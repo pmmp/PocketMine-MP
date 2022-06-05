@@ -104,17 +104,11 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 		}
 	}
 
-	/**
-	 * @return FurnaceInventory
-	 */
-	public function getInventory(){
+	public function getInventory() : FurnaceInventory{
 		return $this->inventory;
 	}
 
-	/**
-	 * @return FurnaceInventory
-	 */
-	public function getRealInventory(){
+	public function getRealInventory() : FurnaceInventory{
 		return $this->getInventory();
 	}
 
