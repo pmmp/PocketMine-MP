@@ -186,6 +186,16 @@ class ItemEntity extends Entity{
 		return true;
 	}
 
+	protected function onHitGround() : ?float{
+		$fallBlockPos = $this->location->floor();
+		$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
+		if(count($fallBlock->getCollisionBoxes()) === 0){
+			$fallBlockPos = $fallBlockPos->down();
+			$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
+		}
+		return $fallBlock->onEntityLand($this);
+	}
+
 	public function canSaveWithChunk() : bool{
 		return !$this->item->isNull() && parent::canSaveWithChunk();
 	}
