@@ -27,6 +27,7 @@ use pocketmine\block\inventory\CraftingTableInventory;
 use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\LoomInventory;
 use pocketmine\block\inventory\StonecutterInventory;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
@@ -59,6 +60,8 @@ class TypeConverter{
 	private const DAMAGE_TAG_CONFLICT_RESOLUTION = "___Damage_ProtocolCollisionResolution___";
 	private const PM_ID_TAG = "___Id___";
 	private const PM_META_TAG = "___Meta___";
+
+	private const RECIPE_INPUT_WILDCARD_META = 0x7fff;
 
 	private int $shieldRuntimeId;
 
@@ -116,10 +119,10 @@ class TypeConverter{
 			return new RecipeIngredient(0, 0, 0);
 		}
 		if($itemStack->hasAnyDamageValue()){
-			[$id, ] = ItemTranslator::getInstance()->toNetworkId($itemStack->getId(), 0);
-			$meta = 0x7fff;
+			[$id, ] = ItemTranslator::getInstance()->toNetworkId(ItemFactory::getInstance()->get($itemStack->getId()));
+			$meta = self::RECIPE_INPUT_WILDCARD_META;
 		}else{
-			[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($itemStack->getId(), $itemStack->getMeta());
+			[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($itemStack);
 		}
 		return new RecipeIngredient($id, $meta, $itemStack->getCount());
 	}
@@ -128,8 +131,17 @@ class TypeConverter{
 		if($ingredient->getId() === 0){
 			return VanillaItems::AIR();
 		}
-		[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($ingredient->getId(), $ingredient->getMeta());
-		return ItemFactory::getInstance()->get($id, $meta, $ingredient->getCount());
+
+		//TODO: this won't be handled properly for blockitems because a block runtimeID is expected rather than a meta value
+
+		if($ingredient->getMeta() === self::RECIPE_INPUT_WILDCARD_META){
+			$idItem = ItemTranslator::getInstance()->fromNetworkId($ingredient->getId(), 0, 0);
+			$result = ItemFactory::getInstance()->get($idItem->getId(), -1);
+		}else{
+			$result = ItemTranslator::getInstance()->fromNetworkId($ingredient->getId(), $ingredient->getMeta(), 0);
+		}
+		$result->setCount($ingredient->getCount());
+		return $result;
 	}
 
 	public function coreItemStackToNet(Item $itemStack) : ItemStack{
@@ -141,11 +153,11 @@ class TypeConverter{
 			$nbt = clone $itemStack->getNamedTag();
 		}
 
-		$idMeta = ItemTranslator::getInstance()->toNetworkIdQuiet($itemStack->getId(), $itemStack->getMeta());
+		$idMeta = ItemTranslator::getInstance()->toNetworkIdQuiet($itemStack);
 		if($idMeta === null){
 			//Display unmapped items as INFO_UPDATE, but stick something in their NBT to make sure they don't stack with
 			//other unmapped items.
-			[$id, $meta, $blockRuntimeId] = ItemTranslator::getInstance()->toNetworkId(ItemIds::INFO_UPDATE, 0);
+			[$id, $meta, $blockRuntimeId] = ItemTranslator::getInstance()->toNetworkId(VanillaBlocks::INFO_UPDATE()->asItem());
 			if($nbt === null){
 				$nbt = new CompoundTag();
 			}
@@ -188,12 +200,13 @@ class TypeConverter{
 		}
 		$compound = $itemStack->getNbt();
 
-		[$id, $meta] = ItemTranslator::getInstance()->fromNetworkId($itemStack->getId(), $itemStack->getMeta(), $itemStack->getBlockRuntimeId());
+		$itemResult = ItemTranslator::getInstance()->fromNetworkId($itemStack->getId(), $itemStack->getMeta(), $itemStack->getBlockRuntimeId());
 
 		if($compound !== null){
 			$compound = clone $compound;
 
-			if($id === ItemIds::INFO_UPDATE && $meta === 0){
+			$id = $meta = null;
+			if($itemResult->getId() === ItemIds::INFO_UPDATE && $itemResult->getMeta() === 0){
 				if(($idTag = $compound->getTag(self::PM_ID_TAG)) instanceof IntTag){
 					$id = $idTag->getValue();
 					$compound->removeTag(self::PM_ID_TAG);
@@ -214,21 +227,24 @@ class TypeConverter{
 			if($compound->count() === 0){
 				$compound = null;
 			}
-		}
-		if($meta < 0 || $meta >= 0x7fff){ //this meta value may have been restored from the NBT
-			throw new TypeConversionException("Item meta must be in range 0 ... " . 0x7fff . " (received $meta)");
+			if($meta !== null){
+				if($meta < 0 || $meta >= 0x7fff){ //this meta value may have been restored from the NBT
+					throw new TypeConversionException("Item meta must be in range 0 ... " . 0x7fff . " (received $meta)");
+				}
+				$itemResult = ItemFactory::getInstance()->get($id ?? $itemResult->getId(), $meta);
+			}
 		}
 
-		try{
-			return ItemFactory::getInstance()->get(
-				$id,
-				$meta,
-				$itemStack->getCount(),
-				$compound
-			);
-		}catch(NbtException $e){
-			throw TypeConversionException::wrap($e, "Bad itemstack NBT data");
+		$itemResult->setCount($itemStack->getCount());
+		if($compound !== null){
+			try{
+				$itemResult->setNamedTag($compound);
+			}catch(NbtException $e){
+				throw TypeConversionException::wrap($e, "Bad itemstack NBT data");
+			}
 		}
+
+		return $itemResult;
 	}
 
 	/**

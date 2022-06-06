@@ -27,6 +27,7 @@ use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\crafting\ShapelessRecipeType;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\network\mcpe\convert\ItemTranslator;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
@@ -135,7 +136,7 @@ final class CraftingDataCache{
 				default => throw new AssumptionFailedError("Unreachable"),
 			};
 			foreach($manager->getFurnaceRecipeManager($furnaceType)->getAll() as $recipe){
-				$input = $converter->coreItemStackToNet($recipe->getInput());
+				$input = $converter->coreItemStackToRecipeIngredient($recipe->getInput());
 				$recipesWithTypeIds[] = new ProtocolFurnaceRecipe(
 					CraftingDataPacket::ENTRY_FURNACE_DATA,
 					$input->getId(),
@@ -167,9 +168,9 @@ final class CraftingDataCache{
 		$itemTranslator = ItemTranslator::getInstance();
 		foreach($manager->getPotionContainerChangeRecipes() as $recipes){
 			foreach($recipes as $recipe){
-				$input = $itemTranslator->toNetworkId($recipe->getInputItemId(), 0);
-				$ingredient = $itemTranslator->toNetworkId($recipe->getIngredient()->getId(), 0);
-				$output = $itemTranslator->toNetworkId($recipe->getOutputItemId(), 0);
+				$input = $itemTranslator->toNetworkId(ItemFactory::getInstance()->get($recipe->getInputItemId(), 0));
+				$ingredient = $itemTranslator->toNetworkId($recipe->getIngredient());
+				$output = $itemTranslator->toNetworkId(ItemFactory::getInstance()->get($recipe->getOutputItemId(), 0));
 				$potionContainerChangeRecipes[] = new ProtocolPotionContainerChangeRecipe(
 					$input[0],
 					$ingredient[0],
