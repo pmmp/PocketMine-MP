@@ -30,7 +30,7 @@ use function error_reporting;
 trait CommonThreadPartsTrait{
 	/** @var \Threaded|\ClassLoader[]|null  */
 	private ?\Threaded $classLoaders = null;
-	protected ?string $composerAutoloaderPath;
+	protected ?string $composerAutoloaderPath = null;
 
 	protected bool $isKilled = false;
 

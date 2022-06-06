@@ -28,8 +28,8 @@ use pocketmine\world\format\Chunk;
 use pocketmine\world\format\SubChunk;
 
 class SubChunkExplorer{
-	public ?Chunk $currentChunk;
-	public ?SubChunk $currentSubChunk;
+	public ?Chunk $currentChunk = null;
+	public ?SubChunk $currentSubChunk = null;
 
 	protected int $currentX;
 	protected int $currentY;
