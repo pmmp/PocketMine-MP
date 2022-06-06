@@ -105,6 +105,9 @@ final class ItemSerializer{
 		if($item->isNull()){
 			throw new \InvalidArgumentException("Cannot serialize a null itemstack");
 		}
+		if($item->hasAnyDamageValue()){
+			throw new \InvalidArgumentException("Cannot serialize a recipe input as a saved itemstack");
+		}
 		if($item instanceof ItemBlock){
 			$data = $this->serializeBlockItem($item->getBlock());
 		}else{
