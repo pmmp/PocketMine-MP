@@ -41,11 +41,12 @@ final class CraftingManagerFromDataHelper{
 	private static function containsUnknownItems(array $items) : bool{
 		$factory = ItemFactory::getInstance();
 		foreach($items as $item){
-			if(
+			if($item instanceof Durable || $item->hasAnyDamageValue()){
 				//TODO: this check is imperfect and might cause problems if meta 0 isn't used for some reason
-				(($item instanceof Durable || $item->hasAnyDamageValue()) && !$factory->isRegistered($item->getId())) ||
-				!$factory->isRegistered($item->getId(), $item->getMeta())
-			){
+				if(!$factory->isRegistered($item->getId())){
+					return true;
+				}
+			}elseif(!$factory->isRegistered($item->getId(), $item->getMeta())){
 				return true;
 			}
 		}
