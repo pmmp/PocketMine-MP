@@ -41,11 +41,17 @@ final class ItemTranslator{
 	use SingletonTrait;
 
 	private static function make() : self{
-		return new self(GlobalItemTypeDictionary::getInstance()->getDictionary(), new ItemSerializer(), new ItemDeserializer());
+		return new self(
+			GlobalItemTypeDictionary::getInstance()->getDictionary(),
+			RuntimeBlockMapping::getInstance()->getBlockStateDictionary(),
+			new ItemSerializer(),
+			new ItemDeserializer()
+		);
 	}
 
 	public function __construct(
-		private ItemTypeDictionary $dictionary,
+		private ItemTypeDictionary $itemTypeDictionary,
+		private BlockStateDictionary $blockStateDictionary,
 		private ItemSerializer $itemSerializer,
 		private ItemDeserializer $itemDeserializer
 	){}
@@ -73,11 +79,11 @@ final class ItemTranslator{
 
 		$itemData = $this->itemSerializer->serialize($item);
 
-		$numericId = $this->dictionary->fromStringId($itemData->getName());
+		$numericId = $this->itemTypeDictionary->fromStringId($itemData->getName());
 		$blockStateData = $itemData->getBlock();
 
 		if($blockStateData !== null){
-			$blockRuntimeId = RuntimeBlockMapping::getInstance()->getBlockStateDictionary()->lookupStateIdFromData($blockStateData);
+			$blockRuntimeId = $this->blockStateDictionary->lookupStateIdFromData($blockStateData);
 			if($blockRuntimeId === null){
 				throw new AssumptionFailedError("Unmapped blockstate returned by blockstate serializer: " . $blockStateData->toNbt());
 			}
@@ -92,10 +98,10 @@ final class ItemTranslator{
 	 * @throws TypeConversionException
 	 */
 	public function fromNetworkId(int $networkId, int $networkMeta, int $networkBlockRuntimeId) : Item{
-		$stringId = $this->dictionary->fromIntId($networkId);
+		$stringId = $this->itemTypeDictionary->fromIntId($networkId);
 
 		$blockStateData = $networkBlockRuntimeId !== self::NO_BLOCK_RUNTIME_ID ?
-			RuntimeBlockMapping::getInstance()->getBlockStateDictionary()->getDataFromStateId($networkBlockRuntimeId) :
+			$this->blockStateDictionary->getDataFromStateId($networkBlockRuntimeId) :
 			null;
 
 		return $this->itemDeserializer->deserialize(new SavedItemData($stringId, $networkMeta, $blockStateData));
