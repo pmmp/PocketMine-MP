@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\data\bedrock\item\ItemDeserializer;
 use pocketmine\data\bedrock\item\ItemSerializer;
+use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
 use pocketmine\data\bedrock\item\ItemTypeSerializeException;
 use pocketmine\data\bedrock\item\SavedItemData;
 use pocketmine\item\Item;
@@ -98,12 +99,25 @@ final class ItemTranslator{
 	 * @throws TypeConversionException
 	 */
 	public function fromNetworkId(int $networkId, int $networkMeta, int $networkBlockRuntimeId) : Item{
-		$stringId = $this->itemTypeDictionary->fromIntId($networkId);
+		try{
+			$stringId = $this->itemTypeDictionary->fromIntId($networkId);
+		}catch(\InvalidArgumentException $e){
+			//TODO: a quiet version of fromIntId() would be better than catching InvalidArgumentException
+			throw TypeConversionException::wrap($e, "Invalid network itemstack ID $networkId");
+		}
 
-		$blockStateData = $networkBlockRuntimeId !== self::NO_BLOCK_RUNTIME_ID ?
-			$this->blockStateDictionary->getDataFromStateId($networkBlockRuntimeId) :
-			null;
+		$blockStateData = null;
+		if($networkBlockRuntimeId !== self::NO_BLOCK_RUNTIME_ID){
+			$blockStateData = $this->blockStateDictionary->getDataFromStateId($networkBlockRuntimeId);
+			if($blockStateData === null){
+				throw new TypeConversionException("Blockstate runtimeID $networkBlockRuntimeId does not correspond to any known blockstate");
+			}
+		}
 
-		return $this->itemDeserializer->deserialize(new SavedItemData($stringId, $networkMeta, $blockStateData));
+		try{
+			return $this->itemDeserializer->deserialize(new SavedItemData($stringId, $networkMeta, $blockStateData));
+		}catch(ItemTypeDeserializeException $e){
+			throw TypeConversionException::wrap($e, "Invalid network itemstack data");
+		}
 	}
 }
