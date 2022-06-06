@@ -48,8 +48,8 @@ use function intdiv;
  * results, with no remainder. Any leftovers are expected to be emitted back to the crafting grid.
  */
 class CraftingTransaction extends InventoryTransaction{
-	protected ?CraftingRecipe $recipe;
-	protected ?int $repetitions;
+	protected ?CraftingRecipe $recipe = null;
+	protected ?int $repetitions = null;
 
 	/** @var Item[] */
 	protected array $inputs = [];
