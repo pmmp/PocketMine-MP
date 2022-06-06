@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\crafting;
 
+use pocketmine\item\Durable;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use function array_map;
@@ -32,6 +34,24 @@ use function is_array;
 use function json_decode;
 
 final class CraftingManagerFromDataHelper{
+
+	/**
+	 * @param Item[] $items
+	 */
+	private static function containsUnknownItems(array $items) : bool{
+		$factory = ItemFactory::getInstance();
+		foreach($items as $item){
+			if(
+				//TODO: this check is imperfect and might cause problems if meta 0 isn't used for some reason
+				(($item instanceof Durable || $item->hasAnyDamageValue()) && !$factory->isRegistered($item->getId())) ||
+				!$factory->isRegistered($item->getId(), $item->getMeta())
+			){
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 	public static function make(string $filePath) : CraftingManager{
 		$recipes = json_decode(Utils::assumeNotFalse(file_get_contents($filePath), "Missing required resource file"), true);
@@ -52,9 +72,14 @@ final class CraftingManagerFromDataHelper{
 			if($recipeType === null){
 				continue;
 			}
+			$inputs = array_map($itemDeserializerFunc, $recipe["input"]);
+			$outputs = array_map($itemDeserializerFunc, $recipe["output"]);
+			if(self::containsUnknownItems($inputs) || self::containsUnknownItems($outputs)){
+				continue;
+			}
 			$result->registerShapelessRecipe(new ShapelessRecipe(
-				array_map($itemDeserializerFunc, $recipe["input"]),
-				array_map($itemDeserializerFunc, $recipe["output"]),
+				$inputs,
+				$outputs,
 				$recipeType
 			));
 		}
@@ -62,10 +87,15 @@ final class CraftingManagerFromDataHelper{
 			if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
 				continue;
 			}
+			$inputs = array_map($itemDeserializerFunc, $recipe["input"]);
+			$outputs = array_map($itemDeserializerFunc, $recipe["output"]);
+			if(self::containsUnknownItems($inputs) || self::containsUnknownItems($outputs)){
+				continue;
+			}
 			$result->registerShapedRecipe(new ShapedRecipe(
 				$recipe["shape"],
-				array_map($itemDeserializerFunc, $recipe["input"]),
-				array_map($itemDeserializerFunc, $recipe["output"])
+				$inputs,
+				$outputs
 			));
 		}
 		foreach($recipes["smelting"] as $recipe){
@@ -79,23 +109,42 @@ final class CraftingManagerFromDataHelper{
 			if($furnaceType === null){
 				continue;
 			}
+			$output = Item::jsonDeserialize($recipe["output"]);
+			$input = Item::jsonDeserialize($recipe["input"]);
+			if(self::containsUnknownItems([$output, $input])){
+				continue;
+			}
 			$result->getFurnaceRecipeManager($furnaceType)->register(new FurnaceRecipe(
-				Item::jsonDeserialize($recipe["output"]),
-				Item::jsonDeserialize($recipe["input"]))
-			);
+				$output,
+				$input
+			));
 		}
 		foreach($recipes["potion_type"] as $recipe){
+			$input = Item::jsonDeserialize($recipe["input"]);
+			$ingredient = Item::jsonDeserialize($recipe["ingredient"]);
+			$output = Item::jsonDeserialize($recipe["output"]);
+
+			if(self::containsUnknownItems([$input, $ingredient, $output])){
+				continue;
+			}
 			$result->registerPotionTypeRecipe(new PotionTypeRecipe(
-				Item::jsonDeserialize($recipe["input"]),
-				Item::jsonDeserialize($recipe["ingredient"]),
-				Item::jsonDeserialize($recipe["output"])
+				$input,
+				$ingredient,
+				$output
 			));
 		}
 		foreach($recipes["potion_container_change"] as $recipe){
+			$input = ItemFactory::getInstance()->get($recipe["input_item_id"], -1);
+			$ingredient = Item::jsonDeserialize($recipe["ingredient"]);
+			$output = ItemFactory::getInstance()->get($recipe["output_item_id"], -1);
+
+			if(self::containsUnknownItems([$input, $ingredient, $output])){
+				continue;
+			}
 			$result->registerPotionContainerChangeRecipe(new PotionContainerChangeRecipe(
-				$recipe["input_item_id"],
-				Item::jsonDeserialize($recipe["ingredient"]),
-				$recipe["output_item_id"]
+				$input->getId(),
+				$ingredient,
+				$output->getId()
 			));
 		}
 
