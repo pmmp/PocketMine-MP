@@ -123,6 +123,11 @@ class TypeConverter{
 			$meta = self::RECIPE_INPUT_WILDCARD_META;
 		}else{
 			[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($itemStack);
+			if($id < 256){
+				//TODO: this is needed for block crafting recipes to work - we need to replace this with some kind of
+				//blockstate <-> meta mapping table so that we can remove the legacy code from the core
+				$meta = $itemStack->getMeta();
+			}
 		}
 		return new RecipeIngredient($id, $meta, $itemStack->getCount());
 	}
