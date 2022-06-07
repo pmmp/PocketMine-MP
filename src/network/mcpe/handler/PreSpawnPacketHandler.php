@@ -45,7 +45,6 @@ use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\VersionInfo;
 use Ramsey\Uuid\Uuid;
-use function sprintf;
 
 /**
  * Handler used for the pre-spawn phase of the session.

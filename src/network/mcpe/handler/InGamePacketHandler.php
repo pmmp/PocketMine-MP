@@ -81,6 +81,7 @@ use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\RequestAbilityPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
@@ -651,7 +652,27 @@ class InGamePacketHandler extends ChunkRequestPacketHandler{
 	}
 
 	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
-		return true; //no longer used, but the client still sends it for flight changes
+		if($this->session->getProtocolId() >= ProtocolInfo::PROTOCOL_1_19_0){
+			return true; //no longer used, but the client still sends it for flight changes
+		}
+
+		if($packet->targetActorUniqueId !== $this->player->getId()){
+			return false; //TODO: operators can change other people's permissions using this
+		}
+
+		$handled = false;
+
+		$isFlying = $packet->getFlag(AdventureSettingsPacket::FLYING);
+		if($isFlying !== $this->player->isFlying()){
+			if(!$this->player->toggleFlight($isFlying)){
+				$this->session->syncAdventureSettings($this->player);
+			}
+			$handled = true;
+		}
+
+		//TODO: check for other changes
+
+		return $handled;
 	}
 
 	public function handleBlockActorData(BlockActorDataPacket $packet) : bool{
@@ -975,6 +996,10 @@ class InGamePacketHandler extends ChunkRequestPacketHandler{
 	}
 
 	public function handleRequestAbility(RequestAbilityPacket $packet) : bool{
+		if($this->session->getProtocolId() < ProtocolInfo::PROTOCOL_1_19_0){
+			return false;
+		}
+
 		if($packet->getAbilityId() === RequestAbilityPacket::ABILITY_FLYING){
 			$isFlying = $packet->getAbilityValue();
 			if(!is_bool($isFlying)){
