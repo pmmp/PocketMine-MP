@@ -97,6 +97,11 @@ class PluginManager{
 		}
 	}
 
+	/**
+	 * @param string $class
+	 * @phpstan-param class-string<Plugin> $class
+	 * @return Plugin|null
+	 */
 	public function getPlugin(string $class) : ?Plugin{
 		if(!is_a($class, Plugin::class, true)) return null;
 		return $this->plugins[$class];
