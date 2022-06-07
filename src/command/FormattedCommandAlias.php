@@ -85,7 +85,7 @@ class FormattedCommandAlias extends Command{
 				$target->timings->startTiming();
 
 				try{
-					$target->execute($sender, $commandLabel, $args);
+					$target->execute($sender, $commandLabel, $commandArgs);
 				}catch(InvalidCommandSyntaxException $e){
 					$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage())));
 				}finally{
