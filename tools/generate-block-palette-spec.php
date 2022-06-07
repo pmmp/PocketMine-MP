@@ -28,6 +28,15 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\BlockStateDictionary;
 use pocketmine\utils\AssumptionFailedError;
+use function array_values;
+use function count;
+use function dirname;
+use function file_get_contents;
+use function file_put_contents;
+use function fwrite;
+use function get_class;
+use function json_encode;
+use function ksort;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -66,5 +75,3 @@ foreach($reportMap as $blockName => $propertyList){
 ksort($reportMap, SORT_STRING);
 
 file_put_contents($argv[2], json_encode($reportMap, JSON_PRETTY_PRINT));
-
-
