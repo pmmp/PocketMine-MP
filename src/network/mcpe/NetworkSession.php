@@ -1043,7 +1043,7 @@ class NetworkSession{
 		$this->sendDataPacket(EmotePacket::create($from->getId(), $emoteId, EmotePacket::FLAG_SERVER));
 	}
 
-	public function onToast(string $title, string $body){
+	public function onToast(string $title, string $body) : void{
 		$this->sendDataPacket(ToastRequestPacket::create($title, $body));
 	}
 
