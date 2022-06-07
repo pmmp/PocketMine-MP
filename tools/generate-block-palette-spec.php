@@ -23,11 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\tools\generate_block_palette_spec;
 
+use pocketmine\errorhandler\ErrorToExceptionHandler;
+use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\BlockStateDictionary;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Utils;
 use function array_values;
 use function count;
 use function dirname;
@@ -44,7 +47,15 @@ if(count($argv) !== 3){
 	fwrite(STDERR, "Required arguments: input palette file path, output JSON file path\n");
 	exit(1);
 }
-$palette = BlockStateDictionary::loadFromString(file_get_contents($argv[1]));
+
+[, $inputFile, $outputFile] = $argv;
+
+try{
+	$palette = BlockStateDictionary::loadFromString(ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents($inputFile)));
+}catch(NbtException){
+	fwrite(STDERR, "Invalid block palette file $argv[1]\n");
+	exit(1);
+}
 
 $reportMap = [];
 
@@ -66,12 +77,12 @@ foreach($palette->getStates() as $state){
 	}
 }
 
-foreach($reportMap as $blockName => $propertyList){
-	foreach($propertyList as $propertyName => $propertyValues){
+foreach(Utils::stringifyKeys($reportMap) as $blockName => $propertyList){
+	foreach(Utils::stringifyKeys($propertyList) as $propertyName => $propertyValues){
 		ksort($reportMap[$blockName][$propertyName]);
 		$reportMap[$blockName][$propertyName] = array_values($propertyValues);
 	}
 }
 ksort($reportMap, SORT_STRING);
 
-file_put_contents($argv[2], json_encode($reportMap, JSON_PRETTY_PRINT));
+file_put_contents($outputFile, json_encode($reportMap, JSON_PRETTY_PRINT));
