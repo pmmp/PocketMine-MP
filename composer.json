@@ -36,7 +36,7 @@
       "netresearch/jsonmapper": "^4.0",
       "pocketmine/bedrock-block-upgrade-schema": "dev-master@dev",
       "pocketmine/bedrock-data": "dev-modern-world-support@dev",
-      "pocketmine/bedrock-protocol": "~9.0.0+bedrock-1.18.30",
+      "pocketmine/bedrock-protocol": "~10.0.0+bedrock-1.19.0",
       "pocketmine/binaryutils": "^0.2.1",
       "pocketmine/callback-validator": "^1.0.2",
       "pocketmine/classloader": "^0.2.0",
@@ -80,7 +80,7 @@
       "sort-packages": true
    },
    "scripts": {
-      "make-devtools": "@php -dphar.readonly=0 tests/plugins/DevTools/src/ConsoleScript.php --make tests/plugins/DevTools --out plugins/DevTools.phar",
+      "make-devtools": "@php -dphar.readonly=0 tests/plugins/DevTools/src/ConsoleScript.php --make ./ --relative tests/plugins/DevTools --out plugins/DevTools.phar",
       "make-server": [
          "@composer install --no-dev --classmap-authoritative --ignore-platform-reqs",
          "@php -dphar.readonly=0 build/server-phar.php"

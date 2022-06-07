@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -861,7 +861,7 @@ class Server{
 					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error3()));
 					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error4("settings.enable-dev-builds")));
 					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error5("https://github.com/pmmp/PocketMine-MP/releases")));
-					$this->forceShutdown();
+					$this->forceShutdownExit();
 
 					return;
 				}
@@ -976,7 +976,7 @@ class Server{
 				$pluginGraylist = PluginGraylist::fromArray(yaml_parse(file_get_contents($graylistFile)));
 			}catch(\InvalidArgumentException $e){
 				$this->logger->emergency("Failed to load $graylistFile: " . $e->getMessage());
-				$this->forceShutdown();
+				$this->forceShutdownExit();
 				return;
 			}
 			$this->pluginManager = new PluginManager($this, $this->configGroup->getPropertyBool("plugins.legacy-data-dir", true) ? null : Path::join($this->getDataPath(), "plugin_data"), $pluginGraylist);
@@ -1007,28 +1007,28 @@ class Server{
 			$this->pluginManager->loadPlugins($this->pluginPath, $loadErrorCount);
 			if($loadErrorCount > 0){
 				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someLoadErrors()));
-				$this->forceShutdown();
+				$this->forceShutdownExit();
 				return;
 			}
 			if(!$this->enablePlugins(PluginEnableOrder::STARTUP())){
 				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
-				$this->forceShutdown();
+				$this->forceShutdownExit();
 				return;
 			}
 
 			if(!$this->startupPrepareWorlds()){
-				$this->forceShutdown();
+				$this->forceShutdownExit();
 				return;
 			}
 
 			if(!$this->enablePlugins(PluginEnableOrder::POSTWORLD())){
 				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
-				$this->forceShutdown();
+				$this->forceShutdownExit();
 				return;
 			}
 
 			if(!$this->startupPrepareNetworkInterfaces()){
-				$this->forceShutdown();
+				$this->forceShutdownExit();
 				return;
 			}
 
@@ -1454,6 +1454,11 @@ class Server{
 			$this->isRunning = false;
 			$this->signalHandler->unregister();
 		}
+	}
+
+	private function forceShutdownExit() : void{
+		$this->forceShutdown();
+		Process::kill(Process::pid(), true);
 	}
 
 	public function forceShutdown() : void{

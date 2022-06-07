@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 /**
  * Implementation of MCPE-style chunks with subchunks with XZY ordering.

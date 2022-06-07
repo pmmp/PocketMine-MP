@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -269,11 +269,13 @@ class InventoryManager{
 		//initiated the close and expect an ack.
 		$this->session->sendDataPacket(ContainerClosePacket::create($id, false));
 
-		if($this->pendingOpenWindowCallback !== null && $id === $this->pendingCloseWindowId){
-			$this->session->getLogger()->debug("Opening deferred window after close ack of window $id");
+		if($this->pendingCloseWindowId === $id){
 			$this->pendingCloseWindowId = null;
-			($this->pendingOpenWindowCallback)();
-			$this->pendingOpenWindowCallback = null;
+			if($this->pendingOpenWindowCallback !== null){
+				$this->session->getLogger()->debug("Opening deferred window after close ack of window $id");
+				($this->pendingOpenWindowCallback)();
+				$this->pendingOpenWindowCallback = null;
+			}
 		}
 	}
 
