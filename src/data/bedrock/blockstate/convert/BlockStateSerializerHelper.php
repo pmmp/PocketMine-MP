@@ -222,19 +222,19 @@ final class BlockStateSerializerHelper{
 	}
 
 	public static function encodeStoneSlab1(Slab $block, string $typeValue) : BlockStateWriter{
-		return self::encodeStoneSlab($block, Ids::STONE_SLAB, Ids::DOUBLE_STONE_SLAB, BlockStateNames::STONE_SLAB_TYPE, $typeValue);
+		return self::encodeStoneSlab($block, Ids::STONE_BLOCK_SLAB, Ids::DOUBLE_STONE_BLOCK_SLAB, BlockStateNames::STONE_SLAB_TYPE, $typeValue);
 	}
 
 	public static function encodeStoneSlab2(Slab $block, string $typeValue) : BlockStateWriter{
-		return self::encodeStoneSlab($block, Ids::STONE_SLAB2, Ids::DOUBLE_STONE_SLAB2, BlockStateNames::STONE_SLAB_TYPE_2, $typeValue);
+		return self::encodeStoneSlab($block, Ids::STONE_BLOCK_SLAB2, Ids::DOUBLE_STONE_BLOCK_SLAB2, BlockStateNames::STONE_SLAB_TYPE_2, $typeValue);
 	}
 
 	public static function encodeStoneSlab3(Slab $block, string $typeValue) : BlockStateWriter{
-		return self::encodeStoneSlab($block, Ids::STONE_SLAB3, Ids::DOUBLE_STONE_SLAB3, BlockStateNames::STONE_SLAB_TYPE_3, $typeValue);
+		return self::encodeStoneSlab($block, Ids::STONE_BLOCK_SLAB3, Ids::DOUBLE_STONE_BLOCK_SLAB3, BlockStateNames::STONE_SLAB_TYPE_3, $typeValue);
 	}
 
 	public static function encodeStoneSlab4(Slab $block, string $typeValue) : BlockStateWriter{
-		return self::encodeStoneSlab($block, Ids::STONE_SLAB4, Ids::DOUBLE_STONE_SLAB4, BlockStateNames::STONE_SLAB_TYPE_4, $typeValue);
+		return self::encodeStoneSlab($block, Ids::STONE_BLOCK_SLAB4, Ids::DOUBLE_STONE_BLOCK_SLAB4, BlockStateNames::STONE_SLAB_TYPE_4, $typeValue);
 	}
 
 	public static function encodeTrapdoor(Trapdoor $block, BlockStateWriter $out) : BlockStateWriter{

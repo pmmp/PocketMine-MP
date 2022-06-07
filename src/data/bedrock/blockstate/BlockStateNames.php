@@ -42,6 +42,7 @@ final class BlockStateNames{
 	public const BREWING_STAND_SLOT_B_BIT = "brewing_stand_slot_b_bit";
 	public const BREWING_STAND_SLOT_C_BIT = "brewing_stand_slot_c_bit";
 	public const BUTTON_PRESSED_BIT = "button_pressed_bit";
+	public const CAN_SUMMON = "can_summon";
 	public const CANDLES = "candles";
 	public const CAULDRON_LIQUID = "cauldron_liquid";
 	public const CHEMISTRY_TABLE_TYPE = "chemistry_table_type";
@@ -105,6 +106,7 @@ final class BlockStateNames{
 	public const PORTAL_AXIS = "portal_axis";
 	public const POWERED_BIT = "powered_bit";
 	public const PRISMARINE_BLOCK_TYPE = "prismarine_block_type";
+	public const PROPAGULE_STAGE = "propagule_stage";
 	public const RAIL_DATA_BIT = "rail_data_bit";
 	public const RAIL_DIRECTION = "rail_direction";
 	public const REDSTONE_SIGNAL = "redstone_signal";

@@ -253,12 +253,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockBlockUpgradeSchema.git",
-                "reference": "826fb285c7e8e6fd8e0f0184b9ce37813d5102f4"
+                "reference": "68a411921c52260248f18716a129f85126b871fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockBlockUpgradeSchema/zipball/826fb285c7e8e6fd8e0f0184b9ce37813d5102f4",
-                "reference": "826fb285c7e8e6fd8e0f0184b9ce37813d5102f4",
+                "url": "https://api.github.com/repos/pmmp/BedrockBlockUpgradeSchema/zipball/68a411921c52260248f18716a129f85126b871fb",
+                "reference": "68a411921c52260248f18716a129f85126b871fb",
                 "shasum": ""
             },
             "default-branch": true,
@@ -272,7 +272,7 @@
                 "issues": "https://github.com/pmmp/BedrockBlockUpgradeSchema/issues",
                 "source": "https://github.com/pmmp/BedrockBlockUpgradeSchema/tree/master"
             },
-            "time": "2022-05-13T19:44:35+00:00"
+            "time": "2022-06-07T17:46:29+00:00"
         },
         {
             "name": "pocketmine/bedrock-data",

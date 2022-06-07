@@ -298,19 +298,19 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 				default => throw $in->badValueException(StateNames::DOUBLE_PLANT_TYPE, $type),
 			})->setTop($in->readBool(StateNames::UPPER_BLOCK_BIT));
 		});
-		$this->map(Ids::DOUBLE_STONE_SLAB, function(Reader $in) : Block{
+		$this->map(Ids::DOUBLE_STONE_BLOCK_SLAB, function(Reader $in) : Block{
 			$in->ignored(StateNames::TOP_SLOT_BIT); //useless for double slabs
 			return Helper::mapStoneSlab1Type($in)->setSlabType(SlabType::DOUBLE());
 		});
-		$this->map(Ids::DOUBLE_STONE_SLAB2, function(Reader $in) : Block{
+		$this->map(Ids::DOUBLE_STONE_BLOCK_SLAB2, function(Reader $in) : Block{
 			$in->ignored(StateNames::TOP_SLOT_BIT); //useless for double slabs
 			return Helper::mapStoneSlab2Type($in)->setSlabType(SlabType::DOUBLE());
 		});
-		$this->map(Ids::DOUBLE_STONE_SLAB3, function(Reader $in) : Block{
+		$this->map(Ids::DOUBLE_STONE_BLOCK_SLAB3, function(Reader $in) : Block{
 			$in->ignored(StateNames::TOP_SLOT_BIT); //useless for double slabs
 			return Helper::mapStoneSlab3Type($in)->setSlabType(SlabType::DOUBLE());
 		});
-		$this->map(Ids::DOUBLE_STONE_SLAB4, function(Reader $in) : Block{
+		$this->map(Ids::DOUBLE_STONE_BLOCK_SLAB4, function(Reader $in) : Block{
 			$in->ignored(StateNames::TOP_SLOT_BIT); //useless for double slabs
 			return Helper::mapStoneSlab4Type($in)->setSlabType(SlabType::DOUBLE());
 		});
@@ -939,10 +939,10 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::STONE_BRICK_STAIRS, fn(Reader $in) => Helper::decodeStairs(Blocks::STONE_BRICK_STAIRS(), $in));
 		$this->map(Ids::STONE_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::STONE_BUTTON(), $in));
 		$this->map(Ids::STONE_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::STONE_PRESSURE_PLATE(), $in));
-		$this->map(Ids::STONE_SLAB, fn(Reader $in) => Helper::mapStoneSlab1Type($in)->setSlabType($in->readSlabPosition()));
-		$this->map(Ids::STONE_SLAB2, fn(Reader $in) => Helper::mapStoneSlab2Type($in)->setSlabType($in->readSlabPosition()));
-		$this->map(Ids::STONE_SLAB3, fn(Reader $in) => Helper::mapStoneSlab3Type($in)->setSlabType($in->readSlabPosition()));
-		$this->map(Ids::STONE_SLAB4, fn(Reader $in) => Helper::mapStoneSlab4Type($in)->setSlabType($in->readSlabPosition()));
+		$this->map(Ids::STONE_BLOCK_SLAB, fn(Reader $in) => Helper::mapStoneSlab1Type($in)->setSlabType($in->readSlabPosition()));
+		$this->map(Ids::STONE_BLOCK_SLAB2, fn(Reader $in) => Helper::mapStoneSlab2Type($in)->setSlabType($in->readSlabPosition()));
+		$this->map(Ids::STONE_BLOCK_SLAB3, fn(Reader $in) => Helper::mapStoneSlab3Type($in)->setSlabType($in->readSlabPosition()));
+		$this->map(Ids::STONE_BLOCK_SLAB4, fn(Reader $in) => Helper::mapStoneSlab4Type($in)->setSlabType($in->readSlabPosition()));
 		$this->map(Ids::STONE_STAIRS, fn(Reader $in) => Helper::decodeStairs(Blocks::COBBLESTONE_STAIRS(), $in));
 		$this->map(Ids::STONEBRICK, function(Reader $in) : Block{
 			return match($type = $in->readString(StateNames::STONE_BRICK_TYPE)){
