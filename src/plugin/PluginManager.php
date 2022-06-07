@@ -97,12 +97,9 @@ class PluginManager{
 		}
 	}
 
-	public function getPlugin(string $name) : ?Plugin{
-		if(isset($this->plugins[$name])){
-			return $this->plugins[$name];
-		}
-
-		return null;
+	public function getPlugin(string $class) : ?Plugin{
+		if(!is_a($class, Plugin::class, true)) return null;
+		return $this->plugins[$class];
 	}
 
 	public function registerInterface(PluginLoader $loader) : void{
@@ -211,7 +208,7 @@ class PluginManager{
 		 * @see Plugin::__construct()
 		 */
 		$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $prefixed, new DiskResourceProvider($prefixed . "/resources/"));
-		$this->plugins[$plugin->getDescription()->getName()] = $plugin;
+		$this->plugins[$plugin->getDescription()->getMain()] = $plugin;
 
 		return $plugin;
 	}
@@ -287,7 +284,7 @@ class PluginManager{
 					continue;
 				}
 
-				if(isset($triage->plugins[$name]) || $this->getPlugin($name) instanceof Plugin){
+				if(isset($triage->plugins[$name]) || $this->getPlugin($description->getMain()) instanceof Plugin){
 					$this->server->getLogger()->critical($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_duplicateError($name)));
 					$loadErrorCount++;
 					continue;
@@ -436,7 +433,7 @@ class PluginManager{
 	}
 
 	public function isPluginEnabled(Plugin $plugin) : bool{
-		return isset($this->plugins[$plugin->getDescription()->getName()]) && $plugin->isEnabled();
+		return isset($this->plugins[$plugin->getDescription()->getMain()]) && $plugin->isEnabled();
 	}
 
 	public function enablePlugin(Plugin $plugin) : bool{
