@@ -615,6 +615,7 @@ class InGamePacketHandler extends PacketHandler{
 			case PlayerAction::START_ITEM_USE_ON:
 			case PlayerAction::STOP_ITEM_USE_ON:
 				//TODO: this has no obvious use and seems only used for analytics in vanilla - ignore it
+				break;
 			default:
 				$this->session->getLogger()->debug("Unhandled/unknown player action type " . $action);
 				return false;
