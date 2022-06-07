@@ -17,12 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\cache\CraftingDataCache;
 use pocketmine\network\mcpe\cache\StaticPacketCache;
 use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
@@ -33,6 +34,7 @@ use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\BoolGameRule;
+use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\Experiments;
 use pocketmine\network\mcpe\protocol\types\LevelSettings;
@@ -42,6 +44,7 @@ use pocketmine\network\mcpe\protocol\types\SpawnSettings;
 use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\VersionInfo;
+use Ramsey\Uuid\Uuid;
 use function sprintf;
 
 /**
@@ -82,6 +85,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 			$this->player->getOffsetPosition($location),
 			$location->pitch,
 			$location->yaw,
+			new CacheableNbt(CompoundTag::create()), //TODO: we don't care about this right now
 			$levelSettings,
 			"",
 			$this->server->getMotd(),
@@ -93,6 +97,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 			"",
 			false,
 			sprintf("%s %s", VersionInfo::NAME, VersionInfo::VERSION()->getFullVersion(true)),
+			Uuid::fromString(Uuid::NIL),
 			[],
 			0,
 			GlobalItemTypeDictionary::getInstance()->getDictionary()->getEntries()
