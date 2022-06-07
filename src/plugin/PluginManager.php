@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -270,6 +270,17 @@ class PluginManager{
 
 				$name = $description->getName();
 
+				if($this->graylist !== null && !$this->graylist->isAllowed($name)){
+					$this->server->getLogger()->notice($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
+						$name,
+						$this->graylist->isWhitelist() ? KnownTranslationFactory::pocketmine_plugin_disallowedByWhitelist() : KnownTranslationFactory::pocketmine_plugin_disallowedByBlacklist()
+					)));
+					//this does NOT increment loadErrorCount, because using the graylist to prevent a plugin from
+					//loading is not considered accidental; this is the same as if the plugin were manually removed
+					//this means that the server will continue to boot even if some plugins were blocked by graylist
+					continue;
+				}
+
 				if(($loadabilityError = $loadabilityChecker->check($description)) !== null){
 					$this->server->getLogger()->critical($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($name, $loadabilityError)));
 					$loadErrorCount++;
@@ -284,17 +295,6 @@ class PluginManager{
 
 				if(strpos($name, " ") !== false){
 					$this->server->getLogger()->warning($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_spacesDiscouraged($name)));
-				}
-
-				if($this->graylist !== null && !$this->graylist->isAllowed($name)){
-					$this->server->getLogger()->notice($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
-						$name,
-						$this->graylist->isWhitelist() ? KnownTranslationFactory::pocketmine_plugin_disallowedByWhitelist() : KnownTranslationFactory::pocketmine_plugin_disallowedByBlacklist()
-					)));
-					//this does NOT increment loadErrorCount, because using the graylist to prevent a plugin from
-					//loading is not considered accidental; this is the same as if the plugin were manually removed
-					//this means that the server will continue to boot even if some plugins were blocked by graylist
-					continue;
 				}
 
 				$triage->plugins[$name] = new PluginLoadTriageEntry($file, $loader, $description);
