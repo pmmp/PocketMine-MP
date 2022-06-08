@@ -2342,7 +2342,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$properties->setPlayerFlag(PlayerMetadataFlags::SLEEP, $this->sleeping !== null);
 		$properties->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, $this->sleeping !== null ? BlockPosition::fromVector3($this->sleeping) : new BlockPosition(0, 0, 0));
-		$properties->setGenericFlag(EntityMetadataFlags::HAS_COLLISION, !$this->getGamemode()->equals(GameMode::SPECTATOR());
+		$properties->setGenericFlag(EntityMetadataFlags::HAS_COLLISION, !$this->getGamemode()->equals(GameMode::SPECTATOR()));
 	}
 
 	public function sendData(?array $targets, ?array $data = null) : void{
