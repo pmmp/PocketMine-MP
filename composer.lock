@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1d35edfe78183512ce45be7a8a4940e7",
+    "content-hash": "4e3266e01983490663a0cdac7609bde0",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -299,6 +299,33 @@
                 "source": "https://github.com/pmmp/BedrockData/tree/modern-world-support"
             },
             "time": "2022-06-07T16:24:29+00:00"
+        },
+        {
+            "name": "pocketmine/bedrock-item-upgrade-schema",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/BedrockItemUpgradeSchema.git",
+                "reference": "d984d2ee7283bc52e8733e7c7da1d0f6b6dc501f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/BedrockItemUpgradeSchema/zipball/d984d2ee7283bc52e8733e7c7da1d0f6b6dc501f",
+                "reference": "d984d2ee7283bc52e8733e7c7da1d0f6b6dc501f",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "CC0-1.0"
+            ],
+            "description": "JSON schemas for upgrading items found in older Minecraft: Bedrock world saves",
+            "support": {
+                "issues": "https://github.com/pmmp/BedrockItemUpgradeSchema/issues",
+                "source": "https://github.com/pmmp/BedrockItemUpgradeSchema/tree/master"
+            },
+            "time": "2022-06-08T13:47:48+00:00"
         },
         {
             "name": "pocketmine/bedrock-protocol",
@@ -3361,7 +3388,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "pocketmine/bedrock-block-upgrade-schema": 20,
-        "pocketmine/bedrock-data": 20
+        "pocketmine/bedrock-data": 20,
+        "pocketmine/bedrock-item-upgrade-schema": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
