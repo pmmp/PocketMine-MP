@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock;
+namespace pocketmine\data\bedrock\item;
 
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;

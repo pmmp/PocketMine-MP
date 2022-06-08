@@ -35,7 +35,7 @@ use pocketmine\data\bedrock\block\upgrade\BlockStateUpgrader;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaUtils;
 use pocketmine\data\bedrock\block\upgrade\LegacyBlockStateMapper;
 use pocketmine\data\bedrock\block\UpgradingBlockStateDeserializer;
-use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
+use pocketmine\data\bedrock\block\upgrade\LegacyBlockIdToStringIdMap;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\nbt\tag\CompoundTag;
 use Webmozart\PathUtil\Path;
