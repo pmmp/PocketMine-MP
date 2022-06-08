@@ -40,7 +40,7 @@ use function json_encode;
 use function ksort;
 use function scandir;
 
-require __DIR__ . '/vendor/autoload.php';
+require dirname(__DIR__) . '/vendor/autoload.php';
 
 if(count($argv) !== 4){
 	\GlobalLogger::get()->error("Required arguments: path to mapping table, path to current schemas, path to output file");
