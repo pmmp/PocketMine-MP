@@ -29,6 +29,7 @@ use pocketmine\block\utils\SkullType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
+use pocketmine\data\bedrock\block\BlockStateDeserializer;
 use pocketmine\data\bedrock\CompoundTypeIds;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\bedrock\EntityLegacyIds;
@@ -43,16 +44,15 @@ use pocketmine\utils\SingletonTrait;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
 
 final class ItemDeserializer{
-
-	use SingletonTrait;
-
 	/**
 	 * @var \Closure[]
 	 * @phpstan-var array<string, \Closure(Data) : Item>
 	 */
 	private array $deserializers = [];
 
-	public function __construct(){
+	public function __construct(
+		private BlockStateDeserializer $blockStateDeserializer
+	){
 		$this->registerDeserializers();
 	}
 
@@ -70,7 +70,7 @@ final class ItemDeserializer{
 		if(($blockData = $data->getBlock()) !== null){
 			//TODO: this is rough duct tape; we need a better way to deal with this
 			try{
-				$block = GlobalBlockStateHandlers::getDeserializer()->deserialize($blockData);
+				$block = $this->blockStateDeserializer->deserialize($blockData);
 			}catch(BlockStateDeserializeException $e){
 				throw new ItemTypeDeserializeException("Failed to deserialize item data: " . $e->getMessage(), 0, $e);
 			}

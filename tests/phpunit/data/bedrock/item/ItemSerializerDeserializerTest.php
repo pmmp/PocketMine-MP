@@ -26,6 +26,7 @@ namespace pocketmine\data\bedrock\item;
 use PHPUnit\Framework\TestCase;
 use pocketmine\block\BlockFactory;
 use pocketmine\item\ItemFactory;
+use pocketmine\world\format\io\GlobalBlockStateHandlers;
 
 final class ItemSerializerDeserializerTest extends TestCase{
 
@@ -33,8 +34,8 @@ final class ItemSerializerDeserializerTest extends TestCase{
 	private ItemSerializer $serializer;
 
 	public function setUp() : void{
-		$this->deserializer = new ItemDeserializer();
-		$this->serializer = new ItemSerializer();
+		$this->deserializer = new ItemDeserializer(GlobalBlockStateHandlers::getDeserializer());
+		$this->serializer = new ItemSerializer(GlobalBlockStateHandlers::getSerializer());
 	}
 
 	public function testAllVanillaItemsSerializableAndDeserializable() : void{

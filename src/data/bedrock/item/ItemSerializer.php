@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SkullType;
 use pocketmine\block\VanillaBlocks as Blocks;
+use pocketmine\data\bedrock\block\BlockStateSerializer;
 use pocketmine\data\bedrock\item\BlockItemIdMap;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
 use pocketmine\data\bedrock\CompoundTypeIds;
@@ -61,7 +62,9 @@ final class ItemSerializer{
 	 */
 	private array $blockItemSerializers = [];
 
-	public function __construct(){
+	public function __construct(
+		private BlockStateSerializer $blockStateSerializer
+	){
 		$this->registerSerializers();
 	}
 
@@ -170,7 +173,7 @@ final class ItemSerializer{
 			$serializer = $locatedSerializer;
 			$data = $serializer($block);
 		}else{
-			$data = self::standardBlock($block);
+			$data = $this->standardBlock($block);
 		}
 
 		return $data;
@@ -179,9 +182,9 @@ final class ItemSerializer{
 	/**
 	 * @throws ItemTypeSerializeException
 	 */
-	private static function standardBlock(Block $block) : Data{
+	private function standardBlock(Block $block) : Data{
 		try{
-			$blockStateData = GlobalBlockStateHandlers::getSerializer()->serialize($block->getFullId());
+			$blockStateData = $this->blockStateSerializer->serialize($block->getFullId());
 		}catch(BlockStateSerializeException $e){
 			throw new ItemTypeSerializeException($e->getMessage(), 0, $e);
 		}
@@ -261,8 +264,8 @@ final class ItemSerializer{
 
 		//these are encoded as regular blocks, but they have to be accounted for explicitly since they don't use ItemBlock
 		//Bamboo->getBlock() returns BambooSapling :(
-		$this->map(Items::BAMBOO(), fn() => self::standardBlock(Blocks::BAMBOO()));
-		$this->map(Items::CORAL_FAN(), fn(CoralFan $item) => self::standardBlock($item->getBlock()));
+		$this->map(Items::BAMBOO(), fn() => $this->standardBlock(Blocks::BAMBOO()));
+		$this->map(Items::CORAL_FAN(), fn(CoralFan $item) => $this->standardBlock($item->getBlock()));
 
 		$this->map(Items::ACACIA_BOAT(), self::id(Ids::ACACIA_BOAT));
 		$this->map(Items::ACACIA_SIGN(), self::id(Ids::ACACIA_SIGN));

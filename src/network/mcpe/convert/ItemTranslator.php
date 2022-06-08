@@ -32,6 +32,7 @@ use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\world\format\io\GlobalBlockStateHandlers;
 
 /**
  * This class handles translation between network item ID+metadata to PocketMine-MP internal ID+metadata and vice versa.
@@ -45,8 +46,8 @@ final class ItemTranslator{
 		return new self(
 			GlobalItemTypeDictionary::getInstance()->getDictionary(),
 			RuntimeBlockMapping::getInstance()->getBlockStateDictionary(),
-			new ItemSerializer(),
-			new ItemDeserializer()
+			new ItemSerializer(GlobalBlockStateHandlers::getSerializer()),
+			new ItemDeserializer(GlobalBlockStateHandlers::getDeserializer())
 		);
 	}
 
