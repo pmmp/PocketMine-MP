@@ -32,6 +32,7 @@ namespace pocketmine\tools\generate_item_upgrade_schema;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use Webmozart\PathUtil\Path;
 use function count;
+use function dirname;
 use function file_get_contents;
 use function file_put_contents;
 use function is_array;
