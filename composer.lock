@@ -253,12 +253,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockBlockUpgradeSchema.git",
-                "reference": "68a411921c52260248f18716a129f85126b871fb"
+                "reference": "c7aa3e04ae36dbb9a97905a2595f4453d914aa5c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockBlockUpgradeSchema/zipball/68a411921c52260248f18716a129f85126b871fb",
-                "reference": "68a411921c52260248f18716a129f85126b871fb",
+                "url": "https://api.github.com/repos/pmmp/BedrockBlockUpgradeSchema/zipball/c7aa3e04ae36dbb9a97905a2595f4453d914aa5c",
+                "reference": "c7aa3e04ae36dbb9a97905a2595f4453d914aa5c",
                 "shasum": ""
             },
             "default-branch": true,
@@ -272,7 +272,7 @@
                 "issues": "https://github.com/pmmp/BedrockBlockUpgradeSchema/issues",
                 "source": "https://github.com/pmmp/BedrockBlockUpgradeSchema/tree/master"
             },
-            "time": "2022-06-07T17:46:29+00:00"
+            "time": "2022-06-08T13:20:45+00:00"
         },
         {
             "name": "pocketmine/bedrock-data",
@@ -280,12 +280,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockData.git",
-                "reference": "3c65a3197d8a46c424358ac983b6fc287874e649"
+                "reference": "6a28ede3e9cdf1c548e85ce24382fee5f1bd9d75"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/3c65a3197d8a46c424358ac983b6fc287874e649",
-                "reference": "3c65a3197d8a46c424358ac983b6fc287874e649",
+                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/6a28ede3e9cdf1c548e85ce24382fee5f1bd9d75",
+                "reference": "6a28ede3e9cdf1c548e85ce24382fee5f1bd9d75",
                 "shasum": ""
             },
             "type": "library",
@@ -298,7 +298,7 @@
                 "issues": "https://github.com/pmmp/BedrockData/issues",
                 "source": "https://github.com/pmmp/BedrockData/tree/modern-world-support"
             },
-            "time": "2022-06-07T16:24:29+00:00"
+            "time": "2022-06-08T14:00:34+00:00"
         },
         {
             "name": "pocketmine/bedrock-item-upgrade-schema",
@@ -329,16 +329,16 @@
         },
         {
             "name": "pocketmine/bedrock-protocol",
-            "version": "10.0.0+bedrock-1.19.0",
+            "version": "10.0.1+bedrock-1.19.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "7c17498541bb9a375b945cb131e951674067c00e"
+                "reference": "331fb0eb45c26daadf8cf01a3b6f20e909d7684b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/7c17498541bb9a375b945cb131e951674067c00e",
-                "reference": "7c17498541bb9a375b945cb131e951674067c00e",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/331fb0eb45c26daadf8cf01a3b6f20e909d7684b",
+                "reference": "331fb0eb45c26daadf8cf01a3b6f20e909d7684b",
                 "shasum": ""
             },
             "require": {
@@ -370,9 +370,9 @@
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
-                "source": "https://github.com/pmmp/BedrockProtocol/tree/10.0.0+bedrock-1.19.0"
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/10.0.1+bedrock-1.19.0"
             },
-            "time": "2022-06-07T16:31:30+00:00"
+            "time": "2022-06-08T01:11:15+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
