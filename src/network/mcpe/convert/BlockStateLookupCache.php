@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
-use pocketmine\data\bedrock\blockstate\BlockStateData;
+use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\utils\Utils;
 use function array_key_first;
 use function count;

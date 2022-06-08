@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\tools\generate_blockstate_upgrade_schema;
 
-use pocketmine\data\bedrock\blockstate\BlockStateData;
-use pocketmine\data\bedrock\blockstate\upgrade\BlockStateUpgradeSchema;
-use pocketmine\data\bedrock\blockstate\upgrade\BlockStateUpgradeSchemaBlockRemap;
-use pocketmine\data\bedrock\blockstate\upgrade\BlockStateUpgradeSchemaUtils;
-use pocketmine\data\bedrock\blockstate\upgrade\BlockStateUpgradeSchemaValueRemap;
+use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchema;
+use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaBlockRemap;
+use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaUtils;
+use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaValueRemap;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;

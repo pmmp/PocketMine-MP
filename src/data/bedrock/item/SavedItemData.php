@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\item;
 
-use pocketmine\data\bedrock\blockstate\BlockStateData;
-use pocketmine\data\bedrock\blockstate\BlockStateDeserializeException;
+use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;

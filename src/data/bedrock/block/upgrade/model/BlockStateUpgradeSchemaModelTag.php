@@ -21,23 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\blockstate;
+namespace pocketmine\data\bedrock\block\upgrade\model;
 
-final class CachingBlockStateSerializer implements BlockStateSerializer{
-
-	/**
-	 * @var BlockStateData[]
-	 * @phpstan-var array<int, BlockStateData>
-	 */
-	private array $cache = [];
-
-	public function __construct(
-		private BlockStateSerializer $realSerializer
-	){}
-
-	public function serialize(int $stateId) : BlockStateData{
-		return $this->cache[$stateId] ??= $this->realSerializer->serialize($stateId);
-	}
-
-	public function getRealSerializer() : BlockStateSerializer{ return $this->realSerializer; }
+final class BlockStateUpgradeSchemaModelTag{
+	public int $byte;
+	public int $int;
+	public string $string;
 }

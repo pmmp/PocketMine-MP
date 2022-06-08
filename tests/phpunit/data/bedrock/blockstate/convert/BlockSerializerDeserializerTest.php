@@ -21,12 +21,12 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\blockstate\convert;
+namespace pocketmine\data\bedrock\block\convert;
 
 use PHPUnit\Framework\TestCase;
 use pocketmine\block\BlockFactory;
-use pocketmine\data\bedrock\blockstate\BlockStateDeserializeException;
-use pocketmine\data\bedrock\blockstate\BlockStateSerializeException;
+use pocketmine\data\bedrock\block\BlockStateDeserializeException;
+use pocketmine\data\bedrock\block\BlockStateSerializeException;
 
 final class BlockSerializerDeserializerTest extends TestCase{
 	private BlockStateToBlockObjectDeserializer $deserializer;

@@ -21,8 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\blockstate;
+namespace pocketmine\data\bedrock\block;
 
-final class BlockStateSerializeException extends \LogicException{
+use pocketmine\data\bedrock\block\upgrade\BlockStateUpgrader;
 
+final class UpgradingBlockStateDeserializer implements BlockStateDeserializer{
+
+	public function __construct(
+		private BlockStateUpgrader $blockStateUpgrader,
+		private BlockStateDeserializer $realDeserializer
+	){}
+
+	public function deserialize(BlockStateData $stateData) : int{
+		return $this->realDeserializer->deserialize($this->blockStateUpgrader->upgrade($stateData));
+	}
+
+	public function getRealDeserializer() : BlockStateDeserializer{ return $this->realDeserializer; }
 }

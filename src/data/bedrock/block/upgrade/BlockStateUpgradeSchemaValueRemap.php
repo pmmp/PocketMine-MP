@@ -21,20 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\blockstate;
+namespace pocketmine\data\bedrock\block\upgrade;
 
-/**
- * Implementors of this interface decide how blockstate IDs will be represented as NBT.
- *
- * @phpstan-type BlockStateId int
- */
-interface BlockStateSerializer{
+use pocketmine\nbt\tag\Tag;
 
-	/**
-	 * Serializes an implementation-defined blockstate ID to NBT for storage.
-	 *
-	 * @phpstan-param BlockStateId $stateId
-	 * @throws BlockStateSerializeException
-	 */
-	public function serialize(int $stateId) : BlockStateData;
+final class BlockStateUpgradeSchemaValueRemap{
+
+	public function __construct(
+		public Tag $old,
+		public Tag $new
+	){}
 }

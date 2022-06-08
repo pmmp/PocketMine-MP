@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\blockstate\upgrade;
+namespace pocketmine\data\bedrock\block\upgrade;
 
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\Tag;

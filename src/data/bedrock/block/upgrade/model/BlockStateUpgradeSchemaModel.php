@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\blockstate\upgrade\model;
+namespace pocketmine\data\bedrock\block\upgrade\model;
 
 use function count;
 use function is_array;

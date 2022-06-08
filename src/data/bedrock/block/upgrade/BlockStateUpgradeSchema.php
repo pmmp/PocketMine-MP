@@ -21,9 +21,9 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\blockstate\upgrade;
+namespace pocketmine\data\bedrock\block\upgrade;
 
-use pocketmine\data\bedrock\blockstate\upgrade\BlockStateUpgradeSchemaValueRemap as ValueRemap;
+use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaValueRemap as ValueRemap;
 use pocketmine\nbt\tag\Tag;
 use function count;
 

@@ -21,17 +21,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\blockstate\convert;
+namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\TreeType;
-use pocketmine\data\bedrock\blockstate\BlockStateData;
-use pocketmine\data\bedrock\blockstate\BlockStateNames;
-use pocketmine\data\bedrock\blockstate\BlockStateSerializeException;
-use pocketmine\data\bedrock\blockstate\BlockStateStringValues as StringValues;
+use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\data\bedrock\block\BlockStateNames;
+use pocketmine\data\bedrock\block\BlockStateSerializeException;
+use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\nbt\tag\CompoundTag;

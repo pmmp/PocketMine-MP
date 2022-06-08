@@ -21,20 +21,16 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\blockstate;
+namespace pocketmine\data\bedrock\block\upgrade\model;
 
-/**
- * Implementors of this interface decide how a block should be deserialized and represented at runtime. This is used by
- * world providers when decoding blockstates into block IDs.
- *
- * @phpstan-type BlockStateId int
- */
-interface BlockStateDeserializer{
-	/**
-	 * Deserializes blockstate NBT into an implementation-defined blockstate ID, for runtime paletted storage.
-	 *
-	 * @phpstan-return BlockStateId
-	 * @throws BlockStateDeserializeException
-	 */
-	public function deserialize(BlockStateData $stateData) : int;
+final class BlockStateUpgradeSchemaModelValueRemap{
+	/** @required */
+	public BlockStateUpgradeSchemaModelTag $old;
+	/** @required */
+	public BlockStateUpgradeSchemaModelTag $new;
+
+	public function __construct(BlockStateUpgradeSchemaModelTag $old, BlockStateUpgradeSchemaModelTag $new){
+		$this->old = $old;
+		$this->new = $new;
+	}
 }

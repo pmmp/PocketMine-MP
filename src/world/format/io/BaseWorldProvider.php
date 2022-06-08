@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
-use pocketmine\data\bedrock\blockstate\BlockStateData;
-use pocketmine\data\bedrock\blockstate\BlockTypeNames;
+use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\data\bedrock\block\BlockTypeNames;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;

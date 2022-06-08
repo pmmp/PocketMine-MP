@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\blockstate\convert;
+namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\Button;
 use pocketmine\block\ChemistryTable;
@@ -47,9 +47,9 @@ use pocketmine\block\utils\SlabType;
 use pocketmine\block\Wall;
 use pocketmine\block\WallSign;
 use pocketmine\block\Wood;
-use pocketmine\data\bedrock\blockstate\BlockStateNames;
-use pocketmine\data\bedrock\blockstate\BlockStateStringValues;
-use pocketmine\data\bedrock\blockstate\BlockTypeNames as Ids;
+use pocketmine\data\bedrock\block\BlockStateNames;
+use pocketmine\data\bedrock\block\BlockStateStringValues;
+use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;

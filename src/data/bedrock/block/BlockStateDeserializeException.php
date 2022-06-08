@@ -21,16 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\blockstate\upgrade\model;
+namespace pocketmine\data\bedrock\block;
 
-final class BlockStateUpgradeSchemaModelValueRemap{
-	/** @required */
-	public BlockStateUpgradeSchemaModelTag $old;
-	/** @required */
-	public BlockStateUpgradeSchemaModelTag $new;
+final class BlockStateDeserializeException extends \RuntimeException{
 
-	public function __construct(BlockStateUpgradeSchemaModelTag $old, BlockStateUpgradeSchemaModelTag $new){
-		$this->old = $old;
-		$this->new = $new;
-	}
 }

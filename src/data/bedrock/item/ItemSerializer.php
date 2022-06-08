@@ -28,7 +28,7 @@ use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SkullType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\data\bedrock\BlockItemIdMap;
-use pocketmine\data\bedrock\blockstate\BlockStateSerializeException;
+use pocketmine\data\bedrock\block\BlockStateSerializeException;
 use pocketmine\data\bedrock\CompoundTypeIds;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\bedrock\item\ItemTypeIds as Ids;

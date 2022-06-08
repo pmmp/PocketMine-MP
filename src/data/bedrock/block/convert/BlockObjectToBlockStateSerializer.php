@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\blockstate\convert;
+namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\ActivatorRail;
 use pocketmine\block\Anvil;
@@ -139,14 +139,14 @@ use pocketmine\block\WoodenPressurePlate;
 use pocketmine\block\WoodenStairs;
 use pocketmine\block\WoodenTrapdoor;
 use pocketmine\block\Wool;
-use pocketmine\data\bedrock\blockstate\BlockStateData;
-use pocketmine\data\bedrock\blockstate\BlockStateNames as StateNames;
-use pocketmine\data\bedrock\blockstate\BlockStateSerializeException;
-use pocketmine\data\bedrock\blockstate\BlockStateSerializer;
-use pocketmine\data\bedrock\blockstate\BlockStateStringValues as StringValues;
-use pocketmine\data\bedrock\blockstate\BlockTypeNames as Ids;
-use pocketmine\data\bedrock\blockstate\convert\BlockStateSerializerHelper as Helper;
-use pocketmine\data\bedrock\blockstate\convert\BlockStateWriter as Writer;
+use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
+use pocketmine\data\bedrock\block\BlockStateSerializeException;
+use pocketmine\data\bedrock\block\BlockStateSerializer;
+use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
+use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
+use pocketmine\data\bedrock\block\convert\BlockStateSerializerHelper as Helper;
+use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;

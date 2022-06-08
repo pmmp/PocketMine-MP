@@ -21,12 +21,12 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\blockstate\upgrade;
+namespace pocketmine\data\bedrock\block\upgrade;
 
-use pocketmine\data\bedrock\blockstate\upgrade\model\BlockStateUpgradeSchemaModel;
-use pocketmine\data\bedrock\blockstate\upgrade\model\BlockStateUpgradeSchemaModelBlockRemap;
-use pocketmine\data\bedrock\blockstate\upgrade\model\BlockStateUpgradeSchemaModelTag;
-use pocketmine\data\bedrock\blockstate\upgrade\model\BlockStateUpgradeSchemaModelValueRemap;
+use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModel;
+use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModelBlockRemap;
+use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModelTag;
+use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModelValueRemap;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;

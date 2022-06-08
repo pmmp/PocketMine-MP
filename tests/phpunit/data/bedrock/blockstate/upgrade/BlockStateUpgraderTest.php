@@ -21,10 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\blockstate\upgrade;
+namespace pocketmine\data\bedrock\block\upgrade;
 
 use PHPUnit\Framework\TestCase;
-use pocketmine\data\bedrock\blockstate\BlockStateData;
+use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use const PHP_INT_MAX;

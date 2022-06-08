@@ -21,20 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\blockstate;
+namespace pocketmine\data\bedrock\block;
 
-use pocketmine\data\bedrock\blockstate\upgrade\BlockStateUpgrader;
+/**
+ * Implementors of this interface decide how blockstate IDs will be represented as NBT.
+ *
+ * @phpstan-type BlockStateId int
+ */
+interface BlockStateSerializer{
 
-final class UpgradingBlockStateDeserializer implements BlockStateDeserializer{
-
-	public function __construct(
-		private BlockStateUpgrader $blockStateUpgrader,
-		private BlockStateDeserializer $realDeserializer
-	){}
-
-	public function deserialize(BlockStateData $stateData) : int{
-		return $this->realDeserializer->deserialize($this->blockStateUpgrader->upgrade($stateData));
-	}
-
-	public function getRealDeserializer() : BlockStateDeserializer{ return $this->realDeserializer; }
+	/**
+	 * Serializes an implementation-defined blockstate ID to NBT for storage.
+	 *
+	 * @phpstan-param BlockStateId $stateId
+	 * @throws BlockStateSerializeException
+	 */
+	public function serialize(int $stateId) : BlockStateData;
 }

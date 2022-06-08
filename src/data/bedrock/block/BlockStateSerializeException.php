@@ -21,10 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\blockstate\upgrade\model;
+namespace pocketmine\data\bedrock\block;
 
-final class BlockStateUpgradeSchemaModelTag{
-	public int $byte;
-	public int $int;
-	public string $string;
+final class BlockStateSerializeException extends \LogicException{
+
 }
