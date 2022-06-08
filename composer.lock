@@ -275,16 +275,16 @@
         },
         {
             "name": "pocketmine/bedrock-protocol",
-            "version": "10.0.0+bedrock-1.19.0",
+            "version": "10.0.1+bedrock-1.19.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "7c17498541bb9a375b945cb131e951674067c00e"
+                "reference": "331fb0eb45c26daadf8cf01a3b6f20e909d7684b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/7c17498541bb9a375b945cb131e951674067c00e",
-                "reference": "7c17498541bb9a375b945cb131e951674067c00e",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/331fb0eb45c26daadf8cf01a3b6f20e909d7684b",
+                "reference": "331fb0eb45c26daadf8cf01a3b6f20e909d7684b",
                 "shasum": ""
             },
             "require": {
@@ -316,9 +316,9 @@
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
-                "source": "https://github.com/pmmp/BedrockProtocol/tree/10.0.0+bedrock-1.19.0"
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/10.0.1+bedrock-1.19.0"
             },
-            "time": "2022-06-07T16:31:30+00:00"
+            "time": "2022-06-08T01:11:15+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
