@@ -227,12 +227,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/NetherGamesMC/BedrockProtocol.git",
-                "reference": "e9cd4ea25c7f474da4d61645a484022bafe13606"
+                "reference": "2b54c52b103e187e807c37161948f674ead100f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/e9cd4ea25c7f474da4d61645a484022bafe13606",
-                "reference": "e9cd4ea25c7f474da4d61645a484022bafe13606",
+                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/2b54c52b103e187e807c37161948f674ead100f6",
+                "reference": "2b54c52b103e187e807c37161948f674ead100f6",
                 "shasum": ""
             },
             "require": {
@@ -275,7 +275,7 @@
             "support": {
                 "source": "https://github.com/NetherGamesMC/BedrockProtocol/tree/master"
             },
-            "time": "2022-06-07T17:21:21+00:00"
+            "time": "2022-06-08T11:03:08+00:00"
         },
         {
             "name": "netresearch/jsonmapper",
