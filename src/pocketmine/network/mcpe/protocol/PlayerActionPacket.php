@@ -58,6 +58,8 @@ class PlayerActionPacket extends DataPacket{
 	public const ACTION_INTERACT_BLOCK = 25;
 	public const ACTION_PREDICT_DESTROY_BLOCK = 26;
 	public const ACTION_CONTINUE_DESTROY_BLOCK = 27;
+	public const ACTION_START_ITEM_USE_ON = 28;
+	public const ACTION_STOP_ITEM_USE_ON = 29;
 
 	/** @var int */
 	public $entityRuntimeId;
@@ -72,10 +74,15 @@ class PlayerActionPacket extends DataPacket{
 	/** @var int */
 	public $face;
 
+	public ?int $resultX = null;
+	public ?int $resultY = null;
+	public ?int $resultZ = null;
+
 	protected function decodePayload(){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->action = $this->getVarInt();
 		$this->getBlockPosition($this->x, $this->y, $this->z);
+		$this->getBlockPosition($this->resultX, $this->resultY, $this->resultZ);
 		$this->face = $this->getVarInt();
 	}
 
@@ -83,6 +90,8 @@ class PlayerActionPacket extends DataPacket{
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putVarInt($this->action);
 		$this->putBlockPosition($this->x, $this->y, $this->z);
+		// I doubt anyones gonna be using this pm version and sending resultposition to players
+		// if the servers meant to send something then oops idk what send a pr to fix if u know !
 		$this->putVarInt($this->face);
 	}
 

@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NetworkLittleEndianNBTStream;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\BlockPaletteEntry;
 use pocketmine\network\mcpe\protocol\types\EducationEditionOffer;
@@ -39,6 +40,7 @@ use pocketmine\network\mcpe\protocol\types\MultiplayerGameVisibility;
 use pocketmine\network\mcpe\protocol\types\PlayerMovementSettings;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\types\SpawnSettings;
+use pocketmine\utils\UUID;
 use function count;
 
 class StartGamePacket extends DataPacket{
@@ -184,6 +186,9 @@ class StartGamePacket extends DataPacket{
 
 	public int $blockPaletteChecksum;
 
+	public ?CompoundTag $actorproperties;
+	public UUID $worldTemplateID;
+
 	protected function decodePayload(){
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
@@ -267,7 +272,10 @@ class StartGamePacket extends DataPacket{
 		$this->multiplayerCorrelationId = $this->getString();
 		$this->enableNewInventorySystem = $this->getBool();
 		$this->serverSoftwareVersion = $this->getString();
+
+		$this->actorproperties = $this->getNbtCompoundRoot();
 		$this->blockPaletteChecksum = $this->getLLong();
+		$this->worldTemplateID = $this->getUUID();
 	}
 
 	protected function encodePayload(){
@@ -349,7 +357,9 @@ class StartGamePacket extends DataPacket{
 		$this->putString($this->multiplayerCorrelationId);
 		$this->putBool($this->enableNewInventorySystem);
 		$this->putString($this->serverSoftwareVersion);
+		$this->put((new NetworkLittleEndianNBTStream())->write($this->actorproperties));
 		$this->putLLong($this->blockPaletteChecksum);
+		$this->putUUID($this->worldTemplateID);
 	}
 
 	public function handle(NetworkSession $session) : bool{
