@@ -1,5 +1,5 @@
 ## Features/Changes
-- Support for v1.18.30
+- Support for v1.19
 - Server will not crash from errors (unless a crashloop occurs)
 - Removed internal server error
 - Compatible with plugins using `ItemBlock::write()` methods
