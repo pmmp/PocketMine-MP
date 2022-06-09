@@ -820,7 +820,11 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$pk->pitch = $this->pitch;
 		$pk->item = ItemStackWrapper::legacy($this->getInventory()->getItemInHand());
 		$pk->metadata = $this->propertyManager->getAll();
-        $pk->gamemode = $this->getGamemode();
+        if($this instanceof  Player){
+			$pk->gamemode = $this->getGamemode();
+		}else{
+			$pk->gamemode = 1;
+		}
 		$player->dataPacket($pk);
 
 		//TODO: Hack for MCPE 1.2.13: DATA_NAMETAG is useless in AddPlayerPacket, so it has to be sent separately
@@ -835,6 +839,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			$player->dataPacket($pk);
 		}
 	}
+
 
 	public function close() : void{
 		if(!$this->closed){
