@@ -46,11 +46,13 @@ class FlowerPot extends Spawnable{
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		$blockStateData = null;
+
+		$blockDataUpgrader = GlobalBlockStateHandlers::getUpgrader();
 		if(($itemIdTag = $nbt->getTag(self::TAG_ITEM)) instanceof ShortTag && ($itemMetaTag = $nbt->getTag(self::TAG_ITEM_DATA)) instanceof IntTag){
-			$blockStateData = GlobalBlockStateHandlers::getLegacyBlockStateMapper()->fromIntIdMeta($itemIdTag->getValue(), $itemMetaTag->getValue());
+			$blockStateData = $blockDataUpgrader->upgradeIntIdMeta($itemIdTag->getValue(), $itemMetaTag->getValue());
 		}elseif(($plantBlockTag = $nbt->getCompoundTag(self::TAG_PLANT_BLOCK)) !== null){
 			try{
-				$blockStateData = GlobalBlockStateHandlers::nbtToBlockStateData($plantBlockTag);
+				$blockStateData = $blockDataUpgrader->upgradeBlockStateNbt($plantBlockTag);
 			}catch(BlockStateDeserializeException $e){
 				throw new SavedDataLoadingException("Error loading " . self::TAG_PLANT_BLOCK . " tag for flower pot: " . $e->getMessage(), 0, $e);
 			}

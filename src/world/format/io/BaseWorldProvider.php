@@ -56,11 +56,11 @@ abstract class BaseWorldProvider implements WorldProvider{
 
 		//TODO: this should be dependency-injected so it can be replaced, but that would break BC
 		//also, we want it to be lazy-loaded ...
-		$legacyBlockStateMapper = GlobalBlockStateHandlers::getLegacyBlockStateMapper();
+		$blockDataUpgrader = GlobalBlockStateHandlers::getUpgrader();
 		$blockStateDeserializer = GlobalBlockStateHandlers::getDeserializer();
 		$newPalette = [];
 		foreach($palette as $k => $legacyIdMeta){
-			$newStateData = $legacyBlockStateMapper->fromIntIdMeta($legacyIdMeta >> 4, $legacyIdMeta & 0xf);
+			$newStateData = $blockDataUpgrader->upgradeIntIdMeta($legacyIdMeta >> 4, $legacyIdMeta & 0xf);
 			if($newStateData === null){
 				//TODO: remember data for unknown states so we can implement them later
 				$newStateData = new BlockStateData(BlockTypeNames::INFO_UPDATE, CompoundTag::create(), BlockStateData::CURRENT_VERSION);

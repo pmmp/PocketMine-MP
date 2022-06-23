@@ -65,12 +65,9 @@ class FallingBlock extends Entity{
 	public static function parseBlockNBT(BlockFactory $factory, CompoundTag $nbt) : Block{
 
 		//TODO: 1.8+ save format
+		$blockDataUpgrader = GlobalBlockStateHandlers::getUpgrader();
 		if(($fallingBlockTag = $nbt->getCompoundTag(self::TAG_FALLING_BLOCK)) !== null){
-			try{
-				$blockStateData = GlobalBlockStateHandlers::nbtToBlockStateData($fallingBlockTag);
-			}catch(BlockStateDeserializeException $e){
-				throw new SavedDataLoadingException($e->getMessage(), 0, $e);
-			}
+			$blockStateData = $blockDataUpgrader->upgradeBlockStateNbt($fallingBlockTag);
 		}else{
 			if(($tileIdTag = $nbt->getTag("TileID")) instanceof IntTag){
 				$blockId = $tileIdTag->getValue();
@@ -81,10 +78,10 @@ class FallingBlock extends Entity{
 			}
 			$damage = $nbt->getByte("Data", 0);
 
-			$blockStateData = GlobalBlockStateHandlers::getLegacyBlockStateMapper()->fromIntIdMeta($blockId, $damage);
-			if($blockStateData === null){
-				throw new SavedDataLoadingException("Invalid legacy falling block");
-			}
+			$blockStateData = $blockDataUpgrader->upgradeIntIdMeta($blockId, $damage);
+		}
+		if($blockStateData === null){
+			throw new SavedDataLoadingException("Invalid legacy falling block");
 		}
 
 		try{

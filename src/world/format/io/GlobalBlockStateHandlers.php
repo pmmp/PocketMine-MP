@@ -26,18 +26,16 @@ namespace pocketmine\world\format\io;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateDeserializer;
 use pocketmine\data\bedrock\block\BlockStateSerializer;
-use pocketmine\data\bedrock\block\BlockTypeNames;
 use pocketmine\data\bedrock\block\CachingBlockStateDeserializer;
 use pocketmine\data\bedrock\block\CachingBlockStateSerializer;
 use pocketmine\data\bedrock\block\convert\BlockObjectToBlockStateSerializer;
 use pocketmine\data\bedrock\block\convert\BlockStateToBlockObjectDeserializer;
+use pocketmine\data\bedrock\block\upgrade\BlockDataUpgrader;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgrader;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaUtils;
-use pocketmine\data\bedrock\block\upgrade\LegacyBlockStateMapper;
-use pocketmine\data\bedrock\block\UpgradingBlockStateDeserializer;
 use pocketmine\data\bedrock\block\upgrade\LegacyBlockIdToStringIdMap;
+use pocketmine\data\bedrock\block\upgrade\LegacyBlockStateMapper;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
-use pocketmine\nbt\tag\CompoundTag;
 use Webmozart\PathUtil\Path;
 use function file_get_contents;
 use const pocketmine\BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH;
@@ -54,50 +52,29 @@ final class GlobalBlockStateHandlers{
 
 	private static ?BlockStateDeserializer $blockStateDeserializer;
 
-	private static ?LegacyBlockStateMapper $legacyBlockStateMapper;
+	private static ?BlockDataUpgrader $blockDataUpgrader;
 
 	public static function getDeserializer() : BlockStateDeserializer{
-		return self::$blockStateDeserializer ??= new CachingBlockStateDeserializer(
-			new UpgradingBlockStateDeserializer(
-				new BlockStateUpgrader(BlockStateUpgradeSchemaUtils::loadSchemas(
-					Path::join(BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH, 'nbt_upgrade_schema'),
-					BlockStateData::CURRENT_VERSION
-				)),
-				new BlockStateToBlockObjectDeserializer()
-			)
-		);
+		return self::$blockStateDeserializer ??= new CachingBlockStateDeserializer(new BlockStateToBlockObjectDeserializer());
 	}
 
 	public static function getSerializer() : BlockStateSerializer{
 		return self::$blockStateSerializer ??= new CachingBlockStateSerializer(new BlockObjectToBlockStateSerializer());
 	}
 
-	public static function getLegacyBlockStateMapper() : LegacyBlockStateMapper{
-		return self::$legacyBlockStateMapper ??= LegacyBlockStateMapper::loadFromString(
-			ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents(Path::join(
-				BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH,
-				'1.12.0_to_1.18.10_blockstate_map.bin'
-			))),
-			LegacyBlockIdToStringIdMap::getInstance()
+	public static function getUpgrader() : BlockDataUpgrader{
+		return self::$blockDataUpgrader ??= new BlockDataUpgrader(
+			LegacyBlockStateMapper::loadFromString(
+				ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents(Path::join(
+					BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH,
+					'1.12.0_to_1.18.10_blockstate_map.bin'
+				))),
+				LegacyBlockIdToStringIdMap::getInstance()
+			),
+			new BlockStateUpgrader(BlockStateUpgradeSchemaUtils::loadSchemas(
+				Path::join(BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH, 'nbt_upgrade_schema'),
+				BlockStateData::CURRENT_VERSION
+			))
 		);
-	}
-
-	public static function nbtToBlockStateData(CompoundTag $tag) : BlockStateData{
-		if($tag->getTag("name") !== null && $tag->getTag("val") !== null){
-			//Legacy (pre-1.13) blockstate - upgrade it to a version we understand
-			$id = $tag->getString("name");
-			$data = $tag->getShort("val");
-
-			$blockStateData = GlobalBlockStateHandlers::getLegacyBlockStateMapper()->fromStringIdMeta($id, $data);
-			if($blockStateData === null){
-				//unknown block, invalid ID
-				$blockStateData = new BlockStateData(BlockTypeNames::INFO_UPDATE, CompoundTag::create(), BlockStateData::CURRENT_VERSION);
-			}
-		}else{
-			//Modern (post-1.13) blockstate
-			$blockStateData = BlockStateData::fromNbt($tag);
-		}
-
-		return $blockStateData;
 	}
 }

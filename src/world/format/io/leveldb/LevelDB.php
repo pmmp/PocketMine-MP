@@ -160,12 +160,18 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		$paletteSize = $bitsPerBlock === 0 ? 1 : $stream->getLInt();
 
+		$blockDataUpgrader = GlobalBlockStateHandlers::getUpgrader();
 		$blockStateDeserializer = GlobalBlockStateHandlers::getDeserializer();
 		for($i = 0; $i < $paletteSize; ++$i){
 			try{
 				$offset = $stream->getOffset();
 
-				$blockStateData = GlobalBlockStateHandlers::nbtToBlockStateData($nbt->read($stream->getBuffer(), $offset)->mustGetCompoundTag());
+				$blockStateNbt = $nbt->read($stream->getBuffer(), $offset)->mustGetCompoundTag();
+				$blockStateData = $blockDataUpgrader->upgradeBlockStateNbt($blockStateNbt);
+				if($blockStateData === null){
+					//upgrading blockstates should always succeed, regardless of whether they've been implemented or not
+					throw new BlockStateDeserializeException("Invalid or improperly mapped legacy blockstate: " . $blockStateNbt->toString());
+				}
 				$stream->setOffset($offset);
 
 				try{
@@ -210,7 +216,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$binaryStream = new BinaryStream($extraRawData);
 		$count = $binaryStream->getLInt();
 
-		$legacyMapper = GlobalBlockStateHandlers::getLegacyBlockStateMapper();
+		$blockDataUpgrader = GlobalBlockStateHandlers::getUpgrader();
 		$blockStateDeserializer = GlobalBlockStateHandlers::getDeserializer();
 		for($i = 0; $i < $count; ++$i){
 			$key = $binaryStream->getLInt();
@@ -223,7 +229,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 			$blockId = $value & 0xff;
 			$blockData = ($value >> 8) & 0xf;
-			$blockStateData = $legacyMapper->fromIntIdMeta($blockId, $blockData);
+			$blockStateData = $blockDataUpgrader->upgradeIntIdMeta($blockId, $blockData);
 			if($blockStateData === null){
 				//TODO: we could preserve this in case it's supported in the future, but this was historically only
 				//used for grass anyway, so we probably don't need to care
