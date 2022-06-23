@@ -27,9 +27,8 @@ use pocketmine\block\Block;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SkullType;
 use pocketmine\block\VanillaBlocks as Blocks;
-use pocketmine\data\bedrock\block\BlockStateSerializer;
-use pocketmine\data\bedrock\item\BlockItemIdMap;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
+use pocketmine\data\bedrock\block\BlockStateSerializer;
 use pocketmine\data\bedrock\CompoundTypeIds;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\bedrock\item\ItemTypeIds as Ids;
@@ -42,7 +41,6 @@ use pocketmine\item\ItemBlock;
 use pocketmine\item\PotionType;
 use pocketmine\item\VanillaItems as Items;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use function class_parents;
 use function get_class;
 

@@ -40,8 +40,6 @@ use pocketmine\item\Item;
 use pocketmine\item\PotionType;
 use pocketmine\item\VanillaItems as Items;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\utils\SingletonTrait;
-use pocketmine\world\format\io\GlobalBlockStateHandlers;
 
 final class ItemDeserializer{
 	/**

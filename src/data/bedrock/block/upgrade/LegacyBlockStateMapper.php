@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\upgrade;
 
 use pocketmine\data\bedrock\block\BlockStateData;
-use pocketmine\data\bedrock\block\upgrade\LegacyBlockIdToStringIdMap;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\utils\BinaryStream;
 
