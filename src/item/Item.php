@@ -31,6 +31,7 @@ use pocketmine\block\BlockBreakInfo;
 use pocketmine\block\BlockToolType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\EnchantmentIdMap;
+use pocketmine\data\bedrock\item\SavedItemStackData;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\EnchantmentInstance;
@@ -41,16 +42,14 @@ use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\player\Player;
-use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
+use pocketmine\world\format\io\GlobalItemDataHandlers;
 use function base64_decode;
 use function base64_encode;
 use function count;
-use function get_class;
 use function gettype;
 use function hex2bin;
 use function is_string;
@@ -648,21 +647,16 @@ class Item implements \JsonSerializable{
 	 * @param int $slot optional, the inventory slot of the item
 	 */
 	public function nbtSerialize(int $slot = -1) : CompoundTag{
-		$result = CompoundTag::create()
-			->setShort("id", $this->getId())
-			->setByte("Count", Binary::signByte($this->count))
-			->setShort("Damage", $this->getMeta());
+		$typeData = GlobalItemDataHandlers::getSerializer()->serialize($this);
 
-		$tag = $this->getNamedTag();
-		if($tag->count() > 0){
-			$result->setTag("tag", $tag);
-		}
-
-		if($slot !== -1){
-			$result->setByte("Slot", $slot);
-		}
-
-		return $result;
+		return (new SavedItemStackData(
+			$typeData,
+			$this->count,
+			$slot !== -1 ? $slot : null,
+			null,
+			[], //we currently represent canDestroy and canPlaceOn via NBT, like PC
+			[]
+		))->toNbt();
 	}
 
 	/**
@@ -671,31 +665,13 @@ class Item implements \JsonSerializable{
 	 * @throws SavedDataLoadingException
 	 */
 	public static function nbtDeserialize(CompoundTag $tag) : Item{
-		if($tag->getTag("id") === null || $tag->getTag("Count") === null){
-			return VanillaItems::AIR();
-		}
+		$itemData = GlobalItemDataHandlers::getUpgrader()->upgradeItemStackNbt($tag);
 
-		$count = Binary::unsignByte($tag->getByte("Count"));
-		$meta = $tag->getShort("Damage", 0);
+		$item = GlobalItemDataHandlers::getDeserializer()->deserialize($itemData->getTypeData());
 
-		$idTag = $tag->getTag("id");
-		if($idTag instanceof ShortTag){
-			$item = ItemFactory::getInstance()->get($idTag->getValue(), $meta, $count);
-		}elseif($idTag instanceof StringTag){ //PC item save format
-			try{
-				$item = LegacyStringToItemParser::getInstance()->parse($idTag->getValue() . ":$meta");
-			}catch(LegacyStringToItemParserException $e){
-				//TODO: improve error handling
-				return VanillaItems::AIR();
-			}
-			$item->setCount($count);
-		}else{
-			throw new SavedDataLoadingException("Item CompoundTag ID must be an instance of StringTag or ShortTag, " . get_class($idTag) . " given");
-		}
-
-		$itemNBT = $tag->getCompoundTag("tag");
-		if($itemNBT !== null){
-			$item->setNamedTag(clone $itemNBT);
+		$item->setCount($itemData->getCount());
+		if(($tagTag = $itemData->getTypeData()->getTag()) !== null){
+			$item->setNamedTag(clone $tagTag);
 		}
 
 		return $item;

@@ -21,8 +21,9 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock;
+namespace pocketmine\data\bedrock\item\upgrade;
 
+use pocketmine\data\bedrock\LegacyToStringBidirectionalIdMap;
 use pocketmine\utils\SingletonTrait;
 use Webmozart\PathUtil\Path;
 
