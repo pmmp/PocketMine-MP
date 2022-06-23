@@ -84,7 +84,7 @@ final class R12ItemIdToBlockIdMap{
 	 * @phpstan-param array<string, string> $itemToBlock
 	 */
 	public function __construct(array $itemToBlock){
-		foreach($itemToBlock as $itemId => $blockId){
+		foreach(Utils::stringifyKeys($itemToBlock) as $itemId => $blockId){
 			$this->itemToBlock[mb_strtolower($itemId, 'US-ASCII')] = $blockId;
 			$this->blockToItem[mb_strtolower($blockId, 'US-ASCII')] = $itemId;
 		}
