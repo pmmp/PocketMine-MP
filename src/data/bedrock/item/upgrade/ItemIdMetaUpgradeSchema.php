@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\item\upgrade;
 
+use function mb_strtolower;
+
 final class ItemIdMetaUpgradeSchema{
 
 	/**

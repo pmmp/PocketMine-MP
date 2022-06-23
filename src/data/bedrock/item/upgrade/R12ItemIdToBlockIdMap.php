@@ -27,11 +27,11 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
-use function array_search;
 use function file_get_contents;
 use function is_array;
 use function is_string;
 use function json_decode;
+use function mb_strtolower;
 use const pocketmine\BEDROCK_ITEM_UPGRADE_SCHEMA_PATH;
 
 /**
