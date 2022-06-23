@@ -40,10 +40,10 @@ final class ItemIdMetaUpgradeSchema{
 	public function getPriority() : int{ return $this->priority; }
 
 	public function renameId(string $id) : ?string{
-		return $this->renamedIds[$id] ?? null;
+		return $this->renamedIds[mb_strtolower($id, 'US-ASCII')] ?? null;
 	}
 
 	public function remapMeta(string $id, int $meta) : ?string{
-		return $this->remappedMetas[$id][$meta] ?? null;
+		return $this->remappedMetas[mb_strtolower($id, 'US-ASCII')][$meta] ?? null;
 	}
 }

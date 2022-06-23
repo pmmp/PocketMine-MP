@@ -31,6 +31,7 @@ use pocketmine\block\BlockBreakInfo;
 use pocketmine\block\BlockToolType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\EnchantmentIdMap;
+use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
 use pocketmine\data\bedrock\item\SavedItemStackData;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
@@ -661,13 +662,16 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Deserializes an Item from an NBT CompoundTag
-	 * @throws NbtException
 	 * @throws SavedDataLoadingException
 	 */
 	public static function nbtDeserialize(CompoundTag $tag) : Item{
 		$itemData = GlobalItemDataHandlers::getUpgrader()->upgradeItemStackNbt($tag);
 
-		$item = GlobalItemDataHandlers::getDeserializer()->deserialize($itemData->getTypeData());
+		try{
+			$item = GlobalItemDataHandlers::getDeserializer()->deserialize($itemData->getTypeData());
+		}catch(ItemTypeDeserializeException $e){
+			throw new SavedDataLoadingException($e->getMessage(), 0, $e);
+		}
 
 		$item->setCount($itemData->getCount());
 		if(($tagTag = $itemData->getTypeData()->getTag()) !== null){

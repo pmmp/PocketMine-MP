@@ -69,19 +69,33 @@ final class R12ItemIdToBlockIdMap{
 	}
 
 	/**
+	 * @var string[]
+	 * @phpstan-var array<string, string>
+	 */
+	private array $itemToBlock = [];
+	/**
+	 * @var string[]
+	 * @phpstan-var array<string, string>
+	 */
+	private array $blockToItem = [];
+
+	/**
 	 * @param string[] $itemToBlock
 	 * @phpstan-param array<string, string> $itemToBlock
 	 */
-	public function __construct(private array $itemToBlock){}
+	public function __construct(array $itemToBlock){
+		foreach($itemToBlock as $itemId => $blockId){
+			$this->itemToBlock[mb_strtolower($itemId, 'US-ASCII')] = $blockId;
+			$this->blockToItem[mb_strtolower($blockId, 'US-ASCII')] = $itemId;
+		}
+	}
 
 	public function itemIdToBlockId(string $itemId) : ?string{
-		return $this->itemToBlock[$itemId] ?? null;
+		return $this->itemToBlock[mb_strtolower($itemId, 'US-ASCII')] ?? null;
 	}
 
 	public function blockIdToItemId(string $blockId) : ?string{
-		//we don't need this for any functionality, so we're not concerned about performance here
-		//however, it might be nice to have for debugging
-		$itemId = array_search($blockId, $this->itemToBlock, true);
-		return $itemId !== false ? $itemId : null;
+		//we don't need this for any functionality, but it might be nice to have for debugging
+		return $this->blockToItem[mb_strtolower($blockId, 'US-ASCII')] ?? null;
 	}
 }

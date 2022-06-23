@@ -70,6 +70,9 @@ final class ItemDataUpgrader{
 		ksort($this->idMetaUpgradeSchemas, SORT_NUMERIC);
 	}
 
+	/**
+	 * @throws SavedDataLoadingException
+	 */
 	private function upgradeItemTypeNbt(CompoundTag $tag) : SavedItemData{
 		if(($nameIdTag = $tag->getTag(SavedItemData::TAG_NAME)) instanceof StringTag){
 			//Bedrock 1.6+
@@ -98,6 +101,11 @@ final class ItemDataUpgrader{
 		}elseif(($r12BlockId = $this->r12ItemIdToBlockIdMap->itemIdToBlockId($rawNameId)) !== null){
 			//this is a legacy blockitem represented by ID + meta
 			$blockStateData = $this->blockDataUpgrader->upgradeStringIdMeta($r12BlockId, $meta);
+			if($blockStateData === null){
+				throw new SavedDataLoadingException("Expected a blockstate to be associated with this block");
+			}
+			//the block data upgrader returns states from 1.18.10, which need to be updated to the current version the usual way
+			$blockStateData = $this->blockDataUpgrader->getBlockStateUpgrader()->upgrade($blockStateData);
 		}else{
 			//probably a standard item
 			$blockStateData = null;
@@ -112,6 +120,7 @@ final class ItemDataUpgrader{
 
 	/**
 	 * @return string[]
+	 * @throws SavedDataLoadingException
 	 */
 	private static function deserializeListOfStrings(?ListTag $list, string $tagName) : array{
 		if($list === null){
@@ -129,6 +138,9 @@ final class ItemDataUpgrader{
 		return $result;
 	}
 
+	/**
+	 * @throws SavedDataLoadingException
+	 */
 	public function upgradeItemStackNbt(CompoundTag $tag) : SavedItemStackData{
 		$savedItemData = $this->upgradeItemTypeNbt($tag);
 		try{
@@ -169,6 +181,6 @@ final class ItemDataUpgrader{
 			}
 		}
 
-		return [$id, $meta];
+		return [$newId, $newMeta];
 	}
 }

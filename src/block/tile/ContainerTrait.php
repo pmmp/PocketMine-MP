@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\nbt\NBT;
@@ -49,7 +50,13 @@ trait ContainerTrait{
 			$newContents = [];
 			/** @var CompoundTag $itemNBT */
 			foreach($inventoryTag as $itemNBT){
-				$newContents[$itemNBT->getByte("Slot")] = Item::nbtDeserialize($itemNBT);
+				try{
+					$newContents[$itemNBT->getByte("Slot")] = Item::nbtDeserialize($itemNBT);
+				}catch(SavedDataLoadingException $e){
+					//TODO: not the best solution
+					\GlobalLogger::get()->logException($e);
+					continue;
+				}
 			}
 			$inventory->setContents($newContents);
 

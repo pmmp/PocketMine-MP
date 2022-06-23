@@ -60,4 +60,6 @@ final class BlockDataUpgrader{
 
 		return $this->blockStateUpgrader->upgrade($blockStateData);
 	}
+
+	public function getBlockStateUpgrader() : BlockStateUpgrader{ return $this->blockStateUpgrader; }
 }
