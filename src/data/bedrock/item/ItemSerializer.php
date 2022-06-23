@@ -141,6 +141,15 @@ final class ItemSerializer{
 			$data = $serializer($item);
 		}
 
+		if($item->hasNamedTag()){
+			$resultTag = $item->getNamedTag();
+			$extraTag = $data->getTag();
+			if($extraTag !== null){
+				$resultTag = $resultTag->merge($extraTag);
+			}
+			$data = new Data($data->getName(), $data->getMeta(), $data->getBlock(), $resultTag);
+		}
+
 		return $data;
 	}
 
