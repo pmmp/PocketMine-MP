@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block;
 
-final class CachingBlockStateDeserializer implements BlockStateDeserializer{
+final class CachingBlockStateDeserializer implements DelegatingBlockStateDeserializer{
 
 	/**
 	 * @var int[]

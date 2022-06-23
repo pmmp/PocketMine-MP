@@ -23,21 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block;
 
-final class CachingBlockStateSerializer implements DelegatingBlockStateSerializer{
+interface DelegatingBlockStateSerializer extends BlockStateSerializer{
 
-	/**
-	 * @var BlockStateData[]
-	 * @phpstan-var array<int, BlockStateData>
-	 */
-	private array $cache = [];
-
-	public function __construct(
-		private BlockStateSerializer $realSerializer
-	){}
-
-	public function serialize(int $stateId) : BlockStateData{
-		return $this->cache[$stateId] ??= $this->realSerializer->serialize($stateId);
-	}
-
-	public function getRealSerializer() : BlockStateSerializer{ return $this->realSerializer; }
+	public function getRealSerializer() : BlockStateSerializer;
 }
