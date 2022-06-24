@@ -6,11 +6,6 @@ parameters:
 			path: ../../../src/block/BaseBanner.php
 
 		-
-			message: "#^Property pocketmine\\\\block\\\\tile\\\\TileFactory\\:\\:\\$saveNames \\(array\\<class\\-string\\<pocketmine\\\\block\\\\tile\\\\Tile\\>, string\\>\\) does not accept array\\<class\\-string\\<pocketmine\\\\block\\\\tile\\\\Tile\\>, bool\\|string\\>\\.$#"
-			count: 1
-			path: ../../../src/block/tile/TileFactory.php
-
-		-
 			message: "#^Comparison operation \"\\<\" between int\\<1, max\\> and 1 is always false\\.$#"
 			count: 1
 			path: ../../../src/console/ConsoleCommandSender.php
@@ -24,11 +19,6 @@ parameters:
 			message: "#^Property pocketmine\\\\crafting\\\\CraftingManager\\:\\:\\$destructorCallbacks \\(pocketmine\\\\utils\\\\ObjectSet\\<Closure\\(\\)\\: void\\>\\|null\\) does not accept pocketmine\\\\utils\\\\ObjectSet\\<object\\>\\.$#"
 			count: 1
 			path: ../../../src/crafting/CraftingManager.php
-
-		-
-			message: "#^Dead catch \\- JsonException is never thrown in the try block\\.$#"
-			count: 1
-			path: ../../../src/data/bedrock/blockstate/upgrade/BlockStateUpgradeSchemaUtils.php
 
 		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
@@ -84,11 +74,6 @@ parameters:
 			message: "#^Property pocketmine\\\\thread\\\\Worker\\:\\:\\$classLoaders \\(\\(iterable\\<ClassLoader\\>&Threaded\\)\\|null\\) does not accept array\\<int, ClassLoader\\>\\|\\(iterable\\<ClassLoader\\>&Threaded\\)\\.$#"
 			count: 1
 			path: ../../../src/thread/Worker.php
-
-		-
-			message: "#^Dead catch \\- JsonException is never thrown in the try block\\.$#"
-			count: 1
-			path: ../../../src/utils/Config.php
 
 		-
 			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
