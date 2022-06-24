@@ -56,7 +56,7 @@ class Skull extends Flowable{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = $stateMeta === 1 ? Facing::UP : BlockDataSerializer::readHorizontalFacing($stateMeta);
+		$this->facing = ($stateMeta & 0x07) === 1 ? Facing::UP : BlockDataSerializer::readHorizontalFacing($stateMeta);
 		$this->noDrops = ($stateMeta & BlockLegacyMetadata::SKULL_FLAG_NO_DROPS) !== 0;
 	}
 
