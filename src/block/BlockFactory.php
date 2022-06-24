@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\block\BlockBreakInfo as BreakInfo;
 use pocketmine\block\BlockIdentifier as BID;
-use pocketmine\block\BlockIdentifierFlattened as BIDFlattened;
 use pocketmine\block\BlockLegacyIds as LegacyIds;
 use pocketmine\block\BlockLegacyMetadata as Meta;
 use pocketmine\block\BlockToolType as ToolType;
@@ -161,7 +160,7 @@ class BlockFactory{
 		$this->register(new CocoaBlock(new BID(Ids::COCOA_POD, LegacyIds::COCOA, 0), "Cocoa Block", new BreakInfo(0.2, ToolType::AXE, 0, 15.0)));
 		$this->register(new CoralBlock(new BID(Ids::CORAL_BLOCK, LegacyIds::CORAL_BLOCK, 0), "Coral Block", new BreakInfo(7.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new CraftingTable(new BID(Ids::CRAFTING_TABLE, LegacyIds::CRAFTING_TABLE, 0), "Crafting Table", new BreakInfo(2.5, ToolType::AXE)));
-		$this->register(new DaylightSensor(new BIDFlattened(Ids::DAYLIGHT_SENSOR, LegacyIds::DAYLIGHT_DETECTOR, [LegacyIds::DAYLIGHT_DETECTOR_INVERTED], 0, null, TileDaylightSensor::class), "Daylight Sensor", new BreakInfo(0.2, ToolType::AXE)));
+		$this->register(new DaylightSensor(new BID(Ids::DAYLIGHT_SENSOR, LegacyIds::DAYLIGHT_DETECTOR, 0, null, TileDaylightSensor::class), "Daylight Sensor", new BreakInfo(0.2, ToolType::AXE)));
 		$this->register(new DeadBush(new BID(Ids::DEAD_BUSH, LegacyIds::DEADBUSH, 0), "Dead Bush", BreakInfo::instant(ToolType::SHEARS, 1)));
 		$this->register(new DetectorRail(new BID(Ids::DETECTOR_RAIL, LegacyIds::DETECTOR_RAIL, 0), "Detector Rail", $railBreakInfo));
 
@@ -205,9 +204,9 @@ class BlockFactory{
 		$this->register(new Flower(new BID(Ids::WHITE_TULIP, LegacyIds::RED_FLOWER, Meta::FLOWER_WHITE_TULIP), "White Tulip", BreakInfo::instant()));
 		$this->register(new FlowerPot(new BID(Ids::FLOWER_POT, LegacyIds::FLOWER_POT_BLOCK, 0, ItemIds::FLOWER_POT, TileFlowerPot::class), "Flower Pot", BreakInfo::instant()));
 		$this->register(new FrostedIce(new BID(Ids::FROSTED_ICE, LegacyIds::FROSTED_ICE, 0), "Frosted Ice", new BreakInfo(2.5, ToolType::PICKAXE)));
-		$this->register(new Furnace(new BIDFlattened(Ids::FURNACE, LegacyIds::FURNACE, [LegacyIds::LIT_FURNACE], 0, null, TileNormalFurnace::class), "Furnace", new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
-		$this->register(new Furnace(new BIDFlattened(Ids::BLAST_FURNACE, LegacyIds::BLAST_FURNACE, [LegacyIds::LIT_BLAST_FURNACE], 0, null, TileBlastFurnace::class), "Blast Furnace", new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
-		$this->register(new Furnace(new BIDFlattened(Ids::SMOKER, LegacyIds::SMOKER, [LegacyIds::LIT_SMOKER], 0, null, TileSmoker::class), "Smoker", new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		$this->register(new Furnace(new BID(Ids::FURNACE, LegacyIds::FURNACE, 0, null, TileNormalFurnace::class), "Furnace", new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		$this->register(new Furnace(new BID(Ids::BLAST_FURNACE, LegacyIds::BLAST_FURNACE, 0, null, TileBlastFurnace::class), "Blast Furnace", new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		$this->register(new Furnace(new BID(Ids::SMOKER, LegacyIds::SMOKER, 0, null, TileSmoker::class), "Smoker", new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 
 		$glassBreakInfo = new BreakInfo(0.3);
 		$this->register(new Glass(new BID(Ids::GLASS, LegacyIds::GLASS, 0), "Glass", $glassBreakInfo));
@@ -250,7 +249,7 @@ class BlockFactory{
 		$this->register(new Lantern(new BID(Ids::LANTERN, LegacyIds::LANTERN, 0), "Lantern", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new Opaque(new BID(Ids::LAPIS_LAZULI, LegacyIds::LAPIS_BLOCK, 0), "Lapis Lazuli Block", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
 		$this->register(new LapisOre(new BID(Ids::LAPIS_LAZULI_ORE, LegacyIds::LAPIS_ORE, 0), "Lapis Lazuli Ore", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
-		$this->register(new Lava(new BIDFlattened(Ids::LAVA, LegacyIds::FLOWING_LAVA, [LegacyIds::STILL_LAVA], 0), "Lava", BreakInfo::indestructible(500.0)));
+		$this->register(new Lava(new BID(Ids::LAVA, LegacyIds::FLOWING_LAVA, 0), "Lava", BreakInfo::indestructible(500.0)));
 		$this->register(new Lectern(new BID(Ids::LECTERN, LegacyIds::LECTERN, 0, ItemIds::LECTERN, TileLectern::class), "Lectern", new BreakInfo(2.0, ToolType::AXE)));
 		$this->register(new Lever(new BID(Ids::LEVER, LegacyIds::LEVER, 0), "Lever", new BreakInfo(0.5)));
 		$this->register(new Loom(new BID(Ids::LOOM, LegacyIds::LOOM, 0), "Loom", new BreakInfo(2.5, ToolType::AXE)));
@@ -311,11 +310,11 @@ class BlockFactory{
 		$this->register(new Rail(new BID(Ids::RAIL, LegacyIds::RAIL, 0), "Rail", $railBreakInfo));
 		$this->register(new RedMushroom(new BID(Ids::RED_MUSHROOM, LegacyIds::RED_MUSHROOM, 0), "Red Mushroom", BreakInfo::instant()));
 		$this->register(new Redstone(new BID(Ids::REDSTONE, LegacyIds::REDSTONE_BLOCK, 0), "Redstone Block", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0)));
-		$this->register(new RedstoneComparator(new BIDFlattened(Ids::REDSTONE_COMPARATOR, LegacyIds::UNPOWERED_COMPARATOR, [LegacyIds::POWERED_COMPARATOR], 0, ItemIds::COMPARATOR, TileComparator::class), "Redstone Comparator", BreakInfo::instant()));
-		$this->register(new RedstoneLamp(new BIDFlattened(Ids::REDSTONE_LAMP, LegacyIds::REDSTONE_LAMP, [LegacyIds::LIT_REDSTONE_LAMP], 0), "Redstone Lamp", new BreakInfo(0.3)));
-		$this->register(new RedstoneOre(new BIDFlattened(Ids::REDSTONE_ORE, LegacyIds::REDSTONE_ORE, [LegacyIds::LIT_REDSTONE_ORE], 0), "Redstone Ore", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel())));
-		$this->register(new RedstoneRepeater(new BIDFlattened(Ids::REDSTONE_REPEATER, LegacyIds::UNPOWERED_REPEATER, [LegacyIds::POWERED_REPEATER], 0, ItemIds::REPEATER), "Redstone Repeater", BreakInfo::instant()));
-		$this->register(new RedstoneTorch(new BIDFlattened(Ids::REDSTONE_TORCH, LegacyIds::REDSTONE_TORCH, [LegacyIds::UNLIT_REDSTONE_TORCH], 0), "Redstone Torch", BreakInfo::instant()));
+		$this->register(new RedstoneComparator(new BID(Ids::REDSTONE_COMPARATOR, LegacyIds::UNPOWERED_COMPARATOR, 0, ItemIds::COMPARATOR, TileComparator::class), "Redstone Comparator", BreakInfo::instant()));
+		$this->register(new RedstoneLamp(new BID(Ids::REDSTONE_LAMP, LegacyIds::REDSTONE_LAMP, 0), "Redstone Lamp", new BreakInfo(0.3)));
+		$this->register(new RedstoneOre(new BID(Ids::REDSTONE_ORE, LegacyIds::REDSTONE_ORE, 0), "Redstone Ore", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel())));
+		$this->register(new RedstoneRepeater(new BID(Ids::REDSTONE_REPEATER, LegacyIds::UNPOWERED_REPEATER, 0, ItemIds::REPEATER), "Redstone Repeater", BreakInfo::instant()));
+		$this->register(new RedstoneTorch(new BID(Ids::REDSTONE_TORCH, LegacyIds::REDSTONE_TORCH, 0), "Redstone Torch", BreakInfo::instant()));
 		$this->register(new RedstoneWire(new BID(Ids::REDSTONE_WIRE, LegacyIds::REDSTONE_WIRE, 0, ItemIds::REDSTONE), "Redstone", BreakInfo::instant()));
 		$this->register(new Reserved6(new BID(Ids::RESERVED6, LegacyIds::RESERVED6, 0), "reserved6", BreakInfo::instant()));
 
@@ -436,7 +435,7 @@ class BlockFactory{
 		$this->register(new TripwireHook(new BID(Ids::TRIPWIRE_HOOK, LegacyIds::TRIPWIRE_HOOK, 0), "Tripwire Hook", BreakInfo::instant()));
 		$this->register(new UnderwaterTorch(new BID(Ids::UNDERWATER_TORCH, LegacyIds::UNDERWATER_TORCH, 0), "Underwater Torch", BreakInfo::instant()));
 		$this->register(new Vine(new BID(Ids::VINES, LegacyIds::VINE, 0), "Vines", new BreakInfo(0.2, ToolType::AXE)));
-		$this->register(new Water(new BIDFlattened(Ids::WATER, LegacyIds::FLOWING_WATER, [LegacyIds::STILL_WATER], 0), "Water", BreakInfo::indestructible(500.0)));
+		$this->register(new Water(new BID(Ids::WATER, LegacyIds::FLOWING_WATER, 0), "Water", BreakInfo::indestructible(500.0)));
 		$this->register(new WaterLily(new BID(Ids::LILY_PAD, LegacyIds::LILY_PAD, 0), "Lily Pad", BreakInfo::instant()));
 
 		$weightedPressurePlateBreakInfo = new BreakInfo(0.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
@@ -563,12 +562,12 @@ class BlockFactory{
 			BreakInfo::instant(),
 		));
 		$this->register(new FloorCoralFan(
-			new BlockIdentifierFlattened(Ids::CORAL_FAN, LegacyIds::CORAL_FAN, [LegacyIds::CORAL_FAN_DEAD], 0, ItemIds::CORAL_FAN),
+			new BID(Ids::CORAL_FAN, LegacyIds::CORAL_FAN, 0, ItemIds::CORAL_FAN),
 			"Coral Fan",
 			BreakInfo::instant(),
 		));
 		$this->register(new WallCoralFan(
-			new BlockIdentifierFlattened(Ids::WALL_CORAL_FAN, LegacyIds::CORAL_FAN_HANG, [LegacyIds::CORAL_FAN_HANG2, LegacyIds::CORAL_FAN_HANG3], 0, ItemIds::CORAL_FAN),
+			new BID(Ids::WALL_CORAL_FAN, LegacyIds::CORAL_FAN_HANG, 0, ItemIds::CORAL_FAN),
 			"Wall Coral Fan",
 			BreakInfo::instant(),
 		));

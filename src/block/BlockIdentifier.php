@@ -63,14 +63,6 @@ class BlockIdentifier{
 
 	/**
 	 * @deprecated
-	 * @return int[]
-	 */
-	public function getAllLegacyBlockIds() : array{
-		return [$this->legacyBlockId];
-	}
-
-	/**
-	 * @deprecated
 	 */
 	public function getLegacyVariant() : int{
 		return $this->legacyVariant;

@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\BlockIdentifier as BID;
-use pocketmine\block\BlockIdentifierFlattened as BIDFlattened;
 use pocketmine\block\BlockLegacyIds as LegacyIds;
 use pocketmine\block\BlockTypeIds as Ids;
 use pocketmine\block\tile\Sign as TileSign;
@@ -59,8 +58,8 @@ final class BlockLegacyIdHelper{
 		}, LegacyIds::FENCE, $treeType->getMagicNumber());
 	}
 
-	public static function getWoodenSlabIdentifier(TreeType $treeType) : BIDFlattened{
-		return new BIDFlattened(match($treeType->id()){
+	public static function getWoodenSlabIdentifier(TreeType $treeType) : BID{
+		return new BID(match($treeType->id()){
 			TreeType::OAK()->id() => Ids::OAK_SLAB,
 			TreeType::SPRUCE()->id() => Ids::SPRUCE_SLAB,
 			TreeType::BIRCH()->id() => Ids::BIRCH_SLAB,
@@ -68,7 +67,7 @@ final class BlockLegacyIdHelper{
 			TreeType::ACACIA()->id() => Ids::ACACIA_SLAB,
 			TreeType::DARK_OAK()->id() => Ids::DARK_OAK_SLAB,
 			default => throw new AssumptionFailedError("All tree types should be covered")
-		}, LegacyIds::WOODEN_SLAB, [LegacyIds::DOUBLE_WOODEN_SLAB], $treeType->getMagicNumber());
+		}, LegacyIds::WOODEN_SLAB, $treeType->getMagicNumber());
 	}
 
 	public static function getLogIdentifier(TreeType $treeType) : BID{
@@ -331,16 +330,16 @@ final class BlockLegacyIdHelper{
 		throw new AssumptionFailedError("Switch should cover all colours");
 	}
 
-	public static function getStoneSlabIdentifier(int $blockTypeId, int $stoneSlabId, int $meta) : BlockIdentifierFlattened{
+	public static function getStoneSlabIdentifier(int $blockTypeId, int $stoneSlabId, int $meta) : BID{
 		$id = [
-			1 => [LegacyIds::STONE_SLAB, LegacyIds::DOUBLE_STONE_SLAB],
-			2 => [LegacyIds::STONE_SLAB2, LegacyIds::DOUBLE_STONE_SLAB2],
-			3 => [LegacyIds::STONE_SLAB3, LegacyIds::DOUBLE_STONE_SLAB3],
-			4 => [LegacyIds::STONE_SLAB4, LegacyIds::DOUBLE_STONE_SLAB4]
+			1 => LegacyIds::STONE_SLAB,
+			2 => LegacyIds::STONE_SLAB2,
+			3 => LegacyIds::STONE_SLAB3,
+			4 => LegacyIds::STONE_SLAB4
 		][$stoneSlabId] ?? null;
 		if($id === null){
 			throw new \InvalidArgumentException("Stone slab type should be 1, 2, 3 or 4");
 		}
-		return new BlockIdentifierFlattened($blockTypeId, $id[0], [$id[1]], $meta);
+		return new BID($blockTypeId, $id, $meta);
 	}
 }
