@@ -2534,7 +2534,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 	public function deserializeBlock(BlockStateData $blockStateData) : Block{
 		$id = $blockStateData->getName();
 		if(!array_key_exists($id, $this->deserializeFuncs)){
-			throw new BlockStateDeserializeException("Unknown block ID \"$id\"");
+			throw new UnsupportedBlockStateException("Unknown block ID \"$id\"");
 		}
 		$reader = new Reader($blockStateData);
 		$block = $this->deserializeFuncs[$id]($reader);

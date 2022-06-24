@@ -21,8 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\block;
+namespace pocketmine\data\bedrock\block\convert;
 
-class BlockStateDeserializeException extends \RuntimeException{
+use pocketmine\data\bedrock\block\BlockStateDeserializeException;
+
+final class UnsupportedBlockStateException extends BlockStateDeserializeException{
 
 }
