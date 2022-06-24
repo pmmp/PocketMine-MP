@@ -131,7 +131,7 @@ parameters:
 			path: ../../../src/block/DragonEgg.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int\\<0, max\\> given\\.$#"
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int\\<0, 255\\> given\\.$#"
 			count: 1
 			path: ../../../src/block/DragonEgg.php
 
@@ -334,21 +334,6 @@ parameters:
 			message: "#^Parameter \\#2 \\$max of function mt_rand expects int, float\\|int given\\.$#"
 			count: 3
 			path: ../../../src/block/Mycelium.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/block/RedMushroom.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/block/RedMushroom.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/block/RedMushroom.php
 
 		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockLightAt\\(\\) expects int, float\\|int given\\.$#"
