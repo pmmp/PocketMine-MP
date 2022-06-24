@@ -114,8 +114,8 @@ class BlockTest extends TestCase{
 		$oldStateDataSize = $list["stateDataBits"];
 		self::assertSame($oldStateDataSize, Block::INTERNAL_STATE_DATA_BITS, "Changed number of state data bits - consistency check probably need regenerating");
 
-		$states = BlockFactory::getInstance()->getAllKnownStates();
-		foreach(BlockFactory::getInstance()->getAllKnownStates() as $stateId => $state){
+		$states = $this->blockFactory->getAllKnownStates();
+		foreach($states as $stateId => $state){
 			self::assertArrayHasKey($stateId, $knownStates, "New block state $stateId (" . $state->getTypeId() . ":" . $state->computeStateData() . ", " . print_r($state, true) . ") - consistency check may need regenerating");
 			self::assertSame($knownStates[$stateId], $state->getName());
 		}
