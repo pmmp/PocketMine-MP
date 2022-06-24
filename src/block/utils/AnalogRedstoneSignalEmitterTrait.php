@@ -26,6 +26,14 @@ namespace pocketmine\block\utils;
 trait AnalogRedstoneSignalEmitterTrait{
 	protected int $signalStrength = 0;
 
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->signalStrength = $r->readBoundedInt(4, 0, 15);
+	}
+
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeInt(4, $this->signalStrength);
+	}
+
 	public function getOutputSignalStrength() : int{ return $this->signalStrength; }
 
 	/** @return $this */

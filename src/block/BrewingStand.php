@@ -24,6 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\BrewingStand as TileBrewingStand;
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataReaderHelper;
+use pocketmine\block\utils\BlockDataWriter;
+use pocketmine\block\utils\BlockDataWriterHelper;
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
@@ -42,33 +46,12 @@ class BrewingStand extends Transparent{
 	 */
 	protected array $slots = [];
 
-	protected function writeStateToMeta() : int{
-		$flags = 0;
-		foreach([
-			BlockLegacyMetadata::BREWING_STAND_FLAG_EAST => BrewingStandSlot::EAST(),
-			BlockLegacyMetadata::BREWING_STAND_FLAG_NORTHWEST => BrewingStandSlot::NORTHWEST(),
-			BlockLegacyMetadata::BREWING_STAND_FLAG_SOUTHWEST => BrewingStandSlot::SOUTHWEST(),
-		] as $flag => $slot){
-			$flags |= (array_key_exists($slot->id(), $this->slots) ? $flag : 0);
-		}
-		return $flags;
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->setSlots(BlockDataReaderHelper::readBrewingStandSlotKeySet($r));
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->slots = [];
-		foreach([
-			BlockLegacyMetadata::BREWING_STAND_FLAG_EAST => BrewingStandSlot::EAST(),
-			BlockLegacyMetadata::BREWING_STAND_FLAG_NORTHWEST => BrewingStandSlot::NORTHWEST(),
-			BlockLegacyMetadata::BREWING_STAND_FLAG_SOUTHWEST => BrewingStandSlot::SOUTHWEST(),
-		] as $flag => $slot){
-			if(($stateMeta & $flag) !== 0){
-				$this->slots[$slot->id()] = $slot;
-			}
-		}
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
+	protected function encodeState(BlockDataWriter $w) : void{
+		BlockDataWriterHelper::writeBrewingStandSlotKeySet($w, $this->slots);
 	}
 
 	protected function recalculateCollisionBoxes() : array{

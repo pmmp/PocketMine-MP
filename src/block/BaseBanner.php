@@ -25,6 +25,8 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\utils\BannerPatternLayer;
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SupportType;
@@ -51,6 +53,14 @@ abstract class BaseBanner extends Transparent{
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->color = DyeColor::BLACK();
 		parent::__construct($idInfo, $name, $breakInfo);
+	}
+
+	protected function decodeState(BlockDataReader $r) : void{
+		//TODO: we currently purposely don't read or write colour (it's stored on the tile)
+	}
+
+	protected function encodeState(BlockDataWriter $w) : void{
+		//TODO: we currently purposely don't read or write colour (it's stored on the tile)
 	}
 
 	public function readStateFromWorld() : void{

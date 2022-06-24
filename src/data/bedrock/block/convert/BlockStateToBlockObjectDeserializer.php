@@ -58,7 +58,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 	}
 
 	public function deserialize(BlockStateData $stateData) : int{
-		return $this->deserializeBlock($stateData)->getFullId();
+		return $this->deserializeBlock($stateData)->getStateId();
 	}
 
 	/** @phpstan-param \Closure(Reader) : Block $c */

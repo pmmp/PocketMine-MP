@@ -23,29 +23,27 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class Tripwire extends Flowable{
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 
+class Tripwire extends Flowable{
 	protected bool $triggered = false;
 	protected bool $suspended = false; //unclear usage, makes hitbox bigger if set
 	protected bool $connected = false;
 	protected bool $disarmed = false;
 
-	protected function writeStateToMeta() : int{
-		return ($this->triggered ? BlockLegacyMetadata::TRIPWIRE_FLAG_TRIGGERED : 0) |
-			($this->suspended ? BlockLegacyMetadata::TRIPWIRE_FLAG_SUSPENDED : 0) |
-			($this->connected ? BlockLegacyMetadata::TRIPWIRE_FLAG_CONNECTED : 0) |
-			($this->disarmed ? BlockLegacyMetadata::TRIPWIRE_FLAG_DISARMED : 0);
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->triggered = $r->readBool();
+		$this->suspended = $r->readBool();
+		$this->connected = $r->readBool();
+		$this->disarmed = $r->readBool();
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->triggered = ($stateMeta & BlockLegacyMetadata::TRIPWIRE_FLAG_TRIGGERED) !== 0;
-		$this->suspended = ($stateMeta & BlockLegacyMetadata::TRIPWIRE_FLAG_SUSPENDED) !== 0;
-		$this->connected = ($stateMeta & BlockLegacyMetadata::TRIPWIRE_FLAG_CONNECTED) !== 0;
-		$this->disarmed = ($stateMeta & BlockLegacyMetadata::TRIPWIRE_FLAG_DISARMED) !== 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeBool($this->triggered);
+		$w->writeBool($this->suspended);
+		$w->writeBool($this->connected);
+		$w->writeBool($this->disarmed);
 	}
 
 	public function isTriggered() : bool{ return $this->triggered; }

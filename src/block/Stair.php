@@ -23,7 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\StairShape;
 use pocketmine\block\utils\SupportType;
@@ -46,17 +47,14 @@ class Stair extends Transparent{
 		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::write5MinusHorizontalFacing($this->facing) | ($this->upsideDown ? BlockLegacyMetadata::STAIR_FLAG_UPSIDE_DOWN : 0);
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->facing = $r->readHorizontalFacing();
+		$this->upsideDown = $r->readBool();
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::read5MinusHorizontalFacing($stateMeta);
-		$this->upsideDown = ($stateMeta & BlockLegacyMetadata::STAIR_FLAG_UPSIDE_DOWN) !== 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeHorizontalFacing($this->facing);
+		$w->writeBool($this->upsideDown);
 	}
 
 	public function readStateFromWorld() : void{

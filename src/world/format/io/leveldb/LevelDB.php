@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\format\io\leveldb;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
@@ -238,7 +238,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			$blockStateId = $blockStateDeserializer->deserialize($blockStateData);
 
 			if(!isset($extraDataLayers[$ySub])){
-				$extraDataLayers[$ySub] = new PalettedBlockArray(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS);
+				$extraDataLayers[$ySub] = new PalettedBlockArray(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS);
 			}
 			$extraDataLayers[$ySub]->set($x, $y, $z, $blockStateId);
 		}
@@ -367,14 +367,14 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 								$storages[] = $convertedLegacyExtraData[$y];
 							}
 
-							$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, $storages);
+							$subChunks[$y] = new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, $storages);
 							break;
 						case SubChunkVersion::PALETTED_SINGLE:
 							$storages = [$this->deserializePaletted($binaryStream)];
 							if(isset($convertedLegacyExtraData[$y])){
 								$storages[] = $convertedLegacyExtraData[$y];
 							}
-							$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, $storages);
+							$subChunks[$y] = new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, $storages);
 							break;
 						case SubChunkVersion::PALETTED_MULTI:
 						case SubChunkVersion::PALETTED_MULTI_WITH_OFFSET:
@@ -390,7 +390,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 								for($k = 0; $k < $storageCount; ++$k){
 									$storages[] = $this->deserializePaletted($binaryStream);
 								}
-								$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, $storages);
+								$subChunks[$y] = new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, $storages);
 							}
 							break;
 						default:
@@ -433,7 +433,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 					if(isset($convertedLegacyExtraData[$yy])){
 						$storages[] = $convertedLegacyExtraData[$yy];
 					}
-					$subChunks[$yy] = new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, $storages);
+					$subChunks[$yy] = new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, $storages);
 				}
 
 				try{

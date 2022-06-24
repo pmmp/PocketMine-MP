@@ -23,7 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\TreeType;
@@ -46,17 +47,14 @@ class CocoaBlock extends Transparent{
 
 	protected int $age = 0;
 
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing(Facing::opposite($this->facing)) | ($this->age << 2);
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->facing = $r->readHorizontalFacing();
+		$this->age = $r->readBoundedInt(2, 0, self::MAX_AGE);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = Facing::opposite(BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03));
-		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta >> 2, 0, self::MAX_AGE);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeHorizontalFacing($this->facing);
+		$w->writeInt(2, $this->age);
 	}
 
 	public function getAge() : int{ return $this->age; }

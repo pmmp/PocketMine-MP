@@ -52,7 +52,7 @@ final class LegacyBlockStateMapper{
 		return $this->fromStringIdMeta($stringId, $meta);
 	}
 
-	public static function loadFromString(string $data, LegacyBlockIdToStringIdMap $idMap) : self{
+	public static function loadFromString(string $data, LegacyBlockIdToStringIdMap $idMap, BlockStateUpgrader $blockStateUpgrader) : self{
 		$mappingTable = [];
 
 		$legacyStateMapReader = new BinaryStream($data);
@@ -64,7 +64,7 @@ final class LegacyBlockStateMapper{
 			$offset = $legacyStateMapReader->getOffset();
 			$state = $nbtReader->read($legacyStateMapReader->getBuffer(), $offset)->mustGetCompoundTag();
 			$legacyStateMapReader->setOffset($offset);
-			$mappingTable[$id][$meta] = BlockStateData::fromNbt($state);
+			$mappingTable[$id][$meta] = $blockStateUpgrader->upgrade(BlockStateData::fromNbt($state));
 		}
 
 		return new self($mappingTable, $idMap);

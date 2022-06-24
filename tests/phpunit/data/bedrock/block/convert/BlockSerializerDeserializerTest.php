@@ -27,6 +27,7 @@ use PHPUnit\Framework\TestCase;
 use pocketmine\block\BlockFactory;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
+use function print_r;
 
 final class BlockSerializerDeserializerTest extends TestCase{
 	private BlockStateToBlockObjectDeserializer $deserializer;
@@ -50,7 +51,7 @@ final class BlockSerializerDeserializerTest extends TestCase{
 				self::fail($e->getMessage());
 			}
 
-			self::assertSame($block->getFullId(), $newBlock->getFullId(), "Mismatch of blockstate for " . $block->getName());
+			self::assertSame($block->getStateId(), $newBlock->getStateId(), "Mismatch of blockstate for " . $block->getName() . ", " . print_r($block, true) . " vs " . print_r($newBlock, true));
 		}
 	}
 }

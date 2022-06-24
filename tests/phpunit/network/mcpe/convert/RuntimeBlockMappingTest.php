@@ -33,7 +33,7 @@ class RuntimeBlockMappingTest extends TestCase{
 	 */
 	public function testAllBlockStatesSerialize() : void{
 		foreach(BlockFactory::getInstance()->getAllKnownStates() as $state){
-			RuntimeBlockMapping::getInstance()->toRuntimeId($state->getFullId());
+			RuntimeBlockMapping::getInstance()->toRuntimeId($state->getStateId());
 		}
 	}
 }

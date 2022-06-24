@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
+use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
@@ -36,17 +38,16 @@ class Torch extends Flowable{
 
 	protected int $facing = Facing::UP;
 
-	protected function writeStateToMeta() : int{
-		return $this->facing === Facing::UP ? 5 : 6 - BlockDataSerializer::writeHorizontalFacing($this->facing);
+	protected function decodeState(BlockDataReader $r) : void{
+		$facing = $r->readFacing();
+		if($facing === Facing::DOWN){
+			throw new InvalidBlockStateException("Torch cannot have a DOWN facing");
+		}
+		$this->facing = $facing;
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$facingMeta = $stateMeta & 0x7;
-		$this->facing = $facingMeta === 5 ? Facing::UP : BlockDataSerializer::readHorizontalFacing(6 - $facingMeta);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeFacing($this->facing);
 	}
 
 	public function getFacing() : int{ return $this->facing; }

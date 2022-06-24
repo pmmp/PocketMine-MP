@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -37,17 +39,14 @@ class SeaPickle extends Transparent{
 	protected int $count = self::MIN_COUNT;
 	protected bool $underwater = false;
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->count = ($stateMeta & 0x03) + 1;
-		$this->underwater = ($stateMeta & BlockLegacyMetadata::SEA_PICKLE_FLAG_NOT_UNDERWATER) === 0;
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->count = $r->readBoundedInt(2, self::MIN_COUNT - 1, self::MAX_COUNT - 1) + 1;
+		$this->underwater = $r->readBool();
 	}
 
-	protected function writeStateToMeta() : int{
-		return ($this->count - 1) | ($this->underwater ? 0 : BlockLegacyMetadata::SEA_PICKLE_FLAG_NOT_UNDERWATER);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeInt(2, $this->count - 1);
+		$w->writeBool($this->underwater);
 	}
 
 	public function getCount() : int{ return $this->count; }

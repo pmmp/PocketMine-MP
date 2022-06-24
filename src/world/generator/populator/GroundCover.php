@@ -67,7 +67,7 @@ class GroundCover implements Populator{
 							continue;
 						}
 
-						$chunk->setFullBlock($x, $y, $z, $b->getFullId());
+						$chunk->setFullBlock($x, $y, $z, $b->getStateId());
 					}
 				}
 			}

@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\block\utils\SignLikeRotationTrait;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -31,18 +33,19 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 final class FloorBanner extends BaseBanner{
-	use SignLikeRotationTrait;
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->rotation = $stateMeta;
+	use SignLikeRotationTrait {
+		decodeState as decodeRotation;
+		encodeState as encodeRotation;
 	}
 
-	protected function writeStateToMeta() : int{
-		return $this->rotation;
+	protected function decodeState(BlockDataReader $r) : void{
+		parent::decodeState($r);
+		$this->decodeRotation($r);
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function encodeState(BlockDataWriter $w) : void{
+		parent::encodeState($w);
+		$this->encodeRotation($w);
 	}
 
 	protected function getSupportingFace() : int{

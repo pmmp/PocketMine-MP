@@ -28,7 +28,8 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
-use pocketmine\block\utils\InvalidBlockStateException;
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\VanillaEnchantments;
@@ -44,14 +45,12 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\World;
-use function assert;
 use function count;
-use function dechex;
 use const PHP_INT_MAX;
 
 class Block{
-	public const INTERNAL_METADATA_BITS = 4;
-	public const INTERNAL_METADATA_MASK = ~(~0 << self::INTERNAL_METADATA_BITS);
+	public const INTERNAL_STATE_DATA_BITS = 6;
+	public const INTERNAL_STATE_DATA_MASK = ~(~0 << self::INTERNAL_STATE_DATA_BITS);
 
 	protected BlockIdentifier $idInfo;
 	protected string $fallbackName;
@@ -65,9 +64,6 @@ class Block{
 	 * @param string          $name English name of the block type (TODO: implement translations)
 	 */
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
-		if(($idInfo->getLegacyVariant() & $this->getStateBitmask()) !== 0){
-			throw new \InvalidArgumentException("Variant 0x" . dechex($idInfo->getLegacyVariant()) . " collides with state bitmask 0x" . dechex($this->getStateBitmask()));
-		}
 		$this->idInfo = $idInfo;
 		$this->fallbackName = $name;
 		$this->breakInfo = $breakInfo;
@@ -87,17 +83,10 @@ class Block{
 	}
 
 	/**
-	 * @deprecated
-	 */
-	public function getId() : int{
-		return $this->idInfo->getLegacyBlockId();
-	}
-
-	/**
 	 * @internal
 	 */
-	public function getFullId() : int{
-		return ($this->getId() << self::INTERNAL_METADATA_BITS) | $this->getMeta();
+	public function getStateId() : int{
+		return ($this->getTypeId() << self::INTERNAL_STATE_DATA_BITS) | $this->computeStateData();
 	}
 
 	public function asItem() : Item{
@@ -107,34 +96,29 @@ class Block{
 		);
 	}
 
-	/**
-	 * @deprecated
-	 */
-	public function getMeta() : int{
-		$stateMeta = $this->writeStateToMeta();
-		assert(($stateMeta & ~$this->getStateBitmask()) === 0);
-		return $this->idInfo->getLegacyVariant() | $stateMeta;
-	}
-
 	protected function writeStateToItemMeta() : int{
 		return 0;
 	}
 
-	/**
-	 * Returns a bitmask used to extract state bits from block metadata.
-	 */
-	public function getStateBitmask() : int{
-		return 0;
+	public function decodeStateData(int $data) : void{
+		$reader = new BlockDataReader(self::INTERNAL_STATE_DATA_BITS, $data);
+		$this->decodeState($reader);
 	}
 
-	protected function writeStateToMeta() : int{
-		return 0;
+	protected function decodeState(BlockDataReader $r) : void{
+		//NOOP
 	}
 
 	/**
-	 * @throws InvalidBlockStateException
+	 * @internal
 	 */
-	public function readStateFromData(int $id, int $stateMeta) : void{
+	public function computeStateData() : int{
+		$writer = new BlockDataWriter(self::INTERNAL_STATE_DATA_BITS);
+		$this->encodeState($writer);
+		return $writer->getValue();
+	}
+
+	protected function encodeState(BlockDataWriter $w) : void{
 		//NOOP
 	}
 
@@ -150,7 +134,7 @@ class Block{
 	}
 
 	public function writeStateToWorld() : void{
-		$this->position->getWorld()->getOrLoadChunkAtPosition($this->position)->setFullBlock($this->position->x & Chunk::COORD_MASK, $this->position->y, $this->position->z & Chunk::COORD_MASK, $this->getFullId());
+		$this->position->getWorld()->getOrLoadChunkAtPosition($this->position)->setFullBlock($this->position->x & Chunk::COORD_MASK, $this->position->y, $this->position->z & Chunk::COORD_MASK, $this->getStateId());
 
 		$tileType = $this->idInfo->getTileClass();
 		$oldTile = $this->position->getWorld()->getTile($this->position);
@@ -194,7 +178,7 @@ class Block{
 	 * Returns whether the given block has the same type and properties as this block.
 	 */
 	public function isSameState(Block $other) : bool{
-		return $this->getFullId() === $other->getFullId();
+		return $this->getStateId() === $other->getStateId();
 	}
 
 	/**
@@ -551,7 +535,7 @@ class Block{
 	 * @return string
 	 */
 	public function __toString(){
-		return "Block[" . $this->getName() . "] (" . $this->getId() . ":" . $this->getMeta() . ")";
+		return "Block[" . $this->getName() . "] (" . $this->getTypeId() . ":" . $this->computeStateData() . ")";
 	}
 
 	/**

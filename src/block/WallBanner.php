@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
+use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -32,7 +34,20 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 final class WallBanner extends BaseBanner{
-	use NormalHorizontalFacingInMetadataTrait;
+	use HorizontalFacingTrait {
+		decodeState as decodeFacing;
+		encodeState as encodeFacing;
+	}
+
+	protected function decodeState(BlockDataReader $r) : void{
+		parent::decodeState($r);
+		$this->decodeFacing($r);
+	}
+
+	protected function encodeState(BlockDataWriter $w) : void{
+		parent::encodeState($w);
+		$this->encodeFacing($w);
+	}
 
 	protected function getSupportingFace() : int{
 		return Facing::opposite($this->facing);

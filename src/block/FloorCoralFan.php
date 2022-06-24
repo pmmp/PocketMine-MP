@@ -23,7 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\InvalidBlockStateException;
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\data\bedrock\CoralTypeIdMap;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -37,29 +38,7 @@ use function atan2;
 use function rad2deg;
 
 final class FloorCoralFan extends BaseCoral{
-
-	protected BlockIdentifierFlattened $idInfoFlattened;
-
 	private int $axis = Axis::X;
-
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
-		$this->idInfoFlattened = $idInfo;
-		parent::__construct($idInfo, $name, $breakInfo);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->dead = $id === $this->idInfoFlattened->getSecondId();
-		$this->axis = ($stateMeta >> 3) === BlockLegacyMetadata::CORAL_FAN_EAST_WEST ? Axis::X : Axis::Z;
-		$coralType = CoralTypeIdMap::getInstance()->fromId($stateMeta & BlockLegacyMetadata::CORAL_FAN_TYPE_MASK);
-		if($coralType === null){
-			throw new InvalidBlockStateException("No such coral type");
-		}
-		$this->coralType = $coralType;
-	}
-
-	public function getId() : int{
-		return $this->dead ? $this->idInfoFlattened->getSecondId() : parent::getId();
-	}
 
 	public function asItem() : Item{
 		//TODO: HACK! workaround dead flag being lost when broken / blockpicked (original impl only uses first ID)
@@ -69,17 +48,18 @@ final class FloorCoralFan extends BaseCoral{
 		);
 	}
 
-	protected function writeStateToMeta() : int{
-		return (($this->axis === Axis::X ? BlockLegacyMetadata::CORAL_FAN_EAST_WEST : BlockLegacyMetadata::CORAL_FAN_NORTH_SOUTH) << 3) |
-			CoralTypeIdMap::getInstance()->toId($this->coralType);
-	}
-
 	protected function writeStateToItemMeta() : int{
 		return CoralTypeIdMap::getInstance()->toId($this->coralType);
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function decodeState(BlockDataReader $r) : void{
+		parent::decodeState($r);
+		$this->axis = $r->readHorizontalAxis();
+	}
+
+	protected function encodeState(BlockDataWriter $w) : void{
+		parent::encodeState($w);
+		$w->writeHorizontalAxis($this->axis);
 	}
 
 	public function getAxis() : int{ return $this->axis; }

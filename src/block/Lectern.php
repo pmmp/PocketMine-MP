@@ -24,7 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Lectern as TileLectern;
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
@@ -43,15 +44,17 @@ class Lectern extends Transparent{
 
 	protected int $viewedPage = 0;
 	protected ?WritableBookBase $book = null;
+
 	protected bool $producingSignal = false;
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
-		$this->producingSignal = ($stateMeta & BlockLegacyMetadata::LECTERN_FLAG_POWERED) !== 0;
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->facing = $r->readHorizontalFacing();
+		$this->producingSignal = $r->readBool();
 	}
 
-	public function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) | ($this->producingSignal ? BlockLegacyMetadata::LECTERN_FLAG_POWERED : 0);
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeHorizontalFacing($this->facing);
+		$w->writeBool($this->producingSignal);
 	}
 
 	public function readStateFromWorld() : void{
@@ -70,10 +73,6 @@ class Lectern extends Transparent{
 			$tile->setViewedPage($this->viewedPage);
 			$tile->setBook($this->book);
 		}
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
 	}
 
 	public function getFlammability() : int{

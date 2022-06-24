@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\block\utils\TreeType;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Fertilizer;
@@ -36,7 +38,6 @@ use pocketmine\world\generator\object\TreeFactory;
 use function mt_rand;
 
 class Sapling extends Flowable{
-
 	protected bool $ready = false;
 
 	private TreeType $treeType;
@@ -46,16 +47,12 @@ class Sapling extends Flowable{
 		$this->treeType = $treeType;
 	}
 
-	protected function writeStateToMeta() : int{
-		return ($this->ready ? BlockLegacyMetadata::SAPLING_FLAG_READY : 0);
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->ready = $r->readBool();
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->ready = ($stateMeta & BlockLegacyMetadata::SAPLING_FLAG_READY) !== 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1000;
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeBool($this->ready);
 	}
 
 	public function isReady() : bool{ return $this->ready; }

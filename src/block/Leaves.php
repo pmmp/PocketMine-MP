@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\event\block\LeavesDecayEvent;
@@ -38,7 +40,6 @@ use pocketmine\world\World;
 use function mt_rand;
 
 class Leaves extends Transparent{
-
 	protected TreeType $treeType;
 	protected bool $noDecay = false;
 	protected bool $checkDecay = false;
@@ -48,17 +49,14 @@ class Leaves extends Transparent{
 		$this->treeType = $treeType;
 	}
 
-	protected function writeStateToMeta() : int{
-		return ($this->noDecay ? BlockLegacyMetadata::LEAVES_FLAG_NO_DECAY : 0) | ($this->checkDecay ? BlockLegacyMetadata::LEAVES_FLAG_CHECK_DECAY : 0);
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->noDecay = $r->readBool();
+		$this->checkDecay = $r->readBool();
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->noDecay = ($stateMeta & BlockLegacyMetadata::LEAVES_FLAG_NO_DECAY) !== 0;
-		$this->checkDecay = ($stateMeta & BlockLegacyMetadata::LEAVES_FLAG_CHECK_DECAY) !== 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1100;
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeBool($this->noDecay);
+		$w->writeBool($this->checkDecay);
 	}
 
 	public function isNoDecay() : bool{ return $this->noDecay; }

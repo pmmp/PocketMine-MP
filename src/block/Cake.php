@@ -23,7 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\block\utils\SupportType;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\FoodSource;
@@ -40,16 +41,12 @@ class Cake extends Transparent implements FoodSource{
 
 	protected int $bites = 0;
 
-	protected function writeStateToMeta() : int{
-		return $this->bites;
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->bites = $r->readBoundedInt(3, 0, self::MAX_BITES);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->bites = BlockDataSerializer::readBoundedInt("bites", $stateMeta, 0, self::MAX_BITES);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeInt(3, $this->bites);
 	}
 
 	/**

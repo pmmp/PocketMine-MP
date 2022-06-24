@@ -152,7 +152,7 @@ class FallingBlock extends Entity{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setTag(self::TAG_FALLING_BLOCK, GlobalBlockStateHandlers::getSerializer()->serialize($this->block->getFullId())->toNbt());
+		$nbt->setTag(self::TAG_FALLING_BLOCK, GlobalBlockStateHandlers::getSerializer()->serialize($this->block->getStateId())->toNbt());
 
 		return $nbt;
 	}
@@ -160,7 +160,7 @@ class FallingBlock extends Entity{
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
 		parent::syncNetworkData($properties);
 
-		$properties->setInt(EntityMetadataProperties::VARIANT, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId()));
+		$properties->setInt(EntityMetadataProperties::VARIANT, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getStateId()));
 	}
 
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{

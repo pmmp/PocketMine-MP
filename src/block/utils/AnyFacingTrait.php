@@ -28,6 +28,14 @@ use pocketmine\math\Facing;
 trait AnyFacingTrait{
 	protected int $facing = Facing::DOWN;
 
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->facing = $r->readFacing();
+	}
+
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeFacing($this->facing);
+	}
+
 	public function getFacing() : int{ return $this->facing; }
 
 	/** @return $this */

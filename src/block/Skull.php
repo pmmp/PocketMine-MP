@@ -24,7 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Skull as TileSkull;
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
+use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\SkullType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -42,7 +44,6 @@ class Skull extends Flowable{
 	protected SkullType $skullType;
 
 	protected int $facing = Facing::NORTH;
-	protected bool $noDrops = false;
 	protected int $rotation = self::MIN_ROTATION; //TODO: split this into floor skull and wall skull handling
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
@@ -50,19 +51,16 @@ class Skull extends Flowable{
 		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
-	protected function writeStateToMeta() : int{
-		return ($this->facing === Facing::UP ? 1 : BlockDataSerializer::writeHorizontalFacing($this->facing)) |
-			($this->noDrops ? BlockLegacyMetadata::SKULL_FLAG_NO_DROPS : 0);
+	protected function decodeState(BlockDataReader $r) : void{
+		$facing = $r->readFacing();
+		if($facing === Facing::DOWN){
+			throw new InvalidBlockStateException("Skull may not face down");
+		}
+		$this->facing = $facing;
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$facingMeta = $stateMeta & 0x7;
-		$this->facing = $facingMeta === 1 ? Facing::UP : BlockDataSerializer::readHorizontalFacing($facingMeta);
-		$this->noDrops = ($stateMeta & BlockLegacyMetadata::SKULL_FLAG_NO_DROPS) !== 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeFacing($this->facing);
 	}
 
 	public function readStateFromWorld() : void{
@@ -112,14 +110,6 @@ class Skull extends Flowable{
 			throw new \InvalidArgumentException("Rotation must be in range " . self::MIN_ROTATION . " ... " . self::MAX_ROTATION);
 		}
 		$this->rotation = $rotation;
-		return $this;
-	}
-
-	public function isNoDrops() : bool{ return $this->noDrops; }
-
-	/** @return $this */
-	public function setNoDrops(bool $noDrops) : self{
-		$this->noDrops = $noDrops;
 		return $this;
 	}
 

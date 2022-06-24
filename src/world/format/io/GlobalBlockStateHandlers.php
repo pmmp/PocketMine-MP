@@ -48,11 +48,11 @@ use const pocketmine\BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH;
  */
 final class GlobalBlockStateHandlers{
 
-	private static ?BlockStateSerializer $blockStateSerializer;
+	private static ?BlockStateSerializer $blockStateSerializer = null;
 
-	private static ?BlockStateDeserializer $blockStateDeserializer;
+	private static ?BlockStateDeserializer $blockStateDeserializer = null;
 
-	private static ?BlockDataUpgrader $blockDataUpgrader;
+	private static ?BlockDataUpgrader $blockDataUpgrader = null;
 
 	public static function getDeserializer() : BlockStateDeserializer{
 		return self::$blockStateDeserializer ??= new CachingBlockStateDeserializer(new BlockStateToBlockObjectDeserializer());
@@ -63,18 +63,24 @@ final class GlobalBlockStateHandlers{
 	}
 
 	public static function getUpgrader() : BlockDataUpgrader{
-		return self::$blockDataUpgrader ??= new BlockDataUpgrader(
-			LegacyBlockStateMapper::loadFromString(
-				ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents(Path::join(
-					BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH,
-					'1.12.0_to_1.18.10_blockstate_map.bin'
-				))),
-				LegacyBlockIdToStringIdMap::getInstance()
-			),
-			new BlockStateUpgrader(BlockStateUpgradeSchemaUtils::loadSchemas(
+		if(self::$blockDataUpgrader === null){
+			$blockStateUpgrader = new BlockStateUpgrader(BlockStateUpgradeSchemaUtils::loadSchemas(
 				Path::join(BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH, 'nbt_upgrade_schema'),
 				BlockStateData::CURRENT_VERSION
-			))
-		);
+			));
+			self::$blockDataUpgrader = new BlockDataUpgrader(
+				LegacyBlockStateMapper::loadFromString(
+					ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents(Path::join(
+						BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH,
+						'1.12.0_to_1.18.10_blockstate_map.bin'
+					))),
+					LegacyBlockIdToStringIdMap::getInstance(),
+					$blockStateUpgrader
+				),
+				$blockStateUpgrader
+			);
+		}
+
+		return self::$blockDataUpgrader;
 	}
 }

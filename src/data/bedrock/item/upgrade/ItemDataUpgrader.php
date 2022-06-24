@@ -104,8 +104,6 @@ final class ItemDataUpgrader{
 			if($blockStateData === null){
 				throw new SavedDataLoadingException("Expected a blockstate to be associated with this block");
 			}
-			//the block data upgrader returns states from 1.18.10, which need to be updated to the current version the usual way
-			$blockStateData = $this->blockDataUpgrader->getBlockStateUpgrader()->upgrade($blockStateData);
 		}else{
 			//probably a standard item
 			$blockStateData = null;

@@ -31,6 +31,7 @@ use pocketmine\block\utils\RecordType;
 use pocketmine\block\utils\SkullType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks as Blocks;
+use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\CompoundTypeIds;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\bedrock\EntityLegacyIds;
@@ -47,6 +48,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use pocketmine\world\World;
 
 /**
@@ -467,7 +469,16 @@ class ItemFactory{
 				}
 			}elseif($id < 256){ //intentionally includes negatives, for extended block IDs
 				//TODO: do not assume that item IDs and block IDs are the same or related
-				$item = new ItemBlock(new IID($id, $meta), BlockFactory::getInstance()->get(self::itemToBlockId($id), $meta & 0xf));
+				$blockStateData = GlobalBlockStateHandlers::getUpgrader()->upgradeIntIdMeta(self::itemToBlockId($id), $meta & 0xf);
+				if($blockStateData !== null){
+					try{
+						$blockStateId = GlobalBlockStateHandlers::getDeserializer()->deserialize($blockStateData);
+						$item = new ItemBlock(new IID($id, $meta), BlockFactory::getInstance()->fromFullBlock($blockStateId));
+					}catch(BlockStateDeserializeException $e){
+						\GlobalLogger::get()->logException($e);
+						//fallthru
+					}
+				}
 			}
 		}
 

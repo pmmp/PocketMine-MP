@@ -191,7 +191,7 @@ final class ItemSerializer{
 	 */
 	private function standardBlock(Block $block) : Data{
 		try{
-			$blockStateData = $this->blockStateSerializer->serialize($block->getFullId());
+			$blockStateData = $this->blockStateSerializer->serialize($block->getStateId());
 		}catch(BlockStateSerializeException $e){
 			throw new ItemTypeSerializeException($e->getMessage(), 0, $e);
 		}

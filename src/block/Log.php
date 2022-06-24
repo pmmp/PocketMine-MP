@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\PillarRotationInMetadataTrait;
+use pocketmine\block\utils\PillarRotationTrait;
 
 class Log extends Wood{
-	use PillarRotationInMetadataTrait;
+	use PillarRotationTrait;
 
 	protected function getAxisMetaShift() : int{
 		return $this->isStripped() ? 0 : 2;

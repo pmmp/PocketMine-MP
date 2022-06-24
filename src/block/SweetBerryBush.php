@@ -23,7 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\block\BlockGrowEvent;
@@ -45,16 +46,12 @@ class SweetBerryBush extends Flowable{
 
 	protected int $age = self::STAGE_SAPLING;
 
-	protected function writeStateToMeta() : int{
-		return $this->age;
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->age = $r->readBoundedInt(3, self::STAGE_SAPLING, self::STAGE_MATURE);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->age = BlockDataSerializer::readBoundedInt("stage", $stateMeta, self::STAGE_SAPLING, self::STAGE_MATURE);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeInt(3, $this->age);
 	}
 
 	public function getAge() : int{ return $this->age; }

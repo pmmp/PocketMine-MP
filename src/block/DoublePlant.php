@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -30,19 +32,14 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class DoublePlant extends Flowable{
-
 	protected bool $top = false;
 
-	protected function writeStateToMeta() : int{
-		return ($this->top ? BlockLegacyMetadata::DOUBLE_PLANT_FLAG_TOP : 0);
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->top = $r->readBool();
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->top = ($stateMeta & BlockLegacyMetadata::DOUBLE_PLANT_FLAG_TOP) !== 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1000;
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeBool($this->top);
 	}
 
 	public function isTop() : bool{ return $this->top; }

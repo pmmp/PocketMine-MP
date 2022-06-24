@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
@@ -33,19 +35,14 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Lantern extends Transparent{
-
 	protected bool $hanging = false;
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->hanging = ($stateMeta & BlockLegacyMetadata::LANTERN_FLAG_HANGING) !== 0;
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->hanging = $r->readBool();
 	}
 
-	protected function writeStateToMeta() : int{
-		return $this->hanging ? BlockLegacyMetadata::LANTERN_FLAG_HANGING : 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1;
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeBool($this->hanging);
 	}
 
 	public function isHanging() : bool{ return $this->hanging; }

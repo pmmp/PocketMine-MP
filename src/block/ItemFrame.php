@@ -24,7 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -46,13 +47,14 @@ class ItemFrame extends Flowable{
 	protected int $itemRotation = 0;
 	protected float $itemDropChance = 1.0;
 
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::write5MinusHorizontalFacing($this->facing) | ($this->hasMap ? BlockLegacyMetadata::ITEM_FRAME_FLAG_HAS_MAP : 0);
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->facing = $r->readHorizontalFacing();
+		$this->hasMap = $r->readBool();
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::read5MinusHorizontalFacing($stateMeta);
-		$this->hasMap = ($stateMeta & BlockLegacyMetadata::ITEM_FRAME_FLAG_HAS_MAP) !== 0;
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeHorizontalFacing($this->facing);
+		$w->writeBool($this->hasMap);
 	}
 
 	public function readStateFromWorld() : void{
@@ -76,10 +78,6 @@ class ItemFrame extends Flowable{
 			$tile->setItemRotation($this->itemRotation);
 			$tile->setItemDropChance($this->itemDropChance);
 		}
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
 	}
 
 	public function getFramedItem() : ?Item{

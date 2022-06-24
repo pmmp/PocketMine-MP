@@ -23,24 +23,22 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class Sponge extends Opaque{
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 
+class Sponge extends Opaque{
 	protected bool $wet = false;
 
-	protected function writeStateToMeta() : int{
+	protected function writeStateToItemMeta() : int{
 		return $this->wet ? BlockLegacyMetadata::SPONGE_FLAG_WET : 0;
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->wet = ($stateMeta & BlockLegacyMetadata::SPONGE_FLAG_WET) !== 0;
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->wet = $r->readBool();
 	}
 
-	protected function writeStateToItemMeta() : int{
-		return $this->writeStateToMeta();
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1;
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeBool($this->wet);
 	}
 
 	public function isWet() : bool{ return $this->wet; }

@@ -24,9 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use PHPUnit\Framework\TestCase;
+use function asort;
 use function file_get_contents;
 use function is_array;
 use function json_decode;
+use function print_r;
 
 class BlockTest extends TestCase{
 
@@ -52,7 +54,7 @@ class BlockTest extends TestCase{
 	public function testDeliberateOverrideBlock() : void{
 		$block = new MyCustomBlock(new BlockIdentifier(BlockTypeIds::COBBLESTONE, BlockLegacyIds::COBBLESTONE, 0), "Cobblestone", BlockBreakInfo::instant());
 		$this->blockFactory->register($block, true);
-		self::assertInstanceOf(MyCustomBlock::class, $this->blockFactory->get($block->getId(), 0));
+		self::assertInstanceOf(MyCustomBlock::class, $this->blockFactory->get($block->getTypeId(), 0));
 	}
 
 	/**
@@ -63,7 +65,7 @@ class BlockTest extends TestCase{
 			if(!$this->blockFactory->isRegistered($i)){
 				$b = new StrangeNewBlock(new BlockIdentifier(BlockTypeIds::FIRST_UNUSED_BLOCK_ID, $i, 0), "Strange New Block", BlockBreakInfo::instant());
 				$this->blockFactory->register($b);
-				self::assertInstanceOf(StrangeNewBlock::class, $this->blockFactory->get($b->getId(), 0));
+				self::assertInstanceOf(StrangeNewBlock::class, $this->blockFactory->get($b->getTypeId(), 0));
 				return;
 			}
 		}
@@ -93,37 +95,6 @@ class BlockTest extends TestCase{
 	}
 
 	/**
-	 * @return int[][]
-	 * @phpstan-return list<array{int,int}>
-	 */
-	public function blockGetProvider() : array{
-		return [
-			[BlockLegacyIds::STONE, 5],
-			[BlockLegacyIds::GOLD_BLOCK, 0],
-			[BlockLegacyIds::WOODEN_PLANKS, 5],
-			[BlockLegacyIds::SAND, 0],
-			[BlockLegacyIds::GOLD_BLOCK, 0]
-		];
-	}
-
-	/**
-	 * @dataProvider blockGetProvider
-	 */
-	public function testBlockGet(int $id, int $meta) : void{
-		$block = $this->blockFactory->get($id, $meta);
-
-		self::assertEquals($id, $block->getId());
-		self::assertEquals($meta, $block->getMeta());
-	}
-
-	public function testBlockIds() : void{
-		for($i = 0; $i < 256; ++$i){
-			$b = $this->blockFactory->get($i, 0);
-			self::assertContains($i, $b->getIdInfo()->getAllLegacyBlockIds());
-		}
-	}
-
-	/**
 	 * Test that light filters in the static arrays have valid values. Wrong values can cause lots of unpleasant bugs
 	 * (like freezes) when doing light population.
 	 */
@@ -137,33 +108,21 @@ class BlockTest extends TestCase{
 	public function testConsistency() : void{
 		$list = json_decode(file_get_contents(__DIR__ . '/block_factory_consistency_check.json'), true);
 		if(!is_array($list)){
-			throw new \pocketmine\utils\AssumptionFailedError("Old table should be array{knownStates: array<string, string>, remaps: array<string, int>}");
+			throw new \pocketmine\utils\AssumptionFailedError("Old table should be array{knownStates: array<string, string>, stateDataBits: int}");
 		}
 		$knownStates = $list["knownStates"];
-		$remaps = $list["remaps"];
+		$oldStateDataSize = $list["stateDataBits"];
+		self::assertSame($oldStateDataSize, Block::INTERNAL_STATE_DATA_BITS, "Changed number of state data bits - consistency check probably need regenerating");
 
-		$states = [];
-		for($k = 0; $k < 1024 << Block::INTERNAL_METADATA_BITS; $k++){
-			$state = $this->blockFactory->fromFullBlock($k);
-			if($state instanceof UnknownBlock){
-				continue;
-			}
-			$states[$k] = $state;
-			if($state->getFullId() !== $k){
-				self::assertArrayHasKey($k, $remaps, "New remap of state $k (" . $state->getName() . ") - consistency check may need regenerating");
-				self::assertSame($state->getFullId(), $remaps[$k], "Mismatched full IDs of remapped state $k");
-			}else{
-				self::assertArrayHasKey($k, $knownStates, "New block state $k (" . $state->getName() . ") - consistency check may need regenerating");
-				self::assertSame($knownStates[$k], $state->getName());
-			}
+		$states = BlockFactory::getInstance()->getAllKnownStates();
+		foreach(BlockFactory::getInstance()->getAllKnownStates() as $stateId => $state){
+			self::assertArrayHasKey($stateId, $knownStates, "New block state $stateId (" . $state->getTypeId() . ":" . $state->computeStateData() . ", " . print_r($state, true) . ") - consistency check may need regenerating");
+			self::assertSame($knownStates[$stateId], $state->getName());
 		}
+		asort($knownStates, SORT_STRING);
 		foreach($knownStates as $k => $name){
-			self::assertArrayHasKey($k, $states, "Missing previously-known block state $k ($name)");
+			self::assertArrayHasKey($k, $states, "Missing previously-known block state $k " . ($k >> Block::INTERNAL_STATE_DATA_BITS) . ":" . ($k & Block::INTERNAL_STATE_DATA_MASK) . " ($name)");
 			self::assertSame($name, $states[$k]->getName());
-		}
-		foreach($remaps as $origin => $destination){
-			self::assertArrayHasKey($origin, $states, "Missing previously-remapped state $origin");
-			self::assertSame($destination, $states[$origin]->getFullId());
 		}
 	}
 }

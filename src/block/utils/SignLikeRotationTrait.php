@@ -29,6 +29,14 @@ trait SignLikeRotationTrait{
 	/** @var int */
 	private $rotation = 0;
 
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->rotation = $r->readBoundedInt(4, 0, 15);
+	}
+
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeInt(4, $this->rotation);
+	}
+
 	public function getRotation() : int{ return $this->rotation; }
 
 	/** @return $this */

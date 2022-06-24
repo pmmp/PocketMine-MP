@@ -24,12 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Bed as TileBed;
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\item\Item;
@@ -54,20 +54,18 @@ class Bed extends Transparent{
 		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) |
-			($this->occupied ? BlockLegacyMetadata::BED_FLAG_OCCUPIED : 0) |
-			($this->head ? BlockLegacyMetadata::BED_FLAG_HEAD : 0);
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->facing = $r->readHorizontalFacing();
+		$this->occupied = $r->readBool();
+		$this->head = $r->readBool();
+		//TODO: we currently purposely don't read or write colour (it's stored on the tile)
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
-		$this->occupied = ($stateMeta & BlockLegacyMetadata::BED_FLAG_OCCUPIED) !== 0;
-		$this->head = ($stateMeta & BlockLegacyMetadata::BED_FLAG_HEAD) !== 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeHorizontalFacing($this->facing);
+		$w->writeBool($this->occupied);
+		$w->writeBool($this->head);
+		//TODO: we currently purposely don't read or write colour (it's stored on the tile)
 	}
 
 	public function readStateFromWorld() : void{
@@ -207,10 +205,6 @@ class Bed extends Transparent{
 		}
 
 		return [];
-	}
-
-	protected function writeStateToItemMeta() : int{
-		return DyeColorIdMap::getInstance()->toId($this->color);
 	}
 
 	public function getAffectedBlocks() : array{

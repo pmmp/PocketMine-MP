@@ -70,7 +70,7 @@ class FlowerPot extends Spawnable{
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
 		if($this->plant !== null){
-			$nbt->setTag(self::TAG_PLANT_BLOCK, GlobalBlockStateHandlers::getSerializer()->serialize($this->plant->getFullId())->toNbt());
+			$nbt->setTag(self::TAG_PLANT_BLOCK, GlobalBlockStateHandlers::getSerializer()->serialize($this->plant->getStateId())->toNbt());
 		}
 	}
 
@@ -88,7 +88,7 @@ class FlowerPot extends Spawnable{
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		if($this->plant !== null){
-			$nbt->setTag(self::TAG_PLANT_BLOCK, GlobalBlockStateHandlers::getSerializer()->serialize($this->plant->getFullId())->toNbt());
+			$nbt->setTag(self::TAG_PLANT_BLOCK, GlobalBlockStateHandlers::getSerializer()->serialize($this->plant->getStateId())->toNbt());
 		}
 	}
 }

@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
 use pocketmine\entity\object\PrimedTNT;
@@ -40,25 +42,21 @@ use function sin;
 use const M_PI;
 
 class TNT extends Opaque{
-
 	protected bool $unstable = false; //TODO: Usage unclear, seems to be a weird hack in vanilla
 	protected bool $worksUnderwater = false;
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->unstable = ($stateMeta & BlockLegacyMetadata::TNT_FLAG_UNSTABLE) !== 0;
-		$this->worksUnderwater = ($stateMeta & BlockLegacyMetadata::TNT_FLAG_UNDERWATER) !== 0;
-	}
-
-	protected function writeStateToMeta() : int{
-		return ($this->unstable ? BlockLegacyMetadata::TNT_FLAG_UNSTABLE : 0) | ($this->worksUnderwater ? BlockLegacyMetadata::TNT_FLAG_UNDERWATER : 0);
-	}
 
 	protected function writeStateToItemMeta() : int{
 		return $this->worksUnderwater ? BlockLegacyMetadata::TNT_FLAG_UNDERWATER : 0;
 	}
 
-	public function getStateBitmask() : int{
-		return 0b11;
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->unstable = $r->readBool();
+		$this->worksUnderwater = $r->readBool();
+	}
+
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeBool($this->unstable);
+		$w->writeBool($this->worksUnderwater);
 	}
 
 	public function isUnstable() : bool{ return $this->unstable; }

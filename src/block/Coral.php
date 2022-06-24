@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\data\bedrock\CoralTypeIdMap;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -33,24 +32,8 @@ use pocketmine\world\BlockTransaction;
 
 final class Coral extends BaseCoral{
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$coralType = CoralTypeIdMap::getInstance()->fromId($stateMeta);
-		if($coralType === null){
-			throw new InvalidBlockStateException("No such coral type");
-		}
-		$this->coralType = $coralType;
-	}
-
-	public function writeStateToMeta() : int{
-		return CoralTypeIdMap::getInstance()->toId($this->coralType);
-	}
-
 	protected function writeStateToItemMeta() : int{
-		return $this->writeStateToMeta();
-	}
-
-	public function getStateBitmask() : int{
-		return 0b0111;
+		return CoralTypeIdMap::getInstance()->toId($this->coralType);
 	}
 
 	public function readStateFromWorld() : void{

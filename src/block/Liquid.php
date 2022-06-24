@@ -23,7 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\block\utils\MinimumCostFlowCalculator;
 use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
@@ -40,8 +41,6 @@ use function lcg_value;
 abstract class Liquid extends Transparent{
 	public const MAX_DECAY = 7;
 
-	protected BlockIdentifierFlattened $idInfoFlattened;
-
 	public int $adjacentSources = 0;
 
 	protected ?Vector3 $flowVector = null;
@@ -50,27 +49,16 @@ abstract class Liquid extends Transparent{
 	protected int $decay = 0; //PC "level" property
 	protected bool $still = false;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
-		$this->idInfoFlattened = $idInfo;
-		parent::__construct($idInfo, $name, $breakInfo);
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->decay = $r->readBoundedInt(3, 0, self::MAX_DECAY);
+		$this->falling = $r->readBool();
+		$this->still = $r->readBool();
 	}
 
-	public function getId() : int{
-		return $this->still ? $this->idInfoFlattened->getSecondId() : parent::getId();
-	}
-
-	protected function writeStateToMeta() : int{
-		return $this->decay | ($this->falling ? BlockLegacyMetadata::LIQUID_FLAG_FALLING : 0);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->decay = BlockDataSerializer::readBoundedInt("decay", $stateMeta & 0x07, 0, self::MAX_DECAY);
-		$this->falling = ($stateMeta & BlockLegacyMetadata::LIQUID_FLAG_FALLING) !== 0;
-		$this->still = $id === $this->idInfoFlattened->getSecondId();
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeInt(3, $this->decay);
+		$w->writeBool($this->falling);
+		$w->writeBool($this->still);
 	}
 
 	public function isFalling() : bool{ return $this->falling; }

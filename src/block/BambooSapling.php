@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Bamboo as ItemBamboo;
 use pocketmine\item\Fertilizer;
@@ -32,18 +34,15 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 final class BambooSapling extends Flowable{
-
 	private bool $ready = false;
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->ready = ($stateMeta & BlockLegacyMetadata::BAMBOO_SAPLING_FLAG_READY) !== 0;
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->setReady($r->readBool());
 	}
 
-	protected function writeStateToMeta() : int{
-		return $this->ready ? BlockLegacyMetadata::BAMBOO_SAPLING_FLAG_READY : 0;
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeBool($this->isReady());
 	}
-
-	public function getStateBitmask() : int{ return 0b1; }
 
 	public function isReady() : bool{ return $this->ready; }
 
