@@ -54,18 +54,18 @@ class BlockTest extends TestCase{
 	public function testDeliberateOverrideBlock() : void{
 		$block = new MyCustomBlock(new BlockIdentifier(BlockTypeIds::COBBLESTONE, BlockLegacyIds::COBBLESTONE, 0), "Cobblestone", BlockBreakInfo::instant());
 		$this->blockFactory->register($block, true);
-		self::assertInstanceOf(MyCustomBlock::class, $this->blockFactory->get($block->getTypeId(), 0));
+		self::assertInstanceOf(MyCustomBlock::class, $this->blockFactory->fromFullBlock($block->getStateId()));
 	}
 
 	/**
 	 * Test registering a new block which does not yet exist
 	 */
 	public function testRegisterNewBlock() : void{
-		for($i = 0; $i < 256; ++$i){
+		for($i = BlockTypeIds::FIRST_UNUSED_BLOCK_ID; $i < BlockTypeIds::FIRST_UNUSED_BLOCK_ID + 256; ++$i){
 			if(!$this->blockFactory->isRegistered($i)){
-				$b = new StrangeNewBlock(new BlockIdentifier(BlockTypeIds::FIRST_UNUSED_BLOCK_ID, $i, 0), "Strange New Block", BlockBreakInfo::instant());
+				$b = new StrangeNewBlock(new BlockIdentifier($i, $i, 0), "Strange New Block", BlockBreakInfo::instant());
 				$this->blockFactory->register($b);
-				self::assertInstanceOf(StrangeNewBlock::class, $this->blockFactory->get($b->getTypeId(), 0));
+				self::assertInstanceOf(StrangeNewBlock::class, $this->blockFactory->fromFullBlock($b->getStateId()));
 				return;
 			}
 		}
@@ -87,9 +87,9 @@ class BlockTest extends TestCase{
 	 * instances which would hold position data and other things, so it's necessary to clone them to avoid astonishing behaviour.
 	 */
 	public function testBlockFactoryClone() : void{
-		for($i = 0; $i < 256; ++$i){
-			$b1 = $this->blockFactory->get($i, 0);
-			$b2 = $this->blockFactory->get($i, 0);
+		foreach($this->blockFactory->getAllKnownStates() as $k => $state){
+			$b1 = $this->blockFactory->fromFullBlock($k);
+			$b2 = $this->blockFactory->fromFullBlock($k);
 			self::assertNotSame($b1, $b2);
 		}
 	}
