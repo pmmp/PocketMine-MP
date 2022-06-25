@@ -53,12 +53,6 @@ class Wall extends Transparent{
 		$w->writeBool($this->post);
 	}
 
-	public function onNearbyBlockChange() : void{
-		if($this->recalculateConnections()){
-			$this->position->getWorld()->setBlock($this->position, $this);
-		}
-	}
-
 	/**
 	 * @return WallConnectionType[]
 	 * @phpstan-return WallConnectionSet
@@ -98,6 +92,12 @@ class Wall extends Transparent{
 	public function setPost(bool $post) : self{
 		$this->post = $post;
 		return $this;
+	}
+
+	public function onNearbyBlockChange() : void{
+		if($this->recalculateConnections()){
+			$this->position->getWorld()->setBlock($this->position, $this);
+		}
 	}
 
 	protected function recalculateConnections() : bool{
