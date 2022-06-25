@@ -28,6 +28,7 @@ use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\TreeType;
+use pocketmine\block\utils\WallConnectionType;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateNames;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
@@ -259,6 +260,17 @@ final class BlockStateWriter{
 			BellAttachmentType::ONE_WALL()->id() => StringValues::ATTACHMENT_SIDE,
 			BellAttachmentType::TWO_WALLS()->id() => StringValues::ATTACHMENT_MULTIPLE,
 			default => throw new BlockStateSerializeException("Invalid Bell attachment type " . $attachmentType->name())
+		});
+		return $this;
+	}
+
+	/** @return $this */
+	public function writeWallConnectionType(string $name, ?WallConnectionType $wallConnectionType) : self{
+		$this->writeString($name, match($wallConnectionType){
+			null => StringValues::WALL_CONNECTION_TYPE_EAST_NONE,
+			WallConnectionType::SHORT() => StringValues::WALL_CONNECTION_TYPE_EAST_SHORT,
+			WallConnectionType::TALL() => StringValues::WALL_CONNECTION_TYPE_EAST_TALL,
+			default => throw new BlockStateSerializeException("Invalid Wall connection type " . $wallConnectionType->name())
 		});
 		return $this;
 	}

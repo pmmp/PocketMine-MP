@@ -48,7 +48,6 @@ use pocketmine\block\Wall;
 use pocketmine\block\WallSign;
 use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockStateNames;
-use pocketmine\data\bedrock\block\BlockStateStringValues;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
 use pocketmine\math\Axis;
@@ -245,13 +244,12 @@ final class BlockStateSerializerHelper{
 	}
 
 	public static function encodeWall(Wall $block, BlockStateWriter $out) : BlockStateWriter{
-		//TODO: our walls don't support the full range of needed states yet
 		return $out
-			->writeBool(BlockStateNames::WALL_POST_BIT, false)
-			->writeString(BlockStateNames::WALL_CONNECTION_TYPE_EAST, BlockStateStringValues::WALL_CONNECTION_TYPE_EAST_NONE)
-			->writeString(BlockStateNames::WALL_CONNECTION_TYPE_NORTH, BlockStateStringValues::WALL_CONNECTION_TYPE_NORTH_NONE)
-			->writeString(BlockStateNames::WALL_CONNECTION_TYPE_SOUTH, BlockStateStringValues::WALL_CONNECTION_TYPE_SOUTH_NONE)
-			->writeString(BlockStateNames::WALL_CONNECTION_TYPE_WEST, BlockStateStringValues::WALL_CONNECTION_TYPE_WEST_NONE);
+			->writeBool(BlockStateNames::WALL_POST_BIT, $block->isPost())
+			->writeWallConnectionType(BlockStateNames::WALL_CONNECTION_TYPE_EAST, $block->getConnection(Facing::EAST))
+			->writeWallConnectionType(BlockStateNames::WALL_CONNECTION_TYPE_NORTH, $block->getConnection(Facing::NORTH))
+			->writeWallConnectionType(BlockStateNames::WALL_CONNECTION_TYPE_SOUTH, $block->getConnection(Facing::SOUTH))
+			->writeWallConnectionType(BlockStateNames::WALL_CONNECTION_TYPE_WEST, $block->getConnection(Facing::WEST));
 	}
 
 	public static function encodeLegacyWall(Wall $block, string $type) : BlockStateWriter{

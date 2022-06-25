@@ -27,6 +27,7 @@ use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SlabType;
+use pocketmine\block\utils\WallConnectionType;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateNames;
@@ -293,6 +294,19 @@ final class BlockStateReader{
 			StringValues::ATTACHMENT_SIDE => BellAttachmentType::ONE_WALL(),
 			StringValues::ATTACHMENT_MULTIPLE => BellAttachmentType::TWO_WALLS(),
 			default => throw $this->badValueException(BlockStateNames::ATTACHMENT, $type),
+		};
+	}
+
+	/** @throws BlockStateDeserializeException */
+	public function readWallConnectionType(string $name) : ?WallConnectionType{
+		return match($type = $this->readString($name)){
+			//TODO: this looks a bit confusing due to use of EAST, but the values are the same for all connections
+			//we need to find a better way to auto-generate the constant names when they are reused
+			//for now, using these constants is better than nothing since it still gives static analysability
+			StringValues::WALL_CONNECTION_TYPE_EAST_NONE => null,
+			StringValues::WALL_CONNECTION_TYPE_EAST_SHORT => WallConnectionType::SHORT(),
+			StringValues::WALL_CONNECTION_TYPE_EAST_TALL => WallConnectionType::TALL(),
+			default => throw $this->badValueException($name, $type),
 		};
 	}
 

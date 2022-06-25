@@ -97,4 +97,25 @@ final class BlockDataReader{
 			default => throw new AssumptionFailedError("Unreachable")
 		};
 	}
+
+	/**
+	 * @return WallConnectionType[]
+	 * @phpstan-return array<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST, WallConnectionType>
+	 */
+	public function readWallConnections() : array{
+		$connections = [];
+		//TODO: we can pack this into 7 bits instead of 8
+		foreach(Facing::HORIZONTAL as $facing){
+			$type = $this->readBoundedInt(2, 0, 2);
+			if($type !== 0){
+				$connections[$facing] = match($type){
+					1 => WallConnectionType::SHORT(),
+					2 => WallConnectionType::TALL(),
+					default => throw new AssumptionFailedError("Unreachable")
+				};
+			}
+		}
+
+		return $connections;
+	}
 }

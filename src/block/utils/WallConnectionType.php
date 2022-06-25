@@ -31,7 +31,6 @@ use pocketmine\utils\EnumTrait;
  * @see build/generate-registry-annotations.php
  * @generate-registry-docblock
  *
- * @method static WallConnectionType NONE()
  * @method static WallConnectionType SHORT()
  * @method static WallConnectionType TALL()
  */
@@ -40,7 +39,6 @@ final class WallConnectionType{
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self("none"),
 			new self("short"),
 			new self("tall")
 		);

@@ -23,30 +23,93 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataReader;
+use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\block\utils\SupportType;
+use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 
+/**
+ * @phpstan-type WallConnectionSet array<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST, WallConnectionType>
+ */
 class Wall extends Transparent{
 
-	/** @var int[] facing => facing */
+	/**
+	 * @var WallConnectionType[]
+	 * @phpstan-var WallConnectionSet
+	 */
 	protected array $connections = [];
-	protected bool $up = false;
+	protected bool $post = false;
 
-	public function readStateFromWorld() : void{
-		parent::readStateFromWorld();
+	protected function decodeState(BlockDataReader $r) : void{
+		$this->connections = $r->readWallConnections();
+		$this->post = $r->readBool();
+	}
 
-		$this->recalculateConnections();
+	protected function encodeState(BlockDataWriter $w) : void{
+		$w->writeWallConnections($this->connections);
+		$w->writeBool($this->post);
+	}
+
+	public function onNearbyBlockChange() : void{
+		if($this->recalculateConnections()){
+			$this->position->getWorld()->setBlock($this->position, $this);
+		}
+	}
+
+	/**
+	 * @return WallConnectionType[]
+	 * @phpstan-return WallConnectionSet
+	 */
+	public function getConnections() : array{ return $this->connections; }
+
+	public function getConnection(int $face) : ?WallConnectionType{
+		return $this->connections[$face] ?? null;
+	}
+
+	/**
+	 * @param WallConnectionType[] $connections
+	 * @phpstan-param WallConnectionSet $connections
+	 * @return $this
+	 */
+	public function setConnections(array $connections) : self{
+		$this->connections = $connections;
+		return $this;
+	}
+
+	/** @return $this */
+	public function setConnection(int $face, ?WallConnectionType $type) : self{
+		if($face !== Facing::NORTH && $face !== Facing::SOUTH && $face !== Facing::WEST && $face !== Facing::EAST){
+			throw new \InvalidArgumentException("Facing can only be north, east, south or west");
+		}
+		if($type !== null){
+			$this->connections[$face] = $type;
+		}else{
+			unset($this->connections[$face]);
+		}
+		return $this;
+	}
+
+	public function isPost() : bool{ return $this->post; }
+
+	/** @return $this */
+	public function setPost(bool $post) : self{
+		$this->post = $post;
+		return $this;
 	}
 
 	protected function recalculateConnections() : bool{
 		$changed = 0;
+
+		//TODO: implement tall/short connections - right now we only support short as per pre-1.16
+
 		foreach(Facing::HORIZONTAL as $facing){
 			$block = $this->getSide($facing);
 			if($block instanceof static || $block instanceof FenceGate || ($block->isSolid() && !$block->isTransparent())){
 				if(!isset($this->connections[$facing])){
-					$this->connections[$facing] = $facing;
+					$this->connections[$facing] = WallConnectionType::SHORT();
 					$changed++;
 				}
 			}elseif(isset($this->connections[$facing])){
@@ -56,8 +119,8 @@ class Wall extends Transparent{
 		}
 
 		$up = $this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR;
-		if($up !== $this->up){
-			$this->up = $up;
+		if($up !== $this->post){
+			$this->post = $up;
 			$changed++;
 		}
 
@@ -74,7 +137,7 @@ class Wall extends Transparent{
 
 		$inset = 0.25;
 		if(
-			!$this->up && //if there is a block on top, it stays as a post
+			!$this->post && //if there is a block on top, it stays as a post
 			(
 				($north && $south && !$west && !$east) ||
 				(!$north && !$south && $west && $east)

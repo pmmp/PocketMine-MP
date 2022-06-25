@@ -49,7 +49,7 @@ use function count;
 use const PHP_INT_MAX;
 
 class Block{
-	public const INTERNAL_STATE_DATA_BITS = 6;
+	public const INTERNAL_STATE_DATA_BITS = 9;
 	public const INTERNAL_STATE_DATA_MASK = ~(~0 << self::INTERNAL_STATE_DATA_BITS);
 
 	protected BlockIdentifier $idInfo;

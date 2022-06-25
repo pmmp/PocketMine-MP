@@ -196,12 +196,11 @@ final class BlockStateDeserializerHelper{
 
 	/** @throws BlockStateDeserializeException */
 	public static function decodeWall(Wall $block, BlockStateReader $in) : Wall{
-		//TODO: our walls don't support the full range of needed states yet
-		$in->todo(BlockStateNames::WALL_POST_BIT); //TODO
-		$in->todo(BlockStateNames::WALL_CONNECTION_TYPE_EAST);
-		$in->todo(BlockStateNames::WALL_CONNECTION_TYPE_NORTH);
-		$in->todo(BlockStateNames::WALL_CONNECTION_TYPE_SOUTH);
-		$in->todo(BlockStateNames::WALL_CONNECTION_TYPE_WEST);
+		$block->setPost($in->readBool(BlockStateNames::WALL_POST_BIT));
+		$block->setConnection(Facing::NORTH, $in->readWallConnectionType(BlockStateNames::WALL_CONNECTION_TYPE_NORTH));
+		$block->setConnection(Facing::SOUTH, $in->readWallConnectionType(BlockStateNames::WALL_CONNECTION_TYPE_SOUTH));
+		$block->setConnection(Facing::WEST, $in->readWallConnectionType(BlockStateNames::WALL_CONNECTION_TYPE_WEST));
+		$block->setConnection(Facing::EAST, $in->readWallConnectionType(BlockStateNames::WALL_CONNECTION_TYPE_EAST));
 
 		return $block;
 	}

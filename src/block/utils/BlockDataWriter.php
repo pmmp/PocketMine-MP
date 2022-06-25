@@ -25,6 +25,7 @@ namespace pocketmine\block\utils;
 
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
+use pocketmine\utils\AssumptionFailedError;
 
 final class BlockDataWriter{
 
@@ -93,6 +94,24 @@ final class BlockDataWriter{
 			Axis::Z => 1,
 			default => throw new \InvalidArgumentException("Invalid horizontal axis $axis")
 		});
+	}
+
+	/**
+	 * @param WallConnectionType[] $connections
+	 * @phpstan-param array<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST, WallConnectionType> $connections
+	 */
+	public function writeWallConnections(array $connections) : self{
+		//TODO: we can pack this into 7 bits instead of 8
+		foreach(Facing::HORIZONTAL as $facing){
+			$this->writeInt(2, match($connections[$facing] ?? null){
+				null => 0,
+				WallConnectionType::SHORT() => 1,
+				WallConnectionType::TALL() => 2,
+				default => throw new AssumptionFailedError("Unreachable")
+			});
+		}
+
+		return $this;
 	}
 
 	public function getValue() : int{ return $this->value; }
