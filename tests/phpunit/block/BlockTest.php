@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use PHPUnit\Framework\TestCase;
+use pocketmine\item\ItemIds;
 use function asort;
 use function file_get_contents;
 use function is_array;
@@ -43,7 +44,7 @@ class BlockTest extends TestCase{
 	 * Test registering a block which would overwrite another block, without forcing it
 	 */
 	public function testAccidentalOverrideBlock() : void{
-		$block = new MyCustomBlock(new BlockIdentifier(BlockTypeIds::COBBLESTONE, BlockLegacyIds::COBBLESTONE, 0), "Cobblestone", BlockBreakInfo::instant());
+		$block = new MyCustomBlock(new BlockIdentifier(BlockTypeIds::COBBLESTONE, ItemIds::COBBLESTONE, 0), "Cobblestone", BlockBreakInfo::instant());
 		$this->expectException(\InvalidArgumentException::class);
 		$this->blockFactory->register($block);
 	}
@@ -52,7 +53,7 @@ class BlockTest extends TestCase{
 	 * Test registering a block deliberately overwriting another block works as expected
 	 */
 	public function testDeliberateOverrideBlock() : void{
-		$block = new MyCustomBlock(new BlockIdentifier(BlockTypeIds::COBBLESTONE, BlockLegacyIds::COBBLESTONE, 0), "Cobblestone", BlockBreakInfo::instant());
+		$block = new MyCustomBlock(new BlockIdentifier(BlockTypeIds::COBBLESTONE, ItemIds::COBBLESTONE, 0), "Cobblestone", BlockBreakInfo::instant());
 		$this->blockFactory->register($block, true);
 		self::assertInstanceOf(MyCustomBlock::class, $this->blockFactory->fromFullBlock($block->getStateId()));
 	}
@@ -63,7 +64,7 @@ class BlockTest extends TestCase{
 	public function testRegisterNewBlock() : void{
 		for($i = BlockTypeIds::FIRST_UNUSED_BLOCK_ID; $i < BlockTypeIds::FIRST_UNUSED_BLOCK_ID + 256; ++$i){
 			if(!$this->blockFactory->isRegistered($i)){
-				$b = new StrangeNewBlock(new BlockIdentifier($i, $i, 0), "Strange New Block", BlockBreakInfo::instant());
+				$b = new StrangeNewBlock(new BlockIdentifier($i, $i + 10000, 0), "Strange New Block", BlockBreakInfo::instant());
 				$this->blockFactory->register($b);
 				self::assertInstanceOf(StrangeNewBlock::class, $this->blockFactory->fromFullBlock($b->getStateId()));
 				return;

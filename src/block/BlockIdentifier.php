@@ -32,19 +32,15 @@ class BlockIdentifier{
 	 */
 	public function __construct(
 		private int $blockTypeId,
-		private int $legacyBlockId,
-		private int $legacyVariant,
-		private ?int $legacyItemId = null,
+		private int $legacyItemId,
+		private int $legacyItemVariant,
 		private ?string $tileClass = null
 	){
 		if($blockTypeId < 0){
 			throw new \InvalidArgumentException("Block type ID may not be negative");
 		}
-		if($legacyBlockId < 0){
-			throw new \InvalidArgumentException("Legacy block ID may not be negative");
-		}
-		if($legacyVariant < 0){
-			throw new \InvalidArgumentException("Legacy block variant may not be negative");
+		if($legacyItemVariant < 0){
+			throw new \InvalidArgumentException("Legacy item variant may not be negative");
 		}
 
 		if($tileClass !== null){
@@ -57,22 +53,15 @@ class BlockIdentifier{
 	/**
 	 * @deprecated
 	 */
-	public function getLegacyBlockId() : int{
-		return $this->legacyBlockId;
-	}
-
-	/**
-	 * @deprecated
-	 */
 	public function getLegacyVariant() : int{
-		return $this->legacyVariant;
+		return $this->legacyItemVariant;
 	}
 
 	/**
 	 * @deprecated
 	 */
 	public function getLegacyItemId() : int{
-		return $this->legacyItemId ?? ($this->legacyBlockId > 255 ? 255 - $this->legacyBlockId : $this->legacyBlockId);
+		return $this->legacyItemId;
 	}
 
 	/**
