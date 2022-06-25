@@ -486,10 +486,9 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::FLOWING_LAVA, fn(Reader $in) => Helper::decodeFlowingLiquid(Blocks::LAVA(), $in));
 		$this->map(Ids::FLOWING_WATER, fn(Reader $in) => Helper::decodeFlowingLiquid(Blocks::WATER(), $in));
 		$this->map(Ids::FRAME, function(Reader $in) : Block{
-			//TODO: in R13 this can be any side, not just horizontal
 			$in->todo(StateNames::ITEM_FRAME_PHOTO_BIT); //TODO: not sure what the point of this is
 			return Blocks::ITEM_FRAME()
-				->setFacing($in->readHorizontalFacing())
+				->setFacing($in->readFacingDirection())
 				->setHasMap($in->readBool(StateNames::ITEM_FRAME_MAP_BIT));
 		});
 		$this->map(Ids::FROSTED_ICE, function(Reader $in) : Block{

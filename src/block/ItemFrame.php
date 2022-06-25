@@ -24,9 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
+use pocketmine\block\utils\AnyFacingTrait;
 use pocketmine\block\utils\BlockDataReader;
 use pocketmine\block\utils\BlockDataWriter;
-use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -37,7 +37,7 @@ use function is_nan;
 use function lcg_value;
 
 class ItemFrame extends Flowable{
-	use HorizontalFacingTrait;
+	use AnyFacingTrait;
 
 	public const ROTATIONS = 8;
 
@@ -48,12 +48,12 @@ class ItemFrame extends Flowable{
 	protected float $itemDropChance = 1.0;
 
 	protected function decodeState(BlockDataReader $r) : void{
-		$this->facing = $r->readHorizontalFacing();
+		$this->facing = $r->readFacing();
 		$this->hasMap = $r->readBool();
 	}
 
 	protected function encodeState(BlockDataWriter $w) : void{
-		$w->writeHorizontalFacing($this->facing);
+		$w->writeFacing($this->facing);
 		$w->writeBool($this->hasMap);
 	}
 
@@ -164,7 +164,7 @@ class ItemFrame extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($face === Facing::DOWN || $face === Facing::UP || !$blockClicked->isSolid()){
+		if(!$blockClicked->isSolid()){
 			return false;
 		}
 

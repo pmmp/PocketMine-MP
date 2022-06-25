@@ -694,7 +694,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::FRAME)
 				->writeBool(StateNames::ITEM_FRAME_MAP_BIT, $block->hasMap())
 				->writeBool(StateNames::ITEM_FRAME_PHOTO_BIT, false)
-				->writeHorizontalFacing($block->getFacing());
+				->writeFacingDirection($block->getFacing());
 		});
 		$this->map(Blocks::JUKEBOX(), fn() => new Writer(Ids::JUKEBOX));
 		$this->map(Blocks::JUNGLE_BUTTON(), fn(WoodenButton $block) => Helper::encodeButton($block, new Writer(Ids::JUNGLE_BUTTON)));
