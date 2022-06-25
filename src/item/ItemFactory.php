@@ -507,7 +507,16 @@ class ItemFactory{
 	 */
 	public function isRegistered(int $id, int $variant = 0) : bool{
 		if($id < 256){
-			return GlobalBlockStateHandlers::getUpgrader()->upgradeIntIdMeta(self::itemToBlockId($id), $variant & 0xf) !== null;
+			$blockStateData = GlobalBlockStateHandlers::getUpgrader()->upgradeIntIdMeta(self::itemToBlockId($id), $variant & 0xf);
+			if($blockStateData === null){
+				return false;
+			}
+			try{
+				GlobalBlockStateHandlers::getDeserializer()->deserialize($blockStateData);
+				return true;
+			}catch(BlockStateDeserializeException){
+				return false;
+			}
 		}
 
 		return isset($this->list[self::getListOffset($id, $variant)]);
