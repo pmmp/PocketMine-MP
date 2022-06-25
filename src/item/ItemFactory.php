@@ -495,14 +495,6 @@ class ItemFactory{
 	}
 
 	/**
-	 * @deprecated
-	 * @see VanillaItems::AIR()
-	 */
-	public static function air() : Item{
-		return self::getInstance()->get(Ids::AIR, 0, 0);
-	}
-
-	/**
 	 * Returns whether the specified item ID is already registered in the item factory.
 	 */
 	public function isRegistered(int $id, int $variant = 0) : bool{
