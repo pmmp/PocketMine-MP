@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use PHPUnit\Framework\TestCase;
-use pocketmine\block\BlockFactory;
 
 class ItemFactoryTest extends TestCase{
 
