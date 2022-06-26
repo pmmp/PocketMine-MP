@@ -79,7 +79,7 @@ final class ItemTranslator{
 	public function toNetworkId(Item $item) : array{
 		//TODO: we should probably come up with a cache for this
 
-		$itemData = $this->itemSerializer->serialize($item);
+		$itemData = $this->itemSerializer->serializeType($item);
 
 		$numericId = $this->itemTypeDictionary->fromStringId($itemData->getName());
 		$blockStateData = $itemData->getBlock();
@@ -116,7 +116,7 @@ final class ItemTranslator{
 		}
 
 		try{
-			return $this->itemDeserializer->deserialize(new SavedItemData($stringId, $networkMeta, $blockStateData));
+			return $this->itemDeserializer->deserializeType(new SavedItemData($stringId, $networkMeta, $blockStateData));
 		}catch(ItemTypeDeserializeException $e){
 			throw TypeConversionException::wrap($e, "Invalid network itemstack data");
 		}

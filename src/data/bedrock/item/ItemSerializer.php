@@ -102,7 +102,7 @@ final class ItemSerializer{
 	 *
 	 * @throws ItemTypeSerializeException
 	 */
-	public function serialize(Item $item) : Data{
+	public function serializeType(Item $item) : Data{
 		if($item->isNull()){
 			throw new \InvalidArgumentException("Cannot serialize a null itemstack");
 		}
@@ -128,7 +128,7 @@ final class ItemSerializer{
 			}
 
 			if($locatedSerializer === null){
-				throw new ItemTypeSerializeException("No serializer registered for " . get_class($item) . " " . $item->getName());
+				throw new ItemTypeSerializeException("No serializer registered for " . get_class($item) . " ($index) " . $item->getName());
 			}
 
 			/**
@@ -151,6 +151,17 @@ final class ItemSerializer{
 		}
 
 		return $data;
+	}
+
+	public function serializeStack(Item $item, ?int $slot = null) : SavedItemStackData{
+		return new SavedItemStackData(
+			$this->serializeType($item),
+			$item->getCount(),
+			$slot,
+			null,
+			[], //we currently represent canDestroy and canPlaceOn via NBT, like PC
+			[]
+		);
 	}
 
 	/**

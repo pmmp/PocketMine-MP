@@ -45,12 +45,12 @@ final class ItemSerializerDeserializerTest extends TestCase{
 			}
 
 			try{
-				$itemData = $this->serializer->serialize($item);
+				$itemData = $this->serializer->serializeType($item);
 			}catch(ItemTypeSerializeException $e){
 				self::fail($e->getMessage());
 			}
 			try{
-				$newItem = $this->deserializer->deserialize($itemData);
+				$newItem = $this->deserializer->deserializeType($itemData);
 			}catch(ItemTypeDeserializeException $e){
 				self::fail($e->getMessage());
 			}
@@ -67,12 +67,12 @@ final class ItemSerializerDeserializerTest extends TestCase{
 			}
 
 			try{
-				$itemData = $this->serializer->serialize($item);
+				$itemData = $this->serializer->serializeType($item);
 			}catch(ItemTypeSerializeException $e){
 				self::fail($e->getMessage());
 			}
 			try{
-				$newItem = $this->deserializer->deserialize($itemData);
+				$newItem = $this->deserializer->deserializeType($itemData);
 			}catch(ItemTypeDeserializeException $e){
 				self::fail($e->getMessage());
 			}

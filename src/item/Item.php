@@ -32,7 +32,6 @@ use pocketmine\block\BlockToolType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
-use pocketmine\data\bedrock\item\SavedItemStackData;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\EnchantmentInstance;
@@ -648,16 +647,7 @@ class Item implements \JsonSerializable{
 	 * @param int $slot optional, the inventory slot of the item
 	 */
 	public function nbtSerialize(int $slot = -1) : CompoundTag{
-		$typeData = GlobalItemDataHandlers::getSerializer()->serialize($this);
-
-		return (new SavedItemStackData(
-			$typeData,
-			$this->count,
-			$slot !== -1 ? $slot : null,
-			null,
-			[], //we currently represent canDestroy and canPlaceOn via NBT, like PC
-			[]
-		))->toNbt();
+		return GlobalItemDataHandlers::getSerializer()->serializeStack($this, $slot !== -1 ? $slot : null);
 	}
 
 	/**
@@ -668,17 +658,10 @@ class Item implements \JsonSerializable{
 		$itemData = GlobalItemDataHandlers::getUpgrader()->upgradeItemStackNbt($tag);
 
 		try{
-			$item = GlobalItemDataHandlers::getDeserializer()->deserialize($itemData->getTypeData());
+			return GlobalItemDataHandlers::getDeserializer()->deserializeStack($itemData);
 		}catch(ItemTypeDeserializeException $e){
 			throw new SavedDataLoadingException($e->getMessage(), 0, $e);
 		}
-
-		$item->setCount($itemData->getCount());
-		if(($tagTag = $itemData->getTypeData()->getTag()) !== null){
-			$item->setNamedTag(clone $tagTag);
-		}
-
-		return $item;
 	}
 
 	public function __clone(){

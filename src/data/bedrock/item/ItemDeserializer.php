@@ -64,7 +64,7 @@ final class ItemDeserializer{
 	/**
 	 * @throws ItemTypeDeserializeException
 	 */
-	public function deserialize(Data $data) : Item{
+	public function deserializeType(Data $data) : Item{
 		if(($blockData = $data->getBlock()) !== null){
 			//TODO: this is rough duct tape; we need a better way to deal with this
 			try{
@@ -82,6 +82,22 @@ final class ItemDeserializer{
 		}
 
 		return ($this->deserializers[$id])($data);
+	}
+
+	/**
+	 * @throws ItemTypeDeserializeException
+	 */
+	public function deserializeStack(SavedItemStackData $data) : Item{
+		$itemStack = $this->deserializeType($data->getTypeData());
+
+		$itemStack->setCount($data->getCount());
+		if(($tagTag = $data->getTypeData()->getTag()) !== null){
+			$itemStack->setNamedTag(clone $tagTag);
+		}
+
+		//TODO: canDestroy, canPlaceOn, wasPickedUp are currently unused
+
+		return $itemStack;
 	}
 
 	private function registerDeserializers() : void{
