@@ -457,27 +457,30 @@ class ItemFactory{
 	public function get(int $id, int $meta = 0, int $count = 1, ?CompoundTag $tags = null) : Item{
 		/** @var Item|null $item */
 		$item = null;
-		if($meta !== -1){
-			if(isset($this->list[$offset = self::getListOffset($id, $meta)])){
-				$item = clone $this->list[$offset];
-			}elseif(isset($this->list[$zero = self::getListOffset($id, 0)]) && $this->list[$zero] instanceof Durable){
-				if($meta <= $this->list[$zero]->getMaxDurability()){
-					$item = clone $this->list[$zero];
-					$item->setDamage($meta);
-				}else{
-					$item = new Item(new IID($id, $meta));
-				}
-			}elseif($id < 256){ //intentionally includes negatives, for extended block IDs
-				//TODO: do not assume that item IDs and block IDs are the same or related
-				$blockStateData = GlobalBlockStateHandlers::getUpgrader()->upgradeIntIdMeta(self::itemToBlockId($id), $meta & 0xf);
-				if($blockStateData !== null){
-					try{
-						$blockStateId = GlobalBlockStateHandlers::getDeserializer()->deserialize($blockStateData);
-						$item = new ItemBlock(new IID($id, $meta), BlockFactory::getInstance()->fromFullBlock($blockStateId));
-					}catch(BlockStateDeserializeException $e){
-						\GlobalLogger::get()->logException($e);
-						//fallthru
-					}
+
+		if($meta < 0 || $meta > 0x7ffe){ //0x7fff would cause problems with recipe wildcards
+			throw new \InvalidArgumentException("Meta cannot be negative or larger than " . 0x7ffe);
+		}
+
+		if(isset($this->list[$offset = self::getListOffset($id, $meta)])){
+			$item = clone $this->list[$offset];
+		}elseif(isset($this->list[$zero = self::getListOffset($id, 0)]) && $this->list[$zero] instanceof Durable){
+			if($meta <= $this->list[$zero]->getMaxDurability()){
+				$item = clone $this->list[$zero];
+				$item->setDamage($meta);
+			}else{
+				$item = new Item(new IID($id, $meta));
+			}
+		}elseif($id < 256){ //intentionally includes negatives, for extended block IDs
+			//TODO: do not assume that item IDs and block IDs are the same or related
+			$blockStateData = GlobalBlockStateHandlers::getUpgrader()->upgradeIntIdMeta(self::itemToBlockId($id), $meta & 0xf);
+			if($blockStateData !== null){
+				try{
+					$blockStateId = GlobalBlockStateHandlers::getDeserializer()->deserialize($blockStateData);
+					$item = new ItemBlock(new IID($id, $meta), BlockFactory::getInstance()->fromFullBlock($blockStateId));
+				}catch(BlockStateDeserializeException $e){
+					\GlobalLogger::get()->logException($e);
+					//fallthru
 				}
 			}
 		}

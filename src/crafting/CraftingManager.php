@@ -184,7 +184,7 @@ class CraftingManager{
 	public function registerPotionTypeRecipe(PotionTypeRecipe $recipe) : void{
 		$input = $recipe->getInput();
 		$ingredient = $recipe->getIngredient();
-		$this->potionTypeRecipes[$input->getId() . ":" . $input->getMeta()][$ingredient->getId() . ":" . ($ingredient->hasAnyDamageValue() ? "?" : $ingredient->getMeta())] = $recipe;
+		$this->potionTypeRecipes[$input->getId() . ":" . $input->getMeta()][$ingredient->getId() . ":" . $ingredient->getMeta()] = $recipe;
 
 		foreach($this->recipeRegisteredCallbacks as $callback){
 			$callback();
@@ -193,7 +193,7 @@ class CraftingManager{
 
 	public function registerPotionContainerChangeRecipe(PotionContainerChangeRecipe $recipe) : void{
 		$ingredient = $recipe->getIngredient();
-		$this->potionContainerChangeRecipes[$recipe->getInputItemId()][$ingredient->getId() . ":" . ($ingredient->hasAnyDamageValue() ? "?" : $ingredient->getMeta())] = $recipe;
+		$this->potionContainerChangeRecipes[$recipe->getInputItemId()][$ingredient->getId() . ":" . $ingredient->getMeta()] = $recipe;
 
 		foreach($this->recipeRegisteredCallbacks as $callback){
 			$callback();
@@ -253,8 +253,6 @@ class CraftingManager{
 
 	public function matchBrewingRecipe(Item $input, Item $ingredient) : ?BrewingRecipe{
 		return $this->potionTypeRecipes[$input->getId() . ":" . $input->getMeta()][$ingredient->getId() . ":" . $ingredient->getMeta()] ??
-			$this->potionTypeRecipes[$input->getId() . ":" . $input->getMeta()][$ingredient->getId() . ":?"] ??
-			$this->potionContainerChangeRecipes[$input->getId()][$ingredient->getId() . ":" . $ingredient->getMeta()] ??
-			$this->potionContainerChangeRecipes[$input->getId()][$ingredient->getId() . ":?"] ?? null;
+			$this->potionContainerChangeRecipes[$input->getId()][$ingredient->getId() . ":" . $ingredient->getMeta()] ?? null;
 	}
 }

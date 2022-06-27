@@ -23,14 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\crafting;
 
+use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
+use pocketmine\world\format\io\GlobalItemDataHandlers;
 use function array_map;
 use function file_get_contents;
 use function is_array;
+use function is_int;
 use function json_decode;
 
 final class CraftingManagerFromDataHelper{
@@ -41,7 +44,7 @@ final class CraftingManagerFromDataHelper{
 	private static function containsUnknownItems(array $items) : bool{
 		$factory = ItemFactory::getInstance();
 		foreach($items as $item){
-			if($item instanceof Durable || $item->hasAnyDamageValue()){
+			if($item instanceof Durable){
 				//TODO: this check is imperfect and might cause problems if meta 0 isn't used for some reason
 				if(!$factory->isRegistered($item->getId())){
 					return true;
@@ -54,6 +57,30 @@ final class CraftingManagerFromDataHelper{
 		return false;
 	}
 
+	/**
+	 * @param mixed[] $data
+	 */
+	private static function deserializeIngredient(array $data) : ?RecipeIngredient{
+		if(!isset($data["id"]) || !is_int($data["id"])){
+			throw new \InvalidArgumentException("Invalid input data, expected int ID");
+		}
+		if(isset($data["damage"]) && $data["damage"] === -1){
+			try{
+				$typeData = GlobalItemDataHandlers::getUpgrader()->upgradeItemTypeDataInt($data["id"], 0, 1, null);
+			}catch(ItemTypeDeserializeException){
+				//probably unknown item
+				return null;
+			}
+
+			return new MetaWildcardRecipeIngredient($typeData->getTypeData()->getName());
+		}
+
+		//TODO: we need to stop using jsonDeserialize for this
+		$item = Item::jsonDeserialize($data);
+
+		return self::containsUnknownItems([$item]) ? null : new ExactRecipeIngredient($item);
+	}
+
 	public static function make(string $filePath) : CraftingManager{
 		$recipes = json_decode(Utils::assumeNotFalse(file_get_contents($filePath), "Missing required resource file"), true);
 		if(!is_array($recipes)){
@@ -61,6 +88,7 @@ final class CraftingManagerFromDataHelper{
 		}
 		$result = new CraftingManager();
 
+		$ingredientDeserializerFunc = \Closure::fromCallable([self::class, "deserializeIngredient"]);
 		$itemDeserializerFunc = \Closure::fromCallable([Item::class, 'jsonDeserialize']);
 
 		foreach($recipes["shapeless"] as $recipe){
@@ -73,9 +101,16 @@ final class CraftingManagerFromDataHelper{
 			if($recipeType === null){
 				continue;
 			}
-			$inputs = array_map($itemDeserializerFunc, $recipe["input"]);
+			$inputs = [];
+			foreach($recipe["input"] as $inputData){
+				$input = $ingredientDeserializerFunc($inputData);
+				if($input === null){ //unknown input item
+					continue;
+				}
+				$inputs[] = $input;
+			}
 			$outputs = array_map($itemDeserializerFunc, $recipe["output"]);
-			if(self::containsUnknownItems($inputs) || self::containsUnknownItems($outputs)){
+			if(self::containsUnknownItems($outputs)){
 				continue;
 			}
 			$result->registerShapelessRecipe(new ShapelessRecipe(
@@ -88,9 +123,16 @@ final class CraftingManagerFromDataHelper{
 			if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
 				continue;
 			}
-			$inputs = array_map($itemDeserializerFunc, $recipe["input"]);
+			$inputs = [];
+			foreach($recipe["input"] as $symbol => $inputData){
+				$input = $ingredientDeserializerFunc($inputData);
+				if($input === null){ //unknown input item
+					continue;
+				}
+				$inputs[$symbol] = $input;
+			}
 			$outputs = array_map($itemDeserializerFunc, $recipe["output"]);
-			if(self::containsUnknownItems($inputs) || self::containsUnknownItems($outputs)){
+			if(self::containsUnknownItems($outputs)){
 				continue;
 			}
 			$result->registerShapedRecipe(new ShapedRecipe(
@@ -111,8 +153,8 @@ final class CraftingManagerFromDataHelper{
 				continue;
 			}
 			$output = Item::jsonDeserialize($recipe["output"]);
-			$input = Item::jsonDeserialize($recipe["input"]);
-			if(self::containsUnknownItems([$output, $input])){
+			$input = self::deserializeIngredient($recipe["input"]);
+			if($input === null || self::containsUnknownItems([$output])){
 				continue;
 			}
 			$result->getFurnaceRecipeManager($furnaceType)->register(new FurnaceRecipe(
@@ -135,9 +177,9 @@ final class CraftingManagerFromDataHelper{
 			));
 		}
 		foreach($recipes["potion_container_change"] as $recipe){
-			$input = ItemFactory::getInstance()->get($recipe["input_item_id"], -1);
+			$input = ItemFactory::getInstance()->get($recipe["input_item_id"]);
 			$ingredient = Item::jsonDeserialize($recipe["ingredient"]);
-			$output = ItemFactory::getInstance()->get($recipe["output_item_id"], -1);
+			$output = ItemFactory::getInstance()->get($recipe["output_item_id"]);
 
 			if(self::containsUnknownItems([$input, $ingredient, $output])){
 				continue;

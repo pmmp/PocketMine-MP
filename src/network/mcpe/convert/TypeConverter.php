@@ -29,6 +29,9 @@ use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\LoomInventory;
 use pocketmine\block\inventory\StonecutterInventory;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\crafting\ExactRecipeIngredient;
+use pocketmine\crafting\MetaWildcardRecipeIngredient;
+use pocketmine\crafting\RecipeIngredient;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
@@ -48,11 +51,12 @@ use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
-use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
+use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient as ProtocolRecipeIngredient;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
+use function get_class;
 
 class TypeConverter{
 	use SingletonTrait;
@@ -115,39 +119,40 @@ class TypeConverter{
 		}
 	}
 
-	public function coreItemStackToRecipeIngredient(Item $itemStack) : RecipeIngredient{
-		if($itemStack->isNull()){
-			return new RecipeIngredient(0, 0, 0);
+	public function coreRecipeIngredientToNet(?RecipeIngredient $ingredient) : ProtocolRecipeIngredient{
+		if($ingredient === null){
+			return new ProtocolRecipeIngredient(0, 0, 0);
 		}
-		if($itemStack->hasAnyDamageValue()){
-			[$id, ] = ItemTranslator::getInstance()->toNetworkId(ItemFactory::getInstance()->get($itemStack->getId()));
+		if($ingredient instanceof MetaWildcardRecipeIngredient){
+			$id = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromStringId($ingredient->getItemId());
 			$meta = self::RECIPE_INPUT_WILDCARD_META;
-		}else{
-			[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($itemStack);
+		}elseif($ingredient instanceof ExactRecipeIngredient){
+			$item = $ingredient->getItem();
+			[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($item);
 			if($id < 256){
 				//TODO: this is needed for block crafting recipes to work - we need to replace this with some kind of
 				//blockstate <-> meta mapping table so that we can remove the legacy code from the core
-				$meta = $itemStack->getMeta();
+				$meta = $item->getMeta();
 			}
+		}else{
+			throw new \LogicException("Unsupported recipe ingredient type " . get_class($ingredient) . ", only " . ExactRecipeIngredient::class . " and " . MetaWildcardRecipeIngredient::class . " are supported");
 		}
-		return new RecipeIngredient($id, $meta, $itemStack->getCount());
+		return new ProtocolRecipeIngredient($id, $meta, 1);
 	}
 
-	public function recipeIngredientToCoreItemStack(RecipeIngredient $ingredient) : Item{
+	public function netRecipeIngredientToCore(ProtocolRecipeIngredient $ingredient) : ?RecipeIngredient{
 		if($ingredient->getId() === 0){
-			return VanillaItems::AIR();
+			return null;
+		}
+
+		if($ingredient->getMeta() === self::RECIPE_INPUT_WILDCARD_META){
+			$itemId = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromIntId($ingredient->getId());
+			return new MetaWildcardRecipeIngredient($itemId);
 		}
 
 		//TODO: this won't be handled properly for blockitems because a block runtimeID is expected rather than a meta value
-
-		if($ingredient->getMeta() === self::RECIPE_INPUT_WILDCARD_META){
-			$idItem = ItemTranslator::getInstance()->fromNetworkId($ingredient->getId(), 0, 0);
-			$result = ItemFactory::getInstance()->get($idItem->getId(), -1);
-		}else{
-			$result = ItemTranslator::getInstance()->fromNetworkId($ingredient->getId(), $ingredient->getMeta(), 0);
-		}
-		$result->setCount($ingredient->getCount());
-		return $result;
+		$result = ItemTranslator::getInstance()->fromNetworkId($ingredient->getId(), $ingredient->getMeta(), 0);
+		return new ExactRecipeIngredient($result);
 	}
 
 	public function coreItemStackToNet(Item $itemStack) : ItemStack{
@@ -237,8 +242,8 @@ class TypeConverter{
 				if($id !== null && ($id < -0x8000 || $id >= 0x7fff)){
 					throw new TypeConversionException("Item ID must be in range " . -0x8000 . " ... " . 0x7fff . " (received $id)");
 				}
-				if($meta < 0 || $meta >= 0x7fff){ //this meta value may have been restored from the NBT
-					throw new TypeConversionException("Item meta must be in range 0 ... " . 0x7fff . " (received $meta)");
+				if($meta < 0 || $meta >= 0x7ffe){ //this meta value may have been restored from the NBT
+					throw new TypeConversionException("Item meta must be in range 0 ... " . 0x7ffe . " (received $meta)");
 				}
 				$itemResult = ItemFactory::getInstance()->get($id ?? $itemResult->getId(), $meta);
 			}

@@ -104,6 +104,9 @@ final class LegacyStringToItemParser{
 			$meta = 0;
 		}elseif(is_numeric($b[1])){
 			$meta = (int) $b[1];
+			if($meta < 0 || $meta > 0x7ffe){
+				throw new LegacyStringToItemParserException("Meta value $meta is outside the range 0 - " . 0x7ffe);
+			}
 		}else{
 			throw new LegacyStringToItemParserException("Unable to parse \"" . $b[1] . "\" from \"" . $input . "\" as a valid meta value");
 		}

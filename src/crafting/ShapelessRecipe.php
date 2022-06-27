@@ -28,30 +28,24 @@ use pocketmine\utils\Utils;
 use function count;
 
 class ShapelessRecipe implements CraftingRecipe{
-	/** @var Item[] */
+	/** @var RecipeIngredient[] */
 	private array $ingredients = [];
 	/** @var Item[] */
 	private array $results;
 	private ShapelessRecipeType $type;
 
 	/**
-	 * @param Item[] $ingredients No more than 9 total. This applies to sum of item stack counts, not count of array.
+	 * @param RecipeIngredient[] $ingredients No more than 9 total. This applies to sum of item stack counts, not count of array.
 	 * @param Item[] $results List of result items created by this recipe.
 	 * TODO: we'll want to make the type parameter mandatory in PM5
 	 */
 	public function __construct(array $ingredients, array $results, ?ShapelessRecipeType $type = null){
 		$this->type = $type ?? ShapelessRecipeType::CRAFTING();
-		foreach($ingredients as $item){
-			//Ensure they get split up properly
-			if(count($this->ingredients) + $item->getCount() > 9){
-				throw new \InvalidArgumentException("Shapeless recipes cannot have more than 9 ingredients");
-			}
 
-			while($item->getCount() > 0){
-				$this->ingredients[] = $item->pop();
-			}
+		if(count($ingredients) > 9){
+			throw new \InvalidArgumentException("Shapeless recipes cannot have more than 9 ingredients");
 		}
-
+		$this->ingredients = $ingredients;
 		$this->results = Utils::cloneObjectArray($results);
 	}
 
@@ -71,28 +65,23 @@ class ShapelessRecipe implements CraftingRecipe{
 	}
 
 	/**
-	 * @return Item[]
+	 * @return RecipeIngredient[]
 	 */
 	public function getIngredientList() : array{
-		return Utils::cloneObjectArray($this->ingredients);
+		return $this->ingredients;
 	}
 
 	public function getIngredientCount() : int{
-		$count = 0;
-		foreach($this->ingredients as $ingredient){
-			$count += $ingredient->getCount();
-		}
-
-		return $count;
+		return count($this->ingredients);
 	}
 
 	public function matchesCraftingGrid(CraftingGrid $grid) : bool{
 		//don't pack the ingredients - shapeless recipes require that each ingredient be in a separate slot
 		$input = $grid->getContents();
 
-		foreach($this->ingredients as $needItem){
+		foreach($this->ingredients as $ingredient){
 			foreach($input as $j => $haveItem){
-				if($haveItem->equals($needItem, !$needItem->hasAnyDamageValue(), $needItem->hasNamedTag()) && $haveItem->getCount() >= $needItem->getCount()){
+				if($ingredient->accepts($haveItem)){
 					unset($input[$j]);
 					continue 2;
 				}

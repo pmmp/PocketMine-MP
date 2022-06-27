@@ -31,8 +31,11 @@ class ItemIdentifier{
 		if($id < -0x8000 || $id > 0x7fff){ //signed short range
 			throw new \InvalidArgumentException("ID must be in range " . -0x8000 . " - " . 0x7fff);
 		}
+		if($meta < 0 || $meta > 0x7ffe){
+			throw new \InvalidArgumentException("Meta must be in range 0 - " . 0x7ffe);
+		}
 		$this->id = $id;
-		$this->meta = $meta !== -1 ? $meta & 0x7FFF : -1;
+		$this->meta = $meta;
 	}
 
 	public function getId() : int{

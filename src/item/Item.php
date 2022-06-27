@@ -581,7 +581,7 @@ class Item implements \JsonSerializable{
 	}
 
 	final public function __toString() : string{
-		return "Item " . $this->name . " (" . $this->getId() . ":" . ($this->hasAnyDamageValue() ? "?" : $this->getMeta()) . ")x" . $this->count . ($this->hasNamedTag() ? " tags:0x" . base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($this->getNamedTag()))) : "");
+		return "Item " . $this->name . " (" . $this->getId() . ":" . $this->getMeta() . ")x" . $this->count . ($this->hasNamedTag() ? " tags:0x" . base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($this->getNamedTag()))) : "");
 	}
 
 	/**
@@ -647,7 +647,7 @@ class Item implements \JsonSerializable{
 	 * @param int $slot optional, the inventory slot of the item
 	 */
 	public function nbtSerialize(int $slot = -1) : CompoundTag{
-		return GlobalItemDataHandlers::getSerializer()->serializeStack($this, $slot !== -1 ? $slot : null);
+		return GlobalItemDataHandlers::getSerializer()->serializeStack($this, $slot !== -1 ? $slot : null)->toNbt();
 	}
 
 	/**

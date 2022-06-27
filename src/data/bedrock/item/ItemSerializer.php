@@ -72,9 +72,6 @@ final class ItemSerializer{
 	 * @phpstan-param \Closure(TItemType) : Data $serializer
 	 */
 	public function map(Item $item, \Closure $serializer) : void{
-		if($item->hasAnyDamageValue()){
-			throw new \InvalidArgumentException("Cannot serialize a recipe wildcard");
-		}
 		$index = $item->getTypeId();
 		if(isset($this->itemSerializers[$index])){
 			//TODO: REMOVE ME
@@ -105,9 +102,6 @@ final class ItemSerializer{
 	public function serializeType(Item $item) : Data{
 		if($item->isNull()){
 			throw new \InvalidArgumentException("Cannot serialize a null itemstack");
-		}
-		if($item->hasAnyDamageValue()){
-			throw new \InvalidArgumentException("Cannot serialize a recipe input as a saved itemstack");
 		}
 		if($item instanceof ItemBlock){
 			$data = $this->serializeBlockItem($item->getBlock());

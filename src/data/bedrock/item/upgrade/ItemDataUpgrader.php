@@ -71,6 +71,47 @@ final class ItemDataUpgrader{
 	}
 
 	/**
+	 * This function replaces the legacy ItemFactory::get().
+	 *
+	 * Unlike ItemFactory::get(), it returns a SavedItemStackData which you can do with as you please.
+	 * If you want to deserialize it into a PocketMine-MP itemstack, pass it to the ItemDeserializer.
+	 *
+	 * @see ItemDataUpgrader::upgradeItemTypeDataInt()
+	 */
+	public function upgradeItemTypeDataString(string $rawNameId, int $meta, int $count, ?CompoundTag $nbt) : SavedItemStackData{
+		if(($r12BlockId = $this->r12ItemIdToBlockIdMap->itemIdToBlockId($rawNameId)) !== null){
+			$blockStateData = $this->blockDataUpgrader->upgradeStringIdMeta($r12BlockId, $meta);
+		}else{
+			//probably a standard item
+			$blockStateData = null;
+		}
+
+		[$newNameId, $newMeta] = $this->upgradeItemStringIdMeta($rawNameId, $meta);
+
+		//TODO: this won't account for spawn eggs from before 1.16.100 - perhaps we're lucky and they just left the meta in there anyway?
+
+		return new SavedItemStackData(
+			new SavedItemData($newNameId, $newMeta, $blockStateData, $nbt),
+			$count,
+			null,
+			null,
+			[],
+			[]
+		);
+	}
+
+	/**
+	 * This function replaces the legacy ItemFactory::get().
+	 */
+	public function upgradeItemTypeDataInt(int $legacyNumericId, int $meta, int $count, ?CompoundTag $nbt) : SavedItemStackData{
+		$rawNameId = $this->legacyIntToStringIdMap->legacyToString($legacyNumericId);
+		if($rawNameId === null){
+			throw new SavedDataLoadingException("Unmapped legacy item ID $legacyNumericId");
+		}
+		return $this->upgradeItemTypeDataString($rawNameId, $meta, $count, $nbt);
+	}
+
+	/**
 	 * @throws SavedDataLoadingException
 	 */
 	private function upgradeItemTypeNbt(CompoundTag $tag) : SavedItemData{
