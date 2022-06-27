@@ -105,7 +105,7 @@ final class CraftingManagerFromDataHelper{
 			foreach($recipe["input"] as $inputData){
 				$input = $ingredientDeserializerFunc($inputData);
 				if($input === null){ //unknown input item
-					continue;
+					continue 2;
 				}
 				$inputs[] = $input;
 			}
@@ -127,7 +127,7 @@ final class CraftingManagerFromDataHelper{
 			foreach($recipe["input"] as $symbol => $inputData){
 				$input = $ingredientDeserializerFunc($inputData);
 				if($input === null){ //unknown input item
-					continue;
+					continue 2;
 				}
 				$inputs[$symbol] = $input;
 			}
