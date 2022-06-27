@@ -442,14 +442,6 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
-	 * Returns whether this item can match any item with an equivalent ID with any meta value.
-	 * Used in crafting recipes which accept multiple variants of the same item, for example crafting tables recipes.
-	 */
-	public function hasAnyDamageValue() : bool{
-		return $this->identifier->getMeta() === -1;
-	}
-
-	/**
 	 * Returns the highest amount of this item which will fit into one inventory slot.
 	 */
 	public function getMaxStackSize() : int{
