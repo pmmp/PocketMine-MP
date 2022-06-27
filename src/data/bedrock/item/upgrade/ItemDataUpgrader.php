@@ -102,6 +102,8 @@ final class ItemDataUpgrader{
 
 	/**
 	 * This function replaces the legacy ItemFactory::get().
+	 *
+	 * @throws SavedDataLoadingException if the legacy numeric ID doesn't map to a string ID
 	 */
 	public function upgradeItemTypeDataInt(int $legacyNumericId, int $meta, int $count, ?CompoundTag $nbt) : SavedItemStackData{
 		$rawNameId = $this->legacyIntToStringIdMap->legacyToString($legacyNumericId);

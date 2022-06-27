@@ -38,7 +38,6 @@ use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
-use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
@@ -606,8 +605,7 @@ class Item implements \JsonSerializable{
 	 * Returns an Item from properties created in an array by {@link Item#jsonSerialize}
 	 * @param mixed[] $data
 	 *
-	 * @throws NbtDataException
-	 * @throws \InvalidArgumentException
+	 * @throws SavedDataLoadingException
 	 */
 	final public static function jsonDeserialize(array $data) : Item{
 		$nbt = "";

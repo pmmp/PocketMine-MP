@@ -32,6 +32,7 @@ use pocketmine\block\VanillaBlocks;
 use pocketmine\crafting\ExactRecipeIngredient;
 use pocketmine\crafting\MetaWildcardRecipeIngredient;
 use pocketmine\crafting\RecipeIngredient;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
@@ -239,13 +240,11 @@ class TypeConverter{
 				$compound = null;
 			}
 			if($meta !== null){
-				if($id !== null && ($id < -0x8000 || $id >= 0x7fff)){
-					throw new TypeConversionException("Item ID must be in range " . -0x8000 . " ... " . 0x7fff . " (received $id)");
+				try{
+					$itemResult = ItemFactory::getInstance()->get($id ?? $itemResult->getId(), $meta);
+				}catch(SavedDataLoadingException $e){
+					throw new TypeConversionException("Failed loading network item: " . $e->getMessage(), 0, $e);
 				}
-				if($meta < 0 || $meta >= 0x7ffe){ //this meta value may have been restored from the NBT
-					throw new TypeConversionException("Item meta must be in range 0 ... " . 0x7ffe . " (received $meta)");
-				}
-				$itemResult = ItemFactory::getInstance()->get($id ?? $itemResult->getId(), $meta);
 			}
 		}
 

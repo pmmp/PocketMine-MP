@@ -36,6 +36,7 @@ use pocketmine\data\bedrock\CompoundTypeIds;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\bedrock\EntityLegacyIds;
 use pocketmine\data\bedrock\PotionTypeIdMap;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
 use pocketmine\entity\Squid;
@@ -50,6 +51,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use pocketmine\world\World;
+use function min;
 
 /**
  * Manages deserializing item types from their legacy ID/metadata.
@@ -451,26 +453,24 @@ class ItemFactory{
 	 *
 	 * Deserializes an item from the provided legacy ID, legacy meta, count and NBT.
 	 *
-	 * @throws \InvalidArgumentException
-	 * @throws NbtException
+	 * @throws SavedDataLoadingException
 	 */
 	public function get(int $id, int $meta = 0, int $count = 1, ?CompoundTag $tags = null) : Item{
 		/** @var Item|null $item */
 		$item = null;
 
+		if($id < -0x8000 || $id > 0x7fff){
+			throw new SavedDataLoadingException("Legacy ID must be in the range " . -0x8000 . " ... " . 0x7fff);
+		}
 		if($meta < 0 || $meta > 0x7ffe){ //0x7fff would cause problems with recipe wildcards
-			throw new \InvalidArgumentException("Meta cannot be negative or larger than " . 0x7ffe);
+			throw new SavedDataLoadingException("Meta cannot be negative or larger than " . 0x7ffe);
 		}
 
 		if(isset($this->list[$offset = self::getListOffset($id, $meta)])){
 			$item = clone $this->list[$offset];
 		}elseif(isset($this->list[$zero = self::getListOffset($id, 0)]) && $this->list[$zero] instanceof Durable){
-			if($meta <= $this->list[$zero]->getMaxDurability()){
-				$item = clone $this->list[$zero];
-				$item->setDamage($meta);
-			}else{
-				$item = new Item(new IID($id, $meta));
-			}
+			$item = clone $this->list[$zero];
+			$item->setDamage(min($meta, $this->list[$zero]->getMaxDurability()));
 		}elseif($id < 256){ //intentionally includes negatives, for extended block IDs
 			//TODO: do not assume that item IDs and block IDs are the same or related
 			$blockStateData = GlobalBlockStateHandlers::getUpgrader()->upgradeIntIdMeta(self::itemToBlockId($id), $meta & 0xf);
@@ -479,20 +479,22 @@ class ItemFactory{
 					$blockStateId = GlobalBlockStateHandlers::getDeserializer()->deserialize($blockStateData);
 					$item = new ItemBlock(new IID($id, $meta), BlockFactory::getInstance()->fromFullBlock($blockStateId));
 				}catch(BlockStateDeserializeException $e){
-					\GlobalLogger::get()->logException($e);
-					//fallthru
+					throw new SavedDataLoadingException("Failed to deserialize itemblock: " . $e->getMessage(), 0, $e);
 				}
 			}
 		}
 
 		if($item === null){
-			//negative damage values will fallthru to here, to avoid crazy shit with crafting wildcard hacks
-			$item = new Item(new IID($id, $meta));
+			throw new SavedDataLoadingException("No registered item is associated with this ID and meta");
 		}
 
 		$item->setCount($count);
 		if($tags !== null){
-			$item->setNamedTag($tags);
+			try{
+				$item->setNamedTag($tags);
+			}catch(NbtException $e){
+				throw new SavedDataLoadingException("Invalid item NBT: " . $e->getMessage(), 0, $e);
+			}
 		}
 		return $item;
 	}

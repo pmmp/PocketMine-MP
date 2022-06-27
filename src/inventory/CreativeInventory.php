@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\utils\SingletonTrait;
@@ -40,8 +41,10 @@ final class CreativeInventory{
 		$creativeItems = json_decode(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "creativeitems.json")), true);
 
 		foreach($creativeItems as $data){
-			$item = Item::jsonDeserialize($data);
-			if($item->getName() === "Unknown"){
+			try{
+				$item = Item::jsonDeserialize($data);
+			}catch(SavedDataLoadingException){
+				//unknown item
 				continue;
 			}
 			$this->add($item);

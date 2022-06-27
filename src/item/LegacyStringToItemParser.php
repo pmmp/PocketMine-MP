@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
@@ -104,15 +105,16 @@ final class LegacyStringToItemParser{
 			$meta = 0;
 		}elseif(is_numeric($b[1])){
 			$meta = (int) $b[1];
-			if($meta < 0 || $meta > 0x7ffe){
-				throw new LegacyStringToItemParserException("Meta value $meta is outside the range 0 - " . 0x7ffe);
-			}
 		}else{
 			throw new LegacyStringToItemParserException("Unable to parse \"" . $b[1] . "\" from \"" . $input . "\" as a valid meta value");
 		}
 
 		if(isset($this->map[strtolower($b[0])])){
-			$item = $this->itemFactory->get($this->map[strtolower($b[0])], $meta);
+			try{
+				$item = $this->itemFactory->get($this->map[strtolower($b[0])], $meta);
+			}catch(SavedDataLoadingException $e){
+				throw new LegacyStringToItemParserException($e->getMessage(), 0, $e);
+			}
 		}else{
 			throw new LegacyStringToItemParserException("Unable to resolve \"" . $input . "\" to a valid item");
 		}

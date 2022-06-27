@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\crafting;
 
 use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
-use pocketmine\item\Durable;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\utils\AssumptionFailedError;
@@ -37,26 +37,6 @@ use function is_int;
 use function json_decode;
 
 final class CraftingManagerFromDataHelper{
-
-	/**
-	 * @param Item[] $items
-	 */
-	private static function containsUnknownItems(array $items) : bool{
-		$factory = ItemFactory::getInstance();
-		foreach($items as $item){
-			if($item instanceof Durable){
-				//TODO: this check is imperfect and might cause problems if meta 0 isn't used for some reason
-				if(!$factory->isRegistered($item->getId())){
-					return true;
-				}
-			}elseif(!$factory->isRegistered($item->getId(), $item->getMeta())){
-				return true;
-			}
-		}
-
-		return false;
-	}
-
 	/**
 	 * @param mixed[] $data
 	 */
@@ -76,9 +56,14 @@ final class CraftingManagerFromDataHelper{
 		}
 
 		//TODO: we need to stop using jsonDeserialize for this
-		$item = Item::jsonDeserialize($data);
+		try{
+			$item = Item::jsonDeserialize($data);
+		}catch(SavedDataLoadingException){
+			//unknown item
+			return null;
+		}
 
-		return self::containsUnknownItems([$item]) ? null : new ExactRecipeIngredient($item);
+		return new ExactRecipeIngredient($item);
 	}
 
 	public static function make(string $filePath) : CraftingManager{
@@ -109,8 +94,10 @@ final class CraftingManagerFromDataHelper{
 				}
 				$inputs[] = $input;
 			}
-			$outputs = array_map($itemDeserializerFunc, $recipe["output"]);
-			if(self::containsUnknownItems($outputs)){
+			try{
+				$outputs = array_map($itemDeserializerFunc, $recipe["output"]);
+			}catch(SavedDataLoadingException){
+				//unknown output item
 				continue;
 			}
 			$result->registerShapelessRecipe(new ShapelessRecipe(
@@ -131,8 +118,10 @@ final class CraftingManagerFromDataHelper{
 				}
 				$inputs[$symbol] = $input;
 			}
-			$outputs = array_map($itemDeserializerFunc, $recipe["output"]);
-			if(self::containsUnknownItems($outputs)){
+			try{
+				$outputs = array_map($itemDeserializerFunc, $recipe["output"]);
+			}catch(SavedDataLoadingException){
+				//unknown output item
 				continue;
 			}
 			$result->registerShapedRecipe(new ShapedRecipe(
@@ -152,9 +141,13 @@ final class CraftingManagerFromDataHelper{
 			if($furnaceType === null){
 				continue;
 			}
-			$output = Item::jsonDeserialize($recipe["output"]);
+			try{
+				$output = Item::jsonDeserialize($recipe["output"]);
+			}catch(SavedDataLoadingException){
+				continue;
+			}
 			$input = self::deserializeIngredient($recipe["input"]);
-			if($input === null || self::containsUnknownItems([$output])){
+			if($input === null){
 				continue;
 			}
 			$result->getFurnaceRecipeManager($furnaceType)->register(new FurnaceRecipe(
@@ -163,11 +156,12 @@ final class CraftingManagerFromDataHelper{
 			));
 		}
 		foreach($recipes["potion_type"] as $recipe){
-			$input = Item::jsonDeserialize($recipe["input"]);
-			$ingredient = Item::jsonDeserialize($recipe["ingredient"]);
-			$output = Item::jsonDeserialize($recipe["output"]);
-
-			if(self::containsUnknownItems([$input, $ingredient, $output])){
+			try{
+				$input = Item::jsonDeserialize($recipe["input"]);
+				$ingredient = Item::jsonDeserialize($recipe["ingredient"]);
+				$output = Item::jsonDeserialize($recipe["output"]);
+			}catch(SavedDataLoadingException){
+				//unknown item
 				continue;
 			}
 			$result->registerPotionTypeRecipe(new PotionTypeRecipe(
@@ -177,11 +171,12 @@ final class CraftingManagerFromDataHelper{
 			));
 		}
 		foreach($recipes["potion_container_change"] as $recipe){
-			$input = ItemFactory::getInstance()->get($recipe["input_item_id"]);
-			$ingredient = Item::jsonDeserialize($recipe["ingredient"]);
-			$output = ItemFactory::getInstance()->get($recipe["output_item_id"]);
-
-			if(self::containsUnknownItems([$input, $ingredient, $output])){
+			try{
+				$input = ItemFactory::getInstance()->get($recipe["input_item_id"]);
+				$ingredient = Item::jsonDeserialize($recipe["ingredient"]);
+				$output = ItemFactory::getInstance()->get($recipe["output_item_id"]);
+			}catch(SavedDataLoadingException){
+				//unknown item
 				continue;
 			}
 			$result->registerPotionContainerChangeRecipe(new PotionContainerChangeRecipe(
