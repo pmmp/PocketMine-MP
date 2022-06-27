@@ -27,8 +27,4 @@ use pocketmine\block\utils\PillarRotationTrait;
 
 class Log extends Wood{
 	use PillarRotationTrait;
-
-	protected function getAxisMetaShift() : int{
-		return $this->isStripped() ? 0 : 2;
-	}
 }
