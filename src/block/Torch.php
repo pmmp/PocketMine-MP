@@ -38,6 +38,8 @@ class Torch extends Flowable{
 
 	protected int $facing = Facing::UP;
 
+	public function getRequiredStateDataBits() : int{ return 3; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$facing = $r->readFacing();
 		if($facing === Facing::DOWN){

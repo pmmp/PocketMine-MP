@@ -30,6 +30,8 @@ use pocketmine\block\utils\PoweredByRedstoneTrait;
 class RedstoneLamp extends Opaque{
 	use PoweredByRedstoneTrait;
 
+	public function getRequiredStateDataBits() : int{ return 1; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->powered = $r->readBool();
 	}

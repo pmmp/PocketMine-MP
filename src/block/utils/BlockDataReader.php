@@ -118,4 +118,6 @@ final class BlockDataReader{
 
 		return $connections;
 	}
+
+	public function getOffset() : int{ return $this->offset; }
 }

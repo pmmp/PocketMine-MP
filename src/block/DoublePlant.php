@@ -34,6 +34,8 @@ use pocketmine\world\BlockTransaction;
 class DoublePlant extends Flowable{
 	protected bool $top = false;
 
+	public function getRequiredStateDataBits() : int{ return 1; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->top = $r->readBool();
 	}

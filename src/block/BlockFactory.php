@@ -864,7 +864,11 @@ class BlockFactory{
 
 		//TODO: this bruteforce approach to discovering all valid states is very inefficient for larger state data sizes
 		//at some point we'll need to find a better way to do this
-		for($stateData = 0; $stateData < (1 << Block::INTERNAL_STATE_DATA_BITS); ++$stateData){
+		$bits = $block->getRequiredStateDataBits();
+		if($bits > Block::INTERNAL_STATE_DATA_BITS){
+			throw new \InvalidArgumentException("Block state data cannot use more than " . Block::INTERNAL_STATE_DATA_BITS . " bits");
+		}
+		for($stateData = 0; $stateData < (1 << $bits); ++$stateData){
 			$v = clone $block;
 			try{
 				$v->decodeStateData($stateData);

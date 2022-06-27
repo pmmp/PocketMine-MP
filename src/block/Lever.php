@@ -47,6 +47,8 @@ class Lever extends Flowable{
 		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
+	public function getRequiredStateDataBits() : int{ return 4; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->facing = BlockDataReaderHelper::readLeverFacing($r);
 		$this->activated = $r->readBool();

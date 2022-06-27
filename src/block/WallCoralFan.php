@@ -43,6 +43,8 @@ final class WallCoralFan extends BaseCoral{
 		return CoralTypeIdMap::getInstance()->toId($this->coralType);
 	}
 
+	public function getRequiredStateDataBits() : int{ return parent::getRequiredStateDataBits() + 2; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		parent::decodeState($r);
 		$this->facing = $r->readHorizontalFacing();

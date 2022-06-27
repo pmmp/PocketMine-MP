@@ -29,6 +29,8 @@ use pocketmine\block\utils\BlockDataWriter;
 class DetectorRail extends StraightOnlyRail{
 	protected bool $activated = false;
 
+	public function getRequiredStateDataBits() : int{ return 4; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		parent::decodeState($r);
 		$this->activated = $r->readBool();

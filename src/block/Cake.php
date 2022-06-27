@@ -41,6 +41,8 @@ class Cake extends Transparent implements FoodSource{
 
 	protected int $bites = 0;
 
+	public function getRequiredStateDataBits() : int{ return 3; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->bites = $r->readBoundedInt(3, 0, self::MAX_BITES);
 	}

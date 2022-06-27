@@ -46,6 +46,8 @@ class BrewingStand extends Transparent{
 	 */
 	protected array $slots = [];
 
+	public function getRequiredStateDataBits() : int{ return 3; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->setSlots(BlockDataReaderHelper::readBrewingStandSlotKeySet($r));
 	}

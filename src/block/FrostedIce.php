@@ -33,6 +33,8 @@ class FrostedIce extends Ice{
 
 	protected int $age = 0;
 
+	public function getRequiredStateDataBits() : int{ return 2; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->age = $r->readBoundedInt(2, 0, self::MAX_AGE);
 	}

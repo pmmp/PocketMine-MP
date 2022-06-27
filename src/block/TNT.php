@@ -49,6 +49,8 @@ class TNT extends Opaque{
 		return $this->worksUnderwater ? BlockLegacyMetadata::TNT_FLAG_UNDERWATER : 0;
 	}
 
+	public function getRequiredStateDataBits() : int{ return 2; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->unstable = $r->readBool();
 		$this->worksUnderwater = $r->readBool();

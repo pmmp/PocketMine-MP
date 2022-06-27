@@ -39,6 +39,8 @@ class Barrel extends Opaque{
 
 	protected bool $open = false;
 
+	public function getRequiredStateDataBits() : int{ return 4; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->setFacing($r->readFacing());
 		$this->setOpen($r->readBool());

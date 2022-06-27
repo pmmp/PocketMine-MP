@@ -39,6 +39,8 @@ class Furnace extends Opaque{
 
 	protected bool $lit = false;
 
+	public function getRequiredStateDataBits() : int{ return 3; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->facing = $r->readHorizontalFacing();
 		$this->lit = $r->readBool();

@@ -41,6 +41,8 @@ class FenceGate extends Transparent{
 	protected bool $open = false;
 	protected bool $inWall = false;
 
+	public function getRequiredStateDataBits() : int{ return 4; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->facing = $r->readHorizontalFacing();
 		$this->open = $r->readBool();

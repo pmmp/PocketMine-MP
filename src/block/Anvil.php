@@ -51,6 +51,8 @@ class Anvil extends Transparent implements Fallable{
 		return $this->damage << 2;
 	}
 
+	public function getRequiredStateDataBits() : int{ return 4; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->setDamage($r->readBoundedInt(2, self::UNDAMAGED, self::VERY_DAMAGED));
 		$this->setFacing($r->readHorizontalFacing());

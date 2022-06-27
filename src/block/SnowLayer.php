@@ -47,6 +47,8 @@ class SnowLayer extends Flowable implements Fallable{
 
 	protected int $layers = self::MIN_LAYERS;
 
+	public function getRequiredStateDataBits() : int{ return 3; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->layers = $r->readBoundedInt(3, self::MIN_LAYERS - 1, self::MAX_LAYERS - 1) + 1;
 	}

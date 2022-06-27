@@ -32,6 +32,8 @@ class Tripwire extends Flowable{
 	protected bool $connected = false;
 	protected bool $disarmed = false;
 
+	public function getRequiredStateDataBits() : int{ return 4; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->triggered = $r->readBool();
 		$this->suspended = $r->readBool();

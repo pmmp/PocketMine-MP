@@ -45,6 +45,8 @@ class RedstoneComparator extends Flowable{
 
 	protected bool $isSubtractMode = false;
 
+	public function getRequiredStateDataBits() : int{ return 4; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->facing = $r->readHorizontalFacing();
 		$this->isSubtractMode = $r->readBool();

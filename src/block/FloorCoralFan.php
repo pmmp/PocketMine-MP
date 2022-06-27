@@ -52,6 +52,8 @@ final class FloorCoralFan extends BaseCoral{
 		return CoralTypeIdMap::getInstance()->toId($this->coralType);
 	}
 
+	public function getRequiredStateDataBits() : int{ return parent::getRequiredStateDataBits() + 1; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		parent::decodeState($r);
 		$this->axis = $r->readHorizontalAxis();

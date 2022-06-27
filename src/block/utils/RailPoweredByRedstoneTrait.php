@@ -26,6 +26,8 @@ namespace pocketmine\block\utils;
 trait RailPoweredByRedstoneTrait{
 	use PoweredByRedstoneTrait;
 
+	public function getRequiredStateDataBits() : int{ return parent::getRequiredStateDataBits() + 1; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		parent::decodeState($r);
 		$this->powered = $r->readBool();

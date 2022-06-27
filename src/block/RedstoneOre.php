@@ -34,6 +34,8 @@ use function mt_rand;
 class RedstoneOre extends Opaque{
 	protected bool $lit = false;
 
+	public function getRequiredStateDataBits() : int{ return 1; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->lit = $r->readBool();
 	}

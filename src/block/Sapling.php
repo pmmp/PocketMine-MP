@@ -47,6 +47,8 @@ class Sapling extends Flowable{
 		$this->treeType = $treeType;
 	}
 
+	public function getRequiredStateDataBits() : int{ return 1; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->ready = $r->readBool();
 	}

@@ -41,6 +41,8 @@ class Trapdoor extends Transparent{
 	protected bool $open = false;
 	protected bool $top = false;
 
+	public function getRequiredStateDataBits() : int{ return 4; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->facing = $r->readHorizontalFacing();
 		$this->top = $r->readBool();

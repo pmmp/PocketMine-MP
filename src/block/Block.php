@@ -100,9 +100,16 @@ class Block{
 		return 0;
 	}
 
+	public function getRequiredStateDataBits() : int{ return 0; }
+
 	public function decodeStateData(int $data) : void{
-		$reader = new BlockDataReader(self::INTERNAL_STATE_DATA_BITS, $data);
+		$givenBits = $this->getRequiredStateDataBits();
+		$reader = new BlockDataReader($givenBits, $data);
 		$this->decodeState($reader);
+		$readBits = $reader->getOffset();
+		if($givenBits !== $readBits){
+			throw new \LogicException("Exactly $givenBits bits of state data were provided, but only $readBits were read");
+		}
 	}
 
 	protected function decodeState(BlockDataReader $r) : void{
@@ -113,8 +120,14 @@ class Block{
 	 * @internal
 	 */
 	public function computeStateData() : int{
-		$writer = new BlockDataWriter(self::INTERNAL_STATE_DATA_BITS);
+		$requiredBits = $this->getRequiredStateDataBits();
+		$writer = new BlockDataWriter($requiredBits);
 		$this->encodeState($writer);
+
+		$writtenBits = $writer->getOffset();
+		if($requiredBits !== $writtenBits){
+			throw new \LogicException("Exactly $requiredBits bits of state data were expected, but only $writtenBits were written");
+		}
 		return $writer->getValue();
 	}
 

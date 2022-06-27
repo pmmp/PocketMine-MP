@@ -54,6 +54,8 @@ class Bed extends Transparent{
 		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
+	public function getRequiredStateDataBits() : int{ return 4; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->facing = $r->readHorizontalFacing();
 		$this->occupied = $r->readBool();

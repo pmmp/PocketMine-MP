@@ -37,6 +37,8 @@ trait ColoredTrait{
 		return DyeColorIdMap::getInstance()->toId($this->color);
 	}
 
+	public function getRequiredStateDataBits() : int{ return 4; }
+
 	/** @see Block::decodeState() */
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->color = BlockDataReaderHelper::readDyeColor($r);

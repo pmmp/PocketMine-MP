@@ -36,6 +36,8 @@ class EndPortalFrame extends Opaque{
 
 	protected bool $eye = false;
 
+	public function getRequiredStateDataBits() : int{ return 3; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->facing = $r->readHorizontalFacing();
 		$this->eye = $r->readBool();

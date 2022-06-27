@@ -42,6 +42,8 @@ class Cactus extends Transparent{
 
 	protected int $age = 0;
 
+	public function getRequiredStateDataBits() : int{ return 4; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->age = $r->readBoundedInt(4, 0, self::MAX_AGE);
 	}

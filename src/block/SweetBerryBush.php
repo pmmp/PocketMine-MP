@@ -46,6 +46,8 @@ class SweetBerryBush extends Flowable{
 
 	protected int $age = self::STAGE_SAPLING;
 
+	public function getRequiredStateDataBits() : int{ return 3; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->age = $r->readBoundedInt(3, self::STAGE_SAPLING, self::STAGE_MATURE);
 	}

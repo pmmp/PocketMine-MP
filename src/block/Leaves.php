@@ -49,6 +49,8 @@ class Leaves extends Transparent{
 		$this->treeType = $treeType;
 	}
 
+	public function getRequiredStateDataBits() : int{ return 2; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->noDecay = $r->readBool();
 		$this->checkDecay = $r->readBool();

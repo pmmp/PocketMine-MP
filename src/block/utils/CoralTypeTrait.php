@@ -27,6 +27,8 @@ trait CoralTypeTrait{
 	protected CoralType $coralType;
 	protected bool $dead = false;
 
+	public function getRequiredStateDataBits() : int{ return 4; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->coralType = BlockDataReaderHelper::readCoralType($r);
 		$this->dead = $r->readBool();

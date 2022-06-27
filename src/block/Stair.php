@@ -47,6 +47,8 @@ class Stair extends Transparent{
 		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
+	public function getRequiredStateDataBits() : int{ return 3; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->facing = $r->readHorizontalFacing();
 		$this->upsideDown = $r->readBool();

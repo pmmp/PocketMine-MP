@@ -29,6 +29,8 @@ use pocketmine\math\Facing;
 trait HorizontalFacingTrait{
 	protected int $facing = Facing::NORTH;
 
+	public function getRequiredStateDataBits() : int{ return 2; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->facing = $r->readHorizontalFacing();
 	}

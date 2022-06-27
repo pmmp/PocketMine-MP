@@ -40,6 +40,8 @@ class Vine extends Flowable{
 	/** @var int[] */
 	protected array $faces = [];
 
+	public function getRequiredStateDataBits() : int{ return 4; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		foreach(Facing::HORIZONTAL as $facing){
 			$this->setFace($facing, $r->readBool());

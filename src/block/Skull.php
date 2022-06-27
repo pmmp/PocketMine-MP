@@ -51,6 +51,8 @@ class Skull extends Flowable{
 		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
+	public function getRequiredStateDataBits() : int{ return 3; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$facing = $r->readFacing();
 		if($facing === Facing::DOWN){

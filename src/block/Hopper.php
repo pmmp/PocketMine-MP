@@ -41,6 +41,8 @@ class Hopper extends Transparent{
 
 	private int $facing = Facing::DOWN;
 
+	public function getRequiredStateDataBits() : int{ return 4; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$facing = $r->readFacing();
 		if($facing === Facing::UP){

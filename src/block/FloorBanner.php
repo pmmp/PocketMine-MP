@@ -38,6 +38,8 @@ final class FloorBanner extends BaseBanner{
 		encodeState as encodeRotation;
 	}
 
+	public function getRequiredStateDataBits() : int{ return 4; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		parent::decodeState($r);
 		$this->decodeRotation($r);

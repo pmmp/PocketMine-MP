@@ -49,6 +49,8 @@ final class Bell extends Transparent{
 		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
+	public function getRequiredStateDataBits() : int{ return 4; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->attachmentType = BlockDataReaderHelper::readBellAttachmentType($r);
 		$this->facing = $r->readHorizontalFacing();

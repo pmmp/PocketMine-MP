@@ -42,6 +42,9 @@ class Door extends Transparent{
 	protected bool $hingeRight = false;
 	protected bool $open = false;
 
+
+	public function getRequiredStateDataBits() : int{ return 5; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->facing = $r->readHorizontalFacing();
 		$this->top = $r->readBool();

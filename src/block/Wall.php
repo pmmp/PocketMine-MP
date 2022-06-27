@@ -43,6 +43,8 @@ class Wall extends Transparent{
 	protected array $connections = [];
 	protected bool $post = false;
 
+	public function getRequiredStateDataBits() : int{ return 9; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->connections = $r->readWallConnections();
 		$this->post = $r->readBool();

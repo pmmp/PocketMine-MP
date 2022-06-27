@@ -39,6 +39,8 @@ final class WallBanner extends BaseBanner{
 		encodeState as encodeFacing;
 	}
 
+	public function getRequiredStateDataBits() : int{ return 2; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		parent::decodeState($r);
 		$this->decodeFacing($r);

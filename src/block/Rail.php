@@ -35,6 +35,8 @@ class Rail extends BaseRail{
 
 	private int $railShape = BlockLegacyMetadata::RAIL_STRAIGHT_NORTH_SOUTH;
 
+	public function getRequiredStateDataBits() : int{ return 4; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$railShape = $r->readInt(4);
 		if(!isset(RailConnectionInfo::CONNECTIONS[$railShape]) && !isset(RailConnectionInfo::CURVE_CONNECTIONS[$railShape])){

@@ -39,6 +39,8 @@ abstract class Crops extends Flowable{
 
 	protected int $age = 0;
 
+	public function getRequiredStateDataBits() : int{ return 3; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->age = $r->readBoundedInt(3, 0, self::MAX_AGE);
 	}

@@ -29,6 +29,8 @@ use pocketmine\block\utils\BlockDataWriter;
 class Bedrock extends Opaque{
 	private bool $burnsForever = false;
 
+	public function getRequiredStateDataBits() : int{ return 1; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->burnsForever = $r->readBool();
 	}

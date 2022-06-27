@@ -29,6 +29,8 @@ use pocketmine\block\utils\BlockDataWriter;
 abstract class SimplePressurePlate extends PressurePlate{
 	protected bool $pressed = false;
 
+	public function getRequiredStateDataBits() : int{ return 1; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->pressed = $r->readBool();
 	}

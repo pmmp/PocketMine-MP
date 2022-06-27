@@ -37,6 +37,8 @@ class StraightOnlyRail extends BaseRail{
 
 	private int $railShape = BlockLegacyMetadata::RAIL_STRAIGHT_NORTH_SOUTH;
 
+	public function getRequiredStateDataBits() : int{ return 3; }
+
 	protected function decodeState(BlockDataReader $r) : void{
 		$railShape = $r->readInt(3);
 		if(!isset(RailConnectionInfo::CONNECTIONS[$railShape])){
