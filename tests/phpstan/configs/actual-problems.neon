@@ -581,7 +581,7 @@ parameters:
 			path: ../../../src/inventory/CreativeInventory.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of static method pocketmine\\\\item\\\\Item\\:\\:jsonDeserialize\\(\\) expects array\\{id\\: int, damage\\?\\: int, count\\?\\: int, nbt\\?\\: string, nbt_hex\\?\\: string, nbt_b64\\?\\: string\\}, mixed given\\.$#"
+			message: "#^Parameter \\#1 \\$data of static method pocketmine\\\\item\\\\Item\\:\\:jsonDeserialize\\(\\) expects array, mixed given\\.$#"
 			count: 1
 			path: ../../../src/inventory/CreativeInventory.php
 
@@ -601,7 +601,22 @@ parameters:
 			path: ../../../src/inventory/transaction/CraftingTransaction.php
 
 		-
-			message: "#^Parameter \\#1 \\$buffer of method pocketmine\\\\nbt\\\\BaseNbtSerializer\\:\\:read\\(\\) expects string, string\\|false given\\.$#"
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 3
+			path: ../../../src/item/Item.php
+
+		-
+			message: "#^Parameter \\#1 \\$buffer of method pocketmine\\\\nbt\\\\BaseNbtSerializer\\:\\:read\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/item/Item.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function base64_decode expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/item/Item.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function hex2bin expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/item/Item.php
 
