@@ -55,7 +55,6 @@ abstract class BaseBanner extends Transparent{
 		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
-
 	public function getRequiredStateDataBits() : int{ return 0; }
 
 	protected function decodeState(BlockDataReader $r) : void{
