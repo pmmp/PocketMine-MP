@@ -102,7 +102,7 @@ class Block{
 
 	public function getRequiredStateDataBits() : int{ return 0; }
 
-	public function decodeStateData(int $data) : void{
+	final public function decodeStateData(int $data) : void{
 		$givenBits = $this->getRequiredStateDataBits();
 		$reader = new BlockDataReader($givenBits, $data);
 		$this->decodeState($reader);
@@ -119,7 +119,7 @@ class Block{
 	/**
 	 * @internal
 	 */
-	public function computeStateData() : int{
+	final public function computeStateData() : int{
 		$requiredBits = $this->getRequiredStateDataBits();
 		$writer = new BlockDataWriter($requiredBits);
 		$this->encodeState($writer);
