@@ -379,11 +379,6 @@ class InventoryManager{
 	}
 
 	public function syncCreative() : void{
-		$typeConverter = TypeConverter::getInstance();
-
-		$nextEntryId = 1;
-		$this->session->sendDataPacket(CreativeContentPacket::create(array_map(function(Item $item) use($typeConverter, &$nextEntryId) : CreativeContentEntry{
-			return new CreativeContentEntry($nextEntryId++, $typeConverter->coreItemStackToNet($item));
-		}, $this->player->isSpectator() ? [] : CreativeInventory::getInstance()->getAll())));
+		$this->session->sendDataPacket($this->player->isSpectator() ? CreativeContentPacket::create([]) : CreativeInventory::getInstance()->getContentPacket());
 	}
 }
