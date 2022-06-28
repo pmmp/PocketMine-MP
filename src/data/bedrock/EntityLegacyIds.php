@@ -25,6 +25,23 @@ namespace pocketmine\data\bedrock;
 
 final class EntityLegacyIds{
 
+	public const BEE = 122;
+	public const FOX = 121;
+	public const ZOMBIFIED_PIGLIN = 36;
+	public const STRIDER = 125;
+	public const HOGLIN = 124;
+	public const PIGLIN = 123;
+	public const ZOGLIN = 126;
+	public const PIGLIN_BRUTE = 127;
+	public const GOAT = 128;
+	public const WARDEN = 131;
+	public const ALLAY = 134;
+	public const FROG = 132;
+	public const TADPOLE = 133;
+	public const EVOKER = 104;
+	public const WANDERING_TRADER = 118;
+	public const PILLAGER = 114;
+	public const RAVAGER = 59;
 	public const CHICKEN = 10;
 	public const COW = 11;
 	public const PIG = 12;
