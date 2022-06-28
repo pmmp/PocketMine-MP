@@ -48,7 +48,7 @@ use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\World;
-
+use pocketmine\entity\animals;
 /**
  * Manages deserializing item types from their legacy ID/metadata.
  * This is primarily needed for loading inventories saved in the world (or playerdata storage).
@@ -354,6 +354,156 @@ class ItemFactory{
 
 	private function registerSpawnEggs() : void{
 		//TODO: the meta values should probably be hardcoded; they won't change, but the EntityLegacyIds might
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::GOAT), "Goat Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Goat(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::CHICKEN), "Chicken Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Chicken(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::BEE), "Bee Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Bee(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::COW), "Cow Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Cow(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::PIG), "Pig Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Pig(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::SHEEP), "Sheep Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Sheep(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::WOLF), "Wolf Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Wolf(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::POLAR_BEAR), "Polar Bear Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\PolarBear(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::OCELOT), "Ocelot Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Ocelot(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::CAT), "Cat Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Cat(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::MOOSHROOM), "Mooshroom Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Mooshroom(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::BAT), "Bat Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Bat(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::PARROT), "Parrot Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Parrot(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::RABBIT), "Rabbit Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Rabbit(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::LLAMA), "Llama Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Llama(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::HORSE), "Horse Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Horse(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::DONKEY), "Donkey Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Donkey(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::MULE), "Mule Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Mule(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::TROPICAL_FISH), "Tropical Fish Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\TropicalFish(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::COD), "Cod Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Cod(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::PUFFERFISH), "Pufferfish Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Pufferfish(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::SALMON), "Salmon Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Salmon(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::DOLPHIN), "Dolphin Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Dolphin(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::TURTLE), "Turtle Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Turtle(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::PANDA), "Panda Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Panda(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::FOX), "Fox Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Fox(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::FROG), "Frog Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Frog(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::TADPOLE), "Tadpole Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Tadpole(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::STRAY), "Stray Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Stray(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::SILVERFISH), "Silverfish Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new animals\Silverfish(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+
 		$this->register(new class(new IID(Ids::SPAWN_EGG, EntityLegacyIds::ZOMBIE), "Zombie Spawn Egg") extends SpawnEgg{
 			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
 				return new Zombie(Location::fromObject($pos, $world, $yaw, $pitch));
