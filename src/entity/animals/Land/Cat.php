@@ -39,7 +39,7 @@ class Cat extends Animal{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::CAT; }
 
-	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.56, 0.48); }
 
 	public function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(10);

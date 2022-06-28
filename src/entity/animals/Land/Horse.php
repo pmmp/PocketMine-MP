@@ -39,7 +39,7 @@ class Horse extends Animal{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::HORSE; }
 
-	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(1.6, 1.4); }
 
 	public function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(10);

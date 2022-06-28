@@ -39,7 +39,7 @@ class Llama extends Animal{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::LLAMA; }
 
-	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(1.87, 0.9); }
 
 	public function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(10);

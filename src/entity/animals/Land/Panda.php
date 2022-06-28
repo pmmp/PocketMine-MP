@@ -39,7 +39,7 @@ class Panda extends Animal{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::PANDA; }
 
-	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(1.5, 1.7); }
 
 	public function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(10);

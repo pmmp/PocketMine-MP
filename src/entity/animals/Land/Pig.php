@@ -39,7 +39,7 @@ class Pig extends Animal{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::PIG; }
 
-	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.45, 0.45); }
 
 	public function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(10);

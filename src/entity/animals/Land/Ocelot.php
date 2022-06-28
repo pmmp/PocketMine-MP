@@ -39,7 +39,7 @@ class Ocelot extends Animal{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::OCELOT; }
 
-	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.7, 0.6); }
 
 	public function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(10);
