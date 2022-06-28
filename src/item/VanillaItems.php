@@ -392,8 +392,39 @@ final class VanillaItems{
 		return $result;
 	}
 
+
 	protected static function setup() : void{
 		$factory = ItemFactory::getInstance();
+		self::register("goat_spawn_egg", $factory->get(Ids::SPAWN_EGG, 128));
+		self::register("chicken_spawn_egg", $factory->get(Ids::SPAWN_EGG, 10));
+		self::register("bee_spawn_egg", $factory->get(Ids::SPAWN_EGG, 122));
+		self::register("cow_spawn_egg", $factory->get(Ids::SPAWN_EGG, 11));
+		self::register("pig_spawn_egg", $factory->get(Ids::SPAWN_EGG, 12));
+		self::register("sheep_spawn_egg", $factory->get(Ids::SPAWN_EGG, 13));
+		self::register("wolf_spawn_egg", $factory->get(Ids::SPAWN_EGG, 14));
+		self::register("polar_bear_spawn_egg", $factory->get(Ids::SPAWN_EGG, 28));
+		self::register("ocelot_spawn_egg", $factory->get(Ids::SPAWN_EGG, 22));
+		self::register("cat_spawn_egg", $factory->get(Ids::SPAWN_EGG, 75));
+		self::register("mooshroom_spawn_egg", $factory->get(Ids::SPAWN_EGG, 16));
+		self::register("bat_spawn_egg", $factory->get(Ids::SPAWN_EGG, 19));
+		self::register("parrot_spawn_egg", $factory->get(Ids::SPAWN_EGG, 30));
+		self::register("rabbit_spawn_egg", $factory->get(Ids::SPAWN_EGG, 18));
+		self::register("llama_spawn_egg", $factory->get(Ids::SPAWN_EGG, 29));
+		self::register("horse_spawn_egg", $factory->get(Ids::SPAWN_EGG, 23));
+		self::register("donkey_spawn_egg", $factory->get(Ids::SPAWN_EGG, 24));
+		self::register("mule_spawn_egg", $factory->get(Ids::SPAWN_EGG, 25));
+		self::register("tropical_fish_spawn_egg", $factory->get(Ids::SPAWN_EGG, 111));
+		self::register("cod_spawn_egg", $factory->get(Ids::SPAWN_EGG, 112));
+		self::register("pufferfish_spawn_egg", $factory->get(Ids::SPAWN_EGG, 108));
+		self::register("salmon_spawn_egg", $factory->get(Ids::SPAWN_EGG, 109));
+		self::register("dolphin_spawn_egg", $factory->get(Ids::SPAWN_EGG, 31));
+		self::register("turtle_spawn_egg", $factory->get(Ids::SPAWN_EGG, 74));
+		self::register("panda_spawn_egg", $factory->get(Ids::SPAWN_EGG, 113));
+		self::register("fox_spawn_egg", $factory->get(Ids::SPAWN_EGG, 121));
+		self::register("from_spawn_egg", $factory->get(Ids::SPAWN_EGG, 132));
+		self::register("tadpole_spawn_egg", $factory->get(Ids::SPAWN_EGG, 133));
+		self::register("stray_spawn_egg", $factory->get(Ids::SPAWN_EGG, 46));
+		self::register("silverfish_spawn_egg", $factory->get(Ids::SPAWN_EGG, 39));
 		self::register("acacia_boat", $factory->get(Ids::BOAT, 4));
 		self::register("air", $factory->get(Ids::AIR, 0, 0));
 		self::register("apple", $factory->get(Ids::APPLE));
