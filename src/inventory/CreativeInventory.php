@@ -30,6 +30,7 @@ use pocketmine\network\mcpe\protocol\CreativeContentPacket;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
 use pocketmine\utils\SingletonTrait;
 use Webmozart\PathUtil\Path;
+use function array_map;
 use function file_get_contents;
 use function json_decode;
 
