@@ -39,7 +39,7 @@ class TropicalFish extends WaterAnimal{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::TROPICALFISH; }
 
-	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.52, 0.52); }
 
 	public function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(10);

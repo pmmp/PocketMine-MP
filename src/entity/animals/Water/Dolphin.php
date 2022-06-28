@@ -39,7 +39,7 @@ class Dolphin extends WaterAnimal{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::DOLPHIN; }
 
-	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.39, 0.585); }
 
 	public function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(10);

@@ -39,7 +39,7 @@ class Tadpole extends WaterAnimal{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::TADPOLE; }
 
-	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.8, 0.6); }
 
 	public function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(10);

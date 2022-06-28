@@ -39,7 +39,7 @@ class Pufferfish extends WaterAnimal{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::PUFFERFISH; }
 
-	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.96, 0.96); }
 
 	public function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(10);

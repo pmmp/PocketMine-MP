@@ -39,7 +39,7 @@ class Salmon extends WaterAnimal{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::SALMON; }
 
-	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.75, 0.75); }
 
 	public function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(10);
