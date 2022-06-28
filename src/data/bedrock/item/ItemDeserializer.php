@@ -144,12 +144,12 @@ final class ItemDeserializer{
 		$this->map(Ids::BIRCH_BOAT, fn() => Items::BIRCH_BOAT());
 		$this->map(Ids::BIRCH_DOOR, fn() => Blocks::BIRCH_DOOR()->asItem());
 		$this->map(Ids::BIRCH_SIGN, fn() => Blocks::BIRCH_SIGN()->asItem());
-		$this->map(Ids::BLACK_DYE, fn() => Items::BLACK_DYE());
+		$this->map(Ids::BLACK_DYE, fn() => Items::DYE()->setColor(DyeColor::BLACK()));
 		$this->map(Ids::BLAZE_POWDER, fn() => Items::BLAZE_POWDER());
 		$this->map(Ids::BLAZE_ROD, fn() => Items::BLAZE_ROD());
 		//TODO: minecraft:blaze_spawn_egg
 		$this->map(Ids::BLEACH, fn() => Items::BLEACH());
-		$this->map(Ids::BLUE_DYE, fn() => Items::BLUE_DYE());
+		$this->map(Ids::BLUE_DYE, fn() => Items::DYE()->setColor(DyeColor::BLUE()));
 		$this->map(Ids::BOAT, function(Data $data) : Item{
 			try{
 				$treeType = TreeType::fromMagicNumber($data->getMeta());
@@ -175,7 +175,7 @@ final class ItemDeserializer{
 		$this->map(Ids::BREAD, fn() => Items::BREAD());
 		$this->map(Ids::BREWING_STAND, fn() => Blocks::BREWING_STAND()->asItem());
 		$this->map(Ids::BRICK, fn() => Items::BRICK());
-		$this->map(Ids::BROWN_DYE, fn() => Items::BROWN_DYE());
+		$this->map(Ids::BROWN_DYE, fn() => Items::DYE()->setColor(DyeColor::BROWN()));
 		$this->map(Ids::BUCKET, fn() => Items::BUCKET());
 		$this->map(Ids::CAKE, fn() => Blocks::CAKE()->asItem());
 		//TODO: minecraft:camera
@@ -261,7 +261,7 @@ final class ItemDeserializer{
 		//TODO: minecraft:crimson_door
 		//TODO: minecraft:crimson_sign
 		//TODO: minecraft:crossbow
-		$this->map(Ids::CYAN_DYE, fn() => Items::CYAN_DYE());
+		$this->map(Ids::CYAN_DYE, fn() => Items::DYE()->setColor(DyeColor::CYAN()));
 		$this->map(Ids::DARK_OAK_BOAT, fn() => Items::DARK_OAK_BOAT());
 		$this->map(Ids::DARK_OAK_DOOR, fn() => Blocks::DARK_OAK_DOOR()->asItem());
 		$this->map(Ids::DARK_OAK_SIGN, fn() => Blocks::DARK_OAK_SIGN()->asItem());
@@ -288,10 +288,10 @@ final class ItemDeserializer{
 				3 => Items::COCOA_BEANS(),
 				4 => Items::LAPIS_LAZULI(),
 				15 => Items::BONE_MEAL(),
-				16 => Items::BLACK_DYE(),
-				17 => Items::BROWN_DYE(),
-				18 => Items::BLUE_DYE(),
-				19 => Items::WHITE_DYE(),
+				16 => Items::DYE()->setColor(DyeColor::BLACK()),
+				17 => Items::DYE()->setColor(DyeColor::BROWN()),
+				18 => Items::DYE()->setColor(DyeColor::BLUE()),
+				19 => Items::DYE()->setColor(DyeColor::WHITE()),
 				default => null
 			};
 			if($item !== null){
@@ -301,21 +301,7 @@ final class ItemDeserializer{
 			if($dyeColor === null){
 				throw new ItemTypeDeserializeException("Unknown dye meta $meta");
 			}
-			return match($dyeColor->id()){
-				DyeColor::CYAN()->id() => Items::CYAN_DYE(),
-				DyeColor::GRAY()->id() => Items::GRAY_DYE(),
-				DyeColor::GREEN()->id() => Items::GREEN_DYE(),
-				DyeColor::LIGHT_BLUE()->id() => Items::LIGHT_BLUE_DYE(),
-				DyeColor::LIGHT_GRAY()->id() => Items::LIGHT_GRAY_DYE(),
-				DyeColor::LIME()->id() => Items::LIME_DYE(),
-				DyeColor::MAGENTA()->id() => Items::MAGENTA_DYE(),
-				DyeColor::ORANGE()->id() => Items::ORANGE_DYE(),
-				DyeColor::PINK()->id() => Items::PINK_DYE(),
-				DyeColor::PURPLE()->id() => Items::PURPLE_DYE(),
-				DyeColor::RED()->id() => Items::RED_DYE(),
-				DyeColor::YELLOW()->id() => Items::YELLOW_DYE(),
-				default => throw new AssumptionFailedError("Unhandled dye color " . $dyeColor->name())
-			};
+			return Items::DYE()->setColor($dyeColor);
 		});
 		$this->map(Ids::EGG, fn() => Items::EGG());
 		//TODO: minecraft:elder_guardian_spawn_egg
@@ -374,8 +360,8 @@ final class ItemDeserializer{
 		$this->map(Ids::GOLDEN_PICKAXE, fn() => Items::GOLDEN_PICKAXE());
 		$this->map(Ids::GOLDEN_SHOVEL, fn() => Items::GOLDEN_SHOVEL());
 		$this->map(Ids::GOLDEN_SWORD, fn() => Items::GOLDEN_SWORD());
-		$this->map(Ids::GRAY_DYE, fn() => Items::GRAY_DYE());
-		$this->map(Ids::GREEN_DYE, fn() => Items::GREEN_DYE());
+		$this->map(Ids::GRAY_DYE, fn() => Items::DYE()->setColor(DyeColor::GRAY()));
+		$this->map(Ids::GREEN_DYE, fn() => Items::DYE()->setColor(DyeColor::GREEN()));
 		//TODO: minecraft:guardian_spawn_egg
 		$this->map(Ids::GUNPOWDER, fn() => Items::GUNPOWDER());
 		$this->map(Ids::HEART_OF_THE_SEA, fn() => Items::HEART_OF_THE_SEA());
@@ -414,13 +400,13 @@ final class ItemDeserializer{
 		$this->map(Ids::LEATHER_HELMET, fn() => Items::LEATHER_CAP());
 		//TODO: minecraft:leather_horse_armor
 		$this->map(Ids::LEATHER_LEGGINGS, fn() => Items::LEATHER_PANTS());
-		$this->map(Ids::LIGHT_BLUE_DYE, fn() => Items::LIGHT_BLUE_DYE());
-		$this->map(Ids::LIGHT_GRAY_DYE, fn() => Items::LIGHT_GRAY_DYE());
-		$this->map(Ids::LIME_DYE, fn() => Items::LIME_DYE());
+		$this->map(Ids::LIGHT_BLUE_DYE, fn() => Items::DYE()->setColor(DyeColor::LIGHT_BLUE()));
+		$this->map(Ids::LIGHT_GRAY_DYE, fn() => Items::DYE()->setColor(DyeColor::LIGHT_GRAY()));
+		$this->map(Ids::LIME_DYE, fn() => Items::DYE()->setColor(DyeColor::LIME()));
 		//TODO: minecraft:lingering_potion
 		//TODO: minecraft:llama_spawn_egg
 		//TODO: minecraft:lodestone_compass
-		$this->map(Ids::MAGENTA_DYE, fn() => Items::MAGENTA_DYE());
+		$this->map(Ids::MAGENTA_DYE, fn() => Items::DYE()->setColor(DyeColor::MAGENTA()));
 		$this->map(Ids::MAGMA_CREAM, fn() => Items::MAGMA_CREAM());
 		//TODO: minecraft:magma_cube_spawn_egg
 		//TODO: minecraft:medicine
@@ -468,7 +454,7 @@ final class ItemDeserializer{
 		$this->map(Ids::OAK_BOAT, fn() => Items::OAK_BOAT());
 		$this->map(Ids::OAK_SIGN, fn() => Blocks::OAK_SIGN()->asItem());
 		//TODO: minecraft:ocelot_spawn_egg
-		$this->map(Ids::ORANGE_DYE, fn() => Items::ORANGE_DYE());
+		$this->map(Ids::ORANGE_DYE, fn() => Items::DYE()->setColor(DyeColor::ORANGE()));
 		$this->map(Ids::PAINTING, fn() => Items::PAINTING());
 		//TODO: minecraft:panda_spawn_egg
 		$this->map(Ids::PAPER, fn() => Items::PAPER());
@@ -480,7 +466,7 @@ final class ItemDeserializer{
 		//TODO: minecraft:piglin_brute_spawn_egg
 		//TODO: minecraft:piglin_spawn_egg
 		//TODO: minecraft:pillager_spawn_egg
-		$this->map(Ids::PINK_DYE, fn() => Items::PINK_DYE());
+		$this->map(Ids::PINK_DYE, fn() => Items::DYE()->setColor(DyeColor::PINK()));
 		$this->map(Ids::POISONOUS_POTATO, fn() => Items::POISONOUS_POTATO());
 		//TODO: minecraft:polar_bear_spawn_egg
 		$this->map(Ids::POPPED_CHORUS_FRUIT, fn() => Items::POPPED_CHORUS_FRUIT());
@@ -502,7 +488,7 @@ final class ItemDeserializer{
 		//TODO: minecraft:pufferfish_spawn_egg
 		$this->map(Ids::PUMPKIN_PIE, fn() => Items::PUMPKIN_PIE());
 		$this->map(Ids::PUMPKIN_SEEDS, fn() => Items::PUMPKIN_SEEDS());
-		$this->map(Ids::PURPLE_DYE, fn() => Items::PURPLE_DYE());
+		$this->map(Ids::PURPLE_DYE, fn() => Items::DYE()->setColor(DyeColor::PURPLE()));
 		$this->map(Ids::QUARTZ, fn() => Items::NETHER_QUARTZ());
 		$this->map(Ids::RABBIT, fn() => Items::RAW_RABBIT());
 		$this->map(Ids::RABBIT_FOOT, fn() => Items::RABBIT_FOOT());
@@ -514,7 +500,7 @@ final class ItemDeserializer{
 		//TODO: minecraft:raw_copper
 		//TODO: minecraft:raw_gold
 		//TODO: minecraft:raw_iron
-		$this->map(Ids::RED_DYE, fn() => Items::RED_DYE());
+		$this->map(Ids::RED_DYE, fn() => Items::DYE()->setColor(DyeColor::RED()));
 		$this->map(Ids::REDSTONE, fn() => Items::REDSTONE_DUST());
 		$this->map(Ids::REPEATER, fn() => Blocks::REDSTONE_REPEATER()->asItem());
 		$this->map(Ids::ROTTEN_FLESH, fn() => Items::ROTTEN_FLESH());
@@ -538,15 +524,7 @@ final class ItemDeserializer{
 			}catch(\InvalidArgumentException $e){
 				throw new ItemTypeDeserializeException($e->getMessage(), 0, $e);
 			}
-			return match($skullType->id()) {
-				SkullType::SKELETON()->id() => Items::SKELETON_SKULL(),
-				SkullType::WITHER_SKELETON()->id() => Items::WITHER_SKELETON_SKULL(),
-				SkullType::ZOMBIE()->id() => Items::ZOMBIE_HEAD(),
-				SkullType::CREEPER()->id() => Items::CREEPER_HEAD(),
-				SkullType::PLAYER()->id() => Items::PLAYER_HEAD(),
-				SkullType::DRAGON()->id() => Items::DRAGON_HEAD(),
-				default => throw new ItemTypeDeserializeException("Unexpected skull type " . $skullType->getDisplayName())
-			};
+			return Items::MOB_HEAD()->setSkullType($skullType);
 		});
 		//TODO: minecraft:skull_banner_pattern
 		$this->map(Ids::SLIME_BALL, fn() => Items::SLIMEBALL());
@@ -608,7 +586,7 @@ final class ItemDeserializer{
 		$this->map(Ids::WATER_BUCKET, fn() => Items::WATER_BUCKET());
 		$this->map(Ids::WHEAT, fn() => Items::WHEAT());
 		$this->map(Ids::WHEAT_SEEDS, fn() => Items::WHEAT_SEEDS());
-		$this->map(Ids::WHITE_DYE, fn() => Items::WHITE_DYE());
+		$this->map(Ids::WHITE_DYE, fn() => Items::DYE()->setColor(DyeColor::WHITE()));
 		//TODO: minecraft:witch_spawn_egg
 		//TODO: minecraft:wither_skeleton_spawn_egg
 		//TODO: minecraft:wolf_spawn_egg
@@ -620,7 +598,7 @@ final class ItemDeserializer{
 		$this->map(Ids::WOODEN_SWORD, fn() => Items::WOODEN_SWORD());
 		$this->map(Ids::WRITABLE_BOOK, fn() => Items::WRITABLE_BOOK());
 		$this->map(Ids::WRITTEN_BOOK, fn() => Items::WRITTEN_BOOK());
-		$this->map(Ids::YELLOW_DYE, fn() => Items::YELLOW_DYE());
+		$this->map(Ids::YELLOW_DYE, fn() => Items::DYE()->setColor(DyeColor::YELLOW()));
 		//TODO: minecraft:zoglin_spawn_egg
 		//TODO: minecraft:zombie_horse_spawn_egg
 		//TODO: minecraft:zombie_pigman_spawn_egg

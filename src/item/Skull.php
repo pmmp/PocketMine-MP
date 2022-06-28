@@ -30,9 +30,13 @@ use pocketmine\block\VanillaBlocks;
 class Skull extends Item{
 	private SkullType $skullType;
 
-	public function __construct(ItemIdentifier $identifier, string $name, SkullType $skullType){
+	public function __construct(ItemIdentifier $identifier, string $name){
+		$this->skullType = SkullType::SKELETON();
 		parent::__construct($identifier, $name);
-		$this->skullType = $skullType;
+	}
+
+	public function getMeta() : int{
+		return $this->skullType->getMagicNumber();
 	}
 
 	public function getBlock(?int $clickedFace = null) : Block{
@@ -43,5 +47,11 @@ class Skull extends Item{
 
 	public function getSkullType() : SkullType{
 		return $this->skullType;
+	}
+
+	/** @return $this */
+	public function setSkullType(SkullType $skullType) : self{
+		$this->skullType = $skullType;
+		return $this;
 	}
 }

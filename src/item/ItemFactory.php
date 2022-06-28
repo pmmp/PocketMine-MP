@@ -33,7 +33,6 @@ use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\CompoundTypeIds;
-use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\bedrock\EntityLegacyIds;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
@@ -267,21 +266,15 @@ class ItemFactory{
 		$this->register(new WrittenBook(new IID(Ids::WRITTEN_BOOK, 0), "Written Book"));
 
 		foreach(SkullType::getAll() as $skullType){
-			$this->register(new Skull(new IID(Ids::SKULL, $skullType->getMagicNumber()), $skullType->getDisplayName(), $skullType));
+			$this->register((new Skull(new IID(Ids::SKULL, 0), "Mob Head"))->setSkullType($skullType));
 		}
 
-		$dyeMap = [
-			DyeColor::BLACK()->id() => 16,
-			DyeColor::BROWN()->id() => 17,
-			DyeColor::BLUE()->id() => 18,
-			DyeColor::WHITE()->id() => 19
-		];
-		$colorIdMap = DyeColorIdMap::getInstance();
 		foreach(DyeColor::getAll() as $color){
 			//TODO: use colour object directly
 			//TODO: add interface to dye-colour objects
-			$this->register(new Dye(new IID(Ids::DYE, $dyeMap[$color->id()] ?? $colorIdMap->toInvertedId($color)), $color->getDisplayName() . " Dye", $color));
-			$this->register(new Bed(new IID(Ids::BED, $colorIdMap->toId($color)), $color->getDisplayName() . " Bed", $color));
+			//1000 isn't the real variant for dye, but it needs to not conflict with INK_SAC
+			$this->register((new Dye(new IID(Ids::DYE, 1000), "Dye"))->setColor($color));
+			$this->register((new Bed(new IID(Ids::BED, 0), "Bed"))->setColor($color));
 			$this->register((new Banner(
 				new IID(Ids::BANNER, 0),
 				Blocks::BANNER(),

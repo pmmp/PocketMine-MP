@@ -25,7 +25,6 @@ namespace pocketmine\data\bedrock\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\utils\DyeColor;
-use pocketmine\block\utils\SkullType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
 use pocketmine\data\bedrock\block\BlockStateSerializer;
@@ -35,10 +34,13 @@ use pocketmine\data\bedrock\item\ItemTypeIds as Ids;
 use pocketmine\data\bedrock\item\SavedItemData as Data;
 use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\item\Banner;
+use pocketmine\item\Bed;
 use pocketmine\item\CoralFan;
+use pocketmine\item\Dye;
 use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
 use pocketmine\item\Potion;
+use pocketmine\item\Skull;
 use pocketmine\item\SplashPotion;
 use pocketmine\item\VanillaItems as Items;
 use pocketmine\utils\AssumptionFailedError;
@@ -217,22 +219,6 @@ final class ItemSerializer{
 	/**
 	 * @phpstan-return \Closure() : Data
 	 */
-	private static function bed(DyeColor $color) : \Closure{
-		$meta = DyeColorIdMap::getInstance()->toId($color);
-		return fn() => new Data(Ids::BED, $meta);
-	}
-
-	/**
-	 * @phpstan-return \Closure() : Data
-	 */
-	private static function skull(SkullType $skullType) : \Closure{
-		$meta = $skullType->getMagicNumber();
-		return fn() => new Data(Ids::SKULL, $meta);
-	}
-
-	/**
-	 * @phpstan-return \Closure() : Data
-	 */
 	private static function chemical(int $type) : \Closure{
 		return fn() => new Data(Ids::COMPOUND, $type);
 	}
@@ -270,18 +256,15 @@ final class ItemSerializer{
 		$this->map(Items::ARROW(), self::id(Ids::ARROW));
 		$this->map(Items::BAKED_POTATO(), self::id(Ids::BAKED_POTATO));
 		$this->map(Items::BANNER(), fn(Banner $item) => new Data(Ids::BANNER, DyeColorIdMap::getInstance()->toInvertedId($item->getColor())));
+		$this->map(Items::BED(), fn(Bed $item) => new Data(Ids::BED, DyeColorIdMap::getInstance()->toId($item->getColor())));
 		$this->map(Items::BEETROOT(), self::id(Ids::BEETROOT));
 		$this->map(Items::BEETROOT_SEEDS(), self::id(Ids::BEETROOT_SEEDS));
 		$this->map(Items::BEETROOT_SOUP(), self::id(Ids::BEETROOT_SOUP));
 		$this->map(Items::BIRCH_BOAT(), self::id(Ids::BIRCH_BOAT));
 		$this->map(Items::BIRCH_SIGN(), self::id(Ids::BIRCH_SIGN));
-		$this->map(Items::BLACK_BED(), self::bed(DyeColor::BLACK()));
-		$this->map(Items::BLACK_DYE(), self::id(Ids::BLACK_DYE));
 		$this->map(Items::BLAZE_POWDER(), self::id(Ids::BLAZE_POWDER));
 		$this->map(Items::BLAZE_ROD(), self::id(Ids::BLAZE_ROD));
 		$this->map(Items::BLEACH(), self::id(Ids::BLEACH));
-		$this->map(Items::BLUE_BED(), self::bed(DyeColor::BLUE()));
-		$this->map(Items::BLUE_DYE(), self::id(Ids::BLUE_DYE));
 		$this->map(Items::BONE(), self::id(Ids::BONE));
 		$this->map(Items::BONE_MEAL(), self::id(Ids::BONE_MEAL));
 		$this->map(Items::BOOK(), self::id(Ids::BOOK));
@@ -289,8 +272,6 @@ final class ItemSerializer{
 		$this->map(Items::BOWL(), self::id(Ids::BOWL));
 		$this->map(Items::BREAD(), self::id(Ids::BREAD));
 		$this->map(Items::BRICK(), self::id(Ids::BRICK));
-		$this->map(Items::BROWN_BED(), self::bed(DyeColor::BROWN()));
-		$this->map(Items::BROWN_DYE(), self::id(Ids::BROWN_DYE));
 		$this->map(Items::BUCKET(), self::id(Ids::BUCKET));
 		$this->map(Items::CARROT(), self::id(Ids::CARROT));
 		$this->map(Items::CHAINMAIL_BOOTS(), self::id(Ids::CHAINMAIL_BOOTS));
@@ -350,9 +331,6 @@ final class ItemSerializer{
 		$this->map(Items::COOKED_RABBIT(), self::id(Ids::COOKED_RABBIT));
 		$this->map(Items::COOKED_SALMON(), self::id(Ids::COOKED_SALMON));
 		$this->map(Items::COOKIE(), self::id(Ids::COOKIE));
-		$this->map(Items::CREEPER_HEAD(), self::skull(SkullType::CREEPER()));
-		$this->map(Items::CYAN_BED(), self::bed(DyeColor::CYAN()));
-		$this->map(Items::CYAN_DYE(), self::id(Ids::CYAN_DYE));
 		$this->map(Items::DARK_OAK_BOAT(), self::id(Ids::DARK_OAK_BOAT));
 		$this->map(Items::DARK_OAK_SIGN(), self::id(Ids::DARK_OAK_SIGN));
 		$this->map(Items::DIAMOND(), self::id(Ids::DIAMOND));
@@ -366,8 +344,26 @@ final class ItemSerializer{
 		$this->map(Items::DIAMOND_SHOVEL(), self::id(Ids::DIAMOND_SHOVEL));
 		$this->map(Items::DIAMOND_SWORD(), self::id(Ids::DIAMOND_SWORD));
 		$this->map(Items::DRAGON_BREATH(), self::id(Ids::DRAGON_BREATH));
-		$this->map(Items::DRAGON_HEAD(), self::skull(SkullType::DRAGON()));
 		$this->map(Items::DRIED_KELP(), self::id(Ids::DRIED_KELP));
+		$this->map(Items::DYE(), fn(Dye $item) => new Data(match($item->getColor()){
+			DyeColor::BLACK() => Ids::BLACK_DYE,
+			DyeColor::BLUE() => Ids::BLUE_DYE,
+			DyeColor::BROWN() => Ids::BROWN_DYE,
+			DyeColor::CYAN() => Ids::CYAN_DYE,
+			DyeColor::GRAY() => Ids::GRAY_DYE,
+			DyeColor::GREEN() => Ids::GREEN_DYE,
+			DyeColor::LIGHT_BLUE() => Ids::LIGHT_BLUE_DYE,
+			DyeColor::LIGHT_GRAY() => Ids::LIGHT_GRAY_DYE,
+			DyeColor::LIME() => Ids::LIME_DYE,
+			DyeColor::MAGENTA() => Ids::MAGENTA_DYE,
+			DyeColor::ORANGE() => Ids::ORANGE_DYE,
+			DyeColor::PINK() => Ids::PINK_DYE,
+			DyeColor::PURPLE() => Ids::PURPLE_DYE,
+			DyeColor::RED() => Ids::RED_DYE,
+			DyeColor::WHITE() => Ids::WHITE_DYE,
+			DyeColor::YELLOW() => Ids::YELLOW_DYE,
+			default => throw new AssumptionFailedError("Unhandled dye color " . $item->getColor()->name()),
+		}));
 		$this->map(Items::EGG(), self::id(Ids::EGG));
 		$this->map(Items::EMERALD(), self::id(Ids::EMERALD));
 		$this->map(Items::ENCHANTED_GOLDEN_APPLE(), self::id(Ids::ENCHANTED_GOLDEN_APPLE));
@@ -395,10 +391,6 @@ final class ItemSerializer{
 		$this->map(Items::GOLDEN_SWORD(), self::id(Ids::GOLDEN_SWORD));
 		$this->map(Items::GOLD_INGOT(), self::id(Ids::GOLD_INGOT));
 		$this->map(Items::GOLD_NUGGET(), self::id(Ids::GOLD_NUGGET));
-		$this->map(Items::GRAY_BED(), self::bed(DyeColor::GRAY()));
-		$this->map(Items::GRAY_DYE(), self::id(Ids::GRAY_DYE));
-		$this->map(Items::GREEN_BED(), self::bed(DyeColor::GREEN()));
-		$this->map(Items::GREEN_DYE(), self::id(Ids::GREEN_DYE));
 		$this->map(Items::GUNPOWDER(), self::id(Ids::GUNPOWDER));
 		$this->map(Items::HEART_OF_THE_SEA(), self::id(Ids::HEART_OF_THE_SEA));
 		$this->map(Items::INK_SAC(), self::id(Ids::INK_SAC));
@@ -422,19 +414,12 @@ final class ItemSerializer{
 		$this->map(Items::LEATHER_CAP(), self::id(Ids::LEATHER_HELMET));
 		$this->map(Items::LEATHER_PANTS(), self::id(Ids::LEATHER_LEGGINGS));
 		$this->map(Items::LEATHER_TUNIC(), self::id(Ids::LEATHER_CHESTPLATE));
-		$this->map(Items::LIGHT_BLUE_BED(), self::bed(DyeColor::LIGHT_BLUE()));
-		$this->map(Items::LIGHT_BLUE_DYE(), self::id(Ids::LIGHT_BLUE_DYE));
-		$this->map(Items::LIGHT_GRAY_BED(), self::bed(DyeColor::LIGHT_GRAY()));
-		$this->map(Items::LIGHT_GRAY_DYE(), self::id(Ids::LIGHT_GRAY_DYE));
-		$this->map(Items::LIME_BED(), self::bed(DyeColor::LIME()));
-		$this->map(Items::LIME_DYE(), self::id(Ids::LIME_DYE));
-		$this->map(Items::MAGENTA_BED(), self::bed(DyeColor::MAGENTA()));
-		$this->map(Items::MAGENTA_DYE(), self::id(Ids::MAGENTA_DYE));
 		$this->map(Items::MAGMA_CREAM(), self::id(Ids::MAGMA_CREAM));
 		$this->map(Items::MELON(), self::id(Ids::MELON_SLICE));
 		$this->map(Items::MELON_SEEDS(), self::id(Ids::MELON_SEEDS));
 		$this->map(Items::MILK_BUCKET(), self::id(Ids::MILK_BUCKET));
 		$this->map(Items::MINECART(), self::id(Ids::MINECART));
+		$this->map(Items::MOB_HEAD(), fn(Skull $item) => new Data(Ids::SKULL, $item->getSkullType()->getMagicNumber()));
 		$this->map(Items::MUSHROOM_STEW(), self::id(Ids::MUSHROOM_STEW));
 		$this->map(Items::NAUTILUS_SHELL(), self::id(Ids::NAUTILUS_SHELL));
 		$this->map(Items::NETHER_BRICK(), self::id(Ids::NETHERBRICK));
@@ -442,13 +427,8 @@ final class ItemSerializer{
 		$this->map(Items::NETHER_STAR(), self::id(Ids::NETHER_STAR));
 		$this->map(Items::OAK_BOAT(), self::id(Ids::OAK_BOAT));
 		$this->map(Items::OAK_SIGN(), self::id(Ids::OAK_SIGN));
-		$this->map(Items::ORANGE_BED(), self::bed(DyeColor::ORANGE()));
-		$this->map(Items::ORANGE_DYE(), self::id(Ids::ORANGE_DYE));
 		$this->map(Items::PAINTING(), self::id(Ids::PAINTING));
 		$this->map(Items::PAPER(), self::id(Ids::PAPER));
-		$this->map(Items::PINK_BED(), self::bed(DyeColor::PINK()));
-		$this->map(Items::PINK_DYE(), self::id(Ids::PINK_DYE));
-		$this->map(Items::PLAYER_HEAD(), self::skull(SkullType::PLAYER()));
 		$this->map(Items::POISONOUS_POTATO(), self::id(Ids::POISONOUS_POTATO));
 		$this->map(Items::POPPED_CHORUS_FRUIT(), self::id(Ids::POPPED_CHORUS_FRUIT));
 		$this->map(Items::POTATO(), self::id(Ids::POTATO));
@@ -458,8 +438,6 @@ final class ItemSerializer{
 		$this->map(Items::PUFFERFISH(), self::id(Ids::PUFFERFISH));
 		$this->map(Items::PUMPKIN_PIE(), self::id(Ids::PUMPKIN_PIE));
 		$this->map(Items::PUMPKIN_SEEDS(), self::id(Ids::PUMPKIN_SEEDS));
-		$this->map(Items::PURPLE_BED(), self::bed(DyeColor::PURPLE()));
-		$this->map(Items::PURPLE_DYE(), self::id(Ids::PURPLE_DYE));
 		$this->map(Items::RABBIT_FOOT(), self::id(Ids::RABBIT_FOOT));
 		$this->map(Items::RABBIT_HIDE(), self::id(Ids::RABBIT_HIDE));
 		$this->map(Items::RABBIT_STEW(), self::id(Ids::RABBIT_STEW));
@@ -483,13 +461,10 @@ final class ItemSerializer{
 		$this->map(Items::RECORD_WAIT(), self::id(Ids::MUSIC_DISC_WAIT));
 		$this->map(Items::RECORD_WARD(), self::id(Ids::MUSIC_DISC_WARD));
 		$this->map(Items::REDSTONE_DUST(), self::id(Ids::REDSTONE));
-		$this->map(Items::RED_BED(), self::bed(DyeColor::RED()));
-		$this->map(Items::RED_DYE(), self::id(Ids::RED_DYE));
 		$this->map(Items::ROTTEN_FLESH(), self::id(Ids::ROTTEN_FLESH));
 		$this->map(Items::SCUTE(), self::id(Ids::SCUTE));
 		$this->map(Items::SHEARS(), self::id(Ids::SHEARS));
 		$this->map(Items::SHULKER_SHELL(), self::id(Ids::SHULKER_SHELL));
-		$this->map(Items::SKELETON_SKULL(), self::skull(SkullType::SKELETON()));
 		$this->map(Items::SLIMEBALL(), self::id(Ids::SLIME_BALL));
 		$this->map(Items::SNOWBALL(), self::id(Ids::SNOWBALL));
 		$this->map(Items::SPIDER_EYE(), self::id(Ids::SPIDER_EYE));
@@ -512,9 +487,6 @@ final class ItemSerializer{
 		$this->map(Items::WATER_BUCKET(), self::id(Ids::WATER_BUCKET));
 		$this->map(Items::WHEAT(), self::id(Ids::WHEAT));
 		$this->map(Items::WHEAT_SEEDS(), self::id(Ids::WHEAT_SEEDS));
-		$this->map(Items::WHITE_BED(), self::bed(DyeColor::WHITE()));
-		$this->map(Items::WHITE_DYE(), self::id(Ids::WHITE_DYE));
-		$this->map(Items::WITHER_SKELETON_SKULL(), self::skull(SkullType::WITHER_SKELETON()));
 		$this->map(Items::WOODEN_AXE(), self::id(Ids::WOODEN_AXE));
 		$this->map(Items::WOODEN_HOE(), self::id(Ids::WOODEN_HOE));
 		$this->map(Items::WOODEN_PICKAXE(), self::id(Ids::WOODEN_PICKAXE));
@@ -522,9 +494,6 @@ final class ItemSerializer{
 		$this->map(Items::WOODEN_SWORD(), self::id(Ids::WOODEN_SWORD));
 		$this->map(Items::WRITABLE_BOOK(), self::id(Ids::WRITABLE_BOOK));
 		$this->map(Items::WRITTEN_BOOK(), self::id(Ids::WRITTEN_BOOK));
-		$this->map(Items::YELLOW_BED(), self::bed(DyeColor::YELLOW()));
-		$this->map(Items::YELLOW_DYE(), self::id(Ids::YELLOW_DYE));
-		$this->map(Items::ZOMBIE_HEAD(), self::skull(SkullType::ZOMBIE()));
 		$this->map(Items::ZOMBIE_SPAWN_EGG(), self::id(Ids::ZOMBIE_SPAWN_EGG));
 	}
 }
