@@ -37,7 +37,6 @@ use pocketmine\data\bedrock\item\ItemTypeIds as Ids;
 use pocketmine\data\bedrock\item\SavedItemData as Data;
 use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\item\Item;
-use pocketmine\item\PotionType;
 use pocketmine\item\VanillaItems as Items;
 use pocketmine\utils\AssumptionFailedError;
 
@@ -493,51 +492,7 @@ final class ItemDeserializer{
 			if($potionType === null){
 				throw new ItemTypeDeserializeException("Unknown potion type ID $meta");
 			}
-			return match($potionType->id()){
-				PotionType::WATER()->id() => Items::WATER_POTION(),
-				PotionType::MUNDANE()->id() => Items::MUNDANE_POTION(),
-				PotionType::LONG_MUNDANE()->id() => Items::LONG_MUNDANE_POTION(),
-				PotionType::THICK()->id() => Items::THICK_POTION(),
-				PotionType::AWKWARD()->id() => Items::AWKWARD_POTION(),
-				PotionType::NIGHT_VISION()->id() => Items::NIGHT_VISION_POTION(),
-				PotionType::LONG_NIGHT_VISION()->id() => Items::LONG_NIGHT_VISION_POTION(),
-				PotionType::INVISIBILITY()->id() => Items::INVISIBILITY_POTION(),
-				PotionType::LONG_INVISIBILITY()->id() => Items::LONG_INVISIBILITY_POTION(),
-				PotionType::LEAPING()->id() => Items::LEAPING_POTION(),
-				PotionType::LONG_LEAPING()->id() => Items::LONG_LEAPING_POTION(),
-				PotionType::STRONG_LEAPING()->id() => Items::STRONG_LEAPING_POTION(),
-				PotionType::FIRE_RESISTANCE()->id() => Items::FIRE_RESISTANCE_POTION(),
-				PotionType::LONG_FIRE_RESISTANCE()->id() => Items::LONG_FIRE_RESISTANCE_POTION(),
-				PotionType::SWIFTNESS()->id() => Items::SWIFTNESS_POTION(),
-				PotionType::LONG_SWIFTNESS()->id() => Items::LONG_SWIFTNESS_POTION(),
-				PotionType::STRONG_SWIFTNESS()->id() => Items::STRONG_SWIFTNESS_POTION(),
-				PotionType::SLOWNESS()->id() => Items::SLOWNESS_POTION(),
-				PotionType::LONG_SLOWNESS()->id() => Items::LONG_SLOWNESS_POTION(),
-				PotionType::WATER_BREATHING()->id() => Items::WATER_BREATHING_POTION(),
-				PotionType::LONG_WATER_BREATHING()->id() => Items::LONG_WATER_BREATHING_POTION(),
-				PotionType::HEALING()->id() => Items::HEALING_POTION(),
-				PotionType::STRONG_HEALING()->id() => Items::STRONG_HEALING_POTION(),
-				PotionType::HARMING()->id() => Items::HARMING_POTION(),
-				PotionType::STRONG_HARMING()->id() => Items::STRONG_HARMING_POTION(),
-				PotionType::POISON()->id() => Items::POISON_POTION(),
-				PotionType::LONG_POISON()->id() => Items::LONG_POISON_POTION(),
-				PotionType::STRONG_POISON()->id() => Items::STRONG_POISON_POTION(),
-				PotionType::REGENERATION()->id() => Items::REGENERATION_POTION(),
-				PotionType::LONG_REGENERATION()->id() => Items::LONG_REGENERATION_POTION(),
-				PotionType::STRONG_REGENERATION()->id() => Items::STRONG_REGENERATION_POTION(),
-				PotionType::STRENGTH()->id() => Items::STRENGTH_POTION(),
-				PotionType::LONG_STRENGTH()->id() => Items::LONG_STRENGTH_POTION(),
-				PotionType::STRONG_STRENGTH()->id() => Items::STRONG_STRENGTH_POTION(),
-				PotionType::WEAKNESS()->id() => Items::WEAKNESS_POTION(),
-				PotionType::LONG_WEAKNESS()->id() => Items::LONG_WEAKNESS_POTION(),
-				PotionType::WITHER()->id() => Items::WITHER_POTION(),
-				PotionType::TURTLE_MASTER()->id() => Items::TURTLE_MASTER_POTION(),
-				PotionType::LONG_TURTLE_MASTER()->id() => Items::LONG_TURTLE_MASTER_POTION(),
-				PotionType::STRONG_TURTLE_MASTER()->id() => Items::STRONG_TURTLE_MASTER_POTION(),
-				PotionType::SLOW_FALLING()->id() => Items::SLOW_FALLING_POTION(),
-				PotionType::LONG_SLOW_FALLING()->id() => Items::LONG_SLOW_FALLING_POTION(),
-				default => throw new ItemTypeDeserializeException("Unhandled potion type " . $potionType->getDisplayName())
-			};
+			return Items::POTION()->setType($potionType);
 		});
 		//TODO: minecraft:powder_snow_bucket
 		$this->map(Ids::PRISMARINE_CRYSTALS, fn() => Items::PRISMARINE_CRYSTALS());
@@ -613,51 +568,7 @@ final class ItemDeserializer{
 			if($potionType === null){
 				throw new ItemTypeDeserializeException("Unknown potion type ID $meta");
 			}
-			return match($potionType->id()){
-				PotionType::WATER()->id() => Items::WATER_SPLASH_POTION(),
-				PotionType::MUNDANE()->id() => Items::MUNDANE_SPLASH_POTION(),
-				PotionType::LONG_MUNDANE()->id() => Items::LONG_MUNDANE_SPLASH_POTION(),
-				PotionType::THICK()->id() => Items::THICK_SPLASH_POTION(),
-				PotionType::AWKWARD()->id() => Items::AWKWARD_SPLASH_POTION(),
-				PotionType::NIGHT_VISION()->id() => Items::NIGHT_VISION_SPLASH_POTION(),
-				PotionType::LONG_NIGHT_VISION()->id() => Items::LONG_NIGHT_VISION_SPLASH_POTION(),
-				PotionType::INVISIBILITY()->id() => Items::INVISIBILITY_SPLASH_POTION(),
-				PotionType::LONG_INVISIBILITY()->id() => Items::LONG_INVISIBILITY_SPLASH_POTION(),
-				PotionType::LEAPING()->id() => Items::LEAPING_SPLASH_POTION(),
-				PotionType::LONG_LEAPING()->id() => Items::LONG_LEAPING_SPLASH_POTION(),
-				PotionType::STRONG_LEAPING()->id() => Items::STRONG_LEAPING_SPLASH_POTION(),
-				PotionType::FIRE_RESISTANCE()->id() => Items::FIRE_RESISTANCE_SPLASH_POTION(),
-				PotionType::LONG_FIRE_RESISTANCE()->id() => Items::LONG_FIRE_RESISTANCE_SPLASH_POTION(),
-				PotionType::SWIFTNESS()->id() => Items::SWIFTNESS_SPLASH_POTION(),
-				PotionType::LONG_SWIFTNESS()->id() => Items::LONG_SWIFTNESS_SPLASH_POTION(),
-				PotionType::STRONG_SWIFTNESS()->id() => Items::STRONG_SWIFTNESS_SPLASH_POTION(),
-				PotionType::SLOWNESS()->id() => Items::SLOWNESS_SPLASH_POTION(),
-				PotionType::LONG_SLOWNESS()->id() => Items::LONG_SLOWNESS_SPLASH_POTION(),
-				PotionType::WATER_BREATHING()->id() => Items::WATER_BREATHING_SPLASH_POTION(),
-				PotionType::LONG_WATER_BREATHING()->id() => Items::LONG_WATER_BREATHING_SPLASH_POTION(),
-				PotionType::HEALING()->id() => Items::HEALING_SPLASH_POTION(),
-				PotionType::STRONG_HEALING()->id() => Items::STRONG_HEALING_SPLASH_POTION(),
-				PotionType::HARMING()->id() => Items::HARMING_SPLASH_POTION(),
-				PotionType::STRONG_HARMING()->id() => Items::STRONG_HARMING_SPLASH_POTION(),
-				PotionType::POISON()->id() => Items::POISON_SPLASH_POTION(),
-				PotionType::LONG_POISON()->id() => Items::LONG_POISON_SPLASH_POTION(),
-				PotionType::STRONG_POISON()->id() => Items::STRONG_POISON_SPLASH_POTION(),
-				PotionType::REGENERATION()->id() => Items::REGENERATION_SPLASH_POTION(),
-				PotionType::LONG_REGENERATION()->id() => Items::LONG_REGENERATION_SPLASH_POTION(),
-				PotionType::STRONG_REGENERATION()->id() => Items::STRONG_REGENERATION_SPLASH_POTION(),
-				PotionType::STRENGTH()->id() => Items::STRENGTH_SPLASH_POTION(),
-				PotionType::LONG_STRENGTH()->id() => Items::LONG_STRENGTH_SPLASH_POTION(),
-				PotionType::STRONG_STRENGTH()->id() => Items::STRONG_STRENGTH_SPLASH_POTION(),
-				PotionType::WEAKNESS()->id() => Items::WEAKNESS_SPLASH_POTION(),
-				PotionType::LONG_WEAKNESS()->id() => Items::LONG_WEAKNESS_SPLASH_POTION(),
-				PotionType::WITHER()->id() => Items::WITHER_SPLASH_POTION(),
-				PotionType::TURTLE_MASTER()->id() => Items::TURTLE_MASTER_SPLASH_POTION(),
-				PotionType::LONG_TURTLE_MASTER()->id() => Items::LONG_TURTLE_MASTER_SPLASH_POTION(),
-				PotionType::STRONG_TURTLE_MASTER()->id() => Items::STRONG_TURTLE_MASTER_SPLASH_POTION(),
-				PotionType::SLOW_FALLING()->id() => Items::SLOW_FALLING_SPLASH_POTION(),
-				PotionType::LONG_SLOW_FALLING()->id() => Items::LONG_SLOW_FALLING_SPLASH_POTION(),
-				default => throw new ItemTypeDeserializeException("Unhandled potion type " . $potionType->getDisplayName())
-			};
+			return Items::SPLASH_POTION()->setType($potionType);
 		});
 		$this->map(Ids::SPRUCE_BOAT, fn() => Items::SPRUCE_BOAT());
 		$this->map(Ids::SPRUCE_DOOR, fn() => Blocks::SPRUCE_DOOR()->asItem());

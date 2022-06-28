@@ -38,7 +38,8 @@ use pocketmine\item\Banner;
 use pocketmine\item\CoralFan;
 use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
-use pocketmine\item\PotionType;
+use pocketmine\item\Potion;
+use pocketmine\item\SplashPotion;
 use pocketmine\item\VanillaItems as Items;
 use pocketmine\utils\AssumptionFailedError;
 use function class_parents;
@@ -236,22 +237,6 @@ final class ItemSerializer{
 		return fn() => new Data(Ids::COMPOUND, $type);
 	}
 
-	/**
-	 * @phpstan-return \Closure() : Data
-	 */
-	private static function potion(PotionType $type) : \Closure{
-		$meta = PotionTypeIdMap::getInstance()->toId($type);
-		return fn() => new Data(Ids::POTION, $meta);
-	}
-
-	/**
-	 * @phpstan-return \Closure() : Data
-	 */
-	private static function splashPotion(PotionType $type) : \Closure{
-		$meta = PotionTypeIdMap::getInstance()->toId($type);
-		return fn() => new Data(Ids::SPLASH_POTION, $meta);
-	}
-
 	private function registerSpecialBlockSerializers() : void{
 		$this->mapBlock(Blocks::ACACIA_DOOR(), self::id(Ids::ACACIA_DOOR));
 		$this->mapBlock(Blocks::BIRCH_DOOR(), self::id(Ids::BIRCH_DOOR));
@@ -283,8 +268,6 @@ final class ItemSerializer{
 		$this->map(Items::ACACIA_SIGN(), self::id(Ids::ACACIA_SIGN));
 		$this->map(Items::APPLE(), self::id(Ids::APPLE));
 		$this->map(Items::ARROW(), self::id(Ids::ARROW));
-		$this->map(Items::AWKWARD_POTION(), self::potion(PotionType::AWKWARD()));
-		$this->map(Items::AWKWARD_SPLASH_POTION(), self::splashPotion(PotionType::AWKWARD()));
 		$this->map(Items::BAKED_POTATO(), self::id(Ids::BAKED_POTATO));
 		$this->map(Items::BANNER(), fn(Banner $item) => new Data(Ids::BANNER, DyeColorIdMap::getInstance()->toInvertedId($item->getColor())));
 		$this->map(Items::BEETROOT(), self::id(Ids::BEETROOT));
@@ -392,8 +375,6 @@ final class ItemSerializer{
 		$this->map(Items::EXPERIENCE_BOTTLE(), self::id(Ids::EXPERIENCE_BOTTLE));
 		$this->map(Items::FEATHER(), self::id(Ids::FEATHER));
 		$this->map(Items::FERMENTED_SPIDER_EYE(), self::id(Ids::FERMENTED_SPIDER_EYE));
-		$this->map(Items::FIRE_RESISTANCE_POTION(), self::potion(PotionType::FIRE_RESISTANCE()));
-		$this->map(Items::FIRE_RESISTANCE_SPLASH_POTION(), self::splashPotion(PotionType::FIRE_RESISTANCE()));
 		$this->map(Items::FISHING_ROD(), self::id(Ids::FISHING_ROD));
 		$this->map(Items::FLINT(), self::id(Ids::FLINT));
 		$this->map(Items::FLINT_AND_STEEL(), self::id(Ids::FLINT_AND_STEEL));
@@ -419,14 +400,8 @@ final class ItemSerializer{
 		$this->map(Items::GREEN_BED(), self::bed(DyeColor::GREEN()));
 		$this->map(Items::GREEN_DYE(), self::id(Ids::GREEN_DYE));
 		$this->map(Items::GUNPOWDER(), self::id(Ids::GUNPOWDER));
-		$this->map(Items::HARMING_POTION(), self::potion(PotionType::HARMING()));
-		$this->map(Items::HARMING_SPLASH_POTION(), self::splashPotion(PotionType::HARMING()));
-		$this->map(Items::HEALING_POTION(), self::potion(PotionType::HEALING()));
-		$this->map(Items::HEALING_SPLASH_POTION(), self::splashPotion(PotionType::HEALING()));
 		$this->map(Items::HEART_OF_THE_SEA(), self::id(Ids::HEART_OF_THE_SEA));
 		$this->map(Items::INK_SAC(), self::id(Ids::INK_SAC));
-		$this->map(Items::INVISIBILITY_POTION(), self::potion(PotionType::INVISIBILITY()));
-		$this->map(Items::INVISIBILITY_SPLASH_POTION(), self::splashPotion(PotionType::INVISIBILITY()));
 		$this->map(Items::IRON_AXE(), self::id(Ids::IRON_AXE));
 		$this->map(Items::IRON_BOOTS(), self::id(Ids::IRON_BOOTS));
 		$this->map(Items::IRON_CHESTPLATE(), self::id(Ids::IRON_CHESTPLATE));
@@ -442,8 +417,6 @@ final class ItemSerializer{
 		$this->map(Items::JUNGLE_SIGN(), self::id(Ids::JUNGLE_SIGN));
 		$this->map(Items::LAPIS_LAZULI(), self::id(Ids::LAPIS_LAZULI));
 		$this->map(Items::LAVA_BUCKET(), self::id(Ids::LAVA_BUCKET));
-		$this->map(Items::LEAPING_POTION(), self::potion(PotionType::LEAPING()));
-		$this->map(Items::LEAPING_SPLASH_POTION(), self::splashPotion(PotionType::LEAPING()));
 		$this->map(Items::LEATHER(), self::id(Ids::LEATHER));
 		$this->map(Items::LEATHER_BOOTS(), self::id(Ids::LEATHER_BOOTS));
 		$this->map(Items::LEATHER_CAP(), self::id(Ids::LEATHER_HELMET));
@@ -455,34 +428,6 @@ final class ItemSerializer{
 		$this->map(Items::LIGHT_GRAY_DYE(), self::id(Ids::LIGHT_GRAY_DYE));
 		$this->map(Items::LIME_BED(), self::bed(DyeColor::LIME()));
 		$this->map(Items::LIME_DYE(), self::id(Ids::LIME_DYE));
-		$this->map(Items::LONG_FIRE_RESISTANCE_POTION(), self::potion(PotionType::LONG_FIRE_RESISTANCE()));
-		$this->map(Items::LONG_FIRE_RESISTANCE_SPLASH_POTION(), self::splashPotion(PotionType::LONG_FIRE_RESISTANCE()));
-		$this->map(Items::LONG_INVISIBILITY_POTION(), self::potion(PotionType::LONG_INVISIBILITY()));
-		$this->map(Items::LONG_INVISIBILITY_SPLASH_POTION(), self::splashPotion(PotionType::LONG_INVISIBILITY()));
-		$this->map(Items::LONG_LEAPING_POTION(), self::potion(PotionType::LONG_LEAPING()));
-		$this->map(Items::LONG_LEAPING_SPLASH_POTION(), self::splashPotion(PotionType::LONG_LEAPING()));
-		$this->map(Items::LONG_MUNDANE_POTION(), self::potion(PotionType::LONG_MUNDANE()));
-		$this->map(Items::LONG_MUNDANE_SPLASH_POTION(), self::splashPotion(PotionType::LONG_MUNDANE()));
-		$this->map(Items::LONG_NIGHT_VISION_POTION(), self::potion(PotionType::LONG_NIGHT_VISION()));
-		$this->map(Items::LONG_NIGHT_VISION_SPLASH_POTION(), self::splashPotion(PotionType::LONG_NIGHT_VISION()));
-		$this->map(Items::LONG_POISON_POTION(), self::potion(PotionType::LONG_POISON()));
-		$this->map(Items::LONG_POISON_SPLASH_POTION(), self::splashPotion(PotionType::LONG_POISON()));
-		$this->map(Items::LONG_REGENERATION_POTION(), self::potion(PotionType::LONG_REGENERATION()));
-		$this->map(Items::LONG_REGENERATION_SPLASH_POTION(), self::splashPotion(PotionType::LONG_REGENERATION()));
-		$this->map(Items::LONG_SLOWNESS_POTION(), self::potion(PotionType::LONG_SLOWNESS()));
-		$this->map(Items::LONG_SLOWNESS_SPLASH_POTION(), self::splashPotion(PotionType::LONG_SLOWNESS()));
-		$this->map(Items::LONG_SLOW_FALLING_POTION(), self::potion(PotionType::LONG_SLOW_FALLING()));
-		$this->map(Items::LONG_SLOW_FALLING_SPLASH_POTION(), self::splashPotion(PotionType::LONG_SLOW_FALLING()));
-		$this->map(Items::LONG_STRENGTH_POTION(), self::potion(PotionType::LONG_STRENGTH()));
-		$this->map(Items::LONG_STRENGTH_SPLASH_POTION(), self::splashPotion(PotionType::LONG_STRENGTH()));
-		$this->map(Items::LONG_SWIFTNESS_POTION(), self::potion(PotionType::LONG_SWIFTNESS()));
-		$this->map(Items::LONG_SWIFTNESS_SPLASH_POTION(), self::splashPotion(PotionType::LONG_SWIFTNESS()));
-		$this->map(Items::LONG_TURTLE_MASTER_POTION(), self::potion(PotionType::LONG_TURTLE_MASTER()));
-		$this->map(Items::LONG_TURTLE_MASTER_SPLASH_POTION(), self::splashPotion(PotionType::LONG_TURTLE_MASTER()));
-		$this->map(Items::LONG_WATER_BREATHING_POTION(), self::potion(PotionType::LONG_WATER_BREATHING()));
-		$this->map(Items::LONG_WATER_BREATHING_SPLASH_POTION(), self::splashPotion(PotionType::LONG_WATER_BREATHING()));
-		$this->map(Items::LONG_WEAKNESS_POTION(), self::potion(PotionType::LONG_WEAKNESS()));
-		$this->map(Items::LONG_WEAKNESS_SPLASH_POTION(), self::splashPotion(PotionType::LONG_WEAKNESS()));
 		$this->map(Items::MAGENTA_BED(), self::bed(DyeColor::MAGENTA()));
 		$this->map(Items::MAGENTA_DYE(), self::id(Ids::MAGENTA_DYE));
 		$this->map(Items::MAGMA_CREAM(), self::id(Ids::MAGMA_CREAM));
@@ -490,15 +435,11 @@ final class ItemSerializer{
 		$this->map(Items::MELON_SEEDS(), self::id(Ids::MELON_SEEDS));
 		$this->map(Items::MILK_BUCKET(), self::id(Ids::MILK_BUCKET));
 		$this->map(Items::MINECART(), self::id(Ids::MINECART));
-		$this->map(Items::MUNDANE_POTION(), self::potion(PotionType::MUNDANE()));
-		$this->map(Items::MUNDANE_SPLASH_POTION(), self::splashPotion(PotionType::MUNDANE()));
 		$this->map(Items::MUSHROOM_STEW(), self::id(Ids::MUSHROOM_STEW));
 		$this->map(Items::NAUTILUS_SHELL(), self::id(Ids::NAUTILUS_SHELL));
 		$this->map(Items::NETHER_BRICK(), self::id(Ids::NETHERBRICK));
 		$this->map(Items::NETHER_QUARTZ(), self::id(Ids::QUARTZ));
 		$this->map(Items::NETHER_STAR(), self::id(Ids::NETHER_STAR));
-		$this->map(Items::NIGHT_VISION_POTION(), self::potion(PotionType::NIGHT_VISION()));
-		$this->map(Items::NIGHT_VISION_SPLASH_POTION(), self::splashPotion(PotionType::NIGHT_VISION()));
 		$this->map(Items::OAK_BOAT(), self::id(Ids::OAK_BOAT));
 		$this->map(Items::OAK_SIGN(), self::id(Ids::OAK_SIGN));
 		$this->map(Items::ORANGE_BED(), self::bed(DyeColor::ORANGE()));
@@ -509,10 +450,9 @@ final class ItemSerializer{
 		$this->map(Items::PINK_DYE(), self::id(Ids::PINK_DYE));
 		$this->map(Items::PLAYER_HEAD(), self::skull(SkullType::PLAYER()));
 		$this->map(Items::POISONOUS_POTATO(), self::id(Ids::POISONOUS_POTATO));
-		$this->map(Items::POISON_POTION(), self::potion(PotionType::POISON()));
-		$this->map(Items::POISON_SPLASH_POTION(), self::splashPotion(PotionType::POISON()));
 		$this->map(Items::POPPED_CHORUS_FRUIT(), self::id(Ids::POPPED_CHORUS_FRUIT));
 		$this->map(Items::POTATO(), self::id(Ids::POTATO));
+		$this->map(Items::POTION(), fn(Potion $item) => new Data(Ids::POTION, PotionTypeIdMap::getInstance()->toId($item->getType())));
 		$this->map(Items::PRISMARINE_CRYSTALS(), self::id(Ids::PRISMARINE_CRYSTALS));
 		$this->map(Items::PRISMARINE_SHARD(), self::id(Ids::PRISMARINE_SHARD));
 		$this->map(Items::PUFFERFISH(), self::id(Ids::PUFFERFISH));
@@ -545,20 +485,15 @@ final class ItemSerializer{
 		$this->map(Items::REDSTONE_DUST(), self::id(Ids::REDSTONE));
 		$this->map(Items::RED_BED(), self::bed(DyeColor::RED()));
 		$this->map(Items::RED_DYE(), self::id(Ids::RED_DYE));
-		$this->map(Items::REGENERATION_POTION(), self::potion(PotionType::REGENERATION()));
-		$this->map(Items::REGENERATION_SPLASH_POTION(), self::splashPotion(PotionType::REGENERATION()));
 		$this->map(Items::ROTTEN_FLESH(), self::id(Ids::ROTTEN_FLESH));
 		$this->map(Items::SCUTE(), self::id(Ids::SCUTE));
 		$this->map(Items::SHEARS(), self::id(Ids::SHEARS));
 		$this->map(Items::SHULKER_SHELL(), self::id(Ids::SHULKER_SHELL));
 		$this->map(Items::SKELETON_SKULL(), self::skull(SkullType::SKELETON()));
 		$this->map(Items::SLIMEBALL(), self::id(Ids::SLIME_BALL));
-		$this->map(Items::SLOWNESS_POTION(), self::potion(PotionType::SLOWNESS()));
-		$this->map(Items::SLOWNESS_SPLASH_POTION(), self::splashPotion(PotionType::SLOWNESS()));
-		$this->map(Items::SLOW_FALLING_POTION(), self::potion(PotionType::SLOW_FALLING()));
-		$this->map(Items::SLOW_FALLING_SPLASH_POTION(), self::splashPotion(PotionType::SLOW_FALLING()));
 		$this->map(Items::SNOWBALL(), self::id(Ids::SNOWBALL));
 		$this->map(Items::SPIDER_EYE(), self::id(Ids::SPIDER_EYE));
+		$this->map(Items::SPLASH_POTION(), fn(SplashPotion $item) => new Data(Ids::SPLASH_POTION, PotionTypeIdMap::getInstance()->toId($item->getType())));
 		$this->map(Items::SPRUCE_BOAT(), self::id(Ids::SPRUCE_BOAT));
 		$this->map(Items::SPRUCE_SIGN(), self::id(Ids::SPRUCE_SIGN));
 		$this->map(Items::SQUID_SPAWN_EGG(), self::id(Ids::SQUID_SPAWN_EGG));
@@ -569,49 +504,17 @@ final class ItemSerializer{
 		$this->map(Items::STONE_PICKAXE(), self::id(Ids::STONE_PICKAXE));
 		$this->map(Items::STONE_SHOVEL(), self::id(Ids::STONE_SHOVEL));
 		$this->map(Items::STONE_SWORD(), self::id(Ids::STONE_SWORD));
-		$this->map(Items::STRENGTH_POTION(), self::potion(PotionType::STRENGTH()));
-		$this->map(Items::STRENGTH_SPLASH_POTION(), self::splashPotion(PotionType::STRENGTH()));
 		$this->map(Items::STRING(), self::id(Ids::STRING));
-		$this->map(Items::STRONG_HARMING_POTION(), self::potion(PotionType::STRONG_HARMING()));
-		$this->map(Items::STRONG_HARMING_SPLASH_POTION(), self::splashPotion(PotionType::STRONG_HARMING()));
-		$this->map(Items::STRONG_HEALING_POTION(), self::potion(PotionType::STRONG_HEALING()));
-		$this->map(Items::STRONG_HEALING_SPLASH_POTION(), self::splashPotion(PotionType::STRONG_HEALING()));
-		$this->map(Items::STRONG_LEAPING_POTION(), self::potion(PotionType::STRONG_LEAPING()));
-		$this->map(Items::STRONG_LEAPING_SPLASH_POTION(), self::splashPotion(PotionType::STRONG_LEAPING()));
-		$this->map(Items::STRONG_POISON_POTION(), self::potion(PotionType::STRONG_POISON()));
-		$this->map(Items::STRONG_POISON_SPLASH_POTION(), self::splashPotion(PotionType::STRONG_POISON()));
-		$this->map(Items::STRONG_REGENERATION_POTION(), self::potion(PotionType::STRONG_REGENERATION()));
-		$this->map(Items::STRONG_REGENERATION_SPLASH_POTION(), self::splashPotion(PotionType::STRONG_REGENERATION()));
-		$this->map(Items::STRONG_STRENGTH_POTION(), self::potion(PotionType::STRONG_STRENGTH()));
-		$this->map(Items::STRONG_STRENGTH_SPLASH_POTION(), self::splashPotion(PotionType::STRONG_STRENGTH()));
-		$this->map(Items::STRONG_SWIFTNESS_POTION(), self::potion(PotionType::STRONG_SWIFTNESS()));
-		$this->map(Items::STRONG_SWIFTNESS_SPLASH_POTION(), self::splashPotion(PotionType::STRONG_SWIFTNESS()));
-		$this->map(Items::STRONG_TURTLE_MASTER_POTION(), self::potion(PotionType::STRONG_TURTLE_MASTER()));
-		$this->map(Items::STRONG_TURTLE_MASTER_SPLASH_POTION(), self::splashPotion(PotionType::STRONG_TURTLE_MASTER()));
 		$this->map(Items::SUGAR(), self::id(Ids::SUGAR));
 		$this->map(Items::SWEET_BERRIES(), self::id(Ids::SWEET_BERRIES));
-		$this->map(Items::SWIFTNESS_POTION(), self::potion(PotionType::SWIFTNESS()));
-		$this->map(Items::SWIFTNESS_SPLASH_POTION(), self::splashPotion(PotionType::SWIFTNESS()));
-		$this->map(Items::THICK_POTION(), self::potion(PotionType::THICK()));
-		$this->map(Items::THICK_SPLASH_POTION(), self::splashPotion(PotionType::THICK()));
 		$this->map(Items::TOTEM(), self::id(Ids::TOTEM_OF_UNDYING));
-		$this->map(Items::TURTLE_MASTER_POTION(), self::potion(PotionType::TURTLE_MASTER()));
-		$this->map(Items::TURTLE_MASTER_SPLASH_POTION(), self::splashPotion(PotionType::TURTLE_MASTER()));
 		$this->map(Items::VILLAGER_SPAWN_EGG(), self::id(Ids::VILLAGER_SPAWN_EGG));
-		$this->map(Items::WATER_BREATHING_POTION(), self::potion(PotionType::WATER_BREATHING()));
-		$this->map(Items::WATER_BREATHING_SPLASH_POTION(), self::splashPotion(PotionType::WATER_BREATHING()));
 		$this->map(Items::WATER_BUCKET(), self::id(Ids::WATER_BUCKET));
-		$this->map(Items::WATER_POTION(), self::potion(PotionType::WATER()));
-		$this->map(Items::WATER_SPLASH_POTION(), self::splashPotion(PotionType::WATER()));
-		$this->map(Items::WEAKNESS_POTION(), self::potion(PotionType::WEAKNESS()));
-		$this->map(Items::WEAKNESS_SPLASH_POTION(), self::splashPotion(PotionType::WEAKNESS()));
 		$this->map(Items::WHEAT(), self::id(Ids::WHEAT));
 		$this->map(Items::WHEAT_SEEDS(), self::id(Ids::WHEAT_SEEDS));
 		$this->map(Items::WHITE_BED(), self::bed(DyeColor::WHITE()));
 		$this->map(Items::WHITE_DYE(), self::id(Ids::WHITE_DYE));
-		$this->map(Items::WITHER_POTION(), self::potion(PotionType::WITHER()));
 		$this->map(Items::WITHER_SKELETON_SKULL(), self::skull(SkullType::WITHER_SKELETON()));
-		$this->map(Items::WITHER_SPLASH_POTION(), self::splashPotion(PotionType::WITHER()));
 		$this->map(Items::WOODEN_AXE(), self::id(Ids::WOODEN_AXE));
 		$this->map(Items::WOODEN_HOE(), self::id(Ids::WOODEN_HOE));
 		$this->map(Items::WOODEN_PICKAXE(), self::id(Ids::WOODEN_PICKAXE));

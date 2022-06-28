@@ -35,7 +35,6 @@ use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\CompoundTypeIds;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\bedrock\EntityLegacyIds;
-use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
@@ -291,9 +290,8 @@ class ItemFactory{
 		}
 
 		foreach(PotionType::getAll() as $type){
-			$typeId = PotionTypeIdMap::getInstance()->toId($type);
-			$this->register(new Potion(new IID(Ids::POTION, $typeId), $type->getDisplayName() . " Potion", $type));
-			$this->register(new SplashPotion(new IID(Ids::SPLASH_POTION, $typeId), $type->getDisplayName() . " Splash Potion", $type));
+			$this->register((new Potion(new IID(Ids::POTION, 0), "Potion"))->setType($type));
+			$this->register((new SplashPotion(new IID(Ids::SPLASH_POTION, 0), "Splash Potion"))->setType($type));
 		}
 
 		foreach(TreeType::getAll() as $type){
