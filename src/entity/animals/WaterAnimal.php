@@ -23,32 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\animals;
 
-use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\entity\Ageable;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\entity\EntitySizeInfo;
-use pocketmine\item\VanillaItems;
-use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
-use function atan2;
-use function mt_rand;
-use function sqrt;
-use const M_PI;
 
-class TropicalFish extends Animal{
-
-	public static function getNetworkTypeId() : string{ return EntityIds::TROPICALFISH; }
-
-	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
-
-	public function initEntity(CompoundTag $nbt) : void{
-		$this->setMaxHealth(10);
-		parent::initEntity($nbt);
+abstract class WaterAnimal extends Animal implements Ageable{
+	public function canBreathe() : bool{
+		return $this->isUnderwater();
 	}
 
-	public function getName() : string{
-		return "Tropical Fish";
+	public function onAirExpired() : void{
+		$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 2);
+		$this->attack($ev);
 	}
-
-	public function getDrops() : array{}
 }

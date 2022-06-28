@@ -23,32 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\animals;
 
-use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\entity\Ageable;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\entity\EntitySizeInfo;
-use pocketmine\item\VanillaItems;
-use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
-use function atan2;
-use function mt_rand;
-use function sqrt;
-use const M_PI;
 
-class Turtle extends Animal{
-
-	public static function getNetworkTypeId() : string{ return EntityIds::TURTLE; }
-
-	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
-
-	public function initEntity(CompoundTag $nbt) : void{
-		$this->setMaxHealth(10);
-		parent::initEntity($nbt);
-	}
-
-	public function getName() : string{
-		return "Turtle";
-	}
-
-	public function getDrops() : array{}
-}
+abstract class FlyingAnimal extends Animal implements Ageable{}

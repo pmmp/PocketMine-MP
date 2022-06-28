@@ -35,11 +35,11 @@ use function mt_rand;
 use function sqrt;
 use const M_PI;
 
-class Dolphin extends Animal{
+class Parrot extends FlyingAnimal{
 
-	public static function getNetworkTypeId() : string{ return EntityIds::DOLPHIN; }
+	public static function getNetworkTypeId() : string{ return EntityIds::PARROT; }
 
-	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(1, 0.5); }
 
 	public function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(10);
@@ -47,7 +47,7 @@ class Dolphin extends Animal{
 	}
 
 	public function getName() : string{
-		return "Dolphin";
+		return "Parrot";
 	}
 
 	public function getDrops() : array{}

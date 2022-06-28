@@ -35,11 +35,11 @@ use function mt_rand;
 use function sqrt;
 use const M_PI;
 
-class Bee extends Animal{
+class Bat extends FlyingAnimal{
 
-	public static function getNetworkTypeId() : string{ return EntityIds::BEE; }
+	public static function getNetworkTypeId() : string{ return EntityIds::BAT; }
 
-	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.9, 0.5); }
 
 	public function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(10);
@@ -47,7 +47,7 @@ class Bee extends Animal{
 	}
 
 	public function getName() : string{
-		return "Bee";
+		return "Bat";
 	}
 
 	public function getDrops() : array{}

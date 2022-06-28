@@ -35,9 +35,9 @@ use function mt_rand;
 use function sqrt;
 use const M_PI;
 
-class Pufferfish extends Animal{
+class Silverfish extends WaterAnimal{
 
-	public static function getNetworkTypeId() : string{ return EntityIds::PUFFERFISH; }
+	public static function getNetworkTypeId() : string{ return EntityIds::SILVERFISH; }
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
 
@@ -47,7 +47,7 @@ class Pufferfish extends Animal{
 	}
 
 	public function getName() : string{
-		return "Pufferfish";
+		return "Silverfish";
 	}
 
 	public function getDrops() : array{}

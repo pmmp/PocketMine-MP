@@ -35,9 +35,9 @@ use function mt_rand;
 use function sqrt;
 use const M_PI;
 
-class Parrot extends Animal{
+class Cod extends WaterAnimal{
 
-	public static function getNetworkTypeId() : string{ return EntityIds::PARROT; }
+	public static function getNetworkTypeId() : string{ return EntityIds::COD; }
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
 
@@ -47,7 +47,7 @@ class Parrot extends Animal{
 	}
 
 	public function getName() : string{
-		return "Parrot";
+		return "Cod";
 	}
 
 	public function getDrops() : array{}

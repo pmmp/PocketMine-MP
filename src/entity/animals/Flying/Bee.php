@@ -35,11 +35,11 @@ use function mt_rand;
 use function sqrt;
 use const M_PI;
 
-class Tadpole extends Animal{
+class Bee extends FlyingAnimal{
 
-	public static function getNetworkTypeId() : string{ return EntityIds::TADPOLE; }
+	public static function getNetworkTypeId() : string{ return EntityIds::BEE; }
 
-	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.5, 0.55); }
 
 	public function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(10);
@@ -47,7 +47,7 @@ class Tadpole extends Animal{
 	}
 
 	public function getName() : string{
-		return "Tadpole";
+		return "Bee";
 	}
 
 	public function getDrops() : array{}
