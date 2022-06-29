@@ -28,7 +28,6 @@ use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\data\bedrock\CoralTypeIdMap;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -38,6 +37,10 @@ use pocketmine\world\BlockTransaction;
 
 final class WallCoralFan extends BaseCoral{
 	use HorizontalFacingTrait;
+
+	public function getLegacyItemId() : int{
+		return $this->dead ? ItemIds::CORAL_FAN_DEAD : ItemIds::CORAL_FAN;
+	}
 
 	protected function writeStateToItemMeta() : int{
 		return CoralTypeIdMap::getInstance()->toId($this->coralType);
@@ -53,13 +56,6 @@ final class WallCoralFan extends BaseCoral{
 	protected function encodeState(BlockDataWriter $w) : void{
 		parent::encodeState($w);
 		$w->writeHorizontalFacing($this->facing);
-	}
-
-	public function asItem() : Item{
-		return ItemFactory::getInstance()->get(
-			$this->dead ? ItemIds::CORAL_FAN_DEAD : ItemIds::CORAL_FAN,
-			$this->writeStateToItemMeta()
-		);
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

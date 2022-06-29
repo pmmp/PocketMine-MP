@@ -27,7 +27,6 @@ use pocketmine\block\utils\BlockDataReader;
 use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\data\bedrock\CoralTypeIdMap;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -40,12 +39,8 @@ use function rad2deg;
 final class FloorCoralFan extends BaseCoral{
 	private int $axis = Axis::X;
 
-	public function asItem() : Item{
-		//TODO: HACK! workaround dead flag being lost when broken / blockpicked (original impl only uses first ID)
-		return ItemFactory::getInstance()->get(
-			$this->dead ? ItemIds::CORAL_FAN_DEAD : ItemIds::CORAL_FAN,
-			$this->writeStateToItemMeta()
-		);
+	public function getLegacyItemId() : int{
+		return $this->dead ? ItemIds::CORAL_FAN_DEAD : ItemIds::CORAL_FAN;
 	}
 
 	protected function writeStateToItemMeta() : int{
@@ -105,5 +100,4 @@ final class FloorCoralFan extends BaseCoral{
 	private function canBeSupportedBy(Block $block) : bool{
 		return $block->getSupportType(Facing::UP)->hasCenterSupport();
 	}
-
 }

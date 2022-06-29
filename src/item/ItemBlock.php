@@ -35,8 +35,8 @@ use pocketmine\block\BlockFactory;
 final class ItemBlock extends Item{
 	private int $blockFullId;
 
-	public function __construct(ItemIdentifier $identifier, Block $block){
-		parent::__construct($identifier, $block->getName());
+	public function __construct(Block $block){
+		parent::__construct(ItemIdentifier::fromBlock($block), $block->getName());
 		$this->blockFullId = $block->getStateId();
 	}
 

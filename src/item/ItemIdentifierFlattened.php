@@ -24,19 +24,18 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 final class ItemIdentifierFlattened extends ItemIdentifier{
-
 	/**
-	 * @param int[] $additionalIds
+	 * @param int[] $additionalLegacyIds
 	 */
-	public function __construct(int $id, int $meta, private array $additionalIds){
-		parent::__construct($id, $meta);
+	public function __construct(int $typeId, int $legacyId, int $legacyMeta, private array $additionalLegacyIds){
+		parent::__construct($typeId, $legacyId, $legacyMeta);
 	}
 
 	/** @return int[] */
-	public function getAdditionalIds() : array{ return $this->additionalIds; }
+	public function getAdditionalLegacyIds() : array{ return $this->additionalLegacyIds; }
 
 	/** @return int[] */
-	public function getAllIds() : array{
-		return [$this->getId(), ...$this->additionalIds];
+	public function getAllLegacyIds() : array{
+		return [$this->getLegacyId(), ...$this->additionalLegacyIds];
 	}
 }

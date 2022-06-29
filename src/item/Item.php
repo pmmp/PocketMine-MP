@@ -428,16 +428,15 @@ class Item implements \JsonSerializable{
 	}
 
 	final public function getTypeId() : int{
-		//don't use Item::getMeta(), since it might be overridden for non-type information (e.g. durability)
-		return ($this->identifier->getId() << 16) | $this->identifier->getMeta();
+		return $this->identifier->getTypeId();
 	}
 
 	public function getId() : int{
-		return $this->identifier->getId();
+		return $this->identifier->getLegacyId();
 	}
 
 	public function getMeta() : int{
-		return $this->identifier->getMeta();
+		return $this->identifier->getLegacyMeta();
 	}
 
 	/**

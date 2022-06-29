@@ -38,7 +38,7 @@ final class CoralFan extends Item{
 	}
 
 	public function getId() : int{
-		return $this->dead ? $this->identifierFlattened->getAdditionalIds()[0] : $this->identifierFlattened->getId();
+		return $this->dead ? $this->identifierFlattened->getAdditionalLegacyIds()[0] : $this->identifierFlattened->getLegacyId();
 	}
 
 	public function getMeta() : int{

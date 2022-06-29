@@ -23,26 +23,40 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-class ItemIdentifier{
-	private int $id;
-	private int $meta;
+use pocketmine\block\Block;
 
-	public function __construct(int $id, int $meta){
-		if($id < -0x8000 || $id > 0x7fff){ //signed short range
+class ItemIdentifier{
+	private int $legacyId;
+	private int $legacyMeta;
+
+	public function __construct(
+		private int $typeId,
+		int $legacyId,
+		int $legacyMeta
+	){
+		if($legacyId < -0x8000 || $legacyId > 0x7fff){ //signed short range
 			throw new \InvalidArgumentException("ID must be in range " . -0x8000 . " - " . 0x7fff);
 		}
-		if($meta < 0 || $meta > 0x7ffe){
+		if($legacyMeta < 0 || $legacyMeta > 0x7ffe){
 			throw new \InvalidArgumentException("Meta must be in range 0 - " . 0x7ffe);
 		}
-		$this->id = $id;
-		$this->meta = $meta;
+		$this->legacyId = $legacyId;
+		$this->legacyMeta = $legacyMeta;
 	}
 
-	public function getId() : int{
-		return $this->id;
+	public static function fromBlock(Block $block) : self{
+		//negative item type IDs are treated as block IDs
+		//TODO: maybe an ItemBlockIdentifier is in order?
+		return new self(-$block->getTypeId(), $block->getLegacyItemId(), $block->getLegacyItemMeta());
 	}
 
-	public function getMeta() : int{
-		return $this->meta;
+	public function getTypeId() : int{ return $this->typeId; }
+
+	public function getLegacyId() : int{
+		return $this->legacyId;
+	}
+
+	public function getLegacyMeta() : int{
+		return $this->legacyMeta;
 	}
 }

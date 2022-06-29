@@ -91,9 +91,17 @@ class Block{
 
 	public function asItem() : Item{
 		return ItemFactory::getInstance()->get(
-			$this->idInfo->getLegacyItemId(),
-			$this->idInfo->getLegacyVariant() | $this->writeStateToItemMeta()
+			$this->getLegacyItemId(),
+			$this->getLegacyItemMeta()
 		);
+	}
+
+	public function getLegacyItemId() : int{
+		return $this->idInfo->getLegacyItemId();
+	}
+
+	public function getLegacyItemMeta() : int{
+		return $this->idInfo->getLegacyVariant() | $this->writeStateToItemMeta();
 	}
 
 	protected function writeStateToItemMeta() : int{
