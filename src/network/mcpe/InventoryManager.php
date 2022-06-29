@@ -50,6 +50,7 @@ use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
+use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
@@ -84,6 +85,8 @@ class InventoryManager{
 	private ?int $pendingCloseWindowId = null;
 	/** @phpstan-var \Closure() : void */
 	private ?\Closure $pendingOpenWindowCallback = null;
+
+	private ?CreativeContentPacket $creativeContentsCache = null;
 
 	public function __construct(
 		private Player $player,
@@ -378,6 +381,21 @@ class InventoryManager{
 	}
 
 	public function syncCreative() : void{
-		$this->session->sendDataPacket($this->player->isSpectator() ? CreativeContentPacket::create([]) : CreativeInventory::getInstance()->getContentPacket());
+		$creativeInventory = CreativeInventory::getInstance();
+
+		if($this->creativeContentsCache === null || $creativeInventory->hasChanged()){
+			$typeConverter = TypeConverter::getInstance();
+			$nextEntryId = 1;
+
+			$this->creativeContentsCache = CreativeContentPacket::create(
+				array_map(function(Item $item) use($typeConverter, &$nextEntryId) : CreativeContentEntry{
+					return new CreativeContentEntry($nextEntryId++, $typeConverter->coreItemStackToNet($item));
+				}, $creativeInventory->getAll())
+			);
+
+			$creativeInventory->setChanged(false);
+		}
+
+		$this->session->sendDataPacket($this->player->isSpectator() ? CreativeContentPacket::create([]) : clone $this->creativeContentsCache);
 	}
 }

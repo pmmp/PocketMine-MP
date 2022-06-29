@@ -25,12 +25,8 @@ namespace pocketmine\inventory;
 
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\convert\TypeConverter;
-use pocketmine\network\mcpe\protocol\CreativeContentPacket;
-use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
 use pocketmine\utils\SingletonTrait;
 use Webmozart\PathUtil\Path;
-use function array_map;
 use function file_get_contents;
 use function json_decode;
 
@@ -40,7 +36,7 @@ final class CreativeInventory{
 	/** @var Item[] */
 	private array $creative = [];
 
-	private ?CreativeContentPacket $packetCache = null;
+	private bool $changed = false;
 
 	private function __construct(){
 		$creativeItems = json_decode(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "creativeitems.json")), true);
@@ -60,7 +56,7 @@ final class CreativeInventory{
 	 */
 	public function clear() : void{
 		$this->creative = [];
-		$this->packetCache = null;
+		$this->changed = true;
 	}
 
 	/**
@@ -90,7 +86,7 @@ final class CreativeInventory{
 	 */
 	public function add(Item $item) : void{
 		$this->creative[] = clone $item;
-		$this->packetCache = null;
+		$this->changed = true;
 	}
 
 	/**
@@ -101,7 +97,7 @@ final class CreativeInventory{
 		$index = $this->getItemIndex($item);
 		if($index !== -1){
 			unset($this->creative[$index]);
-			$this->packetCache = null;
+			$this->changed = true;
 		}
 	}
 
@@ -109,18 +105,11 @@ final class CreativeInventory{
 		return $this->getItemIndex($item) !== -1;
 	}
 
-	public function getContentPacket() : CreativeContentPacket{
-		if($this->packetCache === null){
-			$typeConverter = TypeConverter::getInstance();
-			$nextEntryId = 1;
+	public function hasChanged() : bool{
+		return $this->changed;
+	}
 
-			$this->packetCache = CreativeContentPacket::create(
-				array_map(function(Item $item) use($typeConverter, &$nextEntryId) : CreativeContentEntry{
-					return new CreativeContentEntry($nextEntryId++, $typeConverter->coreItemStackToNet($item));
-				}, $this->getAll())
-			);
-		}
-
-		return clone $this->packetCache;
+	public function setChanged(bool $changed) : void{
+		$this->changed = $changed;
 	}
 }
