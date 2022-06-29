@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\data\SavedDataLoadingException;
-use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\utils\SingletonTrait;
 use Webmozart\PathUtil\Path;
@@ -72,7 +71,7 @@ final class CreativeInventory{
 
 	public function getItemIndex(Item $item) : int{
 		foreach($this->creative as $i => $d){
-			if($item->equals($d, !($item instanceof Durable))){
+			if($item->equals($d, true, false)){
 				return $i;
 			}
 		}
