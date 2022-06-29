@@ -28,8 +28,7 @@ use pocketmine\crafting\FurnaceType;
 use pocketmine\crafting\RecipeIngredient;
 use pocketmine\crafting\ShapelessRecipeType;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\network\mcpe\convert\ItemTranslator;
+use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
@@ -149,35 +148,31 @@ final class CraftingDataCache{
 		}
 
 		$potionTypeRecipes = [];
-		foreach($manager->getPotionTypeRecipes() as $recipes){
-			foreach($recipes as $recipe){
-				$input = $converter->coreItemStackToNet($recipe->getInput());
-				$ingredient = $converter->coreItemStackToNet($recipe->getIngredient());
-				$output = $converter->coreItemStackToNet($recipe->getOutput());
-				$potionTypeRecipes[] = new ProtocolPotionTypeRecipe(
-					$input->getId(),
-					$input->getMeta(),
-					$ingredient->getId(),
-					$ingredient->getMeta(),
-					$output->getId(),
-					$output->getMeta()
-				);
-			}
+		foreach($manager->getPotionTypeRecipes() as $recipe){
+			$input = $converter->coreItemStackToNet($recipe->getInput());
+			$ingredient = $converter->coreItemStackToNet($recipe->getIngredient());
+			$output = $converter->coreItemStackToNet($recipe->getOutput());
+			$potionTypeRecipes[] = new ProtocolPotionTypeRecipe(
+				$input->getId(),
+				$input->getMeta(),
+				$ingredient->getId(),
+				$ingredient->getMeta(),
+				$output->getId(),
+				$output->getMeta()
+			);
 		}
 
 		$potionContainerChangeRecipes = [];
-		$itemTranslator = ItemTranslator::getInstance();
-		foreach($manager->getPotionContainerChangeRecipes() as $recipes){
-			foreach($recipes as $recipe){
-				$input = $itemTranslator->toNetworkId(ItemFactory::getInstance()->get($recipe->getInputItemId(), 0));
-				$ingredient = $itemTranslator->toNetworkId($recipe->getIngredient());
-				$output = $itemTranslator->toNetworkId(ItemFactory::getInstance()->get($recipe->getOutputItemId(), 0));
-				$potionContainerChangeRecipes[] = new ProtocolPotionContainerChangeRecipe(
-					$input[0],
-					$ingredient[0],
-					$output[0]
-				);
-			}
+		$itemTypeDictionary = GlobalItemTypeDictionary::getInstance()->getDictionary();
+		foreach($manager->getPotionContainerChangeRecipes() as $recipe){
+			$input = $itemTypeDictionary->fromStringId($recipe->getInputItemId());
+			$ingredient = $converter->coreItemStackToNet($recipe->getIngredient());
+			$output = $itemTypeDictionary->fromStringId($recipe->getOutputItemId());
+			$potionContainerChangeRecipes[] = new ProtocolPotionContainerChangeRecipe(
+				$input,
+				$ingredient->getId(),
+				$output
+			);
 		}
 
 		Timings::$craftingDataCacheRebuild->stopTiming();

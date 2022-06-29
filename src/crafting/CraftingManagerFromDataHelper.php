@@ -24,9 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\crafting;
 
 use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
+use pocketmine\data\bedrock\item\upgrade\LegacyItemIdToStringIdMap;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
@@ -172,17 +172,23 @@ final class CraftingManagerFromDataHelper{
 		}
 		foreach($recipes["potion_container_change"] as $recipe){
 			try{
-				$input = ItemFactory::getInstance()->get($recipe["input_item_id"]);
 				$ingredient = Item::jsonDeserialize($recipe["ingredient"]);
-				$output = ItemFactory::getInstance()->get($recipe["output_item_id"]);
 			}catch(SavedDataLoadingException){
 				//unknown item
 				continue;
 			}
+
+			//TODO: we'll be able to get rid of these conversions once the crafting data is updated
+			$inputId = LegacyItemIdToStringIdMap::getInstance()->legacyToString($recipe["input_item_id"]);
+			$outputId = LegacyItemIdToStringIdMap::getInstance()->legacyToString($recipe["output_item_id"]);
+			if($inputId === null || $outputId === null){
+				//unknown item
+				continue;
+			}
 			$result->registerPotionContainerChangeRecipe(new PotionContainerChangeRecipe(
-				$input->getId(),
+				$inputId,
 				$ingredient,
-				$output->getId()
+				$outputId
 			));
 		}
 
