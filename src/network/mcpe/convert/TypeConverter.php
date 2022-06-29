@@ -38,7 +38,6 @@ use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
-use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
@@ -62,8 +61,6 @@ use function get_class;
 class TypeConverter{
 	use SingletonTrait;
 
-	private const DAMAGE_TAG = "Damage"; //TAG_Int
-	private const DAMAGE_TAG_CONFLICT_RESOLUTION = "___Damage_ProtocolCollisionResolution___";
 	private const PM_ID_TAG = "___Id___";
 	private const PM_META_TAG = "___Meta___";
 
@@ -177,18 +174,6 @@ class TypeConverter{
 			$nbt->setInt(self::PM_META_TAG, $itemStack->getMeta());
 		}else{
 			[$id, $meta, $blockRuntimeId] = $idMeta;
-
-			if($itemStack instanceof Durable && $itemStack->getDamage() > 0){
-				if($nbt !== null){
-					if(($existing = $nbt->getTag(self::DAMAGE_TAG)) !== null){
-						$nbt->removeTag(self::DAMAGE_TAG);
-						$nbt->setTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION, $existing);
-					}
-				}else{
-					$nbt = new CompoundTag();
-				}
-				$nbt->setInt(self::DAMAGE_TAG, $itemStack->getDamage());
-			}
 		}
 
 		return new ItemStack(
@@ -226,14 +211,6 @@ class TypeConverter{
 				if(($metaTag = $compound->getTag(self::PM_META_TAG)) instanceof IntTag){
 					$meta = $metaTag->getValue();
 					$compound->removeTag(self::PM_META_TAG);
-				}
-			}
-			if(($damageTag = $compound->getTag(self::DAMAGE_TAG)) instanceof IntTag){
-				$meta = $damageTag->getValue();
-				$compound->removeTag(self::DAMAGE_TAG);
-				if(($conflicted = $compound->getTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION)) !== null){
-					$compound->removeTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION);
-					$compound->setTag(self::DAMAGE_TAG, $conflicted);
 				}
 			}
 			if($compound->count() === 0){
