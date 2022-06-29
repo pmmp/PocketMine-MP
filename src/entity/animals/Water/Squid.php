@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\animals;
 
 use pocketmine\entity\animation\SquidInkCloudAnimation;
 use pocketmine\event\entity\EntityDamageByEntityEvent;

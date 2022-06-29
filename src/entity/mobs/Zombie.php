@@ -26,8 +26,9 @@ namespace pocketmine\entity;
 use pocketmine\item\VanillaItems;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use function mt_rand;
+use pocketmine\entity\mobs\Mob;
 
-class Zombie extends Living{
+class Zombie extends Mob{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::ZOMBIE; }
 

@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity\animals;
+namespace pocketmine\entity\mobs;
 
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -35,7 +35,7 @@ use function mt_rand;
 use function sqrt;
 use const M_PI;
 
-class Stray extends Animal{
+class Stray extends Mob{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::STRAY; }
 
