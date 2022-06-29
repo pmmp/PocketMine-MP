@@ -67,7 +67,7 @@ final class LegacyStringToItemParser{
 		if(!is_array($mappings)) throw new AssumptionFailedError("Invalid mappings format, expected array");
 
 		foreach($mappings as $name => $id){
-			if(!is_int($id)) throw new AssumptionFailedError("Invalid mappings format, expected int values");
+			if(!is_string($id)) throw new AssumptionFailedError("Invalid mappings format, expected string values");
 			$result->addMapping((string) $name, $id);
 		}
 
@@ -75,8 +75,8 @@ final class LegacyStringToItemParser{
 	}
 
 	/**
-	 * @var int[]
-	 * @phpstan-var array<string, int>
+	 * @var string[]
+	 * @phpstan-var array<string, string>
 	 */
 	private array $map = [];
 
@@ -85,13 +85,13 @@ final class LegacyStringToItemParser{
 		private ItemDeserializer $itemDeserializer
 	){}
 
-	public function addMapping(string $alias, int $id) : void{
+	public function addMapping(string $alias, string $id) : void{
 		$this->map[$alias] = $id;
 	}
 
 	/**
-	 * @return int[]
-	 * @phpstan-return array<string, int>
+	 * @return string[]
+	 * @phpstan-return array<string, string>
 	 */
 	public function getMappings() : array{
 		return $this->map;
@@ -123,11 +123,7 @@ final class LegacyStringToItemParser{
 		if($legacyId === null){
 			throw new LegacyStringToItemParserException("Unable to resolve \"" . $input . "\" to a valid item");
 		}
-		try{
-			$itemData = $this->itemDataUpgrader->upgradeItemTypeDataInt($legacyId, $meta, 1, null);
-		}catch(SavedDataLoadingException){
-			throw new LegacyStringToItemParserException("Unable to resolve \"" . $input . "\" to a valid item");
-		}
+		$itemData = $this->itemDataUpgrader->upgradeItemTypeDataString($legacyId, $meta, 1, null);
 
 		try{
 			return $this->itemDeserializer->deserializeStack($itemData);
