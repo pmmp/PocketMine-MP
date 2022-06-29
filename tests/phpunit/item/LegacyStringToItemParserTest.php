@@ -38,8 +38,7 @@ class LegacyStringToItemParserTest extends TestCase{
 			["351:4", ItemIds::DYE, 4],
 			["stone:3", ItemIds::STONE, 3],
 			["minecraft:string", ItemIds::STRING, 0],
-			["diamond_pickaxe", ItemIds::DIAMOND_PICKAXE, 0],
-			["diamond_pickaxe:5", ItemIds::DIAMOND_PICKAXE, 5]
+			["diamond_pickaxe", ItemIds::DIAMOND_PICKAXE, 0]
 		];
 	}
 
