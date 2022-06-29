@@ -143,7 +143,7 @@ class Leaves extends Transparent{
 
 		$drops = [];
 		if(mt_rand(1, 20) === 1){ //Saplings
-			$drops[] = match($this->treeType){
+			$drops[] = (match($this->treeType){
 				TreeType::ACACIA() => VanillaBlocks::ACACIA_SAPLING(),
 				TreeType::BIRCH() => VanillaBlocks::BIRCH_SAPLING(),
 				TreeType::DARK_OAK() => VanillaBlocks::DARK_OAK_SAPLING(),
@@ -151,7 +151,7 @@ class Leaves extends Transparent{
 				TreeType::OAK() => VanillaBlocks::OAK_SAPLING(),
 				TreeType::SPRUCE() => VanillaBlocks::SPRUCE_SAPLING(),
 				default => throw new AssumptionFailedError("Unreachable")
-			};
+			})->asItem();
 		}
 		if(($this->treeType->equals(TreeType::OAK()) || $this->treeType->equals(TreeType::DARK_OAK())) && mt_rand(1, 200) === 1){ //Apples
 			$drops[] = VanillaItems::APPLE();

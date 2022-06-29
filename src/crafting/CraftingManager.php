@@ -258,9 +258,9 @@ class CraftingManager{
 	public function matchBrewingRecipe(Item $input, Item $ingredient) : ?BrewingRecipe{
 		$inputHash = morton2d_encode($input->getId(), $input->getMeta());
 		$ingredientHash = morton2d_encode($ingredient->getId(), $ingredient->getMeta());
-		$recipe = $this->brewingRecipeCache[$inputHash][$ingredientHash] ?? null;
-		if($recipe !== null){
-			return $recipe;
+		$cached = $this->brewingRecipeCache[$inputHash][$ingredientHash] ?? null;
+		if($cached !== null){
+			return $cached;
 		}
 
 		foreach($this->potionContainerChangeRecipes as $recipe){
