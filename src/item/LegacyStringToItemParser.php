@@ -23,10 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\data\bedrock\item\ItemDeserializer;
+use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
+use pocketmine\data\bedrock\item\upgrade\ItemDataUpgrader;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
+use pocketmine\world\format\io\GlobalItemDataHandlers;
 use Webmozart\PathUtil\Path;
 use function explode;
 use function file_get_contents;
@@ -52,7 +56,10 @@ final class LegacyStringToItemParser{
 	use SingletonTrait;
 
 	private static function make() : self{
-		$result = new self(ItemFactory::getInstance());
+		$result = new self(
+			GlobalItemDataHandlers::getUpgrader(),
+			GlobalItemDataHandlers::getDeserializer()
+		);
 
 		$mappingsRaw = Utils::assumeNotFalse(@file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, 'item_from_string_bc_map.json')), "Missing required resource file");
 
@@ -73,7 +80,10 @@ final class LegacyStringToItemParser{
 	 */
 	private array $map = [];
 
-	public function __construct(private ItemFactory $itemFactory){}
+	public function __construct(
+		private ItemDataUpgrader $itemDataUpgrader,
+		private ItemDeserializer $itemDeserializer
+	){}
 
 	public function addMapping(string $alias, int $id) : void{
 		$this->map[$alias] = $id;
@@ -109,17 +119,21 @@ final class LegacyStringToItemParser{
 			throw new LegacyStringToItemParserException("Unable to parse \"" . $b[1] . "\" from \"" . $input . "\" as a valid meta value");
 		}
 
-		if(isset($this->map[strtolower($b[0])])){
-			try{
-				$item = $this->itemFactory->get($this->map[strtolower($b[0])], $meta);
-			}catch(SavedDataLoadingException $e){
-				throw new LegacyStringToItemParserException($e->getMessage(), 0, $e);
-			}
-		}else{
+		$legacyId = $this->map[strtolower($b[0])] ?? null;
+		if($legacyId === null){
+			throw new LegacyStringToItemParserException("Unable to resolve \"" . $input . "\" to a valid item");
+		}
+		try{
+			$itemData = $this->itemDataUpgrader->upgradeItemTypeDataInt($legacyId, $meta, 1, null);
+		}catch(SavedDataLoadingException){
 			throw new LegacyStringToItemParserException("Unable to resolve \"" . $input . "\" to a valid item");
 		}
 
-		return $item;
+		try{
+			return $this->itemDeserializer->deserializeStack($itemData);
+		}catch(ItemTypeDeserializeException $e){
+			throw new LegacyStringToItemParserException($e->getMessage(), 0, $e);
+		}
 	}
 
 	protected function reprocess(string $input) : string{
