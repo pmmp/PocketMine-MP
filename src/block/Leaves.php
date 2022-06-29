@@ -29,12 +29,11 @@ use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\item\ItemIds;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\World;
 use function mt_rand;
@@ -144,7 +143,15 @@ class Leaves extends Transparent{
 
 		$drops = [];
 		if(mt_rand(1, 20) === 1){ //Saplings
-			$drops[] = ItemFactory::getInstance()->get(ItemIds::SAPLING, $this->treeType->getMagicNumber());
+			$drops[] = match($this->treeType){
+				TreeType::ACACIA() => VanillaBlocks::ACACIA_SAPLING(),
+				TreeType::BIRCH() => VanillaBlocks::BIRCH_SAPLING(),
+				TreeType::DARK_OAK() => VanillaBlocks::DARK_OAK_SAPLING(),
+				TreeType::JUNGLE() => VanillaBlocks::JUNGLE_SAPLING(),
+				TreeType::OAK() => VanillaBlocks::OAK_SAPLING(),
+				TreeType::SPRUCE() => VanillaBlocks::SPRUCE_SAPLING(),
+				default => throw new AssumptionFailedError("Unreachable")
+			};
 		}
 		if(($this->treeType->equals(TreeType::OAK()) || $this->treeType->equals(TreeType::DARK_OAK())) && mt_rand(1, 200) === 1){ //Apples
 			$drops[] = VanillaItems::APPLE();
