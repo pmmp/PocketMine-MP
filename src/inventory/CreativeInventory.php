@@ -28,6 +28,7 @@ use pocketmine\item\Item;
 use pocketmine\utils\SingletonTrait;
 use Webmozart\PathUtil\Path;
 use function file_get_contents;
+use function is_array;
 use function json_decode;
 
 final class CreativeInventory{
