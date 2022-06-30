@@ -41,7 +41,7 @@ final class CreativeInventory{
 
 		foreach($creativeItems as $data){
 			try{
-				$item = Item::jsonDeserialize($data);
+				$item = Item::legacyJsonDeserialize($data);
 			}catch(SavedDataLoadingException){
 				//unknown item
 				continue;

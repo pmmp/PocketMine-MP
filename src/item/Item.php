@@ -575,38 +575,21 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
-	 * Returns an array of item stack properties that can be serialized to json.
-	 *
-	 * @return mixed[]
-	 * @phpstan-return array{id: int, damage?: int, count?: int, nbt_b64?: string}
+	 * @phpstan-return never
 	 */
-	final public function jsonSerialize() : array{
-		$data = [
-			"id" => $this->getId()
-		];
-
-		if($this->getMeta() !== 0){
-			$data["damage"] = $this->getMeta();
-		}
-
-		if($this->getCount() !== 1){
-			$data["count"] = $this->getCount();
-		}
-
-		if($this->hasNamedTag()){
-			$data["nbt_b64"] = base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($this->getNamedTag())));
-		}
-
-		return $data;
+	public function jsonSerialize() : array{
+		throw new \LogicException("json_encode()ing Item instances is no longer supported. Make your own method to convert the item to an array or stdClass.");
 	}
 
 	/**
+	 * @deprecated This is intended for deserializing legacy data from the old crafting JSON and creative JSON data.
+	 *
 	 * Returns an Item from properties created in an array by {@link Item#jsonSerialize}
 	 * @param mixed[] $data
 	 *
 	 * @throws SavedDataLoadingException
 	 */
-	final public static function jsonDeserialize(array $data) : Item{
+	final public static function legacyJsonDeserialize(array $data) : Item{
 		$nbt = "";
 
 		//Backwards compatibility
@@ -617,9 +600,19 @@ class Item implements \JsonSerializable{
 		}elseif(isset($data["nbt_b64"])){
 			$nbt = base64_decode($data["nbt_b64"], true);
 		}
-		return ItemFactory::getInstance()->get(
-			(int) $data["id"], (int) ($data["damage"] ?? 0), (int) ($data["count"] ?? 1), $nbt !== "" ? (new LittleEndianNbtSerializer())->read($nbt)->mustGetCompoundTag() : null
+
+		$itemStackData = GlobalItemDataHandlers::getUpgrader()->upgradeItemTypeDataInt(
+			(int) $data["id"],
+			(int) ($data["damage"] ?? 0),
+			(int) ($data["count"] ?? 1),
+			$nbt !== "" ? (new LittleEndianNbtSerializer())->read($nbt)->mustGetCompoundTag() : null
 		);
+
+		try{
+			return GlobalItemDataHandlers::getDeserializer()->deserializeStack($itemStackData);
+		}catch(ItemTypeDeserializeException $e){
+			throw new SavedDataLoadingException($e->getMessage(), 0, $e);
+		}
 	}
 
 	/**

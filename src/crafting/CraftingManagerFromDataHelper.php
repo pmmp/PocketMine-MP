@@ -57,7 +57,7 @@ final class CraftingManagerFromDataHelper{
 
 		//TODO: we need to stop using jsonDeserialize for this
 		try{
-			$item = Item::jsonDeserialize($data);
+			$item = Item::legacyJsonDeserialize($data);
 		}catch(SavedDataLoadingException){
 			//unknown item
 			return null;
@@ -74,7 +74,7 @@ final class CraftingManagerFromDataHelper{
 		$result = new CraftingManager();
 
 		$ingredientDeserializerFunc = \Closure::fromCallable([self::class, "deserializeIngredient"]);
-		$itemDeserializerFunc = \Closure::fromCallable([Item::class, 'jsonDeserialize']);
+		$itemDeserializerFunc = \Closure::fromCallable([Item::class, 'legacyJsonDeserialize']);
 
 		foreach($recipes["shapeless"] as $recipe){
 			$recipeType = match($recipe["block"]){
@@ -142,7 +142,7 @@ final class CraftingManagerFromDataHelper{
 				continue;
 			}
 			try{
-				$output = Item::jsonDeserialize($recipe["output"]);
+				$output = Item::legacyJsonDeserialize($recipe["output"]);
 			}catch(SavedDataLoadingException){
 				continue;
 			}
@@ -157,9 +157,9 @@ final class CraftingManagerFromDataHelper{
 		}
 		foreach($recipes["potion_type"] as $recipe){
 			try{
-				$input = Item::jsonDeserialize($recipe["input"]);
-				$ingredient = Item::jsonDeserialize($recipe["ingredient"]);
-				$output = Item::jsonDeserialize($recipe["output"]);
+				$input = Item::legacyJsonDeserialize($recipe["input"]);
+				$ingredient = Item::legacyJsonDeserialize($recipe["ingredient"]);
+				$output = Item::legacyJsonDeserialize($recipe["output"]);
 			}catch(SavedDataLoadingException){
 				//unknown item
 				continue;
@@ -172,7 +172,7 @@ final class CraftingManagerFromDataHelper{
 		}
 		foreach($recipes["potion_container_change"] as $recipe){
 			try{
-				$ingredient = Item::jsonDeserialize($recipe["ingredient"]);
+				$ingredient = Item::legacyJsonDeserialize($recipe["ingredient"]);
 			}catch(SavedDataLoadingException){
 				//unknown item
 				continue;
