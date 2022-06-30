@@ -24,14 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\convert;
 
 use PHPUnit\Framework\TestCase;
+use pocketmine\block\BaseBanner;
 use pocketmine\block\Bed;
 use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockTypeIds;
 use pocketmine\block\Skull;
-use pocketmine\block\utils\DyeColor;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
-use pocketmine\block\BaseBanner;
 use function print_r;
 
 final class BlockSerializerDeserializerTest extends TestCase{
