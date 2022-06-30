@@ -864,7 +864,7 @@ class BlockFactory{
 
 		//TODO: this bruteforce approach to discovering all valid states is very inefficient for larger state data sizes
 		//at some point we'll need to find a better way to do this
-		$bits = $block->getRequiredStateDataBits();
+		$bits = $block->getRequiredTypeDataBits() + $block->getRequiredStateDataBits();
 		if($bits > Block::INTERNAL_STATE_DATA_BITS){
 			throw new \InvalidArgumentException("Block state data cannot use more than " . Block::INTERNAL_STATE_DATA_BITS . " bits");
 		}

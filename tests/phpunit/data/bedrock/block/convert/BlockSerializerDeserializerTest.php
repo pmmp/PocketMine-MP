@@ -24,9 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\convert;
 
 use PHPUnit\Framework\TestCase;
+use pocketmine\block\Bed;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\BlockTypeIds;
+use pocketmine\block\Skull;
+use pocketmine\block\utils\DyeColor;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
+use pocketmine\block\BaseBanner;
 use function print_r;
 
 final class BlockSerializerDeserializerTest extends TestCase{
@@ -49,6 +54,19 @@ final class BlockSerializerDeserializerTest extends TestCase{
 				$newBlock = $this->deserializer->deserializeBlock($blockStateData);
 			}catch(BlockStateDeserializeException $e){
 				self::fail($e->getMessage());
+			}
+
+			//The following are workarounds for differences in blockstate representation in Bedrock vs PM
+			//In these cases, some properties are not stored in the blockstate (but rather in the block entity NBT), but
+			//they do form part of the internal blockstate hash in PM. This leads to inconsistencies when serializing
+			//and deserializing blockstates.
+			if(
+				($block instanceof BaseBanner && $newBlock instanceof BaseBanner) ||
+				($block instanceof Bed && $newBlock instanceof Bed)
+			){
+				$newBlock->setColor($block->getColor());
+			}elseif($block instanceof Skull && $newBlock instanceof Skull){
+				$newBlock->setSkullType($block->getSkullType());
 			}
 
 			self::assertSame($block->getStateId(), $newBlock->getStateId(), "Mismatch of blockstate for " . $block->getName() . ", " . print_r($block, true) . " vs " . print_r($newBlock, true));

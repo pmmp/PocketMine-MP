@@ -60,14 +60,12 @@ class Bed extends Transparent{
 		$this->facing = $r->readHorizontalFacing();
 		$this->occupied = $r->readBool();
 		$this->head = $r->readBool();
-		//TODO: we currently purposely don't read or write colour (it's stored on the tile)
 	}
 
 	protected function encodeState(BlockDataWriter $w) : void{
 		$w->writeHorizontalFacing($this->facing);
 		$w->writeBool($this->occupied);
 		$w->writeBool($this->head);
-		//TODO: we currently purposely don't read or write colour (it's stored on the tile)
 	}
 
 	public function readStateFromWorld() : void{

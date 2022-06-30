@@ -108,16 +108,31 @@ class Block{
 		return 0;
 	}
 
+	public function getRequiredTypeDataBits() : int{ return 0; }
+
 	public function getRequiredStateDataBits() : int{ return 0; }
 
 	final public function decodeStateData(int $data) : void{
-		$givenBits = $this->getRequiredStateDataBits();
+		$typeBits = $this->getRequiredTypeDataBits();
+		$stateBits = $this->getRequiredStateDataBits();
+		$givenBits = $typeBits + $stateBits;
 		$reader = new BlockDataReader($givenBits, $data);
-		$this->decodeState($reader);
+
+		$this->decodeType($reader);
 		$readBits = $reader->getOffset();
-		if($givenBits !== $readBits){
-			throw new \LogicException("Exactly $givenBits bits of state data were provided, but only $readBits were read");
+		if($typeBits !== $readBits){
+			throw new \LogicException("Exactly $typeBits bits of type data were provided, but $readBits were read");
 		}
+
+		$this->decodeState($reader);
+		$readBits = $reader->getOffset() - $typeBits;
+		if($stateBits !== $readBits){
+			throw new \LogicException("Exactly $stateBits bits of state data were provided, but $readBits were read");
+		}
+	}
+
+	protected function decodeType(BlockDataReader $r) : void{
+		//NOOP
 	}
 
 	protected function decodeState(BlockDataReader $r) : void{
@@ -128,15 +143,28 @@ class Block{
 	 * @internal
 	 */
 	final public function computeStateData() : int{
-		$requiredBits = $this->getRequiredStateDataBits();
+		$typeBits = $this->getRequiredTypeDataBits();
+		$stateBits = $this->getRequiredStateDataBits();
+		$requiredBits = $typeBits + $stateBits;
 		$writer = new BlockDataWriter($requiredBits);
-		$this->encodeState($writer);
 
+		$this->encodeType($writer);
 		$writtenBits = $writer->getOffset();
-		if($requiredBits !== $writtenBits){
-			throw new \LogicException("Exactly $requiredBits bits of state data were expected, but only $writtenBits were written");
+		if($typeBits !== $writtenBits){
+			throw new \LogicException("Exactly $typeBits bits of type data were expected, but $writtenBits were written");
 		}
+
+		$this->encodeState($writer);
+		$writtenBits = $writer->getOffset() - $typeBits;
+		if($stateBits !== $writtenBits){
+			throw new \LogicException("Exactly $stateBits bits of state data were expected, but $writtenBits were written");
+		}
+
 		return $writer->getValue();
+	}
+
+	protected function encodeType(BlockDataWriter $w) : void{
+		//NOOP
 	}
 
 	protected function encodeState(BlockDataWriter $w) : void{

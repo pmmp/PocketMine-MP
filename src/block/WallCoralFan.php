@@ -49,12 +49,10 @@ final class WallCoralFan extends BaseCoral{
 	public function getRequiredStateDataBits() : int{ return parent::getRequiredStateDataBits() + 2; }
 
 	protected function decodeState(BlockDataReader $r) : void{
-		parent::decodeState($r);
 		$this->facing = $r->readHorizontalFacing();
 	}
 
 	protected function encodeState(BlockDataWriter $w) : void{
-		parent::encodeState($w);
 		$w->writeHorizontalFacing($this->facing);
 	}
 

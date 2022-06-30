@@ -55,16 +55,6 @@ abstract class BaseBanner extends Transparent{
 		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
-	public function getRequiredStateDataBits() : int{ return 0; }
-
-	protected function decodeState(BlockDataReader $r) : void{
-		//TODO: we currently purposely don't read or write colour (it's stored on the tile)
-	}
-
-	protected function encodeState(BlockDataWriter $w) : void{
-		//TODO: we currently purposely don't read or write colour (it's stored on the tile)
-	}
-
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);

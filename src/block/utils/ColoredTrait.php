@@ -37,15 +37,15 @@ trait ColoredTrait{
 		return DyeColorIdMap::getInstance()->toId($this->color);
 	}
 
-	public function getRequiredStateDataBits() : int{ return 4; }
+	public function getRequiredTypeDataBits() : int{ return 4; }
 
-	/** @see Block::decodeState() */
-	protected function decodeState(BlockDataReader $r) : void{
+	/** @see Block::decodeType() */
+	protected function decodeType(BlockDataReader $r) : void{
 		$this->color = BlockDataReaderHelper::readDyeColor($r);
 	}
 
-	/** @see Block::encodeState() */
-	protected function encodeState(BlockDataWriter $w) : void{
+	/** @see Block::encodeType() */
+	protected function encodeType(BlockDataWriter $w) : void{
 		BlockDataWriterHelper::writeDyeColor($w, $this->color);
 	}
 

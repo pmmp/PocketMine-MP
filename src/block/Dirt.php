@@ -39,13 +39,13 @@ class Dirt extends Opaque{
 		return $this->coarse ? BlockLegacyMetadata::DIRT_FLAG_COARSE : 0;
 	}
 
-	public function getRequiredStateDataBits() : int{ return 1; }
+	public function getRequiredTypeDataBits() : int{ return 1; }
 
-	protected function decodeState(BlockDataReader $r) : void{
+	protected function decodeType(BlockDataReader $r) : void{
 		$this->coarse = $r->readBool();
 	}
 
-	protected function encodeState(BlockDataWriter $w) : void{
+	protected function encodeType(BlockDataWriter $w) : void{
 		$w->writeBool($this->coarse);
 	}
 

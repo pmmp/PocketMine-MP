@@ -33,22 +33,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 final class FloorBanner extends BaseBanner{
-	use SignLikeRotationTrait {
-		decodeState as decodeRotation;
-		encodeState as encodeRotation;
-	}
-
-	public function getRequiredStateDataBits() : int{ return 4; }
-
-	protected function decodeState(BlockDataReader $r) : void{
-		parent::decodeState($r);
-		$this->decodeRotation($r);
-	}
-
-	protected function encodeState(BlockDataWriter $w) : void{
-		parent::encodeState($w);
-		$this->encodeRotation($w);
-	}
+	use SignLikeRotationTrait;
 
 	protected function getSupportingFace() : int{
 		return Facing::DOWN;

@@ -50,12 +50,10 @@ final class FloorCoralFan extends BaseCoral{
 	public function getRequiredStateDataBits() : int{ return parent::getRequiredStateDataBits() + 1; }
 
 	protected function decodeState(BlockDataReader $r) : void{
-		parent::decodeState($r);
 		$this->axis = $r->readHorizontalAxis();
 	}
 
 	protected function encodeState(BlockDataWriter $w) : void{
-		parent::encodeState($w);
 		$w->writeHorizontalAxis($this->axis);
 	}
 

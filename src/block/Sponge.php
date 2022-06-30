@@ -33,13 +33,13 @@ class Sponge extends Opaque{
 		return $this->wet ? BlockLegacyMetadata::SPONGE_FLAG_WET : 0;
 	}
 
-	public function getRequiredStateDataBits() : int{ return 1; }
+	public function getRequiredTypeDataBits() : int{ return 1; }
 
-	protected function decodeState(BlockDataReader $r) : void{
+	protected function decodeType(BlockDataReader $r) : void{
 		$this->wet = $r->readBool();
 	}
 
-	protected function encodeState(BlockDataWriter $w) : void{
+	protected function encodeType(BlockDataWriter $w) : void{
 		$w->writeBool($this->wet);
 	}
 

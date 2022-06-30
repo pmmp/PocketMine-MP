@@ -23,18 +23,22 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\block\Block;
+
 trait CoralTypeTrait{
 	protected CoralType $coralType;
 	protected bool $dead = false;
 
-	public function getRequiredStateDataBits() : int{ return 4; }
+	public function getRequiredTypeDataBits() : int{ return 4; }
 
-	protected function decodeState(BlockDataReader $r) : void{
+	/** @see Block::decodeType() */
+	protected function decodeType(BlockDataReader $r) : void{
 		$this->coralType = BlockDataReaderHelper::readCoralType($r);
 		$this->dead = $r->readBool();
 	}
 
-	protected function encodeState(BlockDataWriter $w) : void{
+	/** @see Block::encodeType() */
+	protected function encodeType(BlockDataWriter $w) : void{
 		BlockDataWriterHelper::writeCoralType($w, $this->coralType);
 		$w->writeBool($this->dead);
 	}

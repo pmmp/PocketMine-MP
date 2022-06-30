@@ -34,22 +34,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 final class WallBanner extends BaseBanner{
-	use HorizontalFacingTrait {
-		decodeState as decodeFacing;
-		encodeState as encodeFacing;
-	}
-
-	public function getRequiredStateDataBits() : int{ return 2; }
-
-	protected function decodeState(BlockDataReader $r) : void{
-		parent::decodeState($r);
-		$this->decodeFacing($r);
-	}
-
-	protected function encodeState(BlockDataWriter $w) : void{
-		parent::encodeState($w);
-		$this->encodeFacing($w);
-	}
+	use HorizontalFacingTrait;
 
 	protected function getSupportingFace() : int{
 		return Facing::opposite($this->facing);

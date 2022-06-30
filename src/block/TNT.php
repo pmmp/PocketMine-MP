@@ -49,16 +49,24 @@ class TNT extends Opaque{
 		return $this->worksUnderwater ? BlockLegacyMetadata::TNT_FLAG_UNDERWATER : 0;
 	}
 
-	public function getRequiredStateDataBits() : int{ return 2; }
+	public function getRequiredTypeDataBits() : int{ return 1; }
+
+	protected function decodeType(BlockDataReader $r) : void{
+		$this->worksUnderwater = $r->readBool();
+	}
+
+	protected function encodeType(BlockDataWriter $w) : void{
+		$w->writeBool($this->worksUnderwater);
+	}
+
+	public function getRequiredStateDataBits() : int{ return 1; }
 
 	protected function decodeState(BlockDataReader $r) : void{
 		$this->unstable = $r->readBool();
-		$this->worksUnderwater = $r->readBool();
 	}
 
 	protected function encodeState(BlockDataWriter $w) : void{
 		$w->writeBool($this->unstable);
-		$w->writeBool($this->worksUnderwater);
 	}
 
 	public function isUnstable() : bool{ return $this->unstable; }

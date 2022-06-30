@@ -626,7 +626,7 @@ final class VanillaBlocks{
 		self::register("barrel", $factory->get(Ids::BARREL, 0));
 		self::register("barrier", $factory->get(Ids::BARRIER, 0));
 		self::register("beacon", $factory->get(Ids::BEACON, 0));
-		self::register("bed", $factory->get(Ids::BED, 0));
+		self::register("bed", $factory->get(Ids::BED, 13));
 		self::register("bedrock", $factory->get(Ids::BEDROCK, 0));
 		self::register("beetroots", $factory->get(Ids::BEETROOTS, 0));
 		self::register("bell", $factory->get(Ids::BELL, 1));
@@ -943,7 +943,7 @@ final class VanillaBlocks{
 		self::register("material_reducer", $factory->get(Ids::MATERIAL_REDUCER, 0));
 		self::register("melon", $factory->get(Ids::MELON, 0));
 		self::register("melon_stem", $factory->get(Ids::MELON_STEM, 0));
-		self::register("mob_head", $factory->get(Ids::MOB_HEAD, 2));
+		self::register("mob_head", $factory->get(Ids::MOB_HEAD, 19));
 		self::register("monster_spawner", $factory->get(Ids::MONSTER_SPAWNER, 0));
 		self::register("mossy_cobblestone", $factory->get(Ids::MOSSY_COBBLESTONE, 0));
 		self::register("mossy_cobblestone_slab", $factory->get(Ids::MOSSY_COBBLESTONE_SLAB, 0));
