@@ -488,6 +488,7 @@ abstract class Entity{
 			if($this->getNameTag() !== ""){
 				$nbt->setString("CustomName", $this->getNameTag());
 				$nbt->setByte("CustomNameVisible", $this->isNameTagVisible() ? 1 : 0);
+				$nbt->setByte("CustomNameAlwaysVisible", $this->isNameTagAlwaysVisible() ? 1 : 0);
 			}
 		}
 
@@ -514,6 +515,8 @@ abstract class Entity{
 			}else{
 				$this->setNameTagVisible($nbt->getByte("CustomNameVisible", 1) !== 0);
 			}
+			
+			$this->setNameTagAlwaysVisible($nbt->getByte("CustomNameAlwaysVisible", 0) !== 0);
 		}
 	}
 
