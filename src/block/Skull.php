@@ -31,6 +31,7 @@ use pocketmine\block\utils\BlockDataWriterHelper;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\SkullType;
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -153,7 +154,8 @@ class Skull extends Flowable{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	protected function writeStateToItemMeta() : int{
-		return $this->skullType->getMagicNumber();
+	public function asItem() : Item{
+		//TODO: we might be able to get rid of this
+		return VanillaItems::MOB_HEAD()->setSkullType($this->skullType);
 	}
 }

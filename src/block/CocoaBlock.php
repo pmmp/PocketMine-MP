@@ -147,7 +147,7 @@ class CocoaBlock extends Transparent{
 		];
 	}
 
-	public function getPickedItem(bool $addUserData = false) : Item{
+	public function asItem() : Item{
 		return VanillaItems::COCOA_BEANS();
 	}
 }

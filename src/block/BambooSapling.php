@@ -29,6 +29,7 @@ use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Bamboo as ItemBamboo;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
@@ -126,6 +127,6 @@ final class BambooSapling extends Flowable{
 	}
 
 	public function asItem() : Item{
-		return VanillaBlocks::BAMBOO()->asItem();
+		return VanillaItems::BAMBOO();
 	}
 }

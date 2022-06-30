@@ -30,6 +30,7 @@ use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Bamboo as ItemBamboo;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -242,5 +243,9 @@ class Bamboo extends Transparent{
 			$this->ready = true;
 			$world->setBlock($this->position, $this);
 		}
+	}
+
+	public function asItem() : Item{
+		return VanillaItems::BAMBOO();
 	}
 }

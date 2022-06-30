@@ -26,9 +26,8 @@ namespace pocketmine\block;
 use pocketmine\block\utils\BlockDataReader;
 use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\block\utils\HorizontalFacingTrait;
-use pocketmine\data\bedrock\CoralTypeIdMap;
 use pocketmine\item\Item;
-use pocketmine\item\ItemIds;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -37,14 +36,6 @@ use pocketmine\world\BlockTransaction;
 
 final class WallCoralFan extends BaseCoral{
 	use HorizontalFacingTrait;
-
-	public function getLegacyItemId() : int{
-		return $this->dead ? ItemIds::CORAL_FAN_DEAD : ItemIds::CORAL_FAN;
-	}
-
-	protected function writeStateToItemMeta() : int{
-		return CoralTypeIdMap::getInstance()->toId($this->coralType);
-	}
 
 	public function getRequiredStateDataBits() : int{ return parent::getRequiredStateDataBits() + 2; }
 
@@ -76,5 +67,9 @@ final class WallCoralFan extends BaseCoral{
 
 	private function canBeSupportedBy(Block $block, int $face) : bool{
 		return $block->getSupportType($face)->hasCenterSupport();
+	}
+
+	public function asItem() : Item{
+		return VanillaItems::CORAL_FAN()->setCoralType($this->coralType)->setDead($this->dead);
 	}
 }

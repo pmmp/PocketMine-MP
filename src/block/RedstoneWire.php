@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -53,5 +54,9 @@ class RedstoneWire extends Flowable{
 
 	private function canBeSupportedBy(Block $block) : bool{
 		return $block->getSupportType(Facing::UP)->hasCenterSupport();
+	}
+
+	public function asItem() : Item{
+		return VanillaItems::REDSTONE_DUST();
 	}
 }
