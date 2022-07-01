@@ -32,6 +32,6 @@ class SharpnessEnchantment extends MeleeWeaponEnchantment{
 	}
 
 	public function getDamageBonus(int $enchantmentLevel) : float{
-		return 0.5 * ($enchantmentLevel + 1);
+		return 1.25 * $enchantmentLevel;
 	}
 }
