@@ -33,19 +33,15 @@ use pocketmine\crafting\ExactRecipeIngredient;
 use pocketmine\crafting\MetaWildcardRecipeIngredient;
 use pocketmine\crafting\RecipeIngredient;
 use pocketmine\data\bedrock\item\BlockItemIdMap;
-use pocketmine\data\SavedDataLoadingException;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\item\ItemIds;
 use pocketmine\item\VanillaItems;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\protocol\types\GameMode as ProtocolGameMode;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
@@ -211,28 +207,6 @@ class TypeConverter{
 
 		if($compound !== null){
 			$compound = clone $compound;
-
-			$id = $meta = null;
-			if($itemResult->getId() === ItemIds::INFO_UPDATE && $itemResult->getMeta() === 0){
-				if(($idTag = $compound->getTag(self::PM_ID_TAG)) instanceof IntTag){
-					$id = $idTag->getValue();
-					$compound->removeTag(self::PM_ID_TAG);
-				}
-				if(($metaTag = $compound->getTag(self::PM_META_TAG)) instanceof IntTag){
-					$meta = $metaTag->getValue();
-					$compound->removeTag(self::PM_META_TAG);
-				}
-			}
-			if($compound->count() === 0){
-				$compound = null;
-			}
-			if($meta !== null){
-				try{
-					$itemResult = ItemFactory::getInstance()->get($id ?? $itemResult->getId(), $meta);
-				}catch(SavedDataLoadingException $e){
-					throw new TypeConversionException("Failed loading network item: " . $e->getMessage(), 0, $e);
-				}
-			}
 		}
 
 		$itemResult->setCount($itemStack->getCount());

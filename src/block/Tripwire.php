@@ -25,6 +25,8 @@ namespace pocketmine\block;
 
 use pocketmine\data\runtime\block\BlockDataReader;
 use pocketmine\data\runtime\block\BlockDataWriter;
+use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 
 class Tripwire extends Flowable{
 	protected bool $triggered = false;
@@ -78,5 +80,9 @@ class Tripwire extends Flowable{
 	public function setDisarmed(bool $disarmed) : self{
 		$this->disarmed = $disarmed;
 		return $this;
+	}
+
+	public function asItem() : Item{
+		return VanillaItems::STRING();
 	}
 }

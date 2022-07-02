@@ -41,9 +41,16 @@ abstract class BaseSign extends Transparent{
 	protected SignText $text;
 	protected ?int $editorEntityRuntimeId = null;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	/** @var \Closure() : Item */
+	private \Closure $asItemCallback;
+
+	/**
+	 * @param \Closure() : Item $asItemCallback
+	 */
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, \Closure $asItemCallback){
 		parent::__construct($idInfo, $name, $breakInfo);
 		$this->text = new SignText();
+		$this->asItemCallback = $asItemCallback;
 	}
 
 	public function readStateFromWorld() : void{
@@ -138,5 +145,9 @@ abstract class BaseSign extends Transparent{
 		}
 
 		return false;
+	}
+
+	public function asItem() : Item{
+		return ($this->asItemCallback)();
 	}
 }

@@ -30,6 +30,7 @@ use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\TreeType;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\item\ItemIds;
+use pocketmine\item\VanillaItems;
 use pocketmine\utils\AssumptionFailedError;
 
 final class BlockLegacyIdHelper{
@@ -130,38 +131,48 @@ final class BlockLegacyIdHelper{
 		}, ItemIds::SAPLING, $treeType->getMagicNumber());
 	}
 
-	public static function getWoodenFloorSignIdentifier(TreeType $treeType) : BID{
+	/**
+	 * @return BID[]|\Closure[]
+	 * @phpstan-return array{BID, BID, \Closure() : \pocketmine\item\Item}
+	 */
+	public static function getWoodenSignInfo(TreeType $treeType) : array{
 		switch($treeType->id()){
 			case TreeType::OAK()->id():
-				return new BID(Ids::OAK_SIGN, ItemIds::SIGN, 0, TileSign::class);
+				return [
+					new BID(Ids::OAK_SIGN, ItemIds::SIGN, 0, TileSign::class),
+					new BID(Ids::OAK_WALL_SIGN, ItemIds::SIGN, 0, TileSign::class),
+					fn() => VanillaItems::OAK_SIGN()
+				];
 			case TreeType::SPRUCE()->id():
-				return new BID(Ids::SPRUCE_SIGN, ItemIds::SPRUCE_SIGN, 0, TileSign::class);
+				return [
+					new BID(Ids::SPRUCE_SIGN, ItemIds::SPRUCE_SIGN, 0, TileSign::class),
+					new BID(Ids::SPRUCE_WALL_SIGN, ItemIds::SPRUCE_SIGN, 0, TileSign::class),
+					fn() => VanillaItems::SPRUCE_SIGN()
+				];
 			case TreeType::BIRCH()->id():
-				return new BID(Ids::BIRCH_SIGN, ItemIds::BIRCH_SIGN, 0, TileSign::class);
+				return [
+					new BID(Ids::BIRCH_SIGN, ItemIds::BIRCH_SIGN, 0, TileSign::class),
+					new BID(Ids::BIRCH_WALL_SIGN, ItemIds::BIRCH_SIGN, 0, TileSign::class),
+					fn() => VanillaItems::BIRCH_SIGN()
+				];
 			case TreeType::JUNGLE()->id():
-				return new BID(Ids::JUNGLE_SIGN, ItemIds::JUNGLE_SIGN, 0, TileSign::class);
+				return [
+					new BID(Ids::JUNGLE_SIGN, ItemIds::JUNGLE_SIGN, 0, TileSign::class),
+					new BID(Ids::JUNGLE_WALL_SIGN, ItemIds::JUNGLE_SIGN, 0, TileSign::class),
+					fn() => VanillaItems::JUNGLE_SIGN()
+				];
 			case TreeType::ACACIA()->id():
-				return new BID(Ids::ACACIA_SIGN, ItemIds::ACACIA_SIGN, 0, TileSign::class);
+				return [
+					new BID(Ids::ACACIA_SIGN, ItemIds::ACACIA_SIGN, 0, TileSign::class),
+					new BID(Ids::ACACIA_WALL_SIGN, ItemIds::ACACIA_SIGN, 0, TileSign::class),
+					fn() => VanillaItems::ACACIA_SIGN()
+				];
 			case TreeType::DARK_OAK()->id():
-				return new BID(Ids::DARK_OAK_SIGN, ItemIds::DARKOAK_SIGN, 0, TileSign::class);
-		}
-		throw new AssumptionFailedError("Switch should cover all wood types");
-	}
-
-	public static function getWoodenWallSignIdentifier(TreeType $treeType) : BID{
-		switch($treeType->id()){
-			case TreeType::OAK()->id():
-				return new BID(Ids::OAK_WALL_SIGN, ItemIds::SIGN, 0, TileSign::class);
-			case TreeType::SPRUCE()->id():
-				return new BID(Ids::SPRUCE_WALL_SIGN, ItemIds::SPRUCE_SIGN, 0, TileSign::class);
-			case TreeType::BIRCH()->id():
-				return new BID(Ids::BIRCH_WALL_SIGN, ItemIds::BIRCH_SIGN, 0, TileSign::class);
-			case TreeType::JUNGLE()->id():
-				return new BID(Ids::JUNGLE_WALL_SIGN, ItemIds::JUNGLE_SIGN, 0, TileSign::class);
-			case TreeType::ACACIA()->id():
-				return new BID(Ids::ACACIA_WALL_SIGN, ItemIds::ACACIA_SIGN, 0, TileSign::class);
-			case TreeType::DARK_OAK()->id():
-				return new BID(Ids::DARK_OAK_WALL_SIGN, ItemIds::DARKOAK_SIGN, 0, TileSign::class);
+				return [
+					new BID(Ids::DARK_OAK_SIGN, ItemIds::DARKOAK_SIGN, 0, TileSign::class),
+					new BID(Ids::DARK_OAK_WALL_SIGN, ItemIds::DARKOAK_SIGN, 0, TileSign::class),
+					fn() => VanillaItems::DARK_OAK_SIGN()
+				];
 		}
 		throw new AssumptionFailedError("Switch should cover all wood types");
 	}

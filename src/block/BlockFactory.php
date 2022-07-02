@@ -480,8 +480,9 @@ class BlockFactory{
 			$this->register(new WoodenPressurePlate(BlockLegacyIdHelper::getWoodenPressurePlateIdentifier($treeType), $name . " Pressure Plate", $woodenPressurePlateBreakInfo));
 			$this->register(new WoodenTrapdoor(BlockLegacyIdHelper::getWoodenTrapdoorIdentifier($treeType), $name . " Trapdoor", $woodenDoorBreakInfo));
 
-			$this->register(new FloorSign(BlockLegacyIdHelper::getWoodenFloorSignIdentifier($treeType), $name . " Sign", $signBreakInfo));
-			$this->register(new WallSign(BlockLegacyIdHelper::getWoodenWallSignIdentifier($treeType), $name . " Wall Sign", $signBreakInfo));
+			[$floorSignId, $wallSignId, $signAsItem] = BlockLegacyIdHelper::getWoodenSignInfo($treeType);
+			$this->register(new FloorSign($floorSignId, $name . " Sign", $signBreakInfo, $signAsItem));
+			$this->register(new WallSign($wallSignId, $name . " Wall Sign", $signBreakInfo, $signAsItem));
 		}
 
 		$sandstoneBreakInfo = new BreakInfo(0.8, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
@@ -921,6 +922,18 @@ class BlockFactory{
 		}
 
 		return $block;
+	}
+
+	/**
+	 * @internal
+	 * Returns the default state of the block type associated with the given type ID.
+	 */
+	public function fromTypeId(int $typeId) : ?Block{
+		if(isset($this->typeIndex[$typeId])){
+			return clone $this->typeIndex[$typeId];
+		}
+
+		return null;
 	}
 
 	public function fromFullBlock(int $fullState) : Block{

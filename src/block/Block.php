@@ -34,7 +34,7 @@ use pocketmine\data\runtime\block\BlockDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\ItemBlock;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\RayTraceResult;
@@ -90,10 +90,7 @@ class Block{
 	}
 
 	public function asItem() : Item{
-		return ItemFactory::getInstance()->get(
-			$this->getLegacyItemId(),
-			$this->getLegacyItemMeta()
-		);
+		return new ItemBlock($this);
 	}
 
 	public function getLegacyItemId() : int{
@@ -112,10 +109,9 @@ class Block{
 
 	public function getRequiredStateDataBits() : int{ return 0; }
 
-	final public function decodeStateData(int $data) : void{
+	final public function decodeTypeData(int $data) : void{
 		$typeBits = $this->getRequiredTypeDataBits();
-		$stateBits = $this->getRequiredStateDataBits();
-		$givenBits = $typeBits + $stateBits;
+		$givenBits = $typeBits;
 		$reader = new BlockDataReader($givenBits, $data);
 
 		$this->decodeType($reader);
@@ -123,6 +119,14 @@ class Block{
 		if($typeBits !== $readBits){
 			throw new \LogicException("Exactly $typeBits bits of type data were provided, but $readBits were read");
 		}
+	}
+
+	final public function decodeStateData(int $data) : void{
+		$typeBits = $this->getRequiredTypeDataBits();
+		$stateBits = $this->getRequiredStateDataBits();
+		$givenBits = $typeBits + $stateBits;
+		$reader = new BlockDataReader($givenBits, $data);
+		$this->decodeTypeData($reader->readInt($typeBits));
 
 		$this->decodeState($reader);
 		$readBits = $reader->getOffset() - $typeBits;
@@ -139,6 +143,20 @@ class Block{
 		//NOOP
 	}
 
+	final public function computeTypeData() : int{
+		$typeBits = $this->getRequiredTypeDataBits();
+		$requiredBits = $typeBits;
+		$writer = new BlockDataWriter($requiredBits);
+
+		$this->encodeType($writer);
+		$writtenBits = $writer->getOffset();
+		if($typeBits !== $writtenBits){
+			throw new \LogicException("Exactly $typeBits bits of type data were expected, but $writtenBits were written");
+		}
+
+		return $writer->getValue();
+	}
+
 	/**
 	 * @internal
 	 */
@@ -147,12 +165,7 @@ class Block{
 		$stateBits = $this->getRequiredStateDataBits();
 		$requiredBits = $typeBits + $stateBits;
 		$writer = new BlockDataWriter($requiredBits);
-
-		$this->encodeType($writer);
-		$writtenBits = $writer->getOffset();
-		if($typeBits !== $writtenBits){
-			throw new \LogicException("Exactly $typeBits bits of type data were expected, but $writtenBits were written");
-		}
+		$writer->writeInt($typeBits, $this->computeTypeData());
 
 		$this->encodeState($writer);
 		$writtenBits = $writer->getOffset() - $typeBits;

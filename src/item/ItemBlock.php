@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\VanillaBlocks;
 
 /**
  * Class used for Items that directly represent blocks, such as stone, dirt, wood etc.
@@ -33,15 +34,23 @@ use pocketmine\block\BlockFactory;
  * just place wheat crops when used on the ground).
  */
 final class ItemBlock extends Item{
-	private int $blockFullId;
+	private int $blockTypeId;
+	private int $blockTypeData;
 
 	public function __construct(Block $block){
 		parent::__construct(ItemIdentifier::fromBlock($block), $block->getName());
-		$this->blockFullId = $block->getStateId();
+		$this->blockTypeId = $block->getTypeId();
+		$this->blockTypeData = $block->computeTypeData();
 	}
 
 	public function getBlock(?int $clickedFace = null) : Block{
-		return BlockFactory::getInstance()->fromFullBlock($this->blockFullId);
+		//TODO: HACKY MESS, CLEAN IT UP
+		$blockType = BlockFactory::getInstance()->fromTypeId($this->blockTypeId);
+		if($blockType === null){
+			return VanillaBlocks::AIR();
+		}
+		$blockType->decodeTypeData($this->blockTypeData);
+		return $blockType;
 	}
 
 	public function getFuelTime() : int{

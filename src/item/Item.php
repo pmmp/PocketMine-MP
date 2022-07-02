@@ -399,7 +399,7 @@ class Item implements \JsonSerializable{
 	}
 
 	public function isNull() : bool{
-		return $this->count <= 0 || $this->getId() === ItemIds::AIR;
+		return $this->count <= 0;
 	}
 
 	/**
