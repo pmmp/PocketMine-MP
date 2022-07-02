@@ -77,6 +77,7 @@ use pocketmine\block\Lava;
 use pocketmine\block\Leaves;
 use pocketmine\block\Lectern;
 use pocketmine\block\Lever;
+use pocketmine\block\Light;
 use pocketmine\block\LitPumpkin;
 use pocketmine\block\Log;
 use pocketmine\block\Loom;
@@ -790,6 +791,10 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 					LeverFacing::EAST()->id() => StringValues::LEVER_DIRECTION_EAST,
 					default => throw new BlockStateSerializeException("Invalid Lever facing " . $block->getFacing()->name()),
 				});
+		});
+		$this->map(Blocks::LIGHT(), function(Light $block) : Writer{
+			return Writer::create(Ids::LIGHT_BLOCK)
+				->writeInt(StateNames::BLOCK_LIGHT_LEVEL, $block->getLightLevel());
 		});
 		$this->map(Blocks::LILAC(), fn(DoublePlant $block) => Helper::encodeDoublePlant($block, StringValues::DOUBLE_PLANT_TYPE_SYRINGA, Writer::create(Ids::DOUBLE_PLANT)));
 		$this->map(Blocks::LILY_OF_THE_VALLEY(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_LILY_OF_THE_VALLEY));

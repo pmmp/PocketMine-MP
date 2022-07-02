@@ -25,6 +25,7 @@ namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\Bamboo;
 use pocketmine\block\Block;
+use pocketmine\block\Light;
 use pocketmine\block\Slab;
 use pocketmine\block\Stair;
 use pocketmine\block\SweetBerryBush;
@@ -639,6 +640,10 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 					StringValues::LEVER_DIRECTION_EAST => LeverFacing::EAST(),
 					default => throw $in->badValueException(StateNames::LEVER_DIRECTION, $value),
 				});
+		});
+		$this->map(Ids::LIGHT_BLOCK, function(Reader $in) : Block{
+			return Blocks::LIGHT()
+				->setLightLevel($in->readBoundedInt(StateNames::BLOCK_LIGHT_LEVEL, Light::MIN_LIGHT_LEVEL, Light::MAX_LIGHT_LEVEL));
 		});
 		$this->map(Ids::LIGHT_BLUE_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::LIGHT_BLUE(), $in));
 		$this->map(Ids::LIGHT_WEIGHTED_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeWeightedPressurePlate(Blocks::WEIGHTED_PRESSURE_PLATE_LIGHT(), $in));

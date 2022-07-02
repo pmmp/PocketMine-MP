@@ -558,6 +558,7 @@ class BlockFactory{
 			BreakInfo::instant(),
 		));
 
+		$this->registerBlocksR13();
 		$this->registerBlocksR16();
 		$this->registerBlocksR17();
 
@@ -829,6 +830,10 @@ class BlockFactory{
 		$this->register(new Element(new BID(Ids::ELEMENT_LIVERMORIUM), "Livermorium", $instaBreak, "lv", 116, 3));
 		$this->register(new Element(new BID(Ids::ELEMENT_TENNESSINE), "Tennessine", $instaBreak, "ts", 117, 6));
 		$this->register(new Element(new BID(Ids::ELEMENT_OGANESSON), "Oganesson", $instaBreak, "og", 118, 7));
+	}
+
+	private function registerBlocksR13() : void{
+		$this->register(new Light(new BID(Ids::LIGHT), "Light Block", BreakInfo::indestructible()));
 	}
 
 	private function registerBlocksR16() : void{

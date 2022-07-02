@@ -371,6 +371,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Lectern LECTERN()
  * @method static Opaque LEGACY_STONECUTTER()
  * @method static Lever LEVER()
+ * @method static Light LIGHT()
  * @method static DoublePlant LILAC()
  * @method static Flower LILY_OF_THE_VALLEY()
  * @method static WaterLily LILY_PAD()
@@ -928,6 +929,7 @@ final class VanillaBlocks{
 		self::register("lectern", $factory->get(Ids::LECTERN, 0));
 		self::register("legacy_stonecutter", $factory->get(Ids::LEGACY_STONECUTTER, 0));
 		self::register("lever", $factory->get(Ids::LEVER, 5));
+		self::register("light", $factory->get(Ids::LIGHT, 15));
 		self::register("lilac", $factory->get(Ids::LILAC, 0));
 		self::register("lily_of_the_valley", $factory->get(Ids::LILY_OF_THE_VALLEY, 0));
 		self::register("lily_pad", $factory->get(Ids::LILY_PAD, 0));
