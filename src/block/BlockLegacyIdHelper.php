@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\block\BlockIdentifier as BID;
 use pocketmine\block\BlockTypeIds as Ids;
 use pocketmine\block\tile\Sign as TileSign;
-use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\TreeType;
 use pocketmine\item\VanillaItems;
 use pocketmine\utils\AssumptionFailedError;
@@ -299,43 +298,5 @@ final class BlockLegacyIdHelper{
 				return new BID(Ids::STRIPPED_DARK_OAK_LOG);
 		}
 		throw new AssumptionFailedError("Switch should cover all wood types");
-	}
-
-	public static function getGlazedTerracottaIdentifier(DyeColor $color) : BlockIdentifier{
-		switch($color->id()){
-			case DyeColor::WHITE()->id():
-				return new BID(Ids::WHITE_GLAZED_TERRACOTTA);
-			case DyeColor::ORANGE()->id():
-				return new BID(Ids::ORANGE_GLAZED_TERRACOTTA);
-			case DyeColor::MAGENTA()->id():
-				return new BID(Ids::MAGENTA_GLAZED_TERRACOTTA);
-			case DyeColor::LIGHT_BLUE()->id():
-				return new BID(Ids::LIGHT_BLUE_GLAZED_TERRACOTTA);
-			case DyeColor::YELLOW()->id():
-				return new BID(Ids::YELLOW_GLAZED_TERRACOTTA);
-			case DyeColor::LIME()->id():
-				return new BID(Ids::LIME_GLAZED_TERRACOTTA);
-			case DyeColor::PINK()->id():
-				return new BID(Ids::PINK_GLAZED_TERRACOTTA);
-			case DyeColor::GRAY()->id():
-				return new BID(Ids::GRAY_GLAZED_TERRACOTTA);
-			case DyeColor::LIGHT_GRAY()->id():
-				return new BID(Ids::LIGHT_GRAY_GLAZED_TERRACOTTA);
-			case DyeColor::CYAN()->id():
-				return new BID(Ids::CYAN_GLAZED_TERRACOTTA);
-			case DyeColor::PURPLE()->id():
-				return new BID(Ids::PURPLE_GLAZED_TERRACOTTA);
-			case DyeColor::BLUE()->id():
-				return new BID(Ids::BLUE_GLAZED_TERRACOTTA);
-			case DyeColor::BROWN()->id():
-				return new BID(Ids::BROWN_GLAZED_TERRACOTTA);
-			case DyeColor::GREEN()->id():
-				return new BID(Ids::GREEN_GLAZED_TERRACOTTA);
-			case DyeColor::RED()->id():
-				return new BID(Ids::RED_GLAZED_TERRACOTTA);
-			case DyeColor::BLACK()->id():
-				return new BID(Ids::BLACK_GLAZED_TERRACOTTA);
-		}
-		throw new AssumptionFailedError("Switch should cover all colours");
 	}
 }

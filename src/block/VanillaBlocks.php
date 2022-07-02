@@ -82,9 +82,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static WoodenTrapdoor BIRCH_TRAPDOOR()
  * @method static WallSign BIRCH_WALL_SIGN()
  * @method static Wood BIRCH_WOOD()
- * @method static GlazedTerracotta BLACK_GLAZED_TERRACOTTA()
  * @method static Furnace BLAST_FURNACE()
- * @method static GlazedTerracotta BLUE_GLAZED_TERRACOTTA()
  * @method static BlueIce BLUE_ICE()
  * @method static Flower BLUE_ORCHID()
  * @method static Torch BLUE_TORCH()
@@ -95,7 +93,6 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Slab BRICK_SLAB()
  * @method static Stair BRICK_STAIRS()
  * @method static Wall BRICK_WALL()
- * @method static GlazedTerracotta BROWN_GLAZED_TERRACOTTA()
  * @method static BrownMushroom BROWN_MUSHROOM()
  * @method static BrownMushroomBlock BROWN_MUSHROOM_BLOCK()
  * @method static Cactus CACTUS()
@@ -131,7 +128,6 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Slab CUT_RED_SANDSTONE_SLAB()
  * @method static Opaque CUT_SANDSTONE()
  * @method static Slab CUT_SANDSTONE_SLAB()
- * @method static GlazedTerracotta CYAN_GLAZED_TERRACOTTA()
  * @method static Flower DANDELION()
  * @method static WoodenButton DARK_OAK_BUTTON()
  * @method static WoodenDoor DARK_OAK_DOOR()
@@ -306,6 +302,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Furnace FURNACE()
  * @method static Glass GLASS()
  * @method static GlassPane GLASS_PANE()
+ * @method static GlazedTerracotta GLAZED_TERRACOTTA()
  * @method static GlowingObsidian GLOWING_OBSIDIAN()
  * @method static Glowstone GLOWSTONE()
  * @method static Opaque GOLD()
@@ -317,8 +314,6 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Grass GRASS()
  * @method static GrassPath GRASS_PATH()
  * @method static Gravel GRAVEL()
- * @method static GlazedTerracotta GRAY_GLAZED_TERRACOTTA()
- * @method static GlazedTerracotta GREEN_GLAZED_TERRACOTTA()
  * @method static Torch GREEN_TORCH()
  * @method static HardenedClay HARDENED_CLAY()
  * @method static HardenedGlass HARDENED_GLASS()
@@ -367,15 +362,11 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Lectern LECTERN()
  * @method static Opaque LEGACY_STONECUTTER()
  * @method static Lever LEVER()
- * @method static GlazedTerracotta LIGHT_BLUE_GLAZED_TERRACOTTA()
- * @method static GlazedTerracotta LIGHT_GRAY_GLAZED_TERRACOTTA()
  * @method static DoublePlant LILAC()
  * @method static Flower LILY_OF_THE_VALLEY()
  * @method static WaterLily LILY_PAD()
- * @method static GlazedTerracotta LIME_GLAZED_TERRACOTTA()
  * @method static LitPumpkin LIT_PUMPKIN()
  * @method static Loom LOOM()
- * @method static GlazedTerracotta MAGENTA_GLAZED_TERRACOTTA()
  * @method static Magma MAGMA()
  * @method static ChemistryTable MATERIAL_REDUCER()
  * @method static Melon MELON()
@@ -420,12 +411,10 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static WallSign OAK_WALL_SIGN()
  * @method static Wood OAK_WOOD()
  * @method static Opaque OBSIDIAN()
- * @method static GlazedTerracotta ORANGE_GLAZED_TERRACOTTA()
  * @method static Flower ORANGE_TULIP()
  * @method static Flower OXEYE_DAISY()
  * @method static PackedIce PACKED_ICE()
  * @method static DoublePlant PEONY()
- * @method static GlazedTerracotta PINK_GLAZED_TERRACOTTA()
  * @method static Flower PINK_TULIP()
  * @method static Podzol PODZOL()
  * @method static Opaque POLISHED_ANDESITE()
@@ -449,7 +438,6 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Wall PRISMARINE_WALL()
  * @method static Pumpkin PUMPKIN()
  * @method static PumpkinStem PUMPKIN_STEM()
- * @method static GlazedTerracotta PURPLE_GLAZED_TERRACOTTA()
  * @method static Torch PURPLE_TORCH()
  * @method static Opaque PURPUR()
  * @method static SimplePillar PURPUR_PILLAR()
@@ -467,7 +455,6 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static RedstoneRepeater REDSTONE_REPEATER()
  * @method static RedstoneTorch REDSTONE_TORCH()
  * @method static RedstoneWire REDSTONE_WIRE()
- * @method static GlazedTerracotta RED_GLAZED_TERRACOTTA()
  * @method static RedMushroom RED_MUSHROOM()
  * @method static RedMushroomBlock RED_MUSHROOM_BLOCK()
  * @method static Opaque RED_NETHER_BRICKS()
@@ -567,10 +554,8 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static WeightedPressurePlateHeavy WEIGHTED_PRESSURE_PLATE_HEAVY()
  * @method static WeightedPressurePlateLight WEIGHTED_PRESSURE_PLATE_LIGHT()
  * @method static Wheat WHEAT()
- * @method static GlazedTerracotta WHITE_GLAZED_TERRACOTTA()
  * @method static Flower WHITE_TULIP()
  * @method static Wool WOOL()
- * @method static GlazedTerracotta YELLOW_GLAZED_TERRACOTTA()
  */
 final class VanillaBlocks{
 	use CloningRegistryTrait;
@@ -645,9 +630,7 @@ final class VanillaBlocks{
 		self::register("birch_trapdoor", $factory->get(Ids::BIRCH_TRAPDOOR, 0));
 		self::register("birch_wall_sign", $factory->get(Ids::BIRCH_WALL_SIGN, 0));
 		self::register("birch_wood", $factory->get(Ids::BIRCH_WOOD, 0));
-		self::register("black_glazed_terracotta", $factory->get(Ids::BLACK_GLAZED_TERRACOTTA, 0));
 		self::register("blast_furnace", $factory->get(Ids::BLAST_FURNACE, 0));
-		self::register("blue_glazed_terracotta", $factory->get(Ids::BLUE_GLAZED_TERRACOTTA, 0));
 		self::register("blue_ice", $factory->get(Ids::BLUE_ICE, 0));
 		self::register("blue_orchid", $factory->get(Ids::BLUE_ORCHID, 0));
 		self::register("blue_torch", $factory->get(Ids::BLUE_TORCH, 1));
@@ -658,7 +641,6 @@ final class VanillaBlocks{
 		self::register("brick_stairs", $factory->get(Ids::BRICK_STAIRS, 0));
 		self::register("brick_wall", $factory->get(Ids::BRICK_WALL, 0));
 		self::register("bricks", $factory->get(Ids::BRICKS, 0));
-		self::register("brown_glazed_terracotta", $factory->get(Ids::BROWN_GLAZED_TERRACOTTA, 0));
 		self::register("brown_mushroom", $factory->get(Ids::BROWN_MUSHROOM, 0));
 		self::register("brown_mushroom_block", $factory->get(Ids::BROWN_MUSHROOM_BLOCK, 10));
 		self::register("cactus", $factory->get(Ids::CACTUS, 0));
@@ -694,7 +676,6 @@ final class VanillaBlocks{
 		self::register("cut_red_sandstone_slab", $factory->get(Ids::CUT_RED_SANDSTONE_SLAB, 0));
 		self::register("cut_sandstone", $factory->get(Ids::CUT_SANDSTONE, 0));
 		self::register("cut_sandstone_slab", $factory->get(Ids::CUT_SANDSTONE_SLAB, 0));
-		self::register("cyan_glazed_terracotta", $factory->get(Ids::CYAN_GLAZED_TERRACOTTA, 0));
 		self::register("dandelion", $factory->get(Ids::DANDELION, 0));
 		self::register("dark_oak_button", $factory->get(Ids::DARK_OAK_BUTTON, 0));
 		self::register("dark_oak_door", $factory->get(Ids::DARK_OAK_DOOR, 0));
@@ -869,6 +850,7 @@ final class VanillaBlocks{
 		self::register("furnace", $factory->get(Ids::FURNACE, 0));
 		self::register("glass", $factory->get(Ids::GLASS, 0));
 		self::register("glass_pane", $factory->get(Ids::GLASS_PANE, 0));
+		self::register("glazed_terracotta", $factory->get(Ids::GLAZED_TERRACOTTA, 0));
 		self::register("glowing_obsidian", $factory->get(Ids::GLOWING_OBSIDIAN, 0));
 		self::register("glowstone", $factory->get(Ids::GLOWSTONE, 0));
 		self::register("gold", $factory->get(Ids::GOLD, 0));
@@ -880,8 +862,6 @@ final class VanillaBlocks{
 		self::register("grass", $factory->get(Ids::GRASS, 0));
 		self::register("grass_path", $factory->get(Ids::GRASS_PATH, 0));
 		self::register("gravel", $factory->get(Ids::GRAVEL, 0));
-		self::register("gray_glazed_terracotta", $factory->get(Ids::GRAY_GLAZED_TERRACOTTA, 0));
-		self::register("green_glazed_terracotta", $factory->get(Ids::GREEN_GLAZED_TERRACOTTA, 0));
 		self::register("green_torch", $factory->get(Ids::GREEN_TORCH, 1));
 		self::register("hardened_clay", $factory->get(Ids::HARDENED_CLAY, 0));
 		self::register("hardened_glass", $factory->get(Ids::HARDENED_GLASS, 0));
@@ -930,15 +910,11 @@ final class VanillaBlocks{
 		self::register("lectern", $factory->get(Ids::LECTERN, 0));
 		self::register("legacy_stonecutter", $factory->get(Ids::LEGACY_STONECUTTER, 0));
 		self::register("lever", $factory->get(Ids::LEVER, 5));
-		self::register("light_blue_glazed_terracotta", $factory->get(Ids::LIGHT_BLUE_GLAZED_TERRACOTTA, 0));
-		self::register("light_gray_glazed_terracotta", $factory->get(Ids::LIGHT_GRAY_GLAZED_TERRACOTTA, 0));
 		self::register("lilac", $factory->get(Ids::LILAC, 0));
 		self::register("lily_of_the_valley", $factory->get(Ids::LILY_OF_THE_VALLEY, 0));
 		self::register("lily_pad", $factory->get(Ids::LILY_PAD, 0));
-		self::register("lime_glazed_terracotta", $factory->get(Ids::LIME_GLAZED_TERRACOTTA, 0));
 		self::register("lit_pumpkin", $factory->get(Ids::LIT_PUMPKIN, 0));
 		self::register("loom", $factory->get(Ids::LOOM, 0));
-		self::register("magenta_glazed_terracotta", $factory->get(Ids::MAGENTA_GLAZED_TERRACOTTA, 0));
 		self::register("magma", $factory->get(Ids::MAGMA, 0));
 		self::register("material_reducer", $factory->get(Ids::MATERIAL_REDUCER, 0));
 		self::register("melon", $factory->get(Ids::MELON, 0));
@@ -983,12 +959,10 @@ final class VanillaBlocks{
 		self::register("oak_wall_sign", $factory->get(Ids::OAK_WALL_SIGN, 0));
 		self::register("oak_wood", $factory->get(Ids::OAK_WOOD, 0));
 		self::register("obsidian", $factory->get(Ids::OBSIDIAN, 0));
-		self::register("orange_glazed_terracotta", $factory->get(Ids::ORANGE_GLAZED_TERRACOTTA, 0));
 		self::register("orange_tulip", $factory->get(Ids::ORANGE_TULIP, 0));
 		self::register("oxeye_daisy", $factory->get(Ids::OXEYE_DAISY, 0));
 		self::register("packed_ice", $factory->get(Ids::PACKED_ICE, 0));
 		self::register("peony", $factory->get(Ids::PEONY, 0));
-		self::register("pink_glazed_terracotta", $factory->get(Ids::PINK_GLAZED_TERRACOTTA, 0));
 		self::register("pink_tulip", $factory->get(Ids::PINK_TULIP, 0));
 		self::register("podzol", $factory->get(Ids::PODZOL, 0));
 		self::register("polished_andesite", $factory->get(Ids::POLISHED_ANDESITE, 0));
@@ -1012,7 +986,6 @@ final class VanillaBlocks{
 		self::register("prismarine_wall", $factory->get(Ids::PRISMARINE_WALL, 0));
 		self::register("pumpkin", $factory->get(Ids::PUMPKIN, 0));
 		self::register("pumpkin_stem", $factory->get(Ids::PUMPKIN_STEM, 0));
-		self::register("purple_glazed_terracotta", $factory->get(Ids::PURPLE_GLAZED_TERRACOTTA, 0));
 		self::register("purple_torch", $factory->get(Ids::PURPLE_TORCH, 1));
 		self::register("purpur", $factory->get(Ids::PURPUR, 0));
 		self::register("purpur_pillar", $factory->get(Ids::PURPUR_PILLAR, 2));
@@ -1023,7 +996,6 @@ final class VanillaBlocks{
 		self::register("quartz_slab", $factory->get(Ids::QUARTZ_SLAB, 0));
 		self::register("quartz_stairs", $factory->get(Ids::QUARTZ_STAIRS, 0));
 		self::register("rail", $factory->get(Ids::RAIL, 0));
-		self::register("red_glazed_terracotta", $factory->get(Ids::RED_GLAZED_TERRACOTTA, 0));
 		self::register("red_mushroom", $factory->get(Ids::RED_MUSHROOM, 0));
 		self::register("red_mushroom_block", $factory->get(Ids::RED_MUSHROOM_BLOCK, 10));
 		self::register("red_nether_brick_slab", $factory->get(Ids::RED_NETHER_BRICK_SLAB, 0));
@@ -1130,9 +1102,7 @@ final class VanillaBlocks{
 		self::register("weighted_pressure_plate_heavy", $factory->get(Ids::WEIGHTED_PRESSURE_PLATE_HEAVY, 0));
 		self::register("weighted_pressure_plate_light", $factory->get(Ids::WEIGHTED_PRESSURE_PLATE_LIGHT, 0));
 		self::register("wheat", $factory->get(Ids::WHEAT, 0));
-		self::register("white_glazed_terracotta", $factory->get(Ids::WHITE_GLAZED_TERRACOTTA, 0));
 		self::register("white_tulip", $factory->get(Ids::WHITE_TULIP, 0));
 		self::register("wool", $factory->get(Ids::WOOL, 14));
-		self::register("yellow_glazed_terracotta", $factory->get(Ids::YELLOW_GLAZED_TERRACOTTA, 0));
 	}
 }

@@ -120,6 +120,7 @@ use pocketmine\block\TripwireHook;
 use pocketmine\block\UnderwaterTorch;
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\CoralType;
+use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Vine;
@@ -329,9 +330,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::BIRCH_TRAPDOOR(), fn(WoodenTrapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::BIRCH_TRAPDOOR)));
 		$this->map(Blocks::BIRCH_WALL_SIGN(), fn(WallSign $block) => Helper::encodeWallSign($block, new Writer(Ids::BIRCH_WALL_SIGN)));
 		$this->map(Blocks::BIRCH_WOOD(), fn(Wood $block) => Helper::encodeAllSidedLog($block));
-		$this->map(Blocks::BLACK_GLAZED_TERRACOTTA(), fn(GlazedTerracotta $block) => Helper::encodeGlazedTerracotta($block, new Writer(Ids::BLACK_GLAZED_TERRACOTTA)));
 		$this->map(Blocks::BLAST_FURNACE(), fn(Furnace $block) => Helper::encodeFurnace($block, Ids::BLAST_FURNACE, Ids::LIT_BLAST_FURNACE));
-		$this->map(Blocks::BLUE_GLAZED_TERRACOTTA(), fn(GlazedTerracotta $block) => Helper::encodeGlazedTerracotta($block, new Writer(Ids::BLUE_GLAZED_TERRACOTTA)));
 		$this->map(Blocks::BLUE_ICE(), fn() => new Writer(Ids::BLUE_ICE));
 		$this->map(Blocks::BLUE_ORCHID(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_ORCHID));
 		$this->map(Blocks::BLUE_TORCH(), fn(Torch $block) => Helper::encodeColoredTorch($block, false, Writer::create(Ids::COLORED_TORCH_BP)));
@@ -351,7 +350,6 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::BRICK_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab1($block, StringValues::STONE_SLAB_TYPE_BRICK));
 		$this->map(Blocks::BRICK_STAIRS(), fn(Stair $block) => Helper::encodeStairs($block, new Writer(Ids::BRICK_STAIRS)));
 		$this->map(Blocks::BRICK_WALL(), fn(Wall $block) => Helper::encodeLegacyWall($block, StringValues::WALL_BLOCK_TYPE_BRICK));
-		$this->map(Blocks::BROWN_GLAZED_TERRACOTTA(), fn(GlazedTerracotta $block) => Helper::encodeGlazedTerracotta($block, new Writer(Ids::BROWN_GLAZED_TERRACOTTA)));
 		$this->map(Blocks::BROWN_MUSHROOM(), fn() => new Writer(Ids::BROWN_MUSHROOM));
 		$this->map(Blocks::BROWN_MUSHROOM_BLOCK(), fn(BrownMushroomBlock $block) => Helper::encodeMushroomBlock($block, new Writer(Ids::BROWN_MUSHROOM_BLOCK)));
 		$this->map(Blocks::CACTUS(), function(Cactus $block) : Writer{
@@ -428,7 +426,6 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::CUT_RED_SANDSTONE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab4($block, StringValues::STONE_SLAB_TYPE_4_CUT_RED_SANDSTONE));
 		$this->map(Blocks::CUT_SANDSTONE(), fn() => Helper::encodeSandstone(Ids::SANDSTONE, StringValues::SAND_STONE_TYPE_CUT));
 		$this->map(Blocks::CUT_SANDSTONE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab4($block, StringValues::STONE_SLAB_TYPE_4_CUT_SANDSTONE));
-		$this->map(Blocks::CYAN_GLAZED_TERRACOTTA(), fn(GlazedTerracotta $block) => Helper::encodeGlazedTerracotta($block, new Writer(Ids::CYAN_GLAZED_TERRACOTTA)));
 		$this->map(Blocks::DANDELION(), fn() => new Writer(Ids::YELLOW_FLOWER));
 		$this->map(Blocks::DARK_OAK_BUTTON(), fn(WoodenButton $block) => Helper::encodeButton($block, new Writer(Ids::DARK_OAK_BUTTON)));
 		$this->map(Blocks::DARK_OAK_DOOR(), fn(WoodenDoor $block) => Helper::encodeDoor($block, new Writer(Ids::DARK_OAK_DOOR)));
@@ -642,6 +639,28 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::FURNACE(), fn(Furnace $block) => Helper::encodeFurnace($block, Ids::FURNACE, Ids::LIT_FURNACE));
 		$this->map(Blocks::GLASS(), fn() => new Writer(Ids::GLASS));
 		$this->map(Blocks::GLASS_PANE(), fn() => new Writer(Ids::GLASS_PANE));
+		$this->map(Blocks::GLAZED_TERRACOTTA(), function(GlazedTerracotta $block) : Writer{
+			return Writer::create(match ($color = $block->getColor()) {
+				DyeColor::BLACK() => Ids::BLACK_GLAZED_TERRACOTTA,
+				DyeColor::BLUE() => Ids::BLUE_GLAZED_TERRACOTTA,
+				DyeColor::BROWN() => Ids::BROWN_GLAZED_TERRACOTTA,
+				DyeColor::CYAN() => Ids::CYAN_GLAZED_TERRACOTTA,
+				DyeColor::GRAY() => Ids::GRAY_GLAZED_TERRACOTTA,
+				DyeColor::GREEN() => Ids::GREEN_GLAZED_TERRACOTTA,
+				DyeColor::LIGHT_BLUE() => Ids::LIGHT_BLUE_GLAZED_TERRACOTTA,
+				DyeColor::LIGHT_GRAY() => Ids::SILVER_GLAZED_TERRACOTTA,
+				DyeColor::LIME() => Ids::LIME_GLAZED_TERRACOTTA,
+				DyeColor::MAGENTA() => Ids::MAGENTA_GLAZED_TERRACOTTA,
+				DyeColor::ORANGE() => Ids::ORANGE_GLAZED_TERRACOTTA,
+				DyeColor::PINK() => Ids::PINK_GLAZED_TERRACOTTA,
+				DyeColor::PURPLE() => Ids::PURPLE_GLAZED_TERRACOTTA,
+				DyeColor::RED() => Ids::RED_GLAZED_TERRACOTTA,
+				DyeColor::WHITE() => Ids::WHITE_GLAZED_TERRACOTTA,
+				DyeColor::YELLOW() => Ids::YELLOW_GLAZED_TERRACOTTA,
+				default => throw new AssumptionFailedError("Unhandled dye colour " . $color->name())
+			})
+				->writeHorizontalFacing($block->getFacing());
+		});
 		$this->map(Blocks::GLOWING_OBSIDIAN(), fn() => new Writer(Ids::GLOWINGOBSIDIAN));
 		$this->map(Blocks::GLOWSTONE(), fn() => new Writer(Ids::GLOWSTONE));
 		$this->map(Blocks::GOLD(), fn() => new Writer(Ids::GOLD_BLOCK));
@@ -653,8 +672,6 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::GRASS(), fn() => new Writer(Ids::GRASS));
 		$this->map(Blocks::GRASS_PATH(), fn() => new Writer(Ids::GRASS_PATH));
 		$this->map(Blocks::GRAVEL(), fn() => new Writer(Ids::GRAVEL));
-		$this->map(Blocks::GRAY_GLAZED_TERRACOTTA(), fn(GlazedTerracotta $block) => Helper::encodeGlazedTerracotta($block, new Writer(Ids::GRAY_GLAZED_TERRACOTTA)));
-		$this->map(Blocks::GREEN_GLAZED_TERRACOTTA(), fn(GlazedTerracotta $block) => Helper::encodeGlazedTerracotta($block, new Writer(Ids::GREEN_GLAZED_TERRACOTTA)));
 		$this->map(Blocks::GREEN_TORCH(), fn(Torch $block) => Helper::encodeColoredTorch($block, true, Writer::create(Ids::COLORED_TORCH_RG)));
 		$this->map(Blocks::HARDENED_CLAY(), fn() => new Writer(Ids::HARDENED_CLAY));
 		$this->map(Blocks::HARDENED_GLASS(), fn() => new Writer(Ids::HARD_GLASS));
@@ -748,12 +765,9 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 					default => throw new BlockStateSerializeException("Invalid Lever facing " . $block->getFacing()->name()),
 				});
 		});
-		$this->map(Blocks::LIGHT_BLUE_GLAZED_TERRACOTTA(), fn(GlazedTerracotta $block) => Helper::encodeGlazedTerracotta($block, new Writer(Ids::LIGHT_BLUE_GLAZED_TERRACOTTA)));
-		$this->map(Blocks::LIGHT_GRAY_GLAZED_TERRACOTTA(), fn(GlazedTerracotta $block) => Helper::encodeGlazedTerracotta($block, new Writer(Ids::SILVER_GLAZED_TERRACOTTA)));
 		$this->map(Blocks::LILAC(), fn(DoublePlant $block) => Helper::encodeDoublePlant($block, StringValues::DOUBLE_PLANT_TYPE_SYRINGA, Writer::create(Ids::DOUBLE_PLANT)));
 		$this->map(Blocks::LILY_OF_THE_VALLEY(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_LILY_OF_THE_VALLEY));
 		$this->map(Blocks::LILY_PAD(), fn() => new Writer(Ids::WATERLILY));
-		$this->map(Blocks::LIME_GLAZED_TERRACOTTA(), fn(GlazedTerracotta $block) => Helper::encodeGlazedTerracotta($block, new Writer(Ids::LIME_GLAZED_TERRACOTTA)));
 		$this->map(Blocks::LIT_PUMPKIN(), function(LitPumpkin $block) : Writer{
 			return Writer::create(Ids::LIT_PUMPKIN)
 				->writeLegacyHorizontalFacing($block->getFacing());
@@ -762,7 +776,6 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::LOOM)
 				->writeLegacyHorizontalFacing($block->getFacing());
 		});
-		$this->map(Blocks::MAGENTA_GLAZED_TERRACOTTA(), fn(GlazedTerracotta $block) => Helper::encodeGlazedTerracotta($block, new Writer(Ids::MAGENTA_GLAZED_TERRACOTTA)));
 		$this->map(Blocks::MAGMA(), fn() => new Writer(Ids::MAGMA));
 		$this->map(Blocks::MATERIAL_REDUCER(), fn(ChemistryTable $block) => Helper::encodeChemistryTable($block, StringValues::CHEMISTRY_TABLE_TYPE_MATERIAL_REDUCER, new Writer(Ids::CHEMISTRY_TABLE)));
 		$this->map(Blocks::MELON(), fn() => new Writer(Ids::MELON_BLOCK));
@@ -823,12 +836,10 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::OAK_WALL_SIGN(), fn(WallSign $block) => Helper::encodeWallSign($block, new Writer(Ids::WALL_SIGN)));
 		$this->map(Blocks::OAK_WOOD(), fn(Wood $block) => Helper::encodeAllSidedLog($block));
 		$this->map(Blocks::OBSIDIAN(), fn() => new Writer(Ids::OBSIDIAN));
-		$this->map(Blocks::ORANGE_GLAZED_TERRACOTTA(), fn(GlazedTerracotta $block) => Helper::encodeGlazedTerracotta($block, new Writer(Ids::ORANGE_GLAZED_TERRACOTTA)));
 		$this->map(Blocks::ORANGE_TULIP(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_TULIP_ORANGE));
 		$this->map(Blocks::OXEYE_DAISY(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_OXEYE));
 		$this->map(Blocks::PACKED_ICE(), fn() => new Writer(Ids::PACKED_ICE));
 		$this->map(Blocks::PEONY(), fn(DoublePlant $block) => Helper::encodeDoublePlant($block, StringValues::DOUBLE_PLANT_TYPE_PAEONIA, Writer::create(Ids::DOUBLE_PLANT)));
-		$this->map(Blocks::PINK_GLAZED_TERRACOTTA(), fn(GlazedTerracotta $block) => Helper::encodeGlazedTerracotta($block, new Writer(Ids::PINK_GLAZED_TERRACOTTA)));
 		$this->map(Blocks::PINK_TULIP(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_TULIP_PINK));
 		$this->map(Blocks::PODZOL(), fn() => new Writer(Ids::PODZOL));
 		$this->map(Blocks::POLISHED_ANDESITE(), fn() => Helper::encodeStone(StringValues::STONE_TYPE_ANDESITE_SMOOTH));
@@ -861,7 +872,6 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeLegacyHorizontalFacing(Facing::SOUTH); //no longer used
 		});
 		$this->map(Blocks::PUMPKIN_STEM(), fn(PumpkinStem $block) => Helper::encodeStem($block, new Writer(Ids::PUMPKIN_STEM)));
-		$this->map(Blocks::PURPLE_GLAZED_TERRACOTTA(), fn(GlazedTerracotta $block) => Helper::encodeGlazedTerracotta($block, new Writer(Ids::PURPLE_GLAZED_TERRACOTTA)));
 		$this->map(Blocks::PURPLE_TORCH(), fn(Torch $block) => Helper::encodeColoredTorch($block, true, Writer::create(Ids::COLORED_TORCH_BP)));
 		$this->map(Blocks::PURPUR(), function() : Writer{
 			return Writer::create(Ids::PURPUR_BLOCK)
@@ -905,7 +915,6 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::REDSTONE_WIRE)
 				->writeInt(StateNames::REDSTONE_SIGNAL, $block->getOutputSignalStrength());
 		});
-		$this->map(Blocks::RED_GLAZED_TERRACOTTA(), fn(GlazedTerracotta $block) => Helper::encodeGlazedTerracotta($block, new Writer(Ids::RED_GLAZED_TERRACOTTA)));
 		$this->map(Blocks::RED_MUSHROOM(), fn() => new Writer(Ids::RED_MUSHROOM));
 		$this->map(Blocks::RED_MUSHROOM_BLOCK(), fn(RedMushroomBlock $block) => Helper::encodeMushroomBlock($block, new Writer(Ids::RED_MUSHROOM_BLOCK)));
 		$this->map(Blocks::RED_NETHER_BRICKS(), fn() => new Writer(Ids::RED_NETHER_BRICK));
@@ -1096,12 +1105,10 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeInt(StateNames::REDSTONE_SIGNAL, $block->getOutputSignalStrength());
 		});
 		$this->map(Blocks::WHEAT(), fn(Wheat $block) => Helper::encodeCrops($block, new Writer(Ids::WHEAT)));
-		$this->map(Blocks::WHITE_GLAZED_TERRACOTTA(), fn(GlazedTerracotta $block) => Helper::encodeGlazedTerracotta($block, new Writer(Ids::WHITE_GLAZED_TERRACOTTA)));
 		$this->map(Blocks::WHITE_TULIP(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_TULIP_WHITE));
 		$this->map(Blocks::WOOL(), function(Wool $block) : Writer{
 			return Writer::create(Ids::WOOL)
 				->writeColor($block->getColor());
 		});
-		$this->map(Blocks::YELLOW_GLAZED_TERRACOTTA(), fn(GlazedTerracotta $block) => Helper::encodeGlazedTerracotta($block, new Writer(Ids::YELLOW_GLAZED_TERRACOTTA)));
 	}
 }

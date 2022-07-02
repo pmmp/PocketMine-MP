@@ -41,6 +41,7 @@ use pocketmine\block\Slab;
 use pocketmine\block\Stair;
 use pocketmine\block\Stem;
 use pocketmine\block\Trapdoor;
+use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\block\Wall;
 use pocketmine\block\WallCoralFan;
@@ -125,8 +126,10 @@ final class BlockStateDeserializerHelper{
 	}
 
 	/** @throws BlockStateDeserializeException */
-	public static function decodeGlazedTerracotta(GlazedTerracotta $block, BlockStateReader $in) : GlazedTerracotta{
-		return $block->setFacing($in->readHorizontalFacing());
+	public static function decodeGlazedTerracotta(DyeColor $color, BlockStateReader $in) : GlazedTerracotta{
+		return VanillaBlocks::GLAZED_TERRACOTTA()
+			->setColor($color)
+			->setFacing($in->readHorizontalFacing());
 	}
 
 	/** @throws BlockStateDeserializeException */

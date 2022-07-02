@@ -87,9 +87,9 @@ final class BlockTypeIds{
 	public const BIRCH_TRAPDOOR = 10047;
 	public const BIRCH_WALL_SIGN = 10048;
 	public const BIRCH_WOOD = 10049;
-	public const BLACK_GLAZED_TERRACOTTA = 10050;
+
 	public const BLAST_FURNACE = 10051;
-	public const BLUE_GLAZED_TERRACOTTA = 10052;
+
 	public const BLUE_ICE = 10053;
 	public const BLUE_ORCHID = 10054;
 	public const BLUE_TORCH = 10055;
@@ -100,7 +100,7 @@ final class BlockTypeIds{
 	public const BRICK_STAIRS = 10060;
 	public const BRICK_WALL = 10061;
 	public const BRICKS = 10062;
-	public const BROWN_GLAZED_TERRACOTTA = 10063;
+
 	public const BROWN_MUSHROOM = 10064;
 	public const BROWN_MUSHROOM_BLOCK = 10065;
 	public const CACTUS = 10066;
@@ -136,7 +136,7 @@ final class BlockTypeIds{
 	public const CUT_RED_SANDSTONE_SLAB = 10096;
 	public const CUT_SANDSTONE = 10097;
 	public const CUT_SANDSTONE_SLAB = 10098;
-	public const CYAN_GLAZED_TERRACOTTA = 10099;
+
 	public const DANDELION = 10100;
 	public const DARK_OAK_BUTTON = 10101;
 	public const DARK_OAK_DOOR = 10102;
@@ -322,8 +322,7 @@ final class BlockTypeIds{
 	public const GRASS = 10282;
 	public const GRASS_PATH = 10283;
 	public const GRAVEL = 10284;
-	public const GRAY_GLAZED_TERRACOTTA = 10285;
-	public const GREEN_GLAZED_TERRACOTTA = 10286;
+
 	public const GREEN_TORCH = 10287;
 	public const HARDENED_CLAY = 10288;
 	public const HARDENED_GLASS = 10289;
@@ -372,15 +371,14 @@ final class BlockTypeIds{
 	public const LECTERN = 10332;
 	public const LEGACY_STONECUTTER = 10333;
 	public const LEVER = 10334;
-	public const LIGHT_BLUE_GLAZED_TERRACOTTA = 10335;
-	public const LIGHT_GRAY_GLAZED_TERRACOTTA = 10336;
+
 	public const LILAC = 10337;
 	public const LILY_OF_THE_VALLEY = 10338;
 	public const LILY_PAD = 10339;
-	public const LIME_GLAZED_TERRACOTTA = 10340;
+
 	public const LIT_PUMPKIN = 10341;
 	public const LOOM = 10342;
-	public const MAGENTA_GLAZED_TERRACOTTA = 10343;
+
 	public const MAGMA = 10344;
 	public const MATERIAL_REDUCER = 10345;
 	public const MELON = 10346;
@@ -425,12 +423,12 @@ final class BlockTypeIds{
 	public const OAK_WALL_SIGN = 10385;
 	public const OAK_WOOD = 10386;
 	public const OBSIDIAN = 10387;
-	public const ORANGE_GLAZED_TERRACOTTA = 10388;
+
 	public const ORANGE_TULIP = 10389;
 	public const OXEYE_DAISY = 10390;
 	public const PACKED_ICE = 10391;
 	public const PEONY = 10392;
-	public const PINK_GLAZED_TERRACOTTA = 10393;
+
 	public const PINK_TULIP = 10394;
 	public const PODZOL = 10395;
 	public const POLISHED_ANDESITE = 10396;
@@ -454,7 +452,7 @@ final class BlockTypeIds{
 	public const PRISMARINE_WALL = 10414;
 	public const PUMPKIN = 10415;
 	public const PUMPKIN_STEM = 10416;
-	public const PURPLE_GLAZED_TERRACOTTA = 10417;
+
 	public const PURPLE_TORCH = 10418;
 	public const PURPUR = 10419;
 	public const PURPUR_PILLAR = 10420;
@@ -465,7 +463,7 @@ final class BlockTypeIds{
 	public const QUARTZ_SLAB = 10425;
 	public const QUARTZ_STAIRS = 10426;
 	public const RAIL = 10427;
-	public const RED_GLAZED_TERRACOTTA = 10428;
+
 	public const RED_MUSHROOM = 10429;
 	public const RED_MUSHROOM_BLOCK = 10430;
 	public const RED_NETHER_BRICK_SLAB = 10431;
@@ -572,10 +570,11 @@ final class BlockTypeIds{
 	public const WEIGHTED_PRESSURE_PLATE_HEAVY = 10532;
 	public const WEIGHTED_PRESSURE_PLATE_LIGHT = 10533;
 	public const WHEAT = 10534;
-	public const WHITE_GLAZED_TERRACOTTA = 10535;
+
 	public const WHITE_TULIP = 10536;
 	public const WOOL = 10537;
-	public const YELLOW_GLAZED_TERRACOTTA = 10538;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10539;
+	public const GLAZED_TERRACOTTA = 10539;
+
+	public const FIRST_UNUSED_BLOCK_ID = 10540;
 }

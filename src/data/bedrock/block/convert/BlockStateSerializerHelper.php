@@ -31,7 +31,6 @@ use pocketmine\block\DoublePlant;
 use pocketmine\block\FenceGate;
 use pocketmine\block\FloorSign;
 use pocketmine\block\Furnace;
-use pocketmine\block\GlazedTerracotta;
 use pocketmine\block\Leaves;
 use pocketmine\block\Liquid;
 use pocketmine\block\Log;
@@ -113,9 +112,6 @@ final class BlockStateSerializerHelper{
 	public static function encodeFurnace(Furnace $block, string $unlitId, string $litId) : BlockStateWriter{
 		return BlockStateWriter::create($block->isLit() ? $litId : $unlitId)
 			->writeHorizontalFacing($block->getFacing());
-	}
-	public static function encodeGlazedTerracotta(GlazedTerracotta $block, BlockStateWriter $out) : BlockStateWriter{
-		return $out->writeHorizontalFacing($block->getFacing());
 	}
 
 	private static function encodeLeaves(Leaves $block, BlockStateWriter $out) : BlockStateWriter{
