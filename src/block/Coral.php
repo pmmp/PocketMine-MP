@@ -31,18 +31,6 @@ use pocketmine\world\BlockTransaction;
 
 final class Coral extends BaseCoral{
 
-	public function readStateFromWorld() : void{
-		//TODO: this hack ensures correct state of coral plants, because they don't retain their dead flag in metadata
-		$world = $this->position->getWorld();
-		$this->dead = true;
-		foreach($this->position->sides() as $vector3){
-			if($world->getBlock($vector3) instanceof Water){
-				$this->dead = false;
-				break;
-			}
-		}
-	}
-
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if(!$this->canBeSupportedBy($tx->fetchBlock($blockReplace->getPosition()->down()))){
 			return false;
