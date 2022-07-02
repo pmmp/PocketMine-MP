@@ -27,7 +27,6 @@ use pocketmine\block\BlockFactory;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\RecordType;
-use pocketmine\block\utils\SkullType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
@@ -268,15 +267,10 @@ class ItemFactory{
 		$this->register(new WritableBook(new IID(Ids::WRITABLE_BOOK, LegacyIds::WRITABLE_BOOK, 0), "Book & Quill"));
 		$this->register(new WrittenBook(new IID(Ids::WRITTEN_BOOK, LegacyIds::WRITTEN_BOOK, 0), "Written Book"));
 
-		foreach(SkullType::getAll() as $skullType){
-			$this->register((new Skull(new IID(Ids::MOB_HEAD, LegacyIds::SKULL, 0), "Mob Head"))->setSkullType($skullType));
-		}
-
 		foreach(DyeColor::getAll() as $color){
 			//TODO: use colour object directly
 			//TODO: add interface to dye-colour objects
 			$this->register((new Dye(new IID(Ids::DYE, LegacyIds::DYE, 0), "Dye"))->setColor($color));
-			$this->register((new Bed(new IID(Ids::BED, LegacyIds::BED, 0), "Bed"))->setColor($color));
 			$this->register((new Banner(
 				new IID(Ids::BANNER, LegacyIds::BANNER, 0),
 				Blocks::BANNER(),

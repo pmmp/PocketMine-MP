@@ -536,7 +536,7 @@ final class ItemDeserializer{
 			}catch(\InvalidArgumentException $e){
 				throw new ItemTypeDeserializeException($e->getMessage(), 0, $e);
 			}
-			return Items::MOB_HEAD()->setSkullType($skullType);
+			return Blocks::MOB_HEAD()->setSkullType($skullType)->asItem();
 		});
 		//TODO: minecraft:skull_banner_pattern
 		$this->map(Ids::SLIME_BALL, fn() => Items::SLIMEBALL());

@@ -43,7 +43,7 @@ final class ItemTypeIds{
 	public const BAKED_POTATO = 20004;
 	public const BAMBOO = 20005;
 	public const BANNER = 20006;
-	public const BED = 20007;
+
 	public const BEETROOT = 20008;
 	public const BEETROOT_SEEDS = 20009;
 	public const BEETROOT_SOUP = 20010;
@@ -189,7 +189,7 @@ final class ItemTypeIds{
 	public const MELON_SEEDS = 20150;
 	public const MILK_BUCKET = 20151;
 	public const MINECART = 20152;
-	public const MOB_HEAD = 20153;
+
 	public const MUSHROOM_STEW = 20154;
 	public const NAUTILUS_SHELL = 20155;
 	public const NETHER_BRICK = 20156;

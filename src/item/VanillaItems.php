@@ -40,7 +40,6 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static BakedPotato BAKED_POTATO()
  * @method static Bamboo BAMBOO()
  * @method static Banner BANNER()
- * @method static Bed BED()
  * @method static Beetroot BEETROOT()
  * @method static BeetrootSeeds BEETROOT_SEEDS()
  * @method static BeetrootSoup BEETROOT_SOUP()
@@ -186,7 +185,6 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static MelonSeeds MELON_SEEDS()
  * @method static MilkBucket MILK_BUCKET()
  * @method static Minecart MINECART()
- * @method static Skull MOB_HEAD()
  * @method static MushroomStew MUSHROOM_STEW()
  * @method static Item NAUTILUS_SHELL()
  * @method static Item NETHER_BRICK()
@@ -294,7 +292,6 @@ final class VanillaItems{
 		self::register("baked_potato", $factory->get(Ids::BAKED_POTATO));
 		self::register("bamboo", $factory->get(Ids::BAMBOO));
 		self::register("banner", $factory->get(Ids::BANNER));
-		self::register("bed", $factory->get(Ids::BED));
 		self::register("beetroot", $factory->get(Ids::BEETROOT));
 		self::register("beetroot_seeds", $factory->get(Ids::BEETROOT_SEEDS));
 		self::register("beetroot_soup", $factory->get(Ids::BEETROOT_SOUP));
@@ -440,7 +437,6 @@ final class VanillaItems{
 		self::register("melon_seeds", $factory->get(Ids::MELON_SEEDS));
 		self::register("milk_bucket", $factory->get(Ids::BUCKET, 1));
 		self::register("minecart", $factory->get(Ids::MINECART));
-		self::register("mob_head", $factory->get(Ids::MOB_HEAD));
 		self::register("mushroom_stew", $factory->get(Ids::MUSHROOM_STEW));
 		self::register("nautilus_shell", $factory->get(Ids::NAUTILUS_SHELL));
 		self::register("nether_brick", $factory->get(Ids::NETHERBRICK));

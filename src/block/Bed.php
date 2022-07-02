@@ -33,7 +33,6 @@ use pocketmine\data\runtime\block\BlockDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -220,8 +219,5 @@ class Bed extends Transparent{
 		return !$block->getSupportType(Facing::UP)->equals(SupportType::NONE());
 	}
 
-	public function asItem() : Item{
-		//TODO: we might be able to get rid of this
-		return VanillaItems::BED()->setColor($this->color);
-	}
+	public function getMaxStackSize() : int{ return 1; }
 }
