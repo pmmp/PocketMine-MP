@@ -25,6 +25,9 @@ namespace pocketmine\block;
 
 use pocketmine\data\runtime\block\BlockDataReader;
 use pocketmine\data\runtime\block\BlockDataWriter;
+use pocketmine\item\Item;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
 
 final class Light extends Flowable{
 	public const MIN_LIGHT_LEVEL = 0;
@@ -54,4 +57,14 @@ final class Light extends Flowable{
 	}
 
 	public function canBeReplaced() : bool{ return true; }
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		$this->level = $this->level === self::MAX_LIGHT_LEVEL ?
+			self::MIN_LIGHT_LEVEL :
+			$this->level + 1;
+
+		$this->position->getWorld()->setBlock($this->position, $this);
+
+		return true;
+	}
 }
