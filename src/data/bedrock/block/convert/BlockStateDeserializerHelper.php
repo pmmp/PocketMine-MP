@@ -33,6 +33,7 @@ use pocketmine\block\FloorCoralFan;
 use pocketmine\block\FloorSign;
 use pocketmine\block\GlazedTerracotta;
 use pocketmine\block\Liquid;
+use pocketmine\block\Log;
 use pocketmine\block\RedMushroomBlock;
 use pocketmine\block\RedstoneComparator;
 use pocketmine\block\RedstoneRepeater;
@@ -147,6 +148,13 @@ final class BlockStateDeserializerHelper{
 
 	public static function decodeStillLiquid(Liquid $block, BlockStateReader $in) : Liquid{
 		return self::decodeLiquid($block, $in, true);
+	}
+
+	/** @throws BlockStateDeserializeException */
+	public static function decodeLog(Log $block, bool $stripped, BlockStateReader $in) : Log{
+		return $block
+			->setAxis($in->readPillarAxis())
+			->setStripped($stripped);
 	}
 
 	/** @throws BlockStateDeserializeException */

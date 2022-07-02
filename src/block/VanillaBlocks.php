@@ -525,18 +525,6 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static StonePressurePlate STONE_PRESSURE_PLATE()
  * @method static Slab STONE_SLAB()
  * @method static Stair STONE_STAIRS()
- * @method static Log STRIPPED_ACACIA_LOG()
- * @method static Wood STRIPPED_ACACIA_WOOD()
- * @method static Log STRIPPED_BIRCH_LOG()
- * @method static Wood STRIPPED_BIRCH_WOOD()
- * @method static Log STRIPPED_DARK_OAK_LOG()
- * @method static Wood STRIPPED_DARK_OAK_WOOD()
- * @method static Log STRIPPED_JUNGLE_LOG()
- * @method static Wood STRIPPED_JUNGLE_WOOD()
- * @method static Log STRIPPED_OAK_LOG()
- * @method static Wood STRIPPED_OAK_WOOD()
- * @method static Log STRIPPED_SPRUCE_LOG()
- * @method static Wood STRIPPED_SPRUCE_WOOD()
  * @method static Sugarcane SUGARCANE()
  * @method static DoublePlant SUNFLOWER()
  * @method static SweetBerryBush SWEET_BERRY_BUSH()
@@ -585,7 +573,7 @@ final class VanillaBlocks{
 		self::register("acacia_fence", $factory->get(Ids::ACACIA_FENCE, 0));
 		self::register("acacia_fence_gate", $factory->get(Ids::ACACIA_FENCE_GATE, 0));
 		self::register("acacia_leaves", $factory->get(Ids::ACACIA_LEAVES, 0));
-		self::register("acacia_log", $factory->get(Ids::ACACIA_LOG, 2));
+		self::register("acacia_log", $factory->get(Ids::ACACIA_LOG, 4));
 		self::register("acacia_planks", $factory->get(Ids::ACACIA_PLANKS, 0));
 		self::register("acacia_pressure_plate", $factory->get(Ids::ACACIA_PRESSURE_PLATE, 0));
 		self::register("acacia_sapling", $factory->get(Ids::ACACIA_SAPLING, 0));
@@ -620,7 +608,7 @@ final class VanillaBlocks{
 		self::register("birch_fence", $factory->get(Ids::BIRCH_FENCE, 0));
 		self::register("birch_fence_gate", $factory->get(Ids::BIRCH_FENCE_GATE, 0));
 		self::register("birch_leaves", $factory->get(Ids::BIRCH_LEAVES, 0));
-		self::register("birch_log", $factory->get(Ids::BIRCH_LOG, 2));
+		self::register("birch_log", $factory->get(Ids::BIRCH_LOG, 4));
 		self::register("birch_planks", $factory->get(Ids::BIRCH_PLANKS, 0));
 		self::register("birch_pressure_plate", $factory->get(Ids::BIRCH_PRESSURE_PLATE, 0));
 		self::register("birch_sapling", $factory->get(Ids::BIRCH_SAPLING, 0));
@@ -682,7 +670,7 @@ final class VanillaBlocks{
 		self::register("dark_oak_fence", $factory->get(Ids::DARK_OAK_FENCE, 0));
 		self::register("dark_oak_fence_gate", $factory->get(Ids::DARK_OAK_FENCE_GATE, 0));
 		self::register("dark_oak_leaves", $factory->get(Ids::DARK_OAK_LEAVES, 0));
-		self::register("dark_oak_log", $factory->get(Ids::DARK_OAK_LOG, 2));
+		self::register("dark_oak_log", $factory->get(Ids::DARK_OAK_LOG, 4));
 		self::register("dark_oak_planks", $factory->get(Ids::DARK_OAK_PLANKS, 0));
 		self::register("dark_oak_pressure_plate", $factory->get(Ids::DARK_OAK_PRESSURE_PLATE, 0));
 		self::register("dark_oak_sapling", $factory->get(Ids::DARK_OAK_SAPLING, 0));
@@ -890,7 +878,7 @@ final class VanillaBlocks{
 		self::register("jungle_fence", $factory->get(Ids::JUNGLE_FENCE, 0));
 		self::register("jungle_fence_gate", $factory->get(Ids::JUNGLE_FENCE_GATE, 0));
 		self::register("jungle_leaves", $factory->get(Ids::JUNGLE_LEAVES, 0));
-		self::register("jungle_log", $factory->get(Ids::JUNGLE_LOG, 2));
+		self::register("jungle_log", $factory->get(Ids::JUNGLE_LOG, 4));
 		self::register("jungle_planks", $factory->get(Ids::JUNGLE_PLANKS, 0));
 		self::register("jungle_pressure_plate", $factory->get(Ids::JUNGLE_PRESSURE_PLATE, 0));
 		self::register("jungle_sapling", $factory->get(Ids::JUNGLE_SAPLING, 0));
@@ -948,7 +936,7 @@ final class VanillaBlocks{
 		self::register("oak_fence", $factory->get(Ids::OAK_FENCE, 0));
 		self::register("oak_fence_gate", $factory->get(Ids::OAK_FENCE_GATE, 0));
 		self::register("oak_leaves", $factory->get(Ids::OAK_LEAVES, 0));
-		self::register("oak_log", $factory->get(Ids::OAK_LOG, 2));
+		self::register("oak_log", $factory->get(Ids::OAK_LOG, 4));
 		self::register("oak_planks", $factory->get(Ids::OAK_PLANKS, 0));
 		self::register("oak_pressure_plate", $factory->get(Ids::OAK_PRESSURE_PLATE, 0));
 		self::register("oak_sapling", $factory->get(Ids::OAK_SAPLING, 0));
@@ -1048,7 +1036,7 @@ final class VanillaBlocks{
 		self::register("spruce_fence", $factory->get(Ids::SPRUCE_FENCE, 0));
 		self::register("spruce_fence_gate", $factory->get(Ids::SPRUCE_FENCE_GATE, 0));
 		self::register("spruce_leaves", $factory->get(Ids::SPRUCE_LEAVES, 0));
-		self::register("spruce_log", $factory->get(Ids::SPRUCE_LOG, 2));
+		self::register("spruce_log", $factory->get(Ids::SPRUCE_LOG, 4));
 		self::register("spruce_planks", $factory->get(Ids::SPRUCE_PLANKS, 0));
 		self::register("spruce_pressure_plate", $factory->get(Ids::SPRUCE_PRESSURE_PLATE, 0));
 		self::register("spruce_sapling", $factory->get(Ids::SPRUCE_SAPLING, 0));
@@ -1073,18 +1061,6 @@ final class VanillaBlocks{
 		self::register("stone_slab", $factory->get(Ids::STONE_SLAB, 0));
 		self::register("stone_stairs", $factory->get(Ids::STONE_STAIRS, 0));
 		self::register("stonecutter", $factory->get(Ids::STONECUTTER, 0));
-		self::register("stripped_acacia_log", $factory->get(Ids::STRIPPED_ACACIA_LOG, 2));
-		self::register("stripped_acacia_wood", $factory->get(Ids::STRIPPED_ACACIA_WOOD, 0));
-		self::register("stripped_birch_log", $factory->get(Ids::STRIPPED_BIRCH_LOG, 2));
-		self::register("stripped_birch_wood", $factory->get(Ids::STRIPPED_BIRCH_WOOD, 0));
-		self::register("stripped_dark_oak_log", $factory->get(Ids::STRIPPED_DARK_OAK_LOG, 2));
-		self::register("stripped_dark_oak_wood", $factory->get(Ids::STRIPPED_DARK_OAK_WOOD, 0));
-		self::register("stripped_jungle_log", $factory->get(Ids::STRIPPED_JUNGLE_LOG, 2));
-		self::register("stripped_jungle_wood", $factory->get(Ids::STRIPPED_JUNGLE_WOOD, 0));
-		self::register("stripped_oak_log", $factory->get(Ids::STRIPPED_OAK_LOG, 2));
-		self::register("stripped_oak_wood", $factory->get(Ids::STRIPPED_OAK_WOOD, 0));
-		self::register("stripped_spruce_log", $factory->get(Ids::STRIPPED_SPRUCE_LOG, 2));
-		self::register("stripped_spruce_wood", $factory->get(Ids::STRIPPED_SPRUCE_WOOD, 0));
 		self::register("sugarcane", $factory->get(Ids::SUGARCANE, 0));
 		self::register("sunflower", $factory->get(Ids::SUNFLOWER, 0));
 		self::register("sweet_berry_bush", $factory->get(Ids::SWEET_BERRY_BUSH, 0));

@@ -24,6 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\TreeType;
+use pocketmine\data\runtime\block\BlockDataReader;
+use pocketmine\data\runtime\block\BlockDataWriter;
+use pocketmine\item\Axe;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -32,12 +35,21 @@ class Wood extends Opaque{
 
 	private TreeType $treeType;
 
-	private bool $stripped;
+	private bool $stripped = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, TreeType $treeType, bool $stripped){
-		$this->stripped = $stripped; //TODO: this should be dynamic, but right now legacy shit gets in the way
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, TreeType $treeType){
 		parent::__construct($idInfo, $name, $breakInfo);
 		$this->treeType = $treeType;
+	}
+
+	public function getRequiredTypeDataBits() : int{ return 1; }
+
+	protected function decodeType(BlockDataReader $r) : void{
+		$this->stripped = $r->readBool();
+	}
+
+	protected function encodeType(BlockDataWriter $w) : void{
+		$w->writeBool($this->stripped);
 	}
 
 	/**
@@ -48,6 +60,12 @@ class Wood extends Opaque{
 	}
 
 	public function isStripped() : bool{ return $this->stripped; }
+
+	/** @return $this */
+	public function setStripped(bool $stripped) : self{
+		$this->stripped = $stripped;
+		return $this;
+	}
 
 	public function getFuelTime() : int{
 		return 300;
@@ -62,8 +80,10 @@ class Wood extends Opaque{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->stripped && ($item->getBlockToolType() & BlockToolType::AXE) !== 0){
-			//TODO: strip logs; can't implement this yet because of legacy limitations :(
+		if(!$this->stripped && $item instanceof Axe){
+			$item->applyDamage(1);
+			$this->stripped = true;
+			$this->position->getWorld()->setBlock($this->position, $this);
 			return true;
 		}
 		return false;

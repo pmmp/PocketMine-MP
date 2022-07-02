@@ -140,14 +140,17 @@ final class BlockStateSerializerHelper{
 			->writePillarAxis($block->getAxis());
 	}
 
-	public static function encodeLog1(Log $block, string $type) : BlockStateWriter{
-		return self::encodeLog($block, BlockStateWriter::create(Ids::LOG)
-			->writeString(BlockStateNames::OLD_LOG_TYPE, $type));
+	public static function encodeLog1(Log $block, string $unstrippedType, string $strippedId) : BlockStateWriter{
+		return self::encodeLog($block, $block->isStripped() ?
+			BlockStateWriter::create($strippedId) :
+			BlockStateWriter::create(Ids::LOG)->writeString(BlockStateNames::OLD_LOG_TYPE, $unstrippedType));
 	}
 
-	public static function encodeLog2(Log $block, string $type) : BlockStateWriter{
-		return self::encodeLog($block, BlockStateWriter::create(Ids::LOG2)
-			->writeString(BlockStateNames::NEW_LOG_TYPE, $type));
+	public static function encodeLog2(Log $block, string $unstrippedType, string $strippedId) : BlockStateWriter{
+		return self::encodeLog($block, $block->isStripped() ?
+			BlockStateWriter::create($strippedId) :
+			BlockStateWriter::create(Ids::LOG2)->writeString(BlockStateNames::NEW_LOG_TYPE, $unstrippedType)
+		);
 	}
 
 	public static function encodeMushroomBlock(RedMushroomBlock $block, BlockStateWriter $out) : BlockStateWriter{

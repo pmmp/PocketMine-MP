@@ -461,11 +461,8 @@ class BlockFactory{
 
 			$this->register(new Leaves(BlockLegacyIdHelper::getLeavesIdentifier($treeType), $name . " Leaves", $leavesBreakInfo, $treeType));
 
-			$this->register(new Log(BlockLegacyIdHelper::getLogIdentifier($treeType), $name . " Log", $logBreakInfo, $treeType, false));
-			$this->register(new Log(BlockLegacyIdHelper::getStrippedLogIdentifier($treeType), "Stripped " . $name . " Log", $logBreakInfo, $treeType, true));
-
-			$this->register(new Wood(BlockLegacyIdHelper::getAllSidedLogIdentifier($treeType), $name . " Wood", $logBreakInfo, $treeType, false));
-			$this->register(new Wood(BlockLegacyIdHelper::getAllSidedStrippedLogIdentifier($treeType), "Stripped $name Wood", $logBreakInfo, $treeType, true));
+			$this->register(new Log(BlockLegacyIdHelper::getLogIdentifier($treeType), $name . " Log", $logBreakInfo, $treeType));
+			$this->register(new Wood(BlockLegacyIdHelper::getAllSidedLogIdentifier($treeType), $name . " Wood", $logBreakInfo, $treeType));
 
 			$this->register(new FenceGate(BlockLegacyIdHelper::getWoodenFenceGateIdentifier($treeType), $name . " Fence Gate", $planksBreakInfo));
 			$this->register(new WoodenStairs(BlockLegacyIdHelper::getWoodenStairsIdentifier($treeType), $name . " Stairs", $planksBreakInfo));

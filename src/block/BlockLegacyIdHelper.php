@@ -92,18 +92,6 @@ final class BlockLegacyIdHelper{
 		});
 	}
 
-	public static function getAllSidedStrippedLogIdentifier(TreeType $treeType) : BID{
-		return new BID(match($treeType->id()){
-			TreeType::OAK()->id() => Ids::STRIPPED_OAK_WOOD,
-			TreeType::SPRUCE()->id() => Ids::STRIPPED_SPRUCE_WOOD,
-			TreeType::BIRCH()->id() => Ids::STRIPPED_BIRCH_WOOD,
-			TreeType::JUNGLE()->id() => Ids::STRIPPED_JUNGLE_WOOD,
-			TreeType::ACACIA()->id() => Ids::STRIPPED_ACACIA_WOOD,
-			TreeType::DARK_OAK()->id() => Ids::STRIPPED_DARK_OAK_WOOD,
-			default => throw new AssumptionFailedError("All tree types should be covered")
-		});
-	}
-
 	public static function getLeavesIdentifier(TreeType $treeType) : BID{
 		return match($treeType->id()){
 			TreeType::OAK()->id() => new BID(Ids::OAK_LEAVES),
@@ -278,24 +266,6 @@ final class BlockLegacyIdHelper{
 				return new BID(Ids::ACACIA_STAIRS);
 			case TreeType::DARK_OAK()->id():
 				return new BID(Ids::DARK_OAK_STAIRS);
-		}
-		throw new AssumptionFailedError("Switch should cover all wood types");
-	}
-
-	public static function getStrippedLogIdentifier(TreeType $treeType) : BlockIdentifier{
-		switch($treeType->id()){
-			case TreeType::OAK()->id():
-				return new BID(Ids::STRIPPED_OAK_LOG);
-			case TreeType::SPRUCE()->id():
-				return new BID(Ids::STRIPPED_SPRUCE_LOG);
-			case TreeType::BIRCH()->id():
-				return new BID(Ids::STRIPPED_BIRCH_LOG);
-			case TreeType::JUNGLE()->id():
-				return new BID(Ids::STRIPPED_JUNGLE_LOG);
-			case TreeType::ACACIA()->id():
-				return new BID(Ids::STRIPPED_ACACIA_LOG);
-			case TreeType::DARK_OAK()->id():
-				return new BID(Ids::STRIPPED_DARK_OAK_LOG);
 		}
 		throw new AssumptionFailedError("Switch should cover all wood types");
 	}

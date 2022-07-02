@@ -638,24 +638,18 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 				->setFacing($in->readHorizontalFacing())
 				->setLit(true);
 		});
-		$this->map(Ids::LOG, function(Reader $in) : Block{
-			return (match($type = $in->readString(StateNames::OLD_LOG_TYPE)){
-					StringValues::OLD_LOG_TYPE_BIRCH => Blocks::BIRCH_LOG(),
-					StringValues::OLD_LOG_TYPE_JUNGLE => Blocks::JUNGLE_LOG(),
-					StringValues::OLD_LOG_TYPE_OAK => Blocks::OAK_LOG(),
-					StringValues::OLD_LOG_TYPE_SPRUCE => Blocks::SPRUCE_LOG(),
-					default => throw $in->badValueException(StateNames::OLD_LOG_TYPE, $type),
-				})
-				->setAxis($in->readPillarAxis());
-		});
-		$this->map(Ids::LOG2, function(Reader $in) : Block{
-			return (match($type = $in->readString(StateNames::NEW_LOG_TYPE)){
-					StringValues::NEW_LOG_TYPE_ACACIA => Blocks::ACACIA_LOG(),
-					StringValues::NEW_LOG_TYPE_DARK_OAK => Blocks::DARK_OAK_LOG(),
-					default => throw $in->badValueException(StateNames::NEW_LOG_TYPE, $type),
-				})
-				->setAxis($in->readPillarAxis());
-		});
+		$this->map(Ids::LOG, fn(Reader $in) => Helper::decodeLog(match($type = $in->readString(StateNames::OLD_LOG_TYPE)){
+			StringValues::OLD_LOG_TYPE_BIRCH => Blocks::BIRCH_LOG(),
+			StringValues::OLD_LOG_TYPE_JUNGLE => Blocks::JUNGLE_LOG(),
+			StringValues::OLD_LOG_TYPE_OAK => Blocks::OAK_LOG(),
+			StringValues::OLD_LOG_TYPE_SPRUCE => Blocks::SPRUCE_LOG(),
+			default => throw $in->badValueException(StateNames::OLD_LOG_TYPE, $type),
+		}, false, $in));
+		$this->map(Ids::LOG2, fn(Reader $in) => Helper::decodeLog(match($type = $in->readString(StateNames::NEW_LOG_TYPE)){
+			StringValues::NEW_LOG_TYPE_ACACIA => Blocks::ACACIA_LOG(),
+			StringValues::NEW_LOG_TYPE_DARK_OAK => Blocks::DARK_OAK_LOG(),
+			default => throw $in->badValueException(StateNames::NEW_LOG_TYPE, $type),
+		}, false, $in));
 		$this->map(Ids::LOOM, function(Reader $in) : Block{
 			return Blocks::LOOM()
 				->setFacing($in->readLegacyHorizontalFacing());
@@ -959,30 +953,12 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			return Blocks::STONECUTTER()
 				->setFacing($in->readHorizontalFacing());
 		});
-		$this->map(Ids::STRIPPED_ACACIA_LOG, function(Reader $in) : Block{
-			return Blocks::STRIPPED_ACACIA_LOG()
-				->setAxis($in->readPillarAxis());
-		});
-		$this->map(Ids::STRIPPED_BIRCH_LOG, function(Reader $in) : Block{
-			return Blocks::STRIPPED_BIRCH_LOG()
-				->setAxis($in->readPillarAxis());
-		});
-		$this->map(Ids::STRIPPED_DARK_OAK_LOG, function(Reader $in) : Block{
-			return Blocks::STRIPPED_DARK_OAK_LOG()
-				->setAxis($in->readPillarAxis());
-		});
-		$this->map(Ids::STRIPPED_JUNGLE_LOG, function(Reader $in) : Block{
-			return Blocks::STRIPPED_JUNGLE_LOG()
-				->setAxis($in->readPillarAxis());
-		});
-		$this->map(Ids::STRIPPED_OAK_LOG, function(Reader $in) : Block{
-			return Blocks::STRIPPED_OAK_LOG()
-				->setAxis($in->readPillarAxis());
-		});
-		$this->map(Ids::STRIPPED_SPRUCE_LOG, function(Reader $in) : Block{
-			return Blocks::STRIPPED_SPRUCE_LOG()
-				->setAxis($in->readPillarAxis());
-		});
+		$this->map(Ids::STRIPPED_ACACIA_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::ACACIA_LOG(), true, $in));
+		$this->map(Ids::STRIPPED_BIRCH_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::BIRCH_LOG(), true, $in));
+		$this->map(Ids::STRIPPED_DARK_OAK_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::DARK_OAK_LOG(), true, $in));
+		$this->map(Ids::STRIPPED_JUNGLE_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::JUNGLE_LOG(), true, $in));
+		$this->map(Ids::STRIPPED_OAK_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::OAK_LOG(), true, $in));
+		$this->map(Ids::STRIPPED_SPRUCE_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::SPRUCE_LOG(), true, $in));
 		$this->map(Ids::SWEET_BERRY_BUSH, function(Reader $in) : Block{
 			//berry bush only wants 0-3, but it can be bigger in MCPE due to misuse of GROWTH state which goes up to 7
 			$growth = $in->readBoundedInt(StateNames::GROWTH, 0, 7);
@@ -1057,15 +1033,15 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::WOOD, function(Reader $in) : Block{
 			$in->todo(StateNames::PILLAR_AXIS); //TODO: our impl doesn't support axis yet
 			$stripped = $in->readBool(StateNames::STRIPPED_BIT);
-			return match($woodType = $in->readString(StateNames::WOOD_TYPE)){
-				StringValues::WOOD_TYPE_ACACIA => $stripped ? Blocks::STRIPPED_ACACIA_WOOD() : Blocks::ACACIA_WOOD(),
-				StringValues::WOOD_TYPE_BIRCH => $stripped ? Blocks::STRIPPED_BIRCH_WOOD() : Blocks::BIRCH_WOOD(),
-				StringValues::WOOD_TYPE_DARK_OAK => $stripped ? Blocks::STRIPPED_DARK_OAK_WOOD() : Blocks::DARK_OAK_WOOD(),
-				StringValues::WOOD_TYPE_JUNGLE => $stripped ? Blocks::STRIPPED_JUNGLE_WOOD() : Blocks::JUNGLE_WOOD(),
-				StringValues::WOOD_TYPE_OAK => $stripped ? Blocks::STRIPPED_OAK_WOOD() : Blocks::OAK_WOOD(),
-				StringValues::WOOD_TYPE_SPRUCE => $stripped ? Blocks::STRIPPED_SPRUCE_WOOD() : Blocks::SPRUCE_WOOD(),
+			return (match($woodType = $in->readString(StateNames::WOOD_TYPE)){
+				StringValues::WOOD_TYPE_ACACIA => Blocks::ACACIA_WOOD(),
+				StringValues::WOOD_TYPE_BIRCH => Blocks::BIRCH_WOOD(),
+				StringValues::WOOD_TYPE_DARK_OAK => Blocks::DARK_OAK_WOOD(),
+				StringValues::WOOD_TYPE_JUNGLE => Blocks::JUNGLE_WOOD(),
+				StringValues::WOOD_TYPE_OAK => Blocks::OAK_WOOD(),
+				StringValues::WOOD_TYPE_SPRUCE => Blocks::SPRUCE_WOOD(),
 				default => throw $in->badValueException(StateNames::WOOD_TYPE, $woodType),
-			};
+			})->setStripped($stripped);
 		});
 		$this->map(Ids::WOODEN_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::OAK_BUTTON(), $in));
 		$this->map(Ids::WOODEN_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::OAK_DOOR(), $in));

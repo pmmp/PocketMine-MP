@@ -541,18 +541,7 @@ final class BlockTypeIds{
 	public const STONE_SLAB = 10503;
 	public const STONE_STAIRS = 10504;
 	public const STONECUTTER = 10505;
-	public const STRIPPED_ACACIA_LOG = 10506;
-	public const STRIPPED_ACACIA_WOOD = 10507;
-	public const STRIPPED_BIRCH_LOG = 10508;
-	public const STRIPPED_BIRCH_WOOD = 10509;
-	public const STRIPPED_DARK_OAK_LOG = 10510;
-	public const STRIPPED_DARK_OAK_WOOD = 10511;
-	public const STRIPPED_JUNGLE_LOG = 10512;
-	public const STRIPPED_JUNGLE_WOOD = 10513;
-	public const STRIPPED_OAK_LOG = 10514;
-	public const STRIPPED_OAK_WOOD = 10515;
-	public const STRIPPED_SPRUCE_LOG = 10516;
-	public const STRIPPED_SPRUCE_WOOD = 10517;
+
 	public const SUGARCANE = 10518;
 	public const SUNFLOWER = 10519;
 	public const SWEET_BERRY_BUSH = 10520;
