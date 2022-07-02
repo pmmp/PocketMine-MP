@@ -24,12 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Bed as TileBed;
-use pocketmine\block\utils\BlockDataReader;
-use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\block\BlockDataReader;
+use pocketmine\data\runtime\block\BlockDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\item\Item;

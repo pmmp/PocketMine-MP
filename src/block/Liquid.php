@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataReader;
-use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\block\utils\MinimumCostFlowCalculator;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\block\BlockDataReader;
+use pocketmine\data\runtime\block\BlockDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockFormEvent;
 use pocketmine\event\block\BlockSpreadEvent;

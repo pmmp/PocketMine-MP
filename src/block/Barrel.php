@@ -25,8 +25,8 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Barrel as TileBarrel;
 use pocketmine\block\utils\AnyFacingTrait;
-use pocketmine\block\utils\BlockDataReader;
-use pocketmine\block\utils\BlockDataWriter;
+use pocketmine\data\runtime\block\BlockDataReader;
+use pocketmine\data\runtime\block\BlockDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;

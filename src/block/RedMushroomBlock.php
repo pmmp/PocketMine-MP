@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataReader;
-use pocketmine\block\utils\BlockDataReaderHelper;
-use pocketmine\block\utils\BlockDataWriter;
-use pocketmine\block\utils\BlockDataWriterHelper;
 use pocketmine\block\utils\MushroomBlockType;
+use pocketmine\data\runtime\block\BlockDataReader;
+use pocketmine\data\runtime\block\BlockDataReaderHelper;
+use pocketmine\data\runtime\block\BlockDataWriter;
+use pocketmine\data\runtime\block\BlockDataWriterHelper;
 use pocketmine\item\Item;
 use function mt_rand;
 

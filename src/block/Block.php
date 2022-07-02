@@ -28,9 +28,9 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
-use pocketmine\block\utils\BlockDataReader;
-use pocketmine\block\utils\BlockDataWriter;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\block\BlockDataReader;
+use pocketmine\data\runtime\block\BlockDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;

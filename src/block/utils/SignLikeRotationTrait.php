@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\data\runtime\block\BlockDataReader;
+use pocketmine\data\runtime\block\BlockDataWriter;
 use function floor;
 
 trait SignLikeRotationTrait{

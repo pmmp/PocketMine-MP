@@ -24,6 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
+use pocketmine\data\runtime\block\BlockDataReader;
+use pocketmine\data\runtime\block\BlockDataReaderHelper;
+use pocketmine\data\runtime\block\BlockDataWriter;
+use pocketmine\data\runtime\block\BlockDataWriterHelper;
 
 trait CoralTypeTrait{
 	protected CoralType $coralType;

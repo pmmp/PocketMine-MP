@@ -21,7 +21,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\utils;
+namespace pocketmine\data\runtime\block;
+
+use pocketmine\block\utils\BellAttachmentType;
+use pocketmine\block\utils\CoralType;
+use pocketmine\block\utils\DyeColor;
+use pocketmine\block\utils\LeverFacing;
+use pocketmine\block\utils\MushroomBlockType;
+use pocketmine\block\utils\SkullType;
+use pocketmine\block\utils\SlabType;
+use pocketmine\block\utils\StairShape;
+use pocketmine\block\utils\TreeType;
 
 final class BlockDataReaderHelper{
 

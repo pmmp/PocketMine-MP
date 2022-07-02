@@ -25,12 +25,12 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Bell as TileBell;
 use pocketmine\block\utils\BellAttachmentType;
-use pocketmine\block\utils\BlockDataReader;
-use pocketmine\block\utils\BlockDataReaderHelper;
-use pocketmine\block\utils\BlockDataWriter;
-use pocketmine\block\utils\BlockDataWriterHelper;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\block\BlockDataReader;
+use pocketmine\data\runtime\block\BlockDataReaderHelper;
+use pocketmine\data\runtime\block\BlockDataWriter;
+use pocketmine\data\runtime\block\BlockDataWriterHelper;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
