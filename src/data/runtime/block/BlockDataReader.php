@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\data\runtime\block;
 
+use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
