@@ -53,9 +53,12 @@ final class RuntimeBlockMapping{
 
 	private static function make() : self{
 		$canonicalBlockStatesFile = Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt");
-		$contents = Utils::assumeNotFalse(file_get_contents($canonicalBlockStatesFile), "Missing required resource file");
+		$canonicalBlockStatesRaw = Utils::assumeNotFalse(file_get_contents($canonicalBlockStatesFile), "Missing required resource file");
+
+		$metaMappingFile = Path::join(\pocketmine\BEDROCK_DATA_PATH, 'block_state_meta_map.json');
+		$metaMappingRaw = Utils::assumeNotFalse(file_get_contents($metaMappingFile), "Missing required resource file");
 		return new self(
-			BlockStateDictionary::loadFromString($contents),
+			BlockStateDictionary::loadFromString($canonicalBlockStatesRaw, $metaMappingRaw),
 			GlobalBlockStateHandlers::getSerializer()
 		);
 	}

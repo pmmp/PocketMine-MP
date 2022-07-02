@@ -32,6 +32,7 @@ use pocketmine\block\VanillaBlocks;
 use pocketmine\crafting\ExactRecipeIngredient;
 use pocketmine\crafting\MetaWildcardRecipeIngredient;
 use pocketmine\crafting\RecipeIngredient;
+use pocketmine\data\bedrock\item\BlockItemIdMap;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
@@ -126,11 +127,12 @@ class TypeConverter{
 			$meta = self::RECIPE_INPUT_WILDCARD_META;
 		}elseif($ingredient instanceof ExactRecipeIngredient){
 			$item = $ingredient->getItem();
-			[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($item);
-			if($id < 256){
-				//TODO: this is needed for block crafting recipes to work - we need to replace this with some kind of
-				//blockstate <-> meta mapping table so that we can remove the legacy code from the core
-				$meta = $item->getMeta();
+			[$id, $meta, $blockRuntimeId] = ItemTranslator::getInstance()->toNetworkId($item);
+			if($blockRuntimeId !== ItemTranslator::NO_BLOCK_RUNTIME_ID){
+				$meta = RuntimeBlockMapping::getInstance()->getBlockStateDictionary()->getMetaFromStateId($blockRuntimeId);
+				if($meta === null){
+					throw new AssumptionFailedError("Every block state should have an associated meta value");
+				}
 			}
 		}else{
 			throw new \LogicException("Unsupported recipe ingredient type " . get_class($ingredient) . ", only " . ExactRecipeIngredient::class . " and " . MetaWildcardRecipeIngredient::class . " are supported");
@@ -143,13 +145,21 @@ class TypeConverter{
 			return null;
 		}
 
+		$itemId = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromIntId($ingredient->getId());
+
 		if($ingredient->getMeta() === self::RECIPE_INPUT_WILDCARD_META){
-			$itemId = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromIntId($ingredient->getId());
 			return new MetaWildcardRecipeIngredient($itemId);
 		}
 
-		//TODO: this won't be handled properly for blockitems because a block runtimeID is expected rather than a meta value
-		$result = ItemTranslator::getInstance()->fromNetworkId($ingredient->getId(), $ingredient->getMeta(), 0);
+		$meta = $ingredient->getMeta();
+		$blockRuntimeId = null;
+		if(($blockId = BlockItemIdMap::getInstance()->lookupBlockId($itemId)) !== null){
+			$blockRuntimeId = RuntimeBlockMapping::getInstance()->getBlockStateDictionary()->lookupStateIdFromIdMeta($blockId, $meta);
+			if($blockRuntimeId !== null){
+				$meta = 0;
+			}
+		}
+		$result = ItemTranslator::getInstance()->fromNetworkId($ingredient->getId(), $meta, $blockRuntimeId ?? ItemTranslator::NO_BLOCK_RUNTIME_ID);
 		return new ExactRecipeIngredient($result);
 	}
 

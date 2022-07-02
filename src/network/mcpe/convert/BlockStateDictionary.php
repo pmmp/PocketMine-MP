@@ -27,27 +27,53 @@ use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use function array_map;
+use function get_debug_type;
+use function is_array;
+use function is_int;
+use function json_decode;
 
 /**
  * Handles translation of network block runtime IDs into blockstate data, and vice versa
  */
 final class BlockStateDictionary{
 
-	private BlockStateLookupCache $lookupCache;
+	private BlockStateLookupCache $stateDataToStateIdLookupCache;
+	/**
+	 * @var int[][]|null
+	 * @phpstan-var array<int, array<string, int>>|null
+	 */
+	private ?array $idMetaToStateIdLookupCache = null;
 
 	/**
-	 * @param BlockStateData[]             $states
+	 * @param BlockStateDictionaryEntry[]  $states
 	 *
-	 * @phpstan-param list<BlockStateData> $states
+	 * @phpstan-param list<BlockStateDictionaryEntry> $states
 	 */
 	public function __construct(
 		private array $states
 	){
-		$this->lookupCache = new BlockStateLookupCache($this->states);
+		$this->stateDataToStateIdLookupCache = new BlockStateLookupCache(array_map(fn(BlockStateDictionaryEntry $entry) => $entry->getStateData(), $this->states));
+	}
+
+	/**
+	 * @return int[][]
+	 * @phpstan-return array<int, array<string, int>>
+	 */
+	private function getIdMetaToStateIdLookup() : array{
+		if($this->idMetaToStateIdLookupCache === null){
+			//TODO: if we ever allow mutating the dictionary, this would need to be rebuilt on modification
+			$this->idMetaToStateIdLookupCache = [];
+
+			foreach($this->states as $i => $state){
+				$this->idMetaToStateIdLookupCache[$state->getMeta()][$state->getStateData()->getName()] = $i;
+			}
+		}
+
+		return $this->idMetaToStateIdLookupCache;
 	}
 
 	public function getDataFromStateId(int $networkRuntimeId) : ?BlockStateData{
-		return $this->states[$networkRuntimeId] ?? null;
+		return ($this->states[$networkRuntimeId] ?? null)?->getStateData();
 	}
 
 	/**
@@ -55,20 +81,55 @@ final class BlockStateDictionary{
 	 * Returns null if there were no matches.
 	 */
 	public function lookupStateIdFromData(BlockStateData $data) : ?int{
-		return $this->lookupCache->lookupStateId($data);
+		return $this->stateDataToStateIdLookupCache->lookupStateId($data);
+	}
+
+	/**
+	 * Returns the blockstate meta value associated with the given blockstate runtime ID.
+	 * This is used for serializing crafting recipe inputs.
+	 */
+	public function getMetaFromStateId(int $networkRuntimeId) : ?int{
+		return ($this->states[$networkRuntimeId] ?? null)?->getMeta();
+	}
+
+	/**
+	 * Returns the blockstate data associated with the given block ID and meta value.
+	 * This is used for deserializing crafting recipe inputs.
+	 */
+	public function lookupStateIdFromIdMeta(string $id, int $meta) : ?int{
+		return $this->getIdMetaToStateIdLookup()[$meta][$id] ?? null;
 	}
 
 	/**
 	 * Returns an array mapping runtime ID => blockstate data.
-	 * @return BlockStateData[]
-	 * @phpstan-return array<int, BlockStateData>
+	 * @return BlockStateDictionaryEntry[]
+	 * @phpstan-return array<int, BlockStateDictionaryEntry>
 	 */
 	public function getStates() : array{ return $this->states; }
 
-	public static function loadFromString(string $contents) : self{
-		return new self(array_map(
+	public static function loadFromString(string $blockPaletteContents, string $metaMapContents) : self{
+		$metaMap = json_decode($metaMapContents, flags: JSON_THROW_ON_ERROR);
+		if(!is_array($metaMap)){
+			throw new \InvalidArgumentException("Invalid metaMap, expected array for root type, got " . get_debug_type($metaMap));
+		}
+
+		$entries = [];
+		$states = array_map(
 			fn(TreeRoot $root) => BlockStateData::fromNbt($root->mustGetCompoundTag()),
-			(new NetworkNbtSerializer())->readMultiple($contents)
-		));
+			(new NetworkNbtSerializer())->readMultiple($blockPaletteContents)
+		);
+
+		foreach($states as $i => $state){
+			$meta = $metaMap[$i] ?? null;
+			if($meta === null){
+				throw new \InvalidArgumentException("Missing associated meta value for state $i (" . $state->toNbt() . ")");
+			}
+			if(!is_int($meta)){
+				throw new \InvalidArgumentException("Invalid metaMap offset $i, expected int, got " . get_debug_type($meta));
+			}
+			$entries[$i] = new BlockStateDictionaryEntry($state, $meta);
+		}
+
+		return new self($entries);
 	}
 }
