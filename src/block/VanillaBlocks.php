@@ -104,6 +104,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static BrownMushroomBlock BROWN_MUSHROOM_BLOCK()
  * @method static Cactus CACTUS()
  * @method static Cake CAKE()
+ * @method static Opaque CALCITE()
  * @method static Carpet CARPET()
  * @method static Carrot CARROTS()
  * @method static CarvedPumpkin CARVED_PUMPKIN()
@@ -665,6 +666,7 @@ final class VanillaBlocks{
 		self::register("brown_mushroom_block", $factory->get(Ids::BROWN_MUSHROOM_BLOCK, 10));
 		self::register("cactus", $factory->get(Ids::CACTUS, 0));
 		self::register("cake", $factory->get(Ids::CAKE, 0));
+		self::register("calcite", $factory->get(Ids::CALCITE, 0));
 		self::register("carpet", $factory->get(Ids::CARPET, 14));
 		self::register("carrots", $factory->get(Ids::CARROTS, 0));
 		self::register("carved_pumpkin", $factory->get(Ids::CARVED_PUMPKIN, 0));

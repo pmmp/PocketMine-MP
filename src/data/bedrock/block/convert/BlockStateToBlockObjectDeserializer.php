@@ -211,6 +211,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			return Blocks::CAKE()
 				->setBites($in->readBoundedInt(StateNames::BITE_COUNTER, 0, 6));
 		});
+		$this->map(Ids::CALCITE, fn() => Blocks::CALCITE());
 		$this->map(Ids::CARPET, function(Reader $in) : Block{
 			return Blocks::CARPET()
 				->setColor($in->readColor());

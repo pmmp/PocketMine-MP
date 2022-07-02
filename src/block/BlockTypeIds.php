@@ -589,6 +589,7 @@ final class BlockTypeIds{
 	public const RAW_COPPER = 10562;
 	public const RAW_GOLD = 10563;
 	public const RAW_IRON = 10564;
+	public const CALCITE = 10565;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10565;
+	public const FIRST_UNUSED_BLOCK_ID = 10566;
 }

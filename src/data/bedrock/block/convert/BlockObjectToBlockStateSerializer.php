@@ -385,6 +385,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::CAKE)
 				->writeInt(StateNames::BITE_COUNTER, $block->getBites());
 		});
+		$this->mapSimple(Blocks::CALCITE(), Ids::CALCITE);
 		$this->map(Blocks::CARPET(), function(Carpet $block) : Writer{
 			return Writer::create(Ids::CARPET)
 				->writeColor($block->getColor());
