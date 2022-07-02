@@ -844,7 +844,7 @@ class BlockFactory{
 
 		$blackstoneBreakInfo = new BreakInfo(1.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
 		$this->register(new Opaque(new BID(Ids::BLACKSTONE), "Blackstone", $blackstoneBreakInfo));
-+$this->register(new Slab(new BID(Ids::BLACKSTONE_SLAB), "Blackstone", $slabBreakInfo));
+		$this->register(new Slab(new BID(Ids::BLACKSTONE_SLAB), "Blackstone", $slabBreakInfo));
 		$this->register(new Stair(new BID(Ids::BLACKSTONE_STAIRS), "Blackstone Stairs", $blackstoneBreakInfo));
 		$this->register(new Wall(new BID(Ids::BLACKSTONE_WALL), "Blackstone Wall", $blackstoneBreakInfo));
 
