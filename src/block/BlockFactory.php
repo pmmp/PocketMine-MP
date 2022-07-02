@@ -558,6 +558,9 @@ class BlockFactory{
 			BreakInfo::instant(),
 		));
 
+		$this->registerBlocksR16();
+		$this->registerBlocksR17();
+
 		//region --- auto-generated TODOs for bedrock-1.11.0 ---
 		//TODO: minecraft:bubble_column
 		//TODO: minecraft:campfire
@@ -826,6 +829,46 @@ class BlockFactory{
 		$this->register(new Element(new BID(Ids::ELEMENT_LIVERMORIUM), "Livermorium", $instaBreak, "lv", 116, 3));
 		$this->register(new Element(new BID(Ids::ELEMENT_TENNESSINE), "Tennessine", $instaBreak, "ts", 117, 6));
 		$this->register(new Element(new BID(Ids::ELEMENT_OGANESSON), "Oganesson", $instaBreak, "og", 118, 7));
+	}
+
+	private function registerBlocksR16() : void{
+		//for some reason, slabs have weird hardness like the legacy ones
+		$slabBreakInfo = new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+
+		$this->register(new Opaque(new BID(Ids::ANCIENT_DEBRIS), "Ancient Debris", new BreakInfo(30, ToolType::PICKAXE, ToolTier::DIAMOND()->getHarvestLevel())));
+
+		$basaltBreakInfo = new BreakInfo(1.25, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$this->register(new SimplePillar(new BID(Ids::BASALT), "Basalt", $basaltBreakInfo));
+		$this->register(new SimplePillar(new BID(Ids::POLISHED_BASALT), "Polished Basalt", $basaltBreakInfo));
+		$this->register(new Opaque(new BID(Ids::SMOOTH_BASALT), "Smooth Basalt", $basaltBreakInfo));
+
+		$blackstoneBreakInfo = new BreakInfo(1.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$this->register(new Opaque(new BID(Ids::BLACKSTONE), "Blackstone", $blackstoneBreakInfo));
++$this->register(new Slab(new BID(Ids::BLACKSTONE_SLAB), "Blackstone", $slabBreakInfo));
+		$this->register(new Stair(new BID(Ids::BLACKSTONE_STAIRS), "Blackstone Stairs", $blackstoneBreakInfo));
+		$this->register(new Wall(new BID(Ids::BLACKSTONE_WALL), "Blackstone Wall", $blackstoneBreakInfo));
+
+		//TODO: polished blackstone ought to have 2.0 hardness (as per java) but it's 1.5 in Bedrock (probably parity bug)
+		$prefix = fn(string $thing) => "Polished Blackstone" . ($thing !== "" ? " $thing" : "");
+		$this->register(new Opaque(new BID(Ids::POLISHED_BLACKSTONE), $prefix(""), $blackstoneBreakInfo));
+		$this->register(new StoneButton(new BID(Ids::POLISHED_BLACKSTONE_BUTTON), $prefix("Button"), new BreakInfo(0.5, ToolType::PICKAXE))); //same as regular stone button
+		$this->register(new StonePressurePlate(new BID(Ids::POLISHED_BLACKSTONE_PRESSURE_PLATE), $prefix("Pressure Plate"), new BreakInfo(0.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()))); //same as regular stone pressure plate
+		$this->register(new Slab(new BID(Ids::POLISHED_BLACKSTONE_SLAB), $prefix(""), $slabBreakInfo));
+		$this->register(new Stair(new BID(Ids::POLISHED_BLACKSTONE_STAIRS), $prefix("Stairs"), $blackstoneBreakInfo));
+		$this->register(new Wall(new BID(Ids::POLISHED_BLACKSTONE_WALL), $prefix("Wall"), $blackstoneBreakInfo));
+		$this->register(new Opaque(new BID(Ids::CHISELED_POLISHED_BLACKSTONE), "Chiseled Polished Blackstone", $blackstoneBreakInfo));
+
+		$prefix = fn(string $thing) => "Polished Blackstone Brick" . ($thing !== "" ? " $thing" : "");
+		$this->register(new Opaque(new BID(Ids::POLISHED_BLACKSTONE_BRICKS), "Polished Blackstone Bricks", $blackstoneBreakInfo));
+		$this->register(new Slab(new BID(Ids::POLISHED_BLACKSTONE_BRICK_SLAB), "Polished Blackstone Brick", $slabBreakInfo));
+		$this->register(new Stair(new BID(Ids::POLISHED_BLACKSTONE_BRICK_STAIRS), $prefix("Stairs"), $blackstoneBreakInfo));
+		$this->register(new Wall(new BID(Ids::POLISHED_BLACKSTONE_BRICK_WALL), $prefix("Wall"), $blackstoneBreakInfo));
+		$this->register(new Opaque(new BID(Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS), "Cracked Polished Blackstone Bricks", $blackstoneBreakInfo));
+	}
+
+	private function registerBlocksR17() : void{
+		//in java this can be acquired using any tool - seems to be a parity issue in bedrock
+		$this->register(new Opaque(new BID(Ids::AMETHYST), "Amethyst", new BreakInfo(1.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 	}
 
 	/**

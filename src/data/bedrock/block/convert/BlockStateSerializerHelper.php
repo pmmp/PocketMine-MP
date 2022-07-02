@@ -185,7 +185,7 @@ final class BlockStateSerializerHelper{
 			->writeInt(BlockStateNames::REDSTONE_SIGNAL, $block->isPressed() ? 15 : 0);
 	}
 
-	private static function encodeSlab(Slab $block, string $singleId, string $doubleId) : BlockStateWriter{
+	public static function encodeSlab(Slab $block, string $singleId, string $doubleId) : BlockStateWriter{
 		$slabType = $block->getSlabType();
 		return BlockStateWriter::create($slabType->equals(SlabType::DOUBLE()) ? $doubleId : $singleId)
 

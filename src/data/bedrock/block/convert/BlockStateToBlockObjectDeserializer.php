@@ -25,6 +25,7 @@ namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\Bamboo;
 use pocketmine\block\Block;
+use pocketmine\block\Slab;
 use pocketmine\block\Stair;
 use pocketmine\block\SweetBerryBush;
 use pocketmine\block\utils\BrewingStandSlot;
@@ -72,6 +73,17 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 	}
 
 	/**
+	 * @phpstan-param \Closure() : Slab $getBlock
+	 */
+	public function mapSlab(string $singleId, string $doubleId, \Closure $getBlock) : void{
+		$this->map($singleId, fn(Reader $in) : Slab => $getBlock()->setSlabType($in->readSlabPosition()));
+		$this->map($doubleId, function(Reader $in) use ($getBlock) : Slab{
+			$in->ignored(StateNames::TOP_SLOT_BIT);
+			return $getBlock()->setSlabType(SlabType::DOUBLE());
+		});
+	}
+
+	/**
 	 * @phpstan-param \Closure() : Stair $getBlock
 	 */
 	public function mapStairs(string $id, \Closure $getBlock) : void{
@@ -93,6 +105,8 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 				->setShape($in->readBoundedInt(StateNames::RAIL_DIRECTION, 0, 5));
 		});
 		$this->map(Ids::AIR, fn() => Blocks::AIR());
+		$this->map(Ids::AMETHYST_BLOCK, fn() => Blocks::AMETHYST());
+		$this->map(Ids::ANCIENT_DEBRIS, fn() => Blocks::ANCIENT_DEBRIS());
 		$this->mapStairs(Ids::ANDESITE_STAIRS, fn() => Blocks::ANDESITE_STAIRS());
 		$this->map(Ids::ANVIL, function(Reader $in) : Block{
 			return Blocks::ANVIL()
@@ -130,6 +144,10 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 				->setOpen($in->readBool(StateNames::OPEN_BIT));
 		});
 		$this->map(Ids::BARRIER, fn() => Blocks::BARRIER());
+		$this->map(Ids::BASALT, function(Reader $in){
+			return Blocks::BASALT()
+				->setAxis($in->readPillarAxis());
+		});
 		$this->map(Ids::BEACON, fn() => Blocks::BEACON());
 		$this->map(Ids::BED, function(Reader $in) : Block{
 			return Blocks::BED()
@@ -156,6 +174,10 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::BIRCH_STANDING_SIGN, fn(Reader $in) => Helper::decodeFloorSign(Blocks::BIRCH_SIGN(), $in));
 		$this->map(Ids::BIRCH_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::BIRCH_TRAPDOOR(), $in));
 		$this->map(Ids::BIRCH_WALL_SIGN, fn(Reader $in) => Helper::decodeWallSign(Blocks::BIRCH_WALL_SIGN(), $in));
+		$this->map(Ids::BLACKSTONE, fn() => Blocks::BLACKSTONE());
+		$this->mapSlab(Ids::BLACKSTONE_SLAB, Ids::BLACKSTONE_DOUBLE_SLAB, fn() => Blocks::BLACKSTONE_SLAB());
+		$this->mapStairs(Ids::BLACKSTONE_STAIRS, fn() => Blocks::BLACKSTONE_STAIRS());
+		$this->map(Ids::BLACKSTONE_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::BLACKSTONE_WALL(), $in));
 		$this->map(Ids::BLACK_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::BLACK(), $in));
 		$this->map(Ids::BLAST_FURNACE, function(Reader $in) : Block{
 			return Blocks::BLAST_FURNACE()
@@ -211,6 +233,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			return Blocks::CHEST()
 				->setFacing($in->readHorizontalFacing());
 		});
+		$this->map(Ids::CHISELED_POLISHED_BLACKSTONE, fn() => Blocks::CHISELED_POLISHED_BLACKSTONE());
 		$this->map(Ids::CLAY, fn() => Blocks::CLAY());
 		$this->map(Ids::COAL_BLOCK, fn() => Blocks::COAL());
 		$this->map(Ids::COAL_ORE, fn() => Blocks::COAL_ORE());
@@ -264,6 +287,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			return Helper::decodeWallCoralFan(Blocks::WALL_CORAL_FAN(), $in)
 				->setCoralType(CoralType::HORN());
 		});
+		$this->map(Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS, fn() => Blocks::CRACKED_POLISHED_BLACKSTONE_BRICKS());
 		$this->map(Ids::CRAFTING_TABLE, fn() => Blocks::CRAFTING_TABLE());
 		$this->map(Ids::CYAN_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::CYAN(), $in));
 		$this->map(Ids::DARK_OAK_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::DARK_OAK_BUTTON(), $in));
@@ -712,6 +736,21 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		});
 		$this->map(Ids::PODZOL, fn() => Blocks::PODZOL());
 		$this->mapStairs(Ids::POLISHED_ANDESITE_STAIRS, fn() => Blocks::POLISHED_ANDESITE_STAIRS());
+		$this->map(Ids::POLISHED_BASALT, function(Reader $in) : Block{
+			return Blocks::POLISHED_BASALT()
+				->setAxis($in->readPillarAxis());
+		});
+		$this->map(Ids::POLISHED_BLACKSTONE, fn() => Blocks::POLISHED_BLACKSTONE());
+		$this->map(Ids::POLISHED_BLACKSTONE_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::POLISHED_BLACKSTONE_BUTTON(), $in));
+		$this->mapSlab(Ids::POLISHED_BLACKSTONE_SLAB, Ids::POLISHED_BLACKSTONE_DOUBLE_SLAB, fn() => Blocks::POLISHED_BLACKSTONE_SLAB());
+		$this->map(Ids::POLISHED_BLACKSTONE_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::POLISHED_BLACKSTONE_PRESSURE_PLATE(), $in));
+		$this->mapStairs(Ids::POLISHED_BLACKSTONE_STAIRS, fn() => Blocks::POLISHED_BLACKSTONE_STAIRS());
+		$this->map(Ids::POLISHED_BLACKSTONE_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::POLISHED_BLACKSTONE_WALL(), $in));
+		$this->map(Ids::POLISHED_BLACKSTONE_BRICKS, fn() => Blocks::POLISHED_BLACKSTONE_BRICKS());
+		$this->mapSlab(Ids::POLISHED_BLACKSTONE_BRICK_SLAB, Ids::POLISHED_BLACKSTONE_BRICK_DOUBLE_SLAB, fn() => Blocks::POLISHED_BLACKSTONE_BRICK_SLAB());
+		$this->mapStairs(Ids::POLISHED_BLACKSTONE_BRICK_STAIRS, fn() => Blocks::POLISHED_BLACKSTONE_BRICK_STAIRS());
+		$this->map(Ids::POLISHED_BLACKSTONE_BRICK_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::POLISHED_BLACKSTONE_BRICK_WALL(), $in));
+
 		$this->mapStairs(Ids::POLISHED_DIORITE_STAIRS, fn() => Blocks::POLISHED_DIORITE_STAIRS());
 		$this->mapStairs(Ids::POLISHED_GRANITE_STAIRS, fn() => Blocks::POLISHED_GRANITE_STAIRS());
 		$this->map(Ids::PORTAL, function(Reader $in) : Block{
@@ -884,6 +923,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 				->setFacing($in->readHorizontalFacing())
 				->setLit(false);
 		});
+		$this->map(Ids::SMOOTH_BASALT, fn() => Blocks::SMOOTH_BASALT());
 		$this->mapStairs(Ids::SMOOTH_QUARTZ_STAIRS, fn() => Blocks::SMOOTH_QUARTZ_STAIRS());
 		$this->mapStairs(Ids::SMOOTH_RED_SANDSTONE_STAIRS, fn() => Blocks::SMOOTH_RED_SANDSTONE_STAIRS());
 		$this->mapStairs(Ids::SMOOTH_SANDSTONE_STAIRS, fn() => Blocks::SMOOTH_SANDSTONE_STAIRS());
@@ -1064,17 +1104,11 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		//$this->map(Ids::ALLOW, function(Reader $in) : Block{
 			/* TODO: Un-implemented block */
 		//});
-		//$this->map(Ids::AMETHYST_BLOCK, function(Reader $in) : Block{
-			/* TODO: Un-implemented block */
-		//});
 		//$this->map(Ids::AMETHYST_CLUSTER, function(Reader $in) : Block{
 			/*
 			 * TODO: Un-implemented block
 			 * facing_direction (IntTag) = 0, 1, 2, 3, 4, 5
 			 */
-		//});
-		//$this->map(Ids::ANCIENT_DEBRIS, function(Reader $in) : Block{
-			/* TODO: Un-implemented block */
 		//});
 		//$this->map(Ids::AZALEA, function(Reader $in) : Block{
 			/* TODO: Un-implemented block */
@@ -1091,12 +1125,6 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			 * TODO: Un-implemented block
 			 * persistent_bit (ByteTag) = 0, 1
 			 * update_bit (ByteTag) = 0, 1
-			 */
-		//});
-		//$this->map(Ids::BASALT, function(Reader $in) : Block{
-			/*
-			 * TODO: Un-implemented block
-			 * pillar_axis (StringTag) = x, y, z
 			 */
 		//});
 		//$this->map(Ids::BEE_NEST, function(Reader $in) : Block{
@@ -1284,9 +1312,6 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		//$this->map(Ids::CHISELED_NETHER_BRICKS, function(Reader $in) : Block{
 			/* TODO: Un-implemented block */
 		//});
-		//$this->map(Ids::CHISELED_POLISHED_BLACKSTONE, function(Reader $in) : Block{
-			/* TODO: Un-implemented block */
-		//});
 		//$this->map(Ids::CHORUS_FLOWER, function(Reader $in) : Block{
 			/*
 			 * TODO: Un-implemented block
@@ -1360,9 +1385,6 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			/* TODO: Un-implemented block */
 		//});
 		//$this->map(Ids::CRACKED_NETHER_BRICKS, function(Reader $in) : Block{
-			/* TODO: Un-implemented block */
-		//});
-		//$this->map(Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS, function(Reader $in) : Block{
 			/* TODO: Un-implemented block */
 		//});
 		//$this->map(Ids::CRIMSON_BUTTON, function(Reader $in) : Block{
@@ -1918,89 +1940,6 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			 * hanging (ByteTag) = 0, 1
 			 */
 		//});
-		//$this->map(Ids::POLISHED_BASALT, function(Reader $in) : Block{
-			/*
-			 * TODO: Un-implemented block
-			 * pillar_axis (StringTag) = x, y, z
-			 */
-		//});
-		//$this->map(Ids::POLISHED_BLACKSTONE, function(Reader $in) : Block{
-			/* TODO: Un-implemented block */
-		//});
-		//$this->map(Ids::POLISHED_BLACKSTONE_BRICK_DOUBLE_SLAB, function(Reader $in) : Block{
-			/*
-			 * TODO: Un-implemented block
-			 * top_slot_bit (ByteTag) = 0, 1
-			 */
-		//});
-		//$this->map(Ids::POLISHED_BLACKSTONE_BRICK_SLAB, function(Reader $in) : Block{
-			/*
-			 * TODO: Un-implemented block
-			 * top_slot_bit (ByteTag) = 0, 1
-			 */
-		//});
-		//$this->map(Ids::POLISHED_BLACKSTONE_BRICK_STAIRS, function(Reader $in) : Block{
-			/*
-			 * TODO: Un-implemented block
-			 * upside_down_bit (ByteTag) = 0, 1
-			 * weirdo_direction (IntTag) = 0, 1, 2, 3
-			 */
-		//});
-		//$this->map(Ids::POLISHED_BLACKSTONE_BRICK_WALL, function(Reader $in) : Block{
-			/*
-			 * TODO: Un-implemented block
-			 * wall_connection_type_east (StringTag) = none, short, tall
-			 * wall_connection_type_north (StringTag) = none, short, tall
-			 * wall_connection_type_south (StringTag) = none, short, tall
-			 * wall_connection_type_west (StringTag) = none, short, tall
-			 * wall_post_bit (ByteTag) = 0, 1
-			 */
-		//});
-		//$this->map(Ids::POLISHED_BLACKSTONE_BRICKS, function(Reader $in) : Block{
-			/* TODO: Un-implemented block */
-		//});
-		//$this->map(Ids::POLISHED_BLACKSTONE_BUTTON, function(Reader $in) : Block{
-			/*
-			 * TODO: Un-implemented block
-			 * button_pressed_bit (ByteTag) = 0, 1
-			 * facing_direction (IntTag) = 0, 1, 2, 3, 4, 5
-			 */
-		//});
-		//$this->map(Ids::POLISHED_BLACKSTONE_DOUBLE_SLAB, function(Reader $in) : Block{
-			/*
-			 * TODO: Un-implemented block
-			 * top_slot_bit (ByteTag) = 0, 1
-			 */
-		//});
-		//$this->map(Ids::POLISHED_BLACKSTONE_PRESSURE_PLATE, function(Reader $in) : Block{
-			/*
-			 * TODO: Un-implemented block
-			 * redstone_signal (IntTag) = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
-			 */
-		//});
-		//$this->map(Ids::POLISHED_BLACKSTONE_SLAB, function(Reader $in) : Block{
-			/*
-			 * TODO: Un-implemented block
-			 * top_slot_bit (ByteTag) = 0, 1
-			 */
-		//});
-		//$this->map(Ids::POLISHED_BLACKSTONE_STAIRS, function(Reader $in) : Block{
-			/*
-			 * TODO: Un-implemented block
-			 * upside_down_bit (ByteTag) = 0, 1
-			 * weirdo_direction (IntTag) = 0, 1, 2, 3
-			 */
-		//});
-		//$this->map(Ids::POLISHED_BLACKSTONE_WALL, function(Reader $in) : Block{
-			/*
-			 * TODO: Un-implemented block
-			 * wall_connection_type_east (StringTag) = none, short, tall
-			 * wall_connection_type_north (StringTag) = none, short, tall
-			 * wall_connection_type_south (StringTag) = none, short, tall
-			 * wall_connection_type_west (StringTag) = none, short, tall
-			 * wall_post_bit (ByteTag) = 0, 1
-			 */
-		//});
 		//$this->map(Ids::POLISHED_DEEPSLATE, function(Reader $in) : Block{
 			/* TODO: Un-implemented block */
 		//});
@@ -2144,9 +2083,6 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			 */
 		//});
 		//$this->map(Ids::SMITHING_TABLE, function(Reader $in) : Block{
-			/* TODO: Un-implemented block */
-		//});
-		//$this->map(Ids::SMOOTH_BASALT, function(Reader $in) : Block{
 			/* TODO: Un-implemented block */
 		//});
 		//$this->map(Ids::SOUL_CAMPFIRE, function(Reader $in) : Block{

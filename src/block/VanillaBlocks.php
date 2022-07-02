@@ -51,6 +51,8 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Air AIR()
  * @method static Flower ALLIUM()
  * @method static MushroomStem ALL_SIDED_MUSHROOM_STEM()
+ * @method static Opaque AMETHYST()
+ * @method static Opaque ANCIENT_DEBRIS()
  * @method static Opaque ANDESITE()
  * @method static Slab ANDESITE_SLAB()
  * @method static Stair ANDESITE_STAIRS()
@@ -62,6 +64,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static FloorBanner BANNER()
  * @method static Barrel BARREL()
  * @method static Transparent BARRIER()
+ * @method static SimplePillar BASALT()
  * @method static Beacon BEACON()
  * @method static Bed BED()
  * @method static Bedrock BEDROCK()
@@ -82,6 +85,10 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static WoodenTrapdoor BIRCH_TRAPDOOR()
  * @method static WallSign BIRCH_WALL_SIGN()
  * @method static Wood BIRCH_WOOD()
+ * @method static Opaque BLACKSTONE()
+ * @method static Slab BLACKSTONE_SLAB()
+ * @method static Stair BLACKSTONE_STAIRS()
+ * @method static Wall BLACKSTONE_WALL()
  * @method static Furnace BLAST_FURNACE()
  * @method static BlueIce BLUE_ICE()
  * @method static Flower BLUE_ORCHID()
@@ -102,6 +109,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static CarvedPumpkin CARVED_PUMPKIN()
  * @method static ChemicalHeat CHEMICAL_HEAT()
  * @method static Chest CHEST()
+ * @method static Opaque CHISELED_POLISHED_BLACKSTONE()
  * @method static SimplePillar CHISELED_QUARTZ()
  * @method static Opaque CHISELED_RED_SANDSTONE()
  * @method static Opaque CHISELED_SANDSTONE()
@@ -122,6 +130,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static CoralBlock CORAL_BLOCK()
  * @method static FloorCoralFan CORAL_FAN()
  * @method static Flower CORNFLOWER()
+ * @method static Opaque CRACKED_POLISHED_BLACKSTONE_BRICKS()
  * @method static Opaque CRACKED_STONE_BRICKS()
  * @method static CraftingTable CRAFTING_TABLE()
  * @method static Opaque CUT_RED_SANDSTONE()
@@ -420,6 +429,17 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Opaque POLISHED_ANDESITE()
  * @method static Slab POLISHED_ANDESITE_SLAB()
  * @method static Stair POLISHED_ANDESITE_STAIRS()
+ * @method static SimplePillar POLISHED_BASALT()
+ * @method static Opaque POLISHED_BLACKSTONE()
+ * @method static Opaque POLISHED_BLACKSTONE_BRICKS()
+ * @method static Slab POLISHED_BLACKSTONE_BRICK_SLAB()
+ * @method static Stair POLISHED_BLACKSTONE_BRICK_STAIRS()
+ * @method static Wall POLISHED_BLACKSTONE_BRICK_WALL()
+ * @method static StoneButton POLISHED_BLACKSTONE_BUTTON()
+ * @method static StonePressurePlate POLISHED_BLACKSTONE_PRESSURE_PLATE()
+ * @method static Slab POLISHED_BLACKSTONE_SLAB()
+ * @method static Stair POLISHED_BLACKSTONE_STAIRS()
+ * @method static Wall POLISHED_BLACKSTONE_WALL()
  * @method static Opaque POLISHED_DIORITE()
  * @method static Slab POLISHED_DIORITE_SLAB()
  * @method static Stair POLISHED_DIORITE_STAIRS()
@@ -480,6 +500,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static ShulkerBox SHULKER_BOX()
  * @method static Slime SLIME()
  * @method static Furnace SMOKER()
+ * @method static Opaque SMOOTH_BASALT()
  * @method static Opaque SMOOTH_QUARTZ()
  * @method static Slab SMOOTH_QUARTZ_SLAB()
  * @method static Stair SMOOTH_QUARTZ_STAIRS()
@@ -587,6 +608,8 @@ final class VanillaBlocks{
 		self::register("air", $factory->get(Ids::AIR, 0));
 		self::register("all_sided_mushroom_stem", $factory->get(Ids::ALL_SIDED_MUSHROOM_STEM, 0));
 		self::register("allium", $factory->get(Ids::ALLIUM, 0));
+		self::register("amethyst", $factory->get(Ids::AMETHYST, 0));
+		self::register("ancient_debris", $factory->get(Ids::ANCIENT_DEBRIS, 0));
 		self::register("andesite", $factory->get(Ids::ANDESITE, 0));
 		self::register("andesite_slab", $factory->get(Ids::ANDESITE_SLAB, 0));
 		self::register("andesite_stairs", $factory->get(Ids::ANDESITE_STAIRS, 0));
@@ -598,6 +621,7 @@ final class VanillaBlocks{
 		self::register("banner", $factory->get(Ids::BANNER, 0));
 		self::register("barrel", $factory->get(Ids::BARREL, 0));
 		self::register("barrier", $factory->get(Ids::BARRIER, 0));
+		self::register("basalt", $factory->get(Ids::BASALT, 2));
 		self::register("beacon", $factory->get(Ids::BEACON, 0));
 		self::register("bed", $factory->get(Ids::BED, 13));
 		self::register("bedrock", $factory->get(Ids::BEDROCK, 0));
@@ -618,6 +642,10 @@ final class VanillaBlocks{
 		self::register("birch_trapdoor", $factory->get(Ids::BIRCH_TRAPDOOR, 0));
 		self::register("birch_wall_sign", $factory->get(Ids::BIRCH_WALL_SIGN, 0));
 		self::register("birch_wood", $factory->get(Ids::BIRCH_WOOD, 0));
+		self::register("blackstone", $factory->get(Ids::BLACKSTONE, 0));
+		self::register("blackstone_slab", $factory->get(Ids::BLACKSTONE_SLAB, 0));
+		self::register("blackstone_stairs", $factory->get(Ids::BLACKSTONE_STAIRS, 0));
+		self::register("blackstone_wall", $factory->get(Ids::BLACKSTONE_WALL, 0));
 		self::register("blast_furnace", $factory->get(Ids::BLAST_FURNACE, 0));
 		self::register("blue_ice", $factory->get(Ids::BLUE_ICE, 0));
 		self::register("blue_orchid", $factory->get(Ids::BLUE_ORCHID, 0));
@@ -638,6 +666,7 @@ final class VanillaBlocks{
 		self::register("carved_pumpkin", $factory->get(Ids::CARVED_PUMPKIN, 0));
 		self::register("chemical_heat", $factory->get(Ids::CHEMICAL_HEAT, 0));
 		self::register("chest", $factory->get(Ids::CHEST, 0));
+		self::register("chiseled_polished_blackstone", $factory->get(Ids::CHISELED_POLISHED_BLACKSTONE, 0));
 		self::register("chiseled_quartz", $factory->get(Ids::CHISELED_QUARTZ, 2));
 		self::register("chiseled_red_sandstone", $factory->get(Ids::CHISELED_RED_SANDSTONE, 0));
 		self::register("chiseled_sandstone", $factory->get(Ids::CHISELED_SANDSTONE, 0));
@@ -658,6 +687,7 @@ final class VanillaBlocks{
 		self::register("coral_block", $factory->get(Ids::CORAL_BLOCK, 4));
 		self::register("coral_fan", $factory->get(Ids::CORAL_FAN, 4));
 		self::register("cornflower", $factory->get(Ids::CORNFLOWER, 0));
+		self::register("cracked_polished_blackstone_bricks", $factory->get(Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS, 0));
 		self::register("cracked_stone_bricks", $factory->get(Ids::CRACKED_STONE_BRICKS, 0));
 		self::register("crafting_table", $factory->get(Ids::CRAFTING_TABLE, 0));
 		self::register("cut_red_sandstone", $factory->get(Ids::CUT_RED_SANDSTONE, 0));
@@ -956,6 +986,17 @@ final class VanillaBlocks{
 		self::register("polished_andesite", $factory->get(Ids::POLISHED_ANDESITE, 0));
 		self::register("polished_andesite_slab", $factory->get(Ids::POLISHED_ANDESITE_SLAB, 0));
 		self::register("polished_andesite_stairs", $factory->get(Ids::POLISHED_ANDESITE_STAIRS, 0));
+		self::register("polished_basalt", $factory->get(Ids::POLISHED_BASALT, 2));
+		self::register("polished_blackstone", $factory->get(Ids::POLISHED_BLACKSTONE, 0));
+		self::register("polished_blackstone_brick_slab", $factory->get(Ids::POLISHED_BLACKSTONE_BRICK_SLAB, 0));
+		self::register("polished_blackstone_brick_stairs", $factory->get(Ids::POLISHED_BLACKSTONE_BRICK_STAIRS, 0));
+		self::register("polished_blackstone_brick_wall", $factory->get(Ids::POLISHED_BLACKSTONE_BRICK_WALL, 0));
+		self::register("polished_blackstone_bricks", $factory->get(Ids::POLISHED_BLACKSTONE_BRICKS, 0));
+		self::register("polished_blackstone_button", $factory->get(Ids::POLISHED_BLACKSTONE_BUTTON, 0));
+		self::register("polished_blackstone_pressure_plate", $factory->get(Ids::POLISHED_BLACKSTONE_PRESSURE_PLATE, 0));
+		self::register("polished_blackstone_slab", $factory->get(Ids::POLISHED_BLACKSTONE_SLAB, 0));
+		self::register("polished_blackstone_stairs", $factory->get(Ids::POLISHED_BLACKSTONE_STAIRS, 0));
+		self::register("polished_blackstone_wall", $factory->get(Ids::POLISHED_BLACKSTONE_WALL, 0));
 		self::register("polished_diorite", $factory->get(Ids::POLISHED_DIORITE, 0));
 		self::register("polished_diorite_slab", $factory->get(Ids::POLISHED_DIORITE_SLAB, 0));
 		self::register("polished_diorite_stairs", $factory->get(Ids::POLISHED_DIORITE_STAIRS, 0));
@@ -1016,6 +1057,7 @@ final class VanillaBlocks{
 		self::register("shulker_box", $factory->get(Ids::SHULKER_BOX, 0));
 		self::register("slime", $factory->get(Ids::SLIME, 0));
 		self::register("smoker", $factory->get(Ids::SMOKER, 0));
+		self::register("smooth_basalt", $factory->get(Ids::SMOOTH_BASALT, 0));
 		self::register("smooth_quartz", $factory->get(Ids::SMOOTH_QUARTZ, 0));
 		self::register("smooth_quartz_slab", $factory->get(Ids::SMOOTH_QUARTZ_SLAB, 0));
 		self::register("smooth_quartz_stairs", $factory->get(Ids::SMOOTH_QUARTZ_STAIRS, 0));
