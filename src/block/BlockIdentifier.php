@@ -32,37 +32,17 @@ class BlockIdentifier{
 	 */
 	public function __construct(
 		private int $blockTypeId,
-		private int $legacyItemId,
-		private int $legacyItemVariant,
 		private ?string $tileClass = null
 	){
 		if($blockTypeId < 0){
 			throw new \InvalidArgumentException("Block type ID may not be negative");
 		}
-		if($legacyItemVariant < 0){
-			throw new \InvalidArgumentException("Legacy item variant may not be negative");
-		}
-
 		if($tileClass !== null){
 			Utils::testValidInstance($tileClass, Tile::class);
 		}
 	}
 
 	public function getBlockTypeId() : int{ return $this->blockTypeId; }
-
-	/**
-	 * @deprecated
-	 */
-	public function getLegacyVariant() : int{
-		return $this->legacyItemVariant;
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function getLegacyItemId() : int{
-		return $this->legacyItemId;
-	}
 
 	/**
 	 * @phpstan-return class-string<Tile>|null

@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\bedrock\CoralTypeIdMap;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -31,10 +30,6 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 final class Coral extends BaseCoral{
-
-	protected function writeStateToItemMeta() : int{
-		return CoralTypeIdMap::getInstance()->toId($this->coralType);
-	}
 
 	public function readStateFromWorld() : void{
 		//TODO: this hack ensures correct state of coral plants, because they don't retain their dead flag in metadata

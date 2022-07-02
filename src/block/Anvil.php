@@ -47,10 +47,6 @@ class Anvil extends Transparent implements Fallable{
 
 	private int $damage = self::UNDAMAGED;
 
-	protected function writeStateToItemMeta() : int{
-		return $this->damage << 2;
-	}
-
 	public function getRequiredTypeDataBits() : int{ return 2; }
 
 	protected function decodeType(BlockDataReader $r) : void{

@@ -23,16 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\runtime\block\BlockDataReader;
 use pocketmine\data\runtime\block\BlockDataWriter;
 
 class Sponge extends Opaque{
 	protected bool $wet = false;
-
-	protected function writeStateToItemMeta() : int{
-		return $this->wet ? BlockLegacyMetadata::SPONGE_FLAG_WET : 0;
-	}
 
 	public function getRequiredTypeDataBits() : int{ return 1; }
 

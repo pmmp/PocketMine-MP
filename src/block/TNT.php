@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\runtime\block\BlockDataReader;
 use pocketmine\data\runtime\block\BlockDataWriter;
 use pocketmine\entity\Entity;
@@ -45,10 +44,6 @@ use const M_PI;
 class TNT extends Opaque{
 	protected bool $unstable = false; //TODO: Usage unclear, seems to be a weird hack in vanilla
 	protected bool $worksUnderwater = false;
-
-	protected function writeStateToItemMeta() : int{
-		return $this->worksUnderwater ? BlockLegacyMetadata::TNT_FLAG_UNDERWATER : 0;
-	}
 
 	public function getRequiredTypeDataBits() : int{ return 1; }
 

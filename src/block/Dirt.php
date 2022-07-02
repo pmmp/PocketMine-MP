@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\runtime\block\BlockDataReader;
 use pocketmine\data\runtime\block\BlockDataWriter;
 use pocketmine\item\Hoe;
@@ -35,10 +34,6 @@ use pocketmine\world\sound\ItemUseOnBlockSound;
 
 class Dirt extends Opaque{
 	protected bool $coarse = false;
-
-	protected function writeStateToItemMeta() : int{
-		return $this->coarse ? BlockLegacyMetadata::DIRT_FLAG_COARSE : 0;
-	}
 
 	public function getRequiredTypeDataBits() : int{ return 1; }
 

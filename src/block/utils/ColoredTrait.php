@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
-use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\runtime\block\BlockDataReader;
 use pocketmine\data\runtime\block\BlockDataReaderHelper;
 use pocketmine\data\runtime\block\BlockDataWriter;
@@ -33,13 +32,6 @@ use pocketmine\data\runtime\block\BlockDataWriterHelper;
 trait ColoredTrait{
 	/** @var DyeColor */
 	private $color;
-
-	/**
-	 * @see Block::writeStateToItemMeta()
-	 */
-	protected function writeStateToItemMeta() : int{
-		return DyeColorIdMap::getInstance()->toId($this->color);
-	}
 
 	public function getRequiredTypeDataBits() : int{ return 4; }
 

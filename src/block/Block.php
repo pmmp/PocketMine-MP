@@ -93,18 +93,6 @@ class Block{
 		return new ItemBlock($this);
 	}
 
-	public function getLegacyItemId() : int{
-		return $this->idInfo->getLegacyItemId();
-	}
-
-	public function getLegacyItemMeta() : int{
-		return $this->idInfo->getLegacyVariant() | $this->writeStateToItemMeta();
-	}
-
-	protected function writeStateToItemMeta() : int{
-		return 0;
-	}
-
 	public function getRequiredTypeDataBits() : int{ return 0; }
 
 	public function getRequiredStateDataBits() : int{ return 0; }
