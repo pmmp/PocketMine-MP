@@ -1170,38 +1170,6 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			 * lit (ByteTag) = 0, 1
 			 */
 		//});
-		//$this->map(Ids::BLACKSTONE, function(Reader $in) : Block{
-			/* TODO: Un-implemented block */
-		//});
-		//$this->map(Ids::BLACKSTONE_DOUBLE_SLAB, function(Reader $in) : Block{
-			/*
-			 * TODO: Un-implemented block
-			 * top_slot_bit (ByteTag) = 0, 1
-			 */
-		//});
-		//$this->map(Ids::BLACKSTONE_SLAB, function(Reader $in) : Block{
-			/*
-			 * TODO: Un-implemented block
-			 * top_slot_bit (ByteTag) = 0, 1
-			 */
-		//});
-		//$this->map(Ids::BLACKSTONE_STAIRS, function(Reader $in) : Block{
-			/*
-			 * TODO: Un-implemented block
-			 * upside_down_bit (ByteTag) = 0, 1
-			 * weirdo_direction (IntTag) = 0, 1, 2, 3
-			 */
-		//});
-		//$this->map(Ids::BLACKSTONE_WALL, function(Reader $in) : Block{
-			/*
-			 * TODO: Un-implemented block
-			 * wall_connection_type_east (StringTag) = none, short, tall
-			 * wall_connection_type_north (StringTag) = none, short, tall
-			 * wall_connection_type_south (StringTag) = none, short, tall
-			 * wall_connection_type_west (StringTag) = none, short, tall
-			 * wall_post_bit (ByteTag) = 0, 1
-			 */
-		//});
 		//$this->map(Ids::BLUE_CANDLE, function(Reader $in) : Block{
 			/*
 			 * TODO: Un-implemented block
@@ -1680,6 +1648,9 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		//$this->map(Ids::FLOWERING_AZALEA, function(Reader $in) : Block{
 			/* TODO: Un-implemented block */
 		//});
+		//$this->map(Ids::FROG_SPAWN, function(Reader $in) : Block{
+			/* TODO: Un-implemented block */
+		//});
 		//$this->map(Ids::GILDED_BLACKSTONE, function(Reader $in) : Block{
 			/* TODO: Un-implemented block */
 		//});
@@ -1771,12 +1742,6 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			 * fill_level (IntTag) = 0, 1, 2, 3, 4, 5, 6
 			 */
 		//});
-		//$this->map(Ids::LIGHT_BLOCK, function(Reader $in) : Block{
-			/*
-			 * TODO: Un-implemented block
-			 * block_light_level (IntTag) = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
-			 */
-		//});
 		//$this->map(Ids::LIGHT_BLUE_CANDLE, function(Reader $in) : Block{
 			/*
 			 * TODO: Un-implemented block
@@ -1841,6 +1806,111 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			 * lit (ByteTag) = 0, 1
 			 */
 		//});
+		//$this->map(Ids::MANGROVE_BUTTON, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * button_pressed_bit (ByteTag) = 0, 1
+			 * facing_direction (IntTag) = 0, 1, 2, 3, 4, 5
+			 */
+		//});
+		//$this->map(Ids::MANGROVE_DOOR, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * direction (IntTag) = 0, 1, 2, 3
+			 * door_hinge_bit (ByteTag) = 0, 1
+			 * open_bit (ByteTag) = 0, 1
+			 * upper_block_bit (ByteTag) = 0, 1
+			 */
+		//});
+		//$this->map(Ids::MANGROVE_DOUBLE_SLAB, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * top_slot_bit (ByteTag) = 0, 1
+			 */
+		//});
+		//$this->map(Ids::MANGROVE_FENCE, function(Reader $in) : Block{
+			/* TODO: Un-implemented block */
+		//});
+		//$this->map(Ids::MANGROVE_FENCE_GATE, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * direction (IntTag) = 0, 1, 2, 3
+			 * in_wall_bit (ByteTag) = 0, 1
+			 * open_bit (ByteTag) = 0, 1
+			 */
+		//});
+		//$this->map(Ids::MANGROVE_LEAVES, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * persistent_bit (ByteTag) = 0, 1
+			 * update_bit (ByteTag) = 0, 1
+			 */
+		//});
+		//$this->map(Ids::MANGROVE_LOG, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * pillar_axis (StringTag) = x, y, z
+			 */
+		//});
+		//$this->map(Ids::MANGROVE_PLANKS, function(Reader $in) : Block{
+			/* TODO: Un-implemented block */
+		//});
+		//$this->map(Ids::MANGROVE_PRESSURE_PLATE, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * redstone_signal (IntTag) = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+			 */
+		//});
+		//$this->map(Ids::MANGROVE_PROPAGULE, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * hanging (ByteTag) = 0, 1
+			 * propagule_stage (IntTag) = 0, 1, 2, 3, 4
+			 */
+		//});
+		//$this->map(Ids::MANGROVE_ROOTS, function(Reader $in) : Block{
+			/* TODO: Un-implemented block */
+		//});
+		//$this->map(Ids::MANGROVE_SLAB, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * top_slot_bit (ByteTag) = 0, 1
+			 */
+		//});
+		//$this->map(Ids::MANGROVE_STAIRS, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * upside_down_bit (ByteTag) = 0, 1
+			 * weirdo_direction (IntTag) = 0, 1, 2, 3
+			 */
+		//});
+		//$this->map(Ids::MANGROVE_STANDING_SIGN, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * ground_sign_direction (IntTag) = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+			 */
+		//});
+		//$this->map(Ids::MANGROVE_TRAPDOOR, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * direction (IntTag) = 0, 1, 2, 3
+			 * open_bit (ByteTag) = 0, 1
+			 * upside_down_bit (ByteTag) = 0, 1
+			 */
+		//});
+		//$this->map(Ids::MANGROVE_WALL_SIGN, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * facing_direction (IntTag) = 0, 1, 2, 3, 4, 5
+			 */
+		//});
+		//$this->map(Ids::MANGROVE_WOOD, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * pillar_axis (StringTag) = x, y, z
+			 * stripped_bit (ByteTag) = 0, 1
+			 */
+		//});
 		//$this->map(Ids::MEDIUM_AMETHYST_BUD, function(Reader $in) : Block{
 			/*
 			 * TODO: Un-implemented block
@@ -1853,13 +1923,45 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		//$this->map(Ids::MOSS_CARPET, function(Reader $in) : Block{
 			/* TODO: Un-implemented block */
 		//});
-		//$this->map(Ids::MOVINGBLOCK, function(Reader $in) : Block{
+		//$this->map(Ids::MOVING_BLOCK, function(Reader $in) : Block{
 			/* TODO: Un-implemented block */
 		//});
-		//$this->map(Ids::MYSTERIOUS_FRAME, function(Reader $in) : Block{
+		//$this->map(Ids::MUD, function(Reader $in) : Block{
 			/* TODO: Un-implemented block */
 		//});
-		//$this->map(Ids::MYSTERIOUS_FRAME_SLOT, function(Reader $in) : Block{
+		//$this->map(Ids::MUD_BRICK_DOUBLE_SLAB, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * top_slot_bit (ByteTag) = 0, 1
+			 */
+		//});
+		//$this->map(Ids::MUD_BRICK_SLAB, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * top_slot_bit (ByteTag) = 0, 1
+			 */
+		//});
+		//$this->map(Ids::MUD_BRICK_STAIRS, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * upside_down_bit (ByteTag) = 0, 1
+			 * weirdo_direction (IntTag) = 0, 1, 2, 3
+			 */
+		//});
+		//$this->map(Ids::MUD_BRICK_WALL, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * wall_connection_type_east (StringTag) = none, short, tall
+			 * wall_connection_type_north (StringTag) = none, short, tall
+			 * wall_connection_type_south (StringTag) = none, short, tall
+			 * wall_connection_type_west (StringTag) = none, short, tall
+			 * wall_post_bit (ByteTag) = 0, 1
+			 */
+		//});
+		//$this->map(Ids::MUD_BRICKS, function(Reader $in) : Block{
+			/* TODO: Un-implemented block */
+		//});
+		//$this->map(Ids::MUDDY_MANGROVE_ROOTS, function(Reader $in) : Block{
 			/* TODO: Un-implemented block */
 		//});
 		//$this->map(Ids::NETHER_GOLD_ORE, function(Reader $in) : Block{
@@ -1876,6 +1978,12 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			 * TODO: Un-implemented block
 			 * facing_direction (IntTag) = 0, 1, 2, 3, 4, 5
 			 * powered_bit (ByteTag) = 0, 1
+			 */
+		//});
+		//$this->map(Ids::OCHRE_FROGLIGHT, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * pillar_axis (StringTag) = x, y, z
 			 */
 		//});
 		//$this->map(Ids::ORANGE_CANDLE, function(Reader $in) : Block{
@@ -1916,6 +2024,15 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			 * top_slot_bit (ByteTag) = 0, 1
 			 */
 		//});
+		//$this->map(Ids::PACKED_MUD, function(Reader $in) : Block{
+			/* TODO: Un-implemented block */
+		//});
+		//$this->map(Ids::PEARLESCENT_FROGLIGHT, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * pillar_axis (StringTag) = x, y, z
+			 */
+		//});
 		//$this->map(Ids::PINK_CANDLE, function(Reader $in) : Block{
 			/*
 			 * TODO: Un-implemented block
@@ -1935,7 +2052,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			 * facing_direction (IntTag) = 0, 1, 2, 3, 4, 5
 			 */
 		//});
-		//$this->map(Ids::PISTONARMCOLLISION, function(Reader $in) : Block{
+		//$this->map(Ids::PISTON_ARM_COLLISION, function(Reader $in) : Block{
 			/*
 			 * TODO: Un-implemented block
 			 * facing_direction (IntTag) = 0, 1, 2, 3, 4, 5
@@ -1999,15 +2116,6 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		//$this->map(Ids::QUARTZ_BRICKS, function(Reader $in) : Block{
 			/* TODO: Un-implemented block */
 		//});
-		//$this->map(Ids::RAW_COPPER_BLOCK, function(Reader $in) : Block{
-			/* TODO: Un-implemented block */
-		//});
-		//$this->map(Ids::RAW_GOLD_BLOCK, function(Reader $in) : Block{
-			/* TODO: Un-implemented block */
-		//});
-		//$this->map(Ids::RAW_IRON_BLOCK, function(Reader $in) : Block{
-			/* TODO: Un-implemented block */
-		//});
 		//$this->map(Ids::RED_CANDLE, function(Reader $in) : Block{
 			/*
 			 * TODO: Un-implemented block
@@ -2020,6 +2128,9 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			 * TODO: Un-implemented block
 			 * lit (ByteTag) = 0, 1
 			 */
+		//});
+		//$this->map(Ids::REINFORCED_DEEPSLATE, function(Reader $in) : Block{
+			/* TODO: Un-implemented block */
 		//});
 		//$this->map(Ids::REPEATING_COMMAND_BLOCK, function(Reader $in) : Block{
 			/*
@@ -2060,6 +2171,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			/*
 			 * TODO: Un-implemented block
 			 * active (ByteTag) = 0, 1
+			 * can_summon (ByteTag) = 0, 1
 			 */
 		//});
 		//$this->map(Ids::SCULK_VEIN, function(Reader $in) : Block{
@@ -2124,13 +2236,13 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		//$this->map(Ids::SPORE_BLOSSOM, function(Reader $in) : Block{
 			/* TODO: Un-implemented block */
 		//});
-		//$this->map(Ids::STICKYPISTONARMCOLLISION, function(Reader $in) : Block{
+		//$this->map(Ids::STICKY_PISTON, function(Reader $in) : Block{
 			/*
 			 * TODO: Un-implemented block
 			 * facing_direction (IntTag) = 0, 1, 2, 3, 4, 5
 			 */
 		//});
-		//$this->map(Ids::STICKY_PISTON, function(Reader $in) : Block{
+		//$this->map(Ids::STICKY_PISTON_ARM_COLLISION, function(Reader $in) : Block{
 			/*
 			 * TODO: Un-implemented block
 			 * facing_direction (IntTag) = 0, 1, 2, 3, 4, 5
@@ -2143,6 +2255,18 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			 */
 		//});
 		//$this->map(Ids::STRIPPED_CRIMSON_STEM, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * pillar_axis (StringTag) = x, y, z
+			 */
+		//});
+		//$this->map(Ids::STRIPPED_MANGROVE_LOG, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * pillar_axis (StringTag) = x, y, z
+			 */
+		//});
+		//$this->map(Ids::STRIPPED_MANGROVE_WOOD, function(Reader $in) : Block{
 			/*
 			 * TODO: Un-implemented block
 			 * pillar_axis (StringTag) = x, y, z
@@ -2196,6 +2320,12 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		//});
 		//$this->map(Ids::UNKNOWN, function(Reader $in) : Block{
 			/* TODO: Un-implemented block */
+		//});
+		//$this->map(Ids::VERDANT_FROGLIGHT, function(Reader $in) : Block{
+			/*
+			 * TODO: Un-implemented block
+			 * pillar_axis (StringTag) = x, y, z
+			 */
 		//});
 		//$this->map(Ids::WARPED_BUTTON, function(Reader $in) : Block{
 			/*
