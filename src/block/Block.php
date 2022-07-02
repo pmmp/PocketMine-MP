@@ -216,9 +216,6 @@ class Block{
 
 	/**
 	 * Returns whether the given block has an equivalent type to this one. This compares the type IDs.
-	 *
-	 * Note: This ignores additional IDs used to represent additional states. This means that, for example, a lit
-	 * furnace and unlit furnace are considered the same type.
 	 */
 	public function isSameType(Block $other) : bool{
 		return $this->getTypeId() === $other->getTypeId();
