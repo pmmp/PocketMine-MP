@@ -586,6 +586,9 @@ final class BlockTypeIds{
 	public const POLISHED_BLACKSTONE_BRICK_WALL = 10559;
 	public const CRACKED_POLISHED_BLACKSTONE_BRICKS = 10560;
 	public const LIGHT = 10561;
+	public const RAW_COPPER = 10562;
+	public const RAW_GOLD = 10563;
+	public const RAW_IRON = 10564;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10562;
+	public const FIRST_UNUSED_BLOCK_ID = 10565;
 }

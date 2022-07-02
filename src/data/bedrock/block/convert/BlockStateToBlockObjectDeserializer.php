@@ -824,6 +824,9 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			return Blocks::RAIL()
 				->setShape($in->readBoundedInt(StateNames::RAIL_DIRECTION, 0, 9));
 		});
+		$this->map(Ids::RAW_COPPER_BLOCK, fn() => Blocks::RAW_COPPER());
+		$this->map(Ids::RAW_GOLD_BLOCK, fn() => Blocks::RAW_GOLD());
+		$this->map(Ids::RAW_IRON_BLOCK, fn() => Blocks::RAW_IRON());
 		$this->map(Ids::RED_FLOWER, function(Reader $in) : Block{
 			return match($type = $in->readString(StateNames::FLOWER_TYPE)){
 				StringValues::FLOWER_TYPE_ALLIUM => Blocks::ALLIUM(),

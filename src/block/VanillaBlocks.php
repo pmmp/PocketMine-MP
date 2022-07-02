@@ -469,6 +469,9 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Slab QUARTZ_SLAB()
  * @method static Stair QUARTZ_STAIRS()
  * @method static Rail RAIL()
+ * @method static Opaque RAW_COPPER()
+ * @method static Opaque RAW_GOLD()
+ * @method static Opaque RAW_IRON()
  * @method static Redstone REDSTONE()
  * @method static RedstoneComparator REDSTONE_COMPARATOR()
  * @method static RedstoneLamp REDSTONE_LAMP()
@@ -1027,6 +1030,9 @@ final class VanillaBlocks{
 		self::register("quartz_slab", $factory->get(Ids::QUARTZ_SLAB, 0));
 		self::register("quartz_stairs", $factory->get(Ids::QUARTZ_STAIRS, 0));
 		self::register("rail", $factory->get(Ids::RAIL, 0));
+		self::register("raw_copper", $factory->get(Ids::RAW_COPPER, 0));
+		self::register("raw_gold", $factory->get(Ids::RAW_GOLD, 0));
+		self::register("raw_iron", $factory->get(Ids::RAW_IRON, 0));
 		self::register("red_mushroom", $factory->get(Ids::RED_MUSHROOM, 0));
 		self::register("red_mushroom_block", $factory->get(Ids::RED_MUSHROOM_BLOCK, 10));
 		self::register("red_nether_brick_slab", $factory->get(Ids::RED_NETHER_BRICK_SLAB, 0));

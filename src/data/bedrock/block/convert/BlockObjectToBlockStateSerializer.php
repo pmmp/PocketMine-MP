@@ -938,6 +938,9 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::RAIL)
 				->writeInt(StateNames::RAIL_DIRECTION, $block->getShape());
 		});
+		$this->mapSimple(Blocks::RAW_COPPER(), Ids::RAW_COPPER_BLOCK);
+		$this->mapSimple(Blocks::RAW_GOLD(), Ids::RAW_GOLD_BLOCK);
+		$this->mapSimple(Blocks::RAW_IRON(), Ids::RAW_IRON_BLOCK);
 		$this->mapSimple(Blocks::REDSTONE(), Ids::REDSTONE_BLOCK);
 		$this->map(Blocks::REDSTONE_COMPARATOR(), function(RedstoneComparator $block) : Writer{
 			return Writer::create($block->isPowered() ? Ids::POWERED_COMPARATOR : Ids::UNPOWERED_COMPARATOR)
