@@ -186,6 +186,10 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->serializers[$block->getTypeId()][get_class($block)] = $serializer;
 	}
 
+	public function mapSimple(Block $block, string $id) : void{
+		$this->map($block, fn() => Writer::create($id));
+	}
+
 	public function mapStairs(Stair $block, string $id) : void{
 		$this->map($block, fn(Stair $block) => Helper::encodeStairs($block, Writer::create($id)));
 	}
@@ -251,7 +255,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeBool(StateNames::RAIL_DATA_BIT, $block->isPowered())
 				->writeInt(StateNames::RAIL_DIRECTION, $block->getShape());
 		});
-		$this->map(Blocks::AIR(), fn() => new Writer(Ids::AIR));
+		$this->mapSimple(Blocks::AIR(), Ids::AIR);
 		$this->map(Blocks::ALLIUM(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_ALLIUM));
 		$this->map(Blocks::ALL_SIDED_MUSHROOM_STEM(), fn() => Writer::create(Ids::BROWN_MUSHROOM_BLOCK)
 				->writeInt(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_ALL_STEM));
@@ -297,8 +301,8 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeBool(StateNames::OPEN_BIT, $block->isOpen())
 				->writeFacingDirection($block->getFacing());
 		});
-		$this->map(Blocks::BARRIER(), fn() => new Writer(Ids::BARRIER));
-		$this->map(Blocks::BEACON(), fn() => new Writer(Ids::BEACON));
+		$this->mapSimple(Blocks::BARRIER(), Ids::BARRIER);
+		$this->mapSimple(Blocks::BEACON(), Ids::BEACON);
 		$this->map(Blocks::BED(), function(Bed $block) : Writer{
 			return Writer::create(Ids::BED)
 				->writeBool(StateNames::HEAD_PIECE_BIT, $block->isHeadPart())
@@ -335,7 +339,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::BIRCH_WALL_SIGN(), fn(WallSign $block) => Helper::encodeWallSign($block, new Writer(Ids::BIRCH_WALL_SIGN)));
 		$this->map(Blocks::BIRCH_WOOD(), fn(Wood $block) => Helper::encodeAllSidedLog($block));
 		$this->map(Blocks::BLAST_FURNACE(), fn(Furnace $block) => Helper::encodeFurnace($block, Ids::BLAST_FURNACE, Ids::LIT_BLAST_FURNACE));
-		$this->map(Blocks::BLUE_ICE(), fn() => new Writer(Ids::BLUE_ICE));
+		$this->mapSimple(Blocks::BLUE_ICE(), Ids::BLUE_ICE);
 		$this->map(Blocks::BLUE_ORCHID(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_ORCHID));
 		$this->map(Blocks::BLUE_TORCH(), fn(Torch $block) => Helper::encodeColoredTorch($block, false, Writer::create(Ids::COLORED_TORCH_BP)));
 		$this->map(Blocks::BONE_BLOCK(), function(BoneBlock $block) : Writer{
@@ -343,18 +347,18 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeInt(StateNames::DEPRECATED, 0)
 				->writePillarAxis($block->getAxis());
 		});
-		$this->map(Blocks::BOOKSHELF(), fn() => new Writer(Ids::BOOKSHELF));
+		$this->mapSimple(Blocks::BOOKSHELF(), Ids::BOOKSHELF);
 		$this->map(Blocks::BREWING_STAND(), function(BrewingStand $block) : Writer{
 			return Writer::create(Ids::BREWING_STAND)
 				->writeBool(StateNames::BREWING_STAND_SLOT_A_BIT, $block->hasSlot(BrewingStandSlot::EAST()))
 				->writeBool(StateNames::BREWING_STAND_SLOT_B_BIT, $block->hasSlot(BrewingStandSlot::SOUTHWEST()))
 				->writeBool(StateNames::BREWING_STAND_SLOT_C_BIT, $block->hasSlot(BrewingStandSlot::NORTHWEST()));
 		});
-		$this->map(Blocks::BRICKS(), fn() => new Writer(Ids::BRICK_BLOCK));
+		$this->mapSimple(Blocks::BRICKS(), Ids::BRICK_BLOCK);
 		$this->map(Blocks::BRICK_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab1($block, StringValues::STONE_SLAB_TYPE_BRICK));
 		$this->mapStairs(Blocks::BRICK_STAIRS(), Ids::BRICK_STAIRS);
 		$this->map(Blocks::BRICK_WALL(), fn(Wall $block) => Helper::encodeLegacyWall($block, StringValues::WALL_BLOCK_TYPE_BRICK));
-		$this->map(Blocks::BROWN_MUSHROOM(), fn() => new Writer(Ids::BROWN_MUSHROOM));
+		$this->mapSimple(Blocks::BROWN_MUSHROOM(), Ids::BROWN_MUSHROOM);
 		$this->map(Blocks::BROWN_MUSHROOM_BLOCK(), fn(BrownMushroomBlock $block) => Helper::encodeMushroomBlock($block, new Writer(Ids::BROWN_MUSHROOM_BLOCK)));
 		$this->map(Blocks::CACTUS(), function(Cactus $block) : Writer{
 			return Writer::create(Ids::CACTUS)
@@ -373,7 +377,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::CARVED_PUMPKIN)
 				->writeLegacyHorizontalFacing($block->getFacing());
 		});
-		$this->map(Blocks::CHEMICAL_HEAT(), fn() => new Writer(Ids::CHEMICAL_HEAT));
+		$this->mapSimple(Blocks::CHEMICAL_HEAT(), Ids::CHEMICAL_HEAT);
 		$this->map(Blocks::CHEST(), function(Chest $block) : Writer{
 			return Writer::create(Ids::CHEST)
 				->writeHorizontalFacing($block->getFacing());
@@ -382,14 +386,14 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::CHISELED_RED_SANDSTONE(), fn() => Helper::encodeSandstone(Ids::RED_SANDSTONE, StringValues::SAND_STONE_TYPE_HEIROGLYPHS));
 		$this->map(Blocks::CHISELED_SANDSTONE(), fn() => Helper::encodeSandstone(Ids::SANDSTONE, StringValues::SAND_STONE_TYPE_HEIROGLYPHS));
 		$this->map(Blocks::CHISELED_STONE_BRICKS(), fn() => Helper::encodeStoneBricks(StringValues::STONE_BRICK_TYPE_CHISELED));
-		$this->map(Blocks::CLAY(), fn() => new Writer(Ids::CLAY));
-		$this->map(Blocks::COAL(), fn() => new Writer(Ids::COAL_BLOCK));
-		$this->map(Blocks::COAL_ORE(), fn() => new Writer(Ids::COAL_ORE));
-		$this->map(Blocks::COBBLESTONE(), fn() => new Writer(Ids::COBBLESTONE));
+		$this->mapSimple(Blocks::CLAY(), Ids::CLAY);
+		$this->mapSimple(Blocks::COAL(), Ids::COAL_BLOCK);
+		$this->mapSimple(Blocks::COAL_ORE(), Ids::COAL_ORE);
+		$this->mapSimple(Blocks::COBBLESTONE(), Ids::COBBLESTONE);
 		$this->map(Blocks::COBBLESTONE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab1($block, StringValues::STONE_SLAB_TYPE_COBBLESTONE));
 		$this->mapStairs(Blocks::COBBLESTONE_STAIRS(), Ids::STONE_STAIRS);
 		$this->map(Blocks::COBBLESTONE_WALL(), fn(Wall $block) => Helper::encodeLegacyWall($block, StringValues::WALL_BLOCK_TYPE_COBBLESTONE));
-		$this->map(Blocks::COBWEB(), fn() => new Writer(Ids::WEB));
+		$this->mapSimple(Blocks::COBWEB(), Ids::WEB);
 		$this->map(Blocks::COCOA_POD(), function(CocoaBlock $block) : Writer{
 			return Writer::create(Ids::COCOA)
 				->writeInt(StateNames::AGE, $block->getAge())
@@ -425,12 +429,12 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::CORNFLOWER(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_CORNFLOWER));
 		$this->map(Blocks::CRACKED_STONE_BRICKS(), fn() => Helper::encodeStoneBricks(StringValues::STONE_BRICK_TYPE_CRACKED));
-		$this->map(Blocks::CRAFTING_TABLE(), fn() => new Writer(Ids::CRAFTING_TABLE));
+		$this->mapSimple(Blocks::CRAFTING_TABLE(), Ids::CRAFTING_TABLE);
 		$this->map(Blocks::CUT_RED_SANDSTONE(), fn() => Helper::encodeSandstone(Ids::RED_SANDSTONE, StringValues::SAND_STONE_TYPE_CUT));
 		$this->map(Blocks::CUT_RED_SANDSTONE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab4($block, StringValues::STONE_SLAB_TYPE_4_CUT_RED_SANDSTONE));
 		$this->map(Blocks::CUT_SANDSTONE(), fn() => Helper::encodeSandstone(Ids::SANDSTONE, StringValues::SAND_STONE_TYPE_CUT));
 		$this->map(Blocks::CUT_SANDSTONE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab4($block, StringValues::STONE_SLAB_TYPE_4_CUT_SANDSTONE));
-		$this->map(Blocks::DANDELION(), fn() => new Writer(Ids::YELLOW_FLOWER));
+		$this->mapSimple(Blocks::DANDELION(), Ids::YELLOW_FLOWER);
 		$this->map(Blocks::DARK_OAK_BUTTON(), fn(WoodenButton $block) => Helper::encodeButton($block, new Writer(Ids::DARK_OAK_BUTTON)));
 		$this->map(Blocks::DARK_OAK_DOOR(), fn(WoodenDoor $block) => Helper::encodeDoor($block, new Writer(Ids::DARK_OAK_DOOR)));
 		$this->map(Blocks::DARK_OAK_FENCE(), fn() => Writer::create(Ids::FENCE)
@@ -456,14 +460,14 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 			return Writer::create($block->isInverted() ? Ids::DAYLIGHT_DETECTOR_INVERTED : Ids::DAYLIGHT_DETECTOR)
 				->writeInt(StateNames::REDSTONE_SIGNAL, $block->getOutputSignalStrength());
 		});
-		$this->map(Blocks::DEAD_BUSH(), fn() => new Writer(Ids::DEADBUSH));
+		$this->mapSimple(Blocks::DEAD_BUSH(), Ids::DEADBUSH);
 		$this->map(Blocks::DETECTOR_RAIL(), function(DetectorRail $block) : Writer{
 			return Writer::create(Ids::DETECTOR_RAIL)
 				->writeBool(StateNames::RAIL_DATA_BIT, $block->isActivated())
 				->writeInt(StateNames::RAIL_DIRECTION, $block->getShape());
 		});
-		$this->map(Blocks::DIAMOND(), fn() => new Writer(Ids::DIAMOND_BLOCK));
-		$this->map(Blocks::DIAMOND_ORE(), fn() => new Writer(Ids::DIAMOND_ORE));
+		$this->mapSimple(Blocks::DIAMOND(), Ids::DIAMOND_BLOCK);
+		$this->mapSimple(Blocks::DIAMOND_ORE(), Ids::DIAMOND_ORE);
 		$this->map(Blocks::DIORITE(), fn() => Helper::encodeStone(StringValues::STONE_TYPE_DIORITE));
 		$this->map(Blocks::DIORITE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab3($block, StringValues::STONE_SLAB_TYPE_3_DIORITE));
 		$this->mapStairs(Blocks::DIORITE_STAIRS(), Ids::DIORITE_STAIRS);
@@ -473,135 +477,135 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeString(StateNames::DIRT_TYPE, $block->isCoarse() ? StringValues::DIRT_TYPE_COARSE : StringValues::DIRT_TYPE_NORMAL);
 		});
 		$this->map(Blocks::DOUBLE_TALLGRASS(), fn(DoubleTallGrass $block) => Helper::encodeDoublePlant($block, StringValues::DOUBLE_PLANT_TYPE_GRASS, Writer::create(Ids::DOUBLE_PLANT)));
-		$this->map(Blocks::DRAGON_EGG(), fn() => new Writer(Ids::DRAGON_EGG));
-		$this->map(Blocks::DRIED_KELP(), fn() => new Writer(Ids::DRIED_KELP_BLOCK));
+		$this->mapSimple(Blocks::DRAGON_EGG(), Ids::DRAGON_EGG);
+		$this->mapSimple(Blocks::DRIED_KELP(), Ids::DRIED_KELP_BLOCK);
 		$this->map(Blocks::DYED_SHULKER_BOX(), function(DyedShulkerBox $block) : Writer{
 			return Writer::create(Ids::SHULKER_BOX)
 				->writeColor($block->getColor());
 		});
-		$this->map(Blocks::ELEMENT_ACTINIUM(), fn() => new Writer(Ids::ELEMENT_89));
-		$this->map(Blocks::ELEMENT_ALUMINUM(), fn() => new Writer(Ids::ELEMENT_13));
-		$this->map(Blocks::ELEMENT_AMERICIUM(), fn() => new Writer(Ids::ELEMENT_95));
-		$this->map(Blocks::ELEMENT_ANTIMONY(), fn() => new Writer(Ids::ELEMENT_51));
-		$this->map(Blocks::ELEMENT_ARGON(), fn() => new Writer(Ids::ELEMENT_18));
-		$this->map(Blocks::ELEMENT_ARSENIC(), fn() => new Writer(Ids::ELEMENT_33));
-		$this->map(Blocks::ELEMENT_ASTATINE(), fn() => new Writer(Ids::ELEMENT_85));
-		$this->map(Blocks::ELEMENT_BARIUM(), fn() => new Writer(Ids::ELEMENT_56));
-		$this->map(Blocks::ELEMENT_BERKELIUM(), fn() => new Writer(Ids::ELEMENT_97));
-		$this->map(Blocks::ELEMENT_BERYLLIUM(), fn() => new Writer(Ids::ELEMENT_4));
-		$this->map(Blocks::ELEMENT_BISMUTH(), fn() => new Writer(Ids::ELEMENT_83));
-		$this->map(Blocks::ELEMENT_BOHRIUM(), fn() => new Writer(Ids::ELEMENT_107));
-		$this->map(Blocks::ELEMENT_BORON(), fn() => new Writer(Ids::ELEMENT_5));
-		$this->map(Blocks::ELEMENT_BROMINE(), fn() => new Writer(Ids::ELEMENT_35));
-		$this->map(Blocks::ELEMENT_CADMIUM(), fn() => new Writer(Ids::ELEMENT_48));
-		$this->map(Blocks::ELEMENT_CALCIUM(), fn() => new Writer(Ids::ELEMENT_20));
-		$this->map(Blocks::ELEMENT_CALIFORNIUM(), fn() => new Writer(Ids::ELEMENT_98));
-		$this->map(Blocks::ELEMENT_CARBON(), fn() => new Writer(Ids::ELEMENT_6));
-		$this->map(Blocks::ELEMENT_CERIUM(), fn() => new Writer(Ids::ELEMENT_58));
-		$this->map(Blocks::ELEMENT_CESIUM(), fn() => new Writer(Ids::ELEMENT_55));
-		$this->map(Blocks::ELEMENT_CHLORINE(), fn() => new Writer(Ids::ELEMENT_17));
-		$this->map(Blocks::ELEMENT_CHROMIUM(), fn() => new Writer(Ids::ELEMENT_24));
-		$this->map(Blocks::ELEMENT_COBALT(), fn() => new Writer(Ids::ELEMENT_27));
+		$this->mapSimple(Blocks::ELEMENT_ACTINIUM(), Ids::ELEMENT_89);
+		$this->mapSimple(Blocks::ELEMENT_ALUMINUM(), Ids::ELEMENT_13);
+		$this->mapSimple(Blocks::ELEMENT_AMERICIUM(), Ids::ELEMENT_95);
+		$this->mapSimple(Blocks::ELEMENT_ANTIMONY(), Ids::ELEMENT_51);
+		$this->mapSimple(Blocks::ELEMENT_ARGON(), Ids::ELEMENT_18);
+		$this->mapSimple(Blocks::ELEMENT_ARSENIC(), Ids::ELEMENT_33);
+		$this->mapSimple(Blocks::ELEMENT_ASTATINE(), Ids::ELEMENT_85);
+		$this->mapSimple(Blocks::ELEMENT_BARIUM(), Ids::ELEMENT_56);
+		$this->mapSimple(Blocks::ELEMENT_BERKELIUM(), Ids::ELEMENT_97);
+		$this->mapSimple(Blocks::ELEMENT_BERYLLIUM(), Ids::ELEMENT_4);
+		$this->mapSimple(Blocks::ELEMENT_BISMUTH(), Ids::ELEMENT_83);
+		$this->mapSimple(Blocks::ELEMENT_BOHRIUM(), Ids::ELEMENT_107);
+		$this->mapSimple(Blocks::ELEMENT_BORON(), Ids::ELEMENT_5);
+		$this->mapSimple(Blocks::ELEMENT_BROMINE(), Ids::ELEMENT_35);
+		$this->mapSimple(Blocks::ELEMENT_CADMIUM(), Ids::ELEMENT_48);
+		$this->mapSimple(Blocks::ELEMENT_CALCIUM(), Ids::ELEMENT_20);
+		$this->mapSimple(Blocks::ELEMENT_CALIFORNIUM(), Ids::ELEMENT_98);
+		$this->mapSimple(Blocks::ELEMENT_CARBON(), Ids::ELEMENT_6);
+		$this->mapSimple(Blocks::ELEMENT_CERIUM(), Ids::ELEMENT_58);
+		$this->mapSimple(Blocks::ELEMENT_CESIUM(), Ids::ELEMENT_55);
+		$this->mapSimple(Blocks::ELEMENT_CHLORINE(), Ids::ELEMENT_17);
+		$this->mapSimple(Blocks::ELEMENT_CHROMIUM(), Ids::ELEMENT_24);
+		$this->mapSimple(Blocks::ELEMENT_COBALT(), Ids::ELEMENT_27);
 		$this->map(Blocks::ELEMENT_CONSTRUCTOR(), fn(ChemistryTable $block) => Helper::encodeChemistryTable($block, StringValues::CHEMISTRY_TABLE_TYPE_ELEMENT_CONSTRUCTOR, new Writer(Ids::CHEMISTRY_TABLE)));
-		$this->map(Blocks::ELEMENT_COPERNICIUM(), fn() => new Writer(Ids::ELEMENT_112));
-		$this->map(Blocks::ELEMENT_COPPER(), fn() => new Writer(Ids::ELEMENT_29));
-		$this->map(Blocks::ELEMENT_CURIUM(), fn() => new Writer(Ids::ELEMENT_96));
-		$this->map(Blocks::ELEMENT_DARMSTADTIUM(), fn() => new Writer(Ids::ELEMENT_110));
-		$this->map(Blocks::ELEMENT_DUBNIUM(), fn() => new Writer(Ids::ELEMENT_105));
-		$this->map(Blocks::ELEMENT_DYSPROSIUM(), fn() => new Writer(Ids::ELEMENT_66));
-		$this->map(Blocks::ELEMENT_EINSTEINIUM(), fn() => new Writer(Ids::ELEMENT_99));
-		$this->map(Blocks::ELEMENT_ERBIUM(), fn() => new Writer(Ids::ELEMENT_68));
-		$this->map(Blocks::ELEMENT_EUROPIUM(), fn() => new Writer(Ids::ELEMENT_63));
-		$this->map(Blocks::ELEMENT_FERMIUM(), fn() => new Writer(Ids::ELEMENT_100));
-		$this->map(Blocks::ELEMENT_FLEROVIUM(), fn() => new Writer(Ids::ELEMENT_114));
-		$this->map(Blocks::ELEMENT_FLUORINE(), fn() => new Writer(Ids::ELEMENT_9));
-		$this->map(Blocks::ELEMENT_FRANCIUM(), fn() => new Writer(Ids::ELEMENT_87));
-		$this->map(Blocks::ELEMENT_GADOLINIUM(), fn() => new Writer(Ids::ELEMENT_64));
-		$this->map(Blocks::ELEMENT_GALLIUM(), fn() => new Writer(Ids::ELEMENT_31));
-		$this->map(Blocks::ELEMENT_GERMANIUM(), fn() => new Writer(Ids::ELEMENT_32));
-		$this->map(Blocks::ELEMENT_GOLD(), fn() => new Writer(Ids::ELEMENT_79));
-		$this->map(Blocks::ELEMENT_HAFNIUM(), fn() => new Writer(Ids::ELEMENT_72));
-		$this->map(Blocks::ELEMENT_HASSIUM(), fn() => new Writer(Ids::ELEMENT_108));
-		$this->map(Blocks::ELEMENT_HELIUM(), fn() => new Writer(Ids::ELEMENT_2));
-		$this->map(Blocks::ELEMENT_HOLMIUM(), fn() => new Writer(Ids::ELEMENT_67));
-		$this->map(Blocks::ELEMENT_HYDROGEN(), fn() => new Writer(Ids::ELEMENT_1));
-		$this->map(Blocks::ELEMENT_INDIUM(), fn() => new Writer(Ids::ELEMENT_49));
-		$this->map(Blocks::ELEMENT_IODINE(), fn() => new Writer(Ids::ELEMENT_53));
-		$this->map(Blocks::ELEMENT_IRIDIUM(), fn() => new Writer(Ids::ELEMENT_77));
-		$this->map(Blocks::ELEMENT_IRON(), fn() => new Writer(Ids::ELEMENT_26));
-		$this->map(Blocks::ELEMENT_KRYPTON(), fn() => new Writer(Ids::ELEMENT_36));
-		$this->map(Blocks::ELEMENT_LANTHANUM(), fn() => new Writer(Ids::ELEMENT_57));
-		$this->map(Blocks::ELEMENT_LAWRENCIUM(), fn() => new Writer(Ids::ELEMENT_103));
-		$this->map(Blocks::ELEMENT_LEAD(), fn() => new Writer(Ids::ELEMENT_82));
-		$this->map(Blocks::ELEMENT_LITHIUM(), fn() => new Writer(Ids::ELEMENT_3));
-		$this->map(Blocks::ELEMENT_LIVERMORIUM(), fn() => new Writer(Ids::ELEMENT_116));
-		$this->map(Blocks::ELEMENT_LUTETIUM(), fn() => new Writer(Ids::ELEMENT_71));
-		$this->map(Blocks::ELEMENT_MAGNESIUM(), fn() => new Writer(Ids::ELEMENT_12));
-		$this->map(Blocks::ELEMENT_MANGANESE(), fn() => new Writer(Ids::ELEMENT_25));
-		$this->map(Blocks::ELEMENT_MEITNERIUM(), fn() => new Writer(Ids::ELEMENT_109));
-		$this->map(Blocks::ELEMENT_MENDELEVIUM(), fn() => new Writer(Ids::ELEMENT_101));
-		$this->map(Blocks::ELEMENT_MERCURY(), fn() => new Writer(Ids::ELEMENT_80));
-		$this->map(Blocks::ELEMENT_MOLYBDENUM(), fn() => new Writer(Ids::ELEMENT_42));
-		$this->map(Blocks::ELEMENT_MOSCOVIUM(), fn() => new Writer(Ids::ELEMENT_115));
-		$this->map(Blocks::ELEMENT_NEODYMIUM(), fn() => new Writer(Ids::ELEMENT_60));
-		$this->map(Blocks::ELEMENT_NEON(), fn() => new Writer(Ids::ELEMENT_10));
-		$this->map(Blocks::ELEMENT_NEPTUNIUM(), fn() => new Writer(Ids::ELEMENT_93));
-		$this->map(Blocks::ELEMENT_NICKEL(), fn() => new Writer(Ids::ELEMENT_28));
-		$this->map(Blocks::ELEMENT_NIHONIUM(), fn() => new Writer(Ids::ELEMENT_113));
-		$this->map(Blocks::ELEMENT_NIOBIUM(), fn() => new Writer(Ids::ELEMENT_41));
-		$this->map(Blocks::ELEMENT_NITROGEN(), fn() => new Writer(Ids::ELEMENT_7));
-		$this->map(Blocks::ELEMENT_NOBELIUM(), fn() => new Writer(Ids::ELEMENT_102));
-		$this->map(Blocks::ELEMENT_OGANESSON(), fn() => new Writer(Ids::ELEMENT_118));
-		$this->map(Blocks::ELEMENT_OSMIUM(), fn() => new Writer(Ids::ELEMENT_76));
-		$this->map(Blocks::ELEMENT_OXYGEN(), fn() => new Writer(Ids::ELEMENT_8));
-		$this->map(Blocks::ELEMENT_PALLADIUM(), fn() => new Writer(Ids::ELEMENT_46));
-		$this->map(Blocks::ELEMENT_PHOSPHORUS(), fn() => new Writer(Ids::ELEMENT_15));
-		$this->map(Blocks::ELEMENT_PLATINUM(), fn() => new Writer(Ids::ELEMENT_78));
-		$this->map(Blocks::ELEMENT_PLUTONIUM(), fn() => new Writer(Ids::ELEMENT_94));
-		$this->map(Blocks::ELEMENT_POLONIUM(), fn() => new Writer(Ids::ELEMENT_84));
-		$this->map(Blocks::ELEMENT_POTASSIUM(), fn() => new Writer(Ids::ELEMENT_19));
-		$this->map(Blocks::ELEMENT_PRASEODYMIUM(), fn() => new Writer(Ids::ELEMENT_59));
-		$this->map(Blocks::ELEMENT_PROMETHIUM(), fn() => new Writer(Ids::ELEMENT_61));
-		$this->map(Blocks::ELEMENT_PROTACTINIUM(), fn() => new Writer(Ids::ELEMENT_91));
-		$this->map(Blocks::ELEMENT_RADIUM(), fn() => new Writer(Ids::ELEMENT_88));
-		$this->map(Blocks::ELEMENT_RADON(), fn() => new Writer(Ids::ELEMENT_86));
-		$this->map(Blocks::ELEMENT_RHENIUM(), fn() => new Writer(Ids::ELEMENT_75));
-		$this->map(Blocks::ELEMENT_RHODIUM(), fn() => new Writer(Ids::ELEMENT_45));
-		$this->map(Blocks::ELEMENT_ROENTGENIUM(), fn() => new Writer(Ids::ELEMENT_111));
-		$this->map(Blocks::ELEMENT_RUBIDIUM(), fn() => new Writer(Ids::ELEMENT_37));
-		$this->map(Blocks::ELEMENT_RUTHENIUM(), fn() => new Writer(Ids::ELEMENT_44));
-		$this->map(Blocks::ELEMENT_RUTHERFORDIUM(), fn() => new Writer(Ids::ELEMENT_104));
-		$this->map(Blocks::ELEMENT_SAMARIUM(), fn() => new Writer(Ids::ELEMENT_62));
-		$this->map(Blocks::ELEMENT_SCANDIUM(), fn() => new Writer(Ids::ELEMENT_21));
-		$this->map(Blocks::ELEMENT_SEABORGIUM(), fn() => new Writer(Ids::ELEMENT_106));
-		$this->map(Blocks::ELEMENT_SELENIUM(), fn() => new Writer(Ids::ELEMENT_34));
-		$this->map(Blocks::ELEMENT_SILICON(), fn() => new Writer(Ids::ELEMENT_14));
-		$this->map(Blocks::ELEMENT_SILVER(), fn() => new Writer(Ids::ELEMENT_47));
-		$this->map(Blocks::ELEMENT_SODIUM(), fn() => new Writer(Ids::ELEMENT_11));
-		$this->map(Blocks::ELEMENT_STRONTIUM(), fn() => new Writer(Ids::ELEMENT_38));
-		$this->map(Blocks::ELEMENT_SULFUR(), fn() => new Writer(Ids::ELEMENT_16));
-		$this->map(Blocks::ELEMENT_TANTALUM(), fn() => new Writer(Ids::ELEMENT_73));
-		$this->map(Blocks::ELEMENT_TECHNETIUM(), fn() => new Writer(Ids::ELEMENT_43));
-		$this->map(Blocks::ELEMENT_TELLURIUM(), fn() => new Writer(Ids::ELEMENT_52));
-		$this->map(Blocks::ELEMENT_TENNESSINE(), fn() => new Writer(Ids::ELEMENT_117));
-		$this->map(Blocks::ELEMENT_TERBIUM(), fn() => new Writer(Ids::ELEMENT_65));
-		$this->map(Blocks::ELEMENT_THALLIUM(), fn() => new Writer(Ids::ELEMENT_81));
-		$this->map(Blocks::ELEMENT_THORIUM(), fn() => new Writer(Ids::ELEMENT_90));
-		$this->map(Blocks::ELEMENT_THULIUM(), fn() => new Writer(Ids::ELEMENT_69));
-		$this->map(Blocks::ELEMENT_TIN(), fn() => new Writer(Ids::ELEMENT_50));
-		$this->map(Blocks::ELEMENT_TITANIUM(), fn() => new Writer(Ids::ELEMENT_22));
-		$this->map(Blocks::ELEMENT_TUNGSTEN(), fn() => new Writer(Ids::ELEMENT_74));
-		$this->map(Blocks::ELEMENT_URANIUM(), fn() => new Writer(Ids::ELEMENT_92));
-		$this->map(Blocks::ELEMENT_VANADIUM(), fn() => new Writer(Ids::ELEMENT_23));
-		$this->map(Blocks::ELEMENT_XENON(), fn() => new Writer(Ids::ELEMENT_54));
-		$this->map(Blocks::ELEMENT_YTTERBIUM(), fn() => new Writer(Ids::ELEMENT_70));
-		$this->map(Blocks::ELEMENT_YTTRIUM(), fn() => new Writer(Ids::ELEMENT_39));
-		$this->map(Blocks::ELEMENT_ZERO(), fn() => new Writer(Ids::ELEMENT_0));
-		$this->map(Blocks::ELEMENT_ZINC(), fn() => new Writer(Ids::ELEMENT_30));
-		$this->map(Blocks::ELEMENT_ZIRCONIUM(), fn() => new Writer(Ids::ELEMENT_40));
-		$this->map(Blocks::EMERALD(), fn() => new Writer(Ids::EMERALD_BLOCK));
-		$this->map(Blocks::EMERALD_ORE(), fn() => new Writer(Ids::EMERALD_ORE));
-		$this->map(Blocks::ENCHANTING_TABLE(), fn() => new Writer(Ids::ENCHANTING_TABLE));
+		$this->mapSimple(Blocks::ELEMENT_COPERNICIUM(), Ids::ELEMENT_112);
+		$this->mapSimple(Blocks::ELEMENT_COPPER(), Ids::ELEMENT_29);
+		$this->mapSimple(Blocks::ELEMENT_CURIUM(), Ids::ELEMENT_96);
+		$this->mapSimple(Blocks::ELEMENT_DARMSTADTIUM(), Ids::ELEMENT_110);
+		$this->mapSimple(Blocks::ELEMENT_DUBNIUM(), Ids::ELEMENT_105);
+		$this->mapSimple(Blocks::ELEMENT_DYSPROSIUM(), Ids::ELEMENT_66);
+		$this->mapSimple(Blocks::ELEMENT_EINSTEINIUM(), Ids::ELEMENT_99);
+		$this->mapSimple(Blocks::ELEMENT_ERBIUM(), Ids::ELEMENT_68);
+		$this->mapSimple(Blocks::ELEMENT_EUROPIUM(), Ids::ELEMENT_63);
+		$this->mapSimple(Blocks::ELEMENT_FERMIUM(), Ids::ELEMENT_100);
+		$this->mapSimple(Blocks::ELEMENT_FLEROVIUM(), Ids::ELEMENT_114);
+		$this->mapSimple(Blocks::ELEMENT_FLUORINE(), Ids::ELEMENT_9);
+		$this->mapSimple(Blocks::ELEMENT_FRANCIUM(), Ids::ELEMENT_87);
+		$this->mapSimple(Blocks::ELEMENT_GADOLINIUM(), Ids::ELEMENT_64);
+		$this->mapSimple(Blocks::ELEMENT_GALLIUM(), Ids::ELEMENT_31);
+		$this->mapSimple(Blocks::ELEMENT_GERMANIUM(), Ids::ELEMENT_32);
+		$this->mapSimple(Blocks::ELEMENT_GOLD(), Ids::ELEMENT_79);
+		$this->mapSimple(Blocks::ELEMENT_HAFNIUM(), Ids::ELEMENT_72);
+		$this->mapSimple(Blocks::ELEMENT_HASSIUM(), Ids::ELEMENT_108);
+		$this->mapSimple(Blocks::ELEMENT_HELIUM(), Ids::ELEMENT_2);
+		$this->mapSimple(Blocks::ELEMENT_HOLMIUM(), Ids::ELEMENT_67);
+		$this->mapSimple(Blocks::ELEMENT_HYDROGEN(), Ids::ELEMENT_1);
+		$this->mapSimple(Blocks::ELEMENT_INDIUM(), Ids::ELEMENT_49);
+		$this->mapSimple(Blocks::ELEMENT_IODINE(), Ids::ELEMENT_53);
+		$this->mapSimple(Blocks::ELEMENT_IRIDIUM(), Ids::ELEMENT_77);
+		$this->mapSimple(Blocks::ELEMENT_IRON(), Ids::ELEMENT_26);
+		$this->mapSimple(Blocks::ELEMENT_KRYPTON(), Ids::ELEMENT_36);
+		$this->mapSimple(Blocks::ELEMENT_LANTHANUM(), Ids::ELEMENT_57);
+		$this->mapSimple(Blocks::ELEMENT_LAWRENCIUM(), Ids::ELEMENT_103);
+		$this->mapSimple(Blocks::ELEMENT_LEAD(), Ids::ELEMENT_82);
+		$this->mapSimple(Blocks::ELEMENT_LITHIUM(), Ids::ELEMENT_3);
+		$this->mapSimple(Blocks::ELEMENT_LIVERMORIUM(), Ids::ELEMENT_116);
+		$this->mapSimple(Blocks::ELEMENT_LUTETIUM(), Ids::ELEMENT_71);
+		$this->mapSimple(Blocks::ELEMENT_MAGNESIUM(), Ids::ELEMENT_12);
+		$this->mapSimple(Blocks::ELEMENT_MANGANESE(), Ids::ELEMENT_25);
+		$this->mapSimple(Blocks::ELEMENT_MEITNERIUM(), Ids::ELEMENT_109);
+		$this->mapSimple(Blocks::ELEMENT_MENDELEVIUM(), Ids::ELEMENT_101);
+		$this->mapSimple(Blocks::ELEMENT_MERCURY(), Ids::ELEMENT_80);
+		$this->mapSimple(Blocks::ELEMENT_MOLYBDENUM(), Ids::ELEMENT_42);
+		$this->mapSimple(Blocks::ELEMENT_MOSCOVIUM(), Ids::ELEMENT_115);
+		$this->mapSimple(Blocks::ELEMENT_NEODYMIUM(), Ids::ELEMENT_60);
+		$this->mapSimple(Blocks::ELEMENT_NEON(), Ids::ELEMENT_10);
+		$this->mapSimple(Blocks::ELEMENT_NEPTUNIUM(), Ids::ELEMENT_93);
+		$this->mapSimple(Blocks::ELEMENT_NICKEL(), Ids::ELEMENT_28);
+		$this->mapSimple(Blocks::ELEMENT_NIHONIUM(), Ids::ELEMENT_113);
+		$this->mapSimple(Blocks::ELEMENT_NIOBIUM(), Ids::ELEMENT_41);
+		$this->mapSimple(Blocks::ELEMENT_NITROGEN(), Ids::ELEMENT_7);
+		$this->mapSimple(Blocks::ELEMENT_NOBELIUM(), Ids::ELEMENT_102);
+		$this->mapSimple(Blocks::ELEMENT_OGANESSON(), Ids::ELEMENT_118);
+		$this->mapSimple(Blocks::ELEMENT_OSMIUM(), Ids::ELEMENT_76);
+		$this->mapSimple(Blocks::ELEMENT_OXYGEN(), Ids::ELEMENT_8);
+		$this->mapSimple(Blocks::ELEMENT_PALLADIUM(), Ids::ELEMENT_46);
+		$this->mapSimple(Blocks::ELEMENT_PHOSPHORUS(), Ids::ELEMENT_15);
+		$this->mapSimple(Blocks::ELEMENT_PLATINUM(), Ids::ELEMENT_78);
+		$this->mapSimple(Blocks::ELEMENT_PLUTONIUM(), Ids::ELEMENT_94);
+		$this->mapSimple(Blocks::ELEMENT_POLONIUM(), Ids::ELEMENT_84);
+		$this->mapSimple(Blocks::ELEMENT_POTASSIUM(), Ids::ELEMENT_19);
+		$this->mapSimple(Blocks::ELEMENT_PRASEODYMIUM(), Ids::ELEMENT_59);
+		$this->mapSimple(Blocks::ELEMENT_PROMETHIUM(), Ids::ELEMENT_61);
+		$this->mapSimple(Blocks::ELEMENT_PROTACTINIUM(), Ids::ELEMENT_91);
+		$this->mapSimple(Blocks::ELEMENT_RADIUM(), Ids::ELEMENT_88);
+		$this->mapSimple(Blocks::ELEMENT_RADON(), Ids::ELEMENT_86);
+		$this->mapSimple(Blocks::ELEMENT_RHENIUM(), Ids::ELEMENT_75);
+		$this->mapSimple(Blocks::ELEMENT_RHODIUM(), Ids::ELEMENT_45);
+		$this->mapSimple(Blocks::ELEMENT_ROENTGENIUM(), Ids::ELEMENT_111);
+		$this->mapSimple(Blocks::ELEMENT_RUBIDIUM(), Ids::ELEMENT_37);
+		$this->mapSimple(Blocks::ELEMENT_RUTHENIUM(), Ids::ELEMENT_44);
+		$this->mapSimple(Blocks::ELEMENT_RUTHERFORDIUM(), Ids::ELEMENT_104);
+		$this->mapSimple(Blocks::ELEMENT_SAMARIUM(), Ids::ELEMENT_62);
+		$this->mapSimple(Blocks::ELEMENT_SCANDIUM(), Ids::ELEMENT_21);
+		$this->mapSimple(Blocks::ELEMENT_SEABORGIUM(), Ids::ELEMENT_106);
+		$this->mapSimple(Blocks::ELEMENT_SELENIUM(), Ids::ELEMENT_34);
+		$this->mapSimple(Blocks::ELEMENT_SILICON(), Ids::ELEMENT_14);
+		$this->mapSimple(Blocks::ELEMENT_SILVER(), Ids::ELEMENT_47);
+		$this->mapSimple(Blocks::ELEMENT_SODIUM(), Ids::ELEMENT_11);
+		$this->mapSimple(Blocks::ELEMENT_STRONTIUM(), Ids::ELEMENT_38);
+		$this->mapSimple(Blocks::ELEMENT_SULFUR(), Ids::ELEMENT_16);
+		$this->mapSimple(Blocks::ELEMENT_TANTALUM(), Ids::ELEMENT_73);
+		$this->mapSimple(Blocks::ELEMENT_TECHNETIUM(), Ids::ELEMENT_43);
+		$this->mapSimple(Blocks::ELEMENT_TELLURIUM(), Ids::ELEMENT_52);
+		$this->mapSimple(Blocks::ELEMENT_TENNESSINE(), Ids::ELEMENT_117);
+		$this->mapSimple(Blocks::ELEMENT_TERBIUM(), Ids::ELEMENT_65);
+		$this->mapSimple(Blocks::ELEMENT_THALLIUM(), Ids::ELEMENT_81);
+		$this->mapSimple(Blocks::ELEMENT_THORIUM(), Ids::ELEMENT_90);
+		$this->mapSimple(Blocks::ELEMENT_THULIUM(), Ids::ELEMENT_69);
+		$this->mapSimple(Blocks::ELEMENT_TIN(), Ids::ELEMENT_50);
+		$this->mapSimple(Blocks::ELEMENT_TITANIUM(), Ids::ELEMENT_22);
+		$this->mapSimple(Blocks::ELEMENT_TUNGSTEN(), Ids::ELEMENT_74);
+		$this->mapSimple(Blocks::ELEMENT_URANIUM(), Ids::ELEMENT_92);
+		$this->mapSimple(Blocks::ELEMENT_VANADIUM(), Ids::ELEMENT_23);
+		$this->mapSimple(Blocks::ELEMENT_XENON(), Ids::ELEMENT_54);
+		$this->mapSimple(Blocks::ELEMENT_YTTERBIUM(), Ids::ELEMENT_70);
+		$this->mapSimple(Blocks::ELEMENT_YTTRIUM(), Ids::ELEMENT_39);
+		$this->mapSimple(Blocks::ELEMENT_ZERO(), Ids::ELEMENT_0);
+		$this->mapSimple(Blocks::ELEMENT_ZINC(), Ids::ELEMENT_30);
+		$this->mapSimple(Blocks::ELEMENT_ZIRCONIUM(), Ids::ELEMENT_40);
+		$this->mapSimple(Blocks::EMERALD(), Ids::EMERALD_BLOCK);
+		$this->mapSimple(Blocks::EMERALD_ORE(), Ids::EMERALD_ORE);
+		$this->mapSimple(Blocks::ENCHANTING_TABLE(), Ids::ENCHANTING_TABLE);
 		$this->map(Blocks::ENDER_CHEST(), function(EnderChest $block) : Writer{
 			return Writer::create(Ids::ENDER_CHEST)
 				->writeHorizontalFacing($block->getFacing());
@@ -615,8 +619,8 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::END_ROD)
 				->writeEndRodFacingDirection($block->getFacing());
 		});
-		$this->map(Blocks::END_STONE(), fn() => new Writer(Ids::END_STONE));
-		$this->map(Blocks::END_STONE_BRICKS(), fn() => new Writer(Ids::END_BRICKS));
+		$this->mapSimple(Blocks::END_STONE(), Ids::END_STONE);
+		$this->mapSimple(Blocks::END_STONE_BRICKS(), Ids::END_BRICKS);
 		$this->map(Blocks::END_STONE_BRICK_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab3($block, StringValues::STONE_SLAB_TYPE_3_END_STONE_BRICK));
 		$this->mapStairs(Blocks::END_STONE_BRICK_STAIRS(), Ids::END_BRICK_STAIRS);
 		$this->map(Blocks::END_STONE_BRICK_WALL(), fn(Wall $block) => Helper::encodeLegacyWall($block, StringValues::WALL_BLOCK_TYPE_END_BRICK));
@@ -631,7 +635,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::FIRE)
 				->writeInt(StateNames::AGE, $block->getAge());
 		});
-		$this->map(Blocks::FLETCHING_TABLE(), fn() => new Writer(Ids::FLETCHING_TABLE));
+		$this->mapSimple(Blocks::FLETCHING_TABLE(), Ids::FLETCHING_TABLE);
 		$this->map(Blocks::FLOWER_POT(), function() : Writer{
 			return Writer::create(Ids::FLOWER_POT)
 				->writeBool(StateNames::UPDATE_BIT, true); //to keep MCPE happy
@@ -641,8 +645,8 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeInt(StateNames::AGE, $block->getAge());
 		});
 		$this->map(Blocks::FURNACE(), fn(Furnace $block) => Helper::encodeFurnace($block, Ids::FURNACE, Ids::LIT_FURNACE));
-		$this->map(Blocks::GLASS(), fn() => new Writer(Ids::GLASS));
-		$this->map(Blocks::GLASS_PANE(), fn() => new Writer(Ids::GLASS_PANE));
+		$this->mapSimple(Blocks::GLASS(), Ids::GLASS);
+		$this->mapSimple(Blocks::GLASS_PANE(), Ids::GLASS_PANE);
 		$this->map(Blocks::GLAZED_TERRACOTTA(), function(GlazedTerracotta $block) : Writer{
 			return Writer::create(match ($color = $block->getColor()) {
 				DyeColor::BLACK() => Ids::BLACK_GLAZED_TERRACOTTA,
@@ -665,21 +669,21 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 			})
 				->writeHorizontalFacing($block->getFacing());
 		});
-		$this->map(Blocks::GLOWING_OBSIDIAN(), fn() => new Writer(Ids::GLOWINGOBSIDIAN));
-		$this->map(Blocks::GLOWSTONE(), fn() => new Writer(Ids::GLOWSTONE));
-		$this->map(Blocks::GOLD(), fn() => new Writer(Ids::GOLD_BLOCK));
-		$this->map(Blocks::GOLD_ORE(), fn() => new Writer(Ids::GOLD_ORE));
+		$this->mapSimple(Blocks::GLOWING_OBSIDIAN(), Ids::GLOWINGOBSIDIAN);
+		$this->mapSimple(Blocks::GLOWSTONE(), Ids::GLOWSTONE);
+		$this->mapSimple(Blocks::GOLD(), Ids::GOLD_BLOCK);
+		$this->mapSimple(Blocks::GOLD_ORE(), Ids::GOLD_ORE);
 		$this->map(Blocks::GRANITE(), fn() => Helper::encodeStone(StringValues::STONE_TYPE_GRANITE));
 		$this->map(Blocks::GRANITE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab3($block, StringValues::STONE_SLAB_TYPE_3_GRANITE));
 		$this->mapStairs(Blocks::GRANITE_STAIRS(), Ids::GRANITE_STAIRS);
 		$this->map(Blocks::GRANITE_WALL(), fn(Wall $block) => Helper::encodeLegacyWall($block, StringValues::WALL_BLOCK_TYPE_GRANITE));
-		$this->map(Blocks::GRASS(), fn() => new Writer(Ids::GRASS));
-		$this->map(Blocks::GRASS_PATH(), fn() => new Writer(Ids::GRASS_PATH));
-		$this->map(Blocks::GRAVEL(), fn() => new Writer(Ids::GRAVEL));
+		$this->mapSimple(Blocks::GRASS(), Ids::GRASS);
+		$this->mapSimple(Blocks::GRASS_PATH(), Ids::GRASS_PATH);
+		$this->mapSimple(Blocks::GRAVEL(), Ids::GRAVEL);
 		$this->map(Blocks::GREEN_TORCH(), fn(Torch $block) => Helper::encodeColoredTorch($block, true, Writer::create(Ids::COLORED_TORCH_RG)));
-		$this->map(Blocks::HARDENED_CLAY(), fn() => new Writer(Ids::HARDENED_CLAY));
-		$this->map(Blocks::HARDENED_GLASS(), fn() => new Writer(Ids::HARD_GLASS));
-		$this->map(Blocks::HARDENED_GLASS_PANE(), fn() => new Writer(Ids::HARD_GLASS_PANE));
+		$this->mapSimple(Blocks::HARDENED_CLAY(), Ids::HARDENED_CLAY);
+		$this->mapSimple(Blocks::HARDENED_GLASS(), Ids::HARD_GLASS);
+		$this->mapSimple(Blocks::HARDENED_GLASS_PANE(), Ids::HARD_GLASS_PANE);
 		$this->map(Blocks::HAY_BALE(), function(HayBale $block) : Writer{
 			return Writer::create(Ids::HAY_BLOCK)
 				->writeInt(StateNames::DEPRECATED, 0)
@@ -690,7 +694,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeBool(StateNames::TOGGLE_BIT, $block->isPowered())
 				->writeFacingWithoutUp($block->getFacing());
 		});
-		$this->map(Blocks::ICE(), fn() => new Writer(Ids::ICE));
+		$this->mapSimple(Blocks::ICE(), Ids::ICE);
 		$this->map(Blocks::INFESTED_CHISELED_STONE_BRICK(), fn() => Writer::create(Ids::MONSTER_EGG)
 				->writeString(StateNames::MONSTER_EGG_STONE_TYPE, StringValues::MONSTER_EGG_STONE_TYPE_CHISELED_STONE_BRICK));
 		$this->map(Blocks::INFESTED_COBBLESTONE(), fn() => Writer::create(Ids::MONSTER_EGG)
@@ -703,13 +707,13 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeString(StateNames::MONSTER_EGG_STONE_TYPE, StringValues::MONSTER_EGG_STONE_TYPE_STONE));
 		$this->map(Blocks::INFESTED_STONE_BRICK(), fn() => Writer::create(Ids::MONSTER_EGG)
 				->writeString(StateNames::MONSTER_EGG_STONE_TYPE, StringValues::MONSTER_EGG_STONE_TYPE_STONE_BRICK));
-		$this->map(Blocks::INFO_UPDATE(), fn() => new Writer(Ids::INFO_UPDATE));
-		$this->map(Blocks::INFO_UPDATE2(), fn() => new Writer(Ids::INFO_UPDATE2));
-		$this->map(Blocks::INVISIBLE_BEDROCK(), fn() => new Writer(Ids::INVISIBLE_BEDROCK));
-		$this->map(Blocks::IRON(), fn() => new Writer(Ids::IRON_BLOCK));
-		$this->map(Blocks::IRON_BARS(), fn() => new Writer(Ids::IRON_BARS));
+		$this->mapSimple(Blocks::INFO_UPDATE(), Ids::INFO_UPDATE);
+		$this->mapSimple(Blocks::INFO_UPDATE2(), Ids::INFO_UPDATE2);
+		$this->mapSimple(Blocks::INVISIBLE_BEDROCK(), Ids::INVISIBLE_BEDROCK);
+		$this->mapSimple(Blocks::IRON(), Ids::IRON_BLOCK);
+		$this->mapSimple(Blocks::IRON_BARS(), Ids::IRON_BARS);
 		$this->map(Blocks::IRON_DOOR(), fn(Door $block) => Helper::encodeDoor($block, new Writer(Ids::IRON_DOOR)));
-		$this->map(Blocks::IRON_ORE(), fn() => new Writer(Ids::IRON_ORE));
+		$this->mapSimple(Blocks::IRON_ORE(), Ids::IRON_ORE);
 		$this->map(Blocks::IRON_TRAPDOOR(), fn(Trapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::IRON_TRAPDOOR)));
 		$this->map(Blocks::ITEM_FRAME(), function(ItemFrame $block) : Writer{
 			return Writer::create(Ids::FRAME)
@@ -717,7 +721,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeBool(StateNames::ITEM_FRAME_PHOTO_BIT, false)
 				->writeFacingDirection($block->getFacing());
 		});
-		$this->map(Blocks::JUKEBOX(), fn() => new Writer(Ids::JUKEBOX));
+		$this->mapSimple(Blocks::JUKEBOX(), Ids::JUKEBOX);
 		$this->map(Blocks::JUNGLE_BUTTON(), fn(WoodenButton $block) => Helper::encodeButton($block, new Writer(Ids::JUNGLE_BUTTON)));
 		$this->map(Blocks::JUNGLE_DOOR(), fn(WoodenDoor $block) => Helper::encodeDoor($block, new Writer(Ids::JUNGLE_DOOR)));
 		$this->map(Blocks::JUNGLE_FENCE(), fn() => Writer::create(Ids::FENCE)
@@ -744,8 +748,8 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::LANTERN)
 				->writeBool(StateNames::HANGING, $block->isHanging());
 		});
-		$this->map(Blocks::LAPIS_LAZULI(), fn() => new Writer(Ids::LAPIS_BLOCK));
-		$this->map(Blocks::LAPIS_LAZULI_ORE(), fn() => new Writer(Ids::LAPIS_ORE));
+		$this->mapSimple(Blocks::LAPIS_LAZULI(), Ids::LAPIS_BLOCK);
+		$this->mapSimple(Blocks::LAPIS_LAZULI_ORE(), Ids::LAPIS_ORE);
 		$this->map(Blocks::LARGE_FERN(), fn(DoubleTallGrass $block) => Helper::encodeDoublePlant($block, StringValues::DOUBLE_PLANT_TYPE_FERN, Writer::create(Ids::DOUBLE_PLANT)));
 		$this->map(Blocks::LAVA(), fn(Lava $block) => Helper::encodeLiquid($block, Ids::LAVA, Ids::FLOWING_LAVA));
 		$this->map(Blocks::LECTERN(), function(Lectern $block) : Writer{
@@ -753,7 +757,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeBool(StateNames::POWERED_BIT, $block->isProducingSignal())
 				->writeLegacyHorizontalFacing($block->getFacing());
 		});
-		$this->map(Blocks::LEGACY_STONECUTTER(), fn() => new Writer(Ids::STONECUTTER));
+		$this->mapSimple(Blocks::LEGACY_STONECUTTER(), Ids::STONECUTTER);
 		$this->map(Blocks::LEVER(), function(Lever $block) : Writer{
 			return Writer::create(Ids::LEVER)
 				->writeBool(StateNames::OPEN_BIT, $block->isActivated())
@@ -771,7 +775,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::LILAC(), fn(DoublePlant $block) => Helper::encodeDoublePlant($block, StringValues::DOUBLE_PLANT_TYPE_SYRINGA, Writer::create(Ids::DOUBLE_PLANT)));
 		$this->map(Blocks::LILY_OF_THE_VALLEY(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_LILY_OF_THE_VALLEY));
-		$this->map(Blocks::LILY_PAD(), fn() => new Writer(Ids::WATERLILY));
+		$this->mapSimple(Blocks::LILY_PAD(), Ids::WATERLILY);
 		$this->map(Blocks::LIT_PUMPKIN(), function(LitPumpkin $block) : Writer{
 			return Writer::create(Ids::LIT_PUMPKIN)
 				->writeLegacyHorizontalFacing($block->getFacing());
@@ -780,16 +784,16 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::LOOM)
 				->writeLegacyHorizontalFacing($block->getFacing());
 		});
-		$this->map(Blocks::MAGMA(), fn() => new Writer(Ids::MAGMA));
+		$this->mapSimple(Blocks::MAGMA(), Ids::MAGMA);
 		$this->map(Blocks::MATERIAL_REDUCER(), fn(ChemistryTable $block) => Helper::encodeChemistryTable($block, StringValues::CHEMISTRY_TABLE_TYPE_MATERIAL_REDUCER, new Writer(Ids::CHEMISTRY_TABLE)));
-		$this->map(Blocks::MELON(), fn() => new Writer(Ids::MELON_BLOCK));
+		$this->mapSimple(Blocks::MELON(), Ids::MELON_BLOCK);
 		$this->map(Blocks::MELON_STEM(), fn(MelonStem $block) => Helper::encodeStem($block, new Writer(Ids::MELON_STEM)));
 		$this->map(Blocks::MOB_HEAD(), function(Skull $block) : Writer{
 			return Writer::create(Ids::SKULL)
 				->writeFacingWithoutDown($block->getFacing());
 		});
-		$this->map(Blocks::MONSTER_SPAWNER(), fn() => new Writer(Ids::MOB_SPAWNER));
-		$this->map(Blocks::MOSSY_COBBLESTONE(), fn() => new Writer(Ids::MOSSY_COBBLESTONE));
+		$this->mapSimple(Blocks::MONSTER_SPAWNER(), Ids::MOB_SPAWNER);
+		$this->mapSimple(Blocks::MOSSY_COBBLESTONE(), Ids::MOSSY_COBBLESTONE);
 		$this->map(Blocks::MOSSY_COBBLESTONE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab2($block, StringValues::STONE_SLAB_TYPE_2_MOSSY_COBBLESTONE));
 		$this->mapStairs(Blocks::MOSSY_COBBLESTONE_STAIRS(), Ids::MOSSY_COBBLESTONE_STAIRS);
 		$this->map(Blocks::MOSSY_COBBLESTONE_WALL(), fn(Wall $block) => Helper::encodeLegacyWall($block, StringValues::WALL_BLOCK_TYPE_MOSSY_COBBLESTONE));
@@ -799,10 +803,10 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::MOSSY_STONE_BRICK_WALL(), fn(Wall $block) => Helper::encodeLegacyWall($block, StringValues::WALL_BLOCK_TYPE_MOSSY_STONE_BRICK));
 		$this->map(Blocks::MUSHROOM_STEM(), fn() => Writer::create(Ids::BROWN_MUSHROOM_BLOCK)
 				->writeInt(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_STEM));
-		$this->map(Blocks::MYCELIUM(), fn() => new Writer(Ids::MYCELIUM));
-		$this->map(Blocks::NETHERRACK(), fn() => new Writer(Ids::NETHERRACK));
-		$this->map(Blocks::NETHER_BRICKS(), fn() => new Writer(Ids::NETHER_BRICK));
-		$this->map(Blocks::NETHER_BRICK_FENCE(), fn() => new Writer(Ids::NETHER_BRICK_FENCE));
+		$this->mapSimple(Blocks::MYCELIUM(), Ids::MYCELIUM);
+		$this->mapSimple(Blocks::NETHERRACK(), Ids::NETHERRACK);
+		$this->mapSimple(Blocks::NETHER_BRICKS(), Ids::NETHER_BRICK);
+		$this->mapSimple(Blocks::NETHER_BRICK_FENCE(), Ids::NETHER_BRICK_FENCE);
 		$this->map(Blocks::NETHER_BRICK_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab1($block, StringValues::STONE_SLAB_TYPE_NETHER_BRICK));
 		$this->mapStairs(Blocks::NETHER_BRICK_STAIRS(), Ids::NETHER_BRICK_STAIRS);
 		$this->map(Blocks::NETHER_BRICK_WALL(), fn(Wall $block) => Helper::encodeLegacyWall($block, StringValues::WALL_BLOCK_TYPE_NETHER_BRICK));
@@ -814,14 +818,14 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 					default => throw new BlockStateSerializeException("Invalid Nether Portal axis " . $block->getAxis()),
 				});
 		});
-		$this->map(Blocks::NETHER_QUARTZ_ORE(), fn() => new Writer(Ids::QUARTZ_ORE));
-		$this->map(Blocks::NETHER_REACTOR_CORE(), fn() => new Writer(Ids::NETHERREACTOR));
+		$this->mapSimple(Blocks::NETHER_QUARTZ_ORE(), Ids::QUARTZ_ORE);
+		$this->mapSimple(Blocks::NETHER_REACTOR_CORE(), Ids::NETHERREACTOR);
 		$this->map(Blocks::NETHER_WART(), function(NetherWartPlant $block) : Writer{
 			return Writer::create(Ids::NETHER_WART)
 				->writeInt(StateNames::AGE, $block->getAge());
 		});
-		$this->map(Blocks::NETHER_WART_BLOCK(), fn() => new Writer(Ids::NETHER_WART_BLOCK));
-		$this->map(Blocks::NOTE_BLOCK(), fn() => new Writer(Ids::NOTEBLOCK));
+		$this->mapSimple(Blocks::NETHER_WART_BLOCK(), Ids::NETHER_WART_BLOCK);
+		$this->mapSimple(Blocks::NOTE_BLOCK(), Ids::NOTEBLOCK);
 		$this->map(Blocks::OAK_BUTTON(), fn(WoodenButton $block) => Helper::encodeButton($block, new Writer(Ids::WOODEN_BUTTON)));
 		$this->map(Blocks::OAK_DOOR(), fn(WoodenDoor $block) => Helper::encodeDoor($block, new Writer(Ids::WOODEN_DOOR)));
 		$this->map(Blocks::OAK_FENCE(), fn() => Writer::create(Ids::FENCE)
@@ -839,13 +843,13 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::OAK_TRAPDOOR(), fn(WoodenTrapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::TRAPDOOR)));
 		$this->map(Blocks::OAK_WALL_SIGN(), fn(WallSign $block) => Helper::encodeWallSign($block, new Writer(Ids::WALL_SIGN)));
 		$this->map(Blocks::OAK_WOOD(), fn(Wood $block) => Helper::encodeAllSidedLog($block));
-		$this->map(Blocks::OBSIDIAN(), fn() => new Writer(Ids::OBSIDIAN));
+		$this->mapSimple(Blocks::OBSIDIAN(), Ids::OBSIDIAN);
 		$this->map(Blocks::ORANGE_TULIP(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_TULIP_ORANGE));
 		$this->map(Blocks::OXEYE_DAISY(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_OXEYE));
-		$this->map(Blocks::PACKED_ICE(), fn() => new Writer(Ids::PACKED_ICE));
+		$this->mapSimple(Blocks::PACKED_ICE(), Ids::PACKED_ICE);
 		$this->map(Blocks::PEONY(), fn(DoublePlant $block) => Helper::encodeDoublePlant($block, StringValues::DOUBLE_PLANT_TYPE_PAEONIA, Writer::create(Ids::DOUBLE_PLANT)));
 		$this->map(Blocks::PINK_TULIP(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_TULIP_PINK));
-		$this->map(Blocks::PODZOL(), fn() => new Writer(Ids::PODZOL));
+		$this->mapSimple(Blocks::PODZOL(), Ids::PODZOL);
 		$this->map(Blocks::POLISHED_ANDESITE(), fn() => Helper::encodeStone(StringValues::STONE_TYPE_ANDESITE_SMOOTH));
 		$this->map(Blocks::POLISHED_ANDESITE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab3($block, StringValues::STONE_SLAB_TYPE_3_POLISHED_ANDESITE));
 		$this->mapStairs(Blocks::POLISHED_ANDESITE_STAIRS(), Ids::POLISHED_ANDESITE_STAIRS);
@@ -897,7 +901,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::RAIL)
 				->writeInt(StateNames::RAIL_DIRECTION, $block->getShape());
 		});
-		$this->map(Blocks::REDSTONE(), fn() => new Writer(Ids::REDSTONE_BLOCK));
+		$this->mapSimple(Blocks::REDSTONE(), Ids::REDSTONE_BLOCK);
 		$this->map(Blocks::REDSTONE_COMPARATOR(), function(RedstoneComparator $block) : Writer{
 			return Writer::create($block->isPowered() ? Ids::POWERED_COMPARATOR : Ids::UNPOWERED_COMPARATOR)
 				->writeBool(StateNames::OUTPUT_LIT_BIT, $block->isPowered())
@@ -919,9 +923,9 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::REDSTONE_WIRE)
 				->writeInt(StateNames::REDSTONE_SIGNAL, $block->getOutputSignalStrength());
 		});
-		$this->map(Blocks::RED_MUSHROOM(), fn() => new Writer(Ids::RED_MUSHROOM));
+		$this->mapSimple(Blocks::RED_MUSHROOM(), Ids::RED_MUSHROOM);
 		$this->map(Blocks::RED_MUSHROOM_BLOCK(), fn(RedMushroomBlock $block) => Helper::encodeMushroomBlock($block, new Writer(Ids::RED_MUSHROOM_BLOCK)));
-		$this->map(Blocks::RED_NETHER_BRICKS(), fn() => new Writer(Ids::RED_NETHER_BRICK));
+		$this->mapSimple(Blocks::RED_NETHER_BRICKS(), Ids::RED_NETHER_BRICK);
 		$this->map(Blocks::RED_NETHER_BRICK_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab2($block, StringValues::STONE_SLAB_TYPE_2_RED_NETHER_BRICK));
 		$this->mapStairs(Blocks::RED_NETHER_BRICK_STAIRS(), Ids::RED_NETHER_BRICK_STAIRS);
 		$this->map(Blocks::RED_NETHER_BRICK_WALL(), fn(Wall $block) => Helper::encodeLegacyWall($block, StringValues::WALL_BLOCK_TYPE_RED_NETHER_BRICK));
@@ -933,7 +937,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::RED_SANDSTONE_WALL(), fn(Wall $block) => Helper::encodeLegacyWall($block, StringValues::WALL_BLOCK_TYPE_RED_SANDSTONE));
 		$this->map(Blocks::RED_TORCH(), fn(Torch $block) => Helper::encodeColoredTorch($block, false, Writer::create(Ids::COLORED_TORCH_RG)));
 		$this->map(Blocks::RED_TULIP(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_TULIP_RED));
-		$this->map(Blocks::RESERVED6(), fn() => new Writer(Ids::RESERVED6));
+		$this->mapSimple(Blocks::RESERVED6(), Ids::RESERVED6);
 		$this->map(Blocks::ROSE_BUSH(), fn(DoublePlant $block) => Helper::encodeDoublePlant($block, StringValues::DOUBLE_PLANT_TYPE_ROSE, Writer::create(Ids::DOUBLE_PLANT)));
 		$this->map(Blocks::SAND(), fn() => Writer::create(Ids::SAND)
 				->writeString(StateNames::SAND_TYPE, StringValues::SAND_TYPE_NORMAL));
@@ -941,14 +945,14 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::SANDSTONE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab1($block, StringValues::STONE_SLAB_TYPE_SANDSTONE));
 		$this->mapStairs(Blocks::SANDSTONE_STAIRS(), Ids::SANDSTONE_STAIRS);
 		$this->map(Blocks::SANDSTONE_WALL(), fn(Wall $block) => Helper::encodeLegacyWall($block, StringValues::WALL_BLOCK_TYPE_SANDSTONE));
-		$this->map(Blocks::SEA_LANTERN(), fn() => new Writer(Ids::SEA_LANTERN));
+		$this->mapSimple(Blocks::SEA_LANTERN(), Ids::SEA_LANTERN);
 		$this->map(Blocks::SEA_PICKLE(), function(SeaPickle $block) : Writer{
 			return Writer::create(Ids::SEA_PICKLE)
 				->writeBool(StateNames::DEAD_BIT, !$block->isUnderwater())
 				->writeInt(StateNames::CLUSTER_COUNT, $block->getCount() - 1);
 		});
-		$this->map(Blocks::SHULKER_BOX(), fn() => new Writer(Ids::UNDYED_SHULKER_BOX));
-		$this->map(Blocks::SLIME(), fn() => new Writer(Ids::SLIME));
+		$this->mapSimple(Blocks::SHULKER_BOX(), Ids::UNDYED_SHULKER_BOX);
+		$this->mapSimple(Blocks::SLIME(), Ids::SLIME);
 		$this->map(Blocks::SMOKER(), fn(Furnace $block) => Helper::encodeFurnace($block, Ids::SMOKER, Ids::LIT_SMOKER));
 		$this->map(Blocks::SMOOTH_QUARTZ(), fn() => Helper::encodeQuartz(StringValues::CHISEL_TYPE_SMOOTH, Axis::Y));
 		$this->map(Blocks::SMOOTH_QUARTZ_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab4($block, StringValues::STONE_SLAB_TYPE_4_SMOOTH_QUARTZ));
@@ -959,15 +963,15 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::SMOOTH_SANDSTONE(), fn() => Helper::encodeSandstone(Ids::SANDSTONE, StringValues::SAND_STONE_TYPE_SMOOTH));
 		$this->map(Blocks::SMOOTH_SANDSTONE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab2($block, StringValues::STONE_SLAB_TYPE_2_SMOOTH_SANDSTONE));
 		$this->mapStairs(Blocks::SMOOTH_SANDSTONE_STAIRS(), Ids::SMOOTH_SANDSTONE_STAIRS);
-		$this->map(Blocks::SMOOTH_STONE(), fn() => new Writer(Ids::SMOOTH_STONE));
+		$this->mapSimple(Blocks::SMOOTH_STONE(), Ids::SMOOTH_STONE);
 		$this->map(Blocks::SMOOTH_STONE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab1($block, StringValues::STONE_SLAB_TYPE_SMOOTH_STONE));
-		$this->map(Blocks::SNOW(), fn() => new Writer(Ids::SNOW));
+		$this->mapSimple(Blocks::SNOW(), Ids::SNOW);
 		$this->map(Blocks::SNOW_LAYER(), function(SnowLayer $block) : Writer{
 			return Writer::create(Ids::SNOW_LAYER)
 				->writeBool(StateNames::COVERED_BIT, false)
 				->writeInt(StateNames::HEIGHT, $block->getLayers() - 1);
 		});
-		$this->map(Blocks::SOUL_SAND(), fn() => new Writer(Ids::SOUL_SAND));
+		$this->mapSimple(Blocks::SOUL_SAND(), Ids::SOUL_SAND);
 		$this->map(Blocks::SPONGE(), function(Sponge $block) : Writer{
 			return Writer::create(Ids::SPONGE)
 				->writeString(StateNames::SPONGE_TYPE, $block->isWet() ? StringValues::SPONGE_TYPE_WET : StringValues::SPONGE_TYPE_DRY);
