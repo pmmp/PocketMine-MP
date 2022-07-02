@@ -25,13 +25,13 @@ namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\Bamboo;
 use pocketmine\block\Block;
-use pocketmine\block\BlockLegacyMetadata;
 use pocketmine\block\SweetBerryBush;
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\VanillaBlocks as Blocks;
+use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateDeserializer;

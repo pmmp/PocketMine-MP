@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\runtime\block\BlockDataReader;
 use pocketmine\data\runtime\block\BlockDataWriter;
 use pocketmine\entity\Entity;

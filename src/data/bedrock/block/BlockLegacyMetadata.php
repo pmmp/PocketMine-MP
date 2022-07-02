@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\data\bedrock\block;
 
 /**
  * Constants for legacy metadata for various blocks.

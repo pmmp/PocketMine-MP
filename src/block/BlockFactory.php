@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\block\BlockBreakInfo as BreakInfo;
 use pocketmine\block\BlockIdentifier as BID;
-use pocketmine\block\BlockLegacyMetadata as Meta;
 use pocketmine\block\BlockToolType as ToolType;
 use pocketmine\block\BlockTypeIds as Ids;
 use pocketmine\block\tile\Banner as TileBanner;
@@ -54,6 +53,7 @@ use pocketmine\block\tile\Smoker as TileSmoker;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\TreeType;
+use pocketmine\data\bedrock\block\BlockLegacyMetadata as Meta;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
 use pocketmine\item\ToolTier;

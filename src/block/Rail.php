@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\RailConnectionInfo;
+use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\runtime\block\BlockDataReader;
 use pocketmine\data\runtime\block\BlockDataWriter;
 use pocketmine\math\Facing;

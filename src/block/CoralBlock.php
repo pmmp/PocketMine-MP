@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\CoralTypeTrait;
+use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\CoralTypeIdMap;
 use pocketmine\item\Item;
 use function mt_rand;

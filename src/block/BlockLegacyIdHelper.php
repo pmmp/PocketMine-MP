@@ -28,6 +28,7 @@ use pocketmine\block\BlockTypeIds as Ids;
 use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\TreeType;
+use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\item\ItemIds;
 use pocketmine\utils\AssumptionFailedError;
 

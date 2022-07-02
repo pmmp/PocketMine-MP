@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockLegacyMetadata;
 use pocketmine\block\Button;
 use pocketmine\block\Crops;
 use pocketmine\block\DaylightSensor;
@@ -47,6 +46,7 @@ use pocketmine\block\Wall;
 use pocketmine\block\WallCoralFan;
 use pocketmine\block\WallSign;
 use pocketmine\block\WeightedPressurePlate;
+use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateNames;
 use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;

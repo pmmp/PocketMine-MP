@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock;
 
-use pocketmine\block\BlockLegacyMetadata;
 use pocketmine\block\utils\CoralType;
+use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\utils\SingletonTrait;
 use function array_key_exists;
 
