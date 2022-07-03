@@ -79,7 +79,6 @@ use pocketmine\block\Lectern;
 use pocketmine\block\Lever;
 use pocketmine\block\Light;
 use pocketmine\block\LitPumpkin;
-use pocketmine\block\Log;
 use pocketmine\block\Loom;
 use pocketmine\block\MelonStem;
 use pocketmine\block\NetherPortal;
@@ -246,7 +245,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeString(StateNames::WOOD_TYPE, StringValues::WOOD_TYPE_ACACIA));
 		$this->map(Blocks::ACACIA_FENCE_GATE(), fn(FenceGate $block) => Helper::encodeFenceGate($block, new Writer(Ids::ACACIA_FENCE_GATE)));
 		$this->map(Blocks::ACACIA_LEAVES(), fn(Leaves $block) => Helper::encodeLeaves2($block, StringValues::NEW_LEAF_TYPE_ACACIA));
-		$this->map(Blocks::ACACIA_LOG(), fn(Log $block) => Helper::encodeLog2($block, StringValues::NEW_LOG_TYPE_ACACIA, Ids::STRIPPED_ACACIA_LOG));
+		$this->map(Blocks::ACACIA_LOG(), fn(Wood $block) => Helper::encodeLog2($block, StringValues::NEW_LOG_TYPE_ACACIA, Ids::STRIPPED_ACACIA_LOG));
 		$this->map(Blocks::ACACIA_PLANKS(), fn() => Writer::create(Ids::PLANKS)
 				->writeString(StateNames::WOOD_TYPE, StringValues::WOOD_TYPE_ACACIA));
 		$this->map(Blocks::ACACIA_PRESSURE_PLATE(), fn(WoodenPressurePlate $block) => Helper::encodeSimplePressurePlate($block, new Writer(Ids::ACACIA_PRESSURE_PLATE)));
@@ -340,7 +339,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeString(StateNames::WOOD_TYPE, StringValues::WOOD_TYPE_BIRCH));
 		$this->map(Blocks::BIRCH_FENCE_GATE(), fn(FenceGate $block) => Helper::encodeFenceGate($block, new Writer(Ids::BIRCH_FENCE_GATE)));
 		$this->map(Blocks::BIRCH_LEAVES(), fn(Leaves $block) => Helper::encodeLeaves1($block, StringValues::OLD_LEAF_TYPE_BIRCH));
-		$this->map(Blocks::BIRCH_LOG(), fn(Log $block) => Helper::encodeLog1($block, StringValues::OLD_LOG_TYPE_BIRCH, Ids::STRIPPED_BIRCH_LOG));
+		$this->map(Blocks::BIRCH_LOG(), fn(Wood $block) => Helper::encodeLog1($block, StringValues::OLD_LOG_TYPE_BIRCH, Ids::STRIPPED_BIRCH_LOG));
 		$this->map(Blocks::BIRCH_PLANKS(), fn() => Writer::create(Ids::PLANKS)
 				->writeString(StateNames::WOOD_TYPE, StringValues::WOOD_TYPE_BIRCH));
 		$this->map(Blocks::BIRCH_PRESSURE_PLATE(), fn(WoodenPressurePlate $block) => Helper::encodeSimplePressurePlate($block, new Writer(Ids::BIRCH_PRESSURE_PLATE)));
@@ -470,7 +469,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeString(StateNames::WOOD_TYPE, StringValues::WOOD_TYPE_DARK_OAK));
 		$this->map(Blocks::DARK_OAK_FENCE_GATE(), fn(FenceGate $block) => Helper::encodeFenceGate($block, new Writer(Ids::DARK_OAK_FENCE_GATE)));
 		$this->map(Blocks::DARK_OAK_LEAVES(), fn(Leaves $block) => Helper::encodeLeaves2($block, StringValues::NEW_LEAF_TYPE_DARK_OAK));
-		$this->map(Blocks::DARK_OAK_LOG(), fn(Log $block) => Helper::encodeLog2($block, StringValues::NEW_LOG_TYPE_DARK_OAK, Ids::STRIPPED_DARK_OAK_LOG));
+		$this->map(Blocks::DARK_OAK_LOG(), fn(Wood $block) => Helper::encodeLog2($block, StringValues::NEW_LOG_TYPE_DARK_OAK, Ids::STRIPPED_DARK_OAK_LOG));
 		$this->map(Blocks::DARK_OAK_PLANKS(), fn() => Writer::create(Ids::PLANKS)
 				->writeString(StateNames::WOOD_TYPE, StringValues::WOOD_TYPE_DARK_OAK));
 		$this->map(Blocks::DARK_OAK_PRESSURE_PLATE(), fn(WoodenPressurePlate $block) => Helper::encodeSimplePressurePlate($block, new Writer(Ids::DARK_OAK_PRESSURE_PLATE)));
@@ -769,7 +768,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeString(StateNames::WOOD_TYPE, StringValues::WOOD_TYPE_JUNGLE));
 		$this->map(Blocks::JUNGLE_FENCE_GATE(), fn(FenceGate $block) => Helper::encodeFenceGate($block, new Writer(Ids::JUNGLE_FENCE_GATE)));
 		$this->map(Blocks::JUNGLE_LEAVES(), fn(Leaves $block) => Helper::encodeLeaves1($block, StringValues::OLD_LEAF_TYPE_JUNGLE));
-		$this->map(Blocks::JUNGLE_LOG(), fn(Log $block) => Helper::encodeLog1($block, StringValues::OLD_LOG_TYPE_JUNGLE, Ids::STRIPPED_JUNGLE_LOG));
+		$this->map(Blocks::JUNGLE_LOG(), fn(Wood $block) => Helper::encodeLog1($block, StringValues::OLD_LOG_TYPE_JUNGLE, Ids::STRIPPED_JUNGLE_LOG));
 		$this->map(Blocks::JUNGLE_PLANKS(), fn() => Writer::create(Ids::PLANKS)
 				->writeString(StateNames::WOOD_TYPE, StringValues::WOOD_TYPE_JUNGLE));
 		$this->map(Blocks::JUNGLE_PRESSURE_PLATE(), fn(WoodenPressurePlate $block) => Helper::encodeSimplePressurePlate($block, new Writer(Ids::JUNGLE_PRESSURE_PLATE)));
@@ -877,7 +876,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeString(StateNames::WOOD_TYPE, StringValues::WOOD_TYPE_OAK));
 		$this->map(Blocks::OAK_FENCE_GATE(), fn(FenceGate $block) => Helper::encodeFenceGate($block, new Writer(Ids::FENCE_GATE)));
 		$this->map(Blocks::OAK_LEAVES(), fn(Leaves $block) => Helper::encodeLeaves1($block, StringValues::OLD_LEAF_TYPE_OAK));
-		$this->map(Blocks::OAK_LOG(), fn(Log $block) => Helper::encodeLog1($block, StringValues::OLD_LOG_TYPE_OAK, Ids::STRIPPED_OAK_LOG));
+		$this->map(Blocks::OAK_LOG(), fn(Wood $block) => Helper::encodeLog1($block, StringValues::OLD_LOG_TYPE_OAK, Ids::STRIPPED_OAK_LOG));
 		$this->map(Blocks::OAK_PLANKS(), fn() => Writer::create(Ids::PLANKS)
 				->writeString(StateNames::WOOD_TYPE, StringValues::WOOD_TYPE_OAK));
 		$this->map(Blocks::OAK_PRESSURE_PLATE(), fn(WoodenPressurePlate $block) => Helper::encodeSimplePressurePlate($block, new Writer(Ids::WOODEN_PRESSURE_PLATE)));
@@ -1050,7 +1049,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeString(StateNames::WOOD_TYPE, StringValues::WOOD_TYPE_SPRUCE));
 		$this->map(Blocks::SPRUCE_FENCE_GATE(), fn(FenceGate $block) => Helper::encodeFenceGate($block, new Writer(Ids::SPRUCE_FENCE_GATE)));
 		$this->map(Blocks::SPRUCE_LEAVES(), fn(Leaves $block) => Helper::encodeLeaves1($block, StringValues::OLD_LEAF_TYPE_SPRUCE));
-		$this->map(Blocks::SPRUCE_LOG(), fn(Log $block) => Helper::encodeLog1($block, StringValues::OLD_LOG_TYPE_SPRUCE, Ids::STRIPPED_SPRUCE_LOG));
+		$this->map(Blocks::SPRUCE_LOG(), fn(Wood $block) => Helper::encodeLog1($block, StringValues::OLD_LOG_TYPE_SPRUCE, Ids::STRIPPED_SPRUCE_LOG));
 		$this->map(Blocks::SPRUCE_PLANKS(), fn() => Writer::create(Ids::PLANKS)
 				->writeString(StateNames::WOOD_TYPE, StringValues::WOOD_TYPE_SPRUCE));
 		$this->map(Blocks::SPRUCE_PRESSURE_PLATE(), fn(WoodenPressurePlate $block) => Helper::encodeSimplePressurePlate($block, new Writer(Ids::SPRUCE_PRESSURE_PLATE)));

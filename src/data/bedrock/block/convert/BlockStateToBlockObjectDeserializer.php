@@ -1112,19 +1112,15 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::WEB, fn() => Blocks::COBWEB());
 		$this->map(Ids::WHEAT, fn(Reader $in) => Helper::decodeCrops(Blocks::WHEAT(), $in));
 		$this->map(Ids::WHITE_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::WHITE(), $in));
-		$this->map(Ids::WOOD, function(Reader $in) : Block{
-			$in->todo(StateNames::PILLAR_AXIS); //TODO: our impl doesn't support axis yet
-			$stripped = $in->readBool(StateNames::STRIPPED_BIT);
-			return (match($woodType = $in->readString(StateNames::WOOD_TYPE)){
-				StringValues::WOOD_TYPE_ACACIA => Blocks::ACACIA_WOOD(),
-				StringValues::WOOD_TYPE_BIRCH => Blocks::BIRCH_WOOD(),
-				StringValues::WOOD_TYPE_DARK_OAK => Blocks::DARK_OAK_WOOD(),
-				StringValues::WOOD_TYPE_JUNGLE => Blocks::JUNGLE_WOOD(),
-				StringValues::WOOD_TYPE_OAK => Blocks::OAK_WOOD(),
-				StringValues::WOOD_TYPE_SPRUCE => Blocks::SPRUCE_WOOD(),
-				default => throw $in->badValueException(StateNames::WOOD_TYPE, $woodType),
-			})->setStripped($stripped);
-		});
+		$this->map(Ids::WOOD, fn(Reader $in) : Block => Helper::decodeLog(match($woodType = $in->readString(StateNames::WOOD_TYPE)){
+			StringValues::WOOD_TYPE_ACACIA => Blocks::ACACIA_WOOD(),
+			StringValues::WOOD_TYPE_BIRCH => Blocks::BIRCH_WOOD(),
+			StringValues::WOOD_TYPE_DARK_OAK => Blocks::DARK_OAK_WOOD(),
+			StringValues::WOOD_TYPE_JUNGLE => Blocks::JUNGLE_WOOD(),
+			StringValues::WOOD_TYPE_OAK => Blocks::OAK_WOOD(),
+			StringValues::WOOD_TYPE_SPRUCE => Blocks::SPRUCE_WOOD(),
+			default => throw $in->badValueException(StateNames::WOOD_TYPE, $woodType),
+		}, $in->readBool(StateNames::STRIPPED_BIT), $in));
 		$this->map(Ids::WOODEN_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::OAK_BUTTON(), $in));
 		$this->map(Ids::WOODEN_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::OAK_DOOR(), $in));
 		$this->map(Ids::WOODEN_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::OAK_PRESSURE_PLATE(), $in));

@@ -37,7 +37,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static WoodenFence ACACIA_FENCE()
  * @method static FenceGate ACACIA_FENCE_GATE()
  * @method static Leaves ACACIA_LEAVES()
- * @method static Log ACACIA_LOG()
+ * @method static Wood ACACIA_LOG()
  * @method static Planks ACACIA_PLANKS()
  * @method static WoodenPressurePlate ACACIA_PRESSURE_PLATE()
  * @method static Sapling ACACIA_SAPLING()
@@ -75,7 +75,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static WoodenFence BIRCH_FENCE()
  * @method static FenceGate BIRCH_FENCE_GATE()
  * @method static Leaves BIRCH_LEAVES()
- * @method static Log BIRCH_LOG()
+ * @method static Wood BIRCH_LOG()
  * @method static Planks BIRCH_PLANKS()
  * @method static WoodenPressurePlate BIRCH_PRESSURE_PLATE()
  * @method static Sapling BIRCH_SAPLING()
@@ -153,7 +153,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static WoodenFence DARK_OAK_FENCE()
  * @method static FenceGate DARK_OAK_FENCE_GATE()
  * @method static Leaves DARK_OAK_LEAVES()
- * @method static Log DARK_OAK_LOG()
+ * @method static Wood DARK_OAK_LOG()
  * @method static Planks DARK_OAK_PLANKS()
  * @method static WoodenPressurePlate DARK_OAK_PRESSURE_PLATE()
  * @method static Sapling DARK_OAK_SAPLING()
@@ -370,7 +370,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static WoodenFence JUNGLE_FENCE()
  * @method static FenceGate JUNGLE_FENCE_GATE()
  * @method static Leaves JUNGLE_LEAVES()
- * @method static Log JUNGLE_LOG()
+ * @method static Wood JUNGLE_LOG()
  * @method static Planks JUNGLE_PLANKS()
  * @method static WoodenPressurePlate JUNGLE_PRESSURE_PLATE()
  * @method static Sapling JUNGLE_SAPLING()
@@ -429,7 +429,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static WoodenFence OAK_FENCE()
  * @method static FenceGate OAK_FENCE_GATE()
  * @method static Leaves OAK_LEAVES()
- * @method static Log OAK_LOG()
+ * @method static Wood OAK_LOG()
  * @method static Planks OAK_PLANKS()
  * @method static WoodenPressurePlate OAK_PRESSURE_PLATE()
  * @method static Sapling OAK_SAPLING()
@@ -549,7 +549,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static WoodenFence SPRUCE_FENCE()
  * @method static FenceGate SPRUCE_FENCE_GATE()
  * @method static Leaves SPRUCE_LEAVES()
- * @method static Log SPRUCE_LOG()
+ * @method static Wood SPRUCE_LOG()
  * @method static Planks SPRUCE_PLANKS()
  * @method static WoodenPressurePlate SPRUCE_PRESSURE_PLATE()
  * @method static Sapling SPRUCE_SAPLING()
@@ -631,7 +631,7 @@ final class VanillaBlocks{
 		self::register("acacia_stairs", $factory->get(Ids::ACACIA_STAIRS, 0));
 		self::register("acacia_trapdoor", $factory->get(Ids::ACACIA_TRAPDOOR, 0));
 		self::register("acacia_wall_sign", $factory->get(Ids::ACACIA_WALL_SIGN, 0));
-		self::register("acacia_wood", $factory->get(Ids::ACACIA_WOOD, 0));
+		self::register("acacia_wood", $factory->get(Ids::ACACIA_WOOD, 4));
 		self::register("activator_rail", $factory->get(Ids::ACTIVATOR_RAIL, 0));
 		self::register("air", $factory->get(Ids::AIR, 0));
 		self::register("all_sided_mushroom_stem", $factory->get(Ids::ALL_SIDED_MUSHROOM_STEM, 0));
@@ -669,7 +669,7 @@ final class VanillaBlocks{
 		self::register("birch_stairs", $factory->get(Ids::BIRCH_STAIRS, 0));
 		self::register("birch_trapdoor", $factory->get(Ids::BIRCH_TRAPDOOR, 0));
 		self::register("birch_wall_sign", $factory->get(Ids::BIRCH_WALL_SIGN, 0));
-		self::register("birch_wood", $factory->get(Ids::BIRCH_WOOD, 0));
+		self::register("birch_wood", $factory->get(Ids::BIRCH_WOOD, 4));
 		self::register("blackstone", $factory->get(Ids::BLACKSTONE, 0));
 		self::register("blackstone_slab", $factory->get(Ids::BLACKSTONE_SLAB, 0));
 		self::register("blackstone_stairs", $factory->get(Ids::BLACKSTONE_STAIRS, 0));
@@ -747,7 +747,7 @@ final class VanillaBlocks{
 		self::register("dark_oak_stairs", $factory->get(Ids::DARK_OAK_STAIRS, 0));
 		self::register("dark_oak_trapdoor", $factory->get(Ids::DARK_OAK_TRAPDOOR, 0));
 		self::register("dark_oak_wall_sign", $factory->get(Ids::DARK_OAK_WALL_SIGN, 0));
-		self::register("dark_oak_wood", $factory->get(Ids::DARK_OAK_WOOD, 0));
+		self::register("dark_oak_wood", $factory->get(Ids::DARK_OAK_WOOD, 4));
 		self::register("dark_prismarine", $factory->get(Ids::DARK_PRISMARINE, 0));
 		self::register("dark_prismarine_slab", $factory->get(Ids::DARK_PRISMARINE_SLAB, 0));
 		self::register("dark_prismarine_stairs", $factory->get(Ids::DARK_PRISMARINE_STAIRS, 0));
@@ -964,7 +964,7 @@ final class VanillaBlocks{
 		self::register("jungle_stairs", $factory->get(Ids::JUNGLE_STAIRS, 0));
 		self::register("jungle_trapdoor", $factory->get(Ids::JUNGLE_TRAPDOOR, 0));
 		self::register("jungle_wall_sign", $factory->get(Ids::JUNGLE_WALL_SIGN, 0));
-		self::register("jungle_wood", $factory->get(Ids::JUNGLE_WOOD, 0));
+		self::register("jungle_wood", $factory->get(Ids::JUNGLE_WOOD, 4));
 		self::register("lab_table", $factory->get(Ids::LAB_TABLE, 0));
 		self::register("ladder", $factory->get(Ids::LADDER, 0));
 		self::register("lantern", $factory->get(Ids::LANTERN, 0));
@@ -1023,7 +1023,7 @@ final class VanillaBlocks{
 		self::register("oak_stairs", $factory->get(Ids::OAK_STAIRS, 0));
 		self::register("oak_trapdoor", $factory->get(Ids::OAK_TRAPDOOR, 0));
 		self::register("oak_wall_sign", $factory->get(Ids::OAK_WALL_SIGN, 0));
-		self::register("oak_wood", $factory->get(Ids::OAK_WOOD, 0));
+		self::register("oak_wood", $factory->get(Ids::OAK_WOOD, 4));
 		self::register("obsidian", $factory->get(Ids::OBSIDIAN, 0));
 		self::register("orange_tulip", $factory->get(Ids::ORANGE_TULIP, 0));
 		self::register("oxeye_daisy", $factory->get(Ids::OXEYE_DAISY, 0));
@@ -1143,7 +1143,7 @@ final class VanillaBlocks{
 		self::register("spruce_stairs", $factory->get(Ids::SPRUCE_STAIRS, 0));
 		self::register("spruce_trapdoor", $factory->get(Ids::SPRUCE_TRAPDOOR, 0));
 		self::register("spruce_wall_sign", $factory->get(Ids::SPRUCE_WALL_SIGN, 0));
-		self::register("spruce_wood", $factory->get(Ids::SPRUCE_WOOD, 0));
+		self::register("spruce_wood", $factory->get(Ids::SPRUCE_WOOD, 4));
 		self::register("stained_clay", $factory->get(Ids::STAINED_CLAY, 14));
 		self::register("stained_glass", $factory->get(Ids::STAINED_GLASS, 14));
 		self::register("stained_glass_pane", $factory->get(Ids::STAINED_GLASS_PANE, 14));

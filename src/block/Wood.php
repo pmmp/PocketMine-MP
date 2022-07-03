@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\PillarRotationTrait;
 use pocketmine\block\utils\TreeType;
 use pocketmine\data\runtime\block\BlockDataReader;
 use pocketmine\data\runtime\block\BlockDataWriter;
@@ -32,6 +33,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
 class Wood extends Opaque{
+	use PillarRotationTrait;
 
 	private TreeType $treeType;
 

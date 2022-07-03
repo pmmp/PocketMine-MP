@@ -33,7 +33,6 @@ use pocketmine\block\FloorCoralFan;
 use pocketmine\block\FloorSign;
 use pocketmine\block\GlazedTerracotta;
 use pocketmine\block\Liquid;
-use pocketmine\block\Log;
 use pocketmine\block\RedMushroomBlock;
 use pocketmine\block\RedstoneComparator;
 use pocketmine\block\RedstoneRepeater;
@@ -48,6 +47,7 @@ use pocketmine\block\Wall;
 use pocketmine\block\WallCoralFan;
 use pocketmine\block\WallSign;
 use pocketmine\block\WeightedPressurePlate;
+use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateNames;
@@ -151,7 +151,7 @@ final class BlockStateDeserializerHelper{
 	}
 
 	/** @throws BlockStateDeserializeException */
-	public static function decodeLog(Log $block, bool $stripped, BlockStateReader $in) : Log{
+	public static function decodeLog(Wood $block, bool $stripped, BlockStateReader $in) : Wood{
 		return $block
 			->setAxis($in->readPillarAxis())
 			->setStripped($stripped);
