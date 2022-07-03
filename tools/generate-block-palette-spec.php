@@ -77,6 +77,7 @@ $reportMap = [];
 foreach($palette->getStates() as $entry){
 	$state = $entry->getStateData();
 	$name = $state->getName();
+	$reportMap[$name] ??= [];
 	foreach($state->getStates() as $propertyName => $value){
 		if($value instanceof IntTag || $value instanceof StringTag){
 			$rawValue = $value->getValue();
