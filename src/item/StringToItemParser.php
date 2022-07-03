@@ -801,6 +801,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("purpur_slab", fn() => Blocks::PURPUR_SLAB());
 		$result->registerBlock("purpur_stairs", fn() => Blocks::PURPUR_STAIRS());
 		$result->registerBlock("quartz_block", fn() => Blocks::QUARTZ());
+		$result->registerBlock("quartz_bricks", fn() => Blocks::QUARTZ_BRICKS());
 		$result->registerBlock("quartz_ore", fn() => Blocks::NETHER_QUARTZ_ORE());
 		$result->registerBlock("quartz_pillar", fn() => Blocks::QUARTZ_PILLAR());
 		$result->registerBlock("quartz_slab", fn() => Blocks::QUARTZ_SLAB());

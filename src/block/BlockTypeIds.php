@@ -609,6 +609,7 @@ final class BlockTypeIds{
 	public const POLISHED_DEEPSLATE_SLAB = 10582;
 	public const POLISHED_DEEPSLATE_STAIRS = 10583;
 	public const POLISHED_DEEPSLATE_WALL = 10584;
+	public const QUARTZ_BRICKS = 10585;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10585;
+	public const FIRST_UNUSED_BLOCK_ID = 10586;
 }

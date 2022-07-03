@@ -840,6 +840,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 					return throw $in->badValueException(StateNames::CHISEL_TYPE, $type);
 			}
 		});
+		$this->map(Ids::QUARTZ_BRICKS, fn() => Blocks::QUARTZ_BRICKS());
 		$this->map(Ids::QUARTZ_ORE, fn() => Blocks::NETHER_QUARTZ_ORE());
 		$this->mapStairs(Ids::QUARTZ_STAIRS, fn() => Blocks::QUARTZ_STAIRS());
 		$this->map(Ids::RAIL, function(Reader $in) : Block{

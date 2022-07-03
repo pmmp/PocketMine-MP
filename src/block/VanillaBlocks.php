@@ -485,6 +485,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Slab PURPUR_SLAB()
  * @method static Stair PURPUR_STAIRS()
  * @method static Opaque QUARTZ()
+ * @method static Opaque QUARTZ_BRICKS()
  * @method static SimplePillar QUARTZ_PILLAR()
  * @method static Slab QUARTZ_SLAB()
  * @method static Stair QUARTZ_STAIRS()
@@ -1066,6 +1067,7 @@ final class VanillaBlocks{
 		self::register("purpur_slab", $factory->get(Ids::PURPUR_SLAB, 0));
 		self::register("purpur_stairs", $factory->get(Ids::PURPUR_STAIRS, 0));
 		self::register("quartz", $factory->get(Ids::QUARTZ, 0));
+		self::register("quartz_bricks", $factory->get(Ids::QUARTZ_BRICKS, 0));
 		self::register("quartz_pillar", $factory->get(Ids::QUARTZ_PILLAR, 2));
 		self::register("quartz_slab", $factory->get(Ids::QUARTZ_SLAB, 0));
 		self::register("quartz_stairs", $factory->get(Ids::QUARTZ_STAIRS, 0));
