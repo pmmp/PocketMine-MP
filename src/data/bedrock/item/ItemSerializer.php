@@ -228,18 +228,21 @@ final class ItemSerializer{
 		$this->mapBlock(Blocks::BIRCH_DOOR(), self::id(Ids::BIRCH_DOOR));
 		$this->mapBlock(Blocks::BREWING_STAND(), self::id(Ids::BREWING_STAND));
 		$this->mapBlock(Blocks::CAKE(), self::id(Ids::CAKE));
+		$this->mapBlock(Blocks::CRIMSON_DOOR(), self::id(Ids::CRIMSON_DOOR));
 		$this->mapBlock(Blocks::DARK_OAK_DOOR(), self::id(Ids::DARK_OAK_DOOR));
 		$this->mapBlock(Blocks::FLOWER_POT(), self::id(Ids::FLOWER_POT));
 		$this->mapBlock(Blocks::HOPPER(), self::id(Ids::HOPPER));
 		$this->mapBlock(Blocks::IRON_DOOR(), self::id(Ids::IRON_DOOR));
 		$this->mapBlock(Blocks::ITEM_FRAME(), self::id(Ids::FRAME));
 		$this->mapBlock(Blocks::JUNGLE_DOOR(), self::id(Ids::JUNGLE_DOOR));
+		$this->mapBlock(Blocks::MANGROVE_DOOR(), self::id(Ids::MANGROVE_DOOR));
 		$this->mapBlock(Blocks::NETHER_WART(), self::id(Ids::NETHER_WART));
 		$this->mapBlock(Blocks::OAK_DOOR(), self::id(Ids::WOODEN_DOOR));
 		$this->mapBlock(Blocks::REDSTONE_COMPARATOR(), self::id(Ids::COMPARATOR));
 		$this->mapBlock(Blocks::REDSTONE_REPEATER(), self::id(Ids::REPEATER));
 		$this->mapBlock(Blocks::SPRUCE_DOOR(), self::id(Ids::SPRUCE_DOOR));
 		$this->mapBlock(Blocks::SUGARCANE(), self::id(Ids::SUGAR_CANE));
+		$this->mapBlock(Blocks::WARPED_DOOR(), self::id(Ids::WARPED_DOOR));
 
 		$this->mapBlock(Blocks::BED(), fn(Bed $block) => new Data(Ids::BED, DyeColorIdMap::getInstance()->toId($block->getColor())));
 		$this->mapBlock(Blocks::MOB_HEAD(), fn(Skull $block) => new Data(Ids::SKULL, $block->getSkullType()->getMagicNumber()));

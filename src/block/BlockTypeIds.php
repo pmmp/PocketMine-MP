@@ -614,5 +614,39 @@ final class BlockTypeIds{
 	public const CHISELED_NETHER_BRICKS = 10587;
 	public const CRACKED_NETHER_BRICKS = 10588;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10589;
+	public const MANGROVE_PLANKS = 10595;
+	public const CRIMSON_PLANKS = 10596;
+	public const WARPED_PLANKS = 10597;
+	public const MANGROVE_FENCE = 10598;
+	public const CRIMSON_FENCE = 10599;
+	public const WARPED_FENCE = 10600;
+	public const MANGROVE_SLAB = 10601;
+	public const CRIMSON_SLAB = 10602;
+	public const WARPED_SLAB = 10603;
+	public const MANGROVE_LOG = 10604;
+	public const CRIMSON_STEM = 10605;
+	public const WARPED_STEM = 10606;
+	public const MANGROVE_WOOD = 10607;
+	public const CRIMSON_HYPHAE = 10608;
+	public const WARPED_HYPHAE = 10609;
+	public const MANGROVE_TRAPDOOR = 10610;
+	public const CRIMSON_TRAPDOOR = 10611;
+	public const WARPED_TRAPDOOR = 10612;
+	public const MANGROVE_BUTTON = 10613;
+	public const CRIMSON_BUTTON = 10614;
+	public const WARPED_BUTTON = 10615;
+	public const MANGROVE_PRESSURE_PLATE = 10616;
+	public const CRIMSON_PRESSURE_PLATE = 10617;
+	public const WARPED_PRESSURE_PLATE = 10618;
+	public const MANGROVE_DOOR = 10619;
+	public const CRIMSON_DOOR = 10620;
+	public const WARPED_DOOR = 10621;
+	public const MANGROVE_FENCE_GATE = 10622;
+	public const CRIMSON_FENCE_GATE = 10623;
+	public const WARPED_FENCE_GATE = 10624;
+	public const MANGROVE_STAIRS = 10625;
+	public const CRIMSON_STAIRS = 10626;
+	public const WARPED_STAIRS = 10627;
+
+	public const FIRST_UNUSED_BLOCK_ID = 10628;
 }

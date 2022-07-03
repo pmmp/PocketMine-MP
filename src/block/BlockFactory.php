@@ -52,6 +52,7 @@ use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\tile\Smoker as TileSmoker;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\TreeType;
+use pocketmine\block\utils\WoodType;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\utils\AssumptionFailedError;
@@ -458,27 +459,31 @@ class BlockFactory{
 
 		foreach(TreeType::getAll() as $treeType){
 			$name = $treeType->getDisplayName();
-			$this->register(new Planks(BlockLegacyIdHelper::getWoodenPlanksIdentifier($treeType), $name . " Planks", $planksBreakInfo));
 			$this->register(new Sapling(BlockLegacyIdHelper::getSaplingIdentifier($treeType), $name . " Sapling", BreakInfo::instant(), $treeType));
-			$this->register(new WoodenFence(BlockLegacyIdHelper::getWoodenFenceIdentifier($treeType), $name . " Fence", $planksBreakInfo));
-			$this->register(new WoodenSlab(BlockLegacyIdHelper::getWoodenSlabIdentifier($treeType), $name, $planksBreakInfo));
-
 			$this->register(new Leaves(BlockLegacyIdHelper::getLeavesIdentifier($treeType), $name . " Leaves", $leavesBreakInfo, $treeType));
-
-			$this->register(new Wood(BlockLegacyIdHelper::getLogIdentifier($treeType), $name . " Log", $logBreakInfo, $treeType));
-			$this->register(new Wood(BlockLegacyIdHelper::getAllSidedLogIdentifier($treeType), $name . " Wood", $logBreakInfo, $treeType));
-
-			$this->register(new FenceGate(BlockLegacyIdHelper::getWoodenFenceGateIdentifier($treeType), $name . " Fence Gate", $planksBreakInfo));
-			$this->register(new WoodenStairs(BlockLegacyIdHelper::getWoodenStairsIdentifier($treeType), $name . " Stairs", $planksBreakInfo));
-			$this->register(new WoodenDoor(BlockLegacyIdHelper::getWoodenDoorIdentifier($treeType), $name . " Door", $woodenDoorBreakInfo));
-
-			$this->register(new WoodenButton(BlockLegacyIdHelper::getWoodenButtonIdentifier($treeType), $name . " Button", $woodenButtonBreakInfo));
-			$this->register(new WoodenPressurePlate(BlockLegacyIdHelper::getWoodenPressurePlateIdentifier($treeType), $name . " Pressure Plate", $woodenPressurePlateBreakInfo));
-			$this->register(new WoodenTrapdoor(BlockLegacyIdHelper::getWoodenTrapdoorIdentifier($treeType), $name . " Trapdoor", $woodenDoorBreakInfo));
 
 			[$floorSignId, $wallSignId, $signAsItem] = BlockLegacyIdHelper::getWoodenSignInfo($treeType);
 			$this->register(new FloorSign($floorSignId, $name . " Sign", $signBreakInfo, $signAsItem));
 			$this->register(new WallSign($wallSignId, $name . " Wall Sign", $signBreakInfo, $signAsItem));
+		}
+
+		foreach(WoodType::getAll() as $woodType){
+			$name = $woodType->getDisplayName();
+
+			$this->register(new Wood(BlockLegacyIdHelper::getLogIdentifier($woodType), $name . " " . ($woodType->getStandardLogSuffix() ?? "Log"), $logBreakInfo, $woodType));
+			$this->register(new Wood(BlockLegacyIdHelper::getAllSidedLogIdentifier($woodType), $name . " " . ($woodType->getAllSidedLogSuffix() ?? "Wood"), $logBreakInfo, $woodType));
+
+			$this->register(new Planks(BlockLegacyIdHelper::getWoodenPlanksIdentifier($woodType), $name . " Planks", $planksBreakInfo, $woodType));
+			$this->register(new WoodenFence(BlockLegacyIdHelper::getWoodenFenceIdentifier($woodType), $name . " Fence", $planksBreakInfo, $woodType));
+			$this->register(new WoodenSlab(BlockLegacyIdHelper::getWoodenSlabIdentifier($woodType), $name, $planksBreakInfo, $woodType));
+
+			$this->register(new FenceGate(BlockLegacyIdHelper::getWoodenFenceGateIdentifier($woodType), $name . " Fence Gate", $planksBreakInfo, $woodType));
+			$this->register(new WoodenStairs(BlockLegacyIdHelper::getWoodenStairsIdentifier($woodType), $name . " Stairs", $planksBreakInfo, $woodType));
+			$this->register(new WoodenDoor(BlockLegacyIdHelper::getWoodenDoorIdentifier($woodType), $name . " Door", $woodenDoorBreakInfo, $woodType));
+
+			$this->register(new WoodenButton(BlockLegacyIdHelper::getWoodenButtonIdentifier($woodType), $name . " Button", $woodenButtonBreakInfo, $woodType));
+			$this->register(new WoodenPressurePlate(BlockLegacyIdHelper::getWoodenPressurePlateIdentifier($woodType), $name . " Pressure Plate", $woodenPressurePlateBreakInfo, $woodType));
+			$this->register(new WoodenTrapdoor(BlockLegacyIdHelper::getWoodenTrapdoorIdentifier($woodType), $name . " Trapdoor", $woodenDoorBreakInfo, $woodType));
 		}
 
 		$sandstoneBreakInfo = new BreakInfo(0.8, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());

@@ -143,6 +143,17 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Opaque CRACKED_POLISHED_BLACKSTONE_BRICKS()
  * @method static Opaque CRACKED_STONE_BRICKS()
  * @method static CraftingTable CRAFTING_TABLE()
+ * @method static WoodenButton CRIMSON_BUTTON()
+ * @method static WoodenDoor CRIMSON_DOOR()
+ * @method static WoodenFence CRIMSON_FENCE()
+ * @method static FenceGate CRIMSON_FENCE_GATE()
+ * @method static Wood CRIMSON_HYPHAE()
+ * @method static Planks CRIMSON_PLANKS()
+ * @method static WoodenPressurePlate CRIMSON_PRESSURE_PLATE()
+ * @method static WoodenSlab CRIMSON_SLAB()
+ * @method static WoodenStairs CRIMSON_STAIRS()
+ * @method static Wood CRIMSON_STEM()
+ * @method static WoodenTrapdoor CRIMSON_TRAPDOOR()
  * @method static Opaque CUT_RED_SANDSTONE()
  * @method static Slab CUT_RED_SANDSTONE_SLAB()
  * @method static Opaque CUT_SANDSTONE()
@@ -397,6 +408,17 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static LitPumpkin LIT_PUMPKIN()
  * @method static Loom LOOM()
  * @method static Magma MAGMA()
+ * @method static WoodenButton MANGROVE_BUTTON()
+ * @method static WoodenDoor MANGROVE_DOOR()
+ * @method static WoodenFence MANGROVE_FENCE()
+ * @method static FenceGate MANGROVE_FENCE_GATE()
+ * @method static Wood MANGROVE_LOG()
+ * @method static Planks MANGROVE_PLANKS()
+ * @method static WoodenPressurePlate MANGROVE_PRESSURE_PLATE()
+ * @method static WoodenSlab MANGROVE_SLAB()
+ * @method static WoodenStairs MANGROVE_STAIRS()
+ * @method static WoodenTrapdoor MANGROVE_TRAPDOOR()
+ * @method static Wood MANGROVE_WOOD()
  * @method static ChemistryTable MATERIAL_REDUCER()
  * @method static Melon MELON()
  * @method static MelonStem MELON_STEM()
@@ -587,6 +609,17 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Vine VINES()
  * @method static WallBanner WALL_BANNER()
  * @method static WallCoralFan WALL_CORAL_FAN()
+ * @method static WoodenButton WARPED_BUTTON()
+ * @method static WoodenDoor WARPED_DOOR()
+ * @method static WoodenFence WARPED_FENCE()
+ * @method static FenceGate WARPED_FENCE_GATE()
+ * @method static Wood WARPED_HYPHAE()
+ * @method static Planks WARPED_PLANKS()
+ * @method static WoodenPressurePlate WARPED_PRESSURE_PLATE()
+ * @method static WoodenSlab WARPED_SLAB()
+ * @method static WoodenStairs WARPED_STAIRS()
+ * @method static Wood WARPED_STEM()
+ * @method static WoodenTrapdoor WARPED_TRAPDOOR()
  * @method static Water WATER()
  * @method static WeightedPressurePlateHeavy WEIGHTED_PRESSURE_PLATE_HEAVY()
  * @method static WeightedPressurePlateLight WEIGHTED_PRESSURE_PLATE_LIGHT()
@@ -728,6 +761,17 @@ final class VanillaBlocks{
 		self::register("cracked_polished_blackstone_bricks", $factory->get(Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS, 0));
 		self::register("cracked_stone_bricks", $factory->get(Ids::CRACKED_STONE_BRICKS, 0));
 		self::register("crafting_table", $factory->get(Ids::CRAFTING_TABLE, 0));
+		self::register("crimson_button", $factory->get(Ids::CRIMSON_BUTTON, 0));
+		self::register("crimson_door", $factory->get(Ids::CRIMSON_DOOR, 0));
+		self::register("crimson_fence", $factory->get(Ids::CRIMSON_FENCE, 0));
+		self::register("crimson_fence_gate", $factory->get(Ids::CRIMSON_FENCE_GATE, 0));
+		self::register("crimson_hyphae", $factory->get(Ids::CRIMSON_HYPHAE, 4));
+		self::register("crimson_planks", $factory->get(Ids::CRIMSON_PLANKS, 0));
+		self::register("crimson_pressure_plate", $factory->get(Ids::CRIMSON_PRESSURE_PLATE, 0));
+		self::register("crimson_slab", $factory->get(Ids::CRIMSON_SLAB, 0));
+		self::register("crimson_stairs", $factory->get(Ids::CRIMSON_STAIRS, 0));
+		self::register("crimson_stem", $factory->get(Ids::CRIMSON_STEM, 4));
+		self::register("crimson_trapdoor", $factory->get(Ids::CRIMSON_TRAPDOOR, 0));
 		self::register("cut_red_sandstone", $factory->get(Ids::CUT_RED_SANDSTONE, 0));
 		self::register("cut_red_sandstone_slab", $factory->get(Ids::CUT_RED_SANDSTONE_SLAB, 0));
 		self::register("cut_sandstone", $factory->get(Ids::CUT_SANDSTONE, 0));
@@ -982,6 +1026,17 @@ final class VanillaBlocks{
 		self::register("lit_pumpkin", $factory->get(Ids::LIT_PUMPKIN, 0));
 		self::register("loom", $factory->get(Ids::LOOM, 0));
 		self::register("magma", $factory->get(Ids::MAGMA, 0));
+		self::register("mangrove_button", $factory->get(Ids::MANGROVE_BUTTON, 0));
+		self::register("mangrove_door", $factory->get(Ids::MANGROVE_DOOR, 0));
+		self::register("mangrove_fence", $factory->get(Ids::MANGROVE_FENCE, 0));
+		self::register("mangrove_fence_gate", $factory->get(Ids::MANGROVE_FENCE_GATE, 0));
+		self::register("mangrove_log", $factory->get(Ids::MANGROVE_LOG, 4));
+		self::register("mangrove_planks", $factory->get(Ids::MANGROVE_PLANKS, 0));
+		self::register("mangrove_pressure_plate", $factory->get(Ids::MANGROVE_PRESSURE_PLATE, 0));
+		self::register("mangrove_slab", $factory->get(Ids::MANGROVE_SLAB, 0));
+		self::register("mangrove_stairs", $factory->get(Ids::MANGROVE_STAIRS, 0));
+		self::register("mangrove_trapdoor", $factory->get(Ids::MANGROVE_TRAPDOOR, 0));
+		self::register("mangrove_wood", $factory->get(Ids::MANGROVE_WOOD, 4));
 		self::register("material_reducer", $factory->get(Ids::MATERIAL_REDUCER, 0));
 		self::register("melon", $factory->get(Ids::MELON, 0));
 		self::register("melon_stem", $factory->get(Ids::MELON_STEM, 0));
@@ -1172,6 +1227,17 @@ final class VanillaBlocks{
 		self::register("vines", $factory->get(Ids::VINES, 0));
 		self::register("wall_banner", $factory->get(Ids::WALL_BANNER, 0));
 		self::register("wall_coral_fan", $factory->get(Ids::WALL_CORAL_FAN, 4));
+		self::register("warped_button", $factory->get(Ids::WARPED_BUTTON, 0));
+		self::register("warped_door", $factory->get(Ids::WARPED_DOOR, 0));
+		self::register("warped_fence", $factory->get(Ids::WARPED_FENCE, 0));
+		self::register("warped_fence_gate", $factory->get(Ids::WARPED_FENCE_GATE, 0));
+		self::register("warped_hyphae", $factory->get(Ids::WARPED_HYPHAE, 4));
+		self::register("warped_planks", $factory->get(Ids::WARPED_PLANKS, 0));
+		self::register("warped_pressure_plate", $factory->get(Ids::WARPED_PRESSURE_PLATE, 0));
+		self::register("warped_slab", $factory->get(Ids::WARPED_SLAB, 0));
+		self::register("warped_stairs", $factory->get(Ids::WARPED_STAIRS, 0));
+		self::register("warped_stem", $factory->get(Ids::WARPED_STEM, 4));
+		self::register("warped_trapdoor", $factory->get(Ids::WARPED_TRAPDOOR, 0));
 		self::register("water", $factory->get(Ids::WATER, 0));
 		self::register("weighted_pressure_plate_heavy", $factory->get(Ids::WEIGHTED_PRESSURE_PLATE_HEAVY, 0));
 		self::register("weighted_pressure_plate_light", $factory->get(Ids::WEIGHTED_PRESSURE_PLATE_LIGHT, 0));
