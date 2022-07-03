@@ -23,16 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\WoodType;
 use pocketmine\block\utils\WoodTypeTrait;
 
 class Planks extends Opaque{
 	use WoodTypeTrait;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, WoodType $woodType){
-		$this->woodType = $woodType;
-		parent::__construct($idInfo, $name, $breakInfo);
-	}
 
 	public function getFuelTime() : int{
 		return 300;
