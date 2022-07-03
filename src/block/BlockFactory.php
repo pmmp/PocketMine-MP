@@ -880,6 +880,33 @@ class BlockFactory{
 		$this->register(new Opaque(new BID(Ids::RAW_COPPER), "Raw Copper Block", new BreakInfo(5, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
 		$this->register(new Opaque(new BID(Ids::RAW_GOLD), "Raw Gold Block", new BreakInfo(5, ToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel())));
 		$this->register(new Opaque(new BID(Ids::RAW_IRON), "Raw Iron Block", new BreakInfo(5, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
+
+		//TODO: check blast resistance
+		$deepslateBreakInfo = new BreakInfo(3, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$this->register(new SimplePillar(new BID(Ids::DEEPSLATE), "Deepslate", $deepslateBreakInfo));
+
+		//TODO: check blast resistance
+		$deepslateBrickBreakInfo = new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$this->register(new Opaque(new BID(Ids::DEEPSLATE_BRICKS), "Deepslate Bricks", $deepslateBrickBreakInfo));
+		$this->register(new Slab(new BID(Ids::DEEPSLATE_BRICK_SLAB), "Deepslate Brick", $deepslateBrickBreakInfo));
+		$this->register(new Stair(new BID(Ids::DEEPSLATE_BRICK_STAIRS), "Deepslate Brick Stairs", $deepslateBrickBreakInfo));
+		$this->register(new Wall(new BID(Ids::DEEPSLATE_BRICK_WALL), "Deepslate Brick Wall", $deepslateBrickBreakInfo));
+		$this->register(new Opaque(new BID(Ids::CRACKED_DEEPSLATE_BRICKS), "Cracked Deepslate Bricks", $deepslateBrickBreakInfo));
+
+		//TODO: check blast resistance
+		$deepslateTilesBreakInfo = new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$this->register(new Opaque(new BID(Ids::DEEPSLATE_TILES), "Deepslate Tiles", $deepslateTilesBreakInfo));
+		$this->register(new Slab(new BID(Ids::DEEPSLATE_TILE_SLAB), "Deepslate Tile", $deepslateTilesBreakInfo));
+		$this->register(new Stair(new BID(Ids::DEEPSLATE_TILE_STAIRS), "Deepslate Tile Stairs", $deepslateTilesBreakInfo));
+		$this->register(new Wall(new BID(Ids::DEEPSLATE_TILE_WALL), "Deepslate Tile Wall", $deepslateTilesBreakInfo));
+		$this->register(new Opaque(new BID(Ids::CRACKED_DEEPSLATE_TILES), "Cracked Deepslate Tiles", $deepslateTilesBreakInfo));
+
+		//TODO: check blast resistance
+		$cobbledDeepslateBreakInfo = new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$this->register(new Opaque(new BID(Ids::COBBLED_DEEPSLATE), "Cobbled Deepslate", $cobbledDeepslateBreakInfo));
+		$this->register(new Slab(new BID(Ids::COBBLED_DEEPSLATE_SLAB), "Cobbled Deepslate", $cobbledDeepslateBreakInfo));
+		$this->register(new Stair(new BID(Ids::COBBLED_DEEPSLATE_STAIRS), "Cobbled Deepslate Stairs", $cobbledDeepslateBreakInfo));
+		$this->register(new Wall(new BID(Ids::COBBLED_DEEPSLATE_WALL), "Cobbled Deepslate Wall", $cobbledDeepslateBreakInfo));
 	}
 
 	/**

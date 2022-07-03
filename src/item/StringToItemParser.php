@@ -188,6 +188,10 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("cobble", fn() => Blocks::COBBLESTONE());
 		$result->registerBlock("cobble_stairs", fn() => Blocks::COBBLESTONE_STAIRS());
 		$result->registerBlock("cobble_wall", fn() => Blocks::COBBLESTONE_WALL());
+		$result->registerBlock("cobbled_deepslate", fn() => Blocks::COBBLED_DEEPSLATE());
+		$result->registerBlock("cobbled_deepslate_slab", fn() => Blocks::COBBLED_DEEPSLATE_SLAB());
+		$result->registerBlock("cobbled_deepslate_stairs", fn() => Blocks::COBBLED_DEEPSLATE_STAIRS());
+		$result->registerBlock("cobbled_deepslate_wall", fn() => Blocks::COBBLED_DEEPSLATE_WALL());
 		$result->registerBlock("cobblestone", fn() => Blocks::COBBLESTONE());
 		$result->registerBlock("cobblestone_slab", fn() => Blocks::COBBLESTONE_SLAB());
 		$result->registerBlock("cobblestone_stairs", fn() => Blocks::COBBLESTONE_STAIRS());
@@ -213,6 +217,8 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("coral_fan_hang2", fn() => Blocks::WALL_CORAL_FAN()->setCoralType(CoralType::BUBBLE()));
 		$result->registerBlock("coral_fan_hang3", fn() => Blocks::WALL_CORAL_FAN()->setCoralType(CoralType::HORN()));
 		$result->registerBlock("cornflower", fn() => Blocks::CORNFLOWER());
+		$result->registerBlock("cracked_deepslate_bricks", fn() => Blocks::CRACKED_DEEPSLATE_BRICKS());
+		$result->registerBlock("cracked_deepslate_tiles", fn() => Blocks::CRACKED_DEEPSLATE_TILES());
 		$result->registerBlock("cracked_polished_blackstone_bricks", fn() => Blocks::CRACKED_POLISHED_BLACKSTONE_BRICKS());
 		$result->registerBlock("cracked_stone_bricks", fn() => Blocks::CRACKED_STONE_BRICKS());
 		$result->registerBlock("crafting_table", fn() => Blocks::CRAFTING_TABLE());
@@ -254,6 +260,15 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("daylight_sensor_inverted", fn() => Blocks::DAYLIGHT_SENSOR()->setInverted(true));
 		$result->registerBlock("dead_bush", fn() => Blocks::DEAD_BUSH());
 		$result->registerBlock("deadbush", fn() => Blocks::DEAD_BUSH());
+		$result->registerBlock("deepslate", fn() => Blocks::DEEPSLATE());
+		$result->registerBlock("deepslate_bricks", fn() => Blocks::DEEPSLATE_BRICKS());
+		$result->registerBlock("deepslate_brick_slab", fn() => Blocks::DEEPSLATE_BRICK_SLAB());
+		$result->registerBlock("deepslate_brick_stairs", fn() => Blocks::DEEPSLATE_BRICK_STAIRS());
+		$result->registerBlock("deepslate_brick_wall", fn() => Blocks::DEEPSLATE_BRICK_WALL());
+		$result->registerBlock("deepslate_tiles", fn() => Blocks::DEEPSLATE_TILES());
+		$result->registerBlock("deepslate_tile_slab", fn() => Blocks::DEEPSLATE_TILE_SLAB());
+		$result->registerBlock("deepslate_tile_stairs", fn() => Blocks::DEEPSLATE_TILE_STAIRS());
+		$result->registerBlock("deepslate_tile_wall", fn() => Blocks::DEEPSLATE_TILE_WALL());
 		$result->registerBlock("detector_rail", fn() => Blocks::DETECTOR_RAIL());
 		$result->registerBlock("diamond_block", fn() => Blocks::DIAMOND());
 		$result->registerBlock("diamond_ore", fn() => Blocks::DIAMOND_ORE());

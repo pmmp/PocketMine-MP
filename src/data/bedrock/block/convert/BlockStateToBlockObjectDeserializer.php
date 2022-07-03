@@ -239,6 +239,10 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::CLAY, fn() => Blocks::CLAY());
 		$this->map(Ids::COAL_BLOCK, fn() => Blocks::COAL());
 		$this->map(Ids::COAL_ORE, fn() => Blocks::COAL_ORE());
+		$this->map(Ids::COBBLED_DEEPSLATE, fn() => Blocks::COBBLED_DEEPSLATE());
+		$this->mapSlab(Ids::COBBLED_DEEPSLATE_SLAB, Ids::COBBLED_DEEPSLATE_DOUBLE_SLAB, fn() => Blocks::COBBLED_DEEPSLATE_SLAB());
+		$this->mapStairs(Ids::COBBLED_DEEPSLATE_STAIRS, fn() => Blocks::COBBLED_DEEPSLATE_STAIRS());
+		$this->map(Ids::COBBLED_DEEPSLATE_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::COBBLED_DEEPSLATE_WALL(), $in));
 		$this->map(Ids::COBBLESTONE, fn() => Blocks::COBBLESTONE());
 		$this->map(Ids::COBBLESTONE_WALL, fn(Reader $in) => Helper::mapLegacyWallType($in));
 		$this->map(Ids::COCOA, function(Reader $in) : Block{
@@ -289,6 +293,8 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			return Helper::decodeWallCoralFan(Blocks::WALL_CORAL_FAN(), $in)
 				->setCoralType(CoralType::HORN());
 		});
+		$this->map(Ids::CRACKED_DEEPSLATE_BRICKS, fn() => Blocks::CRACKED_DEEPSLATE_BRICKS());
+		$this->map(Ids::CRACKED_DEEPSLATE_TILES, fn() => Blocks::CRACKED_DEEPSLATE_TILES());
 		$this->map(Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS, fn() => Blocks::CRACKED_POLISHED_BLACKSTONE_BRICKS());
 		$this->map(Ids::CRAFTING_TABLE, fn() => Blocks::CRAFTING_TABLE());
 		$this->map(Ids::CYAN_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::CYAN(), $in));
@@ -306,6 +312,18 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::DAYLIGHT_DETECTOR_INVERTED, fn(Reader $in) => Helper::decodeDaylightSensor(Blocks::DAYLIGHT_SENSOR(), $in)
 				->setInverted(true));
 		$this->map(Ids::DEADBUSH, fn() => Blocks::DEAD_BUSH());
+		$this->map(Ids::DEEPSLATE, function(Reader $in) : Block{
+			return Blocks::DEEPSLATE()
+				->setAxis($in->readPillarAxis());
+		});
+		$this->map(Ids::DEEPSLATE_BRICKS, fn() => Blocks::DEEPSLATE_BRICKS());
+		$this->mapSlab(Ids::DEEPSLATE_BRICK_SLAB, Ids::DEEPSLATE_BRICK_DOUBLE_SLAB, fn() => Blocks::DEEPSLATE_BRICK_SLAB());
+		$this->mapStairs(Ids::DEEPSLATE_BRICK_STAIRS, fn() => Blocks::DEEPSLATE_BRICK_STAIRS());
+		$this->map(Ids::DEEPSLATE_BRICK_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::DEEPSLATE_BRICK_WALL(), $in));
+		$this->map(Ids::DEEPSLATE_TILES, fn() => Blocks::DEEPSLATE_TILES());
+		$this->mapSlab(Ids::DEEPSLATE_TILE_SLAB, Ids::DEEPSLATE_TILE_DOUBLE_SLAB, fn() => Blocks::DEEPSLATE_TILE_SLAB());
+		$this->mapStairs(Ids::DEEPSLATE_TILE_STAIRS, fn() => Blocks::DEEPSLATE_TILE_STAIRS());
+		$this->map(Ids::DEEPSLATE_TILE_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::DEEPSLATE_TILE_WALL(), $in));
 		$this->map(Ids::DETECTOR_RAIL, function(Reader $in) : Block{
 			return Blocks::DETECTOR_RAIL()
 				->setActivated($in->readBool(StateNames::RAIL_DATA_BIT))

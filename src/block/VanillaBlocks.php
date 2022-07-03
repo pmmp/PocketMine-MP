@@ -118,6 +118,10 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Clay CLAY()
  * @method static Coal COAL()
  * @method static CoalOre COAL_ORE()
+ * @method static Opaque COBBLED_DEEPSLATE()
+ * @method static Slab COBBLED_DEEPSLATE_SLAB()
+ * @method static Stair COBBLED_DEEPSLATE_STAIRS()
+ * @method static Wall COBBLED_DEEPSLATE_WALL()
  * @method static Opaque COBBLESTONE()
  * @method static Slab COBBLESTONE_SLAB()
  * @method static Stair COBBLESTONE_STAIRS()
@@ -131,6 +135,8 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static CoralBlock CORAL_BLOCK()
  * @method static FloorCoralFan CORAL_FAN()
  * @method static Flower CORNFLOWER()
+ * @method static Opaque CRACKED_DEEPSLATE_BRICKS()
+ * @method static Opaque CRACKED_DEEPSLATE_TILES()
  * @method static Opaque CRACKED_POLISHED_BLACKSTONE_BRICKS()
  * @method static Opaque CRACKED_STONE_BRICKS()
  * @method static CraftingTable CRAFTING_TABLE()
@@ -159,6 +165,15 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Stair DARK_PRISMARINE_STAIRS()
  * @method static DaylightSensor DAYLIGHT_SENSOR()
  * @method static DeadBush DEAD_BUSH()
+ * @method static SimplePillar DEEPSLATE()
+ * @method static Opaque DEEPSLATE_BRICKS()
+ * @method static Slab DEEPSLATE_BRICK_SLAB()
+ * @method static Stair DEEPSLATE_BRICK_STAIRS()
+ * @method static Wall DEEPSLATE_BRICK_WALL()
+ * @method static Opaque DEEPSLATE_TILES()
+ * @method static Slab DEEPSLATE_TILE_SLAB()
+ * @method static Stair DEEPSLATE_TILE_STAIRS()
+ * @method static Wall DEEPSLATE_TILE_WALL()
  * @method static DetectorRail DETECTOR_RAIL()
  * @method static Opaque DIAMOND()
  * @method static DiamondOre DIAMOND_ORE()
@@ -680,6 +695,10 @@ final class VanillaBlocks{
 		self::register("clay", $factory->get(Ids::CLAY, 0));
 		self::register("coal", $factory->get(Ids::COAL, 0));
 		self::register("coal_ore", $factory->get(Ids::COAL_ORE, 0));
+		self::register("cobbled_deepslate", $factory->get(Ids::COBBLED_DEEPSLATE, 0));
+		self::register("cobbled_deepslate_slab", $factory->get(Ids::COBBLED_DEEPSLATE_SLAB, 0));
+		self::register("cobbled_deepslate_stairs", $factory->get(Ids::COBBLED_DEEPSLATE_STAIRS, 0));
+		self::register("cobbled_deepslate_wall", $factory->get(Ids::COBBLED_DEEPSLATE_WALL, 0));
 		self::register("cobblestone", $factory->get(Ids::COBBLESTONE, 0));
 		self::register("cobblestone_slab", $factory->get(Ids::COBBLESTONE_SLAB, 0));
 		self::register("cobblestone_stairs", $factory->get(Ids::COBBLESTONE_STAIRS, 0));
@@ -693,6 +712,8 @@ final class VanillaBlocks{
 		self::register("coral_block", $factory->get(Ids::CORAL_BLOCK, 4));
 		self::register("coral_fan", $factory->get(Ids::CORAL_FAN, 4));
 		self::register("cornflower", $factory->get(Ids::CORNFLOWER, 0));
+		self::register("cracked_deepslate_bricks", $factory->get(Ids::CRACKED_DEEPSLATE_BRICKS, 0));
+		self::register("cracked_deepslate_tiles", $factory->get(Ids::CRACKED_DEEPSLATE_TILES, 0));
 		self::register("cracked_polished_blackstone_bricks", $factory->get(Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS, 0));
 		self::register("cracked_stone_bricks", $factory->get(Ids::CRACKED_STONE_BRICKS, 0));
 		self::register("crafting_table", $factory->get(Ids::CRAFTING_TABLE, 0));
@@ -721,6 +742,15 @@ final class VanillaBlocks{
 		self::register("dark_prismarine_stairs", $factory->get(Ids::DARK_PRISMARINE_STAIRS, 0));
 		self::register("daylight_sensor", $factory->get(Ids::DAYLIGHT_SENSOR, 0));
 		self::register("dead_bush", $factory->get(Ids::DEAD_BUSH, 0));
+		self::register("deepslate", $factory->get(Ids::DEEPSLATE, 2));
+		self::register("deepslate_brick_slab", $factory->get(Ids::DEEPSLATE_BRICK_SLAB, 0));
+		self::register("deepslate_brick_stairs", $factory->get(Ids::DEEPSLATE_BRICK_STAIRS, 0));
+		self::register("deepslate_brick_wall", $factory->get(Ids::DEEPSLATE_BRICK_WALL, 0));
+		self::register("deepslate_bricks", $factory->get(Ids::DEEPSLATE_BRICKS, 0));
+		self::register("deepslate_tile_slab", $factory->get(Ids::DEEPSLATE_TILE_SLAB, 0));
+		self::register("deepslate_tile_stairs", $factory->get(Ids::DEEPSLATE_TILE_STAIRS, 0));
+		self::register("deepslate_tile_wall", $factory->get(Ids::DEEPSLATE_TILE_WALL, 0));
+		self::register("deepslate_tiles", $factory->get(Ids::DEEPSLATE_TILES, 0));
 		self::register("detector_rail", $factory->get(Ids::DETECTOR_RAIL, 0));
 		self::register("diamond", $factory->get(Ids::DIAMOND, 0));
 		self::register("diamond_ore", $factory->get(Ids::DIAMOND_ORE, 0));

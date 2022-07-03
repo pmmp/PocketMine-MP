@@ -590,6 +590,21 @@ final class BlockTypeIds{
 	public const RAW_GOLD = 10563;
 	public const RAW_IRON = 10564;
 	public const CALCITE = 10565;
+	public const DEEPSLATE = 10566;
+	public const DEEPSLATE_BRICKS = 10567;
+	public const DEEPSLATE_BRICK_SLAB = 10568;
+	public const DEEPSLATE_BRICK_STAIRS = 10569;
+	public const DEEPSLATE_BRICK_WALL = 10570;
+	public const CRACKED_DEEPSLATE_BRICKS = 10571;
+	public const DEEPSLATE_TILES = 10572;
+	public const DEEPSLATE_TILE_SLAB = 10573;
+	public const DEEPSLATE_TILE_STAIRS = 10574;
+	public const DEEPSLATE_TILE_WALL = 10575;
+	public const CRACKED_DEEPSLATE_TILES = 10576;
+	public const COBBLED_DEEPSLATE = 10577;
+	public const COBBLED_DEEPSLATE_SLAB = 10578;
+	public const COBBLED_DEEPSLATE_STAIRS = 10579;
+	public const COBBLED_DEEPSLATE_WALL = 10580;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10566;
+	public const FIRST_UNUSED_BLOCK_ID = 10581;
 }
