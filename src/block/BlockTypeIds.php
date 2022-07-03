@@ -610,6 +610,9 @@ final class BlockTypeIds{
 	public const POLISHED_DEEPSLATE_STAIRS = 10583;
 	public const POLISHED_DEEPSLATE_WALL = 10584;
 	public const QUARTZ_BRICKS = 10585;
+	public const CHISELED_DEEPSLATE = 10586;
+	public const CHISELED_NETHER_BRICKS = 10587;
+	public const CRACKED_NETHER_BRICKS = 10588;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10586;
+	public const FIRST_UNUSED_BLOCK_ID = 10589;
 }

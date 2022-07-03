@@ -110,6 +110,8 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static CarvedPumpkin CARVED_PUMPKIN()
  * @method static ChemicalHeat CHEMICAL_HEAT()
  * @method static Chest CHEST()
+ * @method static Opaque CHISELED_DEEPSLATE()
+ * @method static Opaque CHISELED_NETHER_BRICKS()
  * @method static Opaque CHISELED_POLISHED_BLACKSTONE()
  * @method static SimplePillar CHISELED_QUARTZ()
  * @method static Opaque CHISELED_RED_SANDSTONE()
@@ -137,6 +139,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Flower CORNFLOWER()
  * @method static Opaque CRACKED_DEEPSLATE_BRICKS()
  * @method static Opaque CRACKED_DEEPSLATE_TILES()
+ * @method static Opaque CRACKED_NETHER_BRICKS()
  * @method static Opaque CRACKED_POLISHED_BLACKSTONE_BRICKS()
  * @method static Opaque CRACKED_STONE_BRICKS()
  * @method static CraftingTable CRAFTING_TABLE()
@@ -692,6 +695,8 @@ final class VanillaBlocks{
 		self::register("carved_pumpkin", $factory->get(Ids::CARVED_PUMPKIN, 0));
 		self::register("chemical_heat", $factory->get(Ids::CHEMICAL_HEAT, 0));
 		self::register("chest", $factory->get(Ids::CHEST, 0));
+		self::register("chiseled_deepslate", $factory->get(Ids::CHISELED_DEEPSLATE, 0));
+		self::register("chiseled_nether_bricks", $factory->get(Ids::CHISELED_NETHER_BRICKS, 0));
 		self::register("chiseled_polished_blackstone", $factory->get(Ids::CHISELED_POLISHED_BLACKSTONE, 0));
 		self::register("chiseled_quartz", $factory->get(Ids::CHISELED_QUARTZ, 2));
 		self::register("chiseled_red_sandstone", $factory->get(Ids::CHISELED_RED_SANDSTONE, 0));
@@ -719,6 +724,7 @@ final class VanillaBlocks{
 		self::register("cornflower", $factory->get(Ids::CORNFLOWER, 0));
 		self::register("cracked_deepslate_bricks", $factory->get(Ids::CRACKED_DEEPSLATE_BRICKS, 0));
 		self::register("cracked_deepslate_tiles", $factory->get(Ids::CRACKED_DEEPSLATE_TILES, 0));
+		self::register("cracked_nether_bricks", $factory->get(Ids::CRACKED_NETHER_BRICKS, 0));
 		self::register("cracked_polished_blackstone_bricks", $factory->get(Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS, 0));
 		self::register("cracked_stone_bricks", $factory->get(Ids::CRACKED_STONE_BRICKS, 0));
 		self::register("crafting_table", $factory->get(Ids::CRAFTING_TABLE, 0));

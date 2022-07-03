@@ -176,6 +176,8 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("chemistry_table", fn() => Blocks::COMPOUND_CREATOR());
 		$result->registerBlock("chest", fn() => Blocks::CHEST());
 		$result->registerBlock("chipped_anvil", fn() => Blocks::ANVIL()->setDamage(1));
+		$result->registerBlock("chiseled_deepslate", fn() => Blocks::CHISELED_DEEPSLATE());
+		$result->registerBlock("chiseled_nether_bricks", fn() => Blocks::CHISELED_NETHER_BRICKS());
 		$result->registerBlock("chiseled_polished_blackstone", fn() => Blocks::CHISELED_POLISHED_BLACKSTONE());
 		$result->registerBlock("chiseled_quartz", fn() => Blocks::CHISELED_QUARTZ());
 		$result->registerBlock("chiseled_red_sandstone", fn() => Blocks::CHISELED_RED_SANDSTONE());
@@ -219,6 +221,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("cornflower", fn() => Blocks::CORNFLOWER());
 		$result->registerBlock("cracked_deepslate_bricks", fn() => Blocks::CRACKED_DEEPSLATE_BRICKS());
 		$result->registerBlock("cracked_deepslate_tiles", fn() => Blocks::CRACKED_DEEPSLATE_TILES());
+		$result->registerBlock("cracked_nether_bricks", fn() => Blocks::CRACKED_NETHER_BRICKS());
 		$result->registerBlock("cracked_polished_blackstone_bricks", fn() => Blocks::CRACKED_POLISHED_BLACKSTONE_BRICKS());
 		$result->registerBlock("cracked_stone_bricks", fn() => Blocks::CRACKED_STONE_BRICKS());
 		$result->registerBlock("crafting_table", fn() => Blocks::CRAFTING_TABLE());
