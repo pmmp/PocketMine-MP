@@ -605,6 +605,10 @@ final class BlockTypeIds{
 	public const COBBLED_DEEPSLATE_SLAB = 10578;
 	public const COBBLED_DEEPSLATE_STAIRS = 10579;
 	public const COBBLED_DEEPSLATE_WALL = 10580;
+	public const POLISHED_DEEPSLATE = 10581;
+	public const POLISHED_DEEPSLATE_SLAB = 10582;
+	public const POLISHED_DEEPSLATE_STAIRS = 10583;
+	public const POLISHED_DEEPSLATE_WALL = 10584;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10581;
+	public const FIRST_UNUSED_BLOCK_ID = 10585;
 }

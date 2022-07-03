@@ -765,6 +765,10 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("polished_blackstone_slab", fn() => Blocks::POLISHED_BLACKSTONE_SLAB());
 		$result->registerBlock("polished_blackstone_stairs", fn() => Blocks::POLISHED_BLACKSTONE_STAIRS());
 		$result->registerBlock("polished_blackstone_wall", fn() => Blocks::POLISHED_BLACKSTONE_WALL());
+		$result->registerBlock("polished_deepslate", fn() => Blocks::POLISHED_DEEPSLATE());
+		$result->registerBlock("polished_deepslate_slab", fn() => Blocks::POLISHED_DEEPSLATE_SLAB());
+		$result->registerBlock("polished_deepslate_stairs", fn() => Blocks::POLISHED_DEEPSLATE_STAIRS());
+		$result->registerBlock("polished_deepslate_wall", fn() => Blocks::POLISHED_DEEPSLATE_WALL());
 		$result->registerBlock("polished_diorite", fn() => Blocks::POLISHED_DIORITE());
 		$result->registerBlock("polished_diorite_slab", fn() => Blocks::POLISHED_DIORITE_SLAB());
 		$result->registerBlock("polished_diorite_stairs", fn() => Blocks::POLISHED_DIORITE_STAIRS());

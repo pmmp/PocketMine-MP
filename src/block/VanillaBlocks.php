@@ -457,6 +457,10 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Slab POLISHED_BLACKSTONE_SLAB()
  * @method static Stair POLISHED_BLACKSTONE_STAIRS()
  * @method static Wall POLISHED_BLACKSTONE_WALL()
+ * @method static Opaque POLISHED_DEEPSLATE()
+ * @method static Slab POLISHED_DEEPSLATE_SLAB()
+ * @method static Stair POLISHED_DEEPSLATE_STAIRS()
+ * @method static Wall POLISHED_DEEPSLATE_WALL()
  * @method static Opaque POLISHED_DIORITE()
  * @method static Slab POLISHED_DIORITE_SLAB()
  * @method static Stair POLISHED_DIORITE_STAIRS()
@@ -1034,6 +1038,10 @@ final class VanillaBlocks{
 		self::register("polished_blackstone_slab", $factory->get(Ids::POLISHED_BLACKSTONE_SLAB, 0));
 		self::register("polished_blackstone_stairs", $factory->get(Ids::POLISHED_BLACKSTONE_STAIRS, 0));
 		self::register("polished_blackstone_wall", $factory->get(Ids::POLISHED_BLACKSTONE_WALL, 0));
+		self::register("polished_deepslate", $factory->get(Ids::POLISHED_DEEPSLATE, 0));
+		self::register("polished_deepslate_slab", $factory->get(Ids::POLISHED_DEEPSLATE_SLAB, 0));
+		self::register("polished_deepslate_stairs", $factory->get(Ids::POLISHED_DEEPSLATE_STAIRS, 0));
+		self::register("polished_deepslate_wall", $factory->get(Ids::POLISHED_DEEPSLATE_WALL, 0));
 		self::register("polished_diorite", $factory->get(Ids::POLISHED_DIORITE, 0));
 		self::register("polished_diorite_slab", $factory->get(Ids::POLISHED_DIORITE_SLAB, 0));
 		self::register("polished_diorite_stairs", $factory->get(Ids::POLISHED_DIORITE_STAIRS, 0));
