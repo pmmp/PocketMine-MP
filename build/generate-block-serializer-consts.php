@@ -33,7 +33,25 @@ use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\convert\BlockStateDictionary;
 use pocketmine\network\mcpe\convert\BlockStateDictionaryEntry;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
+use function array_map;
+use function array_values;
+use function asort;
+use function count;
+use function dirname;
+use function explode;
+use function fclose;
+use function file_get_contents;
+use function fopen;
+use function fwrite;
+use function is_string;
+use function ksort;
+use function mb_strtoupper;
+use function sort;
+use function strrpos;
+use function strtoupper;
+use function substr;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -45,7 +63,7 @@ class BlockPaletteReport{
 	public array $seenTypes = [];
 	/**
 	 * @var string[][]
-	 * @phpstan-var array<string, array<mixed, string|int>>
+	 * @phpstan-var array<string, array<mixed, mixed>>
 	 */
 	public array $seenStateValues = [];
 }
@@ -73,8 +91,12 @@ function constifyMcId(string $id) : string{
 }
 
 function generateClassHeader(string $className) : string{
-	$namespace = substr($className, 0, strrpos($className, "\\"));
-	$shortName = substr($className, strrpos($className, "\\") + 1);
+	$backslashPos = strrpos($className, "\\");
+	if($backslashPos === false){
+		throw new AssumptionFailedError("Expected a namespaced class FQN");
+	}
+	$namespace = substr($className, 0, $backslashPos);
+	$shortName = substr($className, $backslashPos + 1);
 	return <<<HEADER
 <?php
 
@@ -176,7 +198,7 @@ foreach($states as $state){
 }
 $dictionary = new BlockStateDictionary($entries);
 $report = generateBlockPaletteReport($dictionary);
-generateBlockIds($report->seenTypes);
+generateBlockIds(array_values($report->seenTypes));
 generateBlockStateNames($report);
 generateBlockStringValues($report);
 
