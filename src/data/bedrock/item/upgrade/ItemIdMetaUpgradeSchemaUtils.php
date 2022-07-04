@@ -42,10 +42,11 @@ final class ItemIdMetaUpgradeSchemaUtils{
 		$iterator = new \RegexIterator(
 			new \FilesystemIterator(
 				$path,
-				\FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
+				\FilesystemIterator::KEY_AS_FILENAME | \FilesystemIterator::SKIP_DOTS
 			),
-			'/\/(\d{4}).*\.json$/',
-			\RegexIterator::GET_MATCH
+			'/^(\d{4}).*\.json$/',
+			\RegexIterator::GET_MATCH,
+			\RegexIterator::USE_KEY
 		);
 
 		$result = [];
