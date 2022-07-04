@@ -53,7 +53,7 @@ function generateItemIds(ItemTypeDictionary $dictionary) : void{
 	}
 	asort($ids, SORT_STRING);
 
-	$file = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen(dirname(__DIR__) . '/src/data/bedrock/item/ItemTypeIds.php', 'wb'));
+	$file = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen(dirname(__DIR__) . '/src/data/bedrock/item/ItemTypeNames.php', 'wb'));
 
 	fwrite($file, <<<'HEADER'
 <?php
@@ -65,7 +65,7 @@ namespace pocketmine\data\bedrock\item;
 /**
  * This class is generated automatically from the item type dictionary for the current version. Do not edit it manually.
  */
-final class ItemTypeIds{
+final class ItemTypeNames{
 
 HEADER
 	);
@@ -78,7 +78,7 @@ HEADER
 }
 
 if(count($argv) !== 2){
-	fwrite(STDERR, "This script regenerates ItemTypeIds from a given item dictionary file\n");
+	fwrite(STDERR, "This script regenerates ItemTypeNames from a given item dictionary file\n");
 	fwrite(STDERR, "Required argument: path to item type dictionary file\n");
 	exit(1);
 }

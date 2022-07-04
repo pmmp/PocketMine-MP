@@ -33,7 +33,7 @@ use pocketmine\data\bedrock\block\BlockStateDeserializer;
 use pocketmine\data\bedrock\CompoundTypeIds;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\bedrock\EntityLegacyIds;
-use pocketmine\data\bedrock\item\ItemTypeIds as Ids;
+use pocketmine\data\bedrock\item\ItemTypeNames as Ids;
 use pocketmine\data\bedrock\item\SavedItemData as Data;
 use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\item\Durable;

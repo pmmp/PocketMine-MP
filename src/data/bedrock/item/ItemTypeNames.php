@@ -26,7 +26,7 @@ namespace pocketmine\data\bedrock\item;
 /**
  * This class is generated automatically from the item type dictionary for the current version. Do not edit it manually.
  */
-final class ItemTypeIds{
+final class ItemTypeNames{
 	public const ACACIA_BOAT = "minecraft:acacia_boat";
 	public const ACACIA_CHEST_BOAT = "minecraft:acacia_chest_boat";
 	public const ACACIA_DOOR = "minecraft:acacia_door";
