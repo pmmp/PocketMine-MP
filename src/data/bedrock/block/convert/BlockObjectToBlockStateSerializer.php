@@ -1070,6 +1070,10 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeBool(StateNames::COVERED_BIT, false)
 				->writeInt(StateNames::HEIGHT, $block->getLayers() - 1);
 		});
+		$this->map(Blocks::SOUL_FIRE(), function() : Writer{
+			return Writer::create(Ids::SOUL_FIRE)
+				->writeInt(StateNames::AGE, 0); //useless for soul fire, we don't track it
+		});
 		$this->mapSimple(Blocks::SOUL_SAND(), Ids::SOUL_SAND);
 		$this->map(Blocks::SPONGE(), function(Sponge $block) : Writer{
 			return Writer::create(Ids::SPONGE)

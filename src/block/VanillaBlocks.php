@@ -564,6 +564,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Slab SMOOTH_STONE_SLAB()
  * @method static Snow SNOW()
  * @method static SnowLayer SNOW_LAYER()
+ * @method static SoulFire SOUL_FIRE()
  * @method static SoulSand SOUL_SAND()
  * @method static Sponge SPONGE()
  * @method static WoodenButton SPRUCE_BUTTON()
@@ -1182,6 +1183,7 @@ final class VanillaBlocks{
 		self::register("smooth_stone_slab", $factory->get(Ids::SMOOTH_STONE_SLAB, 0));
 		self::register("snow", $factory->get(Ids::SNOW, 0));
 		self::register("snow_layer", $factory->get(Ids::SNOW_LAYER, 0));
+		self::register("soul_fire", $factory->get(Ids::SOUL_FIRE, 0));
 		self::register("soul_sand", $factory->get(Ids::SOUL_SAND, 0));
 		self::register("sponge", $factory->get(Ids::SPONGE, 0));
 		self::register("spruce_button", $factory->get(Ids::SPRUCE_BUTTON, 0));

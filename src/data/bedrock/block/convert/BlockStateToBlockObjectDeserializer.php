@@ -992,6 +992,10 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			$in->ignored(StateNames::COVERED_BIT); //seems to be useless
 			return Blocks::SNOW_LAYER()->setLayers($in->readBoundedInt(StateNames::HEIGHT, 0, 7) + 1);
 		});
+		$this->map(Ids::SOUL_FIRE, function(Reader $in) : Block{
+			$in->ignored(StateNames::AGE); //this is useless for soul fire, since it doesn't have the logic associated
+			return Blocks::SOUL_FIRE();
+		});
 		$this->map(Ids::SOUL_SAND, fn() => Blocks::SOUL_SAND());
 		$this->map(Ids::SPONGE, function(Reader $in) : Block{
 			return Blocks::SPONGE()->setWet(match($type = $in->readString(StateNames::SPONGE_TYPE)){

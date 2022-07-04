@@ -744,6 +744,8 @@ class BlockFactory{
 		$this->register(new Stair(new BID(Ids::POLISHED_BLACKSTONE_BRICK_STAIRS), $prefix("Stairs"), $blackstoneBreakInfo));
 		$this->register(new Wall(new BID(Ids::POLISHED_BLACKSTONE_BRICK_WALL), $prefix("Wall"), $blackstoneBreakInfo));
 		$this->register(new Opaque(new BID(Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS), "Cracked Polished Blackstone Bricks", $blackstoneBreakInfo));
+
+		$this->register(new SoulFire(new BID(Ids::SOUL_FIRE), "Soul Fire", BreakInfo::instant()));
 	}
 
 	private function registerBlocksR17() : void{

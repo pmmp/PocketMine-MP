@@ -614,6 +614,9 @@ final class BlockTypeIds{
 	public const CHISELED_NETHER_BRICKS = 10587;
 	public const CRACKED_NETHER_BRICKS = 10588;
 
+	public const SOUL_SOIL = 10592;
+	public const SOUL_FIRE = 10593;
+
 	public const MANGROVE_PLANKS = 10595;
 	public const CRIMSON_PLANKS = 10596;
 	public const WARPED_PLANKS = 10597;
