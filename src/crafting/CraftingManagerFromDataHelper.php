@@ -60,7 +60,7 @@ final class CraftingManagerFromDataHelper{
 			$blockStateDictionary = RuntimeBlockMapping::getInstance()->getBlockStateDictionary();
 			$blockRuntimeId = $blockStateDictionary->lookupStateIdFromIdMeta($name, $meta === RecipeIngredientData::WILDCARD_META_VALUE ? 0 : $meta);
 			if($blockRuntimeId === null){
-				throw new \InvalidArgumentException("$blockName with meta $meta doesn't map to any known blockstate");
+				throw new SavedDataLoadingException("$blockName with meta $meta doesn't map to any known blockstate");
 			}
 			$blockStateData = $blockStateDictionary->getDataFromStateId($blockRuntimeId);
 			if($blockStateData === null){
@@ -118,7 +118,7 @@ final class CraftingManagerFromDataHelper{
 		$blockName = BlockItemIdMap::getInstance()->lookupBlockId($name);
 		if($blockName !== null){
 			if($meta !== 0){
-				throw new \InvalidArgumentException("Meta should not be specified for blockitems");
+				throw new SavedDataLoadingException("Meta should not be specified for blockitems");
 			}
 			$blockStatesTag = $blockStatesRaw === null ?
 				CompoundTag::create() :
@@ -166,7 +166,7 @@ final class CraftingManagerFromDataHelper{
 	public static function loadJsonArrayOfObjectsFile(string $filePath, string $modelCLass) : array{
 		$recipes = json_decode(Utils::assumeNotFalse(file_get_contents($filePath), "Missing required resource file"));
 		if(!is_array($recipes)){
-			throw new AssumptionFailedError("$filePath root should be an array, got " . get_debug_type($recipes));
+			throw new SavedDataLoadingException("$filePath root should be an array, got " . get_debug_type($recipes));
 		}
 
 		$mapper = new \JsonMapper();
