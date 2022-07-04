@@ -21,33 +21,23 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\crafting;
+namespace pocketmine\crafting\json;
 
-use pocketmine\item\Item;
+final class ItemStackData{
 
-class PotionTypeRecipe implements BrewingRecipe{
+	/** @required */
+	public string $name;
 
-	public function __construct(
-		private RecipeIngredient $input,
-		private RecipeIngredient $ingredient,
-		private Item $output
-	){
-		$this->output = clone $output;
-	}
+	public int $count;
+	public string $block_states;
+	public int $meta;
+	public string $nbt;
+	/** @var string[] */
+	public array $can_place_on;
+	/** @var string[] */
+	public array $can_destroy;
 
-	public function getInput() : RecipeIngredient{
-		return $this->input;
-	}
-
-	public function getIngredient() : RecipeIngredient{
-		return $this->ingredient;
-	}
-
-	public function getOutput() : Item{
-		return clone $this->output;
-	}
-
-	public function getResultFor(Item $input) : ?Item{
-		return $this->input->accepts($input) ? $this->getOutput() : null;
+	public function __construct(string $name){
+		$this->name = $name;
 	}
 }

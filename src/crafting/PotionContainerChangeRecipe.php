@@ -31,18 +31,16 @@ class PotionContainerChangeRecipe implements BrewingRecipe{
 
 	public function __construct(
 		private string $inputItemId,
-		private Item $ingredient,
+		private RecipeIngredient $ingredient,
 		private string $outputItemId
-	){
-		$this->ingredient = clone $ingredient;
-	}
+	){}
 
 	public function getInputItemId() : string{
 		return $this->inputItemId;
 	}
 
-	public function getIngredient() : Item{
-		return clone $this->ingredient;
+	public function getIngredient() : RecipeIngredient{
+		return $this->ingredient;
 	}
 
 	public function getOutputItemId() : string{

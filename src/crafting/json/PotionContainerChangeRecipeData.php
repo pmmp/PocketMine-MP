@@ -21,33 +21,21 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\crafting;
+namespace pocketmine\crafting\json;
 
-use pocketmine\item\Item;
+final class PotionContainerChangeRecipeData{
+	/** @required */
+	public string $input_item_name;
 
-class PotionTypeRecipe implements BrewingRecipe{
+	/** @required */
+	public RecipeIngredientData $ingredient;
 
-	public function __construct(
-		private RecipeIngredient $input,
-		private RecipeIngredient $ingredient,
-		private Item $output
-	){
-		$this->output = clone $output;
-	}
+	/** @required */
+	public string $output_item_name;
 
-	public function getInput() : RecipeIngredient{
-		return $this->input;
-	}
-
-	public function getIngredient() : RecipeIngredient{
-		return $this->ingredient;
-	}
-
-	public function getOutput() : Item{
-		return clone $this->output;
-	}
-
-	public function getResultFor(Item $input) : ?Item{
-		return $this->input->accepts($input) ? $this->getOutput() : null;
+	public function __construct(string $input_item_name, RecipeIngredientData $ingredient, string $output_item_name){
+		$this->input_item_name = $input_item_name;
+		$this->ingredient = $ingredient;
+		$this->output_item_name = $output_item_name;
 	}
 }

@@ -23,13 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\data\SavedDataLoadingException;
+use pocketmine\crafting\CraftingManagerFromDataHelper;
+use pocketmine\crafting\json\ItemStackData;
 use pocketmine\item\Item;
 use pocketmine\utils\SingletonTrait;
 use Webmozart\PathUtil\Path;
-use function file_get_contents;
-use function is_array;
-use function json_decode;
 
 final class CreativeInventory{
 	use SingletonTrait;
@@ -38,18 +36,13 @@ final class CreativeInventory{
 	private array $creative = [];
 
 	private function __construct(){
-		$creativeItems = json_decode(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "creativeitems.json")), true);
-		if(!is_array($creativeItems)){
-			throw new SavedDataLoadingException("Invalid creative items file, expected array as root type");
-		}
-
+		$creativeItems = CraftingManagerFromDataHelper::loadJsonArrayOfObjectsFile(
+			Path::join(\pocketmine\BEDROCK_DATA_PATH, "creativeitems.json"),
+			ItemStackData::class
+		);
 		foreach($creativeItems as $data){
-			if(!is_array($data)){
-				throw new SavedDataLoadingException("Invalid creative items file, expected array as item type");
-			}
-			try{
-				$item = Item::legacyJsonDeserialize($data);
-			}catch(SavedDataLoadingException){
+			$item = CraftingManagerFromDataHelper::deserializeItemStack($data);
+			if($item === null){
 				//unknown item
 				continue;
 			}
