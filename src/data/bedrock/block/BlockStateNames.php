@@ -23,7 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block;
 
+/**
+ * This class is generated automatically from the block palette for the current version. Do not edit it manually.
+ */
 final class BlockStateNames{
+	private function __construct(){
+		//NOOP
+	}
 
 	public const ACTIVE = "active";
 	public const AGE = "age";
