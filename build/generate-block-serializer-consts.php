@@ -21,6 +21,8 @@
 
 declare(strict_types=1);
 
+namespace pocketmine\build\generate_block_serializer_consts;
+
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateNames;
 use pocketmine\data\bedrock\block\BlockStateStringValues;
