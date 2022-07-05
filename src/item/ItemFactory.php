@@ -98,6 +98,7 @@ class ItemFactory{
 		$this->register(new GoldenApple(new IID(Ids::GOLDEN_APPLE), "Golden Apple"));
 		$this->register(new GoldenAppleEnchanted(new IID(Ids::ENCHANTED_GOLDEN_APPLE), "Enchanted Golden Apple"));
 		$this->register(new GoldenCarrot(new IID(Ids::GOLDEN_CARROT), "Golden Carrot"));
+		$this->register(new Spyglass(new IID(Ids::SPYGLASS), "Spyglass"));
 		$this->register(new Item(new IID(Ids::AMETHYST_SHARD), "Amethyst Shard"));
 		$this->register(new Item(new IID(Ids::BLAZE_POWDER), "Blaze Powder"));
 		$this->register(new Item(new IID(Ids::BLEACH), "Bleach")); //EDU
@@ -185,7 +186,6 @@ class ItemFactory{
 		$this->register(new Item(new IID(Ids::RAW_IRON), "Raw Iron"));
 		$this->register(new Item(new IID(Ids::RAW_GOLD), "Raw Gold"));
 		$this->register(new Item(new IID(Ids::PHANTOM_MEMBRANE), "Phantom Membrane"));
-		$this->register(new Item(new IID(Ids::SPYGLASS), "Spyglass"));
 
 		//the meta values for buckets are intentionally hardcoded because block IDs will change in the future
 		$this->register(new LiquidBucket(new IID(Ids::WATER_BUCKET), "Water Bucket", Blocks::WATER()));
