@@ -24,25 +24,28 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\CoralTypeTrait;
 use pocketmine\block\VanillaBlocks;
-use pocketmine\data\bedrock\CoralTypeIdMap;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 
 final class CoralFan extends Item{
-	use CoralTypeTrait;
-
-	public function __construct(private ItemIdentifierFlattened $identifierFlattened){
-		parent::__construct($this->identifierFlattened, VanillaBlocks::CORAL_FAN()->getName());
+	use CoralTypeTrait {
+		encodeType as encodeCoralType;
 	}
 
-	public function getId() : int{
-		return $this->dead ? $this->identifierFlattened->getAdditionalLegacyIds()[0] : $this->identifierFlattened->getLegacyId();
+	public function __construct(ItemIdentifier $identifier){
+		$this->coralType = CoralType::TUBE();
+		parent::__construct($identifier, VanillaBlocks::CORAL_FAN()->getName());
 	}
 
-	public function getMeta() : int{
-		return CoralTypeIdMap::getInstance()->toId($this->coralType);
+	protected function encodeType(RuntimeDataWriter $w) : void{
+		//this is aliased to ensure a compile error in case the functions in Item or Block start to differ in future
+		//right now we can directly reuse encodeType from CoralTypeTrait, but that might silently stop working if Item
+		//were to be altered. CoralTypeTrait was originally intended for blocks, so it's better not to assume anything.
+		$this->encodeCoralType($w);
 	}
 
 	public function getBlock(?int $clickedFace = null) : Block{

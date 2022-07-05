@@ -26,6 +26,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\data\runtime\RuntimeDataWriter;
 
 /**
  * Class used for Items that directly represent blocks, such as stone, dirt, wood etc.
@@ -43,12 +44,17 @@ final class ItemBlock extends Item{
 		$this->blockTypeData = $block->computeTypeData();
 	}
 
+	protected function encodeType(RuntimeDataWriter $w) : void{
+		$w->writeInt(Block::INTERNAL_STATE_DATA_BITS, $this->blockTypeData);
+	}
+
 	public function getBlock(?int $clickedFace = null) : Block{
 		//TODO: HACKY MESS, CLEAN IT UP
-		$blockType = BlockFactory::getInstance()->fromTypeId($this->blockTypeId);
-		if($blockType === null){
+		$factory = BlockFactory::getInstance();
+		if(!$factory->isRegistered($this->blockTypeId)){
 			return VanillaBlocks::AIR();
 		}
+		$blockType = BlockFactory::getInstance()->fromTypeId($this->blockTypeId);
 		$blockType->decodeTypeData($this->blockTypeData);
 		return $blockType;
 	}

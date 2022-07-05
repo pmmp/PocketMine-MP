@@ -258,6 +258,7 @@ final class ItemSerializer{
 
 		$this->map(Items::ACACIA_BOAT(), self::id(Ids::ACACIA_BOAT));
 		$this->map(Items::ACACIA_SIGN(), self::id(Ids::ACACIA_SIGN));
+		$this->map(Items::AMETHYST_SHARD(), self::id(Ids::AMETHYST_SHARD));
 		$this->map(Items::APPLE(), self::id(Ids::APPLE));
 		$this->map(Items::ARROW(), self::id(Ids::ARROW));
 		$this->map(Items::BAKED_POTATO(), self::id(Ids::BAKED_POTATO));
@@ -336,6 +337,8 @@ final class ItemSerializer{
 		$this->map(Items::COOKED_RABBIT(), self::id(Ids::COOKED_RABBIT));
 		$this->map(Items::COOKED_SALMON(), self::id(Ids::COOKED_SALMON));
 		$this->map(Items::COOKIE(), self::id(Ids::COOKIE));
+		$this->map(Items::COPPER_INGOT(), self::id(Ids::COPPER_INGOT));
+		$this->map(Items::CRIMSON_SIGN(), self::id(Ids::CRIMSON_SIGN));
 		$this->map(Items::DARK_OAK_BOAT(), self::id(Ids::DARK_OAK_BOAT));
 		$this->map(Items::DARK_OAK_SIGN(), self::id(Ids::DARK_OAK_SIGN));
 		$this->map(Items::DIAMOND(), self::id(Ids::DIAMOND));
@@ -348,6 +351,7 @@ final class ItemSerializer{
 		$this->map(Items::DIAMOND_PICKAXE(), self::id(Ids::DIAMOND_PICKAXE));
 		$this->map(Items::DIAMOND_SHOVEL(), self::id(Ids::DIAMOND_SHOVEL));
 		$this->map(Items::DIAMOND_SWORD(), self::id(Ids::DIAMOND_SWORD));
+		$this->map(Items::DISC_FRAGMENT_5(), self::id(Ids::DISC_FRAGMENT_5));
 		$this->map(Items::DRAGON_BREATH(), self::id(Ids::DRAGON_BREATH));
 		$this->map(Items::DRIED_KELP(), self::id(Ids::DRIED_KELP));
 		$this->map(Items::DYE(), fn(Dye $item) => new Data(match($item->getColor()){
@@ -369,6 +373,7 @@ final class ItemSerializer{
 			DyeColor::YELLOW() => Ids::YELLOW_DYE,
 			default => throw new AssumptionFailedError("Unhandled dye color " . $item->getColor()->name()),
 		}));
+		$this->map(Items::ECHO_SHARD(), self::id(Ids::ECHO_SHARD));
 		$this->map(Items::EGG(), self::id(Ids::EGG));
 		$this->map(Items::EMERALD(), self::id(Ids::EMERALD));
 		$this->map(Items::ENCHANTED_GOLDEN_APPLE(), self::id(Ids::ENCHANTED_GOLDEN_APPLE));
@@ -383,6 +388,7 @@ final class ItemSerializer{
 		$this->map(Items::GLASS_BOTTLE(), self::id(Ids::GLASS_BOTTLE));
 		$this->map(Items::GLISTERING_MELON(), self::id(Ids::GLISTERING_MELON_SLICE));
 		$this->map(Items::GLOWSTONE_DUST(), self::id(Ids::GLOWSTONE_DUST));
+		$this->map(Items::GLOW_INK_SAC(), self::id(Ids::GLOW_INK_SAC));
 		$this->map(Items::GOLDEN_APPLE(), self::id(Ids::GOLDEN_APPLE));
 		$this->map(Items::GOLDEN_AXE(), self::id(Ids::GOLDEN_AXE));
 		$this->map(Items::GOLDEN_BOOTS(), self::id(Ids::GOLDEN_BOOTS));
@@ -398,6 +404,7 @@ final class ItemSerializer{
 		$this->map(Items::GOLD_NUGGET(), self::id(Ids::GOLD_NUGGET));
 		$this->map(Items::GUNPOWDER(), self::id(Ids::GUNPOWDER));
 		$this->map(Items::HEART_OF_THE_SEA(), self::id(Ids::HEART_OF_THE_SEA));
+		$this->map(Items::HONEYCOMB(), self::id(Ids::HONEYCOMB));
 		$this->map(Items::INK_SAC(), self::id(Ids::INK_SAC));
 		$this->map(Items::IRON_AXE(), self::id(Ids::IRON_AXE));
 		$this->map(Items::IRON_BOOTS(), self::id(Ids::IRON_BOOTS));
@@ -420,6 +427,7 @@ final class ItemSerializer{
 		$this->map(Items::LEATHER_PANTS(), self::id(Ids::LEATHER_LEGGINGS));
 		$this->map(Items::LEATHER_TUNIC(), self::id(Ids::LEATHER_CHESTPLATE));
 		$this->map(Items::MAGMA_CREAM(), self::id(Ids::MAGMA_CREAM));
+		$this->map(Items::MANGROVE_SIGN(), self::id(Ids::MANGROVE_SIGN));
 		$this->map(Items::MELON(), self::id(Ids::MELON_SLICE));
 		$this->map(Items::MELON_SEEDS(), self::id(Ids::MELON_SEEDS));
 		$this->map(Items::MILK_BUCKET(), self::id(Ids::MILK_BUCKET));
@@ -433,6 +441,7 @@ final class ItemSerializer{
 		$this->map(Items::OAK_SIGN(), self::id(Ids::OAK_SIGN));
 		$this->map(Items::PAINTING(), self::id(Ids::PAINTING));
 		$this->map(Items::PAPER(), self::id(Ids::PAPER));
+		$this->map(Items::PHANTOM_MEMBRANE(), self::id(Ids::PHANTOM_MEMBRANE));
 		$this->map(Items::POISONOUS_POTATO(), self::id(Ids::POISONOUS_POTATO));
 		$this->map(Items::POPPED_CHORUS_FRUIT(), self::id(Ids::POPPED_CHORUS_FRUIT));
 		$this->map(Items::POTATO(), self::id(Ids::POTATO));
@@ -447,7 +456,10 @@ final class ItemSerializer{
 		$this->map(Items::RABBIT_STEW(), self::id(Ids::RABBIT_STEW));
 		$this->map(Items::RAW_BEEF(), self::id(Ids::BEEF));
 		$this->map(Items::RAW_CHICKEN(), self::id(Ids::CHICKEN));
+		$this->map(Items::RAW_COPPER(), self::id(Ids::RAW_COPPER));
 		$this->map(Items::RAW_FISH(), self::id(Ids::COD));
+		$this->map(Items::RAW_GOLD(), self::id(Ids::RAW_GOLD));
+		$this->map(Items::RAW_IRON(), self::id(Ids::RAW_IRON));
 		$this->map(Items::RAW_MUTTON(), self::id(Ids::MUTTON));
 		$this->map(Items::RAW_PORKCHOP(), self::id(Ids::PORKCHOP));
 		$this->map(Items::RAW_RABBIT(), self::id(Ids::RABBIT));
@@ -475,6 +487,7 @@ final class ItemSerializer{
 		$this->map(Items::SPLASH_POTION(), fn(SplashPotion $item) => new Data(Ids::SPLASH_POTION, PotionTypeIdMap::getInstance()->toId($item->getType())));
 		$this->map(Items::SPRUCE_BOAT(), self::id(Ids::SPRUCE_BOAT));
 		$this->map(Items::SPRUCE_SIGN(), self::id(Ids::SPRUCE_SIGN));
+		$this->map(Items::SPYGLASS(), self::id(Ids::SPYGLASS));
 		$this->map(Items::SQUID_SPAWN_EGG(), self::id(Ids::SQUID_SPAWN_EGG));
 		$this->map(Items::STEAK(), self::id(Ids::COOKED_BEEF));
 		$this->map(Items::STICK(), self::id(Ids::STICK));
@@ -488,6 +501,7 @@ final class ItemSerializer{
 		$this->map(Items::SWEET_BERRIES(), self::id(Ids::SWEET_BERRIES));
 		$this->map(Items::TOTEM(), self::id(Ids::TOTEM_OF_UNDYING));
 		$this->map(Items::VILLAGER_SPAWN_EGG(), self::id(Ids::VILLAGER_SPAWN_EGG));
+		$this->map(Items::WARPED_SIGN(), self::id(Ids::WARPED_SIGN));
 		$this->map(Items::WATER_BUCKET(), self::id(Ids::WATER_BUCKET));
 		$this->map(Items::WHEAT(), self::id(Ids::WHEAT));
 		$this->map(Items::WHEAT_SEEDS(), self::id(Ids::WHEAT_SEEDS));

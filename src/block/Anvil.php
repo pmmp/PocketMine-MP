@@ -28,8 +28,8 @@ use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\block\BlockDataReader;
-use pocketmine\data\runtime\block\BlockDataWriter;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -49,21 +49,21 @@ class Anvil extends Transparent implements Fallable{
 
 	public function getRequiredTypeDataBits() : int{ return 2; }
 
-	protected function decodeType(BlockDataReader $r) : void{
+	protected function decodeType(RuntimeDataReader $r) : void{
 		$this->setDamage($r->readBoundedInt(2, self::UNDAMAGED, self::VERY_DAMAGED));
 	}
 
-	protected function encodeType(BlockDataWriter $w) : void{
+	protected function encodeType(RuntimeDataWriter $w) : void{
 		$w->writeInt(2, $this->getDamage());
 	}
 
 	public function getRequiredStateDataBits() : int{ return 2; }
 
-	protected function decodeState(BlockDataReader $r) : void{
+	protected function decodeState(RuntimeDataReader $r) : void{
 		$this->setFacing($r->readHorizontalFacing());
 	}
 
-	protected function encodeState(BlockDataWriter $w) : void{
+	protected function encodeState(RuntimeDataWriter $w) : void{
 		$w->writeHorizontalFacing($this->getFacing());
 	}
 

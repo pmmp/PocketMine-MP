@@ -76,7 +76,7 @@ final class ItemDeserializer{
 			}
 
 			//TODO: worth caching this or not?
-			return BlockFactory::getInstance()->fromFullBlock($block)->asItem();
+			return BlockFactory::getInstance()->fromStateId($block)->asItem();
 		}
 		$id = $data->getName();
 		if(!isset($this->deserializers[$id])){
@@ -117,7 +117,7 @@ final class ItemDeserializer{
 		$this->map(Ids::ACACIA_SIGN, fn() => Blocks::ACACIA_SIGN()->asItem());
 		//TODO: minecraft:agent_spawn_egg
 		//TODO: minecraft:allay_spawn_egg
-		//TODO: minecraft:amethyst_shard
+		$this->map(Ids::AMETHYST_SHARD, fn() => Items::AMETHYST_SHARD());
 		$this->map(Ids::APPLE, fn() => Items::APPLE());
 		//TODO: minecraft:armor_stand
 		$this->map(Ids::ARROW, function(Data $data) : Item{
@@ -266,12 +266,12 @@ final class ItemDeserializer{
 		$this->map(Ids::COOKED_RABBIT, fn() => Items::COOKED_RABBIT());
 		$this->map(Ids::COOKED_SALMON, fn() => Items::COOKED_SALMON());
 		$this->map(Ids::COOKIE, fn() => Items::COOKIE());
-		//TODO: minecraft:copper_ingot
+		$this->map(Ids::COPPER_INGOT, fn() => Items::COPPER_INGOT());
 		//TODO: minecraft:cow_spawn_egg
 		//TODO: minecraft:creeper_banner_pattern
 		//TODO: minecraft:creeper_spawn_egg
 		$this->map(Ids::CRIMSON_DOOR, fn() => Blocks::CRIMSON_DOOR()->asItem());
-		//TODO: minecraft:crimson_sign
+		$this->map(Ids::CRIMSON_SIGN, fn() => Blocks::CRIMSON_SIGN()->asItem());
 		//TODO: minecraft:crossbow
 		$this->map(Ids::CYAN_DYE, fn() => Items::DYE()->setColor(DyeColor::CYAN()));
 		$this->map(Ids::DARK_OAK_BOAT, fn() => Items::DARK_OAK_BOAT());
@@ -288,6 +288,7 @@ final class ItemDeserializer{
 		$this->map(Ids::DIAMOND_PICKAXE, fn() => Items::DIAMOND_PICKAXE());
 		$this->map(Ids::DIAMOND_SHOVEL, fn() => Items::DIAMOND_SHOVEL());
 		$this->map(Ids::DIAMOND_SWORD, fn() => Items::DIAMOND_SWORD());
+		$this->map(Ids::DISC_FRAGMENT_5, fn() => Items::DISC_FRAGMENT_5());
 		//TODO: minecraft:dolphin_spawn_egg
 		//TODO: minecraft:donkey_spawn_egg
 		$this->map(Ids::DRAGON_BREATH, fn() => Items::DRAGON_BREATH());
@@ -315,6 +316,7 @@ final class ItemDeserializer{
 			}
 			return Items::DYE()->setColor($dyeColor);
 		});
+		$this->map(Ids::ECHO_SHARD, fn() => Items::ECHO_SHARD());
 		$this->map(Ids::EGG, fn() => Items::EGG());
 		//TODO: minecraft:elder_guardian_spawn_egg
 		//TODO: minecraft:elytra
@@ -352,7 +354,7 @@ final class ItemDeserializer{
 		//TODO: minecraft:globe_banner_pattern
 		//TODO: minecraft:glow_berries
 		//TODO: minecraft:glow_frame
-		//TODO: minecraft:glow_ink_sac
+		$this->map(Ids::GLOW_INK_SAC, fn() => Items::GLOW_INK_SAC());
 		//TODO: minecraft:glow_squid_spawn_egg
 		//TODO: minecraft:glow_stick
 		$this->map(Ids::GLOWSTONE_DUST, fn() => Items::GLOWSTONE_DUST());
@@ -379,7 +381,7 @@ final class ItemDeserializer{
 		$this->map(Ids::HEART_OF_THE_SEA, fn() => Items::HEART_OF_THE_SEA());
 		//TODO: minecraft:hoglin_spawn_egg
 		//TODO: minecraft:honey_bottle
-		//TODO: minecraft:honeycomb
+		$this->map(Ids::HONEYCOMB, fn() => Items::HONEYCOMB());
 		$this->map(Ids::HOPPER, fn() => Blocks::HOPPER()->asItem());
 		//TODO: minecraft:hopper_minecart
 		//TODO: minecraft:horse_spawn_egg
@@ -422,6 +424,7 @@ final class ItemDeserializer{
 		$this->map(Ids::MAGMA_CREAM, fn() => Items::MAGMA_CREAM());
 		//TODO: minecraft:magma_cube_spawn_egg
 		$this->map(Ids::MANGROVE_DOOR, fn() => Blocks::MANGROVE_DOOR()->asItem());
+		$this->map(Ids::MANGROVE_SIGN, fn() => Blocks::MANGROVE_SIGN()->asItem());
 		//TODO: minecraft:medicine
 		$this->map(Ids::MELON_SEEDS, fn() => Items::MELON_SEEDS());
 		$this->map(Ids::MELON_SLICE, fn() => Items::MELON());
@@ -472,7 +475,7 @@ final class ItemDeserializer{
 		//TODO: minecraft:panda_spawn_egg
 		$this->map(Ids::PAPER, fn() => Items::PAPER());
 		//TODO: minecraft:parrot_spawn_egg
-		//TODO: minecraft:phantom_membrane
+		$this->map(Ids::PHANTOM_MEMBRANE, fn() => Items::PHANTOM_MEMBRANE());
 		//TODO: minecraft:phantom_spawn_egg
 		//TODO: minecraft:pig_spawn_egg
 		//TODO: minecraft:piglin_banner_pattern
@@ -510,9 +513,9 @@ final class ItemDeserializer{
 		$this->map(Ids::RABBIT_STEW, fn() => Items::RABBIT_STEW());
 		//TODO: minecraft:rapid_fertilizer
 		//TODO: minecraft:ravager_spawn_egg
-		//TODO: minecraft:raw_copper
-		//TODO: minecraft:raw_gold
-		//TODO: minecraft:raw_iron
+		$this->map(Ids::RAW_COPPER, fn() => Items::RAW_COPPER());
+		$this->map(Ids::RAW_GOLD, fn() => Items::RAW_GOLD());
+		$this->map(Ids::RAW_IRON, fn() => Items::RAW_IRON());
 		$this->map(Ids::RED_DYE, fn() => Items::DYE()->setColor(DyeColor::RED()));
 		$this->map(Ids::REDSTONE, fn() => Items::REDSTONE_DUST());
 		$this->map(Ids::REPEATER, fn() => Blocks::REDSTONE_REPEATER()->asItem());
@@ -564,7 +567,7 @@ final class ItemDeserializer{
 		$this->map(Ids::SPRUCE_BOAT, fn() => Items::SPRUCE_BOAT());
 		$this->map(Ids::SPRUCE_DOOR, fn() => Blocks::SPRUCE_DOOR()->asItem());
 		$this->map(Ids::SPRUCE_SIGN, fn() => Blocks::SPRUCE_SIGN()->asItem());
-		//TODO: minecraft:spyglass
+		$this->map(Ids::SPYGLASS, fn() => Items::SPYGLASS());
 		$this->map(Ids::SQUID_SPAWN_EGG, fn() => Items::SQUID_SPAWN_EGG());
 		$this->map(Ids::STICK, fn() => Items::STICK());
 		$this->map(Ids::STONE_AXE, fn() => Items::STONE_AXE());
@@ -595,7 +598,7 @@ final class ItemDeserializer{
 		//TODO: minecraft:wandering_trader_spawn_egg
 		$this->map(Ids::WARPED_DOOR, fn() => Blocks::WARPED_DOOR()->asItem());
 		//TODO: minecraft:warped_fungus_on_a_stick
-		//TODO: minecraft:warped_sign
+		$this->map(Ids::WARPED_SIGN, fn() => Blocks::WARPED_SIGN()->asItem());
 		$this->map(Ids::WATER_BUCKET, fn() => Items::WATER_BUCKET());
 		$this->map(Ids::WHEAT, fn() => Items::WHEAT());
 		$this->map(Ids::WHEAT_SEEDS, fn() => Items::WHEAT_SEEDS());

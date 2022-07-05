@@ -23,7 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\data\bedrock\PotionTypeIdMap;
+use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeEnumSerializer;
 use pocketmine\entity\Living;
 use pocketmine\player\Player;
 
@@ -36,8 +37,8 @@ class Potion extends Item implements ConsumableItem{
 		parent::__construct($identifier, $name);
 	}
 
-	public function getMeta() : int{
-		return PotionTypeIdMap::getInstance()->toId($this->potionType);
+	protected function encodeType(RuntimeDataWriter $w) : void{
+		RuntimeEnumSerializer::writePotionType($w, $this->potionType);
 	}
 
 	public function getType() : PotionType{ return $this->potionType; }

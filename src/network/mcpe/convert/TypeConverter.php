@@ -54,12 +54,12 @@ use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use function get_class;
+use function morton2d_encode;
 
 class TypeConverter{
 	use SingletonTrait;
 
 	private const PM_ID_TAG = "___Id___";
-	private const PM_META_TAG = "___Meta___";
 
 	private const RECIPE_INPUT_WILDCARD_META = 0x7fff;
 
@@ -176,8 +176,7 @@ class TypeConverter{
 			if($nbt === null){
 				$nbt = new CompoundTag();
 			}
-			$nbt->setInt(self::PM_ID_TAG, $itemStack->getId());
-			$nbt->setInt(self::PM_META_TAG, $itemStack->getMeta());
+			$nbt->setInt(self::PM_ID_TAG, morton2d_encode($itemStack->getTypeId(), $itemStack->computeTypeData()));
 		}else{
 			[$id, $meta, $blockRuntimeId] = $idMeta;
 		}

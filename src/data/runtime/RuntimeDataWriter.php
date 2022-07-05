@@ -21,14 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\runtime\block;
+namespace pocketmine\data\runtime;
 
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
 
-final class BlockDataWriter{
+final class RuntimeDataWriter{
 
 	private int $value = 0;
 	private int $offset = 0;

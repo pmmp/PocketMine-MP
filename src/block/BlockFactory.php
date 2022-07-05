@@ -50,9 +50,9 @@ use pocketmine\block\tile\Note as TileNote;
 use pocketmine\block\tile\ShulkerBox as TileShulkerBox;
 use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\tile\Smoker as TileSmoker;
-use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\TreeType;
 use pocketmine\block\utils\WoodType;
+use pocketmine\data\runtime\InvalidSerializedRuntimeDataException;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\utils\AssumptionFailedError;
@@ -461,10 +461,6 @@ class BlockFactory{
 			$name = $treeType->getDisplayName();
 			$this->register(new Sapling(BlockLegacyIdHelper::getSaplingIdentifier($treeType), $name . " Sapling", BreakInfo::instant(), $treeType));
 			$this->register(new Leaves(BlockLegacyIdHelper::getLeavesIdentifier($treeType), $name . " Leaves", $leavesBreakInfo, $treeType));
-
-			[$floorSignId, $wallSignId, $signAsItem] = BlockLegacyIdHelper::getWoodenSignInfo($treeType);
-			$this->register(new FloorSign($floorSignId, $name . " Sign", $signBreakInfo, $signAsItem));
-			$this->register(new WallSign($wallSignId, $name . " Wall Sign", $signBreakInfo, $signAsItem));
 		}
 
 		foreach(WoodType::getAll() as $woodType){
@@ -484,6 +480,10 @@ class BlockFactory{
 			$this->register(new WoodenButton(BlockLegacyIdHelper::getWoodenButtonIdentifier($woodType), $name . " Button", $woodenButtonBreakInfo, $woodType));
 			$this->register(new WoodenPressurePlate(BlockLegacyIdHelper::getWoodenPressurePlateIdentifier($woodType), $name . " Pressure Plate", $woodenPressurePlateBreakInfo, $woodType));
 			$this->register(new WoodenTrapdoor(BlockLegacyIdHelper::getWoodenTrapdoorIdentifier($woodType), $name . " Trapdoor", $woodenDoorBreakInfo, $woodType));
+
+			[$floorSignId, $wallSignId, $signAsItem] = BlockLegacyIdHelper::getWoodenSignInfo($woodType);
+			$this->register(new FloorSign($floorSignId, $name . " Sign", $signBreakInfo, $woodType, $signAsItem));
+			$this->register(new WallSign($wallSignId, $name . " Wall Sign", $signBreakInfo, $woodType, $signAsItem));
 		}
 
 		$sandstoneBreakInfo = new BreakInfo(0.8, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
@@ -829,9 +829,9 @@ class BlockFactory{
 				$v->decodeStateData($stateData);
 				if($v->computeStateData() !== $stateData){
 					//if the fullID comes back different, this is a broken state that we can't rely on; map it to default
-					throw new InvalidBlockStateException("Corrupted state");
+					throw new InvalidSerializedRuntimeDataException("Corrupted state");
 				}
-			}catch(InvalidBlockStateException $e){ //invalid property combination, leave it
+			}catch(InvalidSerializedRuntimeDataException $e){ //invalid property combination, leave it
 				continue;
 			}
 
@@ -856,22 +856,25 @@ class BlockFactory{
 
 	/**
 	 * @internal
-	 * @see VanillaBlocks
-	 *
-	 * Deserializes a block from the provided type ID and internal state data.
+	 * Returns the default state of the block type associated with the given type ID.
 	 */
-	public function get(int $typeId, int $stateData) : Block{
-		if($stateData < 0 || $stateData >= (1 << Block::INTERNAL_STATE_DATA_BITS)){
-			throw new \InvalidArgumentException("Block meta value $stateData is out of bounds");
+	public function fromTypeId(int $typeId) : Block{
+		if(isset($this->typeIndex[$typeId])){
+			return clone $this->typeIndex[$typeId];
 		}
 
-		$index = ($typeId << Block::INTERNAL_STATE_DATA_BITS) | $stateData;
-		if($index < 0){
-			throw new \InvalidArgumentException("Block ID $typeId is out of bounds");
+		throw new \InvalidArgumentException("Block ID $typeId is not registered");
+	}
+
+	public function fromStateId(int $stateId) : Block{
+		if($stateId < 0){
+			throw new \InvalidArgumentException("Block state ID cannot be negative");
 		}
-		if(isset($this->fullList[$index])) { //hot
-			$block = clone $this->fullList[$index];
+		if(isset($this->fullList[$stateId])) { //hot
+			$block = clone $this->fullList[$stateId];
 		}else{
+			$typeId = $stateId >> Block::INTERNAL_STATE_DATA_BITS;
+			$stateData = $stateId & Block::INTERNAL_STATE_DATA_MASK;
 			$block = new UnknownBlock(new BID($typeId), BreakInfo::instant(), $stateData);
 		}
 
@@ -879,27 +882,10 @@ class BlockFactory{
 	}
 
 	/**
-	 * @internal
-	 * Returns the default state of the block type associated with the given type ID.
-	 */
-	public function fromTypeId(int $typeId) : ?Block{
-		if(isset($this->typeIndex[$typeId])){
-			return clone $this->typeIndex[$typeId];
-		}
-
-		return null;
-	}
-
-	public function fromFullBlock(int $fullState) : Block{
-		return $this->get($fullState >> Block::INTERNAL_STATE_DATA_BITS, $fullState & Block::INTERNAL_STATE_DATA_MASK);
-	}
-
-	/**
 	 * Returns whether a specified block state is already registered in the block factory.
 	 */
-	public function isRegistered(int $typeId, int $stateData = 0) : bool{
-		$index = ($typeId << Block::INTERNAL_STATE_DATA_BITS) | $stateData;
-		$b = $this->fullList[$index] ?? null;
+	public function isRegistered(int $typeId) : bool{
+		$b = $this->typeIndex[$typeId] ?? null;
 		return $b !== null && !($b instanceof UnknownBlock);
 	}
 

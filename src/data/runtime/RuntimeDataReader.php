@@ -21,15 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\runtime\block;
+namespace pocketmine\data\runtime;
 
-use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
 
-final class BlockDataReader{
+final class RuntimeDataReader{
 
 	private int $offset = 0;
 
@@ -52,7 +51,7 @@ final class BlockDataReader{
 	public function readBoundedInt(int $bits, int $min, int $max) : int{
 		$result = $this->readInt($bits);
 		if($result < $min || $result > $max){
-			throw new InvalidBlockStateException("Value is outside the range $min - $max");
+			throw new InvalidSerializedRuntimeDataException("Value is outside the range $min - $max");
 		}
 		return $result;
 	}
@@ -79,7 +78,7 @@ final class BlockDataReader{
 			3 => Facing::SOUTH,
 			4 => Facing::WEST,
 			5 => Facing::EAST,
-			default => throw new InvalidBlockStateException("Invalid facing value")
+			default => throw new InvalidSerializedRuntimeDataException("Invalid facing value")
 		};
 	}
 
@@ -88,7 +87,7 @@ final class BlockDataReader{
 			0 => Axis::X,
 			1 => Axis::Z,
 			2 => Axis::Y,
-			default => throw new InvalidBlockStateException("Invalid axis value")
+			default => throw new InvalidSerializedRuntimeDataException("Invalid axis value")
 		};
 	}
 

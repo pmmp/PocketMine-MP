@@ -21,21 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\data\runtime;
 
-final class ItemIdentifierFlattened extends ItemIdentifier{
-	/**
-	 * @param int[] $additionalLegacyIds
-	 */
-	public function __construct(int $typeId, int $legacyId, int $legacyMeta, private array $additionalLegacyIds){
-		parent::__construct($typeId, $legacyId, $legacyMeta);
-	}
+final class InvalidSerializedRuntimeDataException extends \UnexpectedValueException{
 
-	/** @return int[] */
-	public function getAdditionalLegacyIds() : array{ return $this->additionalLegacyIds; }
-
-	/** @return int[] */
-	public function getAllLegacyIds() : array{
-		return [$this->getLegacyId(), ...$this->additionalLegacyIds];
-	}
 }

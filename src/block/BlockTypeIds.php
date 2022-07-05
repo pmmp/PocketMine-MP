@@ -650,6 +650,12 @@ final class BlockTypeIds{
 	public const MANGROVE_STAIRS = 10625;
 	public const CRIMSON_STAIRS = 10626;
 	public const WARPED_STAIRS = 10627;
+	public const MANGROVE_SIGN = 10628;
+	public const CRIMSON_SIGN = 10629;
+	public const WARPED_SIGN = 10630;
+	public const MANGROVE_WALL_SIGN = 10631;
+	public const CRIMSON_WALL_SIGN = 10632;
+	public const WARPED_WALL_SIGN = 10633;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10628;
+	public const FIRST_UNUSED_BLOCK_ID = 10634;
 }

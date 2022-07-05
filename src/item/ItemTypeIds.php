@@ -265,6 +265,34 @@ final class ItemTypeIds{
 	public const WRITABLE_BOOK = 20226;
 	public const WRITTEN_BOOK = 20227;
 	public const ZOMBIE_SPAWN_EGG = 20228;
+	public const CRIMSON_SIGN = 20229;
+	public const MANGROVE_SIGN = 20230;
+	public const WARPED_SIGN = 20231;
+	public const AMETHYST_SHARD = 20232;
+	public const COPPER_INGOT = 20233;
+	public const DISC_FRAGMENT_5 = 20234;
+	public const ECHO_SHARD = 20235;
+	public const GLOW_INK_SAC = 20236;
+	public const HONEY_BOTTLE = 20237;
+	public const HONEYCOMB = 20238;
+	public const RECORD_5 = 20239;
+	public const RECORD_OTHERSIDE = 20240;
+	public const RECORD_PIGSTEP = 20241;
+	public const NETHERITE_INGOT = 20242;
+	public const NETHERITE_AXE = 20243;
+	public const NETHERITE_HOE = 20244;
+	public const NETHERITE_PICKAXE = 20245;
+	public const NETHERITE_SHOVEL = 20246;
+	public const NETHERITE_SWORD = 20247;
+	public const NETHERITE_BOOTS = 20248;
+	public const NETHERITE_CHESTPLATE = 20249;
+	public const NETHERITE_HELMET = 20250;
+	public const NETHERITE_LEGGINGS = 20251;
+	public const PHANTOM_MEMBRANE = 20252;
+	public const RAW_COPPER = 20253;
+	public const RAW_IRON = 20254;
+	public const RAW_GOLD = 20255;
+	public const SPYGLASS = 20256;
 
-	public const FIRST_UNUSED_ITEM_ID = 20229;
+	public const FIRST_UNUSED_ITEM_ID = 20239;
 }
