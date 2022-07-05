@@ -63,9 +63,9 @@ class BrewingStand extends Transparent{
 
 	protected function encodeState(RuntimeDataWriter $w) : void{
 		foreach([
-			\pocketmine\block\utils\BrewingStandSlot::EAST(),
-			\pocketmine\block\utils\BrewingStandSlot::NORTHWEST(),
-			\pocketmine\block\utils\BrewingStandSlot::SOUTHWEST(),
+			BrewingStandSlot::EAST(),
+			BrewingStandSlot::NORTHWEST(),
+			BrewingStandSlot::SOUTHWEST(),
 		] as $member){
 			$w->writeBool(isset($this->slots[$member->id()]));
 		}
