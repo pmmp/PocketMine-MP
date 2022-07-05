@@ -742,6 +742,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeInt(StateNames::DEPRECATED, 0)
 				->writePillarAxis($block->getAxis());
 		});
+		$this->mapSimple(Blocks::HONEYCOMB(), Ids::HONEYCOMB_BLOCK);
 		$this->map(Blocks::HOPPER(), function(Hopper $block) : Writer{
 			return Writer::create(Ids::HOPPER)
 				->writeBool(StateNames::TOGGLE_BIT, $block->isPowered())

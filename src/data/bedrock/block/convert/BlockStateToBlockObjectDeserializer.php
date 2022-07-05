@@ -602,6 +602,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			return Blocks::HAY_BALE()->setAxis($in->readPillarAxis());
 		});
 		$this->map(Ids::HEAVY_WEIGHTED_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeWeightedPressurePlate(Blocks::WEIGHTED_PRESSURE_PLATE_HEAVY(), $in));
+		$this->map(Ids::HONEYCOMB_BLOCK, fn() => Blocks::HONEYCOMB());
 		$this->map(Ids::HOPPER, function(Reader $in) : Block{
 			return Blocks::HOPPER()
 				->setFacing($in->readFacingWithoutUp())
