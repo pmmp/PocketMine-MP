@@ -856,30 +856,6 @@ class BlockFactory{
 
 	/**
 	 * @internal
-	 * @see VanillaBlocks
-	 *
-	 * Deserializes a block from the provided type ID and internal state data.
-	 */
-	public function get(int $typeId, int $stateData) : Block{
-		if($stateData < 0 || $stateData >= (1 << Block::INTERNAL_STATE_DATA_BITS)){
-			throw new \InvalidArgumentException("Block meta value $stateData is out of bounds");
-		}
-
-		$index = ($typeId << Block::INTERNAL_STATE_DATA_BITS) | $stateData;
-		if($index < 0){
-			throw new \InvalidArgumentException("Block ID $typeId is out of bounds");
-		}
-		if(isset($this->fullList[$index])) { //hot
-			$block = clone $this->fullList[$index];
-		}else{
-			$block = new UnknownBlock(new BID($typeId), BreakInfo::instant(), $stateData);
-		}
-
-		return $block;
-	}
-
-	/**
-	 * @internal
 	 * Returns the default state of the block type associated with the given type ID.
 	 */
 	public function fromTypeId(int $typeId) : Block{
@@ -891,7 +867,18 @@ class BlockFactory{
 	}
 
 	public function fromFullBlock(int $fullState) : Block{
-		return $this->get($fullState >> Block::INTERNAL_STATE_DATA_BITS, $fullState & Block::INTERNAL_STATE_DATA_MASK);
+		if($fullState < 0){
+			throw new \InvalidArgumentException("Block state ID cannot be negative");
+		}
+		if(isset($this->fullList[$fullState])) { //hot
+			$block = clone $this->fullList[$fullState];
+		}else{
+			$typeId = $fullState >> Block::INTERNAL_STATE_DATA_BITS;
+			$stateData = $fullState & Block::INTERNAL_STATE_DATA_MASK;
+			$block = new UnknownBlock(new BID($typeId), BreakInfo::instant(), $stateData);
+		}
+
+		return $block;
 	}
 
 	/**
