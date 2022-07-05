@@ -249,7 +249,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static SplashPotion SPLASH_POTION()
  * @method static Boat SPRUCE_BOAT()
  * @method static ItemBlockWallOrFloor SPRUCE_SIGN()
- * @method static Item SPYGLASS()
+ * @method static Spyglass SPYGLASS()
  * @method static SpawnEgg SQUID_SPAWN_EGG()
  * @method static Steak STEAK()
  * @method static Stick STICK()

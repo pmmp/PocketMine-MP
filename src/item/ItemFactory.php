@@ -185,7 +185,6 @@ class ItemFactory{
 		$this->register(new Item(new IID(Ids::RAW_IRON), "Raw Iron"));
 		$this->register(new Item(new IID(Ids::RAW_GOLD), "Raw Gold"));
 		$this->register(new Item(new IID(Ids::PHANTOM_MEMBRANE), "Phantom Membrane"));
-		$this->register(new Item(new IID(Ids::SPYGLASS), "Spyglass"));
 
 		//the meta values for buckets are intentionally hardcoded because block IDs will change in the future
 		$this->register(new LiquidBucket(new IID(Ids::WATER_BUCKET), "Water Bucket", Blocks::WATER()));
@@ -235,6 +234,7 @@ class ItemFactory{
 		$this->register(new ItemBlockWallOrFloor(new IID(Ids::WARPED_SIGN), Blocks::WARPED_SIGN(), Blocks::WARPED_WALL_SIGN()));
 		$this->register(new Snowball(new IID(Ids::SNOWBALL), "Snowball"));
 		$this->register(new SpiderEye(new IID(Ids::SPIDER_EYE), "Spider Eye"));
+		$this->register(new Spyglass(new IID(Ids::SPYGLASS), "Spyglass"));
 		$this->register(new Steak(new IID(Ids::STEAK), "Steak"));
 		$this->register(new Stick(new IID(Ids::STICK), "Stick"));
 		$this->register(new StringItem(new IID(Ids::STRING), "String"));
