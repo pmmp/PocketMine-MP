@@ -45,10 +45,11 @@ final class ItemBlock extends Item{
 
 	public function getBlock(?int $clickedFace = null) : Block{
 		//TODO: HACKY MESS, CLEAN IT UP
-		$blockType = BlockFactory::getInstance()->fromTypeId($this->blockTypeId);
-		if($blockType === null){
+		$factory = BlockFactory::getInstance();
+		if(!$factory->isRegistered($this->blockTypeId)){
 			return VanillaBlocks::AIR();
 		}
+		$blockType = BlockFactory::getInstance()->fromTypeId($this->blockTypeId);
 		$blockType->decodeTypeData($this->blockTypeData);
 		return $blockType;
 	}

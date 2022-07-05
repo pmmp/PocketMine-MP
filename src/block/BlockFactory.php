@@ -882,12 +882,12 @@ class BlockFactory{
 	 * @internal
 	 * Returns the default state of the block type associated with the given type ID.
 	 */
-	public function fromTypeId(int $typeId) : ?Block{
+	public function fromTypeId(int $typeId) : Block{
 		if(isset($this->typeIndex[$typeId])){
 			return clone $this->typeIndex[$typeId];
 		}
 
-		return null;
+		throw new \InvalidArgumentException("Block ID $typeId is not registered");
 	}
 
 	public function fromFullBlock(int $fullState) : Block{
@@ -897,9 +897,8 @@ class BlockFactory{
 	/**
 	 * Returns whether a specified block state is already registered in the block factory.
 	 */
-	public function isRegistered(int $typeId, int $stateData = 0) : bool{
-		$index = ($typeId << Block::INTERNAL_STATE_DATA_BITS) | $stateData;
-		$b = $this->fullList[$index] ?? null;
+	public function isRegistered(int $typeId) : bool{
+		$b = $this->typeIndex[$typeId] ?? null;
 		return $b !== null && !($b instanceof UnknownBlock);
 	}
 
