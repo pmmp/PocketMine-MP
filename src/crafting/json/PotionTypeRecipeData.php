@@ -21,22 +21,21 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\crafting\json;
 
-use pocketmine\block\utils\WoodTypeTrait;
+final class PotionTypeRecipeData{
+	/** @required */
+	public RecipeIngredientData $input;
 
-class Planks extends Opaque{
-	use WoodTypeTrait;
+	/** @required */
+	public RecipeIngredientData $ingredient;
 
-	public function getFuelTime() : int{
-		return 300;
-	}
+	/** @required */
+	public ItemStackData $output;
 
-	public function getFlameEncouragement() : int{
-		return $this->woodType->isFlammable() ? 5 : 0;
-	}
-
-	public function getFlammability() : int{
-		return $this->woodType->isFlammable() ? 20 : 0;
+	public function __construct(RecipeIngredientData $input, RecipeIngredientData $ingredient, ItemStackData $output){
+		$this->input = $input;
+		$this->ingredient = $ingredient;
+		$this->output = $output;
 	}
 }

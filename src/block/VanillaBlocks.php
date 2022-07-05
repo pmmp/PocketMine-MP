@@ -37,7 +37,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static WoodenFence ACACIA_FENCE()
  * @method static FenceGate ACACIA_FENCE_GATE()
  * @method static Leaves ACACIA_LEAVES()
- * @method static Log ACACIA_LOG()
+ * @method static Wood ACACIA_LOG()
  * @method static Planks ACACIA_PLANKS()
  * @method static WoodenPressurePlate ACACIA_PRESSURE_PLATE()
  * @method static Sapling ACACIA_SAPLING()
@@ -51,6 +51,8 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Air AIR()
  * @method static Flower ALLIUM()
  * @method static MushroomStem ALL_SIDED_MUSHROOM_STEM()
+ * @method static Opaque AMETHYST()
+ * @method static Opaque ANCIENT_DEBRIS()
  * @method static Opaque ANDESITE()
  * @method static Slab ANDESITE_SLAB()
  * @method static Stair ANDESITE_STAIRS()
@@ -62,6 +64,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static FloorBanner BANNER()
  * @method static Barrel BARREL()
  * @method static Transparent BARRIER()
+ * @method static SimplePillar BASALT()
  * @method static Beacon BEACON()
  * @method static Bed BED()
  * @method static Bedrock BEDROCK()
@@ -72,7 +75,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static WoodenFence BIRCH_FENCE()
  * @method static FenceGate BIRCH_FENCE_GATE()
  * @method static Leaves BIRCH_LEAVES()
- * @method static Log BIRCH_LOG()
+ * @method static Wood BIRCH_LOG()
  * @method static Planks BIRCH_PLANKS()
  * @method static WoodenPressurePlate BIRCH_PRESSURE_PLATE()
  * @method static Sapling BIRCH_SAPLING()
@@ -82,6 +85,10 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static WoodenTrapdoor BIRCH_TRAPDOOR()
  * @method static WallSign BIRCH_WALL_SIGN()
  * @method static Wood BIRCH_WOOD()
+ * @method static Opaque BLACKSTONE()
+ * @method static Slab BLACKSTONE_SLAB()
+ * @method static Stair BLACKSTONE_STAIRS()
+ * @method static Wall BLACKSTONE_WALL()
  * @method static Furnace BLAST_FURNACE()
  * @method static BlueIce BLUE_ICE()
  * @method static Flower BLUE_ORCHID()
@@ -97,11 +104,15 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static BrownMushroomBlock BROWN_MUSHROOM_BLOCK()
  * @method static Cactus CACTUS()
  * @method static Cake CAKE()
+ * @method static Opaque CALCITE()
  * @method static Carpet CARPET()
  * @method static Carrot CARROTS()
  * @method static CarvedPumpkin CARVED_PUMPKIN()
  * @method static ChemicalHeat CHEMICAL_HEAT()
  * @method static Chest CHEST()
+ * @method static Opaque CHISELED_DEEPSLATE()
+ * @method static Opaque CHISELED_NETHER_BRICKS()
+ * @method static Opaque CHISELED_POLISHED_BLACKSTONE()
  * @method static SimplePillar CHISELED_QUARTZ()
  * @method static Opaque CHISELED_RED_SANDSTONE()
  * @method static Opaque CHISELED_SANDSTONE()
@@ -109,6 +120,10 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Clay CLAY()
  * @method static Coal COAL()
  * @method static CoalOre COAL_ORE()
+ * @method static Opaque COBBLED_DEEPSLATE()
+ * @method static Slab COBBLED_DEEPSLATE_SLAB()
+ * @method static Stair COBBLED_DEEPSLATE_STAIRS()
+ * @method static Wall COBBLED_DEEPSLATE_WALL()
  * @method static Opaque COBBLESTONE()
  * @method static Slab COBBLESTONE_SLAB()
  * @method static Stair COBBLESTONE_STAIRS()
@@ -122,8 +137,23 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static CoralBlock CORAL_BLOCK()
  * @method static FloorCoralFan CORAL_FAN()
  * @method static Flower CORNFLOWER()
+ * @method static Opaque CRACKED_DEEPSLATE_BRICKS()
+ * @method static Opaque CRACKED_DEEPSLATE_TILES()
+ * @method static Opaque CRACKED_NETHER_BRICKS()
+ * @method static Opaque CRACKED_POLISHED_BLACKSTONE_BRICKS()
  * @method static Opaque CRACKED_STONE_BRICKS()
  * @method static CraftingTable CRAFTING_TABLE()
+ * @method static WoodenButton CRIMSON_BUTTON()
+ * @method static WoodenDoor CRIMSON_DOOR()
+ * @method static WoodenFence CRIMSON_FENCE()
+ * @method static FenceGate CRIMSON_FENCE_GATE()
+ * @method static Wood CRIMSON_HYPHAE()
+ * @method static Planks CRIMSON_PLANKS()
+ * @method static WoodenPressurePlate CRIMSON_PRESSURE_PLATE()
+ * @method static WoodenSlab CRIMSON_SLAB()
+ * @method static WoodenStairs CRIMSON_STAIRS()
+ * @method static Wood CRIMSON_STEM()
+ * @method static WoodenTrapdoor CRIMSON_TRAPDOOR()
  * @method static Opaque CUT_RED_SANDSTONE()
  * @method static Slab CUT_RED_SANDSTONE_SLAB()
  * @method static Opaque CUT_SANDSTONE()
@@ -134,7 +164,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static WoodenFence DARK_OAK_FENCE()
  * @method static FenceGate DARK_OAK_FENCE_GATE()
  * @method static Leaves DARK_OAK_LEAVES()
- * @method static Log DARK_OAK_LOG()
+ * @method static Wood DARK_OAK_LOG()
  * @method static Planks DARK_OAK_PLANKS()
  * @method static WoodenPressurePlate DARK_OAK_PRESSURE_PLATE()
  * @method static Sapling DARK_OAK_SAPLING()
@@ -149,6 +179,15 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Stair DARK_PRISMARINE_STAIRS()
  * @method static DaylightSensor DAYLIGHT_SENSOR()
  * @method static DeadBush DEAD_BUSH()
+ * @method static SimplePillar DEEPSLATE()
+ * @method static Opaque DEEPSLATE_BRICKS()
+ * @method static Slab DEEPSLATE_BRICK_SLAB()
+ * @method static Stair DEEPSLATE_BRICK_STAIRS()
+ * @method static Wall DEEPSLATE_BRICK_WALL()
+ * @method static Opaque DEEPSLATE_TILES()
+ * @method static Slab DEEPSLATE_TILE_SLAB()
+ * @method static Stair DEEPSLATE_TILE_STAIRS()
+ * @method static Wall DEEPSLATE_TILE_WALL()
  * @method static DetectorRail DETECTOR_RAIL()
  * @method static Opaque DIAMOND()
  * @method static DiamondOre DIAMOND_ORE()
@@ -342,7 +381,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static WoodenFence JUNGLE_FENCE()
  * @method static FenceGate JUNGLE_FENCE_GATE()
  * @method static Leaves JUNGLE_LEAVES()
- * @method static Log JUNGLE_LOG()
+ * @method static Wood JUNGLE_LOG()
  * @method static Planks JUNGLE_PLANKS()
  * @method static WoodenPressurePlate JUNGLE_PRESSURE_PLATE()
  * @method static Sapling JUNGLE_SAPLING()
@@ -362,12 +401,24 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Lectern LECTERN()
  * @method static Opaque LEGACY_STONECUTTER()
  * @method static Lever LEVER()
+ * @method static Light LIGHT()
  * @method static DoublePlant LILAC()
  * @method static Flower LILY_OF_THE_VALLEY()
  * @method static WaterLily LILY_PAD()
  * @method static LitPumpkin LIT_PUMPKIN()
  * @method static Loom LOOM()
  * @method static Magma MAGMA()
+ * @method static WoodenButton MANGROVE_BUTTON()
+ * @method static WoodenDoor MANGROVE_DOOR()
+ * @method static WoodenFence MANGROVE_FENCE()
+ * @method static FenceGate MANGROVE_FENCE_GATE()
+ * @method static Wood MANGROVE_LOG()
+ * @method static Planks MANGROVE_PLANKS()
+ * @method static WoodenPressurePlate MANGROVE_PRESSURE_PLATE()
+ * @method static WoodenSlab MANGROVE_SLAB()
+ * @method static WoodenStairs MANGROVE_STAIRS()
+ * @method static WoodenTrapdoor MANGROVE_TRAPDOOR()
+ * @method static Wood MANGROVE_WOOD()
  * @method static ChemistryTable MATERIAL_REDUCER()
  * @method static Melon MELON()
  * @method static MelonStem MELON_STEM()
@@ -400,7 +451,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static WoodenFence OAK_FENCE()
  * @method static FenceGate OAK_FENCE_GATE()
  * @method static Leaves OAK_LEAVES()
- * @method static Log OAK_LOG()
+ * @method static Wood OAK_LOG()
  * @method static Planks OAK_PLANKS()
  * @method static WoodenPressurePlate OAK_PRESSURE_PLATE()
  * @method static Sapling OAK_SAPLING()
@@ -420,6 +471,21 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Opaque POLISHED_ANDESITE()
  * @method static Slab POLISHED_ANDESITE_SLAB()
  * @method static Stair POLISHED_ANDESITE_STAIRS()
+ * @method static SimplePillar POLISHED_BASALT()
+ * @method static Opaque POLISHED_BLACKSTONE()
+ * @method static Opaque POLISHED_BLACKSTONE_BRICKS()
+ * @method static Slab POLISHED_BLACKSTONE_BRICK_SLAB()
+ * @method static Stair POLISHED_BLACKSTONE_BRICK_STAIRS()
+ * @method static Wall POLISHED_BLACKSTONE_BRICK_WALL()
+ * @method static StoneButton POLISHED_BLACKSTONE_BUTTON()
+ * @method static StonePressurePlate POLISHED_BLACKSTONE_PRESSURE_PLATE()
+ * @method static Slab POLISHED_BLACKSTONE_SLAB()
+ * @method static Stair POLISHED_BLACKSTONE_STAIRS()
+ * @method static Wall POLISHED_BLACKSTONE_WALL()
+ * @method static Opaque POLISHED_DEEPSLATE()
+ * @method static Slab POLISHED_DEEPSLATE_SLAB()
+ * @method static Stair POLISHED_DEEPSLATE_STAIRS()
+ * @method static Wall POLISHED_DEEPSLATE_WALL()
  * @method static Opaque POLISHED_DIORITE()
  * @method static Slab POLISHED_DIORITE_SLAB()
  * @method static Stair POLISHED_DIORITE_STAIRS()
@@ -444,10 +510,14 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Slab PURPUR_SLAB()
  * @method static Stair PURPUR_STAIRS()
  * @method static Opaque QUARTZ()
+ * @method static Opaque QUARTZ_BRICKS()
  * @method static SimplePillar QUARTZ_PILLAR()
  * @method static Slab QUARTZ_SLAB()
  * @method static Stair QUARTZ_STAIRS()
  * @method static Rail RAIL()
+ * @method static Opaque RAW_COPPER()
+ * @method static Opaque RAW_GOLD()
+ * @method static Opaque RAW_IRON()
  * @method static Redstone REDSTONE()
  * @method static RedstoneComparator REDSTONE_COMPARATOR()
  * @method static RedstoneLamp REDSTONE_LAMP()
@@ -480,6 +550,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static ShulkerBox SHULKER_BOX()
  * @method static Slime SLIME()
  * @method static Furnace SMOKER()
+ * @method static Opaque SMOOTH_BASALT()
  * @method static Opaque SMOOTH_QUARTZ()
  * @method static Slab SMOOTH_QUARTZ_SLAB()
  * @method static Stair SMOOTH_QUARTZ_STAIRS()
@@ -493,6 +564,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Slab SMOOTH_STONE_SLAB()
  * @method static Snow SNOW()
  * @method static SnowLayer SNOW_LAYER()
+ * @method static SoulFire SOUL_FIRE()
  * @method static SoulSand SOUL_SAND()
  * @method static Sponge SPONGE()
  * @method static WoodenButton SPRUCE_BUTTON()
@@ -500,7 +572,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static WoodenFence SPRUCE_FENCE()
  * @method static FenceGate SPRUCE_FENCE_GATE()
  * @method static Leaves SPRUCE_LEAVES()
- * @method static Log SPRUCE_LOG()
+ * @method static Wood SPRUCE_LOG()
  * @method static Planks SPRUCE_PLANKS()
  * @method static WoodenPressurePlate SPRUCE_PRESSURE_PLATE()
  * @method static Sapling SPRUCE_SAPLING()
@@ -538,6 +610,17 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Vine VINES()
  * @method static WallBanner WALL_BANNER()
  * @method static WallCoralFan WALL_CORAL_FAN()
+ * @method static WoodenButton WARPED_BUTTON()
+ * @method static WoodenDoor WARPED_DOOR()
+ * @method static WoodenFence WARPED_FENCE()
+ * @method static FenceGate WARPED_FENCE_GATE()
+ * @method static Wood WARPED_HYPHAE()
+ * @method static Planks WARPED_PLANKS()
+ * @method static WoodenPressurePlate WARPED_PRESSURE_PLATE()
+ * @method static WoodenSlab WARPED_SLAB()
+ * @method static WoodenStairs WARPED_STAIRS()
+ * @method static Wood WARPED_STEM()
+ * @method static WoodenTrapdoor WARPED_TRAPDOOR()
  * @method static Water WATER()
  * @method static WeightedPressurePlateHeavy WEIGHTED_PRESSURE_PLATE_HEAVY()
  * @method static WeightedPressurePlateLight WEIGHTED_PRESSURE_PLATE_LIGHT()
@@ -582,11 +665,13 @@ final class VanillaBlocks{
 		self::register("acacia_stairs", $factory->get(Ids::ACACIA_STAIRS, 0));
 		self::register("acacia_trapdoor", $factory->get(Ids::ACACIA_TRAPDOOR, 0));
 		self::register("acacia_wall_sign", $factory->get(Ids::ACACIA_WALL_SIGN, 0));
-		self::register("acacia_wood", $factory->get(Ids::ACACIA_WOOD, 0));
+		self::register("acacia_wood", $factory->get(Ids::ACACIA_WOOD, 4));
 		self::register("activator_rail", $factory->get(Ids::ACTIVATOR_RAIL, 0));
 		self::register("air", $factory->get(Ids::AIR, 0));
 		self::register("all_sided_mushroom_stem", $factory->get(Ids::ALL_SIDED_MUSHROOM_STEM, 0));
 		self::register("allium", $factory->get(Ids::ALLIUM, 0));
+		self::register("amethyst", $factory->get(Ids::AMETHYST, 0));
+		self::register("ancient_debris", $factory->get(Ids::ANCIENT_DEBRIS, 0));
 		self::register("andesite", $factory->get(Ids::ANDESITE, 0));
 		self::register("andesite_slab", $factory->get(Ids::ANDESITE_SLAB, 0));
 		self::register("andesite_stairs", $factory->get(Ids::ANDESITE_STAIRS, 0));
@@ -598,6 +683,7 @@ final class VanillaBlocks{
 		self::register("banner", $factory->get(Ids::BANNER, 0));
 		self::register("barrel", $factory->get(Ids::BARREL, 0));
 		self::register("barrier", $factory->get(Ids::BARRIER, 0));
+		self::register("basalt", $factory->get(Ids::BASALT, 2));
 		self::register("beacon", $factory->get(Ids::BEACON, 0));
 		self::register("bed", $factory->get(Ids::BED, 13));
 		self::register("bedrock", $factory->get(Ids::BEDROCK, 0));
@@ -617,7 +703,11 @@ final class VanillaBlocks{
 		self::register("birch_stairs", $factory->get(Ids::BIRCH_STAIRS, 0));
 		self::register("birch_trapdoor", $factory->get(Ids::BIRCH_TRAPDOOR, 0));
 		self::register("birch_wall_sign", $factory->get(Ids::BIRCH_WALL_SIGN, 0));
-		self::register("birch_wood", $factory->get(Ids::BIRCH_WOOD, 0));
+		self::register("birch_wood", $factory->get(Ids::BIRCH_WOOD, 4));
+		self::register("blackstone", $factory->get(Ids::BLACKSTONE, 0));
+		self::register("blackstone_slab", $factory->get(Ids::BLACKSTONE_SLAB, 0));
+		self::register("blackstone_stairs", $factory->get(Ids::BLACKSTONE_STAIRS, 0));
+		self::register("blackstone_wall", $factory->get(Ids::BLACKSTONE_WALL, 0));
 		self::register("blast_furnace", $factory->get(Ids::BLAST_FURNACE, 0));
 		self::register("blue_ice", $factory->get(Ids::BLUE_ICE, 0));
 		self::register("blue_orchid", $factory->get(Ids::BLUE_ORCHID, 0));
@@ -633,11 +723,15 @@ final class VanillaBlocks{
 		self::register("brown_mushroom_block", $factory->get(Ids::BROWN_MUSHROOM_BLOCK, 10));
 		self::register("cactus", $factory->get(Ids::CACTUS, 0));
 		self::register("cake", $factory->get(Ids::CAKE, 0));
+		self::register("calcite", $factory->get(Ids::CALCITE, 0));
 		self::register("carpet", $factory->get(Ids::CARPET, 14));
 		self::register("carrots", $factory->get(Ids::CARROTS, 0));
 		self::register("carved_pumpkin", $factory->get(Ids::CARVED_PUMPKIN, 0));
 		self::register("chemical_heat", $factory->get(Ids::CHEMICAL_HEAT, 0));
 		self::register("chest", $factory->get(Ids::CHEST, 0));
+		self::register("chiseled_deepslate", $factory->get(Ids::CHISELED_DEEPSLATE, 0));
+		self::register("chiseled_nether_bricks", $factory->get(Ids::CHISELED_NETHER_BRICKS, 0));
+		self::register("chiseled_polished_blackstone", $factory->get(Ids::CHISELED_POLISHED_BLACKSTONE, 0));
 		self::register("chiseled_quartz", $factory->get(Ids::CHISELED_QUARTZ, 2));
 		self::register("chiseled_red_sandstone", $factory->get(Ids::CHISELED_RED_SANDSTONE, 0));
 		self::register("chiseled_sandstone", $factory->get(Ids::CHISELED_SANDSTONE, 0));
@@ -645,6 +739,10 @@ final class VanillaBlocks{
 		self::register("clay", $factory->get(Ids::CLAY, 0));
 		self::register("coal", $factory->get(Ids::COAL, 0));
 		self::register("coal_ore", $factory->get(Ids::COAL_ORE, 0));
+		self::register("cobbled_deepslate", $factory->get(Ids::COBBLED_DEEPSLATE, 0));
+		self::register("cobbled_deepslate_slab", $factory->get(Ids::COBBLED_DEEPSLATE_SLAB, 0));
+		self::register("cobbled_deepslate_stairs", $factory->get(Ids::COBBLED_DEEPSLATE_STAIRS, 0));
+		self::register("cobbled_deepslate_wall", $factory->get(Ids::COBBLED_DEEPSLATE_WALL, 0));
 		self::register("cobblestone", $factory->get(Ids::COBBLESTONE, 0));
 		self::register("cobblestone_slab", $factory->get(Ids::COBBLESTONE_SLAB, 0));
 		self::register("cobblestone_stairs", $factory->get(Ids::COBBLESTONE_STAIRS, 0));
@@ -658,8 +756,23 @@ final class VanillaBlocks{
 		self::register("coral_block", $factory->get(Ids::CORAL_BLOCK, 4));
 		self::register("coral_fan", $factory->get(Ids::CORAL_FAN, 4));
 		self::register("cornflower", $factory->get(Ids::CORNFLOWER, 0));
+		self::register("cracked_deepslate_bricks", $factory->get(Ids::CRACKED_DEEPSLATE_BRICKS, 0));
+		self::register("cracked_deepslate_tiles", $factory->get(Ids::CRACKED_DEEPSLATE_TILES, 0));
+		self::register("cracked_nether_bricks", $factory->get(Ids::CRACKED_NETHER_BRICKS, 0));
+		self::register("cracked_polished_blackstone_bricks", $factory->get(Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS, 0));
 		self::register("cracked_stone_bricks", $factory->get(Ids::CRACKED_STONE_BRICKS, 0));
 		self::register("crafting_table", $factory->get(Ids::CRAFTING_TABLE, 0));
+		self::register("crimson_button", $factory->get(Ids::CRIMSON_BUTTON, 0));
+		self::register("crimson_door", $factory->get(Ids::CRIMSON_DOOR, 0));
+		self::register("crimson_fence", $factory->get(Ids::CRIMSON_FENCE, 0));
+		self::register("crimson_fence_gate", $factory->get(Ids::CRIMSON_FENCE_GATE, 0));
+		self::register("crimson_hyphae", $factory->get(Ids::CRIMSON_HYPHAE, 4));
+		self::register("crimson_planks", $factory->get(Ids::CRIMSON_PLANKS, 0));
+		self::register("crimson_pressure_plate", $factory->get(Ids::CRIMSON_PRESSURE_PLATE, 0));
+		self::register("crimson_slab", $factory->get(Ids::CRIMSON_SLAB, 0));
+		self::register("crimson_stairs", $factory->get(Ids::CRIMSON_STAIRS, 0));
+		self::register("crimson_stem", $factory->get(Ids::CRIMSON_STEM, 4));
+		self::register("crimson_trapdoor", $factory->get(Ids::CRIMSON_TRAPDOOR, 0));
 		self::register("cut_red_sandstone", $factory->get(Ids::CUT_RED_SANDSTONE, 0));
 		self::register("cut_red_sandstone_slab", $factory->get(Ids::CUT_RED_SANDSTONE_SLAB, 0));
 		self::register("cut_sandstone", $factory->get(Ids::CUT_SANDSTONE, 0));
@@ -679,12 +792,21 @@ final class VanillaBlocks{
 		self::register("dark_oak_stairs", $factory->get(Ids::DARK_OAK_STAIRS, 0));
 		self::register("dark_oak_trapdoor", $factory->get(Ids::DARK_OAK_TRAPDOOR, 0));
 		self::register("dark_oak_wall_sign", $factory->get(Ids::DARK_OAK_WALL_SIGN, 0));
-		self::register("dark_oak_wood", $factory->get(Ids::DARK_OAK_WOOD, 0));
+		self::register("dark_oak_wood", $factory->get(Ids::DARK_OAK_WOOD, 4));
 		self::register("dark_prismarine", $factory->get(Ids::DARK_PRISMARINE, 0));
 		self::register("dark_prismarine_slab", $factory->get(Ids::DARK_PRISMARINE_SLAB, 0));
 		self::register("dark_prismarine_stairs", $factory->get(Ids::DARK_PRISMARINE_STAIRS, 0));
 		self::register("daylight_sensor", $factory->get(Ids::DAYLIGHT_SENSOR, 0));
 		self::register("dead_bush", $factory->get(Ids::DEAD_BUSH, 0));
+		self::register("deepslate", $factory->get(Ids::DEEPSLATE, 2));
+		self::register("deepslate_brick_slab", $factory->get(Ids::DEEPSLATE_BRICK_SLAB, 0));
+		self::register("deepslate_brick_stairs", $factory->get(Ids::DEEPSLATE_BRICK_STAIRS, 0));
+		self::register("deepslate_brick_wall", $factory->get(Ids::DEEPSLATE_BRICK_WALL, 0));
+		self::register("deepslate_bricks", $factory->get(Ids::DEEPSLATE_BRICKS, 0));
+		self::register("deepslate_tile_slab", $factory->get(Ids::DEEPSLATE_TILE_SLAB, 0));
+		self::register("deepslate_tile_stairs", $factory->get(Ids::DEEPSLATE_TILE_STAIRS, 0));
+		self::register("deepslate_tile_wall", $factory->get(Ids::DEEPSLATE_TILE_WALL, 0));
+		self::register("deepslate_tiles", $factory->get(Ids::DEEPSLATE_TILES, 0));
 		self::register("detector_rail", $factory->get(Ids::DETECTOR_RAIL, 0));
 		self::register("diamond", $factory->get(Ids::DIAMOND, 0));
 		self::register("diamond_ore", $factory->get(Ids::DIAMOND_ORE, 0));
@@ -887,7 +1009,7 @@ final class VanillaBlocks{
 		self::register("jungle_stairs", $factory->get(Ids::JUNGLE_STAIRS, 0));
 		self::register("jungle_trapdoor", $factory->get(Ids::JUNGLE_TRAPDOOR, 0));
 		self::register("jungle_wall_sign", $factory->get(Ids::JUNGLE_WALL_SIGN, 0));
-		self::register("jungle_wood", $factory->get(Ids::JUNGLE_WOOD, 0));
+		self::register("jungle_wood", $factory->get(Ids::JUNGLE_WOOD, 4));
 		self::register("lab_table", $factory->get(Ids::LAB_TABLE, 0));
 		self::register("ladder", $factory->get(Ids::LADDER, 0));
 		self::register("lantern", $factory->get(Ids::LANTERN, 0));
@@ -898,12 +1020,24 @@ final class VanillaBlocks{
 		self::register("lectern", $factory->get(Ids::LECTERN, 0));
 		self::register("legacy_stonecutter", $factory->get(Ids::LEGACY_STONECUTTER, 0));
 		self::register("lever", $factory->get(Ids::LEVER, 5));
+		self::register("light", $factory->get(Ids::LIGHT, 15));
 		self::register("lilac", $factory->get(Ids::LILAC, 0));
 		self::register("lily_of_the_valley", $factory->get(Ids::LILY_OF_THE_VALLEY, 0));
 		self::register("lily_pad", $factory->get(Ids::LILY_PAD, 0));
 		self::register("lit_pumpkin", $factory->get(Ids::LIT_PUMPKIN, 0));
 		self::register("loom", $factory->get(Ids::LOOM, 0));
 		self::register("magma", $factory->get(Ids::MAGMA, 0));
+		self::register("mangrove_button", $factory->get(Ids::MANGROVE_BUTTON, 0));
+		self::register("mangrove_door", $factory->get(Ids::MANGROVE_DOOR, 0));
+		self::register("mangrove_fence", $factory->get(Ids::MANGROVE_FENCE, 0));
+		self::register("mangrove_fence_gate", $factory->get(Ids::MANGROVE_FENCE_GATE, 0));
+		self::register("mangrove_log", $factory->get(Ids::MANGROVE_LOG, 4));
+		self::register("mangrove_planks", $factory->get(Ids::MANGROVE_PLANKS, 0));
+		self::register("mangrove_pressure_plate", $factory->get(Ids::MANGROVE_PRESSURE_PLATE, 0));
+		self::register("mangrove_slab", $factory->get(Ids::MANGROVE_SLAB, 0));
+		self::register("mangrove_stairs", $factory->get(Ids::MANGROVE_STAIRS, 0));
+		self::register("mangrove_trapdoor", $factory->get(Ids::MANGROVE_TRAPDOOR, 0));
+		self::register("mangrove_wood", $factory->get(Ids::MANGROVE_WOOD, 4));
 		self::register("material_reducer", $factory->get(Ids::MATERIAL_REDUCER, 0));
 		self::register("melon", $factory->get(Ids::MELON, 0));
 		self::register("melon_stem", $factory->get(Ids::MELON_STEM, 0));
@@ -945,7 +1079,7 @@ final class VanillaBlocks{
 		self::register("oak_stairs", $factory->get(Ids::OAK_STAIRS, 0));
 		self::register("oak_trapdoor", $factory->get(Ids::OAK_TRAPDOOR, 0));
 		self::register("oak_wall_sign", $factory->get(Ids::OAK_WALL_SIGN, 0));
-		self::register("oak_wood", $factory->get(Ids::OAK_WOOD, 0));
+		self::register("oak_wood", $factory->get(Ids::OAK_WOOD, 4));
 		self::register("obsidian", $factory->get(Ids::OBSIDIAN, 0));
 		self::register("orange_tulip", $factory->get(Ids::ORANGE_TULIP, 0));
 		self::register("oxeye_daisy", $factory->get(Ids::OXEYE_DAISY, 0));
@@ -956,6 +1090,21 @@ final class VanillaBlocks{
 		self::register("polished_andesite", $factory->get(Ids::POLISHED_ANDESITE, 0));
 		self::register("polished_andesite_slab", $factory->get(Ids::POLISHED_ANDESITE_SLAB, 0));
 		self::register("polished_andesite_stairs", $factory->get(Ids::POLISHED_ANDESITE_STAIRS, 0));
+		self::register("polished_basalt", $factory->get(Ids::POLISHED_BASALT, 2));
+		self::register("polished_blackstone", $factory->get(Ids::POLISHED_BLACKSTONE, 0));
+		self::register("polished_blackstone_brick_slab", $factory->get(Ids::POLISHED_BLACKSTONE_BRICK_SLAB, 0));
+		self::register("polished_blackstone_brick_stairs", $factory->get(Ids::POLISHED_BLACKSTONE_BRICK_STAIRS, 0));
+		self::register("polished_blackstone_brick_wall", $factory->get(Ids::POLISHED_BLACKSTONE_BRICK_WALL, 0));
+		self::register("polished_blackstone_bricks", $factory->get(Ids::POLISHED_BLACKSTONE_BRICKS, 0));
+		self::register("polished_blackstone_button", $factory->get(Ids::POLISHED_BLACKSTONE_BUTTON, 0));
+		self::register("polished_blackstone_pressure_plate", $factory->get(Ids::POLISHED_BLACKSTONE_PRESSURE_PLATE, 0));
+		self::register("polished_blackstone_slab", $factory->get(Ids::POLISHED_BLACKSTONE_SLAB, 0));
+		self::register("polished_blackstone_stairs", $factory->get(Ids::POLISHED_BLACKSTONE_STAIRS, 0));
+		self::register("polished_blackstone_wall", $factory->get(Ids::POLISHED_BLACKSTONE_WALL, 0));
+		self::register("polished_deepslate", $factory->get(Ids::POLISHED_DEEPSLATE, 0));
+		self::register("polished_deepslate_slab", $factory->get(Ids::POLISHED_DEEPSLATE_SLAB, 0));
+		self::register("polished_deepslate_stairs", $factory->get(Ids::POLISHED_DEEPSLATE_STAIRS, 0));
+		self::register("polished_deepslate_wall", $factory->get(Ids::POLISHED_DEEPSLATE_WALL, 0));
 		self::register("polished_diorite", $factory->get(Ids::POLISHED_DIORITE, 0));
 		self::register("polished_diorite_slab", $factory->get(Ids::POLISHED_DIORITE_SLAB, 0));
 		self::register("polished_diorite_stairs", $factory->get(Ids::POLISHED_DIORITE_STAIRS, 0));
@@ -980,10 +1129,14 @@ final class VanillaBlocks{
 		self::register("purpur_slab", $factory->get(Ids::PURPUR_SLAB, 0));
 		self::register("purpur_stairs", $factory->get(Ids::PURPUR_STAIRS, 0));
 		self::register("quartz", $factory->get(Ids::QUARTZ, 0));
+		self::register("quartz_bricks", $factory->get(Ids::QUARTZ_BRICKS, 0));
 		self::register("quartz_pillar", $factory->get(Ids::QUARTZ_PILLAR, 2));
 		self::register("quartz_slab", $factory->get(Ids::QUARTZ_SLAB, 0));
 		self::register("quartz_stairs", $factory->get(Ids::QUARTZ_STAIRS, 0));
 		self::register("rail", $factory->get(Ids::RAIL, 0));
+		self::register("raw_copper", $factory->get(Ids::RAW_COPPER, 0));
+		self::register("raw_gold", $factory->get(Ids::RAW_GOLD, 0));
+		self::register("raw_iron", $factory->get(Ids::RAW_IRON, 0));
 		self::register("red_mushroom", $factory->get(Ids::RED_MUSHROOM, 0));
 		self::register("red_mushroom_block", $factory->get(Ids::RED_MUSHROOM_BLOCK, 10));
 		self::register("red_nether_brick_slab", $factory->get(Ids::RED_NETHER_BRICK_SLAB, 0));
@@ -1016,6 +1169,7 @@ final class VanillaBlocks{
 		self::register("shulker_box", $factory->get(Ids::SHULKER_BOX, 0));
 		self::register("slime", $factory->get(Ids::SLIME, 0));
 		self::register("smoker", $factory->get(Ids::SMOKER, 0));
+		self::register("smooth_basalt", $factory->get(Ids::SMOOTH_BASALT, 0));
 		self::register("smooth_quartz", $factory->get(Ids::SMOOTH_QUARTZ, 0));
 		self::register("smooth_quartz_slab", $factory->get(Ids::SMOOTH_QUARTZ_SLAB, 0));
 		self::register("smooth_quartz_stairs", $factory->get(Ids::SMOOTH_QUARTZ_STAIRS, 0));
@@ -1029,6 +1183,7 @@ final class VanillaBlocks{
 		self::register("smooth_stone_slab", $factory->get(Ids::SMOOTH_STONE_SLAB, 0));
 		self::register("snow", $factory->get(Ids::SNOW, 0));
 		self::register("snow_layer", $factory->get(Ids::SNOW_LAYER, 0));
+		self::register("soul_fire", $factory->get(Ids::SOUL_FIRE, 0));
 		self::register("soul_sand", $factory->get(Ids::SOUL_SAND, 0));
 		self::register("sponge", $factory->get(Ids::SPONGE, 0));
 		self::register("spruce_button", $factory->get(Ids::SPRUCE_BUTTON, 0));
@@ -1045,7 +1200,7 @@ final class VanillaBlocks{
 		self::register("spruce_stairs", $factory->get(Ids::SPRUCE_STAIRS, 0));
 		self::register("spruce_trapdoor", $factory->get(Ids::SPRUCE_TRAPDOOR, 0));
 		self::register("spruce_wall_sign", $factory->get(Ids::SPRUCE_WALL_SIGN, 0));
-		self::register("spruce_wood", $factory->get(Ids::SPRUCE_WOOD, 0));
+		self::register("spruce_wood", $factory->get(Ids::SPRUCE_WOOD, 4));
 		self::register("stained_clay", $factory->get(Ids::STAINED_CLAY, 14));
 		self::register("stained_glass", $factory->get(Ids::STAINED_GLASS, 14));
 		self::register("stained_glass_pane", $factory->get(Ids::STAINED_GLASS_PANE, 14));
@@ -1074,6 +1229,17 @@ final class VanillaBlocks{
 		self::register("vines", $factory->get(Ids::VINES, 0));
 		self::register("wall_banner", $factory->get(Ids::WALL_BANNER, 0));
 		self::register("wall_coral_fan", $factory->get(Ids::WALL_CORAL_FAN, 4));
+		self::register("warped_button", $factory->get(Ids::WARPED_BUTTON, 0));
+		self::register("warped_door", $factory->get(Ids::WARPED_DOOR, 0));
+		self::register("warped_fence", $factory->get(Ids::WARPED_FENCE, 0));
+		self::register("warped_fence_gate", $factory->get(Ids::WARPED_FENCE_GATE, 0));
+		self::register("warped_hyphae", $factory->get(Ids::WARPED_HYPHAE, 4));
+		self::register("warped_planks", $factory->get(Ids::WARPED_PLANKS, 0));
+		self::register("warped_pressure_plate", $factory->get(Ids::WARPED_PRESSURE_PLATE, 0));
+		self::register("warped_slab", $factory->get(Ids::WARPED_SLAB, 0));
+		self::register("warped_stairs", $factory->get(Ids::WARPED_STAIRS, 0));
+		self::register("warped_stem", $factory->get(Ids::WARPED_STEM, 4));
+		self::register("warped_trapdoor", $factory->get(Ids::WARPED_TRAPDOOR, 0));
 		self::register("water", $factory->get(Ids::WATER, 0));
 		self::register("weighted_pressure_plate_heavy", $factory->get(Ids::WEIGHTED_PRESSURE_PLATE_HEAVY, 0));
 		self::register("weighted_pressure_plate_light", $factory->get(Ids::WEIGHTED_PRESSURE_PLATE_LIGHT, 0));

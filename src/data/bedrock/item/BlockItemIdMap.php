@@ -27,7 +27,7 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
-use function array_search;
+use function array_flip;
 use function file_get_contents;
 use function is_array;
 use function json_decode;
@@ -53,19 +53,24 @@ final class BlockItemIdMap{
 	}
 
 	/**
+	 * @var string[]
+	 * @phpstan-var array<string, string>
+	 */
+	private array $itemToBlockId;
+
+	/**
 	 * @param string[] $blockToItemId
 	 * @phpstan-param array<string, string> $blockToItemId
 	 */
-	public function __construct(private array $blockToItemId){}
+	public function __construct(private array $blockToItemId){
+		$this->itemToBlockId = array_flip($this->blockToItemId);
+	}
 
 	public function lookupItemId(string $blockId) : ?string{
 		return $this->blockToItemId[$blockId] ?? null;
 	}
 
 	public function lookupBlockId(string $itemId) : ?string{
-		//we don't need this for any functionality, so we're not concerned about performance here
-		//however, it might be nice to have for debugging
-		$blockId = array_search($itemId, $this->blockToItemId, true);
-		return $blockId !== false ? $blockId : null;
+		return $this->itemToBlockId[$itemId] ?? null;
 	}
 }

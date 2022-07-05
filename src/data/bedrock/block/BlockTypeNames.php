@@ -765,5 +765,4 @@ final class BlockTypeNames{
 	public const YELLOW_CANDLE_CAKE = "minecraft:yellow_candle_cake";
 	public const YELLOW_FLOWER = "minecraft:yellow_flower";
 	public const YELLOW_GLAZED_TERRACOTTA = "minecraft:yellow_glazed_terracotta";
-
 }

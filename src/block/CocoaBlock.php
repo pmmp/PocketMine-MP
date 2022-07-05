@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\block\utils\TreeType;
+use pocketmine\block\utils\WoodType;
 use pocketmine\data\runtime\block\BlockDataReader;
 use pocketmine\data\runtime\block\BlockDataWriter;
 use pocketmine\event\block\BlockGrowEvent;
@@ -89,7 +89,7 @@ class CocoaBlock extends Transparent{
 	}
 
 	private function canAttachTo(Block $block) : bool{
-		return $block instanceof Wood && $block->getTreeType()->equals(TreeType::JUNGLE());
+		return $block instanceof Wood && $block->getWoodType()->equals(WoodType::JUNGLE());
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

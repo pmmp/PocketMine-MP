@@ -21,10 +21,23 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\crafting\json;
 
-use pocketmine\block\utils\PillarRotationTrait;
+final class ItemStackData{
 
-class Log extends Wood{
-	use PillarRotationTrait;
+	/** @required */
+	public string $name;
+
+	public int $count;
+	public string $block_states;
+	public int $meta;
+	public string $nbt;
+	/** @var string[] */
+	public array $can_place_on;
+	/** @var string[] */
+	public array $can_destroy;
+
+	public function __construct(string $name){
+		$this->name = $name;
+	}
 }

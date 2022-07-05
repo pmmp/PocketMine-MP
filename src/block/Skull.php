@@ -31,7 +31,6 @@ use pocketmine\data\runtime\block\BlockDataReaderHelper;
 use pocketmine\data\runtime\block\BlockDataWriter;
 use pocketmine\data\runtime\block\BlockDataWriterHelper;
 use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -152,10 +151,5 @@ class Skull extends Flowable{
 			$this->rotation = ((int) floor(($player->getLocation()->getYaw() * 16 / 360) + 0.5)) & 0xf;
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	public function asItem() : Item{
-		//TODO: we might be able to get rid of this
-		return VanillaItems::MOB_HEAD()->setSkullType($this->skullType);
 	}
 }

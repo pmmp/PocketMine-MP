@@ -33,7 +33,7 @@ use pocketmine\data\bedrock\block\BlockStateDeserializer;
 use pocketmine\data\bedrock\CompoundTypeIds;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\bedrock\EntityLegacyIds;
-use pocketmine\data\bedrock\item\ItemTypeIds as Ids;
+use pocketmine\data\bedrock\item\ItemTypeNames as Ids;
 use pocketmine\data\bedrock\item\SavedItemData as Data;
 use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\item\Durable;
@@ -270,7 +270,7 @@ final class ItemDeserializer{
 		//TODO: minecraft:cow_spawn_egg
 		//TODO: minecraft:creeper_banner_pattern
 		//TODO: minecraft:creeper_spawn_egg
-		//TODO: minecraft:crimson_door
+		$this->map(Ids::CRIMSON_DOOR, fn() => Blocks::CRIMSON_DOOR()->asItem());
 		//TODO: minecraft:crimson_sign
 		//TODO: minecraft:crossbow
 		$this->map(Ids::CYAN_DYE, fn() => Items::DYE()->setColor(DyeColor::CYAN()));
@@ -421,6 +421,7 @@ final class ItemDeserializer{
 		$this->map(Ids::MAGENTA_DYE, fn() => Items::DYE()->setColor(DyeColor::MAGENTA()));
 		$this->map(Ids::MAGMA_CREAM, fn() => Items::MAGMA_CREAM());
 		//TODO: minecraft:magma_cube_spawn_egg
+		$this->map(Ids::MANGROVE_DOOR, fn() => Blocks::MANGROVE_DOOR()->asItem());
 		//TODO: minecraft:medicine
 		$this->map(Ids::MELON_SEEDS, fn() => Items::MELON_SEEDS());
 		$this->map(Ids::MELON_SLICE, fn() => Items::MELON());
@@ -536,7 +537,7 @@ final class ItemDeserializer{
 			}catch(\InvalidArgumentException $e){
 				throw new ItemTypeDeserializeException($e->getMessage(), 0, $e);
 			}
-			return Items::MOB_HEAD()->setSkullType($skullType);
+			return Blocks::MOB_HEAD()->setSkullType($skullType)->asItem();
 		});
 		//TODO: minecraft:skull_banner_pattern
 		$this->map(Ids::SLIME_BALL, fn() => Items::SLIMEBALL());
@@ -592,7 +593,7 @@ final class ItemDeserializer{
 		$this->map(Ids::VILLAGER_SPAWN_EGG, fn() => Items::VILLAGER_SPAWN_EGG());
 		//TODO: minecraft:vindicator_spawn_egg
 		//TODO: minecraft:wandering_trader_spawn_egg
-		//TODO: minecraft:warped_door
+		$this->map(Ids::WARPED_DOOR, fn() => Blocks::WARPED_DOOR()->asItem());
 		//TODO: minecraft:warped_fungus_on_a_stick
 		//TODO: minecraft:warped_sign
 		$this->map(Ids::WATER_BUCKET, fn() => Items::WATER_BUCKET());

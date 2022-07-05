@@ -21,22 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\utils\WoodTypeTrait;
+use pocketmine\block\BlockBreakInfo;
+use pocketmine\block\BlockIdentifier;
 
-class Planks extends Opaque{
-	use WoodTypeTrait;
+trait WoodTypeTrait{
+	private WoodType $woodType; //immutable for now
 
-	public function getFuelTime() : int{
-		return 300;
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, WoodType $woodType){
+		$this->woodType = $woodType;
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
-	public function getFlameEncouragement() : int{
-		return $this->woodType->isFlammable() ? 5 : 0;
-	}
-
-	public function getFlammability() : int{
-		return $this->woodType->isFlammable() ? 20 : 0;
+	public function getWoodType() : WoodType{
+		return $this->woodType;
 	}
 }

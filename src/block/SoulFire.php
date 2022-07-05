@@ -23,20 +23,23 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\WoodTypeTrait;
+use pocketmine\math\Facing;
 
-class Planks extends Opaque{
-	use WoodTypeTrait;
+final class SoulFire extends BaseFire{
 
-	public function getFuelTime() : int{
-		return 300;
+	public function getLightLevel() : int{
+		return 10;
 	}
 
-	public function getFlameEncouragement() : int{
-		return $this->woodType->isFlammable() ? 5 : 0;
+	public static function canBeSupportedBy(Block $block) : bool{
+		//TODO: this really ought to use some kind of tag system
+		$id = $block->getTypeId();
+		return $id === BlockTypeIds::SOUL_SAND || $id === BlockTypeIds::SOUL_SOIL;
 	}
 
-	public function getFlammability() : int{
-		return $this->woodType->isFlammable() ? 20 : 0;
+	public function onNearbyBlockChange() : void{
+		if(!self::canBeSupportedBy($this->getSide(Facing::DOWN))){
+			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
+		}
 	}
 }

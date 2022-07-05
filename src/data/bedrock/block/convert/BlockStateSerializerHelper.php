@@ -33,7 +33,6 @@ use pocketmine\block\FloorSign;
 use pocketmine\block\Furnace;
 use pocketmine\block\Leaves;
 use pocketmine\block\Liquid;
-use pocketmine\block\Log;
 use pocketmine\block\RedMushroomBlock;
 use pocketmine\block\Sapling;
 use pocketmine\block\SimplePressurePlate;
@@ -49,7 +48,6 @@ use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockStateNames;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
-use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 
 final class BlockStateSerializerHelper{
@@ -57,8 +55,8 @@ final class BlockStateSerializerHelper{
 	public static function encodeAllSidedLog(Wood $block) : BlockStateWriter{
 		return BlockStateWriter::create(Ids::WOOD)
 			->writeBool(BlockStateNames::STRIPPED_BIT, $block->isStripped())
-			->writePillarAxis(Axis::Y) //TODO: our implementation doesn't support this yet
-			->writeTreeType($block->getTreeType());
+			->writePillarAxis($block->getAxis())
+			->writeLegacyWoodType($block->getWoodType());
 	}
 
 	public static function encodeButton(Button $block, BlockStateWriter $out) : BlockStateWriter{
@@ -135,21 +133,28 @@ final class BlockStateSerializerHelper{
 			->writeInt(BlockStateNames::LIQUID_DEPTH, $block->getDecay() | ($block->isFalling() ? 0x8 : 0));
 	}
 
-	private static function encodeLog(Log $block, BlockStateWriter $out) : BlockStateWriter{
+	private static function encodeLog(Wood $block, BlockStateWriter $out) : BlockStateWriter{
 		return $out
 			->writePillarAxis($block->getAxis());
 	}
 
-	public static function encodeLog1(Log $block, string $unstrippedType, string $strippedId) : BlockStateWriter{
+	public static function encodeLog1(Wood $block, string $unstrippedType, string $strippedId) : BlockStateWriter{
 		return self::encodeLog($block, $block->isStripped() ?
 			BlockStateWriter::create($strippedId) :
 			BlockStateWriter::create(Ids::LOG)->writeString(BlockStateNames::OLD_LOG_TYPE, $unstrippedType));
 	}
 
-	public static function encodeLog2(Log $block, string $unstrippedType, string $strippedId) : BlockStateWriter{
+	public static function encodeLog2(Wood $block, string $unstrippedType, string $strippedId) : BlockStateWriter{
 		return self::encodeLog($block, $block->isStripped() ?
 			BlockStateWriter::create($strippedId) :
 			BlockStateWriter::create(Ids::LOG2)->writeString(BlockStateNames::NEW_LOG_TYPE, $unstrippedType)
+		);
+	}
+
+	public static function encodeNewLog(Wood $block, string $unstrippedId, string $strippedId) : BlockStateWriter{
+		return self::encodeLog($block, $block->isStripped() ?
+			BlockStateWriter::create($strippedId) :
+			BlockStateWriter::create($unstrippedId)
 		);
 	}
 
@@ -185,7 +190,7 @@ final class BlockStateSerializerHelper{
 			->writeInt(BlockStateNames::REDSTONE_SIGNAL, $block->isPressed() ? 15 : 0);
 	}
 
-	private static function encodeSlab(Slab $block, string $singleId, string $doubleId) : BlockStateWriter{
+	public static function encodeSlab(Slab $block, string $singleId, string $doubleId) : BlockStateWriter{
 		$slabType = $block->getSlabType();
 		return BlockStateWriter::create($slabType->equals(SlabType::DOUBLE()) ? $doubleId : $singleId)
 

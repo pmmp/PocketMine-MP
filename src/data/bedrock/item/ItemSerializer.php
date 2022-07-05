@@ -23,24 +23,24 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\item;
 
+use pocketmine\block\Bed;
 use pocketmine\block\Block;
+use pocketmine\block\Skull;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
 use pocketmine\data\bedrock\block\BlockStateSerializer;
 use pocketmine\data\bedrock\CompoundTypeIds;
 use pocketmine\data\bedrock\DyeColorIdMap;
-use pocketmine\data\bedrock\item\ItemTypeIds as Ids;
+use pocketmine\data\bedrock\item\ItemTypeNames as Ids;
 use pocketmine\data\bedrock\item\SavedItemData as Data;
 use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\item\Banner;
-use pocketmine\item\Bed;
 use pocketmine\item\CoralFan;
 use pocketmine\item\Dye;
 use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
 use pocketmine\item\Potion;
-use pocketmine\item\Skull;
 use pocketmine\item\SplashPotion;
 use pocketmine\item\VanillaItems as Items;
 use pocketmine\utils\AssumptionFailedError;
@@ -228,18 +228,24 @@ final class ItemSerializer{
 		$this->mapBlock(Blocks::BIRCH_DOOR(), self::id(Ids::BIRCH_DOOR));
 		$this->mapBlock(Blocks::BREWING_STAND(), self::id(Ids::BREWING_STAND));
 		$this->mapBlock(Blocks::CAKE(), self::id(Ids::CAKE));
+		$this->mapBlock(Blocks::CRIMSON_DOOR(), self::id(Ids::CRIMSON_DOOR));
 		$this->mapBlock(Blocks::DARK_OAK_DOOR(), self::id(Ids::DARK_OAK_DOOR));
 		$this->mapBlock(Blocks::FLOWER_POT(), self::id(Ids::FLOWER_POT));
 		$this->mapBlock(Blocks::HOPPER(), self::id(Ids::HOPPER));
 		$this->mapBlock(Blocks::IRON_DOOR(), self::id(Ids::IRON_DOOR));
 		$this->mapBlock(Blocks::ITEM_FRAME(), self::id(Ids::FRAME));
 		$this->mapBlock(Blocks::JUNGLE_DOOR(), self::id(Ids::JUNGLE_DOOR));
+		$this->mapBlock(Blocks::MANGROVE_DOOR(), self::id(Ids::MANGROVE_DOOR));
 		$this->mapBlock(Blocks::NETHER_WART(), self::id(Ids::NETHER_WART));
 		$this->mapBlock(Blocks::OAK_DOOR(), self::id(Ids::WOODEN_DOOR));
 		$this->mapBlock(Blocks::REDSTONE_COMPARATOR(), self::id(Ids::COMPARATOR));
 		$this->mapBlock(Blocks::REDSTONE_REPEATER(), self::id(Ids::REPEATER));
 		$this->mapBlock(Blocks::SPRUCE_DOOR(), self::id(Ids::SPRUCE_DOOR));
 		$this->mapBlock(Blocks::SUGARCANE(), self::id(Ids::SUGAR_CANE));
+		$this->mapBlock(Blocks::WARPED_DOOR(), self::id(Ids::WARPED_DOOR));
+
+		$this->mapBlock(Blocks::BED(), fn(Bed $block) => new Data(Ids::BED, DyeColorIdMap::getInstance()->toId($block->getColor())));
+		$this->mapBlock(Blocks::MOB_HEAD(), fn(Skull $block) => new Data(Ids::SKULL, $block->getSkullType()->getMagicNumber()));
 	}
 
 	private function registerSerializers() : void{
@@ -256,7 +262,6 @@ final class ItemSerializer{
 		$this->map(Items::ARROW(), self::id(Ids::ARROW));
 		$this->map(Items::BAKED_POTATO(), self::id(Ids::BAKED_POTATO));
 		$this->map(Items::BANNER(), fn(Banner $item) => new Data(Ids::BANNER, DyeColorIdMap::getInstance()->toInvertedId($item->getColor())));
-		$this->map(Items::BED(), fn(Bed $item) => new Data(Ids::BED, DyeColorIdMap::getInstance()->toId($item->getColor())));
 		$this->map(Items::BEETROOT(), self::id(Ids::BEETROOT));
 		$this->map(Items::BEETROOT_SEEDS(), self::id(Ids::BEETROOT_SEEDS));
 		$this->map(Items::BEETROOT_SOUP(), self::id(Ids::BEETROOT_SOUP));
@@ -419,7 +424,6 @@ final class ItemSerializer{
 		$this->map(Items::MELON_SEEDS(), self::id(Ids::MELON_SEEDS));
 		$this->map(Items::MILK_BUCKET(), self::id(Ids::MILK_BUCKET));
 		$this->map(Items::MINECART(), self::id(Ids::MINECART));
-		$this->map(Items::MOB_HEAD(), fn(Skull $item) => new Data(Ids::SKULL, $item->getSkullType()->getMagicNumber()));
 		$this->map(Items::MUSHROOM_STEW(), self::id(Ids::MUSHROOM_STEW));
 		$this->map(Items::NAUTILUS_SHELL(), self::id(Ids::NAUTILUS_SHELL));
 		$this->map(Items::NETHER_BRICK(), self::id(Ids::NETHERBRICK));

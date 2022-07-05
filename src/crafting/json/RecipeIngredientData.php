@@ -21,22 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\crafting\json;
 
-use pocketmine\block\utils\WoodTypeTrait;
+final class RecipeIngredientData{
+	public const WILDCARD_META_VALUE = 32767;
 
-class Planks extends Opaque{
-	use WoodTypeTrait;
+	/** @required */
+	public string $name;
+	/** @required */
+	public int $meta;
 
-	public function getFuelTime() : int{
-		return 300;
-	}
+	public int $count;
 
-	public function getFlameEncouragement() : int{
-		return $this->woodType->isFlammable() ? 5 : 0;
-	}
-
-	public function getFlammability() : int{
-		return $this->woodType->isFlammable() ? 20 : 0;
+	public function __construct(string $name, int $meta){
+		$this->name = $name;
+		$this->meta = $meta;
 	}
 }

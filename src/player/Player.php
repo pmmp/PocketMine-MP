@@ -1613,7 +1613,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		$block = $target->getSide($face);
-		if($block->getTypeId() === BlockTypeIds::FIRE){
+		if($block->getTypeId() === BlockTypeIds::FIRE || $block->getTypeId() === BlockTypeIds::SOUL_FIRE){
 			$this->getWorld()->setBlock($block->getPosition(), VanillaBlocks::AIR());
 			$this->getWorld()->addSound($block->getPosition()->add(0.5, 0.5, 0.5), new FireExtinguishSound());
 			return true;

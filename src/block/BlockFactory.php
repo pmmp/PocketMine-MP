@@ -52,6 +52,7 @@ use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\tile\Smoker as TileSmoker;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\TreeType;
+use pocketmine\block\utils\WoodType;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\utils\AssumptionFailedError;
@@ -261,6 +262,9 @@ class BlockFactory{
 		$this->register(new Fence(new BID(Ids::NETHER_BRICK_FENCE), "Nether Brick Fence", $netherBrickBreakInfo));
 		$this->register(new Stair(new BID(Ids::NETHER_BRICK_STAIRS), "Nether Brick Stairs", $netherBrickBreakInfo));
 		$this->register(new Stair(new BID(Ids::RED_NETHER_BRICK_STAIRS), "Red Nether Brick Stairs", $netherBrickBreakInfo));
+		$this->register(new Opaque(new BID(Ids::CHISELED_NETHER_BRICKS), "Chiseled Nether Bricks", $netherBrickBreakInfo));
+		$this->register(new Opaque(new BID(Ids::CRACKED_NETHER_BRICKS), "Cracked Nether Bricks", $netherBrickBreakInfo));
+
 		$this->register(new NetherPortal(new BID(Ids::NETHER_PORTAL), "Nether Portal", BreakInfo::indestructible(0.0)));
 		$this->register(new NetherQuartzOre(new BID(Ids::NETHER_QUARTZ_ORE), "Nether Quartz Ore", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new NetherReactor(new BID(Ids::NETHER_REACTOR_CORE), "Nether Reactor Core", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
@@ -299,6 +303,7 @@ class BlockFactory{
 		$this->register(new SimplePillar(new BID(Ids::CHISELED_QUARTZ), "Chiseled Quartz Block", $quartzBreakInfo));
 		$this->register(new SimplePillar(new BID(Ids::QUARTZ_PILLAR), "Quartz Pillar", $quartzBreakInfo));
 		$this->register(new Opaque(new BID(Ids::SMOOTH_QUARTZ), "Smooth Quartz Block", $quartzBreakInfo));
+		$this->register(new Opaque(new BID(Ids::QUARTZ_BRICKS), "Quartz Bricks", $quartzBreakInfo));
 
 		$this->register(new Stair(new BID(Ids::QUARTZ_STAIRS), "Quartz Stairs", $quartzBreakInfo));
 		$this->register(new Stair(new BID(Ids::SMOOTH_QUARTZ_STAIRS), "Smooth Quartz Stairs", $quartzBreakInfo));
@@ -454,27 +459,31 @@ class BlockFactory{
 
 		foreach(TreeType::getAll() as $treeType){
 			$name = $treeType->getDisplayName();
-			$this->register(new Planks(BlockLegacyIdHelper::getWoodenPlanksIdentifier($treeType), $name . " Planks", $planksBreakInfo));
 			$this->register(new Sapling(BlockLegacyIdHelper::getSaplingIdentifier($treeType), $name . " Sapling", BreakInfo::instant(), $treeType));
-			$this->register(new WoodenFence(BlockLegacyIdHelper::getWoodenFenceIdentifier($treeType), $name . " Fence", $planksBreakInfo));
-			$this->register(new WoodenSlab(BlockLegacyIdHelper::getWoodenSlabIdentifier($treeType), $name, $planksBreakInfo));
-
 			$this->register(new Leaves(BlockLegacyIdHelper::getLeavesIdentifier($treeType), $name . " Leaves", $leavesBreakInfo, $treeType));
-
-			$this->register(new Log(BlockLegacyIdHelper::getLogIdentifier($treeType), $name . " Log", $logBreakInfo, $treeType));
-			$this->register(new Wood(BlockLegacyIdHelper::getAllSidedLogIdentifier($treeType), $name . " Wood", $logBreakInfo, $treeType));
-
-			$this->register(new FenceGate(BlockLegacyIdHelper::getWoodenFenceGateIdentifier($treeType), $name . " Fence Gate", $planksBreakInfo));
-			$this->register(new WoodenStairs(BlockLegacyIdHelper::getWoodenStairsIdentifier($treeType), $name . " Stairs", $planksBreakInfo));
-			$this->register(new WoodenDoor(BlockLegacyIdHelper::getWoodenDoorIdentifier($treeType), $name . " Door", $woodenDoorBreakInfo));
-
-			$this->register(new WoodenButton(BlockLegacyIdHelper::getWoodenButtonIdentifier($treeType), $name . " Button", $woodenButtonBreakInfo));
-			$this->register(new WoodenPressurePlate(BlockLegacyIdHelper::getWoodenPressurePlateIdentifier($treeType), $name . " Pressure Plate", $woodenPressurePlateBreakInfo));
-			$this->register(new WoodenTrapdoor(BlockLegacyIdHelper::getWoodenTrapdoorIdentifier($treeType), $name . " Trapdoor", $woodenDoorBreakInfo));
 
 			[$floorSignId, $wallSignId, $signAsItem] = BlockLegacyIdHelper::getWoodenSignInfo($treeType);
 			$this->register(new FloorSign($floorSignId, $name . " Sign", $signBreakInfo, $signAsItem));
 			$this->register(new WallSign($wallSignId, $name . " Wall Sign", $signBreakInfo, $signAsItem));
+		}
+
+		foreach(WoodType::getAll() as $woodType){
+			$name = $woodType->getDisplayName();
+
+			$this->register(new Wood(BlockLegacyIdHelper::getLogIdentifier($woodType), $name . " " . ($woodType->getStandardLogSuffix() ?? "Log"), $logBreakInfo, $woodType));
+			$this->register(new Wood(BlockLegacyIdHelper::getAllSidedLogIdentifier($woodType), $name . " " . ($woodType->getAllSidedLogSuffix() ?? "Wood"), $logBreakInfo, $woodType));
+
+			$this->register(new Planks(BlockLegacyIdHelper::getWoodenPlanksIdentifier($woodType), $name . " Planks", $planksBreakInfo, $woodType));
+			$this->register(new WoodenFence(BlockLegacyIdHelper::getWoodenFenceIdentifier($woodType), $name . " Fence", $planksBreakInfo, $woodType));
+			$this->register(new WoodenSlab(BlockLegacyIdHelper::getWoodenSlabIdentifier($woodType), $name, $planksBreakInfo, $woodType));
+
+			$this->register(new FenceGate(BlockLegacyIdHelper::getWoodenFenceGateIdentifier($woodType), $name . " Fence Gate", $planksBreakInfo, $woodType));
+			$this->register(new WoodenStairs(BlockLegacyIdHelper::getWoodenStairsIdentifier($woodType), $name . " Stairs", $planksBreakInfo, $woodType));
+			$this->register(new WoodenDoor(BlockLegacyIdHelper::getWoodenDoorIdentifier($woodType), $name . " Door", $woodenDoorBreakInfo, $woodType));
+
+			$this->register(new WoodenButton(BlockLegacyIdHelper::getWoodenButtonIdentifier($woodType), $name . " Button", $woodenButtonBreakInfo, $woodType));
+			$this->register(new WoodenPressurePlate(BlockLegacyIdHelper::getWoodenPressurePlateIdentifier($woodType), $name . " Pressure Plate", $woodenPressurePlateBreakInfo, $woodType));
+			$this->register(new WoodenTrapdoor(BlockLegacyIdHelper::getWoodenTrapdoorIdentifier($woodType), $name . " Trapdoor", $woodenDoorBreakInfo, $woodType));
 		}
 
 		$sandstoneBreakInfo = new BreakInfo(0.8, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
@@ -558,139 +567,9 @@ class BlockFactory{
 			BreakInfo::instant(),
 		));
 
-		//region --- auto-generated TODOs for bedrock-1.11.0 ---
-		//TODO: minecraft:bubble_column
-		//TODO: minecraft:campfire
-		//TODO: minecraft:cartography_table
-		//TODO: minecraft:cauldron
-		//TODO: minecraft:chain_command_block
-		//TODO: minecraft:chorus_flower
-		//TODO: minecraft:chorus_plant
-		//TODO: minecraft:command_block
-		//TODO: minecraft:composter
-		//TODO: minecraft:conduit
-		//TODO: minecraft:dispenser
-		//TODO: minecraft:dropper
-		//TODO: minecraft:end_gateway
-		//TODO: minecraft:end_portal
-		//TODO: minecraft:grindstone
-		//TODO: minecraft:jigsaw
-		//TODO: minecraft:kelp
-		//TODO: minecraft:lava_cauldron
-		//TODO: minecraft:movingBlock
-		//TODO: minecraft:observer
-		//TODO: minecraft:piston
-		//TODO: minecraft:pistonArmCollision
-		//TODO: minecraft:repeating_command_block
-		//TODO: minecraft:scaffolding
-		//TODO: minecraft:seagrass
-		//TODO: minecraft:smithing_table
-		//TODO: minecraft:sticky_piston
-		//TODO: minecraft:structure_block
-		//TODO: minecraft:turtle_egg
-		//endregion
-
-		//region --- auto-generated TODOs for bedrock-1.13.0 ---
-		//TODO: minecraft:camera
-		//TODO: minecraft:light_block
-		//TODO: minecraft:stickyPistonArmCollision
-		//TODO: minecraft:structure_void
-		//TODO: minecraft:wither_rose
-		//endregion
-
-		//region --- auto-generated TODOs for bedrock-1.14.0 ---
-		//TODO: minecraft:bee_nest
-		//TODO: minecraft:beehive
-		//TODO: minecraft:honey_block
-		//TODO: minecraft:honeycomb_block
-		//endregion
-
-		//region --- auto-generated TODOs for bedrock-1.16.0 ---
-		//TODO: minecraft:allow
-		//TODO: minecraft:ancient_debris
-		//TODO: minecraft:basalt
-		//TODO: minecraft:blackstone
-		//TODO: minecraft:blackstone_double_slab
-		//TODO: minecraft:blackstone_slab
-		//TODO: minecraft:blackstone_stairs
-		//TODO: minecraft:blackstone_wall
-		//TODO: minecraft:border_block
-		//TODO: minecraft:chain
-		//TODO: minecraft:chiseled_nether_bricks
-		//TODO: minecraft:chiseled_polished_blackstone
-		//TODO: minecraft:cracked_nether_bricks
-		//TODO: minecraft:cracked_polished_blackstone_bricks
-		//TODO: minecraft:crimson_button
-		//TODO: minecraft:crimson_door
-		//TODO: minecraft:crimson_double_slab
-		//TODO: minecraft:crimson_fence
-		//TODO: minecraft:crimson_fence_gate
-		//TODO: minecraft:crimson_fungus
-		//TODO: minecraft:crimson_hyphae
-		//TODO: minecraft:crimson_nylium
-		//TODO: minecraft:crimson_planks
-		//TODO: minecraft:crimson_pressure_plate
-		//TODO: minecraft:crimson_roots
-		//TODO: minecraft:crimson_slab
-		//TODO: minecraft:crimson_stairs
-		//TODO: minecraft:crimson_standing_sign
-		//TODO: minecraft:crimson_stem
-		//TODO: minecraft:crimson_trapdoor
-		//TODO: minecraft:crimson_wall_sign
-		//TODO: minecraft:crying_obsidian
-		//TODO: minecraft:deny
-		//TODO: minecraft:gilded_blackstone
-		//TODO: minecraft:lodestone
-		//TODO: minecraft:nether_gold_ore
-		//TODO: minecraft:nether_sprouts
-		//TODO: minecraft:netherite_block
-		//TODO: minecraft:polished_basalt
-		//TODO: minecraft:polished_blackstone
-		//TODO: minecraft:polished_blackstone_brick_double_slab
-		//TODO: minecraft:polished_blackstone_brick_slab
-		//TODO: minecraft:polished_blackstone_brick_stairs
-		//TODO: minecraft:polished_blackstone_brick_wall
-		//TODO: minecraft:polished_blackstone_bricks
-		//TODO: minecraft:polished_blackstone_button
-		//TODO: minecraft:polished_blackstone_double_slab
-		//TODO: minecraft:polished_blackstone_pressure_plate
-		//TODO: minecraft:polished_blackstone_slab
-		//TODO: minecraft:polished_blackstone_stairs
-		//TODO: minecraft:polished_blackstone_wall
-		//TODO: minecraft:quartz_bricks
-		//TODO: minecraft:respawn_anchor
-		//TODO: minecraft:shroomlight
-		//TODO: minecraft:soul_campfire
-		//TODO: minecraft:soul_fire
-		//TODO: minecraft:soul_lantern
-		//TODO: minecraft:soul_soil
-		//TODO: minecraft:soul_torch
-		//TODO: minecraft:stripped_crimson_hyphae
-		//TODO: minecraft:stripped_crimson_stem
-		//TODO: minecraft:stripped_warped_hyphae
-		//TODO: minecraft:stripped_warped_stem
-		//TODO: minecraft:target
-		//TODO: minecraft:twisting_vines
-		//TODO: minecraft:warped_button
-		//TODO: minecraft:warped_door
-		//TODO: minecraft:warped_double_slab
-		//TODO: minecraft:warped_fence
-		//TODO: minecraft:warped_fence_gate
-		//TODO: minecraft:warped_fungus
-		//TODO: minecraft:warped_hyphae
-		//TODO: minecraft:warped_nylium
-		//TODO: minecraft:warped_planks
-		//TODO: minecraft:warped_pressure_plate
-		//TODO: minecraft:warped_roots
-		//TODO: minecraft:warped_slab
-		//TODO: minecraft:warped_stairs
-		//TODO: minecraft:warped_standing_sign
-		//TODO: minecraft:warped_stem
-		//TODO: minecraft:warped_trapdoor
-		//TODO: minecraft:warped_wall_sign
-		//TODO: minecraft:warped_wart_block
-		//TODO: minecraft:weeping_vines
-		//endregion
+		$this->registerBlocksR13();
+		$this->registerBlocksR16();
+		$this->registerBlocksR17();
 	}
 
 	private function registerMushroomBlocks() : void{
@@ -826,6 +705,95 @@ class BlockFactory{
 		$this->register(new Element(new BID(Ids::ELEMENT_LIVERMORIUM), "Livermorium", $instaBreak, "lv", 116, 3));
 		$this->register(new Element(new BID(Ids::ELEMENT_TENNESSINE), "Tennessine", $instaBreak, "ts", 117, 6));
 		$this->register(new Element(new BID(Ids::ELEMENT_OGANESSON), "Oganesson", $instaBreak, "og", 118, 7));
+	}
+
+	private function registerBlocksR13() : void{
+		$this->register(new Light(new BID(Ids::LIGHT), "Light Block", BreakInfo::indestructible()));
+	}
+
+	private function registerBlocksR16() : void{
+		//for some reason, slabs have weird hardness like the legacy ones
+		$slabBreakInfo = new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+
+		$this->register(new Opaque(new BID(Ids::ANCIENT_DEBRIS), "Ancient Debris", new BreakInfo(30, ToolType::PICKAXE, ToolTier::DIAMOND()->getHarvestLevel())));
+
+		$basaltBreakInfo = new BreakInfo(1.25, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$this->register(new SimplePillar(new BID(Ids::BASALT), "Basalt", $basaltBreakInfo));
+		$this->register(new SimplePillar(new BID(Ids::POLISHED_BASALT), "Polished Basalt", $basaltBreakInfo));
+		$this->register(new Opaque(new BID(Ids::SMOOTH_BASALT), "Smooth Basalt", $basaltBreakInfo));
+
+		$blackstoneBreakInfo = new BreakInfo(1.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$this->register(new Opaque(new BID(Ids::BLACKSTONE), "Blackstone", $blackstoneBreakInfo));
+		$this->register(new Slab(new BID(Ids::BLACKSTONE_SLAB), "Blackstone", $slabBreakInfo));
+		$this->register(new Stair(new BID(Ids::BLACKSTONE_STAIRS), "Blackstone Stairs", $blackstoneBreakInfo));
+		$this->register(new Wall(new BID(Ids::BLACKSTONE_WALL), "Blackstone Wall", $blackstoneBreakInfo));
+
+		//TODO: polished blackstone ought to have 2.0 hardness (as per java) but it's 1.5 in Bedrock (probably parity bug)
+		$prefix = fn(string $thing) => "Polished Blackstone" . ($thing !== "" ? " $thing" : "");
+		$this->register(new Opaque(new BID(Ids::POLISHED_BLACKSTONE), $prefix(""), $blackstoneBreakInfo));
+		$this->register(new StoneButton(new BID(Ids::POLISHED_BLACKSTONE_BUTTON), $prefix("Button"), new BreakInfo(0.5, ToolType::PICKAXE))); //same as regular stone button
+		$this->register(new StonePressurePlate(new BID(Ids::POLISHED_BLACKSTONE_PRESSURE_PLATE), $prefix("Pressure Plate"), new BreakInfo(0.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()))); //same as regular stone pressure plate
+		$this->register(new Slab(new BID(Ids::POLISHED_BLACKSTONE_SLAB), $prefix(""), $slabBreakInfo));
+		$this->register(new Stair(new BID(Ids::POLISHED_BLACKSTONE_STAIRS), $prefix("Stairs"), $blackstoneBreakInfo));
+		$this->register(new Wall(new BID(Ids::POLISHED_BLACKSTONE_WALL), $prefix("Wall"), $blackstoneBreakInfo));
+		$this->register(new Opaque(new BID(Ids::CHISELED_POLISHED_BLACKSTONE), "Chiseled Polished Blackstone", $blackstoneBreakInfo));
+
+		$prefix = fn(string $thing) => "Polished Blackstone Brick" . ($thing !== "" ? " $thing" : "");
+		$this->register(new Opaque(new BID(Ids::POLISHED_BLACKSTONE_BRICKS), "Polished Blackstone Bricks", $blackstoneBreakInfo));
+		$this->register(new Slab(new BID(Ids::POLISHED_BLACKSTONE_BRICK_SLAB), "Polished Blackstone Brick", $slabBreakInfo));
+		$this->register(new Stair(new BID(Ids::POLISHED_BLACKSTONE_BRICK_STAIRS), $prefix("Stairs"), $blackstoneBreakInfo));
+		$this->register(new Wall(new BID(Ids::POLISHED_BLACKSTONE_BRICK_WALL), $prefix("Wall"), $blackstoneBreakInfo));
+		$this->register(new Opaque(new BID(Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS), "Cracked Polished Blackstone Bricks", $blackstoneBreakInfo));
+
+		$this->register(new SoulFire(new BID(Ids::SOUL_FIRE), "Soul Fire", BreakInfo::instant()));
+	}
+
+	private function registerBlocksR17() : void{
+		//in java this can be acquired using any tool - seems to be a parity issue in bedrock
+		$this->register(new Opaque(new BID(Ids::AMETHYST), "Amethyst", new BreakInfo(1.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+
+		$this->register(new Opaque(new BID(Ids::CALCITE), "Calcite", new BreakInfo(0.75, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+
+		$this->register(new Opaque(new BID(Ids::RAW_COPPER), "Raw Copper Block", new BreakInfo(5, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
+		$this->register(new Opaque(new BID(Ids::RAW_GOLD), "Raw Gold Block", new BreakInfo(5, ToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel())));
+		$this->register(new Opaque(new BID(Ids::RAW_IRON), "Raw Iron Block", new BreakInfo(5, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
+
+		//TODO: check blast resistance
+		$deepslateBreakInfo = new BreakInfo(3, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$this->register(new SimplePillar(new BID(Ids::DEEPSLATE), "Deepslate", $deepslateBreakInfo));
+
+		//TODO: parity issue here - in Java this has a hardness of 3.0, but in bedrock it's 3.5
+		$this->register(new Opaque(new BID(Ids::CHISELED_DEEPSLATE), "Chiseled Deepslate", new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+
+		//TODO: check blast resistance
+		$deepslateBrickBreakInfo = new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$this->register(new Opaque(new BID(Ids::DEEPSLATE_BRICKS), "Deepslate Bricks", $deepslateBrickBreakInfo));
+		$this->register(new Slab(new BID(Ids::DEEPSLATE_BRICK_SLAB), "Deepslate Brick", $deepslateBrickBreakInfo));
+		$this->register(new Stair(new BID(Ids::DEEPSLATE_BRICK_STAIRS), "Deepslate Brick Stairs", $deepslateBrickBreakInfo));
+		$this->register(new Wall(new BID(Ids::DEEPSLATE_BRICK_WALL), "Deepslate Brick Wall", $deepslateBrickBreakInfo));
+		$this->register(new Opaque(new BID(Ids::CRACKED_DEEPSLATE_BRICKS), "Cracked Deepslate Bricks", $deepslateBrickBreakInfo));
+
+		//TODO: check blast resistance
+		$deepslateTilesBreakInfo = new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$this->register(new Opaque(new BID(Ids::DEEPSLATE_TILES), "Deepslate Tiles", $deepslateTilesBreakInfo));
+		$this->register(new Slab(new BID(Ids::DEEPSLATE_TILE_SLAB), "Deepslate Tile", $deepslateTilesBreakInfo));
+		$this->register(new Stair(new BID(Ids::DEEPSLATE_TILE_STAIRS), "Deepslate Tile Stairs", $deepslateTilesBreakInfo));
+		$this->register(new Wall(new BID(Ids::DEEPSLATE_TILE_WALL), "Deepslate Tile Wall", $deepslateTilesBreakInfo));
+		$this->register(new Opaque(new BID(Ids::CRACKED_DEEPSLATE_TILES), "Cracked Deepslate Tiles", $deepslateTilesBreakInfo));
+
+		//TODO: check blast resistance
+		$cobbledDeepslateBreakInfo = new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$this->register(new Opaque(new BID(Ids::COBBLED_DEEPSLATE), "Cobbled Deepslate", $cobbledDeepslateBreakInfo));
+		$this->register(new Slab(new BID(Ids::COBBLED_DEEPSLATE_SLAB), "Cobbled Deepslate", $cobbledDeepslateBreakInfo));
+		$this->register(new Stair(new BID(Ids::COBBLED_DEEPSLATE_STAIRS), "Cobbled Deepslate Stairs", $cobbledDeepslateBreakInfo));
+		$this->register(new Wall(new BID(Ids::COBBLED_DEEPSLATE_WALL), "Cobbled Deepslate Wall", $cobbledDeepslateBreakInfo));
+
+		//TODO: check blast resistance
+		$polishedDeepslateBreakInfo = new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$this->register(new Opaque(new BID(Ids::POLISHED_DEEPSLATE), "Polished Deepslate", $polishedDeepslateBreakInfo));
+		$this->register(new Slab(new BID(Ids::POLISHED_DEEPSLATE_SLAB), "Polished Deepslate", $polishedDeepslateBreakInfo));
+		$this->register(new Stair(new BID(Ids::POLISHED_DEEPSLATE_STAIRS), "Polished Deepslate Stairs", $polishedDeepslateBreakInfo));
+		$this->register(new Wall(new BID(Ids::POLISHED_DEEPSLATE_WALL), "Polished Deepslate Wall", $polishedDeepslateBreakInfo));
 	}
 
 	/**

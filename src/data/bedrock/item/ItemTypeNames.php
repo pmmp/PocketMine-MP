@@ -23,8 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\item;
 
-final class ItemTypeIds{
+/**
+ * This class is generated automatically from the item type dictionary for the current version. Do not edit it manually.
+ */
+final class ItemTypeNames{
 	public const ACACIA_BOAT = "minecraft:acacia_boat";
+	public const ACACIA_CHEST_BOAT = "minecraft:acacia_chest_boat";
 	public const ACACIA_DOOR = "minecraft:acacia_door";
 	public const ACACIA_SIGN = "minecraft:acacia_sign";
 	public const AGENT_SPAWN_EGG = "minecraft:agent_spawn_egg";
@@ -47,6 +51,7 @@ final class ItemTypeIds{
 	public const BEETROOT_SEEDS = "minecraft:beetroot_seeds";
 	public const BEETROOT_SOUP = "minecraft:beetroot_soup";
 	public const BIRCH_BOAT = "minecraft:birch_boat";
+	public const BIRCH_CHEST_BOAT = "minecraft:birch_chest_boat";
 	public const BIRCH_DOOR = "minecraft:birch_door";
 	public const BIRCH_SIGN = "minecraft:birch_sign";
 	public const BLACK_DYE = "minecraft:black_dye";
@@ -81,6 +86,7 @@ final class ItemTypeIds{
 	public const CHAINMAIL_HELMET = "minecraft:chainmail_helmet";
 	public const CHAINMAIL_LEGGINGS = "minecraft:chainmail_leggings";
 	public const CHARCOAL = "minecraft:charcoal";
+	public const CHEST_BOAT = "minecraft:chest_boat";
 	public const CHEST_MINECART = "minecraft:chest_minecart";
 	public const CHICKEN = "minecraft:chicken";
 	public const CHICKEN_SPAWN_EGG = "minecraft:chicken_spawn_egg";
@@ -113,6 +119,7 @@ final class ItemTypeIds{
 	public const CROSSBOW = "minecraft:crossbow";
 	public const CYAN_DYE = "minecraft:cyan_dye";
 	public const DARK_OAK_BOAT = "minecraft:dark_oak_boat";
+	public const DARK_OAK_CHEST_BOAT = "minecraft:dark_oak_chest_boat";
 	public const DARK_OAK_DOOR = "minecraft:dark_oak_door";
 	public const DARK_OAK_SIGN = "minecraft:dark_oak_sign";
 	public const DIAMOND = "minecraft:diamond";
@@ -126,12 +133,14 @@ final class ItemTypeIds{
 	public const DIAMOND_PICKAXE = "minecraft:diamond_pickaxe";
 	public const DIAMOND_SHOVEL = "minecraft:diamond_shovel";
 	public const DIAMOND_SWORD = "minecraft:diamond_sword";
+	public const DISC_FRAGMENT_5 = "minecraft:disc_fragment_5";
 	public const DOLPHIN_SPAWN_EGG = "minecraft:dolphin_spawn_egg";
 	public const DONKEY_SPAWN_EGG = "minecraft:donkey_spawn_egg";
 	public const DRAGON_BREATH = "minecraft:dragon_breath";
 	public const DRIED_KELP = "minecraft:dried_kelp";
 	public const DROWNED_SPAWN_EGG = "minecraft:drowned_spawn_egg";
 	public const DYE = "minecraft:dye";
+	public const ECHO_SHARD = "minecraft:echo_shard";
 	public const EGG = "minecraft:egg";
 	public const ELDER_GUARDIAN_SPAWN_EGG = "minecraft:elder_guardian_spawn_egg";
 	public const ELYTRA = "minecraft:elytra";
@@ -151,7 +160,6 @@ final class ItemTypeIds{
 	public const FIELD_MASONED_BANNER_PATTERN = "minecraft:field_masoned_banner_pattern";
 	public const FILLED_MAP = "minecraft:filled_map";
 	public const FIRE_CHARGE = "minecraft:fire_charge";
-	public const FIREFLY_SPAWN_EGG = "minecraft:firefly_spawn_egg";
 	public const FIREWORK_ROCKET = "minecraft:firework_rocket";
 	public const FIREWORK_STAR = "minecraft:firework_star";
 	public const FISHING_ROD = "minecraft:fishing_rod";
@@ -217,6 +225,7 @@ final class ItemTypeIds{
 	public const IRON_SHOVEL = "minecraft:iron_shovel";
 	public const IRON_SWORD = "minecraft:iron_sword";
 	public const JUNGLE_BOAT = "minecraft:jungle_boat";
+	public const JUNGLE_CHEST_BOAT = "minecraft:jungle_chest_boat";
 	public const JUNGLE_DOOR = "minecraft:jungle_door";
 	public const JUNGLE_SIGN = "minecraft:jungle_sign";
 	public const KELP = "minecraft:kelp";
@@ -238,6 +247,10 @@ final class ItemTypeIds{
 	public const MAGENTA_DYE = "minecraft:magenta_dye";
 	public const MAGMA_CREAM = "minecraft:magma_cream";
 	public const MAGMA_CUBE_SPAWN_EGG = "minecraft:magma_cube_spawn_egg";
+	public const MANGROVE_BOAT = "minecraft:mangrove_boat";
+	public const MANGROVE_CHEST_BOAT = "minecraft:mangrove_chest_boat";
+	public const MANGROVE_DOOR = "minecraft:mangrove_door";
+	public const MANGROVE_SIGN = "minecraft:mangrove_sign";
 	public const MEDICINE = "minecraft:medicine";
 	public const MELON_SEEDS = "minecraft:melon_seeds";
 	public const MELON_SLICE = "minecraft:melon_slice";
@@ -249,6 +262,7 @@ final class ItemTypeIds{
 	public const MUSHROOM_STEW = "minecraft:mushroom_stew";
 	public const MUSIC_DISC_11 = "minecraft:music_disc_11";
 	public const MUSIC_DISC_13 = "minecraft:music_disc_13";
+	public const MUSIC_DISC_5 = "minecraft:music_disc_5";
 	public const MUSIC_DISC_BLOCKS = "minecraft:music_disc_blocks";
 	public const MUSIC_DISC_CAT = "minecraft:music_disc_cat";
 	public const MUSIC_DISC_CHIRP = "minecraft:music_disc_chirp";
@@ -281,6 +295,7 @@ final class ItemTypeIds{
 	public const NETHERITE_SWORD = "minecraft:netherite_sword";
 	public const NPC_SPAWN_EGG = "minecraft:npc_spawn_egg";
 	public const OAK_BOAT = "minecraft:oak_boat";
+	public const OAK_CHEST_BOAT = "minecraft:oak_chest_boat";
 	public const OAK_SIGN = "minecraft:oak_sign";
 	public const OCELOT_SPAWN_EGG = "minecraft:ocelot_spawn_egg";
 	public const ORANGE_DYE = "minecraft:orange_dye";
@@ -322,6 +337,7 @@ final class ItemTypeIds{
 	public const RAW_COPPER = "minecraft:raw_copper";
 	public const RAW_GOLD = "minecraft:raw_gold";
 	public const RAW_IRON = "minecraft:raw_iron";
+	public const RECOVERY_COMPASS = "minecraft:recovery_compass";
 	public const RED_DYE = "minecraft:red_dye";
 	public const REDSTONE = "minecraft:redstone";
 	public const REPEATER = "minecraft:repeater";
@@ -351,6 +367,7 @@ final class ItemTypeIds{
 	public const SPIDER_SPAWN_EGG = "minecraft:spider_spawn_egg";
 	public const SPLASH_POTION = "minecraft:splash_potion";
 	public const SPRUCE_BOAT = "minecraft:spruce_boat";
+	public const SPRUCE_CHEST_BOAT = "minecraft:spruce_chest_boat";
 	public const SPRUCE_DOOR = "minecraft:spruce_door";
 	public const SPRUCE_SIGN = "minecraft:spruce_sign";
 	public const SPYGLASS = "minecraft:spyglass";
@@ -382,6 +399,7 @@ final class ItemTypeIds{
 	public const VILLAGER_SPAWN_EGG = "minecraft:villager_spawn_egg";
 	public const VINDICATOR_SPAWN_EGG = "minecraft:vindicator_spawn_egg";
 	public const WANDERING_TRADER_SPAWN_EGG = "minecraft:wandering_trader_spawn_egg";
+	public const WARDEN_SPAWN_EGG = "minecraft:warden_spawn_egg";
 	public const WARPED_DOOR = "minecraft:warped_door";
 	public const WARPED_FUNGUS_ON_A_STICK = "minecraft:warped_fungus_on_a_stick";
 	public const WARPED_SIGN = "minecraft:warped_sign";

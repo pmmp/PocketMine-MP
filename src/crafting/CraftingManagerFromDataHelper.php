@@ -23,61 +23,205 @@ declare(strict_types=1);
 
 namespace pocketmine\crafting;
 
+use pocketmine\crafting\json\FurnaceRecipeData;
+use pocketmine\crafting\json\ItemStackData;
+use pocketmine\crafting\json\PotionContainerChangeRecipeData;
+use pocketmine\crafting\json\PotionTypeRecipeData;
+use pocketmine\crafting\json\RecipeIngredientData;
+use pocketmine\crafting\json\ShapedRecipeData;
+use pocketmine\crafting\json\ShapelessRecipeData;
+use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\data\bedrock\item\BlockItemIdMap;
 use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
-use pocketmine\data\bedrock\item\upgrade\LegacyItemIdToStringIdMap;
+use pocketmine\data\bedrock\item\SavedItemData;
+use pocketmine\data\bedrock\item\SavedItemStackData;
 use pocketmine\data\SavedDataLoadingException;
+use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\item\Item;
+use pocketmine\nbt\LittleEndianNbtSerializer;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
-use function array_map;
+use Webmozart\PathUtil\Path;
+use function base64_decode;
 use function file_get_contents;
+use function get_debug_type;
 use function is_array;
-use function is_int;
+use function is_object;
 use function json_decode;
 
 final class CraftingManagerFromDataHelper{
-	/**
-	 * @param mixed[] $data
-	 */
-	private static function deserializeIngredient(array $data) : ?RecipeIngredient{
-		if(!isset($data["id"]) || !is_int($data["id"])){
-			throw new \InvalidArgumentException("Invalid input data, expected int ID");
-		}
-		if(isset($data["damage"]) && $data["damage"] === -1){
-			try{
-				$typeData = GlobalItemDataHandlers::getUpgrader()->upgradeItemTypeDataInt($data["id"], 0, 1, null);
-			}catch(ItemTypeDeserializeException){
-				//probably unknown item
-				return null;
+
+	private static function deserializeItemStackFromNameMeta(string $name, int $meta) : ?Item{
+		$blockName = BlockItemIdMap::getInstance()->lookupBlockId($name);
+		if($blockName !== null){
+			$blockStateDictionary = RuntimeBlockMapping::getInstance()->getBlockStateDictionary();
+			$blockRuntimeId = $blockStateDictionary->lookupStateIdFromIdMeta($name, $meta === RecipeIngredientData::WILDCARD_META_VALUE ? 0 : $meta);
+			if($blockRuntimeId === null){
+				throw new SavedDataLoadingException("$blockName with meta $meta doesn't map to any known blockstate");
 			}
-
-			return new MetaWildcardRecipeIngredient($typeData->getTypeData()->getName());
+			$blockStateData = $blockStateDictionary->getDataFromStateId($blockRuntimeId);
+			if($blockStateData === null){
+				throw new AssumptionFailedError("We just looked up the runtime ID for this state, so it can't possibly be null");
+			}
+		}else{
+			$blockStateData = null;
 		}
 
-		//TODO: we need to stop using jsonDeserialize for this
+		//TODO: for wildcards, we only need a way to check if the item serializer recognizes the ID; we don't need to
+		//deserialize the whole itemstack, which might give bogus results anyway if meta 0 isn't recognized
+		$itemTypeData = new SavedItemData(
+			$name,
+			$meta === RecipeIngredientData::WILDCARD_META_VALUE ? 0 : $meta,
+			$blockStateData,
+			null
+		);
+
 		try{
-			$item = Item::legacyJsonDeserialize($data);
-		}catch(SavedDataLoadingException){
-			//unknown item
+			return GlobalItemDataHandlers::getDeserializer()->deserializeType($itemTypeData);
+		}catch(ItemTypeDeserializeException){
+			//probably unknown item
 			return null;
 		}
-
-		return new ExactRecipeIngredient($item);
 	}
 
-	public static function make(string $filePath) : CraftingManager{
-		$recipes = json_decode(Utils::assumeNotFalse(file_get_contents($filePath), "Missing required resource file"), true);
-		if(!is_array($recipes)){
-			throw new AssumptionFailedError("recipes.json root should contain a map of recipe types");
+	private static function deserializeIngredient(RecipeIngredientData $data) : ?RecipeIngredient{
+		if(isset($data->count) && $data->count !== 1){
+			//every case we've seen so far where this isn't the case, it's been a bug and the count was ignored anyway
+			//e.g. gold blocks crafted from 9 ingots, but each input item individually had a count of 9
+			throw new SavedDataLoadingException("Recipe inputs should have a count of exactly 1");
 		}
+
+		$itemStack = self::deserializeItemStackFromNameMeta($data->name, $data->meta);
+		if($itemStack === null){
+			//probably unknown item
+			return null;
+		}
+		return $data->meta === RecipeIngredientData::WILDCARD_META_VALUE ?
+			new MetaWildcardRecipeIngredient($data->name) :
+			new ExactRecipeIngredient($itemStack);
+	}
+
+	public static function deserializeItemStack(ItemStackData $data) : ?Item{
+		//count, name, block_name, block_states, meta, nbt, can_place_on, can_destroy
+		$name = $data->name;
+		$meta = $data->meta ?? 0;
+		$count = $data->count ?? 1;
+
+		$blockStatesRaw = $data->block_states ?? null;
+		$nbtRaw = $data->nbt ?? null;
+		$canPlaceOn = $data->can_place_on ?? [];
+		$canDestroy = $data->can_destroy ?? [];
+
+		$blockName = BlockItemIdMap::getInstance()->lookupBlockId($name);
+		if($blockName !== null){
+			if($meta !== 0){
+				throw new SavedDataLoadingException("Meta should not be specified for blockitems");
+			}
+			$blockStatesTag = $blockStatesRaw === null ?
+				CompoundTag::create() :
+				(new LittleEndianNbtSerializer())
+					->read(ErrorToExceptionHandler::trapAndRemoveFalse(fn() => base64_decode($blockStatesRaw, true)))
+					->mustGetCompoundTag();
+			$blockStateData = new BlockStateData($blockName, $blockStatesTag, BlockStateData::CURRENT_VERSION);
+		}else{
+			$blockStateData = null;
+		}
+
+		$nbt = $nbtRaw === null ? null : (new LittleEndianNbtSerializer())
+			->read(ErrorToExceptionHandler::trapAndRemoveFalse(fn() => base64_decode($nbtRaw, true)))
+			->mustGetCompoundTag();
+
+		$itemStackData = new SavedItemStackData(
+			new SavedItemData(
+				$name,
+				$meta,
+				$blockStateData,
+				$nbt
+			),
+			$count,
+			null,
+			null,
+			$canPlaceOn,
+			$canDestroy,
+		);
+
+		try{
+			return GlobalItemDataHandlers::getDeserializer()->deserializeStack($itemStackData);
+		}catch(ItemTypeDeserializeException){
+			//probably unknown item
+			return null;
+		}
+	}
+
+	/**
+	 * @return mixed[]
+	 *
+	 * @phpstan-template TData of object
+	 * @phpstan-param class-string<TData> $modelCLass
+	 * @phpstan-return list<TData>
+	 */
+	public static function loadJsonArrayOfObjectsFile(string $filePath, string $modelCLass) : array{
+		$recipes = json_decode(Utils::assumeNotFalse(file_get_contents($filePath), "Missing required resource file"));
+		if(!is_array($recipes)){
+			throw new SavedDataLoadingException("$filePath root should be an array, got " . get_debug_type($recipes));
+		}
+
+		$mapper = new \JsonMapper();
+		$mapper->bStrictObjectTypeChecking = true;
+		$mapper->bExceptionOnUndefinedProperty = true;
+		$mapper->bExceptionOnMissingData = true;
+
+		return self::loadJsonObjectListIntoModel($mapper, $modelCLass, $recipes);
+	}
+
+	/**
+	 * @phpstan-template TRecipeData of object
+	 * @phpstan-param class-string<TRecipeData> $modelClass
+	 * @phpstan-return TRecipeData
+	 */
+	private static function loadJsonObjectIntoModel(\JsonMapper $mapper, string $modelClass, object $data) : object{
+		//JsonMapper does this for subtypes, but not for the base type :(
+		try{
+			return $mapper->map($data, (new \ReflectionClass($modelClass))->newInstanceWithoutConstructor());
+		}catch(\JsonMapper_Exception $e){
+			throw new SavedDataLoadingException($e->getMessage(), 0, $e);
+		}
+	}
+
+	/**
+	 * @param mixed[] $data
+	 * @return object[]
+	 *
+	 * @phpstan-template TRecipeData of object
+	 * @phpstan-param class-string<TRecipeData> $modelClass
+	 * @phpstan-return list<TRecipeData>
+	 */
+	private static function loadJsonObjectListIntoModel(\JsonMapper $mapper, string $modelClass, array $data) : array{
+		$result = [];
+		foreach($data as $i => $item){
+			if(!is_object($item)){
+				throw new SavedDataLoadingException("Invalid entry at index $i: expected object, got " . get_debug_type($item));
+			}
+			try{
+				$result[] = self::loadJsonObjectIntoModel($mapper, $modelClass, $item);
+			}catch(SavedDataLoadingException $e){
+				throw new SavedDataLoadingException("Invalid entry at index $i: " . $e->getMessage(), 0, $e);
+			}
+		}
+		return $result;
+	}
+
+	public static function make(string $directoryPath) : CraftingManager{
 		$result = new CraftingManager();
 
 		$ingredientDeserializerFunc = \Closure::fromCallable([self::class, "deserializeIngredient"]);
-		$itemDeserializerFunc = \Closure::fromCallable([Item::class, 'legacyJsonDeserialize']);
+		$itemDeserializerFunc = \Closure::fromCallable([self::class, 'deserializeItemStack']);
 
-		foreach($recipes["shapeless"] as $recipe){
-			$recipeType = match($recipe["block"]){
+		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'shapeless_crafting.json'), ShapelessRecipeData::class) as $recipe){
+			$recipeType = match($recipe->block){
 				"crafting_table" => ShapelessRecipeType::CRAFTING(),
 				"stonecutter" => ShapelessRecipeType::STONECUTTER(),
 				//TODO: Cartography Table
@@ -87,18 +231,20 @@ final class CraftingManagerFromDataHelper{
 				continue;
 			}
 			$inputs = [];
-			foreach($recipe["input"] as $inputData){
+			foreach($recipe->input as $inputData){
 				$input = $ingredientDeserializerFunc($inputData);
 				if($input === null){ //unknown input item
 					continue 2;
 				}
 				$inputs[] = $input;
 			}
-			try{
-				$outputs = array_map($itemDeserializerFunc, $recipe["output"]);
-			}catch(SavedDataLoadingException){
-				//unknown output item
-				continue;
+			$outputs = [];
+			foreach($recipe->output as $outputData){
+				$output = $itemDeserializerFunc($outputData);
+				if($output === null){ //unknown output item
+					continue 2;
+				}
+				$outputs[] = $output;
 			}
 			$result->registerShapelessRecipe(new ShapelessRecipe(
 				$inputs,
@@ -106,32 +252,34 @@ final class CraftingManagerFromDataHelper{
 				$recipeType
 			));
 		}
-		foreach($recipes["shaped"] as $recipe){
-			if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
+		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'shaped_crafting.json'), ShapedRecipeData::class) as $recipe){
+			if($recipe->block !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
 				continue;
 			}
 			$inputs = [];
-			foreach($recipe["input"] as $symbol => $inputData){
+			foreach(Utils::stringifyKeys($recipe->input) as $symbol => $inputData){
 				$input = $ingredientDeserializerFunc($inputData);
 				if($input === null){ //unknown input item
 					continue 2;
 				}
 				$inputs[$symbol] = $input;
 			}
-			try{
-				$outputs = array_map($itemDeserializerFunc, $recipe["output"]);
-			}catch(SavedDataLoadingException){
-				//unknown output item
-				continue;
+			$outputs = [];
+			foreach($recipe->output as $outputData){
+				$output = $itemDeserializerFunc($outputData);
+				if($output === null){ //unknown output item
+					continue 2;
+				}
+				$outputs[] = $output;
 			}
 			$result->registerShapedRecipe(new ShapedRecipe(
-				$recipe["shape"],
+				$recipe->shape,
 				$inputs,
 				$outputs
 			));
 		}
-		foreach($recipes["smelting"] as $recipe){
-			$furnaceType = match ($recipe["block"]){
+		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'smelting.json'), FurnaceRecipeData::class) as $recipe){
+			$furnaceType = match ($recipe->block){
 				"furnace" => FurnaceType::FURNACE(),
 				"blast_furnace" => FurnaceType::BLAST_FURNACE(),
 				"smoker" => FurnaceType::SMOKER(),
@@ -141,12 +289,11 @@ final class CraftingManagerFromDataHelper{
 			if($furnaceType === null){
 				continue;
 			}
-			try{
-				$output = Item::legacyJsonDeserialize($recipe["output"]);
-			}catch(SavedDataLoadingException){
+			$output = self::deserializeItemStack($recipe->output);
+			if($output === null){
 				continue;
 			}
-			$input = self::deserializeIngredient($recipe["input"]);
+			$input = self::deserializeIngredient($recipe->input);
 			if($input === null){
 				continue;
 			}
@@ -155,13 +302,12 @@ final class CraftingManagerFromDataHelper{
 				$input
 			));
 		}
-		foreach($recipes["potion_type"] as $recipe){
-			try{
-				$input = Item::legacyJsonDeserialize($recipe["input"]);
-				$ingredient = Item::legacyJsonDeserialize($recipe["ingredient"]);
-				$output = Item::legacyJsonDeserialize($recipe["output"]);
-			}catch(SavedDataLoadingException){
-				//unknown item
+
+		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'potion_type.json'), PotionTypeRecipeData::class) as $recipe){
+			$input = self::deserializeIngredient($recipe->input);
+			$ingredient = self::deserializeIngredient($recipe->ingredient);
+			$output = self::deserializeItemStack($recipe->output);
+			if($input === null || $ingredient === null || $output === null){
 				continue;
 			}
 			$result->registerPotionTypeRecipe(new PotionTypeRecipe(
@@ -170,18 +316,16 @@ final class CraftingManagerFromDataHelper{
 				$output
 			));
 		}
-		foreach($recipes["potion_container_change"] as $recipe){
-			try{
-				$ingredient = Item::legacyJsonDeserialize($recipe["ingredient"]);
-			}catch(SavedDataLoadingException){
-				//unknown item
+		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'potion_container_change.json'), PotionContainerChangeRecipeData::class) as $recipe){
+			$ingredient = self::deserializeIngredient($recipe->ingredient);
+			if($ingredient === null){
 				continue;
 			}
 
-			//TODO: we'll be able to get rid of these conversions once the crafting data is updated
-			$inputId = LegacyItemIdToStringIdMap::getInstance()->legacyToString($recipe["input_item_id"]);
-			$outputId = LegacyItemIdToStringIdMap::getInstance()->legacyToString($recipe["output_item_id"]);
-			if($inputId === null || $outputId === null){
+			$inputId = $recipe->input_item_name;
+			$outputId = $recipe->output_item_name;
+
+			if(self::deserializeItemStackFromNameMeta($inputId, 0) === null || self::deserializeItemStackFromNameMeta($outputId, 0) === null){
 				//unknown item
 				continue;
 			}

@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
+use pocketmine\block\utils\WoodTypeTrait;
 use pocketmine\data\runtime\block\BlockDataReader;
 use pocketmine\data\runtime\block\BlockDataWriter;
 use pocketmine\item\Item;
@@ -36,6 +37,7 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\DoorSound;
 
 class FenceGate extends Transparent{
+	use WoodTypeTrait;
 	use HorizontalFacingTrait;
 
 	protected bool $open = false;
@@ -126,10 +128,10 @@ class FenceGate extends Transparent{
 	}
 
 	public function getFlameEncouragement() : int{
-		return 5;
+		return $this->woodType->isFlammable() ? 5 : 0;
 	}
 
 	public function getFlammability() : int{
-		return 20;
+		return $this->woodType->isFlammable() ? 20 : 0;
 	}
 }

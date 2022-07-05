@@ -264,13 +264,13 @@ class CraftingManager{
 		}
 
 		foreach($this->potionContainerChangeRecipes as $recipe){
-			if($recipe->getIngredient()->equals($ingredient) && $recipe->getResultFor($input) !== null){
+			if($recipe->getIngredient()->accepts($ingredient) && $recipe->getResultFor($input) !== null){
 				return $this->brewingRecipeCache[$inputHash][$ingredientHash] = $recipe;
 			}
 		}
 
 		foreach($this->potionTypeRecipes as $recipe){
-			if($recipe->getIngredient()->equals($ingredient) && $recipe->getResultFor($input) !== null){
+			if($recipe->getIngredient()->accepts($ingredient) && $recipe->getResultFor($input) !== null){
 				return $this->brewingRecipeCache[$inputHash][$ingredientHash] = $recipe;
 			}
 		}

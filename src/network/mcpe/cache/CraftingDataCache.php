@@ -149,8 +149,8 @@ final class CraftingDataCache{
 
 		$potionTypeRecipes = [];
 		foreach($manager->getPotionTypeRecipes() as $recipe){
-			$input = $converter->coreItemStackToNet($recipe->getInput());
-			$ingredient = $converter->coreItemStackToNet($recipe->getIngredient());
+			$input = $converter->coreRecipeIngredientToNet($recipe->getInput());
+			$ingredient = $converter->coreRecipeIngredientToNet($recipe->getIngredient());
 			$output = $converter->coreItemStackToNet($recipe->getOutput());
 			$potionTypeRecipes[] = new ProtocolPotionTypeRecipe(
 				$input->getId(),
@@ -166,7 +166,7 @@ final class CraftingDataCache{
 		$itemTypeDictionary = GlobalItemTypeDictionary::getInstance()->getDictionary();
 		foreach($manager->getPotionContainerChangeRecipes() as $recipe){
 			$input = $itemTypeDictionary->fromStringId($recipe->getInputItemId());
-			$ingredient = $converter->coreItemStackToNet($recipe->getIngredient());
+			$ingredient = $converter->coreRecipeIngredientToNet($recipe->getIngredient());
 			$output = $itemTypeDictionary->fromStringId($recipe->getOutputItemId());
 			$potionContainerChangeRecipes[] = new ProtocolPotionContainerChangeRecipe(
 				$input,
