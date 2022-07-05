@@ -59,12 +59,16 @@ final class Light extends Flowable{
 	public function canBeReplaced() : bool{ return true; }
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$this->level = $this->level === self::MAX_LIGHT_LEVEL ?
-			self::MIN_LIGHT_LEVEL :
-			$this->level + 1;
+		if($item->getBlock() instanceof Light){
+			$this->level = $this->level === self::MAX_LIGHT_LEVEL ?
+				self::MIN_LIGHT_LEVEL :
+				$this->level + 1;
 
-		$this->position->getWorld()->setBlock($this->position, $this);
+			$this->position->getWorld()->setBlock($this->position, $this);
 
-		return true;
+			return true;
+		}
+
+		return false;
 	}
 }
