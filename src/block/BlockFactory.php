@@ -243,7 +243,11 @@ class BlockFactory{
 		$this->register(new ItemFrame(new BID(Ids::ITEM_FRAME, TileItemFrame::class), "Item Frame", new BreakInfo(0.25)));
 		$this->register(new Jukebox(new BID(Ids::JUKEBOX, TileJukebox::class), "Jukebox", new BreakInfo(0.8, ToolType::AXE))); //TODO: in PC the hardness is 2.0, not 0.8, unsure if this is a MCPE bug or not
 		$this->register(new Ladder(new BID(Ids::LADDER), "Ladder", new BreakInfo(0.4, ToolType::AXE)));
-		$this->register(new Lantern(new BID(Ids::LANTERN), "Lantern", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+
+		$lanternBreakInfo = new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$this->register(new Lantern(new BID(Ids::LANTERN), "Lantern", $lanternBreakInfo, 15));
+		$this->register(new Lantern(new BID(Ids::SOUL_LANTERN), "Soul Lantern", $lanternBreakInfo, 10));
+
 		$this->register(new Opaque(new BID(Ids::LAPIS_LAZULI), "Lapis Lazuli Block", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
 		$this->register(new LapisOre(new BID(Ids::LAPIS_LAZULI_ORE), "Lapis Lazuli Ore", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
 		$this->register(new Lava(new BID(Ids::LAVA), "Lava", BreakInfo::indestructible(500.0)));
@@ -568,6 +572,7 @@ class BlockFactory{
 		));
 
 		$this->registerBlocksR13();
+		$this->registerBlocksR14();
 		$this->registerBlocksR16();
 		$this->registerBlocksR17();
 	}
@@ -711,6 +716,10 @@ class BlockFactory{
 		$this->register(new Light(new BID(Ids::LIGHT), "Light Block", BreakInfo::indestructible()));
 	}
 
+	private function registerBlocksR14() : void{
+		$this->register(new Opaque(new BID(Ids::HONEYCOMB), "Honeycomb Block", new BreakInfo(0.6)));
+	}
+
 	private function registerBlocksR16() : void{
 		//for some reason, slabs have weird hardness like the legacy ones
 		$slabBreakInfo = new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
@@ -745,7 +754,15 @@ class BlockFactory{
 		$this->register(new Wall(new BID(Ids::POLISHED_BLACKSTONE_BRICK_WALL), $prefix("Wall"), $blackstoneBreakInfo));
 		$this->register(new Opaque(new BID(Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS), "Cracked Polished Blackstone Bricks", $blackstoneBreakInfo));
 
+		$this->register(new Torch(new BID(Ids::SOUL_TORCH), "Soul Torch", BreakInfo::instant()));
 		$this->register(new SoulFire(new BID(Ids::SOUL_FIRE), "Soul Fire", BreakInfo::instant()));
+
+		//TODO: soul soul ought to have 0.5 hardness (as per java) but it's 1.0 in Bedrock (probably parity bug)
+		$this->register(new Opaque(new BID(Ids::SOUL_SOIL), "Soul Soil", new BreakInfo(1.0, ToolType::SHOVEL)));
+
+		$this->register(new class(new BID(Ids::SHROOMLIGHT), "Shroomlight", new BreakInfo(1.0, ToolType::HOE)) extends Opaque{
+			public function getLightLevel() : int{ return 15; }
+		});
 	}
 
 	private function registerBlocksR17() : void{
@@ -753,6 +770,7 @@ class BlockFactory{
 		$this->register(new Opaque(new BID(Ids::AMETHYST), "Amethyst", new BreakInfo(1.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 
 		$this->register(new Opaque(new BID(Ids::CALCITE), "Calcite", new BreakInfo(0.75, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		$this->register(new Opaque(new BID(Ids::TUFF), "Tuff", new BreakInfo(1.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 
 		$this->register(new Opaque(new BID(Ids::RAW_COPPER), "Raw Copper Block", new BreakInfo(5, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
 		$this->register(new Opaque(new BID(Ids::RAW_GOLD), "Raw Gold Block", new BreakInfo(5, ToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel())));

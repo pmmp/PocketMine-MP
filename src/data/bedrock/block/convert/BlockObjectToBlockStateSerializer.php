@@ -1053,6 +1053,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeBool(StateNames::DEAD_BIT, !$block->isUnderwater())
 				->writeInt(StateNames::CLUSTER_COUNT, $block->getCount() - 1);
 		});
+		$this->mapSimple(Blocks::SHROOMLIGHT(), Ids::SHROOMLIGHT);
 		$this->mapSimple(Blocks::SHULKER_BOX(), Ids::UNDYED_SHULKER_BOX);
 		$this->mapSimple(Blocks::SLIME(), Ids::SLIME);
 		$this->map(Blocks::SMOKER(), fn(Furnace $block) => Helper::encodeFurnace($block, Ids::SMOKER, Ids::LIT_SMOKER));
@@ -1078,7 +1079,16 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::SOUL_FIRE)
 				->writeInt(StateNames::AGE, 0); //useless for soul fire, we don't track it
 		});
+		$this->map(Blocks::SOUL_LANTERN(), function(Lantern $block) : Writer{
+			return Writer::create(Ids::SOUL_LANTERN)
+				->writeBool(StateNames::HANGING, $block->isHanging());
+		});
 		$this->mapSimple(Blocks::SOUL_SAND(), Ids::SOUL_SAND);
+		$this->mapSimple(Blocks::SOUL_SOIL(), Ids::SOUL_SOIL);
+		$this->map(Blocks::SOUL_TORCH(), function(Torch $block) : Writer{
+			return Writer::create(Ids::SOUL_TORCH)
+				->writeTorchFacing($block->getFacing());
+		});
 		$this->map(Blocks::SPONGE(), function(Sponge $block) : Writer{
 			return Writer::create(Ids::SPONGE)
 				->writeString(StateNames::SPONGE_TYPE, $block->isWet() ? StringValues::SPONGE_TYPE_WET : StringValues::SPONGE_TYPE_DRY);
@@ -1168,6 +1178,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeBool(StateNames::POWERED_BIT, $block->isPowered())
 				->writeLegacyHorizontalFacing($block->getFacing());
 		});
+		$this->mapSimple(Blocks::TUFF(), Ids::TUFF);
 		$this->map(Blocks::UNDERWATER_TORCH(), function(UnderwaterTorch $block) : Writer{
 			return Writer::create(Ids::UNDERWATER_TORCH)
 				->writeTorchFacing($block->getFacing());

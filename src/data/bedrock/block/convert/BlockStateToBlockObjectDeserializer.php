@@ -971,6 +971,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 				->setCount($in->readBoundedInt(StateNames::CLUSTER_COUNT, 0, 3) + 1)
 				->setUnderwater(!$in->readBool(StateNames::DEAD_BIT));
 		});
+		$this->map(Ids::SHROOMLIGHT, fn() => Blocks::SHROOMLIGHT());
 		$this->map(Ids::SHULKER_BOX, function(Reader $in) : Block{
 			return Blocks::DYED_SHULKER_BOX()
 				->setColor($in->readColor());
@@ -1000,7 +1001,16 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			$in->ignored(StateNames::AGE); //this is useless for soul fire, since it doesn't have the logic associated
 			return Blocks::SOUL_FIRE();
 		});
+		$this->map(Ids::SOUL_LANTERN, function(Reader $in) : Block{
+			return Blocks::SOUL_LANTERN()
+				->setHanging($in->readBool(StateNames::HANGING));
+		});
 		$this->map(Ids::SOUL_SAND, fn() => Blocks::SOUL_SAND());
+		$this->map(Ids::SOUL_SOIL, fn() => Blocks::SOUL_SOIL());
+		$this->map(Ids::SOUL_TORCH, function(Reader $in) : Block{
+			return Blocks::SOUL_TORCH()
+				->setFacing($in->readTorchFacing());
+		});
 		$this->map(Ids::SPONGE, function(Reader $in) : Block{
 			return Blocks::SPONGE()->setWet(match($type = $in->readString(StateNames::SPONGE_TYPE)){
 				StringValues::SPONGE_TYPE_DRY => false,
@@ -1120,6 +1130,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 				->setFacing($in->readLegacyHorizontalFacing())
 				->setPowered($in->readBool(StateNames::POWERED_BIT));
 		});
+		$this->map(Ids::TUFF, fn() => Blocks::TUFF());
 		$this->map(Ids::UNDERWATER_TORCH, function(Reader $in) : Block{
 			return Blocks::UNDERWATER_TORCH()
 				->setFacing($in->readTorchFacing());
