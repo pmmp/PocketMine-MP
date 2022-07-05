@@ -336,6 +336,7 @@ final class ItemSerializer{
 		$this->map(Items::COOKED_RABBIT(), self::id(Ids::COOKED_RABBIT));
 		$this->map(Items::COOKED_SALMON(), self::id(Ids::COOKED_SALMON));
 		$this->map(Items::COOKIE(), self::id(Ids::COOKIE));
+		$this->map(Items::CRIMSON_SIGN(), self::id(Ids::CRIMSON_SIGN));
 		$this->map(Items::DARK_OAK_BOAT(), self::id(Ids::DARK_OAK_BOAT));
 		$this->map(Items::DARK_OAK_SIGN(), self::id(Ids::DARK_OAK_SIGN));
 		$this->map(Items::DIAMOND(), self::id(Ids::DIAMOND));
@@ -420,6 +421,7 @@ final class ItemSerializer{
 		$this->map(Items::LEATHER_PANTS(), self::id(Ids::LEATHER_LEGGINGS));
 		$this->map(Items::LEATHER_TUNIC(), self::id(Ids::LEATHER_CHESTPLATE));
 		$this->map(Items::MAGMA_CREAM(), self::id(Ids::MAGMA_CREAM));
+		$this->map(Items::MANGROVE_SIGN(), self::id(Ids::MANGROVE_SIGN));
 		$this->map(Items::MELON(), self::id(Ids::MELON_SLICE));
 		$this->map(Items::MELON_SEEDS(), self::id(Ids::MELON_SEEDS));
 		$this->map(Items::MILK_BUCKET(), self::id(Ids::MILK_BUCKET));
@@ -488,6 +490,7 @@ final class ItemSerializer{
 		$this->map(Items::SWEET_BERRIES(), self::id(Ids::SWEET_BERRIES));
 		$this->map(Items::TOTEM(), self::id(Ids::TOTEM_OF_UNDYING));
 		$this->map(Items::VILLAGER_SPAWN_EGG(), self::id(Ids::VILLAGER_SPAWN_EGG));
+		$this->map(Items::WARPED_SIGN(), self::id(Ids::WARPED_SIGN));
 		$this->map(Items::WATER_BUCKET(), self::id(Ids::WATER_BUCKET));
 		$this->map(Items::WHEAT(), self::id(Ids::WHEAT));
 		$this->map(Items::WHEAT_SEEDS(), self::id(Ids::WHEAT_SEEDS));

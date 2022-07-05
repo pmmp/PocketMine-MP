@@ -309,8 +309,10 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::CRIMSON_PLANKS, fn() => Blocks::CRIMSON_PLANKS());
 		$this->map(Ids::CRIMSON_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::CRIMSON_PRESSURE_PLATE(), $in));
 		$this->mapStairs(Ids::CRIMSON_STAIRS, fn() => Blocks::CRIMSON_STAIRS());
+		$this->map(Ids::CRIMSON_STANDING_SIGN, fn(Reader $in) => Helper::decodeFloorSign(Blocks::CRIMSON_SIGN(), $in));
 		$this->map(Ids::CRIMSON_STEM, fn(Reader $in) => Helper::decodeLog(Blocks::CRIMSON_STEM(), false, $in));
 		$this->map(Ids::CRIMSON_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::CRIMSON_TRAPDOOR(), $in));
+		$this->map(Ids::CRIMSON_WALL_SIGN, fn(Reader $in) => Helper::decodeWallSign(Blocks::CRIMSON_WALL_SIGN(), $in));
 		$this->map(Ids::CYAN_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::CYAN(), $in));
 		$this->map(Ids::DARK_OAK_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::DARK_OAK_BUTTON(), $in));
 		$this->map(Ids::DARK_OAK_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::DARK_OAK_DOOR(), $in));
@@ -735,7 +737,9 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::MANGROVE_PLANKS, fn() => Blocks::MANGROVE_PLANKS());
 		$this->map(Ids::MANGROVE_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::MANGROVE_PRESSURE_PLATE(), $in));
 		$this->mapStairs(Ids::MANGROVE_STAIRS, fn() => Blocks::MANGROVE_STAIRS());
+		$this->map(Ids::MANGROVE_STANDING_SIGN, fn(Reader $in) => Helper::decodeFloorSign(Blocks::MANGROVE_SIGN(), $in));
 		$this->map(Ids::MANGROVE_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::MANGROVE_TRAPDOOR(), $in));
+		$this->map(Ids::MANGROVE_WALL_SIGN, fn(Reader $in) => Helper::decodeWallSign(Blocks::MANGROVE_WALL_SIGN(), $in));
 		$this->map(Ids::MANGROVE_WOOD, function(Reader $in){
 			$in->ignored(StateNames::STRIPPED_BIT); //this is also ignored by vanilla
 			return Helper::decodeLog(Blocks::MANGROVE_WOOD(), false, $in);
@@ -1151,8 +1155,10 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::WARPED_PLANKS, fn() => Blocks::WARPED_PLANKS());
 		$this->map(Ids::WARPED_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::WARPED_PRESSURE_PLATE(), $in));
 		$this->mapStairs(Ids::WARPED_STAIRS, fn() => Blocks::WARPED_STAIRS());
+		$this->map(Ids::WARPED_STANDING_SIGN, fn(Reader $in) => Helper::decodeFloorSign(Blocks::WARPED_SIGN(), $in));
 		$this->map(Ids::WARPED_STEM, fn(Reader $in) => Helper::decodeLog(Blocks::WARPED_STEM(), false, $in));
 		$this->map(Ids::WARPED_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::WARPED_TRAPDOOR(), $in));
+		$this->map(Ids::WARPED_WALL_SIGN, fn(Reader $in) => Helper::decodeWallSign(Blocks::WARPED_WALL_SIGN(), $in));
 		$this->map(Ids::WATER, fn(Reader $in) => Helper::decodeStillLiquid(Blocks::WATER(), $in));
 		$this->map(Ids::WATERLILY, fn() => Blocks::LILY_PAD());
 		$this->map(Ids::WEB, fn() => Blocks::COBWEB());

@@ -219,6 +219,9 @@ class ItemFactory{
 		$this->register(new ItemBlockWallOrFloor(new IID(Ids::JUNGLE_SIGN), Blocks::JUNGLE_SIGN(), Blocks::JUNGLE_WALL_SIGN()));
 		$this->register(new ItemBlockWallOrFloor(new IID(Ids::ACACIA_SIGN), Blocks::ACACIA_SIGN(), Blocks::ACACIA_WALL_SIGN()));
 		$this->register(new ItemBlockWallOrFloor(new IID(Ids::DARK_OAK_SIGN), Blocks::DARK_OAK_SIGN(), Blocks::DARK_OAK_WALL_SIGN()));
+		$this->register(new ItemBlockWallOrFloor(new IID(Ids::MANGROVE_SIGN), Blocks::MANGROVE_SIGN(), Blocks::MANGROVE_WALL_SIGN()));
+		$this->register(new ItemBlockWallOrFloor(new IID(Ids::CRIMSON_SIGN), Blocks::CRIMSON_SIGN(), Blocks::CRIMSON_WALL_SIGN()));
+		$this->register(new ItemBlockWallOrFloor(new IID(Ids::WARPED_SIGN), Blocks::WARPED_SIGN(), Blocks::WARPED_WALL_SIGN()));
 		$this->register(new Snowball(new IID(Ids::SNOWBALL), "Snowball"));
 		$this->register(new SpiderEye(new IID(Ids::SPIDER_EYE), "Spider Eye"));
 		$this->register(new Steak(new IID(Ids::STEAK), "Steak"));

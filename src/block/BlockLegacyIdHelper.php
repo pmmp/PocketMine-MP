@@ -136,44 +136,63 @@ final class BlockLegacyIdHelper{
 	 * @return BID[]|\Closure[]
 	 * @phpstan-return array{BID, BID, \Closure() : \pocketmine\item\Item}
 	 */
-	public static function getWoodenSignInfo(TreeType $treeType) : array{
+	public static function getWoodenSignInfo(WoodType $treeType) : array{
 		switch($treeType->id()){
-			case TreeType::OAK()->id():
+			case WoodType::OAK()->id():
 				return [
 					new BID(Ids::OAK_SIGN, TileSign::class),
 					new BID(Ids::OAK_WALL_SIGN, TileSign::class),
 					fn() => VanillaItems::OAK_SIGN()
 				];
-			case TreeType::SPRUCE()->id():
+			case WoodType::SPRUCE()->id():
 				return [
 					new BID(Ids::SPRUCE_SIGN, TileSign::class),
 					new BID(Ids::SPRUCE_WALL_SIGN, TileSign::class),
 					fn() => VanillaItems::SPRUCE_SIGN()
 				];
-			case TreeType::BIRCH()->id():
+			case WoodType::BIRCH()->id():
 				return [
 					new BID(Ids::BIRCH_SIGN, TileSign::class),
 					new BID(Ids::BIRCH_WALL_SIGN, TileSign::class),
 					fn() => VanillaItems::BIRCH_SIGN()
 				];
-			case TreeType::JUNGLE()->id():
+			case WoodType::JUNGLE()->id():
 				return [
 					new BID(Ids::JUNGLE_SIGN, TileSign::class),
 					new BID(Ids::JUNGLE_WALL_SIGN, TileSign::class),
 					fn() => VanillaItems::JUNGLE_SIGN()
 				];
-			case TreeType::ACACIA()->id():
+			case WoodType::ACACIA()->id():
 				return [
 					new BID(Ids::ACACIA_SIGN, TileSign::class),
 					new BID(Ids::ACACIA_WALL_SIGN, TileSign::class),
 					fn() => VanillaItems::ACACIA_SIGN()
 				];
-			case TreeType::DARK_OAK()->id():
+			case WoodType::DARK_OAK()->id():
 				return [
 					new BID(Ids::DARK_OAK_SIGN, TileSign::class),
 					new BID(Ids::DARK_OAK_WALL_SIGN, TileSign::class),
 					fn() => VanillaItems::DARK_OAK_SIGN()
 				];
+			case WoodType::MANGROVE()->id():
+				return [
+					new BID(Ids::MANGROVE_SIGN, TileSign::class),
+					new BID(Ids::MANGROVE_WALL_SIGN, TileSign::class),
+					fn() => VanillaItems::MANGROVE_SIGN()
+				];
+			case WoodType::CRIMSON()->id():
+				return [
+					new BID(Ids::CRIMSON_SIGN, TileSign::class),
+					new BID(Ids::CRIMSON_WALL_SIGN, TileSign::class),
+					fn() => VanillaItems::CRIMSON_SIGN()
+				];
+			case WoodType::WARPED()->id():
+				return [
+					new BID(Ids::WARPED_SIGN, TileSign::class),
+					new BID(Ids::WARPED_WALL_SIGN, TileSign::class),
+					fn() => VanillaItems::WARPED_SIGN()
+				];
+
 		}
 		throw new AssumptionFailedError("Switch should cover all wood types");
 	}

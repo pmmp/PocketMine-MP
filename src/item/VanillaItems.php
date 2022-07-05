@@ -116,6 +116,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static CookedSalmon COOKED_SALMON()
  * @method static Cookie COOKIE()
  * @method static CoralFan CORAL_FAN()
+ * @method static ItemBlockWallOrFloor CRIMSON_SIGN()
  * @method static Boat DARK_OAK_BOAT()
  * @method static ItemBlockWallOrFloor DARK_OAK_SIGN()
  * @method static Item DIAMOND()
@@ -182,6 +183,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Armor LEATHER_PANTS()
  * @method static Armor LEATHER_TUNIC()
  * @method static Item MAGMA_CREAM()
+ * @method static ItemBlockWallOrFloor MANGROVE_SIGN()
  * @method static Melon MELON()
  * @method static MelonSeeds MELON_SEEDS()
  * @method static MilkBucket MILK_BUCKET()
@@ -250,6 +252,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static SweetBerries SWEET_BERRIES()
  * @method static Totem TOTEM()
  * @method static SpawnEgg VILLAGER_SPAWN_EGG()
+ * @method static ItemBlockWallOrFloor WARPED_SIGN()
  * @method static LiquidBucket WATER_BUCKET()
  * @method static Item WHEAT()
  * @method static WheatSeeds WHEAT_SEEDS()
@@ -369,6 +372,7 @@ final class VanillaItems{
 		self::register("cooked_salmon", $factory->fromTypeId(Ids::COOKED_SALMON));
 		self::register("cookie", $factory->fromTypeId(Ids::COOKIE));
 		self::register("coral_fan", $factory->fromTypeId(Ids::CORAL_FAN));
+		self::register("crimson_sign", $factory->fromTypeId(Ids::CRIMSON_SIGN));
 		self::register("dark_oak_boat", $factory->fromTypeId(Ids::DARK_OAK_BOAT));
 		self::register("dark_oak_sign", $factory->fromTypeId(Ids::DARK_OAK_SIGN));
 		self::register("diamond", $factory->fromTypeId(Ids::DIAMOND));
@@ -435,6 +439,7 @@ final class VanillaItems{
 		self::register("leather_pants", $factory->fromTypeId(Ids::LEATHER_PANTS));
 		self::register("leather_tunic", $factory->fromTypeId(Ids::LEATHER_TUNIC));
 		self::register("magma_cream", $factory->fromTypeId(Ids::MAGMA_CREAM));
+		self::register("mangrove_sign", $factory->fromTypeId(Ids::MANGROVE_SIGN));
 		self::register("melon", $factory->fromTypeId(Ids::MELON));
 		self::register("melon_seeds", $factory->fromTypeId(Ids::MELON_SEEDS));
 		self::register("milk_bucket", $factory->fromTypeId(Ids::MILK_BUCKET));
@@ -503,6 +508,7 @@ final class VanillaItems{
 		self::register("sweet_berries", $factory->fromTypeId(Ids::SWEET_BERRIES));
 		self::register("totem", $factory->fromTypeId(Ids::TOTEM));
 		self::register("villager_spawn_egg", $factory->fromTypeId(Ids::VILLAGER_SPAWN_EGG));
+		self::register("warped_sign", $factory->fromTypeId(Ids::WARPED_SIGN));
 		self::register("water_bucket", $factory->fromTypeId(Ids::WATER_BUCKET));
 		self::register("wheat", $factory->fromTypeId(Ids::WHEAT));
 		self::register("wheat_seeds", $factory->fromTypeId(Ids::WHEAT_SEEDS));

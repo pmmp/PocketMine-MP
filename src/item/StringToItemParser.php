@@ -233,6 +233,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("crimson_hyphae", fn() => Blocks::CRIMSON_HYPHAE()->setStripped(false));
 		$result->registerBlock("crimson_planks", fn() => Blocks::CRIMSON_PLANKS());
 		$result->registerBlock("crimson_pressure_plate", fn() => Blocks::CRIMSON_PRESSURE_PLATE());
+		$result->registerBlock("crimson_sign", fn() => Blocks::CRIMSON_SIGN());
 		$result->registerBlock("crimson_slab", fn() => Blocks::CRIMSON_SLAB());
 		$result->registerBlock("crimson_stairs", fn() => Blocks::CRIMSON_STAIRS());
 		$result->registerBlock("crimson_stem", fn() => Blocks::CRIMSON_STEM()->setStripped(false));
@@ -703,6 +704,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("mangrove_log", fn() => Blocks::MANGROVE_LOG()->setStripped(false));
 		$result->registerBlock("mangrove_planks", fn() => Blocks::MANGROVE_PLANKS());
 		$result->registerBlock("mangrove_pressure_plate", fn() => Blocks::MANGROVE_PRESSURE_PLATE());
+		$result->registerBlock("mangrove_sign", fn() => Blocks::MANGROVE_SIGN());
 		$result->registerBlock("mangrove_slab", fn() => Blocks::MANGROVE_SLAB());
 		$result->registerBlock("mangrove_stairs", fn() => Blocks::MANGROVE_STAIRS());
 		$result->registerBlock("mangrove_trapdoor", fn() => Blocks::MANGROVE_TRAPDOOR());
@@ -1003,6 +1005,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("warped_hyphae", fn() => Blocks::WARPED_HYPHAE()->setStripped(false));
 		$result->registerBlock("warped_planks", fn() => Blocks::WARPED_PLANKS());
 		$result->registerBlock("warped_pressure_plate", fn() => Blocks::WARPED_PRESSURE_PLATE());
+		$result->registerBlock("warped_sign", fn() => Blocks::WARPED_SIGN());
 		$result->registerBlock("warped_slab", fn() => Blocks::WARPED_SLAB());
 		$result->registerBlock("warped_stairs", fn() => Blocks::WARPED_STAIRS());
 		$result->registerBlock("warped_stem", fn() => Blocks::WARPED_STEM()->setStripped(false));

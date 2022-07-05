@@ -271,7 +271,7 @@ final class ItemDeserializer{
 		//TODO: minecraft:creeper_banner_pattern
 		//TODO: minecraft:creeper_spawn_egg
 		$this->map(Ids::CRIMSON_DOOR, fn() => Blocks::CRIMSON_DOOR()->asItem());
-		//TODO: minecraft:crimson_sign
+		$this->map(Ids::CRIMSON_SIGN, fn() => Blocks::CRIMSON_SIGN()->asItem());
 		//TODO: minecraft:crossbow
 		$this->map(Ids::CYAN_DYE, fn() => Items::DYE()->setColor(DyeColor::CYAN()));
 		$this->map(Ids::DARK_OAK_BOAT, fn() => Items::DARK_OAK_BOAT());
@@ -422,6 +422,7 @@ final class ItemDeserializer{
 		$this->map(Ids::MAGMA_CREAM, fn() => Items::MAGMA_CREAM());
 		//TODO: minecraft:magma_cube_spawn_egg
 		$this->map(Ids::MANGROVE_DOOR, fn() => Blocks::MANGROVE_DOOR()->asItem());
+		$this->map(Ids::MANGROVE_SIGN, fn() => Blocks::MANGROVE_SIGN()->asItem());
 		//TODO: minecraft:medicine
 		$this->map(Ids::MELON_SEEDS, fn() => Items::MELON_SEEDS());
 		$this->map(Ids::MELON_SLICE, fn() => Items::MELON());
@@ -595,7 +596,7 @@ final class ItemDeserializer{
 		//TODO: minecraft:wandering_trader_spawn_egg
 		$this->map(Ids::WARPED_DOOR, fn() => Blocks::WARPED_DOOR()->asItem());
 		//TODO: minecraft:warped_fungus_on_a_stick
-		//TODO: minecraft:warped_sign
+		$this->map(Ids::WARPED_SIGN, fn() => Blocks::WARPED_SIGN()->asItem());
 		$this->map(Ids::WATER_BUCKET, fn() => Items::WATER_BUCKET());
 		$this->map(Ids::WHEAT, fn() => Items::WHEAT());
 		$this->map(Ids::WHEAT_SEEDS, fn() => Items::WHEAT_SEEDS());

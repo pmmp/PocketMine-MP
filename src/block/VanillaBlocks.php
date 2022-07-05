@@ -150,10 +150,12 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Wood CRIMSON_HYPHAE()
  * @method static Planks CRIMSON_PLANKS()
  * @method static WoodenPressurePlate CRIMSON_PRESSURE_PLATE()
+ * @method static FloorSign CRIMSON_SIGN()
  * @method static WoodenSlab CRIMSON_SLAB()
  * @method static WoodenStairs CRIMSON_STAIRS()
  * @method static Wood CRIMSON_STEM()
  * @method static WoodenTrapdoor CRIMSON_TRAPDOOR()
+ * @method static WallSign CRIMSON_WALL_SIGN()
  * @method static Opaque CUT_RED_SANDSTONE()
  * @method static Slab CUT_RED_SANDSTONE_SLAB()
  * @method static Opaque CUT_SANDSTONE()
@@ -415,9 +417,11 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Wood MANGROVE_LOG()
  * @method static Planks MANGROVE_PLANKS()
  * @method static WoodenPressurePlate MANGROVE_PRESSURE_PLATE()
+ * @method static FloorSign MANGROVE_SIGN()
  * @method static WoodenSlab MANGROVE_SLAB()
  * @method static WoodenStairs MANGROVE_STAIRS()
  * @method static WoodenTrapdoor MANGROVE_TRAPDOOR()
+ * @method static WallSign MANGROVE_WALL_SIGN()
  * @method static Wood MANGROVE_WOOD()
  * @method static ChemistryTable MATERIAL_REDUCER()
  * @method static Melon MELON()
@@ -617,10 +621,12 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Wood WARPED_HYPHAE()
  * @method static Planks WARPED_PLANKS()
  * @method static WoodenPressurePlate WARPED_PRESSURE_PLATE()
+ * @method static FloorSign WARPED_SIGN()
  * @method static WoodenSlab WARPED_SLAB()
  * @method static WoodenStairs WARPED_STAIRS()
  * @method static Wood WARPED_STEM()
  * @method static WoodenTrapdoor WARPED_TRAPDOOR()
+ * @method static WallSign WARPED_WALL_SIGN()
  * @method static Water WATER()
  * @method static WeightedPressurePlateHeavy WEIGHTED_PRESSURE_PLATE_HEAVY()
  * @method static WeightedPressurePlateLight WEIGHTED_PRESSURE_PLATE_LIGHT()
@@ -769,10 +775,12 @@ final class VanillaBlocks{
 		self::register("crimson_hyphae", $factory->fromTypeId(Ids::CRIMSON_HYPHAE));
 		self::register("crimson_planks", $factory->fromTypeId(Ids::CRIMSON_PLANKS));
 		self::register("crimson_pressure_plate", $factory->fromTypeId(Ids::CRIMSON_PRESSURE_PLATE));
+		self::register("crimson_sign", $factory->fromTypeId(Ids::CRIMSON_SIGN));
 		self::register("crimson_slab", $factory->fromTypeId(Ids::CRIMSON_SLAB));
 		self::register("crimson_stairs", $factory->fromTypeId(Ids::CRIMSON_STAIRS));
 		self::register("crimson_stem", $factory->fromTypeId(Ids::CRIMSON_STEM));
 		self::register("crimson_trapdoor", $factory->fromTypeId(Ids::CRIMSON_TRAPDOOR));
+		self::register("crimson_wall_sign", $factory->fromTypeId(Ids::CRIMSON_WALL_SIGN));
 		self::register("cut_red_sandstone", $factory->fromTypeId(Ids::CUT_RED_SANDSTONE));
 		self::register("cut_red_sandstone_slab", $factory->fromTypeId(Ids::CUT_RED_SANDSTONE_SLAB));
 		self::register("cut_sandstone", $factory->fromTypeId(Ids::CUT_SANDSTONE));
@@ -1034,9 +1042,11 @@ final class VanillaBlocks{
 		self::register("mangrove_log", $factory->fromTypeId(Ids::MANGROVE_LOG));
 		self::register("mangrove_planks", $factory->fromTypeId(Ids::MANGROVE_PLANKS));
 		self::register("mangrove_pressure_plate", $factory->fromTypeId(Ids::MANGROVE_PRESSURE_PLATE));
+		self::register("mangrove_sign", $factory->fromTypeId(Ids::MANGROVE_SIGN));
 		self::register("mangrove_slab", $factory->fromTypeId(Ids::MANGROVE_SLAB));
 		self::register("mangrove_stairs", $factory->fromTypeId(Ids::MANGROVE_STAIRS));
 		self::register("mangrove_trapdoor", $factory->fromTypeId(Ids::MANGROVE_TRAPDOOR));
+		self::register("mangrove_wall_sign", $factory->fromTypeId(Ids::MANGROVE_WALL_SIGN));
 		self::register("mangrove_wood", $factory->fromTypeId(Ids::MANGROVE_WOOD));
 		self::register("material_reducer", $factory->fromTypeId(Ids::MATERIAL_REDUCER));
 		self::register("melon", $factory->fromTypeId(Ids::MELON));
@@ -1236,10 +1246,12 @@ final class VanillaBlocks{
 		self::register("warped_hyphae", $factory->fromTypeId(Ids::WARPED_HYPHAE));
 		self::register("warped_planks", $factory->fromTypeId(Ids::WARPED_PLANKS));
 		self::register("warped_pressure_plate", $factory->fromTypeId(Ids::WARPED_PRESSURE_PLATE));
+		self::register("warped_sign", $factory->fromTypeId(Ids::WARPED_SIGN));
 		self::register("warped_slab", $factory->fromTypeId(Ids::WARPED_SLAB));
 		self::register("warped_stairs", $factory->fromTypeId(Ids::WARPED_STAIRS));
 		self::register("warped_stem", $factory->fromTypeId(Ids::WARPED_STEM));
 		self::register("warped_trapdoor", $factory->fromTypeId(Ids::WARPED_TRAPDOOR));
+		self::register("warped_wall_sign", $factory->fromTypeId(Ids::WARPED_WALL_SIGN));
 		self::register("water", $factory->fromTypeId(Ids::WATER));
 		self::register("weighted_pressure_plate_heavy", $factory->fromTypeId(Ids::WEIGHTED_PRESSURE_PLATE_HEAVY));
 		self::register("weighted_pressure_plate_light", $factory->fromTypeId(Ids::WEIGHTED_PRESSURE_PLATE_LIGHT));

@@ -26,6 +26,8 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\utils\SignText;
 use pocketmine\block\utils\SupportType;
+use pocketmine\block\utils\WoodType;
+use pocketmine\block\utils\WoodTypeTrait;
 use pocketmine\event\block\SignChangeEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -38,6 +40,8 @@ use function assert;
 use function strlen;
 
 abstract class BaseSign extends Transparent{
+	use WoodTypeTrait;
+
 	protected SignText $text;
 	protected ?int $editorEntityRuntimeId = null;
 
@@ -47,7 +51,8 @@ abstract class BaseSign extends Transparent{
 	/**
 	 * @param \Closure() : Item $asItemCallback
 	 */
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, \Closure $asItemCallback){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, WoodType $woodType, \Closure $asItemCallback){
+		$this->woodType = $woodType;
 		parent::__construct($idInfo, $name, $breakInfo);
 		$this->text = new SignText();
 		$this->asItemCallback = $asItemCallback;

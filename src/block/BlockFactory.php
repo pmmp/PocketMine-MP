@@ -461,10 +461,6 @@ class BlockFactory{
 			$name = $treeType->getDisplayName();
 			$this->register(new Sapling(BlockLegacyIdHelper::getSaplingIdentifier($treeType), $name . " Sapling", BreakInfo::instant(), $treeType));
 			$this->register(new Leaves(BlockLegacyIdHelper::getLeavesIdentifier($treeType), $name . " Leaves", $leavesBreakInfo, $treeType));
-
-			[$floorSignId, $wallSignId, $signAsItem] = BlockLegacyIdHelper::getWoodenSignInfo($treeType);
-			$this->register(new FloorSign($floorSignId, $name . " Sign", $signBreakInfo, $signAsItem));
-			$this->register(new WallSign($wallSignId, $name . " Wall Sign", $signBreakInfo, $signAsItem));
 		}
 
 		foreach(WoodType::getAll() as $woodType){
@@ -484,6 +480,10 @@ class BlockFactory{
 			$this->register(new WoodenButton(BlockLegacyIdHelper::getWoodenButtonIdentifier($woodType), $name . " Button", $woodenButtonBreakInfo, $woodType));
 			$this->register(new WoodenPressurePlate(BlockLegacyIdHelper::getWoodenPressurePlateIdentifier($woodType), $name . " Pressure Plate", $woodenPressurePlateBreakInfo, $woodType));
 			$this->register(new WoodenTrapdoor(BlockLegacyIdHelper::getWoodenTrapdoorIdentifier($woodType), $name . " Trapdoor", $woodenDoorBreakInfo, $woodType));
+
+			[$floorSignId, $wallSignId, $signAsItem] = BlockLegacyIdHelper::getWoodenSignInfo($woodType);
+			$this->register(new FloorSign($floorSignId, $name . " Sign", $signBreakInfo, $woodType, $signAsItem));
+			$this->register(new WallSign($wallSignId, $name . " Wall Sign", $signBreakInfo, $woodType, $signAsItem));
 		}
 
 		$sandstoneBreakInfo = new BreakInfo(0.8, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());

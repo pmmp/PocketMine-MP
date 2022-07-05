@@ -265,6 +265,9 @@ final class ItemTypeIds{
 	public const WRITABLE_BOOK = 20226;
 	public const WRITTEN_BOOK = 20227;
 	public const ZOMBIE_SPAWN_EGG = 20228;
+	public const CRIMSON_SIGN = 20229;
+	public const MANGROVE_SIGN = 20230;
+	public const WARPED_SIGN = 20231;
 
-	public const FIRST_UNUSED_ITEM_ID = 20229;
+	public const FIRST_UNUSED_ITEM_ID = 20232;
 }
