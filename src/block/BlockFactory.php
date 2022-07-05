@@ -145,7 +145,6 @@ class BlockFactory{
 		$this->register(new Chest(new BID(Ids::CHEST, TileChest::class), "Chest", $chestBreakInfo));
 		$this->register(new Clay(new BID(Ids::CLAY), "Clay Block", new BreakInfo(0.6, ToolType::SHOVEL)));
 		$this->register(new Coal(new BID(Ids::COAL), "Coal Block", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0)));
-		$this->register(new CoalOre(new BID(Ids::COAL_ORE), "Coal Ore", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 
 		$cobblestoneBreakInfo = new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
 		$this->register($cobblestone = new Opaque(new BID(Ids::COBBLESTONE), "Cobblestone", $cobblestoneBreakInfo));
@@ -162,7 +161,6 @@ class BlockFactory{
 		$this->register(new DetectorRail(new BID(Ids::DETECTOR_RAIL), "Detector Rail", $railBreakInfo));
 
 		$this->register(new Opaque(new BID(Ids::DIAMOND), "Diamond Block", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel(), 30.0)));
-		$this->register(new DiamondOre(new BID(Ids::DIAMOND_ORE), "Diamond Ore", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel())));
 		$this->register(new Dirt(new BID(Ids::DIRT), "Dirt", new BreakInfo(0.5, ToolType::SHOVEL)));
 		$this->register(new DoublePlant(new BID(Ids::SUNFLOWER), "Sunflower", BreakInfo::instant()));
 		$this->register(new DoublePlant(new BID(Ids::LILAC), "Lilac", BreakInfo::instant()));
@@ -173,7 +171,6 @@ class BlockFactory{
 		$this->register(new DragonEgg(new BID(Ids::DRAGON_EGG), "Dragon Egg", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new DriedKelp(new BID(Ids::DRIED_KELP), "Dried Kelp Block", new BreakInfo(0.5, ToolType::NONE, 0, 12.5)));
 		$this->register(new Opaque(new BID(Ids::EMERALD), "Emerald Block", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel(), 30.0)));
-		$this->register(new EmeraldOre(new BID(Ids::EMERALD_ORE), "Emerald Ore", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel())));
 		$this->register(new EnchantingTable(new BID(Ids::ENCHANTING_TABLE, TileEnchantingTable::class), "Enchanting Table", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 6000.0)));
 		$this->register(new EndPortalFrame(new BID(Ids::END_PORTAL_FRAME), "End Portal Frame", BreakInfo::indestructible()));
 		$this->register(new EndRod(new BID(Ids::END_ROD), "End Rod", BreakInfo::instant()));
@@ -211,7 +208,6 @@ class BlockFactory{
 		$this->register(new GlowingObsidian(new BID(Ids::GLOWING_OBSIDIAN), "Glowing Obsidian", new BreakInfo(10.0, ToolType::PICKAXE, ToolTier::DIAMOND()->getHarvestLevel(), 50.0)));
 		$this->register(new Glowstone(new BID(Ids::GLOWSTONE), "Glowstone", new BreakInfo(0.3, ToolType::PICKAXE)));
 		$this->register(new Opaque(new BID(Ids::GOLD), "Gold Block", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel(), 30.0)));
-		$this->register(new Opaque(new BID(Ids::GOLD_ORE), "Gold Ore", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel())));
 
 		$grassBreakInfo = new BreakInfo(0.6, ToolType::SHOVEL);
 		$this->register(new Grass(new BID(Ids::GRASS), "Grass", $grassBreakInfo));
@@ -239,7 +235,6 @@ class BlockFactory{
 		$ironDoorBreakInfo = new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 25.0);
 		$this->register(new Door(new BID(Ids::IRON_DOOR), "Iron Door", $ironDoorBreakInfo));
 		$this->register(new Trapdoor(new BID(Ids::IRON_TRAPDOOR), "Iron Trapdoor", $ironDoorBreakInfo));
-		$this->register(new Opaque(new BID(Ids::IRON_ORE), "Iron Ore", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
 		$this->register(new ItemFrame(new BID(Ids::ITEM_FRAME, TileItemFrame::class), "Item Frame", new BreakInfo(0.25)));
 		$this->register(new Jukebox(new BID(Ids::JUKEBOX, TileJukebox::class), "Jukebox", new BreakInfo(0.8, ToolType::AXE))); //TODO: in PC the hardness is 2.0, not 0.8, unsure if this is a MCPE bug or not
 		$this->register(new Ladder(new BID(Ids::LADDER), "Ladder", new BreakInfo(0.4, ToolType::AXE)));
@@ -249,7 +244,6 @@ class BlockFactory{
 		$this->register(new Lantern(new BID(Ids::SOUL_LANTERN), "Soul Lantern", $lanternBreakInfo, 10));
 
 		$this->register(new Opaque(new BID(Ids::LAPIS_LAZULI), "Lapis Lazuli Block", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
-		$this->register(new LapisOre(new BID(Ids::LAPIS_LAZULI_ORE), "Lapis Lazuli Ore", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
 		$this->register(new Lava(new BID(Ids::LAVA), "Lava", BreakInfo::indestructible(500.0)));
 		$this->register(new Lectern(new BID(Ids::LECTERN, TileLectern::class), "Lectern", new BreakInfo(2.0, ToolType::AXE)));
 		$this->register(new Lever(new BID(Ids::LEVER), "Lever", new BreakInfo(0.5)));
@@ -270,7 +264,6 @@ class BlockFactory{
 		$this->register(new Opaque(new BID(Ids::CRACKED_NETHER_BRICKS), "Cracked Nether Bricks", $netherBrickBreakInfo));
 
 		$this->register(new NetherPortal(new BID(Ids::NETHER_PORTAL), "Nether Portal", BreakInfo::indestructible(0.0)));
-		$this->register(new NetherQuartzOre(new BID(Ids::NETHER_QUARTZ_ORE), "Nether Quartz Ore", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new NetherReactor(new BID(Ids::NETHER_REACTOR_CORE), "Nether Reactor Core", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new Opaque(new BID(Ids::NETHER_WART_BLOCK), "Nether Wart Block", new BreakInfo(1.0, ToolType::HOE)));
 		$this->register(new NetherWartPlant(new BID(Ids::NETHER_WART), "Nether Wart", BreakInfo::instant()));
@@ -317,7 +310,6 @@ class BlockFactory{
 		$this->register(new Redstone(new BID(Ids::REDSTONE), "Redstone Block", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0)));
 		$this->register(new RedstoneComparator(new BID(Ids::REDSTONE_COMPARATOR, TileComparator::class), "Redstone Comparator", BreakInfo::instant()));
 		$this->register(new RedstoneLamp(new BID(Ids::REDSTONE_LAMP), "Redstone Lamp", new BreakInfo(0.3)));
-		$this->register(new RedstoneOre(new BID(Ids::REDSTONE_ORE), "Redstone Ore", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel())));
 		$this->register(new RedstoneRepeater(new BID(Ids::REDSTONE_REPEATER), "Redstone Repeater", BreakInfo::instant()));
 		$this->register(new RedstoneTorch(new BID(Ids::REDSTONE_TORCH), "Redstone Torch", BreakInfo::instant()));
 		$this->register(new RedstoneWire(new BID(Ids::REDSTONE_WIRE), "Redstone", BreakInfo::instant()));
@@ -575,6 +567,8 @@ class BlockFactory{
 		$this->registerBlocksR14();
 		$this->registerBlocksR16();
 		$this->registerBlocksR17();
+
+		$this->registerOres();
 	}
 
 	private function registerMushroomBlocks() : void{
@@ -710,6 +704,32 @@ class BlockFactory{
 		$this->register(new Element(new BID(Ids::ELEMENT_LIVERMORIUM), "Livermorium", $instaBreak, "lv", 116, 3));
 		$this->register(new Element(new BID(Ids::ELEMENT_TENNESSINE), "Tennessine", $instaBreak, "ts", 117, 6));
 		$this->register(new Element(new BID(Ids::ELEMENT_OGANESSON), "Oganesson", $instaBreak, "og", 118, 7));
+	}
+
+	private function registerOres() : void{
+		$stoneOreBreakInfo = fn(ToolTier $toolTier) => new BreakInfo(3.0, ToolType::PICKAXE, $toolTier->getHarvestLevel());
+		$this->register(new CoalOre(new BID(Ids::COAL_ORE), "Coal Ore", $stoneOreBreakInfo(ToolTier::WOOD())));
+		$this->register(new CopperOre(new BID(Ids::COPPER_ORE), "Copper Ore", $stoneOreBreakInfo(ToolTier::STONE())));
+		$this->register(new DiamondOre(new BID(Ids::DIAMOND_ORE), "Diamond Ore", $stoneOreBreakInfo(ToolTier::IRON())));
+		$this->register(new EmeraldOre(new BID(Ids::EMERALD_ORE), "Emerald Ore", $stoneOreBreakInfo(ToolTier::IRON())));
+		$this->register(new GoldOre(new BID(Ids::GOLD_ORE), "Gold Ore", $stoneOreBreakInfo(ToolTier::IRON())));
+		$this->register(new IronOre(new BID(Ids::IRON_ORE), "Iron Ore", $stoneOreBreakInfo(ToolTier::STONE())));
+		$this->register(new LapisOre(new BID(Ids::LAPIS_LAZULI_ORE), "Lapis Lazuli Ore", $stoneOreBreakInfo(ToolTier::STONE())));
+		$this->register(new RedstoneOre(new BID(Ids::REDSTONE_ORE), "Redstone Ore", $stoneOreBreakInfo(ToolTier::IRON())));
+
+		$deepslateOreBreakInfo = fn(ToolTier $toolTier) => new BreakInfo(4.5, ToolType::PICKAXE, $toolTier->getHarvestLevel());
+		$this->register(new CoalOre(new BID(Ids::DEEPSLATE_COAL_ORE), "Deepslate Coal Ore", $deepslateOreBreakInfo(ToolTier::WOOD())));
+		$this->register(new CopperOre(new BID(Ids::DEEPSLATE_COPPER_ORE), "Deepslate Copper Ore", $deepslateOreBreakInfo(ToolTier::STONE())));
+		$this->register(new DiamondOre(new BID(Ids::DEEPSLATE_DIAMOND_ORE), "Deepslate Diamond Ore", $deepslateOreBreakInfo(ToolTier::IRON())));
+		$this->register(new EmeraldOre(new BID(Ids::DEEPSLATE_EMERALD_ORE), "Deepslate Emerald Ore", $deepslateOreBreakInfo(ToolTier::IRON())));
+		$this->register(new GoldOre(new BID(Ids::DEEPSLATE_GOLD_ORE), "Deepslate Gold Ore", $deepslateOreBreakInfo(ToolTier::IRON())));
+		$this->register(new IronOre(new BID(Ids::DEEPSLATE_IRON_ORE), "Deepslate Iron Ore", $deepslateOreBreakInfo(ToolTier::STONE())));
+		$this->register(new LapisOre(new BID(Ids::DEEPSLATE_LAPIS_LAZULI_ORE), "Deepslate Lapis Lazuli Ore", $deepslateOreBreakInfo(ToolTier::STONE())));
+		$this->register(new RedstoneOre(new BID(Ids::DEEPSLATE_REDSTONE_ORE), "Deepslate Redstone Ore", $deepslateOreBreakInfo(ToolTier::IRON())));
+
+		$netherrackOreBreakInfo = new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$this->register(new NetherQuartzOre(new BID(Ids::NETHER_QUARTZ_ORE), "Nether Quartz Ore", $netherrackOreBreakInfo));
+		$this->register(new NetherGoldOre(new BID(Ids::NETHER_GOLD_ORE), "Nether Gold Ore", $netherrackOreBreakInfo));
 	}
 
 	private function registerBlocksR13() : void{

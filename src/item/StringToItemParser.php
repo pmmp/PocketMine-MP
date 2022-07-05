@@ -211,6 +211,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("concrete", fn() => Blocks::CONCRETE());
 		$result->registerBlock("concrete_powder", fn() => Blocks::CONCRETE_POWDER());
 		$result->registerBlock("concretepowder", fn() => Blocks::CONCRETE_POWDER());
+		$result->registerBlock("copper_ore", fn() => Blocks::COPPER_ORE());
 		$result->registerBlock("coral", fn() => Blocks::CORAL());
 		$result->registerBlock("coral_block", fn() => Blocks::CORAL_BLOCK());
 		$result->registerBlock("coral_fan", fn() => Blocks::CORAL_FAN());
@@ -284,6 +285,14 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("deepslate_tile_slab", fn() => Blocks::DEEPSLATE_TILE_SLAB());
 		$result->registerBlock("deepslate_tile_stairs", fn() => Blocks::DEEPSLATE_TILE_STAIRS());
 		$result->registerBlock("deepslate_tile_wall", fn() => Blocks::DEEPSLATE_TILE_WALL());
+		$result->registerBlock("deepslate_coal_ore", fn() => Blocks::DEEPSLATE_COAL_ORE());
+		$result->registerBlock("deepslate_copper_ore", fn() => Blocks::DEEPSLATE_COPPER_ORE());
+		$result->registerBlock("deepslate_diamond_ore", fn() => Blocks::DEEPSLATE_DIAMOND_ORE());
+		$result->registerBlock("deepslate_emerald_ore", fn() => Blocks::DEEPSLATE_EMERALD_ORE());
+		$result->registerBlock("deepslate_gold_ore", fn() => Blocks::DEEPSLATE_GOLD_ORE());
+		$result->registerBlock("deepslate_iron_ore", fn() => Blocks::DEEPSLATE_IRON_ORE());
+		$result->registerBlock("deepslate_lapis_lazuli_ore", fn() => Blocks::DEEPSLATE_LAPIS_LAZULI_ORE());
+		$result->registerBlock("deepslate_redstone_ore", fn() => Blocks::DEEPSLATE_REDSTONE_ORE());
 		$result->registerBlock("detector_rail", fn() => Blocks::DETECTOR_RAIL());
 		$result->registerBlock("diamond_block", fn() => Blocks::DIAMOND());
 		$result->registerBlock("diamond_ore", fn() => Blocks::DIAMOND_ORE());
@@ -738,6 +747,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("nether_brick_wall", fn() => Blocks::NETHER_BRICK_WALL());
 		$result->registerBlock("nether_bricks", fn() => Blocks::NETHER_BRICKS());
 		$result->registerBlock("nether_bricks_stairs", fn() => Blocks::NETHER_BRICK_STAIRS());
+		$result->registerBlock("nether_gold_ore", fn() => Blocks::NETHER_GOLD_ORE());
 		$result->registerBlock("nether_portal", fn() => Blocks::NETHER_PORTAL());
 		$result->registerBlock("nether_quartz_ore", fn() => Blocks::NETHER_QUARTZ_ORE());
 		$result->registerBlock("nether_reactor", fn() => Blocks::NETHER_REACTOR_CORE());

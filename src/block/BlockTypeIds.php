@@ -660,6 +660,16 @@ final class BlockTypeIds{
 	public const WARPED_WALL_SIGN = 10633;
 
 	public const HONEYCOMB = 10635;
+	public const DEEPSLATE_COAL_ORE = 10636;
+	public const DEEPSLATE_DIAMOND_ORE = 10637;
+	public const DEEPSLATE_EMERALD_ORE = 10638;
+	public const DEEPSLATE_LAPIS_LAZULI_ORE = 10639;
+	public const DEEPSLATE_REDSTONE_ORE = 10640;
+	public const DEEPSLATE_IRON_ORE = 10641;
+	public const DEEPSLATE_GOLD_ORE = 10642;
+	public const DEEPSLATE_COPPER_ORE = 10643;
+	public const COPPER_ORE = 10644;
+	public const NETHER_GOLD_ORE = 10645;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10636;
+	public const FIRST_UNUSED_BLOCK_ID = 10646;
 }

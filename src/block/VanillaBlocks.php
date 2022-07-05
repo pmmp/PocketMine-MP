@@ -133,6 +133,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static ChemistryTable COMPOUND_CREATOR()
  * @method static Concrete CONCRETE()
  * @method static ConcretePowder CONCRETE_POWDER()
+ * @method static CopperOre COPPER_ORE()
  * @method static Coral CORAL()
  * @method static CoralBlock CORAL_BLOCK()
  * @method static FloorCoralFan CORAL_FAN()
@@ -186,6 +187,14 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Slab DEEPSLATE_BRICK_SLAB()
  * @method static Stair DEEPSLATE_BRICK_STAIRS()
  * @method static Wall DEEPSLATE_BRICK_WALL()
+ * @method static CoalOre DEEPSLATE_COAL_ORE()
+ * @method static CopperOre DEEPSLATE_COPPER_ORE()
+ * @method static DiamondOre DEEPSLATE_DIAMOND_ORE()
+ * @method static EmeraldOre DEEPSLATE_EMERALD_ORE()
+ * @method static GoldOre DEEPSLATE_GOLD_ORE()
+ * @method static IronOre DEEPSLATE_IRON_ORE()
+ * @method static LapisOre DEEPSLATE_LAPIS_LAZULI_ORE()
+ * @method static RedstoneOre DEEPSLATE_REDSTONE_ORE()
  * @method static Opaque DEEPSLATE_TILES()
  * @method static Slab DEEPSLATE_TILE_SLAB()
  * @method static Stair DEEPSLATE_TILE_STAIRS()
@@ -347,7 +356,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static GlowingObsidian GLOWING_OBSIDIAN()
  * @method static Glowstone GLOWSTONE()
  * @method static Opaque GOLD()
- * @method static Opaque GOLD_ORE()
+ * @method static GoldOre GOLD_ORE()
  * @method static Opaque GRANITE()
  * @method static Slab GRANITE_SLAB()
  * @method static Stair GRANITE_STAIRS()
@@ -375,7 +384,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Opaque IRON()
  * @method static Thin IRON_BARS()
  * @method static Door IRON_DOOR()
- * @method static Opaque IRON_ORE()
+ * @method static IronOre IRON_ORE()
  * @method static Trapdoor IRON_TRAPDOOR()
  * @method static ItemFrame ITEM_FRAME()
  * @method static Jukebox JUKEBOX()
@@ -445,6 +454,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Slab NETHER_BRICK_SLAB()
  * @method static Stair NETHER_BRICK_STAIRS()
  * @method static Wall NETHER_BRICK_WALL()
+ * @method static NetherGoldOre NETHER_GOLD_ORE()
  * @method static NetherPortal NETHER_PORTAL()
  * @method static NetherQuartzOre NETHER_QUARTZ_ORE()
  * @method static NetherReactor NETHER_REACTOR_CORE()
@@ -764,6 +774,7 @@ final class VanillaBlocks{
 		self::register("compound_creator", $factory->fromTypeId(Ids::COMPOUND_CREATOR));
 		self::register("concrete", $factory->fromTypeId(Ids::CONCRETE));
 		self::register("concrete_powder", $factory->fromTypeId(Ids::CONCRETE_POWDER));
+		self::register("copper_ore", $factory->fromTypeId(Ids::COPPER_ORE));
 		self::register("coral", $factory->fromTypeId(Ids::CORAL));
 		self::register("coral_block", $factory->fromTypeId(Ids::CORAL_BLOCK));
 		self::register("coral_fan", $factory->fromTypeId(Ids::CORAL_FAN));
@@ -817,6 +828,14 @@ final class VanillaBlocks{
 		self::register("deepslate_brick_stairs", $factory->fromTypeId(Ids::DEEPSLATE_BRICK_STAIRS));
 		self::register("deepslate_brick_wall", $factory->fromTypeId(Ids::DEEPSLATE_BRICK_WALL));
 		self::register("deepslate_bricks", $factory->fromTypeId(Ids::DEEPSLATE_BRICKS));
+		self::register("deepslate_coal_ore", $factory->fromTypeId(Ids::DEEPSLATE_COAL_ORE));
+		self::register("deepslate_copper_ore", $factory->fromTypeId(Ids::DEEPSLATE_COPPER_ORE));
+		self::register("deepslate_diamond_ore", $factory->fromTypeId(Ids::DEEPSLATE_DIAMOND_ORE));
+		self::register("deepslate_emerald_ore", $factory->fromTypeId(Ids::DEEPSLATE_EMERALD_ORE));
+		self::register("deepslate_gold_ore", $factory->fromTypeId(Ids::DEEPSLATE_GOLD_ORE));
+		self::register("deepslate_iron_ore", $factory->fromTypeId(Ids::DEEPSLATE_IRON_ORE));
+		self::register("deepslate_lapis_lazuli_ore", $factory->fromTypeId(Ids::DEEPSLATE_LAPIS_LAZULI_ORE));
+		self::register("deepslate_redstone_ore", $factory->fromTypeId(Ids::DEEPSLATE_REDSTONE_ORE));
 		self::register("deepslate_tile_slab", $factory->fromTypeId(Ids::DEEPSLATE_TILE_SLAB));
 		self::register("deepslate_tile_stairs", $factory->fromTypeId(Ids::DEEPSLATE_TILE_STAIRS));
 		self::register("deepslate_tile_wall", $factory->fromTypeId(Ids::DEEPSLATE_TILE_WALL));
@@ -1075,6 +1094,7 @@ final class VanillaBlocks{
 		self::register("nether_brick_stairs", $factory->fromTypeId(Ids::NETHER_BRICK_STAIRS));
 		self::register("nether_brick_wall", $factory->fromTypeId(Ids::NETHER_BRICK_WALL));
 		self::register("nether_bricks", $factory->fromTypeId(Ids::NETHER_BRICKS));
+		self::register("nether_gold_ore", $factory->fromTypeId(Ids::NETHER_GOLD_ORE));
 		self::register("nether_portal", $factory->fromTypeId(Ids::NETHER_PORTAL));
 		self::register("nether_quartz_ore", $factory->fromTypeId(Ids::NETHER_QUARTZ_ORE));
 		self::register("nether_reactor_core", $factory->fromTypeId(Ids::NETHER_REACTOR_CORE));
