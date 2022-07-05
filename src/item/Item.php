@@ -32,6 +32,7 @@ use pocketmine\block\BlockToolType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\EnchantmentInstance;
@@ -431,12 +432,14 @@ class Item implements \JsonSerializable{
 		return $this->identifier->getTypeId();
 	}
 
-	public function getId() : int{
-		return $this->identifier->getLegacyId();
+	final public function computeTypeData() : int{
+		$writer = new RuntimeDataWriter(16); //TODO: max bits should be a constant instead of being hardcoded all over the place
+		$this->encodeType($writer);
+		return $writer->getValue();
 	}
 
-	public function getMeta() : int{
-		return $this->identifier->getLegacyMeta();
+	protected function encodeType(RuntimeDataWriter $w) : void{
+		//NOOP
 	}
 
 	/**
@@ -547,12 +550,12 @@ class Item implements \JsonSerializable{
 	/**
 	 * Compares an Item to this Item and check if they match.
 	 *
-	 * @param bool $checkDamage Whether to verify that the damage values match.
+	 * @param bool $checkDamage @deprecated
 	 * @param bool $checkCompound Whether to verify that the items' NBT match.
 	 */
 	final public function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
-		return $this->getId() === $item->getId() &&
-			(!$checkDamage || $this->getMeta() === $item->getMeta()) &&
+		return $this->getTypeId() === $item->getTypeId() &&
+			$this->computeTypeData() === $item->computeTypeData() &&
 			(!$checkCompound || $this->getNamedTag()->equals($item->getNamedTag()));
 	}
 
@@ -571,7 +574,7 @@ class Item implements \JsonSerializable{
 	}
 
 	final public function __toString() : string{
-		return "Item " . $this->name . " (" . $this->getId() . ":" . $this->getMeta() . ")x" . $this->count . ($this->hasNamedTag() ? " tags:0x" . base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($this->getNamedTag()))) : "");
+		return "Item " . $this->name . " (" . $this->getTypeId() . ":" . $this->computeTypeData() . ")x" . $this->count . ($this->hasNamedTag() ? " tags:0x" . base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($this->getNamedTag()))) : "");
 	}
 
 	/**

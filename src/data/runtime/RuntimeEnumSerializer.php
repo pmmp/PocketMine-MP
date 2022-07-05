@@ -103,6 +103,54 @@ final class RuntimeEnumSerializer{
 		});
 	}
 
+	public static function writePotionType(RuntimeDataWriter $w, \pocketmine\item\PotionType $value) : void{
+		$w->writeInt(6, match($value){
+			\pocketmine\item\PotionType::AWKWARD() => 0,
+			\pocketmine\item\PotionType::FIRE_RESISTANCE() => 1,
+			\pocketmine\item\PotionType::HARMING() => 2,
+			\pocketmine\item\PotionType::HEALING() => 3,
+			\pocketmine\item\PotionType::INVISIBILITY() => 4,
+			\pocketmine\item\PotionType::LEAPING() => 5,
+			\pocketmine\item\PotionType::LONG_FIRE_RESISTANCE() => 6,
+			\pocketmine\item\PotionType::LONG_INVISIBILITY() => 7,
+			\pocketmine\item\PotionType::LONG_LEAPING() => 8,
+			\pocketmine\item\PotionType::LONG_MUNDANE() => 9,
+			\pocketmine\item\PotionType::LONG_NIGHT_VISION() => 10,
+			\pocketmine\item\PotionType::LONG_POISON() => 11,
+			\pocketmine\item\PotionType::LONG_REGENERATION() => 12,
+			\pocketmine\item\PotionType::LONG_SLOWNESS() => 13,
+			\pocketmine\item\PotionType::LONG_SLOW_FALLING() => 14,
+			\pocketmine\item\PotionType::LONG_STRENGTH() => 15,
+			\pocketmine\item\PotionType::LONG_SWIFTNESS() => 16,
+			\pocketmine\item\PotionType::LONG_TURTLE_MASTER() => 17,
+			\pocketmine\item\PotionType::LONG_WATER_BREATHING() => 18,
+			\pocketmine\item\PotionType::LONG_WEAKNESS() => 19,
+			\pocketmine\item\PotionType::MUNDANE() => 20,
+			\pocketmine\item\PotionType::NIGHT_VISION() => 21,
+			\pocketmine\item\PotionType::POISON() => 22,
+			\pocketmine\item\PotionType::REGENERATION() => 23,
+			\pocketmine\item\PotionType::SLOWNESS() => 24,
+			\pocketmine\item\PotionType::SLOW_FALLING() => 25,
+			\pocketmine\item\PotionType::STRENGTH() => 26,
+			\pocketmine\item\PotionType::STRONG_HARMING() => 27,
+			\pocketmine\item\PotionType::STRONG_HEALING() => 28,
+			\pocketmine\item\PotionType::STRONG_LEAPING() => 29,
+			\pocketmine\item\PotionType::STRONG_POISON() => 30,
+			\pocketmine\item\PotionType::STRONG_REGENERATION() => 31,
+			\pocketmine\item\PotionType::STRONG_STRENGTH() => 32,
+			\pocketmine\item\PotionType::STRONG_SWIFTNESS() => 33,
+			\pocketmine\item\PotionType::STRONG_TURTLE_MASTER() => 34,
+			\pocketmine\item\PotionType::SWIFTNESS() => 35,
+			\pocketmine\item\PotionType::THICK() => 36,
+			\pocketmine\item\PotionType::TURTLE_MASTER() => 37,
+			\pocketmine\item\PotionType::WATER() => 38,
+			\pocketmine\item\PotionType::WATER_BREATHING() => 39,
+			\pocketmine\item\PotionType::WEAKNESS() => 40,
+			\pocketmine\item\PotionType::WITHER() => 41,
+			default => throw new \pocketmine\utils\AssumptionFailedError("All PotionType cases should be covered")
+		});
+	}
+
 	public static function writeSkullType(RuntimeDataWriter $w, \pocketmine\block\utils\SkullType $value) : void{
 		$w->writeInt(3, match($value){
 			\pocketmine\block\utils\SkullType::CREEPER() => 0,

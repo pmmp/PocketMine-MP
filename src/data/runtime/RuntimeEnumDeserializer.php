@@ -103,6 +103,54 @@ final class RuntimeEnumDeserializer{
 		};
 	}
 
+	public static function readPotionType(RuntimeDataReader $r) : \pocketmine\item\PotionType{
+		return match($r->readInt(6)){
+			0 => \pocketmine\item\PotionType::AWKWARD(),
+			1 => \pocketmine\item\PotionType::FIRE_RESISTANCE(),
+			2 => \pocketmine\item\PotionType::HARMING(),
+			3 => \pocketmine\item\PotionType::HEALING(),
+			4 => \pocketmine\item\PotionType::INVISIBILITY(),
+			5 => \pocketmine\item\PotionType::LEAPING(),
+			6 => \pocketmine\item\PotionType::LONG_FIRE_RESISTANCE(),
+			7 => \pocketmine\item\PotionType::LONG_INVISIBILITY(),
+			8 => \pocketmine\item\PotionType::LONG_LEAPING(),
+			9 => \pocketmine\item\PotionType::LONG_MUNDANE(),
+			10 => \pocketmine\item\PotionType::LONG_NIGHT_VISION(),
+			11 => \pocketmine\item\PotionType::LONG_POISON(),
+			12 => \pocketmine\item\PotionType::LONG_REGENERATION(),
+			13 => \pocketmine\item\PotionType::LONG_SLOWNESS(),
+			14 => \pocketmine\item\PotionType::LONG_SLOW_FALLING(),
+			15 => \pocketmine\item\PotionType::LONG_STRENGTH(),
+			16 => \pocketmine\item\PotionType::LONG_SWIFTNESS(),
+			17 => \pocketmine\item\PotionType::LONG_TURTLE_MASTER(),
+			18 => \pocketmine\item\PotionType::LONG_WATER_BREATHING(),
+			19 => \pocketmine\item\PotionType::LONG_WEAKNESS(),
+			20 => \pocketmine\item\PotionType::MUNDANE(),
+			21 => \pocketmine\item\PotionType::NIGHT_VISION(),
+			22 => \pocketmine\item\PotionType::POISON(),
+			23 => \pocketmine\item\PotionType::REGENERATION(),
+			24 => \pocketmine\item\PotionType::SLOWNESS(),
+			25 => \pocketmine\item\PotionType::SLOW_FALLING(),
+			26 => \pocketmine\item\PotionType::STRENGTH(),
+			27 => \pocketmine\item\PotionType::STRONG_HARMING(),
+			28 => \pocketmine\item\PotionType::STRONG_HEALING(),
+			29 => \pocketmine\item\PotionType::STRONG_LEAPING(),
+			30 => \pocketmine\item\PotionType::STRONG_POISON(),
+			31 => \pocketmine\item\PotionType::STRONG_REGENERATION(),
+			32 => \pocketmine\item\PotionType::STRONG_STRENGTH(),
+			33 => \pocketmine\item\PotionType::STRONG_SWIFTNESS(),
+			34 => \pocketmine\item\PotionType::STRONG_TURTLE_MASTER(),
+			35 => \pocketmine\item\PotionType::SWIFTNESS(),
+			36 => \pocketmine\item\PotionType::THICK(),
+			37 => \pocketmine\item\PotionType::TURTLE_MASTER(),
+			38 => \pocketmine\item\PotionType::WATER(),
+			39 => \pocketmine\item\PotionType::WATER_BREATHING(),
+			40 => \pocketmine\item\PotionType::WEAKNESS(),
+			41 => \pocketmine\item\PotionType::WITHER(),
+			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for PotionType")
+		};
+	}
+
 	public static function readSkullType(RuntimeDataReader $r) : \pocketmine\block\utils\SkullType{
 		return match($r->readInt(3)){
 			0 => \pocketmine\block\utils\SkullType::CREEPER(),
