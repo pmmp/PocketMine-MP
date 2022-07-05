@@ -98,7 +98,6 @@ class ItemFactory{
 		$this->register(new GoldenApple(new IID(Ids::GOLDEN_APPLE), "Golden Apple"));
 		$this->register(new GoldenAppleEnchanted(new IID(Ids::ENCHANTED_GOLDEN_APPLE), "Enchanted Golden Apple"));
 		$this->register(new GoldenCarrot(new IID(Ids::GOLDEN_CARROT), "Golden Carrot"));
-		$this->register(new Spyglass(new IID(Ids::SPYGLASS), "Spyglass"));
 		$this->register(new Item(new IID(Ids::AMETHYST_SHARD), "Amethyst Shard"));
 		$this->register(new Item(new IID(Ids::BLAZE_POWDER), "Blaze Powder"));
 		$this->register(new Item(new IID(Ids::BLEACH), "Bleach")); //EDU
@@ -235,6 +234,7 @@ class ItemFactory{
 		$this->register(new ItemBlockWallOrFloor(new IID(Ids::WARPED_SIGN), Blocks::WARPED_SIGN(), Blocks::WARPED_WALL_SIGN()));
 		$this->register(new Snowball(new IID(Ids::SNOWBALL), "Snowball"));
 		$this->register(new SpiderEye(new IID(Ids::SPIDER_EYE), "Spider Eye"));
+		$this->register(new Spyglass(new IID(Ids::SPYGLASS), "Spyglass"));
 		$this->register(new Steak(new IID(Ids::STEAK), "Steak"));
 		$this->register(new Stick(new IID(Ids::STICK), "Stick"));
 		$this->register(new StringItem(new IID(Ids::STRING), "String"));
