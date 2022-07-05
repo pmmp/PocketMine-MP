@@ -172,7 +172,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 
 	public function serialize(int $stateId) : BlockStateData{
 		//TODO: singleton usage not ideal
-		return $this->serializeBlock(BlockFactory::getInstance()->fromFullBlock($stateId));
+		return $this->serializeBlock(BlockFactory::getInstance()->fromStateId($stateId));
 	}
 
 	/**

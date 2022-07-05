@@ -473,7 +473,7 @@ class ItemFactory{
 			if($blockStateData !== null){
 				try{
 					$blockStateId = GlobalBlockStateHandlers::getDeserializer()->deserialize($blockStateData);
-					$item = new ItemBlock(BlockFactory::getInstance()->fromFullBlock($blockStateId));
+					$item = new ItemBlock(BlockFactory::getInstance()->fromStateId($blockStateId));
 				}catch(BlockStateDeserializeException $e){
 					throw new SavedDataLoadingException("Failed to deserialize itemblock: " . $e->getMessage(), 0, $e);
 				}

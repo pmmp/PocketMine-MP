@@ -64,7 +64,7 @@ class FlowerPot extends Spawnable{
 			}catch(BlockStateDeserializeException $e){
 				throw new SavedDataLoadingException("Error deserializing plant for flower pot: " . $e->getMessage(), 0, $e);
 			}
-			$this->setPlant(BlockFactory::getInstance()->fromFullBlock($blockStateId));
+			$this->setPlant(BlockFactory::getInstance()->fromStateId($blockStateId));
 		}
 	}
 

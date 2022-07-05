@@ -444,7 +444,7 @@ class World implements ChunkManager{
 				if($blockStateData === null){
 					continue;
 				}
-				$block = BlockFactory::getInstance()->fromFullBlock(GlobalBlockStateHandlers::getDeserializer()->deserialize($blockStateData));
+				$block = BlockFactory::getInstance()->fromStateId(GlobalBlockStateHandlers::getDeserializer()->deserialize($blockStateData));
 			}else{
 				//TODO: we probably ought to log an error here
 				continue;
@@ -1112,7 +1112,7 @@ class World implements ChunkManager{
 					$state = $subChunk->getFullBlock($x, $y, $z);
 
 					if(isset($this->randomTickBlocks[$state])){
-						$block = $blockFactory->fromFullBlock($state);
+						$block = $blockFactory->fromStateId($state);
 						$block->position($this, $chunkX * Chunk::EDGE_LENGTH + $x, ($Y << SubChunk::COORD_BIT_SIZE) + $y, $chunkZ * Chunk::EDGE_LENGTH + $z);
 						$block->onRandomTick();
 					}
@@ -1528,7 +1528,7 @@ class World implements ChunkManager{
 
 			$chunk = $this->chunks[$chunkHash] ?? null;
 			if($chunk !== null){
-				$block = BlockFactory::getInstance()->fromFullBlock($chunk->getFullBlock($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK));
+				$block = BlockFactory::getInstance()->fromStateId($chunk->getFullBlock($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK));
 			}else{
 				$addToCache = false;
 				$block = VanillaBlocks::AIR();
@@ -2146,7 +2146,7 @@ class World implements ChunkManager{
 				$localY = $tilePosition->getFloorY();
 				$localZ = $tilePosition->getFloorZ() & Chunk::COORD_MASK;
 
-				$newBlock = BlockFactory::getInstance()->fromFullBlock($chunk->getFullBlock($localX, $localY, $localZ));
+				$newBlock = BlockFactory::getInstance()->fromStateId($chunk->getFullBlock($localX, $localY, $localZ));
 				$expectedTileClass = $newBlock->getIdInfo()->getTileClass();
 				if(
 					$expectedTileClass === null || //new block doesn't expect a tile

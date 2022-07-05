@@ -866,15 +866,15 @@ class BlockFactory{
 		throw new \InvalidArgumentException("Block ID $typeId is not registered");
 	}
 
-	public function fromFullBlock(int $fullState) : Block{
-		if($fullState < 0){
+	public function fromStateId(int $stateId) : Block{
+		if($stateId < 0){
 			throw new \InvalidArgumentException("Block state ID cannot be negative");
 		}
-		if(isset($this->fullList[$fullState])) { //hot
-			$block = clone $this->fullList[$fullState];
+		if(isset($this->fullList[$stateId])) { //hot
+			$block = clone $this->fullList[$stateId];
 		}else{
-			$typeId = $fullState >> Block::INTERNAL_STATE_DATA_BITS;
-			$stateData = $fullState & Block::INTERNAL_STATE_DATA_MASK;
+			$typeId = $stateId >> Block::INTERNAL_STATE_DATA_BITS;
+			$stateData = $stateId & Block::INTERNAL_STATE_DATA_MASK;
 			$block = new UnknownBlock(new BID($typeId), BreakInfo::instant(), $stateData);
 		}
 

@@ -76,7 +76,7 @@ final class ItemDeserializer{
 			}
 
 			//TODO: worth caching this or not?
-			return BlockFactory::getInstance()->fromFullBlock($block)->asItem();
+			return BlockFactory::getInstance()->fromStateId($block)->asItem();
 		}
 		$id = $data->getName();
 		if(!isset($this->deserializers[$id])){
