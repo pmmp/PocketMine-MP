@@ -567,6 +567,7 @@ class BlockFactory{
 		$this->registerBlocksR14();
 		$this->registerBlocksR16();
 		$this->registerBlocksR17();
+		$this->registerMudBlocks();
 
 		$this->registerOres();
 	}
@@ -827,6 +828,15 @@ class BlockFactory{
 		$this->register(new Slab(new BID(Ids::POLISHED_DEEPSLATE_SLAB), "Polished Deepslate", $polishedDeepslateBreakInfo));
 		$this->register(new Stair(new BID(Ids::POLISHED_DEEPSLATE_STAIRS), "Polished Deepslate Stairs", $polishedDeepslateBreakInfo));
 		$this->register(new Wall(new BID(Ids::POLISHED_DEEPSLATE_WALL), "Polished Deepslate Wall", $polishedDeepslateBreakInfo));
+	}
+
+	private function registerMudBlocks() : void{
+		$mudBricksBreakInfo = new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+
+		$this->register(new Opaque(new BID(Ids::MUD_BRICKS), "Mud Bricks", $mudBricksBreakInfo));
+		$this->register(new Slab(new BID(Ids::MUD_BRICK_SLAB), "Mud Brick", $mudBricksBreakInfo));
+		$this->register(new Stair(new BID(Ids::MUD_BRICK_STAIRS), "Mud Brick Stairs", $mudBricksBreakInfo));
+		$this->register(new Wall(new BID(Ids::MUD_BRICK_WALL), "Mud Brick Wall", $mudBricksBreakInfo));
 	}
 
 	/**

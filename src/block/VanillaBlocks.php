@@ -446,6 +446,10 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Slab MOSSY_STONE_BRICK_SLAB()
  * @method static Stair MOSSY_STONE_BRICK_STAIRS()
  * @method static Wall MOSSY_STONE_BRICK_WALL()
+ * @method static Opaque MUD_BRICKS()
+ * @method static Slab MUD_BRICK_SLAB()
+ * @method static Stair MUD_BRICK_STAIRS()
+ * @method static Wall MUD_BRICK_WALL()
  * @method static MushroomStem MUSHROOM_STEM()
  * @method static Mycelium MYCELIUM()
  * @method static Netherrack NETHERRACK()
@@ -1087,6 +1091,10 @@ final class VanillaBlocks{
 		self::register("mossy_stone_brick_stairs", $factory->fromTypeId(Ids::MOSSY_STONE_BRICK_STAIRS));
 		self::register("mossy_stone_brick_wall", $factory->fromTypeId(Ids::MOSSY_STONE_BRICK_WALL));
 		self::register("mossy_stone_bricks", $factory->fromTypeId(Ids::MOSSY_STONE_BRICKS));
+		self::register("mud_brick_slab", $factory->fromTypeId(Ids::MUD_BRICK_SLAB));
+		self::register("mud_brick_stairs", $factory->fromTypeId(Ids::MUD_BRICK_STAIRS));
+		self::register("mud_brick_wall", $factory->fromTypeId(Ids::MUD_BRICK_WALL));
+		self::register("mud_bricks", $factory->fromTypeId(Ids::MUD_BRICKS));
 		self::register("mushroom_stem", $factory->fromTypeId(Ids::MUSHROOM_STEM));
 		self::register("mycelium", $factory->fromTypeId(Ids::MYCELIUM));
 		self::register("nether_brick_fence", $factory->fromTypeId(Ids::NETHER_BRICK_FENCE));

@@ -670,6 +670,12 @@ final class BlockTypeIds{
 	public const DEEPSLATE_COPPER_ORE = 10643;
 	public const COPPER_ORE = 10644;
 	public const NETHER_GOLD_ORE = 10645;
+	public const MUD = 10646;
+	public const MUD_BRICKS = 10647;
+	public const MUD_BRICK_SLAB = 10648;
+	public const MUD_BRICK_STAIRS = 10649;
+	public const MUD_BRICK_WALL = 10650;
+	public const PACKED_MUD = 10651;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10646;
+	public const FIRST_UNUSED_BLOCK_ID = 10652;
 }
