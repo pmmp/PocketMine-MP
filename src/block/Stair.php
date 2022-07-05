@@ -26,8 +26,8 @@ namespace pocketmine\block;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\StairShape;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\block\BlockDataReader;
-use pocketmine\data\runtime\block\BlockDataWriter;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -49,12 +49,12 @@ class Stair extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function decodeState(BlockDataReader $r) : void{
+	protected function decodeState(RuntimeDataReader $r) : void{
 		$this->facing = $r->readHorizontalFacing();
 		$this->upsideDown = $r->readBool();
 	}
 
-	protected function encodeState(BlockDataWriter $w) : void{
+	protected function encodeState(RuntimeDataWriter $w) : void{
 		$w->writeHorizontalFacing($this->facing);
 		$w->writeBool($this->upsideDown);
 	}

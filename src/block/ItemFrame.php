@@ -25,8 +25,8 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
 use pocketmine\block\utils\AnyFacingTrait;
-use pocketmine\data\runtime\block\BlockDataReader;
-use pocketmine\data\runtime\block\BlockDataWriter;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -49,12 +49,12 @@ class ItemFrame extends Flowable{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(BlockDataReader $r) : void{
+	protected function decodeState(RuntimeDataReader $r) : void{
 		$this->facing = $r->readFacing();
 		$this->hasMap = $r->readBool();
 	}
 
-	protected function encodeState(BlockDataWriter $w) : void{
+	protected function encodeState(RuntimeDataWriter $w) : void{
 		$w->writeFacing($this->facing);
 		$w->writeBool($this->hasMap);
 	}

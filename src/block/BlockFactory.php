@@ -50,9 +50,9 @@ use pocketmine\block\tile\Note as TileNote;
 use pocketmine\block\tile\ShulkerBox as TileShulkerBox;
 use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\tile\Smoker as TileSmoker;
-use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\TreeType;
 use pocketmine\block\utils\WoodType;
+use pocketmine\data\runtime\InvalidSerializedRuntimeDataException;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\utils\AssumptionFailedError;
@@ -829,9 +829,9 @@ class BlockFactory{
 				$v->decodeStateData($stateData);
 				if($v->computeStateData() !== $stateData){
 					//if the fullID comes back different, this is a broken state that we can't rely on; map it to default
-					throw new InvalidBlockStateException("Corrupted state");
+					throw new InvalidSerializedRuntimeDataException("Corrupted state");
 				}
-			}catch(InvalidBlockStateException $e){ //invalid property combination, leave it
+			}catch(InvalidSerializedRuntimeDataException $e){ //invalid property combination, leave it
 				continue;
 			}
 

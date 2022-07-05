@@ -24,10 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
-use pocketmine\data\runtime\block\BlockDataReader;
-use pocketmine\data\runtime\block\BlockDataReaderHelper;
-use pocketmine\data\runtime\block\BlockDataWriter;
-use pocketmine\data\runtime\block\BlockDataWriterHelper;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeEnumDeserializer;
+use pocketmine\data\runtime\RuntimeEnumSerializer;
 
 trait ColoredTrait{
 	/** @var DyeColor */
@@ -36,13 +36,13 @@ trait ColoredTrait{
 	public function getRequiredTypeDataBits() : int{ return 4; }
 
 	/** @see Block::decodeType() */
-	protected function decodeType(BlockDataReader $r) : void{
-		$this->color = BlockDataReaderHelper::readDyeColor($r);
+	protected function decodeType(RuntimeDataReader $r) : void{
+		$this->color = RuntimeEnumDeserializer::readDyeColor($r);
 	}
 
 	/** @see Block::encodeType() */
-	protected function encodeType(BlockDataWriter $w) : void{
-		BlockDataWriterHelper::writeDyeColor($w, $this->color);
+	protected function encodeType(RuntimeDataWriter $w) : void{
+		RuntimeEnumSerializer::writeDyeColor($w, $this->color);
 	}
 
 	public function getColor() : DyeColor{ return $this->color; }

@@ -25,8 +25,8 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\PillarRotationTrait;
 use pocketmine\block\utils\WoodTypeTrait;
-use pocketmine\data\runtime\block\BlockDataReader;
-use pocketmine\data\runtime\block\BlockDataWriter;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Axe;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
@@ -40,11 +40,11 @@ class Wood extends Opaque{
 
 	public function getRequiredTypeDataBits() : int{ return 1; }
 
-	protected function decodeType(BlockDataReader $r) : void{
+	protected function decodeType(RuntimeDataReader $r) : void{
 		$this->stripped = $r->readBool();
 	}
 
-	protected function encodeType(BlockDataWriter $w) : void{
+	protected function encodeType(RuntimeDataWriter $w) : void{
 		$w->writeBool($this->stripped);
 	}
 

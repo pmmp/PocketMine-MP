@@ -24,19 +24,19 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\PoweredByRedstoneTrait;
-use pocketmine\data\runtime\block\BlockDataReader;
-use pocketmine\data\runtime\block\BlockDataWriter;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 
 class RedstoneLamp extends Opaque{
 	use PoweredByRedstoneTrait;
 
 	public function getRequiredStateDataBits() : int{ return 1; }
 
-	protected function decodeState(BlockDataReader $r) : void{
+	protected function decodeState(RuntimeDataReader $r) : void{
 		$this->powered = $r->readBool();
 	}
 
-	protected function encodeState(BlockDataWriter $w) : void{
+	protected function encodeState(RuntimeDataWriter $w) : void{
 		$w->writeBool($this->powered);
 	}
 

@@ -1,41 +1,16 @@
 <?php
 
-/*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- *
- *
- */
-
 declare(strict_types=1);
 
-namespace pocketmine\data\runtime\block;
+namespace pocketmine\data\runtime;
 
-use pocketmine\block\utils\BellAttachmentType;
-use pocketmine\block\utils\CoralType;
-use pocketmine\block\utils\DyeColor;
-use pocketmine\block\utils\LeverFacing;
-use pocketmine\block\utils\MushroomBlockType;
-use pocketmine\block\utils\SkullType;
-use pocketmine\block\utils\SlabType;
-use pocketmine\block\utils\StairShape;
-use pocketmine\block\utils\TreeType;
+/**
+ * This class is auto-generated. Do not edit it manually.
+ * @see build/generate-runtime-enum-serializers.php
+ */
+final class RuntimeEnumSerializer{
 
-final class BlockDataWriterHelper{
-
-	public static function writeBellAttachmentType(BlockDataWriter $w, BellAttachmentType $value) : void{
+	public static function writeBellAttachmentType(RuntimeDataWriter $w, \pocketmine\block\utils\BellAttachmentType $value) : void{
 		$w->writeInt(2, match($value){
 			\pocketmine\block\utils\BellAttachmentType::CEILING() => 0,
 			\pocketmine\block\utils\BellAttachmentType::FLOOR() => 1,
@@ -45,21 +20,7 @@ final class BlockDataWriterHelper{
 		});
 	}
 
-	/**
-	 * @param \pocketmine\block\utils\BrewingStandSlot[] $value
-	 * @phpstan-param array<int, \pocketmine\block\utils\BrewingStandSlot> $value
-	 */
-	public static function writeBrewingStandSlotKeySet(BlockDataWriter $w, array $value) : void{
-		foreach([
-			\pocketmine\block\utils\BrewingStandSlot::EAST(),
-			\pocketmine\block\utils\BrewingStandSlot::NORTHWEST(),
-			\pocketmine\block\utils\BrewingStandSlot::SOUTHWEST(),
-		] as $member){
-			$w->writeBool(isset($value[$member->id()]));
-		}
-	}
-
-	public static function writeCoralType(BlockDataWriter $w, CoralType $value) : void{
+	public static function writeCoralType(RuntimeDataWriter $w, \pocketmine\block\utils\CoralType $value) : void{
 		$w->writeInt(3, match($value){
 			\pocketmine\block\utils\CoralType::BRAIN() => 0,
 			\pocketmine\block\utils\CoralType::BUBBLE() => 1,
@@ -70,7 +31,7 @@ final class BlockDataWriterHelper{
 		});
 	}
 
-	public static function writeDyeColor(BlockDataWriter $w, DyeColor $value) : void{
+	public static function writeDyeColor(RuntimeDataWriter $w, \pocketmine\block\utils\DyeColor $value) : void{
 		$w->writeInt(4, match($value){
 			\pocketmine\block\utils\DyeColor::BLACK() => 0,
 			\pocketmine\block\utils\DyeColor::BLUE() => 1,
@@ -92,7 +53,7 @@ final class BlockDataWriterHelper{
 		});
 	}
 
-	public static function writeLeverFacing(BlockDataWriter $w, LeverFacing $value) : void{
+	public static function writeLeverFacing(RuntimeDataWriter $w, \pocketmine\block\utils\LeverFacing $value) : void{
 		$w->writeInt(3, match($value){
 			\pocketmine\block\utils\LeverFacing::DOWN_AXIS_X() => 0,
 			\pocketmine\block\utils\LeverFacing::DOWN_AXIS_Z() => 1,
@@ -106,7 +67,7 @@ final class BlockDataWriterHelper{
 		});
 	}
 
-	public static function writeMushroomBlockType(BlockDataWriter $w, MushroomBlockType $value) : void{
+	public static function writeMushroomBlockType(RuntimeDataWriter $w, \pocketmine\block\utils\MushroomBlockType $value) : void{
 		$w->writeInt(4, match($value){
 			\pocketmine\block\utils\MushroomBlockType::ALL_CAP() => 0,
 			\pocketmine\block\utils\MushroomBlockType::CAP_EAST() => 1,
@@ -123,7 +84,7 @@ final class BlockDataWriterHelper{
 		});
 	}
 
-	public static function writeSkullType(BlockDataWriter $w, SkullType $value) : void{
+	public static function writeSkullType(RuntimeDataWriter $w, \pocketmine\block\utils\SkullType $value) : void{
 		$w->writeInt(3, match($value){
 			\pocketmine\block\utils\SkullType::CREEPER() => 0,
 			\pocketmine\block\utils\SkullType::DRAGON() => 1,
@@ -135,35 +96,12 @@ final class BlockDataWriterHelper{
 		});
 	}
 
-	public static function writeSlabType(BlockDataWriter $w, SlabType $value) : void{
+	public static function writeSlabType(RuntimeDataWriter $w, \pocketmine\block\utils\SlabType $value) : void{
 		$w->writeInt(2, match($value){
 			\pocketmine\block\utils\SlabType::BOTTOM() => 0,
 			\pocketmine\block\utils\SlabType::DOUBLE() => 1,
 			\pocketmine\block\utils\SlabType::TOP() => 2,
 			default => throw new \pocketmine\utils\AssumptionFailedError("All SlabType cases should be covered")
-		});
-	}
-
-	public static function writeStairShape(BlockDataWriter $w, StairShape $value) : void{
-		$w->writeInt(3, match($value){
-			\pocketmine\block\utils\StairShape::INNER_LEFT() => 0,
-			\pocketmine\block\utils\StairShape::INNER_RIGHT() => 1,
-			\pocketmine\block\utils\StairShape::OUTER_LEFT() => 2,
-			\pocketmine\block\utils\StairShape::OUTER_RIGHT() => 3,
-			\pocketmine\block\utils\StairShape::STRAIGHT() => 4,
-			default => throw new \pocketmine\utils\AssumptionFailedError("All StairShape cases should be covered")
-		});
-	}
-
-	public static function writeTreeType(BlockDataWriter $w, TreeType $value) : void{
-		$w->writeInt(3, match($value){
-			\pocketmine\block\utils\TreeType::ACACIA() => 0,
-			\pocketmine\block\utils\TreeType::BIRCH() => 1,
-			\pocketmine\block\utils\TreeType::DARK_OAK() => 2,
-			\pocketmine\block\utils\TreeType::JUNGLE() => 3,
-			\pocketmine\block\utils\TreeType::OAK() => 4,
-			\pocketmine\block\utils\TreeType::SPRUCE() => 5,
-			default => throw new \pocketmine\utils\AssumptionFailedError("All TreeType cases should be covered")
 		});
 	}
 

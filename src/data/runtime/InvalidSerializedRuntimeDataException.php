@@ -21,8 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\utils;
+namespace pocketmine\data\runtime;
 
-class InvalidBlockStateException extends \UnexpectedValueException{
+final class InvalidSerializedRuntimeDataException extends \UnexpectedValueException{
 
 }
