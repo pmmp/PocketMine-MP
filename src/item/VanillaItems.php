@@ -36,6 +36,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Boat ACACIA_BOAT()
  * @method static ItemBlockWallOrFloor ACACIA_SIGN()
  * @method static ItemBlock AIR()
+ * @method static Item AMETHYST_SHARD()
  * @method static Apple APPLE()
  * @method static Arrow ARROW()
  * @method static BakedPotato BAKED_POTATO()
@@ -115,6 +116,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static CookedRabbit COOKED_RABBIT()
  * @method static CookedSalmon COOKED_SALMON()
  * @method static Cookie COOKIE()
+ * @method static Item COPPER_INGOT()
  * @method static CoralFan CORAL_FAN()
  * @method static ItemBlockWallOrFloor CRIMSON_SIGN()
  * @method static Boat DARK_OAK_BOAT()
@@ -129,9 +131,11 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Pickaxe DIAMOND_PICKAXE()
  * @method static Shovel DIAMOND_SHOVEL()
  * @method static Sword DIAMOND_SWORD()
+ * @method static Item DISC_FRAGMENT_5()
  * @method static Item DRAGON_BREATH()
  * @method static DriedKelp DRIED_KELP()
  * @method static Dye DYE()
+ * @method static Item ECHO_SHARD()
  * @method static Egg EGG()
  * @method static Item EMERALD()
  * @method static GoldenAppleEnchanted ENCHANTED_GOLDEN_APPLE()
@@ -146,6 +150,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static GlassBottle GLASS_BOTTLE()
  * @method static Item GLISTERING_MELON()
  * @method static Item GLOWSTONE_DUST()
+ * @method static Item GLOW_INK_SAC()
  * @method static GoldenApple GOLDEN_APPLE()
  * @method static Axe GOLDEN_AXE()
  * @method static Armor GOLDEN_BOOTS()
@@ -161,6 +166,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Item GOLD_NUGGET()
  * @method static Item GUNPOWDER()
  * @method static Item HEART_OF_THE_SEA()
+ * @method static Item HONEYCOMB()
  * @method static Item INK_SAC()
  * @method static Axe IRON_AXE()
  * @method static Armor IRON_BOOTS()
@@ -197,6 +203,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static ItemBlockWallOrFloor OAK_SIGN()
  * @method static PaintingItem PAINTING()
  * @method static Item PAPER()
+ * @method static Item PHANTOM_MEMBRANE()
  * @method static PoisonousPotato POISONOUS_POTATO()
  * @method static Item POPPED_CHORUS_FRUIT()
  * @method static Potato POTATO()
@@ -211,7 +218,10 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static RabbitStew RABBIT_STEW()
  * @method static RawBeef RAW_BEEF()
  * @method static RawChicken RAW_CHICKEN()
+ * @method static Item RAW_COPPER()
  * @method static RawFish RAW_FISH()
+ * @method static Item RAW_GOLD()
+ * @method static Item RAW_IRON()
  * @method static RawMutton RAW_MUTTON()
  * @method static RawPorkchop RAW_PORKCHOP()
  * @method static RawRabbit RAW_RABBIT()
@@ -239,6 +249,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static SplashPotion SPLASH_POTION()
  * @method static Boat SPRUCE_BOAT()
  * @method static ItemBlockWallOrFloor SPRUCE_SIGN()
+ * @method static Item SPYGLASS()
  * @method static SpawnEgg SQUID_SPAWN_EGG()
  * @method static Steak STEAK()
  * @method static Stick STICK()
@@ -292,6 +303,7 @@ final class VanillaItems{
 
 		self::register("acacia_boat", $factory->fromTypeId(Ids::ACACIA_BOAT));
 		self::register("acacia_sign", $factory->fromTypeId(Ids::ACACIA_SIGN));
+		self::register("amethyst_shard", $factory->fromTypeId(Ids::AMETHYST_SHARD));
 		self::register("apple", $factory->fromTypeId(Ids::APPLE));
 		self::register("arrow", $factory->fromTypeId(Ids::ARROW));
 		self::register("baked_potato", $factory->fromTypeId(Ids::BAKED_POTATO));
@@ -371,6 +383,7 @@ final class VanillaItems{
 		self::register("cooked_rabbit", $factory->fromTypeId(Ids::COOKED_RABBIT));
 		self::register("cooked_salmon", $factory->fromTypeId(Ids::COOKED_SALMON));
 		self::register("cookie", $factory->fromTypeId(Ids::COOKIE));
+		self::register("copper_ingot", $factory->fromTypeId(Ids::COPPER_INGOT));
 		self::register("coral_fan", $factory->fromTypeId(Ids::CORAL_FAN));
 		self::register("crimson_sign", $factory->fromTypeId(Ids::CRIMSON_SIGN));
 		self::register("dark_oak_boat", $factory->fromTypeId(Ids::DARK_OAK_BOAT));
@@ -385,9 +398,11 @@ final class VanillaItems{
 		self::register("diamond_pickaxe", $factory->fromTypeId(Ids::DIAMOND_PICKAXE));
 		self::register("diamond_shovel", $factory->fromTypeId(Ids::DIAMOND_SHOVEL));
 		self::register("diamond_sword", $factory->fromTypeId(Ids::DIAMOND_SWORD));
+		self::register("disc_fragment_5", $factory->fromTypeId(Ids::DISC_FRAGMENT_5));
 		self::register("dragon_breath", $factory->fromTypeId(Ids::DRAGON_BREATH));
 		self::register("dried_kelp", $factory->fromTypeId(Ids::DRIED_KELP));
 		self::register("dye", $factory->fromTypeId(Ids::DYE));
+		self::register("echo_shard", $factory->fromTypeId(Ids::ECHO_SHARD));
 		self::register("egg", $factory->fromTypeId(Ids::EGG));
 		self::register("emerald", $factory->fromTypeId(Ids::EMERALD));
 		self::register("enchanted_golden_apple", $factory->fromTypeId(Ids::ENCHANTED_GOLDEN_APPLE));
@@ -401,6 +416,7 @@ final class VanillaItems{
 		self::register("ghast_tear", $factory->fromTypeId(Ids::GHAST_TEAR));
 		self::register("glass_bottle", $factory->fromTypeId(Ids::GLASS_BOTTLE));
 		self::register("glistering_melon", $factory->fromTypeId(Ids::GLISTERING_MELON));
+		self::register("glow_ink_sac", $factory->fromTypeId(Ids::GLOW_INK_SAC));
 		self::register("glowstone_dust", $factory->fromTypeId(Ids::GLOWSTONE_DUST));
 		self::register("gold_ingot", $factory->fromTypeId(Ids::GOLD_INGOT));
 		self::register("gold_nugget", $factory->fromTypeId(Ids::GOLD_NUGGET));
@@ -417,6 +433,7 @@ final class VanillaItems{
 		self::register("golden_sword", $factory->fromTypeId(Ids::GOLDEN_SWORD));
 		self::register("gunpowder", $factory->fromTypeId(Ids::GUNPOWDER));
 		self::register("heart_of_the_sea", $factory->fromTypeId(Ids::HEART_OF_THE_SEA));
+		self::register("honeycomb", $factory->fromTypeId(Ids::HONEYCOMB));
 		self::register("ink_sac", $factory->fromTypeId(Ids::INK_SAC));
 		self::register("iron_axe", $factory->fromTypeId(Ids::IRON_AXE));
 		self::register("iron_boots", $factory->fromTypeId(Ids::IRON_BOOTS));
@@ -453,6 +470,7 @@ final class VanillaItems{
 		self::register("oak_sign", $factory->fromTypeId(Ids::OAK_SIGN));
 		self::register("painting", $factory->fromTypeId(Ids::PAINTING));
 		self::register("paper", $factory->fromTypeId(Ids::PAPER));
+		self::register("phantom_membrane", $factory->fromTypeId(Ids::PHANTOM_MEMBRANE));
 		self::register("poisonous_potato", $factory->fromTypeId(Ids::POISONOUS_POTATO));
 		self::register("popped_chorus_fruit", $factory->fromTypeId(Ids::POPPED_CHORUS_FRUIT));
 		self::register("potato", $factory->fromTypeId(Ids::POTATO));
@@ -467,7 +485,10 @@ final class VanillaItems{
 		self::register("rabbit_stew", $factory->fromTypeId(Ids::RABBIT_STEW));
 		self::register("raw_beef", $factory->fromTypeId(Ids::RAW_BEEF));
 		self::register("raw_chicken", $factory->fromTypeId(Ids::RAW_CHICKEN));
+		self::register("raw_copper", $factory->fromTypeId(Ids::RAW_COPPER));
 		self::register("raw_fish", $factory->fromTypeId(Ids::RAW_FISH));
+		self::register("raw_gold", $factory->fromTypeId(Ids::RAW_GOLD));
+		self::register("raw_iron", $factory->fromTypeId(Ids::RAW_IRON));
 		self::register("raw_mutton", $factory->fromTypeId(Ids::RAW_MUTTON));
 		self::register("raw_porkchop", $factory->fromTypeId(Ids::RAW_PORKCHOP));
 		self::register("raw_rabbit", $factory->fromTypeId(Ids::RAW_RABBIT));
@@ -495,6 +516,7 @@ final class VanillaItems{
 		self::register("splash_potion", $factory->fromTypeId(Ids::SPLASH_POTION));
 		self::register("spruce_boat", $factory->fromTypeId(Ids::SPRUCE_BOAT));
 		self::register("spruce_sign", $factory->fromTypeId(Ids::SPRUCE_SIGN));
+		self::register("spyglass", $factory->fromTypeId(Ids::SPYGLASS));
 		self::register("squid_spawn_egg", $factory->fromTypeId(Ids::SQUID_SPAWN_EGG));
 		self::register("steak", $factory->fromTypeId(Ids::STEAK));
 		self::register("stick", $factory->fromTypeId(Ids::STICK));

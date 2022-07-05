@@ -98,6 +98,7 @@ class ItemFactory{
 		$this->register(new GoldenApple(new IID(Ids::GOLDEN_APPLE), "Golden Apple"));
 		$this->register(new GoldenAppleEnchanted(new IID(Ids::ENCHANTED_GOLDEN_APPLE), "Enchanted Golden Apple"));
 		$this->register(new GoldenCarrot(new IID(Ids::GOLDEN_CARROT), "Golden Carrot"));
+		$this->register(new Item(new IID(Ids::AMETHYST_SHARD), "Amethyst Shard"));
 		$this->register(new Item(new IID(Ids::BLAZE_POWDER), "Blaze Powder"));
 		$this->register(new Item(new IID(Ids::BLEACH), "Bleach")); //EDU
 		$this->register(new Item(new IID(Ids::BONE), "Bone"));
@@ -143,9 +144,12 @@ class ItemFactory{
 		$this->register(new Item(new IID(Ids::CHEMICAL_AMMONIA), "Ammonia"));
 		$this->register(new Item(new IID(Ids::CHEMICAL_SODIUM_HYPOCHLORITE), "Sodium Hypochlorite"));
 		$this->register(new Item(new IID(Ids::DIAMOND), "Diamond"));
+		$this->register(new Item(new IID(Ids::DISC_FRAGMENT_5), "Disc Fragment (5)"));
 		$this->register(new Item(new IID(Ids::DRAGON_BREATH), "Dragon's Breath"));
+		$this->register(new Item(new IID(Ids::GLOW_INK_SAC), "Glow Ink Sac"));
 		$this->register(new Item(new IID(Ids::INK_SAC), "Ink Sac"));
 		$this->register(new Item(new IID(Ids::LAPIS_LAZULI), "Lapis Lazuli"));
+		$this->register(new Item(new IID(Ids::ECHO_SHARD), "Echo Shard"));
 		$this->register(new Item(new IID(Ids::EMERALD), "Emerald"));
 		$this->register(new Item(new IID(Ids::FEATHER), "Feather"));
 		$this->register(new Item(new IID(Ids::FERMENTED_SPIDER_EYE), "Fermented Spider Eye"));
@@ -157,6 +161,7 @@ class ItemFactory{
 		$this->register(new Item(new IID(Ids::GOLD_NUGGET), "Gold Nugget"));
 		$this->register(new Item(new IID(Ids::GUNPOWDER), "Gunpowder"));
 		$this->register(new Item(new IID(Ids::HEART_OF_THE_SEA), "Heart of the Sea"));
+		$this->register(new Item(new IID(Ids::HONEYCOMB), "Honeycomb"));
 		$this->register(new Item(new IID(Ids::IRON_INGOT), "Iron Ingot"));
 		$this->register(new Item(new IID(Ids::IRON_NUGGET), "Iron Nugget"));
 		$this->register(new Item(new IID(Ids::LEATHER), "Leather"));
@@ -175,6 +180,12 @@ class ItemFactory{
 		$this->register(new Item(new IID(Ids::SUGAR), "Sugar"));
 		$this->register(new Item(new IID(Ids::SCUTE), "Scute"));
 		$this->register(new Item(new IID(Ids::WHEAT), "Wheat"));
+		$this->register(new Item(new IID(Ids::COPPER_INGOT), "Copper Ingot"));
+		$this->register(new Item(new IID(Ids::RAW_COPPER), "Raw Copper"));
+		$this->register(new Item(new IID(Ids::RAW_IRON), "Raw Iron"));
+		$this->register(new Item(new IID(Ids::RAW_GOLD), "Raw Gold"));
+		$this->register(new Item(new IID(Ids::PHANTOM_MEMBRANE), "Phantom Membrane"));
+		$this->register(new Item(new IID(Ids::SPYGLASS), "Spyglass"));
 
 		//the meta values for buckets are intentionally hardcoded because block IDs will change in the future
 		$this->register(new LiquidBucket(new IID(Ids::WATER_BUCKET), "Water Bucket", Blocks::WATER()));
