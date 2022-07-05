@@ -35,7 +35,14 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Lantern extends Transparent{
+	private int $lightLevel; //readonly
+
 	protected bool $hanging = false;
+
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, int $lightLevel){
+		$this->lightLevel = $lightLevel;
+		parent::__construct($idInfo, $name, $breakInfo);
+	}
 
 	public function getRequiredStateDataBits() : int{ return 1; }
 
@@ -56,7 +63,7 @@ class Lantern extends Transparent{
 	}
 
 	public function getLightLevel() : int{
-		return 15;
+		return $this->lightLevel;
 	}
 
 	/**

@@ -613,10 +613,12 @@ final class BlockTypeIds{
 	public const CHISELED_DEEPSLATE = 10586;
 	public const CHISELED_NETHER_BRICKS = 10587;
 	public const CRACKED_NETHER_BRICKS = 10588;
-
+	public const TUFF = 10589;
+	public const SOUL_TORCH = 10590;
+	public const SOUL_LANTERN = 10591;
 	public const SOUL_SOIL = 10592;
 	public const SOUL_FIRE = 10593;
-
+	public const SHROOMLIGHT = 10594;
 	public const MANGROVE_PLANKS = 10595;
 	public const CRIMSON_PLANKS = 10596;
 	public const WARPED_PLANKS = 10597;
@@ -657,5 +659,7 @@ final class BlockTypeIds{
 	public const CRIMSON_WALL_SIGN = 10632;
 	public const WARPED_WALL_SIGN = 10633;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10634;
+	public const HONEYCOMB = 10635;
+
+	public const FIRST_UNUSED_BLOCK_ID = 10636;
 }

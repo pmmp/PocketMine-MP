@@ -360,6 +360,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static HardenedGlass HARDENED_GLASS()
  * @method static HardenedGlassPane HARDENED_GLASS_PANE()
  * @method static HayBale HAY_BALE()
+ * @method static Opaque HONEYCOMB()
  * @method static Hopper HOPPER()
  * @method static Ice ICE()
  * @method static InfestedStone INFESTED_CHISELED_STONE_BRICK()
@@ -551,6 +552,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Wall SANDSTONE_WALL()
  * @method static SeaLantern SEA_LANTERN()
  * @method static SeaPickle SEA_PICKLE()
+ * @method static Opaque SHROOMLIGHT()
  * @method static ShulkerBox SHULKER_BOX()
  * @method static Slime SLIME()
  * @method static Furnace SMOKER()
@@ -569,7 +571,10 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Snow SNOW()
  * @method static SnowLayer SNOW_LAYER()
  * @method static SoulFire SOUL_FIRE()
+ * @method static Lantern SOUL_LANTERN()
  * @method static SoulSand SOUL_SAND()
+ * @method static Opaque SOUL_SOIL()
+ * @method static Torch SOUL_TORCH()
  * @method static Sponge SPONGE()
  * @method static WoodenButton SPRUCE_BUTTON()
  * @method static WoodenDoor SPRUCE_DOOR()
@@ -610,6 +615,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static TrappedChest TRAPPED_CHEST()
  * @method static Tripwire TRIPWIRE()
  * @method static TripwireHook TRIPWIRE_HOOK()
+ * @method static Opaque TUFF()
  * @method static UnderwaterTorch UNDERWATER_TORCH()
  * @method static Vine VINES()
  * @method static WallBanner WALL_BANNER()
@@ -985,6 +991,7 @@ final class VanillaBlocks{
 		self::register("hardened_glass", $factory->fromTypeId(Ids::HARDENED_GLASS));
 		self::register("hardened_glass_pane", $factory->fromTypeId(Ids::HARDENED_GLASS_PANE));
 		self::register("hay_bale", $factory->fromTypeId(Ids::HAY_BALE));
+		self::register("honeycomb", $factory->fromTypeId(Ids::HONEYCOMB));
 		self::register("hopper", $factory->fromTypeId(Ids::HOPPER));
 		self::register("ice", $factory->fromTypeId(Ids::ICE));
 		self::register("infested_chiseled_stone_brick", $factory->fromTypeId(Ids::INFESTED_CHISELED_STONE_BRICK));
@@ -1176,6 +1183,7 @@ final class VanillaBlocks{
 		self::register("sandstone_wall", $factory->fromTypeId(Ids::SANDSTONE_WALL));
 		self::register("sea_lantern", $factory->fromTypeId(Ids::SEA_LANTERN));
 		self::register("sea_pickle", $factory->fromTypeId(Ids::SEA_PICKLE));
+		self::register("shroomlight", $factory->fromTypeId(Ids::SHROOMLIGHT));
 		self::register("shulker_box", $factory->fromTypeId(Ids::SHULKER_BOX));
 		self::register("slime", $factory->fromTypeId(Ids::SLIME));
 		self::register("smoker", $factory->fromTypeId(Ids::SMOKER));
@@ -1194,7 +1202,10 @@ final class VanillaBlocks{
 		self::register("snow", $factory->fromTypeId(Ids::SNOW));
 		self::register("snow_layer", $factory->fromTypeId(Ids::SNOW_LAYER));
 		self::register("soul_fire", $factory->fromTypeId(Ids::SOUL_FIRE));
+		self::register("soul_lantern", $factory->fromTypeId(Ids::SOUL_LANTERN));
 		self::register("soul_sand", $factory->fromTypeId(Ids::SOUL_SAND));
+		self::register("soul_soil", $factory->fromTypeId(Ids::SOUL_SOIL));
+		self::register("soul_torch", $factory->fromTypeId(Ids::SOUL_TORCH));
 		self::register("sponge", $factory->fromTypeId(Ids::SPONGE));
 		self::register("spruce_button", $factory->fromTypeId(Ids::SPRUCE_BUTTON));
 		self::register("spruce_door", $factory->fromTypeId(Ids::SPRUCE_DOOR));
@@ -1235,6 +1246,7 @@ final class VanillaBlocks{
 		self::register("trapped_chest", $factory->fromTypeId(Ids::TRAPPED_CHEST));
 		self::register("tripwire", $factory->fromTypeId(Ids::TRIPWIRE));
 		self::register("tripwire_hook", $factory->fromTypeId(Ids::TRIPWIRE_HOOK));
+		self::register("tuff", $factory->fromTypeId(Ids::TUFF));
 		self::register("underwater_torch", $factory->fromTypeId(Ids::UNDERWATER_TORCH));
 		self::register("vines", $factory->fromTypeId(Ids::VINES));
 		self::register("wall_banner", $factory->fromTypeId(Ids::WALL_BANNER));
