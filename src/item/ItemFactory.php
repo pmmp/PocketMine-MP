@@ -24,15 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\BlockFactory;
-use pocketmine\block\utils\CoralType;
-use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\RecordType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks as Blocks;
-use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\CompoundTypeIds;
 use pocketmine\data\bedrock\EntityLegacyIds;
-use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
 use pocketmine\entity\Squid;
@@ -43,13 +39,9 @@ use pocketmine\item\ItemIdentifier as IID;
 use pocketmine\item\ItemIds as LegacyIds;
 use pocketmine\item\ItemTypeIds as Ids;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\NbtException;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
-use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use pocketmine\world\World;
-use function min;
 
 /**
  * Manages deserializing item types from their legacy ID/metadata.
@@ -86,11 +78,7 @@ class ItemFactory{
 		$this->register(new Clownfish(new IID(Ids::CLOWNFISH, LegacyIds::CLOWNFISH, 0), "Clownfish"));
 		$this->register(new Coal(new IID(Ids::COAL, LegacyIds::COAL, 0), "Coal"));
 
-		$identifier = new ItemIdentifierFlattened(Ids::CORAL_FAN, LegacyIds::CORAL_FAN, 0, [LegacyIds::CORAL_FAN_DEAD]);
-		foreach(CoralType::getAll() as $coralType){
-			$this->register((new CoralFan($identifier))->setCoralType($coralType)->setDead(false), true);
-			$this->register((new CoralFan($identifier))->setCoralType($coralType)->setDead(true), true);
-		}
+		$this->register(new CoralFan(new ItemIdentifierFlattened(Ids::CORAL_FAN, LegacyIds::CORAL_FAN, 0, [LegacyIds::CORAL_FAN_DEAD])));
 
 		$this->register(new Coal(new IID(Ids::CHARCOAL, LegacyIds::COAL, 1), "Charcoal"));
 		$this->register(new CocoaBeans(new IID(Ids::COCOA_BEANS, LegacyIds::DYE, 3), "Cocoa Beans"));
@@ -191,31 +179,9 @@ class ItemFactory{
 		$this->register(new Item(new IID(Ids::SCUTE, LegacyIds::TURTLE_SHELL_PIECE, 0), "Scute"));
 		$this->register(new Item(new IID(Ids::WHEAT, LegacyIds::WHEAT, 0), "Wheat"));
 
-		//these blocks have special legacy item IDs, so they need to be registered explicitly
-		$this->register(new ItemBlock(Blocks::ACACIA_DOOR()));
-		$this->register(new ItemBlock(Blocks::BIRCH_DOOR()));
-		$this->register(new ItemBlock(Blocks::BREWING_STAND()));
-		$this->register(new ItemBlock(Blocks::CAKE()));
-		$this->register(new ItemBlock(Blocks::REDSTONE_COMPARATOR()));
-		$this->register(new ItemBlock(Blocks::DARK_OAK_DOOR()));
-		$this->register(new ItemBlock(Blocks::FLOWER_POT()));
-		$this->register(new ItemBlock(Blocks::HOPPER()));
-		$this->register(new ItemBlock(Blocks::IRON_DOOR()));
-		$this->register(new ItemBlock(Blocks::ITEM_FRAME()));
-		$this->register(new ItemBlock(Blocks::JUNGLE_DOOR()));
-		$this->register(new ItemBlock(Blocks::NETHER_WART()));
-		$this->register(new ItemBlock(Blocks::OAK_DOOR()));
-		$this->register(new ItemBlock(Blocks::REDSTONE_REPEATER()));
-		$this->register(new ItemBlock(Blocks::SPRUCE_DOOR()));
-		$this->register(new ItemBlock(Blocks::SUGARCANE()));
-
 		//the meta values for buckets are intentionally hardcoded because block IDs will change in the future
-		$waterBucket = new LiquidBucket(new IID(Ids::WATER_BUCKET, LegacyIds::BUCKET, 8), "Water Bucket", Blocks::WATER());
-		$this->register($waterBucket);
-		$this->remap(LegacyIds::BUCKET, 9, $waterBucket);
-		$lavaBucket = new LiquidBucket(new IID(Ids::LAVA_BUCKET, LegacyIds::BUCKET, 10), "Lava Bucket", Blocks::LAVA());
-		$this->register($lavaBucket);
-		$this->remap(LegacyIds::BUCKET, 11, $lavaBucket);
+		$this->register(new LiquidBucket(new IID(Ids::WATER_BUCKET, LegacyIds::BUCKET, 8), "Water Bucket", Blocks::WATER()));
+		$this->register(new LiquidBucket(new IID(Ids::LAVA_BUCKET, LegacyIds::BUCKET, 10), "Lava Bucket", Blocks::LAVA()));
 		$this->register(new Melon(new IID(Ids::MELON, LegacyIds::MELON, 0), "Melon"));
 		$this->register(new MelonSeeds(new IID(Ids::MELON_SEEDS, LegacyIds::MELON_SEEDS, 0), "Melon Seeds"));
 		$this->register(new MilkBucket(new IID(Ids::MILK_BUCKET, LegacyIds::BUCKET, 1), "Milk Bucket"));
@@ -267,21 +233,16 @@ class ItemFactory{
 		$this->register(new WritableBook(new IID(Ids::WRITABLE_BOOK, LegacyIds::WRITABLE_BOOK, 0), "Book & Quill"));
 		$this->register(new WrittenBook(new IID(Ids::WRITTEN_BOOK, LegacyIds::WRITTEN_BOOK, 0), "Written Book"));
 
-		foreach(DyeColor::getAll() as $color){
-			//TODO: use colour object directly
-			//TODO: add interface to dye-colour objects
-			$this->register((new Dye(new IID(Ids::DYE, LegacyIds::DYE, 0), "Dye"))->setColor($color));
-			$this->register((new Banner(
-				new IID(Ids::BANNER, LegacyIds::BANNER, 0),
-				Blocks::BANNER(),
-				Blocks::WALL_BANNER()
-			))->setColor($color));
-		}
+		//TODO: add interface to dye-colour objects
+		$this->register(new Dye(new IID(Ids::DYE, LegacyIds::DYE, 0), "Dye"));
+		$this->register(new Banner(
+			new IID(Ids::BANNER, LegacyIds::BANNER, 0),
+			Blocks::BANNER(),
+			Blocks::WALL_BANNER()
+		));
 
-		foreach(PotionType::getAll() as $type){
-			$this->register((new Potion(new IID(Ids::POTION, LegacyIds::POTION, 0), "Potion"))->setType($type));
-			$this->register((new SplashPotion(new IID(Ids::SPLASH_POTION, LegacyIds::SPLASH_POTION, 0), "Splash Potion"))->setType($type));
-		}
+		$this->register(new Potion(new IID(Ids::POTION, LegacyIds::POTION, 0), "Potion"));
+		$this->register(new SplashPotion(new IID(Ids::SPLASH_POTION, LegacyIds::SPLASH_POTION, 0), "Splash Potion"));
 
 		foreach(TreeType::getAll() as $type){
 			//TODO: tree type should be dynamic in the future, but we're staying static for now for the sake of consistency
@@ -420,112 +381,51 @@ class ItemFactory{
 	 * $override parameter.
 	 */
 	public function register(Item $item, bool $override = false) : void{
-		$id = $item->getId();
-		$variant = $item->getMeta();
+		$id = $item->getTypeId();
 
-		if(!$override && $this->isRegistered($id, $variant)){
+		if(!$override && $this->isRegistered($id)){
 			throw new \RuntimeException("Trying to overwrite an already registered item");
 		}
 
-		$this->list[self::getListOffset($id, $variant)] = clone $item;
-	}
-
-	public function remap(int $legacyId, int $legacyMeta, Item $item, bool $override = false) : void{
-		if(!$override && $this->isRegistered($legacyId, $legacyMeta)){
-			throw new \RuntimeException("Trying to overwrite an already registered item");
-		}
-
-		$this->list[self::getListOffset($legacyId, $legacyMeta)] = clone $item;
+		$this->list[$id] = clone $item;
 	}
 
 	private static function itemToBlockId(int $id) : int{
-		return $id < 0 ? 255 - $id : $id;
+		if($id > 0){
+			throw new \InvalidArgumentException("ID $id is not a block ID");
+		}
+		return -$id;
 	}
 
 	/**
-	 * @deprecated This method should ONLY be used for deserializing data, e.g. from a config or database. For all other
-	 * purposes, use VanillaItems.
-	 * @see VanillaItems
-	 *
-	 * Deserializes an item from the provided legacy ID, legacy meta, count and NBT.
-	 *
-	 * @throws SavedDataLoadingException
+	 * @internal
 	 */
-	public function get(int $id, int $meta = 0, int $count = 1, ?CompoundTag $tags = null) : Item{
-		/** @var Item|null $item */
-		$item = null;
-
-		if($id < -0x8000 || $id > 0x7fff){
-			throw new SavedDataLoadingException("Legacy ID must be in the range " . -0x8000 . " ... " . 0x7fff);
+	public function fromTypeId(int $typeId) : Item{
+		if(isset($this->list[$typeId])){
+			return clone $this->list[$typeId];
 		}
-		if($meta < 0 || $meta > 0x7ffe){ //0x7fff would cause problems with recipe wildcards
-			throw new SavedDataLoadingException("Meta cannot be negative or larger than " . 0x7ffe);
+		if($typeId <= 0){
+			return BlockFactory::getInstance()->fromTypeId(self::itemToBlockId($typeId))->asItem();
 		}
 
-		if(isset($this->list[$offset = self::getListOffset($id, $meta)])){
-			$item = clone $this->list[$offset];
-		}elseif(isset($this->list[$zero = self::getListOffset($id, 0)]) && $this->list[$zero] instanceof Durable){
-			$item = clone $this->list[$zero];
-			$item->setDamage(min($meta, $this->list[$zero]->getMaxDurability()));
-		}elseif($id < 256){ //intentionally includes negatives, for extended block IDs
-			//TODO: do not assume that item IDs and block IDs are the same or related
-			$blockStateData = GlobalBlockStateHandlers::getUpgrader()->upgradeIntIdMeta(self::itemToBlockId($id), $meta & 0xf);
-			if($blockStateData !== null){
-				try{
-					$blockStateId = GlobalBlockStateHandlers::getDeserializer()->deserialize($blockStateData);
-					$item = new ItemBlock(BlockFactory::getInstance()->fromStateId($blockStateId));
-				}catch(BlockStateDeserializeException $e){
-					throw new SavedDataLoadingException("Failed to deserialize itemblock: " . $e->getMessage(), 0, $e);
-				}
-			}
-		}
-
-		if($item === null){
-			throw new SavedDataLoadingException("No registered item is associated with this ID and meta");
-		}
-
-		$item->setCount($count);
-		if($tags !== null){
-			try{
-				$item->setNamedTag($tags);
-			}catch(NbtException $e){
-				throw new SavedDataLoadingException("Invalid item NBT: " . $e->getMessage(), 0, $e);
-			}
-		}
-		return $item;
+		throw new \InvalidArgumentException("No item with type ID $typeId is registered");
 	}
 
 	/**
 	 * Returns whether the specified item ID is already registered in the item factory.
 	 */
-	public function isRegistered(int $id, int $variant = 0) : bool{
-		if($id < 256){
-			$blockStateData = GlobalBlockStateHandlers::getUpgrader()->upgradeIntIdMeta(self::itemToBlockId($id), $variant & 0xf);
-			if($blockStateData === null){
-				return false;
-			}
-			try{
-				GlobalBlockStateHandlers::getDeserializer()->deserialize($blockStateData);
-				return true;
-			}catch(BlockStateDeserializeException){
-				return false;
-			}
+	public function isRegistered(int $id) : bool{
+		if($id <= 0){
+			return BlockFactory::getInstance()->isRegistered(self::itemToBlockId($id));
 		}
 
-		return isset($this->list[self::getListOffset($id, $variant)]);
-	}
-
-	private static function getListOffset(int $id, int $variant) : int{
-		if($id < -0x8000 || $id > 0x7fff){
-			throw new \InvalidArgumentException("ID must be in range " . -0x8000 . " - " . 0x7fff);
-		}
-		return (($id & 0xffff) << 16) | ($variant & 0xffff);
+		return isset($this->list[$id]);
 	}
 
 	/**
 	 * @return Item[]
 	 */
-	public function getAllRegistered() : array{
+	public function getAllKnownTypes() : array{
 		return $this->list;
 	}
 }
