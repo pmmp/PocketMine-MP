@@ -186,7 +186,6 @@ class ItemFactory{
 		$this->register(new Item(new IID(Ids::RAW_GOLD), "Raw Gold"));
 		$this->register(new Item(new IID(Ids::PHANTOM_MEMBRANE), "Phantom Membrane"));
 
-		//the meta values for buckets are intentionally hardcoded because block IDs will change in the future
 		$this->register(new LiquidBucket(new IID(Ids::WATER_BUCKET), "Water Bucket", Blocks::WATER()));
 		$this->register(new LiquidBucket(new IID(Ids::LAVA_BUCKET), "Lava Bucket", Blocks::LAVA()));
 		$this->register(new Melon(new IID(Ids::MELON), "Melon"));
