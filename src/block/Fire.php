@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\block\BlockDataReader;
-use pocketmine\data\runtime\block\BlockDataWriter;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\event\block\BlockBurnEvent;
 use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\math\Facing;
@@ -42,11 +42,11 @@ class Fire extends BaseFire{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(BlockDataReader $r) : void{
+	protected function decodeState(RuntimeDataReader $r) : void{
 		$this->age = $r->readBoundedInt(4, 0, self::MAX_AGE);
 	}
 
-	protected function encodeState(BlockDataWriter $w) : void{
+	protected function encodeState(RuntimeDataWriter $w) : void{
 		$w->writeInt(4, $this->age);
 	}
 
@@ -59,6 +59,10 @@ class Fire extends BaseFire{
 		}
 		$this->age = $age;
 		return $this;
+	}
+
+	protected function getFireDamage() : int{
+		return 1;
 	}
 
 	public function onNearbyBlockChange() : void{

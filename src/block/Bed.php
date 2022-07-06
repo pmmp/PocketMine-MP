@@ -28,8 +28,8 @@ use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\block\BlockDataReader;
-use pocketmine\data\runtime\block\BlockDataWriter;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\item\Item;
@@ -56,13 +56,13 @@ class Bed extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(BlockDataReader $r) : void{
+	protected function decodeState(RuntimeDataReader $r) : void{
 		$this->facing = $r->readHorizontalFacing();
 		$this->occupied = $r->readBool();
 		$this->head = $r->readBool();
 	}
 
-	protected function encodeState(BlockDataWriter $w) : void{
+	protected function encodeState(RuntimeDataWriter $w) : void{
 		$w->writeHorizontalFacing($this->facing);
 		$w->writeBool($this->occupied);
 		$w->writeBool($this->head);

@@ -23,7 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\data\bedrock\PotionTypeIdMap;
+use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeEnumSerializer;
 use pocketmine\entity\Location;
 use pocketmine\entity\projectile\SplashPotion as SplashPotionEntity;
 use pocketmine\entity\projectile\Throwable;
@@ -38,8 +39,8 @@ class SplashPotion extends ProjectileItem{
 		parent::__construct($identifier, $name);
 	}
 
-	public function getMeta() : int{
-		return PotionTypeIdMap::getInstance()->toId($this->potionType);
+	protected function encodeType(RuntimeDataWriter $w) : void{
+		RuntimeEnumSerializer::writePotionType($w, $this->potionType);
 	}
 
 	public function getType() : PotionType{ return $this->potionType; }

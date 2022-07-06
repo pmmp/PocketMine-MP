@@ -40,9 +40,9 @@ class ItemBlockWallOrFloor extends Item{
 
 	public function getBlock(?int $clickedFace = null) : Block{
 		if($clickedFace !== null && Facing::axis($clickedFace) !== Axis::Y){
-			return BlockFactory::getInstance()->fromFullBlock($this->wallVariant);
+			return BlockFactory::getInstance()->fromStateId($this->wallVariant);
 		}
-		return BlockFactory::getInstance()->fromFullBlock($this->floorVariant);
+		return BlockFactory::getInstance()->fromStateId($this->floorVariant);
 	}
 
 	public function getFuelTime() : int{

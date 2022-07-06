@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\block\BlockDataReader;
-use pocketmine\data\runtime\block\BlockDataWriter;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -35,15 +35,22 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Lantern extends Transparent{
+	private int $lightLevel; //readonly
+
 	protected bool $hanging = false;
+
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, int $lightLevel){
+		$this->lightLevel = $lightLevel;
+		parent::__construct($idInfo, $name, $breakInfo);
+	}
 
 	public function getRequiredStateDataBits() : int{ return 1; }
 
-	protected function decodeState(BlockDataReader $r) : void{
+	protected function decodeState(RuntimeDataReader $r) : void{
 		$this->hanging = $r->readBool();
 	}
 
-	protected function encodeState(BlockDataWriter $w) : void{
+	protected function encodeState(RuntimeDataWriter $w) : void{
 		$w->writeBool($this->hanging);
 	}
 
@@ -56,7 +63,7 @@ class Lantern extends Transparent{
 	}
 
 	public function getLightLevel() : int{
-		return 15;
+		return $this->lightLevel;
 	}
 
 	/**

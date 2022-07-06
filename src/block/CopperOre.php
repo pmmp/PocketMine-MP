@@ -23,27 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\math\Facing;
+use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 
-final class SoulFire extends BaseFire{
+final class CopperOre extends Opaque{
 
-	public function getLightLevel() : int{
-		return 10;
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [VanillaItems::RAW_COPPER()];
 	}
 
-	protected function getFireDamage() : int{
-		return 2;
-	}
-
-	public static function canBeSupportedBy(Block $block) : bool{
-		//TODO: this really ought to use some kind of tag system
-		$id = $block->getTypeId();
-		return $id === BlockTypeIds::SOUL_SAND || $id === BlockTypeIds::SOUL_SOIL;
-	}
-
-	public function onNearbyBlockChange() : void{
-		if(!self::canBeSupportedBy($this->getSide(Facing::DOWN))){
-			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
-		}
-	}
+	public function isAffectedBySilkTouch() : bool{ return true; }
 }

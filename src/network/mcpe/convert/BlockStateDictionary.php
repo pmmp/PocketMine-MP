@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use function array_map;
@@ -107,6 +108,19 @@ final class BlockStateDictionary{
 	 */
 	public function getStates() : array{ return $this->states; }
 
+	/**
+	 * @return BlockStateData[]
+	 * @phpstan-return list<BlockStateData>
+	 *
+	 * @throws NbtDataException
+	 */
+	public static function loadPaletteFromString(string $blockPaletteContents) : array{
+		return array_map(
+			fn(TreeRoot $root) => BlockStateData::fromNbt($root->mustGetCompoundTag()),
+			(new NetworkNbtSerializer())->readMultiple($blockPaletteContents)
+		);
+	}
+
 	public static function loadFromString(string $blockPaletteContents, string $metaMapContents) : self{
 		$metaMap = json_decode($metaMapContents, flags: JSON_THROW_ON_ERROR);
 		if(!is_array($metaMap)){
@@ -114,12 +128,8 @@ final class BlockStateDictionary{
 		}
 
 		$entries = [];
-		$states = array_map(
-			fn(TreeRoot $root) => BlockStateData::fromNbt($root->mustGetCompoundTag()),
-			(new NetworkNbtSerializer())->readMultiple($blockPaletteContents)
-		);
 
-		foreach($states as $i => $state){
+		foreach(self::loadPaletteFromString($blockPaletteContents) as $i => $state){
 			$meta = $metaMap[$i] ?? null;
 			if($meta === null){
 				throw new \InvalidArgumentException("Missing associated meta value for state $i (" . $state->toNbt() . ")");

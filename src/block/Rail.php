@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\RailConnectionInfo;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
-use pocketmine\data\runtime\block\BlockDataReader;
-use pocketmine\data\runtime\block\BlockDataWriter;
+use pocketmine\data\runtime\InvalidSerializedRuntimeDataException;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\math\Facing;
 use function array_keys;
 use function implode;
@@ -38,15 +38,15 @@ class Rail extends BaseRail{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(BlockDataReader $r) : void{
+	protected function decodeState(RuntimeDataReader $r) : void{
 		$railShape = $r->readInt(4);
 		if(!isset(RailConnectionInfo::CONNECTIONS[$railShape]) && !isset(RailConnectionInfo::CURVE_CONNECTIONS[$railShape])){
-			throw new InvalidBlockStateException("Invalid rail shape $railShape");
+			throw new InvalidSerializedRuntimeDataException("Invalid rail shape $railShape");
 		}
 		$this->railShape = $railShape;
 	}
 
-	protected function encodeState(BlockDataWriter $w) : void{
+	protected function encodeState(RuntimeDataWriter $w) : void{
 		$w->writeInt(4, $this->railShape);
 	}
 

@@ -613,10 +613,12 @@ final class BlockTypeIds{
 	public const CHISELED_DEEPSLATE = 10586;
 	public const CHISELED_NETHER_BRICKS = 10587;
 	public const CRACKED_NETHER_BRICKS = 10588;
-
+	public const TUFF = 10589;
+	public const SOUL_TORCH = 10590;
+	public const SOUL_LANTERN = 10591;
 	public const SOUL_SOIL = 10592;
 	public const SOUL_FIRE = 10593;
-
+	public const SHROOMLIGHT = 10594;
 	public const MANGROVE_PLANKS = 10595;
 	public const CRIMSON_PLANKS = 10596;
 	public const WARPED_PLANKS = 10597;
@@ -650,6 +652,30 @@ final class BlockTypeIds{
 	public const MANGROVE_STAIRS = 10625;
 	public const CRIMSON_STAIRS = 10626;
 	public const WARPED_STAIRS = 10627;
+	public const MANGROVE_SIGN = 10628;
+	public const CRIMSON_SIGN = 10629;
+	public const WARPED_SIGN = 10630;
+	public const MANGROVE_WALL_SIGN = 10631;
+	public const CRIMSON_WALL_SIGN = 10632;
+	public const WARPED_WALL_SIGN = 10633;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10628;
+	public const HONEYCOMB = 10635;
+	public const DEEPSLATE_COAL_ORE = 10636;
+	public const DEEPSLATE_DIAMOND_ORE = 10637;
+	public const DEEPSLATE_EMERALD_ORE = 10638;
+	public const DEEPSLATE_LAPIS_LAZULI_ORE = 10639;
+	public const DEEPSLATE_REDSTONE_ORE = 10640;
+	public const DEEPSLATE_IRON_ORE = 10641;
+	public const DEEPSLATE_GOLD_ORE = 10642;
+	public const DEEPSLATE_COPPER_ORE = 10643;
+	public const COPPER_ORE = 10644;
+	public const NETHER_GOLD_ORE = 10645;
+	public const MUD = 10646;
+	public const MUD_BRICKS = 10647;
+	public const MUD_BRICK_SLAB = 10648;
+	public const MUD_BRICK_STAIRS = 10649;
+	public const MUD_BRICK_WALL = 10650;
+	public const PACKED_MUD = 10651;
+
+	public const FIRST_UNUSED_BLOCK_ID = 10652;
 }

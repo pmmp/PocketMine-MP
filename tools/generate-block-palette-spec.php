@@ -23,19 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\tools\generate_block_palette_spec;
 
-use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\convert\BlockStateDictionary;
-use pocketmine\network\mcpe\convert\BlockStateDictionaryEntry;
-use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
-use function array_map;
 use function array_values;
 use function count;
 use function dirname;
@@ -56,26 +51,15 @@ if(count($argv) !== 3){
 [, $inputFile, $outputFile] = $argv;
 
 try{
-	$states = array_map(
-		fn(TreeRoot $root) => BlockStateData::fromNbt($root->mustGetCompoundTag()),
-		(new NetworkNbtSerializer())->readMultiple(ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents($inputFile)))
-	);
+	$states = BlockStateDictionary::loadPaletteFromString(ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents($inputFile)));
 }catch(NbtException){
 	fwrite(STDERR, "Invalid block palette file $argv[1]\n");
 	exit(1);
 }
-$entries = [];
-$fakeMeta = [];
-foreach($states as $state){
-	$fakeMeta[$state->getName()] ??= 0;
-	$entries[] = new BlockStateDictionaryEntry($state, $fakeMeta[$state->getName()]++);
-}
-$palette = new BlockStateDictionary($entries);
 
 $reportMap = [];
 
-foreach($palette->getStates() as $entry){
-	$state = $entry->getStateData();
+foreach($states as $state){
 	$name = $state->getName();
 	$reportMap[$name] ??= [];
 	foreach($state->getStates() as $propertyName => $value){

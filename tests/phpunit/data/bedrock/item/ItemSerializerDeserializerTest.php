@@ -39,7 +39,7 @@ final class ItemSerializerDeserializerTest extends TestCase{
 	}
 
 	public function testAllVanillaItemsSerializableAndDeserializable() : void{
-		foreach(ItemFactory::getInstance()->getAllRegistered() as $item){
+		foreach(ItemFactory::getInstance()->getAllKnownTypes() as $item){
 			if($item->isNull()){
 				continue;
 			}

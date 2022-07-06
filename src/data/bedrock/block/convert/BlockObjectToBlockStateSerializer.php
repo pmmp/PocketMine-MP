@@ -172,7 +172,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 
 	public function serialize(int $stateId) : BlockStateData{
 		//TODO: singleton usage not ideal
-		return $this->serializeBlock(BlockFactory::getInstance()->fromFullBlock($stateId));
+		return $this->serializeBlock(BlockFactory::getInstance()->fromStateId($stateId));
 	}
 
 	/**
@@ -432,6 +432,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::CONCRETE_POWDER)
 				->writeColor($block->getColor());
 		});
+		$this->mapSimple(Blocks::COPPER_ORE(), Ids::COPPER_ORE);
 		$this->map(Blocks::CORAL(), function(Coral $block) : Writer{
 			return Writer::create(Ids::CORAL)
 				->writeBool(StateNames::DEAD_BIT, $block->isDead())
@@ -465,10 +466,12 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::CRIMSON_HYPHAE(), fn(Wood $block) => Helper::encodeNewLog($block, Ids::CRIMSON_HYPHAE, Ids::STRIPPED_CRIMSON_HYPHAE));
 		$this->mapSimple(Blocks::CRIMSON_PLANKS(), Ids::CRIMSON_PLANKS);
 		$this->map(Blocks::CRIMSON_PRESSURE_PLATE(), fn(SimplePressurePlate $block) => Helper::encodeSimplePressurePlate($block, new Writer(Ids::CRIMSON_PRESSURE_PLATE)));
+		$this->map(Blocks::CRIMSON_SIGN(), fn(FloorSign $block) => Helper::encodeFloorSign($block, new Writer(Ids::CRIMSON_STANDING_SIGN)));
 		$this->mapSlab(Blocks::CRIMSON_SLAB(), Ids::CRIMSON_SLAB, Ids::CRIMSON_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::CRIMSON_STAIRS(), Ids::CRIMSON_STAIRS);
 		$this->map(Blocks::CRIMSON_STEM(), fn(Wood $block) => Helper::encodeNewLog($block, Ids::CRIMSON_STEM, Ids::STRIPPED_CRIMSON_STEM));
 		$this->map(Blocks::CRIMSON_TRAPDOOR(), fn(Trapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::CRIMSON_TRAPDOOR)));
+		$this->map(Blocks::CRIMSON_WALL_SIGN(), fn(WallSign $block) => Helper::encodeWallSign($block, new Writer(Ids::CRIMSON_WALL_SIGN)));
 		$this->map(Blocks::CUT_RED_SANDSTONE(), fn() => Helper::encodeSandstone(Ids::RED_SANDSTONE, StringValues::SAND_STONE_TYPE_CUT));
 		$this->map(Blocks::CUT_RED_SANDSTONE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab4($block, StringValues::STONE_SLAB_TYPE_4_CUT_RED_SANDSTONE));
 		$this->map(Blocks::CUT_SANDSTONE(), fn() => Helper::encodeSandstone(Ids::SANDSTONE, StringValues::SAND_STONE_TYPE_CUT));
@@ -508,6 +511,14 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->mapSlab(Blocks::DEEPSLATE_BRICK_SLAB(), Ids::DEEPSLATE_BRICK_SLAB, Ids::DEEPSLATE_BRICK_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::DEEPSLATE_BRICK_STAIRS(), Ids::DEEPSLATE_BRICK_STAIRS);
 		$this->map(Blocks::DEEPSLATE_BRICK_WALL(), fn(Wall $block) => Helper::encodeWall($block, new Writer(Ids::DEEPSLATE_BRICK_WALL)));
+		$this->mapSimple(Blocks::DEEPSLATE_COAL_ORE(), Ids::DEEPSLATE_COAL_ORE);
+		$this->mapSimple(Blocks::DEEPSLATE_COPPER_ORE(), Ids::DEEPSLATE_COPPER_ORE);
+		$this->mapSimple(Blocks::DEEPSLATE_DIAMOND_ORE(), Ids::DEEPSLATE_DIAMOND_ORE);
+		$this->mapSimple(Blocks::DEEPSLATE_EMERALD_ORE(), Ids::DEEPSLATE_EMERALD_ORE);
+		$this->mapSimple(Blocks::DEEPSLATE_GOLD_ORE(), Ids::DEEPSLATE_GOLD_ORE);
+		$this->mapSimple(Blocks::DEEPSLATE_IRON_ORE(), Ids::DEEPSLATE_IRON_ORE);
+		$this->mapSimple(Blocks::DEEPSLATE_LAPIS_LAZULI_ORE(), Ids::DEEPSLATE_LAPIS_ORE);
+		$this->map(Blocks::DEEPSLATE_REDSTONE_ORE(), fn(RedstoneOre $block) => new Writer($block->isLit() ? Ids::LIT_DEEPSLATE_REDSTONE_ORE : Ids::DEEPSLATE_REDSTONE_ORE));
 		$this->mapSimple(Blocks::DEEPSLATE_TILES(), Ids::DEEPSLATE_TILES);
 		$this->mapSlab(Blocks::DEEPSLATE_TILE_SLAB(), Ids::DEEPSLATE_TILE_SLAB, Ids::DEEPSLATE_TILE_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::DEEPSLATE_TILE_STAIRS(), Ids::DEEPSLATE_TILE_STAIRS);
@@ -740,6 +751,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeInt(StateNames::DEPRECATED, 0)
 				->writePillarAxis($block->getAxis());
 		});
+		$this->mapSimple(Blocks::HONEYCOMB(), Ids::HONEYCOMB_BLOCK);
 		$this->map(Blocks::HOPPER(), function(Hopper $block) : Writer{
 			return Writer::create(Ids::HOPPER)
 				->writeBool(StateNames::TOGGLE_BIT, $block->isPowered())
@@ -847,9 +859,11 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::MANGROVE_LOG(), fn(Wood $block) => Helper::encodeNewLog($block, Ids::MANGROVE_LOG, Ids::STRIPPED_MANGROVE_LOG));
 		$this->mapSimple(Blocks::MANGROVE_PLANKS(), Ids::MANGROVE_PLANKS);
 		$this->map(Blocks::MANGROVE_PRESSURE_PLATE(), fn(SimplePressurePlate $block) => Helper::encodeSimplePressurePlate($block, new Writer(Ids::MANGROVE_PRESSURE_PLATE)));
+		$this->map(Blocks::MANGROVE_SIGN(), fn(FloorSign $block) => Helper::encodeFloorSign($block, new Writer(Ids::MANGROVE_STANDING_SIGN)));
 		$this->mapSlab(Blocks::MANGROVE_SLAB(), Ids::MANGROVE_SLAB, Ids::MANGROVE_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::MANGROVE_STAIRS(), Ids::MANGROVE_STAIRS);
 		$this->map(Blocks::MANGROVE_TRAPDOOR(), fn(Trapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::MANGROVE_TRAPDOOR)));
+		$this->map(Blocks::MANGROVE_WALL_SIGN(), fn(WallSign $block) => Helper::encodeWallSign($block, new Writer(Ids::MANGROVE_WALL_SIGN)));
 		$this->map(Blocks::MANGROVE_WOOD(), function(Wood $block) : Writer{
 			//we can't use the standard method for this because mangrove_wood has a useless property attached to it
 			if(!$block->isStripped()){
@@ -877,6 +891,10 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::MOSSY_STONE_BRICK_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab4($block, StringValues::STONE_SLAB_TYPE_4_MOSSY_STONE_BRICK));
 		$this->mapStairs(Blocks::MOSSY_STONE_BRICK_STAIRS(), Ids::MOSSY_STONE_BRICK_STAIRS);
 		$this->map(Blocks::MOSSY_STONE_BRICK_WALL(), fn(Wall $block) => Helper::encodeLegacyWall($block, StringValues::WALL_BLOCK_TYPE_MOSSY_STONE_BRICK));
+		$this->mapSimple(Blocks::MUD_BRICKS(), Ids::MUD_BRICKS);
+		$this->mapSlab(Blocks::MUD_BRICK_SLAB(), Ids::MUD_BRICK_SLAB, Ids::MUD_BRICK_DOUBLE_SLAB);
+		$this->mapStairs(Blocks::MUD_BRICK_STAIRS(), Ids::MUD_BRICK_STAIRS);
+		$this->map(Blocks::MUD_BRICK_WALL(), fn(Wall $block) => Helper::encodeWall($block, new Writer(Ids::MUD_BRICK_WALL)));
 		$this->map(Blocks::MUSHROOM_STEM(), fn() => Writer::create(Ids::BROWN_MUSHROOM_BLOCK)
 				->writeInt(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_STEM));
 		$this->mapSimple(Blocks::MYCELIUM(), Ids::MYCELIUM);
@@ -886,6 +904,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::NETHER_BRICK_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab1($block, StringValues::STONE_SLAB_TYPE_NETHER_BRICK));
 		$this->mapStairs(Blocks::NETHER_BRICK_STAIRS(), Ids::NETHER_BRICK_STAIRS);
 		$this->map(Blocks::NETHER_BRICK_WALL(), fn(Wall $block) => Helper::encodeLegacyWall($block, StringValues::WALL_BLOCK_TYPE_NETHER_BRICK));
+		$this->mapSimple(Blocks::NETHER_GOLD_ORE(), Ids::NETHER_GOLD_ORE);
 		$this->map(Blocks::NETHER_PORTAL(), function(NetherPortal $block) : Writer{
 			return Writer::create(Ids::PORTAL)
 				->writeString(StateNames::PORTAL_AXIS, match($block->getAxis()){
@@ -1049,6 +1068,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeBool(StateNames::DEAD_BIT, !$block->isUnderwater())
 				->writeInt(StateNames::CLUSTER_COUNT, $block->getCount() - 1);
 		});
+		$this->mapSimple(Blocks::SHROOMLIGHT(), Ids::SHROOMLIGHT);
 		$this->mapSimple(Blocks::SHULKER_BOX(), Ids::UNDYED_SHULKER_BOX);
 		$this->mapSimple(Blocks::SLIME(), Ids::SLIME);
 		$this->map(Blocks::SMOKER(), fn(Furnace $block) => Helper::encodeFurnace($block, Ids::SMOKER, Ids::LIT_SMOKER));
@@ -1074,7 +1094,16 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::SOUL_FIRE)
 				->writeInt(StateNames::AGE, 0); //useless for soul fire, we don't track it
 		});
+		$this->map(Blocks::SOUL_LANTERN(), function(Lantern $block) : Writer{
+			return Writer::create(Ids::SOUL_LANTERN)
+				->writeBool(StateNames::HANGING, $block->isHanging());
+		});
 		$this->mapSimple(Blocks::SOUL_SAND(), Ids::SOUL_SAND);
+		$this->mapSimple(Blocks::SOUL_SOIL(), Ids::SOUL_SOIL);
+		$this->map(Blocks::SOUL_TORCH(), function(Torch $block) : Writer{
+			return Writer::create(Ids::SOUL_TORCH)
+				->writeTorchFacing($block->getFacing());
+		});
 		$this->map(Blocks::SPONGE(), function(Sponge $block) : Writer{
 			return Writer::create(Ids::SPONGE)
 				->writeString(StateNames::SPONGE_TYPE, $block->isWet() ? StringValues::SPONGE_TYPE_WET : StringValues::SPONGE_TYPE_DRY);
@@ -1164,6 +1193,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeBool(StateNames::POWERED_BIT, $block->isPowered())
 				->writeLegacyHorizontalFacing($block->getFacing());
 		});
+		$this->mapSimple(Blocks::TUFF(), Ids::TUFF);
 		$this->map(Blocks::UNDERWATER_TORCH(), function(UnderwaterTorch $block) : Writer{
 			return Writer::create(Ids::UNDERWATER_TORCH)
 				->writeTorchFacing($block->getFacing());
@@ -1195,10 +1225,12 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::WARPED_HYPHAE(), fn(Wood $block) => Helper::encodeNewLog($block, Ids::WARPED_HYPHAE, Ids::STRIPPED_WARPED_HYPHAE));
 		$this->mapSimple(Blocks::WARPED_PLANKS(), Ids::WARPED_PLANKS);
 		$this->map(Blocks::WARPED_PRESSURE_PLATE(), fn(SimplePressurePlate $block) => Helper::encodeSimplePressurePlate($block, new Writer(Ids::WARPED_PRESSURE_PLATE)));
+		$this->map(Blocks::WARPED_SIGN(), fn(FloorSign $block) => Helper::encodeFloorSign($block, new Writer(Ids::WARPED_STANDING_SIGN)));
 		$this->mapSlab(Blocks::WARPED_SLAB(), Ids::WARPED_SLAB, Ids::WARPED_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::WARPED_STAIRS(), Ids::WARPED_STAIRS);
 		$this->map(Blocks::WARPED_STEM(), fn(Wood $block) => Helper::encodeNewLog($block, Ids::WARPED_STEM, Ids::STRIPPED_WARPED_STEM));
 		$this->map(Blocks::WARPED_TRAPDOOR(), fn(Trapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::WARPED_TRAPDOOR)));
+		$this->map(Blocks::WARPED_WALL_SIGN(), fn(WallSign $block) => Helper::encodeWallSign($block, new Writer(Ids::WARPED_WALL_SIGN)));
 		$this->map(Blocks::WATER(), fn(Water $block) => Helper::encodeLiquid($block, Ids::WATER, Ids::FLOWING_WATER));
 		$this->map(Blocks::WEIGHTED_PRESSURE_PLATE_HEAVY(), function(WeightedPressurePlateHeavy $block) : Writer{
 			return Writer::create(Ids::HEAVY_WEIGHTED_PRESSURE_PLATE)

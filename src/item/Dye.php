@@ -24,7 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\utils\DyeColor;
-use pocketmine\data\bedrock\DyeColorIdMap;
+use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeEnumSerializer;
 
 class Dye extends Item{
 	private DyeColor $color;
@@ -34,14 +35,8 @@ class Dye extends Item{
 		parent::__construct($identifier, $name);
 	}
 
-	public function getMeta() : int{
-		return match($this->color->id()){
-			DyeColor::BLACK()->id() => 16,
-			DyeColor::BROWN()->id() => 17,
-			DyeColor::BLUE()->id() => 18,
-			DyeColor::WHITE()->id() => 19,
-			default => DyeColorIdMap::getInstance()->toInvertedId($this->color)
-		};
+	protected function encodeType(RuntimeDataWriter $w) : void{
+		RuntimeEnumSerializer::writeDyeColor($w, $this->color);
 	}
 
 	public function getColor() : DyeColor{

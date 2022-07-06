@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\block\BlockDataReader;
-use pocketmine\data\runtime\block\BlockDataWriter;
+use pocketmine\data\runtime\InvalidSerializedRuntimeDataException;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -40,15 +40,15 @@ class Torch extends Flowable{
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function decodeState(BlockDataReader $r) : void{
+	protected function decodeState(RuntimeDataReader $r) : void{
 		$facing = $r->readFacing();
 		if($facing === Facing::DOWN){
-			throw new InvalidBlockStateException("Torch cannot have a DOWN facing");
+			throw new InvalidSerializedRuntimeDataException("Torch cannot have a DOWN facing");
 		}
 		$this->facing = $facing;
 	}
 
-	protected function encodeState(BlockDataWriter $w) : void{
+	protected function encodeState(RuntimeDataWriter $w) : void{
 		$w->writeFacing($this->facing);
 	}
 

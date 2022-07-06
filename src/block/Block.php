@@ -29,8 +29,8 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\block\BlockDataReader;
-use pocketmine\data\runtime\block\BlockDataWriter;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
@@ -100,7 +100,7 @@ class Block{
 	final public function decodeTypeData(int $data) : void{
 		$typeBits = $this->getRequiredTypeDataBits();
 		$givenBits = $typeBits;
-		$reader = new BlockDataReader($givenBits, $data);
+		$reader = new RuntimeDataReader($givenBits, $data);
 
 		$this->decodeType($reader);
 		$readBits = $reader->getOffset();
@@ -113,7 +113,7 @@ class Block{
 		$typeBits = $this->getRequiredTypeDataBits();
 		$stateBits = $this->getRequiredStateDataBits();
 		$givenBits = $typeBits + $stateBits;
-		$reader = new BlockDataReader($givenBits, $data);
+		$reader = new RuntimeDataReader($givenBits, $data);
 		$this->decodeTypeData($reader->readInt($typeBits));
 
 		$this->decodeState($reader);
@@ -123,18 +123,18 @@ class Block{
 		}
 	}
 
-	protected function decodeType(BlockDataReader $r) : void{
+	protected function decodeType(RuntimeDataReader $r) : void{
 		//NOOP
 	}
 
-	protected function decodeState(BlockDataReader $r) : void{
+	protected function decodeState(RuntimeDataReader $r) : void{
 		//NOOP
 	}
 
 	final public function computeTypeData() : int{
 		$typeBits = $this->getRequiredTypeDataBits();
 		$requiredBits = $typeBits;
-		$writer = new BlockDataWriter($requiredBits);
+		$writer = new RuntimeDataWriter($requiredBits);
 
 		$this->encodeType($writer);
 		$writtenBits = $writer->getOffset();
@@ -152,7 +152,7 @@ class Block{
 		$typeBits = $this->getRequiredTypeDataBits();
 		$stateBits = $this->getRequiredStateDataBits();
 		$requiredBits = $typeBits + $stateBits;
-		$writer = new BlockDataWriter($requiredBits);
+		$writer = new RuntimeDataWriter($requiredBits);
 		$writer->writeInt($typeBits, $this->computeTypeData());
 
 		$this->encodeState($writer);
@@ -164,11 +164,11 @@ class Block{
 		return $writer->getValue();
 	}
 
-	protected function encodeType(BlockDataWriter $w) : void{
+	protected function encodeType(RuntimeDataWriter $w) : void{
 		//NOOP
 	}
 
-	protected function encodeState(BlockDataWriter $w) : void{
+	protected function encodeState(RuntimeDataWriter $w) : void{
 		//NOOP
 	}
 

@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\block\BlockDataReader;
-use pocketmine\data\runtime\block\BlockDataWriter;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
@@ -41,12 +41,12 @@ class SeaPickle extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function decodeState(BlockDataReader $r) : void{
+	protected function decodeState(RuntimeDataReader $r) : void{
 		$this->count = $r->readBoundedInt(2, self::MIN_COUNT - 1, self::MAX_COUNT - 1) + 1;
 		$this->underwater = $r->readBool();
 	}
 
-	protected function encodeState(BlockDataWriter $w) : void{
+	protected function encodeState(RuntimeDataWriter $w) : void{
 		$w->writeInt(2, $this->count - 1);
 		$w->writeBool($this->underwater);
 	}

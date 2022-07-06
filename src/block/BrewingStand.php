@@ -26,10 +26,8 @@ namespace pocketmine\block;
 use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\block\BlockDataReader;
-use pocketmine\data\runtime\block\BlockDataReaderHelper;
-use pocketmine\data\runtime\block\BlockDataWriter;
-use pocketmine\data\runtime\block\BlockDataWriterHelper;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -48,12 +46,29 @@ class BrewingStand extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function decodeState(BlockDataReader $r) : void{
-		$this->setSlots(BlockDataReaderHelper::readBrewingStandSlotKeySet($r));
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$result = [];
+		foreach([
+			BrewingStandSlot::EAST(),
+			BrewingStandSlot::NORTHWEST(),
+			BrewingStandSlot::SOUTHWEST(),
+		] as $member){
+			if($r->readBool()){
+				$result[$member->id()] = $member;
+			}
+		}
+
+		$this->setSlots($result);
 	}
 
-	protected function encodeState(BlockDataWriter $w) : void{
-		BlockDataWriterHelper::writeBrewingStandSlotKeySet($w, $this->slots);
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		foreach([
+			BrewingStandSlot::EAST(),
+			BrewingStandSlot::NORTHWEST(),
+			BrewingStandSlot::SOUTHWEST(),
+		] as $member){
+			$w->writeBool(isset($this->slots[$member->id()]));
+		}
 	}
 
 	protected function recalculateCollisionBoxes() : array{

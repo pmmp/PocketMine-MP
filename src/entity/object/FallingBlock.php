@@ -90,7 +90,7 @@ class FallingBlock extends Entity{
 			throw new SavedDataLoadingException($e->getMessage(), 0, $e);
 		}
 
-		return $factory->fromFullBlock($blockStateId);
+		return $factory->fromStateId($blockStateId);
 	}
 
 	public function canCollideWith(Entity $entity) : bool{

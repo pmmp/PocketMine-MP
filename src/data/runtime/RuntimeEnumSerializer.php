@@ -21,21 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\runtime\block;
+namespace pocketmine\data\runtime;
 
-use pocketmine\block\utils\BellAttachmentType;
-use pocketmine\block\utils\CoralType;
-use pocketmine\block\utils\DyeColor;
-use pocketmine\block\utils\LeverFacing;
-use pocketmine\block\utils\MushroomBlockType;
-use pocketmine\block\utils\SkullType;
-use pocketmine\block\utils\SlabType;
-use pocketmine\block\utils\StairShape;
-use pocketmine\block\utils\TreeType;
+/**
+ * This class is auto-generated. Do not edit it manually.
+ * @see build/generate-runtime-enum-serializers.php
+ */
+final class RuntimeEnumSerializer{
 
-final class BlockDataWriterHelper{
-
-	public static function writeBellAttachmentType(BlockDataWriter $w, BellAttachmentType $value) : void{
+	public static function writeBellAttachmentType(RuntimeDataWriter $w, \pocketmine\block\utils\BellAttachmentType $value) : void{
 		$w->writeInt(2, match($value){
 			\pocketmine\block\utils\BellAttachmentType::CEILING() => 0,
 			\pocketmine\block\utils\BellAttachmentType::FLOOR() => 1,
@@ -45,21 +39,7 @@ final class BlockDataWriterHelper{
 		});
 	}
 
-	/**
-	 * @param \pocketmine\block\utils\BrewingStandSlot[] $value
-	 * @phpstan-param array<int, \pocketmine\block\utils\BrewingStandSlot> $value
-	 */
-	public static function writeBrewingStandSlotKeySet(BlockDataWriter $w, array $value) : void{
-		foreach([
-			\pocketmine\block\utils\BrewingStandSlot::EAST(),
-			\pocketmine\block\utils\BrewingStandSlot::NORTHWEST(),
-			\pocketmine\block\utils\BrewingStandSlot::SOUTHWEST(),
-		] as $member){
-			$w->writeBool(isset($value[$member->id()]));
-		}
-	}
-
-	public static function writeCoralType(BlockDataWriter $w, CoralType $value) : void{
+	public static function writeCoralType(RuntimeDataWriter $w, \pocketmine\block\utils\CoralType $value) : void{
 		$w->writeInt(3, match($value){
 			\pocketmine\block\utils\CoralType::BRAIN() => 0,
 			\pocketmine\block\utils\CoralType::BUBBLE() => 1,
@@ -70,7 +50,7 @@ final class BlockDataWriterHelper{
 		});
 	}
 
-	public static function writeDyeColor(BlockDataWriter $w, DyeColor $value) : void{
+	public static function writeDyeColor(RuntimeDataWriter $w, \pocketmine\block\utils\DyeColor $value) : void{
 		$w->writeInt(4, match($value){
 			\pocketmine\block\utils\DyeColor::BLACK() => 0,
 			\pocketmine\block\utils\DyeColor::BLUE() => 1,
@@ -92,7 +72,7 @@ final class BlockDataWriterHelper{
 		});
 	}
 
-	public static function writeLeverFacing(BlockDataWriter $w, LeverFacing $value) : void{
+	public static function writeLeverFacing(RuntimeDataWriter $w, \pocketmine\block\utils\LeverFacing $value) : void{
 		$w->writeInt(3, match($value){
 			\pocketmine\block\utils\LeverFacing::DOWN_AXIS_X() => 0,
 			\pocketmine\block\utils\LeverFacing::DOWN_AXIS_Z() => 1,
@@ -106,7 +86,7 @@ final class BlockDataWriterHelper{
 		});
 	}
 
-	public static function writeMushroomBlockType(BlockDataWriter $w, MushroomBlockType $value) : void{
+	public static function writeMushroomBlockType(RuntimeDataWriter $w, \pocketmine\block\utils\MushroomBlockType $value) : void{
 		$w->writeInt(4, match($value){
 			\pocketmine\block\utils\MushroomBlockType::ALL_CAP() => 0,
 			\pocketmine\block\utils\MushroomBlockType::CAP_EAST() => 1,
@@ -123,7 +103,55 @@ final class BlockDataWriterHelper{
 		});
 	}
 
-	public static function writeSkullType(BlockDataWriter $w, SkullType $value) : void{
+	public static function writePotionType(RuntimeDataWriter $w, \pocketmine\item\PotionType $value) : void{
+		$w->writeInt(6, match($value){
+			\pocketmine\item\PotionType::AWKWARD() => 0,
+			\pocketmine\item\PotionType::FIRE_RESISTANCE() => 1,
+			\pocketmine\item\PotionType::HARMING() => 2,
+			\pocketmine\item\PotionType::HEALING() => 3,
+			\pocketmine\item\PotionType::INVISIBILITY() => 4,
+			\pocketmine\item\PotionType::LEAPING() => 5,
+			\pocketmine\item\PotionType::LONG_FIRE_RESISTANCE() => 6,
+			\pocketmine\item\PotionType::LONG_INVISIBILITY() => 7,
+			\pocketmine\item\PotionType::LONG_LEAPING() => 8,
+			\pocketmine\item\PotionType::LONG_MUNDANE() => 9,
+			\pocketmine\item\PotionType::LONG_NIGHT_VISION() => 10,
+			\pocketmine\item\PotionType::LONG_POISON() => 11,
+			\pocketmine\item\PotionType::LONG_REGENERATION() => 12,
+			\pocketmine\item\PotionType::LONG_SLOWNESS() => 13,
+			\pocketmine\item\PotionType::LONG_SLOW_FALLING() => 14,
+			\pocketmine\item\PotionType::LONG_STRENGTH() => 15,
+			\pocketmine\item\PotionType::LONG_SWIFTNESS() => 16,
+			\pocketmine\item\PotionType::LONG_TURTLE_MASTER() => 17,
+			\pocketmine\item\PotionType::LONG_WATER_BREATHING() => 18,
+			\pocketmine\item\PotionType::LONG_WEAKNESS() => 19,
+			\pocketmine\item\PotionType::MUNDANE() => 20,
+			\pocketmine\item\PotionType::NIGHT_VISION() => 21,
+			\pocketmine\item\PotionType::POISON() => 22,
+			\pocketmine\item\PotionType::REGENERATION() => 23,
+			\pocketmine\item\PotionType::SLOWNESS() => 24,
+			\pocketmine\item\PotionType::SLOW_FALLING() => 25,
+			\pocketmine\item\PotionType::STRENGTH() => 26,
+			\pocketmine\item\PotionType::STRONG_HARMING() => 27,
+			\pocketmine\item\PotionType::STRONG_HEALING() => 28,
+			\pocketmine\item\PotionType::STRONG_LEAPING() => 29,
+			\pocketmine\item\PotionType::STRONG_POISON() => 30,
+			\pocketmine\item\PotionType::STRONG_REGENERATION() => 31,
+			\pocketmine\item\PotionType::STRONG_STRENGTH() => 32,
+			\pocketmine\item\PotionType::STRONG_SWIFTNESS() => 33,
+			\pocketmine\item\PotionType::STRONG_TURTLE_MASTER() => 34,
+			\pocketmine\item\PotionType::SWIFTNESS() => 35,
+			\pocketmine\item\PotionType::THICK() => 36,
+			\pocketmine\item\PotionType::TURTLE_MASTER() => 37,
+			\pocketmine\item\PotionType::WATER() => 38,
+			\pocketmine\item\PotionType::WATER_BREATHING() => 39,
+			\pocketmine\item\PotionType::WEAKNESS() => 40,
+			\pocketmine\item\PotionType::WITHER() => 41,
+			default => throw new \pocketmine\utils\AssumptionFailedError("All PotionType cases should be covered")
+		});
+	}
+
+	public static function writeSkullType(RuntimeDataWriter $w, \pocketmine\block\utils\SkullType $value) : void{
 		$w->writeInt(3, match($value){
 			\pocketmine\block\utils\SkullType::CREEPER() => 0,
 			\pocketmine\block\utils\SkullType::DRAGON() => 1,
@@ -135,35 +163,12 @@ final class BlockDataWriterHelper{
 		});
 	}
 
-	public static function writeSlabType(BlockDataWriter $w, SlabType $value) : void{
+	public static function writeSlabType(RuntimeDataWriter $w, \pocketmine\block\utils\SlabType $value) : void{
 		$w->writeInt(2, match($value){
 			\pocketmine\block\utils\SlabType::BOTTOM() => 0,
 			\pocketmine\block\utils\SlabType::DOUBLE() => 1,
 			\pocketmine\block\utils\SlabType::TOP() => 2,
 			default => throw new \pocketmine\utils\AssumptionFailedError("All SlabType cases should be covered")
-		});
-	}
-
-	public static function writeStairShape(BlockDataWriter $w, StairShape $value) : void{
-		$w->writeInt(3, match($value){
-			\pocketmine\block\utils\StairShape::INNER_LEFT() => 0,
-			\pocketmine\block\utils\StairShape::INNER_RIGHT() => 1,
-			\pocketmine\block\utils\StairShape::OUTER_LEFT() => 2,
-			\pocketmine\block\utils\StairShape::OUTER_RIGHT() => 3,
-			\pocketmine\block\utils\StairShape::STRAIGHT() => 4,
-			default => throw new \pocketmine\utils\AssumptionFailedError("All StairShape cases should be covered")
-		});
-	}
-
-	public static function writeTreeType(BlockDataWriter $w, TreeType $value) : void{
-		$w->writeInt(3, match($value){
-			\pocketmine\block\utils\TreeType::ACACIA() => 0,
-			\pocketmine\block\utils\TreeType::BIRCH() => 1,
-			\pocketmine\block\utils\TreeType::DARK_OAK() => 2,
-			\pocketmine\block\utils\TreeType::JUNGLE() => 3,
-			\pocketmine\block\utils\TreeType::OAK() => 4,
-			\pocketmine\block\utils\TreeType::SPRUCE() => 5,
-			default => throw new \pocketmine\utils\AssumptionFailedError("All TreeType cases should be covered")
 		});
 	}
 

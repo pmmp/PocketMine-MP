@@ -270,6 +270,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			return Blocks::CONCRETE_POWDER()
 				->setColor($in->readColor());
 		});
+		$this->map(Ids::COPPER_ORE, fn() => Blocks::COPPER_ORE());
 		$this->map(Ids::CORAL, function(Reader $in) : Block{
 			return Blocks::CORAL()
 				->setCoralType($in->readCoralType())
@@ -309,8 +310,10 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::CRIMSON_PLANKS, fn() => Blocks::CRIMSON_PLANKS());
 		$this->map(Ids::CRIMSON_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::CRIMSON_PRESSURE_PLATE(), $in));
 		$this->mapStairs(Ids::CRIMSON_STAIRS, fn() => Blocks::CRIMSON_STAIRS());
+		$this->map(Ids::CRIMSON_STANDING_SIGN, fn(Reader $in) => Helper::decodeFloorSign(Blocks::CRIMSON_SIGN(), $in));
 		$this->map(Ids::CRIMSON_STEM, fn(Reader $in) => Helper::decodeLog(Blocks::CRIMSON_STEM(), false, $in));
 		$this->map(Ids::CRIMSON_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::CRIMSON_TRAPDOOR(), $in));
+		$this->map(Ids::CRIMSON_WALL_SIGN, fn(Reader $in) => Helper::decodeWallSign(Blocks::CRIMSON_WALL_SIGN(), $in));
 		$this->map(Ids::CYAN_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::CYAN(), $in));
 		$this->map(Ids::DARK_OAK_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::DARK_OAK_BUTTON(), $in));
 		$this->map(Ids::DARK_OAK_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::DARK_OAK_DOOR(), $in));
@@ -334,6 +337,14 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->mapSlab(Ids::DEEPSLATE_BRICK_SLAB, Ids::DEEPSLATE_BRICK_DOUBLE_SLAB, fn() => Blocks::DEEPSLATE_BRICK_SLAB());
 		$this->mapStairs(Ids::DEEPSLATE_BRICK_STAIRS, fn() => Blocks::DEEPSLATE_BRICK_STAIRS());
 		$this->map(Ids::DEEPSLATE_BRICK_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::DEEPSLATE_BRICK_WALL(), $in));
+		$this->map(Ids::DEEPSLATE_COAL_ORE, fn() => Blocks::DEEPSLATE_COAL_ORE());
+		$this->map(Ids::DEEPSLATE_COPPER_ORE, fn() => Blocks::DEEPSLATE_COPPER_ORE());
+		$this->map(Ids::DEEPSLATE_DIAMOND_ORE, fn() => Blocks::DEEPSLATE_DIAMOND_ORE());
+		$this->map(Ids::DEEPSLATE_EMERALD_ORE, fn() => Blocks::DEEPSLATE_EMERALD_ORE());
+		$this->map(Ids::DEEPSLATE_GOLD_ORE, fn() => Blocks::DEEPSLATE_GOLD_ORE());
+		$this->map(Ids::DEEPSLATE_IRON_ORE, fn() => Blocks::DEEPSLATE_IRON_ORE());
+		$this->map(Ids::DEEPSLATE_LAPIS_ORE, fn() => Blocks::DEEPSLATE_LAPIS_LAZULI_ORE());
+		$this->map(Ids::DEEPSLATE_REDSTONE_ORE, fn() => Blocks::DEEPSLATE_REDSTONE_ORE()->setLit(false));
 		$this->map(Ids::DEEPSLATE_TILES, fn() => Blocks::DEEPSLATE_TILES());
 		$this->mapSlab(Ids::DEEPSLATE_TILE_SLAB, Ids::DEEPSLATE_TILE_DOUBLE_SLAB, fn() => Blocks::DEEPSLATE_TILE_SLAB());
 		$this->mapStairs(Ids::DEEPSLATE_TILE_STAIRS, fn() => Blocks::DEEPSLATE_TILE_STAIRS());
@@ -600,6 +611,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			return Blocks::HAY_BALE()->setAxis($in->readPillarAxis());
 		});
 		$this->map(Ids::HEAVY_WEIGHTED_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeWeightedPressurePlate(Blocks::WEIGHTED_PRESSURE_PLATE_HEAVY(), $in));
+		$this->map(Ids::HONEYCOMB_BLOCK, fn() => Blocks::HONEYCOMB());
 		$this->map(Ids::HOPPER, function(Reader $in) : Block{
 			return Blocks::HOPPER()
 				->setFacing($in->readFacingWithoutUp())
@@ -686,6 +698,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 				->setFacing($in->readHorizontalFacing())
 				->setLit(true);
 		});
+		$this->map(Ids::LIT_DEEPSLATE_REDSTONE_ORE, fn() => Blocks::DEEPSLATE_REDSTONE_ORE()->setLit(true));
 		$this->map(Ids::LIT_FURNACE, function(Reader $in) : Block{
 			return Blocks::FURNACE()
 				->setFacing($in->readHorizontalFacing())
@@ -735,7 +748,9 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::MANGROVE_PLANKS, fn() => Blocks::MANGROVE_PLANKS());
 		$this->map(Ids::MANGROVE_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::MANGROVE_PRESSURE_PLATE(), $in));
 		$this->mapStairs(Ids::MANGROVE_STAIRS, fn() => Blocks::MANGROVE_STAIRS());
+		$this->map(Ids::MANGROVE_STANDING_SIGN, fn(Reader $in) => Helper::decodeFloorSign(Blocks::MANGROVE_SIGN(), $in));
 		$this->map(Ids::MANGROVE_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::MANGROVE_TRAPDOOR(), $in));
+		$this->map(Ids::MANGROVE_WALL_SIGN, fn(Reader $in) => Helper::decodeWallSign(Blocks::MANGROVE_WALL_SIGN(), $in));
 		$this->map(Ids::MANGROVE_WOOD, function(Reader $in){
 			$in->ignored(StateNames::STRIPPED_BIT); //this is also ignored by vanilla
 			return Helper::decodeLog(Blocks::MANGROVE_WOOD(), false, $in);
@@ -757,10 +772,15 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::MOSSY_COBBLESTONE, fn() => Blocks::MOSSY_COBBLESTONE());
 		$this->mapStairs(Ids::MOSSY_COBBLESTONE_STAIRS, fn() => Blocks::MOSSY_COBBLESTONE_STAIRS());
 		$this->mapStairs(Ids::MOSSY_STONE_BRICK_STAIRS, fn() => Blocks::MOSSY_STONE_BRICK_STAIRS());
+		$this->map(Ids::MUD_BRICKS, fn() => Blocks::MUD_BRICKS());
+		$this->mapSlab(Ids::MUD_BRICK_SLAB, Ids::MUD_BRICK_DOUBLE_SLAB, fn() => Blocks::MUD_BRICK_SLAB());
+		$this->mapStairs(Ids::MUD_BRICK_STAIRS, fn() => Blocks::MUD_BRICK_STAIRS());
+		$this->map(Ids::MUD_BRICK_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::MUD_BRICK_WALL(), $in));
 		$this->map(Ids::MYCELIUM, fn() => Blocks::MYCELIUM());
 		$this->map(Ids::NETHER_BRICK, fn() => Blocks::NETHER_BRICKS());
 		$this->map(Ids::NETHER_BRICK_FENCE, fn() => Blocks::NETHER_BRICK_FENCE());
 		$this->mapStairs(Ids::NETHER_BRICK_STAIRS, fn() => Blocks::NETHER_BRICK_STAIRS());
+		$this->map(Ids::NETHER_GOLD_ORE, fn() => Blocks::NETHER_GOLD_ORE());
 		$this->map(Ids::NETHER_WART, function(Reader $in) : Block{
 			return Blocks::NETHER_WART()
 				->setAge($in->readBoundedInt(StateNames::AGE, 0, 3));
@@ -967,6 +987,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 				->setCount($in->readBoundedInt(StateNames::CLUSTER_COUNT, 0, 3) + 1)
 				->setUnderwater(!$in->readBool(StateNames::DEAD_BIT));
 		});
+		$this->map(Ids::SHROOMLIGHT, fn() => Blocks::SHROOMLIGHT());
 		$this->map(Ids::SHULKER_BOX, function(Reader $in) : Block{
 			return Blocks::DYED_SHULKER_BOX()
 				->setColor($in->readColor());
@@ -996,7 +1017,16 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			$in->ignored(StateNames::AGE); //this is useless for soul fire, since it doesn't have the logic associated
 			return Blocks::SOUL_FIRE();
 		});
+		$this->map(Ids::SOUL_LANTERN, function(Reader $in) : Block{
+			return Blocks::SOUL_LANTERN()
+				->setHanging($in->readBool(StateNames::HANGING));
+		});
 		$this->map(Ids::SOUL_SAND, fn() => Blocks::SOUL_SAND());
+		$this->map(Ids::SOUL_SOIL, fn() => Blocks::SOUL_SOIL());
+		$this->map(Ids::SOUL_TORCH, function(Reader $in) : Block{
+			return Blocks::SOUL_TORCH()
+				->setFacing($in->readTorchFacing());
+		});
 		$this->map(Ids::SPONGE, function(Reader $in) : Block{
 			return Blocks::SPONGE()->setWet(match($type = $in->readString(StateNames::SPONGE_TYPE)){
 				StringValues::SPONGE_TYPE_DRY => false,
@@ -1116,6 +1146,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 				->setFacing($in->readLegacyHorizontalFacing())
 				->setPowered($in->readBool(StateNames::POWERED_BIT));
 		});
+		$this->map(Ids::TUFF, fn() => Blocks::TUFF());
 		$this->map(Ids::UNDERWATER_TORCH, function(Reader $in) : Block{
 			return Blocks::UNDERWATER_TORCH()
 				->setFacing($in->readTorchFacing());
@@ -1151,8 +1182,10 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::WARPED_PLANKS, fn() => Blocks::WARPED_PLANKS());
 		$this->map(Ids::WARPED_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::WARPED_PRESSURE_PLATE(), $in));
 		$this->mapStairs(Ids::WARPED_STAIRS, fn() => Blocks::WARPED_STAIRS());
+		$this->map(Ids::WARPED_STANDING_SIGN, fn(Reader $in) => Helper::decodeFloorSign(Blocks::WARPED_SIGN(), $in));
 		$this->map(Ids::WARPED_STEM, fn(Reader $in) => Helper::decodeLog(Blocks::WARPED_STEM(), false, $in));
 		$this->map(Ids::WARPED_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::WARPED_TRAPDOOR(), $in));
+		$this->map(Ids::WARPED_WALL_SIGN, fn(Reader $in) => Helper::decodeWallSign(Blocks::WARPED_WALL_SIGN(), $in));
 		$this->map(Ids::WATER, fn(Reader $in) => Helper::decodeStillLiquid(Blocks::WATER(), $in));
 		$this->map(Ids::WATERLILY, fn() => Blocks::LILY_PAD());
 		$this->map(Ids::WEB, fn() => Blocks::COBWEB());

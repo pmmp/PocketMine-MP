@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\data\runtime\block\BlockDataReader;
-use pocketmine\data\runtime\block\BlockDataWriter;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\math\Facing;
 
 trait AnyFacingTrait{
@@ -32,11 +32,11 @@ trait AnyFacingTrait{
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function decodeState(BlockDataReader $r) : void{
+	protected function decodeState(RuntimeDataReader $r) : void{
 		$this->facing = $r->readFacing();
 	}
 
-	protected function encodeState(BlockDataWriter $w) : void{
+	protected function encodeState(RuntimeDataWriter $w) : void{
 		$w->writeFacing($this->facing);
 	}
 

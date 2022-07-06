@@ -21,21 +21,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\block;
 
-final class ItemIdentifierFlattened extends ItemIdentifier{
-	/**
-	 * @param int[] $additionalLegacyIds
-	 */
-	public function __construct(int $typeId, int $legacyId, int $legacyMeta, private array $additionalLegacyIds){
-		parent::__construct($typeId, $legacyId, $legacyMeta);
+use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
+use function mt_rand;
+
+final class NetherGoldOre extends Opaque{
+
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [VanillaItems::GOLD_NUGGET()->setCount(mt_rand(2, 6))];
 	}
 
-	/** @return int[] */
-	public function getAdditionalLegacyIds() : array{ return $this->additionalLegacyIds; }
-
-	/** @return int[] */
-	public function getAllLegacyIds() : array{
-		return [$this->getLegacyId(), ...$this->additionalLegacyIds];
-	}
+	public function isAffectedBySilkTouch() : bool{ return true; }
 }

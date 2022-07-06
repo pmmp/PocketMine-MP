@@ -21,18 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock;
+namespace pocketmine\data\runtime;
 
-use PHPUnit\Framework\TestCase;
-use pocketmine\block\utils\CoralType;
+final class InvalidSerializedRuntimeDataException extends \UnexpectedValueException{
 
-class CoralTypeIdMapTest extends TestCase{
-
-	public function testFromIdExhaustiveness() : void{
-		foreach(CoralType::getAll() as $type){
-			$id = CoralTypeIdMap::getInstance()->toId($type);
-			$type2 = CoralTypeIdMap::getInstance()->fromId($id);
-			self::assertTrue($type2 !== null && $type->equals($type2));
-		}
-	}
 }

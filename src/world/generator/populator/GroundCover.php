@@ -51,7 +51,7 @@ class GroundCover implements Populator{
 
 					$startY = 127;
 					for(; $startY > 0; --$startY){
-						if(!$factory->fromFullBlock($chunk->getFullBlock($x, $startY, $z))->isTransparent()){
+						if(!$factory->fromStateId($chunk->getFullBlock($x, $startY, $z))->isTransparent()){
 							break;
 						}
 					}
@@ -59,7 +59,7 @@ class GroundCover implements Populator{
 					$endY = $startY - count($cover);
 					for($y = $startY; $y > $endY && $y >= 0; --$y){
 						$b = $cover[$startY - $y];
-						$id = $factory->fromFullBlock($chunk->getFullBlock($x, $y, $z));
+						$id = $factory->fromStateId($chunk->getFullBlock($x, $y, $z));
 						if($id->getTypeId() === BlockTypeIds::AIR && $b->isSolid()){
 							break;
 						}

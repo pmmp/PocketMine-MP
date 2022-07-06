@@ -23,19 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\block\BlockDataReader;
-use pocketmine\data\runtime\block\BlockDataWriter;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 
 class Sponge extends Opaque{
 	protected bool $wet = false;
 
 	public function getRequiredTypeDataBits() : int{ return 1; }
 
-	protected function decodeType(BlockDataReader $r) : void{
+	protected function decodeType(RuntimeDataReader $r) : void{
 		$this->wet = $r->readBool();
 	}
 
-	protected function encodeType(BlockDataWriter $w) : void{
+	protected function encodeType(RuntimeDataWriter $w) : void{
 		$w->writeBool($this->wet);
 	}
 

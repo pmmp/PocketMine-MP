@@ -25,12 +25,13 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\PillarRotationTrait;
 use pocketmine\block\utils\WoodTypeTrait;
-use pocketmine\data\runtime\block\BlockDataReader;
-use pocketmine\data\runtime\block\BlockDataWriter;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Axe;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\sound\ItemUseOnBlockSound;
 
 class Wood extends Opaque{
 	use PillarRotationTrait;
@@ -40,11 +41,11 @@ class Wood extends Opaque{
 
 	public function getRequiredTypeDataBits() : int{ return 1; }
 
-	protected function decodeType(BlockDataReader $r) : void{
+	protected function decodeType(RuntimeDataReader $r) : void{
 		$this->stripped = $r->readBool();
 	}
 
-	protected function encodeType(BlockDataWriter $w) : void{
+	protected function encodeType(RuntimeDataWriter $w) : void{
 		$w->writeBool($this->stripped);
 	}
 
@@ -73,6 +74,7 @@ class Wood extends Opaque{
 			$item->applyDamage(1);
 			$this->stripped = true;
 			$this->position->getWorld()->setBlock($this->position, $this);
+			$this->position->getWorld()->addSound($this->position, new ItemUseOnBlockSound($this));
 			return true;
 		}
 		return false;

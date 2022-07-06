@@ -24,12 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Skull as TileSkull;
-use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\SkullType;
-use pocketmine\data\runtime\block\BlockDataReader;
-use pocketmine\data\runtime\block\BlockDataReaderHelper;
-use pocketmine\data\runtime\block\BlockDataWriter;
-use pocketmine\data\runtime\block\BlockDataWriterHelper;
+use pocketmine\data\runtime\InvalidSerializedRuntimeDataException;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeEnumDeserializer;
+use pocketmine\data\runtime\RuntimeEnumSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -55,25 +55,25 @@ class Skull extends Flowable{
 
 	public function getRequiredTypeDataBits() : int{ return 3; }
 
-	protected function decodeType(BlockDataReader $r) : void{
-		$this->skullType = BlockDataReaderHelper::readSkullType($r);
+	protected function decodeType(RuntimeDataReader $r) : void{
+		$this->skullType = RuntimeEnumDeserializer::readSkullType($r);
 	}
 
-	protected function encodeType(BlockDataWriter $w) : void{
-		BlockDataWriterHelper::writeSkullType($w, $this->skullType);
+	protected function encodeType(RuntimeDataWriter $w) : void{
+		RuntimeEnumSerializer::writeSkullType($w, $this->skullType);
 	}
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function decodeState(BlockDataReader $r) : void{
+	protected function decodeState(RuntimeDataReader $r) : void{
 		$facing = $r->readFacing();
 		if($facing === Facing::DOWN){
-			throw new InvalidBlockStateException("Skull may not face down");
+			throw new InvalidSerializedRuntimeDataException("Skull may not face down");
 		}
 		$this->facing = $facing;
 	}
 
-	protected function encodeState(BlockDataWriter $w) : void{
+	protected function encodeState(RuntimeDataWriter $w) : void{
 		$w->writeFacing($this->facing);
 	}
 

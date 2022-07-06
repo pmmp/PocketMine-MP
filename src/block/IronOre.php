@@ -21,8 +21,16 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\utils;
+namespace pocketmine\block;
 
-class InvalidBlockStateException extends \UnexpectedValueException{
+use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 
+final class IronOre extends Opaque{
+
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [VanillaItems::RAW_IRON()];
+	}
+
+	public function isAffectedBySilkTouch() : bool{ return true; }
 }

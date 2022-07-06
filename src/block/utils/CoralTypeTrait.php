@@ -24,10 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
-use pocketmine\data\runtime\block\BlockDataReader;
-use pocketmine\data\runtime\block\BlockDataReaderHelper;
-use pocketmine\data\runtime\block\BlockDataWriter;
-use pocketmine\data\runtime\block\BlockDataWriterHelper;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeEnumDeserializer;
+use pocketmine\data\runtime\RuntimeEnumSerializer;
 
 trait CoralTypeTrait{
 	protected CoralType $coralType;
@@ -36,14 +36,14 @@ trait CoralTypeTrait{
 	public function getRequiredTypeDataBits() : int{ return 4; }
 
 	/** @see Block::decodeType() */
-	protected function decodeType(BlockDataReader $r) : void{
-		$this->coralType = BlockDataReaderHelper::readCoralType($r);
+	protected function decodeType(RuntimeDataReader $r) : void{
+		$this->coralType = RuntimeEnumDeserializer::readCoralType($r);
 		$this->dead = $r->readBool();
 	}
 
 	/** @see Block::encodeType() */
-	protected function encodeType(BlockDataWriter $w) : void{
-		BlockDataWriterHelper::writeCoralType($w, $this->coralType);
+	protected function encodeType(RuntimeDataWriter $w) : void{
+		RuntimeEnumSerializer::writeCoralType($w, $this->coralType);
 		$w->writeBool($this->dead);
 	}
 

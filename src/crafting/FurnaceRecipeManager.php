@@ -66,7 +66,7 @@ final class FurnaceRecipeManager{
 	}
 
 	public function match(Item $input) : ?FurnaceRecipe{
-		$index = morton2d_encode($input->getId(), $input->getMeta());
+		$index = morton2d_encode($input->getTypeId(), $input->computeTypeData());
 		$simpleRecipe = $this->lookupCache[$index] ?? null;
 		if($simpleRecipe !== null){
 			return $simpleRecipe;
