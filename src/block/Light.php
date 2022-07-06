@@ -64,7 +64,7 @@ final class Light extends Flowable{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($item->getBlock() instanceof Light){
+		if($item->getBlock()->isSameType($this)){
 			$this->level = $this->level === self::MAX_LIGHT_LEVEL ?
 				self::MIN_LIGHT_LEVEL :
 				$this->level + 1;
