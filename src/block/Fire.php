@@ -61,6 +61,10 @@ class Fire extends BaseFire{
 		return $this;
 	}
 
+	protected function getFireDamage() : int{
+		return 1;
+	}
+
 	public function onNearbyBlockChange() : void{
 		$down = $this->getSide(Facing::DOWN);
 		if(SoulFire::canBeSupportedBy($down)){
