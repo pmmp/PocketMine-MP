@@ -84,7 +84,7 @@ class Explosion{
 	 * Calculates which blocks will be destroyed by this explosion. If explodeB() is called without calling this, no blocks
 	 * will be destroyed.
 	 */
-	public function explodeA(bool $forceToBreakAll = false) : bool{
+	public function explodeA(bool $canBreakAll = false) : bool{
 		if($this->size < 0.1){
 			return false;
 		}
@@ -130,7 +130,7 @@ class Explosion{
 										$_block = $this->world->getBlockAt($vBlockX, $vBlockY, $vBlockZ, true, false);
 										foreach($_block->getAffectedBlocks() as $_affectedBlock){
 
-											if(!$forceToBreakAll && !$_affectedBlock->getBreakInfo()->isBreakable())
+											if(!$canBreakAll && !$_affectedBlock->getBreakInfo()->isBreakable())
 												continue;
 
 											$_affectedBlockPos = $_affectedBlock->getPosition();
