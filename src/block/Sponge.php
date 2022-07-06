@@ -29,6 +29,10 @@ use pocketmine\data\runtime\RuntimeDataWriter;
 class Sponge extends Opaque{
 	protected bool $wet = false;
 
+	public function getFullName() : string{
+		return ($this->wet ? "Wet " : "") . $this->getBaseName();
+	}
+
 	public function getRequiredTypeDataBits() : int{ return 1; }
 
 	protected function decodeType(RuntimeDataReader $r) : void{

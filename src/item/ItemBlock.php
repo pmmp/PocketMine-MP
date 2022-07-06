@@ -39,9 +39,13 @@ final class ItemBlock extends Item{
 	private int $blockTypeData;
 
 	public function __construct(Block $block){
-		parent::__construct(ItemIdentifier::fromBlock($block), $block->getName());
+		parent::__construct(ItemIdentifier::fromBlock($block), $block->getBaseName());
 		$this->blockTypeId = $block->getTypeId();
 		$this->blockTypeData = $block->computeTypeData();
+	}
+
+	public function getFullName() : string{
+		return $this->getBlock()->getFullName();
 	}
 
 	protected function encodeType(RuntimeDataWriter $w) : void{

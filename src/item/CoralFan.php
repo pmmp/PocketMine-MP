@@ -38,7 +38,7 @@ final class CoralFan extends Item{
 
 	public function __construct(ItemIdentifier $identifier){
 		$this->coralType = CoralType::TUBE();
-		parent::__construct($identifier, VanillaBlocks::CORAL_FAN()->getName());
+		parent::__construct($identifier, VanillaBlocks::CORAL_FAN()->getBaseName());
 	}
 
 	protected function encodeType(RuntimeDataWriter $w) : void{

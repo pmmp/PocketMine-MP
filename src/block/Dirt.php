@@ -35,6 +35,10 @@ use pocketmine\world\sound\ItemUseOnBlockSound;
 class Dirt extends Opaque{
 	protected bool $coarse = false;
 
+	public function getFullName() : string{
+		return ($this->coarse ? "Coarse " : "") . $this->getBaseName();
+	}
+
 	public function getRequiredTypeDataBits() : int{ return 1; }
 
 	protected function decodeType(RuntimeDataReader $r) : void{

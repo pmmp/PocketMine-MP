@@ -125,7 +125,7 @@ final class ItemSerializer{
 			}
 
 			if($locatedSerializer === null){
-				throw new ItemTypeSerializeException("No serializer registered for " . get_class($item) . " ($index) " . $item->getName());
+				throw new ItemTypeSerializeException("No serializer registered for " . get_class($item) . " ($index) " . $item->getFullName());
 			}
 
 			/**

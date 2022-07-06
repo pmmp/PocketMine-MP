@@ -67,7 +67,7 @@ final class BlockSerializerDeserializerTest extends TestCase{
 				$newBlock->setSkullType($block->getSkullType());
 			}
 
-			self::assertSame($block->getStateId(), $newBlock->getStateId(), "Mismatch of blockstate for " . $block->getName() . ", " . print_r($block, true) . " vs " . print_r($newBlock, true));
+			self::assertSame($block->getStateId(), $newBlock->getStateId(), "Mismatch of blockstate for " . $block->getFullName() . ", " . print_r($block, true) . " vs " . print_r($newBlock, true));
 		}
 	}
 }

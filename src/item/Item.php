@@ -407,13 +407,17 @@ class Item implements \JsonSerializable{
 	 * Returns the name of the item, or the custom name if it is set.
 	 */
 	final public function getName() : string{
-		return $this->hasCustomName() ? $this->getCustomName() : $this->getVanillaName();
+		return $this->hasCustomName() ? $this->getCustomName() : $this->getBaseVanillaName();
 	}
 
 	/**
 	 * Returns the vanilla name of the item, disregarding custom names.
 	 */
-	public function getVanillaName() : string{
+	public function getBaseVanillaName() : string{
+		return $this->name;
+	}
+
+	public function getFullName() : string{
 		return $this->name;
 	}
 

@@ -53,6 +53,10 @@ class Skull extends Flowable{
 		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
+	public function getFullName() : string{
+		return $this->skullType->getDisplayName();
+	}
+
 	public function getRequiredTypeDataBits() : int{ return 3; }
 
 	protected function decodeType(RuntimeDataReader $r) : void{

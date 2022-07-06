@@ -35,6 +35,10 @@ class Dye extends Item{
 		parent::__construct($identifier, $name);
 	}
 
+	public function getFullName() : string{
+		return $this->color->getDisplayName() . " " . $this->getBaseVanillaName();
+	}
+
 	protected function encodeType(RuntimeDataWriter $w) : void{
 		RuntimeEnumSerializer::writeDyeColor($w, $this->color);
 	}

@@ -36,7 +36,7 @@ foreach(BlockFactory::getInstance()->getAllKnownStates() as $index => $block){
 	if($index !== $block->getStateId()){
 		throw new AssumptionFailedError("State index should always match state ID");
 	}
-	$new[$index] = $block->getName();
+	$new[$index] = $block->getBaseName();
 }
 
 $oldTablePath = __DIR__ . '/block_factory_consistency_check.json';

@@ -33,6 +33,10 @@ trait CoralTypeTrait{
 	protected CoralType $coralType;
 	protected bool $dead = false;
 
+	public function getFullName() : string{
+		return ($this->dead ? "Dead " : "") . $this->coralType->getDisplayName() . " " . $this->getBaseName();
+	}
+
 	public function getRequiredTypeDataBits() : int{ return 4; }
 
 	/** @see Block::decodeType() */

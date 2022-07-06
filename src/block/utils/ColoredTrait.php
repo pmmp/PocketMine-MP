@@ -33,6 +33,10 @@ trait ColoredTrait{
 	/** @var DyeColor */
 	private $color;
 
+	public function getFullName() : string{
+		return $this->color->getDisplayName() . " " . $this->getBaseName();
+	}
+
 	public function getRequiredTypeDataBits() : int{ return 4; }
 
 	/** @see Block::decodeType() */

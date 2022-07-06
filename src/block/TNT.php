@@ -45,6 +45,10 @@ class TNT extends Opaque{
 	protected bool $unstable = false; //TODO: Usage unclear, seems to be a weird hack in vanilla
 	protected bool $worksUnderwater = false;
 
+	public function getFullName() : string{
+		return ($this->worksUnderwater ? "Underwater " : "") . $this->getBaseName();
+	}
+
 	public function getRequiredTypeDataBits() : int{ return 1; }
 
 	protected function decodeType(RuntimeDataReader $r) : void{

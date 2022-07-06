@@ -33,7 +33,7 @@ class ItemBlockWallOrFloor extends Item{
 	private int $wallVariant;
 
 	public function __construct(ItemIdentifier $identifier, Block $floorVariant, Block $wallVariant){
-		parent::__construct($identifier, $floorVariant->getName());
+		parent::__construct($identifier, $floorVariant->getBaseName());
 		$this->floorVariant = $floorVariant->getStateId();
 		$this->wallVariant = $wallVariant->getStateId();
 	}

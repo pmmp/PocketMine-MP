@@ -54,6 +54,10 @@ class Banner extends ItemBlockWallOrFloor{
 		$this->color = DyeColor::BLACK();
 	}
 
+	public function getFullName() : string{
+		return $this->color->getDisplayName() . " " . $this->getBaseVanillaName();
+	}
+
 	public function getColor() : DyeColor{
 		return $this->color;
 	}

@@ -47,6 +47,14 @@ class Anvil extends Transparent implements Fallable{
 
 	private int $damage = self::UNDAMAGED;
 
+	public function getFullName() : string{
+		return match($this->damage){
+			self::UNDAMAGED => "",
+			self::SLIGHTLY_DAMAGED => "Slightly Damaged ",
+			self::VERY_DAMAGED => "Very Damaged ",
+		} . $this->getBaseName();
+	}
+
 	public function getRequiredTypeDataBits() : int{ return 2; }
 
 	protected function decodeType(RuntimeDataReader $r) : void{

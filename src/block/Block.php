@@ -53,7 +53,7 @@ class Block{
 	public const INTERNAL_STATE_DATA_MASK = ~(~0 << self::INTERNAL_STATE_DATA_BITS);
 
 	protected BlockIdentifier $idInfo;
-	protected string $fallbackName;
+	protected string $baseName;
 	protected BlockBreakInfo $breakInfo;
 	protected Position $position;
 
@@ -61,11 +61,11 @@ class Block{
 	protected ?array $collisionBoxes = null;
 
 	/**
-	 * @param string          $name English name of the block type (TODO: implement translations)
+	 * @param string $name English name of the block type (TODO: implement translations)
 	 */
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->idInfo = $idInfo;
-		$this->fallbackName = $name;
+		$this->baseName = $name;
 		$this->breakInfo = $breakInfo;
 		$this->position = new Position(0, 0, 0, null);
 	}
@@ -78,8 +78,12 @@ class Block{
 		return $this->idInfo;
 	}
 
-	public function getName() : string{
-		return $this->fallbackName;
+	final public function getBaseName() : string{
+		return $this->baseName;
+	}
+
+	public function getFullName() : string{
+		return $this->baseName;
 	}
 
 	/**
@@ -591,7 +595,7 @@ class Block{
 	 * @return string
 	 */
 	public function __toString(){
-		return "Block[" . $this->getName() . "] (" . $this->getTypeId() . ":" . $this->computeStateData() . ")";
+		return "Block[" . $this->getBaseName() . "] (" . $this->getTypeId() . ":" . $this->computeStateData() . ")";
 	}
 
 	/**

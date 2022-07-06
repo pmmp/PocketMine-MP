@@ -39,6 +39,10 @@ class SplashPotion extends ProjectileItem{
 		parent::__construct($identifier, $name);
 	}
 
+	public function getFullName() : string{
+		return $this->potionType->getDisplayName() . " " . $this->getBaseVanillaName();
+	}
+
 	protected function encodeType(RuntimeDataWriter $w) : void{
 		RuntimeEnumSerializer::writePotionType($w, $this->potionType);
 	}

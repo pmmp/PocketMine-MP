@@ -39,6 +39,10 @@ class Wood extends Opaque{
 
 	private bool $stripped = false;
 
+	public function getFullName() : string{
+		return ($this->stripped ? "Stripped " : "") . $this->getBaseName();
+	}
+
 	public function getRequiredTypeDataBits() : int{ return 1; }
 
 	protected function decodeType(RuntimeDataReader $r) : void{

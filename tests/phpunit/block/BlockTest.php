@@ -126,12 +126,12 @@ class BlockTest extends TestCase{
 		$states = $this->blockFactory->getAllKnownStates();
 		foreach($states as $stateId => $state){
 			self::assertArrayHasKey($stateId, $knownStates, "New block state $stateId (" . $state->getTypeId() . ":" . $state->computeStateData() . ", " . print_r($state, true) . ") - consistency check may need regenerating");
-			self::assertSame($knownStates[$stateId], $state->getName());
+			self::assertSame($knownStates[$stateId], $state->getBaseName());
 		}
 		asort($knownStates, SORT_STRING);
 		foreach($knownStates as $k => $name){
 			self::assertArrayHasKey($k, $states, "Missing previously-known block state $k " . ($k >> Block::INTERNAL_STATE_DATA_BITS) . ":" . ($k & Block::INTERNAL_STATE_DATA_MASK) . " ($name)");
-			self::assertSame($name, $states[$k]->getName());
+			self::assertSame($name, $states[$k]->getBaseName());
 		}
 	}
 }
