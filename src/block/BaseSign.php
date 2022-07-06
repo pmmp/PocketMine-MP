@@ -24,17 +24,24 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Sign as TileSign;
+use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SignText;
 use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\WoodType;
 use pocketmine\block\utils\WoodTypeTrait;
+use pocketmine\color\Color;
 use pocketmine\event\block\SignChangeEvent;
+use pocketmine\item\Dye;
+use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\sound\DyeUseSound;
+use pocketmine\world\sound\InkSacUseSound;
 use function array_map;
 use function assert;
 use function strlen;
@@ -108,6 +115,65 @@ abstract class BaseSign extends Transparent{
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
+
+	private function doSignChange(SignText $newText, Player $player, Item $item) : bool{
+		$ev = new SignChangeEvent($this, $player, $newText);
+		$ev->call();
+		if(!$ev->isCancelled()){
+			$this->text = $ev->getNewText();
+			$this->position->getWorld()->setBlock($this->position, $this);
+			$item->pop();
+			return true;
+		}
+
+		return false;
+	}
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if($player !== null){
+			if($item instanceof Dye || $item instanceof Fertilizer || $item->equals(VanillaItems::LAPIS_LAZULI())){
+				if($item instanceof Dye){
+					$dyeColor = $item->getColor();
+				}elseif($item instanceof Fertilizer){
+					$dyeColor = DyeColor::WHITE(); //Fertilizer
+				}elseif($item->equals(VanillaItems::LAPIS_LAZULI())){
+					$dyeColor = DyeColor::BLUE(); //Lapis Lazuli
+				}else{
+					return false;
+				}
+				$oldColor = $this->text->getBaseColor();
+
+				$color = $dyeColor->getRgbValue();
+
+				if($dyeColor->equals(DyeColor::BLACK())){
+					$color = new Color(0, 0, 0);
+				}
+				if($color->toARGB() === $oldColor->toARGB()){
+					return false;
+				}
+
+				if($this->doSignChange(new SignText($this->text->getLines(), $color, $this->text->isGlowing()), $player, $item)){
+					$this->position->getWorld()->addSound($this->position, new DyeUseSound());
+					$item->pop();
+					return true;
+				}
+			}elseif($item->equals(VanillaItems::INK_SAC())){
+				if($this->text->isGlowing() && $this->doSignChange(new SignText($this->text->getLines(), $this->text->getBaseColor(), false), $player, $item)){
+					$this->position->getWorld()->addSound($this->position, new InkSacUseSound());
+					return true;
+				}
+				return false;
+			}elseif($item->equals(VanillaItems::GLOW_INK_SAC())){
+				if(!$this->text->isGlowing() && $this->doSignChange(new SignText($this->text->getLines(), $this->text->getBaseColor(), true), $player, $item)){
+					$this->position->getWorld()->addSound($this->position, new InkSacUseSound());
+					return true;
+				}
+				return false;
+			}
+		}
+		return false;
+	}
+
 
 	/**
 	 * Returns an object containing information about the sign text.
