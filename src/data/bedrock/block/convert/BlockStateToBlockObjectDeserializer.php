@@ -270,6 +270,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			return Blocks::CONCRETE_POWDER()
 				->setColor($in->readColor());
 		});
+		$this->map(Ids::COPPER_ORE, fn() => Blocks::COPPER_ORE());
 		$this->map(Ids::CORAL, function(Reader $in) : Block{
 			return Blocks::CORAL()
 				->setCoralType($in->readCoralType())
@@ -336,6 +337,14 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->mapSlab(Ids::DEEPSLATE_BRICK_SLAB, Ids::DEEPSLATE_BRICK_DOUBLE_SLAB, fn() => Blocks::DEEPSLATE_BRICK_SLAB());
 		$this->mapStairs(Ids::DEEPSLATE_BRICK_STAIRS, fn() => Blocks::DEEPSLATE_BRICK_STAIRS());
 		$this->map(Ids::DEEPSLATE_BRICK_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::DEEPSLATE_BRICK_WALL(), $in));
+		$this->map(Ids::DEEPSLATE_COAL_ORE, fn() => Blocks::DEEPSLATE_COAL_ORE());
+		$this->map(Ids::DEEPSLATE_COPPER_ORE, fn() => Blocks::DEEPSLATE_COPPER_ORE());
+		$this->map(Ids::DEEPSLATE_DIAMOND_ORE, fn() => Blocks::DEEPSLATE_DIAMOND_ORE());
+		$this->map(Ids::DEEPSLATE_EMERALD_ORE, fn() => Blocks::DEEPSLATE_EMERALD_ORE());
+		$this->map(Ids::DEEPSLATE_GOLD_ORE, fn() => Blocks::DEEPSLATE_GOLD_ORE());
+		$this->map(Ids::DEEPSLATE_IRON_ORE, fn() => Blocks::DEEPSLATE_IRON_ORE());
+		$this->map(Ids::DEEPSLATE_LAPIS_ORE, fn() => Blocks::DEEPSLATE_LAPIS_LAZULI_ORE());
+		$this->map(Ids::DEEPSLATE_REDSTONE_ORE, fn() => Blocks::DEEPSLATE_REDSTONE_ORE()->setLit(false));
 		$this->map(Ids::DEEPSLATE_TILES, fn() => Blocks::DEEPSLATE_TILES());
 		$this->mapSlab(Ids::DEEPSLATE_TILE_SLAB, Ids::DEEPSLATE_TILE_DOUBLE_SLAB, fn() => Blocks::DEEPSLATE_TILE_SLAB());
 		$this->mapStairs(Ids::DEEPSLATE_TILE_STAIRS, fn() => Blocks::DEEPSLATE_TILE_STAIRS());
@@ -602,6 +611,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			return Blocks::HAY_BALE()->setAxis($in->readPillarAxis());
 		});
 		$this->map(Ids::HEAVY_WEIGHTED_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeWeightedPressurePlate(Blocks::WEIGHTED_PRESSURE_PLATE_HEAVY(), $in));
+		$this->map(Ids::HONEYCOMB_BLOCK, fn() => Blocks::HONEYCOMB());
 		$this->map(Ids::HOPPER, function(Reader $in) : Block{
 			return Blocks::HOPPER()
 				->setFacing($in->readFacingWithoutUp())
@@ -688,6 +698,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 				->setFacing($in->readHorizontalFacing())
 				->setLit(true);
 		});
+		$this->map(Ids::LIT_DEEPSLATE_REDSTONE_ORE, fn() => Blocks::DEEPSLATE_REDSTONE_ORE()->setLit(true));
 		$this->map(Ids::LIT_FURNACE, function(Reader $in) : Block{
 			return Blocks::FURNACE()
 				->setFacing($in->readHorizontalFacing())
@@ -761,10 +772,15 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::MOSSY_COBBLESTONE, fn() => Blocks::MOSSY_COBBLESTONE());
 		$this->mapStairs(Ids::MOSSY_COBBLESTONE_STAIRS, fn() => Blocks::MOSSY_COBBLESTONE_STAIRS());
 		$this->mapStairs(Ids::MOSSY_STONE_BRICK_STAIRS, fn() => Blocks::MOSSY_STONE_BRICK_STAIRS());
+		$this->map(Ids::MUD_BRICKS, fn() => Blocks::MUD_BRICKS());
+		$this->mapSlab(Ids::MUD_BRICK_SLAB, Ids::MUD_BRICK_DOUBLE_SLAB, fn() => Blocks::MUD_BRICK_SLAB());
+		$this->mapStairs(Ids::MUD_BRICK_STAIRS, fn() => Blocks::MUD_BRICK_STAIRS());
+		$this->map(Ids::MUD_BRICK_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::MUD_BRICK_WALL(), $in));
 		$this->map(Ids::MYCELIUM, fn() => Blocks::MYCELIUM());
 		$this->map(Ids::NETHER_BRICK, fn() => Blocks::NETHER_BRICKS());
 		$this->map(Ids::NETHER_BRICK_FENCE, fn() => Blocks::NETHER_BRICK_FENCE());
 		$this->mapStairs(Ids::NETHER_BRICK_STAIRS, fn() => Blocks::NETHER_BRICK_STAIRS());
+		$this->map(Ids::NETHER_GOLD_ORE, fn() => Blocks::NETHER_GOLD_ORE());
 		$this->map(Ids::NETHER_WART, function(Reader $in) : Block{
 			return Blocks::NETHER_WART()
 				->setAge($in->readBoundedInt(StateNames::AGE, 0, 3));
