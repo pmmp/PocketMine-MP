@@ -624,6 +624,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static DoublePlant SUNFLOWER()
  * @method static SweetBerryBush SWEET_BERRY_BUSH()
  * @method static TallGrass TALL_GRASS()
+ * @method static TintedGlass TINTED_GLASS()
  * @method static TNT TNT()
  * @method static Torch TORCH()
  * @method static TrappedChest TRAPPED_CHEST()
@@ -1269,6 +1270,7 @@ final class VanillaBlocks{
 		self::register("sunflower", $factory->fromTypeId(Ids::SUNFLOWER));
 		self::register("sweet_berry_bush", $factory->fromTypeId(Ids::SWEET_BERRY_BUSH));
 		self::register("tall_grass", $factory->fromTypeId(Ids::TALL_GRASS));
+		self::register("tinted_glass", $factory->fromTypeId(Ids::TINTED_GLASS));
 		self::register("tnt", $factory->fromTypeId(Ids::TNT));
 		self::register("torch", $factory->fromTypeId(Ids::TORCH));
 		self::register("trapped_chest", $factory->fromTypeId(Ids::TRAPPED_CHEST));

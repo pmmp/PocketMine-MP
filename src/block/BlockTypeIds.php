@@ -658,7 +658,7 @@ final class BlockTypeIds{
 	public const MANGROVE_WALL_SIGN = 10631;
 	public const CRIMSON_WALL_SIGN = 10632;
 	public const WARPED_WALL_SIGN = 10633;
-
+	public const TINTED_GLASS = 10634;
 	public const HONEYCOMB = 10635;
 	public const DEEPSLATE_COAL_ORE = 10636;
 	public const DEEPSLATE_DIAMOND_ORE = 10637;

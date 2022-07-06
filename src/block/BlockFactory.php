@@ -828,6 +828,8 @@ class BlockFactory{
 		$this->register(new Slab(new BID(Ids::POLISHED_DEEPSLATE_SLAB), "Polished Deepslate", $polishedDeepslateBreakInfo));
 		$this->register(new Stair(new BID(Ids::POLISHED_DEEPSLATE_STAIRS), "Polished Deepslate Stairs", $polishedDeepslateBreakInfo));
 		$this->register(new Wall(new BID(Ids::POLISHED_DEEPSLATE_WALL), "Polished Deepslate Wall", $polishedDeepslateBreakInfo));
+
+		$this->register(new TintedGlass(new BID(Ids::TINTED_GLASS), "Tinted Glass", new BreakInfo(0.3)));
 	}
 
 	private function registerMudBlocks() : void{

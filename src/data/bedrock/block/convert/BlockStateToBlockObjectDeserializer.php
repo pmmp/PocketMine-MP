@@ -1119,6 +1119,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 				default => throw $in->badValueException(StateNames::TALL_GRASS_TYPE, $type),
 			};
 		});
+		$this->map(Ids::TINTED_GLASS, fn() => Blocks::TINTED_GLASS());
 		$this->map(Ids::TNT, function(Reader $in) : Block{
 			return Blocks::TNT()
 				->setUnstable($in->readBool(StateNames::EXPLODE_BIT))

@@ -1167,6 +1167,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::TALL_GRASS(), fn() => Writer::create(Ids::TALLGRASS)
 				->writeString(StateNames::TALL_GRASS_TYPE, StringValues::TALL_GRASS_TYPE_TALL));
+		$this->mapSimple(Blocks::TINTED_GLASS(), Ids::TINTED_GLASS);
 		$this->map(Blocks::TNT(), function(TNT $block) : Writer{
 			return Writer::create(Ids::TNT)
 				->writeBool(StateNames::ALLOW_UNDERWATER_BIT, $block->worksUnderwater())
