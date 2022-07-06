@@ -38,11 +38,8 @@ use pocketmine\event\CancellableTrait;
 class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var float */
-	protected $force;
-	/** @var bool */
+	protected float $force;
 	private bool $blockBreaking = true;
-	/** @var bool */
 	private bool $canBreakUnbreakableBlocks;
 
 	public function __construct(Entity $entity, float $force, bool $canBreakUnbreakableBlocks){
