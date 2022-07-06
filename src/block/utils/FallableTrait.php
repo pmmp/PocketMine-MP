@@ -24,9 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockLegacyIds;
-use pocketmine\block\Fire;
-use pocketmine\block\Liquid;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Location;
 use pocketmine\entity\object\FallingBlock;
@@ -50,7 +47,7 @@ trait FallableTrait{
 	public function onNearbyBlockChange() : void{
 		$pos = $this->getPosition();
 		$down = $pos->getWorld()->getBlock($pos->getSide(Facing::DOWN));
-		if($down->getId() === BlockLegacyIds::AIR || $down instanceof Liquid || $down instanceof Fire){
+		if($down->canBeReplaced()){
 			$pos->getWorld()->setBlock($pos, VanillaBlocks::AIR());
 
 			$block = $this;
