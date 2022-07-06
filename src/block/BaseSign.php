@@ -174,7 +174,6 @@ abstract class BaseSign extends Transparent{
 		return false;
 	}
 
-
 	/**
 	 * Returns an object containing information about the sign text.
 	 */

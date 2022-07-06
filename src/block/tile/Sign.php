@@ -50,7 +50,6 @@ class Sign extends Spawnable{
 	public const TAG_GLOWING_TEXT = "IgnoreLighting";
 	public const TAG_LEGACY_BUG_RESOLVE = "TextIgnoreLegacyBugResolved";
 
-
 	/**
 	 * @return string[]
 	 */
