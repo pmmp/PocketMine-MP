@@ -46,6 +46,10 @@ if(file_exists($oldTablePath)){
 		throw new \pocketmine\utils\AssumptionFailedError("Old table should be array{knownStates: array<string, string>, stateDataBits: int}");
 	}
 	$old = [];
+	/**
+	 * @var string $name
+	 * @var int[]  $stateIds
+	 */
 	foreach($oldTable["knownStates"] as $name => $stateIds){
 		foreach($stateIds as $stateId){
 			$old[$stateId] = $name;

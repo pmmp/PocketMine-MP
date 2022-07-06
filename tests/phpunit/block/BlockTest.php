@@ -110,7 +110,16 @@ class BlockTest extends TestCase{
 		if(!is_array($list)){
 			throw new \pocketmine\utils\AssumptionFailedError("Old table should be array{knownStates: array<string, string>, stateDataBits: int}");
 		}
-		$knownStates = $list["knownStates"];
+		$knownStates = [];
+		/**
+		 * @var string $name
+		 * @var int[]  $stateIds
+		 */
+		foreach($list["knownStates"] as $name => $stateIds){
+			foreach($stateIds as $stateId){
+				$knownStates[$stateId] = $name;
+			}
+		}
 		$oldStateDataSize = $list["stateDataBits"];
 		self::assertSame($oldStateDataSize, Block::INTERNAL_STATE_DATA_BITS, "Changed number of state data bits - consistency check probably need regenerating");
 
