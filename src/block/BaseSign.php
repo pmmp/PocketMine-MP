@@ -34,6 +34,7 @@ use pocketmine\event\block\SignChangeEvent;
 use pocketmine\item\Dye;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
+use pocketmine\item\ItemTypeIds;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
@@ -131,13 +132,13 @@ abstract class BaseSign extends Transparent{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
-			if($item instanceof Dye || $item instanceof Fertilizer || $item->equals(VanillaItems::LAPIS_LAZULI())){
+			if($item instanceof Dye || $item->getTypeId() === ItemTypeIds::BONE_MEAL || $item->getTypeId() === ItemTypeIds::LAPIS_LAZULI){
 				if($item instanceof Dye){
 					$dyeColor = $item->getColor();
-				}elseif($item instanceof Fertilizer){
-					$dyeColor = DyeColor::WHITE(); //Fertilizer
-				}elseif($item->equals(VanillaItems::LAPIS_LAZULI())){
-					$dyeColor = DyeColor::BLUE(); //Lapis Lazuli
+				}elseif($item->getTypeId() === ItemTypeIds::BONE_MEAL){
+					$dyeColor = DyeColor::WHITE();
+				}elseif($item->getTypeId() === ItemTypeIds::LAPIS_LAZULI){
+					$dyeColor = DyeColor::BLUE();
 				}else{
 					return false;
 				}
@@ -157,13 +158,13 @@ abstract class BaseSign extends Transparent{
 					$item->pop();
 					return true;
 				}
-			}elseif($item->equals(VanillaItems::INK_SAC())){
+			}elseif($item->getTypeId() === ItemTypeIds::INK_SAC){
 				if($this->text->isGlowing() && $this->doSignChange(new SignText($this->text->getLines(), $this->text->getBaseColor(), false), $player, $item)){
 					$this->position->getWorld()->addSound($this->position, new InkSacUseSound());
 					return true;
 				}
 				return false;
-			}elseif($item->equals(VanillaItems::GLOW_INK_SAC())){
+			}elseif($item->getTypeId() === ItemTypeIds::GLOW_INK_SAC){
 				if(!$this->text->isGlowing() && $this->doSignChange(new SignText($this->text->getLines(), $this->text->getBaseColor(), true), $player, $item)){
 					$this->position->getWorld()->addSound($this->position, new InkSacUseSound());
 					return true;
