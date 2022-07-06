@@ -40,20 +40,31 @@ class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 
 	/** @var float */
 	protected $force;
+	/** @var bool */
 	private bool $blockBreaking = true;
+	/** @var bool */
+	private bool $canBreakUnbreakableBlocks;
 
-	public function __construct(Entity $entity, float $force){
+	public function __construct(Entity $entity, float $force, bool $canBreakUnbreakableBlocks){
 		if($force <= 0){
 			throw new \InvalidArgumentException("Explosion radius must be positive");
 		}
 		$this->entity = $entity;
 		$this->force = $force;
+		$this->canBreakUnbreakableBlocks = $canBreakUnbreakableBlocks;
 	}
 
+	/**
+	 * @return float
+	 */
 	public function getForce() : float{
 		return $this->force;
 	}
 
+	/**
+	 * @param float $force
+	 * @return void
+	 */
 	public function setForce(float $force) : void{
 		if($force <= 0){
 			throw new \InvalidArgumentException("Explosion radius must be positive");
@@ -61,11 +72,34 @@ class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 		$this->force = $force;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function isBlockBreaking() : bool{
 		return $this->blockBreaking;
 	}
 
+	/**
+	 * @param bool $affectsBlocks
+	 * @return void
+	 */
 	public function setBlockBreaking(bool $affectsBlocks) : void{
 		$this->blockBreaking = $affectsBlocks;
 	}
+
+	/**
+	 * @return bool
+	 */
+	public function canBreakUnbreakableBlocks() : bool{
+		return $this->canBreakUnbreakableBlocks;
+	}
+
+	/**
+	 * @param bool $value
+	 * @return void
+	 */
+	public function setCanBreakUnbreakableBlocks(bool $value = true) : void{
+		$this->canBreakUnbreakableBlocks = $value;
+	}
+
 }
