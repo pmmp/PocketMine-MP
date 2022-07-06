@@ -23,8 +23,39 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\BlockBreakInfo as BreakInfo;
+use pocketmine\block\BlockIdentifier as BID;
+use pocketmine\block\BlockToolType as ToolType;
 use pocketmine\block\BlockTypeIds as Ids;
+use pocketmine\block\tile\Banner as TileBanner;
+use pocketmine\block\tile\Barrel as TileBarrel;
+use pocketmine\block\tile\Beacon as TileBeacon;
+use pocketmine\block\tile\Bed as TileBed;
+use pocketmine\block\tile\Bell as TileBell;
+use pocketmine\block\tile\BlastFurnace as TileBlastFurnace;
+use pocketmine\block\tile\BrewingStand as TileBrewingStand;
+use pocketmine\block\tile\Chest as TileChest;
+use pocketmine\block\tile\Comparator as TileComparator;
+use pocketmine\block\tile\DaylightSensor as TileDaylightSensor;
+use pocketmine\block\tile\EnchantTable as TileEnchantingTable;
+use pocketmine\block\tile\EnderChest as TileEnderChest;
+use pocketmine\block\tile\FlowerPot as TileFlowerPot;
+use pocketmine\block\tile\Hopper as TileHopper;
+use pocketmine\block\tile\ItemFrame as TileItemFrame;
+use pocketmine\block\tile\Jukebox as TileJukebox;
+use pocketmine\block\tile\Lectern as TileLectern;
+use pocketmine\block\tile\MonsterSpawner as TileMonsterSpawner;
+use pocketmine\block\tile\NormalFurnace as TileNormalFurnace;
+use pocketmine\block\tile\Note as TileNote;
+use pocketmine\block\tile\ShulkerBox as TileShulkerBox;
+use pocketmine\block\tile\Skull as TileSkull;
+use pocketmine\block\tile\Smoker as TileSmoker;
+use pocketmine\block\utils\TreeType;
+use pocketmine\block\utils\WoodType;
+use pocketmine\item\Item;
+use pocketmine\item\ToolTier;
 use pocketmine\utils\CloningRegistryTrait;
+use function mb_strtolower;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
@@ -677,628 +708,746 @@ final class VanillaBlocks{
 	}
 
 	protected static function setup() : void{
-		$factory = BlockFactory::getInstance();
-		self::register("acacia_button", $factory->fromTypeId(Ids::ACACIA_BUTTON));
-		self::register("acacia_door", $factory->fromTypeId(Ids::ACACIA_DOOR));
-		self::register("acacia_fence", $factory->fromTypeId(Ids::ACACIA_FENCE));
-		self::register("acacia_fence_gate", $factory->fromTypeId(Ids::ACACIA_FENCE_GATE));
-		self::register("acacia_leaves", $factory->fromTypeId(Ids::ACACIA_LEAVES));
-		self::register("acacia_log", $factory->fromTypeId(Ids::ACACIA_LOG));
-		self::register("acacia_planks", $factory->fromTypeId(Ids::ACACIA_PLANKS));
-		self::register("acacia_pressure_plate", $factory->fromTypeId(Ids::ACACIA_PRESSURE_PLATE));
-		self::register("acacia_sapling", $factory->fromTypeId(Ids::ACACIA_SAPLING));
-		self::register("acacia_sign", $factory->fromTypeId(Ids::ACACIA_SIGN));
-		self::register("acacia_slab", $factory->fromTypeId(Ids::ACACIA_SLAB));
-		self::register("acacia_stairs", $factory->fromTypeId(Ids::ACACIA_STAIRS));
-		self::register("acacia_trapdoor", $factory->fromTypeId(Ids::ACACIA_TRAPDOOR));
-		self::register("acacia_wall_sign", $factory->fromTypeId(Ids::ACACIA_WALL_SIGN));
-		self::register("acacia_wood", $factory->fromTypeId(Ids::ACACIA_WOOD));
-		self::register("activator_rail", $factory->fromTypeId(Ids::ACTIVATOR_RAIL));
-		self::register("air", $factory->fromTypeId(Ids::AIR));
-		self::register("all_sided_mushroom_stem", $factory->fromTypeId(Ids::ALL_SIDED_MUSHROOM_STEM));
-		self::register("allium", $factory->fromTypeId(Ids::ALLIUM));
-		self::register("amethyst", $factory->fromTypeId(Ids::AMETHYST));
-		self::register("ancient_debris", $factory->fromTypeId(Ids::ANCIENT_DEBRIS));
-		self::register("andesite", $factory->fromTypeId(Ids::ANDESITE));
-		self::register("andesite_slab", $factory->fromTypeId(Ids::ANDESITE_SLAB));
-		self::register("andesite_stairs", $factory->fromTypeId(Ids::ANDESITE_STAIRS));
-		self::register("andesite_wall", $factory->fromTypeId(Ids::ANDESITE_WALL));
-		self::register("anvil", $factory->fromTypeId(Ids::ANVIL));
-		self::register("azure_bluet", $factory->fromTypeId(Ids::AZURE_BLUET));
-		self::register("bamboo", $factory->fromTypeId(Ids::BAMBOO));
-		self::register("bamboo_sapling", $factory->fromTypeId(Ids::BAMBOO_SAPLING));
-		self::register("banner", $factory->fromTypeId(Ids::BANNER));
-		self::register("barrel", $factory->fromTypeId(Ids::BARREL));
-		self::register("barrier", $factory->fromTypeId(Ids::BARRIER));
-		self::register("basalt", $factory->fromTypeId(Ids::BASALT));
-		self::register("beacon", $factory->fromTypeId(Ids::BEACON));
-		self::register("bed", $factory->fromTypeId(Ids::BED));
-		self::register("bedrock", $factory->fromTypeId(Ids::BEDROCK));
-		self::register("beetroots", $factory->fromTypeId(Ids::BEETROOTS));
-		self::register("bell", $factory->fromTypeId(Ids::BELL));
-		self::register("birch_button", $factory->fromTypeId(Ids::BIRCH_BUTTON));
-		self::register("birch_door", $factory->fromTypeId(Ids::BIRCH_DOOR));
-		self::register("birch_fence", $factory->fromTypeId(Ids::BIRCH_FENCE));
-		self::register("birch_fence_gate", $factory->fromTypeId(Ids::BIRCH_FENCE_GATE));
-		self::register("birch_leaves", $factory->fromTypeId(Ids::BIRCH_LEAVES));
-		self::register("birch_log", $factory->fromTypeId(Ids::BIRCH_LOG));
-		self::register("birch_planks", $factory->fromTypeId(Ids::BIRCH_PLANKS));
-		self::register("birch_pressure_plate", $factory->fromTypeId(Ids::BIRCH_PRESSURE_PLATE));
-		self::register("birch_sapling", $factory->fromTypeId(Ids::BIRCH_SAPLING));
-		self::register("birch_sign", $factory->fromTypeId(Ids::BIRCH_SIGN));
-		self::register("birch_slab", $factory->fromTypeId(Ids::BIRCH_SLAB));
-		self::register("birch_stairs", $factory->fromTypeId(Ids::BIRCH_STAIRS));
-		self::register("birch_trapdoor", $factory->fromTypeId(Ids::BIRCH_TRAPDOOR));
-		self::register("birch_wall_sign", $factory->fromTypeId(Ids::BIRCH_WALL_SIGN));
-		self::register("birch_wood", $factory->fromTypeId(Ids::BIRCH_WOOD));
-		self::register("blackstone", $factory->fromTypeId(Ids::BLACKSTONE));
-		self::register("blackstone_slab", $factory->fromTypeId(Ids::BLACKSTONE_SLAB));
-		self::register("blackstone_stairs", $factory->fromTypeId(Ids::BLACKSTONE_STAIRS));
-		self::register("blackstone_wall", $factory->fromTypeId(Ids::BLACKSTONE_WALL));
-		self::register("blast_furnace", $factory->fromTypeId(Ids::BLAST_FURNACE));
-		self::register("blue_ice", $factory->fromTypeId(Ids::BLUE_ICE));
-		self::register("blue_orchid", $factory->fromTypeId(Ids::BLUE_ORCHID));
-		self::register("blue_torch", $factory->fromTypeId(Ids::BLUE_TORCH));
-		self::register("bone_block", $factory->fromTypeId(Ids::BONE_BLOCK));
-		self::register("bookshelf", $factory->fromTypeId(Ids::BOOKSHELF));
-		self::register("brewing_stand", $factory->fromTypeId(Ids::BREWING_STAND));
-		self::register("brick_slab", $factory->fromTypeId(Ids::BRICK_SLAB));
-		self::register("brick_stairs", $factory->fromTypeId(Ids::BRICK_STAIRS));
-		self::register("brick_wall", $factory->fromTypeId(Ids::BRICK_WALL));
-		self::register("bricks", $factory->fromTypeId(Ids::BRICKS));
-		self::register("brown_mushroom", $factory->fromTypeId(Ids::BROWN_MUSHROOM));
-		self::register("brown_mushroom_block", $factory->fromTypeId(Ids::BROWN_MUSHROOM_BLOCK));
-		self::register("cactus", $factory->fromTypeId(Ids::CACTUS));
-		self::register("cake", $factory->fromTypeId(Ids::CAKE));
-		self::register("calcite", $factory->fromTypeId(Ids::CALCITE));
-		self::register("carpet", $factory->fromTypeId(Ids::CARPET));
-		self::register("carrots", $factory->fromTypeId(Ids::CARROTS));
-		self::register("carved_pumpkin", $factory->fromTypeId(Ids::CARVED_PUMPKIN));
-		self::register("chemical_heat", $factory->fromTypeId(Ids::CHEMICAL_HEAT));
-		self::register("chest", $factory->fromTypeId(Ids::CHEST));
-		self::register("chiseled_deepslate", $factory->fromTypeId(Ids::CHISELED_DEEPSLATE));
-		self::register("chiseled_nether_bricks", $factory->fromTypeId(Ids::CHISELED_NETHER_BRICKS));
-		self::register("chiseled_polished_blackstone", $factory->fromTypeId(Ids::CHISELED_POLISHED_BLACKSTONE));
-		self::register("chiseled_quartz", $factory->fromTypeId(Ids::CHISELED_QUARTZ));
-		self::register("chiseled_red_sandstone", $factory->fromTypeId(Ids::CHISELED_RED_SANDSTONE));
-		self::register("chiseled_sandstone", $factory->fromTypeId(Ids::CHISELED_SANDSTONE));
-		self::register("chiseled_stone_bricks", $factory->fromTypeId(Ids::CHISELED_STONE_BRICKS));
-		self::register("clay", $factory->fromTypeId(Ids::CLAY));
-		self::register("coal", $factory->fromTypeId(Ids::COAL));
-		self::register("coal_ore", $factory->fromTypeId(Ids::COAL_ORE));
-		self::register("cobbled_deepslate", $factory->fromTypeId(Ids::COBBLED_DEEPSLATE));
-		self::register("cobbled_deepslate_slab", $factory->fromTypeId(Ids::COBBLED_DEEPSLATE_SLAB));
-		self::register("cobbled_deepslate_stairs", $factory->fromTypeId(Ids::COBBLED_DEEPSLATE_STAIRS));
-		self::register("cobbled_deepslate_wall", $factory->fromTypeId(Ids::COBBLED_DEEPSLATE_WALL));
-		self::register("cobblestone", $factory->fromTypeId(Ids::COBBLESTONE));
-		self::register("cobblestone_slab", $factory->fromTypeId(Ids::COBBLESTONE_SLAB));
-		self::register("cobblestone_stairs", $factory->fromTypeId(Ids::COBBLESTONE_STAIRS));
-		self::register("cobblestone_wall", $factory->fromTypeId(Ids::COBBLESTONE_WALL));
-		self::register("cobweb", $factory->fromTypeId(Ids::COBWEB));
-		self::register("cocoa_pod", $factory->fromTypeId(Ids::COCOA_POD));
-		self::register("compound_creator", $factory->fromTypeId(Ids::COMPOUND_CREATOR));
-		self::register("concrete", $factory->fromTypeId(Ids::CONCRETE));
-		self::register("concrete_powder", $factory->fromTypeId(Ids::CONCRETE_POWDER));
-		self::register("copper_ore", $factory->fromTypeId(Ids::COPPER_ORE));
-		self::register("coral", $factory->fromTypeId(Ids::CORAL));
-		self::register("coral_block", $factory->fromTypeId(Ids::CORAL_BLOCK));
-		self::register("coral_fan", $factory->fromTypeId(Ids::CORAL_FAN));
-		self::register("cornflower", $factory->fromTypeId(Ids::CORNFLOWER));
-		self::register("cracked_deepslate_bricks", $factory->fromTypeId(Ids::CRACKED_DEEPSLATE_BRICKS));
-		self::register("cracked_deepslate_tiles", $factory->fromTypeId(Ids::CRACKED_DEEPSLATE_TILES));
-		self::register("cracked_nether_bricks", $factory->fromTypeId(Ids::CRACKED_NETHER_BRICKS));
-		self::register("cracked_polished_blackstone_bricks", $factory->fromTypeId(Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS));
-		self::register("cracked_stone_bricks", $factory->fromTypeId(Ids::CRACKED_STONE_BRICKS));
-		self::register("crafting_table", $factory->fromTypeId(Ids::CRAFTING_TABLE));
-		self::register("crimson_button", $factory->fromTypeId(Ids::CRIMSON_BUTTON));
-		self::register("crimson_door", $factory->fromTypeId(Ids::CRIMSON_DOOR));
-		self::register("crimson_fence", $factory->fromTypeId(Ids::CRIMSON_FENCE));
-		self::register("crimson_fence_gate", $factory->fromTypeId(Ids::CRIMSON_FENCE_GATE));
-		self::register("crimson_hyphae", $factory->fromTypeId(Ids::CRIMSON_HYPHAE));
-		self::register("crimson_planks", $factory->fromTypeId(Ids::CRIMSON_PLANKS));
-		self::register("crimson_pressure_plate", $factory->fromTypeId(Ids::CRIMSON_PRESSURE_PLATE));
-		self::register("crimson_sign", $factory->fromTypeId(Ids::CRIMSON_SIGN));
-		self::register("crimson_slab", $factory->fromTypeId(Ids::CRIMSON_SLAB));
-		self::register("crimson_stairs", $factory->fromTypeId(Ids::CRIMSON_STAIRS));
-		self::register("crimson_stem", $factory->fromTypeId(Ids::CRIMSON_STEM));
-		self::register("crimson_trapdoor", $factory->fromTypeId(Ids::CRIMSON_TRAPDOOR));
-		self::register("crimson_wall_sign", $factory->fromTypeId(Ids::CRIMSON_WALL_SIGN));
-		self::register("cut_red_sandstone", $factory->fromTypeId(Ids::CUT_RED_SANDSTONE));
-		self::register("cut_red_sandstone_slab", $factory->fromTypeId(Ids::CUT_RED_SANDSTONE_SLAB));
-		self::register("cut_sandstone", $factory->fromTypeId(Ids::CUT_SANDSTONE));
-		self::register("cut_sandstone_slab", $factory->fromTypeId(Ids::CUT_SANDSTONE_SLAB));
-		self::register("dandelion", $factory->fromTypeId(Ids::DANDELION));
-		self::register("dark_oak_button", $factory->fromTypeId(Ids::DARK_OAK_BUTTON));
-		self::register("dark_oak_door", $factory->fromTypeId(Ids::DARK_OAK_DOOR));
-		self::register("dark_oak_fence", $factory->fromTypeId(Ids::DARK_OAK_FENCE));
-		self::register("dark_oak_fence_gate", $factory->fromTypeId(Ids::DARK_OAK_FENCE_GATE));
-		self::register("dark_oak_leaves", $factory->fromTypeId(Ids::DARK_OAK_LEAVES));
-		self::register("dark_oak_log", $factory->fromTypeId(Ids::DARK_OAK_LOG));
-		self::register("dark_oak_planks", $factory->fromTypeId(Ids::DARK_OAK_PLANKS));
-		self::register("dark_oak_pressure_plate", $factory->fromTypeId(Ids::DARK_OAK_PRESSURE_PLATE));
-		self::register("dark_oak_sapling", $factory->fromTypeId(Ids::DARK_OAK_SAPLING));
-		self::register("dark_oak_sign", $factory->fromTypeId(Ids::DARK_OAK_SIGN));
-		self::register("dark_oak_slab", $factory->fromTypeId(Ids::DARK_OAK_SLAB));
-		self::register("dark_oak_stairs", $factory->fromTypeId(Ids::DARK_OAK_STAIRS));
-		self::register("dark_oak_trapdoor", $factory->fromTypeId(Ids::DARK_OAK_TRAPDOOR));
-		self::register("dark_oak_wall_sign", $factory->fromTypeId(Ids::DARK_OAK_WALL_SIGN));
-		self::register("dark_oak_wood", $factory->fromTypeId(Ids::DARK_OAK_WOOD));
-		self::register("dark_prismarine", $factory->fromTypeId(Ids::DARK_PRISMARINE));
-		self::register("dark_prismarine_slab", $factory->fromTypeId(Ids::DARK_PRISMARINE_SLAB));
-		self::register("dark_prismarine_stairs", $factory->fromTypeId(Ids::DARK_PRISMARINE_STAIRS));
-		self::register("daylight_sensor", $factory->fromTypeId(Ids::DAYLIGHT_SENSOR));
-		self::register("dead_bush", $factory->fromTypeId(Ids::DEAD_BUSH));
-		self::register("deepslate", $factory->fromTypeId(Ids::DEEPSLATE));
-		self::register("deepslate_brick_slab", $factory->fromTypeId(Ids::DEEPSLATE_BRICK_SLAB));
-		self::register("deepslate_brick_stairs", $factory->fromTypeId(Ids::DEEPSLATE_BRICK_STAIRS));
-		self::register("deepslate_brick_wall", $factory->fromTypeId(Ids::DEEPSLATE_BRICK_WALL));
-		self::register("deepslate_bricks", $factory->fromTypeId(Ids::DEEPSLATE_BRICKS));
-		self::register("deepslate_coal_ore", $factory->fromTypeId(Ids::DEEPSLATE_COAL_ORE));
-		self::register("deepslate_copper_ore", $factory->fromTypeId(Ids::DEEPSLATE_COPPER_ORE));
-		self::register("deepslate_diamond_ore", $factory->fromTypeId(Ids::DEEPSLATE_DIAMOND_ORE));
-		self::register("deepslate_emerald_ore", $factory->fromTypeId(Ids::DEEPSLATE_EMERALD_ORE));
-		self::register("deepslate_gold_ore", $factory->fromTypeId(Ids::DEEPSLATE_GOLD_ORE));
-		self::register("deepslate_iron_ore", $factory->fromTypeId(Ids::DEEPSLATE_IRON_ORE));
-		self::register("deepslate_lapis_lazuli_ore", $factory->fromTypeId(Ids::DEEPSLATE_LAPIS_LAZULI_ORE));
-		self::register("deepslate_redstone_ore", $factory->fromTypeId(Ids::DEEPSLATE_REDSTONE_ORE));
-		self::register("deepslate_tile_slab", $factory->fromTypeId(Ids::DEEPSLATE_TILE_SLAB));
-		self::register("deepslate_tile_stairs", $factory->fromTypeId(Ids::DEEPSLATE_TILE_STAIRS));
-		self::register("deepslate_tile_wall", $factory->fromTypeId(Ids::DEEPSLATE_TILE_WALL));
-		self::register("deepslate_tiles", $factory->fromTypeId(Ids::DEEPSLATE_TILES));
-		self::register("detector_rail", $factory->fromTypeId(Ids::DETECTOR_RAIL));
-		self::register("diamond", $factory->fromTypeId(Ids::DIAMOND));
-		self::register("diamond_ore", $factory->fromTypeId(Ids::DIAMOND_ORE));
-		self::register("diorite", $factory->fromTypeId(Ids::DIORITE));
-		self::register("diorite_slab", $factory->fromTypeId(Ids::DIORITE_SLAB));
-		self::register("diorite_stairs", $factory->fromTypeId(Ids::DIORITE_STAIRS));
-		self::register("diorite_wall", $factory->fromTypeId(Ids::DIORITE_WALL));
-		self::register("dirt", $factory->fromTypeId(Ids::DIRT));
-		self::register("double_tallgrass", $factory->fromTypeId(Ids::DOUBLE_TALLGRASS));
-		self::register("dragon_egg", $factory->fromTypeId(Ids::DRAGON_EGG));
-		self::register("dried_kelp", $factory->fromTypeId(Ids::DRIED_KELP));
-		self::register("dyed_shulker_box", $factory->fromTypeId(Ids::DYED_SHULKER_BOX));
-		self::register("element_actinium", $factory->fromTypeId(Ids::ELEMENT_ACTINIUM));
-		self::register("element_aluminum", $factory->fromTypeId(Ids::ELEMENT_ALUMINUM));
-		self::register("element_americium", $factory->fromTypeId(Ids::ELEMENT_AMERICIUM));
-		self::register("element_antimony", $factory->fromTypeId(Ids::ELEMENT_ANTIMONY));
-		self::register("element_argon", $factory->fromTypeId(Ids::ELEMENT_ARGON));
-		self::register("element_arsenic", $factory->fromTypeId(Ids::ELEMENT_ARSENIC));
-		self::register("element_astatine", $factory->fromTypeId(Ids::ELEMENT_ASTATINE));
-		self::register("element_barium", $factory->fromTypeId(Ids::ELEMENT_BARIUM));
-		self::register("element_berkelium", $factory->fromTypeId(Ids::ELEMENT_BERKELIUM));
-		self::register("element_beryllium", $factory->fromTypeId(Ids::ELEMENT_BERYLLIUM));
-		self::register("element_bismuth", $factory->fromTypeId(Ids::ELEMENT_BISMUTH));
-		self::register("element_bohrium", $factory->fromTypeId(Ids::ELEMENT_BOHRIUM));
-		self::register("element_boron", $factory->fromTypeId(Ids::ELEMENT_BORON));
-		self::register("element_bromine", $factory->fromTypeId(Ids::ELEMENT_BROMINE));
-		self::register("element_cadmium", $factory->fromTypeId(Ids::ELEMENT_CADMIUM));
-		self::register("element_calcium", $factory->fromTypeId(Ids::ELEMENT_CALCIUM));
-		self::register("element_californium", $factory->fromTypeId(Ids::ELEMENT_CALIFORNIUM));
-		self::register("element_carbon", $factory->fromTypeId(Ids::ELEMENT_CARBON));
-		self::register("element_cerium", $factory->fromTypeId(Ids::ELEMENT_CERIUM));
-		self::register("element_cesium", $factory->fromTypeId(Ids::ELEMENT_CESIUM));
-		self::register("element_chlorine", $factory->fromTypeId(Ids::ELEMENT_CHLORINE));
-		self::register("element_chromium", $factory->fromTypeId(Ids::ELEMENT_CHROMIUM));
-		self::register("element_cobalt", $factory->fromTypeId(Ids::ELEMENT_COBALT));
-		self::register("element_constructor", $factory->fromTypeId(Ids::ELEMENT_CONSTRUCTOR));
-		self::register("element_copernicium", $factory->fromTypeId(Ids::ELEMENT_COPERNICIUM));
-		self::register("element_copper", $factory->fromTypeId(Ids::ELEMENT_COPPER));
-		self::register("element_curium", $factory->fromTypeId(Ids::ELEMENT_CURIUM));
-		self::register("element_darmstadtium", $factory->fromTypeId(Ids::ELEMENT_DARMSTADTIUM));
-		self::register("element_dubnium", $factory->fromTypeId(Ids::ELEMENT_DUBNIUM));
-		self::register("element_dysprosium", $factory->fromTypeId(Ids::ELEMENT_DYSPROSIUM));
-		self::register("element_einsteinium", $factory->fromTypeId(Ids::ELEMENT_EINSTEINIUM));
-		self::register("element_erbium", $factory->fromTypeId(Ids::ELEMENT_ERBIUM));
-		self::register("element_europium", $factory->fromTypeId(Ids::ELEMENT_EUROPIUM));
-		self::register("element_fermium", $factory->fromTypeId(Ids::ELEMENT_FERMIUM));
-		self::register("element_flerovium", $factory->fromTypeId(Ids::ELEMENT_FLEROVIUM));
-		self::register("element_fluorine", $factory->fromTypeId(Ids::ELEMENT_FLUORINE));
-		self::register("element_francium", $factory->fromTypeId(Ids::ELEMENT_FRANCIUM));
-		self::register("element_gadolinium", $factory->fromTypeId(Ids::ELEMENT_GADOLINIUM));
-		self::register("element_gallium", $factory->fromTypeId(Ids::ELEMENT_GALLIUM));
-		self::register("element_germanium", $factory->fromTypeId(Ids::ELEMENT_GERMANIUM));
-		self::register("element_gold", $factory->fromTypeId(Ids::ELEMENT_GOLD));
-		self::register("element_hafnium", $factory->fromTypeId(Ids::ELEMENT_HAFNIUM));
-		self::register("element_hassium", $factory->fromTypeId(Ids::ELEMENT_HASSIUM));
-		self::register("element_helium", $factory->fromTypeId(Ids::ELEMENT_HELIUM));
-		self::register("element_holmium", $factory->fromTypeId(Ids::ELEMENT_HOLMIUM));
-		self::register("element_hydrogen", $factory->fromTypeId(Ids::ELEMENT_HYDROGEN));
-		self::register("element_indium", $factory->fromTypeId(Ids::ELEMENT_INDIUM));
-		self::register("element_iodine", $factory->fromTypeId(Ids::ELEMENT_IODINE));
-		self::register("element_iridium", $factory->fromTypeId(Ids::ELEMENT_IRIDIUM));
-		self::register("element_iron", $factory->fromTypeId(Ids::ELEMENT_IRON));
-		self::register("element_krypton", $factory->fromTypeId(Ids::ELEMENT_KRYPTON));
-		self::register("element_lanthanum", $factory->fromTypeId(Ids::ELEMENT_LANTHANUM));
-		self::register("element_lawrencium", $factory->fromTypeId(Ids::ELEMENT_LAWRENCIUM));
-		self::register("element_lead", $factory->fromTypeId(Ids::ELEMENT_LEAD));
-		self::register("element_lithium", $factory->fromTypeId(Ids::ELEMENT_LITHIUM));
-		self::register("element_livermorium", $factory->fromTypeId(Ids::ELEMENT_LIVERMORIUM));
-		self::register("element_lutetium", $factory->fromTypeId(Ids::ELEMENT_LUTETIUM));
-		self::register("element_magnesium", $factory->fromTypeId(Ids::ELEMENT_MAGNESIUM));
-		self::register("element_manganese", $factory->fromTypeId(Ids::ELEMENT_MANGANESE));
-		self::register("element_meitnerium", $factory->fromTypeId(Ids::ELEMENT_MEITNERIUM));
-		self::register("element_mendelevium", $factory->fromTypeId(Ids::ELEMENT_MENDELEVIUM));
-		self::register("element_mercury", $factory->fromTypeId(Ids::ELEMENT_MERCURY));
-		self::register("element_molybdenum", $factory->fromTypeId(Ids::ELEMENT_MOLYBDENUM));
-		self::register("element_moscovium", $factory->fromTypeId(Ids::ELEMENT_MOSCOVIUM));
-		self::register("element_neodymium", $factory->fromTypeId(Ids::ELEMENT_NEODYMIUM));
-		self::register("element_neon", $factory->fromTypeId(Ids::ELEMENT_NEON));
-		self::register("element_neptunium", $factory->fromTypeId(Ids::ELEMENT_NEPTUNIUM));
-		self::register("element_nickel", $factory->fromTypeId(Ids::ELEMENT_NICKEL));
-		self::register("element_nihonium", $factory->fromTypeId(Ids::ELEMENT_NIHONIUM));
-		self::register("element_niobium", $factory->fromTypeId(Ids::ELEMENT_NIOBIUM));
-		self::register("element_nitrogen", $factory->fromTypeId(Ids::ELEMENT_NITROGEN));
-		self::register("element_nobelium", $factory->fromTypeId(Ids::ELEMENT_NOBELIUM));
-		self::register("element_oganesson", $factory->fromTypeId(Ids::ELEMENT_OGANESSON));
-		self::register("element_osmium", $factory->fromTypeId(Ids::ELEMENT_OSMIUM));
-		self::register("element_oxygen", $factory->fromTypeId(Ids::ELEMENT_OXYGEN));
-		self::register("element_palladium", $factory->fromTypeId(Ids::ELEMENT_PALLADIUM));
-		self::register("element_phosphorus", $factory->fromTypeId(Ids::ELEMENT_PHOSPHORUS));
-		self::register("element_platinum", $factory->fromTypeId(Ids::ELEMENT_PLATINUM));
-		self::register("element_plutonium", $factory->fromTypeId(Ids::ELEMENT_PLUTONIUM));
-		self::register("element_polonium", $factory->fromTypeId(Ids::ELEMENT_POLONIUM));
-		self::register("element_potassium", $factory->fromTypeId(Ids::ELEMENT_POTASSIUM));
-		self::register("element_praseodymium", $factory->fromTypeId(Ids::ELEMENT_PRASEODYMIUM));
-		self::register("element_promethium", $factory->fromTypeId(Ids::ELEMENT_PROMETHIUM));
-		self::register("element_protactinium", $factory->fromTypeId(Ids::ELEMENT_PROTACTINIUM));
-		self::register("element_radium", $factory->fromTypeId(Ids::ELEMENT_RADIUM));
-		self::register("element_radon", $factory->fromTypeId(Ids::ELEMENT_RADON));
-		self::register("element_rhenium", $factory->fromTypeId(Ids::ELEMENT_RHENIUM));
-		self::register("element_rhodium", $factory->fromTypeId(Ids::ELEMENT_RHODIUM));
-		self::register("element_roentgenium", $factory->fromTypeId(Ids::ELEMENT_ROENTGENIUM));
-		self::register("element_rubidium", $factory->fromTypeId(Ids::ELEMENT_RUBIDIUM));
-		self::register("element_ruthenium", $factory->fromTypeId(Ids::ELEMENT_RUTHENIUM));
-		self::register("element_rutherfordium", $factory->fromTypeId(Ids::ELEMENT_RUTHERFORDIUM));
-		self::register("element_samarium", $factory->fromTypeId(Ids::ELEMENT_SAMARIUM));
-		self::register("element_scandium", $factory->fromTypeId(Ids::ELEMENT_SCANDIUM));
-		self::register("element_seaborgium", $factory->fromTypeId(Ids::ELEMENT_SEABORGIUM));
-		self::register("element_selenium", $factory->fromTypeId(Ids::ELEMENT_SELENIUM));
-		self::register("element_silicon", $factory->fromTypeId(Ids::ELEMENT_SILICON));
-		self::register("element_silver", $factory->fromTypeId(Ids::ELEMENT_SILVER));
-		self::register("element_sodium", $factory->fromTypeId(Ids::ELEMENT_SODIUM));
-		self::register("element_strontium", $factory->fromTypeId(Ids::ELEMENT_STRONTIUM));
-		self::register("element_sulfur", $factory->fromTypeId(Ids::ELEMENT_SULFUR));
-		self::register("element_tantalum", $factory->fromTypeId(Ids::ELEMENT_TANTALUM));
-		self::register("element_technetium", $factory->fromTypeId(Ids::ELEMENT_TECHNETIUM));
-		self::register("element_tellurium", $factory->fromTypeId(Ids::ELEMENT_TELLURIUM));
-		self::register("element_tennessine", $factory->fromTypeId(Ids::ELEMENT_TENNESSINE));
-		self::register("element_terbium", $factory->fromTypeId(Ids::ELEMENT_TERBIUM));
-		self::register("element_thallium", $factory->fromTypeId(Ids::ELEMENT_THALLIUM));
-		self::register("element_thorium", $factory->fromTypeId(Ids::ELEMENT_THORIUM));
-		self::register("element_thulium", $factory->fromTypeId(Ids::ELEMENT_THULIUM));
-		self::register("element_tin", $factory->fromTypeId(Ids::ELEMENT_TIN));
-		self::register("element_titanium", $factory->fromTypeId(Ids::ELEMENT_TITANIUM));
-		self::register("element_tungsten", $factory->fromTypeId(Ids::ELEMENT_TUNGSTEN));
-		self::register("element_uranium", $factory->fromTypeId(Ids::ELEMENT_URANIUM));
-		self::register("element_vanadium", $factory->fromTypeId(Ids::ELEMENT_VANADIUM));
-		self::register("element_xenon", $factory->fromTypeId(Ids::ELEMENT_XENON));
-		self::register("element_ytterbium", $factory->fromTypeId(Ids::ELEMENT_YTTERBIUM));
-		self::register("element_yttrium", $factory->fromTypeId(Ids::ELEMENT_YTTRIUM));
-		self::register("element_zero", $factory->fromTypeId(Ids::ELEMENT_ZERO));
-		self::register("element_zinc", $factory->fromTypeId(Ids::ELEMENT_ZINC));
-		self::register("element_zirconium", $factory->fromTypeId(Ids::ELEMENT_ZIRCONIUM));
-		self::register("emerald", $factory->fromTypeId(Ids::EMERALD));
-		self::register("emerald_ore", $factory->fromTypeId(Ids::EMERALD_ORE));
-		self::register("enchanting_table", $factory->fromTypeId(Ids::ENCHANTING_TABLE));
-		self::register("end_portal_frame", $factory->fromTypeId(Ids::END_PORTAL_FRAME));
-		self::register("end_rod", $factory->fromTypeId(Ids::END_ROD));
-		self::register("end_stone", $factory->fromTypeId(Ids::END_STONE));
-		self::register("end_stone_brick_slab", $factory->fromTypeId(Ids::END_STONE_BRICK_SLAB));
-		self::register("end_stone_brick_stairs", $factory->fromTypeId(Ids::END_STONE_BRICK_STAIRS));
-		self::register("end_stone_brick_wall", $factory->fromTypeId(Ids::END_STONE_BRICK_WALL));
-		self::register("end_stone_bricks", $factory->fromTypeId(Ids::END_STONE_BRICKS));
-		self::register("ender_chest", $factory->fromTypeId(Ids::ENDER_CHEST));
-		self::register("fake_wooden_slab", $factory->fromTypeId(Ids::FAKE_WOODEN_SLAB));
-		self::register("farmland", $factory->fromTypeId(Ids::FARMLAND));
-		self::register("fern", $factory->fromTypeId(Ids::FERN));
-		self::register("fire", $factory->fromTypeId(Ids::FIRE));
-		self::register("fletching_table", $factory->fromTypeId(Ids::FLETCHING_TABLE));
-		self::register("flower_pot", $factory->fromTypeId(Ids::FLOWER_POT));
-		self::register("frosted_ice", $factory->fromTypeId(Ids::FROSTED_ICE));
-		self::register("furnace", $factory->fromTypeId(Ids::FURNACE));
-		self::register("glass", $factory->fromTypeId(Ids::GLASS));
-		self::register("glass_pane", $factory->fromTypeId(Ids::GLASS_PANE));
-		self::register("glazed_terracotta", $factory->fromTypeId(Ids::GLAZED_TERRACOTTA));
-		self::register("glowing_obsidian", $factory->fromTypeId(Ids::GLOWING_OBSIDIAN));
-		self::register("glowstone", $factory->fromTypeId(Ids::GLOWSTONE));
-		self::register("gold", $factory->fromTypeId(Ids::GOLD));
-		self::register("gold_ore", $factory->fromTypeId(Ids::GOLD_ORE));
-		self::register("granite", $factory->fromTypeId(Ids::GRANITE));
-		self::register("granite_slab", $factory->fromTypeId(Ids::GRANITE_SLAB));
-		self::register("granite_stairs", $factory->fromTypeId(Ids::GRANITE_STAIRS));
-		self::register("granite_wall", $factory->fromTypeId(Ids::GRANITE_WALL));
-		self::register("grass", $factory->fromTypeId(Ids::GRASS));
-		self::register("grass_path", $factory->fromTypeId(Ids::GRASS_PATH));
-		self::register("gravel", $factory->fromTypeId(Ids::GRAVEL));
-		self::register("green_torch", $factory->fromTypeId(Ids::GREEN_TORCH));
-		self::register("hardened_clay", $factory->fromTypeId(Ids::HARDENED_CLAY));
-		self::register("hardened_glass", $factory->fromTypeId(Ids::HARDENED_GLASS));
-		self::register("hardened_glass_pane", $factory->fromTypeId(Ids::HARDENED_GLASS_PANE));
-		self::register("hay_bale", $factory->fromTypeId(Ids::HAY_BALE));
-		self::register("honeycomb", $factory->fromTypeId(Ids::HONEYCOMB));
-		self::register("hopper", $factory->fromTypeId(Ids::HOPPER));
-		self::register("ice", $factory->fromTypeId(Ids::ICE));
-		self::register("infested_chiseled_stone_brick", $factory->fromTypeId(Ids::INFESTED_CHISELED_STONE_BRICK));
-		self::register("infested_cobblestone", $factory->fromTypeId(Ids::INFESTED_COBBLESTONE));
-		self::register("infested_cracked_stone_brick", $factory->fromTypeId(Ids::INFESTED_CRACKED_STONE_BRICK));
-		self::register("infested_mossy_stone_brick", $factory->fromTypeId(Ids::INFESTED_MOSSY_STONE_BRICK));
-		self::register("infested_stone", $factory->fromTypeId(Ids::INFESTED_STONE));
-		self::register("infested_stone_brick", $factory->fromTypeId(Ids::INFESTED_STONE_BRICK));
-		self::register("info_update", $factory->fromTypeId(Ids::INFO_UPDATE));
-		self::register("info_update2", $factory->fromTypeId(Ids::INFO_UPDATE2));
-		self::register("invisible_bedrock", $factory->fromTypeId(Ids::INVISIBLE_BEDROCK));
-		self::register("iron", $factory->fromTypeId(Ids::IRON));
-		self::register("iron_bars", $factory->fromTypeId(Ids::IRON_BARS));
-		self::register("iron_door", $factory->fromTypeId(Ids::IRON_DOOR));
-		self::register("iron_ore", $factory->fromTypeId(Ids::IRON_ORE));
-		self::register("iron_trapdoor", $factory->fromTypeId(Ids::IRON_TRAPDOOR));
-		self::register("item_frame", $factory->fromTypeId(Ids::ITEM_FRAME));
-		self::register("jukebox", $factory->fromTypeId(Ids::JUKEBOX));
-		self::register("jungle_button", $factory->fromTypeId(Ids::JUNGLE_BUTTON));
-		self::register("jungle_door", $factory->fromTypeId(Ids::JUNGLE_DOOR));
-		self::register("jungle_fence", $factory->fromTypeId(Ids::JUNGLE_FENCE));
-		self::register("jungle_fence_gate", $factory->fromTypeId(Ids::JUNGLE_FENCE_GATE));
-		self::register("jungle_leaves", $factory->fromTypeId(Ids::JUNGLE_LEAVES));
-		self::register("jungle_log", $factory->fromTypeId(Ids::JUNGLE_LOG));
-		self::register("jungle_planks", $factory->fromTypeId(Ids::JUNGLE_PLANKS));
-		self::register("jungle_pressure_plate", $factory->fromTypeId(Ids::JUNGLE_PRESSURE_PLATE));
-		self::register("jungle_sapling", $factory->fromTypeId(Ids::JUNGLE_SAPLING));
-		self::register("jungle_sign", $factory->fromTypeId(Ids::JUNGLE_SIGN));
-		self::register("jungle_slab", $factory->fromTypeId(Ids::JUNGLE_SLAB));
-		self::register("jungle_stairs", $factory->fromTypeId(Ids::JUNGLE_STAIRS));
-		self::register("jungle_trapdoor", $factory->fromTypeId(Ids::JUNGLE_TRAPDOOR));
-		self::register("jungle_wall_sign", $factory->fromTypeId(Ids::JUNGLE_WALL_SIGN));
-		self::register("jungle_wood", $factory->fromTypeId(Ids::JUNGLE_WOOD));
-		self::register("lab_table", $factory->fromTypeId(Ids::LAB_TABLE));
-		self::register("ladder", $factory->fromTypeId(Ids::LADDER));
-		self::register("lantern", $factory->fromTypeId(Ids::LANTERN));
-		self::register("lapis_lazuli", $factory->fromTypeId(Ids::LAPIS_LAZULI));
-		self::register("lapis_lazuli_ore", $factory->fromTypeId(Ids::LAPIS_LAZULI_ORE));
-		self::register("large_fern", $factory->fromTypeId(Ids::LARGE_FERN));
-		self::register("lava", $factory->fromTypeId(Ids::LAVA));
-		self::register("lectern", $factory->fromTypeId(Ids::LECTERN));
-		self::register("legacy_stonecutter", $factory->fromTypeId(Ids::LEGACY_STONECUTTER));
-		self::register("lever", $factory->fromTypeId(Ids::LEVER));
-		self::register("light", $factory->fromTypeId(Ids::LIGHT));
-		self::register("lilac", $factory->fromTypeId(Ids::LILAC));
-		self::register("lily_of_the_valley", $factory->fromTypeId(Ids::LILY_OF_THE_VALLEY));
-		self::register("lily_pad", $factory->fromTypeId(Ids::LILY_PAD));
-		self::register("lit_pumpkin", $factory->fromTypeId(Ids::LIT_PUMPKIN));
-		self::register("loom", $factory->fromTypeId(Ids::LOOM));
-		self::register("magma", $factory->fromTypeId(Ids::MAGMA));
-		self::register("mangrove_button", $factory->fromTypeId(Ids::MANGROVE_BUTTON));
-		self::register("mangrove_door", $factory->fromTypeId(Ids::MANGROVE_DOOR));
-		self::register("mangrove_fence", $factory->fromTypeId(Ids::MANGROVE_FENCE));
-		self::register("mangrove_fence_gate", $factory->fromTypeId(Ids::MANGROVE_FENCE_GATE));
-		self::register("mangrove_log", $factory->fromTypeId(Ids::MANGROVE_LOG));
-		self::register("mangrove_planks", $factory->fromTypeId(Ids::MANGROVE_PLANKS));
-		self::register("mangrove_pressure_plate", $factory->fromTypeId(Ids::MANGROVE_PRESSURE_PLATE));
-		self::register("mangrove_sign", $factory->fromTypeId(Ids::MANGROVE_SIGN));
-		self::register("mangrove_slab", $factory->fromTypeId(Ids::MANGROVE_SLAB));
-		self::register("mangrove_stairs", $factory->fromTypeId(Ids::MANGROVE_STAIRS));
-		self::register("mangrove_trapdoor", $factory->fromTypeId(Ids::MANGROVE_TRAPDOOR));
-		self::register("mangrove_wall_sign", $factory->fromTypeId(Ids::MANGROVE_WALL_SIGN));
-		self::register("mangrove_wood", $factory->fromTypeId(Ids::MANGROVE_WOOD));
-		self::register("material_reducer", $factory->fromTypeId(Ids::MATERIAL_REDUCER));
-		self::register("melon", $factory->fromTypeId(Ids::MELON));
-		self::register("melon_stem", $factory->fromTypeId(Ids::MELON_STEM));
-		self::register("mob_head", $factory->fromTypeId(Ids::MOB_HEAD));
-		self::register("monster_spawner", $factory->fromTypeId(Ids::MONSTER_SPAWNER));
-		self::register("mossy_cobblestone", $factory->fromTypeId(Ids::MOSSY_COBBLESTONE));
-		self::register("mossy_cobblestone_slab", $factory->fromTypeId(Ids::MOSSY_COBBLESTONE_SLAB));
-		self::register("mossy_cobblestone_stairs", $factory->fromTypeId(Ids::MOSSY_COBBLESTONE_STAIRS));
-		self::register("mossy_cobblestone_wall", $factory->fromTypeId(Ids::MOSSY_COBBLESTONE_WALL));
-		self::register("mossy_stone_brick_slab", $factory->fromTypeId(Ids::MOSSY_STONE_BRICK_SLAB));
-		self::register("mossy_stone_brick_stairs", $factory->fromTypeId(Ids::MOSSY_STONE_BRICK_STAIRS));
-		self::register("mossy_stone_brick_wall", $factory->fromTypeId(Ids::MOSSY_STONE_BRICK_WALL));
-		self::register("mossy_stone_bricks", $factory->fromTypeId(Ids::MOSSY_STONE_BRICKS));
-		self::register("mud_brick_slab", $factory->fromTypeId(Ids::MUD_BRICK_SLAB));
-		self::register("mud_brick_stairs", $factory->fromTypeId(Ids::MUD_BRICK_STAIRS));
-		self::register("mud_brick_wall", $factory->fromTypeId(Ids::MUD_BRICK_WALL));
-		self::register("mud_bricks", $factory->fromTypeId(Ids::MUD_BRICKS));
-		self::register("mushroom_stem", $factory->fromTypeId(Ids::MUSHROOM_STEM));
-		self::register("mycelium", $factory->fromTypeId(Ids::MYCELIUM));
-		self::register("nether_brick_fence", $factory->fromTypeId(Ids::NETHER_BRICK_FENCE));
-		self::register("nether_brick_slab", $factory->fromTypeId(Ids::NETHER_BRICK_SLAB));
-		self::register("nether_brick_stairs", $factory->fromTypeId(Ids::NETHER_BRICK_STAIRS));
-		self::register("nether_brick_wall", $factory->fromTypeId(Ids::NETHER_BRICK_WALL));
-		self::register("nether_bricks", $factory->fromTypeId(Ids::NETHER_BRICKS));
-		self::register("nether_gold_ore", $factory->fromTypeId(Ids::NETHER_GOLD_ORE));
-		self::register("nether_portal", $factory->fromTypeId(Ids::NETHER_PORTAL));
-		self::register("nether_quartz_ore", $factory->fromTypeId(Ids::NETHER_QUARTZ_ORE));
-		self::register("nether_reactor_core", $factory->fromTypeId(Ids::NETHER_REACTOR_CORE));
-		self::register("nether_wart", $factory->fromTypeId(Ids::NETHER_WART));
-		self::register("nether_wart_block", $factory->fromTypeId(Ids::NETHER_WART_BLOCK));
-		self::register("netherrack", $factory->fromTypeId(Ids::NETHERRACK));
-		self::register("note_block", $factory->fromTypeId(Ids::NOTE_BLOCK));
-		self::register("oak_button", $factory->fromTypeId(Ids::OAK_BUTTON));
-		self::register("oak_door", $factory->fromTypeId(Ids::OAK_DOOR));
-		self::register("oak_fence", $factory->fromTypeId(Ids::OAK_FENCE));
-		self::register("oak_fence_gate", $factory->fromTypeId(Ids::OAK_FENCE_GATE));
-		self::register("oak_leaves", $factory->fromTypeId(Ids::OAK_LEAVES));
-		self::register("oak_log", $factory->fromTypeId(Ids::OAK_LOG));
-		self::register("oak_planks", $factory->fromTypeId(Ids::OAK_PLANKS));
-		self::register("oak_pressure_plate", $factory->fromTypeId(Ids::OAK_PRESSURE_PLATE));
-		self::register("oak_sapling", $factory->fromTypeId(Ids::OAK_SAPLING));
-		self::register("oak_sign", $factory->fromTypeId(Ids::OAK_SIGN));
-		self::register("oak_slab", $factory->fromTypeId(Ids::OAK_SLAB));
-		self::register("oak_stairs", $factory->fromTypeId(Ids::OAK_STAIRS));
-		self::register("oak_trapdoor", $factory->fromTypeId(Ids::OAK_TRAPDOOR));
-		self::register("oak_wall_sign", $factory->fromTypeId(Ids::OAK_WALL_SIGN));
-		self::register("oak_wood", $factory->fromTypeId(Ids::OAK_WOOD));
-		self::register("obsidian", $factory->fromTypeId(Ids::OBSIDIAN));
-		self::register("orange_tulip", $factory->fromTypeId(Ids::ORANGE_TULIP));
-		self::register("oxeye_daisy", $factory->fromTypeId(Ids::OXEYE_DAISY));
-		self::register("packed_ice", $factory->fromTypeId(Ids::PACKED_ICE));
-		self::register("peony", $factory->fromTypeId(Ids::PEONY));
-		self::register("pink_tulip", $factory->fromTypeId(Ids::PINK_TULIP));
-		self::register("podzol", $factory->fromTypeId(Ids::PODZOL));
-		self::register("polished_andesite", $factory->fromTypeId(Ids::POLISHED_ANDESITE));
-		self::register("polished_andesite_slab", $factory->fromTypeId(Ids::POLISHED_ANDESITE_SLAB));
-		self::register("polished_andesite_stairs", $factory->fromTypeId(Ids::POLISHED_ANDESITE_STAIRS));
-		self::register("polished_basalt", $factory->fromTypeId(Ids::POLISHED_BASALT));
-		self::register("polished_blackstone", $factory->fromTypeId(Ids::POLISHED_BLACKSTONE));
-		self::register("polished_blackstone_brick_slab", $factory->fromTypeId(Ids::POLISHED_BLACKSTONE_BRICK_SLAB));
-		self::register("polished_blackstone_brick_stairs", $factory->fromTypeId(Ids::POLISHED_BLACKSTONE_BRICK_STAIRS));
-		self::register("polished_blackstone_brick_wall", $factory->fromTypeId(Ids::POLISHED_BLACKSTONE_BRICK_WALL));
-		self::register("polished_blackstone_bricks", $factory->fromTypeId(Ids::POLISHED_BLACKSTONE_BRICKS));
-		self::register("polished_blackstone_button", $factory->fromTypeId(Ids::POLISHED_BLACKSTONE_BUTTON));
-		self::register("polished_blackstone_pressure_plate", $factory->fromTypeId(Ids::POLISHED_BLACKSTONE_PRESSURE_PLATE));
-		self::register("polished_blackstone_slab", $factory->fromTypeId(Ids::POLISHED_BLACKSTONE_SLAB));
-		self::register("polished_blackstone_stairs", $factory->fromTypeId(Ids::POLISHED_BLACKSTONE_STAIRS));
-		self::register("polished_blackstone_wall", $factory->fromTypeId(Ids::POLISHED_BLACKSTONE_WALL));
-		self::register("polished_deepslate", $factory->fromTypeId(Ids::POLISHED_DEEPSLATE));
-		self::register("polished_deepslate_slab", $factory->fromTypeId(Ids::POLISHED_DEEPSLATE_SLAB));
-		self::register("polished_deepslate_stairs", $factory->fromTypeId(Ids::POLISHED_DEEPSLATE_STAIRS));
-		self::register("polished_deepslate_wall", $factory->fromTypeId(Ids::POLISHED_DEEPSLATE_WALL));
-		self::register("polished_diorite", $factory->fromTypeId(Ids::POLISHED_DIORITE));
-		self::register("polished_diorite_slab", $factory->fromTypeId(Ids::POLISHED_DIORITE_SLAB));
-		self::register("polished_diorite_stairs", $factory->fromTypeId(Ids::POLISHED_DIORITE_STAIRS));
-		self::register("polished_granite", $factory->fromTypeId(Ids::POLISHED_GRANITE));
-		self::register("polished_granite_slab", $factory->fromTypeId(Ids::POLISHED_GRANITE_SLAB));
-		self::register("polished_granite_stairs", $factory->fromTypeId(Ids::POLISHED_GRANITE_STAIRS));
-		self::register("poppy", $factory->fromTypeId(Ids::POPPY));
-		self::register("potatoes", $factory->fromTypeId(Ids::POTATOES));
-		self::register("powered_rail", $factory->fromTypeId(Ids::POWERED_RAIL));
-		self::register("prismarine", $factory->fromTypeId(Ids::PRISMARINE));
-		self::register("prismarine_bricks", $factory->fromTypeId(Ids::PRISMARINE_BRICKS));
-		self::register("prismarine_bricks_slab", $factory->fromTypeId(Ids::PRISMARINE_BRICKS_SLAB));
-		self::register("prismarine_bricks_stairs", $factory->fromTypeId(Ids::PRISMARINE_BRICKS_STAIRS));
-		self::register("prismarine_slab", $factory->fromTypeId(Ids::PRISMARINE_SLAB));
-		self::register("prismarine_stairs", $factory->fromTypeId(Ids::PRISMARINE_STAIRS));
-		self::register("prismarine_wall", $factory->fromTypeId(Ids::PRISMARINE_WALL));
-		self::register("pumpkin", $factory->fromTypeId(Ids::PUMPKIN));
-		self::register("pumpkin_stem", $factory->fromTypeId(Ids::PUMPKIN_STEM));
-		self::register("purple_torch", $factory->fromTypeId(Ids::PURPLE_TORCH));
-		self::register("purpur", $factory->fromTypeId(Ids::PURPUR));
-		self::register("purpur_pillar", $factory->fromTypeId(Ids::PURPUR_PILLAR));
-		self::register("purpur_slab", $factory->fromTypeId(Ids::PURPUR_SLAB));
-		self::register("purpur_stairs", $factory->fromTypeId(Ids::PURPUR_STAIRS));
-		self::register("quartz", $factory->fromTypeId(Ids::QUARTZ));
-		self::register("quartz_bricks", $factory->fromTypeId(Ids::QUARTZ_BRICKS));
-		self::register("quartz_pillar", $factory->fromTypeId(Ids::QUARTZ_PILLAR));
-		self::register("quartz_slab", $factory->fromTypeId(Ids::QUARTZ_SLAB));
-		self::register("quartz_stairs", $factory->fromTypeId(Ids::QUARTZ_STAIRS));
-		self::register("rail", $factory->fromTypeId(Ids::RAIL));
-		self::register("raw_copper", $factory->fromTypeId(Ids::RAW_COPPER));
-		self::register("raw_gold", $factory->fromTypeId(Ids::RAW_GOLD));
-		self::register("raw_iron", $factory->fromTypeId(Ids::RAW_IRON));
-		self::register("red_mushroom", $factory->fromTypeId(Ids::RED_MUSHROOM));
-		self::register("red_mushroom_block", $factory->fromTypeId(Ids::RED_MUSHROOM_BLOCK));
-		self::register("red_nether_brick_slab", $factory->fromTypeId(Ids::RED_NETHER_BRICK_SLAB));
-		self::register("red_nether_brick_stairs", $factory->fromTypeId(Ids::RED_NETHER_BRICK_STAIRS));
-		self::register("red_nether_brick_wall", $factory->fromTypeId(Ids::RED_NETHER_BRICK_WALL));
-		self::register("red_nether_bricks", $factory->fromTypeId(Ids::RED_NETHER_BRICKS));
-		self::register("red_sand", $factory->fromTypeId(Ids::RED_SAND));
-		self::register("red_sandstone", $factory->fromTypeId(Ids::RED_SANDSTONE));
-		self::register("red_sandstone_slab", $factory->fromTypeId(Ids::RED_SANDSTONE_SLAB));
-		self::register("red_sandstone_stairs", $factory->fromTypeId(Ids::RED_SANDSTONE_STAIRS));
-		self::register("red_sandstone_wall", $factory->fromTypeId(Ids::RED_SANDSTONE_WALL));
-		self::register("red_torch", $factory->fromTypeId(Ids::RED_TORCH));
-		self::register("red_tulip", $factory->fromTypeId(Ids::RED_TULIP));
-		self::register("redstone", $factory->fromTypeId(Ids::REDSTONE));
-		self::register("redstone_comparator", $factory->fromTypeId(Ids::REDSTONE_COMPARATOR));
-		self::register("redstone_lamp", $factory->fromTypeId(Ids::REDSTONE_LAMP));
-		self::register("redstone_ore", $factory->fromTypeId(Ids::REDSTONE_ORE));
-		self::register("redstone_repeater", $factory->fromTypeId(Ids::REDSTONE_REPEATER));
-		self::register("redstone_torch", $factory->fromTypeId(Ids::REDSTONE_TORCH));
-		self::register("redstone_wire", $factory->fromTypeId(Ids::REDSTONE_WIRE));
-		self::register("reserved6", $factory->fromTypeId(Ids::RESERVED6));
-		self::register("rose_bush", $factory->fromTypeId(Ids::ROSE_BUSH));
-		self::register("sand", $factory->fromTypeId(Ids::SAND));
-		self::register("sandstone", $factory->fromTypeId(Ids::SANDSTONE));
-		self::register("sandstone_slab", $factory->fromTypeId(Ids::SANDSTONE_SLAB));
-		self::register("sandstone_stairs", $factory->fromTypeId(Ids::SANDSTONE_STAIRS));
-		self::register("sandstone_wall", $factory->fromTypeId(Ids::SANDSTONE_WALL));
-		self::register("sea_lantern", $factory->fromTypeId(Ids::SEA_LANTERN));
-		self::register("sea_pickle", $factory->fromTypeId(Ids::SEA_PICKLE));
-		self::register("shroomlight", $factory->fromTypeId(Ids::SHROOMLIGHT));
-		self::register("shulker_box", $factory->fromTypeId(Ids::SHULKER_BOX));
-		self::register("slime", $factory->fromTypeId(Ids::SLIME));
-		self::register("smoker", $factory->fromTypeId(Ids::SMOKER));
-		self::register("smooth_basalt", $factory->fromTypeId(Ids::SMOOTH_BASALT));
-		self::register("smooth_quartz", $factory->fromTypeId(Ids::SMOOTH_QUARTZ));
-		self::register("smooth_quartz_slab", $factory->fromTypeId(Ids::SMOOTH_QUARTZ_SLAB));
-		self::register("smooth_quartz_stairs", $factory->fromTypeId(Ids::SMOOTH_QUARTZ_STAIRS));
-		self::register("smooth_red_sandstone", $factory->fromTypeId(Ids::SMOOTH_RED_SANDSTONE));
-		self::register("smooth_red_sandstone_slab", $factory->fromTypeId(Ids::SMOOTH_RED_SANDSTONE_SLAB));
-		self::register("smooth_red_sandstone_stairs", $factory->fromTypeId(Ids::SMOOTH_RED_SANDSTONE_STAIRS));
-		self::register("smooth_sandstone", $factory->fromTypeId(Ids::SMOOTH_SANDSTONE));
-		self::register("smooth_sandstone_slab", $factory->fromTypeId(Ids::SMOOTH_SANDSTONE_SLAB));
-		self::register("smooth_sandstone_stairs", $factory->fromTypeId(Ids::SMOOTH_SANDSTONE_STAIRS));
-		self::register("smooth_stone", $factory->fromTypeId(Ids::SMOOTH_STONE));
-		self::register("smooth_stone_slab", $factory->fromTypeId(Ids::SMOOTH_STONE_SLAB));
-		self::register("snow", $factory->fromTypeId(Ids::SNOW));
-		self::register("snow_layer", $factory->fromTypeId(Ids::SNOW_LAYER));
-		self::register("soul_fire", $factory->fromTypeId(Ids::SOUL_FIRE));
-		self::register("soul_lantern", $factory->fromTypeId(Ids::SOUL_LANTERN));
-		self::register("soul_sand", $factory->fromTypeId(Ids::SOUL_SAND));
-		self::register("soul_soil", $factory->fromTypeId(Ids::SOUL_SOIL));
-		self::register("soul_torch", $factory->fromTypeId(Ids::SOUL_TORCH));
-		self::register("sponge", $factory->fromTypeId(Ids::SPONGE));
-		self::register("spruce_button", $factory->fromTypeId(Ids::SPRUCE_BUTTON));
-		self::register("spruce_door", $factory->fromTypeId(Ids::SPRUCE_DOOR));
-		self::register("spruce_fence", $factory->fromTypeId(Ids::SPRUCE_FENCE));
-		self::register("spruce_fence_gate", $factory->fromTypeId(Ids::SPRUCE_FENCE_GATE));
-		self::register("spruce_leaves", $factory->fromTypeId(Ids::SPRUCE_LEAVES));
-		self::register("spruce_log", $factory->fromTypeId(Ids::SPRUCE_LOG));
-		self::register("spruce_planks", $factory->fromTypeId(Ids::SPRUCE_PLANKS));
-		self::register("spruce_pressure_plate", $factory->fromTypeId(Ids::SPRUCE_PRESSURE_PLATE));
-		self::register("spruce_sapling", $factory->fromTypeId(Ids::SPRUCE_SAPLING));
-		self::register("spruce_sign", $factory->fromTypeId(Ids::SPRUCE_SIGN));
-		self::register("spruce_slab", $factory->fromTypeId(Ids::SPRUCE_SLAB));
-		self::register("spruce_stairs", $factory->fromTypeId(Ids::SPRUCE_STAIRS));
-		self::register("spruce_trapdoor", $factory->fromTypeId(Ids::SPRUCE_TRAPDOOR));
-		self::register("spruce_wall_sign", $factory->fromTypeId(Ids::SPRUCE_WALL_SIGN));
-		self::register("spruce_wood", $factory->fromTypeId(Ids::SPRUCE_WOOD));
-		self::register("stained_clay", $factory->fromTypeId(Ids::STAINED_CLAY));
-		self::register("stained_glass", $factory->fromTypeId(Ids::STAINED_GLASS));
-		self::register("stained_glass_pane", $factory->fromTypeId(Ids::STAINED_GLASS_PANE));
-		self::register("stained_hardened_glass", $factory->fromTypeId(Ids::STAINED_HARDENED_GLASS));
-		self::register("stained_hardened_glass_pane", $factory->fromTypeId(Ids::STAINED_HARDENED_GLASS_PANE));
-		self::register("stone", $factory->fromTypeId(Ids::STONE));
-		self::register("stone_brick_slab", $factory->fromTypeId(Ids::STONE_BRICK_SLAB));
-		self::register("stone_brick_stairs", $factory->fromTypeId(Ids::STONE_BRICK_STAIRS));
-		self::register("stone_brick_wall", $factory->fromTypeId(Ids::STONE_BRICK_WALL));
-		self::register("stone_bricks", $factory->fromTypeId(Ids::STONE_BRICKS));
-		self::register("stone_button", $factory->fromTypeId(Ids::STONE_BUTTON));
-		self::register("stone_pressure_plate", $factory->fromTypeId(Ids::STONE_PRESSURE_PLATE));
-		self::register("stone_slab", $factory->fromTypeId(Ids::STONE_SLAB));
-		self::register("stone_stairs", $factory->fromTypeId(Ids::STONE_STAIRS));
-		self::register("stonecutter", $factory->fromTypeId(Ids::STONECUTTER));
-		self::register("sugarcane", $factory->fromTypeId(Ids::SUGARCANE));
-		self::register("sunflower", $factory->fromTypeId(Ids::SUNFLOWER));
-		self::register("sweet_berry_bush", $factory->fromTypeId(Ids::SWEET_BERRY_BUSH));
-		self::register("tall_grass", $factory->fromTypeId(Ids::TALL_GRASS));
-		self::register("tinted_glass", $factory->fromTypeId(Ids::TINTED_GLASS));
-		self::register("tnt", $factory->fromTypeId(Ids::TNT));
-		self::register("torch", $factory->fromTypeId(Ids::TORCH));
-		self::register("trapped_chest", $factory->fromTypeId(Ids::TRAPPED_CHEST));
-		self::register("tripwire", $factory->fromTypeId(Ids::TRIPWIRE));
-		self::register("tripwire_hook", $factory->fromTypeId(Ids::TRIPWIRE_HOOK));
-		self::register("tuff", $factory->fromTypeId(Ids::TUFF));
-		self::register("underwater_torch", $factory->fromTypeId(Ids::UNDERWATER_TORCH));
-		self::register("vines", $factory->fromTypeId(Ids::VINES));
-		self::register("wall_banner", $factory->fromTypeId(Ids::WALL_BANNER));
-		self::register("wall_coral_fan", $factory->fromTypeId(Ids::WALL_CORAL_FAN));
-		self::register("warped_button", $factory->fromTypeId(Ids::WARPED_BUTTON));
-		self::register("warped_door", $factory->fromTypeId(Ids::WARPED_DOOR));
-		self::register("warped_fence", $factory->fromTypeId(Ids::WARPED_FENCE));
-		self::register("warped_fence_gate", $factory->fromTypeId(Ids::WARPED_FENCE_GATE));
-		self::register("warped_hyphae", $factory->fromTypeId(Ids::WARPED_HYPHAE));
-		self::register("warped_planks", $factory->fromTypeId(Ids::WARPED_PLANKS));
-		self::register("warped_pressure_plate", $factory->fromTypeId(Ids::WARPED_PRESSURE_PLATE));
-		self::register("warped_sign", $factory->fromTypeId(Ids::WARPED_SIGN));
-		self::register("warped_slab", $factory->fromTypeId(Ids::WARPED_SLAB));
-		self::register("warped_stairs", $factory->fromTypeId(Ids::WARPED_STAIRS));
-		self::register("warped_stem", $factory->fromTypeId(Ids::WARPED_STEM));
-		self::register("warped_trapdoor", $factory->fromTypeId(Ids::WARPED_TRAPDOOR));
-		self::register("warped_wall_sign", $factory->fromTypeId(Ids::WARPED_WALL_SIGN));
-		self::register("water", $factory->fromTypeId(Ids::WATER));
-		self::register("weighted_pressure_plate_heavy", $factory->fromTypeId(Ids::WEIGHTED_PRESSURE_PLATE_HEAVY));
-		self::register("weighted_pressure_plate_light", $factory->fromTypeId(Ids::WEIGHTED_PRESSURE_PLATE_LIGHT));
-		self::register("wheat", $factory->fromTypeId(Ids::WHEAT));
-		self::register("white_tulip", $factory->fromTypeId(Ids::WHITE_TULIP));
-		self::register("wool", $factory->fromTypeId(Ids::WOOL));
+		$railBreakInfo = new BlockBreakInfo(0.7);
+		self::register("activator_rail", new ActivatorRail(new BID(Ids::ACTIVATOR_RAIL), "Activator Rail", $railBreakInfo));
+		self::register("air", new Air(new BID(Ids::AIR), "Air", BreakInfo::indestructible(-1.0)));
+		self::register("anvil", new Anvil(new BID(Ids::ANVIL), "Anvil", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 6000.0)));
+		self::register("bamboo", new Bamboo(new BID(Ids::BAMBOO), "Bamboo", new class(2.0 /* 1.0 in PC */, ToolType::AXE) extends BreakInfo{
+			public function getBreakTime(Item $item) : float{
+				if($item->getBlockToolType() === ToolType::SWORD){
+					return 0.0;
+				}
+				return parent::getBreakTime($item);
+			}
+		}));
+		self::register("bamboo_sapling", new BambooSapling(new BID(Ids::BAMBOO_SAPLING), "Bamboo Sapling", BreakInfo::instant()));
+
+		$bannerBreakInfo = new BreakInfo(1.0, ToolType::AXE);
+		self::register("banner", new FloorBanner(new BID(Ids::BANNER, TileBanner::class), "Banner", $bannerBreakInfo));
+		self::register("wall_banner", new WallBanner(new BID(Ids::WALL_BANNER, TileBanner::class), "Wall Banner", $bannerBreakInfo));
+		self::register("barrel", new Barrel(new BID(Ids::BARREL, TileBarrel::class), "Barrel", new BreakInfo(2.5, ToolType::AXE)));
+		self::register("barrier", new Transparent(new BID(Ids::BARRIER), "Barrier", BreakInfo::indestructible()));
+		self::register("beacon", new Beacon(new BID(Ids::BEACON, TileBeacon::class), "Beacon", new BreakInfo(3.0)));
+		self::register("bed", new Bed(new BID(Ids::BED, TileBed::class), "Bed Block", new BreakInfo(0.2)));
+		self::register("bedrock", new Bedrock(new BID(Ids::BEDROCK), "Bedrock", BreakInfo::indestructible()));
+
+		self::register("beetroots", new Beetroot(new BID(Ids::BEETROOTS), "Beetroot Block", BreakInfo::instant()));
+		self::register("bell", new Bell(new BID(Ids::BELL, TileBell::class), "Bell", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("blue_ice", new BlueIce(new BID(Ids::BLUE_ICE), "Blue Ice", new BreakInfo(2.8, ToolType::PICKAXE)));
+		self::register("bone_block", new BoneBlock(new BID(Ids::BONE_BLOCK), "Bone Block", new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("bookshelf", new Bookshelf(new BID(Ids::BOOKSHELF), "Bookshelf", new BreakInfo(1.5, ToolType::AXE)));
+		self::register("brewing_stand", new BrewingStand(new BID(Ids::BREWING_STAND, TileBrewingStand::class), "Brewing Stand", new BreakInfo(0.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+
+		$bricksBreakInfo = new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+		self::register("brick_stairs", new Stair(new BID(Ids::BRICK_STAIRS), "Brick Stairs", $bricksBreakInfo));
+		self::register("bricks", new Opaque(new BID(Ids::BRICKS), "Bricks", $bricksBreakInfo));
+
+		self::register("brown_mushroom", new BrownMushroom(new BID(Ids::BROWN_MUSHROOM), "Brown Mushroom", BreakInfo::instant()));
+		self::register("cactus", new Cactus(new BID(Ids::CACTUS), "Cactus", new BreakInfo(0.4)));
+		self::register("cake", new Cake(new BID(Ids::CAKE), "Cake", new BreakInfo(0.5)));
+		self::register("carrots", new Carrot(new BID(Ids::CARROTS), "Carrot Block", BreakInfo::instant()));
+
+		$chestBreakInfo = new BreakInfo(2.5, ToolType::AXE);
+		self::register("chest", new Chest(new BID(Ids::CHEST, TileChest::class), "Chest", $chestBreakInfo));
+		self::register("clay", new Clay(new BID(Ids::CLAY), "Clay Block", new BreakInfo(0.6, ToolType::SHOVEL)));
+		self::register("coal", new Coal(new BID(Ids::COAL), "Coal Block", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0)));
+
+		$cobblestoneBreakInfo = new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+		self::register("cobblestone", $cobblestone = new Opaque(new BID(Ids::COBBLESTONE), "Cobblestone", $cobblestoneBreakInfo));
+		self::register("mossy_cobblestone", new Opaque(new BID(Ids::MOSSY_COBBLESTONE), "Mossy Cobblestone", $cobblestoneBreakInfo));
+		self::register("cobblestone_stairs", new Stair(new BID(Ids::COBBLESTONE_STAIRS), "Cobblestone Stairs", $cobblestoneBreakInfo));
+		self::register("mossy_cobblestone_stairs", new Stair(new BID(Ids::MOSSY_COBBLESTONE_STAIRS), "Mossy Cobblestone Stairs", $cobblestoneBreakInfo));
+
+		self::register("cobweb", new Cobweb(new BID(Ids::COBWEB), "Cobweb", new BreakInfo(4.0, ToolType::SWORD | ToolType::SHEARS, 1)));
+		self::register("cocoa_pod", new CocoaBlock(new BID(Ids::COCOA_POD), "Cocoa Block", new BreakInfo(0.2, ToolType::AXE, 0, 15.0)));
+		self::register("coral_block", new CoralBlock(new BID(Ids::CORAL_BLOCK), "Coral Block", new BreakInfo(7.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("crafting_table", new CraftingTable(new BID(Ids::CRAFTING_TABLE), "Crafting Table", new BreakInfo(2.5, ToolType::AXE)));
+		self::register("daylight_sensor", new DaylightSensor(new BID(Ids::DAYLIGHT_SENSOR, TileDaylightSensor::class), "Daylight Sensor", new BreakInfo(0.2, ToolType::AXE)));
+		self::register("dead_bush", new DeadBush(new BID(Ids::DEAD_BUSH), "Dead Bush", BreakInfo::instant(ToolType::SHEARS, 1)));
+		self::register("detector_rail", new DetectorRail(new BID(Ids::DETECTOR_RAIL), "Detector Rail", $railBreakInfo));
+
+		self::register("diamond", new Opaque(new BID(Ids::DIAMOND), "Diamond Block", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel(), 30.0)));
+		self::register("dirt", new Dirt(new BID(Ids::DIRT), "Dirt", new BreakInfo(0.5, ToolType::SHOVEL)));
+		self::register("sunflower", new DoublePlant(new BID(Ids::SUNFLOWER), "Sunflower", BreakInfo::instant()));
+		self::register("lilac", new DoublePlant(new BID(Ids::LILAC), "Lilac", BreakInfo::instant()));
+		self::register("rose_bush", new DoublePlant(new BID(Ids::ROSE_BUSH), "Rose Bush", BreakInfo::instant()));
+		self::register("peony", new DoublePlant(new BID(Ids::PEONY), "Peony", BreakInfo::instant()));
+		self::register("double_tallgrass", new DoubleTallGrass(new BID(Ids::DOUBLE_TALLGRASS), "Double Tallgrass", BreakInfo::instant(ToolType::SHEARS, 1)));
+		self::register("large_fern", new DoubleTallGrass(new BID(Ids::LARGE_FERN), "Large Fern", BreakInfo::instant(ToolType::SHEARS, 1)));
+		self::register("dragon_egg", new DragonEgg(new BID(Ids::DRAGON_EGG), "Dragon Egg", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("dried_kelp", new DriedKelp(new BID(Ids::DRIED_KELP), "Dried Kelp Block", new BreakInfo(0.5, ToolType::NONE, 0, 12.5)));
+		self::register("emerald", new Opaque(new BID(Ids::EMERALD), "Emerald Block", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel(), 30.0)));
+		self::register("enchanting_table", new EnchantingTable(new BID(Ids::ENCHANTING_TABLE, TileEnchantingTable::class), "Enchanting Table", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 6000.0)));
+		self::register("end_portal_frame", new EndPortalFrame(new BID(Ids::END_PORTAL_FRAME), "End Portal Frame", BreakInfo::indestructible()));
+		self::register("end_rod", new EndRod(new BID(Ids::END_ROD), "End Rod", BreakInfo::instant()));
+		self::register("end_stone", new Opaque(new BID(Ids::END_STONE), "End Stone", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 45.0)));
+
+		$endBrickBreakInfo = new BreakInfo(0.8, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 4.0);
+		self::register("end_stone_bricks", new Opaque(new BID(Ids::END_STONE_BRICKS), "End Stone Bricks", $endBrickBreakInfo));
+		self::register("end_stone_brick_stairs", new Stair(new BID(Ids::END_STONE_BRICK_STAIRS), "End Stone Brick Stairs", $endBrickBreakInfo));
+
+		self::register("ender_chest", new EnderChest(new BID(Ids::ENDER_CHEST, TileEnderChest::class), "Ender Chest", new BreakInfo(22.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 3000.0)));
+		self::register("farmland", new Farmland(new BID(Ids::FARMLAND), "Farmland", new BreakInfo(0.6, ToolType::SHOVEL)));
+		self::register("fire", new Fire(new BID(Ids::FIRE), "Fire Block", BreakInfo::instant()));
+		self::register("fletching_table", new FletchingTable(new BID(Ids::FLETCHING_TABLE), "Fletching Table", new BreakInfo(2.5, ToolType::AXE, 0, 2.5)));
+		self::register("dandelion", new Flower(new BID(Ids::DANDELION), "Dandelion", BreakInfo::instant()));
+		self::register("poppy", new Flower(new BID(Ids::POPPY), "Poppy", BreakInfo::instant()));
+		self::register("allium", new Flower(new BID(Ids::ALLIUM), "Allium", BreakInfo::instant()));
+		self::register("azure_bluet", new Flower(new BID(Ids::AZURE_BLUET), "Azure Bluet", BreakInfo::instant()));
+		self::register("blue_orchid", new Flower(new BID(Ids::BLUE_ORCHID), "Blue Orchid", BreakInfo::instant()));
+		self::register("cornflower", new Flower(new BID(Ids::CORNFLOWER), "Cornflower", BreakInfo::instant()));
+		self::register("lily_of_the_valley", new Flower(new BID(Ids::LILY_OF_THE_VALLEY), "Lily of the Valley", BreakInfo::instant()));
+		self::register("orange_tulip", new Flower(new BID(Ids::ORANGE_TULIP), "Orange Tulip", BreakInfo::instant()));
+		self::register("oxeye_daisy", new Flower(new BID(Ids::OXEYE_DAISY), "Oxeye Daisy", BreakInfo::instant()));
+		self::register("pink_tulip", new Flower(new BID(Ids::PINK_TULIP), "Pink Tulip", BreakInfo::instant()));
+		self::register("red_tulip", new Flower(new BID(Ids::RED_TULIP), "Red Tulip", BreakInfo::instant()));
+		self::register("white_tulip", new Flower(new BID(Ids::WHITE_TULIP), "White Tulip", BreakInfo::instant()));
+		self::register("FLOWER_POT", new FlowerPot(new BID(Ids::FLOWER_POT, TileFlowerPot::class), "Flower Pot", BreakInfo::instant()));
+		self::register("frosted_ice", new FrostedIce(new BID(Ids::FROSTED_ICE), "Frosted Ice", new BreakInfo(2.5, ToolType::PICKAXE)));
+		self::register("FURNACE", new Furnace(new BID(Ids::FURNACE, TileNormalFurnace::class), "Furnace", new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("BLAST_FURNACE", new Furnace(new BID(Ids::BLAST_FURNACE, TileBlastFurnace::class), "Blast Furnace", new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("SMOKER", new Furnace(new BID(Ids::SMOKER, TileSmoker::class), "Smoker", new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+
+		$glassBreakInfo = new BreakInfo(0.3);
+		self::register("glass", new Glass(new BID(Ids::GLASS), "Glass", $glassBreakInfo));
+		self::register("glass_pane", new GlassPane(new BID(Ids::GLASS_PANE), "Glass Pane", $glassBreakInfo));
+		self::register("glowing_obsidian", new GlowingObsidian(new BID(Ids::GLOWING_OBSIDIAN), "Glowing Obsidian", new BreakInfo(10.0, ToolType::PICKAXE, ToolTier::DIAMOND()->getHarvestLevel(), 50.0)));
+		self::register("glowstone", new Glowstone(new BID(Ids::GLOWSTONE), "Glowstone", new BreakInfo(0.3, ToolType::PICKAXE)));
+		self::register("gold", new Opaque(new BID(Ids::GOLD), "Gold Block", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel(), 30.0)));
+
+		$grassBreakInfo = new BreakInfo(0.6, ToolType::SHOVEL);
+		self::register("grass", new Grass(new BID(Ids::GRASS), "Grass", $grassBreakInfo));
+		self::register("grass_path", new GrassPath(new BID(Ids::GRASS_PATH), "Grass Path", $grassBreakInfo));
+		self::register("gravel", new Gravel(new BID(Ids::GRAVEL), "Gravel", new BreakInfo(0.6, ToolType::SHOVEL)));
+
+		$hardenedClayBreakInfo = new BreakInfo(1.25, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 21.0);
+		self::register("hardened_clay", new HardenedClay(new BID(Ids::HARDENED_CLAY), "Hardened Clay", $hardenedClayBreakInfo));
+
+		$hardenedGlassBreakInfo = new BreakInfo(10.0);
+		self::register("hardened_glass", new HardenedGlass(new BID(Ids::HARDENED_GLASS), "Hardened Glass", $hardenedGlassBreakInfo));
+		self::register("hardened_glass_pane", new HardenedGlassPane(new BID(Ids::HARDENED_GLASS_PANE), "Hardened Glass Pane", $hardenedGlassBreakInfo));
+		self::register("hay_bale", new HayBale(new BID(Ids::HAY_BALE), "Hay Bale", new BreakInfo(0.5)));
+		self::register("HOPPER", new Hopper(new BID(Ids::HOPPER, TileHopper::class), "Hopper", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 15.0)));
+		self::register("ice", new Ice(new BID(Ids::ICE), "Ice", new BreakInfo(0.5, ToolType::PICKAXE)));
+
+		$updateBlockBreakInfo = new BreakInfo(1.0);
+		self::register("info_update", new Opaque(new BID(Ids::INFO_UPDATE), "update!", $updateBlockBreakInfo));
+		self::register("info_update2", new Opaque(new BID(Ids::INFO_UPDATE2), "ate!upd", $updateBlockBreakInfo));
+		self::register("invisible_bedrock", new Transparent(new BID(Ids::INVISIBLE_BEDROCK), "Invisible Bedrock", BreakInfo::indestructible()));
+
+		$ironBreakInfo = new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel(), 30.0);
+		self::register("iron", new Opaque(new BID(Ids::IRON), "Iron Block", $ironBreakInfo));
+		self::register("iron_bars", new Thin(new BID(Ids::IRON_BARS), "Iron Bars", $ironBreakInfo));
+		$ironDoorBreakInfo = new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 25.0);
+		self::register("iron_door", new Door(new BID(Ids::IRON_DOOR), "Iron Door", $ironDoorBreakInfo));
+		self::register("iron_trapdoor", new Trapdoor(new BID(Ids::IRON_TRAPDOOR), "Iron Trapdoor", $ironDoorBreakInfo));
+		self::register("ITEM_FRAME", new ItemFrame(new BID(Ids::ITEM_FRAME, TileItemFrame::class), "Item Frame", new BreakInfo(0.25)));
+		self::register("JUKEBOX", new Jukebox(new BID(Ids::JUKEBOX, TileJukebox::class), "Jukebox", new BreakInfo(0.8, ToolType::AXE))); //TODO: in PC the hardness is 2.0, not 0.8, unsure if this is a MCPE bug or not
+		self::register("ladder", new Ladder(new BID(Ids::LADDER), "Ladder", new BreakInfo(0.4, ToolType::AXE)));
+
+		$lanternBreakInfo = new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		self::register("lantern", new Lantern(new BID(Ids::LANTERN), "Lantern", $lanternBreakInfo, 15));
+		self::register("soul_lantern", new Lantern(new BID(Ids::SOUL_LANTERN), "Soul Lantern", $lanternBreakInfo, 10));
+
+		self::register("lapis_lazuli", new Opaque(new BID(Ids::LAPIS_LAZULI), "Lapis Lazuli Block", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
+		self::register("lava", new Lava(new BID(Ids::LAVA), "Lava", BreakInfo::indestructible(500.0)));
+		self::register("LECTERN", new Lectern(new BID(Ids::LECTERN, TileLectern::class), "Lectern", new BreakInfo(2.0, ToolType::AXE)));
+		self::register("lever", new Lever(new BID(Ids::LEVER), "Lever", new BreakInfo(0.5)));
+		self::register("loom", new Loom(new BID(Ids::LOOM), "Loom", new BreakInfo(2.5, ToolType::AXE)));
+		self::register("magma", new Magma(new BID(Ids::MAGMA), "Magma Block", new BreakInfo(0.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("melon", new Melon(new BID(Ids::MELON), "Melon Block", new BreakInfo(1.0, ToolType::AXE)));
+		self::register("melon_stem", new MelonStem(new BID(Ids::MELON_STEM), "Melon Stem", BreakInfo::instant()));
+		self::register("MONSTER_SPAWNER", new MonsterSpawner(new BID(Ids::MONSTER_SPAWNER, TileMonsterSpawner::class), "Monster Spawner", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("mycelium", new Mycelium(new BID(Ids::MYCELIUM), "Mycelium", new BreakInfo(0.6, ToolType::SHOVEL)));
+
+		$netherBrickBreakInfo = new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+		self::register("nether_bricks", new Opaque(new BID(Ids::NETHER_BRICKS), "Nether Bricks", $netherBrickBreakInfo));
+		self::register("red_nether_bricks", new Opaque(new BID(Ids::RED_NETHER_BRICKS), "Red Nether Bricks", $netherBrickBreakInfo));
+		self::register("nether_brick_fence", new Fence(new BID(Ids::NETHER_BRICK_FENCE), "Nether Brick Fence", $netherBrickBreakInfo));
+		self::register("nether_brick_stairs", new Stair(new BID(Ids::NETHER_BRICK_STAIRS), "Nether Brick Stairs", $netherBrickBreakInfo));
+		self::register("red_nether_brick_stairs", new Stair(new BID(Ids::RED_NETHER_BRICK_STAIRS), "Red Nether Brick Stairs", $netherBrickBreakInfo));
+		self::register("chiseled_nether_bricks", new Opaque(new BID(Ids::CHISELED_NETHER_BRICKS), "Chiseled Nether Bricks", $netherBrickBreakInfo));
+		self::register("cracked_nether_bricks", new Opaque(new BID(Ids::CRACKED_NETHER_BRICKS), "Cracked Nether Bricks", $netherBrickBreakInfo));
+
+		self::register("nether_portal", new NetherPortal(new BID(Ids::NETHER_PORTAL), "Nether Portal", BreakInfo::indestructible(0.0)));
+		self::register("nether_reactor_core", new NetherReactor(new BID(Ids::NETHER_REACTOR_CORE), "Nether Reactor Core", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("nether_wart_block", new Opaque(new BID(Ids::NETHER_WART_BLOCK), "Nether Wart Block", new BreakInfo(1.0, ToolType::HOE)));
+		self::register("nether_wart", new NetherWartPlant(new BID(Ids::NETHER_WART), "Nether Wart", BreakInfo::instant()));
+		self::register("netherrack", new Netherrack(new BID(Ids::NETHERRACK), "Netherrack", new BreakInfo(0.4, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("NOTE_BLOCK", new Note(new BID(Ids::NOTE_BLOCK, TileNote::class), "Note Block", new BreakInfo(0.8, ToolType::AXE)));
+		self::register("obsidian", new Opaque(new BID(Ids::OBSIDIAN), "Obsidian", new BreakInfo(35.0 /* 50 in PC */, ToolType::PICKAXE, ToolTier::DIAMOND()->getHarvestLevel(), 6000.0)));
+		self::register("packed_ice", new PackedIce(new BID(Ids::PACKED_ICE), "Packed Ice", new BreakInfo(0.5, ToolType::PICKAXE)));
+		self::register("podzol", new Podzol(new BID(Ids::PODZOL), "Podzol", new BreakInfo(0.5, ToolType::SHOVEL)));
+		self::register("potatoes", new Potato(new BID(Ids::POTATOES), "Potato Block", BreakInfo::instant()));
+		self::register("powered_rail", new PoweredRail(new BID(Ids::POWERED_RAIL), "Powered Rail", $railBreakInfo));
+
+		$prismarineBreakInfo = new BreakInfo(1.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+		self::register("prismarine", new Opaque(new BID(Ids::PRISMARINE), "Prismarine", $prismarineBreakInfo));
+		self::register("dark_prismarine", new Opaque(new BID(Ids::DARK_PRISMARINE), "Dark Prismarine", $prismarineBreakInfo));
+		self::register("prismarine_bricks", new Opaque(new BID(Ids::PRISMARINE_BRICKS), "Prismarine Bricks", $prismarineBreakInfo));
+		self::register("prismarine_bricks_stairs", new Stair(new BID(Ids::PRISMARINE_BRICKS_STAIRS), "Prismarine Bricks Stairs", $prismarineBreakInfo));
+		self::register("dark_prismarine_stairs", new Stair(new BID(Ids::DARK_PRISMARINE_STAIRS), "Dark Prismarine Stairs", $prismarineBreakInfo));
+		self::register("prismarine_stairs", new Stair(new BID(Ids::PRISMARINE_STAIRS), "Prismarine Stairs", $prismarineBreakInfo));
+
+		$pumpkinBreakInfo = new BreakInfo(1.0, ToolType::AXE);
+		self::register("pumpkin", new Pumpkin(new BID(Ids::PUMPKIN), "Pumpkin", $pumpkinBreakInfo));
+		self::register("carved_pumpkin", new CarvedPumpkin(new BID(Ids::CARVED_PUMPKIN), "Carved Pumpkin", $pumpkinBreakInfo));
+		self::register("lit_pumpkin", new LitPumpkin(new BID(Ids::LIT_PUMPKIN), "Jack o'Lantern", $pumpkinBreakInfo));
+
+		self::register("pumpkin_stem", new PumpkinStem(new BID(Ids::PUMPKIN_STEM), "Pumpkin Stem", BreakInfo::instant()));
+
+		$purpurBreakInfo = new BreakInfo(1.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+		self::register("purpur", new Opaque(new BID(Ids::PURPUR), "Purpur Block", $purpurBreakInfo));
+		self::register("purpur_pillar", new SimplePillar(new BID(Ids::PURPUR_PILLAR), "Purpur Pillar", $purpurBreakInfo));
+		self::register("purpur_stairs", new Stair(new BID(Ids::PURPUR_STAIRS), "Purpur Stairs", $purpurBreakInfo));
+
+		$quartzBreakInfo = new BreakInfo(0.8, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		self::register("quartz", new Opaque(new BID(Ids::QUARTZ), "Quartz Block", $quartzBreakInfo));
+		self::register("chiseled_quartz", new SimplePillar(new BID(Ids::CHISELED_QUARTZ), "Chiseled Quartz Block", $quartzBreakInfo));
+		self::register("quartz_pillar", new SimplePillar(new BID(Ids::QUARTZ_PILLAR), "Quartz Pillar", $quartzBreakInfo));
+		self::register("smooth_quartz", new Opaque(new BID(Ids::SMOOTH_QUARTZ), "Smooth Quartz Block", $quartzBreakInfo));
+		self::register("quartz_bricks", new Opaque(new BID(Ids::QUARTZ_BRICKS), "Quartz Bricks", $quartzBreakInfo));
+
+		self::register("quartz_stairs", new Stair(new BID(Ids::QUARTZ_STAIRS), "Quartz Stairs", $quartzBreakInfo));
+		self::register("smooth_quartz_stairs", new Stair(new BID(Ids::SMOOTH_QUARTZ_STAIRS), "Smooth Quartz Stairs", $quartzBreakInfo));
+
+		self::register("rail", new Rail(new BID(Ids::RAIL), "Rail", $railBreakInfo));
+		self::register("red_mushroom", new RedMushroom(new BID(Ids::RED_MUSHROOM), "Red Mushroom", BreakInfo::instant()));
+		self::register("redstone", new Redstone(new BID(Ids::REDSTONE), "Redstone Block", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0)));
+		self::register("REDSTONE_COMPARATOR", new RedstoneComparator(new BID(Ids::REDSTONE_COMPARATOR, TileComparator::class), "Redstone Comparator", BreakInfo::instant()));
+		self::register("redstone_lamp", new RedstoneLamp(new BID(Ids::REDSTONE_LAMP), "Redstone Lamp", new BreakInfo(0.3)));
+		self::register("redstone_repeater", new RedstoneRepeater(new BID(Ids::REDSTONE_REPEATER), "Redstone Repeater", BreakInfo::instant()));
+		self::register("redstone_torch", new RedstoneTorch(new BID(Ids::REDSTONE_TORCH), "Redstone Torch", BreakInfo::instant()));
+		self::register("redstone_wire", new RedstoneWire(new BID(Ids::REDSTONE_WIRE), "Redstone", BreakInfo::instant()));
+		self::register("reserved6", new Reserved6(new BID(Ids::RESERVED6), "reserved6", BreakInfo::instant()));
+
+		$sandBreakInfo = new BreakInfo(0.5, ToolType::SHOVEL);
+		self::register("sand", new Sand(new BID(Ids::SAND), "Sand", $sandBreakInfo));
+		self::register("red_sand", new Sand(new BID(Ids::RED_SAND), "Red Sand", $sandBreakInfo));
+
+		self::register("sea_lantern", new SeaLantern(new BID(Ids::SEA_LANTERN), "Sea Lantern", new BreakInfo(0.3)));
+		self::register("sea_pickle", new SeaPickle(new BID(Ids::SEA_PICKLE), "Sea Pickle", BreakInfo::instant()));
+		self::register("MOB_HEAD", new Skull(new BID(Ids::MOB_HEAD, TileSkull::class), "Mob Head", new BreakInfo(1.0)));
+		self::register("slime", new Slime(new BID(Ids::SLIME), "Slime Block", BreakInfo::instant()));
+		self::register("snow", new Snow(new BID(Ids::SNOW), "Snow Block", new BreakInfo(0.2, ToolType::SHOVEL, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("snow_layer", new SnowLayer(new BID(Ids::SNOW_LAYER), "Snow Layer", new BreakInfo(0.1, ToolType::SHOVEL, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("soul_sand", new SoulSand(new BID(Ids::SOUL_SAND), "Soul Sand", new BreakInfo(0.5, ToolType::SHOVEL)));
+		self::register("sponge", new Sponge(new BID(Ids::SPONGE), "Sponge", new BreakInfo(0.6, ToolType::HOE)));
+		$shulkerBoxBreakInfo = new BreakInfo(2, ToolType::PICKAXE);
+		self::register("SHULKER_BOX", new ShulkerBox(new BID(Ids::SHULKER_BOX, TileShulkerBox::class), "Shulker Box", $shulkerBoxBreakInfo));
+
+		$stoneBreakInfo = new BreakInfo(1.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+		self::register(
+			"stone",
+			$stone = new class(new BID(Ids::STONE), "Stone", $stoneBreakInfo) extends Opaque{
+				public function getDropsForCompatibleTool(Item $item) : array{
+					return [VanillaBlocks::COBBLESTONE()->asItem()];
+				}
+
+				public function isAffectedBySilkTouch() : bool{
+					return true;
+				}
+			}
+		);
+		self::register("andesite", new Opaque(new BID(Ids::ANDESITE), "Andesite", $stoneBreakInfo));
+		self::register("diorite", new Opaque(new BID(Ids::DIORITE), "Diorite", $stoneBreakInfo));
+		self::register("granite", new Opaque(new BID(Ids::GRANITE), "Granite", $stoneBreakInfo));
+		self::register("polished_andesite", new Opaque(new BID(Ids::POLISHED_ANDESITE), "Polished Andesite", $stoneBreakInfo));
+		self::register("polished_diorite", new Opaque(new BID(Ids::POLISHED_DIORITE), "Polished Diorite", $stoneBreakInfo));
+		self::register("polished_granite", new Opaque(new BID(Ids::POLISHED_GRANITE), "Polished Granite", $stoneBreakInfo));
+
+		self::register("stone_bricks", $stoneBrick = new Opaque(new BID(Ids::STONE_BRICKS), "Stone Bricks", $stoneBreakInfo));
+		self::register("mossy_stone_bricks", $mossyStoneBrick = new Opaque(new BID(Ids::MOSSY_STONE_BRICKS), "Mossy Stone Bricks", $stoneBreakInfo));
+		self::register("cracked_stone_bricks", $crackedStoneBrick = new Opaque(new BID(Ids::CRACKED_STONE_BRICKS), "Cracked Stone Bricks", $stoneBreakInfo));
+		self::register("chiseled_stone_bricks", $chiseledStoneBrick = new Opaque(new BID(Ids::CHISELED_STONE_BRICKS), "Chiseled Stone Bricks", $stoneBreakInfo));
+
+		$infestedStoneBreakInfo = new BreakInfo(0.75, ToolType::PICKAXE);
+		self::register("infested_stone", new InfestedStone(new BID(Ids::INFESTED_STONE), "Infested Stone", $infestedStoneBreakInfo, $stone));
+		self::register("infested_stone_brick", new InfestedStone(new BID(Ids::INFESTED_STONE_BRICK), "Infested Stone Brick", $infestedStoneBreakInfo, $stoneBrick));
+		self::register("infested_cobblestone", new InfestedStone(new BID(Ids::INFESTED_COBBLESTONE), "Infested Cobblestone", $infestedStoneBreakInfo, $cobblestone));
+		self::register("infested_mossy_stone_brick", new InfestedStone(new BID(Ids::INFESTED_MOSSY_STONE_BRICK), "Infested Mossy Stone Brick", $infestedStoneBreakInfo, $mossyStoneBrick));
+		self::register("infested_cracked_stone_brick", new InfestedStone(new BID(Ids::INFESTED_CRACKED_STONE_BRICK), "Infested Cracked Stone Brick", $infestedStoneBreakInfo, $crackedStoneBrick));
+		self::register("infested_chiseled_stone_brick", new InfestedStone(new BID(Ids::INFESTED_CHISELED_STONE_BRICK), "Infested Chiseled Stone Brick", $infestedStoneBreakInfo, $chiseledStoneBrick));
+
+		self::register("stone_stairs", new Stair(new BID(Ids::STONE_STAIRS), "Stone Stairs", $stoneBreakInfo));
+		self::register("smooth_stone", new Opaque(new BID(Ids::SMOOTH_STONE), "Smooth Stone", $stoneBreakInfo));
+		self::register("andesite_stairs", new Stair(new BID(Ids::ANDESITE_STAIRS), "Andesite Stairs", $stoneBreakInfo));
+		self::register("diorite_stairs", new Stair(new BID(Ids::DIORITE_STAIRS), "Diorite Stairs", $stoneBreakInfo));
+		self::register("granite_stairs", new Stair(new BID(Ids::GRANITE_STAIRS), "Granite Stairs", $stoneBreakInfo));
+		self::register("polished_andesite_stairs", new Stair(new BID(Ids::POLISHED_ANDESITE_STAIRS), "Polished Andesite Stairs", $stoneBreakInfo));
+		self::register("polished_diorite_stairs", new Stair(new BID(Ids::POLISHED_DIORITE_STAIRS), "Polished Diorite Stairs", $stoneBreakInfo));
+		self::register("polished_granite_stairs", new Stair(new BID(Ids::POLISHED_GRANITE_STAIRS), "Polished Granite Stairs", $stoneBreakInfo));
+		self::register("stone_brick_stairs", new Stair(new BID(Ids::STONE_BRICK_STAIRS), "Stone Brick Stairs", $stoneBreakInfo));
+		self::register("mossy_stone_brick_stairs", new Stair(new BID(Ids::MOSSY_STONE_BRICK_STAIRS), "Mossy Stone Brick Stairs", $stoneBreakInfo));
+		self::register("stone_button", new StoneButton(new BID(Ids::STONE_BUTTON), "Stone Button", new BreakInfo(0.5, ToolType::PICKAXE)));
+		self::register("stonecutter", new Stonecutter(new BID(Ids::STONECUTTER), "Stonecutter", new BreakInfo(3.5, ToolType::PICKAXE)));
+		self::register("stone_pressure_plate", new StonePressurePlate(new BID(Ids::STONE_PRESSURE_PLATE), "Stone Pressure Plate", new BreakInfo(0.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+
+		//TODO: in the future this won't be the same for all the types
+		$stoneSlabBreakInfo = new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+
+		self::register("BRICK_SLAB", new Slab(new BID(Ids::BRICK_SLAB), "Brick", $stoneSlabBreakInfo));
+		self::register("COBBLESTONE_SLAB", new Slab(new BID(Ids::COBBLESTONE_SLAB), "Cobblestone", $stoneSlabBreakInfo));
+		self::register("FAKE_WOODEN_SLAB", new Slab(new BID(Ids::FAKE_WOODEN_SLAB), "Fake Wooden", $stoneSlabBreakInfo));
+		self::register("NETHER_BRICK_SLAB", new Slab(new BID(Ids::NETHER_BRICK_SLAB), "Nether Brick", $stoneSlabBreakInfo));
+		self::register("QUARTZ_SLAB", new Slab(new BID(Ids::QUARTZ_SLAB), "Quartz", $stoneSlabBreakInfo));
+		self::register("SANDSTONE_SLAB", new Slab(new BID(Ids::SANDSTONE_SLAB), "Sandstone", $stoneSlabBreakInfo));
+		self::register("SMOOTH_STONE_SLAB", new Slab(new BID(Ids::SMOOTH_STONE_SLAB), "Smooth Stone", $stoneSlabBreakInfo));
+		self::register("STONE_BRICK_SLAB", new Slab(new BID(Ids::STONE_BRICK_SLAB), "Stone Brick", $stoneSlabBreakInfo));
+		self::register("DARK_PRISMARINE_SLAB", new Slab(new BID(Ids::DARK_PRISMARINE_SLAB), "Dark Prismarine", $stoneSlabBreakInfo));
+		self::register("MOSSY_COBBLESTONE_SLAB", new Slab(new BID(Ids::MOSSY_COBBLESTONE_SLAB), "Mossy Cobblestone", $stoneSlabBreakInfo));
+		self::register("PRISMARINE_SLAB", new Slab(new BID(Ids::PRISMARINE_SLAB), "Prismarine", $stoneSlabBreakInfo));
+		self::register("PRISMARINE_BRICKS_SLAB", new Slab(new BID(Ids::PRISMARINE_BRICKS_SLAB), "Prismarine Bricks", $stoneSlabBreakInfo));
+		self::register("PURPUR_SLAB", new Slab(new BID(Ids::PURPUR_SLAB), "Purpur", $stoneSlabBreakInfo));
+		self::register("RED_NETHER_BRICK_SLAB", new Slab(new BID(Ids::RED_NETHER_BRICK_SLAB), "Red Nether Brick", $stoneSlabBreakInfo));
+		self::register("RED_SANDSTONE_SLAB", new Slab(new BID(Ids::RED_SANDSTONE_SLAB), "Red Sandstone", $stoneSlabBreakInfo));
+		self::register("SMOOTH_SANDSTONE_SLAB", new Slab(new BID(Ids::SMOOTH_SANDSTONE_SLAB), "Smooth Sandstone", $stoneSlabBreakInfo));
+		self::register("ANDESITE_SLAB", new Slab(new BID(Ids::ANDESITE_SLAB), "Andesite", $stoneSlabBreakInfo));
+		self::register("DIORITE_SLAB", new Slab(new BID(Ids::DIORITE_SLAB), "Diorite", $stoneSlabBreakInfo));
+		self::register("END_STONE_BRICK_SLAB", new Slab(new BID(Ids::END_STONE_BRICK_SLAB), "End Stone Brick", $stoneSlabBreakInfo));
+		self::register("GRANITE_SLAB", new Slab(new BID(Ids::GRANITE_SLAB), "Granite", $stoneSlabBreakInfo));
+		self::register("POLISHED_ANDESITE_SLAB", new Slab(new BID(Ids::POLISHED_ANDESITE_SLAB), "Polished Andesite", $stoneSlabBreakInfo));
+		self::register("POLISHED_DIORITE_SLAB", new Slab(new BID(Ids::POLISHED_DIORITE_SLAB), "Polished Diorite", $stoneSlabBreakInfo));
+		self::register("POLISHED_GRANITE_SLAB", new Slab(new BID(Ids::POLISHED_GRANITE_SLAB), "Polished Granite", $stoneSlabBreakInfo));
+		self::register("SMOOTH_RED_SANDSTONE_SLAB", new Slab(new BID(Ids::SMOOTH_RED_SANDSTONE_SLAB), "Smooth Red Sandstone", $stoneSlabBreakInfo));
+		self::register("CUT_RED_SANDSTONE_SLAB", new Slab(new BID(Ids::CUT_RED_SANDSTONE_SLAB), "Cut Red Sandstone", $stoneSlabBreakInfo));
+		self::register("CUT_SANDSTONE_SLAB", new Slab(new BID(Ids::CUT_SANDSTONE_SLAB), "Cut Sandstone", $stoneSlabBreakInfo));
+		self::register("MOSSY_STONE_BRICK_SLAB", new Slab(new BID(Ids::MOSSY_STONE_BRICK_SLAB), "Mossy Stone Brick", $stoneSlabBreakInfo));
+		self::register("SMOOTH_QUARTZ_SLAB", new Slab(new BID(Ids::SMOOTH_QUARTZ_SLAB), "Smooth Quartz", $stoneSlabBreakInfo));
+		self::register("STONE_SLAB", new Slab(new BID(Ids::STONE_SLAB), "Stone", $stoneSlabBreakInfo));
+
+		self::register("legacy_stonecutter", new Opaque(new BID(Ids::LEGACY_STONECUTTER), "Legacy Stonecutter", new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("sugarcane", new Sugarcane(new BID(Ids::SUGARCANE), "Sugarcane", BreakInfo::instant()));
+		self::register("sweet_berry_bush", new SweetBerryBush(new BID(Ids::SWEET_BERRY_BUSH), "Sweet Berry Bush", BreakInfo::instant()));
+		self::register("tnt", new TNT(new BID(Ids::TNT), "TNT", BreakInfo::instant()));
+		self::register("fern", new TallGrass(new BID(Ids::FERN), "Fern", BreakInfo::instant(ToolType::SHEARS, 1)));
+		self::register("tall_grass", new TallGrass(new BID(Ids::TALL_GRASS), "Tall Grass", BreakInfo::instant(ToolType::SHEARS, 1)));
+
+		self::register("blue_torch", new Torch(new BID(Ids::BLUE_TORCH), "Blue Torch", BreakInfo::instant()));
+		self::register("purple_torch", new Torch(new BID(Ids::PURPLE_TORCH), "Purple Torch", BreakInfo::instant()));
+		self::register("red_torch", new Torch(new BID(Ids::RED_TORCH), "Red Torch", BreakInfo::instant()));
+		self::register("green_torch", new Torch(new BID(Ids::GREEN_TORCH), "Green Torch", BreakInfo::instant()));
+		self::register("torch", new Torch(new BID(Ids::TORCH), "Torch", BreakInfo::instant()));
+
+		self::register("TRAPPED_CHEST", new TrappedChest(new BID(Ids::TRAPPED_CHEST, TileChest::class), "Trapped Chest", $chestBreakInfo));
+		self::register("tripwire", new Tripwire(new BID(Ids::TRIPWIRE), "Tripwire", BreakInfo::instant()));
+		self::register("tripwire_hook", new TripwireHook(new BID(Ids::TRIPWIRE_HOOK), "Tripwire Hook", BreakInfo::instant()));
+		self::register("underwater_torch", new UnderwaterTorch(new BID(Ids::UNDERWATER_TORCH), "Underwater Torch", BreakInfo::instant()));
+		self::register("vines", new Vine(new BID(Ids::VINES), "Vines", new BreakInfo(0.2, ToolType::AXE)));
+		self::register("water", new Water(new BID(Ids::WATER), "Water", BreakInfo::indestructible(500.0)));
+		self::register("lily_pad", new WaterLily(new BID(Ids::LILY_PAD), "Lily Pad", BreakInfo::instant()));
+
+		$weightedPressurePlateBreakInfo = new BreakInfo(0.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		self::register("weighted_pressure_plate_heavy", new WeightedPressurePlateHeavy(new BID(Ids::WEIGHTED_PRESSURE_PLATE_HEAVY), "Weighted Pressure Plate Heavy", $weightedPressurePlateBreakInfo));
+		self::register("weighted_pressure_plate_light", new WeightedPressurePlateLight(new BID(Ids::WEIGHTED_PRESSURE_PLATE_LIGHT), "Weighted Pressure Plate Light", $weightedPressurePlateBreakInfo));
+		self::register("wheat", new Wheat(new BID(Ids::WHEAT), "Wheat Block", BreakInfo::instant()));
+
+		$leavesBreakInfo = new class(0.2, ToolType::HOE) extends BreakInfo{
+			public function getBreakTime(Item $item) : float{
+				if($item->getBlockToolType() === ToolType::SHEARS){
+					return 0.0;
+				}
+				return parent::getBreakTime($item);
+			}
+		};
+
+		foreach(TreeType::getAll() as $treeType){
+			$name = $treeType->getDisplayName();
+			self::register($treeType->name() . "_sapling", new Sapling(BlockLegacyIdHelper::getSaplingIdentifier($treeType), $name . " Sapling", BreakInfo::instant(), $treeType));
+			self::register($treeType->name() . "_leaves", new Leaves(BlockLegacyIdHelper::getLeavesIdentifier($treeType), $name . " Leaves", $leavesBreakInfo, $treeType));
+		}
+
+		$sandstoneBreakInfo = new BreakInfo(0.8, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		self::register("red_sandstone_stairs", new Stair(new BID(Ids::RED_SANDSTONE_STAIRS), "Red Sandstone Stairs", $sandstoneBreakInfo));
+		self::register("smooth_red_sandstone_stairs", new Stair(new BID(Ids::SMOOTH_RED_SANDSTONE_STAIRS), "Smooth Red Sandstone Stairs", $sandstoneBreakInfo));
+		self::register("red_sandstone", new Opaque(new BID(Ids::RED_SANDSTONE), "Red Sandstone", $sandstoneBreakInfo));
+		self::register("chiseled_red_sandstone", new Opaque(new BID(Ids::CHISELED_RED_SANDSTONE), "Chiseled Red Sandstone", $sandstoneBreakInfo));
+		self::register("cut_red_sandstone", new Opaque(new BID(Ids::CUT_RED_SANDSTONE), "Cut Red Sandstone", $sandstoneBreakInfo));
+		self::register("smooth_red_sandstone", new Opaque(new BID(Ids::SMOOTH_RED_SANDSTONE), "Smooth Red Sandstone", $sandstoneBreakInfo));
+
+		self::register("sandstone_stairs", new Stair(new BID(Ids::SANDSTONE_STAIRS), "Sandstone Stairs", $sandstoneBreakInfo));
+		self::register("smooth_sandstone_stairs", new Stair(new BID(Ids::SMOOTH_SANDSTONE_STAIRS), "Smooth Sandstone Stairs", $sandstoneBreakInfo));
+		self::register("sandstone", new Opaque(new BID(Ids::SANDSTONE), "Sandstone", $sandstoneBreakInfo));
+		self::register("chiseled_sandstone", new Opaque(new BID(Ids::CHISELED_SANDSTONE), "Chiseled Sandstone", $sandstoneBreakInfo));
+		self::register("cut_sandstone", new Opaque(new BID(Ids::CUT_SANDSTONE), "Cut Sandstone", $sandstoneBreakInfo));
+		self::register("smooth_sandstone", new Opaque(new BID(Ids::SMOOTH_SANDSTONE), "Smooth Sandstone", $sandstoneBreakInfo));
+
+		self::register("glazed_terracotta", new GlazedTerracotta(new BID(Ids::GLAZED_TERRACOTTA), "Glazed Terracotta", new BreakInfo(1.4, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("DYED_SHULKER_BOX", new DyedShulkerBox(new BID(Ids::DYED_SHULKER_BOX, TileShulkerBox::class), "Dyed Shulker Box", $shulkerBoxBreakInfo));
+		self::register("stained_glass", new StainedGlass(new BID(Ids::STAINED_GLASS), "Stained Glass", $glassBreakInfo));
+		self::register("stained_glass_pane", new StainedGlassPane(new BID(Ids::STAINED_GLASS_PANE), "Stained Glass Pane", $glassBreakInfo));
+		self::register("stained_clay", new StainedHardenedClay(new BID(Ids::STAINED_CLAY), "Stained Clay", $hardenedClayBreakInfo));
+		self::register("stained_hardened_glass", new StainedHardenedGlass(new BID(Ids::STAINED_HARDENED_GLASS), "Stained Hardened Glass", $hardenedGlassBreakInfo));
+		self::register("stained_hardened_glass_pane", new StainedHardenedGlassPane(new BID(Ids::STAINED_HARDENED_GLASS_PANE), "Stained Hardened Glass Pane", $hardenedGlassBreakInfo));
+		self::register("carpet", new Carpet(new BID(Ids::CARPET), "Carpet", new BreakInfo(0.1)));
+		self::register("concrete", new Concrete(new BID(Ids::CONCRETE), "Concrete", new BreakInfo(1.8, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("concrete_powder", new ConcretePowder(new BID(Ids::CONCRETE_POWDER), "Concrete Powder", new BreakInfo(0.5, ToolType::SHOVEL)));
+		self::register("wool", new Wool(new BID(Ids::WOOL), "Wool", new class(0.8, ToolType::SHEARS) extends BreakInfo{
+			public function getBreakTime(Item $item) : float{
+				$time = parent::getBreakTime($item);
+				if($item->getBlockToolType() === ToolType::SHEARS){
+					$time *= 3; //shears break compatible blocks 15x faster, but wool 5x
+				}
+
+				return $time;
+			}
+		}));
+
+		//TODO: in the future these won't all have the same hardness; they only do now because of the old metadata crap
+		$wallBreakInfo = new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+		self::register("cobblestone_wall", new Wall(new BID(Ids::COBBLESTONE_WALL), "Cobblestone Wall", $wallBreakInfo));
+		self::register("andesite_wall", new Wall(new BID(Ids::ANDESITE_WALL), "Andesite Wall", $wallBreakInfo));
+		self::register("brick_wall", new Wall(new BID(Ids::BRICK_WALL), "Brick Wall", $wallBreakInfo));
+		self::register("diorite_wall", new Wall(new BID(Ids::DIORITE_WALL), "Diorite Wall", $wallBreakInfo));
+		self::register("end_stone_brick_wall", new Wall(new BID(Ids::END_STONE_BRICK_WALL), "End Stone Brick Wall", $wallBreakInfo));
+		self::register("granite_wall", new Wall(new BID(Ids::GRANITE_WALL), "Granite Wall", $wallBreakInfo));
+		self::register("mossy_stone_brick_wall", new Wall(new BID(Ids::MOSSY_STONE_BRICK_WALL), "Mossy Stone Brick Wall", $wallBreakInfo));
+		self::register("mossy_cobblestone_wall", new Wall(new BID(Ids::MOSSY_COBBLESTONE_WALL), "Mossy Cobblestone Wall", $wallBreakInfo));
+		self::register("nether_brick_wall", new Wall(new BID(Ids::NETHER_BRICK_WALL), "Nether Brick Wall", $wallBreakInfo));
+		self::register("prismarine_wall", new Wall(new BID(Ids::PRISMARINE_WALL), "Prismarine Wall", $wallBreakInfo));
+		self::register("red_nether_brick_wall", new Wall(new BID(Ids::RED_NETHER_BRICK_WALL), "Red Nether Brick Wall", $wallBreakInfo));
+		self::register("red_sandstone_wall", new Wall(new BID(Ids::RED_SANDSTONE_WALL), "Red Sandstone Wall", $wallBreakInfo));
+		self::register("sandstone_wall", new Wall(new BID(Ids::SANDSTONE_WALL), "Sandstone Wall", $wallBreakInfo));
+		self::register("stone_brick_wall", new Wall(new BID(Ids::STONE_BRICK_WALL), "Stone Brick Wall", $wallBreakInfo));
+
+		self::registerElements();
+
+		$chemistryTableBreakInfo = new BreakInfo(2.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		self::register("compound_creator", new ChemistryTable(new BID(Ids::COMPOUND_CREATOR), "Compound Creator", $chemistryTableBreakInfo));
+		self::register("element_constructor", new ChemistryTable(new BID(Ids::ELEMENT_CONSTRUCTOR), "Element Constructor", $chemistryTableBreakInfo));
+		self::register("lab_table", new ChemistryTable(new BID(Ids::LAB_TABLE), "Lab Table", $chemistryTableBreakInfo));
+		self::register("material_reducer", new ChemistryTable(new BID(Ids::MATERIAL_REDUCER), "Material Reducer", $chemistryTableBreakInfo));
+
+		self::register("chemical_heat", new ChemicalHeat(new BID(Ids::CHEMICAL_HEAT), "Heat Block", $chemistryTableBreakInfo));
+
+		self::registerMushroomBlocks();
+
+		self::register("coral", new Coral(
+			new BID(Ids::CORAL),
+			"Coral",
+			BreakInfo::instant(),
+		));
+		self::register("coral_fan", new FloorCoralFan(
+			new BID(Ids::CORAL_FAN),
+			"Coral Fan",
+			BreakInfo::instant(),
+		));
+		self::register("wall_coral_fan", new WallCoralFan(
+			new BID(Ids::WALL_CORAL_FAN),
+			"Wall Coral Fan",
+			BreakInfo::instant(),
+		));
+
+		self::registerBlocksR13();
+		self::registerBlocksR14();
+		self::registerBlocksR16();
+		self::registerBlocksR17();
+		self::registerMudBlocks();
+
+		self::registerOres();
+		self::registerWoodenBlocks();
 	}
+
+	private static function registerWoodenBlocks() : void{
+		$planksBreakInfo = new BreakInfo(2.0, ToolType::AXE, 0, 15.0);
+		$signBreakInfo = new BreakInfo(1.0, ToolType::AXE);
+		$logBreakInfo = new BreakInfo(2.0, ToolType::AXE);
+		$woodenDoorBreakInfo = new BreakInfo(3.0, ToolType::AXE, 0, 15.0);
+		$woodenButtonBreakInfo = new BreakInfo(0.5, ToolType::AXE);
+		$woodenPressurePlateBreakInfo = new BreakInfo(0.5, ToolType::AXE);
+
+		foreach(WoodType::getAll() as $woodType){
+			$name = $woodType->getDisplayName();
+			$idName = fn(string $suffix) => $woodType->name() . "_" . $suffix;
+
+			self::register($idName(mb_strtolower($woodType->getStandardLogSuffix() ?? "log", 'US-ASCII')), new Wood(BlockLegacyIdHelper::getLogIdentifier($woodType), $name . " " . ($woodType->getStandardLogSuffix() ?? "Log"), $logBreakInfo, $woodType));
+			self::register($idName(mb_strtolower($woodType->getAllSidedLogSuffix() ?? "wood", 'US-ASCII')), new Wood(BlockLegacyIdHelper::getAllSidedLogIdentifier($woodType), $name . " " . ($woodType->getAllSidedLogSuffix() ?? "Wood"), $logBreakInfo, $woodType));
+
+			self::register($idName("planks"), new Planks(BlockLegacyIdHelper::getWoodenPlanksIdentifier($woodType), $name . " Planks", $planksBreakInfo, $woodType));
+			self::register($idName("fence"), new WoodenFence(BlockLegacyIdHelper::getWoodenFenceIdentifier($woodType), $name . " Fence", $planksBreakInfo, $woodType));
+			self::register($idName("slab"), new WoodenSlab(BlockLegacyIdHelper::getWoodenSlabIdentifier($woodType), $name, $planksBreakInfo, $woodType));
+
+			self::register($idName("fence_gate"), new FenceGate(BlockLegacyIdHelper::getWoodenFenceGateIdentifier($woodType), $name . " Fence Gate", $planksBreakInfo, $woodType));
+			self::register($idName("stairs"), new WoodenStairs(BlockLegacyIdHelper::getWoodenStairsIdentifier($woodType), $name . " Stairs", $planksBreakInfo, $woodType));
+			self::register($idName("door"), new WoodenDoor(BlockLegacyIdHelper::getWoodenDoorIdentifier($woodType), $name . " Door", $woodenDoorBreakInfo, $woodType));
+
+			self::register($idName("button"), new WoodenButton(BlockLegacyIdHelper::getWoodenButtonIdentifier($woodType), $name . " Button", $woodenButtonBreakInfo, $woodType));
+			self::register($idName("pressure_plate"), new WoodenPressurePlate(BlockLegacyIdHelper::getWoodenPressurePlateIdentifier($woodType), $name . " Pressure Plate", $woodenPressurePlateBreakInfo, $woodType));
+			self::register($idName("trapdoor"), new WoodenTrapdoor(BlockLegacyIdHelper::getWoodenTrapdoorIdentifier($woodType), $name . " Trapdoor", $woodenDoorBreakInfo, $woodType));
+
+			[$floorSignId, $wallSignId, $signAsItem] = BlockLegacyIdHelper::getWoodenSignInfo($woodType);
+			self::register($idName("sign"), new FloorSign($floorSignId, $name . " Sign", $signBreakInfo, $woodType, $signAsItem));
+			self::register($idName("wall_sign"), new WallSign($wallSignId, $name . " Wall Sign", $signBreakInfo, $woodType, $signAsItem));
+		}
+	}
+
+	private static function registerMushroomBlocks() : void{
+		$mushroomBlockBreakInfo = new BreakInfo(0.2, ToolType::AXE);
+
+		self::register("brown_mushroom_block", new BrownMushroomBlock(new BID(Ids::BROWN_MUSHROOM_BLOCK), "Brown Mushroom Block", $mushroomBlockBreakInfo));
+		self::register("red_mushroom_block", new RedMushroomBlock(new BID(Ids::RED_MUSHROOM_BLOCK), "Red Mushroom Block", $mushroomBlockBreakInfo));
+
+		//finally, the stems
+		self::register("mushroom_stem", new MushroomStem(new BID(Ids::MUSHROOM_STEM), "Mushroom Stem", $mushroomBlockBreakInfo));
+		self::register("all_sided_mushroom_stem", new MushroomStem(new BID(Ids::ALL_SIDED_MUSHROOM_STEM), "All Sided Mushroom Stem", $mushroomBlockBreakInfo));
+	}
+
+	private static function registerElements() : void{
+		$instaBreak = BreakInfo::instant();
+		self::register("element_zero", new Opaque(new BID(Ids::ELEMENT_ZERO), "???", $instaBreak));
+
+		self::register("element_hydrogen", new Element(new BID(Ids::ELEMENT_HYDROGEN), "Hydrogen", $instaBreak, "h", 1, 5));
+		self::register("element_helium", new Element(new BID(Ids::ELEMENT_HELIUM), "Helium", $instaBreak, "he", 2, 7));
+		self::register("element_lithium", new Element(new BID(Ids::ELEMENT_LITHIUM), "Lithium", $instaBreak, "li", 3, 0));
+		self::register("element_beryllium", new Element(new BID(Ids::ELEMENT_BERYLLIUM), "Beryllium", $instaBreak, "be", 4, 1));
+		self::register("element_boron", new Element(new BID(Ids::ELEMENT_BORON), "Boron", $instaBreak, "b", 5, 4));
+		self::register("element_carbon", new Element(new BID(Ids::ELEMENT_CARBON), "Carbon", $instaBreak, "c", 6, 5));
+		self::register("element_nitrogen", new Element(new BID(Ids::ELEMENT_NITROGEN), "Nitrogen", $instaBreak, "n", 7, 5));
+		self::register("element_oxygen", new Element(new BID(Ids::ELEMENT_OXYGEN), "Oxygen", $instaBreak, "o", 8, 5));
+		self::register("element_fluorine", new Element(new BID(Ids::ELEMENT_FLUORINE), "Fluorine", $instaBreak, "f", 9, 6));
+		self::register("element_neon", new Element(new BID(Ids::ELEMENT_NEON), "Neon", $instaBreak, "ne", 10, 7));
+		self::register("element_sodium", new Element(new BID(Ids::ELEMENT_SODIUM), "Sodium", $instaBreak, "na", 11, 0));
+		self::register("element_magnesium", new Element(new BID(Ids::ELEMENT_MAGNESIUM), "Magnesium", $instaBreak, "mg", 12, 1));
+		self::register("element_aluminum", new Element(new BID(Ids::ELEMENT_ALUMINUM), "Aluminum", $instaBreak, "al", 13, 3));
+		self::register("element_silicon", new Element(new BID(Ids::ELEMENT_SILICON), "Silicon", $instaBreak, "si", 14, 4));
+		self::register("element_phosphorus", new Element(new BID(Ids::ELEMENT_PHOSPHORUS), "Phosphorus", $instaBreak, "p", 15, 5));
+		self::register("element_sulfur", new Element(new BID(Ids::ELEMENT_SULFUR), "Sulfur", $instaBreak, "s", 16, 5));
+		self::register("element_chlorine", new Element(new BID(Ids::ELEMENT_CHLORINE), "Chlorine", $instaBreak, "cl", 17, 6));
+		self::register("element_argon", new Element(new BID(Ids::ELEMENT_ARGON), "Argon", $instaBreak, "ar", 18, 7));
+		self::register("element_potassium", new Element(new BID(Ids::ELEMENT_POTASSIUM), "Potassium", $instaBreak, "k", 19, 0));
+		self::register("element_calcium", new Element(new BID(Ids::ELEMENT_CALCIUM), "Calcium", $instaBreak, "ca", 20, 1));
+		self::register("element_scandium", new Element(new BID(Ids::ELEMENT_SCANDIUM), "Scandium", $instaBreak, "sc", 21, 2));
+		self::register("element_titanium", new Element(new BID(Ids::ELEMENT_TITANIUM), "Titanium", $instaBreak, "ti", 22, 2));
+		self::register("element_vanadium", new Element(new BID(Ids::ELEMENT_VANADIUM), "Vanadium", $instaBreak, "v", 23, 2));
+		self::register("element_chromium", new Element(new BID(Ids::ELEMENT_CHROMIUM), "Chromium", $instaBreak, "cr", 24, 2));
+		self::register("element_manganese", new Element(new BID(Ids::ELEMENT_MANGANESE), "Manganese", $instaBreak, "mn", 25, 2));
+		self::register("element_iron", new Element(new BID(Ids::ELEMENT_IRON), "Iron", $instaBreak, "fe", 26, 2));
+		self::register("element_cobalt", new Element(new BID(Ids::ELEMENT_COBALT), "Cobalt", $instaBreak, "co", 27, 2));
+		self::register("element_nickel", new Element(new BID(Ids::ELEMENT_NICKEL), "Nickel", $instaBreak, "ni", 28, 2));
+		self::register("element_copper", new Element(new BID(Ids::ELEMENT_COPPER), "Copper", $instaBreak, "cu", 29, 2));
+		self::register("element_zinc", new Element(new BID(Ids::ELEMENT_ZINC), "Zinc", $instaBreak, "zn", 30, 2));
+		self::register("element_gallium", new Element(new BID(Ids::ELEMENT_GALLIUM), "Gallium", $instaBreak, "ga", 31, 3));
+		self::register("element_germanium", new Element(new BID(Ids::ELEMENT_GERMANIUM), "Germanium", $instaBreak, "ge", 32, 4));
+		self::register("element_arsenic", new Element(new BID(Ids::ELEMENT_ARSENIC), "Arsenic", $instaBreak, "as", 33, 4));
+		self::register("element_selenium", new Element(new BID(Ids::ELEMENT_SELENIUM), "Selenium", $instaBreak, "se", 34, 5));
+		self::register("element_bromine", new Element(new BID(Ids::ELEMENT_BROMINE), "Bromine", $instaBreak, "br", 35, 6));
+		self::register("element_krypton", new Element(new BID(Ids::ELEMENT_KRYPTON), "Krypton", $instaBreak, "kr", 36, 7));
+		self::register("element_rubidium", new Element(new BID(Ids::ELEMENT_RUBIDIUM), "Rubidium", $instaBreak, "rb", 37, 0));
+		self::register("element_strontium", new Element(new BID(Ids::ELEMENT_STRONTIUM), "Strontium", $instaBreak, "sr", 38, 1));
+		self::register("element_yttrium", new Element(new BID(Ids::ELEMENT_YTTRIUM), "Yttrium", $instaBreak, "y", 39, 2));
+		self::register("element_zirconium", new Element(new BID(Ids::ELEMENT_ZIRCONIUM), "Zirconium", $instaBreak, "zr", 40, 2));
+		self::register("element_niobium", new Element(new BID(Ids::ELEMENT_NIOBIUM), "Niobium", $instaBreak, "nb", 41, 2));
+		self::register("element_molybdenum", new Element(new BID(Ids::ELEMENT_MOLYBDENUM), "Molybdenum", $instaBreak, "mo", 42, 2));
+		self::register("element_technetium", new Element(new BID(Ids::ELEMENT_TECHNETIUM), "Technetium", $instaBreak, "tc", 43, 2));
+		self::register("element_ruthenium", new Element(new BID(Ids::ELEMENT_RUTHENIUM), "Ruthenium", $instaBreak, "ru", 44, 2));
+		self::register("element_rhodium", new Element(new BID(Ids::ELEMENT_RHODIUM), "Rhodium", $instaBreak, "rh", 45, 2));
+		self::register("element_palladium", new Element(new BID(Ids::ELEMENT_PALLADIUM), "Palladium", $instaBreak, "pd", 46, 2));
+		self::register("element_silver", new Element(new BID(Ids::ELEMENT_SILVER), "Silver", $instaBreak, "ag", 47, 2));
+		self::register("element_cadmium", new Element(new BID(Ids::ELEMENT_CADMIUM), "Cadmium", $instaBreak, "cd", 48, 2));
+		self::register("element_indium", new Element(new BID(Ids::ELEMENT_INDIUM), "Indium", $instaBreak, "in", 49, 3));
+		self::register("element_tin", new Element(new BID(Ids::ELEMENT_TIN), "Tin", $instaBreak, "sn", 50, 3));
+		self::register("element_antimony", new Element(new BID(Ids::ELEMENT_ANTIMONY), "Antimony", $instaBreak, "sb", 51, 4));
+		self::register("element_tellurium", new Element(new BID(Ids::ELEMENT_TELLURIUM), "Tellurium", $instaBreak, "te", 52, 4));
+		self::register("element_iodine", new Element(new BID(Ids::ELEMENT_IODINE), "Iodine", $instaBreak, "i", 53, 6));
+		self::register("element_xenon", new Element(new BID(Ids::ELEMENT_XENON), "Xenon", $instaBreak, "xe", 54, 7));
+		self::register("element_cesium", new Element(new BID(Ids::ELEMENT_CESIUM), "Cesium", $instaBreak, "cs", 55, 0));
+		self::register("element_barium", new Element(new BID(Ids::ELEMENT_BARIUM), "Barium", $instaBreak, "ba", 56, 1));
+		self::register("element_lanthanum", new Element(new BID(Ids::ELEMENT_LANTHANUM), "Lanthanum", $instaBreak, "la", 57, 8));
+		self::register("element_cerium", new Element(new BID(Ids::ELEMENT_CERIUM), "Cerium", $instaBreak, "ce", 58, 8));
+		self::register("element_praseodymium", new Element(new BID(Ids::ELEMENT_PRASEODYMIUM), "Praseodymium", $instaBreak, "pr", 59, 8));
+		self::register("element_neodymium", new Element(new BID(Ids::ELEMENT_NEODYMIUM), "Neodymium", $instaBreak, "nd", 60, 8));
+		self::register("element_promethium", new Element(new BID(Ids::ELEMENT_PROMETHIUM), "Promethium", $instaBreak, "pm", 61, 8));
+		self::register("element_samarium", new Element(new BID(Ids::ELEMENT_SAMARIUM), "Samarium", $instaBreak, "sm", 62, 8));
+		self::register("element_europium", new Element(new BID(Ids::ELEMENT_EUROPIUM), "Europium", $instaBreak, "eu", 63, 8));
+		self::register("element_gadolinium", new Element(new BID(Ids::ELEMENT_GADOLINIUM), "Gadolinium", $instaBreak, "gd", 64, 8));
+		self::register("element_terbium", new Element(new BID(Ids::ELEMENT_TERBIUM), "Terbium", $instaBreak, "tb", 65, 8));
+		self::register("element_dysprosium", new Element(new BID(Ids::ELEMENT_DYSPROSIUM), "Dysprosium", $instaBreak, "dy", 66, 8));
+		self::register("element_holmium", new Element(new BID(Ids::ELEMENT_HOLMIUM), "Holmium", $instaBreak, "ho", 67, 8));
+		self::register("element_erbium", new Element(new BID(Ids::ELEMENT_ERBIUM), "Erbium", $instaBreak, "er", 68, 8));
+		self::register("element_thulium", new Element(new BID(Ids::ELEMENT_THULIUM), "Thulium", $instaBreak, "tm", 69, 8));
+		self::register("element_ytterbium", new Element(new BID(Ids::ELEMENT_YTTERBIUM), "Ytterbium", $instaBreak, "yb", 70, 8));
+		self::register("element_lutetium", new Element(new BID(Ids::ELEMENT_LUTETIUM), "Lutetium", $instaBreak, "lu", 71, 8));
+		self::register("element_hafnium", new Element(new BID(Ids::ELEMENT_HAFNIUM), "Hafnium", $instaBreak, "hf", 72, 2));
+		self::register("element_tantalum", new Element(new BID(Ids::ELEMENT_TANTALUM), "Tantalum", $instaBreak, "ta", 73, 2));
+		self::register("element_tungsten", new Element(new BID(Ids::ELEMENT_TUNGSTEN), "Tungsten", $instaBreak, "w", 74, 2));
+		self::register("element_rhenium", new Element(new BID(Ids::ELEMENT_RHENIUM), "Rhenium", $instaBreak, "re", 75, 2));
+		self::register("element_osmium", new Element(new BID(Ids::ELEMENT_OSMIUM), "Osmium", $instaBreak, "os", 76, 2));
+		self::register("element_iridium", new Element(new BID(Ids::ELEMENT_IRIDIUM), "Iridium", $instaBreak, "ir", 77, 2));
+		self::register("element_platinum", new Element(new BID(Ids::ELEMENT_PLATINUM), "Platinum", $instaBreak, "pt", 78, 2));
+		self::register("element_gold", new Element(new BID(Ids::ELEMENT_GOLD), "Gold", $instaBreak, "au", 79, 2));
+		self::register("element_mercury", new Element(new BID(Ids::ELEMENT_MERCURY), "Mercury", $instaBreak, "hg", 80, 2));
+		self::register("element_thallium", new Element(new BID(Ids::ELEMENT_THALLIUM), "Thallium", $instaBreak, "tl", 81, 3));
+		self::register("element_lead", new Element(new BID(Ids::ELEMENT_LEAD), "Lead", $instaBreak, "pb", 82, 3));
+		self::register("element_bismuth", new Element(new BID(Ids::ELEMENT_BISMUTH), "Bismuth", $instaBreak, "bi", 83, 3));
+		self::register("element_polonium", new Element(new BID(Ids::ELEMENT_POLONIUM), "Polonium", $instaBreak, "po", 84, 4));
+		self::register("element_astatine", new Element(new BID(Ids::ELEMENT_ASTATINE), "Astatine", $instaBreak, "at", 85, 6));
+		self::register("element_radon", new Element(new BID(Ids::ELEMENT_RADON), "Radon", $instaBreak, "rn", 86, 7));
+		self::register("element_francium", new Element(new BID(Ids::ELEMENT_FRANCIUM), "Francium", $instaBreak, "fr", 87, 0));
+		self::register("element_radium", new Element(new BID(Ids::ELEMENT_RADIUM), "Radium", $instaBreak, "ra", 88, 1));
+		self::register("element_actinium", new Element(new BID(Ids::ELEMENT_ACTINIUM), "Actinium", $instaBreak, "ac", 89, 9));
+		self::register("element_thorium", new Element(new BID(Ids::ELEMENT_THORIUM), "Thorium", $instaBreak, "th", 90, 9));
+		self::register("element_protactinium", new Element(new BID(Ids::ELEMENT_PROTACTINIUM), "Protactinium", $instaBreak, "pa", 91, 9));
+		self::register("element_uranium", new Element(new BID(Ids::ELEMENT_URANIUM), "Uranium", $instaBreak, "u", 92, 9));
+		self::register("element_neptunium", new Element(new BID(Ids::ELEMENT_NEPTUNIUM), "Neptunium", $instaBreak, "np", 93, 9));
+		self::register("element_plutonium", new Element(new BID(Ids::ELEMENT_PLUTONIUM), "Plutonium", $instaBreak, "pu", 94, 9));
+		self::register("element_americium", new Element(new BID(Ids::ELEMENT_AMERICIUM), "Americium", $instaBreak, "am", 95, 9));
+		self::register("element_curium", new Element(new BID(Ids::ELEMENT_CURIUM), "Curium", $instaBreak, "cm", 96, 9));
+		self::register("element_berkelium", new Element(new BID(Ids::ELEMENT_BERKELIUM), "Berkelium", $instaBreak, "bk", 97, 9));
+		self::register("element_californium", new Element(new BID(Ids::ELEMENT_CALIFORNIUM), "Californium", $instaBreak, "cf", 98, 9));
+		self::register("element_einsteinium", new Element(new BID(Ids::ELEMENT_EINSTEINIUM), "Einsteinium", $instaBreak, "es", 99, 9));
+		self::register("element_fermium", new Element(new BID(Ids::ELEMENT_FERMIUM), "Fermium", $instaBreak, "fm", 100, 9));
+		self::register("element_mendelevium", new Element(new BID(Ids::ELEMENT_MENDELEVIUM), "Mendelevium", $instaBreak, "md", 101, 9));
+		self::register("element_nobelium", new Element(new BID(Ids::ELEMENT_NOBELIUM), "Nobelium", $instaBreak, "no", 102, 9));
+		self::register("element_lawrencium", new Element(new BID(Ids::ELEMENT_LAWRENCIUM), "Lawrencium", $instaBreak, "lr", 103, 9));
+		self::register("element_rutherfordium", new Element(new BID(Ids::ELEMENT_RUTHERFORDIUM), "Rutherfordium", $instaBreak, "rf", 104, 2));
+		self::register("element_dubnium", new Element(new BID(Ids::ELEMENT_DUBNIUM), "Dubnium", $instaBreak, "db", 105, 2));
+		self::register("element_seaborgium", new Element(new BID(Ids::ELEMENT_SEABORGIUM), "Seaborgium", $instaBreak, "sg", 106, 2));
+		self::register("element_bohrium", new Element(new BID(Ids::ELEMENT_BOHRIUM), "Bohrium", $instaBreak, "bh", 107, 2));
+		self::register("element_hassium", new Element(new BID(Ids::ELEMENT_HASSIUM), "Hassium", $instaBreak, "hs", 108, 2));
+		self::register("element_meitnerium", new Element(new BID(Ids::ELEMENT_MEITNERIUM), "Meitnerium", $instaBreak, "mt", 109, 2));
+		self::register("element_darmstadtium", new Element(new BID(Ids::ELEMENT_DARMSTADTIUM), "Darmstadtium", $instaBreak, "ds", 110, 2));
+		self::register("element_roentgenium", new Element(new BID(Ids::ELEMENT_ROENTGENIUM), "Roentgenium", $instaBreak, "rg", 111, 2));
+		self::register("element_copernicium", new Element(new BID(Ids::ELEMENT_COPERNICIUM), "Copernicium", $instaBreak, "cn", 112, 2));
+		self::register("element_nihonium", new Element(new BID(Ids::ELEMENT_NIHONIUM), "Nihonium", $instaBreak, "nh", 113, 3));
+		self::register("element_flerovium", new Element(new BID(Ids::ELEMENT_FLEROVIUM), "Flerovium", $instaBreak, "fl", 114, 3));
+		self::register("element_moscovium", new Element(new BID(Ids::ELEMENT_MOSCOVIUM), "Moscovium", $instaBreak, "mc", 115, 3));
+		self::register("element_livermorium", new Element(new BID(Ids::ELEMENT_LIVERMORIUM), "Livermorium", $instaBreak, "lv", 116, 3));
+		self::register("element_tennessine", new Element(new BID(Ids::ELEMENT_TENNESSINE), "Tennessine", $instaBreak, "ts", 117, 6));
+		self::register("element_oganesson", new Element(new BID(Ids::ELEMENT_OGANESSON), "Oganesson", $instaBreak, "og", 118, 7));
+	}
+
+	private static function registerOres() : void{
+		$stoneOreBreakInfo = fn(ToolTier $toolTier) => new BreakInfo(3.0, ToolType::PICKAXE, $toolTier->getHarvestLevel());
+		self::register("coal_ore", new CoalOre(new BID(Ids::COAL_ORE), "Coal Ore", $stoneOreBreakInfo(ToolTier::WOOD())));
+		self::register("copper_ore", new CopperOre(new BID(Ids::COPPER_ORE), "Copper Ore", $stoneOreBreakInfo(ToolTier::STONE())));
+		self::register("diamond_ore", new DiamondOre(new BID(Ids::DIAMOND_ORE), "Diamond Ore", $stoneOreBreakInfo(ToolTier::IRON())));
+		self::register("emerald_ore", new EmeraldOre(new BID(Ids::EMERALD_ORE), "Emerald Ore", $stoneOreBreakInfo(ToolTier::IRON())));
+		self::register("gold_ore", new GoldOre(new BID(Ids::GOLD_ORE), "Gold Ore", $stoneOreBreakInfo(ToolTier::IRON())));
+		self::register("iron_ore", new IronOre(new BID(Ids::IRON_ORE), "Iron Ore", $stoneOreBreakInfo(ToolTier::STONE())));
+		self::register("lapis_lazuli_ore", new LapisOre(new BID(Ids::LAPIS_LAZULI_ORE), "Lapis Lazuli Ore", $stoneOreBreakInfo(ToolTier::STONE())));
+		self::register("redstone_ore", new RedstoneOre(new BID(Ids::REDSTONE_ORE), "Redstone Ore", $stoneOreBreakInfo(ToolTier::IRON())));
+
+		$deepslateOreBreakInfo = fn(ToolTier $toolTier) => new BreakInfo(4.5, ToolType::PICKAXE, $toolTier->getHarvestLevel());
+		self::register("deepslate_coal_ore", new CoalOre(new BID(Ids::DEEPSLATE_COAL_ORE), "Deepslate Coal Ore", $deepslateOreBreakInfo(ToolTier::WOOD())));
+		self::register("deepslate_copper_ore", new CopperOre(new BID(Ids::DEEPSLATE_COPPER_ORE), "Deepslate Copper Ore", $deepslateOreBreakInfo(ToolTier::STONE())));
+		self::register("deepslate_diamond_ore", new DiamondOre(new BID(Ids::DEEPSLATE_DIAMOND_ORE), "Deepslate Diamond Ore", $deepslateOreBreakInfo(ToolTier::IRON())));
+		self::register("deepslate_emerald_ore", new EmeraldOre(new BID(Ids::DEEPSLATE_EMERALD_ORE), "Deepslate Emerald Ore", $deepslateOreBreakInfo(ToolTier::IRON())));
+		self::register("deepslate_gold_ore", new GoldOre(new BID(Ids::DEEPSLATE_GOLD_ORE), "Deepslate Gold Ore", $deepslateOreBreakInfo(ToolTier::IRON())));
+		self::register("deepslate_iron_ore", new IronOre(new BID(Ids::DEEPSLATE_IRON_ORE), "Deepslate Iron Ore", $deepslateOreBreakInfo(ToolTier::STONE())));
+		self::register("deepslate_lapis_lazuli_ore", new LapisOre(new BID(Ids::DEEPSLATE_LAPIS_LAZULI_ORE), "Deepslate Lapis Lazuli Ore", $deepslateOreBreakInfo(ToolTier::STONE())));
+		self::register("deepslate_redstone_ore", new RedstoneOre(new BID(Ids::DEEPSLATE_REDSTONE_ORE), "Deepslate Redstone Ore", $deepslateOreBreakInfo(ToolTier::IRON())));
+
+		$netherrackOreBreakInfo = new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		self::register("nether_quartz_ore", new NetherQuartzOre(new BID(Ids::NETHER_QUARTZ_ORE), "Nether Quartz Ore", $netherrackOreBreakInfo));
+		self::register("nether_gold_ore", new NetherGoldOre(new BID(Ids::NETHER_GOLD_ORE), "Nether Gold Ore", $netherrackOreBreakInfo));
+	}
+
+	private static function registerBlocksR13() : void{
+		self::register("light", new Light(new BID(Ids::LIGHT), "Light Block", BreakInfo::indestructible()));
+	}
+
+	private static function registerBlocksR14() : void{
+		self::register("honeycomb", new Opaque(new BID(Ids::HONEYCOMB), "Honeycomb Block", new BreakInfo(0.6)));
+	}
+
+	private static function registerBlocksR16() : void{
+		//for some reason, slabs have weird hardness like the legacy ones
+		$slabBreakInfo = new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+
+		self::register("ancient_debris", new Opaque(new BID(Ids::ANCIENT_DEBRIS), "Ancient Debris", new BreakInfo(30, ToolType::PICKAXE, ToolTier::DIAMOND()->getHarvestLevel(), 3600.0)));
+
+		$basaltBreakInfo = new BreakInfo(1.25, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 21.0);
+		self::register("basalt", new SimplePillar(new BID(Ids::BASALT), "Basalt", $basaltBreakInfo));
+		self::register("polished_basalt", new SimplePillar(new BID(Ids::POLISHED_BASALT), "Polished Basalt", $basaltBreakInfo));
+		self::register("smooth_basalt", new Opaque(new BID(Ids::SMOOTH_BASALT), "Smooth Basalt", $basaltBreakInfo));
+
+		$blackstoneBreakInfo = new BreakInfo(1.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+		self::register("blackstone", new Opaque(new BID(Ids::BLACKSTONE), "Blackstone", $blackstoneBreakInfo));
+		self::register("blackstone_slab", new Slab(new BID(Ids::BLACKSTONE_SLAB), "Blackstone", $slabBreakInfo));
+		self::register("blackstone_stairs", new Stair(new BID(Ids::BLACKSTONE_STAIRS), "Blackstone Stairs", $blackstoneBreakInfo));
+		self::register("blackstone_wall", new Wall(new BID(Ids::BLACKSTONE_WALL), "Blackstone Wall", $blackstoneBreakInfo));
+
+		//TODO: polished blackstone ought to have 2.0 hardness (as per java) but it's 1.5 in Bedrock (probably parity bug)
+		$prefix = fn(string $thing) => "Polished Blackstone" . ($thing !== "" ? " $thing" : "");
+		self::register("polished_blackstone", new Opaque(new BID(Ids::POLISHED_BLACKSTONE), $prefix(""), $blackstoneBreakInfo));
+		self::register("polished_blackstone_button", new StoneButton(new BID(Ids::POLISHED_BLACKSTONE_BUTTON), $prefix("Button"), new BreakInfo(0.5, ToolType::PICKAXE)));
+		self::register("polished_blackstone_pressure_plate", new StonePressurePlate(new BID(Ids::POLISHED_BLACKSTONE_PRESSURE_PLATE), $prefix("Pressure Plate"), new BreakInfo(0.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("polished_blackstone_slab", new Slab(new BID(Ids::POLISHED_BLACKSTONE_SLAB), $prefix(""), $slabBreakInfo));
+		self::register("polished_blackstone_stairs", new Stair(new BID(Ids::POLISHED_BLACKSTONE_STAIRS), $prefix("Stairs"), $blackstoneBreakInfo));
+		self::register("polished_blackstone_wall", new Wall(new BID(Ids::POLISHED_BLACKSTONE_WALL), $prefix("Wall"), $blackstoneBreakInfo));
+		self::register("chiseled_polished_blackstone", new Opaque(new BID(Ids::CHISELED_POLISHED_BLACKSTONE), "Chiseled Polished Blackstone", $blackstoneBreakInfo));
+
+		$prefix = fn(string $thing) => "Polished Blackstone Brick" . ($thing !== "" ? " $thing" : "");
+		self::register("polished_blackstone_bricks", new Opaque(new BID(Ids::POLISHED_BLACKSTONE_BRICKS), "Polished Blackstone Bricks", $blackstoneBreakInfo));
+		self::register("polished_blackstone_brick_slab", new Slab(new BID(Ids::POLISHED_BLACKSTONE_BRICK_SLAB), "Polished Blackstone Brick", $slabBreakInfo));
+		self::register("polished_blackstone_brick_stairs", new Stair(new BID(Ids::POLISHED_BLACKSTONE_BRICK_STAIRS), $prefix("Stairs"), $blackstoneBreakInfo));
+		self::register("polished_blackstone_brick_wall", new Wall(new BID(Ids::POLISHED_BLACKSTONE_BRICK_WALL), $prefix("Wall"), $blackstoneBreakInfo));
+		self::register("cracked_polished_blackstone_bricks", new Opaque(new BID(Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS), "Cracked Polished Blackstone Bricks", $blackstoneBreakInfo));
+
+		self::register("soul_torch", new Torch(new BID(Ids::SOUL_TORCH), "Soul Torch", BreakInfo::instant()));
+		self::register("soul_fire", new SoulFire(new BID(Ids::SOUL_FIRE), "Soul Fire", BreakInfo::instant()));
+
+		//TODO: soul soul ought to have 0.5 hardness (as per java) but it's 1.0 in Bedrock (probably parity bug)
+		self::register("soul_soil", new Opaque(new BID(Ids::SOUL_SOIL), "Soul Soil", new BreakInfo(1.0, ToolType::SHOVEL)));
+
+		self::register("shroomlight", new class(new BID(Ids::SHROOMLIGHT), "Shroomlight", new BreakInfo(1.0, ToolType::HOE)) extends Opaque{
+			public function getLightLevel() : int{ return 15; }
+		});
+	}
+
+	private static function registerBlocksR17() : void{
+		//in java this can be acquired using any tool - seems to be a parity issue in bedrock
+		self::register("amethyst", new Opaque(new BID(Ids::AMETHYST), "Amethyst", new BreakInfo(1.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+
+		self::register("calcite", new Opaque(new BID(Ids::CALCITE), "Calcite", new BreakInfo(0.75, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("tuff", new Opaque(new BID(Ids::TUFF), "Tuff", new BreakInfo(1.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0)));
+
+		self::register("raw_copper", new Opaque(new BID(Ids::RAW_COPPER), "Raw Copper Block", new BreakInfo(5, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel(), 30.0)));
+		self::register("raw_gold", new Opaque(new BID(Ids::RAW_GOLD), "Raw Gold Block", new BreakInfo(5, ToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel(), 30.0)));
+		self::register("raw_iron", new Opaque(new BID(Ids::RAW_IRON), "Raw Iron Block", new BreakInfo(5, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel(), 30.0)));
+
+		$deepslateBreakInfo = new BreakInfo(3, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 18.0);
+		self::register("deepslate", new SimplePillar(new BID(Ids::DEEPSLATE), "Deepslate", $deepslateBreakInfo));
+
+		//TODO: parity issue here - in Java this has a hardness of 3.0, but in bedrock it's 3.5
+		self::register("chiseled_deepslate", new Opaque(new BID(Ids::CHISELED_DEEPSLATE), "Chiseled Deepslate", new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 18.0)));
+
+		$deepslateBrickBreakInfo = new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 18.0);
+		self::register("deepslate_bricks", new Opaque(new BID(Ids::DEEPSLATE_BRICKS), "Deepslate Bricks", $deepslateBrickBreakInfo));
+		self::register("deepslate_brick_slab", new Slab(new BID(Ids::DEEPSLATE_BRICK_SLAB), "Deepslate Brick", $deepslateBrickBreakInfo));
+		self::register("deepslate_brick_stairs", new Stair(new BID(Ids::DEEPSLATE_BRICK_STAIRS), "Deepslate Brick Stairs", $deepslateBrickBreakInfo));
+		self::register("deepslate_brick_wall", new Wall(new BID(Ids::DEEPSLATE_BRICK_WALL), "Deepslate Brick Wall", $deepslateBrickBreakInfo));
+		self::register("cracked_deepslate_bricks", new Opaque(new BID(Ids::CRACKED_DEEPSLATE_BRICKS), "Cracked Deepslate Bricks", $deepslateBrickBreakInfo));
+
+		$deepslateTilesBreakInfo = new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 18.0);
+		self::register("deepslate_tiles", new Opaque(new BID(Ids::DEEPSLATE_TILES), "Deepslate Tiles", $deepslateTilesBreakInfo));
+		self::register("deepslate_tile_slab", new Slab(new BID(Ids::DEEPSLATE_TILE_SLAB), "Deepslate Tile", $deepslateTilesBreakInfo));
+		self::register("deepslate_tile_stairs", new Stair(new BID(Ids::DEEPSLATE_TILE_STAIRS), "Deepslate Tile Stairs", $deepslateTilesBreakInfo));
+		self::register("deepslate_tile_wall", new Wall(new BID(Ids::DEEPSLATE_TILE_WALL), "Deepslate Tile Wall", $deepslateTilesBreakInfo));
+		self::register("cracked_deepslate_tiles", new Opaque(new BID(Ids::CRACKED_DEEPSLATE_TILES), "Cracked Deepslate Tiles", $deepslateTilesBreakInfo));
+
+		$cobbledDeepslateBreakInfo = new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 18.0);
+		self::register("cobbled_deepslate", new Opaque(new BID(Ids::COBBLED_DEEPSLATE), "Cobbled Deepslate", $cobbledDeepslateBreakInfo));
+		self::register("cobbled_deepslate_slab", new Slab(new BID(Ids::COBBLED_DEEPSLATE_SLAB), "Cobbled Deepslate", $cobbledDeepslateBreakInfo));
+		self::register("cobbled_deepslate_stairs", new Stair(new BID(Ids::COBBLED_DEEPSLATE_STAIRS), "Cobbled Deepslate Stairs", $cobbledDeepslateBreakInfo));
+		self::register("cobbled_deepslate_wall", new Wall(new BID(Ids::COBBLED_DEEPSLATE_WALL), "Cobbled Deepslate Wall", $cobbledDeepslateBreakInfo));
+
+		$polishedDeepslateBreakInfo = new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 18.0);
+		self::register("polished_deepslate", new Opaque(new BID(Ids::POLISHED_DEEPSLATE), "Polished Deepslate", $polishedDeepslateBreakInfo));
+		self::register("polished_deepslate_slab", new Slab(new BID(Ids::POLISHED_DEEPSLATE_SLAB), "Polished Deepslate", $polishedDeepslateBreakInfo));
+		self::register("polished_deepslate_stairs", new Stair(new BID(Ids::POLISHED_DEEPSLATE_STAIRS), "Polished Deepslate Stairs", $polishedDeepslateBreakInfo));
+		self::register("polished_deepslate_wall", new Wall(new BID(Ids::POLISHED_DEEPSLATE_WALL), "Polished Deepslate Wall", $polishedDeepslateBreakInfo));
+
+		self::register("tinted_glass", new TintedGlass(new BID(Ids::TINTED_GLASS), "Tinted Glass", new BreakInfo(0.3)));
+	}
+
+	private static function registerMudBlocks() : void{
+		$mudBricksBreakInfo = new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+
+		self::register("mud_bricks", new Opaque(new BID(Ids::MUD_BRICKS), "Mud Bricks", $mudBricksBreakInfo));
+		self::register("mud_brick_slab", new Slab(new BID(Ids::MUD_BRICK_SLAB), "Mud Brick", $mudBricksBreakInfo));
+		self::register("mud_brick_stairs", new Stair(new BID(Ids::MUD_BRICK_STAIRS), "Mud Brick Stairs", $mudBricksBreakInfo));
+		self::register("mud_brick_wall", new Wall(new BID(Ids::MUD_BRICK_WALL), "Mud Brick Wall", $mudBricksBreakInfo));
+	}
+
 }
