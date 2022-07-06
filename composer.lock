@@ -685,16 +685,16 @@
         },
         {
             "name": "pocketmine/nbt",
-            "version": "0.3.2",
+            "version": "0.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "3e0d9ef6b6c5fb45e3745a121296e75631b3eefe"
+                "reference": "f4321be50df1a18b9f4e94d428a2e68a6e2ac2b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/3e0d9ef6b6c5fb45e3745a121296e75631b3eefe",
-                "reference": "3e0d9ef6b6c5fb45e3745a121296e75631b3eefe",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/f4321be50df1a18b9f4e94d428a2e68a6e2ac2b4",
+                "reference": "f4321be50df1a18b9f4e94d428a2e68a6e2ac2b4",
                 "shasum": ""
             },
             "require": {
@@ -704,7 +704,7 @@
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "1.2.0",
+                "phpstan/phpstan": "1.7.7",
                 "phpstan/phpstan-strict-rules": "^1.0",
                 "phpunit/phpunit": "^9.5"
             },
@@ -721,9 +721,9 @@
             "description": "PHP library for working with Named Binary Tags",
             "support": {
                 "issues": "https://github.com/pmmp/NBT/issues",
-                "source": "https://github.com/pmmp/NBT/tree/0.3.2"
+                "source": "https://github.com/pmmp/NBT/tree/0.3.3"
             },
-            "time": "2021-12-16T01:02:37+00:00"
+            "time": "2022-07-06T14:13:26+00:00"
         },
         {
             "name": "pocketmine/raklib",
