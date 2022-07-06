@@ -30,8 +30,6 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\network\mcpe\convert\BlockStateDictionary;
-use pocketmine\network\mcpe\convert\BlockStateDictionaryEntry;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
@@ -64,18 +62,10 @@ try{
 	fwrite(STDERR, "Invalid block palette file $argv[1]\n");
 	exit(1);
 }
-$entries = [];
-$fakeMeta = [];
-foreach($states as $state){
-	$fakeMeta[$state->getName()] ??= 0;
-	$entries[] = new BlockStateDictionaryEntry($state, $fakeMeta[$state->getName()]++);
-}
-$palette = new BlockStateDictionary($entries);
 
 $reportMap = [];
 
-foreach($palette->getStates() as $entry){
-	$state = $entry->getStateData();
+foreach($states as $state){
 	$name = $state->getName();
 	$reportMap[$name] ??= [];
 	foreach($state->getStates() as $propertyName => $value){

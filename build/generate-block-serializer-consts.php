@@ -30,8 +30,6 @@ use pocketmine\data\bedrock\block\BlockTypeNames;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\network\mcpe\convert\BlockStateDictionary;
-use pocketmine\network\mcpe\convert\BlockStateDictionaryEntry;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
@@ -68,11 +66,14 @@ class BlockPaletteReport{
 	public array $seenStateValues = [];
 }
 
-function generateBlockPaletteReport(BlockStateDictionary $dictionary) : BlockPaletteReport{
+/**
+ * @param BlockStateData[] $states
+ * @phpstan-param list<BlockStateData> $states
+ */
+function generateBlockPaletteReport(array $states) : BlockPaletteReport{
 	$result = new BlockPaletteReport();
 
-	foreach($dictionary->getStates() as $state){
-		$stateData = $state->getStateData();
+	foreach($states as $stateData){
 		$name = $stateData->getName();
 		$result->seenTypes[$name] = $name;
 		foreach($stateData->getStates() as $k => $v){
@@ -190,14 +191,8 @@ try{
 	fwrite(STDERR, "Invalid block palette file $argv[1]\n");
 	exit(1);
 }
-$entries = [];
-$fakeMeta = [];
-foreach($states as $state){
-	$fakeMeta[$state->getName()] ??= 0;
-	$entries[] = new BlockStateDictionaryEntry($state, $fakeMeta[$state->getName()]++);
-}
-$dictionary = new BlockStateDictionary($entries);
-$report = generateBlockPaletteReport($dictionary);
+
+$report = generateBlockPaletteReport($states);
 generateBlockIds(array_values($report->seenTypes));
 generateBlockStateNames($report);
 generateBlockStringValues($report);
