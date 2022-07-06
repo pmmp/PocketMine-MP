@@ -29,11 +29,9 @@ use pocketmine\data\bedrock\block\BlockStateStringValues;
 use pocketmine\data\bedrock\block\BlockTypeNames;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\nbt\NbtException;
-use pocketmine\nbt\TreeRoot;
-use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
+use pocketmine\network\mcpe\convert\BlockStateDictionary;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
-use function array_map;
 use function array_values;
 use function asort;
 use function count;
@@ -183,10 +181,7 @@ if($paletteRaw === false){
 }
 
 try{
-	$states = array_map(
-		fn(TreeRoot $root) => BlockStateData::fromNbt($root->mustGetCompoundTag()),
-		(new NetworkNbtSerializer())->readMultiple($paletteRaw)
-	);
+	$states = BlockStateDictionary::loadPaletteFromString($paletteRaw);
 }catch(NbtException){
 	fwrite(STDERR, "Invalid block palette file $argv[1]\n");
 	exit(1);
