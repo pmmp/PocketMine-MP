@@ -585,9 +585,9 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
-	 * @deprecated This is intended for deserializing legacy data from the old crafting JSON and creative JSON data.
+	 * Deserializes item JSON data produced by json_encode()ing Item instances in older versions of PocketMine-MP.
+	 * This method exists solely to allow upgrading old JSON data stored by plugins.
 	 *
-	 * Returns an Item from properties created in an array by {@link Item#jsonSerialize}
 	 * @param mixed[] $data
 	 *
 	 * @throws SavedDataLoadingException
