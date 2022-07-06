@@ -23,9 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-class Spyglass extends Item{
+use pocketmine\player\Player;
+
+class Spyglass extends Item implements Releasable{
 
 	public function getMaxStackSize() : int{
 		return 1;
+	}
+
+	public function canStartUsingItem(Player $player) : bool{
+		return true;
 	}
 }
