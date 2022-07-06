@@ -179,6 +179,7 @@ use pocketmine\world\World;
  * @method static Item GOLD_NUGGET()
  * @method static Item GUNPOWDER()
  * @method static Item HEART_OF_THE_SEA()
+ * @method static HoneyBottle HONEY_BOTTLE()
  * @method static Item HONEYCOMB()
  * @method static Item INK_SAC()
  * @method static Axe IRON_AXE()
@@ -423,8 +424,8 @@ final class VanillaItems{
 		self::register("gold_nugget", new Item(new IID(Ids::GOLD_NUGGET), "Gold Nugget"));
 		self::register("gunpowder", new Item(new IID(Ids::GUNPOWDER), "Gunpowder"));
 		self::register("heart_of_the_sea", new Item(new IID(Ids::HEART_OF_THE_SEA), "Heart of the Sea"));
-		self::register("honeycomb", new Item(new IID(Ids::HONEYCOMB), "Honeycomb"));
 		self::register("honey_bottle", new HoneyBottle(new IID(Ids::HONEY_BOTTLE), "Honey Bottle"));
+		self::register("honeycomb", new Item(new IID(Ids::HONEYCOMB), "Honeycomb"));
 		self::register("iron_ingot", new Item(new IID(Ids::IRON_INGOT), "Iron Ingot"));
 		self::register("iron_nugget", new Item(new IID(Ids::IRON_NUGGET), "Iron Nugget"));
 		self::register("leather", new Item(new IID(Ids::LEATHER), "Leather"));
