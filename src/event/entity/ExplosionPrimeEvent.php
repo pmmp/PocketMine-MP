@@ -40,15 +40,15 @@ class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 
 	protected float $force;
 	private bool $blockBreaking = true;
-	private bool $canBreakUnbreakableBlocks;
+	private bool $forceToBreakAll;
 
-	public function __construct(Entity $entity, float $force, bool $canBreakUnbreakableBlocks){
+	public function __construct(Entity $entity, float $force, bool $forceToBreakAll){
 		if($force <= 0){
 			throw new \InvalidArgumentException("Explosion radius must be positive");
 		}
 		$this->entity = $entity;
 		$this->force = $force;
-		$this->canBreakUnbreakableBlocks = $canBreakUnbreakableBlocks;
+		$this->forceToBreakAll = $forceToBreakAll;
 	}
 
 	public function getForce() : float{
@@ -69,12 +69,12 @@ class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 		$this->blockBreaking = $affectsBlocks;
 	}
 
-	public function canBreakUnbreakableBlocks() : bool{
-		return $this->canBreakUnbreakableBlocks;
+	public function isForcedToBreakAll() : bool{
+		return $this->forceToBreakAll;
 	}
 
-	public function setCanBreakUnbreakableBlocks(bool $value = true) : void{
-		$this->canBreakUnbreakableBlocks = $value;
+	public function setForceToBreakAll(bool $value = true) : void{
+		$this->forceToBreakAll = $value;
 	}
 
 }
