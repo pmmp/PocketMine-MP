@@ -31,6 +31,10 @@ final class SoulFire extends BaseFire{
 		return 10;
 	}
 
+	protected function getFireDamage() : int{
+		return 2;
+	}
+
 	public static function canBeSupportedBy(Block $block) : bool{
 		//TODO: this really ought to use some kind of tag system
 		$id = $block->getTypeId();

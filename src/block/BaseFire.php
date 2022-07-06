@@ -41,7 +41,7 @@ abstract class BaseFire extends Flowable{
 	}
 
 	public function onEntityInside(Entity $entity) : bool{
-		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1);
+		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, $this->getFireDamage());
 		$entity->attack($ev);
 
 		$ev = new EntityCombustByBlockEvent($this, $entity, 8);
@@ -54,6 +54,8 @@ abstract class BaseFire extends Flowable{
 		}
 		return true;
 	}
+
+	abstract protected function getFireDamage() : int;
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [];
