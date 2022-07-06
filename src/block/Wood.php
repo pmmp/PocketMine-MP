@@ -31,6 +31,7 @@ use pocketmine\item\Axe;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\sound\ItemUseOnBlockSound;
 
 class Wood extends Opaque{
 	use PillarRotationTrait;
@@ -73,6 +74,7 @@ class Wood extends Opaque{
 			$item->applyDamage(1);
 			$this->stripped = true;
 			$this->position->getWorld()->setBlock($this->position, $this);
+			$this->position->getWorld()->addSound($this->position, new ItemUseOnBlockSound($this));
 			return true;
 		}
 		return false;
