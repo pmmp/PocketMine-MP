@@ -424,6 +424,7 @@ final class VanillaItems{
 		self::register("gunpowder", new Item(new IID(Ids::GUNPOWDER), "Gunpowder"));
 		self::register("heart_of_the_sea", new Item(new IID(Ids::HEART_OF_THE_SEA), "Heart of the Sea"));
 		self::register("honeycomb", new Item(new IID(Ids::HONEYCOMB), "Honeycomb"));
+		self::register("honey_bottle", new HoneyBottle(new IID(Ids::HONEY_BOTTLE), "Honey Bottle"));
 		self::register("iron_ingot", new Item(new IID(Ids::IRON_INGOT), "Iron Ingot"));
 		self::register("iron_nugget", new Item(new IID(Ids::IRON_NUGGET), "Iron Nugget"));
 		self::register("leather", new Item(new IID(Ids::LEATHER), "Leather"));
