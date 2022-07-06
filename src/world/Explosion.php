@@ -130,8 +130,9 @@ class Explosion{
 										$_block = $this->world->getBlockAt($vBlockX, $vBlockY, $vBlockZ, true, false);
 										foreach($_block->getAffectedBlocks() as $_affectedBlock){
 
-											if(!$canBreakAll && !$_affectedBlock->getBreakInfo()->isBreakable())
+											if(!$canBreakAll && !$_affectedBlock->getBreakInfo()->isBreakable()){
 												continue;
+											}
 
 											$_affectedBlockPos = $_affectedBlock->getPosition();
 											$this->affectedBlocks[World::blockHash($_affectedBlockPos->x, $_affectedBlockPos->y, $_affectedBlockPos->z)] = $_affectedBlock;
