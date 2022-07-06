@@ -97,6 +97,9 @@ class Block{
 
 	public function getRequiredStateDataBits() : int{ return 0; }
 
+	/**
+	 * @internal
+	 */
 	final public function decodeTypeData(int $data) : void{
 		$typeBits = $this->getRequiredTypeDataBits();
 		$givenBits = $typeBits;
@@ -109,6 +112,9 @@ class Block{
 		}
 	}
 
+	/**
+	 * @internal
+	 */
 	final public function decodeStateData(int $data) : void{
 		$typeBits = $this->getRequiredTypeDataBits();
 		$stateBits = $this->getRequiredStateDataBits();
@@ -131,6 +137,9 @@ class Block{
 		//NOOP
 	}
 
+	/**
+	 * @internal
+	 */
 	final public function computeTypeData() : int{
 		$typeBits = $this->getRequiredTypeDataBits();
 		$requiredBits = $typeBits;
