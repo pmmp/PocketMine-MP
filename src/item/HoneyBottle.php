@@ -28,11 +28,15 @@ use pocketmine\entity\Living;
 
 class HoneyBottle extends Food{
 
-  public function requiresHunger() : bool{
+	public function getMaxStackSize() : int{
+		return 16;
+	}
+
+	public function requiresHunger() : bool{
 		return false;
 	}
 
-  public function getResidue() : Item{
+	public function getResidue() : Item{
 		return VanillaItems::GLASS_BOTTLE();
 	}
 
