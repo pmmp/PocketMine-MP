@@ -380,7 +380,7 @@ final class ItemDeserializer{
 		$this->map(Ids::GUNPOWDER, fn() => Items::GUNPOWDER());
 		$this->map(Ids::HEART_OF_THE_SEA, fn() => Items::HEART_OF_THE_SEA());
 		//TODO: minecraft:hoglin_spawn_egg
-		//TODO: minecraft:honey_bottle
+		$this->map(Ids::HONEY_BOTTLE, fn() => Items::HONEY_BOTTLE());
 		$this->map(Ids::HONEYCOMB, fn() => Items::HONEYCOMB());
 		$this->map(Ids::HOPPER, fn() => Blocks::HOPPER()->asItem());
 		//TODO: minecraft:hopper_minecart

@@ -405,6 +405,7 @@ final class ItemSerializer{
 		$this->map(Items::GUNPOWDER(), self::id(Ids::GUNPOWDER));
 		$this->map(Items::HEART_OF_THE_SEA(), self::id(Ids::HEART_OF_THE_SEA));
 		$this->map(Items::HONEYCOMB(), self::id(Ids::HONEYCOMB));
+		$this->map(Items::HONEY_BOTTLE(), self::id(Ids::HONEY_BOTTLE));
 		$this->map(Items::INK_SAC(), self::id(Ids::INK_SAC));
 		$this->map(Items::IRON_AXE(), self::id(Ids::IRON_AXE));
 		$this->map(Items::IRON_BOOTS(), self::id(Ids::IRON_BOOTS));
