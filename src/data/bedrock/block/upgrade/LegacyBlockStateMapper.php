@@ -61,7 +61,7 @@ final class LegacyBlockStateMapper{
 			throw new \InvalidArgumentException("A mapping for $stringId:$meta already exists");
 		}
 		$this->mappingTable[$stringId][$meta] = $stateData;
-		$this->legacyNumericIdMap->add($intId, $stringId);
+		$this->legacyNumericIdMap->add($stringId, $intId);
 	}
 
 	public static function loadFromString(string $data, LegacyBlockIdToStringIdMap $idMap, BlockStateUpgrader $blockStateUpgrader) : self{
