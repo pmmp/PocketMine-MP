@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\item\upgrade;
 
-use pocketmine\data\bedrock\LegacyToStringBidirectionalIdMap;
+use pocketmine\data\bedrock\LegacyToStringIdMap;
 use pocketmine\utils\SingletonTrait;
 use Webmozart\PathUtil\Path;
 
-final class LegacyItemIdToStringIdMap extends LegacyToStringBidirectionalIdMap{
+final class LegacyItemIdToStringIdMap extends LegacyToStringIdMap{
 	use SingletonTrait;
 
 	public function __construct(){

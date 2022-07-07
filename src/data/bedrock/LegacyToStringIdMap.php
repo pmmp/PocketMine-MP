@@ -31,18 +31,13 @@ use function is_int;
 use function is_string;
 use function json_decode;
 
-abstract class LegacyToStringBidirectionalIdMap{
+abstract class LegacyToStringIdMap{
 
 	/**
 	 * @var string[]
 	 * @phpstan-var array<int, string>
 	 */
 	private array $legacyToString = [];
-	/**
-	 * @var int[]
-	 * @phpstan-var array<string, int>
-	 */
-	private array $stringToLegacy = [];
 
 	public function __construct(string $file){
 		$stringToLegacyId = json_decode(Utils::assumeNotFalse(file_get_contents($file), "Missing required resource file"), true);
@@ -54,16 +49,11 @@ abstract class LegacyToStringBidirectionalIdMap{
 				throw new AssumptionFailedError("ID map should have string keys and int values");
 			}
 			$this->legacyToString[$legacyId] = $stringId;
-			$this->stringToLegacy[$stringId] = $legacyId;
 		}
 	}
 
 	public function legacyToString(int $legacy) : ?string{
 		return $this->legacyToString[$legacy] ?? null;
-	}
-
-	public function stringToLegacy(string $string) : ?int{
-		return $this->stringToLegacy[$string] ?? null;
 	}
 
 	/**
@@ -74,22 +64,10 @@ abstract class LegacyToStringBidirectionalIdMap{
 		return $this->legacyToString;
 	}
 
-	/**
-	 * @return int[]
-	 * @phpstan-return array<string, int>
-	 */
-	public function getStringToLegacyMap() : array{
-		return $this->stringToLegacy;
-	}
-
 	public function add(string $string, int $legacy) : void{
 		if(isset($this->legacyToString[$legacy])){
 			throw new \InvalidArgumentException("Legacy ID $legacy is already mapped to string " . $this->legacyToString[$legacy]);
 		}
-		if(isset($this->stringToLegacy[$string])){
-			throw new \InvalidArgumentException("String ID $string is already mapped to legacy ID " . $this->stringToLegacy[$string]);
-		}
 		$this->legacyToString[$legacy] = $string;
-		$this->stringToLegacy[$string] = $legacy;
 	}
 }
