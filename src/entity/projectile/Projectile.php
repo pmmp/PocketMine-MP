@@ -306,5 +306,6 @@ abstract class Projectile extends Entity{
 	 */
 	protected function onHitBlock(Block $blockHit, RayTraceResult $hitResult) : void{
 		$this->blockHit = $blockHit->getPosition()->asVector3();
+		$blockHit->onProjectileHit($this, $hitResult);
 	}
 }

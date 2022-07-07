@@ -32,6 +32,7 @@ use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
+use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
@@ -624,6 +625,13 @@ class Block{
 	 */
 	public function onEntityLand(Entity $entity) : ?float{
 		return null;
+	}
+
+	/**
+	 * Called when a projectile collides with one of this block's collision boxes.
+	 */
+	public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
+		//NOOP
 	}
 
 	/**
