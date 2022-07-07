@@ -1226,6 +1226,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("healing_potion", fn() => Items::POTION()->setType(PotionType::HEALING()));
 		$result->register("healing_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::HEALING()));
 		$result->register("heart_of_the_sea", fn() => Items::HEART_OF_THE_SEA());
+		$result->register("honey_bottle", fn() => Items::HONEY_BOTTLE());
 		$result->register("honeycomb", fn() => Items::HONEYCOMB());
 		$result->register("ink_sac", fn() => Items::INK_SAC());
 		$result->register("invisibility_potion", fn() => Items::POTION()->setType(PotionType::INVISIBILITY()));
