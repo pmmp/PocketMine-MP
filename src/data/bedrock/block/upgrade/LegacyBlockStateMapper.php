@@ -52,6 +52,18 @@ final class LegacyBlockStateMapper{
 		return $this->fromStringIdMeta($stringId, $meta);
 	}
 
+	/**
+	 * Adds a mapping of legacy block ID and meta to modern blockstate data. This may be needed for upgrading data from
+	 * stored custom blocks from older versions of PocketMine-MP.
+	 */
+	public function addMapping(string $stringId, int $intId, int $meta, BlockStateData $stateData) : void{
+		if(isset($this->mappingTable[$stringId][$meta])){
+			throw new \InvalidArgumentException("A mapping for $stringId:$meta already exists");
+		}
+		$this->mappingTable[$stringId][$meta] = $stateData;
+		$this->legacyNumericIdMap->add($intId, $stringId);
+	}
+
 	public static function loadFromString(string $data, LegacyBlockIdToStringIdMap $idMap, BlockStateUpgrader $blockStateUpgrader) : self{
 		$mappingTable = [];
 

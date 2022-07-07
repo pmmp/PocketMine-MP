@@ -81,4 +81,15 @@ abstract class LegacyToStringBidirectionalIdMap{
 	public function getStringToLegacyMap() : array{
 		return $this->stringToLegacy;
 	}
+
+	public function add(string $string, int $legacy) : void{
+		if(isset($this->legacyToString[$legacy])){
+			throw new \InvalidArgumentException("Legacy ID $legacy is already mapped to string " . $this->legacyToString[$legacy]);
+		}
+		if(isset($this->stringToLegacy[$string])){
+			throw new \InvalidArgumentException("String ID $string is already mapped to legacy ID " . $this->stringToLegacy[$string]);
+		}
+		$this->legacyToString[$legacy] = $string;
+		$this->stringToLegacy[$string] = $legacy;
+	}
 }
