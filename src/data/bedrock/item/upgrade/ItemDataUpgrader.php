@@ -116,7 +116,7 @@ final class ItemDataUpgrader{
 	/**
 	 * @throws SavedDataLoadingException
 	 */
-	private function upgradeItemTypeNbt(CompoundTag $tag) : SavedItemData{
+	private function upgradeItemTypeNbt(CompoundTag $tag) : ?SavedItemData{
 		if(($nameIdTag = $tag->getTag(SavedItemData::TAG_NAME)) instanceof StringTag){
 			//Bedrock 1.6+
 
@@ -124,6 +124,11 @@ final class ItemDataUpgrader{
 		}elseif(($idTag = $tag->getTag(self::TAG_LEGACY_ID)) instanceof ShortTag){
 			//Bedrock <= 1.5, PM <= 1.12
 
+			if($idTag->getValue() === 0){
+				//0 is a special case for air, which is not a valid item ID
+				//this isn't supposed to be saved, but this appears in some places due to bugs in older versions
+				return null;
+			}
 			$rawNameId = $this->legacyIntToStringIdMap->legacyToString($idTag->getValue());
 			if($rawNameId === null){
 				throw new SavedDataLoadingException("Legacy item ID " . $idTag->getValue() . " doesn't map to any modern string ID");
@@ -182,8 +187,12 @@ final class ItemDataUpgrader{
 	/**
 	 * @throws SavedDataLoadingException
 	 */
-	public function upgradeItemStackNbt(CompoundTag $tag) : SavedItemStackData{
+	public function upgradeItemStackNbt(CompoundTag $tag) : ?SavedItemStackData{
 		$savedItemData = $this->upgradeItemTypeNbt($tag);
+		if($savedItemData === null){
+			//air - this isn't supposed to be saved, but older versions of PM saved it in some places
+			return null;
+		}
 		try{
 			//required
 			$count = Binary::unsignByte($tag->getByte(SavedItemStackData::TAG_COUNT));
