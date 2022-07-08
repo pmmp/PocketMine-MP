@@ -217,8 +217,6 @@ abstract class Living extends Entity{
 
 		if($doSync){
 			$this->networkPropertiesDirty = true;
-
-			print "DO SYNC 2" . PHP_EOL;
 		}
 	}
 

@@ -1793,7 +1793,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return false;
 	}
 
-	public function toggleSprint(bool $sprint) : bool{
+	public function toggleSprint(bool $sprint, bool $doSync = true) : bool{
 		if($sprint === $this->sprinting){
 			return true;
 		}
@@ -1802,11 +1802,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($ev->isCancelled()){
 			return false;
 		}
-		$this->setSprinting($sprint, false);
+		$this->setSprinting($sprint, $doSync);
 		return true;
 	}
 
-	public function toggleSneak(bool $sneak) : bool{
+	public function toggleSneak(bool $sneak, bool $doSync = true) : bool{
 		if($sneak === $this->sneaking){
 			return true;
 		}
@@ -1815,7 +1815,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($ev->isCancelled()){
 			return false;
 		}
-		$this->setSneaking($sneak, false);
+		$this->setSneaking($sneak, $doSync);
 		return true;
 	}
 
