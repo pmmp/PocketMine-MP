@@ -1802,7 +1802,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($ev->isCancelled()){
 			return false;
 		}
-		$this->setSprinting($sprint);
+		$this->setSprinting($sprint, false);
 		return true;
 	}
 
@@ -1815,7 +1815,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($ev->isCancelled()){
 			return false;
 		}
-		$this->setSneaking($sneak);
+		$this->setSneaking($sneak, false);
 		return true;
 	}
 

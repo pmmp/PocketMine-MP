@@ -212,22 +212,32 @@ abstract class Living extends Entity{
 		return $this->sneaking;
 	}
 
-	public function setSneaking(bool $value = true) : void{
+	public function setSneaking(bool $value = true, bool $doSync = true) : void{
 		$this->sneaking = $value;
-		$this->networkPropertiesDirty = true;
+
+		if($doSync){
+			$this->networkPropertiesDirty = true;
+
+			print "DO SYNC 2" . PHP_EOL;
+		}
 	}
 
 	public function isSprinting() : bool{
 		return $this->sprinting;
 	}
 
-	public function setSprinting(bool $value = true) : void{
+	public function setSprinting(bool $value = true, bool $doSync = true) : void{
 		if($value !== $this->isSprinting()){
 			$this->sprinting = $value;
-			$this->networkPropertiesDirty = true;
 			$moveSpeed = $this->getMovementSpeed();
 			$this->setMovementSpeed($value ? ($moveSpeed * 1.3) : ($moveSpeed / 1.3));
-			$this->moveSpeedAttr->markSynchronized(false); //TODO: reevaluate this hack
+
+			// Only do sync if the server wanted to, player's movement speed has already been synced.
+			if($doSync){
+				$this->networkPropertiesDirty = true;
+			}
+
+			$this->moveSpeedAttr->markSynchronized(!$doSync);
 		}
 	}
 
