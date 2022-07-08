@@ -100,8 +100,9 @@ class Item implements \JsonSerializable{
 	 * Constructs a new Item type. This constructor should ONLY be used when constructing a new item TYPE to register
 	 * into the index.
 	 *
-	 * NOTE: This should NOT BE USED for creating items to set into an inventory. Use {@link ItemFactory#get} for that
+	 * NOTE: This should NOT BE USED for creating items to set into an inventory. Use VanillaItems for that
 	 * purpose.
+	 * @see VanillaItems
 	 */
 	public function __construct(ItemIdentifier $identifier, string $name = "Unknown"){
 		$this->identifier = $identifier;

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "27194304adc76d57e15b23229e6e4aff",
+    "content-hash": "7354b793d1b0a55bcd77e776956d5767",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -202,12 +202,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/NetherGamesMC/BedrockData.git",
-                "reference": "f74589fe97b3572d156b21bfbd8e30e4b2f0f789"
+                "reference": "7a1fa4f1c54a43d7e4f3a2993429d8915d1f7c19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NetherGamesMC/BedrockData/zipball/f74589fe97b3572d156b21bfbd8e30e4b2f0f789",
-                "reference": "f74589fe97b3572d156b21bfbd8e30e4b2f0f789",
+                "url": "https://api.github.com/repos/NetherGamesMC/BedrockData/zipball/7a1fa4f1c54a43d7e4f3a2993429d8915d1f7c19",
+                "reference": "7a1fa4f1c54a43d7e4f3a2993429d8915d1f7c19",
                 "shasum": ""
             },
             "default-branch": true,
@@ -219,7 +219,7 @@
             "support": {
                 "source": "https://github.com/NetherGamesMC/BedrockData/tree/master"
             },
-            "time": "2022-06-07T17:21:57+00:00"
+            "time": "2022-07-08T20:13:34+00:00"
         },
         {
             "name": "nethergamesmc/bedrock-protocol",
@@ -693,16 +693,16 @@
         },
         {
             "name": "pocketmine/nbt",
-            "version": "0.3.2",
+            "version": "0.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "3e0d9ef6b6c5fb45e3745a121296e75631b3eefe"
+                "reference": "f4321be50df1a18b9f4e94d428a2e68a6e2ac2b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/3e0d9ef6b6c5fb45e3745a121296e75631b3eefe",
-                "reference": "3e0d9ef6b6c5fb45e3745a121296e75631b3eefe",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/f4321be50df1a18b9f4e94d428a2e68a6e2ac2b4",
+                "reference": "f4321be50df1a18b9f4e94d428a2e68a6e2ac2b4",
                 "shasum": ""
             },
             "require": {
@@ -712,7 +712,7 @@
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "1.2.0",
+                "phpstan/phpstan": "1.7.7",
                 "phpstan/phpstan-strict-rules": "^1.0",
                 "phpunit/phpunit": "^9.5"
             },
@@ -729,9 +729,9 @@
             "description": "PHP library for working with Named Binary Tags",
             "support": {
                 "issues": "https://github.com/pmmp/NBT/issues",
-                "source": "https://github.com/pmmp/NBT/tree/0.3.2"
+                "source": "https://github.com/pmmp/NBT/tree/0.3.3"
             },
-            "time": "2021-12-16T01:02:37+00:00"
+            "time": "2022-07-06T14:13:26+00:00"
         },
         {
             "name": "pocketmine/raklib",
@@ -1745,16 +1745,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.7.15",
+            "version": "1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "cd0202ea1b1fc6d1bbe156c6e2e18a03e0ff160a"
+                "reference": "b7648d4ee9321665acaf112e49da9fd93df8fbd5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/cd0202ea1b1fc6d1bbe156c6e2e18a03e0ff160a",
-                "reference": "cd0202ea1b1fc6d1bbe156c6e2e18a03e0ff160a",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/b7648d4ee9321665acaf112e49da9fd93df8fbd5",
+                "reference": "b7648d4ee9321665acaf112e49da9fd93df8fbd5",
                 "shasum": ""
             },
             "require": {
@@ -1780,7 +1780,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.7.15"
+                "source": "https://github.com/phpstan/phpstan/tree/1.8.0"
             },
             "funding": [
                 {
@@ -1800,7 +1800,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-06-20T08:29:01+00:00"
+            "time": "2022-06-29T08:53:31+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
