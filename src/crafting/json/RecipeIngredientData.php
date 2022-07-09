@@ -28,13 +28,11 @@ final class RecipeIngredientData{
 
 	/** @required */
 	public string $name;
-	/** @required */
 	public int $meta;
-
+	public string $block_states;
 	public int $count;
 
-	public function __construct(string $name, int $meta){
+	public function __construct(string $name){
 		$this->name = $name;
-		$this->meta = $meta;
 	}
 }

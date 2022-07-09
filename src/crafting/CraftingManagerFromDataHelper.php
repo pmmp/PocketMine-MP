@@ -39,8 +39,6 @@ use pocketmine\data\SavedDataLoadingException;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\item\Item;
 use pocketmine\nbt\LittleEndianNbtSerializer;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
 use Webmozart\PathUtil\Path;
@@ -53,39 +51,6 @@ use function json_decode;
 
 final class CraftingManagerFromDataHelper{
 
-	private static function deserializeItemStackFromNameMeta(string $name, int $meta) : ?Item{
-		$blockName = BlockItemIdMap::getInstance()->lookupBlockId($name);
-		if($blockName !== null){
-			$blockStateDictionary = RuntimeBlockMapping::getInstance()->getBlockStateDictionary();
-			$blockRuntimeId = $blockStateDictionary->lookupStateIdFromIdMeta($name, $meta === RecipeIngredientData::WILDCARD_META_VALUE ? 0 : $meta);
-			if($blockRuntimeId === null){
-				throw new SavedDataLoadingException("$blockName with meta $meta doesn't map to any known blockstate");
-			}
-			$blockStateData = $blockStateDictionary->getDataFromStateId($blockRuntimeId);
-			if($blockStateData === null){
-				throw new AssumptionFailedError("We just looked up the runtime ID for this state, so it can't possibly be null");
-			}
-		}else{
-			$blockStateData = null;
-		}
-
-		//TODO: for wildcards, we only need a way to check if the item serializer recognizes the ID; we don't need to
-		//deserialize the whole itemstack, which might give bogus results anyway if meta 0 isn't recognized
-		$itemTypeData = new SavedItemData(
-			$name,
-			$meta === RecipeIngredientData::WILDCARD_META_VALUE ? 0 : $meta,
-			$blockStateData,
-			null
-		);
-
-		try{
-			return GlobalItemDataHandlers::getDeserializer()->deserializeType($itemTypeData);
-		}catch(ItemTypeDeserializeException){
-			//probably unknown item
-			return null;
-		}
-	}
-
 	private static function deserializeIngredient(RecipeIngredientData $data) : ?RecipeIngredient{
 		if(isset($data->count) && $data->count !== 1){
 			//every case we've seen so far where this isn't the case, it's been a bug and the count was ignored anyway
@@ -93,26 +58,50 @@ final class CraftingManagerFromDataHelper{
 			throw new SavedDataLoadingException("Recipe inputs should have a count of exactly 1");
 		}
 
-		$itemStack = self::deserializeItemStackFromNameMeta($data->name, $data->meta);
+		$meta = $data->meta ?? null;
+		if($meta === RecipeIngredientData::WILDCARD_META_VALUE){
+			//this could be an unimplemented item, but it doesn't really matter, since the item shouldn't be able to
+			//be obtained anyway - filtering unknown items is only really important for outputs, to prevent players
+			//obtaining them
+			return new MetaWildcardRecipeIngredient($data->name);
+		}
+
+		$itemStack = self::deserializeItemStackFromFields(
+			$data->name,
+			$meta,
+			$data->count ?? null,
+			$data->block_states ?? null,
+			null,
+			[],
+			[]
+		);
 		if($itemStack === null){
 			//probably unknown item
 			return null;
 		}
-		return $data->meta === RecipeIngredientData::WILDCARD_META_VALUE ?
-			new MetaWildcardRecipeIngredient($data->name) :
-			new ExactRecipeIngredient($itemStack);
+		return new ExactRecipeIngredient($itemStack);
 	}
 
 	public static function deserializeItemStack(ItemStackData $data) : ?Item{
 		//count, name, block_name, block_states, meta, nbt, can_place_on, can_destroy
-		$name = $data->name;
-		$meta = $data->meta ?? 0;
-		$count = $data->count ?? 1;
+		return self::deserializeItemStackFromFields(
+			$data->name,
+			$data->meta ?? null,
+			$data->count ?? null,
+			$data->block_states ?? null,
+			$data->nbt ?? null,
+			$data->can_place_on ?? [],
+			$data->can_destroy ?? []
+		);
+	}
 
-		$blockStatesRaw = $data->block_states ?? null;
-		$nbtRaw = $data->nbt ?? null;
-		$canPlaceOn = $data->can_place_on ?? [];
-		$canDestroy = $data->can_destroy ?? [];
+	/**
+	 * @param string[] $canPlaceOn
+	 * @param string[] $canDestroy
+	 */
+	private static function deserializeItemStackFromFields(string $name, ?int $meta, ?int $count, ?string $blockStatesRaw, ?string $nbtRaw, array $canPlaceOn, array $canDestroy) : ?Item{
+		$meta ??= 0;
+		$count ??= 1;
 
 		$blockName = BlockItemIdMap::getInstance()->lookupBlockId($name);
 		if($blockName !== null){
@@ -325,7 +314,11 @@ final class CraftingManagerFromDataHelper{
 			$inputId = $recipe->input_item_name;
 			$outputId = $recipe->output_item_name;
 
-			if(self::deserializeItemStackFromNameMeta($inputId, 0) === null || self::deserializeItemStackFromNameMeta($outputId, 0) === null){
+			//TODO: this is a really awful way to just check if an ID is recognized ...
+			if(
+				self::deserializeItemStackFromFields($inputId, null, null, null, null, [], []) === null ||
+				self::deserializeItemStackFromFields($outputId, null, null, null, null, [], []) === null
+			){
 				//unknown item
 				continue;
 			}
