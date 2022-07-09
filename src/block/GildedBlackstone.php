@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
+use function mt_rand;
 
 final class GildedBlackstone extends Opaque{
 
