@@ -39,6 +39,16 @@ final class RuntimeEnumSerializer{
 		});
 	}
 
+	public static function writeCopperOxidation(RuntimeDataWriter $w, \pocketmine\block\utils\CopperOxidation $value) : void{
+		$w->writeInt(2, match($value){
+			\pocketmine\block\utils\CopperOxidation::EXPOSED() => 0,
+			\pocketmine\block\utils\CopperOxidation::NONE() => 1,
+			\pocketmine\block\utils\CopperOxidation::OXIDIZED() => 2,
+			\pocketmine\block\utils\CopperOxidation::WEATHERED() => 3,
+			default => throw new \pocketmine\utils\AssumptionFailedError("All CopperOxidation cases should be covered")
+		});
+	}
+
 	public static function writeCoralType(RuntimeDataWriter $w, \pocketmine\block\utils\CoralType $value) : void{
 		$w->writeInt(3, match($value){
 			\pocketmine\block\utils\CoralType::BRAIN() => 0,

@@ -39,6 +39,16 @@ final class RuntimeEnumDeserializer{
 		};
 	}
 
+	public static function readCopperOxidation(RuntimeDataReader $r) : \pocketmine\block\utils\CopperOxidation{
+		return match($r->readInt(2)){
+			0 => \pocketmine\block\utils\CopperOxidation::EXPOSED(),
+			1 => \pocketmine\block\utils\CopperOxidation::NONE(),
+			2 => \pocketmine\block\utils\CopperOxidation::OXIDIZED(),
+			3 => \pocketmine\block\utils\CopperOxidation::WEATHERED(),
+			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for CopperOxidation")
+		};
+	}
+
 	public static function readCoralType(RuntimeDataReader $r) : \pocketmine\block\utils\CoralType{
 		return match($r->readInt(3)){
 			0 => \pocketmine\block\utils\CoralType::BRAIN(),

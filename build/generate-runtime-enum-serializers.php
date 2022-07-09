@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\build\generate_runtime_enum_serializers;
 
 use pocketmine\block\utils\BellAttachmentType;
+use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\LeverFacing;
@@ -154,6 +155,7 @@ function buildEnumReaderFunc(array $enumMembers, string &$functionName) : array{
 
 $enumsUsed = [
 	BellAttachmentType::getAll(),
+	CopperOxidation::getAll(),
 	CoralType::getAll(),
 	DyeColor::getAll(),
 	LeverFacing::getAll(),

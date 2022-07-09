@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\Light;
+use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SkullType;
@@ -75,6 +76,18 @@ final class StringToItemParser extends StringToTParser{
 			//helper aliases, since we don't support passing data values in /give
 			$result->registerBlock("light_$i", fn() => Blocks::LIGHT()->setLightLevel($i));
 			$result->registerBlock("light_block_$i", fn() => Blocks::LIGHT()->setLightLevel($i));
+		}
+
+		foreach(CopperOxidation::getAll() as $oxidation){
+			$oxPrefix = $oxidation->equals(CopperOxidation::NONE()) ? "" : $oxidation->name() . "_";
+
+			foreach(["" => false, "waxed_" => true] as $waxedPrefix => $waxed){
+				$prefix = $waxedPrefix . $oxPrefix;
+				$result->registerBlock($prefix . "copper_block", fn() => Blocks::COPPER()->setOxidation($oxidation)->setWaxed($waxed));
+				$result->registerBlock($prefix . "cut_copper_block", fn() => Blocks::CUT_COPPER()->setOxidation($oxidation)->setWaxed($waxed));
+				$result->registerBlock($prefix . "cut_copper_stairs", fn() => Blocks::CUT_COPPER_STAIRS()->setOxidation($oxidation)->setWaxed($waxed));
+				$result->registerBlock($prefix . "cut_copper_slab", fn() => Blocks::CUT_COPPER_SLAB()->setOxidation($oxidation)->setWaxed($waxed));
+			}
 		}
 
 		$result->registerBlock("acacia_button", fn() => Blocks::ACACIA_BUTTON());

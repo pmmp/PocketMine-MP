@@ -680,6 +680,10 @@ final class BlockTypeIds{
 	public const CRYING_OBSIDIAN = 10653;
 	public const GILDED_BLACKSTONE = 10654;
 	public const LIGHTNING_ROD = 10655;
+	public const COPPER = 10656;
+	public const CUT_COPPER = 10657;
+	public const CUT_COPPER_SLAB = 10658;
+	public const CUT_COPPER_STAIRS = 10659;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10656;
+	public const FIRST_UNUSED_BLOCK_ID = 10660;
 }

@@ -164,6 +164,7 @@ use function mb_strtolower;
  * @method static ChemistryTable COMPOUND_CREATOR()
  * @method static Concrete CONCRETE()
  * @method static ConcretePowder CONCRETE_POWDER()
+ * @method static Copper COPPER()
  * @method static CopperOre COPPER_ORE()
  * @method static Coral CORAL()
  * @method static CoralBlock CORAL_BLOCK()
@@ -189,6 +190,9 @@ use function mb_strtolower;
  * @method static WoodenTrapdoor CRIMSON_TRAPDOOR()
  * @method static WallSign CRIMSON_WALL_SIGN()
  * @method static Opaque CRYING_OBSIDIAN()
+ * @method static Copper CUT_COPPER()
+ * @method static CopperSlab CUT_COPPER_SLAB()
+ * @method static CopperStairs CUT_COPPER_STAIRS()
  * @method static Opaque CUT_RED_SANDSTONE()
  * @method static Slab CUT_RED_SANDSTONE_SLAB()
  * @method static Opaque CUT_SANDSTONE()
@@ -1454,6 +1458,11 @@ final class VanillaBlocks{
 		//blast resistance should be 30 if we were matched with java :(
 		$copperBreakInfo = new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel(), 18.0);
 		self::register("lightning_rod", new LightningRod(new BID(Ids::LIGHTNING_ROD), "Lightning Rod", $copperBreakInfo));
+
+		self::register("copper", new Copper(new BID(Ids::COPPER), "Copper Block", $copperBreakInfo));
+		self::register("cut_copper", new Copper(new BID(Ids::CUT_COPPER), "Cut Copper Block", $copperBreakInfo));
+		self::register("cut_copper_slab", new CopperSlab(new BID(Ids::CUT_COPPER_SLAB), "Cut Copper Slab", $copperBreakInfo));
+		self::register("cut_copper_stairs", new CopperStairs(new BID(Ids::CUT_COPPER_STAIRS), "Cut Copper Stairs", $copperBreakInfo));
 	}
 
 	private static function registerMudBlocks() : void{
