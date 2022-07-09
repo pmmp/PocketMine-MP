@@ -239,6 +239,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("crimson_stairs", fn() => Blocks::CRIMSON_STAIRS());
 		$result->registerBlock("crimson_stem", fn() => Blocks::CRIMSON_STEM()->setStripped(false));
 		$result->registerBlock("crimson_trapdoor", fn() => Blocks::CRIMSON_TRAPDOOR());
+		$result->registerBlock("crying_obsidian", fn() => Blocks::CRYING_OBSIDIAN());
 		$result->registerBlock("cut_red_sandstone", fn() => Blocks::CUT_RED_SANDSTONE());
 		$result->registerBlock("cut_red_sandstone_slab", fn() => Blocks::CUT_RED_SANDSTONE_SLAB());
 		$result->registerBlock("cut_sandstone", fn() => Blocks::CUT_SANDSTONE());
@@ -593,6 +594,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("frame_block", fn() => Blocks::ITEM_FRAME());
 		$result->registerBlock("frosted_ice", fn() => Blocks::FROSTED_ICE());
 		$result->registerBlock("furnace", fn() => Blocks::FURNACE());
+		$result->registerBlock("gilded_blackstone", fn() => Blocks::GILDED_BLACKSTONE());
 		$result->registerBlock("glass", fn() => Blocks::GLASS());
 		$result->registerBlock("glass_pane", fn() => Blocks::GLASS_PANE());
 		$result->registerBlock("glass_panel", fn() => Blocks::GLASS_PANE());
@@ -1031,6 +1033,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("warped_stairs", fn() => Blocks::WARPED_STAIRS());
 		$result->registerBlock("warped_stem", fn() => Blocks::WARPED_STEM()->setStripped(false));
 		$result->registerBlock("warped_trapdoor", fn() => Blocks::WARPED_TRAPDOOR());
+		$result->registerBlock("warped_wart_block", fn() => Blocks::WARPED_WART_BLOCK());
 		$result->registerBlock("water", fn() => Blocks::WATER());
 		$result->registerBlock("water_lily", fn() => Blocks::LILY_PAD());
 		$result->registerBlock("waterlily", fn() => Blocks::LILY_PAD());

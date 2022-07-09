@@ -188,6 +188,7 @@ use function mb_strtolower;
  * @method static Wood CRIMSON_STEM()
  * @method static WoodenTrapdoor CRIMSON_TRAPDOOR()
  * @method static WallSign CRIMSON_WALL_SIGN()
+ * @method static Opaque CRYING_OBSIDIAN()
  * @method static Opaque CUT_RED_SANDSTONE()
  * @method static Slab CUT_RED_SANDSTONE_SLAB()
  * @method static Opaque CUT_SANDSTONE()
@@ -381,6 +382,7 @@ use function mb_strtolower;
  * @method static FlowerPot FLOWER_POT()
  * @method static FrostedIce FROSTED_ICE()
  * @method static Furnace FURNACE()
+ * @method static GildedBlackstone GILDED_BLACKSTONE()
  * @method static Glass GLASS()
  * @method static GlassPane GLASS_PANE()
  * @method static GlazedTerracotta GLAZED_TERRACOTTA()
@@ -679,6 +681,7 @@ use function mb_strtolower;
  * @method static Wood WARPED_STEM()
  * @method static WoodenTrapdoor WARPED_TRAPDOOR()
  * @method static WallSign WARPED_WALL_SIGN()
+ * @method static Opaque WARPED_WART_BLOCK()
  * @method static Water WATER()
  * @method static WeightedPressurePlateHeavy WEIGHTED_PRESSURE_PLATE_HEAVY()
  * @method static WeightedPressurePlateLight WEIGHTED_PRESSURE_PLATE_LIGHT()
@@ -1367,6 +1370,8 @@ final class VanillaBlocks{
 		self::register("blackstone_stairs", new Stair(new BID(Ids::BLACKSTONE_STAIRS), "Blackstone Stairs", $blackstoneBreakInfo));
 		self::register("blackstone_wall", new Wall(new BID(Ids::BLACKSTONE_WALL), "Blackstone Wall", $blackstoneBreakInfo));
 
+		self::register("gilded_blackstone", new GildedBlackstone(new BID(Ids::GILDED_BLACKSTONE), "Gilded Blackstone", $blackstoneBreakInfo));
+
 		//TODO: polished blackstone ought to have 2.0 hardness (as per java) but it's 1.5 in Bedrock (probably parity bug)
 		$prefix = fn(string $thing) => "Polished Blackstone" . ($thing !== "" ? " $thing" : "");
 		self::register("polished_blackstone", new Opaque(new BID(Ids::POLISHED_BLACKSTONE), $prefix(""), $blackstoneBreakInfo));
@@ -1392,6 +1397,11 @@ final class VanillaBlocks{
 
 		self::register("shroomlight", new class(new BID(Ids::SHROOMLIGHT), "Shroomlight", new BreakInfo(1.0, ToolType::HOE)) extends Opaque{
 			public function getLightLevel() : int{ return 15; }
+		});
+
+		self::register("warped_wart_block", new Opaque(new BID(Ids::WARPED_WART_BLOCK), "Warped Wart Block", new BreakInfo(1.0, ToolType::HOE)));
+		self::register("crying_obsidian", new class(new BID(Ids::CRYING_OBSIDIAN), "Crying Obsidian", new BreakInfo(35.0 /* 50 in Java */, ToolType::PICKAXE, ToolTier::DIAMOND()->getHarvestLevel())) extends Opaque{
+			public function getLightLevel() : int{ return 10;}
 		});
 	}
 

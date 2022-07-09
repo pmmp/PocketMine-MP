@@ -676,6 +676,9 @@ final class BlockTypeIds{
 	public const MUD_BRICK_STAIRS = 10649;
 	public const MUD_BRICK_WALL = 10650;
 	public const PACKED_MUD = 10651;
+	public const WARPED_WART_BLOCK = 10652;
+	public const CRYING_OBSIDIAN = 10653;
+	public const GILDED_BLACKSTONE = 10654;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10652;
+	public const FIRST_UNUSED_BLOCK_ID = 10655;
 }
