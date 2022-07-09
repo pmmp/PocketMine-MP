@@ -692,6 +692,10 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			return Blocks::LIGHT()
 				->setLightLevel($in->readBoundedInt(StateNames::BLOCK_LIGHT_LEVEL, Light::MIN_LIGHT_LEVEL, Light::MAX_LIGHT_LEVEL));
 		});
+		$this->map(Ids::LIGHTNING_ROD, function(Reader $in) : Block{
+			return Blocks::LIGHTNING_ROD()
+				->setFacing($in->readFacingDirection());
+		});
 		$this->map(Ids::LIGHT_BLUE_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::LIGHT_BLUE(), $in));
 		$this->map(Ids::LIGHT_WEIGHTED_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeWeightedPressurePlate(Blocks::WEIGHTED_PRESSURE_PLATE_LIGHT(), $in));
 		$this->map(Ids::LIME_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::LIME(), $in));

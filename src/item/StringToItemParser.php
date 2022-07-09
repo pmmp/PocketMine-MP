@@ -695,6 +695,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("light", fn() => Blocks::LIGHT());
 		$result->registerBlock("light_block", fn() => Blocks::LIGHT());
 		$result->registerBlock("light_weighted_pressure_plate", fn() => Blocks::WEIGHTED_PRESSURE_PLATE_LIGHT());
+		$result->registerBlock("lightning_rod", fn() => Blocks::LIGHTNING_ROD());
 		$result->registerBlock("lilac", fn() => Blocks::LILAC());
 		$result->registerBlock("lily_of_the_valley", fn() => Blocks::LILY_OF_THE_VALLEY());
 		$result->registerBlock("lily_pad", fn() => Blocks::LILY_PAD());

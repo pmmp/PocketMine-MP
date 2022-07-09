@@ -679,6 +679,7 @@ final class BlockTypeIds{
 	public const WARPED_WART_BLOCK = 10652;
 	public const CRYING_OBSIDIAN = 10653;
 	public const GILDED_BLACKSTONE = 10654;
+	public const LIGHTNING_ROD = 10655;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10655;
+	public const FIRST_UNUSED_BLOCK_ID = 10656;
 }

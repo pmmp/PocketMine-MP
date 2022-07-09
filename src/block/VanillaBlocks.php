@@ -447,6 +447,7 @@ use function mb_strtolower;
  * @method static Opaque LEGACY_STONECUTTER()
  * @method static Lever LEVER()
  * @method static Light LIGHT()
+ * @method static LightningRod LIGHTNING_ROD()
  * @method static DoublePlant LILAC()
  * @method static Flower LILY_OF_THE_VALLEY()
  * @method static WaterLily LILY_PAD()
@@ -1449,6 +1450,10 @@ final class VanillaBlocks{
 		self::register("polished_deepslate_wall", new Wall(new BID(Ids::POLISHED_DEEPSLATE_WALL), "Polished Deepslate Wall", $polishedDeepslateBreakInfo));
 
 		self::register("tinted_glass", new TintedGlass(new BID(Ids::TINTED_GLASS), "Tinted Glass", new BreakInfo(0.3)));
+
+		//blast resistance should be 30 if we were matched with java :(
+		$copperBreakInfo = new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel(), 18.0);
+		self::register("lightning_rod", new LightningRod(new BID(Ids::LIGHTNING_ROD), "Lightning Rod", $copperBreakInfo));
 	}
 
 	private static function registerMudBlocks() : void{
