@@ -74,9 +74,8 @@ final class BlockStateLookupCache{
 		}
 
 		if(isset($this->nameToNetworkIdsLookup[$name])){
-			$states = $data->getStates();
 			foreach($this->nameToNetworkIdsLookup[$name] as $stateId => $stateNbt){
-				if($stateNbt->getStates()->equals($states)){
+				if($stateNbt->equals($data)){
 					return $stateId;
 				}
 			}

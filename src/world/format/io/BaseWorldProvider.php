@@ -25,7 +25,6 @@ namespace pocketmine\world\format\io;
 
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockTypeNames;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\format\PalettedBlockArray;
@@ -63,7 +62,7 @@ abstract class BaseWorldProvider implements WorldProvider{
 			$newStateData = $blockDataUpgrader->upgradeIntIdMeta($legacyIdMeta >> 4, $legacyIdMeta & 0xf);
 			if($newStateData === null){
 				//TODO: remember data for unknown states so we can implement them later
-				$newStateData = new BlockStateData(BlockTypeNames::INFO_UPDATE, CompoundTag::create(), BlockStateData::CURRENT_VERSION);
+				$newStateData = new BlockStateData(BlockTypeNames::INFO_UPDATE, [], BlockStateData::CURRENT_VERSION);
 			}
 
 			$newPalette[$k] = $blockStateDeserializer->deserialize($newStateData);

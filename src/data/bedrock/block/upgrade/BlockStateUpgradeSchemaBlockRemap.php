@@ -23,15 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\upgrade;
 
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\Tag;
-use pocketmine\utils\Utils;
 
 final class BlockStateUpgradeSchemaBlockRemap{
-
-	public CompoundTag $oldState;
-	public CompoundTag $newState;
-
 	/**
 	 * @param Tag[] $oldState
 	 * @param Tag[] $newState
@@ -39,17 +33,8 @@ final class BlockStateUpgradeSchemaBlockRemap{
 	 * @phpstan-param array<string, Tag> $newState
 	 */
 	public function __construct(
-		array $oldState,
+		public array $oldState,
 		public string $newName,
-		array $newState
-	){
-		$this->oldState = CompoundTag::create();
-		$this->newState = CompoundTag::create();
-		foreach(Utils::stringifyKeys($oldState) as $k => $v){
-			$this->oldState->setTag($k, $v);
-		}
-		foreach(Utils::stringifyKeys($newState) as $k => $v){
-			$this->newState->setTag($k, $v);
-		}
-	}
+		public array $newState
+	){}
 }

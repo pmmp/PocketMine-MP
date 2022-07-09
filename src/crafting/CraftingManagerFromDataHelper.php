@@ -121,10 +121,11 @@ final class CraftingManagerFromDataHelper{
 				throw new SavedDataLoadingException("Meta should not be specified for blockitems");
 			}
 			$blockStatesTag = $blockStatesRaw === null ?
-				CompoundTag::create() :
+				[] :
 				(new LittleEndianNbtSerializer())
 					->read(ErrorToExceptionHandler::trapAndRemoveFalse(fn() => base64_decode($blockStatesRaw, true)))
-					->mustGetCompoundTag();
+					->mustGetCompoundTag()
+					->getValue();
 			$blockStateData = new BlockStateData($blockName, $blockStatesTag, BlockStateData::CURRENT_VERSION);
 		}else{
 			$blockStateData = null;

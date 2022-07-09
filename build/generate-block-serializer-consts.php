@@ -74,7 +74,7 @@ function generateBlockPaletteReport(array $states) : BlockPaletteReport{
 	foreach($states as $stateData){
 		$name = $stateData->getName();
 		$result->seenTypes[$name] = $name;
-		foreach($stateData->getStates() as $k => $v){
+		foreach(Utils::stringifyKeys($stateData->getStates()) as $k => $v){
 			$result->seenStateValues[$k][$v->getValue()] = $v->getValue();
 			asort($result->seenStateValues[$k]);
 		}

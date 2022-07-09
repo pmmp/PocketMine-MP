@@ -35,17 +35,22 @@ use pocketmine\data\bedrock\block\BlockStateSerializeException;
 use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
-use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\tag\Tag;
 
 final class BlockStateWriter{
 
-	private CompoundTag $states;
+	/**
+	 * @var Tag[]
+	 * @phpstan-var array<string, Tag>
+	 */
+	private array $states = [];
 
 	public function __construct(
 		private string $id
-	){
-		$this->states = CompoundTag::create();
-	}
+	){}
 
 	public static function create(string $id) : self{
 		return new self($id);
@@ -53,19 +58,19 @@ final class BlockStateWriter{
 
 	/** @return $this */
 	public function writeBool(string $name, bool $value) : self{
-		$this->states->setByte($name, $value ? 1 : 0);
+		$this->states[$name] = new ByteTag($value ? 1 : 0);
 		return $this;
 	}
 
 	/** @return $this */
 	public function writeInt(string $name, int $value) : self{
-		$this->states->setInt($name, $value);
+		$this->states[$name] = new IntTag($value);
 		return $this;
 	}
 
 	/** @return $this */
 	public function writeString(string $name, string $value) : self{
-		$this->states->setString($name, $value);
+		$this->states[$name] = new StringTag($value);
 		return $this;
 	}
 

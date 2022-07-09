@@ -240,9 +240,9 @@ final class BlockStateUpgradeSchemaUtils{
 		foreach(Utils::stringifyKeys($schema->remappedStates) as $oldBlockName => $remaps){
 			foreach($remaps as $remap){
 				$result->remappedStates[$oldBlockName][] = new BlockStateUpgradeSchemaModelBlockRemap(
-					array_map(fn(Tag $tag) => self::tagToJsonModel($tag), $remap->oldState->getValue()),
+					array_map(fn(Tag $tag) => self::tagToJsonModel($tag), $remap->oldState),
 					$remap->newName,
-					array_map(fn(Tag $tag) => self::tagToJsonModel($tag), $remap->newState->getValue()),
+					array_map(fn(Tag $tag) => self::tagToJsonModel($tag), $remap->newState),
 				);
 			}
 		}

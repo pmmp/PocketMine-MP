@@ -27,7 +27,6 @@ use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
 use pocketmine\data\bedrock\block\BlockStateSerializer;
 use pocketmine\data\bedrock\block\BlockTypeNames;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
@@ -67,7 +66,7 @@ final class RuntimeBlockMapping{
 		private BlockStateDictionary $blockStateDictionary,
 		private BlockStateSerializer $blockStateSerializer
 	){
-		$this->fallbackStateData = new BlockStateData(BlockTypeNames::INFO_UPDATE, CompoundTag::create(), BlockStateData::CURRENT_VERSION);
+		$this->fallbackStateData = new BlockStateData(BlockTypeNames::INFO_UPDATE, [], BlockStateData::CURRENT_VERSION);
 		$this->fallbackStateId = $this->blockStateDictionary->lookupStateIdFromData($this->fallbackStateData) ?? throw new AssumptionFailedError(BlockTypeNames::INFO_UPDATE . " should always exist");
 	}
 

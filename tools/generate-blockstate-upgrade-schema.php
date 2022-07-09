@@ -97,8 +97,8 @@ function processState(BlockStateData $old, BlockStateData $new, BlockStateUpgrad
 
 	$propertyRemoved = [];
 	$propertyAdded = [];
-	foreach($oldStates as $propertyName => $oldProperty){
-		$newProperty = $newStates->getTag($propertyName);
+	foreach(Utils::stringifyKeys($oldStates) as $propertyName => $oldProperty){
+		$newProperty = $new->getState($propertyName);
 		if($newProperty === null){
 			$propertyRemoved[$propertyName] = $oldProperty;
 		}elseif(!$newProperty->equals($oldProperty)){
@@ -112,8 +112,8 @@ function processState(BlockStateData $old, BlockStateData $new, BlockStateUpgrad
 		}
 	}
 
-	foreach($newStates as $propertyName => $value){
-		if($oldStates->getTag($propertyName) === null){
+	foreach(Utils::stringifyKeys($newStates) as $propertyName => $value){
+		if($old->getState($propertyName) === null){
 			$propertyAdded[$propertyName] = $value;
 		}
 	}
@@ -179,9 +179,9 @@ function processState(BlockStateData $old, BlockStateData $new, BlockStateUpgrad
 			}
 		}else{
 			$result->remappedStates[$oldName][] = new BlockStateUpgradeSchemaBlockRemap(
-				$oldStates->getValue(),
+				$oldStates,
 				$new->getName(),
-				$newStates->getValue()
+				$newStates
 			);
 			\GlobalLogger::get()->warning("warning: multiple properties added and removed for $oldName; added full state remap");;
 		}
@@ -231,11 +231,11 @@ function generateBlockStateUpgradeSchema(array $upgradeTable) : BlockStateUpgrad
 		}else{
 			//block mapped to multiple different new IDs; we can't guess these, so we just do a plain old remap
 			foreach($blockStateMappings as $mapping){
-				if($mapping->old->getName() !== $mapping->new->getName() || !$mapping->old->getStates()->equals($mapping->new->getStates())){
+				if(!$mapping->old->equals($mapping->new)){
 					$result->remappedStates[$mapping->old->getName()][] = new BlockStateUpgradeSchemaBlockRemap(
-						$mapping->old->getStates()->getValue(),
+						$mapping->old->getStates(),
 						$mapping->new->getName(),
-						$mapping->new->getStates()->getValue()
+						$mapping->new->getStates()
 					);
 				}
 			}

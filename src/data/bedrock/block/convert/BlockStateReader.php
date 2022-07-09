@@ -38,6 +38,7 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
+use pocketmine\utils\Utils;
 use function get_class;
 
 final class BlockStateReader{
@@ -66,7 +67,7 @@ final class BlockStateReader{
 	/** @throws BlockStateDeserializeException */
 	public function readBool(string $name) : bool{
 		$this->usedStates[$name] = true;
-		$tag = $this->data->getStates()->getTag($name);
+		$tag = $this->data->getState($name);
 		if($tag instanceof ByteTag){
 			switch($tag->getValue()){
 				case 0: return false;
@@ -80,7 +81,7 @@ final class BlockStateReader{
 	/** @throws BlockStateDeserializeException */
 	public function readInt(string $name) : int{
 		$this->usedStates[$name] = true;
-		$tag = $this->data->getStates()->getTag($name);
+		$tag = $this->data->getState($name);
 		if($tag instanceof IntTag){
 			return $tag->getValue();
 		}
@@ -100,7 +101,7 @@ final class BlockStateReader{
 	public function readString(string $name) : string{
 		$this->usedStates[$name] = true;
 		//TODO: only allow a specific set of values (strings are primarily used for enums)
-		$tag = $this->data->getStates()->getTag($name);
+		$tag = $this->data->getState($name);
 		if($tag instanceof StringTag){
 			return $tag->getValue();
 		}
@@ -314,7 +315,7 @@ final class BlockStateReader{
 	 * Explicitly mark a property as unused, so it doesn't get flagged as an error when debug mode is enabled
 	 */
 	public function ignored(string $name) : void{
-		if($this->data->getStates()->getTag($name) !== null){
+		if($this->data->getState($name) !== null){
 			$this->usedStates[$name] = true;
 		}else{
 			throw $this->missingOrWrongTypeException($name, null);
@@ -332,7 +333,7 @@ final class BlockStateReader{
 	 * @throws BlockStateDeserializeException
 	 */
 	public function checkUnreadProperties() : void{
-		foreach($this->data->getStates() as $name => $tag){
+		foreach(Utils::stringifyKeys($this->data->getStates()) as $name => $tag){
 			if(!isset($this->usedStates[$name])){
 				throw new BlockStateDeserializeException("Unread property \"$name\"");
 			}

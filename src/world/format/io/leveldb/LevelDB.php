@@ -180,7 +180,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 					//TODO: remember data for unknown states so we can implement them later
 					//TODO: this is slow; we need to cache this
 					//TODO: log this
-					$palette[] = $blockStateDeserializer->deserialize(new BlockStateData(BlockTypeNames::INFO_UPDATE, CompoundTag::create(), BlockStateData::CURRENT_VERSION));
+					$palette[] = $blockStateDeserializer->deserialize(new BlockStateData(BlockTypeNames::INFO_UPDATE, [], BlockStateData::CURRENT_VERSION));
 				}
 			}catch(NbtException | BlockStateDeserializeException $e){
 				throw new CorruptedChunkException("Invalid blockstate NBT at offset $i in paletted storage: " . $e->getMessage(), 0, $e);
