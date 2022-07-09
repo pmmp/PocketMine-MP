@@ -39,7 +39,6 @@ use pocketmine\data\SavedDataLoadingException;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\item\Item;
 use pocketmine\nbt\LittleEndianNbtSerializer;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
