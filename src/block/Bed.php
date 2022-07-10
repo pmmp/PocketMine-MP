@@ -24,12 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Bed as TileBed;
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\bedrock\DyeColorIdMap;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\item\Item;
@@ -54,20 +54,18 @@ class Bed extends Transparent{
 		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) |
-			($this->occupied ? BlockLegacyMetadata::BED_FLAG_OCCUPIED : 0) |
-			($this->head ? BlockLegacyMetadata::BED_FLAG_HEAD : 0);
+	public function getRequiredStateDataBits() : int{ return 4; }
+
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$this->facing = $r->readHorizontalFacing();
+		$this->occupied = $r->readBool();
+		$this->head = $r->readBool();
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
-		$this->occupied = ($stateMeta & BlockLegacyMetadata::BED_FLAG_OCCUPIED) !== 0;
-		$this->head = ($stateMeta & BlockLegacyMetadata::BED_FLAG_HEAD) !== 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		$w->writeHorizontalFacing($this->facing);
+		$w->writeBool($this->occupied);
+		$w->writeBool($this->head);
 	}
 
 	public function readStateFromWorld() : void{
@@ -209,10 +207,6 @@ class Bed extends Transparent{
 		return [];
 	}
 
-	protected function writeStateToItemMeta() : int{
-		return DyeColorIdMap::getInstance()->toId($this->color);
-	}
-
 	public function getAffectedBlocks() : array{
 		if(($other = $this->getOtherHalf()) !== null){
 			return [$this, $other];
@@ -224,4 +218,6 @@ class Bed extends Transparent{
 	private function canBeSupportedBy(Block $block) : bool{
 		return !$block->getSupportType(Facing::UP)->equals(SupportType::NONE());
 	}
+
+	public function getMaxStackSize() : int{ return 1; }
 }

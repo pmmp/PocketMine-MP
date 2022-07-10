@@ -40,10 +40,6 @@ trait FallableTrait{
 
 	abstract protected function getPosition() : Position;
 
-	abstract protected function getId() : int;
-
-	abstract protected function getMeta() : int;
-
 	public function onNearbyBlockChange() : void{
 		$pos = $this->getPosition();
 		$down = $pos->getWorld()->getBlock($pos->getSide(Facing::DOWN));

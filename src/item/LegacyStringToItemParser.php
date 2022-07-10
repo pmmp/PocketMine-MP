@@ -23,15 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\data\bedrock\item\ItemDeserializer;
+use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
+use pocketmine\data\bedrock\item\upgrade\ItemDataUpgrader;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
+use pocketmine\world\format\io\GlobalItemDataHandlers;
 use Webmozart\PathUtil\Path;
 use function explode;
 use function file_get_contents;
 use function is_array;
-use function is_int;
 use function is_numeric;
+use function is_string;
 use function json_decode;
 use function str_replace;
 use function strtolower;
@@ -51,7 +55,10 @@ final class LegacyStringToItemParser{
 	use SingletonTrait;
 
 	private static function make() : self{
-		$result = new self(ItemFactory::getInstance());
+		$result = new self(
+			GlobalItemDataHandlers::getUpgrader(),
+			GlobalItemDataHandlers::getDeserializer()
+		);
 
 		$mappingsRaw = Utils::assumeNotFalse(@file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, 'item_from_string_bc_map.json')), "Missing required resource file");
 
@@ -59,7 +66,7 @@ final class LegacyStringToItemParser{
 		if(!is_array($mappings)) throw new AssumptionFailedError("Invalid mappings format, expected array");
 
 		foreach($mappings as $name => $id){
-			if(!is_int($id)) throw new AssumptionFailedError("Invalid mappings format, expected int values");
+			if(!is_string($id)) throw new AssumptionFailedError("Invalid mappings format, expected string values");
 			$result->addMapping((string) $name, $id);
 		}
 
@@ -67,20 +74,23 @@ final class LegacyStringToItemParser{
 	}
 
 	/**
-	 * @var int[]
-	 * @phpstan-var array<string, int>
+	 * @var string[]
+	 * @phpstan-var array<string, string>
 	 */
 	private array $map = [];
 
-	public function __construct(private ItemFactory $itemFactory){}
+	public function __construct(
+		private ItemDataUpgrader $itemDataUpgrader,
+		private ItemDeserializer $itemDeserializer
+	){}
 
-	public function addMapping(string $alias, int $id) : void{
+	public function addMapping(string $alias, string $id) : void{
 		$this->map[$alias] = $id;
 	}
 
 	/**
-	 * @return int[]
-	 * @phpstan-return array<string, int>
+	 * @return string[]
+	 * @phpstan-return array<string, string>
 	 */
 	public function getMappings() : array{
 		return $this->map;
@@ -108,13 +118,17 @@ final class LegacyStringToItemParser{
 			throw new LegacyStringToItemParserException("Unable to parse \"" . $b[1] . "\" from \"" . $input . "\" as a valid meta value");
 		}
 
-		if(isset($this->map[strtolower($b[0])])){
-			$item = $this->itemFactory->get($this->map[strtolower($b[0])], $meta);
-		}else{
+		$legacyId = $this->map[strtolower($b[0])] ?? null;
+		if($legacyId === null){
 			throw new LegacyStringToItemParserException("Unable to resolve \"" . $input . "\" to a valid item");
 		}
+		$itemData = $this->itemDataUpgrader->upgradeItemTypeDataString($legacyId, $meta, 1, null);
 
-		return $item;
+		try{
+			return $this->itemDeserializer->deserializeStack($itemData);
+		}catch(ItemTypeDeserializeException $e){
+			throw new LegacyStringToItemParserException($e->getMessage(), 0, $e);
+		}
 	}
 
 	protected function reprocess(string $input) : string{

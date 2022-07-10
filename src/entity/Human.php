@@ -74,28 +74,18 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::PLAYER; }
 
-	/** @var PlayerInventory */
-	protected $inventory;
+	protected PlayerInventory $inventory;
+	protected PlayerOffHandInventory $offHandInventory;
+	protected PlayerEnderInventory $enderInventory;
 
-	/** @var PlayerOffHandInventory */
-	protected $offHandInventory;
+	protected UuidInterface $uuid;
 
-	/** @var PlayerEnderInventory */
-	protected $enderInventory;
+	protected Skin $skin;
 
-	/** @var UuidInterface */
-	protected $uuid;
+	protected HungerManager $hungerManager;
+	protected ExperienceManager $xpManager;
 
-	/** @var Skin */
-	protected $skin;
-
-	/** @var HungerManager */
-	protected $hungerManager;
-	/** @var ExperienceManager */
-	protected $xpManager;
-
-	/** @var int */
-	protected $xpSeed;
+	protected int $xpSeed;
 
 	public function __construct(Location $location, Skin $skin, ?CompoundTag $nbt = null){
 		$this->skin = $skin;
@@ -199,10 +189,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return min(100, 7 * $this->xpManager->getXpLevel());
 	}
 
-	/**
-	 * @return PlayerInventory
-	 */
-	public function getInventory(){
+	public function getInventory() : PlayerInventory{
 		return $this->inventory;
 	}
 
@@ -383,9 +370,9 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	public function getDrops() : array{
 		return array_filter(array_merge(
-			$this->inventory !== null ? array_values($this->inventory->getContents()) : [],
-			$this->armorInventory !== null ? array_values($this->armorInventory->getContents()) : [],
-			$this->offHandInventory !== null ? array_values($this->offHandInventory->getContents()) : [],
+			array_values($this->inventory->getContents()),
+			array_values($this->armorInventory->getContents()),
+			array_values($this->offHandInventory->getContents()),
 		), function(Item $item) : bool{ return !$item->hasEnchantment(VanillaEnchantments::VANISHING()); });
 	}
 
@@ -404,55 +391,51 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 		$inventoryTag = new ListTag([], NBT::TAG_Compound);
 		$nbt->setTag("Inventory", $inventoryTag);
-		if($this->inventory !== null){
-			//Normal inventory
-			$slotCount = $this->inventory->getSize() + $this->inventory->getHotbarSize();
-			for($slot = $this->inventory->getHotbarSize(); $slot < $slotCount; ++$slot){
-				$item = $this->inventory->getItem($slot - 9);
-				if(!$item->isNull()){
-					$inventoryTag->push($item->nbtSerialize($slot));
-				}
-			}
 
-			//Armor
-			for($slot = 100; $slot < 104; ++$slot){
-				$item = $this->armorInventory->getItem($slot - 100);
-				if(!$item->isNull()){
-					$inventoryTag->push($item->nbtSerialize($slot));
-				}
+		//Normal inventory
+		$slotCount = $this->inventory->getSize() + $this->inventory->getHotbarSize();
+		for($slot = $this->inventory->getHotbarSize(); $slot < $slotCount; ++$slot){
+			$item = $this->inventory->getItem($slot - 9);
+			if(!$item->isNull()){
+				$inventoryTag->push($item->nbtSerialize($slot));
 			}
-
-			$nbt->setInt("SelectedInventorySlot", $this->inventory->getHeldItemIndex());
 		}
+
+		//Armor
+		for($slot = 100; $slot < 104; ++$slot){
+			$item = $this->armorInventory->getItem($slot - 100);
+			if(!$item->isNull()){
+				$inventoryTag->push($item->nbtSerialize($slot));
+			}
+		}
+
+		$nbt->setInt("SelectedInventorySlot", $this->inventory->getHeldItemIndex());
+
 		$offHandItem = $this->offHandInventory->getItem(0);
 		if(!$offHandItem->isNull()){
 			$nbt->setTag("OffHandItem", $offHandItem->nbtSerialize());
 		}
 
-		if($this->enderInventory !== null){
-			/** @var CompoundTag[] $items */
-			$items = [];
+		/** @var CompoundTag[] $items */
+		$items = [];
 
-			$slotCount = $this->enderInventory->getSize();
-			for($slot = 0; $slot < $slotCount; ++$slot){
-				$item = $this->enderInventory->getItem($slot);
-				if(!$item->isNull()){
-					$items[] = $item->nbtSerialize($slot);
-				}
+		$slotCount = $this->enderInventory->getSize();
+		for($slot = 0; $slot < $slotCount; ++$slot){
+			$item = $this->enderInventory->getItem($slot);
+			if(!$item->isNull()){
+				$items[] = $item->nbtSerialize($slot);
 			}
-
-			$nbt->setTag("EnderChestInventory", new ListTag($items, NBT::TAG_Compound));
 		}
 
-		if($this->skin !== null){
-			$nbt->setTag("Skin", CompoundTag::create()
-				->setString("Name", $this->skin->getSkinId())
-				->setByteArray("Data", $this->skin->getSkinData())
-				->setByteArray("CapeData", $this->skin->getCapeData())
-				->setString("GeometryName", $this->skin->getGeometryName())
-				->setByteArray("GeometryData", $this->skin->getGeometryData())
-			);
-		}
+		$nbt->setTag("EnderChestInventory", new ListTag($items, NBT::TAG_Compound));
+
+		$nbt->setTag("Skin", CompoundTag::create()
+			->setString("Name", $this->skin->getSkinId())
+			->setByteArray("Data", $this->skin->getSkinData())
+			->setByteArray("CapeData", $this->skin->getCapeData())
+			->setString("GeometryName", $this->skin->getGeometryName())
+			->setByteArray("GeometryData", $this->skin->getGeometryData())
+		);
 
 		return $nbt;
 	}
@@ -512,11 +495,13 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	}
 
 	protected function destroyCycles() : void{
-		$this->inventory = null;
-		$this->offHandInventory = null;
-		$this->enderInventory = null;
-		$this->hungerManager = null;
-		$this->xpManager = null;
+		unset(
+			$this->inventory,
+			$this->offHandInventory,
+			$this->enderInventory,
+			$this->hungerManager,
+			$this->xpManager
+		);
 		parent::destroyCycles();
 	}
 }

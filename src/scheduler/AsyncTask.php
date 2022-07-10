@@ -59,8 +59,7 @@ abstract class AsyncTask extends \Threaded{
 	/** @var AsyncWorker|null $worker */
 	public $worker = null;
 
-	/** @var \Threaded */
-	public $progressUpdates;
+	public \Threaded $progressUpdates;
 
 	private string|int|bool|null|float $result = null;
 	private bool $serialized = false;

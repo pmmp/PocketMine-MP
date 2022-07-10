@@ -23,20 +23,20 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class Bedrock extends Opaque{
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 
+class Bedrock extends Opaque{
 	private bool $burnsForever = false;
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->burnsForever = ($stateMeta & BlockLegacyMetadata::BEDROCK_FLAG_INFINIBURN) !== 0;
+	public function getRequiredStateDataBits() : int{ return 1; }
+
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$this->burnsForever = $r->readBool();
 	}
 
-	protected function writeStateToMeta() : int{
-		return $this->burnsForever ? BlockLegacyMetadata::BEDROCK_FLAG_INFINIBURN : 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1;
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		$w->writeBool($this->burnsForever);
 	}
 
 	public function burnsForever() : bool{

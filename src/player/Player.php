@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\player;
 
 use pocketmine\block\Bed;
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\command\CommandSender;
@@ -142,6 +142,7 @@ use function max;
 use function mb_strlen;
 use function microtime;
 use function min;
+use function morton2d_encode;
 use function preg_match;
 use function spl_object_id;
 use function sqrt;
@@ -241,8 +242,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected ?float $lastMovementProcess = null;
 
 	protected int $inAirTicks = 0;
-	/** @var float */
-	protected $stepHeight = 0.6;
+
+	protected float $stepHeight = 0.6;
 
 	protected ?Vector3 $sleeping = null;
 	private ?Position $spawnPosition = null;
@@ -641,7 +642,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function getItemCooldownExpiry(Item $item) : int{
 		$this->checkItemCooldowns();
-		return $this->usedItemsCooldown[$item->getId()] ?? 0;
+		return $this->usedItemsCooldown[morton2d_encode($item->getTypeId(), $item->computeTypeData())] ?? 0;
 	}
 
 	/**
@@ -649,7 +650,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function hasItemCooldown(Item $item) : bool{
 		$this->checkItemCooldowns();
-		return isset($this->usedItemsCooldown[$item->getId()]);
+		return isset($this->usedItemsCooldown[morton2d_encode($item->getTypeId(), $item->computeTypeData())]);
 	}
 
 	/**
@@ -658,7 +659,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function resetItemCooldown(Item $item, ?int $ticks = null) : void{
 		$ticks = $ticks ?? $item->getCooldownTicks();
 		if($ticks > 0){
-			$this->usedItemsCooldown[$item->getId()] = $this->server->getTick() + $ticks;
+			$this->usedItemsCooldown[morton2d_encode($item->getTypeId(), $item->computeTypeData())] = $this->server->getTick() + $ticks;
 		}
 	}
 
@@ -1613,7 +1614,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		$block = $target->getSide($face);
-		if($block->getId() === BlockLegacyIds::FIRE){
+		if($block->getTypeId() === BlockTypeIds::FIRE || $block->getTypeId() === BlockTypeIds::SOUL_FIRE){
 			$this->getWorld()->setBlock($block->getPosition(), VanillaBlocks::AIR());
 			$this->getWorld()->addSound($block->getPosition()->add(0.5, 0.5, 0.5), new FireExtinguishSound());
 			return true;
@@ -2217,16 +2218,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$this->getWorld()->dropItem($this->location, $item);
 			}
 
-			if($this->inventory !== null){
-				$this->inventory->setHeldItemIndex(0);
-				$this->inventory->clearAll();
-			}
-			if($this->armorInventory !== null){
-				$this->armorInventory->clearAll();
-			}
-			if($this->offHandInventory !== null){
-				$this->offHandInventory->clearAll();
-			}
+			$this->inventory->setHeldItemIndex(0);
+			$this->inventory->clearAll();
+			$this->armorInventory->clearAll();
+			$this->offHandInventory->clearAll();
 		}
 
 		if(!$ev->getKeepXp()){

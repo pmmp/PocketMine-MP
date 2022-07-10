@@ -25,10 +25,17 @@ namespace pocketmine\crafting;
 
 use pocketmine\item\Item;
 use pocketmine\utils\ObjectSet;
+use function morton2d_encode;
 
 final class FurnaceRecipeManager{
 	/** @var FurnaceRecipe[] */
-	protected $furnaceRecipes = [];
+	protected array $furnaceRecipes = [];
+
+	/**
+	 * @var FurnaceRecipe[]
+	 * @phpstan-var array<int, FurnaceRecipe>
+	 */
+	private array $lookupCache = [];
 
 	/** @phpstan-var ObjectSet<\Closure(FurnaceRecipe) : void> */
 	private ObjectSet $recipeRegisteredCallbacks;
@@ -52,14 +59,27 @@ final class FurnaceRecipeManager{
 	}
 
 	public function register(FurnaceRecipe $recipe) : void{
-		$input = $recipe->getInput();
-		$this->furnaceRecipes[$input->getId() . ":" . ($input->hasAnyDamageValue() ? "?" : $input->getMeta())] = $recipe;
+		$this->furnaceRecipes[] = $recipe;
 		foreach($this->recipeRegisteredCallbacks as $callback){
 			$callback($recipe);
 		}
 	}
 
 	public function match(Item $input) : ?FurnaceRecipe{
-		return $this->furnaceRecipes[$input->getId() . ":" . $input->getMeta()] ?? $this->furnaceRecipes[$input->getId() . ":?"] ?? null;
+		$index = morton2d_encode($input->getTypeId(), $input->computeTypeData());
+		$simpleRecipe = $this->lookupCache[$index] ?? null;
+		if($simpleRecipe !== null){
+			return $simpleRecipe;
+		}
+
+		foreach($this->furnaceRecipes as $recipe){
+			if($recipe->getInput()->accepts($input)){
+				//remember that this item is accepted by this recipe, so we don't need to bruteforce it again
+				$this->lookupCache[$index] = $recipe;
+				return $recipe;
+			}
+		}
+
+		return null;
 	}
 }

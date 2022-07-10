@@ -41,30 +41,22 @@ abstract class LightUpdate{
 		[ 0,  0, -1]
 	];
 
-	/**
-	 * @var \SplFixedArray|int[]
-	 * @phpstan-var \SplFixedArray<int>
-	 */
-	protected $lightFilters;
+	public const BASE_LIGHT_FILTER = 1;
 
 	/**
 	 * @var int[][] blockhash => [x, y, z, new light level]
 	 * @phpstan-var array<int, array{int, int, int, int}>
 	 */
-	protected $updateNodes = [];
-
-	/** @var SubChunkExplorer */
-	protected $subChunkExplorer;
+	protected array $updateNodes = [];
 
 	/**
-	 * @param \SplFixedArray|int[] $lightFilters
-	 * @phpstan-param \SplFixedArray<int> $lightFilters
+	 * @param int[] $lightFilters
+	 * @phpstan-param array<int, int> $lightFilters
 	 */
-	public function __construct(SubChunkExplorer $subChunkExplorer, \SplFixedArray $lightFilters){
-		$this->lightFilters = $lightFilters;
-
-		$this->subChunkExplorer = $subChunkExplorer;
-	}
+	public function __construct(
+		protected SubChunkExplorer $subChunkExplorer,
+		protected array $lightFilters
+	){}
 
 	abstract protected function getCurrentLightArray() : LightArray;
 
@@ -199,7 +191,7 @@ abstract class LightUpdate{
 		$ly = $y & SubChunk::COORD_MASK;
 		$lz = $z & SubChunk::COORD_MASK;
 		$current = $lightArray->get($lx, $ly, $lz);
-		$potentialLight = $newAdjacentLevel - $this->lightFilters[$this->subChunkExplorer->currentSubChunk->getFullBlock($lx, $ly, $lz)];
+		$potentialLight = $newAdjacentLevel - ($this->lightFilters[$this->subChunkExplorer->currentSubChunk->getFullBlock($lx, $ly, $lz)] ?? self::BASE_LIGHT_FILTER);
 
 		if($current < $potentialLight){
 			$lightArray->set($lx, $ly, $lz, $potentialLight);

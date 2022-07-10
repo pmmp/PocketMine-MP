@@ -41,12 +41,11 @@ use pocketmine\player\Player;
 class PlayerCommandPreprocessEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var string */
-	protected $message;
-
-	public function __construct(Player $player, string $message){
+	public function __construct(
+		Player $player,
+		protected string $message
+	){
 		$this->player = $player;
-		$this->message = $message;
 	}
 
 	public function getMessage() : string{

@@ -48,35 +48,27 @@ use function sqrt;
 
 class Explosion{
 	private int $rays = 16;
-	/** @var World */
-	public $world;
-	/** @var Position */
-	public $source;
-	/** @var float */
-	public $size;
+	public World $world;
 
 	/** @var Block[] */
-	public $affectedBlocks = [];
-	/** @var float */
-	public $stepLen = 0.3;
-
-	private Entity|Block|null $what;
+	public array $affectedBlocks = [];
+	public float $stepLen = 0.3;
 
 	private SubChunkExplorer $subChunkExplorer;
 
-	public function __construct(Position $center, float $size, Entity|Block|null $what = null){
-		if(!$center->isValid()){
+	public function __construct(
+		public Position $source,
+		public float $size,
+		private Entity|Block|null $what = null
+	){
+		if(!$this->source->isValid()){
 			throw new \InvalidArgumentException("Position does not have a valid world");
 		}
-		$this->source = $center;
-		$this->world = $center->getWorld();
+		$this->world = $this->source->getWorld();
 
 		if($size <= 0){
 			throw new \InvalidArgumentException("Explosion radius must be greater than 0, got $size");
 		}
-		$this->size = $size;
-
-		$this->what = $what;
 		$this->subChunkExplorer = new SubChunkExplorer($this->world);
 	}
 
@@ -122,7 +114,7 @@ class Explosion{
 
 							$state = $this->subChunkExplorer->currentSubChunk->getFullBlock($vBlockX & SubChunk::COORD_MASK, $vBlockY & SubChunk::COORD_MASK, $vBlockZ & SubChunk::COORD_MASK);
 
-							$blastResistance = $blockFactory->blastResistance[$state];
+							$blastResistance = $blockFactory->blastResistance[$state] ?? 0;
 							if($blastResistance >= 0){
 								$blastForce -= ($blastResistance / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){

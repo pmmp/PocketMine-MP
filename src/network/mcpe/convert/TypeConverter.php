@@ -23,44 +23,45 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
-use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\inventory\AnvilInventory;
 use pocketmine\block\inventory\CraftingTableInventory;
 use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\LoomInventory;
 use pocketmine\block\inventory\StonecutterInventory;
+use pocketmine\block\VanillaBlocks;
+use pocketmine\crafting\ExactRecipeIngredient;
+use pocketmine\crafting\MetaWildcardRecipeIngredient;
+use pocketmine\crafting\RecipeIngredient;
+use pocketmine\data\bedrock\item\BlockItemIdMap;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
-use pocketmine\item\Durable;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\item\ItemIds;
 use pocketmine\item\VanillaItems;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\protocol\types\GameMode as ProtocolGameMode;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
-use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
+use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient as ProtocolRecipeIngredient;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
+use function get_class;
+use function morton2d_encode;
 
 class TypeConverter{
 	use SingletonTrait;
 
-	private const DAMAGE_TAG = "Damage"; //TAG_Int
-	private const DAMAGE_TAG_CONFLICT_RESOLUTION = "___Damage_ProtocolCollisionResolution___";
 	private const PM_ID_TAG = "___Id___";
-	private const PM_META_TAG = "___Meta___";
+
+	private const RECIPE_INPUT_WILDCARD_META = 0x7fff;
 
 	private int $shieldRuntimeId;
 
@@ -113,25 +114,49 @@ class TypeConverter{
 		}
 	}
 
-	public function coreItemStackToRecipeIngredient(Item $itemStack) : RecipeIngredient{
-		if($itemStack->isNull()){
-			return new RecipeIngredient(0, 0, 0);
+	public function coreRecipeIngredientToNet(?RecipeIngredient $ingredient) : ProtocolRecipeIngredient{
+		if($ingredient === null){
+			return new ProtocolRecipeIngredient(0, 0, 0);
 		}
-		if($itemStack->hasAnyDamageValue()){
-			[$id, ] = ItemTranslator::getInstance()->toNetworkId($itemStack->getId(), 0);
-			$meta = 0x7fff;
+		if($ingredient instanceof MetaWildcardRecipeIngredient){
+			$id = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromStringId($ingredient->getItemId());
+			$meta = self::RECIPE_INPUT_WILDCARD_META;
+		}elseif($ingredient instanceof ExactRecipeIngredient){
+			$item = $ingredient->getItem();
+			[$id, $meta, $blockRuntimeId] = ItemTranslator::getInstance()->toNetworkId($item);
+			if($blockRuntimeId !== ItemTranslator::NO_BLOCK_RUNTIME_ID){
+				$meta = RuntimeBlockMapping::getInstance()->getBlockStateDictionary()->getMetaFromStateId($blockRuntimeId);
+				if($meta === null){
+					throw new AssumptionFailedError("Every block state should have an associated meta value");
+				}
+			}
 		}else{
-			[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($itemStack->getId(), $itemStack->getMeta());
+			throw new \LogicException("Unsupported recipe ingredient type " . get_class($ingredient) . ", only " . ExactRecipeIngredient::class . " and " . MetaWildcardRecipeIngredient::class . " are supported");
 		}
-		return new RecipeIngredient($id, $meta, $itemStack->getCount());
+		return new ProtocolRecipeIngredient($id, $meta, 1);
 	}
 
-	public function recipeIngredientToCoreItemStack(RecipeIngredient $ingredient) : Item{
+	public function netRecipeIngredientToCore(ProtocolRecipeIngredient $ingredient) : ?RecipeIngredient{
 		if($ingredient->getId() === 0){
-			return VanillaItems::AIR();
+			return null;
 		}
-		[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($ingredient->getId(), $ingredient->getMeta());
-		return ItemFactory::getInstance()->get($id, $meta, $ingredient->getCount());
+
+		$itemId = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromIntId($ingredient->getId());
+
+		if($ingredient->getMeta() === self::RECIPE_INPUT_WILDCARD_META){
+			return new MetaWildcardRecipeIngredient($itemId);
+		}
+
+		$meta = $ingredient->getMeta();
+		$blockRuntimeId = null;
+		if(($blockId = BlockItemIdMap::getInstance()->lookupBlockId($itemId)) !== null){
+			$blockRuntimeId = RuntimeBlockMapping::getInstance()->getBlockStateDictionary()->lookupStateIdFromIdMeta($blockId, $meta);
+			if($blockRuntimeId !== null){
+				$meta = 0;
+			}
+		}
+		$result = ItemTranslator::getInstance()->fromNetworkId($ingredient->getId(), $meta, $blockRuntimeId ?? ItemTranslator::NO_BLOCK_RUNTIME_ID);
+		return new ExactRecipeIngredient($result);
 	}
 
 	public function coreItemStackToNet(Item $itemStack) : ItemStack{
@@ -143,48 +168,17 @@ class TypeConverter{
 			$nbt = clone $itemStack->getNamedTag();
 		}
 
-		$isBlockItem = $itemStack->getId() < 256;
-
-		$idMeta = ItemTranslator::getInstance()->toNetworkIdQuiet($itemStack->getId(), $itemStack->getMeta());
+		$idMeta = ItemTranslator::getInstance()->toNetworkIdQuiet($itemStack);
 		if($idMeta === null){
 			//Display unmapped items as INFO_UPDATE, but stick something in their NBT to make sure they don't stack with
 			//other unmapped items.
-			[$id, $meta] = ItemTranslator::getInstance()->toNetworkId(ItemIds::INFO_UPDATE, 0);
+			[$id, $meta, $blockRuntimeId] = ItemTranslator::getInstance()->toNetworkId(VanillaBlocks::INFO_UPDATE()->asItem());
 			if($nbt === null){
 				$nbt = new CompoundTag();
 			}
-			$nbt->setInt(self::PM_ID_TAG, $itemStack->getId());
-			$nbt->setInt(self::PM_META_TAG, $itemStack->getMeta());
+			$nbt->setInt(self::PM_ID_TAG, morton2d_encode($itemStack->getTypeId(), $itemStack->computeTypeData()));
 		}else{
-			[$id, $meta] = $idMeta;
-
-			if($itemStack instanceof Durable && $itemStack->getDamage() > 0){
-				if($nbt !== null){
-					if(($existing = $nbt->getTag(self::DAMAGE_TAG)) !== null){
-						$nbt->removeTag(self::DAMAGE_TAG);
-						$nbt->setTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION, $existing);
-					}
-				}else{
-					$nbt = new CompoundTag();
-				}
-				$nbt->setInt(self::DAMAGE_TAG, $itemStack->getDamage());
-			}elseif($isBlockItem && $itemStack->getMeta() !== 0){
-				//TODO HACK: This foul-smelling code ensures that we can correctly deserialize an item when the
-				//client sends it back to us, because as of 1.16.220, blockitems quietly discard their metadata
-				//client-side. Aside from being very annoying, this also breaks various server-side behaviours.
-				if($nbt === null){
-					$nbt = new CompoundTag();
-				}
-				$nbt->setInt(self::PM_META_TAG, $itemStack->getMeta());
-			}
-		}
-
-		$blockRuntimeId = 0;
-		if($isBlockItem){
-			$block = $itemStack->getBlock();
-			if($block->getId() !== BlockLegacyIds::AIR){
-				$blockRuntimeId = RuntimeBlockMapping::getInstance()->toRuntimeId($block->getFullId());
-			}
+			[$id, $meta, $blockRuntimeId] = $idMeta;
 		}
 
 		return new ItemStack(
@@ -208,49 +202,22 @@ class TypeConverter{
 		}
 		$compound = $itemStack->getNbt();
 
-		[$id, $meta] = ItemTranslator::getInstance()->fromNetworkId($itemStack->getId(), $itemStack->getMeta());
+		$itemResult = ItemTranslator::getInstance()->fromNetworkId($itemStack->getId(), $itemStack->getMeta(), $itemStack->getBlockRuntimeId());
 
 		if($compound !== null){
 			$compound = clone $compound;
-			if(($idTag = $compound->getTag(self::PM_ID_TAG)) instanceof IntTag){
-				$id = $idTag->getValue();
-				$compound->removeTag(self::PM_ID_TAG);
-			}
-			if(($damageTag = $compound->getTag(self::DAMAGE_TAG)) instanceof IntTag){
-				$meta = $damageTag->getValue();
-				$compound->removeTag(self::DAMAGE_TAG);
-				if(($conflicted = $compound->getTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION)) !== null){
-					$compound->removeTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION);
-					$compound->setTag(self::DAMAGE_TAG, $conflicted);
-				}
-			}elseif(($metaTag = $compound->getTag(self::PM_META_TAG)) instanceof IntTag){
-				//TODO HACK: This foul-smelling code ensures that we can correctly deserialize an item when the
-				//client sends it back to us, because as of 1.16.220, blockitems quietly discard their metadata
-				//client-side. Aside from being very annoying, this also breaks various server-side behaviours.
-				$meta = $metaTag->getValue();
-				$compound->removeTag(self::PM_META_TAG);
-			}
-			if($compound->count() === 0){
-				$compound = null;
-			}
-		}
-		if($id < -0x8000 || $id >= 0x7fff){
-			throw new TypeConversionException("Item ID must be in range " . -0x8000 . " ... " . 0x7fff . " (received $id)");
-		}
-		if($meta < 0 || $meta >= 0x7fff){ //this meta value may have been restored from the NBT
-			throw new TypeConversionException("Item meta must be in range 0 ... " . 0x7fff . " (received $meta)");
 		}
 
-		try{
-			return ItemFactory::getInstance()->get(
-				$id,
-				$meta,
-				$itemStack->getCount(),
-				$compound
-			);
-		}catch(NbtException $e){
-			throw TypeConversionException::wrap($e, "Bad itemstack NBT data");
+		$itemResult->setCount($itemStack->getCount());
+		if($compound !== null){
+			try{
+				$itemResult->setNamedTag($compound);
+			}catch(NbtException $e){
+				throw TypeConversionException::wrap($e, "Bad itemstack NBT data");
+			}
 		}
+
+		return $itemResult;
 	}
 
 	/**

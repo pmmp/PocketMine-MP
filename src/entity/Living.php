@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\animation\DeathAnimation;
 use pocketmine\entity\animation\HurtAnimation;
@@ -76,50 +76,34 @@ use const M_PI;
 abstract class Living extends Entity{
 	protected const DEFAULT_BREATH_TICKS = 300;
 
-	protected $gravity = 0.08;
-	protected $drag = 0.02;
+	protected int $attackTime = 0;
 
-	/** @var int */
-	protected $attackTime = 0;
+	public int $deadTicks = 0;
+	protected int $maxDeadTicks = 25;
 
-	/** @var int */
-	public $deadTicks = 0;
-	/** @var int */
-	protected $maxDeadTicks = 25;
+	protected float $jumpVelocity = 0.42;
 
-	/** @var float */
-	protected $jumpVelocity = 0.42;
+	protected EffectManager $effectManager;
 
-	/** @var EffectManager */
-	protected $effectManager;
+	protected ArmorInventory $armorInventory;
 
-	/** @var ArmorInventory */
-	protected $armorInventory;
+	protected bool $breathing = true;
+	protected int $breathTicks = self::DEFAULT_BREATH_TICKS;
+	protected int $maxBreathTicks = self::DEFAULT_BREATH_TICKS;
 
-	/** @var bool */
-	protected $breathing = true;
-	/** @var int */
-	protected $breathTicks = self::DEFAULT_BREATH_TICKS;
-	/** @var int */
-	protected $maxBreathTicks = self::DEFAULT_BREATH_TICKS;
+	protected Attribute $healthAttr;
+	protected Attribute $absorptionAttr;
+	protected Attribute $knockbackResistanceAttr;
+	protected Attribute $moveSpeedAttr;
 
-	/** @var Attribute */
-	protected $healthAttr;
-	/** @var Attribute */
-	protected $absorptionAttr;
-	/** @var Attribute */
-	protected $knockbackResistanceAttr;
-	/** @var Attribute */
-	protected $moveSpeedAttr;
+	protected bool $sprinting = false;
+	protected bool $sneaking = false;
+	protected bool $gliding = false;
+	protected bool $swimming = false;
 
-	/** @var bool */
-	protected $sprinting = false;
-	/** @var bool */
-	protected $sneaking = false;
-	/** @var bool */
-	protected $gliding = false;
-	/** @var bool */
-	protected $swimming = false;
+	protected function getInitialDragMultiplier() : float{ return 0.02; }
+
+	protected function getInitialGravity() : float{ return 0.08; }
 
 	abstract public function getName() : string;
 
@@ -362,7 +346,7 @@ abstract class Living extends Entity{
 				new EntityLongFallSound($this) :
 				new EntityShortFallSound($this)
 			);
-		}elseif($fallBlock->getId() !== BlockLegacyIds::AIR){
+		}elseif($fallBlock->getTypeId() !== BlockTypeIds::AIR){
 			$this->broadcastSound(new EntityLandSound($this, $fallBlock));
 		}
 		return $newVerticalVelocity;
@@ -772,10 +756,10 @@ abstract class Living extends Entity{
 				--$nextIndex;
 			}
 
-			$id = $block->getId();
+			$id = $block->getTypeId();
 
 			if($transparent === null){
-				if($id !== BlockLegacyIds::AIR){
+				if($id !== BlockTypeIds::AIR){
 					break;
 				}
 			}else{
@@ -850,8 +834,10 @@ abstract class Living extends Entity{
 	}
 
 	protected function destroyCycles() : void{
-		$this->armorInventory = null;
-		$this->effectManager = null;
+		unset(
+			$this->armorInventory,
+			$this->effectManager
+		);
 		parent::destroyCycles();
 	}
 }

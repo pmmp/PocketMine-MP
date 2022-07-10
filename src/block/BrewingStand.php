@@ -26,6 +26,8 @@ namespace pocketmine\block;
 use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -42,33 +44,31 @@ class BrewingStand extends Transparent{
 	 */
 	protected array $slots = [];
 
-	protected function writeStateToMeta() : int{
-		$flags = 0;
-		foreach([
-			BlockLegacyMetadata::BREWING_STAND_FLAG_EAST => BrewingStandSlot::EAST(),
-			BlockLegacyMetadata::BREWING_STAND_FLAG_NORTHWEST => BrewingStandSlot::NORTHWEST(),
-			BlockLegacyMetadata::BREWING_STAND_FLAG_SOUTHWEST => BrewingStandSlot::SOUTHWEST(),
-		] as $flag => $slot){
-			$flags |= (array_key_exists($slot->id(), $this->slots) ? $flag : 0);
-		}
-		return $flags;
-	}
+	public function getRequiredStateDataBits() : int{ return 3; }
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->slots = [];
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$result = [];
 		foreach([
-			BlockLegacyMetadata::BREWING_STAND_FLAG_EAST => BrewingStandSlot::EAST(),
-			BlockLegacyMetadata::BREWING_STAND_FLAG_NORTHWEST => BrewingStandSlot::NORTHWEST(),
-			BlockLegacyMetadata::BREWING_STAND_FLAG_SOUTHWEST => BrewingStandSlot::SOUTHWEST(),
-		] as $flag => $slot){
-			if(($stateMeta & $flag) !== 0){
-				$this->slots[$slot->id()] = $slot;
+			BrewingStandSlot::EAST(),
+			BrewingStandSlot::NORTHWEST(),
+			BrewingStandSlot::SOUTHWEST(),
+		] as $member){
+			if($r->readBool()){
+				$result[$member->id()] = $member;
 			}
 		}
+
+		$this->setSlots($result);
 	}
 
-	public function getStateBitmask() : int{
-		return 0b111;
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		foreach([
+			BrewingStandSlot::EAST(),
+			BrewingStandSlot::NORTHWEST(),
+			BrewingStandSlot::SOUTHWEST(),
+		] as $member){
+			$w->writeBool(isset($this->slots[$member->id()]));
+		}
 	}
 
 	protected function recalculateCollisionBoxes() : array{

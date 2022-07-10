@@ -26,7 +26,7 @@ namespace pocketmine\data\bedrock;
 use pocketmine\utils\SingletonTrait;
 use Webmozart\PathUtil\Path;
 
-final class LegacyEntityIdToStringIdMap extends LegacyToStringBidirectionalIdMap{
+final class LegacyEntityIdToStringIdMap extends LegacyToStringIdMap{
 	use SingletonTrait;
 
 	public function __construct(){

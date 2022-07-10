@@ -23,12 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Bamboo as ItemBamboo;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -54,18 +56,18 @@ class Bamboo extends Transparent{
 	protected bool $ready = false;
 	protected int $leafSize = self::NO_LEAVES;
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->thick = ($stateMeta & BlockLegacyMetadata::BAMBOO_FLAG_THICK) !== 0;
-		$this->leafSize = BlockDataSerializer::readBoundedInt("leafSize", ($stateMeta >> BlockLegacyMetadata::BAMBOO_LEAF_SIZE_SHIFT) & BlockLegacyMetadata::BAMBOO_LEAF_SIZE_MASK, self::NO_LEAVES, self::LARGE_LEAVES);
-		$this->ready = ($stateMeta & BlockLegacyMetadata::BAMBOO_FLAG_READY) !== 0;
+	public function getRequiredStateDataBits() : int{ return 4; }
+
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$this->setLeafSize($r->readBoundedInt(2, self::NO_LEAVES, self::LARGE_LEAVES));
+		$this->setThick($r->readBool());
+		$this->setReady($r->readBool());
 	}
 
-	public function writeStateToMeta() : int{
-		return ($this->thick ? BlockLegacyMetadata::BAMBOO_FLAG_THICK : 0) | ($this->leafSize << BlockLegacyMetadata::BAMBOO_LEAF_SIZE_SHIFT) | ($this->ready ? BlockLegacyMetadata::BAMBOO_FLAG_READY : 0);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		$w->writeInt(2, $this->getLeafSize());
+		$w->writeBool($this->isThick());
+		$w->writeBool($this->isReady());
 	}
 
 	public function isThick() : bool{ return $this->thick; }
@@ -241,5 +243,9 @@ class Bamboo extends Transparent{
 			$this->ready = true;
 			$world->setBlock($this->position, $this);
 		}
+	}
+
+	public function asItem() : Item{
+		return VanillaItems::BAMBOO();
 	}
 }

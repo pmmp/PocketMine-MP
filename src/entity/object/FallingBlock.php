@@ -26,6 +26,7 @@ namespace pocketmine\entity\object;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\utils\Fallable;
+use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
@@ -40,19 +41,15 @@ use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
+use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use function abs;
 
 class FallingBlock extends Entity{
+	private const TAG_FALLING_BLOCK = "FallingBlock"; //TAG_Compound
 
 	public static function getNetworkTypeId() : string{ return EntityIds::FALLING_BLOCK; }
 
-	protected $gravity = 0.04;
-	protected $drag = 0.02;
-
-	/** @var Block */
-	protected $block;
-
-	public $canCollide = false;
+	protected Block $block;
 
 	public function __construct(Location $location, Block $block, ?CompoundTag $nbt = null){
 		$this->block = $block;
@@ -61,23 +58,39 @@ class FallingBlock extends Entity{
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.98, 0.98); }
 
+	protected function getInitialDragMultiplier() : float{ return 0.02; }
+
+	protected function getInitialGravity() : float{ return 0.04; }
+
 	public static function parseBlockNBT(BlockFactory $factory, CompoundTag $nbt) : Block{
-		$blockId = 0;
 
 		//TODO: 1.8+ save format
-		if(($tileIdTag = $nbt->getTag("TileID")) instanceof IntTag){
-			$blockId = $tileIdTag->getValue();
-		}elseif(($tileTag = $nbt->getTag("Tile")) instanceof ByteTag){
-			$blockId = $tileTag->getValue();
+		$blockDataUpgrader = GlobalBlockStateHandlers::getUpgrader();
+		if(($fallingBlockTag = $nbt->getCompoundTag(self::TAG_FALLING_BLOCK)) !== null){
+			$blockStateData = $blockDataUpgrader->upgradeBlockStateNbt($fallingBlockTag);
+		}else{
+			if(($tileIdTag = $nbt->getTag("TileID")) instanceof IntTag){
+				$blockId = $tileIdTag->getValue();
+			}elseif(($tileTag = $nbt->getTag("Tile")) instanceof ByteTag){
+				$blockId = $tileTag->getValue();
+			}else{
+				throw new SavedDataLoadingException("Missing legacy falling block info");
+			}
+			$damage = $nbt->getByte("Data", 0);
+
+			$blockStateData = $blockDataUpgrader->upgradeIntIdMeta($blockId, $damage);
+		}
+		if($blockStateData === null){
+			throw new SavedDataLoadingException("Invalid legacy falling block");
 		}
 
-		if($blockId === 0){
-			throw new SavedDataLoadingException("Missing block info from NBT");
+		try{
+			$blockStateId = GlobalBlockStateHandlers::getDeserializer()->deserialize($blockStateData);
+		}catch(BlockStateDeserializeException $e){
+			throw new SavedDataLoadingException($e->getMessage(), 0, $e);
 		}
 
-		$damage = $nbt->getByte("Data", 0);
-
-		return $factory->get($blockId, $damage);
+		return $factory->fromStateId($blockStateId);
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
@@ -139,8 +152,7 @@ class FallingBlock extends Entity{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setInt("TileID", $this->block->getId());
-		$nbt->setByte("Data", $this->block->getMeta());
+		$nbt->setTag(self::TAG_FALLING_BLOCK, GlobalBlockStateHandlers::getSerializer()->serialize($this->block->getStateId())->toNbt());
 
 		return $nbt;
 	}
@@ -148,7 +160,7 @@ class FallingBlock extends Entity{
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
 		parent::syncNetworkData($properties);
 
-		$properties->setInt(EntityMetadataProperties::VARIANT, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId()));
+		$properties->setInt(EntityMetadataProperties::VARIANT, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getStateId()));
 	}
 
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{

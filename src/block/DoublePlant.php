@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -30,19 +32,16 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class DoublePlant extends Flowable{
-
 	protected bool $top = false;
 
-	protected function writeStateToMeta() : int{
-		return ($this->top ? BlockLegacyMetadata::DOUBLE_PLANT_FLAG_TOP : 0);
+	public function getRequiredStateDataBits() : int{ return 1; }
+
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$this->top = $r->readBool();
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->top = ($stateMeta & BlockLegacyMetadata::DOUBLE_PLANT_FLAG_TOP) !== 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1000;
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		$w->writeBool($this->top);
 	}
 
 	public function isTop() : bool{ return $this->top; }
@@ -54,8 +53,8 @@ class DoublePlant extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$id = $blockReplace->getSide(Facing::DOWN)->getId();
-		if(($id === BlockLegacyIds::GRASS || $id === BlockLegacyIds::DIRT) && $blockReplace->getSide(Facing::UP)->canBeReplaced()){
+		$id = $blockReplace->getSide(Facing::DOWN)->getTypeId();
+		if(($id === BlockTypeIds::GRASS || $id === BlockTypeIds::DIRT) && $blockReplace->getSide(Facing::UP)->canBeReplaced()){
 			$top = clone $this;
 			$top->top = true;
 			$tx->addBlock($blockReplace->position, $this)->addBlock($blockReplace->position->getSide(Facing::UP), $top);

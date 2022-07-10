@@ -32,8 +32,7 @@ use const PHP_EOL;
 use const PTHREADS_INHERIT_NONE;
 
 class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
-	/** @var bool */
-	protected $logDebug;
+	protected bool $logDebug;
 
 	private string $format = TextFormat::AQUA . "[%s] " . TextFormat::RESET . "%s[%s/%s]: %s" . TextFormat::RESET;
 	private bool $useFormattingCodes = false;

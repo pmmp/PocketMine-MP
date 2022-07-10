@@ -23,9 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -40,20 +41,18 @@ class Trapdoor extends Transparent{
 	protected bool $open = false;
 	protected bool $top = false;
 
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::write5MinusHorizontalFacing($this->facing) | ($this->top ? BlockLegacyMetadata::TRAPDOOR_FLAG_UPPER : 0) | ($this->open ? BlockLegacyMetadata::TRAPDOOR_FLAG_OPEN : 0);
+	public function getRequiredStateDataBits() : int{ return 4; }
+
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$this->facing = $r->readHorizontalFacing();
+		$this->top = $r->readBool();
+		$this->open = $r->readBool();
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		//TODO: in PC the values are reversed (facing - 2)
-
-		$this->facing = BlockDataSerializer::read5MinusHorizontalFacing($stateMeta);
-		$this->top = ($stateMeta & BlockLegacyMetadata::TRAPDOOR_FLAG_UPPER) !== 0;
-		$this->open = ($stateMeta & BlockLegacyMetadata::TRAPDOOR_FLAG_OPEN) !== 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		$w->writeHorizontalFacing($this->facing);
+		$w->writeBool($this->top);
+		$w->writeBool($this->open);
 	}
 
 	public function isOpen() : bool{ return $this->open; }

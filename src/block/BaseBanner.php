@@ -28,9 +28,9 @@ use pocketmine\block\utils\BannerPatternLayer;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\item\Banner as ItemBanner;
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -124,13 +124,9 @@ abstract class BaseBanner extends Transparent{
 	abstract protected function getSupportingFace() : int;
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide($this->getSupportingFace())->getId() === BlockLegacyIds::AIR){
+		if($this->getSide($this->getSupportingFace())->getTypeId() === BlockTypeIds::AIR){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
-	}
-
-	protected function writeStateToItemMeta() : int{
-		return DyeColorIdMap::getInstance()->toInvertedId($this->color);
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
@@ -148,5 +144,9 @@ abstract class BaseBanner extends Transparent{
 			$result->setPatterns($this->patterns);
 		}
 		return $result;
+	}
+
+	public function asItem() : Item{
+		return VanillaItems::BANNER()->setColor($this->color);
 	}
 }

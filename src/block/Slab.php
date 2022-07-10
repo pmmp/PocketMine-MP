@@ -25,6 +25,10 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeEnumDeserializer;
+use pocketmine\data\runtime\RuntimeEnumSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -33,38 +37,21 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Slab extends Transparent{
-
-	protected BlockIdentifierFlattened $idInfoFlattened;
-
 	protected SlabType $slabType;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
-		$this->idInfoFlattened = $idInfo;
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		parent::__construct($idInfo, $name . " Slab", $breakInfo);
 		$this->slabType = SlabType::BOTTOM();
 	}
 
-	public function getId() : int{
-		return $this->slabType->equals(SlabType::DOUBLE()) ? $this->idInfoFlattened->getSecondId() : parent::getId();
+	public function getRequiredStateDataBits() : int{ return 2; }
+
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$this->slabType = RuntimeEnumDeserializer::readSlabType($r);
 	}
 
-	protected function writeStateToMeta() : int{
-		if(!$this->slabType->equals(SlabType::DOUBLE())){
-			return ($this->slabType->equals(SlabType::TOP()) ? BlockLegacyMetadata::SLAB_FLAG_UPPER : 0);
-		}
-		return 0;
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		if($id === $this->idInfoFlattened->getSecondId()){
-			$this->slabType = SlabType::DOUBLE();
-		}else{
-			$this->slabType = ($stateMeta & BlockLegacyMetadata::SLAB_FLAG_UPPER) !== 0 ? SlabType::TOP() : SlabType::BOTTOM();
-		}
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1000;
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		RuntimeEnumSerializer::writeSlabType($w, $this->slabType);
 	}
 
 	public function isTransparent() : bool{

@@ -36,15 +36,6 @@ class FlowerPot extends Flowable{
 
 	protected ?Block $plant = null;
 
-	protected function writeStateToMeta() : int{
-		//TODO: HACK! this is just to make the client actually render the plant - we purposely don't read the flag back
-		return $this->plant !== null ? BlockLegacyMetadata::FLOWER_POT_FLAG_OCCUPIED : 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1;
-	}
-
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
@@ -92,7 +83,7 @@ class FlowerPot extends Flowable{
 			$block instanceof Flower ||
 			$block instanceof RedMushroom ||
 			$block instanceof Sapling ||
-			($block instanceof TallGrass && $block->getIdInfo()->getVariant() === BlockLegacyMetadata::TALLGRASS_FERN); //TODO: clean up
+			($block instanceof TallGrass && $block->getTypeId() === BlockTypeIds::LARGE_FERN);
 		//TODO: bamboo
 	}
 

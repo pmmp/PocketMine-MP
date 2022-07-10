@@ -23,8 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\FoodSource;
 use pocketmine\entity\Living;
@@ -40,16 +41,14 @@ class Cake extends Transparent implements FoodSource{
 
 	protected int $bites = 0;
 
-	protected function writeStateToMeta() : int{
-		return $this->bites;
+	public function getRequiredStateDataBits() : int{ return 3; }
+
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$this->bites = $r->readBoundedInt(3, 0, self::MAX_BITES);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->bites = BlockDataSerializer::readBoundedInt("bites", $stateMeta, 0, self::MAX_BITES);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		$w->writeInt(3, $this->bites);
 	}
 
 	/**
@@ -81,7 +80,7 @@ class Cake extends Transparent implements FoodSource{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->getId() !== BlockLegacyIds::AIR){
+		if($down->getTypeId() !== BlockTypeIds::AIR){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
@@ -89,7 +88,7 @@ class Cake extends Transparent implements FoodSource{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->getId() === BlockLegacyIds::AIR){ //Replace with common break method
+		if($this->getSide(Facing::DOWN)->getTypeId() === BlockTypeIds::AIR){ //Replace with common break method
 			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
 		}
 	}

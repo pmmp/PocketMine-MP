@@ -23,8 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -38,20 +39,18 @@ class TripwireHook extends Flowable{
 	protected bool $connected = false;
 	protected bool $powered = false;
 
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) |
-			($this->connected ? BlockLegacyMetadata::TRIPWIRE_HOOK_FLAG_CONNECTED : 0) |
-			($this->powered ? BlockLegacyMetadata::TRIPWIRE_HOOK_FLAG_POWERED : 0);
+	public function getRequiredStateDataBits() : int{ return 4; }
+
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$this->facing = $r->readHorizontalFacing();
+		$this->connected = $r->readBool();
+		$this->powered = $r->readBool();
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
-		$this->connected = ($stateMeta & BlockLegacyMetadata::TRIPWIRE_HOOK_FLAG_CONNECTED) !== 0;
-		$this->powered = ($stateMeta & BlockLegacyMetadata::TRIPWIRE_HOOK_FLAG_POWERED) !== 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		$w->writeHorizontalFacing($this->facing);
+		$w->writeBool($this->connected);
+		$w->writeBool($this->powered);
 	}
 
 	public function isConnected() : bool{ return $this->connected; }

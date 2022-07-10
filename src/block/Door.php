@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
-use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -37,35 +37,25 @@ use pocketmine\world\sound\DoorSound;
 
 class Door extends Transparent{
 	use HorizontalFacingTrait;
-	use PoweredByRedstoneTrait;
 
 	protected bool $top = false;
 	protected bool $hingeRight = false;
 	protected bool $open = false;
 
-	protected function writeStateToMeta() : int{
-		if($this->top){
-			return BlockLegacyMetadata::DOOR_FLAG_TOP |
-				($this->hingeRight ? BlockLegacyMetadata::DOOR_TOP_FLAG_RIGHT : 0) |
-				($this->powered ? BlockLegacyMetadata::DOOR_TOP_FLAG_POWERED : 0);
-		}
+	public function getRequiredStateDataBits() : int{ return 5; }
 
-		return BlockDataSerializer::writeLegacyHorizontalFacing(Facing::rotateY($this->facing, true)) | ($this->open ? BlockLegacyMetadata::DOOR_BOTTOM_FLAG_OPEN : 0);
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$this->facing = $r->readHorizontalFacing();
+		$this->top = $r->readBool();
+		$this->hingeRight = $r->readBool();
+		$this->open = $r->readBool();
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->top = ($stateMeta & BlockLegacyMetadata::DOOR_FLAG_TOP) !== 0;
-		if($this->top){
-			$this->hingeRight = ($stateMeta & BlockLegacyMetadata::DOOR_TOP_FLAG_RIGHT) !== 0;
-			$this->powered = ($stateMeta & BlockLegacyMetadata::DOOR_TOP_FLAG_POWERED) !== 0;
-		}else{
-			$this->facing = Facing::rotateY(BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03), false);
-			$this->open = ($stateMeta & BlockLegacyMetadata::DOOR_BOTTOM_FLAG_OPEN) !== 0;
-		}
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		$w->writeHorizontalFacing($this->facing);
+		$w->writeBool($this->top);
+		$w->writeBool($this->hingeRight);
+		$w->writeBool($this->open);
 	}
 
 	public function readStateFromWorld() : void{
@@ -79,7 +69,6 @@ class Door extends Transparent{
 				$this->open = $other->open;
 			}else{
 				$this->hingeRight = $other->hingeRight;
-				$this->powered = $other->powered;
 			}
 		}
 	}

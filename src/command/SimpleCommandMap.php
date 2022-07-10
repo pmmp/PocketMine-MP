@@ -80,7 +80,7 @@ use function trim;
 class SimpleCommandMap implements CommandMap{
 
 	/** @var Command[] */
-	protected $knownCommands = [];
+	protected array $knownCommands = [];
 
 	public function __construct(private Server $server){
 		$this->setDefaultCommands();

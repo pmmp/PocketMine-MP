@@ -24,8 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Skull as TileSkull;
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\SkullType;
+use pocketmine\data\runtime\InvalidSerializedRuntimeDataException;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeEnumDeserializer;
+use pocketmine\data\runtime\RuntimeEnumSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -42,7 +46,6 @@ class Skull extends Flowable{
 	protected SkullType $skullType;
 
 	protected int $facing = Facing::NORTH;
-	protected bool $noDrops = false;
 	protected int $rotation = self::MIN_ROTATION; //TODO: split this into floor skull and wall skull handling
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
@@ -50,19 +53,28 @@ class Skull extends Flowable{
 		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
-	protected function writeStateToMeta() : int{
-		return ($this->facing === Facing::UP ? 1 : BlockDataSerializer::writeHorizontalFacing($this->facing)) |
-			($this->noDrops ? BlockLegacyMetadata::SKULL_FLAG_NO_DROPS : 0);
+	public function getRequiredTypeDataBits() : int{ return 3; }
+
+	protected function decodeType(RuntimeDataReader $r) : void{
+		$this->skullType = RuntimeEnumDeserializer::readSkullType($r);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$facingMeta = $stateMeta & 0x7;
-		$this->facing = $facingMeta === 1 ? Facing::UP : BlockDataSerializer::readHorizontalFacing($facingMeta);
-		$this->noDrops = ($stateMeta & BlockLegacyMetadata::SKULL_FLAG_NO_DROPS) !== 0;
+	protected function encodeType(RuntimeDataWriter $w) : void{
+		RuntimeEnumSerializer::writeSkullType($w, $this->skullType);
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1111;
+	public function getRequiredStateDataBits() : int{ return 3; }
+
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$facing = $r->readFacing();
+		if($facing === Facing::DOWN){
+			throw new InvalidSerializedRuntimeDataException("Skull may not face down");
+		}
+		$this->facing = $facing;
+	}
+
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		$w->writeFacing($this->facing);
 	}
 
 	public function readStateFromWorld() : void{
@@ -115,14 +127,6 @@ class Skull extends Flowable{
 		return $this;
 	}
 
-	public function isNoDrops() : bool{ return $this->noDrops; }
-
-	/** @return $this */
-	public function setNoDrops(bool $noDrops) : self{
-		$this->noDrops = $noDrops;
-		return $this;
-	}
-
 	/**
 	 * @return AxisAlignedBB[]
 	 */
@@ -147,9 +151,5 @@ class Skull extends Flowable{
 			$this->rotation = ((int) floor(($player->getLocation()->getYaw() * 16 / 360) + 0.5)) & 0xf;
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	protected function writeStateToItemMeta() : int{
-		return $this->skullType->getMagicNumber();
 	}
 }

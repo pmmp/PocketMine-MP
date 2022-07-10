@@ -23,10 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -41,31 +42,20 @@ class RedstoneRepeater extends Flowable{
 	public const MIN_DELAY = 1;
 	public const MAX_DELAY = 4;
 
-	protected BlockIdentifierFlattened $idInfoFlattened;
-
 	protected int $delay = self::MIN_DELAY;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
-		$this->idInfoFlattened = $idInfo;
-		parent::__construct($idInfo, $name, $breakInfo);
+	public function getRequiredStateDataBits() : int{ return 5; }
+
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$this->facing = $r->readHorizontalFacing();
+		$this->delay = $r->readBoundedInt(2, self::MIN_DELAY - 1, self::MAX_DELAY - 1) + 1;
+		$this->powered = $r->readBool();
 	}
 
-	public function getId() : int{
-		return $this->powered ? $this->idInfoFlattened->getSecondId() : parent::getId();
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
-		$this->delay = BlockDataSerializer::readBoundedInt("delay", ($stateMeta >> 2) + 1, self::MIN_DELAY, self::MAX_DELAY);
-		$this->powered = $id === $this->idInfoFlattened->getSecondId();
-	}
-
-	public function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) | (($this->delay - 1) << 2);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		$w->writeHorizontalFacing($this->facing);
+		$w->writeInt(2, $this->delay - 1);
+		$w->writeBool($this->powered);
 	}
 
 	public function getDelay() : int{ return $this->delay; }

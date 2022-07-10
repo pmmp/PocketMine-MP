@@ -24,23 +24,20 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\PoweredByRedstoneTrait;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 
 class RedstoneLamp extends Opaque{
 	use PoweredByRedstoneTrait;
 
-	protected BlockIdentifierFlattened $idInfoFlattened;
+	public function getRequiredStateDataBits() : int{ return 1; }
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
-		$this->idInfoFlattened = $idInfo;
-		parent::__construct($idInfo, $name, $breakInfo);
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$this->powered = $r->readBool();
 	}
 
-	public function getId() : int{
-		return $this->powered ? $this->idInfoFlattened->getSecondId() : parent::getId();
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->powered = $id === $this->idInfoFlattened->getSecondId();
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		$w->writeBool($this->powered);
 	}
 
 	public function getLightLevel() : int{

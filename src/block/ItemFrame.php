@@ -24,8 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
-use pocketmine\block\utils\BlockDataSerializer;
-use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\AnyFacingTrait;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -36,7 +37,7 @@ use function is_nan;
 use function lcg_value;
 
 class ItemFrame extends Flowable{
-	use HorizontalFacingTrait;
+	use AnyFacingTrait;
 
 	public const ROTATIONS = 8;
 
@@ -46,13 +47,16 @@ class ItemFrame extends Flowable{
 	protected int $itemRotation = 0;
 	protected float $itemDropChance = 1.0;
 
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::write5MinusHorizontalFacing($this->facing) | ($this->hasMap ? BlockLegacyMetadata::ITEM_FRAME_FLAG_HAS_MAP : 0);
+	public function getRequiredStateDataBits() : int{ return 4; }
+
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$this->facing = $r->readFacing();
+		$this->hasMap = $r->readBool();
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::read5MinusHorizontalFacing($stateMeta);
-		$this->hasMap = ($stateMeta & BlockLegacyMetadata::ITEM_FRAME_FLAG_HAS_MAP) !== 0;
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		$w->writeFacing($this->facing);
+		$w->writeBool($this->hasMap);
 	}
 
 	public function readStateFromWorld() : void{
@@ -76,10 +80,6 @@ class ItemFrame extends Flowable{
 			$tile->setItemRotation($this->itemRotation);
 			$tile->setItemDropChance($this->itemDropChance);
 		}
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
 	}
 
 	public function getFramedItem() : ?Item{
@@ -166,7 +166,7 @@ class ItemFrame extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($face === Facing::DOWN || $face === Facing::UP || !$blockClicked->isSolid()){
+		if(!$blockClicked->isSolid()){
 			return false;
 		}
 

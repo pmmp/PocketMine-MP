@@ -24,11 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\inventory\AnvilInventory;
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -46,21 +47,24 @@ class Anvil extends Transparent implements Fallable{
 
 	private int $damage = self::UNDAMAGED;
 
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) | ($this->damage << 2);
+	public function getRequiredTypeDataBits() : int{ return 2; }
+
+	protected function decodeType(RuntimeDataReader $r) : void{
+		$this->setDamage($r->readBoundedInt(2, self::UNDAMAGED, self::VERY_DAMAGED));
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x3);
-		$this->damage = BlockDataSerializer::readBoundedInt("damage", $stateMeta >> 2, self::UNDAMAGED, self::VERY_DAMAGED);
+	protected function encodeType(RuntimeDataWriter $w) : void{
+		$w->writeInt(2, $this->getDamage());
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1111;
+	public function getRequiredStateDataBits() : int{ return 2; }
+
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$this->setFacing($r->readHorizontalFacing());
 	}
 
-	protected function writeStateToItemMeta() : int{
-		return $this->damage << 2;
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		$w->writeHorizontalFacing($this->getFacing());
 	}
 
 	public function getDamage() : int{ return $this->damage; }

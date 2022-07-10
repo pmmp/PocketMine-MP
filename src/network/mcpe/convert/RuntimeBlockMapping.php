@@ -23,15 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
-use pocketmine\block\Block;
-use pocketmine\block\BlockLegacyIds;
-use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
+use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\data\bedrock\block\BlockStateSerializeException;
+use pocketmine\data\bedrock\block\BlockStateSerializer;
+use pocketmine\data\bedrock\block\BlockTypeNames;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
+use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use Webmozart\PathUtil\Path;
 use function file_get_contents;
 
@@ -41,105 +40,61 @@ use function file_get_contents;
 final class RuntimeBlockMapping{
 	use SingletonTrait;
 
-	/** @var int[] */
-	private array $legacyToRuntimeMap = [];
-	/** @var int[] */
-	private array $runtimeToLegacyMap = [];
-	/** @var CompoundTag[] */
-	private array $bedrockKnownStates;
+	/**
+	 * @var int[]
+	 * @phpstan-var array<int, int>
+	 */
+	private array $networkIdCache = [];
+
+	/** Used when a blockstate can't be correctly serialized (e.g. because it's unknown) */
+	private BlockStateData $fallbackStateData;
+	private int $fallbackStateId;
 
 	private static function make() : self{
+		$canonicalBlockStatesFile = Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt");
+		$canonicalBlockStatesRaw = Utils::assumeNotFalse(file_get_contents($canonicalBlockStatesFile), "Missing required resource file");
+
+		$metaMappingFile = Path::join(\pocketmine\BEDROCK_DATA_PATH, 'block_state_meta_map.json');
+		$metaMappingRaw = Utils::assumeNotFalse(file_get_contents($metaMappingFile), "Missing required resource file");
 		return new self(
-			Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt"),
-			Path::join(\pocketmine\BEDROCK_DATA_PATH, "r12_to_current_block_map.bin")
+			BlockStateDictionary::loadFromString($canonicalBlockStatesRaw, $metaMappingRaw),
+			GlobalBlockStateHandlers::getSerializer()
 		);
 	}
 
-	public function __construct(string $canonicalBlockStatesFile, string $r12ToCurrentBlockMapFile){
-		$stream = PacketSerializer::decoder(
-			Utils::assumeNotFalse(file_get_contents($canonicalBlockStatesFile), "Missing required resource file"),
-			0,
-			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary())
-		);
-		$list = [];
-		while(!$stream->feof()){
-			$list[] = $stream->getNbtCompoundRoot();
-		}
-		$this->bedrockKnownStates = $list;
-
-		$this->setupLegacyMappings($r12ToCurrentBlockMapFile);
-	}
-
-	private function setupLegacyMappings(string $r12ToCurrentBlockMapFile) : void{
-		$legacyIdMap = LegacyBlockIdToStringIdMap::getInstance();
-		/** @var R12ToCurrentBlockMapEntry[] $legacyStateMap */
-		$legacyStateMap = [];
-		$legacyStateMapReader = PacketSerializer::decoder(
-			Utils::assumeNotFalse(file_get_contents($r12ToCurrentBlockMapFile), "Missing required resource file"),
-			0,
-			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary())
-		);
-		$nbtReader = new NetworkNbtSerializer();
-		while(!$legacyStateMapReader->feof()){
-			$id = $legacyStateMapReader->getString();
-			$meta = $legacyStateMapReader->getLShort();
-
-			$offset = $legacyStateMapReader->getOffset();
-			$state = $nbtReader->read($legacyStateMapReader->getBuffer(), $offset)->mustGetCompoundTag();
-			$legacyStateMapReader->setOffset($offset);
-			$legacyStateMap[] = new R12ToCurrentBlockMapEntry($id, $meta, $state);
-		}
-
-		/**
-		 * @var int[][] $idToStatesMap string id -> int[] list of candidate state indices
-		 */
-		$idToStatesMap = [];
-		foreach($this->bedrockKnownStates as $k => $state){
-			$idToStatesMap[$state->getString("name")][] = $k;
-		}
-		foreach($legacyStateMap as $pair){
-			$id = $legacyIdMap->stringToLegacy($pair->getId());
-			if($id === null){
-				throw new \RuntimeException("No legacy ID matches " . $pair->getId());
-			}
-			$data = $pair->getMeta();
-			if($data > 15){
-				//we can't handle metadata with more than 4 bits
-				continue;
-			}
-			$mappedState = $pair->getBlockState();
-			$mappedName = $mappedState->getString("name");
-			if(!isset($idToStatesMap[$mappedName])){
-				throw new \RuntimeException("Mapped new state does not appear in network table");
-			}
-			foreach($idToStatesMap[$mappedName] as $k){
-				$networkState = $this->bedrockKnownStates[$k];
-				if($mappedState->equals($networkState)){
-					$this->registerMapping($k, $id, $data);
-					continue 2;
-				}
-			}
-			throw new \RuntimeException("Mapped new state does not appear in network table");
-		}
+	public function __construct(
+		private BlockStateDictionary $blockStateDictionary,
+		private BlockStateSerializer $blockStateSerializer
+	){
+		$this->fallbackStateId = $this->blockStateDictionary->lookupStateIdFromData(
+				new BlockStateData(BlockTypeNames::INFO_UPDATE, [], BlockStateData::CURRENT_VERSION)
+			) ?? throw new AssumptionFailedError(BlockTypeNames::INFO_UPDATE . " should always exist");
+		//lookup the state data from the dictionary to avoid keeping two copies of the same data around
+		$this->fallbackStateData = $this->blockStateDictionary->getDataFromStateId($this->fallbackStateId) ?? throw new AssumptionFailedError("We just looked up this state data, so it must exist");
 	}
 
 	public function toRuntimeId(int $internalStateId) : int{
-		return $this->legacyToRuntimeMap[$internalStateId] ?? $this->legacyToRuntimeMap[BlockLegacyIds::INFO_UPDATE << Block::INTERNAL_METADATA_BITS];
+		if(isset($this->networkIdCache[$internalStateId])){
+			return $this->networkIdCache[$internalStateId];
+		}
+
+		try{
+			$blockStateData = $this->blockStateSerializer->serialize($internalStateId);
+
+			$networkId = $this->blockStateDictionary->lookupStateIdFromData($blockStateData);
+			if($networkId === null){
+				throw new AssumptionFailedError("Unmapped blockstate returned by blockstate serializer: " . $blockStateData->toNbt());
+			}
+		}catch(BlockStateSerializeException){
+			//TODO: this will swallow any error caused by invalid block properties; this is not ideal, but it should be
+			//covered by unit tests, so this is probably a safe assumption.
+			$networkId = $this->fallbackStateId;
+		}
+
+		return $this->networkIdCache[$internalStateId] = $networkId;
 	}
 
-	public function fromRuntimeId(int $runtimeId) : int{
-		return $this->runtimeToLegacyMap[$runtimeId];
-	}
+	public function getBlockStateDictionary() : BlockStateDictionary{ return $this->blockStateDictionary; }
 
-	private function registerMapping(int $staticRuntimeId, int $legacyId, int $legacyMeta) : void{
-		$this->legacyToRuntimeMap[($legacyId << Block::INTERNAL_METADATA_BITS) | $legacyMeta] = $staticRuntimeId;
-		$this->runtimeToLegacyMap[$staticRuntimeId] = ($legacyId << Block::INTERNAL_METADATA_BITS) | $legacyMeta;
-	}
-
-	/**
-	 * @return CompoundTag[]
-	 */
-	public function getBedrockKnownStates() : array{
-		return $this->bedrockKnownStates;
-	}
+	public function getFallbackStateData() : BlockStateData{ return $this->fallbackStateData; }
 }

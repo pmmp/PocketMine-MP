@@ -23,15 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
-use pocketmine\entity\Entity;
-use pocketmine\entity\projectile\Arrow;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\event\block\BlockBurnEvent;
 use pocketmine\event\block\BlockSpreadEvent;
-use pocketmine\event\entity\EntityCombustByBlockEvent;
-use pocketmine\event\entity\EntityDamageByBlockEvent;
-use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\World;
@@ -40,21 +35,19 @@ use function max;
 use function min;
 use function mt_rand;
 
-class Fire extends Flowable{
+class Fire extends BaseFire{
 	public const MAX_AGE = 15;
 
 	protected int $age = 0;
 
-	protected function writeStateToMeta() : int{
-		return $this->age;
+	public function getRequiredStateDataBits() : int{ return 4; }
+
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$this->age = $r->readBoundedInt(4, 0, self::MAX_AGE);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, self::MAX_AGE);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		$w->writeInt(4, $this->age);
 	}
 
 	public function getAge() : int{ return $this->age; }
@@ -68,39 +61,15 @@ class Fire extends Flowable{
 		return $this;
 	}
 
-	public function hasEntityCollision() : bool{
-		return true;
-	}
-
-	public function getLightLevel() : int{
-		return 15;
-	}
-
-	public function canBeReplaced() : bool{
-		return true;
-	}
-
-	public function onEntityInside(Entity $entity) : bool{
-		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1);
-		$entity->attack($ev);
-
-		$ev = new EntityCombustByBlockEvent($this, $entity, 8);
-		if($entity instanceof Arrow){
-			$ev->cancel();
-		}
-		$ev->call();
-		if(!$ev->isCancelled()){
-			$entity->setOnFire($ev->getDuration());
-		}
-		return true;
-	}
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [];
+	protected function getFireDamage() : int{
+		return 1;
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->isTransparent() && !$this->hasAdjacentFlammableBlocks()){
+		$down = $this->getSide(Facing::DOWN);
+		if(SoulFire::canBeSupportedBy($down)){
+			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::SOUL_FIRE());
+		}elseif($down->isTransparent() && !$this->hasAdjacentFlammableBlocks()){
 			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
 		}else{
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(30, 40));
@@ -224,7 +193,7 @@ class Fire extends Flowable{
 						continue;
 					}
 					$block = $world->getBlockAt($targetX, $targetY, $targetZ);
-					if($block->getId() !== BlockLegacyIds::AIR){
+					if($block->getTypeId() !== BlockTypeIds::AIR){
 						continue;
 					}
 

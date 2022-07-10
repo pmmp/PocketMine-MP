@@ -23,11 +23,23 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use function floor;
 
 trait SignLikeRotationTrait{
 	/** @var int */
 	private $rotation = 0;
+
+	public function getRequiredStateDataBits() : int{ return 4; }
+
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$this->rotation = $r->readBoundedInt(4, 0, 15);
+	}
+
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		$w->writeInt(4, $this->rotation);
+	}
 
 	public function getRotation() : int{ return $this->rotation; }
 

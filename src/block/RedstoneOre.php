@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
@@ -30,22 +32,16 @@ use pocketmine\player\Player;
 use function mt_rand;
 
 class RedstoneOre extends Opaque{
-
-	protected BlockIdentifierFlattened $idInfoFlattened;
-
 	protected bool $lit = false;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
-		$this->idInfoFlattened = $idInfo;
-		parent::__construct($idInfo, $name, $breakInfo);
+	public function getRequiredStateDataBits() : int{ return 1; }
+
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$this->lit = $r->readBool();
 	}
 
-	public function getId() : int{
-		return $this->lit ? $this->idInfoFlattened->getSecondId() : parent::getId();
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->lit = $id === $this->idInfoFlattened->getSecondId();
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		$w->writeBool($this->lit);
 	}
 
 	public function isLit() : bool{

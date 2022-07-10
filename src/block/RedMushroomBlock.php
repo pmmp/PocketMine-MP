@@ -23,14 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\MushroomBlockType;
-use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeEnumDeserializer;
+use pocketmine\data\runtime\RuntimeEnumSerializer;
 use pocketmine\item\Item;
 use function mt_rand;
 
 class RedMushroomBlock extends Opaque{
-
 	protected MushroomBlockType $mushroomBlockType;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
@@ -38,20 +39,14 @@ class RedMushroomBlock extends Opaque{
 		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
-	protected function writeStateToMeta() : int{
-		return MushroomBlockTypeIdMap::getInstance()->toId($this->mushroomBlockType);
+	public function getRequiredStateDataBits() : int{ return 4; }
+
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$this->mushroomBlockType = RuntimeEnumDeserializer::readMushroomBlockType($r);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$type = MushroomBlockTypeIdMap::getInstance()->fromId($stateMeta);
-		if($type === null){
-			throw new InvalidBlockStateException("No such mushroom variant $stateMeta");
-		}
-		$this->mushroomBlockType = $type;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		RuntimeEnumSerializer::writeMushroomBlockType($w, $this->mushroomBlockType);
 	}
 
 	public function getMushroomBlockType() : MushroomBlockType{ return $this->mushroomBlockType; }

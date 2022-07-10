@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
@@ -33,16 +35,14 @@ class NetherPortal extends Transparent{
 
 	protected int $axis = Axis::X;
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->axis = $stateMeta === BlockLegacyMetadata::NETHER_PORTAL_AXIS_Z ? Axis::Z : Axis::X; //mojang u dumb
+	public function getRequiredStateDataBits() : int{ return 1; }
+
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$this->axis = $r->readHorizontalAxis();
 	}
 
-	protected function writeStateToMeta() : int{
-		return $this->axis === Axis::Z ? BlockLegacyMetadata::NETHER_PORTAL_AXIS_Z : BlockLegacyMetadata::NETHER_PORTAL_AXIS_X;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b11;
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		$w->writeHorizontalAxis($this->axis);
 	}
 
 	public function getAxis() : int{

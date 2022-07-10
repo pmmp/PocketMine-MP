@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\TreeType;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
@@ -36,7 +38,6 @@ use pocketmine\world\generator\object\TreeFactory;
 use function mt_rand;
 
 class Sapling extends Flowable{
-
 	protected bool $ready = false;
 
 	private TreeType $treeType;
@@ -46,16 +47,14 @@ class Sapling extends Flowable{
 		$this->treeType = $treeType;
 	}
 
-	protected function writeStateToMeta() : int{
-		return ($this->ready ? BlockLegacyMetadata::SAPLING_FLAG_READY : 0);
+	public function getRequiredStateDataBits() : int{ return 1; }
+
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$this->ready = $r->readBool();
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->ready = ($stateMeta & BlockLegacyMetadata::SAPLING_FLAG_READY) !== 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1000;
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		$w->writeBool($this->ready);
 	}
 
 	public function isReady() : bool{ return $this->ready; }
@@ -68,7 +67,7 @@ class Sapling extends Flowable{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->getId() === BlockLegacyIds::GRASS || $down->getId() === BlockLegacyIds::DIRT || $down->getId() === BlockLegacyIds::FARMLAND){
+		if($down->getTypeId() === BlockTypeIds::GRASS || $down->getTypeId() === BlockTypeIds::DIRT || $down->getTypeId() === BlockTypeIds::FARMLAND){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 

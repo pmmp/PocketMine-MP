@@ -24,8 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -39,30 +40,18 @@ use const M_PI;
 class DaylightSensor extends Transparent{
 	use AnalogRedstoneSignalEmitterTrait;
 
-	protected BlockIdentifierFlattened $idInfoFlattened;
-
 	protected bool $inverted = false;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
-		$this->idInfoFlattened = $idInfo;
-		parent::__construct($idInfo, $name, $breakInfo);
+	public function getRequiredStateDataBits() : int{ return 5; }
+
+	protected function decodeState(RuntimeDataReader $r) : void{
+		$this->signalStrength = $r->readBoundedInt(4, 0, 15);
+		$this->inverted = $r->readBool();
 	}
 
-	public function getId() : int{
-		return $this->inverted ? $this->idInfoFlattened->getSecondId() : parent::getId();
-	}
-
-	protected function writeStateToMeta() : int{
-		return $this->signalStrength;
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->signalStrength = BlockDataSerializer::readBoundedInt("signalStrength", $stateMeta, 0, 15);
-		$this->inverted = $id === $this->idInfoFlattened->getSecondId();
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function encodeState(RuntimeDataWriter $w) : void{
+		$w->writeInt(4, $this->signalStrength);
+		$w->writeBool($this->inverted);
 	}
 
 	public function isInverted() : bool{

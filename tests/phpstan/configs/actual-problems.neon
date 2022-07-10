@@ -131,7 +131,7 @@ parameters:
 			path: ../../../src/block/DragonEgg.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int\\<0, 255\\> given\\.$#"
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int\\<\\-64, 319\\> given\\.$#"
 			count: 1
 			path: ../../../src/block/DragonEgg.php
 
@@ -566,11 +566,6 @@ parameters:
 			path: ../../../src/entity/projectile/Projectile.php
 
 		-
-			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setInt\\(\\) expects int, float\\|int given\\.$#"
-			count: 3
-			path: ../../../src/entity/projectile/Projectile.php
-
-		-
 			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
@@ -579,21 +574,6 @@ parameters:
 			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
-
-		-
-			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../../src/inventory/CreativeInventory.php
-
-		-
-			message: "#^Parameter \\#1 \\$data of static method pocketmine\\\\item\\\\Item\\:\\:jsonDeserialize\\(\\) expects array\\{id\\: int, damage\\?\\: int, count\\?\\: int, nbt\\?\\: string, nbt_hex\\?\\: string, nbt_b64\\?\\: string\\}, mixed given\\.$#"
-			count: 1
-			path: ../../../src/inventory/CreativeInventory.php
-
-		-
-			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/inventory/CreativeInventory.php
 
 		-
 			message: "#^Parameter \\#2 \\$recipe of class pocketmine\\\\event\\\\inventory\\\\CraftItemEvent constructor expects pocketmine\\\\crafting\\\\CraftingRecipe, pocketmine\\\\crafting\\\\CraftingRecipe\\|null given\\.$#"
@@ -606,7 +586,22 @@ parameters:
 			path: ../../../src/inventory/transaction/CraftingTransaction.php
 
 		-
-			message: "#^Parameter \\#1 \\$buffer of method pocketmine\\\\nbt\\\\BaseNbtSerializer\\:\\:read\\(\\) expects string, string\\|false given\\.$#"
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 3
+			path: ../../../src/item/Item.php
+
+		-
+			message: "#^Parameter \\#1 \\$buffer of method pocketmine\\\\nbt\\\\BaseNbtSerializer\\:\\:read\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/item/Item.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function base64_decode expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/item/Item.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function hex2bin expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/item/Item.php
 
@@ -971,11 +966,6 @@ parameters:
 			path: ../../../src/world/Explosion.php
 
 		-
-			message: "#^Only numeric types are allowed in /, float\\|null given on the left side\\.$#"
-			count: 1
-			path: ../../../src/world/Explosion.php
-
-		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/world/Explosion.php
@@ -1286,16 +1276,6 @@ parameters:
 			path: ../../../src/world/light/BlockLightUpdate.php
 
 		-
-			message: "#^Only numeric types are allowed in \\-, int\\|null given on the right side\\.$#"
-			count: 1
-			path: ../../../src/world/light/BlockLightUpdate.php
-
-		-
-			message: "#^Parameter \\#4 \\$newLevel of method pocketmine\\\\world\\\\light\\\\LightUpdate\\:\\:setAndUpdateLight\\(\\) expects int, int\\|null given\\.$#"
-			count: 1
-			path: ../../../src/world/light/BlockLightUpdate.php
-
-		-
 			message: "#^Property pocketmine\\\\world\\\\light\\\\LightPopulationTask\\:\\:\\$resultBlockLightArrays \\(string\\) does not accept string\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/light/LightPopulationTask.php
@@ -1312,11 +1292,6 @@ parameters:
 
 		-
 			message: "#^Cannot call method getFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/light/LightUpdate.php
-
-		-
-			message: "#^Only numeric types are allowed in \\-, int\\|null given on the right side\\.$#"
 			count: 1
 			path: ../../../src/world/light/LightUpdate.php
 
@@ -1356,17 +1331,7 @@ parameters:
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-
-			message: "#^Only booleans are allowed in an if condition, bool\\|null given\\.$#"
-			count: 3
-			path: ../../../src/world/light/SkyLightUpdate.php
-
-		-
 			message: "#^Only numeric types are allowed in \\+, int\\|false given on the left side\\.$#"
-			count: 1
-			path: ../../../src/world/light/SkyLightUpdate.php
-
-		-
-			message: "#^Only numeric types are allowed in \\-, int\\|null given on the right side\\.$#"
 			count: 1
 			path: ../../../src/world/light/SkyLightUpdate.php
 
