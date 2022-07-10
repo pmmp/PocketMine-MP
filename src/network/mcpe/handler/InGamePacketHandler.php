@@ -210,12 +210,7 @@ class InGamePacketHandler extends PacketHandler{
 		$sprinting = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_SPRINTING, PlayerAuthInputFlags::STOP_SPRINTING);
 		$swimming = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_SWIMMING, PlayerAuthInputFlags::STOP_SWIMMING);
 		$gliding = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_GLIDING, PlayerAuthInputFlags::STOP_GLIDING);
-		$mismatch =
-			($sneaking !== null && !$this->player->toggleSneak($sneaking, false)) |
-			($sprinting !== null && !$this->player->toggleSprint($sprinting, false)) |
-			($swimming !== null && !$this->player->toggleSwim($swimming)) |
-			($gliding !== null && !$this->player->toggleGlide($gliding));
-		if((bool) $mismatch){
+		if(!$this->player->syncPlayerActions($sneaking, $sprinting, $swimming, $gliding)){
 			$this->player->sendData([$this->player]);
 		}
 

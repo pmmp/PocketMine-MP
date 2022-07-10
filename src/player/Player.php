@@ -1793,7 +1793,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return false;
 	}
 
-	public function toggleSprint(bool $sprint, bool $doSync = true) : bool{
+	public function toggleSprint(bool $sprint) : bool{
 		if($sprint === $this->sprinting){
 			return true;
 		}
@@ -1802,11 +1802,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($ev->isCancelled()){
 			return false;
 		}
-		$this->setSprinting($sprint, $doSync);
+		$this->setSprinting($sprint);
 		return true;
 	}
 
-	public function toggleSneak(bool $sneak, bool $doSync = true) : bool{
+	public function toggleSneak(bool $sneak) : bool{
 		if($sneak === $this->sneaking){
 			return true;
 		}
@@ -1815,7 +1815,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($ev->isCancelled()){
 			return false;
 		}
-		$this->setSneaking($sneak, $doSync);
+		$this->setSneaking($sneak);
 		return true;
 	}
 
@@ -2343,6 +2343,36 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$properties->setPlayerFlag(PlayerMetadataFlags::SLEEP, $this->sleeping !== null);
 		$properties->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, $this->sleeping !== null ? BlockPosition::fromVector3($this->sleeping) : new BlockPosition(0, 0, 0));
+	}
+
+	/**
+	 * @internal Used to sync player actions with the server.
+	 */
+	public function syncPlayerActions(?bool $sneaking, ?bool $sprinting, ?bool $swimming, ?bool $gliding) : bool{
+		$networkPropertiesDirty = $this->networkPropertiesDirty;
+
+		$mismatch =
+			($sneaking !== null && !$this->toggleSneak($sneaking)) |
+			($sprinting !== null && !$this->toggleSprint($sprinting)) |
+			($swimming !== null && !$this->toggleSwim($swimming)) |
+			($gliding !== null && !$this->toggleGlide($gliding));
+
+		if((bool) $mismatch){
+			return false;
+		}
+
+		// We do not want to do anything with gliding and swimming,
+		// because it is syncing the player own bounding boxes.
+		if($sneaking !== null || $sprinting !== null){
+			// In case the previous network properties was dirty.
+			$this->networkPropertiesDirty = $networkPropertiesDirty;
+
+			if($sprinting !== null){
+				// Mark as synchronized, we accept them as-is
+				$this->moveSpeedAttr->markSynchronized();
+			}
+		}
+		return true;
 	}
 
 	public function sendData(?array $targets, ?array $data = null) : void{
