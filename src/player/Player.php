@@ -2350,6 +2350,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function syncPlayerActions(?bool $sneaking, ?bool $sprinting, ?bool $swimming, ?bool $gliding) : bool{
 		$networkPropertiesDirty = $this->networkPropertiesDirty;
+		$isDesynchronized = $this->moveSpeedAttr->isDesynchronized();
 
 		$mismatch =
 			($sneaking !== null && !$this->toggleSneak($sneaking)) |
@@ -2367,7 +2368,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			// In case the previous network properties was dirty.
 			$this->networkPropertiesDirty = $networkPropertiesDirty;
 
-			if($sprinting !== null){
+			if($sprinting !== null && !$isDesynchronized){
 				// Mark as synchronized, we accept them as-is
 				$this->moveSpeedAttr->markSynchronized();
 			}
