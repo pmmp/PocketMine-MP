@@ -27,6 +27,14 @@ use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\data\runtime\RuntimeEnumDeserializer;
 use pocketmine\data\runtime\RuntimeEnumSerializer;
+use pocketmine\item\Axe;
+use pocketmine\item\Item;
+use pocketmine\item\ItemTypeIds;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
+use pocketmine\world\sound\CopperWaxApplySound;
+use pocketmine\world\sound\CopperWaxRemoveSound;
+use pocketmine\world\sound\ItemUseOnBlockSound;
 
 trait CopperTrait{
 	private CopperOxidation $oxidation;
@@ -58,5 +66,39 @@ trait CopperTrait{
 	public function setWaxed(bool $waxed) : self{
 		$this->waxed = $waxed;
 		return $this;
+	}
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if(!$this->waxed && $item->getTypeId() === ItemTypeIds::HONEYCOMB){
+			$this->waxed = true;
+			$this->position->getWorld()->setBlock($this->position, $this);
+			//TODO: orange particles are supposed to appear when applying wax
+			$this->position->getWorld()->addSound($this->position, new CopperWaxApplySound());
+			$item->pop();
+			return true;
+		}
+
+		if($item instanceof Axe){
+			if($this->waxed){
+				$this->waxed = false;
+				$this->position->getWorld()->setBlock($this->position, $this);
+				//TODO: white particles are supposed to appear when removing wax
+				$this->position->getWorld()->addSound($this->position, new CopperWaxRemoveSound());
+				$item->applyDamage(1);
+				return true;
+			}
+
+			$previousOxidation = $this->oxidation->getPrevious();
+			if($previousOxidation !== null){
+				$this->oxidation = $previousOxidation;
+				$this->position->getWorld()->setBlock($this->position, $this);
+				//TODO: turquoise particles are supposed to appear when removing oxidation
+				$this->position->getWorld()->addSound($this->position, new ItemUseOnBlockSound($this));
+				$item->applyDamage(1);
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
