@@ -27,6 +27,7 @@ use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\CoralTypeTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
+use function mt_rand;
 
 abstract class BaseCoral extends Transparent{
 	use CoralTypeTrait;
