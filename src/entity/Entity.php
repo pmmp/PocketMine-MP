@@ -494,6 +494,11 @@ abstract class Entity{
 		$nbt->setFloat("FallDistance", $this->fallDistance);
 		$nbt->setShort("Fire", $this->fireTicks);
 		$nbt->setByte("OnGround", $this->onGround ? 1 : 0);
+		$nbt->setFloat("Scale", $this->scale);
+		$nbt->setByte("Immobile", $this->immobile ? 1 : 0);
+		$nbt->setByte("Invisible", $this->invisible ? 1 : 0);
+		$nbt->setByte("Silent", $this->silent ? 1 : 0);
+		$nbt->setByte("CanClimb", $this->canClimb ? 1 : 0);
 
 		return $nbt;
 	}
@@ -504,6 +509,12 @@ abstract class Entity{
 		$this->onGround = $nbt->getByte("OnGround", 0) !== 0;
 
 		$this->fallDistance = $nbt->getFloat("FallDistance", 0.0);
+
+		$this->setScale($nbt->getFloat("Scale", 1));
+		$this->setImmobile($nbt->getByte("Immobile", 0) !== 0);
+		$this->setInvisible($nbt->getByte("Invisible", 0) !== 0);
+		$this->setSilent($nbt->getByte("Silent", 0) !== 0);
+		$this->setCanClimb($nbt->getByte("CanClimb", 0) !== 0);
 
 		if(($customNameTag = $nbt->getTag("CustomName")) instanceof StringTag){
 			$this->setNameTag($customNameTag->getValue());
