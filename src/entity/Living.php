@@ -227,7 +227,7 @@ abstract class Living extends Entity{
 			$this->networkPropertiesDirty = true;
 			$moveSpeed = $this->getMovementSpeed();
 			$this->setMovementSpeed($value ? ($moveSpeed * 1.3) : ($moveSpeed / 1.3));
-			$this->moveSpeedAttr->markSynchronized(false); //TODO: reevaluate this hack
+			$this->moveSpeedAttr->markSynchronized(false);
 		}
 	}
 
