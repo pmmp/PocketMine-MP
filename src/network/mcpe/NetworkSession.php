@@ -57,7 +57,6 @@ use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\handler\PreSpawnPacketHandler;
 use pocketmine\network\mcpe\handler\ResourcePacksPacketHandler;
 use pocketmine\network\mcpe\handler\SpawnResponsePacketHandler;
-use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
@@ -93,6 +92,7 @@ use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\command\CommandData;
 use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
+use pocketmine\network\mcpe\protocol\types\command\CommandPermissions;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\entity\Attribute as NetworkAttribute;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
@@ -100,9 +100,13 @@ use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
+use pocketmine\network\mcpe\protocol\types\UpdateAbilitiesPacketLayer;
+use pocketmine\network\mcpe\protocol\UpdateAbilitiesPacket;
+use pocketmine\network\mcpe\protocol\UpdateAdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\NetworkSessionManager;
 use pocketmine\network\PacketHandlingException;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
@@ -250,8 +254,8 @@ class NetworkSession{
 
 		$permissionHooks = $this->player->getPermissionRecalculationCallbacks();
 		$permissionHooks->add($permHook = function() : void{
-			$this->logger->debug("Syncing available commands and adventure settings due to permission recalculation");
-			$this->syncAdventureSettings($this->player);
+			$this->logger->debug("Syncing available commands and abilities/permissions due to permission recalculation");
+			$this->syncAbilities($this->player);
 			$this->syncAvailableCommands();
 		});
 		$this->disposeHooks->add(static function() use ($permissionHooks, $permHook) : void{
@@ -716,7 +720,7 @@ class NetworkSession{
 		$this->syncAttributes($this->player, $this->player->getAttributeMap()->getAll());
 		$this->player->sendData(null);
 
-		$this->syncAdventureSettings($this->player);
+		$this->syncAbilities($this->player);
 		$this->invManager->syncAll();
 		$this->setHandler(new InGamePacketHandler($this->player, $this, $this->invManager));
 	}
@@ -766,37 +770,60 @@ class NetworkSession{
 	public function syncGameMode(GameMode $mode, bool $isRollback = false) : void{
 		$this->sendDataPacket(SetPlayerGameTypePacket::create(TypeConverter::getInstance()->coreGameModeToProtocol($mode)));
 		if($this->player !== null){
-			$this->syncAdventureSettings($this->player);
+			$this->syncAbilities($this->player);
+			$this->syncAdventureSettings(); //TODO: we might be able to do this with the abilities packet alone
 		}
 		if(!$isRollback && $this->invManager !== null){
 			$this->invManager->syncCreative();
 		}
 	}
 
-	/**
-	 * TODO: make this less specialized
-	 */
-	public function syncAdventureSettings(Player $for) : void{
+	public function syncAbilities(Player $for) : void{
 		$isOp = $for->hasPermission(DefaultPermissions::ROOT_OPERATOR);
-		$pk = AdventureSettingsPacket::create(
-			0,
-			$isOp ? AdventureSettingsPacket::PERMISSION_OPERATOR : AdventureSettingsPacket::PERMISSION_NORMAL,
-			0,
+
+		//ALL of these need to be set for the base layer, otherwise the client will cry
+		$boolAbilities = [
+			UpdateAbilitiesPacketLayer::ABILITY_ALLOW_FLIGHT => $for->getAllowFlight(),
+			UpdateAbilitiesPacketLayer::ABILITY_FLYING => $for->isFlying(),
+			UpdateAbilitiesPacketLayer::ABILITY_NO_CLIP => !$for->hasBlockCollision(),
+			UpdateAbilitiesPacketLayer::ABILITY_OPERATOR => $isOp,
+			UpdateAbilitiesPacketLayer::ABILITY_TELEPORT => $for->hasPermission(DefaultPermissionNames::COMMAND_TELEPORT),
+			UpdateAbilitiesPacketLayer::ABILITY_INVULNERABLE => $for->isCreative(),
+			UpdateAbilitiesPacketLayer::ABILITY_MUTED => false,
+			UpdateAbilitiesPacketLayer::ABILITY_WORLD_BUILDER => false,
+			UpdateAbilitiesPacketLayer::ABILITY_INFINITE_RESOURCES => !$for->hasFiniteResources(),
+			UpdateAbilitiesPacketLayer::ABILITY_LIGHTNING => false,
+			UpdateAbilitiesPacketLayer::ABILITY_BUILD => !$for->isSpectator(),
+			UpdateAbilitiesPacketLayer::ABILITY_MINE => !$for->isSpectator(),
+			UpdateAbilitiesPacketLayer::ABILITY_DOORS_AND_SWITCHES => !$for->isSpectator(),
+			UpdateAbilitiesPacketLayer::ABILITY_OPEN_CONTAINERS => !$for->isSpectator(),
+			UpdateAbilitiesPacketLayer::ABILITY_ATTACK_PLAYERS => !$for->isSpectator(),
+			UpdateAbilitiesPacketLayer::ABILITY_ATTACK_MOBS => !$for->isSpectator(),
+		];
+
+		$this->sendDataPacket(UpdateAbilitiesPacket::create(
+			$isOp ? CommandPermissions::OPERATOR : CommandPermissions::NORMAL,
 			$isOp ? PlayerPermissions::OPERATOR : PlayerPermissions::MEMBER,
-			0,
-			$for->getId()
-		);
+			$for->getId(),
+			[
+				//TODO: dynamic flying speed! FINALLY!!!!!!!!!!!!!!!!!
+				new UpdateAbilitiesPacketLayer(UpdateAbilitiesPacketLayer::LAYER_BASE, $boolAbilities, 0.05, 0.1),
+			]
+		));
+	}
 
-		$pk->setFlag(AdventureSettingsPacket::WORLD_IMMUTABLE, $for->isSpectator());
-		$pk->setFlag(AdventureSettingsPacket::NO_PVP, $for->isSpectator());
-		$pk->setFlag(AdventureSettingsPacket::AUTO_JUMP, $for->hasAutoJump());
-		$pk->setFlag(AdventureSettingsPacket::ALLOW_FLIGHT, $for->getAllowFlight());
-		$pk->setFlag(AdventureSettingsPacket::NO_CLIP, !$for->hasBlockCollision());
-		$pk->setFlag(AdventureSettingsPacket::FLYING, $for->isFlying());
-
-		//TODO: permission flags
-
-		$this->sendDataPacket($pk);
+	public function syncAdventureSettings() : void{
+		if($this->player === null){
+			throw new \LogicException("Cannot sync adventure settings for a player that is not yet created");
+		}
+		//everything except auto jump is handled via UpdateAbilitiesPacket
+		$this->sendDataPacket(UpdateAdventureSettingsPacket::create(
+			noAttackingMobs: false,
+			noAttackingPlayers: false,
+			worldImmutable: false,
+			showNameTags: true,
+			autoJump: $this->player->hasAutoJump()
+		));
 	}
 
 	/**
