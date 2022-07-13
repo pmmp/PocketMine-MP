@@ -975,7 +975,7 @@ class InGamePacketHandler extends PacketHandler{
 			}
 			if($isFlying !== $this->player->isFlying()){
 				if(!$this->player->toggleFlight($isFlying)){
-					$this->session->syncAdventureSettings($this->player);
+					$this->session->syncAbilities($this->player);
 				}
 			}
 

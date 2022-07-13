@@ -28,7 +28,6 @@ use pocketmine\entity\Skin;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
-use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\types\DeviceOS;
@@ -40,6 +39,7 @@ use pocketmine\network\mcpe\protocol\types\GameMode;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
+use pocketmine\network\mcpe\protocol\UpdateAbilitiesPacket;
 use Ramsey\Uuid\Uuid;
 use function str_repeat;
 
@@ -104,7 +104,6 @@ class FloatingTextParticle implements Particle{
 				$uuid,
 				$name,
 				$this->entityId, //TODO: actor unique ID
-				$this->entityId,
 				"",
 				$pos, //TODO: check offset
 				null,
@@ -114,7 +113,7 @@ class FloatingTextParticle implements Particle{
 				ItemStackWrapper::legacy(ItemStack::null()),
 				GameMode::SURVIVAL,
 				$actorMetadata,
-				AdventureSettingsPacket::create(0, 0, 0, 0, 0, $this->entityId),
+				UpdateAbilitiesPacket::create(0, 0, $this->entityId, []),
 				[],
 				"",
 				DeviceOS::UNKNOWN
