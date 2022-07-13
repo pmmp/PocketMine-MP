@@ -2384,7 +2384,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				// Mark as synchronized, we accept them as-is
 				$this->moveSpeedAttr->markSynchronized();
 			}
-		}else if($sprinting !== null && !$this->moveSpeedAttr->isDesynchronized()){
+		}elseif($sprinting !== null && !$this->moveSpeedAttr->isDesynchronized()){
 			// Re-synchronize the player's speed attribute when we receive any sprint flag, since the player's
 			// sprint -> not-sprint will always set the player's own speed attribute to 0.1, they negate whatever value the
 			// previous attribute is set. (This can be tested when the player has food exhaustion while having speed before).

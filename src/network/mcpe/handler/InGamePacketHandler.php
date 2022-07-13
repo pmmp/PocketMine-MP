@@ -36,7 +36,6 @@ use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionException;
 use pocketmine\inventory\transaction\TransactionValidationException;
-use pocketmine\item\ItemUseResult;
 use pocketmine\item\VanillaItems;
 use pocketmine\item\WritableBook;
 use pocketmine\item\WritableBookPage;
