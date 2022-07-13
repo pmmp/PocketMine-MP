@@ -295,9 +295,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::CORAL_FAN_HANG2, fn(Reader $in) => Helper::decodeWallCoralFan(Blocks::WALL_CORAL_FAN(), $in)
 				->setCoralType($in->readBool(StateNames::CORAL_HANG_TYPE_BIT) ? CoralType::FIRE() : CoralType::BUBBLE()));
 		$this->map(Ids::CORAL_FAN_HANG3, function(Reader $in) : Block{
-			if($in->readBool(StateNames::CORAL_HANG_TYPE_BIT)){
-				throw $in->badValueException(StateNames::CORAL_HANG_TYPE_BIT, "1", "This should always be zero for hang3");
-			}
+			$in->ignored(StateNames::CORAL_HANG_TYPE_BIT); //the game always writes this, even though it's not used
 			return Helper::decodeWallCoralFan(Blocks::WALL_CORAL_FAN(), $in)
 				->setCoralType(CoralType::HORN());
 		});
