@@ -254,6 +254,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected bool $allowFlight = false;
 	protected bool $blockCollision = true;
 	protected bool $flying = false;
+	protected float $flySpeed = 0.05;
+	protected float $walkSpeed = 0.1;
 
 	/** @phpstan-var positive-int|null  */
 	protected ?int $lineHeight = null;
@@ -450,6 +452,36 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function isFlying() : bool{
 		return $this->flying;
+	}
+
+	/**
+	 * @param float $flySpeed
+	 */
+	public function setFlySpeed(float $flySpeed) : void{
+		$this->flySpeed = $flySpeed;
+		$this->getNetworkSession()->syncAbilities($this);
+	}
+
+	/**
+	 * @return float
+	 */
+	public function getFlySpeed() : float{
+		return $this->flySpeed;
+	}
+
+	/**
+	 * @param float $walkSpeed
+	 */
+	public function setWalkSpeed(float $walkSpeed) : void{
+		$this->walkSpeed = $walkSpeed;
+		$this->getNetworkSession()->syncAbilities($this);
+	}
+
+	/**
+	 * @return float
+	 */
+	public function getWalkSpeed() : float{
+		return $this->walkSpeed;
 	}
 
 	public function setAutoJump(bool $value) : void{

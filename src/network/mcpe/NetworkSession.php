@@ -806,8 +806,7 @@ class NetworkSession{
 			$isOp ? PlayerPermissions::OPERATOR : PlayerPermissions::MEMBER,
 			$for->getId(),
 			[
-				//TODO: dynamic flying speed! FINALLY!!!!!!!!!!!!!!!!!
-				new UpdateAbilitiesPacketLayer(UpdateAbilitiesPacketLayer::LAYER_BASE, $boolAbilities, 0.05, 0.1),
+				new UpdateAbilitiesPacketLayer(UpdateAbilitiesPacketLayer::LAYER_BASE, $boolAbilities, $for->getFlySpeed(), $for->getWalkSpeed()),
 			]
 		));
 	}
