@@ -25,10 +25,8 @@ namespace pocketmine\block;
 
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
-use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
 use pocketmine\entity\object\PrimedTNT;
-use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\VanillaEnchantments;
@@ -101,18 +99,6 @@ class TNT extends Opaque{
 		}
 
 		return false;
-	}
-
-	public function hasEntityCollision() : bool{
-		return true;
-	}
-
-	public function onEntityInside(Entity $entity) : bool{
-		if($entity instanceof Arrow && $entity->isOnFire()){
-			$this->ignite();
-			return false;
-		}
-		return true;
 	}
 
 	public function ignite(int $fuse = 80) : void{
