@@ -101,7 +101,7 @@ class Cake extends Transparent implements FoodSource{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null && $player->consumeObject($this)){
-			$this->position->getWorld()->addSound($this->position, new BurpSound());
+			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new BurpSound());
 			return true;
 		}
 
