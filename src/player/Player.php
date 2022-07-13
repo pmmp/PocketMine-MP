@@ -454,7 +454,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return $this->flying;
 	}
 
-	public function setFlySpeed(float $flySpeed = 0.05) : void{
+	public function setFlySpeed(float $flySpeed) : void{
 		$this->flySpeed = $flySpeed;
 		$this->getNetworkSession()->syncAbilities($this);
 	}
@@ -463,13 +463,23 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return $this->flySpeed;
 	}
 
-	public function setWalkSpeed(float $walkSpeed = 0.1) : void{
+	public function resetFlySpeed(): void
+	{
+		$this->setFlySpeed(0.05);
+	}
+
+	public function setWalkSpeed(float $walkSpeed) : void{
 		$this->walkSpeed = $walkSpeed;
 		$this->getNetworkSession()->syncAbilities($this);
 	}
 
 	public function getWalkSpeed() : float{
 		return $this->walkSpeed;
+	}
+
+	public function resetWalkSpeed(): void
+	{
+		$this->setWalkSpeed(0.1);
 	}
 
 	public function setAutoJump(bool $value) : void{
