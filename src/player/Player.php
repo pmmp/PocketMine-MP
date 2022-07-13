@@ -454,32 +454,20 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return $this->flying;
 	}
 
-	/**
-	 * @param float $flySpeed
-	 */
 	public function setFlySpeed(float $flySpeed) : void{
 		$this->flySpeed = $flySpeed;
 		$this->getNetworkSession()->syncAbilities($this);
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getFlySpeed() : float{
 		return $this->flySpeed;
 	}
 
-	/**
-	 * @param float $walkSpeed
-	 */
 	public function setWalkSpeed(float $walkSpeed) : void{
 		$this->walkSpeed = $walkSpeed;
 		$this->getNetworkSession()->syncAbilities($this);
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getWalkSpeed() : float{
 		return $this->walkSpeed;
 	}
