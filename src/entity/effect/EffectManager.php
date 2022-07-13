@@ -89,7 +89,7 @@ class EffectManager{
 			$ev = new EntityEffectRemoveEvent($this->entity, $effect);
 			$ev->call();
 			if($ev->isCancelled()){
-				if($hasExpired && !$ev->getEffect()->hasExpired()){ //altered duration of an expired effect to make it not get removed
+				if($hasExpired){ //altered duration of an expired effect to make it not get removed
 					foreach($this->effectAddHooks as $hook){
 						$hook($ev->getEffect(), true);
 					}
