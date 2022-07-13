@@ -51,6 +51,7 @@ final class StringToItemParser extends StringToTParser{
 			//wall and floor banner are the same item
 			$result->registerBlock($prefix("banner"), fn() => Blocks::BANNER()->setColor($color));
 			$result->registerBlock($prefix("bed"), fn() => Blocks::BED()->setColor($color));
+			$result->registerBlock($prefix("candle"), fn() => Blocks::DYED_CANDLE()->setColor($color));
 			$result->registerBlock($prefix("carpet"), fn() => Blocks::CARPET()->setColor($color));
 			$result->registerBlock($prefix("concrete"), fn() => Blocks::CONCRETE()->setColor($color));
 			$result->registerBlock($prefix("concrete_powder"), fn() => Blocks::CONCRETE_POWDER()->setColor($color));
@@ -181,6 +182,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("cake", fn() => Blocks::CAKE());
 		$result->registerBlock("cake_block", fn() => Blocks::CAKE());
 		$result->registerBlock("calcite", fn() => Blocks::CALCITE());
+		$result->registerBlock("candle", fn() => Blocks::CANDLE());
 		$result->registerBlock("carpet", fn() => Blocks::CARPET());
 		$result->registerBlock("carrot_block", fn() => Blocks::CARROTS());
 		$result->registerBlock("carrots", fn() => Blocks::CARROTS());

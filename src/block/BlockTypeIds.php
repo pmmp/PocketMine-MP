@@ -684,6 +684,10 @@ final class BlockTypeIds{
 	public const CUT_COPPER = 10657;
 	public const CUT_COPPER_SLAB = 10658;
 	public const CUT_COPPER_STAIRS = 10659;
+	public const CANDLE = 10660;
+	public const DYED_CANDLE = 10661;
+	public const CAKE_WITH_CANDLE = 10662;
+	public const CAKE_WITH_DYED_CANDLE = 10663;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10660;
+	public const FIRST_UNUSED_BLOCK_ID = 10664;
 }

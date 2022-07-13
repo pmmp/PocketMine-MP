@@ -39,6 +39,9 @@ use pocketmine\block\BrownMushroomBlock;
 use pocketmine\block\Button;
 use pocketmine\block\Cactus;
 use pocketmine\block\Cake;
+use pocketmine\block\CakeWithCandle;
+use pocketmine\block\CakeWithDyedCandle;
+use pocketmine\block\Candle;
 use pocketmine\block\Carpet;
 use pocketmine\block\Carrot;
 use pocketmine\block\CarvedPumpkin;
@@ -58,6 +61,7 @@ use pocketmine\block\Dirt;
 use pocketmine\block\Door;
 use pocketmine\block\DoublePlant;
 use pocketmine\block\DoubleTallGrass;
+use pocketmine\block\DyedCandle;
 use pocketmine\block\DyedShulkerBox;
 use pocketmine\block\EnderChest;
 use pocketmine\block\EndPortalFrame;
@@ -171,6 +175,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 	private array $serializers = [];
 
 	public function __construct(){
+		$this->registerCandleSerializers();
 		$this->registerSerializers();
 	}
 
@@ -240,6 +245,50 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		/** @var Writer $writer */
 		$writer = $serializer($blockState);
 		return $writer->getBlockStateData();
+	}
+
+	private function registerCandleSerializers() : void{
+		$this->map(Blocks::CANDLE(), fn(Candle $block) => Helper::encodeCandle($block, new Writer(Ids::CANDLE)));
+		$this->map(Blocks::DYED_CANDLE(), fn(DyedCandle $block) => Helper::encodeCandle($block, new Writer(match($block->getColor()){
+			DyeColor::BLACK() => Ids::BLACK_CANDLE,
+			DyeColor::BLUE() => Ids::BLUE_CANDLE,
+			DyeColor::BROWN() => Ids::BROWN_CANDLE,
+			DyeColor::CYAN() => Ids::CYAN_CANDLE,
+			DyeColor::GRAY() => Ids::GRAY_CANDLE,
+			DyeColor::GREEN() => Ids::GREEN_CANDLE,
+			DyeColor::LIGHT_BLUE() => Ids::LIGHT_BLUE_CANDLE,
+			DyeColor::LIGHT_GRAY() => Ids::LIGHT_GRAY_CANDLE,
+			DyeColor::LIME() => Ids::LIME_CANDLE,
+			DyeColor::MAGENTA() => Ids::MAGENTA_CANDLE,
+			DyeColor::ORANGE() => Ids::ORANGE_CANDLE,
+			DyeColor::PINK() => Ids::PINK_CANDLE,
+			DyeColor::PURPLE() => Ids::PURPLE_CANDLE,
+			DyeColor::RED() => Ids::RED_CANDLE,
+			DyeColor::WHITE() => Ids::WHITE_CANDLE,
+			DyeColor::YELLOW() => Ids::YELLOW_CANDLE,
+			default => throw new AssumptionFailedError("Unhandled DyeColor " . $block->getColor()->name())
+		})));
+		$this->map(Blocks::CAKE_WITH_CANDLE(), fn(CakeWithCandle $block) => Writer::create(Ids::CANDLE_CAKE)
+			->writeBool(StateNames::LIT, $block->isLit()));
+		$this->map(Blocks::CAKE_WITH_DYED_CANDLE(), fn(CakeWithDyedCandle $block) => Writer::create(match($block->getColor()){
+			DyeColor::BLACK() => Ids::BLACK_CANDLE_CAKE,
+			DyeColor::BLUE() => Ids::BLUE_CANDLE_CAKE,
+			DyeColor::BROWN() => Ids::BROWN_CANDLE_CAKE,
+			DyeColor::CYAN() => Ids::CYAN_CANDLE_CAKE,
+			DyeColor::GRAY() => Ids::GRAY_CANDLE_CAKE,
+			DyeColor::GREEN() => Ids::GREEN_CANDLE_CAKE,
+			DyeColor::LIGHT_BLUE() => Ids::LIGHT_BLUE_CANDLE_CAKE,
+			DyeColor::LIGHT_GRAY() => Ids::LIGHT_GRAY_CANDLE_CAKE,
+			DyeColor::LIME() => Ids::LIME_CANDLE_CAKE,
+			DyeColor::MAGENTA() => Ids::MAGENTA_CANDLE_CAKE,
+			DyeColor::ORANGE() => Ids::ORANGE_CANDLE_CAKE,
+			DyeColor::PINK() => Ids::PINK_CANDLE_CAKE,
+			DyeColor::PURPLE() => Ids::PURPLE_CANDLE_CAKE,
+			DyeColor::RED() => Ids::RED_CANDLE_CAKE,
+			DyeColor::WHITE() => Ids::WHITE_CANDLE_CAKE,
+			DyeColor::YELLOW() => Ids::YELLOW_CANDLE_CAKE,
+			default => throw new AssumptionFailedError("Unhandled DyeColor " . $block->getColor()->name())
+		})->writeBool(StateNames::LIT, $block->isLit()));
 	}
 
 	private function registerSerializers() : void{

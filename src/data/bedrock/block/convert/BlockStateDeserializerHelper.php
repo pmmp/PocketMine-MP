@@ -25,6 +25,7 @@ namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\Block;
 use pocketmine\block\Button;
+use pocketmine\block\Candle;
 use pocketmine\block\Copper;
 use pocketmine\block\CopperSlab;
 use pocketmine\block\CopperStairs;
@@ -55,6 +56,7 @@ use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateNames;
+use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
 use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
 use pocketmine\math\Axis;
@@ -68,6 +70,13 @@ final class BlockStateDeserializerHelper{
 		return $block
 			->setFacing($in->readFacingDirection())
 			->setPressed($in->readBool(BlockStateNames::BUTTON_PRESSED_BIT));
+	}
+
+	/** @throws BlockStateDeserializeException */
+	public static function decodeCandle(Candle $block, BlockStateReader $in) : Candle{
+		return $block
+			->setCount($in->readBoundedInt(StateNames::CANDLES, 0, 3) + 1)
+			->setLit($in->readBool(StateNames::LIT));
 	}
 
 	/**

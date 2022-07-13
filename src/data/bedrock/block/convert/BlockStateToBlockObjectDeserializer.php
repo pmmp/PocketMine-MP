@@ -59,6 +59,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 	private array $deserializeFuncs = [];
 
 	public function __construct(){
+		$this->registerCandleDeserializers();
 		$this->registerDeserializers();
 	}
 
@@ -90,6 +91,48 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 	 */
 	public function mapStairs(string $id, \Closure $getBlock) : void{
 		$this->map($id, fn(Reader $in) : Stair => Helper::decodeStairs($getBlock(), $in));
+	}
+
+	private function registerCandleDeserializers() : void{
+		$this->map(Ids::CANDLE, fn(Reader $in) => Helper::decodeCandle(Blocks::CANDLE(), $in));
+		$dyedCandleDeserializer = fn(DyeColor $color) => fn(Reader $in) => Helper::decodeCandle(Blocks::DYED_CANDLE()->setColor($color), $in);
+		$this->map(Ids::BLACK_CANDLE, $dyedCandleDeserializer(DyeColor::BLACK()));
+		$this->map(Ids::BLUE_CANDLE, $dyedCandleDeserializer(DyeColor::BLUE()));
+		$this->map(Ids::BROWN_CANDLE, $dyedCandleDeserializer(DyeColor::BROWN()));
+		$this->map(Ids::CYAN_CANDLE, $dyedCandleDeserializer(DyeColor::CYAN()));
+		$this->map(Ids::GRAY_CANDLE, $dyedCandleDeserializer(DyeColor::GRAY()));
+		$this->map(Ids::GREEN_CANDLE, $dyedCandleDeserializer(DyeColor::GREEN()));
+		$this->map(Ids::LIGHT_BLUE_CANDLE, $dyedCandleDeserializer(DyeColor::LIGHT_BLUE()));
+		$this->map(Ids::LIGHT_GRAY_CANDLE, $dyedCandleDeserializer(DyeColor::LIGHT_GRAY()));
+		$this->map(Ids::LIME_CANDLE, $dyedCandleDeserializer(DyeColor::LIME()));
+		$this->map(Ids::MAGENTA_CANDLE, $dyedCandleDeserializer(DyeColor::MAGENTA()));
+		$this->map(Ids::ORANGE_CANDLE, $dyedCandleDeserializer(DyeColor::ORANGE()));
+		$this->map(Ids::PINK_CANDLE, $dyedCandleDeserializer(DyeColor::PINK()));
+		$this->map(Ids::PURPLE_CANDLE, $dyedCandleDeserializer(DyeColor::PURPLE()));
+		$this->map(Ids::RED_CANDLE, $dyedCandleDeserializer(DyeColor::RED()));
+		$this->map(Ids::WHITE_CANDLE, $dyedCandleDeserializer(DyeColor::WHITE()));
+		$this->map(Ids::YELLOW_CANDLE, $dyedCandleDeserializer(DyeColor::YELLOW()));
+
+		$this->map(Ids::CANDLE_CAKE, fn(Reader $in) => Blocks::CAKE_WITH_CANDLE()->setLit($in->readBool(StateNames::LIT)));
+		$cakeWithDyedCandleDeserializer = fn(DyeColor $color) => fn(Reader $in) => Blocks::CAKE_WITH_DYED_CANDLE()
+			->setColor($color)
+			->setLit($in->readBool(StateNames::LIT));
+		$this->map(Ids::BLACK_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::BLACK()));
+		$this->map(Ids::BLUE_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::BLUE()));
+		$this->map(Ids::BROWN_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::BROWN()));
+		$this->map(Ids::CYAN_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::CYAN()));
+		$this->map(Ids::GRAY_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::GRAY()));
+		$this->map(Ids::GREEN_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::GREEN()));
+		$this->map(Ids::LIGHT_BLUE_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::LIGHT_BLUE()));
+		$this->map(Ids::LIGHT_GRAY_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::LIGHT_GRAY()));
+		$this->map(Ids::LIME_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::LIME()));
+		$this->map(Ids::MAGENTA_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::MAGENTA()));
+		$this->map(Ids::ORANGE_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::ORANGE()));
+		$this->map(Ids::PINK_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::PINK()));
+		$this->map(Ids::PURPLE_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::PURPLE()));
+		$this->map(Ids::RED_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::RED()));
+		$this->map(Ids::WHITE_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::WHITE()));
+		$this->map(Ids::YELLOW_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::YELLOW()));
 	}
 
 	private function registerDeserializers() : void{

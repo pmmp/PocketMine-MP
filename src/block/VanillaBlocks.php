@@ -135,7 +135,10 @@ use function mb_strtolower;
  * @method static BrownMushroomBlock BROWN_MUSHROOM_BLOCK()
  * @method static Cactus CACTUS()
  * @method static Cake CAKE()
+ * @method static CakeWithCandle CAKE_WITH_CANDLE()
+ * @method static CakeWithDyedCandle CAKE_WITH_DYED_CANDLE()
  * @method static Opaque CALCITE()
+ * @method static Candle CANDLE()
  * @method static Carpet CARPET()
  * @method static Carrot CARROTS()
  * @method static CarvedPumpkin CARVED_PUMPKIN()
@@ -246,6 +249,7 @@ use function mb_strtolower;
  * @method static DoubleTallGrass DOUBLE_TALLGRASS()
  * @method static DragonEgg DRAGON_EGG()
  * @method static DriedKelp DRIED_KELP()
+ * @method static DyedCandle DYED_CANDLE()
  * @method static DyedShulkerBox DYED_SHULKER_BOX()
  * @method static Element ELEMENT_ACTINIUM()
  * @method static Element ELEMENT_ALUMINUM()
@@ -1463,6 +1467,15 @@ final class VanillaBlocks{
 		self::register("cut_copper", new Copper(new BID(Ids::CUT_COPPER), "Cut Copper Block", $copperBreakInfo));
 		self::register("cut_copper_slab", new CopperSlab(new BID(Ids::CUT_COPPER_SLAB), "Cut Copper Slab", $copperBreakInfo));
 		self::register("cut_copper_stairs", new CopperStairs(new BID(Ids::CUT_COPPER_STAIRS), "Cut Copper Stairs", $copperBreakInfo));
+
+		$candleBreakInfo = new BreakInfo(0.1);
+		self::register("candle", new Candle(new BID(Ids::CANDLE), "Candle", $candleBreakInfo));
+		self::register("dyed_candle", new DyedCandle(new BID(Ids::DYED_CANDLE), "Dyed Candle", $candleBreakInfo));
+
+		//TODO: duplicated break info :(
+		$cakeBreakInfo = new BreakInfo(0.5);
+		self::register("cake_with_candle", new CakeWithCandle(new BID(Ids::CAKE_WITH_CANDLE), "Cake With Candle", $cakeBreakInfo));
+		self::register("cake_with_dyed_candle", new CakeWithDyedCandle(new BID(Ids::CAKE_WITH_DYED_CANDLE), "Cake With Dyed Candle", $cakeBreakInfo));
 	}
 
 	private static function registerMudBlocks() : void{

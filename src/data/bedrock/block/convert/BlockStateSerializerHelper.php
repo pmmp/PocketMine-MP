@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\Button;
+use pocketmine\block\Candle;
 use pocketmine\block\ChemistryTable;
 use pocketmine\block\Crops;
 use pocketmine\block\Door;
@@ -47,6 +48,7 @@ use pocketmine\block\Wall;
 use pocketmine\block\WallSign;
 use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockStateNames;
+use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
 use pocketmine\math\Facing;
@@ -65,6 +67,12 @@ final class BlockStateSerializerHelper{
 		return $out
 			->writeFacingDirection($block->getFacing())
 			->writeBool(BlockStateNames::BUTTON_PRESSED_BIT, $block->isPressed());
+	}
+
+	public static function encodeCandle(Candle $block, BlockStateWriter $out) : BlockStateWriter{
+		return $out
+			->writeBool(StateNames::LIT, $block->isLit())
+			->writeInt(StateNames::CANDLES, $block->getCount() - 1);
 	}
 
 	public static function encodeChemistryTable(ChemistryTable $block, string $chemistryTableType, BlockStateWriter $out) : BlockStateWriter{

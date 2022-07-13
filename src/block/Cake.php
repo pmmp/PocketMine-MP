@@ -23,20 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
-use pocketmine\entity\effect\EffectInstance;
-use pocketmine\entity\FoodSource;
-use pocketmine\entity\Living;
 use pocketmine\item\Item;
+use pocketmine\item\ItemBlock;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 
-class Cake extends Transparent implements FoodSource{
+class Cake extends BaseCake{
 	public const MAX_BITES = 6;
 
 	protected int $bites = 0;
@@ -63,10 +59,6 @@ class Cake extends Transparent implements FoodSource{
 		];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
-	}
-
 	public function getBites() : int{ return $this->bites; }
 
 	/** @return $this */
@@ -78,65 +70,32 @@ class Cake extends Transparent implements FoodSource{
 		return $this;
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$down = $this->getSide(Facing::DOWN);
-		if($down->getTypeId() !== BlockTypeIds::AIR){
-			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}
-
-		return false;
-	}
-
-	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->getTypeId() === BlockTypeIds::AIR){ //Replace with common break method
-			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
-		}
-	}
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [];
-	}
-
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($player !== null){
-			return $player->consumeObject($this);
+		if($item instanceof ItemBlock){
+			$block = $item->getBlock();
+			$resultBlock = null;
+			if($block->getTypeId() === BlockTypeIds::CANDLE){
+				$resultBlock = VanillaBlocks::CAKE_WITH_CANDLE();
+			}elseif($block instanceof DyedCandle){
+				$resultBlock = VanillaBlocks::CAKE_WITH_DYED_CANDLE()->setColor($block->getColor());
+			}
+
+			if($resultBlock !== null){
+				$this->position->getWorld()->setBlock($this->position, $resultBlock);
+				$item->pop();
+				return true;
+			}
 		}
 
-		return false;
+		return parent::onInteract($item, $face, $clickVector, $player);
 	}
 
-	public function getFoodRestore() : int{
-		return 2;
-	}
-
-	public function getSaturationRestore() : float{
-		return 0.4;
-	}
-
-	public function requiresHunger() : bool{
-		return true;
-	}
-
-	/**
-	 * @return Block
-	 */
-	public function getResidue(){
+	public function getResidue() : Block{
 		$clone = clone $this;
 		$clone->bites++;
 		if($clone->bites > self::MAX_BITES){
 			$clone = VanillaBlocks::AIR();
 		}
 		return $clone;
-	}
-
-	/**
-	 * @return EffectInstance[]
-	 */
-	public function getAdditionalEffects() : array{
-		return [];
-	}
-
-	public function onConsume(Living $consumer) : void{
-		$this->position->getWorld()->setBlock($this->position, $this->getResidue());
 	}
 }
