@@ -36,6 +36,7 @@ use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionException;
 use pocketmine\inventory\transaction\TransactionValidationException;
+use pocketmine\item\ItemUseResult;
 use pocketmine\item\VanillaItems;
 use pocketmine\item\WritableBook;
 use pocketmine\item\WritableBookPage;
@@ -660,7 +661,7 @@ class InGamePacketHandler extends ChunkRequestPacketHandler{
 		$isFlying = $packet->getFlag(AdventureSettingsPacket::FLYING);
 		if($isFlying !== $this->player->isFlying()){
 			if(!$this->player->toggleFlight($isFlying)){
-				$this->session->syncAdventureSettings($this->player);
+				$this->session->syncAbilities($this->player);
 			}
 			$handled = true;
 		}

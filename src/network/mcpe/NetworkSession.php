@@ -58,6 +58,7 @@ use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\handler\PreSpawnPacketHandler;
 use pocketmine\network\mcpe\handler\ResourcePacksPacketHandler;
 use pocketmine\network\mcpe\handler\SpawnResponsePacketHandler;
+use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
@@ -241,7 +242,7 @@ class NetworkSession{
 	}
 
 	public function setCacheEnabled(bool $isEnabled) : void{
-		$this->chunkCacheEnabled = $isEnabled;
+		//$this->chunkCacheEnabled = $isEnabled;
 	}
 
 	public function isCacheEnabled() : bool{
@@ -832,49 +833,72 @@ class NetworkSession{
 	public function syncAbilities(Player $for) : void{
 		$isOp = $for->hasPermission(DefaultPermissions::ROOT_OPERATOR);
 
-		//ALL of these need to be set for the base layer, otherwise the client will cry
-		$boolAbilities = [
-			UpdateAbilitiesPacketLayer::ABILITY_ALLOW_FLIGHT => $for->getAllowFlight(),
-			UpdateAbilitiesPacketLayer::ABILITY_FLYING => $for->isFlying(),
-			UpdateAbilitiesPacketLayer::ABILITY_NO_CLIP => !$for->hasBlockCollision(),
-			UpdateAbilitiesPacketLayer::ABILITY_OPERATOR => $isOp,
-			UpdateAbilitiesPacketLayer::ABILITY_TELEPORT => $for->hasPermission(DefaultPermissionNames::COMMAND_TELEPORT),
-			UpdateAbilitiesPacketLayer::ABILITY_INVULNERABLE => $for->isCreative(),
-			UpdateAbilitiesPacketLayer::ABILITY_MUTED => false,
-			UpdateAbilitiesPacketLayer::ABILITY_WORLD_BUILDER => false,
-			UpdateAbilitiesPacketLayer::ABILITY_INFINITE_RESOURCES => !$for->hasFiniteResources(),
-			UpdateAbilitiesPacketLayer::ABILITY_LIGHTNING => false,
-			UpdateAbilitiesPacketLayer::ABILITY_BUILD => !$for->isSpectator(),
-			UpdateAbilitiesPacketLayer::ABILITY_MINE => !$for->isSpectator(),
-			UpdateAbilitiesPacketLayer::ABILITY_DOORS_AND_SWITCHES => !$for->isSpectator(),
-			UpdateAbilitiesPacketLayer::ABILITY_OPEN_CONTAINERS => !$for->isSpectator(),
-			UpdateAbilitiesPacketLayer::ABILITY_ATTACK_PLAYERS => !$for->isSpectator(),
-			UpdateAbilitiesPacketLayer::ABILITY_ATTACK_MOBS => !$for->isSpectator(),
-		];
+		if($this->getProtocolId() >= ProtocolInfo::PROTOCOL_1_19_10){
+			//ALL of these need to be set for the base layer, otherwise the client will cry
+			$boolAbilities = [
+				UpdateAbilitiesPacketLayer::ABILITY_ALLOW_FLIGHT => $for->getAllowFlight(),
+				UpdateAbilitiesPacketLayer::ABILITY_FLYING => $for->isFlying(),
+				UpdateAbilitiesPacketLayer::ABILITY_NO_CLIP => !$for->hasBlockCollision(),
+				UpdateAbilitiesPacketLayer::ABILITY_OPERATOR => $isOp,
+				UpdateAbilitiesPacketLayer::ABILITY_TELEPORT => $for->hasPermission(DefaultPermissionNames::COMMAND_TELEPORT),
+				UpdateAbilitiesPacketLayer::ABILITY_INVULNERABLE => $for->isCreative(),
+				UpdateAbilitiesPacketLayer::ABILITY_MUTED => false,
+				UpdateAbilitiesPacketLayer::ABILITY_WORLD_BUILDER => false,
+				UpdateAbilitiesPacketLayer::ABILITY_INFINITE_RESOURCES => !$for->hasFiniteResources(),
+				UpdateAbilitiesPacketLayer::ABILITY_LIGHTNING => false,
+				UpdateAbilitiesPacketLayer::ABILITY_BUILD => !$for->isSpectator(),
+				UpdateAbilitiesPacketLayer::ABILITY_MINE => !$for->isSpectator(),
+				UpdateAbilitiesPacketLayer::ABILITY_DOORS_AND_SWITCHES => !$for->isSpectator(),
+				UpdateAbilitiesPacketLayer::ABILITY_OPEN_CONTAINERS => !$for->isSpectator(),
+				UpdateAbilitiesPacketLayer::ABILITY_ATTACK_PLAYERS => !$for->isSpectator(),
+				UpdateAbilitiesPacketLayer::ABILITY_ATTACK_MOBS => !$for->isSpectator(),
+			];
 
-		$this->sendDataPacket(UpdateAbilitiesPacket::create(
-			$isOp ? CommandPermissions::OPERATOR : CommandPermissions::NORMAL,
-			$isOp ? PlayerPermissions::OPERATOR : PlayerPermissions::MEMBER,
-			$for->getId(),
-			[
-				//TODO: dynamic flying speed! FINALLY!!!!!!!!!!!!!!!!!
-				new UpdateAbilitiesPacketLayer(UpdateAbilitiesPacketLayer::LAYER_BASE, $boolAbilities, 0.05, 0.1),
-			]
-		));
+			$pk = UpdateAbilitiesPacket::create(
+				$isOp ? CommandPermissions::OPERATOR : CommandPermissions::NORMAL,
+				$isOp ? PlayerPermissions::OPERATOR : PlayerPermissions::MEMBER,
+				$for->getId(),
+				[
+					//TODO: dynamic flying speed! FINALLY!!!!!!!!!!!!!!!!!
+					new UpdateAbilitiesPacketLayer(UpdateAbilitiesPacketLayer::LAYER_BASE, $boolAbilities, 0.05, 0.1),
+				]
+			);
+		}else{
+			$pk = AdventureSettingsPacket::create(
+				0,
+				$isOp ? CommandPermissions::OPERATOR : CommandPermissions::NORMAL,
+				0,
+				$isOp ? PlayerPermissions::OPERATOR : PlayerPermissions::MEMBER,
+				0,
+				$for->getId()
+			);
+
+			$pk->setFlag(AdventureSettingsPacket::WORLD_IMMUTABLE, $for->isSpectator());
+			$pk->setFlag(AdventureSettingsPacket::NO_PVP, $for->isSpectator());
+			$pk->setFlag(AdventureSettingsPacket::AUTO_JUMP, $for->hasAutoJump());
+			$pk->setFlag(AdventureSettingsPacket::ALLOW_FLIGHT, $for->getAllowFlight());
+			$pk->setFlag(AdventureSettingsPacket::NO_CLIP, !$for->hasBlockCollision());
+			$pk->setFlag(AdventureSettingsPacket::FLYING, $for->isFlying());
+		}
+
+		$this->sendDataPacket($pk);
 	}
 
 	public function syncAdventureSettings() : void{
 		if($this->player === null){
 			throw new \LogicException("Cannot sync adventure settings for a player that is not yet created");
 		}
-		//everything except auto jump is handled via UpdateAbilitiesPacket
-		$this->sendDataPacket(UpdateAdventureSettingsPacket::create(
-			noAttackingMobs: false,
-			noAttackingPlayers: false,
-			worldImmutable: false,
-			showNameTags: true,
-			autoJump: $this->player->hasAutoJump()
-		));
+
+		if($this->getProtocolId() >= ProtocolInfo::PROTOCOL_1_19_10){
+			//everything except auto jump is handled via UpdateAbilitiesPacket
+			$this->sendDataPacket(UpdateAdventureSettingsPacket::create(
+				noAttackingMobs: false,
+				noAttackingPlayers: false,
+				worldImmutable: false,
+				showNameTags: true,
+				autoJump: $this->player->hasAutoJump()
+			));
+		}
 	}
 
 	/**

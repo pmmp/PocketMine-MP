@@ -43,7 +43,6 @@ use pocketmine\network\mcpe\protocol\types\PlayerMovementType;
 use pocketmine\network\mcpe\protocol\types\SpawnSettings;
 use pocketmine\player\Player;
 use pocketmine\Server;
-use pocketmine\VersionInfo;
 use Ramsey\Uuid\Uuid;
 
 /**

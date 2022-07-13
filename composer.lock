@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e03c7f446cee1fdb97ee79817c78470a",
+    "content-hash": "7354b793d1b0a55bcd77e776956d5767",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -202,12 +202,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/NetherGamesMC/BedrockData.git",
-                "reference": "7a1fa4f1c54a43d7e4f3a2993429d8915d1f7c19"
+                "reference": "897ec5b31f81ede348066955a0da5900daf7be46"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NetherGamesMC/BedrockData/zipball/7a1fa4f1c54a43d7e4f3a2993429d8915d1f7c19",
-                "reference": "7a1fa4f1c54a43d7e4f3a2993429d8915d1f7c19",
+                "url": "https://api.github.com/repos/NetherGamesMC/BedrockData/zipball/897ec5b31f81ede348066955a0da5900daf7be46",
+                "reference": "897ec5b31f81ede348066955a0da5900daf7be46",
                 "shasum": ""
             },
             "default-branch": true,
@@ -219,7 +219,7 @@
             "support": {
                 "source": "https://github.com/NetherGamesMC/BedrockData/tree/master"
             },
-            "time": "2022-07-08T20:13:34+00:00"
+            "time": "2022-07-13T07:29:59+00:00"
         },
         {
             "name": "nethergamesmc/bedrock-protocol",
@@ -227,12 +227,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/NetherGamesMC/BedrockProtocol.git",
-                "reference": "2b54c52b103e187e807c37161948f674ead100f6"
+                "reference": "d214c816f4b3a79630e06a55776fdce56d2128d9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/2b54c52b103e187e807c37161948f674ead100f6",
-                "reference": "2b54c52b103e187e807c37161948f674ead100f6",
+                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/d214c816f4b3a79630e06a55776fdce56d2128d9",
+                "reference": "d214c816f4b3a79630e06a55776fdce56d2128d9",
                 "shasum": ""
             },
             "require": {
@@ -246,7 +246,7 @@
                 "ramsey/uuid": "^4.1"
             },
             "require-dev": {
-                "phpstan/phpstan": "1.7.11",
+                "phpstan/phpstan": "1.8.0",
                 "phpstan/phpstan-phpunit": "^1.0.0",
                 "phpstan/phpstan-strict-rules": "^1.0.0",
                 "phpunit/phpunit": "^9.5"
@@ -275,7 +275,7 @@
             "support": {
                 "source": "https://github.com/NetherGamesMC/BedrockProtocol/tree/master"
             },
-            "time": "2022-06-08T11:03:08+00:00"
+            "time": "2022-07-13T07:24:21+00:00"
         },
         {
             "name": "netresearch/jsonmapper",
