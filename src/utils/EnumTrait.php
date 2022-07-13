@@ -56,6 +56,16 @@ trait EnumTrait{
 		return $result;
 	}
 
+	/**
+	 * Returns a random member of the enum.
+	 * @return self
+	 */
+	public static function getRandom() : self{
+		/** @var self[] $all */
+		$all = self::getAll();
+		return $all[array_random($all)];
+	}
+
 	/** @var int|null */
 	private static $nextId = null;
 
