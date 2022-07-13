@@ -45,7 +45,7 @@ class Farmland extends Transparent{
 	}
 
 	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeInt(3, $this->wetness);
+		$w->writeBoundedInt(3, 0, self::MAX_WETNESS, $this->wetness);
 	}
 
 	public function getWetness() : int{ return $this->wetness; }

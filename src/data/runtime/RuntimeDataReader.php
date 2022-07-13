@@ -49,7 +49,7 @@ final class RuntimeDataReader{
 	}
 
 	public function readBoundedInt(int $bits, int $min, int $max) : int{
-		$result = $this->readInt($bits);
+		$result = $this->readInt($bits) + $min;
 		if($result < $min || $result > $max){
 			throw new InvalidSerializedRuntimeDataException("Value is outside the range $min - $max");
 		}

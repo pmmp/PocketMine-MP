@@ -53,7 +53,7 @@ class SweetBerryBush extends Flowable{
 	}
 
 	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeInt(3, $this->age);
+		$w->writeBoundedInt(3, self::STAGE_SAPLING, self::STAGE_MATURE, $this->age);
 	}
 
 	public function getAge() : int{ return $this->age; }

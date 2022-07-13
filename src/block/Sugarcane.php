@@ -45,7 +45,7 @@ class Sugarcane extends Flowable{
 	}
 
 	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeInt(4, $this->age);
+		$w->writeBoundedInt(4, 0, self::MAX_AGE, $this->age);
 	}
 
 	private function grow() : bool{

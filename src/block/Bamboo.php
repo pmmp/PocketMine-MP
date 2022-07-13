@@ -65,7 +65,7 @@ class Bamboo extends Transparent{
 	}
 
 	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeInt(2, $this->getLeafSize());
+		$w->writeBoundedInt(2, self::NO_LEAVES, self::LARGE_LEAVES, $this->getLeafSize());
 		$w->writeBool($this->isThick());
 		$w->writeBool($this->isReady());
 	}

@@ -38,7 +38,7 @@ trait SignLikeRotationTrait{
 	}
 
 	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeInt(4, $this->rotation);
+		$w->writeBoundedInt(4, 0, 15, $this->rotation);
 	}
 
 	public function getRotation() : int{ return $this->rotation; }

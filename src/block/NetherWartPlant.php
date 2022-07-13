@@ -45,7 +45,7 @@ class NetherWartPlant extends Flowable{
 	}
 
 	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeInt(2, $this->age);
+		$w->writeBoundedInt(2, 0, self::MAX_AGE, $this->age);
 	}
 
 	public function getAge() : int{ return $this->age; }

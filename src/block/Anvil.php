@@ -54,7 +54,7 @@ class Anvil extends Transparent implements Fallable{
 	}
 
 	protected function encodeType(RuntimeDataWriter $w) : void{
-		$w->writeInt(2, $this->getDamage());
+		$w->writeBoundedInt(2, self::UNDAMAGED, self::VERY_DAMAGED, $this->getDamage());
 	}
 
 	public function getRequiredStateDataBits() : int{ return 2; }

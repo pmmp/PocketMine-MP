@@ -52,6 +52,15 @@ final class RuntimeDataWriter{
 		return $this;
 	}
 
+	/** @param int $bits *@return $this */
+	public function writeBoundedInt(int $bits, int $min, int $max, int $value) : self{
+		if($value < $min || $value > $max){
+			throw new \InvalidArgumentException("Value $value is outside the range $min - $max");
+		}
+		$this->writeInt($bits, $value - $min);
+		return $this;
+	}
+
 	/** @return $this */
 	public function writeBool(bool $value) : self{
 		return $this->writeInt(1, $value ? 1 : 0);
@@ -104,7 +113,7 @@ final class RuntimeDataWriter{
 	public function writeWallConnections(array $connections) : self{
 		//TODO: we can pack this into 7 bits instead of 8
 		foreach(Facing::HORIZONTAL as $facing){
-			$this->writeInt(2, match($connections[$facing] ?? null){
+			$this->writeBoundedInt(2, 0, 2, match($connections[$facing] ?? null){
 				null => 0,
 				WallConnectionType::SHORT() => 1,
 				WallConnectionType::TALL() => 2,

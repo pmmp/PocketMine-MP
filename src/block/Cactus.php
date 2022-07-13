@@ -49,7 +49,7 @@ class Cactus extends Transparent{
 	}
 
 	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeInt(4, $this->age);
+		$w->writeBoundedInt(4, 0, self::MAX_AGE, $this->age);
 	}
 
 	public function getAge() : int{ return $this->age; }

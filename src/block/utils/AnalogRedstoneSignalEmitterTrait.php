@@ -36,7 +36,7 @@ trait AnalogRedstoneSignalEmitterTrait{
 	}
 
 	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeInt(4, $this->signalStrength);
+		$w->writeBoundedInt(4, 0, 15, $this->signalStrength);
 	}
 
 	public function getOutputSignalStrength() : int{ return $this->signalStrength; }

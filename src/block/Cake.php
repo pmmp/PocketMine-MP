@@ -48,7 +48,7 @@ class Cake extends Transparent implements FoodSource{
 	}
 
 	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeInt(3, $this->bites);
+		$w->writeBoundedInt(3, 0, self::MAX_BITES, $this->bites);
 	}
 
 	/**
