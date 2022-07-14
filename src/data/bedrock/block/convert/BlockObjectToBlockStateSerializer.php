@@ -872,6 +872,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::GRASS_PATH(), Ids::GRASS_PATH);
 		$this->mapSimple(Blocks::GRAVEL(), Ids::GRAVEL);
 		$this->map(Blocks::GREEN_TORCH(), fn(Torch $block) => Helper::encodeColoredTorch($block, true, Writer::create(Ids::COLORED_TORCH_RG)));
+		$this->mapSimple(Blocks::HANGING_ROOTS(), Ids::HANGING_ROOTS);
 		$this->mapSimple(Blocks::HARDENED_CLAY(), Ids::HARDENED_CLAY);
 		$this->mapSimple(Blocks::HARDENED_GLASS(), Ids::HARD_GLASS);
 		$this->mapSimple(Blocks::HARDENED_GLASS_PANE(), Ids::HARD_GLASS_PANE);

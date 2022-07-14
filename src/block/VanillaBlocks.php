@@ -406,6 +406,7 @@ use function mb_strtolower;
  * @method static GrassPath GRASS_PATH()
  * @method static Gravel GRAVEL()
  * @method static Torch GREEN_TORCH()
+ * @method static HangingRoots HANGING_ROOTS()
  * @method static HardenedClay HARDENED_CLAY()
  * @method static HardenedGlass HARDENED_GLASS()
  * @method static HardenedGlassPane HARDENED_GLASS_PANE()
@@ -1478,6 +1479,8 @@ final class VanillaBlocks{
 		$cakeBreakInfo = new BreakInfo(0.5);
 		self::register("cake_with_candle", new CakeWithCandle(new BID(Ids::CAKE_WITH_CANDLE), "Cake With Candle", $cakeBreakInfo));
 		self::register("cake_with_dyed_candle", new CakeWithDyedCandle(new BID(Ids::CAKE_WITH_DYED_CANDLE), "Cake With Dyed Candle", $cakeBreakInfo));
+
+		self::register("hanging_roots", new HangingRoots(new BID(Ids::HANGING_ROOTS), "Hanging Roots", BreakInfo::instant(ToolType::SHEARS, 1)));
 	}
 
 	private static function registerMudBlocks() : void{

@@ -643,6 +643,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::GRAVEL, fn() => Blocks::GRAVEL());
 		$this->map(Ids::GRAY_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::GRAY(), $in));
 		$this->map(Ids::GREEN_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::GREEN(), $in));
+		$this->map(Ids::HANGING_ROOTS, fn() => Blocks::HANGING_ROOTS());
 		$this->map(Ids::HARD_GLASS, fn() => Blocks::HARDENED_GLASS());
 		$this->map(Ids::HARD_GLASS_PANE, fn() => Blocks::HARDENED_GLASS_PANE());
 		$this->map(Ids::HARD_STAINED_GLASS, function(Reader $in) : Block{
