@@ -297,15 +297,10 @@ class TypeConverter{
 
 				}
 			case NetworkInventoryAction::SOURCE_TODO:
-				//These types need special handling.
-				switch($action->windowId){
-					case NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT:
-					case NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
-						return null;
-				}
-
-				//TODO: more stuff
-				throw new TypeConversionException("No open container with window ID $action->windowId");
+				//These are used to balance a transaction that involves special actions, like crafting, enchanting, etc.
+				//The vanilla server just accepted these without verifying them. We don't need to care about them since
+				//we verify crafting by checking for imbalances anyway.
+				return null;
 			default:
 				throw new TypeConversionException("Unknown inventory source type $action->sourceType");
 		}
