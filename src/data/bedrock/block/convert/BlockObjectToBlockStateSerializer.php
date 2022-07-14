@@ -908,7 +908,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::IRON_ORE(), Ids::IRON_ORE);
 		$this->map(Blocks::IRON_TRAPDOOR(), fn(Trapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::IRON_TRAPDOOR)));
 		$this->map(Blocks::ITEM_FRAME(), function(ItemFrame $block) : Writer{
-			return Writer::create(Ids::FRAME)
+			return Writer::create($block->isGlowing() ? Ids::GLOW_FRAME : Ids::FRAME)
 				->writeBool(StateNames::ITEM_FRAME_MAP_BIT, $block->hasMap())
 				->writeBool(StateNames::ITEM_FRAME_PHOTO_BIT, false)
 				->writeFacingDirection($block->getFacing());

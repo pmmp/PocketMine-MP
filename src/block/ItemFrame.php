@@ -41,11 +41,23 @@ class ItemFrame extends Flowable{
 
 	public const ROTATIONS = 8;
 
+	protected bool $glowing = false;
+
 	protected bool $hasMap = false; //makes frame appear large if set
 
 	protected ?Item $framedItem = null;
 	protected int $itemRotation = 0;
 	protected float $itemDropChance = 1.0;
+
+	public function getRequiredTypeDataBits() : int{ return 1; }
+
+	protected function decodeType(RuntimeDataReader $r) : void{
+		$this->glowing = $r->readBool();
+	}
+
+	protected function encodeType(RuntimeDataWriter $w) : void{
+		$w->writeBool($this->glowing);
+	}
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
@@ -130,6 +142,14 @@ class ItemFrame extends Flowable{
 	 */
 	public function setHasMap(bool $hasMap) : self{
 		$this->hasMap = $hasMap;
+		return $this;
+	}
+
+	public function isGlowing() : bool{ return $this->glowing; }
+
+	/** @return $this */
+	public function setGlowing(bool $glowing) : self{
+		$this->glowing = $glowing;
 		return $this;
 	}
 

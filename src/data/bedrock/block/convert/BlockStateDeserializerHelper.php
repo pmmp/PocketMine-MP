@@ -36,6 +36,7 @@ use pocketmine\block\FenceGate;
 use pocketmine\block\FloorCoralFan;
 use pocketmine\block\FloorSign;
 use pocketmine\block\GlazedTerracotta;
+use pocketmine\block\ItemFrame;
 use pocketmine\block\Liquid;
 use pocketmine\block\RedMushroomBlock;
 use pocketmine\block\RedstoneComparator;
@@ -48,6 +49,7 @@ use pocketmine\block\Trapdoor;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Wall;
 use pocketmine\block\WallCoralFan;
 use pocketmine\block\WallSign;
@@ -168,6 +170,14 @@ final class BlockStateDeserializerHelper{
 		return VanillaBlocks::GLAZED_TERRACOTTA()
 			->setColor($color)
 			->setFacing($in->readHorizontalFacing());
+	}
+
+	public static function decodeItemFrame(BlockStateReader $in, bool $glowing) : ItemFrame{
+		$in->todo(StateNames::ITEM_FRAME_PHOTO_BIT); //TODO: not sure what the point of this is
+		return Blocks::ITEM_FRAME()
+			->setFacing($in->readFacingDirection())
+			->setHasMap($in->readBool(StateNames::ITEM_FRAME_MAP_BIT))
+			->setGlowing($glowing);
 	}
 
 	/** @throws BlockStateDeserializeException */

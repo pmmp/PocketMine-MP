@@ -25,6 +25,7 @@ namespace pocketmine\data\bedrock\item;
 
 use pocketmine\block\Bed;
 use pocketmine\block\Block;
+use pocketmine\block\ItemFrame;
 use pocketmine\block\Skull;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks as Blocks;
@@ -233,7 +234,7 @@ final class ItemSerializer{
 		$this->mapBlock(Blocks::FLOWER_POT(), self::id(Ids::FLOWER_POT));
 		$this->mapBlock(Blocks::HOPPER(), self::id(Ids::HOPPER));
 		$this->mapBlock(Blocks::IRON_DOOR(), self::id(Ids::IRON_DOOR));
-		$this->mapBlock(Blocks::ITEM_FRAME(), self::id(Ids::FRAME));
+		$this->mapBlock(Blocks::ITEM_FRAME(), fn(ItemFrame $block) => new Data($block->isGlowing() ? Ids::GLOW_FRAME : Ids::FRAME));
 		$this->mapBlock(Blocks::JUNGLE_DOOR(), self::id(Ids::JUNGLE_DOOR));
 		$this->mapBlock(Blocks::MANGROVE_DOOR(), self::id(Ids::MANGROVE_DOOR));
 		$this->mapBlock(Blocks::NETHER_WART(), self::id(Ids::NETHER_WART));

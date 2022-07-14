@@ -345,7 +345,7 @@ final class ItemDeserializer{
 		//TODO: minecraft:flower_banner_pattern
 		$this->map(Ids::FLOWER_POT, fn() => Blocks::FLOWER_POT()->asItem());
 		//TODO: minecraft:fox_spawn_egg
-		$this->map(Ids::FRAME, fn() => Blocks::ITEM_FRAME()->asItem());
+		$this->map(Ids::FRAME, fn() => Blocks::ITEM_FRAME()->setGlowing(false)->asItem());
 		//TODO: minecraft:frog_spawn_egg
 		//TODO: minecraft:ghast_spawn_egg
 		$this->map(Ids::GHAST_TEAR, fn() => Items::GHAST_TEAR());
@@ -353,7 +353,7 @@ final class ItemDeserializer{
 		$this->map(Ids::GLISTERING_MELON_SLICE, fn() => Items::GLISTERING_MELON());
 		//TODO: minecraft:globe_banner_pattern
 		//TODO: minecraft:glow_berries
-		//TODO: minecraft:glow_frame
+		$this->map(Ids::GLOW_FRAME, fn() => Blocks::ITEM_FRAME()->setGlowing(true)->asItem());
 		$this->map(Ids::GLOW_INK_SAC, fn() => Items::GLOW_INK_SAC());
 		//TODO: minecraft:glow_squid_spawn_egg
 		//TODO: minecraft:glow_stick

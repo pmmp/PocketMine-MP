@@ -614,12 +614,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		});
 		$this->map(Ids::FLOWING_LAVA, fn(Reader $in) => Helper::decodeFlowingLiquid(Blocks::LAVA(), $in));
 		$this->map(Ids::FLOWING_WATER, fn(Reader $in) => Helper::decodeFlowingLiquid(Blocks::WATER(), $in));
-		$this->map(Ids::FRAME, function(Reader $in) : Block{
-			$in->todo(StateNames::ITEM_FRAME_PHOTO_BIT); //TODO: not sure what the point of this is
-			return Blocks::ITEM_FRAME()
-				->setFacing($in->readFacingDirection())
-				->setHasMap($in->readBool(StateNames::ITEM_FRAME_MAP_BIT));
-		});
+		$this->map(Ids::FRAME, fn(Reader $in) => Helper::decodeItemFrame($in, false));
 		$this->map(Ids::FROSTED_ICE, function(Reader $in) : Block{
 			return Blocks::FROSTED_ICE()
 				->setAge($in->readBoundedInt(StateNames::AGE, 0, 3));
@@ -632,6 +627,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::GILDED_BLACKSTONE, fn() => Blocks::GILDED_BLACKSTONE());
 		$this->map(Ids::GLASS, fn() => Blocks::GLASS());
 		$this->map(Ids::GLASS_PANE, fn() => Blocks::GLASS_PANE());
+		$this->map(Ids::GLOW_FRAME, fn(Reader $in) => Helper::decodeItemFrame($in, true));
 		$this->map(Ids::GLOWINGOBSIDIAN, fn() => Blocks::GLOWING_OBSIDIAN());
 		$this->map(Ids::GLOWSTONE, fn() => Blocks::GLOWSTONE());
 		$this->map(Ids::GOLD_BLOCK, fn() => Blocks::GOLD());
