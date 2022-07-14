@@ -443,6 +443,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeColor($block->getColor());
 		});
 		$this->map(Blocks::CARROTS(), fn(Carrot $block) => Helper::encodeCrops($block, new Writer(Ids::CARROTS)));
+		$this->mapSimple(Blocks::CARTOGRAPHY_TABLE(), Ids::CARTOGRAPHY_TABLE);
 		$this->map(Blocks::CARVED_PUMPKIN(), function(CarvedPumpkin $block) : Writer{
 			return Writer::create(Ids::CARVED_PUMPKIN)
 				->writeLegacyHorizontalFacing($block->getFacing());
@@ -1205,6 +1206,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::SHROOMLIGHT(), Ids::SHROOMLIGHT);
 		$this->mapSimple(Blocks::SHULKER_BOX(), Ids::UNDYED_SHULKER_BOX);
 		$this->mapSimple(Blocks::SLIME(), Ids::SLIME);
+		$this->mapSimple(Blocks::SMITHING_TABLE(), Ids::SMITHING_TABLE);
 		$this->map(Blocks::SMOKER(), fn(Furnace $block) => Helper::encodeFurnace($block, Ids::SMOKER, Ids::LIT_SMOKER));
 		$this->mapSimple(Blocks::SMOOTH_BASALT(), Ids::SMOOTH_BASALT);
 		$this->map(Blocks::SMOOTH_QUARTZ(), fn() => Helper::encodeQuartz(StringValues::CHISEL_TYPE_SMOOTH, Axis::Y));

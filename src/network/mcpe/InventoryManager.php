@@ -26,11 +26,13 @@ namespace pocketmine\network\mcpe;
 use pocketmine\block\inventory\AnvilInventory;
 use pocketmine\block\inventory\BlockInventory;
 use pocketmine\block\inventory\BrewingStandInventory;
+use pocketmine\block\inventory\CartographyTableInventory;
 use pocketmine\block\inventory\CraftingTableInventory;
 use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\block\inventory\HopperInventory;
 use pocketmine\block\inventory\LoomInventory;
+use pocketmine\block\inventory\SmithingTableInventory;
 use pocketmine\block\inventory\StonecutterInventory;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\inventory\CreativeInventory;
@@ -225,6 +227,8 @@ class InventoryManager{
 				$inv instanceof HopperInventory => WindowTypes::HOPPER,
 				$inv instanceof CraftingTableInventory => WindowTypes::WORKBENCH,
 				$inv instanceof StonecutterInventory => WindowTypes::STONECUTTER,
+				$inv instanceof CartographyTableInventory => WindowTypes::CARTOGRAPHY,
+				$inv instanceof SmithingTableInventory => WindowTypes::SMITHING_TABLE,
 				default => WindowTypes::CONTAINER
 			};
 			return [ContainerOpenPacket::blockInv($id, $windowType, $blockPosition)];

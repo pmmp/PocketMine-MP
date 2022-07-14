@@ -141,6 +141,7 @@ use function mb_strtolower;
  * @method static Candle CANDLE()
  * @method static Carpet CARPET()
  * @method static Carrot CARROTS()
+ * @method static CartographyTable CARTOGRAPHY_TABLE()
  * @method static CarvedPumpkin CARVED_PUMPKIN()
  * @method static ChemicalHeat CHEMICAL_HEAT()
  * @method static Chest CHEST()
@@ -612,6 +613,7 @@ use function mb_strtolower;
  * @method static Opaque SHROOMLIGHT()
  * @method static ShulkerBox SHULKER_BOX()
  * @method static Slime SLIME()
+ * @method static SmithingTable SMITHING_TABLE()
  * @method static Furnace SMOKER()
  * @method static Opaque SMOOTH_BASALT()
  * @method static Opaque SMOOTH_QUARTZ()
@@ -1158,6 +1160,7 @@ final class VanillaBlocks{
 		self::registerBlocksR17();
 		self::registerMudBlocks();
 
+		self::registerCraftingTables();
 		self::registerOres();
 		self::registerWoodenBlocks();
 	}
@@ -1354,6 +1357,13 @@ final class VanillaBlocks{
 		$netherrackOreBreakInfo = new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
 		self::register("nether_quartz_ore", new NetherQuartzOre(new BID(Ids::NETHER_QUARTZ_ORE), "Nether Quartz Ore", $netherrackOreBreakInfo));
 		self::register("nether_gold_ore", new NetherGoldOre(new BID(Ids::NETHER_GOLD_ORE), "Nether Gold Ore", $netherrackOreBreakInfo));
+	}
+
+	private static function registerCraftingTables() : void{
+		//TODO: this is the same for all wooden crafting blocks
+		$craftingBlockBreakInfo = new BreakInfo(2.5, ToolType::AXE);
+		self::register("cartography_table", new CartographyTable(new BID(Ids::CARTOGRAPHY_TABLE), "Cartography Table", $craftingBlockBreakInfo));
+		self::register("smithing_table", new SmithingTable(new BID(Ids::SMITHING_TABLE), "Smithing Table", $craftingBlockBreakInfo));
 	}
 
 	private static function registerBlocksR13() : void{

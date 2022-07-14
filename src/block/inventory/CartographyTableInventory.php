@@ -21,30 +21,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\crafting;
+namespace pocketmine\block\inventory;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\inventory\SimpleInventory;
+use pocketmine\inventory\TemporaryInventory;
+use pocketmine\world\Position;
 
-/**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
- *
- * @method static ShapelessRecipeType CARTOGRAPHY()
- * @method static ShapelessRecipeType CRAFTING()
- * @method static ShapelessRecipeType SMITHING()
- * @method static ShapelessRecipeType STONECUTTER()
- */
-final class ShapelessRecipeType{
-	use EnumTrait;
+final class CartographyTableInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
+	use BlockInventoryTrait;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("crafting"),
-			new self("stonecutter"),
-			new self("smithing"),
-			new self("cartography")
-		);
+	public function __construct(Position $holder){
+		$this->holder = $holder;
+		parent::__construct(2);
 	}
 }

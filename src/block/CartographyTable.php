@@ -21,30 +21,24 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\crafting;
+namespace pocketmine\block;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\block\inventory\CartographyTableInventory;
+use pocketmine\item\Item;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
 
-/**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
- *
- * @method static ShapelessRecipeType CARTOGRAPHY()
- * @method static ShapelessRecipeType CRAFTING()
- * @method static ShapelessRecipeType SMITHING()
- * @method static ShapelessRecipeType STONECUTTER()
- */
-final class ShapelessRecipeType{
-	use EnumTrait;
+final class CartographyTable extends Opaque{
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("crafting"),
-			new self("stonecutter"),
-			new self("smithing"),
-			new self("cartography")
-		);
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if($player !== null){
+			$player->setCurrentWindow(new CartographyTableInventory($this->position));
+		}
+
+		return true;
+	}
+
+	public function getFuelTime() : int{
+		return 300;
 	}
 }

@@ -24,9 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\block\inventory\AnvilInventory;
+use pocketmine\block\inventory\CartographyTableInventory;
 use pocketmine\block\inventory\CraftingTableInventory;
 use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\LoomInventory;
+use pocketmine\block\inventory\SmithingTableInventory;
 use pocketmine\block\inventory\StonecutterInventory;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\crafting\ExactRecipeIngredient;
@@ -257,6 +259,8 @@ class TypeConverter{
 							$current instanceof LoomInventory => UIInventorySlotOffset::LOOM,
 							$current instanceof StonecutterInventory => [UIInventorySlotOffset::STONE_CUTTER_INPUT => StonecutterInventory::SLOT_INPUT],
 							$current instanceof CraftingTableInventory => UIInventorySlotOffset::CRAFTING3X3_INPUT,
+							$current instanceof CartographyTableInventory => UIInventorySlotOffset::CARTOGRAPHY_TABLE,
+							$current instanceof SmithingTableInventory => UIInventorySlotOffset::SMITHING_TABLE,
 							default => null
 						};
 						if($slotMap !== null){

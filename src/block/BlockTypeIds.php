@@ -690,6 +690,8 @@ final class BlockTypeIds{
 	public const CAKE_WITH_DYED_CANDLE = 10663;
 	public const WITHER_ROSE = 10664;
 	public const HANGING_ROOTS = 10665;
+	public const CARTOGRAPHY_TABLE = 10666;
+	public const SMITHING_TABLE = 10667;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10666;
+	public const FIRST_UNUSED_BLOCK_ID = 10668;
 }

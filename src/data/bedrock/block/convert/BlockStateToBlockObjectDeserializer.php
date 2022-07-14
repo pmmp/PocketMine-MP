@@ -261,6 +261,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 				->setColor($in->readColor());
 		});
 		$this->map(Ids::CARROTS, fn(Reader $in) => Helper::decodeCrops(Blocks::CARROTS(), $in));
+		$this->map(Ids::CARTOGRAPHY_TABLE, fn() => Blocks::CARTOGRAPHY_TABLE());
 		$this->map(Ids::CARVED_PUMPKIN, function(Reader $in) : Block{
 			return Blocks::CARVED_PUMPKIN()
 				->setFacing($in->readLegacyHorizontalFacing());
@@ -1055,6 +1056,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 				->setFacing($in->readFacingWithoutDown());
 		});
 		$this->map(Ids::SLIME, fn() => Blocks::SLIME());
+		$this->map(Ids::SMITHING_TABLE, fn() => Blocks::SMITHING_TABLE());
 		$this->map(Ids::SMOKER, function(Reader $in) : Block{
 			return Blocks::SMOKER()
 				->setFacing($in->readHorizontalFacing())
