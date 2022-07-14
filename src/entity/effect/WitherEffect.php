@@ -30,7 +30,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 class WitherEffect extends Effect{
 
 	public function canTick(EffectInstance $instance) : bool{
-		if(($interval = (50 >> $instance->getAmplifier())) > 0){
+		if(($interval = (40 >> $instance->getAmplifier())) > 0){
 			return ($instance->getDuration() % $interval) === 0;
 		}
 		return true;
