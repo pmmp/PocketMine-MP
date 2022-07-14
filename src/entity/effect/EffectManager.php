@@ -85,7 +85,6 @@ class EffectManager{
 		$index = spl_object_id($effectType);
 		if(isset($this->effects[$index])){
 			$effect = $this->effects[$index];
-			$hasExpired = $effect->hasExpired();
 			$ev = new EntityEffectRemoveEvent($this->entity, $effect);
 			$ev->call();
 			if($ev->isCancelled()){
