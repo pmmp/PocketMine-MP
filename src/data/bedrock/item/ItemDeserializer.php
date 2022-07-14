@@ -30,6 +30,7 @@ use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateDeserializer;
+use pocketmine\data\bedrock\block\convert\UnsupportedBlockStateException;
 use pocketmine\data\bedrock\CompoundTypeIds;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\bedrock\EntityLegacyIds;
@@ -71,6 +72,8 @@ final class ItemDeserializer{
 			//TODO: this is rough duct tape; we need a better way to deal with this
 			try{
 				$block = $this->blockStateDeserializer->deserialize($blockData);
+			}catch(UnsupportedBlockStateException $e){
+				throw new UnsupportedItemTypeException($e->getMessage(), 0, $e);
 			}catch(BlockStateDeserializeException $e){
 				throw new ItemTypeDeserializeException("Failed to deserialize item data: " . $e->getMessage(), 0, $e);
 			}
@@ -80,7 +83,7 @@ final class ItemDeserializer{
 		}
 		$id = $data->getName();
 		if(!isset($this->deserializers[$id])){
-			throw new ItemTypeDeserializeException("No deserializer found for ID $id");
+			throw new UnsupportedItemTypeException("No deserializer found for ID $id");
 		}
 
 		return ($this->deserializers[$id])($data);
