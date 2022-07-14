@@ -1058,6 +1058,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("weighted_pressure_plate_light", fn() => Blocks::WEIGHTED_PRESSURE_PLATE_LIGHT());
 		$result->registerBlock("wheat_block", fn() => Blocks::WHEAT());
 		$result->registerBlock("white_tulip", fn() => Blocks::WHITE_TULIP());
+		$result->registerBlock("wither_rose", fn() => Blocks::WITHER_ROSE());
 		$result->registerBlock("wither_skeleton_skull", fn() => Blocks::MOB_HEAD()->setSkullType(SkullType::WITHER_SKELETON()));
 		$result->registerBlock("wood", fn() => Blocks::OAK_LOG()->setStripped(false));
 		$result->registerBlock("wood2", fn() => Blocks::ACACIA_LOG()->setStripped(false));

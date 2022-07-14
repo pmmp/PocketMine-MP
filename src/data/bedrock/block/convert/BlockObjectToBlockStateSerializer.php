@@ -1377,6 +1377,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::WHEAT(), fn(Wheat $block) => Helper::encodeCrops($block, new Writer(Ids::WHEAT)));
 		$this->map(Blocks::WHITE_TULIP(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_TULIP_WHITE));
+		$this->mapSimple(Blocks::WITHER_ROSE(), Ids::WITHER_ROSE);
 		$this->map(Blocks::WOOL(), function(Wool $block) : Writer{
 			return Writer::create(Ids::WOOL)
 				->writeColor($block->getColor());

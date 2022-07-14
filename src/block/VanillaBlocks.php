@@ -696,6 +696,7 @@ use function mb_strtolower;
  * @method static WeightedPressurePlateLight WEIGHTED_PRESSURE_PLATE_LIGHT()
  * @method static Wheat WHEAT()
  * @method static Flower WHITE_TULIP()
+ * @method static WitherRose WITHER_ROSE()
  * @method static Wool WOOL()
  */
 final class VanillaBlocks{
@@ -1356,6 +1357,7 @@ final class VanillaBlocks{
 
 	private static function registerBlocksR13() : void{
 		self::register("light", new Light(new BID(Ids::LIGHT), "Light Block", BreakInfo::indestructible()));
+		self::register("wither_rose", new WitherRose(new BID(Ids::WITHER_ROSE), "Wither Rose", BreakInfo::instant()));
 	}
 
 	private static function registerBlocksR14() : void{

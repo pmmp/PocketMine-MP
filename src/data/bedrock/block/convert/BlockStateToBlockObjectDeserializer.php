@@ -1273,6 +1273,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::WEB, fn() => Blocks::COBWEB());
 		$this->map(Ids::WHEAT, fn(Reader $in) => Helper::decodeCrops(Blocks::WHEAT(), $in));
 		$this->map(Ids::WHITE_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::WHITE(), $in));
+		$this->map(Ids::WITHER_ROSE, fn() => Blocks::WITHER_ROSE());
 		$this->map(Ids::WOOD, fn(Reader $in) : Block => Helper::decodeLog(match($woodType = $in->readString(StateNames::WOOD_TYPE)){
 			StringValues::WOOD_TYPE_ACACIA => Blocks::ACACIA_WOOD(),
 			StringValues::WOOD_TYPE_BIRCH => Blocks::BIRCH_WOOD(),
