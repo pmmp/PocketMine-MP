@@ -496,6 +496,7 @@ use function mb_strtolower;
  * @method static Wall MUD_BRICK_WALL()
  * @method static MushroomStem MUSHROOM_STEM()
  * @method static Mycelium MYCELIUM()
+ * @method static Opaque NETHERITE()
  * @method static Netherrack NETHERRACK()
  * @method static Opaque NETHER_BRICKS()
  * @method static Fence NETHER_BRICK_FENCE()
@@ -1380,6 +1381,10 @@ final class VanillaBlocks{
 		$slabBreakInfo = new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
 
 		self::register("ancient_debris", new Opaque(new BID(Ids::ANCIENT_DEBRIS), "Ancient Debris", new BreakInfo(30, ToolType::PICKAXE, ToolTier::DIAMOND()->getHarvestLevel(), 3600.0)));
+		$netheriteBreakInfo = new BreakInfo(50, ToolType::PICKAXE, ToolTier::DIAMOND()->getHarvestLevel(), 3600.0);
+		self::register("netherite", new class(new BID(Ids::NETHERITE), "Netherite Block", $netheriteBreakInfo) extends Opaque{
+			public function isFireProofAsItem() : bool{ return true; }
+		});
 
 		$basaltBreakInfo = new BreakInfo(1.25, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 21.0);
 		self::register("basalt", new SimplePillar(new BID(Ids::BASALT), "Basalt", $basaltBreakInfo));

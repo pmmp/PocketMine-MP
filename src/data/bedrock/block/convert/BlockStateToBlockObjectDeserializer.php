@@ -840,6 +840,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 				->setAge($in->readBoundedInt(StateNames::AGE, 0, 3));
 		});
 		$this->map(Ids::NETHER_WART_BLOCK, fn() => Blocks::NETHER_WART_BLOCK());
+		$this->map(Ids::NETHERITE_BLOCK, fn() => Blocks::NETHERITE());
 		$this->map(Ids::NETHERRACK, fn() => Blocks::NETHERRACK());
 		$this->map(Ids::NETHERREACTOR, fn() => Blocks::NETHER_REACTOR_CORE());
 		$this->mapStairs(Ids::NORMAL_STONE_STAIRS, fn() => Blocks::STONE_STAIRS());

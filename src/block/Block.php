@@ -504,6 +504,10 @@ class Block{
 		return 64;
 	}
 
+	public function isFireProofAsItem() : bool{
+		return false;
+	}
+
 	/**
 	 * Returns the chance that the block will catch fire from nearby fire sources. Higher values lead to faster catching
 	 * fire.

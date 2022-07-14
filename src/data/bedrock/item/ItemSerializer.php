@@ -436,6 +436,17 @@ final class ItemSerializer{
 		$this->map(Items::MINECART(), self::id(Ids::MINECART));
 		$this->map(Items::MUSHROOM_STEW(), self::id(Ids::MUSHROOM_STEW));
 		$this->map(Items::NAUTILUS_SHELL(), self::id(Ids::NAUTILUS_SHELL));
+		$this->map(Items::NETHERITE_AXE(), self::id(Ids::NETHERITE_AXE));
+		$this->map(Items::NETHERITE_BOOTS(), self::id(Ids::NETHERITE_BOOTS));
+		$this->map(Items::NETHERITE_CHESTPLATE(), self::id(Ids::NETHERITE_CHESTPLATE));
+		$this->map(Items::NETHERITE_HELMET(), self::id(Ids::NETHERITE_HELMET));
+		$this->map(Items::NETHERITE_HOE(), self::id(Ids::NETHERITE_HOE));
+		$this->map(Items::NETHERITE_INGOT(), self::id(Ids::NETHERITE_INGOT));
+		$this->map(Items::NETHERITE_LEGGINGS(), self::id(Ids::NETHERITE_LEGGINGS));
+		$this->map(Items::NETHERITE_PICKAXE(), self::id(Ids::NETHERITE_PICKAXE));
+		$this->map(Items::NETHERITE_SCRAP(), self::id(Ids::NETHERITE_SCRAP));
+		$this->map(Items::NETHERITE_SHOVEL(), self::id(Ids::NETHERITE_SHOVEL));
+		$this->map(Items::NETHERITE_SWORD(), self::id(Ids::NETHERITE_SWORD));
 		$this->map(Items::NETHER_BRICK(), self::id(Ids::NETHERBRICK));
 		$this->map(Items::NETHER_QUARTZ(), self::id(Ids::QUARTZ));
 		$this->map(Items::NETHER_STAR(), self::id(Ids::NETHER_STAR));

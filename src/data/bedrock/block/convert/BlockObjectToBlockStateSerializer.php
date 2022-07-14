@@ -1033,6 +1033,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::MUSHROOM_STEM(), fn() => Writer::create(Ids::BROWN_MUSHROOM_BLOCK)
 				->writeInt(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_STEM));
 		$this->mapSimple(Blocks::MYCELIUM(), Ids::MYCELIUM);
+		$this->mapSimple(Blocks::NETHERITE(), Ids::NETHERITE_BLOCK);
 		$this->mapSimple(Blocks::NETHERRACK(), Ids::NETHERRACK);
 		$this->mapSimple(Blocks::NETHER_BRICKS(), Ids::NETHER_BRICK);
 		$this->mapSimple(Blocks::NETHER_BRICK_FENCE(), Ids::NETHER_BRICK_FENCE);

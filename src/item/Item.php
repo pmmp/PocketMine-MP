@@ -468,6 +468,13 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
+	 * Returns whether this item can survive being dropped into lava, or fire.
+	 */
+	public function isFireProof() : bool{
+		return false;
+	}
+
+	/**
 	 * Returns how many points of damage this item will deal to an entity when used as a weapon.
 	 */
 	public function getAttackPoints() : int{

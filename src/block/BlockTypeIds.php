@@ -692,6 +692,7 @@ final class BlockTypeIds{
 	public const HANGING_ROOTS = 10665;
 	public const CARTOGRAPHY_TABLE = 10666;
 	public const SMITHING_TABLE = 10667;
+	public const NETHERITE = 10668;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10668;
+	public const FIRST_UNUSED_BLOCK_ID = 10669;
 }

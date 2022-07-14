@@ -780,6 +780,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("nether_wart", fn() => Blocks::NETHER_WART());
 		$result->registerBlock("nether_wart_block", fn() => Blocks::NETHER_WART_BLOCK());
 		$result->registerBlock("nether_wart_plant", fn() => Blocks::NETHER_WART());
+		$result->registerBlock("netherite_block", fn() => Blocks::NETHERITE());
 		$result->registerBlock("netherrack", fn() => Blocks::NETHERRACK());
 		$result->registerBlock("netherreactor", fn() => Blocks::NETHER_REACTOR_CORE());
 		$result->registerBlock("normal_stone_stairs", fn() => Blocks::STONE_STAIRS());
@@ -1325,6 +1326,17 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("nether_quartz", fn() => Items::NETHER_QUARTZ());
 		$result->register("nether_star", fn() => Items::NETHER_STAR());
 		$result->register("netherbrick", fn() => Items::NETHER_BRICK());
+		$result->register("netherite_axe", fn() => Items::NETHERITE_AXE());
+		$result->register("netherite_boots", fn() => Items::NETHERITE_BOOTS());
+		$result->register("netherite_chestplate", fn() => Items::NETHERITE_CHESTPLATE());
+		$result->register("netherite_helmet", fn() => Items::NETHERITE_HELMET());
+		$result->register("netherite_hoe", fn() => Items::NETHERITE_HOE());
+		$result->register("netherite_ingot", fn() => Items::NETHERITE_INGOT());
+		$result->register("netherite_leggings", fn() => Items::NETHERITE_LEGGINGS());
+		$result->register("netherite_pickaxe", fn() => Items::NETHERITE_PICKAXE());
+		$result->register("netherite_scrap", fn() => Items::NETHERITE_SCRAP());
+		$result->register("netherite_shovel", fn() => Items::NETHERITE_SHOVEL());
+		$result->register("netherite_sword", fn() => Items::NETHERITE_SWORD());
 		$result->register("netherstar", fn() => Items::NETHER_STAR());
 		$result->register("night_vision_potion", fn() => Items::POTION()->setType(PotionType::NIGHT_VISION()));
 		$result->register("night_vision_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::NIGHT_VISION()));

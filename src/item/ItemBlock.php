@@ -63,6 +63,10 @@ final class ItemBlock extends Item{
 		return $this->getBlock()->getFuelTime();
 	}
 
+	public function isFireProof() : bool{
+		return $this->getBlock()->isFireProofAsItem();
+	}
+
 	public function getMaxStackSize() : int{
 		return $this->getBlock()->getMaxStackSize();
 	}

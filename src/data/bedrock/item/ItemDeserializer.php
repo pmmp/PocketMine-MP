@@ -458,17 +458,17 @@ final class ItemDeserializer{
 		$this->map(Ids::NETHER_STAR, fn() => Items::NETHER_STAR());
 		$this->map(Ids::NETHER_WART, fn() => Blocks::NETHER_WART()->asItem());
 		$this->map(Ids::NETHERBRICK, fn() => Items::NETHER_BRICK());
-		//TODO: minecraft:netherite_axe
-		//TODO: minecraft:netherite_boots
-		//TODO: minecraft:netherite_chestplate
-		//TODO: minecraft:netherite_helmet
-		//TODO: minecraft:netherite_hoe
-		//TODO: minecraft:netherite_ingot
-		//TODO: minecraft:netherite_leggings
-		//TODO: minecraft:netherite_pickaxe
-		//TODO: minecraft:netherite_scrap
-		//TODO: minecraft:netherite_shovel
-		//TODO: minecraft:netherite_sword
+		$this->map(Ids::NETHERITE_AXE, fn() => Items::NETHERITE_AXE());
+		$this->map(Ids::NETHERITE_BOOTS, fn() => Items::NETHERITE_BOOTS());
+		$this->map(Ids::NETHERITE_CHESTPLATE, fn() => Items::NETHERITE_CHESTPLATE());
+		$this->map(Ids::NETHERITE_HELMET, fn() => Items::NETHERITE_HELMET());
+		$this->map(Ids::NETHERITE_HOE, fn() => Items::NETHERITE_HOE());
+		$this->map(Ids::NETHERITE_INGOT, fn() => Items::NETHERITE_INGOT());
+		$this->map(Ids::NETHERITE_LEGGINGS, fn() => Items::NETHERITE_LEGGINGS());
+		$this->map(Ids::NETHERITE_PICKAXE, fn() => Items::NETHERITE_PICKAXE());
+		$this->map(Ids::NETHERITE_SCRAP, fn() => Items::NETHERITE_SCRAP());
+		$this->map(Ids::NETHERITE_SHOVEL, fn() => Items::NETHERITE_SHOVEL());
+		$this->map(Ids::NETHERITE_SWORD, fn() => Items::NETHERITE_SWORD());
 		//TODO: minecraft:npc_spawn_egg
 		$this->map(Ids::OAK_BOAT, fn() => Items::OAK_BOAT());
 		$this->map(Ids::OAK_SIGN, fn() => Blocks::OAK_SIGN()->asItem());

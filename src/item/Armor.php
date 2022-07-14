@@ -68,6 +68,10 @@ class Armor extends Durable{
 		return 1;
 	}
 
+	public function isFireProof() : bool{
+		return $this->armorInfo->isFireProof();
+	}
+
 	/**
 	 * Returns the dyed colour of this armour piece. This generally only applies to leather armour.
 	 */

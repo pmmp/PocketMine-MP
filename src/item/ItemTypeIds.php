@@ -293,6 +293,7 @@ final class ItemTypeIds{
 	public const RAW_IRON = 20254;
 	public const RAW_GOLD = 20255;
 	public const SPYGLASS = 20256;
+	public const NETHERITE_SCRAP = 20257;
 
-	public const FIRST_UNUSED_ITEM_ID = 20257;
+	public const FIRST_UNUSED_ITEM_ID = 20258;
 }
