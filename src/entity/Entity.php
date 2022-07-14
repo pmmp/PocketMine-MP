@@ -493,6 +493,9 @@ abstract class Entity{
 	}
 
 	public function attack(EntityDamageEvent $source) : void{
+		if($this->isFireProof() && ($source->getCause() === EntityDamageEvent::CAUSE_FIRE || $source->getCause() === EntityDamageEvent::CAUSE_FIRE_TICK)){
+			$source->cancel();
+		}
 		$source->call();
 		if($source->isCancelled()){
 			return;

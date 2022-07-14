@@ -82,14 +82,11 @@ class EffectManager{
 		$index = spl_object_id($effectType);
 		if(isset($this->effects[$index])){
 			$effect = $this->effects[$index];
-			$hasExpired = $effect->hasExpired();
 			$ev = new EntityEffectRemoveEvent($this->entity, $effect);
 			$ev->call();
 			if($ev->isCancelled()){
-				if($hasExpired && !$ev->getEffect()->hasExpired()){ //altered duration of an expired effect to make it not get removed
-					foreach($this->effectAddHooks as $hook){
-						$hook($ev->getEffect(), true);
-					}
+				foreach($this->effectAddHooks as $hook){
+					$hook($ev->getEffect(), true);
 				}
 				return;
 			}
