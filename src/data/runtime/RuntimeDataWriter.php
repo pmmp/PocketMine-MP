@@ -52,7 +52,7 @@ final class RuntimeDataWriter{
 		return $this;
 	}
 
-	/** @param int $bits *@return $this */
+	/** @return $this */
 	public function writeBoundedInt(int $bits, int $min, int $max, int $value) : self{
 		if($value < $min || $value > $max){
 			throw new \InvalidArgumentException("Value $value is outside the range $min - $max");
