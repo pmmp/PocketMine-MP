@@ -294,6 +294,8 @@ final class ItemTypeIds{
 	public const RAW_GOLD = 20255;
 	public const SPYGLASS = 20256;
 	public const NETHERITE_SCRAP = 20257;
+	public const POWDER_SNOW_BUCKET = 20258;
+	public const LINGERING_POTION = 20259;
 
-	public const FIRST_UNUSED_ITEM_ID = 20258;
+	public const FIRST_UNUSED_ITEM_ID = 20260;
 }
