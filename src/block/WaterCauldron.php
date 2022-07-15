@@ -1,0 +1,133 @@
+<?php
+
+/*
+ *
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
+ *
+ *
+ */
+
+declare(strict_types=1);
+
+namespace pocketmine\block;
+
+use pocketmine\block\tile\Cauldron as TileCauldron;
+use pocketmine\block\utils\DyeColor;
+use pocketmine\color\Color;
+use pocketmine\entity\Entity;
+use pocketmine\item\Dye;
+use pocketmine\item\Item;
+use pocketmine\item\ItemTypeIds;
+use pocketmine\item\Potion;
+use pocketmine\item\PotionType;
+use pocketmine\item\SplashPotion;
+use pocketmine\item\VanillaItems;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
+use function assert;
+
+final class WaterCauldron extends FillableCauldron{
+
+	public const WATER_BOTTLE_FILL_AMOUNT = 2;
+
+	//TODO: I'm not sure if this was intended to be 2 (to match java) but in Bedrock you can extinguish yourself 6 times ...
+	public const ENTITY_EXTINGUISH_USE_AMOUNT = 1;
+
+	private ?Color $customWaterColor = null;
+
+	public function readStateFromWorld() : Block{
+		$result = parent::readStateFromWorld();
+		if($result !== $this){
+			return $result;
+		}
+
+		$tile = $this->position->getWorld()->getTile($this->position);
+
+		$potionItem = $tile instanceof TileCauldron ? $tile->getPotionItem() : null;
+		if($potionItem !== null){
+			//TODO: HACK! we keep potion cauldrons as a separate block type due to different behaviour, but in the
+			//blockstate they are typically indistinguishable from water cauldrons. This hack converts cauldrons into
+			//their appropriate type.
+			return VanillaBlocks::POTION_CAULDRON()->setFillLevel($this->getFillLevel())->setPotionItem($potionItem);
+		}
+
+		$this->customWaterColor = $tile instanceof TileCauldron ? $tile->getCustomWaterColor() : null;
+
+		return $this;
+	}
+
+	public function writeStateToWorld() : void{
+		parent::writeStateToWorld();
+		$tile = $this->position->getWorld()->getTile($this->position);
+		assert($tile instanceof TileCauldron);
+		$tile->setCustomWaterColor($this->customWaterColor);
+	}
+
+	/** @return Color|null */
+	public function getCustomWaterColor() : ?Color{ return $this->customWaterColor; }
+
+	/** @return $this */
+	public function setCustomWaterColor(?Color $customWaterColor) : self{
+		$this->customWaterColor = $customWaterColor;
+		return $this;
+	}
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if(($newColor = match($item->getTypeId()){
+				ItemTypeIds::LAPIS_LAZULI => DyeColor::BLUE()->getRgbValue(),
+				ItemTypeIds::INK_SAC => DyeColor::BLACK()->getRgbValue(),
+				ItemTypeIds::COCOA_BEANS => DyeColor::BROWN()->getRgbValue(),
+				ItemTypeIds::BONE_MEAL => DyeColor::WHITE()->getRgbValue(),
+				ItemTypeIds::DYE => $item instanceof Dye ? $item->getColor()->getRgbValue() : null,
+				default => null
+			}) !== null
+		){
+			$this->position->getWorld()->setBlock($this->position, $this->setCustomWaterColor($this->customWaterColor === null ? $newColor : Color::mix($this->customWaterColor, $newColor)));
+			//TODO: sounds
+
+			$item->pop();
+		}elseif($item instanceof Potion || $item instanceof SplashPotion){ //TODO: lingering potion
+			if($item->getType()->equals(PotionType::WATER())){
+				$this->addFillLevels(self::WATER_BOTTLE_FILL_AMOUNT, $item, $player, VanillaItems::GLASS_BOTTLE());
+			}else{
+				$this->mix($item, $player, VanillaItems::GLASS_BOTTLE());
+			}
+		}else{
+			match($item->getTypeId()){
+				ItemTypeIds::WATER_BUCKET => $this->addFillLevels(self::MAX_FILL_LEVEL, $item, $player, VanillaItems::BUCKET()),
+				ItemTypeIds::BUCKET => $this->removeFillLevels(self::MAX_FILL_LEVEL, $item, $player, VanillaItems::WATER_BUCKET()),
+				ItemTypeIds::GLASS_BOTTLE => $this->removeFillLevels(self::WATER_BOTTLE_FILL_AMOUNT, $item, $player, VanillaItems::POTION()->setType(PotionType::WATER())),
+				ItemTypeIds::LAVA_BUCKET, ItemTypeIds::POWDER_SNOW_BUCKET => $this->mix($item, $player, VanillaItems::BUCKET()),
+				default => null
+			};
+		}
+
+		//TODO: dye/wash leather armour
+		return true;
+	}
+
+	public function hasEntityCollision() : bool{ return true; }
+
+	public function onEntityInside(Entity $entity) : bool{
+		if($entity->isOnFire()){
+			$entity->extinguish();
+			//TODO: particles
+
+			$this->position->getWorld()->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::ENTITY_EXTINGUISH_USE_AMOUNT));
+		}
+
+		return true;
+	}
+}

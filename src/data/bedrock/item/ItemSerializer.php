@@ -229,6 +229,7 @@ final class ItemSerializer{
 		$this->mapBlock(Blocks::BIRCH_DOOR(), self::id(Ids::BIRCH_DOOR));
 		$this->mapBlock(Blocks::BREWING_STAND(), self::id(Ids::BREWING_STAND));
 		$this->mapBlock(Blocks::CAKE(), self::id(Ids::CAKE));
+		$this->mapBlock(Blocks::CAULDRON(), self::id(Ids::CAULDRON));
 		$this->mapBlock(Blocks::CRIMSON_DOOR(), self::id(Ids::CRIMSON_DOOR));
 		$this->mapBlock(Blocks::DARK_OAK_DOOR(), self::id(Ids::DARK_OAK_DOOR));
 		$this->mapBlock(Blocks::FLOWER_POT(), self::id(Ids::FLOWER_POT));

@@ -198,7 +198,7 @@ final class ItemDeserializer{
 		$this->map(Ids::CARROT, fn() => Items::CARROT());
 		//TODO: minecraft:carrot_on_a_stick
 		//TODO: minecraft:cat_spawn_egg
-		//TODO: minecraft:cauldron
+		$this->map(Ids::CAULDRON, fn() => Blocks::CAULDRON()->asItem());
 		//TODO: minecraft:cave_spider_spawn_egg
 		//TODO: minecraft:chain
 		$this->map(Ids::CHAINMAIL_BOOTS, fn() => Items::CHAINMAIL_BOOTS());

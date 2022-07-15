@@ -693,6 +693,11 @@ final class BlockTypeIds{
 	public const CARTOGRAPHY_TABLE = 10666;
 	public const SMITHING_TABLE = 10667;
 	public const NETHERITE = 10668;
+	public const CAULDRON = 10669;
+	public const WATER_CAULDRON = 10670;
+	public const LAVA_CAULDRON = 10671;
+	public const POTION_CAULDRON = 10672;
+	public const POWDER_SNOW_CAULDRON = 10673;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10669;
+	public const FIRST_UNUSED_BLOCK_ID = 10674;
 }

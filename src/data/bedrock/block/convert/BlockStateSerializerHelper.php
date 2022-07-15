@@ -91,6 +91,12 @@ final class BlockStateSerializerHelper{
 			->writeTorchFacing($block->getFacing());
 	}
 
+	public static function encodeCauldron(string $liquid, int $fillLevel, BlockStateWriter $out) : BlockStateWriter{
+		return $out
+			->writeString(BlockStateNames::CAULDRON_LIQUID, $liquid)
+			->writeInt(BlockStateNames::FILL_LEVEL, $fillLevel);
+	}
+
 	public static function selectCopperId(CopperOxidation $oxidation, string $noneId, string $exposedId, string $weatheredId, string $oxidizedId) : string{
 		return match($oxidation){
 			CopperOxidation::NONE() => $noneId,
