@@ -28,10 +28,10 @@ use pocketmine\entity\Living;
 class SlownessEffect extends Effect{
 
 	public function add(Living $entity, EffectInstance $instance) : void{
-		$entity->setMovementSpeed($entity->getMovementSpeed() * (1 - 0.15 * $instance->getEffectLevel()), true);
+		$entity->setDefaultSpeed($entity->getDefaultSpeed() * (1 - 0.15 * $instance->getEffectLevel()), true);
 	}
 
 	public function remove(Living $entity, EffectInstance $instance) : void{
-		$entity->setMovementSpeed($entity->getMovementSpeed() / (1 - 0.15 * $instance->getEffectLevel()));
+		$entity->setDefaultSpeed($entity->getDefaultSpeed() / (1 + 0.2 * $instance->getEffectLevel()));
 	}
 }
