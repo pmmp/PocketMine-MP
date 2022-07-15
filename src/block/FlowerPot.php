@@ -36,7 +36,7 @@ class FlowerPot extends Flowable{
 
 	protected ?Block $plant = null;
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileFlowerPot){
@@ -44,6 +44,8 @@ class FlowerPot extends Flowable{
 		}else{
 			$this->setPlant(null);
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{

@@ -41,9 +41,11 @@ class RedstoneWire extends Flowable{
 		return false;
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		//TODO: check connections to nearby redstone components
+
+		return $this;
 	}
 
 	public function onNearbyBlockChange() : void{

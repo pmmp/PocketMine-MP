@@ -189,9 +189,14 @@ class Block{
 	 *
 	 * Clears any cached precomputed objects, such as bounding boxes. Remove any outdated precomputed things such as
 	 * AABBs and force recalculation.
+	 *
+	 * A replacement block may be returned. This is useful if the block type changed due to reading of world data (e.g.
+	 * data from a block entity).
 	 */
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		$this->collisionBoxes = null;
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{
