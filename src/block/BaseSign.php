@@ -58,13 +58,15 @@ abstract class BaseSign extends Transparent{
 		$this->asItemCallback = $asItemCallback;
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileSign){
 			$this->text = $tile->getText();
 			$this->editorEntityRuntimeId = $tile->getEditorEntityRuntimeId();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{

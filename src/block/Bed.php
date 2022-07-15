@@ -68,13 +68,15 @@ class Bed extends Transparent{
 		$w->writeBool($this->head);
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		//read extra state information from the tile - this is an ugly hack
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileBed){
 			$this->color = $tile->getColor();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{

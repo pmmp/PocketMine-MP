@@ -60,12 +60,14 @@ class RedstoneComparator extends Flowable{
 		$w->writeBool($this->powered);
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof Comparator){
 			$this->signalStrength = $tile->getSignalStrength();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{

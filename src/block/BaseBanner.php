@@ -53,13 +53,15 @@ abstract class BaseBanner extends Transparent{
 		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileBanner){
 			$this->color = $tile->getBaseColor();
 			$this->setPatterns($tile->getPatterns());
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{

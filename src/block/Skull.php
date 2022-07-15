@@ -77,13 +77,15 @@ class Skull extends Flowable{
 		$w->writeFacing($this->facing);
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileSkull){
 			$this->skullType = $tile->getSkullType();
 			$this->rotation = $tile->getRotation();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{

@@ -59,7 +59,7 @@ class Stair extends Transparent{
 		$w->writeBool($this->upsideDown);
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 
 		$clockwise = Facing::rotateY($this->facing, true);
@@ -70,6 +70,8 @@ class Stair extends Transparent{
 		}else{
 			$this->shape = StairShape::STRAIGHT();
 		}
+
+		return $this;
 	}
 
 	public function isUpsideDown() : bool{ return $this->upsideDown; }

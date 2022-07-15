@@ -96,12 +96,14 @@ class Jukebox extends Opaque{
 		return $drops;
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$jukebox = $this->position->getWorld()->getTile($this->position);
 		if($jukebox instanceof JukeboxTile){
 			$this->record = $jukebox->getRecord();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{

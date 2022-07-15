@@ -59,13 +59,15 @@ class Lectern extends Transparent{
 		$w->writeBool($this->producingSignal);
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileLectern){
 			$this->viewedPage = $tile->getViewedPage();
 			$this->book = $tile->getBook();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{

@@ -58,7 +58,7 @@ class Door extends Transparent{
 		$w->writeBool($this->open);
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 
 		//copy door properties from other half
@@ -71,6 +71,8 @@ class Door extends Transparent{
 				$this->hingeRight = $other->hingeRight;
 			}
 		}
+
+		return $this;
 	}
 
 	public function isTop() : bool{ return $this->top; }

@@ -824,7 +824,11 @@ class World implements ChunkManager{
 			}
 
 			$block = $this->getBlockAt($x, $y, $z);
-			$block->readStateFromWorld(); //for blocks like fences, force recalculation of connected AABBs
+			$replacement = $block->readStateFromWorld(); //for blocks like fences, force recalculation of connected AABBs
+			if($replacement !== $block){
+				$replacement->position($this, $x, $y, $z);
+				$block = $replacement;
+			}
 
 			$ev = new BlockUpdateEvent($block);
 			$ev->call();
@@ -1548,7 +1552,11 @@ class World implements ChunkManager{
 			$addToCache = false;
 		}else{
 			$dynamicStateRead = true;
-			$block->readStateFromWorld();
+			$replacement = $block->readStateFromWorld();
+			if($replacement !== $block){
+				$replacement->position($this, $x, $y, $z);
+				$block = $replacement;
+			}
 			$dynamicStateRead = false;
 		}
 
