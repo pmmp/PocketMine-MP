@@ -32,6 +32,6 @@ class SlownessEffect extends Effect{
 	}
 
 	public function remove(Living $entity, EffectInstance $instance) : void{
-		$entity->setDefaultSpeed($entity->getDefaultSpeed() / (1 + 0.2 * $instance->getEffectLevel()));
+		$entity->setDefaultSpeed($entity->getDefaultSpeed() / (1 - 0.15 * $instance->getEffectLevel()));
 	}
 }
