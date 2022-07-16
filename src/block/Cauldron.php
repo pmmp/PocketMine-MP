@@ -46,6 +46,17 @@ final class Cauldron extends Transparent{
 		$tile->setPotionItem(null);
 	}
 
+	protected function recalculateCollisionBoxes() : array{
+		$result = [
+			AxisAlignedBB::one()->trim(Facing::UP, 11 / 16) //bottom of the cauldron
+		];
+
+		foreach(Facing::HORIZONTAL as $f){ //add the frame parts around the bowl
+			$result[] = AxisAlignedBB::one()->trim($f, 14 / 16);
+		}
+		return $result;
+	}
+
 	private function fill(int $amount, Item $item, ?Player $player, FillableCauldron $result, Item $returnedItem) : void{
 		$this->position->getWorld()->setBlock($this->position, $result->setFillLevel($amount));
 		//TODO: sounds
