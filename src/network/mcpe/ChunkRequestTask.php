@@ -63,7 +63,7 @@ class ChunkRequestTask extends AsyncTask{
 		$this->chunk = FastChunkSerializer::serializeTerrain($chunk);
 		$this->chunkX = $chunkX;
 		$this->chunkZ = $chunkZ;
-		$this->tiles = ChunkSerializer::serializeTiles($chunk);
+		$this->tiles = ChunkSerializer::serializeTiles($chunk, $mappingProtocol);
 
 		$this->storeLocal(self::TLS_KEY_PROMISE, $promise);
 		$this->storeLocal(self::TLS_KEY_ERROR_HOOK, $onError);
