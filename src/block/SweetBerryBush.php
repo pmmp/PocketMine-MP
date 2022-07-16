@@ -88,7 +88,7 @@ class SweetBerryBush extends Flowable{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->age < self::STAGE_MATURE && $item instanceof Fertilizer){
 			$block = clone $this;
 			$block->age++;

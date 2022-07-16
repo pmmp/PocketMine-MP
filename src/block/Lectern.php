@@ -127,7 +127,7 @@ class Lectern extends Transparent{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->book === null && $item instanceof WritableBookBase){
 			$this->position->getWorld()->setBlock($this->position, $this->setBook($item));
 			$this->position->getWorld()->addSound($this->position, new LecternPlaceBookSound());

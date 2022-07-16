@@ -63,7 +63,7 @@ final class Light extends Flowable{
 		return $blockReplace->canBeReplaced() && $blockReplace->getTypeId() !== $this->getTypeId();
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->level = $this->level === self::MAX_LIGHT_LEVEL ?
 			self::MIN_LIGHT_LEVEL :
 			$this->level + 1;

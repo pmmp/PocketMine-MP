@@ -109,7 +109,7 @@ class FenceGate extends Transparent{
 		}
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->open = !$this->open;
 		if($this->open && $player !== null){
 			$playerFacing = $player->getHorizontalFacing();

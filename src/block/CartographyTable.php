@@ -30,7 +30,7 @@ use pocketmine\player\Player;
 
 final class CartographyTable extends Opaque{
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
 			$player->setCurrentWindow(new CartographyTableInventory($this->position));
 		}

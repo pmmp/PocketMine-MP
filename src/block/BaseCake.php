@@ -54,7 +54,7 @@ abstract class BaseCake extends Transparent implements FoodSource{
 		}
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
 			return $player->consumeObject($this);
 		}

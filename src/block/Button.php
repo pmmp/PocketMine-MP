@@ -69,7 +69,7 @@ abstract class Button extends Flowable{
 
 	abstract protected function getActivationTime() : int;
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if(!$this->pressed){
 			$this->pressed = true;
 			$this->position->getWorld()->setBlock($this->position, $this);

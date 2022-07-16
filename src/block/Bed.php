@@ -130,7 +130,7 @@ class Bed extends Transparent{
 		return null;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
 			$other = $this->getOtherHalf();
 			$playerPos = $player->getPosition();

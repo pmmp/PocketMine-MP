@@ -68,7 +68,7 @@ trait CopperTrait{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if(!$this->waxed && $item->getTypeId() === ItemTypeIds::HONEYCOMB){
 			$this->waxed = true;
 			$this->position->getWorld()->setBlock($this->position, $this);

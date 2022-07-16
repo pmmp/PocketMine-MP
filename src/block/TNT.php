@@ -81,15 +81,15 @@ class TNT extends Opaque{
 		return $this;
 	}
 
-	public function onBreak(Item $item, ?Player $player = null) : bool{
+	public function onBreak(Item $item, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->unstable){
 			$this->ignite();
 			return true;
 		}
-		return parent::onBreak($item, $player);
+		return parent::onBreak($item, $player, $returnedItems);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof FlintSteel || $item->hasEnchantment(VanillaEnchantments::FIRE_ASPECT())){
 			if($item instanceof Durable){
 				$item->applyDamage(1);

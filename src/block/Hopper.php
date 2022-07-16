@@ -93,7 +93,7 @@ class Hopper extends Transparent{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
 			$tile = $this->position->getWorld()->getTile($this->position);
 			if($tile instanceof TileHopper){ //TODO: find a way to have inventories open on click without this boilerplate in every block

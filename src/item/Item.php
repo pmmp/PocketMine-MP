@@ -513,38 +513,48 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Called when a player uses this item on a block.
+	 *
+	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
-	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		return ItemUseResult::NONE();
 	}
 
 	/**
 	 * Called when a player uses the item on air, for example throwing a projectile.
 	 * Returns whether the item was changed, for example count decrease or durability change.
+	 *
+	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
-	public function onClickAir(Player $player, Vector3 $directionVector) : ItemUseResult{
+	public function onClickAir(Player $player, Vector3 $directionVector, array &$returnedItems) : ItemUseResult{
 		return ItemUseResult::NONE();
 	}
 
 	/**
 	 * Called when a player is using this item and releases it. Used to handle bow shoot actions.
 	 * Returns whether the item was changed, for example count decrease or durability change.
+	 *
+	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
-	public function onReleaseUsing(Player $player) : ItemUseResult{
+	public function onReleaseUsing(Player $player, array &$returnedItems) : ItemUseResult{
 		return ItemUseResult::NONE();
 	}
 
 	/**
 	 * Called when this item is used to destroy a block. Usually used to update durability.
+	 *
+	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
-	public function onDestroyBlock(Block $block) : bool{
+	public function onDestroyBlock(Block $block, array &$returnedItems) : bool{
 		return false;
 	}
 
 	/**
 	 * Called when this item is used to attack an entity. Usually used to update durability.
+	 *
+	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
-	public function onAttackEntity(Entity $victim) : bool{
+	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
 		return false;
 	}
 

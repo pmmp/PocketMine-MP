@@ -112,7 +112,7 @@ class FlowerPot extends Flowable{
 		return $block->getSupportType(Facing::UP)->hasCenterSupport();
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$plant = $item->getBlock();
 		if($this->plant !== null){
 			if($this->isValidPlant($plant)){

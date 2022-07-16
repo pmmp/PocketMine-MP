@@ -51,12 +51,12 @@ class CakeWithCandle extends BaseCake{
 		return VanillaBlocks::CANDLE();
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->onInteractCandle($item, $face, $clickVector, $player)){
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		if($this->onInteractCandle($item, $face, $clickVector, $player, $returnedItems)){
 			return true;
 		}
 
-		return parent::onInteract($item, $face, $clickVector, $player);
+		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

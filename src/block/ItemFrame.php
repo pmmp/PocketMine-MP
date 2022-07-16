@@ -153,7 +153,7 @@ class ItemFrame extends Flowable{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->framedItem !== null){
 			$this->itemRotation = ($this->itemRotation + 1) % self::ROTATIONS;
 		}elseif(!$item->isNull()){

@@ -70,7 +70,7 @@ class Cake extends BaseCake{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof ItemBlock){
 			$block = $item->getBlock();
 			$resultBlock = null;
@@ -87,7 +87,7 @@ class Cake extends BaseCake{
 			}
 		}
 
-		return parent::onInteract($item, $face, $clickVector, $player);
+		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
 	}
 
 	public function getResidue() : Block{

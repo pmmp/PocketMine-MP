@@ -103,9 +103,9 @@ class SeaPickle extends Transparent{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		//TODO: bonemeal logic (requires coral)
-		return parent::onInteract($item, $face, $clickVector, $player);
+		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

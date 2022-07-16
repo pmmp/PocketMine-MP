@@ -67,7 +67,7 @@ class Furnace extends Opaque{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 			$furnace = $this->position->getWorld()->getTile($this->position);
 			if($furnace instanceof TileFurnace && $furnace->canOpenWith($item->getCustomName())){

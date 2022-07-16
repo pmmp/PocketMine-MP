@@ -148,7 +148,7 @@ class Door extends Transparent{
 		return false;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->open = !$this->open;
 
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);

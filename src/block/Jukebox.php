@@ -39,7 +39,7 @@ class Jukebox extends Opaque{
 		return 300;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 			if($this->record !== null){
 				$this->ejectRecord();
@@ -83,9 +83,9 @@ class Jukebox extends Opaque{
 		$this->getPosition()->getWorld()->addSound($this->getPosition(), new RecordStopSound());
 	}
 
-	public function onBreak(Item $item, ?Player $player = null) : bool{
+	public function onBreak(Item $item, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->stopSound();
-		return parent::onBreak($item, $player);
+		return parent::onBreak($item, $player, $returnedItems);
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

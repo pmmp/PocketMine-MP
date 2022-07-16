@@ -149,7 +149,7 @@ class Bamboo extends Transparent{
 		return $top;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer){
 			$top = $this->seekToTop();
 			if($top->grow(self::getMaxHeight($top->position->getFloorX(), $top->position->getFloorZ()), mt_rand(1, 2), $player)){

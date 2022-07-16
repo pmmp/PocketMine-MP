@@ -37,7 +37,7 @@ class Stonecutter extends Transparent{
 	use FacesOppositePlacingPlayerTrait;
 	use HorizontalFacingTrait;
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
 			$player->setCurrentWindow(new StonecutterInventory($this->position));
 		}

@@ -69,7 +69,7 @@ class Wood extends Opaque{
 		return $this->woodType->isFlammable() ? 5 : 0;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if(!$this->stripped && $item instanceof Axe){
 			$item->applyDamage(1);
 			$this->stripped = true;

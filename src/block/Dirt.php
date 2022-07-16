@@ -53,7 +53,7 @@ class Dirt extends Opaque{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($face === Facing::UP && $item instanceof Hoe){
 			$item->applyDamage(1);
 

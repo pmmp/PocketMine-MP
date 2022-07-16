@@ -60,7 +60,7 @@ class RedstoneOre extends Opaque{
 		return $this->lit ? 9 : 0;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if(!$this->lit){
 			$this->lit = true;
 			$this->position->getWorld()->setBlock($this->position, $this); //no return here - this shouldn't prevent block placement

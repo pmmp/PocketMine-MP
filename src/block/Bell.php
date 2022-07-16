@@ -139,7 +139,7 @@ final class Bell extends Transparent{
 		}
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
 			$faceHit = Facing::opposite($player->getHorizontalFacing());
 			if($this->attachmentType->equals(BellAttachmentType::CEILING())){

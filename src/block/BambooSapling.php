@@ -73,7 +73,7 @@ final class BambooSapling extends Flowable{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer || $item instanceof ItemBamboo){
 			if($this->grow($player)){
 				$item->pop();
