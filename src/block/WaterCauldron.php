@@ -27,6 +27,7 @@ use pocketmine\block\tile\Cauldron as TileCauldron;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\color\Color;
 use pocketmine\entity\Entity;
+use pocketmine\item\Armor;
 use pocketmine\item\Dye;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
@@ -41,6 +42,9 @@ use function assert;
 final class WaterCauldron extends FillableCauldron{
 
 	public const WATER_BOTTLE_FILL_AMOUNT = 2;
+
+	public const DYE_ARMOR_USE_AMOUNT = 1;
+	public const CLEAN_ARMOR_USE_AMOUNT = 1;
 
 	//TODO: I'm not sure if this was intended to be 2 (to match java) but in Bedrock you can extinguish yourself 6 times ...
 	public const ENTITY_EXTINGUISH_USE_AMOUNT = 1;
@@ -104,6 +108,24 @@ final class WaterCauldron extends FillableCauldron{
 			}else{
 				$this->mix($item, $player, VanillaItems::GLASS_BOTTLE());
 			}
+		}elseif($item instanceof Armor){
+			if($this->customWaterColor !== null){
+				if(match($item->getTypeId()){ //TODO: a DyeableArmor class would probably be a better idea, since not all types of armor are dyeable
+					ItemTypeIds::LEATHER_CAP,
+					ItemTypeIds::LEATHER_TUNIC,
+					ItemTypeIds::LEATHER_PANTS,
+					ItemTypeIds::LEATHER_BOOTS => true,
+					default => false
+				} && $item->getCustomColor()?->toRGBA() !== $this->customWaterColor->toRGBA()){
+					//TODO: sounds
+					$item->setCustomColor($this->customWaterColor);
+					$this->position->getWorld()->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::DYE_ARMOR_USE_AMOUNT));
+				}
+			}elseif($item->getCustomColor() !== null){
+				//TODO: sounds
+				$item->clearCustomColor();
+				$this->position->getWorld()->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::CLEAN_ARMOR_USE_AMOUNT));
+			}
 		}else{
 			match($item->getTypeId()){
 				ItemTypeIds::WATER_BUCKET => $this->addFillLevels(self::MAX_FILL_LEVEL, $item, $player, VanillaItems::BUCKET()),
@@ -114,7 +136,6 @@ final class WaterCauldron extends FillableCauldron{
 			};
 		}
 
-		//TODO: dye/wash leather armour
 		return true;
 	}
 
