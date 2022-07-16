@@ -39,7 +39,9 @@ use pocketmine\item\SplashPotion;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use function array_pop;
 use function assert;
+use function count;
 
 final class WaterCauldron extends FillableCauldron{
 
