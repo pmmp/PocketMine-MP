@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
@@ -69,6 +70,10 @@ class FillableCauldron extends Transparent{
 			$result[] = AxisAlignedBB::one()->trim($f, 14 / 16);
 		}
 		return $result;
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return $facing === Facing::UP ? SupportType::EDGE() : SupportType::NONE();
 	}
 
 	protected function withFillLevel(int $fillLevel) : Block{

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Cauldron as TileCauldron;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\item\Potion;
@@ -57,6 +58,10 @@ final class Cauldron extends Transparent{
 			$result[] = AxisAlignedBB::one()->trim($f, 14 / 16);
 		}
 		return $result;
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return $facing === Facing::UP ? SupportType::EDGE() : SupportType::NONE();
 	}
 
 	private function fill(int $amount, Item $item, ?Player $player, FillableCauldron $result, Item $returnedItem) : void{
