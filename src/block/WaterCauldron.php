@@ -96,7 +96,7 @@ final class WaterCauldron extends FillableCauldron{
 				ItemTypeIds::BONE_MEAL => DyeColor::WHITE()->getRgbValue(),
 				ItemTypeIds::DYE => $item instanceof Dye ? $item->getColor()->getRgbValue() : null,
 				default => null
-			}) !== null
+			}) !== null && $newColor->toRGBA() !== $this->customWaterColor?->toRGBA()
 		){
 			$this->position->getWorld()->setBlock($this->position, $this->setCustomWaterColor($this->customWaterColor === null ? $newColor : Color::mix($this->customWaterColor, $newColor)));
 			//TODO: sounds
