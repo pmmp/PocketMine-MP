@@ -64,19 +64,22 @@ final class PotionCauldron extends FillableCauldron{
 		return $this;
 	}
 
-	protected function addFillLevelsOrMix(int $amount, Item $item, ?Player $player, Item $returnedItem) : void{
-		if($this->potionItem !== null && !$item->equals($this->potionItem, true, false)){
-			$this->mix($item, $player, $returnedItem);
+	/**
+	 * @param Item[] &$returnedItems
+	 */
+	protected function addFillLevelsOrMix(int $amount, Item $usedItem, Item $returnedItem, array &$returnedItems) : void{
+		if($this->potionItem !== null && !$usedItem->equals($this->potionItem, true, false)){
+			$this->mix($usedItem, $returnedItem, $returnedItems);
 		}else{
-			$this->addFillLevels($amount, $item, $player, $returnedItem);
+			$this->addFillLevels($amount, $usedItem, $returnedItem, $returnedItems);
 		}
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		match($item->getTypeId()){
-			ItemTypeIds::LINGERING_POTION, ItemTypeIds::POTION, ItemTypeIds::SPLASH_POTION => $this->addFillLevelsOrMix(self::POTION_FILL_AMOUNT, $item, $player, VanillaItems::GLASS_BOTTLE()),
-			ItemTypeIds::GLASS_BOTTLE => $this->potionItem === null ? null : $this->removeFillLevels(self::POTION_FILL_AMOUNT, $item, $player, clone $this->potionItem),
-			ItemTypeIds::LAVA_BUCKET, ItemTypeIds::POWDER_SNOW_BUCKET, ItemTypeIds::WATER_BUCKET => $this->mix($item, $player, VanillaItems::BUCKET()),
+			ItemTypeIds::LINGERING_POTION, ItemTypeIds::POTION, ItemTypeIds::SPLASH_POTION => $this->addFillLevelsOrMix(self::POTION_FILL_AMOUNT, $item, VanillaItems::GLASS_BOTTLE(), $returnedItems),
+			ItemTypeIds::GLASS_BOTTLE => $this->potionItem === null ? null : $this->removeFillLevels(self::POTION_FILL_AMOUNT, $item, clone $this->potionItem, $returnedItems),
+			ItemTypeIds::LAVA_BUCKET, ItemTypeIds::POWDER_SNOW_BUCKET, ItemTypeIds::WATER_BUCKET => $this->mix($item, VanillaItems::BUCKET(), $returnedItems),
 			//TODO: tipped arrows
 			default => null
 		};

@@ -64,26 +64,29 @@ final class Cauldron extends Transparent{
 		return $facing === Facing::UP ? SupportType::EDGE() : SupportType::NONE();
 	}
 
-	private function fill(int $amount, Item $item, ?Player $player, FillableCauldron $result, Item $returnedItem) : void{
+	/**
+	 * @param Item[] &$returnedItems
+	 */
+	private function fill(int $amount, FillableCauldron $result, Item $usedItem, Item $returnedItem, array &$returnedItems) : void{
 		$this->position->getWorld()->setBlock($this->position, $result->setFillLevel($amount));
 		//TODO: sounds
 
-		$item->pop();
-		$player?->getInventory()->addItem($returnedItem);
+		$usedItem->pop();
+		$returnedItems[] = $returnedItem;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item->getTypeId() === ItemTypeIds::WATER_BUCKET){
-			$this->fill(FillableCauldron::MAX_FILL_LEVEL, $item, $player, VanillaBlocks::WATER_CAULDRON(), VanillaItems::BUCKET());
+			$this->fill(FillableCauldron::MAX_FILL_LEVEL, VanillaBlocks::WATER_CAULDRON(), $item, VanillaItems::BUCKET(), $returnedItems);
 		}elseif($item->getTypeId() === ItemTypeIds::LAVA_BUCKET){
-			$this->fill(FillableCauldron::MAX_FILL_LEVEL, $item, $player, VanillaBlocks::LAVA_CAULDRON(), VanillaItems::BUCKET());
+			$this->fill(FillableCauldron::MAX_FILL_LEVEL, VanillaBlocks::LAVA_CAULDRON(), $item, VanillaItems::BUCKET(), $returnedItems);
 		}elseif($item->getTypeId() === ItemTypeIds::POWDER_SNOW_BUCKET){
 			//TODO: powder snow cauldron
 		}elseif($item instanceof Potion || $item instanceof SplashPotion){ //TODO: lingering potion
 			if($item->getType()->equals(PotionType::WATER())){
-				$this->fill(WaterCauldron::WATER_BOTTLE_FILL_AMOUNT, $item, $player, VanillaBlocks::WATER_CAULDRON(), VanillaItems::GLASS_BOTTLE());
+				$this->fill(WaterCauldron::WATER_BOTTLE_FILL_AMOUNT, VanillaBlocks::WATER_CAULDRON(), $item, VanillaItems::GLASS_BOTTLE(), $returnedItems);
 			}else{
-				$this->fill(PotionCauldron::POTION_FILL_AMOUNT, $item, $player, VanillaBlocks::POTION_CAULDRON()->setPotionItem($item), VanillaItems::GLASS_BOTTLE());
+				$this->fill(PotionCauldron::POTION_FILL_AMOUNT, VanillaBlocks::POTION_CAULDRON()->setPotionItem($item), $item, VanillaItems::GLASS_BOTTLE(), $returnedItems);
 			}
 		}
 

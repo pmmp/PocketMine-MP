@@ -88,7 +88,7 @@ final class WaterCauldron extends FillableCauldron{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if(($newColor = match($item->getTypeId()){
 				ItemTypeIds::LAPIS_LAZULI => DyeColor::BLUE()->getRgbValue(),
 				ItemTypeIds::INK_SAC => DyeColor::BLACK()->getRgbValue(),
@@ -104,9 +104,9 @@ final class WaterCauldron extends FillableCauldron{
 			$item->pop();
 		}elseif($item instanceof Potion || $item instanceof SplashPotion){ //TODO: lingering potion
 			if($item->getType()->equals(PotionType::WATER())){
-				$this->addFillLevels(self::WATER_BOTTLE_FILL_AMOUNT, $item, $player, VanillaItems::GLASS_BOTTLE());
+				$this->addFillLevels(self::WATER_BOTTLE_FILL_AMOUNT, $item, VanillaItems::GLASS_BOTTLE(), $returnedItems);
 			}else{
-				$this->mix($item, $player, VanillaItems::GLASS_BOTTLE());
+				$this->mix($item, VanillaItems::GLASS_BOTTLE(), $returnedItems);
 			}
 		}elseif($item instanceof Armor){
 			if($this->customWaterColor !== null){
@@ -128,10 +128,10 @@ final class WaterCauldron extends FillableCauldron{
 			}
 		}else{
 			match($item->getTypeId()){
-				ItemTypeIds::WATER_BUCKET => $this->addFillLevels(self::MAX_FILL_LEVEL, $item, $player, VanillaItems::BUCKET()),
-				ItemTypeIds::BUCKET => $this->removeFillLevels(self::MAX_FILL_LEVEL, $item, $player, VanillaItems::WATER_BUCKET()),
-				ItemTypeIds::GLASS_BOTTLE => $this->removeFillLevels(self::WATER_BOTTLE_FILL_AMOUNT, $item, $player, VanillaItems::POTION()->setType(PotionType::WATER())),
-				ItemTypeIds::LAVA_BUCKET, ItemTypeIds::POWDER_SNOW_BUCKET => $this->mix($item, $player, VanillaItems::BUCKET()),
+				ItemTypeIds::WATER_BUCKET => $this->addFillLevels(self::MAX_FILL_LEVEL, $item, VanillaItems::BUCKET(), $returnedItems),
+				ItemTypeIds::BUCKET => $this->removeFillLevels(self::MAX_FILL_LEVEL, $item, VanillaItems::WATER_BUCKET(), $returnedItems),
+				ItemTypeIds::GLASS_BOTTLE => $this->removeFillLevels(self::WATER_BOTTLE_FILL_AMOUNT, $item, VanillaItems::POTION()->setType(PotionType::WATER()), $returnedItems),
+				ItemTypeIds::LAVA_BUCKET, ItemTypeIds::POWDER_SNOW_BUCKET => $this->mix($item, VanillaItems::BUCKET(), $returnedItems),
 				default => null
 			};
 		}

@@ -29,7 +29,6 @@ use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
-use pocketmine\player\Player;
 use function min;
 
 class FillableCauldron extends Transparent{
@@ -80,17 +79,23 @@ class FillableCauldron extends Transparent{
 		return $fillLevel === 0 ? VanillaBlocks::CAULDRON() : $this->setFillLevel(min(self::MAX_FILL_LEVEL, $fillLevel));
 	}
 
-	protected function addFillLevels(int $amount, Item $item, ?Player $player, Item $returnedItem) : void{
+	/**
+	 * @param Item[] &$returnedItems
+	 */
+	protected function addFillLevels(int $amount, Item $usedItem, Item $returnedItem, array &$returnedItems) : void{
 		if($this->fillLevel >= self::MAX_FILL_LEVEL){
 			return;
 		}
 		$this->position->getWorld()->setBlock($this->position, $this->withFillLevel($this->fillLevel + $amount));
 
-		$item->pop();
-		$player?->getInventory()->addItem($returnedItem);
+		$usedItem->pop();
+		$returnedItems[] = $returnedItem;
 	}
 
-	protected function removeFillLevels(int $amount, Item $item, ?Player $player, Item $returnedItem) : void{
+	/**
+	 * @param Item[] &$returnedItems
+	 */
+	protected function removeFillLevels(int $amount, Item $usedItem, Item $returnedItem, array &$returnedItems) : void{
 		if($this->fillLevel < $amount){
 			return;
 		}
@@ -98,16 +103,19 @@ class FillableCauldron extends Transparent{
 		$this->position->getWorld()->setBlock($this->position, $this->withFillLevel($this->fillLevel - $amount));
 		//TODO: sounds
 
-		$item->pop();
-		$player?->getInventory()->addItem($returnedItem);
+		$usedItem->pop();
+		$returnedItems[] = $returnedItem;
 	}
 
-	protected function mix(Item $item, ?Player $player, Item $returnedItem) : void{
+	/**
+	 * @param Item[] &$returnedItems
+	 */
+	protected function mix(Item $usedItem, Item $returnedItem, array &$returnedItems) : void{
 		$this->position->getWorld()->setBlock($this->position, VanillaBlocks::CAULDRON());
 		//TODO: sounds and particles
 
-		$item->pop();
-		$player?->getInventory()->addItem($returnedItem);
+		$usedItem->pop();
+		$returnedItems[] = $returnedItem;
 	}
 
 	public function asItem() : Item{
