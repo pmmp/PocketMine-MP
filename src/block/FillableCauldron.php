@@ -49,17 +49,6 @@ class FillableCauldron extends Transparent{
 		$w->writeBoundedInt(3, self::MIN_FILL_LEVEL, self::MAX_FILL_LEVEL, $this->fillLevel);
 	}
 
-	protected function recalculateCollisionBoxes() : array{
-		$result = [
-			AxisAlignedBB::one()->trim(Facing::UP, 11 / 16) //bottom of the cauldron
-		];
-
-		foreach(Facing::HORIZONTAL as $f){ //add the frame parts around the bowl
-			$result[] = AxisAlignedBB::one()->trim($f, 14 / 16);
-		}
-		return $result;
-	}
-
 	public function getFillLevel() : int{ return $this->fillLevel; }
 
 	/** @return $this */
@@ -69,6 +58,17 @@ class FillableCauldron extends Transparent{
 		}
 		$this->fillLevel = $fillLevel;
 		return $this;
+	}
+
+	protected function recalculateCollisionBoxes() : array{
+		$result = [
+			AxisAlignedBB::one()->trim(Facing::UP, 11 / 16) //bottom of the cauldron
+		];
+
+		foreach(Facing::HORIZONTAL as $f){ //add the frame parts around the bowl
+			$result[] = AxisAlignedBB::one()->trim($f, 14 / 16);
+		}
+		return $result;
 	}
 
 	protected function withFillLevel(int $fillLevel) : Block{
