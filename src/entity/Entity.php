@@ -1303,6 +1303,10 @@ abstract class Entity{
 		return $this->location->asLocation();
 	}
 
+	public function getLastLocation() : Location{
+		return $this->lastLocation->asLocation();
+	}
+
 	public function getWorld() : World{
 		return $this->location->getWorld();
 	}
