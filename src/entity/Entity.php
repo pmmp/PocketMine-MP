@@ -1370,6 +1370,10 @@ abstract class Entity{
 		return clone $this->motion;
 	}
 
+	public function getLastMotion() : Vector3{
+		return clone $this->lastMotion;
+	}
+
 	public function setMotion(Vector3 $motion) : bool{
 		Utils::checkVector3NotInfOrNaN($motion);
 		if(!$this->justCreated){
