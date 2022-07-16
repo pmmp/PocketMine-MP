@@ -78,7 +78,7 @@ final class Cauldron extends Spawnable{
 		$nbt->setShort(self::TAG_POTION_ID, $type === null ? self::POTION_ID_NONE : PotionTypeIdMap::getInstance()->toId($type));
 
 		if($this->customWaterColor !== null){
-			$nbt->setInt(self::TAG_CUSTOM_COLOR, Binary::signInt($this->customWaterColor->toRGBA()));
+			$nbt->setInt(self::TAG_CUSTOM_COLOR, Binary::signInt($this->customWaterColor->toARGB()));
 		}
 	}
 
@@ -100,7 +100,7 @@ final class Cauldron extends Spawnable{
 			$this->potionItem = null;
 		}
 
-		$this->customWaterColor = ($customColorTag = $nbt->getTag(self::TAG_CUSTOM_COLOR)) instanceof IntTag ? Color::fromRGBA(Binary::unsignInt($customColorTag->getValue())) : null;
+		$this->customWaterColor = ($customColorTag = $nbt->getTag(self::TAG_CUSTOM_COLOR)) instanceof IntTag ? Color::fromARGB(Binary::unsignInt($customColorTag->getValue())) : null;
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
@@ -117,7 +117,7 @@ final class Cauldron extends Spawnable{
 		$nbt->setShort(self::TAG_POTION_ID, $type === null ? self::POTION_ID_NONE : PotionTypeIdMap::getInstance()->toId($type));
 
 		if($this->customWaterColor !== null){
-			$nbt->setInt(self::TAG_CUSTOM_COLOR, Binary::signInt($this->customWaterColor->toRGBA()));
+			$nbt->setInt(self::TAG_CUSTOM_COLOR, Binary::signInt($this->customWaterColor->toARGB()));
 		}
 	}
 }
