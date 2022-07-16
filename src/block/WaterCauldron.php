@@ -28,8 +28,10 @@ use pocketmine\block\utils\DyeColor;
 use pocketmine\color\Color;
 use pocketmine\entity\Entity;
 use pocketmine\item\Armor;
+use pocketmine\item\Banner;
 use pocketmine\item\Dye;
 use pocketmine\item\Item;
+use pocketmine\item\ItemBlock;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\item\Potion;
 use pocketmine\item\PotionType;
@@ -45,6 +47,8 @@ final class WaterCauldron extends FillableCauldron{
 
 	public const DYE_ARMOR_USE_AMOUNT = 1;
 	public const CLEAN_ARMOR_USE_AMOUNT = 1;
+	public const CLEAN_BANNER_USE_AMOUNT = 1;
+	public const CLEAN_SHULKER_BOX_USE_AMOUNT = 1;
 
 	//TODO: I'm not sure if this was intended to be 2 (to match java) but in Bedrock you can extinguish yourself 6 times ...
 	public const ENTITY_EXTINGUISH_USE_AMOUNT = 1;
@@ -125,6 +129,24 @@ final class WaterCauldron extends FillableCauldron{
 				//TODO: sounds
 				$item->clearCustomColor();
 				$this->position->getWorld()->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::CLEAN_ARMOR_USE_AMOUNT));
+			}
+		}elseif($item instanceof Banner){
+			$patterns = $item->getPatterns();
+			if(count($patterns) > 0 && $this->customWaterColor === null){
+				array_pop($patterns);
+				$item->setPatterns($patterns);
+
+				$this->position->getWorld()->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::CLEAN_BANNER_USE_AMOUNT));
+			}
+		}elseif($item instanceof ItemBlock && $item->getBlock()->getTypeId() === BlockTypeIds::DYED_SHULKER_BOX){
+			if($this->customWaterColor === null){
+				$newItem = VanillaBlocks::SHULKER_BOX()->asItem();
+				$newItem->setNamedTag($item->getNamedTag());
+
+				$item->pop();
+				$returnedItems[] = $newItem;
+
+				$this->position->getWorld()->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::CLEAN_SHULKER_BOX_USE_AMOUNT));
 			}
 		}else{
 			match($item->getTypeId()){
