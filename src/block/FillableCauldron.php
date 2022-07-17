@@ -29,9 +29,10 @@ use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use pocketmine\world\sound\Sound;
 use function min;
 
-class FillableCauldron extends Transparent{
+abstract class FillableCauldron extends Transparent{
 	public const MIN_FILL_LEVEL = 1;
 	public const MAX_FILL_LEVEL = 6;
 
@@ -87,6 +88,7 @@ class FillableCauldron extends Transparent{
 			return;
 		}
 		$this->position->getWorld()->setBlock($this->position, $this->withFillLevel($this->fillLevel + $amount));
+		$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), $this->getFillSound());
 
 		$usedItem->pop();
 		$returnedItems[] = $returnedItem;
@@ -101,11 +103,21 @@ class FillableCauldron extends Transparent{
 		}
 
 		$this->position->getWorld()->setBlock($this->position, $this->withFillLevel($this->fillLevel - $amount));
-		//TODO: sounds
+		$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), $this->getEmptySound());
 
 		$usedItem->pop();
 		$returnedItems[] = $returnedItem;
 	}
+
+	/**
+	 * Returns the sound played when adding levels to the cauldron liquid.
+	 */
+	abstract public function getFillSound() : Sound;
+
+	/**
+	 * Returns the sound played when removing levels from the cauldron liquid.
+	 */
+	abstract public function getEmptySound() : Sound;
 
 	/**
 	 * @param Item[] &$returnedItems
