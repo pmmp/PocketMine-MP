@@ -28,8 +28,8 @@ use pocketmine\data\bedrock\item\ItemSerializer;
 use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
 use pocketmine\data\bedrock\item\ItemTypeSerializeException;
 use pocketmine\data\bedrock\item\SavedItemData;
-use pocketmine\data\bedrock\item\SavedItemStackData;
 use pocketmine\item\Item;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
@@ -100,11 +100,11 @@ final class ItemTranslator{
 	/**
 	 * @throws ItemTypeSerializeException
 	 */
-	public function toNetworkNbt(Item $item) : SavedItemStackData{
+	public function toNetworkNbt(Item $item) : CompoundTag{
 		//TODO: this relies on the assumption that network item NBT is the same as disk item NBT, which may not always
 		//be true - if we stick on an older world version while updating network version, this could be a problem (and
 		//may be a problem for multi version implementations)
-		return $this->itemSerializer->serializeStack($item);
+		return $this->itemSerializer->serializeStack($item)->toNbt();
 	}
 
 	/**
