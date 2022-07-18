@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\data\runtime;
 
+use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -69,6 +70,20 @@ final class RuntimeDataReader{
 			3 => Facing::WEST,
 			default => throw new AssumptionFailedError("Unreachable")
 		};
+	}
+
+	/**
+	 * @return int[]
+	 */
+	public function readHorizontalFacingFlags() : array{
+		$result = [];
+		foreach(Facing::HORIZONTAL as $facing){
+			if($this->readBool()){
+				$result[$facing] = $facing;
+			}
+		}
+
+		return $result;
 	}
 
 	public function readFacing() : int{
@@ -119,6 +134,25 @@ final class RuntimeDataReader{
 		}
 
 		return $connections;
+	}
+
+	/**
+	 * @return BrewingStandSlot[]
+	 * @phpstan-return array<int, BrewingStandSlot>
+	 */
+	public function readBrewingStandSlots() : array{
+		$result = [];
+		foreach([
+			BrewingStandSlot::EAST(),
+			BrewingStandSlot::NORTHWEST(),
+			BrewingStandSlot::SOUTHWEST(),
+		] as $member){
+			if($this->readBool()){
+				$result[$member->id()] = $member;
+			}
+		}
+
+		return $result;
 	}
 
 	public function getOffset() : int{ return $this->offset; }

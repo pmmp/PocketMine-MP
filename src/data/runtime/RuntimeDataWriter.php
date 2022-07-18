@@ -23,10 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\data\runtime;
 
+use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
+use function array_flip;
 
 final class RuntimeDataWriter{
 	use RuntimeEnumSerializerTrait;
@@ -78,6 +80,20 @@ final class RuntimeDataWriter{
 		});
 	}
 
+	/**
+	 * @param int[] $faces
+	 *
+	 * @return $this
+	 */
+	public function writeHorizontalFacingFlags(array $faces) : self{
+		$uniqueFaces = array_flip($faces);
+		foreach(Facing::HORIZONTAL as $facing){
+			$this->writeBool(isset($uniqueFaces[$facing]));
+		}
+
+		return $this;
+	}
+
 	public function writeFacing(int $facing) : self{
 		return $this->writeInt(3, match($facing){
 			0 => Facing::DOWN,
@@ -120,6 +136,24 @@ final class RuntimeDataWriter{
 				WallConnectionType::TALL() => 2,
 				default => throw new AssumptionFailedError("Unreachable")
 			});
+		}
+
+		return $this;
+	}
+
+	/**
+	 * @param BrewingStandSlot[] $slots
+	 * @phpstan-param array<int, BrewingStandSlot> $slots
+	 *
+	 * @return $this
+	 */
+	public function writeBrewingStandSlots(array $slots) : self{
+		foreach([
+			BrewingStandSlot::EAST(),
+			BrewingStandSlot::NORTHWEST(),
+			BrewingStandSlot::SOUTHWEST(),
+		] as $member){
+			$this->writeBool(isset($slots[$member->id()]));
 		}
 
 		return $this;

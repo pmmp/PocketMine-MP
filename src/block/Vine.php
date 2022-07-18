@@ -43,15 +43,11 @@ class Vine extends Flowable{
 	public function getRequiredStateDataBits() : int{ return 4; }
 
 	protected function decodeState(RuntimeDataReader $r) : void{
-		foreach(Facing::HORIZONTAL as $facing){
-			$this->setFace($facing, $r->readBool());
-		}
+		$this->faces = $r->readHorizontalFacingFlags();
 	}
 
 	protected function encodeState(RuntimeDataWriter $w) : void{
-		foreach(Facing::HORIZONTAL as $facing){
-			$w->writeBool($this->hasFace($facing));
-		}
+		$w->writeHorizontalFacingFlags($this->faces);
 	}
 
 	/** @return int[] */
