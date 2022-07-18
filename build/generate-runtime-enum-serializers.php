@@ -172,7 +172,7 @@ $readerFuncs = [
 ];
 $writerFuncs = [
 	"" => [
-		"abstract public function writeInt(int \$bits, int \$value) : void;"
+		"abstract public function writeInt(int \$bits, int \$value) : self;"
 	]
 ];
 $functionName = "";

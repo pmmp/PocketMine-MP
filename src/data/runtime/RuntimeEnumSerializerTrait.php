@@ -29,7 +29,7 @@ namespace pocketmine\data\runtime;
  */
 trait RuntimeEnumSerializerTrait{
 
-	abstract public function writeInt(int $bits, int $value) : void;
+	abstract public function writeInt(int $bits, int $value) : self;
 
 	public function writeBellAttachmentType(\pocketmine\block\utils\BellAttachmentType $value) : void{
 		$this->writeInt(2, match($value){
