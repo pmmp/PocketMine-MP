@@ -28,8 +28,6 @@ use pocketmine\block\utils\SkullType;
 use pocketmine\data\runtime\InvalidSerializedRuntimeDataException;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
-use pocketmine\data\runtime\RuntimeEnumDeserializer;
-use pocketmine\data\runtime\RuntimeEnumSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -56,11 +54,11 @@ class Skull extends Flowable{
 	public function getRequiredTypeDataBits() : int{ return 3; }
 
 	protected function decodeType(RuntimeDataReader $r) : void{
-		$this->skullType = RuntimeEnumDeserializer::readSkullType($r);
+		$this->skullType = $r->readSkullType();
 	}
 
 	protected function encodeType(RuntimeDataWriter $w) : void{
-		RuntimeEnumSerializer::writeSkullType($w, $this->skullType);
+		$w->writeSkullType($this->skullType);
 	}
 
 	public function getRequiredStateDataBits() : int{ return 3; }

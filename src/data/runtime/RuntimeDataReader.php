@@ -29,6 +29,7 @@ use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
 
 final class RuntimeDataReader{
+	use RuntimeEnumDeserializerTrait;
 
 	private int $offset = 0;
 

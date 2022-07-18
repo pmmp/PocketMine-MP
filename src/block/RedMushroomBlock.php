@@ -26,8 +26,6 @@ namespace pocketmine\block;
 use pocketmine\block\utils\MushroomBlockType;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
-use pocketmine\data\runtime\RuntimeEnumDeserializer;
-use pocketmine\data\runtime\RuntimeEnumSerializer;
 use pocketmine\item\Item;
 use function mt_rand;
 
@@ -42,11 +40,11 @@ class RedMushroomBlock extends Opaque{
 	public function getRequiredStateDataBits() : int{ return 4; }
 
 	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->mushroomBlockType = RuntimeEnumDeserializer::readMushroomBlockType($r);
+		$this->mushroomBlockType = $r->readMushroomBlockType();
 	}
 
 	protected function encodeState(RuntimeDataWriter $w) : void{
-		RuntimeEnumSerializer::writeMushroomBlockType($w, $this->mushroomBlockType);
+		$w->writeMushroomBlockType($this->mushroomBlockType);
 	}
 
 	public function getMushroomBlockType() : MushroomBlockType{ return $this->mushroomBlockType; }

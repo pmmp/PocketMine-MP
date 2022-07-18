@@ -29,6 +29,7 @@ use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
 
 final class RuntimeDataWriter{
+	use RuntimeEnumSerializerTrait;
 
 	private int $value = 0;
 	private int $offset = 0;

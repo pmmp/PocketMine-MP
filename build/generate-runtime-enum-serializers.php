@@ -59,8 +59,8 @@ function buildWriterFunc(string $virtualTypeName, string $nativeTypeName, array 
 	$lines = [];
 
 	$functionName = "write$virtualTypeName";
-	$lines[] = "public static function $functionName(RuntimeDataWriter \$w, \\$nativeTypeName \$value) : void{";
-	$lines[] = "\t\$w->writeInt($bits, match(\$value){";
+	$lines[] = "public function $functionName(\\$nativeTypeName \$value) : void{";
+	$lines[] = "\t\$this->writeInt($bits, match(\$value){";
 
 	foreach($memberNames as $key => $memberName){
 		$lines[] = "\t\t$memberName => $key,";
@@ -84,8 +84,8 @@ function buildReaderFunc(string $virtualTypeName, string $nativeTypeName, array 
 	$lines = [];
 
 	$functionName = "read$virtualTypeName";
-	$lines[] = "public static function $functionName(RuntimeDataReader \$r) : \\$nativeTypeName{";
-	$lines[] = "\treturn match(\$r->readInt($bits)){";
+	$lines[] = "public function $functionName() : \\$nativeTypeName{";
+	$lines[] = "\treturn match(\$this->readInt($bits)){";
 
 	foreach($memberNames as $key => $memberName){
 		$lines[] = "\t\t$key => $memberName,";
@@ -165,8 +165,16 @@ $enumsUsed = [
 	PotionType::getAll()
 ];
 
-$readerFuncs = [];
-$writerFuncs = [];
+$readerFuncs = [
+	"" => [
+		"abstract public function readInt(int \$bits) : int;"
+	]
+];
+$writerFuncs = [
+	"" => [
+		"abstract public function writeInt(int \$bits, int \$value) : void;"
+	]
+];
 $functionName = "";
 
 foreach($enumsUsed as $enumMembers){
@@ -220,14 +228,14 @@ namespace pocketmine\data\runtime;
 
 HEADER;
 
-	echo "final class $className{\n\n";
+	echo "trait $className{\n\n";
 	echo implode("\n\n", array_map(fn(array $functionLines) => "\t" . implode("\n\t", $functionLines), $functions));
 	echo "\n\n}\n";
 
 	file_put_contents(dirname(__DIR__) . '/src/data/runtime/' . $className . '.php', ob_get_clean());
 }
 
-printFunctions($writerFuncs, "RuntimeEnumSerializer");
-printFunctions($readerFuncs, "RuntimeEnumDeserializer");
+printFunctions($writerFuncs, "RuntimeEnumSerializerTrait");
+printFunctions($readerFuncs, "RuntimeEnumDeserializerTrait");
 
 echo "Done. Don't forget to run CS fixup after generating code.\n";

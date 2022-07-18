@@ -27,10 +27,12 @@ namespace pocketmine\data\runtime;
  * This class is auto-generated. Do not edit it manually.
  * @see build/generate-runtime-enum-serializers.php
  */
-final class RuntimeEnumDeserializer{
+trait RuntimeEnumDeserializerTrait{
 
-	public static function readBellAttachmentType(RuntimeDataReader $r) : \pocketmine\block\utils\BellAttachmentType{
-		return match($r->readInt(2)){
+	abstract public function readInt(int $bits) : int;
+
+	public function readBellAttachmentType() : \pocketmine\block\utils\BellAttachmentType{
+		return match($this->readInt(2)){
 			0 => \pocketmine\block\utils\BellAttachmentType::CEILING(),
 			1 => \pocketmine\block\utils\BellAttachmentType::FLOOR(),
 			2 => \pocketmine\block\utils\BellAttachmentType::ONE_WALL(),
@@ -39,8 +41,8 @@ final class RuntimeEnumDeserializer{
 		};
 	}
 
-	public static function readCopperOxidation(RuntimeDataReader $r) : \pocketmine\block\utils\CopperOxidation{
-		return match($r->readInt(2)){
+	public function readCopperOxidation() : \pocketmine\block\utils\CopperOxidation{
+		return match($this->readInt(2)){
 			0 => \pocketmine\block\utils\CopperOxidation::EXPOSED(),
 			1 => \pocketmine\block\utils\CopperOxidation::NONE(),
 			2 => \pocketmine\block\utils\CopperOxidation::OXIDIZED(),
@@ -49,8 +51,8 @@ final class RuntimeEnumDeserializer{
 		};
 	}
 
-	public static function readCoralType(RuntimeDataReader $r) : \pocketmine\block\utils\CoralType{
-		return match($r->readInt(3)){
+	public function readCoralType() : \pocketmine\block\utils\CoralType{
+		return match($this->readInt(3)){
 			0 => \pocketmine\block\utils\CoralType::BRAIN(),
 			1 => \pocketmine\block\utils\CoralType::BUBBLE(),
 			2 => \pocketmine\block\utils\CoralType::FIRE(),
@@ -60,8 +62,8 @@ final class RuntimeEnumDeserializer{
 		};
 	}
 
-	public static function readDyeColor(RuntimeDataReader $r) : \pocketmine\block\utils\DyeColor{
-		return match($r->readInt(4)){
+	public function readDyeColor() : \pocketmine\block\utils\DyeColor{
+		return match($this->readInt(4)){
 			0 => \pocketmine\block\utils\DyeColor::BLACK(),
 			1 => \pocketmine\block\utils\DyeColor::BLUE(),
 			2 => \pocketmine\block\utils\DyeColor::BROWN(),
@@ -82,8 +84,8 @@ final class RuntimeEnumDeserializer{
 		};
 	}
 
-	public static function readLeverFacing(RuntimeDataReader $r) : \pocketmine\block\utils\LeverFacing{
-		return match($r->readInt(3)){
+	public function readLeverFacing() : \pocketmine\block\utils\LeverFacing{
+		return match($this->readInt(3)){
 			0 => \pocketmine\block\utils\LeverFacing::DOWN_AXIS_X(),
 			1 => \pocketmine\block\utils\LeverFacing::DOWN_AXIS_Z(),
 			2 => \pocketmine\block\utils\LeverFacing::EAST(),
@@ -96,8 +98,8 @@ final class RuntimeEnumDeserializer{
 		};
 	}
 
-	public static function readMushroomBlockType(RuntimeDataReader $r) : \pocketmine\block\utils\MushroomBlockType{
-		return match($r->readInt(4)){
+	public function readMushroomBlockType() : \pocketmine\block\utils\MushroomBlockType{
+		return match($this->readInt(4)){
 			0 => \pocketmine\block\utils\MushroomBlockType::ALL_CAP(),
 			1 => \pocketmine\block\utils\MushroomBlockType::CAP_EAST(),
 			2 => \pocketmine\block\utils\MushroomBlockType::CAP_MIDDLE(),
@@ -113,8 +115,8 @@ final class RuntimeEnumDeserializer{
 		};
 	}
 
-	public static function readPotionType(RuntimeDataReader $r) : \pocketmine\item\PotionType{
-		return match($r->readInt(6)){
+	public function readPotionType() : \pocketmine\item\PotionType{
+		return match($this->readInt(6)){
 			0 => \pocketmine\item\PotionType::AWKWARD(),
 			1 => \pocketmine\item\PotionType::FIRE_RESISTANCE(),
 			2 => \pocketmine\item\PotionType::HARMING(),
@@ -161,8 +163,8 @@ final class RuntimeEnumDeserializer{
 		};
 	}
 
-	public static function readSkullType(RuntimeDataReader $r) : \pocketmine\block\utils\SkullType{
-		return match($r->readInt(3)){
+	public function readSkullType() : \pocketmine\block\utils\SkullType{
+		return match($this->readInt(3)){
 			0 => \pocketmine\block\utils\SkullType::CREEPER(),
 			1 => \pocketmine\block\utils\SkullType::DRAGON(),
 			2 => \pocketmine\block\utils\SkullType::PLAYER(),
@@ -173,8 +175,8 @@ final class RuntimeEnumDeserializer{
 		};
 	}
 
-	public static function readSlabType(RuntimeDataReader $r) : \pocketmine\block\utils\SlabType{
-		return match($r->readInt(2)){
+	public function readSlabType() : \pocketmine\block\utils\SlabType{
+		return match($this->readInt(2)){
 			0 => \pocketmine\block\utils\SlabType::BOTTOM(),
 			1 => \pocketmine\block\utils\SlabType::DOUBLE(),
 			2 => \pocketmine\block\utils\SlabType::TOP(),

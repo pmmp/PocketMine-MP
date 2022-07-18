@@ -27,10 +27,12 @@ namespace pocketmine\data\runtime;
  * This class is auto-generated. Do not edit it manually.
  * @see build/generate-runtime-enum-serializers.php
  */
-final class RuntimeEnumSerializer{
+trait RuntimeEnumSerializerTrait{
 
-	public static function writeBellAttachmentType(RuntimeDataWriter $w, \pocketmine\block\utils\BellAttachmentType $value) : void{
-		$w->writeInt(2, match($value){
+	abstract public function writeInt(int $bits, int $value) : void;
+
+	public function writeBellAttachmentType(\pocketmine\block\utils\BellAttachmentType $value) : void{
+		$this->writeInt(2, match($value){
 			\pocketmine\block\utils\BellAttachmentType::CEILING() => 0,
 			\pocketmine\block\utils\BellAttachmentType::FLOOR() => 1,
 			\pocketmine\block\utils\BellAttachmentType::ONE_WALL() => 2,
@@ -39,8 +41,8 @@ final class RuntimeEnumSerializer{
 		});
 	}
 
-	public static function writeCopperOxidation(RuntimeDataWriter $w, \pocketmine\block\utils\CopperOxidation $value) : void{
-		$w->writeInt(2, match($value){
+	public function writeCopperOxidation(\pocketmine\block\utils\CopperOxidation $value) : void{
+		$this->writeInt(2, match($value){
 			\pocketmine\block\utils\CopperOxidation::EXPOSED() => 0,
 			\pocketmine\block\utils\CopperOxidation::NONE() => 1,
 			\pocketmine\block\utils\CopperOxidation::OXIDIZED() => 2,
@@ -49,8 +51,8 @@ final class RuntimeEnumSerializer{
 		});
 	}
 
-	public static function writeCoralType(RuntimeDataWriter $w, \pocketmine\block\utils\CoralType $value) : void{
-		$w->writeInt(3, match($value){
+	public function writeCoralType(\pocketmine\block\utils\CoralType $value) : void{
+		$this->writeInt(3, match($value){
 			\pocketmine\block\utils\CoralType::BRAIN() => 0,
 			\pocketmine\block\utils\CoralType::BUBBLE() => 1,
 			\pocketmine\block\utils\CoralType::FIRE() => 2,
@@ -60,8 +62,8 @@ final class RuntimeEnumSerializer{
 		});
 	}
 
-	public static function writeDyeColor(RuntimeDataWriter $w, \pocketmine\block\utils\DyeColor $value) : void{
-		$w->writeInt(4, match($value){
+	public function writeDyeColor(\pocketmine\block\utils\DyeColor $value) : void{
+		$this->writeInt(4, match($value){
 			\pocketmine\block\utils\DyeColor::BLACK() => 0,
 			\pocketmine\block\utils\DyeColor::BLUE() => 1,
 			\pocketmine\block\utils\DyeColor::BROWN() => 2,
@@ -82,8 +84,8 @@ final class RuntimeEnumSerializer{
 		});
 	}
 
-	public static function writeLeverFacing(RuntimeDataWriter $w, \pocketmine\block\utils\LeverFacing $value) : void{
-		$w->writeInt(3, match($value){
+	public function writeLeverFacing(\pocketmine\block\utils\LeverFacing $value) : void{
+		$this->writeInt(3, match($value){
 			\pocketmine\block\utils\LeverFacing::DOWN_AXIS_X() => 0,
 			\pocketmine\block\utils\LeverFacing::DOWN_AXIS_Z() => 1,
 			\pocketmine\block\utils\LeverFacing::EAST() => 2,
@@ -96,8 +98,8 @@ final class RuntimeEnumSerializer{
 		});
 	}
 
-	public static function writeMushroomBlockType(RuntimeDataWriter $w, \pocketmine\block\utils\MushroomBlockType $value) : void{
-		$w->writeInt(4, match($value){
+	public function writeMushroomBlockType(\pocketmine\block\utils\MushroomBlockType $value) : void{
+		$this->writeInt(4, match($value){
 			\pocketmine\block\utils\MushroomBlockType::ALL_CAP() => 0,
 			\pocketmine\block\utils\MushroomBlockType::CAP_EAST() => 1,
 			\pocketmine\block\utils\MushroomBlockType::CAP_MIDDLE() => 2,
@@ -113,8 +115,8 @@ final class RuntimeEnumSerializer{
 		});
 	}
 
-	public static function writePotionType(RuntimeDataWriter $w, \pocketmine\item\PotionType $value) : void{
-		$w->writeInt(6, match($value){
+	public function writePotionType(\pocketmine\item\PotionType $value) : void{
+		$this->writeInt(6, match($value){
 			\pocketmine\item\PotionType::AWKWARD() => 0,
 			\pocketmine\item\PotionType::FIRE_RESISTANCE() => 1,
 			\pocketmine\item\PotionType::HARMING() => 2,
@@ -161,8 +163,8 @@ final class RuntimeEnumSerializer{
 		});
 	}
 
-	public static function writeSkullType(RuntimeDataWriter $w, \pocketmine\block\utils\SkullType $value) : void{
-		$w->writeInt(3, match($value){
+	public function writeSkullType(\pocketmine\block\utils\SkullType $value) : void{
+		$this->writeInt(3, match($value){
 			\pocketmine\block\utils\SkullType::CREEPER() => 0,
 			\pocketmine\block\utils\SkullType::DRAGON() => 1,
 			\pocketmine\block\utils\SkullType::PLAYER() => 2,
@@ -173,8 +175,8 @@ final class RuntimeEnumSerializer{
 		});
 	}
 
-	public static function writeSlabType(RuntimeDataWriter $w, \pocketmine\block\utils\SlabType $value) : void{
-		$w->writeInt(2, match($value){
+	public function writeSlabType(\pocketmine\block\utils\SlabType $value) : void{
+		$this->writeInt(2, match($value){
 			\pocketmine\block\utils\SlabType::BOTTOM() => 0,
 			\pocketmine\block\utils\SlabType::DOUBLE() => 1,
 			\pocketmine\block\utils\SlabType::TOP() => 2,

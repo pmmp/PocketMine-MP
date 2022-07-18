@@ -25,8 +25,6 @@ namespace pocketmine\block\utils;
 
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
-use pocketmine\data\runtime\RuntimeEnumDeserializer;
-use pocketmine\data\runtime\RuntimeEnumSerializer;
 use pocketmine\item\Axe;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
@@ -43,12 +41,12 @@ trait CopperTrait{
 	public function getRequiredTypeDataBits() : int{ return 3; }
 
 	protected function decodeType(RuntimeDataReader $r) : void{
-		$this->oxidation = RuntimeEnumDeserializer::readCopperOxidation($r);
+		$this->oxidation = $r->readCopperOxidation();
 		$this->waxed = $r->readBool();
 	}
 
 	protected function encodeType(RuntimeDataWriter $w) : void{
-		RuntimeEnumSerializer::writeCopperOxidation($w, $this->oxidation);
+		$w->writeCopperOxidation($this->oxidation);
 		$w->writeBool($this->waxed);
 	}
 

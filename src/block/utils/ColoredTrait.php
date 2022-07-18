@@ -26,8 +26,6 @@ namespace pocketmine\block\utils;
 use pocketmine\block\Block;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
-use pocketmine\data\runtime\RuntimeEnumDeserializer;
-use pocketmine\data\runtime\RuntimeEnumSerializer;
 
 trait ColoredTrait{
 	/** @var DyeColor */
@@ -37,12 +35,12 @@ trait ColoredTrait{
 
 	/** @see Block::decodeType() */
 	protected function decodeType(RuntimeDataReader $r) : void{
-		$this->color = RuntimeEnumDeserializer::readDyeColor($r);
+		$this->color = $r->readDyeColor();
 	}
 
 	/** @see Block::encodeType() */
 	protected function encodeType(RuntimeDataWriter $w) : void{
-		RuntimeEnumSerializer::writeDyeColor($w, $this->color);
+		$w->writeDyeColor($this->color);
 	}
 
 	public function getColor() : DyeColor{ return $this->color; }
