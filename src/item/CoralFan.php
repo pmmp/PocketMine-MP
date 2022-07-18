@@ -33,7 +33,7 @@ use pocketmine\math\Facing;
 
 final class CoralFan extends Item{
 	use CoralTypeTrait {
-		encodeType as encodeCoralType;
+		describeType as encodeCoralType;
 	}
 
 	public function __construct(ItemIdentifier $identifier){

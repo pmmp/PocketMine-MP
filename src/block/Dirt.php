@@ -37,12 +37,8 @@ class Dirt extends Opaque{
 
 	public function getRequiredTypeDataBits() : int{ return 1; }
 
-	protected function decodeType(RuntimeDataReader $r) : void{
-		$this->coarse = $r->readBool();
-	}
-
-	protected function encodeType(RuntimeDataWriter $w) : void{
-		$w->writeBool($this->coarse);
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->bool($this->coarse);
 	}
 
 	public function isCoarse() : bool{ return $this->coarse; }

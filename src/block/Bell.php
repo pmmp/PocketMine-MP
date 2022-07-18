@@ -49,14 +49,9 @@ final class Bell extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->attachmentType = $r->readBellAttachmentType();
-		$this->facing = $r->readHorizontalFacing();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeBellAttachmentType($this->attachmentType);
-		$w->writeHorizontalFacing($this->facing);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->bellAttachmentType($this->attachmentType);
+		$w->horizontalFacing($this->facing);
 	}
 
 	protected function recalculateCollisionBoxes() : array{

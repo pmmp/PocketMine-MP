@@ -31,12 +31,8 @@ class Sponge extends Opaque{
 
 	public function getRequiredTypeDataBits() : int{ return 1; }
 
-	protected function decodeType(RuntimeDataReader $r) : void{
-		$this->wet = $r->readBool();
-	}
-
-	protected function encodeType(RuntimeDataWriter $w) : void{
-		$w->writeBool($this->wet);
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->bool($this->wet);
 	}
 
 	public function isWet() : bool{ return $this->wet; }

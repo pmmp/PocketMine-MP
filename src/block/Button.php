@@ -41,14 +41,9 @@ abstract class Button extends Flowable{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->facing = $r->readFacing();
-		$this->pressed = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeFacing($this->facing);
-		$w->writeBool($this->pressed);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->facing($this->facing);
+		$w->bool($this->pressed);
 	}
 
 	public function isPressed() : bool{ return $this->pressed; }

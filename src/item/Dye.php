@@ -35,7 +35,7 @@ class Dye extends Item{
 	}
 
 	protected function encodeType(RuntimeDataWriter $w) : void{
-		$w->writeDyeColor($this->color);
+		$w->dyeColor($this->color);
 	}
 
 	public function getColor() : DyeColor{

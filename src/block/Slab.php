@@ -44,12 +44,8 @@ class Slab extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 2; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->slabType = $r->readSlabType();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeSlabType($this->slabType);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->slabType($this->slabType);
 	}
 
 	public function isTransparent() : bool{

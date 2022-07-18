@@ -64,7 +64,7 @@ class Banner extends ItemBlockWallOrFloor{
 	}
 
 	protected function encodeType(RuntimeDataWriter $w) : void{
-		$w->writeDyeColor($this->color);
+		$w->dyeColor($this->color);
 	}
 
 	/**

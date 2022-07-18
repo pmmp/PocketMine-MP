@@ -48,12 +48,8 @@ class SweetBerryBush extends Flowable{
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->age = $r->readBoundedInt(3, self::STAGE_SAPLING, self::STAGE_MATURE);
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeBoundedInt(3, self::STAGE_SAPLING, self::STAGE_MATURE, $this->age);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(3, self::STAGE_SAPLING, self::STAGE_MATURE, $this->age);
 	}
 
 	public function getAge() : int{ return $this->age; }

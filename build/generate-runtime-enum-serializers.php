@@ -41,6 +41,7 @@ use function dirname;
 use function file_put_contents;
 use function implode;
 use function ksort;
+use function lcfirst;
 use function log;
 use function ob_get_clean;
 use function ob_start;
@@ -58,9 +59,9 @@ function buildWriterFunc(string $virtualTypeName, string $nativeTypeName, array 
 	$bits = getBitsRequired($memberNames);
 	$lines = [];
 
-	$functionName = "write$virtualTypeName";
+	$functionName = lcfirst($virtualTypeName);
 	$lines[] = "public function $functionName(\\$nativeTypeName \$value) : void{";
-	$lines[] = "\t\$this->writeInt($bits, match(\$value){";
+	$lines[] = "\t\$this->int($bits, match(\$value){";
 
 	foreach($memberNames as $key => $memberName){
 		$lines[] = "\t\t$memberName => $key,";
@@ -83,9 +84,9 @@ function buildReaderFunc(string $virtualTypeName, string $nativeTypeName, array 
 	$bits = getBitsRequired($memberNames);
 	$lines = [];
 
-	$functionName = "read$virtualTypeName";
-	$lines[] = "public function $functionName() : \\$nativeTypeName{";
-	$lines[] = "\treturn match(\$this->readInt($bits)){";
+	$functionName = lcfirst($virtualTypeName);
+	$lines[] = "public function $functionName(\\$nativeTypeName &\$value) : void{";
+	$lines[] = "\t\$value = match(\$this->readInt($bits)){";
 
 	foreach($memberNames as $key => $memberName){
 		$lines[] = "\t\t$key => $memberName,";
@@ -167,12 +168,12 @@ $enumsUsed = [
 
 $readerFuncs = [
 	"" => [
-		"abstract public function readInt(int \$bits) : int;"
+		"abstract protected function readInt(int \$bits) : int;"
 	]
 ];
 $writerFuncs = [
 	"" => [
-		"abstract public function writeInt(int \$bits, int \$value) : self;"
+		"abstract public function int(int \$bits, int \$value) : void;"
 	]
 ];
 $functionName = "";

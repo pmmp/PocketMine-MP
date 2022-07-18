@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\utils\SkullType;
-use pocketmine\data\runtime\InvalidSerializedRuntimeDataException;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
@@ -53,26 +52,14 @@ class Skull extends Flowable{
 
 	public function getRequiredTypeDataBits() : int{ return 3; }
 
-	protected function decodeType(RuntimeDataReader $r) : void{
-		$this->skullType = $r->readSkullType();
-	}
-
-	protected function encodeType(RuntimeDataWriter $w) : void{
-		$w->writeSkullType($this->skullType);
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->skullType($this->skullType);
 	}
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$facing = $r->readFacing();
-		if($facing === Facing::DOWN){
-			throw new InvalidSerializedRuntimeDataException("Skull may not face down");
-		}
-		$this->facing = $facing;
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeFacing($this->facing);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->facingExcept($this->facing, Facing::DOWN);
 	}
 
 	public function readStateFromWorld() : Block{

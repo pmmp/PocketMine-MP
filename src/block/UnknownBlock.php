@@ -36,14 +36,10 @@ class UnknownBlock extends Transparent{
 		$this->stateData = $stateData;
 	}
 
-	protected function decodeType(RuntimeDataReader $r) : void{
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
 		//use type instead of state, so we don't lose any information like colour
 		//this might be an improperly registered plugin block
-		$this->stateData = $r->readInt(Block::INTERNAL_STATE_DATA_BITS);
-	}
-
-	protected function encodeType(RuntimeDataWriter $w) : void{
-		$w->writeInt(Block::INTERNAL_STATE_DATA_BITS, $this->stateData);
+		$w->int(Block::INTERNAL_STATE_DATA_BITS, $this->stateData);
 	}
 
 	public function canBePlaced() : bool{

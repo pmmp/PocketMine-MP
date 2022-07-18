@@ -41,16 +41,10 @@ class TripwireHook extends Flowable{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->facing = $r->readHorizontalFacing();
-		$this->connected = $r->readBool();
-		$this->powered = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeHorizontalFacing($this->facing);
-		$w->writeBool($this->connected);
-		$w->writeBool($this->powered);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->bool($this->connected);
+		$w->bool($this->powered);
 	}
 
 	public function isConnected() : bool{ return $this->connected; }

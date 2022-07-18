@@ -41,14 +41,9 @@ class SeaPickle extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->count = $r->readBoundedInt(2, self::MIN_COUNT, self::MAX_COUNT);
-		$this->underwater = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeBoundedInt(2, self::MIN_COUNT, self::MAX_COUNT, $this->count);
-		$w->writeBool($this->underwater);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(2, self::MIN_COUNT, self::MAX_COUNT, $this->count);
+		$w->bool($this->underwater);
 	}
 
 	public function getCount() : int{ return $this->count; }

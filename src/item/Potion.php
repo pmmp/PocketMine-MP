@@ -37,7 +37,7 @@ class Potion extends Item implements ConsumableItem{
 	}
 
 	protected function encodeType(RuntimeDataWriter $w) : void{
-		$w->writePotionType($this->potionType);
+		$w->potionType($this->potionType);
 	}
 
 	public function getType() : PotionType{ return $this->potionType; }

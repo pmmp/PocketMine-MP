@@ -50,14 +50,9 @@ class Leaves extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 2; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->noDecay = $r->readBool();
-		$this->checkDecay = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeBool($this->noDecay);
-		$w->writeBool($this->checkDecay);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->bool($this->noDecay);
+		$w->bool($this->checkDecay);
 	}
 
 	public function isNoDecay() : bool{ return $this->noDecay; }

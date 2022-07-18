@@ -24,9 +24,15 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\ColoredTrait;
+use pocketmine\block\utils\DyeColor;
 
 class CakeWithDyedCandle extends CakeWithCandle{
 	use ColoredTrait;
+
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->color = DyeColor::WHITE();
+		parent::__construct($idInfo, $name, $breakInfo);
+	}
 
 	public function getCandle() : Candle{
 		return VanillaBlocks::DYED_CANDLE()->setColor($this->color);

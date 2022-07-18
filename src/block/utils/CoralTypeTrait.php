@@ -33,16 +33,10 @@ trait CoralTypeTrait{
 
 	public function getRequiredTypeDataBits() : int{ return 4; }
 
-	/** @see Block::decodeType() */
-	protected function decodeType(RuntimeDataReader $r) : void{
-		$this->coralType = $r->readCoralType();
-		$this->dead = $r->readBool();
-	}
-
-	/** @see Block::encodeType() */
-	protected function encodeType(RuntimeDataWriter $w) : void{
-		$w->writeCoralType($this->coralType);
-		$w->writeBool($this->dead);
+	/** @see Block::describeType() */
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->coralType($this->coralType);
+		$w->bool($this->dead);
 	}
 
 	public function getCoralType() : CoralType{ return $this->coralType; }

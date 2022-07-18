@@ -39,12 +39,8 @@ class RedMushroomBlock extends Opaque{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->mushroomBlockType = $r->readMushroomBlockType();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeMushroomBlockType($this->mushroomBlockType);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->mushroomBlockType($this->mushroomBlockType);
 	}
 
 	public function getMushroomBlockType() : MushroomBlockType{ return $this->mushroomBlockType; }

@@ -40,8 +40,7 @@ final class RuntimeDataWriter{
 		private int $maxBits
 	){}
 
-	/** @return $this */
-	public function writeInt(int $bits, int $value) : self{
+	public function int(int $bits, int $value) : void{
 		if($this->offset + $bits > $this->maxBits){
 			throw new \InvalidArgumentException("Bit buffer cannot be larger than $this->maxBits bits (already have $this->offset bits)");
 		}
@@ -51,27 +50,21 @@ final class RuntimeDataWriter{
 
 		$this->value |= ($value << $this->offset);
 		$this->offset += $bits;
-
-		return $this;
 	}
 
-	/** @return $this */
-	public function writeBoundedInt(int $bits, int $min, int $max, int $value) : self{
+	public function boundedInt(int $bits, int $min, int $max, int $value) : void{
 		if($value < $min || $value > $max){
 			throw new \InvalidArgumentException("Value $value is outside the range $min - $max");
 		}
-		$this->writeInt($bits, $value - $min);
-		return $this;
+		$this->int($bits, $value - $min);
 	}
 
-	/** @return $this */
-	public function writeBool(bool $value) : self{
-		return $this->writeInt(1, $value ? 1 : 0);
+	public function bool(bool $value) : void{
+		$this->int(1, $value ? 1 : 0);
 	}
 
-	/** @return $this */
-	public function writeHorizontalFacing(int $facing) : self{
-		return $this->writeInt(2, match($facing){
+	public function horizontalFacing(int $facing) : void{
+		$this->int(2, match($facing){
 			Facing::NORTH => 0,
 			Facing::EAST => 1,
 			Facing::SOUTH => 2,
@@ -82,20 +75,16 @@ final class RuntimeDataWriter{
 
 	/**
 	 * @param int[] $faces
-	 *
-	 * @return $this
 	 */
-	public function writeHorizontalFacingFlags(array $faces) : self{
+	public function horizontalFacingFlags(array $faces) : void{
 		$uniqueFaces = array_flip($faces);
 		foreach(Facing::HORIZONTAL as $facing){
-			$this->writeBool(isset($uniqueFaces[$facing]));
+			$this->bool(isset($uniqueFaces[$facing]));
 		}
-
-		return $this;
 	}
 
-	public function writeFacing(int $facing) : self{
-		return $this->writeInt(3, match($facing){
+	public function facing(int $facing) : void{
+		$this->int(3, match($facing){
 			0 => Facing::DOWN,
 			1 => Facing::UP,
 			2 => Facing::NORTH,
@@ -106,8 +95,12 @@ final class RuntimeDataWriter{
 		});
 	}
 
-	public function writeAxis(int $axis) : self{
-		return $this->writeInt(2, match($axis){
+	public function facingExcept(int $facing, int $except) : void{
+		$this->facing($facing);
+	}
+
+	public function axis(int $axis) : void{
+		$this->int(2, match($axis){
 			Axis::X => 0,
 			Axis::Z => 1,
 			Axis::Y => 2,
@@ -115,8 +108,8 @@ final class RuntimeDataWriter{
 		});
 	}
 
-	public function writeHorizontalAxis(int $axis) : self{
-		return $this->writeInt(1, match($axis){
+	public function horizontalAxis(int $axis) : void{
+		$this->int(1, match($axis){
 			Axis::X => 0,
 			Axis::Z => 1,
 			default => throw new \InvalidArgumentException("Invalid horizontal axis $axis")
@@ -127,36 +120,38 @@ final class RuntimeDataWriter{
 	 * @param WallConnectionType[] $connections
 	 * @phpstan-param array<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST, WallConnectionType> $connections
 	 */
-	public function writeWallConnections(array $connections) : self{
+	public function wallConnections(array $connections) : void{
 		//TODO: we can pack this into 7 bits instead of 8
 		foreach(Facing::HORIZONTAL as $facing){
-			$this->writeBoundedInt(2, 0, 2, match($connections[$facing] ?? null){
+			$this->boundedInt(2, 0, 2, match($connections[$facing] ?? null){
 				null => 0,
 				WallConnectionType::SHORT() => 1,
 				WallConnectionType::TALL() => 2,
 				default => throw new AssumptionFailedError("Unreachable")
 			});
 		}
-
-		return $this;
 	}
 
 	/**
 	 * @param BrewingStandSlot[] $slots
 	 * @phpstan-param array<int, BrewingStandSlot> $slots
-	 *
-	 * @return $this
 	 */
-	public function writeBrewingStandSlots(array $slots) : self{
+	public function brewingStandSlots(array $slots) : void{
 		foreach([
 			BrewingStandSlot::EAST(),
 			BrewingStandSlot::NORTHWEST(),
 			BrewingStandSlot::SOUTHWEST(),
 		] as $member){
-			$this->writeBool(isset($slots[$member->id()]));
+			$this->bool(isset($slots[$member->id()]));
 		}
+	}
 
-		return $this;
+	public function railShape(int $railShape) : void{
+		$this->int(4, $railShape);
+	}
+
+	public function straightOnlyRailShape(int $railShape) : void{
+		$this->int(3, $railShape);
 	}
 
 	public function getValue() : int{ return $this->value; }

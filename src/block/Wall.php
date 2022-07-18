@@ -45,14 +45,9 @@ class Wall extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 9; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->connections = $r->readWallConnections();
-		$this->post = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeWallConnections($this->connections);
-		$w->writeBool($this->post);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->wallConnections($this->connections);
+		$w->bool($this->post);
 	}
 
 	/**

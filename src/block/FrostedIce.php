@@ -35,12 +35,8 @@ class FrostedIce extends Ice{
 
 	public function getRequiredStateDataBits() : int{ return 2; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->age = $r->readBoundedInt(2, 0, self::MAX_AGE);
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeBoundedInt(2, 0, self::MAX_AGE, $this->age);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(2, 0, self::MAX_AGE, $this->age);
 	}
 
 	public function getAge() : int{ return $this->age; }

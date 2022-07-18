@@ -29,10 +29,10 @@ namespace pocketmine\data\runtime;
  */
 trait RuntimeEnumSerializerTrait{
 
-	abstract public function writeInt(int $bits, int $value) : self;
+	abstract public function int(int $bits, int $value) : void;
 
-	public function writeBellAttachmentType(\pocketmine\block\utils\BellAttachmentType $value) : void{
-		$this->writeInt(2, match($value){
+	public function bellAttachmentType(\pocketmine\block\utils\BellAttachmentType $value) : void{
+		$this->int(2, match($value){
 			\pocketmine\block\utils\BellAttachmentType::CEILING() => 0,
 			\pocketmine\block\utils\BellAttachmentType::FLOOR() => 1,
 			\pocketmine\block\utils\BellAttachmentType::ONE_WALL() => 2,
@@ -41,8 +41,8 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
-	public function writeCopperOxidation(\pocketmine\block\utils\CopperOxidation $value) : void{
-		$this->writeInt(2, match($value){
+	public function copperOxidation(\pocketmine\block\utils\CopperOxidation $value) : void{
+		$this->int(2, match($value){
 			\pocketmine\block\utils\CopperOxidation::EXPOSED() => 0,
 			\pocketmine\block\utils\CopperOxidation::NONE() => 1,
 			\pocketmine\block\utils\CopperOxidation::OXIDIZED() => 2,
@@ -51,8 +51,8 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
-	public function writeCoralType(\pocketmine\block\utils\CoralType $value) : void{
-		$this->writeInt(3, match($value){
+	public function coralType(\pocketmine\block\utils\CoralType $value) : void{
+		$this->int(3, match($value){
 			\pocketmine\block\utils\CoralType::BRAIN() => 0,
 			\pocketmine\block\utils\CoralType::BUBBLE() => 1,
 			\pocketmine\block\utils\CoralType::FIRE() => 2,
@@ -62,8 +62,8 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
-	public function writeDyeColor(\pocketmine\block\utils\DyeColor $value) : void{
-		$this->writeInt(4, match($value){
+	public function dyeColor(\pocketmine\block\utils\DyeColor $value) : void{
+		$this->int(4, match($value){
 			\pocketmine\block\utils\DyeColor::BLACK() => 0,
 			\pocketmine\block\utils\DyeColor::BLUE() => 1,
 			\pocketmine\block\utils\DyeColor::BROWN() => 2,
@@ -84,8 +84,8 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
-	public function writeLeverFacing(\pocketmine\block\utils\LeverFacing $value) : void{
-		$this->writeInt(3, match($value){
+	public function leverFacing(\pocketmine\block\utils\LeverFacing $value) : void{
+		$this->int(3, match($value){
 			\pocketmine\block\utils\LeverFacing::DOWN_AXIS_X() => 0,
 			\pocketmine\block\utils\LeverFacing::DOWN_AXIS_Z() => 1,
 			\pocketmine\block\utils\LeverFacing::EAST() => 2,
@@ -98,8 +98,8 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
-	public function writeMushroomBlockType(\pocketmine\block\utils\MushroomBlockType $value) : void{
-		$this->writeInt(4, match($value){
+	public function mushroomBlockType(\pocketmine\block\utils\MushroomBlockType $value) : void{
+		$this->int(4, match($value){
 			\pocketmine\block\utils\MushroomBlockType::ALL_CAP() => 0,
 			\pocketmine\block\utils\MushroomBlockType::CAP_EAST() => 1,
 			\pocketmine\block\utils\MushroomBlockType::CAP_MIDDLE() => 2,
@@ -115,8 +115,8 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
-	public function writePotionType(\pocketmine\item\PotionType $value) : void{
-		$this->writeInt(6, match($value){
+	public function potionType(\pocketmine\item\PotionType $value) : void{
+		$this->int(6, match($value){
 			\pocketmine\item\PotionType::AWKWARD() => 0,
 			\pocketmine\item\PotionType::FIRE_RESISTANCE() => 1,
 			\pocketmine\item\PotionType::HARMING() => 2,
@@ -163,8 +163,8 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
-	public function writeSkullType(\pocketmine\block\utils\SkullType $value) : void{
-		$this->writeInt(3, match($value){
+	public function skullType(\pocketmine\block\utils\SkullType $value) : void{
+		$this->int(3, match($value){
 			\pocketmine\block\utils\SkullType::CREEPER() => 0,
 			\pocketmine\block\utils\SkullType::DRAGON() => 1,
 			\pocketmine\block\utils\SkullType::PLAYER() => 2,
@@ -175,8 +175,8 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
-	public function writeSlabType(\pocketmine\block\utils\SlabType $value) : void{
-		$this->writeInt(2, match($value){
+	public function slabType(\pocketmine\block\utils\SlabType $value) : void{
+		$this->int(2, match($value){
 			\pocketmine\block\utils\SlabType::BOTTOM() => 0,
 			\pocketmine\block\utils\SlabType::DOUBLE() => 1,
 			\pocketmine\block\utils\SlabType::TOP() => 2,

@@ -33,14 +33,9 @@ trait ColoredTrait{
 
 	public function getRequiredTypeDataBits() : int{ return 4; }
 
-	/** @see Block::decodeType() */
-	protected function decodeType(RuntimeDataReader $r) : void{
-		$this->color = $r->readDyeColor();
-	}
-
-	/** @see Block::encodeType() */
-	protected function encodeType(RuntimeDataWriter $w) : void{
-		$w->writeDyeColor($this->color);
+	/** @see Block::describeType() */
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->dyeColor($this->color);
 	}
 
 	public function getColor() : DyeColor{ return $this->color; }

@@ -46,12 +46,8 @@ class BrewingStand extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->setSlots($r->readBrewingStandSlots());
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeBrewingStandSlots($this->getSlots());
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->brewingStandSlots($this->slots);
 	}
 
 	protected function recalculateCollisionBoxes() : array{
