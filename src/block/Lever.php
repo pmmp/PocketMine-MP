@@ -26,8 +26,6 @@ namespace pocketmine\block;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
-use pocketmine\data\runtime\RuntimeEnumDeserializer;
-use pocketmine\data\runtime\RuntimeEnumSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -49,14 +47,9 @@ class Lever extends Flowable{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->facing = RuntimeEnumDeserializer::readLeverFacing($r);
-		$this->activated = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		RuntimeEnumSerializer::writeLeverFacing($w, $this->facing);
-		$w->writeBool($this->activated);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->leverFacing($this->facing);
+		$w->bool($this->activated);
 	}
 
 	public function getFacing() : LeverFacing{ return $this->facing; }

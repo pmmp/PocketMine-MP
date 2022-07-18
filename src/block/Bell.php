@@ -29,8 +29,6 @@ use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
-use pocketmine\data\runtime\RuntimeEnumDeserializer;
-use pocketmine\data\runtime\RuntimeEnumSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -51,14 +49,9 @@ final class Bell extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->attachmentType = RuntimeEnumDeserializer::readBellAttachmentType($r);
-		$this->facing = $r->readHorizontalFacing();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		RuntimeEnumSerializer::writeBellAttachmentType($w, $this->attachmentType);
-		$w->writeHorizontalFacing($this->facing);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->bellAttachmentType($this->attachmentType);
+		$w->horizontalFacing($this->facing);
 	}
 
 	protected function recalculateCollisionBoxes() : array{

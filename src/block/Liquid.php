@@ -51,16 +51,10 @@ abstract class Liquid extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 5; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->decay = $r->readBoundedInt(3, 0, self::MAX_DECAY);
-		$this->falling = $r->readBool();
-		$this->still = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeBoundedInt(3, 0, self::MAX_DECAY, $this->decay);
-		$w->writeBool($this->falling);
-		$w->writeBool($this->still);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(3, 0, self::MAX_DECAY, $this->decay);
+		$w->bool($this->falling);
+		$w->bool($this->still);
 	}
 
 	public function isFalling() : bool{ return $this->falling; }

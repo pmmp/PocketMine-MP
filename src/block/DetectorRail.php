@@ -31,14 +31,9 @@ class DetectorRail extends StraightOnlyRail{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		parent::decodeState($r);
-		$this->activated = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		parent::encodeState($w);
-		$w->writeBool($this->activated);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		parent::describeState($w);
+		$w->bool($this->activated);
 	}
 
 	public function isActivated() : bool{ return $this->activated; }

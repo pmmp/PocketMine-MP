@@ -42,12 +42,8 @@ abstract class FillableCauldron extends Transparent{
 		return 3;
 	}
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->fillLevel = $r->readBoundedInt(3, self::MIN_FILL_LEVEL, self::MAX_FILL_LEVEL);
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeBoundedInt(3, self::MIN_FILL_LEVEL, self::MAX_FILL_LEVEL, $this->fillLevel);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(3, self::MIN_FILL_LEVEL, self::MAX_FILL_LEVEL, $this->fillLevel);
 	}
 
 	public function getFillLevel() : int{ return $this->fillLevel; }

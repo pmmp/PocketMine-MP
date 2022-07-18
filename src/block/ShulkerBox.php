@@ -37,11 +37,7 @@ class ShulkerBox extends Opaque{
 
 	public function getRequiredStateDataBits() : int{ return 0; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		//NOOP - we don't read or write facing here, because the tile persists it
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
 		//NOOP - we don't read or write facing here, because the tile persists it
 	}
 

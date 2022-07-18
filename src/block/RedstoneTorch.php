@@ -31,14 +31,9 @@ class RedstoneTorch extends Torch{
 
 	public function getRequiredStateDataBits() : int{ return parent::getRequiredStateDataBits() + 1; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		parent::decodeState($r);
-		$this->lit = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		parent::encodeState($w);
-		$w->writeBool($this->lit);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		parent::describeState($w);
+		$w->bool($this->lit);
 	}
 
 	public function isLit() : bool{

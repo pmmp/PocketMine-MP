@@ -94,6 +94,18 @@ final class RuntimeBlockMapping{
 		return $this->networkIdCache[$internalStateId] = $networkId;
 	}
 
+	/**
+	 * Looks up the network state data associated with the given internal state ID.
+	 */
+	public function toStateData(int $internalStateId) : BlockStateData{
+		//we don't directly use the blockstate serializer here - we can't assume that the network blockstate NBT is the
+		//same as the disk blockstate NBT, in case we decide to have different world version than network version (or in
+		//case someone wants to implement multi version).
+		$networkRuntimeId = $this->toRuntimeId($internalStateId);
+
+		return $this->blockStateDictionary->getDataFromStateId($networkRuntimeId) ?? throw new AssumptionFailedError("We just looked up this state ID, so it must exist");
+	}
+
 	public function getBlockStateDictionary() : BlockStateDictionary{ return $this->blockStateDictionary; }
 
 	public function getFallbackStateData() : BlockStateData{ return $this->fallbackStateData; }

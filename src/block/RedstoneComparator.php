@@ -47,17 +47,10 @@ class RedstoneComparator extends Flowable{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->facing = $r->readHorizontalFacing();
-		$this->isSubtractMode = $r->readBool();
-		$this->powered = $r->readBool();
-		//TODO: this doesn't call the decoder from AnalogRedstoneSignalEmitter
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeHorizontalFacing($this->facing);
-		$w->writeBool($this->isSubtractMode);
-		$w->writeBool($this->powered);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->bool($this->isSubtractMode);
+		$w->bool($this->powered);
 	}
 
 	public function readStateFromWorld() : Block{

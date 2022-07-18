@@ -36,18 +36,11 @@ class Tripwire extends Flowable{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->triggered = $r->readBool();
-		$this->suspended = $r->readBool();
-		$this->connected = $r->readBool();
-		$this->disarmed = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeBool($this->triggered);
-		$w->writeBool($this->suspended);
-		$w->writeBool($this->connected);
-		$w->writeBool($this->disarmed);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->bool($this->triggered);
+		$w->bool($this->suspended);
+		$w->bool($this->connected);
+		$w->bool($this->disarmed);
 	}
 
 	public function isTriggered() : bool{ return $this->triggered; }

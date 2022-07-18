@@ -31,6 +31,7 @@ use pocketmine\data\SavedDataLoadingException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ShortTag;
+use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
 
 /**
@@ -88,7 +89,7 @@ class FlowerPot extends Spawnable{
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		if($this->plant !== null){
-			$nbt->setTag(self::TAG_PLANT_BLOCK, GlobalBlockStateHandlers::getSerializer()->serialize($this->plant->getStateId())->toNbt());
+			$nbt->setTag(self::TAG_PLANT_BLOCK, RuntimeBlockMapping::getInstance()->toStateData($this->plant->getStateId())->toNbt());
 		}
 	}
 }

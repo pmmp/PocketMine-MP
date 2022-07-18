@@ -45,16 +45,10 @@ class FenceGate extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->facing = $r->readHorizontalFacing();
-		$this->open = $r->readBool();
-		$this->inWall = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeHorizontalFacing($this->facing);
-		$w->writeBool($this->open);
-		$w->writeBool($this->inWall);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->bool($this->open);
+		$w->bool($this->inWall);
 	}
 
 	public function isOpen() : bool{ return $this->open; }

@@ -44,18 +44,11 @@ class Door extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 5; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->facing = $r->readHorizontalFacing();
-		$this->top = $r->readBool();
-		$this->hingeRight = $r->readBool();
-		$this->open = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeHorizontalFacing($this->facing);
-		$w->writeBool($this->top);
-		$w->writeBool($this->hingeRight);
-		$w->writeBool($this->open);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->bool($this->top);
+		$w->bool($this->hingeRight);
+		$w->bool($this->open);
 	}
 
 	public function readStateFromWorld() : Block{
