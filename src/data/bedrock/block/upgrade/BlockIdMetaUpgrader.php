@@ -30,7 +30,7 @@ use pocketmine\utils\BinaryStream;
 /**
  * Handles translating legacy 1.12 block ID/meta into modern blockstates.
  */
-final class LegacyBlockStateMapper{
+final class BlockIdMetaUpgrader{
 	/**
 	 * @param BlockStateData[][] $mappingTable
 	 * @phpstan-param array<string, array<int, BlockStateData>> $mappingTable

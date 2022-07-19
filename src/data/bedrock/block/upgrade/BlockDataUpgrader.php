@@ -30,7 +30,7 @@ use pocketmine\nbt\tag\CompoundTag;
 final class BlockDataUpgrader{
 
 	public function __construct(
-		private LegacyBlockStateMapper $legacyBlockStateMapper,
+		private BlockIdMetaUpgrader $legacyBlockStateMapper,
 		private BlockStateUpgrader $blockStateUpgrader
 	){}
 
