@@ -39,7 +39,8 @@ use function substr;
 use const SORT_STRING;
 
 if(count($argv) !== 2){
-	die("Provide a path to process");
+	fwrite(STDERR, "Provide a path to process\n");
+	exit(1);
 }
 
 /**
