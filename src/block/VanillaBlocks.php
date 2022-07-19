@@ -636,6 +636,7 @@ use function mb_strtolower;
  * @method static Opaque SOUL_SOIL()
  * @method static Torch SOUL_TORCH()
  * @method static Sponge SPONGE()
+ * @method static SporeBlossom SPORE_BLOSSOM()
  * @method static WoodenButton SPRUCE_BUTTON()
  * @method static WoodenDoor SPRUCE_DOOR()
  * @method static WoodenFence SPRUCE_FENCE()
@@ -1159,6 +1160,7 @@ final class VanillaBlocks{
 		self::registerBlocksR14();
 		self::registerBlocksR16();
 		self::registerBlocksR17();
+		self::registerBlocksR18();
 		self::registerMudBlocks();
 
 		self::registerCraftingTables();
@@ -1496,6 +1498,10 @@ final class VanillaBlocks{
 		self::register("cake_with_dyed_candle", new CakeWithDyedCandle(new BID(Ids::CAKE_WITH_DYED_CANDLE), "Cake With Dyed Candle", $cakeBreakInfo));
 
 		self::register("hanging_roots", new HangingRoots(new BID(Ids::HANGING_ROOTS), "Hanging Roots", BreakInfo::instant(ToolType::SHEARS, 1)));
+	}
+
+	private static function registerBlocksR18() : void{
+		self::register("spore_blossom", new SporeBlossom(new BID(Ids::SPORE_BLOSSOM), "Spore Blossom", BreakInfo::instant()));
 	}
 
 	private static function registerMudBlocks() : void{

@@ -73,6 +73,7 @@ final class TileFactory{
 		$this->register(ShulkerBox::class, ["ShulkerBox", "minecraft:shulker_box"]);
 		$this->register(Sign::class, ["Sign", "minecraft:sign"]);
 		$this->register(Smoker::class, ["Smoker", "minecraft:smoker"]);
+		$this->register(SporeBlossom::class, ["SporeBlossom", "minecraft:spore_blossom"]);
 		$this->register(Skull::class, ["Skull", "minecraft:skull"]);
 
 		//TODO: Campfire
