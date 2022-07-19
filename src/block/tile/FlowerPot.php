@@ -27,7 +27,9 @@ use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
+use pocketmine\data\bedrock\block\BlockStateNames;
 use pocketmine\data\SavedDataLoadingException;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ShortTag;
@@ -91,5 +93,9 @@ class FlowerPot extends Spawnable{
 		if($this->plant !== null){
 			$nbt->setTag(self::TAG_PLANT_BLOCK, RuntimeBlockMapping::getInstance()->toStateData($this->plant->getStateId())->toNbt());
 		}
+	}
+
+	public function getRenderUpdateBugWorkaroundStateProperties(Block $block) : array{
+		return [BlockStateNames::UPDATE_BIT => new ByteTag(1)];
 	}
 }
