@@ -30,7 +30,7 @@ use pocketmine\utils\BinaryStream;
 /**
  * Handles translating legacy 1.12 block ID/meta into modern blockstates.
  */
-final class LegacyBlockStateMapper{
+final class BlockIdMetaUpgrader{
 	/**
 	 * @param BlockStateData[][] $mappingTable
 	 * @phpstan-param array<string, array<int, BlockStateData>> $mappingTable
@@ -53,15 +53,22 @@ final class LegacyBlockStateMapper{
 	}
 
 	/**
+	 * Adds a mapping of legacy block numeric ID to modern string ID. This is used for upgrading blocks from pre-1.2.13
+	 * worlds (PM3). It's also needed for upgrading flower pot contents and falling blocks from PM4 worlds.
+	 */
+	public function addIntIdToStringIdMapping(int $intId, string $stringId) : void{
+		$this->legacyNumericIdMap->add($stringId, $intId);
+	}
+
+	/**
 	 * Adds a mapping of legacy block ID and meta to modern blockstate data. This may be needed for upgrading data from
 	 * stored custom blocks from older versions of PocketMine-MP.
 	 */
-	public function addMapping(string $stringId, int $intId, int $meta, BlockStateData $stateData) : void{
+	public function addIdMetaToStateMapping(string $stringId, int $meta, BlockStateData $stateData) : void{
 		if(isset($this->mappingTable[$stringId][$meta])){
 			throw new \InvalidArgumentException("A mapping for $stringId:$meta already exists");
 		}
 		$this->mappingTable[$stringId][$meta] = $stateData;
-		$this->legacyNumericIdMap->add($stringId, $intId);
 	}
 
 	public static function loadFromString(string $data, LegacyBlockIdToStringIdMap $idMap, BlockStateUpgrader $blockStateUpgrader) : self{

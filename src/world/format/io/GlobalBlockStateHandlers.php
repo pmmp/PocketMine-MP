@@ -31,10 +31,10 @@ use pocketmine\data\bedrock\block\CachingBlockStateSerializer;
 use pocketmine\data\bedrock\block\convert\BlockObjectToBlockStateSerializer;
 use pocketmine\data\bedrock\block\convert\BlockStateToBlockObjectDeserializer;
 use pocketmine\data\bedrock\block\upgrade\BlockDataUpgrader;
+use pocketmine\data\bedrock\block\upgrade\BlockIdMetaUpgrader;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgrader;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaUtils;
 use pocketmine\data\bedrock\block\upgrade\LegacyBlockIdToStringIdMap;
-use pocketmine\data\bedrock\block\upgrade\LegacyBlockStateMapper;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use Webmozart\PathUtil\Path;
 use function file_get_contents;
@@ -69,7 +69,7 @@ final class GlobalBlockStateHandlers{
 				BlockStateData::CURRENT_VERSION
 			));
 			self::$blockDataUpgrader = new BlockDataUpgrader(
-				LegacyBlockStateMapper::loadFromString(
+				BlockIdMetaUpgrader::loadFromString(
 					ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents(Path::join(
 						BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH,
 						'1.12.0_to_1.18.10_blockstate_map.bin'
