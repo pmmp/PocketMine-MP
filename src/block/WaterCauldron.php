@@ -89,6 +89,7 @@ final class WaterCauldron extends FillableCauldron{
 		$tile = $this->position->getWorld()->getTile($this->position);
 		assert($tile instanceof TileCauldron);
 		$tile->setCustomWaterColor($this->customWaterColor);
+		$tile->setPotionItem(null);
 	}
 
 	/** @return Color|null */
