@@ -23,7 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
+use pocketmine\block\Block;
+use pocketmine\block\FillableCauldron;
 use pocketmine\color\Color;
+use pocketmine\data\bedrock\block\BlockStateNames;
 use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\item\Item;
@@ -119,5 +122,14 @@ final class Cauldron extends Spawnable{
 		if($this->customWaterColor !== null){
 			$nbt->setInt(self::TAG_CUSTOM_COLOR, Binary::signInt($this->customWaterColor->toARGB()));
 		}
+	}
+
+	public function getRenderUpdateBugWorkaroundStateProperties(Block $block) : array{
+		if($block instanceof FillableCauldron){
+			$realFillLevel = $block->getFillLevel();
+			return [BlockStateNames::FILL_LEVEL => new IntTag($realFillLevel === FillableCauldron::MAX_FILL_LEVEL ? FillableCauldron::MIN_FILL_LEVEL : $realFillLevel + 1)];
+		}
+
+		return [];
 	}
 }
