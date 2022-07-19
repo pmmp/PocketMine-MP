@@ -907,7 +907,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::FLOWER_POT(), function() : Writer{
 			return Writer::create(Ids::FLOWER_POT)
-				->writeBool(StateNames::UPDATE_BIT, true); //to keep MCPE happy
+				->writeBool(StateNames::UPDATE_BIT, false); //to keep MCPE happy
 		});
 		$this->map(Blocks::FROSTED_ICE(), function(FrostedIce $block) : Writer{
 			return Writer::create(Ids::FROSTED_ICE)
