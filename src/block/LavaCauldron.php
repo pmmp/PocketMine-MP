@@ -33,6 +33,9 @@ use pocketmine\item\ItemTypeIds;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\sound\CauldronEmptyLavaSound;
+use pocketmine\world\sound\CauldronFillLavaSound;
+use pocketmine\world\sound\Sound;
 use function assert;
 
 final class LavaCauldron extends FillableCauldron{
@@ -48,6 +51,14 @@ final class LavaCauldron extends FillableCauldron{
 
 	public function getLightLevel() : int{
 		return 15;
+	}
+
+	public function getFillSound() : Sound{
+		return new CauldronFillLavaSound();
+	}
+
+	public function getEmptySound() : Sound{
+		return new CauldronEmptyLavaSound();
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{

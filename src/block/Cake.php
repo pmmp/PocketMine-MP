@@ -39,12 +39,8 @@ class Cake extends BaseCake{
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->bites = $r->readBoundedInt(3, 0, self::MAX_BITES);
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeBoundedInt(3, 0, self::MAX_BITES, $this->bites);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(3, 0, self::MAX_BITES, $this->bites);
 	}
 
 	/**

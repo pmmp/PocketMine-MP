@@ -41,14 +41,9 @@ class Barrel extends Opaque{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->setFacing($r->readFacing());
-		$this->setOpen($r->readBool());
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeFacing($this->getFacing());
-		$w->writeBool($this->isOpen());
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->facing($this->facing);
+		$w->bool($this->open);
 	}
 
 	public function isOpen() : bool{

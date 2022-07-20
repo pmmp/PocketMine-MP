@@ -33,12 +33,8 @@ trait SignLikeRotationTrait{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->rotation = $r->readBoundedInt(4, 0, 15);
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeBoundedInt(4, 0, 15, $this->rotation);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(4, 0, 15, $this->rotation);
 	}
 
 	public function getRotation() : int{ return $this->rotation; }

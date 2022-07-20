@@ -46,16 +46,10 @@ class RedstoneRepeater extends Flowable{
 
 	public function getRequiredStateDataBits() : int{ return 5; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->facing = $r->readHorizontalFacing();
-		$this->delay = $r->readBoundedInt(2, self::MIN_DELAY, self::MAX_DELAY);
-		$this->powered = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeHorizontalFacing($this->facing);
-		$w->writeBoundedInt(2, self::MIN_DELAY, self::MAX_DELAY, $this->delay);
-		$w->writeBool($this->powered);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->boundedInt(2, self::MIN_DELAY, self::MAX_DELAY, $this->delay);
+		$w->bool($this->powered);
 	}
 
 	public function getDelay() : int{ return $this->delay; }

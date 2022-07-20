@@ -46,29 +46,8 @@ class BrewingStand extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$result = [];
-		foreach([
-			BrewingStandSlot::EAST(),
-			BrewingStandSlot::NORTHWEST(),
-			BrewingStandSlot::SOUTHWEST(),
-		] as $member){
-			if($r->readBool()){
-				$result[$member->id()] = $member;
-			}
-		}
-
-		$this->setSlots($result);
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		foreach([
-			BrewingStandSlot::EAST(),
-			BrewingStandSlot::NORTHWEST(),
-			BrewingStandSlot::SOUTHWEST(),
-		] as $member){
-			$w->writeBool(isset($this->slots[$member->id()]));
-		}
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->brewingStandSlots($this->slots);
 	}
 
 	protected function recalculateCollisionBoxes() : array{

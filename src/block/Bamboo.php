@@ -58,16 +58,10 @@ class Bamboo extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->setLeafSize($r->readBoundedInt(2, self::NO_LEAVES, self::LARGE_LEAVES));
-		$this->setThick($r->readBool());
-		$this->setReady($r->readBool());
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeBoundedInt(2, self::NO_LEAVES, self::LARGE_LEAVES, $this->getLeafSize());
-		$w->writeBool($this->isThick());
-		$w->writeBool($this->isReady());
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(2, self::NO_LEAVES, self::LARGE_LEAVES, $this->leafSize);
+		$w->bool($this->thick);
+		$w->bool($this->ready);
 	}
 
 	public function isThick() : bool{ return $this->thick; }

@@ -39,6 +39,12 @@ use pocketmine\item\SplashPotion;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\sound\CauldronAddDyeSound;
+use pocketmine\world\sound\CauldronCleanItemSound;
+use pocketmine\world\sound\CauldronDyeItemSound;
+use pocketmine\world\sound\CauldronEmptyWaterSound;
+use pocketmine\world\sound\CauldronFillWaterSound;
+use pocketmine\world\sound\Sound;
 use function array_pop;
 use function assert;
 use function count;
@@ -83,6 +89,7 @@ final class WaterCauldron extends FillableCauldron{
 		$tile = $this->position->getWorld()->getTile($this->position);
 		assert($tile instanceof TileCauldron);
 		$tile->setCustomWaterColor($this->customWaterColor);
+		$tile->setPotionItem(null);
 	}
 
 	/** @return Color|null */
@@ -92,6 +99,14 @@ final class WaterCauldron extends FillableCauldron{
 	public function setCustomWaterColor(?Color $customWaterColor) : self{
 		$this->customWaterColor = $customWaterColor;
 		return $this;
+	}
+
+	public function getFillSound() : Sound{
+		return new CauldronFillWaterSound();
+	}
+
+	public function getEmptySound() : Sound{
+		return new CauldronEmptyWaterSound();
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
@@ -105,7 +120,7 @@ final class WaterCauldron extends FillableCauldron{
 			}) !== null && $newColor->toRGBA() !== $this->customWaterColor?->toRGBA()
 		){
 			$this->position->getWorld()->setBlock($this->position, $this->setCustomWaterColor($this->customWaterColor === null ? $newColor : Color::mix($this->customWaterColor, $newColor)));
-			//TODO: sounds
+			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronAddDyeSound());
 
 			$item->pop();
 		}elseif($item instanceof Potion || $item instanceof SplashPotion){ //TODO: lingering potion
@@ -123,14 +138,14 @@ final class WaterCauldron extends FillableCauldron{
 					ItemTypeIds::LEATHER_BOOTS => true,
 					default => false
 				} && $item->getCustomColor()?->toRGBA() !== $this->customWaterColor->toRGBA()){
-					//TODO: sounds
 					$item->setCustomColor($this->customWaterColor);
 					$this->position->getWorld()->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::DYE_ARMOR_USE_AMOUNT));
+					$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronDyeItemSound());
 				}
 			}elseif($item->getCustomColor() !== null){
-				//TODO: sounds
 				$item->clearCustomColor();
 				$this->position->getWorld()->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::CLEAN_ARMOR_USE_AMOUNT));
+				$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronCleanItemSound());
 			}
 		}elseif($item instanceof Banner){
 			$patterns = $item->getPatterns();
@@ -139,6 +154,7 @@ final class WaterCauldron extends FillableCauldron{
 				$item->setPatterns($patterns);
 
 				$this->position->getWorld()->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::CLEAN_BANNER_USE_AMOUNT));
+				$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronCleanItemSound());
 			}
 		}elseif($item instanceof ItemBlock && $item->getBlock()->getTypeId() === BlockTypeIds::DYED_SHULKER_BOX){
 			if($this->customWaterColor === null){
@@ -149,6 +165,7 @@ final class WaterCauldron extends FillableCauldron{
 				$returnedItems[] = $newItem;
 
 				$this->position->getWorld()->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::CLEAN_SHULKER_BOX_USE_AMOUNT));
+				$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronCleanItemSound());
 			}
 		}else{
 			match($item->getTypeId()){

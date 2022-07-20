@@ -66,6 +66,9 @@ abstract class LegacyToStringIdMap{
 
 	public function add(string $string, int $legacy) : void{
 		if(isset($this->legacyToString[$legacy])){
+			if($this->legacyToString[$legacy] === $string){
+				return;
+			}
 			throw new \InvalidArgumentException("Legacy ID $legacy is already mapped to string " . $this->legacyToString[$legacy]);
 		}
 		$this->legacyToString[$legacy] = $string;

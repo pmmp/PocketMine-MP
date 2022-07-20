@@ -69,7 +69,7 @@ final class Cauldron extends Transparent{
 	 */
 	private function fill(int $amount, FillableCauldron $result, Item $usedItem, Item $returnedItem, array &$returnedItems) : void{
 		$this->position->getWorld()->setBlock($this->position, $result->setFillLevel($amount));
-		//TODO: sounds
+		$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), $result->getFillSound());
 
 		$usedItem->pop();
 		$returnedItems[] = $returnedItem;

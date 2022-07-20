@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\block\BlockBreakInfo;
+use pocketmine\block\BlockIdentifier;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
-use pocketmine\data\runtime\RuntimeEnumDeserializer;
-use pocketmine\data\runtime\RuntimeEnumSerializer;
 use pocketmine\item\Axe;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
@@ -38,18 +38,18 @@ use pocketmine\world\sound\ItemUseOnBlockSound;
 
 trait CopperTrait{
 	private CopperOxidation $oxidation;
-	private bool $waxed;
+	private bool $waxed = false;
+
+	public function __construct(BlockIdentifier $identifier, string $name, BlockBreakInfo $breakInfo){
+		$this->oxidation = CopperOxidation::NONE();
+		parent::__construct($identifier, $name, $breakInfo);
+	}
 
 	public function getRequiredTypeDataBits() : int{ return 3; }
 
-	protected function decodeType(RuntimeDataReader $r) : void{
-		$this->oxidation = RuntimeEnumDeserializer::readCopperOxidation($r);
-		$this->waxed = $r->readBool();
-	}
-
-	protected function encodeType(RuntimeDataWriter $w) : void{
-		RuntimeEnumSerializer::writeCopperOxidation($w, $this->oxidation);
-		$w->writeBool($this->waxed);
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->copperOxidation($this->oxidation);
+		$w->bool($this->waxed);
 	}
 
 	public function getOxidation() : CopperOxidation{ return $this->oxidation; }

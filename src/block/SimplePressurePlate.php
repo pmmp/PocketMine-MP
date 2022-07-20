@@ -31,12 +31,8 @@ abstract class SimplePressurePlate extends PressurePlate{
 
 	public function getRequiredStateDataBits() : int{ return 1; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->pressed = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeBool($this->pressed);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->bool($this->pressed);
 	}
 
 	public function isPressed() : bool{ return $this->pressed; }

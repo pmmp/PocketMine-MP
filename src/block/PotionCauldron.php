@@ -29,6 +29,9 @@ use pocketmine\item\ItemTypeIds;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\sound\CauldronEmptyPotionSound;
+use pocketmine\world\sound\CauldronFillPotionSound;
+use pocketmine\world\sound\Sound;
 use function assert;
 
 final class PotionCauldron extends FillableCauldron{
@@ -62,6 +65,14 @@ final class PotionCauldron extends FillableCauldron{
 	public function setPotionItem(?Item $potionItem) : self{
 		$this->potionItem = $potionItem !== null ? (clone $potionItem)->setCount(1) : null;
 		return $this;
+	}
+
+	public function getFillSound() : Sound{
+		return new CauldronFillPotionSound();
+	}
+
+	public function getEmptySound() : Sound{
+		return new CauldronEmptyPotionSound();
 	}
 
 	/**
