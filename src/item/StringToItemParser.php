@@ -46,6 +46,15 @@ final class StringToItemParser extends StringToTParser{
 	private static function make() : self{
 		$result = new self;
 
+		self::registerDynamicBlocks($result);
+		self::registerBlocks($result);
+		self::registerDynamicItems($result);
+		self::registerItems($result);
+
+		return $result;
+	}
+
+	private static function registerDynamicBlocks(self $result) : void{
 		foreach(DyeColor::getAll() as $color){
 			$prefix = fn(string $name) => $color->name() . "_" . $name;
 			//wall and floor banner are the same item
@@ -63,9 +72,8 @@ final class StringToItemParser extends StringToTParser{
 			$result->registerBlock($prefix("stained_hardened_glass_pane"), fn() => Blocks::STAINED_HARDENED_GLASS_PANE()->setColor($color));
 			$result->registerBlock($prefix("wool"), fn() => Blocks::WOOL()->setColor($color));
 			$result->registerBlock($prefix("shulker_box"), fn() => Blocks::DYED_SHULKER_BOX()->setColor($color));
-
-			$result->register($prefix("dye"), fn() => Items::DYE()->setColor($color));
 		}
+
 		foreach(CoralType::getAll() as $coralType){
 			$prefix = fn(string $name) => $coralType->name() . "_" . $name;
 			$result->registerBlock($prefix("coral"), fn() => Blocks::CORAL()->setCoralType($coralType));
@@ -90,7 +98,9 @@ final class StringToItemParser extends StringToTParser{
 				$result->registerBlock($prefix . "cut_copper_slab", fn() => Blocks::CUT_COPPER_SLAB()->setOxidation($oxidation)->setWaxed($waxed));
 			}
 		}
+	}
 
+	private static function registerBlocks(self $result) : void{
 		$result->registerBlock("acacia_button", fn() => Blocks::ACACIA_BUTTON());
 		$result->registerBlock("acacia_door", fn() => Blocks::ACACIA_DOOR());
 		$result->registerBlock("acacia_door_block", fn() => Blocks::ACACIA_DOOR());
@@ -1085,6 +1095,17 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("workbench", fn() => Blocks::CRAFTING_TABLE());
 		$result->registerBlock("yellow_flower", fn() => Blocks::DANDELION());
 		$result->registerBlock("zombie_head", fn() => Blocks::MOB_HEAD()->setSkullType(SkullType::ZOMBIE()));
+	}
+
+	private static function registerDynamicItems(self $result) : void{
+		foreach(DyeColor::getAll() as $color){
+			$prefix = fn(string $name) => $color->name() . "_" . $name;
+
+			$result->register($prefix("dye"), fn() => Items::DYE()->setColor($color));
+		}
+	}
+
+	private static function registerItems(self $result) : void{
 
 		$result->register("acacia_boat", fn() => Items::ACACIA_BOAT());
 		$result->register("amethyst_shard", fn() => Items::AMETHYST_SHARD());
@@ -1466,8 +1487,6 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("writable_book", fn() => Items::WRITABLE_BOOK());
 		$result->register("written_book", fn() => Items::WRITTEN_BOOK());
 		$result->register("zombie_spawn_egg", fn() => Items::ZOMBIE_SPAWN_EGG());
-
-		return $result;
 	}
 
 	/** @phpstan-param \Closure(string $input) : Block $callback */
