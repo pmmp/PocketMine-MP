@@ -35,13 +35,14 @@ abstract class Stem extends Crops{
 
 	public function onRandomTick() : void{
 		if(mt_rand(0, 2) === 1){
+			$world = $this->position->getWorld();
 			if($this->age < self::MAX_AGE){
 				$block = clone $this;
 				++$block->age;
 				$ev = new BlockGrowEvent($this, $block);
 				$ev->call();
 				if(!$ev->isCancelled()){
-					$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
+					$world->setBlock($this->position, $ev->getNewState());
 				}
 			}else{
 				$grow = $this->getPlant();
@@ -57,7 +58,7 @@ abstract class Stem extends Crops{
 					$ev = new BlockGrowEvent($side, $grow);
 					$ev->call();
 					if(!$ev->isCancelled()){
-						$this->position->getWorld()->setBlock($side->position, $ev->getNewState());
+						$world->setBlock($side->position, $ev->getNewState());
 					}
 				}
 			}

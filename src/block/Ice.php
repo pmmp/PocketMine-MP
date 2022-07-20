@@ -51,11 +51,12 @@ class Ice extends Transparent{
 	}
 
 	public function onRandomTick() : void{
-		if($this->position->getWorld()->getHighestAdjacentBlockLight($this->position->x, $this->position->y, $this->position->z) >= 12){
+		$world = $this->position->getWorld();
+		if($world->getHighestAdjacentBlockLight($this->position->x, $this->position->y, $this->position->z) >= 12){
 			$ev = new BlockMeltEvent($this, VanillaBlocks::WATER());
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
+				$world->setBlock($this->position, $ev->getNewState());
 			}
 		}
 	}

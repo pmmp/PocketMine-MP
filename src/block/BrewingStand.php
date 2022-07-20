@@ -109,10 +109,11 @@ class BrewingStand extends Transparent{
 	}
 
 	public function onScheduledUpdate() : void{
-		$brewing = $this->position->getWorld()->getTile($this->position);
+		$world = $this->position->getWorld();
+		$brewing = $world->getTile($this->position);
 		if($brewing instanceof TileBrewingStand){
 			if($brewing->onUpdate()){
-				$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
+				$world->scheduleDelayedBlockUpdate($this->position, 1);
 			}
 
 			$changed = false;
@@ -125,7 +126,7 @@ class BrewingStand extends Transparent{
 			}
 
 			if($changed){
-				$this->position->getWorld()->setBlock($this->position, $this);
+				$world->setBlock($this->position, $this);
 			}
 		}
 	}

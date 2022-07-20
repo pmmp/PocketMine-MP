@@ -48,9 +48,10 @@ class BarrelInventory extends SimpleInventory implements BlockInventory{
 
 	protected function animateBlock(bool $isOpen) : void{
 		$holder = $this->getHolder();
-		$block = $holder->getWorld()->getBlock($holder);
+		$world = $holder->getWorld();
+		$block = $world->getBlock($holder);
 		if($block instanceof Barrel){
-			$holder->getWorld()->setBlock($holder, $block->setOpen($isOpen));
+			$world->setBlock($holder, $block->setOpen($isOpen));
 		}
 	}
 }

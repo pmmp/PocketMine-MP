@@ -51,13 +51,13 @@ class Chest extends Transparent{
 	}
 
 	public function onPostPlace() : void{
-		$tile = $this->position->getWorld()->getTile($this->position);
+		$world = $this->position->getWorld();
+		$tile = $world->getTile($this->position);
 		if($tile instanceof TileChest){
 			foreach([false, true] as $clockwise){
 				$side = Facing::rotateY($this->facing, $clockwise);
 				$c = $this->getSide($side);
 				if($c instanceof Chest && $c->isSameType($this) && $c->facing === $this->facing){
-					$world = $this->position->getWorld();
 					$pair = $world->getTile($c->position);
 					if($pair instanceof TileChest && !$pair->isPaired()){
 						[$left, $right] = $clockwise ? [$c, $this] : [$this, $c];
