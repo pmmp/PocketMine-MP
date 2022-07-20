@@ -194,13 +194,15 @@ final class WaterCauldron extends FillableCauldron{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getFillLevel() < self::MAX_FILL_LEVEL){
+		$hasCustomWaterColor = $this->customWaterColor !== null;
+		if($this->getFillLevel() < self::MAX_FILL_LEVEL || $hasCustomWaterColor){
 			$world = $this->position->getWorld();
 			if($world->getBlock($this->position->up())->getTypeId() === BlockTypeIds::WATER){
-				if($this->customWaterColor !== null){
+				if($hasCustomWaterColor){
 					//TODO: particles
 				}
 				$world->setBlock($this->position, $this->setCustomWaterColor(null)->setFillLevel(FillableCauldron::MAX_FILL_LEVEL));
+				$world->addSound($this->position->add(0.5, 0.5, 0.5), $this->getFillSound());
 			}
 		}
 	}
