@@ -25,6 +25,7 @@ namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\Bamboo;
 use pocketmine\block\Block;
+use pocketmine\block\ChorusFlower;
 use pocketmine\block\Light;
 use pocketmine\block\Slab;
 use pocketmine\block\Stair;
@@ -173,6 +174,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::CHISELED_DEEPSLATE, fn() => Blocks::CHISELED_DEEPSLATE());
 		$this->map(Ids::CHISELED_NETHER_BRICKS, fn() => Blocks::CHISELED_NETHER_BRICKS());
 		$this->map(Ids::CHISELED_POLISHED_BLACKSTONE, fn() => Blocks::CHISELED_POLISHED_BLACKSTONE());
+		$this->map(Ids::CHORUS_PLANT, fn() => Blocks::CHORUS_PLANT());
 		$this->map(Ids::CLAY, fn() => Blocks::CLAY());
 		$this->map(Ids::COAL_BLOCK, fn() => Blocks::COAL());
 		$this->map(Ids::COAL_ORE, fn() => Blocks::COAL_ORE());
@@ -536,6 +538,10 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::CHEST, function(Reader $in) : Block{
 			return Blocks::CHEST()
 				->setFacing($in->readHorizontalFacing());
+		});
+		$this->map(Ids::CHORUS_FLOWER, function(Reader $in) : Block{
+			return Blocks::CHORUS_FLOWER()
+				->setAge($in->readBoundedInt(StateNames::AGE, ChorusFlower::MIN_AGE, ChorusFlower::MAX_AGE));
 		});
 		$this->mapSlab(Ids::COBBLED_DEEPSLATE_SLAB, Ids::COBBLED_DEEPSLATE_DOUBLE_SLAB, fn() => Blocks::COBBLED_DEEPSLATE_SLAB());
 		$this->mapStairs(Ids::COBBLED_DEEPSLATE_STAIRS, fn() => Blocks::COBBLED_DEEPSLATE_STAIRS());

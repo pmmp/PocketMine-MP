@@ -699,6 +699,8 @@ final class BlockTypeIds{
 	public const LAVA_CAULDRON = 10672;
 	public const POTION_CAULDRON = 10673;
 	public const POWDER_SNOW_CAULDRON = 10674;
+	public const CHORUS_FLOWER = 10675;
+	public const CHORUS_PLANT = 10676;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10675;
+	public const FIRST_UNUSED_BLOCK_ID = 10676;
 }

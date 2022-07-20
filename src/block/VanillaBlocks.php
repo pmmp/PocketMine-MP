@@ -154,6 +154,8 @@ use function mb_strtolower;
  * @method static Opaque CHISELED_RED_SANDSTONE()
  * @method static Opaque CHISELED_SANDSTONE()
  * @method static Opaque CHISELED_STONE_BRICKS()
+ * @method static ChorusFlower CHORUS_FLOWER()
+ * @method static ChorusPlant CHORUS_PLANT()
  * @method static Clay CLAY()
  * @method static Coal COAL()
  * @method static CoalOre COAL_ORE()
@@ -1169,6 +1171,7 @@ final class VanillaBlocks{
 		self::registerMudBlocks();
 
 		self::registerCraftingTables();
+		self::registerChorusBlocks();
 		self::registerOres();
 		self::registerWoodenBlocks();
 		self::registerCauldronBlocks();
@@ -1373,6 +1376,12 @@ final class VanillaBlocks{
 		$craftingBlockBreakInfo = new BreakInfo(2.5, ToolType::AXE);
 		self::register("cartography_table", new CartographyTable(new BID(Ids::CARTOGRAPHY_TABLE), "Cartography Table", $craftingBlockBreakInfo));
 		self::register("smithing_table", new SmithingTable(new BID(Ids::SMITHING_TABLE), "Smithing Table", $craftingBlockBreakInfo));
+	}
+
+	private static function registerChorusBlocks() : void{
+		$chorusBlockBreakInfo = new BreakInfo(0.4, ToolType::AXE);
+		self::register("chorus_plant", new ChorusPlant(new BID(Ids::CHORUS_PLANT), "Chorus Plant", $chorusBlockBreakInfo));
+		self::register("chorus_flower", new ChorusFlower(new BID(Ids::CHORUS_FLOWER), "Chorus Flower", $chorusBlockBreakInfo));
 	}
 
 	private static function registerBlocksR13() : void{
