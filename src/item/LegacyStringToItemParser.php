@@ -118,7 +118,13 @@ final class LegacyStringToItemParser{
 			throw new LegacyStringToItemParserException("Unable to parse \"" . $b[1] . "\" from \"" . $input . "\" as a valid meta value");
 		}
 
-		$legacyId = $this->map[strtolower($b[0])] ?? null;
+		$lower = strtolower($b[0]);
+		if($lower === "0" || $lower === "air"){
+			//item deserializer doesn't recognize air items since they aren't supposed to exist
+			return VanillaItems::AIR();
+		}
+
+		$legacyId = $this->map[$lower] ?? null;
 		if($legacyId === null){
 			throw new LegacyStringToItemParserException("Unable to resolve \"" . $input . "\" to a valid item");
 		}
