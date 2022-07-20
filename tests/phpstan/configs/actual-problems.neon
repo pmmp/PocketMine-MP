@@ -106,6 +106,21 @@ parameters:
 			path: ../../../src/block/Cactus.php
 
 		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/block/ChorusFlower.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/block/ChorusFlower.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/block/ChorusFlower.php
+
+		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getRealBlockSkyLightAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/block/DaylightSensor.php
