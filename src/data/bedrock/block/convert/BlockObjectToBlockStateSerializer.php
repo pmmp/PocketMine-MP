@@ -68,6 +68,7 @@ use pocketmine\block\EndPortalFrame;
 use pocketmine\block\EndRod;
 use pocketmine\block\Farmland;
 use pocketmine\block\FenceGate;
+use pocketmine\block\FillableCauldron;
 use pocketmine\block\Fire;
 use pocketmine\block\FloorBanner;
 use pocketmine\block\FloorCoralFan;
@@ -176,6 +177,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 
 	public function __construct(){
 		$this->registerCandleSerializers();
+		$this->registerCauldronSerializers();
 		$this->registerSimpleSerializers();
 		$this->registerSerializers();
 	}
@@ -290,6 +292,14 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 			DyeColor::YELLOW() => Ids::YELLOW_CANDLE_CAKE,
 			default => throw new AssumptionFailedError("Unhandled DyeColor " . $block->getColor()->name())
 		})->writeBool(StateNames::LIT, $block->isLit()));
+	}
+
+	private function registerCauldronSerializers() : void{
+		$this->map(Blocks::CAULDRON(), fn() => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, 0, new Writer(Ids::CAULDRON)));
+		$this->map(Blocks::LAVA_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_LAVA, $b->getFillLevel(), new Writer(Ids::LAVA_CAULDRON)));
+		//potion cauldrons store their real information in the block actor data
+		$this->map(Blocks::POTION_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, $b->getFillLevel(), new Writer(Ids::CAULDRON)));
+		$this->map(Blocks::WATER_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, $b->getFillLevel(), new Writer(Ids::CAULDRON)));
 	}
 
 	private function registerSimpleSerializers() : void{
