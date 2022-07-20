@@ -96,4 +96,13 @@ final class PotionCauldron extends FillableCauldron{
 		};
 		return true;
 	}
+
+	public function onNearbyBlockChange() : void{
+		$world = $this->position->getWorld();
+		if($world->getBlock($this->position->up())->getTypeId() === BlockTypeIds::WATER){
+			$cauldron = VanillaBlocks::WATER_CAULDRON()->setFillLevel(FillableCauldron::MAX_FILL_LEVEL);
+			$world->setBlock($this->position, $cauldron);
+			$world->addSound($this->position->add(0.5, 0.5, 0.5), $cauldron->getFillSound());
+		}
+	}
 }
