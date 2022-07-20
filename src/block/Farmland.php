@@ -78,16 +78,17 @@ class Farmland extends Transparent{
 	}
 
 	public function onRandomTick() : void{
+		$world = $this->position->getWorld();
 		if(!$this->canHydrate()){
 			if($this->wetness > 0){
 				$this->wetness--;
-				$this->position->getWorld()->setBlock($this->position, $this, false);
+				$world->setBlock($this->position, $this, false);
 			}else{
-				$this->position->getWorld()->setBlock($this->position, VanillaBlocks::DIRT());
+				$world->setBlock($this->position, VanillaBlocks::DIRT());
 			}
 		}elseif($this->wetness < self::MAX_WETNESS){
 			$this->wetness = self::MAX_WETNESS;
-			$this->position->getWorld()->setBlock($this->position, $this, false);
+			$world->setBlock($this->position, $this, false);
 		}
 	}
 

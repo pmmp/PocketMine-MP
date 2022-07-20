@@ -144,10 +144,11 @@ class Block{
 	}
 
 	public function writeStateToWorld() : void{
-		$this->position->getWorld()->getOrLoadChunkAtPosition($this->position)->setFullBlock($this->position->x & Chunk::COORD_MASK, $this->position->y, $this->position->z & Chunk::COORD_MASK, $this->getFullId());
+		$world = $this->position->getWorld();
+		$world->getOrLoadChunkAtPosition($this->position)->setFullBlock($this->position->x & Chunk::COORD_MASK, $this->position->y, $this->position->z & Chunk::COORD_MASK, $this->getFullId());
 
 		$tileType = $this->idInfo->getTileClass();
-		$oldTile = $this->position->getWorld()->getTile($this->position);
+		$oldTile = $world->getTile($this->position);
 		if($oldTile !== null){
 			if($tileType === null || !($oldTile instanceof $tileType)){
 				$oldTile->close();
@@ -161,8 +162,8 @@ class Block{
 			 * @var Tile $tile
 			 * @see Tile::__construct()
 			 */
-			$tile = new $tileType($this->position->getWorld(), $this->position->asVector3());
-			$this->position->getWorld()->addTile($tile);
+			$tile = new $tileType($world, $this->position->asVector3());
+			$world->addTile($tile);
 		}
 	}
 
@@ -229,10 +230,11 @@ class Block{
 	 * Do the actions needed so the block is broken with the Item
 	 */
 	public function onBreak(Item $item, ?Player $player = null) : bool{
-		if(($t = $this->position->getWorld()->getTile($this->position)) !== null){
+		$world = $this->position->getWorld();
+		if(($t = $world->getTile($this->position)) !== null){
 			$t->onBlockDestroyed();
 		}
-		$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
+		$world->setBlock($this->position, VanillaBlocks::AIR());
 		return true;
 	}
 

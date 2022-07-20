@@ -51,25 +51,26 @@ class Sugarcane extends Flowable{
 
 	private function grow() : bool{
 		$grew = false;
+		$world = $this->position->getWorld();
 		for($y = 1; $y < 3; ++$y){
-			if(!$this->position->getWorld()->isInWorld($this->position->x, $this->position->y + $y, $this->position->z)){
+			if(!$world->isInWorld($this->position->x, $this->position->y + $y, $this->position->z)){
 				break;
 			}
-			$b = $this->position->getWorld()->getBlockAt($this->position->x, $this->position->y + $y, $this->position->z);
+			$b = $world->getBlockAt($this->position->x, $this->position->y + $y, $this->position->z);
 			if($b->getId() === BlockLegacyIds::AIR){
 				$ev = new BlockGrowEvent($b, VanillaBlocks::SUGARCANE());
 				$ev->call();
 				if($ev->isCancelled()){
 					break;
 				}
-				$this->position->getWorld()->setBlock($b->position, $ev->getNewState());
+				$world->setBlock($b->position, $ev->getNewState());
 				$grew = true;
 			}else{
 				break;
 			}
 		}
 		$this->age = 0;
-		$this->position->getWorld()->setBlock($this->position, $this);
+		$world->setBlock($this->position, $this);
 		return $grew;
 	}
 
