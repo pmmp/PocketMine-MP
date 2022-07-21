@@ -26,6 +26,7 @@ namespace pocketmine\world\format\io;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateDeserializer;
 use pocketmine\data\bedrock\block\BlockStateSerializer;
+use pocketmine\data\bedrock\block\BlockTypeNames;
 use pocketmine\data\bedrock\block\CachingBlockStateDeserializer;
 use pocketmine\data\bedrock\block\CachingBlockStateSerializer;
 use pocketmine\data\bedrock\block\convert\BlockObjectToBlockStateSerializer;
@@ -53,6 +54,8 @@ final class GlobalBlockStateHandlers{
 	private static ?BlockStateDeserializer $blockStateDeserializer = null;
 
 	private static ?BlockDataUpgrader $blockDataUpgrader = null;
+
+	private static ?BlockStateData $unknownBlockStateData = null;
 
 	public static function getDeserializer() : BlockStateDeserializer{
 		return self::$blockStateDeserializer ??= new CachingBlockStateDeserializer(new BlockStateToBlockObjectDeserializer());
@@ -82,5 +85,9 @@ final class GlobalBlockStateHandlers{
 		}
 
 		return self::$blockDataUpgrader;
+	}
+
+	public static function getUnknownBlockStateData() : BlockStateData{
+		return self::$unknownBlockStateData ??= new BlockStateData(BlockTypeNames::INFO_UPDATE, [], BlockStateData::CURRENT_VERSION);
 	}
 }

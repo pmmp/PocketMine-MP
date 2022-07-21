@@ -23,8 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
-use pocketmine\data\bedrock\block\BlockStateData;
-use pocketmine\data\bedrock\block\BlockTypeNames;
+use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\format\PalettedBlockArray;
@@ -62,10 +61,16 @@ abstract class BaseWorldProvider implements WorldProvider{
 			$newStateData = $blockDataUpgrader->upgradeIntIdMeta($legacyIdMeta >> 4, $legacyIdMeta & 0xf);
 			if($newStateData === null){
 				//TODO: remember data for unknown states so we can implement them later
-				$newStateData = new BlockStateData(BlockTypeNames::INFO_UPDATE, [], BlockStateData::CURRENT_VERSION);
+				$newStateData = GlobalBlockStateHandlers::getUnknownBlockStateData();
 			}
 
-			$newPalette[$k] = $blockStateDeserializer->deserialize($newStateData);
+			try{
+				$newPalette[$k] = $blockStateDeserializer->deserialize($newStateData);
+			}catch(BlockStateDeserializeException){
+				//TODO: this needs to be logged
+				//TODO: maybe we can remember unknown states for later saving instead of discarding them and destroying maps...
+				$newPalette[$k] = $blockStateDeserializer->deserialize(GlobalBlockStateHandlers::getUnknownBlockStateData());
+			}
 		}
 
 		//TODO: this is sub-optimal since it reallocates the offset table multiple times
