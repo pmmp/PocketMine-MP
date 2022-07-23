@@ -92,9 +92,16 @@ class Sugarcane extends Flowable{
 		return false;
 	}
 
+	private function canBeSupportedBy(Block $block) : bool{
+		return
+			$block->hasTypeTag(BlockTypeTags::MUD) ||
+			$block->hasTypeTag(BlockTypeTags::DIRT) ||
+			$block->hasTypeTag(BlockTypeTags::SAND);
+	}
+
 	public function onNearbyBlockChange() : void{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->isTransparent() && !$down->isSameType($this)){
+		if(!$down->isSameType($this) && !$this->canBeSupportedBy($down)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -118,7 +125,7 @@ class Sugarcane extends Flowable{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->isSameType($this)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif($down->getTypeId() === BlockTypeIds::GRASS || $down->getTypeId() === BlockTypeIds::DIRT || $down->getTypeId() === BlockTypeIds::SAND || $down->getTypeId() === BlockTypeIds::RED_SAND || $down->getTypeId() === BlockTypeIds::PODZOL){
+		}elseif($this->canBeSupportedBy($down)){
 			foreach(Facing::HORIZONTAL as $side){
 				if($down->getSide($side) instanceof Water){
 					return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);

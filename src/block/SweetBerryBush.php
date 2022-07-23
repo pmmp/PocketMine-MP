@@ -73,8 +73,8 @@ class SweetBerryBush extends Flowable{
 	}
 
 	protected function canBeSupportedBy(Block $block) : bool{
-		$id = $block->getTypeId();
-		return $id === BlockTypeIds::GRASS || $id === BlockTypeIds::DIRT || $id === BlockTypeIds::PODZOL;
+		return $block->getTypeId() !== BlockTypeIds::FARMLAND && //bedrock-specific thing (bug?)
+			($block->hasTypeTag(BlockTypeTags::DIRT) || $block->hasTypeTag(BlockTypeTags::MUD));
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

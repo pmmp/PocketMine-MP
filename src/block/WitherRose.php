@@ -36,18 +36,15 @@ use pocketmine\world\BlockTransaction;
 class WitherRose extends Flowable{
 
 	private function canBeSupportedBy(Block $block) : bool{
-		return match($block->getTypeId()){
-			BlockTypeIds::GRASS,
-			BlockTypeIds::DIRT,
-			BlockTypeIds::FARMLAND,
-			BlockTypeIds::MYCELIUM,
-			BlockTypeIds::PODZOL,
-			BlockTypeIds::NETHERRACK,
-			BlockTypeIds::SOUL_SAND,
-			BlockTypeIds::SOUL_SOIL => true,
-			//TODO: moss, mud, rooted dirt
-			default => false
-		};
+		return
+			$block->hasTypeTag(BlockTypeTags::DIRT) ||
+			$block->hasTypeTag(BlockTypeTags::MUD) ||
+			match($block->getTypeId()){
+				BlockTypeIds::NETHERRACK,
+				BlockTypeIds::SOUL_SAND,
+				BlockTypeIds::SOUL_SOIL => true,
+				default => false
+			};
 	}
 
 	public function onNearbyBlockChange() : void{

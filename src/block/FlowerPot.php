@@ -79,14 +79,7 @@ class FlowerPot extends Flowable{
 	}
 
 	private function isValidPlant(Block $block) : bool{
-		return
-			$block instanceof Cactus ||
-			$block instanceof DeadBush ||
-			$block instanceof Flower ||
-			$block instanceof RedMushroom ||
-			$block instanceof Sapling ||
-			($block instanceof TallGrass && $block->getTypeId() === BlockTypeIds::LARGE_FERN);
-		//TODO: bamboo
+		return $block->hasTypeTag(BlockTypeTags::POTTABLE_PLANTS);
 	}
 
 	/**

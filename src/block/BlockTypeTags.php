@@ -23,27 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use function array_fill_keys;
-use function array_keys;
+final class BlockTypeTags{
 
-final class BlockTypeInfo{
-	/**
-	 * @var true[]
-	 * @phpstan-var array<string, true>
-	 */
-	private array $typeTags;
-
-	public function __construct(
-		private BlockBreakInfo $breakInfo,
-		array $typeTags = []
-	){
-		$this->typeTags = array_fill_keys($typeTags, true);
-	}
-
-	public function getBreakInfo() : BlockBreakInfo{ return $this->breakInfo; }
-
-	/** @return string[] */
-	public function getTypeTags() : array{ return array_keys($this->typeTags); }
-
-	public function hasTypeTag(string $tag) : bool{ return isset($this->typeTags[$tag]); }
+	public const DIRT = "dirt";
+	public const MUD = "mud";
+	public const SAND = "sand";
+	public const POTTABLE_PLANTS = "pottable";
 }

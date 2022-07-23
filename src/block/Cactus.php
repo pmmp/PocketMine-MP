@@ -81,10 +81,13 @@ class Cactus extends Transparent{
 		return true;
 	}
 
+	private function canBeSupportedBy(Block $block) : bool{
+		return $block->isSameType($this) || $block->hasTypeTag(BlockTypeTags::SAND);
+	}
+
 	public function onNearbyBlockChange() : void{
-		$down = $this->getSide(Facing::DOWN);
 		$world = $this->position->getWorld();
-		if($down->getTypeId() !== BlockTypeIds::SAND && $down->getTypeId() !== BlockTypeIds::RED_SAND && !$down->isSameType($this)){
+		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
 			$world->useBreakOn($this->position);
 		}else{
 			foreach(Facing::HORIZONTAL as $side){
@@ -131,8 +134,7 @@ class Cactus extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$down = $this->getSide(Facing::DOWN);
-		if($down->getTypeId() === BlockTypeIds::SAND || $down->getTypeId() === BlockTypeIds::RED_SAND || $down->isSameType($this)){
+		if($this->canBeSupportedBy($this->getSide(Facing::DOWN))){
 			foreach(Facing::HORIZONTAL as $side){
 				if($this->getSide($side)->isSolid()){
 					return false;

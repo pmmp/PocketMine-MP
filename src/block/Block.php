@@ -56,7 +56,7 @@ class Block{
 
 	protected BlockIdentifier $idInfo;
 	protected string $fallbackName;
-	protected BlockBreakInfo $breakInfo;
+	protected BlockTypeInfo $typeInfo;
 	protected Position $position;
 
 	/** @var AxisAlignedBB[]|null */
@@ -68,7 +68,7 @@ class Block{
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->idInfo = $idInfo;
 		$this->fallbackName = $name;
-		$this->breakInfo = $typeInfo->getBreakInfo();
+		$this->typeInfo = $typeInfo;
 		$this->position = new Position(0, 0, 0, null);
 	}
 
@@ -238,6 +238,25 @@ class Block{
 	}
 
 	/**
+	 * @return string[]
+	 */
+	public function getTypeTags() : array{
+		return $this->typeInfo->getTypeTags();
+	}
+
+	/**
+	 * Returns whether this block type has the given type tag. Type tags are used as a dynamic way to tag blocks as
+	 * having certain properties, allowing type checks which are more dynamic than hardcoding a bunch of IDs or a bunch
+	 * of instanceof checks.
+	 *
+	 * For example, grass blocks, dirt, farmland, podzol and mycelium are all dirt-like blocks, and support the
+	 * placement of blocks like flowers, so they have a common tag which allows them to be identified as such.
+	 */
+	public function hasTypeTag(string $tag) : bool{
+		return $this->typeInfo->hasTypeTag($tag);
+	}
+
+	/**
 	 * AKA: Block->isPlaceable
 	 */
 	public function canBePlaced() : bool{
@@ -268,7 +287,7 @@ class Block{
 	 * Returns an object containing information about the destruction requirements of this block.
 	 */
 	public function getBreakInfo() : BlockBreakInfo{
-		return $this->breakInfo;
+		return $this->typeInfo->getBreakInfo();
 	}
 
 	/**
@@ -412,7 +431,7 @@ class Block{
 	 * @return Item[]
 	 */
 	public function getDrops(Item $item) : array{
-		if($this->breakInfo->isToolCompatible($item)){
+		if($this->getBreakInfo()->isToolCompatible($item)){
 			if($this->isAffectedBySilkTouch() && $item->hasEnchantment(VanillaEnchantments::SILK_TOUCH())){
 				return $this->getSilkTouchDrops($item);
 			}
@@ -454,7 +473,7 @@ class Block{
 	 * Returns how much XP will be dropped by breaking this block with the given item.
 	 */
 	public function getXpDropForTool(Item $item) : int{
-		if($item->hasEnchantment(VanillaEnchantments::SILK_TOUCH()) || !$this->breakInfo->isToolCompatible($item)){
+		if($item->hasEnchantment(VanillaEnchantments::SILK_TOUCH()) || !$this->getBreakInfo()->isToolCompatible($item)){
 			return 0;
 		}
 

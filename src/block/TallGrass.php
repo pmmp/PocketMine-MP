@@ -38,8 +38,8 @@ class TallGrass extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$down = $this->getSide(Facing::DOWN)->getTypeId();
-		if($down === BlockTypeIds::GRASS || $down === BlockTypeIds::DIRT){
+		$down = $this->getSide(Facing::DOWN);
+		if($down->hasTypeTag(BlockTypeTags::DIRT) || $down->hasTypeTag(BlockTypeTags::MUD)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
@@ -47,7 +47,8 @@ class TallGrass extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->isTransparent()){ //Replace with common break method
+		$down = $this->getSide(Facing::DOWN);
+		if($down->hasTypeTag(BlockTypeTags::DIRT) || $down->hasTypeTag(BlockTypeTags::MUD)){ //Replace with common break method
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}

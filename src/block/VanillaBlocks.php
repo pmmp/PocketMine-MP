@@ -28,6 +28,7 @@ use pocketmine\block\BlockIdentifier as BID;
 use pocketmine\block\BlockToolType as ToolType;
 use pocketmine\block\BlockTypeIds as Ids;
 use pocketmine\block\BlockTypeInfo as Info;
+use pocketmine\block\BlockTypeTags as Tags;
 use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\tile\Barrel as TileBarrel;
 use pocketmine\block\tile\Beacon as TileBeacon;
@@ -750,7 +751,7 @@ final class VanillaBlocks{
 				}
 				return parent::getBreakTime($item);
 			}
-		})));
+		}, [Tags::POTTABLE_PLANTS])));
 		self::register("bamboo_sapling", new BambooSapling(new BID(Ids::BAMBOO_SAPLING), "Bamboo Sapling", new Info(BreakInfo::instant())));
 
 		$bannerBreakInfo = new Info(BreakInfo::axe(1.0));
@@ -773,8 +774,8 @@ final class VanillaBlocks{
 		self::register("brick_stairs", new Stair(new BID(Ids::BRICK_STAIRS), "Brick Stairs", $bricksBreakInfo));
 		self::register("bricks", new Opaque(new BID(Ids::BRICKS), "Bricks", $bricksBreakInfo));
 
-		self::register("brown_mushroom", new BrownMushroom(new BID(Ids::BROWN_MUSHROOM), "Brown Mushroom", new Info(BreakInfo::instant())));
-		self::register("cactus", new Cactus(new BID(Ids::CACTUS), "Cactus", new Info(new BreakInfo(0.4))));
+		self::register("brown_mushroom", new BrownMushroom(new BID(Ids::BROWN_MUSHROOM), "Brown Mushroom", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
+		self::register("cactus", new Cactus(new BID(Ids::CACTUS), "Cactus", new Info(new BreakInfo(0.4), [Tags::POTTABLE_PLANTS])));
 		self::register("cake", new Cake(new BID(Ids::CAKE), "Cake", new Info(new BreakInfo(0.5))));
 		self::register("carrots", new Carrot(new BID(Ids::CARROTS), "Carrot Block", new Info(BreakInfo::instant())));
 
@@ -794,11 +795,11 @@ final class VanillaBlocks{
 		self::register("coral_block", new CoralBlock(new BID(Ids::CORAL_BLOCK), "Coral Block", new Info(BreakInfo::pickaxe(7.0, ToolTier::WOOD()))));
 		self::register("crafting_table", new CraftingTable(new BID(Ids::CRAFTING_TABLE), "Crafting Table", new Info(BreakInfo::axe(2.5))));
 		self::register("daylight_sensor", new DaylightSensor(new BID(Ids::DAYLIGHT_SENSOR, TileDaylightSensor::class), "Daylight Sensor", new Info(BreakInfo::axe(0.2))));
-		self::register("dead_bush", new DeadBush(new BID(Ids::DEAD_BUSH), "Dead Bush", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
+		self::register("dead_bush", new DeadBush(new BID(Ids::DEAD_BUSH), "Dead Bush", new Info(BreakInfo::instant(ToolType::SHEARS, 1), [Tags::POTTABLE_PLANTS])));
 		self::register("detector_rail", new DetectorRail(new BID(Ids::DETECTOR_RAIL), "Detector Rail", $railBreakInfo));
 
 		self::register("diamond", new Opaque(new BID(Ids::DIAMOND), "Diamond Block", new Info(BreakInfo::pickaxe(5.0, ToolTier::IRON(), 30.0))));
-		self::register("dirt", new Dirt(new BID(Ids::DIRT), "Dirt", new Info(BreakInfo::shovel(0.5))));
+		self::register("dirt", new Dirt(new BID(Ids::DIRT), "Dirt", new Info(BreakInfo::shovel(0.5), [Tags::DIRT])));
 		self::register("sunflower", new DoublePlant(new BID(Ids::SUNFLOWER), "Sunflower", new Info(BreakInfo::instant())));
 		self::register("lilac", new DoublePlant(new BID(Ids::LILAC), "Lilac", new Info(BreakInfo::instant())));
 		self::register("rose_bush", new DoublePlant(new BID(Ids::ROSE_BUSH), "Rose Bush", new Info(BreakInfo::instant())));
@@ -818,22 +819,24 @@ final class VanillaBlocks{
 		self::register("end_stone_brick_stairs", new Stair(new BID(Ids::END_STONE_BRICK_STAIRS), "End Stone Brick Stairs", $endBrickBreakInfo));
 
 		self::register("ender_chest", new EnderChest(new BID(Ids::ENDER_CHEST, TileEnderChest::class), "Ender Chest", new Info(BreakInfo::pickaxe(22.5, ToolTier::WOOD(), 3000.0))));
-		self::register("farmland", new Farmland(new BID(Ids::FARMLAND), "Farmland", new Info(BreakInfo::shovel(0.6))));
+		self::register("farmland", new Farmland(new BID(Ids::FARMLAND), "Farmland", new Info(BreakInfo::shovel(0.6), [Tags::DIRT])));
 		self::register("fire", new Fire(new BID(Ids::FIRE), "Fire Block", new Info(BreakInfo::instant())));
 		self::register("fletching_table", new FletchingTable(new BID(Ids::FLETCHING_TABLE), "Fletching Table", new Info(BreakInfo::axe(2.5, null, 2.5))));
-		self::register("dandelion", new Flower(new BID(Ids::DANDELION), "Dandelion", new Info(BreakInfo::instant())));
-		self::register("poppy", new Flower(new BID(Ids::POPPY), "Poppy", new Info(BreakInfo::instant())));
-		self::register("allium", new Flower(new BID(Ids::ALLIUM), "Allium", new Info(BreakInfo::instant())));
-		self::register("azure_bluet", new Flower(new BID(Ids::AZURE_BLUET), "Azure Bluet", new Info(BreakInfo::instant())));
-		self::register("blue_orchid", new Flower(new BID(Ids::BLUE_ORCHID), "Blue Orchid", new Info(BreakInfo::instant())));
-		self::register("cornflower", new Flower(new BID(Ids::CORNFLOWER), "Cornflower", new Info(BreakInfo::instant())));
-		self::register("lily_of_the_valley", new Flower(new BID(Ids::LILY_OF_THE_VALLEY), "Lily of the Valley", new Info(BreakInfo::instant())));
-		self::register("orange_tulip", new Flower(new BID(Ids::ORANGE_TULIP), "Orange Tulip", new Info(BreakInfo::instant())));
-		self::register("oxeye_daisy", new Flower(new BID(Ids::OXEYE_DAISY), "Oxeye Daisy", new Info(BreakInfo::instant())));
-		self::register("pink_tulip", new Flower(new BID(Ids::PINK_TULIP), "Pink Tulip", new Info(BreakInfo::instant())));
-		self::register("red_tulip", new Flower(new BID(Ids::RED_TULIP), "Red Tulip", new Info(BreakInfo::instant())));
-		self::register("white_tulip", new Flower(new BID(Ids::WHITE_TULIP), "White Tulip", new Info(BreakInfo::instant())));
-		self::register("flower_pot", new FlowerPot(new BID(Ids::FLOWER_POT, TileFlowerPot::class), "Flower Pot", new Info(BreakInfo::instant())));
+
+		$flowerTypeInfo = new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS]);
+		self::register("dandelion", new Flower(new BID(Ids::DANDELION), "Dandelion", $flowerTypeInfo));
+		self::register("poppy", new Flower(new BID(Ids::POPPY), "Poppy", $flowerTypeInfo));
+		self::register("allium", new Flower(new BID(Ids::ALLIUM), "Allium", $flowerTypeInfo));
+		self::register("azure_bluet", new Flower(new BID(Ids::AZURE_BLUET), "Azure Bluet", $flowerTypeInfo));
+		self::register("blue_orchid", new Flower(new BID(Ids::BLUE_ORCHID), "Blue Orchid", $flowerTypeInfo));
+		self::register("cornflower", new Flower(new BID(Ids::CORNFLOWER), "Cornflower", $flowerTypeInfo));
+		self::register("lily_of_the_valley", new Flower(new BID(Ids::LILY_OF_THE_VALLEY), "Lily of the Valley", $flowerTypeInfo));
+		self::register("orange_tulip", new Flower(new BID(Ids::ORANGE_TULIP), "Orange Tulip", $flowerTypeInfo));
+		self::register("oxeye_daisy", new Flower(new BID(Ids::OXEYE_DAISY), "Oxeye Daisy", $flowerTypeInfo));
+		self::register("pink_tulip", new Flower(new BID(Ids::PINK_TULIP), "Pink Tulip", $flowerTypeInfo));
+		self::register("red_tulip", new Flower(new BID(Ids::RED_TULIP), "Red Tulip", $flowerTypeInfo));
+		self::register("white_tulip", new Flower(new BID(Ids::WHITE_TULIP), "White Tulip", $flowerTypeInfo));
+		self::register("flower_pot", new FlowerPot(new BID(Ids::FLOWER_POT, TileFlowerPot::class), "Flower Pot", $flowerTypeInfo));
 		self::register("frosted_ice", new FrostedIce(new BID(Ids::FROSTED_ICE), "Frosted Ice", new Info(BreakInfo::pickaxe(2.5))));
 		self::register("furnace", new Furnace(new BID(Ids::FURNACE, TileNormalFurnace::class), "Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD()))));
 		self::register("blast_furnace", new Furnace(new BID(Ids::BLAST_FURNACE, TileBlastFurnace::class), "Blast Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD()))));
@@ -846,9 +849,9 @@ final class VanillaBlocks{
 		self::register("glowstone", new Glowstone(new BID(Ids::GLOWSTONE), "Glowstone", new Info(BreakInfo::pickaxe(0.3))));
 		self::register("gold", new Opaque(new BID(Ids::GOLD), "Gold Block", new Info(BreakInfo::pickaxe(3.0, ToolTier::IRON(), 30.0))));
 
-		$grassBreakInfo = new Info(BreakInfo::shovel(0.6));
-		self::register("grass", new Grass(new BID(Ids::GRASS), "Grass", $grassBreakInfo));
-		self::register("grass_path", new GrassPath(new BID(Ids::GRASS_PATH), "Grass Path", $grassBreakInfo));
+		$grassBreakInfo = BreakInfo::shovel(0.6);
+		self::register("grass", new Grass(new BID(Ids::GRASS), "Grass", new Info($grassBreakInfo, [Tags::DIRT])));
+		self::register("grass_path", new GrassPath(new BID(Ids::GRASS_PATH), "Grass Path", new Info($grassBreakInfo)));
 		self::register("gravel", new Gravel(new BID(Ids::GRAVEL), "Gravel", new Info(BreakInfo::shovel(0.6))));
 
 		$hardenedClayBreakInfo = new Info(BreakInfo::pickaxe(1.25, ToolTier::WOOD(), 21.0));
@@ -889,7 +892,7 @@ final class VanillaBlocks{
 		self::register("melon", new Melon(new BID(Ids::MELON), "Melon Block", new Info(BreakInfo::axe(1.0))));
 		self::register("melon_stem", new MelonStem(new BID(Ids::MELON_STEM), "Melon Stem", new Info(BreakInfo::instant())));
 		self::register("monster_spawner", new MonsterSpawner(new BID(Ids::MONSTER_SPAWNER, TileMonsterSpawner::class), "Monster Spawner", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD()))));
-		self::register("mycelium", new Mycelium(new BID(Ids::MYCELIUM), "Mycelium", new Info(BreakInfo::shovel(0.6))));
+		self::register("mycelium", new Mycelium(new BID(Ids::MYCELIUM), "Mycelium", new Info(BreakInfo::shovel(0.6), [Tags::DIRT])));
 
 		$netherBrickBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD(), 30.0));
 		self::register("nether_bricks", new Opaque(new BID(Ids::NETHER_BRICKS), "Nether Bricks", $netherBrickBreakInfo));
@@ -908,7 +911,7 @@ final class VanillaBlocks{
 		self::register("note_block", new Note(new BID(Ids::NOTE_BLOCK, TileNote::class), "Note Block", new Info(BreakInfo::axe(0.8))));
 		self::register("obsidian", new Opaque(new BID(Ids::OBSIDIAN), "Obsidian", new Info(BreakInfo::pickaxe(35.0 /* 50 in PC */,  ToolTier::DIAMOND(), 6000.0))));
 		self::register("packed_ice", new PackedIce(new BID(Ids::PACKED_ICE), "Packed Ice", new Info(BreakInfo::pickaxe(0.5))));
-		self::register("podzol", new Podzol(new BID(Ids::PODZOL), "Podzol", new Info(BreakInfo::shovel(0.5))));
+		self::register("podzol", new Podzol(new BID(Ids::PODZOL), "Podzol", new Info(BreakInfo::shovel(0.5), [Tags::DIRT])));
 		self::register("potatoes", new Potato(new BID(Ids::POTATOES), "Potato Block", new Info(BreakInfo::instant())));
 		self::register("powered_rail", new PoweredRail(new BID(Ids::POWERED_RAIL), "Powered Rail", $railBreakInfo));
 
@@ -943,7 +946,7 @@ final class VanillaBlocks{
 		self::register("smooth_quartz_stairs", new Stair(new BID(Ids::SMOOTH_QUARTZ_STAIRS), "Smooth Quartz Stairs", $quartzBreakInfo));
 
 		self::register("rail", new Rail(new BID(Ids::RAIL), "Rail", $railBreakInfo));
-		self::register("red_mushroom", new RedMushroom(new BID(Ids::RED_MUSHROOM), "Red Mushroom", new Info(BreakInfo::instant())));
+		self::register("red_mushroom", new RedMushroom(new BID(Ids::RED_MUSHROOM), "Red Mushroom", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
 		self::register("redstone", new Redstone(new BID(Ids::REDSTONE), "Redstone Block", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD(), 30.0))));
 		self::register("redstone_comparator", new RedstoneComparator(new BID(Ids::REDSTONE_COMPARATOR, TileComparator::class), "Redstone Comparator", new Info(BreakInfo::instant())));
 		self::register("redstone_lamp", new RedstoneLamp(new BID(Ids::REDSTONE_LAMP), "Redstone Lamp", new Info(new BreakInfo(0.3))));
@@ -952,9 +955,9 @@ final class VanillaBlocks{
 		self::register("redstone_wire", new RedstoneWire(new BID(Ids::REDSTONE_WIRE), "Redstone", new Info(BreakInfo::instant())));
 		self::register("reserved6", new Reserved6(new BID(Ids::RESERVED6), "reserved6", new Info(BreakInfo::instant())));
 
-		$sandBreakInfo = new Info(BreakInfo::shovel(0.5));
-		self::register("sand", new Sand(new BID(Ids::SAND), "Sand", $sandBreakInfo));
-		self::register("red_sand", new Sand(new BID(Ids::RED_SAND), "Red Sand", $sandBreakInfo));
+		$sandTypeInfo = new Info(BreakInfo::shovel(0.5), [Tags::SAND]);
+		self::register("sand", new Sand(new BID(Ids::SAND), "Sand", $sandTypeInfo));
+		self::register("red_sand", new Sand(new BID(Ids::RED_SAND), "Red Sand", $sandTypeInfo));
 
 		self::register("sea_lantern", new SeaLantern(new BID(Ids::SEA_LANTERN), "Sea Lantern", new Info(new BreakInfo(0.3))));
 		self::register("sea_pickle", new SeaPickle(new BID(Ids::SEA_PICKLE), "Sea Pickle", new Info(BreakInfo::instant())));
@@ -1051,7 +1054,7 @@ final class VanillaBlocks{
 		self::register("sugarcane", new Sugarcane(new BID(Ids::SUGARCANE), "Sugarcane", new Info(BreakInfo::instant())));
 		self::register("sweet_berry_bush", new SweetBerryBush(new BID(Ids::SWEET_BERRY_BUSH), "Sweet Berry Bush", new Info(BreakInfo::instant())));
 		self::register("tnt", new TNT(new BID(Ids::TNT), "TNT", new Info(BreakInfo::instant())));
-		self::register("fern", new TallGrass(new BID(Ids::FERN), "Fern", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
+		self::register("fern", new TallGrass(new BID(Ids::FERN), "Fern", new Info(BreakInfo::instant(ToolType::SHEARS, 1), [Tags::POTTABLE_PLANTS])));
 		self::register("tall_grass", new TallGrass(new BID(Ids::TALL_GRASS), "Tall Grass", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
 
 		self::register("blue_torch", new Torch(new BID(Ids::BLUE_TORCH), "Blue Torch", new Info(BreakInfo::instant())));
@@ -1081,10 +1084,11 @@ final class VanillaBlocks{
 				return parent::getBreakTime($item);
 			}
 		});
+		$saplingTypeInfo = new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS]);
 
 		foreach(TreeType::getAll() as $treeType){
 			$name = $treeType->getDisplayName();
-			self::register($treeType->name() . "_sapling", new Sapling(BlockLegacyIdHelper::getSaplingIdentifier($treeType), $name . " Sapling", new Info(BreakInfo::instant()), $treeType));
+			self::register($treeType->name() . "_sapling", new Sapling(BlockLegacyIdHelper::getSaplingIdentifier($treeType), $name . " Sapling", $saplingTypeInfo, $treeType));
 			self::register($treeType->name() . "_leaves", new Leaves(BlockLegacyIdHelper::getLeavesIdentifier($treeType), $name . " Leaves", $leavesBreakInfo, $treeType));
 		}
 
@@ -1171,7 +1175,7 @@ final class VanillaBlocks{
 
 		self::register("mangrove_roots", new MangroveRoots(new BID(Ids::MANGROVE_ROOTS), "Mangrove Roots", new Info(BreakInfo::axe(0.7))));
 		//TODO: muddy mangrove roots are supposed to be axis-rotatable (Bedrock parity issue https://bugs.mojang.com/browse/MCPE-153721)
-		self::register("muddy_mangrove_roots", new Transparent(new BID(Ids::MUDDY_MANGROVE_ROOTS), "Muddy Mangrove Roots", new Info(BreakInfo::shovel(0.7))));
+		self::register("muddy_mangrove_roots", new Transparent(new BID(Ids::MUDDY_MANGROVE_ROOTS), "Muddy Mangrove Roots", new Info(BreakInfo::shovel(0.7), [Tags::MUD])));
 		self::register("froglight", new Froglight(new BID(Ids::FROGLIGHT), "Froglight", new Info(new BreakInfo(0.3))));
 
 		self::registerBlocksR13();
@@ -1397,7 +1401,7 @@ final class VanillaBlocks{
 
 	private static function registerBlocksR13() : void{
 		self::register("light", new Light(new BID(Ids::LIGHT), "Light Block", new Info(BreakInfo::indestructible())));
-		self::register("wither_rose", new WitherRose(new BID(Ids::WITHER_ROSE), "Wither Rose", new Info(BreakInfo::instant())));
+		self::register("wither_rose", new WitherRose(new BID(Ids::WITHER_ROSE), "Wither Rose", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
 	}
 
 	private static function registerBlocksR14() : void{
@@ -1531,7 +1535,7 @@ final class VanillaBlocks{
 	}
 
 	private static function registerMudBlocks() : void{
-		self::register("mud", new Opaque(new BID(Ids::MUD), "Mud", new Info(BreakInfo::shovel(0.5))));
+		self::register("mud", new Opaque(new BID(Ids::MUD), "Mud", new Info(BreakInfo::shovel(0.5), [Tags::MUD])));
 		self::register("packed_mud", new Opaque(new BID(Ids::PACKED_MUD), "Packed Mud", new Info(BreakInfo::pickaxe(1.0, null, 15.0))));
 
 		$mudBricksBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD(), 30.0));
