@@ -741,7 +741,7 @@ final class VanillaBlocks{
 		$railBreakInfo = new BlockBreakInfo(0.7);
 		self::register("activator_rail", new ActivatorRail(new BID(Ids::ACTIVATOR_RAIL), "Activator Rail", $railBreakInfo));
 		self::register("air", new Air(new BID(Ids::AIR), "Air", BreakInfo::indestructible(-1.0)));
-		self::register("anvil", new Anvil(new BID(Ids::ANVIL), "Anvil", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 6000.0)));
+		self::register("anvil", new Anvil(new BID(Ids::ANVIL), "Anvil", BreakInfo::tier(5.0, ToolType::PICKAXE, ToolTier::WOOD(), 6000.0)));
 		self::register("bamboo", new Bamboo(new BID(Ids::BAMBOO), "Bamboo", new class(2.0 /* 1.0 in PC */, ToolType::AXE) extends BreakInfo{
 			public function getBreakTime(Item $item) : float{
 				if($item->getBlockToolType() === ToolType::SWORD){
@@ -762,13 +762,13 @@ final class VanillaBlocks{
 		self::register("bedrock", new Bedrock(new BID(Ids::BEDROCK), "Bedrock", BreakInfo::indestructible()));
 
 		self::register("beetroots", new Beetroot(new BID(Ids::BEETROOTS), "Beetroot Block", BreakInfo::instant()));
-		self::register("bell", new Bell(new BID(Ids::BELL, TileBell::class), "Bell", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("bell", new Bell(new BID(Ids::BELL, TileBell::class), "Bell", BreakInfo::tier(5.0, ToolType::PICKAXE, ToolTier::WOOD())));
 		self::register("blue_ice", new BlueIce(new BID(Ids::BLUE_ICE), "Blue Ice", new BreakInfo(2.8, ToolType::PICKAXE)));
-		self::register("bone_block", new BoneBlock(new BID(Ids::BONE_BLOCK), "Bone Block", new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("bone_block", new BoneBlock(new BID(Ids::BONE_BLOCK), "Bone Block", BreakInfo::tier(2.0, ToolType::PICKAXE, ToolTier::WOOD())));
 		self::register("bookshelf", new Bookshelf(new BID(Ids::BOOKSHELF), "Bookshelf", new BreakInfo(1.5, ToolType::AXE)));
-		self::register("brewing_stand", new BrewingStand(new BID(Ids::BREWING_STAND, TileBrewingStand::class), "Brewing Stand", new BreakInfo(0.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("brewing_stand", new BrewingStand(new BID(Ids::BREWING_STAND, TileBrewingStand::class), "Brewing Stand", BreakInfo::tier(0.5, ToolType::PICKAXE, ToolTier::WOOD())));
 
-		$bricksBreakInfo = new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+		$bricksBreakInfo = BreakInfo::tier(2.0, ToolType::PICKAXE, ToolTier::WOOD(), 30.0);
 		self::register("brick_stairs", new Stair(new BID(Ids::BRICK_STAIRS), "Brick Stairs", $bricksBreakInfo));
 		self::register("bricks", new Opaque(new BID(Ids::BRICKS), "Bricks", $bricksBreakInfo));
 
@@ -780,9 +780,9 @@ final class VanillaBlocks{
 		$chestBreakInfo = new BreakInfo(2.5, ToolType::AXE);
 		self::register("chest", new Chest(new BID(Ids::CHEST, TileChest::class), "Chest", $chestBreakInfo));
 		self::register("clay", new Clay(new BID(Ids::CLAY), "Clay Block", new BreakInfo(0.6, ToolType::SHOVEL)));
-		self::register("coal", new Coal(new BID(Ids::COAL), "Coal Block", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0)));
+		self::register("coal", new Coal(new BID(Ids::COAL), "Coal Block", BreakInfo::tier(5.0, ToolType::PICKAXE, ToolTier::WOOD(), 30.0)));
 
-		$cobblestoneBreakInfo = new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+		$cobblestoneBreakInfo = BreakInfo::tier(2.0, ToolType::PICKAXE, ToolTier::WOOD(), 30.0);
 		self::register("cobblestone", $cobblestone = new Opaque(new BID(Ids::COBBLESTONE), "Cobblestone", $cobblestoneBreakInfo));
 		self::register("mossy_cobblestone", new Opaque(new BID(Ids::MOSSY_COBBLESTONE), "Mossy Cobblestone", $cobblestoneBreakInfo));
 		self::register("cobblestone_stairs", new Stair(new BID(Ids::COBBLESTONE_STAIRS), "Cobblestone Stairs", $cobblestoneBreakInfo));
@@ -790,13 +790,13 @@ final class VanillaBlocks{
 
 		self::register("cobweb", new Cobweb(new BID(Ids::COBWEB), "Cobweb", new BreakInfo(4.0, ToolType::SWORD | ToolType::SHEARS, 1)));
 		self::register("cocoa_pod", new CocoaBlock(new BID(Ids::COCOA_POD), "Cocoa Block", new BreakInfo(0.2, ToolType::AXE, 0, 15.0)));
-		self::register("coral_block", new CoralBlock(new BID(Ids::CORAL_BLOCK), "Coral Block", new BreakInfo(7.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("coral_block", new CoralBlock(new BID(Ids::CORAL_BLOCK), "Coral Block", BreakInfo::tier(7.0, ToolType::PICKAXE, ToolTier::WOOD())));
 		self::register("crafting_table", new CraftingTable(new BID(Ids::CRAFTING_TABLE), "Crafting Table", new BreakInfo(2.5, ToolType::AXE)));
 		self::register("daylight_sensor", new DaylightSensor(new BID(Ids::DAYLIGHT_SENSOR, TileDaylightSensor::class), "Daylight Sensor", new BreakInfo(0.2, ToolType::AXE)));
 		self::register("dead_bush", new DeadBush(new BID(Ids::DEAD_BUSH), "Dead Bush", BreakInfo::instant(ToolType::SHEARS, 1)));
 		self::register("detector_rail", new DetectorRail(new BID(Ids::DETECTOR_RAIL), "Detector Rail", $railBreakInfo));
 
-		self::register("diamond", new Opaque(new BID(Ids::DIAMOND), "Diamond Block", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel(), 30.0)));
+		self::register("diamond", new Opaque(new BID(Ids::DIAMOND), "Diamond Block", BreakInfo::tier(5.0, ToolType::PICKAXE, ToolTier::IRON(), 30.0)));
 		self::register("dirt", new Dirt(new BID(Ids::DIRT), "Dirt", new BreakInfo(0.5, ToolType::SHOVEL)));
 		self::register("sunflower", new DoublePlant(new BID(Ids::SUNFLOWER), "Sunflower", BreakInfo::instant()));
 		self::register("lilac", new DoublePlant(new BID(Ids::LILAC), "Lilac", BreakInfo::instant()));
@@ -804,19 +804,19 @@ final class VanillaBlocks{
 		self::register("peony", new DoublePlant(new BID(Ids::PEONY), "Peony", BreakInfo::instant()));
 		self::register("double_tallgrass", new DoubleTallGrass(new BID(Ids::DOUBLE_TALLGRASS), "Double Tallgrass", BreakInfo::instant(ToolType::SHEARS, 1)));
 		self::register("large_fern", new DoubleTallGrass(new BID(Ids::LARGE_FERN), "Large Fern", BreakInfo::instant(ToolType::SHEARS, 1)));
-		self::register("dragon_egg", new DragonEgg(new BID(Ids::DRAGON_EGG), "Dragon Egg", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("dragon_egg", new DragonEgg(new BID(Ids::DRAGON_EGG), "Dragon Egg", BreakInfo::tier(3.0, ToolType::PICKAXE, ToolTier::WOOD())));
 		self::register("dried_kelp", new DriedKelp(new BID(Ids::DRIED_KELP), "Dried Kelp Block", new BreakInfo(0.5, ToolType::NONE, 0, 12.5)));
-		self::register("emerald", new Opaque(new BID(Ids::EMERALD), "Emerald Block", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel(), 30.0)));
-		self::register("enchanting_table", new EnchantingTable(new BID(Ids::ENCHANTING_TABLE, TileEnchantingTable::class), "Enchanting Table", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 6000.0)));
+		self::register("emerald", new Opaque(new BID(Ids::EMERALD), "Emerald Block", BreakInfo::tier(5.0, ToolType::PICKAXE, ToolTier::IRON(), 30.0)));
+		self::register("enchanting_table", new EnchantingTable(new BID(Ids::ENCHANTING_TABLE, TileEnchantingTable::class), "Enchanting Table", BreakInfo::tier(5.0, ToolType::PICKAXE, ToolTier::WOOD(), 6000.0)));
 		self::register("end_portal_frame", new EndPortalFrame(new BID(Ids::END_PORTAL_FRAME), "End Portal Frame", BreakInfo::indestructible()));
 		self::register("end_rod", new EndRod(new BID(Ids::END_ROD), "End Rod", BreakInfo::instant()));
-		self::register("end_stone", new Opaque(new BID(Ids::END_STONE), "End Stone", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 45.0)));
+		self::register("end_stone", new Opaque(new BID(Ids::END_STONE), "End Stone", BreakInfo::tier(3.0, ToolType::PICKAXE, ToolTier::WOOD(), 45.0)));
 
-		$endBrickBreakInfo = new BreakInfo(0.8, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 4.0);
+		$endBrickBreakInfo = BreakInfo::tier(0.8, ToolType::PICKAXE, ToolTier::WOOD(), 4.0);
 		self::register("end_stone_bricks", new Opaque(new BID(Ids::END_STONE_BRICKS), "End Stone Bricks", $endBrickBreakInfo));
 		self::register("end_stone_brick_stairs", new Stair(new BID(Ids::END_STONE_BRICK_STAIRS), "End Stone Brick Stairs", $endBrickBreakInfo));
 
-		self::register("ender_chest", new EnderChest(new BID(Ids::ENDER_CHEST, TileEnderChest::class), "Ender Chest", new BreakInfo(22.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 3000.0)));
+		self::register("ender_chest", new EnderChest(new BID(Ids::ENDER_CHEST, TileEnderChest::class), "Ender Chest", BreakInfo::tier(22.5, ToolType::PICKAXE, ToolTier::WOOD(), 3000.0)));
 		self::register("farmland", new Farmland(new BID(Ids::FARMLAND), "Farmland", new BreakInfo(0.6, ToolType::SHOVEL)));
 		self::register("fire", new Fire(new BID(Ids::FIRE), "Fire Block", BreakInfo::instant()));
 		self::register("fletching_table", new FletchingTable(new BID(Ids::FLETCHING_TABLE), "Fletching Table", new BreakInfo(2.5, ToolType::AXE, 0, 2.5)));
@@ -834,30 +834,30 @@ final class VanillaBlocks{
 		self::register("white_tulip", new Flower(new BID(Ids::WHITE_TULIP), "White Tulip", BreakInfo::instant()));
 		self::register("flower_pot", new FlowerPot(new BID(Ids::FLOWER_POT, TileFlowerPot::class), "Flower Pot", BreakInfo::instant()));
 		self::register("frosted_ice", new FrostedIce(new BID(Ids::FROSTED_ICE), "Frosted Ice", new BreakInfo(2.5, ToolType::PICKAXE)));
-		self::register("furnace", new Furnace(new BID(Ids::FURNACE, TileNormalFurnace::class), "Furnace", new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
-		self::register("blast_furnace", new Furnace(new BID(Ids::BLAST_FURNACE, TileBlastFurnace::class), "Blast Furnace", new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
-		self::register("smoker", new Furnace(new BID(Ids::SMOKER, TileSmoker::class), "Smoker", new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("furnace", new Furnace(new BID(Ids::FURNACE, TileNormalFurnace::class), "Furnace", BreakInfo::tier(3.5, ToolType::PICKAXE, ToolTier::WOOD())));
+		self::register("blast_furnace", new Furnace(new BID(Ids::BLAST_FURNACE, TileBlastFurnace::class), "Blast Furnace", BreakInfo::tier(3.5, ToolType::PICKAXE, ToolTier::WOOD())));
+		self::register("smoker", new Furnace(new BID(Ids::SMOKER, TileSmoker::class), "Smoker", BreakInfo::tier(3.5, ToolType::PICKAXE, ToolTier::WOOD())));
 
 		$glassBreakInfo = new BreakInfo(0.3);
 		self::register("glass", new Glass(new BID(Ids::GLASS), "Glass", $glassBreakInfo));
 		self::register("glass_pane", new GlassPane(new BID(Ids::GLASS_PANE), "Glass Pane", $glassBreakInfo));
-		self::register("glowing_obsidian", new GlowingObsidian(new BID(Ids::GLOWING_OBSIDIAN), "Glowing Obsidian", new BreakInfo(10.0, ToolType::PICKAXE, ToolTier::DIAMOND()->getHarvestLevel(), 50.0)));
+		self::register("glowing_obsidian", new GlowingObsidian(new BID(Ids::GLOWING_OBSIDIAN), "Glowing Obsidian", BreakInfo::tier(10.0, ToolType::PICKAXE, ToolTier::DIAMOND(), 50.0)));
 		self::register("glowstone", new Glowstone(new BID(Ids::GLOWSTONE), "Glowstone", new BreakInfo(0.3, ToolType::PICKAXE)));
-		self::register("gold", new Opaque(new BID(Ids::GOLD), "Gold Block", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel(), 30.0)));
+		self::register("gold", new Opaque(new BID(Ids::GOLD), "Gold Block", BreakInfo::tier(3.0, ToolType::PICKAXE, ToolTier::IRON(), 30.0)));
 
 		$grassBreakInfo = new BreakInfo(0.6, ToolType::SHOVEL);
 		self::register("grass", new Grass(new BID(Ids::GRASS), "Grass", $grassBreakInfo));
 		self::register("grass_path", new GrassPath(new BID(Ids::GRASS_PATH), "Grass Path", $grassBreakInfo));
 		self::register("gravel", new Gravel(new BID(Ids::GRAVEL), "Gravel", new BreakInfo(0.6, ToolType::SHOVEL)));
 
-		$hardenedClayBreakInfo = new BreakInfo(1.25, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 21.0);
+		$hardenedClayBreakInfo = BreakInfo::tier(1.25, ToolType::PICKAXE, ToolTier::WOOD(), 21.0);
 		self::register("hardened_clay", new HardenedClay(new BID(Ids::HARDENED_CLAY), "Hardened Clay", $hardenedClayBreakInfo));
 
 		$hardenedGlassBreakInfo = new BreakInfo(10.0);
 		self::register("hardened_glass", new HardenedGlass(new BID(Ids::HARDENED_GLASS), "Hardened Glass", $hardenedGlassBreakInfo));
 		self::register("hardened_glass_pane", new HardenedGlassPane(new BID(Ids::HARDENED_GLASS_PANE), "Hardened Glass Pane", $hardenedGlassBreakInfo));
 		self::register("hay_bale", new HayBale(new BID(Ids::HAY_BALE), "Hay Bale", new BreakInfo(0.5)));
-		self::register("hopper", new Hopper(new BID(Ids::HOPPER, TileHopper::class), "Hopper", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 15.0)));
+		self::register("hopper", new Hopper(new BID(Ids::HOPPER, TileHopper::class), "Hopper", BreakInfo::tier(3.0, ToolType::PICKAXE, ToolTier::WOOD(), 15.0)));
 		self::register("ice", new Ice(new BID(Ids::ICE), "Ice", new BreakInfo(0.5, ToolType::PICKAXE)));
 
 		$updateBlockBreakInfo = new BreakInfo(1.0);
@@ -865,32 +865,32 @@ final class VanillaBlocks{
 		self::register("info_update2", new Opaque(new BID(Ids::INFO_UPDATE2), "ate!upd", $updateBlockBreakInfo));
 		self::register("invisible_bedrock", new Transparent(new BID(Ids::INVISIBLE_BEDROCK), "Invisible Bedrock", BreakInfo::indestructible()));
 
-		$ironBreakInfo = new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel(), 30.0);
+		$ironBreakInfo = BreakInfo::tier(5.0, ToolType::PICKAXE, ToolTier::STONE(), 30.0);
 		self::register("iron", new Opaque(new BID(Ids::IRON), "Iron Block", $ironBreakInfo));
 		self::register("iron_bars", new Thin(new BID(Ids::IRON_BARS), "Iron Bars", $ironBreakInfo));
-		$ironDoorBreakInfo = new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 25.0);
+		$ironDoorBreakInfo = BreakInfo::tier(5.0, ToolType::PICKAXE, ToolTier::WOOD(), 25.0);
 		self::register("iron_door", new Door(new BID(Ids::IRON_DOOR), "Iron Door", $ironDoorBreakInfo));
 		self::register("iron_trapdoor", new Trapdoor(new BID(Ids::IRON_TRAPDOOR), "Iron Trapdoor", $ironDoorBreakInfo));
 		self::register("item_frame", new ItemFrame(new BID(Ids::ITEM_FRAME, TileItemFrame::class), "Item Frame", new BreakInfo(0.25)));
 		self::register("jukebox", new Jukebox(new BID(Ids::JUKEBOX, TileJukebox::class), "Jukebox", new BreakInfo(0.8, ToolType::AXE))); //TODO: in PC the hardness is 2.0, not 0.8, unsure if this is a MCPE bug or not
 		self::register("ladder", new Ladder(new BID(Ids::LADDER), "Ladder", new BreakInfo(0.4, ToolType::AXE)));
 
-		$lanternBreakInfo = new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$lanternBreakInfo = BreakInfo::tier(5.0, ToolType::PICKAXE, ToolTier::WOOD());
 		self::register("lantern", new Lantern(new BID(Ids::LANTERN), "Lantern", $lanternBreakInfo, 15));
 		self::register("soul_lantern", new Lantern(new BID(Ids::SOUL_LANTERN), "Soul Lantern", $lanternBreakInfo, 10));
 
-		self::register("lapis_lazuli", new Opaque(new BID(Ids::LAPIS_LAZULI), "Lapis Lazuli Block", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
+		self::register("lapis_lazuli", new Opaque(new BID(Ids::LAPIS_LAZULI), "Lapis Lazuli Block", BreakInfo::tier(3.0, ToolType::PICKAXE, ToolTier::STONE())));
 		self::register("lava", new Lava(new BID(Ids::LAVA), "Lava", BreakInfo::indestructible(500.0)));
 		self::register("lectern", new Lectern(new BID(Ids::LECTERN, TileLectern::class), "Lectern", new BreakInfo(2.0, ToolType::AXE)));
 		self::register("lever", new Lever(new BID(Ids::LEVER), "Lever", new BreakInfo(0.5)));
 		self::register("loom", new Loom(new BID(Ids::LOOM), "Loom", new BreakInfo(2.5, ToolType::AXE)));
-		self::register("magma", new Magma(new BID(Ids::MAGMA), "Magma Block", new BreakInfo(0.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("magma", new Magma(new BID(Ids::MAGMA), "Magma Block", BreakInfo::tier(0.5, ToolType::PICKAXE, ToolTier::WOOD())));
 		self::register("melon", new Melon(new BID(Ids::MELON), "Melon Block", new BreakInfo(1.0, ToolType::AXE)));
 		self::register("melon_stem", new MelonStem(new BID(Ids::MELON_STEM), "Melon Stem", BreakInfo::instant()));
-		self::register("monster_spawner", new MonsterSpawner(new BID(Ids::MONSTER_SPAWNER, TileMonsterSpawner::class), "Monster Spawner", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("monster_spawner", new MonsterSpawner(new BID(Ids::MONSTER_SPAWNER, TileMonsterSpawner::class), "Monster Spawner", BreakInfo::tier(5.0, ToolType::PICKAXE, ToolTier::WOOD())));
 		self::register("mycelium", new Mycelium(new BID(Ids::MYCELIUM), "Mycelium", new BreakInfo(0.6, ToolType::SHOVEL)));
 
-		$netherBrickBreakInfo = new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+		$netherBrickBreakInfo = BreakInfo::tier(2.0, ToolType::PICKAXE, ToolTier::WOOD(), 30.0);
 		self::register("nether_bricks", new Opaque(new BID(Ids::NETHER_BRICKS), "Nether Bricks", $netherBrickBreakInfo));
 		self::register("red_nether_bricks", new Opaque(new BID(Ids::RED_NETHER_BRICKS), "Red Nether Bricks", $netherBrickBreakInfo));
 		self::register("nether_brick_fence", new Fence(new BID(Ids::NETHER_BRICK_FENCE), "Nether Brick Fence", $netherBrickBreakInfo));
@@ -900,10 +900,10 @@ final class VanillaBlocks{
 		self::register("cracked_nether_bricks", new Opaque(new BID(Ids::CRACKED_NETHER_BRICKS), "Cracked Nether Bricks", $netherBrickBreakInfo));
 
 		self::register("nether_portal", new NetherPortal(new BID(Ids::NETHER_PORTAL), "Nether Portal", BreakInfo::indestructible(0.0)));
-		self::register("nether_reactor_core", new NetherReactor(new BID(Ids::NETHER_REACTOR_CORE), "Nether Reactor Core", new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("nether_reactor_core", new NetherReactor(new BID(Ids::NETHER_REACTOR_CORE), "Nether Reactor Core", BreakInfo::tier(3.0, ToolType::PICKAXE, ToolTier::WOOD())));
 		self::register("nether_wart_block", new Opaque(new BID(Ids::NETHER_WART_BLOCK), "Nether Wart Block", new BreakInfo(1.0, ToolType::HOE)));
 		self::register("nether_wart", new NetherWartPlant(new BID(Ids::NETHER_WART), "Nether Wart", BreakInfo::instant()));
-		self::register("netherrack", new Netherrack(new BID(Ids::NETHERRACK), "Netherrack", new BreakInfo(0.4, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("netherrack", new Netherrack(new BID(Ids::NETHERRACK), "Netherrack", BreakInfo::tier(0.4, ToolType::PICKAXE, ToolTier::WOOD())));
 		self::register("note_block", new Note(new BID(Ids::NOTE_BLOCK, TileNote::class), "Note Block", new BreakInfo(0.8, ToolType::AXE)));
 		self::register("obsidian", new Opaque(new BID(Ids::OBSIDIAN), "Obsidian", new BreakInfo(35.0 /* 50 in PC */, ToolType::PICKAXE, ToolTier::DIAMOND()->getHarvestLevel(), 6000.0)));
 		self::register("packed_ice", new PackedIce(new BID(Ids::PACKED_ICE), "Packed Ice", new BreakInfo(0.5, ToolType::PICKAXE)));
@@ -911,7 +911,7 @@ final class VanillaBlocks{
 		self::register("potatoes", new Potato(new BID(Ids::POTATOES), "Potato Block", BreakInfo::instant()));
 		self::register("powered_rail", new PoweredRail(new BID(Ids::POWERED_RAIL), "Powered Rail", $railBreakInfo));
 
-		$prismarineBreakInfo = new BreakInfo(1.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+		$prismarineBreakInfo = BreakInfo::tier(1.5, ToolType::PICKAXE, ToolTier::WOOD(), 30.0);
 		self::register("prismarine", new Opaque(new BID(Ids::PRISMARINE), "Prismarine", $prismarineBreakInfo));
 		self::register("dark_prismarine", new Opaque(new BID(Ids::DARK_PRISMARINE), "Dark Prismarine", $prismarineBreakInfo));
 		self::register("prismarine_bricks", new Opaque(new BID(Ids::PRISMARINE_BRICKS), "Prismarine Bricks", $prismarineBreakInfo));
@@ -926,12 +926,12 @@ final class VanillaBlocks{
 
 		self::register("pumpkin_stem", new PumpkinStem(new BID(Ids::PUMPKIN_STEM), "Pumpkin Stem", BreakInfo::instant()));
 
-		$purpurBreakInfo = new BreakInfo(1.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+		$purpurBreakInfo = BreakInfo::tier(1.5, ToolType::PICKAXE, ToolTier::WOOD(), 30.0);
 		self::register("purpur", new Opaque(new BID(Ids::PURPUR), "Purpur Block", $purpurBreakInfo));
 		self::register("purpur_pillar", new SimplePillar(new BID(Ids::PURPUR_PILLAR), "Purpur Pillar", $purpurBreakInfo));
 		self::register("purpur_stairs", new Stair(new BID(Ids::PURPUR_STAIRS), "Purpur Stairs", $purpurBreakInfo));
 
-		$quartzBreakInfo = new BreakInfo(0.8, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$quartzBreakInfo = BreakInfo::tier(0.8, ToolType::PICKAXE, ToolTier::WOOD());
 		self::register("quartz", new Opaque(new BID(Ids::QUARTZ), "Quartz Block", $quartzBreakInfo));
 		self::register("chiseled_quartz", new SimplePillar(new BID(Ids::CHISELED_QUARTZ), "Chiseled Quartz Block", $quartzBreakInfo));
 		self::register("quartz_pillar", new SimplePillar(new BID(Ids::QUARTZ_PILLAR), "Quartz Pillar", $quartzBreakInfo));
@@ -943,7 +943,7 @@ final class VanillaBlocks{
 
 		self::register("rail", new Rail(new BID(Ids::RAIL), "Rail", $railBreakInfo));
 		self::register("red_mushroom", new RedMushroom(new BID(Ids::RED_MUSHROOM), "Red Mushroom", BreakInfo::instant()));
-		self::register("redstone", new Redstone(new BID(Ids::REDSTONE), "Redstone Block", new BreakInfo(5.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0)));
+		self::register("redstone", new Redstone(new BID(Ids::REDSTONE), "Redstone Block", BreakInfo::tier(5.0, ToolType::PICKAXE, ToolTier::WOOD(), 30.0)));
 		self::register("redstone_comparator", new RedstoneComparator(new BID(Ids::REDSTONE_COMPARATOR, TileComparator::class), "Redstone Comparator", BreakInfo::instant()));
 		self::register("redstone_lamp", new RedstoneLamp(new BID(Ids::REDSTONE_LAMP), "Redstone Lamp", new BreakInfo(0.3)));
 		self::register("redstone_repeater", new RedstoneRepeater(new BID(Ids::REDSTONE_REPEATER), "Redstone Repeater", BreakInfo::instant()));
@@ -959,14 +959,14 @@ final class VanillaBlocks{
 		self::register("sea_pickle", new SeaPickle(new BID(Ids::SEA_PICKLE), "Sea Pickle", BreakInfo::instant()));
 		self::register("mob_head", new Skull(new BID(Ids::MOB_HEAD, TileSkull::class), "Mob Head", new BreakInfo(1.0)));
 		self::register("slime", new Slime(new BID(Ids::SLIME), "Slime Block", BreakInfo::instant()));
-		self::register("snow", new Snow(new BID(Ids::SNOW), "Snow Block", new BreakInfo(0.2, ToolType::SHOVEL, ToolTier::WOOD()->getHarvestLevel())));
-		self::register("snow_layer", new SnowLayer(new BID(Ids::SNOW_LAYER), "Snow Layer", new BreakInfo(0.1, ToolType::SHOVEL, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("snow", new Snow(new BID(Ids::SNOW), "Snow Block", BreakInfo::tier(0.2, ToolType::SHOVEL, ToolTier::WOOD())));
+		self::register("snow_layer", new SnowLayer(new BID(Ids::SNOW_LAYER), "Snow Layer", BreakInfo::tier(0.1, ToolType::SHOVEL, ToolTier::WOOD())));
 		self::register("soul_sand", new SoulSand(new BID(Ids::SOUL_SAND), "Soul Sand", new BreakInfo(0.5, ToolType::SHOVEL)));
 		self::register("sponge", new Sponge(new BID(Ids::SPONGE), "Sponge", new BreakInfo(0.6, ToolType::HOE)));
 		$shulkerBoxBreakInfo = new BreakInfo(2, ToolType::PICKAXE);
 		self::register("shulker_box", new ShulkerBox(new BID(Ids::SHULKER_BOX, TileShulkerBox::class), "Shulker Box", $shulkerBoxBreakInfo));
 
-		$stoneBreakInfo = new BreakInfo(1.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+		$stoneBreakInfo = BreakInfo::tier(1.5, ToolType::PICKAXE, ToolTier::WOOD(), 30.0);
 		self::register(
 			"stone",
 			$stone = new class(new BID(Ids::STONE), "Stone", $stoneBreakInfo) extends Opaque{
@@ -1011,10 +1011,10 @@ final class VanillaBlocks{
 		self::register("mossy_stone_brick_stairs", new Stair(new BID(Ids::MOSSY_STONE_BRICK_STAIRS), "Mossy Stone Brick Stairs", $stoneBreakInfo));
 		self::register("stone_button", new StoneButton(new BID(Ids::STONE_BUTTON), "Stone Button", new BreakInfo(0.5, ToolType::PICKAXE)));
 		self::register("stonecutter", new Stonecutter(new BID(Ids::STONECUTTER), "Stonecutter", new BreakInfo(3.5, ToolType::PICKAXE)));
-		self::register("stone_pressure_plate", new StonePressurePlate(new BID(Ids::STONE_PRESSURE_PLATE), "Stone Pressure Plate", new BreakInfo(0.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("stone_pressure_plate", new StonePressurePlate(new BID(Ids::STONE_PRESSURE_PLATE), "Stone Pressure Plate", BreakInfo::tier(0.5, ToolType::PICKAXE, ToolTier::WOOD())));
 
 		//TODO: in the future this won't be the same for all the types
-		$stoneSlabBreakInfo = new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+		$stoneSlabBreakInfo = BreakInfo::tier(2.0, ToolType::PICKAXE, ToolTier::WOOD(), 30.0);
 
 		self::register("brick_slab", new Slab(new BID(Ids::BRICK_SLAB), "Brick", $stoneSlabBreakInfo));
 		self::register("cobblestone_slab", new Slab(new BID(Ids::COBBLESTONE_SLAB), "Cobblestone", $stoneSlabBreakInfo));
@@ -1046,7 +1046,7 @@ final class VanillaBlocks{
 		self::register("smooth_quartz_slab", new Slab(new BID(Ids::SMOOTH_QUARTZ_SLAB), "Smooth Quartz", $stoneSlabBreakInfo));
 		self::register("stone_slab", new Slab(new BID(Ids::STONE_SLAB), "Stone", $stoneSlabBreakInfo));
 
-		self::register("legacy_stonecutter", new Opaque(new BID(Ids::LEGACY_STONECUTTER), "Legacy Stonecutter", new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("legacy_stonecutter", new Opaque(new BID(Ids::LEGACY_STONECUTTER), "Legacy Stonecutter", BreakInfo::tier(3.5, ToolType::PICKAXE, ToolTier::WOOD())));
 		self::register("sugarcane", new Sugarcane(new BID(Ids::SUGARCANE), "Sugarcane", BreakInfo::instant()));
 		self::register("sweet_berry_bush", new SweetBerryBush(new BID(Ids::SWEET_BERRY_BUSH), "Sweet Berry Bush", BreakInfo::instant()));
 		self::register("tnt", new TNT(new BID(Ids::TNT), "TNT", BreakInfo::instant()));
@@ -1067,7 +1067,7 @@ final class VanillaBlocks{
 		self::register("water", new Water(new BID(Ids::WATER), "Water", BreakInfo::indestructible(500.0)));
 		self::register("lily_pad", new WaterLily(new BID(Ids::LILY_PAD), "Lily Pad", BreakInfo::instant()));
 
-		$weightedPressurePlateBreakInfo = new BreakInfo(0.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$weightedPressurePlateBreakInfo = BreakInfo::tier(0.5, ToolType::PICKAXE, ToolTier::WOOD());
 		self::register("weighted_pressure_plate_heavy", new WeightedPressurePlateHeavy(new BID(Ids::WEIGHTED_PRESSURE_PLATE_HEAVY), "Weighted Pressure Plate Heavy", $weightedPressurePlateBreakInfo));
 		self::register("weighted_pressure_plate_light", new WeightedPressurePlateLight(new BID(Ids::WEIGHTED_PRESSURE_PLATE_LIGHT), "Weighted Pressure Plate Light", $weightedPressurePlateBreakInfo));
 		self::register("wheat", new Wheat(new BID(Ids::WHEAT), "Wheat Block", BreakInfo::instant()));
@@ -1087,7 +1087,7 @@ final class VanillaBlocks{
 			self::register($treeType->name() . "_leaves", new Leaves(BlockLegacyIdHelper::getLeavesIdentifier($treeType), $name . " Leaves", $leavesBreakInfo, $treeType));
 		}
 
-		$sandstoneBreakInfo = new BreakInfo(0.8, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$sandstoneBreakInfo = BreakInfo::tier(0.8, ToolType::PICKAXE, ToolTier::WOOD());
 		self::register("red_sandstone_stairs", new Stair(new BID(Ids::RED_SANDSTONE_STAIRS), "Red Sandstone Stairs", $sandstoneBreakInfo));
 		self::register("smooth_red_sandstone_stairs", new Stair(new BID(Ids::SMOOTH_RED_SANDSTONE_STAIRS), "Smooth Red Sandstone Stairs", $sandstoneBreakInfo));
 		self::register("red_sandstone", new Opaque(new BID(Ids::RED_SANDSTONE), "Red Sandstone", $sandstoneBreakInfo));
@@ -1102,7 +1102,7 @@ final class VanillaBlocks{
 		self::register("cut_sandstone", new Opaque(new BID(Ids::CUT_SANDSTONE), "Cut Sandstone", $sandstoneBreakInfo));
 		self::register("smooth_sandstone", new Opaque(new BID(Ids::SMOOTH_SANDSTONE), "Smooth Sandstone", $sandstoneBreakInfo));
 
-		self::register("glazed_terracotta", new GlazedTerracotta(new BID(Ids::GLAZED_TERRACOTTA), "Glazed Terracotta", new BreakInfo(1.4, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("glazed_terracotta", new GlazedTerracotta(new BID(Ids::GLAZED_TERRACOTTA), "Glazed Terracotta", BreakInfo::tier(1.4, ToolType::PICKAXE, ToolTier::WOOD())));
 		self::register("dyed_shulker_box", new DyedShulkerBox(new BID(Ids::DYED_SHULKER_BOX, TileShulkerBox::class), "Dyed Shulker Box", $shulkerBoxBreakInfo));
 		self::register("stained_glass", new StainedGlass(new BID(Ids::STAINED_GLASS), "Stained Glass", $glassBreakInfo));
 		self::register("stained_glass_pane", new StainedGlassPane(new BID(Ids::STAINED_GLASS_PANE), "Stained Glass Pane", $glassBreakInfo));
@@ -1110,7 +1110,7 @@ final class VanillaBlocks{
 		self::register("stained_hardened_glass", new StainedHardenedGlass(new BID(Ids::STAINED_HARDENED_GLASS), "Stained Hardened Glass", $hardenedGlassBreakInfo));
 		self::register("stained_hardened_glass_pane", new StainedHardenedGlassPane(new BID(Ids::STAINED_HARDENED_GLASS_PANE), "Stained Hardened Glass Pane", $hardenedGlassBreakInfo));
 		self::register("carpet", new Carpet(new BID(Ids::CARPET), "Carpet", new BreakInfo(0.1)));
-		self::register("concrete", new Concrete(new BID(Ids::CONCRETE), "Concrete", new BreakInfo(1.8, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("concrete", new Concrete(new BID(Ids::CONCRETE), "Concrete", BreakInfo::tier(1.8, ToolType::PICKAXE, ToolTier::WOOD())));
 		self::register("concrete_powder", new ConcretePowder(new BID(Ids::CONCRETE_POWDER), "Concrete Powder", new BreakInfo(0.5, ToolType::SHOVEL)));
 		self::register("wool", new Wool(new BID(Ids::WOOL), "Wool", new class(0.8, ToolType::SHEARS) extends BreakInfo{
 			public function getBreakTime(Item $item) : float{
@@ -1124,7 +1124,7 @@ final class VanillaBlocks{
 		}));
 
 		//TODO: in the future these won't all have the same hardness; they only do now because of the old metadata crap
-		$wallBreakInfo = new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+		$wallBreakInfo = BreakInfo::tier(2.0, ToolType::PICKAXE, ToolTier::WOOD(), 30.0);
 		self::register("cobblestone_wall", new Wall(new BID(Ids::COBBLESTONE_WALL), "Cobblestone Wall", $wallBreakInfo));
 		self::register("andesite_wall", new Wall(new BID(Ids::ANDESITE_WALL), "Andesite Wall", $wallBreakInfo));
 		self::register("brick_wall", new Wall(new BID(Ids::BRICK_WALL), "Brick Wall", $wallBreakInfo));
@@ -1142,7 +1142,7 @@ final class VanillaBlocks{
 
 		self::registerElements();
 
-		$chemistryTableBreakInfo = new BreakInfo(2.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$chemistryTableBreakInfo = BreakInfo::tier(2.5, ToolType::PICKAXE, ToolTier::WOOD());
 		self::register("compound_creator", new ChemistryTable(new BID(Ids::COMPOUND_CREATOR), "Compound Creator", $chemistryTableBreakInfo));
 		self::register("element_constructor", new ChemistryTable(new BID(Ids::ELEMENT_CONSTRUCTOR), "Element Constructor", $chemistryTableBreakInfo));
 		self::register("lab_table", new ChemistryTable(new BID(Ids::LAB_TABLE), "Lab Table", $chemistryTableBreakInfo));
@@ -1376,7 +1376,7 @@ final class VanillaBlocks{
 		self::register("deepslate_lapis_lazuli_ore", new LapisOre(new BID(Ids::DEEPSLATE_LAPIS_LAZULI_ORE), "Deepslate Lapis Lazuli Ore", $deepslateOreBreakInfo(ToolTier::STONE())));
 		self::register("deepslate_redstone_ore", new RedstoneOre(new BID(Ids::DEEPSLATE_REDSTONE_ORE), "Deepslate Redstone Ore", $deepslateOreBreakInfo(ToolTier::IRON())));
 
-		$netherrackOreBreakInfo = new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$netherrackOreBreakInfo = BreakInfo::tier(3.0, ToolType::PICKAXE, ToolTier::WOOD());
 		self::register("nether_quartz_ore", new NetherQuartzOre(new BID(Ids::NETHER_QUARTZ_ORE), "Nether Quartz Ore", $netherrackOreBreakInfo));
 		self::register("nether_gold_ore", new NetherGoldOre(new BID(Ids::NETHER_GOLD_ORE), "Nether Gold Ore", $netherrackOreBreakInfo));
 	}
@@ -1405,20 +1405,20 @@ final class VanillaBlocks{
 
 	private static function registerBlocksR16() : void{
 		//for some reason, slabs have weird hardness like the legacy ones
-		$slabBreakInfo = new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+		$slabBreakInfo = BreakInfo::tier(2.0, ToolType::PICKAXE, ToolTier::WOOD(), 30.0);
 
-		self::register("ancient_debris", new Opaque(new BID(Ids::ANCIENT_DEBRIS), "Ancient Debris", new BreakInfo(30, ToolType::PICKAXE, ToolTier::DIAMOND()->getHarvestLevel(), 3600.0)));
-		$netheriteBreakInfo = new BreakInfo(50, ToolType::PICKAXE, ToolTier::DIAMOND()->getHarvestLevel(), 3600.0);
+		self::register("ancient_debris", new Opaque(new BID(Ids::ANCIENT_DEBRIS), "Ancient Debris", BreakInfo::tier(30, ToolType::PICKAXE, ToolTier::DIAMOND(), 3600.0)));
+		$netheriteBreakInfo = BreakInfo::tier(50, ToolType::PICKAXE, ToolTier::DIAMOND(), 3600.0);
 		self::register("netherite", new class(new BID(Ids::NETHERITE), "Netherite Block", $netheriteBreakInfo) extends Opaque{
 			public function isFireProofAsItem() : bool{ return true; }
 		});
 
-		$basaltBreakInfo = new BreakInfo(1.25, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 21.0);
+		$basaltBreakInfo = BreakInfo::tier(1.25, ToolType::PICKAXE, ToolTier::WOOD(), 21.0);
 		self::register("basalt", new SimplePillar(new BID(Ids::BASALT), "Basalt", $basaltBreakInfo));
 		self::register("polished_basalt", new SimplePillar(new BID(Ids::POLISHED_BASALT), "Polished Basalt", $basaltBreakInfo));
 		self::register("smooth_basalt", new Opaque(new BID(Ids::SMOOTH_BASALT), "Smooth Basalt", $basaltBreakInfo));
 
-		$blackstoneBreakInfo = new BreakInfo(1.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+		$blackstoneBreakInfo = BreakInfo::tier(1.5, ToolType::PICKAXE, ToolTier::WOOD(), 30.0);
 		self::register("blackstone", new Opaque(new BID(Ids::BLACKSTONE), "Blackstone", $blackstoneBreakInfo));
 		self::register("blackstone_slab", new Slab(new BID(Ids::BLACKSTONE_SLAB), "Blackstone", $slabBreakInfo));
 		self::register("blackstone_stairs", new Stair(new BID(Ids::BLACKSTONE_STAIRS), "Blackstone Stairs", $blackstoneBreakInfo));
@@ -1430,7 +1430,7 @@ final class VanillaBlocks{
 		$prefix = fn(string $thing) => "Polished Blackstone" . ($thing !== "" ? " $thing" : "");
 		self::register("polished_blackstone", new Opaque(new BID(Ids::POLISHED_BLACKSTONE), $prefix(""), $blackstoneBreakInfo));
 		self::register("polished_blackstone_button", new StoneButton(new BID(Ids::POLISHED_BLACKSTONE_BUTTON), $prefix("Button"), new BreakInfo(0.5, ToolType::PICKAXE)));
-		self::register("polished_blackstone_pressure_plate", new StonePressurePlate(new BID(Ids::POLISHED_BLACKSTONE_PRESSURE_PLATE), $prefix("Pressure Plate"), new BreakInfo(0.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("polished_blackstone_pressure_plate", new StonePressurePlate(new BID(Ids::POLISHED_BLACKSTONE_PRESSURE_PLATE), $prefix("Pressure Plate"), BreakInfo::tier(0.5, ToolType::PICKAXE, ToolTier::WOOD())));
 		self::register("polished_blackstone_slab", new Slab(new BID(Ids::POLISHED_BLACKSTONE_SLAB), $prefix(""), $slabBreakInfo));
 		self::register("polished_blackstone_stairs", new Stair(new BID(Ids::POLISHED_BLACKSTONE_STAIRS), $prefix("Stairs"), $blackstoneBreakInfo));
 		self::register("polished_blackstone_wall", new Wall(new BID(Ids::POLISHED_BLACKSTONE_WALL), $prefix("Wall"), $blackstoneBreakInfo));
@@ -1461,42 +1461,42 @@ final class VanillaBlocks{
 
 	private static function registerBlocksR17() : void{
 		//in java this can be acquired using any tool - seems to be a parity issue in bedrock
-		self::register("amethyst", new Opaque(new BID(Ids::AMETHYST), "Amethyst", new BreakInfo(1.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		self::register("amethyst", new Opaque(new BID(Ids::AMETHYST), "Amethyst", BreakInfo::tier(1.5, ToolType::PICKAXE, ToolTier::WOOD())));
 
-		self::register("calcite", new Opaque(new BID(Ids::CALCITE), "Calcite", new BreakInfo(0.75, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
-		self::register("tuff", new Opaque(new BID(Ids::TUFF), "Tuff", new BreakInfo(1.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0)));
+		self::register("calcite", new Opaque(new BID(Ids::CALCITE), "Calcite", BreakInfo::tier(0.75, ToolType::PICKAXE, ToolTier::WOOD())));
+		self::register("tuff", new Opaque(new BID(Ids::TUFF), "Tuff", BreakInfo::tier(1.5, ToolType::PICKAXE, ToolTier::WOOD(), 30.0)));
 
-		self::register("raw_copper", new Opaque(new BID(Ids::RAW_COPPER), "Raw Copper Block", new BreakInfo(5, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel(), 30.0)));
-		self::register("raw_gold", new Opaque(new BID(Ids::RAW_GOLD), "Raw Gold Block", new BreakInfo(5, ToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel(), 30.0)));
-		self::register("raw_iron", new Opaque(new BID(Ids::RAW_IRON), "Raw Iron Block", new BreakInfo(5, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel(), 30.0)));
+		self::register("raw_copper", new Opaque(new BID(Ids::RAW_COPPER), "Raw Copper Block", BreakInfo::tier(5, ToolType::PICKAXE, ToolTier::STONE(), 30.0)));
+		self::register("raw_gold", new Opaque(new BID(Ids::RAW_GOLD), "Raw Gold Block", BreakInfo::tier(5, ToolType::PICKAXE, ToolTier::IRON(), 30.0)));
+		self::register("raw_iron", new Opaque(new BID(Ids::RAW_IRON), "Raw Iron Block", BreakInfo::tier(5, ToolType::PICKAXE, ToolTier::STONE(), 30.0)));
 
-		$deepslateBreakInfo = new BreakInfo(3, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 18.0);
+		$deepslateBreakInfo = BreakInfo::tier(3, ToolType::PICKAXE, ToolTier::WOOD(), 18.0);
 		self::register("deepslate", new SimplePillar(new BID(Ids::DEEPSLATE), "Deepslate", $deepslateBreakInfo));
 
 		//TODO: parity issue here - in Java this has a hardness of 3.0, but in bedrock it's 3.5
-		self::register("chiseled_deepslate", new Opaque(new BID(Ids::CHISELED_DEEPSLATE), "Chiseled Deepslate", new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 18.0)));
+		self::register("chiseled_deepslate", new Opaque(new BID(Ids::CHISELED_DEEPSLATE), "Chiseled Deepslate", BreakInfo::tier(3.5, ToolType::PICKAXE, ToolTier::WOOD(), 18.0)));
 
-		$deepslateBrickBreakInfo = new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 18.0);
+		$deepslateBrickBreakInfo = BreakInfo::tier(3.5, ToolType::PICKAXE, ToolTier::WOOD(), 18.0);
 		self::register("deepslate_bricks", new Opaque(new BID(Ids::DEEPSLATE_BRICKS), "Deepslate Bricks", $deepslateBrickBreakInfo));
 		self::register("deepslate_brick_slab", new Slab(new BID(Ids::DEEPSLATE_BRICK_SLAB), "Deepslate Brick", $deepslateBrickBreakInfo));
 		self::register("deepslate_brick_stairs", new Stair(new BID(Ids::DEEPSLATE_BRICK_STAIRS), "Deepslate Brick Stairs", $deepslateBrickBreakInfo));
 		self::register("deepslate_brick_wall", new Wall(new BID(Ids::DEEPSLATE_BRICK_WALL), "Deepslate Brick Wall", $deepslateBrickBreakInfo));
 		self::register("cracked_deepslate_bricks", new Opaque(new BID(Ids::CRACKED_DEEPSLATE_BRICKS), "Cracked Deepslate Bricks", $deepslateBrickBreakInfo));
 
-		$deepslateTilesBreakInfo = new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 18.0);
+		$deepslateTilesBreakInfo = BreakInfo::tier(3.5, ToolType::PICKAXE, ToolTier::WOOD(), 18.0);
 		self::register("deepslate_tiles", new Opaque(new BID(Ids::DEEPSLATE_TILES), "Deepslate Tiles", $deepslateTilesBreakInfo));
 		self::register("deepslate_tile_slab", new Slab(new BID(Ids::DEEPSLATE_TILE_SLAB), "Deepslate Tile", $deepslateTilesBreakInfo));
 		self::register("deepslate_tile_stairs", new Stair(new BID(Ids::DEEPSLATE_TILE_STAIRS), "Deepslate Tile Stairs", $deepslateTilesBreakInfo));
 		self::register("deepslate_tile_wall", new Wall(new BID(Ids::DEEPSLATE_TILE_WALL), "Deepslate Tile Wall", $deepslateTilesBreakInfo));
 		self::register("cracked_deepslate_tiles", new Opaque(new BID(Ids::CRACKED_DEEPSLATE_TILES), "Cracked Deepslate Tiles", $deepslateTilesBreakInfo));
 
-		$cobbledDeepslateBreakInfo = new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 18.0);
+		$cobbledDeepslateBreakInfo = BreakInfo::tier(3.5, ToolType::PICKAXE, ToolTier::WOOD(), 18.0);
 		self::register("cobbled_deepslate", new Opaque(new BID(Ids::COBBLED_DEEPSLATE), "Cobbled Deepslate", $cobbledDeepslateBreakInfo));
 		self::register("cobbled_deepslate_slab", new Slab(new BID(Ids::COBBLED_DEEPSLATE_SLAB), "Cobbled Deepslate", $cobbledDeepslateBreakInfo));
 		self::register("cobbled_deepslate_stairs", new Stair(new BID(Ids::COBBLED_DEEPSLATE_STAIRS), "Cobbled Deepslate Stairs", $cobbledDeepslateBreakInfo));
 		self::register("cobbled_deepslate_wall", new Wall(new BID(Ids::COBBLED_DEEPSLATE_WALL), "Cobbled Deepslate Wall", $cobbledDeepslateBreakInfo));
 
-		$polishedDeepslateBreakInfo = new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 18.0);
+		$polishedDeepslateBreakInfo = BreakInfo::tier(3.5, ToolType::PICKAXE, ToolTier::WOOD(), 18.0);
 		self::register("polished_deepslate", new Opaque(new BID(Ids::POLISHED_DEEPSLATE), "Polished Deepslate", $polishedDeepslateBreakInfo));
 		self::register("polished_deepslate_slab", new Slab(new BID(Ids::POLISHED_DEEPSLATE_SLAB), "Polished Deepslate", $polishedDeepslateBreakInfo));
 		self::register("polished_deepslate_stairs", new Stair(new BID(Ids::POLISHED_DEEPSLATE_STAIRS), "Polished Deepslate Stairs", $polishedDeepslateBreakInfo));
@@ -1505,7 +1505,7 @@ final class VanillaBlocks{
 		self::register("tinted_glass", new TintedGlass(new BID(Ids::TINTED_GLASS), "Tinted Glass", new BreakInfo(0.3)));
 
 		//blast resistance should be 30 if we were matched with java :(
-		$copperBreakInfo = new BreakInfo(3.0, ToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel(), 18.0);
+		$copperBreakInfo = BreakInfo::tier(3.0, ToolType::PICKAXE, ToolTier::STONE(), 18.0);
 		self::register("lightning_rod", new LightningRod(new BID(Ids::LIGHTNING_ROD), "Lightning Rod", $copperBreakInfo));
 
 		self::register("copper", new Copper(new BID(Ids::COPPER), "Copper Block", $copperBreakInfo));
@@ -1533,7 +1533,7 @@ final class VanillaBlocks{
 		self::register("mud", new Opaque(new BID(Ids::MUD), "Mud", new BreakInfo(0.5, ToolType::SHOVEL)));
 		self::register("packed_mud", new Opaque(new BID(Ids::PACKED_MUD), "Packed Mud", new BreakInfo(1.0, ToolType::PICKAXE, 0, 15.0)));
 
-		$mudBricksBreakInfo = new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+		$mudBricksBreakInfo = BreakInfo::tier(2.0, ToolType::PICKAXE, ToolTier::WOOD(), 30.0);
 
 		self::register("mud_bricks", new Opaque(new BID(Ids::MUD_BRICKS), "Mud Bricks", $mudBricksBreakInfo));
 		self::register("mud_brick_slab", new Slab(new BID(Ids::MUD_BRICK_SLAB), "Mud Brick", $mudBricksBreakInfo));
@@ -1542,7 +1542,7 @@ final class VanillaBlocks{
 	}
 
 	private static function registerCauldronBlocks() : void{
-		$cauldronBreakInfo = new BreakInfo(2, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$cauldronBreakInfo = BreakInfo::tier(2, ToolType::PICKAXE, ToolTier::WOOD());
 
 		self::register("cauldron", new Cauldron(new BID(Ids::CAULDRON, TileCauldron::class), "Cauldron", $cauldronBreakInfo));
 		self::register("water_cauldron", new WaterCauldron(new BID(Ids::WATER_CAULDRON, TileCauldron::class), "Water Cauldron", $cauldronBreakInfo));
