@@ -57,6 +57,18 @@ class BlockBreakInfo{
 		return new self($hardness, $toolType, $toolTier->getHarvestLevel(), $blastResistance);
 	}
 
+	public static function pickaxe(float $hardness, ?ToolTier $toolTier = null, ?float $blastResistance = null) : self{
+		return new self($hardness, BlockToolType::PICKAXE, $toolTier?->getHarvestLevel() ?? 0, $blastResistance);
+	}
+
+	public static function shovel(float $hardness, ?ToolTier $toolTier = null, ?float $blastResistance = null) : self{
+		return new self($hardness, BlockToolType::SHOVEL, $toolTier?->getHarvestLevel() ?? 0, $blastResistance);
+	}
+
+	public static function axe(float $hardness, ?ToolTier $toolTier = null, ?float $blastResistance = null) : self{
+		return new self($hardness, BlockToolType::AXE, $toolTier?->getHarvestLevel() ?? 0, $blastResistance);
+	}
+
 	public static function instant(int $toolType = BlockToolType::NONE, int $toolHarvestLevel = 0) : self{
 		return new self(0.0, $toolType, $toolHarvestLevel, 0.0);
 	}
