@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\BlockTypeInfo as Info;
 use pocketmine\block\BlockBreakInfo as BreakInfo;
 use pocketmine\block\BlockIdentifier as BID;
 use pocketmine\block\BlockToolType as ToolType;
 use pocketmine\block\BlockTypeIds as Ids;
+use pocketmine\block\BlockTypeInfo as Info;
 use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\tile\Barrel as TileBarrel;
 use pocketmine\block\tile\Beacon as TileBeacon;

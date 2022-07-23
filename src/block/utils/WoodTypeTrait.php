@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\block\BlockBreakInfo;
 use pocketmine\block\BlockIdentifier;
 use pocketmine\block\BlockTypeInfo;
 
