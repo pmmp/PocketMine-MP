@@ -33,6 +33,9 @@ final class BlockTypeInfo{
 	 */
 	private array $typeTags;
 
+	/**
+	 * @param string[] $typeTags
+	 */
 	public function __construct(
 		private BlockBreakInfo $breakInfo,
 		array $typeTags = []
