@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\DirtType;
 use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Hoe;
@@ -72,7 +73,7 @@ class Grass extends Opaque{
 				$b = $world->getBlockAt($x, $y, $z);
 				if(
 					!($b instanceof Dirt) ||
-					$b->isCoarse() ||
+					!$b->getDirtType()->equals(DirtType::NORMAL()) ||
 					$world->getFullLightAt($x, $y + 1, $z) < 4 ||
 					$world->getBlockAt($x, $y + 1, $z)->getLightFilter() >= 2
 				){

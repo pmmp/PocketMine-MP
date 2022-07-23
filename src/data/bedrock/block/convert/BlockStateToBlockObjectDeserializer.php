@@ -33,6 +33,7 @@ use pocketmine\block\SweetBerryBush;
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CoralType;
+use pocketmine\block\utils\DirtType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\SlabType;
@@ -641,12 +642,13 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->mapStairs(Ids::DIORITE_STAIRS, fn() => Blocks::DIORITE_STAIRS());
 		$this->map(Ids::DIRT, function(Reader $in) : Block{
 			return Blocks::DIRT()
-				->setCoarse(match($value = $in->readString(StateNames::DIRT_TYPE)){
-					StringValues::DIRT_TYPE_NORMAL => false,
-					StringValues::DIRT_TYPE_COARSE => true,
+				->setDirtType(match($value = $in->readString(StateNames::DIRT_TYPE)){
+					StringValues::DIRT_TYPE_NORMAL => DirtType::NORMAL(),
+					StringValues::DIRT_TYPE_COARSE => DirtType::COARSE(),
 					default => throw $in->badValueException(StateNames::DIRT_TYPE, $value),
 				});
 		});
+		$this->map(Ids::DIRT_WITH_ROOTS, fn() => Blocks::DIRT()->setDirtType(DirtType::ROOTED()));
 		$this->map(Ids::DOUBLE_PLANT, function(Reader $in) : Block{
 			return (match($type = $in->readString(StateNames::DOUBLE_PLANT_TYPE)){
 				StringValues::DOUBLE_PLANT_TYPE_FERN => Blocks::LARGE_FERN(),

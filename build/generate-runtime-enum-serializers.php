@@ -26,6 +26,7 @@ namespace pocketmine\build\generate_runtime_enum_serializers;
 use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CoralType;
+use pocketmine\block\utils\DirtType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\MushroomBlockType;
@@ -158,6 +159,7 @@ $enumsUsed = [
 	BellAttachmentType::getAll(),
 	CopperOxidation::getAll(),
 	CoralType::getAll(),
+	DirtType::getAll(),
 	DyeColor::getAll(),
 	LeverFacing::getAll(),
 	MushroomBlockType::getAll(),

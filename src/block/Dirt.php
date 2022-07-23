@@ -23,8 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\DirtType;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\item\Fertilizer;
 use pocketmine\item\Hoe;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -33,32 +35,50 @@ use pocketmine\player\Player;
 use pocketmine\world\sound\ItemUseOnBlockSound;
 
 class Dirt extends Opaque{
-	protected bool $coarse = false;
+	protected DirtType $dirtType;
 
-	public function getRequiredTypeDataBits() : int{ return 1; }
-
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
-		$w->bool($this->coarse);
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->dirtType = DirtType::NORMAL();
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
-	public function isCoarse() : bool{ return $this->coarse; }
+	public function getRequiredTypeDataBits() : int{ return 2; }
+
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->dirtType($this->dirtType);
+	}
+
+	public function getDirtType() : DirtType{ return $this->dirtType; }
 
 	/** @return $this */
-	public function setCoarse(bool $coarse) : self{
-		$this->coarse = $coarse;
+	public function setDirtType(DirtType $dirtType) : self{
+		$this->dirtType = $dirtType;
 		return $this;
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		$world = $this->position->getWorld();
 		if($face === Facing::UP && $item instanceof Hoe){
 			$item->applyDamage(1);
 
-			$newBlock = $this->coarse ? VanillaBlocks::DIRT() : VanillaBlocks::FARMLAND();
-			$world = $this->position->getWorld();
-			$world->addSound($this->position->add(0.5, 0.5, 0.5), new ItemUseOnBlockSound($newBlock));
+			$newBlock = $this->dirtType->equals(DirtType::NORMAL()) ? VanillaBlocks::FARMLAND() : VanillaBlocks::DIRT();
+			$center = $this->position->add(0.5, 0.5, 0.5);
+			$world->addSound($center, new ItemUseOnBlockSound($newBlock));
 			$world->setBlock($this->position, $newBlock);
+			if($this->dirtType->equals(DirtType::ROOTED())){
+				$world->dropItem($center, VanillaBlocks::HANGING_ROOTS()->asItem());
+			}
 
 			return true;
+		}elseif($this->dirtType->equals(DirtType::ROOTED()) && $item instanceof Fertilizer){
+			$down = $this->getSide(Facing::DOWN);
+			if($down->getTypeId() !== BlockTypeIds::AIR){
+				return true;
+			}
+
+			$item->pop();
+			$world->setBlock($down->position, VanillaBlocks::HANGING_ROOTS());
+			//TODO: bonemeal particles, growth sounds
 		}
 
 		return false;

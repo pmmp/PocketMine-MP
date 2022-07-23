@@ -62,6 +62,15 @@ trait RuntimeEnumDeserializerTrait{
 		};
 	}
 
+	public function dirtType(\pocketmine\block\utils\DirtType &$value) : void{
+		$value = match($this->readInt(2)){
+			0 => \pocketmine\block\utils\DirtType::COARSE(),
+			1 => \pocketmine\block\utils\DirtType::NORMAL(),
+			2 => \pocketmine\block\utils\DirtType::ROOTED(),
+			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for DirtType")
+		};
+	}
+
 	public function dyeColor(\pocketmine\block\utils\DyeColor &$value) : void{
 		$value = match($this->readInt(4)){
 			0 => \pocketmine\block\utils\DyeColor::BLACK(),

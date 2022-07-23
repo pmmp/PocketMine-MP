@@ -132,6 +132,7 @@ use pocketmine\block\TripwireHook;
 use pocketmine\block\UnderwaterTorch;
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\CoralType;
+use pocketmine\block\utils\DirtType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\VanillaBlocks as Blocks;
@@ -886,8 +887,16 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->mapStairs(Blocks::DIORITE_STAIRS(), Ids::DIORITE_STAIRS);
 		$this->map(Blocks::DIORITE_WALL(), fn(Wall $block) => Helper::encodeLegacyWall($block, StringValues::WALL_BLOCK_TYPE_DIORITE));
 		$this->map(Blocks::DIRT(), function(Dirt $block) : Writer{
+			$dirtType = $block->getDirtType();
+			if($dirtType->equals(DirtType::ROOTED())){
+				return new Writer(Ids::DIRT_WITH_ROOTS);
+			}
 			return Writer::create(Ids::DIRT)
-				->writeString(StateNames::DIRT_TYPE, $block->isCoarse() ? StringValues::DIRT_TYPE_COARSE : StringValues::DIRT_TYPE_NORMAL);
+				->writeString(StateNames::DIRT_TYPE, match($dirtType){
+					DirtType::COARSE() => StringValues::DIRT_TYPE_COARSE,
+					DirtType::NORMAL() => StringValues::DIRT_TYPE_NORMAL,
+					default => throw new AssumptionFailedError("Unhandled dirt type " . $dirtType->name())
+				});
 		});
 		$this->map(Blocks::DOUBLE_TALLGRASS(), fn(DoubleTallGrass $block) => Helper::encodeDoublePlant($block, StringValues::DOUBLE_PLANT_TYPE_GRASS, Writer::create(Ids::DOUBLE_PLANT)));
 		$this->map(Blocks::DYED_SHULKER_BOX(), function(DyedShulkerBox $block) : Writer{
