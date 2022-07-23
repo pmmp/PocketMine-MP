@@ -41,9 +41,9 @@ use pocketmine\world\sound\WaterSplashSound;
 class Dirt extends Opaque{
 	protected DirtType $dirtType;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->dirtType = DirtType::NORMAL();
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
 	public function getRequiredTypeDataBits() : int{ return 2; }

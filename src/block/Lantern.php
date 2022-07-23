@@ -39,9 +39,9 @@ class Lantern extends Transparent{
 
 	protected bool $hanging = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, int $lightLevel){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, int $lightLevel){
 		$this->lightLevel = $lightLevel;
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
 	public function getRequiredStateDataBits() : int{ return 1; }

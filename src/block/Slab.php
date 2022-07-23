@@ -37,8 +37,8 @@ use pocketmine\world\BlockTransaction;
 class Slab extends Transparent{
 	protected SlabType $slabType;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
-		parent::__construct($idInfo, $name . " Slab", $breakInfo);
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
+		parent::__construct($idInfo, $name . " Slab", $typeInfo);
 		$this->slabType = SlabType::BOTTOM();
 	}
 

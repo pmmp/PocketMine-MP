@@ -51,9 +51,9 @@ abstract class BaseSign extends Transparent{
 	/**
 	 * @param \Closure() : Item $asItemCallback
 	 */
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, WoodType $woodType, \Closure $asItemCallback){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, WoodType $woodType, \Closure $asItemCallback){
 		$this->woodType = $woodType;
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 		$this->text = new SignText();
 		$this->asItemCallback = $asItemCallback;
 	}

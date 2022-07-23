@@ -29,8 +29,8 @@ use pocketmine\block\utils\CopperTrait;
 class CopperStairs extends Stair{
 	use CopperTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->oxidation = CopperOxidation::NONE();
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 }

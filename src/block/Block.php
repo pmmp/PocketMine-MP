@@ -65,10 +65,10 @@ class Block{
 	/**
 	 * @param string          $name English name of the block type (TODO: implement translations)
 	 */
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->idInfo = $idInfo;
 		$this->fallbackName = $name;
-		$this->breakInfo = $breakInfo;
+		$this->breakInfo = $typeInfo->getBreakInfo();
 		$this->position = new Position(0, 0, 0, null);
 	}
 

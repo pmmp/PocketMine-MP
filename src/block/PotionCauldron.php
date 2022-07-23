@@ -39,8 +39,8 @@ final class PotionCauldron extends FillableCauldron{
 
 	private ?Item $potionItem = null;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
-		parent::__construct($idInfo, $name, $breakInfo);
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
 	public function readStateFromWorld() : Block{

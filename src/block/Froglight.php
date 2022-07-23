@@ -31,9 +31,9 @@ final class Froglight extends SimplePillar{
 
 	private FroglightType $froglightType;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->froglightType = FroglightType::OCHRE();
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
 	public function getRequiredTypeDataBits() : int{ return 2; }

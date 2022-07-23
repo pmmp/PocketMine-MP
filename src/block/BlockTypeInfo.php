@@ -23,14 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\ColoredTrait;
-use pocketmine\block\utils\DyeColor;
+final class BlockTypeInfo{
 
-final class DyedShulkerBox extends ShulkerBox{
-	use ColoredTrait;
+	public function __construct(
+		private BlockBreakInfo $breakInfo,
+	){}
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->color = DyeColor::WHITE();
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
+	public function getBreakInfo() : BlockBreakInfo{ return $this->breakInfo; }
 }
