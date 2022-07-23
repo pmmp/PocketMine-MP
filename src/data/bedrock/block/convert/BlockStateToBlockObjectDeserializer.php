@@ -35,6 +35,7 @@ use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\VanillaBlocks as Blocks;
@@ -918,11 +919,13 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		});
 		$this->mapStairs(Ids::NORMAL_STONE_STAIRS, fn() => Blocks::STONE_STAIRS());
 		$this->mapStairs(Ids::OAK_STAIRS, fn() => Blocks::OAK_STAIRS());
+		$this->map(Ids::OCHRE_FROGLIGHT, fn(Reader $in) => Blocks::FROGLIGHT()->setFroglightType(FroglightType::OCHRE())->setAxis($in->readPillarAxis()));
 		$this->map(Ids::ORANGE_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::ORANGE(), $in));
 		$this->map(Ids::OXIDIZED_COPPER, fn() => Helper::decodeCopper(Blocks::COPPER(), CopperOxidation::OXIDIZED()));
 		$this->map(Ids::OXIDIZED_CUT_COPPER, fn() => Helper::decodeCopper(Blocks::CUT_COPPER(), CopperOxidation::OXIDIZED()));
 		$this->mapSlab(Ids::OXIDIZED_CUT_COPPER_SLAB, Ids::OXIDIZED_DOUBLE_CUT_COPPER_SLAB, fn() => Helper::decodeCopper(Blocks::CUT_COPPER_SLAB(), CopperOxidation::OXIDIZED()));
 		$this->mapStairs(Ids::OXIDIZED_CUT_COPPER_STAIRS, fn() => Helper::decodeCopper(Blocks::CUT_COPPER_STAIRS(), CopperOxidation::OXIDIZED()));
+		$this->map(Ids::PEARLESCENT_FROGLIGHT, fn(Reader $in) => Blocks::FROGLIGHT()->setFroglightType(FroglightType::PEARLESCENT())->setAxis($in->readPillarAxis()));
 		$this->map(Ids::PINK_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::PINK(), $in));
 		$this->map(Ids::PLANKS, function(Reader $in) : Block{
 			return match($woodName = $in->readString(StateNames::WOOD_TYPE)){
@@ -1265,6 +1268,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::UNPOWERED_COMPARATOR, fn(Reader $in) => Helper::decodeComparator(Blocks::REDSTONE_COMPARATOR(), $in));
 		$this->map(Ids::UNPOWERED_REPEATER, fn(Reader $in) => Helper::decodeRepeater(Blocks::REDSTONE_REPEATER(), $in)
 				->setPowered(false));
+		$this->map(Ids::VERDANT_FROGLIGHT, fn(Reader $in) => Blocks::FROGLIGHT()->setFroglightType(FroglightType::VERDANT())->setAxis($in->readPillarAxis()));
 		$this->map(Ids::VINE, function(Reader $in) : Block{
 			$vineDirectionFlags = $in->readBoundedInt(StateNames::VINE_DIRECTION_BITS, 0, 15);
 			return Blocks::VINES()

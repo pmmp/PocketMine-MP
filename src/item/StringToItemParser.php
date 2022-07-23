@@ -29,6 +29,7 @@ use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\SkullType;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\VanillaBlocks as Blocks;
@@ -98,6 +99,10 @@ final class StringToItemParser extends StringToTParser{
 				$result->registerBlock($prefix . "cut_copper_stairs", fn() => Blocks::CUT_COPPER_STAIRS()->setOxidation($oxidation)->setWaxed($waxed));
 				$result->registerBlock($prefix . "cut_copper_slab", fn() => Blocks::CUT_COPPER_SLAB()->setOxidation($oxidation)->setWaxed($waxed));
 			}
+		}
+
+		foreach(FroglightType::getAll() as $froglightType){
+			$result->registerBlock($froglightType->name() . "_froglight", fn() => Blocks::FROGLIGHT()->setFroglightType($froglightType));
 		}
 	}
 

@@ -393,6 +393,7 @@ use function mb_strtolower;
  * @method static Fire FIRE()
  * @method static FletchingTable FLETCHING_TABLE()
  * @method static FlowerPot FLOWER_POT()
+ * @method static Froglight FROGLIGHT()
  * @method static FrostedIce FROSTED_ICE()
  * @method static Furnace FURNACE()
  * @method static GildedBlackstone GILDED_BLACKSTONE()
@@ -1170,6 +1171,7 @@ final class VanillaBlocks{
 		self::register("mangrove_roots", new MangroveRoots(new BID(Ids::MANGROVE_ROOTS), "Mangrove Roots", new BreakInfo(0.7, ToolType::AXE)));
 		//TODO: muddy mangrove roots are supposed to be axis-rotatable (Bedrock parity issue https://bugs.mojang.com/browse/MCPE-153721)
 		self::register("muddy_mangrove_roots", new Transparent(new BID(Ids::MUDDY_MANGROVE_ROOTS), "Muddy Mangrove Roots", new BreakInfo(0.7, ToolType::SHOVEL)));
+		self::register("froglight", new Froglight(new BID(Ids::FROGLIGHT), "Froglight", new BreakInfo(0.3)));
 
 		self::registerBlocksR13();
 		self::registerBlocksR14();

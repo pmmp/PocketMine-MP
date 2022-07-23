@@ -28,6 +28,7 @@ use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\MushroomBlockType;
 use pocketmine\block\utils\SkullType;
@@ -161,6 +162,7 @@ $enumsUsed = [
 	CoralType::getAll(),
 	DirtType::getAll(),
 	DyeColor::getAll(),
+	FroglightType::getAll(),
 	LeverFacing::getAll(),
 	MushroomBlockType::getAll(),
 	SkullType::getAll(),

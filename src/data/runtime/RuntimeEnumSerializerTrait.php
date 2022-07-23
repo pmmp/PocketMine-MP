@@ -93,6 +93,15 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
+	public function froglightType(\pocketmine\block\utils\FroglightType $value) : void{
+		$this->int(2, match($value){
+			\pocketmine\block\utils\FroglightType::OCHRE() => 0,
+			\pocketmine\block\utils\FroglightType::PEARLESCENT() => 1,
+			\pocketmine\block\utils\FroglightType::VERDANT() => 2,
+			default => throw new \pocketmine\utils\AssumptionFailedError("All FroglightType cases should be covered")
+		});
+	}
+
 	public function leverFacing(\pocketmine\block\utils\LeverFacing $value) : void{
 		$this->int(3, match($value){
 			\pocketmine\block\utils\LeverFacing::DOWN_AXIS_X() => 0,

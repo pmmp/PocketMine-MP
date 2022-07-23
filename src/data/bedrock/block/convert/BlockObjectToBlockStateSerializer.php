@@ -74,6 +74,7 @@ use pocketmine\block\Fire;
 use pocketmine\block\FloorBanner;
 use pocketmine\block\FloorCoralFan;
 use pocketmine\block\FloorSign;
+use pocketmine\block\Froglight;
 use pocketmine\block\FrostedIce;
 use pocketmine\block\Furnace;
 use pocketmine\block\GlazedTerracotta;
@@ -134,6 +135,7 @@ use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Vine;
@@ -938,6 +940,15 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::FLOWER_POT(), function() : Writer{
 			return Writer::create(Ids::FLOWER_POT)
 				->writeBool(StateNames::UPDATE_BIT, false); //to keep MCPE happy
+		});
+		$this->map(Blocks::FROGLIGHT(), function(Froglight $block){
+			return Writer::create(match($block->getFroglightType()){
+				FroglightType::OCHRE() => Ids::OCHRE_FROGLIGHT,
+				FroglightType::PEARLESCENT() => Ids::PEARLESCENT_FROGLIGHT,
+				FroglightType::VERDANT() => Ids::VERDANT_FROGLIGHT,
+				default => throw new AssumptionFailedError("Unhandled froglight type " . $block->getFroglightType()->name())
+			})
+				->writePillarAxis($block->getAxis());
 		});
 		$this->map(Blocks::FROSTED_ICE(), function(FrostedIce $block) : Writer{
 			return Writer::create(Ids::FROSTED_ICE)
