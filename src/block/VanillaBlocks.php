@@ -1454,7 +1454,7 @@ final class VanillaBlocks{
 		});
 
 		self::register("warped_wart_block", new Opaque(new BID(Ids::WARPED_WART_BLOCK), "Warped Wart Block", new BreakInfo(1.0, ToolType::HOE)));
-		self::register("crying_obsidian", new class(new BID(Ids::CRYING_OBSIDIAN), "Crying Obsidian", BreakInfo::pickaxe(35.0 /* 50 in Java */, ToolTier::DIAMOND())) extends Opaque{
+		self::register("crying_obsidian", new class(new BID(Ids::CRYING_OBSIDIAN), "Crying Obsidian", BreakInfo::pickaxe(35.0 /* 50 in Java */, ToolTier::DIAMOND(), 6000.0)) extends Opaque{
 			public function getLightLevel() : int{ return 10;}
 		});
 	}
