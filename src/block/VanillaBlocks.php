@@ -495,6 +495,7 @@ use function mb_strtolower;
  * @method static Slab MOSSY_STONE_BRICK_SLAB()
  * @method static Stair MOSSY_STONE_BRICK_STAIRS()
  * @method static Wall MOSSY_STONE_BRICK_WALL()
+ * @method static Opaque MUD()
  * @method static Opaque MUD_BRICKS()
  * @method static Slab MUD_BRICK_SLAB()
  * @method static Stair MUD_BRICK_STAIRS()
@@ -534,6 +535,7 @@ use function mb_strtolower;
  * @method static Flower ORANGE_TULIP()
  * @method static Flower OXEYE_DAISY()
  * @method static PackedIce PACKED_ICE()
+ * @method static Opaque PACKED_MUD()
  * @method static DoublePlant PEONY()
  * @method static Flower PINK_TULIP()
  * @method static Podzol PODZOL()
@@ -1520,6 +1522,9 @@ final class VanillaBlocks{
 	}
 
 	private static function registerMudBlocks() : void{
+		self::register("mud", new Opaque(new BID(Ids::MUD), "Mud", new BreakInfo(0.5, ToolType::SHOVEL)));
+		self::register("packed_mud", new Opaque(new BID(Ids::PACKED_MUD), "Packed Mud", new BreakInfo(1.0, ToolType::PICKAXE, 0, 15.0)));
+
 		$mudBricksBreakInfo = new BreakInfo(2.0, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
 
 		self::register("mud_bricks", new Opaque(new BID(Ids::MUD_BRICKS), "Mud Bricks", $mudBricksBreakInfo));

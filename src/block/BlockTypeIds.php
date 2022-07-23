@@ -702,5 +702,5 @@ final class BlockTypeIds{
 	public const CHORUS_FLOWER = 10675;
 	public const CHORUS_PLANT = 10676;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10676;
+	public const FIRST_UNUSED_BLOCK_ID = 10677;
 }

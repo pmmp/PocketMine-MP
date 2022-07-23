@@ -774,6 +774,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("mossy_stone_brick_stairs", fn() => Blocks::MOSSY_STONE_BRICK_STAIRS());
 		$result->registerBlock("mossy_stone_brick_wall", fn() => Blocks::MOSSY_STONE_BRICK_WALL());
 		$result->registerBlock("mossy_stone_bricks", fn() => Blocks::MOSSY_STONE_BRICKS());
+		$result->registerBlock("mud", fn() => Blocks::MUD());
 		$result->registerBlock("mud_bricks", fn() => Blocks::MUD_BRICKS());
 		$result->registerBlock("mud_brick_slab", fn() => Blocks::MUD_BRICK_SLAB());
 		$result->registerBlock("mud_brick_stairs", fn() => Blocks::MUD_BRICK_STAIRS());
@@ -824,6 +825,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("orange_tulip", fn() => Blocks::ORANGE_TULIP());
 		$result->registerBlock("oxeye_daisy", fn() => Blocks::OXEYE_DAISY());
 		$result->registerBlock("packed_ice", fn() => Blocks::PACKED_ICE());
+		$result->registerBlock("packed_mud", fn() => Blocks::PACKED_MUD());
 		$result->registerBlock("peony", fn() => Blocks::PEONY());
 		$result->registerBlock("pink_tulip", fn() => Blocks::PINK_TULIP());
 		$result->registerBlock("plank", fn() => Blocks::OAK_PLANKS());

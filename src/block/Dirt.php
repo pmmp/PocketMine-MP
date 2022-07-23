@@ -29,10 +29,14 @@ use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Hoe;
 use pocketmine\item\Item;
+use pocketmine\item\Potion;
+use pocketmine\item\PotionType;
+use pocketmine\item\SplashPotion;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\sound\ItemUseOnBlockSound;
+use pocketmine\world\sound\WaterSplashSound;
 
 class Dirt extends Opaque{
 	protected DirtType $dirtType;
@@ -79,6 +83,11 @@ class Dirt extends Opaque{
 			$item->pop();
 			$world->setBlock($down->position, VanillaBlocks::HANGING_ROOTS());
 			//TODO: bonemeal particles, growth sounds
+		}elseif(($item instanceof Potion || $item instanceof SplashPotion) && $item->getType()->equals(PotionType::WATER())){
+			$item->pop();
+			$world->setBlock($this->position, VanillaBlocks::MUD());
+			$world->addSound($this->position, new WaterSplashSound(0.5));
+			return true;
 		}
 
 		return false;

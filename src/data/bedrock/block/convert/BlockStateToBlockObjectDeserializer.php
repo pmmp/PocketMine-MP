@@ -360,6 +360,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::MELON_BLOCK, fn() => Blocks::MELON());
 		$this->map(Ids::MOB_SPAWNER, fn() => Blocks::MONSTER_SPAWNER());
 		$this->map(Ids::MOSSY_COBBLESTONE, fn() => Blocks::MOSSY_COBBLESTONE());
+		$this->map(Ids::MUD, fn() => Blocks::MUD());
 		$this->map(Ids::MUD_BRICKS, fn() => Blocks::MUD_BRICKS());
 		$this->map(Ids::MYCELIUM, fn() => Blocks::MYCELIUM());
 		$this->map(Ids::NETHER_BRICK, fn() => Blocks::NETHER_BRICKS());
@@ -372,6 +373,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::NOTEBLOCK, fn() => Blocks::NOTE_BLOCK());
 		$this->map(Ids::OBSIDIAN, fn() => Blocks::OBSIDIAN());
 		$this->map(Ids::PACKED_ICE, fn() => Blocks::PACKED_ICE());
+		$this->map(Ids::PACKED_MUD, fn() => Blocks::PACKED_MUD());
 		$this->map(Ids::PODZOL, fn() => Blocks::PODZOL());
 		$this->map(Ids::POLISHED_BLACKSTONE, fn() => Blocks::POLISHED_BLACKSTONE());
 		$this->map(Ids::POLISHED_BLACKSTONE_BRICKS, fn() => Blocks::POLISHED_BLACKSTONE_BRICKS());
