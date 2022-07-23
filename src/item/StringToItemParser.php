@@ -750,6 +750,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("mangrove_log", fn() => Blocks::MANGROVE_LOG()->setStripped(false));
 		$result->registerBlock("mangrove_planks", fn() => Blocks::MANGROVE_PLANKS());
 		$result->registerBlock("mangrove_pressure_plate", fn() => Blocks::MANGROVE_PRESSURE_PLATE());
+		$result->registerBlock("mangrove_roots", fn() => Blocks::MANGROVE_ROOTS());
 		$result->registerBlock("mangrove_sign", fn() => Blocks::MANGROVE_SIGN());
 		$result->registerBlock("mangrove_slab", fn() => Blocks::MANGROVE_SLAB());
 		$result->registerBlock("mangrove_stairs", fn() => Blocks::MANGROVE_STAIRS());
@@ -779,6 +780,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("mud_brick_slab", fn() => Blocks::MUD_BRICK_SLAB());
 		$result->registerBlock("mud_brick_stairs", fn() => Blocks::MUD_BRICK_STAIRS());
 		$result->registerBlock("mud_brick_wall", fn() => Blocks::MUD_BRICK_WALL());
+		$result->registerBlock("muddy_mangrove_roots", fn() => Blocks::MUDDY_MANGROVE_ROOTS());
 		$result->registerBlock("mushroom_stem", fn() => Blocks::MUSHROOM_STEM());
 		$result->registerBlock("mycelium", fn() => Blocks::MYCELIUM());
 		$result->registerBlock("nether_brick_block", fn() => Blocks::NETHER_BRICKS());

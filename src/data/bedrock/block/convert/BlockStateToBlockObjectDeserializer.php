@@ -357,10 +357,12 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::MAGMA, fn() => Blocks::MAGMA());
 		$this->map(Ids::MANGROVE_FENCE, fn() => Blocks::MANGROVE_FENCE());
 		$this->map(Ids::MANGROVE_PLANKS, fn() => Blocks::MANGROVE_PLANKS());
+		$this->map(Ids::MANGROVE_ROOTS, fn() => Blocks::MANGROVE_ROOTS());
 		$this->map(Ids::MELON_BLOCK, fn() => Blocks::MELON());
 		$this->map(Ids::MOB_SPAWNER, fn() => Blocks::MONSTER_SPAWNER());
 		$this->map(Ids::MOSSY_COBBLESTONE, fn() => Blocks::MOSSY_COBBLESTONE());
 		$this->map(Ids::MUD, fn() => Blocks::MUD());
+		$this->map(Ids::MUDDY_MANGROVE_ROOTS, fn() => Blocks::MUDDY_MANGROVE_ROOTS());
 		$this->map(Ids::MUD_BRICKS, fn() => Blocks::MUD_BRICKS());
 		$this->map(Ids::MYCELIUM, fn() => Blocks::MYCELIUM());
 		$this->map(Ids::NETHER_BRICK, fn() => Blocks::NETHER_BRICKS());

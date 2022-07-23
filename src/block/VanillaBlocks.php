@@ -476,6 +476,7 @@ use function mb_strtolower;
  * @method static Wood MANGROVE_LOG()
  * @method static Planks MANGROVE_PLANKS()
  * @method static WoodenPressurePlate MANGROVE_PRESSURE_PLATE()
+ * @method static MangroveRoots MANGROVE_ROOTS()
  * @method static FloorSign MANGROVE_SIGN()
  * @method static WoodenSlab MANGROVE_SLAB()
  * @method static WoodenStairs MANGROVE_STAIRS()
@@ -496,6 +497,7 @@ use function mb_strtolower;
  * @method static Stair MOSSY_STONE_BRICK_STAIRS()
  * @method static Wall MOSSY_STONE_BRICK_WALL()
  * @method static Opaque MUD()
+ * @method static Transparent MUDDY_MANGROVE_ROOTS()
  * @method static Opaque MUD_BRICKS()
  * @method static Slab MUD_BRICK_SLAB()
  * @method static Stair MUD_BRICK_STAIRS()
@@ -1164,6 +1166,10 @@ final class VanillaBlocks{
 			"Wall Coral Fan",
 			BreakInfo::instant(),
 		));
+
+		self::register("mangrove_roots", new MangroveRoots(new BID(Ids::MANGROVE_ROOTS), "Mangrove Roots", new BreakInfo(0.7, ToolType::AXE)));
+		//TODO: muddy mangrove roots are supposed to be axis-rotatable (Bedrock parity issue https://bugs.mojang.com/browse/MCPE-153721)
+		self::register("muddy_mangrove_roots", new Transparent(new BID(Ids::MUDDY_MANGROVE_ROOTS), "Muddy Mangrove Roots", new BreakInfo(0.7, ToolType::SHOVEL)));
 
 		self::registerBlocksR13();
 		self::registerBlocksR14();
