@@ -29,7 +29,7 @@ class WoodenFence extends Fence{
 	use WoodTypeTrait;
 
 	public function getFuelTime() : int{
-		return 300;
+		return $this->woodType->isFlammable() ? 300 : 0;
 	}
 
 	public function getFlameEncouragement() : int{
