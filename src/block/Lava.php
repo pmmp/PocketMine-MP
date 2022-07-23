@@ -94,7 +94,8 @@ class Lava extends Liquid{
 		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_LAVA, 4);
 		$entity->attack($ev);
 
-		$ev = new EntityCombustByBlockEvent($this, $entity, 15);
+		//in java burns entities for 15 seconds - seems to be a parity issue in bedrock
+		$ev = new EntityCombustByBlockEvent($this, $entity, 8);
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$entity->setOnFire($ev->getDuration());
