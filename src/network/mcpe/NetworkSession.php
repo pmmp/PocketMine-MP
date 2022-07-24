@@ -374,9 +374,8 @@ class NetworkSession{
 			throw new PacketHandlingException("Unexpected non-serverbound packet");
 		}
 
-		$timings = Timings::getReceiveDataPacketTimings($packet);
+		$timings = Timings::getDecodeDataPacketTimings($packet);
 		$timings->startTiming();
-
 		try{
 			$stream = PacketSerializer::decoder($buffer, 0, $this->packetSerializerContext);
 			try{
@@ -388,7 +387,15 @@ class NetworkSession{
 				$remains = substr($stream->getBuffer(), $stream->getOffset());
 				$this->logger->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": " . bin2hex($remains));
 			}
+		}finally{
+			$timings->stopTiming();
+		}
 
+		$timings = Timings::getHandleDataPacketTimings($packet);
+		$timings->startTiming();
+		try{
+			//TODO: I'm not sure DataPacketReceiveEvent should be included in the handler timings, but it needs to be
+			//included for now to ensure the receivePacket timings are counted the way they were before
 			$ev = new DataPacketReceiveEvent($this, $packet);
 			$ev->call();
 			if(!$ev->isCancelled() && ($this->handler === null || !$packet->handle($this->handler))){
