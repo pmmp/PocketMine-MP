@@ -1180,7 +1180,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return;
 		}
 
-		$oldPos = $this->getLocation();
+		$oldPos = $this->location;
 		$distanceSquared = $newPos->distanceSquared($oldPos);
 
 		$revert = false;
@@ -1198,7 +1198,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			 * asking for help if you suffer the consequences of messing with this.
 			 */
 			$this->logger->debug("Moved too fast, reverting movement");
-			$this->logger->debug("Old position: " . $this->location->asVector3() . ", new position: " . $newPos);
+			$this->logger->debug("Old position: " . $oldPos->asVector3() . ", new position: " . $newPos);
 			$revert = true;
 		}elseif(!$this->getWorld()->isInLoadedTerrain($newPos)){
 			$revert = true;
@@ -1206,9 +1206,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		if(!$revert && $distanceSquared != 0){
-			$dx = $newPos->x - $this->location->x;
-			$dy = $newPos->y - $this->location->y;
-			$dz = $newPos->z - $this->location->z;
+			$dx = $newPos->x - $oldPos->x;
+			$dy = $newPos->y - $oldPos->y;
+			$dz = $newPos->z - $oldPos->z;
 
 			$this->move($dx, $dy, $dz);
 		}
