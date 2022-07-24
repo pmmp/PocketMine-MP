@@ -145,6 +145,8 @@ class InGamePacketHandler extends PacketHandler{
 	/** @var UseItemTransactionData|null */
 	protected $lastRightClickData = null;
 
+	protected ?int $lastPlayerAuthInputFlags = null;
+
 	/** @var bool */
 	public $forceMoveSync = false;
 
@@ -208,21 +210,25 @@ class InGamePacketHandler extends PacketHandler{
 		$this->forceMoveSync = false;
 
 		$inputFlags = $packet->getInputFlags();
-		$sneaking = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SNEAKING, PlayerAuthInputFlags::STOP_SNEAKING);
-		$sprinting = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SPRINTING, PlayerAuthInputFlags::STOP_SPRINTING);
-		$swimming = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SWIMMING, PlayerAuthInputFlags::STOP_SWIMMING);
-		$gliding = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_GLIDING, PlayerAuthInputFlags::STOP_GLIDING);
-		$mismatch =
-			($sneaking !== null && !$this->player->toggleSneak($sneaking)) |
-			($sprinting !== null && !$this->player->toggleSprint($sprinting)) |
-			($swimming !== null && !$this->player->toggleSwim($swimming)) |
-			($gliding !== null && !$this->player->toggleGlide($gliding));
-		if((bool) $mismatch){
-			$this->player->sendData([$this->player]);
-		}
+		if($inputFlags !== $this->lastPlayerAuthInputFlags){
+			$this->lastPlayerAuthInputFlags = $inputFlags;
 
-		if($packet->hasFlag(PlayerAuthInputFlags::START_JUMPING)){
-			$this->player->jump();
+			$sneaking = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SNEAKING, PlayerAuthInputFlags::STOP_SNEAKING);
+			$sprinting = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SPRINTING, PlayerAuthInputFlags::STOP_SPRINTING);
+			$swimming = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SWIMMING, PlayerAuthInputFlags::STOP_SWIMMING);
+			$gliding = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_GLIDING, PlayerAuthInputFlags::STOP_GLIDING);
+			$mismatch =
+				($sneaking !== null && !$this->player->toggleSneak($sneaking)) |
+				($sprinting !== null && !$this->player->toggleSprint($sprinting)) |
+				($swimming !== null && !$this->player->toggleSwim($swimming)) |
+				($gliding !== null && !$this->player->toggleGlide($gliding));
+			if((bool) $mismatch){
+				$this->player->sendData([$this->player]);
+			}
+
+			if($packet->hasFlag(PlayerAuthInputFlags::START_JUMPING)){
+				$this->player->jump();
+			}
 		}
 
 		if(!$this->forceMoveSync){
