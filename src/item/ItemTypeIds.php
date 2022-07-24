@@ -298,4 +298,13 @@ final class ItemTypeIds{
 	public const LINGERING_POTION = 20259;
 
 	public const FIRST_UNUSED_ITEM_ID = 20260;
+
+	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
+
+	/**
+	 * Returns a new runtime item type ID, e.g. for use by a custom item.
+	 */
+	public static function newId() : int{
+		return self::$nextDynamicId++;
+	}
 }

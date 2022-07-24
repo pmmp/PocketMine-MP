@@ -706,4 +706,13 @@ final class BlockTypeIds{
 	public const FROGLIGHT = 10679;
 
 	public const FIRST_UNUSED_BLOCK_ID = 10680;
+
+	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
+
+	/**
+	 * Returns a new runtime block type ID, e.g. for use by a custom block.
+	 */
+	public static function newId() : int{
+		return self::$nextDynamicId++;
+	}
 }
