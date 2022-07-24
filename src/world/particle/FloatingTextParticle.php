@@ -30,6 +30,7 @@ use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
+use pocketmine\network\mcpe\protocol\types\command\CommandPermissions;
 use pocketmine\network\mcpe\protocol\types\DeviceOS;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
@@ -39,8 +40,11 @@ use pocketmine\network\mcpe\protocol\types\GameMode;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
+use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
+use pocketmine\network\mcpe\protocol\types\UpdateAbilitiesPacketLayer;
 use pocketmine\network\mcpe\protocol\UpdateAbilitiesPacket;
 use Ramsey\Uuid\Uuid;
+use function array_fill;
 use function str_repeat;
 
 class FloatingTextParticle implements Particle{
@@ -119,7 +123,14 @@ class FloatingTextParticle implements Particle{
 				ItemStackWrapper::legacy(ItemStack::null()),
 				GameMode::SURVIVAL,
 				$actorMetadata,
-				UpdateAbilitiesPacket::create(0, 0, $this->entityId, []),
+				UpdateAbilitiesPacket::create(CommandPermissions::NORMAL, PlayerPermissions::VISITOR, $this->entityId, [
+					new UpdateAbilitiesPacketLayer(
+						UpdateAbilitiesPacketLayer::LAYER_BASE,
+						array_fill(0, UpdateAbilitiesPacketLayer::NUMBER_OF_ABILITIES, false),
+						0.0,
+						0.0
+					)
+				]),
 				[],
 				"",
 				DeviceOS::UNKNOWN
