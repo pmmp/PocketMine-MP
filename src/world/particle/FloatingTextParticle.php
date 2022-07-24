@@ -39,7 +39,7 @@ use pocketmine\network\mcpe\protocol\types\entity\LongMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 
 class FloatingTextParticle implements Particle{
-	//TODO: HACK! Change to actual entity
+	//TODO: HACK!
 
 	/** @var string */
 	protected $text;
