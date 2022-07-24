@@ -197,17 +197,20 @@ class InGamePacketHandler extends PacketHandler{
 
 		$this->player->setRotation($yaw, $pitch);
 
-		$curPos = $this->player->getLocation();
 		$newPos = $rawPos->round(4)->subtract(0, 1.62, 0);
 
-		if($this->forceMoveSync && $newPos->distanceSquared($curPos) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
-			$this->session->getLogger()->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $curPos);
-			//Still getting movements from before teleport, ignore them
-			return false;
-		}
+		if($this->forceMoveSync){
+			$curPos = $this->player->getLocation();
 
-		// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
-		$this->forceMoveSync = false;
+			if($newPos->distanceSquared($curPos) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
+				$this->session->getLogger()->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $curPos);
+				//Still getting movements from before teleport, ignore them
+				return false;
+			}
+
+			// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
+			$this->forceMoveSync = false;
+		}
 
 		$inputFlags = $packet->getInputFlags();
 		if($inputFlags !== $this->lastPlayerAuthInputFlags){
