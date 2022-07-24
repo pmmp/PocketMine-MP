@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -39,7 +39,7 @@ class Ice extends Transparent{
 	}
 
 	public function onBreak(Item $item, ?Player $player = null) : bool{
-		if(($player === null or $player->isSurvival()) and !$item->hasEnchantment(VanillaEnchantments::SILK_TOUCH())){
+		if(($player === null || $player->isSurvival()) && !$item->hasEnchantment(VanillaEnchantments::SILK_TOUCH())){
 			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::WATER());
 			return true;
 		}

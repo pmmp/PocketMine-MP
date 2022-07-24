@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -39,16 +39,11 @@ final class Skin{
 		128 * 128 * 4
 	];
 
-	/** @var string */
-	private $skinId;
-	/** @var string */
-	private $skinData;
-	/** @var string */
-	private $capeData;
-	/** @var string */
-	private $geometryName;
-	/** @var string */
-	private $geometryData;
+	private string $skinId;
+	private string $skinData;
+	private string $capeData;
+	private string $geometryName;
+	private string $geometryData;
 
 	private static function checkLength(string $string, string $name, int $maxLength) : void{
 		if(strlen($string) > $maxLength){
@@ -68,7 +63,7 @@ final class Skin{
 		if(!in_array($len, self::ACCEPTED_SKIN_SIZES, true)){
 			throw new InvalidSkinException("Invalid skin data size $len bytes (allowed sizes: " . implode(", ", self::ACCEPTED_SKIN_SIZES) . ")");
 		}
-		if($capeData !== "" and strlen($capeData) !== 8192){
+		if($capeData !== "" && strlen($capeData) !== 8192){
 			throw new InvalidSkinException("Invalid cape data size " . strlen($capeData) . " bytes (must be exactly 8192 bytes)");
 		}
 

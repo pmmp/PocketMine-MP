@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,9 +28,7 @@ use pocketmine\block\utils\SkullType;
 use pocketmine\block\VanillaBlocks;
 
 class Skull extends Item{
-
-	/** @var SkullType */
-	private $skullType;
+	private SkullType $skullType;
 
 	public function __construct(ItemIdentifier $identifier, string $name, SkullType $skullType){
 		parent::__construct($identifier, $name);

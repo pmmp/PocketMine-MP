@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,26 +28,25 @@ use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use function get_class;
 
 abstract class Spawnable extends Tile{
-	/**
-	 * @var CacheableNbt|null
-	 * @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag>|null
-	 */
-	private $spawnCompoundCache = null;
-	/** @var bool */
-	private $dirty = true; //default dirty, until it's been spawned appropriately on the world
+	/** @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag>|null */
+	private ?CacheableNbt $spawnCompoundCache = null;
 
 	/**
-	 * Returns whether the tile needs to be respawned to viewers.
+	 * @deprecated
 	 */
 	public function isDirty() : bool{
-		return $this->dirty;
+		return $this->spawnCompoundCache === null;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function setDirty(bool $dirty = true) : void{
-		if($dirty){
-			$this->spawnCompoundCache = null;
-		}
-		$this->dirty = $dirty;
+		$this->clearSpawnCompoundCache();
+	}
+
+	public function clearSpawnCompoundCache() : void{
+		$this->spawnCompoundCache = null;
 	}
 
 	/**

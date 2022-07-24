@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -36,12 +36,14 @@ use function assert;
 use function floor;
 
 class Skull extends Flowable{
+	public const MIN_ROTATION = 0;
+	public const MAX_ROTATION = 15;
 
 	protected SkullType $skullType;
 
 	protected int $facing = Facing::NORTH;
 	protected bool $noDrops = false;
-	protected int $rotation = 0; //TODO: split this into floor skull and wall skull handling
+	protected int $rotation = self::MIN_ROTATION; //TODO: split this into floor skull and wall skull handling
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->skullType = SkullType::SKELETON(); //TODO: this should be a parameter
@@ -54,7 +56,8 @@ class Skull extends Flowable{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = $stateMeta === 1 ? Facing::UP : BlockDataSerializer::readHorizontalFacing($stateMeta);
+		$facingMeta = $stateMeta & 0x7;
+		$this->facing = $facingMeta === 1 ? Facing::UP : BlockDataSerializer::readHorizontalFacing($facingMeta);
 		$this->noDrops = ($stateMeta & BlockLegacyMetadata::SKULL_FLAG_NO_DROPS) !== 0;
 	}
 
@@ -105,8 +108,8 @@ class Skull extends Flowable{
 
 	/** @return $this */
 	public function setRotation(int $rotation) : self{
-		if($rotation < 0 || $rotation > 15){
-			throw new \InvalidArgumentException("Rotation must be a value between 0 and 15");
+		if($rotation < self::MIN_ROTATION || $rotation > self::MAX_ROTATION){
+			throw new \InvalidArgumentException("Rotation must be in range " . self::MIN_ROTATION . " ... " . self::MAX_ROTATION);
 		}
 		$this->rotation = $rotation;
 		return $this;
@@ -140,7 +143,7 @@ class Skull extends Flowable{
 		}
 
 		$this->facing = $face;
-		if($player !== null and $face === Facing::UP){
+		if($player !== null && $face === Facing::UP){
 			$this->rotation = ((int) floor(($player->getLocation()->getYaw() * 16 / 360) + 0.5)) & 0xf;
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);

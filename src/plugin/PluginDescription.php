@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -124,7 +124,7 @@ class PluginDescription{
 		$this->compatibleMcpeProtocols = array_map("\intval", (array) ($plugin["mcpe-protocol"] ?? []));
 		$this->compatibleOperatingSystems = array_map("\strval", (array) ($plugin["os"] ?? []));
 
-		if(isset($plugin["commands"]) and is_array($plugin["commands"])){
+		if(isset($plugin["commands"]) && is_array($plugin["commands"])){
 			foreach($plugin["commands"] as $commandName => $commandData){
 				if(!is_string($commandName)){
 					throw new PluginDescriptionParseException("Invalid Plugin commands, key must be the name of the command");
@@ -156,7 +156,7 @@ class PluginDescription{
 					$k = $v;
 					$v = "*";
 				}
-				$this->extensions[$k] = array_map('strval', is_array($v) ? $v : [$v]);
+				$this->extensions[(string) $k] = array_map('strval', is_array($v) ? $v : [$v]);
 			}
 		}
 

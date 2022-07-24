@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -38,12 +38,9 @@ class ItemFrame extends Spawnable{
 	public const TAG_ITEM_DROP_CHANCE = "ItemDropChance";
 	public const TAG_ITEM = "Item";
 
-	/** @var Item */
-	private $item;
-	/** @var int */
-	private $itemRotation = 0;
-	/** @var float */
-	private $itemDropChance = 1.0;
+	private Item $item;
+	private int $itemRotation = 0;
+	private float $itemDropChance = 1.0;
 
 	public function __construct(World $world, Vector3 $pos){
 		$this->item = VanillaItems::AIR();
@@ -73,7 +70,7 @@ class ItemFrame extends Spawnable{
 	}
 
 	public function setItem(?Item $item) : void{
-		if($item !== null and !$item->isNull()){
+		if($item !== null && !$item->isNull()){
 			$this->item = clone $item;
 		}else{
 			$this->item = VanillaItems::AIR();

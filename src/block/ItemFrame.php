@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,6 +31,8 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use function is_infinite;
+use function is_nan;
 use function lcg_value;
 
 class ItemFrame extends Flowable{
@@ -86,7 +88,7 @@ class ItemFrame extends Flowable{
 
 	/** @return $this */
 	public function setFramedItem(?Item $item) : self{
-		if($item === null or $item->isNull()){
+		if($item === null || $item->isNull()){
 			$this->framedItem = null;
 			$this->itemRotation = 0;
 		}else{
@@ -111,6 +113,9 @@ class ItemFrame extends Flowable{
 
 	/** @return $this */
 	public function setItemDropChance(float $itemDropChance) : self{
+		if($itemDropChance < 0.0 || $itemDropChance > 1.0 || is_nan($itemDropChance) || is_infinite($itemDropChance)){
+			throw new \InvalidArgumentException("Drop chance must be in range 0-1");
+		}
 		$this->itemDropChance = $itemDropChance;
 		return $this;
 	}
@@ -161,7 +166,7 @@ class ItemFrame extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($face === Facing::DOWN or $face === Facing::UP or !$blockClicked->isSolid()){
+		if($face === Facing::DOWN || $face === Facing::UP || !$blockClicked->isSolid()){
 			return false;
 		}
 
@@ -172,7 +177,7 @@ class ItemFrame extends Flowable{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		$drops = parent::getDropsForCompatibleTool($item);
-		if($this->framedItem !== null and lcg_value() <= $this->itemDropChance){
+		if($this->framedItem !== null && lcg_value() <= $this->itemDropChance){
 			$drops[] = clone $this->framedItem;
 		}
 

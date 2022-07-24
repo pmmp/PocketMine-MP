@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -113,7 +113,7 @@ final class WallCoralFan extends BaseCoral{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$axis = Facing::axis($face);
-		if(($axis !== Axis::X && $axis !== Axis::Z) || !$blockClicked->isSolid()){
+		if(($axis !== Axis::X && $axis !== Axis::Z) || !$this->canBeSupportedBy($blockClicked, $face)){
 			return false;
 		}
 		$this->facing = $face;
@@ -122,10 +122,14 @@ final class WallCoralFan extends BaseCoral{
 
 	public function onNearbyBlockChange() : void{
 		$world = $this->position->getWorld();
-		if(!$world->getBlock($this->position->getSide(Facing::opposite($this->facing)))->isSolid()){
+		if(!$this->canBeSupportedBy($world->getBlock($this->position->getSide(Facing::opposite($this->facing))), $this->facing)){
 			$world->useBreakOn($this->position);
 		}else{
 			parent::onNearbyBlockChange();
 		}
+	}
+
+	private function canBeSupportedBy(Block $block, int $face) : bool{
+		return $block->getSupportType($face)->hasCenterSupport();
 	}
 }

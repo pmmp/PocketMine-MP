@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -70,15 +70,13 @@ final class RecordType{
 		);
 	}
 
-	/** @var string */
-	private $soundName;
-	/** @var int */
-	private $soundId;
-
-	private function __construct(string $enumName, string $soundName, int $soundId, private Translatable $translatableName){
+	private function __construct(
+		string $enumName,
+		private string $soundName,
+		private int $soundId,
+		private Translatable $translatableName
+	){
 		$this->Enum___construct($enumName);
-		$this->soundName = $soundName;
-		$this->soundId = $soundId;
 	}
 
 	public function getSoundName() : string{

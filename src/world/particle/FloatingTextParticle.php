@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -109,6 +109,7 @@ class FloatingTextParticle implements Particle{
 				EntityIds::FALLING_BLOCK,
 				$pos, //TODO: check offset (0.49?)
 				null,
+				0,
 				0,
 				0,
 				0,

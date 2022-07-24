@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -40,12 +40,9 @@ class WrittenBook extends WritableBookBase{
 	public const TAG_AUTHOR = "author"; //TAG_String
 	public const TAG_TITLE = "title"; //TAG_String
 
-	/** @var int */
-	private $generation = self::GENERATION_ORIGINAL;
-	/** @var string */
-	private $author = "";
-	/** @var string */
-	private $title = "";
+	private int $generation = self::GENERATION_ORIGINAL;
+	private string $author = "";
+	private string $title = "";
 
 	public function getMaxStackSize() : int{
 		return 16;
@@ -65,7 +62,7 @@ class WrittenBook extends WritableBookBase{
 	 * @return $this
 	 */
 	public function setGeneration(int $generation) : self{
-		if($generation < 0 or $generation > 3){
+		if($generation < 0 || $generation > 3){
 			throw new \InvalidArgumentException("Generation \"$generation\" is out of range");
 		}
 

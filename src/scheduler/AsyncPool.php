@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -42,47 +42,40 @@ use const PTHREADS_INHERIT_INI;
 class AsyncPool{
 	private const WORKER_START_OPTIONS = PTHREADS_INHERIT_INI;
 
-	/** @var \ClassLoader */
-	private $classLoader;
-	/** @var \ThreadedLogger */
-	private $logger;
 	/** @var int */
 	protected $size;
-	/** @var int */
-	private $workerMemoryLimit;
 
 	/**
 	 * @var \SplQueue[]|AsyncTask[][]
 	 * @phpstan-var array<int, \SplQueue<AsyncTask>>
 	 */
-	private $taskQueues = [];
+	private array $taskQueues = [];
 
 	/**
 	 * @var AsyncWorker[]
 	 * @phpstan-var array<int, AsyncWorker>
 	 */
-	private $workers = [];
+	private array $workers = [];
 	/**
 	 * @var int[]
 	 * @phpstan-var array<int, int>
 	 */
-	private $workerLastUsed = [];
+	private array $workerLastUsed = [];
 
 	/**
 	 * @var \Closure[]
 	 * @phpstan-var (\Closure(int $workerId) : void)[]
 	 */
-	private $workerStartHooks = [];
+	private array $workerStartHooks = [];
 
-	/** @var SleeperHandler */
-	private $eventLoop;
-
-	public function __construct(int $size, int $workerMemoryLimit, \ClassLoader $classLoader, \ThreadedLogger $logger, SleeperHandler $eventLoop){
+	public function __construct(
+		int $size,
+		private int $workerMemoryLimit,
+		private \ClassLoader $classLoader,
+		private \ThreadedLogger $logger,
+		private SleeperHandler $eventLoop
+	){
 		$this->size = $size;
-		$this->workerMemoryLimit = $workerMemoryLimit;
-		$this->classLoader = $classLoader;
-		$this->logger = $logger;
-		$this->eventLoop = $eventLoop;
 	}
 
 	/**
@@ -163,7 +156,7 @@ class AsyncPool{
 	 * Submits an AsyncTask to an arbitrary worker.
 	 */
 	public function submitTaskToWorker(AsyncTask $task, int $worker) : void{
-		if($worker < 0 or $worker >= $this->size){
+		if($worker < 0 || $worker >= $this->size){
 			throw new \InvalidArgumentException("Invalid worker $worker");
 		}
 		if($task->isSubmitted()){
@@ -197,7 +190,7 @@ class AsyncPool{
 				}
 			}
 		}
-		if($worker === null or ($minUsage > 0 and count($this->workers) < $this->size)){
+		if($worker === null || ($minUsage > 0 && count($this->workers) < $this->size)){
 			//select a worker to start on the fly
 			for($i = 0; $i < $this->size; ++$i){
 				if(!isset($this->workers[$i])){
@@ -297,7 +290,7 @@ class AsyncPool{
 		$ret = 0;
 		$time = time();
 		foreach($this->taskQueues as $i => $queue){
-			if((!isset($this->workerLastUsed[$i]) or $this->workerLastUsed[$i] + 300 < $time) and $queue->isEmpty()){
+			if((!isset($this->workerLastUsed[$i]) || $this->workerLastUsed[$i] + 300 < $time) && $queue->isEmpty()){
 				$this->workers[$i]->quit();
 				$this->eventLoop->removeNotifier($this->workers[$i]->getNotifier());
 				unset($this->workers[$i], $this->taskQueues[$i], $this->workerLastUsed[$i]);

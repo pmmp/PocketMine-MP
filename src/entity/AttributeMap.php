@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,7 +27,7 @@ use function array_filter;
 
 class AttributeMap{
 	/** @var Attribute[] */
-	private $attributes = [];
+	private array $attributes = [];
 
 	public function add(Attribute $attribute) : void{
 		$this->attributes[$attribute->getId()] = $attribute;
@@ -49,7 +49,7 @@ class AttributeMap{
 	 */
 	public function needSend() : array{
 		return array_filter($this->attributes, function(Attribute $attribute) : bool{
-			return $attribute->isSyncable() and $attribute->isDesynchronized();
+			return $attribute->isSyncable() && $attribute->isDesynchronized();
 		});
 	}
 }

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -43,12 +43,19 @@ final class CraftingManagerFromDataHelper{
 		$itemDeserializerFunc = \Closure::fromCallable([Item::class, 'jsonDeserialize']);
 
 		foreach($recipes["shapeless"] as $recipe){
-			if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
+			$recipeType = match($recipe["block"]){
+				"crafting_table" => ShapelessRecipeType::CRAFTING(),
+				"stonecutter" => ShapelessRecipeType::STONECUTTER(),
+				//TODO: Cartography Table
+				default => null
+			};
+			if($recipeType === null){
 				continue;
 			}
 			$result->registerShapelessRecipe(new ShapelessRecipe(
 				array_map($itemDeserializerFunc, $recipe["input"]),
-				array_map($itemDeserializerFunc, $recipe["output"])
+				array_map($itemDeserializerFunc, $recipe["output"]),
+				$recipeType
 			));
 		}
 		foreach($recipes["shaped"] as $recipe){
@@ -76,6 +83,20 @@ final class CraftingManagerFromDataHelper{
 				Item::jsonDeserialize($recipe["output"]),
 				Item::jsonDeserialize($recipe["input"]))
 			);
+		}
+		foreach($recipes["potion_type"] as $recipe){
+			$result->registerPotionTypeRecipe(new PotionTypeRecipe(
+				Item::jsonDeserialize($recipe["input"]),
+				Item::jsonDeserialize($recipe["ingredient"]),
+				Item::jsonDeserialize($recipe["output"])
+			));
+		}
+		foreach($recipes["potion_container_change"] as $recipe){
+			$result->registerPotionContainerChangeRecipe(new PotionContainerChangeRecipe(
+				$recipe["input_item_id"],
+				Item::jsonDeserialize($recipe["ingredient"]),
+				$recipe["output_item_id"]
+			));
 		}
 
 		return $result;

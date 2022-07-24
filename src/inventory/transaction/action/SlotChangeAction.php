@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -36,8 +36,7 @@ class SlotChangeAction extends InventoryAction{
 
 	/** @var Inventory */
 	protected $inventory;
-	/** @var int */
-	private $inventorySlot;
+	private int $inventorySlot;
 
 	public function __construct(Inventory $inventory, int $inventorySlot, Item $sourceItem, Item $targetItem){
 		parent::__construct($sourceItem, $targetItem);

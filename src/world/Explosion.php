@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -42,12 +42,12 @@ use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use function ceil;
 use function floor;
+use function min;
 use function mt_rand;
 use function sqrt;
 
 class Explosion{
-	/** @var int */
-	private $rays = 16;
+	private int $rays = 16;
 	/** @var World */
 	public $world;
 	/** @var Position */
@@ -59,16 +59,12 @@ class Explosion{
 	public $affectedBlocks = [];
 	/** @var float */
 	public $stepLen = 0.3;
-	/** @var Entity|Block|null */
-	private $what;
 
-	/** @var SubChunkExplorer */
-	private $subChunkExplorer;
+	private Entity|Block|null $what;
 
-	/**
-	 * @param Entity|Block|null $what
-	 */
-	public function __construct(Position $center, float $size, $what = null){
+	private SubChunkExplorer $subChunkExplorer;
+
+	public function __construct(Position $center, float $size, Entity|Block|null $what = null){
 		if(!$center->isValid()){
 			throw new \InvalidArgumentException("Position does not have a valid world");
 		}
@@ -95,14 +91,11 @@ class Explosion{
 
 		$blockFactory = BlockFactory::getInstance();
 
-		$currentChunk = null;
-		$currentSubChunk = null;
-
 		$mRays = $this->rays - 1;
 		for($i = 0; $i < $this->rays; ++$i){
 			for($j = 0; $j < $this->rays; ++$j){
 				for($k = 0; $k < $this->rays; ++$k){
-					if($i === 0 or $i === $mRays or $j === 0 or $j === $mRays or $k === 0 or $k === $mRays){
+					if($i === 0 || $i === $mRays || $j === 0 || $j === $mRays || $k === 0 || $k === $mRays){
 						//this could be written as new Vector3(...)->normalize()->multiply(stepLen), but we're avoiding Vector3 for performance here
 						[$shiftX, $shiftY, $shiftZ] = [$i / $mRays * 2 - 1, $j / $mRays * 2 - 1, $k / $mRays * 2 - 1];
 						$len = sqrt($shiftX ** 2 + $shiftY ** 2 + $shiftZ ** 2);
@@ -156,10 +149,8 @@ class Explosion{
 	 * and creating sounds and particles.
 	 */
 	public function explodeB() : bool{
-		$updateBlocks = [];
-
 		$source = (new Vector3($this->source->x, $this->source->y, $this->source->z))->floor();
-		$yield = (1 / $this->size) * 100;
+		$yield = min(100, (1 / $this->size) * 100);
 
 		if($this->what instanceof Entity){
 			$ev = new EntityExplodeEvent($this->what, $this->source, $this->affectedBlocks, $yield);
