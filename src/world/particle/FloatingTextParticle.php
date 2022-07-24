@@ -94,7 +94,7 @@ class FloatingTextParticle implements Particle{
 				EntityMetadataProperties::BOUNDING_BOX_WIDTH => new FloatMetadataProperty(0.0),
 				EntityMetadataProperties::BOUNDING_BOX_HEIGHT => new FloatMetadataProperty(0.0),
 				EntityMetadataProperties::NAMETAG => new StringMetadataProperty($name),
-				EntityMetadataProperties::VARIANT => new IntMetadataProperty(RuntimeBlockMapping::getInstance()->toRuntimeId(VanillaBlocks::AIR()->getFullId())),
+				EntityMetadataProperties::VARIANT => new IntMetadataProperty(RuntimeBlockMapping::getInstance()->toRuntimeId(VanillaBlocks::AIR()->getStateId())),
 				EntityMetadataProperties::ALWAYS_SHOW_NAMETAG => new ByteMetadataProperty(1),
 			];
 			$p[] = AddActorPacket::create(
