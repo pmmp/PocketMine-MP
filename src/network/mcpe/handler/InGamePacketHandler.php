@@ -146,6 +146,8 @@ class InGamePacketHandler extends PacketHandler{
 	protected $lastRightClickData = null;
 
 	protected ?Vector3 $lastPlayerAuthInputPosition = null;
+	protected ?float $lastPlayerAuthInputYaw = null;
+	protected ?float $lastPlayerAuthInputPitch = null;
 	protected ?int $lastPlayerAuthInputFlags = null;
 
 	/** @var bool */
@@ -183,20 +185,27 @@ class InGamePacketHandler extends PacketHandler{
 
 	public function handlePlayerAuthInput(PlayerAuthInputPacket $packet) : bool{
 		$rawPos = $packet->getPosition();
-		foreach([$rawPos->x, $rawPos->y, $rawPos->z, $packet->getYaw(), $packet->getHeadYaw(), $packet->getPitch()] as $float){
+		$rawYaw = $packet->getYaw();
+		$rawPitch = $packet->getPitch();
+		foreach([$rawPos->x, $rawPos->y, $rawPos->z, $rawYaw, $packet->getHeadYaw(), $rawPitch] as $float){
 			if(is_infinite($float) || is_nan($float)){
 				$this->session->getLogger()->debug("Invalid movement received, contains NAN/INF components");
 				return false;
 			}
 		}
 
-		$yaw = fmod($packet->getYaw(), 360);
-		$pitch = fmod($packet->getPitch(), 360);
-		if($yaw < 0){
-			$yaw += 360;
-		}
+		if($rawYaw !== $this->lastPlayerAuthInputYaw || $rawPitch !== $this->lastPlayerAuthInputPitch){
+			$this->lastPlayerAuthInputYaw = $rawYaw;
+			$this->lastPlayerAuthInputPitch = $rawPitch;
 
-		$this->player->setRotation($yaw, $pitch);
+			$yaw = fmod($rawYaw, 360);
+			$pitch = fmod($rawPitch, 360);
+			if($yaw < 0){
+				$yaw += 360;
+			}
+
+			$this->player->setRotation($yaw, $pitch);
+		}
 
 		$hasMoved = $this->lastPlayerAuthInputPosition === null || !$this->lastPlayerAuthInputPosition->equals($rawPos);
 		$newPos = $rawPos->round(4)->subtract(0, 1.62, 0);
