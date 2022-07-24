@@ -145,6 +145,7 @@ class InGamePacketHandler extends PacketHandler{
 	/** @var UseItemTransactionData|null */
 	protected $lastRightClickData = null;
 
+	protected ?Vector3 $lastPlayerAuthInputPosition = null;
 	protected ?int $lastPlayerAuthInputFlags = null;
 
 	/** @var bool */
@@ -197,9 +198,10 @@ class InGamePacketHandler extends PacketHandler{
 
 		$this->player->setRotation($yaw, $pitch);
 
+		$hasMoved = $this->lastPlayerAuthInputPosition === null || !$this->lastPlayerAuthInputPosition->equals($rawPos);
 		$newPos = $rawPos->round(4)->subtract(0, 1.62, 0);
 
-		if($this->forceMoveSync){
+		if($this->forceMoveSync && $hasMoved){
 			$curPos = $this->player->getLocation();
 
 			if($newPos->distanceSquared($curPos) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
@@ -234,7 +236,8 @@ class InGamePacketHandler extends PacketHandler{
 			}
 		}
 
-		if(!$this->forceMoveSync){
+		if(!$this->forceMoveSync && $hasMoved){
+			$this->lastPlayerAuthInputPosition = $rawPos;
 			//TODO: this packet has WAYYYYY more useful information that we're not using
 			$this->player->handleMovement($newPos);
 		}
