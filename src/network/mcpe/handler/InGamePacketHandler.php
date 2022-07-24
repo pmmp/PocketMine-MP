@@ -168,9 +168,10 @@ class InGamePacketHandler extends PacketHandler{
 		return true;
 	}
 
-	private function resolveOnOffInputFlags(PlayerAuthInputPacket $packet, int $startFlag, int $stopFlag) : ?bool{
-		$enabled = $packet->hasFlag($startFlag);
-		if($enabled !== $packet->hasFlag($stopFlag)){
+	private function resolveOnOffInputFlags(int $inputFlags, int $startFlag, int $stopFlag) : ?bool{
+		$enabled = ($inputFlags & (1 << $startFlag)) !== 0;
+		$disabled = ($inputFlags & (1 << $stopFlag)) !== 0;
+		if($enabled !== $disabled){
 			return $enabled;
 		}
 		//neither flag was set, or both were set
@@ -206,10 +207,11 @@ class InGamePacketHandler extends PacketHandler{
 		// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
 		$this->forceMoveSync = false;
 
-		$sneaking = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_SNEAKING, PlayerAuthInputFlags::STOP_SNEAKING);
-		$sprinting = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_SPRINTING, PlayerAuthInputFlags::STOP_SPRINTING);
-		$swimming = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_SWIMMING, PlayerAuthInputFlags::STOP_SWIMMING);
-		$gliding = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_GLIDING, PlayerAuthInputFlags::STOP_GLIDING);
+		$inputFlags = $packet->getInputFlags();
+		$sneaking = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SNEAKING, PlayerAuthInputFlags::STOP_SNEAKING);
+		$sprinting = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SPRINTING, PlayerAuthInputFlags::STOP_SPRINTING);
+		$swimming = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SWIMMING, PlayerAuthInputFlags::STOP_SWIMMING);
+		$gliding = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_GLIDING, PlayerAuthInputFlags::STOP_GLIDING);
 		$mismatch =
 			($sneaking !== null && !$this->player->toggleSneak($sneaking)) |
 			($sprinting !== null && !$this->player->toggleSprint($sprinting)) |
