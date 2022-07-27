@@ -124,7 +124,8 @@ class Bamboo extends Transparent{
 	}
 
 	private function canBeSupportedBy(Block $block) : bool{
-		return $block->hasTypeTag(BlockTypeTags::DIRT) || $block->hasTypeTag(BlockTypeTags::MUD);
+		// TODO: Gravel
+		return $block->hasTypeTag(BlockTypeTags::DIRT) || $block->hasTypeTag(BlockTypeTags::MUD) || $block->hasTypeTag(BlockTypeTags::SAND);
 	}
 
 	private function seekToTop() : Bamboo{
