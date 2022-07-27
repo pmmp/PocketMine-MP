@@ -48,7 +48,7 @@ class TallGrass extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->hasTypeTag(BlockTypeTags::DIRT) || $down->hasTypeTag(BlockTypeTags::MUD)){ //Replace with common break method
+		if(!$down->hasTypeTag(BlockTypeTags::DIRT) && !$down->hasTypeTag(BlockTypeTags::MUD)){ //Replace with common break method
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
