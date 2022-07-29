@@ -138,6 +138,12 @@ final class WaterCauldron extends FillableCauldron{
 					ItemTypeIds::LEATHER_BOOTS => true,
 					default => false
 				} && $item->getCustomColor()?->toRGBA() !== $this->customWaterColor->toRGBA()){
+					$newItem = (clone $item)->setCustomColor($this->customWaterColor);
+					if($item->getCount() === 1){
+						$player->getInventory()->setItemInHand($newItem);
+					}else{ //if the stack size was bigger than 1 (usually won't happen, but might be caused by plugins
+						$player->getInventory()->addItem($newItem);
+					}
 					$item->setCustomColor($this->customWaterColor);
 					$this->position->getWorld()->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::DYE_ARMOR_USE_AMOUNT));
 					$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronDyeItemSound());
