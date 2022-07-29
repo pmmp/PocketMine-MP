@@ -138,8 +138,8 @@ final class WaterCauldron extends FillableCauldron{
 					ItemTypeIds::LEATHER_BOOTS => true,
 					default => false
 				} && $item->getCustomColor()?->toRGBA() !== $this->customWaterColor->toRGBA()){
-					$item->pop();
 					$newItem = (clone $item)->setCustomColor($this->customWaterColor);
+					$item->pop();
 					if($item->getCount() === 0){
 						$player->getInventory()->setItemInHand($newItem);
 					}else{ //if the stack size was bigger than 1 (usually won't happen, but might be caused by plugins
