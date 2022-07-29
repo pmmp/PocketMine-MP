@@ -2,13 +2,16 @@
 DIR="$(cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 cd "$DIR"
 
+SCRIPT_ARGUMENTS_OFFSET=1
 while getopts "p:f:l" OPTION 2> /dev/null; do
 	case ${OPTION} in
 		p)
 			PHP_BINARY="$OPTARG"
+			SCRIPT_ARGUMENTS_OFFSET=$(($SCRIPT_ARGUMENTS_OFFSET+1))
 			;;
 		f)
 			POCKETMINE_FILE="$OPTARG"
+			SCRIPT_ARGUMENTS_OFFSET=$(($SCRIPT_ARGUMENTS_OFFSET+1))
 			;;
 		l)
 			DO_LOOP="yes"
@@ -17,6 +20,7 @@ while getopts "p:f:l" OPTION 2> /dev/null; do
 			break
 			;;
 	esac
+	SCRIPT_ARGUMENTS_OFFSET=$(($SCRIPT_ARGUMENTS_OFFSET+1))
 done
 
 if [ "$PHP_BINARY" == "" ]; then
@@ -51,12 +55,12 @@ if [ "$DO_LOOP" == "yes" ]; then
 		if [ ${LOOPS} -gt 0 ]; then
 			echo "Restarted $LOOPS times"
 		fi
-		"$PHP_BINARY" "$POCKETMINE_FILE" $@
+		"$PHP_BINARY" "$POCKETMINE_FILE" ${@:$SCRIPT_ARGUMENTS_OFFSET}
 		echo "To escape the loop, press CTRL+C now. Otherwise, wait 5 seconds for the server to restart."
 		echo ""
 		sleep 5
 		((LOOPS++))
 	done
 else
-	exec "$PHP_BINARY" "$POCKETMINE_FILE" $@
+	exec "$PHP_BINARY" "$POCKETMINE_FILE" ${@:$SCRIPT_ARGUMENTS_OFFSET}
 fi
