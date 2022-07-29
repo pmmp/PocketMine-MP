@@ -144,7 +144,6 @@ final class WaterCauldron extends FillableCauldron{
 					}else{ //if the stack size was bigger than 1 (usually won't happen, but might be caused by plugins
 						$player->getInventory()->addItem($newItem);
 					}
-					$item->setCustomColor($this->customWaterColor);
 					$this->position->getWorld()->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::DYE_ARMOR_USE_AMOUNT));
 					$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronDyeItemSound());
 				}
