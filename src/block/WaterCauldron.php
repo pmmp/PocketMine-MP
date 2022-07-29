@@ -137,7 +137,7 @@ final class WaterCauldron extends FillableCauldron{
 					ItemTypeIds::LEATHER_PANTS,
 					ItemTypeIds::LEATHER_BOOTS => true,
 					default => false
-				} && $item->getCustomColor()?->toRGBA() !== $this->customWaterColor->toRGBA()){
+				} && $item->getCustomColor()?->toRGBA() !== $this->customWaterColor->toRGBA() && $player !== null){
 					$newItem = (clone $item)->setCustomColor($this->customWaterColor);
 					$item->pop();
 					if($item->getCount() === 0){
