@@ -36,7 +36,9 @@ final class Skin{
 	public const ACCEPTED_SKIN_SIZES = [
 		64 * 32 * 4,
 		64 * 64 * 4,
-		128 * 128 * 4
+		128 * 128 * 4,
+		256 * 256 * 4,
+		512 * 512 * 4
 	];
 
 	private string $skinId;
