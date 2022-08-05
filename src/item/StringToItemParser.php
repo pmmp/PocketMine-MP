@@ -1359,6 +1359,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("muttoncooked", fn() => Items::COOKED_MUTTON());
 		$result->register("muttonraw", fn() => Items::RAW_MUTTON());
 		$result->register("nametag", fn() => Items::NAME_TAG());
+		$result->register("name_tag", fn() => Items::NAME_TAG());
 		$result->register("nautilus_shell", fn() => Items::NAUTILUS_SHELL());
 		$result->register("nether_brick", fn() => Items::NETHER_BRICK());
 		$result->register("nether_quartz", fn() => Items::NETHER_QUARTZ());
