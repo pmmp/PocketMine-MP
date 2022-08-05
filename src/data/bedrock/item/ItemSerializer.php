@@ -436,6 +436,7 @@ final class ItemSerializer{
 		$this->map(Items::MILK_BUCKET(), self::id(Ids::MILK_BUCKET));
 		$this->map(Items::MINECART(), self::id(Ids::MINECART));
 		$this->map(Items::MUSHROOM_STEW(), self::id(Ids::MUSHROOM_STEW));
+		$this->map(Items::NAME_TAG(), self::id(Ids::NAME_TAG));
 		$this->map(Items::NAUTILUS_SHELL(), self::id(Ids::NAUTILUS_SHELL));
 		$this->map(Items::NETHERITE_AXE(), self::id(Ids::NETHERITE_AXE));
 		$this->map(Items::NETHERITE_BOOTS(), self::id(Ids::NETHERITE_BOOTS));
