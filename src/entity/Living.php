@@ -363,7 +363,7 @@ abstract class Living extends Entity{
 			}
 			return true;
 		}
-		return false;
+		return parent::onInteract($player, $clickPos);
 	}
 
 	/**
