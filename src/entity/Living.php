@@ -357,6 +357,10 @@ abstract class Living extends Entity{
 		$item = $player->getInventory()->getItemInHand();
 		if($item->getTypeId() === ItemTypeIds::NAME_TAG && !$this instanceof Human && $item->hasCustomName()){
 			$this->setNameTag($item->getCustomName());
+			if($player->hasFiniteResources()){
+				$item->pop();
+				$player->getInventory()->setItemInHand($item);
+			}
 			return true;
 		}
 		return false;
