@@ -80,4 +80,4 @@ jobs:
           body: |
             **For Minecraft: Bedrock Edition ${{ steps.get-pm-version.outputs.MCPE_VERSION }}**
 
-            Please see the [changelogs](/changelogs/${{ steps.get-pm-version.outputs.PM_VERSION_SHORT }}.md#${{ steps.get-pm-version.outputs.PM_VERSION_MD }}) for details.
+            Please see the [changelogs](${{ github.server_url }}/${{ github.repository }}/blob/${{ steps.get-pm-version.outputs.PM_VERSION }}/changelogs/${{ steps.get-pm-version.outputs.PM_VERSION_SHORT }}.md#${{ steps.get-pm-version.outputs.PM_VERSION_MD }}) for details.
