@@ -44,6 +44,7 @@ use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
+use pocketmine\item\ItemTypeIds;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\CompoundTag;
@@ -350,6 +351,15 @@ abstract class Living extends Entity{
 			$this->broadcastSound(new EntityLandSound($this, $fallBlock));
 		}
 		return $newVerticalVelocity;
+	}
+
+	public function onInteract(Player $player, Vector3 $clickPos) : bool{
+		$item = $player->getInventory()->getItemInHand();
+		if($item->getTypeId() === ItemTypeIds::NAME_TAG && !$this instanceof Human && $item->hasCustomName()){
+			$this->setNameTag($item->getCustomName());
+			return true;
+		}
+		return false;
 	}
 
 	/**

@@ -452,7 +452,7 @@ final class ItemDeserializer{
 		$this->map(Ids::MUSIC_DISC_WAIT, fn() => Items::RECORD_WAIT());
 		$this->map(Ids::MUSIC_DISC_WARD, fn() => Items::RECORD_WARD());
 		$this->map(Ids::MUTTON, fn() => Items::RAW_MUTTON());
-		//TODO: minecraft:name_tag
+		$this->map(Ids::NAME_TAG, fn() => Items::NAME_TAG());
 		$this->map(Ids::NAUTILUS_SHELL, fn() => Items::NAUTILUS_SHELL());
 		//TODO: minecraft:nether_sprouts
 		$this->map(Ids::NETHER_STAR, fn() => Items::NETHER_STAR());
