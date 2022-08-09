@@ -28,6 +28,7 @@ use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\network\mcpe\protocol\LevelChunkPacket;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
+use pocketmine\network\mcpe\protocol\types\ChunkPosition;
 use pocketmine\utils\BinaryStream;
 use function count;
 use function strlen;
@@ -109,8 +110,7 @@ class CachedChunk{
 		$stream->put($chunkData);
 
 		return LevelChunkPacket::create(
-			$chunkX,
-			$chunkZ,
+			new ChunkPosition($chunkX, $chunkZ),
 			count($this->hashes),
 			false,
 			null,
@@ -120,8 +120,7 @@ class CachedChunk{
 
 	private function createCachablePacket(int $chunkX, int $chunkZ, string $chunkData) : LevelChunkPacket{
 		return LevelChunkPacket::create(
-			$chunkX,
-			$chunkZ,
+			new ChunkPosition($chunkX, $chunkZ),
 			count($this->hashes),
 			false,
 			$this->getHashes(),
