@@ -1,0 +1,25 @@
+name: Notify Discord webhook of release
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP and tools
+        uses: shivammathur/setup-php@2.21.1
+        with:
+          php-version: 8.0
+
+      - name: Get actual tag name
+        id: tag-name
+        run: echo ::set-output name=TAG_NAME::$(echo "${{ github.ref }}" | sed 's{^refs/tags/{{')
+
+      - name: Run webhook post script
+        run: php .github/workflows/discord-release-embed.php ${{ github.repo }} ${{ steps.tag-name.outputs.TAG_NAME }} ${{ github.token }} ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
