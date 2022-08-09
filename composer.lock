@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f9d81230e16fff707deb5cbe7ff37376",
+    "content-hash": "80afa24adf37096a23643e051d6128ce",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -245,16 +245,16 @@
         },
         {
             "name": "pocketmine/bedrock-data",
-            "version": "1.9.0+bedrock-1.19.10",
+            "version": "1.10.0+bedrock-1.19.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockData.git",
-                "reference": "ecd798a3e7ead50b7da73141bbb0c4ba14dd76a1"
+                "reference": "43610f6749f22d15ede6b60ed5402bdeff47453e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/ecd798a3e7ead50b7da73141bbb0c4ba14dd76a1",
-                "reference": "ecd798a3e7ead50b7da73141bbb0c4ba14dd76a1",
+                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/43610f6749f22d15ede6b60ed5402bdeff47453e",
+                "reference": "43610f6749f22d15ede6b60ed5402bdeff47453e",
                 "shasum": ""
             },
             "type": "library",
@@ -265,22 +265,22 @@
             "description": "Blobs of data generated from Minecraft: Bedrock Edition, used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockData/issues",
-                "source": "https://github.com/pmmp/BedrockData/tree/bedrock-1.19.10"
+                "source": "https://github.com/pmmp/BedrockData/tree/bedrock-1.19.20"
             },
-            "time": "2022-07-12T19:33:21+00:00"
+            "time": "2022-08-09T17:44:22+00:00"
         },
         {
             "name": "pocketmine/bedrock-protocol",
-            "version": "11.0.4+bedrock-1.19.10",
+            "version": "12.0.0+bedrock-1.19.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "1c87aa1187bc7a31b4fc3e1c0f3e22251c2e6eab"
+                "reference": "c2778039544fa0c7c5bd3af7963149e7552f4215"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/1c87aa1187bc7a31b4fc3e1c0f3e22251c2e6eab",
-                "reference": "1c87aa1187bc7a31b4fc3e1c0f3e22251c2e6eab",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/c2778039544fa0c7c5bd3af7963149e7552f4215",
+                "reference": "c2778039544fa0c7c5bd3af7963149e7552f4215",
                 "shasum": ""
             },
             "require": {
@@ -312,9 +312,9 @@
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
-                "source": "https://github.com/pmmp/BedrockProtocol/tree/11.0.4+bedrock-1.19.10"
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/bedrock-1.19.20"
             },
-            "time": "2022-07-24T19:22:18+00:00"
+            "time": "2022-08-09T17:57:29+00:00"
         },
         {
             "name": "pocketmine/binaryutils",

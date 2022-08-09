@@ -890,7 +890,14 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleModalFormResponse(ModalFormResponsePacket $packet) : bool{
-		return $this->player->onFormSubmit($packet->formId, self::stupid_json_decode($packet->formData, true));
+		if($packet->cancelReason !== null){
+			//TODO: make APIs for this to allow plugins to use this information
+			return $this->player->onFormSubmit($packet->formId, null);
+		}elseif($packet->formData !== null){
+			return $this->player->onFormSubmit($packet->formId, self::stupid_json_decode($packet->formData, true));
+		}else{
+			throw new PacketHandlingException("Expected either formData or cancelReason to be set in ModalFormResponsePacket");
+		}
 	}
 
 	/**
