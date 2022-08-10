@@ -147,7 +147,7 @@ function main() : void{
 		$build = 0;
 	}
 	foreach(buildPhar(
-		$opts["out"] ?? getcwd() . DIRECTORY_SEPARATOR . "PocketMine-MP.phar",
+		$opts["out"] ?? getcwd() . DIRECTORY_SEPARATOR . "FrogCore.phar",
 		dirname(__DIR__) . DIRECTORY_SEPARATOR,
 		[
 			'resources',

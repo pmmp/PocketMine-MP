@@ -94,7 +94,7 @@ function generate_known_translation_keys(array $languageDefinitions) : void{
 	echo SHARED_HEADER;
 	echo <<<'HEADER'
 /**
- * This class contains constants for all the translations known to PocketMine-MP as per the used version of pmmp/Language.
+ * This class contains constants for all the translations known to FrogCore as per the used version of pmmp/Language.
  * This class is generated automatically, do NOT modify it by hand.
  *
  * @internal
@@ -127,7 +127,7 @@ function generate_known_translation_factory(array $languageDefinitions) : void{
 	echo SHARED_HEADER;
 	echo <<<'HEADER'
 /**
- * This class contains factory methods for all the translations known to PocketMine-MP as per the used version of
+ * This class contains factory methods for all the translations known to FrogCore as per the used version of
  * pmmp/Language.
  * This class is generated automatically, do NOT modify it by hand.
  *

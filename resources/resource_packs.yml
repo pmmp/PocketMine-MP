@@ -1,4 +1,4 @@
-#This configuration file controls global resources used on your PocketMine-MP server.
+#This configuration file controls global resources used on your FrogCore server.
 
 #Choose whether players must use your chosen resource packs to join the server.
 #NOTE: This will do nothing if there are no resource packs in the stack below.

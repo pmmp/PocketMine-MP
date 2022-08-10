@@ -1,4 +1,4 @@
-# Main configuration file for PocketMine-MP
+# Main configuration file for FrogCore
 # These settings are the ones that cannot be included in server.properties
 # Some of these settings are safe, others can break your server if modified incorrectly
 # New settings/defaults won't appear automatically in this file when upgrading.
@@ -175,7 +175,7 @@ console:
 aliases:
   ##This section allows you to add, remove or remap command aliases.
   ##A single alias can call one or more other commands (or aliases).
-  ##Aliases defined here will override any command aliases declared by plugins or PocketMine-MP itself.
+  ##Aliases defined here will override any command aliases declared by plugins or FrogCore itself.
 
   ##To remove an alias, set it to [], like so (note that prefixed aliases like "pocketmine:stop" will remain and can't
   ##be removed):

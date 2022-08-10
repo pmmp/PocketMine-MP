@@ -33,11 +33,11 @@ if [ "$PHP_BINARY" == "" ]; then
 fi
 
 if [ "$POCKETMINE_FILE" == "" ]; then
-	if [ -f ./PocketMine-MP.phar ]; then
-		POCKETMINE_FILE="./PocketMine-MP.phar"
+	if [ -f ./FrogCore.phar ]; then
+		POCKETMINE_FILE="./FrogCore.phar"
 	else
-		echo "PocketMine-MP.phar not found"
-		echo "Downloads can be found at https://github.com/pmmp/PocketMine-MP/releases"
+		echo "FrogCore.phar not found"
+		echo "Downloads can be found at https://github.com/MrHoller/FrogCore/releases"
 		exit 1
 	fi
 fi

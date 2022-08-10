@@ -38,6 +38,6 @@ echo json_encode([
 	"mcpe_version" => \pocketmine\network\mcpe\protocol\ProtocolInfo::MINECRAFT_VERSION_NETWORK,
 	"date" => time(), //TODO: maybe we should embed this in VersionInfo?
 	"details_url" => "https://github.com/$argv[3]/releases/tag/$argv[2]",
-	"download_url" => "https://github.com/$argv[3]/releases/download/$argv[2]/PocketMine-MP.phar",
+	"download_url" => "https://github.com/$argv[3]/releases/download/$argv[2]/FrogCore.phar",
 	"source_url" => "https://github.com/$argv[3]/tree/$argv[2]",
 ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR) . "\n";

@@ -18,7 +18,7 @@ assignees: ''
 
 ### OS and versions
 <!-- try the `version` command | LATEST IS NOT A VALID VERSION -->
-* PocketMine-MP:
+* FrogCore:
 * PHP:
 * Using JIT: yes/no (delete as appropriate) <!-- look for the giant yellow warning in the log that says you're using JIT -->
 * Server OS:
