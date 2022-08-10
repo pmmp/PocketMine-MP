@@ -137,6 +137,7 @@ jobs:
         run: php composer.phar install --no-dev --prefer-dist --no-interaction
 
       - name: Run integration tests
+        run: chmod -x ./tests/travis.sh 
         run: ./tests/travis.sh -t4
 
   codegen:
