@@ -135,9 +135,11 @@ jobs:
 
       - name: Install Composer dependencies
         run: php composer.phar install --no-dev --prefer-dist --no-interaction
+        
+      - name: Install chmod
+        run: chmod +x ./tests/travis.sh 
 
       - name: Run integration tests
-        run: chmod -x ./tests/travis.sh 
         run: ./tests/travis.sh -t4
 
   codegen:
