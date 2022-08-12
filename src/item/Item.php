@@ -440,7 +440,7 @@ class Item implements \JsonSerializable{
 		return VanillaBlocks::AIR();
 	}
 
-	public function getIdentifier(): ItemIdentifier{
+	public function getIdentifier() : ItemIdentifier{
 		return $this->identifier;
 	}
 
