@@ -69,15 +69,16 @@ if($doc === false){
 $permissions = PermissionManager::getInstance()->getPermissions();
 ksort($permissions, SORT_STRING);
 
-$title = "PocketMine-MP Core Permissions";
+$title = "List of " . VersionInfo::NAME . " core permissions";
 if($format === "md"){
 	fwrite($doc, "# $title\n");
 }else{
+	fwrite($doc, ".. _corepermissions:\n\n");
 	fwrite($doc, "$title\n");
 	fwrite($doc, str_repeat("=", strlen($title)) . "\n\n");
 }
 
-fwrite($doc, "Generated from PocketMine-MP " . VersionInfo::VERSION()->getFullVersion() . "\n");
+fwrite($doc, "Generated from " . VersionInfo::NAME . " " . VersionInfo::VERSION()->getFullVersion() . "\n");
 fwrite($doc, "\n");
 if($format === "md"){
 	fwrite($doc, "| Name | Description | Implied permissions |\n");
