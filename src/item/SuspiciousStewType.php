@@ -33,15 +33,15 @@ use pocketmine\utils\EnumTrait;
  * @see build/generate-registry-annotations.php
  * @generate-registry-docblock
  *
- * @method static SuspiciousStewType POPPY()
- * @method static SuspiciousStewType CORNFLOWER()
- * @method static SuspiciousStewType TULIP()
- * @method static SuspiciousStewType AZURE_BLUET()
- * @method static SuspiciousStewType LILY_OF_THE_VALLEY()
- * @method static SuspiciousStewType DANDELION()
- * @method static SuspiciousStewType BLUE_ORCHID()
  * @method static SuspiciousStewType ALLIUM()
+ * @method static SuspiciousStewType AZURE_BLUET()
+ * @method static SuspiciousStewType BLUE_ORCHID()
+ * @method static SuspiciousStewType CORNFLOWER()
+ * @method static SuspiciousStewType DANDELION()
+ * @method static SuspiciousStewType LILY_OF_THE_VALLEY()
  * @method static SuspiciousStewType OXEYE_DAISY()
+ * @method static SuspiciousStewType POPPY()
+ * @method static SuspiciousStewType TULIP()
  * @method static SuspiciousStewType WITHER_ROSE()
  */
 final class SuspiciousStewType{
