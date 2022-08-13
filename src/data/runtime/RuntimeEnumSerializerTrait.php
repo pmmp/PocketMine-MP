@@ -202,4 +202,20 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
+	public function suspiciousStewType(\pocketmine\item\SuspiciousStewType $value) : void{
+		$this->int(4, match($value){
+			\pocketmine\item\SuspiciousStewType::ALLIUM() => 0,
+			\pocketmine\item\SuspiciousStewType::AZURE_BLUET() => 1,
+			\pocketmine\item\SuspiciousStewType::BLUE_ORCHID() => 2,
+			\pocketmine\item\SuspiciousStewType::CORNFLOWER() => 3,
+			\pocketmine\item\SuspiciousStewType::DANDELION() => 4,
+			\pocketmine\item\SuspiciousStewType::LILY_OF_THE_VALLEY() => 5,
+			\pocketmine\item\SuspiciousStewType::OXEYE_DAISY() => 6,
+			\pocketmine\item\SuspiciousStewType::POPPY() => 7,
+			\pocketmine\item\SuspiciousStewType::TULIP() => 8,
+			\pocketmine\item\SuspiciousStewType::WITHER_ROSE() => 9,
+			default => throw new \pocketmine\utils\AssumptionFailedError("All SuspiciousStewType cases should be covered")
+		});
+	}
+
 }

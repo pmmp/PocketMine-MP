@@ -202,4 +202,20 @@ trait RuntimeEnumDeserializerTrait{
 		};
 	}
 
+	public function suspiciousStewType(\pocketmine\item\SuspiciousStewType &$value) : void{
+		$value = match($this->readInt(4)){
+			0 => \pocketmine\item\SuspiciousStewType::ALLIUM(),
+			1 => \pocketmine\item\SuspiciousStewType::AZURE_BLUET(),
+			2 => \pocketmine\item\SuspiciousStewType::BLUE_ORCHID(),
+			3 => \pocketmine\item\SuspiciousStewType::CORNFLOWER(),
+			4 => \pocketmine\item\SuspiciousStewType::DANDELION(),
+			5 => \pocketmine\item\SuspiciousStewType::LILY_OF_THE_VALLEY(),
+			6 => \pocketmine\item\SuspiciousStewType::OXEYE_DAISY(),
+			7 => \pocketmine\item\SuspiciousStewType::POPPY(),
+			8 => \pocketmine\item\SuspiciousStewType::TULIP(),
+			9 => \pocketmine\item\SuspiciousStewType::WITHER_ROSE(),
+			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for SuspiciousStewType")
+		};
+	}
+
 }
