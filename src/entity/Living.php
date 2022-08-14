@@ -355,7 +355,7 @@ abstract class Living extends Entity{
 
 	public function onInteract(Player $player, Vector3 $clickPos) : bool{
 		$item = $player->getInventory()->getItemInHand();
-		if($item->getTypeId() === ItemTypeIds::NAME_TAG && !$this instanceof Human && $item->hasCustomName()){
+		if($item->getTypeId() === ItemTypeIds::NAME_TAG && $item->hasCustomName()){
 			$this->setNameTag($item->getCustomName());
 			if($player->hasFiniteResources()){
 				$item->pop();
