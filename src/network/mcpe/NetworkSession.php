@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use pocketmine\block\tile\Spawnable;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\effect\EffectInstance;
@@ -59,7 +58,6 @@ use pocketmine\network\mcpe\handler\PreSpawnPacketHandler;
 use pocketmine\network\mcpe\handler\ResourcePacksPacketHandler;
 use pocketmine\network\mcpe\handler\SpawnResponsePacketHandler;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
-use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
@@ -763,7 +761,7 @@ class NetworkSession{
 	}
 
 	public function syncViewAreaCenterPoint(Vector3 $newPos, int $viewDistance) : void{
-		$this->sendDataPacket(NetworkChunkPublisherUpdatePacket::create(BlockPosition::fromVector3($newPos), $viewDistance * 16)); //blocks, not chunks >.>
+		$this->sendDataPacket(NetworkChunkPublisherUpdatePacket::create(BlockPosition::fromVector3($newPos), $viewDistance * 16, [])); //blocks, not chunks >.>
 	}
 
 	public function syncPlayerSpawnPoint(Position $newSpawn) : void{
@@ -841,7 +839,7 @@ class NetworkSession{
 	public function syncAttributes(Living $entity, array $attributes) : void{
 		if(count($attributes) > 0){
 			$this->sendDataPacket(UpdateAttributesPacket::create($entity->getId(), array_map(function(Attribute $attr) : NetworkAttribute{
-				return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue());
+				return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue(), []);
 			}, $attributes), 0));
 		}
 	}
@@ -968,22 +966,6 @@ class NetworkSession{
 				try{
 					$this->queueCompressed($promise);
 					$onCompletion();
-
-					//TODO: HACK! we send the full tile data here, due to a bug in 1.19.10 which causes items in tiles
-					//(item frames, lecterns) to not load properly when they are sent in a chunk via the classic chunk
-					//sending mechanism. We workaround this bug by sending only bare essential data in LevelChunkPacket
-					//(enough to create the tiles, since BlockActorDataPacket can't create tiles by itself) and then
-					//send the actual tile properties here.
-					//TODO: maybe we can stuff these packets inside the cached batch alongside LevelChunkPacket?
-					$chunk = $currentWorld->getChunk($chunkX, $chunkZ);
-					if($chunk !== null){
-						foreach($chunk->getTiles() as $tile){
-							if(!($tile instanceof Spawnable)){
-								continue;
-							}
-							$this->sendDataPacket(BlockActorDataPacket::create(BlockPosition::fromVector3($tile->getPosition()), $tile->getSerializedSpawnCompound()));
-						}
-					}
 				}finally{
 					$world->timings->syncChunkSend->stopTiming();
 				}
