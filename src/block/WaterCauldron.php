@@ -125,7 +125,7 @@ final class WaterCauldron extends FillableCauldron{
 			$item->pop();
 		}elseif($item instanceof Potion || $item instanceof SplashPotion){ //TODO: lingering potion
 			if($item->getType()->equals(PotionType::WATER())){
-				$this->addFillLevels(self::WATER_BOTTLE_FILL_AMOUNT, $item, VanillaItems::GLASS_BOTTLE(), $returnedItems);
+				$this->setCustomWaterColor(null)->addFillLevels(self::WATER_BOTTLE_FILL_AMOUNT, $item, VanillaItems::GLASS_BOTTLE(), $returnedItems);
 			}else{
 				$this->mix($item, VanillaItems::GLASS_BOTTLE(), $returnedItems);
 			}
@@ -169,7 +169,7 @@ final class WaterCauldron extends FillableCauldron{
 			}
 		}else{
 			match($item->getTypeId()){
-				ItemTypeIds::WATER_BUCKET => $this->addFillLevels(self::MAX_FILL_LEVEL, $item, VanillaItems::BUCKET(), $returnedItems),
+				ItemTypeIds::WATER_BUCKET => $this->setCustomWaterColor(null)->addFillLevels(self::MAX_FILL_LEVEL, $item, VanillaItems::BUCKET(), $returnedItems),
 				ItemTypeIds::BUCKET => $this->removeFillLevels(self::MAX_FILL_LEVEL, $item, VanillaItems::WATER_BUCKET(), $returnedItems),
 				ItemTypeIds::GLASS_BOTTLE => $this->removeFillLevels(self::WATER_BOTTLE_FILL_AMOUNT, $item, VanillaItems::POTION()->setType(PotionType::WATER()), $returnedItems),
 				ItemTypeIds::LAVA_BUCKET, ItemTypeIds::POWDER_SNOW_BUCKET => $this->mix($item, VanillaItems::BUCKET(), $returnedItems),
