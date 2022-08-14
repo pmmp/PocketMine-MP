@@ -52,7 +52,11 @@ final class BambooSapling extends Flowable{
 	}
 
 	private function canBeSupportedBy(Block $block) : bool{
-		return $block->hasTypeTag(BlockTypeTags::DIRT) || $block->hasTypeTag(BlockTypeTags::MUD);
+		return
+			$block->getTypeId() === BlockTypeIds::GRAVEL ||
+			$block->hasTypeTag(BlockTypeTags::DIRT) ||
+			$block->hasTypeTag(BlockTypeTags::MUD) ||
+			$block->hasTypeTag(BlockTypeTags::SAND);
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
