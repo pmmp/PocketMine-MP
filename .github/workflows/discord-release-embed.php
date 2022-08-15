@@ -18,7 +18,7 @@ require dirname(__DIR__, 2) . '/vendor/autoload.php';
 /**
  * @phpstan-return array<string, mixed>
  */
-function generateDiscordEmbed(string $version, string $channel, string $description, string $detailsUrl, string $sourceUrl, string $pharDownloadUrl) : array{
+function generateDiscordEmbed(string $version, string $channel, string $description, string $detailsUrl, string $sourceUrl, string $pharDownloadUrl, string $buildLogUrl) : array{
 	return [
 		"embeds" => [
 			[
@@ -26,7 +26,7 @@ function generateDiscordEmbed(string $version, string $channel, string $descript
 				"description" => <<<DESCRIPTION
 $description
 
-[Details]($detailsUrl) | [Source Code]($sourceUrl) | [Download]($pharDownloadUrl)
+[Details]($detailsUrl) | [Source Code]($sourceUrl) | [Build Log]($buildLogUrl) | [Download]($pharDownloadUrl)
 DESCRIPTION,
 				"url" => $detailsUrl,
 				"color" => $channel === "stable" ? 0x57ab5a : 0xc69026
@@ -82,11 +82,11 @@ if(!is_array($buildInfoJson)){
 $detailsUrl = $buildInfoJson["details_url"];
 $sourceUrl = $buildInfoJson["source_url"];
 $pharDownloadUrl = $buildInfoJson["download_url"];
-
+$buildLogUrl = $buildInfoJson["build_log_url"];
 
 $description = $releaseInfoJson["body"];
 
-$discordPayload = generateDiscordEmbed($buildInfoJson["base_version"], $buildInfoJson["channel"], $description, $detailsUrl, $sourceUrl, $pharDownloadUrl);
+$discordPayload = generateDiscordEmbed($buildInfoJson["base_version"], $buildInfoJson["channel"], $description, $detailsUrl, $sourceUrl, $pharDownloadUrl, $buildLogUrl);
 
 $response = Internet::postURL(
 	$hookURL,

@@ -48,7 +48,7 @@ final class WorldCreationOptions{
 	}
 
 	public static function create() : self{
-		return new self;
+		return new self();
 	}
 
 	/** @phpstan-return class-string<Generator> */
