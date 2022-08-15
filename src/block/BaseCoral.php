@@ -17,39 +17,23 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\block\utils\CoralType;
+use pocketmine\block\utils\CoralTypeTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 
 abstract class BaseCoral extends Transparent{
+	use CoralTypeTrait;
 
-	protected CoralType $coralType;
-	protected bool $dead = false;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
-		parent::__construct($idInfo, $name, $breakInfo);
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
+		parent::__construct($idInfo, $name, $typeInfo);
 		$this->coralType = CoralType::TUBE();
-	}
-
-	public function getCoralType() : CoralType{ return $this->coralType; }
-
-	/** @return $this */
-	public function setCoralType(CoralType $coralType) : self{
-		$this->coralType = $coralType;
-		return $this;
-	}
-
-	public function isDead() : bool{ return $this->dead; }
-
-	/** @return $this */
-	public function setDead(bool $dead) : self{
-		$this->dead = $dead;
-		return $this;
 	}
 
 	public function onNearbyBlockChange() : void{
@@ -82,4 +66,8 @@ abstract class BaseCoral extends Transparent{
 	public function isSolid() : bool{ return false; }
 
 	protected function recalculateCollisionBoxes() : array{ return []; }
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
 }

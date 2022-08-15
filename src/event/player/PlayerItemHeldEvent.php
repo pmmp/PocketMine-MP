@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,18 +28,20 @@ use pocketmine\event\CancellableTrait;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
 
+/**
+ * Called when a player's held item changes.
+ * This could be because they selected a different hotbar slot, or because the item in the selected hotbar slot was
+ * changed.
+ */
 class PlayerItemHeldEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Item */
-	private $item;
-	/** @var int */
-	private $hotbarSlot;
-
-	public function __construct(Player $player, Item $item, int $hotbarSlot){
+	public function __construct(
+		Player $player,
+		private Item $item,
+		private int $hotbarSlot
+	){
 		$this->player = $player;
-		$this->item = $item;
-		$this->hotbarSlot = $hotbarSlot;
 	}
 
 	/**

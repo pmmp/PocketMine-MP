@@ -17,16 +17,16 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use pocketmine\errorhandler\ErrorToExceptionHandler;
 use Webmozart\PathUtil\Path;
 use function copy;
 use function dirname;
-use function disk_free_space;
 use function fclose;
 use function fflush;
 use function file_exists;
@@ -61,12 +61,12 @@ use const SCANDIR_SORT_NONE;
 
 final class Filesystem{
 	/** @var resource[] */
-	private static $lockFileHandles = [];
+	private static array $lockFileHandles = [];
 	/**
 	 * @var string[]
 	 * @phpstan-var array<string, string>
 	 */
-	private static $cleanedPaths = [
+	private static array $cleanedPaths = [
 		\pocketmine\PATH => self::CLEAN_PATH_SRC_PREFIX
 	];
 
@@ -81,7 +81,7 @@ final class Filesystem{
 		if(is_dir($dir)){
 			$objects = Utils::assumeNotFalse(scandir($dir, SCANDIR_SORT_NONE), "scandir() shouldn't return false when is_dir() returns true");
 			foreach($objects as $object){
-				if($object !== "." and $object !== ".."){
+				if($object !== "." && $object !== ".."){
 					$fullObject = Path::join($dir, $object);
 					if(is_dir($fullObject)){
 						self::recursiveUnlink($fullObject);
@@ -111,8 +111,12 @@ final class Filesystem{
 				//if the parent dir doesn't exist, the user most likely made a mistake
 				throw new \RuntimeException("The parent directory of $destination does not exist, or is not a directory");
 			}
-			if(!@mkdir($destination) && !is_dir($destination)){
-				throw new \RuntimeException("Failed to create output directory $destination (permission denied?)");
+			try{
+				ErrorToExceptionHandler::trap(fn() => mkdir($destination));
+			}catch(\ErrorException $e){
+				if(!is_dir($destination)){
+					throw new \RuntimeException("Failed to create output directory $destination: " . $e->getMessage());
+				}
 			}
 		}
 		self::recursiveCopyInternal($origin, $destination);
@@ -231,6 +235,8 @@ final class Filesystem{
 	 * new contents.
 	 *
 	 * @param resource|null $context Context to pass to file_put_contents
+	 *
+	 * @throws \RuntimeException if the operation failed for any reason
 	 */
 	public static function safeFilePutContents(string $fileName, string $contents, int $flags = 0, $context = null) : void{
 		$directory = dirname($fileName);
@@ -248,27 +254,45 @@ final class Filesystem{
 			$counter++;
 		}while(is_dir($temporaryFileName));
 
-		$writeTemporaryFileResult = $context !== null ?
-			file_put_contents($temporaryFileName, $contents, $flags, $context) :
-			file_put_contents($temporaryFileName, $contents, $flags);
-
-		if($writeTemporaryFileResult !== strlen($contents)){
+		try{
+			ErrorToExceptionHandler::trap(fn() => $context !== null ?
+				file_put_contents($temporaryFileName, $contents, $flags, $context) :
+				file_put_contents($temporaryFileName, $contents, $flags)
+			);
+		}catch(\ErrorException $filePutContentsException){
 			$context !== null ?
 				@unlink($temporaryFileName, $context) :
 				@unlink($temporaryFileName);
-			$diskSpace = disk_free_space($directory);
-			if($diskSpace !== false && $diskSpace < strlen($contents)){
-				throw new \RuntimeException("Failed to write to temporary file $temporaryFileName (out of free disk space)");
-			}
-			throw new \RuntimeException("Failed to write to temporary file $temporaryFileName (possibly out of free disk space)");
+			throw new \RuntimeException("Failed to write to temporary file $temporaryFileName: " . $filePutContentsException->getMessage(), 0, $filePutContentsException);
 		}
 
 		$renameTemporaryFileResult = $context !== null ?
-			rename($temporaryFileName, $fileName, $context) :
-			rename($temporaryFileName, $fileName);
-
+			@rename($temporaryFileName, $fileName, $context) :
+			@rename($temporaryFileName, $fileName);
 		if(!$renameTemporaryFileResult){
-			throw new \RuntimeException("Failed to move temporary file contents into target file");
+			/*
+			 * The following code works around a bug in Windows where rename() will periodically decide to give us a
+			 * spurious "Access is denied (code: 5)" error. As far as I could determine, the fault comes from Windows
+			 * itself, but since I couldn't reliably reproduce the issue it's very hard to debug.
+			 *
+			 * The following code can be used to test. Usually it will fail anywhere before 100,000 iterations.
+			 *
+			 * for($i = 0; $i < 10_000_000; ++$i){
+			 *     file_put_contents('ops.txt.0.tmp', 'some data ' . $i, 0);
+			 *     if(!rename('ops.txt.0.tmp', 'ops.txt')){
+			 *         throw new \Error("something weird happened");
+			 *     }
+			 * }
+			 */
+			try{
+				ErrorToExceptionHandler::trap(fn() => $context !== null ?
+					copy($temporaryFileName, $fileName, $context) :
+					copy($temporaryFileName, $fileName)
+				);
+			}catch(\ErrorException $copyException){
+				throw new \RuntimeException("Failed to move temporary file contents into target file: " . $copyException->getMessage(), 0, $copyException);
+			}
+			@unlink($temporaryFileName);
 		}
 	}
 }

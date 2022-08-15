@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -74,26 +74,22 @@ class Config{
 	 * @var mixed[]
 	 * @phpstan-var array<string, mixed>
 	 */
-	private $config = [];
+	private array $config = [];
 
 	/**
 	 * @var mixed[]
 	 * @phpstan-var array<string, mixed>
 	 */
-	private $nestedCache = [];
+	private array $nestedCache = [];
 
-	/** @var string */
-	private $file;
-	/** @var int */
-	private $type = Config::DETECT;
-	/** @var int */
-	private $jsonOptions = JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING;
+	private string $file;
+	private int $type = Config::DETECT;
+	private int $jsonOptions = JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING;
 
-	/** @var bool */
-	private $changed = false;
+	private bool $changed = false;
 
 	/** @var int[] */
-	public static $formats = [
+	public static array $formats = [
 		"properties" => Config::PROPERTIES,
 		"cnf" => Config::CNF,
 		"conf" => Config::CNF,
@@ -393,7 +389,7 @@ class Config{
 
 		while(count($vars) > 0){
 			$baseKey = array_shift($vars);
-			if(is_array($base) and isset($base[$baseKey])){
+			if(is_array($base) && isset($base[$baseKey])){
 				$base = $base[$baseKey];
 			}else{
 				return $default;
@@ -505,7 +501,7 @@ class Config{
 		$changed = 0;
 		foreach(Utils::stringifyKeys($default) as $k => $v){
 			if(is_array($v)){
-				if(!isset($data[$k]) or !is_array($data[$k])){
+				if(!isset($data[$k]) || !is_array($data[$k])){
 					$data[$k] = [];
 				}
 				$changed += $this->fillDefaults($v, $data[$k]);

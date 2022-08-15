@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,22 +32,13 @@ use const PHP_EOL;
 use const PTHREADS_INHERIT_NONE;
 
 class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
-	/** @var bool */
-	protected $logDebug;
+	protected bool $logDebug;
 
-	/** @var string */
-	private $format = TextFormat::AQUA . "[%s] " . TextFormat::RESET . "%s[%s/%s]: %s" . TextFormat::RESET;
-
-	/** @var bool */
-	private $useFormattingCodes = false;
-
+	private string $format = TextFormat::AQUA . "[%s] " . TextFormat::RESET . "%s[%s/%s]: %s" . TextFormat::RESET;
+	private bool $useFormattingCodes = false;
 	private string $mainThreadName;
-
-	/** @var string */
-	private $timezone;
-
-	/** @var MainLoggerThread */
-	private $logWriterThread;
+	private string $timezone;
+	private MainLoggerThread $logWriterThread;
 
 	/**
 	 * @throws \RuntimeException
@@ -115,7 +106,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 	}
 
 	public function debug($message, bool $force = false){
-		if(!$this->logDebug and !$force){
+		if(!$this->logDebug && !$force){
 			return;
 		}
 		$this->send($message, \LogLevel::DEBUG, "DEBUG", TextFormat::GRAY);
@@ -193,7 +184,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 		$thread = \Thread::getCurrentThread();
 		if($thread === null){
 			$threadName = $this->mainThreadName . " thread";
-		}elseif($thread instanceof Thread or $thread instanceof Worker){
+		}elseif($thread instanceof Thread || $thread instanceof Worker){
 			$threadName = $thread->getThreadName() . " thread";
 		}else{
 			$threadName = (new \ReflectionClass($thread))->getShortName() . " thread";

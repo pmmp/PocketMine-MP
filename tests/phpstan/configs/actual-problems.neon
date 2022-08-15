@@ -106,6 +106,21 @@ parameters:
 			path: ../../../src/block/Cactus.php
 
 		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/block/ChorusFlower.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/block/ChorusFlower.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/block/ChorusFlower.php
+
+		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getRealBlockSkyLightAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/block/DaylightSensor.php
@@ -131,7 +146,7 @@ parameters:
 			path: ../../../src/block/DragonEgg.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int\\<0, max\\> given\\.$#"
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int\\<\\-64, 319\\> given\\.$#"
 			count: 1
 			path: ../../../src/block/DragonEgg.php
 
@@ -436,14 +451,19 @@ parameters:
 			path: ../../../src/block/tile/Spawnable.php
 
 		-
-			message: "#^Array \\(array\\<class\\-string\\<pocketmine\\\\block\\\\tile\\\\Tile\\>, string\\>\\) does not accept string\\|false\\.$#"
-			count: 1
-			path: ../../../src/block/tile/TileFactory.php
-
-		-
 			message: "#^Parameter \\#2 \\$replace of function str_replace expects array\\|string, string\\|null given\\.$#"
 			count: 1
 			path: ../../../src/command/Command.php
+
+		-
+			message: "#^Cannot call method startTiming\\(\\) on pocketmine\\\\timings\\\\TimingsHandler\\|null\\.$#"
+			count: 1
+			path: ../../../src/command/FormattedCommandAlias.php
+
+		-
+			message: "#^Cannot call method stopTiming\\(\\) on pocketmine\\\\timings\\\\TimingsHandler\\|null\\.$#"
+			count: 1
+			path: ../../../src/command/FormattedCommandAlias.php
 
 		-
 			message: "#^Cannot call method startTiming\\(\\) on pocketmine\\\\timings\\\\TimingsHandler\\|null\\.$#"
@@ -561,11 +581,6 @@ parameters:
 			path: ../../../src/entity/projectile/Projectile.php
 
 		-
-			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setInt\\(\\) expects int, float\\|int given\\.$#"
-			count: 3
-			path: ../../../src/entity/projectile/Projectile.php
-
-		-
 			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
@@ -574,21 +589,6 @@ parameters:
 			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
-
-		-
-			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../../src/inventory/CreativeInventory.php
-
-		-
-			message: "#^Parameter \\#1 \\$data of static method pocketmine\\\\item\\\\Item\\:\\:jsonDeserialize\\(\\) expects array\\{id\\: int, damage\\?\\: int, count\\?\\: int, nbt\\?\\: string, nbt_hex\\?\\: string, nbt_b64\\?\\: string\\}, mixed given\\.$#"
-			count: 1
-			path: ../../../src/inventory/CreativeInventory.php
-
-		-
-			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/inventory/CreativeInventory.php
 
 		-
 			message: "#^Parameter \\#2 \\$recipe of class pocketmine\\\\event\\\\inventory\\\\CraftItemEvent constructor expects pocketmine\\\\crafting\\\\CraftingRecipe, pocketmine\\\\crafting\\\\CraftingRecipe\\|null given\\.$#"
@@ -601,7 +601,22 @@ parameters:
 			path: ../../../src/inventory/transaction/CraftingTransaction.php
 
 		-
-			message: "#^Parameter \\#1 \\$buffer of method pocketmine\\\\nbt\\\\BaseNbtSerializer\\:\\:read\\(\\) expects string, string\\|false given\\.$#"
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 3
+			path: ../../../src/item/Item.php
+
+		-
+			message: "#^Parameter \\#1 \\$buffer of method pocketmine\\\\nbt\\\\BaseNbtSerializer\\:\\:read\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/item/Item.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function base64_decode expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/item/Item.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function hex2bin expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/item/Item.php
 
@@ -612,6 +627,11 @@ parameters:
 
 		-
 			message: "#^Cannot call method doFirstSpawn\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
+			message: "#^Cannot call method getAttributeMap\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
@@ -671,7 +691,12 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Parameter \\#1 \\$for of method pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\:\\:syncAdventureSettings\\(\\) expects pocketmine\\\\player\\\\Player, pocketmine\\\\player\\\\Player\\|null given\\.$#"
+			message: "#^Parameter \\#1 \\$entity of method pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\:\\:syncAttributes\\(\\) expects pocketmine\\\\entity\\\\Living, pocketmine\\\\player\\\\Player\\|null given\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
+			message: "#^Parameter \\#1 \\$for of method pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\:\\:syncAbilities\\(\\) expects pocketmine\\\\player\\\\Player, pocketmine\\\\player\\\\Player\\|null given\\.$#"
 			count: 2
 			path: ../../../src/network/mcpe/NetworkSession.php
 
@@ -766,13 +791,8 @@ parameters:
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Array \\(array\\<string\\>\\) does not accept mixed\\.$#"
-			count: 2
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
 			message: "#^Cannot cast mixed to string\\.$#"
-			count: 4
+			count: 5
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
@@ -791,17 +811,22 @@ parameters:
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Parameter \\#1 \\$plugin of method pocketmine\\\\plugin\\\\PluginDescription\\:\\:loadMap\\(\\) expects array, mixed given\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
 			message: "#^Parameter \\#2 \\$subject of function preg_match expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
 			message: "#^Parameter \\#3 \\$subject of function str_replace expects array\\|string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
+			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$authors \\(array\\<string\\>\\) does not accept array\\.$#"
+			count: 1
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
+			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$authors \\(array\\<string\\>\\) does not accept array\\<mixed\\>\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
@@ -851,11 +876,6 @@ parameters:
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
 
 		-
-			message: "#^Parameter \\#2 \\$code of class pocketmine\\\\resourcepacks\\\\ResourcePackException constructor expects int, mixed given\\.$#"
-			count: 1
-			path: ../../../src/resourcepacks/ZippedResourcePack.php
-
-		-
 			message: "#^Parameter \\#2 \\$length of function fread expects int\\<0, max\\>, int given\\.$#"
 			count: 1
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
@@ -869,11 +889,6 @@ parameters:
 			message: "#^Property pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:\\$sha256 \\(string\\|null\\) does not accept string\\|false\\.$#"
 			count: 1
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
-
-		-
-			message: "#^Cannot call method count\\(\\) on ArrayObject\\<int, array\\<string, mixed\\>\\>\\|null\\.$#"
-			count: 1
-			path: ../../../src/scheduler/AsyncTask.php
 
 		-
 			message: "#^Cannot call method getNotifier\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
@@ -921,11 +936,6 @@ parameters:
 			path: ../../../src/scheduler/TaskScheduler.php
 
 		-
-			message: "#^Method pocketmine\\\\thread\\\\ThreadManager\\:\\:getAll\\(\\) should return array\\<pocketmine\\\\thread\\\\Thread\\|pocketmine\\\\thread\\\\Worker\\> but returns array\\.$#"
-			count: 1
-			path: ../../../src/thread/ThreadManager.php
-
-		-
 			message: "#^Cannot access offset string on mixed\\.$#"
 			count: 3
 			path: ../../../src/utils/Config.php
@@ -939,16 +949,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$config of static method pocketmine\\\\utils\\\\Config\\:\\:writeProperties\\(\\) expects array\\<string, bool\\|float\\|int\\|string\\>, array\\<string, mixed\\> given\\.$#"
 			count: 1
 			path: ../../../src/utils/Config.php
-
-		-
-			message: "#^Parameter \\#2 \\$offset of function substr expects int, mixed given\\.$#"
-			count: 1
-			path: ../../../src/utils/Internet.php
-
-		-
-			message: "#^Parameter \\#3 \\$length of function substr expects int\\|null, mixed given\\.$#"
-			count: 1
-			path: ../../../src/utils/Internet.php
 
 		-
 			message: "#^Parameter \\#1 \\$string of function trim expects string, string\\|false given\\.$#"
@@ -976,22 +976,7 @@ parameters:
 			path: ../../../src/utils/Utils.php
 
 		-
-			message: "#^Parameter \\#2 \\$array of function array_map expects array, mixed given\\.$#"
-			count: 1
-			path: ../../../src/utils/Utils.php
-
-		-
-			message: "#^Part \\$errno \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
-			count: 1
-			path: ../../../src/utils/Utils.php
-
-		-
 			message: "#^Cannot call method getFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/Explosion.php
-
-		-
-			message: "#^Only numeric types are allowed in /, float\\|null given on the left side\\.$#"
 			count: 1
 			path: ../../../src/world/Explosion.php
 
@@ -1041,6 +1026,11 @@ parameters:
 			path: ../../../src/world/Explosion.php
 
 		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../../src/world/World.php
+
+		-
 			message: "#^Cannot access offset 'data' on array\\{priority\\: int, data\\: pocketmine\\\\math\\\\Vector3\\}\\|int\\|pocketmine\\\\math\\\\Vector3\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
@@ -1051,7 +1041,7 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#1 \\$keys of function array_fill_keys expects array, mixed given\\.$#"
+			message: "#^Cannot cast mixed to string\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
 
@@ -1301,16 +1291,6 @@ parameters:
 			path: ../../../src/world/light/BlockLightUpdate.php
 
 		-
-			message: "#^Only numeric types are allowed in \\-, int\\|null given on the right side\\.$#"
-			count: 1
-			path: ../../../src/world/light/BlockLightUpdate.php
-
-		-
-			message: "#^Parameter \\#4 \\$newLevel of method pocketmine\\\\world\\\\light\\\\LightUpdate\\:\\:setAndUpdateLight\\(\\) expects int, int\\|null given\\.$#"
-			count: 1
-			path: ../../../src/world/light/BlockLightUpdate.php
-
-		-
 			message: "#^Property pocketmine\\\\world\\\\light\\\\LightPopulationTask\\:\\:\\$resultBlockLightArrays \\(string\\) does not accept string\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/light/LightPopulationTask.php
@@ -1327,11 +1307,6 @@ parameters:
 
 		-
 			message: "#^Cannot call method getFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/light/LightUpdate.php
-
-		-
-			message: "#^Only numeric types are allowed in \\-, int\\|null given on the right side\\.$#"
 			count: 1
 			path: ../../../src/world/light/LightUpdate.php
 
@@ -1371,17 +1346,7 @@ parameters:
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-
-			message: "#^Only booleans are allowed in an if condition, bool\\|null given\\.$#"
-			count: 3
-			path: ../../../src/world/light/SkyLightUpdate.php
-
-		-
 			message: "#^Only numeric types are allowed in \\+, int\\|false given on the left side\\.$#"
-			count: 1
-			path: ../../../src/world/light/SkyLightUpdate.php
-
-		-
-			message: "#^Only numeric types are allowed in \\-, int\\|null given on the right side\\.$#"
 			count: 1
 			path: ../../../src/world/light/SkyLightUpdate.php
 

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -80,18 +80,14 @@ class CrashDump{
 	public const PLUGIN_INVOLVEMENT_DIRECT = "direct";
 	public const PLUGIN_INVOLVEMENT_INDIRECT = "indirect";
 
-	/** @var Server */
-	private $server;
 	private CrashDumpData $data;
-	/** @var string */
-	private $encodedData;
+	private string $encodedData;
 
-	private ?PluginManager $pluginManager;
-
-	public function __construct(Server $server, ?PluginManager $pluginManager){
+	public function __construct(
+		private Server $server,
+		private ?PluginManager $pluginManager
+	){
 		$now = microtime(true);
-		$this->server = $server;
-		$this->pluginManager = $pluginManager;
 
 		$this->data = new CrashDumpData();
 		$this->data->format_version = self::FORMAT_VERSION;
@@ -222,10 +218,10 @@ class CrashDump{
 			}
 		}
 
-		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-code", true) and file_exists($error["fullFile"])){
+		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-code", true) && file_exists($error["fullFile"])){
 			$file = @file($error["fullFile"], FILE_IGNORE_NEW_LINES);
 			if($file !== false){
-				for($l = max(0, $error["line"] - 10); $l < $error["line"] + 10 and isset($file[$l]); ++$l){
+				for($l = max(0, $error["line"] - 10); $l < $error["line"] + 10 && isset($file[$l]); ++$l){
 					$this->data->code[$l + 1] = $file[$l];
 				}
 			}

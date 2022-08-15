@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -42,7 +42,7 @@ class ScriptPluginLoader implements PluginLoader{
 
 	public function canLoadPlugin(string $path) : bool{
 		$ext = ".php";
-		return is_file($path) and substr($path, -strlen($ext)) === $ext;
+		return is_file($path) && substr($path, -strlen($ext)) === $ext;
 	}
 
 	/**

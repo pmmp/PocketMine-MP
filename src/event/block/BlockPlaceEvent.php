@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -35,23 +35,14 @@ use pocketmine\player\Player;
 class BlockPlaceEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Player */
-	protected $player;
-
-	/** @var Item */
-	protected $item;
-
-	/** @var Block */
-	protected $blockReplace;
-	/** @var Block */
-	protected $blockAgainst;
-
-	public function __construct(Player $player, Block $blockPlace, Block $blockReplace, Block $blockAgainst, Item $item){
+	public function __construct(
+		protected Player $player,
+		Block $blockPlace,
+		protected Block $blockReplace,
+		protected Block $blockAgainst,
+		protected Item $item
+	){
 		parent::__construct($blockPlace);
-		$this->blockReplace = $blockReplace;
-		$this->blockAgainst = $blockAgainst;
-		$this->item = $item;
-		$this->player = $player;
 	}
 
 	/**

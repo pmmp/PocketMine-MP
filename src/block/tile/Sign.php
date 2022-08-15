@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -50,11 +50,8 @@ class Sign extends Spawnable{
 		return array_slice(array_pad(explode("\n", $blob), 4, ""), 0, 4);
 	}
 
-	/** @var SignText */
-	protected $text;
-
-	/** @var int|null */
-	protected $editorEntityRuntimeId = null;
+	protected SignText $text;
+	protected ?int $editorEntityRuntimeId = null;
 
 	public function __construct(World $world, Vector3 $pos){
 		$this->text = new SignText();

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -40,63 +40,22 @@ use function register_shutdown_function;
 use const PTHREADS_INHERIT_NONE;
 
 class RakLibServer extends Thread{
-	/** @var InternetAddress */
-	private $address;
-
-	/** @var \ThreadedLogger */
-	protected $logger;
-
-	/** @var bool */
-	protected $cleanShutdown = false;
-	/** @var bool */
-	protected $ready = false;
-
-	/** @var \Threaded */
-	protected $mainToThreadBuffer;
-	/** @var \Threaded */
-	protected $threadToMainBuffer;
-
-	/** @var string */
-	protected $mainPath;
-
-	/** @var int */
-	protected $serverId;
-	/** @var int */
-	protected $maxMtuSize;
-	/** @var int */
-	private $protocolVersion;
-
-	/** @var SleeperNotifier */
-	protected $mainThreadNotifier;
-
-	/** @var RakLibThreadCrashInfo|null */
-	public $crashInfo = null;
+	protected bool $cleanShutdown = false;
+	protected bool $ready = false;
+	protected string $mainPath;
+	public ?RakLibThreadCrashInfo $crashInfo = null;
 
 	public function __construct(
-		\ThreadedLogger $logger,
-		\Threaded $mainToThreadBuffer,
-		\Threaded $threadToMainBuffer,
-		InternetAddress $address,
-		int $serverId,
-		int $maxMtuSize,
-		int $protocolVersion,
-		SleeperNotifier $sleeper
+		protected \ThreadedLogger $logger,
+		protected \Threaded $mainToThreadBuffer,
+		protected \Threaded $threadToMainBuffer,
+		protected InternetAddress $address,
+		protected int $serverId,
+		protected int $maxMtuSize,
+		protected int $protocolVersion,
+		protected SleeperNotifier $mainThreadNotifier
 	){
-		$this->address = $address;
-
-		$this->serverId = $serverId;
-		$this->maxMtuSize = $maxMtuSize;
-
-		$this->logger = $logger;
-
-		$this->mainToThreadBuffer = $mainToThreadBuffer;
-		$this->threadToMainBuffer = $threadToMainBuffer;
-
 		$this->mainPath = \pocketmine\PATH;
-
-		$this->protocolVersion = $protocolVersion;
-
-		$this->mainThreadNotifier = $sleeper;
 	}
 
 	/**
@@ -129,7 +88,7 @@ class RakLibServer extends Thread{
 	public function startAndWait(int $options = PTHREADS_INHERIT_NONE) : void{
 		$this->start($options);
 		$this->synchronized(function() : void{
-			while(!$this->ready and $this->crashInfo === null){
+			while(!$this->ready && $this->crashInfo === null){
 				$this->wait();
 			}
 			$crashInfo = $this->crashInfo;

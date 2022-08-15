@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,7 +31,7 @@ use function count;
 
 /**
  * Called when a player connects to the server, prior to authentication taking place.
- * Cancelling this event will cause the player to be disconnected with the kick message set.
+ * Set a kick reason to cancel the event and disconnect the player with the kick message set.
  *
  * This event should be used to decide if the player may continue to login to the server. Do things like checking
  * bans, whitelisting, server-full etc here.
@@ -52,24 +52,15 @@ class PlayerPreLoginEvent extends Event implements Cancellable{
 		self::KICK_REASON_BANNED
 	];
 
-	/** @var PlayerInfo */
-	private $playerInfo;
-	/** @var string */
-	private $ip;
-	/** @var int */
-	private $port;
-	/** @var bool */
-	protected $authRequired;
-
 	/** @var string[] reason const => associated message */
-	protected $kickReasons = [];
+	protected array $kickReasons = [];
 
-	public function __construct(PlayerInfo $playerInfo, string $ip, int $port, bool $authRequired){
-		$this->playerInfo = $playerInfo;
-		$this->ip = $ip;
-		$this->port = $port;
-		$this->authRequired = $authRequired;
-	}
+	public function __construct(
+		private PlayerInfo $playerInfo,
+		private string $ip,
+		private int $port,
+		protected bool $authRequired
+	){}
 
 	/**
 	 * Returns an object containing self-proclaimed information about the connecting player.

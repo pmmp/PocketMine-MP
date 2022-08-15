@@ -17,13 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityTrampleFarmlandEvent;
@@ -33,27 +34,22 @@ use pocketmine\math\Facing;
 use function lcg_value;
 
 class Farmland extends Transparent{
+	public const MAX_WETNESS = 7;
 
 	protected int $wetness = 0; //"moisture" blockstate property in PC
 
-	protected function writeStateToMeta() : int{
-		return $this->wetness;
-	}
+	public function getRequiredStateDataBits() : int{ return 3; }
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->wetness = BlockDataSerializer::readBoundedInt("wetness", $stateMeta, 0, 7);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(3, 0, self::MAX_WETNESS, $this->wetness);
 	}
 
 	public function getWetness() : int{ return $this->wetness; }
 
 	/** @return $this */
 	public function setWetness(int $wetness) : self{
-		if($wetness < 0 || $wetness > 7){
-			throw new \InvalidArgumentException("Wetness must be in range 0-7");
+		if($wetness < 0 || $wetness > self::MAX_WETNESS){
+			throw new \InvalidArgumentException("Wetness must be in range 0 ... " . self::MAX_WETNESS);
 		}
 		$this->wetness = $wetness;
 		return $this;
@@ -77,16 +73,17 @@ class Farmland extends Transparent{
 	}
 
 	public function onRandomTick() : void{
+		$world = $this->position->getWorld();
 		if(!$this->canHydrate()){
 			if($this->wetness > 0){
 				$this->wetness--;
-				$this->position->getWorld()->setBlock($this->position, $this, false);
+				$world->setBlock($this->position, $this, false);
 			}else{
-				$this->position->getWorld()->setBlock($this->position, VanillaBlocks::DIRT());
+				$world->setBlock($this->position, VanillaBlocks::DIRT());
 			}
-		}elseif($this->wetness < 7){
-			$this->wetness = 7;
-			$this->position->getWorld()->setBlock($this->position, $this, false);
+		}elseif($this->wetness < self::MAX_WETNESS){
+			$this->wetness = self::MAX_WETNESS;
+			$world->setBlock($this->position, $this, false);
 		}
 	}
 

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -44,7 +44,7 @@ class Bow extends Tool implements Releasable{
 		return 385;
 	}
 
-	public function onReleaseUsing(Player $player) : ItemUseResult{
+	public function onReleaseUsing(Player $player, array &$returnedItems) : ItemUseResult{
 		$arrow = VanillaItems::ARROW();
 		$inventory = match(true){
 			$player->getOffHandInventory()->contains($arrow) => $player->getOffHandInventory(),
@@ -52,7 +52,7 @@ class Bow extends Tool implements Releasable{
 			default => null
 		};
 
-		if($player->hasFiniteResources() and $inventory === null){
+		if($player->hasFiniteResources() && $inventory === null){
 			return ItemUseResult::FAIL();
 		}
 
@@ -85,7 +85,7 @@ class Bow extends Tool implements Releasable{
 		}
 		$ev = new EntityShootBowEvent($player, $this, $entity, $baseForce * 3);
 
-		if($baseForce < 0.1 or $diff < 5 or $player->isSpectator()){
+		if($baseForce < 0.1 || $diff < 5 || $player->isSpectator()){
 			$ev->cancel();
 		}
 

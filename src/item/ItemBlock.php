@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,25 +25,46 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\VanillaBlocks;
+use pocketmine\data\runtime\RuntimeDataWriter;
 
 /**
- * Class used for Items that can be Blocks
+ * Class used for Items that directly represent blocks, such as stone, dirt, wood etc.
+ *
+ * This should NOT be used for items which are merely *associated* with blocks (e.g. seeds are not wheat crops; they
+ * just place wheat crops when used on the ground).
  */
-class ItemBlock extends Item{
-	/** @var int */
-	private $blockFullId;
+final class ItemBlock extends Item{
+	private int $blockTypeId;
+	private int $blockTypeData;
 
-	public function __construct(ItemIdentifier $identifier, Block $block){
-		parent::__construct($identifier, $block->getName());
-		$this->blockFullId = $block->getFullId();
+	public function __construct(Block $block){
+		parent::__construct(ItemIdentifier::fromBlock($block), $block->getName());
+		$this->blockTypeId = $block->getTypeId();
+		$this->blockTypeData = $block->computeTypeData();
+	}
+
+	protected function encodeType(RuntimeDataWriter $w) : void{
+		$w->int(Block::INTERNAL_STATE_DATA_BITS, $this->blockTypeData);
 	}
 
 	public function getBlock(?int $clickedFace = null) : Block{
-		return BlockFactory::getInstance()->fromFullBlock($this->blockFullId);
+		//TODO: HACKY MESS, CLEAN IT UP
+		$factory = BlockFactory::getInstance();
+		if(!$factory->isRegistered($this->blockTypeId)){
+			return VanillaBlocks::AIR();
+		}
+		$blockType = BlockFactory::getInstance()->fromTypeId($this->blockTypeId);
+		$blockType->decodeTypeData($this->blockTypeData);
+		return $blockType;
 	}
 
 	public function getFuelTime() : int{
 		return $this->getBlock()->getFuelTime();
+	}
+
+	public function isFireProof() : bool{
+		return $this->getBlock()->isFireProofAsItem();
 	}
 
 	public function getMaxStackSize() : int{

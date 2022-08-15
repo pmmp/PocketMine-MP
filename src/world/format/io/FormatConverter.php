@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -41,26 +41,17 @@ use function rtrim;
 use const DIRECTORY_SEPARATOR;
 
 class FormatConverter{
+	private string $backupPath;
+	private \Logger $logger;
 
-	/** @var WorldProvider */
-	private $oldProvider;
-	/** @var WritableWorldProviderManagerEntry */
-	private $newProvider;
-
-	/** @var string */
-	private $backupPath;
-
-	/** @var \Logger */
-	private $logger;
-
-	/** @var int */
-	private $chunksPerProgressUpdate;
-
-	public function __construct(WorldProvider $oldProvider, WritableWorldProviderManagerEntry $newProvider, string $backupPath, \Logger $logger, int $chunksPerProgressUpdate = 256){
-		$this->oldProvider = $oldProvider;
-		$this->newProvider = $newProvider;
+	public function __construct(
+		private WorldProvider $oldProvider,
+		private WritableWorldProviderManagerEntry $newProvider,
+		string $backupPath,
+		\Logger $logger,
+		private int $chunksPerProgressUpdate = 256
+	){
 		$this->logger = new \PrefixedLogger($logger, "World Converter: " . $this->oldProvider->getWorldData()->getName());
-		$this->chunksPerProgressUpdate = $chunksPerProgressUpdate;
 
 		if(!file_exists($backupPath)){
 			@mkdir($backupPath, 0777, true);

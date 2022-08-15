@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -40,38 +40,27 @@ use function str_replace;
 
 abstract class Command{
 
-	/** @var string */
-	private $name;
+	private string $name;
 
-	/** @var string */
-	private $nextLabel;
-
-	/** @var string */
-	private $label;
+	private string $nextLabel;
+	private string $label;
 
 	/** @var string[] */
-	private $aliases = [];
+	private array $aliases = [];
 
 	/** @var string[] */
-	private $activeAliases = [];
+	private array $activeAliases = [];
 
-	/** @var CommandMap|null */
-	private $commandMap = null;
+	private ?CommandMap $commandMap = null;
 
-	/** @var Translatable|string */
-	protected $description = "";
+	protected Translatable|string $description = "";
 
-	/** @var Translatable|string */
-	protected $usageMessage;
+	protected Translatable|string $usageMessage;
 
-	/** @var string|null */
-	private $permission = null;
+	private ?string $permission = null;
+	private ?string $permissionMessage = null;
 
-	/** @var string|null */
-	private $permissionMessage = null;
-
-	/** @var TimingsHandler|null */
-	public $timings = null;
+	public ?TimingsHandler $timings = null;
 
 	/**
 	 * @param string[] $aliases
@@ -127,7 +116,7 @@ abstract class Command{
 
 	public function testPermissionSilent(CommandSender $target, ?string $permission = null) : bool{
 		$permission ??= $this->permission;
-		if($permission === null or $permission === ""){
+		if($permission === null || $permission === ""){
 			return true;
 		}
 
@@ -182,7 +171,7 @@ abstract class Command{
 	}
 
 	private function allowChangesFrom(CommandMap $commandMap) : bool{
-		return $this->commandMap === null or $this->commandMap === $commandMap;
+		return $this->commandMap === null || $this->commandMap === $commandMap;
 	}
 
 	public function isRegistered() : bool{
@@ -235,7 +224,7 @@ abstract class Command{
 		$result = KnownTranslationFactory::chat_type_admin($source->getName(), $message);
 		$colored = $result->prefix(TextFormat::GRAY . TextFormat::ITALIC);
 
-		if($sendToSource and !($source instanceof ConsoleCommandSender)){
+		if($sendToSource && !($source instanceof ConsoleCommandSender)){
 			$source->sendMessage($message);
 		}
 

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,8 +26,7 @@ namespace pocketmine\inventory;
 use pocketmine\entity\Human;
 
 final class PlayerOffHandInventory extends SimpleInventory{
-	/** @var Human */
-	private $holder;
+	private Human $holder;
 
 	public function __construct(Human $player){
 		$this->holder = $player;

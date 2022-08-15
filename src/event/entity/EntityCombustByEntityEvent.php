@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,8 +26,7 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\Entity;
 
 class EntityCombustByEntityEvent extends EntityCombustEvent{
-	/** @var Entity */
-	protected $combuster;
+	protected Entity $combuster;
 
 	public function __construct(Entity $combuster, Entity $combustee, int $duration){
 		parent::__construct($combustee, $duration);

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -45,7 +45,7 @@ class StupidJsonDecodeTest extends TestCase{
 			["[\n   \"a\",\"b,c,d,e\\\"   \",,0,1,2, false, 0.001]", ['a', 'b,c,d,e"   ', '', 0, 1, 2, false, 0.001]],
 			["0", 0],
 			["false", false],
-			["NULL", null],
+			["null", null],
 			['["\",,\"word","a\",,\"word2",]', ['",,"word', 'a",,"word2', '']],
 			['["\",,\"word","a\",,\"word2",""]', ['",,"word', 'a",,"word2', '']],
 			['["Hello,, PocketMine"]', ['Hello,, PocketMine']],

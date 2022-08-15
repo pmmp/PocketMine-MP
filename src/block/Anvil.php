@@ -17,17 +17,19 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\block\inventory\AnvilInventory;
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -39,31 +41,30 @@ class Anvil extends Transparent implements Fallable{
 	use FallableTrait;
 	use HorizontalFacingTrait;
 
-	private int $damage = 0;
+	public const UNDAMAGED = 0;
+	public const SLIGHTLY_DAMAGED = 1;
+	public const VERY_DAMAGED = 2;
 
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) | ($this->damage << 2);
+	private int $damage = self::UNDAMAGED;
+
+	public function getRequiredTypeDataBits() : int{ return 2; }
+
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(2, self::UNDAMAGED, self::VERY_DAMAGED, $this->damage);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x3);
-		$this->damage = BlockDataSerializer::readBoundedInt("damage", $stateMeta >> 2, 0, 2);
-	}
+	public function getRequiredStateDataBits() : int{ return 2; }
 
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
-	protected function writeStateToItemMeta() : int{
-		return $this->damage << 2;
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->horizontalFacing($this->facing);
 	}
 
 	public function getDamage() : int{ return $this->damage; }
 
 	/** @return $this */
 	public function setDamage(int $damage) : self{
-		if($damage < 0 || $damage > 2){
-			throw new \InvalidArgumentException("Damage must be in range 0-2");
+		if($damage < self::UNDAMAGED || $damage > self::VERY_DAMAGED){
+			throw new \InvalidArgumentException("Damage must be in range " . self::UNDAMAGED . " ... " . self::VERY_DAMAGED);
 		}
 		$this->damage = $damage;
 		return $this;
@@ -76,7 +77,11 @@ class Anvil extends Transparent implements Fallable{
 		return [AxisAlignedBB::one()->squash(Facing::axis(Facing::rotateY($this->facing, false)), 1 / 8)];
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 			$player->setCurrentWindow(new AnvilInventory($this->position));
 		}

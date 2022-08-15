@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -78,26 +78,15 @@ class ExperienceOrb extends Entity{
 		return $result;
 	}
 
-	public $gravity = 0.04;
-	public $drag = 0.02;
+	protected int $age = 0;
 
-	/** @var int */
-	protected $age = 0;
+	/** Ticker used for determining interval in which to look for new target players. */
+	protected int $lookForTargetTime = 0;
 
-	/**
-	 * @var int
-	 * Ticker used for determining interval in which to look for new target players.
-	 */
-	protected $lookForTargetTime = 0;
+	/** Runtime entity ID of the player this XP orb is targeting. */
+	protected ?int $targetPlayerRuntimeId = null;
 
-	/**
-	 * @var int|null
-	 * Runtime entity ID of the player this XP orb is targeting.
-	 */
-	protected $targetPlayerRuntimeId = null;
-
-	/** @var int */
-	protected $xpValue;
+	protected int $xpValue;
 
 	public function __construct(Location $location, int $xpValue, ?CompoundTag $nbt = null){
 		$this->xpValue = $xpValue;
@@ -105,6 +94,10 @@ class ExperienceOrb extends Entity{
 	}
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.25, 0.25); }
+
+	protected function getInitialDragMultiplier() : float{ return 0.02; }
+
+	protected function getInitialGravity() : float{ return 0.04; }
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
@@ -166,7 +159,7 @@ class ExperienceOrb extends Entity{
 		}
 
 		$currentTarget = $this->getTargetPlayer();
-		if($currentTarget !== null and (!$currentTarget->isAlive() or !$currentTarget->getXpManager()->canAttractXpOrbs() or $currentTarget->location->distanceSquared($this->location) > self::MAX_TARGET_DISTANCE ** 2)){
+		if($currentTarget !== null && (!$currentTarget->isAlive() || !$currentTarget->getXpManager()->canAttractXpOrbs() || $currentTarget->location->distanceSquared($this->location) > self::MAX_TARGET_DISTANCE ** 2)){
 			$currentTarget = null;
 		}
 
@@ -174,7 +167,7 @@ class ExperienceOrb extends Entity{
 			if($currentTarget === null){
 				$newTarget = $this->getWorld()->getNearestEntity($this->location, self::MAX_TARGET_DISTANCE, Human::class);
 
-				if($newTarget instanceof Human and !($newTarget instanceof Player and $newTarget->isSpectator()) and $newTarget->getXpManager()->canAttractXpOrbs()){
+				if($newTarget instanceof Human && !($newTarget instanceof Player && $newTarget->isSpectator()) && $newTarget->getXpManager()->canAttractXpOrbs()){
 					$currentTarget = $newTarget;
 				}
 			}
@@ -194,7 +187,7 @@ class ExperienceOrb extends Entity{
 				$this->motion = $this->motion->addVector($vector->normalize()->multiply(0.2 * (1 - sqrt($distance)) ** 2));
 			}
 
-			if($currentTarget->getXpManager()->canPickupXp() and $this->boundingBox->intersectsWith($currentTarget->getBoundingBox())){
+			if($currentTarget->getXpManager()->canPickupXp() && $this->boundingBox->intersectsWith($currentTarget->getBoundingBox())){
 				$this->flagForDespawn();
 
 				$currentTarget->getXpManager()->onPickupXp($this->getXpValue());

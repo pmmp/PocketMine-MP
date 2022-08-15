@@ -17,12 +17,15 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
@@ -32,16 +35,10 @@ class NetherPortal extends Transparent{
 
 	protected int $axis = Axis::X;
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->axis = $stateMeta === BlockLegacyMetadata::NETHER_PORTAL_AXIS_Z ? Axis::Z : Axis::X; //mojang u dumb
-	}
+	public function getRequiredStateDataBits() : int{ return 1; }
 
-	protected function writeStateToMeta() : int{
-		return $this->axis === Axis::Z ? BlockLegacyMetadata::NETHER_PORTAL_AXIS_Z : BlockLegacyMetadata::NETHER_PORTAL_AXIS_X;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b11;
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->horizontalAxis($this->axis);
 	}
 
 	public function getAxis() : int{
@@ -53,7 +50,7 @@ class NetherPortal extends Transparent{
 	 * @return $this
 	 */
 	public function setAxis(int $axis) : self{
-		if($axis !== Axis::X and $axis !== Axis::Z){
+		if($axis !== Axis::X && $axis !== Axis::Z){
 			throw new \InvalidArgumentException("Invalid axis");
 		}
 		$this->axis = $axis;
@@ -73,6 +70,10 @@ class NetherPortal extends Transparent{
 	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 
 	public function getDrops(Item $item) : array{

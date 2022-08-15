@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,11 +30,10 @@ use function get_class;
 
 abstract class Event{
 	private const MAX_EVENT_CALL_DEPTH = 50;
-	/** @var int */
-	private static $eventCallDepth = 1;
 
-	/** @var string|null */
-	protected $eventName = null;
+	private static int $eventCallDepth = 1;
+
+	protected ?string $eventName = null;
 
 	final public function getEventName() : string{
 		return $this->eventName ?? get_class($this);

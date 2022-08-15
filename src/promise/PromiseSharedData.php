@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -43,9 +43,6 @@ final class PromiseSharedData{
 
 	public bool $resolved = false;
 
-	/**
-	 * @var mixed
-	 * @phpstan-var TValue|null
-	 */
-	public $result = null;
+	/** @phpstan-var TValue|null */
+	public mixed $result = null;
 }

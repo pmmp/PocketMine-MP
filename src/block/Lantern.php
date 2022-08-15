@@ -17,12 +17,15 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -32,19 +35,19 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Lantern extends Transparent{
+	private int $lightLevel; //readonly
 
 	protected bool $hanging = false;
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->hanging = ($stateMeta & BlockLegacyMetadata::LANTERN_FLAG_HANGING) !== 0;
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, int $lightLevel){
+		$this->lightLevel = $lightLevel;
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	protected function writeStateToMeta() : int{
-		return $this->hanging ? BlockLegacyMetadata::LANTERN_FLAG_HANGING : 0;
-	}
+	public function getRequiredStateDataBits() : int{ return 1; }
 
-	public function getStateBitmask() : int{
-		return 0b1;
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->bool($this->hanging);
 	}
 
 	public function isHanging() : bool{ return $this->hanging; }
@@ -56,7 +59,7 @@ class Lantern extends Transparent{
 	}
 
 	public function getLightLevel() : int{
-		return 15;
+		return $this->lightLevel;
 	}
 
 	/**
@@ -72,22 +75,27 @@ class Lantern extends Transparent{
 		];
 	}
 
-	protected function canAttachTo(Block $b) : bool{
-		return !$b->isTransparent();
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canAttachTo($this->position->getWorld()->getBlock($blockReplace->getPosition()->up())) and !$this->canAttachTo($this->position->getWorld()->getBlock($blockReplace->getPosition()->down()))){
+		if(!$this->canBeSupportedBy($blockReplace->getSide(Facing::UP), Facing::DOWN) && !$this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN), Facing::UP)){
 			return false;
 		}
 
-		$this->hanging = ($face === Facing::DOWN or !$this->canAttachTo($this->position->getWorld()->getBlock($blockReplace->getPosition()->down())));
+		$this->hanging = ($face === Facing::DOWN || !$this->canBeSupportedBy($this->position->getWorld()->getBlock($blockReplace->getPosition()->down()), Facing::UP));
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->canAttachTo($this->position->getWorld()->getBlock($this->hanging ? $this->position->up() : $this->position->down()))){
+		$face = $this->hanging ? Facing::UP : Facing::DOWN;
+		if(!$this->canBeSupportedBy($this->getSide($face), Facing::opposite($face))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
+	}
+
+	private function canBeSupportedBy(Block $block, int $face) : bool{
+		return $block->getSupportType($face)->hasCenterSupport();
 	}
 }

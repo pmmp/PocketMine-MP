@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -56,17 +56,9 @@ class Painting extends Entity{
 		Facing::EAST => 3
 	];
 
-	/** @var float */
-	protected $gravity = 0.0;
-	/** @var float */
-	protected $drag = 1.0;
-
-	/** @var Vector3 */
-	protected $blockIn;
-	/** @var int */
-	protected $facing = Facing::NORTH;
-	/** @var PaintingMotive */
-	protected $motive;
+	protected Vector3 $blockIn;
+	protected int $facing;
+	protected PaintingMotive $motive;
 
 	public function __construct(Location $location, Vector3 $blockIn, int $facing, PaintingMotive $motive, ?CompoundTag $nbt = null){
 		$this->motive = $motive;
@@ -79,6 +71,10 @@ class Painting extends Entity{
 		//these aren't accurate, but it doesn't matter since they aren't used (vanilla PC does something similar)
 		return new EntitySizeInfo(0.5, 0.5);
 	}
+
+	protected function getInitialDragMultiplier() : float{ return 1.0; }
+
+	protected function getInitialGravity() : float{ return 0.0; }
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(1);
@@ -107,7 +103,7 @@ class Painting extends Entity{
 
 		if($this->lastDamageCause instanceof EntityDamageByEntityEvent){
 			$killer = $this->lastDamageCause->getDamager();
-			if($killer instanceof Player and !$killer->hasFiniteResources()){
+			if($killer instanceof Player && !$killer->hasFiniteResources()){
 				$drops = false;
 			}
 		}
@@ -212,7 +208,7 @@ class Painting extends Entity{
 				$pos = $startPos->getSide($rotatedFace, $w)->getSide(Facing::UP, $h);
 
 				$block = $world->getBlockAt($pos->x, $pos->y, $pos->z);
-				if($block->isSolid() or !$block->getSide($oppositeSide)->isSolid()){
+				if($block->isSolid() || !$block->getSide($oppositeSide)->isSolid()){
 					return false;
 				}
 			}

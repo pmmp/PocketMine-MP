@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -34,12 +34,11 @@ use pocketmine\event\CancellableTrait;
 class EntityTrampleFarmlandEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Block */
-	private $block;
-
-	public function __construct(Living $entity, Block $block){
+	public function __construct(
+		Living $entity,
+		private Block $block
+	){
 		$this->entity = $entity;
-		$this->block = $block;
 	}
 
 	public function getBlock() : Block{

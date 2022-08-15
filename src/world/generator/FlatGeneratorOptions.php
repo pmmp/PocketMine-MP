@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -87,7 +87,7 @@ final class FlatGeneratorOptions{
 				throw new InvalidGeneratorOptionsException("Invalid preset layer \"$line\": " . $e->getMessage(), 0, $e);
 			}
 			for($cY = $y, $y += $cnt; $cY < $y; ++$cY){
-				$result[$cY] = $b->getFullId();
+				$result[$cY] = $b->getStateId();
 			}
 		}
 

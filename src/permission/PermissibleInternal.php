@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -44,19 +44,19 @@ class PermissibleInternal implements Permissible{
 	 * @var bool[]
 	 * @phpstan-var array<string, bool>
 	 */
-	private $rootPermissions;
+	private array $rootPermissions;
 
 	/** @var PermissionAttachment[] */
-	private $attachments = [];
+	private array $attachments = [];
 
 	/** @var PermissionAttachmentInfo[] */
-	private $permissions = [];
+	private array $permissions = [];
 
 	/**
 	 * @var ObjectSet|\Closure[]
 	 * @phpstan-var ObjectSet<\Closure(array<string, bool> $changedPermissionsOldValues) : void>
 	 */
-	private $permissionRecalculationCallbacks;
+	private ObjectSet $permissionRecalculationCallbacks;
 
 	/**
 	 * @param bool[] $basePermissions
@@ -114,7 +114,7 @@ class PermissibleInternal implements Permissible{
 
 		$result = new PermissionAttachment($plugin);
 		$this->attachments[spl_object_id($result)] = $result;
-		if($name !== null and $value !== null){
+		if($name !== null && $value !== null){
 			$result->setPermission($name, $value);
 		}
 

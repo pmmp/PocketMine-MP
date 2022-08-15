@@ -17,17 +17,25 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use function floor;
 
 trait SignLikeRotationTrait{
 	/** @var int */
 	private $rotation = 0;
+
+	public function getRequiredStateDataBits() : int{ return 4; }
+
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(4, 0, 15, $this->rotation);
+	}
 
 	public function getRotation() : int{ return $this->rotation; }
 

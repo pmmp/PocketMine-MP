@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,7 +30,7 @@ use function mt_rand;
 class Beetroot extends Crops{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if($this->age >= 7){
+		if($this->age >= self::MAX_AGE){
 			return [
 				VanillaItems::BEETROOT(),
 				VanillaItems::BEETROOT_SEEDS()->setCount(mt_rand(0, 3))
@@ -42,7 +42,7 @@ class Beetroot extends Crops{
 		];
 	}
 
-	public function getPickedItem(bool $addUserData = false) : Item{
+	public function asItem() : Item{
 		return VanillaItems::BEETROOT_SEEDS();
 	}
 }

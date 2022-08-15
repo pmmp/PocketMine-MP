@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -38,9 +38,7 @@ use const DIRECTORY_SEPARATOR;
  * to enable special types of access.
  */
 class DiskResourceProvider implements ResourceProvider{
-
-	/** @var string */
-	private $file;
+	private string $file;
 
 	public function __construct(string $path){
 		$this->file = rtrim(str_replace(DIRECTORY_SEPARATOR, "/", $path), "/") . "/";
@@ -71,6 +69,7 @@ class DiskResourceProvider implements ResourceProvider{
 	public function getResources() : array{
 		$resources = [];
 		if(is_dir($this->file)){
+			/** @var \SplFileInfo $resource */
 			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->file)) as $resource){
 				if($resource->isFile()){
 					$path = str_replace(DIRECTORY_SEPARATOR, "/", substr((string) $resource, strlen($this->file)));

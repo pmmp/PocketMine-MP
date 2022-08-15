@@ -17,32 +17,27 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\item;
 
-final class ItemIdentifier{
+use pocketmine\block\Block;
 
-	/** @var int */
-	private $id;
-	/** @var int */
-	private $meta;
+class ItemIdentifier{
+	public function __construct(
+		private int $typeId
+	){}
 
-	public function __construct(int $id, int $meta){
-		if($id < -0x8000 or $id > 0x7fff){ //signed short range
-			throw new \InvalidArgumentException("ID must be in range " . -0x8000 . " - " . 0x7fff);
-		}
-		$this->id = $id;
-		$this->meta = $meta !== -1 ? $meta & 0x7FFF : -1;
+	public static function fromBlock(Block $block) : self{
+		//negative item type IDs are treated as block IDs
+		//TODO: maybe an ItemBlockIdentifier is in order?
+		//TODO: this isn't vanilla-compliant, but it'll do for now - we only use the "legacy" item ID/meta for full type
+		//indexing right now, because item type IDs aren't granular enough
+		//this should be removed once that's addressed
+		return new self(-$block->getTypeId());
 	}
 
-	public function getId() : int{
-		return $this->id;
-	}
-
-	public function getMeta() : int{
-		return $this->meta;
-	}
+	public function getTypeId() : int{ return $this->typeId; }
 }

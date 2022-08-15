@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -52,23 +52,11 @@ class Arrow extends Projectile{
 	private const TAG_PICKUP = "pickup"; //TAG_Byte
 	public const TAG_CRIT = "crit"; //TAG_Byte
 
-	protected $gravity = 0.05;
-	protected $drag = 0.01;
-
-	/** @var float */
-	protected $damage = 2.0;
-
-	/** @var int */
-	protected $pickupMode = self::PICKUP_ANY;
-
-	/** @var float */
-	protected $punchKnockback = 0.0;
-
-	/** @var int */
-	protected $collideTicks = 0;
-
-	/** @var bool */
-	protected $critical = false;
+	protected float $damage = 2.0;
+	protected int $pickupMode = self::PICKUP_ANY;
+	protected float $punchKnockback = 0.0;
+	protected int $collideTicks = 0;
+	protected bool $critical = false;
 
 	public function __construct(Location $location, ?Entity $shootingEntity, bool $critical, ?CompoundTag $nbt = null){
 		parent::__construct($location, $shootingEntity, $nbt);
@@ -76,6 +64,10 @@ class Arrow extends Projectile{
 	}
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.25, 0.25); }
+
+	protected function getInitialDragMultiplier() : float{ return 0.01; }
+
+	protected function getInitialGravity() : float{ return 0.05; }
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
@@ -176,16 +168,16 @@ class Arrow extends Projectile{
 		$item = VanillaItems::ARROW();
 		$playerInventory = match(true){
 			!$player->hasFiniteResources() => null, //arrows are not picked up in creative
-			$player->getOffHandInventory()->getItem(0)->canStackWith($item) and $player->getOffHandInventory()->canAddItem($item) => $player->getOffHandInventory(),
+			$player->getOffHandInventory()->getItem(0)->canStackWith($item) && $player->getOffHandInventory()->canAddItem($item) => $player->getOffHandInventory(),
 			$player->getInventory()->canAddItem($item) => $player->getInventory(),
 			default => null
 		};
 
 		$ev = new EntityItemPickupEvent($player, $this, $item, $playerInventory);
-		if($player->hasFiniteResources() and $playerInventory === null){
+		if($player->hasFiniteResources() && $playerInventory === null){
 			$ev->cancel();
 		}
-		if($this->pickupMode === self::PICKUP_NONE or ($this->pickupMode === self::PICKUP_CREATIVE and !$player->isCreative())){
+		if($this->pickupMode === self::PICKUP_NONE || ($this->pickupMode === self::PICKUP_CREATIVE && !$player->isCreative())){
 			$ev->cancel();
 		}
 

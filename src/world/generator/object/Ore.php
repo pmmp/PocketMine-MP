@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,15 +30,10 @@ use function sin;
 use const M_PI;
 
 class Ore{
-	/** @var Random */
-	private $random;
-	/** @var OreType */
-	public $type;
-
-	public function __construct(Random $random, OreType $type){
-		$this->type = $type;
-		$this->random = $random;
-	}
+	public function __construct(
+		private Random $random,
+		public OreType $type
+	){}
 
 	public function getType() : OreType{
 		return $this->type;
@@ -80,12 +75,12 @@ class Ore{
 						$sizeY = ($yy + 0.5 - $seedY) / $size;
 						$sizeY *= $sizeY;
 
-						if($yy > 0 and ($sizeX + $sizeY) < 1){
+						if($yy > 0 && ($sizeX + $sizeY) < 1){
 							for($zz = $startZ; $zz <= $endZ; ++$zz){
 								$sizeZ = ($zz + 0.5 - $seedZ) / $size;
 								$sizeZ *= $sizeZ;
 
-								if(($sizeX + $sizeY + $sizeZ) < 1 and $world->getBlockAt($xx, $yy, $zz)->isSameType($this->type->replaces)){
+								if(($sizeX + $sizeY + $sizeZ) < 1 && $world->getBlockAt($xx, $yy, $zz)->isSameType($this->type->replaces)){
 									$world->setBlockAt($xx, $yy, $zz, $this->type->material);
 								}
 							}

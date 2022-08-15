@@ -17,14 +17,16 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\RailConnectionInfo;
+use pocketmine\data\bedrock\block\BlockLegacyMetadata;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\math\Facing;
 use function array_keys;
 use function implode;
@@ -33,20 +35,10 @@ class Rail extends BaseRail{
 
 	private int $railShape = BlockLegacyMetadata::RAIL_STRAIGHT_NORTH_SOUTH;
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		if(!isset(RailConnectionInfo::CONNECTIONS[$stateMeta]) && !isset(RailConnectionInfo::CURVE_CONNECTIONS[$stateMeta])){
-			throw new InvalidBlockStateException("No rail shape matches metadata $stateMeta");
-		}
-		$this->railShape = $stateMeta;
-	}
+	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function writeStateToMeta() : int{
-		//TODO: railShape won't be plain metadata in future
-		return $this->railShape;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->railShape($this->railShape);
 	}
 
 	protected function setShapeFromConnections(array $connections) : void{

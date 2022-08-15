@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,6 +25,9 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\utils\SignText;
+use pocketmine\block\utils\SupportType;
+use pocketmine\block\utils\WoodType;
+use pocketmine\block\utils\WoodTypeTrait;
 use pocketmine\event\block\SignChangeEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -37,23 +40,33 @@ use function assert;
 use function strlen;
 
 abstract class BaseSign extends Transparent{
-	//TODO: conditionally useless properties, find a way to fix
+	use WoodTypeTrait;
 
 	protected SignText $text;
 	protected ?int $editorEntityRuntimeId = null;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
-		parent::__construct($idInfo, $name, $breakInfo);
+	/** @var \Closure() : Item */
+	private \Closure $asItemCallback;
+
+	/**
+	 * @param \Closure() : Item $asItemCallback
+	 */
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, WoodType $woodType, \Closure $asItemCallback){
+		$this->woodType = $woodType;
+		parent::__construct($idInfo, $name, $typeInfo);
 		$this->text = new SignText();
+		$this->asItemCallback = $asItemCallback;
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileSign){
 			$this->text = $tile->getText();
 			$this->editorEntityRuntimeId = $tile->getEditorEntityRuntimeId();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{
@@ -79,10 +92,14 @@ abstract class BaseSign extends Transparent{
 		return [];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	abstract protected function getSupportingFace() : int;
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide($this->getSupportingFace())->getId() === BlockLegacyIds::AIR){
+		if($this->getSide($this->getSupportingFace())->getTypeId() === BlockTypeIds::AIR){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -135,5 +152,9 @@ abstract class BaseSign extends Transparent{
 		}
 
 		return false;
+	}
+
+	public function asItem() : Item{
+		return ($this->asItemCallback)();
 	}
 }

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -48,20 +48,25 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
-use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
+use pocketmine\network\mcpe\protocol\types\command\CommandPermissions;
 use pocketmine\network\mcpe\protocol\types\DeviceOS;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
+use pocketmine\network\mcpe\protocol\types\GameMode;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
+use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
+use pocketmine\network\mcpe\protocol\types\UpdateAbilitiesPacketLayer;
+use pocketmine\network\mcpe\protocol\UpdateAbilitiesPacket;
 use pocketmine\player\Player;
 use pocketmine\utils\Limits;
 use pocketmine\world\sound\TotemUseSound;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
+use function array_fill;
 use function array_filter;
 use function array_key_exists;
 use function array_merge;
@@ -73,28 +78,18 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::PLAYER; }
 
-	/** @var PlayerInventory */
-	protected $inventory;
+	protected PlayerInventory $inventory;
+	protected PlayerOffHandInventory $offHandInventory;
+	protected PlayerEnderInventory $enderInventory;
 
-	/** @var PlayerOffHandInventory */
-	protected $offHandInventory;
+	protected UuidInterface $uuid;
 
-	/** @var PlayerEnderInventory */
-	protected $enderInventory;
+	protected Skin $skin;
 
-	/** @var UuidInterface */
-	protected $uuid;
+	protected HungerManager $hungerManager;
+	protected ExperienceManager $xpManager;
 
-	/** @var Skin */
-	protected $skin;
-
-	/** @var HungerManager */
-	protected $hungerManager;
-	/** @var ExperienceManager */
-	protected $xpManager;
-
-	/** @var int */
-	protected $xpSeed;
+	protected int $xpSeed;
 
 	public function __construct(Location $location, Skin $skin, ?CompoundTag $nbt = null){
 		$this->skin = $skin;
@@ -155,9 +150,15 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	public function jump() : void{
 		parent::jump();
 		if($this->isSprinting()){
-			$this->hungerManager->exhaust(0.8, PlayerExhaustEvent::CAUSE_SPRINT_JUMPING);
+			$this->hungerManager->exhaust(0.2, PlayerExhaustEvent::CAUSE_SPRINT_JUMPING);
 		}else{
-			$this->hungerManager->exhaust(0.2, PlayerExhaustEvent::CAUSE_JUMPING);
+			$this->hungerManager->exhaust(0.05, PlayerExhaustEvent::CAUSE_JUMPING);
+		}
+	}
+
+	public function emote(string $emoteId) : void{
+		foreach($this->getViewers() as $player){
+			$player->getNetworkSession()->onEmote($this, $emoteId);
 		}
 	}
 
@@ -166,7 +167,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	}
 
 	public function consumeObject(Consumable $consumable) : bool{
-		if($consumable instanceof FoodSource && $consumable->requiresHunger() and !$this->hungerManager->isHungry()){
+		if($consumable instanceof FoodSource && $consumable->requiresHunger() && !$this->hungerManager->isHungry()){
 			return false;
 		}
 
@@ -192,10 +193,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return min(100, 7 * $this->xpManager->getXpLevel());
 	}
 
-	/**
-	 * @return PlayerInventory
-	 */
-	public function getInventory(){
+	public function getInventory() : PlayerInventory{
 		return $this->inventory;
 	}
 
@@ -215,6 +213,19 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 		//TODO: use of NIL UUID for namespace is a hack; we should provide a proper UUID for the namespace
 		$this->uuid = Uuid::uuid3(Uuid::NIL, ((string) $this->getId()) . $this->skin->getSkinData() . $this->getNameTag());
+	}
+
+	/**
+	 * @param Item[] $items
+	 * @phpstan-param array<int, Item> $items
+	 */
+	private static function populateInventoryFromListTag(Inventory $inventory, array $items) : void{
+		$listeners = $inventory->getListeners()->toArray();
+		$inventory->getListeners()->clear();
+
+		$inventory->setContents($items);
+
+		$inventory->getListeners()->add(...$listeners);
 	}
 
 	protected function initEntity(CompoundTag $nbt) : void{
@@ -247,25 +258,23 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 		$inventoryTag = $nbt->getListTag("Inventory");
 		if($inventoryTag !== null){
-			$armorListeners = $this->armorInventory->getListeners()->toArray();
-			$this->armorInventory->getListeners()->clear();
-			$inventoryListeners = $this->inventory->getListeners()->toArray();
-			$this->inventory->getListeners()->clear();
+			$inventoryItems = [];
+			$armorInventoryItems = [];
 
 			/** @var CompoundTag $item */
 			foreach($inventoryTag as $i => $item){
 				$slot = $item->getByte("Slot");
-				if($slot >= 0 and $slot < 9){ //Hotbar
+				if($slot >= 0 && $slot < 9){ //Hotbar
 					//Old hotbar saving stuff, ignore it
-				}elseif($slot >= 100 and $slot < 104){ //Armor
-					$this->armorInventory->setItem($slot - 100, Item::nbtDeserialize($item));
-				}elseif($slot >= 9 and $slot < $this->inventory->getSize() + 9){
-					$this->inventory->setItem($slot - 9, Item::nbtDeserialize($item));
+				}elseif($slot >= 100 && $slot < 104){ //Armor
+					$armorInventoryItems[$slot - 100] = Item::nbtDeserialize($item);
+				}elseif($slot >= 9 && $slot < $this->inventory->getSize() + 9){
+					$inventoryItems[$slot - 9] = Item::nbtDeserialize($item);
 				}
 			}
 
-			$this->armorInventory->getListeners()->add(...$armorListeners);
-			$this->inventory->getListeners()->add(...$inventoryListeners);
+			self::populateInventoryFromListTag($this->inventory, $inventoryItems);
+			self::populateInventoryFromListTag($this->armorInventory, $armorInventoryItems);
 		}
 		$offHand = $nbt->getCompoundTag("OffHandItem");
 		if($offHand !== null){
@@ -279,10 +288,13 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 		$enderChestInventoryTag = $nbt->getListTag("EnderChestInventory");
 		if($enderChestInventoryTag !== null){
+			$enderChestInventoryItems = [];
+
 			/** @var CompoundTag $item */
 			foreach($enderChestInventoryTag as $i => $item){
-				$this->enderInventory->setItem($item->getByte("Slot"), Item::nbtDeserialize($item));
+				$enderChestInventoryItems[$item->getByte("Slot")] = Item::nbtDeserialize($item);
 			}
+			self::populateInventoryFromListTag($this->enderInventory, $enderChestInventoryItems);
 		}
 
 		$this->inventory->setHeldItemIndex($nbt->getInt("SelectedInventorySlot", 0));
@@ -326,8 +338,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		parent::applyDamageModifiers($source);
 
 		$type = $source->getCause();
-		if($type !== EntityDamageEvent::CAUSE_SUICIDE and $type !== EntityDamageEvent::CAUSE_VOID
-			and ($this->inventory->getItemInHand() instanceof Totem || $this->offHandInventory->getItem(0) instanceof Totem)){
+		if($type !== EntityDamageEvent::CAUSE_SUICIDE && $type !== EntityDamageEvent::CAUSE_VOID
+			&& ($this->inventory->getItemInHand() instanceof Totem || $this->offHandInventory->getItem(0) instanceof Totem)){
 
 			$compensation = $this->getHealth() - $source->getFinalDamage() - 1;
 			if($compensation < 0){
@@ -362,9 +374,9 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	public function getDrops() : array{
 		return array_filter(array_merge(
-			$this->inventory !== null ? array_values($this->inventory->getContents()) : [],
-			$this->armorInventory !== null ? array_values($this->armorInventory->getContents()) : [],
-			$this->offHandInventory !== null ? array_values($this->offHandInventory->getContents()) : [],
+			array_values($this->inventory->getContents()),
+			array_values($this->armorInventory->getContents()),
+			array_values($this->offHandInventory->getContents()),
 		), function(Item $item) : bool{ return !$item->hasEnchantment(VanillaEnchantments::VANISHING()); });
 	}
 
@@ -383,55 +395,51 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 		$inventoryTag = new ListTag([], NBT::TAG_Compound);
 		$nbt->setTag("Inventory", $inventoryTag);
-		if($this->inventory !== null){
-			//Normal inventory
-			$slotCount = $this->inventory->getSize() + $this->inventory->getHotbarSize();
-			for($slot = $this->inventory->getHotbarSize(); $slot < $slotCount; ++$slot){
-				$item = $this->inventory->getItem($slot - 9);
-				if(!$item->isNull()){
-					$inventoryTag->push($item->nbtSerialize($slot));
-				}
-			}
 
-			//Armor
-			for($slot = 100; $slot < 104; ++$slot){
-				$item = $this->armorInventory->getItem($slot - 100);
-				if(!$item->isNull()){
-					$inventoryTag->push($item->nbtSerialize($slot));
-				}
+		//Normal inventory
+		$slotCount = $this->inventory->getSize() + $this->inventory->getHotbarSize();
+		for($slot = $this->inventory->getHotbarSize(); $slot < $slotCount; ++$slot){
+			$item = $this->inventory->getItem($slot - 9);
+			if(!$item->isNull()){
+				$inventoryTag->push($item->nbtSerialize($slot));
 			}
-
-			$nbt->setInt("SelectedInventorySlot", $this->inventory->getHeldItemIndex());
 		}
+
+		//Armor
+		for($slot = 100; $slot < 104; ++$slot){
+			$item = $this->armorInventory->getItem($slot - 100);
+			if(!$item->isNull()){
+				$inventoryTag->push($item->nbtSerialize($slot));
+			}
+		}
+
+		$nbt->setInt("SelectedInventorySlot", $this->inventory->getHeldItemIndex());
+
 		$offHandItem = $this->offHandInventory->getItem(0);
 		if(!$offHandItem->isNull()){
 			$nbt->setTag("OffHandItem", $offHandItem->nbtSerialize());
 		}
 
-		if($this->enderInventory !== null){
-			/** @var CompoundTag[] $items */
-			$items = [];
+		/** @var CompoundTag[] $items */
+		$items = [];
 
-			$slotCount = $this->enderInventory->getSize();
-			for($slot = 0; $slot < $slotCount; ++$slot){
-				$item = $this->enderInventory->getItem($slot);
-				if(!$item->isNull()){
-					$items[] = $item->nbtSerialize($slot);
-				}
+		$slotCount = $this->enderInventory->getSize();
+		for($slot = 0; $slot < $slotCount; ++$slot){
+			$item = $this->enderInventory->getItem($slot);
+			if(!$item->isNull()){
+				$items[] = $item->nbtSerialize($slot);
 			}
-
-			$nbt->setTag("EnderChestInventory", new ListTag($items, NBT::TAG_Compound));
 		}
 
-		if($this->skin !== null){
-			$nbt->setTag("Skin", CompoundTag::create()
-				->setString("Name", $this->skin->getSkinId())
-				->setByteArray("Data", $this->skin->getSkinData())
-				->setByteArray("CapeData", $this->skin->getCapeData())
-				->setString("GeometryName", $this->skin->getGeometryName())
-				->setByteArray("GeometryData", $this->skin->getGeometryData())
-			);
-		}
+		$nbt->setTag("EnderChestInventory", new ListTag($items, NBT::TAG_Compound));
+
+		$nbt->setTag("Skin", CompoundTag::create()
+			->setString("Name", $this->skin->getSkinId())
+			->setByteArray("Data", $this->skin->getSkinData())
+			->setByteArray("CapeData", $this->skin->getCapeData())
+			->setString("GeometryName", $this->skin->getGeometryName())
+			->setByteArray("GeometryData", $this->skin->getGeometryData())
+		);
 
 		return $nbt;
 	}
@@ -450,7 +458,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$player->getNetworkSession()->sendDataPacket(AddPlayerPacket::create(
 			$this->getUniqueId(),
 			$this->getName(),
-			$this->getId(), //TODO: actor unique ID
 			$this->getId(),
 			"",
 			$this->location->asVector3(),
@@ -459,8 +466,16 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			$this->location->yaw,
 			$this->location->yaw, //TODO: head yaw
 			ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->getInventory()->getItemInHand())),
+			GameMode::SURVIVAL,
 			$this->getAllNetworkData(),
-			AdventureSettingsPacket::create(0, 0, 0, 0, 0, $this->getId()), //TODO
+			UpdateAbilitiesPacket::create(CommandPermissions::NORMAL, PlayerPermissions::VISITOR, $this->getId() /* TODO: this should be unique ID */, [
+				new UpdateAbilitiesPacketLayer(
+					UpdateAbilitiesPacketLayer::LAYER_BASE,
+					array_fill(0, UpdateAbilitiesPacketLayer::NUMBER_OF_ABILITIES, false),
+					0.0,
+					0.0
+				)
+			]),
 			[], //TODO: entity links
 			"", //device ID (we intentionally don't send this - secvuln)
 			DeviceOS::UNKNOWN //we intentionally don't send this (secvuln)
@@ -490,11 +505,13 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	}
 
 	protected function destroyCycles() : void{
-		$this->inventory = null;
-		$this->offHandInventory = null;
-		$this->enderInventory = null;
-		$this->hungerManager = null;
-		$this->xpManager = null;
+		unset(
+			$this->inventory,
+			$this->offHandInventory,
+			$this->enderInventory,
+			$this->hungerManager,
+			$this->xpManager
+		);
 		parent::destroyCycles();
 	}
 }

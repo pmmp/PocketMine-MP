@@ -17,31 +17,33 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\item\Durable;
+use pocketmine\crafting\CraftingManagerFromDataHelper;
+use pocketmine\crafting\json\ItemStackData;
 use pocketmine\item\Item;
 use pocketmine\utils\SingletonTrait;
 use Webmozart\PathUtil\Path;
-use function file_get_contents;
-use function json_decode;
 
 final class CreativeInventory{
 	use SingletonTrait;
 
 	/** @var Item[] */
-	private $creative = [];
+	private array $creative = [];
 
 	private function __construct(){
-		$creativeItems = json_decode(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "creativeitems.json")), true);
-
+		$creativeItems = CraftingManagerFromDataHelper::loadJsonArrayOfObjectsFile(
+			Path::join(\pocketmine\BEDROCK_DATA_PATH, "creativeitems.json"),
+			ItemStackData::class
+		);
 		foreach($creativeItems as $data){
-			$item = Item::jsonDeserialize($data);
-			if($item->getName() === "Unknown"){
+			$item = CraftingManagerFromDataHelper::deserializeItemStack($data);
+			if($item === null){
+				//unknown item
 				continue;
 			}
 			$this->add($item);
@@ -69,7 +71,7 @@ final class CreativeInventory{
 
 	public function getItemIndex(Item $item) : int{
 		foreach($this->creative as $i => $d){
-			if($item->equals($d, !($item instanceof Durable))){
+			if($item->equals($d, true, false)){
 				return $i;
 			}
 		}

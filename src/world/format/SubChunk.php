@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,28 +32,17 @@ class SubChunk{
 	public const COORD_MASK = ~(~0 << self::COORD_BIT_SIZE);
 	public const EDGE_LENGTH = 1 << self::COORD_BIT_SIZE;
 
-	/** @var int */
-	private $emptyBlockId;
-	/** @var PalettedBlockArray[] */
-	private $blockLayers;
-
-	/** @var LightArray|null */
-	private $blockLight;
-	/** @var LightArray|null */
-	private $skyLight;
-
 	/**
 	 * SubChunk constructor.
 	 *
-	 * @param PalettedBlockArray[] $blocks
+	 * @param PalettedBlockArray[] $blockLayers
 	 */
-	public function __construct(int $emptyBlockId, array $blocks, ?LightArray $skyLight = null, ?LightArray $blockLight = null){
-		$this->emptyBlockId = $emptyBlockId;
-		$this->blockLayers = $blocks;
-
-		$this->skyLight = $skyLight;
-		$this->blockLight = $blockLight;
-	}
+	public function __construct(
+		private int $emptyBlockId,
+		private array $blockLayers,
+		private ?LightArray $skyLight = null,
+		private ?LightArray $blockLight = null
+	){}
 
 	/**
 	 * Returns whether this subchunk contains any non-air blocks.

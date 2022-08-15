@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -81,19 +81,17 @@ class Language{
 		throw new LanguageNotFoundException("Language directory $path does not exist or is not a directory");
 	}
 
-	/** @var string */
-	protected $langName;
-
+	protected string $langName;
 	/**
 	 * @var string[]
 	 * @phpstan-var array<string, string>
 	 */
-	protected $lang = [];
+	protected array $lang = [];
 	/**
 	 * @var string[]
 	 * @phpstan-var array<string, string>
 	 */
-	protected $fallbackLang = [];
+	protected array $fallbackLang = [];
 
 	/**
 	 * @throws LanguageNotFoundException
@@ -135,7 +133,7 @@ class Language{
 	 */
 	public function translateString(string $str, array $params = [], ?string $onlyPrefix = null) : string{
 		$baseText = $this->get($str);
-		$baseText = $this->parseTranslation(($onlyPrefix === null or strpos($str, $onlyPrefix) === 0) ? $baseText : $str, $onlyPrefix);
+		$baseText = $this->parseTranslation(($onlyPrefix === null || strpos($str, $onlyPrefix) === 0) ? $baseText : $str, $onlyPrefix);
 
 		foreach($params as $i => $p){
 			$replacement = $p instanceof Translatable ? $this->translate($p) : (string) $p;
@@ -176,14 +174,14 @@ class Language{
 			if($replaceString !== null){
 				$ord = ord($c);
 				if(
-					($ord >= 0x30 and $ord <= 0x39) // 0-9
-					or ($ord >= 0x41 and $ord <= 0x5a) // A-Z
-					or ($ord >= 0x61 and $ord <= 0x7a) or // a-z
-					$c === "." or $c === "-"
+					($ord >= 0x30 && $ord <= 0x39) // 0-9
+					|| ($ord >= 0x41 && $ord <= 0x5a) // A-Z
+					|| ($ord >= 0x61 && $ord <= 0x7a) || // a-z
+					$c === "." || $c === "-"
 				){
 					$replaceString .= $c;
 				}else{
-					if(($t = $this->internalGet(substr($replaceString, 1))) !== null and ($onlyPrefix === null or strpos($replaceString, $onlyPrefix) === 1)){
+					if(($t = $this->internalGet(substr($replaceString, 1))) !== null && ($onlyPrefix === null || strpos($replaceString, $onlyPrefix) === 1)){
 						$newString .= $t;
 					}else{
 						$newString .= $replaceString;
@@ -204,7 +202,7 @@ class Language{
 		}
 
 		if($replaceString !== null){
-			if(($t = $this->internalGet(substr($replaceString, 1))) !== null and ($onlyPrefix === null or strpos($replaceString, $onlyPrefix) === 1)){
+			if(($t = $this->internalGet(substr($replaceString, 1))) !== null && ($onlyPrefix === null || strpos($replaceString, $onlyPrefix) === 1)){
 				$newString .= $t;
 			}else{
 				$newString .= $replaceString;

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,14 +29,11 @@ class CompressBatchTask extends AsyncTask{
 
 	private const TLS_KEY_PROMISE = "promise";
 
-	/** @var string */
-	private $data;
-	/** @var Compressor */
-	private $compressor;
-
-	public function __construct(string $data, CompressBatchPromise $promise, Compressor $compressor){
-		$this->data = $data;
-		$this->compressor = $compressor;
+	public function __construct(
+		private string $data,
+		CompressBatchPromise $promise,
+		private Compressor $compressor
+	){
 		$this->storeLocal(self::TLS_KEY_PROMISE, $promise);
 	}
 

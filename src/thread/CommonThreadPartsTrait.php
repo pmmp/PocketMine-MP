@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,11 +30,9 @@ use function error_reporting;
 trait CommonThreadPartsTrait{
 	/** @var \Threaded|\ClassLoader[]|null  */
 	private ?\Threaded $classLoaders = null;
-	/** @var string|null */
-	protected $composerAutoloaderPath;
+	protected ?string $composerAutoloaderPath = null;
 
-	/** @var bool */
-	protected $isKilled = false;
+	protected bool $isKilled = false;
 
 	/**
 	 * @return \ClassLoader[]

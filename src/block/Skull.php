@@ -17,15 +17,16 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Skull as TileSkull;
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\SkullType;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -36,39 +37,40 @@ use function assert;
 use function floor;
 
 class Skull extends Flowable{
+	public const MIN_ROTATION = 0;
+	public const MAX_ROTATION = 15;
 
 	protected SkullType $skullType;
 
 	protected int $facing = Facing::NORTH;
-	protected bool $noDrops = false;
-	protected int $rotation = 0; //TODO: split this into floor skull and wall skull handling
+	protected int $rotation = self::MIN_ROTATION; //TODO: split this into floor skull and wall skull handling
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->skullType = SkullType::SKELETON(); //TODO: this should be a parameter
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	protected function writeStateToMeta() : int{
-		return ($this->facing === Facing::UP ? 1 : BlockDataSerializer::writeHorizontalFacing($this->facing)) |
-			($this->noDrops ? BlockLegacyMetadata::SKULL_FLAG_NO_DROPS : 0);
+	public function getRequiredTypeDataBits() : int{ return 3; }
+
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->skullType($this->skullType);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = $stateMeta === 1 ? Facing::UP : BlockDataSerializer::readHorizontalFacing($stateMeta);
-		$this->noDrops = ($stateMeta & BlockLegacyMetadata::SKULL_FLAG_NO_DROPS) !== 0;
+	public function getRequiredStateDataBits() : int{ return 3; }
+
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->facingExcept($this->facing, Facing::DOWN);
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileSkull){
 			$this->skullType = $tile->getSkullType();
 			$this->rotation = $tile->getRotation();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{
@@ -105,18 +107,10 @@ class Skull extends Flowable{
 
 	/** @return $this */
 	public function setRotation(int $rotation) : self{
-		if($rotation < 0 || $rotation > 15){
-			throw new \InvalidArgumentException("Rotation must be a value between 0 and 15");
+		if($rotation < self::MIN_ROTATION || $rotation > self::MAX_ROTATION){
+			throw new \InvalidArgumentException("Rotation must be in range " . self::MIN_ROTATION . " ... " . self::MAX_ROTATION);
 		}
 		$this->rotation = $rotation;
-		return $this;
-	}
-
-	public function isNoDrops() : bool{ return $this->noDrops; }
-
-	/** @return $this */
-	public function setNoDrops(bool $noDrops) : self{
-		$this->noDrops = $noDrops;
 		return $this;
 	}
 
@@ -140,13 +134,9 @@ class Skull extends Flowable{
 		}
 
 		$this->facing = $face;
-		if($player !== null and $face === Facing::UP){
+		if($player !== null && $face === Facing::UP){
 			$this->rotation = ((int) floor(($player->getLocation()->getYaw() * 16 / 360) + 0.5)) & 0xf;
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	protected function writeStateToItemMeta() : int{
-		return $this->skullType->getMagicNumber();
 	}
 }

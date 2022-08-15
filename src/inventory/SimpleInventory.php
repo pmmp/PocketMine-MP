@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -52,6 +52,10 @@ class SimpleInventory extends BaseInventory{
 		return $this->slots[$index] !== null ? clone $this->slots[$index] : VanillaItems::AIR();
 	}
 
+	protected function internalSetItem(int $index, Item $item) : void{
+		$this->slots[$index] = $item->isNull() ? null : $item;
+	}
+
 	/**
 	 * @return Item[]
 	 */
@@ -71,15 +75,11 @@ class SimpleInventory extends BaseInventory{
 
 	protected function internalSetContents(array $items) : void{
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
-			if(!isset($items[$i])){
-				$this->clear($i);
+			if(!isset($items[$i]) || $items[$i]->isNull()){
+				$this->slots[$i] = null;
 			}else{
-				$this->setItem($i, $items[$i]);
+				$this->slots[$i] = clone $items[$i];
 			}
 		}
-	}
-
-	protected function internalSetItem(int $index, Item $item) : void{
-		$this->slots[$index] = $item->isNull() ? null : $item;
 	}
 }

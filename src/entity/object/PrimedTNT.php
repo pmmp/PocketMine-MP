@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -41,24 +41,21 @@ class PrimedTNT extends Entity implements Explosive{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::TNT; }
 
-	protected $gravity = 0.04;
-	protected $drag = 0.02;
-
-	/** @var int */
-	protected $fuse;
-
+	protected int $fuse;
 	protected bool $worksUnderwater = false;
 
-	public $canCollide = false;
-
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.98, 0.98); }
+
+	protected function getInitialDragMultiplier() : float{ return 0.02; }
+
+	protected function getInitialGravity() : float{ return 0.04; }
 
 	public function getFuse() : int{
 		return $this->fuse;
 	}
 
 	public function setFuse(int $fuse) : void{
-		if($fuse < 0 or $fuse > 32767){
+		if($fuse < 0 || $fuse > 32767){
 			throw new \InvalidArgumentException("Fuse must be in the range 0-32767");
 		}
 		$this->fuse = $fuse;
@@ -112,7 +109,7 @@ class PrimedTNT extends Entity implements Explosive{
 			}
 		}
 
-		return $hasUpdate or $this->fuse >= 0;
+		return $hasUpdate || $this->fuse >= 0;
 	}
 
 	public function explode() : void{

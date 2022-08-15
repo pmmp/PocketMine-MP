@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -37,17 +37,14 @@ use const PHP_INT_MAX;
 class ConsoleCommandSender implements CommandSender{
 	use PermissibleDelegateTrait;
 
-	/** @var Server */
-	private $server;
-	/** @var int|null */
-	protected $lineHeight = null;
-	/** @var Language */
-	private $language;
+	/** @phpstan-var positive-int|null */
+	protected ?int $lineHeight = null;
 
-	public function __construct(Server $server, Language $language){
-		$this->server = $server;
+	public function __construct(
+		private Server $server,
+		private Language $language
+	){
 		$this->perm = new PermissibleBase([DefaultPermissions::ROOT_CONSOLE => true]);
-		$this->language = $language;
 	}
 
 	public function getServer() : Server{
@@ -78,7 +75,7 @@ class ConsoleCommandSender implements CommandSender{
 	}
 
 	public function setScreenLineHeight(?int $height) : void{
-		if($height !== null and $height < 1){
+		if($height !== null && $height < 1){
 			throw new \InvalidArgumentException("Line height must be at least 1");
 		}
 		$this->lineHeight = $height;

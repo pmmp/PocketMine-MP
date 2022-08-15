@@ -17,18 +17,25 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 
 trait HorizontalFacingTrait{
-	/** @var int */
-	protected $facing = Facing::NORTH;
+	protected int $facing = Facing::NORTH;
+
+	public function getRequiredStateDataBits() : int{ return 2; }
+
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->horizontalFacing($this->facing);
+	}
 
 	public function getFacing() : int{ return $this->facing; }
 

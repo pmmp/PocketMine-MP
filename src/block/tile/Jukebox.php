@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,12 +26,12 @@ namespace pocketmine\block\tile;
 use pocketmine\item\Item;
 use pocketmine\item\Record;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\convert\ItemTranslator;
 
 class Jukebox extends Spawnable{
 	private const TAG_RECORD = "RecordItem"; //Item CompoundTag
 
-	/** @var Record|null */
-	private $record = null;
+	private ?Record $record = null;
 
 	public function getRecord() : ?Record{
 		return $this->record;
@@ -59,7 +59,7 @@ class Jukebox extends Spawnable{
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		//this is needed for the note particles to show on the client side
 		if($this->record !== null){
-			$nbt->setTag(self::TAG_RECORD, $this->record->nbtSerialize());
+			$nbt->setTag(self::TAG_RECORD, ItemTranslator::getInstance()->toNetworkNbt($this->record));
 		}
 	}
 }

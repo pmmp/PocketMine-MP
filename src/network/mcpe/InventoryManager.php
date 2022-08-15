@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,17 +26,21 @@ namespace pocketmine\network\mcpe;
 use pocketmine\block\inventory\AnvilInventory;
 use pocketmine\block\inventory\BlockInventory;
 use pocketmine\block\inventory\BrewingStandInventory;
+use pocketmine\block\inventory\CartographyTableInventory;
 use pocketmine\block\inventory\CraftingTableInventory;
 use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\block\inventory\HopperInventory;
 use pocketmine\block\inventory\LoomInventory;
+use pocketmine\block\inventory\SmithingTableInventory;
+use pocketmine\block\inventory\StonecutterInventory;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Item;
+use pocketmine\network\mcpe\convert\TypeConversionException;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
@@ -50,59 +54,44 @@ use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
+use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
+use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\ObjectSet;
 use function array_map;
 use function array_search;
+use function get_class;
 use function max;
+use function spl_object_id;
 
 /**
  * @phpstan-type ContainerOpenClosure \Closure(int $id, Inventory $inventory) : (list<ClientboundPacket>|null)
  */
 class InventoryManager{
-
-	//TODO: HACK!
-	//these IDs are used for 1.16 to restore 1.14ish crafting & inventory behaviour; since they don't seem to have any
-	//effect on the behaviour of inventory transactions I don't currently plan to integrate these into the main system.
-	private const RESERVED_WINDOW_ID_RANGE_START = ContainerIds::LAST - 10;
-	private const HARDCODED_INVENTORY_WINDOW_ID = self::RESERVED_WINDOW_ID_RANGE_START + 2;
-
-	/** @var Player */
-	private $player;
-	/** @var NetworkSession */
-	private $session;
-
 	/** @var Inventory[] */
-	private $windowMap = [];
-	/** @var int */
-	private $lastInventoryNetworkId = ContainerIds::FIRST;
-
-	/**
-	 * TODO: HACK! This tracks GUIs for inventories that the server considers "always open" so that the client can't
-	 * open them twice. (1.16 hack)
-	 * @var true[]
-	 * @phpstan-var array<int, true>
-	 * @internal
-	 */
-	protected $openHardcodedWindows = [];
+	private array $windowMap = [];
+	private int $lastInventoryNetworkId = ContainerIds::FIRST;
 
 	/**
 	 * @var Item[][]
 	 * @phpstan-var array<int, array<int, Item>>
 	 */
-	private $initiatedSlotChanges = [];
-	/** @var int */
-	private $clientSelectedHotbarSlot = -1;
+	private array $initiatedSlotChanges = [];
+	private int $clientSelectedHotbarSlot = -1;
 
 	/** @phpstan-var ObjectSet<ContainerOpenClosure> */
 	private ObjectSet $containerOpenCallbacks;
 
-	public function __construct(Player $player, NetworkSession $session){
-		$this->player = $player;
-		$this->session = $session;
+	private ?int $pendingCloseWindowId = null;
+	/** @phpstan-var \Closure() : void */
+	private ?\Closure $pendingOpenWindowCallback = null;
 
+	public function __construct(
+		private Player $player,
+		private NetworkSession $session
+	){
 		$this->containerOpenCallbacks = new ObjectSet();
 		$this->containerOpenCallbacks->add(\Closure::fromCallable([self::class, 'createContainerOpen']));
 
@@ -118,6 +107,12 @@ class InventoryManager{
 
 	private function add(int $id, Inventory $inventory) : void{
 		$this->windowMap[$id] = $inventory;
+	}
+
+	private function addDynamic(Inventory $inventory) : int{
+		$this->lastInventoryNetworkId = max(ContainerIds::FIRST, ($this->lastInventoryNetworkId + 1) % ContainerIds::LAST);
+		$this->add($this->lastInventoryNetworkId, $inventory);
+		return $this->lastInventoryNetworkId;
 	}
 
 	private function remove(int $id) : void{
@@ -138,28 +133,72 @@ class InventoryManager{
 
 	public function onTransactionStart(InventoryTransaction $tx) : void{
 		foreach($tx->getActions() as $action){
-			if($action instanceof SlotChangeAction and ($windowId = $this->getWindowId($action->getInventory())) !== null){
+			if($action instanceof SlotChangeAction && ($windowId = $this->getWindowId($action->getInventory())) !== null){
 				//in some cases the inventory might not have a window ID, but still be referenced by a transaction (e.g. crafting grid changes), so we can't unconditionally record the change here or we might leak things
 				$this->initiatedSlotChanges[$windowId][$action->getSlot()] = $action->getTargetItem();
 			}
 		}
 	}
 
-	public function onCurrentWindowChange(Inventory $inventory) : void{
-		$this->onCurrentWindowRemove();
-		$this->add($this->lastInventoryNetworkId = max(ContainerIds::FIRST, ($this->lastInventoryNetworkId + 1) % self::RESERVED_WINDOW_ID_RANGE_START), $inventory);
-
-		foreach($this->containerOpenCallbacks as $callback){
-			$pks = $callback($this->lastInventoryNetworkId, $inventory);
-			if($pks !== null){
-				foreach($pks as $pk){
-					$this->session->sendDataPacket($pk);
+	/**
+	 * @param NetworkInventoryAction[] $networkInventoryActions
+	 * @throws PacketHandlingException
+	 */
+	public function addPredictedSlotChanges(array $networkInventoryActions) : void{
+		foreach($networkInventoryActions as $action){
+			if($action->sourceType === NetworkInventoryAction::SOURCE_CONTAINER && isset($this->windowMap[$action->windowId])){
+				//this won't cover stuff like crafting grid due to too much magic
+				try{
+					$item = TypeConverter::getInstance()->netItemStackToCore($action->newItem->getItemStack());
+				}catch(TypeConversionException $e){
+					throw new PacketHandlingException($e->getMessage(), 0, $e);
 				}
-				$this->syncContents($inventory);
-				return;
+				$this->initiatedSlotChanges[$action->windowId][$action->inventorySlot] = $item;
 			}
 		}
-		throw new \LogicException("Unsupported inventory type");
+	}
+
+	/**
+	 * When the server initiates a window close, it does so by sending a ContainerClose to the client, which causes the
+	 * client to behave as if it initiated the close itself. It responds by sending a ContainerClose back to the server,
+	 * which the server is then expected to respond to.
+	 *
+	 * Sending the client a new window before sending this final response creates buggy behaviour on the client, which
+	 * is problematic when switching windows. Therefore, we defer sending any new windows until after the client
+	 * responds to our window close instruction, so that we can complete the window handshake correctly.
+	 *
+	 * This is a pile of complicated garbage that only exists because Mojang overengineered the process of opening and
+	 * closing inventory windows.
+	 *
+	 * @phpstan-param \Closure() : void $func
+	 */
+	private function openWindowDeferred(\Closure $func) : void{
+		if($this->pendingCloseWindowId !== null){
+			$this->session->getLogger()->debug("Deferring opening of new window, waiting for close ack of window $this->pendingCloseWindowId");
+			$this->pendingOpenWindowCallback = $func;
+		}else{
+			$func();
+		}
+	}
+
+	public function onCurrentWindowChange(Inventory $inventory) : void{
+		$this->onCurrentWindowRemove();
+
+		$this->openWindowDeferred(function() use ($inventory) : void{
+			$windowId = $this->addDynamic($inventory);
+
+			foreach($this->containerOpenCallbacks as $callback){
+				$pks = $callback($windowId, $inventory);
+				if($pks !== null){
+					foreach($pks as $pk){
+						$this->session->sendDataPacket($pk);
+					}
+					$this->syncContents($inventory);
+					return;
+				}
+			}
+			throw new \LogicException("Unsupported inventory type");
+		});
 	}
 
 	/** @phpstan-return ObjectSet<ContainerOpenClosure> */
@@ -187,6 +226,9 @@ class InventoryManager{
 				$inv instanceof AnvilInventory => WindowTypes::ANVIL,
 				$inv instanceof HopperInventory => WindowTypes::HOPPER,
 				$inv instanceof CraftingTableInventory => WindowTypes::WORKBENCH,
+				$inv instanceof StonecutterInventory => WindowTypes::STONECUTTER,
+				$inv instanceof CartographyTableInventory => WindowTypes::CARTOGRAPHY,
+				$inv instanceof SmithingTableInventory => WindowTypes::SMITHING_TABLE,
 				default => WindowTypes::CONTAINER
 			};
 			return [ContainerOpenPacket::blockInv($id, $windowType, $blockPosition)];
@@ -195,31 +237,32 @@ class InventoryManager{
 	}
 
 	public function onClientOpenMainInventory() : void{
-		$id = self::HARDCODED_INVENTORY_WINDOW_ID;
-		if(!isset($this->openHardcodedWindows[$id])){
-			//TODO: HACK! this restores 1.14ish behaviour, but this should be able to be listened to and
-			//controlled by plugins. However, the player is always a subscriber to their own inventory so it
-			//doesn't integrate well with the regular container system right now.
-			$this->openHardcodedWindows[$id] = true;
+		$this->onCurrentWindowRemove();
+
+		$this->openWindowDeferred(function() : void{
+			$windowId = $this->addDynamic($this->player->getInventory());
+
 			$this->session->sendDataPacket(ContainerOpenPacket::entityInv(
-				InventoryManager::HARDCODED_INVENTORY_WINDOW_ID,
+				$windowId,
 				WindowTypes::INVENTORY,
 				$this->player->getId()
 			));
-		}
+		});
 	}
 
 	public function onCurrentWindowRemove() : void{
 		if(isset($this->windowMap[$this->lastInventoryNetworkId])){
 			$this->remove($this->lastInventoryNetworkId);
 			$this->session->sendDataPacket(ContainerClosePacket::create($this->lastInventoryNetworkId, true));
+			if($this->pendingCloseWindowId !== null){
+				throw new AssumptionFailedError("We should not have opened a new window while a window was waiting to be closed");
+			}
+			$this->pendingCloseWindowId = $this->lastInventoryNetworkId;
 		}
 	}
 
 	public function onClientRemoveWindow(int $id) : void{
-		if(isset($this->openHardcodedWindows[$id])){
-			unset($this->openHardcodedWindows[$id]);
-		}elseif($id === $this->lastInventoryNetworkId){
+		if($id === $this->lastInventoryNetworkId){
 			$this->remove($id);
 			$this->player->removeCurrentWindow();
 		}else{
@@ -229,6 +272,15 @@ class InventoryManager{
 		//Always send this, even if no window matches. If we told the client to close a window, it will behave as if it
 		//initiated the close and expect an ack.
 		$this->session->sendDataPacket(ContainerClosePacket::create($id, false));
+
+		if($this->pendingCloseWindowId === $id){
+			$this->pendingCloseWindowId = null;
+			if($this->pendingOpenWindowCallback !== null){
+				$this->session->getLogger()->debug("Opening deferred window after close ack of window $id");
+				($this->pendingOpenWindowCallback)();
+				$this->pendingOpenWindowCallback = null;
+			}
+		}
 	}
 
 	public function syncSlot(Inventory $inventory, int $slot) : void{
@@ -236,7 +288,7 @@ class InventoryManager{
 		if($windowId !== null){
 			$currentItem = $inventory->getItem($slot);
 			$clientSideItem = $this->initiatedSlotChanges[$windowId][$slot] ?? null;
-			if($clientSideItem === null or !$clientSideItem->equalsExact($currentItem)){
+			if($clientSideItem === null || !$clientSideItem->equalsExact($currentItem)){
 				$itemStackWrapper = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($currentItem));
 				if($windowId === ContainerIds::OFFHAND){
 					//TODO: HACK!
@@ -281,6 +333,28 @@ class InventoryManager{
 		foreach($this->windowMap as $inventory){
 			$this->syncContents($inventory);
 		}
+	}
+
+	public function syncMismatchedPredictedSlotChanges() : void{
+		foreach($this->initiatedSlotChanges as $windowId => $slots){
+			if(!isset($this->windowMap[$windowId])){
+				continue;
+			}
+			$inventory = $this->windowMap[$windowId];
+
+			foreach($slots as $slot => $expectedItem){
+				if(!$inventory->slotExists($slot)){
+					continue; //TODO: size desync ???
+				}
+				$actualItem = $inventory->getItem($slot);
+				if(!$actualItem->equalsExact($expectedItem)){
+					$this->session->getLogger()->debug("Detected prediction mismatch in inventory " . get_class($inventory) . "#" . spl_object_id($inventory) . " slot $slot");
+					$this->syncSlot($inventory, $slot);
+				}
+			}
+		}
+
+		$this->initiatedSlotChanges = [];
 	}
 
 	public function syncData(Inventory $inventory, int $propertyId, int $value) : void{

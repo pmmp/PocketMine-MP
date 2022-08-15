@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -39,13 +39,10 @@ class Squid extends WaterAnimal{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::SQUID; }
 
-	/** @var Vector3|null */
-	public $swimDirection = null;
-	/** @var float */
-	public $swimSpeed = 0.1;
+	public ?Vector3 $swimDirection = null;
+	public float $swimSpeed = 0.1;
 
-	/** @var int */
-	private $switchDirectionTicker = 0;
+	private int $switchDirectionTicker = 0;
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
 
@@ -95,7 +92,7 @@ class Squid extends WaterAnimal{
 
 		if($this->isAlive()){
 
-			if($this->location->y > 62 and $this->swimDirection !== null){
+			if($this->location->y > 62 && $this->swimDirection !== null){
 				$this->swimDirection = $this->swimDirection->withComponents(null, -0.5, null);
 			}
 
@@ -113,8 +110,10 @@ class Squid extends WaterAnimal{
 			}
 
 			$f = sqrt(($this->motion->x ** 2) + ($this->motion->z ** 2));
-			$this->location->yaw = (-atan2($this->motion->x, $this->motion->z) * 180 / M_PI);
-			$this->location->pitch = (-atan2($f, $this->motion->y) * 180 / M_PI);
+			$this->setRotation(
+				-atan2($this->motion->x, $this->motion->z) * 180 / M_PI,
+				-atan2($f, $this->motion->y) * 180 / M_PI
+			);
 		}
 
 		return $hasUpdate;

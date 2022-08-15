@@ -17,13 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -35,13 +35,11 @@ use pocketmine\lang\Translatable;
 use pocketmine\player\Player;
 
 class PlayerDeathEvent extends EntityDeathEvent{
-	/** @var Player */
-	protected $player;
+	protected Player $player;
 
-	/** @var Translatable|string */
-	private $deathMessage;
-	/** @var bool */
-	private $keepInventory = false;
+	private Translatable|string $deathMessage;
+	private bool $keepInventory = false;
+	private bool $keepXp = false;
 
 	/**
 	 * @param Item[]                   $drops
@@ -78,6 +76,14 @@ class PlayerDeathEvent extends EntityDeathEvent{
 
 	public function setKeepInventory(bool $keepInventory) : void{
 		$this->keepInventory = $keepInventory;
+	}
+
+	public function getKeepXp() : bool{
+		return $this->keepXp;
+	}
+
+	public function setKeepXp(bool $keepXp) : void{
+		$this->keepXp = $keepXp;
 	}
 
 	/**
@@ -132,7 +138,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 
 			case EntityDamageEvent::CAUSE_CONTACT:
 				if($deathCause instanceof EntityDamageByBlockEvent){
-					if($deathCause->getDamager()->getId() === BlockLegacyIds::CACTUS){
+					if($deathCause->getDamager()->getTypeId() === BlockTypeIds::CACTUS){
 						return KnownTranslationFactory::death_attack_cactus($name);
 					}
 				}

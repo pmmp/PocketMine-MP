@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -37,15 +37,11 @@ use function igbinary_unserialize;
 class LightPopulationTask extends AsyncTask{
 	private const TLS_KEY_COMPLETION_CALLBACK = "onCompletion";
 
-	/** @var string */
-	public $chunk;
+	public string $chunk;
 
-	/** @var string */
-	private $resultHeightMap;
-	/** @var string */
-	private $resultSkyLightArrays;
-	/** @var string */
-	private $resultBlockLightArrays;
+	private string $resultHeightMap;
+	private string $resultSkyLightArrays;
+	private string $resultBlockLightArrays;
 
 	/**
 	 * @phpstan-param \Closure(array<int, LightArray> $blockLight, array<int, LightArray> $skyLight, array<int, int> $heightMap) : void $onCompletion

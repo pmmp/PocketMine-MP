@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -35,12 +35,11 @@ use pocketmine\player\Player;
 class PlayerLoginEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var string */
-	protected $kickMessage;
-
-	public function __construct(Player $player, string $kickMessage){
+	public function __construct(
+		Player $player,
+		protected string $kickMessage
+	){
 		$this->player = $player;
-		$this->kickMessage = $kickMessage;
 	}
 
 	public function setKickMessage(string $kickMessage) : void{

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,20 +32,15 @@ use pocketmine\world\format\io\WorldData;
 use function file_exists;
 
 abstract class BaseNbtWorldData implements WorldData{
-
-	/** @var string */
-	protected $dataPath;
-
-	/** @var CompoundTag */
-	protected $compoundTag;
+	protected CompoundTag $compoundTag;
 
 	/**
 	 * @throws CorruptedWorldException
 	 * @throws UnsupportedWorldFormatException
 	 */
-	public function __construct(string $dataPath){
-		$this->dataPath = $dataPath;
-
+	public function __construct(
+		protected string $dataPath
+	){
 		if(!file_exists($this->dataPath)){
 			throw new CorruptedWorldException("World data not found at $dataPath");
 		}

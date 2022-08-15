@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -40,18 +40,14 @@ use function strtolower;
 use const DIRECTORY_SEPARATOR;
 
 class ResourcePackManager{
-
-	/** @var string */
-	private $path;
-
-	/** @var bool */
-	private $serverForceResources = false;
+	private string $path;
+	private bool $serverForceResources = false;
 
 	/** @var ResourcePack[] */
-	private $resourcePacks = [];
+	private array $resourcePacks = [];
 
 	/** @var ResourcePack[] */
-	private $uuidList = [];
+	private array $uuidList = [];
 
 	/**
 	 * @param string  $path Path to resource-packs directory.

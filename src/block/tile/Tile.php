@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -45,12 +45,9 @@ abstract class Tile{
 	public const TAG_Y = "y";
 	public const TAG_Z = "z";
 
-	/** @var Position */
-	protected $position;
-	/** @var bool */
-	public $closed = false;
-	/** @var TimingsHandler */
-	protected $timings;
+	protected Position $position;
+	public bool $closed = false;
+	protected TimingsHandler $timings;
 
 	public function __construct(World $world, Vector3 $pos){
 		$this->position = Position::fromObject($pos, $world);

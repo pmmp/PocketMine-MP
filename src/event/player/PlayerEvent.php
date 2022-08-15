@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,8 +30,7 @@ use pocketmine\event\Event;
 use pocketmine\player\Player;
 
 abstract class PlayerEvent extends Event{
-	/** @var Player */
-	protected $player;
+	protected Player $player;
 
 	public function getPlayer() : Player{
 		return $this->player;

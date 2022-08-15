@@ -17,63 +17,23 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\block\utils\CoralType;
-use pocketmine\block\utils\InvalidBlockStateException;
-use pocketmine\data\bedrock\CoralTypeIdMap;
+use pocketmine\block\utils\CoralTypeTrait;
 use pocketmine\item\Item;
 use function mt_rand;
 
 final class CoralBlock extends Opaque{
+	use CoralTypeTrait;
 
-	private CoralType $coralType;
-	private bool $dead = false;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->coralType = CoralType::TUBE();
-		parent::__construct($idInfo, $name, $breakInfo);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$coralType = CoralTypeIdMap::getInstance()->fromId($stateMeta & 0x7);
-		if($coralType === null){
-			throw new InvalidBlockStateException("No such coral type");
-		}
-		$this->coralType = $coralType;
-		$this->dead = ($stateMeta & BlockLegacyMetadata::CORAL_BLOCK_FLAG_DEAD) !== 0;
-	}
-
-	protected function writeStateToMeta() : int{
-		return ($this->dead ? BlockLegacyMetadata::CORAL_BLOCK_FLAG_DEAD : 0) | CoralTypeIdMap::getInstance()->toId($this->coralType);
-	}
-
-	protected function writeStateToItemMeta() : int{
-		return $this->writeStateToMeta();
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
-	public function getCoralType() : CoralType{ return $this->coralType; }
-
-	/** @return $this */
-	public function setCoralType(CoralType $coralType) : self{
-		$this->coralType = $coralType;
-		return $this;
-	}
-
-	public function isDead() : bool{ return $this->dead; }
-
-	/** @return $this */
-	public function setDead(bool $dead) : self{
-		$this->dead = $dead;
-		return $this;
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
 	public function onNearbyBlockChange() : void{
