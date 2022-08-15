@@ -156,6 +156,7 @@ use pocketmine\world\World;
  * @method static ExperienceBottle EXPERIENCE_BOTTLE()
  * @method static Item FEATHER()
  * @method static Item FERMENTED_SPIDER_EYE()
+ * @method static FireCharge FIRE_CHARGE()
  * @method static FishingRod FISHING_ROD()
  * @method static Item FLINT()
  * @method static FlintSteel FLINT_AND_STEEL()
@@ -423,6 +424,7 @@ final class VanillaItems{
 		self::register("experience_bottle", new ExperienceBottle(new IID(Ids::EXPERIENCE_BOTTLE), "Bottle o' Enchanting"));
 		self::register("feather", new Item(new IID(Ids::FEATHER), "Feather"));
 		self::register("fermented_spider_eye", new Item(new IID(Ids::FERMENTED_SPIDER_EYE), "Fermented Spider Eye"));
+		self::register("fire_charge", new FireCharge(new IID(Ids::FIRE_CHARGE), "Fire Charge"));
 		self::register("fishing_rod", new FishingRod(new IID(Ids::FISHING_ROD), "Fishing Rod"));
 		self::register("flint", new Item(new IID(Ids::FLINT), "Flint"));
 		self::register("flint_and_steel", new FlintSteel(new IID(Ids::FLINT_AND_STEEL), "Flint and Steel"));

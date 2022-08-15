@@ -296,8 +296,9 @@ final class ItemTypeIds{
 	public const NETHERITE_SCRAP = 20257;
 	public const POWDER_SNOW_BUCKET = 20258;
 	public const LINGERING_POTION = 20259;
+	public const FIRE_CHARGE = 20260;
 
-	public const FIRST_UNUSED_ITEM_ID = 20260;
+	public const FIRST_UNUSED_ITEM_ID = 20261;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 
