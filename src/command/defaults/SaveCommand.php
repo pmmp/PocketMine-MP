@@ -41,10 +41,6 @@ class SaveCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_save_start());
 		$start = microtime(true);
 

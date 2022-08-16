@@ -338,7 +338,7 @@ final class ItemDeserializer{
 		$this->map(Ids::FERMENTED_SPIDER_EYE, fn() => Items::FERMENTED_SPIDER_EYE());
 		//TODO: minecraft:field_masoned_banner_pattern
 		//TODO: minecraft:filled_map
-		//TODO: minecraft:fire_charge
+		$this->map(Ids::FIRE_CHARGE, fn() => Items::FIRE_CHARGE());
 		//TODO: minecraft:firefly_spawn_egg
 		//TODO: minecraft:firework_rocket
 		//TODO: minecraft:firework_star

@@ -21,28 +21,28 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event\block;
+namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockTypeIds;
+use pocketmine\block\VanillaBlocks;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
+use pocketmine\world\sound\BlazeShootSound;
 
-/**
- * Called when a new block forms, usually as the result of some action.
- * This could be things like obsidian forming due to collision of lava and water.
- */
-class BlockFormEvent extends BaseBlockChangeEvent{
+class FireCharge extends Item{
 
-	public function __construct(
-		Block $block,
-		Block $newState,
-		private Block $causingBlock
-	){
-		parent::__construct($block, $newState);
-	}
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
+		if($blockReplace->getTypeId() === BlockTypeIds::AIR){
+			$world = $player->getWorld();
+			$world->setBlock($blockReplace->getPosition(), VanillaBlocks::FIRE());
+			$world->addSound($blockReplace->getPosition()->add(0.5, 0.5, 0.5), new BlazeShootSound());
 
-	/**
-	 * Returns the block which caused the target block to form into a new state.
-	 */
-	public function getCausingBlock() : Block{
-		return $this->causingBlock;
+			$this->pop();
+
+			return ItemUseResult::SUCCESS();
+		}
+
+		return ItemUseResult::NONE();
 	}
 }

@@ -383,6 +383,7 @@ final class ItemSerializer{
 		$this->map(Items::EXPERIENCE_BOTTLE(), self::id(Ids::EXPERIENCE_BOTTLE));
 		$this->map(Items::FEATHER(), self::id(Ids::FEATHER));
 		$this->map(Items::FERMENTED_SPIDER_EYE(), self::id(Ids::FERMENTED_SPIDER_EYE));
+		$this->map(Items::FIRE_CHARGE(), self::id(Ids::FIRE_CHARGE));
 		$this->map(Items::FISHING_ROD(), self::id(Ids::FISHING_ROD));
 		$this->map(Items::FLINT(), self::id(Ids::FLINT));
 		$this->map(Items::FLINT_AND_STEEL(), self::id(Ids::FLINT_AND_STEEL));

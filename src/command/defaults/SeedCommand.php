@@ -39,10 +39,6 @@ class SeedCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if($sender instanceof Player){
 			$seed = $sender->getPosition()->getWorld()->getSeed();
 		}else{
