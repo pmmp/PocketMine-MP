@@ -33,7 +33,6 @@ use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\SkullType;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\VanillaBlocks as Blocks;
-use pocketmine\item\SuspiciousStewType;
 use pocketmine\item\VanillaItems as Items;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\StringToTParser;
