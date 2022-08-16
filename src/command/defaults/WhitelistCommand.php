@@ -55,10 +55,6 @@ class WhitelistCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) === 1){
 			switch(strtolower($args[0])){
 				case "reload":

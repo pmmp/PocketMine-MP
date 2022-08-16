@@ -500,7 +500,7 @@ use function mb_strtolower;
  * @method static Stair MOSSY_STONE_BRICK_STAIRS()
  * @method static Wall MOSSY_STONE_BRICK_WALL()
  * @method static Opaque MUD()
- * @method static Transparent MUDDY_MANGROVE_ROOTS()
+ * @method static SimplePillar MUDDY_MANGROVE_ROOTS()
  * @method static Opaque MUD_BRICKS()
  * @method static Slab MUD_BRICK_SLAB()
  * @method static Stair MUD_BRICK_STAIRS()
@@ -1174,8 +1174,7 @@ final class VanillaBlocks{
 		));
 
 		self::register("mangrove_roots", new MangroveRoots(new BID(Ids::MANGROVE_ROOTS), "Mangrove Roots", new Info(BreakInfo::axe(0.7))));
-		//TODO: muddy mangrove roots are supposed to be axis-rotatable (Bedrock parity issue https://bugs.mojang.com/browse/MCPE-153721)
-		self::register("muddy_mangrove_roots", new Transparent(new BID(Ids::MUDDY_MANGROVE_ROOTS), "Muddy Mangrove Roots", new Info(BreakInfo::shovel(0.7), [Tags::MUD])));
+		self::register("muddy_mangrove_roots", new SimplePillar(new BID(Ids::MUDDY_MANGROVE_ROOTS), "Muddy Mangrove Roots", new Info(BreakInfo::shovel(0.7), [Tags::MUD])));
 		self::register("froglight", new Froglight(new BID(Ids::FROGLIGHT), "Froglight", new Info(new BreakInfo(0.3))));
 
 		self::registerBlocksR13();

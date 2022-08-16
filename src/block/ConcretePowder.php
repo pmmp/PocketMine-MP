@@ -42,8 +42,8 @@ class ConcretePowder extends Opaque implements Fallable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(($block = $this->checkAdjacentWater()) !== null){
-			$ev = new BlockFormEvent($this, $block);
+		if(($water = $this->getAdjacentWater()) !== null){
+			$ev = new BlockFormEvent($this, VanillaBlocks::CONCRETE()->setColor($this->color), $water);
 			$ev->call();
 			if(!$ev->isCancelled()){
 				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
@@ -54,16 +54,20 @@ class ConcretePowder extends Opaque implements Fallable{
 	}
 
 	public function tickFalling() : ?Block{
-		return $this->checkAdjacentWater();
+		if ($this->getAdjacentWater() === null) {
+			return null;
+		}
+		return VanillaBlocks::CONCRETE()->setColor($this->color);
 	}
 
-	private function checkAdjacentWater() : ?Block{
+	private function getAdjacentWater() : ?Water{
 		foreach(Facing::ALL as $i){
 			if($i === Facing::DOWN){
 				continue;
 			}
-			if($this->getSide($i) instanceof Water){
-				return VanillaBlocks::CONCRETE()->setColor($this->color);
+			$block = $this->getSide($i);
+			if($block instanceof Water){
+				return $block;
 			}
 		}
 

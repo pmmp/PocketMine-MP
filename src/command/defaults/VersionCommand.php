@@ -53,10 +53,6 @@ class VersionCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) === 0){
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_serverSoftwareName(
 				VersionInfo::NAME

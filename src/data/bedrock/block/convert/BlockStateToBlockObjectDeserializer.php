@@ -363,7 +363,6 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::MOB_SPAWNER, fn() => Blocks::MONSTER_SPAWNER());
 		$this->map(Ids::MOSSY_COBBLESTONE, fn() => Blocks::MOSSY_COBBLESTONE());
 		$this->map(Ids::MUD, fn() => Blocks::MUD());
-		$this->map(Ids::MUDDY_MANGROVE_ROOTS, fn() => Blocks::MUDDY_MANGROVE_ROOTS());
 		$this->map(Ids::MUD_BRICKS, fn() => Blocks::MUD_BRICKS());
 		$this->map(Ids::MYCELIUM, fn() => Blocks::MYCELIUM());
 		$this->map(Ids::NETHER_BRICK, fn() => Blocks::NETHER_BRICKS());
@@ -912,6 +911,10 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->mapSlab(Ids::MUD_BRICK_SLAB, Ids::MUD_BRICK_DOUBLE_SLAB, fn() => Blocks::MUD_BRICK_SLAB());
 		$this->mapStairs(Ids::MUD_BRICK_STAIRS, fn() => Blocks::MUD_BRICK_STAIRS());
 		$this->map(Ids::MUD_BRICK_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::MUD_BRICK_WALL(), $in));
+		$this->map(Ids::MUDDY_MANGROVE_ROOTS, function(Reader $in) : Block{
+			return Blocks::MUDDY_MANGROVE_ROOTS()
+				->setAxis($in->readPillarAxis());
+		});
 		$this->mapStairs(Ids::NETHER_BRICK_STAIRS, fn() => Blocks::NETHER_BRICK_STAIRS());
 		$this->map(Ids::NETHER_WART, function(Reader $in) : Block{
 			return Blocks::NETHER_WART()
