@@ -286,6 +286,7 @@ use pocketmine\world\World;
  * @method static Sword STONE_SWORD()
  * @method static StringItem STRING()
  * @method static Item SUGAR()
+ * @method static SuspiciousStew SUSPICIOUS_STEW()
  * @method static SweetBerries SWEET_BERRIES()
  * @method static Totem TOTEM()
  * @method static SpawnEgg VILLAGER_SPAWN_EGG()
@@ -518,6 +519,7 @@ final class VanillaItems{
 		self::register("stick", new Stick(new IID(Ids::STICK), "Stick"));
 		self::register("string", new StringItem(new IID(Ids::STRING), "String"));
 		self::register("sugar", new Item(new IID(Ids::SUGAR), "Sugar"));
+		self::register("suspicious_stew", new SuspiciousStew(new IID(Ids::SUSPICIOUS_STEW), "Suspicious Stew"));
 		self::register("sweet_berries", new SweetBerries(new IID(Ids::SWEET_BERRIES), "Sweet Berries"));
 		self::register("totem", new Totem(new IID(Ids::TOTEM), "Totem of Undying"));
 		self::register("warped_sign", new ItemBlockWallOrFloor(new IID(Ids::WARPED_SIGN), Blocks::WARPED_SIGN(), Blocks::WARPED_WALL_SIGN()));
