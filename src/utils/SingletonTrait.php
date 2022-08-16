@@ -31,7 +31,7 @@ trait SingletonTrait{
 		return new self();
 	}
 
-	public static function getInstance() : self{
+	public static function getInstance() : static{
 		if(self::$instance === null){
 			self::$instance = self::make();
 		}
