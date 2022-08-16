@@ -11,6 +11,7 @@ GitHub is public and anyone can see the issues you post on the issue tracker, in
 
 - Version of PocketMine-MP
 - Detailed description of the vulnerability (e.g. how to exploit it, what the effects are)
+- Your GitHub username, if you wish to be credited for reporting the problem in the security advisory
 
 Please note that we can't guarantee a reply to every email.
 
