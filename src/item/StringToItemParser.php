@@ -33,6 +33,7 @@ use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\SkullType;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\VanillaBlocks as Blocks;
+use pocketmine\item\SuspiciousStewType;
 use pocketmine\item\VanillaItems as Items;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\StringToTParser;
@@ -1117,6 +1118,11 @@ final class StringToItemParser extends StringToTParser{
 			$prefix = fn(string $name) => $color->name() . "_" . $name;
 
 			$result->register($prefix("dye"), fn() => Items::DYE()->setColor($color));
+		}
+		foreach(SuspiciousStewType::getAll() as $suspiciousStewType){
+			$prefix = fn(string $name) => $suspiciousStewType->name() . "_" . $name;
+
+			$result->register($prefix("suspicious_stew"), fn() => Items::SUSPICIOUS_STEW()->setType($suspiciousStewType));
 		}
 	}
 
