@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\data\runtime\RuntimeDataWriter;
-use pocketmine\player\Player;
 use pocketmine\math\Vector3;
+use pocketmine\player\Player;
 
 class GoatHorn extends Item implements Releasable{
 

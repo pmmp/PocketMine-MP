@@ -165,6 +165,7 @@ use pocketmine\world\World;
  * @method static Item GLISTERING_MELON()
  * @method static Item GLOWSTONE_DUST()
  * @method static Item GLOW_INK_SAC()
+ * @method static GoatHorn GOAT_HORN()
  * @method static GoldenApple GOLDEN_APPLE()
  * @method static Axe GOLDEN_AXE()
  * @method static Armor GOLDEN_BOOTS()

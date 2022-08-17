@@ -68,7 +68,7 @@ final class GoatHornType{
 	}
 
 	/**
-	 * @phpstan-param \Closure() : Sound
+	 * @phpstan-param \Closure() : Sound $soundGetter
 	 */
 	private function __construct(
 		string $enumName,
