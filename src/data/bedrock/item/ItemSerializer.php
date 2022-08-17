@@ -518,6 +518,7 @@ final class ItemSerializer{
 		$this->map(Items::SUSPICIOUS_STEW(), fn(SuspiciousStew $item) => new Data(Ids::SUSPICIOUS_STEW, SuspiciousStewTypeIdMap::getInstance()->toId($item->getType())));
 		$this->map(Items::SWEET_BERRIES(), self::id(Ids::SWEET_BERRIES));
 		$this->map(Items::TOTEM(), self::id(Ids::TOTEM_OF_UNDYING));
+		$this->map(Items::TURTLE_HELMET(), self::id(Ids::TURTLE_HELMET));
 		$this->map(Items::VILLAGER_SPAWN_EGG(), self::id(Ids::VILLAGER_SPAWN_EGG));
 		$this->map(Items::WARPED_SIGN(), self::id(Ids::WARPED_SIGN));
 		$this->map(Items::WATER_BUCKET(), self::id(Ids::WATER_BUCKET));

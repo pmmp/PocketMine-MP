@@ -601,7 +601,7 @@ final class ItemDeserializer{
 		$this->map(Ids::TROPICAL_FISH, fn() => Items::CLOWNFISH());
 		//TODO: minecraft:tropical_fish_bucket
 		//TODO: minecraft:tropical_fish_spawn_egg
-		//TODO: minecraft:turtle_helmet
+		$this->map(Ids::TURTLE_HELMET, fn() => Items::TURTLE_HELMET());
 		//TODO: minecraft:turtle_spawn_egg
 		//TODO: minecraft:vex_spawn_egg
 		$this->map(Ids::VILLAGER_SPAWN_EGG, fn() => Items::VILLAGER_SPAWN_EGG());

@@ -39,6 +39,7 @@ use pocketmine\inventory\PlayerOffHandInventory;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\Totem;
+use pocketmine\item\TurtleHelmet;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
@@ -326,6 +327,12 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 		$this->hungerManager->tick($tickDiff);
 		$this->xpManager->tick($tickDiff);
+
+		if (!$this->isUnderwater() && ($helmet = $this->armorInventory->getHelmet()) instanceof TurtleHelmet) {
+			foreach ($helmet->getEffects() as $effect){
+				$this->effectManager->add($effect);
+			}
+		}
 
 		return $hasUpdate;
 	}
