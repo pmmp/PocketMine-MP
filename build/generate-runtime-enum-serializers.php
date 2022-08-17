@@ -34,6 +34,7 @@ use pocketmine\block\utils\MushroomBlockType;
 use pocketmine\block\utils\SkullType;
 use pocketmine\block\utils\SlabType;
 use pocketmine\item\PotionType;
+use pocketmine\item\SuspiciousStewType;
 use function array_key_first;
 use function array_keys;
 use function array_map;
@@ -167,6 +168,7 @@ $enumsUsed = [
 	MushroomBlockType::getAll(),
 	SkullType::getAll(),
 	SlabType::getAll(),
+	SuspiciousStewType::getAll(),
 	PotionType::getAll()
 ];
 
