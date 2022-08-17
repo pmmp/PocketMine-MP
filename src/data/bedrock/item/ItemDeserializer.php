@@ -38,6 +38,7 @@ use pocketmine\data\bedrock\GoatHornTypeIdMap;
 use pocketmine\data\bedrock\item\ItemTypeNames as Ids;
 use pocketmine\data\bedrock\item\SavedItemData as Data;
 use pocketmine\data\bedrock\PotionTypeIdMap;
+use pocketmine\data\bedrock\SuspiciousStewTypeIdMap;
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems as Items;
@@ -591,7 +592,14 @@ final class ItemDeserializer{
 		$this->map(Ids::STRING, fn() => Items::STRING());
 		$this->map(Ids::SUGAR, fn() => Items::SUGAR());
 		$this->map(Ids::SUGAR_CANE, fn() => Blocks::SUGARCANE()->asItem());
-		//TODO: minecraft:suspicious_stew
+		$this->map(Ids::SUSPICIOUS_STEW, function(Data $data) : Item{
+			$meta = $data->getMeta();
+			$suspiciousStewType = SuspiciousStewTypeIdMap::getInstance()->fromId($meta);
+			if($suspiciousStewType === null){
+				throw new ItemTypeDeserializeException("Unknown suspicious stew type ID $meta");
+			}
+			return Items::SUSPICIOUS_STEW()->setType($suspiciousStewType);
+		});
 		$this->map(Ids::SWEET_BERRIES, fn() => Items::SWEET_BERRIES());
 		//TODO: minecraft:tadpole_bucket
 		//TODO: minecraft:tadpole_spawn_egg
