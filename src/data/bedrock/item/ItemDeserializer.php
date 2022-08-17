@@ -34,6 +34,7 @@ use pocketmine\data\bedrock\block\convert\UnsupportedBlockStateException;
 use pocketmine\data\bedrock\CompoundTypeIds;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\bedrock\EntityLegacyIds;
+use pocketmine\data\bedrock\GoatHornTypeIdMap;
 use pocketmine\data\bedrock\item\ItemTypeNames as Ids;
 use pocketmine\data\bedrock\item\SavedItemData as Data;
 use pocketmine\data\bedrock\PotionTypeIdMap;
@@ -361,7 +362,14 @@ final class ItemDeserializer{
 		//TODO: minecraft:glow_squid_spawn_egg
 		//TODO: minecraft:glow_stick
 		$this->map(Ids::GLOWSTONE_DUST, fn() => Items::GLOWSTONE_DUST());
-		//TODO: minecraft:goat_horn
+		$this->map(Ids::GOAT_HORN, function(Data $data) : Item{
+			$meta = $data->getMeta();
+			$goatHornType = GoatHornTypeIdMap::getInstance()->fromId($meta);
+			if($goatHornType === null){
+				throw new ItemTypeDeserializeException("Unknown goat horn type ID $meta");
+			}
+			return Items::GOAT_HORN()->setType($goatHornType);
+		});
 		//TODO: minecraft:goat_spawn_egg
 		$this->map(Ids::GOLD_INGOT, fn() => Items::GOLD_INGOT());
 		$this->map(Ids::GOLD_NUGGET, fn() => Items::GOLD_NUGGET());

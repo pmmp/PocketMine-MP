@@ -102,6 +102,20 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
+	public function goatHornType(\pocketmine\item\GoatHornType $value) : void{
+		$this->int(3, match($value){
+			\pocketmine\item\GoatHornType::ADMIRE() => 0,
+			\pocketmine\item\GoatHornType::CALL() => 1,
+			\pocketmine\item\GoatHornType::DREAM() => 2,
+			\pocketmine\item\GoatHornType::FEEL() => 3,
+			\pocketmine\item\GoatHornType::PONDER() => 4,
+			\pocketmine\item\GoatHornType::SEEK() => 5,
+			\pocketmine\item\GoatHornType::SING() => 6,
+			\pocketmine\item\GoatHornType::YEARN() => 7,
+			default => throw new \pocketmine\utils\AssumptionFailedError("All GoatHornType cases should be covered")
+		});
+	}
+
 	public function leverFacing(\pocketmine\block\utils\LeverFacing $value) : void{
 		$this->int(3, match($value){
 			\pocketmine\block\utils\LeverFacing::DOWN_AXIS_X() => 0,

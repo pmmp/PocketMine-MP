@@ -433,6 +433,7 @@ final class VanillaItems{
 		self::register("glistering_melon", new Item(new IID(Ids::GLISTERING_MELON), "Glistering Melon"));
 		self::register("glow_ink_sac", new Item(new IID(Ids::GLOW_INK_SAC), "Glow Ink Sac"));
 		self::register("glowstone_dust", new Item(new IID(Ids::GLOWSTONE_DUST), "Glowstone Dust"));
+		self::register("goat_horn", new GoatHorn(new IID(Ids::GOAT_HORN), "Goat Horn"));
 		self::register("gold_ingot", new Item(new IID(Ids::GOLD_INGOT), "Gold Ingot"));
 		self::register("gold_nugget", new Item(new IID(Ids::GOLD_NUGGET), "Gold Nugget"));
 		self::register("golden_apple", new GoldenApple(new IID(Ids::GOLDEN_APPLE), "Golden Apple"));

@@ -1118,6 +1118,11 @@ final class StringToItemParser extends StringToTParser{
 
 			$result->register($prefix("dye"), fn() => Items::DYE()->setColor($color));
 		}
+		foreach(GoatHornType::getAll() as $goatHornType){
+			$prefix = fn(string $name) => $goatHornType->name() . "_" . $name;
+
+			$result->register($prefix("goat_horn"), fn() => Items::GOAT_HORN()->setType($goatHornType));
+		}
 	}
 
 	private static function registerItems(self $result) : void{
@@ -1259,6 +1264,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("glistering_melon", fn() => Items::GLISTERING_MELON());
 		$result->register("glow_ink_sac", fn() => Items::GLOW_INK_SAC());
 		$result->register("glowstone_dust", fn() => Items::GLOWSTONE_DUST());
+		$result->register("goat_horn", fn() => Items::GOAT_HORN());
 		$result->register("gold_axe", fn() => Items::GOLDEN_AXE());
 		$result->register("gold_boots", fn() => Items::GOLDEN_BOOTS());
 		$result->register("gold_chestplate", fn() => Items::GOLDEN_CHESTPLATE());

@@ -102,6 +102,20 @@ trait RuntimeEnumDeserializerTrait{
 		};
 	}
 
+	public function goatHornType(\pocketmine\item\GoatHornType &$value) : void{
+		$value = match($this->readInt(3)){
+			0 => \pocketmine\item\GoatHornType::ADMIRE(),
+			1 => \pocketmine\item\GoatHornType::CALL(),
+			2 => \pocketmine\item\GoatHornType::DREAM(),
+			3 => \pocketmine\item\GoatHornType::FEEL(),
+			4 => \pocketmine\item\GoatHornType::PONDER(),
+			5 => \pocketmine\item\GoatHornType::SEEK(),
+			6 => \pocketmine\item\GoatHornType::SING(),
+			7 => \pocketmine\item\GoatHornType::YEARN(),
+			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for GoatHornType")
+		};
+	}
+
 	public function leverFacing(\pocketmine\block\utils\LeverFacing &$value) : void{
 		$value = match($this->readInt(3)){
 			0 => \pocketmine\block\utils\LeverFacing::DOWN_AXIS_X(),
