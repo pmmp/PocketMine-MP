@@ -65,6 +65,8 @@ use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
+use pocketmine\network\mcpe\protocol\ItemStackRequestPacket;
+use pocketmine\network\mcpe\protocol\ItemStackResponsePacket;
 use pocketmine\network\mcpe\protocol\LabTablePacket;
 use pocketmine\network\mcpe\protocol\LecternUpdatePacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
@@ -119,7 +121,6 @@ use function is_bool;
 use function is_infinite;
 use function is_nan;
 use function json_decode;
-use function json_encode;
 use function max;
 use function mb_strlen;
 use function microtime;
@@ -263,6 +264,14 @@ class InGamePacketHandler extends PacketHandler{
 			}
 		}
 
+		$itemStackRequest = $packet->getItemStackRequest();
+		if($itemStackRequest !== null){
+			$executor = new ItemStackRequestExecutor($this->player, $this->inventoryManager, $itemStackRequest);
+			$transaction = $executor->generateInventoryTransaction();
+			$result = $this->executeInventoryTransaction($transaction);
+			$this->session->sendDataPacket(ItemStackResponsePacket::create([$executor->buildItemStackResponse($result)]));
+		}
+
 		$blockActions = $packet->getBlockActions();
 		if($blockActions !== null){
 			foreach($blockActions as $k => $blockAction){
@@ -333,6 +342,21 @@ class InGamePacketHandler extends PacketHandler{
 		return $result;
 	}
 
+	private function executeInventoryTransaction(InventoryTransaction $transaction) : bool{
+		$this->player->setUsingItem(false);
+		$this->inventoryManager->addTransactionPredictedSlotChanges($transaction);
+		try{
+			$transaction->execute();
+		}catch(TransactionException $e){
+			$logger = $this->session->getLogger();
+			$logger->debug("Failed to execute inventory transaction: " . $e->getMessage());
+
+			return false;
+		}
+
+		return true;
+	}
+
 	private function handleNormalTransaction(NormalTransactionData $data) : bool{
 		/** @var InventoryAction[] $actions */
 		$actions = [];
@@ -380,18 +404,8 @@ class InGamePacketHandler extends PacketHandler{
 				//all of the parts before we can execute it
 				return true;
 			}
-			$this->player->setUsingItem(false);
 			try{
-				$this->inventoryManager->onTransactionStart($this->craftingTransaction);
-				$this->craftingTransaction->execute();
-			}catch(TransactionException $e){
-				$this->session->getLogger()->debug("Failed to execute crafting transaction: " . $e->getMessage());
-
-				//TODO: only sync slots that the client tried to change
-				foreach($this->craftingTransaction->getInventories() as $inventory){
-					$this->inventoryManager->syncContents($inventory);
-				}
-				return false;
+				return $this->executeInventoryTransaction($this->craftingTransaction);
 			}finally{
 				$this->craftingTransaction = null;
 			}
@@ -408,30 +422,13 @@ class InGamePacketHandler extends PacketHandler{
 				return true;
 			}
 
-			$this->player->setUsingItem(false);
-			$transaction = new InventoryTransaction($this->player, $actions);
-			$this->inventoryManager->onTransactionStart($transaction);
-			try{
-				$transaction->execute();
-			}catch(TransactionException $e){
-				$logger = $this->session->getLogger();
-				$logger->debug("Failed to execute inventory transaction: " . $e->getMessage());
-				$logger->debug("Actions: " . json_encode($data->getActions()));
-
-				foreach($transaction->getInventories() as $inventory){
-					$this->inventoryManager->syncContents($inventory);
-				}
-
-				return false;
-			}
+			return $this->executeInventoryTransaction(new InventoryTransaction($this->player, $actions));
 		}
-
-		return true;
 	}
 
 	private function handleUseItemTransaction(UseItemTransactionData $data) : bool{
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
-		$this->inventoryManager->addPredictedSlotChanges($data->getActions());
+		$this->inventoryManager->addRawPredictedSlotChanges($data->getActions());
 
 		switch($data->getActionType()){
 			case UseItemTransactionData::ACTION_CLICK_BLOCK:
@@ -517,7 +514,7 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
-		$this->inventoryManager->addPredictedSlotChanges($data->getActions());
+		$this->inventoryManager->addRawPredictedSlotChanges($data->getActions());
 
 		//TODO: use transactiondata for rollbacks here
 		switch($data->getActionType()){
@@ -534,7 +531,7 @@ class InGamePacketHandler extends PacketHandler{
 
 	private function handleReleaseItemTransaction(ReleaseItemTransactionData $data) : bool{
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
-		$this->inventoryManager->addPredictedSlotChanges($data->getActions());
+		$this->inventoryManager->addRawPredictedSlotChanges($data->getActions());
 
 		//TODO: use transactiondata for rollbacks here (resending entire inventory is very wasteful)
 		switch($data->getActionType()){
@@ -546,6 +543,20 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		return false;
+	}
+
+	public function handleItemStackRequest(ItemStackRequestPacket $packet) : bool{
+		$responses = [];
+		foreach($packet->getRequests() as $request){
+			$executor = new ItemStackRequestExecutor($this->player, $this->inventoryManager, $request);
+			$transaction = $executor->generateInventoryTransaction();
+			$result = $this->executeInventoryTransaction($transaction);
+			$responses[] = $executor->buildItemStackResponse($result);
+		}
+
+		$this->session->sendDataPacket(ItemStackResponsePacket::create($responses));
+
+		return true;
 	}
 
 	public function handleMobEquipment(MobEquipmentPacket $packet) : bool{
