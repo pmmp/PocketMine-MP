@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
-use pocketmine\block\inventory\CraftingTableInventory;
-use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
@@ -34,8 +32,6 @@ use pocketmine\inventory\transaction\TransactionBuilderInventory;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\network\mcpe\InventoryManager;
-use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
-use pocketmine\network\mcpe\protocol\types\inventory\ContainerUIIds;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftingConsumeInputStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftingMarkSecondaryResultStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftRecipeAutoStackRequestAction;
@@ -50,12 +46,9 @@ use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\PlaceStackRequ
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\SwapStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\TakeStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponse;
-use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponseContainerInfo;
-use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponseSlotInfo;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use function get_class;
-use function var_dump;
 
 final class ItemStackRequestExecutor{
 	private TransactionBuilder $builder;
@@ -73,83 +66,19 @@ final class ItemStackRequestExecutor{
 		$this->builder = new TransactionBuilder();
 	}
 
-	private function translateContainerId(int $containerInterfaceId) : int{
-		return match($containerInterfaceId){
-			ContainerUIIds::ARMOR => ContainerIds::ARMOR,
-
-			ContainerUIIds::HOTBAR,
-			ContainerUIIds::INVENTORY,
-			ContainerUIIds::COMBINED_HOTBAR_AND_INVENTORY => ContainerIds::INVENTORY,
-
-			ContainerUIIds::OFFHAND => ContainerIds::OFFHAND,
-
-			ContainerUIIds::ANVIL_INPUT,
-			ContainerUIIds::ANVIL_MATERIAL,
-			ContainerUIIds::BEACON_PAYMENT,
-			ContainerUIIds::CARTOGRAPHY_ADDITIONAL,
-			ContainerUIIds::CARTOGRAPHY_INPUT,
-			ContainerUIIds::COMPOUND_CREATOR_INPUT,
-			ContainerUIIds::CRAFTING_INPUT,
-			ContainerUIIds::CREATED_OUTPUT,
-			ContainerUIIds::CURSOR,
-			ContainerUIIds::ENCHANTING_INPUT,
-			ContainerUIIds::ENCHANTING_MATERIAL,
-			ContainerUIIds::GRINDSTONE_ADDITIONAL,
-			ContainerUIIds::GRINDSTONE_INPUT,
-			ContainerUIIds::LAB_TABLE_INPUT,
-			ContainerUIIds::LOOM_DYE,
-			ContainerUIIds::LOOM_INPUT,
-			ContainerUIIds::LOOM_MATERIAL,
-			ContainerUIIds::MATERIAL_REDUCER_INPUT,
-			ContainerUIIds::MATERIAL_REDUCER_OUTPUT,
-			ContainerUIIds::SMITHING_TABLE_INPUT,
-			ContainerUIIds::SMITHING_TABLE_MATERIAL,
-			ContainerUIIds::STONECUTTER_INPUT,
-			ContainerUIIds::TRADE2_INGREDIENT1,
-			ContainerUIIds::TRADE2_INGREDIENT2,
-			ContainerUIIds::TRADE_INGREDIENT1,
-			ContainerUIIds::TRADE_INGREDIENT2 => ContainerIds::UI,
-
-			ContainerUIIds::BARREL,
-			ContainerUIIds::BLAST_FURNACE_INGREDIENT,
-			ContainerUIIds::BREWING_STAND_FUEL,
-			ContainerUIIds::BREWING_STAND_INPUT,
-			ContainerUIIds::BREWING_STAND_RESULT,
-			ContainerUIIds::FURNACE_FUEL,
-			ContainerUIIds::FURNACE_INGREDIENT,
-			ContainerUIIds::FURNACE_RESULT,
-			ContainerUIIds::LEVEL_ENTITY, //chest
-			ContainerUIIds::SHULKER_BOX,
-			ContainerUIIds::SMOKER_INGREDIENT => $this->inventoryManager->getCurrentWindowId(),
-
-			//all preview slots are ignored, since the client shouldn't be modifying those directly
-
-			default => throw new PacketHandlingException("Unexpected container UI ID $containerInterfaceId")
-		};
-	}
-
-	/**
-	 * @phpstan-return array{Inventory, int}
-	 */
-	private function getInventoryAndSlot(ItemStackRequestSlotInfo $info) : array{
-		$windowId = $this->translateContainerId($info->getContainerId());
-		$info = $this->inventoryManager->locateWindowAndSlot($windowId, $info->getSlotId());
-		if($info === null){
-			throw new PacketHandlingException("Stack request action cannot target an inventory that is not open");
-		}
-		[$inventory, $slot] = $info;
-		if(!$inventory->slotExists($slot)){
-			throw new PacketHandlingException("Stack request action cannot target an inventory slot that does not exist");
-		}
-
-		return [$inventory, $slot];
-	}
-
 	/**
 	 * @phpstan-return array{TransactionBuilderInventory, int}
 	 */
 	private function getBuilderInventoryAndSlot(ItemStackRequestSlotInfo $info) : array{
-		[$inventory, $slot] = $this->getInventoryAndSlot($info);
+		$windowId = ItemStackContainerIdTranslator::translate($info->getContainerId(), $this->inventoryManager->getCurrentWindowId());
+		$windowAndSlot = $this->inventoryManager->locateWindowAndSlot($windowId, $info->getSlotId());
+		if($windowAndSlot === null){
+			throw new PacketHandlingException("Stack request action cannot target an inventory that is not open");
+		}
+		[$inventory, $slot] = $windowAndSlot;
+		if(!$inventory->slotExists($slot)){
+			throw new PacketHandlingException("Stack request action cannot target an inventory slot that does not exist");
+		}
 
 		if(
 			$info->getStackId() !== $this->request->getRequestId() && //using TransactionBuilderInventory enables this to work
@@ -261,28 +190,11 @@ final class ItemStackRequestExecutor{
 	}
 
 	public function buildItemStackResponse(bool $success) : ItemStackResponse{
-		$responseInfosByContainer = [];
+		$builder = new ItemStackResponseBuilder($this->request->getRequestId(), $this->inventoryManager);
 		foreach($this->requestSlotInfos as $requestInfo){
-			[$inventory, $slot] = $this->getInventoryAndSlot($requestInfo);
-
-			$item = $inventory->getItem($slot);
-			$info = $this->inventoryManager->trackItemStack($inventory, $slot, $item, $this->request->getRequestId());
-
-			$responseInfosByContainer[$requestInfo->getContainerId()][] = new ItemStackResponseSlotInfo(
-				$requestInfo->getSlotId(),
-				$requestInfo->getSlotId(),
-				$info->getItemStack()->getCount(),
-				$info->getStackId(),
-				$item->hasCustomName() ? $item->getCustomName() : "",
-				0
-			);
+			$builder->addSlot($requestInfo->getContainerId(), $requestInfo->getSlotId());
 		}
 
-		$responseContainerInfos = [];
-		foreach($responseInfosByContainer as $containerId => $responseInfos){
-			$responseContainerInfos[] = new ItemStackResponseContainerInfo($containerId, $responseInfos);
-		}
-
-		return new ItemStackResponse($success ? ItemStackResponse::RESULT_OK : ItemStackResponse::RESULT_ERROR, $this->request->getRequestId(), $responseContainerInfos);
+		return $builder->build($success);
 	}
 }

@@ -339,6 +339,17 @@ class InGamePacketHandler extends PacketHandler{
 		}else{
 			$this->inventoryManager->syncMismatchedPredictedSlotChanges();
 		}
+		if($packet->requestId !== 0){
+			$itemStackResponseBuilder = new ItemStackResponseBuilder($packet->requestId, $this->inventoryManager);
+			foreach($packet->requestChangedSlots as $requestChangedSlotsEntry){
+				foreach($requestChangedSlotsEntry->getChangedSlotIndexes() as $slotId){
+					$itemStackResponseBuilder->addSlot($requestChangedSlotsEntry->getContainerId(), $slotId);
+				}
+			}
+			$itemStackResponse = $itemStackResponseBuilder->build($result);
+			$this->session->sendDataPacket(ItemStackResponsePacket::create([$itemStackResponse]));
+			$this->session->getLogger()->debug("Sent item stack response for fake stack request " . $packet->requestId);
+		}
 		return $result;
 	}
 
@@ -551,6 +562,7 @@ class InGamePacketHandler extends PacketHandler{
 			$executor = new ItemStackRequestExecutor($this->player, $this->inventoryManager, $request);
 			$transaction = $executor->generateInventoryTransaction();
 			$result = $this->executeInventoryTransaction($transaction);
+			$this->session->getLogger()->debug("Item stack request " . $request->getRequestId() . " result: " . ($result ? "success" : "failure"));
 			$responses[] = $executor->buildItemStackResponse($result);
 		}
 
