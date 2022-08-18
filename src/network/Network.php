@@ -52,12 +52,10 @@ class Network{
 	 */
 	private array $bannedIps = [];
 
-	/** @var string */
-	private string $subName;
-
 	private BidirectionalBandwidthStatsTracker $bandwidthTracker;
 	private string $name;
-	private NetworkSessionManager$sessionManager;
+	private string $subName = "PocketMine-MP";
+	private NetworkSessionManager $sessionManager;
 
 	public function __construct(
 		private \Logger $logger
@@ -110,7 +108,7 @@ class Network{
 					$interface->addRawPacketFilter($handler->getPattern());
 				}
 			}
-			$interface->setName($this->name);
+			$interface->setName($this->name, $this->subName);
 			return true;
 		}
 		return false;
@@ -129,7 +127,7 @@ class Network{
 	}
 
 	/**
-	 * Sets the server name shown on each interface Query
+	 * Sets the server name and sub name shown on each interface Query
 	 */
 	public function setName(string $name, string $subName = "PocketMine-MP") : void{
 		$this->name = $name;
