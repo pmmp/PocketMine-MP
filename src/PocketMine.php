@@ -233,7 +233,7 @@ JIT_WARNING
 		require_once($bootstrap);
 
 		$composerGitHash = InstalledVersions::getReference('pocketmine/pocketmine-mp');
-/*		if($composerGitHash !== null){
+		if($composerGitHash !== null){
 			//we can't verify dependency versions if we were installed without using git
 			$currentGitHash = explode("-", VersionInfo::GIT_HASH())[0];
 			if($currentGitHash !== $composerGitHash){
@@ -244,7 +244,7 @@ JIT_WARNING
 				critical_error("Please synchronize Composer dependencies before running the server.");
 				exit(1);
 			}
-		}*/
+		}
 		if(extension_loaded('parallel')){
 			\parallel\bootstrap(\pocketmine\COMPOSER_AUTOLOADER_PATH);
 		}
