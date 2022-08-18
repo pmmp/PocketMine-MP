@@ -218,7 +218,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 
 	}
 
-	public function setName(string $name) : void{
+	public function setName(string $name, string $subName = "PocketMine-MP") : void{
 		$info = $this->server->getQueryInformation();
 
 		$this->interface->setName(implode(";",
@@ -230,7 +230,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 				$info->getPlayerCount(),
 				$info->getMaxPlayerCount(),
 				$this->rakServerId,
-				$this->server->getName(),
+				$subName,
 				TypeConverter::getInstance()->protocolGameModeName($this->server->getGamemode())
 			]) . ";"
 		);

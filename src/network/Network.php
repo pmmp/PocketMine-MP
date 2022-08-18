@@ -52,6 +52,9 @@ class Network{
 	 */
 	private array $bannedIps = [];
 
+	/** @var string */
+	private string $subName;
+
 	private BidirectionalBandwidthStatsTracker $bandwidthTracker;
 	private string $name;
 	private NetworkSessionManager$sessionManager;
@@ -128,10 +131,11 @@ class Network{
 	/**
 	 * Sets the server name shown on each interface Query
 	 */
-	public function setName(string $name) : void{
+	public function setName(string $name, string $subName = "PocketMine-MP") : void{
 		$this->name = $name;
+		$this->subName = $subName;
 		foreach($this->interfaces as $interface){
-			$interface->setName($this->name);
+			$interface->setName($this->name, $this->subName);
 		}
 	}
 
@@ -139,9 +143,13 @@ class Network{
 		return $this->name;
 	}
 
+	public function getSubName() :string{
+		return $this->subName;
+	}
+
 	public function updateName() : void{
 		foreach($this->interfaces as $interface){
-			$interface->setName($this->name);
+			$interface->setName($this->name, $this->subName);
 		}
 	}
 

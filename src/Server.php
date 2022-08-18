@@ -386,6 +386,10 @@ class Server{
 		return $this->configGroup->getConfigString("motd", self::DEFAULT_SERVER_NAME);
 	}
 
+	public function getSubMotd() : string{
+		return $this->configGroup->getConfigString("sub-motd", $this->getName());
+	}
+
 	public function getLoader() : \DynamicClassLoader{
 		return $this->autoloader;
 	}
@@ -811,6 +815,7 @@ class Server{
 				new Config($pocketmineYmlPath, Config::YAML, []),
 				new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES, [
 					"motd" => self::DEFAULT_SERVER_NAME,
+					"sub-motd" => $this->getName(),
 					"server-port" => self::DEFAULT_PORT_IPV4,
 					"server-portv6" => self::DEFAULT_PORT_IPV6,
 					"enable-ipv6" => true,
@@ -947,7 +952,7 @@ class Server{
 			$this->getLogger()->debug("Machine unique id: " . Utils::getMachineUniqueId());
 
 			$this->network = new Network($this->logger);
-			$this->network->setName($this->getMotd());
+			$this->network->setName($this->getMotd(), $this->getSubMotd());
 
 			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_info(
 				$this->getName(),
