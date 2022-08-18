@@ -54,7 +54,7 @@ class Network{
 
 	private BidirectionalBandwidthStatsTracker $bandwidthTracker;
 	private string $name;
-	private string $subName = "PocketMine-MP";
+	private string $subName;
 	private NetworkSessionManager $sessionManager;
 
 	public function __construct(
@@ -131,7 +131,14 @@ class Network{
 	 */
 	public function setName(string $name, string $subName = "PocketMine-MP") : void{
 		$this->name = $name;
-		$this->subName = $subName;
+		/**
+		 * This is a hack to fix ip dummy address
+		 */
+		if($subName === ""){
+			$this->subName = "PocketMine-MP";
+		} else {
+			$this->subName = $subName;
+		}
 		foreach($this->interfaces as $interface){
 			$interface->setName($this->name, $this->subName);
 		}
