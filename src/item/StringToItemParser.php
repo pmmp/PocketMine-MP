@@ -41,7 +41,7 @@ final class StringToItemParser extends StringToTParser{
 	use SingletonTrait;
 
 	private static function make() : self{
-		$result = new self;
+		$result = new self();
 
 		foreach(DyeColor::getAll() as $color){
 			$prefix = fn(string $name) => $color->name() . "_" . $name;
