@@ -29,6 +29,7 @@ namespace pocketmine\network;
 use pocketmine\event\server\NetworkInterfaceRegisterEvent;
 use pocketmine\event\server\NetworkInterfaceUnregisterEvent;
 use pocketmine\utils\Utils;
+use pocketmine\Server;
 use function base64_encode;
 use function get_class;
 use function preg_match;
@@ -56,6 +57,7 @@ class Network{
 	private string $name;
 	private string $subName;
 	private NetworkSessionManager $sessionManager;
+	private Server $server;
 
 	public function __construct(
 		private \Logger $logger
@@ -129,13 +131,16 @@ class Network{
 	/**
 	 * Sets the server name and sub name shown on each interface Query
 	 */
-	public function setName(string $name, string $subName = "PocketMine-MP") : void{
+	public function setName(string $name) : void{
 		$this->name = $name;
-		/**
-		 * This is a hack to fix ip dummy address
-		 */
-		if($subName === ""){
-			$this->subName = "PocketMine-MP";
+		foreach($this->interfaces as $interface){
+			$interface->setName($this->name, $this->subName);
+		}
+	}
+
+	public function setSubName(string $subName){
+		if ($this->subName === ""){
+			$this->subName = $this->server->getName();
 		} else {
 			$this->subName = $subName;
 		}
