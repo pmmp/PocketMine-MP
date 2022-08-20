@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Build and prepare PHP cache
-        uses: pmmp/setup-php-action@f8bacc158e731ce69708390b6cce73c64aa369e0
+        uses: pmmp/setup-php-action@330b4c29406995550f79df53e03c470eec8b2cb4
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@f8bacc158e731ce69708390b6cce73c64aa369e0
+        uses: pmmp/setup-php-action@330b4c29406995550f79df53e03c470eec8b2cb4
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
@@ -75,7 +75,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@f8bacc158e731ce69708390b6cce73c64aa369e0
+        uses: pmmp/setup-php-action@330b4c29406995550f79df53e03c470eec8b2cb4
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
@@ -115,7 +115,7 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@f8bacc158e731ce69708390b6cce73c64aa369e0
+        uses: pmmp/setup-php-action@330b4c29406995550f79df53e03c470eec8b2cb4
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
@@ -153,7 +153,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@f8bacc158e731ce69708390b6cce73c64aa369e0
+        uses: pmmp/setup-php-action@330b4c29406995550f79df53e03c470eec8b2cb4
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
