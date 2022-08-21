@@ -163,7 +163,6 @@ abstract class BaseSign extends Transparent{
 
 				if($this->doSignChange(new SignText($this->text->getLines(), $color, $this->text->isGlowing()), $player, $item)){
 					$this->position->getWorld()->addSound($this->position, new DyeUseSound());
-					$item->pop();
 					return true;
 				}
 			}elseif($item->getTypeId() === ItemTypeIds::INK_SAC){
