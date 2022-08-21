@@ -129,19 +129,9 @@ class Network{
 	/**
 	 * Sets the server name and sub name shown on each interface Query
 	 */
-	public function setName(string $name, string $subName = "PocketMine-MP") : void{
+	public function setName(string $name, string $subName = null) : void{
 		$this->name = $name;
-		/**
-		 * This is a hack to fix ip dummy address
-		 */
-		if($subName === ""){
-			$this->subName = "PocketMine-MP";
-		} else {
-			$this->subName = $subName;
-		}
-		foreach($this->interfaces as $interface){
-			$interface->setName($this->name, $this->subName);
-		}
+		$this->subName = $subName;
 	}
 
 	public function getName() : string{
