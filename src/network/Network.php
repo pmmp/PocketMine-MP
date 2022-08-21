@@ -129,7 +129,7 @@ class Network{
 	/**
 	 * Sets the server name and server sub name shown on each interface Query
 	 */
-	public function setName(string $name, string $subName = null) : void{
+	public function setName(string $name, string|null $subName = null) : void{
 		$this->name = $name;
 		$this->subName = $subName;
 	}
