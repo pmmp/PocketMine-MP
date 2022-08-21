@@ -91,8 +91,9 @@ class Item implements \JsonSerializable{
 	 * Constructs a new Item type. This constructor should ONLY be used when constructing a new item TYPE to register
 	 * into the index.
 	 *
-	 * NOTE: This should NOT BE USED for creating items to set into an inventory. Use {@link ItemFactory#get} for that
+	 * NOTE: This should NOT BE USED for creating items to set into an inventory. Use VanillaItems for that
 	 * purpose.
+	 * @see VanillaItems
 	 */
 	public function __construct(
 		private ItemIdentifier $identifier,
@@ -467,6 +468,13 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
+	 * Returns whether this item can survive being dropped into lava, or fire.
+	 */
+	public function isFireProof() : bool{
+		return false;
+	}
+
+	/**
 	 * Returns how many points of damage this item will deal to an entity when used as a weapon.
 	 */
 	public function getAttackPoints() : int{
@@ -505,38 +513,48 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Called when a player uses this item on a block.
+	 *
+	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
-	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		return ItemUseResult::NONE();
 	}
 
 	/**
 	 * Called when a player uses the item on air, for example throwing a projectile.
 	 * Returns whether the item was changed, for example count decrease or durability change.
+	 *
+	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
-	public function onClickAir(Player $player, Vector3 $directionVector) : ItemUseResult{
+	public function onClickAir(Player $player, Vector3 $directionVector, array &$returnedItems) : ItemUseResult{
 		return ItemUseResult::NONE();
 	}
 
 	/**
 	 * Called when a player is using this item and releases it. Used to handle bow shoot actions.
 	 * Returns whether the item was changed, for example count decrease or durability change.
+	 *
+	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
-	public function onReleaseUsing(Player $player) : ItemUseResult{
+	public function onReleaseUsing(Player $player, array &$returnedItems) : ItemUseResult{
 		return ItemUseResult::NONE();
 	}
 
 	/**
 	 * Called when this item is used to destroy a block. Usually used to update durability.
+	 *
+	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
-	public function onDestroyBlock(Block $block) : bool{
+	public function onDestroyBlock(Block $block, array &$returnedItems) : bool{
 		return false;
 	}
 
 	/**
 	 * Called when this item is used to attack an entity. Usually used to update durability.
+	 *
+	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
-	public function onAttackEntity(Entity $victim) : bool{
+	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
 		return false;
 	}
 
@@ -585,9 +603,9 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
-	 * @deprecated This is intended for deserializing legacy data from the old crafting JSON and creative JSON data.
+	 * Deserializes item JSON data produced by json_encode()ing Item instances in older versions of PocketMine-MP.
+	 * This method exists solely to allow upgrading old JSON data stored by plugins.
 	 *
-	 * Returns an Item from properties created in an array by {@link Item#jsonSerialize}
 	 * @param mixed[] $data
 	 *
 	 * @throws SavedDataLoadingException
@@ -633,6 +651,9 @@ class Item implements \JsonSerializable{
 	 */
 	public static function nbtDeserialize(CompoundTag $tag) : Item{
 		$itemData = GlobalItemDataHandlers::getUpgrader()->upgradeItemStackNbt($tag);
+		if($itemData === null){
+			return VanillaItems::AIR();
+		}
 
 		try{
 			return GlobalItemDataHandlers::getDeserializer()->deserializeStack($itemData);

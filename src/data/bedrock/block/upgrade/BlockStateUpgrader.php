@@ -24,9 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\upgrade;
 
 use pocketmine\data\bedrock\block\BlockStateData;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\utils\Utils;
+use function count;
 use function ksort;
 use const SORT_NUMERIC;
 
@@ -68,12 +68,20 @@ final class BlockStateUpgrader{
 			}
 			foreach($schemas as $schema){
 				$oldName = $blockStateData->getName();
+				$oldState = $blockStateData->getStates();
 				if(isset($schema->remappedStates[$oldName])){
 					foreach($schema->remappedStates[$oldName] as $remap){
-						if($blockStateData->getStates()->equals($remap->oldState)){
-							$blockStateData = new BlockStateData($remap->newName, clone $remap->newState, $resultVersion);
-							continue 2;
+						if(count($oldState) !== count($remap->oldState)){
+							continue; //try next state
 						}
+						foreach(Utils::stringifyKeys($oldState) as $k => $v){
+							if(!isset($remap->oldState[$k]) || !$remap->oldState[$k]->equals($v)){
+								continue 2; //try next state
+							}
+						}
+
+						$blockStateData = new BlockStateData($remap->newName, $remap->newState, $resultVersion);
+						continue 2; //try next schema
 					}
 				}
 				$newName = $schema->renamedIds[$oldName] ?? null;
@@ -96,42 +104,44 @@ final class BlockStateUpgrader{
 		return $blockStateData;
 	}
 
-	private function cloneIfNeeded(CompoundTag $states, int &$stateChanges) : CompoundTag{
-		if($stateChanges === 0){
-			$states = clone $states;
+	/**
+	 * @param Tag[] $states
+	 * @phpstan-param array<string, Tag> $states
+	 *
+	 * @return Tag[]
+	 * @phpstan-return array<string, Tag>
+	 */
+	private function applyPropertyAdded(BlockStateUpgradeSchema $schema, string $oldName, array $states, int &$stateChanges) : array{
+		if(isset($schema->addedProperties[$oldName])){
+			foreach(Utils::stringifyKeys($schema->addedProperties[$oldName]) as $propertyName => $value){
+				if(!isset($states[$propertyName])){
+					$stateChanges++;
+					$states[$propertyName] = $value;
+				}
+			}
 		}
-		$stateChanges++;
 
 		return $states;
 	}
 
-	private function applyPropertyAdded(BlockStateUpgradeSchema $schema, string $oldName, CompoundTag $states, int &$stateChanges) : CompoundTag{
-		$newStates = $states;
-		if(isset($schema->addedProperties[$oldName])){
-			foreach(Utils::stringifyKeys($schema->addedProperties[$oldName]) as $propertyName => $value){
-				$oldValue = $states->getTag($propertyName);
-				if($oldValue === null){
-					$newStates = $this->cloneIfNeeded($newStates, $stateChanges);
-					$newStates->setTag($propertyName, $value);
-				}
-			}
-		}
-
-		return $newStates;
-	}
-
-	private function applyPropertyRemoved(BlockStateUpgradeSchema $schema, string $oldName, CompoundTag $states, int &$stateChanges) : CompoundTag{
-		$newStates = $states;
+	/**
+	 * @param Tag[] $states
+	 * @phpstan-param array<string, Tag> $states
+	 *
+	 * @return Tag[]
+	 * @phpstan-return array<string, Tag>
+	 */
+	private function applyPropertyRemoved(BlockStateUpgradeSchema $schema, string $oldName, array $states, int &$stateChanges) : array{
 		if(isset($schema->removedProperties[$oldName])){
 			foreach($schema->removedProperties[$oldName] as $propertyName){
-				if($states->getTag($propertyName) !== null){
-					$newStates = $this->cloneIfNeeded($newStates, $stateChanges);
-					$newStates->removeTag($propertyName);
+				if(isset($states[$propertyName])){
+					$stateChanges++;
+					unset($states[$propertyName]);
 				}
 			}
 		}
 
-		return $newStates;
+		return $states;
 	}
 
 	private function locateNewPropertyValue(BlockStateUpgradeSchema $schema, string $oldName, string $oldPropertyName, Tag $oldValue) : Tag{
@@ -146,18 +156,25 @@ final class BlockStateUpgrader{
 		return $oldValue;
 	}
 
-	private function applyPropertyRenamedOrValueChanged(BlockStateUpgradeSchema $schema, string $oldName, CompoundTag $states, int &$stateChanges) : CompoundTag{
+	/**
+	 * @param Tag[] $states
+	 * @phpstan-param array<string, Tag> $states
+	 *
+	 * @return Tag[]
+	 * @phpstan-return array<string, Tag>
+	 */
+	private function applyPropertyRenamedOrValueChanged(BlockStateUpgradeSchema $schema, string $oldName, array $states, int &$stateChanges) : array{
 		if(isset($schema->renamedProperties[$oldName])){
 			foreach(Utils::stringifyKeys($schema->renamedProperties[$oldName]) as $oldPropertyName => $newPropertyName){
-				$oldValue = $states->getTag($oldPropertyName);
+				$oldValue = $states[$oldPropertyName] ?? null;
 				if($oldValue !== null){
-					$states = $this->cloneIfNeeded($states, $stateChanges);
-					$states->removeTag($oldPropertyName);
+					$stateChanges++;
+					unset($states[$oldPropertyName]);
 
 					//If a value remap is needed, we need to do it here, since we won't be able to locate the property
 					//after it's been renamed - value remaps are always indexed by old property name for the sake of
 					//being able to do changes in any order.
-					$states->setTag($newPropertyName, $this->locateNewPropertyValue($schema, $oldName, $oldPropertyName, $oldValue));
+					$states[$newPropertyName] = $this->locateNewPropertyValue($schema, $oldName, $oldPropertyName, $oldValue);
 				}
 			}
 		}
@@ -165,15 +182,22 @@ final class BlockStateUpgrader{
 		return $states;
 	}
 
-	private function applyPropertyValueChanged(BlockStateUpgradeSchema $schema, string $oldName, CompoundTag $states, int &$stateChanges) : CompoundTag{
+	/**
+	 * @param Tag[] $states
+	 * @phpstan-param array<string, Tag> $states
+	 *
+	 * @return Tag[]
+	 * @phpstan-return array<string, Tag>
+	 */
+	private function applyPropertyValueChanged(BlockStateUpgradeSchema $schema, string $oldName, array $states, int &$stateChanges) : array{
 		if(isset($schema->remappedPropertyValues[$oldName])){
 			foreach(Utils::stringifyKeys($schema->remappedPropertyValues[$oldName]) as $oldPropertyName => $remappedValues){
-				$oldValue = $states->getTag($oldPropertyName);
+				$oldValue = $states[$oldPropertyName] ?? null;
 				if($oldValue !== null){
 					$newValue = $this->locateNewPropertyValue($schema, $oldName, $oldPropertyName, $oldValue);
 					if($newValue !== $oldValue){
-						$states = $this->cloneIfNeeded($states, $stateChanges);
-						$states->setTag($oldPropertyName, $newValue);
+						$stateChanges++;
+						$states[$oldPropertyName] = $newValue;
 					}
 				}
 			}

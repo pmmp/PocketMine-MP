@@ -25,11 +25,8 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\utils\SkullType;
-use pocketmine\data\runtime\InvalidSerializedRuntimeDataException;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
-use pocketmine\data\runtime\RuntimeEnumDeserializer;
-use pocketmine\data\runtime\RuntimeEnumSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -48,42 +45,32 @@ class Skull extends Flowable{
 	protected int $facing = Facing::NORTH;
 	protected int $rotation = self::MIN_ROTATION; //TODO: split this into floor skull and wall skull handling
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->skullType = SkullType::SKELETON(); //TODO: this should be a parameter
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
 	public function getRequiredTypeDataBits() : int{ return 3; }
 
-	protected function decodeType(RuntimeDataReader $r) : void{
-		$this->skullType = RuntimeEnumDeserializer::readSkullType($r);
-	}
-
-	protected function encodeType(RuntimeDataWriter $w) : void{
-		RuntimeEnumSerializer::writeSkullType($w, $this->skullType);
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->skullType($this->skullType);
 	}
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$facing = $r->readFacing();
-		if($facing === Facing::DOWN){
-			throw new InvalidSerializedRuntimeDataException("Skull may not face down");
-		}
-		$this->facing = $facing;
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->facingExcept($this->facing, Facing::DOWN);
 	}
 
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeFacing($this->facing);
-	}
-
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileSkull){
 			$this->skullType = $tile->getSkullType();
 			$this->rotation = $tile->getRotation();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{

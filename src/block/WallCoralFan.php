@@ -39,12 +39,8 @@ final class WallCoralFan extends BaseCoral{
 
 	public function getRequiredStateDataBits() : int{ return parent::getRequiredStateDataBits() + 2; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->facing = $r->readHorizontalFacing();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeHorizontalFacing($this->facing);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->horizontalFacing($this->facing);
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

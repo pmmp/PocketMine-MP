@@ -30,16 +30,16 @@ use pocketmine\nbt\tag\CompoundTag;
 final class BlockDataUpgrader{
 
 	public function __construct(
-		private LegacyBlockStateMapper $legacyBlockStateMapper,
+		private BlockIdMetaUpgrader $blockIdMetaUpgrader,
 		private BlockStateUpgrader $blockStateUpgrader
 	){}
 
 	public function upgradeIntIdMeta(int $id, int $meta) : ?BlockStateData{
-		return $this->legacyBlockStateMapper->fromIntIdMeta($id, $meta);
+		return $this->blockIdMetaUpgrader->fromIntIdMeta($id, $meta);
 	}
 
 	public function upgradeStringIdMeta(string $id, int $meta) : ?BlockStateData{
-		return $this->legacyBlockStateMapper->fromStringIdMeta($id, $meta);
+		return $this->blockIdMetaUpgrader->fromStringIdMeta($id, $meta);
 	}
 
 	public function upgradeBlockStateNbt(CompoundTag $tag) : ?BlockStateData{
@@ -51,7 +51,7 @@ final class BlockDataUpgrader{
 			$blockStateData = $this->upgradeStringIdMeta($id, $data);
 			if($blockStateData === null){
 				//unknown block, invalid ID
-				$blockStateData = new BlockStateData(BlockTypeNames::INFO_UPDATE, CompoundTag::create(), BlockStateData::CURRENT_VERSION);
+				$blockStateData = new BlockStateData(BlockTypeNames::INFO_UPDATE, [], BlockStateData::CURRENT_VERSION);
 			}
 		}else{
 			//Modern (post-1.13) blockstate
@@ -62,4 +62,6 @@ final class BlockDataUpgrader{
 	}
 
 	public function getBlockStateUpgrader() : BlockStateUpgrader{ return $this->blockStateUpgrader; }
+
+	public function getBlockIdMetaUpgrader() : BlockIdMetaUpgrader{ return $this->blockIdMetaUpgrader; }
 }

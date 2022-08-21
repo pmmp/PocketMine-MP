@@ -62,7 +62,7 @@ $reportMap = [];
 foreach($states as $state){
 	$name = $state->getName();
 	$reportMap[$name] ??= [];
-	foreach($state->getStates() as $propertyName => $value){
+	foreach(Utils::stringifyKeys($state->getStates()) as $propertyName => $value){
 		if($value instanceof IntTag || $value instanceof StringTag){
 			$rawValue = $value->getValue();
 		}elseif($value instanceof ByteTag){

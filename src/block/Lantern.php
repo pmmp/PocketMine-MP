@@ -39,19 +39,15 @@ class Lantern extends Transparent{
 
 	protected bool $hanging = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, int $lightLevel){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, int $lightLevel){
 		$this->lightLevel = $lightLevel;
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
 	public function getRequiredStateDataBits() : int{ return 1; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->hanging = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeBool($this->hanging);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->bool($this->hanging);
 	}
 
 	public function isHanging() : bool{ return $this->hanging; }

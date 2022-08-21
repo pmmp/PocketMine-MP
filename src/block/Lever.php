@@ -26,8 +26,6 @@ namespace pocketmine\block;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
-use pocketmine\data\runtime\RuntimeEnumDeserializer;
-use pocketmine\data\runtime\RuntimeEnumSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -42,21 +40,16 @@ class Lever extends Flowable{
 	protected LeverFacing $facing;
 	protected bool $activated = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->facing = LeverFacing::UP_AXIS_X();
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->facing = RuntimeEnumDeserializer::readLeverFacing($r);
-		$this->activated = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		RuntimeEnumSerializer::writeLeverFacing($w, $this->facing);
-		$w->writeBool($this->activated);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->leverFacing($this->facing);
+		$w->bool($this->activated);
 	}
 
 	public function getFacing() : LeverFacing{ return $this->facing; }
@@ -106,10 +99,11 @@ class Lever extends Flowable{
 		}
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->activated = !$this->activated;
-		$this->position->getWorld()->setBlock($this->position, $this);
-		$this->position->getWorld()->addSound(
+		$world = $this->position->getWorld();
+		$world->setBlock($this->position, $this);
+		$world->addSound(
 			$this->position->add(0.5, 0.5, 0.5),
 			$this->activated ? new RedstonePowerOnSound() : new RedstonePowerOffSound()
 		);

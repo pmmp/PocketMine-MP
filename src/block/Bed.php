@@ -49,32 +49,28 @@ class Bed extends Transparent{
 	protected bool $occupied = false;
 	protected bool $head = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->color = DyeColor::RED();
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->facing = $r->readHorizontalFacing();
-		$this->occupied = $r->readBool();
-		$this->head = $r->readBool();
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->bool($this->occupied);
+		$w->bool($this->head);
 	}
 
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeHorizontalFacing($this->facing);
-		$w->writeBool($this->occupied);
-		$w->writeBool($this->head);
-	}
-
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		//read extra state information from the tile - this is an ugly hack
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileBed){
 			$this->color = $tile->getColor();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{
@@ -130,7 +126,7 @@ class Bed extends Transparent{
 		return null;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
 			$other = $this->getOtherHalf();
 			$playerPos = $player->getPosition();

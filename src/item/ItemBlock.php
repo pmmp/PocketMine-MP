@@ -45,7 +45,7 @@ final class ItemBlock extends Item{
 	}
 
 	protected function encodeType(RuntimeDataWriter $w) : void{
-		$w->writeInt(Block::INTERNAL_STATE_DATA_BITS, $this->blockTypeData);
+		$w->int(Block::INTERNAL_STATE_DATA_BITS, $this->blockTypeData);
 	}
 
 	public function getBlock(?int $clickedFace = null) : Block{
@@ -61,6 +61,10 @@ final class ItemBlock extends Item{
 
 	public function getFuelTime() : int{
 		return $this->getBlock()->getFuelTime();
+	}
+
+	public function isFireProof() : bool{
+		return $this->getBlock()->isFireProofAsItem();
 	}
 
 	public function getMaxStackSize() : int{

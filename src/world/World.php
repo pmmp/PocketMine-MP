@@ -36,6 +36,7 @@ use pocketmine\block\tile\TileFactory;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\BiomeIds;
+use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
@@ -824,7 +825,11 @@ class World implements ChunkManager{
 			}
 
 			$block = $this->getBlockAt($x, $y, $z);
-			$block->readStateFromWorld(); //for blocks like fences, force recalculation of connected AABBs
+			$replacement = $block->readStateFromWorld(); //for blocks like fences, force recalculation of connected AABBs
+			if($replacement !== $block){
+				$replacement->position($this, $x, $y, $z);
+				$block = $replacement;
+			}
 
 			$ev = new BlockUpdateEvent($block);
 			$ev->call();
@@ -944,6 +949,22 @@ class World implements ChunkManager{
 
 			$fullBlock = $this->getBlockAt($b->x, $b->y, $b->z);
 			$blockPosition = BlockPosition::fromVector3($b);
+
+			$tile = $this->getTileAt($b->x, $b->y, $b->z);
+			if($tile instanceof Spawnable && count($fakeStateProperties = $tile->getRenderUpdateBugWorkaroundStateProperties($fullBlock)) > 0){
+				$originalStateData = $blockMapping->toStateData($fullBlock->getStateId());
+				$fakeStateData = new BlockStateData(
+					$originalStateData->getName(),
+					array_merge($originalStateData->getStates(), $fakeStateProperties),
+					$originalStateData->getVersion()
+				);
+				$packets[] = UpdateBlockPacket::create(
+					$blockPosition,
+					$blockMapping->getBlockStateDictionary()->lookupStateIdFromData($fakeStateData) ?? throw new AssumptionFailedError("Unmapped fake blockstate data: " . $fakeStateData->toNbt()),
+					UpdateBlockPacket::FLAG_NETWORK,
+					UpdateBlockPacket::DATA_LAYER_NORMAL
+				);
+			}
 			$packets[] = UpdateBlockPacket::create(
 				$blockPosition,
 				$blockMapping->toRuntimeId($fullBlock->getStateId()),
@@ -951,7 +972,6 @@ class World implements ChunkManager{
 				UpdateBlockPacket::DATA_LAYER_NORMAL
 			);
 
-			$tile = $this->getTileAt($b->x, $b->y, $b->z);
 			if($tile instanceof Spawnable){
 				$packets[] = BlockActorDataPacket::create($blockPosition, $tile->getSerializedSpawnCompound());
 			}
@@ -1548,7 +1568,11 @@ class World implements ChunkManager{
 			$addToCache = false;
 		}else{
 			$dynamicStateRead = true;
-			$block->readStateFromWorld();
+			$replacement = $block->readStateFromWorld();
+			if($replacement !== $block){
+				$replacement->position($this, $x, $y, $z);
+				$block = $replacement;
+			}
 			$dynamicStateRead = false;
 		}
 
@@ -1660,9 +1684,10 @@ class World implements ChunkManager{
 	 * Tries to break a block using a item, including Player time checks if available
 	 * It'll try to lower the durability if Item is a tool, and set it to Air if broken.
 	 *
-	 * @param Item    $item reference parameter (if null, can break anything)
+	 * @param Item   &$item reference parameter (if null, can break anything)
+	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
-	public function useBreakOn(Vector3 $vector, Item &$item = null, ?Player $player = null, bool $createParticles = false) : bool{
+	public function useBreakOn(Vector3 $vector, Item &$item = null, ?Player $player = null, bool $createParticles = false, array &$returnedItems = []) : bool{
 		$vector = $vector->floor();
 
 		$chunkX = $vector->getFloorX() >> Chunk::COORD_BIT_SIZE;
@@ -1724,10 +1749,10 @@ class World implements ChunkManager{
 		}
 
 		foreach($affectedBlocks as $t){
-			$this->destroyBlockInternal($t, $item, $player, $createParticles);
+			$this->destroyBlockInternal($t, $item, $player, $createParticles, $returnedItems);
 		}
 
-		$item->onDestroyBlock($target);
+		$item->onDestroyBlock($target, $returnedItems);
 
 		if(count($drops) > 0){
 			$dropPos = $vector->add(0.5, 0.5, 0.5);
@@ -1745,12 +1770,15 @@ class World implements ChunkManager{
 		return true;
 	}
 
-	private function destroyBlockInternal(Block $target, Item $item, ?Player $player = null, bool $createParticles = false) : void{
+	/**
+	 * @param Item[] &$returnedItems
+	 */
+	private function destroyBlockInternal(Block $target, Item $item, ?Player $player, bool $createParticles, array &$returnedItems) : void{
 		if($createParticles){
 			$this->addParticle($target->getPosition()->add(0.5, 0.5, 0.5), new BlockBreakParticle($target));
 		}
 
-		$target->onBreak($item, $player);
+		$target->onBreak($item, $player, $returnedItems);
 
 		$tile = $this->getTile($target->getPosition());
 		if($tile !== null){
@@ -1761,10 +1789,11 @@ class World implements ChunkManager{
 	/**
 	 * Uses a item on a position and face, placing it or activating the block
 	 *
-	 * @param Player|null  $player default null
-	 * @param bool         $playSound Whether to play a block-place sound if the block was placed successfully.
+	 * @param Player|null $player default null
+	 * @param bool        $playSound Whether to play a block-place sound if the block was placed successfully.
+	 * @param Item[]      &$returnedItems Items to be added to the target's inventory (or dropped if the inventory is full)
 	 */
-	public function useItemOn(Vector3 $vector, Item &$item, int $face, ?Vector3 $clickVector = null, ?Player $player = null, bool $playSound = false) : bool{
+	public function useItemOn(Vector3 $vector, Item &$item, int $face, ?Vector3 $clickVector = null, ?Player $player = null, bool $playSound = false, array &$returnedItems = []) : bool{
 		$blockClicked = $this->getBlock($vector);
 		$blockReplace = $blockClicked->getSide($face);
 
@@ -1794,18 +1823,18 @@ class World implements ChunkManager{
 
 			$ev->call();
 			if(!$ev->isCancelled()){
-				if((!$player->isSneaking() || $item->isNull()) && $blockClicked->onInteract($item, $face, $clickVector, $player)){
+				if((!$player->isSneaking() || $item->isNull()) && $blockClicked->onInteract($item, $face, $clickVector, $player, $returnedItems)){
 					return true;
 				}
 
-				$result = $item->onInteractBlock($player, $blockReplace, $blockClicked, $face, $clickVector);
+				$result = $item->onInteractBlock($player, $blockReplace, $blockClicked, $face, $clickVector, $returnedItems);
 				if(!$result->equals(ItemUseResult::NONE())){
 					return $result->equals(ItemUseResult::SUCCESS());
 				}
 			}else{
 				return false;
 			}
-		}elseif($blockClicked->onInteract($item, $face, $clickVector, $player)){
+		}elseif($blockClicked->onInteract($item, $face, $clickVector, $player, $returnedItems)){
 			return true;
 		}
 

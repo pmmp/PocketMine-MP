@@ -48,18 +48,20 @@ abstract class BaseBanner extends Transparent{
 	 */
 	protected array $patterns = [];
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->color = DyeColor::BLACK();
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileBanner){
 			$this->color = $tile->getBaseColor();
 			$this->setPatterns($tile->getPatterns());
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{

@@ -32,12 +32,8 @@ class RedstoneLamp extends Opaque{
 
 	public function getRequiredStateDataBits() : int{ return 1; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->powered = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeBool($this->powered);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->bool($this->powered);
 	}
 
 	public function getLightLevel() : int{

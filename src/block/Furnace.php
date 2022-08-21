@@ -41,14 +41,9 @@ class Furnace extends Opaque{
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->facing = $r->readHorizontalFacing();
-		$this->lit = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeHorizontalFacing($this->facing);
-		$w->writeBool($this->lit);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->bool($this->lit);
 	}
 
 	public function getLightLevel() : int{
@@ -67,7 +62,7 @@ class Furnace extends Opaque{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 			$furnace = $this->position->getWorld()->getTile($this->position);
 			if($furnace instanceof TileFurnace && $furnace->canOpenWith($item->getCustomName())){
@@ -79,12 +74,13 @@ class Furnace extends Opaque{
 	}
 
 	public function onScheduledUpdate() : void{
-		$furnace = $this->position->getWorld()->getTile($this->position);
+		$world = $this->position->getWorld();
+		$furnace = $world->getTile($this->position);
 		if($furnace instanceof TileFurnace && $furnace->onUpdate()){
 			if(mt_rand(1, 60) === 1){ //in vanilla this is between 1 and 5 seconds; try to average about 3
-				$this->position->getWorld()->addSound($this->position, $furnace->getFurnaceType()->getCookSound());
+				$world->addSound($this->position, $furnace->getFurnaceType()->getCookSound());
 			}
-			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1); //TODO: check this
+			$world->scheduleDelayedBlockUpdate($this->position, 1); //TODO: check this
 		}
 	}
 }

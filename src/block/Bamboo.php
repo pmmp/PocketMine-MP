@@ -58,16 +58,10 @@ class Bamboo extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->setLeafSize($r->readBoundedInt(2, self::NO_LEAVES, self::LARGE_LEAVES));
-		$this->setThick($r->readBool());
-		$this->setReady($r->readBool());
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeInt(2, $this->getLeafSize());
-		$w->writeBool($this->isThick());
-		$w->writeBool($this->isReady());
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(2, self::NO_LEAVES, self::LARGE_LEAVES, $this->leafSize);
+		$w->bool($this->thick);
+		$w->bool($this->ready);
 	}
 
 	public function isThick() : bool{ return $this->thick; }
@@ -130,14 +124,11 @@ class Bamboo extends Transparent{
 	}
 
 	private function canBeSupportedBy(Block $block) : bool{
-		//TODO: tags would be better for this
 		return
-			$block instanceof Dirt ||
-			$block instanceof Grass ||
-			$block instanceof Gravel ||
-			$block instanceof Sand ||
-			$block instanceof Mycelium ||
-			$block instanceof Podzol;
+			$block->getTypeId() === BlockTypeIds::GRAVEL ||
+			$block->hasTypeTag(BlockTypeTags::DIRT) ||
+			$block->hasTypeTag(BlockTypeTags::MUD) ||
+			$block->hasTypeTag(BlockTypeTags::SAND);
 	}
 
 	private function seekToTop() : Bamboo{
@@ -149,7 +140,7 @@ class Bamboo extends Transparent{
 		return $top;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer){
 			$top = $this->seekToTop();
 			if($top->grow(self::getMaxHeight($top->position->getFloorX(), $top->position->getFloorZ()), mt_rand(1, 2), $player)){
@@ -166,9 +157,10 @@ class Bamboo extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$below = $this->position->getWorld()->getBlock($this->position->down());
+		$world = $this->position->getWorld();
+		$below = $world->getBlock($this->position->down());
 		if(!$this->canBeSupportedBy($below) && !$below->isSameType($this)){
-			$this->position->getWorld()->useBreakOn($this->position);
+			$world->useBreakOn($this->position);
 		}
 	}
 
@@ -214,7 +206,7 @@ class Bamboo extends Transparent{
 			}
 		}
 
-		$tx = new BlockTransaction($this->position->getWorld());
+		$tx = new BlockTransaction($world);
 		foreach($newBlocks as $idx => $newBlock){
 			$tx->addBlock($this->position->subtract(0, $idx - $growAmount, 0), $newBlock);
 		}

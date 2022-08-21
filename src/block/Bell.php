@@ -29,8 +29,6 @@ use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
-use pocketmine\data\runtime\RuntimeEnumDeserializer;
-use pocketmine\data\runtime\RuntimeEnumSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -44,21 +42,16 @@ final class Bell extends Transparent{
 
 	private BellAttachmentType $attachmentType;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->attachmentType = BellAttachmentType::FLOOR();
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->attachmentType = RuntimeEnumDeserializer::readBellAttachmentType($r);
-		$this->facing = $r->readHorizontalFacing();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		RuntimeEnumSerializer::writeBellAttachmentType($w, $this->attachmentType);
-		$w->writeHorizontalFacing($this->facing);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->bellAttachmentType($this->attachmentType);
+		$w->horizontalFacing($this->facing);
 	}
 
 	protected function recalculateCollisionBoxes() : array{
@@ -139,7 +132,7 @@ final class Bell extends Transparent{
 		}
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
 			$faceHit = Facing::opposite($player->getHorizontalFacing());
 			if($this->attachmentType->equals(BellAttachmentType::CEILING())){
@@ -160,10 +153,11 @@ final class Bell extends Transparent{
 	}
 
 	public function ring(int $faceHit) : void{
-		$this->position->getWorld()->addSound($this->position, new BellRingSound());
-		$tile = $this->position->getWorld()->getTile($this->position);
+		$world = $this->position->getWorld();
+		$world->addSound($this->position, new BellRingSound());
+		$tile = $world->getTile($this->position);
 		if($tile instanceof TileBell){
-			$this->position->getWorld()->broadcastPacketToViewers($this->position, $tile->createFakeUpdatePacket($faceHit));
+			$world->broadcastPacketToViewers($this->position, $tile->createFakeUpdatePacket($faceHit));
 		}
 	}
 }

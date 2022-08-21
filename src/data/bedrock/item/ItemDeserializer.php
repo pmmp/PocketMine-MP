@@ -30,12 +30,14 @@ use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateDeserializer;
+use pocketmine\data\bedrock\block\convert\UnsupportedBlockStateException;
 use pocketmine\data\bedrock\CompoundTypeIds;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\bedrock\EntityLegacyIds;
 use pocketmine\data\bedrock\item\ItemTypeNames as Ids;
 use pocketmine\data\bedrock\item\SavedItemData as Data;
 use pocketmine\data\bedrock\PotionTypeIdMap;
+use pocketmine\data\bedrock\SuspiciousStewTypeIdMap;
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems as Items;
@@ -71,6 +73,8 @@ final class ItemDeserializer{
 			//TODO: this is rough duct tape; we need a better way to deal with this
 			try{
 				$block = $this->blockStateDeserializer->deserialize($blockData);
+			}catch(UnsupportedBlockStateException $e){
+				throw new UnsupportedItemTypeException($e->getMessage(), 0, $e);
 			}catch(BlockStateDeserializeException $e){
 				throw new ItemTypeDeserializeException("Failed to deserialize item data: " . $e->getMessage(), 0, $e);
 			}
@@ -80,7 +84,7 @@ final class ItemDeserializer{
 		}
 		$id = $data->getName();
 		if(!isset($this->deserializers[$id])){
-			throw new ItemTypeDeserializeException("No deserializer found for ID $id");
+			throw new UnsupportedItemTypeException("No deserializer found for ID $id");
 		}
 
 		return ($this->deserializers[$id])($data);
@@ -195,7 +199,7 @@ final class ItemDeserializer{
 		$this->map(Ids::CARROT, fn() => Items::CARROT());
 		//TODO: minecraft:carrot_on_a_stick
 		//TODO: minecraft:cat_spawn_egg
-		//TODO: minecraft:cauldron
+		$this->map(Ids::CAULDRON, fn() => Blocks::CAULDRON()->asItem());
 		//TODO: minecraft:cave_spider_spawn_egg
 		//TODO: minecraft:chain
 		$this->map(Ids::CHAINMAIL_BOOTS, fn() => Items::CHAINMAIL_BOOTS());
@@ -335,7 +339,7 @@ final class ItemDeserializer{
 		$this->map(Ids::FERMENTED_SPIDER_EYE, fn() => Items::FERMENTED_SPIDER_EYE());
 		//TODO: minecraft:field_masoned_banner_pattern
 		//TODO: minecraft:filled_map
-		//TODO: minecraft:fire_charge
+		$this->map(Ids::FIRE_CHARGE, fn() => Items::FIRE_CHARGE());
 		//TODO: minecraft:firefly_spawn_egg
 		//TODO: minecraft:firework_rocket
 		//TODO: minecraft:firework_star
@@ -345,7 +349,7 @@ final class ItemDeserializer{
 		//TODO: minecraft:flower_banner_pattern
 		$this->map(Ids::FLOWER_POT, fn() => Blocks::FLOWER_POT()->asItem());
 		//TODO: minecraft:fox_spawn_egg
-		$this->map(Ids::FRAME, fn() => Blocks::ITEM_FRAME()->asItem());
+		$this->map(Ids::FRAME, fn() => Blocks::ITEM_FRAME()->setGlowing(false)->asItem());
 		//TODO: minecraft:frog_spawn_egg
 		//TODO: minecraft:ghast_spawn_egg
 		$this->map(Ids::GHAST_TEAR, fn() => Items::GHAST_TEAR());
@@ -353,7 +357,7 @@ final class ItemDeserializer{
 		$this->map(Ids::GLISTERING_MELON_SLICE, fn() => Items::GLISTERING_MELON());
 		//TODO: minecraft:globe_banner_pattern
 		//TODO: minecraft:glow_berries
-		//TODO: minecraft:glow_frame
+		$this->map(Ids::GLOW_FRAME, fn() => Blocks::ITEM_FRAME()->setGlowing(true)->asItem());
 		$this->map(Ids::GLOW_INK_SAC, fn() => Items::GLOW_INK_SAC());
 		//TODO: minecraft:glow_squid_spawn_egg
 		//TODO: minecraft:glow_stick
@@ -380,7 +384,7 @@ final class ItemDeserializer{
 		$this->map(Ids::GUNPOWDER, fn() => Items::GUNPOWDER());
 		$this->map(Ids::HEART_OF_THE_SEA, fn() => Items::HEART_OF_THE_SEA());
 		//TODO: minecraft:hoglin_spawn_egg
-		//TODO: minecraft:honey_bottle
+		$this->map(Ids::HONEY_BOTTLE, fn() => Items::HONEY_BOTTLE());
 		$this->map(Ids::HONEYCOMB, fn() => Items::HONEYCOMB());
 		$this->map(Ids::HOPPER, fn() => Blocks::HOPPER()->asItem());
 		//TODO: minecraft:hopper_minecart
@@ -455,17 +459,17 @@ final class ItemDeserializer{
 		$this->map(Ids::NETHER_STAR, fn() => Items::NETHER_STAR());
 		$this->map(Ids::NETHER_WART, fn() => Blocks::NETHER_WART()->asItem());
 		$this->map(Ids::NETHERBRICK, fn() => Items::NETHER_BRICK());
-		//TODO: minecraft:netherite_axe
-		//TODO: minecraft:netherite_boots
-		//TODO: minecraft:netherite_chestplate
-		//TODO: minecraft:netherite_helmet
-		//TODO: minecraft:netherite_hoe
-		//TODO: minecraft:netherite_ingot
-		//TODO: minecraft:netherite_leggings
-		//TODO: minecraft:netherite_pickaxe
-		//TODO: minecraft:netherite_scrap
-		//TODO: minecraft:netherite_shovel
-		//TODO: minecraft:netherite_sword
+		$this->map(Ids::NETHERITE_AXE, fn() => Items::NETHERITE_AXE());
+		$this->map(Ids::NETHERITE_BOOTS, fn() => Items::NETHERITE_BOOTS());
+		$this->map(Ids::NETHERITE_CHESTPLATE, fn() => Items::NETHERITE_CHESTPLATE());
+		$this->map(Ids::NETHERITE_HELMET, fn() => Items::NETHERITE_HELMET());
+		$this->map(Ids::NETHERITE_HOE, fn() => Items::NETHERITE_HOE());
+		$this->map(Ids::NETHERITE_INGOT, fn() => Items::NETHERITE_INGOT());
+		$this->map(Ids::NETHERITE_LEGGINGS, fn() => Items::NETHERITE_LEGGINGS());
+		$this->map(Ids::NETHERITE_PICKAXE, fn() => Items::NETHERITE_PICKAXE());
+		$this->map(Ids::NETHERITE_SCRAP, fn() => Items::NETHERITE_SCRAP());
+		$this->map(Ids::NETHERITE_SHOVEL, fn() => Items::NETHERITE_SHOVEL());
+		$this->map(Ids::NETHERITE_SWORD, fn() => Items::NETHERITE_SWORD());
 		//TODO: minecraft:npc_spawn_egg
 		$this->map(Ids::OAK_BOAT, fn() => Items::OAK_BOAT());
 		$this->map(Ids::OAK_SIGN, fn() => Blocks::OAK_SIGN()->asItem());
@@ -580,7 +584,14 @@ final class ItemDeserializer{
 		$this->map(Ids::STRING, fn() => Items::STRING());
 		$this->map(Ids::SUGAR, fn() => Items::SUGAR());
 		$this->map(Ids::SUGAR_CANE, fn() => Blocks::SUGARCANE()->asItem());
-		//TODO: minecraft:suspicious_stew
+		$this->map(Ids::SUSPICIOUS_STEW, function(Data $data) : Item{
+			$meta = $data->getMeta();
+			$suspiciousStewType = SuspiciousStewTypeIdMap::getInstance()->fromId($meta);
+			if($suspiciousStewType === null){
+				throw new ItemTypeDeserializeException("Unknown suspicious stew type ID $meta");
+			}
+			return Items::SUSPICIOUS_STEW()->setType($suspiciousStewType);
+		});
 		$this->map(Ids::SWEET_BERRIES, fn() => Items::SWEET_BERRIES());
 		//TODO: minecraft:tadpole_bucket
 		//TODO: minecraft:tadpole_spawn_egg

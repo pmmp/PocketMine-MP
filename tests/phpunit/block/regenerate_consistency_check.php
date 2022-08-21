@@ -45,7 +45,16 @@ if(file_exists($oldTablePath)){
 	if(!is_array($oldTable)){
 		throw new \pocketmine\utils\AssumptionFailedError("Old table should be array{knownStates: array<string, string>, stateDataBits: int}");
 	}
-	$old = $oldTable["knownStates"];
+	$old = [];
+	/**
+	 * @var string $name
+	 * @var int[]  $stateIds
+	 */
+	foreach($oldTable["knownStates"] as $name => $stateIds){
+		foreach($stateIds as $stateId){
+			$old[$stateId] = $name;
+		}
+	}
 	$oldStateDataSize = $oldTable["stateDataBits"];
 	$oldStateDataMask = ~(~0 << $oldStateDataSize);
 
@@ -72,15 +81,23 @@ if(file_exists($oldTablePath)){
 				echo "Name changed ($newId:$newStateData) " . $old[$reconstructedK] . " -> " . $name . "\n";
 			}
 		}
-
 	}
 }else{
 	echo "WARNING: Unable to calculate diff, no previous consistency check file found\n";
 }
 
+$newTable = [];
+foreach($new as $stateId => $name){
+	$newTable[$name][] = $stateId;
+}
+ksort($newTable, SORT_STRING);
+foreach($newTable as &$stateIds){
+	sort($stateIds, SORT_NUMERIC);
+}
+
 file_put_contents(__DIR__ . '/block_factory_consistency_check.json', json_encode(
 	[
-		"knownStates" => $new,
+		"knownStates" => $newTable,
 		"stateDataBits" => Block::INTERNAL_STATE_DATA_BITS
 	],
 	JSON_THROW_ON_ERROR

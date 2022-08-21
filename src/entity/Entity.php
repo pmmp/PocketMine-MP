@@ -493,6 +493,9 @@ abstract class Entity{
 	}
 
 	public function attack(EntityDamageEvent $source) : void{
+		if($this->isFireProof() && ($source->getCause() === EntityDamageEvent::CAUSE_FIRE || $source->getCause() === EntityDamageEvent::CAUSE_FIRE_TICK)){
+			$source->cancel();
+		}
 		$source->call();
 		if($source->isCancelled()){
 			return;
@@ -1430,8 +1433,9 @@ abstract class Entity{
 			$this->location->pitch,
 			$this->location->yaw,
 			$this->location->yaw, //TODO: head yaw
+			$this->location->yaw, //TODO: body yaw (wtf mojang?)
 			array_map(function(Attribute $attr) : NetworkAttribute{
-				return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue());
+				return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue(), []);
 			}, $this->attributeMap->getAll()),
 			$this->getAllNetworkData(),
 			[] //TODO: entity links

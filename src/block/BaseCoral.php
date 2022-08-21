@@ -31,8 +31,8 @@ use pocketmine\item\Item;
 abstract class BaseCoral extends Transparent{
 	use CoralTypeTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
-		parent::__construct($idInfo, $name, $breakInfo);
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
+		parent::__construct($idInfo, $name, $typeInfo);
 		$this->coralType = CoralType::TUBE();
 	}
 

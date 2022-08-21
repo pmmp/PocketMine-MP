@@ -49,12 +49,8 @@ class SnowLayer extends Flowable implements Fallable{
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->layers = $r->readBoundedInt(3, self::MIN_LAYERS - 1, self::MAX_LAYERS - 1) + 1;
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeInt(3, $this->layers - 1);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(3, self::MIN_LAYERS, self::MAX_LAYERS, $this->layers);
 	}
 
 	public function getLayers() : int{ return $this->layers; }
@@ -110,11 +106,12 @@ class SnowLayer extends Flowable implements Fallable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->position->getWorld()->getBlockLightAt($this->position->x, $this->position->y, $this->position->z) >= 12){
+		$world = $this->position->getWorld();
+		if($world->getBlockLightAt($this->position->x, $this->position->y, $this->position->z) >= 12){
 			$ev = new BlockMeltEvent($this, VanillaBlocks::AIR());
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
+				$world->setBlock($this->position, $ev->getNewState());
 			}
 		}
 	}

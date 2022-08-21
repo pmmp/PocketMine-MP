@@ -25,6 +25,10 @@ namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\Block;
 use pocketmine\block\Button;
+use pocketmine\block\Candle;
+use pocketmine\block\Copper;
+use pocketmine\block\CopperSlab;
+use pocketmine\block\CopperStairs;
 use pocketmine\block\Crops;
 use pocketmine\block\DaylightSensor;
 use pocketmine\block\Door;
@@ -32,6 +36,7 @@ use pocketmine\block\FenceGate;
 use pocketmine\block\FloorCoralFan;
 use pocketmine\block\FloorSign;
 use pocketmine\block\GlazedTerracotta;
+use pocketmine\block\ItemFrame;
 use pocketmine\block\Liquid;
 use pocketmine\block\RedMushroomBlock;
 use pocketmine\block\RedstoneComparator;
@@ -41,8 +46,10 @@ use pocketmine\block\Slab;
 use pocketmine\block\Stair;
 use pocketmine\block\Stem;
 use pocketmine\block\Trapdoor;
+use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Wall;
 use pocketmine\block\WallCoralFan;
 use pocketmine\block\WallSign;
@@ -51,6 +58,7 @@ use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateNames;
+use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
 use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
 use pocketmine\math\Axis;
@@ -64,6 +72,13 @@ final class BlockStateDeserializerHelper{
 		return $block
 			->setFacing($in->readFacingDirection())
 			->setPressed($in->readBool(BlockStateNames::BUTTON_PRESSED_BIT));
+	}
+
+	/** @throws BlockStateDeserializeException */
+	public static function decodeCandle(Candle $block, BlockStateReader $in) : Candle{
+		return $block
+			->setCount($in->readBoundedInt(StateNames::CANDLES, 0, 3) + 1)
+			->setLit($in->readBool(StateNames::LIT));
 	}
 
 	/**
@@ -83,6 +98,30 @@ final class BlockStateDeserializerHelper{
 			->setFacing($in->readLegacyHorizontalFacing())
 			->setPowered($in->readBool(BlockStateNames::OUTPUT_LIT_BIT))
 			->setSubtractMode($in->readBool(BlockStateNames::OUTPUT_SUBTRACT_BIT));
+	}
+
+	/**
+	 * @phpstan-template TBlock of Copper|CopperSlab|CopperStairs
+	 *
+	 * @phpstan-param TBlock $block
+	 * @phpstan-return TBlock
+	 */
+	public static function decodeCopper(Copper|CopperSlab|CopperStairs $block, CopperOxidation $oxidation) : Copper|CopperSlab|CopperStairs{
+		$block->setOxidation($oxidation);
+		$block->setWaxed(false);
+		return $block;
+	}
+
+	/**
+	 * @phpstan-template TBlock of Copper|CopperSlab|CopperStairs
+	 *
+	 * @phpstan-param TBlock $block
+	 * @phpstan-return TBlock
+	 */
+	public static function decodeWaxedCopper(Copper|CopperSlab|CopperStairs $block, CopperOxidation $oxidation) : Copper|CopperSlab|CopperStairs{
+		$block->setOxidation($oxidation);
+		$block->setWaxed(true);
+		return $block;
 	}
 
 	/** @throws BlockStateDeserializeException */
@@ -131,6 +170,14 @@ final class BlockStateDeserializerHelper{
 		return VanillaBlocks::GLAZED_TERRACOTTA()
 			->setColor($color)
 			->setFacing($in->readHorizontalFacing());
+	}
+
+	public static function decodeItemFrame(BlockStateReader $in, bool $glowing) : ItemFrame{
+		$in->todo(StateNames::ITEM_FRAME_PHOTO_BIT); //TODO: not sure what the point of this is
+		return Blocks::ITEM_FRAME()
+			->setFacing($in->readFacingDirection())
+			->setHasMap($in->readBool(StateNames::ITEM_FRAME_MAP_BIT))
+			->setGlowing($glowing);
 	}
 
 	/** @throws BlockStateDeserializeException */

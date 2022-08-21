@@ -200,6 +200,10 @@ class ItemEntity extends Entity{
 		return $this->item;
 	}
 
+	public function isFireProof() : bool{
+		return $this->item->isFireProof();
+	}
+
 	public function canCollideWith(Entity $entity) : bool{
 		return false;
 	}

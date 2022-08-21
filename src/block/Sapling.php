@@ -42,19 +42,15 @@ class Sapling extends Flowable{
 
 	private TreeType $treeType;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, TreeType $treeType){
-		parent::__construct($idInfo, $name, $breakInfo);
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, TreeType $treeType){
+		parent::__construct($idInfo, $name, $typeInfo);
 		$this->treeType = $treeType;
 	}
 
 	public function getRequiredStateDataBits() : int{ return 1; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->ready = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeBool($this->ready);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->bool($this->ready);
 	}
 
 	public function isReady() : bool{ return $this->ready; }
@@ -67,14 +63,14 @@ class Sapling extends Flowable{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->getTypeId() === BlockTypeIds::GRASS || $down->getTypeId() === BlockTypeIds::DIRT || $down->getTypeId() === BlockTypeIds::FARMLAND){
+		if($down->hasTypeTag(BlockTypeTags::DIRT) || $down->hasTypeTag(BlockTypeTags::MUD)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
 		return false;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer && $this->grow($player)){
 			$item->pop();
 
@@ -85,7 +81,8 @@ class Sapling extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->isTransparent()){
+		$down = $this->getSide(Facing::DOWN);
+		if(!$down->hasTypeTag(BlockTypeTags::DIRT) && !$down->hasTypeTag(BlockTypeTags::MUD)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -95,12 +92,13 @@ class Sapling extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->position->getWorld()->getFullLightAt($this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ()) >= 8 && mt_rand(1, 7) === 1){
+		$world = $this->position->getWorld();
+		if($world->getFullLightAt($this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ()) >= 8 && mt_rand(1, 7) === 1){
 			if($this->ready){
 				$this->grow(null);
 			}else{
 				$this->ready = true;
-				$this->position->getWorld()->setBlock($this->position, $this);
+				$world->setBlock($this->position, $this);
 			}
 		}
 	}

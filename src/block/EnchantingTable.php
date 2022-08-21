@@ -44,7 +44,7 @@ class EnchantingTable extends Transparent{
 		return SupportType::NONE();
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 			//TODO lock
 

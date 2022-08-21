@@ -57,20 +57,22 @@ abstract class BaseSign extends Transparent{
 	/**
 	 * @param \Closure() : Item $asItemCallback
 	 */
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, WoodType $woodType, \Closure $asItemCallback){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, WoodType $woodType, \Closure $asItemCallback){
 		$this->woodType = $woodType;
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 		$this->text = new SignText();
 		$this->asItemCallback = $asItemCallback;
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileSign){
 			$this->text = $tile->getText();
 			$this->editorEntityRuntimeId = $tile->getEditorEntityRuntimeId();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{

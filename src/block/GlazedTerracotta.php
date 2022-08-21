@@ -33,8 +33,8 @@ class GlazedTerracotta extends Opaque{
 	use FacesOppositePlacingPlayerTrait;
 	use HorizontalFacingTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->color = DyeColor::BLACK();
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 }

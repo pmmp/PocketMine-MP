@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block;
 
+use function count;
+
 final class CachingBlockStateDeserializer implements DelegatingBlockStateDeserializer{
 
 	/**
@@ -36,7 +38,7 @@ final class CachingBlockStateDeserializer implements DelegatingBlockStateDeseria
 	){}
 
 	public function deserialize(BlockStateData $stateData) : int{
-		if($stateData->getStates()->count() === 0){
+		if(count($stateData->getStates()) === 0){
 			//if a block has zero properties, we can keep a map of string ID -> internal blockstate ID
 			return $this->simpleCache[$stateData->getName()] ??= $this->realDeserializer->deserialize($stateData);
 		}

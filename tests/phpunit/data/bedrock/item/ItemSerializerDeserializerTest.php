@@ -25,7 +25,7 @@ namespace pocketmine\data\bedrock\item;
 
 use PHPUnit\Framework\TestCase;
 use pocketmine\block\BlockFactory;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
 
 final class ItemSerializerDeserializerTest extends TestCase{
@@ -39,7 +39,7 @@ final class ItemSerializerDeserializerTest extends TestCase{
 	}
 
 	public function testAllVanillaItemsSerializableAndDeserializable() : void{
-		foreach(ItemFactory::getInstance()->getAllKnownTypes() as $item){
+		foreach(VanillaItems::getAll() as $item){
 			if($item->isNull()){
 				continue;
 			}

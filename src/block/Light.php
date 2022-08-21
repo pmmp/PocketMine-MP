@@ -37,12 +37,8 @@ final class Light extends Flowable{
 
 	public function getRequiredTypeDataBits() : int{ return 4; }
 
-	protected function decodeType(RuntimeDataReader $r) : void{
-		$this->level = $r->readBoundedInt(4, self::MIN_LIGHT_LEVEL, self::MAX_LIGHT_LEVEL);
-	}
-
-	protected function encodeType(RuntimeDataWriter $w) : void{
-		$w->writeInt(4, $this->level);
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(4, self::MIN_LIGHT_LEVEL, self::MAX_LIGHT_LEVEL, $this->level);
 	}
 
 	public function getLightLevel() : int{ return $this->level; }
@@ -63,7 +59,7 @@ final class Light extends Flowable{
 		return $blockReplace->canBeReplaced() && $blockReplace->getTypeId() !== $this->getTypeId();
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->level = $this->level === self::MAX_LIGHT_LEVEL ?
 			self::MIN_LIGHT_LEVEL :
 			$this->level + 1;

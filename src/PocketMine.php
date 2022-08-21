@@ -37,6 +37,7 @@ namespace pocketmine {
 	use Webmozart\PathUtil\Path;
 	use function defined;
 	use function extension_loaded;
+	use function function_exists;
 	use function getcwd;
 	use function phpversion;
 	use function preg_match;
@@ -160,7 +161,7 @@ namespace pocketmine {
 		if(PHP_DEBUG !== 0){
 			$logger->warning("This PHP binary was compiled in debug mode. This has a major impact on performance.");
 		}
-		if(extension_loaded("xdebug")){
+		if(extension_loaded("xdebug") && (!function_exists('xdebug_info') || count(xdebug_info('mode')) !== 0)){
 			$logger->warning("Xdebug extension is enabled. This has a major impact on performance.");
 		}
 		if(((int) ini_get('zend.assertions')) !== -1){

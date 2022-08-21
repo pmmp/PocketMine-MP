@@ -43,21 +43,16 @@ class Leaves extends Transparent{
 	protected bool $noDecay = false;
 	protected bool $checkDecay = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, TreeType $treeType){
-		parent::__construct($idInfo, $name, $breakInfo);
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, TreeType $treeType){
+		parent::__construct($idInfo, $name, $typeInfo);
 		$this->treeType = $treeType;
 	}
 
 	public function getRequiredStateDataBits() : int{ return 2; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->noDecay = $r->readBool();
-		$this->checkDecay = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeBool($this->noDecay);
-		$w->writeBool($this->checkDecay);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->bool($this->noDecay);
+		$w->bool($this->checkDecay);
 	}
 
 	public function isNoDecay() : bool{ return $this->noDecay; }
@@ -122,11 +117,12 @@ class Leaves extends Transparent{
 		if(!$this->noDecay && $this->checkDecay){
 			$ev = new LeavesDecayEvent($this);
 			$ev->call();
+			$world = $this->position->getWorld();
 			if($ev->isCancelled() || $this->findLog($this->position)){
 				$this->checkDecay = false;
-				$this->position->getWorld()->setBlock($this->position, $this, false);
+				$world->setBlock($this->position, $this, false);
 			}else{
-				$this->position->getWorld()->useBreakOn($this->position);
+				$world->useBreakOn($this->position);
 			}
 		}
 	}

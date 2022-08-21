@@ -29,9 +29,9 @@ use pocketmine\block\utils\DyeColor;
 class Wool extends Opaque{
 	use ColoredTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->color = DyeColor::WHITE();
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
 	public function getFlameEncouragement() : int{

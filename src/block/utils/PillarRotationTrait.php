@@ -38,12 +38,8 @@ trait PillarRotationTrait{
 
 	public function getRequiredStateDataBits() : int{ return 2; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->axis = $r->readAxis();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeAxis($this->axis);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->axis($this->axis);
 	}
 
 	/** @see Axis */

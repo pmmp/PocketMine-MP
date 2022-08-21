@@ -41,14 +41,9 @@ class Barrel extends Opaque{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->setFacing($r->readFacing());
-		$this->setOpen($r->readBool());
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeFacing($this->getFacing());
-		$w->writeBool($this->isOpen());
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->facing($this->facing);
+		$w->bool($this->open);
 	}
 
 	public function isOpen() : bool{
@@ -81,7 +76,7 @@ class Barrel extends Opaque{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 			$barrel = $this->position->getWorld()->getTile($this->position);
 			if($barrel instanceof TileBarrel){

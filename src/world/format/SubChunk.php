@@ -32,22 +32,17 @@ class SubChunk{
 	public const COORD_MASK = ~(~0 << self::COORD_BIT_SIZE);
 	public const EDGE_LENGTH = 1 << self::COORD_BIT_SIZE;
 
-	/** @var PalettedBlockArray[] */
-	private array $blockLayers;
-
 	/**
 	 * SubChunk constructor.
 	 *
-	 * @param PalettedBlockArray[] $blocks
+	 * @param PalettedBlockArray[] $blockLayers
 	 */
 	public function __construct(
 		private int $emptyBlockId,
-		array $blocks, //TODO: promote this once we can break BC again (needs a name change)
+		private array $blockLayers,
 		private ?LightArray $skyLight = null,
 		private ?LightArray $blockLight = null
-	){
-		$this->blockLayers = $blocks;
-	}
+	){}
 
 	/**
 	 * Returns whether this subchunk contains any non-air blocks.

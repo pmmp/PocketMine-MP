@@ -41,25 +41,28 @@ class ItemFrame extends Flowable{
 
 	public const ROTATIONS = 8;
 
+	protected bool $glowing = false;
+
 	protected bool $hasMap = false; //makes frame appear large if set
 
 	protected ?Item $framedItem = null;
 	protected int $itemRotation = 0;
 	protected float $itemDropChance = 1.0;
 
+	public function getRequiredTypeDataBits() : int{ return 1; }
+
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->bool($this->glowing);
+	}
+
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->facing = $r->readFacing();
-		$this->hasMap = $r->readBool();
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->facing($this->facing);
+		$w->bool($this->hasMap);
 	}
 
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeFacing($this->facing);
-		$w->writeBool($this->hasMap);
-	}
-
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileItemFrame){
@@ -70,6 +73,8 @@ class ItemFrame extends Flowable{
 			$this->itemRotation = $tile->getItemRotation() % self::ROTATIONS;
 			$this->itemDropChance = $tile->getItemDropChance();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{
@@ -133,7 +138,15 @@ class ItemFrame extends Flowable{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function isGlowing() : bool{ return $this->glowing; }
+
+	/** @return $this */
+	public function setGlowing(bool $glowing) : self{
+		$this->glowing = $glowing;
+		return $this;
+	}
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->framedItem !== null){
 			$this->itemRotation = ($this->itemRotation + 1) % self::ROTATIONS;
 		}elseif(!$item->isNull()){
@@ -151,11 +164,12 @@ class ItemFrame extends Flowable{
 		if($this->framedItem === null){
 			return false;
 		}
+		$world = $this->position->getWorld();
 		if(lcg_value() <= $this->itemDropChance){
-			$this->position->getWorld()->dropItem($this->position->add(0.5, 0.5, 0.5), clone $this->framedItem);
+			$world->dropItem($this->position->add(0.5, 0.5, 0.5), clone $this->framedItem);
 		}
 		$this->setFramedItem(null);
-		$this->position->getWorld()->setBlock($this->position, $this);
+		$world->setBlock($this->position, $this);
 		return true;
 	}
 

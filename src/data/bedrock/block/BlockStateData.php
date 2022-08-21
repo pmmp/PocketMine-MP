@@ -25,6 +25,8 @@ namespace pocketmine\data\bedrock\block;
 
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\Tag;
+use pocketmine\utils\Utils;
 use function array_keys;
 use function count;
 use function implode;
@@ -46,15 +48,27 @@ final class BlockStateData{
 	public const TAG_STATES = "states";
 	public const TAG_VERSION = "version";
 
+	/**
+	 * @param Tag[] $states
+	 * @phpstan-param array<string, Tag> $states
+	 */
 	public function __construct(
 		private string $name,
-		private CompoundTag $states,
+		private array $states,
 		private int $version
 	){}
 
 	public function getName() : string{ return $this->name; }
 
-	public function getStates() : CompoundTag{ return $this->states; }
+	/**
+	 * @return Tag[]
+	 * @phpstan-return array<string, Tag>
+	 */
+	public function getStates() : array{ return $this->states; }
+
+	public function getState(string $name) : ?Tag{
+		return $this->states[$name] ?? null;
+	}
 
 	public function getVersion() : int{ return $this->version; }
 
@@ -76,20 +90,30 @@ final class BlockStateData{
 			throw new BlockStateDeserializeException("Unexpected extra keys: " . implode(", ", array_keys($allKeys)));
 		}
 
-		return new self($name, $states, $version);
+		return new self($name, $states->getValue(), $version);
 	}
 
 	public function toNbt() : CompoundTag{
+		$statesTag = CompoundTag::create();
+		foreach(Utils::stringifyKeys($this->states) as $key => $value){
+			$statesTag->setTag($key, $value);
+		}
 		return CompoundTag::create()
 			->setString(self::TAG_NAME, $this->name)
 			->setInt(self::TAG_VERSION, $this->version)
-			->setTag(self::TAG_STATES, $this->states);
+			->setTag(self::TAG_STATES, $statesTag);
 	}
 
 	public function equals(self $that) : bool{
-		return
-			$this->name === $that->name &&
-			$this->states->equals($that->states) &&
-			$this->version === $that->version;
+		if($this->name !== $that->name || count($this->states) !== count($that->states)){
+			return false;
+		}
+		foreach(Utils::stringifyKeys($this->states) as $k => $v){
+			if(!isset($that->states[$k]) || !$that->states[$k]->equals($v)){
+				return false;
+			}
+		}
+
+		return true;
 	}
 }

@@ -25,7 +25,6 @@ namespace pocketmine\data\bedrock\block\upgrade;
 
 use PHPUnit\Framework\TestCase;
 use pocketmine\data\bedrock\block\BlockStateData;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use const PHP_INT_MAX;
 
@@ -81,13 +80,13 @@ class BlockStateUpgraderTest extends TestCase{
 	}
 
 	private function getEmptyPreimage() : BlockStateData{
-		return new BlockStateData(self::TEST_BLOCK, CompoundTag::create(), self::TEST_VERSION);
+		return new BlockStateData(self::TEST_BLOCK, [], self::TEST_VERSION);
 	}
 
 	private function getPreimageOneProperty(string $propertyName, int $value) : BlockStateData{
 		return new BlockStateData(
 			self::TEST_BLOCK,
-			CompoundTag::create()->setInt($propertyName, $value),
+			[$propertyName => new IntTag($value)],
 			self::TEST_VERSION
 		);
 	}
@@ -98,7 +97,7 @@ class BlockStateUpgraderTest extends TestCase{
 		$getStateData = fn() => $this->getEmptyPreimage();
 		$upgradedStateData = $this->upgrade($getStateData(), $getStateData);
 
-		self::assertSame(self::TEST_PROPERTY_VALUE_1, $upgradedStateData->getStates()->getTag(self::TEST_PROPERTY)?->getValue());
+		self::assertSame(self::TEST_PROPERTY_VALUE_1, $upgradedStateData->getState(self::TEST_PROPERTY)?->getValue());
 	}
 
 	public function testAddPropertyAlreadyExists() : void{
@@ -132,7 +131,7 @@ class BlockStateUpgraderTest extends TestCase{
 
 		$upgradedStateData = $this->upgrade($getStateData(), $getStateData);
 
-		self::assertNull($upgradedStateData->getStates()->getTag(self::TEST_PROPERTY));
+		self::assertNull($upgradedStateData->getState(self::TEST_PROPERTY));
 	}
 
 	private function prepareRenamePropertySchema(BlockStateUpgradeSchema $schema) : void{
@@ -157,7 +156,7 @@ class BlockStateUpgraderTest extends TestCase{
 
 		$upgradedStateData = $this->upgrade($getStateData(), $getStateData);
 
-		self::assertSame($valueAfter, $upgradedStateData->getStates()->getTag(self::TEST_PROPERTY_2)?->getValue());
+		self::assertSame($valueAfter, $upgradedStateData->getState(self::TEST_PROPERTY_2)?->getValue());
 	}
 
 	private function prepareRemapPropertyValueSchema(BlockStateUpgradeSchema $schema) : void{
@@ -193,7 +192,7 @@ class BlockStateUpgraderTest extends TestCase{
 
 		$upgradedStateData = $this->upgrade($getStateData(), $getStateData);
 
-		self::assertSame($upgradedStateData->getStates()->getTag(self::TEST_PROPERTY)?->getValue(), $valueAfter);
+		self::assertSame($upgradedStateData->getState(self::TEST_PROPERTY)?->getValue(), $valueAfter);
 	}
 
 	/**
@@ -207,7 +206,7 @@ class BlockStateUpgraderTest extends TestCase{
 
 		$upgradedStateData = $this->upgrade($getStateData(), $getStateData);
 
-		self::assertSame($upgradedStateData->getStates()->getTag(self::TEST_PROPERTY_2)?->getValue(), $valueAfter);
+		self::assertSame($upgradedStateData->getState(self::TEST_PROPERTY_2)?->getValue(), $valueAfter);
 	}
 
 	/**
@@ -228,7 +227,7 @@ class BlockStateUpgraderTest extends TestCase{
 
 		$getStateData = fn() => new BlockStateData(
 			self::TEST_BLOCK,
-			CompoundTag::create(),
+			[],
 			$stateVersion
 		);
 

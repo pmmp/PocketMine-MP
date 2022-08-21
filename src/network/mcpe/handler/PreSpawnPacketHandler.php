@@ -60,15 +60,16 @@ class PreSpawnPacketHandler extends PacketHandler{
 
 	public function setUp() : void{
 		$location = $this->player->getLocation();
+		$world = $location->getWorld();
 
 		$levelSettings = new LevelSettings();
 		$levelSettings->seed = -1;
 		$levelSettings->spawnSettings = new SpawnSettings(SpawnSettings::BIOME_TYPE_DEFAULT, "", DimensionIds::OVERWORLD); //TODO: implement this properly
 		$levelSettings->worldGamemode = TypeConverter::getInstance()->coreGameModeToProtocol($this->server->getGamemode());
-		$levelSettings->difficulty = $location->getWorld()->getDifficulty();
-		$levelSettings->spawnPosition = BlockPosition::fromVector3($location->getWorld()->getSpawnLocation());
+		$levelSettings->difficulty = $world->getDifficulty();
+		$levelSettings->spawnPosition = BlockPosition::fromVector3($world->getSpawnLocation());
 		$levelSettings->hasAchievementsDisabled = true;
-		$levelSettings->time = $location->getWorld()->getTime();
+		$levelSettings->time = $world->getTime();
 		$levelSettings->eduEditionOffer = 0;
 		$levelSettings->rainLevel = 0; //TODO: implement these properly
 		$levelSettings->lightningLevel = 0;
@@ -98,16 +99,18 @@ class PreSpawnPacketHandler extends PacketHandler{
 			false,
 			sprintf("%s %s", VersionInfo::NAME, VersionInfo::VERSION()->getFullVersion(true)),
 			Uuid::fromString(Uuid::NIL),
+			false,
 			[],
 			0,
-			GlobalItemTypeDictionary::getInstance()->getDictionary()->getEntries()
+			GlobalItemTypeDictionary::getInstance()->getDictionary()->getEntries(),
 		));
 
 		$this->session->sendDataPacket(StaticPacketCache::getInstance()->getAvailableActorIdentifiers());
 		$this->session->sendDataPacket(StaticPacketCache::getInstance()->getBiomeDefs());
 		$this->session->syncAttributes($this->player, $this->player->getAttributeMap()->getAll());
 		$this->session->syncAvailableCommands();
-		$this->session->syncAdventureSettings($this->player);
+		$this->session->syncAbilities($this->player);
+		$this->session->syncAdventureSettings();
 		foreach($this->player->getEffects()->all() as $effect){
 			$this->session->onEntityEffectAdded($this->player, $effect, false);
 		}

@@ -26,15 +26,16 @@ namespace pocketmine\world\format\io;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateDeserializer;
 use pocketmine\data\bedrock\block\BlockStateSerializer;
+use pocketmine\data\bedrock\block\BlockTypeNames;
 use pocketmine\data\bedrock\block\CachingBlockStateDeserializer;
 use pocketmine\data\bedrock\block\CachingBlockStateSerializer;
 use pocketmine\data\bedrock\block\convert\BlockObjectToBlockStateSerializer;
 use pocketmine\data\bedrock\block\convert\BlockStateToBlockObjectDeserializer;
 use pocketmine\data\bedrock\block\upgrade\BlockDataUpgrader;
+use pocketmine\data\bedrock\block\upgrade\BlockIdMetaUpgrader;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgrader;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaUtils;
 use pocketmine\data\bedrock\block\upgrade\LegacyBlockIdToStringIdMap;
-use pocketmine\data\bedrock\block\upgrade\LegacyBlockStateMapper;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use Webmozart\PathUtil\Path;
 use function file_get_contents;
@@ -54,6 +55,8 @@ final class GlobalBlockStateHandlers{
 
 	private static ?BlockDataUpgrader $blockDataUpgrader = null;
 
+	private static ?BlockStateData $unknownBlockStateData = null;
+
 	public static function getDeserializer() : BlockStateDeserializer{
 		return self::$blockStateDeserializer ??= new CachingBlockStateDeserializer(new BlockStateToBlockObjectDeserializer());
 	}
@@ -69,7 +72,7 @@ final class GlobalBlockStateHandlers{
 				BlockStateData::CURRENT_VERSION
 			));
 			self::$blockDataUpgrader = new BlockDataUpgrader(
-				LegacyBlockStateMapper::loadFromString(
+				BlockIdMetaUpgrader::loadFromString(
 					ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents(Path::join(
 						BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH,
 						'1.12.0_to_1.18.10_blockstate_map.bin'
@@ -82,5 +85,9 @@ final class GlobalBlockStateHandlers{
 		}
 
 		return self::$blockDataUpgrader;
+	}
+
+	public static function getUnknownBlockStateData() : BlockStateData{
+		return self::$unknownBlockStateData ??= new BlockStateData(BlockTypeNames::INFO_UPDATE, [], BlockStateData::CURRENT_VERSION);
 	}
 }

@@ -40,35 +40,32 @@ class Sugarcane extends Flowable{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->age = $r->readBoundedInt(4, 0, self::MAX_AGE);
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeInt(4, $this->age);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(4, 0, self::MAX_AGE, $this->age);
 	}
 
 	private function grow() : bool{
 		$grew = false;
+		$world = $this->position->getWorld();
 		for($y = 1; $y < 3; ++$y){
-			if(!$this->position->getWorld()->isInWorld($this->position->x, $this->position->y + $y, $this->position->z)){
+			if(!$world->isInWorld($this->position->x, $this->position->y + $y, $this->position->z)){
 				break;
 			}
-			$b = $this->position->getWorld()->getBlockAt($this->position->x, $this->position->y + $y, $this->position->z);
+			$b = $world->getBlockAt($this->position->x, $this->position->y + $y, $this->position->z);
 			if($b->getTypeId() === BlockTypeIds::AIR){
 				$ev = new BlockGrowEvent($b, VanillaBlocks::SUGARCANE());
 				$ev->call();
 				if($ev->isCancelled()){
 					break;
 				}
-				$this->position->getWorld()->setBlock($b->position, $ev->getNewState());
+				$world->setBlock($b->position, $ev->getNewState());
 				$grew = true;
 			}else{
 				break;
 			}
 		}
 		$this->age = 0;
-		$this->position->getWorld()->setBlock($this->position, $this);
+		$world->setBlock($this->position, $this);
 		return $grew;
 	}
 
@@ -83,7 +80,7 @@ class Sugarcane extends Flowable{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer){
 			if(!$this->getSide(Facing::DOWN)->isSameType($this) && $this->grow()){
 				$item->pop();
@@ -95,9 +92,16 @@ class Sugarcane extends Flowable{
 		return false;
 	}
 
+	private function canBeSupportedBy(Block $block) : bool{
+		return
+			$block->hasTypeTag(BlockTypeTags::MUD) ||
+			$block->hasTypeTag(BlockTypeTags::DIRT) ||
+			$block->hasTypeTag(BlockTypeTags::SAND);
+	}
+
 	public function onNearbyBlockChange() : void{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->isTransparent() && !$down->isSameType($this)){
+		if(!$down->isSameType($this) && !$this->canBeSupportedBy($down)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -121,9 +125,10 @@ class Sugarcane extends Flowable{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->isSameType($this)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif($down->getTypeId() === BlockTypeIds::GRASS || $down->getTypeId() === BlockTypeIds::DIRT || $down->getTypeId() === BlockTypeIds::SAND || $down->getTypeId() === BlockTypeIds::RED_SAND || $down->getTypeId() === BlockTypeIds::PODZOL){
+		}elseif($this->canBeSupportedBy($down)){
 			foreach(Facing::HORIZONTAL as $side){
-				if($down->getSide($side) instanceof Water){
+				$sideBlock = $down->getSide($side);
+				if($sideBlock instanceof Water || $sideBlock instanceof FrostedIce){
 					return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 				}
 			}

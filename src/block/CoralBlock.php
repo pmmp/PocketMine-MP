@@ -31,9 +31,9 @@ use function mt_rand;
 final class CoralBlock extends Opaque{
 	use CoralTypeTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->coralType = CoralType::TUBE();
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
 	public function onNearbyBlockChange() : void{

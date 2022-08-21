@@ -43,16 +43,10 @@ class Trapdoor extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->facing = $r->readHorizontalFacing();
-		$this->top = $r->readBool();
-		$this->open = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeHorizontalFacing($this->facing);
-		$w->writeBool($this->top);
-		$w->writeBool($this->open);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->bool($this->top);
+		$w->bool($this->open);
 	}
 
 	public function isOpen() : bool{ return $this->open; }
@@ -93,10 +87,11 @@ class Trapdoor extends Transparent{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->open = !$this->open;
-		$this->position->getWorld()->setBlock($this->position, $this);
-		$this->position->getWorld()->addSound($this->position, new DoorSound());
+		$world = $this->position->getWorld();
+		$world->setBlock($this->position, $this);
+		$world->addSound($this->position, new DoorSound());
 		return true;
 	}
 }

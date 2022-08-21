@@ -47,25 +47,20 @@ class RedstoneComparator extends Flowable{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->facing = $r->readHorizontalFacing();
-		$this->isSubtractMode = $r->readBool();
-		$this->powered = $r->readBool();
-		//TODO: this doesn't call the decoder from AnalogRedstoneSignalEmitter
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->bool($this->isSubtractMode);
+		$w->bool($this->powered);
 	}
 
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeHorizontalFacing($this->facing);
-		$w->writeBool($this->isSubtractMode);
-		$w->writeBool($this->powered);
-	}
-
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof Comparator){
 			$this->signalStrength = $tile->getSignalStrength();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{
@@ -103,7 +98,7 @@ class RedstoneComparator extends Flowable{
 		return false;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->isSubtractMode = !$this->isSubtractMode;
 		$this->position->getWorld()->setBlock($this->position, $this);
 		return true;
