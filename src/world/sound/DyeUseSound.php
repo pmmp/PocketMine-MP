@@ -21,28 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\utils;
+namespace pocketmine\world\sound;
 
-trait SingletonTrait{
-	/** @var self|null */
-	private static $instance = null;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelEvent;
 
-	private static function make() : self{
-		return new self();
-	}
+final class DyeUseSound implements Sound{
 
-	public static function getInstance() : self{
-		if(self::$instance === null){
-			self::$instance = self::make();
-		}
-		return self::$instance;
-	}
-
-	public static function setInstance(self $instance) : void{
-		self::$instance = $instance;
-	}
-
-	public static function reset() : void{
-		self::$instance = null;
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::create(LevelEvent::SOUND_DYE_USED, 0, $pos)];
 	}
 }

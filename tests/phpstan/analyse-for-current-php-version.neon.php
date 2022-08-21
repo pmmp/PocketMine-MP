@@ -21,28 +21,12 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\utils;
-
-trait SingletonTrait{
-	/** @var self|null */
-	private static $instance = null;
-
-	private static function make() : self{
-		return new self();
-	}
-
-	public static function getInstance() : self{
-		if(self::$instance === null){
-			self::$instance = self::make();
-		}
-		return self::$instance;
-	}
-
-	public static function setInstance(self $instance) : void{
-		self::$instance = $instance;
-	}
-
-	public static function reset() : void{
-		self::$instance = null;
-	}
-}
+/*
+ * This hack works around a "feature" in PHPStan which locks in analysis version based on platform.php in composer.json
+ * See https://github.com/phpstan/phpstan/issues/7701 for details
+ */
+return [
+	'parameters' => [
+		'phpVersion' => PHP_VERSION_ID
+	]
+];
