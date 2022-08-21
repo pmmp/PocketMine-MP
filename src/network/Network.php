@@ -144,9 +144,9 @@ class Network{
 	/**
 	 * Get the server sub name shown in the interface Query.
 	 */
-	public function getSubName() : string{
+	public function getSubName() : ?string{
 		return $this->subName;
-	}
+	}y
 
 	public function updateName() : void{
 		foreach($this->interfaces as $interface){
