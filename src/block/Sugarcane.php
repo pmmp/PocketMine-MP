@@ -127,7 +127,8 @@ class Sugarcane extends Flowable{
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}elseif($this->canBeSupportedBy($down)){
 			foreach(Facing::HORIZONTAL as $side){
-				if($down->getSide($side) instanceof Water){
+				$sideBlock = $down->getSide($side);
+				if($sideBlock instanceof Water || $sideBlock instanceof FrostedIce){
 					return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 				}
 			}
