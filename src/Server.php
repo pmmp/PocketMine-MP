@@ -382,10 +382,16 @@ class Server{
 		return $this->configGroup->getConfigBool("hardcore", false);
 	}
 
+	/**
+	 * Get the motd shown in the server.
+	 */
 	public function getMotd() : string{
 		return $this->configGroup->getConfigString("motd", self::DEFAULT_SERVER_NAME);
 	}
 
+	/**
+	 * Get the sub motd shown in the server.
+	 */
 	public function getSubMotd() : string{
 		return $this->configGroup->getConfigString("sub-motd", $this->getName());
 	}
