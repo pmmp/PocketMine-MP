@@ -38,7 +38,6 @@ use pocketmine\utils\TextFormat;
 use function array_slice;
 use function count;
 use function implode;
-use const PHP_INT_MAX;
 
 class GiveCommand extends VanillaCommand{
 
