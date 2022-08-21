@@ -127,17 +127,23 @@ class Network{
 	}
 
 	/**
-	 * Sets the server name and sub name shown on each interface Query
+	 * Sets the server name and server sub name shown on each interface Query
 	 */
 	public function setName(string $name, string $subName = null) : void{
 		$this->name = $name;
 		$this->subName = $subName;
 	}
 
+	/**
+	 * Get the server name shown in the interface Query.
+	 */
 	public function getName() : string{
 		return $this->name;
 	}
 
+	/**
+	 * Get the server sub name shown in the interface Query.
+	 */
 	public function getSubName() : string{
 		return $this->subName;
 	}
