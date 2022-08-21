@@ -38,6 +38,7 @@ use pocketmine\utils\TextFormat;
 use function array_slice;
 use function count;
 use function implode;
+use const PHP_INT_MAX;
 
 class GiveCommand extends VanillaCommand{
 
@@ -75,7 +76,12 @@ class GiveCommand extends VanillaCommand{
 		if(!isset($args[2])){
 			$item->setCount($item->getMaxStackSize());
 		}else{
-			$item->setCount((int) $args[2]);
+			//TODO: PHP_INT_MAX is probably a bit too much, but I don't know what the vanilla limit is
+			$count = $this->getBoundedInt($sender, $args[2], 1, PHP_INT_MAX);
+			if($count === null){
+				return true;
+			}
+			$item->setCount($count);
 		}
 
 		if(isset($args[3])){
