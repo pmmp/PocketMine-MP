@@ -139,37 +139,29 @@ abstract class BaseSign extends Transparent{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player !== null){
-			if($item instanceof Dye || $item->getTypeId() === ItemTypeIds::BONE_MEAL || $item->getTypeId() === ItemTypeIds::LAPIS_LAZULI){
-				if($item instanceof Dye){
-					$dyeColor = $item->getColor();
-				}elseif($item->getTypeId() === ItemTypeIds::BONE_MEAL){
-					$dyeColor = DyeColor::WHITE();
-				}elseif($item->getTypeId() === ItemTypeIds::LAPIS_LAZULI){
-					$dyeColor = DyeColor::BLUE();
-				}else{
-					return false;
-				}
-				$oldColor = $this->text->getBaseColor();
-
-				$color = $dyeColor->getRgbValue();
-
-				if($dyeColor->equals(DyeColor::BLACK())){
-					$color = new Color(0, 0, 0);
-				}
-				if($color->toARGB() === $oldColor->toARGB()){
-					return false;
-				}
-
-				if($this->doSignChange(new SignText($this->text->getLines(), $color, $this->text->isGlowing()), $player, $item)){
-					$this->position->getWorld()->addSound($this->position, new DyeUseSound());
-					return true;
-				}
-			}elseif($item->getTypeId() === ItemTypeIds::INK_SAC){
-				return $this->changeSignGlowingState(false, $player, $item);
-			}elseif($item->getTypeId() === ItemTypeIds::GLOW_INK_SAC){
-				return $this->changeSignGlowingState(true, $player, $item);
+		if($player === null){
+			return false;
+		}
+		$dyeColor = $item instanceof Dye ? $item->getColor() : match($item->getTypeId()){
+			ItemTypeIds::BONE_MEAL => DyeColor::WHITE(),
+			ItemTypeIds::LAPIS_LAZULI => DyeColor::BLUE(),
+			ItemTypeIds::COCOA_BEANS => DyeColor::BROWN(),
+			default => null
+		};
+		if($dyeColor !== null){
+			$color = $dyeColor->equals(DyeColor::BLACK()) ? new Color(0, 0, 0) : $dyeColor->getRgbValue();
+			if($color->toARGB() === $this->text->getBaseColor()->toARGB()){
+				return false;
 			}
+
+			if($this->doSignChange(new SignText($this->text->getLines(), $color, $this->text->isGlowing()), $player, $item)){
+				$this->position->getWorld()->addSound($this->position, new DyeUseSound());
+				return true;
+			}
+		}elseif($item->getTypeId() === ItemTypeIds::INK_SAC){
+			return $this->changeSignGlowingState(false, $player, $item);
+		}elseif($item->getTypeId() === ItemTypeIds::GLOW_INK_SAC){
+			return $this->changeSignGlowingState(true, $player, $item);
 		}
 		return false;
 	}
