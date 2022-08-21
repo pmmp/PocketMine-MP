@@ -66,10 +66,12 @@ class DeadBush extends Flowable{
 	}
 
 	private function isValidSupport(Block $block) : bool{
-		return $block->isSameType(VanillaBlocks::SAND())
-			|| $block->isSameType(VanillaBlocks::PODZOL())
-			|| $block->isSameType(VanillaBlocks::MYCELIUM())
-			|| $block->isSameType(VanillaBlocks::DIRT())
-			|| $block->isSameType(VanillaBlocks::HARDENED_CLAY());
+		$blockId = $block->getId();
+		return $blockId === BlockLegacyIds::SAND
+			|| $blockId === BlockLegacyIds::PODZOL
+			|| $blockId === BlockLegacyIds::MYCELIUM
+			|| $blockId === BlockLegacyIds::DIRT
+			|| $blockId === BlockLegacyIds::HARDENED_CLAY
+			|| $blockId === BlockLegacyIds::STAINED_HARDENED_CLAY;
 	}
 }
