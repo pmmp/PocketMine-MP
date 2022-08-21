@@ -130,6 +130,14 @@ abstract class BaseSign extends Transparent{
 		return false;
 	}
 
+	private function changeSignGlowingState(bool $glowing, Player $player, Item $item) : bool{
+		if($this->text->isGlowing() !== $glowing && $this->doSignChange(new SignText($this->text->getLines(), $this->text->getBaseColor(), $glowing), $player, $item)){
+			$this->position->getWorld()->addSound($this->position, new InkSacUseSound());
+			return true;
+		}
+		return false;
+	}
+
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
 			if($item instanceof Dye || $item->getTypeId() === ItemTypeIds::BONE_MEAL || $item->getTypeId() === ItemTypeIds::LAPIS_LAZULI){
@@ -159,17 +167,9 @@ abstract class BaseSign extends Transparent{
 					return true;
 				}
 			}elseif($item->getTypeId() === ItemTypeIds::INK_SAC){
-				if($this->text->isGlowing() && $this->doSignChange(new SignText($this->text->getLines(), $this->text->getBaseColor(), false), $player, $item)){
-					$this->position->getWorld()->addSound($this->position, new InkSacUseSound());
-					return true;
-				}
-				return false;
+				return $this->changeSignGlowingState(false, $player, $item);
 			}elseif($item->getTypeId() === ItemTypeIds::GLOW_INK_SAC){
-				if(!$this->text->isGlowing() && $this->doSignChange(new SignText($this->text->getLines(), $this->text->getBaseColor(), true), $player, $item)){
-					$this->position->getWorld()->addSound($this->position, new InkSacUseSound());
-					return true;
-				}
-				return false;
+				return $this->changeSignGlowingState(true, $player, $item);
 			}
 		}
 		return false;
