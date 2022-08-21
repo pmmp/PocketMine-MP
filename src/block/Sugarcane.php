@@ -51,25 +51,26 @@ class Sugarcane extends Flowable{
 
 	private function grow() : bool{
 		$grew = false;
+		$world = $this->position->getWorld();
 		for($y = 1; $y < 3; ++$y){
-			if(!$this->position->getWorld()->isInWorld($this->position->x, $this->position->y + $y, $this->position->z)){
+			if(!$world->isInWorld($this->position->x, $this->position->y + $y, $this->position->z)){
 				break;
 			}
-			$b = $this->position->getWorld()->getBlockAt($this->position->x, $this->position->y + $y, $this->position->z);
+			$b = $world->getBlockAt($this->position->x, $this->position->y + $y, $this->position->z);
 			if($b->getId() === BlockLegacyIds::AIR){
 				$ev = new BlockGrowEvent($b, VanillaBlocks::SUGARCANE());
 				$ev->call();
 				if($ev->isCancelled()){
 					break;
 				}
-				$this->position->getWorld()->setBlock($b->position, $ev->getNewState());
+				$world->setBlock($b->position, $ev->getNewState());
 				$grew = true;
 			}else{
 				break;
 			}
 		}
 		$this->age = 0;
-		$this->position->getWorld()->setBlock($this->position, $this);
+		$world->setBlock($this->position, $this);
 		return $grew;
 	}
 
@@ -98,7 +99,7 @@ class Sugarcane extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->isTransparent() && !$down->isSameType($this)){
+		if(!$this->isValidSupport($down)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -122,14 +123,26 @@ class Sugarcane extends Flowable{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->isSameType($this)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif($down->getId() === BlockLegacyIds::GRASS || $down->getId() === BlockLegacyIds::DIRT || $down->getId() === BlockLegacyIds::SAND || $down->getId() === BlockLegacyIds::PODZOL){
+		}elseif($this->isValidSupport($down)){
 			foreach(Facing::HORIZONTAL as $side){
-				if($down->getSide($side) instanceof Water){
+				$sideBlock = $down->getSide($side);
+				if($sideBlock instanceof Water || $sideBlock instanceof FrostedIce){
 					return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 				}
 			}
 		}
 
 		return false;
+	}
+
+	private function isValidSupport(Block $block) : bool{
+		$id = $block->getId();
+		//TODO: rooted dirt, moss block
+		return $block->isSameType($this)
+			|| $id === BlockLegacyIds::GRASS
+			|| $id === BlockLegacyIds::DIRT
+			|| $id === BlockLegacyIds::PODZOL
+			|| $id === BlockLegacyIds::MYCELIUM
+			|| $id === BlockLegacyIds::SAND;
 	}
 }
