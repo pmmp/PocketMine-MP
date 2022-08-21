@@ -38,7 +38,6 @@ use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\PlayerOffHandInventory;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
-use pocketmine\item\ItemTypeIds;
 use pocketmine\item\Totem;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
