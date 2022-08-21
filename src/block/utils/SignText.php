@@ -112,14 +112,15 @@ class SignText{
 	}
 
 	/**
-	 * Returns the base text color of sign.
+	 * Returns the base text color of sign. Color codes using the § escape character will override this color when used.
 	 */
 	public function getBaseColor() : Color{
 		return $this->baseColor;
 	}
 
 	/**
-	 * Returns whether the sign is glowed by the Dye.
+	 * Returns whether the sign text is glowing. When true, the text will have an outline (usually a darker tone of the
+	 * base color, or white for black text), and will glow in the dark, making it readable without any light sources.
 	 */
 	public function isGlowing() : bool{
 		return $this->glowing;
