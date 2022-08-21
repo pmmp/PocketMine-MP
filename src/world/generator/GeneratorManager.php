@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -37,7 +37,7 @@ final class GeneratorManager{
 	 * @var GeneratorManagerEntry[] name => classname mapping
 	 * @phpstan-var array<string, GeneratorManagerEntry>
 	 */
-	private $list = [];
+	private array $list = [];
 
 	public function __construct(){
 		$this->addGenerator(Flat::class, "flat", \Closure::fromCallable(function(string $preset) : ?InvalidGeneratorOptionsException{

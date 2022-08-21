@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -38,8 +38,7 @@ class FlowerPot extends Spawnable{
 	private const TAG_ITEM = "item";
 	private const TAG_ITEM_DATA = "mData";
 
-	/** @var Block|null */
-	private $plant = null;
+	private ?Block $plant = null;
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		if(($itemIdTag = $nbt->getTag(self::TAG_ITEM)) instanceof ShortTag && ($itemMetaTag = $nbt->getTag(self::TAG_ITEM_DATA)) instanceof IntTag){

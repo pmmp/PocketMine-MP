@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -71,30 +71,30 @@ use const LEVELDB_ZLIB_RAW_COMPRESSION;
 class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 	//According to Tomasso, these aren't supposed to be readable anymore. Thankfully he didn't change the readable ones...
-	protected const TAG_DATA_2D = "\x2d";
-	protected const TAG_DATA_2D_LEGACY = "\x2e";
-	protected const TAG_SUBCHUNK_PREFIX = "\x2f";
-	protected const TAG_LEGACY_TERRAIN = "0";
-	protected const TAG_BLOCK_ENTITY = "1";
-	protected const TAG_ENTITY = "2";
-	protected const TAG_PENDING_TICK = "3";
-	protected const TAG_BLOCK_EXTRA_DATA = "4";
-	protected const TAG_BIOME_STATE = "5";
-	protected const TAG_STATE_FINALISATION = "6";
+	protected const TAG_DATA_2D = ChunkDataKey::HEIGHTMAP_AND_2D_BIOMES;
+	protected const TAG_DATA_2D_LEGACY = ChunkDataKey::HEIGHTMAP_AND_2D_BIOME_COLORS;
+	protected const TAG_SUBCHUNK_PREFIX = ChunkDataKey::SUBCHUNK;
+	protected const TAG_LEGACY_TERRAIN = ChunkDataKey::LEGACY_TERRAIN;
+	protected const TAG_BLOCK_ENTITY = ChunkDataKey::BLOCK_ENTITIES;
+	protected const TAG_ENTITY = ChunkDataKey::ENTITIES;
+	protected const TAG_PENDING_TICK = ChunkDataKey::PENDING_SCHEDULED_TICKS;
+	protected const TAG_BLOCK_EXTRA_DATA = ChunkDataKey::LEGACY_BLOCK_EXTRA_DATA;
+	protected const TAG_BIOME_STATE = ChunkDataKey::BIOME_STATES;
+	protected const TAG_STATE_FINALISATION = ChunkDataKey::FINALIZATION;
 
-	protected const TAG_BORDER_BLOCKS = "8";
-	protected const TAG_HARDCODED_SPAWNERS = "9";
+	protected const TAG_BORDER_BLOCKS = ChunkDataKey::BORDER_BLOCKS;
+	protected const TAG_HARDCODED_SPAWNERS = ChunkDataKey::HARDCODED_SPAWNERS;
 
 	protected const FINALISATION_NEEDS_INSTATICKING = 0;
 	protected const FINALISATION_NEEDS_POPULATION = 1;
 	protected const FINALISATION_DONE = 2;
 
-	protected const TAG_VERSION = "v";
+	protected const TAG_VERSION = ChunkDataKey::OLD_VERSION;
 
 	protected const ENTRY_FLAT_WORLD_LAYERS = "game_flatworldlayers";
 
-	protected const CURRENT_LEVEL_CHUNK_VERSION = 7;
-	protected const CURRENT_LEVEL_SUBCHUNK_VERSION = 8;
+	protected const CURRENT_LEVEL_CHUNK_VERSION = ChunkVersion::v1_2_0; //yes, I know this is wrong, but it ensures vanilla auto-fixes stuff we currently don't
+	protected const CURRENT_LEVEL_SUBCHUNK_VERSION = SubChunkVersion::PALETTED_MULTI;
 
 	/** @var \LevelDB */
 	protected $db;
@@ -192,7 +192,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	}
 
 	protected static function deserializeExtraDataKey(int $chunkVersion, int $key, ?int &$x, ?int &$y, ?int &$z) : void{
-		if($chunkVersion >= 3){
+		if($chunkVersion >= ChunkVersion::v1_0_0){
 			$x = ($key >> 12) & 0xf;
 			$z = ($key >> 8) & 0xf;
 			$y = $key & 0xff;
@@ -207,7 +207,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	 * @return PalettedBlockArray[]
 	 */
 	protected function deserializeLegacyExtraData(string $index, int $chunkVersion) : array{
-		if(($extraRawData = $this->db->get($index . self::TAG_BLOCK_EXTRA_DATA)) === false || $extraRawData === ""){
+		if(($extraRawData = $this->db->get($index . ChunkDataKey::LEGACY_BLOCK_EXTRA_DATA)) === false || $extraRawData === ""){
 			return [];
 		}
 
@@ -241,7 +241,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	public function loadChunk(int $chunkX, int $chunkZ) : ?ChunkData{
 		$index = LevelDB::chunkIndex($chunkX, $chunkZ);
 
-		$chunkVersionRaw = $this->db->get($index . self::TAG_VERSION);
+		$chunkVersionRaw = $this->db->get($index . ChunkDataKey::OLD_VERSION);
 		if($chunkVersionRaw === false){
 			return null;
 		}
@@ -256,23 +256,23 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$hasBeenUpgraded = $chunkVersion < self::CURRENT_LEVEL_CHUNK_VERSION;
 
 		switch($chunkVersion){
-			case 15: //MCPE 1.12.0.4 beta (???)
-			case 14: //MCPE 1.11.1.2 (???)
-			case 13: //MCPE 1.11.0.4 beta (???)
-			case 12: //MCPE 1.11.0.3 beta (???)
-			case 11: //MCPE 1.11.0.1 beta (???)
-			case 10: //MCPE 1.9 (???)
-			case 9: //MCPE 1.8 (???)
-			case 8: //MCPE 1.2.13 (paletted subchunks)
-			case 7: //MCPE 1.2 (???)
-			case 6: //MCPE 1.2.0.2 beta (???)
-			case 4: //MCPE 1.1
+			case ChunkVersion::v1_12_0_4_beta:
+			case ChunkVersion::v1_11_1:
+			case ChunkVersion::v1_11_0_4_beta:
+			case ChunkVersion::v1_11_0_3_beta:
+			case ChunkVersion::v1_11_0_1_beta:
+			case ChunkVersion::v1_9_0:
+			case ChunkVersion::v1_8_0:
+			case ChunkVersion::v1_2_13:
+			case ChunkVersion::v1_2_0:
+			case ChunkVersion::v1_2_0_2_beta:
+			case ChunkVersion::v1_1_0:
 				//TODO: check beds
-			case 3: //MCPE 1.0
+			case ChunkVersion::v1_0_0:
 				$convertedLegacyExtraData = $this->deserializeLegacyExtraData($index, $chunkVersion);
 
 				for($y = Chunk::MIN_SUBCHUNK_INDEX; $y <= Chunk::MAX_SUBCHUNK_INDEX; ++$y){
-					if(($data = $this->db->get($index . self::TAG_SUBCHUNK_PREFIX . chr($y))) === false){
+					if(($data = $this->db->get($index . ChunkDataKey::SUBCHUNK . chr($y))) === false){
 						continue;
 					}
 
@@ -286,18 +286,18 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 					}
 
 					switch($subChunkVersion){
-						case 0:
-						case 2: //these are all identical to version 0, but vanilla respects these so we should also
-						case 3:
-						case 4:
-						case 5:
-						case 6:
-						case 7:
+						case SubChunkVersion::CLASSIC:
+						case SubChunkVersion::CLASSIC_BUG_2: //these are all identical to version 0, but vanilla respects these so we should also
+						case SubChunkVersion::CLASSIC_BUG_3:
+						case SubChunkVersion::CLASSIC_BUG_4:
+						case SubChunkVersion::CLASSIC_BUG_5:
+						case SubChunkVersion::CLASSIC_BUG_6:
+						case SubChunkVersion::CLASSIC_BUG_7:
 							try{
 								$blocks = $binaryStream->get(4096);
 								$blockData = $binaryStream->get(2048);
 
-								if($chunkVersion < 4){
+								if($chunkVersion < ChunkVersion::v1_1_0){
 									$binaryStream->get(4096); //legacy light info, discard it
 									$hasBeenUpgraded = true;
 								}
@@ -312,14 +312,14 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 							$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, $storages);
 							break;
-						case 1: //paletted v1, has a single blockstorage
+						case SubChunkVersion::PALETTED_SINGLE:
 							$storages = [$this->deserializePaletted($binaryStream)];
 							if(isset($convertedLegacyExtraData[$y])){
 								$storages[] = $convertedLegacyExtraData[$y];
 							}
 							$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, $storages);
 							break;
-						case 8:
+						case SubChunkVersion::PALETTED_MULTI:
 							//legacy extradata layers intentionally ignored because they aren't supposed to exist in v8
 							$storageCount = $binaryStream->getByte();
 							if($storageCount > 0){
@@ -337,7 +337,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 					}
 				}
 
-				if(($maps2d = $this->db->get($index . self::TAG_DATA_2D)) !== false){
+				if(($maps2d = $this->db->get($index . ChunkDataKey::HEIGHTMAP_AND_2D_BIOMES)) !== false){
 					$binaryStream = new BinaryStream($maps2d);
 
 					try{
@@ -348,12 +348,12 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 					}
 				}
 				break;
-			case 2: // < MCPE 1.0
-			case 1:
-			case 0: //MCPE 0.9.0.1 beta (first version)
+			case ChunkVersion::v0_9_5:
+			case ChunkVersion::v0_9_2:
+			case ChunkVersion::v0_9_0:
 				$convertedLegacyExtraData = $this->deserializeLegacyExtraData($index, $chunkVersion);
 
-				$legacyTerrain = $this->db->get($index . self::TAG_LEGACY_TERRAIN);
+				$legacyTerrain = $this->db->get($index . ChunkDataKey::LEGACY_TERRAIN);
 				if($legacyTerrain === false){
 					throw new CorruptedChunkException("Missing expected LEGACY_TERRAIN tag for format version $chunkVersion");
 				}
@@ -392,7 +392,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		/** @var CompoundTag[] $entities */
 		$entities = [];
-		if(($entityData = $this->db->get($index . self::TAG_ENTITY)) !== false && $entityData !== ""){
+		if(($entityData = $this->db->get($index . ChunkDataKey::ENTITIES)) !== false && $entityData !== ""){
 			try{
 				$entities = array_map(fn(TreeRoot $root) => $root->mustGetCompoundTag(), $nbt->readMultiple($entityData));
 			}catch(NbtDataException $e){
@@ -402,7 +402,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		/** @var CompoundTag[] $tiles */
 		$tiles = [];
-		if(($tileData = $this->db->get($index . self::TAG_BLOCK_ENTITY)) !== false && $tileData !== ""){
+		if(($tileData = $this->db->get($index . ChunkDataKey::BLOCK_ENTITIES)) !== false && $tileData !== ""){
 			try{
 				$tiles = array_map(fn(TreeRoot $root) => $root->mustGetCompoundTag(), $nbt->readMultiple($tileData));
 			}catch(NbtDataException $e){
@@ -410,7 +410,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			}
 		}
 
-		$finalisationChr = $this->db->get($index . self::TAG_STATE_FINALISATION);
+		$finalisationChr = $this->db->get($index . ChunkDataKey::FINALIZATION);
 		if($finalisationChr !== false){
 			$finalisation = ord($finalisationChr);
 			$terrainPopulated = $finalisation === self::FINALISATION_DONE;
@@ -438,13 +438,13 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$index = LevelDB::chunkIndex($chunkX, $chunkZ);
 
 		$write = new \LevelDBWriteBatch();
-		$write->put($index . self::TAG_VERSION, chr(self::CURRENT_LEVEL_CHUNK_VERSION));
+		$write->put($index . ChunkDataKey::OLD_VERSION, chr(self::CURRENT_LEVEL_CHUNK_VERSION));
 
 		$chunk = $chunkData->getChunk();
 		if($chunk->getTerrainDirtyFlag(Chunk::DIRTY_FLAG_BLOCKS)){
 			$subChunks = $chunk->getSubChunks();
 			foreach($subChunks as $y => $subChunk){
-				$key = $index . self::TAG_SUBCHUNK_PREFIX . chr($y);
+				$key = $index . ChunkDataKey::SUBCHUNK . chr($y);
 				if($subChunk->isEmptyAuthoritative()){
 					$write->delete($key);
 				}else{
@@ -483,17 +483,17 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		}
 
 		if($chunk->getTerrainDirtyFlag(Chunk::DIRTY_FLAG_BIOMES)){
-			$write->put($index . self::TAG_DATA_2D, str_repeat("\x00", 512) . $chunk->getBiomeIdArray());
+			$write->put($index . ChunkDataKey::HEIGHTMAP_AND_2D_BIOMES, str_repeat("\x00", 512) . $chunk->getBiomeIdArray());
 		}
 
 		//TODO: use this properly
-		$write->put($index . self::TAG_STATE_FINALISATION, chr($chunk->isPopulated() ? self::FINALISATION_DONE : self::FINALISATION_NEEDS_POPULATION));
+		$write->put($index . ChunkDataKey::FINALIZATION, chr($chunk->isPopulated() ? self::FINALISATION_DONE : self::FINALISATION_NEEDS_POPULATION));
 
-		$this->writeTags($chunkData->getTileNBT(), $index . self::TAG_BLOCK_ENTITY, $write);
-		$this->writeTags($chunkData->getEntityNBT(), $index . self::TAG_ENTITY, $write);
+		$this->writeTags($chunkData->getTileNBT(), $index . ChunkDataKey::BLOCK_ENTITIES, $write);
+		$this->writeTags($chunkData->getEntityNBT(), $index . ChunkDataKey::ENTITIES, $write);
 
-		$write->delete($index . self::TAG_DATA_2D_LEGACY);
-		$write->delete($index . self::TAG_LEGACY_TERRAIN);
+		$write->delete($index . ChunkDataKey::HEIGHTMAP_AND_2D_BIOME_COLORS);
+		$write->delete($index . ChunkDataKey::LEGACY_TERRAIN);
 
 		$this->db->write($write);
 	}
@@ -528,7 +528,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 	public function getAllChunks(bool $skipCorrupted = false, ?\Logger $logger = null) : \Generator{
 		foreach($this->db->getIterator() as $key => $_){
-			if(strlen($key) === 9 && substr($key, -1) === self::TAG_VERSION){
+			if(strlen($key) === 9 && substr($key, -1) === ChunkDataKey::OLD_VERSION){
 				$chunkX = Binary::readLInt(substr($key, 0, 4));
 				$chunkZ = Binary::readLInt(substr($key, 4, 4));
 				try{
@@ -550,7 +550,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	public function calculateChunkCount() : int{
 		$count = 0;
 		foreach($this->db->getIterator() as $key => $_){
-			if(strlen($key) === 9 && substr($key, -1) === self::TAG_VERSION){
+			if(strlen($key) === 9 && substr($key, -1) === ChunkDataKey::OLD_VERSION){
 				$count++;
 			}
 		}

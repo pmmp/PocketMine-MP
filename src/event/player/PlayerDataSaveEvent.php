@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -39,13 +39,14 @@ class PlayerDataSaveEvent extends Event implements Cancellable{
 	protected $data;
 	/** @var string */
 	protected $playerName;
-	/** @var Player|null */
-	private $player;
 
-	public function __construct(CompoundTag $nbt, string $playerName, ?Player $player){
+	public function __construct(
+		CompoundTag $nbt,
+		string $playerName,
+		private ?Player $player
+	){
 		$this->data = $nbt;
 		$this->playerName = $playerName;
-		$this->player = $player;
 	}
 
 	/**

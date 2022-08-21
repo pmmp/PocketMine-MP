@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,9 +26,7 @@ namespace pocketmine\item;
 use pocketmine\block\utils\DyeColor;
 
 class Dye extends Item{
-
-	/** @var DyeColor */
-	private $color;
+	private DyeColor $color;
 
 	public function __construct(ItemIdentifier $identifier, string $name, DyeColor $color){
 		parent::__construct($identifier, $name);

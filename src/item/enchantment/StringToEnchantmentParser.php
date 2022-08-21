@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -35,7 +35,7 @@ final class StringToEnchantmentParser extends StringToTParser{
 	use SingletonTrait;
 
 	private static function make() : self{
-		$result = new self;
+		$result = new self();
 
 		$result->register("blast_protection", fn() => VanillaEnchantments::BLAST_PROTECTION());
 		$result->register("efficiency", fn() => VanillaEnchantments::EFFICIENCY());

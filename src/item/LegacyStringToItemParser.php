@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -50,9 +50,6 @@ use function trim;
 final class LegacyStringToItemParser{
 	use SingletonTrait;
 
-	/** @var ItemFactory */
-	private $itemFactory;
-
 	private static function make() : self{
 		$result = new self(ItemFactory::getInstance());
 
@@ -73,11 +70,9 @@ final class LegacyStringToItemParser{
 	 * @var int[]
 	 * @phpstan-var array<string, int>
 	 */
-	private $map = [];
+	private array $map = [];
 
-	public function __construct(ItemFactory $itemFactory){
-		$this->itemFactory = $itemFactory;
-	}
+	public function __construct(private ItemFactory $itemFactory){}
 
 	public function addMapping(string $alias, int $id) : void{
 		$this->map[$alias] = $id;

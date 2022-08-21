@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,7 +32,7 @@ final class HeightArray{
 	 * @var \SplFixedArray|int[]
 	 * @phpstan-var \SplFixedArray<int>
 	 */
-	private $array;
+	private \SplFixedArray $array;
 
 	/**
 	 * @param int[] $values ZZZZXXXX key bit order

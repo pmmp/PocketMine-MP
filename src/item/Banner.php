@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -39,14 +39,13 @@ class Banner extends ItemBlockWallOrFloor{
 	public const TAG_PATTERN_COLOR = TileBanner::TAG_PATTERN_COLOR;
 	public const TAG_PATTERN_NAME = TileBanner::TAG_PATTERN_NAME;
 
-	/** @var DyeColor */
-	private $color;
+	private DyeColor $color;
 
 	/**
 	 * @var BannerPatternLayer[]
 	 * @phpstan-var list<BannerPatternLayer>
 	 */
-	private $patterns = [];
+	private array $patterns = [];
 
 	public function __construct(ItemIdentifier $identifier, Block $floorVariant, Block $wallVariant){
 		parent::__construct($identifier, $floorVariant, $wallVariant);

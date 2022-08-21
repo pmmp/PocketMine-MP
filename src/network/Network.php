@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,6 +28,7 @@ namespace pocketmine\network;
 
 use pocketmine\event\server\NetworkInterfaceRegisterEvent;
 use pocketmine\event\server\NetworkInterfaceUnregisterEvent;
+use pocketmine\utils\Utils;
 use function base64_encode;
 use function get_class;
 use function preg_match;
@@ -37,32 +38,28 @@ use const PHP_INT_MAX;
 
 class Network{
 	/** @var NetworkInterface[] */
-	private $interfaces = [];
+	private array $interfaces = [];
 
 	/** @var AdvancedNetworkInterface[] */
-	private $advancedInterfaces = [];
+	private array $advancedInterfaces = [];
 
 	/** @var RawPacketHandler[] */
-	private $rawPacketHandlers = [];
+	private array $rawPacketHandlers = [];
 
-	/** @var int[] */
-	private $bannedIps = [];
+	/**
+	 * @var int[]
+	 * @phpstan-var array<string, int>
+	 */
+	private array $bannedIps = [];
 
-	/** @var BidirectionalBandwidthStatsTracker */
-	private $bandwidthTracker;
+	private BidirectionalBandwidthStatsTracker $bandwidthTracker;
+	private string $name;
+	private NetworkSessionManager$sessionManager;
 
-	/** @var string */
-	private $name;
-
-	/** @var NetworkSessionManager */
-	private $sessionManager;
-
-	/** @var \Logger */
-	private $logger;
-
-	public function __construct(\Logger $logger){
+	public function __construct(
+		private \Logger $logger
+	){
 		$this->sessionManager = new NetworkSessionManager();
-		$this->logger = $logger;
 		$this->bandwidthTracker = new BidirectionalBandwidthStatsTracker(5);
 	}
 
@@ -103,7 +100,7 @@ class Network{
 			if($interface instanceof AdvancedNetworkInterface){
 				$this->advancedInterfaces[$hash] = $interface;
 				$interface->setNetwork($this);
-				foreach($this->bannedIps as $ip => $until){
+				foreach(Utils::stringifyKeys($this->bannedIps) as $ip => $until){
 					$interface->blockAddress($ip);
 				}
 				foreach($this->rawPacketHandlers as $handler){

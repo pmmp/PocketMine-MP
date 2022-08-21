@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,9 +28,7 @@ use pocketmine\world\generator\populator\TallGrass;
 use pocketmine\world\generator\populator\Tree;
 
 class ForestBiome extends GrassyBiome{
-
-	/** @var TreeType */
-	private $type;
+	private TreeType $type;
 
 	public function __construct(?TreeType $type = null){
 		parent::__construct();

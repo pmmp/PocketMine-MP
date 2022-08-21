@@ -6,11 +6,6 @@ parameters:
 			path: ../../../src/block/BaseBanner.php
 
 		-
-			message: "#^Property pocketmine\\\\block\\\\tile\\\\TileFactory\\:\\:\\$saveNames \\(array\\<class\\-string\\<pocketmine\\\\block\\\\tile\\\\Tile\\>, string\\>\\) does not accept array\\<class\\-string\\<pocketmine\\\\block\\\\tile\\\\Tile\\>, bool\\|string\\>\\.$#"
-			count: 1
-			path: ../../../src/block/tile/TileFactory.php
-
-		-
 			message: "#^Comparison operation \"\\<\" between int\\<1, max\\> and 1 is always false\\.$#"
 			count: 1
 			path: ../../../src/console/ConsoleCommandSender.php
@@ -37,11 +32,6 @@ parameters:
 
 		-
 			message: "#^Match arm is unreachable because previous comparison is always true\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
-
-		-
-			message: "#^Negated boolean expression is always true\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
 
@@ -81,12 +71,12 @@ parameters:
 			path: ../../../src/thread/Worker.php
 
 		-
-			message: "#^Dead catch \\- JsonException is never thrown in the try block\\.$#"
-			count: 1
-			path: ../../../src/utils/Config.php
-
-		-
 			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
 			count: 2
 			path: ../../../src/world/format/io/region/RegionLoader.php
+
+		-
+			message: "#^Casting to int something that's already int\\.$#"
+			count: 1
+			path: ../../../src/world/generator/normal/Normal.php
 

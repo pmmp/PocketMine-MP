@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,25 +30,14 @@ use function ini_set;
 
 class AsyncWorker extends Worker{
 	/** @var mixed[] */
-	private static $store = [];
+	private static array $store = [];
 
-	/** @var \ThreadedLogger */
-	private $logger;
-	/** @var int */
-	private $id;
-
-	/** @var int */
-	private $memoryLimit;
-
-	/** @var SleeperNotifier */
-	private $notifier;
-
-	public function __construct(\ThreadedLogger $logger, int $id, int $memoryLimit, SleeperNotifier $notifier){
-		$this->logger = $logger;
-		$this->id = $id;
-		$this->memoryLimit = $memoryLimit;
-		$this->notifier = $notifier;
-	}
+	public function __construct(
+		private \ThreadedLogger $logger,
+		private int $id,
+		private int $memoryLimit,
+		private SleeperNotifier $notifier
+	){}
 
 	public function getNotifier() : SleeperNotifier{
 		return $this->notifier;

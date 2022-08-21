@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,7 +30,7 @@ use function spl_object_id;
 class NetworkSessionManager{
 
 	/** @var NetworkSession[] */
-	private $sessions = [];
+	private array $sessions = [];
 
 	/**
 	 * Adds a network session to the manager. This should only be called on session creation.

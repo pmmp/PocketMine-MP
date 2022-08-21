@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -114,6 +114,9 @@ abstract class LightUpdate{
 						$context->removalQueue->enqueue([$x, $y, $z, $oldLevel]);
 					}
 				}
+			}elseif($this->getEffectiveLight($x, $y, $z) > 0){ //outside the chunk (e.g. virtual sky light from y=256)
+				$context->spreadVisited[$blockHash] = true;
+				$context->spreadQueue->enqueue([$x, $y, $z]);
 			}
 		}
 		return $context;

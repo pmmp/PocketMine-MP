@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,15 +25,18 @@ namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\event\server\CommandEvent;
 use pocketmine\player\Player;
 
 /**
- * Called when a player runs a command or chats, early in the process
+ * Called when a player runs a command or chats, before it is processed.
  *
- * You don't want to use this except for a few cases like logging commands,
- * blocking commands on certain places, or applying modifiers.
+ * If the message is prefixed with a / (forward slash), it will be interpreted as a command.
+ * Otherwise, it will be broadcasted as a chat message.
  *
- * The message contains a slash at the start
+ * @deprecated
+ * @see PlayerChatEvent to handle chat messages
+ * @see CommandEvent to intercept commands
  */
 class PlayerCommandPreprocessEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;

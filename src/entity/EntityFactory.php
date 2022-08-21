@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -70,12 +70,12 @@ final class EntityFactory{
 	 * @var \Closure[] save ID => creator function
 	 * @phpstan-var array<int|string, \Closure(World, CompoundTag) : Entity>
 	 */
-	private $creationFuncs = [];
+	private array $creationFuncs = [];
 	/**
 	 * @var string[]
 	 * @phpstan-var array<class-string<Entity>, string>
 	 */
-	private $saveNames = [];
+	private array $saveNames = [];
 
 	public function __construct(){
 		//define legacy save IDs first - use them for saving for maximum compatibility with Minecraft PC

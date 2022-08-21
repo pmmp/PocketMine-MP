@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,6 +31,7 @@ use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\block\inventory\HopperInventory;
 use pocketmine\block\inventory\LoomInventory;
+use pocketmine\block\inventory\StonecutterInventory;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
@@ -67,23 +68,16 @@ use function spl_object_id;
  * @phpstan-type ContainerOpenClosure \Closure(int $id, Inventory $inventory) : (list<ClientboundPacket>|null)
  */
 class InventoryManager{
-	/** @var Player */
-	private $player;
-	/** @var NetworkSession */
-	private $session;
-
 	/** @var Inventory[] */
-	private $windowMap = [];
-	/** @var int */
-	private $lastInventoryNetworkId = ContainerIds::FIRST;
+	private array $windowMap = [];
+	private int $lastInventoryNetworkId = ContainerIds::FIRST;
 
 	/**
 	 * @var Item[][]
 	 * @phpstan-var array<int, array<int, Item>>
 	 */
-	private $initiatedSlotChanges = [];
-	/** @var int */
-	private $clientSelectedHotbarSlot = -1;
+	private array $initiatedSlotChanges = [];
+	private int $clientSelectedHotbarSlot = -1;
 
 	/** @phpstan-var ObjectSet<ContainerOpenClosure> */
 	private ObjectSet $containerOpenCallbacks;
@@ -92,10 +86,10 @@ class InventoryManager{
 	/** @phpstan-var \Closure() : void */
 	private ?\Closure $pendingOpenWindowCallback = null;
 
-	public function __construct(Player $player, NetworkSession $session){
-		$this->player = $player;
-		$this->session = $session;
-
+	public function __construct(
+		private Player $player,
+		private NetworkSession $session
+	){
 		$this->containerOpenCallbacks = new ObjectSet();
 		$this->containerOpenCallbacks->add(\Closure::fromCallable([self::class, 'createContainerOpen']));
 
@@ -230,6 +224,7 @@ class InventoryManager{
 				$inv instanceof AnvilInventory => WindowTypes::ANVIL,
 				$inv instanceof HopperInventory => WindowTypes::HOPPER,
 				$inv instanceof CraftingTableInventory => WindowTypes::WORKBENCH,
+				$inv instanceof StonecutterInventory => WindowTypes::STONECUTTER,
 				default => WindowTypes::CONTAINER
 			};
 			return [ContainerOpenPacket::blockInv($id, $windowType, $blockPosition)];
@@ -274,11 +269,13 @@ class InventoryManager{
 		//initiated the close and expect an ack.
 		$this->session->sendDataPacket(ContainerClosePacket::create($id, false));
 
-		if($this->pendingOpenWindowCallback !== null && $id === $this->pendingCloseWindowId){
-			$this->session->getLogger()->debug("Opening deferred window after close ack of window $id");
+		if($this->pendingCloseWindowId === $id){
 			$this->pendingCloseWindowId = null;
-			($this->pendingOpenWindowCallback)();
-			$this->pendingOpenWindowCallback = null;
+			if($this->pendingOpenWindowCallback !== null){
+				$this->session->getLogger()->debug("Opening deferred window after close ack of window $id");
+				($this->pendingOpenWindowCallback)();
+				$this->pendingOpenWindowCallback = null;
+			}
 		}
 	}
 

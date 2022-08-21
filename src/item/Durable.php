@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,8 +32,7 @@ abstract class Durable extends Item{
 
 	/** @var int */
 	protected $damage = 0;
-	/** @var bool */
-	private $unbreakable = false;
+	private bool $unbreakable = false;
 
 	public function getMeta() : int{
 		return $this->damage;

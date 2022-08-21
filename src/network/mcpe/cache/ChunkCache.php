@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -39,7 +39,7 @@ use function strlen;
  */
 class ChunkCache implements ChunkListener{
 	/** @var self[][] */
-	private static $instances = [];
+	private static array $instances = [];
 
 	/**
 	 * Fetches the ChunkCache instance for the given world. This lazily creates cache systems as needed.
@@ -79,23 +79,16 @@ class ChunkCache implements ChunkListener{
 		}
 	}
 
-	/** @var World */
-	private $world;
-	/** @var Compressor */
-	private $compressor;
-
 	/** @var CompressBatchPromise[] */
-	private $caches = [];
+	private array $caches = [];
 
-	/** @var int */
-	private $hits = 0;
-	/** @var int */
-	private $misses = 0;
+	private int $hits = 0;
+	private int $misses = 0;
 
-	private function __construct(World $world, Compressor $compressor){
-		$this->world = $world;
-		$this->compressor = $compressor;
-	}
+	private function __construct(
+		private World $world,
+		private Compressor $compressor
+	){}
 
 	/**
 	 * Requests asynchronous preparation of the chunk at the given coordinates.

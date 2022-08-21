@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,15 +32,12 @@ use pocketmine\utils\Utils;
 class PlayerMoveEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Location */
-	private $from;
-	/** @var Location */
-	private $to;
-
-	public function __construct(Player $player, Location $from, Location $to){
+	public function __construct(
+		Player $player,
+		private Location $from,
+		private Location $to
+	){
 		$this->player = $player;
-		$this->from = $from;
-		$this->to = $to;
 	}
 
 	public function getFrom() : Location{

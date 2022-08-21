@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -44,8 +44,7 @@ class Squid extends WaterAnimal{
 	/** @var float */
 	public $swimSpeed = 0.1;
 
-	/** @var int */
-	private $switchDirectionTicker = 0;
+	private int $switchDirectionTicker = 0;
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
 

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -34,11 +34,9 @@ use pocketmine\world\generator\populator\Populator;
 use function count;
 
 class Flat extends Generator{
-
-	/** @var Chunk */
-	private $chunk;
+	private Chunk $chunk;
 	/** @var Populator[] */
-	private $populators = [];
+	private array $populators = [];
 
 	private FlatGeneratorOptions $options;
 

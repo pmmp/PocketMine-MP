@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -33,13 +33,13 @@ final class DyeColorIdMap{
 	 * @var DyeColor[]
 	 * @phpstan-var array<int, DyeColor>
 	 */
-	private $idToEnum = [];
+	private array $idToEnum = [];
 
 	/**
 	 * @var int[]
 	 * @phpstan-var array<int, int>
 	 */
-	private $enumToId = [];
+	private array $enumToId = [];
 
 	private function __construct(){
 		$this->register(0, DyeColor::WHITE());

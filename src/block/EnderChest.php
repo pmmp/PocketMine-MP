@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,6 +27,7 @@ use pocketmine\block\inventory\EnderChestInventory;
 use pocketmine\block\tile\EnderChest as TileEnderChest;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -47,6 +48,10 @@ class EnderChest extends Transparent{
 	protected function recalculateCollisionBoxes() : array{
 		//these are slightly bigger than in PC
 		return [AxisAlignedBB::one()->contract(0.025, 0, 0.025)->trim(Facing::UP, 0.05)];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

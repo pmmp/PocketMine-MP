@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -80,8 +80,7 @@ abstract class Entity{
 	public const MOTION_THRESHOLD = 0.00001;
 	protected const STEP_CLIP_MULTIPLIER = 0.4;
 
-	/** @var int */
-	private static $entityCount = 1;
+	private static int $entityCount = 1;
 
 	/**
 	 * Returns a new runtime entity ID for a new entity.
@@ -96,8 +95,7 @@ abstract class Entity{
 	/** @var int */
 	protected $id;
 
-	/** @var EntityMetadataCollection */
-	private $networkProperties;
+	private EntityMetadataCollection $networkProperties;
 
 	/** @var EntityDamageEvent|null */
 	protected $lastDamageCause = null;
@@ -124,10 +122,8 @@ abstract class Entity{
 	/** @var EntitySizeInfo */
 	public $size;
 
-	/** @var float */
-	private $health = 20.0;
-	/** @var int */
-	private $maxHealth = 20;
+	private float $health = 20.0;
+	private int $maxHealth = 20;
 
 	/** @var float */
 	protected $ySize = 0.0;
@@ -150,8 +146,7 @@ abstract class Entity{
 	/** @var bool */
 	protected $isStatic = false;
 
-	/** @var bool */
-	private $savedWithChunk = true;
+	private bool $savedWithChunk = true;
 
 	/** @var bool */
 	public $isCollided = false;
@@ -181,8 +176,7 @@ abstract class Entity{
 	/** @var bool */
 	protected $closed = false;
 	private bool $closeInFlight = false;
-	/** @var bool */
-	private $needsDespawn = false;
+	private bool $needsDespawn = false;
 
 	/** @var TimingsHandler */
 	protected $timings;
@@ -528,6 +522,9 @@ abstract class Entity{
 	}
 
 	public function attack(EntityDamageEvent $source) : void{
+		if($this->isFireProof() && ($source->getCause() === EntityDamageEvent::CAUSE_FIRE || $source->getCause() === EntityDamageEvent::CAUSE_FIRE_TICK)){
+			$source->cancel();
+		}
 		$source->call();
 		if($source->isCancelled()){
 			return;
@@ -1467,8 +1464,9 @@ abstract class Entity{
 			$this->location->pitch,
 			$this->location->yaw,
 			$this->location->yaw, //TODO: head yaw
+			$this->location->yaw, //TODO: body yaw (wtf mojang?)
 			array_map(function(Attribute $attr) : NetworkAttribute{
-				return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue());
+				return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue(), []);
 			}, $this->attributeMap->getAll()),
 			$this->getAllNetworkData(),
 			[] //TODO: entity links

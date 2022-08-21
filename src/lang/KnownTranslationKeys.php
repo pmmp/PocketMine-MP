@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -262,6 +262,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_COMMAND_GIVE_DESCRIPTION = "pocketmine.command.give.description";
 	public const POCKETMINE_COMMAND_GIVE_USAGE = "pocketmine.command.give.usage";
 	public const POCKETMINE_COMMAND_HELP_DESCRIPTION = "pocketmine.command.help.description";
+	public const POCKETMINE_COMMAND_HELP_SPECIFICCOMMAND_ALIASES = "pocketmine.command.help.specificCommand.aliases";
 	public const POCKETMINE_COMMAND_HELP_SPECIFICCOMMAND_DESCRIPTION = "pocketmine.command.help.specificCommand.description";
 	public const POCKETMINE_COMMAND_HELP_SPECIFICCOMMAND_HEADER = "pocketmine.command.help.specificCommand.header";
 	public const POCKETMINE_COMMAND_HELP_SPECIFICCOMMAND_USAGE = "pocketmine.command.help.specificCommand.usage";
@@ -367,6 +368,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_PLUGIN_DUPLICATEPERMISSIONERROR = "pocketmine.plugin.duplicatePermissionError";
 	public const POCKETMINE_PLUGIN_EMPTYEXTENSIONVERSIONCONSTRAINT = "pocketmine.plugin.emptyExtensionVersionConstraint";
 	public const POCKETMINE_PLUGIN_ENABLE = "pocketmine.plugin.enable";
+	public const POCKETMINE_PLUGIN_ENABLEERROR = "pocketmine.plugin.enableError";
 	public const POCKETMINE_PLUGIN_EXTENSIONNOTLOADED = "pocketmine.plugin.extensionNotLoaded";
 	public const POCKETMINE_PLUGIN_GENERICLOADERROR = "pocketmine.plugin.genericLoadError";
 	public const POCKETMINE_PLUGIN_INCOMPATIBLEAPI = "pocketmine.plugin.incompatibleAPI";
@@ -383,7 +385,10 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_PLUGIN_MAINCLASSNOTFOUND = "pocketmine.plugin.mainClassNotFound";
 	public const POCKETMINE_PLUGIN_MAINCLASSWRONGTYPE = "pocketmine.plugin.mainClassWrongType";
 	public const POCKETMINE_PLUGIN_RESTRICTEDNAME = "pocketmine.plugin.restrictedName";
+	public const POCKETMINE_PLUGIN_SOMEENABLEERRORS = "pocketmine.plugin.someEnableErrors";
+	public const POCKETMINE_PLUGIN_SOMELOADERRORS = "pocketmine.plugin.someLoadErrors";
 	public const POCKETMINE_PLUGIN_SPACESDISCOURAGED = "pocketmine.plugin.spacesDiscouraged";
+	public const POCKETMINE_PLUGIN_SUICIDE = "pocketmine.plugin.suicide";
 	public const POCKETMINE_PLUGIN_UNKNOWNDEPENDENCY = "pocketmine.plugin.unknownDependency";
 	public const POCKETMINE_SAVE_START = "pocketmine.save.start";
 	public const POCKETMINE_SAVE_SUCCESS = "pocketmine.save.success";
@@ -402,6 +407,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_SERVER_DEVBUILD_WARNING2 = "pocketmine.server.devBuild.warning2";
 	public const POCKETMINE_SERVER_DEVBUILD_WARNING3 = "pocketmine.server.devBuild.warning3";
 	public const POCKETMINE_SERVER_DONATE = "pocketmine.server.donate";
+	public const POCKETMINE_SERVER_FORCINGSHUTDOWN = "pocketmine.server.forcingShutdown";
 	public const POCKETMINE_SERVER_INFO = "pocketmine.server.info";
 	public const POCKETMINE_SERVER_INFO_EXTENDED = "pocketmine.server.info.extended";
 	public const POCKETMINE_SERVER_LICENSE = "pocketmine.server.license";

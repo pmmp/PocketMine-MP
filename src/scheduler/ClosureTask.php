@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -39,20 +39,14 @@ use pocketmine\utils\Utils;
  * ```
  */
 class ClosureTask extends Task{
-
-	/**
-	 * @var \Closure
-	 * @phpstan-var \Closure() : void
-	 */
-	private $closure;
-
 	/**
 	 * @param \Closure $closure Must accept zero parameters
 	 * @phpstan-param \Closure() : void $closure
 	 */
-	public function __construct(\Closure $closure){
+	public function __construct(
+		private \Closure $closure
+	){
 		Utils::validateCallableSignature(new CallbackType(new ReturnType()), $closure);
-		$this->closure = $closure;
 	}
 
 	public function getName() : string{

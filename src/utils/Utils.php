@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -106,10 +106,8 @@ final class Utils{
 	public const OS_BSD = "bsd";
 	public const OS_UNKNOWN = "other";
 
-	/** @var string|null */
-	private static $os;
-	/** @var UuidInterface|null */
-	private static $serverUniqueId = null;
+	private static ?string $os = null;
+	private static ?UuidInterface $serverUniqueId = null;
 
 	/**
 	 * Returns a readable identifier for the given Closure, including file and line.

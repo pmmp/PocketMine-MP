@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -80,6 +80,7 @@ use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
+use pocketmine\network\mcpe\protocol\RequestAbilityPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
@@ -114,6 +115,7 @@ use function count;
 use function fmod;
 use function implode;
 use function in_array;
+use function is_bool;
 use function is_infinite;
 use function is_nan;
 use function json_decode;
@@ -135,11 +137,6 @@ use const JSON_THROW_ON_ERROR;
 class InGamePacketHandler extends PacketHandler{
 	private const MAX_FORM_RESPONSE_DEPTH = 2; //modal/simple will be 1, custom forms 2 - they will never contain anything other than string|int|float|bool|null
 
-	/** @var Player */
-	private $player;
-	/** @var NetworkSession */
-	private $session;
-
 	/** @var CraftingTransaction|null */
 	protected $craftingTransaction = null;
 
@@ -148,16 +145,19 @@ class InGamePacketHandler extends PacketHandler{
 	/** @var UseItemTransactionData|null */
 	protected $lastRightClickData = null;
 
+	protected ?Vector3 $lastPlayerAuthInputPosition = null;
+	protected ?float $lastPlayerAuthInputYaw = null;
+	protected ?float $lastPlayerAuthInputPitch = null;
+	protected ?int $lastPlayerAuthInputFlags = null;
+
 	/** @var bool */
 	public $forceMoveSync = false;
 
-	private InventoryManager $inventoryManager;
-
-	public function __construct(Player $player, NetworkSession $session, InventoryManager $inventoryManager){
-		$this->player = $player;
-		$this->session = $session;
-		$this->inventoryManager = $inventoryManager;
-	}
+	public function __construct(
+		private Player $player,
+		private NetworkSession $session,
+		private InventoryManager $inventoryManager
+	){}
 
 	public function handleText(TextPacket $packet) : bool{
 		if($packet->type === TextPacket::TYPE_CHAT){
@@ -173,9 +173,10 @@ class InGamePacketHandler extends PacketHandler{
 		return true;
 	}
 
-	private function resolveOnOffInputFlags(PlayerAuthInputPacket $packet, int $startFlag, int $stopFlag) : ?bool{
-		$enabled = $packet->hasFlag($startFlag);
-		if($enabled !== $packet->hasFlag($stopFlag)){
+	private function resolveOnOffInputFlags(int $inputFlags, int $startFlag, int $stopFlag) : ?bool{
+		$enabled = ($inputFlags & (1 << $startFlag)) !== 0;
+		$disabled = ($inputFlags & (1 << $stopFlag)) !== 0;
+		if($enabled !== $disabled){
 			return $enabled;
 		}
 		//neither flag was set, or both were set
@@ -184,51 +185,68 @@ class InGamePacketHandler extends PacketHandler{
 
 	public function handlePlayerAuthInput(PlayerAuthInputPacket $packet) : bool{
 		$rawPos = $packet->getPosition();
-		foreach([$rawPos->x, $rawPos->y, $rawPos->z, $packet->getYaw(), $packet->getHeadYaw(), $packet->getPitch()] as $float){
+		$rawYaw = $packet->getYaw();
+		$rawPitch = $packet->getPitch();
+		foreach([$rawPos->x, $rawPos->y, $rawPos->z, $rawYaw, $packet->getHeadYaw(), $rawPitch] as $float){
 			if(is_infinite($float) || is_nan($float)){
 				$this->session->getLogger()->debug("Invalid movement received, contains NAN/INF components");
 				return false;
 			}
 		}
 
-		$yaw = fmod($packet->getYaw(), 360);
-		$pitch = fmod($packet->getPitch(), 360);
-		if($yaw < 0){
-			$yaw += 360;
+		if($rawYaw !== $this->lastPlayerAuthInputYaw || $rawPitch !== $this->lastPlayerAuthInputPitch){
+			$this->lastPlayerAuthInputYaw = $rawYaw;
+			$this->lastPlayerAuthInputPitch = $rawPitch;
+
+			$yaw = fmod($rawYaw, 360);
+			$pitch = fmod($rawPitch, 360);
+			if($yaw < 0){
+				$yaw += 360;
+			}
+
+			$this->player->setRotation($yaw, $pitch);
 		}
 
-		$this->player->setRotation($yaw, $pitch);
-
-		$curPos = $this->player->getLocation();
+		$hasMoved = $this->lastPlayerAuthInputPosition === null || !$this->lastPlayerAuthInputPosition->equals($rawPos);
 		$newPos = $rawPos->round(4)->subtract(0, 1.62, 0);
 
-		if($this->forceMoveSync && $newPos->distanceSquared($curPos) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
-			$this->session->getLogger()->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $curPos);
-			//Still getting movements from before teleport, ignore them
-			return false;
+		if($this->forceMoveSync && $hasMoved){
+			$curPos = $this->player->getLocation();
+
+			if($newPos->distanceSquared($curPos) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
+				$this->session->getLogger()->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $curPos);
+				//Still getting movements from before teleport, ignore them
+				return false;
+			}
+
+			// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
+			$this->forceMoveSync = false;
 		}
 
-		// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
-		$this->forceMoveSync = false;
+		$inputFlags = $packet->getInputFlags();
+		if($inputFlags !== $this->lastPlayerAuthInputFlags){
+			$this->lastPlayerAuthInputFlags = $inputFlags;
 
-		$sneaking = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_SNEAKING, PlayerAuthInputFlags::STOP_SNEAKING);
-		$sprinting = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_SPRINTING, PlayerAuthInputFlags::STOP_SPRINTING);
-		$swimming = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_SWIMMING, PlayerAuthInputFlags::STOP_SWIMMING);
-		$gliding = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_GLIDING, PlayerAuthInputFlags::STOP_GLIDING);
-		$mismatch =
-			($sneaking !== null && !$this->player->toggleSneak($sneaking)) |
-			($sprinting !== null && !$this->player->toggleSprint($sprinting)) |
-			($swimming !== null && !$this->player->toggleSwim($swimming)) |
-			($gliding !== null && !$this->player->toggleGlide($gliding));
-		if((bool) $mismatch){
-			$this->player->sendData([$this->player]);
+			$sneaking = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SNEAKING, PlayerAuthInputFlags::STOP_SNEAKING);
+			$sprinting = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SPRINTING, PlayerAuthInputFlags::STOP_SPRINTING);
+			$swimming = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SWIMMING, PlayerAuthInputFlags::STOP_SWIMMING);
+			$gliding = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_GLIDING, PlayerAuthInputFlags::STOP_GLIDING);
+			$mismatch =
+				($sneaking !== null && !$this->player->toggleSneak($sneaking)) |
+				($sprinting !== null && !$this->player->toggleSprint($sprinting)) |
+				($swimming !== null && !$this->player->toggleSwim($swimming)) |
+				($gliding !== null && !$this->player->toggleGlide($gliding));
+			if((bool) $mismatch){
+				$this->player->sendData([$this->player]);
+			}
+
+			if($packet->hasFlag(PlayerAuthInputFlags::START_JUMPING)){
+				$this->player->jump();
+			}
 		}
 
-		if($packet->hasFlag(PlayerAuthInputFlags::START_JUMPING)){
-			$this->player->jump();
-		}
-
-		if(!$this->forceMoveSync){
+		if(!$this->forceMoveSync && $hasMoved){
+			$this->lastPlayerAuthInputPosition = $rawPos;
 			//TODO: this packet has WAYYYYY more useful information that we're not using
 			$this->player->handleMovement($newPos);
 		}
@@ -274,7 +292,6 @@ class InGamePacketHandler extends PacketHandler{
 			//TODO HACK: EATING_ITEM is sent back to the server when the server sends it for other players (1.14 bug, maybe earlier)
 			return $packet->actorRuntimeId === ActorEvent::EATING_ITEM;
 		}
-		$this->player->removeCurrentWindow();
 
 		switch($packet->eventId){
 			case ActorEvent::EATING_ITEM: //TODO: ignore this and handle it server-side
@@ -617,6 +634,10 @@ class InGamePacketHandler extends PacketHandler{
 			case PlayerAction::CREATIVE_PLAYER_DESTROY_BLOCK:
 				//TODO: do we need to handle this?
 				break;
+			case PlayerAction::START_ITEM_USE_ON:
+			case PlayerAction::STOP_ITEM_USE_ON:
+				//TODO: this has no obvious use and seems only used for analytics in vanilla - ignore it
+				break;
 			default:
 				$this->session->getLogger()->debug("Unhandled/unknown player action type " . $action);
 				return false;
@@ -649,23 +670,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
-		if($packet->targetActorUniqueId !== $this->player->getId()){
-			return false; //TODO: operators can change other people's permissions using this
-		}
-
-		$handled = false;
-
-		$isFlying = $packet->getFlag(AdventureSettingsPacket::FLYING);
-		if($isFlying !== $this->player->isFlying()){
-			if(!$this->player->toggleFlight($isFlying)){
-				$this->session->syncAdventureSettings($this->player);
-			}
-			$handled = true;
-		}
-
-		//TODO: check for other changes
-
-		return $handled;
+		return true; //no longer used, but the client still sends it for flight changes
 	}
 
 	public function handleBlockActorData(BlockActorDataPacket $packet) : bool{
@@ -885,7 +890,14 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleModalFormResponse(ModalFormResponsePacket $packet) : bool{
-		return $this->player->onFormSubmit($packet->formId, self::stupid_json_decode($packet->formData, true));
+		if($packet->cancelReason !== null){
+			//TODO: make APIs for this to allow plugins to use this information
+			return $this->player->onFormSubmit($packet->formId, null);
+		}elseif($packet->formData !== null){
+			return $this->player->onFormSubmit($packet->formId, self::stupid_json_decode($packet->formData, true));
+		}else{
+			throw new PacketHandlingException("Expected either formData or cancelReason to be set in ModalFormResponsePacket");
+		}
 	}
 
 	/**
@@ -986,5 +998,23 @@ class InGamePacketHandler extends PacketHandler{
 	public function handleEmote(EmotePacket $packet) : bool{
 		$this->player->emote($packet->getEmoteId());
 		return true;
+	}
+
+	public function handleRequestAbility(RequestAbilityPacket $packet) : bool{
+		if($packet->getAbilityId() === RequestAbilityPacket::ABILITY_FLYING){
+			$isFlying = $packet->getAbilityValue();
+			if(!is_bool($isFlying)){
+				throw new PacketHandlingException("Flying ability should always have a bool value");
+			}
+			if($isFlying !== $this->player->isFlying()){
+				if(!$this->player->toggleFlight($isFlying)){
+					$this->session->syncAbilities($this->player);
+				}
+			}
+
+			return true;
+		}
+
+		return false;
 	}
 }

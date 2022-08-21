@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -38,10 +38,8 @@ class Villager extends Living implements Ageable{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::VILLAGER; }
 
-	/** @var bool */
-	private $baby = false;
-	/** @var int */
-	private $profession = self::PROFESSION_FARMER;
+	private bool $baby = false;
+	private int $profession = self::PROFESSION_FARMER;
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{
 		return new EntitySizeInfo(1.8, 0.6); //TODO: eye height??
