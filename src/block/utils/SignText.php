@@ -38,9 +38,7 @@ class SignText{
 
 	/** @var string[] */
 	private array $lines;
-
 	private Color $baseColor;
-
 	private bool $glowing;
 
 	/**
