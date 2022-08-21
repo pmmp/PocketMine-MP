@@ -76,7 +76,6 @@ class GiveCommand extends VanillaCommand{
 		if(!isset($args[2])){
 			$item->setCount($item->getMaxStackSize());
 		}else{
-			//TODO: PHP_INT_MAX is probably a bit too much, but I don't know what the vanilla limit is
 			$count = $this->getBoundedInt($sender, $args[2], 1, 32767);
 			if($count === null){
 				return true;
