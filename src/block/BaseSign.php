@@ -130,7 +130,7 @@ abstract class BaseSign extends Transparent{
 		return false;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
 			if($item instanceof Dye || $item->getTypeId() === ItemTypeIds::BONE_MEAL || $item->getTypeId() === ItemTypeIds::LAPIS_LAZULI){
 				if($item instanceof Dye){
