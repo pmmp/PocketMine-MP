@@ -328,10 +328,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->hungerManager->tick($tickDiff);
 		$this->xpManager->tick($tickDiff);
 
-		if(!$this->isUnderwater() && $this->armorInventory->getHelmet()->getTypeId() === ItemTypeIds::TURTLE_HELMET){
-			$this->effectManager->add(new EffectInstance(VanillaEffects::WATER_BREATHING(), 200));
-		}
-
 		return $hasUpdate;
 	}
 
