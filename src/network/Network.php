@@ -54,7 +54,7 @@ class Network{
 
 	private BidirectionalBandwidthStatsTracker $bandwidthTracker;
 	private string $name;
-	private string $subName;
+	private ?string $subName;
 	private NetworkSessionManager $sessionManager;
 
 	public function __construct(
@@ -129,7 +129,7 @@ class Network{
 	/**
 	 * Sets the server name and server sub name shown on each interface Query
 	 */
-	public function setName(string $name, string|null $subName = null) : void{
+	public function setName(string $name, ?string $subName = null) : void{
 		$this->name = $name;
 		$this->subName = $subName;
 	}

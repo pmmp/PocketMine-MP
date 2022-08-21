@@ -37,7 +37,7 @@ interface NetworkInterface{
 	 */
 	public function start() : void;
 
-	public function setName(string $name, string|null $subName = null) : void;
+	public function setName(string $name, ?string $subName = null) : void;
 
 	/**
 	 * Called every tick to process events on the interface.

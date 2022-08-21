@@ -218,7 +218,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 
 	}
 
-	public function setName(string $name, string|null $subName = null) : void{
+	public function setName(string $name, ?string $subName = null) : void{
 		$info = $this->server->getQueryInformation();
 
 		$this->interface->setName(implode(";",
