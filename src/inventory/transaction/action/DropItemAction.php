@@ -42,6 +42,9 @@ class DropItemAction extends InventoryAction{
 		if($this->targetItem->isNull()){
 			throw new TransactionValidationException("Cannot drop an empty itemstack");
 		}
+		if($this->targetItem->getCount() > $this->targetItem->getMaxStackSize()){
+			throw new TransactionValidationException("Target item exceeds item type max stack size");
+		}
 	}
 
 	public function onPreExecute(Player $source) : bool{
