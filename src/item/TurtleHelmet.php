@@ -32,7 +32,7 @@ class TurtleHelmet extends Armor{
 
 	public function onTickWorn(Living $entity) : bool{
 		if($entity instanceof Human && !$entity->isUnderwater()){
-			$entity->getEffects()->add(new EffectInstance(VanillaEffects::WATER_BREATHING(), 200));
+			$entity->getEffects()->add(new EffectInstance(VanillaEffects::WATER_BREATHING(), 200, 0, false));
 			return true;
 		}
 
