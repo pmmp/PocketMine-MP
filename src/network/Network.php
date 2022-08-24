@@ -29,7 +29,6 @@ namespace pocketmine\network;
 use pocketmine\event\server\NetworkInterfaceRegisterEvent;
 use pocketmine\event\server\NetworkInterfaceUnregisterEvent;
 use pocketmine\utils\Utils;
-use pocketmine\Server;
 use function base64_encode;
 use function get_class;
 use function preg_match;
@@ -55,9 +54,8 @@ class Network{
 
 	private BidirectionalBandwidthStatsTracker $bandwidthTracker;
 	private string $name;
-	private string $subName;
+	private ?string $subName;
 	private NetworkSessionManager $sessionManager;
-	private Server $server;
 
 	public function __construct(
 		private \Logger $logger
@@ -131,19 +129,9 @@ class Network{
 	/**
 	 * Sets the server name and sub name shown on each interface Query
 	 */
-	public function setName(string $name) : void{
+	public function setName(string $name, ?string $subName = null) : void{
 		$this->name = $name;
-		foreach($this->interfaces as $interface){
-			$interface->setName($this->name, $this->subName);
-		}
-	}
-
-	public function setSubName(string $subName){
-		if ($this->subName === ""){
-			$this->subName = $this->server->getName();
-		} else {
-			$this->subName = $subName;
-		}
+		$this->subName = $subName;
 		foreach($this->interfaces as $interface){
 			$interface->setName($this->name, $this->subName);
 		}
