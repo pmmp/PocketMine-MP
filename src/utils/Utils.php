@@ -486,8 +486,8 @@ final class Utils{
 	 */
 	public static function currentTrace(int $skipFrames = 0) : array{
 		++$skipFrames; //omit this frame from trace, in addition to other skipped frames
-		if(function_exists("xdebug_get_function_stack")){
-			$trace = array_reverse(xdebug_get_function_stack());
+		if(function_exists("xdebug_get_function_stack") && count($trace = @xdebug_get_function_stack()) !== 0){
+			$trace = array_reverse($trace);
 		}else{
 			$e = new \Exception();
 			$trace = $e->getTrace();
