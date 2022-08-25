@@ -723,16 +723,16 @@
         },
         {
             "name": "pocketmine/raklib",
-            "version": "0.14.4",
+            "version": "0.14.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "1ea8e3b95a1b6bf785dc27d76578657be4185f42"
+                "reference": "85b4e5cb7117d37e010eeadb3ff53b21276c6f48"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/1ea8e3b95a1b6bf785dc27d76578657be4185f42",
-                "reference": "1ea8e3b95a1b6bf785dc27d76578657be4185f42",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/85b4e5cb7117d37e010eeadb3ff53b21276c6f48",
+                "reference": "85b4e5cb7117d37e010eeadb3ff53b21276c6f48",
                 "shasum": ""
             },
             "require": {
@@ -744,7 +744,7 @@
                 "pocketmine/log": "^0.3.0 || ^0.4.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "1.5.4",
+                "phpstan/phpstan": "1.7.7",
                 "phpstan/phpstan-strict-rules": "^1.0"
             },
             "type": "library",
@@ -760,9 +760,9 @@
             "description": "A RakNet server implementation written in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/RakLib/issues",
-                "source": "https://github.com/pmmp/RakLib/tree/0.14.4"
+                "source": "https://github.com/pmmp/RakLib/tree/0.14.5"
             },
-            "time": "2022-04-17T18:42:17+00:00"
+            "time": "2022-08-25T16:16:44+00:00"
         },
         {
             "name": "pocketmine/raklib-ipc",
