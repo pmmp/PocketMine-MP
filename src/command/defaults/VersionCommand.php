@@ -71,16 +71,10 @@ class VersionCommand extends VanillaCommand{
 			));
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpVersion(PHP_VERSION));
 
-			if(
-				function_exists('opcache_get_status') &&
-				($opcacheStatus = opcache_get_status(false)) !== false &&
-				isset($opcacheStatus["jit"]["on"])
-			){
-				$jit = $opcacheStatus["jit"];
-				if($jit["on"] === true){
-					$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitEnabled(
-						sprintf("CRTO: %s%s%s%s", $jit["opt_flags"] >> 2, $jit["opt_flags"] & 0x03, $jit["kind"], $jit["opt_level"])
-					);
+			$jitMode = Utils::getOpcacheJitMode();
+			if($jitMode !== null){
+				if($jitMode !== 0){
+					$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitEnabled(sprintf("CRTO: %d", $jitMode));
 				}else{
 					$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitDisabled();
 				}

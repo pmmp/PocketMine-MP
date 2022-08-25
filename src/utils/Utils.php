@@ -69,6 +69,7 @@ use function mb_check_encoding;
 use function ob_end_clean;
 use function ob_get_contents;
 use function ob_start;
+use function opcache_get_status;
 use function ord;
 use function php_uname;
 use function phpversion;
@@ -78,6 +79,7 @@ use function preg_match_all;
 use function preg_replace;
 use function shell_exec;
 use function spl_object_id;
+use function sprintf;
 use function str_pad;
 use function str_split;
 use function stripos;
@@ -633,5 +635,31 @@ final class Utils{
 
 	public static function checkLocationNotInfOrNaN(Location $location) : void{
 		self::checkVector3NotInfOrNaN($location);
+	}
+
+	/**
+	 * Returns an integer describing the current OPcache JIT setting.
+	 * @see https://www.php.net/manual/en/opcache.configuration.php#ini.opcache.jit
+	 */
+	public static function getOpcacheJitMode() : ?int{
+		if(
+			function_exists('opcache_get_status') &&
+			($opcacheStatus = opcache_get_status(false)) !== false &&
+			isset($opcacheStatus["jit"]["on"])
+		){
+			$jit = $opcacheStatus["jit"];
+			if($jit["on"] === true){
+				return (($jit["opt_flags"] >> 2) * 1000) +
+					(($jit["opt_flags"] & 0x03) * 100) +
+					($jit["kind"] * 10) +
+					$jit["opt_level"];
+			}
+
+			//jit available, but disabled
+			return 0;
+		}
+
+		//jit not available
+		return null;
 	}
 }
