@@ -56,7 +56,9 @@ abstract class Worker extends \Worker{
 		$this->isKilled = true;
 
 		if(!$this->isShutdown()){
-			while($this->unstack() !== null);
+			$this->synchronized(function() : void{
+				while($this->unstack() !== null);
+			});
 			$this->notify();
 			$this->shutdown();
 		}

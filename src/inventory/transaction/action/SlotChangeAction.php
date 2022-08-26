@@ -70,6 +70,12 @@ class SlotChangeAction extends InventoryAction{
 		if(!$this->inventory->getItem($this->inventorySlot)->equalsExact($this->sourceItem)){
 			throw new TransactionValidationException("Slot does not contain expected original item");
 		}
+		if($this->targetItem->getCount() > $this->targetItem->getMaxStackSize()){
+			throw new TransactionValidationException("Target item exceeds item type max stack size");
+		}
+		if($this->targetItem->getCount() > $this->inventory->getMaxStackSize()){
+			throw new TransactionValidationException("Target item exceeds inventory max stack size");
+		}
 	}
 
 	/**

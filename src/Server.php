@@ -383,14 +383,22 @@ class Server{
 	}
 
 	/**
+<<<<<<< HEAD
 	 * Get the motd shown in the server.
+=======
+	 * Returns the Server Motd shown in the Interface Query.
+>>>>>>> ba5d034ce5d4b30cedd7b81c908f4328aba4c763
 	 */
 	public function getMotd() : string{
 		return $this->configGroup->getConfigString("motd", self::DEFAULT_SERVER_NAME);
 	}
 
 	/**
+<<<<<<< HEAD
 	 * Get the sub motd shown in the server.
+=======
+	 * Returns the Server SubMotd shown in the Interface Query.
+>>>>>>> ba5d034ce5d4b30cedd7b81c908f4328aba4c763
 	 */
 	public function getSubMotd() : string{
 		return $this->configGroup->getConfigString("sub-motd", $this->getName());
