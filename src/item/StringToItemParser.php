@@ -46,7 +46,7 @@ final class StringToItemParser extends StringToTParser{
 	use SingletonTrait;
 
 	private static function make() : self{
-		$result = new self;
+		$result = new self();
 
 		self::registerDynamicBlocks($result);
 		self::registerBlocks($result);

@@ -24,9 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\block\utils\SignText;
+use pocketmine\color\Color;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\utils\Binary;
 use pocketmine\world\World;
 use function array_pad;
 use function array_slice;
@@ -42,6 +46,13 @@ use function sprintf;
 class Sign extends Spawnable{
 	public const TAG_TEXT_BLOB = "Text";
 	public const TAG_TEXT_LINE = "Text%d"; //sprintf()able
+	public const TAG_TEXT_COLOR = "SignTextColor";
+	public const TAG_GLOWING_TEXT = "IgnoreLighting";
+	/**
+	 * This tag is set to indicate that MCPE-117835 has been addressed in whatever version this sign was created.
+	 * @see https://bugs.mojang.com/browse/MCPE-117835
+	 */
+	public const TAG_LEGACY_BUG_RESOLVE = "TextIgnoreLegacyBugResolved";
 
 	/**
 	 * @return string[]
@@ -60,7 +71,20 @@ class Sign extends Spawnable{
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		if(($textBlobTag = $nbt->getTag(self::TAG_TEXT_BLOB)) instanceof StringTag){ //MCPE 1.2 save format
-			$this->text = SignText::fromBlob(mb_scrub($textBlobTag->getValue(), 'UTF-8'));
+			$baseColor = new Color(0, 0, 0);
+			$glowingText = false;
+			if(($baseColorTag = $nbt->getTag(self::TAG_TEXT_COLOR)) instanceof IntTag){
+				$baseColor = Color::fromARGB(Binary::unsignInt($baseColorTag->getValue()));
+			}
+			if(
+				($glowingTextTag = $nbt->getTag(self::TAG_GLOWING_TEXT)) instanceof ByteTag &&
+				($lightingBugResolvedTag = $nbt->getTag(self::TAG_LEGACY_BUG_RESOLVE)) instanceof ByteTag
+			){
+				//both of these must be 1 - if only one is set, it's a leftover from 1.16.210 experimental features
+				//see https://bugs.mojang.com/browse/MCPE-117835
+				$glowingText = $glowingTextTag->getValue() !== 0 && $lightingBugResolvedTag->getValue() !== 0;
+			}
+			$this->text = SignText::fromBlob(mb_scrub($textBlobTag->getValue(), 'UTF-8'), $baseColor, $glowingText);
 		}else{
 			$text = [];
 			for($i = 0; $i < SignText::LINE_COUNT; ++$i){
@@ -80,6 +104,9 @@ class Sign extends Spawnable{
 			$textKey = sprintf(self::TAG_TEXT_LINE, $i + 1);
 			$nbt->setString($textKey, $this->text->getLine($i));
 		}
+		$nbt->setInt(self::TAG_TEXT_COLOR, Binary::signInt($this->text->getBaseColor()->toARGB()));
+		$nbt->setByte(self::TAG_GLOWING_TEXT, $this->text->isGlowing() ? 1 : 0);
+		$nbt->setByte(self::TAG_LEGACY_BUG_RESOLVE, 1);
 	}
 
 	public function getText() : SignText{
@@ -108,5 +135,8 @@ class Sign extends Spawnable{
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->setString(self::TAG_TEXT_BLOB, implode("\n", $this->text->getLines()));
+		$nbt->setInt(self::TAG_TEXT_COLOR, Binary::signInt($this->text->getBaseColor()->toARGB()));
+		$nbt->setByte(self::TAG_GLOWING_TEXT, $this->text->isGlowing() ? 1 : 0);
+		$nbt->setByte(self::TAG_LEGACY_BUG_RESOLVE, 1);
 	}
 }
