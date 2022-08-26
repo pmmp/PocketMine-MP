@@ -148,12 +148,16 @@ class Network{
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	/**
 	 * Get the server sub name shown in the interface Query.
 	 */
 =======
 >>>>>>> ba5d034ce5d4b30cedd7b81c908f4328aba4c763
 	public function getSubName() : ?string{
+=======
+	public function getSubName() : string{
+>>>>>>> parent of ba5d034ce (Fix Lints)
 		return $this->subName;
 	}
 
