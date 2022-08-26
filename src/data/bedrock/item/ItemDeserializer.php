@@ -23,17 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\item;
 
+use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SkullType;
-use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateDeserializer;
 use pocketmine\data\bedrock\block\convert\UnsupportedBlockStateException;
 use pocketmine\data\bedrock\CompoundTypeIds;
 use pocketmine\data\bedrock\DyeColorIdMap;
-use pocketmine\data\bedrock\EntityLegacyIds;
 use pocketmine\data\bedrock\GoatHornTypeIdMap;
 use pocketmine\data\bedrock\item\ItemTypeNames as Ids;
 use pocketmine\data\bedrock\item\SavedItemData as Data;
@@ -43,7 +42,6 @@ use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems as Items;
 use pocketmine\nbt\NbtException;
-use pocketmine\utils\AssumptionFailedError;
 use function min;
 
 final class ItemDeserializer{
@@ -64,6 +62,13 @@ final class ItemDeserializer{
 	 */
 	public function map(string $id, \Closure $deserializer) : void{
 		$this->deserializers[$id] = $deserializer;
+	}
+
+	/**
+	 * @phpstan-param \Closure(Data) : Block $deserializer
+	 */
+	public function mapBlock(string $id, \Closure $deserializer) : void{
+		$this->map($id, fn(Data $data) => $deserializer($data)->asItem());
 	}
 
 	/**
@@ -116,10 +121,53 @@ final class ItemDeserializer{
 		return $itemStack;
 	}
 
+	private function registerSpecialBlockDeserializers() : void{
+		$this->mapBlock(Ids::ACACIA_DOOR, fn() => Blocks::ACACIA_DOOR());
+		$this->mapBlock(Ids::BIRCH_DOOR, fn() => Blocks::BIRCH_DOOR());
+		$this->mapBlock(Ids::BREWING_STAND, fn() => Blocks::BREWING_STAND());
+		$this->mapBlock(Ids::CAKE, fn() => Blocks::CAKE());
+		$this->mapBlock(Ids::CAULDRON, fn() => Blocks::CAULDRON());
+		$this->mapBlock(Ids::COMPARATOR, fn() => Blocks::REDSTONE_COMPARATOR());
+		$this->mapBlock(Ids::CRIMSON_DOOR, fn() => Blocks::CRIMSON_DOOR());
+		$this->mapBlock(Ids::DARK_OAK_DOOR, fn() => Blocks::DARK_OAK_DOOR());
+		$this->mapBlock(Ids::FLOWER_POT, fn() => Blocks::FLOWER_POT());
+		$this->mapBlock(Ids::FRAME, fn() => Blocks::ITEM_FRAME()->setGlowing(false));
+		$this->mapBlock(Ids::GLOW_FRAME, fn() => Blocks::ITEM_FRAME()->setGlowing(true));
+		$this->mapBlock(Ids::HOPPER, fn() => Blocks::HOPPER());
+		$this->mapBlock(Ids::IRON_DOOR, fn() => Blocks::IRON_DOOR());
+		$this->mapBlock(Ids::JUNGLE_DOOR, fn() => Blocks::JUNGLE_DOOR());
+		$this->mapBlock(Ids::MANGROVE_DOOR, fn() => Blocks::MANGROVE_DOOR());
+		$this->mapBlock(Ids::NETHER_WART, fn() => Blocks::NETHER_WART());
+		$this->mapBlock(Ids::REPEATER, fn() => Blocks::REDSTONE_REPEATER());
+		$this->mapBlock(Ids::SPRUCE_DOOR, fn() => Blocks::SPRUCE_DOOR());
+		$this->mapBlock(Ids::SUGAR_CANE, fn() => Blocks::SUGARCANE());
+		$this->mapBlock(Ids::WARPED_DOOR, fn() => Blocks::WARPED_DOOR());
+		$this->mapBlock(Ids::WOODEN_DOOR, fn() => Blocks::OAK_DOOR());
+
+		$this->mapBlock(Ids::BED, function(Data $data) : Block{
+			$meta = $data->getMeta();
+			$color = DyeColorIdMap::getInstance()->fromId($meta);
+			if($color === null){
+				throw new ItemTypeDeserializeException("Unknown bed meta $meta");
+			}
+			return Blocks::BED()->setColor($color);
+		});
+		$this->mapBlock(Ids::SKULL, function(Data $data) : Block{
+			$meta = $data->getMeta();
+			try{
+				$skullType = SkullType::fromMagicNumber($meta);
+			}catch(\InvalidArgumentException $e){
+				throw new ItemTypeDeserializeException($e->getMessage(), 0, $e);
+			}
+			return Blocks::MOB_HEAD()->setSkullType($skullType);
+		});
+	}
+
 	private function registerDeserializers() : void{
+		$this->registerSpecialBlockDeserializers();
+
 		$this->map(Ids::ACACIA_BOAT, fn() => Items::ACACIA_BOAT());
-		$this->map(Ids::ACACIA_DOOR, fn() => Blocks::ACACIA_DOOR()->asItem());
-		$this->map(Ids::ACACIA_SIGN, fn() => Blocks::ACACIA_SIGN()->asItem());
+		$this->map(Ids::ACACIA_SIGN, fn() => Items::ACACIA_SIGN());
 		//TODO: minecraft:agent_spawn_egg
 		//TODO: minecraft:allay_spawn_egg
 		$this->map(Ids::AMETHYST_SHARD, fn() => Items::AMETHYST_SHARD());
@@ -145,44 +193,19 @@ final class ItemDeserializer{
 		});
 		//TODO: minecraft:banner_pattern
 		//TODO: minecraft:bat_spawn_egg
-		$this->map(Ids::BED, function(Data $data) : Item{
-			$meta = $data->getMeta();
-			$color = DyeColorIdMap::getInstance()->fromId($meta);
-			if($color === null){
-				throw new ItemTypeDeserializeException("Unknown bed meta $meta");
-			}
-			return Blocks::BED()->setColor($color)->asItem();
-		});
 		//TODO: minecraft:bee_spawn_egg
 		$this->map(Ids::BEEF, fn() => Items::RAW_BEEF());
 		$this->map(Ids::BEETROOT, fn() => Items::BEETROOT());
 		$this->map(Ids::BEETROOT_SEEDS, fn() => Items::BEETROOT_SEEDS());
 		$this->map(Ids::BEETROOT_SOUP, fn() => Items::BEETROOT_SOUP());
 		$this->map(Ids::BIRCH_BOAT, fn() => Items::BIRCH_BOAT());
-		$this->map(Ids::BIRCH_DOOR, fn() => Blocks::BIRCH_DOOR()->asItem());
-		$this->map(Ids::BIRCH_SIGN, fn() => Blocks::BIRCH_SIGN()->asItem());
+		$this->map(Ids::BIRCH_SIGN, fn() => Items::BIRCH_SIGN());
 		$this->map(Ids::BLACK_DYE, fn() => Items::DYE()->setColor(DyeColor::BLACK()));
 		$this->map(Ids::BLAZE_POWDER, fn() => Items::BLAZE_POWDER());
 		$this->map(Ids::BLAZE_ROD, fn() => Items::BLAZE_ROD());
 		//TODO: minecraft:blaze_spawn_egg
 		$this->map(Ids::BLEACH, fn() => Items::BLEACH());
 		$this->map(Ids::BLUE_DYE, fn() => Items::DYE()->setColor(DyeColor::BLUE()));
-		$this->map(Ids::BOAT, function(Data $data) : Item{
-			try{
-				$treeType = TreeType::fromMagicNumber($data->getMeta());
-			}catch(\InvalidArgumentException $e){
-				throw new ItemTypeDeserializeException($e->getMessage(), 0, $e);
-			}
-			return match($treeType->id()){
-				TreeType::OAK()->id() => Items::OAK_BOAT(),
-				TreeType::SPRUCE()->id() => Items::SPRUCE_BOAT(),
-				TreeType::BIRCH()->id() => Items::BIRCH_BOAT(),
-				TreeType::JUNGLE()->id() => Items::JUNGLE_BOAT(),
-				TreeType::ACACIA()->id() => Items::ACACIA_BOAT(),
-				TreeType::DARK_OAK()->id() => Items::DARK_OAK_BOAT(),
-				default => throw new AssumptionFailedError("Unexpected tree type " . $treeType->name())
-			};
-		});
 		$this->map(Ids::BONE, fn() => Items::BONE());
 		$this->map(Ids::BONE_MEAL, fn() => Items::BONE_MEAL());
 		$this->map(Ids::BOOK, fn() => Items::BOOK());
@@ -190,17 +213,14 @@ final class ItemDeserializer{
 		$this->map(Ids::BOW, fn() => Items::BOW());
 		$this->map(Ids::BOWL, fn() => Items::BOWL());
 		$this->map(Ids::BREAD, fn() => Items::BREAD());
-		$this->map(Ids::BREWING_STAND, fn() => Blocks::BREWING_STAND()->asItem());
 		$this->map(Ids::BRICK, fn() => Items::BRICK());
 		$this->map(Ids::BROWN_DYE, fn() => Items::DYE()->setColor(DyeColor::BROWN()));
 		$this->map(Ids::BUCKET, fn() => Items::BUCKET());
-		$this->map(Ids::CAKE, fn() => Blocks::CAKE()->asItem());
 		//TODO: minecraft:camera
 		//TODO: minecraft:campfire
 		$this->map(Ids::CARROT, fn() => Items::CARROT());
 		//TODO: minecraft:carrot_on_a_stick
 		//TODO: minecraft:cat_spawn_egg
-		$this->map(Ids::CAULDRON, fn() => Blocks::CAULDRON()->asItem());
 		//TODO: minecraft:cave_spider_spawn_egg
 		//TODO: minecraft:chain
 		$this->map(Ids::CHAINMAIL_BOOTS, fn() => Items::CHAINMAIL_BOOTS());
@@ -220,7 +240,6 @@ final class ItemDeserializer{
 		//TODO: minecraft:cod_bucket
 		//TODO: minecraft:cod_spawn_egg
 		//TODO: minecraft:command_block_minecart
-		$this->map(Ids::COMPARATOR, fn() => Blocks::REDSTONE_COMPARATOR()->asItem());
 		$this->map(Ids::COMPASS, fn() => Items::COMPASS());
 		$this->map(Ids::COMPOUND, fn(Data $data) => match($data->getMeta()){
 			CompoundTypeIds::SALT => Items::CHEMICAL_SALT(),
@@ -275,13 +294,11 @@ final class ItemDeserializer{
 		//TODO: minecraft:cow_spawn_egg
 		//TODO: minecraft:creeper_banner_pattern
 		//TODO: minecraft:creeper_spawn_egg
-		$this->map(Ids::CRIMSON_DOOR, fn() => Blocks::CRIMSON_DOOR()->asItem());
-		$this->map(Ids::CRIMSON_SIGN, fn() => Blocks::CRIMSON_SIGN()->asItem());
+		$this->map(Ids::CRIMSON_SIGN, fn() => Items::CRIMSON_SIGN());
 		//TODO: minecraft:crossbow
 		$this->map(Ids::CYAN_DYE, fn() => Items::DYE()->setColor(DyeColor::CYAN()));
 		$this->map(Ids::DARK_OAK_BOAT, fn() => Items::DARK_OAK_BOAT());
-		$this->map(Ids::DARK_OAK_DOOR, fn() => Blocks::DARK_OAK_DOOR()->asItem());
-		$this->map(Ids::DARK_OAK_SIGN, fn() => Blocks::DARK_OAK_SIGN()->asItem());
+		$this->map(Ids::DARK_OAK_SIGN, fn() => Items::DARK_OAK_SIGN());
 		$this->map(Ids::DIAMOND, fn() => Items::DIAMOND());
 		$this->map(Ids::DIAMOND_AXE, fn() => Items::DIAMOND_AXE());
 		$this->map(Ids::DIAMOND_BOOTS, fn() => Items::DIAMOND_BOOTS());
@@ -299,28 +316,6 @@ final class ItemDeserializer{
 		$this->map(Ids::DRAGON_BREATH, fn() => Items::DRAGON_BREATH());
 		$this->map(Ids::DRIED_KELP, fn() => Items::DRIED_KELP());
 		//TODO: minecraft:drowned_spawn_egg
-		$this->map(Ids::DYE, function(Data $data) : Item{
-			$meta = $data->getMeta();
-			$item = match($meta) {
-				0 => Items::INK_SAC(),
-				3 => Items::COCOA_BEANS(),
-				4 => Items::LAPIS_LAZULI(),
-				15 => Items::BONE_MEAL(),
-				16 => Items::DYE()->setColor(DyeColor::BLACK()),
-				17 => Items::DYE()->setColor(DyeColor::BROWN()),
-				18 => Items::DYE()->setColor(DyeColor::BLUE()),
-				19 => Items::DYE()->setColor(DyeColor::WHITE()),
-				default => null
-			};
-			if($item !== null){
-				return $item;
-			}
-			$dyeColor = DyeColorIdMap::getInstance()->fromInvertedId($meta);
-			if($dyeColor === null){
-				throw new ItemTypeDeserializeException("Unknown dye meta $meta");
-			}
-			return Items::DYE()->setColor($dyeColor);
-		});
 		$this->map(Ids::ECHO_SHARD, fn() => Items::ECHO_SHARD());
 		$this->map(Ids::EGG, fn() => Items::EGG());
 		//TODO: minecraft:elder_guardian_spawn_egg
@@ -348,9 +343,7 @@ final class ItemDeserializer{
 		$this->map(Ids::FLINT, fn() => Items::FLINT());
 		$this->map(Ids::FLINT_AND_STEEL, fn() => Items::FLINT_AND_STEEL());
 		//TODO: minecraft:flower_banner_pattern
-		$this->map(Ids::FLOWER_POT, fn() => Blocks::FLOWER_POT()->asItem());
 		//TODO: minecraft:fox_spawn_egg
-		$this->map(Ids::FRAME, fn() => Blocks::ITEM_FRAME()->setGlowing(false)->asItem());
 		//TODO: minecraft:frog_spawn_egg
 		//TODO: minecraft:ghast_spawn_egg
 		$this->map(Ids::GHAST_TEAR, fn() => Items::GHAST_TEAR());
@@ -358,7 +351,6 @@ final class ItemDeserializer{
 		$this->map(Ids::GLISTERING_MELON_SLICE, fn() => Items::GLISTERING_MELON());
 		//TODO: minecraft:globe_banner_pattern
 		//TODO: minecraft:glow_berries
-		$this->map(Ids::GLOW_FRAME, fn() => Blocks::ITEM_FRAME()->setGlowing(true)->asItem());
 		$this->map(Ids::GLOW_INK_SAC, fn() => Items::GLOW_INK_SAC());
 		//TODO: minecraft:glow_squid_spawn_egg
 		//TODO: minecraft:glow_stick
@@ -394,7 +386,6 @@ final class ItemDeserializer{
 		//TODO: minecraft:hoglin_spawn_egg
 		$this->map(Ids::HONEY_BOTTLE, fn() => Items::HONEY_BOTTLE());
 		$this->map(Ids::HONEYCOMB, fn() => Items::HONEYCOMB());
-		$this->map(Ids::HOPPER, fn() => Blocks::HOPPER()->asItem());
 		//TODO: minecraft:hopper_minecart
 		//TODO: minecraft:horse_spawn_egg
 		//TODO: minecraft:husk_spawn_egg
@@ -403,7 +394,6 @@ final class ItemDeserializer{
 		$this->map(Ids::IRON_AXE, fn() => Items::IRON_AXE());
 		$this->map(Ids::IRON_BOOTS, fn() => Items::IRON_BOOTS());
 		$this->map(Ids::IRON_CHESTPLATE, fn() => Items::IRON_CHESTPLATE());
-		$this->map(Ids::IRON_DOOR, fn() => Blocks::IRON_DOOR()->asItem());
 		$this->map(Ids::IRON_HELMET, fn() => Items::IRON_HELMET());
 		$this->map(Ids::IRON_HOE, fn() => Items::IRON_HOE());
 		//TODO: minecraft:iron_horse_armor
@@ -414,8 +404,7 @@ final class ItemDeserializer{
 		$this->map(Ids::IRON_SHOVEL, fn() => Items::IRON_SHOVEL());
 		$this->map(Ids::IRON_SWORD, fn() => Items::IRON_SWORD());
 		$this->map(Ids::JUNGLE_BOAT, fn() => Items::JUNGLE_BOAT());
-		$this->map(Ids::JUNGLE_DOOR, fn() => Blocks::JUNGLE_DOOR()->asItem());
-		$this->map(Ids::JUNGLE_SIGN, fn() => Blocks::JUNGLE_SIGN()->asItem());
+		$this->map(Ids::JUNGLE_SIGN, fn() => Items::JUNGLE_SIGN());
 		//TODO: minecraft:kelp
 		$this->map(Ids::LAPIS_LAZULI, fn() => Items::LAPIS_LAZULI());
 		$this->map(Ids::LAVA_BUCKET, fn() => Items::LAVA_BUCKET());
@@ -435,8 +424,7 @@ final class ItemDeserializer{
 		$this->map(Ids::MAGENTA_DYE, fn() => Items::DYE()->setColor(DyeColor::MAGENTA()));
 		$this->map(Ids::MAGMA_CREAM, fn() => Items::MAGMA_CREAM());
 		//TODO: minecraft:magma_cube_spawn_egg
-		$this->map(Ids::MANGROVE_DOOR, fn() => Blocks::MANGROVE_DOOR()->asItem());
-		$this->map(Ids::MANGROVE_SIGN, fn() => Blocks::MANGROVE_SIGN()->asItem());
+		$this->map(Ids::MANGROVE_SIGN, fn() => Items::MANGROVE_SIGN());
 		//TODO: minecraft:medicine
 		$this->map(Ids::MELON_SEEDS, fn() => Items::MELON_SEEDS());
 		$this->map(Ids::MELON_SLICE, fn() => Items::MELON());
@@ -465,7 +453,6 @@ final class ItemDeserializer{
 		$this->map(Ids::NAUTILUS_SHELL, fn() => Items::NAUTILUS_SHELL());
 		//TODO: minecraft:nether_sprouts
 		$this->map(Ids::NETHER_STAR, fn() => Items::NETHER_STAR());
-		$this->map(Ids::NETHER_WART, fn() => Blocks::NETHER_WART()->asItem());
 		$this->map(Ids::NETHERBRICK, fn() => Items::NETHER_BRICK());
 		$this->map(Ids::NETHERITE_AXE, fn() => Items::NETHERITE_AXE());
 		$this->map(Ids::NETHERITE_BOOTS, fn() => Items::NETHERITE_BOOTS());
@@ -480,7 +467,7 @@ final class ItemDeserializer{
 		$this->map(Ids::NETHERITE_SWORD, fn() => Items::NETHERITE_SWORD());
 		//TODO: minecraft:npc_spawn_egg
 		$this->map(Ids::OAK_BOAT, fn() => Items::OAK_BOAT());
-		$this->map(Ids::OAK_SIGN, fn() => Blocks::OAK_SIGN()->asItem());
+		$this->map(Ids::OAK_SIGN, fn() => Items::OAK_SIGN());
 		//TODO: minecraft:ocelot_spawn_egg
 		$this->map(Ids::ORANGE_DYE, fn() => Items::DYE()->setColor(DyeColor::ORANGE()));
 		$this->map(Ids::PAINTING, fn() => Items::PAINTING());
@@ -530,7 +517,6 @@ final class ItemDeserializer{
 		$this->map(Ids::RAW_IRON, fn() => Items::RAW_IRON());
 		$this->map(Ids::RED_DYE, fn() => Items::DYE()->setColor(DyeColor::RED()));
 		$this->map(Ids::REDSTONE, fn() => Items::REDSTONE_DUST());
-		$this->map(Ids::REPEATER, fn() => Blocks::REDSTONE_REPEATER()->asItem());
 		$this->map(Ids::ROTTEN_FLESH, fn() => Items::ROTTEN_FLESH());
 		//TODO: minecraft:saddle
 		$this->map(Ids::SALMON, fn() => Items::RAW_SALMON());
@@ -545,27 +531,12 @@ final class ItemDeserializer{
 		//TODO: minecraft:silverfish_spawn_egg
 		//TODO: minecraft:skeleton_horse_spawn_egg
 		//TODO: minecraft:skeleton_spawn_egg
-		$this->map(Ids::SKULL, function(Data $data) : Item{
-			$meta = $data->getMeta();
-			try{
-				$skullType = SkullType::fromMagicNumber($meta);
-			}catch(\InvalidArgumentException $e){
-				throw new ItemTypeDeserializeException($e->getMessage(), 0, $e);
-			}
-			return Blocks::MOB_HEAD()->setSkullType($skullType)->asItem();
-		});
 		//TODO: minecraft:skull_banner_pattern
 		$this->map(Ids::SLIME_BALL, fn() => Items::SLIMEBALL());
 		//TODO: minecraft:slime_spawn_egg
 		$this->map(Ids::SNOWBALL, fn() => Items::SNOWBALL());
 		//TODO: minecraft:soul_campfire
 		//TODO: minecraft:sparkler
-		$this->map(Ids::SPAWN_EGG, fn(Data $data) => match($data->getMeta()){
-			EntityLegacyIds::ZOMBIE => Items::ZOMBIE_SPAWN_EGG(),
-			EntityLegacyIds::SQUID => Items::SQUID_SPAWN_EGG(),
-			EntityLegacyIds::VILLAGER => Items::VILLAGER_SPAWN_EGG(),
-			default => throw new ItemTypeDeserializeException("Unhandled spawn egg meta " . $data->getMeta())
-		});
 		$this->map(Ids::SPIDER_EYE, fn() => Items::SPIDER_EYE());
 		//TODO: minecraft:spider_spawn_egg
 		$this->map(Ids::SPLASH_POTION, function(Data $data) : Item{
@@ -577,8 +548,7 @@ final class ItemDeserializer{
 			return Items::SPLASH_POTION()->setType($potionType);
 		});
 		$this->map(Ids::SPRUCE_BOAT, fn() => Items::SPRUCE_BOAT());
-		$this->map(Ids::SPRUCE_DOOR, fn() => Blocks::SPRUCE_DOOR()->asItem());
-		$this->map(Ids::SPRUCE_SIGN, fn() => Blocks::SPRUCE_SIGN()->asItem());
+		$this->map(Ids::SPRUCE_SIGN, fn() => Items::SPRUCE_SIGN());
 		$this->map(Ids::SPYGLASS, fn() => Items::SPYGLASS());
 		$this->map(Ids::SQUID_SPAWN_EGG, fn() => Items::SQUID_SPAWN_EGG());
 		$this->map(Ids::STICK, fn() => Items::STICK());
@@ -591,7 +561,6 @@ final class ItemDeserializer{
 		//TODO: minecraft:strider_spawn_egg
 		$this->map(Ids::STRING, fn() => Items::STRING());
 		$this->map(Ids::SUGAR, fn() => Items::SUGAR());
-		$this->map(Ids::SUGAR_CANE, fn() => Blocks::SUGARCANE()->asItem());
 		$this->map(Ids::SUSPICIOUS_STEW, function(Data $data) : Item{
 			$meta = $data->getMeta();
 			$suspiciousStewType = SuspiciousStewTypeIdMap::getInstance()->fromId($meta);
@@ -615,9 +584,8 @@ final class ItemDeserializer{
 		$this->map(Ids::VILLAGER_SPAWN_EGG, fn() => Items::VILLAGER_SPAWN_EGG());
 		//TODO: minecraft:vindicator_spawn_egg
 		//TODO: minecraft:wandering_trader_spawn_egg
-		$this->map(Ids::WARPED_DOOR, fn() => Blocks::WARPED_DOOR()->asItem());
 		//TODO: minecraft:warped_fungus_on_a_stick
-		$this->map(Ids::WARPED_SIGN, fn() => Blocks::WARPED_SIGN()->asItem());
+		$this->map(Ids::WARPED_SIGN, fn() => Items::WARPED_SIGN());
 		$this->map(Ids::WATER_BUCKET, fn() => Items::WATER_BUCKET());
 		$this->map(Ids::WHEAT, fn() => Items::WHEAT());
 		$this->map(Ids::WHEAT_SEEDS, fn() => Items::WHEAT_SEEDS());
@@ -626,7 +594,6 @@ final class ItemDeserializer{
 		//TODO: minecraft:wither_skeleton_spawn_egg
 		//TODO: minecraft:wolf_spawn_egg
 		$this->map(Ids::WOODEN_AXE, fn() => Items::WOODEN_AXE());
-		$this->map(Ids::WOODEN_DOOR, fn() => Blocks::OAK_DOOR()->asItem());
 		$this->map(Ids::WOODEN_HOE, fn() => Items::WOODEN_HOE());
 		$this->map(Ids::WOODEN_PICKAXE, fn() => Items::WOODEN_PICKAXE());
 		$this->map(Ids::WOODEN_SHOVEL, fn() => Items::WOODEN_SHOVEL());

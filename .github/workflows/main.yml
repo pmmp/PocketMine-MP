@@ -13,11 +13,11 @@ jobs:
     strategy:
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.18]
+        php: [8.0.22, 8.1.9]
 
     steps:
       - name: Build and prepare PHP cache
-        uses: pmmp/setup-php-action@aa636a4fe0c1c035fd9a3f05e360eadd86e06440
+        uses: pmmp/setup-php-action@82a44d659bf5046612c69f036af3e14dc32e3fa8
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
@@ -31,13 +31,13 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.18]
+        php: [8.0.22, 8.1.9]
 
     steps:
       - uses: actions/checkout@v3
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@aa636a4fe0c1c035fd9a3f05e360eadd86e06440
+        uses: pmmp/setup-php-action@82a44d659bf5046612c69f036af3e14dc32e3fa8
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
@@ -69,13 +69,13 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.18]
+        php: [8.0.22, 8.1.9]
 
     steps:
       - uses: actions/checkout@v3
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@aa636a4fe0c1c035fd9a3f05e360eadd86e06440
+        uses: pmmp/setup-php-action@82a44d659bf5046612c69f036af3e14dc32e3fa8
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
@@ -107,7 +107,7 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.18]
+        php: [8.0.22, 8.1.9]
 
     steps:
       - uses: actions/checkout@v3
@@ -115,7 +115,7 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@aa636a4fe0c1c035fd9a3f05e360eadd86e06440
+        uses: pmmp/setup-php-action@82a44d659bf5046612c69f036af3e14dc32e3fa8
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
@@ -147,13 +147,13 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.18]
+        php: [8.0.22, 8.1.9]
 
     steps:
       - uses: actions/checkout@v3
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@aa636a4fe0c1c035fd9a3f05e360eadd86e06440
+        uses: pmmp/setup-php-action@82a44d659bf5046612c69f036af3e14dc32e3fa8
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
@@ -198,10 +198,10 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Setup PHP and tools
-        uses: shivammathur/setup-php@2.21.1
+        uses: shivammathur/setup-php@2.21.2
         with:
           php-version: 8.0
-          tools: php-cs-fixer:3.2
+          tools: php-cs-fixer:3.8
 
       - name: Run PHP-CS-Fixer
         run: php-cs-fixer fix --dry-run --diff --ansi
