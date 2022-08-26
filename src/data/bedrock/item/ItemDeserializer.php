@@ -27,14 +27,12 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SkullType;
-use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateDeserializer;
 use pocketmine\data\bedrock\block\convert\UnsupportedBlockStateException;
 use pocketmine\data\bedrock\CompoundTypeIds;
 use pocketmine\data\bedrock\DyeColorIdMap;
-use pocketmine\data\bedrock\EntityLegacyIds;
 use pocketmine\data\bedrock\item\ItemTypeNames as Ids;
 use pocketmine\data\bedrock\item\SavedItemData as Data;
 use pocketmine\data\bedrock\PotionTypeIdMap;
@@ -43,7 +41,6 @@ use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems as Items;
 use pocketmine\nbt\NbtException;
-use pocketmine\utils\AssumptionFailedError;
 use function min;
 
 final class ItemDeserializer{
@@ -208,22 +205,6 @@ final class ItemDeserializer{
 		//TODO: minecraft:blaze_spawn_egg
 		$this->map(Ids::BLEACH, fn() => Items::BLEACH());
 		$this->map(Ids::BLUE_DYE, fn() => Items::DYE()->setColor(DyeColor::BLUE()));
-		$this->map(Ids::BOAT, function(Data $data) : Item{
-			try{
-				$treeType = TreeType::fromMagicNumber($data->getMeta());
-			}catch(\InvalidArgumentException $e){
-				throw new ItemTypeDeserializeException($e->getMessage(), 0, $e);
-			}
-			return match($treeType->id()){
-				TreeType::OAK()->id() => Items::OAK_BOAT(),
-				TreeType::SPRUCE()->id() => Items::SPRUCE_BOAT(),
-				TreeType::BIRCH()->id() => Items::BIRCH_BOAT(),
-				TreeType::JUNGLE()->id() => Items::JUNGLE_BOAT(),
-				TreeType::ACACIA()->id() => Items::ACACIA_BOAT(),
-				TreeType::DARK_OAK()->id() => Items::DARK_OAK_BOAT(),
-				default => throw new AssumptionFailedError("Unexpected tree type " . $treeType->name())
-			};
-		});
 		$this->map(Ids::BONE, fn() => Items::BONE());
 		$this->map(Ids::BONE_MEAL, fn() => Items::BONE_MEAL());
 		$this->map(Ids::BOOK, fn() => Items::BOOK());
@@ -334,28 +315,6 @@ final class ItemDeserializer{
 		$this->map(Ids::DRAGON_BREATH, fn() => Items::DRAGON_BREATH());
 		$this->map(Ids::DRIED_KELP, fn() => Items::DRIED_KELP());
 		//TODO: minecraft:drowned_spawn_egg
-		$this->map(Ids::DYE, function(Data $data) : Item{
-			$meta = $data->getMeta();
-			$item = match($meta) {
-				0 => Items::INK_SAC(),
-				3 => Items::COCOA_BEANS(),
-				4 => Items::LAPIS_LAZULI(),
-				15 => Items::BONE_MEAL(),
-				16 => Items::DYE()->setColor(DyeColor::BLACK()),
-				17 => Items::DYE()->setColor(DyeColor::BROWN()),
-				18 => Items::DYE()->setColor(DyeColor::BLUE()),
-				19 => Items::DYE()->setColor(DyeColor::WHITE()),
-				default => null
-			};
-			if($item !== null){
-				return $item;
-			}
-			$dyeColor = DyeColorIdMap::getInstance()->fromInvertedId($meta);
-			if($dyeColor === null){
-				throw new ItemTypeDeserializeException("Unknown dye meta $meta");
-			}
-			return Items::DYE()->setColor($dyeColor);
-		});
 		$this->map(Ids::ECHO_SHARD, fn() => Items::ECHO_SHARD());
 		$this->map(Ids::EGG, fn() => Items::EGG());
 		//TODO: minecraft:elder_guardian_spawn_egg
@@ -570,12 +529,6 @@ final class ItemDeserializer{
 		$this->map(Ids::SNOWBALL, fn() => Items::SNOWBALL());
 		//TODO: minecraft:soul_campfire
 		//TODO: minecraft:sparkler
-		$this->map(Ids::SPAWN_EGG, fn(Data $data) => match($data->getMeta()){
-			EntityLegacyIds::ZOMBIE => Items::ZOMBIE_SPAWN_EGG(),
-			EntityLegacyIds::SQUID => Items::SQUID_SPAWN_EGG(),
-			EntityLegacyIds::VILLAGER => Items::VILLAGER_SPAWN_EGG(),
-			default => throw new ItemTypeDeserializeException("Unhandled spawn egg meta " . $data->getMeta())
-		});
 		$this->map(Ids::SPIDER_EYE, fn() => Items::SPIDER_EYE());
 		//TODO: minecraft:spider_spawn_egg
 		$this->map(Ids::SPLASH_POTION, function(Data $data) : Item{
