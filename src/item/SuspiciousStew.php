@@ -52,10 +52,6 @@ class SuspiciousStew extends Food{
 		return 1;
 	}
 
-	public function requiresHunger() : bool{
-		return false;
-	}
-
 	public function getFoodRestore() : int{
 		return 6;
 	}
