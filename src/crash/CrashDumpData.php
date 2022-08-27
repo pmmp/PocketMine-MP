@@ -66,6 +66,8 @@ final class CrashDumpData implements \JsonSerializable{
 	 */
 	public array $extensions = [];
 
+	public ?int $jit_mode = null;
+
 	public string $phpinfo = "";
 
 	public CrashDumpDataGeneral $general;
