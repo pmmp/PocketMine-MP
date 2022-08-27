@@ -38,10 +38,18 @@ final class ItemBlock extends Item{
 	private int $blockTypeId;
 	private int $blockTypeData;
 
+	private int $fuelTime;
+	private bool $fireProof;
+	private int $maxStackSize;
+
 	public function __construct(Block $block){
 		parent::__construct(ItemIdentifier::fromBlock($block), $block->getName());
 		$this->blockTypeId = $block->getTypeId();
 		$this->blockTypeData = $block->computeTypeData();
+
+		$this->fuelTime = $block->getFuelTime();
+		$this->fireProof = $block->isFireProofAsItem();
+		$this->maxStackSize = $block->getMaxStackSize();
 	}
 
 	protected function encodeType(RuntimeDataWriter $w) : void{
@@ -60,14 +68,14 @@ final class ItemBlock extends Item{
 	}
 
 	public function getFuelTime() : int{
-		return $this->getBlock()->getFuelTime();
+		return $this->fuelTime;
 	}
 
 	public function isFireProof() : bool{
-		return $this->getBlock()->isFireProofAsItem();
+		return $this->fireProof;
 	}
 
 	public function getMaxStackSize() : int{
-		return $this->getBlock()->getMaxStackSize();
+		return $this->maxStackSize;
 	}
 }

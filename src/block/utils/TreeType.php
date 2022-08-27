@@ -44,51 +44,25 @@ final class TreeType{
 		__construct as Enum___construct;
 	}
 
-	/** @var TreeType[] */
-	private static array $numericIdMap = [];
-
 	protected static function setup() : void{
 		self::registerAll(
-			new TreeType("oak", "Oak", 0),
-			new TreeType("spruce", "Spruce", 1),
-			new TreeType("birch", "Birch", 2),
-			new TreeType("jungle", "Jungle", 3),
-			new TreeType("acacia", "Acacia", 4),
-			new TreeType("dark_oak", "Dark Oak", 5)
+			new TreeType("oak", "Oak"),
+			new TreeType("spruce", "Spruce"),
+			new TreeType("birch", "Birch"),
+			new TreeType("jungle", "Jungle"),
+			new TreeType("acacia", "Acacia"),
+			new TreeType("dark_oak", "Dark Oak")
 		);
-	}
-
-	protected static function register(TreeType $type) : void{
-		self::Enum_register($type);
-		self::$numericIdMap[$type->getMagicNumber()] = $type;
-	}
-
-	/**
-	 * @internal
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	public static function fromMagicNumber(int $magicNumber) : TreeType{
-		self::checkInit();
-		if(!isset(self::$numericIdMap[$magicNumber])){
-			throw new \InvalidArgumentException("Unknown tree type magic number $magicNumber");
-		}
-		return self::$numericIdMap[$magicNumber];
 	}
 
 	private function __construct(
 		string $enumName,
-		private string $displayName,
-		private int $magicNumber
+		private string $displayName
 	){
 		$this->Enum___construct($enumName);
 	}
 
 	public function getDisplayName() : string{
 		return $this->displayName;
-	}
-
-	public function getMagicNumber() : int{
-		return $this->magicNumber;
 	}
 }

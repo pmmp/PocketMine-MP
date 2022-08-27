@@ -58,30 +58,30 @@ final class StringToItemParser extends StringToTParser{
 
 	private static function registerDynamicBlocks(self $result) : void{
 		foreach(DyeColor::getAll() as $color){
-			$prefix = fn(string $name) => $color->name() . "_" . $name;
+			$register = fn(string $name, \Closure $callback) => $result->registerBlock($color->name() . "_" . $name, $callback);
 			//wall and floor banner are the same item
-			$result->registerBlock($prefix("banner"), fn() => Blocks::BANNER()->setColor($color));
-			$result->registerBlock($prefix("bed"), fn() => Blocks::BED()->setColor($color));
-			$result->registerBlock($prefix("candle"), fn() => Blocks::DYED_CANDLE()->setColor($color));
-			$result->registerBlock($prefix("carpet"), fn() => Blocks::CARPET()->setColor($color));
-			$result->registerBlock($prefix("concrete"), fn() => Blocks::CONCRETE()->setColor($color));
-			$result->registerBlock($prefix("concrete_powder"), fn() => Blocks::CONCRETE_POWDER()->setColor($color));
-			$result->registerBlock($prefix("glazed_terracotta"), fn() => Blocks::GLAZED_TERRACOTTA()->setColor($color));
-			$result->registerBlock($prefix("stained_clay"), fn() => Blocks::STAINED_CLAY()->setColor($color));
-			$result->registerBlock($prefix("stained_glass"), fn() => Blocks::STAINED_GLASS()->setColor($color));
-			$result->registerBlock($prefix("stained_glass_pane"), fn() => Blocks::STAINED_GLASS_PANE()->setColor($color));
-			$result->registerBlock($prefix("stained_hardened_glass"), fn() => Blocks::STAINED_HARDENED_GLASS()->setColor($color));
-			$result->registerBlock($prefix("stained_hardened_glass_pane"), fn() => Blocks::STAINED_HARDENED_GLASS_PANE()->setColor($color));
-			$result->registerBlock($prefix("wool"), fn() => Blocks::WOOL()->setColor($color));
-			$result->registerBlock($prefix("shulker_box"), fn() => Blocks::DYED_SHULKER_BOX()->setColor($color));
+			$register("banner", fn() => Blocks::BANNER()->setColor($color));
+			$register("bed", fn() => Blocks::BED()->setColor($color));
+			$register("candle", fn() => Blocks::DYED_CANDLE()->setColor($color));
+			$register("carpet", fn() => Blocks::CARPET()->setColor($color));
+			$register("concrete", fn() => Blocks::CONCRETE()->setColor($color));
+			$register("concrete_powder", fn() => Blocks::CONCRETE_POWDER()->setColor($color));
+			$register("glazed_terracotta", fn() => Blocks::GLAZED_TERRACOTTA()->setColor($color));
+			$register("stained_clay", fn() => Blocks::STAINED_CLAY()->setColor($color));
+			$register("stained_glass", fn() => Blocks::STAINED_GLASS()->setColor($color));
+			$register("stained_glass_pane", fn() => Blocks::STAINED_GLASS_PANE()->setColor($color));
+			$register("stained_hardened_glass", fn() => Blocks::STAINED_HARDENED_GLASS()->setColor($color));
+			$register("stained_hardened_glass_pane", fn() => Blocks::STAINED_HARDENED_GLASS_PANE()->setColor($color));
+			$register("wool", fn() => Blocks::WOOL()->setColor($color));
+			$register("shulker_box", fn() => Blocks::DYED_SHULKER_BOX()->setColor($color));
 		}
 
 		foreach(CoralType::getAll() as $coralType){
-			$prefix = fn(string $name) => $coralType->name() . "_" . $name;
-			$result->registerBlock($prefix("coral"), fn() => Blocks::CORAL()->setCoralType($coralType));
-			$result->registerBlock($prefix("coral_block"), fn() => Blocks::CORAL_BLOCK()->setCoralType($coralType));
+			$register = fn(string $name, \Closure $callback) => $result->registerBlock($coralType->name() . "_" . $name, $callback);
+			$register("coral", fn() => Blocks::CORAL()->setCoralType($coralType));
+			$register("coral_block", fn() => Blocks::CORAL_BLOCK()->setCoralType($coralType));
 			//wall and floor coral fans are the same item
-			$result->registerBlock($prefix("coral_fan"), fn() => Blocks::CORAL_FAN()->setCoralType($coralType));
+			$register("coral_fan", fn() => Blocks::CORAL_FAN()->setCoralType($coralType));
 		}
 		for($i = Light::MIN_LIGHT_LEVEL; $i <= Light::MAX_LIGHT_LEVEL; $i++){
 			//helper aliases, since we don't support passing data values in /give
@@ -93,11 +93,11 @@ final class StringToItemParser extends StringToTParser{
 			$oxPrefix = $oxidation->equals(CopperOxidation::NONE()) ? "" : $oxidation->name() . "_";
 
 			foreach(["" => false, "waxed_" => true] as $waxedPrefix => $waxed){
-				$prefix = $waxedPrefix . $oxPrefix;
-				$result->registerBlock($prefix . "copper_block", fn() => Blocks::COPPER()->setOxidation($oxidation)->setWaxed($waxed));
-				$result->registerBlock($prefix . "cut_copper_block", fn() => Blocks::CUT_COPPER()->setOxidation($oxidation)->setWaxed($waxed));
-				$result->registerBlock($prefix . "cut_copper_stairs", fn() => Blocks::CUT_COPPER_STAIRS()->setOxidation($oxidation)->setWaxed($waxed));
-				$result->registerBlock($prefix . "cut_copper_slab", fn() => Blocks::CUT_COPPER_SLAB()->setOxidation($oxidation)->setWaxed($waxed));
+				$register = fn(string $name, \Closure $callback) => $result->registerBlock($waxedPrefix . $oxPrefix . $name, $callback);
+				$register("copper_block", fn() => Blocks::COPPER()->setOxidation($oxidation)->setWaxed($waxed));
+				$register("cut_copper_block", fn() => Blocks::CUT_COPPER()->setOxidation($oxidation)->setWaxed($waxed));
+				$register("cut_copper_stairs", fn() => Blocks::CUT_COPPER_STAIRS()->setOxidation($oxidation)->setWaxed($waxed));
+				$register("cut_copper_slab", fn() => Blocks::CUT_COPPER_SLAB()->setOxidation($oxidation)->setWaxed($waxed));
 			}
 		}
 
