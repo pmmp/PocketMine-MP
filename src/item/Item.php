@@ -561,7 +561,7 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Called when this item is being worn by an entity.
-	 * Returns whether the item was updated, for example count decrease or durability change.
+	 * Returns whether it did something.
 	 */
 	public function onTickWorn(Living $entity) : bool{
 		return false;
