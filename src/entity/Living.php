@@ -607,9 +607,10 @@ abstract class Living extends Entity{
 				$hasUpdate = true;
 			}
 
-			foreach($this->armorInventory->getContents() as $item){
+			foreach($this->armorInventory->getContents() as $index => $item){
 				if($item->onTickWorn($this)){
 					$hasUpdate = true;
+					$this->armorInventory->setItem($index, $item);
 				}
 			}
 		}
