@@ -132,12 +132,9 @@ class Network{
 	public function setName(string $name, ?string $subName = null) : void{
 		$this->name = $name;
 		$this->subName = $subName;
-<<<<<<< HEAD
-=======
 		foreach($this->interfaces as $interface){
 			$interface->setName($this->name, $this->subName);
 		}
->>>>>>> ba5d034ce5d4b30cedd7b81c908f4328aba4c763
 	}
 
 	/**
@@ -147,17 +144,10 @@ class Network{
 		return $this->name;
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 	/**
 	 * Get the server sub name shown in the interface Query.
 	 */
-=======
->>>>>>> ba5d034ce5d4b30cedd7b81c908f4328aba4c763
 	public function getSubName() : ?string{
-=======
-	public function getSubName() : string{
->>>>>>> parent of ba5d034ce (Fix Lints)
 		return $this->subName;
 	}
 
