@@ -301,7 +301,7 @@ abstract class Living extends Entity{
 	public function hasLineOfSight(Entity $entity) : bool{
 		$world = $this->getWorld();
 		if ($world !== $entity->getWorld()) {
-			throw new \InvalidArgumentException("Target entity is not in the same");
+			throw new \InvalidArgumentException("Target entity is not in the same world");
 			
 		}
 		$start = $this->getEyePos();
