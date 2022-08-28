@@ -293,16 +293,22 @@ abstract class Living extends Entity{
 		return $nbt;
 	}
 
+	/**
+	 * Returns whether this entity has not block line of sight to another entity.
+	 *
+	 * @throws \InvalidArgumentException if the entities are not in the same world
+	 */
 	public function hasLineOfSight(Entity $entity) : bool{
 		$world = $this->getWorld();
 		if ($world !== $entity->getWorld()) {
-			return false;
+			throw new \InvalidArgumentException("Target entity is not in the same");
+			
 		}
 		$start = $this->getEyePos();
 		$end = $entity->getEyePos();
 		if ($end->subtractVector($start)->normalize()->lengthSquared() > 0) {
 			foreach(VoxelRayTrace::betweenPoints($start, $end) as $vector3){
-				if(!$world->getBlockAt($vector3->x, $vector3->y, $vector3->z)->isTransparent()){
+				if(!$world->getBlockAt((int) floor($vector3->x), (int) floor($vector3->y), (int) floor($vector3->z))->isTransparent()){
 					return false;
 				}
 			}
