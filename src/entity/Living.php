@@ -302,7 +302,6 @@ abstract class Living extends Entity{
 		$world = $this->getWorld();
 		if ($world !== $entity->getWorld()) {
 			throw new \InvalidArgumentException("Target entity is not in the same world");
-			
 		}
 		$start = $this->getEyePos();
 		$end = $entity->getEyePos();
