@@ -294,9 +294,20 @@ abstract class Living extends Entity{
 	}
 
 	public function hasLineOfSight(Entity $entity) : bool{
-		//TODO: head height
+		$world = $this->getWorld();
+		if ($world !== $entity->getWorld()) {
+			return false;
+		}
+		$start = $this->getEyePos();
+		$end = $entity->getEyePos();
+		if ($end->subtractVector($start)->normalize()->lengthSquared() > 0) {
+			foreach(VoxelRayTrace::betweenPoints($start, $end) as $vector3){
+				if(!$world->getBlockAt($vector3->x, $vector3->y, $vector3->z)->isTransparent()){
+					return false;
+				}
+			}
+		}
 		return true;
-		//return $this->getLevelNonNull()->rayTraceBlocks(Vector3::createVector($this->x, $this->y + $this->height, $this->z), Vector3::createVector($entity->x, $entity->y + $entity->height, $entity->z)) === null;
 	}
 
 	public function getEffects() : EffectManager{
