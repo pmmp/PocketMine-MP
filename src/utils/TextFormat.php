@@ -171,7 +171,7 @@ abstract class TextFormat{
 	public static function rebase(string $baseFormat, string $string) : string{
 		$baseFormatParts = self::tokenize($baseFormat);
 		foreach($baseFormatParts as $part){
-			if(!isset(self::FORMATS[$part]) and !isset(self::COLORS[$part])){
+			if(!isset(self::FORMATS[$part]) && !isset(self::COLORS[$part])){
 				throw new \InvalidArgumentException("Unexpected base format token \"$part\", expected only color and format tokens");
 			}
 		}
