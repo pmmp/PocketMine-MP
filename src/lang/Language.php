@@ -68,13 +68,13 @@ class Language{
 				$result = [];
 
 				foreach($files as $file){
-					try {
+					try{
 						$code = explode(".", $file)[0];
 						$strings = self::loadLang($path, $code);
 						if(isset($strings["language.name"])){
 							$result[$code] = $strings["language.name"];
 						}
-					} catch (LanguageNotFoundException $e) {
+					}catch(LanguageNotFoundException $e){
 						// no-op
 					}
 				}
