@@ -225,7 +225,7 @@ class Server{
 
 	private MemoryManager $memoryManager;
 
-	private ConsoleReaderThread $console;
+	private ?ConsoleReaderThread $console = null;
 
 	private SimpleCommandMap $commandMap;
 
@@ -1048,17 +1048,19 @@ class Server{
 			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_ADMINISTRATIVE, $consoleSender);
 			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $consoleSender);
 
-			$consoleNotifier = new SleeperNotifier();
-			$commandBuffer = new \Threaded();
-			$this->console = new ConsoleReaderThread($commandBuffer, $consoleNotifier);
-			$this->tickSleeper->addNotifier($consoleNotifier, function() use ($commandBuffer, $consoleSender) : void{
-				Timings::$serverCommand->startTiming();
-				while(($line = $commandBuffer->shift()) !== null){
-					$this->dispatchCommand($consoleSender, (string) $line);
-				}
-				Timings::$serverCommand->stopTiming();
-			});
-			$this->console->start(PTHREADS_INHERIT_NONE);
+			if($this->configGroup->getPropertyBool("console.enable-input", true)){
+				$consoleNotifier = new SleeperNotifier();
+				$commandBuffer = new \Threaded();
+				$this->console = new ConsoleReaderThread($commandBuffer, $consoleNotifier);
+				$this->tickSleeper->addNotifier($consoleNotifier, function() use ($commandBuffer, $consoleSender) : void{
+					Timings::$serverCommand->startTiming();
+					while(($line = $commandBuffer->shift()) !== null){
+						$this->dispatchCommand($consoleSender, (string) $line);
+					}
+					Timings::$serverCommand->stopTiming();
+				});
+				$this->console->start(PTHREADS_INHERIT_NONE);
+			}
 
 			$this->tickProcessor();
 			$this->forceShutdown();
@@ -1511,7 +1513,7 @@ class Server{
 				$this->configGroup->save();
 			}
 
-			if(isset($this->console)){
+			if($this->console !== null){
 				$this->getLogger()->debug("Closing console");
 				$this->console->quit();
 			}
