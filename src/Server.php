@@ -31,7 +31,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\SimpleCommandMap;
 use pocketmine\console\ConsoleCommandSender;
-use pocketmine\console\ConsoleReaderThread;
+use pocketmine\console\ConsoleReaderChildProcessDaemon;
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingManagerFromDataHelper;
 use pocketmine\crash\CrashDump;
@@ -225,7 +225,8 @@ class Server{
 
 	private MemoryManager $memoryManager;
 
-	private ?ConsoleReaderThread $console = null;
+	private ?ConsoleReaderChildProcessDaemon $console = null;
+	private ?ConsoleCommandSender $consoleSender = null;
 
 	private SimpleCommandMap $commandMap;
 
@@ -1049,17 +1050,7 @@ class Server{
 			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $consoleSender);
 
 			if($this->configGroup->getPropertyBool("console.enable-input", true)){
-				$consoleNotifier = new SleeperNotifier();
-				$commandBuffer = new \Threaded();
-				$this->console = new ConsoleReaderThread($commandBuffer, $consoleNotifier);
-				$this->tickSleeper->addNotifier($consoleNotifier, function() use ($commandBuffer, $consoleSender) : void{
-					Timings::$serverCommand->startTiming();
-					while(($line = $commandBuffer->shift()) !== null){
-						$this->dispatchCommand($consoleSender, (string) $line);
-					}
-					Timings::$serverCommand->stopTiming();
-				});
-				$this->console->start(PTHREADS_INHERIT_NONE);
+				$this->console = new ConsoleReaderChildProcessDaemon($this->logger);
 			}
 
 			$this->tickProcessor();
@@ -1854,6 +1845,13 @@ class Server{
 		}
 
 		$this->getMemoryManager()->check();
+
+		if($this->console !== null){
+			while(($line = $this->console->readLine()) !== null){
+				$this->consoleSender ??= new ConsoleCommandSender($this, $this->language);
+				$this->dispatchCommand($this->consoleSender, $line);
+			}
+		}
 
 		Timings::$serverTick->stopTiming();
 
