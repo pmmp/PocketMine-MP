@@ -259,8 +259,10 @@ class InventoryManager{
 
 	public function onClientRemoveWindow(int $id) : void{
 		if($id === $this->lastInventoryNetworkId){
-			$this->remove($id);
-			$this->player->removeCurrentWindow();
+			if($id !== $this->pendingCloseWindowId){
+				$this->remove($id);
+				$this->player->removeCurrentWindow();
+			}
 		}else{
 			$this->session->getLogger()->debug("Attempted to close inventory with network ID $id, but current is $this->lastInventoryNetworkId");
 		}
