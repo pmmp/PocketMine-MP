@@ -88,7 +88,6 @@ use pocketmine\promise\PromiseResolver;
 use pocketmine\resourcepacks\ResourcePackManager;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\snooze\SleeperHandler;
-use pocketmine\snooze\SleeperNotifier;
 use pocketmine\stats\SendUsageTask;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
@@ -165,7 +164,6 @@ use function zlib_encode;
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 use const PHP_INT_MAX;
-use const PTHREADS_INHERIT_NONE;
 use const ZLIB_ENCODING_GZIP;
 
 /**
