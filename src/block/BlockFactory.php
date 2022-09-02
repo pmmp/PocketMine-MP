@@ -523,12 +523,6 @@ class BlockFactory{
 		$this->registerAllMeta(...$leaves);
 		$this->registerAllMeta(...$allSidedLogs);
 
-		static $sandstoneTypes = [
-			Meta::SANDSTONE_NORMAL => "",
-			Meta::SANDSTONE_CHISELED => "Chiseled ",
-			Meta::SANDSTONE_CUT => "Cut ",
-			Meta::SANDSTONE_SMOOTH => "Smooth "
-		];
 		$sandstoneBreakInfo = new BreakInfo(0.8, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
 		$this->registerAllMeta(new Stair(new BID(Ids::RED_SANDSTONE_STAIRS, 0), "Red Sandstone Stairs", $sandstoneBreakInfo));
 		$this->registerAllMeta(new Stair(new BID(Ids::SMOOTH_RED_SANDSTONE_STAIRS, 0), "Smooth Red Sandstone Stairs", $sandstoneBreakInfo));
@@ -536,7 +530,12 @@ class BlockFactory{
 		$this->registerAllMeta(new Stair(new BID(Ids::SMOOTH_SANDSTONE_STAIRS, 0), "Smooth Sandstone Stairs", $sandstoneBreakInfo));
 		$sandstones = [];
 		$redSandstones = [];
-		foreach($sandstoneTypes as $variant => $prefix){
+		foreach([
+			Meta::SANDSTONE_NORMAL => "",
+			Meta::SANDSTONE_CHISELED => "Chiseled ",
+			Meta::SANDSTONE_CUT => "Cut ",
+			Meta::SANDSTONE_SMOOTH => "Smooth "
+		] as $variant => $prefix){
 			$sandstones[] = new Opaque(new BID(Ids::SANDSTONE, $variant), $prefix . "Sandstone", $sandstoneBreakInfo);
 			$redSandstones[] = new Opaque(new BID(Ids::RED_SANDSTONE, $variant), $prefix . "Red Sandstone", $sandstoneBreakInfo);
 		}
