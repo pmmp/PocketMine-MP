@@ -165,12 +165,11 @@ abstract class TextFormat{
 	 * than whatever the terminal's base text colour is.
 	 *
 	 * Example behaviour:
-	 * - Base format "§c" (red) + "Hello" (no format) = "§r§cHello§r"
-	 * - Base format "§c" + "Hello §rWorld" = "§r§cHello §r§cWorld§r"
+	 * - Base format "§c" (red) + "Hello" (no format) = "§r§cHello"
+	 * - Base format "§c" + "Hello §rWorld" = "§r§cHello §r§cWorld"
 	 *
-	 * Note: It is recommended to only rebase a string's formatting once. If formats are rebased multiple times, the new
-	 * base format will be inserted before the previous base format, resulting in a combination of the two. This is not
-	 * by design, but simply a consequence of the way the function is implemented.
+	 * Note: Attempting to rebase the output string a second time will result in a combination of formats from both
+	 * calls. This is not by design, but simply a consequence of the way the function is implemented.
 	 */
 	public static function rebase(string $baseFormat, string $string) : string{
 		$baseFormatParts = self::tokenize($baseFormat);
@@ -181,7 +180,7 @@ abstract class TextFormat{
 		}
 		$baseFormat = self::RESET . $baseFormat;
 
-		return $baseFormat . str_replace(TextFormat::RESET, $baseFormat, $string) . self::RESET;
+		return $baseFormat . str_replace(TextFormat::RESET, $baseFormat, $string);
 	}
 
 	/**
