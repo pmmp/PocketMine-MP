@@ -129,7 +129,7 @@ class Language{
 	protected static function loadLang(string $path, string $languageCode) : array{
 		$file = Path::join($path, $languageCode . ".ini");
 		if(file_exists($file)){
-			$strings = array_map('\stripcslashes', Utils::assumeNotFalse(parse_ini_file($file, false, INI_SCANNER_RAW), "Missing or inaccessible required resource files"));
+			$strings = array_map('stripcslashes', Utils::assumeNotFalse(parse_ini_file($file, false, INI_SCANNER_RAW), "Missing or inaccessible required resource files"));
 			if(count($strings) > 0){
 				return $strings;
 			}
