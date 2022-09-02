@@ -27,6 +27,7 @@ use pocketmine\color\Color;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityEffectAddEvent;
 use pocketmine\event\entity\EntityEffectRemoveEvent;
+use function count;
 use function spl_object_id;
 
 class EffectManager extends EffectContainer{
