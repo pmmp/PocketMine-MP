@@ -237,8 +237,8 @@ class ExperienceManager{
 	}
 
 	public function onPickupXp(int $xpValue) : void{
-		static $mainHandIndex = -1;
-		static $offHandIndex = -2;
+		$mainHandIndex = -1;
+		$offHandIndex = -2;
 
 		//TODO: replace this with a more generic equipment getting/setting interface
 		/** @var Durable[] $equipment */
