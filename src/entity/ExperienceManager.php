@@ -241,7 +241,6 @@ class ExperienceManager{
 		$offHandIndex = -2;
 
 		//TODO: replace this with a more generic equipment getting/setting interface
-		/** @var Durable[] $equipment */
 		$equipment = [];
 
 		if(($item = $this->entity->getInventory()->getItemInHand()) instanceof Durable && $item->hasEnchantment(VanillaEnchantments::MENDING())){
