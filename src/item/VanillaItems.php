@@ -203,6 +203,7 @@ use pocketmine\world\World;
  * @method static Armor LEATHER_CAP()
  * @method static Armor LEATHER_PANTS()
  * @method static Armor LEATHER_TUNIC()
+ * @method static LingeringPotion LINGERING_POTION()
  * @method static Item MAGMA_CREAM()
  * @method static ItemBlockWallOrFloor MANGROVE_SIGN()
  * @method static Melon MELON()
