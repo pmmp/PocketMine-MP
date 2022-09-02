@@ -167,6 +167,10 @@ abstract class TextFormat{
 	 * Example behaviour:
 	 * - Base format "§c" (red) + "Hello" (no format) = "§r§cHello§r"
 	 * - Base format "§c" + "Hello §rWorld" = "§r§cHello §r§cWorld§r"
+	 *
+	 * Note: It is recommended to only rebase a string's formatting once. If formats are rebased multiple times, the new
+	 * base format will be inserted before the previous base format, resulting in a combination of the two. This is not
+	 * by design, but simply a consequence of the way the function is implemented.
 	 */
 	public static function rebase(string $baseFormat, string $string) : string{
 		$baseFormatParts = self::tokenize($baseFormat);
