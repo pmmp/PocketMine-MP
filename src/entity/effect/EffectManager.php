@@ -24,55 +24,21 @@ declare(strict_types=1);
 namespace pocketmine\entity\effect;
 
 use pocketmine\color\Color;
-use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityEffectAddEvent;
 use pocketmine\event\entity\EntityEffectRemoveEvent;
-use pocketmine\utils\ObjectSet;
-use function abs;
-use function count;
 use function spl_object_id;
 
-class EffectManager{
-	/** @var EffectInstance[] */
-	protected array $effects = [];
+class EffectManager extends EffectContainer{
 
 	protected Color $bubbleColor;
 	protected bool $onlyAmbientEffects = false;
 
-	/**
-	 * @var \Closure[]|ObjectSet
-	 * @phpstan-var ObjectSet<\Closure(EffectInstance, bool $replacesOldEffect) : void>
-	 */
-	protected ObjectSet $effectAddHooks;
-	/**
-	 * @var \Closure[]|ObjectSet
-	 * @phpstan-var ObjectSet<\Closure(EffectInstance) : void>
-	 */
-	protected ObjectSet $effectRemoveHooks;
-
 	public function __construct(
-		private Entity $entity
+		private Living $entity
 	){
 		$this->bubbleColor = new Color(0, 0, 0, 0);
-		$this->effectAddHooks = new ObjectSet();
-		$this->effectRemoveHooks = new ObjectSet();
-	}
-
-	/**
-	 * Returns an array of Effects currently active on the mob.
-	 * @return EffectInstance[]
-	 */
-	public function all() : array{
-		return $this->effects;
-	}
-
-	/**
-	 * Removes all effects from the mob.
-	 */
-	public function clear() : void{
-		foreach($this->effects as $effect){
-			$this->remove($effect->getType());
-		}
+		parent::__construct();
 	}
 
 	/**
@@ -91,29 +57,11 @@ class EffectManager{
 				return;
 			}
 
-			unset($this->effects[$index]);
 			$effect->getType()->remove($this->entity, $effect);
-			foreach($this->effectRemoveHooks as $hook){
-				$hook($effect);
-			}
+			parent::remove($effectType);
 
 			$this->recalculateEffectColor();
 		}
-	}
-
-	/**
-	 * Returns the effect instance active on this entity with the specified ID, or null if the mob does not have the
-	 * effect.
-	 */
-	public function get(Effect $effect) : ?EffectInstance{
-		return $this->effects[spl_object_id($effect)] ?? null;
-	}
-
-	/**
-	 * Returns whether the specified effect is active on the mob.
-	 */
-	public function has(Effect $effect) : bool{
-		return isset($this->effects[spl_object_id($effect)]);
 	}
 
 	/**
@@ -123,28 +71,17 @@ class EffectManager{
 	 *
 	 * @return bool whether the effect has been successfully applied.
 	 */
-	public function add(EffectInstance $effect) : bool{
-		$oldEffect = null;
-		$cancelled = false;
-
+	public function add(EffectInstance $effect, bool $force = false) : bool{
 		$index = spl_object_id($effect->getType());
-		if(isset($this->effects[$index])){
-			$oldEffect = $this->effects[$index];
-			if(
-				abs($effect->getAmplifier()) < $oldEffect->getAmplifier()
-				|| (abs($effect->getAmplifier()) === abs($oldEffect->getAmplifier()) && $effect->getDuration() < $oldEffect->getDuration())
-			){
-				$cancelled = true;
-			}
-		}
+		$oldEffect = $this->effects[$index] ?? null;
 
 		$ev = new EntityEffectAddEvent($this->entity, $effect, $oldEffect);
-		if($cancelled){
+		if(!$this->canAdd($effect)){
 			$ev->cancel();
 		}
 
 		$ev->call();
-		if($ev->isCancelled()){
+		if(!$force && $ev->isCancelled()){
 			return false;
 		}
 
@@ -153,11 +90,7 @@ class EffectManager{
 		}
 
 		$effect->getType()->add($this->entity, $effect);
-		foreach($this->effectAddHooks as $hook){
-			$hook($effect, $oldEffect !== null);
-		}
-
-		$this->effects[$index] = $effect;
+		parent::add($effect, true);
 
 		$this->recalculateEffectColor();
 
@@ -215,21 +148,5 @@ class EffectManager{
 		}
 
 		return count($this->effects) > 0;
-	}
-
-	/**
-	 * @return \Closure[]|ObjectSet
-	 * @phpstan-return ObjectSet<\Closure(EffectInstance, bool $replacesOldEffect) : void>
-	 */
-	public function getEffectAddHooks() : ObjectSet{
-		return $this->effectAddHooks;
-	}
-
-	/**
-	 * @return \Closure[]|ObjectSet
-	 * @phpstan-return ObjectSet<\Closure(EffectInstance) : void>
-	 */
-	public function getEffectRemoveHooks() : ObjectSet{
-		return $this->effectRemoveHooks;
 	}
 }

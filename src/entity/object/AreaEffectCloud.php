@@ -27,7 +27,7 @@ use pocketmine\color\Color;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\entity\effect\EffectInstance;
-use pocketmine\entity\effect\EffectManager;
+use pocketmine\entity\effect\EffectContainer;
 use pocketmine\entity\effect\InstantEffect;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
@@ -53,7 +53,7 @@ class AreaEffectCloud extends Entity{
 	protected int $age = 0;
 
 	protected PotionType $potionType;
-	protected EffectManager $effectManager;
+	protected EffectContainer $effectContainer;
 
 	protected Color $bubbleColor;
 	protected bool $onlyAmbientEffects = false;
@@ -84,9 +84,9 @@ class AreaEffectCloud extends Entity{
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
-		$this->effectManager = new EffectManager($this);
-		$this->effectManager->getEffectAddHooks()->add(function() : void{ $this->recalculateEffectColor(); });
-		$this->effectManager->getEffectRemoveHooks()->add(function() : void{ $this->recalculateEffectColor(); });
+		$this->effectContainer = new EffectContainer();
+		$this->effectContainer->getEffectAddHooks()->add(function() : void{ $this->recalculateEffectColor(); });
+		$this->effectContainer->getEffectRemoveHooks()->add(function() : void{ $this->recalculateEffectColor(); });
 
 		$this->age = $nbt->getShort("Age", 0);
 		$this->duration = $nbt->getInt("Duration", 600);
@@ -105,7 +105,7 @@ class AreaEffectCloud extends Entity{
 					continue;
 				}
 
-				$this->effectManager->add(new EffectInstance(
+				$this->effectContainer->add(new EffectInstance(
 					$effect,
 					$e->getInt("Duration"),
 					Binary::unsignByte($e->getByte("Amplifier")),
@@ -132,9 +132,9 @@ class AreaEffectCloud extends Entity{
 		$nbt->setFloat("RadiusOnUse", $this->radiusOnUse);
 		$nbt->setFloat("RadiusPerTick", $this->radiusPerTick);
 
-		if(count($this->effectManager->all()) > 0){
+		if(count($this->effectContainer->all()) > 0){
 			$effects = [];
-			foreach($this->effectManager->all() as $effect){
+			foreach($this->effectContainer->all() as $effect){
 				$effects[] = CompoundTag::create()
 					->setByte("Id", EffectIdMap::getInstance()->toId($effect->getType()))
 					->setByte("Amplifier", Binary::signByte($effect->getAmplifier()))
@@ -193,8 +193,8 @@ class AreaEffectCloud extends Entity{
 		$this->networkPropertiesDirty = true;
 	}
 
-	public function getEffects() : EffectManager{
-		return $this->effectManager;
+	public function getEffects() : EffectContainer{
+		return $this->effectContainer;
 	}
 
 	public function getBubbleColor() : Color{
@@ -333,7 +333,7 @@ class AreaEffectCloud extends Entity{
 			}, $this->potionType->getEffects()),
 			array_map(function(EffectInstance $effect) : EffectInstance{
 				return clone $effect;
-			}, $this->effectManager->all())
+			}, $this->effectContainer->all())
 		);
 	}
 
