@@ -366,12 +366,6 @@ final class Utils{
 				$ord -= 0x100;
 			}
 			$hash = 31 * $hash + $ord;
-			while($hash > 0x7FFFFFFF){
-				$hash -= 0x100000000;
-			}
-			while($hash < -0x80000000){
-				$hash += 0x100000000;
-			}
 			$hash &= 0xFFFFFFFF;
 		}
 		return $hash;
