@@ -33,7 +33,7 @@ class BrewingStandTest extends TestCase{
 	 * @phpstan-return \Generator<int, array{list<BrewingStandSlot>}, void, void>
 	 */
 	public function slotsProvider() : \Generator{
-		yield [BrewingStandSlot::getAll()];
+		yield [array_values(BrewingStandSlot::getAll())];
 		yield [[BrewingStandSlot::EAST()]];
 		yield [[BrewingStandSlot::EAST(), BrewingStandSlot::NORTHWEST()]];
 	}
