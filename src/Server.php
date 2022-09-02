@@ -1651,12 +1651,14 @@ class Server{
 					], 10, [], $postUrlError);
 
 					if($reply !== null && is_object($data = json_decode($reply->getBody()))){
-						if(isset($data->crashId) && isset($data->crashUrl)){
+						if(isset($data->crashId) && is_int($data->crashId) && isset($data->crashUrl) && is_string($data->crashUrl)){
 							$reportId = $data->crashId;
 							$reportUrl = $data->crashUrl;
 							$this->logger->emergency($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_crash_archive($reportUrl, (string) $reportId)));
-						}elseif(isset($data->error)){
+						}elseif(isset($data->error) && is_string($data->error)){
 							$this->logger->emergency("Automatic crash report submission failed: $data->error");
+						}else{
+							$this->logger->emergency("Invalid JSON response received from crash archive: " . $reply->getBody());
 						}
 					}else{
 						$this->logger->emergency("Failed to communicate with crash archive: $postUrlError");
