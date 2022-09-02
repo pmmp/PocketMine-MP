@@ -109,6 +109,7 @@ final class Utils{
 
 	private static ?string $os = null;
 	private static ?UuidInterface $serverUniqueId = null;
+	private static ?int $cpuCores = null;
 
 	/**
 	 * Returns a readable identifier for the given Closure, including file and line.
@@ -296,14 +297,11 @@ final class Utils{
 	}
 
 	public static function getCoreCount(bool $recalculate = false) : int{
-		static $processors = 0;
-
-		if($processors > 0 && !$recalculate){
-			return $processors;
-		}else{
-			$processors = 0;
+		if(self::$cpuCores !== null && !$recalculate){
+			return self::$cpuCores;
 		}
 
+		$processors = 0;
 		switch(Utils::getOS()){
 			case Utils::OS_LINUX:
 			case Utils::OS_ANDROID:
@@ -327,7 +325,7 @@ final class Utils{
 				$processors = (int) getenv("NUMBER_OF_PROCESSORS");
 				break;
 		}
-		return $processors;
+		return self::$cpuCores = $processors;
 	}
 
 	/**
