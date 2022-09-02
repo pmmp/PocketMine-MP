@@ -134,6 +134,7 @@ abstract class BaseInventory implements Inventory{
 
 		return $slots;
 	}
+
 	public function first(Item $item, bool $exact = false) : int{
 		$count = $exact ? $item->getCount() : max(1, $item->getCount());
 		$checkDamage = $exact || !$item->hasAnyDamageValue();
