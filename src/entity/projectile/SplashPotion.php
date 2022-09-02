@@ -32,6 +32,7 @@ use pocketmine\entity\effect\InstantEffect;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\entity\Location;
+use pocketmine\entity\object\AreaEffectCloud;
 use pocketmine\event\entity\ProjectileHitBlockEvent;
 use pocketmine\event\entity\ProjectileHitEntityEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
@@ -94,8 +95,8 @@ class SplashPotion extends Throwable{
 		$this->getWorld()->addParticle($this->location, $particle);
 		$this->broadcastSound(new PotionSplashSound());
 
-		if($hasEffects){
-			if(!$this->willLinger()){
+		if(!$this->willLinger()){
+			if($hasEffects){
 				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(4.125, 2.125, 4.125), $this) as $entity){
 					if($entity instanceof Living && $entity->isAlive()){
 						$distanceSquared = $entity->getEyePos()->distanceSquared($this->location);
@@ -124,10 +125,15 @@ class SplashPotion extends Throwable{
 						}
 					}
 				}
-			}else{
-				//TODO: lingering potions
 			}
-		}elseif($event instanceof ProjectileHitBlockEvent && $this->getPotionType()->equals(PotionType::WATER())){
+		}else{
+			$entity = new AreaEffectCloud($this->location, $this->potionType);
+			$entity->setRadius(3.0);
+			$entity->setRadiusOnUse(-0.5);
+			$entity->setRadiusPerTick(-$entity->getRadius() / $entity->getDuration());
+			$entity->spawnToAll();
+		}
+		if(!$hasEffects && $event instanceof ProjectileHitBlockEvent && $this->getPotionType()->equals(PotionType::WATER())){
 			$blockIn = $event->getBlockHit()->getSide($event->getRayTraceResult()->getHitFace());
 
 			if($blockIn->getTypeId() === BlockTypeIds::FIRE){
@@ -162,10 +168,13 @@ class SplashPotion extends Throwable{
 
 	/**
 	 * Sets whether this splash potion will create an area-effect-cloud when it lands.
+	 *
+	 * @return $this
 	 */
-	public function setLinger(bool $value = true) : void{
+	public function setLinger(bool $value = true) : self{
 		$this->linger = $value;
 		$this->networkPropertiesDirty = true;
+		return $this;
 	}
 
 	/**

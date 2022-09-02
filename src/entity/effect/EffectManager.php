@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\effect;
 
 use pocketmine\color\Color;
-use pocketmine\entity\Living;
+use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityEffectAddEvent;
 use pocketmine\event\entity\EntityEffectRemoveEvent;
 use pocketmine\utils\ObjectSet;
@@ -51,7 +51,7 @@ class EffectManager{
 	protected ObjectSet $effectRemoveHooks;
 
 	public function __construct(
-		private Living $entity
+		private Entity $entity
 	){
 		$this->bubbleColor = new Color(0, 0, 0, 0);
 		$this->effectAddHooks = new ObjectSet();

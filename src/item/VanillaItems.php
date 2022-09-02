@@ -449,6 +449,7 @@ final class VanillaItems{
 		self::register("lapis_lazuli", new Item(new IID(Ids::LAPIS_LAZULI), "Lapis Lazuli"));
 		self::register("lava_bucket", new LiquidBucket(new IID(Ids::LAVA_BUCKET), "Lava Bucket", Blocks::LAVA()));
 		self::register("leather", new Item(new IID(Ids::LEATHER), "Leather"));
+		self::register("lingering_potion", new LingeringPotion(new IID(Ids::LINGERING_POTION), "Lingering Potion"));
 		self::register("magma_cream", new Item(new IID(Ids::MAGMA_CREAM), "Magma Cream"));
 		self::register("mangrove_sign", new ItemBlockWallOrFloor(new IID(Ids::MANGROVE_SIGN), Blocks::MANGROVE_SIGN(), Blocks::MANGROVE_WALL_SIGN()));
 		self::register("melon", new Melon(new IID(Ids::MELON), "Melon"));
