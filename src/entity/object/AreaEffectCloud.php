@@ -42,7 +42,6 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\utils\Binary;
 use pocketmine\world\particle\PotionSplashParticle;
 use function array_map;
-use function array_merge;
 use function count;
 use function round;
 
@@ -52,7 +51,7 @@ class AreaEffectCloud extends Entity{
 	public const DURATION_ON_USE = 0;
 
 	public const WAIT_TIME = 10;
-	public const REAPPLICATION_DELAY = 0;
+	public const REAPPLICATION_DELAY = 40;
 
 	public const RADIUS = 3.0;
 	public const RADIUS_ON_USE = -0.5;
@@ -207,12 +206,6 @@ class AreaEffectCloud extends Entity{
 		return $this->potionType;
 	}
 
-	public function setPotionType(PotionType $type) : void{
-		$this->potionType = $type;
-		$this->recalculateEffectColor();
-		$this->networkPropertiesDirty = true;
-	}
-
 	public function getEffects() : EffectContainer{
 		return $this->effectContainer;
 	}
@@ -317,7 +310,7 @@ class AreaEffectCloud extends Entity{
 					if($effect->getType() instanceof InstantEffect){
 						$effect->getType()->applyEffect($entity, $effect, 0.5, $this);
 					}else{
-						$entity->getEffects()->add($effect);
+						$entity->getEffects()->add($effect->setDuration((int) round($effect->getDuration() / 4)));
 					}
 				}
 				if($this->reapplicationDelay !== 0){
@@ -348,16 +341,15 @@ class AreaEffectCloud extends Entity{
 	/**
 	 * Returns the effects the area effect cloud provides.
 	 *
+	 * Used to get COPIES to avoid accidentally modifying the same effect instance
+	 * already applied to another entity.
+	 *
 	 * @return EffectInstance[]
 	 */
 	public function getCloudEffects() : array{
-		return array_merge(array_map(function(EffectInstance $effect) : EffectInstance{
-				return $effect->getType() instanceof InstantEffect ? $effect : $effect->setDuration((int) round($effect->getDuration() / 4));
-			}, $this->potionType->getEffects()),
-			array_map(function(EffectInstance $effect) : EffectInstance{
-				return clone $effect;
-			}, $this->effectContainer->all())
-		);
+		return array_map(function(EffectInstance $effect) : EffectInstance{
+			return clone $effect;
+		}, $this->effectContainer->all());
 	}
 
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{

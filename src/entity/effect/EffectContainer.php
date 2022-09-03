@@ -123,11 +123,12 @@ class EffectContainer{
 	public function add(EffectInstance $effect, bool $force = false) : bool{
 		if($force || $this->canAdd($effect)){
 			$index = spl_object_id($effect->getType());
-			foreach($this->effectAddHooks as $hook){
-				$hook($effect, isset($this->effects[$index]));
-			}
+			$replacesOldEffect = isset($this->effects[$index]);
 
 			$this->effects[$index] = $effect;
+			foreach($this->effectAddHooks as $hook){
+				$hook($effect, $replacesOldEffect);
+			}
 			return true;
 		}
 
