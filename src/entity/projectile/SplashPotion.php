@@ -127,7 +127,7 @@ class SplashPotion extends Throwable{
 				}
 			}
 		}else{
-			$entity = new AreaEffectCloud($this->location, $this->potionType);
+			$entity = new AreaEffectCloud(Location::fromObject($this->location->floor()->add(0.5, 0.5, 0.5), $this->getWorld()), $this->potionType);
 			$entity->setRadiusPerTick(-$entity->getRadius() / $entity->getDuration());
 			$entity->spawnToAll();
 		}

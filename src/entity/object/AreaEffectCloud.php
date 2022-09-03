@@ -52,7 +52,7 @@ class AreaEffectCloud extends Entity{
 	public const DURATION_ON_USE = 0;
 
 	public const WAIT_TIME = 10;
-	public const REAPPLICATION_DELAY = 20;
+	public const REAPPLICATION_DELAY = 0;
 
 	public const RADIUS = 3.0;
 	public const RADIUS_ON_USE = -0.5;
@@ -150,7 +150,7 @@ class AreaEffectCloud extends Entity{
 		$nbt->setInt(self::TAG_REAPPLICATION_DELAY, $this->reapplicationDelay);
 		$nbt->setFloat(self::TAG_RADIUS, $this->radius);
 		$nbt->setFloat(self::TAG_RADIUS_ON_USE, $this->radiusOnUse);
-		$nbt->setFloat(self::self::TAG_RADIUS_PER_TICK, $this->radiusPerTick);
+		$nbt->setFloat(self::TAG_RADIUS_PER_TICK, $this->radiusPerTick);
 
 		if(count($this->effectContainer->all()) > 0){
 			$effects = [];
@@ -290,11 +290,12 @@ class AreaEffectCloud extends Entity{
 		}
 		//Area effect clouds only trigger updates every ten ticks.
 		if($this->age >= self::WAIT_TIME && $this->age % self::WAIT_TIME === 0){
-			$this->setRadius($this->radius + ($this->radiusPerTick * $tickDiff));
+			$radius = $this->radius + ($this->radiusPerTick * $tickDiff);
 			if($this->radius < 0.5){
 				$this->flagForDespawn();
 				return true;
 			}
+			$this->setRadius($radius);
 			foreach($this->victims as $entityId => $expiration){
 				if($this->age >= $expiration){
 					unset($this->victims[$entityId]);
@@ -319,20 +320,24 @@ class AreaEffectCloud extends Entity{
 						$entity->getEffects()->add($effect);
 					}
 				}
-				$this->victims[$entity->getId()] = $this->age + $this->reapplicationDelay;
+				if($this->reapplicationDelay !== 0){
+					$this->victims[$entity->getId()] = $this->age + $this->reapplicationDelay;
+				}
 				if($this->radiusOnUse !== 0.0){
-					$this->setRadius($this->radius + $this->radiusOnUse);
-					if($this->radius <= 0){
+					$radius = $this->radius + $this->radiusOnUse;
+					if($radius <= 0){
 						$this->flagForDespawn();
 						return true;
 					}
+					$this->setRadius($radius);
 				}
 				if($this->durationOnUse !== 0){
-					$this->setDuration($this->duration + $this->durationOnUse);
-					if($this->duration <= 0){
+					$duration = $this->duration + $this->durationOnUse;
+					if($duration <= 0){
 						$this->flagForDespawn();
 						return true;
 					}
+					$this->setDuration($duration);
 				}
 			}
 		}
