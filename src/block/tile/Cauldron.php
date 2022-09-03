@@ -96,7 +96,7 @@ final class Cauldron extends Spawnable{
 			$this->potionItem = match($containerType){
 				self::POTION_CONTAINER_TYPE_NORMAL => VanillaItems::POTION()->setType($potionType),
 				self::POTION_CONTAINER_TYPE_SPLASH => VanillaItems::SPLASH_POTION()->setType($potionType),
-				self::POTION_CONTAINER_TYPE_LINGERING => throw new SavedDataLoadingException("Not implemented"),
+				self::POTION_CONTAINER_TYPE_LINGERING => VanillaItems::LINGERING_POTION()->setType($potionType),
 				default => throw new SavedDataLoadingException("Invalid potion container type ID $containerType")
 			};
 		}else{

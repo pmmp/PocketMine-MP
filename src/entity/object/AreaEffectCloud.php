@@ -48,6 +48,26 @@ use function round;
 
 class AreaEffectCloud extends Entity{
 
+	public const DURATION = 600;
+	public const DURATION_ON_USE = 0;
+
+	public const WAIT_TIME = 10;
+	public const REAPPLICATION_DELAY = 20;
+
+	public const RADIUS = 3.0;
+	public const RADIUS_ON_USE = -0.5;
+	public const RADIUS_PER_TICK = -0.005;
+
+	public const TAG_POTION_ID = "PotionId"; //TAG_Short
+	public const TAG_AGE = "Age"; //TAG_Int
+	public const TAG_DURATION = "Duration"; //TAG_Int
+	public const TAG_DURATION_ON_USE = "DurationOnUse"; //TAG_Int
+	public const TAG_REAPPLICATION_DELAY = "ReapplicationDelay"; //TAG_Int
+	public const TAG_RADIUS = "Radius"; //TAG_Float
+	public const TAG_RADIUS_ON_USE = "RadiusOnUse"; //TAG_Float
+	public const TAG_RADIUS_PER_TICK = "RadiusPerTick"; //TAG_Float
+	public const TAG_EFFECTS = "mobEffects"; //TAG_List
+
 	public static function getNetworkTypeId() : string{ return EntityIds::AREA_EFFECT_CLOUD; }
 
 	protected int $age = 0;
@@ -61,17 +81,17 @@ class AreaEffectCloud extends Entity{
 	/** @var array<int, int> */
 	protected array $victims = [];
 
-	protected int $duration = 600;
-	protected int $durationOnUse = 0;
-	protected int $reapplicationDelay = 20;
+	protected int $duration = self::DURATION;
+	protected int $durationOnUse = self::DURATION_ON_USE;
+	protected int $reapplicationDelay = self::REAPPLICATION_DELAY;
 
-	protected float $radius = 3.0;
-	protected float $radiusOnUse = -0.5;
+	protected float $radius = self::RADIUS;
+	protected float $radiusOnUse = self::RADIUS_ON_USE;
 	protected float $radiusPerTick = -0.005;
 
 	public function __construct(Location $location, PotionType $potionType, ?CompoundTag $nbt = null){
 		$this->potionType = $potionType;
-		$this->bubbleColor = new Color(0, 0, 0, 0);
+		$this->bubbleColor = PotionSplashParticle::DEFAULT_COLOR();
 		parent::__construct($location, $nbt);
 	}
 
@@ -88,16 +108,16 @@ class AreaEffectCloud extends Entity{
 		$this->effectContainer->getEffectAddHooks()->add(function() : void{ $this->recalculateEffectColor(); });
 		$this->effectContainer->getEffectRemoveHooks()->add(function() : void{ $this->recalculateEffectColor(); });
 
-		$this->age = $nbt->getShort("Age", 0);
-		$this->duration = $nbt->getInt("Duration", 600);
-		$this->durationOnUse = $nbt->getInt("DurationOnUse", 0);
-		$this->reapplicationDelay = $nbt->getInt("ReapplicationDelay", 20);
-		$this->radius = $nbt->getFloat("Radius", 3.0);
-		$this->radiusOnUse = $nbt->getFloat("RadiusOnUse", -0.5);
-		$this->radiusPerTick = $nbt->getFloat("RadiusPerTick", -0.005);
+		$this->age = $nbt->getInt(self::TAG_AGE, 0);
+		$this->duration = $nbt->getInt(self::TAG_DURATION, self::DURATION);
+		$this->durationOnUse = $nbt->getInt(self::TAG_DURATION_ON_USE, self::DURATION_ON_USE);
+		$this->reapplicationDelay = $nbt->getInt(self::TAG_REAPPLICATION_DELAY, self::REAPPLICATION_DELAY);
+		$this->radius = $nbt->getFloat(self::TAG_RADIUS, self::RADIUS);
+		$this->radiusOnUse = $nbt->getFloat(self::TAG_RADIUS_ON_USE, self::RADIUS_ON_USE);
+		$this->radiusPerTick = $nbt->getFloat(self::TAG_RADIUS_PER_TICK, self::RADIUS_PER_TICK);
 
 		/** @var CompoundTag[]|ListTag|null $effectsTag */
-		$effectsTag = $nbt->getListTag("mobEffects");
+		$effectsTag = $nbt->getListTag(self::TAG_EFFECTS);
 		if($effectsTag !== null){
 			foreach($effectsTag as $e){
 				$effect = EffectIdMap::getInstance()->fromId($e->getByte("Id"));
@@ -123,14 +143,14 @@ class AreaEffectCloud extends Entity{
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
 
-		$nbt->setShort("Age", $this->age);
-		$nbt->setShort("PotionId", PotionTypeIdMap::getInstance()->toId($this->potionType));
-		$nbt->setInt("Duration", $this->duration);
-		$nbt->setInt("DurationOnUse", $this->durationOnUse);
-		$nbt->setInt("ReapplicationDelay", $this->reapplicationDelay);
-		$nbt->setFloat("Radius", $this->radius);
-		$nbt->setFloat("RadiusOnUse", $this->radiusOnUse);
-		$nbt->setFloat("RadiusPerTick", $this->radiusPerTick);
+		$nbt->setInt(self::TAG_AGE, $this->age);
+		$nbt->setShort(self::TAG_POTION_ID, PotionTypeIdMap::getInstance()->toId($this->potionType));
+		$nbt->setInt(self::TAG_DURATION, $this->duration);
+		$nbt->setInt(self::TAG_DURATION_ON_USE, $this->durationOnUse);
+		$nbt->setInt(self::TAG_REAPPLICATION_DELAY, $this->reapplicationDelay);
+		$nbt->setFloat(self::TAG_RADIUS, $this->radius);
+		$nbt->setFloat(self::TAG_RADIUS_ON_USE, $this->radiusOnUse);
+		$nbt->setFloat(self::self::TAG_RADIUS_PER_TICK, $this->radiusPerTick);
 
 		if(count($this->effectContainer->all()) > 0){
 			$effects = [];
@@ -142,7 +162,7 @@ class AreaEffectCloud extends Entity{
 					->setByte("Ambient", $effect->isAmbient() ? 1 : 0)
 					->setByte("ShowParticles", $effect->isVisible() ? 1 : 0);
 			}
-			$nbt->setTag("mobEffects", new ListTag($effects));
+			$nbt->setTag(self::TAG_EFFECTS, new ListTag($effects));
 		}
 
 		return $nbt;
@@ -268,52 +288,50 @@ class AreaEffectCloud extends Entity{
 			$this->flagForDespawn();
 			return true;
 		}
-		if($this->age > 10){
-			//Area effect clouds only trigger updates every ten ticks.
-			if($this->age % 10 === 0){
-				$this->setRadius($this->radius + ($this->radiusPerTick * $tickDiff));
-				if($this->radius < 0.5){
-					$this->flagForDespawn();
-					return true;
+		//Area effect clouds only trigger updates every ten ticks.
+		if($this->age >= self::WAIT_TIME && $this->age % self::WAIT_TIME === 0){
+			$this->setRadius($this->radius + ($this->radiusPerTick * $tickDiff));
+			if($this->radius < 0.5){
+				$this->flagForDespawn();
+				return true;
+			}
+			foreach($this->victims as $entityId => $expiration){
+				if($this->age >= $expiration){
+					unset($this->victims[$entityId]);
 				}
-				foreach($this->victims as $entityId => $expiration){
-					if($this->age >= $expiration){
-						unset($this->victims[$entityId]);
+			}
+			foreach($this->getWorld()->getNearbyEntities($this->getBoundingBox(), $this) as $entity){
+				if(!$entity instanceof Living || !$entity->isAlive() || isset($this->victims[$entity->getId()])){
+					continue;
+				}
+
+				$entityPosition = $entity->getPosition();
+				$xDiff = $entityPosition->getX() - $this->location->getX();
+				$zDiff = $entityPosition->getZ() - $this->location->getZ();
+				if(($xDiff ** 2 + $zDiff ** 2) > $this->radius ** 2){
+					continue;
+				}
+
+				foreach($this->getCloudEffects() as $effect){
+					if($effect->getType() instanceof InstantEffect){
+						$effect->getType()->applyEffect($entity, $effect, 0.5, $this);
+					}else{
+						$entity->getEffects()->add($effect);
 					}
 				}
-				foreach($this->getWorld()->getNearbyEntities($this->getBoundingBox(), $this) as $entity){
-					if(!$entity instanceof Living || !$entity->isAlive() || isset($this->victims[$entity->getId()])){
-						continue;
+				$this->victims[$entity->getId()] = $this->age + $this->reapplicationDelay;
+				if($this->radiusOnUse !== 0.0){
+					$this->setRadius($this->radius + $this->radiusOnUse);
+					if($this->radius <= 0){
+						$this->flagForDespawn();
+						return true;
 					}
-
-					$entityPosition = $entity->getPosition();
-					$xDiff = $entityPosition->getX() - $this->location->getX();
-					$zDiff = $entityPosition->getZ() - $this->location->getZ();
-					if(($xDiff ** 2 + $zDiff ** 2) > $this->radius ** 2){
-						continue;
-					}
-
-					foreach($this->getCloudEffects() as $effect){
-						if($effect->getType() instanceof InstantEffect){
-							$effect->getType()->applyEffect($entity, $effect, 0.5, $this);
-						}else{
-							$entity->getEffects()->add($effect);
-						}
-					}
-					$this->victims[$entity->getId()] = $this->age + $this->reapplicationDelay;
-					if($this->radiusOnUse !== 0.0){
-						$this->setRadius($this->radius + $this->radiusOnUse);
-						if($this->radius <= 0){
-							$this->flagForDespawn();
-							return true;
-						}
-					}
-					if($this->durationOnUse !== 0){
-						$this->setDuration($this->duration + $this->durationOnUse);
-						if($this->duration <= 0){
-							$this->flagForDespawn();
-							return true;
-						}
+				}
+				if($this->durationOnUse !== 0){
+					$this->setDuration($this->duration + $this->durationOnUse);
+					if($this->duration <= 0){
+						$this->flagForDespawn();
+						return true;
 					}
 				}
 			}
