@@ -88,7 +88,7 @@ class AreaEffectCloud extends Entity{
 
 	protected float $radius = self::RADIUS;
 	protected float $radiusOnUse = self::RADIUS_ON_USE;
-	protected float $radiusPerTick = -0.005;
+	protected float $radiusPerTick = self::RADIUS_PER_TICK;
 
 	public function __construct(Location $location, PotionType $potionType, ?CompoundTag $nbt = null){
 		$this->potionType = $potionType;
