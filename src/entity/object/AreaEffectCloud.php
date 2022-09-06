@@ -58,7 +58,7 @@ class AreaEffectCloud extends Entity{
 	public const RADIUS_PER_TICK = -0.005;
 
 	public const TAG_POTION_ID = "PotionId"; //TAG_Short
-	public const TAG_AGE = "Age"; //TAG_Int
+	public const TAG_SPAWN_TICK = "SpawnTick"; //TAG_Long
 	public const TAG_DURATION = "Duration"; //TAG_Int
 	public const TAG_DURATION_ON_USE = "DurationOnUse"; //TAG_Int
 	public const TAG_REAPPLICATION_DELAY = "ReapplicationDelay"; //TAG_Int
@@ -84,6 +84,8 @@ class AreaEffectCloud extends Entity{
 	protected int $durationOnUse = self::DURATION_ON_USE;
 	protected int $reapplicationDelay = self::REAPPLICATION_DELAY;
 
+	protected int $waiting = self::WAIT_TIME;
+
 	protected float $radius = self::RADIUS;
 	protected float $radiusOnUse = self::RADIUS_ON_USE;
 	protected float $radiusPerTick = -0.005;
@@ -107,7 +109,8 @@ class AreaEffectCloud extends Entity{
 		$this->effectContainer->getEffectAddHooks()->add(function() : void{ $this->recalculateEffectColor(); });
 		$this->effectContainer->getEffectRemoveHooks()->add(function() : void{ $this->recalculateEffectColor(); });
 
-		$this->age = $nbt->getInt(self::TAG_AGE, 0);
+		$worldTime = $this->getWorld()->getTime();
+		$this->age = $worldTime - $nbt->getLong(self::TAG_SPAWN_TICK, $worldTime);
 		$this->duration = $nbt->getInt(self::TAG_DURATION, self::DURATION);
 		$this->durationOnUse = $nbt->getInt(self::TAG_DURATION_ON_USE, self::DURATION_ON_USE);
 		$this->reapplicationDelay = $nbt->getInt(self::TAG_REAPPLICATION_DELAY, self::REAPPLICATION_DELAY);
@@ -136,13 +139,10 @@ class AreaEffectCloud extends Entity{
 		$this->recalculateEffectColor();
 	}
 
-	public function isFireProof() : bool{
-		return true;
-	}
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
 
-		$nbt->setInt(self::TAG_AGE, $this->age);
+		$nbt->setLong(self::TAG_SPAWN_TICK, $this->getWorld()->getTime() - $this->age);
 		$nbt->setShort(self::TAG_POTION_ID, PotionTypeIdMap::getInstance()->toId($this->potionType));
 		$nbt->setInt(self::TAG_DURATION, $this->duration);
 		$nbt->setInt(self::TAG_DURATION_ON_USE, $this->durationOnUse);
@@ -165,6 +165,14 @@ class AreaEffectCloud extends Entity{
 		}
 
 		return $nbt;
+	}
+
+	public function isFireProof() : bool{
+		return true;
+	}
+
+	public function canBeCollidedWith() : bool{
+		return false;
 	}
 
 	/**
@@ -246,6 +254,15 @@ class AreaEffectCloud extends Entity{
 		$this->networkPropertiesDirty = true;
 	}
 
+	public function getWaiting() : int{
+		return $this->waiting;
+	}
+
+	public function setWaiting(int $time) : void{
+		$this->waiting = $time;
+		$this->networkPropertiesDirty = true;
+	}
+
 	public function getDuration() : int{
 		return $this->duration;
 	}
@@ -281,8 +298,9 @@ class AreaEffectCloud extends Entity{
 			$this->flagForDespawn();
 			return true;
 		}
-		//Area effect clouds only trigger updates every ten ticks.
-		if($this->age >= self::WAIT_TIME && $this->age % self::WAIT_TIME === 0){
+		$waiting = $this->waiting - $tickDiff;
+		if($waiting <= 0){
+			$waiting = self::WAIT_TIME;
 			$radius = $this->radius + ($this->radiusPerTick * $tickDiff);
 			if($this->radius < 0.5){
 				$this->flagForDespawn();
@@ -294,8 +312,8 @@ class AreaEffectCloud extends Entity{
 					unset($this->victims[$entityId]);
 				}
 			}
-			foreach($this->getWorld()->getNearbyEntities($this->getBoundingBox(), $this) as $entity){
-				if(!$entity instanceof Living || !$entity->isAlive() || isset($this->victims[$entity->getId()])){
+			foreach($this->getWorld()->getCollidingEntities($this->getBoundingBox(), $this) as $entity){
+				if(!$entity instanceof Living || isset($this->victims[$entity->getId()])){
 					continue;
 				}
 
@@ -334,6 +352,7 @@ class AreaEffectCloud extends Entity{
 				}
 			}
 		}
+		$this->setWaiting($waiting);
 
 		return $hasUpdate;
 	}
@@ -359,6 +378,7 @@ class AreaEffectCloud extends Entity{
 		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS, $this->radius);
 		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS_PER_TICK, $this->radiusPerTick);
 		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS_CHANGE_ON_PICKUP, $this->radiusOnUse);
+		$properties->setInt(EntityMetadataProperties::AREA_EFFECT_CLOUD_WAITING, $this->waiting);
 		$properties->setInt(EntityMetadataProperties::POTION_COLOR, Binary::signInt($this->bubbleColor->toARGB()));
 		$properties->setByte(EntityMetadataProperties::POTION_AMBIENT, $this->onlyAmbientEffects ? 1 : 0);
 	}
