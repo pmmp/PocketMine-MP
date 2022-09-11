@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d8462ed9ea3d8bb790a53c5719ae60df",
+    "content-hash": "29c6cae17b09de64d844787cf07e968e",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -63,16 +63,16 @@
         },
         {
             "name": "brick/math",
-            "version": "0.10.1",
+            "version": "0.10.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/brick/math.git",
-                "reference": "de846578401f4e58f911b3afeb62ced56365ed87"
+                "reference": "459f2781e1a08d52ee56b0b1444086e038561e3f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/brick/math/zipball/de846578401f4e58f911b3afeb62ced56365ed87",
-                "reference": "de846578401f4e58f911b3afeb62ced56365ed87",
+                "url": "https://api.github.com/repos/brick/math/zipball/459f2781e1a08d52ee56b0b1444086e038561e3f",
+                "reference": "459f2781e1a08d52ee56b0b1444086e038561e3f",
                 "shasum": ""
             },
             "require": {
@@ -107,7 +107,7 @@
             ],
             "support": {
                 "issues": "https://github.com/brick/math/issues",
-                "source": "https://github.com/brick/math/tree/0.10.1"
+                "source": "https://github.com/brick/math/tree/0.10.2"
             },
             "funding": [
                 {
@@ -115,7 +115,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-08-01T22:54:31+00:00"
+            "time": "2022-08-10T22:54:19+00:00"
         },
         {
             "name": "fgrosse/phpasn1",
@@ -648,16 +648,16 @@
         },
         {
             "name": "pocketmine/math",
-            "version": "0.4.2",
+            "version": "0.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "aacc3759a508a69dfa5bc4dfa770ab733c5c94bf"
+                "reference": "47a243d320b01c8099d65309967934c188111549"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/aacc3759a508a69dfa5bc4dfa770ab733c5c94bf",
-                "reference": "aacc3759a508a69dfa5bc4dfa770ab733c5c94bf",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/47a243d320b01c8099d65309967934c188111549",
+                "reference": "47a243d320b01c8099d65309967934c188111549",
                 "shasum": ""
             },
             "require": {
@@ -666,7 +666,7 @@
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "1.2.0",
+                "phpstan/phpstan": "1.8.2",
                 "phpstan/phpstan-strict-rules": "^1.0",
                 "phpunit/phpunit": "^8.5 || ^9.5"
             },
@@ -683,9 +683,9 @@
             "description": "PHP library containing math related code used in PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/Math/issues",
-                "source": "https://github.com/pmmp/Math/tree/0.4.2"
+                "source": "https://github.com/pmmp/Math/tree/0.4.3"
             },
-            "time": "2021-12-05T01:15:17+00:00"
+            "time": "2022-08-25T18:43:37+00:00"
         },
         {
             "name": "pocketmine/nbt",
@@ -731,16 +731,16 @@
         },
         {
             "name": "pocketmine/raklib",
-            "version": "0.14.4",
+            "version": "0.14.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "1ea8e3b95a1b6bf785dc27d76578657be4185f42"
+                "reference": "85b4e5cb7117d37e010eeadb3ff53b21276c6f48"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/1ea8e3b95a1b6bf785dc27d76578657be4185f42",
-                "reference": "1ea8e3b95a1b6bf785dc27d76578657be4185f42",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/85b4e5cb7117d37e010eeadb3ff53b21276c6f48",
+                "reference": "85b4e5cb7117d37e010eeadb3ff53b21276c6f48",
                 "shasum": ""
             },
             "require": {
@@ -752,7 +752,7 @@
                 "pocketmine/log": "^0.3.0 || ^0.4.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "1.5.4",
+                "phpstan/phpstan": "1.7.7",
                 "phpstan/phpstan-strict-rules": "^1.0"
             },
             "type": "library",
@@ -768,9 +768,9 @@
             "description": "A RakNet server implementation written in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/RakLib/issues",
-                "source": "https://github.com/pmmp/RakLib/tree/0.14.4"
+                "source": "https://github.com/pmmp/RakLib/tree/0.14.5"
             },
-            "time": "2022-04-17T18:42:17+00:00"
+            "time": "2022-08-25T16:16:44+00:00"
         },
         {
             "name": "pocketmine/raklib-ipc",
@@ -1513,16 +1513,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.8.2",
+            "version": "1.8.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "c53312ecc575caf07b0e90dee43883fdf90ca67c"
+                "reference": "5583623b61caafebd62bc78a99533aa9d769d097"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/c53312ecc575caf07b0e90dee43883fdf90ca67c",
-                "reference": "c53312ecc575caf07b0e90dee43883fdf90ca67c",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/5583623b61caafebd62bc78a99533aa9d769d097",
+                "reference": "5583623b61caafebd62bc78a99533aa9d769d097",
                 "shasum": ""
             },
             "require": {
@@ -1546,9 +1546,13 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
+            "keywords": [
+                "dev",
+                "static analysis"
+            ],
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.8.2"
+                "source": "https://github.com/phpstan/phpstan/tree/1.8.3"
             },
             "funding": [
                 {
@@ -1560,15 +1564,11 @@
                     "type": "github"
                 },
                 {
-                    "url": "https://www.patreon.com/phpstan",
-                    "type": "patreon"
-                },
-                {
                     "url": "https://tidelift.com/funding/github/packagist/phpstan/phpstan",
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-07-20T09:57:31+00:00"
+            "time": "2022-09-01T15:27:34+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
@@ -1624,21 +1624,21 @@
         },
         {
             "name": "phpstan/phpstan-strict-rules",
-            "version": "1.3.0",
+            "version": "1.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-strict-rules.git",
-                "reference": "543675a9be82d4befb9ca0bd8cdc9d211665037f"
+                "reference": "431b3d6e8040075de196680cd5bc95735987b4ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/543675a9be82d4befb9ca0bd8cdc9d211665037f",
-                "reference": "543675a9be82d4befb9ca0bd8cdc9d211665037f",
+                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/431b3d6e8040075de196680cd5bc95735987b4ae",
+                "reference": "431b3d6e8040075de196680cd5bc95735987b4ae",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.2 || ^8.0",
-                "phpstan/phpstan": "^1.7.15"
+                "phpstan/phpstan": "^1.8.3"
             },
             "require-dev": {
                 "nikic/php-parser": "^4.13.0",
@@ -1666,22 +1666,22 @@
             "description": "Extra strict and opinionated rules for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-strict-rules/issues",
-                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/1.3.0"
+                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/1.4.3"
             },
-            "time": "2022-06-24T06:47:20+00:00"
+            "time": "2022-08-26T15:05:46+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "9.2.16",
+            "version": "9.2.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "2593003befdcc10db5e213f9f28814f5aa8ac073"
+                "reference": "aa94dc41e8661fe90c7316849907cba3007b10d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/2593003befdcc10db5e213f9f28814f5aa8ac073",
-                "reference": "2593003befdcc10db5e213f9f28814f5aa8ac073",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/aa94dc41e8661fe90c7316849907cba3007b10d8",
+                "reference": "aa94dc41e8661fe90c7316849907cba3007b10d8",
                 "shasum": ""
             },
             "require": {
@@ -1737,7 +1737,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.16"
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.17"
             },
             "funding": [
                 {
@@ -1745,7 +1745,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-08-20T05:26:47+00:00"
+            "time": "2022-08-30T12:24:04+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",

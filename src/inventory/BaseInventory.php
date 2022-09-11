@@ -76,11 +76,13 @@ abstract class BaseInventory implements Inventory{
 
 	/**
 	 * @param Item[] $items
+	 * @phpstan-param array<int, Item> $items
 	 */
 	abstract protected function internalSetContents(array $items) : void;
 
 	/**
 	 * @param Item[] $items
+	 * @phpstan-param array<int, Item> $items
 	 */
 	public function setContents(array $items) : void{
 		if(count($items) > $this->getSize()){
@@ -132,6 +134,7 @@ abstract class BaseInventory implements Inventory{
 
 		return $slots;
 	}
+
 	public function first(Item $item, bool $exact = false) : int{
 		$count = $exact ? $item->getCount() : max(1, $item->getCount());
 		$checkDamage = $exact || !$item->hasAnyDamageValue();
