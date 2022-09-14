@@ -462,7 +462,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return $this->flySpeed;
 	}
 
-	public function resetFlySpeed(): void
+	public function resetFlySpeed() : void
 	{
 		$this->flySpeed = 0.05;
 	}
