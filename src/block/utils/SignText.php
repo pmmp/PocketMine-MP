@@ -39,7 +39,7 @@ class SignText{
 	private array $lines;
 
 	/**
-	 * @param string[]|null $lines index-sensitive; omitting an index will leave it unchanged
+	 * @param string[]|null $lines index-sensitive; keys 0-3 will be used, regardless of array order
 	 *
 	 * @throws \InvalidArgumentException if the array size is greater than 4
 	 * @throws \InvalidArgumentException if invalid keys (out of bounds or string) are found in the array

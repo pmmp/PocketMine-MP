@@ -585,6 +585,7 @@ final class VanillaBlocks{
 
 	/**
 	 * @return Block[]
+	 * @phpstan-return array<string, Block>
 	 */
 	public static function getAll() : array{
 		//phpstan doesn't support generic traits yet :(

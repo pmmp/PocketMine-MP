@@ -163,7 +163,7 @@ class AsyncPool{
 			throw new \InvalidArgumentException("Cannot submit the same AsyncTask instance more than once");
 		}
 
-		$task->progressUpdates = new \Threaded;
+		$task->progressUpdates = new \Threaded();
 		$task->setSubmitted();
 
 		$this->getWorker($worker)->stack($task);

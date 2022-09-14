@@ -98,7 +98,7 @@ class Sugarcane extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->isTransparent() && !$down->isSameType($this)){
+		if(!$this->isValidSupport($down)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -122,14 +122,26 @@ class Sugarcane extends Flowable{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->isSameType($this)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif($down->getId() === BlockLegacyIds::GRASS || $down->getId() === BlockLegacyIds::DIRT || $down->getId() === BlockLegacyIds::SAND || $down->getId() === BlockLegacyIds::PODZOL){
+		}elseif($this->isValidSupport($down)){
 			foreach(Facing::HORIZONTAL as $side){
-				if($down->getSide($side) instanceof Water){
+				$sideBlock = $down->getSide($side);
+				if($sideBlock instanceof Water || $sideBlock instanceof FrostedIce){
 					return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 				}
 			}
 		}
 
 		return false;
+	}
+
+	private function isValidSupport(Block $block) : bool{
+		$id = $block->getId();
+		//TODO: rooted dirt, moss block
+		return $block->isSameType($this)
+			|| $id === BlockLegacyIds::GRASS
+			|| $id === BlockLegacyIds::DIRT
+			|| $id === BlockLegacyIds::PODZOL
+			|| $id === BlockLegacyIds::MYCELIUM
+			|| $id === BlockLegacyIds::SAND;
 	}
 }
