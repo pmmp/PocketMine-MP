@@ -97,7 +97,7 @@ final class DedicatedQueryNetworkInterface implements AdvancedNetworkInterface{
 		$this->logger->info("Running on $this->ip $this->port");
 	}
 
-	public function setName(string $name, string $subName = "PocketMine-MP") : void{
+	public function setName(string $name, ?string $subName = null) : void{
 		//NOOP
 	}
 

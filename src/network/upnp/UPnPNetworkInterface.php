@@ -54,7 +54,7 @@ final class UPnPNetworkInterface implements NetworkInterface{
 		}
 	}
 
-	public function setName(string $name, string $subName = "PocketMine-MP") : void{
+	public function setName(string $name, ?string $subName = null) : void{
 
 	}
 

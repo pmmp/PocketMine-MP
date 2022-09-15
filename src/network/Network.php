@@ -141,7 +141,7 @@ class Network{
 		return $this->name;
 	}
 
-	public function getSubName() :string{
+	public function getSubName() : ?string{
 		return $this->subName;
 	}
 
