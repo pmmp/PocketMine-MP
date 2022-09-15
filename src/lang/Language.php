@@ -27,6 +27,7 @@ use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
 use function array_filter;
 use function array_map;
+use function count;
 use function explode;
 use function file_exists;
 use function is_dir;
@@ -67,10 +68,14 @@ class Language{
 				$result = [];
 
 				foreach($files as $file){
-					$code = explode(".", $file)[0];
-					$strings = self::loadLang($path, $code);
-					if(isset($strings["language.name"])){
-						$result[$code] = $strings["language.name"];
+					try{
+						$code = explode(".", $file)[0];
+						$strings = self::loadLang($path, $code);
+						if(isset($strings["language.name"])){
+							$result[$code] = $strings["language.name"];
+						}
+					}catch(LanguageNotFoundException $e){
+						// no-op
 					}
 				}
 
@@ -124,7 +129,10 @@ class Language{
 	protected static function loadLang(string $path, string $languageCode) : array{
 		$file = Path::join($path, $languageCode . ".ini");
 		if(file_exists($file)){
-			return array_map('\stripcslashes', Utils::assumeNotFalse(parse_ini_file($file, false, INI_SCANNER_RAW), "Missing or inaccessible required resource files"));
+			$strings = array_map('stripcslashes', Utils::assumeNotFalse(parse_ini_file($file, false, INI_SCANNER_RAW), "Missing or inaccessible required resource files"));
+			if(count($strings) > 0){
+				return $strings;
+			}
 		}
 
 		throw new LanguageNotFoundException("Language \"$languageCode\" not found");

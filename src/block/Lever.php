@@ -69,7 +69,6 @@ class Lever extends Flowable{
 			5 => LeverFacing::UP_AXIS_Z(),
 			6 => LeverFacing::UP_AXIS_X(),
 			7 => LeverFacing::DOWN_AXIS_Z(),
-			default => throw new AssumptionFailedError("0x07 mask should make this impossible"), //phpstan doesn't understand :(
 		};
 
 		$this->activated = ($stateMeta & BlockLegacyMetadata::LEVER_FLAG_POWERED) !== 0;

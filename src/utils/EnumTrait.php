@@ -48,6 +48,7 @@ trait EnumTrait{
 	 * This is overridden to change the return typehint.
 	 *
 	 * @return self[]
+	 * @phpstan-return array<string, self>
 	 */
 	public static function getAll() : array{
 		//phpstan doesn't support generic traits yet :(
