@@ -28,8 +28,11 @@ use function cli_set_process_title;
 use function count;
 use function dirname;
 use function fwrite;
+use function ini_set;
 use const PTHREADS_INHERIT_NONE;
 use const STDOUT;
+
+ini_set('display_errors', 'stderr');
 
 require dirname(__DIR__, 2) . '/vendor/autoload.php';
 
