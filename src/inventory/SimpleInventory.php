@@ -58,6 +58,7 @@ class SimpleInventory extends BaseInventory{
 
 	/**
 	 * @return Item[]
+	 * @phpstan-return array<int, Item>
 	 */
 	public function getContents(bool $includeEmpty = false) : array{
 		$contents = [];
