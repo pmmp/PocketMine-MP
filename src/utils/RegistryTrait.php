@@ -29,7 +29,10 @@ use function mb_strtoupper;
 use function preg_match;
 
 trait RegistryTrait{
-	/** @var object[] */
+	/**
+	 * @var object[]
+	 * @phpstan-var array<string, object>
+	 */
 	private static $members = null;
 
 	private static function verifyName(string $name) : void{
@@ -107,6 +110,7 @@ trait RegistryTrait{
 
 	/**
 	 * @return object[]
+	 * @phpstan-return array<string, object>
 	 */
 	private static function _registryGetAll() : array{
 		self::checkInit();
