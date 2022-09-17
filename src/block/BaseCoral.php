@@ -59,7 +59,7 @@ abstract class BaseCoral extends Transparent{
 
 	public function isSolid() : bool{ return false; }
 
-	public function isCoveredWithWater() : bool{
+	protected function isCoveredWithWater() : bool{
 		$world = $this->position->getWorld();
 
 		$hasWater = false;
