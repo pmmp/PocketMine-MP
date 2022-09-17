@@ -54,7 +54,7 @@ final class WallCoralFan extends BaseCoral{
 		}
 		$this->facing = $face;
 
-		$this->dead = !$this->hasWater();
+		$this->dead = !$this->isCoveredWithWater();
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}

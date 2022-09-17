@@ -44,7 +44,7 @@ abstract class BaseCoral extends Transparent{
 	}
 
 	public function onScheduledUpdate() : void{
-		if(!$this->dead && !$this->hasWater()){
+		if(!$this->dead && !$this->isCoveredWithWater()){
 			$this->position->getWorld()->setBlock($this->position, $this->setDead(true));
 		}
 	}
@@ -59,7 +59,7 @@ abstract class BaseCoral extends Transparent{
 
 	public function isSolid() : bool{ return false; }
 
-	public function hasWater() : bool{
+	public function isCoveredWithWater() : bool{
 		$world = $this->position->getWorld();
 
 		$hasWater = false;

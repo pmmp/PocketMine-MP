@@ -75,7 +75,7 @@ final class FloorCoralFan extends BaseCoral{
 			}
 		}
 
-		$this->dead = !$this->hasWater();
+		$this->dead = !$this->isCoveredWithWater();
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
