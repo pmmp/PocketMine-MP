@@ -2492,7 +2492,7 @@ class World implements ChunkManager{
 					continue;
 				}
 				if($entity === null){
-					$saveIdTag = $nbt->getTag("id") ?? $nbt->getTag("identifier");
+					$saveIdTag = $nbt->getTag("identifier") ?? $nbt->getTag("id");
 					$saveId = "<unknown>";
 					if($saveIdTag instanceof StringTag){
 						$saveId = $saveIdTag->getValue();
