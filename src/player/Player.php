@@ -1986,8 +1986,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->getNetworkSession()->onTip($message);
 	}
 
-	public function sendToast(string $title, string $body) : void{
-		$this->getNetworkSession()->onToast($title, $body);
+	/**
+	 * Sends a toast message to the player, or queue to send it if a toast message is already shown.
+	 */
+	public function sendToastNotification(string $title, string $body) : void{
+		$this->getNetworkSession()->onToastNotification($title, $body);
 	}
 
 	/**
