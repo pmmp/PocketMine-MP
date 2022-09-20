@@ -172,6 +172,7 @@ class NetworkSession{
 	/** @var string[] */
 	private array $chunkCacheBlobs = [];
 	private bool $chunkCacheEnabled = false;
+	private bool $isFirstPacket = true;
 
 	/**
 	 * @var \SplQueue|CompressBatchPromise[]
@@ -399,8 +400,21 @@ class NetworkSession{
 			try{
 				$decompressed = $this->compressor->decompress($payload);
 			}catch(DecompressionException $e){
-				$this->logger->debug("Failed to decompress packet: " . base64_encode($payload));
-				throw PacketHandlingException::wrap($e, "Compressed packet batch decode error");
+				if($this->isFirstPacket){
+					$this->logger->debug("Failed to decompress packet, assuming client is using the new compression method");
+
+					$this->enableCompression = false;
+					$this->setHandler(new SessionStartPacketHandler(
+						$this->server,
+						$this,
+						fn() => $this->onSessionStartSuccess()
+					));
+
+					$decompressed = $payload;
+				}else{
+					$this->logger->debug("Failed to decompress packet: " . base64_encode($payload));
+					throw PacketHandlingException::wrap($e, "Compressed packet batch decode error");
+				}
 			}finally{
 				Timings::$playerNetworkReceiveDecompress->stopTiming();
 			}
@@ -426,6 +440,8 @@ class NetworkSession{
 				$this->logger->logException($e);
 			}
 			throw PacketHandlingException::wrap($e, "Packet batch decode error");
+		}finally{
+			$this->isFirstPacket = false;
 		}
 	}
 
@@ -511,7 +527,7 @@ class NetworkSession{
 				$syncMode = false;
 			}
 
-			$batch = PacketBatch::fromPackets($this->packetSerializerContext, ...$this->sendBuffer);
+			$batch = PacketBatch::fromPackets($this->getProtocolId(), $this->packetSerializerContext, ...$this->sendBuffer);
 			if($this->enableCompression){
 				$promise = $this->server->prepareBatch($batch, $this->compressor, $syncMode);
 			}else{
@@ -1078,7 +1094,7 @@ class NetworkSession{
 					$this->queueCompressed($compressBatchPromise);
 					$onCompletion();
 
-					if($this->getProtocolId() === ProtocolInfo::PROTOCOL_1_19_10){
+					if($this->getProtocolId() >= ProtocolInfo::PROTOCOL_1_19_10){
 						//TODO: HACK! we send the full tile data here, due to a bug in 1.19.10 which causes items in tiles
 						//(item frames, lecterns) to not load properly when they are sent in a chunk via the classic chunk
 						//sending mechanism. We workaround this bug by sending only bare essential data in LevelChunkPacket

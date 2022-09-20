@@ -131,18 +131,18 @@ class TypeConverter{
 		return new RecipeIngredient(new IntIdMetaItemDescriptor($id, $meta), $itemStack->getCount());
 	}
 
-	public function recipeIngredientToCoreItemStack(RecipeIngredient $ingredient) : Item{
+	public function recipeIngredientToCoreItemStack(int $dictionaryProtocol, RecipeIngredient $ingredient) : Item{
 		$descriptor = $ingredient->getDescriptor();
 		if($descriptor === null){
 			return VanillaItems::AIR();
 		}
 		if($descriptor instanceof IntIdMetaItemDescriptor){
-			[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($descriptor->getId(), $descriptor->getMeta());
+			[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($dictionaryProtocol, $ingredient->getId(), $ingredient->getMeta());
 			return ItemFactory::getInstance()->get($id, $meta, $ingredient->getCount());
 		}
 		if($descriptor instanceof StringIdMetaItemDescriptor){
 			$intId = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromStringId($descriptor->getId());
-			[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($intId, $descriptor->getMeta());
+			[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($dictionaryProtocol, $intId, $descriptor->getMeta());
 			return ItemFactory::getInstance()->get($id, $meta, $ingredient->getCount());
 		}
 

@@ -182,7 +182,7 @@ final class ChunkSerializer{
 		$nbtSerializer = new NetworkNbtSerializer();
 		foreach($chunk->getTiles() as $tile){
 			if($tile instanceof Spawnable){
-				if($mappingProtocol === ProtocolInfo::PROTOCOL_1_19_10){
+				if($mappingProtocol >= ProtocolInfo::PROTOCOL_1_19_10){
 					//TODO: HACK! we send only the bare essentials to create a tile in the chunk itself, due to a bug in
 					//1.19.10 which causes items in tiles (item frames, lecterns) to not load properly when they are sent in
 					//a chunk via the classic chunk sending mechanism. We workaround this bug by sendingBlockActorDataPacket
