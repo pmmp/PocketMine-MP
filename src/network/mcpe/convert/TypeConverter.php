@@ -137,7 +137,7 @@ class TypeConverter{
 			return VanillaItems::AIR();
 		}
 		if($descriptor instanceof IntIdMetaItemDescriptor){
-			[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($dictionaryProtocol, $ingredient->getId(), $ingredient->getMeta());
+			[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($dictionaryProtocol, $descriptor->getId(), $descriptor->getMeta());
 			return ItemFactory::getInstance()->get($id, $meta, $ingredient->getCount());
 		}
 		if($descriptor instanceof StringIdMetaItemDescriptor){

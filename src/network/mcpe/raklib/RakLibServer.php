@@ -30,7 +30,6 @@ use raklib\generic\SocketException;
 use raklib\server\ipc\RakLibToUserThreadMessageSender;
 use raklib\server\ipc\UserToRakLibThreadMessageReceiver;
 use raklib\server\Server;
-use raklib\server\SimpleProtocolAcceptor;
 use raklib\utils\ExceptionTraceCleaner;
 use raklib\utils\InternetAddress;
 use function error_get_last;
