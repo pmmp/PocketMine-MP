@@ -147,13 +147,13 @@ class Network{
 	public function setLanName(?string $lanName = null) : void{
 		$this->lanName = $lanName;
 		foreach($this->interfaces as $interface){
-                        if($interface instanceof RakLibInterface){
-                                $interface->internalSetName($this->name, $this->lanName);
-                        } else {
-                                $interface->setName($this->name);
-                                $interface->setLanName($this->lanName);
-                        }
-                }
+						if($interface instanceof RakLibInterface){
+								$interface->internalSetName($this->name, $this->lanName);
+						} else {
+								$interface->setName($this->name);
+								$interface->setLanName($this->lanName);
+						}
+				}
 	}
 
 	public function getName() : string{

@@ -222,9 +222,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	 * Do not call this directly.
 	 * For Plugin Developers, Please use Network->setName() or Network->setLanName().
 	 *
-	 * @param string $name
 	 * @param ?string $lanName
-	 * @return void
 	 */
 	public function internalSetName(string $name, ?string $lanName = null) : void{
 		$info = $this->server->getQueryInformation();
