@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\object;
 
-use pocketmine\color\Color;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\entity\effect\EffectContainer;
@@ -54,15 +53,19 @@ class AreaEffectCloud extends Entity{
 	public const REAPPLICATION_DELAY = 40;
 
 	public const RADIUS = 3.0;
+	public const RADIUS_CHANGE_ON_PICKUP = -0.5;
 	public const RADIUS_ON_USE = -0.5;
 	public const RADIUS_PER_TICK = -0.005;
 
 	public const TAG_POTION_ID = "PotionId"; //TAG_Short
 	public const TAG_SPAWN_TICK = "SpawnTick"; //TAG_Long
 	public const TAG_DURATION = "Duration"; //TAG_Int
+	public const TAG_PICKUP_COUNT = "PickupCount"; //TAG_Int
 	public const TAG_DURATION_ON_USE = "DurationOnUse"; //TAG_Int
 	public const TAG_REAPPLICATION_DELAY = "ReapplicationDelay"; //TAG_Int
+	public const TAG_INITIAL_RADIUS = "InitialRadius"; //TAG_Float
 	public const TAG_RADIUS = "Radius"; //TAG_Float
+	public const TAG_RADIUS_CHANGE_ON_PICKUP = "RadiusChangeOnPickup"; //TAG_Float
 	public const TAG_RADIUS_ON_USE = "RadiusOnUse"; //TAG_Float
 	public const TAG_RADIUS_PER_TICK = "RadiusPerTick"; //TAG_Float
 	public const TAG_EFFECTS = "mobEffects"; //TAG_List
@@ -74,25 +77,28 @@ class AreaEffectCloud extends Entity{
 	protected PotionType $potionType;
 	protected EffectContainer $effectContainer;
 
-	protected Color $bubbleColor;
-	protected bool $onlyAmbientEffects = false;
-
-	/** @var array<int, int> */
+	/**
+	 * @var array<int, int> entity ID => expiration
+	 */
 	protected array $victims = [];
 
 	protected int $duration = self::DURATION;
 	protected int $durationOnUse = self::DURATION_ON_USE;
 	protected int $reapplicationDelay = self::REAPPLICATION_DELAY;
 
+	protected int $pickupCount = 0;
+
+	/** The entity will not do any update until its age reaches this value. */
 	protected int $waiting = self::WAIT_TIME;
 
+	protected float $initialRadius = self::RADIUS;
 	protected float $radius = self::RADIUS;
+	protected float $radiusChangeOnPickup = self::RADIUS_CHANGE_ON_PICKUP;
 	protected float $radiusOnUse = self::RADIUS_ON_USE;
 	protected float $radiusPerTick = self::RADIUS_PER_TICK;
 
 	public function __construct(Location $location, PotionType $potionType, ?CompoundTag $nbt = null){
 		$this->potionType = $potionType;
-		$this->bubbleColor = PotionSplashParticle::DEFAULT_COLOR();
 		parent::__construct($location, $nbt);
 	}
 
@@ -106,15 +112,22 @@ class AreaEffectCloud extends Entity{
 		parent::initEntity($nbt);
 
 		$this->effectContainer = new EffectContainer();
-		$this->effectContainer->getEffectAddHooks()->add(function() : void{ $this->recalculateEffectColor(); });
-		$this->effectContainer->getEffectRemoveHooks()->add(function() : void{ $this->recalculateEffectColor(); });
+		$this->effectContainer->setDefaultBubbleColor(PotionSplashParticle::DEFAULT_COLOR());
+		$this->effectContainer->getEffectAddHooks()->add(function() : void{ $this->networkPropertiesDirty = true; });
+		$this->effectContainer->getEffectRemoveHooks()->add(function() : void{ $this->networkPropertiesDirty = true; });
+		$this->effectContainer->setEffectValidatorForBubbles(function(EffectInstance $effect) : bool{
+			return $effect->isVisible();
+		});
 
 		$worldTime = $this->getWorld()->getTime();
 		$this->age = $worldTime - $nbt->getLong(self::TAG_SPAWN_TICK, $worldTime);
 		$this->duration = $nbt->getInt(self::TAG_DURATION, self::DURATION);
 		$this->durationOnUse = $nbt->getInt(self::TAG_DURATION_ON_USE, self::DURATION_ON_USE);
+		$this->pickupCount = $nbt->getInt(self::TAG_PICKUP_COUNT, 0);
 		$this->reapplicationDelay = $nbt->getInt(self::TAG_REAPPLICATION_DELAY, self::REAPPLICATION_DELAY);
+		$this->initialRadius = $nbt->getFloat(self::TAG_INITIAL_RADIUS, self::RADIUS);
 		$this->radius = $nbt->getFloat(self::TAG_RADIUS, self::RADIUS);
+		$this->radiusChangeOnPickup = $nbt->getFloat(self::TAG_RADIUS_CHANGE_ON_PICKUP, self::RADIUS_CHANGE_ON_PICKUP);
 		$this->radiusOnUse = $nbt->getFloat(self::TAG_RADIUS_ON_USE, self::RADIUS_ON_USE);
 		$this->radiusPerTick = $nbt->getFloat(self::TAG_RADIUS_PER_TICK, self::RADIUS_PER_TICK);
 
@@ -136,7 +149,6 @@ class AreaEffectCloud extends Entity{
 				));
 			}
 		}
-		$this->recalculateEffectColor();
 	}
 
 	public function saveNBT() : CompoundTag{
@@ -146,8 +158,11 @@ class AreaEffectCloud extends Entity{
 		$nbt->setShort(self::TAG_POTION_ID, PotionTypeIdMap::getInstance()->toId($this->potionType));
 		$nbt->setInt(self::TAG_DURATION, $this->duration);
 		$nbt->setInt(self::TAG_DURATION_ON_USE, $this->durationOnUse);
+		$nbt->setInt(self::TAG_PICKUP_COUNT, $this->pickupCount);
 		$nbt->setInt(self::TAG_REAPPLICATION_DELAY, $this->reapplicationDelay);
+		$nbt->setFloat(self::TAG_INITIAL_RADIUS, $this->initialRadius);
 		$nbt->setFloat(self::TAG_RADIUS, $this->radius);
+		$nbt->setFloat(self::TAG_RADIUS_CHANGE_ON_PICKUP, $this->radiusChangeOnPickup);
 		$nbt->setFloat(self::TAG_RADIUS_ON_USE, $this->radiusOnUse);
 		$nbt->setFloat(self::TAG_RADIUS_PER_TICK, $this->radiusPerTick);
 
@@ -175,37 +190,6 @@ class AreaEffectCloud extends Entity{
 		return false;
 	}
 
-	/**
-	 * Recalculates the area entity's potion bubbles colour based on the active effects.
-	 */
-	protected function recalculateEffectColor() : void{
-		/** @var Color[] $colors */
-		$colors = [];
-		$ambient = true;
-		foreach($this->getCloudEffects() as $effect){
-			if($effect->isVisible()){
-				$level = $effect->getEffectLevel();
-				$color = $effect->getColor();
-				for($i = 0; $i < $level; ++$i){
-					$colors[] = $color;
-				}
-
-				if(!$effect->isAmbient()){
-					$ambient = false;
-				}
-			}
-		}
-
-		if(count($colors) > 0){
-			$this->bubbleColor = Color::mix(...$colors);
-			$this->onlyAmbientEffects = $ambient;
-		}else{
-			$this->bubbleColor = PotionSplashParticle::DEFAULT_COLOR();
-			$this->onlyAmbientEffects = false;
-		}
-		$this->networkPropertiesDirty = true;
-	}
-
 	public function getAge() : int{
 		return $this->age;
 	}
@@ -218,22 +202,37 @@ class AreaEffectCloud extends Entity{
 		return $this->effectContainer;
 	}
 
-	public function getBubbleColor() : Color{
-		return $this->bubbleColor;
+	public function getInitialRadius() : float{
+		return $this->initialRadius;
 	}
 
-	public function hasOnlyAmbientEffects() : bool{
-		return $this->onlyAmbientEffects;
+	/**
+	 * Sets the initial radius.
+	 *
+	 * @throws \RuntimeException if something attempted to set when it is already ticking
+	 */
+	public function setInitialRadius(float $radius) : void{
+		if($this->age > 0){
+			throw new \RuntimeException("Trying to set radius after initialization");
+		}
+		$this->initialRadius = $radius;
+		$this->setRadius($radius);
+		$this->networkPropertiesDirty = true;
 	}
 
+	/**
+	 * Gets the current radius.
+	 */
 	public function getRadius() : float{
 		return $this->radius;
 	}
 
-	public function setRadius(float $radius) : void{
+	/**
+	 * Sets the radius only server-side, client calculates the radius by himself
+	 */
+	protected function setRadius(float $radius) : void{
 		$this->radius = $radius;
 		$this->setSize($this->getInitialSizeInfo());
-		$this->networkPropertiesDirty = true;
 	}
 
 	public function getRadiusOnUse() : float{
@@ -294,19 +293,17 @@ class AreaEffectCloud extends Entity{
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
 		$this->age += $tickDiff;
-		if($this->age > $this->duration){
+		$radius = $this->radius + ($this->radiusPerTick * $tickDiff);
+		if($radius < 0.75){
 			$this->flagForDespawn();
 			return true;
 		}
-		$waiting = $this->waiting - $tickDiff;
-		if($waiting <= 0){
-			$waiting = self::WAIT_TIME;
-			$radius = $this->radius + ($this->radiusPerTick * $tickDiff);
-			if($this->radius < 0.5){
+		$this->setRadius($radius);
+		if($this->age >= $this->waiting){
+			if($this->age > $this->duration){
 				$this->flagForDespawn();
 				return true;
 			}
-			$this->setRadius($radius);
 			foreach($this->victims as $entityId => $expiration){
 				if($this->age >= $expiration){
 					unset($this->victims[$entityId]);
@@ -351,8 +348,9 @@ class AreaEffectCloud extends Entity{
 					$this->setDuration($duration);
 				}
 			}
+			$this->setWaiting($this->age + self::WAIT_TIME);
+			$hasUpdate = true;
 		}
-		$this->setWaiting($waiting);
 
 		return $hasUpdate;
 	}
@@ -374,12 +372,15 @@ class AreaEffectCloud extends Entity{
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
 		parent::syncNetworkData($properties);
 
+		$spawnTime = $this->getWorld()->getTime() - $this->age;
+		$properties->setInt(EntityMetadataProperties::AREA_EFFECT_CLOUD_SPAWN_TIME, $spawnTime);
 		$properties->setInt(EntityMetadataProperties::AREA_EFFECT_CLOUD_DURATION, $this->duration);
-		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS, $this->radius);
+		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS, $this->initialRadius);
 		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS_PER_TICK, $this->radiusPerTick);
-		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS_CHANGE_ON_PICKUP, $this->radiusOnUse);
-		$properties->setInt(EntityMetadataProperties::AREA_EFFECT_CLOUD_WAITING, $this->waiting);
-		$properties->setInt(EntityMetadataProperties::POTION_COLOR, Binary::signInt($this->bubbleColor->toARGB()));
-		$properties->setByte(EntityMetadataProperties::POTION_AMBIENT, $this->onlyAmbientEffects ? 1 : 0);
+		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS_CHANGE_ON_PICKUP, $this->radiusChangeOnPickup);
+		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_PICKUP_COUNT, $this->pickupCount);
+		$properties->setInt(EntityMetadataProperties::AREA_EFFECT_CLOUD_WAITING, $spawnTime + $this->waiting);
+		$properties->setInt(EntityMetadataProperties::POTION_COLOR, Binary::signInt($this->effectContainer->getBubbleColor()->toARGB()));
+		$properties->setByte(EntityMetadataProperties::POTION_AMBIENT, $this->effectContainer->hasOnlyAmbientEffects() ? 1 : 0);
 	}
 }

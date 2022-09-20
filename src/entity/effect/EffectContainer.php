@@ -23,11 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\effect;
 
+use DaveRandom\CallbackValidator\BuiltInTypes;
+use DaveRandom\CallbackValidator\CallbackType;
+use DaveRandom\CallbackValidator\ParameterType;
+use DaveRandom\CallbackValidator\ReturnType;
+use pocketmine\color\Color;
 use pocketmine\utils\ObjectSet;
+use pocketmine\utils\Utils;
 use function abs;
+use function count;
 use function spl_object_id;
 
 class EffectContainer{
+
 	/** @var EffectInstance[] */
 	protected array $effects = [];
 
@@ -42,9 +50,24 @@ class EffectContainer{
 	 */
 	protected ObjectSet $effectRemoveHooks;
 
+	protected Color $defaultBubbleColor;
+
+	protected ?Color $bubbleColor = null;
+
+	/** @phpstan-var \Closure(EffectInstance) : bool */
+	protected bool $onlyAmbientEffects = false;
+
+	/** Validates whether an effect will be used for bubbles color calculation. */
+	protected \Closure $effectValidatorForBubbles;
+
 	public function __construct(){
+		$this->defaultBubbleColor = new Color(0, 0, 0, 0);
 		$this->effectAddHooks = new ObjectSet();
 		$this->effectRemoveHooks = new ObjectSet();
+
+		$this->setEffectValidatorForBubbles(function(EffectInstance $effect) : bool{
+			return $effect->isVisible() && $effect->getType()->hasBubbles();
+		});
 	}
 
 	/**
@@ -76,6 +99,8 @@ class EffectContainer{
 			foreach($this->effectRemoveHooks as $hook){
 				$hook($effect);
 			}
+
+			$this->recalculateEffectColor();
 		}
 	}
 
@@ -129,10 +154,63 @@ class EffectContainer{
 			foreach($this->effectAddHooks as $hook){
 				$hook($effect, $replacesOldEffect);
 			}
+
+			$this->recalculateEffectColor();
 			return true;
 		}
 
 		return false;
+	}
+
+	public function setEffectValidatorForBubbles(\Closure $closure) : void{
+		Utils::validateCallableSignature(new CallbackType(new ReturnType(BuiltInTypes::BOOL), new ParameterType("effect", EffectInstance::class)), $closure);
+		$this->effectValidatorForBubbles = $closure;
+	}
+
+	/**
+	 * Recalculates the potion bubbles colour based on the active effects.
+	 */
+	protected function recalculateEffectColor() : void{
+		/** @var Color[] $colors */
+		$colors = [];
+		$ambient = true;
+		foreach($this->effects as $effect){
+			if(($this->effectValidatorForBubbles)($effect)){
+				$level = $effect->getEffectLevel();
+				$color = $effect->getColor();
+				for($i = 0; $i < $level; ++$i){
+					$colors[] = $color;
+				}
+
+				if(!$effect->isAmbient()){
+					$ambient = false;
+				}
+			}
+		}
+
+		if(count($colors) > 0){
+			$this->bubbleColor = Color::mix(...$colors);
+			$this->onlyAmbientEffects = $ambient;
+		}else{
+			$this->bubbleColor = null;
+			$this->onlyAmbientEffects = false;
+		}
+	}
+
+	public function getDefaultBubbleColor() : Color{
+		return $this->defaultBubbleColor = $color;
+	}
+
+	public function setDefaultBubbleColor(Color $color) : void{
+		$this->defaultBubbleColor = $color;
+	}
+
+	public function getBubbleColor() : Color{
+		return $this->bubbleColor ?? $this->defaultBubbleColor;
+	}
+
+	public function hasOnlyAmbientEffects() : bool{
+		return $this->onlyAmbientEffects;
 	}
 
 	/**

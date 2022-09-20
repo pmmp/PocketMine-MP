@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\effect;
 
-use pocketmine\color\Color;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityEffectAddEvent;
 use pocketmine\event\entity\EntityEffectRemoveEvent;
@@ -32,13 +31,9 @@ use function spl_object_id;
 
 class EffectManager extends EffectContainer{
 
-	protected Color $bubbleColor;
-	protected bool $onlyAmbientEffects = false;
-
 	public function __construct(
 		private Living $entity
 	){
-		$this->bubbleColor = new Color(0, 0, 0, 0);
 		parent::__construct();
 	}
 
@@ -60,8 +55,6 @@ class EffectManager extends EffectContainer{
 
 			$effect->getType()->remove($this->entity, $effect);
 			parent::remove($effectType);
-
-			$this->recalculateEffectColor();
 		}
 	}
 
@@ -91,49 +84,8 @@ class EffectManager extends EffectContainer{
 		}
 
 		$effect->getType()->add($this->entity, $effect);
-		parent::add($effect, true);
 
-		$this->recalculateEffectColor();
-
-		return true;
-	}
-
-	/**
-	 * Recalculates the mob's potion bubbles colour based on the active effects.
-	 */
-	protected function recalculateEffectColor() : void{
-		/** @var Color[] $colors */
-		$colors = [];
-		$ambient = true;
-		foreach($this->effects as $effect){
-			if($effect->isVisible() && $effect->getType()->hasBubbles()){
-				$level = $effect->getEffectLevel();
-				$color = $effect->getColor();
-				for($i = 0; $i < $level; ++$i){
-					$colors[] = $color;
-				}
-
-				if(!$effect->isAmbient()){
-					$ambient = false;
-				}
-			}
-		}
-
-		if(count($colors) > 0){
-			$this->bubbleColor = Color::mix(...$colors);
-			$this->onlyAmbientEffects = $ambient;
-		}else{
-			$this->bubbleColor = new Color(0, 0, 0, 0);
-			$this->onlyAmbientEffects = false;
-		}
-	}
-
-	public function getBubbleColor() : Color{
-		return $this->bubbleColor;
-	}
-
-	public function hasOnlyAmbientEffects() : bool{
-		return $this->onlyAmbientEffects;
+		return parent::add($effect, true);
 	}
 
 	public function tick(int $tickDiff = 1) : bool{
