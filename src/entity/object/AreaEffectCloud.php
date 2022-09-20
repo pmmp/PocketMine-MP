@@ -77,9 +77,7 @@ class AreaEffectCloud extends Entity{
 	protected PotionType $potionType;
 	protected EffectContainer $effectContainer;
 
-	/**
-	 * @var array<int, int> entity ID => expiration
-	 */
+	/** @var array<int, int> entity ID => expiration */
 	protected array $victims = [];
 
 	protected int $duration = self::DURATION;

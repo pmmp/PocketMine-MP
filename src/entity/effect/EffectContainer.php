@@ -44,6 +44,7 @@ class EffectContainer{
 	 * @phpstan-var ObjectSet<\Closure(EffectInstance, bool $replacesOldEffect) : void>
 	 */
 	protected ObjectSet $effectAddHooks;
+
 	/**
 	 * @var \Closure[]|ObjectSet
 	 * @phpstan-var ObjectSet<\Closure(EffectInstance) : void>
@@ -54,10 +55,13 @@ class EffectContainer{
 
 	protected ?Color $bubbleColor = null;
 
-	/** @phpstan-var \Closure(EffectInstance) : bool */
 	protected bool $onlyAmbientEffects = false;
 
-	/** Validates whether an effect will be used for bubbles color calculation. */
+	/**
+	 * Validates whether an effect will be used for bubbles color calculation.
+	 *
+	 * @phpstan-var \Closure(EffectInstance) : bool
+	 */
 	protected \Closure $effectValidatorForBubbles;
 
 	public function __construct(){
@@ -198,7 +202,7 @@ class EffectContainer{
 	}
 
 	public function getDefaultBubbleColor() : Color{
-		return $this->defaultBubbleColor = $color;
+		return $this->defaultBubbleColor;
 	}
 
 	public function setDefaultBubbleColor(Color $color) : void{
