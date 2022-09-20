@@ -48,7 +48,9 @@ use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
+use pocketmine\network\mcpe\protocol\types\recipe\IntIdMetaItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
+use pocketmine\network\mcpe\protocol\types\recipe\StringIdMetaItemDescriptor;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
@@ -118,7 +120,7 @@ class TypeConverter{
 
 	public function coreItemStackToRecipeIngredient(int $dictionaryProtocol, Item $itemStack) : RecipeIngredient{
 		if($itemStack->isNull()){
-			return new RecipeIngredient(0, 0, 0);
+			return new RecipeIngredient(null, 0);
 		}
 		if($itemStack->hasAnyDamageValue()){
 			[$id, ] = ItemTranslator::getInstance()->toNetworkId($dictionaryProtocol, $itemStack->getId(), 0);
@@ -126,15 +128,25 @@ class TypeConverter{
 		}else{
 			[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($dictionaryProtocol, $itemStack->getId(), $itemStack->getMeta());
 		}
-		return new RecipeIngredient($id, $meta, $itemStack->getCount());
+		return new RecipeIngredient(new IntIdMetaItemDescriptor($id, $meta), $itemStack->getCount());
 	}
 
-	public function recipeIngredientToCoreItemStack(int $dictionaryProtocol, RecipeIngredient $ingredient) : Item{
-		if($ingredient->getId() === 0){
+	public function recipeIngredientToCoreItemStack(RecipeIngredient $ingredient) : Item{
+		$descriptor = $ingredient->getDescriptor();
+		if($descriptor === null){
 			return VanillaItems::AIR();
 		}
-		[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($dictionaryProtocol, $ingredient->getId(), $ingredient->getMeta());
-		return ItemFactory::getInstance()->get($id, $meta, $ingredient->getCount());
+		if($descriptor instanceof IntIdMetaItemDescriptor){
+			[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($descriptor->getId(), $descriptor->getMeta());
+			return ItemFactory::getInstance()->get($id, $meta, $ingredient->getCount());
+		}
+		if($descriptor instanceof StringIdMetaItemDescriptor){
+			$intId = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromStringId($descriptor->getId());
+			[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($intId, $descriptor->getMeta());
+			return ItemFactory::getInstance()->get($id, $meta, $ingredient->getCount());
+		}
+
+		throw new \LogicException("Unsupported conversion of recipe ingredient to core item stack");
 	}
 
 	public function coreItemStackToNet(int $protocolId, Item $itemStack) : ItemStack{
