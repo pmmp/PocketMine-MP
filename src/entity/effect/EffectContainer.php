@@ -166,9 +166,12 @@ class EffectContainer{
 		return false;
 	}
 
-	public function setEffectValidatorForBubbles(\Closure $closure) : void{
-		Utils::validateCallableSignature(new CallbackType(new ReturnType(BuiltInTypes::BOOL), new ParameterType("effect", EffectInstance::class)), $closure);
-		$this->effectValidatorForBubbles = $closure;
+	/**
+	 * @phpstan-param \Closure(EffectInstance) : bool $effectValidator
+	 */
+	public function setEffectValidatorForBubbles(\Closure $effectValidator) : void{
+		Utils::validateCallableSignature(new CallbackType(new ReturnType(BuiltInTypes::BOOL), new ParameterType("effect", EffectInstance::class)), $effectValidator);
+		$this->effectValidatorForBubbles = $effectValidator;
 	}
 
 	/**
