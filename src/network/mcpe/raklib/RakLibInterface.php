@@ -218,7 +218,15 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 
 	}
 
-	public function setName(string $name, ?string $lanName = null) : void{
+	/**
+	 * Do not call this directly.
+	 * For Plugin Developers, Please use Network->setName() or Network->setLanName().
+	 *
+	 * @param string $name
+	 * @param ?string $lanName
+	 * @return void
+	 */
+	public function internalSetName(string $name, ?string $lanName = null) : void{
 		$info = $this->server->getQueryInformation();
 
 		$this->interface->setName(implode(";",
@@ -230,10 +238,16 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 				$info->getPlayerCount(),
 				$info->getMaxPlayerCount(),
 				$this->rakServerId,
-				($subName ?? $this->server->getName()),
+				($lanName ?? $this->server->getName()),
 				TypeConverter::getInstance()->protocolGameModeName($this->server->getGamemode())
 			]) . ";"
 		);
+	}
+
+	public function setName(string $name) : void{
+	}
+
+	public function setLanName(?string $lanName) : void{
 	}
 
 	public function setPortCheck(bool $name) : void{
