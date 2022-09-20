@@ -383,16 +383,15 @@ class Server{
 		return $this->configGroup->getConfigBool("hardcore", false);
 	}
 
-    
 	public function getMotd() : string{
 		return $this->configGroup->getConfigString("motd", self::DEFAULT_SERVER_NAME);
 	}
 
-    /**
-     * This changes the behavior of lan motd. Since this can be viewed only in the lan list on Minecraft.
-     * 
-     * @return string  When motd is null the default value will returned.
-     */
+	/**
+	 * This changes the behavior of lan motd. Since this can be viewed only in the lan list on Minecraft.
+	 *
+	 * @return string  When motd is null the default value will returned.
+	 */
 	public function getLanMotd() : string{
 		return $this->configGroup->getConfigString("sub-motd", $this->getName());
 	}

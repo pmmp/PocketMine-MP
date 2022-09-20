@@ -98,11 +98,11 @@ final class DedicatedQueryNetworkInterface implements AdvancedNetworkInterface{
 	}
 
 	public function setName(string $name) : void{
-	    //NOOP
+		//NOOP
 	}
-	
+
 	public function setLanName(string $lanName) : void{
-        //NOOP
+		//NOOP
 	}
 
 	public function tick() : void{

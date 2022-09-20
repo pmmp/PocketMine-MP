@@ -126,36 +126,35 @@ class Network{
 		unset($this->interfaces[$hash], $this->advancedInterfaces[$hash]);
 		$interface->shutdown();
 	}
-	
+
 	public function setName(string $name) : void{
 		$this->name = $name;
 		foreach($this->interfaces as $interface){
 			$interface->setName($this->name);
 		}
 	}
-	
+
 	/**
 	 * This changes the behaivor of lan motd. Since this can be only viewed in the lan list on minecraft.
-	 * 
+	 *
 	 * @param string|null $lanName  If null, returns the default value to prevent query bugs.
-	 * @return void
 	 */
 	public function setLanName(?string $lanName) : void{
-	    $this->lanName = $lanName;
-	    foreach($this->interfaces as $interface){
+		$this->lanName = $lanName;
+		foreach($this->interfaces as $interface){
 			$interface->setLanName($this->lanName);
 		}
 	}
-	
+
 	public function getName() : string{
 		return $this->name;
 	}
 
-    /**
-     * This returns the of lan motd.
-     * 
-     * @return ?string
-     */
+	/**
+	 * This returns the of lan motd.
+	 *
+	 * @return ?string
+	 */
 	public function getLanName() : string{
 		return ($this->lanName ?? Server::getInstance()->getName());
 	}

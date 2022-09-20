@@ -92,7 +92,7 @@ final class QueryInfo{
 	public function getServerName() : string{
 		return $this->serverName;
 	}
-	
+
 	public function getServerLanName() : string{
 		return $this->serverLanName;
 	}
@@ -101,9 +101,9 @@ final class QueryInfo{
 		$this->serverName = $serverName;
 		$this->destroyCache();
 	}
-	
+
 	public function setServerLanName(string $lanName) : void{
-	    $this->serverLanName = $lanName;
+		$this->serverLanName = $lanName;
 		$this->destroyCache();
 	}
 
