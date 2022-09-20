@@ -164,8 +164,6 @@ class Network{
 
 	/**
 	 * This returns the of lan motd.
-	 *
-	 * @return string
 	 */
 	public function getLanName() : string{
 		return ($this->lanName ?? Server::getInstance()->getName());
