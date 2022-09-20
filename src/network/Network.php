@@ -110,7 +110,8 @@ class Network{
 					$interface->addRawPacketFilter($handler->getPattern());
 				}
 			}
-			$interface->setName($this->name, $this->lanName);
+			$interface->setName($this->name);
+			$interface->setLanName($this->lanName);
 			return true;
 		}
 		return false;
@@ -164,7 +165,7 @@ class Network{
 	/**
 	 * This returns the of lan motd.
 	 *
-	 * @return ?string
+	 * @return string
 	 */
 	public function getLanName() : string{
 		return ($this->lanName ?? Server::getInstance()->getName());

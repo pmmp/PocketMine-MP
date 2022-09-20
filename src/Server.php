@@ -959,7 +959,7 @@ class Server{
 			$this->getLogger()->debug("Machine unique id: " . Utils::getMachineUniqueId());
 
 			$this->network = new Network($this->logger);
-			$this->network->setName($this->getMotd(), $this->getLanMotd());
+			$this->network->setName($this->getMotd());
 			$this->network->setLanName($this->getLanMotd());
 
 			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_info(
