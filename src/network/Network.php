@@ -130,7 +130,7 @@ class Network{
 	public function setName(string $name) : void{
 		$this->name = $name;
 		foreach($this->interfaces as $interface){
-			$interface->setName($this->name);
+			$interface->setName($this->name, $this->lanName);
 		}
 	}
 
@@ -139,10 +139,10 @@ class Network{
 	 *
 	 * @param string|null $lanName  If null, returns the default value to prevent query bugs.
 	 */
-	public function setLanName(?string $lanName) : void{
+	public function setLanName(?string $lanName = null) : void{
 		$this->lanName = $lanName;
 		foreach($this->interfaces as $interface){
-			$interface->setLanName($this->lanName);
+			$interface->setName($this->name, $this->lanName);
 		}
 	}
 

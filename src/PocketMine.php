@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -35,15 +35,32 @@ namespace pocketmine {
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\SetupWizard;
 	use Webmozart\PathUtil\Path;
+	use function count;
 	use function defined;
+	use function dirname;
+	use function error_reporting;
+	use function explode;
 	use function extension_loaded;
+	use function file_exists;
 	use function function_exists;
 	use function getcwd;
-	use function phpversion;
-	use function preg_match;
-	use function preg_quote;
-	use function realpath;
-	use function version_compare;
+use function getenv;
+use function getopt;
+use function ini_get;
+use function ini_set;
+use function is_file;
+use function mkdir;
+use function opcache_get_status;
+use function php_ini_loaded_file;
+use function php_sapi_name;
+use function phpversion;
+use function preg_match;
+use function preg_quote;
+use function realpath;
+use function substr_count;
+use function usleep;
+use function version_compare;
+use function xdebug_info;
 
 	require_once __DIR__ . '/VersionInfo.php';
 

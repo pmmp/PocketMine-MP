@@ -58,7 +58,7 @@ final class UPnPNetworkInterface implements NetworkInterface{
 
 	}
 
-	public function setLanName(?string $lanName) : void{
+	public function setLanName(?string $lanName = null) : void{
 
 	}
 

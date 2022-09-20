@@ -101,7 +101,7 @@ final class DedicatedQueryNetworkInterface implements AdvancedNetworkInterface{
 		//NOOP
 	}
 
-	public function setLanName(string $lanName) : void{
+	public function setLanName(?string $lanName = null) : void{
 		//NOOP
 	}
 

@@ -218,7 +218,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 
 	}
 
-	public function setName(string $name, ?string $subName = null) : void{
+	public function setName(string $name, ?string $lanName = null) : void{
 		$info = $this->server->getQueryInformation();
 
 		$this->interface->setName(implode(";",
@@ -230,7 +230,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 				$info->getPlayerCount(),
 				$info->getMaxPlayerCount(),
 				$this->rakServerId,
-				$subName,
+				($subName ?? $this->server->getName()),
 				TypeConverter::getInstance()->protocolGameModeName($this->server->getGamemode())
 			]) . ";"
 		);
