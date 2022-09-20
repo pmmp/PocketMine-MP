@@ -97,8 +97,12 @@ final class DedicatedQueryNetworkInterface implements AdvancedNetworkInterface{
 		$this->logger->info("Running on $this->ip $this->port");
 	}
 
-	public function setName(string $name, ?string $subName = null) : void{
-		//NOOP
+	public function setName(string $name) : void{
+	    //NOOP
+	}
+	
+	public function setLanName(string $lanName) : void{
+        //NOOP
 	}
 
 	public function tick() : void{

@@ -38,6 +38,7 @@ final class QueryInfo{
 	public const GAME_ID = "MINECRAFTPE";
 
 	private string $serverName;
+	private string $serverLanName;
 	private bool $listPlugins;
 	/** @var Plugin[] */
 	private array $plugins;
@@ -65,6 +66,7 @@ final class QueryInfo{
 
 	public function __construct(Server $server){
 		$this->serverName = $server->getMotd();
+		$this->serverLanName = $server->getLanMotd();
 		$this->listPlugins = $server->getConfigGroup()->getPropertyBool("settings.query-plugins", true);
 		$this->plugins = $server->getPluginManager()->getPlugins();
 		$this->players = $server->getOnlinePlayers();
@@ -90,9 +92,18 @@ final class QueryInfo{
 	public function getServerName() : string{
 		return $this->serverName;
 	}
+	
+	public function getServerLanName() : string{
+		return $this->serverLanName;
+	}
 
 	public function setServerName(string $serverName) : void{
 		$this->serverName = $serverName;
+		$this->destroyCache();
+	}
+	
+	public function setServerLanName(string $lanName) : void{
+	    $this->serverLanName = $lanName;
 		$this->destroyCache();
 	}
 

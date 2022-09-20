@@ -28,6 +28,7 @@ namespace pocketmine\network;
 
 use pocketmine\event\server\NetworkInterfaceRegisterEvent;
 use pocketmine\event\server\NetworkInterfaceUnregisterEvent;
+use pocketmine\Server;
 use pocketmine\utils\Utils;
 use function base64_encode;
 use function get_class;
@@ -54,7 +55,7 @@ class Network{
 
 	private BidirectionalBandwidthStatsTracker $bandwidthTracker;
 	private string $name;
-	private ?string $subName;
+	private ?string $lanName;
 	private NetworkSessionManager $sessionManager;
 
 	public function __construct(
@@ -125,29 +126,44 @@ class Network{
 		unset($this->interfaces[$hash], $this->advancedInterfaces[$hash]);
 		$interface->shutdown();
 	}
-
-	/**
-	 * Sets the server name and sub name shown on each interface Query
-	 */
-	public function setName(string $name, ?string $subName = null) : void{
+	
+	public function setName(string $name) : void{
 		$this->name = $name;
-		$this->subName = $subName;
 		foreach($this->interfaces as $interface){
-			$interface->setName($this->name, $this->subName);
+			$interface->setName($this->name);
 		}
 	}
-
+	
+	/**
+	 * This changes the behaivor of lan motd. Since this can be only viewed in the lan list on minecraft.
+	 * 
+	 * @param string|null $lanName  If null, returns the default value to prevent query bugs.
+	 * @return void
+	 */
+	public function setLanName(?string $lanName) : void{
+	    $this->lanName = $lanName;
+	    foreach($this->interfaces as $interface){
+			$interface->setLanName($this->lanName);
+		}
+	}
+	
 	public function getName() : string{
 		return $this->name;
 	}
 
-	public function getSubName() : ?string{
-		return $this->subName;
+    /**
+     * This returns the of lan motd.
+     * 
+     * @return ?string
+     */
+	public function getLanName() : string{
+		return ($this->lanName ?? Server::getInstance()->getName());
 	}
 
 	public function updateName() : void{
 		foreach($this->interfaces as $interface){
-			$interface->setName($this->name, $this->subName);
+			$interface->setName($this->name);
+			$interface->setLanName($this->lanName);
 		}
 	}
 

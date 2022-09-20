@@ -383,11 +383,17 @@ class Server{
 		return $this->configGroup->getConfigBool("hardcore", false);
 	}
 
+    
 	public function getMotd() : string{
 		return $this->configGroup->getConfigString("motd", self::DEFAULT_SERVER_NAME);
 	}
 
-	public function getSubMotd() : string{
+    /**
+     * This changes the behavior of lan motd. Since this can be viewed only in the lan list on Minecraft.
+     * 
+     * @return string  When motd is null the default value will returned.
+     */
+	public function getLanMotd() : string{
 		return $this->configGroup->getConfigString("sub-motd", $this->getName());
 	}
 
@@ -954,7 +960,8 @@ class Server{
 			$this->getLogger()->debug("Machine unique id: " . Utils::getMachineUniqueId());
 
 			$this->network = new Network($this->logger);
-			$this->network->setName($this->getMotd(), $this->getSubMotd());
+			$this->network->setName($this->getMotd(), $this->getLanMotd());
+			$this->network->setLanName($this->getLanMotd());
 
 			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_info(
 				$this->getName(),
