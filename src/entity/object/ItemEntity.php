@@ -187,7 +187,7 @@ class ItemEntity extends Entity{
 	}
 
 	public function canSaveWithChunk() : bool{
-		return !$this->item->isNull();
+		return !$this->item->isNull() && parent::canSaveWithChunk();
 	}
 
 	public function saveNBT() : CompoundTag{
