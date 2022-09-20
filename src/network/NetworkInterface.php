@@ -37,6 +37,10 @@ interface NetworkInterface{
 	 */
 	public function start() : void;
 
+	public function setName(string $name) : void;
+
+	public function setLanName(?string $name) : void;
+
 	/**
 	 * Called every tick to process events on the interface.
 	 */

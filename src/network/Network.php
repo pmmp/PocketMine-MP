@@ -28,6 +28,7 @@ namespace pocketmine\network;
 
 use pocketmine\event\server\NetworkInterfaceRegisterEvent;
 use pocketmine\event\server\NetworkInterfaceUnregisterEvent;
+use pocketmine\network\mcpe\raklib\RakLibInterface;
 use pocketmine\Server;
 use pocketmine\utils\Utils;
 use function base64_encode;
@@ -109,7 +110,7 @@ class Network{
 					$interface->addRawPacketFilter($handler->getPattern());
 				}
 			}
-			$interface->setName($this->name, $this->subName);
+			$interface->setName($this->name, $this->lanName);
 			return true;
 		}
 		return false;
@@ -142,7 +143,7 @@ class Network{
 	/**
 	 * This changes the behaivor of lan motd. Since this can be only viewed in the lan list on minecraft.
 	 *
-	 * @param string|null $lanName  If null, returns the default value to prevent query bugs.
+	 * @param $lanName  If null, returns the default value to prevent query bugs.
 	 */
 	public function setLanName(?string $lanName = null) : void{
 		$this->lanName = $lanName;
