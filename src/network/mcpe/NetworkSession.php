@@ -181,7 +181,7 @@ class NetworkSession{
 	private \SplQueue $compressedQueue;
 	private bool $forceAsyncCompression = true;
 	private ?int $protocolId = null;
-	private bool $enableCompression = false; //disabled until handshake completed
+	private bool $enableCompression = true;
 
 	private PacketSerializerContext $packetSerializerContext;
 
@@ -214,10 +214,17 @@ class NetworkSession{
 
 		$this->connectTime = time();
 
-		$this->setHandler(new SessionStartPacketHandler(
+		$this->setHandler(new LoginPacketHandler(
 			$this->server,
 			$this,
-			fn() => $this->onSessionStartSuccess()
+			function(PlayerInfo $info) : void{
+				$this->info = $info;
+				$this->logger->info("Player: " . TextFormat::AQUA . $info->getUsername() . TextFormat::RESET);
+				$this->logger->setPrefix($this->getLogPrefix());
+			},
+			function(bool $isAuthenticated, bool $authRequired, ?string $error, ?string $clientPubKey) : void{
+				$this->setAuthenticationStatus($isAuthenticated, $authRequired, $error, $clientPubKey);
+			}
 		));
 
 		$this->manager->add($this);
