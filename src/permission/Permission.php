@@ -31,7 +31,6 @@ namespace pocketmine\permission;
  * Represents a permission
  */
 class Permission{
-	private string $description;
 
 	/**
 	 * Creates a new Permission object to be attached to Permissible objects
@@ -41,11 +40,9 @@ class Permission{
 	 */
 	public function __construct(
 		private string $name,
-		?string $description = null,
+		private ?string $description = null,
 		private array $children = []
 	){
-		$this->description = $description ?? ""; //TODO: wtf ????
-
 		$this->recalculatePermissibles();
 	}
 
@@ -62,7 +59,7 @@ class Permission{
 	}
 
 	public function getDescription() : string{
-		return $this->description;
+		return $this->description ?? "";
 	}
 
 	public function setDescription(string $value) : void{
