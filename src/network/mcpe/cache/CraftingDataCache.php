@@ -35,6 +35,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\recipe\CraftingRecipeBlockName;
 use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipe as ProtocolFurnaceRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipeBlockName;
+use pocketmine\network\mcpe\protocol\types\recipe\IntIdMetaItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\PotionContainerChangeRecipe as ProtocolPotionContainerChangeRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\PotionTypeRecipe as ProtocolPotionTypeRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient as ProtocolRecipeIngredient;
@@ -138,7 +139,10 @@ final class CraftingDataCache{
 				default => throw new AssumptionFailedError("Unreachable"),
 			};
 			foreach($manager->getFurnaceRecipeManager($furnaceType)->getAll() as $recipe){
-				$input = $converter->coreRecipeIngredientToNet($recipe->getInput());
+				$input = $converter->coreRecipeIngredientToNet($recipe->getInput())->getDescriptor();
+				if(!$input instanceof IntIdMetaItemDescriptor){
+					throw new AssumptionFailedError();
+				}
 				$recipesWithTypeIds[] = new ProtocolFurnaceRecipe(
 					CraftingDataPacket::ENTRY_FURNACE_DATA,
 					$input->getId(),
@@ -151,8 +155,11 @@ final class CraftingDataCache{
 
 		$potionTypeRecipes = [];
 		foreach($manager->getPotionTypeRecipes() as $recipe){
-			$input = $converter->coreRecipeIngredientToNet($recipe->getInput());
-			$ingredient = $converter->coreRecipeIngredientToNet($recipe->getIngredient());
+			$input = $converter->coreRecipeIngredientToNet($recipe->getInput())->getDescriptor();
+			$ingredient = $converter->coreRecipeIngredientToNet($recipe->getIngredient())->getDescriptor();
+			if(!$input instanceof IntIdMetaItemDescriptor || !$ingredient instanceof IntIdMetaItemDescriptor){
+				throw new AssumptionFailedError();
+			}
 			$output = $converter->coreItemStackToNet($recipe->getOutput());
 			$potionTypeRecipes[] = new ProtocolPotionTypeRecipe(
 				$input->getId(),
@@ -168,7 +175,10 @@ final class CraftingDataCache{
 		$itemTypeDictionary = GlobalItemTypeDictionary::getInstance()->getDictionary();
 		foreach($manager->getPotionContainerChangeRecipes() as $recipe){
 			$input = $itemTypeDictionary->fromStringId($recipe->getInputItemId());
-			$ingredient = $converter->coreRecipeIngredientToNet($recipe->getIngredient());
+			$ingredient = $converter->coreRecipeIngredientToNet($recipe->getIngredient())->getDescriptor();
+			if(!$ingredient instanceof IntIdMetaItemDescriptor){
+				throw new AssumptionFailedError();
+			}
 			$output = $itemTypeDictionary->fromStringId($recipe->getOutputItemId());
 			$potionContainerChangeRecipes[] = new ProtocolPotionContainerChangeRecipe(
 				$input,
