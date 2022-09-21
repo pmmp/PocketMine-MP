@@ -1021,7 +1021,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected function internalSetGameMode(GameMode $gameMode) : void{
 		$this->gamemode = $gameMode;
 
-		$this->allowFlight = $this->isCreative();
+		$this->allowFlight = $this->gamemode->equals(GameMode::CREATIVE());
 		$this->hungerManager->setEnabled($this->isSurvival());
 
 		if($this->isSpectator()){
