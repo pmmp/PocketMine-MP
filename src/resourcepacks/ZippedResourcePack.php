@@ -45,6 +45,9 @@ class ZippedResourcePack implements ResourcePack{
 	/** @var string */
 	protected $path;
 
+	/** @var string */
+	protected $encryptionKey;
+
 	/** @var Manifest */
 	protected $manifest;
 
@@ -56,10 +59,12 @@ class ZippedResourcePack implements ResourcePack{
 
 	/**
 	 * @param string $zipPath Path to the resource pack zip
+	 * @param string $encryptionKey
 	 * @throws ResourcePackException
 	 */
-	public function __construct(string $zipPath){
+	public function __construct(string $zipPath, string $encryptionKey = ""){
 		$this->path = $zipPath;
+		$this->encryptionKey = $encryptionKey;
 
 		if(!file_exists($zipPath)){
 			throw new ResourcePackException("File not found");
@@ -149,6 +154,10 @@ class ZippedResourcePack implements ResourcePack{
 
 	public function getPackSize() : int{
 		return filesize($this->path);
+	}
+
+	public function getEncryptionKey() : string{
+		return $this->encryptionKey;
 	}
 
 	public function getSha256(bool $cached = true) : string{

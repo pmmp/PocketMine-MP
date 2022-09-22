@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\resourcepacks;
 
 use pocketmine\utils\Config;
+use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
 use function array_keys;
 use function copy;
@@ -93,13 +94,19 @@ class ResourcePackManager{
 					throw new ResourcePackException("Directory resource packs are unsupported");
 				}
 
+				$encryptionKey = "";
+				$keyPath = Path::join($this->path, $pack . ".key");
+				if(file_exists($keyPath)) {
+					$encryptionKey = Utils::assumeNotFalse(file_get_contents($keyPath));
+				}
+
 				$newPack = null;
 				//Detect the type of resource pack.
 				$info = new \SplFileInfo($packPath);
 				switch($info->getExtension()){
 					case "zip":
 					case "mcpack":
-						$newPack = new ZippedResourcePack($packPath);
+						$newPack = new ZippedResourcePack($packPath, $encryptionKey);
 						break;
 				}
 
