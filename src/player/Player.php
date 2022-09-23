@@ -1987,6 +1987,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	/**
+	 * Sends a toast message to the player, or queue to send it if a toast message is already shown.
+	 */
+	public function sendToastNotification(string $title, string $body) : void{
+		$this->getNetworkSession()->onToastNotification($title, $body);
+	}
+
+	/**
 	 * Sends a Form to the player, or queue to send it if a form is already open.
 	 *
 	 * @throws \InvalidArgumentException
