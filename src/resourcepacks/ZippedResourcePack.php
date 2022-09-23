@@ -59,7 +59,6 @@ class ZippedResourcePack implements ResourcePack{
 
 	/**
 	 * @param string $zipPath Path to the resource pack zip
-	 * @param string $encryptionKey
 	 * @throws ResourcePackException
 	 */
 	public function __construct(string $zipPath, string $encryptionKey = ""){

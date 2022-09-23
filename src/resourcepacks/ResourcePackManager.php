@@ -30,6 +30,7 @@ use function array_keys;
 use function copy;
 use function count;
 use function file_exists;
+use function file_get_contents;
 use function gettype;
 use function is_array;
 use function is_dir;
