@@ -87,7 +87,7 @@ final class CraftingDataCache{
 				$typeTag = match($recipe->getType()->id()){
 					ShapelessRecipeType::CRAFTING()->id() => CraftingRecipeBlockName::CRAFTING_TABLE,
 					ShapelessRecipeType::STONECUTTER()->id() => CraftingRecipeBlockName::STONECUTTER,
-					ShapelessRecipeType::CARTOGRAPHY()->id() => CraftingRecipeBlockName::SMITHING_TABLE,
+					ShapelessRecipeType::CARTOGRAPHY()->id() => CraftingRecipeBlockName::CARTOGRAPHY_TABLE,
 					ShapelessRecipeType::SMITHING()->id() => CraftingRecipeBlockName::SMITHING_TABLE,
 					default => throw new AssumptionFailedError("Unreachable"),
 				};
