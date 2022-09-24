@@ -776,27 +776,12 @@ parameters:
 			path: ../../../src/plugin/PluginBase.php
 
 		-
-			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
 			message: "#^Cannot cast mixed to string\\.$#"
-			count: 5
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Parameter \\#1 \\$data of static method pocketmine\\\\permission\\\\PermissionParser\\:\\:loadPermissions\\(\\) expects array\\<string, array\\<string, mixed\\>\\>, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
 			message: "#^Parameter \\#1 \\$haystack of function stripos expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Parameter \\#1 \\$name of static method pocketmine\\\\plugin\\\\PluginEnableOrder\\:\\:fromString\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
@@ -811,42 +796,12 @@ parameters:
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$authors \\(array\\<string\\>\\) does not accept array\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$authors \\(array\\<string\\>\\) does not accept array\\<mixed\\>\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$depend \\(array\\<string\\>\\) does not accept array\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$loadBefore \\(array\\<string\\>\\) does not accept array\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
 			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$main \\(string\\) does not accept mixed\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
 			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$name \\(string\\) does not accept mixed\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$softDepend \\(array\\<string\\>\\) does not accept array\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$srcNamespacePrefix \\(string\\) does not accept mixed\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 

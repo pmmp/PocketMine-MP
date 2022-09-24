@@ -47,12 +47,20 @@ interface Inventory{
 	public function setItem(int $index, Item $item) : void;
 
 	/**
+	 * Returns an array of all the itemstacks in the inventory, indexed by their slot number.
+	 * Empty slots are not included unless includeEmpty is true.
+	 *
 	 * @return Item[]
+	 * @phpstan-return array<int, Item>
 	 */
 	public function getContents(bool $includeEmpty = false) : array;
 
 	/**
+	 * Sets the contents of the inventory. Non-numeric offsets or offsets larger than the size of the inventory are
+	 * ignored.
+	 *
 	 * @param Item[] $items
+	 * @phpstan-param array<int, Item> $items
 	 */
 	public function setContents(array $items) : void;
 
@@ -85,8 +93,10 @@ interface Inventory{
 	/**
 	 * Will return all the Items that has the same id and metadata (if not null).
 	 * Won't check amount
+	 * The returned array is indexed by slot number.
 	 *
 	 * @return Item[]
+	 * @phpstan-return array<int, Item>
 	 */
 	public function all(Item $item) : array;
 
