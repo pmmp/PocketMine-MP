@@ -169,7 +169,7 @@ use pocketmine\utils\AssumptionFailedError;
 use function class_parents;
 use function get_class;
 
-final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
+final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	/**
 	 * These callables actually accept Block, but for the sake of type completeness, it has to be never, since we can't
 	 * describe the bottom type of a type hierarchy only containing Block.

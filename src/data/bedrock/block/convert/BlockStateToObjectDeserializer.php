@@ -54,7 +54,7 @@ use function array_key_exists;
 use function count;
 use function min;
 
-final class BlockStateToBlockObjectDeserializer implements BlockStateDeserializer{
+final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 
 	/**
 	 * @var \Closure[]
