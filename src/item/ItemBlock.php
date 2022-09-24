@@ -26,6 +26,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
 
 /**
@@ -52,7 +53,7 @@ final class ItemBlock extends Item{
 		$this->maxStackSize = $block->getMaxStackSize();
 	}
 
-	protected function encodeType(RuntimeDataWriter $w) : void{
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
 		$w->int(Block::INTERNAL_STATE_DATA_BITS, $this->blockTypeData);
 	}
 

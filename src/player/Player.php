@@ -51,7 +51,6 @@ use pocketmine\event\player\PlayerBedLeaveEvent;
 use pocketmine\event\player\PlayerBlockPickEvent;
 use pocketmine\event\player\PlayerChangeSkinEvent;
 use pocketmine\event\player\PlayerChatEvent;
-use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerDisplayNameChangeEvent;
 use pocketmine\event\player\PlayerDropItemEvent;
@@ -421,6 +420,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return $this->lastPlayed - $this->firstPlayed > 1; // microtime(true) - microtime(true) may have less than one millisecond difference
 	}
 
+	/**
+	 * Sets whether the player is allowed to toggle flight mode.
+	 *
+	 * If set to false, the player will be locked in its current flight mode (flying/not flying), and attempts by the
+	 * player to enter or exit flight mode will be prevented.
+	 *
+	 * Note: Setting this to false DOES NOT change whether the player is currently flying. Use
+	 * {@link Player::setFlying()} for that purpose.
+	 */
 	public function setAllowFlight(bool $value) : void{
 		if($this->allowFlight !== $value){
 			$this->allowFlight = $value;
@@ -428,10 +436,24 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 	}
 
+	/**
+	 * Returns whether the player is allowed to toggle its flight state.
+	 *
+	 * If false, the player is locked in its current flight mode (flying/not flying), and attempts by the player to
+	 * enter or exit flight mode will be prevented.
+	 */
 	public function getAllowFlight() : bool{
 		return $this->allowFlight;
 	}
 
+	/**
+	 * Sets whether the player's movement may be obstructed by blocks with collision boxes.
+	 * If set to false, the player can move through any block unobstructed.
+	 *
+	 * Note: Enabling flight mode in conjunction with this is recommended. A non-flying player will simply fall through
+	 * the ground into the void.
+	 * @see Player::setFlying()
+	 */
 	public function setHasBlockCollision(bool $value) : void{
 		if($this->blockCollision !== $value){
 			$this->blockCollision = $value;
@@ -439,6 +461,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 	}
 
+	/**
+	 * Returns whether blocks may obstruct the player's movement.
+	 * If false, the player can move through any block unobstructed.
+	 */
 	public function hasBlockCollision() : bool{
 		return $this->blockCollision;
 	}
@@ -1024,7 +1050,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected function internalSetGameMode(GameMode $gameMode) : void{
 		$this->gamemode = $gameMode;
 
-		$this->allowFlight = $this->isCreative();
+		$this->allowFlight = $this->gamemode->equals(GameMode::CREATIVE());
 		$this->hungerManager->setEnabled($this->isSurvival());
 
 		if($this->isSpectator()){
@@ -1401,19 +1427,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					$messagePart = substr($messagePart, 1);
 				}
 
-				$ev = new PlayerCommandPreprocessEvent($this, $messagePart);
-				$ev->call();
-
-				if($ev->isCancelled()){
-					break;
-				}
-
-				if(strpos($ev->getMessage(), "/") === 0){
+				if(strpos($messagePart, "/") === 0){
 					Timings::$playerCommand->startTiming();
-					$this->server->dispatchCommand($ev->getPlayer(), substr($ev->getMessage(), 1));
+					$this->server->dispatchCommand($this, substr($messagePart, 1));
 					Timings::$playerCommand->stopTiming();
 				}else{
-					$ev = new PlayerChatEvent($this, $ev->getMessage(), $this->server->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_USERS));
+					$ev = new PlayerChatEvent($this, $messagePart, $this->server->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_USERS));
 					$ev->call();
 					if(!$ev->isCancelled()){
 						$this->server->broadcastMessage($this->getServer()->getLanguage()->translateString($ev->getFormat(), [$ev->getPlayer()->getDisplayName(), $ev->getMessage()]), $ev->getRecipients());
@@ -1998,6 +2017,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function sendTip(string $message) : void{
 		$this->getNetworkSession()->onTip($message);
+	}
+
+	/**
+	 * Sends a toast message to the player, or queue to send it if a toast message is already shown.
+	 */
+	public function sendToastNotification(string $title, string $body) : void{
+		$this->getNetworkSession()->onToastNotification($title, $body);
 	}
 
 	/**

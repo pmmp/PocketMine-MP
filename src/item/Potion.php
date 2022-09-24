@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Living;
 use pocketmine\player\Player;
@@ -36,7 +37,7 @@ class Potion extends Item implements ConsumableItem{
 		parent::__construct($identifier, $name);
 	}
 
-	protected function encodeType(RuntimeDataWriter $w) : void{
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
 		$w->potionType($this->potionType);
 	}
 
