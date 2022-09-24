@@ -77,8 +77,8 @@ class Block{
 	}
 
 	/**
-	 * Returns an object containing information about how to identify and store this block type, such as its legacy
-	 * numeric ID(s), tile type (if any), and legacy variant metadata.
+	 * Returns an object containing information about how to identify and store this block type, such as type ID and
+	 * tile type (if any).
 	 */
 	public function getIdInfo() : BlockIdentifier{
 		return $this->idInfo;
