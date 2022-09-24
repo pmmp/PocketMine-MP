@@ -282,6 +282,12 @@ class Block{
 		return false;
 	}
 
+	/**
+	 * Returns a multiplier applied to the velocity of entities moving on top of this block. A higher value will make
+	 * the block more slippery (like ice).
+	 *
+	 * @return float 0.0-1.0
+	 */
 	public function getFrictionFactor() : float{
 		return 0.6;
 	}
