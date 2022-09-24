@@ -121,7 +121,7 @@ class ResourcePackManager{
 							$this->encryptionKeys[strtolower($newPack->getPackId())] = ErrorToExceptionHandler::trapAndRemoveFalse(
 								fn() => file_get_contents($keyPath)
 							);
-						}catch(\ErrorException $e) {
+						}catch(\ErrorException $e){
 							throw new ResourcePackException("Could not read encryption key file: " . $e->getMessage(), 0, $e);
 						}
 					}
