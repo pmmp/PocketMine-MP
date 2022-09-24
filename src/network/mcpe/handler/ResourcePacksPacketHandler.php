@@ -65,17 +65,17 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	){}
 
 	public function setUp() : void{
-		$resourcePackEntries = array_map(static function(ResourcePack $pack) : ResourcePackInfoEntry{
+		$resourcePackEntries = array_map(function(ResourcePack $pack) : ResourcePackInfoEntry{
 			//TODO: more stuff
-			$encryptionKey = $pack->getEncryptionKey();
+			$encryptionKey = $this->resourcePackManager->getPackEncryptionKey($pack->getPackId());
 
 			return new ResourcePackInfoEntry(
 				$pack->getPackId(),
 				$pack->getPackVersion(),
 				$pack->getPackSize(),
-				$encryptionKey,
+				$encryptionKey ?? "",
 				"",
-				$encryptionKey === "" ? "" : $pack->getPackId(),
+				$encryptionKey === null ? "" : $pack->getPackId(), // ContentId is required for client-side validations when the pack is encrypted.
 				false
 			);
 		}, $this->resourcePackManager->getResourceStack());

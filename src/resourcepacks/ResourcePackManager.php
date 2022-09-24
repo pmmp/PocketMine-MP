@@ -51,6 +51,9 @@ class ResourcePackManager{
 	/** @var ResourcePack[] */
 	private array $uuidList = [];
 
+	/** @var array<string,string> */
+	private array $encryptionKeys = [];
+
 	/**
 	 * @param string  $path Path to resource-packs directory.
 	 */
@@ -95,25 +98,24 @@ class ResourcePackManager{
 					throw new ResourcePackException("Directory resource packs are unsupported");
 				}
 
-				$encryptionKey = "";
-				$keyPath = Path::join($this->path, $pack . ".key");
-				if(file_exists($keyPath)) {
-					$encryptionKey = Utils::assumeNotFalse(file_get_contents($keyPath));
-				}
-
 				$newPack = null;
 				//Detect the type of resource pack.
 				$info = new \SplFileInfo($packPath);
 				switch($info->getExtension()){
 					case "zip":
 					case "mcpack":
-						$newPack = new ZippedResourcePack($packPath, $encryptionKey);
+						$newPack = new ZippedResourcePack($packPath);
 						break;
 				}
 
 				if($newPack instanceof ResourcePack){
 					$this->resourcePacks[] = $newPack;
 					$this->uuidList[strtolower($newPack->getPackId())] = $newPack;
+
+					$keyPath = Path::join($this->path, $pack . ".key");
+					if(file_exists($keyPath)){
+						$this->encryptionKeys[strtolower($newPack->getPackId())] = Utils::assumeNotFalse(file_get_contents($keyPath));
+					}
 				}else{
 					throw new ResourcePackException("Format not recognized");
 				}
@@ -160,5 +162,12 @@ class ResourcePackManager{
 	 */
 	public function getPackIdList() : array{
 		return array_keys($this->uuidList);
+	}
+
+	/**
+	 * Returns the key with which the pack was encrypted, or null if the pack has no key.
+	 */
+	public function getPackEncryptionKey(string $id) : ?string {
+		return $this->encryptionKeys[strtolower($id)] ?? null;
 	}
 }
