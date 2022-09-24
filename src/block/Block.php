@@ -342,10 +342,6 @@ class Block{
 		return false;
 	}
 
-	public function addVelocityToEntity(Entity $entity) : ?Vector3{
-		return null;
-	}
-
 	final public function getPosition() : Position{
 		return $this->position;
 	}
@@ -583,6 +579,19 @@ class Block{
 	 */
 	public function onEntityInside(Entity $entity) : bool{
 		return true;
+	}
+
+	/**
+	 * Returns a direction vector describing which way an entity intersecting this block should be pushed.
+	 * This is used by liquids to push entities in liquid currents.
+	 *
+	 * The returned vector is summed with vectors from every other block the entity is intersecting, and normalized to
+	 * produce a final direction vector.
+	 *
+	 * WARNING: This will not be called if {@link Block::hasEntityCollision()} does not return true!
+	 */
+	public function addVelocityToEntity(Entity $entity) : ?Vector3{
+		return null;
 	}
 
 	/**
