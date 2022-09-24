@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\resourcepacks;
 
+use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\utils\Config;
-use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
 use function array_keys;
 use function copy;
@@ -51,7 +51,10 @@ class ResourcePackManager{
 	/** @var ResourcePack[] */
 	private array $uuidList = [];
 
-	/** @var array<string,string> */
+	/**
+	 * @var string[]
+	 * @phpstan-var array<string, string>
+	 */
 	private array $encryptionKeys = [];
 
 	/**
@@ -114,7 +117,13 @@ class ResourcePackManager{
 
 					$keyPath = Path::join($this->path, $pack . ".key");
 					if(file_exists($keyPath)){
-						$this->encryptionKeys[strtolower($newPack->getPackId())] = Utils::assumeNotFalse(file_get_contents($keyPath));
+						try{
+							$this->encryptionKeys[strtolower($newPack->getPackId())] = ErrorToExceptionHandler::trapAndRemoveFalse(
+								fn() => file_get_contents($keyPath)
+							);
+						}catch(\ErrorException $e) {
+							throw new ResourcePackException("Could not read encryption key file: " . $e->getMessage(), 0, $e);
+						}
 					}
 				}else{
 					throw new ResourcePackException("Format not recognized");
@@ -167,7 +176,7 @@ class ResourcePackManager{
 	/**
 	 * Returns the key with which the pack was encrypted, or null if the pack has no key.
 	 */
-	public function getPackEncryptionKey(string $id) : ?string {
+	public function getPackEncryptionKey(string $id) : ?string{
 		return $this->encryptionKeys[strtolower($id)] ?? null;
 	}
 }
