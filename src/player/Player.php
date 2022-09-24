@@ -51,7 +51,6 @@ use pocketmine\event\player\PlayerBedLeaveEvent;
 use pocketmine\event\player\PlayerBlockPickEvent;
 use pocketmine\event\player\PlayerChangeSkinEvent;
 use pocketmine\event\player\PlayerChatEvent;
-use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerDisplayNameChangeEvent;
 use pocketmine\event\player\PlayerDropItemEvent;
@@ -1401,19 +1400,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					$messagePart = substr($messagePart, 1);
 				}
 
-				$ev = new PlayerCommandPreprocessEvent($this, $messagePart);
-				$ev->call();
-
-				if($ev->isCancelled()){
-					break;
-				}
-
-				if(strpos($ev->getMessage(), "/") === 0){
+				if(strpos($messagePart, "/") === 0){
 					Timings::$playerCommand->startTiming();
-					$this->server->dispatchCommand($ev->getPlayer(), substr($ev->getMessage(), 1));
+					$this->server->dispatchCommand($this, substr($messagePart, 1));
 					Timings::$playerCommand->stopTiming();
 				}else{
-					$ev = new PlayerChatEvent($this, $ev->getMessage(), $this->server->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_USERS));
+					$ev = new PlayerChatEvent($this, $messagePart, $this->server->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_USERS));
 					$ev->call();
 					if(!$ev->isCancelled()){
 						$this->server->broadcastMessage($this->getServer()->getLanguage()->translateString($ev->getFormat(), [$ev->getPlayer()->getDisplayName(), $ev->getMessage()]), $ev->getRecipients());
