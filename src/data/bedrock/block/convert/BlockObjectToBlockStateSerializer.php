@@ -179,6 +179,12 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 	 */
 	private array $serializers = [];
 
+	/**
+	 * @var BlockStateData[]
+	 * @phpstan-var array<int, BlockStateData>
+	 */
+	private array $cache = [];
+
 	public function __construct(){
 		$this->registerCandleSerializers();
 		$this->registerCauldronSerializers();
@@ -188,7 +194,8 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 
 	public function serialize(int $stateId) : BlockStateData{
 		//TODO: singleton usage not ideal
-		return $this->serializeBlock(BlockFactory::getInstance()->fromStateId($stateId));
+		//TODO: we may want to deduplicate cache entries to avoid wasting memory
+		return $this->cache[$stateId] ??= $this->serializeBlock(BlockFactory::getInstance()->fromStateId($stateId));
 	}
 
 	/**

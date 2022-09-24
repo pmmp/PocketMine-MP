@@ -51,6 +51,7 @@ use pocketmine\data\bedrock\block\convert\BlockStateReader as Reader;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use function array_key_exists;
+use function count;
 use function min;
 
 final class BlockStateToBlockObjectDeserializer implements BlockStateDeserializer{
@@ -61,6 +62,12 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 	 */
 	private array $deserializeFuncs = [];
 
+	/**
+	 * @var int[]
+	 * @phpstan-var array<string, int>
+	 */
+	private array $simpleCache = [];
+
 	public function __construct(){
 		$this->registerCandleDeserializers();
 		$this->registerCauldronDeserializers();
@@ -69,6 +76,12 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 	}
 
 	public function deserialize(BlockStateData $stateData) : int{
+		if(count($stateData->getStates()) === 0){
+			//if a block has zero properties, we can keep a map of string ID -> internal blockstate ID
+			return $this->simpleCache[$stateData->getName()] ??= $this->deserializeBlock($stateData)->getStateId();
+		}
+
+		//we can't cache blocks that have properties - go ahead and deserialize the slow way
 		return $this->deserializeBlock($stateData)->getStateId();
 	}
 
