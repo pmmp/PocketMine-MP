@@ -329,10 +329,6 @@ class Block{
 		return false;
 	}
 
-	public function hasEntityCollision() : bool{
-		return false;
-	}
-
 	/**
 	 * Returns whether entities can climb up this block.
 	 */
@@ -562,8 +558,19 @@ class Block{
 	}
 
 	/**
+	 * Returns whether the block has actions to be executed when an entity enters its cell (full cube space).
+	 *
+	 * @see Block::onEntityInside()
+	 */
+	public function hasEntityCollision() : bool{
+		return false;
+	}
+
+	/**
 	 * Called when an entity's bounding box clips inside this block's cell. Note that the entity may not be intersecting
 	 * with the collision box or bounding box.
+	 *
+	 * WARNING: This will not be called if {@link Block::hasEntityCollision()} returns false.
 	 *
 	 * @return bool Whether the block is still the same after the intersection. If it changed (e.g. due to an explosive
 	 * being ignited), this should return false.
