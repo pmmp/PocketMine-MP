@@ -83,12 +83,13 @@ class Furnace extends Opaque{
 	}
 
 	public function onScheduledUpdate() : void{
-		$furnace = $this->position->getWorld()->getTile($this->position);
+		$world = $this->position->getWorld();
+		$furnace = $world->getTile($this->position);
 		if($furnace instanceof TileFurnace && $furnace->onUpdate()){
 			if(mt_rand(1, 60) === 1){ //in vanilla this is between 1 and 5 seconds; try to average about 3
-				$this->position->getWorld()->addSound($this->position, $furnace->getFurnaceType()->getCookSound());
+				$world->addSound($this->position, $furnace->getFurnaceType()->getCookSound());
 			}
-			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1); //TODO: check this
+			$world->scheduleDelayedBlockUpdate($this->position, 1); //TODO: check this
 		}
 	}
 }

@@ -31,7 +31,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\SimpleCommandMap;
 use pocketmine\console\ConsoleCommandSender;
-use pocketmine\console\ConsoleReaderThread;
+use pocketmine\console\ConsoleReaderChildProcessDaemon;
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingManagerFromDataHelper;
 use pocketmine\crash\CrashDump;
@@ -88,7 +88,6 @@ use pocketmine\promise\PromiseResolver;
 use pocketmine\resourcepacks\ResourcePackManager;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\snooze\SleeperHandler;
-use pocketmine\snooze\SleeperNotifier;
 use pocketmine\stats\SendUsageTask;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
@@ -166,7 +165,6 @@ use function zlib_encode;
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 use const PHP_INT_MAX;
-use const PTHREADS_INHERIT_NONE;
 use const ZLIB_ENCODING_GZIP;
 
 /**
@@ -226,7 +224,8 @@ class Server{
 
 	private MemoryManager $memoryManager;
 
-	private ConsoleReaderThread $console;
+	private ?ConsoleReaderChildProcessDaemon $console = null;
+	private ?ConsoleCommandSender $consoleSender = null;
 
 	private SimpleCommandMap $commandMap;
 
@@ -1050,17 +1049,9 @@ class Server{
 			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_ADMINISTRATIVE, $consoleSender);
 			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $consoleSender);
 
-			$consoleNotifier = new SleeperNotifier();
-			$commandBuffer = new \Threaded();
-			$this->console = new ConsoleReaderThread($commandBuffer, $consoleNotifier);
-			$this->tickSleeper->addNotifier($consoleNotifier, function() use ($commandBuffer, $consoleSender) : void{
-				Timings::$serverCommand->startTiming();
-				while(($line = $commandBuffer->shift()) !== null){
-					$this->dispatchCommand($consoleSender, (string) $line);
-				}
-				Timings::$serverCommand->stopTiming();
-			});
-			$this->console->start(PTHREADS_INHERIT_NONE);
+			if($this->configGroup->getPropertyBool("console.enable-input", true)){
+				$this->console = new ConsoleReaderChildProcessDaemon($this->logger);
+			}
 
 			$this->tickProcessor();
 			$this->forceShutdown();
@@ -1513,7 +1504,7 @@ class Server{
 				$this->configGroup->save();
 			}
 
-			if(isset($this->console)){
+			if($this->console !== null){
 				$this->getLogger()->debug("Closing console");
 				$this->console->quit();
 			}
@@ -1856,6 +1847,13 @@ class Server{
 		}
 
 		$this->getMemoryManager()->check();
+
+		if($this->console !== null){
+			while(($line = $this->console->readLine()) !== null){
+				$this->consoleSender ??= new ConsoleCommandSender($this, $this->language);
+				$this->dispatchCommand($this->consoleSender, $line);
+			}
+		}
 
 		Timings::$serverTick->stopTiming();
 
