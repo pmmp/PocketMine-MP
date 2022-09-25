@@ -574,7 +574,7 @@ class InGamePacketHandler extends PacketHandler{
 			}else{
 				$this->player->setLookingEntity(null);
 			}
-			return $this->player->updateInteractiveTag($target);
+			return $this->player->updateInteractiveTag();
 		}
 		if($target === null){
 			return false;
