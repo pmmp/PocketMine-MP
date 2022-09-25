@@ -22,7 +22,7 @@
 declare(strict_types=1);
 
 /**
- * Network-related classes
+ * Network-related classes 
  */
 namespace pocketmine\network;
 
