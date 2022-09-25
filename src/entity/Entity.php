@@ -1052,6 +1052,10 @@ abstract class Entity{
 
 	}
 
+	/**
+	 * Returns the interactive tag that will be displayed as a button
+	 * when a player looks at this entity, or null if the entity doesn't have an interactive tag.
+	 */
 	public function getInteractiveTag(Player $player, Item $item) : ?string{
 		return null;
 	}

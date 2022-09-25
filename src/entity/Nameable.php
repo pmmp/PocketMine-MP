@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\item\Item;
+use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
 interface Nameable{
@@ -33,4 +34,6 @@ interface Nameable{
 	public function setNameTag(string $name) : void;
 
 	public function getInteractiveTag(Player $player, Item $item) : ?string;
+
+	public function onInteract(Player $player, Vector3 $clickPos) : bool;
 }

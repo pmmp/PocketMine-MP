@@ -29,7 +29,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
 /**
- * Trait used only for nameable entities using a name tag.
+ * This trait implements most methods in the {@link Nameable} interface. It should only be used by Entities.
  */
 trait NameableTrait{
 

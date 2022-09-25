@@ -1842,6 +1842,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return false;
 	}
 
+	/**
+	 * Updates the interactive tag displayed as a button or removes it if necessary.
+	 * Returns whether it did something.
+	 */
 	public function updateInteractiveTag() : bool{
 		$item = $this->inventory->getItemInHand();
 		$looking = $this->getLookingEntity();

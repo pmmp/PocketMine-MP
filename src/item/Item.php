@@ -566,7 +566,8 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
-	 * Returns a text or translation key representing the button that will appear when the player holds this.
+	 * Returns the interactive tag that will be displayed as a button
+	 * when a player holds this, or null if the item doesn't have an interactive tag.
 	 */
 	public function getInteractiveTag() : ?string{
 		return null;
