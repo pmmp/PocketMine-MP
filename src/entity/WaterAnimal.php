@@ -27,7 +27,9 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 
-abstract class WaterAnimal extends Living implements Ageable{
+abstract class WaterAnimal extends Living implements Ageable, Nameable{
+	use NameableTrait;
+
 	protected bool $baby = false;
 
 	public function isBaby() : bool{

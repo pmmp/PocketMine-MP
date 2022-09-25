@@ -566,6 +566,13 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
+	 * Returns a text or translation key representing the button that will appear when the player holds this.
+	 */
+	public function getInteractiveTag() : ?string{
+		return null;
+	}
+
+	/**
 	 * Compares an Item to this Item and check if they match.
 	 *
 	 * @param bool $checkDamage @deprecated

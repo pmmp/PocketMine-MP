@@ -35,6 +35,7 @@ use pocketmine\event\entity\EntityMotionEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
+use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector2;
@@ -1049,6 +1050,10 @@ abstract class Entity{
 
 	public function onCollideWithPlayer(Player $player) : void{
 
+	}
+
+	public function getInteractiveTag(Player $player, Item $item) : ?string{
+		return null;
 	}
 
 	/**

@@ -27,7 +27,8 @@ use pocketmine\item\VanillaItems;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use function mt_rand;
 
-class Zombie extends Living{
+class Zombie extends Living implements Nameable{
+	use NameableTrait;
 
 	public static function getNetworkTypeId() : string{ return EntityIds::ZOMBIE; }
 

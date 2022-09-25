@@ -38,7 +38,6 @@ use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\PlayerOffHandInventory;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
-use pocketmine\item\ItemTypeIds;
 use pocketmine\item\Totem;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
@@ -333,14 +332,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	public function getName() : string{
 		return $this->getNameTag();
-	}
-
-	public function onInteract(Player $player, Vector3 $clickPos) : bool{
-		$item = $player->getInventory()->getItemInHand();
-		if($item->getTypeId() === ItemTypeIds::NAME_TAG){
-			return false;
-		}
-		return parent::onInteract($player, $clickPos);
 	}
 
 	public function applyDamageModifiers(EntityDamageEvent $source) : void{
