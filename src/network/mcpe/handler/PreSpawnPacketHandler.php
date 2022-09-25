@@ -98,9 +98,10 @@ class PreSpawnPacketHandler extends PacketHandler{
 			false,
 			sprintf("%s %s", VersionInfo::NAME, VersionInfo::VERSION()->getFullVersion(true)),
 			Uuid::fromString(Uuid::NIL),
+			false,
 			[],
 			0,
-			GlobalItemTypeDictionary::getInstance()->getDictionary()->getEntries()
+			GlobalItemTypeDictionary::getInstance()->getDictionary()->getEntries(),
 		));
 
 		$this->session->sendDataPacket(StaticPacketCache::getInstance()->getAvailableActorIdentifiers());

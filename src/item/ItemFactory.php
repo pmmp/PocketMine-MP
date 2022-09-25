@@ -472,7 +472,7 @@ class ItemFactory{
 			if(isset($this->list[$offset = self::getListOffset($id, $meta)])){
 				$item = clone $this->list[$offset];
 			}elseif(isset($this->list[$zero = self::getListOffset($id, 0)]) && $this->list[$zero] instanceof Durable){
-				if($meta <= $this->list[$zero]->getMaxDurability()){
+				if($meta >= 0 && $meta <= $this->list[$zero]->getMaxDurability()){
 					$item = clone $this->list[$zero];
 					$item->setDamage($meta);
 				}else{

@@ -25,6 +25,9 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 
+/**
+ * Represents a block which is unrecognized or not implemented.
+ */
 class UnknownBlock extends Transparent{
 
 	public function __construct(BlockIdentifier $idInfo, BlockBreakInfo $breakInfo){

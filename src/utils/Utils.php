@@ -69,6 +69,7 @@ use function mb_check_encoding;
 use function ob_end_clean;
 use function ob_get_contents;
 use function ob_start;
+use function opcache_get_status;
 use function ord;
 use function php_uname;
 use function phpversion;
@@ -108,6 +109,7 @@ final class Utils{
 
 	private static ?string $os = null;
 	private static ?UuidInterface $serverUniqueId = null;
+	private static ?int $cpuCores = null;
 
 	/**
 	 * Returns a readable identifier for the given Closure, including file and line.
@@ -295,14 +297,11 @@ final class Utils{
 	}
 
 	public static function getCoreCount(bool $recalculate = false) : int{
-		static $processors = 0;
-
-		if($processors > 0 && !$recalculate){
-			return $processors;
-		}else{
-			$processors = 0;
+		if(self::$cpuCores !== null && !$recalculate){
+			return self::$cpuCores;
 		}
 
+		$processors = 0;
 		switch(Utils::getOS()){
 			case Utils::OS_LINUX:
 			case Utils::OS_ANDROID:
@@ -326,7 +325,7 @@ final class Utils{
 				$processors = (int) getenv("NUMBER_OF_PROCESSORS");
 				break;
 		}
-		return $processors;
+		return self::$cpuCores = $processors;
 	}
 
 	/**
@@ -365,12 +364,6 @@ final class Utils{
 				$ord -= 0x100;
 			}
 			$hash = 31 * $hash + $ord;
-			while($hash > 0x7FFFFFFF){
-				$hash -= 0x100000000;
-			}
-			while($hash < -0x80000000){
-				$hash += 0x100000000;
-			}
 			$hash &= 0xFFFFFFFF;
 		}
 		return $hash;
@@ -486,8 +479,8 @@ final class Utils{
 	 */
 	public static function currentTrace(int $skipFrames = 0) : array{
 		++$skipFrames; //omit this frame from trace, in addition to other skipped frames
-		if(function_exists("xdebug_get_function_stack")){
-			$trace = array_reverse(xdebug_get_function_stack());
+		if(function_exists("xdebug_get_function_stack") && count($trace = @xdebug_get_function_stack()) !== 0){
+			$trace = array_reverse($trace);
 		}else{
 			$e = new \Exception();
 			$trace = $e->getTrace();
@@ -633,5 +626,31 @@ final class Utils{
 
 	public static function checkLocationNotInfOrNaN(Location $location) : void{
 		self::checkVector3NotInfOrNaN($location);
+	}
+
+	/**
+	 * Returns an integer describing the current OPcache JIT setting.
+	 * @see https://www.php.net/manual/en/opcache.configuration.php#ini.opcache.jit
+	 */
+	public static function getOpcacheJitMode() : ?int{
+		if(
+			function_exists('opcache_get_status') &&
+			($opcacheStatus = opcache_get_status(false)) !== false &&
+			isset($opcacheStatus["jit"]["on"])
+		){
+			$jit = $opcacheStatus["jit"];
+			if($jit["on"] === true){
+				return (($jit["opt_flags"] >> 2) * 1000) +
+					(($jit["opt_flags"] & 0x03) * 100) +
+					($jit["kind"] * 10) +
+					$jit["opt_level"];
+			}
+
+			//jit available, but disabled
+			return 0;
+		}
+
+		//jit not available
+		return null;
 	}
 }

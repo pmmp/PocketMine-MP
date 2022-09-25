@@ -21,20 +21,12 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity\effect;
-
-use pocketmine\entity\Living;
-
-class HealthBoostEffect extends Effect{
-
-	public function add(Living $entity, EffectInstance $instance) : void{
-		$entity->setMaxHealth($entity->getMaxHealth() + 4 * $instance->getEffectLevel());
-	}
-
-	public function remove(Living $entity, EffectInstance $instance) : void{
-		$entity->setMaxHealth($entity->getMaxHealth() - 4 * $instance->getEffectLevel());
-		if($entity->getHealth() > $entity->getMaxHealth()){
-			$entity->setHealth($entity->getMaxHealth());
-		}
-	}
-}
+/*
+ * This hack works around a "feature" in PHPStan which locks in analysis version based on platform.php in composer.json
+ * See https://github.com/phpstan/phpstan/issues/7701 for details
+ */
+return [
+	'parameters' => [
+		'phpVersion' => PHP_VERSION_ID
+	]
+];

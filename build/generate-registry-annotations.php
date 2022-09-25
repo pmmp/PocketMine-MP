@@ -29,7 +29,9 @@ use function count;
 use function dirname;
 use function file_get_contents;
 use function file_put_contents;
+use function fwrite;
 use function implode;
+use function is_dir;
 use function ksort;
 use function mb_strtoupper;
 use function preg_match;
@@ -39,7 +41,8 @@ use function substr;
 use const SORT_STRING;
 
 if(count($argv) !== 2){
-	die("Provide a path to process");
+	fwrite(STDERR, "Provide a path to process\n");
+	exit(1);
 }
 
 /**
@@ -80,30 +83,24 @@ function generateMethodAnnotations(string $namespaceName, array $members) : stri
 	return implode("\n", $lines);
 }
 
-require dirname(__DIR__) . '/vendor/autoload.php';
-
-/** @var string $file */
-foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($argv[1], \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::CURRENT_AS_PATHNAME)) as $file){
-	if(substr($file, -4) !== ".php"){
-		continue;
-	}
+function processFile(string $file) : void{
 	$contents = file_get_contents($file);
 	if($contents === false){
 		throw new \RuntimeException("Failed to get contents of $file");
 	}
 
 	if(preg_match("/(*ANYCRLF)^namespace (.+);$/m", $contents, $matches) !== 1 || preg_match('/(*ANYCRLF)^((final|abstract)\s+)?class /m', $contents) !== 1){
-		continue;
+		return;
 	}
 	$shortClassName = basename($file, ".php");
 	$className = $matches[1] . "\\" . $shortClassName;
 	if(!class_exists($className)){
-		continue;
+		return;
 	}
 	$reflect = new \ReflectionClass($className);
 	$docComment = $reflect->getDocComment();
 	if($docComment === false || preg_match("/(*ANYCRLF)^\s*\*\s*@generate-registry-docblock$/m", $docComment) !== 1){
-		continue;
+		return;
 	}
 	echo "Found registry in $file\n";
 
@@ -116,4 +113,19 @@ foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($argv[1],
 	}else{
 		echo "No changes made to file $file\n";
 	}
+}
+
+require dirname(__DIR__) . '/vendor/autoload.php';
+
+if(is_dir($argv[1])){
+	/** @var string $file */
+	foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($argv[1], \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::CURRENT_AS_PATHNAME)) as $file){
+		if(substr($file, -4) !== ".php"){
+			continue;
+		}
+
+		processFile($file);
+	}
+}else{
+	processFile($argv[1]);
 }

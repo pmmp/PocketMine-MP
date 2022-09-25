@@ -28,7 +28,7 @@ trait SingletonTrait{
 	private static $instance = null;
 
 	private static function make() : self{
-		return new self;
+		return new self();
 	}
 
 	public static function getInstance() : self{

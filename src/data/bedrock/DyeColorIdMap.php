@@ -74,7 +74,7 @@ final class DyeColorIdMap{
 	}
 
 	public function fromId(int $id) : ?DyeColor{
-		return $this->idToEnum[$id];
+		return $this->idToEnum[$id] ?? null;
 	}
 
 	public function fromInvertedId(int $id) : ?DyeColor{
