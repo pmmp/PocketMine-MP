@@ -34,7 +34,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
-use pocketmine\world\sound\BurpSound;
 
 class Cake extends Transparent implements FoodSource{
 	public const MAX_BITES = 6;
@@ -100,9 +99,8 @@ class Cake extends Transparent implements FoodSource{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($player !== null && $player->consumeObject($this)){
-			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new BurpSound());
-			return true;
+		if($player !== null){
+			return $player->consumeObject($this);
 		}
 
 		return false;
