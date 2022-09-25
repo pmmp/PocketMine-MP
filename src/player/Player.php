@@ -1847,9 +1847,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * Returns whether it did something.
 	 */
 	public function updateInteractiveTag() : bool{
-		$item = $this->inventory->getItemInHand();
 		$looking = $this->getLookingEntity();
-		$interactiveTag = $item->getInteractiveTag() ?? ($looking !== null ? $looking->getInteractiveTag($this, $item) : null);
+		$item = $this->inventory->getItemInHand();
+		$interactiveTag = ($looking !== null ? $looking->getInteractiveTag($this, $item) : null) ?? $item->getInteractiveTag();
 		if($interactiveTag !== $this->interactiveTag){
 			$this->interactiveTag = $interactiveTag;
 			$this->networkPropertiesDirty = true;
