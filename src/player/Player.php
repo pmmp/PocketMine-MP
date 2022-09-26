@@ -418,6 +418,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return $this->lastPlayed - $this->firstPlayed > 1; // microtime(true) - microtime(true) may have less than one millisecond difference
 	}
 
+	/**
+	 * Sets whether the player is allowed to toggle flight mode.
+	 *
+	 * If set to false, the player will be locked in its current flight mode (flying/not flying), and attempts by the
+	 * player to enter or exit flight mode will be prevented.
+	 *
+	 * Note: Setting this to false DOES NOT change whether the player is currently flying. Use
+	 * {@link Player::setFlying()} for that purpose.
+	 */
 	public function setAllowFlight(bool $value) : void{
 		if($this->allowFlight !== $value){
 			$this->allowFlight = $value;
@@ -425,10 +434,24 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 	}
 
+	/**
+	 * Returns whether the player is allowed to toggle its flight state.
+	 *
+	 * If false, the player is locked in its current flight mode (flying/not flying), and attempts by the player to
+	 * enter or exit flight mode will be prevented.
+	 */
 	public function getAllowFlight() : bool{
 		return $this->allowFlight;
 	}
 
+	/**
+	 * Sets whether the player's movement may be obstructed by blocks with collision boxes.
+	 * If set to false, the player can move through any block unobstructed.
+	 *
+	 * Note: Enabling flight mode in conjunction with this is recommended. A non-flying player will simply fall through
+	 * the ground into the void.
+	 * @see Player::setFlying()
+	 */
 	public function setHasBlockCollision(bool $value) : void{
 		if($this->blockCollision !== $value){
 			$this->blockCollision = $value;
@@ -436,6 +459,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 	}
 
+	/**
+	 * Returns whether blocks may obstruct the player's movement.
+	 * If false, the player can move through any block unobstructed.
+	 */
 	public function hasBlockCollision() : bool{
 		return $this->blockCollision;
 	}
@@ -1021,7 +1048,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected function internalSetGameMode(GameMode $gameMode) : void{
 		$this->gamemode = $gameMode;
 
-		$this->allowFlight = $this->isCreative();
+		$this->allowFlight = $this->gamemode->equals(GameMode::CREATIVE());
 		$this->hungerManager->setEnabled($this->isSurvival());
 
 		if($this->isSpectator()){
