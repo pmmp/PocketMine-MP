@@ -27,7 +27,6 @@ declare(strict_types=1);
 namespace pocketmine\command;
 
 use pocketmine\command\utils\CommandException;
-use pocketmine\console\ConsoleCommandSender;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
 use pocketmine\permission\PermissionManager;
@@ -228,7 +227,7 @@ abstract class Command{
 		$result = KnownTranslationFactory::chat_type_admin($source->getName(), $message);
 		$colored = $result->prefix(TextFormat::GRAY . TextFormat::ITALIC);
 
-		if($sendToSource && !($source instanceof ConsoleCommandSender)){
+		if($sendToSource){
 			$source->sendMessage($message);
 		}
 
