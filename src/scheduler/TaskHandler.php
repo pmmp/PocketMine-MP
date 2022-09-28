@@ -69,6 +69,9 @@ class TaskHandler{
 		return $this->nextRun;
 	}
 
+	/**
+	 * @internal
+	 */
 	public function setNextRun(int $ticks) : void{
 		$this->nextRun = $ticks;
 	}
@@ -103,11 +106,17 @@ class TaskHandler{
 		}
 	}
 
+	/**
+	 * @internal
+	 */
 	public function remove() : void{
 		$this->cancelled = true;
 		$this->task->setHandler(null);
 	}
 
+	/**
+	 * @internal
+	 */
 	public function run() : void{
 		$this->timings->startTiming();
 		try{
