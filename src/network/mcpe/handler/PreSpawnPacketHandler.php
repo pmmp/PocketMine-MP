@@ -30,6 +30,7 @@ use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
@@ -146,6 +147,12 @@ class PreSpawnPacketHandler extends PacketHandler{
 	public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet) : bool{
 		$this->player->setViewDistance($packet->radius);
 
+		return true;
+	}
+
+	public function handlePlayerAuthInput(PlayerAuthInputPacket $packet) : bool{
+		//the client will send this every tick once we start sending chunks, but we don't handle it in this stage
+		//this is very spammy so we filter it out
 		return true;
 	}
 }
