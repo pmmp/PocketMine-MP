@@ -43,8 +43,6 @@ class ChunkCache implements ChunkListener{
 
 	/**
 	 * Fetches the ChunkCache instance for the given world. This lazily creates cache systems as needed.
-	 *
-	 * @return ChunkCache
 	 */
 	public static function getInstance(World $world, Compressor $compressor) : self{
 		$worldId = spl_object_id($world);

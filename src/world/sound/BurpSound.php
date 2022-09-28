@@ -21,20 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity\effect;
+namespace pocketmine\world\sound;
 
-use pocketmine\entity\Living;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-class HealthBoostEffect extends Effect{
+class BurpSound implements Sound{
 
-	public function add(Living $entity, EffectInstance $instance) : void{
-		$entity->setMaxHealth($entity->getMaxHealth() + 4 * $instance->getEffectLevel());
-	}
-
-	public function remove(Living $entity, EffectInstance $instance) : void{
-		$entity->setMaxHealth($entity->getMaxHealth() - 4 * $instance->getEffectLevel());
-		if($entity->getHealth() > $entity->getMaxHealth()){
-			$entity->setHealth($entity->getMaxHealth());
-		}
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::BURP, $pos, false)];
 	}
 }
