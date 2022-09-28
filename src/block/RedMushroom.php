@@ -50,6 +50,7 @@ class RedMushroom extends Flowable{
 		if(($lightLevel <= 12 && !$down->isTransparent()) || $downId === BlockLegacyIds::MYCELIUM || $downId === BlockLegacyIds::PODZOL){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
+
 		return false;
 	}
 }
