@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -47,6 +47,24 @@ interface Inventory{
 	public function setItem(int $index, Item $item) : void;
 
 	/**
+	 * Returns an array of all the itemstacks in the inventory, indexed by their slot number.
+	 * Empty slots are not included unless includeEmpty is true.
+	 *
+	 * @return Item[]
+	 * @phpstan-return array<int, Item>
+	 */
+	public function getContents(bool $includeEmpty = false) : array;
+
+	/**
+	 * Sets the contents of the inventory. Non-numeric offsets or offsets larger than the size of the inventory are
+	 * ignored.
+	 *
+	 * @param Item[] $items
+	 * @phpstan-param array<int, Item> $items
+	 */
+	public function setContents(array $items) : void;
+
+	/**
 	 * Stores the given Items in the inventory. This will try to fill
 	 * existing stacks and empty slots as well as it can.
 	 *
@@ -67,24 +85,6 @@ interface Inventory{
 	public function getAddableItemQuantity(Item $item) : int;
 
 	/**
-	 * Removes the given Item from the inventory.
-	 * It will return the Items that couldn't be removed.
-	 *
-	 * @return Item[]
-	 */
-	public function removeItem(Item ...$slots) : array;
-
-	/**
-	 * @return Item[]
-	 */
-	public function getContents(bool $includeEmpty = false) : array;
-
-	/**
-	 * @param Item[] $items
-	 */
-	public function setContents(array $items) : void;
-
-	/**
 	 * Checks if the inventory contains any Item with the same material data.
 	 * It will check id, amount, and metadata (if not null)
 	 */
@@ -93,8 +93,10 @@ interface Inventory{
 	/**
 	 * Will return all the Items that has the same id and metadata (if not null).
 	 * Won't check amount
+	 * The returned array is indexed by slot number.
 	 *
 	 * @return Item[]
+	 * @phpstan-return array<int, Item>
 	 */
 	public function all(Item $item) : array;
 
@@ -120,6 +122,14 @@ interface Inventory{
 	 * Will remove all the Items that has the same id and metadata (if not null)
 	 */
 	public function remove(Item $item) : void;
+
+	/**
+	 * Removes the given Item from the inventory.
+	 * It will return the Items that couldn't be removed.
+	 *
+	 * @return Item[]
+	 */
+	public function removeItem(Item ...$slots) : array;
 
 	/**
 	 * Will clear a specific slot

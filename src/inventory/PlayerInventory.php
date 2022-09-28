@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -49,7 +49,7 @@ class PlayerInventory extends SimpleInventory{
 	}
 
 	public function isHotbarSlot(int $slot) : bool{
-		return $slot >= 0 and $slot <= $this->getHotbarSize();
+		return $slot >= 0 && $slot < $this->getHotbarSize();
 	}
 
 	/**

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -91,7 +91,7 @@ class ShulkerBox extends Opaque{
 			$shulker = $this->position->getWorld()->getTile($this->position);
 			if($shulker instanceof TileShulkerBox){
 				if(
-					$this->getSide($this->facing)->getId() !== BlockLegacyIds::AIR or
+					$this->getSide($this->facing)->isSolid() ||
 					!$shulker->canOpenWith($item->getCustomName())
 				){
 					return true;

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,11 +29,8 @@ use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 
 class ItemBlockWallOrFloor extends Item{
-
-	/** @var int */
-	private $floorVariant;
-	/** @var int */
-	private $wallVariant;
+	private int $floorVariant;
+	private int $wallVariant;
 
 	public function __construct(ItemIdentifier $identifier, Block $floorVariant, Block $wallVariant){
 		parent::__construct($identifier, $floorVariant->getName());

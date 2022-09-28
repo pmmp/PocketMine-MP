@@ -17,14 +17,16 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\crafting;
 
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Utils;
 use function array_map;
 use function file_get_contents;
 use function is_array;
@@ -32,8 +34,25 @@ use function json_decode;
 
 final class CraftingManagerFromDataHelper{
 
+	/**
+	 * @param Item[] $items
+	 */
+	private static function containsUnknownOutputs(array $items) : bool{
+		$factory = ItemFactory::getInstance();
+		foreach($items as $item){
+			if($item->hasAnyDamageValue()){
+				throw new \InvalidArgumentException("Recipe outputs must not have wildcard meta values");
+			}
+			if(!$factory->isRegistered($item->getId(), $item->getMeta())){
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public static function make(string $filePath) : CraftingManager{
-		$recipes = json_decode(file_get_contents($filePath), true);
+		$recipes = json_decode(Utils::assumeNotFalse(file_get_contents($filePath), "Missing required resource file"), true);
 		if(!is_array($recipes)){
 			throw new AssumptionFailedError("recipes.json root should contain a map of recipe types");
 		}
@@ -42,22 +61,37 @@ final class CraftingManagerFromDataHelper{
 		$itemDeserializerFunc = \Closure::fromCallable([Item::class, 'jsonDeserialize']);
 
 		foreach($recipes["shapeless"] as $recipe){
-			if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
+			$recipeType = match($recipe["block"]){
+				"crafting_table" => ShapelessRecipeType::CRAFTING(),
+				"stonecutter" => ShapelessRecipeType::STONECUTTER(),
+				//TODO: Cartography Table
+				default => null
+			};
+			if($recipeType === null){
+				continue;
+			}
+			$output = array_map($itemDeserializerFunc, $recipe["output"]);
+			if(self::containsUnknownOutputs($output)){
 				continue;
 			}
 			$result->registerShapelessRecipe(new ShapelessRecipe(
 				array_map($itemDeserializerFunc, $recipe["input"]),
-				array_map($itemDeserializerFunc, $recipe["output"])
+				$output,
+				$recipeType
 			));
 		}
 		foreach($recipes["shaped"] as $recipe){
 			if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
 				continue;
 			}
+			$output = array_map($itemDeserializerFunc, $recipe["output"]);
+			if(self::containsUnknownOutputs($output)){
+				continue;
+			}
 			$result->registerShapedRecipe(new ShapedRecipe(
 				$recipe["shape"],
 				array_map($itemDeserializerFunc, $recipe["input"]),
-				array_map($itemDeserializerFunc, $recipe["output"])
+				$output
 			));
 		}
 		foreach($recipes["smelting"] as $recipe){
@@ -71,10 +105,35 @@ final class CraftingManagerFromDataHelper{
 			if($furnaceType === null){
 				continue;
 			}
+			$output = Item::jsonDeserialize($recipe["output"]);
+			if(self::containsUnknownOutputs([$output])){
+				continue;
+			}
 			$result->getFurnaceRecipeManager($furnaceType)->register(new FurnaceRecipe(
-				Item::jsonDeserialize($recipe["output"]),
+				$output,
 				Item::jsonDeserialize($recipe["input"]))
 			);
+		}
+		foreach($recipes["potion_type"] as $recipe){
+			$output = Item::jsonDeserialize($recipe["output"]);
+			if(self::containsUnknownOutputs([$output])){
+				continue;
+			}
+			$result->registerPotionTypeRecipe(new PotionTypeRecipe(
+				Item::jsonDeserialize($recipe["input"]),
+				Item::jsonDeserialize($recipe["ingredient"]),
+				$output
+			));
+		}
+		foreach($recipes["potion_container_change"] as $recipe){
+			if(!ItemFactory::getInstance()->isRegistered($recipe["output_item_id"])){
+				continue;
+			}
+			$result->registerPotionContainerChangeRecipe(new PotionContainerChangeRecipe(
+				$recipe["input_item_id"],
+				Item::jsonDeserialize($recipe["ingredient"]),
+				$recipe["output_item_id"]
+			));
 		}
 
 		return $result;

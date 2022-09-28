@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,13 +31,9 @@ use pocketmine\world\format\Chunk;
 use pocketmine\world\generator\object\TreeFactory;
 
 class Tree implements Populator{
-	/** @var int */
-	private $randomAmount = 1;
-	/** @var int */
-	private $baseAmount = 0;
-
-	/** @var TreeType */
-	private $type;
+	private int $randomAmount = 1;
+	private int $baseAmount = 0;
+	private TreeType $type;
 
 	/**
 	 * @param TreeType|null $type default oak
@@ -72,9 +68,9 @@ class Tree implements Populator{
 	private function getHighestWorkableBlock(ChunkManager $world, int $x, int $z) : int{
 		for($y = 127; $y >= 0; --$y){
 			$b = $world->getBlockAt($x, $y, $z)->getId();
-			if($b === BlockLegacyIds::DIRT or $b === BlockLegacyIds::GRASS){
+			if($b === BlockLegacyIds::DIRT || $b === BlockLegacyIds::GRASS){
 				return $y + 1;
-			}elseif($b !== BlockLegacyIds::AIR and $b !== BlockLegacyIds::SNOW_LAYER){
+			}elseif($b !== BlockLegacyIds::AIR && $b !== BlockLegacyIds::SNOW_LAYER){
 				return -1;
 			}
 		}

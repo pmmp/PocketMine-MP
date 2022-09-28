@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -40,10 +40,8 @@ class Skull extends Spawnable{
 	private const TAG_MOUTH_MOVING = "MouthMoving"; //TAG_Byte
 	private const TAG_MOUTH_TICK_COUNT = "MouthTickCount"; //TAG_Int
 
-	/** @var SkullType */
-	private $skullType;
-	/** @var int */
-	private $skullRotation = 0;
+	private SkullType $skullType;
+	private int $skullRotation = 0;
 
 	public function __construct(World $world, Vector3 $pos){
 		$this->skullType = SkullType::SKELETON();
@@ -59,7 +57,7 @@ class Skull extends Spawnable{
 			}
 		}
 		$rotation = $nbt->getByte(self::TAG_ROT, 0);
-		if($rotation >= 0 and $rotation <= 15){
+		if($rotation >= 0 && $rotation <= 15){
 			$this->skullRotation = $rotation;
 		}
 	}

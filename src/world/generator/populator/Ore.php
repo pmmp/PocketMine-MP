@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,7 +31,7 @@ use pocketmine\world\generator\object\OreType;
 
 class Ore implements Populator{
 	/** @var OreType[] */
-	private $oreTypes = [];
+	private array $oreTypes = [];
 
 	public function populate(ChunkManager $world, int $chunkX, int $chunkZ, Random $random) : void{
 		foreach($this->oreTypes as $type){

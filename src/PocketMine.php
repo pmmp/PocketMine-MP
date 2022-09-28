@@ -32,14 +32,17 @@ namespace pocketmine {
 	use pocketmine\utils\ServerKiller;
 	use pocketmine\utils\Terminal;
 	use pocketmine\utils\Timezone;
+	use pocketmine\utils\Utils;
 	use pocketmine\wizard\SetupWizard;
 	use Webmozart\PathUtil\Path;
 	use function defined;
 	use function extension_loaded;
+	use function function_exists;
+	use function getcwd;
 	use function phpversion;
 	use function preg_match;
 	use function preg_quote;
-	use function strpos;
+	use function realpath;
 	use function version_compare;
 
 	require_once __DIR__ . '/VersionInfo.php';
@@ -112,8 +115,7 @@ namespace pocketmine {
 			}
 		}
 
-		if(extension_loaded("pthreads")){
-			$pthreads_version = phpversion("pthreads");
+		if(($pthreads_version = phpversion("pthreads")) !== false){
 			if(substr_count($pthreads_version, ".") < 2){
 				$pthreads_version = "0.$pthreads_version";
 			}
@@ -122,8 +124,7 @@ namespace pocketmine {
 			}
 		}
 
-		if(extension_loaded("leveldb")){
-			$leveldb_version = phpversion("leveldb");
+		if(($leveldb_version = phpversion("leveldb")) !== false){
 			if(version_compare($leveldb_version, "0.2.1") < 0){
 				$messages[] = "php-leveldb >= 0.2.1 is required, while you have $leveldb_version.";
 			}
@@ -160,7 +161,7 @@ namespace pocketmine {
 		if(PHP_DEBUG !== 0){
 			$logger->warning("This PHP binary was compiled in debug mode. This has a major impact on performance.");
 		}
-		if(extension_loaded("xdebug")){
+		if(extension_loaded("xdebug") && (!function_exists('xdebug_info') || count(xdebug_info('mode')) !== 0)){
 			$logger->warning("Xdebug extension is enabled. This has a major impact on performance.");
 		}
 		if(((int) ini_get('zend.assertions')) !== -1){
@@ -176,10 +177,10 @@ namespace pocketmine {
 
 
 	--------------------------------------- ! WARNING ! ---------------------------------------
-	You're using PHP 8.0 with JIT enabled. This provides significant performance improvements.
+	You're using PHP with JIT enabled. This provides significant performance improvements.
 	HOWEVER, it is EXPERIMENTAL, and has already been seen to cause weird and unexpected bugs.
 	Proceed with caution.
-	If you want to report any bugs, make sure to mention that you are using PHP 8.0 with JIT.
+	If you want to report any bugs, make sure to mention that you have enabled PHP JIT.
 	To turn off JIT, change `opcache.jit` to `0` in your php.ini file.
 	-------------------------------------------------------------------------------------------
 
@@ -253,8 +254,9 @@ JIT_WARNING
 
 		$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-ansi", "disable-ansi"]);
 
-		$dataPath = isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : realpath(getcwd()) . DIRECTORY_SEPARATOR;
-		$pluginPath = isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : realpath(getcwd()) . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR;
+		$cwd = Utils::assumeNotFalse(realpath(Utils::assumeNotFalse(getcwd())));
+		$dataPath = isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : $cwd . DIRECTORY_SEPARATOR;
+		$pluginPath = isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : $cwd . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR;
 		Filesystem::addCleanedPath($pluginPath, Filesystem::CLEAN_PATH_PLUGINS_PREFIX);
 
 		if(!file_exists($dataPath)){
@@ -286,7 +288,7 @@ JIT_WARNING
 
 		$exitCode = 0;
 		do{
-			if(!file_exists(Path::join($dataPath, "server.properties")) and !isset($opts["no-wizard"])){
+			if(!file_exists(Path::join($dataPath, "server.properties")) && !isset($opts["no-wizard"])){
 				$installer = new SetupWizard($dataPath);
 				if(!$installer->run()){
 					$exitCode = -1;

@@ -17,13 +17,11 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\utils;
-
-use function preg_match;
 
 trait EnumTrait{
 	use RegistryTrait;
@@ -50,6 +48,7 @@ trait EnumTrait{
 	 * This is overridden to change the return typehint.
 	 *
 	 * @return self[]
+	 * @phpstan-return array<string, self>
 	 */
 	public static function getAll() : array{
 		//phpstan doesn't support generic traits yet :(
@@ -70,9 +69,7 @@ trait EnumTrait{
 	 * @throws \InvalidArgumentException
 	 */
 	private function __construct(string $enumName){
-		if(preg_match('/^\D[A-Za-z\d_]+$/u', $enumName, $matches) === 0){
-			throw new \InvalidArgumentException("Invalid enum member name \"$enumName\", should only contain letters, numbers and underscores, and must not start with a number");
-		}
+		self::verifyName($enumName);
 		$this->enumName = $enumName;
 		if(self::$nextId === null){
 			self::$nextId = Process::pid(); //this provides enough base entropy to prevent hardcoding

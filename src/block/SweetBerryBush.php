@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -135,7 +135,7 @@ class SweetBerryBush extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->age < self::STAGE_MATURE and mt_rand(0, 2) === 1){
+		if($this->age < self::STAGE_MATURE && mt_rand(0, 2) === 1){
 			$block = clone $this;
 			++$block->age;
 			$ev = new BlockGrowEvent($this, $block);
@@ -151,9 +151,11 @@ class SweetBerryBush extends Flowable{
 	}
 
 	public function onEntityInside(Entity $entity) : bool{
-		//TODO: in MCPE, this only triggers if moving while inside the bush block - we don't have the system to deal
-		//with that reliably right now
 		if($this->age >= self::STAGE_BUSH_NO_BERRIES && $entity instanceof Living){
+			$entity->resetFallDistance();
+
+			//TODO: in MCPE, this only triggers if moving while inside the bush block - we don't have the system to deal
+			//with that reliably right now
 			$entity->attack(new EntityDamageByBlockEvent($this, $entity, EntityDamageByBlockEvent::CAUSE_CONTACT, 1));
 		}
 		return true;

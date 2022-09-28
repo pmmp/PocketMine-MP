@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -83,6 +84,10 @@ class BrewingStand extends Transparent{
 		];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function hasSlot(BrewingStandSlot $slot) : bool{
 		return array_key_exists($slot->id(), $this->slots);
 	}
@@ -116,7 +121,7 @@ class BrewingStand extends Transparent{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
 			$stand = $this->position->getWorld()->getTile($this->position);
-			if($stand instanceof TileBrewingStand and $stand->canOpenWith($item->getCustomName())){
+			if($stand instanceof TileBrewingStand && $stand->canOpenWith($item->getCustomName())){
 				$player->setCurrentWindow($stand->getInventory());
 			}
 		}
@@ -125,6 +130,24 @@ class BrewingStand extends Transparent{
 	}
 
 	public function onScheduledUpdate() : void{
-		//TODO
+		$brewing = $this->position->getWorld()->getTile($this->position);
+		if($brewing instanceof TileBrewingStand){
+			if($brewing->onUpdate()){
+				$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
+			}
+
+			$changed = false;
+			foreach(BrewingStandSlot::getAll() as $slot){
+				$occupied = !$brewing->getInventory()->isSlotEmpty($slot->getSlotNumber());
+				if($occupied !== $this->hasSlot($slot)){
+					$this->setSlot($slot, $occupied);
+					$changed = true;
+				}
+			}
+
+			if($changed){
+				$this->position->getWorld()->setBlock($this->position, $this);
+			}
+		}
 	}
 }

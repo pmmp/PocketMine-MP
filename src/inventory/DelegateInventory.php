@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,13 +31,12 @@ use function count;
  * An inventory which is backed by another inventory, and acts as a proxy to that inventory.
  */
 class DelegateInventory extends BaseInventory{
-
-	private Inventory $backingInventory;
 	private InventoryListener $inventoryListener;
 
-	public function __construct(Inventory $backingInventory){
+	public function __construct(
+		private Inventory $backingInventory
+	){
 		parent::__construct();
-		$this->backingInventory = $backingInventory;
 		$this->backingInventory->getListeners()->add($this->inventoryListener = new CallbackInventoryListener(
 			function(Inventory $unused, int $slot, Item $oldItem) : void{
 				$this->onSlotChange($slot, $oldItem);

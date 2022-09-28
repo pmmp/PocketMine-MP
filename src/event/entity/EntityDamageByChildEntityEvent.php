@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,8 +29,7 @@ use pocketmine\entity\Entity;
  * Called when an entity takes damage from an entity sourced from another entity, for example being hit by a snowball thrown by a Player.
  */
 class EntityDamageByChildEntityEvent extends EntityDamageByEntityEvent{
-	/** @var int */
-	private $childEntityEid;
+	private int $childEntityEid;
 
 	/**
 	 * @param float[] $modifiers

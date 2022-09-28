@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,7 +31,9 @@ use pocketmine\data\java\GameModeIdMap;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
+use pocketmine\lang\Translatable;
 use pocketmine\player\GameMode;
+use pocketmine\Server;
 use pocketmine\utils\Config;
 use pocketmine\utils\Internet;
 use pocketmine\utils\InternetException;
@@ -46,18 +48,15 @@ use const PHP_EOL;
 use const STDIN;
 
 class SetupWizard{
-	public const DEFAULT_NAME = VersionInfo::NAME . " Server";
-	public const DEFAULT_PORT = 19132;
-	public const DEFAULT_PLAYERS = 20;
+	public const DEFAULT_NAME = Server::DEFAULT_SERVER_NAME;
+	public const DEFAULT_PORT = Server::DEFAULT_PORT_IPV4;
+	public const DEFAULT_PLAYERS = Server::DEFAULT_MAX_PLAYERS;
 
-	/** @var Language */
-	private $lang;
-	/** @var string */
-	private $dataPath;
+	private Language $lang;
 
-	public function __construct(string $dataPath){
-		$this->dataPath = $dataPath;
-	}
+	public function __construct(
+		private string $dataPath
+	){}
 
 	public function run() : bool{
 		$this->message(VersionInfo::NAME . " set-up wizard");
@@ -140,6 +139,18 @@ LICENSE;
 		$this->message($this->lang->translate(KnownTranslationFactory::server_properties()));
 	}
 
+	private function askPort(Translatable $prompt, int $default) : int{
+		while(true){
+			$port = (int) $this->getInput($this->lang->translate($prompt), (string) $default);
+			if($port <= 0 || $port > 65535){
+				$this->error($this->lang->translate(KnownTranslationFactory::invalid_port()));
+				continue;
+			}
+
+			return $port;
+		}
+	}
+
 	private function generateBaseConfig() : void{
 		$config = new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES);
 
@@ -148,25 +159,19 @@ LICENSE;
 
 		$this->message($this->lang->translate(KnownTranslationFactory::port_warning()));
 
-		do{
-			$port = (int) $this->getInput($this->lang->translate(KnownTranslationFactory::server_port()), (string) self::DEFAULT_PORT);
-			if($port <= 0 or $port > 65535){
-				$this->error($this->lang->translate(KnownTranslationFactory::invalid_port()));
-				continue;
-			}
-
-			break;
-		}while(true);
-		$config->set("server-port", $port);
+		$config->set("server-port", $this->askPort(KnownTranslationFactory::server_port_v4(), Server::DEFAULT_PORT_IPV4));
+		$config->set("server-portv6", $this->askPort(KnownTranslationFactory::server_port_v6(), Server::DEFAULT_PORT_IPV6));
 
 		$this->message($this->lang->translate(KnownTranslationFactory::gamemode_info()));
 
 		do{
-			$gamemode = (int) $this->getInput($this->lang->translate(KnownTranslationFactory::default_gamemode()), (string) GameModeIdMap::getInstance()->toId(GameMode::SURVIVAL()));
-		}while($gamemode < 0 or $gamemode > 3);
-		$config->set("gamemode", $gamemode);
+			$gamemode = GameModeIdMap::getInstance()->fromId((int) $this->getInput($this->lang->translate(KnownTranslationFactory::default_gamemode()), (string) GameModeIdMap::getInstance()->toId(GameMode::SURVIVAL())));
+		}while($gamemode === null);
+		$config->set("gamemode", $gamemode->name());
 
 		$config->set("max-players", (int) $this->getInput($this->lang->translate(KnownTranslationFactory::max_players()), (string) self::DEFAULT_PLAYERS));
+
+		$config->set("view-distance", (int) $this->getInput($this->lang->translate(KnownTranslationFactory::view_distance()), (string) Server::DEFAULT_MAX_VIEW_DISTANCE));
 
 		$config->save();
 	}
@@ -256,7 +261,7 @@ LICENSE;
 	private function getInput(string $message, string $default = "", string $options = "") : string{
 		$message = "[?] " . $message;
 
-		if($options !== "" or $default !== ""){
+		if($options !== "" || $default !== ""){
 			$message .= " (" . ($options === "" ? $default : $options) . ")";
 		}
 		$message .= ": ";

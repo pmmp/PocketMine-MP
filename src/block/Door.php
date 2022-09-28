@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -72,7 +73,7 @@ class Door extends Transparent{
 
 		//copy door properties from other half
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
-		if($other instanceof Door and $other->isSameType($this)){
+		if($other instanceof Door && $other->isSameType($this)){
 			if($this->top){
 				$this->facing = $other->facing;
 				$this->open = $other->open;
@@ -119,8 +120,12 @@ class Door extends Transparent{
 		return [AxisAlignedBB::one()->trim($this->open ? Facing::rotateY($this->facing, !$this->hingeRight) : $this->facing, 327 / 400)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->getId() === BlockLegacyIds::AIR){ //Replace with common break method
+		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN)) && !$this->getSide(Facing::DOWN) instanceof Door){ //Replace with common break method
 			$this->position->getWorld()->useBreakOn($this->position); //this will delete both halves if they exist
 		}
 	}
@@ -129,7 +134,7 @@ class Door extends Transparent{
 		if($face === Facing::UP){
 			$blockUp = $this->getSide(Facing::UP);
 			$blockDown = $this->getSide(Facing::DOWN);
-			if(!$blockUp->canBeReplaced() or $blockDown->isTransparent()){
+			if(!$blockUp->canBeReplaced() || !$this->canBeSupportedBy($blockDown)){
 				return false;
 			}
 
@@ -140,7 +145,7 @@ class Door extends Transparent{
 			$next = $this->getSide(Facing::rotateY($this->facing, false));
 			$next2 = $this->getSide(Facing::rotateY($this->facing, true));
 
-			if($next->isSameType($this) or (!$next2->isTransparent() and $next->isTransparent())){ //Door hinge
+			if($next->isSameType($this) || (!$next2->isTransparent() && $next->isTransparent())){ //Door hinge
 				$this->hingeRight = true;
 			}
 
@@ -158,7 +163,7 @@ class Door extends Transparent{
 		$this->open = !$this->open;
 
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
-		if($other instanceof Door and $other->isSameType($this)){
+		if($other instanceof Door && $other->isSameType($this)){
 			$other->open = $this->open;
 			$this->position->getWorld()->setBlock($other->position, $other);
 		}
@@ -183,5 +188,9 @@ class Door extends Transparent{
 			return [$this, $other];
 		}
 		return parent::getAffectedBlocks();
+	}
+
+	private function canBeSupportedBy(Block $block) : bool{
+		return $block->getSupportType(Facing::UP)->hasEdgeSupport();
 	}
 }

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -35,7 +35,7 @@ final class StringToEffectParser extends StringToTParser{
 	use SingletonTrait;
 
 	private static function make() : self{
-		$result = new self;
+		$result = new self();
 
 		$result->register("absorption", fn() => VanillaEffects::ABSORPTION());
 		$result->register("blindness", fn() => VanillaEffects::BLINDNESS());

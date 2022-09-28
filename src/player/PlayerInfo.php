@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,31 +31,18 @@ use Ramsey\Uuid\UuidInterface;
  * Encapsulates data needed to create a player.
  */
 class PlayerInfo{
-
-	/** @var string */
-	private $username;
-	/** @var UuidInterface */
-	private $uuid;
-	/** @var Skin */
-	private $skin;
-	/** @var string */
-	private $locale;
-	/**
-	 * @var mixed[]
-	 * @phpstan-var array<string, mixed>
-	 */
-	private $extraData;
-
 	/**
 	 * @param mixed[] $extraData
 	 * @phpstan-param array<string, mixed> $extraData
 	 */
-	public function __construct(string $username, UuidInterface $uuid, Skin $skin, string $locale, array $extraData = []){
+	public function __construct(
+		private string $username,
+		private UuidInterface $uuid,
+		private Skin $skin,
+		private string $locale,
+		private array $extraData = []
+	){
 		$this->username = TextFormat::clean($username);
-		$this->uuid = $uuid;
-		$this->skin = $skin;
-		$this->locale = $locale;
-		$this->extraData = $extraData;
 	}
 
 	public function getUsername() : string{

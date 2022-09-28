@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -101,6 +101,7 @@ final class VanillaEffects{
 
 	/**
 	 * @return Effect[]
+	 * @phpstan-return array<string, Effect>
 	 */
 	public static function getAll() : array{
 		//phpstan doesn't support generic traits yet :(

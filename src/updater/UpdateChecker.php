@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -40,8 +40,7 @@ class UpdateChecker{
 	/** @var UpdateInfo|null */
 	protected $updateInfo = null;
 
-	/** @var \Logger */
-	private $logger;
+	private \Logger $logger;
 
 	public function __construct(Server $server, string $endpoint){
 		$this->server = $server;
@@ -68,9 +67,9 @@ class UpdateChecker{
 				$this->showConsoleUpdate();
 			}
 		}else{
-			if(!VersionInfo::IS_DEVELOPMENT_BUILD and $this->getChannel() !== "stable"){
+			if(!VersionInfo::IS_DEVELOPMENT_BUILD && $this->getChannel() !== "stable"){
 				$this->showChannelSuggestionStable();
-			}elseif(VersionInfo::IS_DEVELOPMENT_BUILD and $this->getChannel() === "stable"){
+			}elseif(VersionInfo::IS_DEVELOPMENT_BUILD && $this->getChannel() === "stable"){
 				$this->showChannelSuggestionBeta();
 			}
 		}

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -37,8 +37,7 @@ use function igbinary_unserialize;
 class BulkCurlTask extends AsyncTask{
 	private const TLS_KEY_COMPLETION_CALLBACK = "completionCallback";
 
-	/** @var string */
-	private $operations;
+	private string $operations;
 
 	/**
 	 * BulkCurlTask constructor.

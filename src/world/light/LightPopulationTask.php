@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -40,12 +40,9 @@ class LightPopulationTask extends AsyncTask{
 	/** @var string */
 	public $chunk;
 
-	/** @var string */
-	private $resultHeightMap;
-	/** @var string */
-	private $resultSkyLightArrays;
-	/** @var string */
-	private $resultBlockLightArrays;
+	private string $resultHeightMap;
+	private string $resultSkyLightArrays;
+	private string $resultBlockLightArrays;
 
 	/**
 	 * @phpstan-param \Closure(array<int, LightArray> $blockLight, array<int, LightArray> $skyLight, array<int, int> $heightMap) : void $onCompletion

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,14 +26,9 @@ namespace pocketmine\scheduler;
 use pocketmine\utils\Utils;
 
 abstract class Task{
+	private ?TaskHandler $taskHandler = null;
 
-	/** @var TaskHandler|null */
-	private $taskHandler = null;
-
-	/**
-	 * @return TaskHandler|null
-	 */
-	final public function getHandler(){
+	final public function getHandler() : ?TaskHandler{
 		return $this->taskHandler;
 	}
 
@@ -42,7 +37,7 @@ abstract class Task{
 	}
 
 	final public function setHandler(?TaskHandler $taskHandler) : void{
-		if($this->taskHandler === null or $taskHandler === null){
+		if($this->taskHandler === null || $taskHandler === null){
 			$this->taskHandler = $taskHandler;
 		}
 	}
