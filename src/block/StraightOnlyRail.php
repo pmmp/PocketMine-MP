@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\RailConnectionInfo;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
-use pocketmine\data\runtime\InvalidSerializedRuntimeDataException;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use function array_keys;
@@ -40,16 +39,8 @@ class StraightOnlyRail extends BaseRail{
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$railShape = $r->readInt(3);
-		if(!isset(RailConnectionInfo::CONNECTIONS[$railShape])){
-			throw new InvalidSerializedRuntimeDataException("No rail shape matches meta $railShape");
-		}
-		$this->railShape = $railShape;
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeInt(3, $this->railShape);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->straightOnlyRailShape($this->railShape);
 	}
 
 	protected function setShapeFromConnections(array $connections) : void{

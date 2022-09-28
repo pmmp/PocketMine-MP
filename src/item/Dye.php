@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\utils\DyeColor;
+use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
-use pocketmine\data\runtime\RuntimeEnumSerializer;
 
 class Dye extends Item{
 	private DyeColor $color;
@@ -35,8 +35,8 @@ class Dye extends Item{
 		parent::__construct($identifier, $name);
 	}
 
-	protected function encodeType(RuntimeDataWriter $w) : void{
-		RuntimeEnumSerializer::writeDyeColor($w, $this->color);
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->dyeColor($this->color);
 	}
 
 	public function getColor() : DyeColor{

@@ -21,23 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\block;
+namespace pocketmine\world\sound;
 
-final class CachingBlockStateSerializer implements DelegatingBlockStateSerializer{
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelEvent;
 
-	/**
-	 * @var BlockStateData[]
-	 * @phpstan-var array<int, BlockStateData>
-	 */
-	private array $cache = [];
+final class CauldronDyeItemSound implements Sound{
 
-	public function __construct(
-		private BlockStateSerializer $realSerializer
-	){}
-
-	public function serialize(int $stateId) : BlockStateData{
-		return $this->cache[$stateId] ??= $this->realSerializer->serialize($stateId);
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::create(LevelEvent::CAULDRON_DYE_ARMOR, 0, $pos)];
 	}
-
-	public function getRealSerializer() : BlockStateSerializer{ return $this->realSerializer; }
 }

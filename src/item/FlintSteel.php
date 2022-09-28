@@ -32,7 +32,7 @@ use pocketmine\world\sound\FlintSteelSound;
 
 class FlintSteel extends Tool{
 
-	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		if($blockReplace->getTypeId() === BlockTypeIds::AIR){
 			$world = $player->getWorld();
 			$world->setBlock($blockReplace->getPosition(), VanillaBlocks::FIRE());

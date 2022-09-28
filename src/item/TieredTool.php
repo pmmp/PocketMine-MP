@@ -50,4 +50,8 @@ abstract class TieredTool extends Tool{
 
 		return 0;
 	}
+
+	public function isFireProof() : bool{
+		return $this->tier->equals(ToolTier::NETHERITE());
+	}
 }

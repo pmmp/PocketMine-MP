@@ -157,7 +157,7 @@ class BlockFactory{
 		}else{
 			$typeId = $stateId >> Block::INTERNAL_STATE_DATA_BITS;
 			$stateData = $stateId & Block::INTERNAL_STATE_DATA_MASK;
-			$block = new UnknownBlock(new BID($typeId), BreakInfo::instant(), $stateData);
+			$block = new UnknownBlock(new BID($typeId), new BlockTypeInfo(BreakInfo::instant()), $stateData);
 		}
 
 		return $block;

@@ -27,10 +27,12 @@ namespace pocketmine\data\runtime;
  * This class is auto-generated. Do not edit it manually.
  * @see build/generate-runtime-enum-serializers.php
  */
-final class RuntimeEnumDeserializer{
+trait RuntimeEnumDeserializerTrait{
 
-	public static function readBellAttachmentType(RuntimeDataReader $r) : \pocketmine\block\utils\BellAttachmentType{
-		return match($r->readInt(2)){
+	abstract protected function readInt(int $bits) : int;
+
+	public function bellAttachmentType(\pocketmine\block\utils\BellAttachmentType &$value) : void{
+		$value = match($this->readInt(2)){
 			0 => \pocketmine\block\utils\BellAttachmentType::CEILING(),
 			1 => \pocketmine\block\utils\BellAttachmentType::FLOOR(),
 			2 => \pocketmine\block\utils\BellAttachmentType::ONE_WALL(),
@@ -39,8 +41,8 @@ final class RuntimeEnumDeserializer{
 		};
 	}
 
-	public static function readCopperOxidation(RuntimeDataReader $r) : \pocketmine\block\utils\CopperOxidation{
-		return match($r->readInt(2)){
+	public function copperOxidation(\pocketmine\block\utils\CopperOxidation &$value) : void{
+		$value = match($this->readInt(2)){
 			0 => \pocketmine\block\utils\CopperOxidation::EXPOSED(),
 			1 => \pocketmine\block\utils\CopperOxidation::NONE(),
 			2 => \pocketmine\block\utils\CopperOxidation::OXIDIZED(),
@@ -49,8 +51,8 @@ final class RuntimeEnumDeserializer{
 		};
 	}
 
-	public static function readCoralType(RuntimeDataReader $r) : \pocketmine\block\utils\CoralType{
-		return match($r->readInt(3)){
+	public function coralType(\pocketmine\block\utils\CoralType &$value) : void{
+		$value = match($this->readInt(3)){
 			0 => \pocketmine\block\utils\CoralType::BRAIN(),
 			1 => \pocketmine\block\utils\CoralType::BUBBLE(),
 			2 => \pocketmine\block\utils\CoralType::FIRE(),
@@ -60,8 +62,17 @@ final class RuntimeEnumDeserializer{
 		};
 	}
 
-	public static function readDyeColor(RuntimeDataReader $r) : \pocketmine\block\utils\DyeColor{
-		return match($r->readInt(4)){
+	public function dirtType(\pocketmine\block\utils\DirtType &$value) : void{
+		$value = match($this->readInt(2)){
+			0 => \pocketmine\block\utils\DirtType::COARSE(),
+			1 => \pocketmine\block\utils\DirtType::NORMAL(),
+			2 => \pocketmine\block\utils\DirtType::ROOTED(),
+			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for DirtType")
+		};
+	}
+
+	public function dyeColor(\pocketmine\block\utils\DyeColor &$value) : void{
+		$value = match($this->readInt(4)){
 			0 => \pocketmine\block\utils\DyeColor::BLACK(),
 			1 => \pocketmine\block\utils\DyeColor::BLUE(),
 			2 => \pocketmine\block\utils\DyeColor::BROWN(),
@@ -82,8 +93,17 @@ final class RuntimeEnumDeserializer{
 		};
 	}
 
-	public static function readLeverFacing(RuntimeDataReader $r) : \pocketmine\block\utils\LeverFacing{
-		return match($r->readInt(3)){
+	public function froglightType(\pocketmine\block\utils\FroglightType &$value) : void{
+		$value = match($this->readInt(2)){
+			0 => \pocketmine\block\utils\FroglightType::OCHRE(),
+			1 => \pocketmine\block\utils\FroglightType::PEARLESCENT(),
+			2 => \pocketmine\block\utils\FroglightType::VERDANT(),
+			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for FroglightType")
+		};
+	}
+
+	public function leverFacing(\pocketmine\block\utils\LeverFacing &$value) : void{
+		$value = match($this->readInt(3)){
 			0 => \pocketmine\block\utils\LeverFacing::DOWN_AXIS_X(),
 			1 => \pocketmine\block\utils\LeverFacing::DOWN_AXIS_Z(),
 			2 => \pocketmine\block\utils\LeverFacing::EAST(),
@@ -96,8 +116,8 @@ final class RuntimeEnumDeserializer{
 		};
 	}
 
-	public static function readMushroomBlockType(RuntimeDataReader $r) : \pocketmine\block\utils\MushroomBlockType{
-		return match($r->readInt(4)){
+	public function mushroomBlockType(\pocketmine\block\utils\MushroomBlockType &$value) : void{
+		$value = match($this->readInt(4)){
 			0 => \pocketmine\block\utils\MushroomBlockType::ALL_CAP(),
 			1 => \pocketmine\block\utils\MushroomBlockType::CAP_EAST(),
 			2 => \pocketmine\block\utils\MushroomBlockType::CAP_MIDDLE(),
@@ -113,8 +133,8 @@ final class RuntimeEnumDeserializer{
 		};
 	}
 
-	public static function readPotionType(RuntimeDataReader $r) : \pocketmine\item\PotionType{
-		return match($r->readInt(6)){
+	public function potionType(\pocketmine\item\PotionType &$value) : void{
+		$value = match($this->readInt(6)){
 			0 => \pocketmine\item\PotionType::AWKWARD(),
 			1 => \pocketmine\item\PotionType::FIRE_RESISTANCE(),
 			2 => \pocketmine\item\PotionType::HARMING(),
@@ -161,8 +181,8 @@ final class RuntimeEnumDeserializer{
 		};
 	}
 
-	public static function readSkullType(RuntimeDataReader $r) : \pocketmine\block\utils\SkullType{
-		return match($r->readInt(3)){
+	public function skullType(\pocketmine\block\utils\SkullType &$value) : void{
+		$value = match($this->readInt(3)){
 			0 => \pocketmine\block\utils\SkullType::CREEPER(),
 			1 => \pocketmine\block\utils\SkullType::DRAGON(),
 			2 => \pocketmine\block\utils\SkullType::PLAYER(),
@@ -173,12 +193,28 @@ final class RuntimeEnumDeserializer{
 		};
 	}
 
-	public static function readSlabType(RuntimeDataReader $r) : \pocketmine\block\utils\SlabType{
-		return match($r->readInt(2)){
+	public function slabType(\pocketmine\block\utils\SlabType &$value) : void{
+		$value = match($this->readInt(2)){
 			0 => \pocketmine\block\utils\SlabType::BOTTOM(),
 			1 => \pocketmine\block\utils\SlabType::DOUBLE(),
 			2 => \pocketmine\block\utils\SlabType::TOP(),
 			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for SlabType")
+		};
+	}
+
+	public function suspiciousStewType(\pocketmine\item\SuspiciousStewType &$value) : void{
+		$value = match($this->readInt(4)){
+			0 => \pocketmine\item\SuspiciousStewType::ALLIUM(),
+			1 => \pocketmine\item\SuspiciousStewType::AZURE_BLUET(),
+			2 => \pocketmine\item\SuspiciousStewType::BLUE_ORCHID(),
+			3 => \pocketmine\item\SuspiciousStewType::CORNFLOWER(),
+			4 => \pocketmine\item\SuspiciousStewType::DANDELION(),
+			5 => \pocketmine\item\SuspiciousStewType::LILY_OF_THE_VALLEY(),
+			6 => \pocketmine\item\SuspiciousStewType::OXEYE_DAISY(),
+			7 => \pocketmine\item\SuspiciousStewType::POPPY(),
+			8 => \pocketmine\item\SuspiciousStewType::TULIP(),
+			9 => \pocketmine\item\SuspiciousStewType::WITHER_ROSE(),
+			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for SuspiciousStewType")
 		};
 	}
 

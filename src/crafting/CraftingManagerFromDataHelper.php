@@ -213,7 +213,8 @@ final class CraftingManagerFromDataHelper{
 			$recipeType = match($recipe->block){
 				"crafting_table" => ShapelessRecipeType::CRAFTING(),
 				"stonecutter" => ShapelessRecipeType::STONECUTTER(),
-				//TODO: Cartography Table
+				"smithing_table" => ShapelessRecipeType::SMITHING(),
+				"cartography_table" => ShapelessRecipeType::CARTOGRAPHY(),
 				default => null
 			};
 			if($recipeType === null){

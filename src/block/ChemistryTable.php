@@ -33,7 +33,7 @@ final class ChemistryTable extends Opaque{
 	use FacesOppositePlacingPlayerTrait;
 	use HorizontalFacingTrait;
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		//TODO
 		return false;
 	}

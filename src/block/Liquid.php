@@ -51,16 +51,10 @@ abstract class Liquid extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 5; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->decay = $r->readBoundedInt(3, 0, self::MAX_DECAY);
-		$this->falling = $r->readBool();
-		$this->still = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeInt(3, $this->decay);
-		$w->writeBool($this->falling);
-		$w->writeBool($this->still);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(3, 0, self::MAX_DECAY, $this->decay);
+		$w->bool($this->falling);
+		$w->bool($this->still);
 	}
 
 	public function isFalling() : bool{ return $this->falling; }
@@ -160,9 +154,11 @@ abstract class Liquid extends Transparent{
 		return $block->falling ? 0 : $block->decay;
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$this->flowVector = null;
+
+		return $this;
 	}
 
 	public function getFlowVector() : Vector3{
@@ -319,7 +315,7 @@ abstract class Liquid extends Transparent{
 			}
 
 			if($adjacentDecay <= self::MAX_DECAY){
-				$calculator = new MinimumCostFlowCalculator($this->position->getWorld(), $this->getFlowDecayPerBlock(), \Closure::fromCallable([$this, 'canFlowInto']));
+				$calculator = new MinimumCostFlowCalculator($world, $this->getFlowDecayPerBlock(), \Closure::fromCallable([$this, 'canFlowInto']));
 				foreach($calculator->getOptimalFlowDirections($this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ()) as $facing){
 					$this->flowIntoBlock($world->getBlock($this->position->getSide($facing)), $adjacentDecay, false);
 				}
@@ -338,11 +334,12 @@ abstract class Liquid extends Transparent{
 			$ev = new BlockSpreadEvent($block, $this, $new);
 			$ev->call();
 			if(!$ev->isCancelled()){
+				$world = $this->position->getWorld();
 				if($block->getTypeId() !== BlockTypeIds::AIR){
-					$this->position->getWorld()->useBreakOn($block->position);
+					$world->useBreakOn($block->position);
 				}
 
-				$this->position->getWorld()->setBlock($block->position, $ev->getNewState());
+				$world->setBlock($block->position, $ev->getNewState());
 			}
 		}
 	}
@@ -369,11 +366,12 @@ abstract class Liquid extends Transparent{
 	}
 
 	protected function liquidCollide(Block $cause, Block $result) : bool{
-		$ev = new BlockFormEvent($this, $result);
+		$ev = new BlockFormEvent($this, $result, $cause);
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
-			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new FizzSound(2.6 + (lcg_value() - lcg_value()) * 0.8));
+			$world = $this->position->getWorld();
+			$world->setBlock($this->position, $ev->getNewState());
+			$world->addSound($this->position->add(0.5, 0.5, 0.5), new FizzSound(2.6 + (lcg_value() - lcg_value()) * 0.8));
 		}
 		return true;
 	}

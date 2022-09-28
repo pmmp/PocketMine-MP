@@ -68,6 +68,10 @@ class Armor extends Durable{
 		return 1;
 	}
 
+	public function isFireProof() : bool{
+		return $this->armorInfo->isFireProof();
+	}
+
 	/**
 	 * Returns the dyed colour of this armour piece. This generally only applies to leather armour.
 	 */
@@ -82,6 +86,12 @@ class Armor extends Durable{
 	 */
 	public function setCustomColor(Color $color) : self{
 		$this->customColor = $color;
+		return $this;
+	}
+
+	/** @return $this */
+	public function clearCustomColor() : self{
+		$this->customColor = null;
 		return $this;
 	}
 
@@ -119,16 +129,15 @@ class Armor extends Durable{
 		return 0;
 	}
 
-	public function onClickAir(Player $player, Vector3 $directionVector) : ItemUseResult{
+	public function onClickAir(Player $player, Vector3 $directionVector, array &$returnedItems) : ItemUseResult{
 		$existing = $player->getArmorInventory()->getItem($this->getArmorSlot());
 		$thisCopy = clone $this;
 		$new = $thisCopy->pop();
 		$player->getArmorInventory()->setItem($this->getArmorSlot(), $new);
-		if($thisCopy->getCount() === 0){
-			$player->getInventory()->setItemInHand($existing);
-		}else{ //if the stack size was bigger than 1 (usually won't happen, but might be caused by plugins
-			$player->getInventory()->setItemInHand($thisCopy);
-			$player->getInventory()->addItem($existing);
+		$player->getInventory()->setItemInHand($existing);
+		if(!$thisCopy->isNull()){
+			//if the stack size was bigger than 1 (usually won't happen, but might be caused by plugins)
+			$returnedItems[] = $thisCopy;
 		}
 		return ItemUseResult::SUCCESS();
 	}

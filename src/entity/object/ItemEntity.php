@@ -179,6 +179,10 @@ class ItemEntity extends Entity{
 		return true;
 	}
 
+	public function canSaveWithChunk() : bool{
+		return !$this->item->isNull() && parent::canSaveWithChunk();
+	}
+
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
 		$nbt->setTag("Item", $this->item->nbtSerialize());
@@ -198,6 +202,10 @@ class ItemEntity extends Entity{
 
 	public function getItem() : Item{
 		return $this->item;
+	}
+
+	public function isFireProof() : bool{
+		return $this->item->isFireProof();
 	}
 
 	public function canCollideWith(Entity $entity) : bool{

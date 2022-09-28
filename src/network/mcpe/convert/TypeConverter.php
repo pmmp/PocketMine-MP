@@ -23,11 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
-use pocketmine\block\inventory\AnvilInventory;
-use pocketmine\block\inventory\CraftingTableInventory;
-use pocketmine\block\inventory\EnchantInventory;
-use pocketmine\block\inventory\LoomInventory;
-use pocketmine\block\inventory\StonecutterInventory;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\crafting\ExactRecipeIngredient;
 use pocketmine\crafting\MetaWildcardRecipeIngredient;
@@ -48,7 +43,9 @@ use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
+use pocketmine\network\mcpe\protocol\types\recipe\IntIdMetaItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient as ProtocolRecipeIngredient;
+use pocketmine\network\mcpe\protocol\types\recipe\StringIdMetaItemDescriptor;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
@@ -116,7 +113,7 @@ class TypeConverter{
 
 	public function coreRecipeIngredientToNet(?RecipeIngredient $ingredient) : ProtocolRecipeIngredient{
 		if($ingredient === null){
-			return new ProtocolRecipeIngredient(0, 0, 0);
+			return new ProtocolRecipeIngredient(null, 0);
 		}
 		if($ingredient instanceof MetaWildcardRecipeIngredient){
 			$id = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromStringId($ingredient->getItemId());
@@ -133,29 +130,42 @@ class TypeConverter{
 		}else{
 			throw new \LogicException("Unsupported recipe ingredient type " . get_class($ingredient) . ", only " . ExactRecipeIngredient::class . " and " . MetaWildcardRecipeIngredient::class . " are supported");
 		}
-		return new ProtocolRecipeIngredient($id, $meta, 1);
+
+		return new ProtocolRecipeIngredient(new IntIdMetaItemDescriptor($id, $meta), 1);
 	}
 
 	public function netRecipeIngredientToCore(ProtocolRecipeIngredient $ingredient) : ?RecipeIngredient{
-		if($ingredient->getId() === 0){
+		$descriptor = $ingredient->getDescriptor();
+		if($descriptor === null){
 			return null;
 		}
 
-		$itemId = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromIntId($ingredient->getId());
-
-		if($ingredient->getMeta() === self::RECIPE_INPUT_WILDCARD_META){
-			return new MetaWildcardRecipeIngredient($itemId);
+		if($descriptor instanceof IntIdMetaItemDescriptor){
+			$stringId = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromIntId($descriptor->getId());
+			$meta = $descriptor->getMeta();
+		}elseif($descriptor instanceof StringIdMetaItemDescriptor){
+			$stringId = $descriptor->getId();
+			$meta = $descriptor->getMeta();
+		}else{
+			throw new \LogicException("Unsupported conversion of recipe ingredient to core item stack");
 		}
 
-		$meta = $ingredient->getMeta();
+		if($meta === self::RECIPE_INPUT_WILDCARD_META){
+			return new MetaWildcardRecipeIngredient($stringId);
+		}
+
 		$blockRuntimeId = null;
-		if(($blockId = BlockItemIdMap::getInstance()->lookupBlockId($itemId)) !== null){
+		if(($blockId = BlockItemIdMap::getInstance()->lookupBlockId($stringId)) !== null){
 			$blockRuntimeId = RuntimeBlockMapping::getInstance()->getBlockStateDictionary()->lookupStateIdFromIdMeta($blockId, $meta);
 			if($blockRuntimeId !== null){
 				$meta = 0;
 			}
 		}
-		$result = ItemTranslator::getInstance()->fromNetworkId($ingredient->getId(), $meta, $blockRuntimeId ?? ItemTranslator::NO_BLOCK_RUNTIME_ID);
+		$result = ItemTranslator::getInstance()->fromNetworkId(
+			GlobalItemTypeDictionary::getInstance()->getDictionary()->fromStringId($stringId),
+			$meta,
+			$blockRuntimeId ?? ItemTranslator::NO_BLOCK_RUNTIME_ID
+		);
 		return new ExactRecipeIngredient($result);
 	}
 
@@ -240,38 +250,12 @@ class TypeConverter{
 		}
 		switch($action->sourceType){
 			case NetworkInventoryAction::SOURCE_CONTAINER:
-				$window = null;
-				if($action->windowId === ContainerIds::UI && $action->inventorySlot > 0){
-					if($action->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
-						return null; //useless noise
-					}
-					$pSlot = $action->inventorySlot;
-
-					$slot = UIInventorySlotOffset::CRAFTING2X2_INPUT[$pSlot] ?? null;
-					if($slot !== null){
-						$window = $player->getCraftingGrid();
-					}elseif(($current = $player->getCurrentWindow()) !== null){
-						$slotMap = match(true){
-							$current instanceof AnvilInventory => UIInventorySlotOffset::ANVIL,
-							$current instanceof EnchantInventory => UIInventorySlotOffset::ENCHANTING_TABLE,
-							$current instanceof LoomInventory => UIInventorySlotOffset::LOOM,
-							$current instanceof StonecutterInventory => [UIInventorySlotOffset::STONE_CUTTER_INPUT => StonecutterInventory::SLOT_INPUT],
-							$current instanceof CraftingTableInventory => UIInventorySlotOffset::CRAFTING3X3_INPUT,
-							default => null
-						};
-						if($slotMap !== null){
-							$window = $current;
-							$slot = $slotMap[$pSlot] ?? null;
-						}
-					}
-					if($slot === null){
-						throw new TypeConversionException("Unmatched UI inventory slot offset $pSlot");
-					}
-				}else{
-					$window = $inventoryManager->getWindow($action->windowId);
-					$slot = $action->inventorySlot;
+				if($action->windowId === ContainerIds::UI && $action->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
+					return null; //useless noise
 				}
-				if($window !== null){
+				$located = $inventoryManager->locateWindowAndSlot($action->windowId, $action->inventorySlot);
+				if($located !== null){
+					[$window, $slot] = $located;
 					return new SlotChangeAction($window, $slot, $old, $new);
 				}
 
@@ -293,15 +277,10 @@ class TypeConverter{
 
 				}
 			case NetworkInventoryAction::SOURCE_TODO:
-				//These types need special handling.
-				switch($action->windowId){
-					case NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT:
-					case NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
-						return null;
-				}
-
-				//TODO: more stuff
-				throw new TypeConversionException("No open container with window ID $action->windowId");
+				//These are used to balance a transaction that involves special actions, like crafting, enchanting, etc.
+				//The vanilla server just accepted these without verifying them. We don't need to care about them since
+				//we verify crafting by checking for imbalances anyway.
+				return null;
 			default:
 				throw new TypeConversionException("Unknown inventory source type $action->sourceType");
 		}

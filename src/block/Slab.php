@@ -27,8 +27,6 @@ use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
-use pocketmine\data\runtime\RuntimeEnumDeserializer;
-use pocketmine\data\runtime\RuntimeEnumSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -39,19 +37,15 @@ use pocketmine\world\BlockTransaction;
 class Slab extends Transparent{
 	protected SlabType $slabType;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
-		parent::__construct($idInfo, $name . " Slab", $breakInfo);
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
+		parent::__construct($idInfo, $name . " Slab", $typeInfo);
 		$this->slabType = SlabType::BOTTOM();
 	}
 
 	public function getRequiredStateDataBits() : int{ return 2; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->slabType = RuntimeEnumDeserializer::readSlabType($r);
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		RuntimeEnumSerializer::writeSlabType($w, $this->slabType);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->slabType($this->slabType);
 	}
 
 	public function isTransparent() : bool{

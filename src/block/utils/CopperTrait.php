@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\block\BlockIdentifier;
+use pocketmine\block\BlockTypeInfo;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
-use pocketmine\data\runtime\RuntimeEnumDeserializer;
-use pocketmine\data\runtime\RuntimeEnumSerializer;
 use pocketmine\item\Axe;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
@@ -38,18 +38,18 @@ use pocketmine\world\sound\ScrapeSound;
 
 trait CopperTrait{
 	private CopperOxidation $oxidation;
-	private bool $waxed;
+	private bool $waxed = false;
+
+	public function __construct(BlockIdentifier $identifier, string $name, BlockTypeInfo $typeInfo){
+		$this->oxidation = CopperOxidation::NONE();
+		parent::__construct($identifier, $name, $typeInfo);
+	}
 
 	public function getRequiredTypeDataBits() : int{ return 3; }
 
-	protected function decodeType(RuntimeDataReader $r) : void{
-		$this->oxidation = RuntimeEnumDeserializer::readCopperOxidation($r);
-		$this->waxed = $r->readBool();
-	}
-
-	protected function encodeType(RuntimeDataWriter $w) : void{
-		RuntimeEnumSerializer::writeCopperOxidation($w, $this->oxidation);
-		$w->writeBool($this->waxed);
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->copperOxidation($this->oxidation);
+		$w->bool($this->waxed);
 	}
 
 	public function getOxidation() : CopperOxidation{ return $this->oxidation; }
@@ -68,7 +68,7 @@ trait CopperTrait{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if(!$this->waxed && $item->getTypeId() === ItemTypeIds::HONEYCOMB){
 			$this->waxed = true;
 			$this->position->getWorld()->setBlock($this->position, $this);

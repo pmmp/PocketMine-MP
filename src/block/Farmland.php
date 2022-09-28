@@ -40,12 +40,8 @@ class Farmland extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->wetness = $r->readBoundedInt(3, 0, self::MAX_WETNESS);
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeInt(3, $this->wetness);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(3, 0, self::MAX_WETNESS, $this->wetness);
 	}
 
 	public function getWetness() : int{ return $this->wetness; }
@@ -77,16 +73,17 @@ class Farmland extends Transparent{
 	}
 
 	public function onRandomTick() : void{
+		$world = $this->position->getWorld();
 		if(!$this->canHydrate()){
 			if($this->wetness > 0){
 				$this->wetness--;
-				$this->position->getWorld()->setBlock($this->position, $this, false);
+				$world->setBlock($this->position, $this, false);
 			}else{
-				$this->position->getWorld()->setBlock($this->position, VanillaBlocks::DIRT());
+				$world->setBlock($this->position, VanillaBlocks::DIRT());
 			}
 		}elseif($this->wetness < self::MAX_WETNESS){
 			$this->wetness = self::MAX_WETNESS;
-			$this->position->getWorld()->setBlock($this->position, $this, false);
+			$world->setBlock($this->position, $this, false);
 		}
 	}
 

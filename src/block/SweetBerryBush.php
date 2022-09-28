@@ -48,12 +48,8 @@ class SweetBerryBush extends Flowable{
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->age = $r->readBoundedInt(3, self::STAGE_SAPLING, self::STAGE_MATURE);
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeInt(3, $this->age);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(3, self::STAGE_SAPLING, self::STAGE_MATURE, $this->age);
 	}
 
 	public function getAge() : int{ return $this->age; }
@@ -77,8 +73,8 @@ class SweetBerryBush extends Flowable{
 	}
 
 	protected function canBeSupportedBy(Block $block) : bool{
-		$id = $block->getTypeId();
-		return $id === BlockTypeIds::GRASS || $id === BlockTypeIds::DIRT || $id === BlockTypeIds::PODZOL;
+		return $block->getTypeId() !== BlockTypeIds::FARMLAND && //bedrock-specific thing (bug?)
+			($block->hasTypeTag(BlockTypeTags::DIRT) || $block->hasTypeTag(BlockTypeTags::MUD));
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
@@ -88,7 +84,8 @@ class SweetBerryBush extends Flowable{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		$world = $this->position->getWorld();
 		if($this->age < self::STAGE_MATURE && $item instanceof Fertilizer){
 			$block = clone $this;
 			$block->age++;
@@ -97,13 +94,13 @@ class SweetBerryBush extends Flowable{
 			$ev->call();
 
 			if(!$ev->isCancelled()){
-				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
+				$world->setBlock($this->position, $ev->getNewState());
 				$item->pop();
 			}
 
 		}elseif(($dropAmount = $this->getBerryDropAmount()) > 0){
-			$this->position->getWorld()->setBlock($this->position, $this->setAge(self::STAGE_BUSH_NO_BERRIES));
-			$this->position->getWorld()->dropItem($this->position, $this->asItem()->setCount($dropAmount));
+			$world->setBlock($this->position, $this->setAge(self::STAGE_BUSH_NO_BERRIES));
+			$world->dropItem($this->position, $this->asItem()->setCount($dropAmount));
 		}
 
 		return true;

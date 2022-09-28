@@ -37,7 +37,7 @@ class Bucket extends Item{
 		return 16;
 	}
 
-	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		//TODO: move this to generic placement logic
 		if($blockClicked instanceof Liquid && $blockClicked->isSource()){
 			$stack = clone $this;
@@ -57,16 +57,9 @@ class Bucket extends Item{
 			if(!$ev->isCancelled()){
 				$player->getWorld()->setBlock($blockClicked->getPosition(), VanillaBlocks::AIR());
 				$player->getWorld()->addSound($blockClicked->getPosition()->add(0.5, 0.5, 0.5), $blockClicked->getBucketFillSound());
-				if($player->hasFiniteResources()){
-					if($stack->getCount() === 0){
-						$player->getInventory()->setItemInHand($ev->getItem());
-					}else{
-						$player->getInventory()->setItemInHand($stack);
-						$player->getInventory()->addItem($ev->getItem());
-					}
-				}else{
-					$player->getInventory()->addItem($ev->getItem());
-				}
+
+				$this->pop();
+				$returnedItems[] = $ev->getItem();
 				return ItemUseResult::SUCCESS();
 			}
 

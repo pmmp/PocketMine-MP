@@ -31,12 +31,8 @@ class Bedrock extends Opaque{
 
 	public function getRequiredStateDataBits() : int{ return 1; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->burnsForever = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeBool($this->burnsForever);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->bool($this->burnsForever);
 	}
 
 	public function burnsForever() : bool{

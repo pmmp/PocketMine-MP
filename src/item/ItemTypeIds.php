@@ -293,6 +293,20 @@ final class ItemTypeIds{
 	public const RAW_IRON = 20254;
 	public const RAW_GOLD = 20255;
 	public const SPYGLASS = 20256;
+	public const NETHERITE_SCRAP = 20257;
+	public const POWDER_SNOW_BUCKET = 20258;
+	public const LINGERING_POTION = 20259;
+	public const FIRE_CHARGE = 20260;
+	public const SUSPICIOUS_STEW = 20261;
 
-	public const FIRST_UNUSED_ITEM_ID = 20257;
+	public const FIRST_UNUSED_ITEM_ID = 20262;
+
+	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
+
+	/**
+	 * Returns a new runtime item type ID, e.g. for use by a custom item.
+	 */
+	public static function newId() : int{
+		return self::$nextDynamicId++;
+	}
 }

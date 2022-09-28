@@ -44,14 +44,9 @@ class DaylightSensor extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 5; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->signalStrength = $r->readBoundedInt(4, 0, 15);
-		$this->inverted = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeInt(4, $this->signalStrength);
-		$w->writeBool($this->inverted);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(4, 0, 15, $this->signalStrength);
+		$w->bool($this->inverted);
 	}
 
 	public function isInverted() : bool{
@@ -81,7 +76,7 @@ class DaylightSensor extends Transparent{
 		return SupportType::NONE();
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->inverted = !$this->inverted;
 		$this->signalStrength = $this->recalculateSignalStrength();
 		$this->position->getWorld()->setBlock($this->position, $this);
@@ -89,21 +84,23 @@ class DaylightSensor extends Transparent{
 	}
 
 	public function onScheduledUpdate() : void{
+		$world = $this->position->getWorld();
 		$signalStrength = $this->recalculateSignalStrength();
 		if($this->signalStrength !== $signalStrength){
 			$this->signalStrength = $signalStrength;
-			$this->position->getWorld()->setBlock($this->position, $this);
+			$world->setBlock($this->position, $this);
 		}
-		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20);
+		$world->scheduleDelayedBlockUpdate($this->position, 20);
 	}
 
 	private function recalculateSignalStrength() : int{
-		$lightLevel = $this->position->getWorld()->getRealBlockSkyLightAt($this->position->x, $this->position->y, $this->position->z);
+		$world = $this->position->getWorld();
+		$lightLevel = $world->getRealBlockSkyLightAt($this->position->x, $this->position->y, $this->position->z);
 		if($this->inverted){
 			return 15 - $lightLevel;
 		}
 
-		$sunAngle = $this->position->getWorld()->getSunAnglePercentage();
+		$sunAngle = $world->getSunAnglePercentage();
 		return max(0, (int) round($lightLevel * cos(($sunAngle + ((($sunAngle < 0.5 ? 0 : 1) - $sunAngle) / 5)) * 2 * M_PI)));
 	}
 

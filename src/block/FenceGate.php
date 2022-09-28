@@ -45,16 +45,10 @@ class FenceGate extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->facing = $r->readHorizontalFacing();
-		$this->open = $r->readBool();
-		$this->inWall = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeHorizontalFacing($this->facing);
-		$w->writeBool($this->open);
-		$w->writeBool($this->inWall);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->bool($this->open);
+		$w->bool($this->inWall);
 	}
 
 	public function isOpen() : bool{ return $this->open; }
@@ -109,7 +103,7 @@ class FenceGate extends Transparent{
 		}
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->open = !$this->open;
 		if($this->open && $player !== null){
 			$playerFacing = $player->getHorizontalFacing();
@@ -118,13 +112,14 @@ class FenceGate extends Transparent{
 			}
 		}
 
-		$this->position->getWorld()->setBlock($this->position, $this);
-		$this->position->getWorld()->addSound($this->position, new DoorSound());
+		$world = $this->position->getWorld();
+		$world->setBlock($this->position, $this);
+		$world->addSound($this->position, new DoorSound());
 		return true;
 	}
 
 	public function getFuelTime() : int{
-		return 300;
+		return $this->woodType->isFlammable() ? 300 : 0;
 	}
 
 	public function getFlameEncouragement() : int{

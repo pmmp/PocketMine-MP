@@ -41,14 +41,9 @@ class SeaPickle extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->count = $r->readBoundedInt(2, self::MIN_COUNT - 1, self::MAX_COUNT - 1) + 1;
-		$this->underwater = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeInt(2, $this->count - 1);
-		$w->writeBool($this->underwater);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(2, self::MIN_COUNT, self::MAX_COUNT, $this->count);
+		$w->bool($this->underwater);
 	}
 
 	public function getCount() : int{ return $this->count; }
@@ -103,9 +98,9 @@ class SeaPickle extends Transparent{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		//TODO: bonemeal logic (requires coral)
-		return parent::onInteract($item, $face, $clickVector, $player);
+		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

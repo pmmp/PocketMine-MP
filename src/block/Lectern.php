@@ -49,23 +49,20 @@ class Lectern extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->facing = $r->readHorizontalFacing();
-		$this->producingSignal = $r->readBool();
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->bool($this->producingSignal);
 	}
 
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeHorizontalFacing($this->facing);
-		$w->writeBool($this->producingSignal);
-	}
-
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileLectern){
 			$this->viewedPage = $tile->getViewedPage();
 			$this->book = $tile->getBook();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{
@@ -127,10 +124,11 @@ class Lectern extends Transparent{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->book === null && $item instanceof WritableBookBase){
-			$this->position->getWorld()->setBlock($this->position, $this->setBook($item));
-			$this->position->getWorld()->addSound($this->position, new LecternPlaceBookSound());
+			$world = $this->position->getWorld();
+			$world->setBlock($this->position, $this->setBook($item));
+			$world->addSound($this->position, new LecternPlaceBookSound());
 			$item->pop();
 		}
 		return true;
@@ -138,8 +136,9 @@ class Lectern extends Transparent{
 
 	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
 		if($this->book !== null){
-			$this->position->getWorld()->dropItem($this->position->up(), $this->book);
-			$this->position->getWorld()->setBlock($this->position, $this->setBook(null));
+			$world = $this->position->getWorld();
+			$world->dropItem($this->position->up(), $this->book);
+			$world->setBlock($this->position, $this->setBook(null));
 		}
 		return false;
 	}
@@ -153,12 +152,13 @@ class Lectern extends Transparent{
 		}
 
 		$this->viewedPage = $newPage;
+		$world = $this->position->getWorld();
 		if(!$this->producingSignal){
 			$this->producingSignal = true;
-			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
+			$world->scheduleDelayedBlockUpdate($this->position, 1);
 		}
 
-		$this->position->getWorld()->setBlock($this->position, $this);
+		$world->setBlock($this->position, $this);
 
 		return true;
 	}

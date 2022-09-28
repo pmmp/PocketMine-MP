@@ -21,9 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\block;
+namespace pocketmine\world\sound;
 
-interface DelegatingBlockStateSerializer extends BlockStateSerializer{
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelEvent;
 
-	public function getRealSerializer() : BlockStateSerializer;
+final class CauldronFillPotionSound implements Sound{
+
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::create(LevelEvent::CAULDRON_FILL_POTION, 0, $pos)];
+	}
 }

@@ -106,6 +106,21 @@ parameters:
 			path: ../../../src/block/Cactus.php
 
 		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/block/ChorusFlower.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/block/ChorusFlower.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/block/ChorusFlower.php
+
+		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getRealBlockSkyLightAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/block/DaylightSensor.php
@@ -681,7 +696,7 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Parameter \\#1 \\$for of method pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\:\\:syncAdventureSettings\\(\\) expects pocketmine\\\\player\\\\Player, pocketmine\\\\player\\\\Player\\|null given\\.$#"
+			message: "#^Parameter \\#1 \\$for of method pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\:\\:syncAbilities\\(\\) expects pocketmine\\\\player\\\\Player, pocketmine\\\\player\\\\Player\\|null given\\.$#"
 			count: 2
 			path: ../../../src/network/mcpe/NetworkSession.php
 
@@ -771,27 +786,12 @@ parameters:
 			path: ../../../src/plugin/PluginBase.php
 
 		-
-			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
 			message: "#^Cannot cast mixed to string\\.$#"
-			count: 5
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Parameter \\#1 \\$data of static method pocketmine\\\\permission\\\\PermissionParser\\:\\:loadPermissions\\(\\) expects array\\<string, array\\<string, mixed\\>\\>, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
 			message: "#^Parameter \\#1 \\$haystack of function stripos expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Parameter \\#1 \\$name of static method pocketmine\\\\plugin\\\\PluginEnableOrder\\:\\:fromString\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
@@ -806,42 +806,12 @@ parameters:
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$authors \\(array\\<string\\>\\) does not accept array\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$authors \\(array\\<string\\>\\) does not accept array\\<mixed\\>\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$depend \\(array\\<string\\>\\) does not accept array\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$loadBefore \\(array\\<string\\>\\) does not accept array\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
 			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$main \\(string\\) does not accept mixed\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
 			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$name \\(string\\) does not accept mixed\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$softDepend \\(array\\<string\\>\\) does not accept array\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$srcNamespacePrefix \\(string\\) does not accept mixed\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 

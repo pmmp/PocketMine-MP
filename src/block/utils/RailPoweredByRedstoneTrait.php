@@ -31,13 +31,8 @@ trait RailPoweredByRedstoneTrait{
 
 	public function getRequiredStateDataBits() : int{ return parent::getRequiredStateDataBits() + 1; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		parent::decodeState($r);
-		$this->powered = $r->readBool();
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		parent::encodeState($w);
-		$w->writeBool($this->powered);
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		parent::describeState($w);
+		$w->bool($this->powered);
 	}
 }

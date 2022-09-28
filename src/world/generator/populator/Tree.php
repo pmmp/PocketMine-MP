@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\generator\populator;
 
 use pocketmine\block\BlockTypeIds;
+use pocketmine\block\BlockTypeTags;
 use pocketmine\block\utils\TreeType;
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
@@ -67,10 +68,10 @@ class Tree implements Populator{
 
 	private function getHighestWorkableBlock(ChunkManager $world, int $x, int $z) : int{
 		for($y = 127; $y >= 0; --$y){
-			$b = $world->getBlockAt($x, $y, $z)->getTypeId();
-			if($b === BlockTypeIds::DIRT || $b === BlockTypeIds::GRASS){
+			$b = $world->getBlockAt($x, $y, $z);
+			if($b->hasTypeTag(BlockTypeTags::DIRT) || $b->hasTypeTag(BlockTypeTags::MUD)){
 				return $y + 1;
-			}elseif($b !== BlockTypeIds::AIR && $b !== BlockTypeIds::SNOW_LAYER){
+			}elseif($b->getTypeId() !== BlockTypeIds::AIR && $b->getTypeId() !== BlockTypeIds::SNOW_LAYER){
 				return -1;
 			}
 		}

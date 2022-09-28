@@ -44,21 +44,14 @@ class Door extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 5; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->facing = $r->readHorizontalFacing();
-		$this->top = $r->readBool();
-		$this->hingeRight = $r->readBool();
-		$this->open = $r->readBool();
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->bool($this->top);
+		$w->bool($this->hingeRight);
+		$w->bool($this->open);
 	}
 
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeHorizontalFacing($this->facing);
-		$w->writeBool($this->top);
-		$w->writeBool($this->hingeRight);
-		$w->writeBool($this->open);
-	}
-
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 
 		//copy door properties from other half
@@ -71,6 +64,8 @@ class Door extends Transparent{
 				$this->hingeRight = $other->hingeRight;
 			}
 		}
+
+		return $this;
 	}
 
 	public function isTop() : bool{ return $this->top; }
@@ -148,17 +143,18 @@ class Door extends Transparent{
 		return false;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->open = !$this->open;
 
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
+		$world = $this->position->getWorld();
 		if($other instanceof Door && $other->isSameType($this)){
 			$other->open = $this->open;
-			$this->position->getWorld()->setBlock($other->position, $other);
+			$world->setBlock($other->position, $other);
 		}
 
-		$this->position->getWorld()->setBlock($this->position, $this);
-		$this->position->getWorld()->addSound($this->position, new DoorSound());
+		$world->setBlock($this->position, $this);
+		$world->addSound($this->position, new DoorSound());
 
 		return true;
 	}

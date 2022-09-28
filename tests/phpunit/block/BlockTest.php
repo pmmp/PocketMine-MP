@@ -43,7 +43,7 @@ class BlockTest extends TestCase{
 	 * Test registering a block which would overwrite another block, without forcing it
 	 */
 	public function testAccidentalOverrideBlock() : void{
-		$block = new MyCustomBlock(new BlockIdentifier(BlockTypeIds::COBBLESTONE), "Cobblestone", BlockBreakInfo::instant());
+		$block = new MyCustomBlock(new BlockIdentifier(BlockTypeIds::COBBLESTONE), "Cobblestone", new BlockTypeInfo(BlockBreakInfo::instant()));
 		$this->expectException(\InvalidArgumentException::class);
 		$this->blockFactory->register($block);
 	}
@@ -52,7 +52,7 @@ class BlockTest extends TestCase{
 	 * Test registering a block deliberately overwriting another block works as expected
 	 */
 	public function testDeliberateOverrideBlock() : void{
-		$block = new MyCustomBlock(new BlockIdentifier(BlockTypeIds::COBBLESTONE), "Cobblestone", BlockBreakInfo::instant());
+		$block = new MyCustomBlock(new BlockIdentifier(BlockTypeIds::COBBLESTONE), "Cobblestone", new BlockTypeInfo(BlockBreakInfo::instant()));
 		$this->blockFactory->register($block, true);
 		self::assertInstanceOf(MyCustomBlock::class, $this->blockFactory->fromStateId($block->getStateId()));
 	}
@@ -63,7 +63,7 @@ class BlockTest extends TestCase{
 	public function testRegisterNewBlock() : void{
 		for($i = BlockTypeIds::FIRST_UNUSED_BLOCK_ID; $i < BlockTypeIds::FIRST_UNUSED_BLOCK_ID + 256; ++$i){
 			if(!$this->blockFactory->isRegistered($i)){
-				$b = new StrangeNewBlock(new BlockIdentifier($i), "Strange New Block", BlockBreakInfo::instant());
+				$b = new StrangeNewBlock(new BlockIdentifier($i), "Strange New Block", new BlockTypeInfo(BlockBreakInfo::instant()));
 				$this->blockFactory->register($b);
 				self::assertInstanceOf(StrangeNewBlock::class, $this->blockFactory->fromStateId($b->getStateId()));
 				return;
@@ -78,7 +78,7 @@ class BlockTest extends TestCase{
 	 */
 	public function testRegisterIdTooSmall() : void{
 		self::expectException(\InvalidArgumentException::class);
-		$this->blockFactory->register(new OutOfBoundsBlock(new BlockIdentifier(-1), "Out Of Bounds Block", BlockBreakInfo::instant()));
+		$this->blockFactory->register(new OutOfBoundsBlock(new BlockIdentifier(-1), "Out Of Bounds Block", new BlockTypeInfo(BlockBreakInfo::instant())));
 	}
 
 	/**

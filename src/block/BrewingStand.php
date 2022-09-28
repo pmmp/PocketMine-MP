@@ -46,29 +46,8 @@ class BrewingStand extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$result = [];
-		foreach([
-			BrewingStandSlot::EAST(),
-			BrewingStandSlot::NORTHWEST(),
-			BrewingStandSlot::SOUTHWEST(),
-		] as $member){
-			if($r->readBool()){
-				$result[$member->id()] = $member;
-			}
-		}
-
-		$this->setSlots($result);
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		foreach([
-			BrewingStandSlot::EAST(),
-			BrewingStandSlot::NORTHWEST(),
-			BrewingStandSlot::SOUTHWEST(),
-		] as $member){
-			$w->writeBool(isset($this->slots[$member->id()]));
-		}
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->brewingStandSlots($this->slots);
 	}
 
 	protected function recalculateCollisionBoxes() : array{
@@ -118,7 +97,7 @@ class BrewingStand extends Transparent{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 			$stand = $this->position->getWorld()->getTile($this->position);
 			if($stand instanceof TileBrewingStand && $stand->canOpenWith($item->getCustomName())){
@@ -130,10 +109,11 @@ class BrewingStand extends Transparent{
 	}
 
 	public function onScheduledUpdate() : void{
-		$brewing = $this->position->getWorld()->getTile($this->position);
+		$world = $this->position->getWorld();
+		$brewing = $world->getTile($this->position);
 		if($brewing instanceof TileBrewingStand){
 			if($brewing->onUpdate()){
-				$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
+				$world->scheduleDelayedBlockUpdate($this->position, 1);
 			}
 
 			$changed = false;
@@ -146,7 +126,7 @@ class BrewingStand extends Transparent{
 			}
 
 			if($changed){
-				$this->position->getWorld()->setBlock($this->position, $this);
+				$world->setBlock($this->position, $this);
 			}
 		}
 	}

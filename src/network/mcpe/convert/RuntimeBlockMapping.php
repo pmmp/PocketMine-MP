@@ -66,8 +66,11 @@ final class RuntimeBlockMapping{
 		private BlockStateDictionary $blockStateDictionary,
 		private BlockStateSerializer $blockStateSerializer
 	){
-		$this->fallbackStateData = new BlockStateData(BlockTypeNames::INFO_UPDATE, [], BlockStateData::CURRENT_VERSION);
-		$this->fallbackStateId = $this->blockStateDictionary->lookupStateIdFromData($this->fallbackStateData) ?? throw new AssumptionFailedError(BlockTypeNames::INFO_UPDATE . " should always exist");
+		$this->fallbackStateId = $this->blockStateDictionary->lookupStateIdFromData(
+				new BlockStateData(BlockTypeNames::INFO_UPDATE, [], BlockStateData::CURRENT_VERSION)
+			) ?? throw new AssumptionFailedError(BlockTypeNames::INFO_UPDATE . " should always exist");
+		//lookup the state data from the dictionary to avoid keeping two copies of the same data around
+		$this->fallbackStateData = $this->blockStateDictionary->getDataFromStateId($this->fallbackStateId) ?? throw new AssumptionFailedError("We just looked up this state data, so it must exist");
 	}
 
 	public function toRuntimeId(int $internalStateId) : int{
@@ -89,6 +92,18 @@ final class RuntimeBlockMapping{
 		}
 
 		return $this->networkIdCache[$internalStateId] = $networkId;
+	}
+
+	/**
+	 * Looks up the network state data associated with the given internal state ID.
+	 */
+	public function toStateData(int $internalStateId) : BlockStateData{
+		//we don't directly use the blockstate serializer here - we can't assume that the network blockstate NBT is the
+		//same as the disk blockstate NBT, in case we decide to have different world version than network version (or in
+		//case someone wants to implement multi version).
+		$networkRuntimeId = $this->toRuntimeId($internalStateId);
+
+		return $this->blockStateDictionary->getDataFromStateId($networkRuntimeId) ?? throw new AssumptionFailedError("We just looked up this state ID, so it must exist");
 	}
 
 	public function getBlockStateDictionary() : BlockStateDictionary{ return $this->blockStateDictionary; }

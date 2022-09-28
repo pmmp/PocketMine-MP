@@ -39,12 +39,8 @@ final class BambooSapling extends Flowable{
 
 	public function getRequiredStateDataBits() : int{ return 1; }
 
-	protected function decodeState(RuntimeDataReader $r) : void{
-		$this->setReady($r->readBool());
-	}
-
-	protected function encodeState(RuntimeDataWriter $w) : void{
-		$w->writeBool($this->isReady());
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->bool($this->ready);
 	}
 
 	public function isReady() : bool{ return $this->ready; }
@@ -56,14 +52,11 @@ final class BambooSapling extends Flowable{
 	}
 
 	private function canBeSupportedBy(Block $block) : bool{
-		//TODO: tags would be better for this
 		return
-			$block instanceof Dirt ||
-			$block instanceof Grass ||
-			$block instanceof Gravel ||
-			$block instanceof Sand ||
-			$block instanceof Mycelium ||
-			$block instanceof Podzol;
+			$block->getTypeId() === BlockTypeIds::GRAVEL ||
+			$block->hasTypeTag(BlockTypeTags::DIRT) ||
+			$block->hasTypeTag(BlockTypeTags::MUD) ||
+			$block->hasTypeTag(BlockTypeTags::SAND);
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
@@ -73,7 +66,7 @@ final class BambooSapling extends Flowable{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer || $item instanceof ItemBamboo){
 			if($this->grow($player)){
 				$item->pop();
@@ -84,8 +77,9 @@ final class BambooSapling extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->position->getWorld()->getBlock($this->position->down()))){
-			$this->position->getWorld()->useBreakOn($this->position);
+		$world = $this->position->getWorld();
+		if(!$this->canBeSupportedBy($world->getBlock($this->position->down()))){
+			$world->useBreakOn($this->position);
 		}
 	}
 

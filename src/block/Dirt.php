@@ -23,44 +23,70 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\DirtType;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\item\Fertilizer;
 use pocketmine\item\Hoe;
 use pocketmine\item\Item;
+use pocketmine\item\Potion;
+use pocketmine\item\PotionType;
+use pocketmine\item\SplashPotion;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\sound\ItemUseOnBlockSound;
+use pocketmine\world\sound\WaterSplashSound;
 
 class Dirt extends Opaque{
-	protected bool $coarse = false;
+	protected DirtType $dirtType;
 
-	public function getRequiredTypeDataBits() : int{ return 1; }
-
-	protected function decodeType(RuntimeDataReader $r) : void{
-		$this->coarse = $r->readBool();
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
+		$this->dirtType = DirtType::NORMAL();
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	protected function encodeType(RuntimeDataWriter $w) : void{
-		$w->writeBool($this->coarse);
+	public function getRequiredTypeDataBits() : int{ return 2; }
+
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->dirtType($this->dirtType);
 	}
 
-	public function isCoarse() : bool{ return $this->coarse; }
+	public function getDirtType() : DirtType{ return $this->dirtType; }
 
 	/** @return $this */
-	public function setCoarse(bool $coarse) : self{
-		$this->coarse = $coarse;
+	public function setDirtType(DirtType $dirtType) : self{
+		$this->dirtType = $dirtType;
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		$world = $this->position->getWorld();
 		if($face === Facing::UP && $item instanceof Hoe){
 			$item->applyDamage(1);
 
-			$newBlock = $this->coarse ? VanillaBlocks::DIRT() : VanillaBlocks::FARMLAND();
-			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new ItemUseOnBlockSound($newBlock));
-			$this->position->getWorld()->setBlock($this->position, $newBlock);
+			$newBlock = $this->dirtType->equals(DirtType::NORMAL()) ? VanillaBlocks::FARMLAND() : VanillaBlocks::DIRT();
+			$center = $this->position->add(0.5, 0.5, 0.5);
+			$world->addSound($center, new ItemUseOnBlockSound($newBlock));
+			$world->setBlock($this->position, $newBlock);
+			if($this->dirtType->equals(DirtType::ROOTED())){
+				$world->dropItem($center, VanillaBlocks::HANGING_ROOTS()->asItem());
+			}
 
+			return true;
+		}elseif($this->dirtType->equals(DirtType::ROOTED()) && $item instanceof Fertilizer){
+			$down = $this->getSide(Facing::DOWN);
+			if($down->getTypeId() !== BlockTypeIds::AIR){
+				return true;
+			}
+
+			$item->pop();
+			$world->setBlock($down->position, VanillaBlocks::HANGING_ROOTS());
+			//TODO: bonemeal particles, growth sounds
+		}elseif(($item instanceof Potion || $item instanceof SplashPotion) && $item->getType()->equals(PotionType::WATER())){
+			$item->pop();
+			$world->setBlock($this->position, VanillaBlocks::MUD());
+			$world->addSound($this->position, new WaterSplashSound(0.5));
 			return true;
 		}
 

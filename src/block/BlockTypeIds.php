@@ -684,6 +684,35 @@ final class BlockTypeIds{
 	public const CUT_COPPER = 10657;
 	public const CUT_COPPER_SLAB = 10658;
 	public const CUT_COPPER_STAIRS = 10659;
+	public const CANDLE = 10660;
+	public const DYED_CANDLE = 10661;
+	public const CAKE_WITH_CANDLE = 10662;
+	public const CAKE_WITH_DYED_CANDLE = 10663;
+	public const WITHER_ROSE = 10664;
+	public const HANGING_ROOTS = 10665;
+	public const CARTOGRAPHY_TABLE = 10666;
+	public const SMITHING_TABLE = 10667;
+	public const NETHERITE = 10668;
+	public const SPORE_BLOSSOM = 10669;
+	public const CAULDRON = 10670;
+	public const WATER_CAULDRON = 10671;
+	public const LAVA_CAULDRON = 10672;
+	public const POTION_CAULDRON = 10673;
+	public const POWDER_SNOW_CAULDRON = 10674;
+	public const CHORUS_FLOWER = 10675;
+	public const CHORUS_PLANT = 10676;
+	public const MANGROVE_ROOTS = 10677;
+	public const MUDDY_MANGROVE_ROOTS = 10678;
+	public const FROGLIGHT = 10679;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10660;
+	public const FIRST_UNUSED_BLOCK_ID = 10680;
+
+	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
+
+	/**
+	 * Returns a new runtime block type ID, e.g. for use by a custom block.
+	 */
+	public static function newId() : int{
+		return self::$nextDynamicId++;
+	}
 }

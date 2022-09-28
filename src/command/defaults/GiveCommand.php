@@ -51,10 +51,6 @@ class GiveCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) < 2){
 			throw new InvalidCommandSyntaxException();
 		}
@@ -75,7 +71,11 @@ class GiveCommand extends VanillaCommand{
 		if(!isset($args[2])){
 			$item->setCount($item->getMaxStackSize());
 		}else{
-			$item->setCount((int) $args[2]);
+			$count = $this->getBoundedInt($sender, $args[2], 1, 32767);
+			if($count === null){
+				return true;
+			}
+			$item->setCount($count);
 		}
 
 		if(isset($args[3])){

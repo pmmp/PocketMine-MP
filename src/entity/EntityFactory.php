@@ -176,20 +176,6 @@ final class EntityFactory{
 	}
 
 	/**
-	 * @phpstan-param \Closure(World, CompoundTag) : Entity $creationFunc
-	 */
-	private static function validateCreationFunc(\Closure $creationFunc) : void{
-		$sig = new CallbackType(
-			new ReturnType(Entity::class),
-			new ParameterType("world", World::class),
-			new ParameterType("nbt", CompoundTag::class)
-		);
-		if(!$sig->isSatisfiedBy($creationFunc)){
-			throw new \TypeError("Declaration of callable `" . CallbackType::createFromCallable($creationFunc) . "` must be compatible with `" . $sig . "`");
-		}
-	}
-
-	/**
 	 * Registers an entity type into the index.
 	 *
 	 * @param string   $className Class that extends Entity
@@ -207,7 +193,11 @@ final class EntityFactory{
 			throw new \InvalidArgumentException("At least one save name must be provided");
 		}
 		Utils::testValidInstance($className, Entity::class);
-		self::validateCreationFunc($creationFunc);
+		Utils::validateCallableSignature(new CallbackType(
+			new ReturnType(Entity::class),
+			new ParameterType("world", World::class),
+			new ParameterType("nbt", CompoundTag::class)
+		), $creationFunc);
 
 		foreach($saveNames as $name){
 			$this->creationFuncs[$name] = $creationFunc;
@@ -227,7 +217,7 @@ final class EntityFactory{
 	 */
 	public function createFromData(World $world, CompoundTag $nbt) : ?Entity{
 		try{
-			$saveId = $nbt->getTag("id") ?? $nbt->getTag("identifier");
+			$saveId = $nbt->getTag("identifier") ?? $nbt->getTag("id");
 			$func = null;
 			if($saveId instanceof StringTag){
 				$func = $this->creationFuncs[$saveId->getValue()] ?? null;
@@ -248,7 +238,7 @@ final class EntityFactory{
 
 	public function injectSaveId(string $class, CompoundTag $saveData) : void{
 		if(isset($this->saveNames[$class])){
-			$saveData->setTag("id", new StringTag($this->saveNames[$class]));
+			$saveData->setTag("identifier", new StringTag($this->saveNames[$class]));
 		}else{
 			throw new \InvalidArgumentException("Entity $class is not registered");
 		}

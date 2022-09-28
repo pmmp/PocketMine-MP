@@ -29,8 +29,8 @@ use pocketmine\block\utils\BannerPatternLayer;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\data\bedrock\BannerPatternTypeIdMap;
 use pocketmine\data\bedrock\DyeColorIdMap;
+use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
-use pocketmine\data\runtime\RuntimeEnumSerializer;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
@@ -64,8 +64,8 @@ class Banner extends ItemBlockWallOrFloor{
 		return $this;
 	}
 
-	protected function encodeType(RuntimeDataWriter $w) : void{
-		RuntimeEnumSerializer::writeDyeColor($w, $this->color);
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->dyeColor($this->color);
 	}
 
 	/**

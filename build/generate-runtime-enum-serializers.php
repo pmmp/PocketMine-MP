@@ -26,12 +26,15 @@ namespace pocketmine\build\generate_runtime_enum_serializers;
 use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CoralType;
+use pocketmine\block\utils\DirtType;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\MushroomBlockType;
 use pocketmine\block\utils\SkullType;
 use pocketmine\block\utils\SlabType;
 use pocketmine\item\PotionType;
+use pocketmine\item\SuspiciousStewType;
 use function array_key_first;
 use function array_keys;
 use function array_map;
@@ -41,6 +44,7 @@ use function dirname;
 use function file_put_contents;
 use function implode;
 use function ksort;
+use function lcfirst;
 use function log;
 use function ob_get_clean;
 use function ob_start;
@@ -58,9 +62,9 @@ function buildWriterFunc(string $virtualTypeName, string $nativeTypeName, array 
 	$bits = getBitsRequired($memberNames);
 	$lines = [];
 
-	$functionName = "write$virtualTypeName";
-	$lines[] = "public static function $functionName(RuntimeDataWriter \$w, \\$nativeTypeName \$value) : void{";
-	$lines[] = "\t\$w->writeInt($bits, match(\$value){";
+	$functionName = lcfirst($virtualTypeName);
+	$lines[] = "public function $functionName(\\$nativeTypeName \$value) : void{";
+	$lines[] = "\t\$this->int($bits, match(\$value){";
 
 	foreach($memberNames as $key => $memberName){
 		$lines[] = "\t\t$memberName => $key,";
@@ -83,9 +87,9 @@ function buildReaderFunc(string $virtualTypeName, string $nativeTypeName, array 
 	$bits = getBitsRequired($memberNames);
 	$lines = [];
 
-	$functionName = "read$virtualTypeName";
-	$lines[] = "public static function $functionName(RuntimeDataReader \$r) : \\$nativeTypeName{";
-	$lines[] = "\treturn match(\$r->readInt($bits)){";
+	$functionName = lcfirst($virtualTypeName);
+	$lines[] = "public function $functionName(\\$nativeTypeName &\$value) : void{";
+	$lines[] = "\t\$value = match(\$this->readInt($bits)){";
 
 	foreach($memberNames as $key => $memberName){
 		$lines[] = "\t\t$key => $memberName,";
@@ -157,16 +161,27 @@ $enumsUsed = [
 	BellAttachmentType::getAll(),
 	CopperOxidation::getAll(),
 	CoralType::getAll(),
+	DirtType::getAll(),
 	DyeColor::getAll(),
+	FroglightType::getAll(),
 	LeverFacing::getAll(),
 	MushroomBlockType::getAll(),
 	SkullType::getAll(),
 	SlabType::getAll(),
+	SuspiciousStewType::getAll(),
 	PotionType::getAll()
 ];
 
-$readerFuncs = [];
-$writerFuncs = [];
+$readerFuncs = [
+	"" => [
+		"abstract protected function readInt(int \$bits) : int;"
+	]
+];
+$writerFuncs = [
+	"" => [
+		"abstract public function int(int \$bits, int \$value) : void;"
+	]
+];
 $functionName = "";
 
 foreach($enumsUsed as $enumMembers){
@@ -220,14 +235,14 @@ namespace pocketmine\data\runtime;
 
 HEADER;
 
-	echo "final class $className{\n\n";
+	echo "trait $className{\n\n";
 	echo implode("\n\n", array_map(fn(array $functionLines) => "\t" . implode("\n\t", $functionLines), $functions));
 	echo "\n\n}\n";
 
 	file_put_contents(dirname(__DIR__) . '/src/data/runtime/' . $className . '.php', ob_get_clean());
 }
 
-printFunctions($writerFuncs, "RuntimeEnumSerializer");
-printFunctions($readerFuncs, "RuntimeEnumDeserializer");
+printFunctions($writerFuncs, "RuntimeEnumSerializerTrait");
+printFunctions($readerFuncs, "RuntimeEnumDeserializerTrait");
 
 echo "Done. Don't forget to run CS fixup after generating code.\n";

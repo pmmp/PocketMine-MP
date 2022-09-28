@@ -27,18 +27,19 @@ use PHPUnit\Framework\TestCase;
 use pocketmine\block\BaseBanner;
 use pocketmine\block\Bed;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\block\Skull;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
 use function print_r;
 
 final class BlockSerializerDeserializerTest extends TestCase{
-	private BlockStateToBlockObjectDeserializer $deserializer;
-	private BlockObjectToBlockStateSerializer $serializer;
+	private BlockStateToObjectDeserializer $deserializer;
+	private BlockObjectToStateSerializer $serializer;
 
 	public function setUp() : void{
-		$this->deserializer = new BlockStateToBlockObjectDeserializer();
-		$this->serializer = new BlockObjectToBlockStateSerializer();
+		$this->deserializer = new BlockStateToObjectDeserializer();
+		$this->serializer = new BlockObjectToStateSerializer();
 	}
 
 	public function testAllKnownBlockStatesSerializableAndDeserializable() : void{
@@ -52,6 +53,11 @@ final class BlockSerializerDeserializerTest extends TestCase{
 				$newBlock = $this->deserializer->deserializeBlock($blockStateData);
 			}catch(BlockStateDeserializeException $e){
 				self::fail($e->getMessage());
+			}
+
+			if($block->getTypeId() === BlockTypeIds::POTION_CAULDRON){
+				//this pretends to be a water cauldron in the blockstate, and stores its actual data in the blockentity
+				continue;
 			}
 
 			//The following are workarounds for differences in blockstate representation in Bedrock vs PM
