@@ -164,7 +164,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 				if($deathCause instanceof EntityDamageByEntityEvent){
 					$e = $deathCause->getDamager();
 					if($e instanceof FallingBlock){
-						if($e->getBlock()->getTypeId()  === BlockTypeIds::ANVIL){
+						if($e->getBlock()->getTypeId() === BlockTypeIds::ANVIL){
 							return KnownTranslationFactory::death_attack_anvil($name);
 						}else{
 							//TODO: falling block generic translation
