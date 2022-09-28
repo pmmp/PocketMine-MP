@@ -511,11 +511,6 @@ parameters:
 			path: ../../../src/crash/CrashDump.php
 
 		-
-			message: "#^Parameter \\#1 \\$index of method pocketmine\\\\inventory\\\\BaseInventory\\:\\:setItem\\(\\) expects int, int\\|string given\\.$#"
-			count: 1
-			path: ../../../src/entity/ExperienceManager.php
-
-		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/entity/Living.php
