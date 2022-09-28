@@ -131,8 +131,10 @@ class PreSpawnPacketHandler extends PacketHandler{
 
 		$this->session->getLogger()->debug("Sending inventory");
 		$this->inventoryManager->syncAll();
-		$this->inventoryManager->syncCreative();
 		$this->inventoryManager->syncSelectedHotbarSlot();
+
+		$this->session->getLogger()->debug("Sending creative inventory data");
+		$this->inventoryManager->syncCreative();
 
 		$this->session->getLogger()->debug("Sending crafting data");
 		$this->session->sendDataPacket(CraftingDataCache::getInstance()->getCache($this->server->getCraftingManager()));
