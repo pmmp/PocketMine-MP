@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -34,15 +34,10 @@ class SimpleChunkManager implements ChunkManager{
 	/** @var Chunk[] */
 	protected $chunks = [];
 
-	/** @var int */
-	private $minY;
-	/** @var int */
-	private $maxY;
-
-	public function __construct(int $minY, int $maxY){
-		$this->minY = $minY;
-		$this->maxY = $maxY;
-	}
+	public function __construct(
+		private int $minY,
+		private int $maxY
+	){}
 
 	public function getBlockAt(int $x, int $y, int $z) : Block{
 		if($this->isInWorld($x, $y, $z) && ($chunk = $this->getChunk($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)) !== null){

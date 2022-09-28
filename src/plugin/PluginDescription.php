@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -156,7 +156,7 @@ class PluginDescription{
 					$k = $v;
 					$v = "*";
 				}
-				$this->extensions[$k] = array_map('strval', is_array($v) ? $v : [$v]);
+				$this->extensions[(string) $k] = array_map('strval', is_array($v) ? $v : [$v]);
 			}
 		}
 

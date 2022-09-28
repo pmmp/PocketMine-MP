@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -37,44 +37,31 @@ use function substr;
 final class QueryInfo{
 	public const GAME_ID = "MINECRAFTPE";
 
-	/** @var string */
-	private $serverName;
-	/** @var bool */
-	private $listPlugins;
+	private string $serverName;
+	private bool $listPlugins;
 	/** @var Plugin[] */
-	private $plugins;
+	private array $plugins;
 	/** @var Player[] */
-	private $players;
+	private array $players;
 
-	/** @var string */
-	private $gametype;
-	/** @var string */
-	private $version;
-	/** @var string */
-	private $server_engine;
-	/** @var string */
-	private $map;
-	/** @var int */
-	private $numPlayers;
-	/** @var int */
-	private $maxPlayers;
-	/** @var string */
-	private $whitelist;
-	/** @var int */
-	private $port;
-	/** @var string */
-	private $ip;
+	private string $gametype;
+	private string $version;
+	private string $server_engine;
+	private string $map;
+	private int $numPlayers;
+	private int $maxPlayers;
+	private string $whitelist;
+	private int $port;
+	private string $ip;
 
 	/**
 	 * @var string[]
 	 * @phpstan-var array<string, string>
 	 */
-	private $extraData = [];
+	private array $extraData = [];
 
-	/** @var string|null */
-	private $longQueryCache = null;
-	/** @var string|null */
-	private $shortQueryCache = null;
+	private ?string $longQueryCache = null;
+	private ?string $shortQueryCache = null;
 
 	public function __construct(Server $server){
 		$this->serverName = $server->getMotd();

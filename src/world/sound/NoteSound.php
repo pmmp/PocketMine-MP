@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,18 +28,13 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
 class NoteSound implements Sound{
-
-	/** @var NoteInstrument */
-	private $instrument;
-	/** @var int */
-	private $note;
-
-	public function __construct(NoteInstrument $instrument, int $note){
-		if($note < 0 || $note > 255){
+	public function __construct(
+		private NoteInstrument $instrument,
+		private int $note
+	){
+		if($this->note < 0 || $this->note > 255){
 			throw new \InvalidArgumentException("Note $note is outside accepted range");
 		}
-		$this->instrument = $instrument;
-		$this->note = $note;
 	}
 
 	public function encode(Vector3 $pos) : array{

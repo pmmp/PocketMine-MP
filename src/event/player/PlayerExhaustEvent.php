@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -46,19 +46,16 @@ class PlayerExhaustEvent extends EntityEvent implements Cancellable{
 	public const CAUSE_SPRINT_JUMPING = 10;
 	public const CAUSE_CUSTOM = 11;
 
-	/** @var float */
-	private $amount;
-	/** @var int */
-	private $cause;
-
 	/** @var Human */
 	protected $player;
 
-	public function __construct(Human $human, float $amount, int $cause){
+	public function __construct(
+		Human $human,
+		private float $amount,
+		private int $cause
+	){
 		$this->entity = $human;
 		$this->player = $human;
-		$this->amount = $amount;
-		$this->cause = $cause;
 	}
 
 	/**

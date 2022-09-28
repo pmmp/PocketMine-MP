@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,13 +29,12 @@ use pocketmine\player\Player;
  * Called when a player requests a different viewing distance than the current one.
  */
 class PlayerViewDistanceChangeEvent extends PlayerEvent{
-	protected int $newDistance;
-	protected int $oldDistance;
-
-	public function __construct(Player $player, int $oldDistance, int $newDistance){
+	public function __construct(
+		Player $player,
+		protected int $oldDistance,
+		protected int $newDistance
+	){
 		$this->player = $player;
-		$this->oldDistance = $oldDistance;
-		$this->newDistance = $newDistance;
 	}
 
 	/**

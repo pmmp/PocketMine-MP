@@ -17,13 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\SupportType;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\FoodSource;
 use pocketmine\entity\Living;
@@ -61,6 +62,10 @@ class Cake extends Transparent implements FoodSource{
 				->trim(Facing::UP, 0.5)
 				->trim(Facing::WEST, $this->bites / 8)
 		];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 
 	public function getBites() : int{ return $this->bites; }

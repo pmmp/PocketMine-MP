@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -58,35 +58,25 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	 * Sometimes this gets changed when the MCPE-layer protocol gets broken to the point where old and new can't
 	 * communicate. It's important that we check this to avoid catastrophes.
 	 */
-	private const MCPE_RAKNET_PROTOCOL_VERSION = 10;
+	private const MCPE_RAKNET_PROTOCOL_VERSION = 11;
 
 	private const MCPE_RAKNET_PACKET_ID = "\xfe";
 
-	/** @var Server */
-	private $server;
+	private Server $server;
+	private Network $network;
 
-	/** @var Network */
-	private $network;
-
-	/** @var int */
-	private $rakServerId;
-
-	/** @var RakLibServer */
-	private $rakLib;
+	private int $rakServerId;
+	private RakLibServer $rakLib;
 
 	/** @var NetworkSession[] */
-	private $sessions = [];
+	private array $sessions = [];
 
-	/** @var RakLibToUserThreadMessageReceiver */
-	private $eventReceiver;
-	/** @var UserToRakLibThreadMessageSender */
-	private $interface;
+	private RakLibToUserThreadMessageReceiver $eventReceiver;
+	private UserToRakLibThreadMessageSender $interface;
 
-	/** @var SleeperNotifier */
-	private $sleeper;
+	private SleeperNotifier $sleeper;
 
-	/** @var PacketBroadcaster */
-	private $broadcaster;
+	private PacketBroadcaster $broadcaster;
 
 	public function __construct(Server $server, string $ip, int $port, bool $ipV6){
 		$this->server = $server;
@@ -94,8 +84,8 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 
 		$this->sleeper = new SleeperNotifier();
 
-		$mainToThreadBuffer = new \Threaded;
-		$threadToMainBuffer = new \Threaded;
+		$mainToThreadBuffer = new \Threaded();
+		$threadToMainBuffer = new \Threaded();
 
 		$this->rakLib = new RakLibServer(
 			$this->server->getLogger(),

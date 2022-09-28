@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -116,7 +116,7 @@ class Vine extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$blockClicked->isSolid() || Facing::axis($face) === Axis::Y){
+		if(!$blockClicked->isFullCube() || Facing::axis($face) === Axis::Y){
 			return false;
 		}
 
@@ -141,10 +141,11 @@ class Vine extends Flowable{
 		}
 
 		if($changed){
+			$world = $this->position->getWorld();
 			if(count($this->faces) === 0){
-				$this->position->getWorld()->useBreakOn($this->position);
+				$world->useBreakOn($this->position);
 			}else{
-				$this->position->getWorld()->setBlock($this->position, $this);
+				$world->setBlock($this->position, $this);
 			}
 		}
 	}

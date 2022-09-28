@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -52,7 +52,7 @@ class StatusCommand extends VanillaCommand{
 		$mUsage = Process::getAdvancedMemoryUsage();
 
 		$server = $sender->getServer();
-		$sender->sendMessage(TextFormat::GREEN . "---- " . TextFormat::WHITE . "Server status" . TextFormat::GREEN . " ----");
+		$sender->sendMessage(TextFormat::GREEN . "---- " . TextFormat::RESET . "Server status" . TextFormat::GREEN . " ----");
 
 		$time = (int) (microtime(true) - $server->getStartTime());
 
@@ -103,7 +103,7 @@ class StatusCommand extends VanillaCommand{
 
 		$globalLimit = $server->getMemoryManager()->getGlobalMemoryLimit();
 		if($globalLimit > 0){
-			$sender->sendMessage(TextFormat::GOLD . "Maximum memory (manager): " . TextFormat::RED . number_format(round($globalLimit, 2), 2) . " MB.");
+			$sender->sendMessage(TextFormat::GOLD . "Maximum memory (manager): " . TextFormat::RED . number_format(round(($globalLimit / 1024) / 1024, 2), 2) . " MB.");
 		}
 
 		foreach($server->getWorldManager()->getWorlds() as $world){

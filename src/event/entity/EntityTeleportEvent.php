@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,6 +26,7 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\utils\Utils;
 use pocketmine\world\Position;
 
 /**
@@ -34,15 +35,12 @@ use pocketmine\world\Position;
 class EntityTeleportEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Position */
-	private $from;
-	/** @var Position */
-	private $to;
-
-	public function __construct(Entity $entity, Position $from, Position $to){
+	public function __construct(
+		Entity $entity,
+		private Position $from,
+		private Position $to
+	){
 		$this->entity = $entity;
-		$this->from = $from;
-		$this->to = $to;
 	}
 
 	public function getFrom() : Position{
@@ -54,6 +52,7 @@ class EntityTeleportEvent extends EntityEvent implements Cancellable{
 	}
 
 	public function setTo(Position $to) : void{
+		Utils::checkVector3NotInfOrNaN($to);
 		$this->to = $to;
 	}
 }

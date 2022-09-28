@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\MinimumCostFlowCalculator;
+use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockFormEvent;
 use pocketmine\event\block\BlockSpreadEvent;
@@ -112,6 +113,10 @@ abstract class Liquid extends Transparent{
 	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
@@ -324,7 +329,7 @@ abstract class Liquid extends Transparent{
 			}
 
 			if($adjacentDecay <= self::MAX_DECAY){
-				$calculator = new MinimumCostFlowCalculator($this->position->getWorld(), $this->getFlowDecayPerBlock(), \Closure::fromCallable([$this, 'canFlowInto']));
+				$calculator = new MinimumCostFlowCalculator($world, $this->getFlowDecayPerBlock(), \Closure::fromCallable([$this, 'canFlowInto']));
 				foreach($calculator->getOptimalFlowDirections($this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ()) as $facing){
 					$this->flowIntoBlock($world->getBlock($this->position->getSide($facing)), $adjacentDecay, false);
 				}
@@ -343,11 +348,12 @@ abstract class Liquid extends Transparent{
 			$ev = new BlockSpreadEvent($block, $this, $new);
 			$ev->call();
 			if(!$ev->isCancelled()){
-				if($block->getId() > 0){
-					$this->position->getWorld()->useBreakOn($block->position);
+				$world = $this->position->getWorld();
+				if($block->getId() !== BlockLegacyIds::AIR){
+					$world->useBreakOn($block->position);
 				}
 
-				$this->position->getWorld()->setBlock($block->position, $ev->getNewState());
+				$world->setBlock($block->position, $ev->getNewState());
 			}
 		}
 	}
@@ -377,8 +383,9 @@ abstract class Liquid extends Transparent{
 		$ev = new BlockFormEvent($this, $result);
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
-			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new FizzSound(2.6 + (lcg_value() - lcg_value()) * 0.8));
+			$world = $this->position->getWorld();
+			$world->setBlock($this->position, $ev->getNewState());
+			$world->addSound($this->position->add(0.5, 0.5, 0.5), new FizzSound(2.6 + (lcg_value() - lcg_value()) * 0.8));
 		}
 		return true;
 	}

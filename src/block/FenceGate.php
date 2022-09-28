@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -78,6 +79,10 @@ class FenceGate extends Transparent{
 		return $this->open ? [] : [AxisAlignedBB::one()->extend(Facing::UP, 0.5)->squash(Facing::axis($this->facing), 6 / 16)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	private function checkInWall() : bool{
 		return (
 			$this->getSide(Facing::rotateY($this->facing, false)) instanceof Wall ||
@@ -112,8 +117,9 @@ class FenceGate extends Transparent{
 			}
 		}
 
-		$this->position->getWorld()->setBlock($this->position, $this);
-		$this->position->getWorld()->addSound($this->position, new DoorSound());
+		$world = $this->position->getWorld();
+		$world->setBlock($this->position, $this);
+		$world->addSound($this->position, new DoorSound());
 		return true;
 	}
 

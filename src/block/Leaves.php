@@ -17,12 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
@@ -122,11 +123,12 @@ class Leaves extends Transparent{
 		if(!$this->noDecay && $this->checkDecay){
 			$ev = new LeavesDecayEvent($this);
 			$ev->call();
+			$world = $this->position->getWorld();
 			if($ev->isCancelled() || $this->findLog($this->position)){
 				$this->checkDecay = false;
-				$this->position->getWorld()->setBlock($this->position, $this, false);
+				$world->setBlock($this->position, $this, false);
 			}else{
-				$this->position->getWorld()->useBreakOn($this->position);
+				$world->useBreakOn($this->position);
 			}
 		}
 	}
@@ -148,6 +150,9 @@ class Leaves extends Transparent{
 		if(($this->treeType->equals(TreeType::OAK()) || $this->treeType->equals(TreeType::DARK_OAK())) && mt_rand(1, 200) === 1){ //Apples
 			$drops[] = VanillaItems::APPLE();
 		}
+		if(mt_rand(1, 50) === 1){
+			$drops[] = VanillaItems::STICK()->setCount(mt_rand(1, 2));
+		}
 
 		return $drops;
 	}
@@ -162,5 +167,9 @@ class Leaves extends Transparent{
 
 	public function getFlammability() : int{
 		return 60;
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 }

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,11 +31,7 @@ use pocketmine\utils\ObjectSet;
 use pocketmine\utils\ReversePriorityQueue;
 
 class TaskScheduler{
-	/** @var string|null */
-	private $owner;
-
-	/** @var bool */
-	private $enabled = true;
+	private bool $enabled = true;
 
 	/**
 	 * @var ReversePriorityQueue
@@ -52,8 +48,9 @@ class TaskScheduler{
 	/** @var int */
 	protected $currentTick = 0;
 
-	public function __construct(?string $owner = null){
-		$this->owner = $owner;
+	public function __construct(
+		private ?string $owner = null
+	){
 		$this->queue = new ReversePriorityQueue();
 		$this->tasks = new ObjectSet();
 	}

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -131,8 +131,7 @@ use const PHP_INT_MIN;
 
 class World implements ChunkManager{
 
-	/** @var int */
-	private static $worldIdCounter = 1;
+	private static int $worldIdCounter = 1;
 
 	public const Y_MAX = 256;
 	public const Y_MIN = 0;
@@ -154,15 +153,15 @@ class World implements ChunkManager{
 	public const DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK = 3;
 
 	/** @var Player[] */
-	private $players = [];
+	private array $players = [];
 
 	/** @var Entity[] */
-	private $entities = [];
+	private array $entities = [];
 	/**
 	 * @var Vector3[]
 	 * @phpstan-var array<int, Vector3>
 	 */
-	private $entityLastKnownPositions = [];
+	private array $entityLastKnownPositions = [];
 
 	/**
 	 * @var Entity[][]
@@ -172,89 +171,69 @@ class World implements ChunkManager{
 
 	/** @var Entity[] */
 	public $updateEntities = [];
+
+	private bool $inDynamicStateRecalculation = false;
 	/** @var Block[][] */
-	private $blockCache = [];
+	private array $blockCache = [];
 
-	/** @var int */
-	private $sendTimeTicker = 0;
+	private int $sendTimeTicker = 0;
 
-	/** @var Server */
-	private $server;
+	private int $worldId;
 
-	/** @var int */
-	private $worldId;
+	private int $providerGarbageCollectionTicker = 0;
 
-	/** @var WritableWorldProvider */
-	private $provider;
-	/** @var int */
-	private $providerGarbageCollectionTicker = 0;
-
-	/** @var int */
-	private $minY;
-	/** @var int */
-	private $maxY;
+	private int $minY;
+	private int $maxY;
 
 	/** @var TickingChunkLoader[] */
-	private $tickingLoaders = [];
+	private array $tickingLoaders = [];
 	/** @var int[] */
-	private $tickingLoaderCounter = [];
+	private array $tickingLoaderCounter = [];
 	/** @var ChunkLoader[][] */
-	private $chunkLoaders = [];
+	private array $chunkLoaders = [];
 
 	/** @var ChunkListener[][] */
-	private $chunkListeners = [];
+	private array $chunkListeners = [];
 	/** @var Player[][] */
-	private $playerChunkListeners = [];
+	private array $playerChunkListeners = [];
 
 	/** @var ClientboundPacket[][] */
-	private $packetBuffersByChunk = [];
+	private array $packetBuffersByChunk = [];
 
 	/** @var float[] */
-	private $unloadQueue = [];
+	private array $unloadQueue = [];
 
-	/** @var int */
-	private $time;
+	private int $time;
 	/** @var bool */
 	public $stopTime = false;
 
-	/** @var float */
-	private $sunAnglePercentage = 0.0;
-	/** @var int */
-	private $skyLightReduction = 0;
+	private float $sunAnglePercentage = 0.0;
+	private int $skyLightReduction = 0;
 
-	/** @var string */
-	private $folderName;
-	/** @var string */
-	private $displayName;
+	private string $folderName;
+	private string $displayName;
 
 	/** @var Chunk[] */
-	private $chunks = [];
+	private array $chunks = [];
 
 	/** @var Vector3[][] */
-	private $changedBlocks = [];
+	private array $changedBlocks = [];
 
-	/**
-	 * @var ReversePriorityQueue
-	 * @phpstan-var ReversePriorityQueue<int, Vector3>
-	 */
-	private $scheduledBlockUpdateQueue;
+	/** @phpstan-var ReversePriorityQueue<int, Vector3> */
+	private ReversePriorityQueue $scheduledBlockUpdateQueue;
 	/** @var int[] */
-	private $scheduledBlockUpdateQueueIndex = [];
+	private array $scheduledBlockUpdateQueueIndex = [];
 
-	/**
-	 * @var \SplQueue
-	 * @phpstan-var \SplQueue<int>
-	 */
-	private $neighbourBlockUpdateQueue;
+	/** @phpstan-var \SplQueue<int> */
+	private \SplQueue $neighbourBlockUpdateQueue;
 	/** @var bool[] blockhash => dummy */
-	private $neighbourBlockUpdateQueueIndex = [];
+	private array $neighbourBlockUpdateQueueIndex = [];
 
 	/** @var bool[] */
-	private $activeChunkPopulationTasks = [];
+	private array $activeChunkPopulationTasks = [];
 	/** @var ChunkLockId[] */
-	private $chunkLock = [];
-	/** @var int */
-	private $maxConcurrentChunkPopulationTasks = 2;
+	private array $chunkLock = [];
+	private int $maxConcurrentChunkPopulationTasks = 2;
 	/**
 	 * @var PromiseResolver[] chunkHash => promise
 	 * @phpstan-var array<int, PromiseResolver<Chunk>>
@@ -272,22 +251,17 @@ class World implements ChunkManager{
 	private array $chunkPopulationRequestQueueIndex = [];
 
 	/** @var bool[] */
-	private $generatorRegisteredWorkers = [];
+	private array $generatorRegisteredWorkers = [];
 
-	/** @var bool */
-	private $autoSave = true;
+	private bool $autoSave = true;
 
-	/** @var int */
-	private $sleepTicks = 0;
+	private int $sleepTicks = 0;
 
-	/** @var int */
-	private $chunkTickRadius;
-	/** @var int */
-	private $chunksPerTick;
-	/** @var int */
-	private $tickedBlocksPerSubchunkPerTick = self::DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK;
+	private int $chunkTickRadius;
+	private int $chunksPerTick;
+	private int $tickedBlocksPerSubchunkPerTick = self::DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK;
 	/** @var bool[] */
-	private $randomTickBlocks = [];
+	private array $randomTickBlocks = [];
 
 	/** @var WorldTimings */
 	public $timings;
@@ -295,33 +269,22 @@ class World implements ChunkManager{
 	/** @var float */
 	public $tickRateTime = 0;
 
-	/** @var bool */
-	private $doingTick = false;
+	private bool $doingTick = false;
 
-	/**
-	 * @var string
-	 * @phpstan-var class-string<\pocketmine\world\generator\Generator>
-	 */
-	private $generator;
+	/** @phpstan-var class-string<\pocketmine\world\generator\Generator> */
+	private string $generator;
 
-	/** @var bool */
-	private $unloaded = false;
+	private bool $unloaded = false;
 	/**
 	 * @var \Closure[]
 	 * @phpstan-var array<int, \Closure() : void>
 	 */
-	private $unloadCallbacks = [];
+	private array $unloadCallbacks = [];
 
-	/** @var BlockLightUpdate|null */
-	private $blockLightUpdate = null;
-	/** @var SkyLightUpdate|null */
-	private $skyLightUpdate = null;
+	private ?BlockLightUpdate $blockLightUpdate = null;
+	private ?SkyLightUpdate $skyLightUpdate = null;
 
-	/** @var \Logger */
-	private $logger;
-
-	/** @var AsyncPool */
-	private $workerPool;
+	private \Logger $logger;
 
 	public static function chunkHash(int $x, int $z) : int{
 		return morton2d_encode($x, $z);
@@ -407,12 +370,14 @@ class World implements ChunkManager{
 	/**
 	 * Init the default world data
 	 */
-	public function __construct(Server $server, string $name, WritableWorldProvider $provider, AsyncPool $workerPool){
+	public function __construct(
+		private Server $server,
+		string $name, //TODO: this should be folderName (named arguments BC break)
+		private WritableWorldProvider $provider,
+		private AsyncPool $workerPool
+	){
+		$this->folderName = $name;
 		$this->worldId = self::$worldIdCounter++;
-		$this->server = $server;
-
-		$this->provider = $provider;
-		$this->workerPool = $workerPool;
 
 		$this->displayName = $this->provider->getWorldData()->getName();
 		$this->logger = new \PrefixedLogger($server->getLogger(), "World: $this->displayName");
@@ -439,8 +404,6 @@ class World implements ChunkManager{
 				throw new AssumptionFailedError("New generation requests scheduled during unload");
 			}
 		});
-
-		$this->folderName = $name;
 
 		$this->scheduledBlockUpdateQueue = new ReversePriorityQueue();
 		$this->scheduledBlockUpdateQueue->setExtractFlags(\SplPriorityQueue::EXTR_BOTH);
@@ -1312,7 +1275,7 @@ class World implements ChunkManager{
 	 * get an angle in radians, or by 360 to get an angle in degrees.
 	 */
 	public function computeSunAnglePercentage() : float{
-		$timeProgress = ($this->time % 24000) / 24000;
+		$timeProgress = ($this->time % self::TIME_FULL) / self::TIME_FULL;
 
 		//0.0 needs to be high noon, not dusk
 		$sunProgress = $timeProgress + ($timeProgress < 0.25 ? 0.75 : -0.25);
@@ -1575,17 +1538,15 @@ class World implements ChunkManager{
 
 		$block->position($this, $x, $y, $z);
 
-		static $dynamicStateRead = false;
-
-		if($dynamicStateRead){
+		if($this->inDynamicStateRecalculation){
 			//this call was generated by a parent getBlock() call calculating dynamic stateinfo
 			//don't calculate dynamic state and don't add to block cache (since it won't have dynamic state calculated).
 			//this ensures that it's impossible for dynamic state properties to recursively depend on each other.
 			$addToCache = false;
 		}else{
-			$dynamicStateRead = true;
+			$this->inDynamicStateRecalculation = true;
 			$block->readStateFromWorld();
-			$dynamicStateRead = false;
+			$this->inDynamicStateRecalculation = false;
 		}
 
 		if($addToCache && $relativeBlockHash !== null){
@@ -2531,7 +2492,7 @@ class World implements ChunkManager{
 					continue;
 				}
 				if($entity === null){
-					$saveIdTag = $nbt->getTag("id") ?? $nbt->getTag("identifier");
+					$saveIdTag = $nbt->getTag("identifier") ?? $nbt->getTag("id");
 					$saveId = "<unknown>";
 					if($saveIdTag instanceof StringTag){
 						$saveId = $saveIdTag->getValue();
@@ -2653,8 +2614,13 @@ class World implements ChunkManager{
 		unset($this->changedBlocks[$chunkHash]);
 
 		if(array_key_exists($chunkHash, $this->chunkPopulationRequestMap)){
+			$this->logger->debug("Rejecting population promise for chunk $x $z");
 			$this->chunkPopulationRequestMap[$chunkHash]->reject();
 			unset($this->chunkPopulationRequestMap[$chunkHash]);
+			if(isset($this->activeChunkPopulationTasks[$chunkHash])){
+				$this->logger->debug("Marking population task for chunk $x $z as orphaned");
+				$this->activeChunkPopulationTasks[$chunkHash] = false;
+			}
 		}
 
 		$this->timings->doChunkUnload->stopTiming();
@@ -2830,7 +2796,7 @@ class World implements ChunkManager{
 			unset($this->chunkPopulationRequestQueueIndex[$nextChunkHash]);
 			World::getXZ($nextChunkHash, $nextChunkX, $nextChunkZ);
 			if(isset($this->chunkPopulationRequestMap[$nextChunkHash])){
-				assert(!isset($this->activeChunkPopulationTasks[$nextChunkHash]), "Population for chunk $nextChunkX $nextChunkZ already running");
+				assert(!($this->activeChunkPopulationTasks[$nextChunkHash] ?? false), "Population for chunk $nextChunkX $nextChunkZ already running");
 				if(
 					!$this->orderChunkPopulation($nextChunkX, $nextChunkZ, null)->isResolved() &&
 					!isset($this->activeChunkPopulationTasks[$nextChunkHash])
@@ -2999,10 +2965,13 @@ class World implements ChunkManager{
 		}
 
 		$index = World::chunkHash($x, $z);
-		if(!isset($this->chunkPopulationRequestMap[$index])){
-			$this->logger->debug("Discarding population result for chunk x=$x,z=$z - promise was already broken");
+		if(!isset($this->activeChunkPopulationTasks[$index])){
+			throw new AssumptionFailedError("This should always be set, regardless of whether the task was orphaned or not");
+		}
+		if(!$this->activeChunkPopulationTasks[$index]){
+			$this->logger->debug("Discarding orphaned population result for chunk x=$x,z=$z");
 			unset($this->activeChunkPopulationTasks[$index]);
-		}elseif(isset($this->activeChunkPopulationTasks[$index])){
+		}else{
 			if($dirtyChunks === 0){
 				$oldChunk = $this->loadChunk($x, $z);
 				$this->setChunk($x, $z, $chunk);
@@ -3035,9 +3004,14 @@ class World implements ChunkManager{
 			unset($this->activeChunkPopulationTasks[$index]);
 
 			if($dirtyChunks === 0){
-				$promise = $this->chunkPopulationRequestMap[$index];
-				unset($this->chunkPopulationRequestMap[$index]);
-				$promise->resolve($chunk);
+				$promise = $this->chunkPopulationRequestMap[$index] ?? null;
+				if($promise !== null){
+					unset($this->chunkPopulationRequestMap[$index]);
+					$promise->resolve($chunk);
+				}else{
+					//Handlers of ChunkPopulateEvent, ChunkLoadEvent, or just ChunkListeners can cause this
+					$this->logger->debug("Unable to resolve population promise for chunk x=$x,z=$z - populated chunk was forcibly unloaded while setting modified chunks");
+				}
 			}else{
 				//request failed, stick it back on the queue
 				//we didn't resolve the promise or touch it in any way, so any fake chunk loaders are still valid and

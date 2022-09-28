@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -33,6 +33,7 @@ use pocketmine\data\java\GameModeIdMap;
 use pocketmine\entity\animation\Animation;
 use pocketmine\entity\animation\ArmSwingAnimation;
 use pocketmine\entity\animation\CriticalHitAnimation;
+use pocketmine\entity\Attribute;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
@@ -65,6 +66,7 @@ use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerJumpEvent;
 use pocketmine\event\player\PlayerKickEvent;
 use pocketmine\event\player\PlayerMoveEvent;
+use pocketmine\event\player\PlayerPostChunkSendEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\player\PlayerRespawnEvent;
 use pocketmine\event\player\PlayerToggleFlightEvent;
@@ -83,7 +85,7 @@ use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\TemporaryInventory;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
-use pocketmine\inventory\transaction\TransactionBuilderInventory;
+use pocketmine\inventory\transaction\TransactionBuilder;
 use pocketmine\inventory\transaction\TransactionCancelledException;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\ConsumableItem;
@@ -253,6 +255,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected bool $blockCollision = true;
 	protected bool $flying = false;
 
+	/** @phpstan-var positive-int|null  */
 	protected ?int $lineHeight = null;
 	protected string $locale = "en_US";
 
@@ -312,6 +315,16 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->setNameTag($this->username);
 	}
 
+	private function callDummyItemHeldEvent() : void{
+		$slot = $this->inventory->getHeldItemIndex();
+
+		$event = new PlayerItemHeldEvent($this, $this->inventory->getItem($slot), $slot);
+		$event->call();
+		//TODO: this event is actually cancellable, but cancelling it here has no meaningful result, so we
+		//just ignore it. We fire this only because the content of the held slot changed, not because the
+		//held slot index changed. We can't prevent that from here, and nor would it be sensible to.
+	}
+
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 		$this->addDefaultWindows();
@@ -320,10 +333,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			function(Inventory $unused, int $slot) : void{
 				if($slot === $this->inventory->getHeldItemIndex()){
 					$this->setUsingItem(false);
+
+					$this->callDummyItemHeldEvent();
 				}
 			},
 			function() : void{
 				$this->setUsingItem(false);
+				$this->callDummyItemHeldEvent();
 			}
 		));
 
@@ -402,24 +418,51 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return $this->lastPlayed - $this->firstPlayed > 1; // microtime(true) - microtime(true) may have less than one millisecond difference
 	}
 
+	/**
+	 * Sets whether the player is allowed to toggle flight mode.
+	 *
+	 * If set to false, the player will be locked in its current flight mode (flying/not flying), and attempts by the
+	 * player to enter or exit flight mode will be prevented.
+	 *
+	 * Note: Setting this to false DOES NOT change whether the player is currently flying. Use
+	 * {@link Player::setFlying()} for that purpose.
+	 */
 	public function setAllowFlight(bool $value) : void{
 		if($this->allowFlight !== $value){
 			$this->allowFlight = $value;
-			$this->getNetworkSession()->syncAdventureSettings($this);
+			$this->getNetworkSession()->syncAbilities($this);
 		}
 	}
 
+	/**
+	 * Returns whether the player is allowed to toggle its flight state.
+	 *
+	 * If false, the player is locked in its current flight mode (flying/not flying), and attempts by the player to
+	 * enter or exit flight mode will be prevented.
+	 */
 	public function getAllowFlight() : bool{
 		return $this->allowFlight;
 	}
 
+	/**
+	 * Sets whether the player's movement may be obstructed by blocks with collision boxes.
+	 * If set to false, the player can move through any block unobstructed.
+	 *
+	 * Note: Enabling flight mode in conjunction with this is recommended. A non-flying player will simply fall through
+	 * the ground into the void.
+	 * @see Player::setFlying()
+	 */
 	public function setHasBlockCollision(bool $value) : void{
 		if($this->blockCollision !== $value){
 			$this->blockCollision = $value;
-			$this->getNetworkSession()->syncAdventureSettings($this);
+			$this->getNetworkSession()->syncAbilities($this);
 		}
 	}
 
+	/**
+	 * Returns whether blocks may obstruct the player's movement.
+	 * If false, the player can move through any block unobstructed.
+	 */
 	public function hasBlockCollision() : bool{
 		return $this->blockCollision;
 	}
@@ -428,7 +471,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($this->flying !== $value){
 			$this->flying = $value;
 			$this->resetFallDistance();
-			$this->getNetworkSession()->syncAdventureSettings($this);
+			$this->getNetworkSession()->syncAbilities($this);
 		}
 	}
 
@@ -439,7 +482,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function setAutoJump(bool $value) : void{
 		if($this->autoJump !== $value){
 			$this->autoJump = $value;
-			$this->getNetworkSession()->syncAdventureSettings($this);
+			$this->getNetworkSession()->syncAdventureSettings();
 		}
 	}
 
@@ -771,6 +814,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 							$this->getNetworkSession()->notifyTerrainReady();
 						}
+						(new PlayerPostChunkSendEvent($this, $X, $Z))->call();
 					});
 				},
 				static function() : void{
@@ -1004,7 +1048,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected function internalSetGameMode(GameMode $gameMode) : void{
 		$this->gamemode = $gameMode;
 
-		$this->allowFlight = $this->isCreative();
+		$this->allowFlight = $this->gamemode->equals(GameMode::CREATIVE());
 		$this->hungerManager->setEnabled($this->isSurvival());
 
 		if($this->isSpectator()){
@@ -1163,7 +1207,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return;
 		}
 
-		$oldPos = $this->getLocation();
+		$oldPos = $this->location;
 		$distanceSquared = $newPos->distanceSquared($oldPos);
 
 		$revert = false;
@@ -1181,7 +1225,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			 * asking for help if you suffer the consequences of messing with this.
 			 */
 			$this->logger->debug("Moved too fast, reverting movement");
-			$this->logger->debug("Old position: " . $this->location->asVector3() . ", new position: " . $newPos);
+			$this->logger->debug("Old position: " . $oldPos->asVector3() . ", new position: " . $newPos);
 			$revert = true;
 		}elseif(!$this->getWorld()->isInLoadedTerrain($newPos)){
 			$revert = true;
@@ -1189,9 +1233,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		if(!$revert && $distanceSquared != 0){
-			$dx = $newPos->x - $this->location->x;
-			$dy = $newPos->y - $this->location->y;
-			$dz = $newPos->z - $this->location->z;
+			$dx = $newPos->x - $oldPos->x;
+			$dy = $newPos->y - $oldPos->y;
+			$dz = $newPos->z - $oldPos->z;
 
 			$this->move($dx, $dy, $dz);
 		}
@@ -1237,11 +1281,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 			$horizontalDistanceTravelled = sqrt((($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2));
 			if($horizontalDistanceTravelled > 0){
-				//TODO: check swimming (adds 0.015 exhaustion in MCPE)
+				//TODO: check for swimming
 				if($this->isSprinting()){
-					$this->hungerManager->exhaust(0.1 * $horizontalDistanceTravelled, PlayerExhaustEvent::CAUSE_SPRINTING);
+					$this->hungerManager->exhaust(0.01 * $horizontalDistanceTravelled, PlayerExhaustEvent::CAUSE_SPRINTING);
 				}else{
-					$this->hungerManager->exhaust(0.01 * $horizontalDistanceTravelled, PlayerExhaustEvent::CAUSE_WALKING);
+					$this->hungerManager->exhaust(0.0, PlayerExhaustEvent::CAUSE_WALKING);
 				}
 
 				if($this->nextChunkOrderRun > 20){
@@ -1363,8 +1407,19 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function chat(string $message) : bool{
 		$this->removeCurrentWindow();
 
+		if($this->messageCounter <= 0){
+			//the check below would take care of this (0 * (maxlen + 1) = 0), but it's better be explicit
+			return false;
+		}
+
+		//Fast length check, to make sure we don't get hung trying to explode MBs of string ...
+		$maxTotalLength = $this->messageCounter * (self::MAX_CHAT_BYTE_LENGTH + 1);
+		if(strlen($message) > $maxTotalLength){
+			return false;
+		}
+
 		$message = TextFormat::clean($message, false);
-		foreach(explode("\n", $message) as $messagePart){
+		foreach(explode("\n", $message, $this->messageCounter + 1) as $messagePart){
 			if(trim($messagePart) !== "" && strlen($messagePart) <= self::MAX_CHAT_BYTE_LENGTH && mb_strlen($messagePart, 'UTF-8') <= self::MAX_CHAT_CHAR_LENGTH && $this->messageCounter-- > 0){
 				if(strpos($messagePart, './') === 0){
 					$messagePart = substr($messagePart, 1);
@@ -1530,7 +1585,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$ev = new PlayerBlockPickEvent($this, $block, $item);
 		$existingSlot = $this->inventory->first($item);
-		if($existingSlot === -1 && $this->hasFiniteResources()){
+		if($existingSlot === -1 && ($this->hasFiniteResources() || $this->isSpectator())){
 			$ev->cancel();
 		}
 		$ev->call();
@@ -1630,7 +1685,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					}
 					$this->inventory->setItemInHand($item);
 				}
-				$this->hungerManager->exhaust(0.025, PlayerExhaustEvent::CAUSE_MINING);
+				$this->hungerManager->exhaust(0.005, PlayerExhaustEvent::CAUSE_MINING);
 				return true;
 			}
 		}else{
@@ -1740,7 +1795,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$this->inventory->setItemInHand($heldItem);
 			}
 
-			$this->hungerManager->exhaust(0.3, PlayerExhaustEvent::CAUSE_ATTACK);
+			$this->hungerManager->exhaust(0.1, PlayerExhaustEvent::CAUSE_ATTACK);
 		}
 
 		return true;
@@ -1956,6 +2011,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function sendTip(string $message) : void{
 		$this->getNetworkSession()->onTip($message);
+	}
+
+	/**
+	 * Sends a toast message to the player, or queue to send it if a toast message is already shown.
+	 */
+	public function sendToastNotification(string $title, string $body) : void{
+		$this->getNetworkSession()->onToastNotification($title, $body);
 	}
 
 	/**
@@ -2201,8 +2263,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			}
 		}
 
-		$this->getWorld()->dropExperience($this->location, $ev->getXpDropAmount());
-		$this->xpManager->setXpAndProgress(0, 0.0);
+		if(!$ev->getKeepXp()){
+			$this->getWorld()->dropExperience($this->location, $ev->getXpDropAmount());
+			$this->xpManager->setXpAndProgress(0, 0.0);
+		}
 
 		if($ev->getDeathMessage() != ""){
 			$this->server->broadcastMessage($ev->getDeathMessage());
@@ -2263,6 +2327,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$this->setHealth($this->getMaxHealth());
 
 				foreach($this->attributeMap->getAll() as $attr){
+					if($attr->getId() === Attribute::EXPERIENCE || $attr->getId() === Attribute::EXPERIENCE_LEVEL){ //we have already reset both of those if needed when the player died
+						continue;
+					}
 					$attr->resetToDefault();
 				}
 
@@ -2283,7 +2350,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
 		parent::applyPostDamageEffects($source);
 
-		$this->hungerManager->exhaust(0.3, PlayerExhaustEvent::CAUSE_DAMAGE);
+		$this->hungerManager->exhaust(0.1, PlayerExhaustEvent::CAUSE_DAMAGE);
 	}
 
 	public function attack(EntityDamageEvent $source) : void{
@@ -2293,7 +2360,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		if($this->isCreative()
 			&& $source->getCause() !== EntityDamageEvent::CAUSE_SUICIDE
-			&& $source->getCause() !== EntityDamageEvent::CAUSE_VOID
 		){
 			$source->cancel();
 		}elseif($this->allowFlight && $source->getCause() === EntityDamageEvent::CAUSE_FALL){
@@ -2307,6 +2373,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		parent::syncNetworkData($properties);
 
 		$properties->setGenericFlag(EntityMetadataFlags::ACTION, $this->startAction > -1);
+		$properties->setGenericFlag(EntityMetadataFlags::HAS_COLLISION, $this->hasBlockCollision());
 
 		$properties->setPlayerFlag(PlayerMetadataFlags::SLEEP, $this->sleeping !== null);
 		$properties->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, $this->sleeping !== null ? BlockPosition::fromVector3($this->sleeping) : new BlockPosition(0, 0, 0));
@@ -2352,6 +2419,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if(parent::teleport($pos, $yaw, $pitch)){
 
 			$this->removeCurrentWindow();
+			$this->stopSleep();
 
 			$this->sendPosition($this->location, $this->location->yaw, $this->location->pitch, MovePlayerPacket::MODE_TELEPORT);
 			$this->broadcastMovement(true);
@@ -2363,7 +2431,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			if($this->spawnChunkLoadCount !== -1){
 				$this->spawnChunkLoadCount = 0;
 			}
-			$this->stopSleep();
 			$this->blockBreakHandler = null;
 
 			//TODO: workaround for player last pos not getting updated
@@ -2403,29 +2470,23 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$inventories[] = $this->currentWindow;
 		}
 
-		$transaction = new InventoryTransaction($this);
-		$mainInventoryTransactionBuilder = new TransactionBuilderInventory($this->inventory);
+		$builder = new TransactionBuilder();
 		foreach($inventories as $inventory){
 			$contents = $inventory->getContents();
 
 			if(count($contents) > 0){
-				$drops = $mainInventoryTransactionBuilder->addItem(...$contents);
+				$drops = $builder->getInventory($this->inventory)->addItem(...$contents);
 				foreach($drops as $drop){
-					$transaction->addAction(new DropItemAction($drop));
+					$builder->addAction(new DropItemAction($drop));
 				}
 
-				$clearedInventoryTransactionBuilder = new TransactionBuilderInventory($inventory);
-				$clearedInventoryTransactionBuilder->clearAll();
-				foreach($clearedInventoryTransactionBuilder->generateActions() as $action){
-					$transaction->addAction($action);
-				}
+				$builder->getInventory($inventory)->clearAll();
 			}
 		}
-		foreach($mainInventoryTransactionBuilder->generateActions() as $action){
-			$transaction->addAction($action);
-		}
 
-		if(count($transaction->getActions()) !== 0){
+		$actions = $builder->generateActions();
+		if(count($actions) !== 0){
+			$transaction = new InventoryTransaction($this, $actions);
 			try{
 				$transaction->execute();
 				$this->logger->debug("Successfully evacuated items from temporary inventories");
@@ -2460,7 +2521,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return false;
 		}
 
-		//TODO: client side race condition here makes the opening work incorrectly
 		$this->removeCurrentWindow();
 
 		if(($inventoryManager = $this->getNetworkSession()->getInvManager()) === null){
@@ -2476,14 +2536,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function removeCurrentWindow() : void{
 		$this->doCloseInventory();
 		if($this->currentWindow !== null){
-			(new InventoryCloseEvent($this->currentWindow, $this))->call();
-
+			$currentWindow = $this->currentWindow;
 			$this->logger->debug("Closing inventory " . get_class($this->currentWindow) . "#" . spl_object_id($this->currentWindow));
 			$this->currentWindow->onClose($this);
 			if(($inventoryManager = $this->getNetworkSession()->getInvManager()) !== null){
 				$inventoryManager->onCurrentWindowRemove();
 			}
 			$this->currentWindow = null;
+			(new InventoryCloseEvent($currentWindow, $this))->call();
 		}
 	}
 

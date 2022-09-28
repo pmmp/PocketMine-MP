@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,8 +27,7 @@ use function spl_object_id;
 
 class ThreadManager extends \Volatile{
 
-	/** @var ThreadManager|null */
-	private static $instance = null;
+	private static ?self $instance = null;
 
 	public static function init() : void{
 		self::$instance = new ThreadManager();
@@ -64,6 +63,9 @@ class ThreadManager extends \Volatile{
 	 */
 	public function getAll() : array{
 		$array = [];
+		/**
+		 * @var Worker|Thread $thread
+		 */
 		foreach($this as $key => $thread){
 			$array[$key] = $thread;
 		}

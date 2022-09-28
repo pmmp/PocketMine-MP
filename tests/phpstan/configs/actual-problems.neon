@@ -131,7 +131,7 @@ parameters:
 			path: ../../../src/block/DragonEgg.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int\\<0, max\\> given\\.$#"
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int\\<0, 255\\> given\\.$#"
 			count: 1
 			path: ../../../src/block/DragonEgg.php
 
@@ -436,14 +436,19 @@ parameters:
 			path: ../../../src/block/tile/Spawnable.php
 
 		-
-			message: "#^Array \\(array\\<class\\-string\\<pocketmine\\\\block\\\\tile\\\\Tile\\>, string\\>\\) does not accept string\\|false\\.$#"
-			count: 1
-			path: ../../../src/block/tile/TileFactory.php
-
-		-
 			message: "#^Parameter \\#2 \\$replace of function str_replace expects array\\|string, string\\|null given\\.$#"
 			count: 1
 			path: ../../../src/command/Command.php
+
+		-
+			message: "#^Cannot call method startTiming\\(\\) on pocketmine\\\\timings\\\\TimingsHandler\\|null\\.$#"
+			count: 1
+			path: ../../../src/command/FormattedCommandAlias.php
+
+		-
+			message: "#^Cannot call method stopTiming\\(\\) on pocketmine\\\\timings\\\\TimingsHandler\\|null\\.$#"
+			count: 1
+			path: ../../../src/command/FormattedCommandAlias.php
 
 		-
 			message: "#^Cannot call method startTiming\\(\\) on pocketmine\\\\timings\\\\TimingsHandler\\|null\\.$#"
@@ -616,6 +621,11 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
+			message: "#^Cannot call method getAttributeMap\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
 			message: "#^Cannot call method getLanguage\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
@@ -671,7 +681,12 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Parameter \\#1 \\$for of method pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\:\\:syncAdventureSettings\\(\\) expects pocketmine\\\\player\\\\Player, pocketmine\\\\player\\\\Player\\|null given\\.$#"
+			message: "#^Parameter \\#1 \\$entity of method pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\:\\:syncAttributes\\(\\) expects pocketmine\\\\entity\\\\Living, pocketmine\\\\player\\\\Player\\|null given\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
+			message: "#^Parameter \\#1 \\$for of method pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\:\\:syncAbilities\\(\\) expects pocketmine\\\\player\\\\Player, pocketmine\\\\player\\\\Player\\|null given\\.$#"
 			count: 2
 			path: ../../../src/network/mcpe/NetworkSession.php
 
@@ -761,32 +776,12 @@ parameters:
 			path: ../../../src/plugin/PluginBase.php
 
 		-
-			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Array \\(array\\<string\\>\\) does not accept mixed\\.$#"
-			count: 2
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
 			message: "#^Cannot cast mixed to string\\.$#"
-			count: 4
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Parameter \\#1 \\$data of static method pocketmine\\\\permission\\\\PermissionParser\\:\\:loadPermissions\\(\\) expects array\\<string, array\\<string, mixed\\>\\>, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
 			message: "#^Parameter \\#1 \\$haystack of function stripos expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Parameter \\#1 \\$name of static method pocketmine\\\\plugin\\\\PluginEnableOrder\\:\\:fromString\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
@@ -801,32 +796,12 @@ parameters:
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$depend \\(array\\<string\\>\\) does not accept array\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$loadBefore \\(array\\<string\\>\\) does not accept array\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
 			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$main \\(string\\) does not accept mixed\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
 			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$name \\(string\\) does not accept mixed\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$softDepend \\(array\\<string\\>\\) does not accept array\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$srcNamespacePrefix \\(string\\) does not accept mixed\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
@@ -859,11 +834,6 @@ parameters:
 			message: "#^Property pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:\\$sha256 \\(string\\|null\\) does not accept string\\|false\\.$#"
 			count: 1
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
-
-		-
-			message: "#^Cannot call method count\\(\\) on ArrayObject\\<int, array\\<string, mixed\\>\\>\\|null\\.$#"
-			count: 1
-			path: ../../../src/scheduler/AsyncTask.php
 
 		-
 			message: "#^Cannot call method getNotifier\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
@@ -911,11 +881,6 @@ parameters:
 			path: ../../../src/scheduler/TaskScheduler.php
 
 		-
-			message: "#^Method pocketmine\\\\thread\\\\ThreadManager\\:\\:getAll\\(\\) should return array\\<pocketmine\\\\thread\\\\Thread\\|pocketmine\\\\thread\\\\Worker\\> but returns array\\.$#"
-			count: 1
-			path: ../../../src/thread/ThreadManager.php
-
-		-
 			message: "#^Cannot access offset string on mixed\\.$#"
 			count: 3
 			path: ../../../src/utils/Config.php
@@ -929,16 +894,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$config of static method pocketmine\\\\utils\\\\Config\\:\\:writeProperties\\(\\) expects array\\<string, bool\\|float\\|int\\|string\\>, array\\<string, mixed\\> given\\.$#"
 			count: 1
 			path: ../../../src/utils/Config.php
-
-		-
-			message: "#^Parameter \\#2 \\$offset of function substr expects int, mixed given\\.$#"
-			count: 1
-			path: ../../../src/utils/Internet.php
-
-		-
-			message: "#^Parameter \\#3 \\$length of function substr expects int\\|null, mixed given\\.$#"
-			count: 1
-			path: ../../../src/utils/Internet.php
 
 		-
 			message: "#^Parameter \\#1 \\$string of function trim expects string, string\\|false given\\.$#"
@@ -962,11 +917,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$trace of static method pocketmine\\\\utils\\\\Utils\\:\\:printableTrace\\(\\) expects array\\<int, array\\<string, mixed\\>\\>, array given\\.$#"
-			count: 1
-			path: ../../../src/utils/Utils.php
-
-		-
-			message: "#^Parameter \\#2 \\$array of function array_map expects array, mixed given\\.$#"
 			count: 1
 			path: ../../../src/utils/Utils.php
 

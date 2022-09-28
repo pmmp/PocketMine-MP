@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -33,22 +33,18 @@ use pocketmine\world\World;
 use function max;
 
 class SkyLightUpdate extends LightUpdate{
-
-	/**
-	 * @var \SplFixedArray|bool[]
-	 * @phpstan-var \SplFixedArray<bool>
-	 */
-	private $directSkyLightBlockers;
-
 	/**
 	 * @param \SplFixedArray|int[]  $lightFilters
 	 * @param \SplFixedArray|bool[] $directSkyLightBlockers
 	 * @phpstan-param \SplFixedArray<int>  $lightFilters
 	 * @phpstan-param \SplFixedArray<bool> $directSkyLightBlockers
 	 */
-	public function __construct(SubChunkExplorer $subChunkExplorer, \SplFixedArray $lightFilters, \SplFixedArray $directSkyLightBlockers){
+	public function __construct(
+		SubChunkExplorer $subChunkExplorer,
+		\SplFixedArray $lightFilters,
+		private \SplFixedArray $directSkyLightBlockers
+	){
 		parent::__construct($subChunkExplorer, $lightFilters);
-		$this->directSkyLightBlockers = $directSkyLightBlockers;
 	}
 
 	protected function getCurrentLightArray() : LightArray{

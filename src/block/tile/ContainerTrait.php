@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -44,7 +44,7 @@ trait ContainerTrait{
 	abstract public function getRealInventory();
 
 	protected function loadItems(CompoundTag $tag) : void{
-		if(($inventoryTag = $tag->getTag(Container::TAG_ITEMS)) instanceof ListTag){
+		if(($inventoryTag = $tag->getTag(Container::TAG_ITEMS)) instanceof ListTag && $inventoryTag->getTagType() === NBT::TAG_Compound){
 			$inventory = $this->getRealInventory();
 			$listeners = $inventory->getListeners()->toArray();
 			$inventory->getListeners()->remove(...$listeners); //prevent any events being fired by initialization
@@ -96,8 +96,10 @@ trait ContainerTrait{
 		$inv = $this->getRealInventory();
 		$pos = $this->getPosition();
 
+		$world = $pos->getWorld();
+		$dropPos = $pos->add(0.5, 0.5, 0.5);
 		foreach($inv->getContents() as $k => $item){
-			$pos->getWorld()->dropItem($pos->add(0.5, 0.5, 0.5), $item);
+			$world->dropItem($dropPos, $item);
 		}
 		$inv->clearAll();
 	}

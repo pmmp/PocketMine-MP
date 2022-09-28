@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,6 +29,7 @@ use pocketmine\block\utils\BannerPatternLayer;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\data\bedrock\BannerPatternTypeIdMap;
 use pocketmine\data\bedrock\DyeColorIdMap;
+use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use function count;
@@ -38,14 +39,13 @@ class Banner extends ItemBlockWallOrFloor{
 	public const TAG_PATTERN_COLOR = TileBanner::TAG_PATTERN_COLOR;
 	public const TAG_PATTERN_NAME = TileBanner::TAG_PATTERN_NAME;
 
-	/** @var DyeColor */
-	private $color;
+	private DyeColor $color;
 
 	/**
 	 * @var BannerPatternLayer[]
 	 * @phpstan-var list<BannerPatternLayer>
 	 */
-	private $patterns = [];
+	private array $patterns = [];
 
 	public function __construct(ItemIdentifier $identifier, Block $floorVariant, Block $wallVariant){
 		parent::__construct($identifier, $floorVariant, $wallVariant);
@@ -98,7 +98,7 @@ class Banner extends ItemBlockWallOrFloor{
 		$colorIdMap = DyeColorIdMap::getInstance();
 		$patternIdMap = BannerPatternTypeIdMap::getInstance();
 		$patterns = $tag->getListTag(self::TAG_PATTERNS);
-		if($patterns !== null){
+		if($patterns !== null && $patterns->getTagType() === NBT::TAG_Compound){
 			/** @var CompoundTag $t */
 			foreach($patterns as $t){
 				$patternColor = $colorIdMap->fromInvertedId($t->getInt(self::TAG_PATTERN_COLOR)) ?? DyeColor::BLACK(); //TODO: missing pattern colour should be an error

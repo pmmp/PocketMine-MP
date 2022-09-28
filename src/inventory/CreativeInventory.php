@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -34,7 +34,7 @@ final class CreativeInventory{
 	use SingletonTrait;
 
 	/** @var Item[] */
-	private $creative = [];
+	private array $creative = [];
 
 	private function __construct(){
 		$creativeItems = json_decode(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "creativeitems.json")), true);

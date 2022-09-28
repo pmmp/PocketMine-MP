@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -43,13 +43,10 @@ class TaskHandler{
 	/** @var bool */
 	protected $cancelled = false;
 
-	/** @var TimingsHandler */
-	private $timings;
+	private TimingsHandler $timings;
 
-	/** @var string */
-	private $taskName;
-	/** @var string */
-	private $ownerName;
+	private string $taskName;
+	private string $ownerName;
 
 	public function __construct(Task $task, int $delay = -1, int $period = -1, ?string $ownerName = null){
 		if($task->getHandler() !== null){
@@ -72,6 +69,9 @@ class TaskHandler{
 		return $this->nextRun;
 	}
 
+	/**
+	 * @internal
+	 */
 	public function setNextRun(int $ticks) : void{
 		$this->nextRun = $ticks;
 	}
@@ -106,11 +106,17 @@ class TaskHandler{
 		}
 	}
 
+	/**
+	 * @internal
+	 */
 	public function remove() : void{
 		$this->cancelled = true;
 		$this->task->setHandler(null);
 	}
 
+	/**
+	 * @internal
+	 */
 	public function run() : void{
 		$this->timings->startTiming();
 		try{

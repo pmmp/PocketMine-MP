@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,9 +29,7 @@ use function str_repeat;
 use function strlen;
 
 final class BiomeArray{
-
-	/** @var string */
-	private $payload;
+	private string $payload;
 
 	/**
 	 * @param string $payload ZZZZXXXX key bits

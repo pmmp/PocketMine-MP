@@ -17,13 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Bamboo as ItemBamboo;
 use pocketmine\item\Fertilizer;
@@ -100,6 +101,10 @@ class Bamboo extends Transparent{
 		return [AxisAlignedBB::one()->trim(Facing::SOUTH, $inset)->trim(Facing::EAST, $inset)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	private static function getOffsetSeed(int $x, int $y, int $z) : int{
 		$p1 = gmp_mul($z, 0x6ebfff5);
 		$p2 = gmp_mul($x, 0x2fc20f);
@@ -159,9 +164,10 @@ class Bamboo extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$below = $this->position->getWorld()->getBlock($this->position->down());
+		$world = $this->position->getWorld();
+		$below = $world->getBlock($this->position->down());
 		if(!$this->canBeSupportedBy($below) && !$below->isSameType($this)){
-			$this->position->getWorld()->useBreakOn($this->position);
+			$world->useBreakOn($this->position);
 		}
 	}
 
@@ -207,7 +213,7 @@ class Bamboo extends Transparent{
 			}
 		}
 
-		$tx = new BlockTransaction($this->position->getWorld());
+		$tx = new BlockTransaction($world);
 		foreach($newBlocks as $idx => $newBlock){
 			$tx->addBlock($this->position->subtract(0, $idx - $growAmount, 0), $newBlock);
 		}

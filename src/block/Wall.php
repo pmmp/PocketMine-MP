@@ -17,12 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
+use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 
@@ -75,5 +77,9 @@ class Wall extends Transparent{
 				->trim(Facing::WEST, $west ? 0 : $inset)
 				->trim(Facing::EAST, $east ? 0 : $inset)
 		];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return Facing::axis($facing) === Axis::Y ? SupportType::CENTER() : SupportType::NONE();
 	}
 }

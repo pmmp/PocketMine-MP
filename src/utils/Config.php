@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -74,23 +74,19 @@ class Config{
 	 * @var mixed[]
 	 * @phpstan-var array<string, mixed>
 	 */
-	private $config = [];
+	private array $config = [];
 
 	/**
 	 * @var mixed[]
 	 * @phpstan-var array<string, mixed>
 	 */
-	private $nestedCache = [];
+	private array $nestedCache = [];
 
-	/** @var string */
-	private $file;
-	/** @var int */
-	private $type = Config::DETECT;
-	/** @var int */
-	private $jsonOptions = JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING;
+	private string $file;
+	private int $type = Config::DETECT;
+	private int $jsonOptions = JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING;
 
-	/** @var bool */
-	private $changed = false;
+	private bool $changed = false;
 
 	/** @var int[] */
 	public static $formats = [

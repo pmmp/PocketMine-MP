@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,6 +28,7 @@ use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\InvalidBlockStateException;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -99,6 +100,10 @@ final class Bell extends Transparent{
 		return [
 			$this->attachmentType->equals(BellAttachmentType::ONE_WALL()) ? $box->trim($this->facing, 3 / 16) : $box
 		];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 
 	public function getAttachmentType() : BellAttachmentType{ return $this->attachmentType; }
@@ -174,10 +179,11 @@ final class Bell extends Transparent{
 	}
 
 	public function ring(int $faceHit) : void{
-		$this->position->getWorld()->addSound($this->position, new BellRingSound());
-		$tile = $this->position->getWorld()->getTile($this->position);
+		$world = $this->position->getWorld();
+		$world->addSound($this->position, new BellRingSound());
+		$tile = $world->getTile($this->position);
 		if($tile instanceof TileBell){
-			$this->position->getWorld()->broadcastPacketToViewers($this->position, $tile->createFakeUpdatePacket($faceHit));
+			$world->broadcastPacketToViewers($this->position, $tile->createFakeUpdatePacket($faceHit));
 		}
 	}
 }

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -46,25 +46,25 @@ final class ItemTranslator{
 	 * @var int[]
 	 * @phpstan-var array<int, int>
 	 */
-	private $simpleCoreToNetMapping = [];
+	private array $simpleCoreToNetMapping = [];
 	/**
 	 * @var int[]
 	 * @phpstan-var array<int, int>
 	 */
-	private $simpleNetToCoreMapping = [];
+	private array $simpleNetToCoreMapping = [];
 
 	/**
 	 * runtimeId = array[internalId][metadata]
 	 * @var int[][]
 	 * @phpstan-var array<int, array<int, int>>
 	 */
-	private $complexCoreToNetMapping = [];
+	private array $complexCoreToNetMapping = [];
 	/**
 	 * [internalId, metadata] = array[runtimeId]
 	 * @var int[][]
 	 * @phpstan-var array<int, array{int, int}>
 	 */
-	private $complexNetToCoreMapping = [];
+	private array $complexNetToCoreMapping = [];
 
 	private static function make() : self{
 		$data = Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'r16_to_current_item_map.json')), "Missing required resource file");

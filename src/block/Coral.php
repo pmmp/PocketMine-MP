@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\data\bedrock\CoralTypeIdMap;
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
@@ -65,7 +66,7 @@ final class Coral extends BaseCoral{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$tx->fetchBlock($blockReplace->getPosition()->down())->isSolid()){
+		if(!$this->canBeSupportedBy($tx->fetchBlock($blockReplace->getPosition()->down()))){
 			return false;
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
@@ -73,10 +74,14 @@ final class Coral extends BaseCoral{
 
 	public function onNearbyBlockChange() : void{
 		$world = $this->position->getWorld();
-		if(!$world->getBlock($this->position->down())->isSolid()){
+		if(!$this->canBeSupportedBy($world->getBlock($this->position->down()))){
 			$world->useBreakOn($this->position);
 		}else{
 			parent::onNearbyBlockChange();
 		}
+	}
+
+	private function canBeSupportedBy(Block $block) : bool{
+		return $block->getSupportType(Facing::UP)->hasCenterSupport();
 	}
 }

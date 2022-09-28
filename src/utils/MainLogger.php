@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -35,19 +35,11 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 	/** @var bool */
 	protected $logDebug;
 
-	/** @var string */
-	private $format = TextFormat::AQUA . "[%s] " . TextFormat::RESET . "%s[%s/%s]: %s" . TextFormat::RESET;
-
-	/** @var bool */
-	private $useFormattingCodes = false;
-
+	private string $format = TextFormat::AQUA . "[%s] " . TextFormat::RESET . "%s[%s/%s]: %s" . TextFormat::RESET;
+	private bool $useFormattingCodes = false;
 	private string $mainThreadName;
-
-	/** @var string */
-	private $timezone;
-
-	/** @var MainLoggerThread */
-	private $logWriterThread;
+	private string $timezone;
+	private MainLoggerThread $logWriterThread;
 
 	/**
 	 * @throws \RuntimeException
@@ -199,7 +191,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 			$threadName = (new \ReflectionClass($thread))->getShortName() . " thread";
 		}
 
-		$message = sprintf($this->format, $time->format("H:i:s.v"), $color, $threadName, $prefix, TextFormat::clean($message, false));
+		$message = sprintf($this->format, $time->format("H:i:s.v"), $color, $threadName, $prefix, TextFormat::addBase($color, TextFormat::clean($message, false)));
 
 		if(!Terminal::isInit()){
 			Terminal::init($this->useFormattingCodes); //lazy-init colour codes because we don't know if they've been registered on this thread

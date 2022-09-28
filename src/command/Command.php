@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,36 +27,31 @@ declare(strict_types=1);
 namespace pocketmine\command;
 
 use pocketmine\command\utils\CommandException;
-use pocketmine\console\ConsoleCommandSender;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
 use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\utils\BroadcastLoggerForwarder;
 use pocketmine\utils\TextFormat;
 use function explode;
 use function str_replace;
 
 abstract class Command{
 
-	/** @var string */
-	private $name;
+	private string $name;
 
-	/** @var string */
-	private $nextLabel;
-
-	/** @var string */
-	private $label;
+	private string $nextLabel;
+	private string $label;
 
 	/** @var string[] */
-	private $aliases = [];
+	private array $aliases = [];
 
 	/** @var string[] */
-	private $activeAliases = [];
+	private array $activeAliases = [];
 
-	/** @var CommandMap|null */
-	private $commandMap = null;
+	private ?CommandMap $commandMap = null;
 
 	/** @var Translatable|string */
 	protected $description = "";
@@ -64,11 +59,8 @@ abstract class Command{
 	/** @var Translatable|string */
 	protected $usageMessage;
 
-	/** @var string|null */
-	private $permission = null;
-
-	/** @var string|null */
-	private $permissionMessage = null;
+	private ?string $permission = null;
+	private ?string $permissionMessage = null;
 
 	/** @var TimingsHandler|null */
 	public $timings = null;
@@ -235,12 +227,12 @@ abstract class Command{
 		$result = KnownTranslationFactory::chat_type_admin($source->getName(), $message);
 		$colored = $result->prefix(TextFormat::GRAY . TextFormat::ITALIC);
 
-		if($sendToSource && !($source instanceof ConsoleCommandSender)){
+		if($sendToSource){
 			$source->sendMessage($message);
 		}
 
 		foreach($users as $user){
-			if($user instanceof ConsoleCommandSender){
+			if($user instanceof BroadcastLoggerForwarder){
 				$user->sendMessage($result);
 			}elseif($user !== $source){
 				$user->sendMessage($colored);

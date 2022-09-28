@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -35,17 +35,10 @@ class Random{
 	public const Z = 521288629;
 	public const W = 88675123;
 
-	/** @var int */
-	private $x;
-
-	/** @var int */
-	private $y;
-
-	/** @var int */
-	private $z;
-
-	/** @var int */
-	private $w;
+	private int $x;
+	private int $y;
+	private int $z;
+	private int $w;
 
 	/** @var int */
 	protected $seed;

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,7 +28,9 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use DaveRandom\CallbackValidator\CallbackType;
+use pocketmine\entity\Location;
 use pocketmine\errorhandler\ErrorTypeToStringMap;
+use pocketmine\math\Vector3;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use function array_combine;
@@ -57,13 +59,17 @@ use function interface_exists;
 use function is_a;
 use function is_array;
 use function is_bool;
+use function is_float;
+use function is_infinite;
 use function is_int;
+use function is_nan;
 use function is_object;
 use function is_string;
 use function mb_check_encoding;
 use function ob_end_clean;
 use function ob_get_contents;
 use function ob_start;
+use function opcache_get_status;
 use function ord;
 use function php_uname;
 use function phpversion;
@@ -101,10 +107,9 @@ final class Utils{
 	public const OS_BSD = "bsd";
 	public const OS_UNKNOWN = "other";
 
-	/** @var string|null */
-	private static $os;
-	/** @var UuidInterface|null */
-	private static $serverUniqueId = null;
+	private static ?string $os = null;
+	private static ?UuidInterface $serverUniqueId = null;
+	private static ?int $cpuCores = null;
 
 	/**
 	 * Returns a readable identifier for the given Closure, including file and line.
@@ -292,14 +297,11 @@ final class Utils{
 	}
 
 	public static function getCoreCount(bool $recalculate = false) : int{
-		static $processors = 0;
-
-		if($processors > 0 && !$recalculate){
-			return $processors;
-		}else{
-			$processors = 0;
+		if(self::$cpuCores !== null && !$recalculate){
+			return self::$cpuCores;
 		}
 
+		$processors = 0;
 		switch(Utils::getOS()){
 			case Utils::OS_LINUX:
 			case Utils::OS_ANDROID:
@@ -323,7 +325,7 @@ final class Utils{
 				$processors = (int) getenv("NUMBER_OF_PROCESSORS");
 				break;
 		}
-		return $processors;
+		return self::$cpuCores = $processors;
 	}
 
 	/**
@@ -362,12 +364,6 @@ final class Utils{
 				$ord -= 0x100;
 			}
 			$hash = 31 * $hash + $ord;
-			while($hash > 0x7FFFFFFF){
-				$hash -= 0x100000000;
-			}
-			while($hash < -0x80000000){
-				$hash += 0x100000000;
-			}
 			$hash &= 0xFFFFFFFF;
 		}
 		return $hash;
@@ -433,6 +429,19 @@ final class Utils{
 		return $lines;
 	}
 
+	private static function stringifyValueForTrace(mixed $value, int $maxStringLength) : string{
+		return match(true){
+			is_object($value) => "object " . self::getNiceClassName($value) . "#" . spl_object_id($value),
+			is_array($value) => "array[" . count($value) . "]",
+			is_string($value) => "string[" . strlen($value) . "] " . substr(Utils::printable($value), 0, $maxStringLength),
+			is_bool($value) => $value ? "true" : "false",
+			is_int($value) => "int " . $value,
+			is_float($value) => "float " . $value,
+			$value === null => "null",
+			default => gettype($value) . " " . Utils::printable((string) $value)
+		};
+	}
+
 	/**
 	 * @param mixed[][] $trace
 	 * @phpstan-param list<array<string, mixed>> $trace
@@ -449,22 +458,15 @@ final class Utils{
 				}else{
 					$args = $trace[$i]["params"];
 				}
+				/** @var mixed[] $args */
 
-				$params = implode(", ", array_map(function($value) use($maxStringLength) : string{
-					if(is_object($value)){
-						return "object " . self::getNiceClassName($value) . "#" . spl_object_id($value);
-					}
-					if(is_array($value)){
-						return "array[" . count($value) . "]";
-					}
-					if(is_string($value)){
-						return "string[" . strlen($value) . "] " . substr(Utils::printable($value), 0, $maxStringLength);
-					}
-					if(is_bool($value)){
-						return $value ? "true" : "false";
-					}
-					return gettype($value) . " " . Utils::printable((string) $value);
-				}, $args));
+				$paramsList = [];
+				$offset = 0;
+				foreach($args as $argId => $value){
+					$paramsList[] = ($argId === $offset ? "" : "$argId: ") . self::stringifyValueForTrace($value, $maxStringLength);
+					$offset++;
+				}
+				$params = implode(", ", $paramsList);
 			}
 			$messages[] = "#$i " . (isset($trace[$i]["file"]) ? Filesystem::cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" || $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
 		}
@@ -477,8 +479,8 @@ final class Utils{
 	 */
 	public static function currentTrace(int $skipFrames = 0) : array{
 		++$skipFrames; //omit this frame from trace, in addition to other skipped frames
-		if(function_exists("xdebug_get_function_stack")){
-			$trace = array_reverse(xdebug_get_function_stack());
+		if(function_exists("xdebug_get_function_stack") && count($trace = @xdebug_get_function_stack()) !== 0){
+			$trace = array_reverse($trace);
 		}else{
 			$e = new \Exception();
 			$trace = $e->getTrace();
@@ -601,5 +603,54 @@ final class Utils{
 			throw new AssumptionFailedError("Assumption failure: " . (is_string($context) ? $context : $context()) . " (THIS IS A BUG)");
 		}
 		return $value;
+	}
+
+	public static function checkFloatNotInfOrNaN(string $name, float $float) : void{
+		if(is_nan($float)){
+			throw new \InvalidArgumentException("$name cannot be NaN");
+		}
+		if(is_infinite($float)){
+			throw new \InvalidArgumentException("$name cannot be infinite");
+		}
+	}
+
+	public static function checkVector3NotInfOrNaN(Vector3 $vector3) : void{
+		if($vector3 instanceof Location){ //location could be masquerading as vector3
+			self::checkFloatNotInfOrNaN("yaw", $vector3->yaw);
+			self::checkFloatNotInfOrNaN("pitch", $vector3->pitch);
+		}
+		self::checkFloatNotInfOrNaN("x", $vector3->x);
+		self::checkFloatNotInfOrNaN("y", $vector3->y);
+		self::checkFloatNotInfOrNaN("z", $vector3->z);
+	}
+
+	public static function checkLocationNotInfOrNaN(Location $location) : void{
+		self::checkVector3NotInfOrNaN($location);
+	}
+
+	/**
+	 * Returns an integer describing the current OPcache JIT setting.
+	 * @see https://www.php.net/manual/en/opcache.configuration.php#ini.opcache.jit
+	 */
+	public static function getOpcacheJitMode() : ?int{
+		if(
+			function_exists('opcache_get_status') &&
+			($opcacheStatus = opcache_get_status(false)) !== false &&
+			isset($opcacheStatus["jit"]["on"])
+		){
+			$jit = $opcacheStatus["jit"];
+			if($jit["on"] === true){
+				return (($jit["opt_flags"] >> 2) * 1000) +
+					(($jit["opt_flags"] & 0x03) * 100) +
+					($jit["kind"] * 10) +
+					$jit["opt_level"];
+			}
+
+			//jit available, but disabled
+			return 0;
+		}
+
+		//jit not available
+		return null;
 	}
 }

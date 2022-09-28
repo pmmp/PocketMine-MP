@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -42,39 +42,33 @@ class ProcessLoginTask extends AsyncTask{
 
 	private const CLOCK_DRIFT_MAX = 60;
 
-	/** @var string */
-	private $chain;
-	/** @var string */
-	private $clientDataJwt;
+	private string $chain;
 
 	/**
-	 * @var string|null
 	 * Whether the keychain signatures were validated correctly. This will be set to an error message if any link in the
 	 * keychain is invalid for whatever reason (bad signature, not in nbf-exp window, etc). If this is non-null, the
 	 * keychain might have been tampered with. The player will always be disconnected if this is non-null.
 	 */
-	private $error = "Unknown";
+	private ?string $error = "Unknown";
 	/**
-	 * @var bool
 	 * Whether the player is logged into Xbox Live. This is true if any link in the keychain is signed with the Mojang
 	 * root public key.
 	 */
-	private $authenticated = false;
-	/** @var bool */
-	private $authRequired;
-
-	/** @var string|null */
-	private $clientPublicKey = null;
+	private bool $authenticated = false;
+	private ?string $clientPublicKey = null;
 
 	/**
 	 * @param string[] $chainJwts
 	 * @phpstan-param \Closure(bool $isAuthenticated, bool $authRequired, ?string $error, ?string $clientPublicKey) : void $onCompletion
 	 */
-	public function __construct(array $chainJwts, string $clientDataJwt, bool $authRequired, \Closure $onCompletion){
+	public function __construct(
+		array $chainJwts,
+		private string $clientDataJwt,
+		private bool $authRequired,
+		\Closure $onCompletion
+	){
 		$this->storeLocal(self::TLS_KEY_ON_COMPLETION, $onCompletion);
 		$this->chain = igbinary_serialize($chainJwts);
-		$this->clientDataJwt = $clientDataJwt;
-		$this->authRequired = $authRequired;
 	}
 
 	public function onRun() : void{

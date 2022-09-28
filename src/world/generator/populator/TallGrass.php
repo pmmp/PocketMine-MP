@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,10 +30,8 @@ use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
 
 class TallGrass implements Populator{
-	/** @var int */
-	private $randomAmount = 1;
-	/** @var int */
-	private $baseAmount = 0;
+	private int $randomAmount = 1;
+	private int $baseAmount = 0;
 
 	public function setRandomAmount(int $amount) : void{
 		$this->randomAmount = $amount;

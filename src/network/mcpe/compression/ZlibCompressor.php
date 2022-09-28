@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -46,21 +46,14 @@ final class ZlibCompressor implements Compressor{
 		return new self(self::DEFAULT_LEVEL, self::DEFAULT_THRESHOLD, self::DEFAULT_MAX_DECOMPRESSION_SIZE);
 	}
 
-	/** @var int */
-	private $level;
-	/** @var int */
-	private $threshold;
-	/** @var int */
-	private $maxDecompressionSize;
-
-	public function __construct(int $level, int $minCompressionSize, int $maxDecompressionSize){
-		$this->level = $level;
-		$this->threshold = $minCompressionSize;
-		$this->maxDecompressionSize = $maxDecompressionSize;
-	}
+	public function __construct(
+		private int $level,
+		private int $minCompressionSize,
+		private int $maxDecompressionSize
+	){}
 
 	public function willCompress(string $data) : bool{
-		return $this->threshold > -1 && strlen($data) >= $this->threshold;
+		return $this->minCompressionSize > -1 && strlen($data) >= $this->minCompressionSize;
 	}
 
 	/**

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,9 +32,8 @@ use const SORT_NUMERIC;
 final class RegionGarbageMap{
 
 	/** @var RegionLocationTableEntry[] */
-	private $entries = [];
-	/** @var bool */
-	private $clean = false;
+	private array $entries = [];
+	private bool $clean = false;
 
 	/**
 	 * @param RegionLocationTableEntry[] $entries

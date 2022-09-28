@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,17 +27,23 @@ use pocketmine\world\format\Chunk;
 use pocketmine\world\World;
 
 /**
- * Called when a Chunk is loaded
+ * Called when a Chunk is loaded or newly created by the world generator.
  */
 class ChunkLoadEvent extends ChunkEvent{
-	/** @var bool */
-	private $newChunk;
-
-	public function __construct(World $world, int $chunkX, int $chunkZ, Chunk $chunk, bool $newChunk){
+	public function __construct(
+		World $world,
+		int $chunkX,
+		int $chunkZ,
+		Chunk $chunk,
+		private bool $newChunk
+	){
 		parent::__construct($world, $chunkX, $chunkZ, $chunk);
-		$this->newChunk = $newChunk;
 	}
 
+	/**
+	 * Returns whether the chunk is newly generated.
+	 * If false, the chunk was loaded from storage.
+	 */
 	public function isNewChunk() : bool{
 		return $this->newChunk;
 	}

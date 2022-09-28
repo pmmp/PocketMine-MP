@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -34,12 +34,11 @@ use pocketmine\math\Vector3;
 class EntityMotionEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Vector3 */
-	private $mot;
-
-	public function __construct(Entity $entity, Vector3 $mot){
+	public function __construct(
+		Entity $entity,
+		private Vector3 $mot
+	){
 		$this->entity = $entity;
-		$this->mot = $mot;
 	}
 
 	public function getVector() : Vector3{

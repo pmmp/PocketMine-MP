@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\ChestPairEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -45,14 +46,18 @@ class Chest extends Transparent{
 		return [AxisAlignedBB::one()->contract(0.025, 0, 0.025)->trim(Facing::UP, 0.05)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function onPostPlace() : void{
-		$tile = $this->position->getWorld()->getTile($this->position);
+		$world = $this->position->getWorld();
+		$tile = $world->getTile($this->position);
 		if($tile instanceof TileChest){
 			foreach([false, true] as $clockwise){
 				$side = Facing::rotateY($this->facing, $clockwise);
 				$c = $this->getSide($side);
 				if($c instanceof Chest && $c->isSameType($this) && $c->facing === $this->facing){
-					$world = $this->position->getWorld();
 					$pair = $world->getTile($c->position);
 					if($pair instanceof TileChest && !$pair->isPaired()){
 						[$left, $right] = $clockwise ? [$c, $this] : [$this, $c];

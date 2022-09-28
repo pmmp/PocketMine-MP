@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,6 +31,8 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use function is_infinite;
+use function is_nan;
 use function lcg_value;
 
 class ItemFrame extends Flowable{
@@ -111,6 +113,9 @@ class ItemFrame extends Flowable{
 
 	/** @return $this */
 	public function setItemDropChance(float $itemDropChance) : self{
+		if($itemDropChance < 0.0 || $itemDropChance > 1.0 || is_nan($itemDropChance) || is_infinite($itemDropChance)){
+			throw new \InvalidArgumentException("Drop chance must be in range 0-1");
+		}
 		$this->itemDropChance = $itemDropChance;
 		return $this;
 	}
@@ -146,11 +151,12 @@ class ItemFrame extends Flowable{
 		if($this->framedItem === null){
 			return false;
 		}
+		$world = $this->position->getWorld();
 		if(lcg_value() <= $this->itemDropChance){
-			$this->position->getWorld()->dropItem($this->position->add(0.5, 0.5, 0.5), clone $this->framedItem);
+			$world->dropItem($this->position->add(0.5, 0.5, 0.5), clone $this->framedItem);
 		}
 		$this->setFramedItem(null);
-		$this->position->getWorld()->setBlock($this->position, $this);
+		$world->setBlock($this->position, $this);
 		return true;
 	}
 

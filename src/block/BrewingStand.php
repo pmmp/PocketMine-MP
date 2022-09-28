@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -83,6 +84,10 @@ class BrewingStand extends Transparent{
 		];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function hasSlot(BrewingStandSlot $slot) : bool{
 		return array_key_exists($slot->id(), $this->slots);
 	}
@@ -125,10 +130,11 @@ class BrewingStand extends Transparent{
 	}
 
 	public function onScheduledUpdate() : void{
-		$brewing = $this->position->getWorld()->getTile($this->position);
+		$world = $this->position->getWorld();
+		$brewing = $world->getTile($this->position);
 		if($brewing instanceof TileBrewingStand){
 			if($brewing->onUpdate()){
-				$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
+				$world->scheduleDelayedBlockUpdate($this->position, 1);
 			}
 
 			$changed = false;
@@ -141,7 +147,7 @@ class BrewingStand extends Transparent{
 			}
 
 			if($changed){
-				$this->position->getWorld()->setBlock($this->position, $this);
+				$world->setBlock($this->position, $this);
 			}
 		}
 	}

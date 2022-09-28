@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,8 +26,7 @@ namespace pocketmine\item;
 use pocketmine\block\utils\TreeType;
 
 class Boat extends Item{
-	/** @var TreeType */
-	private $woodType;
+	private TreeType $woodType;
 
 	public function __construct(ItemIdentifier $identifier, string $name, TreeType $woodType){
 		parent::__construct($identifier, $name);
@@ -40,6 +39,10 @@ class Boat extends Item{
 
 	public function getFuelTime() : int{
 		return 1200; //400 in PC
+	}
+
+	public function getMaxStackSize() : int{
+		return 1;
 	}
 
 	//TODO

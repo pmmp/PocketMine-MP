@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,7 +28,11 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 
 /**
- * Called when a entity decides to explode
+ * Called when an entity decides to explode, before the explosion's impact is calculated.
+ * This allows changing the force of the explosion and whether it will destroy blocks.
+ *
+ * @see EntityExplodeEvent
+ *
  * @phpstan-extends EntityEvent<Entity>
  */
 class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
@@ -36,13 +40,14 @@ class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 
 	/** @var float */
 	protected $force;
-	/** @var bool */
-	private $blockBreaking;
+	private bool $blockBreaking = true;
 
 	public function __construct(Entity $entity, float $force){
+		if($force <= 0){
+			throw new \InvalidArgumentException("Explosion radius must be positive");
+		}
 		$this->entity = $entity;
 		$this->force = $force;
-		$this->blockBreaking = true;
 	}
 
 	public function getForce() : float{
@@ -50,6 +55,9 @@ class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 	}
 
 	public function setForce(float $force) : void{
+		if($force <= 0){
+			throw new \InvalidArgumentException("Explosion radius must be positive");
+		}
 		$this->force = $force;
 	}
 
