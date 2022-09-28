@@ -1374,3 +1374,4 @@ parameters:
 			message: "#^Parameter \\#1 \\$logFile of class pocketmine\\\\utils\\\\MainLogger constructor expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../phpunit/scheduler/AsyncPoolTest.php
+
