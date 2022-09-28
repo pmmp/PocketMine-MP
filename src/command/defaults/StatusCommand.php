@@ -48,7 +48,7 @@ class StatusCommand extends VanillaCommand{
 		$mUsage = Process::getAdvancedMemoryUsage();
 
 		$server = $sender->getServer();
-		$sender->sendMessage(TextFormat::GREEN . "---- " . TextFormat::WHITE . "Server status" . TextFormat::GREEN . " ----");
+		$sender->sendMessage(TextFormat::GREEN . "---- " . TextFormat::RESET . "Server status" . TextFormat::GREEN . " ----");
 
 		$time = (int) (microtime(true) - $server->getStartTime());
 
