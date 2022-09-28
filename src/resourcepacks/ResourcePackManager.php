@@ -113,12 +113,13 @@ class ResourcePackManager{
 
 				if($newPack instanceof ResourcePack){
 					$this->resourcePacks[] = $newPack;
-					$this->uuidList[strtolower($newPack->getPackId())] = $newPack;
+					$index = strtolower($newPack->getPackId());
+					$this->uuidList[$index] = $newPack;
 
 					$keyPath = Path::join($this->path, $pack . ".key");
 					if(file_exists($keyPath)){
 						try{
-							$this->encryptionKeys[strtolower($newPack->getPackId())] = ErrorToExceptionHandler::trapAndRemoveFalse(
+							$this->encryptionKeys[$index] = ErrorToExceptionHandler::trapAndRemoveFalse(
 								fn() => file_get_contents($keyPath)
 							);
 						}catch(\ErrorException $e){
