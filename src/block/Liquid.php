@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -348,7 +348,7 @@ abstract class Liquid extends Transparent{
 			$ev = new BlockSpreadEvent($block, $this, $new);
 			$ev->call();
 			if(!$ev->isCancelled()){
-				if($block->getId() > 0){
+				if($block->getId() !== BlockLegacyIds::AIR){
 					$this->position->getWorld()->useBreakOn($block->position);
 				}
 

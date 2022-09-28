@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 // This code is based on a Go implementation and its license is below:
 // Copyright (c) 2010 Jack Palevich. All rights reserved.

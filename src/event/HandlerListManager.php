@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,7 +31,7 @@ class HandlerListManager{
 	private static ?self $globalInstance = null;
 
 	public static function global() : self{
-		return self::$globalInstance ?? (self::$globalInstance = new self);
+		return self::$globalInstance ?? (self::$globalInstance = new self());
 	}
 
 	/** @var HandlerList[] classname => HandlerList */

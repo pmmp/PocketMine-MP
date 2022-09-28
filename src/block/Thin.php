@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,6 +29,9 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use function count;
 
+/**
+ * Thin blocks behave like glass panes. They connect to full-cube blocks horizontally adjacent to them if possible.
+ */
 class Thin extends Transparent{
 	/** @var bool[] facing => dummy */
 	protected array $connections = [];

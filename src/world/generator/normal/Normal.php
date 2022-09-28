@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -123,6 +123,7 @@ class Normal extends Generator{
 	private function pickBiome(int $x, int $z) : Biome{
 		$hash = $x * 2345803 ^ $z * 9236449 ^ $this->seed;
 		$hash *= $hash + 223;
+		$hash = (int) $hash;
 		$xNoise = $hash >> 20 & 3;
 		$zNoise = $hash >> 22 & 3;
 		if($xNoise == 3){

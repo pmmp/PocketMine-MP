@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,7 +31,7 @@ class PermissionManager{
 
 	public static function getInstance() : PermissionManager{
 		if(self::$instance === null){
-			self::$instance = new self;
+			self::$instance = new self();
 		}
 
 		return self::$instance;

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,9 +31,9 @@ use function str_repeat;
 
 final class VersionInfo{
 	public const NAME = "PocketMine-MP";
-	public const BASE_VERSION = "4.4.0";
+	public const BASE_VERSION = "4.9.1";
 	public const IS_DEVELOPMENT_BUILD = true;
-	public const BUILD_CHANNEL = "beta";
+	public const BUILD_CHANNEL = "stable";
 
 	private function __construct(){
 		//NOOP

@@ -18,6 +18,32 @@ Larger contributions like feature additions should be preceded by a [Change Prop
 ## Other things you'll need
 - [git](https://git-scm.com/)
 
+## Choosing a target branch
+PocketMine-MP has three primary branches of development.
+
+| Type of change | `stable` | `next-minor` | `next-major` |
+|:---------------|:--------:|:------------:|:------------:|
+| Bug fixes | ✔️ | ✔️ | ✔️ |
+| Improvements to API docs | ✔️ | ✔️ | ✔️ |
+| Cleaning up code | ❌ | ✔️ | ✔️ |
+| Changing code formatting or style | ❌ | ✔️ | ✔️ |
+| Addition of new core features | ❌ | 🟡 Only if non-disruptive | ✔️ |
+| Changing core behaviour (e.g. making something use threads) | ❌ | ✔️ | ✔️ |
+| Addition of new configuration options | ❌ | 🟡 Only if optional | ✔️ |
+| Addition of new API classes, methods or constants | ❌ | ✔️ | ✔️ |
+| Deprecating API classes, methods or constants | ❌ | ✔️ | ✔️ |
+| Adding optional parameters to an API method | ❌ | ✔️ | ✔️ |
+| Changing API behaviour | ❌ | 🟡 Only if backwards-compatible | ✔️ |
+| Removal of API | ❌ | ❌ | ✔️ |
+| Backwards-incompatible API change (e.g. renaming a method) | ❌ | ❌ | ✔️ |
+
+### Notes
+- **Non-disruptive** means that usage should not be significantly altered by the change.
+  - Examples of **non-disruptive** changes include adding new commands, or gameplay features like blocks and items.
+  - Examples of **disruptive** changes include changing the way the server is run, world format changes (since those require downtime for the user to convert their world).
+- **API** includes all public and protected classes, functions and constants (unless marked as `@internal`).
+  - Private members are not part of the API, **unless in a trait**.
+
 ## Making a pull request
 The basic procedure to create a pull request is:
 1. [Fork the repository on GitHub](https://github.com/pmmp/PocketMine-MP/fork). This gives you your own copy of the repository to make changes to.

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,7 +26,7 @@ namespace pocketmine\event\server;
 use pocketmine\updater\UpdateChecker;
 
 /**
- * Called when the AutoUpdater receives notification of an available PocketMine-MP update.
+ * Called when the update checker receives notification of an available PocketMine-MP update.
  * Plugins may use this event to perform actions when an update notification is received.
  */
 class UpdateNotifyEvent extends ServerEvent{

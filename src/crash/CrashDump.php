@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -163,6 +163,8 @@ class CrashDump{
 			$extensions[$ext] = $version !== false ? $version : "**UNKNOWN**";
 		}
 		$this->data->extensions = $extensions;
+
+		$this->data->jit_mode = Utils::getOpcacheJitMode();
 
 		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-phpinfo", true)){
 			ob_start();

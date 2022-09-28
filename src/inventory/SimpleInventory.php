@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -58,6 +58,7 @@ class SimpleInventory extends BaseInventory{
 
 	/**
 	 * @return Item[]
+	 * @phpstan-return array<int, Item>
 	 */
 	public function getContents(bool $includeEmpty = false) : array{
 		$contents = [];

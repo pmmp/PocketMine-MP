@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -163,7 +163,7 @@ class AsyncPool{
 			throw new \InvalidArgumentException("Cannot submit the same AsyncTask instance more than once");
 		}
 
-		$task->progressUpdates = new \Threaded;
+		$task->progressUpdates = new \Threaded();
 		$task->setSubmitted();
 
 		$this->getWorker($worker)->stack($task);

@@ -131,7 +131,7 @@ parameters:
 			path: ../../../src/block/DragonEgg.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int\\<0, max\\> given\\.$#"
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int\\<0, 255\\> given\\.$#"
 			count: 1
 			path: ../../../src/block/DragonEgg.php
 
@@ -334,21 +334,6 @@ parameters:
 			message: "#^Parameter \\#2 \\$max of function mt_rand expects int, float\\|int given\\.$#"
 			count: 3
 			path: ../../../src/block/Mycelium.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/block/RedMushroom.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/block/RedMushroom.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/block/RedMushroom.php
 
 		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockLightAt\\(\\) expects int, float\\|int given\\.$#"
@@ -636,6 +621,11 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
+			message: "#^Cannot call method getAttributeMap\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
 			message: "#^Cannot call method getLanguage\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
@@ -691,7 +681,12 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Parameter \\#1 \\$for of method pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\:\\:syncAdventureSettings\\(\\) expects pocketmine\\\\player\\\\Player, pocketmine\\\\player\\\\Player\\|null given\\.$#"
+			message: "#^Parameter \\#1 \\$entity of method pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\:\\:syncAttributes\\(\\) expects pocketmine\\\\entity\\\\Living, pocketmine\\\\player\\\\Player\\|null given\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
+			message: "#^Parameter \\#1 \\$for of method pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\:\\:syncAbilities\\(\\) expects pocketmine\\\\player\\\\Player, pocketmine\\\\player\\\\Player\\|null given\\.$#"
 			count: 2
 			path: ../../../src/network/mcpe/NetworkSession.php
 
@@ -781,27 +776,12 @@ parameters:
 			path: ../../../src/plugin/PluginBase.php
 
 		-
-			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
 			message: "#^Cannot cast mixed to string\\.$#"
-			count: 5
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Parameter \\#1 \\$data of static method pocketmine\\\\permission\\\\PermissionParser\\:\\:loadPermissions\\(\\) expects array\\<string, array\\<string, mixed\\>\\>, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
 			message: "#^Parameter \\#1 \\$haystack of function stripos expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Parameter \\#1 \\$name of static method pocketmine\\\\plugin\\\\PluginEnableOrder\\:\\:fromString\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
@@ -816,42 +796,12 @@ parameters:
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$authors \\(array\\<string\\>\\) does not accept array\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$authors \\(array\\<string\\>\\) does not accept array\\<mixed\\>\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$depend \\(array\\<string\\>\\) does not accept array\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$loadBefore \\(array\\<string\\>\\) does not accept array\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
 			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$main \\(string\\) does not accept mixed\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
 			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$name \\(string\\) does not accept mixed\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$softDepend \\(array\\<string\\>\\) does not accept array\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$srcNamespacePrefix \\(string\\) does not accept mixed\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
@@ -967,11 +917,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$trace of static method pocketmine\\\\utils\\\\Utils\\:\\:printableTrace\\(\\) expects array\\<int, array\\<string, mixed\\>\\>, array given\\.$#"
-			count: 1
-			path: ../../../src/utils/Utils.php
-
-		-
-			message: "#^Parameter \\#2 \\$array of function array_map expects array, mixed given\\.$#"
 			count: 1
 			path: ../../../src/utils/Utils.php
 

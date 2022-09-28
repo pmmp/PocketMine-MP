@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -384,6 +384,7 @@ final class VanillaItems{
 
 	/**
 	 * @return Item[]
+	 * @phpstan-return array<string, Item>
 	 */
 	public static function getAll() : array{
 		//phpstan doesn't support generic traits yet :(

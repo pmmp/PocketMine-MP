@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -56,8 +56,8 @@ use pocketmine\network\mcpe\handler\LoginPacketHandler;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\handler\PreSpawnPacketHandler;
 use pocketmine\network\mcpe\handler\ResourcePacksPacketHandler;
+use pocketmine\network\mcpe\handler\SessionStartPacketHandler;
 use pocketmine\network\mcpe\handler\SpawnResponsePacketHandler;
-use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
@@ -93,6 +93,7 @@ use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\command\CommandData;
 use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
+use pocketmine\network\mcpe\protocol\types\command\CommandPermissions;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\entity\Attribute as NetworkAttribute;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
@@ -100,9 +101,13 @@ use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
+use pocketmine\network\mcpe\protocol\types\UpdateAbilitiesPacketLayer;
+use pocketmine\network\mcpe\protocol\UpdateAbilitiesPacket;
+use pocketmine\network\mcpe\protocol\UpdateAdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\NetworkSessionManager;
 use pocketmine\network\PacketHandlingException;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
@@ -160,6 +165,7 @@ class NetworkSession{
 	 */
 	private \SplQueue $compressedQueue;
 	private bool $forceAsyncCompression = true;
+	private bool $enableCompression = false; //disabled until handshake completed
 
 	private PacketSerializerContext $packetSerializerContext;
 
@@ -192,17 +198,10 @@ class NetworkSession{
 
 		$this->connectTime = time();
 
-		$this->setHandler(new LoginPacketHandler(
+		$this->setHandler(new SessionStartPacketHandler(
 			$this->server,
 			$this,
-			function(PlayerInfo $info) : void{
-				$this->info = $info;
-				$this->logger->info("Player: " . TextFormat::AQUA . $info->getUsername() . TextFormat::RESET);
-				$this->logger->setPrefix($this->getLogPrefix());
-			},
-			function(bool $isAuthenticated, bool $authRequired, ?string $error, ?string $clientPubKey) : void{
-				$this->setAuthenticationStatus($isAuthenticated, $authRequired, $error, $clientPubKey);
-			}
+			fn() => $this->onSessionStartSuccess()
 		));
 
 		$this->manager->add($this);
@@ -215,6 +214,24 @@ class NetworkSession{
 
 	public function getLogger() : \Logger{
 		return $this->logger;
+	}
+
+	private function onSessionStartSuccess() : void{
+		$this->logger->debug("Session start handshake completed, awaiting login packet");
+		$this->flushSendBuffer(true);
+		$this->enableCompression = true;
+		$this->setHandler(new LoginPacketHandler(
+			$this->server,
+			$this,
+			function(PlayerInfo $info) : void{
+				$this->info = $info;
+				$this->logger->info("Player: " . TextFormat::AQUA . $info->getUsername() . TextFormat::RESET);
+				$this->logger->setPrefix($this->getLogPrefix());
+			},
+			function(bool $isAuthenticated, bool $authRequired, ?string $error, ?string $clientPubKey) : void{
+				$this->setAuthenticationStatus($isAuthenticated, $authRequired, $error, $clientPubKey);
+			}
+		));
 	}
 
 	protected function createPlayer() : void{
@@ -250,8 +267,8 @@ class NetworkSession{
 
 		$permissionHooks = $this->player->getPermissionRecalculationCallbacks();
 		$permissionHooks->add($permHook = function() : void{
-			$this->logger->debug("Syncing available commands and adventure settings due to permission recalculation");
-			$this->syncAdventureSettings($this->player);
+			$this->logger->debug("Syncing available commands and abilities/permissions due to permission recalculation");
+			$this->syncAbilities($this->player);
 			$this->syncAvailableCommands();
 		});
 		$this->disposeHooks->add(static function() use ($permissionHooks, $permHook) : void{
@@ -331,18 +348,22 @@ class NetworkSession{
 			}
 		}
 
-		Timings::$playerNetworkReceiveDecompress->startTiming();
-		try{
-			$stream = new PacketBatch($this->compressor->decompress($payload));
-		}catch(DecompressionException $e){
-			$this->logger->debug("Failed to decompress packet: " . base64_encode($payload));
-			throw PacketHandlingException::wrap($e, "Compressed packet batch decode error");
-		}finally{
-			Timings::$playerNetworkReceiveDecompress->stopTiming();
+		if($this->enableCompression){
+			Timings::$playerNetworkReceiveDecompress->startTiming();
+			try{
+				$decompressed = $this->compressor->decompress($payload);
+			}catch(DecompressionException $e){
+				$this->logger->debug("Failed to decompress packet: " . base64_encode($payload));
+				throw PacketHandlingException::wrap($e, "Compressed packet batch decode error");
+			}finally{
+				Timings::$playerNetworkReceiveDecompress->stopTiming();
+			}
+		}else{
+			$decompressed = $payload;
 		}
 
 		try{
-			foreach($stream->getPackets($this->packetPool, $this->packetSerializerContext, 500) as [$packet, $buffer]){
+			foreach((new PacketBatch($decompressed))->getPackets($this->packetPool, $this->packetSerializerContext, 500) as [$packet, $buffer]){
 				if($packet === null){
 					$this->logger->debug("Unknown packet: " . base64_encode($buffer));
 					throw new PacketHandlingException("Unknown packet received");
@@ -440,7 +461,14 @@ class NetworkSession{
 			}elseif($this->forceAsyncCompression){
 				$syncMode = false;
 			}
-			$promise = $this->server->prepareBatch(PacketBatch::fromPackets($this->packetSerializerContext, ...$this->sendBuffer), $this->compressor, $syncMode);
+
+			$batch = PacketBatch::fromPackets($this->packetSerializerContext, ...$this->sendBuffer);
+			if($this->enableCompression){
+				$promise = $this->server->prepareBatch($batch, $this->compressor, $syncMode);
+			}else{
+				$promise = new CompressBatchPromise();
+				$promise->resolve($batch->getBuffer());
+			}
 			$this->sendBuffer = [];
 			$this->queueCompressedNoBufferFlush($promise, $immediate);
 		}
@@ -713,9 +741,10 @@ class NetworkSession{
 	}
 
 	public function onServerRespawn() : void{
+		$this->syncAttributes($this->player, $this->player->getAttributeMap()->getAll());
 		$this->player->sendData(null);
 
-		$this->syncAdventureSettings($this->player);
+		$this->syncAbilities($this->player);
 		$this->invManager->syncAll();
 		$this->setHandler(new InGamePacketHandler($this->player, $this, $this->invManager));
 	}
@@ -749,7 +778,7 @@ class NetworkSession{
 	}
 
 	public function syncViewAreaCenterPoint(Vector3 $newPos, int $viewDistance) : void{
-		$this->sendDataPacket(NetworkChunkPublisherUpdatePacket::create(BlockPosition::fromVector3($newPos), $viewDistance * 16)); //blocks, not chunks >.>
+		$this->sendDataPacket(NetworkChunkPublisherUpdatePacket::create(BlockPosition::fromVector3($newPos), $viewDistance * 16, [])); //blocks, not chunks >.>
 	}
 
 	public function syncPlayerSpawnPoint(Position $newSpawn) : void{
@@ -765,37 +794,60 @@ class NetworkSession{
 	public function syncGameMode(GameMode $mode, bool $isRollback = false) : void{
 		$this->sendDataPacket(SetPlayerGameTypePacket::create(TypeConverter::getInstance()->coreGameModeToProtocol($mode)));
 		if($this->player !== null){
-			$this->syncAdventureSettings($this->player);
+			$this->syncAbilities($this->player);
+			$this->syncAdventureSettings(); //TODO: we might be able to do this with the abilities packet alone
 		}
 		if(!$isRollback && $this->invManager !== null){
 			$this->invManager->syncCreative();
 		}
 	}
 
-	/**
-	 * TODO: make this less specialized
-	 */
-	public function syncAdventureSettings(Player $for) : void{
+	public function syncAbilities(Player $for) : void{
 		$isOp = $for->hasPermission(DefaultPermissions::ROOT_OPERATOR);
-		$pk = AdventureSettingsPacket::create(
-			0,
-			$isOp ? AdventureSettingsPacket::PERMISSION_OPERATOR : AdventureSettingsPacket::PERMISSION_NORMAL,
-			0,
+
+		//ALL of these need to be set for the base layer, otherwise the client will cry
+		$boolAbilities = [
+			UpdateAbilitiesPacketLayer::ABILITY_ALLOW_FLIGHT => $for->getAllowFlight(),
+			UpdateAbilitiesPacketLayer::ABILITY_FLYING => $for->isFlying(),
+			UpdateAbilitiesPacketLayer::ABILITY_NO_CLIP => !$for->hasBlockCollision(),
+			UpdateAbilitiesPacketLayer::ABILITY_OPERATOR => $isOp,
+			UpdateAbilitiesPacketLayer::ABILITY_TELEPORT => $for->hasPermission(DefaultPermissionNames::COMMAND_TELEPORT),
+			UpdateAbilitiesPacketLayer::ABILITY_INVULNERABLE => $for->isCreative(),
+			UpdateAbilitiesPacketLayer::ABILITY_MUTED => false,
+			UpdateAbilitiesPacketLayer::ABILITY_WORLD_BUILDER => false,
+			UpdateAbilitiesPacketLayer::ABILITY_INFINITE_RESOURCES => !$for->hasFiniteResources(),
+			UpdateAbilitiesPacketLayer::ABILITY_LIGHTNING => false,
+			UpdateAbilitiesPacketLayer::ABILITY_BUILD => !$for->isSpectator(),
+			UpdateAbilitiesPacketLayer::ABILITY_MINE => !$for->isSpectator(),
+			UpdateAbilitiesPacketLayer::ABILITY_DOORS_AND_SWITCHES => !$for->isSpectator(),
+			UpdateAbilitiesPacketLayer::ABILITY_OPEN_CONTAINERS => !$for->isSpectator(),
+			UpdateAbilitiesPacketLayer::ABILITY_ATTACK_PLAYERS => !$for->isSpectator(),
+			UpdateAbilitiesPacketLayer::ABILITY_ATTACK_MOBS => !$for->isSpectator(),
+		];
+
+		$this->sendDataPacket(UpdateAbilitiesPacket::create(
+			$isOp ? CommandPermissions::OPERATOR : CommandPermissions::NORMAL,
 			$isOp ? PlayerPermissions::OPERATOR : PlayerPermissions::MEMBER,
-			0,
-			$for->getId()
-		);
+			$for->getId(),
+			[
+				//TODO: dynamic flying speed! FINALLY!!!!!!!!!!!!!!!!!
+				new UpdateAbilitiesPacketLayer(UpdateAbilitiesPacketLayer::LAYER_BASE, $boolAbilities, 0.05, 0.1),
+			]
+		));
+	}
 
-		$pk->setFlag(AdventureSettingsPacket::WORLD_IMMUTABLE, $for->isSpectator());
-		$pk->setFlag(AdventureSettingsPacket::NO_PVP, $for->isSpectator());
-		$pk->setFlag(AdventureSettingsPacket::AUTO_JUMP, $for->hasAutoJump());
-		$pk->setFlag(AdventureSettingsPacket::ALLOW_FLIGHT, $for->getAllowFlight());
-		$pk->setFlag(AdventureSettingsPacket::NO_CLIP, !$for->hasBlockCollision());
-		$pk->setFlag(AdventureSettingsPacket::FLYING, $for->isFlying());
-
-		//TODO: permission flags
-
-		$this->sendDataPacket($pk);
+	public function syncAdventureSettings() : void{
+		if($this->player === null){
+			throw new \LogicException("Cannot sync adventure settings for a player that is not yet created");
+		}
+		//everything except auto jump is handled via UpdateAbilitiesPacket
+		$this->sendDataPacket(UpdateAdventureSettingsPacket::create(
+			noAttackingMobs: false,
+			noAttackingPlayers: false,
+			worldImmutable: false,
+			showNameTags: true,
+			autoJump: $this->player->hasAutoJump()
+		));
 	}
 
 	/**
@@ -804,7 +856,7 @@ class NetworkSession{
 	public function syncAttributes(Living $entity, array $attributes) : void{
 		if(count($attributes) > 0){
 			$this->sendDataPacket(UpdateAttributesPacket::create($entity->getId(), array_map(function(Attribute $attr) : NetworkAttribute{
-				return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue());
+				return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue(), []);
 			}, $attributes), 0));
 		}
 	}

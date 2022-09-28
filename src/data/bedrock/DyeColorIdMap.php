@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -74,7 +74,7 @@ final class DyeColorIdMap{
 	}
 
 	public function fromId(int $id) : ?DyeColor{
-		return $this->idToEnum[$id];
+		return $this->idToEnum[$id] ?? null;
 	}
 
 	public function fromInvertedId(int $id) : ?DyeColor{

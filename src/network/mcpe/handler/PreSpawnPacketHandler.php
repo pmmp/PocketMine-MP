@@ -17,12 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\cache\CraftingDataCache;
 use pocketmine\network\mcpe\cache\StaticPacketCache;
 use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
@@ -33,6 +34,7 @@ use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\BoolGameRule;
+use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\Experiments;
 use pocketmine\network\mcpe\protocol\types\LevelSettings;
@@ -42,6 +44,7 @@ use pocketmine\network\mcpe\protocol\types\SpawnSettings;
 use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\VersionInfo;
+use Ramsey\Uuid\Uuid;
 use function sprintf;
 
 /**
@@ -58,6 +61,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 	public function setUp() : void{
 		$location = $this->player->getLocation();
 
+		$this->session->getLogger()->debug("Preparing StartGamePacket");
 		$levelSettings = new LevelSettings();
 		$levelSettings->seed = -1;
 		$levelSettings->spawnSettings = new SpawnSettings(SpawnSettings::BIOME_TYPE_DEFAULT, "", DimensionIds::OVERWORLD); //TODO: implement this properly
@@ -82,6 +86,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 			$this->player->getOffsetPosition($location),
 			$location->pitch,
 			$location->yaw,
+			new CacheableNbt(CompoundTag::create()), //TODO: we don't care about this right now
 			$levelSettings,
 			"",
 			$this->server->getMotd(),
@@ -93,26 +98,46 @@ class PreSpawnPacketHandler extends PacketHandler{
 			"",
 			false,
 			sprintf("%s %s", VersionInfo::NAME, VersionInfo::VERSION()->getFullVersion(true)),
+			Uuid::fromString(Uuid::NIL),
+			false,
 			[],
 			0,
-			GlobalItemTypeDictionary::getInstance()->getDictionary()->getEntries()
+			GlobalItemTypeDictionary::getInstance()->getDictionary()->getEntries(),
 		));
 
+		$this->session->getLogger()->debug("Sending actor identifiers");
 		$this->session->sendDataPacket(StaticPacketCache::getInstance()->getAvailableActorIdentifiers());
+
+		$this->session->getLogger()->debug("Sending biome definitions");
 		$this->session->sendDataPacket(StaticPacketCache::getInstance()->getBiomeDefs());
+
+		$this->session->getLogger()->debug("Sending attributes");
 		$this->session->syncAttributes($this->player, $this->player->getAttributeMap()->getAll());
+
+		$this->session->getLogger()->debug("Sending available commands");
 		$this->session->syncAvailableCommands();
-		$this->session->syncAdventureSettings($this->player);
+
+		$this->session->getLogger()->debug("Sending abilities");
+		$this->session->syncAbilities($this->player);
+		$this->session->syncAdventureSettings();
+
+		$this->session->getLogger()->debug("Sending effects");
 		foreach($this->player->getEffects()->all() as $effect){
 			$this->session->onEntityEffectAdded($this->player, $effect, false);
 		}
+
+		$this->session->getLogger()->debug("Sending actor metadata");
 		$this->player->sendData([$this->player]);
 
+		$this->session->getLogger()->debug("Sending inventory");
 		$this->inventoryManager->syncAll();
 		$this->inventoryManager->syncCreative();
 		$this->inventoryManager->syncSelectedHotbarSlot();
+
+		$this->session->getLogger()->debug("Sending crafting data");
 		$this->session->sendDataPacket(CraftingDataCache::getInstance()->getCache($this->server->getCraftingManager()));
 
+		$this->session->getLogger()->debug("Sending player list");
 		$this->session->syncPlayerList($this->server->getOnlinePlayers());
 	}
 

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -132,6 +132,7 @@ use function get_class;
 use function ini_set;
 use function is_array;
 use function is_dir;
+use function is_int;
 use function is_object;
 use function is_resource;
 use function is_string;
@@ -570,6 +571,7 @@ class Server{
 			$playerPos = null;
 			$spawn = $world->getSpawnLocation();
 		}
+		/** @phpstan-var PromiseResolver<Player> $playerPromiseResolver */
 		$playerPromiseResolver = new PromiseResolver();
 		$world->requestChunkPopulation($spawn->getFloorX() >> Chunk::COORD_BIT_SIZE, $spawn->getFloorZ() >> Chunk::COORD_BIT_SIZE, null)->onCompletion(
 			function() use ($playerPromiseResolver, $class, $session, $playerInfo, $authenticated, $world, $playerPos, $spawn, $offlinePlayerData) : void{
@@ -861,7 +863,7 @@ class Server{
 					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error3()));
 					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error4("settings.enable-dev-builds")));
 					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error5("https://github.com/pmmp/PocketMine-MP/releases")));
-					$this->forceShutdown();
+					$this->forceShutdownExit();
 
 					return;
 				}
@@ -976,7 +978,7 @@ class Server{
 				$pluginGraylist = PluginGraylist::fromArray(yaml_parse(file_get_contents($graylistFile)));
 			}catch(\InvalidArgumentException $e){
 				$this->logger->emergency("Failed to load $graylistFile: " . $e->getMessage());
-				$this->forceShutdown();
+				$this->forceShutdownExit();
 				return;
 			}
 			$this->pluginManager = new PluginManager($this, $this->configGroup->getPropertyBool("plugins.legacy-data-dir", true) ? null : Path::join($this->getDataPath(), "plugin_data"), $pluginGraylist);
@@ -1007,28 +1009,28 @@ class Server{
 			$this->pluginManager->loadPlugins($this->pluginPath, $loadErrorCount);
 			if($loadErrorCount > 0){
 				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someLoadErrors()));
-				$this->forceShutdown();
+				$this->forceShutdownExit();
 				return;
 			}
 			if(!$this->enablePlugins(PluginEnableOrder::STARTUP())){
 				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
-				$this->forceShutdown();
+				$this->forceShutdownExit();
 				return;
 			}
 
 			if(!$this->startupPrepareWorlds()){
-				$this->forceShutdown();
+				$this->forceShutdownExit();
 				return;
 			}
 
 			if(!$this->enablePlugins(PluginEnableOrder::POSTWORLD())){
 				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
-				$this->forceShutdown();
+				$this->forceShutdownExit();
 				return;
 			}
 
 			if(!$this->startupPrepareNetworkInterfaces()){
-				$this->forceShutdown();
+				$this->forceShutdownExit();
 				return;
 			}
 
@@ -1118,6 +1120,7 @@ class Server{
 				$creationOptions->setGeneratorClass($generatorClass);
 				$creationOptions->setGeneratorOptions($generatorOptions);
 
+				$creationOptions->setDifficulty($this->getDifficulty());
 				if(isset($options["difficulty"]) && is_string($options["difficulty"])){
 					$creationOptions->setDifficulty(World::getDifficultyFromString($options["difficulty"]));
 				}
@@ -1161,6 +1164,7 @@ class Server{
 				if($convertedSeed !== null){
 					$creationOptions->setSeed($convertedSeed);
 				}
+				$creationOptions->setDifficulty($this->getDifficulty());
 				$this->worldManager->generateWorld($default, $creationOptions);
 			}
 
@@ -1454,6 +1458,11 @@ class Server{
 		}
 	}
 
+	private function forceShutdownExit() : void{
+		$this->forceShutdown();
+		Process::kill(Process::pid(), true);
+	}
+
 	public function forceShutdown() : void{
 		if($this->hasStopped){
 			return;
@@ -1643,12 +1652,14 @@ class Server{
 					], 10, [], $postUrlError);
 
 					if($reply !== null && is_object($data = json_decode($reply->getBody()))){
-						if(isset($data->crashId) && isset($data->crashUrl)){
+						if(isset($data->crashId) && is_int($data->crashId) && isset($data->crashUrl) && is_string($data->crashUrl)){
 							$reportId = $data->crashId;
 							$reportUrl = $data->crashUrl;
 							$this->logger->emergency($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_crash_archive($reportUrl, (string) $reportId)));
-						}elseif(isset($data->error)){
+						}elseif(isset($data->error) && is_string($data->error)){
 							$this->logger->emergency("Automatic crash report submission failed: $data->error");
+						}else{
+							$this->logger->emergency("Invalid JSON response received from crash archive: " . $reply->getBody());
 						}
 					}else{
 						$this->logger->emergency("Failed to communicate with crash archive: $postUrlError");
