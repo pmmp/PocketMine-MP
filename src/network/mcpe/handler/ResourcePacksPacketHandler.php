@@ -75,7 +75,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 				$pack->getPackSize(),
 				$encryptionKey ?? "",
 				"",
-				$encryptionKey === null ? "" : $pack->getPackId(), // ContentId is required for client-side validations when the pack is encrypted.
+				$pack->getPackId(),
 				false
 			);
 		}, $this->resourcePackManager->getResourceStack());
