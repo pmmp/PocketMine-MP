@@ -105,6 +105,14 @@ class SnowLayer extends Flowable implements Fallable{
 		return true;
 	}
 
+	public function getFallDamagePerDistance() : float{
+		return 0.0;
+	}
+
+	public function getMaxFallDamage() : float{
+		return 0.0;
+	}
+
 	public function onRandomTick() : void{
 		$world = $this->position->getWorld();
 		if($world->getBlockLightAt($this->position->x, $this->position->y, $this->position->z) >= 12){

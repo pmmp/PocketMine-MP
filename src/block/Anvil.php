@@ -99,4 +99,12 @@ class Anvil extends Transparent implements Fallable{
 	public function tickFalling() : ?Block{
 		return null;
 	}
+
+	public function getFallDamagePerDistance() : float{
+		return 2.0;
+	}
+
+	public function getMaxFallDamage() : float{
+		return 40.0;
+	}
 }

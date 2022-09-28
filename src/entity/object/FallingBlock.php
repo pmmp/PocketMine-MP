@@ -30,8 +30,10 @@ use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
+use pocketmine\entity\Living;
 use pocketmine\entity\Location;
 use pocketmine\event\entity\EntityBlockChangeEvent;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
@@ -43,6 +45,8 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use function abs;
+use function min;
+use function round;
 
 class FallingBlock extends Entity{
 	private const TAG_FALLING_BLOCK = "FallingBlock"; //TAG_Compound
@@ -144,6 +148,21 @@ class FallingBlock extends Entity{
 		}
 
 		return $hasUpdate;
+	}
+
+	protected function onHitGround() : ?float{
+		if($this->block instanceof Fallable){
+			$damagePerDistance = $this->block->getFallDamagePerDistance();
+			if($damagePerDistance > 0 && ($distance = round($this->fallDistance) - 1) > 0){
+				foreach($this->getWorld()->getCollidingEntities($this->getBoundingBox()) as $entity){
+					if($entity instanceof Living){
+						$ev = new EntityDamageByEntityEvent($this, $entity, EntityDamageEvent::CAUSE_FALLING_BLOCK, min($distance * $damagePerDistance, $this->block->getMaxFallDamage()));
+						$entity->attack($ev);
+					}
+				}
+			}
+		}
+		return parent::onHitGround();
 	}
 
 	public function getBlock() : Block{

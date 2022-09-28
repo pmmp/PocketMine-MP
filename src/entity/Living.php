@@ -416,6 +416,10 @@ abstract class Living extends Entity{
 		$source->setModifier(-$source->getFinalDamage() * min(ceil(min($totalEpf, 25) * (mt_rand(50, 100) / 100)), 20) * 0.04, EntityDamageEvent::MODIFIER_ARMOR_ENCHANTMENTS);
 
 		$source->setModifier(-min($this->getAbsorption(), $source->getFinalDamage()), EntityDamageEvent::MODIFIER_ABSORPTION);
+
+		if($cause === EntityDamageEvent::CAUSE_FALLING_BLOCK && $this->armorInventory->getHelmet() instanceof Armor){
+			$source->setModifier(-min($source->getFinalDamage() / 3, 10), EntityDamageEvent::MODIFIER_HARD_HELMET);
+		}
 	}
 
 	/**
@@ -445,6 +449,14 @@ abstract class Living extends Entity{
 			if($damage > 0){
 				$attacker->attack(new EntityDamageByEntityEvent($this, $attacker, EntityDamageEvent::CAUSE_MAGIC, $damage));
 			}
+
+			if($source->getModifier(EntityDamageEvent::MODIFIER_HARD_HELMET) < 0){
+				$helmet = $this->armorInventory->getHelmet();
+				if($helmet instanceof Armor){
+					$this->damageItem($helmet, (int) $source->getFinalDamage());
+					$this->armorInventory->setHelmet($helmet);
+				}
+			}
 		}
 	}
 
@@ -465,7 +477,7 @@ abstract class Living extends Entity{
 		$this->armorInventory->setContents($armor);
 	}
 
-	private function damageItem(Durable $item, int $durabilityRemoved) : void{
+	public function damageItem(Durable $item, int $durabilityRemoved) : void{
 		$item->applyDamage($durabilityRemoved);
 		if($item->isBroken()){
 			$this->broadcastSound(new ItemBreakSound());

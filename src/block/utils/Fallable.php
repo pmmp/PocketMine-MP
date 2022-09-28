@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
+use pocketmine\entity\object\FallingBlock;
 
 interface Fallable{
 
@@ -33,4 +34,14 @@ interface Fallable{
 	 * Return null if you don't want to change the usual behaviour.
 	 */
 	public function tickFalling() : ?Block;
+
+	/**
+	 * Returns the damage caused per fallen block.
+	 */
+	public function getFallDamagePerDistance() : float;
+
+	/**
+	 * Returns the damage caused per fallen block.
+	 */
+	public function getMaxFallDamage() : float;
 }
