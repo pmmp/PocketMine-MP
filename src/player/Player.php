@@ -1345,6 +1345,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->lastUpdate = $currentTick;
 
+		if($this->justCreated){
+			$this->onFirstUpdate($currentTick);
+		}
+
 		if(!$this->isAlive() && $this->spawned){
 			$this->onDeathUpdate($tickDiff);
 			return true;
