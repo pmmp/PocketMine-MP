@@ -51,7 +51,6 @@ use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\ActorPickRequestPacket;
-use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
@@ -667,10 +666,6 @@ class InGamePacketHandler extends PacketHandler{
 
 	public function handleCraftingEvent(CraftingEventPacket $packet) : bool{
 		return true; //this is a broken useless packet, so we don't use it
-	}
-
-	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
-		return true; //no longer used, but the client still sends it for flight changes
 	}
 
 	public function handleBlockActorData(BlockActorDataPacket $packet) : bool{
