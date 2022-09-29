@@ -82,10 +82,11 @@ class TypeConverter{
 			case GameMode::SURVIVAL()->id():
 				return ProtocolGameMode::SURVIVAL;
 			case GameMode::CREATIVE()->id():
-			case GameMode::SPECTATOR()->id():
 				return ProtocolGameMode::CREATIVE;
 			case GameMode::ADVENTURE()->id():
 				return ProtocolGameMode::ADVENTURE;
+			case GameMode::SPECTATOR()->id():
+				return ProtocolGameMode::CREATIVE_VIEWER;
 			default:
 				throw new AssumptionFailedError("Unknown game mode");
 		}
