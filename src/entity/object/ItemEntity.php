@@ -92,8 +92,11 @@ class ItemEntity extends Entity{
 		$this->pickupDelay = $nbt->getShort("PickupDelay", $this->pickupDelay);
 		$this->owner = $nbt->getString("Owner", $this->owner);
 		$this->thrower = $nbt->getString("Thrower", $this->thrower);
+	}
 
-		(new ItemSpawnEvent($this))->call();
+	protected function onFirstUpdate(int $currentTick) : void{
+		(new ItemSpawnEvent($this))->call(); //this must be called before EntitySpawnEvent, to maintain backwards compatibility
+		parent::onFirstUpdate($currentTick);
 	}
 
 	protected function entityBaseTick(int $tickDiff = 1) : bool{
