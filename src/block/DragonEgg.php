@@ -48,14 +48,6 @@ class DragonEgg extends Transparent implements Fallable{
 		return null;
 	}
 
-	public function getFallDamagePerDistance() : float{
-		return 0.0;
-	}
-
-	public function getMaxFallDamage() : float{
-		return 0.0;
-	}
-
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->teleport();
 		return true;

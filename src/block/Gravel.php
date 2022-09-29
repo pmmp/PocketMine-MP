@@ -49,12 +49,4 @@ class Gravel extends Opaque implements Fallable{
 	public function tickFalling() : ?Block{
 		return null;
 	}
-
-	public function getFallDamagePerDistance() : float{
-		return 0.0;
-	}
-
-	public function getMaxFallDamage() : float{
-		return 0.0;
-	}
 }

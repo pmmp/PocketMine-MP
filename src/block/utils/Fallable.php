@@ -38,7 +38,7 @@ interface Fallable{
 	/**
 	 * Returns the damage caused per fallen block.
 	 */
-	public function getFallDamagePerDistance() : float;
+	public function getFallDamagePerBlock() : float;
 
 	/**
 	 * Returns the damage caused per fallen block.

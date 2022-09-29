@@ -60,14 +60,6 @@ class ConcretePowder extends Opaque implements Fallable{
 		return VanillaBlocks::CONCRETE()->setColor($this->color);
 	}
 
-	public function getFallDamagePerDistance() : float{
-		return 0.0;
-	}
-
-	public function getMaxFallDamage() : float{
-		return 0.0;
-	}
-
 	private function getAdjacentWater() : ?Water{
 		foreach(Facing::ALL as $i){
 			if($i === Facing::DOWN){
