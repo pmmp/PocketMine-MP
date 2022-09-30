@@ -45,7 +45,7 @@ class PrimedTNT extends Entity implements Explosive{
 	protected $drag = 0.02;
 
 	/** @var int */
-	protected $fuse;
+	protected $fuse = 80;
 
 	protected bool $worksUnderwater = false;
 
@@ -81,7 +81,7 @@ class PrimedTNT extends Entity implements Explosive{
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
-		$this->fuse = $nbt->getShort("Fuse", 80);
+		$this->fuse = $nbt->getShort("Fuse", $this->fuse);
 	}
 
 	public function canCollideWith(Entity $entity) : bool{

@@ -325,8 +325,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		//held slot index changed. We can't prevent that from here, and nor would it be sensible to.
 	}
 
-	protected function initEntity(CompoundTag $nbt) : void{
-		parent::initEntity($nbt);
+	protected function initEntityState() : void{
+		parent::initEntityState();
+
+		$now = (int) (microtime(true) * 1000);
+		$this->firstPlayed = $now;
+		$this->lastPlayed = $now;
+
 		$this->addDefaultWindows();
 
 		$this->inventory->getListeners()->add(new CallbackInventoryListener(
@@ -343,20 +348,27 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			}
 		));
 
-		$this->firstPlayed = $nbt->getLong("firstPlayed", $now = (int) (microtime(true) * 1000));
-		$this->lastPlayed = $nbt->getLong("lastPlayed", $now);
-
-		if(!$this->server->getForceGamemode() && ($gameModeTag = $nbt->getTag("playerGameType")) instanceof IntTag){
-			$this->internalSetGameMode(GameModeIdMap::getInstance()->fromId($gameModeTag->getValue()) ?? GameMode::SURVIVAL()); //TODO: bad hack here to avoid crashes on corrupted data
-		}else{
-			$this->internalSetGameMode($this->server->getGamemode());
-		}
+		$this->internalSetGameMode($this->server->getGamemode());
 
 		$this->keepMovement = true;
 
 		$this->setNameTagVisible();
 		$this->setNameTagAlwaysVisible();
 		$this->setCanClimb();
+	}
+
+	protected function initEntity(CompoundTag $nbt) : void{
+		parent::initEntity($nbt);
+
+		$this->firstPlayed = $nbt->getLong("firstPlayed", $this->firstPlayed);
+		$this->lastPlayed = $nbt->getLong("lastPlayed", $this->lastPlayed);
+
+		if(!$this->server->getForceGamemode() && ($gameModeTag = $nbt->getTag("playerGameType")) instanceof IntTag){
+			$gameMode = GameModeIdMap::getInstance()->fromId($gameModeTag->getValue());
+			if($gameMode !== null){
+				$this->internalSetGameMode($gameMode);
+			}
+		}
 
 		if(($world = $this->server->getWorldManager()->getWorldByName($nbt->getString("SpawnLevel", ""))) instanceof World){
 			$this->spawnPosition = new Position($nbt->getInt("SpawnX"), $nbt->getInt("SpawnY"), $nbt->getInt("SpawnZ"), $world);

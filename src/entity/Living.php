@@ -124,8 +124,8 @@ abstract class Living extends Entity{
 
 	abstract public function getName() : string;
 
-	protected function initEntity(CompoundTag $nbt) : void{
-		parent::initEntity($nbt);
+	protected function initEntityState() : void{
+		parent::initEntityState();
 
 		$this->effectManager = new EffectManager($this);
 		$this->effectManager->getEffectAddHooks()->add(function() : void{ $this->networkPropertiesDirty = true; });
@@ -140,6 +140,10 @@ abstract class Living extends Entity{
 				}
 			}
 		));
+	}
+
+	protected function initEntity(CompoundTag $nbt) : void{
+		parent::initEntity($nbt);
 
 		$health = $this->getMaxHealth();
 

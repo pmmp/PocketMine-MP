@@ -244,6 +244,7 @@ abstract class Entity{
 		$this->attributeMap = new AttributeMap();
 		$this->addAttributes();
 
+		$this->initEntityState();
 		$this->initEntity($nbt ?? new CompoundTag());
 
 		$this->getWorld()->addEntity($this);
@@ -494,6 +495,10 @@ abstract class Entity{
 		$nbt->setByte("OnGround", $this->onGround ? 1 : 0);
 
 		return $nbt;
+	}
+
+	protected function initEntityState() : void{
+
 	}
 
 	protected function initEntity(CompoundTag $nbt) : void{

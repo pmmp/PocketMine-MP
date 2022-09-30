@@ -55,7 +55,7 @@ abstract class Projectile extends Entity{
 	protected $damage = 0.0;
 
 	/** @var Block|null */
-	protected $blockHit;
+	protected $blockHit = null;
 
 	public function __construct(Location $location, ?Entity $shootingEntity, ?CompoundTag $nbt = null){
 		parent::__construct($location, $nbt);
@@ -70,11 +70,16 @@ abstract class Projectile extends Entity{
 		}
 	}
 
-	protected function initEntity(CompoundTag $nbt) : void{
-		parent::initEntity($nbt);
+	protected function initEntityState() : void{
+		parent::initEntityState();
 
 		$this->setMaxHealth(1);
 		$this->setHealth(1);
+	}
+
+	protected function initEntity(CompoundTag $nbt) : void{
+		parent::initEntity($nbt);
+
 		$this->damage = $nbt->getDouble("damage", $this->damage);
 
 		(function() use ($nbt) : void{

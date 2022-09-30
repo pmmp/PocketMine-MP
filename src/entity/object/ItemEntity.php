@@ -77,10 +77,15 @@ class ItemEntity extends Entity{
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.25, 0.25); }
 
+	protected function initEntityState() : void{
+		parent::initEntityState();
+
+		$this->setMaxHealth(5);
+	}
+
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
-		$this->setMaxHealth(5);
 		$this->setHealth($nbt->getShort("Health", (int) $this->getHealth()));
 
 		$age = $nbt->getShort("Age", 0);

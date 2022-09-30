@@ -80,10 +80,10 @@ class Painting extends Entity{
 		return new EntitySizeInfo(0.5, 0.5);
 	}
 
-	protected function initEntity(CompoundTag $nbt) : void{
+	protected function initEntityState() : void{
+		parent::initEntityState();
 		$this->setMaxHealth(1);
 		$this->setHealth(1);
-		parent::initEntity($nbt);
 	}
 
 	public function saveNBT() : CompoundTag{

@@ -48,9 +48,10 @@ class Squid extends WaterAnimal{
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
 
-	public function initEntity(CompoundTag $nbt) : void{
+	protected function initEntityState() : void{
+		parent::initEntityState();
+
 		$this->setMaxHealth(10);
-		parent::initEntity($nbt);
 	}
 
 	public function getName() : string{

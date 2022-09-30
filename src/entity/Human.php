@@ -223,9 +223,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		if(($nameTagTag = $nbt->getTag("NameTag")) instanceof StringTag){
 			$this->setNameTag($nameTagTag->getValue());
 		}
-
-		//TODO: use of NIL UUID for namespace is a hack; we should provide a proper UUID for the namespace
-		$this->uuid = Uuid::uuid3(Uuid::NIL, ((string) $this->getId()) . $this->skin->getSkinData() . $this->getNameTag());
 	}
 
 	/**
@@ -241,8 +238,11 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$inventory->getListeners()->add(...$listeners);
 	}
 
-	protected function initEntity(CompoundTag $nbt) : void{
-		parent::initEntity($nbt);
+	protected function initEntityState() : void{
+		parent::initEntityState();
+
+		//TODO: use of NIL UUID for namespace is a hack; we should provide a proper UUID for the namespace
+		$this->uuid = Uuid::uuid3(Uuid::NIL, ((string) $this->getId()) . $this->skin->getSkinData() . $this->getNameTag());
 
 		$this->hungerManager = new HungerManager($this);
 		$this->xpManager = new ExperienceManager($this);
@@ -265,8 +265,27 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 				}
 			}
 		));
+		$this->inventory->getHeldItemIndexChangeListeners()->add(function(int $oldIndex) : void{
+			foreach($this->getViewers() as $viewer){
+				$viewer->getNetworkSession()->onMobMainHandItemChange($this);
+			}
+		});
+
 		$this->offHandInventory = new PlayerOffHandInventory($this);
+		$this->offHandInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(function() : void{
+			foreach($this->getViewers() as $viewer){
+				$viewer->getNetworkSession()->onMobOffHandItemChange($this);
+			}
+		}));
+
 		$this->enderInventory = new PlayerEnderInventory($this);
+
+		$this->xpSeed = random_int(Limits::INT32_MIN, Limits::INT32_MAX);
+	}
+
+	protected function initEntity(CompoundTag $nbt) : void{
+		parent::initEntity($nbt);
+
 		$this->initHumanData($nbt);
 
 		$inventoryTag = $nbt->getListTag("Inventory");
@@ -291,13 +310,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		}
 		$offHand = $nbt->getCompoundTag("OffHandItem");
 		if($offHand !== null){
-			$this->offHandInventory->setItem(0, Item::nbtDeserialize($offHand));
+			self::populateInventoryFromListTag($this->offHandInventory, [0 => Item::nbtDeserialize($offHand)]);
 		}
-		$this->offHandInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(function() : void{
-			foreach($this->getViewers() as $viewer){
-				$viewer->getNetworkSession()->onMobOffHandItemChange($this);
-			}
-		}));
 
 		$enderChestInventoryTag = $nbt->getListTag("EnderChestInventory");
 		if($enderChestInventoryTag !== null){
@@ -310,12 +324,10 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			self::populateInventoryFromListTag($this->enderInventory, $enderChestInventoryItems);
 		}
 
+		$listeners = $this->inventory->getHeldItemIndexChangeListeners()->toArray();
+		$this->inventory->getHeldItemIndexChangeListeners()->clear();
 		$this->inventory->setHeldItemIndex($nbt->getInt("SelectedInventorySlot", 0));
-		$this->inventory->getHeldItemIndexChangeListeners()->add(function(int $oldIndex) : void{
-			foreach($this->getViewers() as $viewer){
-				$viewer->getNetworkSession()->onMobMainHandItemChange($this);
-			}
-		});
+		$this->inventory->getHeldItemIndexChangeListeners()->add(...$listeners);
 
 		$this->hungerManager->setFood((float) $nbt->getInt("foodLevel", (int) $this->hungerManager->getFood()));
 		$this->hungerManager->setExhaustion($nbt->getFloat("foodExhaustionLevel", $this->hungerManager->getExhaustion()));
@@ -329,8 +341,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 		if(($xpSeedTag = $nbt->getTag("XpSeed")) instanceof IntTag){
 			$this->xpSeed = $xpSeedTag->getValue();
-		}else{
-			$this->xpSeed = random_int(Limits::INT32_MIN, Limits::INT32_MAX);
 		}
 	}
 
