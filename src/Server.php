@@ -31,7 +31,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\SimpleCommandMap;
 use pocketmine\console\ConsoleCommandSender;
-use pocketmine\console\ConsoleReaderThread;
+use pocketmine\console\ConsoleReaderChildProcessDaemon;
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingManagerFromDataHelper;
 use pocketmine\crash\CrashDump;
@@ -88,12 +88,12 @@ use pocketmine\promise\PromiseResolver;
 use pocketmine\resourcepacks\ResourcePackManager;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\snooze\SleeperHandler;
-use pocketmine\snooze\SleeperNotifier;
 use pocketmine\stats\SendUsageTask;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\updater\UpdateChecker;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\BroadcastLoggerForwarder;
 use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Internet;
@@ -166,7 +166,6 @@ use function zlib_encode;
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 use const PHP_INT_MAX;
-use const PTHREADS_INHERIT_NONE;
 use const ZLIB_ENCODING_GZIP;
 
 /**
@@ -226,7 +225,8 @@ class Server{
 
 	private MemoryManager $memoryManager;
 
-	private ConsoleReaderThread $console;
+	private ?ConsoleReaderChildProcessDaemon $console = null;
+	private ?ConsoleCommandSender $consoleSender = null;
 
 	private SimpleCommandMap $commandMap;
 
@@ -1045,22 +1045,14 @@ class Server{
 			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_donate(TextFormat::AQUA . "https://patreon.com/pocketminemp" . TextFormat::RESET)));
 			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_startFinished(strval(round(microtime(true) - $this->startTime, 3)))));
 
-			//TODO: move console parts to a separate component
-			$consoleSender = new ConsoleCommandSender($this, $this->language);
-			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_ADMINISTRATIVE, $consoleSender);
-			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $consoleSender);
+			$forwarder = new BroadcastLoggerForwarder($this, $this->logger, $this->language);
+			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_ADMINISTRATIVE, $forwarder);
+			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $forwarder);
 
-			$consoleNotifier = new SleeperNotifier();
-			$commandBuffer = new \Threaded();
-			$this->console = new ConsoleReaderThread($commandBuffer, $consoleNotifier);
-			$this->tickSleeper->addNotifier($consoleNotifier, function() use ($commandBuffer, $consoleSender) : void{
-				Timings::$serverCommand->startTiming();
-				while(($line = $commandBuffer->shift()) !== null){
-					$this->dispatchCommand($consoleSender, (string) $line);
-				}
-				Timings::$serverCommand->stopTiming();
-			});
-			$this->console->start(PTHREADS_INHERIT_NONE);
+			//TODO: move console parts to a separate component
+			if($this->configGroup->getPropertyBool("console.enable-input", true)){
+				$this->console = new ConsoleReaderChildProcessDaemon($this->logger);
+			}
 
 			$this->tickProcessor();
 			$this->forceShutdown();
@@ -1513,7 +1505,7 @@ class Server{
 				$this->configGroup->save();
 			}
 
-			if(isset($this->console)){
+			if($this->console !== null){
 				$this->getLogger()->debug("Closing console");
 				$this->console->quit();
 			}
@@ -1720,7 +1712,7 @@ class Server{
 		$session = $player->getNetworkSession();
 		$position = $player->getPosition();
 		$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_player_logIn(
-			TextFormat::AQUA . $player->getName() . TextFormat::WHITE,
+			TextFormat::AQUA . $player->getName() . TextFormat::RESET,
 			$session->getIp(),
 			(string) $session->getPort(),
 			(string) $player->getId(),
@@ -1856,6 +1848,13 @@ class Server{
 		}
 
 		$this->getMemoryManager()->check();
+
+		if($this->console !== null){
+			while(($line = $this->console->readLine()) !== null){
+				$this->consoleSender ??= new ConsoleCommandSender($this, $this->language);
+				$this->dispatchCommand($this->consoleSender, $line);
+			}
+		}
 
 		Timings::$serverTick->stopTiming();
 

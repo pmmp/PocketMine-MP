@@ -100,10 +100,11 @@ class Fire extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
+		$world = $this->position->getWorld();
 		if($this->getSide(Facing::DOWN)->isTransparent() && !$this->hasAdjacentFlammableBlocks()){
-			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
+			$world->setBlock($this->position, VanillaBlocks::AIR());
 		}else{
-			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(30, 40));
+			$world->scheduleDelayedBlockUpdate($this->position, mt_rand(30, 40));
 		}
 	}
 
@@ -136,11 +137,12 @@ class Fire extends Flowable{
 			}
 		}
 
+		$world = $this->position->getWorld();
 		if($result !== null){
-			$this->position->getWorld()->setBlock($this->position, $result);
+			$world->setBlock($this->position, $result);
 		}
 
-		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(30, 40));
+		$world->scheduleDelayedBlockUpdate($this->position, mt_rand(30, 40));
 
 		if($canSpread){
 			$this->burnBlocksAround();
@@ -181,7 +183,8 @@ class Fire extends Flowable{
 			if(!$ev->isCancelled()){
 				$block->onIncinerate();
 
-				if($this->position->getWorld()->getBlock($block->getPosition())->isSameState($block)){
+				$world = $this->position->getWorld();
+				if($world->getBlock($block->getPosition())->isSameState($block)){
 					$spreadedFire = false;
 					if(mt_rand(0, $this->age + 9) < 5){ //TODO: check rain
 						$fire = clone $this;
@@ -189,7 +192,7 @@ class Fire extends Flowable{
 						$spreadedFire = $this->spreadBlock($block, $fire);
 					}
 					if(!$spreadedFire){
-						$this->position->getWorld()->setBlock($block->position, VanillaBlocks::AIR());
+						$world->setBlock($block->position, VanillaBlocks::AIR());
 					}
 				}
 			}

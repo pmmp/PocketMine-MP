@@ -53,6 +53,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
+use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
@@ -61,6 +62,7 @@ use pocketmine\utils\ObjectSet;
 use function array_map;
 use function array_search;
 use function get_class;
+use function is_int;
 use function max;
 use function spl_object_id;
 
@@ -70,6 +72,17 @@ use function spl_object_id;
 class InventoryManager{
 	/** @var Inventory[] */
 	private array $windowMap = [];
+	/**
+	 * @var ComplexWindowMapEntry[]
+	 * @phpstan-var array<int, ComplexWindowMapEntry>
+	 */
+	private array $complexWindows = [];
+	/**
+	 * @var ComplexWindowMapEntry[]
+	 * @phpstan-var array<int, ComplexWindowMapEntry>
+	 */
+	private array $complexSlotToWindowMap = [];
+
 	private int $lastInventoryNetworkId = ContainerIds::FIRST;
 
 	/**
@@ -96,7 +109,8 @@ class InventoryManager{
 		$this->add(ContainerIds::INVENTORY, $this->player->getInventory());
 		$this->add(ContainerIds::OFFHAND, $this->player->getOffHandInventory());
 		$this->add(ContainerIds::ARMOR, $this->player->getArmorInventory());
-		$this->add(ContainerIds::UI, $this->player->getCursorInventory());
+		$this->addComplex(UIInventorySlotOffset::CURSOR, $this->player->getCursorInventory());
+		$this->addComplex(UIInventorySlotOffset::CRAFTING2X2_INPUT, $this->player->getCraftingGrid());
 
 		$this->player->getInventory()->getHeldItemIndexChangeListeners()->add(function() : void{
 			$this->syncSelectedHotbarSlot();
@@ -113,8 +127,27 @@ class InventoryManager{
 		return $this->lastInventoryNetworkId;
 	}
 
+	/**
+	 * @param int[]|int $slotMap
+	 * @phpstan-param array<int, int>|int $slotMap
+	 */
+	private function addComplex(array|int $slotMap, Inventory $inventory) : void{
+		$entry = new ComplexWindowMapEntry($inventory, is_int($slotMap) ? [$slotMap => 0] : $slotMap);
+		$this->complexWindows[spl_object_id($inventory)] = $entry;
+		foreach($entry->getSlotMap() as $netSlot => $coreSlot){
+			$this->complexSlotToWindowMap[$netSlot] = $entry;
+		}
+	}
+
 	private function remove(int $id) : void{
-		unset($this->windowMap[$id], $this->initiatedSlotChanges[$id]);
+		$inventory = $this->windowMap[$id];
+		$splObjectId = spl_object_id($inventory);
+		unset($this->windowMap[$id], $this->initiatedSlotChanges[$id], $this->complexWindows[$splObjectId]);
+		foreach($this->complexSlotToWindowMap as $netSlot => $entry){
+			if($entry->getInventory() === $inventory){
+				unset($this->complexSlotToWindowMap[$netSlot]);
+			}
+		}
 	}
 
 	public function getWindowId(Inventory $inventory) : ?int{
@@ -125,8 +158,22 @@ class InventoryManager{
 		return $this->lastInventoryNetworkId;
 	}
 
-	public function getWindow(int $windowId) : ?Inventory{
-		return $this->windowMap[$windowId] ?? null;
+	/**
+	 * @phpstan-return array{Inventory, int}
+	 */
+	public function locateWindowAndSlot(int $windowId, int $netSlotId) : ?array{
+		if($windowId === ContainerIds::UI){
+			$entry = $this->complexSlotToWindowMap[$netSlotId] ?? null;
+			if($entry === null){
+				return null;
+			}
+			$coreSlotId = $entry->mapNetToCore($netSlotId);
+			return $coreSlotId !== null ? [$entry->getInventory(), $coreSlotId] : null;
+		}
+		if(isset($this->windowMap[$windowId])){
+			return [$this->windowMap[$windowId], $netSlotId];
+		}
+		return null;
 	}
 
 	public function onTransactionStart(InventoryTransaction $tx) : void{
@@ -179,11 +226,30 @@ class InventoryManager{
 		}
 	}
 
+	/**
+	 * @return int[]|null
+	 * @phpstan-return array<int, int>|null
+	 */
+	private function createComplexSlotMapping(Inventory $inventory) : ?array{
+		//TODO: make this dynamic so plugins can add mappings for stuff not implemented by PM
+		return match(true){
+			$inventory instanceof AnvilInventory => UIInventorySlotOffset::ANVIL,
+			$inventory instanceof EnchantInventory => UIInventorySlotOffset::ENCHANTING_TABLE,
+			$inventory instanceof LoomInventory => UIInventorySlotOffset::LOOM,
+			$inventory instanceof StonecutterInventory => [UIInventorySlotOffset::STONE_CUTTER_INPUT => StonecutterInventory::SLOT_INPUT],
+			$inventory instanceof CraftingTableInventory => UIInventorySlotOffset::CRAFTING3X3_INPUT,
+			default => null,
+		};
+	}
+
 	public function onCurrentWindowChange(Inventory $inventory) : void{
 		$this->onCurrentWindowRemove();
 
 		$this->openWindowDeferred(function() use ($inventory) : void{
 			$windowId = $this->addDynamic($inventory);
+			if(($slotMap = $this->createComplexSlotMapping($inventory)) !== null){
+				$this->addComplex($slotMap, $inventory);
+			}
 
 			foreach($this->containerOpenCallbacks as $callback){
 				$pks = $callback($windowId, $inventory);
@@ -282,10 +348,17 @@ class InventoryManager{
 	}
 
 	public function syncSlot(Inventory $inventory, int $slot) : void{
-		$windowId = $this->getWindowId($inventory);
-		if($windowId !== null){
+		$slotMap = $this->complexWindows[spl_object_id($inventory)] ?? null;
+		if($slotMap !== null){
+			$windowId = ContainerIds::UI;
+			$netSlot = $slotMap->mapCoreToNet($slot) ?? null;
+		}else{
+			$windowId = $this->getWindowId($inventory);
+			$netSlot = $slot;
+		}
+		if($windowId !== null && $netSlot !== null){
 			$currentItem = $inventory->getItem($slot);
-			$clientSideItem = $this->initiatedSlotChanges[$windowId][$slot] ?? null;
+			$clientSideItem = $this->initiatedSlotChanges[$windowId][$netSlot] ?? null;
 			if($clientSideItem === null || !$clientSideItem->equalsExact($currentItem)){
 				$itemStackWrapper = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($currentItem));
 				if($windowId === ContainerIds::OFFHAND){
@@ -296,30 +369,37 @@ class InventoryManager{
 					//BDS (Bedrock Dedicated Server) also seems to work this way.
 					$this->session->sendDataPacket(InventoryContentPacket::create($windowId, [$itemStackWrapper]));
 				}else{
-					$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $slot, $itemStackWrapper));
+					$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $netSlot, $itemStackWrapper));
 				}
 			}
-			unset($this->initiatedSlotChanges[$windowId][$slot]);
+			unset($this->initiatedSlotChanges[$windowId][$netSlot]);
 		}
 	}
 
 	public function syncContents(Inventory $inventory) : void{
-		$windowId = $this->getWindowId($inventory);
+		$slotMap = $this->complexWindows[spl_object_id($inventory)] ?? null;
+		if($slotMap !== null){
+			$windowId = ContainerIds::UI;
+		}else{
+			$windowId = $this->getWindowId($inventory);
+		}
+		$typeConverter = TypeConverter::getInstance();
 		if($windowId !== null){
-			unset($this->initiatedSlotChanges[$windowId]);
-			$typeConverter = TypeConverter::getInstance();
-			if($windowId === ContainerIds::UI){
-				//TODO: HACK!
-				//Since 1.13, cursor is now part of a larger "UI inventory", and sending contents for this larger inventory does
-				//not work the way it's intended to. Even if it did, it would be necessary to send all 51 slots just to update
-				//this one, which is just not worth it.
-				//This workaround isn't great, but it's at least simple.
-				$this->session->sendDataPacket(InventorySlotPacket::create(
-					$windowId,
-					0,
-					ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($inventory->getItem(0)))
-				));
+			if($slotMap !== null){
+				foreach($inventory->getContents(true) as $slotId => $item){
+					$packetSlot = $slotMap->mapCoreToNet($slotId) ?? null;
+					if($packetSlot === null){
+						continue;
+					}
+					unset($this->initiatedSlotChanges[$windowId][$packetSlot]);
+					$this->session->sendDataPacket(InventorySlotPacket::create(
+						$windowId,
+						$packetSlot,
+						ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($inventory->getItem($slotId)))
+					));
+				}
 			}else{
+				unset($this->initiatedSlotChanges[$windowId]);
 				$this->session->sendDataPacket(InventoryContentPacket::create($windowId, array_map(function(Item $itemStack) use ($typeConverter) : ItemStackWrapper{
 					return ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($itemStack));
 				}, $inventory->getContents(true))));
@@ -331,16 +411,20 @@ class InventoryManager{
 		foreach($this->windowMap as $inventory){
 			$this->syncContents($inventory);
 		}
+		foreach($this->complexWindows as $entry){
+			$this->syncContents($entry->getInventory());
+		}
 	}
 
 	public function syncMismatchedPredictedSlotChanges() : void{
 		foreach($this->initiatedSlotChanges as $windowId => $slots){
-			if(!isset($this->windowMap[$windowId])){
-				continue;
-			}
-			$inventory = $this->windowMap[$windowId];
+			foreach($slots as $netSlot => $expectedItem){
+				$located = $this->locateWindowAndSlot($windowId, $netSlot);
+				if($located === null){
+					continue;
+				}
+				[$inventory, $slot] = $located;
 
-			foreach($slots as $slot => $expectedItem){
 				if(!$inventory->slotExists($slot)){
 					continue; //TODO: size desync ???
 				}

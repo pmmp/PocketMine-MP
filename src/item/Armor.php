@@ -86,6 +86,12 @@ class Armor extends Durable{
 		return $this;
 	}
 
+	/** @return $this */
+	public function clearCustomColor() : self{
+		$this->customColor = null;
+		return $this;
+	}
+
 	/**
 	 * Returns the total enchantment protection factor this armour piece offers from all applicable protection
 	 * enchantments on the item.
