@@ -97,9 +97,7 @@ class Item implements \JsonSerializable{
 	 */
 	protected $canDestroy;
 
-	/**
-	 * @var Item[] $containedItems
-	 */
+	/** @var Item[] $containedItems */
 	protected $containedItems;
 
 	/**
