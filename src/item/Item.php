@@ -240,7 +240,7 @@ class Item implements \JsonSerializable{
 	 * @param Item[] $items
 	 */
 	public function setContainedItems(array $items) : void{
-		Utils::validateArrayValueType($items, static function(Item $_) : void{}):
+		Utils::validateArrayValueType($items, static function(Item $_) : void{});
 		$this->containedItems = $items;
 	}
 
