@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\object;
 
-use pocketmine\block\tile\Container;
 use pocketmine\entity\animation\ItemEntityStackSizeChangeAnimation;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
@@ -35,7 +34,6 @@ use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\AddItemActorPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
@@ -326,11 +324,8 @@ class ItemEntity extends Entity{
 	}
 
 	protected function onDeath() : void{
-		if(($inventoryTag = $this->item->getNamedTag()->getTag(Container::TAG_ITEMS)) instanceof ListTag){
-			/** @var CompoundTag $itemNBT */
-			foreach($inventoryTag as $itemNBT){
-				$this->getWorld()->dropItem($this->location, Item::nbtDeserialize($itemNBT));
-			}
+		foreach($this->item->getContainedItems() as $item){
+			$this->getWorld()->dropItem($this->location, $item);
 		}
 	}
 }
