@@ -37,6 +37,9 @@ use pocketmine\world\World;
 class WorldSoundEvent extends WorldEvent implements Cancellable{
 	use CancellableTrait;
 
+	/**
+	 * @param Player[]|null $players
+	 */
 	public function __construct(
 		World $world,
 		private Vector3 $position,
