@@ -51,6 +51,7 @@ use pocketmine\event\world\ChunkPopulateEvent;
 use pocketmine\event\world\ChunkUnloadEvent;
 use pocketmine\event\world\SpawnChangeEvent;
 use pocketmine\event\world\WorldSaveEvent;
+use pocketmine\event\world\WorldSoundEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\LegacyStringToItemParser;
@@ -560,14 +561,22 @@ class World implements ChunkManager{
 	 * @param Player[]|null $players
 	 */
 	public function addSound(Vector3 $pos, Sound $sound, ?array $players = null) : void{
-		$pk = $sound->encode($pos);
+		$ev = new WorldSoundEvent($this, $pos, $sound, $players);
+
+		$ev->call();
+
+		if($ev->isCancelled()){
+			return;
+		}
+
+		$pk = $ev->getSound()->encode($ev->getPosition());
 		if(count($pk) > 0){
-			if($players === null){
+			if($ev->getPlayers() === null){
 				foreach($pk as $e){
-					$this->broadcastPacketToViewers($pos, $e);
+					$this->broadcastPacketToViewers($ev->getPosition(), $e);
 				}
 			}else{
-				$this->server->broadcastPackets($players, $pk);
+				$this->server->broadcastPackets($ev->getPlayers(), $pk);
 			}
 		}
 	}
