@@ -150,6 +150,7 @@ use function round;
 use function sleep;
 use function spl_object_id;
 use function sprintf;
+use function str_pad;
 use function str_repeat;
 use function str_replace;
 use function stripos;
@@ -164,9 +165,9 @@ use function yaml_parse;
 use function zlib_decode;
 use function zlib_encode;
 use const DIRECTORY_SEPARATOR;
-use const PHP_EOL;
 use const PHP_INT_MAX;
 use const PTHREADS_INHERIT_NONE;
+use const STR_PAD_LEFT;
 use const ZLIB_ENCODING_GZIP;
 
 /**
@@ -1678,9 +1679,10 @@ class Server{
 
 		//Force minimum uptime to be >= 120 seconds, to reduce the impact of spammy crash loops
 		$spacing = ((int) $this->startTime) - time() + 120;
-		if($spacing > 0){
-			echo "--- Waiting $spacing seconds to throttle automatic restart (you can kill the process safely now) ---" . PHP_EOL;
-			sleep($spacing);
+		while($spacing > 0){
+			echo "\r--- Waiting " . str_pad("$spacing", 3, " ", STR_PAD_LEFT) . " seconds to throttle automatic restart (you can kill the process safely now) ---";
+			sleep(1);
+			--$spacing;
 		}
 		@Process::kill(Process::pid(), true);
 		exit(1);
