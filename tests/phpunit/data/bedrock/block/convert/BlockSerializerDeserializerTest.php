@@ -34,12 +34,12 @@ use pocketmine\data\bedrock\block\BlockStateSerializeException;
 use function print_r;
 
 final class BlockSerializerDeserializerTest extends TestCase{
-	private BlockStateToBlockObjectDeserializer $deserializer;
-	private BlockObjectToBlockStateSerializer $serializer;
+	private BlockStateToObjectDeserializer $deserializer;
+	private BlockObjectToStateSerializer $serializer;
 
 	public function setUp() : void{
-		$this->deserializer = new BlockStateToBlockObjectDeserializer();
-		$this->serializer = new BlockObjectToBlockStateSerializer();
+		$this->deserializer = new BlockStateToObjectDeserializer();
+		$this->serializer = new BlockObjectToStateSerializer();
 	}
 
 	public function testAllKnownBlockStatesSerializableAndDeserializable() : void{

@@ -54,7 +54,7 @@ class ConcretePowder extends Opaque implements Fallable{
 	}
 
 	public function tickFalling() : ?Block{
-		if ($this->getAdjacentWater() === null) {
+		if($this->getAdjacentWater() === null){
 			return null;
 		}
 		return VanillaBlocks::CONCRETE()->setColor($this->color);

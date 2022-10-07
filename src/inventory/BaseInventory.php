@@ -75,11 +75,13 @@ abstract class BaseInventory implements Inventory{
 
 	/**
 	 * @param Item[] $items
+	 * @phpstan-param array<int, Item> $items
 	 */
 	abstract protected function internalSetContents(array $items) : void;
 
 	/**
 	 * @param Item[] $items
+	 * @phpstan-param array<int, Item> $items
 	 */
 	public function setContents(array $items) : void{
 		if(count($items) > $this->getSize()){

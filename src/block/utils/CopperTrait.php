@@ -34,7 +34,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\sound\CopperWaxApplySound;
 use pocketmine\world\sound\CopperWaxRemoveSound;
-use pocketmine\world\sound\ItemUseOnBlockSound;
+use pocketmine\world\sound\ScrapeSound;
 
 trait CopperTrait{
 	private CopperOxidation $oxidation;
@@ -93,7 +93,7 @@ trait CopperTrait{
 				$this->oxidation = $previousOxidation;
 				$this->position->getWorld()->setBlock($this->position, $this);
 				//TODO: turquoise particles are supposed to appear when removing oxidation
-				$this->position->getWorld()->addSound($this->position, new ItemUseOnBlockSound($this));
+				$this->position->getWorld()->addSound($this->position, new ScrapeSound());
 				$item->applyDamage(1);
 				return true;
 			}

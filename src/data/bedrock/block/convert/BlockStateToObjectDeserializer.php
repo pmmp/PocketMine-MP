@@ -51,15 +51,22 @@ use pocketmine\data\bedrock\block\convert\BlockStateReader as Reader;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use function array_key_exists;
+use function count;
 use function min;
 
-final class BlockStateToBlockObjectDeserializer implements BlockStateDeserializer{
+final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 
 	/**
 	 * @var \Closure[]
 	 * @phpstan-var array<string, \Closure(Reader $in) : Block>
 	 */
 	private array $deserializeFuncs = [];
+
+	/**
+	 * @var int[]
+	 * @phpstan-var array<string, int>
+	 */
+	private array $simpleCache = [];
 
 	public function __construct(){
 		$this->registerCandleDeserializers();
@@ -69,6 +76,12 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 	}
 
 	public function deserialize(BlockStateData $stateData) : int{
+		if(count($stateData->getStates()) === 0){
+			//if a block has zero properties, we can keep a map of string ID -> internal blockstate ID
+			return $this->simpleCache[$stateData->getName()] ??= $this->deserializeBlock($stateData)->getStateId();
+		}
+
+		//we can't cache blocks that have properties - go ahead and deserialize the slow way
 		return $this->deserializeBlock($stateData)->getStateId();
 	}
 
@@ -80,14 +93,19 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->deserializeFuncs[$id] = $c;
 	}
 
+	/** @phpstan-param \Closure() : Block $getBlock */
+	public function mapSimple(string $id, \Closure $getBlock) : void{
+		$this->map($id, $getBlock);
+	}
+
 	/**
-	 * @phpstan-param \Closure() : Slab $getBlock
+	 * @phpstan-param \Closure(Reader) : Slab $getBlock
 	 */
 	public function mapSlab(string $singleId, string $doubleId, \Closure $getBlock) : void{
-		$this->map($singleId, fn(Reader $in) : Slab => $getBlock()->setSlabType($in->readSlabPosition()));
+		$this->map($singleId, fn(Reader $in) : Slab => $getBlock($in)->setSlabType($in->readSlabPosition()));
 		$this->map($doubleId, function(Reader $in) use ($getBlock) : Slab{
 			$in->ignored(StateNames::TOP_SLOT_BIT);
-			return $getBlock()->setSlabType(SlabType::DOUBLE());
+			return $getBlock($in)->setSlabType(SlabType::DOUBLE());
 		});
 	}
 
@@ -160,256 +178,256 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 	}
 
 	private function registerSimpleDeserializers() : void{
-		$this->map(Ids::AIR, fn() => Blocks::AIR());
-		$this->map(Ids::AMETHYST_BLOCK, fn() => Blocks::AMETHYST());
-		$this->map(Ids::ANCIENT_DEBRIS, fn() => Blocks::ANCIENT_DEBRIS());
-		$this->map(Ids::BARRIER, fn() => Blocks::BARRIER());
-		$this->map(Ids::BEACON, fn() => Blocks::BEACON());
-		$this->map(Ids::BLACKSTONE, fn() => Blocks::BLACKSTONE());
-		$this->map(Ids::BLUE_ICE, fn() => Blocks::BLUE_ICE());
-		$this->map(Ids::BOOKSHELF, fn() => Blocks::BOOKSHELF());
-		$this->map(Ids::BRICK_BLOCK, fn() => Blocks::BRICKS());
-		$this->map(Ids::BROWN_MUSHROOM, fn() => Blocks::BROWN_MUSHROOM());
-		$this->map(Ids::CALCITE, fn() => Blocks::CALCITE());
-		$this->map(Ids::CARTOGRAPHY_TABLE, fn() => Blocks::CARTOGRAPHY_TABLE());
-		$this->map(Ids::CHEMICAL_HEAT, fn() => Blocks::CHEMICAL_HEAT());
-		$this->map(Ids::CHISELED_DEEPSLATE, fn() => Blocks::CHISELED_DEEPSLATE());
-		$this->map(Ids::CHISELED_NETHER_BRICKS, fn() => Blocks::CHISELED_NETHER_BRICKS());
-		$this->map(Ids::CHISELED_POLISHED_BLACKSTONE, fn() => Blocks::CHISELED_POLISHED_BLACKSTONE());
-		$this->map(Ids::CHORUS_PLANT, fn() => Blocks::CHORUS_PLANT());
-		$this->map(Ids::CLAY, fn() => Blocks::CLAY());
-		$this->map(Ids::COAL_BLOCK, fn() => Blocks::COAL());
-		$this->map(Ids::COAL_ORE, fn() => Blocks::COAL_ORE());
-		$this->map(Ids::COBBLED_DEEPSLATE, fn() => Blocks::COBBLED_DEEPSLATE());
-		$this->map(Ids::COBBLESTONE, fn() => Blocks::COBBLESTONE());
-		$this->map(Ids::COPPER_ORE, fn() => Blocks::COPPER_ORE());
-		$this->map(Ids::CRACKED_DEEPSLATE_BRICKS, fn() => Blocks::CRACKED_DEEPSLATE_BRICKS());
-		$this->map(Ids::CRACKED_DEEPSLATE_TILES, fn() => Blocks::CRACKED_DEEPSLATE_TILES());
-		$this->map(Ids::CRACKED_NETHER_BRICKS, fn() => Blocks::CRACKED_NETHER_BRICKS());
-		$this->map(Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS, fn() => Blocks::CRACKED_POLISHED_BLACKSTONE_BRICKS());
-		$this->map(Ids::CRAFTING_TABLE, fn() => Blocks::CRAFTING_TABLE());
-		$this->map(Ids::CRIMSON_FENCE, fn() => Blocks::CRIMSON_FENCE());
-		$this->map(Ids::CRIMSON_PLANKS, fn() => Blocks::CRIMSON_PLANKS());
-		$this->map(Ids::CRYING_OBSIDIAN, fn() => Blocks::CRYING_OBSIDIAN());
-		$this->map(Ids::DEADBUSH, fn() => Blocks::DEAD_BUSH());
-		$this->map(Ids::DEEPSLATE_BRICKS, fn() => Blocks::DEEPSLATE_BRICKS());
-		$this->map(Ids::DEEPSLATE_COAL_ORE, fn() => Blocks::DEEPSLATE_COAL_ORE());
-		$this->map(Ids::DEEPSLATE_COPPER_ORE, fn() => Blocks::DEEPSLATE_COPPER_ORE());
-		$this->map(Ids::DEEPSLATE_DIAMOND_ORE, fn() => Blocks::DEEPSLATE_DIAMOND_ORE());
-		$this->map(Ids::DEEPSLATE_EMERALD_ORE, fn() => Blocks::DEEPSLATE_EMERALD_ORE());
-		$this->map(Ids::DEEPSLATE_GOLD_ORE, fn() => Blocks::DEEPSLATE_GOLD_ORE());
-		$this->map(Ids::DEEPSLATE_IRON_ORE, fn() => Blocks::DEEPSLATE_IRON_ORE());
-		$this->map(Ids::DEEPSLATE_LAPIS_ORE, fn() => Blocks::DEEPSLATE_LAPIS_LAZULI_ORE());
-		$this->map(Ids::DEEPSLATE_TILES, fn() => Blocks::DEEPSLATE_TILES());
-		$this->map(Ids::DIAMOND_BLOCK, fn() => Blocks::DIAMOND());
-		$this->map(Ids::DIAMOND_ORE, fn() => Blocks::DIAMOND_ORE());
-		$this->map(Ids::DRAGON_EGG, fn() => Blocks::DRAGON_EGG());
-		$this->map(Ids::DRIED_KELP_BLOCK, fn() => Blocks::DRIED_KELP());
-		$this->map(Ids::ELEMENT_0, fn() => Blocks::ELEMENT_ZERO());
-		$this->map(Ids::ELEMENT_1, fn() => Blocks::ELEMENT_HYDROGEN());
-		$this->map(Ids::ELEMENT_10, fn() => Blocks::ELEMENT_NEON());
-		$this->map(Ids::ELEMENT_100, fn() => Blocks::ELEMENT_FERMIUM());
-		$this->map(Ids::ELEMENT_101, fn() => Blocks::ELEMENT_MENDELEVIUM());
-		$this->map(Ids::ELEMENT_102, fn() => Blocks::ELEMENT_NOBELIUM());
-		$this->map(Ids::ELEMENT_103, fn() => Blocks::ELEMENT_LAWRENCIUM());
-		$this->map(Ids::ELEMENT_104, fn() => Blocks::ELEMENT_RUTHERFORDIUM());
-		$this->map(Ids::ELEMENT_105, fn() => Blocks::ELEMENT_DUBNIUM());
-		$this->map(Ids::ELEMENT_106, fn() => Blocks::ELEMENT_SEABORGIUM());
-		$this->map(Ids::ELEMENT_107, fn() => Blocks::ELEMENT_BOHRIUM());
-		$this->map(Ids::ELEMENT_108, fn() => Blocks::ELEMENT_HASSIUM());
-		$this->map(Ids::ELEMENT_109, fn() => Blocks::ELEMENT_MEITNERIUM());
-		$this->map(Ids::ELEMENT_11, fn() => Blocks::ELEMENT_SODIUM());
-		$this->map(Ids::ELEMENT_110, fn() => Blocks::ELEMENT_DARMSTADTIUM());
-		$this->map(Ids::ELEMENT_111, fn() => Blocks::ELEMENT_ROENTGENIUM());
-		$this->map(Ids::ELEMENT_112, fn() => Blocks::ELEMENT_COPERNICIUM());
-		$this->map(Ids::ELEMENT_113, fn() => Blocks::ELEMENT_NIHONIUM());
-		$this->map(Ids::ELEMENT_114, fn() => Blocks::ELEMENT_FLEROVIUM());
-		$this->map(Ids::ELEMENT_115, fn() => Blocks::ELEMENT_MOSCOVIUM());
-		$this->map(Ids::ELEMENT_116, fn() => Blocks::ELEMENT_LIVERMORIUM());
-		$this->map(Ids::ELEMENT_117, fn() => Blocks::ELEMENT_TENNESSINE());
-		$this->map(Ids::ELEMENT_118, fn() => Blocks::ELEMENT_OGANESSON());
-		$this->map(Ids::ELEMENT_12, fn() => Blocks::ELEMENT_MAGNESIUM());
-		$this->map(Ids::ELEMENT_13, fn() => Blocks::ELEMENT_ALUMINUM());
-		$this->map(Ids::ELEMENT_14, fn() => Blocks::ELEMENT_SILICON());
-		$this->map(Ids::ELEMENT_15, fn() => Blocks::ELEMENT_PHOSPHORUS());
-		$this->map(Ids::ELEMENT_16, fn() => Blocks::ELEMENT_SULFUR());
-		$this->map(Ids::ELEMENT_17, fn() => Blocks::ELEMENT_CHLORINE());
-		$this->map(Ids::ELEMENT_18, fn() => Blocks::ELEMENT_ARGON());
-		$this->map(Ids::ELEMENT_19, fn() => Blocks::ELEMENT_POTASSIUM());
-		$this->map(Ids::ELEMENT_2, fn() => Blocks::ELEMENT_HELIUM());
-		$this->map(Ids::ELEMENT_20, fn() => Blocks::ELEMENT_CALCIUM());
-		$this->map(Ids::ELEMENT_21, fn() => Blocks::ELEMENT_SCANDIUM());
-		$this->map(Ids::ELEMENT_22, fn() => Blocks::ELEMENT_TITANIUM());
-		$this->map(Ids::ELEMENT_23, fn() => Blocks::ELEMENT_VANADIUM());
-		$this->map(Ids::ELEMENT_24, fn() => Blocks::ELEMENT_CHROMIUM());
-		$this->map(Ids::ELEMENT_25, fn() => Blocks::ELEMENT_MANGANESE());
-		$this->map(Ids::ELEMENT_26, fn() => Blocks::ELEMENT_IRON());
-		$this->map(Ids::ELEMENT_27, fn() => Blocks::ELEMENT_COBALT());
-		$this->map(Ids::ELEMENT_28, fn() => Blocks::ELEMENT_NICKEL());
-		$this->map(Ids::ELEMENT_29, fn() => Blocks::ELEMENT_COPPER());
-		$this->map(Ids::ELEMENT_3, fn() => Blocks::ELEMENT_LITHIUM());
-		$this->map(Ids::ELEMENT_30, fn() => Blocks::ELEMENT_ZINC());
-		$this->map(Ids::ELEMENT_31, fn() => Blocks::ELEMENT_GALLIUM());
-		$this->map(Ids::ELEMENT_32, fn() => Blocks::ELEMENT_GERMANIUM());
-		$this->map(Ids::ELEMENT_33, fn() => Blocks::ELEMENT_ARSENIC());
-		$this->map(Ids::ELEMENT_34, fn() => Blocks::ELEMENT_SELENIUM());
-		$this->map(Ids::ELEMENT_35, fn() => Blocks::ELEMENT_BROMINE());
-		$this->map(Ids::ELEMENT_36, fn() => Blocks::ELEMENT_KRYPTON());
-		$this->map(Ids::ELEMENT_37, fn() => Blocks::ELEMENT_RUBIDIUM());
-		$this->map(Ids::ELEMENT_38, fn() => Blocks::ELEMENT_STRONTIUM());
-		$this->map(Ids::ELEMENT_39, fn() => Blocks::ELEMENT_YTTRIUM());
-		$this->map(Ids::ELEMENT_4, fn() => Blocks::ELEMENT_BERYLLIUM());
-		$this->map(Ids::ELEMENT_40, fn() => Blocks::ELEMENT_ZIRCONIUM());
-		$this->map(Ids::ELEMENT_41, fn() => Blocks::ELEMENT_NIOBIUM());
-		$this->map(Ids::ELEMENT_42, fn() => Blocks::ELEMENT_MOLYBDENUM());
-		$this->map(Ids::ELEMENT_43, fn() => Blocks::ELEMENT_TECHNETIUM());
-		$this->map(Ids::ELEMENT_44, fn() => Blocks::ELEMENT_RUTHENIUM());
-		$this->map(Ids::ELEMENT_45, fn() => Blocks::ELEMENT_RHODIUM());
-		$this->map(Ids::ELEMENT_46, fn() => Blocks::ELEMENT_PALLADIUM());
-		$this->map(Ids::ELEMENT_47, fn() => Blocks::ELEMENT_SILVER());
-		$this->map(Ids::ELEMENT_48, fn() => Blocks::ELEMENT_CADMIUM());
-		$this->map(Ids::ELEMENT_49, fn() => Blocks::ELEMENT_INDIUM());
-		$this->map(Ids::ELEMENT_5, fn() => Blocks::ELEMENT_BORON());
-		$this->map(Ids::ELEMENT_50, fn() => Blocks::ELEMENT_TIN());
-		$this->map(Ids::ELEMENT_51, fn() => Blocks::ELEMENT_ANTIMONY());
-		$this->map(Ids::ELEMENT_52, fn() => Blocks::ELEMENT_TELLURIUM());
-		$this->map(Ids::ELEMENT_53, fn() => Blocks::ELEMENT_IODINE());
-		$this->map(Ids::ELEMENT_54, fn() => Blocks::ELEMENT_XENON());
-		$this->map(Ids::ELEMENT_55, fn() => Blocks::ELEMENT_CESIUM());
-		$this->map(Ids::ELEMENT_56, fn() => Blocks::ELEMENT_BARIUM());
-		$this->map(Ids::ELEMENT_57, fn() => Blocks::ELEMENT_LANTHANUM());
-		$this->map(Ids::ELEMENT_58, fn() => Blocks::ELEMENT_CERIUM());
-		$this->map(Ids::ELEMENT_59, fn() => Blocks::ELEMENT_PRASEODYMIUM());
-		$this->map(Ids::ELEMENT_6, fn() => Blocks::ELEMENT_CARBON());
-		$this->map(Ids::ELEMENT_60, fn() => Blocks::ELEMENT_NEODYMIUM());
-		$this->map(Ids::ELEMENT_61, fn() => Blocks::ELEMENT_PROMETHIUM());
-		$this->map(Ids::ELEMENT_62, fn() => Blocks::ELEMENT_SAMARIUM());
-		$this->map(Ids::ELEMENT_63, fn() => Blocks::ELEMENT_EUROPIUM());
-		$this->map(Ids::ELEMENT_64, fn() => Blocks::ELEMENT_GADOLINIUM());
-		$this->map(Ids::ELEMENT_65, fn() => Blocks::ELEMENT_TERBIUM());
-		$this->map(Ids::ELEMENT_66, fn() => Blocks::ELEMENT_DYSPROSIUM());
-		$this->map(Ids::ELEMENT_67, fn() => Blocks::ELEMENT_HOLMIUM());
-		$this->map(Ids::ELEMENT_68, fn() => Blocks::ELEMENT_ERBIUM());
-		$this->map(Ids::ELEMENT_69, fn() => Blocks::ELEMENT_THULIUM());
-		$this->map(Ids::ELEMENT_7, fn() => Blocks::ELEMENT_NITROGEN());
-		$this->map(Ids::ELEMENT_70, fn() => Blocks::ELEMENT_YTTERBIUM());
-		$this->map(Ids::ELEMENT_71, fn() => Blocks::ELEMENT_LUTETIUM());
-		$this->map(Ids::ELEMENT_72, fn() => Blocks::ELEMENT_HAFNIUM());
-		$this->map(Ids::ELEMENT_73, fn() => Blocks::ELEMENT_TANTALUM());
-		$this->map(Ids::ELEMENT_74, fn() => Blocks::ELEMENT_TUNGSTEN());
-		$this->map(Ids::ELEMENT_75, fn() => Blocks::ELEMENT_RHENIUM());
-		$this->map(Ids::ELEMENT_76, fn() => Blocks::ELEMENT_OSMIUM());
-		$this->map(Ids::ELEMENT_77, fn() => Blocks::ELEMENT_IRIDIUM());
-		$this->map(Ids::ELEMENT_78, fn() => Blocks::ELEMENT_PLATINUM());
-		$this->map(Ids::ELEMENT_79, fn() => Blocks::ELEMENT_GOLD());
-		$this->map(Ids::ELEMENT_8, fn() => Blocks::ELEMENT_OXYGEN());
-		$this->map(Ids::ELEMENT_80, fn() => Blocks::ELEMENT_MERCURY());
-		$this->map(Ids::ELEMENT_81, fn() => Blocks::ELEMENT_THALLIUM());
-		$this->map(Ids::ELEMENT_82, fn() => Blocks::ELEMENT_LEAD());
-		$this->map(Ids::ELEMENT_83, fn() => Blocks::ELEMENT_BISMUTH());
-		$this->map(Ids::ELEMENT_84, fn() => Blocks::ELEMENT_POLONIUM());
-		$this->map(Ids::ELEMENT_85, fn() => Blocks::ELEMENT_ASTATINE());
-		$this->map(Ids::ELEMENT_86, fn() => Blocks::ELEMENT_RADON());
-		$this->map(Ids::ELEMENT_87, fn() => Blocks::ELEMENT_FRANCIUM());
-		$this->map(Ids::ELEMENT_88, fn() => Blocks::ELEMENT_RADIUM());
-		$this->map(Ids::ELEMENT_89, fn() => Blocks::ELEMENT_ACTINIUM());
-		$this->map(Ids::ELEMENT_9, fn() => Blocks::ELEMENT_FLUORINE());
-		$this->map(Ids::ELEMENT_90, fn() => Blocks::ELEMENT_THORIUM());
-		$this->map(Ids::ELEMENT_91, fn() => Blocks::ELEMENT_PROTACTINIUM());
-		$this->map(Ids::ELEMENT_92, fn() => Blocks::ELEMENT_URANIUM());
-		$this->map(Ids::ELEMENT_93, fn() => Blocks::ELEMENT_NEPTUNIUM());
-		$this->map(Ids::ELEMENT_94, fn() => Blocks::ELEMENT_PLUTONIUM());
-		$this->map(Ids::ELEMENT_95, fn() => Blocks::ELEMENT_AMERICIUM());
-		$this->map(Ids::ELEMENT_96, fn() => Blocks::ELEMENT_CURIUM());
-		$this->map(Ids::ELEMENT_97, fn() => Blocks::ELEMENT_BERKELIUM());
-		$this->map(Ids::ELEMENT_98, fn() => Blocks::ELEMENT_CALIFORNIUM());
-		$this->map(Ids::ELEMENT_99, fn() => Blocks::ELEMENT_EINSTEINIUM());
-		$this->map(Ids::EMERALD_BLOCK, fn() => Blocks::EMERALD());
-		$this->map(Ids::EMERALD_ORE, fn() => Blocks::EMERALD_ORE());
-		$this->map(Ids::ENCHANTING_TABLE, fn() => Blocks::ENCHANTING_TABLE());
-		$this->map(Ids::END_BRICKS, fn() => Blocks::END_STONE_BRICKS());
-		$this->map(Ids::END_STONE, fn() => Blocks::END_STONE());
-		$this->map(Ids::FLETCHING_TABLE, fn() => Blocks::FLETCHING_TABLE());
-		$this->map(Ids::GILDED_BLACKSTONE, fn() => Blocks::GILDED_BLACKSTONE());
-		$this->map(Ids::GLASS, fn() => Blocks::GLASS());
-		$this->map(Ids::GLASS_PANE, fn() => Blocks::GLASS_PANE());
-		$this->map(Ids::GLOWINGOBSIDIAN, fn() => Blocks::GLOWING_OBSIDIAN());
-		$this->map(Ids::GLOWSTONE, fn() => Blocks::GLOWSTONE());
-		$this->map(Ids::GOLD_BLOCK, fn() => Blocks::GOLD());
-		$this->map(Ids::GOLD_ORE, fn() => Blocks::GOLD_ORE());
-		$this->map(Ids::GRASS, fn() => Blocks::GRASS());
-		$this->map(Ids::GRASS_PATH, fn() => Blocks::GRASS_PATH());
-		$this->map(Ids::GRAVEL, fn() => Blocks::GRAVEL());
-		$this->map(Ids::HANGING_ROOTS, fn() => Blocks::HANGING_ROOTS());
-		$this->map(Ids::HARD_GLASS, fn() => Blocks::HARDENED_GLASS());
-		$this->map(Ids::HARD_GLASS_PANE, fn() => Blocks::HARDENED_GLASS_PANE());
-		$this->map(Ids::HARDENED_CLAY, fn() => Blocks::HARDENED_CLAY());
-		$this->map(Ids::HONEYCOMB_BLOCK, fn() => Blocks::HONEYCOMB());
-		$this->map(Ids::ICE, fn() => Blocks::ICE());
-		$this->map(Ids::INFO_UPDATE, fn() => Blocks::INFO_UPDATE());
-		$this->map(Ids::INFO_UPDATE2, fn() => Blocks::INFO_UPDATE2());
-		$this->map(Ids::INVISIBLE_BEDROCK, fn() => Blocks::INVISIBLE_BEDROCK());
-		$this->map(Ids::IRON_BARS, fn() => Blocks::IRON_BARS());
-		$this->map(Ids::IRON_BLOCK, fn() => Blocks::IRON());
-		$this->map(Ids::IRON_ORE, fn() => Blocks::IRON_ORE());
-		$this->map(Ids::JUKEBOX, fn() => Blocks::JUKEBOX());
-		$this->map(Ids::LAPIS_BLOCK, fn() => Blocks::LAPIS_LAZULI());
-		$this->map(Ids::LAPIS_ORE, fn() => Blocks::LAPIS_LAZULI_ORE());
-		$this->map(Ids::MAGMA, fn() => Blocks::MAGMA());
-		$this->map(Ids::MANGROVE_FENCE, fn() => Blocks::MANGROVE_FENCE());
-		$this->map(Ids::MANGROVE_PLANKS, fn() => Blocks::MANGROVE_PLANKS());
-		$this->map(Ids::MANGROVE_ROOTS, fn() => Blocks::MANGROVE_ROOTS());
-		$this->map(Ids::MELON_BLOCK, fn() => Blocks::MELON());
-		$this->map(Ids::MOB_SPAWNER, fn() => Blocks::MONSTER_SPAWNER());
-		$this->map(Ids::MOSSY_COBBLESTONE, fn() => Blocks::MOSSY_COBBLESTONE());
-		$this->map(Ids::MUD, fn() => Blocks::MUD());
-		$this->map(Ids::MUD_BRICKS, fn() => Blocks::MUD_BRICKS());
-		$this->map(Ids::MYCELIUM, fn() => Blocks::MYCELIUM());
-		$this->map(Ids::NETHER_BRICK, fn() => Blocks::NETHER_BRICKS());
-		$this->map(Ids::NETHER_BRICK_FENCE, fn() => Blocks::NETHER_BRICK_FENCE());
-		$this->map(Ids::NETHER_GOLD_ORE, fn() => Blocks::NETHER_GOLD_ORE());
-		$this->map(Ids::NETHER_WART_BLOCK, fn() => Blocks::NETHER_WART_BLOCK());
-		$this->map(Ids::NETHERITE_BLOCK, fn() => Blocks::NETHERITE());
-		$this->map(Ids::NETHERRACK, fn() => Blocks::NETHERRACK());
-		$this->map(Ids::NETHERREACTOR, fn() => Blocks::NETHER_REACTOR_CORE());
-		$this->map(Ids::NOTEBLOCK, fn() => Blocks::NOTE_BLOCK());
-		$this->map(Ids::OBSIDIAN, fn() => Blocks::OBSIDIAN());
-		$this->map(Ids::PACKED_ICE, fn() => Blocks::PACKED_ICE());
-		$this->map(Ids::PACKED_MUD, fn() => Blocks::PACKED_MUD());
-		$this->map(Ids::PODZOL, fn() => Blocks::PODZOL());
-		$this->map(Ids::POLISHED_BLACKSTONE, fn() => Blocks::POLISHED_BLACKSTONE());
-		$this->map(Ids::POLISHED_BLACKSTONE_BRICKS, fn() => Blocks::POLISHED_BLACKSTONE_BRICKS());
-		$this->map(Ids::POLISHED_DEEPSLATE, fn() => Blocks::POLISHED_DEEPSLATE());
-		$this->map(Ids::QUARTZ_BRICKS, fn() => Blocks::QUARTZ_BRICKS());
-		$this->map(Ids::QUARTZ_ORE, fn() => Blocks::NETHER_QUARTZ_ORE());
-		$this->map(Ids::RAW_COPPER_BLOCK, fn() => Blocks::RAW_COPPER());
-		$this->map(Ids::RAW_GOLD_BLOCK, fn() => Blocks::RAW_GOLD());
-		$this->map(Ids::RAW_IRON_BLOCK, fn() => Blocks::RAW_IRON());
-		$this->map(Ids::RED_MUSHROOM, fn() => Blocks::RED_MUSHROOM());
-		$this->map(Ids::RED_NETHER_BRICK, fn() => Blocks::RED_NETHER_BRICKS());
-		$this->map(Ids::REDSTONE_BLOCK, fn() => Blocks::REDSTONE());
-		$this->map(Ids::RESERVED6, fn() => Blocks::RESERVED6());
-		$this->map(Ids::SEA_LANTERN, fn() => Blocks::SEA_LANTERN());
-		$this->map(Ids::SHROOMLIGHT, fn() => Blocks::SHROOMLIGHT());
-		$this->map(Ids::SLIME, fn() => Blocks::SLIME());
-		$this->map(Ids::SMITHING_TABLE, fn() => Blocks::SMITHING_TABLE());
-		$this->map(Ids::SMOOTH_BASALT, fn() => Blocks::SMOOTH_BASALT());
-		$this->map(Ids::SMOOTH_STONE, fn() => Blocks::SMOOTH_STONE());
-		$this->map(Ids::SNOW, fn() => Blocks::SNOW());
-		$this->map(Ids::SOUL_SAND, fn() => Blocks::SOUL_SAND());
-		$this->map(Ids::SOUL_SOIL, fn() => Blocks::SOUL_SOIL());
-		$this->map(Ids::SPORE_BLOSSOM, fn() => Blocks::SPORE_BLOSSOM());
-		$this->map(Ids::STONECUTTER, fn() => Blocks::LEGACY_STONECUTTER());
-		$this->map(Ids::TINTED_GLASS, fn() => Blocks::TINTED_GLASS());
-		$this->map(Ids::TUFF, fn() => Blocks::TUFF());
-		$this->map(Ids::UNDYED_SHULKER_BOX, fn() => Blocks::SHULKER_BOX());
-		$this->map(Ids::WARPED_FENCE, fn() => Blocks::WARPED_FENCE());
-		$this->map(Ids::WARPED_PLANKS, fn() => Blocks::WARPED_PLANKS());
-		$this->map(Ids::WARPED_WART_BLOCK, fn() => Blocks::WARPED_WART_BLOCK());
-		$this->map(Ids::WATERLILY, fn() => Blocks::LILY_PAD());
-		$this->map(Ids::WEB, fn() => Blocks::COBWEB());
-		$this->map(Ids::WITHER_ROSE, fn() => Blocks::WITHER_ROSE());
-		$this->map(Ids::YELLOW_FLOWER, fn() => Blocks::DANDELION());
+		$this->mapSimple(Ids::AIR, fn() => Blocks::AIR());
+		$this->mapSimple(Ids::AMETHYST_BLOCK, fn() => Blocks::AMETHYST());
+		$this->mapSimple(Ids::ANCIENT_DEBRIS, fn() => Blocks::ANCIENT_DEBRIS());
+		$this->mapSimple(Ids::BARRIER, fn() => Blocks::BARRIER());
+		$this->mapSimple(Ids::BEACON, fn() => Blocks::BEACON());
+		$this->mapSimple(Ids::BLACKSTONE, fn() => Blocks::BLACKSTONE());
+		$this->mapSimple(Ids::BLUE_ICE, fn() => Blocks::BLUE_ICE());
+		$this->mapSimple(Ids::BOOKSHELF, fn() => Blocks::BOOKSHELF());
+		$this->mapSimple(Ids::BRICK_BLOCK, fn() => Blocks::BRICKS());
+		$this->mapSimple(Ids::BROWN_MUSHROOM, fn() => Blocks::BROWN_MUSHROOM());
+		$this->mapSimple(Ids::CALCITE, fn() => Blocks::CALCITE());
+		$this->mapSimple(Ids::CARTOGRAPHY_TABLE, fn() => Blocks::CARTOGRAPHY_TABLE());
+		$this->mapSimple(Ids::CHEMICAL_HEAT, fn() => Blocks::CHEMICAL_HEAT());
+		$this->mapSimple(Ids::CHISELED_DEEPSLATE, fn() => Blocks::CHISELED_DEEPSLATE());
+		$this->mapSimple(Ids::CHISELED_NETHER_BRICKS, fn() => Blocks::CHISELED_NETHER_BRICKS());
+		$this->mapSimple(Ids::CHISELED_POLISHED_BLACKSTONE, fn() => Blocks::CHISELED_POLISHED_BLACKSTONE());
+		$this->mapSimple(Ids::CHORUS_PLANT, fn() => Blocks::CHORUS_PLANT());
+		$this->mapSimple(Ids::CLAY, fn() => Blocks::CLAY());
+		$this->mapSimple(Ids::COAL_BLOCK, fn() => Blocks::COAL());
+		$this->mapSimple(Ids::COAL_ORE, fn() => Blocks::COAL_ORE());
+		$this->mapSimple(Ids::COBBLED_DEEPSLATE, fn() => Blocks::COBBLED_DEEPSLATE());
+		$this->mapSimple(Ids::COBBLESTONE, fn() => Blocks::COBBLESTONE());
+		$this->mapSimple(Ids::COPPER_ORE, fn() => Blocks::COPPER_ORE());
+		$this->mapSimple(Ids::CRACKED_DEEPSLATE_BRICKS, fn() => Blocks::CRACKED_DEEPSLATE_BRICKS());
+		$this->mapSimple(Ids::CRACKED_DEEPSLATE_TILES, fn() => Blocks::CRACKED_DEEPSLATE_TILES());
+		$this->mapSimple(Ids::CRACKED_NETHER_BRICKS, fn() => Blocks::CRACKED_NETHER_BRICKS());
+		$this->mapSimple(Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS, fn() => Blocks::CRACKED_POLISHED_BLACKSTONE_BRICKS());
+		$this->mapSimple(Ids::CRAFTING_TABLE, fn() => Blocks::CRAFTING_TABLE());
+		$this->mapSimple(Ids::CRIMSON_FENCE, fn() => Blocks::CRIMSON_FENCE());
+		$this->mapSimple(Ids::CRIMSON_PLANKS, fn() => Blocks::CRIMSON_PLANKS());
+		$this->mapSimple(Ids::CRYING_OBSIDIAN, fn() => Blocks::CRYING_OBSIDIAN());
+		$this->mapSimple(Ids::DEADBUSH, fn() => Blocks::DEAD_BUSH());
+		$this->mapSimple(Ids::DEEPSLATE_BRICKS, fn() => Blocks::DEEPSLATE_BRICKS());
+		$this->mapSimple(Ids::DEEPSLATE_COAL_ORE, fn() => Blocks::DEEPSLATE_COAL_ORE());
+		$this->mapSimple(Ids::DEEPSLATE_COPPER_ORE, fn() => Blocks::DEEPSLATE_COPPER_ORE());
+		$this->mapSimple(Ids::DEEPSLATE_DIAMOND_ORE, fn() => Blocks::DEEPSLATE_DIAMOND_ORE());
+		$this->mapSimple(Ids::DEEPSLATE_EMERALD_ORE, fn() => Blocks::DEEPSLATE_EMERALD_ORE());
+		$this->mapSimple(Ids::DEEPSLATE_GOLD_ORE, fn() => Blocks::DEEPSLATE_GOLD_ORE());
+		$this->mapSimple(Ids::DEEPSLATE_IRON_ORE, fn() => Blocks::DEEPSLATE_IRON_ORE());
+		$this->mapSimple(Ids::DEEPSLATE_LAPIS_ORE, fn() => Blocks::DEEPSLATE_LAPIS_LAZULI_ORE());
+		$this->mapSimple(Ids::DEEPSLATE_TILES, fn() => Blocks::DEEPSLATE_TILES());
+		$this->mapSimple(Ids::DIAMOND_BLOCK, fn() => Blocks::DIAMOND());
+		$this->mapSimple(Ids::DIAMOND_ORE, fn() => Blocks::DIAMOND_ORE());
+		$this->mapSimple(Ids::DRAGON_EGG, fn() => Blocks::DRAGON_EGG());
+		$this->mapSimple(Ids::DRIED_KELP_BLOCK, fn() => Blocks::DRIED_KELP());
+		$this->mapSimple(Ids::ELEMENT_0, fn() => Blocks::ELEMENT_ZERO());
+		$this->mapSimple(Ids::ELEMENT_1, fn() => Blocks::ELEMENT_HYDROGEN());
+		$this->mapSimple(Ids::ELEMENT_10, fn() => Blocks::ELEMENT_NEON());
+		$this->mapSimple(Ids::ELEMENT_100, fn() => Blocks::ELEMENT_FERMIUM());
+		$this->mapSimple(Ids::ELEMENT_101, fn() => Blocks::ELEMENT_MENDELEVIUM());
+		$this->mapSimple(Ids::ELEMENT_102, fn() => Blocks::ELEMENT_NOBELIUM());
+		$this->mapSimple(Ids::ELEMENT_103, fn() => Blocks::ELEMENT_LAWRENCIUM());
+		$this->mapSimple(Ids::ELEMENT_104, fn() => Blocks::ELEMENT_RUTHERFORDIUM());
+		$this->mapSimple(Ids::ELEMENT_105, fn() => Blocks::ELEMENT_DUBNIUM());
+		$this->mapSimple(Ids::ELEMENT_106, fn() => Blocks::ELEMENT_SEABORGIUM());
+		$this->mapSimple(Ids::ELEMENT_107, fn() => Blocks::ELEMENT_BOHRIUM());
+		$this->mapSimple(Ids::ELEMENT_108, fn() => Blocks::ELEMENT_HASSIUM());
+		$this->mapSimple(Ids::ELEMENT_109, fn() => Blocks::ELEMENT_MEITNERIUM());
+		$this->mapSimple(Ids::ELEMENT_11, fn() => Blocks::ELEMENT_SODIUM());
+		$this->mapSimple(Ids::ELEMENT_110, fn() => Blocks::ELEMENT_DARMSTADTIUM());
+		$this->mapSimple(Ids::ELEMENT_111, fn() => Blocks::ELEMENT_ROENTGENIUM());
+		$this->mapSimple(Ids::ELEMENT_112, fn() => Blocks::ELEMENT_COPERNICIUM());
+		$this->mapSimple(Ids::ELEMENT_113, fn() => Blocks::ELEMENT_NIHONIUM());
+		$this->mapSimple(Ids::ELEMENT_114, fn() => Blocks::ELEMENT_FLEROVIUM());
+		$this->mapSimple(Ids::ELEMENT_115, fn() => Blocks::ELEMENT_MOSCOVIUM());
+		$this->mapSimple(Ids::ELEMENT_116, fn() => Blocks::ELEMENT_LIVERMORIUM());
+		$this->mapSimple(Ids::ELEMENT_117, fn() => Blocks::ELEMENT_TENNESSINE());
+		$this->mapSimple(Ids::ELEMENT_118, fn() => Blocks::ELEMENT_OGANESSON());
+		$this->mapSimple(Ids::ELEMENT_12, fn() => Blocks::ELEMENT_MAGNESIUM());
+		$this->mapSimple(Ids::ELEMENT_13, fn() => Blocks::ELEMENT_ALUMINUM());
+		$this->mapSimple(Ids::ELEMENT_14, fn() => Blocks::ELEMENT_SILICON());
+		$this->mapSimple(Ids::ELEMENT_15, fn() => Blocks::ELEMENT_PHOSPHORUS());
+		$this->mapSimple(Ids::ELEMENT_16, fn() => Blocks::ELEMENT_SULFUR());
+		$this->mapSimple(Ids::ELEMENT_17, fn() => Blocks::ELEMENT_CHLORINE());
+		$this->mapSimple(Ids::ELEMENT_18, fn() => Blocks::ELEMENT_ARGON());
+		$this->mapSimple(Ids::ELEMENT_19, fn() => Blocks::ELEMENT_POTASSIUM());
+		$this->mapSimple(Ids::ELEMENT_2, fn() => Blocks::ELEMENT_HELIUM());
+		$this->mapSimple(Ids::ELEMENT_20, fn() => Blocks::ELEMENT_CALCIUM());
+		$this->mapSimple(Ids::ELEMENT_21, fn() => Blocks::ELEMENT_SCANDIUM());
+		$this->mapSimple(Ids::ELEMENT_22, fn() => Blocks::ELEMENT_TITANIUM());
+		$this->mapSimple(Ids::ELEMENT_23, fn() => Blocks::ELEMENT_VANADIUM());
+		$this->mapSimple(Ids::ELEMENT_24, fn() => Blocks::ELEMENT_CHROMIUM());
+		$this->mapSimple(Ids::ELEMENT_25, fn() => Blocks::ELEMENT_MANGANESE());
+		$this->mapSimple(Ids::ELEMENT_26, fn() => Blocks::ELEMENT_IRON());
+		$this->mapSimple(Ids::ELEMENT_27, fn() => Blocks::ELEMENT_COBALT());
+		$this->mapSimple(Ids::ELEMENT_28, fn() => Blocks::ELEMENT_NICKEL());
+		$this->mapSimple(Ids::ELEMENT_29, fn() => Blocks::ELEMENT_COPPER());
+		$this->mapSimple(Ids::ELEMENT_3, fn() => Blocks::ELEMENT_LITHIUM());
+		$this->mapSimple(Ids::ELEMENT_30, fn() => Blocks::ELEMENT_ZINC());
+		$this->mapSimple(Ids::ELEMENT_31, fn() => Blocks::ELEMENT_GALLIUM());
+		$this->mapSimple(Ids::ELEMENT_32, fn() => Blocks::ELEMENT_GERMANIUM());
+		$this->mapSimple(Ids::ELEMENT_33, fn() => Blocks::ELEMENT_ARSENIC());
+		$this->mapSimple(Ids::ELEMENT_34, fn() => Blocks::ELEMENT_SELENIUM());
+		$this->mapSimple(Ids::ELEMENT_35, fn() => Blocks::ELEMENT_BROMINE());
+		$this->mapSimple(Ids::ELEMENT_36, fn() => Blocks::ELEMENT_KRYPTON());
+		$this->mapSimple(Ids::ELEMENT_37, fn() => Blocks::ELEMENT_RUBIDIUM());
+		$this->mapSimple(Ids::ELEMENT_38, fn() => Blocks::ELEMENT_STRONTIUM());
+		$this->mapSimple(Ids::ELEMENT_39, fn() => Blocks::ELEMENT_YTTRIUM());
+		$this->mapSimple(Ids::ELEMENT_4, fn() => Blocks::ELEMENT_BERYLLIUM());
+		$this->mapSimple(Ids::ELEMENT_40, fn() => Blocks::ELEMENT_ZIRCONIUM());
+		$this->mapSimple(Ids::ELEMENT_41, fn() => Blocks::ELEMENT_NIOBIUM());
+		$this->mapSimple(Ids::ELEMENT_42, fn() => Blocks::ELEMENT_MOLYBDENUM());
+		$this->mapSimple(Ids::ELEMENT_43, fn() => Blocks::ELEMENT_TECHNETIUM());
+		$this->mapSimple(Ids::ELEMENT_44, fn() => Blocks::ELEMENT_RUTHENIUM());
+		$this->mapSimple(Ids::ELEMENT_45, fn() => Blocks::ELEMENT_RHODIUM());
+		$this->mapSimple(Ids::ELEMENT_46, fn() => Blocks::ELEMENT_PALLADIUM());
+		$this->mapSimple(Ids::ELEMENT_47, fn() => Blocks::ELEMENT_SILVER());
+		$this->mapSimple(Ids::ELEMENT_48, fn() => Blocks::ELEMENT_CADMIUM());
+		$this->mapSimple(Ids::ELEMENT_49, fn() => Blocks::ELEMENT_INDIUM());
+		$this->mapSimple(Ids::ELEMENT_5, fn() => Blocks::ELEMENT_BORON());
+		$this->mapSimple(Ids::ELEMENT_50, fn() => Blocks::ELEMENT_TIN());
+		$this->mapSimple(Ids::ELEMENT_51, fn() => Blocks::ELEMENT_ANTIMONY());
+		$this->mapSimple(Ids::ELEMENT_52, fn() => Blocks::ELEMENT_TELLURIUM());
+		$this->mapSimple(Ids::ELEMENT_53, fn() => Blocks::ELEMENT_IODINE());
+		$this->mapSimple(Ids::ELEMENT_54, fn() => Blocks::ELEMENT_XENON());
+		$this->mapSimple(Ids::ELEMENT_55, fn() => Blocks::ELEMENT_CESIUM());
+		$this->mapSimple(Ids::ELEMENT_56, fn() => Blocks::ELEMENT_BARIUM());
+		$this->mapSimple(Ids::ELEMENT_57, fn() => Blocks::ELEMENT_LANTHANUM());
+		$this->mapSimple(Ids::ELEMENT_58, fn() => Blocks::ELEMENT_CERIUM());
+		$this->mapSimple(Ids::ELEMENT_59, fn() => Blocks::ELEMENT_PRASEODYMIUM());
+		$this->mapSimple(Ids::ELEMENT_6, fn() => Blocks::ELEMENT_CARBON());
+		$this->mapSimple(Ids::ELEMENT_60, fn() => Blocks::ELEMENT_NEODYMIUM());
+		$this->mapSimple(Ids::ELEMENT_61, fn() => Blocks::ELEMENT_PROMETHIUM());
+		$this->mapSimple(Ids::ELEMENT_62, fn() => Blocks::ELEMENT_SAMARIUM());
+		$this->mapSimple(Ids::ELEMENT_63, fn() => Blocks::ELEMENT_EUROPIUM());
+		$this->mapSimple(Ids::ELEMENT_64, fn() => Blocks::ELEMENT_GADOLINIUM());
+		$this->mapSimple(Ids::ELEMENT_65, fn() => Blocks::ELEMENT_TERBIUM());
+		$this->mapSimple(Ids::ELEMENT_66, fn() => Blocks::ELEMENT_DYSPROSIUM());
+		$this->mapSimple(Ids::ELEMENT_67, fn() => Blocks::ELEMENT_HOLMIUM());
+		$this->mapSimple(Ids::ELEMENT_68, fn() => Blocks::ELEMENT_ERBIUM());
+		$this->mapSimple(Ids::ELEMENT_69, fn() => Blocks::ELEMENT_THULIUM());
+		$this->mapSimple(Ids::ELEMENT_7, fn() => Blocks::ELEMENT_NITROGEN());
+		$this->mapSimple(Ids::ELEMENT_70, fn() => Blocks::ELEMENT_YTTERBIUM());
+		$this->mapSimple(Ids::ELEMENT_71, fn() => Blocks::ELEMENT_LUTETIUM());
+		$this->mapSimple(Ids::ELEMENT_72, fn() => Blocks::ELEMENT_HAFNIUM());
+		$this->mapSimple(Ids::ELEMENT_73, fn() => Blocks::ELEMENT_TANTALUM());
+		$this->mapSimple(Ids::ELEMENT_74, fn() => Blocks::ELEMENT_TUNGSTEN());
+		$this->mapSimple(Ids::ELEMENT_75, fn() => Blocks::ELEMENT_RHENIUM());
+		$this->mapSimple(Ids::ELEMENT_76, fn() => Blocks::ELEMENT_OSMIUM());
+		$this->mapSimple(Ids::ELEMENT_77, fn() => Blocks::ELEMENT_IRIDIUM());
+		$this->mapSimple(Ids::ELEMENT_78, fn() => Blocks::ELEMENT_PLATINUM());
+		$this->mapSimple(Ids::ELEMENT_79, fn() => Blocks::ELEMENT_GOLD());
+		$this->mapSimple(Ids::ELEMENT_8, fn() => Blocks::ELEMENT_OXYGEN());
+		$this->mapSimple(Ids::ELEMENT_80, fn() => Blocks::ELEMENT_MERCURY());
+		$this->mapSimple(Ids::ELEMENT_81, fn() => Blocks::ELEMENT_THALLIUM());
+		$this->mapSimple(Ids::ELEMENT_82, fn() => Blocks::ELEMENT_LEAD());
+		$this->mapSimple(Ids::ELEMENT_83, fn() => Blocks::ELEMENT_BISMUTH());
+		$this->mapSimple(Ids::ELEMENT_84, fn() => Blocks::ELEMENT_POLONIUM());
+		$this->mapSimple(Ids::ELEMENT_85, fn() => Blocks::ELEMENT_ASTATINE());
+		$this->mapSimple(Ids::ELEMENT_86, fn() => Blocks::ELEMENT_RADON());
+		$this->mapSimple(Ids::ELEMENT_87, fn() => Blocks::ELEMENT_FRANCIUM());
+		$this->mapSimple(Ids::ELEMENT_88, fn() => Blocks::ELEMENT_RADIUM());
+		$this->mapSimple(Ids::ELEMENT_89, fn() => Blocks::ELEMENT_ACTINIUM());
+		$this->mapSimple(Ids::ELEMENT_9, fn() => Blocks::ELEMENT_FLUORINE());
+		$this->mapSimple(Ids::ELEMENT_90, fn() => Blocks::ELEMENT_THORIUM());
+		$this->mapSimple(Ids::ELEMENT_91, fn() => Blocks::ELEMENT_PROTACTINIUM());
+		$this->mapSimple(Ids::ELEMENT_92, fn() => Blocks::ELEMENT_URANIUM());
+		$this->mapSimple(Ids::ELEMENT_93, fn() => Blocks::ELEMENT_NEPTUNIUM());
+		$this->mapSimple(Ids::ELEMENT_94, fn() => Blocks::ELEMENT_PLUTONIUM());
+		$this->mapSimple(Ids::ELEMENT_95, fn() => Blocks::ELEMENT_AMERICIUM());
+		$this->mapSimple(Ids::ELEMENT_96, fn() => Blocks::ELEMENT_CURIUM());
+		$this->mapSimple(Ids::ELEMENT_97, fn() => Blocks::ELEMENT_BERKELIUM());
+		$this->mapSimple(Ids::ELEMENT_98, fn() => Blocks::ELEMENT_CALIFORNIUM());
+		$this->mapSimple(Ids::ELEMENT_99, fn() => Blocks::ELEMENT_EINSTEINIUM());
+		$this->mapSimple(Ids::EMERALD_BLOCK, fn() => Blocks::EMERALD());
+		$this->mapSimple(Ids::EMERALD_ORE, fn() => Blocks::EMERALD_ORE());
+		$this->mapSimple(Ids::ENCHANTING_TABLE, fn() => Blocks::ENCHANTING_TABLE());
+		$this->mapSimple(Ids::END_BRICKS, fn() => Blocks::END_STONE_BRICKS());
+		$this->mapSimple(Ids::END_STONE, fn() => Blocks::END_STONE());
+		$this->mapSimple(Ids::FLETCHING_TABLE, fn() => Blocks::FLETCHING_TABLE());
+		$this->mapSimple(Ids::GILDED_BLACKSTONE, fn() => Blocks::GILDED_BLACKSTONE());
+		$this->mapSimple(Ids::GLASS, fn() => Blocks::GLASS());
+		$this->mapSimple(Ids::GLASS_PANE, fn() => Blocks::GLASS_PANE());
+		$this->mapSimple(Ids::GLOWINGOBSIDIAN, fn() => Blocks::GLOWING_OBSIDIAN());
+		$this->mapSimple(Ids::GLOWSTONE, fn() => Blocks::GLOWSTONE());
+		$this->mapSimple(Ids::GOLD_BLOCK, fn() => Blocks::GOLD());
+		$this->mapSimple(Ids::GOLD_ORE, fn() => Blocks::GOLD_ORE());
+		$this->mapSimple(Ids::GRASS, fn() => Blocks::GRASS());
+		$this->mapSimple(Ids::GRASS_PATH, fn() => Blocks::GRASS_PATH());
+		$this->mapSimple(Ids::GRAVEL, fn() => Blocks::GRAVEL());
+		$this->mapSimple(Ids::HANGING_ROOTS, fn() => Blocks::HANGING_ROOTS());
+		$this->mapSimple(Ids::HARD_GLASS, fn() => Blocks::HARDENED_GLASS());
+		$this->mapSimple(Ids::HARD_GLASS_PANE, fn() => Blocks::HARDENED_GLASS_PANE());
+		$this->mapSimple(Ids::HARDENED_CLAY, fn() => Blocks::HARDENED_CLAY());
+		$this->mapSimple(Ids::HONEYCOMB_BLOCK, fn() => Blocks::HONEYCOMB());
+		$this->mapSimple(Ids::ICE, fn() => Blocks::ICE());
+		$this->mapSimple(Ids::INFO_UPDATE, fn() => Blocks::INFO_UPDATE());
+		$this->mapSimple(Ids::INFO_UPDATE2, fn() => Blocks::INFO_UPDATE2());
+		$this->mapSimple(Ids::INVISIBLE_BEDROCK, fn() => Blocks::INVISIBLE_BEDROCK());
+		$this->mapSimple(Ids::IRON_BARS, fn() => Blocks::IRON_BARS());
+		$this->mapSimple(Ids::IRON_BLOCK, fn() => Blocks::IRON());
+		$this->mapSimple(Ids::IRON_ORE, fn() => Blocks::IRON_ORE());
+		$this->mapSimple(Ids::JUKEBOX, fn() => Blocks::JUKEBOX());
+		$this->mapSimple(Ids::LAPIS_BLOCK, fn() => Blocks::LAPIS_LAZULI());
+		$this->mapSimple(Ids::LAPIS_ORE, fn() => Blocks::LAPIS_LAZULI_ORE());
+		$this->mapSimple(Ids::MAGMA, fn() => Blocks::MAGMA());
+		$this->mapSimple(Ids::MANGROVE_FENCE, fn() => Blocks::MANGROVE_FENCE());
+		$this->mapSimple(Ids::MANGROVE_PLANKS, fn() => Blocks::MANGROVE_PLANKS());
+		$this->mapSimple(Ids::MANGROVE_ROOTS, fn() => Blocks::MANGROVE_ROOTS());
+		$this->mapSimple(Ids::MELON_BLOCK, fn() => Blocks::MELON());
+		$this->mapSimple(Ids::MOB_SPAWNER, fn() => Blocks::MONSTER_SPAWNER());
+		$this->mapSimple(Ids::MOSSY_COBBLESTONE, fn() => Blocks::MOSSY_COBBLESTONE());
+		$this->mapSimple(Ids::MUD, fn() => Blocks::MUD());
+		$this->mapSimple(Ids::MUD_BRICKS, fn() => Blocks::MUD_BRICKS());
+		$this->mapSimple(Ids::MYCELIUM, fn() => Blocks::MYCELIUM());
+		$this->mapSimple(Ids::NETHER_BRICK, fn() => Blocks::NETHER_BRICKS());
+		$this->mapSimple(Ids::NETHER_BRICK_FENCE, fn() => Blocks::NETHER_BRICK_FENCE());
+		$this->mapSimple(Ids::NETHER_GOLD_ORE, fn() => Blocks::NETHER_GOLD_ORE());
+		$this->mapSimple(Ids::NETHER_WART_BLOCK, fn() => Blocks::NETHER_WART_BLOCK());
+		$this->mapSimple(Ids::NETHERITE_BLOCK, fn() => Blocks::NETHERITE());
+		$this->mapSimple(Ids::NETHERRACK, fn() => Blocks::NETHERRACK());
+		$this->mapSimple(Ids::NETHERREACTOR, fn() => Blocks::NETHER_REACTOR_CORE());
+		$this->mapSimple(Ids::NOTEBLOCK, fn() => Blocks::NOTE_BLOCK());
+		$this->mapSimple(Ids::OBSIDIAN, fn() => Blocks::OBSIDIAN());
+		$this->mapSimple(Ids::PACKED_ICE, fn() => Blocks::PACKED_ICE());
+		$this->mapSimple(Ids::PACKED_MUD, fn() => Blocks::PACKED_MUD());
+		$this->mapSimple(Ids::PODZOL, fn() => Blocks::PODZOL());
+		$this->mapSimple(Ids::POLISHED_BLACKSTONE, fn() => Blocks::POLISHED_BLACKSTONE());
+		$this->mapSimple(Ids::POLISHED_BLACKSTONE_BRICKS, fn() => Blocks::POLISHED_BLACKSTONE_BRICKS());
+		$this->mapSimple(Ids::POLISHED_DEEPSLATE, fn() => Blocks::POLISHED_DEEPSLATE());
+		$this->mapSimple(Ids::QUARTZ_BRICKS, fn() => Blocks::QUARTZ_BRICKS());
+		$this->mapSimple(Ids::QUARTZ_ORE, fn() => Blocks::NETHER_QUARTZ_ORE());
+		$this->mapSimple(Ids::RAW_COPPER_BLOCK, fn() => Blocks::RAW_COPPER());
+		$this->mapSimple(Ids::RAW_GOLD_BLOCK, fn() => Blocks::RAW_GOLD());
+		$this->mapSimple(Ids::RAW_IRON_BLOCK, fn() => Blocks::RAW_IRON());
+		$this->mapSimple(Ids::RED_MUSHROOM, fn() => Blocks::RED_MUSHROOM());
+		$this->mapSimple(Ids::RED_NETHER_BRICK, fn() => Blocks::RED_NETHER_BRICKS());
+		$this->mapSimple(Ids::REDSTONE_BLOCK, fn() => Blocks::REDSTONE());
+		$this->mapSimple(Ids::RESERVED6, fn() => Blocks::RESERVED6());
+		$this->mapSimple(Ids::SEA_LANTERN, fn() => Blocks::SEA_LANTERN());
+		$this->mapSimple(Ids::SHROOMLIGHT, fn() => Blocks::SHROOMLIGHT());
+		$this->mapSimple(Ids::SLIME, fn() => Blocks::SLIME());
+		$this->mapSimple(Ids::SMITHING_TABLE, fn() => Blocks::SMITHING_TABLE());
+		$this->mapSimple(Ids::SMOOTH_BASALT, fn() => Blocks::SMOOTH_BASALT());
+		$this->mapSimple(Ids::SMOOTH_STONE, fn() => Blocks::SMOOTH_STONE());
+		$this->mapSimple(Ids::SNOW, fn() => Blocks::SNOW());
+		$this->mapSimple(Ids::SOUL_SAND, fn() => Blocks::SOUL_SAND());
+		$this->mapSimple(Ids::SOUL_SOIL, fn() => Blocks::SOUL_SOIL());
+		$this->mapSimple(Ids::SPORE_BLOSSOM, fn() => Blocks::SPORE_BLOSSOM());
+		$this->mapSimple(Ids::STONECUTTER, fn() => Blocks::LEGACY_STONECUTTER());
+		$this->mapSimple(Ids::TINTED_GLASS, fn() => Blocks::TINTED_GLASS());
+		$this->mapSimple(Ids::TUFF, fn() => Blocks::TUFF());
+		$this->mapSimple(Ids::UNDYED_SHULKER_BOX, fn() => Blocks::SHULKER_BOX());
+		$this->mapSimple(Ids::WARPED_FENCE, fn() => Blocks::WARPED_FENCE());
+		$this->mapSimple(Ids::WARPED_PLANKS, fn() => Blocks::WARPED_PLANKS());
+		$this->mapSimple(Ids::WARPED_WART_BLOCK, fn() => Blocks::WARPED_WART_BLOCK());
+		$this->mapSimple(Ids::WATERLILY, fn() => Blocks::LILY_PAD());
+		$this->mapSimple(Ids::WEB, fn() => Blocks::COBWEB());
+		$this->mapSimple(Ids::WITHER_ROSE, fn() => Blocks::WITHER_ROSE());
+		$this->mapSimple(Ids::YELLOW_FLOWER, fn() => Blocks::DANDELION());
 	}
 
 	private function registerDeserializers() : void{
@@ -663,26 +681,6 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 				StringValues::DOUBLE_PLANT_TYPE_SYRINGA => Blocks::LILAC(),
 				default => throw $in->badValueException(StateNames::DOUBLE_PLANT_TYPE, $type),
 			})->setTop($in->readBool(StateNames::UPPER_BLOCK_BIT));
-		});
-		$this->map(Ids::DOUBLE_STONE_BLOCK_SLAB, function(Reader $in) : Block{
-			$in->ignored(StateNames::TOP_SLOT_BIT); //useless for double slabs
-			return Helper::mapStoneSlab1Type($in)->setSlabType(SlabType::DOUBLE());
-		});
-		$this->map(Ids::DOUBLE_STONE_BLOCK_SLAB2, function(Reader $in) : Block{
-			$in->ignored(StateNames::TOP_SLOT_BIT); //useless for double slabs
-			return Helper::mapStoneSlab2Type($in)->setSlabType(SlabType::DOUBLE());
-		});
-		$this->map(Ids::DOUBLE_STONE_BLOCK_SLAB3, function(Reader $in) : Block{
-			$in->ignored(StateNames::TOP_SLOT_BIT); //useless for double slabs
-			return Helper::mapStoneSlab3Type($in)->setSlabType(SlabType::DOUBLE());
-		});
-		$this->map(Ids::DOUBLE_STONE_BLOCK_SLAB4, function(Reader $in) : Block{
-			$in->ignored(StateNames::TOP_SLOT_BIT); //useless for double slabs
-			return Helper::mapStoneSlab4Type($in)->setSlabType(SlabType::DOUBLE());
-		});
-		$this->map(Ids::DOUBLE_WOODEN_SLAB, function(Reader $in) : Block{
-			$in->ignored(StateNames::TOP_SLOT_BIT); //useless for double slabs
-			return Helper::mapWoodenSlabType($in)->setSlabType(SlabType::DOUBLE());
 		});
 		$this->mapStairs(Ids::END_BRICK_STAIRS, fn() => Blocks::END_STONE_BRICK_STAIRS());
 		$this->map(Ids::END_PORTAL_FRAME, function(Reader $in) : Block{
@@ -1188,10 +1186,10 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->mapStairs(Ids::STONE_BRICK_STAIRS, fn() => Blocks::STONE_BRICK_STAIRS());
 		$this->map(Ids::STONE_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::STONE_BUTTON(), $in));
 		$this->map(Ids::STONE_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::STONE_PRESSURE_PLATE(), $in));
-		$this->map(Ids::STONE_BLOCK_SLAB, fn(Reader $in) => Helper::mapStoneSlab1Type($in)->setSlabType($in->readSlabPosition()));
-		$this->map(Ids::STONE_BLOCK_SLAB2, fn(Reader $in) => Helper::mapStoneSlab2Type($in)->setSlabType($in->readSlabPosition()));
-		$this->map(Ids::STONE_BLOCK_SLAB3, fn(Reader $in) => Helper::mapStoneSlab3Type($in)->setSlabType($in->readSlabPosition()));
-		$this->map(Ids::STONE_BLOCK_SLAB4, fn(Reader $in) => Helper::mapStoneSlab4Type($in)->setSlabType($in->readSlabPosition()));
+		$this->mapSlab(Ids::STONE_BLOCK_SLAB, Ids::DOUBLE_STONE_BLOCK_SLAB, fn(Reader $in) => Helper::mapStoneSlab1Type($in));
+		$this->mapSlab(Ids::STONE_BLOCK_SLAB2, Ids::DOUBLE_STONE_BLOCK_SLAB2, fn(Reader $in) => Helper::mapStoneSlab2Type($in));
+		$this->mapSlab(Ids::STONE_BLOCK_SLAB3, Ids::DOUBLE_STONE_BLOCK_SLAB3, fn(Reader $in) => Helper::mapStoneSlab3Type($in));
+		$this->mapSlab(Ids::STONE_BLOCK_SLAB4, Ids::DOUBLE_STONE_BLOCK_SLAB4, fn(Reader $in) => Helper::mapStoneSlab4Type($in));
 		$this->mapStairs(Ids::STONE_STAIRS, fn() => Blocks::COBBLESTONE_STAIRS());
 		$this->map(Ids::STONEBRICK, function(Reader $in) : Block{
 			return match($type = $in->readString(StateNames::STONE_BRICK_TYPE)){
@@ -1331,7 +1329,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::WOODEN_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::OAK_BUTTON(), $in));
 		$this->map(Ids::WOODEN_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::OAK_DOOR(), $in));
 		$this->map(Ids::WOODEN_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::OAK_PRESSURE_PLATE(), $in));
-		$this->map(Ids::WOODEN_SLAB, fn(Reader $in) => Helper::mapWoodenSlabType($in)->setSlabType($in->readSlabPosition()));
+		$this->mapSlab(Ids::WOODEN_SLAB, Ids::DOUBLE_WOODEN_SLAB, fn(Reader $in) => Helper::mapWoodenSlabType($in));
 		$this->map(Ids::WOOL, function(Reader $in) : Block{
 			return Blocks::WOOL()
 				->setColor($in->readColor());

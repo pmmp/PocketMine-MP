@@ -75,6 +75,9 @@ class PluginManager{
 	/** @var Plugin[] */
 	protected array $enabledPlugins = [];
 
+	/** @var array<string, array<string, true>> */
+	private array $pluginDependents = [];
+
 	private bool $loadPluginsGuard = false;
 
 	/**
@@ -453,6 +456,15 @@ class PluginManager{
 			if($plugin->isEnabled()){ //the plugin may have disabled itself during onEnable()
 				$this->enabledPlugins[$plugin->getDescription()->getName()] = $plugin;
 
+				foreach($plugin->getDescription()->getDepend() as $dependency){
+					$this->pluginDependents[$dependency][$plugin->getDescription()->getName()] = true;
+				}
+				foreach($plugin->getDescription()->getSoftDepend() as $dependency){
+					if(isset($this->plugins[$dependency])){
+						$this->pluginDependents[$dependency][$plugin->getDescription()->getName()] = true;
+					}
+				}
+
 				(new PluginEnableEvent($plugin))->call();
 
 				return true;
@@ -472,8 +484,19 @@ class PluginManager{
 	}
 
 	public function disablePlugins() : void{
-		foreach($this->getPlugins() as $plugin){
-			$this->disablePlugin($plugin);
+		while(count($this->enabledPlugins) > 0){
+			foreach($this->enabledPlugins as $plugin){
+				if(!$plugin->isEnabled()){
+					continue; //in case a plugin disabled another plugin
+				}
+				$name = $plugin->getDescription()->getName();
+				if(isset($this->pluginDependents[$name]) && count($this->pluginDependents[$name]) > 0){
+					$this->server->getLogger()->debug("Deferring disable of plugin $name due to dependent plugins still enabled: " . implode(", ", array_keys($this->pluginDependents[$name])));
+					continue;
+				}
+
+				$this->disablePlugin($plugin);
+			}
 		}
 	}
 
@@ -483,6 +506,12 @@ class PluginManager{
 			(new PluginDisableEvent($plugin))->call();
 
 			unset($this->enabledPlugins[$plugin->getDescription()->getName()]);
+			foreach(Utils::stringifyKeys($this->pluginDependents) as $dependency => $dependentList){
+				unset($this->pluginDependents[$dependency][$plugin->getDescription()->getName()]);
+				if(count($this->pluginDependents[$dependency]) === 0){
+					unset($this->pluginDependents[$dependency]);
+				}
+			}
 
 			$plugin->onEnableStateChange(false);
 			$plugin->getScheduler()->shutdown();

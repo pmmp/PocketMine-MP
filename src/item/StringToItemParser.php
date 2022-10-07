@@ -1524,6 +1524,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("thick_potion", fn() => Items::POTION()->setType(PotionType::THICK()));
 		$result->register("thick_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::THICK()));
 		$result->register("totem", fn() => Items::TOTEM());
+		$result->register("turtle_helmet", fn() => Items::TURTLE_HELMET());
 		$result->register("turtle_master_lingering_potion", fn() => Items::LINGERING_POTION()->setType(PotionType::TURTLE_MASTER()));
 		$result->register("turtle_master_potion", fn() => Items::POTION()->setType(PotionType::TURTLE_MASTER()));
 		$result->register("turtle_master_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::TURTLE_MASTER()));
