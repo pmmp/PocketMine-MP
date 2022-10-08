@@ -85,13 +85,14 @@ class AreaEffectCloud extends Entity{
 
 	protected int $pickupCount = 0;
 
-	/** The entity will not do any update until its age reaches this value. */
 	protected int $waiting = self::WAIT_TIME;
 
 	protected float $radius = self::DEFAULT_RADIUS;
 	protected float $radiusChangeOnPickup = self::RADIUS_CHANGE_ON_PICKUP;
 	protected float $radiusOnUse = self::RADIUS_ON_USE;
 	protected float $radiusPerTick = self::RADIUS_PER_TICK;
+
+	//TODO: Custom particle.
 
 	public function __construct(
 		Location $location,
@@ -201,74 +202,118 @@ class AreaEffectCloud extends Entity{
 		return $this->effectContainer;
 	}
 
+	/**
+	 * Returns the initial radius.
+	 */
 	public function getInitialRadius() : float{
 		return $this->initialRadius;
 	}
 
 	/**
-	 * Gets the current radius.
+	 * Returns the current radius.
 	 */
 	public function getRadius() : float{
 		return $this->radius;
 	}
 
 	/**
-	 * Sets the radius only server-side, client calculates the radius by himself
+	 * Sets the radius only server-side, client calculates the radius by himself.
 	 */
 	protected function setRadius(float $radius) : void{
 		$this->radius = $radius;
 		$this->setSize($this->getInitialSizeInfo());
 	}
 
+	/**
+	 * Returns the amount that the radius of this cloud will add by when it
+	 * applies an effect to an entity. Usually negative resulting in a radius reduction.
+	 */
 	public function getRadiusOnUse() : float{
 		return $this->radiusOnUse;
 	}
 
+	/**
+	 * Returns the amount that the radius of this cloud will add by when it
+	 * applies an effect to an entity.
+	 */
 	public function setRadiusOnUse(float $radiusOnUse) : void{
 		$this->radiusOnUse = $radiusOnUse;
 		$this->networkPropertiesDirty = true;
 	}
 
+	/**
+	 * Returns the amount that the radius of this cloud will add by when an update
+	 * is performed. Usually negative resulting in a radius reduction.
+	 */
 	public function getRadiusPerTick() : float{
 		return $this->radiusPerTick;
 	}
 
+	/**
+	 * Sets the amount that the radius of this cloud will add by when an update is performed.
+	 */
 	public function setRadiusPerTick(float $radiusPerTick) : void{
 		$this->radiusPerTick = $radiusPerTick;
 		$this->networkPropertiesDirty = true;
 	}
 
+	/**
+	 * Returns the value that must be reached by age to perform an update.
+	 */
 	public function getWaiting() : int{
 		return $this->waiting;
 	}
 
+	/**
+	 * Sets the value that must be reached by age to perform an update.
+	 */
 	public function setWaiting(int $time) : void{
 		$this->waiting = $time;
 		$this->networkPropertiesDirty = true;
 	}
 
+	/**
+	 * Returns the duration which this cloud will exist for (in ticks).
+	 */
 	public function getDuration() : int{
 		return $this->duration;
 	}
 
+	/**
+	 * Sets the duration which this cloud will exist for (in ticks).
+	 */
 	public function setDuration(int $duration) : void{
 		$this->duration = $duration;
 		$this->networkPropertiesDirty = true;
 	}
 
+	/**
+	 * Returns the amount that the duration of this cloud will add by when it
+	 * applies an effect to an entity.
+	 */
 	public function getDurationOnUse() : int{
 		return $this->durationOnUse;
 	}
 
+	/**
+	 * Sets the amount that the duration of this cloud will add by when it
+	 * applies an effect to an entity.
+	 */
 	public function setDurationOnUse(int $durationOnUse) : void{
 		$this->durationOnUse = $durationOnUse;
 		$this->networkPropertiesDirty = true;
 	}
 
+	/**
+	 * Returns the time that an entity will be immune from subsequent exposure.
+	 */
 	public function getReapplicationDelay() : int{
 		return $this->reapplicationDelay;
 	}
 
+	/**
+	 * Sets the time that an entity will be immune from subsequent exposure.
+	 */
 	public function setReapplicationDelay(int $delay) : void{
 		$this->reapplicationDelay = $delay;
 		$this->networkPropertiesDirty = true;
