@@ -718,18 +718,18 @@ final class ItemIds{
 	public const SWEET_BERRIES = 477;
 
 	public const COMPOUND = 499;
-	public const RECORD_13 = 500;
-	public const RECORD_CAT = 501;
-	public const RECORD_BLOCKS = 502;
-	public const RECORD_CHIRP = 503;
-	public const RECORD_FAR = 504;
-	public const RECORD_MALL = 505;
-	public const RECORD_MELLOHI = 506;
-	public const RECORD_STAL = 507;
-	public const RECORD_STRAD = 508;
-	public const RECORD_WARD = 509;
-	public const RECORD_11 = 510;
-	public const RECORD_WAIT = 511;
+    public const RECORD_13 = 2256;
+    public const RECORD_CAT = 2257;
+    public const RECORD_BLOCKS = 2258;
+    public const RECORD_CHIRP = 2259;
+    public const RECORD_FAR = 2260;
+    public const RECORD_MALL = 2261;
+    public const RECORD_MELLOHI = 2262;
+    public const RECORD_STAL = 2263;
+    public const RECORD_STRAD = 2264;
+    public const RECORD_WARD = 2265;
+    public const RECORD_11 = 2266;
+    public const RECORD_WAIT = 2267;
 
 	public const SHIELD = 513;
 
