@@ -88,7 +88,7 @@ class AreaEffectCloud extends Entity{
 	/** The entity will not do any update until its age reaches this value. */
 	protected int $waiting = self::WAIT_TIME;
 
-	protected float $radius;
+	protected float $radius = self::DEFAULT_RADIUS;
 	protected float $radiusChangeOnPickup = self::RADIUS_CHANGE_ON_PICKUP;
 	protected float $radiusOnUse = self::RADIUS_ON_USE;
 	protected float $radiusPerTick = self::RADIUS_PER_TICK;
@@ -125,7 +125,7 @@ class AreaEffectCloud extends Entity{
 		$this->durationOnUse = $nbt->getInt(self::TAG_DURATION_ON_USE, self::DURATION_ON_USE);
 		$this->pickupCount = $nbt->getInt(self::TAG_PICKUP_COUNT, 0);
 		$this->reapplicationDelay = $nbt->getInt(self::TAG_REAPPLICATION_DELAY, self::REAPPLICATION_DELAY);
-		$this->radius = $nbt->getFloat(self::TAG_RADIUS, $this->initialRadius);
+		$this->setRadius($nbt->getFloat(self::TAG_RADIUS, $this->initialRadius));
 		$this->radiusChangeOnPickup = $nbt->getFloat(self::TAG_RADIUS_CHANGE_ON_PICKUP, self::RADIUS_CHANGE_ON_PICKUP);
 		$this->radiusOnUse = $nbt->getFloat(self::TAG_RADIUS_ON_USE, self::RADIUS_ON_USE);
 		$this->radiusPerTick = $nbt->getFloat(self::TAG_RADIUS_PER_TICK, self::RADIUS_PER_TICK);
