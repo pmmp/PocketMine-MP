@@ -52,7 +52,7 @@ class AreaEffectCloud extends Entity{
 	public const WAIT_TIME = 10;
 	public const REAPPLICATION_DELAY = 40;
 
-	public const RADIUS = 3.0;
+	public const DEFAULT_RADIUS = 3.0;
 	public const RADIUS_CHANGE_ON_PICKUP = -0.5;
 	public const RADIUS_ON_USE = -0.5;
 	public const RADIUS_PER_TICK = -0.005;
@@ -74,7 +74,6 @@ class AreaEffectCloud extends Entity{
 
 	protected int $age = 0;
 
-	protected PotionType $potionType;
 	protected EffectContainer $effectContainer;
 
 	/** @var array<int, int> entity ID => expiration */
@@ -89,14 +88,17 @@ class AreaEffectCloud extends Entity{
 	/** The entity will not do any update until its age reaches this value. */
 	protected int $waiting = self::WAIT_TIME;
 
-	protected float $initialRadius = self::RADIUS;
-	protected float $radius = self::RADIUS;
+	protected float $radius;
 	protected float $radiusChangeOnPickup = self::RADIUS_CHANGE_ON_PICKUP;
 	protected float $radiusOnUse = self::RADIUS_ON_USE;
 	protected float $radiusPerTick = self::RADIUS_PER_TICK;
 
-	public function __construct(Location $location, PotionType $potionType, ?CompoundTag $nbt = null){
-		$this->potionType = $potionType;
+	public function __construct(
+		Location $location,
+		protected PotionType $potionType,
+		protected float $initialRadius = self::DEFAULT_RADIUS,
+		?CompoundTag $nbt = null
+	){
 		parent::__construct($location, $nbt);
 	}
 
@@ -123,8 +125,7 @@ class AreaEffectCloud extends Entity{
 		$this->durationOnUse = $nbt->getInt(self::TAG_DURATION_ON_USE, self::DURATION_ON_USE);
 		$this->pickupCount = $nbt->getInt(self::TAG_PICKUP_COUNT, 0);
 		$this->reapplicationDelay = $nbt->getInt(self::TAG_REAPPLICATION_DELAY, self::REAPPLICATION_DELAY);
-		$this->initialRadius = $nbt->getFloat(self::TAG_INITIAL_RADIUS, self::RADIUS);
-		$this->radius = $nbt->getFloat(self::TAG_RADIUS, self::RADIUS);
+		$this->radius = $nbt->getFloat(self::TAG_RADIUS, $this->initialRadius);
 		$this->radiusChangeOnPickup = $nbt->getFloat(self::TAG_RADIUS_CHANGE_ON_PICKUP, self::RADIUS_CHANGE_ON_PICKUP);
 		$this->radiusOnUse = $nbt->getFloat(self::TAG_RADIUS_ON_USE, self::RADIUS_ON_USE);
 		$this->radiusPerTick = $nbt->getFloat(self::TAG_RADIUS_PER_TICK, self::RADIUS_PER_TICK);
@@ -202,20 +203,6 @@ class AreaEffectCloud extends Entity{
 
 	public function getInitialRadius() : float{
 		return $this->initialRadius;
-	}
-
-	/**
-	 * Sets the initial radius.
-	 *
-	 * @throws \RuntimeException if something attempted to set when it is already ticking
-	 */
-	public function setInitialRadius(float $radius) : void{
-		if($this->age > 0){
-			throw new \RuntimeException("Trying to set radius after initialization");
-		}
-		$this->initialRadius = $radius;
-		$this->setRadius($radius);
-		$this->networkPropertiesDirty = true;
 	}
 
 	/**

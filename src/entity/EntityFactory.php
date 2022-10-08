@@ -83,11 +83,16 @@ final class EntityFactory{
 		//TODO: index them by version to allow proper multi-save compatibility
 
 		$this->register(AreaEffectCloud::class, function(World $world, CompoundTag $nbt) : AreaEffectCloud{
-			$potionType = PotionTypeIdMap::getInstance()->fromId($nbt->getShort("PotionId", PotionTypeIds::WATER));
+			$potionType = PotionTypeIdMap::getInstance()->fromId($nbt->getShort(AreaEffectCloud::TAG_POTION_ID, PotionTypeIds::WATER));
 			if($potionType === null){
 				throw new SavedDataLoadingException("No such potion type");
 			}
-			return new AreaEffectCloud(Helper::parseLocation($nbt, $world), $potionType, $nbt);
+			return new AreaEffectCloud(
+				Helper::parseLocation($nbt, $world),
+				$potionType,
+				$nbt->getFloatTag(AreaEffectCloud::TAG_INITIAL_RADIUS, AreaEffectCloud::DEFAULT_RADIUS),
+				$nbt
+			);
 		}, ['AreaEffectCloud', 'minecraft:area_effect_cloud'], LegacyIds::AREA_EFFECT_CLOUD);
 
 		$this->register(Arrow::class, function(World $world, CompoundTag $nbt) : Arrow{
