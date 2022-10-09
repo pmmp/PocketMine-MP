@@ -157,8 +157,7 @@ class FallingBlock extends Entity{
 				$damage = min($fallenBlocks * $damagePerBlock, $this->block->getMaxFallDamage());
 				foreach($this->getWorld()->getCollidingEntities($this->getBoundingBox()) as $entity){
 					if($entity instanceof Living){
-						$ev = new EntityDamageByEntityEvent($this, $entity, EntityDamageEvent::CAUSE_FALLING_BLOCK
-							, $damage);
+						$ev = new EntityDamageByEntityEvent($this, $entity, EntityDamageEvent::CAUSE_FALLING_BLOCK, $damage);
 						$entity->attack($ev);
 					}
 				}
