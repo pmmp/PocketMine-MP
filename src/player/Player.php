@@ -1473,15 +1473,27 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	private function returnItemsFromAction(Item $oldHeldItem, Item $newHeldItem, array $extraReturnedItems) : void{
 		$heldItemChanged = false;
-		if($this->hasFiniteResources()){
-			if(!$newHeldItem->equalsExact($oldHeldItem) && $oldHeldItem->equalsExact($this->inventory->getItemInHand())){
+
+		if(!$newHeldItem->equalsExact($oldHeldItem) && $oldHeldItem->equalsExact($this->inventory->getItemInHand())){
+			//determine if the item was changed in some meaningful way, or just damaged/changed count
+			//if it was really changed we always need to set it, whether we have finite resources or not
+			$newReplica = clone $oldHeldItem;
+			$newReplica->setCount($newHeldItem->getCount());
+			if($newReplica instanceof Durable && $newHeldItem instanceof Durable){
+				$newReplica->setDamage($newHeldItem->getDamage());
+			}
+			$damagedOrDeducted = $newReplica->equalsExact($newHeldItem);
+
+			if(!$damagedOrDeducted || $this->hasFiniteResources()){
 				if($newHeldItem instanceof Durable && $newHeldItem->isBroken()){
 					$this->broadcastSound(new ItemBreakSound());
 				}
 				$this->inventory->setItemInHand($newHeldItem);
 				$heldItemChanged = true;
 			}
-		}else{
+		}
+
+		if(!$heldItemChanged){
 			$newHeldItem = $oldHeldItem;
 		}
 
