@@ -560,9 +560,6 @@ class PluginManager{
 
 		$reflection = new \ReflectionClass(get_class($listener));
 		foreach($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method){
-			if($method->isGenerator()){
-				throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() cannot be a generator");
-			}
 
 			$tags = Utils::parseDocComment((string) $method->getDocComment());
 			if(isset($tags[ListenerMethodTags::NOT_HANDLER]) || ($eventClass = $this->getEventsHandledBy($method)) === null){
@@ -570,6 +567,10 @@ class PluginManager{
 			}
 			$handlerClosure = $method->getClosure($listener);
 			if($handlerClosure === null) throw new AssumptionFailedError("This should never happen");
+
+			if($method->isGenerator()){
+				throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() cannot be a generator");
+			}
 
 			try{
 				$priority = isset($tags[ListenerMethodTags::PRIORITY]) ? EventPriority::fromString($tags[ListenerMethodTags::PRIORITY]) : EventPriority::NORMAL;
