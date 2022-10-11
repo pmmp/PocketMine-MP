@@ -560,7 +560,6 @@ class PluginManager{
 
 		$reflection = new \ReflectionClass(get_class($listener));
 		foreach($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method){
-
 			$tags = Utils::parseDocComment((string) $method->getDocComment());
 			if(isset($tags[ListenerMethodTags::NOT_HANDLER]) || ($eventClass = $this->getEventsHandledBy($method)) === null){
 				continue;
