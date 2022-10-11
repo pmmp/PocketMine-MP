@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,13 +31,9 @@ use pocketmine\world\format\Chunk;
 use pocketmine\world\generator\object\TreeFactory;
 
 class Tree implements Populator{
-	/** @var int */
-	private $randomAmount = 1;
-	/** @var int */
-	private $baseAmount = 0;
-
-	/** @var TreeType */
-	private $type;
+	private int $randomAmount = 1;
+	private int $baseAmount = 0;
+	private TreeType $type;
 
 	/**
 	 * @param TreeType|null $type default oak

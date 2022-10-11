@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,27 +32,21 @@ class SubChunk{
 	public const COORD_MASK = ~(~0 << self::COORD_BIT_SIZE);
 	public const EDGE_LENGTH = 1 << self::COORD_BIT_SIZE;
 
-	/** @var int */
-	private $emptyBlockId;
 	/** @var PalettedBlockArray[] */
-	private $blockLayers;
-
-	/** @var LightArray|null */
-	private $blockLight;
-	/** @var LightArray|null */
-	private $skyLight;
+	private array $blockLayers;
 
 	/**
 	 * SubChunk constructor.
 	 *
 	 * @param PalettedBlockArray[] $blocks
 	 */
-	public function __construct(int $emptyBlockId, array $blocks, ?LightArray $skyLight = null, ?LightArray $blockLight = null){
-		$this->emptyBlockId = $emptyBlockId;
+	public function __construct(
+		private int $emptyBlockId,
+		array $blocks, //TODO: promote this once we can break BC again (needs a name change)
+		private ?LightArray $skyLight = null,
+		private ?LightArray $blockLight = null
+	){
 		$this->blockLayers = $blocks;
-
-		$this->skyLight = $skyLight;
-		$this->blockLight = $blockLight;
 	}
 
 	/**

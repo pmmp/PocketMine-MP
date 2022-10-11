@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -69,7 +69,7 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 	}
 
 	public function getItem() : Item{
-		return $this->item;
+		return clone $this->item;
 	}
 
 	public function getBlock() : Block{

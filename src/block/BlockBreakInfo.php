@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -38,18 +38,17 @@ class BlockBreakInfo{
 	 */
 	public const INCOMPATIBLE_TOOL_MULTIPLIER = 5.0;
 
-	private float $hardness;
 	private float $blastResistance;
-	private int $toolType;
-	private int $toolHarvestLevel;
 
 	/**
 	 * @param float|null $blastResistance default 5x hardness
 	 */
-	public function __construct(float $hardness, int $toolType = BlockToolType::NONE, int $toolHarvestLevel = 0, ?float $blastResistance = null){
-		$this->hardness = $hardness;
-		$this->toolType = $toolType;
-		$this->toolHarvestLevel = $toolHarvestLevel;
+	public function __construct(
+		private float $hardness,
+		private int $toolType = BlockToolType::NONE,
+		private int $toolHarvestLevel = 0,
+		?float $blastResistance = null
+	){
 		$this->blastResistance = $blastResistance ?? $hardness * 5;
 	}
 

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\BlockMeltEvent;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
@@ -40,14 +41,17 @@ use function max;
 class SnowLayer extends Flowable implements Fallable{
 	use FallableTrait;
 
-	protected int $layers = 1;
+	public const MIN_LAYERS = 1;
+	public const MAX_LAYERS = 8;
+
+	protected int $layers = self::MIN_LAYERS;
 
 	protected function writeStateToMeta() : int{
 		return $this->layers - 1;
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->layers = BlockDataSerializer::readBoundedInt("layers", $stateMeta + 1, 1, 8);
+		$this->layers = BlockDataSerializer::readBoundedInt("layers", $stateMeta + 1, self::MIN_LAYERS, self::MAX_LAYERS);
 	}
 
 	public function getStateBitmask() : int{
@@ -58,15 +62,15 @@ class SnowLayer extends Flowable implements Fallable{
 
 	/** @return $this */
 	public function setLayers(int $layers) : self{
-		if($layers < 1 || $layers > 8){
-			throw new \InvalidArgumentException("Layers must be in range 1-8");
+		if($layers < self::MIN_LAYERS || $layers > self::MAX_LAYERS){
+			throw new \InvalidArgumentException("Layers must be in range " . self::MIN_LAYERS . " ... " . self::MAX_LAYERS);
 		}
 		$this->layers = $layers;
 		return $this;
 	}
 
 	public function canBeReplaced() : bool{
-		return $this->layers < 8;
+		return $this->layers < self::MAX_LAYERS;
 	}
 
 	/**
@@ -77,13 +81,20 @@ class SnowLayer extends Flowable implements Fallable{
 		return [AxisAlignedBB::one()->trim(Facing::UP, $this->layers >= 4 ? 0.5 : 1)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		if(!$this->canBeReplaced()){
+			return SupportType::FULL();
+		}
+		return SupportType::NONE();
+	}
+
 	private function canBeSupportedBy(Block $b) : bool{
-		return $b->isSolid() || ($b instanceof SnowLayer && $b->isSameType($this) && $b->layers === 8);
+		return $b->getSupportType(Facing::UP)->equals(SupportType::FULL());
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($blockReplace instanceof SnowLayer){
-			if($blockReplace->layers >= 8){
+			if($blockReplace->layers >= self::MAX_LAYERS){
 				return false;
 			}
 			$this->layers = $blockReplace->layers + 1;

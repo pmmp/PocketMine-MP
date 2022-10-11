@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,13 +31,9 @@ use function substr;
  * Handles different types of plugins
  */
 class PharPluginLoader implements PluginLoader{
-
-	/** @var \DynamicClassLoader */
-	private $loader;
-
-	public function __construct(\DynamicClassLoader $loader){
-		$this->loader = $loader;
-	}
+	public function __construct(
+		private \DynamicClassLoader $loader
+	){}
 
 	public function canLoadPlugin(string $path) : bool{
 		$ext = ".phar";

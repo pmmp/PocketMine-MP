@@ -1,4 +1,5 @@
 <?php
+
 /*
  *
  *  ____            _        _   __  __ _                  __  __ ____
@@ -16,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,6 +28,7 @@ use pocketmine\block\inventory\AnvilInventory;
 use pocketmine\block\inventory\CraftingTableInventory;
 use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\LoomInventory;
+use pocketmine\block\inventory\StonecutterInventory;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
@@ -36,6 +38,7 @@ use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
+use pocketmine\item\VanillaItems;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -45,7 +48,9 @@ use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
+use pocketmine\network\mcpe\protocol\types\recipe\IntIdMetaItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
+use pocketmine\network\mcpe\protocol\types\recipe\StringIdMetaItemDescriptor;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
@@ -59,8 +64,7 @@ class TypeConverter{
 	private const PM_ID_TAG = "___Id___";
 	private const PM_META_TAG = "___Meta___";
 
-	/** @var int */
-	private $shieldRuntimeId;
+	private int $shieldRuntimeId;
 
 	public function __construct(){
 		//TODO: inject stuff via constructor
@@ -113,7 +117,7 @@ class TypeConverter{
 
 	public function coreItemStackToRecipeIngredient(Item $itemStack) : RecipeIngredient{
 		if($itemStack->isNull()){
-			return new RecipeIngredient(0, 0, 0);
+			return new RecipeIngredient(null, 0);
 		}
 		if($itemStack->hasAnyDamageValue()){
 			[$id, ] = ItemTranslator::getInstance()->toNetworkId($itemStack->getId(), 0);
@@ -121,15 +125,25 @@ class TypeConverter{
 		}else{
 			[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($itemStack->getId(), $itemStack->getMeta());
 		}
-		return new RecipeIngredient($id, $meta, $itemStack->getCount());
+		return new RecipeIngredient(new IntIdMetaItemDescriptor($id, $meta), $itemStack->getCount());
 	}
 
 	public function recipeIngredientToCoreItemStack(RecipeIngredient $ingredient) : Item{
-		if($ingredient->getId() === 0){
-			return ItemFactory::getInstance()->get(ItemIds::AIR, 0, 0);
+		$descriptor = $ingredient->getDescriptor();
+		if($descriptor === null){
+			return VanillaItems::AIR();
 		}
-		[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($ingredient->getId(), $ingredient->getMeta());
-		return ItemFactory::getInstance()->get($id, $meta, $ingredient->getCount());
+		if($descriptor instanceof IntIdMetaItemDescriptor){
+			[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($descriptor->getId(), $descriptor->getMeta());
+			return ItemFactory::getInstance()->get($id, $meta, $ingredient->getCount());
+		}
+		if($descriptor instanceof StringIdMetaItemDescriptor){
+			$intId = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromStringId($descriptor->getId());
+			[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($intId, $descriptor->getMeta());
+			return ItemFactory::getInstance()->get($id, $meta, $ingredient->getCount());
+		}
+
+		throw new \LogicException("Unsupported conversion of recipe ingredient to core item stack");
 	}
 
 	public function coreItemStackToNet(Item $itemStack) : ItemStack{
@@ -202,7 +216,7 @@ class TypeConverter{
 	 */
 	public function netItemStackToCore(ItemStack $itemStack) : Item{
 		if($itemStack->getId() === 0){
-			return ItemFactory::getInstance()->get(ItemIds::AIR, 0, 0);
+			return VanillaItems::AIR();
 		}
 		$compound = $itemStack->getNbt();
 
@@ -231,6 +245,9 @@ class TypeConverter{
 			if($compound->count() === 0){
 				$compound = null;
 			}
+		}
+		if($id < -0x8000 || $id >= 0x7fff){
+			throw new TypeConversionException("Item ID must be in range " . -0x8000 . " ... " . 0x7fff . " (received $id)");
 		}
 		if($meta < 0 || $meta >= 0x7fff){ //this meta value may have been restored from the NBT
 			throw new TypeConversionException("Item meta must be in range 0 ... " . 0x7fff . " (received $meta)");
@@ -283,6 +300,7 @@ class TypeConverter{
 							$current instanceof AnvilInventory => UIInventorySlotOffset::ANVIL,
 							$current instanceof EnchantInventory => UIInventorySlotOffset::ENCHANTING_TABLE,
 							$current instanceof LoomInventory => UIInventorySlotOffset::LOOM,
+							$current instanceof StonecutterInventory => [UIInventorySlotOffset::STONE_CUTTER_INPUT => StonecutterInventory::SLOT_INPUT],
 							$current instanceof CraftingTableInventory => UIInventorySlotOffset::CRAFTING3X3_INPUT,
 							default => null
 						};

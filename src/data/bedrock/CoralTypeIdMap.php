@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -35,12 +35,12 @@ final class CoralTypeIdMap{
 	 * @var CoralType[]
 	 * @phpstan-var array<int, CoralType>
 	 */
-	private $idToEnum = [];
+	private array $idToEnum = [];
 	/**
 	 * @var int[]
 	 * @phpstan-var array<int, int>
 	 */
-	private $enumToId = [];
+	private array $enumToId = [];
 
 	public function __construct(){
 		$this->register(BlockLegacyMetadata::CORAL_VARIANT_TUBE, CoralType::TUBE());

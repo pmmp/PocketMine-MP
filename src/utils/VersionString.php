@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,28 +30,16 @@ use function preg_match;
  * Manages PocketMine-MP version strings, and compares them
  */
 class VersionString{
-	/** @var string */
-	private $baseVersion;
-	/** @var string */
-	private $suffix;
+	private int $major;
+	private int $minor;
+	private int $patch;
+	private string $suffix;
 
-	/** @var int */
-	private $major;
-	/** @var int */
-	private $minor;
-	/** @var int */
-	private $patch;
-
-	/** @var int */
-	private $build;
-	/** @var bool */
-	private $development = false;
-
-	public function __construct(string $baseVersion, bool $isDevBuild = false, int $buildNumber = 0){
-		$this->baseVersion = $baseVersion;
-		$this->development = $isDevBuild;
-		$this->build = $buildNumber;
-
+	public function __construct(
+		private string $baseVersion,
+		private bool $isDevBuild = false,
+		private int $buildNumber = 0
+	){
 		preg_match('/^(\d+)\.(\d+)\.(\d+)(?:-(.*))?$/', $this->baseVersion, $matches);
 		if(count($matches) < 4){
 			throw new \InvalidArgumentException("Invalid base version \"$baseVersion\", should contain at least 3 version digits");
@@ -77,10 +65,10 @@ class VersionString{
 
 	public function getFullVersion(bool $build = false) : string{
 		$retval = $this->baseVersion;
-		if($this->development){
+		if($this->isDevBuild){
 			$retval .= "+dev";
-			if($build && $this->build > 0){
-				$retval .= "." . $this->build;
+			if($build && $this->buildNumber > 0){
+				$retval .= "." . $this->buildNumber;
 			}
 		}
 
@@ -104,11 +92,11 @@ class VersionString{
 	}
 
 	public function getBuild() : int{
-		return $this->build;
+		return $this->buildNumber;
 	}
 
 	public function isDev() : bool{
-		return $this->development;
+		return $this->isDevBuild;
 	}
 
 	public function __toString() : string{

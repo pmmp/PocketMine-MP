@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -80,8 +80,7 @@ abstract class Entity{
 	public const MOTION_THRESHOLD = 0.00001;
 	protected const STEP_CLIP_MULTIPLIER = 0.4;
 
-	/** @var int */
-	private static $entityCount = 1;
+	private static int $entityCount = 1;
 
 	/**
 	 * Returns a new runtime entity ID for a new entity.
@@ -96,8 +95,7 @@ abstract class Entity{
 	/** @var int */
 	protected $id;
 
-	/** @var EntityMetadataCollection */
-	private $networkProperties;
+	private EntityMetadataCollection $networkProperties;
 
 	/** @var EntityDamageEvent|null */
 	protected $lastDamageCause = null;
@@ -124,10 +122,8 @@ abstract class Entity{
 	/** @var EntitySizeInfo */
 	public $size;
 
-	/** @var float */
-	private $health = 20.0;
-	/** @var int */
-	private $maxHealth = 20;
+	private float $health = 20.0;
+	private int $maxHealth = 20;
 
 	/** @var float */
 	protected $ySize = 0.0;
@@ -150,8 +146,7 @@ abstract class Entity{
 	/** @var bool */
 	protected $isStatic = false;
 
-	/** @var bool */
-	private $savedWithChunk = true;
+	private bool $savedWithChunk = true;
 
 	/** @var bool */
 	public $isCollided = false;
@@ -181,8 +176,7 @@ abstract class Entity{
 	/** @var bool */
 	protected $closed = false;
 	private bool $closeInFlight = false;
-	/** @var bool */
-	private $needsDespawn = false;
+	private bool $needsDespawn = false;
 
 	/** @var TimingsHandler */
 	protected $timings;
@@ -216,7 +210,13 @@ abstract class Entity{
 	/** @var int|null */
 	protected $targetId = null;
 
+	private bool $constructorCalled = false;
+
 	public function __construct(Location $location, ?CompoundTag $nbt = null){
+		if($this->constructorCalled){
+			throw new \LogicException("Attempted to call constructor for an Entity multiple times");
+		}
+		$this->constructorCalled = true;
 		Utils::checkLocationNotInfOrNaN($location);
 
 		$this->timings = Timings::getEntityTimings($this);
@@ -276,6 +276,7 @@ abstract class Entity{
 
 	public function setNameTagVisible(bool $value = true) : void{
 		$this->nameTagVisible = $value;
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function setNameTagAlwaysVisible(bool $value = true) : void{
@@ -521,6 +522,9 @@ abstract class Entity{
 	}
 
 	public function attack(EntityDamageEvent $source) : void{
+		if($this->isFireProof() && ($source->getCause() === EntityDamageEvent::CAUSE_FIRE || $source->getCause() === EntityDamageEvent::CAUSE_FIRE_TICK)){
+			$source->cancel();
+		}
 		$source->call();
 		if($source->isCancelled()){
 			return;
@@ -762,17 +766,29 @@ abstract class Entity{
 	}
 
 	protected function broadcastMovement(bool $teleport = false) : void{
-		$this->server->broadcastPackets($this->hasSpawned, [MoveActorAbsolutePacket::create(
-			$this->id,
-			$this->getOffsetPosition($this->location),
-			$this->location->pitch,
-			$this->location->yaw,
-			$this->location->yaw,
-			(
-				($teleport ? MoveActorAbsolutePacket::FLAG_TELEPORT : 0) |
-				($this->onGround ? MoveActorAbsolutePacket::FLAG_GROUND : 0)
-			)
-		)]);
+		if($teleport){
+			//TODO: HACK! workaround for https://github.com/pmmp/PocketMine-MP/issues/4394
+			//this happens because MoveActor*Packet doesn't clear interpolation targets on the client, so the entity
+			//snaps to the teleport position, but then lerps back to the original position if a normal movement for the
+			//entity was recently broadcasted. This can be seen with players throwing ender pearls.
+			//TODO: remove this if the bug ever gets fixed (lol)
+			foreach($this->hasSpawned as $player){
+				$this->despawnFrom($player);
+				$this->spawnTo($player);
+			}
+		}else{
+			$this->server->broadcastPackets($this->hasSpawned, [MoveActorAbsolutePacket::create(
+				$this->id,
+				$this->getOffsetPosition($this->location),
+				$this->location->pitch,
+				$this->location->yaw,
+				$this->location->yaw,
+				(
+					//TODO: if the above hack for #4394 gets removed, we should be setting FLAG_TELEPORT here
+					($this->onGround ? MoveActorAbsolutePacket::FLAG_GROUND : 0)
+				)
+			)]);
+		}
 	}
 
 	protected function broadcastMotion() : void{
@@ -1448,8 +1464,9 @@ abstract class Entity{
 			$this->location->pitch,
 			$this->location->yaw,
 			$this->location->yaw, //TODO: head yaw
+			$this->location->yaw, //TODO: body yaw (wtf mojang?)
 			array_map(function(Attribute $attr) : NetworkAttribute{
-				return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue());
+				return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue(), []);
 			}, $this->attributeMap->getAll()),
 			$this->getAllNetworkData(),
 			[] //TODO: entity links

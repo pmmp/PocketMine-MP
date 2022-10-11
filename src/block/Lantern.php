@@ -17,12 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -72,22 +73,27 @@ class Lantern extends Transparent{
 		];
 	}
 
-	protected function canAttachTo(Block $b) : bool{
-		return !$b->isTransparent();
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canAttachTo($this->position->getWorld()->getBlock($blockReplace->getPosition()->up())) && !$this->canAttachTo($this->position->getWorld()->getBlock($blockReplace->getPosition()->down()))){
+		if(!$this->canBeSupportedBy($blockReplace->getSide(Facing::UP), Facing::DOWN) && !$this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN), Facing::UP)){
 			return false;
 		}
 
-		$this->hanging = ($face === Facing::DOWN || !$this->canAttachTo($this->position->getWorld()->getBlock($blockReplace->getPosition()->down())));
+		$this->hanging = ($face === Facing::DOWN || !$this->canBeSupportedBy($this->position->getWorld()->getBlock($blockReplace->getPosition()->down()), Facing::UP));
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->canAttachTo($this->position->getWorld()->getBlock($this->hanging ? $this->position->up() : $this->position->down()))){
+		$face = $this->hanging ? Facing::UP : Facing::DOWN;
+		if(!$this->canBeSupportedBy($this->getSide($face), Facing::opposite($face))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
+	}
+
+	private function canBeSupportedBy(Block $block, int $face) : bool{
+		return $block->getSupportType($face)->hasCenterSupport();
 	}
 }

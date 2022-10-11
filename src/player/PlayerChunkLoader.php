@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,13 +27,7 @@ use pocketmine\math\Vector3;
 use pocketmine\world\TickingChunkLoader;
 
 final class PlayerChunkLoader implements TickingChunkLoader{
-
-	/** @var Vector3 */
-	private $currentLocation;
-
-	public function __construct(Vector3 $currentLocation){
-		$this->currentLocation = $currentLocation;
-	}
+	public function __construct(private Vector3 $currentLocation){}
 
 	public function setCurrentLocation(Vector3 $currentLocation) : void{
 		$this->currentLocation = $currentLocation;

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -33,6 +33,7 @@ use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
 class NetherWartPlant extends Flowable{
+	public const MAX_AGE = 3;
 
 	protected int $age = 0;
 
@@ -41,7 +42,7 @@ class NetherWartPlant extends Flowable{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, 3);
+		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, self::MAX_AGE);
 	}
 
 	public function getStateBitmask() : int{
@@ -52,8 +53,8 @@ class NetherWartPlant extends Flowable{
 
 	/** @return $this */
 	public function setAge(int $age) : self{
-		if($age < 0 || $age > 3){
-			throw new \InvalidArgumentException("Age must be in range 0-3");
+		if($age < 0 || $age > self::MAX_AGE){
+			throw new \InvalidArgumentException("Age must be in range 0 ..." . self::MAX_AGE);
 		}
 		$this->age = $age;
 		return $this;
@@ -79,7 +80,7 @@ class NetherWartPlant extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->age < 3 && mt_rand(0, 10) === 0){ //Still growing
+		if($this->age < self::MAX_AGE && mt_rand(0, 10) === 0){ //Still growing
 			$block = clone $this;
 			$block->age++;
 			$ev = new BlockGrowEvent($this, $block);
@@ -92,7 +93,7 @@ class NetherWartPlant extends Flowable{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			$this->asItem()->setCount($this->age === 3 ? mt_rand(2, 4) : 1)
+			$this->asItem()->setCount($this->age === self::MAX_AGE ? mt_rand(2, 4) : 1)
 		];
 	}
 }

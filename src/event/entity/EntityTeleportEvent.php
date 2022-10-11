@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -35,15 +35,12 @@ use pocketmine\world\Position;
 class EntityTeleportEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Position */
-	private $from;
-	/** @var Position */
-	private $to;
-
-	public function __construct(Entity $entity, Position $from, Position $to){
+	public function __construct(
+		Entity $entity,
+		private Position $from,
+		private Position $to
+	){
 		$this->entity = $entity;
-		$this->from = $from;
-		$this->to = $to;
 	}
 
 	public function getFrom() : Position{

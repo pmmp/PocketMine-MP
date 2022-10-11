@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -80,18 +80,14 @@ class CrashDump{
 	public const PLUGIN_INVOLVEMENT_DIRECT = "direct";
 	public const PLUGIN_INVOLVEMENT_INDIRECT = "indirect";
 
-	/** @var Server */
-	private $server;
 	private CrashDumpData $data;
-	/** @var string */
-	private $encodedData;
+	private string $encodedData;
 
-	private ?PluginManager $pluginManager;
-
-	public function __construct(Server $server, ?PluginManager $pluginManager){
+	public function __construct(
+		private Server $server,
+		private ?PluginManager $pluginManager
+	){
 		$now = microtime(true);
-		$this->server = $server;
-		$this->pluginManager = $pluginManager;
 
 		$this->data = new CrashDumpData();
 		$this->data->format_version = self::FORMAT_VERSION;
@@ -167,6 +163,8 @@ class CrashDump{
 			$extensions[$ext] = $version !== false ? $version : "**UNKNOWN**";
 		}
 		$this->data->extensions = $extensions;
+
+		$this->data->jit_mode = Utils::getOpcacheJitMode();
 
 		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-phpinfo", true)){
 			ob_start();

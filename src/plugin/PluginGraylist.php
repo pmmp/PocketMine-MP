@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,9 +32,8 @@ use function is_string;
 class PluginGraylist{
 
 	/** @var string[] */
-	private $plugins;
-	/** @var bool */
-	private $isWhitelist = false;
+	private array $plugins;
+	private bool $isWhitelist = false;
 
 	/**
 	 * @param string[] $plugins

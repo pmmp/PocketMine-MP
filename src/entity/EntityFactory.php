@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -70,12 +70,12 @@ final class EntityFactory{
 	 * @var \Closure[] save ID => creator function
 	 * @phpstan-var array<int|string, \Closure(World, CompoundTag) : Entity>
 	 */
-	private $creationFuncs = [];
+	private array $creationFuncs = [];
 	/**
 	 * @var string[]
 	 * @phpstan-var array<class-string<Entity>, string>
 	 */
-	private $saveNames = [];
+	private array $saveNames = [];
 
 	public function __construct(){
 		//define legacy save IDs first - use them for saving for maximum compatibility with Minecraft PC
@@ -173,8 +173,6 @@ final class EntityFactory{
 		$this->register(Human::class, function(World $world, CompoundTag $nbt) : Human{
 			return new Human(Helper::parseLocation($nbt, $world), Human::parseSkinNBT($nbt), $nbt);
 		}, ['Human']);
-
-		PaintingMotive::init();
 	}
 
 	/**
@@ -229,7 +227,7 @@ final class EntityFactory{
 	 */
 	public function createFromData(World $world, CompoundTag $nbt) : ?Entity{
 		try{
-			$saveId = $nbt->getTag("id") ?? $nbt->getTag("identifier");
+			$saveId = $nbt->getTag("identifier") ?? $nbt->getTag("id");
 			$func = null;
 			if($saveId instanceof StringTag){
 				$func = $this->creationFuncs[$saveId->getValue()] ?? null;
@@ -250,7 +248,7 @@ final class EntityFactory{
 
 	public function injectSaveId(string $class, CompoundTag $saveData) : void{
 		if(isset($this->saveNames[$class])){
-			$saveData->setTag("id", new StringTag($this->saveNames[$class]));
+			$saveData->setTag("identifier", new StringTag($this->saveNames[$class]));
 		}else{
 			throw new \InvalidArgumentException("Entity $class is not registered");
 		}

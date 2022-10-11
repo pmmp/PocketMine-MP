@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -36,8 +36,7 @@ class SlotChangeAction extends InventoryAction{
 
 	/** @var Inventory */
 	protected $inventory;
-	/** @var int */
-	private $inventorySlot;
+	private int $inventorySlot;
 
 	public function __construct(Inventory $inventory, int $inventorySlot, Item $sourceItem, Item $targetItem){
 		parent::__construct($sourceItem, $targetItem);
@@ -70,6 +69,12 @@ class SlotChangeAction extends InventoryAction{
 		}
 		if(!$this->inventory->getItem($this->inventorySlot)->equalsExact($this->sourceItem)){
 			throw new TransactionValidationException("Slot does not contain expected original item");
+		}
+		if($this->targetItem->getCount() > $this->targetItem->getMaxStackSize()){
+			throw new TransactionValidationException("Target item exceeds item type max stack size");
+		}
+		if($this->targetItem->getCount() > $this->inventory->getMaxStackSize()){
+			throw new TransactionValidationException("Target item exceeds inventory max stack size");
 		}
 	}
 

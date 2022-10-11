@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -63,6 +63,13 @@ class ZippedResourcePack implements ResourcePack{
 
 		if(!file_exists($zipPath)){
 			throw new ResourcePackException("File not found");
+		}
+		$size = filesize($zipPath);
+		if($size === false){
+			throw new ResourcePackException("Unable to determine size of file");
+		}
+		if($size === 0){
+			throw new ResourcePackException("Empty file, probably corrupted");
 		}
 
 		$archive = new \ZipArchive();

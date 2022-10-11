@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,7 +26,9 @@ namespace pocketmine\block;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\StairShape;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
+use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -109,6 +111,19 @@ class Stair extends Transparent{
 		$bbs[] = $topStep;
 
 		return $bbs;
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		if(
+			$facing === Facing::UP && $this->isUpsideDown() ||
+			$facing === Facing::DOWN && !$this->isUpsideDown() ||
+			($facing === $this->facing && !$this->shape->equals(StairShape::OUTER_LEFT()) && !$this->shape->equals(StairShape::OUTER_RIGHT())) ||
+			($facing === Facing::rotate($this->facing, Axis::Y, false) && $this->shape->equals(StairShape::INNER_LEFT())) ||
+			($facing === Facing::rotate($this->facing, Axis::Y, true) && $this->shape->equals(StairShape::INNER_RIGHT()))
+		){
+			return SupportType::FULL();
+		}
+		return SupportType::NONE();
 	}
 
 	private function getPossibleCornerFacing(bool $oppositeFacing) : ?int{

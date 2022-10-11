@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -69,9 +69,6 @@ use const JSON_UNESCAPED_SLASHES;
 use const SORT_NUMERIC;
 
 class MemoryManager{
-
-	private Server $server;
-
 	private int $memoryLimit;
 	private int $globalMemoryLimit;
 	private int $checkRate;
@@ -98,8 +95,9 @@ class MemoryManager{
 
 	private \Logger $logger;
 
-	public function __construct(Server $server){
-		$this->server = $server;
+	public function __construct(
+		private Server $server
+	){
 		$this->logger = new \PrefixedLogger($server->getLogger(), "Memory Manager");
 
 		$this->init($server->getConfigGroup());

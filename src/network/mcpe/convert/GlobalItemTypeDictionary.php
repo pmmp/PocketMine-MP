@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -56,11 +56,9 @@ final class GlobalItemTypeDictionary{
 		return new self(new ItemTypeDictionary($params));
 	}
 
-	private ItemTypeDictionary $dictionary;
-
-	public function __construct(ItemTypeDictionary $dictionary){
-		$this->dictionary = $dictionary;
-	}
+	public function __construct(
+		private ItemTypeDictionary $dictionary
+	){}
 
 	public function getDictionary() : ItemTypeDictionary{ return $this->dictionary; }
 }

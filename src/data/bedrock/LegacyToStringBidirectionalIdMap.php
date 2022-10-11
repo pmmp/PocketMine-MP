@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -37,12 +37,12 @@ abstract class LegacyToStringBidirectionalIdMap{
 	 * @var string[]
 	 * @phpstan-var array<int, string>
 	 */
-	private $legacyToString = [];
+	private array $legacyToString = [];
 	/**
 	 * @var int[]
 	 * @phpstan-var array<string, int>
 	 */
-	private $stringToLegacy = [];
+	private array $stringToLegacy = [];
 
 	public function __construct(string $file){
 		$stringToLegacyId = json_decode(Utils::assumeNotFalse(file_get_contents($file), "Missing required resource file"), true);

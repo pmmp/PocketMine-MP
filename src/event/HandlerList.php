@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,18 +28,14 @@ use function array_fill_keys;
 use function spl_object_id;
 
 class HandlerList{
-
-	/** @var string */
-	private $class;
 	/** @var RegisteredListener[][] */
-	private $handlerSlots = [];
-	/** @var HandlerList|null */
-	private $parentList;
+	private array $handlerSlots = [];
 
-	public function __construct(string $class, ?HandlerList $parentList){
-		$this->class = $class;
+	public function __construct(
+		private string $class,
+		private ?HandlerList $parentList
+	){
 		$this->handlerSlots = array_fill_keys(EventPriority::ALL, []);
-		$this->parentList = $parentList;
 	}
 
 	/**

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -36,16 +36,11 @@ class BanEntry{
 	/** @var string */
 	public static $format = "Y-m-d H:i:s O";
 
-	/** @var string */
-	private $name;
-	/** @var \DateTime */
-	private $creationDate;
-	/** @var string */
-	private $source = "(Unknown)";
-	/** @var \DateTime|null */
-	private $expirationDate = null;
-	/** @var string */
-	private $reason = "Banned by an operator.";
+	private string $name;
+	private \DateTime $creationDate;
+	private string $source = "(Unknown)";
+	private ?\DateTime $expirationDate = null;
+	private string $reason = "Banned by an operator.";
 
 	public function __construct(string $name){
 		$this->name = strtolower($name);
@@ -107,18 +102,13 @@ class BanEntry{
 	}
 
 	public function getString() : string{
-		$str = "";
-		$str .= $this->getName();
-		$str .= "|";
-		$str .= $this->getCreated()->format(self::$format);
-		$str .= "|";
-		$str .= $this->getSource();
-		$str .= "|";
-		$str .= $this->getExpires() === null ? "Forever" : $this->getExpires()->format(self::$format);
-		$str .= "|";
-		$str .= $this->getReason();
-
-		return $str;
+		return implode("|", [
+			$this->getName(),
+			$this->getCreated()->format(self::$format),
+			$this->getSource(),
+			$this->getExpires() === null ? "Forever" : $this->getExpires()->format(self::$format),
+			$this->getReason()
+		]);
 	}
 
 	/**

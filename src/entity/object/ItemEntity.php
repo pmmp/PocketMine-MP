@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -184,6 +184,10 @@ class ItemEntity extends Entity{
 
 	protected function applyDragBeforeGravity() : bool{
 		return true;
+	}
+
+	public function canSaveWithChunk() : bool{
+		return !$this->item->isNull() && parent::canSaveWithChunk();
 	}
 
 	public function saveNBT() : CompoundTag{

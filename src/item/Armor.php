@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -40,8 +40,7 @@ class Armor extends Durable{
 
 	public const TAG_CUSTOM_COLOR = "customColor"; //TAG_Int
 
-	/** @var ArmorTypeInfo */
-	private $armorInfo;
+	private ArmorTypeInfo $armorInfo;
 
 	/** @var Color|null */
 	protected $customColor = null;
