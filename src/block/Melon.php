@@ -27,7 +27,7 @@ use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use function mt_rand;
 
-class Melon extends Transparent{
+class Melon extends Opaque{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [

@@ -72,7 +72,7 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 	 * Returns the item used to destroy the block.
 	 */
 	public function getItem() : Item{
-		return $this->item;
+		return clone $this->item;
 	}
 
 	/**
