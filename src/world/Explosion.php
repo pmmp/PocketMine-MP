@@ -195,7 +195,7 @@ class Explosion{
 				}
 
 				$entity->attack($ev);
-				$entity->setMotion($motion->multiply($impact));
+				$entity->setMotion($entity->getMotion()->addVector($motion->multiply($impact)));
 			}
 		}
 
