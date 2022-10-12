@@ -26,6 +26,7 @@ declare(strict_types=1);
  */
 namespace pocketmine\item;
 
+use LogicException;
 use pocketmine\block\Block;
 use pocketmine\block\BlockBreakInfo;
 use pocketmine\block\BlockToolType;
@@ -44,7 +45,9 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
 use function base64_decode;
@@ -95,6 +98,8 @@ class Item implements \JsonSerializable{
 	 * @phpstan-var array<string, string>
 	 */
 	protected $canDestroy;
+	
+	protected ?ItemLockMode $lockMode = null;
 
 	/**
 	 * Constructs a new Item type. This constructor should ONLY be used when constructing a new item TYPE to register
@@ -222,6 +227,15 @@ class Item implements \JsonSerializable{
 		}
 	}
 
+	public function getLockMode() : ?ItemLockMode{
+		return $this->lockMode;
+	}
+
+	public function setLockMode(?ItemLockMode $lockMode) : self{
+		$this->lockMode = $lockMode;
+		return $this;
+	}
+
 	/**
 	 * Returns whether this Item has a non-empty NBT.
 	 */
@@ -320,6 +334,11 @@ class Item implements \JsonSerializable{
 				$this->canDestroy[$entry->getValue()] = $entry->getValue();
 			}
 		}
+		$this->lockMode = match($tag->getByte("minecraft:item_lock", 0)){
+			1 => ItemLockMode::IN_SLOT(),
+			2 => ItemLockMode::IN_INVENTORY(),
+			default => null
+		};
 	}
 
 	protected function serializeCompoundTag(CompoundTag $tag) : void{
@@ -376,6 +395,15 @@ class Item implements \JsonSerializable{
 			$tag->setTag("CanDestroy", $canDestroy);
 		}else{
 			$tag->removeTag("CanDestroy");
+		}
+		if($this->lockMode !== null){
+			$tag->setByte("minecraft:item_lock", match($this->lockMode->id()){
+				ItemLockMode::IN_SLOT()->id() => 1,
+				ItemLockMode::IN_INVENTORY()->id() => 2,
+				default => throw new AssumptionFailedError("Unknown lock mode")
+			});
+		}else{
+			$tag->removeTag("minecraft:item_lock");
 		}
 	}
 
