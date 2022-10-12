@@ -334,6 +334,7 @@ class Item implements \JsonSerializable{
 				$this->canDestroy[$entry->getValue()] = $entry->getValue();
 			}
 		}
+		//TODO: define hardcoded value in BedrockProtocol or BedrockData?
 		$this->lockMode = match($tag->getByte("minecraft:item_lock", 0)){
 			1 => ItemLockMode::IN_SLOT(),
 			2 => ItemLockMode::IN_INVENTORY(),
