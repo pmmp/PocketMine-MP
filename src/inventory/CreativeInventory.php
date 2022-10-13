@@ -27,7 +27,7 @@ use pocketmine\crafting\CraftingManagerFromDataHelper;
 use pocketmine\crafting\json\ItemStackData;
 use pocketmine\item\Item;
 use pocketmine\utils\SingletonTrait;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 
 final class CreativeInventory{
 	use SingletonTrait;
