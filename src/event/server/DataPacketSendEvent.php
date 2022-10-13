@@ -56,4 +56,11 @@ class DataPacketSendEvent extends ServerEvent implements Cancellable{
 	public function getPackets() : array{
 		return $this->packets;
 	}
+
+	/**
+	 * @param ClientboundPacket[] $packets
+	 */
+	public function setPackets(array $packets) : void{
+		$this->packets = $packets;
+	}
 }

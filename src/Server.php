@@ -1359,6 +1359,7 @@ class Server{
 				return false;
 			}
 			$recipients = $ev->getTargets();
+			$packets = $ev->getPackets();
 
 			/** @var PacketBroadcaster[] $broadcasters */
 			$broadcasters = [];
