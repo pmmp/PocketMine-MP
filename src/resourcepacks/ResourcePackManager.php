@@ -25,7 +25,7 @@ namespace pocketmine\resourcepacks;
 
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\utils\Config;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function array_keys;
 use function copy;
 use function count;

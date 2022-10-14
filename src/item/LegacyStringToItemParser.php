@@ -26,7 +26,7 @@ namespace pocketmine\item;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function explode;
 use function file_get_contents;
 use function is_array;

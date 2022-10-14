@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use pocketmine\errorhandler\ErrorToExceptionHandler;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function copy;
 use function dirname;
 use function fclose;

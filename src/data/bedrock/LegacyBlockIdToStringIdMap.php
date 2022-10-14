@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock;
 
 use pocketmine\utils\SingletonTrait;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 
 final class LegacyBlockIdToStringIdMap extends LegacyToStringBidirectionalIdMap{
 	use SingletonTrait;

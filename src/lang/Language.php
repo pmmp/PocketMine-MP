@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\lang;
 
 use pocketmine\utils\Utils;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function array_filter;
 use function array_map;
 use function count;
