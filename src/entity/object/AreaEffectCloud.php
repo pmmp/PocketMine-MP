@@ -79,18 +79,18 @@ class AreaEffectCloud extends Entity{
 	/** @var array<int, int> entity ID => expiration */
 	protected array $victims = [];
 
+	protected int $waiting = self::WAIT_TIME;
 	protected int $duration = self::DURATION;
-	protected int $durationOnUse = self::DURATION_ON_USE;
+	protected int $durationChangeOnUse = self::DURATION_ON_USE;
+
 	protected int $reapplicationDelay = self::REAPPLICATION_DELAY;
 
 	protected int $pickupCount = 0;
-
-	protected int $waiting = self::WAIT_TIME;
+	protected float $radiusChangeOnPickup = self::RADIUS_CHANGE_ON_PICKUP;
 
 	protected float $radius = self::DEFAULT_RADIUS;
-	protected float $radiusChangeOnPickup = self::RADIUS_CHANGE_ON_PICKUP;
-	protected float $radiusOnUse = self::RADIUS_ON_USE;
-	protected float $radiusPerTick = self::RADIUS_PER_TICK;
+	protected float $radiusChangeOnUse = self::RADIUS_ON_USE;
+	protected float $radiusChangePerTick = self::RADIUS_PER_TICK;
 
 	//TODO: Custom particle.
 
@@ -123,13 +123,13 @@ class AreaEffectCloud extends Entity{
 		$worldTime = $this->getWorld()->getTime();
 		$this->age = $worldTime - $nbt->getLong(self::TAG_SPAWN_TICK, $worldTime);
 		$this->duration = $nbt->getInt(self::TAG_DURATION, self::DURATION);
-		$this->durationOnUse = $nbt->getInt(self::TAG_DURATION_ON_USE, self::DURATION_ON_USE);
+		$this->durationChangeOnUse = $nbt->getInt(self::TAG_DURATION_ON_USE, self::DURATION_ON_USE);
 		$this->pickupCount = $nbt->getInt(self::TAG_PICKUP_COUNT, 0);
 		$this->reapplicationDelay = $nbt->getInt(self::TAG_REAPPLICATION_DELAY, self::REAPPLICATION_DELAY);
 		$this->setRadius($nbt->getFloat(self::TAG_RADIUS, $this->initialRadius));
 		$this->radiusChangeOnPickup = $nbt->getFloat(self::TAG_RADIUS_CHANGE_ON_PICKUP, self::RADIUS_CHANGE_ON_PICKUP);
-		$this->radiusOnUse = $nbt->getFloat(self::TAG_RADIUS_ON_USE, self::RADIUS_ON_USE);
-		$this->radiusPerTick = $nbt->getFloat(self::TAG_RADIUS_PER_TICK, self::RADIUS_PER_TICK);
+		$this->radiusChangeOnUse = $nbt->getFloat(self::TAG_RADIUS_ON_USE, self::RADIUS_ON_USE);
+		$this->radiusChangePerTick = $nbt->getFloat(self::TAG_RADIUS_PER_TICK, self::RADIUS_PER_TICK);
 
 		/** @var CompoundTag[]|ListTag|null $effectsTag */
 		$effectsTag = $nbt->getListTag(self::TAG_EFFECTS);
@@ -157,14 +157,14 @@ class AreaEffectCloud extends Entity{
 		$nbt->setLong(self::TAG_SPAWN_TICK, $this->getWorld()->getTime() - $this->age);
 		$nbt->setShort(self::TAG_POTION_ID, PotionTypeIdMap::getInstance()->toId($this->potionType));
 		$nbt->setInt(self::TAG_DURATION, $this->duration);
-		$nbt->setInt(self::TAG_DURATION_ON_USE, $this->durationOnUse);
+		$nbt->setInt(self::TAG_DURATION_ON_USE, $this->durationChangeOnUse);
 		$nbt->setInt(self::TAG_PICKUP_COUNT, $this->pickupCount);
 		$nbt->setInt(self::TAG_REAPPLICATION_DELAY, $this->reapplicationDelay);
 		$nbt->setFloat(self::TAG_INITIAL_RADIUS, $this->initialRadius);
 		$nbt->setFloat(self::TAG_RADIUS, $this->radius);
 		$nbt->setFloat(self::TAG_RADIUS_CHANGE_ON_PICKUP, $this->radiusChangeOnPickup);
-		$nbt->setFloat(self::TAG_RADIUS_ON_USE, $this->radiusOnUse);
-		$nbt->setFloat(self::TAG_RADIUS_PER_TICK, $this->radiusPerTick);
+		$nbt->setFloat(self::TAG_RADIUS_ON_USE, $this->radiusChangeOnUse);
+		$nbt->setFloat(self::TAG_RADIUS_PER_TICK, $this->radiusChangePerTick);
 
 		if(count($this->effectContainer->all()) > 0){
 			$effects = [];
@@ -228,16 +228,16 @@ class AreaEffectCloud extends Entity{
 	 * Returns the amount that the radius of this cloud will add by when it
 	 * applies an effect to an entity. Usually negative resulting in a radius reduction.
 	 */
-	public function getRadiusOnUse() : float{
-		return $this->radiusOnUse;
+	public function getRadiusChangeOnUse() : float{
+		return $this->radiusChangeOnUse;
 	}
 
 	/**
 	 * Returns the amount that the radius of this cloud will add by when it
 	 * applies an effect to an entity.
 	 */
-	public function setRadiusOnUse(float $radiusOnUse) : void{
-		$this->radiusOnUse = $radiusOnUse;
+	public function setRadiusChangeOnUse(float $radiusChangeOnUse) : void{
+		$this->radiusChangeOnUse = $radiusChangeOnUse;
 		$this->networkPropertiesDirty = true;
 	}
 
@@ -245,15 +245,15 @@ class AreaEffectCloud extends Entity{
 	 * Returns the amount that the radius of this cloud will add by when an update
 	 * is performed. Usually negative resulting in a radius reduction.
 	 */
-	public function getRadiusPerTick() : float{
-		return $this->radiusPerTick;
+	public function getRadiusChangePerTick() : float{
+		return $this->radiusChangePerTick;
 	}
 
 	/**
 	 * Sets the amount that the radius of this cloud will add by when an update is performed.
 	 */
-	public function setRadiusPerTick(float $radiusPerTick) : void{
-		$this->radiusPerTick = $radiusPerTick;
+	public function setRadiusChangePerTick(float $radiusChangePerTick) : void{
+		$this->radiusChangePerTick = $radiusChangePerTick;
 		$this->networkPropertiesDirty = true;
 	}
 
@@ -291,16 +291,16 @@ class AreaEffectCloud extends Entity{
 	 * Returns the amount that the duration of this cloud will add by when it
 	 * applies an effect to an entity.
 	 */
-	public function getDurationOnUse() : int{
-		return $this->durationOnUse;
+	public function getDurationChangeOnUse() : int{
+		return $this->durationChangeOnUse;
 	}
 
 	/**
 	 * Sets the amount that the duration of this cloud will add by when it
 	 * applies an effect to an entity.
 	 */
-	public function setDurationOnUse(int $durationOnUse) : void{
-		$this->durationOnUse = $durationOnUse;
+	public function setDurationChangeOnUse(int $durationChangeOnUse) : void{
+		$this->durationChangeOnUse = $durationChangeOnUse;
 		$this->networkPropertiesDirty = true;
 	}
 
@@ -323,7 +323,7 @@ class AreaEffectCloud extends Entity{
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
 		$this->age += $tickDiff;
-		$radius = $this->radius + ($this->radiusPerTick * $tickDiff);
+		$radius = $this->radius + ($this->radiusChangePerTick * $tickDiff);
 		if($radius < 0.75){
 			$this->flagForDespawn();
 			return true;
@@ -361,16 +361,16 @@ class AreaEffectCloud extends Entity{
 				if($this->reapplicationDelay !== 0){
 					$this->victims[$entity->getId()] = $this->age + $this->reapplicationDelay;
 				}
-				if($this->radiusOnUse !== 0.0){
-					$radius = $this->radius + $this->radiusOnUse;
+				if($this->radiusChangeOnUse !== 0.0){
+					$radius = $this->radius + $this->radiusChangeOnUse;
 					if($radius <= 0){
 						$this->flagForDespawn();
 						return true;
 					}
 					$this->setRadius($radius);
 				}
-				if($this->durationOnUse !== 0){
-					$duration = $this->duration + $this->durationOnUse;
+				if($this->durationChangeOnUse !== 0){
+					$duration = $this->duration + $this->durationChangeOnUse;
 					if($duration <= 0){
 						$this->flagForDespawn();
 						return true;
@@ -406,7 +406,7 @@ class AreaEffectCloud extends Entity{
 		$properties->setInt(EntityMetadataProperties::AREA_EFFECT_CLOUD_SPAWN_TIME, $spawnTime);
 		$properties->setInt(EntityMetadataProperties::AREA_EFFECT_CLOUD_DURATION, $this->duration);
 		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS, $this->initialRadius);
-		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS_PER_TICK, $this->radiusPerTick);
+		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS_PER_TICK, $this->radiusChangePerTick);
 		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS_CHANGE_ON_PICKUP, $this->radiusChangeOnPickup);
 		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_PICKUP_COUNT, $this->pickupCount);
 		$properties->setInt(EntityMetadataProperties::AREA_EFFECT_CLOUD_WAITING, $spawnTime + $this->waiting);
