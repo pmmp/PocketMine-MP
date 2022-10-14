@@ -1850,10 +1850,12 @@ class Server{
 		$this->getMemoryManager()->check();
 
 		if($this->console !== null){
+			Timings::$serverCommand->startTiming();
 			while(($line = $this->console->readLine()) !== null){
 				$this->consoleSender ??= new ConsoleCommandSender($this, $this->language);
 				$this->dispatchCommand($this->consoleSender, $line);
 			}
+			Timings::$serverCommand->stopTiming();
 		}
 
 		Timings::$serverTick->stopTiming();
