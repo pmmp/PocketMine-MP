@@ -92,7 +92,6 @@ final class WaterCauldron extends FillableCauldron{
 		$tile->setPotionItem(null);
 	}
 
-	/** @return Color|null */
 	public function getCustomWaterColor() : ?Color{ return $this->customWaterColor; }
 
 	/** @return $this */

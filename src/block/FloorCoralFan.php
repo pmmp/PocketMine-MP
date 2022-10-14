@@ -70,6 +70,9 @@ final class FloorCoralFan extends BaseCoral{
 				$this->axis = Axis::Z;
 			}
 		}
+
+		$this->dead = !$this->isCoveredWithWater();
+
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 

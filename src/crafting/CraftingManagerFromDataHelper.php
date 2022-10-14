@@ -41,7 +41,7 @@ use pocketmine\item\Item;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function base64_decode;
 use function file_get_contents;
 use function get_debug_type;

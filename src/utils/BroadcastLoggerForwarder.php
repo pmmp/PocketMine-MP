@@ -21,36 +21,32 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\console;
+namespace pocketmine\utils;
 
 use pocketmine\command\CommandSender;
 use pocketmine\lang\Language;
 use pocketmine\lang\Translatable;
-use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
 use pocketmine\Server;
-use pocketmine\utils\Terminal;
-use pocketmine\utils\TextFormat;
-use function explode;
-use function trim;
-use const PHP_INT_MAX;
 
-class ConsoleCommandSender implements CommandSender{
+/**
+ * Forwards any messages it receives via sendMessage() to the given logger. Used for forwarding chat messages and
+ * command audit log messages to the server log file.
+ *
+ * Unfortunately, broadcast subscribers are currently required to implement CommandSender, so this class has to include
+ * a lot of useless methods.
+ */
+final class BroadcastLoggerForwarder implements CommandSender{
 	use PermissibleDelegateTrait;
 
-	/** @phpstan-var positive-int|null */
-	protected ?int $lineHeight = null;
-
 	public function __construct(
-		private Server $server,
+		private Server $server, //annoying useless dependency
+		private \Logger $logger,
 		private Language $language
 	){
-		$this->perm = new PermissibleBase([DefaultPermissions::ROOT_CONSOLE => true]);
-	}
-
-	public function getServer() : Server{
-		return $this->server;
+		//this doesn't need any permissions
+		$this->perm = new PermissibleBase([]);
 	}
 
 	public function getLanguage() : Language{
@@ -59,26 +55,25 @@ class ConsoleCommandSender implements CommandSender{
 
 	public function sendMessage(Translatable|string $message) : void{
 		if($message instanceof Translatable){
-			$message = $this->getLanguage()->translate($message);
+			$this->logger->info($this->language->translate($message));
+		}else{
+			$this->logger->info($message);
 		}
+	}
 
-		foreach(explode("\n", trim($message)) as $line){
-			Terminal::writeLine(TextFormat::GREEN . "Command output | " . TextFormat::addBase(TextFormat::WHITE, $line));
-		}
+	public function getServer() : Server{
+		return $this->server;
 	}
 
 	public function getName() : string{
-		return "CONSOLE";
+		return "Broadcast Logger Forwarder";
 	}
 
 	public function getScreenLineHeight() : int{
-		return $this->lineHeight ?? PHP_INT_MAX;
+		return PHP_INT_MAX;
 	}
 
 	public function setScreenLineHeight(?int $height) : void{
-		if($height !== null && $height < 1){
-			throw new \InvalidArgumentException("Line height must be at least 1");
-		}
-		$this->lineHeight = $height;
+		//NOOP
 	}
 }

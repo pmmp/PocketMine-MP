@@ -50,7 +50,7 @@ use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
 use pocketmine\world\WorldCreationOptions;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function array_map;
 use function array_values;
 use function chr;

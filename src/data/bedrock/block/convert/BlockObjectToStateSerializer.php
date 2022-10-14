@@ -169,7 +169,7 @@ use pocketmine\utils\AssumptionFailedError;
 use function class_parents;
 use function get_class;
 
-final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
+final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	/**
 	 * These callables actually accept Block, but for the sake of type completeness, it has to be never, since we can't
 	 * describe the bottom type of a type hierarchy only containing Block.
@@ -178,6 +178,12 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 	 * @phpstan-var array<int, array<class-string, \Closure(never) : Writer>>
 	 */
 	private array $serializers = [];
+
+	/**
+	 * @var BlockStateData[]
+	 * @phpstan-var array<int, BlockStateData>
+	 */
+	private array $cache = [];
 
 	public function __construct(){
 		$this->registerCandleSerializers();
@@ -188,7 +194,8 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 
 	public function serialize(int $stateId) : BlockStateData{
 		//TODO: singleton usage not ideal
-		return $this->serializeBlock(BlockFactory::getInstance()->fromStateId($stateId));
+		//TODO: we may want to deduplicate cache entries to avoid wasting memory
+		return $this->cache[$stateId] ??= $this->serializeBlock(BlockFactory::getInstance()->fromStateId($stateId));
 	}
 
 	/**

@@ -32,9 +32,11 @@ use pocketmine\block\BlockToolType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
+use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNbtSerializer;
@@ -435,11 +437,11 @@ class Item implements \JsonSerializable{
 
 	final public function computeTypeData() : int{
 		$writer = new RuntimeDataWriter(16); //TODO: max bits should be a constant instead of being hardcoded all over the place
-		$this->encodeType($writer);
+		$this->describeType($writer);
 		return $writer->getValue();
 	}
 
-	protected function encodeType(RuntimeDataWriter $w) : void{
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
 		//NOOP
 	}
 
@@ -555,6 +557,14 @@ class Item implements \JsonSerializable{
 	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
 	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
+		return false;
+	}
+
+	/**
+	 * Called when this item is being worn by an entity.
+	 * Returns whether it did something.
+	 */
+	public function onTickWorn(Living $entity) : bool{
 		return false;
 	}
 

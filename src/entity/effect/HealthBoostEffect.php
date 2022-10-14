@@ -33,5 +33,8 @@ class HealthBoostEffect extends Effect{
 
 	public function remove(Living $entity, EffectInstance $instance) : void{
 		$entity->setMaxHealth($entity->getMaxHealth() - 4 * $instance->getEffectLevel());
+		if($entity->getHealth() > $entity->getMaxHealth()){
+			$entity->setHealth($entity->getMaxHealth());
+		}
 	}
 }

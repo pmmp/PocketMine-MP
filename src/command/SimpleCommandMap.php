@@ -274,10 +274,11 @@ class SimpleCommandMap implements CommandMap{
 			}
 
 			//These registered commands have absolute priority
+			$lowerAlias = strtolower($alias);
 			if(count($targets) > 0){
-				$this->knownCommands[strtolower($alias)] = new FormattedCommandAlias(strtolower($alias), $targets);
+				$this->knownCommands[$lowerAlias] = new FormattedCommandAlias($lowerAlias, $targets);
 			}else{
-				unset($this->knownCommands[strtolower($alias)]);
+				unset($this->knownCommands[$lowerAlias]);
 			}
 
 		}
