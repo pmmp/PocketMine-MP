@@ -31,16 +31,16 @@ use pocketmine\utils\EnumTrait;
  * @see build/generate-registry-annotations.php
  * @generate-registry-docblock
  *
- * @method static ItemLockMode IN_INVENTORY()
- * @method static ItemLockMode IN_SLOT()
+ * @method static ItemLockMode INVENTORY()
+ * @method static ItemLockMode SLOT()
  */
 final class ItemLockMode{
 	use EnumTrait;
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self("in_slot"),
-			new self("in_inventory")
+			new self("slot"),
+			new self("inventory")
 		);
 	}
 }

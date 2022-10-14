@@ -336,8 +336,8 @@ class Item implements \JsonSerializable{
 		}
 		//TODO: define hardcoded value in BedrockProtocol or BedrockData?
 		$this->lockMode = match($tag->getByte("minecraft:item_lock", 0)){
-			1 => ItemLockMode::IN_SLOT(),
-			2 => ItemLockMode::IN_INVENTORY(),
+			1 => ItemLockMode::SLOT(),
+			2 => ItemLockMode::INVENTORY(),
 			default => null
 		};
 	}
@@ -399,8 +399,8 @@ class Item implements \JsonSerializable{
 		}
 		if($this->lockMode !== null){
 			$tag->setByte("minecraft:item_lock", match($this->lockMode->id()){
-				ItemLockMode::IN_SLOT()->id() => 1,
-				ItemLockMode::IN_INVENTORY()->id() => 2,
+				ItemLockMode::SLOT()->id() => 1,
+				ItemLockMode::INVENTORY()->id() => 2,
 				default => throw new AssumptionFailedError("Unknown lock mode")
 			});
 		}else{
