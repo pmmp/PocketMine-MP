@@ -30,7 +30,7 @@ declare(strict_types=1);
 namespace pocketmine\tools\generate_item_upgrade_schema;
 
 use pocketmine\errorhandler\ErrorToExceptionHandler;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function count;
 use function dirname;
 use function file_get_contents;

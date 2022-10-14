@@ -59,7 +59,7 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 	}
 
 	public function getItem() : Item{
-		return $this->item;
+		return clone $this->item;
 	}
 
 	public function getBlock() : Block{

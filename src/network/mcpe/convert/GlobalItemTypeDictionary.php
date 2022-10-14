@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\convert;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function file_get_contents;
 
 final class GlobalItemTypeDictionary{

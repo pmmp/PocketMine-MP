@@ -74,9 +74,7 @@ final class WoodType{
 
 	public function isFlammable() : bool{ return $this->flammable; }
 
-	/** @return string|null */
 	public function getStandardLogSuffix() : ?string{ return $this->standardLogSuffix; }
 
-	/** @return string|null */
 	public function getAllSidedLogSuffix() : ?string{ return $this->allSidedLogSuffix; }
 }
