@@ -64,9 +64,13 @@ class Item implements \JsonSerializable{
 	public const TAG_ENCH = "ench";
 	public const TAG_DISPLAY = "display";
 	public const TAG_BLOCK_ENTITY_TAG = "BlockEntityTag";
+	public const TAG_ITEM_LOCK = "minecraft:item_lock";
 
 	public const TAG_DISPLAY_NAME = "Name";
 	public const TAG_DISPLAY_LORE = "Lore";
+
+	public const VALUE_ITEM_LOCK_IN_SLOT = 1;
+	public const VALUE_ITEM_LOCK_IN_INVENTORY = 2;
 
 	private ItemIdentifier $identifier;
 	private CompoundTag $nbt;
@@ -334,10 +338,9 @@ class Item implements \JsonSerializable{
 				$this->canDestroy[$entry->getValue()] = $entry->getValue();
 			}
 		}
-		//TODO: define hardcoded value in BedrockProtocol or BedrockData?
-		$this->lockMode = match($tag->getByte("minecraft:item_lock", 0)){
-			1 => ItemLockMode::SLOT(),
-			2 => ItemLockMode::INVENTORY(),
+		$this->lockMode = match($tag->getByte(self::TAG_ITEM_LOCK, 0)){
+			self::VALUE_ITEM_LOCK_IN_SLOT => ItemLockMode::SLOT(),
+			self::VALUE_ITEM_LOCK_IN_INVENTORY => ItemLockMode::INVENTORY(),
 			default => null
 		};
 	}
@@ -398,9 +401,9 @@ class Item implements \JsonSerializable{
 			$tag->removeTag("CanDestroy");
 		}
 		if($this->lockMode !== null){
-			$tag->setByte("minecraft:item_lock", match($this->lockMode->id()){
-				ItemLockMode::SLOT()->id() => 1,
-				ItemLockMode::INVENTORY()->id() => 2,
+			$tag->setByte(self::TAG_ITEM_LOCK, match($this->lockMode->id()){
+				ItemLockMode::SLOT()->id() => self::VALUE_ITEM_LOCK_IN_SLOT,
+				ItemLockMode::INVENTORY()->id() => self::VALUE_ITEM_LOCK_IN_INVENTORY,
 				default => throw new AssumptionFailedError("Unknown lock mode")
 			});
 		}else{
