@@ -58,17 +58,17 @@ class AreaEffectCloud extends Entity{
 	public const RADIUS_PER_TICK = -0.005;
 
 	public const TAG_POTION_ID = "PotionId"; //TAG_Short
-	public const TAG_SPAWN_TICK = "SpawnTick"; //TAG_Long
-	public const TAG_DURATION = "Duration"; //TAG_Int
-	public const TAG_PICKUP_COUNT = "PickupCount"; //TAG_Int
-	public const TAG_DURATION_ON_USE = "DurationOnUse"; //TAG_Int
-	public const TAG_REAPPLICATION_DELAY = "ReapplicationDelay"; //TAG_Int
+	protected const TAG_SPAWN_TICK = "SpawnTick"; //TAG_Long
+	protected const TAG_DURATION = "Duration"; //TAG_Int
+	protected const TAG_PICKUP_COUNT = "PickupCount"; //TAG_Int
+	protected const TAG_DURATION_ON_USE = "DurationOnUse"; //TAG_Int
+	protected const TAG_REAPPLICATION_DELAY = "ReapplicationDelay"; //TAG_Int
 	public const TAG_INITIAL_RADIUS = "InitialRadius"; //TAG_Float
-	public const TAG_RADIUS = "Radius"; //TAG_Float
-	public const TAG_RADIUS_CHANGE_ON_PICKUP = "RadiusChangeOnPickup"; //TAG_Float
-	public const TAG_RADIUS_ON_USE = "RadiusOnUse"; //TAG_Float
-	public const TAG_RADIUS_PER_TICK = "RadiusPerTick"; //TAG_Float
-	public const TAG_EFFECTS = "mobEffects"; //TAG_List
+	protected const TAG_RADIUS = "Radius"; //TAG_Float
+	protected const TAG_RADIUS_CHANGE_ON_PICKUP = "RadiusChangeOnPickup"; //TAG_Float
+	protected const TAG_RADIUS_ON_USE = "RadiusOnUse"; //TAG_Float
+	protected const TAG_RADIUS_PER_TICK = "RadiusPerTick"; //TAG_Float
+	protected const TAG_EFFECTS = "mobEffects"; //TAG_List
 
 	public static function getNetworkTypeId() : string{ return EntityIds::AREA_EFFECT_CLOUD; }
 
