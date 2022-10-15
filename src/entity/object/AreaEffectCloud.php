@@ -46,16 +46,16 @@ use function round;
 
 class AreaEffectCloud extends Entity{
 
-	public const DURATION = 600;
-	public const DURATION_ON_USE = 0;
+	public const DURATION = 600; // in ticks
+	public const DURATION_ON_USE = 0; // in ticks
 
-	public const WAIT_TIME = 10;
-	public const REAPPLICATION_DELAY = 40;
+	public const WAIT_TIME = 10; // in ticks
+	public const REAPPLICATION_DELAY = 40; // in ticks
 
-	public const DEFAULT_RADIUS = 3.0;
-	public const RADIUS_CHANGE_ON_PICKUP = -0.5;
-	public const RADIUS_ON_USE = -0.5;
-	public const RADIUS_PER_TICK = -0.005;
+	public const DEFAULT_RADIUS = 3.0; // in blocks
+	public const RADIUS_CHANGE_ON_PICKUP = -0.5; // in blocks
+	public const RADIUS_ON_USE = -0.5; // in blocks
+	public const RADIUS_PER_TICK = -0.005; // in blocks
 
 	public const TAG_POTION_ID = "PotionId"; //TAG_Short
 	protected const TAG_SPAWN_TICK = "SpawnTick"; //TAG_Long
@@ -190,6 +190,9 @@ class AreaEffectCloud extends Entity{
 		return false;
 	}
 
+	/**
+	 * Returns the time it have lived (in ticks).
+	 */
 	public function getAge() : int{
 		return $this->age;
 	}
@@ -203,21 +206,21 @@ class AreaEffectCloud extends Entity{
 	}
 
 	/**
-	 * Returns the initial radius.
+	 * Returns the initial radius (in blocks).
 	 */
 	public function getInitialRadius() : float{
 		return $this->initialRadius;
 	}
 
 	/**
-	 * Returns the current radius.
+	 * Returns the current radius (in blocks).
 	 */
 	public function getRadius() : float{
 		return $this->radius;
 	}
 
 	/**
-	 * Sets the radius only server-side, client calculates the radius by himself.
+	 * Sets the radius only server-side, client calculates the radius by himself (in blocks).
 	 */
 	protected function setRadius(float $radius) : void{
 		$this->radius = $radius;
@@ -226,7 +229,7 @@ class AreaEffectCloud extends Entity{
 
 	/**
 	 * Returns the amount that the radius of this cloud will add by when it
-	 * applies an effect to an entity. Usually negative resulting in a radius reduction.
+	 * applies an effect to an entity (in blocks). Usually negative resulting in a radius reduction.
 	 */
 	public function getRadiusChangeOnUse() : float{
 		return $this->radiusChangeOnUse;
@@ -234,7 +237,7 @@ class AreaEffectCloud extends Entity{
 
 	/**
 	 * Returns the amount that the radius of this cloud will add by when it
-	 * applies an effect to an entity.
+	 * applies an effect to an entity (in blocks).
 	 */
 	public function setRadiusChangeOnUse(float $radiusChangeOnUse) : void{
 		$this->radiusChangeOnUse = $radiusChangeOnUse;
@@ -243,14 +246,14 @@ class AreaEffectCloud extends Entity{
 
 	/**
 	 * Returns the amount that the radius of this cloud will add by when an update
-	 * is performed. Usually negative resulting in a radius reduction.
+	 * is performed (in blocks). Usually negative resulting in a radius reduction.
 	 */
 	public function getRadiusChangePerTick() : float{
 		return $this->radiusChangePerTick;
 	}
 
 	/**
-	 * Sets the amount that the radius of this cloud will add by when an update is performed.
+	 * Sets the amount that the radius of this cloud will add by when an update is performed (in blocks).
 	 */
 	public function setRadiusChangePerTick(float $radiusChangePerTick) : void{
 		$this->radiusChangePerTick = $radiusChangePerTick;
@@ -258,14 +261,14 @@ class AreaEffectCloud extends Entity{
 	}
 
 	/**
-	 * Returns the value that must be reached by age to perform an update.
+	 * Returns the value that must be reached by age to perform an update (in ticks).
 	 */
 	public function getWaiting() : int{
 		return $this->waiting;
 	}
 
 	/**
-	 * Sets the value that must be reached by age to perform an update.
+	 * Sets the value that must be reached by age to perform an update (in ticks).
 	 */
 	public function setWaiting(int $time) : void{
 		$this->waiting = $time;
@@ -289,7 +292,7 @@ class AreaEffectCloud extends Entity{
 
 	/**
 	 * Returns the amount that the duration of this cloud will add by when it
-	 * applies an effect to an entity.
+	 * applies an effect to an entity (in ticks).
 	 */
 	public function getDurationChangeOnUse() : int{
 		return $this->durationChangeOnUse;
@@ -297,7 +300,7 @@ class AreaEffectCloud extends Entity{
 
 	/**
 	 * Sets the amount that the duration of this cloud will add by when it
-	 * applies an effect to an entity.
+	 * applies an effect to an entity (in ticks).
 	 */
 	public function setDurationChangeOnUse(int $durationChangeOnUse) : void{
 		$this->durationChangeOnUse = $durationChangeOnUse;
@@ -305,14 +308,14 @@ class AreaEffectCloud extends Entity{
 	}
 
 	/**
-	 * Returns the time that an entity will be immune from subsequent exposure.
+	 * Returns the time that an entity will be immune from subsequent exposure (in ticks).
 	 */
 	public function getReapplicationDelay() : int{
 		return $this->reapplicationDelay;
 	}
 
 	/**
-	 * Sets the time that an entity will be immune from subsequent exposure.
+	 * Sets the time that an entity will be immune from subsequent exposure (in ticks).
 	 */
 	public function setReapplicationDelay(int $delay) : void{
 		$this->reapplicationDelay = $delay;
