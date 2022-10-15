@@ -42,6 +42,7 @@ use pocketmine\utils\Binary;
 use pocketmine\world\particle\PotionSplashParticle;
 use function array_map;
 use function count;
+use function max;
 use function round;
 
 class AreaEffectCloud extends Entity{
@@ -121,7 +122,7 @@ class AreaEffectCloud extends Entity{
 		});
 
 		$worldTime = $this->getWorld()->getTime();
-		$this->age = $worldTime - $nbt->getLong(self::TAG_SPAWN_TICK, $worldTime);
+		$this->age = max($worldTime - $nbt->getLong(self::TAG_SPAWN_TICK, $worldTime), 0);
 		$this->duration = $nbt->getInt(self::TAG_DURATION, self::DURATION);
 		$this->durationChangeOnUse = $nbt->getInt(self::TAG_DURATION_ON_USE, self::DURATION_ON_USE);
 		$this->pickupCount = $nbt->getInt(self::TAG_PICKUP_COUNT, 0);
