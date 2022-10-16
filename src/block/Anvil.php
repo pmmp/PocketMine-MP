@@ -37,7 +37,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
-use pocketmine\world\sound\AnvilFallSound;
 use function lcg_value;
 use function round;
 
