@@ -26,7 +26,7 @@ namespace pocketmine\inventory;
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\utils\SingletonTrait;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function file_get_contents;
 use function json_decode;
 

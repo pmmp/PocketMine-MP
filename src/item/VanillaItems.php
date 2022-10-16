@@ -384,6 +384,7 @@ final class VanillaItems{
 
 	/**
 	 * @return Item[]
+	 * @phpstan-return array<string, Item>
 	 */
 	public static function getAll() : array{
 		//phpstan doesn't support generic traits yet :(

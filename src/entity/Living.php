@@ -56,6 +56,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\player\Player;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Binary;
+use pocketmine\world\sound\BurpSound;
 use pocketmine\world\sound\EntityLandSound;
 use pocketmine\world\sound\EntityLongFallSound;
 use pocketmine\world\sound\EntityShortFallSound;
@@ -255,8 +256,7 @@ abstract class Living extends Entity{
 		$size = $this->getInitialSizeInfo();
 		if($this->isSwimming() || $this->isGliding()){
 			$width = $size->getWidth();
-			//we don't actually know an appropriate eye height for a swimming mob, but 2/3 should be good enough.
-			$this->setSize((new EntitySizeInfo($width, $width, $width * 2 / 3))->scale($this->getScale()));
+			$this->setSize((new EntitySizeInfo($width, $width, $width * 0.9))->scale($this->getScale()));
 		}else{
 			$this->setSize($size->scale($this->getScale()));
 		}
@@ -293,6 +293,10 @@ abstract class Living extends Entity{
 		return $nbt;
 	}
 
+	/**
+	 * @deprecated This function always returns true, no matter whether the target is in the line of sight or not.
+	 * @see VoxelRayTrace::inDirection() for a more generalized method of ray-tracing to a target.
+	 */
 	public function hasLineOfSight(Entity $entity) : bool{
 		//TODO: head height
 		return true;
@@ -319,6 +323,9 @@ abstract class Living extends Entity{
 	protected function applyConsumptionResults(Consumable $consumable) : void{
 		foreach($consumable->getAdditionalEffects() as $effect){
 			$this->effectManager->add($effect);
+		}
+		if($consumable instanceof FoodSource){
+			$this->broadcastSound(new BurpSound());
 		}
 
 		$consumable->onConsume($this);

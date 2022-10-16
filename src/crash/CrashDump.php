@@ -33,7 +33,7 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function base64_encode;
 use function error_get_last;
 use function file;
@@ -163,6 +163,8 @@ class CrashDump{
 			$extensions[$ext] = $version !== false ? $version : "**UNKNOWN**";
 		}
 		$this->data->extensions = $extensions;
+
+		$this->data->jit_mode = Utils::getOpcacheJitMode();
 
 		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-phpinfo", true)){
 			ob_start();

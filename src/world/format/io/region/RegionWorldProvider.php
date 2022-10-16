@@ -32,7 +32,7 @@ use pocketmine\world\format\io\ChunkData;
 use pocketmine\world\format\io\data\JavaWorldData;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\WorldData;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function assert;
 use function file_exists;
 use function is_dir;
