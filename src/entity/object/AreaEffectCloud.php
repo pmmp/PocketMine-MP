@@ -41,7 +41,6 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\utils\Binary;
 use pocketmine\world\particle\PotionSplashParticle;
-use function array_filter;
 use function array_map;
 use function count;
 use function max;
@@ -348,15 +347,33 @@ class AreaEffectCloud extends Entity{
 			$this->setWaiting($this->age + self::WAIT_TIME);
 
 			/** @var Living[] $entities */
-			$entities = array_filter($this->getWorld()->getCollidingEntities($this->getBoundingBox(), $this), function(Entity $entity) : bool{
+			$entities = [];
+			$radiusChange = 0.0;
+			$durationChange = 0;
+			foreach($this->getWorld()->getCollidingEntities($this->getBoundingBox(), $this) as $entity){
 				if(!$entity instanceof Living || isset($this->victims[$entity->getId()])){
-					return false;
+					continue;
 				}
 				$entityPosition = $entity->getPosition();
 				$xDiff = $entityPosition->getX() - $this->location->getX();
 				$zDiff = $entityPosition->getZ() - $this->location->getZ();
-				return !(($xDiff ** 2 + $zDiff ** 2) > $this->radius ** 2);
-			});
+				if(($xDiff ** 2 + $zDiff ** 2) > $this->radius ** 2){
+					continue;
+				}
+				$entities[] = $entity;
+				if($this->radiusChangeOnUse !== 0.0){
+					$radiusChange += $this->radiusChangeOnUse;
+					if($this->radius + $radiusChange <= 0){
+						break;
+					}
+				}
+				if($this->durationChangeOnUse !== 0){
+					$durationChange += $this->durationChangeOnUse;
+					if($this->duration + $durationChange <= 0){
+						break;
+					}
+				}
+			}
 			if(count($entities) === 0){
 				return $hasUpdate;
 			}
@@ -378,23 +395,16 @@ class AreaEffectCloud extends Entity{
 				if($this->reapplicationDelay !== 0){
 					$this->victims[$entity->getId()] = $this->age + $this->reapplicationDelay;
 				}
-				if($this->radiusChangeOnUse !== 0.0){
-					$radius = $this->radius + $this->radiusChangeOnUse;
-					if($radius <= 0){
-						$this->flagForDespawn();
-						return true;
-					}
-					$this->setRadius($radius);
-				}
-				if($this->durationChangeOnUse !== 0){
-					$duration = $this->duration + $this->durationChangeOnUse;
-					if($duration <= 0){
-						$this->flagForDespawn();
-						return true;
-					}
-					$this->setDuration($duration);
-				}
 			}
+
+			$radius = $this->radius + $radiusChange;
+			$duration = $this->duration + $durationChange;
+			if($radius <= 0 || $duration <= 0){
+				$this->flagForDespawn();
+				return true;
+			}
+			$this->setRadius($radius);
+			$this->setDuration($duration);
 			$hasUpdate = true;
 		}
 

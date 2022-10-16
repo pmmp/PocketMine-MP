@@ -55,11 +55,7 @@ class AreaEffectCloudApplyEvent extends EntityEvent implements Cancellable{
 	}
 
 	/**
-	 * Returns the effected entities.
-	 *
-	 * It is important to note that not every entity is guaranteed to be affected.
-	 * The cloud may despawn during the application of its effects due to the depletion
-	 * by {@link AreaEffectCloud::getDurationChangeOnUse()} or {@link AreaEffectCloud::getRadiusChangeOnUse()}.
+	 * Returns the affected entities.
 	 *
 	 * @return Living[]
 	 */
