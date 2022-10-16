@@ -129,6 +129,11 @@ use const PHP_INT_MIN;
 
 #include <rules/World.h>
 
+/**
+ * @phpstan-type ChunkPosHash int
+ * @phpstan-type BlockPosHash int
+ * @phpstan-type ChunkBlockPosHash int
+ */
 class World implements ChunkManager{
 
 	private static int $worldIdCounter = 1;
@@ -152,28 +157,40 @@ class World implements ChunkManager{
 
 	public const DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK = 3;
 
-	/** @var Player[] */
+	/**
+	 * @var Player[] entity runtime ID => Player
+	 * @phpstan-var array<int, Player>
+	 */
 	private array $players = [];
 
-	/** @var Entity[] */
+	/**
+	 * @var Entity[] entity runtime ID => Entity
+	 * @phpstan-var array<int, Entity>
+	 */
 	private array $entities = [];
 	/**
-	 * @var Vector3[]
+	 * @var Vector3[] entity runtime ID => Vector3
 	 * @phpstan-var array<int, Vector3>
 	 */
 	private array $entityLastKnownPositions = [];
 
 	/**
-	 * @var Entity[][]
-	 * @phpstan-var array<int, array<int, Entity>>
+	 * @var Entity[][] chunkHash => [entity runtime ID => Entity]
+	 * @phpstan-var array<ChunkPosHash, array<int, Entity>>
 	 */
 	private array $entitiesByChunk = [];
 
-	/** @var Entity[] */
+	/**
+	 * @var Entity[] entity runtime ID => Entity
+	 * @phpstan-var array<int, Entity>
+	 */
 	public $updateEntities = [];
 
 	private bool $inDynamicStateRecalculation = false;
-	/** @var Block[][] */
+	/**
+	 * @var Block[][] chunkHash => [relativeBlockHash => Block]
+	 * @phpstan-var array<ChunkPosHash, array<ChunkBlockPosHash, Block>>
+	 */
 	private array $blockCache = [];
 
 	private int $sendTimeTicker = 0;
@@ -185,22 +202,43 @@ class World implements ChunkManager{
 	private int $minY;
 	private int $maxY;
 
-	/** @var TickingChunkLoader[] */
+	/**
+	 * @var TickingChunkLoader[] spl_object_id => TickingChunkLoader
+	 * @phpstan-var array<int, TickingChunkLoader>
+	 */
 	private array $tickingLoaders = [];
-	/** @var int[] */
+	/**
+	 * @var int[] spl_object_id => number of chunks
+	 * @phpstan-var array<int, int>
+	 */
 	private array $tickingLoaderCounter = [];
-	/** @var ChunkLoader[][] */
+	/**
+	 * @var ChunkLoader[][] chunkHash => [spl_object_id => ChunkLoader]
+	 * @phpstan-var array<ChunkPosHash, array<int, ChunkLoader>>
+	 */
 	private array $chunkLoaders = [];
 
-	/** @var ChunkListener[][] */
+	/**
+	 * @var ChunkListener[][] chunkHash => [spl_object_id => ChunkListener]
+	 * @phpstan-var array<ChunkPosHash, array<int, ChunkListener>>
+	 */
 	private array $chunkListeners = [];
-	/** @var Player[][] */
+	/**
+	 * @var Player[][] chunkHash => [spl_object_id => Player]
+	 * @phpstan-var array<ChunkPosHash, array<int, Player>>
+	 */
 	private array $playerChunkListeners = [];
 
-	/** @var ClientboundPacket[][] */
+	/**
+	 * @var ClientboundPacket[][]
+	 * @phpstan-var array<ChunkPosHash, list<ClientboundPacket>>
+	 */
 	private array $packetBuffersByChunk = [];
 
-	/** @var float[] */
+	/**
+	 * @var float[] chunkHash => timestamp of request
+	 * @phpstan-var array<ChunkPosHash, float>
+	 */
 	private array $unloadQueue = [];
 
 	private int $time;
@@ -213,44 +251,65 @@ class World implements ChunkManager{
 	private string $folderName;
 	private string $displayName;
 
-	/** @var Chunk[] */
+	/**
+	 * @var Chunk[]
+	 * @phpstan-var array<ChunkPosHash, Chunk>
+	 */
 	private array $chunks = [];
 
-	/** @var Vector3[][] */
+	/**
+	 * @var Vector3[][] chunkHash => [relativeBlockHash => Vector3]
+	 * @phpstan-var array<ChunkPosHash, array<ChunkBlockPosHash, Vector3>>
+	 */
 	private array $changedBlocks = [];
 
 	/** @phpstan-var ReversePriorityQueue<int, Vector3> */
 	private ReversePriorityQueue $scheduledBlockUpdateQueue;
-	/** @var int[] */
+	/**
+	 * @var int[] blockHash => tick delay
+	 * @phpstan-var array<BlockPosHash, int>
+	 */
 	private array $scheduledBlockUpdateQueueIndex = [];
 
 	/** @phpstan-var \SplQueue<int> */
 	private \SplQueue $neighbourBlockUpdateQueue;
-	/** @var bool[] blockhash => dummy */
+	/**
+	 * @var true[] blockhash => dummy
+	 * @phpstan-var array<BlockPosHash, true>
+	 */
 	private array $neighbourBlockUpdateQueueIndex = [];
 
-	/** @var bool[] */
+	/**
+	 * @var bool[] chunkHash => isValid
+	 * @phpstan-var array<ChunkPosHash, bool>
+	 */
 	private array $activeChunkPopulationTasks = [];
-	/** @var ChunkLockId[] */
+	/**
+	 * @var ChunkLockId[]
+	 * @phpstan-var array<ChunkPosHash, ChunkLockId>
+	 */
 	private array $chunkLock = [];
 	private int $maxConcurrentChunkPopulationTasks = 2;
 	/**
 	 * @var PromiseResolver[] chunkHash => promise
-	 * @phpstan-var array<int, PromiseResolver<Chunk>>
+	 * @phpstan-var array<ChunkPosHash, PromiseResolver<Chunk>>
 	 */
 	private array $chunkPopulationRequestMap = [];
 	/**
 	 * @var \SplQueue (queue of chunkHashes)
-	 * @phpstan-var \SplQueue<int>
+	 * @phpstan-var \SplQueue<ChunkPosHash>
 	 */
 	private \SplQueue $chunkPopulationRequestQueue;
 	/**
 	 * @var true[] chunkHash => dummy
-	 * @phpstan-var array<int, true>
+	 * @phpstan-var array<ChunkPosHash, true>
 	 */
 	private array $chunkPopulationRequestQueueIndex = [];
 
-	/** @var bool[] */
+	/**
+	 * @var true[]
+	 * @phpstan-var array<int, true>
+	 */
 	private array $generatorRegisteredWorkers = [];
 
 	private bool $autoSave = true;
@@ -260,7 +319,10 @@ class World implements ChunkManager{
 	private int $chunkTickRadius;
 	private int $chunksPerTick;
 	private int $tickedBlocksPerSubchunkPerTick = self::DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK;
-	/** @var bool[] */
+	/**
+	 * @var true[]
+	 * @phpstan-var array<int, true>
+	 */
 	private array $randomTickBlocks = [];
 
 	/** @var WorldTimings */
@@ -286,6 +348,9 @@ class World implements ChunkManager{
 
 	private \Logger $logger;
 
+	/**
+	 * @phpstan-return ChunkPosHash
+	 */
 	public static function chunkHash(int $x, int $z) : int{
 		return morton2d_encode($x, $z);
 	}
@@ -302,6 +367,9 @@ class World implements ChunkManager{
 	private const BLOCKHASH_X_SHIFT = self::BLOCKHASH_Y_BITS;
 	private const BLOCKHASH_Z_SHIFT = self::BLOCKHASH_X_SHIFT + self::BLOCKHASH_XZ_EXTRA_BITS;
 
+	/**
+	 * @phpstan-return BlockPosHash
+	 */
 	public static function blockHash(int $x, int $y, int $z) : int{
 		$shiftedY = $y + self::BLOCKHASH_Y_OFFSET;
 		if(($shiftedY & (~0 << self::BLOCKHASH_Y_BITS)) !== 0){
@@ -326,6 +394,9 @@ class World implements ChunkManager{
 		return morton3d_encode($x, $y, $z);
 	}
 
+	/**
+	 * @phpstan-param BlockPosHash $hash
+	 */
 	public static function getBlockXYZ(int $hash, ?int &$x, ?int &$y, ?int &$z) : void{
 		[$baseX, $baseY, $baseZ] = morton3d_decode($hash);
 
@@ -337,6 +408,9 @@ class World implements ChunkManager{
 		$z = (($baseZ & self::BLOCKHASH_XZ_MASK) | $extraZ) << self::BLOCKHASH_XZ_SIGN_SHIFT >> self::BLOCKHASH_XZ_SIGN_SHIFT;
 	}
 
+	/**
+	 * @phpstan-param ChunkPosHash $hash
+	 */
 	public static function getXZ(int $hash, ?int &$x, ?int &$z) : void{
 		[$x, $z] = morton2d_decode($hash);
 	}
@@ -557,6 +631,28 @@ class World implements ChunkManager{
 	}
 
 	/**
+	 * Returns a list of players who are in the given filter and also using the chunk containing the target position.
+	 * Used for broadcasting sounds and particles with specific targets.
+	 *
+	 * @param Player[]             $allowed
+	 * @phpstan-param list<Player> $allowed
+	 *
+	 * @return array<int, Player>
+	 */
+	private function filterViewersForPosition(Vector3 $pos, array $allowed) : array{
+		$candidates = $this->getViewersForPosition($pos);
+		$filtered = [];
+		foreach($allowed as $player){
+			$k = spl_object_id($player);
+			if(isset($candidates[$k])){
+				$filtered[$k] = $candidates[$k];
+			}
+		}
+
+		return $filtered;
+	}
+
+	/**
 	 * @param Player[]|null $players
 	 */
 	public function addSound(Vector3 $pos, Sound $sound, ?array $players = null) : void{
@@ -567,7 +663,7 @@ class World implements ChunkManager{
 					$this->broadcastPacketToViewers($pos, $e);
 				}
 			}else{
-				$this->server->broadcastPackets($players, $pk);
+				$this->server->broadcastPackets($this->filterViewersForPosition($pos, $players), $pk);
 			}
 		}
 	}
@@ -583,7 +679,7 @@ class World implements ChunkManager{
 					$this->broadcastPacketToViewers($pos, $e);
 				}
 			}else{
-				$this->server->broadcastPackets($players, $pk);
+				$this->server->broadcastPackets($this->filterViewersForPosition($pos, $players), $pk);
 			}
 		}
 	}
@@ -602,7 +698,8 @@ class World implements ChunkManager{
 	 *
 	 * Returns a list of players who have the target chunk within their view distance.
 	 *
-	 * @return Player[]
+	 * @return Player[] spl_object_id => Player
+	 * @phpstan-return array<int, Player>
 	 */
 	public function getChunkPlayers(int $chunkX, int $chunkZ) : array{
 		return $this->playerChunkListeners[World::chunkHash($chunkX, $chunkZ)] ?? [];
@@ -612,6 +709,7 @@ class World implements ChunkManager{
 	 * Gets the chunk loaders being used in a specific chunk
 	 *
 	 * @return ChunkLoader[]
+	 * @phpstan-return array<int, ChunkLoader>
 	 */
 	public function getChunkLoaders(int $chunkX, int $chunkZ) : array{
 		return $this->chunkLoaders[World::chunkHash($chunkX, $chunkZ)] ?? [];
@@ -620,7 +718,8 @@ class World implements ChunkManager{
 	/**
 	 * Returns an array of players who have the target position within their view distance.
 	 *
-	 * @return Player[]
+	 * @return Player[] spl_object_id => Player
+	 * @phpstan-return array<int, Player>
 	 */
 	public function getViewersForPosition(Vector3 $pos) : array{
 		return $this->getChunkPlayers($pos->getFloorX() >> Chunk::COORD_BIT_SIZE, $pos->getFloorZ() >> Chunk::COORD_BIT_SIZE);
@@ -735,6 +834,7 @@ class World implements ChunkManager{
 	 * Returns all the listeners attached to this chunk.
 	 *
 	 * @return ChunkListener[]
+	 * @phpstan-return array<int, ChunkListener>
 	 */
 	public function getChunkListeners(int $chunkX, int $chunkZ) : array{
 		return $this->chunkListeners[World::chunkHash($chunkX, $chunkZ)] ?? [];
@@ -928,8 +1028,10 @@ class World implements ChunkManager{
 
 	/**
 	 * @param Vector3[] $blocks
+	 * @phpstan-param list<Vector3> $blocks
 	 *
 	 * @return ClientboundPacket[]
+	 * @phpstan-return list<ClientboundPacket>
 	 */
 	public function createBlockUpdatePackets(array $blocks) : array{
 		$packets = [];
@@ -975,7 +1077,8 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * @return bool[] fullID => bool
+	 * @return true[] fullID => dummy
+	 * @phpstan-return array<int, true>
 	 */
 	public function getRandomTickedBlocks() : array{
 		return $this->randomTickBlocks;
@@ -1197,6 +1300,7 @@ class World implements ChunkManager{
 
 	/**
 	 * @return Block[]
+	 * @phpstan-return list<Block>
 	 */
 	public function getCollisionBlocks(AxisAlignedBB $bb, bool $targetFirst = false) : array{
 		$minX = (int) floor($bb->minX - 1);
@@ -1237,6 +1341,7 @@ class World implements ChunkManager{
 
 	/**
 	 * @return AxisAlignedBB[]
+	 * @phpstan-return list<AxisAlignedBB>
 	 */
 	public function getCollisionBoxes(Entity $entity, AxisAlignedBB $bb, bool $entities = true) : array{
 		$minX = (int) floor($bb->minX - 1);
@@ -1636,6 +1741,7 @@ class World implements ChunkManager{
 	 * Drops XP orbs into the world for the specified amount, splitting the amount into several orbs if necessary.
 	 *
 	 * @return ExperienceOrb[]
+	 * @phpstan-return list<ExperienceOrb>
 	 */
 	public function dropExperience(Vector3 $pos, int $amount) : array{
 		/** @var ExperienceOrb[] $orbs */
@@ -1888,18 +1994,24 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * Gets the list of all the entities in this world
+	 * Returns a list of all the entities in this world, indexed by their entity runtime IDs
 	 *
 	 * @return Entity[]
+	 * @phpstan-return array<int, Entity>
 	 */
 	public function getEntities() : array{
 		return $this->entities;
 	}
 
 	/**
-	 * Returns the entities colliding the current one inside the AxisAlignedBB
+	 * Returns all collidable entities whose bounding boxes intersect the given bounding box.
+	 * If an entity is given, it will be excluded from the result.
+	 * If a non-collidable entity is given, the result will be empty.
+	 *
+	 * This function is the same as {@link World::getNearbyEntities()}, but with additional collidability filters.
 	 *
 	 * @return Entity[]
+	 * @phpstan-return array<int, Entity>
 	 */
 	public function getCollidingEntities(AxisAlignedBB $bb, ?Entity $entity = null) : array{
 		$nearby = [];
@@ -1916,9 +2028,10 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * Returns the entities near the current one inside the AxisAlignedBB
+	 * Returns all entities whose bounding boxes intersect the given bounding box, excluding the given entity.
 	 *
 	 * @return Entity[]
+	 * @phpstan-return array<int, Entity>
 	 */
 	public function getNearbyEntities(AxisAlignedBB $bb, ?Entity $entity = null) : array{
 		$nearby = [];
@@ -1995,7 +2108,8 @@ class World implements ChunkManager{
 	/**
 	 * Returns a list of the players in this world
 	 *
-	 * @return Player[]
+	 * @return Player[] entity runtime ID => Player
+	 * @phpstan-return array<int, Player>
 	 */
 	public function getPlayers() : array{
 		return $this->players;
@@ -2042,7 +2156,8 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * @return Chunk[]
+	 * @return Chunk[] chunkHash => Chunk
+	 * @phpstan-return array<ChunkPosHash, Chunk>
 	 */
 	public function getLoadedChunks() : array{
 		return $this->chunks;
@@ -2053,7 +2168,8 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * @return Entity[]
+	 * @return Entity[] entity runtime ID => Entity
+	 * @phpstan-return array<int, Entity>
 	 */
 	public function getChunkEntities(int $chunkX, int $chunkZ) : array{
 		return $this->entitiesByChunk[World::chunkHash($chunkX, $chunkZ)] ?? [];
@@ -2069,7 +2185,8 @@ class World implements ChunkManager{
 	/**
 	 * Returns the chunks adjacent to the specified chunk.
 	 *
-	 * @return Chunk[]|null[]
+	 * @return Chunk[]|null[] chunkHash => Chunk|null
+	 * @phpstan-return array<ChunkPosHash, Chunk|null>
 	 */
 	public function getAdjacentChunks(int $x, int $z) : array{
 		$result = [];

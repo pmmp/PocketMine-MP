@@ -117,7 +117,6 @@ class FallingBlock extends Entity{
 
 				$block = $world->getBlock($pos);
 				if(!$block->canBeReplaced() || !$world->isInWorld($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ()) || ($this->onGround && abs($this->location->y - $this->location->getFloorY()) > 0.001)){
-					//FIXME: anvils are supposed to destroy torches
 					$world->dropItem($this->location, $this->block->asItem());
 				}else{
 					$ev = new EntityBlockChangeEvent($this, $block, $blockTarget ?? $this->block);
