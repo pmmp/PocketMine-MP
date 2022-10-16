@@ -347,6 +347,7 @@ class AreaEffectCloud extends Entity{
 			}
 			$this->setWaiting($this->age + self::WAIT_TIME);
 
+			/** @var Living[] $entities */
 			$entities = array_filter($this->getWorld()->getCollidingEntities($this->getBoundingBox(), $this), function(Entity $entity) : bool{
 				if(!$entity instanceof Living || isset($this->victims[$entity->getId()])){
 					return false;
