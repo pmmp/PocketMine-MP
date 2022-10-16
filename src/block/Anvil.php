@@ -30,12 +30,16 @@ use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\entity\object\FallingBlock;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\sound\AnvilFallSound;
+use function lcg_value;
+use function round;
 
 class Anvil extends Transparent implements Fallable{
 	use FallableTrait;
@@ -98,5 +102,16 @@ class Anvil extends Transparent implements Fallable{
 
 	public function tickFalling() : ?Block{
 		return null;
+	}
+
+	public function onHitGround(FallingBlock $blockEntity) : ?Block{
+		if(lcg_value() < 0.05 + (round($blockEntity->getFallDistance()) - 1) * 0.05){
+			if($this->damage !== self::VERY_DAMAGED){
+				$this->damage = $this->damage + 1;
+			}else{
+				return null;
+			}
+		}
+		return $this;
 	}
 }
