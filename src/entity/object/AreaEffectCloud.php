@@ -32,6 +32,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Living;
 use pocketmine\entity\Location;
+use pocketmine\event\entity\AreaEffectCloudApplyEvent;
 use pocketmine\item\PotionType;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
@@ -40,6 +41,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\utils\Binary;
 use pocketmine\world\particle\PotionSplashParticle;
+use function array_filter;
 use function array_map;
 use function count;
 use function max;
@@ -343,18 +345,28 @@ class AreaEffectCloud extends Entity{
 					unset($this->victims[$entityId]);
 				}
 			}
-			foreach($this->getWorld()->getCollidingEntities($this->getBoundingBox(), $this) as $entity){
-				if(!$entity instanceof Living || isset($this->victims[$entity->getId()])){
-					continue;
-				}
+			$this->setWaiting($this->age + self::WAIT_TIME);
 
+			$entities = array_filter($this->getWorld()->getCollidingEntities($this->getBoundingBox(), $this), function(Entity $entity) : bool{
+				if(!$entity instanceof Living || isset($this->victims[$entity->getId()])){
+					return false;
+				}
 				$entityPosition = $entity->getPosition();
 				$xDiff = $entityPosition->getX() - $this->location->getX();
 				$zDiff = $entityPosition->getZ() - $this->location->getZ();
-				if(($xDiff ** 2 + $zDiff ** 2) > $this->radius ** 2){
-					continue;
-				}
+				return !(($xDiff ** 2 + $zDiff ** 2) > $this->radius ** 2);
+			});
+			if(count($entities) === 0){
+				return $hasUpdate;
+			}
 
+			$ev = new AreaEffectCloudApplyEvent($this, $entities);
+			$ev->call();
+			if($ev->isCancelled()){
+				return $hasUpdate;
+			}
+
+			foreach($ev->getAffectedEntities() as $entity){
 				foreach($this->getCloudEffects() as $effect){
 					if($effect->getType() instanceof InstantEffect){
 						$effect->getType()->applyEffect($entity, $effect, 0.5, $this);
@@ -382,7 +394,6 @@ class AreaEffectCloud extends Entity{
 					$this->setDuration($duration);
 				}
 			}
-			$this->setWaiting($this->age + self::WAIT_TIME);
 			$hasUpdate = true;
 		}
 
