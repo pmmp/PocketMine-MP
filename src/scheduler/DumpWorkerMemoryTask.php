@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\scheduler;
 
 use pocketmine\MemoryManager;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 
 /**
  * Task used to dump memory from AsyncWorkers

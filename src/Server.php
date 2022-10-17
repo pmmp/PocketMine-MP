@@ -115,7 +115,7 @@ use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
 use pocketmine\world\WorldManager;
 use Ramsey\Uuid\UuidInterface;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function array_sum;
 use function base64_encode;
 use function cli_set_process_title;
@@ -609,6 +609,10 @@ class Server{
 	}
 
 	/**
+	 * @deprecated This method's results are unpredictable. The string "Steve" will return the player named "SteveJobs",
+	 * until another player named "SteveJ" joins the server, at which point it will return that player instead. Prefer
+	 * filtering the results of {@link Server::getOnlinePlayers()} yourself.
+	 *
 	 * Returns an online player whose name begins with or equals the given string (case insensitive).
 	 * The closest match will be returned, or null if there are no online matches.
 	 *
@@ -1850,10 +1854,12 @@ class Server{
 		$this->getMemoryManager()->check();
 
 		if($this->console !== null){
+			Timings::$serverCommand->startTiming();
 			while(($line = $this->console->readLine()) !== null){
 				$this->consoleSender ??= new ConsoleCommandSender($this, $this->language);
 				$this->dispatchCommand($this->consoleSender, $line);
 			}
+			Timings::$serverCommand->stopTiming();
 		}
 
 		Timings::$serverTick->stopTiming();

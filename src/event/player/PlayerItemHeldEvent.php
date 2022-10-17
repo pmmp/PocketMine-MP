@@ -60,6 +60,6 @@ class PlayerItemHeldEvent extends PlayerEvent implements Cancellable{
 	 * Returns the item in the slot that the player is trying to equip.
 	 */
 	public function getItem() : Item{
-		return $this->item;
+		return clone $this->item;
 	}
 }

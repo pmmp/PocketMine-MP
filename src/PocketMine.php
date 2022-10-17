@@ -34,7 +34,7 @@ namespace pocketmine {
 	use pocketmine\utils\Timezone;
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\SetupWizard;
-	use Webmozart\PathUtil\Path;
+	use Symfony\Component\Filesystem\Path;
 	use function defined;
 	use function extension_loaded;
 	use function function_exists;

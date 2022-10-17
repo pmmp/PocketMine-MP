@@ -25,7 +25,7 @@ namespace pocketmine\console;
 
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function base64_encode;
 use function fgets;
 use function fopen;
