@@ -35,6 +35,8 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\sound\AnvilFallSound;
+use pocketmine\world\sound\Sound;
 
 class Anvil extends Transparent implements Fallable{
 	use FallableTrait;
@@ -102,5 +104,9 @@ class Anvil extends Transparent implements Fallable{
 
 	public function tickFalling() : ?Block{
 		return null;
+	}
+
+	public function getFallSound() : ?Sound{
+		return new AnvilFallSound();
 	}
 }
