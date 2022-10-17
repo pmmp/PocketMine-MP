@@ -31,7 +31,7 @@ use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 
 /**
- * Called when a sound is played in a world using World->playSound()
+ * Called when a sound is played in a world
  * @see World::playSound()
  */
 class WorldSoundEvent extends WorldEvent implements Cancellable{
