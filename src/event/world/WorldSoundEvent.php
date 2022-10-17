@@ -38,13 +38,13 @@ class WorldSoundEvent extends WorldEvent implements Cancellable{
 	use CancellableTrait;
 
 	/**
-	 * @param Player[]|null $players
+	 * @param Player[] $players
 	 */
 	public function __construct(
 		World $world,
 		private Vector3 $position,
 		private Sound $sound,
-		private ?array $players = null
+		private array $players
 	){
 		parent::__construct($world);
 	}
@@ -66,16 +66,16 @@ class WorldSoundEvent extends WorldEvent implements Cancellable{
 	}
 
 	/**
-	 * @return Player[]|null
+	 * @return Player[]
 	 */
-	public function getPlayers() : ?array{
+	public function getPlayers() : array{
 		return $this->players;
 	}
 
 	/**
-	 * @param Player[]|null $players
+	 * @param Player[] $players
 	 */
-	public function setPlayers(?array $players) : void{
+	public function setPlayers(array $players) : void{
 		$this->players = $players;
 	}
 }
