@@ -99,10 +99,6 @@ class Anvil extends Transparent implements Fallable{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function tickFalling() : ?Block{
-		return null;
-	}
-
 	public function onHitGround(FallingBlock $blockEntity) : ?Block{
 		if(lcg_value() < 0.05 + (round($blockEntity->getFallDistance()) - 1) * 0.05){
 			if($this->damage !== self::VERY_DAMAGED){

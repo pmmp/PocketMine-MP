@@ -116,10 +116,6 @@ class SnowLayer extends Flowable implements Fallable{
 		}
 	}
 
-	public function tickFalling() : ?Block{
-		return null;
-	}
-
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			VanillaItems::SNOWBALL()->setCount(max(1, (int) floor($this->layers / 2)))
