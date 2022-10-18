@@ -267,8 +267,8 @@ class Server{
 	private SignalHandler $signalHandler;
 
 	/**
-	 * @var CommandSender[][]
-	 * @phpstan-var array<string, array<int, CommandSender>>
+	 * @var BroadcastSubscriber[][]
+	 * @phpstan-var array<string, array<int, BroadcastSubscriber>>
 	 */
 	private array $broadcastSubscribers = [];
 
@@ -1049,7 +1049,7 @@ class Server{
 			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_donate(TextFormat::AQUA . "https://patreon.com/pocketminemp" . TextFormat::RESET)));
 			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_startFinished(strval(round(microtime(true) - $this->startTime, 3)))));
 
-			$forwarder = new BroadcastLoggerForwarder($this, $this->logger, $this->language);
+			$forwarder = new BroadcastLoggerForwarder($this->logger, $this->language);
 			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_ADMINISTRATIVE, $forwarder);
 			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $forwarder);
 
@@ -1232,14 +1232,14 @@ class Server{
 	 * Subscribes to a particular message broadcast channel.
 	 * The channel ID can be any arbitrary string.
 	 */
-	public function subscribeToBroadcastChannel(string $channelId, CommandSender $subscriber) : void{
+	public function subscribeToBroadcastChannel(string $channelId, BroadcastSubscriber $subscriber) : void{
 		$this->broadcastSubscribers[$channelId][spl_object_id($subscriber)] = $subscriber;
 	}
 
 	/**
 	 * Unsubscribes from a particular message broadcast channel.
 	 */
-	public function unsubscribeFromBroadcastChannel(string $channelId, CommandSender $subscriber) : void{
+	public function unsubscribeFromBroadcastChannel(string $channelId, BroadcastSubscriber $subscriber) : void{
 		if(isset($this->broadcastSubscribers[$channelId][spl_object_id($subscriber)])){
 			unset($this->broadcastSubscribers[$channelId][spl_object_id($subscriber)]);
 			if(count($this->broadcastSubscribers[$channelId]) === 0){
@@ -1251,30 +1251,30 @@ class Server{
 	/**
 	 * Unsubscribes from all broadcast channels.
 	 */
-	public function unsubscribeFromAllBroadcastChannels(CommandSender $subscriber) : void{
+	public function unsubscribeFromAllBroadcastChannels(BroadcastSubscriber $subscriber) : void{
 		foreach(Utils::stringifyKeys($this->broadcastSubscribers) as $channelId => $recipients){
 			$this->unsubscribeFromBroadcastChannel($channelId, $subscriber);
 		}
 	}
 
 	/**
-	 * Returns a list of all the CommandSenders subscribed to the given broadcast channel.
+	 * Returns a list of all the broadcast subscribers subscribed to the given broadcast channel.
 	 *
-	 * @return CommandSender[]
-	 * @phpstan-return array<int, CommandSender>
+	 * @return BroadcastSubscriber[]
+	 * @phpstan-return array<int, BroadcastSubscriber>
 	 */
 	public function getBroadcastChannelSubscribers(string $channelId) : array{
 		return $this->broadcastSubscribers[$channelId] ?? [];
 	}
 
 	/**
-	 * @param CommandSender[]|null        $recipients
+	 * @param BroadcastSubscriber[]|null $recipients
 	 */
 	public function broadcastMessage(Translatable|string $message, ?array $recipients = null) : int{
 		$recipients = $recipients ?? $this->getBroadcastChannelSubscribers(self::BROADCAST_CHANNEL_USERS);
 
 		foreach($recipients as $recipient){
-			$recipient->sendMessage($message);
+			$recipient->onBroadcast(self::BROADCAST_CHANNEL_USERS, $message);
 		}
 
 		return count($recipients);

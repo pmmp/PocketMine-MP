@@ -27,6 +27,7 @@ use pocketmine\block\Bed;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\BroadcastSubscriber;
 use pocketmine\command\CommandSender;
 use pocketmine\crafting\CraftingGrid;
 use pocketmine\data\java\GameModeIdMap;
@@ -159,7 +160,7 @@ use const PHP_INT_MAX;
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
  */
-class Player extends Human implements CommandSender, ChunkListener, IPlayer{
+class Player extends Human implements BroadcastSubscriber, CommandSender, ChunkListener, IPlayer{
 	use PermissibleDelegateTrait;
 
 	private const MOVES_PER_TICK = 2;
@@ -1985,6 +1986,17 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($fadeIn >= 0 && $stay >= 0 && $fadeOut >= 0){
 			$this->getNetworkSession()->onTitleDuration($fadeIn, $stay, $fadeOut);
 		}
+	}
+
+	public function onBroadcast(string $channelId, Translatable|string $message) : void{
+		if($channelId === Server::BROADCAST_CHANNEL_ADMINISTRATIVE){
+			if($message instanceof Translatable){
+				$message = $message->prefix(TextFormat::GRAY . TextFormat::ITALIC);
+			}else{
+				$message = TextFormat::GRAY . TextFormat::ITALIC . $message;
+			}
+		}
+		$this->sendMessage($message);
 	}
 
 	/**
