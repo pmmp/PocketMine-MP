@@ -36,6 +36,7 @@ use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNbtSerializer;
@@ -556,6 +557,14 @@ class Item implements \JsonSerializable{
 	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
 	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
+		return false;
+	}
+
+	/**
+	 * Called when this item is being worn by an entity.
+	 * Returns whether it did something.
+	 */
+	public function onTickWorn(Living $entity) : bool{
 		return false;
 	}
 

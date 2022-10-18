@@ -28,7 +28,7 @@ use pocketmine\network\mcpe\protocol\BiomeDefinitionListPacket;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\utils\SingletonTrait;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function file_get_contents;
 
 class StaticPacketCache{

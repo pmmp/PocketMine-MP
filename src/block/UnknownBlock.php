@@ -27,6 +27,9 @@ use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 
+/**
+ * Represents a block which is unrecognized or not implemented.
+ */
 class UnknownBlock extends Transparent{
 
 	private int $stateData;

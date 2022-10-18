@@ -35,7 +35,7 @@ use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\InternetException;
 use pocketmine\utils\InternetRequestResult;
 use pocketmine\utils\Utils;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function count;
 use function fclose;
 use function file_exists;

@@ -289,6 +289,7 @@ use pocketmine\world\World;
  * @method static SuspiciousStew SUSPICIOUS_STEW()
  * @method static SweetBerries SWEET_BERRIES()
  * @method static Totem TOTEM()
+ * @method static TurtleHelmet TURTLE_HELMET()
  * @method static SpawnEgg VILLAGER_SPAWN_EGG()
  * @method static ItemBlockWallOrFloor WARPED_SIGN()
  * @method static LiquidBucket WATER_BUCKET()
@@ -616,6 +617,7 @@ final class VanillaItems{
 		self::register("iron_helmet", new Armor(new IID(Ids::IRON_HELMET), "Iron Helmet", new ArmorTypeInfo(2, 166, ArmorInventory::SLOT_HEAD)));
 		self::register("leather_cap", new Armor(new IID(Ids::LEATHER_CAP), "Leather Cap", new ArmorTypeInfo(1, 56, ArmorInventory::SLOT_HEAD)));
 		self::register("netherite_helmet", new Armor(new IID(Ids::NETHERITE_HELMET), "Netherite Helmet", new ArmorTypeInfo(3, 408, ArmorInventory::SLOT_HEAD, 3, true)));
+		self::register("turtle_helmet", new TurtleHelmet(new IID(Ids::TURTLE_HELMET), "Turtle Shell", new ArmorTypeInfo(2, 276, ArmorInventory::SLOT_HEAD)));
 
 		self::register("chainmail_leggings", new Armor(new IID(Ids::CHAINMAIL_LEGGINGS), "Chainmail Leggings", new ArmorTypeInfo(4, 226, ArmorInventory::SLOT_LEGS)));
 		self::register("diamond_leggings", new Armor(new IID(Ids::DIAMOND_LEGGINGS), "Diamond Leggings", new ArmorTypeInfo(6, 496, ArmorInventory::SLOT_LEGS, 2)));

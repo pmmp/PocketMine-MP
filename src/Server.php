@@ -93,6 +93,7 @@ use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\updater\UpdateChecker;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\BroadcastLoggerForwarder;
 use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Internet;
@@ -114,7 +115,7 @@ use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
 use pocketmine\world\WorldManager;
 use Ramsey\Uuid\UuidInterface;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function array_sum;
 use function base64_encode;
 use function cli_set_process_title;
@@ -608,6 +609,10 @@ class Server{
 	}
 
 	/**
+	 * @deprecated This method's results are unpredictable. The string "Steve" will return the player named "SteveJobs",
+	 * until another player named "SteveJ" joins the server, at which point it will return that player instead. Prefer
+	 * filtering the results of {@link Server::getOnlinePlayers()} yourself.
+	 *
 	 * Returns an online player whose name begins with or equals the given string (case insensitive).
 	 * The closest match will be returned, or null if there are no online matches.
 	 *
@@ -1044,11 +1049,11 @@ class Server{
 			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_donate(TextFormat::AQUA . "https://patreon.com/pocketminemp" . TextFormat::RESET)));
 			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_startFinished(strval(round(microtime(true) - $this->startTime, 3)))));
 
-			//TODO: move console parts to a separate component
-			$consoleSender = new ConsoleCommandSender($this, $this->language);
-			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_ADMINISTRATIVE, $consoleSender);
-			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $consoleSender);
+			$forwarder = new BroadcastLoggerForwarder($this, $this->logger, $this->language);
+			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_ADMINISTRATIVE, $forwarder);
+			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $forwarder);
 
+			//TODO: move console parts to a separate component
 			if($this->configGroup->getPropertyBool("console.enable-input", true)){
 				$this->console = new ConsoleReaderChildProcessDaemon($this->logger);
 			}
@@ -1358,6 +1363,7 @@ class Server{
 				return false;
 			}
 			$recipients = $ev->getTargets();
+			$packets = $ev->getPackets();
 
 			/** @var PacketBroadcaster[] $broadcasters */
 			$broadcasters = [];
@@ -1711,7 +1717,7 @@ class Server{
 		$session = $player->getNetworkSession();
 		$position = $player->getPosition();
 		$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_player_logIn(
-			TextFormat::AQUA . $player->getName() . TextFormat::WHITE,
+			TextFormat::AQUA . $player->getName() . TextFormat::RESET,
 			$session->getIp(),
 			(string) $session->getPort(),
 			(string) $player->getId(),
@@ -1849,10 +1855,12 @@ class Server{
 		$this->getMemoryManager()->check();
 
 		if($this->console !== null){
+			Timings::$serverCommand->startTiming();
 			while(($line = $this->console->readLine()) !== null){
 				$this->consoleSender ??= new ConsoleCommandSender($this, $this->language);
 				$this->dispatchCommand($this->consoleSender, $line);
 			}
+			Timings::$serverCommand->stopTiming();
 		}
 
 		Timings::$serverTick->stopTiming();

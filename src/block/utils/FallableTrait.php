@@ -55,6 +55,10 @@ trait FallableTrait{
 		}
 	}
 
+	public function tickFalling() : ?Block{
+		return null;
+	}
+
 	public function getFallDamagePerBlock() : float{
 		return 0.0;
 	}

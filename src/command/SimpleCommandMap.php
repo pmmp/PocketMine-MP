@@ -68,6 +68,7 @@ use pocketmine\command\utils\CommandStringHelper;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\Server;
+use pocketmine\timings\Timings;
 use pocketmine\utils\TextFormat;
 use function array_shift;
 use function count;
@@ -199,7 +200,8 @@ class SimpleCommandMap implements CommandMap{
 
 		$sentCommandLabel = array_shift($args);
 		if($sentCommandLabel !== null && ($target = $this->getCommand($sentCommandLabel)) !== null){
-			$target->timings->startTiming();
+			$timings = Timings::getCommandDispatchTimings($target->getLabel());
+			$timings->startTiming();
 
 			try{
 				if($target->testPermission($sender)){
@@ -208,7 +210,7 @@ class SimpleCommandMap implements CommandMap{
 			}catch(InvalidCommandSyntaxException $e){
 				$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage())));
 			}finally{
-				$target->timings->stopTiming();
+				$timings->stopTiming();
 			}
 			return true;
 		}
@@ -274,10 +276,11 @@ class SimpleCommandMap implements CommandMap{
 			}
 
 			//These registered commands have absolute priority
+			$lowerAlias = strtolower($alias);
 			if(count($targets) > 0){
-				$this->knownCommands[strtolower($alias)] = new FormattedCommandAlias(strtolower($alias), $targets);
+				$this->knownCommands[$lowerAlias] = new FormattedCommandAlias($lowerAlias, $targets);
 			}else{
-				unset($this->knownCommands[strtolower($alias)]);
+				unset($this->knownCommands[$lowerAlias]);
 			}
 
 		}

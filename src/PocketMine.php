@@ -34,7 +34,7 @@ namespace pocketmine {
 	use pocketmine\utils\Timezone;
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\SetupWizard;
-	use Webmozart\PathUtil\Path;
+	use Symfony\Component\Filesystem\Path;
 	use function defined;
 	use function extension_loaded;
 	use function function_exists;
@@ -177,10 +177,10 @@ namespace pocketmine {
 
 
 	--------------------------------------- ! WARNING ! ---------------------------------------
-	You're using PHP 8.0 with JIT enabled. This provides significant performance improvements.
+	You're using PHP with JIT enabled. This provides significant performance improvements.
 	HOWEVER, it is EXPERIMENTAL, and has already been seen to cause weird and unexpected bugs.
 	Proceed with caution.
-	If you want to report any bugs, make sure to mention that you are using PHP 8.0 with JIT.
+	If you want to report any bugs, make sure to mention that you have enabled PHP JIT.
 	To turn off JIT, change `opcache.jit` to `0` in your php.ini file.
 	-------------------------------------------------------------------------------------------
 
