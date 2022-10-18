@@ -80,7 +80,7 @@ class HelpCommand extends VanillaCommand{
 			$commands = [];
 			foreach($sender->getServer()->getCommandMap()->getCommands() as $command){
 				if($command->testPermissionSilent($sender)){
-					$commands[$command->getName()] = $command;
+					$commands[$command->getLabel()] = $command;
 				}
 			}
 			ksort($commands, SORT_NATURAL | SORT_FLAG_CASE);
@@ -95,7 +95,7 @@ class HelpCommand extends VanillaCommand{
 				foreach($commands[$pageNumber - 1] as $command){
 					$description = $command->getDescription();
 					$descriptionString = $description instanceof Translatable ? $lang->translate($description) : $description;
-					$sender->sendMessage(TextFormat::DARK_GREEN . "/" . $command->getName() . ": " . TextFormat::WHITE . $descriptionString);
+					$sender->sendMessage(TextFormat::DARK_GREEN . "/" . $command->getLabel() . ": " . TextFormat::WHITE . $descriptionString);
 				}
 			}
 
@@ -106,7 +106,7 @@ class HelpCommand extends VanillaCommand{
 					$lang = $sender->getLanguage();
 					$description = $cmd->getDescription();
 					$descriptionString = $description instanceof Translatable ? $lang->translate($description) : $description;
-					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_header($cmd->getName())
+					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_header($cmd->getLabel())
 						->format(TextFormat::YELLOW . "--------- " . TextFormat::WHITE, TextFormat::YELLOW . " ---------"));
 					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_description(TextFormat::WHITE . $descriptionString)
 						->prefix(TextFormat::GOLD));
