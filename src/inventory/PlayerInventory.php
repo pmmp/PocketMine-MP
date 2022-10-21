@@ -53,6 +53,21 @@ class PlayerInventory extends SimpleInventory{
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function isFull() : bool {
+		$occupiedSlots = 0;
+        foreach($this->getContents(true) as $item){
+            if($item->isNull()){
+                continue;
+            }
+            $occupiedSlots++;
+        }
+		// 36 is the size of the player's inventory.
+		return $occupiedSlots === 36;
+	}
+
+	/**
 	 * @throws \InvalidArgumentException
 	 */
 	private function throwIfNotHotbarSlot(int $slot) : void{
