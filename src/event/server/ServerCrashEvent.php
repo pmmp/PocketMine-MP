@@ -23,10 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\event\server;
 
+use function file_get_contents;
+
 class ServerCrashEvent extends ServerEvent{
 	public function __construct(private string $pathToCrashDump){}
 
-	public function getCrashText() : string{
+	public function getCrashText() : string|bool{
 		return file_get_contents($this->pathToCrashDump);
 	}
 
