@@ -1606,6 +1606,7 @@ class Server{
 			$dump = new CrashDump($this, $this->pluginManager ?? null);
 
 			$crashDumpPath = $this->writeCrashDumpFile($dump);
+			(new ServerCrashEvent($crashDumpPath))->call();
 
 			$this->logger->emergency($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_crash_submit($crashDumpPath)));
 
