@@ -36,6 +36,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\FloatMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\IntMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\LongMetadataProperty;
+use pocketmine\network\mcpe\protocol\types\entity\PropertySyncData;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 
 class FloatingTextParticle implements Particle{
@@ -115,6 +116,7 @@ class FloatingTextParticle implements Particle{
 				0,
 				[],
 				$actorMetadata,
+				new PropertySyncData([], []),
 				[]
 			);
 		}
