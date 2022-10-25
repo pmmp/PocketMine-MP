@@ -674,7 +674,7 @@ class World implements ChunkManager{
 				$pk = $sound->encode($pos);
 
 				if(count($pk) > 0){
-					this->server->broadcastPackets($this->filterViewersForPosition($pos, $pl), $pk);
+					$this->server->broadcastPackets($this->filterViewersForPosition($pos, $pl), $pk);
 				}
 			}
 		}else{
@@ -686,7 +686,7 @@ class World implements ChunkManager{
 						$this->broadcastPacketToViewers($pos, $e);
 					}
 				}else{
-					this->server->broadcastPackets($this->filterViewersForPosition($pos, $players), $pk);
+					$this->server->broadcastPackets($this->filterViewersForPosition($pos, $players), $pk);
 				}
 			}
 		}
@@ -727,7 +727,7 @@ class World implements ChunkManager{
 				$pk = $particle->encode($pos);
 
 				if(count($pk) > 0){
-					this->server->broadcastPackets($this->filterViewersForPosition($pos, $pl), $pk);
+					$this->server->broadcastPackets($this->filterViewersForPosition($pos, $pl), $pk);
 				}
 			}
 		}else{
@@ -739,7 +739,7 @@ class World implements ChunkManager{
 						$this->broadcastPacketToViewers($pos, $e);
 					}
 				}else{
-					this->server->broadcastPackets($this->filterViewersForPosition($pos, $players), $pk);
+					$this->server->broadcastPackets($this->filterViewersForPosition($pos, $players), $pk);
 				}
 			}
 		}
