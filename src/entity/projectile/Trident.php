@@ -49,19 +49,20 @@ class Trident extends Projectile{
 
 	private const TAG_PICKUP = "pickup"; //TAG_Byte
 
-	/** @var TridentItem */
-	protected $item;
+	protected TridentItem $item;
 
-	/** @var float */
-	protected $damage = 8.0;
+	protected float $damage = 8.0;
 
-	/** @var int */
-	protected $pickupMode = self::PICKUP_ANY;
+	protected int $pickupMode = self::PICKUP_ANY;
 
-	/** @var bool */
-	protected $canHitEntity = true;
+	protected bool $canHitEntity = true;
 
-	public function __construct(Location $location, TridentItem $item, ?Entity $shootingEntity, ?CompoundTag $nbt = null){
+	public function __construct(
+		Location $location,
+		TridentItem $item,
+		?Entity $shootingEntity,
+		?CompoundTag $nbt = null
+	){
 		if($item->isNull()){
 			throw new \InvalidArgumentException("Trident must have a count of at least 1");
 		}

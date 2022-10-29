@@ -349,6 +349,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::SUGAR, Items::SUGAR());
 		$this->map1to1Item(Ids::SWEET_BERRIES, Items::SWEET_BERRIES());
 		$this->map1to1Item(Ids::TOTEM_OF_UNDYING, Items::TOTEM());
+		$this->map1to1Item(Ids::TRIDENT, Items::TRIDENT());
 		$this->map1to1Item(Ids::TROPICAL_FISH, Items::CLOWNFISH());
 		$this->map1to1Item(Ids::TURTLE_HELMET, Items::TURTLE_HELMET());
 		$this->map1to1Item(Ids::VILLAGER_SPAWN_EGG, Items::VILLAGER_SPAWN_EGG());

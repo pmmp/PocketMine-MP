@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
 use pocketmine\entity\projectile\Trident as TridentEntity;
@@ -79,11 +80,18 @@ class Trident extends Tool implements Releasable{
 		return 8;
 	}
 
-	public function onAttackEntity(Entity $victim) : bool{
+	public function canStartUsingItem(Player $player) : bool{
+		return true;
+	}
+
+	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
 		return $this->applyDamage(1);
 	}
 
-	public function canStartUsingItem(Player $player) : bool{
-		return true;
+	public function onDestroyBlock(Block $block, array &$returnedItems) : bool{
+		if(!$block->getBreakInfo()->breaksInstantly()){
+			return $this->applyDamage(2);
+		}
+		return false;
 	}
 }
