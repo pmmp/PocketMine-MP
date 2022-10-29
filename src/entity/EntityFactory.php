@@ -46,6 +46,7 @@ use pocketmine\entity\projectile\Snowball;
 use pocketmine\entity\projectile\SplashPotion;
 use pocketmine\entity\projectile\Trident;
 use pocketmine\item\Item;
+use pocketmine\item\Trident as TridentItem;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NbtException;
@@ -162,15 +163,15 @@ final class EntityFactory{
 		$this->register(Trident::class, function(World $world, CompoundTag $nbt) : Trident{
 			$itemTag = $nbt->getCompoundTag("Trident");
 			if($itemTag === null){
-				throw new \UnexpectedValueException("Expected \"Trident\" NBT tag not found");
+				throw new SavedDataLoadingException("Expected \"Trident\" NBT tag not found");
 			}
 
 			$item = Item::nbtDeserialize($itemTag);
-			if($item->isNull()){
-				throw new \UnexpectedValueException("Trident item is invalid");
+			if($item->isNull() || !$item instanceof TridentItem){
+				throw new SavedDataLoadingException("Trident item is invalid");
 			}
 			return new Trident(EntityDataHelper::parseLocation($nbt, $world), $item, null, $nbt);
-		}, ['Trident', 'ThrownTrident', 'minecraft:trident'], EntityLegacyIds::TRIDENT);
+		}, ['Trident', 'ThrownTrident', 'minecraft:trident'], LegacyIds::TRIDENT);
 
 		$this->register(Squid::class, function(World $world, CompoundTag $nbt) : Squid{
 			return new Squid(Helper::parseLocation($nbt, $world), $nbt);

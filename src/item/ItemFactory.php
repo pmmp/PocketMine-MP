@@ -272,7 +272,7 @@ class ItemFactory{
 		$this->register(new StringItem(new IID(Ids::STRING, 0), "String"));
 		$this->register(new SweetBerries(new IID(Ids::SWEET_BERRIES, 0), "Sweet Berries"));
 		$this->register(new Totem(new IID(Ids::TOTEM, 0), "Totem of Undying"));
-    $this->register(new Trident(new ItemIdentifier(ItemIds::TRIDENT, 0), "Trident"));
+		$this->register(new Trident(new ItemIdentifier(ItemIds::TRIDENT, 0), "Trident"));
 		$this->register(new WheatSeeds(new IID(Ids::WHEAT_SEEDS, 0), "Wheat Seeds"));
 		$this->register(new WritableBook(new IID(Ids::WRITABLE_BOOK, 0), "Book & Quill"));
 		$this->register(new WrittenBook(new IID(Ids::WRITTEN_BOOK, 0), "Written Book"));

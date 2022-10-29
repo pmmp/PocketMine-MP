@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,7 +28,6 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
 use pocketmine\event\entity\EntityItemPickupEvent;
-use pocketmine\item\Item;
 use pocketmine\item\Trident as TridentItem;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
@@ -37,8 +36,8 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\player\Player;
-use pocketmine\world\sound\TridentHitSound;
 use pocketmine\world\sound\TridentHitGroundSound;
+use pocketmine\world\sound\TridentHitSound;
 
 class Trident extends Projectile{
 
@@ -170,10 +169,10 @@ class Trident extends Projectile{
 		};
 
 		$ev = new EntityItemPickupEvent($player, $this, $item, $playerInventory);
-		if($player->hasFiniteResources() and $playerInventory === null){
+		if($player->hasFiniteResources() && $playerInventory === null){
 			$ev->cancel();
 		}
-		if($this->pickupMode === self::PICKUP_NONE or ($this->pickupMode === self::PICKUP_CREATIVE and !$player->isCreative())){
+		if($this->pickupMode === self::PICKUP_NONE || ($this->pickupMode === self::PICKUP_CREATIVE && !$player->isCreative())){
 			$ev->cancel();
 			$shouldDespawn = true;
 		}
