@@ -36,7 +36,7 @@ final class WorldProviderManager{
 	 * @var WorldProviderManagerEntry[]
 	 * @phpstan-var array<string, WorldProviderManagerEntry>
 	 */
-	protected $providers = [];
+	protected array $providers = [];
 
 	private WritableWorldProviderManagerEntry $default;
 

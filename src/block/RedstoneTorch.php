@@ -23,24 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
+
 class RedstoneTorch extends Torch{
-
-	protected BlockIdentifierFlattened $idInfoFlattened;
-
 	protected bool $lit = true;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
-		$this->idInfoFlattened = $idInfo;
-		parent::__construct($idInfo, $name, $breakInfo);
-	}
+	public function getRequiredStateDataBits() : int{ return parent::getRequiredStateDataBits() + 1; }
 
-	public function getId() : int{
-		return $this->lit ? parent::getId() : $this->idInfoFlattened->getSecondId();
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		parent::readStateFromData($id, $stateMeta);
-		$this->lit = $id !== $this->idInfoFlattened->getSecondId();
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		parent::describeState($w);
+		$w->bool($this->lit);
 	}
 
 	public function isLit() : bool{

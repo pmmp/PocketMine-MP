@@ -31,8 +31,6 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
 use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
-use pocketmine\timings\Timings;
-use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\BroadcastLoggerForwarder;
 use pocketmine\utils\TextFormat;
 use function explode;
@@ -53,17 +51,12 @@ abstract class Command{
 
 	private ?CommandMap $commandMap = null;
 
-	/** @var Translatable|string */
-	protected $description = "";
+	protected Translatable|string $description = "";
 
-	/** @var Translatable|string */
-	protected $usageMessage;
+	protected Translatable|string $usageMessage;
 
 	private ?string $permission = null;
 	private ?string $permissionMessage = null;
-
-	/** @var TimingsHandler|null */
-	public $timings = null;
 
 	/**
 	 * @param string[] $aliases
@@ -139,7 +132,6 @@ abstract class Command{
 	public function setLabel(string $name) : bool{
 		$this->nextLabel = $name;
 		if(!$this->isRegistered()){
-			$this->timings = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Command: " . $name);
 			$this->label = $name;
 
 			return true;

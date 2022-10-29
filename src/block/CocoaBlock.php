@@ -23,10 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\block\utils\TreeType;
+use pocketmine\block\utils\WoodType;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
@@ -46,17 +47,11 @@ class CocoaBlock extends Transparent{
 
 	protected int $age = 0;
 
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing(Facing::opposite($this->facing)) | ($this->age << 2);
-	}
+	public function getRequiredStateDataBits() : int{ return 4; }
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = Facing::opposite(BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03));
-		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta >> 2, 0, self::MAX_AGE);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->boundedInt(2, 0, self::MAX_AGE, $this->age);
 	}
 
 	public function getAge() : int{ return $this->age; }
@@ -89,7 +84,7 @@ class CocoaBlock extends Transparent{
 	}
 
 	private function canAttachTo(Block $block) : bool{
-		return $block instanceof Wood && $block->getTreeType()->equals(TreeType::JUNGLE());
+		return $block instanceof Wood && $block->getWoodType()->equals(WoodType::JUNGLE());
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
@@ -101,7 +96,7 @@ class CocoaBlock extends Transparent{
 		return false;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer && $this->grow()){
 			$item->pop();
 
@@ -147,7 +142,7 @@ class CocoaBlock extends Transparent{
 		];
 	}
 
-	public function getPickedItem(bool $addUserData = false) : Item{
+	public function asItem() : Item{
 		return VanillaItems::COCOA_BEANS();
 	}
 }

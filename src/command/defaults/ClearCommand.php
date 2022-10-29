@@ -51,10 +51,6 @@ class ClearCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) > 3){
 			throw new InvalidCommandSyntaxException();
 		}

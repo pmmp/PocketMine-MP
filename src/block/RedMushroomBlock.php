@@ -23,35 +23,24 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\MushroomBlockType;
-use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use function mt_rand;
 
 class RedMushroomBlock extends Opaque{
-
 	protected MushroomBlockType $mushroomBlockType;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->mushroomBlockType = MushroomBlockType::PORES();
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	protected function writeStateToMeta() : int{
-		return MushroomBlockTypeIdMap::getInstance()->toId($this->mushroomBlockType);
-	}
+	public function getRequiredStateDataBits() : int{ return 4; }
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$type = MushroomBlockTypeIdMap::getInstance()->fromId($stateMeta);
-		if($type === null){
-			throw new InvalidBlockStateException("No such mushroom variant $stateMeta");
-		}
-		$this->mushroomBlockType = $type;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->mushroomBlockType($this->mushroomBlockType);
 	}
 
 	public function getMushroomBlockType() : MushroomBlockType{ return $this->mushroomBlockType; }

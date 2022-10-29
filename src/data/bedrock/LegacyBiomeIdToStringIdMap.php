@@ -26,7 +26,7 @@ namespace pocketmine\data\bedrock;
 use pocketmine\utils\SingletonTrait;
 use Symfony\Component\Filesystem\Path;
 
-final class LegacyBiomeIdToStringIdMap extends LegacyToStringBidirectionalIdMap{
+final class LegacyBiomeIdToStringIdMap extends LegacyToStringIdMap{
 	use SingletonTrait;
 
 	public function __construct(){

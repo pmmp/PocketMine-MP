@@ -34,15 +34,15 @@ use function max;
 
 class SkyLightUpdate extends LightUpdate{
 	/**
-	 * @param \SplFixedArray|int[]  $lightFilters
-	 * @param \SplFixedArray|bool[] $directSkyLightBlockers
-	 * @phpstan-param \SplFixedArray<int>  $lightFilters
-	 * @phpstan-param \SplFixedArray<bool> $directSkyLightBlockers
+	 * @param int[]  $lightFilters
+	 * @param true[] $directSkyLightBlockers
+	 * @phpstan-param array<int, int>  $lightFilters
+	 * @phpstan-param array<int, true> $directSkyLightBlockers
 	 */
 	public function __construct(
 		SubChunkExplorer $subChunkExplorer,
-		\SplFixedArray $lightFilters,
-		private \SplFixedArray $directSkyLightBlockers
+		array $lightFilters,
+		private array $directSkyLightBlockers
 	){
 		parent::__construct($subChunkExplorer, $lightFilters);
 	}
@@ -74,7 +74,7 @@ class SkyLightUpdate extends LightUpdate{
 			$newHeightMap = self::recalculateHeightMapColumn($chunk, $x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK, $this->directSkyLightBlockers);
 			$chunk->setHeightMap($x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK, $newHeightMap);
 		}elseif($yPlusOne > $oldHeightMap){ //Block changed above the heightmap.
-			if($this->directSkyLightBlockers[$source]){
+			if(isset($this->directSkyLightBlockers[$source])){
 				$chunk->setHeightMap($x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK, $yPlusOne);
 				$newHeightMap = $yPlusOne;
 			}else{ //Block changed which has no effect on direct sky light, for example placing or removing glass.
@@ -93,7 +93,7 @@ class SkyLightUpdate extends LightUpdate{
 				$this->setAndUpdateLight($x, $i, $z, 15);
 			}
 		}else{ //No heightmap change, block changed "underground"
-			$this->setAndUpdateLight($x, $y, $z, max(0, $this->getHighestAdjacentLight($x, $y, $z) - $this->lightFilters[$source]));
+			$this->setAndUpdateLight($x, $y, $z, max(0, $this->getHighestAdjacentLight($x, $y, $z) - ($this->lightFilters[$source] ?? self::BASE_LIGHT_FILTER)));
 		}
 	}
 
@@ -164,10 +164,10 @@ class SkyLightUpdate extends LightUpdate{
 	/**
 	 * Recalculates the heightmap for the whole chunk.
 	 *
-	 * @param \SplFixedArray|bool[] $directSkyLightBlockers
-	 * @phpstan-param \SplFixedArray<bool> $directSkyLightBlockers
+	 * @param true[] $directSkyLightBlockers
+	 * @phpstan-param array<int, true> $directSkyLightBlockers
 	 */
-	private static function recalculateHeightMap(Chunk $chunk, \SplFixedArray $directSkyLightBlockers) : HeightArray{
+	private static function recalculateHeightMap(Chunk $chunk, array $directSkyLightBlockers) : HeightArray{
 		$maxSubChunkY = Chunk::MAX_SUBCHUNK_INDEX;
 		for(; $maxSubChunkY >= Chunk::MIN_SUBCHUNK_INDEX; $maxSubChunkY--){
 			if(!$chunk->getSubChunk($maxSubChunkY)->isEmptyFast()){
@@ -194,7 +194,7 @@ class SkyLightUpdate extends LightUpdate{
 					$result->set($x, $z, World::Y_MIN);
 				}else{
 					for(; $y >= World::Y_MIN; --$y){
-						if($directSkyLightBlockers[$chunk->getFullBlock($x, $y, $z)]){
+						if(isset($directSkyLightBlockers[$chunk->getFullBlock($x, $y, $z)])){
 							$result->set($x, $z, $y + 1);
 							break;
 						}
@@ -210,18 +210,18 @@ class SkyLightUpdate extends LightUpdate{
 	 *
 	 * @param int $x 0-15
 	 * @param int $z 0-15
-	 * @param \SplFixedArray|bool[] $directSkyLightBlockers
-	 * @phpstan-param \SplFixedArray<bool> $directSkyLightBlockers
+	 * @param true[] $directSkyLightBlockers
+	 * @phpstan-param array<int, true> $directSkyLightBlockers
 	 *
 	 * @return int New calculated heightmap value (0-256 inclusive)
 	 */
-	private static function recalculateHeightMapColumn(Chunk $chunk, int $x, int $z, \SplFixedArray $directSkyLightBlockers) : int{
+	private static function recalculateHeightMapColumn(Chunk $chunk, int $x, int $z, array $directSkyLightBlockers) : int{
 		$y = $chunk->getHighestBlockAt($x, $z);
 		if($y === null){
 			return World::Y_MIN;
 		}
 		for(; $y >= World::Y_MIN; --$y){
-			if($directSkyLightBlockers[$chunk->getFullBlock($x, $y, $z)]){
+			if(isset($directSkyLightBlockers[$chunk->getFullBlock($x, $y, $z)])){
 				break;
 			}
 		}

@@ -41,17 +41,14 @@ class PrimedTNT extends Entity implements Explosive{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::TNT; }
 
-	protected $gravity = 0.04;
-	protected $drag = 0.02;
-
-	/** @var int */
-	protected $fuse;
-
+	protected int $fuse;
 	protected bool $worksUnderwater = false;
 
-	public $canCollide = false;
-
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.98, 0.98); }
+
+	protected function getInitialDragMultiplier() : float{ return 0.02; }
+
+	protected function getInitialGravity() : float{ return 0.04; }
 
 	public function getFuse() : int{
 		return $this->fuse;

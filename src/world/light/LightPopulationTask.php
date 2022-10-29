@@ -37,8 +37,7 @@ use function igbinary_unserialize;
 class LightPopulationTask extends AsyncTask{
 	private const TLS_KEY_COMPLETION_CALLBACK = "onCompletion";
 
-	/** @var string */
-	public $chunk;
+	public string $chunk;
 
 	private string $resultHeightMap;
 	private string $resultSkyLightArrays;

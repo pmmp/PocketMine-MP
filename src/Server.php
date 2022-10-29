@@ -969,7 +969,7 @@ class Server{
 
 			$this->commandMap = new SimpleCommandMap($this);
 
-			$this->craftingManager = CraftingManagerFromDataHelper::make(Path::join(\pocketmine\BEDROCK_DATA_PATH, "recipes.json"));
+			$this->craftingManager = CraftingManagerFromDataHelper::make(Path::join(\pocketmine\BEDROCK_DATA_PATH, "recipes"));
 
 			$this->resourceManager = new ResourcePackManager(Path::join($this->getDataPath(), "resource_packs"), $this->logger);
 
@@ -1363,6 +1363,7 @@ class Server{
 				return false;
 			}
 			$recipients = $ev->getTargets();
+			$packets = $ev->getPackets();
 
 			/** @var PacketBroadcaster[] $broadcasters */
 			$broadcasters = [];

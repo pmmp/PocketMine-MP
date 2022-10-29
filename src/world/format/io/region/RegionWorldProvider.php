@@ -73,7 +73,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	}
 
 	/** @var RegionLoader[] */
-	protected $regions = [];
+	protected array $regions = [];
 
 	protected function loadLevelData() : WorldData{
 		return new JavaWorldData(Path::join($this->getPath(), "level.dat"));

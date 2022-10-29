@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\generator\populator;
 
 use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\block\Liquid;
 use pocketmine\utils\Random;
 use pocketmine\world\biome\BiomeRegistry;
@@ -51,7 +51,7 @@ class GroundCover implements Populator{
 
 					$startY = 127;
 					for(; $startY > 0; --$startY){
-						if(!$factory->fromFullBlock($chunk->getFullBlock($x, $startY, $z))->isTransparent()){
+						if(!$factory->fromStateId($chunk->getFullBlock($x, $startY, $z))->isTransparent()){
 							break;
 						}
 					}
@@ -59,15 +59,15 @@ class GroundCover implements Populator{
 					$endY = $startY - count($cover);
 					for($y = $startY; $y > $endY && $y >= 0; --$y){
 						$b = $cover[$startY - $y];
-						$id = $factory->fromFullBlock($chunk->getFullBlock($x, $y, $z));
-						if($id->getId() === BlockLegacyIds::AIR && $b->isSolid()){
+						$id = $factory->fromStateId($chunk->getFullBlock($x, $y, $z));
+						if($id->getTypeId() === BlockTypeIds::AIR && $b->isSolid()){
 							break;
 						}
 						if($b->canBeFlowedInto() && $id instanceof Liquid){
 							continue;
 						}
 
-						$chunk->setFullBlock($x, $y, $z, $b->getFullId());
+						$chunk->setFullBlock($x, $y, $z, $b->getStateId());
 					}
 				}
 			}

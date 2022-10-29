@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\format\io\region;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
@@ -38,7 +38,6 @@ use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\ChunkData;
 use pocketmine\world\format\io\ChunkUtils;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
-use pocketmine\world\format\io\SubChunkConverter;
 use pocketmine\world\format\SubChunk;
 use function zlib_decode;
 
@@ -75,7 +74,7 @@ class McRegion extends RegionWorldProvider{
 		$fullData = self::readFixedSizeByteArray($chunk, "Data", 16384);
 
 		for($y = 0; $y < 8; ++$y){
-			$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, [SubChunkConverter::convertSubChunkFromLegacyColumn($fullIds, $fullData, $y)]);
+			$subChunks[$y] = new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, [$this->palettizeLegacySubChunkFromColumn($fullIds, $fullData, $y)]);
 		}
 
 		$makeBiomeArray = function(string $biomeIds) : BiomeArray{

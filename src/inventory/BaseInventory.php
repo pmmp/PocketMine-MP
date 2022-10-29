@@ -37,15 +37,14 @@ use function spl_object_id;
  * This class provides everything needed to implement an inventory, minus the underlying storage system.
  */
 abstract class BaseInventory implements Inventory{
-	/** @var int */
-	protected $maxStackSize = Inventory::MAX_STACK;
+	protected int $maxStackSize = Inventory::MAX_STACK;
 	/** @var Player[] */
-	protected $viewers = [];
+	protected array $viewers = [];
 	/**
 	 * @var InventoryListener[]|ObjectSet
 	 * @phpstan-var ObjectSet<InventoryListener>
 	 */
-	protected $listeners;
+	protected ObjectSet $listeners;
 
 	public function __construct(){
 		$this->listeners = new ObjectSet();
@@ -108,10 +107,9 @@ abstract class BaseInventory implements Inventory{
 
 	public function contains(Item $item) : bool{
 		$count = max(1, $item->getCount());
-		$checkDamage = !$item->hasAnyDamageValue();
 		$checkTags = $item->hasNamedTag();
 		foreach($this->getContents() as $i){
-			if($item->equals($i, $checkDamage, $checkTags)){
+			if($item->equals($i, true, $checkTags)){
 				$count -= $i->getCount();
 				if($count <= 0){
 					return true;
@@ -124,10 +122,9 @@ abstract class BaseInventory implements Inventory{
 
 	public function all(Item $item) : array{
 		$slots = [];
-		$checkDamage = !$item->hasAnyDamageValue();
 		$checkTags = $item->hasNamedTag();
 		foreach($this->getContents() as $index => $i){
-			if($item->equals($i, $checkDamage, $checkTags)){
+			if($item->equals($i, true, $checkTags)){
 				$slots[$index] = $i;
 			}
 		}
@@ -137,11 +134,10 @@ abstract class BaseInventory implements Inventory{
 
 	public function first(Item $item, bool $exact = false) : int{
 		$count = $exact ? $item->getCount() : max(1, $item->getCount());
-		$checkDamage = $exact || !$item->hasAnyDamageValue();
 		$checkTags = $exact || $item->hasNamedTag();
 
 		foreach($this->getContents() as $index => $i){
-			if($item->equals($i, $checkDamage, $checkTags) && ($i->getCount() === $count || (!$exact && $i->getCount() > $count))){
+			if($item->equals($i, true, $checkTags) && ($i->getCount() === $count || (!$exact && $i->getCount() > $count))){
 				return $index;
 			}
 		}
@@ -249,11 +245,10 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function remove(Item $item) : void{
-		$checkDamage = !$item->hasAnyDamageValue();
 		$checkTags = $item->hasNamedTag();
 
 		foreach($this->getContents() as $index => $i){
-			if($item->equals($i, $checkDamage, $checkTags)){
+			if($item->equals($i, true, $checkTags)){
 				$this->clear($index);
 			}
 		}
@@ -276,7 +271,7 @@ abstract class BaseInventory implements Inventory{
 			}
 
 			foreach($itemSlots as $index => $slot){
-				if($slot->equals($item, !$slot->hasAnyDamageValue(), $slot->hasNamedTag())){
+				if($slot->equals($item, true, $slot->hasNamedTag())){
 					$amount = min($item->getCount(), $slot->getCount());
 					$slot->setCount($slot->getCount() - $amount);
 					$item->setCount($item->getCount() - $amount);

@@ -34,15 +34,15 @@ class ItemBlockWallOrFloor extends Item{
 
 	public function __construct(ItemIdentifier $identifier, Block $floorVariant, Block $wallVariant){
 		parent::__construct($identifier, $floorVariant->getName());
-		$this->floorVariant = $floorVariant->getFullId();
-		$this->wallVariant = $wallVariant->getFullId();
+		$this->floorVariant = $floorVariant->getStateId();
+		$this->wallVariant = $wallVariant->getStateId();
 	}
 
 	public function getBlock(?int $clickedFace = null) : Block{
 		if($clickedFace !== null && Facing::axis($clickedFace) !== Axis::Y){
-			return BlockFactory::getInstance()->fromFullBlock($this->wallVariant);
+			return BlockFactory::getInstance()->fromStateId($this->wallVariant);
 		}
-		return BlockFactory::getInstance()->fromFullBlock($this->floorVariant);
+		return BlockFactory::getInstance()->fromStateId($this->floorVariant);
 	}
 
 	public function getFuelTime() : int{
