@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -36,6 +36,8 @@ class SplashPotion extends ProjectileItem{
 		parent::__construct($identifier, $name);
 		$this->potionType = $potionType;
 	}
+
+	public function getType() : PotionType{ return $this->potionType; }
 
 	public function getMaxStackSize() : int{
 		return 1;

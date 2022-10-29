@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,8 +30,7 @@ use pocketmine\nbt\tag\CompoundTag;
 class Jukebox extends Spawnable{
 	private const TAG_RECORD = "RecordItem"; //Item CompoundTag
 
-	/** @var Record|null */
-	private $record = null;
+	private ?Record $record = null;
 
 	public function getRecord() : ?Record{
 		return $this->record;

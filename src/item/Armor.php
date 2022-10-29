@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -40,8 +40,7 @@ class Armor extends Durable{
 
 	public const TAG_CUSTOM_COLOR = "customColor"; //TAG_Int
 
-	/** @var ArmorTypeInfo */
-	private $armorInfo;
+	private ArmorTypeInfo $armorInfo;
 
 	/** @var Color|null */
 	protected $customColor = null;
@@ -87,6 +86,12 @@ class Armor extends Durable{
 		return $this;
 	}
 
+	/** @return $this */
+	public function clearCustomColor() : self{
+		$this->customColor = null;
+		return $this;
+	}
+
 	/**
 	 * Returns the total enchantment protection factor this armour piece offers from all applicable protection
 	 * enchantments on the item.
@@ -96,7 +101,7 @@ class Armor extends Durable{
 
 		foreach($this->getEnchantments() as $enchantment){
 			$type = $enchantment->getType();
-			if($type instanceof ProtectionEnchantment and $type->isApplicable($event)){
+			if($type instanceof ProtectionEnchantment && $type->isApplicable($event)){
 				$epf += $type->getProtectionFactor($enchantment->getLevel());
 			}
 		}
@@ -110,7 +115,7 @@ class Armor extends Durable{
 
 			$chance = 1 / ($unbreakingLevel + 1);
 			for($i = 0; $i < $amount; ++$i){
-				if(mt_rand(1, 100) > 60 and lcg_value() > $chance){ //unbreaking only applies to armor 40% of the time at best
+				if(mt_rand(1, 100) > 60 && lcg_value() > $chance){ //unbreaking only applies to armor 40% of the time at best
 					$negated++;
 				}
 			}

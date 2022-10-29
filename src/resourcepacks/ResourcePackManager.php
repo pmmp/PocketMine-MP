@@ -17,18 +17,20 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\resourcepacks;
 
+use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\utils\Config;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function array_keys;
 use function copy;
 use function count;
 use function file_exists;
+use function file_get_contents;
 use function gettype;
 use function is_array;
 use function is_dir;
@@ -40,18 +42,20 @@ use function strtolower;
 use const DIRECTORY_SEPARATOR;
 
 class ResourcePackManager{
-
-	/** @var string */
-	private $path;
-
-	/** @var bool */
-	private $serverForceResources = false;
+	private string $path;
+	private bool $serverForceResources = false;
 
 	/** @var ResourcePack[] */
-	private $resourcePacks = [];
+	private array $resourcePacks = [];
 
 	/** @var ResourcePack[] */
-	private $uuidList = [];
+	private array $uuidList = [];
+
+	/**
+	 * @var string[]
+	 * @phpstan-var array<string, string>
+	 */
+	private array $encryptionKeys = [];
 
 	/**
 	 * @param string  $path Path to resource-packs directory.
@@ -109,7 +113,19 @@ class ResourcePackManager{
 
 				if($newPack instanceof ResourcePack){
 					$this->resourcePacks[] = $newPack;
-					$this->uuidList[strtolower($newPack->getPackId())] = $newPack;
+					$index = strtolower($newPack->getPackId());
+					$this->uuidList[$index] = $newPack;
+
+					$keyPath = Path::join($this->path, $pack . ".key");
+					if(file_exists($keyPath)){
+						try{
+							$this->encryptionKeys[$index] = ErrorToExceptionHandler::trapAndRemoveFalse(
+								fn() => file_get_contents($keyPath)
+							);
+						}catch(\ErrorException $e){
+							throw new ResourcePackException("Could not read encryption key file: " . $e->getMessage(), 0, $e);
+						}
+					}
 				}else{
 					throw new ResourcePackException("Format not recognized");
 				}
@@ -156,5 +172,12 @@ class ResourcePackManager{
 	 */
 	public function getPackIdList() : array{
 		return array_keys($this->uuidList);
+	}
+
+	/**
+	 * Returns the key with which the pack was encrypted, or null if the pack has no key.
+	 */
+	public function getPackEncryptionKey(string $id) : ?string{
+		return $this->encryptionKeys[strtolower($id)] ?? null;
 	}
 }

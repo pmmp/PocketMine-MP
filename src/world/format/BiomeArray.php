@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,9 +29,7 @@ use function str_repeat;
 use function strlen;
 
 final class BiomeArray{
-
-	/** @var string */
-	private $payload;
+	private string $payload;
 
 	/**
 	 * @param string $payload ZZZZXXXX key bits
@@ -48,7 +46,7 @@ final class BiomeArray{
 	}
 
 	private static function idx(int $x, int $z) : int{
-		if($x < 0 or $x >= 16 or $z < 0 or $z >= 16){
+		if($x < 0 || $x >= 16 || $z < 0 || $z >= 16){
 			throw new \InvalidArgumentException("x and z must be in the range 0-15");
 		}
 		return ($z << 4) | $x;
@@ -59,7 +57,7 @@ final class BiomeArray{
 	}
 
 	public function set(int $x, int $z, int $biomeId) : void{
-		if($biomeId < 0 or $biomeId >= 256){
+		if($biomeId < 0 || $biomeId >= 256){
 			throw new \InvalidArgumentException("Biome ID must be in the range 0-255");
 		}
 		$this->payload[self::idx($x, $z)] = chr($biomeId);

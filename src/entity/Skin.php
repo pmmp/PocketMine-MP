@@ -17,18 +17,19 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\entity;
 
 use Ahc\Json\Comment as CommentedJsonDecoder;
+use pocketmine\utils\Limits;
 use function implode;
 use function in_array;
 use function json_encode;
-use function json_last_error_msg;
 use function strlen;
+use const JSON_THROW_ON_ERROR;
 
 final class Skin{
 	public const ACCEPTED_SKIN_SIZES = [
@@ -37,18 +38,23 @@ final class Skin{
 		128 * 128 * 4
 	];
 
-	/** @var string */
-	private $skinId;
-	/** @var string */
-	private $skinData;
-	/** @var string */
-	private $capeData;
-	/** @var string */
-	private $geometryName;
-	/** @var string */
-	private $geometryData;
+	private string $skinId;
+	private string $skinData;
+	private string $capeData;
+	private string $geometryName;
+	private string $geometryData;
+
+	private static function checkLength(string $string, string $name, int $maxLength) : void{
+		if(strlen($string) > $maxLength){
+			throw new InvalidSkinException("$name must be at most $maxLength bytes, but have " . strlen($string) . " bytes");
+		}
+	}
 
 	public function __construct(string $skinId, string $skinData, string $capeData = "", string $geometryName = "", string $geometryData = ""){
+		self::checkLength($skinId, "Skin ID", Limits::INT16_MAX);
+		self::checkLength($geometryName, "Geometry name", Limits::INT16_MAX);
+		self::checkLength($geometryData, "Geometry data", Limits::INT32_MAX);
+
 		if($skinId === ""){
 			throw new InvalidSkinException("Skin ID must not be empty");
 		}
@@ -56,14 +62,15 @@ final class Skin{
 		if(!in_array($len, self::ACCEPTED_SKIN_SIZES, true)){
 			throw new InvalidSkinException("Invalid skin data size $len bytes (allowed sizes: " . implode(", ", self::ACCEPTED_SKIN_SIZES) . ")");
 		}
-		if($capeData !== "" and strlen($capeData) !== 8192){
+		if($capeData !== "" && strlen($capeData) !== 8192){
 			throw new InvalidSkinException("Invalid cape data size " . strlen($capeData) . " bytes (must be exactly 8192 bytes)");
 		}
 
 		if($geometryData !== ""){
-			$decodedGeometry = (new CommentedJsonDecoder())->decode($geometryData);
-			if($decodedGeometry === false){
-				throw new InvalidSkinException("Invalid geometry data (" . json_last_error_msg() . ")");
+			try{
+				$decodedGeometry = (new CommentedJsonDecoder())->decode($geometryData);
+			}catch(\RuntimeException $e){
+				throw new InvalidSkinException("Invalid geometry data: " . $e->getMessage(), 0, $e);
 			}
 
 			/*
@@ -73,7 +80,7 @@ final class Skin{
 			 * Not only that, they are pretty-printed.
 			 * TODO: find out what model crap can be safely dropped from the packet (unless it gets fixed first)
 			 */
-			$geometryData = json_encode($decodedGeometry);
+			$geometryData = json_encode($decodedGeometry, JSON_THROW_ON_ERROR);
 		}
 
 		$this->skinId = $skinId;

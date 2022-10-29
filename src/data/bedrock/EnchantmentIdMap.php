@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -39,12 +39,12 @@ final class EnchantmentIdMap{
 	 * @var Enchantment[]
 	 * @phpstan-var array<int, Enchantment>
 	 */
-	private $idToEnch = [];
+	private array $idToEnch = [];
 	/**
 	 * @var int[]
 	 * @phpstan-var array<int, int>
 	 */
-	private $enchToId = [];
+	private array $enchToId = [];
 
 	private function __construct(){
 		$this->register(EnchantmentIds::PROTECTION, VanillaEnchantments::PROTECTION());

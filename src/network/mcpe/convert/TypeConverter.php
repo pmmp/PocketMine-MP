@@ -1,4 +1,5 @@
 <?php
+
 /*
  *
  *  ____            _        _   __  __ _                  __  __ ____
@@ -16,17 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\block\BlockLegacyIds;
-use pocketmine\block\inventory\AnvilInventory;
-use pocketmine\block\inventory\CraftingTableInventory;
-use pocketmine\block\inventory\EnchantInventory;
-use pocketmine\block\inventory\LoomInventory;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
@@ -36,6 +33,7 @@ use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
+use pocketmine\item\VanillaItems;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -45,7 +43,9 @@ use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
+use pocketmine\network\mcpe\protocol\types\recipe\IntIdMetaItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
+use pocketmine\network\mcpe\protocol\types\recipe\StringIdMetaItemDescriptor;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
@@ -59,8 +59,7 @@ class TypeConverter{
 	private const PM_ID_TAG = "___Id___";
 	private const PM_META_TAG = "___Meta___";
 
-	/** @var int */
-	private $shieldRuntimeId;
+	private int $shieldRuntimeId;
 
 	public function __construct(){
 		//TODO: inject stuff via constructor
@@ -113,7 +112,7 @@ class TypeConverter{
 
 	public function coreItemStackToRecipeIngredient(Item $itemStack) : RecipeIngredient{
 		if($itemStack->isNull()){
-			return new RecipeIngredient(0, 0, 0);
+			return new RecipeIngredient(null, 0);
 		}
 		if($itemStack->hasAnyDamageValue()){
 			[$id, ] = ItemTranslator::getInstance()->toNetworkId($itemStack->getId(), 0);
@@ -121,15 +120,25 @@ class TypeConverter{
 		}else{
 			[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($itemStack->getId(), $itemStack->getMeta());
 		}
-		return new RecipeIngredient($id, $meta, $itemStack->getCount());
+		return new RecipeIngredient(new IntIdMetaItemDescriptor($id, $meta), $itemStack->getCount());
 	}
 
 	public function recipeIngredientToCoreItemStack(RecipeIngredient $ingredient) : Item{
-		if($ingredient->getId() === 0){
-			return ItemFactory::getInstance()->get(ItemIds::AIR, 0, 0);
+		$descriptor = $ingredient->getDescriptor();
+		if($descriptor === null){
+			return VanillaItems::AIR();
 		}
-		[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($ingredient->getId(), $ingredient->getMeta());
-		return ItemFactory::getInstance()->get($id, $meta, $ingredient->getCount());
+		if($descriptor instanceof IntIdMetaItemDescriptor){
+			[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($descriptor->getId(), $descriptor->getMeta());
+			return ItemFactory::getInstance()->get($id, $meta, $ingredient->getCount());
+		}
+		if($descriptor instanceof StringIdMetaItemDescriptor){
+			$intId = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromStringId($descriptor->getId());
+			[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($intId, $descriptor->getMeta());
+			return ItemFactory::getInstance()->get($id, $meta, $ingredient->getCount());
+		}
+
+		throw new \LogicException("Unsupported conversion of recipe ingredient to core item stack");
 	}
 
 	public function coreItemStackToNet(Item $itemStack) : ItemStack{
@@ -156,7 +165,7 @@ class TypeConverter{
 		}else{
 			[$id, $meta] = $idMeta;
 
-			if($itemStack instanceof Durable and $itemStack->getDamage() > 0){
+			if($itemStack instanceof Durable && $itemStack->getDamage() > 0){
 				if($nbt !== null){
 					if(($existing = $nbt->getTag(self::DAMAGE_TAG)) !== null){
 						$nbt->removeTag(self::DAMAGE_TAG);
@@ -202,7 +211,7 @@ class TypeConverter{
 	 */
 	public function netItemStackToCore(ItemStack $itemStack) : Item{
 		if($itemStack->getId() === 0){
-			return ItemFactory::getInstance()->get(ItemIds::AIR, 0, 0);
+			return VanillaItems::AIR();
 		}
 		$compound = $itemStack->getNbt();
 
@@ -231,6 +240,12 @@ class TypeConverter{
 			if($compound->count() === 0){
 				$compound = null;
 			}
+		}
+		if($id < -0x8000 || $id >= 0x7fff){
+			throw new TypeConversionException("Item ID must be in range " . -0x8000 . " ... " . 0x7fff . " (received $id)");
+		}
+		if($meta < 0 || $meta >= 0x7fff){ //this meta value may have been restored from the NBT
+			throw new TypeConversionException("Item meta must be in range 0 ... " . 0x7fff . " (received $meta)");
 		}
 
 		try{
@@ -265,37 +280,12 @@ class TypeConverter{
 		}
 		switch($action->sourceType){
 			case NetworkInventoryAction::SOURCE_CONTAINER:
-				$window = null;
-				if($action->windowId === ContainerIds::UI and $action->inventorySlot > 0){
-					if($action->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
-						return null; //useless noise
-					}
-					$pSlot = $action->inventorySlot;
-
-					$slot = UIInventorySlotOffset::CRAFTING2X2_INPUT[$pSlot] ?? null;
-					if($slot !== null){
-						$window = $player->getCraftingGrid();
-					}elseif(($current = $player->getCurrentWindow()) !== null){
-						$slotMap = match(true){
-							$current instanceof AnvilInventory => UIInventorySlotOffset::ANVIL,
-							$current instanceof EnchantInventory => UIInventorySlotOffset::ENCHANTING_TABLE,
-							$current instanceof LoomInventory => UIInventorySlotOffset::LOOM,
-							$current instanceof CraftingTableInventory => UIInventorySlotOffset::CRAFTING3X3_INPUT,
-							default => null
-						};
-						if($slotMap !== null){
-							$window = $current;
-							$slot = $slotMap[$pSlot] ?? null;
-						}
-					}
-					if($slot === null){
-						throw new TypeConversionException("Unmatched UI inventory slot offset $pSlot");
-					}
-				}else{
-					$window = $inventoryManager->getWindow($action->windowId);
-					$slot = $action->inventorySlot;
+				if($action->windowId === ContainerIds::UI && $action->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
+					return null; //useless noise
 				}
-				if($window !== null){
+				$located = $inventoryManager->locateWindowAndSlot($action->windowId, $action->inventorySlot);
+				if($located !== null){
+					[$window, $slot] = $located;
 					return new SlotChangeAction($window, $slot, $old, $new);
 				}
 
@@ -317,15 +307,10 @@ class TypeConverter{
 
 				}
 			case NetworkInventoryAction::SOURCE_TODO:
-				//These types need special handling.
-				switch($action->windowId){
-					case NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT:
-					case NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
-						return null;
-				}
-
-				//TODO: more stuff
-				throw new TypeConversionException("No open container with window ID $action->windowId");
+				//These are used to balance a transaction that involves special actions, like crafting, enchanting, etc.
+				//The vanilla server just accepted these without verifying them. We don't need to care about them since
+				//we verify crafting by checking for imbalances anyway.
+				return null;
 			default:
 				throw new TypeConversionException("Unknown inventory source type $action->sourceType");
 		}

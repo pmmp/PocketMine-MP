@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -39,7 +39,7 @@ use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\generator\InvalidGeneratorOptionsException;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function array_keys;
 use function array_shift;
 use function assert;
@@ -55,33 +55,19 @@ use function strval;
 use function trim;
 
 class WorldManager{
-	/** @var string */
-	private $dataPath;
-
-	/** @var WorldProviderManager */
-	private $providerManager;
-
 	/** @var World[] */
-	private $worlds = [];
-	/** @var World|null */
-	private $defaultWorld;
+	private array $worlds = [];
+	private ?World $defaultWorld = null;
 
-	/** @var Server */
-	private $server;
+	private bool $autoSave = true;
+	private int $autoSaveTicks = 6000;
+	private int $autoSaveTicker = 0;
 
-	/** @var bool */
-	private $autoSave = true;
-	/** @var int */
-	private $autoSaveTicks = 6000;
-
-	/** @var int */
-	private $autoSaveTicker = 0;
-
-	public function __construct(Server $server, string $dataPath, WorldProviderManager $providerManager){
-		$this->server = $server;
-		$this->dataPath = $dataPath;
-		$this->providerManager = $providerManager;
-	}
+	public function __construct(
+		private Server $server,
+		private string $dataPath,
+		private WorldProviderManager $providerManager
+	){}
 
 	public function getProviderManager() : WorldProviderManager{
 		return $this->providerManager;
@@ -104,7 +90,7 @@ class WorldManager{
 	 * it only affects the server on runtime
 	 */
 	public function setDefaultWorld(?World $world) : void{
-		if($world === null or ($this->isWorldLoaded($world->getFolderName()) and $world !== $this->defaultWorld)){
+		if($world === null || ($this->isWorldLoaded($world->getFolderName()) && $world !== $this->defaultWorld)){
 			$this->defaultWorld = $world;
 		}
 	}
@@ -134,7 +120,7 @@ class WorldManager{
 	 * @throws \InvalidArgumentException
 	 */
 	public function unloadWorld(World $world, bool $forceUnload = false) : bool{
-		if($world === $this->getDefaultWorld() and !$forceUnload){
+		if($world === $this->getDefaultWorld() && !$forceUnload){
 			throw new \InvalidArgumentException("The default world cannot be unloaded while running, please switch worlds.");
 		}
 		if($world->isDoingTick()){
@@ -142,27 +128,29 @@ class WorldManager{
 		}
 
 		$ev = new WorldUnloadEvent($world);
-		if($world === $this->defaultWorld and !$forceUnload){
+		if($world === $this->defaultWorld && !$forceUnload){
 			$ev->cancel();
 		}
 
 		$ev->call();
 
-		if(!$forceUnload and $ev->isCancelled()){
+		if(!$forceUnload && $ev->isCancelled()){
 			return false;
 		}
 
 		$this->server->getLogger()->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_unloading($world->getDisplayName())));
-		try{
-			$safeSpawn = $this->defaultWorld !== null ? $this->defaultWorld->getSafeSpawn() : null;
-		}catch(WorldException $e){
-			$safeSpawn = null;
-		}
-		foreach($world->getPlayers() as $player){
-			if($world === $this->defaultWorld or $safeSpawn === null){
-				$player->disconnect("Forced default world unload");
-			}else{
-				$player->teleport($safeSpawn);
+		if(count($world->getPlayers()) !== 0){
+			try{
+				$safeSpawn = $this->defaultWorld !== null && $this->defaultWorld !== $world ? $this->defaultWorld->getSafeSpawn() : null;
+			}catch(WorldException $e){
+				$safeSpawn = null;
+			}
+			foreach($world->getPlayers() as $player){
+				if($safeSpawn === null){
+					$player->disconnect("Forced default world unload");
+				}else{
+					$player->teleport($safeSpawn);
+				}
 			}
 		}
 
@@ -271,7 +259,7 @@ class WorldManager{
 	 * @throws \InvalidArgumentException
 	 */
 	public function generateWorld(string $name, WorldCreationOptions $options, bool $backgroundGeneration = true) : bool{
-		if(trim($name) === "" or $this->isWorldGenerated($name)){
+		if(trim($name) === "" || $this->isWorldGenerated($name)){
 			return false;
 		}
 
@@ -365,7 +353,7 @@ class WorldManager{
 			}
 		}
 
-		if($this->autoSave and ++$this->autoSaveTicker >= $this->autoSaveTicks){
+		if($this->autoSave && ++$this->autoSaveTicker >= $this->autoSaveTicks){
 			$this->autoSaveTicker = 0;
 			$this->server->getLogger()->debug("[Auto Save] Saving worlds...");
 			$start = microtime(true);

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,9 +30,9 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
-use Webmozart\PathUtil\Path;
+use pocketmine\utils\Utils;
+use Symfony\Component\Filesystem\Path;
 use function file_get_contents;
 
 /**
@@ -42,32 +42,43 @@ final class RuntimeBlockMapping{
 	use SingletonTrait;
 
 	/** @var int[] */
-	private $legacyToRuntimeMap = [];
+	private array $legacyToRuntimeMap = [];
 	/** @var int[] */
-	private $runtimeToLegacyMap = [];
+	private array $runtimeToLegacyMap = [];
 	/** @var CompoundTag[] */
-	private $bedrockKnownStates;
+	private array $bedrockKnownStates;
 
-	private function __construct(){
-		$canonicalBlockStatesFile = file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt"));
-		if($canonicalBlockStatesFile === false){
-			throw new AssumptionFailedError("Missing required resource file");
-		}
-		$stream = PacketSerializer::decoder($canonicalBlockStatesFile, 0, new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary()));
+	private static function make() : self{
+		return new self(
+			Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt"),
+			Path::join(\pocketmine\BEDROCK_DATA_PATH, "r12_to_current_block_map.bin")
+		);
+	}
+
+	public function __construct(string $canonicalBlockStatesFile, string $r12ToCurrentBlockMapFile){
+		$stream = PacketSerializer::decoder(
+			Utils::assumeNotFalse(file_get_contents($canonicalBlockStatesFile), "Missing required resource file"),
+			0,
+			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary())
+		);
 		$list = [];
 		while(!$stream->feof()){
 			$list[] = $stream->getNbtCompoundRoot();
 		}
 		$this->bedrockKnownStates = $list;
 
-		$this->setupLegacyMappings();
+		$this->setupLegacyMappings($r12ToCurrentBlockMapFile);
 	}
 
-	private function setupLegacyMappings() : void{
+	private function setupLegacyMappings(string $r12ToCurrentBlockMapFile) : void{
 		$legacyIdMap = LegacyBlockIdToStringIdMap::getInstance();
 		/** @var R12ToCurrentBlockMapEntry[] $legacyStateMap */
 		$legacyStateMap = [];
-		$legacyStateMapReader = PacketSerializer::decoder(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "r12_to_current_block_map.bin")), 0, new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary()));
+		$legacyStateMapReader = PacketSerializer::decoder(
+			Utils::assumeNotFalse(file_get_contents($r12ToCurrentBlockMapFile), "Missing required resource file"),
+			0,
+			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary())
+		);
 		$nbtReader = new NetworkNbtSerializer();
 		while(!$legacyStateMapReader->feof()){
 			$id = $legacyStateMapReader->getString();

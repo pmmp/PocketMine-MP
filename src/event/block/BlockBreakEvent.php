@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -72,7 +72,7 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 	 * Returns the item used to destroy the block.
 	 */
 	public function getItem() : Item{
-		return $this->item;
+		return clone $this->item;
 	}
 
 	/**
@@ -103,8 +103,6 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 
 	/**
 	 * Variadic hack for easy array member type enforcement.
-	 *
-	 * @param Item ...$drops
 	 */
 	public function setDropsVariadic(Item ...$drops) : void{
 		$this->blockDrops = $drops;

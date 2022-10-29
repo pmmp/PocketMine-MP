@@ -17,16 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockLegacyIds;
-use pocketmine\block\Fire;
-use pocketmine\block\Liquid;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Location;
 use pocketmine\entity\object\FallingBlock;
@@ -49,14 +46,15 @@ trait FallableTrait{
 
 	public function onNearbyBlockChange() : void{
 		$pos = $this->getPosition();
-		$down = $pos->getWorld()->getBlock($pos->getSide(Facing::DOWN));
-		if($down->getId() === BlockLegacyIds::AIR or $down instanceof Liquid or $down instanceof Fire){
-			$pos->getWorld()->setBlock($pos, VanillaBlocks::AIR());
+		$world = $pos->getWorld();
+		$down = $world->getBlock($pos->getSide(Facing::DOWN));
+		if($down->canBeReplaced()){
+			$world->setBlock($pos, VanillaBlocks::AIR());
 
 			$block = $this;
 			if(!($block instanceof Block)) throw new AssumptionFailedError(__TRAIT__ . " should only be used by Blocks");
 
-			$fall = new FallingBlock(Location::fromObject($pos->add(0.5, 0, 0.5), $pos->getWorld()), $block);
+			$fall = new FallingBlock(Location::fromObject($pos->add(0.5, 0, 0.5), $world), $block);
 			$fall->spawnToAll();
 		}
 	}

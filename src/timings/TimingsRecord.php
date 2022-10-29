@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -36,7 +36,7 @@ final class TimingsRecord{
 	 * @var self[]
 	 * @phpstan-var array<int, self>
 	 */
-	private static $records = [];
+	private static array $records = [];
 
 	public static function clearRecords() : void{
 		foreach(self::$records as $record){
@@ -71,26 +71,18 @@ final class TimingsRecord{
 		}
 	}
 
-	/** @var TimingsHandler */
-	private $handler;
+	private int $count = 0;
+	private int $curCount = 0;
+	private int $start = 0;
+	private int $totalTime = 0;
+	private int $curTickTotal = 0;
+	private int $violations = 0;
 
-	/** @var int */
-	private $count = 0;
-	/** @var int */
-	private $curCount = 0;
-	/** @var int */
-	private $start = 0;
-	/** @var int */
-	private $totalTime = 0;
-	/** @var int */
-	private $curTickTotal = 0;
-	/** @var int */
-	private $violations = 0;
-
-	public function __construct(TimingsHandler $handler){
-		self::$records[spl_object_id($this)] = $this;
+	public function __construct(
 		//I'm not the biggest fan of this cycle, but it seems to be the most effective way to avoid leaking anything.
-		$this->handler = $handler;
+		private TimingsHandler $handler
+	){
+		self::$records[spl_object_id($this)] = $this;
 	}
 
 	public function getName() : string{ return $this->handler->getName(); }

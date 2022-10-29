@@ -17,12 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\thread;
 
+use pocketmine\scheduler\AsyncTask;
 use const PTHREADS_INHERIT_NONE;
 
 /**
@@ -55,7 +56,9 @@ abstract class Worker extends \Worker{
 		$this->isKilled = true;
 
 		if(!$this->isShutdown()){
-			while($this->unstack() !== null);
+			$this->synchronized(function() : void{
+				while($this->unstack() !== null);
+			});
 			$this->notify();
 			$this->shutdown();
 		}

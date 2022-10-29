@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,7 +27,8 @@ use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
-use Webmozart\PathUtil\Path;
+use pocketmine\utils\Utils;
+use Symfony\Component\Filesystem\Path;
 use function file_get_contents;
 use function is_array;
 use function is_bool;
@@ -39,8 +40,7 @@ final class GlobalItemTypeDictionary{
 	use SingletonTrait;
 
 	private static function make() : self{
-		$data = file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'required_item_list.json'));
-		if($data === false) throw new AssumptionFailedError("Missing required resource file");
+		$data = Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'required_item_list.json')), "Missing required resource file");
 		$table = json_decode($data, true);
 		if(!is_array($table)){
 			throw new AssumptionFailedError("Invalid item list format");
@@ -56,11 +56,9 @@ final class GlobalItemTypeDictionary{
 		return new self(new ItemTypeDictionary($params));
 	}
 
-	private ItemTypeDictionary $dictionary;
-
-	public function __construct(ItemTypeDictionary $dictionary){
-		$this->dictionary = $dictionary;
-	}
+	public function __construct(
+		private ItemTypeDictionary $dictionary
+	){}
 
 	public function getDictionary() : ItemTypeDictionary{ return $this->dictionary; }
 }

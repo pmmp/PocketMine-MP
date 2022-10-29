@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,8 +31,10 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\Position;
 
 class Sugarcane extends Flowable{
+	public const MAX_AGE = 15;
 
 	protected int $age = 0;
 
@@ -41,34 +43,44 @@ class Sugarcane extends Flowable{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, 15);
+		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, self::MAX_AGE);
 	}
 
 	public function getStateBitmask() : int{
 		return 0b1111;
 	}
 
-	private function grow() : bool{
+	private function seekToBottom() : Position{
+		$world = $this->position->getWorld();
+		$bottom = $this->position;
+		while(($next = $world->getBlock($bottom->down()))->isSameType($this)){
+			$bottom = $next->position;
+		}
+		return $bottom;
+	}
+
+	private function grow(Position $pos) : bool{
 		$grew = false;
+		$world = $pos->getWorld();
 		for($y = 1; $y < 3; ++$y){
-			if(!$this->position->getWorld()->isInWorld($this->position->x, $this->position->y + $y, $this->position->z)){
+			if(!$world->isInWorld($pos->x, $pos->y + $y, $pos->z)){
 				break;
 			}
-			$b = $this->position->getWorld()->getBlockAt($this->position->x, $this->position->y + $y, $this->position->z);
+			$b = $world->getBlockAt($pos->x, $pos->y + $y, $pos->z);
 			if($b->getId() === BlockLegacyIds::AIR){
 				$ev = new BlockGrowEvent($b, VanillaBlocks::SUGARCANE());
 				$ev->call();
 				if($ev->isCancelled()){
 					break;
 				}
-				$this->position->getWorld()->setBlock($b->position, $ev->getNewState());
+				$world->setBlock($b->position, $ev->getNewState());
 				$grew = true;
-			}else{
+			}elseif(!$b->isSameType($this)){
 				break;
 			}
 		}
 		$this->age = 0;
-		$this->position->getWorld()->setBlock($this->position, $this);
+		$world->setBlock($pos, $this);
 		return $grew;
 	}
 
@@ -76,8 +88,8 @@ class Sugarcane extends Flowable{
 
 	/** @return $this */
 	public function setAge(int $age) : self{
-		if($age < 0 || $age > 15){
-			throw new \InvalidArgumentException("Age must be in range 0-15");
+		if($age < 0 || $age > self::MAX_AGE){
+			throw new \InvalidArgumentException("Age must be in range 0 ... " . self::MAX_AGE);
 		}
 		$this->age = $age;
 		return $this;
@@ -85,7 +97,7 @@ class Sugarcane extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($item instanceof Fertilizer){
-			if(!$this->getSide(Facing::DOWN)->isSameType($this) && $this->grow()){
+			if($this->grow($this->seekToBottom())){
 				$item->pop();
 			}
 
@@ -97,7 +109,7 @@ class Sugarcane extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->isTransparent() and !$down->isSameType($this)){
+		if(!$this->isValidSupport($down)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -108,8 +120,8 @@ class Sugarcane extends Flowable{
 
 	public function onRandomTick() : void{
 		if(!$this->getSide(Facing::DOWN)->isSameType($this)){
-			if($this->age === 15){
-				$this->grow();
+			if($this->age === self::MAX_AGE){
+				$this->grow($this->position);
 			}else{
 				++$this->age;
 				$this->position->getWorld()->setBlock($this->position, $this);
@@ -121,14 +133,26 @@ class Sugarcane extends Flowable{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->isSameType($this)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif($down->getId() === BlockLegacyIds::GRASS or $down->getId() === BlockLegacyIds::DIRT or $down->getId() === BlockLegacyIds::SAND or $down->getId() === BlockLegacyIds::PODZOL){
+		}elseif($this->isValidSupport($down)){
 			foreach(Facing::HORIZONTAL as $side){
-				if($down->getSide($side) instanceof Water){
+				$sideBlock = $down->getSide($side);
+				if($sideBlock instanceof Water || $sideBlock instanceof FrostedIce){
 					return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 				}
 			}
 		}
 
 		return false;
+	}
+
+	private function isValidSupport(Block $block) : bool{
+		$id = $block->getId();
+		//TODO: rooted dirt, moss block
+		return $block->isSameType($this)
+			|| $id === BlockLegacyIds::GRASS
+			|| $id === BlockLegacyIds::DIRT
+			|| $id === BlockLegacyIds::PODZOL
+			|| $id === BlockLegacyIds::MYCELIUM
+			|| $id === BlockLegacyIds::SAND;
 	}
 }

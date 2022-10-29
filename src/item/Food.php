@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,7 +32,7 @@ abstract class Food extends Item implements FoodSourceItem{
 	}
 
 	public function getResidue() : Item{
-		return ItemFactory::air();
+		return VanillaItems::AIR();
 	}
 
 	public function getAdditionalEffects() : array{

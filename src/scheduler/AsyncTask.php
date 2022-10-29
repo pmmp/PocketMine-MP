@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -33,19 +33,31 @@ use function spl_object_id;
 /**
  * Class used to run async tasks in other threads.
  *
- * An AsyncTask does not have its own thread. It is queued into an AsyncPool and executed if there is an async worker
- * with no AsyncTask running. Therefore, an AsyncTask SHOULD NOT execute for more than a few seconds. For tasks that
- * run for a long time or infinitely, start another thread instead.
+ * An AsyncTask is run by a thread pool of reusable threads, and doesn't have its own dedicated thread. A thread is
+ * usually chosen from the pool at random to run the task (though a specific thread in the pool may be selected
+ * manually, if needed).
+ * Reusing threads this way has a much lower performance cost than starting an entirely new thread for every operation.
+ * AsyncTasks are therefore suitable for brief CPU-bound tasks, such as world generation, compression/decompression of
+ * data, etc.
+ *
+ * AsyncTask SHOULD NOT be used for I/O-bound tasks, such as network I/O, file I/O, database I/O, etc. The server's
+ * central AsyncPool is used for things like compressing network packets for sending, so using AsyncTask for I/O will
+ * slow the whole server down, stall chunk loading, etc.
+ *
+ * An AsyncTask SHOULD NOT run for more than a few seconds. For tasks that run for a long time or indefinitely, create
+ * a dedicated thread instead.
+ *
+ * The Server instance is not accessible inside {@link AsyncTask::onRun()}. It can only be accessed in the main server
+ * thread, e.g. during {@link AsyncTask::onCompletion()} or {@link AsyncTask::onProgressUpdate()}. This means that
+ * whatever you do in onRun() must be able to work without the Server instance.
  *
  * WARNING: Any non-Threaded objects WILL BE SERIALIZED when assigned to members of AsyncTasks or other Threaded object.
  * If later accessed from said Threaded object, you will be operating on a COPY OF THE OBJECT, NOT THE ORIGINAL OBJECT.
  * If you want to store non-serializable objects to access when the task completes, store them using
  * {@link AsyncTask::storeLocal}.
  *
- * WARNING: As of pthreads v3.1.6, arrays are converted to Volatile objects when assigned as members of Threaded objects.
+ * WARNING: Arrays are converted to Volatile objects when assigned as members of Threaded objects.
  * Keep this in mind when using arrays stored as members of your AsyncTask.
- *
- * WARNING: Do not call PocketMine-MP API methods from other Threads!!
  */
 abstract class AsyncTask extends \Threaded{
 	/**
@@ -54,7 +66,7 @@ abstract class AsyncTask extends \Threaded{
 	 *
 	 * Used to store objects which are only needed on one thread and should not be serialized.
 	 */
-	private static $threadLocalStorage = null;
+	private static ?\ArrayObject $threadLocalStorage = null;
 
 	/** @var AsyncWorker|null $worker */
 	public $worker = null;
@@ -62,19 +74,13 @@ abstract class AsyncTask extends \Threaded{
 	/** @var \Threaded */
 	public $progressUpdates;
 
-	/** @var scalar|null */
-	private $result = null;
-	/** @var bool */
-	private $serialized = false;
-	/** @var bool */
-	private $cancelRun = false;
-	/** @var bool */
-	private $submitted = false;
+	private string|int|bool|null|float $result = null;
+	private bool $serialized = false;
+	private bool $cancelRun = false;
+	private bool $submitted = false;
 
-	/** @var bool */
-	private $crashed = false;
-	/** @var bool */
-	private $finished = false;
+	private bool $crashed = false;
+	private bool $finished = false;
 
 	public function run() : void{
 		$this->result = null;
@@ -93,7 +99,7 @@ abstract class AsyncTask extends \Threaded{
 	}
 
 	public function isCrashed() : bool{
-		return $this->crashed or $this->isTerminated();
+		return $this->crashed || $this->isTerminated();
 	}
 
 	/**
@@ -101,7 +107,7 @@ abstract class AsyncTask extends \Threaded{
 	 * because it is not true prior to task execution.
 	 */
 	public function isFinished() : bool{
-		return $this->finished or $this->isCrashed();
+		return $this->finished || $this->isCrashed();
 	}
 
 	public function hasResult() : bool{
@@ -236,7 +242,7 @@ abstract class AsyncTask extends \Threaded{
 	 */
 	protected function fetchLocal(string $key){
 		$id = spl_object_id($this);
-		if(self::$threadLocalStorage === null or !isset(self::$threadLocalStorage[$id][$key])){
+		if(self::$threadLocalStorage === null || !isset(self::$threadLocalStorage[$id][$key])){
 			throw new \InvalidArgumentException("No matching thread-local data found on this thread");
 		}
 
@@ -245,7 +251,7 @@ abstract class AsyncTask extends \Threaded{
 
 	final public function __destruct(){
 		$this->reallyDestruct();
-		if(self::$threadLocalStorage !== null and isset(self::$threadLocalStorage[$h = spl_object_id($this)])){
+		if(self::$threadLocalStorage !== null && isset(self::$threadLocalStorage[$h = spl_object_id($this)])){
 			unset(self::$threadLocalStorage[$h]);
 			if(self::$threadLocalStorage->count() === 0){
 				self::$threadLocalStorage = null;

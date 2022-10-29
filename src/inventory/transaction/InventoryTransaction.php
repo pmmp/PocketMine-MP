@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -148,7 +148,7 @@ class InventoryTransaction{
 			try{
 				$action->validate($this->source);
 			}catch(TransactionValidationException $e){
-				throw new TransactionValidationException(get_class($action) . ": " . $e->getMessage(), 0, $e);
+				throw new TransactionValidationException(get_class($action) . "#" . spl_object_id($action) . ": " . $e->getMessage(), 0, $e);
 			}
 
 			if(!$action->getSourceItem()->isNull()){

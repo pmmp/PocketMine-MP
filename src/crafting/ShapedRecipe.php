@@ -17,14 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\crafting;
 
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use pocketmine\utils\Utils;
 use function array_values;
 use function count;
@@ -34,16 +34,14 @@ use function strpos;
 
 class ShapedRecipe implements CraftingRecipe{
 	/** @var string[] */
-	private $shape = [];
+	private array $shape = [];
 	/** @var Item[] char => Item map */
-	private $ingredientList = [];
+	private array $ingredientList = [];
 	/** @var Item[] */
-	private $results = [];
+	private array $results = [];
 
-	/** @var int */
-	private $height;
-	/** @var int */
-	private $width;
+	private int $height;
+	private int $width;
 
 	/**
 	 * Constructs a ShapedRecipe instance.
@@ -62,14 +60,14 @@ class ShapedRecipe implements CraftingRecipe{
 	 */
 	public function __construct(array $shape, array $ingredients, array $results){
 		$this->height = count($shape);
-		if($this->height > 3 or $this->height <= 0){
+		if($this->height > 3 || $this->height <= 0){
 			throw new \InvalidArgumentException("Shaped recipes may only have 1, 2 or 3 rows, not $this->height");
 		}
 
 		$shape = array_values($shape);
 
 		$this->width = strlen($shape[0]);
-		if($this->width > 3 or $this->width <= 0){
+		if($this->width > 3 || $this->width <= 0){
 			throw new \InvalidArgumentException("Shaped recipes may only have 1, 2 or 3 columns, not $this->width");
 		}
 
@@ -79,7 +77,7 @@ class ShapedRecipe implements CraftingRecipe{
 			}
 
 			for($x = 0; $x < $this->width; ++$x){
-				if($row[$x] !== ' ' and !isset($ingredients[$row[$x]])){
+				if($row[$x] !== ' ' && !isset($ingredients[$row[$x]])){
 					throw new \InvalidArgumentException("No item specified for symbol '" . $row[$x] . "'");
 				}
 			}
@@ -155,7 +153,7 @@ class ShapedRecipe implements CraftingRecipe{
 
 	public function getIngredient(int $x, int $y) : Item{
 		$exists = $this->ingredientList[$this->shape[$y][$x]] ?? null;
-		return $exists !== null ? clone $exists : ItemFactory::air();
+		return $exists !== null ? clone $exists : VanillaItems::AIR();
 	}
 
 	/**
@@ -172,7 +170,7 @@ class ShapedRecipe implements CraftingRecipe{
 
 				$given = $grid->getIngredient($reverse ? $this->width - $x - 1 : $x, $y);
 				$required = $this->getIngredient($x, $y);
-				if(!$required->equals($given, !$required->hasAnyDamageValue(), $required->hasNamedTag()) or $required->getCount() > $given->getCount()){
+				if(!$required->equals($given, !$required->hasAnyDamageValue(), $required->hasNamedTag()) || $required->getCount() > $given->getCount()){
 					return false;
 				}
 			}
@@ -182,10 +180,10 @@ class ShapedRecipe implements CraftingRecipe{
 	}
 
 	public function matchesCraftingGrid(CraftingGrid $grid) : bool{
-		if($this->width !== $grid->getRecipeWidth() or $this->height !== $grid->getRecipeHeight()){
+		if($this->width !== $grid->getRecipeWidth() || $this->height !== $grid->getRecipeHeight()){
 			return false;
 		}
 
-		return $this->matchInputMap($grid, false) or $this->matchInputMap($grid, true);
+		return $this->matchInputMap($grid, false) || $this->matchInputMap($grid, true);
 	}
 }

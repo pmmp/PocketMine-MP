@@ -17,31 +17,24 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
 use pocketmine\MemoryManager;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 
 /**
  * Task used to dump memory from AsyncWorkers
  */
 class DumpWorkerMemoryTask extends AsyncTask{
-	/** @var string */
-	private $outputFolder;
-	/** @var int */
-	private $maxNesting;
-	/** @var int */
-	private $maxStringSize;
-
-	public function __construct(string $outputFolder, int $maxNesting, int $maxStringSize){
-		$this->outputFolder = $outputFolder;
-		$this->maxNesting = $maxNesting;
-		$this->maxStringSize = $maxStringSize;
-	}
+	public function __construct(
+		private string $outputFolder,
+		private int $maxNesting,
+		private int $maxStringSize
+	){}
 
 	public function onRun() : void{
 		MemoryManager::dumpMemory(

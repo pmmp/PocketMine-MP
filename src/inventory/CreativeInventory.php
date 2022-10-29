@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,7 +26,7 @@ namespace pocketmine\inventory;
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\utils\SingletonTrait;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function file_get_contents;
 use function json_decode;
 
@@ -34,7 +34,7 @@ final class CreativeInventory{
 	use SingletonTrait;
 
 	/** @var Item[] */
-	private $creative = [];
+	private array $creative = [];
 
 	private function __construct(){
 		$creativeItems = json_decode(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "creativeitems.json")), true);

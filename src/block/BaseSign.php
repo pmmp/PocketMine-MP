@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\utils\SignText;
+use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\SignChangeEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -37,8 +38,6 @@ use function assert;
 use function strlen;
 
 abstract class BaseSign extends Transparent{
-	//TODO: conditionally useless properties, find a way to fix
-
 	protected SignText $text;
 	protected ?int $editorEntityRuntimeId = null;
 
@@ -77,6 +76,10 @@ abstract class BaseSign extends Transparent{
 	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 
 	abstract protected function getSupportingFace() : int;

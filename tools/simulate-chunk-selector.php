@@ -1,5 +1,24 @@
 <?php
 
+/*
+ *
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
+ *
+ *
+ */
+
 declare(strict_types=1);
 
 namespace pocketmine\tools\simulate_chunk_selector;
@@ -9,7 +28,7 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\World;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function assert;
 use function count;
 use function dirname;
@@ -37,16 +56,10 @@ use const STR_PAD_LEFT;
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 function newImage(int $scale, int $radius) : \GdImage{
-	$image = imagecreatetruecolor($scale * $radius * 2, $scale * $radius * 2);
-	if($image === false){
-		throw new AssumptionFailedError();
-	}
+	$image = Utils::assumeNotFalse(imagecreatetruecolor($scale * $radius * 2, $scale * $radius * 2));
 	imagesavealpha($image, true);
 
-	$black = imagecolorallocate($image, 0, 0, 0);
-	if($black === false){
-		throw new AssumptionFailedError();
-	}
+	$black = Utils::assumeNotFalse(imagecolorallocate($image, 0, 0, 0));
 	imagefill($image, 0, 0, $black);
 	return $image;
 }
@@ -58,10 +71,9 @@ function render(int $radius, int $baseX, int $baseZ, int $chunksPerStep, int $sc
 	$middleOffsetX = $scale * ($radius + $offsetX);
 	$middleOffsetZ = $scale * ($radius + $offsetZ);
 
-	$black = imagecolorallocate($image, 0, 0, 0);
-	$yellow = imagecolorallocate($image, 255, 255, 51);
-	$red = imagecolorallocate($image, 255, 0, 0);
-	if($black === false || $yellow === false || $red === false) throw new AssumptionFailedError();
+	$black = Utils::assumeNotFalse(imagecolorallocate($image, 0, 0, 0));
+	$yellow = Utils::assumeNotFalse(imagecolorallocate($image, 255, 255, 51));
+	$red = Utils::assumeNotFalse(imagecolorallocate($image, 255, 0, 0));
 
 	$frame = 0;
 	$seen = [];
@@ -152,11 +164,7 @@ foreach(Utils::stringifyKeys(getopt("", ["output:"])) as $name => $value){
 		fwrite(STDERR, "Output directory $value is not empty\n");
 		exit(1);
 	}
-	$realPath = realpath($value);
-	if($realPath === false){
-		throw new AssumptionFailedError();
-	}
-	$outputDirectory = $realPath;
+	$outputDirectory = Utils::assumeNotFalse(realpath($value), "We just created this directory, we should be able to get its realpath");
 }
 if($outputDirectory === null){
 	fwrite(STDERR, "Please specify an output directory using --output\n");
@@ -164,9 +172,5 @@ if($outputDirectory === null){
 }
 $image = newImage($scale, $radius);
 
-$black = imagecolorallocate($image, 0, 0, 0);
-$green = imagecolorallocate($image, 0, 220, 0);
-if($black === false || $green === false){
-	throw new AssumptionFailedError();
-}
+$green = Utils::assumeNotFalse(imagecolorallocate($image, 0, 220, 0));
 render($radius, $baseX, $baseZ, $nChunksPerStep, $scale, $image, $green, 0, 0, $outputDirectory);

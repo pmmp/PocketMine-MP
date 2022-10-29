@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -36,10 +36,10 @@ class SignText{
 	public const LINE_COUNT = 4;
 
 	/** @var string[] */
-	private $lines;
+	private array $lines;
 
 	/**
-	 * @param string[]|null $lines index-sensitive; omitting an index will leave it unchanged
+	 * @param string[]|null $lines index-sensitive; keys 0-3 will be used, regardless of array order
 	 *
 	 * @throws \InvalidArgumentException if the array size is greater than 4
 	 * @throws \InvalidArgumentException if invalid keys (out of bounds or string) are found in the array
@@ -89,7 +89,7 @@ class SignText{
 		if(!is_int($index)){
 			throw new \InvalidArgumentException("Index must be an integer");
 		}
-		if($index < 0 or $index >= self::LINE_COUNT){
+		if($index < 0 || $index >= self::LINE_COUNT){
 			throw new \InvalidArgumentException("Line index is out of bounds");
 		}
 	}

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -33,20 +33,14 @@ abstract class CraftingGrid extends SimpleInventory{
 	public const SIZE_SMALL = 2;
 	public const SIZE_BIG = 3;
 
-	/** @var int */
-	private $gridWidth;
+	private ?int $startX = null;
+	private ?int $xLen = null;
+	private ?int $startY = null;
+	private ?int $yLen = null;
 
-	/** @var int|null */
-	private $startX;
-	/** @var int|null */
-	private $xLen;
-	/** @var int|null */
-	private $startY;
-	/** @var int|null */
-	private $yLen;
-
-	public function __construct(int $gridWidth){
-		$this->gridWidth = $gridWidth;
+	public function __construct(
+		private int $gridWidth
+	){
 		parent::__construct($this->getGridWidth() ** 2);
 	}
 
@@ -96,7 +90,7 @@ abstract class CraftingGrid extends SimpleInventory{
 	 * Returns the item at offset x,y, offset by where the starts of the recipe rectangle are.
 	 */
 	public function getIngredient(int $x, int $y) : Item{
-		if($this->startX !== null and $this->startY !== null){
+		if($this->startX !== null && $this->startY !== null){
 			return $this->getItem(($y + $this->startY) * $this->gridWidth + ($x + $this->startX));
 		}
 

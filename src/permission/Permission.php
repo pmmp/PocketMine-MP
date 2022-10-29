@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,17 +31,7 @@ namespace pocketmine\permission;
  * Represents a permission
  */
 class Permission{
-	/** @var string */
-	private $name;
-
-	/** @var string */
-	private $description;
-
-	/**
-	 * @var bool[]
-	 * @phpstan-var array<string, bool>
-	 */
-	private $children;
+	private string $description;
 
 	/**
 	 * Creates a new Permission object to be attached to Permissible objects
@@ -49,10 +39,12 @@ class Permission{
 	 * @param bool[] $children
 	 * @phpstan-param array<string, bool> $children
 	 */
-	public function __construct(string $name, ?string $description = null, array $children = []){
-		$this->name = $name;
-		$this->description = $description ?? "";
-		$this->children = $children;
+	public function __construct(
+		private string $name,
+		?string $description = null,
+		private array $children = []
+	){
+		$this->description = $description ?? ""; //TODO: wtf ????
 
 		$this->recalculatePermissibles();
 	}

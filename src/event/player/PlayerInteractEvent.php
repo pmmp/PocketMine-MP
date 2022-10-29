@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,7 +31,8 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
 /**
- * Called when a player interacts or touches a block (including air?)
+ * Called when a player interacts or touches a block.
+ * This is called for both left click (start break) and right click (use).
  */
 class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
@@ -68,7 +69,7 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 	}
 
 	public function getItem() : Item{
-		return $this->item;
+		return clone $this->item;
 	}
 
 	public function getBlock() : Block{

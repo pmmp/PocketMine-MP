@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -38,11 +38,10 @@ class FlowerPot extends Spawnable{
 	private const TAG_ITEM = "item";
 	private const TAG_ITEM_DATA = "mData";
 
-	/** @var Block|null */
-	private $plant = null;
+	private ?Block $plant = null;
 
 	public function readSaveData(CompoundTag $nbt) : void{
-		if(($itemIdTag = $nbt->getTag(self::TAG_ITEM)) instanceof ShortTag and ($itemMetaTag = $nbt->getTag(self::TAG_ITEM_DATA)) instanceof IntTag){
+		if(($itemIdTag = $nbt->getTag(self::TAG_ITEM)) instanceof ShortTag && ($itemMetaTag = $nbt->getTag(self::TAG_ITEM_DATA)) instanceof IntTag){
 			try{
 				$this->setPlant(BlockFactory::getInstance()->get($itemIdTag->getValue(), $itemMetaTag->getValue()));
 			}catch(\InvalidArgumentException $e){
@@ -65,7 +64,7 @@ class FlowerPot extends Spawnable{
 	}
 
 	public function setPlant(?Block $plant) : void{
-		if($plant === null or $plant instanceof Air){
+		if($plant === null || $plant instanceof Air){
 			$this->plant = null;
 		}else{
 			$this->plant = clone $plant;

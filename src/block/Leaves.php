@@ -17,12 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
@@ -96,7 +97,7 @@ class Leaves extends Transparent{
 			return true;
 		}
 
-		if($block->getId() === $this->getId() and $distance <= 4){
+		if($block->getId() === $this->getId() && $distance <= 4){
 			foreach(Facing::ALL as $side){
 				if($this->findLog($pos->getSide($side), $visited, $distance + 1)){
 					return true;
@@ -108,7 +109,7 @@ class Leaves extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->noDecay and !$this->checkDecay){
+		if(!$this->noDecay && !$this->checkDecay){
 			$this->checkDecay = true;
 			$this->position->getWorld()->setBlock($this->position, $this, false);
 		}
@@ -119,14 +120,15 @@ class Leaves extends Transparent{
 	}
 
 	public function onRandomTick() : void{
-		if(!$this->noDecay and $this->checkDecay){
+		if(!$this->noDecay && $this->checkDecay){
 			$ev = new LeavesDecayEvent($this);
 			$ev->call();
-			if($ev->isCancelled() or $this->findLog($this->position)){
+			$world = $this->position->getWorld();
+			if($ev->isCancelled() || $this->findLog($this->position)){
 				$this->checkDecay = false;
-				$this->position->getWorld()->setBlock($this->position, $this, false);
+				$world->setBlock($this->position, $this, false);
 			}else{
-				$this->position->getWorld()->useBreakOn($this->position);
+				$world->useBreakOn($this->position);
 			}
 		}
 	}
@@ -145,8 +147,11 @@ class Leaves extends Transparent{
 		if(mt_rand(1, 20) === 1){ //Saplings
 			$drops[] = ItemFactory::getInstance()->get(ItemIds::SAPLING, $this->treeType->getMagicNumber());
 		}
-		if(($this->treeType->equals(TreeType::OAK()) or $this->treeType->equals(TreeType::DARK_OAK())) and mt_rand(1, 200) === 1){ //Apples
+		if(($this->treeType->equals(TreeType::OAK()) || $this->treeType->equals(TreeType::DARK_OAK())) && mt_rand(1, 200) === 1){ //Apples
 			$drops[] = VanillaItems::APPLE();
+		}
+		if(mt_rand(1, 50) === 1){
+			$drops[] = VanillaItems::STICK()->setCount(mt_rand(1, 2));
 		}
 
 		return $drops;
@@ -162,5 +167,9 @@ class Leaves extends Transparent{
 
 	public function getFlammability() : int{
 		return 60;
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 }

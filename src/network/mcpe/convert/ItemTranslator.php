@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,7 +28,7 @@ use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function array_key_exists;
 use function file_get_contents;
 use function is_array;
@@ -46,31 +46,30 @@ final class ItemTranslator{
 	 * @var int[]
 	 * @phpstan-var array<int, int>
 	 */
-	private $simpleCoreToNetMapping = [];
+	private array $simpleCoreToNetMapping = [];
 	/**
 	 * @var int[]
 	 * @phpstan-var array<int, int>
 	 */
-	private $simpleNetToCoreMapping = [];
+	private array $simpleNetToCoreMapping = [];
 
 	/**
 	 * runtimeId = array[internalId][metadata]
 	 * @var int[][]
 	 * @phpstan-var array<int, array<int, int>>
 	 */
-	private $complexCoreToNetMapping = [];
+	private array $complexCoreToNetMapping = [];
 	/**
 	 * [internalId, metadata] = array[runtimeId]
 	 * @var int[][]
 	 * @phpstan-var array<int, array{int, int}>
 	 */
-	private $complexNetToCoreMapping = [];
+	private array $complexNetToCoreMapping = [];
 
 	private static function make() : self{
-		$data = file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'r16_to_current_item_map.json'));
-		if($data === false) throw new AssumptionFailedError("Missing required resource file");
+		$data = Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'r16_to_current_item_map.json')), "Missing required resource file");
 		$json = json_decode($data, true);
-		if(!is_array($json) or !isset($json["simple"], $json["complex"]) || !is_array($json["simple"]) || !is_array($json["complex"])){
+		if(!is_array($json) || !isset($json["simple"], $json["complex"]) || !is_array($json["simple"]) || !is_array($json["complex"])){
 			throw new AssumptionFailedError("Invalid item table format");
 		}
 

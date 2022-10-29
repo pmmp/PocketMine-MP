@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -66,6 +66,6 @@ class ProtectionEnchantment extends Enchantment{
 	 * Returns whether this enchantment type offers protection from the specified damage source's cause.
 	 */
 	public function isApplicable(EntityDamageEvent $event) : bool{
-		return $this->applicableDamageTypes === null or isset($this->applicableDamageTypes[$event->getCause()]);
+		return $this->applicableDamageTypes === null || isset($this->applicableDamageTypes[$event->getCause()]);
 	}
 }

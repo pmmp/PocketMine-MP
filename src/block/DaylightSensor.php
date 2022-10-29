@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -87,6 +88,10 @@ class DaylightSensor extends Transparent{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 10 / 16)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->inverted = !$this->inverted;
 		$this->signalStrength = $this->recalculateSignalStrength();
@@ -95,21 +100,23 @@ class DaylightSensor extends Transparent{
 	}
 
 	public function onScheduledUpdate() : void{
+		$world = $this->position->getWorld();
 		$signalStrength = $this->recalculateSignalStrength();
 		if($this->signalStrength !== $signalStrength){
 			$this->signalStrength = $signalStrength;
-			$this->position->getWorld()->setBlock($this->position, $this);
+			$world->setBlock($this->position, $this);
 		}
-		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20);
+		$world->scheduleDelayedBlockUpdate($this->position, 20);
 	}
 
 	private function recalculateSignalStrength() : int{
-		$lightLevel = $this->position->getWorld()->getRealBlockSkyLightAt($this->position->x, $this->position->y, $this->position->z);
+		$world = $this->position->getWorld();
+		$lightLevel = $world->getRealBlockSkyLightAt($this->position->x, $this->position->y, $this->position->z);
 		if($this->inverted){
 			return 15 - $lightLevel;
 		}
 
-		$sunAngle = $this->position->getWorld()->getSunAnglePercentage();
+		$sunAngle = $world->getSunAnglePercentage();
 		return max(0, (int) round($lightLevel * cos(($sunAngle + ((($sunAngle < 0.5 ? 0 : 1) - $sunAngle) / 5)) * 2 * M_PI)));
 	}
 

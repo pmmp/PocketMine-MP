@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -45,7 +45,7 @@ final class SkullType{
 	}
 
 	/** @var SkullType[] */
-	private static $numericIdMap = [];
+	private static array $numericIdMap = [];
 
 	protected static function setup() : void{
 		self::registerAll(
@@ -75,15 +75,12 @@ final class SkullType{
 		return self::$numericIdMap[$magicNumber];
 	}
 
-	/** @var string */
-	private $displayName;
-	/** @var int */
-	private $magicNumber;
-
-	private function __construct(string $enumName, string $displayName, int $magicNumber){
+	private function __construct(
+		string $enumName,
+		private string $displayName,
+		private int $magicNumber
+	){
 		$this->Enum___construct($enumName);
-		$this->displayName = $displayName;
-		$this->magicNumber = $magicNumber;
 	}
 
 	public function getDisplayName() : string{

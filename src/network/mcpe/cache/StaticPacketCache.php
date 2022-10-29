@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,16 +28,11 @@ use pocketmine\network\mcpe\protocol\BiomeDefinitionListPacket;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\utils\SingletonTrait;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function file_get_contents;
 
 class StaticPacketCache{
 	use SingletonTrait;
-
-	/** @var BiomeDefinitionListPacket */
-	private $biomeDefs;
-	/** @var AvailableActorIdentifiersPacket */
-	private $availableActorIdentifiers;
 
 	/**
 	 * @phpstan-return CacheableNbt<\pocketmine\nbt\tag\CompoundTag>
@@ -55,10 +50,10 @@ class StaticPacketCache{
 		);
 	}
 
-	public function __construct(BiomeDefinitionListPacket $biomeDefs, AvailableActorIdentifiersPacket $availableActorIdentifiers){
-		$this->biomeDefs = $biomeDefs;
-		$this->availableActorIdentifiers = $availableActorIdentifiers;
-	}
+	public function __construct(
+		private BiomeDefinitionListPacket $biomeDefs,
+		private AvailableActorIdentifiersPacket $availableActorIdentifiers
+	){}
 
 	public function getBiomeDefs() : BiomeDefinitionListPacket{
 		return $this->biomeDefs;

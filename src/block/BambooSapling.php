@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -36,14 +36,14 @@ final class BambooSapling extends Flowable{
 	private bool $ready = false;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->ready = ($stateMeta & BlockLegacyMetadata::SAPLING_FLAG_READY) !== 0;
+		$this->ready = ($stateMeta & BlockLegacyMetadata::BAMBOO_SAPLING_FLAG_READY) !== 0;
 	}
 
 	protected function writeStateToMeta() : int{
-		return $this->ready ? BlockLegacyMetadata::SAPLING_FLAG_READY : 0;
+		return $this->ready ? BlockLegacyMetadata::BAMBOO_SAPLING_FLAG_READY : 0;
 	}
 
-	public function getStateBitmask() : int{ return 0b1000; }
+	public function getStateBitmask() : int{ return 0b1; }
 
 	public function isReady() : bool{ return $this->ready; }
 
@@ -82,8 +82,9 @@ final class BambooSapling extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->position->getWorld()->getBlock($this->position->down()))){
-			$this->position->getWorld()->useBreakOn($this->position);
+		$world = $this->position->getWorld();
+		if(!$this->canBeSupportedBy($world->getBlock($this->position->down()))){
+			$world->useBreakOn($this->position);
 		}
 	}
 

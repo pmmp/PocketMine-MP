@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,19 +26,15 @@ namespace pocketmine\world\format\io\region;
 use function range;
 
 class RegionLocationTableEntry{
-
-	/** @var int */
-	private $firstSector;
-	/** @var int */
-	private $sectorCount;
-	/** @var int */
-	private $timestamp;
+	private int $firstSector;
+	private int $sectorCount;
+	private int $timestamp;
 
 	/**
 	 * @throws \InvalidArgumentException
 	 */
 	public function __construct(int $firstSector, int $sectorCount, int $timestamp){
-		if($firstSector < 0 or $firstSector >= 2 ** 24){
+		if($firstSector < 0 || $firstSector >= 2 ** 24){
 			throw new \InvalidArgumentException("Start sector must be positive, got $firstSector");
 		}
 		$this->firstSector = $firstSector;
@@ -79,10 +75,10 @@ class RegionLocationTableEntry{
 			$entry2Last = $entry2->getLastSector();
 
 			return (
-				($entry2->firstSector >= $entry1->firstSector and $entry2->firstSector <= $entry1Last) or
-				($entry2Last >= $entry1->firstSector and $entry2Last <= $entry1Last)
+				($entry2->firstSector >= $entry1->firstSector && $entry2->firstSector <= $entry1Last) ||
+				($entry2Last >= $entry1->firstSector && $entry2Last <= $entry1Last)
 			);
 		};
-		return $overlapCheck($this, $other) or $overlapCheck($other, $this);
+		return $overlapCheck($this, $other) || $overlapCheck($other, $this);
 	}
 }
