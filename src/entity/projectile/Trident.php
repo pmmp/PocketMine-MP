@@ -115,7 +115,7 @@ class Trident extends Projectile{
 		$this->broadcastSound(new TridentHitGroundSound());
 	}
 
-	public function getMotionOnHit(ProjectileHitEvent $event) : Vector3{
+	public function getMotionOnHit(?ProjectileHitEvent $event) : Vector3{
 		if($event instanceof ProjectileHitEntityEvent){
 			return new Vector3($this->motion->x * -0.01, $this->motion->y * -0.1, $this->motion->z * -0.01);
 		}
