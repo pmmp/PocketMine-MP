@@ -236,7 +236,7 @@ abstract class Projectile extends Entity{
 			}
 
 			$this->isCollided = $this->onGround = true;
-			$this->motion = new Vector3(0, 0, 0);
+			$this->setMotion($this->getHitMotion($ev));
 		}else{
 			$this->isCollided = $this->onGround = false;
 			$this->blockHit = null;
@@ -297,8 +297,6 @@ abstract class Projectile extends Entity{
 				}
 			}
 		}
-
-		$this->flagForDespawn();
 	}
 
 	/**
@@ -307,5 +305,12 @@ abstract class Projectile extends Entity{
 	protected function onHitBlock(Block $blockHit, RayTraceResult $hitResult) : void{
 		$this->blockHit = $blockHit->getPosition()->asVector3();
 		$blockHit->onProjectileHit($this, $hitResult);
+	}
+
+	/**
+	 * Returns the resulting motion applied to this entity when hitting something.
+	 */
+	public function getHitMotion(ProjectileHitEvent $event) : Vector3{
+		return Vector3::zero();
 	}
 }

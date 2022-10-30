@@ -28,6 +28,8 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
 use pocketmine\event\entity\EntityItemPickupEvent;
+use pocketmine\event\entity\ProjectileHitEntityEvent;
+use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\Trident as TridentItem;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
@@ -43,19 +45,11 @@ class Trident extends Projectile{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::THROWN_TRIDENT; }
 
-	public const PICKUP_NONE = 0;
-	public const PICKUP_ANY = 1;
-	public const PICKUP_CREATIVE = 2;
-
-	private const TAG_PICKUP = "pickup"; //TAG_Byte
-
 	protected TridentItem $item;
 
 	protected float $damage = 8.0;
 
-	protected int $pickupMode = self::PICKUP_ANY;
-
-	protected bool $canHitEntity = true;
+	protected bool $canCollide = true;
 
 	public function __construct(
 		Location $location,
@@ -79,16 +73,21 @@ class Trident extends Projectile{
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
-		$this->pickupMode = $nbt->getByte(self::TAG_PICKUP, self::PICKUP_ANY);
-		$this->canHitEntity = $nbt->getByte("canHitEntity", 1) === 1;
+		$this->spawnedInCreative = $nbt->getByte("isCreative", 0) === 1;
 	}
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
 		$nbt->setTag("Trident", $this->item->nbtSerialize());
-		$nbt->setByte(self::TAG_PICKUP, $this->pickupMode);
-		$nbt->setByte("canHitEntity", $this->canHitEntity ? 1 : 0);
+		$nbt->setByte("isCreative", $this->spawnedInCreative ? 1 : 0);
 		return $nbt;
+	}
+
+	protected function onFirstUpdate(int $currentTick) : void{
+		$owner = $this->getOwningEntity();
+		$this->spawnedInCreative = $owner instanceof Player && $owner->isCreative();
+
+		parent::onFirstUpdate($currentTick);
 	}
 
 	protected function entityBaseTick(int $tickDiff = 1) : bool{
@@ -99,38 +98,26 @@ class Trident extends Projectile{
 		return parent::entityBaseTick($tickDiff);
 	}
 
-	public function move(float $dx, float $dy, float $dz) : void{
-		$motion = $this->motion;
-		parent::move($dx, $dy, $dz);
-		if($this->isCollided && !$this->canHitEntity){
-			$this->motion = $motion;
-		}
-	}
-
 	protected function onHitEntity(Entity $entityHit, RayTraceResult $hitResult) : void{
-		if(!$this->canHitEntity){
+		if(!$this->canCollide){
 			return;
 		}
-		if($entityHit->getId() === $this->ownerId){
-			if($entityHit instanceof Player){
-				$this->pickup($entityHit); //tridents cannot hit their thrower
-				return;
-			}
-		}
 		parent::onHitEntity($entityHit, $hitResult);
-		$this->canHitEntity = false;
-		$this->item->applyDamage(1);
-		$newTrident = new self($this->location, $this->item, $this->getOwningEntity(), $this->saveNBT());
-		$newTrident->spawnToAll();
-		$motion = new Vector3($this->motion->x * -0.01, $this->motion->y * -0.1, $this->motion->z * -0.01);
-		$newTrident->setMotion($motion);
+		$this->canCollide = false;
 		$this->broadcastSound(new TridentHitSound());
 	}
 
 	protected function onHitBlock(Block $blockHit, RayTraceResult $hitResult) : void{
 		parent::onHitBlock($blockHit, $hitResult);
-		$this->canHitEntity = true;
+		$this->canCollide = true;
 		$this->broadcastSound(new TridentHitGroundSound());
+	}
+
+	public function getHitMotion(ProjectileHitEvent $event) : Vector3{
+		if($event instanceof ProjectileHitEntityEvent){
+			return new Vector3($this->motion->x * -0.01, $this->motion->y * -0.1, $this->motion->z * -0.01);
+		}
+		return parent::getHitMotion($event);
 	}
 
 	public function getItem() : TridentItem{
@@ -145,12 +132,8 @@ class Trident extends Projectile{
 		$this->networkPropertiesDirty = true;
 	}
 
-	public function getPickupMode() : int{
-		return $this->pickupMode;
-	}
-
-	public function setPickupMode(int $pickupMode) : void{
-		$this->pickupMode = $pickupMode;
+	public function canCollideWith(Entity $entity) : bool{
+		return $this->canCollide && $entity->getId() !== $this->ownerId && parent::canCollideWith($entity);
 	}
 
 	public function onCollideWithPlayer(Player $player) : void{
@@ -165,30 +148,26 @@ class Trident extends Projectile{
 		$item = $this->getItem();
 		$shouldDespawn = false;
 
-		$playerInventory = match(true){
-			$player->getInventory()->getAddableItemQuantity($item) > 0 => $player->getInventory(),
-			default => null
-		};
-
-		$ev = new EntityItemPickupEvent($player, $this, $item, $playerInventory);
-		if($player->hasFiniteResources() && $playerInventory === null){
+		$ev = new EntityItemPickupEvent($player, $this, $item, $player->getInventory());
+		if($player->hasFiniteResources() && $ev->getInventory()->getAddableItemQuantity($item) > 0){
 			$ev->cancel();
 		}
-		if($this->pickupMode === self::PICKUP_NONE || ($this->pickupMode === self::PICKUP_CREATIVE && !$player->isCreative())){
+		if($this->spawnedInCreative){
 			$ev->cancel();
 			$shouldDespawn = true;
 		}
 
 		$ev->call();
 		if(!$ev->isCancelled()){
-			foreach($this->getViewers() as $viewer){
-				$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
-			}
 			$ev->getInventory()?->addItem($ev->getItem());
 			$shouldDespawn = true;
 		}
 
 		if($shouldDespawn){
+			//even if the item was not actually picked up, the animation must be displayed.
+			foreach($this->getViewers() as $viewer){
+				$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
+			}
 			$this->flagForDespawn();
 		}
 	}

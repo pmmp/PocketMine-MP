@@ -150,6 +150,7 @@ class Arrow extends Projectile{
 				$entityHit->setMotion($entityHit->getMotion()->add($this->motion->x * $multiplier, 0.1, $this->motion->z * $multiplier));
 			}
 		}
+		$this->flagForDespawn();
 	}
 
 	public function getPickupMode() : int{
