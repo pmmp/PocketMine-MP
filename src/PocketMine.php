@@ -174,6 +174,8 @@ namespace pocketmine {
 			$jitEnabled = $opcacheStatus["jit"]["on"] ?? false;
 			if($jitEnabled !== false){
 				$logger->warning(<<<'JIT_WARNING'
+
+
 	--------------------------------------- ! WARNING ! ---------------------------------------
 	You're using PHP with JIT enabled. This provides significant performance improvements.
 	HOWEVER, it is EXPERIMENTAL, and has already been seen to cause weird and unexpected bugs.
@@ -181,6 +183,7 @@ namespace pocketmine {
 	If you want to report any bugs, make sure to mention that you have enabled PHP JIT.
 	To turn off JIT, change `opcache.jit` to `0` in your php.ini file.
 	-------------------------------------------------------------------------------------------
+
 JIT_WARNING
 );
 			}
