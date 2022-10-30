@@ -49,13 +49,22 @@ class RakLibServer extends Thread{
 		protected \ThreadedLogger $logger,
 		protected \Threaded $mainToThreadBuffer,
 		protected \Threaded $threadToMainBuffer,
-		protected InternetAddress $address,
+		protected SocketFactory $socketFactory,
 		protected int $serverId,
 		protected int $maxMtuSize,
 		protected int $protocolVersion,
 		protected SleeperNotifier $mainThreadNotifier
 	){
 		$this->mainPath = \pocketmine\PATH;
+	}
+
+	/**
+	 * Sets the socket factory.
+	 *
+	 * This method must be called before the thread is started.
+	 */
+	public function setSocketFactory(SocketFactory $socketFactory) : void{
+		$this->socketFactory = $socketFactory;
 	}
 
 	/**
@@ -110,7 +119,7 @@ class RakLibServer extends Thread{
 			register_shutdown_function([$this, "shutdownHandler"]);
 
 			try{
-				$socket = new Socket($this->address);
+				$socket = $this->socketFactory->build();
 			}catch(SocketException $e){
 				$this->setCrashInfo(RakLibThreadCrashInfo::fromThrowable($e));
 				return;

@@ -37,6 +37,7 @@ use pocketmine\network\PacketHandlingException;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\utils\Utils;
+use raklib\generic\Socket;
 use raklib\generic\SocketException;
 use raklib\protocol\EncapsulatedPacket;
 use raklib\protocol\PacketReliability;
@@ -91,7 +92,14 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			$this->server->getLogger(),
 			$mainToThreadBuffer,
 			$threadToMainBuffer,
-			new InternetAddress($ip, $port, $ipV6 ? 6 : 4),
+			new class(new InternetAddress($ip, $port, $ipV6 ? 6 : 4)) implements SocketFactory{
+				public function __construct(private InternetAddress $address){
+				}
+
+				public function build() : Socket{
+					return new Socket($this->address);
+				}
+			},
 			$this->rakServerId,
 			$this->server->getConfigGroup()->getPropertyInt("network.max-mtu-size", 1492),
 			self::MCPE_RAKNET_PROTOCOL_VERSION,
@@ -122,6 +130,14 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 
 	public function setNetwork(Network $network) : void{
 		$this->network = $network;
+	}
+
+	/**
+	 * Sets the socket factory used by this interface.
+	 * Must be called before starting the RakLib thread.
+	 */
+	public function setSocketFactory(SocketFactory $socketFactory) : void{
+		$this->rakLib->setSocketFactory($socketFactory);
 	}
 
 	public function tick() : void{
