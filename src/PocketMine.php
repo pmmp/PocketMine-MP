@@ -174,8 +174,6 @@ namespace pocketmine {
 			$jitEnabled = $opcacheStatus["jit"]["on"] ?? false;
 			if($jitEnabled !== false){
 				$logger->warning(<<<'JIT_WARNING'
-
-
 	--------------------------------------- ! WARNING ! ---------------------------------------
 	You're using PHP with JIT enabled. This provides significant performance improvements.
 	HOWEVER, it is EXPERIMENTAL, and has already been seen to cause weird and unexpected bugs.
@@ -183,7 +181,6 @@ namespace pocketmine {
 	If you want to report any bugs, make sure to mention that you have enabled PHP JIT.
 	To turn off JIT, change `opcache.jit` to `0` in your php.ini file.
 	-------------------------------------------------------------------------------------------
-
 JIT_WARNING
 );
 			}
@@ -199,24 +196,6 @@ JIT_WARNING
 		ini_set("display_startup_errors", '1');
 		ini_set("default_charset", "utf-8");
 		ini_set('assert.exception', '1');
-	}
-
-	function getopt_string(string $opt) : ?string{
-		$opts = getopt("", ["$opt:"]);
-		if(isset($opts[$opt])){
-			if(is_string($opts[$opt])){
-				return $opts[$opt];
-			}
-			if(is_array($opts[$opt])){
-				critical_error("Cannot specify --$opt multiple times");
-				exit(1);
-			}
-			if($opts[$opt] === false){
-				critical_error("Missing value for --$opt");
-				exit(1);
-			}
-		}
-		return null;
 	}
 
 	/**
@@ -270,22 +249,16 @@ JIT_WARNING
 
 		ErrorToExceptionHandler::set();
 
+		$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-ansi", "disable-ansi"]);
+
 		$cwd = Utils::assumeNotFalse(realpath(Utils::assumeNotFalse(getcwd())));
-		$dataPath = getopt_string("data") ?? $cwd;
-		$pluginPath = getopt_string("plugins") ?? $cwd . DIRECTORY_SEPARATOR . "plugins";
+		$dataPath = isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : $cwd . DIRECTORY_SEPARATOR;
+		$pluginPath = isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : $cwd . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR;
 		Filesystem::addCleanedPath($pluginPath, Filesystem::CLEAN_PATH_PLUGINS_PREFIX);
 
-		if(!@mkdir($dataPath, 0777, true) && (!is_dir($dataPath) || !is_writable($dataPath))){
-			critical_error("Unable to create/access data directory at $dataPath. Check that the target location is accessible by the current user.");
-			exit(1);
+		if(!file_exists($dataPath)){
+			mkdir($dataPath, 0777, true);
 		}
-		//this has to be done after we're sure the data path exists
-		$dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
-		if(!@mkdir($pluginPath, 0777, true) && (!is_dir($pluginPath) || !is_writable($pluginPath))){
-			critical_error("Unable to create plugin directory at $pluginPath. Check that the target location is accessible by the current user.");
-			exit(1);
-		}
-		$pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
 
 		$lockFilePath = Path::join($dataPath, 'server.lock');
 		if(($pid = Filesystem::createLockFile($lockFilePath)) !== null){
@@ -297,7 +270,6 @@ JIT_WARNING
 		//Logger has a dependency on timezone
 		Timezone::init();
 
-		$opts = getopt("", ["no-wizard", "enable-ansi", "disable-ansi"]);
 		if(isset($opts["enable-ansi"])){
 			Terminal::init(true);
 		}elseif(isset($opts["disable-ansi"])){

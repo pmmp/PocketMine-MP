@@ -42,8 +42,6 @@ class Trident extends Tool implements Releasable{
 		$location = $player->getLocation();
 
 		$diff = $player->getItemUseDuration();
-		$p = $diff / 20;
-		$baseForce = min((($p ** 2) + $p * 2) / 3, 1) * 2.4;
 		if($diff < 14){
 			return ItemUseResult::FAIL();
 		}
@@ -54,6 +52,8 @@ class Trident extends Tool implements Releasable{
 			($location->yaw > 180 ? 360 : 0) - $location->yaw,
 			-$location->pitch
 		), $this, $player);
+		$p = $diff / 20;
+		$baseForce = min((($p ** 2) + $p * 2) / 3, 1) * 2.4;
 		$entity->setMotion($player->getDirectionVector()->multiply($baseForce));
 
 		$ev = new ProjectileLaunchEvent($entity);

@@ -51,6 +51,8 @@ class Trident extends Projectile{
 
 	protected bool $canCollide = true;
 
+	protected bool $spawnedInCreative;
+
 	public function __construct(
 		Location $location,
 		TridentItem $item,
@@ -113,11 +115,11 @@ class Trident extends Projectile{
 		$this->broadcastSound(new TridentHitGroundSound());
 	}
 
-	public function getHitMotion(ProjectileHitEvent $event) : Vector3{
+	public function getMotionOnHit(ProjectileHitEvent $event) : Vector3{
 		if($event instanceof ProjectileHitEntityEvent){
 			return new Vector3($this->motion->x * -0.01, $this->motion->y * -0.1, $this->motion->z * -0.01);
 		}
-		return parent::getHitMotion($event);
+		return parent::getMotionOnHit($event);
 	}
 
 	public function getItem() : TridentItem{
@@ -148,8 +150,9 @@ class Trident extends Projectile{
 		$item = $this->getItem();
 		$shouldDespawn = false;
 
+		$inventory = $player->getInventory();
 		$ev = new EntityItemPickupEvent($player, $this, $item, $player->getInventory());
-		if($player->hasFiniteResources() && $ev->getInventory()->getAddableItemQuantity($item) > 0){
+		if($player->hasFiniteResources() && $inventory->getAddableItemQuantity($item) > 0){
 			$ev->cancel();
 		}
 		if($this->spawnedInCreative){

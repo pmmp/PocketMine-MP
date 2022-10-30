@@ -236,7 +236,7 @@ abstract class Projectile extends Entity{
 			}
 
 			$this->isCollided = $this->onGround = true;
-			$this->setMotion($this->getHitMotion($ev));
+			$this->setMotion($this->getMotionOnHit($ev));
 		}else{
 			$this->isCollided = $this->onGround = false;
 			$this->blockHit = null;
@@ -310,7 +310,7 @@ abstract class Projectile extends Entity{
 	/**
 	 * Returns the resulting motion applied to this entity when hitting something.
 	 */
-	public function getHitMotion(ProjectileHitEvent $event) : Vector3{
+	public function getMotionOnHit(?ProjectileHitEvent $event) : Vector3{
 		return Vector3::zero();
 	}
 }
