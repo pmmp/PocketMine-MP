@@ -52,6 +52,9 @@ use function json_decode;
 final class CraftingManagerFromDataHelper{
 
 	private static function deserializeIngredient(RecipeIngredientData $data) : ?RecipeIngredient{
+		if(!isset($data->name)){
+			return null; //TODO: not yet implemented
+		}
 		if(isset($data->count) && $data->count !== 1){
 			//every case we've seen so far where this isn't the case, it's been a bug and the count was ignored anyway
 			//e.g. gold blocks crafted from 9 ingots, but each input item individually had a count of 9
