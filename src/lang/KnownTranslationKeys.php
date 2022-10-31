@@ -160,6 +160,7 @@ final class KnownTranslationKeys{
 	public const DISCONNECTIONSCREEN_OUTDATEDSERVER = "disconnectionScreen.outdatedServer";
 	public const DISCONNECTIONSCREEN_RESOURCEPACK = "disconnectionScreen.resourcePack";
 	public const DISCONNECTIONSCREEN_SERVERFULL = "disconnectionScreen.serverFull";
+	public const EFFECT_DARKNESS = "effect.darkness";
 	public const ENCHANTMENT_ARROWDAMAGE = "enchantment.arrowDamage";
 	public const ENCHANTMENT_ARROWFIRE = "enchantment.arrowFire";
 	public const ENCHANTMENT_ARROWINFINITE = "enchantment.arrowInfinite";
@@ -306,6 +307,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_COMMAND_TRANSFERSERVER_USAGE = "pocketmine.command.transferserver.usage";
 	public const POCKETMINE_COMMAND_UNBAN_IP_DESCRIPTION = "pocketmine.command.unban.ip.description";
 	public const POCKETMINE_COMMAND_UNBAN_PLAYER_DESCRIPTION = "pocketmine.command.unban.player.description";
+	public const POCKETMINE_COMMAND_USERDEFINED_DESCRIPTION = "pocketmine.command.userDefined.description";
 	public const POCKETMINE_COMMAND_VERSION_DESCRIPTION = "pocketmine.command.version.description";
 	public const POCKETMINE_COMMAND_VERSION_MINECRAFTVERSION = "pocketmine.command.version.minecraftVersion";
 	public const POCKETMINE_COMMAND_VERSION_NOSUCHPLUGIN = "pocketmine.command.version.noSuchPlugin";
