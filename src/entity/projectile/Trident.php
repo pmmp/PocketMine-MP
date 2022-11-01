@@ -43,6 +43,9 @@ use pocketmine\world\sound\TridentHitSound;
 
 class Trident extends Projectile{
 
+	public const TAG_ITEM = "Trident"; //TAG_Compound
+	protected const TAG_SPAWNED_IN_CREATIVE = "isCreative"; //TAG_Byte
+
 	public static function getNetworkTypeId() : string{ return EntityIds::THROWN_TRIDENT; }
 
 	protected TridentItem $item;
@@ -75,13 +78,13 @@ class Trident extends Projectile{
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
-		$this->spawnedInCreative = $nbt->getByte("isCreative", 0) === 1;
+		$this->spawnedInCreative = $nbt->getByte(self::TAG_SPAWNED_IN_CREATIVE, 0) === 1;
 	}
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setTag("Trident", $this->item->nbtSerialize());
-		$nbt->setByte("isCreative", $this->spawnedInCreative ? 1 : 0);
+		$nbt->setTag(self::TAG_ITEM, $this->item->nbtSerialize());
+		$nbt->setByte(self::TAG_SPAWNED_IN_CREATIVE, $this->spawnedInCreative ? 1 : 0);
 		return $nbt;
 	}
 

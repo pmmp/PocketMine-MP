@@ -161,9 +161,9 @@ final class EntityFactory{
 		}, ['ThrownPotion', 'minecraft:potion', 'thrownpotion'], LegacyIds::SPLASH_POTION);
 
 		$this->register(Trident::class, function(World $world, CompoundTag $nbt) : Trident{
-			$itemTag = $nbt->getCompoundTag("Trident");
+			$itemTag = $nbt->getCompoundTag(Trident::TAG_ITEM);
 			if($itemTag === null){
-				throw new SavedDataLoadingException("Expected \"Trident\" NBT tag not found");
+				throw new SavedDataLoadingException("Expected \"" . Trident::TAG_ITEM . "\" NBT tag not found");
 			}
 
 			$item = Item::nbtDeserialize($itemTag);
