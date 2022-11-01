@@ -96,14 +96,12 @@ class Trident extends Projectile{
 		if($this->closed){
 			return false;
 		}
+		//TODO: Loyalty enchantment.
 
 		return parent::entityBaseTick($tickDiff);
 	}
 
 	protected function onHitEntity(Entity $entityHit, RayTraceResult $hitResult) : void{
-		if(!$this->canCollide){
-			return;
-		}
 		parent::onHitEntity($entityHit, $hitResult);
 		$this->canCollide = false;
 		$this->broadcastSound(new TridentHitSound());
@@ -130,8 +128,10 @@ class Trident extends Projectile{
 		if($item->isNull()){
 			throw new \InvalidArgumentException("Trident must have a count of at least 1");
 		}
+		if($this->item->hasEnchantments() !== $item->hasEnchantments()){
+			$this->networkPropertiesDirty = true;
+		}
 		$this->item = clone $item;
-		$this->networkPropertiesDirty = true;
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
@@ -139,20 +139,17 @@ class Trident extends Projectile{
 	}
 
 	public function onCollideWithPlayer(Player $player) : void{
-		if($this->blockHit === null){
-			return;
+		if($this->blockHit !== null){
+			$this->pickup($player);
 		}
-
-		$this->pickup($player);
 	}
 
 	private function pickup(Player $player) : void{
-		$item = $this->getItem();
 		$shouldDespawn = false;
 
-		$inventory = $player->getInventory();
-		$ev = new EntityItemPickupEvent($player, $this, $item, $player->getInventory());
-		if($player->hasFiniteResources() && $inventory->getAddableItemQuantity($item) > 0){
+		$playerInventory = $player->getInventory();
+		$ev = new EntityItemPickupEvent($player, $this, $this->getItem(), $playerInventory);
+		if($player->hasFiniteResources() && !$playerInventory->canAddItem($ev->getItem())){
 			$ev->cancel();
 		}
 		if($this->spawnedInCreative){
