@@ -25,6 +25,7 @@ namespace pocketmine\entity\projectile;
 
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\VanillaItems;
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\world\particle\ItemBreakParticle;
 
@@ -33,9 +34,10 @@ class Egg extends Throwable{
 
 	//TODO: spawn chickens on collision
 
-	protected function onHit(ProjectileHitEvent $event) : void{
+	protected function onHit(ProjectileHitEvent $event) : Vector3{
 		for($i = 0; $i < 6; ++$i){
 			$this->getWorld()->addParticle($this->location, new ItemBreakParticle(VanillaItems::EGG()));
 		}
+		return parent::onHit($event);
 	}
 }

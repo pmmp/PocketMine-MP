@@ -113,11 +113,12 @@ class Trident extends Projectile{
 		$this->broadcastSound(new TridentHitGroundSound());
 	}
 
-	public function getMotionOnHit(?ProjectileHitEvent $event) : Vector3{
+	public function onHit(ProjectileHitEvent $event) : Vector3{
+		$motion = parent::onHit($event);
 		if($event instanceof ProjectileHitEntityEvent){
-			return new Vector3($this->motion->x * -0.01, $this->motion->y * -0.1, $this->motion->z * -0.01);
+			$motion = new Vector3($this->motion->x * -0.01, $this->motion->y * -0.1, $this->motion->z * -0.01);
 		}
-		return parent::getMotionOnHit($event);
+		return $motion;
 	}
 
 	public function getItem() : TridentItem{

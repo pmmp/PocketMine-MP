@@ -25,6 +25,7 @@ namespace pocketmine\entity\projectile;
 
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\world\particle\EndermanTeleportParticle;
 use pocketmine\world\sound\EndermanTeleportSound;
@@ -32,7 +33,7 @@ use pocketmine\world\sound\EndermanTeleportSound;
 class EnderPearl extends Throwable{
 	public static function getNetworkTypeId() : string{ return EntityIds::ENDER_PEARL; }
 
-	protected function onHit(ProjectileHitEvent $event) : void{
+	protected function onHit(ProjectileHitEvent $event) : Vector3{
 		$owner = $this->getOwningEntity();
 		if($owner !== null){
 			//TODO: check end gateways (when they are added)
@@ -45,5 +46,6 @@ class EnderPearl extends Throwable{
 
 			$owner->attack(new EntityDamageEvent($owner, EntityDamageEvent::CAUSE_FALL, 5));
 		}
+		return parent::onHit($event);
 	}
 }
