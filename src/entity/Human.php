@@ -356,7 +356,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			&& ($this->inventory->getItemInHand() instanceof Totem || $this->offHandInventory->getItem(0) instanceof Totem)){
 
 			$compensation = $this->getHealth() - $source->getFinalDamage() - 1;
-			if($compensation < 0){
+			if($compensation <= -1){
 				$source->setModifier($compensation, EntityDamageEvent::MODIFIER_TOTEM);
 			}
 		}
@@ -365,7 +365,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
 		parent::applyPostDamageEffects($source);
 		$totemModifier = $source->getModifier(EntityDamageEvent::MODIFIER_TOTEM);
-		if($totemModifier < 0){ //Totem prevented death
+		if($totemModifier <= -1){ //Totem prevented death
 			$this->effectManager->clear();
 
 			$this->effectManager->add(new EffectInstance(VanillaEffects::REGENERATION(), 40 * 20, 1));
