@@ -51,7 +51,7 @@ class Trident extends Projectile{
 
 	protected bool $canCollide = true;
 
-	protected bool $spawnedInCreative;
+	protected bool $spawnedInCreative = false;
 
 	public function __construct(
 		Location $location,
