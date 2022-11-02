@@ -31,7 +31,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
-use pocketmine\world\sound\ItemFrameRemoveItemSound;
+use pocketmine\world\sound\ItemFrameAddItemSound;
 use pocketmine\world\sound\ItemFrameRotateItemSound;
 use function is_infinite;
 use function is_nan;
@@ -143,7 +143,7 @@ class ItemFrame extends Flowable{
 		}elseif(!$item->isNull()){
 			$this->framedItem = $item->pop();
 
-			$this->position->getWorld()->addSound($this->position, new ItemFrameRemoveItemSound());
+			$this->position->getWorld()->addSound($this->position, new ItemFrameAddItemSound());
 		}else{
 			return true;
 		}
