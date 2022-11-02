@@ -34,203 +34,133 @@ use pocketmine\utils\AssumptionFailedError;
 final class BlockLegacyIdHelper{
 
 	public static function getWoodenFloorSignIdentifier(TreeType $treeType) : BID{
-		switch($treeType->id()){
-			case TreeType::OAK()->id():
-				return new BID(Ids::SIGN_POST, 0, ItemIds::SIGN, TileSign::class);
-			case TreeType::SPRUCE()->id():
-				return new BID(Ids::SPRUCE_STANDING_SIGN, 0, ItemIds::SPRUCE_SIGN, TileSign::class);
-			case TreeType::BIRCH()->id():
-				return new BID(Ids::BIRCH_STANDING_SIGN, 0, ItemIds::BIRCH_SIGN, TileSign::class);
-			case TreeType::JUNGLE()->id():
-				return new BID(Ids::JUNGLE_STANDING_SIGN, 0, ItemIds::JUNGLE_SIGN, TileSign::class);
-			case TreeType::ACACIA()->id():
-				return new BID(Ids::ACACIA_STANDING_SIGN,0, ItemIds::ACACIA_SIGN, TileSign::class);
-			case TreeType::DARK_OAK()->id():
-				return new BID(Ids::DARKOAK_STANDING_SIGN, 0, ItemIds::DARKOAK_SIGN, TileSign::class);
-		}
-		throw new AssumptionFailedError("Switch should cover all wood types");
+		return match($treeType->id()){
+			TreeType::OAK()->id() => new BID(Ids::SIGN_POST, 0, ItemIds::SIGN, TileSign::class),
+			TreeType::SPRUCE()->id() => new BID(Ids::SPRUCE_STANDING_SIGN, 0, ItemIds::SPRUCE_SIGN, TileSign::class),
+			TreeType::BIRCH()->id() => new BID(Ids::BIRCH_STANDING_SIGN, 0, ItemIds::BIRCH_SIGN, TileSign::class),
+			TreeType::JUNGLE()->id() => new BID(Ids::JUNGLE_STANDING_SIGN, 0, ItemIds::JUNGLE_SIGN, TileSign::class),
+			TreeType::ACACIA()->id() => new BID(Ids::ACACIA_STANDING_SIGN,0, ItemIds::ACACIA_SIGN, TileSign::class),
+			TreeType::DARK_OAK()->id() => new BID(Ids::DARKOAK_STANDING_SIGN, 0, ItemIds::DARKOAK_SIGN, TileSign::class),
+			default => throw new AssumptionFailedError("Match should cover all wood types"),
+		};
 	}
 
 	public static function getWoodenWallSignIdentifier(TreeType $treeType) : BID{
-		switch($treeType->id()){
-			case TreeType::OAK()->id():
-				return new BID(Ids::WALL_SIGN, 0, ItemIds::SIGN, TileSign::class);
-			case TreeType::SPRUCE()->id():
-				return new BID(Ids::SPRUCE_WALL_SIGN, 0, ItemIds::SPRUCE_SIGN, TileSign::class);
-			case TreeType::BIRCH()->id():
-				return new BID(Ids::BIRCH_WALL_SIGN, 0, ItemIds::BIRCH_SIGN, TileSign::class);
-			case TreeType::JUNGLE()->id():
-				return new BID(Ids::JUNGLE_WALL_SIGN, 0, ItemIds::JUNGLE_SIGN, TileSign::class);
-			case TreeType::ACACIA()->id():
-				return new BID(Ids::ACACIA_WALL_SIGN, 0, ItemIds::ACACIA_SIGN, TileSign::class);
-			case TreeType::DARK_OAK()->id():
-				return new BID(Ids::DARKOAK_WALL_SIGN, 0, ItemIds::DARKOAK_SIGN, TileSign::class);
-		}
-		throw new AssumptionFailedError("Switch should cover all wood types");
+		return match($treeType->id()){
+			TreeType::OAK()->id() => new BID(Ids::WALL_SIGN, 0, ItemIds::SIGN, TileSign::class),
+			TreeType::SPRUCE()->id() => new BID(Ids::SPRUCE_WALL_SIGN, 0, ItemIds::SPRUCE_SIGN, TileSign::class),
+			TreeType::BIRCH()->id() => new BID(Ids::BIRCH_WALL_SIGN, 0, ItemIds::BIRCH_SIGN, TileSign::class),
+			TreeType::JUNGLE()->id() => new BID(Ids::JUNGLE_WALL_SIGN, 0, ItemIds::JUNGLE_SIGN, TileSign::class),
+			TreeType::ACACIA()->id() => new BID(Ids::ACACIA_WALL_SIGN, 0, ItemIds::ACACIA_SIGN, TileSign::class),
+			TreeType::DARK_OAK()->id() => new BID(Ids::DARKOAK_WALL_SIGN, 0, ItemIds::DARKOAK_SIGN, TileSign::class),
+			default => throw new AssumptionFailedError("Match should cover all wood types"),
+		};
 	}
 
-	public static function getWoodenTrapdoorIdentifier(TreeType $treeType) : BlockIdentifier{
-		switch($treeType->id()){
-			case TreeType::OAK()->id():
-				return new BlockIdentifier(Ids::WOODEN_TRAPDOOR, 0);
-			case TreeType::SPRUCE()->id():
-				return new BlockIdentifier(Ids::SPRUCE_TRAPDOOR, 0);
-			case TreeType::BIRCH()->id():
-				return new BlockIdentifier(Ids::BIRCH_TRAPDOOR, 0);
-			case TreeType::JUNGLE()->id():
-				return new BlockIdentifier(Ids::JUNGLE_TRAPDOOR, 0);
-			case TreeType::ACACIA()->id():
-				return new BlockIdentifier(Ids::ACACIA_TRAPDOOR, 0);
-			case TreeType::DARK_OAK()->id():
-				return new BlockIdentifier(Ids::DARK_OAK_TRAPDOOR, 0);
-		}
-		throw new AssumptionFailedError("Switch should cover all wood types");
+	public static function getWoodenTrapdoorIdentifier(TreeType $treeType) : BID{
+		return match($treeType->id()){
+			TreeType::OAK()->id() => new BID(Ids::WOODEN_TRAPDOOR, 0),
+			TreeType::SPRUCE()->id() => new BID(Ids::SPRUCE_TRAPDOOR, 0),
+			TreeType::BIRCH()->id() => new BID(Ids::BIRCH_TRAPDOOR, 0),
+			TreeType::JUNGLE()->id() => new BID(Ids::JUNGLE_TRAPDOOR, 0),
+			TreeType::ACACIA()->id() => new BID(Ids::ACACIA_TRAPDOOR, 0),
+			TreeType::DARK_OAK()->id() => new BID(Ids::DARK_OAK_TRAPDOOR, 0),
+			default => throw new AssumptionFailedError("Match should cover all wood types"),
+		};
 	}
 
-	public static function getWoodenButtonIdentifier(TreeType $treeType) : BlockIdentifier{
-		switch($treeType->id()){
-			case TreeType::OAK()->id():
-				return new BlockIdentifier(Ids::WOODEN_BUTTON, 0);
-			case TreeType::SPRUCE()->id():
-				return new BlockIdentifier(Ids::SPRUCE_BUTTON, 0);
-			case TreeType::BIRCH()->id():
-				return new BlockIdentifier(Ids::BIRCH_BUTTON, 0);
-			case TreeType::JUNGLE()->id():
-				return new BlockIdentifier(Ids::JUNGLE_BUTTON, 0);
-			case TreeType::ACACIA()->id():
-				return new BlockIdentifier(Ids::ACACIA_BUTTON, 0);
-			case TreeType::DARK_OAK()->id():
-				return new BlockIdentifier(Ids::DARK_OAK_BUTTON, 0);
-		}
-		throw new AssumptionFailedError("Switch should cover all wood types");
+	public static function getWoodenButtonIdentifier(TreeType $treeType) : BID{
+		return match($treeType->id()){
+			TreeType::OAK()->id() => new BID(Ids::WOODEN_BUTTON, 0),
+			TreeType::SPRUCE()->id() => new BID(Ids::SPRUCE_BUTTON, 0),
+			TreeType::BIRCH()->id() => new BID(Ids::BIRCH_BUTTON, 0),
+			TreeType::JUNGLE()->id() => new BID(Ids::JUNGLE_BUTTON, 0),
+			TreeType::ACACIA()->id() => new BID(Ids::ACACIA_BUTTON, 0),
+			TreeType::DARK_OAK()->id() => new BID(Ids::DARK_OAK_BUTTON, 0),
+			default => throw new AssumptionFailedError("Match should cover all wood types"),
+		};
 	}
 
-	public static function getWoodenPressurePlateIdentifier(TreeType $treeType) : BlockIdentifier{
-		switch($treeType->id()){
-			case TreeType::OAK()->id():
-				return new BlockIdentifier(Ids::WOODEN_PRESSURE_PLATE, 0);
-			case TreeType::SPRUCE()->id():
-				return new BlockIdentifier(Ids::SPRUCE_PRESSURE_PLATE, 0);
-			case TreeType::BIRCH()->id():
-				return new BlockIdentifier(Ids::BIRCH_PRESSURE_PLATE, 0);
-			case TreeType::JUNGLE()->id():
-				return new BlockIdentifier(Ids::JUNGLE_PRESSURE_PLATE, 0);
-			case TreeType::ACACIA()->id():
-				return new BlockIdentifier(Ids::ACACIA_PRESSURE_PLATE, 0);
-			case TreeType::DARK_OAK()->id():
-				return new BlockIdentifier(Ids::DARK_OAK_PRESSURE_PLATE, 0);
-		}
-		throw new AssumptionFailedError("Switch should cover all wood types");
+	public static function getWoodenPressurePlateIdentifier(TreeType $treeType) : BID{
+		return match($treeType->id()){
+			TreeType::OAK()->id() => new BID(Ids::WOODEN_PRESSURE_PLATE, 0),
+			TreeType::SPRUCE()->id() => new BID(Ids::SPRUCE_PRESSURE_PLATE, 0),
+			TreeType::BIRCH()->id() => new BID(Ids::BIRCH_PRESSURE_PLATE, 0),
+			TreeType::JUNGLE()->id() => new BID(Ids::JUNGLE_PRESSURE_PLATE, 0),
+			TreeType::ACACIA()->id() => new BID(Ids::ACACIA_PRESSURE_PLATE, 0),
+			TreeType::DARK_OAK()->id() => new BID(Ids::DARK_OAK_PRESSURE_PLATE, 0),
+			default => throw new AssumptionFailedError("Match should cover all wood types"),
+		};
 	}
 
-	public static function getWoodenDoorIdentifier(TreeType $treeType) : BlockIdentifier{
-		switch($treeType->id()){
-			case TreeType::OAK()->id():
-				return new BID(Ids::OAK_DOOR_BLOCK, 0, ItemIds::OAK_DOOR);
-			case TreeType::SPRUCE()->id():
-				return new BID(Ids::SPRUCE_DOOR_BLOCK, 0, ItemIds::SPRUCE_DOOR);
-			case TreeType::BIRCH()->id():
-				return new BID(Ids::BIRCH_DOOR_BLOCK, 0, ItemIds::BIRCH_DOOR);
-			case TreeType::JUNGLE()->id():
-				return new BID(Ids::JUNGLE_DOOR_BLOCK, 0, ItemIds::JUNGLE_DOOR);
-			case TreeType::ACACIA()->id():
-				return new BID(Ids::ACACIA_DOOR_BLOCK, 0, ItemIds::ACACIA_DOOR);
-			case TreeType::DARK_OAK()->id():
-				return new BID(Ids::DARK_OAK_DOOR_BLOCK, 0, ItemIds::DARK_OAK_DOOR);
-		}
-		throw new AssumptionFailedError("Switch should cover all wood types");
+	public static function getWoodenDoorIdentifier(TreeType $treeType) : BID{
+		return match($treeType->id()){
+			TreeType::OAK()->id() => new BID(Ids::OAK_DOOR_BLOCK, 0, ItemIds::OAK_DOOR),
+			TreeType::SPRUCE()->id() => new BID(Ids::SPRUCE_DOOR_BLOCK, 0, ItemIds::SPRUCE_DOOR),
+			TreeType::BIRCH()->id() => new BID(Ids::BIRCH_DOOR_BLOCK, 0, ItemIds::BIRCH_DOOR),
+			TreeType::JUNGLE()->id() => new BID(Ids::JUNGLE_DOOR_BLOCK, 0, ItemIds::JUNGLE_DOOR),
+			TreeType::ACACIA()->id() => new BID(Ids::ACACIA_DOOR_BLOCK, 0, ItemIds::ACACIA_DOOR),
+			TreeType::DARK_OAK()->id() =>new BID(Ids::DARK_OAK_DOOR_BLOCK, 0, ItemIds::DARK_OAK_DOOR),
+			default => throw new AssumptionFailedError("Match should cover all wood types"),
+		};
 	}
 
-	public static function getWoodenFenceIdentifier(TreeType $treeType) : BlockIdentifier{
-		switch($treeType->id()){
-			case TreeType::OAK()->id():
-				return new BlockIdentifier(Ids::OAK_FENCE_GATE, 0);
-			case TreeType::SPRUCE()->id():
-				return new BlockIdentifier(Ids::SPRUCE_FENCE_GATE, 0);
-			case TreeType::BIRCH()->id():
-				return new BlockIdentifier(Ids::BIRCH_FENCE_GATE, 0);
-			case TreeType::JUNGLE()->id():
-				return new BlockIdentifier(Ids::JUNGLE_FENCE_GATE, 0);
-			case TreeType::ACACIA()->id():
-				return new BlockIdentifier(Ids::ACACIA_FENCE_GATE, 0);
-			case TreeType::DARK_OAK()->id():
-				return new BlockIdentifier(Ids::DARK_OAK_FENCE_GATE, 0);
-		}
-		throw new AssumptionFailedError("Switch should cover all wood types");
+	public static function getWoodenFenceIdentifier(TreeType $treeType) : BID{
+		return match($treeType->id()){
+			TreeType::OAK()->id() => new BID(Ids::OAK_FENCE_GATE, 0),
+			TreeType::SPRUCE()->id() => new BID(Ids::SPRUCE_FENCE_GATE, 0),
+			TreeType::BIRCH()->id() => new BID(Ids::BIRCH_FENCE_GATE, 0),
+			TreeType::JUNGLE()->id() => new BID(Ids::JUNGLE_FENCE_GATE, 0),
+			TreeType::ACACIA()->id() => new BID(Ids::ACACIA_FENCE_GATE, 0),
+			TreeType::DARK_OAK()->id() => new BID(Ids::DARK_OAK_FENCE_GATE, 0),
+			default => throw new AssumptionFailedError("Match should cover all wood types"),
+		};
 	}
 
-	public static function getWoodenStairsIdentifier(TreeType $treeType) : BlockIdentifier{
-		switch($treeType->id()){
-			case TreeType::OAK()->id():
-				return new BlockIdentifier(Ids::OAK_STAIRS, 0);
-			case TreeType::SPRUCE()->id():
-				return new BlockIdentifier(Ids::SPRUCE_STAIRS, 0);
-			case TreeType::BIRCH()->id():
-				return new BlockIdentifier(Ids::BIRCH_STAIRS, 0);
-			case TreeType::JUNGLE()->id():
-				return new BlockIdentifier(Ids::JUNGLE_STAIRS, 0);
-			case TreeType::ACACIA()->id():
-				return new BlockIdentifier(Ids::ACACIA_STAIRS, 0);
-			case TreeType::DARK_OAK()->id():
-				return new BlockIdentifier(Ids::DARK_OAK_STAIRS, 0);
-		}
-		throw new AssumptionFailedError("Switch should cover all wood types");
+	public static function getWoodenStairsIdentifier(TreeType $treeType) : BID{
+		return match($treeType->id()){
+			TreeType::OAK()->id() => new BID(Ids::OAK_STAIRS, 0),
+			TreeType::SPRUCE()->id() => new BID(Ids::SPRUCE_STAIRS, 0),
+			TreeType::BIRCH()->id() => new BID(Ids::BIRCH_STAIRS, 0),
+			TreeType::JUNGLE()->id() => new BID(Ids::JUNGLE_STAIRS, 0),
+			TreeType::ACACIA()->id() => new BID(Ids::ACACIA_STAIRS, 0),
+			TreeType::DARK_OAK()->id() => new BID(Ids::DARK_OAK_STAIRS, 0),
+			default => throw new AssumptionFailedError("Match should cover all wood types"),
+		};
 	}
 
-	public static function getStrippedLogIdentifier(TreeType $treeType) : BlockIdentifier{
-		switch($treeType->id()){
-			case TreeType::OAK()->id():
-				return new BlockIdentifier(Ids::STRIPPED_OAK_LOG, 0);
-			case TreeType::SPRUCE()->id():
-				return new BlockIdentifier(Ids::STRIPPED_SPRUCE_LOG, 0);
-			case TreeType::BIRCH()->id():
-				return new BlockIdentifier(Ids::STRIPPED_BIRCH_LOG, 0);
-			case TreeType::JUNGLE()->id():
-				return new BlockIdentifier(Ids::STRIPPED_JUNGLE_LOG, 0);
-			case TreeType::ACACIA()->id():
-				return new BlockIdentifier(Ids::STRIPPED_ACACIA_LOG, 0);
-			case TreeType::DARK_OAK()->id():
-				return new BlockIdentifier(Ids::STRIPPED_DARK_OAK_LOG, 0);
-		}
-		throw new AssumptionFailedError("Switch should cover all wood types");
+	public static function getStrippedLogIdentifier(TreeType $treeType) : BID{
+		return match($treeType->id()){
+			TreeType::OAK()->id() => new BID(Ids::STRIPPED_OAK_LOG, 0),
+			TreeType::SPRUCE()->id() => new BID(Ids::STRIPPED_SPRUCE_LOG, 0),
+			TreeType::BIRCH()->id() => new BID(Ids::STRIPPED_BIRCH_LOG, 0),
+			TreeType::JUNGLE()->id() => new BID(Ids::STRIPPED_JUNGLE_LOG, 0),
+			TreeType::ACACIA()->id() => new BID(Ids::STRIPPED_ACACIA_LOG, 0),
+			TreeType::DARK_OAK()->id() => new BID(Ids::STRIPPED_DARK_OAK_LOG, 0),
+			default => throw new AssumptionFailedError("Match should cover all wood types"),
+		};
 	}
 
-	public static function getGlazedTerracottaIdentifier(DyeColor $color) : BlockIdentifier{
-		switch($color->id()){
-			case DyeColor::WHITE()->id():
-				return new BlockIdentifier(Ids::WHITE_GLAZED_TERRACOTTA, 0);
-			case DyeColor::ORANGE()->id():
-				return new BlockIdentifier(Ids::ORANGE_GLAZED_TERRACOTTA, 0);
-			case DyeColor::MAGENTA()->id():
-				return new BlockIdentifier(Ids::MAGENTA_GLAZED_TERRACOTTA, 0);
-			case DyeColor::LIGHT_BLUE()->id():
-				return new BlockIdentifier(Ids::LIGHT_BLUE_GLAZED_TERRACOTTA, 0);
-			case DyeColor::YELLOW()->id():
-				return new BlockIdentifier(Ids::YELLOW_GLAZED_TERRACOTTA, 0);
-			case DyeColor::LIME()->id():
-				return new BlockIdentifier(Ids::LIME_GLAZED_TERRACOTTA, 0);
-			case DyeColor::PINK()->id():
-				return new BlockIdentifier(Ids::PINK_GLAZED_TERRACOTTA, 0);
-			case DyeColor::GRAY()->id():
-				return new BlockIdentifier(Ids::GRAY_GLAZED_TERRACOTTA, 0);
-			case DyeColor::LIGHT_GRAY()->id():
-				return new BlockIdentifier(Ids::SILVER_GLAZED_TERRACOTTA, 0);
-			case DyeColor::CYAN()->id():
-				return new BlockIdentifier(Ids::CYAN_GLAZED_TERRACOTTA, 0);
-			case DyeColor::PURPLE()->id():
-				return new BlockIdentifier(Ids::PURPLE_GLAZED_TERRACOTTA, 0);
-			case DyeColor::BLUE()->id():
-				return new BlockIdentifier(Ids::BLUE_GLAZED_TERRACOTTA, 0);
-			case DyeColor::BROWN()->id():
-				return new BlockIdentifier(Ids::BROWN_GLAZED_TERRACOTTA, 0);
-			case DyeColor::GREEN()->id():
-				return new BlockIdentifier(Ids::GREEN_GLAZED_TERRACOTTA, 0);
-			case DyeColor::RED()->id():
-				return new BlockIdentifier(Ids::RED_GLAZED_TERRACOTTA, 0);
-			case DyeColor::BLACK()->id():
-				return new BlockIdentifier(Ids::BLACK_GLAZED_TERRACOTTA, 0);
-		}
-		throw new AssumptionFailedError("Switch should cover all colours");
+	public static function getGlazedTerracottaIdentifier(DyeColor $color) : BID{
+		return match($color->id()){
+			DyeColor::WHITE()->id() => new BID(Ids::WHITE_GLAZED_TERRACOTTA, 0),
+			DyeColor::ORANGE()->id() => new BID(Ids::ORANGE_GLAZED_TERRACOTTA, 0),
+			DyeColor::MAGENTA()->id() => new BID(Ids::MAGENTA_GLAZED_TERRACOTTA, 0),
+			DyeColor::LIGHT_BLUE()->id() => new BID(Ids::LIGHT_BLUE_GLAZED_TERRACOTTA, 0),
+			DyeColor::YELLOW()->id() => new BID(Ids::YELLOW_GLAZED_TERRACOTTA, 0),
+			DyeColor::LIME()->id() => new BID(Ids::LIME_GLAZED_TERRACOTTA, 0),
+			DyeColor::PINK()->id() => new BID(Ids::PINK_GLAZED_TERRACOTTA, 0),
+			DyeColor::GRAY()->id() => new BID(Ids::GRAY_GLAZED_TERRACOTTA, 0),
+			DyeColor::LIGHT_GRAY()->id() => new BID(Ids::SILVER_GLAZED_TERRACOTTA, 0),
+			DyeColor::CYAN()->id() => new BID(Ids::CYAN_GLAZED_TERRACOTTA, 0),
+			DyeColor::PURPLE()->id() => new BID(Ids::PURPLE_GLAZED_TERRACOTTA, 0),
+			DyeColor::BLUE()->id() => new BID(Ids::BLUE_GLAZED_TERRACOTTA, 0),
+			DyeColor::BROWN()->id() => new BID(Ids::BROWN_GLAZED_TERRACOTTA, 0),
+			DyeColor::GREEN()->id() => new BID(Ids::GREEN_GLAZED_TERRACOTTA, 0),
+			DyeColor::RED()->id() => new BID(Ids::RED_GLAZED_TERRACOTTA, 0),
+			DyeColor::BLACK()->id() => new BID(Ids::BLACK_GLAZED_TERRACOTTA, 0),
+			default => throw new AssumptionFailedError("Match should cover all colours"),
+		};
 	}
 
 	public static function getStoneSlabIdentifier(int $stoneSlabId, int $meta) : BlockIdentifierFlattened{
