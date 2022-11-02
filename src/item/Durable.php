@@ -109,6 +109,7 @@ abstract class Durable extends Item{
 	 */
 	protected function onBroken() : void{
 		$this->pop();
+		$this->setDamage(0); //the stack size may be greater than 1 if overstacked by a plugin
 	}
 
 	/**
