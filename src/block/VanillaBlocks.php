@@ -55,9 +55,12 @@ use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\tile\Smoker as TileSmoker;
 use pocketmine\block\utils\TreeType;
 use pocketmine\block\utils\WoodType;
+use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
+use pocketmine\math\RayTraceResult;
 use pocketmine\utils\CloningRegistryTrait;
+use pocketmine\world\sound\AmethystBlockChimeSound;
 use function mb_strtolower;
 
 /**
@@ -1466,7 +1469,11 @@ final class VanillaBlocks{
 
 	private static function registerBlocksR17() : void{
 		//in java this can be acquired using any tool - seems to be a parity issue in bedrock
-		self::register("amethyst", new Opaque(new BID(Ids::AMETHYST), "Amethyst", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD()))));
+		self::register("amethyst", new class(new BID(Ids::AMETHYST), "Amethyst", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD()))) extends Opaque{
+			public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
+				$this->position->getWorld()->addSound($this->position, new AmethystBlockChimeSound());
+			}
+		});
 
 		self::register("calcite", new Opaque(new BID(Ids::CALCITE), "Calcite", new Info(BreakInfo::pickaxe(0.75, ToolTier::WOOD()))));
 		self::register("tuff", new Opaque(new BID(Ids::TUFF), "Tuff", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD(), 30.0))));
