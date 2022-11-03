@@ -184,6 +184,13 @@ abstract class Living extends Entity{
 		$this->attributeMap->add($this->absorptionAttr = AttributeFactory::getInstance()->mustGet(Attribute::ABSORPTION));
 	}
 
+	/**
+	 * Returns the display name of this entity to use in stuff like death messages.
+	 */
+	public function getDisplayName() : string{
+		return $this->nameTag !== "" ? $this->nameTag : $this->getName();
+	}
+
 	public function setHealth(float $amount) : void{
 		$wasAlive = $this->isAlive();
 		parent::setHealth($amount);
