@@ -32,6 +32,8 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\ItemFrameAddItemSound;
+use pocketmine\world\sound\ItemFrameRemoveItemSound;
+use pocketmine\world\sound\ItemFrameRemoveSound;
 use pocketmine\world\sound\ItemFrameRotateItemSound;
 use function is_infinite;
 use function is_nan;
@@ -159,6 +161,7 @@ class ItemFrame extends Flowable{
 		}
 		if(lcg_value() <= $this->itemDropChance){
 			$this->position->getWorld()->dropItem($this->position->add(0.5, 0.5, 0.5), clone $this->framedItem);
+			$this->position->getWorld()->addSound($this->position, new ItemFrameRemoveItemSound());
 		}
 		$this->setFramedItem(null);
 		$this->position->getWorld()->setBlock($this->position, $this);
@@ -168,6 +171,7 @@ class ItemFrame extends Flowable{
 	public function onNearbyBlockChange() : void{
 		if(!$this->getSide(Facing::opposite($this->facing))->isSolid()){
 			$this->position->getWorld()->useBreakOn($this->position);
+			$this->position->getWorld()->addSound($this->position, new ItemFrameRemoveSound());
 		}
 	}
 

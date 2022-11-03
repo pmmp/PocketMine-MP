@@ -108,7 +108,6 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\format\Chunk;
-use pocketmine\world\sound\ItemFrameRemoveItemSound;
 use function array_push;
 use function base64_encode;
 use function count;
@@ -737,9 +736,7 @@ class InGamePacketHandler extends PacketHandler{
 		$blockPosition = $packet->blockPosition;
 		$block = $this->player->getWorld()->getBlockAt($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ());
 		if($block instanceof ItemFrame && $block->getFramedItem() !== null){
-			$this->player->getWorld()->addSound($pos = new Vector3($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ()), new ItemFrameRemoveItemSound());
-
-			return $this->player->attackBlock($pos, $block->getFacing());
+			return $this->player->attackBlock(new Vector3($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ()), $block->getFacing());
 		}
 		return false;
 	}
