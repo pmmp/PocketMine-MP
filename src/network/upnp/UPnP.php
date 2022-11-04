@@ -150,6 +150,7 @@ class UPnP{
 			throw new UPnPException("Failed to recognize the port number from the router's url: {$location}");
 		}
 		$urlPort = $url['port'];
+		$err = "";
 		$response = Internet::getURL($location, 3, [], $err);
 		if($response === null){
 			throw new UPnPException("Unable to access XML: {$err}");

@@ -92,6 +92,8 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	/**
 	 * @param int $regionX reference parameter
 	 * @param int $regionZ reference parameter
+	 * @phpstan-param-out int $regionX
+	 * @phpstan-param-out int $regionZ
 	 */
 	public static function getRegionIndex(int $chunkX, int $chunkZ, &$regionX, &$regionZ) : void{
 		$regionX = $chunkX >> 5;
