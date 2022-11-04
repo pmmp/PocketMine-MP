@@ -998,9 +998,7 @@ abstract class Entity{
 
 		$this->timings->stopTiming();
 
-		//if($this->isStatic())
 		return ($hasUpdate || $this->hasMovementUpdate());
-		//return !($this instanceof Player);
 	}
 
 	final public function scheduleUpdate() : void{
