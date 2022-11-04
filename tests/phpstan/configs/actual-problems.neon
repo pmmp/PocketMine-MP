@@ -582,7 +582,7 @@ parameters:
 
 		-
 			message: "#^Cannot cast mixed to int\\.$#"
-			count: 3
+			count: 2
 			path: ../../../src/item/Item.php
 
 		-
