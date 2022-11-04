@@ -134,6 +134,8 @@ class InventoryTransaction{
 	/**
 	 * @param Item[] $needItems
 	 * @param Item[] $haveItems
+	 * @phpstan-param-out Item[] $needItems
+	 * @phpstan-param-out Item[] $haveItems
 	 *
 	 * @throws TransactionValidationException
 	 */
