@@ -52,8 +52,17 @@ class DeathPacketHandler extends PacketHandler{
 		/** @var string[] $parameters */
 		$parameters = [];
 		if($this->deathMessage instanceof Translatable){
-			$message = $this->deathMessage->getText();
-			$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $this->player->getLanguage()->translate($p) : $p, $this->deathMessage->getParameters());
+			$language = $this->player->getLanguage();
+			$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $language->translate($p) : $p, $this->deathMessage->getParameters());
+			if(!$this->player->getServer()->isLanguageForced()){
+				foreach($parameters as $i => $p){
+					$parameters[$i] = $language->translateString($p, [], "pocketmine.");
+				}
+				$message = $language->translateString($this->deathMessage->getText(), $parameters, "pocketmine.");
+			}else{
+				$message = $language->translateString($this->deathMessage->getText(), $parameters);
+				$parameters = [];
+			}
 		}else{
 			$message = $this->deathMessage;
 		}
