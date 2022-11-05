@@ -24,7 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
+use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
+use pocketmine\world\BlockTransaction;
 
 /**
  * "Flowable" blocks are destroyed if water flows into the same space as the block. These blocks usually don't have any
@@ -37,6 +41,13 @@ abstract class Flowable extends Transparent{
 	}
 
 	public function isSolid() : bool{
+		return false;
+	}
+
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if(!$blockReplace instanceof Liquid){
+			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		}
 		return false;
 	}
 
