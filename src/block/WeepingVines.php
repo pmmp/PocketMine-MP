@@ -27,7 +27,7 @@ use pocketmine\math\Facing;
 
 class WeepingVines extends NetherVines{
 
-	public function getGrowthFace() : int{
+	protected function getGrowthFace() : int{
 		return Facing::DOWN;
 	}
 }
