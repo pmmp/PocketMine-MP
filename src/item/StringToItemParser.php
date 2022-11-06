@@ -1054,6 +1054,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("trunk", fn() => Blocks::OAK_PLANKS());
 		$result->registerBlock("trunk2", fn() => Blocks::ACACIA_LOG()->setStripped(false));
 		$result->registerBlock("tuff", fn() => Blocks::TUFF());
+		$result->registerBlock("twisting_vines", fn() => Blocks::TWISTING_VINES());
 		$result->registerBlock("underwater_torch", fn() => Blocks::UNDERWATER_TORCH());
 		$result->registerBlock("undyed_shulker_box", fn() => Blocks::SHULKER_BOX());
 		$result->registerBlock("unlit_redstone_torch", fn() => Blocks::REDSTONE_TORCH());
@@ -1084,6 +1085,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("water_lily", fn() => Blocks::LILY_PAD());
 		$result->registerBlock("waterlily", fn() => Blocks::LILY_PAD());
 		$result->registerBlock("web", fn() => Blocks::COBWEB());
+		$result->registerBlock("weeping_vines", fn() => Blocks::WEEPING_VINES());
 		$result->registerBlock("weighted_pressure_plate_heavy", fn() => Blocks::WEIGHTED_PRESSURE_PLATE_HEAVY());
 		$result->registerBlock("weighted_pressure_plate_light", fn() => Blocks::WEIGHTED_PRESSURE_PLATE_LIGHT());
 		$result->registerBlock("wheat_block", fn() => Blocks::WHEAT());
