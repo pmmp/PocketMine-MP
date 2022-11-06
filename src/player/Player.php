@@ -131,6 +131,7 @@ use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 use Ramsey\Uuid\UuidInterface;
 use function abs;
+use function array_filter;
 use function array_map;
 use function assert;
 use function count;
