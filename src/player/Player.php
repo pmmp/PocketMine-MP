@@ -2257,13 +2257,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 			if($this->inventory !== null){
 				$this->inventory->setHeldItemIndex(0);
-				$this->inventory->clearAll();
+				$this->inventory->setContents(array_filter($this->inventory->getContents(), fn(Item $item) => $item->keepOnDeath()));
 			}
 			if($this->armorInventory !== null){
-				$this->armorInventory->clearAll();
+				$this->armorInventory->setContents(array_filter($this->armorInventory->getContents(), fn(Item $item) => $item->keepOnDeath()));
 			}
 			if($this->offHandInventory !== null){
-				$this->offHandInventory->clearAll();
+				$this->offHandInventory->setContents(array_filter($this->offHandInventory->getContents(), fn(Item $item) => $item->keepOnDeath()));
 			}
 		}
 
