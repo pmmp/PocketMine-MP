@@ -37,8 +37,7 @@ use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\item\ItemIds;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector2;
@@ -1558,11 +1557,18 @@ abstract class Entity{
 	}
 
 	/**
+	 * Returns the item that can be used to spawn this entity, by default it returns air if there isn't one
+	 */
+	public function getSpawnItem() : Item{
+		return VanillaItems::AIR();
+	}
+
+	/**
 	 * Returns the item that players will equip when middle-clicking on this entity.
 	 * If addUserData is true, additional data may be added, such as name tag, fire ticks, etc.
 	 */
 	public function getPickedItem(bool $addUserData) : Item{
-		$item = ItemFactory::getInstance()->get(ItemIds::SPAWN_EGG, LegacyEntityIdToStringIdMap::getInstance()->stringToLegacy(static::getNetworkTypeId()));
+		$item = $this->getSpawnItem();
 		if($addUserData){
 			$item->setCustomEntityData($this->getCleanedNBT());
 			$item->setLore(["+(DATA)"]);

@@ -1626,6 +1626,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		$item = $entity->getPickedItem($addEntityNBT);
+		if($item->isNull()){
+			return true;
+		}
 
 		$ev = new PlayerEntityPickEvent($this, $entity, $item);
 		$existingSlot = $this->inventory->first($item);
