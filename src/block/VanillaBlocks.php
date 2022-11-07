@@ -60,6 +60,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\math\RayTraceResult;
 use pocketmine\utils\CloningRegistryTrait;
+use pocketmine\world\sound\AmethystBlockChimeSound;
 use pocketmine\world\sound\BlockPunchSound;
 use function mb_strtolower;
 
@@ -1471,6 +1472,7 @@ final class VanillaBlocks{
 		//in java this can be acquired using any tool - seems to be a parity issue in bedrock
 		self::register("amethyst", new class(new BID(Ids::AMETHYST), "Amethyst", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD()))) extends Opaque{
 			public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
+				$this->position->getWorld()->addSound($this->position, new AmethystBlockChimeSound());
 				$this->position->getWorld()->addSound($this->position, new BlockPunchSound($this));
 			}
 		});
