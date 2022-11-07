@@ -16,6 +16,11 @@ parameters:
 			path: ../../../src/entity/projectile/Projectile.php
 
 		-
+			message: "#^Empty array passed to foreach\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/cache/ChunkCache.php
+
+		-
 			message: "#^Match arm comparison between 4 and 4 is always true\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php

@@ -356,7 +356,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			&& ($this->inventory->getItemInHand() instanceof Totem || $this->offHandInventory->getItem(0) instanceof Totem)){
 
 			$compensation = $this->getHealth() - $source->getFinalDamage() - 1;
-			if($compensation < 0){
+			if($compensation <= -1){
 				$source->setModifier($compensation, EntityDamageEvent::MODIFIER_TOTEM);
 			}
 		}

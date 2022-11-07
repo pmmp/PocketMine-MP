@@ -400,6 +400,9 @@ class World implements ChunkManager{
 
 	/**
 	 * @phpstan-param BlockPosHash $hash
+	 * @phpstan-param-out int      $x
+	 * @phpstan-param-out int      $y
+	 * @phpstan-param-out int      $z
 	 */
 	public static function getBlockXYZ(int $hash, ?int &$x, ?int &$y, ?int &$z) : void{
 		[$baseX, $baseY, $baseZ] = morton3d_decode($hash);
@@ -414,6 +417,8 @@ class World implements ChunkManager{
 
 	/**
 	 * @phpstan-param ChunkPosHash $hash
+	 * @phpstan-param-out int      $x
+	 * @phpstan-param-out int      $z
 	 */
 	public static function getXZ(int $hash, ?int &$x, ?int &$z) : void{
 		[$x, $z] = morton2d_decode($hash);
@@ -1833,6 +1838,7 @@ class World implements ChunkManager{
 	 * It'll try to lower the durability if Item is a tool, and set it to Air if broken.
 	 *
 	 * @param Item    $item reference parameter (if null, can break anything)
+	 * @phpstan-param-out Item $item
 	 */
 	public function useBreakOn(Vector3 $vector, Item &$item = null, ?Player $player = null, bool $createParticles = false) : bool{
 		$vector = $vector->floor();
@@ -2847,8 +2853,8 @@ class World implements ChunkManager{
 			if($this->getBlockAt($x, $y, $z)->isFullCube()){
 				if($wasAir){
 					$y++;
-					break;
 				}
+				break;
 			}else{
 				$wasAir = true;
 			}

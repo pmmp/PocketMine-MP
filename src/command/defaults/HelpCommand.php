@@ -76,7 +76,6 @@ class HelpCommand extends VanillaCommand{
 		$pageHeight = $sender->getScreenLineHeight();
 
 		if($commandName === ""){
-			/** @var Command[][] $commands */
 			$commands = [];
 			foreach($sender->getServer()->getCommandMap()->getCommands() as $command){
 				if($command->testPermissionSilent($sender)){

@@ -170,6 +170,7 @@ final class ItemTranslator{
 	}
 
 	/**
+	 * @phpstan-param-out bool $isComplexMapping
 	 * @return int[]
 	 * @phpstan-return array{int, int}
 	 * @throws TypeConversionException
