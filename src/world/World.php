@@ -662,7 +662,8 @@ class World implements ChunkManager{
 	 * @param Player[]|null $players
 	 */
 	public function addSound(Vector3 $pos, Sound $sound, ?array $players = null) : void{
-		$ev = new WorldSoundEvent($this, $pos, $sound, $players ?? $this->getViewersForPosition($pos));
+		$players ??= $this->getViewersForPosition($pos);
+		$ev = new WorldSoundEvent($this, $pos, $sound, $players);
 
 		$ev->call();
 
@@ -672,7 +673,13 @@ class World implements ChunkManager{
 
 		$pk = $ev->getSound()->encode($ev->getPosition());
 		if(count($pk) > 0){
-			$this->server->broadcastPackets($this->filterViewersForPosition($ev->getPosition(), $ev->getRecipients()), $pk);
+			if($players === $this->getViewersForPosition($pos)){
+				foreach($pk as $e){
+					$this->broadcastPacketToViewers($pos, $e);
+				}
+			}else{
+				$this->server->broadcastPackets($this->filterViewersForPosition($ev->getPosition(), $ev->getRecipients()), $pk);
+			}
 		}
 	}
 
