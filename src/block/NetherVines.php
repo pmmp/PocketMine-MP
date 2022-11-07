@@ -134,17 +134,27 @@ abstract class NetherVines extends Flowable{
 
 	private function grow(?Player $player, int $growthAmount) : bool{
 		$top = $this->seekToTop();
-		$face = $this->getGrowthFace();
+		$world = $this->position->getWorld();
+		$growthFace = $this->getGrowthFace();
+		$supportFace = $this->getSupportFace();
 
-		$tx = new BlockTransaction($this->position->getWorld());
-		if(!$tx->fetchBlock($this->getSide($this->getSupportFace())->getPosition())->isSameType($this)){
-			$tx->addBlock($this->position, (clone $this)->setAge(min($this->age + 1, self::MAX_AGE)));
-		}
-		for($i = 1; $i <= $growthAmount && $top->getSide($face, $i)->canBeReplaced(); $i++){
-			$tx->addBlock($top->getSide($face, $i)->getPosition(), (clone $top)->setAge(min($tx->fetchBlock($top->getSide($face, $i - 1)->getPosition())->getAge() + 1, self::MAX_AGE)));
+		$tx = new BlockTransaction($world);
+
+		if(!$this->getSide($supportFace)->isSameType($this) && $this->age < self::MAX_AGE){
+			$tx->addBlock($this->position, (clone $this)->setAge($this->age + 1));
 		}
 
-		$ev = new StructureGrowEvent($this, $tx, $player);
+		for($i = 1; $i <= $growthAmount && $top->getSide($growthFace, $i)->canBeReplaced(); $i++){
+			$pos = $top->getPosition()->getSide($growthFace, $i);
+			if(!$world->isInWorld($pos->getX(), $pos->getY(), $pos->getZ())){
+				break;
+			}
+			$top = $tx->fetchBlock($pos->getSide($supportFace));
+
+			$tx->addBlock($pos, (clone $top)->setAge(min($top->getAge() + 1, self::MAX_AGE)));
+		}
+
+		$ev = new StructureGrowEvent($top, $tx, $player);
 		$ev->call();
 
 		if($ev->isCancelled()){
