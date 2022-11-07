@@ -94,8 +94,6 @@ use pocketmine\item\Durable;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\item\ItemIds;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\Releasable;
 use pocketmine\lang\KnownTranslationFactory;
@@ -1621,7 +1619,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return true;
 	}
 
-	public function pickEntity(int $entityId, bool $addEntityNBT): bool{
+	public function pickEntity(int $entityId, bool $addEntityNBT) : bool{
 		$entity = $this->getWorld()->getEntity($entityId);
 		if($entity === null){
 			return true;
