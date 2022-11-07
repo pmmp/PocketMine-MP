@@ -276,6 +276,8 @@ class RegionLoader{
 	/**
 	 * @param int $x reference parameter
 	 * @param int $z reference parameter
+	 * @phpstan-param-out int $x
+	 * @phpstan-param-out int $z
 	 */
 	protected static function getChunkCoords(int $offset, ?int &$x, ?int &$z) : void{
 		$x = $offset & 0x1f;

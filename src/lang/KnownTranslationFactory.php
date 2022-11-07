@@ -743,6 +743,10 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::DISCONNECTIONSCREEN_SERVERFULL, []);
 	}
 
+	public static function effect_darkness() : Translatable{
+		return new Translatable(KnownTranslationKeys::EFFECT_DARKNESS, []);
+	}
+
 	public static function enchantment_arrowDamage() : Translatable{
 		return new Translatable(KnownTranslationKeys::ENCHANTMENT_ARROWDAMAGE, []);
 	}
@@ -1391,6 +1395,10 @@ final class KnownTranslationFactory{
 
 	public static function pocketmine_command_unban_player_description() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_UNBAN_PLAYER_DESCRIPTION, []);
+	}
+
+	public static function pocketmine_command_userDefined_description() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_USERDEFINED_DESCRIPTION, []);
 	}
 
 	public static function pocketmine_command_version_description() : Translatable{
