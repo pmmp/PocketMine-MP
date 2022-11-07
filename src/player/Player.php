@@ -2406,7 +2406,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * @inheritDoc
 	 */
 	public function teleport(Vector3 $pos, ?float $yaw = null, ?float $pitch = null) : bool{
 		if(parent::teleport($pos, $yaw, $pitch)){
