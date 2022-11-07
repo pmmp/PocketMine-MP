@@ -672,7 +672,7 @@ class World implements ChunkManager{
 
 		$pk = $ev->getSound()->encode($ev->getPosition());
 		if(count($pk) > 0){
-			$this->server->broadcastPackets($this->filterViewersForPosition($ev->getPosition(), $ev->getPlayers()), $pk);
+			$this->server->broadcastPackets($this->filterViewersForPosition($ev->getPosition(), $ev->getRecipients()), $pk);
 		}
 	}
 
