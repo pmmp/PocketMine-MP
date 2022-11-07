@@ -28,6 +28,7 @@ namespace pocketmine\entity;
 
 use pocketmine\block\Block;
 use pocketmine\block\Water;
+use pocketmine\data\bedrock\LegacyEntityIdToStringIdMap;
 use pocketmine\entity\animation\Animation;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDespawnEvent;
@@ -35,6 +36,9 @@ use pocketmine\event\entity\EntityMotionEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
+use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
+use pocketmine\item\ItemIds;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector2;
@@ -497,6 +501,12 @@ abstract class Entity{
 		return $nbt;
 	}
 
+	public function getCleanedNBT() : CompoundTag{
+		$nbt = $this->saveNBT();
+		$nbt->removeTag("identifier", "Pos", "Motion", "Rotation", "FallDistance", "OnGround");
+		return $nbt;
+	}
+
 	protected function initEntity(CompoundTag $nbt) : void{
 		$this->fireTicks = $nbt->getShort("Fire", 0);
 
@@ -513,6 +523,18 @@ abstract class Entity{
 			}else{
 				$this->setNameTagVisible($nbt->getByte("CustomNameVisible", 1) !== 0);
 			}
+		}
+	}
+
+	/**
+	 * @internal
+	 */
+	public function copyDataFromItem(Item $item) : void{
+		if(($entityNbt = $item->getCustomEntityData()) !== null){
+			$this->initEntity($entityNbt);
+		}
+		if($item->hasCustomName()){ //this should take precedence over saved NBT
+			$this->setNameTag($item->getCustomName());
 		}
 	}
 
@@ -1533,6 +1555,19 @@ abstract class Entity{
 		foreach($this->hasSpawned as $player){
 			$this->despawnFrom($player);
 		}
+	}
+
+	/**
+	 * Returns the item that players will equip when middle-clicking on this entity.
+	 * If addUserData is true, additional data may be added, such as name tag, fire ticks, etc.
+	 */
+	public function getPickedItem(bool $addUserData) : Item{
+		$item = ItemFactory::getInstance()->get(ItemIds::SPAWN_EGG, LegacyEntityIdToStringIdMap::getInstance()->stringToLegacy(static::getNetworkTypeId()));
+		if($addUserData){
+			$item->setCustomEntityData($this->getCleanedNBT());
+			$item->setLore(["+(DATA)"]);
+		}
+		return $item;
 	}
 
 	/**

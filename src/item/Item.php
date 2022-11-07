@@ -61,6 +61,7 @@ class Item implements \JsonSerializable{
 	public const TAG_ENCH = "ench";
 	public const TAG_DISPLAY = "display";
 	public const TAG_BLOCK_ENTITY_TAG = "BlockEntityTag";
+	public const TAG_ENTITY_TAG = "EntityTag";
 
 	public const TAG_DISPLAY_NAME = "Name";
 	public const TAG_DISPLAY_LORE = "Lore";
@@ -84,6 +85,7 @@ class Item implements \JsonSerializable{
 	 * @var CompoundTag|null
 	 */
 	protected $blockEntityTag = null;
+	protected ?CompoundTag $entityTag = null;
 
 	/**
 	 * @var string[]
@@ -136,6 +138,19 @@ class Item implements \JsonSerializable{
 
 	public function getCustomBlockData() : ?CompoundTag{
 		return $this->blockEntityTag;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setCustomEntityData(CompoundTag $compound) : Item{
+		$this->entityTag = clone $compound;
+
+		return $this;
+	}
+
+	public function getCustomEntityData() : ?CompoundTag{
+		return $this->entityTag;
 	}
 
 	public function hasCustomName() : bool{
@@ -304,6 +319,8 @@ class Item implements \JsonSerializable{
 
 		$this->blockEntityTag = $tag->getCompoundTag(self::TAG_BLOCK_ENTITY_TAG);
 
+		$this->entityTag = $tag->getCompoundTag(self::TAG_ENTITY_TAG);
+
 		$this->canPlaceOn = [];
 		$canPlaceOn = $tag->getListTag("CanPlaceOn");
 		if($canPlaceOn !== null && $canPlaceOn->getTagType() === NBT::TAG_String){
@@ -358,6 +375,10 @@ class Item implements \JsonSerializable{
 		($blockData = $this->getCustomBlockData()) !== null ?
 			$tag->setTag(self::TAG_BLOCK_ENTITY_TAG, clone $blockData) :
 			$tag->removeTag(self::TAG_BLOCK_ENTITY_TAG);
+
+		($entityData = $this->getCustomEntityData()) !== null ?
+			$tag->setTag(self::TAG_ENTITY_TAG, clone $entityData) :
+			$tag->removeTag(self::TAG_ENTITY_TAG);
 
 		if(count($this->canPlaceOn) > 0){
 			$canPlaceOn = new ListTag();

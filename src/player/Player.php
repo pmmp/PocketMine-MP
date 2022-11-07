@@ -56,6 +56,7 @@ use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerDisplayNameChangeEvent;
 use pocketmine\event\player\PlayerEmoteEvent;
 use pocketmine\event\player\PlayerEntityInteractEvent;
+use pocketmine\event\player\PlayerEntityPickEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerGameModeChangeEvent;
 use pocketmine\event\player\PlayerInteractEvent;
@@ -93,6 +94,8 @@ use pocketmine\item\Durable;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
+use pocketmine\item\ItemIds;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\Releasable;
 use pocketmine\lang\KnownTranslationFactory;
@@ -1588,6 +1591,45 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$item = $block->getPickedItem($addTileNBT);
 
 		$ev = new PlayerBlockPickEvent($this, $block, $item);
+		$existingSlot = $this->inventory->first($item);
+		if($existingSlot === -1 && ($this->hasFiniteResources() || $this->isSpectator())){
+			$ev->cancel();
+		}
+		$ev->call();
+
+		if(!$ev->isCancelled()){
+			if($existingSlot !== -1){
+				if($existingSlot < $this->inventory->getHotbarSize()){
+					$this->inventory->setHeldItemIndex($existingSlot);
+				}else{
+					$this->inventory->swap($this->inventory->getHeldItemIndex(), $existingSlot);
+				}
+			}else{
+				$firstEmpty = $this->inventory->firstEmpty();
+				if($firstEmpty === -1){ //full inventory
+					$this->inventory->setItemInHand($item);
+				}elseif($firstEmpty < $this->inventory->getHotbarSize()){
+					$this->inventory->setItem($firstEmpty, $item);
+					$this->inventory->setHeldItemIndex($firstEmpty);
+				}else{
+					$this->inventory->swap($this->inventory->getHeldItemIndex(), $firstEmpty);
+					$this->inventory->setItemInHand($item);
+				}
+			}
+		}
+
+		return true;
+	}
+
+	public function pickEntity(int $entityId, bool $addEntityNBT): bool{
+		$entity = $this->getWorld()->getEntity($entityId);
+		if($entity === null){
+			return true;
+		}
+
+		$item = $entity->getPickedItem($addEntityNBT);
+
+		$ev = new PlayerEntityPickEvent($this, $entity, $item);
 		$existingSlot = $this->inventory->first($item);
 		if($existingSlot === -1 && ($this->hasFiniteResources() || $this->isSpectator())){
 			$ev->cancel();

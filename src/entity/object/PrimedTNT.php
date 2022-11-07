@@ -23,11 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\object;
 
+use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Explosive;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ExplosionPrimeEvent;
+use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
@@ -126,6 +128,10 @@ class PrimedTNT extends Entity implements Explosive{
 			}
 			$explosion->explodeB();
 		}
+	}
+
+	public function getPickedItem(bool $addUserData) : Item{
+		return VanillaBlocks::TNT()->setWorksUnderwater($this->worksUnderwater)->asItem();
 	}
 
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{

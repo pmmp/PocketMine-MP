@@ -32,6 +32,7 @@ use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
 use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
@@ -142,6 +143,10 @@ class FallingBlock extends Entity{
 		$nbt->setByte("Data", $this->block->getMeta());
 
 		return $nbt;
+	}
+
+	public function getPickedItem(bool $addUserData) : Item{
+		return $this->block->asItem();
 	}
 
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
