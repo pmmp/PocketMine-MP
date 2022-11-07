@@ -1596,24 +1596,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$ev->call();
 
 		if(!$ev->isCancelled()){
-			if($existingSlot !== -1){
-				if($existingSlot < $this->inventory->getHotbarSize()){
-					$this->inventory->setHeldItemIndex($existingSlot);
-				}else{
-					$this->inventory->swap($this->inventory->getHeldItemIndex(), $existingSlot);
-				}
-			}else{
-				$firstEmpty = $this->inventory->firstEmpty();
-				if($firstEmpty === -1){ //full inventory
-					$this->inventory->setItemInHand($item);
-				}elseif($firstEmpty < $this->inventory->getHotbarSize()){
-					$this->inventory->setItem($firstEmpty, $item);
-					$this->inventory->setHeldItemIndex($firstEmpty);
-				}else{
-					$this->inventory->swap($this->inventory->getHeldItemIndex(), $firstEmpty);
-					$this->inventory->setItemInHand($item);
-				}
-			}
+			$this->equipOrAddPickedItem($existingSlot, $item);
 		}
 
 		return true;
@@ -1638,27 +1621,31 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$ev->call();
 
 		if(!$ev->isCancelled()){
-			if($existingSlot !== -1){
-				if($existingSlot < $this->inventory->getHotbarSize()){
-					$this->inventory->setHeldItemIndex($existingSlot);
-				}else{
-					$this->inventory->swap($this->inventory->getHeldItemIndex(), $existingSlot);
-				}
-			}else{
-				$firstEmpty = $this->inventory->firstEmpty();
-				if($firstEmpty === -1){ //full inventory
-					$this->inventory->setItemInHand($item);
-				}elseif($firstEmpty < $this->inventory->getHotbarSize()){
-					$this->inventory->setItem($firstEmpty, $item);
-					$this->inventory->setHeldItemIndex($firstEmpty);
-				}else{
-					$this->inventory->swap($this->inventory->getHeldItemIndex(), $firstEmpty);
-					$this->inventory->setItemInHand($item);
-				}
-			}
+			$this->equipOrAddPickedItem($existingSlot, $item);
 		}
 
 		return true;
+	}
+
+	private function equipOrAddPickedItem(int $existingSlot, Item $item) : void{
+		if($existingSlot !== -1){
+			if($existingSlot < $this->inventory->getHotbarSize()){
+				$this->inventory->setHeldItemIndex($existingSlot);
+			}else{
+				$this->inventory->swap($this->inventory->getHeldItemIndex(), $existingSlot);
+			}
+		}else{
+			$firstEmpty = $this->inventory->firstEmpty();
+			if($firstEmpty === -1){ //full inventory
+				$this->inventory->setItemInHand($item);
+			}elseif($firstEmpty < $this->inventory->getHotbarSize()){
+				$this->inventory->setItem($firstEmpty, $item);
+				$this->inventory->setHeldItemIndex($firstEmpty);
+			}else{
+				$this->inventory->swap($this->inventory->getHeldItemIndex(), $firstEmpty);
+				$this->inventory->setItemInHand($item);
+			}
+		}
 	}
 
 	/**
