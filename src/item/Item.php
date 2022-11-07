@@ -143,6 +143,15 @@ class Item implements \JsonSerializable{
 	/**
 	 * @return $this
 	 */
+	public function clearCustomEntityData() : Item{
+		$this->entityTag = null;
+
+		return $this;
+	}
+
+	/**
+	 * @return $this
+	 */
 	public function setCustomEntityData(CompoundTag $compound) : Item{
 		$this->entityTag = clone $compound;
 
