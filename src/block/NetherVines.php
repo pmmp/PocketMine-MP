@@ -105,10 +105,10 @@ abstract class NetherVines extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy(($support = $blockReplace->getSide($this->getSupportFace())))){
+		if(!$this->canBeSupportedBy($blockReplace->getSide($this->getSupportFace()))){
 			return false;
 		}
-		$this->age = $support->isSameType($this) ? min($support->getAge() + 1, self::MAX_AGE) : mt_rand(0, self::MAX_AGE - 1);
+		$this->age = mt_rand(0, self::MAX_AGE - 2);
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
@@ -137,8 +137,11 @@ abstract class NetherVines extends Flowable{
 		$face = $this->getGrowthFace();
 
 		$tx = new BlockTransaction($this->position->getWorld());
+		if(!$tx->fetchBlock($this->getSide($this->getSupportFace())->getPosition())->isSameType($this)){
+			$tx->addBlock($this->position, (clone $this)->setAge(min($this->age + 1, self::MAX_AGE)));
+		}
 		for($i = 1; $i <= $growthAmount && $top->getSide($face, $i)->canBeReplaced(); $i++){
-			$tx->addBlock($top->getSide($face, $i)->getPosition(), (clone $top)->setAge(min($top->getAge() + $i, self::MAX_AGE)));
+			$tx->addBlock($top->getSide($face, $i)->getPosition(), (clone $top)->setAge(min($tx->fetchBlock($top->getSide($face, $i - 1)->getPosition())->getAge() + 1, self::MAX_AGE)));
 		}
 
 		$ev = new StructureGrowEvent($this, $tx, $player);
