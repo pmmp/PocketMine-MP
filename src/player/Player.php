@@ -2256,15 +2256,16 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$this->getWorld()->dropItem($this->location, $item);
 			}
 
+			$keepOnDeathItemsForInventory = fn(Inventory $inventory) => $inventory->setContents(array_filter($inventory->getContents(), fn(Item $item) => $item->keepOnDeath()));
 			if($this->inventory !== null){
 				$this->inventory->setHeldItemIndex(0);
-				$this->inventory->setContents(array_filter($this->inventory->getContents(), fn(Item $item) => $item->keepOnDeath()));
+				$keepOnDeathItemsForInventory($this->inventory);
 			}
 			if($this->armorInventory !== null){
-				$this->armorInventory->setContents(array_filter($this->armorInventory->getContents(), fn(Item $item) => $item->keepOnDeath()));
+				$keepOnDeathItemsForInventory($this->armorInventory);
 			}
 			if($this->offHandInventory !== null){
-				$this->offHandInventory->setContents(array_filter($this->offHandInventory->getContents(), fn(Item $item) => $item->keepOnDeath()));
+				$keepOnDeathItemsForInventory($this->offHandInventory);
 			}
 		}
 
