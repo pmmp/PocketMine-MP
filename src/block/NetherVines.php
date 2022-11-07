@@ -30,7 +30,6 @@ use pocketmine\entity\Entity;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
-use pocketmine\item\Shears;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -126,7 +125,7 @@ abstract class NetherVines extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if(mt_rand(0, 100) <= 10 && $this->age < self::MAX_AGE){
+		if(mt_rand(0, 100) < 10 && $this->age < self::MAX_AGE){
 			if($this->seekToTop()->getSide($this->getGrowthFace())->canBeReplaced()){
 				$this->grow(null, 1);
 			}
@@ -166,7 +165,7 @@ abstract class NetherVines extends Flowable{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if($item instanceof Shears || mt_rand(0, 100) <= 33){
+		if($item->getBlockToolType() === BlockToolType::SHEARS || mt_rand(0, 100) < 33){
 			return [$this->asItem()];
 		}
 		return [];
