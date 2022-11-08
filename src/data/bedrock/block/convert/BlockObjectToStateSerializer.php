@@ -78,6 +78,7 @@ use pocketmine\block\Froglight;
 use pocketmine\block\FrostedIce;
 use pocketmine\block\Furnace;
 use pocketmine\block\GlazedTerracotta;
+use pocketmine\block\GlowLichen;
 use pocketmine\block\HayBale;
 use pocketmine\block\Hopper;
 use pocketmine\block\ItemFrame;
@@ -982,6 +983,10 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				default => throw new AssumptionFailedError("Unhandled dye colour " . $color->name())
 			})
 				->writeHorizontalFacing($block->getFacing());
+		});
+		$this->map(Blocks::GLOW_LICHEN(), function(GlowLichen $block) : Writer{
+			return Writer::create(Ids::GLOW_LICHEN)
+				->writeInt(StateNames::MULTI_FACE_DIRECTION_BITS, ($block->hasFace(Facing::DOWN) ? BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_DOWN : 0) | ($block->hasFace(Facing::UP) ? BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_UP : 0) | ($block->hasFace(Facing::NORTH) ? BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_NORTH : 0) | ($block->hasFace(Facing::SOUTH) ? BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_SOUTH : 0) | ($block->hasFace(Facing::WEST) ? BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_WEST : 0) | ($block->hasFace(Facing::EAST) ? BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_EAST : 0));
 		});
 		$this->map(Blocks::GRANITE(), fn() => Helper::encodeStone(StringValues::STONE_TYPE_GRANITE));
 		$this->map(Blocks::GRANITE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab3($block, StringValues::STONE_SLAB_TYPE_3_GRANITE));

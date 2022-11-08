@@ -76,6 +76,16 @@ final class RuntimeDataWriter{
 	/**
 	 * @param int[] $faces
 	 */
+	public function facingFlags(array $faces) : void{
+		$uniqueFaces = array_flip($faces);
+		foreach(Facing::ALL as $facing){
+			$this->bool(isset($uniqueFaces[$facing]));
+		}
+	}
+
+	/**
+	 * @param int[] $faces
+	 */
 	public function horizontalFacingFlags(array $faces) : void{
 		$uniqueFaces = array_flip($faces);
 		foreach(Facing::HORIZONTAL as $facing){
