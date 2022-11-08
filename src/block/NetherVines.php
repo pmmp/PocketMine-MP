@@ -173,7 +173,7 @@ abstract class NetherVines extends Flowable{
 		return false;
 	}
 
-	public function recalculateCollisionBoxes() : array{
+	protected function recalculateCollisionBoxes() : array{
 		return [];
 	}
 
