@@ -2784,8 +2784,8 @@ class World implements ChunkManager{
 			if($this->getBlockAt($x, $y, $z)->isFullCube()){
 				if($wasAir){
 					$y++;
-					break;
 				}
+				break;
 			}else{
 				$wasAir = true;
 			}
