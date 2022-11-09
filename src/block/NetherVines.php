@@ -146,7 +146,7 @@ abstract class NetherVines extends Flowable{
 
 		for($i = 1; $i <= $growthAmount && $top->getSide($growthFace, $i)->canBeReplaced(); $i++){
 			$pos = $top->getPosition()->getSide($growthFace, $i);
-			if(!$world->isInWorld($pos->getX(), $pos->getY(), $pos->getZ())){
+			if(!$world->isInWorld($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ())){
 				break;
 			}
 			$block = $tx->fetchBlock($pos->getSide($supportFace));
