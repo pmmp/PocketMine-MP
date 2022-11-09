@@ -149,9 +149,9 @@ abstract class NetherVines extends Flowable{
 			if(!$world->isInWorld($pos->getX(), $pos->getY(), $pos->getZ())){
 				break;
 			}
-			$top = $tx->fetchBlock($pos->getSide($supportFace));
+			$block = $tx->fetchBlock($pos->getSide($supportFace));
 
-			$tx->addBlock($pos, (clone $top)->setAge(min($top->getAge() + 1, self::MAX_AGE)));
+			$tx->addBlock($pos, (clone $block)->setAge(min($block->getAge() + 1, self::MAX_AGE)));
 		}
 
 		$ev = new StructureGrowEvent($top, $tx, $player);
