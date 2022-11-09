@@ -81,7 +81,7 @@ abstract class NetherVines extends Flowable{
 
 	abstract protected function getGrowthFace() : int;
 
-	protected function getSupportFace() : int{
+	private function getSupportFace() : int{
 		return Facing::opposite($this->getGrowthFace());
 	}
 
