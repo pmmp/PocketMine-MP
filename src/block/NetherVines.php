@@ -98,7 +98,7 @@ abstract class NetherVines extends Flowable{
 	private function seekToTop() : NetherVines{
 		$face = $this->getGrowthFace();
 		$top = $this;
-		while(($next = $top->getSide($face))->isSameType($this)){
+		while(($next = $top->getSide($face)) instanceof NetherVines && $next->isSameType($this)){
 			$top = $next;
 		}
 		return $top;
@@ -150,8 +150,9 @@ abstract class NetherVines extends Flowable{
 				break;
 			}
 			$block = $tx->fetchBlock($pos->getSide($supportFace));
-
-			$tx->addBlock($pos, (clone $block)->setAge(min($block->getAge() + 1, self::MAX_AGE)));
+			if($block instanceof NetherVines){
+                $tx->addBlock($pos, (clone $block)->setAge(min($block->getAge() + 1, self::MAX_AGE)));
+            }
 		}
 
 		$ev = new StructureGrowEvent($top, $tx, $player);
