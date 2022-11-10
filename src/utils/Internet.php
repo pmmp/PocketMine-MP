@@ -70,13 +70,13 @@ class Internet{
 	public static $online = true;
 
 	/**
-	 * Gets the External IP using an external service, it is cached
+	 * Gets the External IP using an external service, if it is cached
 	 *
 	 * @param bool $force default false, force IP check even when cached
 	 *
 	 * @return string|false
 	 */
-	public static function getIP(bool $force = false){
+	public static function getIP(bool $force = false) : string|false{
 		if(!self::$online){
 			return false;
 		}elseif(self::$ip !== false && !$force){
