@@ -70,7 +70,7 @@ class Internet{
 	public static $online = true;
 
 	/**
-	 * Gets the External IP using an external service, it is cached
+	 * Gets the External IP using an external service, if it is cached
 	 *
 	 * @param bool $force default false, force IP check even when cached
 	 *
