@@ -74,7 +74,7 @@ class Internet{
 	 *
 	 * @return string|false
 	 */
-	public static function getIP(bool $force = false){
+	public static function getIP(bool $force = false) : string|false{
 		if(!self::$online){
 			return false;
 		}elseif(self::$ip !== false && !$force){
