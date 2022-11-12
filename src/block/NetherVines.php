@@ -125,7 +125,7 @@ abstract class NetherVines extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if(mt_rand(0, 100) < 10 && $this->age < self::MAX_AGE){
+		if(mt_rand(1, 10) === 1 && $this->age < self::MAX_AGE){
 			if($this->getSide($this->getGrowthFace())->canBeReplaced()){
 				$this->grow(null);
 			}
