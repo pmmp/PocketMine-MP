@@ -34,9 +34,9 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use function count;
 use function min;
 use function mt_rand;
-use function count;
 
 /**
  * This class is used for Weeping & Twisting vines, because they have same behaviour
