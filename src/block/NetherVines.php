@@ -176,7 +176,7 @@ abstract class NetherVines extends Flowable{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if($item->getBlockToolType() === BlockToolType::SHEARS || mt_rand(0, 99) < 33){
+		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0 || mt_rand(0, 99) < 33){
 			return [$this->asItem()];
 		}
 		return [];
