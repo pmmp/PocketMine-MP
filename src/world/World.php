@@ -1114,12 +1114,23 @@ class World implements ChunkManager{
 		/** @var bool[] $chunkTickList chunkhash => dummy */
 		$chunkTickList = [];
 
+		$centerChunks = [];
+
 		$selector = new ChunkSelector();
 		foreach($this->tickingLoaders as $loader){
+			$centerChunkX = (int) floor($loader->getX()) >> Chunk::COORD_BIT_SIZE;
+			$centerChunkZ = (int) floor($loader->getZ()) >> Chunk::COORD_BIT_SIZE;
+			$centerChunkPosHash = World::chunkHash($centerChunkX, $centerChunkZ);
+			if(isset($centerChunks[$centerChunkPosHash])){
+				//we already queued chunks in this radius because of a previous loader on the same chunk
+				continue;
+			}
+			$centerChunks[$centerChunkPosHash] = true;
+
 			foreach($selector->selectChunks(
 				$this->chunkTickRadius,
-				(int) floor($loader->getX()) >> Chunk::COORD_BIT_SIZE,
-				(int) floor($loader->getZ()) >> Chunk::COORD_BIT_SIZE
+				$centerChunkX,
+				$centerChunkZ
 			) as $hash){
 				World::getXZ($hash, $chunkX, $chunkZ);
 				if(!isset($chunkTickList[$hash]) && isset($this->chunks[$hash]) && $this->isChunkTickable($chunkX, $chunkZ)){
