@@ -34,8 +34,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
-use function count;
-use function iterator_to_array;
 use function min;
 use function mt_rand;
 
@@ -138,6 +136,7 @@ abstract class NetherVines extends Flowable{
 		$pos = $top->getPosition();
 		$world = $pos->getWorld();
 		$growthDirection = $this->getGrowthFace();
+		$changedBlocks = 0;
 
 		$tx = new BlockTransaction($world);
 
@@ -147,9 +146,10 @@ abstract class NetherVines extends Flowable{
 				break;
 			}
 			$tx->addBlock($growthPos, (clone $top)->setAge(min(++$age, self::MAX_AGE)));
+			$changedBlocks++;
 		}
 
-		if(count(iterator_to_array($tx->getBlocks())) > 0){
+		if($changedBlocks > 0){
 			$ev = new StructureGrowEvent($top, $tx, $player);
 			$ev->call();
 
