@@ -1104,6 +1104,21 @@ class World implements ChunkManager{
 		unset($this->randomTickBlocks[$block->getFullId()]);
 	}
 
+	/**
+	 * Returns the radius of chunks to be ticked around each ticking chunk loader (usually players). This is referred to
+	 * as "simulation distance" in the Minecraft: Bedrock world options screen.
+	 */
+	public function getChunkTickRadius() : int{
+		return $this->chunkTickRadius;
+	}
+
+	/**
+	 * Sets the radius of chunks ticked around each ticking chunk loader (usually players).
+	 */
+	public function setChunkTickRadius(int $radius) : void{
+		$this->chunkTickRadius = $radius;
+	}
+
 	private function tickChunks() : void{
 		if($this->chunkTickRadius <= 0 || count($this->tickingLoaders) === 0){
 			return;
