@@ -114,10 +114,8 @@ abstract class NetherVines extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer){
-			if($this->seekToTop()->getSide($this->getGrowthFace())->canBeReplaced()){
-				if($this->grow($player, mt_rand(1, 5))){
-					$item->pop();
-				}
+			if($this->grow($player, mt_rand(1, 5))){
+				$item->pop();
 			}
 			return true;
 		}
