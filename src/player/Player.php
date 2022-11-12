@@ -300,6 +300,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->chunkLoader = new PlayerChunkLoader($spawnLocation);
 
+		$world = $spawnLocation->getWorld();
+		//load the spawn chunk so we can see the terrain
+		$xSpawnChunk = $spawnLocation->getFloorX() >> Chunk::COORD_BIT_SIZE;
+		$zSpawnChunk = $spawnLocation->getFloorZ() >> Chunk::COORD_BIT_SIZE;
+		$world->registerChunkLoader($this->chunkLoader, $xSpawnChunk, $zSpawnChunk, true);
+		$world->registerChunkListener($this, $xSpawnChunk, $zSpawnChunk);
+		$this->usedChunks[World::chunkHash($xSpawnChunk, $zSpawnChunk)] = UsedChunkStatus::NEEDED();
+
 		parent::__construct($spawnLocation, $this->playerInfo->getSkin(), $namedtag);
 	}
 
