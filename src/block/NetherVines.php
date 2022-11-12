@@ -36,6 +36,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function min;
 use function mt_rand;
+use function count;
 
 /**
  * This class is used for Weeping & Twisting vines, because they have same behaviour
@@ -147,14 +148,18 @@ abstract class NetherVines extends Flowable{
 			$tx->addBlock($growthPos, (clone $top)->setAge(min(++$age, self::MAX_AGE)));
 		}
 
-		$ev = new StructureGrowEvent($top, $tx, $player);
-		$ev->call();
+		if(count($tx->getBlocks()) > 0){
+			$ev = new StructureGrowEvent($top, $tx, $player);
+			$ev->call();
 
-		if($ev->isCancelled()){
-			return false;
+			if($ev->isCancelled()){
+				return false;
+			}
+
+			return $tx->apply();
 		}
 
-		return $tx->apply();
+		return false;
 	}
 
 	public function hasEntityCollision() : bool{
