@@ -27,7 +27,7 @@ use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
-use pocketmine\event\block\BlockGrowEvent;
+use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -115,7 +115,7 @@ abstract class NetherVines extends Flowable{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer){
 			if($this->seekToTop()->getSide($this->getGrowthFace())->canBeReplaced()){
-				if($this->grow(mt_rand(1, 5))){
+				if($this->grow($player, mt_rand(1, 5))){
 					$item->pop();
 				}
 			}
@@ -127,39 +127,36 @@ abstract class NetherVines extends Flowable{
 	public function onRandomTick() : void{
 		if(mt_rand(0, 100) < 10 && $this->age < self::MAX_AGE){
 			if($this->getSide($this->getGrowthFace())->canBeReplaced()){
-				$this->grow();
+				$this->grow(null);
 			}
 		}
 	}
 
-	private function grow(int $growthAmount = 1) : bool{
+	private function grow(?Player $player, int $growthAmount = 1) : bool{
 		$top = $this->seekToTop();
-		$world = $this->position->getWorld();
-		$growthFace = $this->getGrowthFace();
-		$supportFace = $this->getSupportFace();
-		$grew = false;
+		$age = $top->getAge();
+		$pos = $top->getPosition();
+		$world = $pos->getWorld();
+		$growthDirection = $this->getGrowthFace();
 
-		for($i = 1; $i <= $growthAmount && $top->getSide($growthFace, $i)->canBeReplaced(); $i++){
-			$pos = $top->getPosition()->getSide($growthFace, $i);
-			if(!$world->isInWorld($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ())){
+		$tx = new BlockTransaction($world);
+
+		for($i = 1; $i <= $growthAmount; $i++){
+			$growthPos = $pos->getSide($growthDirection, $i);
+			if(!$world->isInWorld($growthPos->getFloorX(), $growthPos->getFloorY(), $growthPos->getFloorZ()) || !$world->getBlock($growthPos)->canBeReplaced()){
 				break;
 			}
-
-			$block = $world->getBlock($pos->getSide($supportFace));
-
-			if($block instanceof NetherVines){
-				$ev = new BlockGrowEvent($block, (clone $block)->setAge(min($block->getAge() + 1, self::MAX_AGE)));
-				$ev->call();
-
-				if($ev->isCancelled()){
-					break;
-				}
-				$world->setBlock($pos, $ev->getNewState());
-				$grew = true;
-			}
+			$tx->addBlock($growthPos, (clone $top)->setAge(min(++$age, self::MAX_AGE)));
 		}
 
-		return $grew;
+		$ev = new StructureGrowEvent($top, $tx, $player);
+		$ev->call();
+
+		if($ev->isCancelled()){
+			return false;
+		}
+
+		return $tx->apply();
 	}
 
 	public function hasEntityCollision() : bool{
