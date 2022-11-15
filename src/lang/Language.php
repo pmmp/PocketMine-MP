@@ -173,6 +173,14 @@ class Language{
 		return $this->internalGet($id) ?? $id;
 	}
 
+	/**
+	 * @return string[]
+	 * @phpstan-return array<string, string>
+	 */
+	public function getAll() : array{
+		return $this->lang;
+	}
+
 	protected function parseTranslation(string $text, ?string $onlyPrefix = null) : string{
 		$newString = "";
 
