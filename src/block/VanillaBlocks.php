@@ -58,6 +58,7 @@ use pocketmine\block\utils\WoodType;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
+use pocketmine\math\Facing;
 use pocketmine\math\RayTraceResult;
 use pocketmine\utils\CloningRegistryTrait;
 use pocketmine\world\sound\AmethystBlockChimeSound;
@@ -695,6 +696,7 @@ use function mb_strtolower;
  * @method static Tripwire TRIPWIRE()
  * @method static TripwireHook TRIPWIRE_HOOK()
  * @method static Opaque TUFF()
+ * @method static NetherVines TWISTING_VINES()
  * @method static UnderwaterTorch UNDERWATER_TORCH()
  * @method static Vine VINES()
  * @method static WallBanner WALL_BANNER()
@@ -715,6 +717,7 @@ use function mb_strtolower;
  * @method static Opaque WARPED_WART_BLOCK()
  * @method static Water WATER()
  * @method static WaterCauldron WATER_CAULDRON()
+ * @method static NetherVines WEEPING_VINES()
  * @method static WeightedPressurePlateHeavy WEIGHTED_PRESSURE_PLATE_HEAVY()
  * @method static WeightedPressurePlateLight WEIGHTED_PRESSURE_PLATE_LIGHT()
  * @method static Wheat WHEAT()
@@ -1466,6 +1469,9 @@ final class VanillaBlocks{
 		self::register("crying_obsidian", new class(new BID(Ids::CRYING_OBSIDIAN), "Crying Obsidian", new Info(BreakInfo::pickaxe(35.0 /* 50 in Java */, ToolTier::DIAMOND(), 6000.0))) extends Opaque{
 			public function getLightLevel() : int{ return 10;}
 		});
+
+		self::register("twisting_vines", new NetherVines(new BID(Ids::TWISTING_VINES), "Twisting Vines", new Info(BreakInfo::instant()), Facing::UP));
+		self::register("weeping_vines", new NetherVines(new BID(Ids::WEEPING_VINES), "Weeping Vines", new Info(BreakInfo::instant()), Facing::DOWN));
 	}
 
 	private static function registerBlocksR17() : void{
