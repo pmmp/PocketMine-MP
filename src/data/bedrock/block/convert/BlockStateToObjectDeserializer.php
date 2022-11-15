@@ -736,16 +736,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFacing($in->readHorizontalFacing())
 				->setLit(false);
 		});
-		$this->map(Ids::GLOW_LICHEN, function(Reader $in) : Block{
-			$drectionFlags = $in->readBoundedInt(StateNames::MULTI_FACE_DIRECTION_BITS, 0, 63);
-			return Blocks::GLOW_LICHEN()
-				->setFace(Facing::DOWN, ($drectionFlags & BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_DOWN) !== 0)
-				->setFace(Facing::UP, ($drectionFlags & BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_UP) !== 0)
-				->setFace(Facing::NORTH, ($drectionFlags & BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_NORTH) !== 0)
-				->setFace(Facing::SOUTH, ($drectionFlags & BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_SOUTH) !== 0)
-				->setFace(Facing::WEST, ($drectionFlags & BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_WEST) !== 0)
-				->setFace(Facing::EAST, ($drectionFlags & BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_EAST) !== 0);
-		});
+		$this->map(Ids::GLOW_LICHEN, fn(Reader $in) => Blocks::GLOW_LICHEN()->setFaces($in->readFacingFlags()));
 		$this->map(Ids::GLOW_FRAME, fn(Reader $in) => Helper::decodeItemFrame($in, true));
 		$this->map(Ids::GOLDEN_RAIL, function(Reader $in) : Block{
 			return Blocks::POWERED_RAIL()
