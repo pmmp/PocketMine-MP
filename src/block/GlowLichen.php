@@ -121,7 +121,7 @@ class GlowLichen extends Transparent{
 		$changed = false;
 
 		foreach($this->faces as $face){
-			if(!$this->getSide($face)->isFullCube()){
+			if(!$this->getSide($face)->getSupportType(Facing::opposite($face))->equals(SupportType::FULL())){
 				unset($this->faces[$face]);
 				$changed = true;
 			}
@@ -166,7 +166,7 @@ class GlowLichen extends Transparent{
 	public function getAvailableFaces() : array{
 		$faces = [];
 		foreach(Facing::ALL as $face){
-			if(!$this->hasFace($face) && $this->getSide($face)->isFullCube()){
+			if(!$this->hasFace($face) && $this->getSide($face)->getSupportType(Facing::opposite($face))->equals(SupportType::FULL())){
 				$faces[$face] = $face;
 			}
 		}
