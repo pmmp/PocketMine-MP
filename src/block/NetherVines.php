@@ -101,7 +101,10 @@ class NetherVines extends Flowable{
 		}
 	}
 
-	private function seekToTop() : NetherVines{
+	/**
+	 * Returns the block at the end of the vine structure furthest from the supporting block.
+	 */
+	private function seekToTip() : NetherVines{
 		$top = $this;
 		while(($next = $top->getSide($this->growthFace)) instanceof NetherVines && $next->isSameType($this)){
 			$top = $next;
@@ -136,7 +139,7 @@ class NetherVines extends Flowable{
 	}
 
 	private function grow(?Player $player, int $growthAmount = 1) : bool{
-		$top = $this->seekToTop();
+		$top = $this->seekToTip();
 		$age = $top->getAge();
 		$pos = $top->getPosition();
 		$world = $pos->getWorld();
