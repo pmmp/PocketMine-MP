@@ -163,7 +163,7 @@ class GlowLichen extends Transparent{
 	/**
 	 * @return array<int, int> $faces
 	 */
-	public function getAvailableFaces() : array{
+	private function getAvailableFaces() : array{
 		$faces = [];
 		foreach(Facing::ALL as $face){
 			if(!$this->hasFace($face) && $this->getSide($face)->getSupportType(Facing::opposite($face))->equals(SupportType::FULL())){
