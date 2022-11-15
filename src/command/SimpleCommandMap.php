@@ -140,7 +140,7 @@ class SimpleCommandMap implements CommandMap{
 
 	public function register(string $fallbackPrefix, Command $command, ?string $label = null) : bool{
 		if($label === null){
-			$label = $command->getName();
+			$label = $command->getLabel();
 		}
 		$label = trim($label);
 		$fallbackPrefix = strtolower(trim($fallbackPrefix));

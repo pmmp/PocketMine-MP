@@ -21,28 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\world\sound;
 
-use pocketmine\block\utils\Fallable;
-use pocketmine\block\utils\FallableTrait;
-use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
-use function mt_rand;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-class Gravel extends Opaque implements Fallable{
-	use FallableTrait;
+class AmethystBlockChimeSound implements Sound{
 
-	public function getDropsForCompatibleTool(Item $item) : array{
-		if(mt_rand(1, 10) === 1){
-			return [
-				VanillaItems::FLINT()
-			];
-		}
-
-		return parent::getDropsForCompatibleTool($item);
-	}
-
-	public function isAffectedBySilkTouch() : bool{
-		return true;
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::AMETHYST_BLOCK_CHIME, $pos, false)];
 	}
 }

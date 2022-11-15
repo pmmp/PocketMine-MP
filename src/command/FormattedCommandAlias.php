@@ -29,9 +29,9 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\TextFormat;
-use function array_map;
 use function array_shift;
 use function count;
+use function implode;
 use function preg_match;
 use function strlen;
 use function strpos;
@@ -63,7 +63,20 @@ class FormattedCommandAlias extends Command{
 		foreach($this->formatStrings as $formatString){
 			try{
 				$formatArgs = CommandStringHelper::parseQuoteAware($formatString);
-				$commands[] = array_map(fn(string $formatArg) => $this->buildCommand($formatArg, $args), $formatArgs);
+				$unresolved = [];
+				$processedArgs = [];
+				foreach($formatArgs as $formatArg){
+					$processedArg = $this->buildCommand($formatArg, $args);
+					if($processedArg === null){
+						$unresolved[] = $formatArg;
+					}elseif(count($unresolved) !== 0){
+						//unresolved args are OK only if they are at the end of the string - we can't have holes in the args list
+						throw new \InvalidArgumentException("Unable to resolve format arguments (" . implode(", ", $unresolved) . ") in command string \"$formatString\" due to missing arguments");
+					}else{
+						$processedArgs[] = $processedArg;
+					}
+				}
+				$commands[] = $processedArgs;
 			}catch(\InvalidArgumentException $e){
 				$sender->sendMessage(TextFormat::RED . $e->getMessage());
 				return false;
@@ -109,7 +122,7 @@ class FormattedCommandAlias extends Command{
 	/**
 	 * @param string[] $args
 	 */
-	private function buildCommand(string $formatString, array $args) : string{
+	private function buildCommand(string $formatString, array $args) : ?string{
 		$index = 0;
 		while(($index = strpos($formatString, '$', $index)) !== false){
 			$start = $index;
@@ -131,6 +144,9 @@ class FormattedCommandAlias extends Command{
 			}
 
 			$replacement = self::buildReplacement($args, $position, $rest);
+			if($replacement === null){
+				return null;
+			}
 
 			$end = $index + strlen($fullPlaceholder);
 			$formatString = substr($formatString, 0, $start) . $replacement . substr($formatString, $end);
@@ -145,9 +161,9 @@ class FormattedCommandAlias extends Command{
 	 * @param string[] $args
 	 * @phpstan-param list<string> $args
 	 */
-	private static function buildReplacement(array $args, int $position, bool $rest) : string{
-		$replacement = "";
+	private static function buildReplacement(array $args, int $position, bool $rest) : ?string{
 		if($rest && $position < count($args)){
+			$replacement = "";
 			for($i = $position, $c = count($args); $i < $c; ++$i){
 				if($i !== $position){
 					$replacement .= " ";
@@ -155,11 +171,13 @@ class FormattedCommandAlias extends Command{
 
 				$replacement .= $args[$i];
 			}
+
+			return $replacement;
 		}elseif($position < count($args)){
-			$replacement .= $args[$position];
+			return $args[$position];
 		}
 
-		return $replacement;
+		return null;
 	}
 
 	/**
