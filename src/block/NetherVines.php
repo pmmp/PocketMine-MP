@@ -40,10 +40,18 @@ use function mt_rand;
 /**
  * This class is used for Weeping & Twisting vines, because they have same behaviour
  */
-abstract class NetherVines extends Flowable{
+class NetherVines extends Flowable{
 	public const MAX_AGE = 25;
 
+	/** Direction the vine grows towards. */
+	private int $growthFace;
+
 	protected int $age = 0;
+
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, int $growthFace){
+		$this->growthFace = $growthFace;
+		parent::__construct($idInfo, $name, $typeInfo);
+	}
 
 	public function getRequiredStateDataBits() : int{
 		return 5;
@@ -79,10 +87,8 @@ abstract class NetherVines extends Flowable{
 		return true;
 	}
 
-	abstract protected function getGrowthFace() : int;
-
 	private function getSupportFace() : int{
-		return Facing::opposite($this->getGrowthFace());
+		return Facing::opposite($this->growthFace);
 	}
 
 	private function canBeSupportedBy(Block $block) : bool{
@@ -96,9 +102,8 @@ abstract class NetherVines extends Flowable{
 	}
 
 	private function seekToTop() : NetherVines{
-		$face = $this->getGrowthFace();
 		$top = $this;
-		while(($next = $top->getSide($face)) instanceof NetherVines && $next->isSameType($this)){
+		while(($next = $top->getSide($this->growthFace)) instanceof NetherVines && $next->isSameType($this)){
 			$top = $next;
 		}
 		return $top;
@@ -124,7 +129,7 @@ abstract class NetherVines extends Flowable{
 
 	public function onRandomTick() : void{
 		if(mt_rand(1, 10) === 1 && $this->age < self::MAX_AGE){
-			if($this->getSide($this->getGrowthFace())->canBeReplaced()){
+			if($this->getSide($this->growthFace)->canBeReplaced()){
 				$this->grow(null);
 			}
 		}
@@ -135,13 +140,12 @@ abstract class NetherVines extends Flowable{
 		$age = $top->getAge();
 		$pos = $top->getPosition();
 		$world = $pos->getWorld();
-		$growthDirection = $this->getGrowthFace();
 		$changedBlocks = 0;
 
 		$tx = new BlockTransaction($world);
 
 		for($i = 1; $i <= $growthAmount; $i++){
-			$growthPos = $pos->getSide($growthDirection, $i);
+			$growthPos = $pos->getSide($this->growthFace, $i);
 			if(!$world->isInWorld($growthPos->getFloorX(), $growthPos->getFloorY(), $growthPos->getFloorZ()) || !$world->getBlock($growthPos)->canBeReplaced()){
 				break;
 			}
