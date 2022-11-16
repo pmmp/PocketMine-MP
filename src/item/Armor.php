@@ -33,6 +33,11 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\player\Player;
 use pocketmine\utils\Binary;
+use pocketmine\world\sound\ArmorEquipChainSound;
+use pocketmine\world\sound\ArmorEquipDiamondSound;
+use pocketmine\world\sound\ArmorEquipGoldSound;
+use pocketmine\world\sound\ArmorEquipIronSound;
+use pocketmine\world\sound\ArmorEquipLeatherSound;
 use function lcg_value;
 use function mt_rand;
 
@@ -125,6 +130,18 @@ class Armor extends Durable{
 		$thisCopy = clone $this;
 		$new = $thisCopy->pop();
 		$player->getArmorInventory()->setItem($this->getArmorSlot(), $new);
+		$sound = match($this->getId()){
+			ItemIds::TURTLE_HELMET, ItemIds::LEATHER_HELMET, ItemIds::LEATHER_CHESTPLATE, ItemIds::LEATHER_LEGGINGS, ItemIds::LEATHER_BOOTS => new ArmorEquipLeatherSound(),
+			ItemIds::CHAIN_HELMET, ItemIds::CHAIN_CHESTPLATE, ItemIds::CHAIN_LEGGINGS, ItemIds::CHAIN_BOOTS => new ArmorEquipChainSound(),
+			ItemIds::IRON_HELMET, ItemIds::IRON_CHESTPLATE, ItemIds::IRON_LEGGINGS, ItemIds::IRON_BOOTS => new ArmorEquipIronSound(),
+			ItemIds::DIAMOND_HELMET, ItemIds::DIAMOND_CHESTPLATE, ItemIds::DIAMOND_LEGGINGS, ItemIds::DIAMOND_BOOTS => new ArmorEquipDiamondSound(),
+			ItemIds::GOLD_HELMET, ItemIds::GOLD_CHESTPLATE, ItemIds::GOLD_LEGGINGS, ItemIds::GOLD_BOOTS => new ArmorEquipGoldSound(),
+			//TODO: Netherite equip sounds
+			default => null
+		};
+		if($sound !== null){
+			$player->getLocation()->getWorld()->addSound($player->getLocation(), $sound);
+		}
 		if($thisCopy->getCount() === 0){
 			$player->getInventory()->setItemInHand($existing);
 		}else{ //if the stack size was bigger than 1 (usually won't happen, but might be caused by plugins
