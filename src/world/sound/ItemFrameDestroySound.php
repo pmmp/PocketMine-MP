@@ -27,7 +27,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\LevelEvent;
 
-class ItemFrameRemoveSound implements Sound{
+class ItemFrameDestroySound implements Sound{
 
 	public function encode(Vector3 $pos) : array{
 		return [LevelEventPacket::create(LevelEvent::SOUND_ITEMFRAME_REMOVE, 0, $pos)];
