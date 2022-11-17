@@ -667,7 +667,7 @@ class World implements ChunkManager{
 	 */
 	public function addSound(Vector3 $pos, Sound $sound, ?array $players = null) : void{
 		$players ??= $this->getViewersForPosition($pos);
-		$ev = new WorldSoundEvent($this, $pos, $sound, $players);
+		$ev = new WorldSoundEvent($this, $sound, $players);
 
 		$ev->call();
 

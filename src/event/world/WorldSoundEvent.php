@@ -25,7 +25,6 @@ namespace pocketmine\event\world;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
@@ -42,19 +41,10 @@ class WorldSoundEvent extends WorldEvent implements Cancellable{
 	 */
 	public function __construct(
 		World $world,
-		private Vector3 $position,
 		private Sound $sound,
 		private array $recipients
 	){
 		parent::__construct($world);
-	}
-
-	public function getPosition() : Vector3{
-		return $this->position;
-	}
-
-	public function setPosition(Vector3 $position) : void{
-		$this->position = $position;
 	}
 
 	public function getSound() : Sound{
