@@ -54,7 +54,7 @@ class Network{
 
 	private BidirectionalBandwidthStatsTracker $bandwidthTracker;
 	private string $name;
-	private NetworkSessionManager$sessionManager;
+	private NetworkSessionManager $sessionManager;
 
 	public function __construct(
 		private \Logger $logger
