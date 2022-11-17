@@ -863,6 +863,10 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::ENCHANTMENT_SOUL_SPEED, []);
 	}
 
+	public static function enchantment_swift_sneak() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_SWIFT_SNEAK, []);
+	}
+
 	public static function enchantment_thorns() : Translatable{
 		return new Translatable(KnownTranslationKeys::ENCHANTMENT_THORNS, []);
 	}
@@ -954,6 +958,10 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::ITEM_RECORD_13_DESC, []);
 	}
 
+	public static function item_record_5_desc() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEM_RECORD_5_DESC, []);
+	}
+
 	public static function item_record_blocks_desc() : Translatable{
 		return new Translatable(KnownTranslationKeys::ITEM_RECORD_BLOCKS_DESC, []);
 	}
@@ -976,6 +984,10 @@ final class KnownTranslationFactory{
 
 	public static function item_record_mellohi_desc() : Translatable{
 		return new Translatable(KnownTranslationKeys::ITEM_RECORD_MELLOHI_DESC, []);
+	}
+
+	public static function item_record_otherside_desc() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEM_RECORD_OTHERSIDE_DESC, []);
 	}
 
 	public static function item_record_pigstep_desc() : Translatable{
