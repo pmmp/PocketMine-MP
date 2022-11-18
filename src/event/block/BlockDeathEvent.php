@@ -25,7 +25,7 @@ namespace pocketmine\event\block;
 
 /**
  * Called when a block dies.
- * This could be things like coral dying due to no water nearby.
+ * This could be things like corals dying due to no water being nearby.
  */
 class BlockDeathEvent extends BaseBlockChangeEvent{
 
