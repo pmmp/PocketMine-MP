@@ -94,7 +94,7 @@ class Candle extends Transparent{
 			})->trim(Facing::UP, 10 / 16)
 		];
 	}
-	
+
 	public function getSupportType(int $facing) : SupportType{
 		return SupportType::NONE();
 	}
