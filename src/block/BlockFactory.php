@@ -133,6 +133,7 @@ class BlockFactory{
 		$this->registerAllMeta(new WallBanner(new BID(Ids::WALL_BANNER, 0, ItemIds::BANNER, TileBanner::class), "Wall Banner", $bannerBreakInfo));
 		$this->registerAllMeta(new Barrel(new BID(Ids::BARREL, 0, null, TileBarrel::class), "Barrel", new BreakInfo(2.5, ToolType::AXE)));
 		$this->registerAllMeta(new Transparent(new BID(Ids::BARRIER, 0), "Barrier", BreakInfo::indestructible()));
+		$this->registerAllMeta(new Transparent(new BID(Ids::STRUCTURE_VOID, 0), "Barrier", BreakInfo::indestructible()));
 		$this->registerAllMeta(new Beacon(new BID(Ids::BEACON, 0, null, TileBeacon::class), "Beacon", new BreakInfo(3.0)));
 		$this->registerAllMeta(new Bed(new BID(Ids::BED_BLOCK, 0, ItemIds::BED, TileBed::class), "Bed Block", new BreakInfo(0.2)));
 		$this->registerAllMeta(new Bedrock(new BID(Ids::BEDROCK, 0), "Bedrock", BreakInfo::indestructible()));
