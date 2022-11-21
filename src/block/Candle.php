@@ -94,6 +94,10 @@ class Candle extends Transparent{
 			})->trim(Facing::UP, 10 / 16)
 		];
 	}
+	
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
 
 	protected function getCandleIfCompatibleType(Block $block) : ?Candle{
 		return $block instanceof Candle && $block->isSameType($this) ? $block : null;
@@ -123,9 +127,5 @@ class Candle extends Transparent{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [$this->asItem()->setCount($this->count)];
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
 	}
 }
