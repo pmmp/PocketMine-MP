@@ -244,7 +244,7 @@ final class BlockLegacyIds{
 	public const NETHER_WART_BLOCK = 214;
 	public const RED_NETHER_BRICK = 215;
 	public const BONE_BLOCK = 216;
-
+	public const STRUCTURE_VOID = 217;
 	public const SHULKER_BOX = 218;
 	public const PURPLE_GLAZED_TERRACOTTA = 219;
 	public const WHITE_GLAZED_TERRACOTTA = 220;
