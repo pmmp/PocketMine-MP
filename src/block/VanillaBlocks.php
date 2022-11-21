@@ -1114,6 +1114,7 @@ final class VanillaBlocks{
 		self::register("stripped_oak_wood", $factory->get(Ids::WOOD, 8));
 		self::register("stripped_spruce_log", $factory->get(Ids::STRIPPED_SPRUCE_LOG, 0));
 		self::register("stripped_spruce_wood", $factory->get(Ids::WOOD, 9));
+		self::register("structure_void", $factory->get(Ids::STRUCUTRE_VOID, 0));
 		self::register("sugarcane", $factory->get(Ids::REEDS_BLOCK, 0));
 		self::register("sunflower", $factory->get(Ids::DOUBLE_PLANT, 0));
 		self::register("sweet_berry_bush", $factory->get(Ids::SWEET_BERRY_BUSH, 0));
