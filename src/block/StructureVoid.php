@@ -22,25 +22,17 @@
 declare(strict_types=1);
 
 namespace pocketmine\block;
-
-use pocketmine\block\utils\SupportType;
-
 /**
  * StructureVoid block
  */
 class StructureVoid extends Transparent{
-  
 	/**
 	 * @return AxisAlignedBB[]
 	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [];
 	}
-	
 	public function isSolid() : bool{
 		return false;
 	}
-	
-  
-  
 }
