@@ -37,9 +37,6 @@ class StructureVoid extends Transparent{
 		return [];
 	}
 	
-	public function canBeReplaced() : bool{
-		return true;
-	}
   
   
 }
