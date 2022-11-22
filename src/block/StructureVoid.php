@@ -37,6 +37,10 @@ class StructureVoid extends Transparent{
 		return [];
 	}
 	
+	public function isSolid() : bool{
+		return false;
+	}
+	
   
   
 }
