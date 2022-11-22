@@ -550,7 +550,6 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Wood STRIPPED_OAK_WOOD()
  * @method static Log STRIPPED_SPRUCE_LOG()
  * @method static Wood STRIPPED_SPRUCE_WOOD()
- * @method static StructureVoid STRUCTURE_VOID()
  * @method static Sugarcane SUGARCANE()
  * @method static DoublePlant SUNFLOWER()
  * @method static SweetBerryBush SWEET_BERRY_BUSH()
