@@ -30,6 +30,9 @@ use pocketmine\block\utils\SupportType;
  */
 class StructureVoid extends Transparent{
   
+	/**
+	 * @return AxisAlignedBB[]
+	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [];
 	}
