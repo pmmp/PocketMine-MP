@@ -438,7 +438,7 @@ class BlockFactory{
 		}
 
 		$this->registerAllMeta(new Opaque(new BID(Ids::STONECUTTER, 0), "Legacy Stonecutter", new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
-		$this->registerAllMeta(new Transparent(new BID(Ids::STRUCTURE_VOID, 0), "Structure Void", BreakInfo::indestructible()));
+		$this->registerAllMeta(new StructureVoid(new BID(Ids::STRUCTURE_VOID, 0), "Structure Void", BreakInfo::indestructible()));
 		$this->registerAllMeta(new Sugarcane(new BID(Ids::REEDS_BLOCK, 0, ItemIds::REEDS), "Sugarcane", BreakInfo::instant()));
 		$this->registerAllMeta(new SweetBerryBush(new BID(Ids::SWEET_BERRY_BUSH, 0, ItemIds::SWEET_BERRIES), "Sweet Berry Bush", BreakInfo::instant()));
 		$this->registerAllMeta(new TNT(new BID(Ids::TNT, 0), "TNT", BreakInfo::instant()));
