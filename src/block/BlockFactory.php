@@ -133,7 +133,6 @@ class BlockFactory{
 		$this->registerAllMeta(new WallBanner(new BID(Ids::WALL_BANNER, 0, ItemIds::BANNER, TileBanner::class), "Wall Banner", $bannerBreakInfo));
 		$this->registerAllMeta(new Barrel(new BID(Ids::BARREL, 0, null, TileBarrel::class), "Barrel", new BreakInfo(2.5, ToolType::AXE)));
 		$this->registerAllMeta(new Transparent(new BID(Ids::BARRIER, 0), "Barrier", BreakInfo::indestructible()));
-		$this->registerAllMeta(new Transparent(new BID(Ids::STRUCTURE_VOID, 0), "Barrier", BreakInfo::indestructible()));
 		$this->registerAllMeta(new Beacon(new BID(Ids::BEACON, 0, null, TileBeacon::class), "Beacon", new BreakInfo(3.0)));
 		$this->registerAllMeta(new Bed(new BID(Ids::BED_BLOCK, 0, ItemIds::BED, TileBed::class), "Bed Block", new BreakInfo(0.2)));
 		$this->registerAllMeta(new Bedrock(new BID(Ids::BEDROCK, 0), "Bedrock", BreakInfo::indestructible()));
@@ -439,6 +438,7 @@ class BlockFactory{
 		}
 
 		$this->registerAllMeta(new Opaque(new BID(Ids::STONECUTTER, 0), "Legacy Stonecutter", new BreakInfo(3.5, ToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		$this->registerAllMeta(new Transparent(new BID(Ids::STRUCTURE_VOID, 0), "Structure Void", BreakInfo::indestructible()));
 		$this->registerAllMeta(new Sugarcane(new BID(Ids::REEDS_BLOCK, 0, ItemIds::REEDS), "Sugarcane", BreakInfo::instant()));
 		$this->registerAllMeta(new SweetBerryBush(new BID(Ids::SWEET_BERRY_BUSH, 0, ItemIds::SWEET_BERRIES), "Sweet Berry Bush", BreakInfo::instant()));
 		$this->registerAllMeta(new TNT(new BID(Ids::TNT, 0), "TNT", BreakInfo::instant()));
