@@ -204,6 +204,9 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("carrots", fn() => Blocks::CARROTS());
 		$result->registerBlock("carved_pumpkin", fn() => Blocks::CARVED_PUMPKIN());
 		$result->registerBlock("cauldron", fn() => Blocks::CAULDRON());
+		$result->registerBlock("cave_vines", fn() => Blocks::CAVE_VINES());
+		$result->registerBlock("cave_vines_body_with_berries", fn() => Blocks::CAVE_VINES()->setBerries(true));
+		$result->registerBlock("cave_vines_head_with_berries", fn() => Blocks::CAVE_VINES()->setBerries(true)->setTip(true));
 		$result->registerBlock("chemical_heat", fn() => Blocks::CHEMICAL_HEAT());
 		$result->registerBlock("chemistry_table", fn() => Blocks::COMPOUND_CREATOR());
 		$result->registerBlock("chest", fn() => Blocks::CHEST());
@@ -1264,6 +1267,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("ghast_tear", fn() => Items::GHAST_TEAR());
 		$result->register("glass_bottle", fn() => Items::GLASS_BOTTLE());
 		$result->register("glistering_melon", fn() => Items::GLISTERING_MELON());
+		$result->register("glow_berries", fn() => Items::GLOW_BERRIES());
 		$result->register("glow_ink_sac", fn() => Items::GLOW_INK_SAC());
 		$result->register("glowstone_dust", fn() => Items::GLOWSTONE_DUST());
 		$result->register("gold_axe", fn() => Items::GOLDEN_AXE());
