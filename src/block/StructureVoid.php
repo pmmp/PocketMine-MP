@@ -33,6 +33,10 @@ class StructureVoid extends Transparent{
 	protected function recalculateCollisionBoxes() : array{
 		return [];
 	}
+	
+	public function canBeReplaced() : bool{
+		return true;
+	}
   
   
 }
