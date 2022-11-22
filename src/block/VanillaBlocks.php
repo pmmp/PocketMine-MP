@@ -55,6 +55,7 @@ use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\tile\Smoker as TileSmoker;
 use pocketmine\block\utils\TreeType;
 use pocketmine\block\utils\WoodType;
+use pocketmine\crafting\FurnaceType;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
@@ -846,9 +847,9 @@ final class VanillaBlocks{
 		self::register("white_tulip", new Flower(new BID(Ids::WHITE_TULIP), "White Tulip", $flowerTypeInfo));
 		self::register("flower_pot", new FlowerPot(new BID(Ids::FLOWER_POT, TileFlowerPot::class), "Flower Pot", $flowerTypeInfo));
 		self::register("frosted_ice", new FrostedIce(new BID(Ids::FROSTED_ICE), "Frosted Ice", new Info(BreakInfo::pickaxe(2.5))));
-		self::register("furnace", new Furnace(new BID(Ids::FURNACE, TileNormalFurnace::class), "Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD()))));
-		self::register("blast_furnace", new Furnace(new BID(Ids::BLAST_FURNACE, TileBlastFurnace::class), "Blast Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD()))));
-		self::register("smoker", new Furnace(new BID(Ids::SMOKER, TileSmoker::class), "Smoker", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD()))));
+		self::register("furnace", new Furnace(new BID(Ids::FURNACE, TileNormalFurnace::class), "Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD())), FurnaceType::FURNACE()));
+		self::register("blast_furnace", new Furnace(new BID(Ids::BLAST_FURNACE, TileBlastFurnace::class), "Blast Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD())), FurnaceType::BLAST_FURNACE()));
+		self::register("smoker", new Furnace(new BID(Ids::SMOKER, TileSmoker::class), "Smoker", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD())), FurnaceType::SMOKER()));
 
 		$glassBreakInfo = new Info(new BreakInfo(0.3));
 		self::register("glass", new Glass(new BID(Ids::GLASS), "Glass", $glassBreakInfo));
