@@ -35,7 +35,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
-use pocketmine\world\sound\GlowBerriesPickSound;
 use function mt_rand;
 
 class CaveVines extends Flowable{
@@ -43,26 +42,12 @@ class CaveVines extends Flowable{
 
 	protected int $age = 0;
 
-	protected bool $hasBerries = false;
-
-	/** In Bedrock this called "head" */
-	protected bool $tip = false;
-
 	public function getRequiredStateDataBits() : int{
-		return 7;
+		return 5;
 	}
 
 	public function describeState(RuntimeDataWriter|RuntimeDataReader $w) : void{
 		$w->boundedInt(5, 0, self::MAX_AGE, $this->age);
-		$w->bool($this->hasBerries);
-		$w->bool($this->tip);
-	}
-
-	public function readStateFromWorld() : Block{
-		parent::readStateFromWorld();
-
-		$this->tip = !$this->getSide(Facing::DOWN)->isSameType($this);
-		return $this;
 	}
 
 	public function getAge() : int{
@@ -78,26 +63,6 @@ class CaveVines extends Flowable{
 		return $this;
 	}
 
-	public function hasBerries() : bool{
-		return $this->hasBerries;
-	}
-
-	/** @return $this */
-	public function setBerries(bool $hasBerries) : self{
-		$this->hasBerries = $hasBerries;
-		return $this;
-	}
-
-	public function isTip() : bool{
-		return $this->tip;
-	}
-
-	/** @return $this */
-	public function setTip(bool $tip) : self{
-		$this->tip = $tip;
-		return $this;
-	}
-
 	public function isAffectedBySilkTouch() : bool{
 		return true;
 	}
@@ -110,12 +75,8 @@ class CaveVines extends Flowable{
 		return true;
 	}
 
-	public function getLightLevel() : int{
-		return $this->hasBerries ? 14 : 0;
-	}
-
 	private function canBeSupportedBy(Block $block) : bool{
-		return $block->getSupportType(Facing::DOWN)->hasCenterSupport() || $block->isSameType($this);
+		return $block->getSupportType(Facing::DOWN)->hasCenterSupport() || $block instanceof CaveVines;
 	}
 
 	public function onNearbyBlockChange() : void{
@@ -133,17 +94,8 @@ class CaveVines extends Flowable{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($this->hasBerries){
-			$this->position->getWorld()->dropItem($this->position, VanillaItems::GLOW_BERRIES());
-			$this->position->getWorld()->addSound($this->position, new GlowBerriesPickSound());
-
-			$this->hasBerries = false;
-			$this->age = mt_rand(0, self::MAX_AGE);
-			$this->position->getWorld()->setBlock($this->position, $this);
-			return true;
-		}
 		if($item instanceof Fertilizer){
-			$ev = new BlockGrowEvent($this, (clone $this)->setBerries(true));
+			$ev = new BlockGrowEvent($this, VanillaBlocks::CAVE_VINES_WITH_BERRIES()->setAge($this->age));
 			$ev->call();
 			if($ev->isCancelled()){
 				return false;
@@ -156,13 +108,12 @@ class CaveVines extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->tip && $this->age < self::MAX_AGE && mt_rand(1, 10) === 1){
+		if($this->age < self::MAX_AGE && mt_rand(1, 10) === 1){
 			$growthPos = $this->position->getSide(Facing::DOWN);
 			$world = $growthPos->getWorld();
 			if($world->isInWorld($growthPos->getFloorX(), $growthPos->getFloorY(), $growthPos->getFloorZ()) && $world->getBlock($growthPos)->getTypeId() === BlockTypeIds::AIR){
-				$ev = new BlockGrowEvent($this, VanillaBlocks::CAVE_VINES()
-					->setAge($this->age + 1)
-					->setBerries(mt_rand(1, 9) === 1));
+				$ev = new BlockGrowEvent($this, (mt_rand(1, 9) === 1 ? VanillaBlocks::CAVE_VINES_WITH_BERRIES() : VanillaBlocks::CAVE_VINES())
+					->setAge($this->age + 1));
 
 				$ev->call();
 
@@ -187,7 +138,7 @@ class CaveVines extends Flowable{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		return $this->hasBerries ? [VanillaItems::GLOW_BERRIES()] : [];
+		return [];
 	}
 
 	public function getSilkTouchDrops(Item $item) : array{

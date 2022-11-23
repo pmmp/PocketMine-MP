@@ -46,6 +46,7 @@ use pocketmine\block\Carpet;
 use pocketmine\block\Carrot;
 use pocketmine\block\CarvedPumpkin;
 use pocketmine\block\CaveVines;
+use pocketmine\block\CaveVinesWithBerries;
 use pocketmine\block\ChemistryTable;
 use pocketmine\block\Chest;
 use pocketmine\block\ChorusFlower;
@@ -714,7 +715,11 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeLegacyHorizontalFacing($block->getFacing());
 		});
 		$this->map(Blocks::CAVE_VINES(), function(CaveVines $block) : Writer{
-			return Writer::create($block->hasBerries() ? ($block->isTip() ? Ids::CAVE_VINES_HEAD_WITH_BERRIES : Ids::CAVE_VINES_BODY_WITH_BERRIES) : Ids::CAVE_VINES)
+			return Writer::create(Ids::CAVE_VINES)
+				->writeInt(StateNames::GROWING_PLANT_AGE, $block->getAge());
+		});
+		$this->map(Blocks::CAVE_VINES_WITH_BERRIES(), function(CaveVinesWithBerries $block) : Writer{
+			return Writer::create($block->isTip() ? Ids::CAVE_VINES_HEAD_WITH_BERRIES : Ids::CAVE_VINES_BODY_WITH_BERRIES)
 				->writeInt(StateNames::GROWING_PLANT_AGE, $block->getAge());
 		});
 		$this->map(Blocks::CHEST(), function(Chest $block) : Writer{

@@ -555,14 +555,12 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setAge($in->readBoundedInt(StateNames::GROWING_PLANT_AGE, 0, 25));
 		});
 		$this->map(Ids::CAVE_VINES_BODY_WITH_BERRIES, function(Reader $in) : CaveVines{
-			return Blocks::CAVE_VINES()
-				->setAge($in->readBoundedInt(StateNames::GROWING_PLANT_AGE, 0, 25))
-				->setBerries(true);
+			return Blocks::CAVE_VINES_WITH_BERRIES()
+				->setAge($in->readBoundedInt(StateNames::GROWING_PLANT_AGE, 0, 25));
 		});
 		$this->map(Ids::CAVE_VINES_HEAD_WITH_BERRIES, function(Reader $in) : CaveVines{
-			return Blocks::CAVE_VINES()
+			return Blocks::CAVE_VINES_WITH_BERRIES()
 				->setAge($in->readBoundedInt(StateNames::GROWING_PLANT_AGE, 0, 25))
-				->setBerries(true)
 				->setTip(true);
 		});
 		$this->map(Ids::CHEMISTRY_TABLE, function(Reader $in) : Block{

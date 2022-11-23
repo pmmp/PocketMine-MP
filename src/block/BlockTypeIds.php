@@ -707,8 +707,9 @@ final class BlockTypeIds{
 	public const TWISTING_VINES = 10680;
 	public const WEEPING_VINES = 10681;
 	public const CAVE_VINES = 10682;
+	public const CAVE_VINES_WITH_BERRIES = 10683;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10683;
+	public const FIRST_UNUSED_BLOCK_ID = 10684;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 
