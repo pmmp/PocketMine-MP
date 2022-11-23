@@ -226,6 +226,9 @@ class Item implements \JsonSerializable{
 		}
 	}
 
+	/**
+	 * Returns whether players will retain this item on death. If a non-player dies it will be excluded from the drops.
+	 */
 	public function keepOnDeath() : bool{
 		return $this->keepOnDeath;
 	}
