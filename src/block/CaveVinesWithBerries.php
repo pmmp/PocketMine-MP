@@ -71,7 +71,6 @@ class CaveVinesWithBerries extends CaveVines{
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [VanillaItems::GLOW_BERRIES()];
 	}
-	
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->position->getWorld()->dropItem($this->position, VanillaItems::GLOW_BERRIES());
