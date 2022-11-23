@@ -70,7 +70,7 @@ class Internet{
 	public static $online = true;
 
 	/**
-	 * Gets the External IP using an external service, it is cached
+	 * Lazily gets the External IP using an external service and caches the result
 	 *
 	 * @param bool $force default false, force IP check even when cached
 	 *
@@ -139,10 +139,14 @@ class Internet{
 	 * GETs an URL using cURL
 	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
 	 *
+	 * @phpstan-template TErrorVar of mixed
+	 *
 	 * @param int         $timeout default 10
 	 * @param string[]    $extraHeaders
 	 * @param string|null $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
 	 * @phpstan-param list<string>          $extraHeaders
+	 * @phpstan-param TErrorVar             $err
+	 * @phpstan-param-out TErrorVar|string  $err
 	 */
 	public static function getURL(string $page, int $timeout = 10, array $extraHeaders = [], &$err = null) : ?InternetRequestResult{
 		try{
@@ -157,11 +161,15 @@ class Internet{
 	 * POSTs data to an URL
 	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
 	 *
+	 * @phpstan-template TErrorVar of mixed
+	 *
 	 * @param string[]|string $args
 	 * @param string[]        $extraHeaders
 	 * @param string|null     $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occurred during the operation.
 	 * @phpstan-param string|array<string, string> $args
 	 * @phpstan-param list<string>                 $extraHeaders
+	 * @phpstan-param TErrorVar                    $err
+	 * @phpstan-param-out TErrorVar|string         $err
 	 */
 	public static function postURL(string $page, $args, int $timeout = 10, array $extraHeaders = [], &$err = null) : ?InternetRequestResult{
 		try{

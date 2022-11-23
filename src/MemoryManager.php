@@ -30,7 +30,7 @@ use pocketmine\scheduler\GarbageCollectionTask;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Process;
 use pocketmine\utils\Utils;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function arsort;
 use function count;
 use function fclose;
@@ -398,7 +398,7 @@ class MemoryManager{
 
 		do{
 			$continue = false;
-			foreach($objects as $hash => $object){
+			foreach(Utils::stringifyKeys($objects) as $hash => $object){
 				if(!is_object($object)){
 					continue;
 				}
@@ -482,6 +482,11 @@ class MemoryManager{
 	 * @param mixed    $from
 	 * @param object[] $objects reference parameter
 	 * @param int[]    $refCounts reference parameter
+	 *
+	 * @phpstan-param array<string, object> $objects
+	 * @phpstan-param array<string, int> $refCounts
+	 * @phpstan-param-out array<string, object> $objects
+	 * @phpstan-param-out array<string, int> $refCounts
 	 *
 	 * @return mixed
 	 */

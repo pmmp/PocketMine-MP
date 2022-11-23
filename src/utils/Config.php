@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use pocketmine\errorhandler\ErrorToExceptionHandler;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function array_change_key_case;
 use function array_fill_keys;
 use function array_keys;
@@ -496,6 +496,7 @@ class Config{
 	 * @param mixed[] $data reference parameter
 	 * @phpstan-param array<string, mixed> $default
 	 * @phpstan-param array<string, mixed> $data
+	 * @phpstan-param-out array<string, mixed> $data
 	 */
 	private function fillDefaults(array $default, &$data) : int{
 		$changed = 0;

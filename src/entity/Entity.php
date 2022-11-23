@@ -250,10 +250,8 @@ abstract class Entity{
 		$this->getWorld()->addEntity($this);
 
 		$this->lastUpdate = $this->server->getTick();
-		(new EntitySpawnEvent($this))->call();
 
 		$this->scheduleUpdate();
-
 	}
 
 	abstract protected function getInitialSizeInfo() : EntitySizeInfo;
@@ -938,6 +936,14 @@ abstract class Entity{
 		return (new Vector2(-cos(deg2rad($this->location->yaw) - M_PI_2), -sin(deg2rad($this->location->yaw) - M_PI_2)))->normalize();
 	}
 
+	/**
+	 * Called from onUpdate() on the first tick of a new entity. This is called before any movement processing or
+	 * main ticking logic. Use this to fire any events related to spawning the entity.
+	 */
+	protected function onFirstUpdate(int $currentTick) : void{
+		(new EntitySpawnEvent($this))->call();
+	}
+
 	public function onUpdate(int $currentTick) : bool{
 		if($this->closed){
 			return false;
@@ -953,6 +959,10 @@ abstract class Entity{
 		}
 
 		$this->lastUpdate = $currentTick;
+
+		if($this->justCreated){
+			$this->onFirstUpdate($currentTick);
+		}
 
 		if(!$this->isAlive()){
 			if($this->onDeathUpdate($tickDiff)){
@@ -988,9 +998,7 @@ abstract class Entity{
 
 		$this->timings->stopTiming();
 
-		//if($this->isStatic())
 		return ($hasUpdate || $this->hasMovementUpdate());
-		//return !($this instanceof Player);
 	}
 
 	final public function scheduleUpdate() : void{

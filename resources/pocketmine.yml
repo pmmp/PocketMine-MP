@@ -119,8 +119,6 @@ chunk-sending:
   spawn-radius: 4
 
 chunk-ticking:
-  #Max amount of chunks processed each tick
-  per-tick: 40
   #Radius of chunks around a player to tick
   tick-radius: 3
   #Number of blocks inside ticking areas' subchunks that get ticked every tick. Higher values will accelerate events
@@ -168,6 +166,9 @@ timings:
   host: timings.pmmp.io
 
 console:
+  #Whether to accept commands via the console. If disabled, anything typed on the console will be ignored.
+  #Useful to save resources on headless servers where the console is never used (e.g. hosted server, Docker, etc.)
+  enable-input: true
   #Choose whether to enable server stats reporting on the console title.
   #NOTE: The title ticker will be disabled regardless if console colours are not enabled.
   title-tick: true

@@ -159,6 +159,31 @@ abstract class TextFormat{
 	}
 
 	/**
+	 * Adds base formatting to the string. The given format codes will be inserted directly after any RESET (§r) codes.
+	 *
+	 * This is useful for log messages, where a RESET code should return to the log message's original colour (e.g.
+	 * blue for NOTICE), rather than whatever the terminal's base text colour is (usually some off-white colour).
+	 *
+	 * Example behaviour:
+	 * - Base format "§c" (red) + "Hello" (no format) = "§r§cHello"
+	 * - Base format "§c" + "Hello §rWorld" = "§r§cHello §r§cWorld"
+	 *
+	 * Note: Adding base formatting to the output string a second time will result in a combination of formats from both
+	 * calls. This is not by design, but simply a consequence of the way the function is implemented.
+	 */
+	public static function addBase(string $baseFormat, string $string) : string{
+		$baseFormatParts = self::tokenize($baseFormat);
+		foreach($baseFormatParts as $part){
+			if(!isset(self::FORMATS[$part]) && !isset(self::COLORS[$part])){
+				throw new \InvalidArgumentException("Unexpected base format token \"$part\", expected only color and format tokens");
+			}
+		}
+		$baseFormat = self::RESET . $baseFormat;
+
+		return $baseFormat . str_replace(TextFormat::RESET, $baseFormat, $string);
+	}
+
+	/**
 	 * Returns an HTML-formatted string with colors/markup
 	 */
 	public static function toHTML(string $string) : string{

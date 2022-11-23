@@ -28,7 +28,7 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\World;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function assert;
 use function count;
 use function dirname;

@@ -21,15 +21,12 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock;
+namespace pocketmine\event\block;
 
-use pocketmine\utils\SingletonTrait;
-use Symfony\Component\Filesystem\Path;
+/**
+ * Called when a block dies.
+ * This could be things like corals dying due to no water being nearby.
+ */
+class BlockDeathEvent extends BaseBlockChangeEvent{
 
-final class LegacyItemIdToStringIdMap extends LegacyToStringBidirectionalIdMap{
-	use SingletonTrait;
-
-	public function __construct(){
-		parent::__construct(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'item_id_map.json'));
-	}
 }

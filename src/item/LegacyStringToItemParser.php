@@ -26,7 +26,7 @@ namespace pocketmine\item;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function explode;
 use function file_get_contents;
 use function is_array;
@@ -108,8 +108,9 @@ final class LegacyStringToItemParser{
 			throw new LegacyStringToItemParserException("Unable to parse \"" . $b[1] . "\" from \"" . $input . "\" as a valid meta value");
 		}
 
-		if(isset($this->map[strtolower($b[0])])){
-			$item = $this->itemFactory->get($this->map[strtolower($b[0])], $meta);
+		$id = strtolower($b[0]);
+		if(isset($this->map[$id])){
+			$item = $this->itemFactory->get($this->map[$id], $meta);
 		}else{
 			throw new LegacyStringToItemParserException("Unable to resolve \"" . $input . "\" to a valid item");
 		}

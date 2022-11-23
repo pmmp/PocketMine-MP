@@ -84,6 +84,7 @@ class Leaves extends Transparent{
 	/**
 	 * @param true[] $visited reference parameter
 	 * @phpstan-param array<int, true> $visited
+	 * @phpstan-param-out array<int, true> $visited
 	 */
 	protected function findLog(Vector3 $pos, array &$visited = [], int $distance = 0) : bool{
 		$index = World::blockHash($pos->x, $pos->y, $pos->z);
@@ -123,11 +124,12 @@ class Leaves extends Transparent{
 		if(!$this->noDecay && $this->checkDecay){
 			$ev = new LeavesDecayEvent($this);
 			$ev->call();
+			$world = $this->position->getWorld();
 			if($ev->isCancelled() || $this->findLog($this->position)){
 				$this->checkDecay = false;
-				$this->position->getWorld()->setBlock($this->position, $this, false);
+				$world->setBlock($this->position, $this, false);
 			}else{
-				$this->position->getWorld()->useBreakOn($this->position);
+				$world->useBreakOn($this->position);
 			}
 		}
 	}

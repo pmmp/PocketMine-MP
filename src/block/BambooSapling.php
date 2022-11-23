@@ -82,8 +82,9 @@ final class BambooSapling extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->position->getWorld()->getBlock($this->position->down()))){
-			$this->position->getWorld()->useBreakOn($this->position);
+		$world = $this->position->getWorld();
+		if(!$this->canBeSupportedBy($world->getBlock($this->position->down()))){
+			$world->useBreakOn($this->position);
 		}
 	}
 

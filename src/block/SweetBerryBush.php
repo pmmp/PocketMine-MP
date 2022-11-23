@@ -90,6 +90,7 @@ class SweetBerryBush extends Flowable{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		$world = $this->position->getWorld();
 		if($this->age < self::STAGE_MATURE && $item instanceof Fertilizer){
 			$block = clone $this;
 			$block->age++;
@@ -98,13 +99,13 @@ class SweetBerryBush extends Flowable{
 			$ev->call();
 
 			if(!$ev->isCancelled()){
-				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
+				$world->setBlock($this->position, $ev->getNewState());
 				$item->pop();
 			}
 
 		}elseif(($dropAmount = $this->getBerryDropAmount()) > 0){
-			$this->position->getWorld()->setBlock($this->position, $this->setAge(self::STAGE_BUSH_NO_BERRIES));
-			$this->position->getWorld()->dropItem($this->position, $this->asItem()->setCount($dropAmount));
+			$world->setBlock($this->position, $this->setAge(self::STAGE_BUSH_NO_BERRIES));
+			$world->dropItem($this->position, $this->asItem()->setCount($dropAmount));
 		}
 
 		return true;

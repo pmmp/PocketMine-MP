@@ -23,12 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\console;
 
+use pocketmine\utils\Process;
 use function cli_set_process_title;
 use function count;
 use function dirname;
 use function feof;
 use function fwrite;
 use function stream_socket_client;
+use const PTHREADS_INHERIT_NONE;
 
 require dirname(__DIR__, 2) . '/vendor/autoload.php';
 
@@ -43,9 +45,40 @@ $socket = stream_socket_client($argv[1], $errCode, $errMessage, 15.0);
 if($socket === false){
 	throw new \RuntimeException("Failed to connect to server process ($errCode): $errMessage");
 }
-$consoleReader = new ConsoleReader();
+
+$channel = new \Threaded();
+$thread = new class($channel) extends \Thread{
+	public function __construct(
+		private \Threaded $channel,
+	){}
+
+	public function run(){
+		require dirname(__DIR__, 2) . '/vendor/autoload.php';
+
+		$channel = $this->channel;
+		$reader = new ConsoleReader();
+		while(true){ // @phpstan-ignore-line
+			$line = $reader->readLine();
+			if($line !== null){
+				$channel->synchronized(function() use ($channel, $line) : void{
+					$channel[] = $line;
+					$channel->notify();
+				});
+			}
+		}
+	}
+};
+
+$thread->start(PTHREADS_INHERIT_NONE);
 while(!feof($socket)){
-	$line = $consoleReader->readLine();
+	$line = $channel->synchronized(function() use ($channel) : ?string{
+		if(count($channel) === 0){
+			$channel->wait(1_000_000);
+		}
+		/** @var string|null $line */
+		$line = $channel->shift();
+		return $line;
+	});
 	if(@fwrite($socket, ($line ?? "") . "\n") === false){
 		//Always send even if there's no line, to check if the parent is alive
 		//If the parent process was terminated forcibly, it won't close the connection properly, so feof() will return
@@ -53,3 +86,8 @@ while(!feof($socket)){
 		break;
 	}
 }
+
+//For simplicity's sake, we don't bother with a graceful shutdown here.
+//The parent process would normally forcibly terminate the child process anyway, so we only reach this point if the
+//parent process was terminated forcibly and didn't clean up after itself.
+Process::kill(Process::pid(), false);

@@ -85,7 +85,7 @@ use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\TemporaryInventory;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
-use pocketmine\inventory\transaction\TransactionBuilderInventory;
+use pocketmine\inventory\transaction\TransactionBuilder;
 use pocketmine\inventory\transaction\TransactionCancelledException;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\ConsumableItem;
@@ -1343,6 +1343,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->lastUpdate = $currentTick;
 
+		if($this->justCreated){
+			$this->onFirstUpdate($currentTick);
+		}
+
 		if(!$this->isAlive() && $this->spawned){
 			$this->onDeathUpdate($tickDiff);
 			return true;
@@ -2014,6 +2018,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	/**
+	 * Sends a toast message to the player, or queue to send it if a toast message is already shown.
+	 */
+	public function sendToastNotification(string $title, string $body) : void{
+		$this->getNetworkSession()->onToastNotification($title, $body);
+	}
+
+	/**
 	 * Sends a Form to the player, or queue to send it if a form is already open.
 	 *
 	 * @throws \InvalidArgumentException
@@ -2405,9 +2416,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->ySize = 0;
 	}
 
-	/**
-	 * {@inheritdoc}
-	 */
 	public function teleport(Vector3 $pos, ?float $yaw = null, ?float $pitch = null) : bool{
 		if(parent::teleport($pos, $yaw, $pitch)){
 
@@ -2463,29 +2471,23 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$inventories[] = $this->currentWindow;
 		}
 
-		$transaction = new InventoryTransaction($this);
-		$mainInventoryTransactionBuilder = new TransactionBuilderInventory($this->inventory);
+		$builder = new TransactionBuilder();
 		foreach($inventories as $inventory){
 			$contents = $inventory->getContents();
 
 			if(count($contents) > 0){
-				$drops = $mainInventoryTransactionBuilder->addItem(...$contents);
+				$drops = $builder->getInventory($this->inventory)->addItem(...$contents);
 				foreach($drops as $drop){
-					$transaction->addAction(new DropItemAction($drop));
+					$builder->addAction(new DropItemAction($drop));
 				}
 
-				$clearedInventoryTransactionBuilder = new TransactionBuilderInventory($inventory);
-				$clearedInventoryTransactionBuilder->clearAll();
-				foreach($clearedInventoryTransactionBuilder->generateActions() as $action){
-					$transaction->addAction($action);
-				}
+				$builder->getInventory($inventory)->clearAll();
 			}
 		}
-		foreach($mainInventoryTransactionBuilder->generateActions() as $action){
-			$transaction->addAction($action);
-		}
 
-		if(count($transaction->getActions()) !== 0){
+		$actions = $builder->generateActions();
+		if(count($actions) !== 0){
+			$transaction = new InventoryTransaction($this, $actions);
 			try{
 				$transaction->execute();
 				$this->logger->debug("Successfully evacuated items from temporary inventories");

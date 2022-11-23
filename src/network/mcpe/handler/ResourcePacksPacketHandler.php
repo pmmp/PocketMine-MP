@@ -65,9 +65,19 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	){}
 
 	public function setUp() : void{
-		$resourcePackEntries = array_map(static function(ResourcePack $pack) : ResourcePackInfoEntry{
+		$resourcePackEntries = array_map(function(ResourcePack $pack) : ResourcePackInfoEntry{
 			//TODO: more stuff
-			return new ResourcePackInfoEntry($pack->getPackId(), $pack->getPackVersion(), $pack->getPackSize(), "", "", "", false);
+			$encryptionKey = $this->resourcePackManager->getPackEncryptionKey($pack->getPackId());
+
+			return new ResourcePackInfoEntry(
+				$pack->getPackId(),
+				$pack->getPackVersion(),
+				$pack->getPackSize(),
+				$encryptionKey ?? "",
+				"",
+				$pack->getPackId(),
+				false
+			);
 		}, $this->resourcePackManager->getResourceStack());
 		//TODO: support forcing server packs
 		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($resourcePackEntries, [], $this->resourcePackManager->resourcePacksRequired(), false, false));

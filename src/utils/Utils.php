@@ -313,7 +313,7 @@ final class Utils{
 					}
 				}elseif(($cpuPresent = @file_get_contents("/sys/devices/system/cpu/present")) !== false){
 					if(preg_match("/^([0-9]+)\\-([0-9]+)$/", trim($cpuPresent), $matches) > 0){
-						$processors = (int) ($matches[2] - $matches[1]);
+						$processors = ((int) $matches[2]) - ((int) $matches[1]);
 					}
 				}
 				break;

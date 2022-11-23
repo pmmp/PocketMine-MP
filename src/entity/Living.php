@@ -293,6 +293,10 @@ abstract class Living extends Entity{
 		return $nbt;
 	}
 
+	/**
+	 * @deprecated This function always returns true, no matter whether the target is in the line of sight or not.
+	 * @see VoxelRayTrace::inDirection() for a more generalized method of ray-tracing to a target.
+	 */
 	public function hasLineOfSight(Entity $entity) : bool{
 		//TODO: head height
 		return true;
