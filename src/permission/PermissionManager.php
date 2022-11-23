@@ -56,10 +56,7 @@ class PermissionManager{
 		return false;
 	}
 
-	/**
-	 * @param string|Permission $permission
-	 */
-	public function removePermission($permission) : void{
+	public function removePermission(Permission|string $permission) : void{
 		if($permission instanceof Permission){
 			unset($this->permissions[$permission->getName()]);
 		}else{
