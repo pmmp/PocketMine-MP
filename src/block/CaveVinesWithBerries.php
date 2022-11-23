@@ -47,11 +47,12 @@ class CaveVinesWithBerries extends CaveVines{
 		$w->bool($this->tip);
 	}
 
-	public function readStateFromWorld() : Block{
-		parent::readStateFromWorld();
-
-		$this->tip = !$this->getSide(Facing::DOWN) instanceof CaveVines;
-		return $this;
+	public function onNearbyBlockChange() : void{
+		$tip = !$this->getSide(Facing::DOWN) instanceof CaveVines;
+		if($this->tip !== $tip){
+			$this->position->getWorld()->setBlock($this->position, $this->setTip($tip));
+		}
+		parent::onNearbyBlockChange();
 	}
 
 	public function isTip() : bool{
