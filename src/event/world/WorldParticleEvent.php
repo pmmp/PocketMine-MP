@@ -42,17 +42,11 @@ class WorldParticleEvent extends WorldEvent implements Cancellable {
 	){
 		parent::__construct($world);
 	}
-
-	/**
-	 * @return Particle
-	 */
+	
 	public function getParticle() : Particle{
 		return $this->particle;
 	}
 
-	/**
-	 * @param Particle $particle
-	 */
 	public function setParticle(Particle $particle) : void{
 		$this->particle = $particle;
 	}
