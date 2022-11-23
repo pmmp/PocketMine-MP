@@ -33,7 +33,6 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\ItemFrameAddItemSound;
 use pocketmine\world\sound\ItemFrameRemoveItemSound;
-use pocketmine\world\sound\ItemFrameDestroySound;
 use pocketmine\world\sound\ItemFrameRotateItemSound;
 use function is_infinite;
 use function is_nan;
@@ -171,7 +170,6 @@ class ItemFrame extends Flowable{
 	public function onNearbyBlockChange() : void{
 		if(!$this->getSide(Facing::opposite($this->facing))->isSolid()){
 			$this->position->getWorld()->useBreakOn($this->position);
-			$this->position->getWorld()->addSound($this->position, new ItemFrameDestroySound());
 		}
 	}
 
