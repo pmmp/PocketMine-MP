@@ -31,6 +31,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\sound\GlowBerriesPickSound;
+use function mt_rand;
 
 class CaveVinesWithBerries extends CaveVines{
 
