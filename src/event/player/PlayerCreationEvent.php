@@ -54,18 +54,16 @@ class PlayerCreationEvent extends Event{
 	}
 
 	/**
-	 * @return string
 	 * @phpstan-return class-string<Player>
 	 */
-	public function getBaseClass(){
+	public function getBaseClass() : string{
 		return $this->baseClass;
 	}
 
 	/**
-	 * @param string $class
 	 * @phpstan-param class-string<Player> $class
 	 */
-	public function setBaseClass($class) : void{
+	public function setBaseClass(string $class) : void{
 		if(!is_a($class, $this->baseClass, true)){
 			throw new \RuntimeException("Base class $class must extend " . $this->baseClass);
 		}
@@ -74,18 +72,16 @@ class PlayerCreationEvent extends Event{
 	}
 
 	/**
-	 * @return string
 	 * @phpstan-return class-string<Player>
 	 */
-	public function getPlayerClass(){
+	public function getPlayerClass() : string{
 		return $this->playerClass;
 	}
 
 	/**
-	 * @param string $class
 	 * @phpstan-param class-string<Player> $class
 	 */
-	public function setPlayerClass($class) : void{
+	public function setPlayerClass(string $class) : void{
 		Utils::testValidInstance($class, $this->baseClass);
 		$this->playerClass = $class;
 	}

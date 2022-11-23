@@ -172,13 +172,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 		}
 	}
 
-	/**
-	 * @param string $message
-	 * @param string $level
-	 * @param string $prefix
-	 * @param string $color
-	 */
-	protected function send($message, $level, $prefix, $color) : void{
+	protected function send(string $message, string $level, string $prefix, string $color) : void{
 		$time = new \DateTime('now', new \DateTimeZone($this->timezone));
 
 		$thread = \Thread::getCurrentThread();

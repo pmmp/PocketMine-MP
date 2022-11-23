@@ -2054,10 +2054,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 	}
 
-	/**
-	 * @param mixed $responseData
-	 */
-	public function onFormSubmit(int $formId, $responseData) : bool{
+	public function onFormSubmit(int $formId, mixed $responseData) : bool{
 		if(!isset($this->forms[$formId])){
 			$this->logger->debug("Got unexpected response for form $formId");
 			return false;
