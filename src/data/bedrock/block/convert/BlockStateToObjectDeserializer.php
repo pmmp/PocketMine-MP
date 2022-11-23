@@ -87,9 +87,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 
 	/** @phpstan-param \Closure(Reader) : Block $c */
 	public function map(string $id, \Closure $c) : void{
-		if(array_key_exists($id, $this->deserializeFuncs)){
-			throw new \InvalidArgumentException("Deserializer is already assigned for \"$id\"");
-		}
+
 		$this->deserializeFuncs[$id] = $c;
 	}
 

@@ -33,6 +33,7 @@ use pocketmine\block\Beetroot;
 use pocketmine\block\Bell;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\block\BoneBlock;
 use pocketmine\block\BrewingStand;
 use pocketmine\block\BrownMushroomBlock;
@@ -205,10 +206,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	 * @phpstan-param \Closure(TBlockType) : Writer $serializer
 	 */
 	public function map(Block $block, \Closure $serializer) : void{
-		if(isset($this->serializers[$block->getTypeId()])){
-			//TODO: REMOVE ME
-			throw new AssumptionFailedError("Registering the same block twice!");
-		}
 		$this->serializers[$block->getTypeId()][get_class($block)] = $serializer;
 	}
 
@@ -232,6 +229,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	 */
 	public function serializeBlock(Block $blockState) : BlockStateData{
 		$typeId = $blockState->getTypeId();
+
 
 		$locatedSerializer = $this->serializers[$typeId][get_class($blockState)] ?? null;
 		if($locatedSerializer === null){
