@@ -555,7 +555,7 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
-	 * Called when a player uses the item to interact with entity, for example by placing a name tag.
+	 * Called when a player uses the item to interact with entity, for example by using a name tag.
 	 */
 	public function onInteractEntity(Player $player, Entity $entity, Vector3 $directionVector) : bool{
 		return false;
