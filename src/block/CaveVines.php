@@ -158,16 +158,19 @@ class CaveVines extends Flowable{
 		if($this->age < self::MAX_AGE && mt_rand(1, 10) === 1){
 			$growthPos = $this->position->getSide(Facing::DOWN);
 			$world = $growthPos->getWorld();
-			if($world->isInWorld($growthPos->getFloorX(), $growthPos->getFloorY(), $growthPos->getFloorZ()) && $world->getBlock($growthPos)->getTypeId() === BlockTypeIds::AIR){
-				$ev = new BlockGrowEvent($this, VanillaBlocks::CAVE_VINES()
-					->setAge($this->age + 1)
-					->setType(mt_rand(1, 9) === 1 ? CaveVinesType::HEAD_WITH_BERRIES() : CaveVinesType::BODY())
-				);
+			if($world->isInWorld($growthPos->getFloorX(), $growthPos->getFloorY(), $growthPos->getFloorZ())){
+				$block = $world->getBlock($growthPos);
+				if($block->getTypeId() === BlockTypeIds::AIR){
+					$ev = new BlockGrowEvent($block, VanillaBlocks::CAVE_VINES()
+						->setAge($this->age + 1)
+						->setType(mt_rand(1, 9) === 1 ? CaveVinesType::HEAD_WITH_BERRIES() : CaveVinesType::BODY())
+					);
 
-				$ev->call();
+					$ev->call();
 
-				if(!$ev->isCancelled()){
-					$world->setBlock($growthPos, $ev->getNewState());
+					if(!$ev->isCancelled()){
+						$world->setBlock($growthPos, $ev->getNewState());
+					}
 				}
 			}
 		}
