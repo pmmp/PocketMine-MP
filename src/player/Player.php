@@ -1585,12 +1585,21 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return true;
 		}
 
-		$ev = new PlayerBlockPickEvent($this, $block, $block->getPickedItem($addTileNBT));
-		$ev->call();
-		$item = $ev->getResultItem();
-		$existingSlot = $this->inventory->first($item);
+		$pickedItem = $block->getPickedItem($addTileNBT);
+
+		$ev = new PlayerBlockPickEvent($this, $block, $pickedItem);
+		$existingSlot = $this->inventory->first($pickedItem);
 		if($existingSlot === -1 && ($this->hasFiniteResources() || $this->isSpectator())){
 			$ev->cancel();
+		}
+		$ev->call();
+
+		$resultItem = $ev->getResultItem();
+		if(!$resultItem->equalsExact($pickedItem)){
+			$existingSlot = $this->inventory->first($resultItem);
+			if($existingSlot === -1 && ($this->hasFiniteResources() || $this->isSpectator())){
+				$ev->cancel();
+			}
 		}
 
 		if(!$ev->isCancelled()){
@@ -1603,13 +1612,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			}else{
 				$firstEmpty = $this->inventory->firstEmpty();
 				if($firstEmpty === -1){ //full inventory
-					$this->inventory->setItemInHand($item);
+					$this->inventory->setItemInHand($resultItem);
 				}elseif($firstEmpty < $this->inventory->getHotbarSize()){
-					$this->inventory->setItem($firstEmpty, $item);
+					$this->inventory->setItem($firstEmpty, $resultItem);
 					$this->inventory->setHeldItemIndex($firstEmpty);
 				}else{
 					$this->inventory->swap($this->inventory->getHeldItemIndex(), $firstEmpty);
-					$this->inventory->setItemInHand($item);
+					$this->inventory->setItemInHand($resultItem);
 				}
 			}
 		}
