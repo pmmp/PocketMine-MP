@@ -153,7 +153,6 @@ use function mb_strtolower;
  * @method static CarvedPumpkin CARVED_PUMPKIN()
  * @method static Cauldron CAULDRON()
  * @method static CaveVines CAVE_VINES()
- * @method static CaveVinesWithBerries CAVE_VINES_WITH_BERRIES()
  * @method static ChemicalHeat CHEMICAL_HEAT()
  * @method static Chest CHEST()
  * @method static Opaque CHISELED_DEEPSLATE()
@@ -1547,7 +1546,6 @@ final class VanillaBlocks{
 		self::register("hanging_roots", new HangingRoots(new BID(Ids::HANGING_ROOTS), "Hanging Roots", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
 
 		self::register("cave_vines", new CaveVines(new BID(Ids::CAVE_VINES), "Cave Vines", new Info(BreakInfo::instant())));
-		self::register("cave_vines_with_berries", new CaveVinesWithBerries(new BID(Ids::CAVE_VINES_WITH_BERRIES), "Cave Vines With Berries", new Info(BreakInfo::instant())));
 	}
 
 	private static function registerBlocksR18() : void{

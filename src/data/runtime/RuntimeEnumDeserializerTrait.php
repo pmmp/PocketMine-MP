@@ -218,4 +218,13 @@ trait RuntimeEnumDeserializerTrait{
 		};
 	}
 
+	public function caveVinesType(\pocketmine\block\utils\CaveVinesType &$value) : void{
+		$value = match ($this->readInt(2)){
+			0 => \pocketmine\block\utils\CaveVinesType::BODY(),
+			1 => \pocketmine\block\utils\CaveVinesType::BODY_WITH_BERRIES(),
+			2 => \pocketmine\block\utils\CaveVinesType::HEAD_WITH_BERRIES(),
+			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for CaveVinesType")
+		};
+	}
+
 }

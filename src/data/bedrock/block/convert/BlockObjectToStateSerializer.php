@@ -46,7 +46,6 @@ use pocketmine\block\Carpet;
 use pocketmine\block\Carrot;
 use pocketmine\block\CarvedPumpkin;
 use pocketmine\block\CaveVines;
-use pocketmine\block\CaveVinesWithBerries;
 use pocketmine\block\ChemistryTable;
 use pocketmine\block\Chest;
 use pocketmine\block\ChorusFlower;
@@ -135,6 +134,7 @@ use pocketmine\block\Tripwire;
 use pocketmine\block\TripwireHook;
 use pocketmine\block\UnderwaterTorch;
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\CaveVinesType;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
 use pocketmine\block\utils\DyeColor;
@@ -715,11 +715,12 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeLegacyHorizontalFacing($block->getFacing());
 		});
 		$this->map(Blocks::CAVE_VINES(), function(CaveVines $block) : Writer{
-			return Writer::create(Ids::CAVE_VINES)
-				->writeInt(StateNames::GROWING_PLANT_AGE, $block->getAge());
-		});
-		$this->map(Blocks::CAVE_VINES_WITH_BERRIES(), function(CaveVinesWithBerries $block) : Writer{
-			return Writer::create($block->isTip() ? Ids::CAVE_VINES_HEAD_WITH_BERRIES : Ids::CAVE_VINES_BODY_WITH_BERRIES)
+			return Writer::create(match($block->getType()){
+				CaveVinesType::BODY() => Ids::CAVE_VINES,
+				CaveVinesType::BODY_WITH_BERRIES() => Ids::CAVE_VINES_BODY_WITH_BERRIES,
+				CaveVinesType::HEAD_WITH_BERRIES() => Ids::CAVE_VINES_HEAD_WITH_BERRIES,
+				default => throw new AssumptionFailedError("Unhandled Cave Vines type ".$block->getType()->name())
+			})
 				->writeInt(StateNames::GROWING_PLANT_AGE, $block->getAge());
 		});
 		$this->map(Blocks::CHEST(), function(Chest $block) : Writer{
