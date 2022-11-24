@@ -41,6 +41,15 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
+	public function caveVinesType(\pocketmine\block\utils\CaveVinesType $value) : void{
+		$this->int(2, match($value){
+			\pocketmine\block\utils\CaveVinesType::BODY() => 0,
+			\pocketmine\block\utils\CaveVinesType::BODY_WITH_BERRIES() => 1,
+			\pocketmine\block\utils\CaveVinesType::HEAD_WITH_BERRIES() => 2,
+			default => throw new \pocketmine\utils\AssumptionFailedError("All CaveVinesType cases should be covered")
+		});
+	}
+
 	public function copperOxidation(\pocketmine\block\utils\CopperOxidation $value) : void{
 		$this->int(2, match($value){
 			\pocketmine\block\utils\CopperOxidation::EXPOSED() => 0,
@@ -215,15 +224,6 @@ trait RuntimeEnumSerializerTrait{
 			\pocketmine\item\SuspiciousStewType::TULIP() => 8,
 			\pocketmine\item\SuspiciousStewType::WITHER_ROSE() => 9,
 			default => throw new \pocketmine\utils\AssumptionFailedError("All SuspiciousStewType cases should be covered")
-		});
-	}
-
-	public function caveVinesType(\pocketmine\block\utils\CaveVinesType $value) : void{
-		$this->int(2, match($value){
-			\pocketmine\block\utils\CaveVinesType::BODY() => 0,
-			\pocketmine\block\utils\CaveVinesType::BODY_WITH_BERRIES() => 1,
-			\pocketmine\block\utils\CaveVinesType::HEAD_WITH_BERRIES() => 2,
-			default => throw new \pocketmine\utils\AssumptionFailedError("All CavesVinesType cases should be covered")
 		});
 	}
 

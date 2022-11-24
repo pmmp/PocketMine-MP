@@ -719,7 +719,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				CaveVinesType::BODY() => Ids::CAVE_VINES,
 				CaveVinesType::BODY_WITH_BERRIES() => Ids::CAVE_VINES_BODY_WITH_BERRIES,
 				CaveVinesType::HEAD_WITH_BERRIES() => Ids::CAVE_VINES_HEAD_WITH_BERRIES,
-				default => throw new AssumptionFailedError("Unhandled Cave Vines type ".$block->getType()->name())
+				default => throw new AssumptionFailedError("Unhandled Cave Vines type " . $block->getType()->name())
 			})
 				->writeInt(StateNames::GROWING_PLANT_AGE, $block->getAge());
 		});

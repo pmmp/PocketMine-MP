@@ -41,6 +41,15 @@ trait RuntimeEnumDeserializerTrait{
 		};
 	}
 
+	public function caveVinesType(\pocketmine\block\utils\CaveVinesType &$value) : void{
+		$value = match($this->readInt(2)){
+			0 => \pocketmine\block\utils\CaveVinesType::BODY(),
+			1 => \pocketmine\block\utils\CaveVinesType::BODY_WITH_BERRIES(),
+			2 => \pocketmine\block\utils\CaveVinesType::HEAD_WITH_BERRIES(),
+			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for CaveVinesType")
+		};
+	}
+
 	public function copperOxidation(\pocketmine\block\utils\CopperOxidation &$value) : void{
 		$value = match($this->readInt(2)){
 			0 => \pocketmine\block\utils\CopperOxidation::EXPOSED(),
@@ -215,15 +224,6 @@ trait RuntimeEnumDeserializerTrait{
 			8 => \pocketmine\item\SuspiciousStewType::TULIP(),
 			9 => \pocketmine\item\SuspiciousStewType::WITHER_ROSE(),
 			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for SuspiciousStewType")
-		};
-	}
-
-	public function caveVinesType(\pocketmine\block\utils\CaveVinesType &$value) : void{
-		$value = match ($this->readInt(2)){
-			0 => \pocketmine\block\utils\CaveVinesType::BODY(),
-			1 => \pocketmine\block\utils\CaveVinesType::BODY_WITH_BERRIES(),
-			2 => \pocketmine\block\utils\CaveVinesType::HEAD_WITH_BERRIES(),
-			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for CaveVinesType")
 		};
 	}
 
