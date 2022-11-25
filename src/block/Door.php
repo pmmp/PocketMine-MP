@@ -163,13 +163,14 @@ class Door extends Transparent{
 		$this->open = !$this->open;
 
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
+		$world = $this->position->getWorld();
 		if($other instanceof Door && $other->isSameType($this)){
 			$other->open = $this->open;
-			$this->position->getWorld()->setBlock($other->position, $other);
+			$world->setBlock($other->position, $other);
 		}
 
-		$this->position->getWorld()->setBlock($this->position, $this);
-		$this->position->getWorld()->addSound($this->position, new DoorSound());
+		$world->setBlock($this->position, $this);
+		$world->addSound($this->position, new DoorSound());
 
 		return true;
 	}

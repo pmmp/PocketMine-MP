@@ -128,8 +128,9 @@ class Lectern extends Transparent{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($this->book === null && $item instanceof WritableBookBase){
-			$this->position->getWorld()->setBlock($this->position, $this->setBook($item));
-			$this->position->getWorld()->addSound($this->position, new LecternPlaceBookSound());
+			$world = $this->position->getWorld();
+			$world->setBlock($this->position, $this->setBook($item));
+			$world->addSound($this->position, new LecternPlaceBookSound());
 			$item->pop();
 		}
 		return true;
@@ -137,8 +138,9 @@ class Lectern extends Transparent{
 
 	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
 		if($this->book !== null){
-			$this->position->getWorld()->dropItem($this->position->up(), $this->book);
-			$this->position->getWorld()->setBlock($this->position, $this->setBook(null));
+			$world = $this->position->getWorld();
+			$world->dropItem($this->position->up(), $this->book);
+			$world->setBlock($this->position, $this->setBook(null));
 		}
 		return false;
 	}
@@ -152,12 +154,13 @@ class Lectern extends Transparent{
 		}
 
 		$this->viewedPage = $newPage;
+		$world = $this->position->getWorld();
 		if(!$this->producingSignal){
 			$this->producingSignal = true;
-			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
+			$world->scheduleDelayedBlockUpdate($this->position, 1);
 		}
 
-		$this->position->getWorld()->setBlock($this->position, $this);
+		$world->setBlock($this->position, $this);
 
 		return true;
 	}

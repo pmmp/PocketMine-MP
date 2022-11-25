@@ -345,12 +345,7 @@ class InGamePacketHandler extends ChunkRequestPacketHandler{
 		$converter = TypeConverter::getInstance();
 		foreach($data->getActions() as $networkInventoryAction){
 			if(
-				(
-					$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_TODO && (
-						$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT ||
-						$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT
-					)
-				) || (
+				$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_TODO || (
 					$this->craftingTransaction !== null &&
 					!$networkInventoryAction->oldItem->getItemStack()->equals($networkInventoryAction->newItem->getItemStack()) &&
 					$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CONTAINER &&

@@ -94,6 +94,7 @@ use pocketmine\network\mcpe\protocol\SetTimePacket;
 use pocketmine\network\mcpe\protocol\SetTitlePacket;
 use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
+use pocketmine\network\mcpe\protocol\ToastRequestPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\ChunkCacheBlob;
@@ -461,9 +462,8 @@ class NetworkSession{
 			throw new PacketHandlingException("Unexpected non-serverbound packet");
 		}
 
-		$timings = Timings::getReceiveDataPacketTimings($packet);
+		$timings = Timings::getDecodeDataPacketTimings($packet);
 		$timings->startTiming();
-
 		try{
 			$stream = PacketSerializer::decoder($buffer, 0, $this->packetSerializerContext);
 			$stream->setProtocolId($protocolId);
@@ -476,7 +476,15 @@ class NetworkSession{
 				$remains = substr($stream->getBuffer(), $stream->getOffset());
 				$this->logger->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": " . bin2hex($remains));
 			}
+		}finally{
+			$timings->stopTiming();
+		}
 
+		$timings = Timings::getHandleDataPacketTimings($packet);
+		$timings->startTiming();
+		try{
+			//TODO: I'm not sure DataPacketReceiveEvent should be included in the handler timings, but it needs to be
+			//included for now to ensure the receivePacket timings are counted the way they were before
 			$ev = new DataPacketReceiveEvent($this, $packet);
 			$ev->call();
 			if(!$ev->isCancelled() && ($this->handler === null || !$packet->handle($this->handler))){
@@ -1228,6 +1236,10 @@ class NetworkSession{
 
 	public function onEmote(Human $from, string $emoteId) : void{
 		$this->sendDataPacket(EmotePacket::create($from->getId(), $emoteId, EmotePacket::FLAG_SERVER));
+	}
+
+	public function onToastNotification(string $title, string $body) : void{
+		$this->sendDataPacket(ToastRequestPacket::create($title, $body));
 	}
 
 	public function tick() : void{

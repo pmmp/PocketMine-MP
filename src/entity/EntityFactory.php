@@ -176,20 +176,6 @@ final class EntityFactory{
 	}
 
 	/**
-	 * @phpstan-param \Closure(World, CompoundTag) : Entity $creationFunc
-	 */
-	private static function validateCreationFunc(\Closure $creationFunc) : void{
-		$sig = new CallbackType(
-			new ReturnType(Entity::class),
-			new ParameterType("world", World::class),
-			new ParameterType("nbt", CompoundTag::class)
-		);
-		if(!$sig->isSatisfiedBy($creationFunc)){
-			throw new \TypeError("Declaration of callable `" . CallbackType::createFromCallable($creationFunc) . "` must be compatible with `" . $sig . "`");
-		}
-	}
-
-	/**
 	 * Registers an entity type into the index.
 	 *
 	 * @param string   $className Class that extends Entity
@@ -207,7 +193,11 @@ final class EntityFactory{
 			throw new \InvalidArgumentException("At least one save name must be provided");
 		}
 		Utils::testValidInstance($className, Entity::class);
-		self::validateCreationFunc($creationFunc);
+		Utils::validateCallableSignature(new CallbackType(
+			new ReturnType(Entity::class),
+			new ParameterType("world", World::class),
+			new ParameterType("nbt", CompoundTag::class)
+		), $creationFunc);
 
 		foreach($saveNames as $name){
 			$this->creationFuncs[$name] = $creationFunc;

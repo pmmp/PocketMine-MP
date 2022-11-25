@@ -33,7 +33,7 @@ use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Config;
 use pocketmine\utils\Utils;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function count;
 use function dirname;
 use function fclose;

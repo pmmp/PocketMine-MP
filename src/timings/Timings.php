@@ -119,6 +119,12 @@ abstract class Timings{
 	public static $tileEntityTypeTimingMap = [];
 	/** @var TimingsHandler[] */
 	public static $packetReceiveTimingMap = [];
+
+	/** @var TimingsHandler[] */
+	private static array $packetDecodeTimingMap = [];
+	/** @var TimingsHandler[] */
+	private static array $packetHandleTimingMap = [];
+
 	/** @var TimingsHandler[] */
 	public static $packetSendTimingMap = [];
 	/** @var TimingsHandler[] */
@@ -227,6 +233,22 @@ abstract class Timings{
 		}
 
 		return self::$packetReceiveTimingMap[$pid];
+	}
+
+	public static function getDecodeDataPacketTimings(ServerboundPacket $pk) : TimingsHandler{
+		$pid = $pk->pid();
+		return self::$packetDecodeTimingMap[$pid] ??= new TimingsHandler(
+			self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Decode - " . $pk->getName() . " [0x" . dechex($pid) . "]",
+			self::getReceiveDataPacketTimings($pk)
+		);
+	}
+
+	public static function getHandleDataPacketTimings(ServerboundPacket $pk) : TimingsHandler{
+		$pid = $pk->pid();
+		return self::$packetHandleTimingMap[$pid] ??= new TimingsHandler(
+			self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Handler - " . $pk->getName() . " [0x" . dechex($pid) . "]",
+			self::getReceiveDataPacketTimings($pk)
+		);
 	}
 
 	public static function getSendDataPacketTimings(ClientboundPacket $pk) : TimingsHandler{

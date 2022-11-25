@@ -27,6 +27,7 @@ use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\CoralTypeTrait;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\data\bedrock\CoralTypeIdMap;
+use pocketmine\event\block\BlockDeathEvent;
 use pocketmine\item\Item;
 use function mt_rand;
 
@@ -77,7 +78,11 @@ final class CoralBlock extends Opaque{
 				}
 			}
 			if(!$hasWater){
-				$world->setBlock($this->position, $this->setDead(true));
+				$ev = new BlockDeathEvent($this, $this->setDead(true));
+				$ev->call();
+				if(!$ev->isCancelled()){
+					$world->setBlock($this->position, $ev->getNewState());
+				}
 			}
 		}
 	}
