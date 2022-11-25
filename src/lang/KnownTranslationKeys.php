@@ -190,6 +190,7 @@ final class KnownTranslationKeys{
 	public const ENCHANTMENT_PROTECT_FIRE = "enchantment.protect.fire";
 	public const ENCHANTMENT_PROTECT_PROJECTILE = "enchantment.protect.projectile";
 	public const ENCHANTMENT_SOUL_SPEED = "enchantment.soul_speed";
+	public const ENCHANTMENT_SWIFT_SNEAK = "enchantment.swift_sneak";
 	public const ENCHANTMENT_THORNS = "enchantment.thorns";
 	public const ENCHANTMENT_TRIDENTCHANNELING = "enchantment.tridentChanneling";
 	public const ENCHANTMENT_TRIDENTIMPALING = "enchantment.tridentImpaling";
@@ -211,12 +212,14 @@ final class KnownTranslationKeys{
 	public const IP_WARNING = "ip_warning";
 	public const ITEM_RECORD_11_DESC = "item.record_11.desc";
 	public const ITEM_RECORD_13_DESC = "item.record_13.desc";
+	public const ITEM_RECORD_5_DESC = "item.record_5.desc";
 	public const ITEM_RECORD_BLOCKS_DESC = "item.record_blocks.desc";
 	public const ITEM_RECORD_CAT_DESC = "item.record_cat.desc";
 	public const ITEM_RECORD_CHIRP_DESC = "item.record_chirp.desc";
 	public const ITEM_RECORD_FAR_DESC = "item.record_far.desc";
 	public const ITEM_RECORD_MALL_DESC = "item.record_mall.desc";
 	public const ITEM_RECORD_MELLOHI_DESC = "item.record_mellohi.desc";
+	public const ITEM_RECORD_OTHERSIDE_DESC = "item.record_otherside.desc";
 	public const ITEM_RECORD_PIGSTEP_DESC = "item.record_pigstep.desc";
 	public const ITEM_RECORD_STAL_DESC = "item.record_stal.desc";
 	public const ITEM_RECORD_STRAD_DESC = "item.record_strad.desc";
