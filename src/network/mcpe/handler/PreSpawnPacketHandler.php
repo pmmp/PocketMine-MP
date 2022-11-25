@@ -61,16 +61,17 @@ class PreSpawnPacketHandler extends PacketHandler{
 
 	public function setUp() : void{
 		$location = $this->player->getLocation();
+		$world = $location->getWorld();
 
 		$this->session->getLogger()->debug("Preparing StartGamePacket");
 		$levelSettings = new LevelSettings();
 		$levelSettings->seed = -1;
 		$levelSettings->spawnSettings = new SpawnSettings(SpawnSettings::BIOME_TYPE_DEFAULT, "", DimensionIds::OVERWORLD); //TODO: implement this properly
 		$levelSettings->worldGamemode = TypeConverter::getInstance()->coreGameModeToProtocol($this->server->getGamemode());
-		$levelSettings->difficulty = $location->getWorld()->getDifficulty();
-		$levelSettings->spawnPosition = BlockPosition::fromVector3($location->getWorld()->getSpawnLocation());
+		$levelSettings->difficulty = $world->getDifficulty();
+		$levelSettings->spawnPosition = BlockPosition::fromVector3($world->getSpawnLocation());
 		$levelSettings->hasAchievementsDisabled = true;
-		$levelSettings->time = $location->getWorld()->getTime();
+		$levelSettings->time = $world->getTime();
 		$levelSettings->eduEditionOffer = 0;
 		$levelSettings->rainLevel = 0; //TODO: implement these properly
 		$levelSettings->lightningLevel = 0;

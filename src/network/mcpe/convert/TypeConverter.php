@@ -24,11 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\block\BlockLegacyIds;
-use pocketmine\block\inventory\AnvilInventory;
-use pocketmine\block\inventory\CraftingTableInventory;
-use pocketmine\block\inventory\EnchantInventory;
-use pocketmine\block\inventory\LoomInventory;
-use pocketmine\block\inventory\StonecutterInventory;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
@@ -285,38 +280,12 @@ class TypeConverter{
 		}
 		switch($action->sourceType){
 			case NetworkInventoryAction::SOURCE_CONTAINER:
-				$window = null;
-				if($action->windowId === ContainerIds::UI && $action->inventorySlot > 0){
-					if($action->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
-						return null; //useless noise
-					}
-					$pSlot = $action->inventorySlot;
-
-					$slot = UIInventorySlotOffset::CRAFTING2X2_INPUT[$pSlot] ?? null;
-					if($slot !== null){
-						$window = $player->getCraftingGrid();
-					}elseif(($current = $player->getCurrentWindow()) !== null){
-						$slotMap = match(true){
-							$current instanceof AnvilInventory => UIInventorySlotOffset::ANVIL,
-							$current instanceof EnchantInventory => UIInventorySlotOffset::ENCHANTING_TABLE,
-							$current instanceof LoomInventory => UIInventorySlotOffset::LOOM,
-							$current instanceof StonecutterInventory => [UIInventorySlotOffset::STONE_CUTTER_INPUT => StonecutterInventory::SLOT_INPUT],
-							$current instanceof CraftingTableInventory => UIInventorySlotOffset::CRAFTING3X3_INPUT,
-							default => null
-						};
-						if($slotMap !== null){
-							$window = $current;
-							$slot = $slotMap[$pSlot] ?? null;
-						}
-					}
-					if($slot === null){
-						throw new TypeConversionException("Unmatched UI inventory slot offset $pSlot");
-					}
-				}else{
-					$window = $inventoryManager->getWindow($action->windowId);
-					$slot = $action->inventorySlot;
+				if($action->windowId === ContainerIds::UI && $action->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
+					return null; //useless noise
 				}
-				if($window !== null){
+				$located = $inventoryManager->locateWindowAndSlot($action->windowId, $action->inventorySlot);
+				if($located !== null){
+					[$window, $slot] = $located;
 					return new SlotChangeAction($window, $slot, $old, $new);
 				}
 
@@ -338,15 +307,10 @@ class TypeConverter{
 
 				}
 			case NetworkInventoryAction::SOURCE_TODO:
-				//These types need special handling.
-				switch($action->windowId){
-					case NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT:
-					case NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
-						return null;
-				}
-
-				//TODO: more stuff
-				throw new TypeConversionException("No open container with window ID $action->windowId");
+				//These are used to balance a transaction that involves special actions, like crafting, enchanting, etc.
+				//The vanilla server just accepted these without verifying them. We don't need to care about them since
+				//we verify crafting by checking for imbalances anyway.
+				return null;
 			default:
 				throw new TypeConversionException("Unknown inventory source type $action->sourceType");
 		}

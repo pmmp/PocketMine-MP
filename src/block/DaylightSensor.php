@@ -100,21 +100,23 @@ class DaylightSensor extends Transparent{
 	}
 
 	public function onScheduledUpdate() : void{
+		$world = $this->position->getWorld();
 		$signalStrength = $this->recalculateSignalStrength();
 		if($this->signalStrength !== $signalStrength){
 			$this->signalStrength = $signalStrength;
-			$this->position->getWorld()->setBlock($this->position, $this);
+			$world->setBlock($this->position, $this);
 		}
-		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20);
+		$world->scheduleDelayedBlockUpdate($this->position, 20);
 	}
 
 	private function recalculateSignalStrength() : int{
-		$lightLevel = $this->position->getWorld()->getRealBlockSkyLightAt($this->position->x, $this->position->y, $this->position->z);
+		$world = $this->position->getWorld();
+		$lightLevel = $world->getRealBlockSkyLightAt($this->position->x, $this->position->y, $this->position->z);
 		if($this->inverted){
 			return 15 - $lightLevel;
 		}
 
-		$sunAngle = $this->position->getWorld()->getSunAnglePercentage();
+		$sunAngle = $world->getSunAnglePercentage();
 		return max(0, (int) round($lightLevel * cos(($sunAngle + ((($sunAngle < 0.5 ? 0 : 1) - $sunAngle) / 5)) * 2 * M_PI)));
 	}
 

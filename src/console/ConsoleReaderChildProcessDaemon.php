@@ -23,11 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\console;
 
-use pocketmine\snooze\SleeperNotifier;
-use pocketmine\thread\Thread;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function base64_encode;
 use function fgets;
 use function fopen;
@@ -45,36 +43,35 @@ use function trim;
 use const PHP_BINARY;
 use const STREAM_SHUT_RDWR;
 
-final class ConsoleReaderThread extends Thread{
+/**
+ * This pile of shit exists because PHP on Windows is broken, and can't handle stream_select() on stdin or pipes
+ * properly - stdin native triggers stream_select() when a key is pressed, causing it to get stuck in fgets()
+ * waiting for a line that might never come (and Windows doesn't support character-based reading either), and
+ * pipes just constantly trigger stream_select() instead of only when data is returned, rendering it useless.
+ *
+ * This results in whichever process reads stdin getting stuck on shutdown, which previously forced us to kill
+ * the entire server process to make it go away.
+ *
+ * To get around this problem, we delegate the responsibility of reading stdin to a subprocess, which we can
+ * then brutally murder when the server shuts down, without killing the entire server process.
+ * Thankfully, stream_select() actually works properly on sockets, so we can use them for inter-process
+ * communication.
+ */
+final class ConsoleReaderChildProcessDaemon{
+	private \PrefixedLogger $logger;
+	/** @var resource */
+	private $subprocess;
+	/** @var resource */
+	private $socket;
+
 	public function __construct(
-		private \Threaded $buffer,
-		private ?SleeperNotifier $notifier = null
-	){}
-
-	protected function onRun() : void{
-		$buffer = $this->buffer;
-		$notifier = $this->notifier;
-
-		while(!$this->isKilled){
-			$this->runSubprocess($buffer, $notifier);
-		}
+		\Logger $logger
+	){
+		$this->logger = new \PrefixedLogger($logger, "Console Reader Daemon");
+		$this->prepareSubprocess();
 	}
 
-	/**
-	 * This pile of shit exists because PHP on Windows is broken, and can't handle stream_select() on stdin or pipes
-	 * properly - stdin native triggers stream_select() when a key is pressed, causing it to get stuck in fgets()
-	 * waiting for a line that might never come (and Windows doesn't support character-based reading either), and
-	 * pipes just constantly trigger stream_select() instead of only when data is returned, rendering it useless.
-	 *
-	 * This results in whichever process reads stdin getting stuck on shutdown, which previously forced us to kill
-	 * the entire server process to make it go away.
-	 *
-	 * To get around this problem, we delegate the responsibility of reading stdin to a subprocess, which we can
-	 * then brutally murder when the server shuts down, without killing the entire server process.
-	 * Thankfully, stream_select() actually works properly on sockets, so we can use them for inter-process
-	 * communication.
-	 */
-	private function runSubprocess(\Threaded $buffer, ?SleeperNotifier $notifier) : void{
+	private function prepareSubprocess() : void{
 		$server = stream_socket_server("tcp://127.0.0.1:0");
 		if($server === false){
 			throw new \RuntimeException("Failed to open console reader socket server");
@@ -96,41 +93,43 @@ final class ConsoleReaderThread extends Thread{
 			throw new AssumptionFailedError("stream_socket_accept() returned false");
 		}
 		stream_socket_shutdown($server, STREAM_SHUT_RDWR);
-		while(!$this->isKilled){
-			$r = [$client];
-			$w = null;
-			$e = null;
-			if(stream_select($r, $w, $e, 0, 200000) === 1){
-				$command = fgets($client);
-				if($command === false){
-					//subprocess died for some reason; this could be someone killed it manually from outside (e.g.
-					//mistyped PID) or it might be a ctrl+c signal to this process that the child is handling
-					//differently (different signal handlers).
-					//since we have no way to know the difference, we just kill the sub and start a new one.
-					break;
-				}
 
-				$command = preg_replace("#\\x1b\\x5b([^\\x1b]*\\x7e|[\\x40-\\x50])#", "", trim($command)) ?? throw new AssumptionFailedError("This regex is assumed to be valid");
-				$command = preg_replace('/[[:cntrl:]]/', '', $command) ?? throw new AssumptionFailedError("This regex is assumed to be valid");
-				if($command === ""){
-					continue;
-				}
-				$buffer[] = $command;
-				if($notifier !== null){
-					$notifier->wakeupSleeper();
-				}
-			}
-		}
+		$this->subprocess = $sub;
+		$this->socket = $client;
+	}
 
+	private function shutdownSubprocess() : void{
 		//we have no way to signal to the subprocess to shut down gracefully; besides, Windows sucks, and the subprocess
 		//gets stuck in a blocking fgets() read because stream_select() is a hunk of junk (hence the separate process in
 		//the first place).
-		proc_terminate($sub);
-		proc_close($sub);
-		stream_socket_shutdown($client, STREAM_SHUT_RDWR);
+		proc_terminate($this->subprocess);
+		proc_close($this->subprocess);
+		stream_socket_shutdown($this->socket, STREAM_SHUT_RDWR);
 	}
 
-	public function getThreadName() : string{
-		return "Console";
+	public function readLine() : ?string{
+		$r = [$this->socket];
+		$w = null;
+		$e = null;
+		if(stream_select($r, $w, $e, 0, 0) === 1){
+			$command = fgets($this->socket);
+			if($command === false){
+				$this->logger->debug("Lost connection to subprocess, restarting (maybe the child process was killed from outside?)");
+				$this->shutdownSubprocess();
+				$this->prepareSubprocess();
+				return null;
+			}
+
+			$command = preg_replace("#\\x1b\\x5b([^\\x1b]*\\x7e|[\\x40-\\x50])#", "", trim($command)) ?? throw new AssumptionFailedError("This regex is assumed to be valid");
+			$command = preg_replace('/[[:cntrl:]]/', '', $command) ?? throw new AssumptionFailedError("This regex is assumed to be valid");
+
+			return $command !== "" ? $command : null;
+		}
+
+		return null;
+	}
+
+	public function quit() : void{
+		$this->shutdownSubprocess();
 	}
 }

@@ -164,9 +164,10 @@ class Bamboo extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$below = $this->position->getWorld()->getBlock($this->position->down());
+		$world = $this->position->getWorld();
+		$below = $world->getBlock($this->position->down());
 		if(!$this->canBeSupportedBy($below) && !$below->isSameType($this)){
-			$this->position->getWorld()->useBreakOn($this->position);
+			$world->useBreakOn($this->position);
 		}
 	}
 
@@ -212,7 +213,7 @@ class Bamboo extends Transparent{
 			}
 		}
 
-		$tx = new BlockTransaction($this->position->getWorld());
+		$tx = new BlockTransaction($world);
 		foreach($newBlocks as $idx => $newBlock){
 			$tx->addBlock($this->position->subtract(0, $idx - $growAmount, 0), $newBlock);
 		}

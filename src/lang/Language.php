@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\lang;
 
 use pocketmine\utils\Utils;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function array_filter;
 use function array_map;
 use function count;
@@ -171,6 +171,14 @@ class Language{
 
 	public function get(string $id) : string{
 		return $this->internalGet($id) ?? $id;
+	}
+
+	/**
+	 * @return string[]
+	 * @phpstan-return array<string, string>
+	 */
+	public function getAll() : array{
+		return $this->lang;
 	}
 
 	protected function parseTranslation(string $text, ?string $onlyPrefix = null) : string{

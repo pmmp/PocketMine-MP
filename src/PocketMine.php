@@ -34,7 +34,7 @@ namespace pocketmine {
 	use pocketmine\utils\Timezone;
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\SetupWizard;
-	use Webmozart\PathUtil\Path;
+	use Symfony\Component\Filesystem\Path;
 	use function defined;
 	use function extension_loaded;
 	use function function_exists;
@@ -201,6 +201,22 @@ JIT_WARNING
 		ini_set('assert.exception', '1');
 	}
 
+	function getopt_string(string $opt) : ?string{
+		$opts = getopt("", ["$opt:"]);
+		if(isset($opts[$opt])){
+			if(is_string($opts[$opt])){
+				return $opts[$opt];
+			}
+			if(is_array($opts[$opt])){
+				critical_error("Cannot specify --$opt multiple times");
+			}else{
+				critical_error("Missing value for --$opt");
+			}
+			exit(1);
+		}
+		return null;
+	}
+
 	/**
 	 * @return void
 	 */
@@ -252,16 +268,22 @@ JIT_WARNING
 
 		ErrorToExceptionHandler::set();
 
-		$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-ansi", "disable-ansi"]);
-
 		$cwd = Utils::assumeNotFalse(realpath(Utils::assumeNotFalse(getcwd())));
-		$dataPath = isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : $cwd . DIRECTORY_SEPARATOR;
-		$pluginPath = isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : $cwd . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR;
+		$dataPath = getopt_string("data") ?? $cwd;
+		$pluginPath = getopt_string("plugins") ?? $cwd . DIRECTORY_SEPARATOR . "plugins";
 		Filesystem::addCleanedPath($pluginPath, Filesystem::CLEAN_PATH_PLUGINS_PREFIX);
 
-		if(!file_exists($dataPath)){
-			mkdir($dataPath, 0777, true);
+		if(!@mkdir($dataPath, 0777, true) && (!is_dir($dataPath) || !is_writable($dataPath))){
+			critical_error("Unable to create/access data directory at $dataPath. Check that the target location is accessible by the current user.");
+			exit(1);
 		}
+		//this has to be done after we're sure the data path exists
+		$dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
+		if(!@mkdir($pluginPath, 0777, true) && (!is_dir($pluginPath) || !is_writable($pluginPath))){
+			critical_error("Unable to create plugin directory at $pluginPath. Check that the target location is accessible by the current user.");
+			exit(1);
+		}
+		$pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
 
 		$lockFilePath = Path::join($dataPath, 'server.lock');
 		if(($pid = Filesystem::createLockFile($lockFilePath)) !== null){
@@ -273,6 +295,7 @@ JIT_WARNING
 		//Logger has a dependency on timezone
 		Timezone::init();
 
+		$opts = getopt("", ["no-wizard", "enable-ansi", "disable-ansi"]);
 		if(isset($opts["enable-ansi"])){
 			Terminal::init(true);
 		}elseif(isset($opts["disable-ansi"])){

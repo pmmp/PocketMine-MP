@@ -122,6 +122,7 @@ class FlowerPot extends Flowable{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		$world = $this->position->getWorld();
 		$plant = $item->getBlock();
 		if($this->plant !== null){
 			if($this->isValidPlant($plant)){
@@ -137,16 +138,16 @@ class FlowerPot extends Flowable{
 				$removedItems = $player->getInventory()->addItem(...$removedItems);
 			}
 			foreach($removedItems as $drops){
-				$this->position->getWorld()->dropItem($this->position->add(0.5, 0.5, 0.5), $drops);
+				$world->dropItem($this->position->add(0.5, 0.5, 0.5), $drops);
 			}
 
 			$this->setPlant(null);
-			$this->position->getWorld()->setBlock($this->position, $this);
+			$world->setBlock($this->position, $this);
 			return true;
 		}elseif($this->isValidPlant($plant)){
 			$this->setPlant($plant);
 			$item->pop();
-			$this->position->getWorld()->setBlock($this->position, $this);
+			$world->setBlock($this->position, $this);
 
 			return true;
 		}

@@ -74,6 +74,7 @@ final class EffectIdMap{
 		//TODO: SLOW_FALLING
 		//TODO: BAD_OMEN
 		//TODO: VILLAGE_HERO
+		$this->register(EffectIds::DARKNESS, VanillaEffects::DARKNESS());
 	}
 
 	//TODO: not a big fan of the code duplication here :(
