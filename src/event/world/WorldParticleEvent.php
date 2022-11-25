@@ -25,6 +25,7 @@ namespace pocketmine\event\world;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\particle\Particle;
 use pocketmine\world\World;
@@ -38,17 +39,22 @@ class WorldParticleEvent extends WorldEvent implements Cancellable {
 	public function __construct(
 		World $world,
 		private Particle $particle,
+		private Vector3 $position,
 		private array $recipients
 	){
 		parent::__construct($world);
 	}
-	
+
 	public function getParticle() : Particle{
 		return $this->particle;
 	}
 
 	public function setParticle(Particle $particle) : void{
 		$this->particle = $particle;
+	}
+
+	public function getPosition() : Vector3{
+		return $this->position;
 	}
 
 	/**

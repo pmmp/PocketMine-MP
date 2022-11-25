@@ -683,7 +683,7 @@ class World implements ChunkManager{
 	 */
 	public function addParticle(Vector3 $pos, Particle $particle, ?array $players = null) : void{
 		$players ??= $this->getViewersForPosition($pos);
-		$ev = new WorldParticleEvent($this, $particle, $players);
+		$ev = new WorldParticleEvent($this, $particle, $pos, $players);
 
 		$ev->call();
 
