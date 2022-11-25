@@ -33,6 +33,13 @@ final class KnownTranslationKeys{
 	public const ABILITY_FLIGHT = "ability.flight";
 	public const ABILITY_NOCLIP = "ability.noclip";
 	public const ACCEPT_LICENSE = "accept_license";
+	public const ACTION_INTERACT_ARMORSTAND_EQUIP = "action.interact.armorstand.equip";
+	public const ACTION_INTERACT_ARMORSTAND_POSE = "action.interact.armorstand.pose";
+	public const ACTION_INTERACT_EXIT_BOAT = "action.interact.exit.boat";
+	public const ACTION_INTERACT_FISHING = "action.interact.fishing";
+	public const ACTION_INTERACT_NAME = "action.interact.name";
+	public const ACTION_INTERACT_RIDE_BOAT = "action.interact.ride.boat";
+	public const ACTION_INTERACT_RIDE_MINECART = "action.interact.ride.minecart";
 	public const CHAT_TYPE_ACHIEVEMENT = "chat.type.achievement";
 	public const CHAT_TYPE_ADMIN = "chat.type.admin";
 	public const CHAT_TYPE_ANNOUNCEMENT = "chat.type.announcement";
@@ -138,6 +145,7 @@ final class KnownTranslationKeys{
 	public const DEATH_ATTACK_EXPLOSION = "death.attack.explosion";
 	public const DEATH_ATTACK_EXPLOSION_PLAYER = "death.attack.explosion.player";
 	public const DEATH_ATTACK_FALL = "death.attack.fall";
+	public const DEATH_ATTACK_FALLINGBLOCK = "death.attack.fallingBlock";
 	public const DEATH_ATTACK_GENERIC = "death.attack.generic";
 	public const DEATH_ATTACK_INFIRE = "death.attack.inFire";
 	public const DEATH_ATTACK_INWALL = "death.attack.inWall";
@@ -148,6 +156,7 @@ final class KnownTranslationKeys{
 	public const DEATH_ATTACK_OUTOFWORLD = "death.attack.outOfWorld";
 	public const DEATH_ATTACK_PLAYER = "death.attack.player";
 	public const DEATH_ATTACK_PLAYER_ITEM = "death.attack.player.item";
+	public const DEATH_ATTACK_TRIDENT = "death.attack.trident";
 	public const DEATH_ATTACK_WITHER = "death.attack.wither";
 	public const DEATH_FELL_ACCIDENT_GENERIC = "death.fell.accident.generic";
 	public const DEFAULT_GAMEMODE = "default_gamemode";

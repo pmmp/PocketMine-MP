@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c471cf28062595a981064058c8b12dbb",
+    "content-hash": "ff2bc73e9b0acccb1e63ddef2412fe31",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -536,16 +536,16 @@
         },
         {
             "name": "pocketmine/locale-data",
-            "version": "2.10.3",
+            "version": "2.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Language.git",
-                "reference": "d641577c8b15d9e60750dd681c0d684b89ae55e1"
+                "reference": "4b33d8fa53eda53d9662a7478806ebae2e4a5c53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Language/zipball/d641577c8b15d9e60750dd681c0d684b89ae55e1",
-                "reference": "d641577c8b15d9e60750dd681c0d684b89ae55e1",
+                "url": "https://api.github.com/repos/pmmp/Language/zipball/4b33d8fa53eda53d9662a7478806ebae2e4a5c53",
+                "reference": "4b33d8fa53eda53d9662a7478806ebae2e4a5c53",
                 "shasum": ""
             },
             "type": "library",
@@ -553,9 +553,9 @@
             "description": "Language resources used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/Language/issues",
-                "source": "https://github.com/pmmp/Language/tree/2.10.3"
+                "source": "https://github.com/pmmp/Language/tree/2.11.0"
             },
-            "time": "2022-11-25T14:21:36+00:00"
+            "time": "2022-11-25T14:24:34+00:00"
         },
         {
             "name": "pocketmine/log",
