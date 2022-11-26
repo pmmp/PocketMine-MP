@@ -24,8 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\event\block;
 
 /**
- * Called when plants or crops grow.
+ * Called when a block dies.
+ * This could be things like corals dying due to no water being nearby.
  */
-class BlockGrowEvent extends BaseBlockChangeEvent{
+class BlockDeathEvent extends BaseBlockChangeEvent{
 
 }

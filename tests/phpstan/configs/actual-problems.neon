@@ -16,19 +16,9 @@ parameters:
 			path: ../../../build/server-phar.php
 
 		-
-			message: "#^Binary operation \"\\.\" between array\\<int, mixed\\>\\|string\\|false and '/'\\|'\\\\\\\\' results in an error\\.$#"
-			count: 2
-			path: ../../../src/PocketMine.php
-
-		-
 			message: "#^Do\\-while loop condition is always false\\.$#"
 			count: 1
 			path: ../../../src/PocketMine.php
-
-		-
-			message: "#^Cannot cast mixed to string\\.$#"
-			count: 1
-			path: ../../../src/Server.php
 
 		-
 			message: "#^Parameter \\#1 \\$array of static method pocketmine\\\\plugin\\\\PluginGraylist\\:\\:fromArray\\(\\) expects array, mixed given\\.$#"
