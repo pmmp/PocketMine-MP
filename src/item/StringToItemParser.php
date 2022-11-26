@@ -36,6 +36,7 @@ use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\item\VanillaItems as Items;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\StringToTParser;
+use function array_keys;
 
 /**
  * Handles parsing items from strings. This is used to interpret names from the /give command (and others).
@@ -1514,6 +1515,18 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("zombie_spawn_egg", fn() => Items::ZOMBIE_SPAWN_EGG());
 	}
 
+	/**
+	 * @var true[][][]
+	 * @phpstan-var array<int, array<int, array<string, true>>>
+	 */
+	private array $reverseMap = [];
+
+	public function register(string $alias, \Closure $callback) : void{
+		parent::register($alias, $callback);
+		$item = $callback($alias);
+		$this->reverseMap[$item->getTypeId()][$item->computeTypeData()][$alias] = true;
+	}
+
 	/** @phpstan-param \Closure(string $input) : Block $callback */
 	public function registerBlock(string $alias, \Closure $callback) : void{
 		$this->register($alias, fn(string $input) => $callback($input)->asItem());
@@ -1521,5 +1534,26 @@ final class StringToItemParser extends StringToTParser{
 
 	public function parse(string $input) : ?Item{
 		return parent::parse($input);
+	}
+
+	/**
+	 * Returns a list of currently registered aliases that resolve to the given item.
+	 *
+	 * @return string[]
+	 * @phpstan-return list<string>
+	 */
+	public function lookupAliases(Item $item) : array{
+		$aliases = $this->reverseMap[$item->getTypeId()][$item->computeTypeData()] ?? [];
+		return array_keys($aliases);
+	}
+
+	/**
+	 * Returns a list of currently registered aliases that resolve to the item form of the given block.
+	 *
+	 * @return string[]
+	 * @phpstan-return list<string>
+	 */
+	public function lookupBlockAliases(Block $block) : array{
+		return $this->lookupAliases($block->asItem());
 	}
 }
