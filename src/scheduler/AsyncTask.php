@@ -124,10 +124,7 @@ abstract class AsyncTask extends \Threaded{
 		return $this->result;
 	}
 
-	/**
-	 * @param mixed $result
-	 */
-	public function setResult($result) : void{
+	public function setResult(mixed $result) : void{
 		$this->result = ($this->serialized = !is_scalar($result)) ? igbinary_serialize($result) : $result;
 	}
 
@@ -166,7 +163,7 @@ abstract class AsyncTask extends \Threaded{
 	 *
 	 * @param mixed $progress A value that can be safely serialize()'ed.
 	 */
-	public function publishProgress($progress) : void{
+	public function publishProgress(mixed $progress) : void{
 		$this->progressUpdates[] = igbinary_serialize($progress);
 	}
 
@@ -213,10 +210,8 @@ abstract class AsyncTask extends \Threaded{
 	 *
 	 * Objects stored in this storage can be retrieved using fetchLocal() on the same thread that this method was called
 	 * from.
-	 *
-	 * @param mixed  $complexData the data to store
 	 */
-	protected function storeLocal(string $key, $complexData) : void{
+	protected function storeLocal(string $key, mixed $complexData) : void{
 		if(self::$threadLocalStorage === null){
 			/*
 			 * It's necessary to use an object (not array) here because pthreads is stupid. Non-default array statics
