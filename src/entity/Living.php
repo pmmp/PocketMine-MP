@@ -185,7 +185,7 @@ abstract class Living extends Entity{
 	}
 
 	/**
-	 * Returns the display name of this entity to use in stuff like death messages.
+	 * Returns the name used to describe this entity in chat and command outputs.
 	 */
 	public function getDisplayName() : string{
 		return $this->nameTag !== "" ? $this->nameTag : $this->getName();
