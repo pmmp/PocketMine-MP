@@ -43,6 +43,34 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::ACCEPT_LICENSE, []);
 	}
 
+	public static function action_interact_armorstand_equip() : Translatable{
+		return new Translatable(KnownTranslationKeys::ACTION_INTERACT_ARMORSTAND_EQUIP, []);
+	}
+
+	public static function action_interact_armorstand_pose() : Translatable{
+		return new Translatable(KnownTranslationKeys::ACTION_INTERACT_ARMORSTAND_POSE, []);
+	}
+
+	public static function action_interact_exit_boat() : Translatable{
+		return new Translatable(KnownTranslationKeys::ACTION_INTERACT_EXIT_BOAT, []);
+	}
+
+	public static function action_interact_fishing() : Translatable{
+		return new Translatable(KnownTranslationKeys::ACTION_INTERACT_FISHING, []);
+	}
+
+	public static function action_interact_name() : Translatable{
+		return new Translatable(KnownTranslationKeys::ACTION_INTERACT_NAME, []);
+	}
+
+	public static function action_interact_ride_boat() : Translatable{
+		return new Translatable(KnownTranslationKeys::ACTION_INTERACT_RIDE_BOAT, []);
+	}
+
+	public static function action_interact_ride_minecart() : Translatable{
+		return new Translatable(KnownTranslationKeys::ACTION_INTERACT_RIDE_MINECART, []);
+	}
+
 	public static function chat_type_achievement(Translatable|string $param0, Translatable|string $param1) : Translatable{
 		return new Translatable(KnownTranslationKeys::CHAT_TYPE_ACHIEVEMENT, [
 			0 => $param0,
@@ -627,6 +655,12 @@ final class KnownTranslationFactory{
 		]);
 	}
 
+	public static function death_attack_fallingBlock(Translatable|string $param0) : Translatable{
+		return new Translatable(KnownTranslationKeys::DEATH_ATTACK_FALLINGBLOCK, [
+			0 => $param0,
+		]);
+	}
+
 	public static function death_attack_generic(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::DEATH_ATTACK_GENERIC, [
 			0 => $param0,
@@ -688,6 +722,13 @@ final class KnownTranslationFactory{
 			0 => $param0,
 			1 => $param1,
 			2 => $param2,
+		]);
+	}
+
+	public static function death_attack_trident(Translatable|string $param0, Translatable|string $param1) : Translatable{
+		return new Translatable(KnownTranslationKeys::DEATH_ATTACK_TRIDENT, [
+			0 => $param0,
+			1 => $param1,
 		]);
 	}
 

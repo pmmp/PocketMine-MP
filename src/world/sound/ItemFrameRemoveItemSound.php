@@ -21,11 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event\block;
+namespace pocketmine\world\sound;
 
-/**
- * Called when plants or crops grow.
- */
-class BlockGrowEvent extends BaseBlockChangeEvent{
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelEvent;
 
+class ItemFrameRemoveItemSound implements Sound{
+
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::create(LevelEvent::SOUND_ITEMFRAME_REMOVE_ITEM, 0, $pos)];
+	}
 }
