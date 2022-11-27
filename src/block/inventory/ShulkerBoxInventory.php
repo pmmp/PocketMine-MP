@@ -23,9 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory;
 
+use pocketmine\block\BlockTypeIds;
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\item\Item;
-use pocketmine\item\ItemIds;
+use pocketmine\item\ItemBlock;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\world\Position;
@@ -50,8 +51,11 @@ class ShulkerBoxInventory extends SimpleInventory implements BlockInventory{
 	}
 
 	public function canAddItem(Item $item) : bool{
-		if($item->getId() === ItemIds::UNDYED_SHULKER_BOX || $item->getId() === ItemIds::SHULKER_BOX){
-			return false;
+		if($item instanceof ItemBlock){
+			$blockTypeId = $item->getBlock()->getTypeId();
+			if($blockTypeId === BlockTypeIds::SHULKER_BOX || $blockTypeId === BlockTypeIds::DYED_SHULKER_BOX){
+				return false;
+			}
 		}
 		return parent::canAddItem($item);
 	}

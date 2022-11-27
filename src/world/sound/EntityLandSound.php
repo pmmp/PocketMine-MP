@@ -43,7 +43,7 @@ class EntityLandSound implements Sound{
 		return [LevelSoundEventPacket::create(
 			LevelSoundEvent::LAND,
 			$pos,
-			RuntimeBlockMapping::getInstance()->toRuntimeId($this->blockLandedOn->getFullId()),
+			RuntimeBlockMapping::getInstance()->toRuntimeId($this->blockLandedOn->getStateId()),
 			$this->entity::getNetworkTypeId(),
 			false, //TODO: does isBaby have any relevance here?
 			false

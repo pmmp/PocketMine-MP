@@ -33,6 +33,6 @@ class BlockBreakSound implements Sound{
 	public function __construct(private Block $block){}
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::BREAK, $pos, false, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId()))];
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::BREAK, $pos, false, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getStateId()))];
 	}
 }

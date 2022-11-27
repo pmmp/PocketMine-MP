@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -30,19 +32,12 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class DoublePlant extends Flowable{
-
 	protected bool $top = false;
 
-	protected function writeStateToMeta() : int{
-		return ($this->top ? BlockLegacyMetadata::DOUBLE_PLANT_FLAG_TOP : 0);
-	}
+	public function getRequiredStateDataBits() : int{ return 1; }
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->top = ($stateMeta & BlockLegacyMetadata::DOUBLE_PLANT_FLAG_TOP) !== 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1000;
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->bool($this->top);
 	}
 
 	public function isTop() : bool{ return $this->top; }
@@ -54,8 +49,8 @@ class DoublePlant extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$id = $blockReplace->getSide(Facing::DOWN)->getId();
-		if(($id === BlockLegacyIds::GRASS || $id === BlockLegacyIds::DIRT) && $blockReplace->getSide(Facing::UP)->canBeReplaced()){
+		$down = $blockReplace->getSide(Facing::DOWN);
+		if($down->hasTypeTag(BlockTypeTags::DIRT) && $blockReplace->getSide(Facing::UP)->canBeReplaced()){
 			$top = clone $this;
 			$top->top = true;
 			$tx->addBlock($blockReplace->position, $this)->addBlock($blockReplace->position->getSide(Facing::UP), $top);
@@ -79,7 +74,8 @@ class DoublePlant extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->isValidHalfPlant() || (!$this->top && $this->getSide(Facing::DOWN)->isTransparent())){
+		$down = $this->getSide(Facing::DOWN);
+		if(!$this->isValidHalfPlant() || (!$this->top && !$down->hasTypeTag(BlockTypeTags::DIRT) && !$down->hasTypeTag(BlockTypeTags::MUD))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}

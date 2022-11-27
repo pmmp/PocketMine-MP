@@ -32,8 +32,7 @@ use const PHP_EOL;
 use const PTHREADS_INHERIT_NONE;
 
 class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
-	/** @var bool */
-	protected $logDebug;
+	protected bool $logDebug;
 
 	private string $format = TextFormat::AQUA . "[%s] " . TextFormat::RESET . "%s[%s/%s]: %s" . TextFormat::RESET;
 	private bool $useFormattingCodes = false;
@@ -173,13 +172,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 		}
 	}
 
-	/**
-	 * @param string $message
-	 * @param string $level
-	 * @param string $prefix
-	 * @param string $color
-	 */
-	protected function send($message, $level, $prefix, $color) : void{
+	protected function send(string $message, string $level, string $prefix, string $color) : void{
 		$time = new \DateTime('now', new \DateTimeZone($this->timezone));
 
 		$thread = \Thread::getCurrentThread();

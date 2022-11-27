@@ -45,10 +45,6 @@ class StatusCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		$mUsage = Process::getAdvancedMemoryUsage();
 
 		$server = $sender->getServer();

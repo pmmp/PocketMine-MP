@@ -31,7 +31,9 @@ use pocketmine\utils\EnumTrait;
  * @see build/generate-registry-annotations.php
  * @generate-registry-docblock
  *
+ * @method static ShapelessRecipeType CARTOGRAPHY()
  * @method static ShapelessRecipeType CRAFTING()
+ * @method static ShapelessRecipeType SMITHING()
  * @method static ShapelessRecipeType STONECUTTER()
  */
 final class ShapelessRecipeType{
@@ -40,7 +42,9 @@ final class ShapelessRecipeType{
 	protected static function setup() : void{
 		self::registerAll(
 			new self("crafting"),
-			new self("stonecutter")
+			new self("stonecutter"),
+			new self("smithing"),
+			new self("cartography")
 		);
 	}
 }

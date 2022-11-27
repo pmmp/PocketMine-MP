@@ -36,25 +36,16 @@ use pocketmine\utils\Utils;
 class PlayerChatEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var string */
-	protected $message;
-
-	/** @var string */
-	protected $format;
-
-	/** @var CommandSender[] */
-	protected $recipients = [];
-
 	/**
 	 * @param CommandSender[] $recipients
 	 */
-	public function __construct(Player $player, string $message, array $recipients, string $format = KnownTranslationKeys::CHAT_TYPE_TEXT){
+	public function __construct(
+		Player $player,
+		protected string $message,
+		protected array $recipients,
+		protected string $format = KnownTranslationKeys::CHAT_TYPE_TEXT
+	){
 		$this->player = $player;
-		$this->message = $message;
-
-		$this->format = $format;
-
-		$this->recipients = $recipients;
 	}
 
 	public function getMessage() : string{

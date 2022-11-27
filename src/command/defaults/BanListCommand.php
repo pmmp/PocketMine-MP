@@ -47,10 +47,6 @@ class BanListCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(isset($args[0])){
 			$args[0] = strtolower($args[0]);
 			if($args[0] === "ips"){

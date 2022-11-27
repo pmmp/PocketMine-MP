@@ -24,11 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\inventory\AnvilInventory;
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -48,21 +49,16 @@ class Anvil extends Transparent implements Fallable{
 
 	private int $damage = self::UNDAMAGED;
 
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) | ($this->damage << 2);
+	public function getRequiredTypeDataBits() : int{ return 2; }
+
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(2, self::UNDAMAGED, self::VERY_DAMAGED, $this->damage);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x3);
-		$this->damage = BlockDataSerializer::readBoundedInt("damage", $stateMeta >> 2, self::UNDAMAGED, self::VERY_DAMAGED);
-	}
+	public function getRequiredStateDataBits() : int{ return 2; }
 
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
-	protected function writeStateToItemMeta() : int{
-		return $this->damage << 2;
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->horizontalFacing($this->facing);
 	}
 
 	public function getDamage() : int{ return $this->damage; }
@@ -87,7 +83,7 @@ class Anvil extends Transparent implements Fallable{
 		return SupportType::NONE();
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 			$player->setCurrentWindow(new AnvilInventory($this->position));
 		}
@@ -100,10 +96,6 @@ class Anvil extends Transparent implements Fallable{
 			$this->facing = Facing::rotateY($player->getHorizontalFacing(), true);
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	public function tickFalling() : ?Block{
-		return null;
 	}
 
 	public function getFallSound() : ?Sound{

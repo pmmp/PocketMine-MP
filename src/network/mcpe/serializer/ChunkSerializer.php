@@ -41,8 +41,6 @@ use function count;
 use function str_repeat;
 
 final class ChunkSerializer{
-	public const LOWER_PADDING_SIZE = 4;
-
 	private function __construct(){
 		//NOOP
 	}
@@ -64,12 +62,6 @@ final class ChunkSerializer{
 
 	public static function serializeFullChunk(Chunk $chunk, RuntimeBlockMapping $blockMapper, PacketSerializerContext $encoderContext, ?string $tiles = null) : string{
 		$stream = PacketSerializer::encoder($encoderContext);
-
-		//TODO: HACK! fill in fake subchunks to make up for the new negative space client-side
-		for($y = 0; $y < self::LOWER_PADDING_SIZE; $y++){
-			$stream->putByte(8); //subchunk version 8
-			$stream->putByte(0); //0 layers - client will treat this as all-air
-		}
 
 		$subChunkCount = self::getSubChunkCount($chunk);
 		for($y = Chunk::MIN_SUBCHUNK_INDEX, $writtenCount = 0; $writtenCount < $subChunkCount; ++$y, ++$writtenCount){
@@ -97,6 +89,8 @@ final class ChunkSerializer{
 
 		$stream->putByte(count($layers));
 
+		$blockStateDictionary = $blockMapper->getBlockStateDictionary();
+
 		foreach($layers as $blocks){
 			$bitsPerBlock = $blocks->getBitsPerBlock();
 			$words = $blocks->getWordArray();
@@ -113,7 +107,13 @@ final class ChunkSerializer{
 			if($persistentBlockStates){
 				$nbtSerializer = new NetworkNbtSerializer();
 				foreach($palette as $p){
-					$stream->put($nbtSerializer->write(new TreeRoot($blockMapper->getBedrockKnownStates()[$blockMapper->toRuntimeId($p)])));
+					//TODO: introduce a binary cache for this
+					$state = $blockStateDictionary->getDataFromStateId($blockMapper->toRuntimeId($p));
+					if($state === null){
+						$state = $blockMapper->getFallbackStateData();
+					}
+
+					$stream->put($nbtSerializer->write(new TreeRoot($state->toNbt())));
 				}
 			}else{
 				foreach($palette as $p){

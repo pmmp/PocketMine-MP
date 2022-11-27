@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\player;
 
 use pocketmine\block\Bed;
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\command\CommandSender;
@@ -51,9 +51,9 @@ use pocketmine\event\player\PlayerBedLeaveEvent;
 use pocketmine\event\player\PlayerBlockPickEvent;
 use pocketmine\event\player\PlayerChangeSkinEvent;
 use pocketmine\event\player\PlayerChatEvent;
-use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerDisplayNameChangeEvent;
+use pocketmine\event\player\PlayerDropItemEvent;
 use pocketmine\event\player\PlayerEmoteEvent;
 use pocketmine\event\player\PlayerEntityInteractEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
@@ -132,6 +132,7 @@ use pocketmine\world\World;
 use Ramsey\Uuid\UuidInterface;
 use function abs;
 use function array_map;
+use function array_shift;
 use function assert;
 use function count;
 use function explode;
@@ -142,6 +143,7 @@ use function max;
 use function mb_strlen;
 use function microtime;
 use function min;
+use function morton2d_encode;
 use function preg_match;
 use function spl_object_id;
 use function sqrt;
@@ -241,8 +243,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected ?float $lastMovementProcess = null;
 
 	protected int $inAirTicks = 0;
-	/** @var float */
-	protected $stepHeight = 0.6;
+
+	protected float $stepHeight = 0.6;
 
 	protected ?Vector3 $sleeping = null;
 	private ?Position $spawnPosition = null;
@@ -668,7 +670,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function getItemCooldownExpiry(Item $item) : int{
 		$this->checkItemCooldowns();
-		return $this->usedItemsCooldown[$item->getId()] ?? 0;
+		return $this->usedItemsCooldown[morton2d_encode($item->getTypeId(), $item->computeTypeData())] ?? 0;
 	}
 
 	/**
@@ -676,7 +678,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function hasItemCooldown(Item $item) : bool{
 		$this->checkItemCooldowns();
-		return isset($this->usedItemsCooldown[$item->getId()]);
+		return isset($this->usedItemsCooldown[morton2d_encode($item->getTypeId(), $item->computeTypeData())]);
 	}
 
 	/**
@@ -685,7 +687,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function resetItemCooldown(Item $item, ?int $ticks = null) : void{
 		$ticks = $ticks ?? $item->getCooldownTicks();
 		if($ticks > 0){
-			$this->usedItemsCooldown[$item->getId()] = $this->server->getTick() + $ticks;
+			$this->usedItemsCooldown[morton2d_encode($item->getTypeId(), $item->computeTypeData())] = $this->server->getTick() + $ticks;
 		}
 	}
 
@@ -1429,19 +1431,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					$messagePart = substr($messagePart, 1);
 				}
 
-				$ev = new PlayerCommandPreprocessEvent($this, $messagePart);
-				$ev->call();
-
-				if($ev->isCancelled()){
-					break;
-				}
-
-				if(strpos($ev->getMessage(), "/") === 0){
+				if(strpos($messagePart, "/") === 0){
 					Timings::$playerCommand->startTiming();
-					$this->server->dispatchCommand($ev->getPlayer(), substr($ev->getMessage(), 1));
+					$this->server->dispatchCommand($this, substr($messagePart, 1));
 					Timings::$playerCommand->stopTiming();
 				}else{
-					$ev = new PlayerChatEvent($this, $ev->getMessage(), $this->server->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_USERS));
+					$ev = new PlayerChatEvent($this, $messagePart, $this->server->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_USERS));
 					$ev->call();
 					if(!$ev->isCancelled()){
 						$this->server->broadcastMessage($this->getServer()->getLanguage()->translateString($ev->getFormat(), [$ev->getPlayer()->getDisplayName(), $ev->getMessage()]), $ev->getRecipients());
@@ -1474,6 +1469,51 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	/**
+	 * @param Item[] $extraReturnedItems
+	 */
+	private function returnItemsFromAction(Item $oldHeldItem, Item $newHeldItem, array $extraReturnedItems) : void{
+		$heldItemChanged = false;
+
+		if(!$newHeldItem->equalsExact($oldHeldItem) && $oldHeldItem->equalsExact($this->inventory->getItemInHand())){
+			//determine if the item was changed in some meaningful way, or just damaged/changed count
+			//if it was really changed we always need to set it, whether we have finite resources or not
+			$newReplica = clone $oldHeldItem;
+			$newReplica->setCount($newHeldItem->getCount());
+			if($newReplica instanceof Durable && $newHeldItem instanceof Durable){
+				$newReplica->setDamage($newHeldItem->getDamage());
+			}
+			$damagedOrDeducted = $newReplica->equalsExact($newHeldItem);
+
+			if(!$damagedOrDeducted || $this->hasFiniteResources()){
+				if($newHeldItem instanceof Durable && $newHeldItem->isBroken()){
+					$this->broadcastSound(new ItemBreakSound());
+				}
+				$this->inventory->setItemInHand($newHeldItem);
+				$heldItemChanged = true;
+			}
+		}
+
+		if(!$heldItemChanged){
+			$newHeldItem = $oldHeldItem;
+		}
+
+		if($heldItemChanged && count($extraReturnedItems) > 0 && $newHeldItem->isNull()){
+			$this->inventory->setItemInHand(array_shift($extraReturnedItems));
+		}
+		foreach($this->inventory->addItem(...$extraReturnedItems) as $drop){
+			//TODO: we can't generate a transaction for this since the items aren't coming from an inventory :(
+			$ev = new PlayerDropItemEvent($this, $drop);
+			if($this->isSpectator()){
+				$ev->cancel();
+			}
+			$ev->call();
+			if(!$ev->isCancelled()){
+				$this->dropItem($drop);
+			}
+		}
+	}
+
+	/**
 	 * Activates the item in hand, for example throwing a projectile.
 	 *
 	 * @return bool if it did something
@@ -1494,18 +1534,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return false;
 		}
 
-		$result = $item->onClickAir($this, $directionVector);
+		$returnedItems = [];
+		$result = $item->onClickAir($this, $directionVector, $returnedItems);
 		if($result->equals(ItemUseResult::FAIL())){
 			return false;
 		}
 
 		$this->resetItemCooldown($item);
-		if($this->hasFiniteResources() && !$item->equalsExact($oldItem) && $oldItem->equalsExact($this->inventory->getItemInHand())){
-			if($item instanceof Durable && $item->isBroken()){
-				$this->broadcastSound(new ItemBreakSound());
-			}
-			$this->inventory->setItemInHand($item);
-		}
+		$this->returnItemsFromAction($oldItem, $item, $returnedItems);
 
 		$this->setUsingItem($item instanceof Releasable && $item->canStartUsingItem($this));
 
@@ -1535,11 +1571,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->setUsingItem(false);
 			$this->resetItemCooldown($slot);
 
-			if($this->hasFiniteResources() && $oldItem->equalsExact($this->inventory->getItemInHand())){
-				$slot->pop();
-				$this->inventory->setItemInHand($slot);
-				$this->inventory->addItem($slot->getResidue());
-			}
+			$slot->pop();
+			$this->returnItemsFromAction($oldItem, $slot, [$slot->getResidue()]);
 
 			return true;
 		}
@@ -1561,15 +1594,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 			$oldItem = clone $item;
 
-			$result = $item->onReleaseUsing($this);
+			$returnedItems = [];
+			$result = $item->onReleaseUsing($this, $returnedItems);
 			if($result->equals(ItemUseResult::SUCCESS())){
 				$this->resetItemCooldown($item);
-				if(!$item->equalsExact($oldItem) && $oldItem->equalsExact($this->inventory->getItemInHand())){
-					if($item instanceof Durable && $item->isBroken()){
-						$this->broadcastSound(new ItemBreakSound());
-					}
-					$this->inventory->setItemInHand($item);
-				}
+				$this->returnItemsFromAction($oldItem, $item, $returnedItems);
 				return true;
 			}
 
@@ -1644,7 +1673,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		$block = $target->getSide($face);
-		if($block->getId() === BlockLegacyIds::FIRE){
+		if($block->getTypeId() === BlockTypeIds::FIRE || $block->getTypeId() === BlockTypeIds::SOUL_FIRE){
 			$this->getWorld()->setBlock($block->getPosition(), VanillaBlocks::AIR());
 			$this->getWorld()->addSound($block->getPosition()->add(0.5, 0.5, 0.5), new FireExtinguishSound());
 			return true;
@@ -1682,13 +1711,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->stopBreakBlock($pos);
 			$item = $this->inventory->getItemInHand();
 			$oldItem = clone $item;
-			if($this->getWorld()->useBreakOn($pos, $item, $this, true)){
-				if($this->hasFiniteResources() && !$item->equalsExact($oldItem) && $oldItem->equalsExact($this->inventory->getItemInHand())){
-					if($item instanceof Durable && $item->isBroken()){
-						$this->broadcastSound(new ItemBreakSound());
-					}
-					$this->inventory->setItemInHand($item);
-				}
+			$returnedItems = [];
+			if($this->getWorld()->useBreakOn($pos, $item, $this, true, $returnedItems)){
+				$this->returnItemsFromAction($oldItem, $item, $returnedItems);
 				$this->hungerManager->exhaust(0.005, PlayerExhaustEvent::CAUSE_MINING);
 				return true;
 			}
@@ -1711,13 +1736,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
 			$item = $this->inventory->getItemInHand(); //this is a copy of the real item
 			$oldItem = clone $item;
-			if($this->getWorld()->useItemOn($pos, $item, $face, $clickOffset, $this, true)){
-				if($this->hasFiniteResources() && !$item->equalsExact($oldItem) && $oldItem->equalsExact($this->inventory->getItemInHand())){
-					if($item instanceof Durable && $item->isBroken()){
-						$this->broadcastSound(new ItemBreakSound());
-					}
-					$this->inventory->setItemInHand($item);
-				}
+			$returnedItems = [];
+			if($this->getWorld()->useItemOn($pos, $item, $face, $clickOffset, $this, true, $returnedItems)){
+				$this->returnItemsFromAction($oldItem, $item, $returnedItems);
 				return true;
 			}
 		}else{
@@ -1792,12 +1813,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($this->isAlive()){
 			//reactive damage like thorns might cause us to be killed by attacking another mob, which
 			//would mean we'd already have dropped the inventory by the time we reached here
-			if($heldItem->onAttackEntity($entity) && $this->hasFiniteResources() && $oldItem->equalsExact($this->inventory->getItemInHand())){ //always fire the hook, even if we are survival
-				if($heldItem instanceof Durable && $heldItem->isBroken()){
-					$this->broadcastSound(new ItemBreakSound());
-				}
-				$this->inventory->setItemInHand($heldItem);
-			}
+			$returnedItems = [];
+			$heldItem->onAttackEntity($entity, $returnedItems);
+			$this->returnItemsFromAction($oldItem, $heldItem, $returnedItems);
 
 			$this->hungerManager->exhaust(0.1, PlayerExhaustEvent::CAUSE_ATTACK);
 		}
@@ -2036,10 +2054,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 	}
 
-	/**
-	 * @param mixed $responseData
-	 */
-	public function onFormSubmit(int $formId, $responseData) : bool{
+	public function onFormSubmit(int $formId, mixed $responseData) : bool{
 		if(!isset($this->forms[$formId])){
 			$this->logger->debug("Got unexpected response for form $formId");
 			return false;
@@ -2255,16 +2270,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$this->getWorld()->dropItem($this->location, $item);
 			}
 
-			if($this->inventory !== null){
-				$this->inventory->setHeldItemIndex(0);
-				$this->inventory->clearAll();
-			}
-			if($this->armorInventory !== null){
-				$this->armorInventory->clearAll();
-			}
-			if($this->offHandInventory !== null){
-				$this->offHandInventory->clearAll();
-			}
+			$this->inventory->setHeldItemIndex(0);
+			$this->inventory->clearAll();
+			$this->armorInventory->clearAll();
+			$this->offHandInventory->clearAll();
 		}
 
 		if(!$ev->getKeepXp()){

@@ -23,10 +23,21 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-trait CoralTypeTrait{
+use pocketmine\block\Block;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 
+trait CoralTypeTrait{
 	protected CoralType $coralType;
 	protected bool $dead = false;
+
+	public function getRequiredTypeDataBits() : int{ return 4; }
+
+	/** @see Block::describeType() */
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->coralType($this->coralType);
+		$w->bool($this->dead);
+	}
 
 	public function getCoralType() : CoralType{ return $this->coralType; }
 
