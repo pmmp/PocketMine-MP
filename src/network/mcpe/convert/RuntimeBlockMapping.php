@@ -59,6 +59,10 @@ final class RuntimeBlockMapping{
 				self::CANONICAL_BLOCK_STATES_PATH => '',
 				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '',
 			],
+			ProtocolInfo::PROTOCOL_1_19_40 => [
+				self::CANONICAL_BLOCK_STATES_PATH => '-1.19.40',
+				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '',
+			],
 			ProtocolInfo::PROTOCOL_1_19_10 => [
 				self::CANONICAL_BLOCK_STATES_PATH => '-1.19.10',
 				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '',
@@ -130,12 +134,14 @@ final class RuntimeBlockMapping{
 	}
 
 	public static function getMappingProtocol(int $protocolId) : int{
-		if($protocolId === ProtocolInfo::PROTOCOL_1_19_0){
-			return ProtocolInfo::PROTOCOL_1_19_10;
-		}
+		if($protocolId < ProtocolInfo::PROTOCOL_1_19_40){
+			if($protocolId === ProtocolInfo::PROTOCOL_1_19_0){
+				return ProtocolInfo::PROTOCOL_1_19_10;
+			}
 
-		if($protocolId >= ProtocolInfo::PROTOCOL_1_19_20){
-			return ProtocolInfo::PROTOCOL_1_19_40;
+			if($protocolId >= ProtocolInfo::PROTOCOL_1_19_20){
+				return ProtocolInfo::PROTOCOL_1_19_40;
+			}
 		}
 
 		return $protocolId;
