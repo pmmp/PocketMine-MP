@@ -267,8 +267,8 @@ class Server{
 	private SignalHandler $signalHandler;
 
 	/**
-	 * @var BroadcastSubscriber[][]
-	 * @phpstan-var array<string, array<int, BroadcastSubscriber>>
+	 * @var ChatBroadcastSubscriber[][]
+	 * @phpstan-var array<string, array<int, ChatBroadcastSubscriber>>
 	 */
 	private array $broadcastSubscribers = [];
 
@@ -1232,14 +1232,14 @@ class Server{
 	 * Subscribes to a particular message broadcast channel.
 	 * The channel ID can be any arbitrary string.
 	 */
-	public function subscribeToBroadcastChannel(string $channelId, BroadcastSubscriber $subscriber) : void{
+	public function subscribeToBroadcastChannel(string $channelId, ChatBroadcastSubscriber $subscriber) : void{
 		$this->broadcastSubscribers[$channelId][spl_object_id($subscriber)] = $subscriber;
 	}
 
 	/**
 	 * Unsubscribes from a particular message broadcast channel.
 	 */
-	public function unsubscribeFromBroadcastChannel(string $channelId, BroadcastSubscriber $subscriber) : void{
+	public function unsubscribeFromBroadcastChannel(string $channelId, ChatBroadcastSubscriber $subscriber) : void{
 		if(isset($this->broadcastSubscribers[$channelId][spl_object_id($subscriber)])){
 			unset($this->broadcastSubscribers[$channelId][spl_object_id($subscriber)]);
 			if(count($this->broadcastSubscribers[$channelId]) === 0){
@@ -1251,7 +1251,7 @@ class Server{
 	/**
 	 * Unsubscribes from all broadcast channels.
 	 */
-	public function unsubscribeFromAllBroadcastChannels(BroadcastSubscriber $subscriber) : void{
+	public function unsubscribeFromAllBroadcastChannels(ChatBroadcastSubscriber $subscriber) : void{
 		foreach(Utils::stringifyKeys($this->broadcastSubscribers) as $channelId => $recipients){
 			$this->unsubscribeFromBroadcastChannel($channelId, $subscriber);
 		}
@@ -1260,15 +1260,15 @@ class Server{
 	/**
 	 * Returns a list of all the broadcast subscribers subscribed to the given broadcast channel.
 	 *
-	 * @return BroadcastSubscriber[]
-	 * @phpstan-return array<int, BroadcastSubscriber>
+	 * @return ChatBroadcastSubscriber[]
+	 * @phpstan-return array<int, ChatBroadcastSubscriber>
 	 */
 	public function getBroadcastChannelSubscribers(string $channelId) : array{
 		return $this->broadcastSubscribers[$channelId] ?? [];
 	}
 
 	/**
-	 * @param BroadcastSubscriber[]|null $recipients
+	 * @param ChatBroadcastSubscriber[]|null $recipients
 	 */
 	public function broadcastMessage(Translatable|string $message, ?array $recipients = null) : int{
 		$recipients = $recipients ?? $this->getBroadcastChannelSubscribers(self::BROADCAST_CHANNEL_USERS);

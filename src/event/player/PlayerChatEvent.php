@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\BroadcastSubscriber;
+use pocketmine\ChatBroadcastSubscriber;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\player\Player;
@@ -36,7 +36,7 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
 	/**
-	 * @param BroadcastSubscriber[] $recipients
+	 * @param ChatBroadcastSubscriber[] $recipients
 	 */
 	public function __construct(
 		Player $player,
@@ -71,17 +71,17 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 	}
 
 	/**
-	 * @return BroadcastSubscriber[]
+	 * @return ChatBroadcastSubscriber[]
 	 */
 	public function getRecipients() : array{
 		return $this->recipients;
 	}
 
 	/**
-	 * @param BroadcastSubscriber[] $recipients
+	 * @param ChatBroadcastSubscriber[] $recipients
 	 */
 	public function setRecipients(array $recipients) : void{
-		Utils::validateArrayValueType($recipients, function(BroadcastSubscriber $_) : void{});
+		Utils::validateArrayValueType($recipients, function(ChatBroadcastSubscriber $_) : void{});
 		$this->recipients = $recipients;
 	}
 }

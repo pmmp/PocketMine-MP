@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
-use pocketmine\BroadcastSubscriber;
+use pocketmine\ChatBroadcastSubscriber;
 use pocketmine\lang\Language;
 use pocketmine\lang\Translatable;
 
@@ -31,7 +31,7 @@ use pocketmine\lang\Translatable;
  * Forwards any messages it receives via sendMessage() to the given logger. Used for forwarding chat messages and
  * command audit log messages to the server log file.
  */
-final class BroadcastLoggerForwarder implements BroadcastSubscriber{
+final class BroadcastLoggerForwarder implements ChatBroadcastSubscriber{
 
 	public function __construct(
 		private \Logger $logger,

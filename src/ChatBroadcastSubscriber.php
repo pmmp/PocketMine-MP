@@ -28,7 +28,7 @@ use pocketmine\lang\Translatable;
 /**
  * This interface can be implemented in order to receive messages from the server's global broadcast channels.
  */
-interface BroadcastSubscriber{
+interface ChatBroadcastSubscriber{
 
 	/**
 	 * Called when a message is broadcasted on any channel that this receiver is subscribed to.
