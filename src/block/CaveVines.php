@@ -103,14 +103,6 @@ class CaveVines extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->type->equals(CaveVinesType::BODY())){
-			$tip = !$this->getSide(Facing::DOWN)->isSameType($this);
-			if($tip !== $this->type->isTip()){
-				$this->position->getWorld()->setBlock($this->position, $this->setType(
-					$tip ? CaveVinesType::HEAD_WITH_BERRIES() : CaveVinesType::BODY_WITH_BERRIES()
-				));
-			}
-		}
 		if(!$this->canBeSupportedBy($this->getSide(Facing::UP))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
@@ -133,7 +125,9 @@ class CaveVines extends Flowable{
 			return true;
 		}
 		if($item instanceof Fertilizer){
-			$ev = new BlockGrowEvent($this, $this->setType(CaveVinesType::BODY_WITH_BERRIES()));
+			$ev = new BlockGrowEvent($this, $this->setType(!$this->getSide(Facing::DOWN)->isSameType($this) ?
+				CaveVinesType::HEAD_WITH_BERRIES() : CaveVinesType::BODY_WITH_BERRIES()
+			));
 			$ev->call();
 			if($ev->isCancelled()){
 				return false;
@@ -146,6 +140,15 @@ class CaveVines extends Flowable{
 	}
 
 	public function onRandomTick() : void{
+		if(!$this->type->equals(CaveVinesType::BODY())){
+			$tip = !$this->getSide(Facing::DOWN)->isSameType($this);
+			if($tip !== $this->type->isTip()){
+				$this->position->getWorld()->setBlock($this->position, $this->setType(
+					$tip ? CaveVinesType::HEAD_WITH_BERRIES() : CaveVinesType::BODY_WITH_BERRIES()
+				));
+			}
+		}
+
 		if($this->age < self::MAX_AGE && mt_rand(1, 10) === 1){
 			$growthPos = $this->position->getSide(Facing::DOWN);
 			$world = $growthPos->getWorld();
