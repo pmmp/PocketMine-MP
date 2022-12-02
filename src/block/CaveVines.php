@@ -90,14 +90,6 @@ class CaveVines extends Flowable{
 		return $this;
 	}
 
-	public function isAffectedBySilkTouch() : bool{
-		return true;
-	}
-
-	public function ticksRandomly() : bool{
-		return true;
-	}
-
 	public function canClimb() : bool{
 		return true;
 	}
@@ -119,7 +111,6 @@ class CaveVines extends Flowable{
 				));
 			}
 		}
-
 		if(!$this->canBeSupportedBy($this->getSide(Facing::UP))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
@@ -176,6 +167,10 @@ class CaveVines extends Flowable{
 		}
 	}
 
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
 	protected function recalculateCollisionBoxes() : array{
 		return [];
 	}
@@ -191,6 +186,10 @@ class CaveVines extends Flowable{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return $this->type->hasBerries() ? [VanillaItems::GLOW_BERRIES()] : [];
+	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
 	}
 
 	public function getSilkTouchDrops(Item $item) : array{
