@@ -196,6 +196,10 @@ class CaveVines extends Flowable{
 		return [VanillaItems::GLOW_BERRIES()];
 	}
 
+	public function getPickedItem(bool $addUserData = false) : Item{
+		return VanillaItems::GLOW_BERRIES();
+	}
+
 	public function getSupportType(int $facing) : SupportType{
 		return SupportType::NONE();
 	}
