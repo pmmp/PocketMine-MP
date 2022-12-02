@@ -280,12 +280,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockData.git",
-                "reference": "3988f8887581082b53c6da64cac81a7837bba5e2"
+                "reference": "d64617faab77300d828debcd1e3597b3403b63b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/3988f8887581082b53c6da64cac81a7837bba5e2",
-                "reference": "3988f8887581082b53c6da64cac81a7837bba5e2",
+                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/d64617faab77300d828debcd1e3597b3403b63b7",
+                "reference": "d64617faab77300d828debcd1e3597b3403b63b7",
                 "shasum": ""
             },
             "type": "library",
@@ -298,7 +298,7 @@
                 "issues": "https://github.com/pmmp/BedrockData/issues",
                 "source": "https://github.com/pmmp/BedrockData/tree/modern-world-support"
             },
-            "time": "2022-11-30T16:22:05+00:00"
+            "time": "2022-12-02T13:01:28+00:00"
         },
         {
             "name": "pocketmine/bedrock-item-upgrade-schema",
