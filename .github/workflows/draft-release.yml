@@ -69,7 +69,7 @@ jobs:
             ${{ github.workspace }}/build_info.json
 
       - name: Create draft release
-        uses: ncipollo/release-action@v1.11.1
+        uses: ncipollo/release-action@v1.11.2
         with:
           artifacts: ${{ github.workspace }}/PocketMine-MP.phar,${{ github.workspace }}/start.*,${{ github.workspace }}/build_info.json
           commit: ${{ github.sha }}

@@ -121,7 +121,7 @@ abstract class Durable extends Item{
 	 * Returns whether the item is broken.
 	 */
 	public function isBroken() : bool{
-		return $this->damage >= $this->getMaxDurability();
+		return $this->damage >= $this->getMaxDurability() || $this->isNull();
 	}
 
 	protected function deserializeCompoundTag(CompoundTag $tag) : void{
