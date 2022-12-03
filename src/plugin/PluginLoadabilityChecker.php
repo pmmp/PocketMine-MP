@@ -70,12 +70,12 @@ final class PluginLoadabilityChecker{
 			return KnownTranslationFactory::pocketmine_plugin_incompatibleOS(implode(", ", $description->getCompatibleOperatingSystems()));
 		}
 
-		if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
-			$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
-			if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
-				return KnownTranslationFactory::pocketmine_plugin_incompatibleProtocol(implode(", ", $pluginMcpeProtocols));
-			}
-		}
+		//if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
+		//	$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
+		//	if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
+		//		return KnownTranslationFactory::pocketmine_plugin_incompatibleProtocol(implode(", ", $pluginMcpeProtocols));
+		//	}
+		//}
 
 		foreach(Utils::stringifyKeys($description->getRequiredExtensions()) as $extensionName => $versionConstrs){
 			if(!extension_loaded($extensionName)){
