@@ -28,6 +28,12 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
+use function array_keys;
+use function file_get_contents;
+use function gettype;
+use function is_array;
+use function is_string;
+use function json_decode;
 use const pocketmine\BEDROCK_DATA_PATH;
 
 /**
