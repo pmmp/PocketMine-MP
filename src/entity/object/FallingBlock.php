@@ -145,7 +145,7 @@ class FallingBlock extends Entity{
 		return $nbt;
 	}
 
-	public function getPickedItem(bool $addUserData) : ?Item{
+	public function getPickedItem() : ?Item{
 		return $this->block->asItem();
 	}
 

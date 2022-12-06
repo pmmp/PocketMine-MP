@@ -524,18 +524,6 @@ abstract class Entity{
 		}
 	}
 
-	/**
-	 * @internal
-	 */
-	public function copyDataFromItem(Item $item) : void{
-		if(($entityNbt = $item->getCustomEntityData()) !== null){
-			$this->initEntity($entityNbt);
-		}
-		if($item->hasCustomName()){ //this should take precedence over saved NBT
-			$this->setNameTag($item->getCustomName());
-		}
-	}
-
 	protected function addAttributes() : void{
 
 	}
@@ -1566,14 +1554,10 @@ abstract class Entity{
 	 * Returns the item that players will equip when middle-clicking on this entity.
 	 * If addUserData is true, additional data may be added, such as name tag, fire ticks, etc.
 	 */
-	public function getPickedItem(bool $addUserData) : ?Item{
+	public function getPickedItem() : ?Item{
 		$item = $this->getSpawnItem();
 		if($item === null){
 			return null;
-		}
-		if($addUserData){
-			$item->setCustomEntityData($this->getCleanedNBT());
-			$item->setLore(["+(DATA)"]);
 		}
 		return $item;
 	}

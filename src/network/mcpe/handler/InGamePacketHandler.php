@@ -590,7 +590,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleActorPickRequest(ActorPickRequestPacket $packet) : bool{
-		return $this->player->pickEntity($packet->actorUniqueId, $packet->addUserData);
+		return $this->player->pickEntity($packet->actorUniqueId);
 	}
 
 	public function handlePlayerAction(PlayerActionPacket $packet) : bool{

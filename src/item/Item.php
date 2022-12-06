@@ -85,7 +85,6 @@ class Item implements \JsonSerializable{
 	 * @var CompoundTag|null
 	 */
 	protected $blockEntityTag = null;
-	protected ?CompoundTag $entityTag = null;
 
 	/**
 	 * @var string[]
@@ -138,28 +137,6 @@ class Item implements \JsonSerializable{
 
 	public function getCustomBlockData() : ?CompoundTag{
 		return $this->blockEntityTag;
-	}
-
-	/**
-	 * @return $this
-	 */
-	public function clearCustomEntityData() : Item{
-		$this->entityTag = null;
-
-		return $this;
-	}
-
-	/**
-	 * @return $this
-	 */
-	public function setCustomEntityData(CompoundTag $compound) : Item{
-		$this->entityTag = clone $compound;
-
-		return $this;
-	}
-
-	public function getCustomEntityData() : ?CompoundTag{
-		return $this->entityTag;
 	}
 
 	public function hasCustomName() : bool{
@@ -384,10 +361,6 @@ class Item implements \JsonSerializable{
 		($blockData = $this->getCustomBlockData()) !== null ?
 			$tag->setTag(self::TAG_BLOCK_ENTITY_TAG, clone $blockData) :
 			$tag->removeTag(self::TAG_BLOCK_ENTITY_TAG);
-
-		($entityData = $this->getCustomEntityData()) !== null ?
-			$tag->setTag(self::TAG_ENTITY_TAG, clone $entityData) :
-			$tag->removeTag(self::TAG_ENTITY_TAG);
 
 		if(count($this->canPlaceOn) > 0){
 			$canPlaceOn = new ListTag();

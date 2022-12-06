@@ -1602,13 +1602,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return true;
 	}
 
-	public function pickEntity(int $entityId, bool $addEntityNBT) : bool{
+	public function pickEntity(int $entityId) : bool{
 		$entity = $this->getWorld()->getEntity($entityId);
 		if($entity === null){
 			return true;
 		}
 
-		$item = $entity->getPickedItem($addEntityNBT);
+		$item = $entity->getPickedItem();
 		if($item === null){
 			return true;
 		}

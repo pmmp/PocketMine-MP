@@ -167,7 +167,7 @@ class Painting extends Entity{
 		return VanillaItems::PAINTING();
 	}
 
-	public function getPickedItem(bool $addUserData) : ?Item{
+	public function getPickedItem() : ?Item{
 		return $this->getSpawnItem();
 	}
 
