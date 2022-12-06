@@ -61,7 +61,6 @@ class Item implements \JsonSerializable{
 	public const TAG_ENCH = "ench";
 	public const TAG_DISPLAY = "display";
 	public const TAG_BLOCK_ENTITY_TAG = "BlockEntityTag";
-	public const TAG_ENTITY_TAG = "EntityTag";
 
 	public const TAG_DISPLAY_NAME = "Name";
 	public const TAG_DISPLAY_LORE = "Lore";
@@ -304,8 +303,6 @@ class Item implements \JsonSerializable{
 		}
 
 		$this->blockEntityTag = $tag->getCompoundTag(self::TAG_BLOCK_ENTITY_TAG);
-
-		$this->entityTag = $tag->getCompoundTag(self::TAG_ENTITY_TAG);
 
 		$this->canPlaceOn = [];
 		$canPlaceOn = $tag->getListTag("CanPlaceOn");
