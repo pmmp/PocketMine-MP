@@ -101,10 +101,7 @@ abstract class Timezone{
 		\GlobalLogger::get()->warning("Timezone could not be automatically determined or was set to an invalid value. An incorrect timezone will result in incorrect timestamps on console logs. It has been set to \"UTC\" by default. You can change it on the php.ini file.");
 	}
 
-	/**
-	 * @return string|false
-	 */
-	public static function detectSystemTimezone(){
+	public static function detectSystemTimezone() : string|false{
 		switch(Utils::getOS()){
 			case Utils::OS_WINDOWS:
 				$regex = '/(UTC)(\+*\-*\d*\d*\:*\d*\d*)/';
@@ -178,10 +175,8 @@ abstract class Timezone{
 
 	/**
 	 * @param string $offset In the format of +09:00, +02:00, -04:00 etc.
-	 *
-	 * @return string|false
 	 */
-	private static function parseOffset($offset){
+	private static function parseOffset(string $offset) : string|false{
 		//Make signed offsets unsigned for date_parse
 		if(strpos($offset, '-') !== false){
 			$negative_offset = true;

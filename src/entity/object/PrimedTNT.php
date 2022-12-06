@@ -27,7 +27,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Explosive;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\entity\ExplosionPrimeEvent;
+use pocketmine\event\entity\EntityPreExplodeEvent;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
@@ -113,7 +113,7 @@ class PrimedTNT extends Entity implements Explosive{
 	}
 
 	public function explode() : void{
-		$ev = new ExplosionPrimeEvent($this, 4);
+		$ev = new EntityPreExplodeEvent($this, 4);
 		$ev->call();
 		if(!$ev->isCancelled()){
 			//TODO: deal with underwater TNT (underwater TNT treats water as if it has a blast resistance of 0)
