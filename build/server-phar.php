@@ -45,7 +45,7 @@ use const PHP_EOL;
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 /**
- * @param string[]    $strings
+ * @param string[] $strings
  *
  * @return string[]
  */

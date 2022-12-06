@@ -52,7 +52,7 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 
 	/**
 	 * @param Block[] $blocks
-	 * @param float   $yield 0-100
+	 * @param float   $yield  0-100
 	 */
 	public function __construct(Entity $entity, Position $position, array $blocks, float $yield){
 		$this->entity = $entity;

@@ -968,7 +968,7 @@ class BlockFactory{
 	 * NOTE: If you are registering a new block type, you will need to add it to the creative inventory yourself - it
 	 * will not automatically appear there.
 	 *
-	 * @param bool  $override Whether to override existing registrations
+	 * @param bool $override Whether to override existing registrations
 	 *
 	 * @throws \RuntimeException if something attempted to override an already-registered block without specifying the
 	 * $override parameter.

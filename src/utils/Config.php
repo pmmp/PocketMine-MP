@@ -108,8 +108,8 @@ class Config{
 	];
 
 	/**
-	 * @param string  $file Path of the file to be loaded
-	 * @param int     $type Config type to load, -1 by default (detect)
+	 * @param string  $file    Path of the file to be loaded
+	 * @param int     $type    Config type to load, -1 by default (detect)
 	 * @param mixed[] $default Array with the default values that will be written to the file if it did not exist
 	 * @phpstan-param array<string, mixed> $default
 	 */
@@ -493,7 +493,7 @@ class Config{
 
 	/**
 	 * @param mixed[] $default
-	 * @param mixed[] $data reference parameter
+	 * @param mixed[] $data    reference parameter
 	 * @phpstan-param array<string, mixed> $default
 	 * @phpstan-param array<string, mixed> $data
 	 * @phpstan-param-out array<string, mixed> $data

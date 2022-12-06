@@ -35,8 +35,8 @@ class CraftItemEvent extends Event implements Cancellable{
 	use CancellableTrait;
 
 	/**
-	 * @param Item[]              $inputs
-	 * @param Item[]              $outputs
+	 * @param Item[] $inputs
+	 * @param Item[] $outputs
 	 */
 	public function __construct(
 		private CraftingTransaction $transaction,
