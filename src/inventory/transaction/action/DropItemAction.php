@@ -45,6 +45,9 @@ class DropItemAction extends InventoryAction{
 		if($this->targetItem->getCount() > $this->targetItem->getMaxStackSize()){
 			throw new TransactionValidationException("Target item exceeds item type max stack size");
 		}
+		if($this->targetItem->getLockMode() !== null){
+			throw new TransactionValidationException("Target item is locked in inventory or slot");
+		}
 	}
 
 	public function onPreExecute(Player $source) : bool{

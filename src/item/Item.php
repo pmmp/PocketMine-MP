@@ -26,6 +26,7 @@ declare(strict_types=1);
  */
 namespace pocketmine\item;
 
+use LogicException;
 use pocketmine\block\Block;
 use pocketmine\block\BlockBreakInfo;
 use pocketmine\block\BlockToolType;
@@ -44,7 +45,9 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
 use function base64_decode;
@@ -61,9 +64,13 @@ class Item implements \JsonSerializable{
 	public const TAG_ENCH = "ench";
 	public const TAG_DISPLAY = "display";
 	public const TAG_BLOCK_ENTITY_TAG = "BlockEntityTag";
+	public const TAG_ITEM_LOCK = "minecraft:item_lock";
 
 	public const TAG_DISPLAY_NAME = "Name";
 	public const TAG_DISPLAY_LORE = "Lore";
+
+	public const VALUE_ITEM_LOCK_IN_SLOT = 1;
+	public const VALUE_ITEM_LOCK_IN_INVENTORY = 2;
 
 	private ItemIdentifier $identifier;
 	private CompoundTag $nbt;
@@ -95,6 +102,8 @@ class Item implements \JsonSerializable{
 	 * @phpstan-var array<string, string>
 	 */
 	protected $canDestroy;
+	
+	protected ?ItemLockMode $lockMode = null;
 
 	/**
 	 * Constructs a new Item type. This constructor should ONLY be used when constructing a new item TYPE to register
@@ -222,6 +231,15 @@ class Item implements \JsonSerializable{
 		}
 	}
 
+	public function getLockMode() : ?ItemLockMode{
+		return $this->lockMode;
+	}
+
+	public function setLockMode(?ItemLockMode $lockMode) : self{
+		$this->lockMode = $lockMode;
+		return $this;
+	}
+
 	/**
 	 * Returns whether this Item has a non-empty NBT.
 	 */
@@ -320,6 +338,11 @@ class Item implements \JsonSerializable{
 				$this->canDestroy[$entry->getValue()] = $entry->getValue();
 			}
 		}
+		$this->lockMode = match($tag->getByte(self::TAG_ITEM_LOCK, 0)){
+			self::VALUE_ITEM_LOCK_IN_SLOT => ItemLockMode::SLOT(),
+			self::VALUE_ITEM_LOCK_IN_INVENTORY => ItemLockMode::INVENTORY(),
+			default => null
+		};
 	}
 
 	protected function serializeCompoundTag(CompoundTag $tag) : void{
@@ -376,6 +399,15 @@ class Item implements \JsonSerializable{
 			$tag->setTag("CanDestroy", $canDestroy);
 		}else{
 			$tag->removeTag("CanDestroy");
+		}
+		if($this->lockMode !== null){
+			$tag->setByte(self::TAG_ITEM_LOCK, match($this->lockMode->id()){
+				ItemLockMode::SLOT()->id() => self::VALUE_ITEM_LOCK_IN_SLOT,
+				ItemLockMode::INVENTORY()->id() => self::VALUE_ITEM_LOCK_IN_INVENTORY,
+				default => throw new AssumptionFailedError("Unknown lock mode")
+			});
+		}else{
+			$tag->removeTag("minecraft:item_lock");
 		}
 	}
 
