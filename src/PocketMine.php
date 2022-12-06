@@ -279,7 +279,7 @@ JIT_WARNING
 		}
 		//this has to be done after we're sure the data path exists
 		$dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
-		if(!@mkdir($pluginPath, 0777, true) && (!is_dir($pluginPath) || !is_writable($pluginPath))){
+		if(!@mkdir($pluginPath, 0777, true) && !is_dir($pluginPath)){
 			critical_error("Unable to create plugin directory at $pluginPath. Check that the target location is accessible by the current user.");
 			exit(1);
 		}
