@@ -92,6 +92,12 @@ BODY,
 			],
 			'sort_algorithm' => 'alpha'
 		],
+		'phpdoc_align' => [
+			'align' => 'vertical',
+			'tags' => [
+				'param',
+			]
+		],
 		'phpdoc_line_span' => [
 			'property' => 'single',
 			'method' => null,
