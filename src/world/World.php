@@ -50,6 +50,7 @@ use pocketmine\event\world\ChunkLoadEvent;
 use pocketmine\event\world\ChunkPopulateEvent;
 use pocketmine\event\world\ChunkUnloadEvent;
 use pocketmine\event\world\SpawnChangeEvent;
+use pocketmine\event\world\WorldParticleEvent;
 use pocketmine\event\world\WorldSaveEvent;
 use pocketmine\event\world\WorldSoundEvent;
 use pocketmine\item\Item;
@@ -692,14 +693,24 @@ class World implements ChunkManager{
 	 * @param Player[]|null $players
 	 */
 	public function addParticle(Vector3 $pos, Particle $particle, ?array $players = null) : void{
-		$pk = $particle->encode($pos);
+		$players ??= $this->getViewersForPosition($pos);
+		$ev = new WorldParticleEvent($this, $particle, $pos, $players);
+
+		$ev->call();
+
+		if($ev->isCancelled()){
+			return;
+		}
+
+		$pk = $ev->getParticle()->encode($pos);
+		$players = $ev->getRecipients();
 		if(count($pk) > 0){
-			if($players === null){
+			if($players === $this->getViewersForPosition($pos)){
 				foreach($pk as $e){
 					$this->broadcastPacketToViewers($pos, $e);
 				}
 			}else{
-				$this->server->broadcastPackets($this->filterViewersForPosition($pos, $players), $pk);
+				$this->server->broadcastPackets($this->filterViewersForPosition($pos, $ev->getRecipients()), $pk);
 			}
 		}
 	}
