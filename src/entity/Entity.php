@@ -1556,9 +1556,9 @@ abstract class Entity{
 	}
 
 	/**
-	 * Returns the item that can be used to spawn this entity, by default it returns air if there isn't one
+	 * Returns the item that can be used to spawn this entity, by default it returns null if there isn't one
 	 */
-	public function getSpawnItem() : Item{
+	public function getSpawnItem() : ?Item{
 		return VanillaItems::AIR();
 	}
 
@@ -1566,8 +1566,11 @@ abstract class Entity{
 	 * Returns the item that players will equip when middle-clicking on this entity.
 	 * If addUserData is true, additional data may be added, such as name tag, fire ticks, etc.
 	 */
-	public function getPickedItem(bool $addUserData) : Item{
+	public function getPickedItem(bool $addUserData) : ?Item{
 		$item = $this->getSpawnItem();
+		if($item === null){
+			return null;
+		}
 		if($addUserData){
 			$item->setCustomEntityData($this->getCleanedNBT());
 			$item->setLore(["+(DATA)"]);

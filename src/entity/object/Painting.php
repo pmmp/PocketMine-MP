@@ -163,11 +163,11 @@ class Painting extends Entity{
 		));
 	}
 
-	public function getSpawnItem() : Item{
+	public function getSpawnItem() : ?Item{
 		return VanillaItems::PAINTING();
 	}
 
-	public function getPickedItem(bool $addUserData) : Item{
+	public function getPickedItem(bool $addUserData) : ?Item{
 		return $this->getSpawnItem();
 	}
 

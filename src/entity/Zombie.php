@@ -67,7 +67,7 @@ class Zombie extends Living{
 		return 5;
 	}
 
-	public function getSpawnItem() : Item{
+	public function getSpawnItem() : ?Item{
 		return VanillaItems::ZOMBIE_SPAWN_EGG();
 	}
 }

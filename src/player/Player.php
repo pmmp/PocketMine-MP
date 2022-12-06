@@ -1609,7 +1609,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		$item = $entity->getPickedItem($addEntityNBT);
-		if($item->isNull()){
+		if($item === null){
 			return true;
 		}
 

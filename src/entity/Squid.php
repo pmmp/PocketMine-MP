@@ -128,7 +128,7 @@ class Squid extends WaterAnimal{
 		];
 	}
 
-	public function getSpawnItem() : Item{
+	public function getSpawnItem() : ?Item{
 		return VanillaItems::SQUID_SPAWN_EGG();
 	}
 }
