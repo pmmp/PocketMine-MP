@@ -30,7 +30,7 @@ use pocketmine\player\Player;
 use pocketmine\world\particle\Particle;
 use pocketmine\world\World;
 
-class WorldParticleEvent extends WorldEvent implements Cancellable {
+class WorldParticleEvent extends WorldEvent implements Cancellable{
 	use CancellableTrait;
 
 	/**
