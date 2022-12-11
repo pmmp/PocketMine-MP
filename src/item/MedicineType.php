@@ -43,7 +43,7 @@ final class MedicineType{
 		__construct as Enum___construct;
 	}
 
-	protected static function setup(): void{
+	protected static function setup() : void{
 		self::registerAll(
 			new self('antidote', 'Antidote', fn() => VanillaEffects::POISON()),
 			new self('elixir', 'Elixir', fn() => VanillaEffects::WEAKNESS()),
