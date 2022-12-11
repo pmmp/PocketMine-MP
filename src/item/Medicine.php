@@ -37,6 +37,12 @@ class Medicine extends Item implements ConsumableItem{
 		parent::__construct($identifier, $name);
 	}
 
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->medicineType($this->medicineType);
+	}
+
+	public function getType() : MedicineType{ return $this->medicineType; }
+
 	/**
 	 * @return $this
 	 */
@@ -53,8 +59,6 @@ class Medicine extends Item implements ConsumableItem{
 		$consumer->getEffects()->remove($this->getType()->getCuredEffect());
 	}
 
-	public function getType() : MedicineType{ return $this->medicineType; }
-
 	public function getAdditionalEffects() : array{
 		return [];
 	}
@@ -65,9 +69,5 @@ class Medicine extends Item implements ConsumableItem{
 
 	public function canStartUsingItem(Player $player) : bool{
 		return $player->getEffects()->has($this->getType()->getCuredEffect());
-	}
-
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
-		$w->medicineType($this->medicineType);
 	}
 }

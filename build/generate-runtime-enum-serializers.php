@@ -166,12 +166,12 @@ $enumsUsed = [
 	DyeColor::getAll(),
 	FroglightType::getAll(),
 	LeverFacing::getAll(),
+	MedicineType::getAll(),
 	MushroomBlockType::getAll(),
 	SkullType::getAll(),
 	SlabType::getAll(),
 	SuspiciousStewType::getAll(),
-	PotionType::getAll(),
-	MedicineType::getAll()
+	PotionType::getAll()
 ];
 
 $readerFuncs = [

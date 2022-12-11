@@ -43,6 +43,15 @@ final class MedicineType{
 		__construct as Enum___construct;
 	}
 
+	protected static function setup(): void{
+		self::registerAll(
+			new self('antidote', 'Antidote', fn() => VanillaEffects::POISON()),
+			new self('elixir', 'Elixir', fn() => VanillaEffects::WEAKNESS()),
+			new self('eye_drops', 'Eye Drops', fn() => VanillaEffects::BLINDNESS()),
+			new self('tonic', 'Tonic', fn() => VanillaEffects::NAUSEA())
+		);
+	}
+
 	/**
 	 * @phpstan-param \Closure() : Effect $curedEffect
 	 */
@@ -52,15 +61,6 @@ final class MedicineType{
 		private \Closure $curedEffect
 	){
 		$this->Enum___construct($enumName);
-	}
-
-	protected static function setup(): void{
-		self::registerAll(
-			new self('antidote', 'Antidote', fn() => VanillaEffects::POISON()),
-			new self('elixir', 'Elixir', fn() => VanillaEffects::WEAKNESS()),
-			new self('eye_drops', 'Eye Drops', fn() => VanillaEffects::BLINDNESS()),
-			new self('tonic', 'Tonic', fn() => VanillaEffects::NAUSEA())
-		);
 	}
 
 	public function getDisplayName() : string{ return $this->displayName; }
