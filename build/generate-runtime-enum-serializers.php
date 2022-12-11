@@ -33,6 +33,7 @@ use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\MushroomBlockType;
 use pocketmine\block\utils\SkullType;
 use pocketmine\block\utils\SlabType;
+use pocketmine\item\MedicineType;
 use pocketmine\item\PotionType;
 use pocketmine\item\SuspiciousStewType;
 use function array_key_first;
@@ -169,7 +170,8 @@ $enumsUsed = [
 	SkullType::getAll(),
 	SlabType::getAll(),
 	SuspiciousStewType::getAll(),
-	PotionType::getAll()
+	PotionType::getAll(),
+	MedicineType::getAll()
 ];
 
 $readerFuncs = [
