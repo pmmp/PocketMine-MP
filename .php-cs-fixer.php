@@ -64,6 +64,9 @@ the Free Software Foundation, either version 3 of the License, or
 BODY,
 			'location' => 'after_open'
 		],
+		"native_constant_invocation" => [
+			"scope" => "namespaced"
+		],
 		'indentation_type' => true,
 		'logical_operators' => true,
 		'native_function_invocation' => [
