@@ -39,6 +39,7 @@ use function sprintf;
 use function str_replace;
 use function substr;
 use const SORT_STRING;
+use const STDERR;
 
 if(count($argv) !== 2){
 	fwrite(STDERR, "Provide a path to process\n");

@@ -55,6 +55,7 @@ use const CASE_LOWER;
 use const JSON_BIGINT_AS_STRING;
 use const JSON_PRETTY_PRINT;
 use const JSON_THROW_ON_ERROR;
+use const YAML_UTF8_ENCODING;
 
 /**
  * Config Class for simple config manipulation of multiple formats.

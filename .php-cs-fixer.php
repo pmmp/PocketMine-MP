@@ -66,6 +66,9 @@ BODY,
 		],
 		'indentation_type' => true,
 		'logical_operators' => true,
+		'native_constant_invocation' => [
+			'scope' => 'namespaced'
+		],
 		'native_function_invocation' => [
 			'scope' => 'namespaced',
 			'include' => ['@all'],
