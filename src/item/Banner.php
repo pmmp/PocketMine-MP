@@ -75,7 +75,7 @@ class Banner extends ItemBlockWallOrFloor{
 	}
 
 	/**
-	 * @param BannerPatternLayer[]             $patterns
+	 * @param BannerPatternLayer[] $patterns
 	 *
 	 * @phpstan-param list<BannerPatternLayer> $patterns
 	 *

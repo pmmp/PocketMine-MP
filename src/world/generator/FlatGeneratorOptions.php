@@ -38,7 +38,7 @@ use function preg_match_all;
 final class FlatGeneratorOptions{
 
 	/**
-	 * @param int[] $structure
+	 * @param int[]   $structure
 	 * @param mixed[] $extraOptions
 	 * @phpstan-param array<int, int> $structure
 	 * @phpstan-param array<string, array<string, string>|true> $extraOptions

@@ -40,12 +40,13 @@ use function rtrim;
 use function sprintf;
 use function str_replace;
 use function unlink;
+use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 /**
- * @param string[]    $strings
+ * @param string[] $strings
  *
  * @return string[]
  */

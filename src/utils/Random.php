@@ -115,7 +115,7 @@ class Random{
 	 * Returns a random integer between $start and $end
 	 *
 	 * @param int $start default 0
-	 * @param int $end default 0x7fffffff
+	 * @param int $end   default 0x7fffffff
 	 */
 	public function nextRange(int $start = 0, int $end = 0x7fffffff) : int{
 		return $start + ($this->nextInt() % ($end + 1 - $start));

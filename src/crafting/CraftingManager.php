@@ -201,7 +201,7 @@ class CraftingManager{
 	}
 
 	/**
-	 * @param Item[]       $outputs
+	 * @param Item[] $outputs
 	 */
 	public function matchRecipe(CraftingGrid $grid, array $outputs) : ?CraftingRecipe{
 		//TODO: try to match special recipes before anything else (first they need to be implemented!)
