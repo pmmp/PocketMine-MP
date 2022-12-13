@@ -47,12 +47,12 @@ class IceBomb extends Throwable{
 		if($block instanceof Water){
 			$pos = $block->getPosition();
 
-			$nextHit = AxisAlignedBB::one()->offset($pos->getX(), $pos->getY(), $pos->getZ())->calculateIntercept($start, $end);
-			if($nextHit === null){
+			$hit = AxisAlignedBB::one()->offset($pos->getX(), $pos->getY(), $pos->getZ())->calculateIntercept($start, $end);
+			if($hit === null){
 				return null;
 			}
 
-			return $nextHit->hitVector->distanceSquared($start) < PHP_INT_MAX ? $nextHit : null;
+			return $hit->hitVector->distanceSquared($start) < PHP_INT_MAX ? $hit : null;
 		}
 
 		return parent::calculateInterceptWithBlock($block, $start, $end);
