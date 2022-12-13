@@ -39,7 +39,7 @@ use const PHP_INT_MAX;
 class IceBomb extends Throwable{
 	public static function getNetworkTypeId() : string{ return EntityIds::ICE_BOMB; }
 
-	public function getResultDamage(): int{
+	public function getResultDamage() : int{
 		return -1;
 	}
 
@@ -73,13 +73,13 @@ class IceBomb extends Throwable{
 
 		$pos = $blockHit->getPosition();
 		$world = $pos->getWorld();
-		$floorX = $pos->getFloorX();
-		$floorY = $pos->getFloorY();
-		$floorZ = $pos->getFloorZ();
+		$posX = $pos->getX();
+		$posY = $pos->getY();
+		$posZ = $pos->getZ();
 
-		for($x = $floorX - 1; $x <= $floorX + 1; $x++){
-			for($y = $floorY - 1; $y <= $floorY + 1; $y++){
-				for($z = $floorZ - 1; $z <= $floorZ + 1; $z++){
+		for($x = $posX - 1; $x <= $posX + 1; $x++){
+			for($y = $posY - 1; $y <= $posY + 1; $y++){
+				for($z = $posZ - 1; $z <= $posZ + 1; $z++){
 					if($world->getBlockAt($x, $y, $z) instanceof Water){
 						$world->setBlockAt($x, $y, $z, VanillaBlocks::ICE());
 					}
