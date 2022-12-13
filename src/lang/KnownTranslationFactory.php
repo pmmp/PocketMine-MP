@@ -43,6 +43,34 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::ACCEPT_LICENSE, []);
 	}
 
+	public static function action_interact_armorstand_equip() : Translatable{
+		return new Translatable(KnownTranslationKeys::ACTION_INTERACT_ARMORSTAND_EQUIP, []);
+	}
+
+	public static function action_interact_armorstand_pose() : Translatable{
+		return new Translatable(KnownTranslationKeys::ACTION_INTERACT_ARMORSTAND_POSE, []);
+	}
+
+	public static function action_interact_exit_boat() : Translatable{
+		return new Translatable(KnownTranslationKeys::ACTION_INTERACT_EXIT_BOAT, []);
+	}
+
+	public static function action_interact_fishing() : Translatable{
+		return new Translatable(KnownTranslationKeys::ACTION_INTERACT_FISHING, []);
+	}
+
+	public static function action_interact_name() : Translatable{
+		return new Translatable(KnownTranslationKeys::ACTION_INTERACT_NAME, []);
+	}
+
+	public static function action_interact_ride_boat() : Translatable{
+		return new Translatable(KnownTranslationKeys::ACTION_INTERACT_RIDE_BOAT, []);
+	}
+
+	public static function action_interact_ride_minecart() : Translatable{
+		return new Translatable(KnownTranslationKeys::ACTION_INTERACT_RIDE_MINECART, []);
+	}
+
 	public static function chat_type_achievement(Translatable|string $param0, Translatable|string $param1) : Translatable{
 		return new Translatable(KnownTranslationKeys::CHAT_TYPE_ACHIEVEMENT, [
 			0 => $param0,
@@ -627,6 +655,12 @@ final class KnownTranslationFactory{
 		]);
 	}
 
+	public static function death_attack_fallingBlock(Translatable|string $param0) : Translatable{
+		return new Translatable(KnownTranslationKeys::DEATH_ATTACK_FALLINGBLOCK, [
+			0 => $param0,
+		]);
+	}
+
 	public static function death_attack_generic(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::DEATH_ATTACK_GENERIC, [
 			0 => $param0,
@@ -691,6 +725,13 @@ final class KnownTranslationFactory{
 		]);
 	}
 
+	public static function death_attack_trident(Translatable|string $param0, Translatable|string $param1) : Translatable{
+		return new Translatable(KnownTranslationKeys::DEATH_ATTACK_TRIDENT, [
+			0 => $param0,
+			1 => $param1,
+		]);
+	}
+
 	public static function death_attack_wither(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::DEATH_ATTACK_WITHER, [
 			0 => $param0,
@@ -741,6 +782,10 @@ final class KnownTranslationFactory{
 
 	public static function disconnectionScreen_serverFull() : Translatable{
 		return new Translatable(KnownTranslationKeys::DISCONNECTIONSCREEN_SERVERFULL, []);
+	}
+
+	public static function effect_darkness() : Translatable{
+		return new Translatable(KnownTranslationKeys::EFFECT_DARKNESS, []);
 	}
 
 	public static function enchantment_arrowDamage() : Translatable{
@@ -859,6 +904,10 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::ENCHANTMENT_SOUL_SPEED, []);
 	}
 
+	public static function enchantment_swift_sneak() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_SWIFT_SNEAK, []);
+	}
+
 	public static function enchantment_thorns() : Translatable{
 		return new Translatable(KnownTranslationKeys::ENCHANTMENT_THORNS, []);
 	}
@@ -950,6 +999,10 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::ITEM_RECORD_13_DESC, []);
 	}
 
+	public static function item_record_5_desc() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEM_RECORD_5_DESC, []);
+	}
+
 	public static function item_record_blocks_desc() : Translatable{
 		return new Translatable(KnownTranslationKeys::ITEM_RECORD_BLOCKS_DESC, []);
 	}
@@ -972,6 +1025,10 @@ final class KnownTranslationFactory{
 
 	public static function item_record_mellohi_desc() : Translatable{
 		return new Translatable(KnownTranslationKeys::ITEM_RECORD_MELLOHI_DESC, []);
+	}
+
+	public static function item_record_otherside_desc() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEM_RECORD_OTHERSIDE_DESC, []);
 	}
 
 	public static function item_record_pigstep_desc() : Translatable{
@@ -1391,6 +1448,10 @@ final class KnownTranslationFactory{
 
 	public static function pocketmine_command_unban_player_description() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_UNBAN_PLAYER_DESCRIPTION, []);
+	}
+
+	public static function pocketmine_command_userDefined_description() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_USERDEFINED_DESCRIPTION, []);
 	}
 
 	public static function pocketmine_command_version_description() : Translatable{

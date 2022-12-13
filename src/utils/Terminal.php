@@ -166,8 +166,10 @@ abstract class Terminal{
 			case Utils::OS_LINUX:
 			case Utils::OS_MACOS:
 			case Utils::OS_BSD:
-				self::getEscapeCodes();
-				return;
+				if(getenv('TERM') !== false){
+					self::getEscapeCodes();
+					return;
+				}
 
 			case Utils::OS_WINDOWS:
 			case Utils::OS_ANDROID:
