@@ -53,12 +53,12 @@ final class MedicineType{
 	}
 
 	/**
-	 * @phpstan-param \Closure() : Effect $curedEffect
+	 * @phpstan-param \Closure() : Effect $curedEffectGetter
 	 */
 	private function __construct(
 		string $enumName,
 		private string $displayName,
-		private \Closure $curedEffect
+		private \Closure $curedEffectGetter
 	){
 		$this->Enum___construct($enumName);
 	}
@@ -66,6 +66,6 @@ final class MedicineType{
 	public function getDisplayName() : string{ return $this->displayName; }
 
 	public function getCuredEffect() : Effect{
-		return ($this->curedEffect)();
+		return ($this->curedEffectGetter)();
 	}
 }

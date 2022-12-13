@@ -468,7 +468,7 @@ final class ItemSerializerDeserializerRegistrar{
 			Ids::MEDICINE,
 			Items::MEDICINE(),
 			function(Medicine $item, int $meta) : void{
-				$item->setType(MedicineTypeIdMap::getInstance()->fromId($meta) ?? throw new ItemTypeDeserializeException("Unknown potion type ID $meta"));
+				$item->setType(MedicineTypeIdMap::getInstance()->fromId($meta) ?? throw new ItemTypeDeserializeException("Unknown medicine type ID $meta"));
 			},
 			fn(Medicine $item) => MedicineTypeIdMap::getInstance()->toId($item->getType())
 		);
