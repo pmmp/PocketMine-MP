@@ -59,10 +59,7 @@ trait FallableTrait{
 		return null;
 	}
 
-	public function onHitGround(FallingBlock $blockEntity) : ?Block{
-		if(!$this instanceof Block){
-			throw new AssumptionFailedError(__TRAIT__ . " should only be used by Blocks");
-		}
-		return $this;
+	public function onHitGround(FallingBlock $blockEntity) : bool{
+		return true;
 	}
 }

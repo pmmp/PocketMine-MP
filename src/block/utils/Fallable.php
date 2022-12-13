@@ -37,7 +37,7 @@ interface Fallable{
 
 	/**
 	 * Called when FallingBlock hits the ground.
-	 * Returns the block resulting from hitting the ground, null will cause no block to be placed.
+	 * Returns whether the block should be placed.
 	 */
-	public function onHitGround(FallingBlock $blockEntity) : ?Block;
+	public function onHitGround(FallingBlock $blockEntity) : bool;
 }
