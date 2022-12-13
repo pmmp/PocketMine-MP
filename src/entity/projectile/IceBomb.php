@@ -73,9 +73,9 @@ class IceBomb extends Throwable{
 
 		$pos = $blockHit->getPosition();
 		$world = $pos->getWorld();
-		$posX = (int)$pos->getX();
-		$posY = (int)$pos->getY();
-		$posZ = (int)$pos->getZ();
+		$posX = (int) $pos->getX();
+		$posY = (int) $pos->getY();
+		$posZ = (int) $pos->getZ();
 
 		for($x = $posX - 1; $x <= $posX + 1; $x++){
 			for($y = $posY - 1; $y <= $posY + 1; $y++){
