@@ -35,7 +35,7 @@ use pocketmine\event\CancellableTrait;
  *
  * @phpstan-extends EntityEvent<Entity>
  */
-class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
+class EntityPreExplodeEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
 	private bool $blockBreaking = true;

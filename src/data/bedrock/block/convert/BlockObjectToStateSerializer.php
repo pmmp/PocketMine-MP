@@ -93,6 +93,7 @@ use pocketmine\block\LitPumpkin;
 use pocketmine\block\Loom;
 use pocketmine\block\MelonStem;
 use pocketmine\block\NetherPortal;
+use pocketmine\block\NetherVines;
 use pocketmine\block\NetherWartPlant;
 use pocketmine\block\Potato;
 use pocketmine\block\PoweredRail;
@@ -169,7 +170,7 @@ use pocketmine\utils\AssumptionFailedError;
 use function class_parents;
 use function get_class;
 
-final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
+final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	/**
 	 * These callables actually accept Block, but for the sake of type completeness, it has to be never, since we can't
 	 * describe the bottom type of a type hierarchy only containing Block.
@@ -178,6 +179,12 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 	 * @phpstan-var array<int, array<class-string, \Closure(never) : Writer>>
 	 */
 	private array $serializers = [];
+
+	/**
+	 * @var BlockStateData[]
+	 * @phpstan-var array<int, BlockStateData>
+	 */
+	private array $cache = [];
 
 	public function __construct(){
 		$this->registerCandleSerializers();
@@ -188,7 +195,8 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 
 	public function serialize(int $stateId) : BlockStateData{
 		//TODO: singleton usage not ideal
-		return $this->serializeBlock(BlockFactory::getInstance()->fromStateId($stateId));
+		//TODO: we may want to deduplicate cache entries to avoid wasting memory
+		return $this->cache[$stateId] ??= $this->serializeBlock(BlockFactory::getInstance()->fromStateId($stateId));
 	}
 
 	/**
@@ -1382,6 +1390,10 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeBool(StateNames::POWERED_BIT, $block->isPowered())
 				->writeLegacyHorizontalFacing($block->getFacing());
 		});
+		$this->map(Blocks::TWISTING_VINES(), function(NetherVines $block) : Writer{
+			return Writer::create(Ids::TWISTING_VINES)
+				->writeInt(StateNames::TWISTING_VINES_AGE, $block->getAge());
+		});
 		$this->map(Blocks::UNDERWATER_TORCH(), function(UnderwaterTorch $block) : Writer{
 			return Writer::create(Ids::UNDERWATER_TORCH)
 				->writeTorchFacing($block->getFacing());
@@ -1418,6 +1430,10 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::WARPED_TRAPDOOR(), fn(Trapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::WARPED_TRAPDOOR)));
 		$this->map(Blocks::WARPED_WALL_SIGN(), fn(WallSign $block) => Helper::encodeWallSign($block, new Writer(Ids::WARPED_WALL_SIGN)));
 		$this->map(Blocks::WATER(), fn(Water $block) => Helper::encodeLiquid($block, Ids::WATER, Ids::FLOWING_WATER));
+		$this->map(Blocks::WEEPING_VINES(), function(NetherVines $block) : Writer{
+			return Writer::create(Ids::WEEPING_VINES)
+				->writeInt(StateNames::WEEPING_VINES_AGE, $block->getAge());
+		});
 		$this->map(Blocks::WEIGHTED_PRESSURE_PLATE_HEAVY(), function(WeightedPressurePlateHeavy $block) : Writer{
 			return Writer::create(Ids::HEAVY_WEIGHTED_PRESSURE_PLATE)
 				->writeInt(StateNames::REDSTONE_SIGNAL, $block->getOutputSignalStrength());

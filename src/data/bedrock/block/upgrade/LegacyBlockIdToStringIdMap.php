@@ -25,7 +25,7 @@ namespace pocketmine\data\bedrock\block\upgrade;
 
 use pocketmine\data\bedrock\LegacyToStringIdMap;
 use pocketmine\utils\SingletonTrait;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 
 final class LegacyBlockIdToStringIdMap extends LegacyToStringIdMap{
 	use SingletonTrait;

@@ -33,7 +33,7 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function base64_encode;
 use function error_get_last;
 use function file;
@@ -43,6 +43,7 @@ use function get_loaded_extensions;
 use function json_encode;
 use function ksort;
 use function max;
+use function mb_scrub;
 use function mb_strtoupper;
 use function microtime;
 use function ob_end_clean;
@@ -196,12 +197,14 @@ class CrashDump{
 				$error["message"] = substr($error["message"], 0, $pos);
 			}
 		}
+		$error["message"] = mb_scrub($error["message"], 'UTF-8');
 
 		if(isset($lastError)){
 			if(isset($lastError["trace"])){
 				$lastError["trace"] = Utils::printableTrace($lastError["trace"]);
 			}
 			$this->data->lastError = $lastError;
+			$this->data->lastError["message"] = mb_scrub($this->data->lastError["message"], 'UTF-8');
 		}
 
 		$this->data->error = $error;

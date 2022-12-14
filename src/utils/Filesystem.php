@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use pocketmine\errorhandler\ErrorToExceptionHandler;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function copy;
 use function dirname;
 use function fclose;
@@ -159,12 +159,7 @@ final class Filesystem{
 	 */
 	public static function getCleanedPaths() : array{ return self::$cleanedPaths; }
 
-	/**
-	 * @param string $path
-	 *
-	 * @return string
-	 */
-	public static function cleanPath($path){
+	public static function cleanPath(string $path) : string{
 		$result = str_replace([DIRECTORY_SEPARATOR, ".php", "phar://"], ["/", "", ""], $path);
 
 		//remove relative paths

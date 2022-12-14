@@ -28,8 +28,18 @@ use function count;
 use function mb_strtoupper;
 use function preg_match;
 
+/**
+ * This trait allows a class to simulate object class constants, since PHP doesn't currently support this.
+ * These faux constants are exposed in static class methods, which are handled using __callStatic().
+ *
+ * Classes using this trait need to include \@method tags in their class docblock for every faux constant.
+ * Alternatively, just put \@generate-registry-docblock in the docblock and run tools/generate-registry-annotations.php
+ */
 trait RegistryTrait{
-	/** @var object[] */
+	/**
+	 * @var object[]
+	 * @phpstan-var array<string, object>
+	 */
 	private static $members = null;
 
 	private static function verifyName(string $name) : void{
@@ -107,6 +117,7 @@ trait RegistryTrait{
 
 	/**
 	 * @return object[]
+	 * @phpstan-return array<string, object>
 	 */
 	private static function _registryGetAll() : array{
 		self::checkInit();

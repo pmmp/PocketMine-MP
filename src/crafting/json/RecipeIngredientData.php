@@ -26,13 +26,14 @@ namespace pocketmine\crafting\json;
 final class RecipeIngredientData{
 	public const WILDCARD_META_VALUE = 32767;
 
-	/** @required */
 	public string $name;
 	public int $meta;
 	public string $block_states;
-	public int $count;
 
-	public function __construct(string $name){
-		$this->name = $name;
-	}
+	public string $tag;
+
+	public string $molang_expression;
+	public int $molang_version;
+
+	public int $count;
 }

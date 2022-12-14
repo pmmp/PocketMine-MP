@@ -25,7 +25,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\permission\DefaultPermissionNames;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function date;
 
 class DumpMemoryCommand extends VanillaCommand{

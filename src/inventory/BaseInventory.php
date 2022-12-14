@@ -27,6 +27,7 @@ use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
 use pocketmine\utils\ObjectSet;
+use pocketmine\utils\Utils;
 use function array_slice;
 use function count;
 use function max;
@@ -75,13 +76,16 @@ abstract class BaseInventory implements Inventory{
 
 	/**
 	 * @param Item[] $items
+	 * @phpstan-param array<int, Item> $items
 	 */
 	abstract protected function internalSetContents(array $items) : void;
 
 	/**
 	 * @param Item[] $items
+	 * @phpstan-param array<int, Item> $items
 	 */
 	public function setContents(array $items) : void{
+		Utils::validateArrayValueType($items, function(Item $item) : void{});
 		if(count($items) > $this->getSize()){
 			$items = array_slice($items, 0, $this->getSize(), true);
 		}

@@ -25,7 +25,7 @@ namespace pocketmine\data\bedrock\item\upgrade;
 
 use pocketmine\data\bedrock\item\upgrade\model\ItemIdMetaUpgradeSchemaModel;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function file_get_contents;
 use function gettype;
 use function is_object;

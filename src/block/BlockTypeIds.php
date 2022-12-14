@@ -704,8 +704,10 @@ final class BlockTypeIds{
 	public const MANGROVE_ROOTS = 10677;
 	public const MUDDY_MANGROVE_ROOTS = 10678;
 	public const FROGLIGHT = 10679;
+	public const TWISTING_VINES = 10680;
+	public const WEEPING_VINES = 10681;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10680;
+	public const FIRST_UNUSED_BLOCK_ID = 10682;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 

@@ -56,6 +56,7 @@ use pocketmine\network\mcpe\handler\LoginPacketHandler;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\handler\PreSpawnPacketHandler;
 use pocketmine\network\mcpe\handler\ResourcePacksPacketHandler;
+use pocketmine\network\mcpe\handler\SessionStartPacketHandler;
 use pocketmine\network\mcpe\handler\SpawnResponsePacketHandler;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
@@ -87,6 +88,7 @@ use pocketmine\network\mcpe\protocol\SetTimePacket;
 use pocketmine\network\mcpe\protocol\SetTitlePacket;
 use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
+use pocketmine\network\mcpe\protocol\ToastRequestPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\command\CommandData;
@@ -96,6 +98,7 @@ use pocketmine\network\mcpe\protocol\types\command\CommandPermissions;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\entity\Attribute as NetworkAttribute;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
+use pocketmine\network\mcpe\protocol\types\entity\PropertySyncData;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
@@ -164,6 +167,7 @@ class NetworkSession{
 	 */
 	private \SplQueue $compressedQueue;
 	private bool $forceAsyncCompression = true;
+	private bool $enableCompression = false; //disabled until handshake completed
 
 	private PacketSerializerContext $packetSerializerContext;
 
@@ -196,17 +200,10 @@ class NetworkSession{
 
 		$this->connectTime = time();
 
-		$this->setHandler(new LoginPacketHandler(
+		$this->setHandler(new SessionStartPacketHandler(
 			$this->server,
 			$this,
-			function(PlayerInfo $info) : void{
-				$this->info = $info;
-				$this->logger->info("Player: " . TextFormat::AQUA . $info->getUsername() . TextFormat::RESET);
-				$this->logger->setPrefix($this->getLogPrefix());
-			},
-			function(bool $isAuthenticated, bool $authRequired, ?string $error, ?string $clientPubKey) : void{
-				$this->setAuthenticationStatus($isAuthenticated, $authRequired, $error, $clientPubKey);
-			}
+			fn() => $this->onSessionStartSuccess()
 		));
 
 		$this->manager->add($this);
@@ -219,6 +216,24 @@ class NetworkSession{
 
 	public function getLogger() : \Logger{
 		return $this->logger;
+	}
+
+	private function onSessionStartSuccess() : void{
+		$this->logger->debug("Session start handshake completed, awaiting login packet");
+		$this->flushSendBuffer(true);
+		$this->enableCompression = true;
+		$this->setHandler(new LoginPacketHandler(
+			$this->server,
+			$this,
+			function(PlayerInfo $info) : void{
+				$this->info = $info;
+				$this->logger->info("Player: " . TextFormat::AQUA . $info->getUsername() . TextFormat::RESET);
+				$this->logger->setPrefix($this->getLogPrefix());
+			},
+			function(bool $isAuthenticated, bool $authRequired, ?string $error, ?string $clientPubKey) : void{
+				$this->setAuthenticationStatus($isAuthenticated, $authRequired, $error, $clientPubKey);
+			}
+		));
 	}
 
 	protected function createPlayer() : void{
@@ -335,18 +350,22 @@ class NetworkSession{
 			}
 		}
 
-		Timings::$playerNetworkReceiveDecompress->startTiming();
-		try{
-			$stream = new PacketBatch($this->compressor->decompress($payload));
-		}catch(DecompressionException $e){
-			$this->logger->debug("Failed to decompress packet: " . base64_encode($payload));
-			throw PacketHandlingException::wrap($e, "Compressed packet batch decode error");
-		}finally{
-			Timings::$playerNetworkReceiveDecompress->stopTiming();
+		if($this->enableCompression){
+			Timings::$playerNetworkReceiveDecompress->startTiming();
+			try{
+				$decompressed = $this->compressor->decompress($payload);
+			}catch(DecompressionException $e){
+				$this->logger->debug("Failed to decompress packet: " . base64_encode($payload));
+				throw PacketHandlingException::wrap($e, "Compressed packet batch decode error");
+			}finally{
+				Timings::$playerNetworkReceiveDecompress->stopTiming();
+			}
+		}else{
+			$decompressed = $payload;
 		}
 
 		try{
-			foreach($stream->getPackets($this->packetPool, $this->packetSerializerContext, 500) as [$packet, $buffer]){
+			foreach((new PacketBatch($decompressed))->getPackets($this->packetPool, $this->packetSerializerContext, 500) as [$packet, $buffer]){
 				if($packet === null){
 					$this->logger->debug("Unknown packet: " . base64_encode($buffer));
 					throw new PacketHandlingException("Unknown packet received");
@@ -418,8 +437,11 @@ class NetworkSession{
 			if($ev->isCancelled()){
 				return false;
 			}
+			$packets = $ev->getPackets();
 
-			$this->addToSendBuffer($packet);
+			foreach($packets as $evPacket){
+				$this->addToSendBuffer($evPacket);
+			}
 			if($immediate){
 				$this->flushSendBuffer(true);
 			}
@@ -451,7 +473,14 @@ class NetworkSession{
 			}elseif($this->forceAsyncCompression){
 				$syncMode = false;
 			}
-			$promise = $this->server->prepareBatch(PacketBatch::fromPackets($this->packetSerializerContext, ...$this->sendBuffer), $this->compressor, $syncMode);
+
+			$batch = PacketBatch::fromPackets($this->packetSerializerContext, ...$this->sendBuffer);
+			if($this->enableCompression){
+				$promise = $this->server->prepareBatch($batch, $this->compressor, $syncMode);
+			}else{
+				$promise = new CompressBatchPromise();
+				$promise->resolve($batch->getBuffer());
+			}
 			$this->sendBuffer = [];
 			$this->queueCompressedNoBufferFlush($promise, $immediate);
 		}
@@ -852,7 +881,7 @@ class NetworkSession{
 		//TODO: HACK! as of 1.18.10, the client responds differently to the same data ordered in different orders - for
 		//example, sending HEIGHT in the list before FLAGS when unsetting the SWIMMING flag results in a hitbox glitch
 		ksort($properties, SORT_NUMERIC);
-		$this->sendDataPacket(SetActorDataPacket::create($entity->getId(), $properties, 0));
+		$this->sendDataPacket(SetActorDataPacket::create($entity->getId(), $properties, new PropertySyncData([], []), 0));
 	}
 
 	public function onEntityEffectAdded(Living $entity, EffectInstance $effect, bool $replacesOldEffect) : void{
@@ -871,11 +900,11 @@ class NetworkSession{
 	public function syncAvailableCommands() : void{
 		$commandData = [];
 		foreach($this->server->getCommandMap()->getCommands() as $name => $command){
-			if(isset($commandData[$command->getName()]) || $command->getName() === "help" || !$command->testPermissionSilent($this->player)){
+			if(isset($commandData[$command->getLabel()]) || $command->getLabel() === "help" || !$command->testPermissionSilent($this->player)){
 				continue;
 			}
 
-			$lname = strtolower($command->getName());
+			$lname = strtolower($command->getLabel());
 			$aliases = $command->getAliases();
 			$aliasObj = null;
 			if(count($aliases) > 0){
@@ -883,7 +912,7 @@ class NetworkSession{
 					//work around a client bug which makes the original name not show when aliases are used
 					$aliases[] = $lname;
 				}
-				$aliasObj = new CommandEnum(ucfirst($command->getName()) . "Aliases", array_values($aliases));
+				$aliasObj = new CommandEnum(ucfirst($command->getLabel()) . "Aliases", array_values($aliases));
 			}
 
 			$description = $command->getDescription();
@@ -898,7 +927,7 @@ class NetworkSession{
 				]
 			);
 
-			$commandData[$command->getName()] = $data;
+			$commandData[$command->getLabel()] = $data;
 		}
 
 		$this->sendDataPacket(AvailableCommandsPacket::create($commandData, [], [], []));
@@ -1074,6 +1103,10 @@ class NetworkSession{
 
 	public function onEmote(Human $from, string $emoteId) : void{
 		$this->sendDataPacket(EmotePacket::create($from->getId(), $emoteId, EmotePacket::FLAG_SERVER));
+	}
+
+	public function onToastNotification(string $title, string $body) : void{
+		$this->sendDataPacket(ToastRequestPacket::create($title, $body));
 	}
 
 	public function tick() : void{

@@ -55,9 +55,15 @@ use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\tile\Smoker as TileSmoker;
 use pocketmine\block\utils\TreeType;
 use pocketmine\block\utils\WoodType;
+use pocketmine\crafting\FurnaceType;
+use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
+use pocketmine\math\Facing;
+use pocketmine\math\RayTraceResult;
 use pocketmine\utils\CloningRegistryTrait;
+use pocketmine\world\sound\AmethystBlockChimeSound;
+use pocketmine\world\sound\BlockPunchSound;
 use function mb_strtolower;
 
 /**
@@ -691,6 +697,7 @@ use function mb_strtolower;
  * @method static Tripwire TRIPWIRE()
  * @method static TripwireHook TRIPWIRE_HOOK()
  * @method static Opaque TUFF()
+ * @method static NetherVines TWISTING_VINES()
  * @method static UnderwaterTorch UNDERWATER_TORCH()
  * @method static Vine VINES()
  * @method static WallBanner WALL_BANNER()
@@ -711,6 +718,7 @@ use function mb_strtolower;
  * @method static Opaque WARPED_WART_BLOCK()
  * @method static Water WATER()
  * @method static WaterCauldron WATER_CAULDRON()
+ * @method static NetherVines WEEPING_VINES()
  * @method static WeightedPressurePlateHeavy WEIGHTED_PRESSURE_PLATE_HEAVY()
  * @method static WeightedPressurePlateLight WEIGHTED_PRESSURE_PLATE_LIGHT()
  * @method static Wheat WHEAT()
@@ -731,6 +739,7 @@ final class VanillaBlocks{
 
 	/**
 	 * @return Block[]
+	 * @phpstan-return array<string, Block>
 	 */
 	public static function getAll() : array{
 		//phpstan doesn't support generic traits yet :(
@@ -838,9 +847,9 @@ final class VanillaBlocks{
 		self::register("white_tulip", new Flower(new BID(Ids::WHITE_TULIP), "White Tulip", $flowerTypeInfo));
 		self::register("flower_pot", new FlowerPot(new BID(Ids::FLOWER_POT, TileFlowerPot::class), "Flower Pot", $flowerTypeInfo));
 		self::register("frosted_ice", new FrostedIce(new BID(Ids::FROSTED_ICE), "Frosted Ice", new Info(BreakInfo::pickaxe(2.5))));
-		self::register("furnace", new Furnace(new BID(Ids::FURNACE, TileNormalFurnace::class), "Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD()))));
-		self::register("blast_furnace", new Furnace(new BID(Ids::BLAST_FURNACE, TileBlastFurnace::class), "Blast Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD()))));
-		self::register("smoker", new Furnace(new BID(Ids::SMOKER, TileSmoker::class), "Smoker", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD()))));
+		self::register("furnace", new Furnace(new BID(Ids::FURNACE, TileNormalFurnace::class), "Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD())), FurnaceType::FURNACE()));
+		self::register("blast_furnace", new Furnace(new BID(Ids::BLAST_FURNACE, TileBlastFurnace::class), "Blast Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD())), FurnaceType::BLAST_FURNACE()));
+		self::register("smoker", new Furnace(new BID(Ids::SMOKER, TileSmoker::class), "Smoker", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD())), FurnaceType::SMOKER()));
 
 		$glassBreakInfo = new Info(new BreakInfo(0.3));
 		self::register("glass", new Glass(new BID(Ids::GLASS), "Glass", $glassBreakInfo));
@@ -1461,11 +1470,19 @@ final class VanillaBlocks{
 		self::register("crying_obsidian", new class(new BID(Ids::CRYING_OBSIDIAN), "Crying Obsidian", new Info(BreakInfo::pickaxe(35.0 /* 50 in Java */, ToolTier::DIAMOND(), 6000.0))) extends Opaque{
 			public function getLightLevel() : int{ return 10;}
 		});
+
+		self::register("twisting_vines", new NetherVines(new BID(Ids::TWISTING_VINES), "Twisting Vines", new Info(BreakInfo::instant()), Facing::UP));
+		self::register("weeping_vines", new NetherVines(new BID(Ids::WEEPING_VINES), "Weeping Vines", new Info(BreakInfo::instant()), Facing::DOWN));
 	}
 
 	private static function registerBlocksR17() : void{
 		//in java this can be acquired using any tool - seems to be a parity issue in bedrock
-		self::register("amethyst", new Opaque(new BID(Ids::AMETHYST), "Amethyst", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD()))));
+		self::register("amethyst", new class(new BID(Ids::AMETHYST), "Amethyst", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD()))) extends Opaque{
+			public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
+				$this->position->getWorld()->addSound($this->position, new AmethystBlockChimeSound());
+				$this->position->getWorld()->addSound($this->position, new BlockPunchSound($this));
+			}
+		});
 
 		self::register("calcite", new Opaque(new BID(Ids::CALCITE), "Calcite", new Info(BreakInfo::pickaxe(0.75, ToolTier::WOOD()))));
 		self::register("tuff", new Opaque(new BID(Ids::TUFF), "Tuff", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD(), 30.0))));

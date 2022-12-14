@@ -16,19 +16,9 @@ parameters:
 			path: ../../../build/server-phar.php
 
 		-
-			message: "#^Binary operation \"\\.\" between array\\<int, mixed\\>\\|string\\|false and '/'\\|'\\\\\\\\' results in an error\\.$#"
-			count: 2
-			path: ../../../src/PocketMine.php
-
-		-
 			message: "#^Do\\-while loop condition is always false\\.$#"
 			count: 1
 			path: ../../../src/PocketMine.php
-
-		-
-			message: "#^Cannot cast mixed to string\\.$#"
-			count: 1
-			path: ../../../src/Server.php
 
 		-
 			message: "#^Parameter \\#1 \\$array of static method pocketmine\\\\plugin\\\\PluginGraylist\\:\\:fromArray\\(\\) expects array, mixed given\\.$#"
@@ -351,6 +341,21 @@ parameters:
 			path: ../../../src/block/Mycelium.php
 
 		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/RedMushroom.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/RedMushroom.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/RedMushroom.php
+
+		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockLightAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/block/SnowLayer.php
@@ -456,26 +461,6 @@ parameters:
 			path: ../../../src/command/Command.php
 
 		-
-			message: "#^Cannot call method startTiming\\(\\) on pocketmine\\\\timings\\\\TimingsHandler\\|null\\.$#"
-			count: 1
-			path: ../../../src/command/FormattedCommandAlias.php
-
-		-
-			message: "#^Cannot call method stopTiming\\(\\) on pocketmine\\\\timings\\\\TimingsHandler\\|null\\.$#"
-			count: 1
-			path: ../../../src/command/FormattedCommandAlias.php
-
-		-
-			message: "#^Cannot call method startTiming\\(\\) on pocketmine\\\\timings\\\\TimingsHandler\\|null\\.$#"
-			count: 1
-			path: ../../../src/command/SimpleCommandMap.php
-
-		-
-			message: "#^Cannot call method stopTiming\\(\\) on pocketmine\\\\timings\\\\TimingsHandler\\|null\\.$#"
-			count: 1
-			path: ../../../src/command/SimpleCommandMap.php
-
-		-
 			message: "#^Cannot call method addParticle\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/ParticleCommand.php
@@ -524,11 +509,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$path of static method pocketmine\\\\utils\\\\Filesystem\\:\\:cleanPath\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/crash/CrashDump.php
-
-		-
-			message: "#^Parameter \\#1 \\$index of method pocketmine\\\\inventory\\\\BaseInventory\\:\\:setItem\\(\\) expects int, int\\|string given\\.$#"
-			count: 1
-			path: ../../../src/entity/ExperienceManager.php
 
 		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
@@ -602,7 +582,7 @@ parameters:
 
 		-
 			message: "#^Cannot cast mixed to int\\.$#"
-			count: 3
+			count: 2
 			path: ../../../src/item/Item.php
 
 		-
@@ -786,27 +766,12 @@ parameters:
 			path: ../../../src/plugin/PluginBase.php
 
 		-
-			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
 			message: "#^Cannot cast mixed to string\\.$#"
-			count: 5
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Parameter \\#1 \\$data of static method pocketmine\\\\permission\\\\PermissionParser\\:\\:loadPermissions\\(\\) expects array\\<string, array\\<string, mixed\\>\\>, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
 			message: "#^Parameter \\#1 \\$haystack of function stripos expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Parameter \\#1 \\$name of static method pocketmine\\\\plugin\\\\PluginEnableOrder\\:\\:fromString\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
@@ -821,42 +786,12 @@ parameters:
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$authors \\(array\\<string\\>\\) does not accept array\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$authors \\(array\\<string\\>\\) does not accept array\\<mixed\\>\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$depend \\(array\\<string\\>\\) does not accept array\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$loadBefore \\(array\\<string\\>\\) does not accept array\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
 			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$main \\(string\\) does not accept mixed\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
 			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$name \\(string\\) does not accept mixed\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$softDepend \\(array\\<string\\>\\) does not accept array\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$srcNamespacePrefix \\(string\\) does not accept mixed\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 

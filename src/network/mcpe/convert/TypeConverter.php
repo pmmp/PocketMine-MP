@@ -27,6 +27,7 @@ use pocketmine\block\VanillaBlocks;
 use pocketmine\crafting\ExactRecipeIngredient;
 use pocketmine\crafting\MetaWildcardRecipeIngredient;
 use pocketmine\crafting\RecipeIngredient;
+use pocketmine\crafting\TagWildcardRecipeIngredient;
 use pocketmine\data\bedrock\item\BlockItemIdMap;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
@@ -43,7 +44,10 @@ use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
+use pocketmine\network\mcpe\protocol\types\recipe\IntIdMetaItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient as ProtocolRecipeIngredient;
+use pocketmine\network\mcpe\protocol\types\recipe\StringIdMetaItemDescriptor;
+use pocketmine\network\mcpe\protocol\types\recipe\TagItemDescriptor;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
@@ -111,11 +115,12 @@ class TypeConverter{
 
 	public function coreRecipeIngredientToNet(?RecipeIngredient $ingredient) : ProtocolRecipeIngredient{
 		if($ingredient === null){
-			return new ProtocolRecipeIngredient(0, 0, 0);
+			return new ProtocolRecipeIngredient(null, 0);
 		}
 		if($ingredient instanceof MetaWildcardRecipeIngredient){
 			$id = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromStringId($ingredient->getItemId());
 			$meta = self::RECIPE_INPUT_WILDCARD_META;
+			$descriptor = new IntIdMetaItemDescriptor($id, $meta);
 		}elseif($ingredient instanceof ExactRecipeIngredient){
 			$item = $ingredient->getItem();
 			[$id, $meta, $blockRuntimeId] = ItemTranslator::getInstance()->toNetworkId($item);
@@ -125,32 +130,52 @@ class TypeConverter{
 					throw new AssumptionFailedError("Every block state should have an associated meta value");
 				}
 			}
+			$descriptor = new IntIdMetaItemDescriptor($id, $meta);
+		}elseif($ingredient instanceof TagWildcardRecipeIngredient){
+			$descriptor = new TagItemDescriptor($ingredient->getTagName());
 		}else{
 			throw new \LogicException("Unsupported recipe ingredient type " . get_class($ingredient) . ", only " . ExactRecipeIngredient::class . " and " . MetaWildcardRecipeIngredient::class . " are supported");
 		}
-		return new ProtocolRecipeIngredient($id, $meta, 1);
+
+		return new ProtocolRecipeIngredient($descriptor, 1);
 	}
 
 	public function netRecipeIngredientToCore(ProtocolRecipeIngredient $ingredient) : ?RecipeIngredient{
-		if($ingredient->getId() === 0){
+		$descriptor = $ingredient->getDescriptor();
+		if($descriptor === null){
 			return null;
 		}
 
-		$itemId = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromIntId($ingredient->getId());
-
-		if($ingredient->getMeta() === self::RECIPE_INPUT_WILDCARD_META){
-			return new MetaWildcardRecipeIngredient($itemId);
+		if($descriptor instanceof TagItemDescriptor){
+			return new TagWildcardRecipeIngredient($descriptor->getTag());
 		}
 
-		$meta = $ingredient->getMeta();
+		if($descriptor instanceof IntIdMetaItemDescriptor){
+			$stringId = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromIntId($descriptor->getId());
+			$meta = $descriptor->getMeta();
+		}elseif($descriptor instanceof StringIdMetaItemDescriptor){
+			$stringId = $descriptor->getId();
+			$meta = $descriptor->getMeta();
+		}else{
+			throw new \LogicException("Unsupported conversion of recipe ingredient to core item stack");
+		}
+
+		if($meta === self::RECIPE_INPUT_WILDCARD_META){
+			return new MetaWildcardRecipeIngredient($stringId);
+		}
+
 		$blockRuntimeId = null;
-		if(($blockId = BlockItemIdMap::getInstance()->lookupBlockId($itemId)) !== null){
+		if(($blockId = BlockItemIdMap::getInstance()->lookupBlockId($stringId)) !== null){
 			$blockRuntimeId = RuntimeBlockMapping::getInstance()->getBlockStateDictionary()->lookupStateIdFromIdMeta($blockId, $meta);
 			if($blockRuntimeId !== null){
 				$meta = 0;
 			}
 		}
-		$result = ItemTranslator::getInstance()->fromNetworkId($ingredient->getId(), $meta, $blockRuntimeId ?? ItemTranslator::NO_BLOCK_RUNTIME_ID);
+		$result = ItemTranslator::getInstance()->fromNetworkId(
+			GlobalItemTypeDictionary::getInstance()->getDictionary()->fromStringId($stringId),
+			$meta,
+			$blockRuntimeId ?? ItemTranslator::NO_BLOCK_RUNTIME_ID
+		);
 		return new ExactRecipeIngredient($result);
 	}
 

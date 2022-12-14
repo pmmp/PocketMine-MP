@@ -21,23 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\block;
+namespace pocketmine\world\sound;
 
-final class CachingBlockStateSerializer implements DelegatingBlockStateSerializer{
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-	/**
-	 * @var BlockStateData[]
-	 * @phpstan-var array<int, BlockStateData>
-	 */
-	private array $cache = [];
-
-	public function __construct(
-		private BlockStateSerializer $realSerializer
-	){}
-
-	public function serialize(int $stateId) : BlockStateData{
-		return $this->cache[$stateId] ??= $this->realSerializer->serialize($stateId);
+final class ScrapeSound implements Sound{
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::SCRAPE, $pos, false)];
 	}
-
-	public function getRealSerializer() : BlockStateSerializer{ return $this->realSerializer; }
 }

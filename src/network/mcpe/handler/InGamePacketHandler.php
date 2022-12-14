@@ -51,7 +51,6 @@ use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\ActorPickRequestPacket;
-use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
@@ -321,9 +320,7 @@ class InGamePacketHandler extends PacketHandler{
 			$result = $this->handleReleaseItemTransaction($packet->trData);
 		}
 
-		if(!$result){
-			$this->inventoryManager->syncAll();
-		}else{
+		if($this->craftingTransaction === null){ //don't sync if we're waiting to complete a crafting transaction
 			$this->inventoryManager->syncMismatchedPredictedSlotChanges();
 		}
 		return $result;
@@ -358,6 +355,7 @@ class InGamePacketHandler extends PacketHandler{
 				return false;
 			}
 		}
+		$this->inventoryManager->addPredictedSlotChanges($data->getActions());
 
 		if($isCraftingPart){
 			if($this->craftingTransaction === null){
@@ -378,15 +376,9 @@ class InGamePacketHandler extends PacketHandler{
 			}
 			$this->player->setUsingItem(false);
 			try{
-				$this->inventoryManager->onTransactionStart($this->craftingTransaction);
 				$this->craftingTransaction->execute();
 			}catch(TransactionException $e){
 				$this->session->getLogger()->debug("Failed to execute crafting transaction: " . $e->getMessage());
-
-				//TODO: only sync slots that the client tried to change
-				foreach($this->craftingTransaction->getInventories() as $inventory){
-					$this->inventoryManager->syncContents($inventory);
-				}
 				return false;
 			}finally{
 				$this->craftingTransaction = null;
@@ -406,18 +398,12 @@ class InGamePacketHandler extends PacketHandler{
 
 			$this->player->setUsingItem(false);
 			$transaction = new InventoryTransaction($this->player, $actions);
-			$this->inventoryManager->onTransactionStart($transaction);
 			try{
 				$transaction->execute();
 			}catch(TransactionException $e){
 				$logger = $this->session->getLogger();
 				$logger->debug("Failed to execute inventory transaction: " . $e->getMessage());
 				$logger->debug("Actions: " . json_encode($data->getActions()));
-
-				foreach($transaction->getInventories() as $inventory){
-					$this->inventoryManager->syncContents($inventory);
-				}
-
 				return false;
 			}
 		}
@@ -427,7 +413,6 @@ class InGamePacketHandler extends PacketHandler{
 
 	private function handleUseItemTransaction(UseItemTransactionData $data) : bool{
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
-		$this->inventoryManager->addPredictedSlotChanges($data->getActions());
 
 		switch($data->getActionType()){
 			case UseItemTransactionData::ACTION_CLICK_BLOCK:
@@ -513,9 +498,7 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
-		$this->inventoryManager->addPredictedSlotChanges($data->getActions());
 
-		//TODO: use transactiondata for rollbacks here
 		switch($data->getActionType()){
 			case UseItemOnEntityTransactionData::ACTION_INTERACT:
 				$this->player->interactEntity($target, $data->getClickPosition());
@@ -530,15 +513,10 @@ class InGamePacketHandler extends PacketHandler{
 
 	private function handleReleaseItemTransaction(ReleaseItemTransactionData $data) : bool{
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
-		$this->inventoryManager->addPredictedSlotChanges($data->getActions());
 
-		//TODO: use transactiondata for rollbacks here (resending entire inventory is very wasteful)
-		switch($data->getActionType()){
-			case ReleaseItemTransactionData::ACTION_RELEASE:
-				if(!$this->player->releaseHeldItem()){
-					$this->inventoryManager->syncContents($this->player->getInventory());
-				}
-				return true;
+		if($data->getActionType() == ReleaseItemTransactionData::ACTION_RELEASE){
+			$this->player->releaseHeldItem();
+			return true;
 		}
 
 		return false;
@@ -658,10 +636,6 @@ class InGamePacketHandler extends PacketHandler{
 
 	public function handleCraftingEvent(CraftingEventPacket $packet) : bool{
 		return true; //this is a broken useless packet, so we don't use it
-	}
-
-	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
-		return true; //no longer used, but the client still sends it for flight changes
 	}
 
 	public function handleBlockActorData(BlockActorDataPacket $packet) : bool{

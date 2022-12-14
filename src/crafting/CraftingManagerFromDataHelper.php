@@ -41,7 +41,7 @@ use pocketmine\item\Item;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function base64_decode;
 use function file_get_contents;
 use function get_debug_type;
@@ -56,6 +56,9 @@ final class CraftingManagerFromDataHelper{
 			//every case we've seen so far where this isn't the case, it's been a bug and the count was ignored anyway
 			//e.g. gold blocks crafted from 9 ingots, but each input item individually had a count of 9
 			throw new SavedDataLoadingException("Recipe inputs should have a count of exactly 1");
+		}
+		if(isset($data->tag)){
+			return new TagWildcardRecipeIngredient($data->tag);
 		}
 
 		$meta = $data->meta ?? null;

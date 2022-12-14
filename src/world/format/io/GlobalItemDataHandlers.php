@@ -29,7 +29,7 @@ use pocketmine\data\bedrock\item\upgrade\ItemDataUpgrader;
 use pocketmine\data\bedrock\item\upgrade\ItemIdMetaUpgradeSchemaUtils;
 use pocketmine\data\bedrock\item\upgrade\LegacyItemIdToStringIdMap;
 use pocketmine\data\bedrock\item\upgrade\R12ItemIdToBlockIdMap;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use const pocketmine\BEDROCK_ITEM_UPGRADE_SCHEMA_PATH;
 
 final class GlobalItemDataHandlers{

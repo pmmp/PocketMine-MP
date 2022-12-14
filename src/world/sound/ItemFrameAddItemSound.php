@@ -21,9 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\block;
+namespace pocketmine\world\sound;
 
-interface DelegatingBlockStateDeserializer extends BlockStateDeserializer{
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelEvent;
 
-	public function getRealDeserializer() : BlockStateDeserializer;
+class ItemFrameAddItemSound implements Sound{
+
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::create(LevelEvent::SOUND_ITEMFRAME_ADD_ITEM, 0, $pos)];
+	}
 }

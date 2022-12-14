@@ -38,7 +38,7 @@ use pocketmine\world\generator\Flat;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function file_get_contents;
 use function file_put_contents;
 use function strlen;

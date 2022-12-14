@@ -103,6 +103,7 @@ abstract class Durable extends Item{
 	 */
 	protected function onBroken() : void{
 		$this->pop();
+		$this->setDamage(0); //the stack size may be greater than 1 if overstacked by a plugin
 	}
 
 	/**
@@ -114,7 +115,7 @@ abstract class Durable extends Item{
 	 * Returns whether the item is broken.
 	 */
 	public function isBroken() : bool{
-		return $this->damage >= $this->getMaxDurability();
+		return $this->damage >= $this->getMaxDurability() || $this->isNull();
 	}
 
 	protected function deserializeCompoundTag(CompoundTag $tag) : void{

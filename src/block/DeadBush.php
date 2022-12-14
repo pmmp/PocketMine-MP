@@ -34,7 +34,7 @@ use function mt_rand;
 class DeadBush extends Flowable{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->getSide(Facing::DOWN)->isTransparent()){
+		if($this->canBeSupportedBy($this->getSide(Facing::DOWN))){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
@@ -42,7 +42,7 @@ class DeadBush extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->isTransparent()){
+		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -63,5 +63,16 @@ class DeadBush extends Flowable{
 
 	public function getFlammability() : int{
 		return 100;
+	}
+
+	private function canBeSupportedBy(Block $block) : bool{
+		$blockId = $block->getTypeId();
+		return $blockId === BlockTypeIds::SAND
+			|| $blockId === BlockTypeIds::RED_SAND
+			|| $blockId === BlockTypeIds::PODZOL
+			|| $blockId === BlockTypeIds::MYCELIUM
+			|| $blockId === BlockTypeIds::DIRT
+			|| $blockId === BlockTypeIds::HARDENED_CLAY
+			|| $blockId === BlockTypeIds::STAINED_CLAY;
 	}
 }
