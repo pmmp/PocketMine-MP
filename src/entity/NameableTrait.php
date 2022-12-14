@@ -25,6 +25,7 @@ namespace pocketmine\entity;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
@@ -56,8 +57,7 @@ trait NameableTrait{
 	 */
 	public function getInteractiveTag(Player $player, Item $item) : ?string{
 		if($item->getTypeId() === ItemTypeIds::NAME_TAG && $item->hasCustomName()){
-			//TODO: translations key const when my PR get merged :)
-			return "action.interact.name";
+			return KnownTranslationKeys::ACTION_INTERACT_NAME;
 		}
 		return parent::getInteractiveTag($player, $item);
 	}
