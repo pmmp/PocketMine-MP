@@ -209,12 +209,10 @@ JIT_WARNING
 			}
 			if(is_array($opts[$opt])){
 				critical_error("Cannot specify --$opt multiple times");
-				exit(1);
-			}
-			if($opts[$opt] === false){
+			}else{
 				critical_error("Missing value for --$opt");
-				exit(1);
 			}
+			exit(1);
 		}
 		return null;
 	}

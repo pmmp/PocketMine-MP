@@ -208,7 +208,7 @@ abstract class Timezone{
 		//That's been a bug in PHP since 2008!
 		foreach(timezone_abbreviations_list() as $zones){
 			foreach($zones as $timezone){
-				if($timezone['offset'] == $offset){
+				if($timezone['timezone_id'] !== null && $timezone['offset'] == $offset){
 					return $timezone['timezone_id'];
 				}
 			}

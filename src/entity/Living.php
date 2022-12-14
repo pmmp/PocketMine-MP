@@ -184,6 +184,13 @@ abstract class Living extends Entity{
 		$this->attributeMap->add($this->absorptionAttr = AttributeFactory::getInstance()->mustGet(Attribute::ABSORPTION));
 	}
 
+	/**
+	 * Returns the name used to describe this entity in chat and command outputs.
+	 */
+	public function getDisplayName() : string{
+		return $this->nameTag !== "" ? $this->nameTag : $this->getName();
+	}
+
 	public function setHealth(float $amount) : void{
 		$wasAlive = $this->isAlive();
 		parent::setHealth($amount);
@@ -448,7 +455,9 @@ abstract class Living extends Entity{
 	 */
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
 		$this->setAbsorption(max(0, $this->getAbsorption() + $source->getModifier(EntityDamageEvent::MODIFIER_ABSORPTION)));
-		$this->damageArmor($source->getBaseDamage());
+		if($source->canBeReducedByArmor()){
+			$this->damageArmor($source->getBaseDamage());
+		}
 
 		if($source instanceof EntityDamageByEntityEvent && ($attacker = $source->getDamager()) !== null){
 			$damage = 0;
