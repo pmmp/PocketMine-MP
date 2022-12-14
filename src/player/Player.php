@@ -2272,14 +2272,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->xpManager->setXpAndProgress(0, 0.0);
 		}
 
-		$deathMessage = $ev->getDeathMessage();
-		if($deathMessage != ""){
+		if($ev->getDeathMessage() != ""){
 			$this->server->broadcastMessage($ev->getDeathMessage());
 		}
 
 		$this->startDeathAnimation();
 
-		$this->getNetworkSession()->onServerDeath($deathMessage);
+		$this->getNetworkSession()->onServerDeath($ev->getDeathMessage());
 	}
 
 	protected function onDeathUpdate(int $tickDiff) : bool{
