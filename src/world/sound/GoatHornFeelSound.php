@@ -30,6 +30,6 @@ use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 class GoatHornFeelSound implements Sound{
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelSoundEventPacket::nonActorSound(386, $pos, false)];
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::HORN_CALL3, $pos, false)];
 	}
 }
