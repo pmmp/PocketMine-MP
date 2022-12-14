@@ -36,6 +36,7 @@ use pocketmine\utils\RegistryTrait;
  * @method static AbsorptionEffect ABSORPTION()
  * @method static Effect BLINDNESS()
  * @method static Effect CONDUIT_POWER()
+ * @method static Effect DARKNESS()
  * @method static PoisonEffect FATAL_POISON()
  * @method static Effect FIRE_RESISTANCE()
  * @method static Effect HASTE()
@@ -68,6 +69,7 @@ final class VanillaEffects{
 		//TODO: bad_omen
 		self::register("blindness", new Effect(KnownTranslationFactory::potion_blindness(), new Color(0x1f, 0x1f, 0x23), true));
 		self::register("conduit_power", new Effect(KnownTranslationFactory::potion_conduitPower(), new Color(0x1d, 0xc2, 0xd1)));
+		self::register("darkness", new Effect(KnownTranslationFactory::effect_darkness(), new Color(0x29, 0x27, 0x21), true, 600, false));
 		self::register("fatal_poison", new PoisonEffect(KnownTranslationFactory::potion_poison(), new Color(0x4e, 0x93, 0x31), true, 600, true, true));
 		self::register("fire_resistance", new Effect(KnownTranslationFactory::potion_fireResistance(), new Color(0xe4, 0x9a, 0x3a)));
 		self::register("haste", new Effect(KnownTranslationFactory::potion_digSpeed(), new Color(0xd9, 0xc0, 0x43)));

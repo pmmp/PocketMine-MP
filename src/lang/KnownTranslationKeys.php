@@ -33,6 +33,13 @@ final class KnownTranslationKeys{
 	public const ABILITY_FLIGHT = "ability.flight";
 	public const ABILITY_NOCLIP = "ability.noclip";
 	public const ACCEPT_LICENSE = "accept_license";
+	public const ACTION_INTERACT_ARMORSTAND_EQUIP = "action.interact.armorstand.equip";
+	public const ACTION_INTERACT_ARMORSTAND_POSE = "action.interact.armorstand.pose";
+	public const ACTION_INTERACT_EXIT_BOAT = "action.interact.exit.boat";
+	public const ACTION_INTERACT_FISHING = "action.interact.fishing";
+	public const ACTION_INTERACT_NAME = "action.interact.name";
+	public const ACTION_INTERACT_RIDE_BOAT = "action.interact.ride.boat";
+	public const ACTION_INTERACT_RIDE_MINECART = "action.interact.ride.minecart";
 	public const CHAT_TYPE_ACHIEVEMENT = "chat.type.achievement";
 	public const CHAT_TYPE_ADMIN = "chat.type.admin";
 	public const CHAT_TYPE_ANNOUNCEMENT = "chat.type.announcement";
@@ -138,6 +145,7 @@ final class KnownTranslationKeys{
 	public const DEATH_ATTACK_EXPLOSION = "death.attack.explosion";
 	public const DEATH_ATTACK_EXPLOSION_PLAYER = "death.attack.explosion.player";
 	public const DEATH_ATTACK_FALL = "death.attack.fall";
+	public const DEATH_ATTACK_FALLINGBLOCK = "death.attack.fallingBlock";
 	public const DEATH_ATTACK_GENERIC = "death.attack.generic";
 	public const DEATH_ATTACK_INFIRE = "death.attack.inFire";
 	public const DEATH_ATTACK_INWALL = "death.attack.inWall";
@@ -148,6 +156,7 @@ final class KnownTranslationKeys{
 	public const DEATH_ATTACK_OUTOFWORLD = "death.attack.outOfWorld";
 	public const DEATH_ATTACK_PLAYER = "death.attack.player";
 	public const DEATH_ATTACK_PLAYER_ITEM = "death.attack.player.item";
+	public const DEATH_ATTACK_TRIDENT = "death.attack.trident";
 	public const DEATH_ATTACK_WITHER = "death.attack.wither";
 	public const DEATH_FELL_ACCIDENT_GENERIC = "death.fell.accident.generic";
 	public const DEFAULT_GAMEMODE = "default_gamemode";
@@ -160,6 +169,7 @@ final class KnownTranslationKeys{
 	public const DISCONNECTIONSCREEN_OUTDATEDSERVER = "disconnectionScreen.outdatedServer";
 	public const DISCONNECTIONSCREEN_RESOURCEPACK = "disconnectionScreen.resourcePack";
 	public const DISCONNECTIONSCREEN_SERVERFULL = "disconnectionScreen.serverFull";
+	public const EFFECT_DARKNESS = "effect.darkness";
 	public const ENCHANTMENT_ARROWDAMAGE = "enchantment.arrowDamage";
 	public const ENCHANTMENT_ARROWFIRE = "enchantment.arrowFire";
 	public const ENCHANTMENT_ARROWINFINITE = "enchantment.arrowInfinite";
@@ -189,6 +199,7 @@ final class KnownTranslationKeys{
 	public const ENCHANTMENT_PROTECT_FIRE = "enchantment.protect.fire";
 	public const ENCHANTMENT_PROTECT_PROJECTILE = "enchantment.protect.projectile";
 	public const ENCHANTMENT_SOUL_SPEED = "enchantment.soul_speed";
+	public const ENCHANTMENT_SWIFT_SNEAK = "enchantment.swift_sneak";
 	public const ENCHANTMENT_THORNS = "enchantment.thorns";
 	public const ENCHANTMENT_TRIDENTCHANNELING = "enchantment.tridentChanneling";
 	public const ENCHANTMENT_TRIDENTIMPALING = "enchantment.tridentImpaling";
@@ -210,12 +221,14 @@ final class KnownTranslationKeys{
 	public const IP_WARNING = "ip_warning";
 	public const ITEM_RECORD_11_DESC = "item.record_11.desc";
 	public const ITEM_RECORD_13_DESC = "item.record_13.desc";
+	public const ITEM_RECORD_5_DESC = "item.record_5.desc";
 	public const ITEM_RECORD_BLOCKS_DESC = "item.record_blocks.desc";
 	public const ITEM_RECORD_CAT_DESC = "item.record_cat.desc";
 	public const ITEM_RECORD_CHIRP_DESC = "item.record_chirp.desc";
 	public const ITEM_RECORD_FAR_DESC = "item.record_far.desc";
 	public const ITEM_RECORD_MALL_DESC = "item.record_mall.desc";
 	public const ITEM_RECORD_MELLOHI_DESC = "item.record_mellohi.desc";
+	public const ITEM_RECORD_OTHERSIDE_DESC = "item.record_otherside.desc";
 	public const ITEM_RECORD_PIGSTEP_DESC = "item.record_pigstep.desc";
 	public const ITEM_RECORD_STAL_DESC = "item.record_stal.desc";
 	public const ITEM_RECORD_STRAD_DESC = "item.record_strad.desc";
@@ -306,6 +319,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_COMMAND_TRANSFERSERVER_USAGE = "pocketmine.command.transferserver.usage";
 	public const POCKETMINE_COMMAND_UNBAN_IP_DESCRIPTION = "pocketmine.command.unban.ip.description";
 	public const POCKETMINE_COMMAND_UNBAN_PLAYER_DESCRIPTION = "pocketmine.command.unban.player.description";
+	public const POCKETMINE_COMMAND_USERDEFINED_DESCRIPTION = "pocketmine.command.userDefined.description";
 	public const POCKETMINE_COMMAND_VERSION_DESCRIPTION = "pocketmine.command.version.description";
 	public const POCKETMINE_COMMAND_VERSION_MINECRAFTVERSION = "pocketmine.command.version.minecraftVersion";
 	public const POCKETMINE_COMMAND_VERSION_NOSUCHPLUGIN = "pocketmine.command.version.noSuchPlugin";

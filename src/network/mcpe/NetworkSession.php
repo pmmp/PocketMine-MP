@@ -98,6 +98,7 @@ use pocketmine\network\mcpe\protocol\types\command\CommandPermissions;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\entity\Attribute as NetworkAttribute;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
+use pocketmine\network\mcpe\protocol\types\entity\PropertySyncData;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
@@ -880,7 +881,7 @@ class NetworkSession{
 		//TODO: HACK! as of 1.18.10, the client responds differently to the same data ordered in different orders - for
 		//example, sending HEIGHT in the list before FLAGS when unsetting the SWIMMING flag results in a hitbox glitch
 		ksort($properties, SORT_NUMERIC);
-		$this->sendDataPacket(SetActorDataPacket::create($entity->getId(), $properties, 0));
+		$this->sendDataPacket(SetActorDataPacket::create($entity->getId(), $properties, new PropertySyncData([], []), 0));
 	}
 
 	public function onEntityEffectAdded(Living $entity, EffectInstance $effect, bool $replacesOldEffect) : void{
@@ -899,11 +900,11 @@ class NetworkSession{
 	public function syncAvailableCommands() : void{
 		$commandData = [];
 		foreach($this->server->getCommandMap()->getCommands() as $name => $command){
-			if(isset($commandData[$command->getName()]) || $command->getName() === "help" || !$command->testPermissionSilent($this->player)){
+			if(isset($commandData[$command->getLabel()]) || $command->getLabel() === "help" || !$command->testPermissionSilent($this->player)){
 				continue;
 			}
 
-			$lname = strtolower($command->getName());
+			$lname = strtolower($command->getLabel());
 			$aliases = $command->getAliases();
 			$aliasObj = null;
 			if(count($aliases) > 0){
@@ -911,7 +912,7 @@ class NetworkSession{
 					//work around a client bug which makes the original name not show when aliases are used
 					$aliases[] = $lname;
 				}
-				$aliasObj = new CommandEnum(ucfirst($command->getName()) . "Aliases", array_values($aliases));
+				$aliasObj = new CommandEnum(ucfirst($command->getLabel()) . "Aliases", array_values($aliases));
 			}
 
 			$description = $command->getDescription();
@@ -926,7 +927,7 @@ class NetworkSession{
 				]
 			);
 
-			$commandData[$command->getName()] = $data;
+			$commandData[$command->getLabel()] = $data;
 		}
 
 		$this->sendDataPacket(AvailableCommandsPacket::create($commandData, [], [], []));

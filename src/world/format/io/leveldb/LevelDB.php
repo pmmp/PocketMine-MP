@@ -188,6 +188,11 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		return PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
 	}
 
+	/**
+	 * @phpstan-param-out int $x
+	 * @phpstan-param-out int $y
+	 * @phpstan-param-out int $z
+	 */
 	protected static function deserializeExtraDataKey(int $chunkVersion, int $key, ?int &$x, ?int &$y, ?int &$z) : void{
 		if($chunkVersion >= ChunkVersion::v1_0_0){
 			$x = ($key >> 12) & 0xf;

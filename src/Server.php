@@ -470,10 +470,7 @@ class Server{
 		return $this->configGroup->getPropertyBool("player.save-player-data", true);
 	}
 
-	/**
-	 * @return OfflinePlayer|Player
-	 */
-	public function getOfflinePlayer(string $name){
+	public function getOfflinePlayer(string $name) : Player|OfflinePlayer|null{
 		$name = strtolower($name);
 		$result = $this->getPlayerExact($name);
 
@@ -1538,7 +1535,7 @@ class Server{
 	 * @param mixed[][]|null $trace
 	 * @phpstan-param list<array<string, mixed>>|null $trace
 	 */
-	public function exceptionHandler(\Throwable $e, $trace = null) : void{
+	public function exceptionHandler(\Throwable $e, ?array $trace = null) : void{
 		while(@ob_end_flush()){}
 		global $lastError;
 

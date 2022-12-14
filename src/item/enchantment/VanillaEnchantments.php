@@ -49,6 +49,7 @@ use pocketmine\utils\RegistryTrait;
  * @method static Enchantment RESPIRATION()
  * @method static SharpnessEnchantment SHARPNESS()
  * @method static Enchantment SILK_TOUCH()
+ * @method static Enchantment SWIFT_SNEAK()
  * @method static Enchantment THORNS()
  * @method static Enchantment UNBREAKING()
  * @method static Enchantment VANISHING()
@@ -95,6 +96,8 @@ final class VanillaEnchantments{
 		self::register("MENDING", new Enchantment(KnownTranslationFactory::enchantment_mending(), Rarity::RARE, ItemFlags::NONE, ItemFlags::ALL, 1));
 
 		self::register("VANISHING", new Enchantment(KnownTranslationFactory::enchantment_curse_vanishing(), Rarity::MYTHIC, ItemFlags::NONE, ItemFlags::ALL, 1));
+
+		self::register("SWIFT_SNEAK", new Enchantment(KnownTranslationFactory::enchantment_swift_sneak(), Rarity::MYTHIC, ItemFlags::NONE, ItemFlags::LEGS, 3));
 	}
 
 	protected static function register(string $name, Enchantment $member) : void{

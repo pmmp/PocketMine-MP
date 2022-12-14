@@ -34,7 +34,7 @@ use pocketmine\world\Position;
  * Called when an entity explodes, after the explosion's impact has been calculated.
  * No changes have been made to the world at this stage.
  *
- * @see ExplosionPrimeEvent
+ * @see EntityPreExplodeEvent
  *
  * @phpstan-extends EntityEvent<Entity>
  */
