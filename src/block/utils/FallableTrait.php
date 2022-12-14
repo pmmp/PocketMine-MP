@@ -54,4 +54,8 @@ trait FallableTrait{
 			$fall->spawnToAll();
 		}
 	}
+
+	public function tickFalling() : ?Block{
+		return null;
+	}
 }

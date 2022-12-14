@@ -285,10 +285,8 @@ class MemoryManager{
 
 	/**
 	 * Static memory dumper accessible from any thread.
-	 *
-	 * @param mixed   $startingObject
 	 */
-	public static function dumpMemory($startingObject, string $outputFolder, int $maxNesting, int $maxStringSize, \Logger $logger) : void{
+	public static function dumpMemory(mixed $startingObject, string $outputFolder, int $maxNesting, int $maxStringSize, \Logger $logger) : void{
 		$hardLimit = Utils::assumeNotFalse(ini_get('memory_limit'), "memory_limit INI directive should always exist");
 		ini_set('memory_limit', '-1');
 		gc_disable();
@@ -398,7 +396,7 @@ class MemoryManager{
 
 		do{
 			$continue = false;
-			foreach($objects as $hash => $object){
+			foreach(Utils::stringifyKeys($objects) as $hash => $object){
 				if(!is_object($object)){
 					continue;
 				}
@@ -479,13 +477,15 @@ class MemoryManager{
 	}
 
 	/**
-	 * @param mixed    $from
 	 * @param object[] $objects reference parameter
 	 * @param int[]    $refCounts reference parameter
 	 *
-	 * @return mixed
+	 * @phpstan-param array<string, object> $objects
+	 * @phpstan-param array<string, int> $refCounts
+	 * @phpstan-param-out array<string, object> $objects
+	 * @phpstan-param-out array<string, int> $refCounts
 	 */
-	private static function continueDump($from, array &$objects, array &$refCounts, int $recursion, int $maxNesting, int $maxStringSize){
+	private static function continueDump(mixed $from, array &$objects, array &$refCounts, int $recursion, int $maxNesting, int $maxStringSize) : mixed{
 		if($maxNesting <= 0){
 			return "(error) NESTING LIMIT REACHED";
 		}

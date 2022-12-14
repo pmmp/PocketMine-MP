@@ -2106,10 +2106,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 	}
 
-	/**
-	 * @param mixed $responseData
-	 */
-	public function onFormSubmit(int $formId, $responseData) : bool{
+	public function onFormSubmit(int $formId, mixed $responseData) : bool{
 		if(!isset($this->forms[$formId])){
 			$this->logger->debug("Got unexpected response for form $formId");
 			return false;
@@ -2481,9 +2478,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->ySize = 0;
 	}
 
-	/**
-	 * {@inheritdoc}
-	 */
 	public function teleport(Vector3 $pos, ?float $yaw = null, ?float $pitch = null) : bool{
 		if(parent::teleport($pos, $yaw, $pitch)){
 
