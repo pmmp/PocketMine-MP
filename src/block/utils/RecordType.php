@@ -58,7 +58,7 @@ final class RecordType{
 	protected static function setup() : void{
 		self::registerAll(
 			new RecordType("disk_13", "C418 - 13", LevelSoundEvent::RECORD_13, KnownTranslationFactory::item_record_13_desc()),
-			new RecordType("disk_5", "Samuel Åberg - 5", 439, KnownTranslationFactory::item_record_5_desc()),
+			new RecordType("disk_5", "Samuel Åberg - 5", LevelSoundEvent::RECORD_5, KnownTranslationFactory::item_record_5_desc()),
 			new RecordType("disk_cat", "C418 - cat", LevelSoundEvent::RECORD_CAT, KnownTranslationFactory::item_record_cat_desc()),
 			new RecordType("disk_blocks", "C418 - blocks", LevelSoundEvent::RECORD_BLOCKS, KnownTranslationFactory::item_record_blocks_desc()),
 			new RecordType("disk_chirp", "C418 - chirp", LevelSoundEvent::RECORD_CHIRP, KnownTranslationFactory::item_record_chirp_desc()),
