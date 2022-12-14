@@ -163,7 +163,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 						if($e->getBlock()->getTypeId() === BlockTypeIds::ANVIL){
 							return KnownTranslationFactory::death_attack_anvil($name);
 						}else{
-							//TODO: falling block generic translation
+							return KnownTranslationFactory::death_attack_fallingBlock($name);
 						}
 					}
 				}
