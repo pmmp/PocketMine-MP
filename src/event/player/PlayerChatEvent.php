@@ -26,6 +26,7 @@ namespace pocketmine\event\player;
 use pocketmine\command\CommandSender;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\player\Player;
 use pocketmine\utils\Utils;
 
@@ -42,7 +43,7 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 		Player $player,
 		protected string $message,
 		protected array $recipients,
-		protected string $format = "chat.type.text"
+		protected string $format = KnownTranslationKeys::CHAT_TYPE_TEXT
 	){
 		$this->player = $player;
 	}

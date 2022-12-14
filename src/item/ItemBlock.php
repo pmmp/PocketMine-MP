@@ -63,7 +63,7 @@ final class ItemBlock extends Item{
 		if(!$factory->isRegistered($this->blockTypeId)){
 			return VanillaBlocks::AIR();
 		}
-		$blockType = BlockFactory::getInstance()->fromTypeId($this->blockTypeId);
+		$blockType = $factory->fromTypeId($this->blockTypeId);
 		$blockType->decodeTypeData($this->blockTypeData);
 		return $blockType;
 	}

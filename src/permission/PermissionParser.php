@@ -54,11 +54,9 @@ class PermissionParser{
 	];
 
 	/**
-	 * @param bool|string $value
-	 *
 	 * @throws PermissionParserException
 	 */
-	public static function defaultFromString($value) : string{
+	public static function defaultFromString(bool|string $value) : string{
 		if(is_bool($value)){
 			if($value){
 				return "true";
