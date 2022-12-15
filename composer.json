@@ -35,7 +35,7 @@
       "fgrosse/phpasn1": "^2.3",
       "netresearch/jsonmapper": "^4.0",
       "pocketmine/bedrock-data": "~1.13.0+bedrock-1.19.50",
-      "pocketmine/bedrock-protocol": "~17.0.0+bedrock-1.19.50",
+      "pocketmine/bedrock-protocol": "~17.1.0+bedrock-1.19.50",
       "pocketmine/binaryutils": "^0.2.1",
       "pocketmine/callback-validator": "^1.0.2",
       "pocketmine/classloader": "^0.2.0",
