@@ -93,41 +93,21 @@ class ResourcePackManager{
 			}
 			$pack = (string) $pack;
 			try{
-				$packPath = Path::join($this->path, $pack);
-				if(!file_exists($packPath)){
-					throw new ResourcePackException("File or directory not found");
-				}
-				if(is_dir($packPath)){
-					throw new ResourcePackException("Directory resource packs are unsupported");
-				}
+				$newPack = $this->loadPackFromPath(Path::join($this->path, $pack));
 
-				$newPack = null;
-				//Detect the type of resource pack.
-				$info = new \SplFileInfo($packPath);
-				switch($info->getExtension()){
-					case "zip":
-					case "mcpack":
-						$newPack = new ZippedResourcePack($packPath);
-						break;
-				}
+				$this->resourcePacks[] = $newPack;
+				$index = strtolower($newPack->getPackId());
+				$this->uuidList[$index] = $newPack;
 
-				if($newPack instanceof ResourcePack){
-					$this->resourcePacks[] = $newPack;
-					$index = strtolower($newPack->getPackId());
-					$this->uuidList[$index] = $newPack;
-
-					$keyPath = Path::join($this->path, $pack . ".key");
-					if(file_exists($keyPath)){
-						try{
-							$this->encryptionKeys[$index] = ErrorToExceptionHandler::trapAndRemoveFalse(
-								fn() => file_get_contents($keyPath)
-							);
-						}catch(\ErrorException $e){
-							throw new ResourcePackException("Could not read encryption key file: " . $e->getMessage(), 0, $e);
-						}
+				$keyPath = Path::join($this->path, $pack . ".key");
+				if(file_exists($keyPath)){
+					try{
+						$this->encryptionKeys[$index] = ErrorToExceptionHandler::trapAndRemoveFalse(
+							fn() => file_get_contents($keyPath)
+						);
+					}catch(\ErrorException $e){
+						throw new ResourcePackException("Could not read encryption key file: " . $e->getMessage(), 0, $e);
 					}
-				}else{
-					throw new ResourcePackException("Format not recognized");
 				}
 			}catch(ResourcePackException $e){
 				$logger->critical("Could not load resource pack \"$pack\": " . $e->getMessage());
@@ -135,6 +115,25 @@ class ResourcePackManager{
 		}
 
 		$logger->debug("Successfully loaded " . count($this->resourcePacks) . " resource packs");
+	}
+
+	private function loadPackFromPath(string $packPath) : ResourcePack{
+		if(!file_exists($packPath)){
+			throw new ResourcePackException("File or directory not found");
+		}
+		if(is_dir($packPath)){
+			throw new ResourcePackException("Directory resource packs are unsupported");
+		}
+
+		//Detect the type of resource pack.
+		$info = new \SplFileInfo($packPath);
+		switch($info->getExtension()){
+			case "zip":
+			case "mcpack":
+				return new ZippedResourcePack($packPath);
+		}
+
+		throw new ResourcePackException("Format not recognized");
 	}
 
 	/**
