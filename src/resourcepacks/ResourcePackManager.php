@@ -38,6 +38,7 @@ use function is_float;
 use function is_int;
 use function is_string;
 use function mkdir;
+use function strlen;
 use function strtolower;
 use const DIRECTORY_SEPARATOR;
 
@@ -201,5 +202,24 @@ class ResourcePackManager{
 	 */
 	public function getPackEncryptionKey(string $id) : ?string{
 		return $this->encryptionKeys[strtolower($id)] ?? null;
+	}
+
+	/**
+	 * Sets the encryption key to use for decrypting the specified resource pack. The pack will **NOT** be decrypted by
+	 * PocketMine-MP; the key is simply passed to the client to allow it to decrypt the pack after downloading it.
+	 */
+	public function setPackEncryptionKey(string $id, ?string $key) : void{
+		$id = strtolower($id);
+		if($key === null){
+			//allow deprovisioning keys for resource packs that have been removed
+			unset($this->encryptionKeys[$id]);
+		}elseif(isset($this->uuidList[$id])){
+			if(strlen($key) !== 32){
+				throw new \InvalidArgumentException("Encryption key must be exactly 32 bytes long");
+			}
+			$this->encryptionKeys[$id] = $key;
+		}else{
+			throw new \InvalidArgumentException("Unknown pack ID $id");
+		}
 	}
 }
