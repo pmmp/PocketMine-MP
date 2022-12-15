@@ -556,8 +556,11 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Called when a player uses the item to interact with entity, for example by using a name tag.
+	 *
+	 * @param Vector3 $clickVector The exact position of the click (absolute coordinates)
+	 * @return bool whether some action took place
 	 */
-	public function onInteractEntity(Player $player, Entity $entity, Vector3 $directionVector) : bool{
+	public function onInteractEntity(Player $player, Entity $entity, Vector3 $clickVector) : bool{
 		return false;
 	}
 
