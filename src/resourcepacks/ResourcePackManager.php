@@ -38,6 +38,7 @@ use function is_float;
 use function is_int;
 use function is_string;
 use function mkdir;
+use function rtrim;
 use function strlen;
 use function strtolower;
 use const DIRECTORY_SEPARATOR;
@@ -103,12 +104,17 @@ class ResourcePackManager{
 				$keyPath = Path::join($this->path, $pack . ".key");
 				if(file_exists($keyPath)){
 					try{
-						$this->encryptionKeys[$index] = ErrorToExceptionHandler::trapAndRemoveFalse(
+						$key = ErrorToExceptionHandler::trapAndRemoveFalse(
 							fn() => file_get_contents($keyPath)
 						);
 					}catch(\ErrorException $e){
 						throw new ResourcePackException("Could not read encryption key file: " . $e->getMessage(), 0, $e);
 					}
+					$key = rtrim($key, "\r\n");
+					if(strlen($key) !== 32){
+						throw new ResourcePackException("Invalid encryption key length, must be exactly 32 bytes");
+					}
+					$this->encryptionKeys[$index] = $key;
 				}
 			}catch(ResourcePackException $e){
 				$logger->critical("Could not load resource pack \"$pack\": " . $e->getMessage());
