@@ -131,6 +131,7 @@ use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 use Ramsey\Uuid\UuidInterface;
 use function abs;
+use function array_filter;
 use function array_map;
 use function assert;
 use function count;
@@ -2265,15 +2266,16 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$this->getWorld()->dropItem($this->location, $item);
 			}
 
+			$clearInventory = fn(Inventory $inventory) => $inventory->setContents(array_filter($inventory->getContents(), fn(Item $item) => $item->keepOnDeath()));
 			if($this->inventory !== null){
 				$this->inventory->setHeldItemIndex(0);
-				$this->inventory->clearAll();
+				$clearInventory($this->inventory);
 			}
 			if($this->armorInventory !== null){
-				$this->armorInventory->clearAll();
+				$clearInventory($this->armorInventory);
 			}
 			if($this->offHandInventory !== null){
-				$this->offHandInventory->clearAll();
+				$clearInventory($this->offHandInventory);
 			}
 		}
 
