@@ -36,7 +36,8 @@ class ShapelessRecipe implements CraftingRecipe{
 
 	/**
 	 * @param Item[] $ingredients No more than 9 total. This applies to sum of item stack counts, not count of array.
-	 * @param Item[] $results List of result items created by this recipe.
+	 * @param Item[] $results     List of result items created by this recipe.
+	 *
 	 * TODO: we'll want to make the type parameter mandatory in PM5
 	 */
 	public function __construct(array $ingredients, array $results, ?ShapelessRecipeType $type = null){

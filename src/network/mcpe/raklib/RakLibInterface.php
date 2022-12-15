@@ -52,6 +52,7 @@ use function mt_rand;
 use function random_bytes;
 use function rtrim;
 use function substr;
+use const PHP_INT_MAX;
 
 class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	/**

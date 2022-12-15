@@ -141,9 +141,9 @@ class Internet{
 	 *
 	 * @phpstan-template TErrorVar of mixed
 	 *
-	 * @param int         $timeout default 10
+	 * @param int         $timeout      default 10
 	 * @param string[]    $extraHeaders
-	 * @param string|null $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
+	 * @param string|null $err          reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
 	 * @phpstan-param list<string>          $extraHeaders
 	 * @phpstan-param TErrorVar             $err
 	 * @phpstan-param-out TErrorVar|string  $err
@@ -165,7 +165,7 @@ class Internet{
 	 *
 	 * @param string[]|string $args
 	 * @param string[]        $extraHeaders
-	 * @param string|null     $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occurred during the operation.
+	 * @param string|null     $err          reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occurred during the operation.
 	 * @phpstan-param string|array<string, string> $args
 	 * @phpstan-param list<string>                 $extraHeaders
 	 * @phpstan-param TErrorVar                    $err
@@ -187,7 +187,7 @@ class Internet{
 	 * General cURL shorthand function.
 	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
 	 *
-	 * @param float|int     $timeout The maximum connect timeout and timeout in seconds, correct to ms.
+	 * @param float|int     $timeout      The maximum connect timeout and timeout in seconds, correct to ms.
 	 * @param string[]      $extraHeaders extra headers to send as a plain string array
 	 * @param array         $extraOpts    extra CURLOPT_* to set as an [opt => value] map
 	 * @param \Closure|null $onSuccess    function to be called if there is no error. Accepts a resource argument as the cURL handle.
