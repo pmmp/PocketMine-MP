@@ -555,6 +555,13 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
+	 * Called when a player uses the item to interact with entity, for example by using a name tag.
+	 */
+	public function onInteractEntity(Player $player, Entity $entity, Vector3 $directionVector) : bool{
+		return false;
+	}
+
+	/**
 	 * Returns the number of ticks a player must wait before activating this item again.
 	 */
 	public function getCooldownTicks() : int{

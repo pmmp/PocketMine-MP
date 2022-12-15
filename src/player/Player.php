@@ -1818,7 +1818,17 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$ev->call();
 
+		$item = $this->inventory->getItemInHand();
+		$oldItem = clone $item;
 		if(!$ev->isCancelled()){
+			if($item->onInteractEntity($this, $entity, $clickPos)){
+				if($this->hasFiniteResources() && !$item->equalsExact($oldItem) && $oldItem->equalsExact($this->inventory->getItemInHand())){
+					if($item instanceof Durable && $item->isBroken()){
+						$this->broadcastSound(new ItemBreakSound());
+					}
+					$this->inventory->setItemInHand($item);
+				}
+			}
 			return $entity->onInteract($this, $clickPos);
 		}
 		return false;
