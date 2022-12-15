@@ -159,6 +159,29 @@ class ResourcePackManager{
 	}
 
 	/**
+	 * Sets the resource packs to use. Packs earliest in the list will appear at the top of the stack (maximum
+	 * priority), and later ones will appear below (lower priority), in the same manner as the Bedrock resource packs
+	 * screen in-game.
+	 *
+	 * @param ResourcePack[] $resourceStack
+	 * @phpstan-param list<ResourcePack> $resourceStack
+	 */
+	public function setResourceStack(array $resourceStack) : void{
+		$uuidList = [];
+		$resourcePacks = [];
+		foreach($resourceStack as $pack){
+			$uuid = strtolower($pack->getPackId());
+			if(isset($uuidList[$uuid])){
+				throw new \InvalidArgumentException("Cannot load two resource pack with the same UUID ($uuid)");
+			}
+			$uuidList[$uuid] = $pack;
+			$resourcePacks[] = $pack;
+		}
+		$this->resourcePacks = $resourcePacks;
+		$this->uuidList = $uuidList;
+	}
+
+	/**
 	 * Returns the resource pack matching the specified UUID string, or null if the ID was not recognized.
 	 */
 	public function getPackById(string $id) : ?ResourcePack{
