@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Location;
 use pocketmine\entity\object\FireworkRocket as FireworkEntity;
 use pocketmine\math\Facing;
@@ -31,6 +32,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use function lcg_value;
 use function mt_rand;
@@ -81,7 +83,8 @@ class FireworkRocket extends Item{
 			Facing::NORTH => $position->add(0, 0, -$correction),
 			Facing::SOUTH => $position->add(0, 0, $correction),
 			Facing::WEST => $position->add(-$correction, 0, 0),
-			Facing::EAST => $position->add($correction, 0, 0)
+			Facing::EAST => $position->add($correction, 0, 0),
+			default => throw new AssumptionFailedError("Invalid facing $facing")
 		};
 
 		$randomDuration = (($this->flightDuration + 1) * 10) + mt_rand(0, 12);

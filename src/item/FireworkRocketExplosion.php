@@ -79,11 +79,11 @@ class FireworkRocketExplosion{
 		$this->color = $color;
 	}
 
-	public function getFade() : DyeColor{
+	public function getFade() : ?DyeColor{
 		return $this->fade;
 	}
 
-	public function setFade(DyeColor $fade) : void{
+	public function setFade(?DyeColor $fade) : void{
 		$this->fade = $fade;
 	}
 
