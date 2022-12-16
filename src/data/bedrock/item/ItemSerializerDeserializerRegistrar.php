@@ -38,6 +38,7 @@ use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\data\bedrock\SuspiciousStewTypeIdMap;
 use pocketmine\item\Banner;
 use pocketmine\item\Dye;
+use pocketmine\item\FireworkStar;
 use pocketmine\item\Item;
 use pocketmine\item\Potion;
 use pocketmine\item\SplashPotion;
@@ -224,6 +225,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::FEATHER, Items::FEATHER());
 		$this->map1to1Item(Ids::FERMENTED_SPIDER_EYE, Items::FERMENTED_SPIDER_EYE());
 		$this->map1to1Item(Ids::FIRE_CHARGE, Items::FIRE_CHARGE());
+		$this->map1to1Item(Ids::FIREWORK_ROCKET, Items::FIREWORK_ROCKET());
 		$this->map1to1Item(Ids::FISHING_ROD, Items::FISHING_ROD());
 		$this->map1to1Item(Ids::FLINT, Items::FLINT());
 		$this->map1to1Item(Ids::FLINT_AND_STEEL, Items::FLINT_AND_STEEL());
@@ -461,6 +463,14 @@ final class ItemSerializerDeserializerRegistrar{
 				$item->setColor(DyeColorIdMap::getInstance()->fromInvertedId($meta) ?? throw new ItemTypeDeserializeException("Unknown banner meta $meta"));
 			},
 			fn(Banner $item) => DyeColorIdMap::getInstance()->toInvertedId($item->getColor())
+		);
+		$this->map1to1ItemWithMeta(
+			Ids::FIREWORK_STAR,
+			Items::FIREWORK_STAR(),
+			function(FireworkStar $item, int $meta) : void{
+				$item->getExplosion()->setColor(DyeColorIdMap::getInstance()->fromInvertedId($meta) ?? throw new ItemTypeDeserializeException("Unknown firework star meta $meta"));
+			},
+			fn(FireworkStar $item) => DyeColorIdMap::getInstance()->toInvertedId($item->getExplosion()->getColor())
 		);
 		$this->map1to1ItemWithMeta(
 			Ids::POTION,
