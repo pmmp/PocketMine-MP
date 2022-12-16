@@ -357,7 +357,7 @@ final class VanillaItems{
 		self::register("brick", new Item(new IID(Ids::BRICK), "Brick"));
 		self::register("bucket", new Bucket(new IID(Ids::BUCKET), "Bucket"));
 		self::register("carrot", new Carrot(new IID(Ids::CARROT), "Carrot"));
-		self::register("chain", new Chain(new IID(Ids::CHAIN)), "Chain");
+		self::register("chain", new Chain(new IID(Ids::CHAIN), "Chain"));
 		self::register("charcoal", new Coal(new IID(Ids::CHARCOAL), "Charcoal"));
 		self::register("chemical_aluminium_oxide", new Item(new IID(Ids::CHEMICAL_ALUMINIUM_OXIDE), "Aluminium Oxide"));
 		self::register("chemical_ammonia", new Item(new IID(Ids::CHEMICAL_AMMONIA), "Ammonia"));
