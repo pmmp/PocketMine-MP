@@ -25,12 +25,12 @@ namespace pocketmine\entity\object;
 
 use pocketmine\entity\animation\FireworkParticlesAnimation;
 use pocketmine\entity\Entity;
-use pocketmine\entity\Living;
 use pocketmine\entity\EntitySizeInfo;
+use pocketmine\entity\Living;
 use pocketmine\entity\Location;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\item\Fireworks;
+use pocketmine\item\FireworkRocket as FireworkItem;
 use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
@@ -39,6 +39,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\world\sound\FireworkLaunchSound;
 use pocketmine\world\sound\FireworkTwinkleSound;
+use function count;
 use function sqrt;
 
 class FireworkRocket extends Entity{
@@ -48,9 +49,9 @@ class FireworkRocket extends Entity{
 	/* Maximum number of ticks this will live for. */
 	protected int $lifeTicks;
 
-	protected Fireworks $item;
+	protected FireworkItem $item;
 
-	public function __construct(Location $location, int $lifeTicks, Fireworks $item, ?CompoundTag $nbt = null){
+	public function __construct(Location $location, int $lifeTicks, FireworkItem $item, ?CompoundTag $nbt = null){
 		if ($lifeTicks < 0) {
 			throw new \InvalidArgumentException("Life ticks cannot be negative");
 		}
@@ -83,11 +84,11 @@ class FireworkRocket extends Entity{
 		$this->lifeTicks = $lifeTicks;
 	}
 
-	public function getItem() : Fireworks{
+	public function getItem() : FireworkItem{
 		return clone $this->item;
 	}
 
-	public function setItem(Fireworks $item) : void{
+	public function setItem(FireworkItem $item) : void{
 		$this->item = $item;
 	}
 

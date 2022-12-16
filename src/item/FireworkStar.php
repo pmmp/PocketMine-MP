@@ -32,19 +32,19 @@ class FireworkStar extends Item{
 	protected const TAG_EXPLOSION = "FireworksItem"; //TAG_Compound
 	protected const TAG_COLOR = "customColor"; //TAG_Int
 
-	protected FireworksExplosion $explosion;
+	protected FireworkRocketExplosion $explosion;
 
 	public function __construct(ItemIdentifier $identifier, string $name){
 		parent::__construct($identifier, $name);
 
-		$this->explosion = new FireworksExplosion(FireworksType::SMALL_SPHERE(), DyeColor::BLACK(), null, false, false);
+		$this->explosion = new FireworkRocketExplosion(FireworkRocketType::SMALL_SPHERE(), DyeColor::BLACK(), null, false, false);
 	}
 
-	public function getExplosion() : FireworksExplosion{
+	public function getExplosion() : FireworkRocketExplosion{
 		return $this->explosion;
 	}
 
-	public function setExplosion(FireworksExplosion $explosion) : void{
+	public function setExplosion(FireworkRocketExplosion $explosion) : void{
 		$this->explosion = $explosion;
 	}
 
@@ -55,7 +55,7 @@ class FireworkStar extends Item{
 		if (!$explosionTag instanceof CompoundTag) {
 			throw new SavedDataLoadingException("Missing explosion data");
 		}
-		$this->explosion = FireworksExplosion::fromCompoundTag($explosionTag);
+		$this->explosion = FireworkRocketExplosion::fromCompoundTag($explosionTag);
 	}
 
 	protected function serializeCompoundTag(CompoundTag $tag) : void{
