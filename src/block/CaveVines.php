@@ -99,7 +99,7 @@ class CaveVines extends Flowable{
 	}
 
 	private function canBeSupportedBy(Block $block) : bool{
-		return $block->getSupportType(Facing::DOWN)->hasCenterSupport() || $block->isSameType($this);
+		return $block->getSupportType(Facing::DOWN)->equals(SupportType::FULL()) || $block->isSameType($this);
 	}
 
 	public function onNearbyBlockChange() : void{
@@ -109,7 +109,7 @@ class CaveVines extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy($blockReplace->getSide(Facing::UP))){
+		if(!$this->canBeSupportedBy($blockReplace->getSide(Facing::UP)) || $face !== Facing::DOWN){
 			return false;
 		}
 		$this->age = mt_rand(0, self::MAX_AGE);
