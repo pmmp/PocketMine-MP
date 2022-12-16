@@ -1474,7 +1474,7 @@ final class VanillaBlocks{
 
 		self::register("twisting_vines", new NetherVines(new BID(Ids::TWISTING_VINES), "Twisting Vines", new Info(BreakInfo::instant()), Facing::UP));
 		self::register("weeping_vines", new NetherVines(new BID(Ids::WEEPING_VINES), "Weeping Vines", new Info(BreakInfo::instant()), Facing::DOWN));
-		
+
 		self::register("chain", new Chain(new BID(Ids::CHAIN), "Chain", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD()))));
 	}
 
