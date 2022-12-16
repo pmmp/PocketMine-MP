@@ -84,7 +84,7 @@ class FireworkRocket extends Item{
 			Facing::SOUTH => $position->add(0, 0, $correction),
 			Facing::WEST => $position->add(-$correction, 0, 0),
 			Facing::EAST => $position->add($correction, 0, 0),
-			default => throw new AssumptionFailedError("Invalid facing $facing")
+			default => throw new AssumptionFailedError("Invalid facing $face")
 		};
 
 		$randomDuration = (($this->flightDuration + 1) * 10) + mt_rand(0, 12);
@@ -105,7 +105,7 @@ class FireworkRocket extends Item{
 			throw new SavedDataLoadingException("Missing firework data");
 		}
 
-		$this->flightDuration = $fireworksTag->getByte(self::TAG_FLIGH_DURATION, 1);
+		$this->setFlightDuration($fireworksTag->getByte(self::TAG_FLIGH_DURATION, 1));
 
 		if(($explosions = $fireworksTag->getListTag(self::TAG_EXPLOSIONS)) instanceof ListTag){
 			/** @var CompoundTag $explosion */
