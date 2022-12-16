@@ -118,7 +118,7 @@ class CaveVines extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->type->hasBerries()){
-			$this->position->getWorld()->dropItem($this->position, VanillaItems::GLOW_BERRIES());
+			$this->position->getWorld()->dropItem($this->position, $this->asItem());
 			$this->position->getWorld()->addSound($this->position, new GlowBerriesPickSound());
 
 			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::CAVE_VINES()->setAge(mt_rand(0, self::MAX_AGE)));
@@ -188,18 +188,14 @@ class CaveVines extends Flowable{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		return $this->type->hasBerries() ? [VanillaItems::GLOW_BERRIES()] : [];
+		return $this->type->hasBerries() ? [$this->asItem()] : [];
 	}
 
 	public function isAffectedBySilkTouch() : bool{
 		return true;
 	}
 
-	public function getSilkTouchDrops(Item $item) : array{
-		return [VanillaItems::GLOW_BERRIES()];
-	}
-
-	public function getPickedItem(bool $addUserData = false) : Item{
+	public function asItem() : Item{
 		return VanillaItems::GLOW_BERRIES();
 	}
 
