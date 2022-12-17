@@ -125,7 +125,7 @@ class CaveVines extends Flowable{
 			return true;
 		}
 		if($item instanceof Fertilizer){
-			$ev = new BlockGrowEvent($this, $this->setType(!$this->getSide(Facing::DOWN)->isSameType($this) ?
+			$ev = new BlockGrowEvent($this, (clone $this)->setType(!$this->getSide(Facing::DOWN)->isSameType($this) ?
 				CaveVinesType::HEAD_WITH_BERRIES() : CaveVinesType::BODY_WITH_BERRIES()
 			));
 			$ev->call();
