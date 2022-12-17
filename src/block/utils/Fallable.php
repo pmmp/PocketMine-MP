@@ -42,8 +42,8 @@ interface Fallable{
 	 */
 	public function onHitGround(FallingBlock $blockEntity) : bool;
 
-  /**
+	/**
 	 * Returns the sound that will be played when FallingBlock hits the ground.
 	 */
-	public function getFallSound() : ?Sound;
+	public function getLandSound() : ?Sound;
 }

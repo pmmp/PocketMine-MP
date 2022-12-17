@@ -112,7 +112,7 @@ class Anvil extends Transparent implements Fallable{
 		return true;
 	}
 
-	public function getFallSound() : ?Sound{
+	public function getLandSound() : ?Sound{
 		return new AnvilFallSound();
 	}
 }

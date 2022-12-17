@@ -64,7 +64,7 @@ trait FallableTrait{
 		return true;
 	}
 
-	public function getFallSound() : ?Sound{
+	public function getLandSound() : ?Sound{
 		return null;
 	}
 }
