@@ -467,7 +467,8 @@ abstract class Living extends Entity{
 			if($source->getModifier(EntityDamageEvent::MODIFIER_HARD_HELMET) < 0){
 				$helmet = $this->armorInventory->getHelmet();
 				if($helmet instanceof Armor){
-					$this->damageItem($helmet, (int) $source->getFinalDamage());
+					$finalDamage = $source->getFinalDamage();
+					$this->damageItem($helmet, (int) ($finalDamage * 4 + lcg_value() * $finalDamage * 2));
 					$this->armorInventory->setHelmet($helmet);
 				}
 			}
