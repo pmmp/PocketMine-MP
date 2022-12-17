@@ -37,6 +37,8 @@ use function realpath;
 use function trim;
 use function zlib_decode;
 use const FILE_IGNORE_NEW_LINES;
+use const JSON_PRETTY_PRINT;
+use const JSON_UNESCAPED_SLASHES;
 use const PHP_EOL;
 use const STDERR;
 

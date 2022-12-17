@@ -60,6 +60,10 @@ trait FallableTrait{
 		return null;
 	}
 
+	public function onHitGround(FallingBlock $blockEntity) : bool{
+		return true;
+	}
+
 	public function getFallSound() : ?Sound{
 		return null;
 	}

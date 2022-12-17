@@ -35,7 +35,7 @@ interface AdvancedNetworkInterface extends NetworkInterface{
 	/**
 	 * Prevents packets received from the IP address getting processed for the given timeout.
 	 *
-	 * @param int    $timeout Seconds
+	 * @param int $timeout Seconds
 	 */
 	public function blockAddress(string $address, int $timeout = 300) : void;
 

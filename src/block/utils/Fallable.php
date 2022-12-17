@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
+use pocketmine\entity\object\FallingBlock;
 use pocketmine\world\sound\Sound;
 
 interface Fallable{
@@ -36,6 +37,12 @@ interface Fallable{
 	public function tickFalling() : ?Block;
 
 	/**
+	 * Called when FallingBlock hits the ground.
+	 * Returns whether the block should be placed.
+	 */
+	public function onHitGround(FallingBlock $blockEntity) : bool;
+
+  /**
 	 * Returns the sound that will be played when FallingBlock hits the ground.
 	 */
 	public function getFallSound() : ?Sound;
