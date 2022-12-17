@@ -76,20 +76,25 @@ class FireworkRocket extends Entity{
 
 	/**
 	 * Sets maximum number of ticks this will live for.
+	 *
+	 * @return $this
 	 */
-	public function setLifeTicks(int $lifeTicks) : void{
+	public function setLifeTicks(int $lifeTicks) : self{
 		if ($lifeTicks < 0) {
 			throw new \InvalidArgumentException("Life ticks cannot be negative");
 		}
 		$this->lifeTicks = $lifeTicks;
+		return $this;
 	}
 
 	public function getItem() : FireworkItem{
 		return clone $this->item;
 	}
 
-	public function setItem(FireworkItem $item) : void{
-		$this->item = $item;
+	/** @return $this */
+	public function setItem(FireworkItem $item) : self{
+		$this->item = clone $item;
+		return $this;
 	}
 
 	/**

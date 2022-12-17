@@ -104,8 +104,10 @@ class FireworkRocketExplosion{
 		return $this->type;
 	}
 
-	public function setType(FireworkRocketType $type) : void{
+	/** @return $this */
+	public function setType(FireworkRocketType $type) : self{
 		$this->type = $type;
+		return $this;
 	}
 
 	/**
@@ -117,13 +119,17 @@ class FireworkRocketExplosion{
 
 	/**
 	 * @param DyeColor[] $colors
+	 *
+	 * @return $this
 	 */
-	public function setColors(array $colors) : void{
+	public function setColors(array $colors) : self{
 		if(count($colors) === 0){
 			throw new \InvalidArgumentException("Colors list cannot be empty");
 		}
 		Utils::validateArrayValueType($colors, $this->colorsValidator);
 		$this->colors = array_values($colors);
+
+		return $this;
 	}
 
 	/**
@@ -154,26 +160,33 @@ class FireworkRocketExplosion{
 
 	/**
 	 * @param DyeColor[] $colors
+	 *
+	 * @return $this
 	 */
-	public function setFadeColors(array $colors) : void{
+	public function setFadeColors(array $colors) : self{
 		Utils::validateArrayValueType($colors, $this->colorsValidator);
 		$this->fadeColors = array_values($colors);
+		return $this;
 	}
 
 	public function willTwinkle() : bool{
 		return $this->twinkle;
 	}
 
-	public function setTwinkle(bool $twinkle) : void{
+	/** @return $this */
+	public function setTwinkle(bool $twinkle) : self{
 		$this->twinkle = $twinkle;
+		return $this;
 	}
 
 	public function getTrail() : bool{
 		return $this->trail;
 	}
 
-	public function setTrail(bool $trail) : void{
+	/** @return $this */
+	public function setTrail(bool $trail) : self{
 		$this->trail = $trail;
+		return $this;
 	}
 
 	public function toCompoundTag() : CompoundTag{

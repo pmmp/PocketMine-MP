@@ -54,7 +54,6 @@ class FireworkStar extends Item{
 		return $this;
 	}
 
-	/** @return $this */
 	public function getColor() : Color{
 		return $this->customColor ?? $this->explosion->getColorMix();
 	}
@@ -64,7 +63,7 @@ class FireworkStar extends Item{
 	}
 
 	public function getCustomColor() : ?Color{
-		$this->customColor;
+		return $this->customColor;
 	}
 
 	/** @return $this */
