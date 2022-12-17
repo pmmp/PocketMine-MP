@@ -36,7 +36,7 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	/**
 	 * @param float[] $modifiers
 	 */
-	public function __construct(Entity $damager, Entity $entity, int $cause, float $damage, array $modifiers = [], private float $knockBack = 0.4){
+	public function __construct(Entity $damager, Entity $entity, int $cause, float $damage, array $modifiers = [], private float $knockBack = 0.4, private float $verticalLimit = 0.4){
 		$this->damagerEntityId = $damager->getId();
 		parent::__construct($entity, $cause, $damage, $modifiers);
 		$this->addAttackerModifiers($damager);
@@ -68,5 +68,13 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 
 	public function setKnockBack(float $knockBack) : void{
 		$this->knockBack = $knockBack;
+	}
+
+	public function setVerticalLimit(float $verticalLimit) : void{
+		$this->verticalLimit = $verticalLimit;
+	}
+
+	public function getVerticalLimit() : float{
+		return $this->verticalLimit;
 	}
 }
