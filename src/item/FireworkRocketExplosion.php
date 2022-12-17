@@ -78,9 +78,7 @@ class FireworkRocketExplosion{
 		return $colors;
 	}
 
-	/**
-	 * @var \Closure(DyeColor) : void
-	 */
+	/** @var \Closure(DyeColor) : void */
 	protected \Closure $colorsValidator;
 
 	/**
