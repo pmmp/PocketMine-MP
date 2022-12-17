@@ -21,25 +21,21 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\item;
 
-use pocketmine\item\Item;
-use pocketmine\item\ItemTypeIds;
-use pocketmine\lang\KnownTranslationKeys;
+use pocketmine\entity\Entity;
+use pocketmine\entity\Nameable;
+use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
-/**
- * This trait implements most methods in the {@link Nameable} interface. It should only be used by Entities.
- */
-trait NameableTrait{
+class NameTag extends Item{
 
-	/**
-	 * @see Entity::getInteractiveTag()
-	 */
-	public function getInteractiveTag(Player $player, Item $item) : ?string{
-		if($item->getTypeId() === ItemTypeIds::NAME_TAG && $item->hasCustomName()){
-			return KnownTranslationKeys::ACTION_INTERACT_NAME;
+	public function onInteractEntity(Player $player, Entity $entity, Vector3 $clickVector) : bool{
+		if($entity instanceof Nameable && $this->hasCustomName()){
+			$entity->setNameTag($this->getCustomName());
+			$this->pop();
+			return true;
 		}
-		return parent::getInteractiveTag($player, $item);
+		return false;
 	}
 }
