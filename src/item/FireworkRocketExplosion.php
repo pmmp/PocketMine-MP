@@ -24,44 +24,81 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\utils\DyeColor;
+use pocketmine\color\Color;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\bedrock\FireworkRocketTypeIdMap;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\Binary;
+use pocketmine\utils\Utils;
+use function array_key_first;
+use function array_values;
+use function count;
+use function strlen;
 
 class FireworkRocketExplosion{
 
 	protected const TAG_TYPE = "FireworkType"; //TAG_Byte
-	protected const TAG_COLOR = "FireworkColor"; //TAG_ByteArray
-	protected const TAG_FADE = "FireworkFade"; //TAG_ByteArray
+	protected const TAG_COLORS = "FireworkColor"; //TAG_ByteArray
+	protected const TAG_FADE_COLORS = "FireworkFade"; //TAG_ByteArray
 	protected const TAG_TWINKLE = "FireworkFlicker"; //TAG_Byte
 	protected const TAG_TRAIL = "FireworkTrail"; //TAG_Byte
 
 	public static function fromCompoundTag(CompoundTag $tag) : self{
-		$dyeColorIdMap = DyeColorIdMap::getInstance();
-
-		$fade = null;
-		if (($fadeTag = $tag->getByteArray(self::TAG_FADE)) !== "") {
-			$fade = $dyeColorIdMap->fromInvertedId(Binary::readByte($fadeTag)) ?? throw new SavedDataLoadingException("Invalid fade color");
+		$colors = self::decodeColors($tag->getByteArray(self::TAG_COLORS));
+		if(count($colors) === 0){
+			throw new SavedDataLoadingException("Colors list cannot be empty");
 		}
 
 		return new self(
 			FireworkRocketTypeIdMap::getInstance()->fromId($tag->getByte(self::TAG_TYPE)) ?? throw new SavedDataLoadingException("Invalid firework type"),
-			$dyeColorIdMap->fromInvertedId(Binary::readByte($tag->getByteArray(self::TAG_COLOR))) ?? throw new SavedDataLoadingException("Invalid dye color"),
-			$fade,
+			$colors,
+			self::decodeColors($tag->getByteArray(self::TAG_FADE_COLORS)),
 			$tag->getByte(self::TAG_TWINKLE, 0) !== 0,
 			$tag->getByte(self::TAG_TRAIL, 0) !== 0
 		);
 	}
 
+	/**
+	 * @return DyeColor[]
+	 */
+	protected static function decodeColors(string $colorsBytes) : array{
+		$colors = [];
+
+		$dyeColorIdMap = DyeColorIdMap::getInstance();
+		for($i=0; $i < strlen($colorsBytes); $i++){ 
+			$color = $dyeColorIdMap->fromInvertedId(Binary::readByte($colorsBytes[$i]));
+			if($color !== null){
+				$colors[] = $color;
+			}else{
+				//TODO: should throw an exception?
+			}
+		}
+
+		return $colors;
+	}
+
+	protected \Closure $colorsValidator;
+	
+	/**
+	 * @param DyeColor[] $colors
+	 * @param DyeColor[] $fadeColors
+	 */
 	public function __construct(
 		protected FireworkRocketType $type,
-		protected DyeColor $color,
-		protected ?DyeColor $fade,
+		protected array $colors,
+		protected array $fadeColors,
 		protected bool $twinkle,
 		protected bool $trail
-	){}
+	){
+		$this->colorsValidator = function(DyeColor $_) : void{};
+
+		if(count($colors) === 0){
+			throw new \InvalidArgumentException("Colors list cannot be empty");
+		}
+		$this->setColors($colors);
+		$this->setFadeColors($fadeColors);
+	}
 
 	public function getType() : FireworkRocketType{
 		return $this->type;
@@ -71,20 +108,56 @@ class FireworkRocketExplosion{
 		$this->type = $type;
 	}
 
-	public function getColor() : DyeColor{
-		return $this->color;
+	/**
+	 * @return DyeColor[]
+	 */
+	public function getColors() : array{
+		return $this->colors;
 	}
 
-	public function setColor(DyeColor $color) : void{
-		$this->color = $color;
+	/**
+	 * @param DyeColor[] $colors
+	 */
+	public function setColors(array $colors) : void{
+		if(count($colors) === 0){
+			throw new \InvalidArgumentException("Colors list cannot be empty");
+		}
+		Utils::validateArrayValueType($colors, $this->colorsValidator);
+		$this->colors = array_values($colors);
 	}
 
-	public function getFade() : ?DyeColor{
-		return $this->fade;
+	/**
+	 * Returns the main color, this defines stuff like meta.
+	 */
+	public function getMainColor() : DyeColor{
+		return $this->colors[array_key_first($this->colors)];
 	}
 
-	public function setFade(?DyeColor $fade) : void{
-		$this->fade = $fade;
+	/**
+	 * Returns a the mix of all colors.
+	 */
+	public function getColorMix() : Color{
+		/** @var Color[] $colors */
+		$colors = [];
+		foreach ($this->colors as $dyeColor) {
+			$colors[] = $dyeColor->getRgbValue();
+		}
+		return Color::mix(...$colors);
+	}
+
+	/**
+	 * @return DyeColor[]
+	 */
+	public function getFadeColors() : array{
+		return $this->fadeColors;
+	}
+
+	/**
+	 * @param DyeColor[] $colors
+	 */
+	public function setFadeColors(array $colors) : void{
+		Utils::validateArrayValueType($colors, $this->colorsValidator);
+		$this->fadeColors = array_values($colors);
 	}
 
 	public function willTwinkle() : bool{
@@ -108,10 +181,24 @@ class FireworkRocketExplosion{
 
 		return CompoundTag::create()
 			->setByte(self::TAG_TYPE, FireworkRocketTypeIdMap::getInstance()->toId($this->type))
-			->setByteArray(self::TAG_COLOR, Binary::writeByte($dyeColorIdMap->toInvertedId($this->color)))
-			->setByteArray(self::TAG_FADE, $this->fade === null ? "" : Binary::writeByte($dyeColorIdMap->toInvertedId($this->fade)))
+			->setByteArray(self::TAG_COLORS, $this->encodeColors($this->colors))
+			->setByteArray(self::TAG_FADE_COLORS, $this->encodeColors($this->fadeColors))
 			->setByte(self::TAG_TWINKLE, $this->twinkle ? 1 : 0)
 			->setByte(self::TAG_TRAIL, $this->trail ? 1 : 0)
 		;
+	}
+
+	/**
+	 * @param DyeColor[] $colors
+	 */
+	protected function encodeColors(array $colors) : string{
+		$colorsBytes = "";
+
+		$dyeColorIdMap = DyeColorIdMap::getInstance();
+		foreach($colors as $color){ 
+			$colorsBytes .= Binary::writeByte($dyeColorIdMap->toInvertedId($color));
+		}
+
+		return $colorsBytes;
 	}
 }
