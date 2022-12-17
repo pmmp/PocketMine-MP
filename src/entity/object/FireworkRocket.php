@@ -170,6 +170,7 @@ class FireworkRocket extends Entity{
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
 		parent::syncNetworkData($properties);
 
+		//TODO: Use the appropriate constant
 		$properties->setCompoundTag(EntityMetadataProperties::MINECART_DISPLAY_BLOCK, new CacheableNbt($this->item->getNamedTag()));
 	}
 }

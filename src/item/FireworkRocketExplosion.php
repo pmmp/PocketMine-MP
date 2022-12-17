@@ -66,7 +66,7 @@ class FireworkRocketExplosion{
 		$colors = [];
 
 		$dyeColorIdMap = DyeColorIdMap::getInstance();
-		for($i=0; $i < strlen($colorsBytes); $i++){ 
+		for($i = 0; $i < strlen($colorsBytes); $i++){
 			$color = $dyeColorIdMap->fromInvertedId(Binary::readByte($colorsBytes[$i]));
 			if($color !== null){
 				$colors[] = $color;
@@ -195,7 +195,7 @@ class FireworkRocketExplosion{
 		$colorsBytes = "";
 
 		$dyeColorIdMap = DyeColorIdMap::getInstance();
-		foreach($colors as $color){ 
+		foreach($colors as $color){
 			$colorsBytes .= Binary::writeByte($dyeColorIdMap->toInvertedId($color));
 		}
 
