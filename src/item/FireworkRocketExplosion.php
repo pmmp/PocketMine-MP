@@ -78,8 +78,11 @@ class FireworkRocketExplosion{
 		return $colors;
 	}
 
+	/**
+	 * @var \Closure(DyeColor) : void
+	 */
 	protected \Closure $colorsValidator;
-	
+
 	/**
 	 * @param DyeColor[] $colors
 	 * @param DyeColor[] $fadeColors
