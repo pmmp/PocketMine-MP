@@ -145,6 +145,13 @@ class FallingBlock extends Entity{
 		return $hasUpdate;
 	}
 
+	protected function onHitGround() : ?float{
+		if($this->block instanceof Fallable && !$this->block->onHitGround($this)){
+			$this->flagForDespawn();
+		}
+		return null;
+	}
+
 	public function getBlock() : Block{
 		return $this->block;
 	}

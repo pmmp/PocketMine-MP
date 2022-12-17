@@ -37,6 +37,7 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\utils\Binary;
 use function assert;
 use function ksort;
+use const SORT_NUMERIC;
 
 final class ItemDataUpgrader{
 	private const TAG_LEGACY_ID = "id"; //TAG_Short (or TAG_String for Java itemstacks)

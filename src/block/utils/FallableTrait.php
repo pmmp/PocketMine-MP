@@ -58,4 +58,8 @@ trait FallableTrait{
 	public function tickFalling() : ?Block{
 		return null;
 	}
+
+	public function onHitGround(FallingBlock $blockEntity) : bool{
+		return true;
+	}
 }

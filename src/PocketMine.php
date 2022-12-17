@@ -39,11 +39,14 @@ namespace pocketmine {
 	use function extension_loaded;
 	use function function_exists;
 	use function getcwd;
+	use function is_dir;
+	use function mkdir;
 	use function phpversion;
 	use function preg_match;
 	use function preg_quote;
 	use function realpath;
 	use function version_compare;
+	use const DIRECTORY_SEPARATOR;
 
 	require_once __DIR__ . '/VersionInfo.php';
 
@@ -273,24 +276,32 @@ JIT_WARNING
 		$pluginPath = getopt_string("plugins") ?? $cwd . DIRECTORY_SEPARATOR . "plugins";
 		Filesystem::addCleanedPath($pluginPath, Filesystem::CLEAN_PATH_PLUGINS_PREFIX);
 
-		if(!@mkdir($dataPath, 0777, true) && (!is_dir($dataPath) || !is_writable($dataPath))){
+		if(!@mkdir($dataPath, 0777, true) && !is_dir($dataPath)){
 			critical_error("Unable to create/access data directory at $dataPath. Check that the target location is accessible by the current user.");
 			exit(1);
 		}
 		//this has to be done after we're sure the data path exists
 		$dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
-		if(!@mkdir($pluginPath, 0777, true) && (!is_dir($pluginPath) || !is_writable($pluginPath))){
-			critical_error("Unable to create plugin directory at $pluginPath. Check that the target location is accessible by the current user.");
-			exit(1);
-		}
-		$pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
 
 		$lockFilePath = Path::join($dataPath, 'server.lock');
-		if(($pid = Filesystem::createLockFile($lockFilePath)) !== null){
+		try{
+			$pid = Filesystem::createLockFile($lockFilePath);
+		}catch(\InvalidArgumentException $e){
+			critical_error($e->getMessage());
+			critical_error("Please ensure that there is enough space on the disk and that the current user has read/write permissions to the selected data directory $dataPath.");
+			exit(1);
+		}
+		if($pid !== null){
 			critical_error("Another " . VersionInfo::NAME . " instance (PID $pid) is already using this folder (" . realpath($dataPath) . ").");
 			critical_error("Please stop the other server first before running a new one.");
 			exit(1);
 		}
+
+		if(!@mkdir($pluginPath, 0777, true) && !is_dir($pluginPath)){
+			critical_error("Unable to create plugin directory at $pluginPath. Check that the target location is accessible by the current user.");
+			exit(1);
+		}
+		$pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
 
 		//Logger has a dependency on timezone
 		Timezone::init();
