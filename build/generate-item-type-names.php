@@ -36,6 +36,8 @@ use function file_get_contents;
 use function fopen;
 use function fwrite;
 use function strtoupper;
+use const SORT_STRING;
+use const STDERR;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 

@@ -150,8 +150,8 @@ final class Process{
 
 	/**
 	 * @param string      $command Command to execute
-	 * @param string|null $stdout Reference parameter to write stdout to
-	 * @param string|null $stderr Reference parameter to write stderr to
+	 * @param string|null $stdout  Reference parameter to write stdout to
+	 * @param string|null $stderr  Reference parameter to write stderr to
 	 * @phpstan-param-out string $stdout
 	 * @phpstan-param-out string $stderr
 	 *

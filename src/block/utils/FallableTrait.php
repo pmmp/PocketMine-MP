@@ -59,6 +59,10 @@ trait FallableTrait{
 		return null;
 	}
 
+	public function onHitGround(FallingBlock $blockEntity) : bool{
+		return true;
+	}
+
 	public function getFallDamagePerBlock() : float{
 		return 0.0;
 	}

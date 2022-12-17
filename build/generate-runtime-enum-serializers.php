@@ -48,6 +48,7 @@ use function lcfirst;
 use function log;
 use function ob_get_clean;
 use function ob_start;
+use const SORT_STRING;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 

@@ -36,6 +36,12 @@ interface Fallable{
 	public function tickFalling() : ?Block;
 
 	/**
+	 * Called when FallingBlock hits the ground.
+	 * Returns whether the block should be placed.
+	 */
+	public function onHitGround(FallingBlock $blockEntity) : bool;
+
+	/**
 	 * Returns the damage caused per fallen block. This is multiplied by the fall distance (and capped according to
 	 * {@link Fallable::getMaxFallDamage()}) to calculate the damage dealt to any entities who intersect with the block
 	 * when it hits the ground.

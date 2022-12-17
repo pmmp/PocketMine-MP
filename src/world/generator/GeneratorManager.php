@@ -58,10 +58,10 @@ final class GeneratorManager{
 	}
 
 	/**
-	 * @param string                          $class Fully qualified name of class that extends \pocketmine\world\generator\Generator
-	 * @param string                          $name Alias for this generator type that can be written in configs
-	 * @param \Closure                        $presetValidator Callback to validate generator options for new worlds
-	 * @param bool                            $overwrite Whether to force overwriting any existing registered generator with the same name
+	 * @param string   $class           Fully qualified name of class that extends \pocketmine\world\generator\Generator
+	 * @param string   $name            Alias for this generator type that can be written in configs
+	 * @param \Closure $presetValidator Callback to validate generator options for new worlds
+	 * @param bool     $overwrite       Whether to force overwriting any existing registered generator with the same name
 	 *
 	 * @phpstan-param \Closure(string) : ?InvalidGeneratorOptionsException $presetValidator
 	 *

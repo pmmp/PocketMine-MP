@@ -569,6 +569,16 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
+	 * Called when a player uses the item to interact with entity, for example by using a name tag.
+	 *
+	 * @param Vector3 $clickVector The exact position of the click (absolute coordinates)
+	 * @return bool whether some action took place
+	 */
+	public function onInteractEntity(Player $player, Entity $entity, Vector3 $clickVector) : bool{
+		return false;
+	}
+
+	/**
 	 * Returns the number of ticks a player must wait before activating this item again.
 	 */
 	public function getCooldownTicks() : int{
@@ -578,7 +588,7 @@ class Item implements \JsonSerializable{
 	/**
 	 * Compares an Item to this Item and check if they match.
 	 *
-	 * @param bool $checkDamage @deprecated
+	 * @param bool $checkDamage   @deprecated
 	 * @param bool $checkCompound Whether to verify that the items' NBT match.
 	 */
 	final public function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{

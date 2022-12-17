@@ -161,8 +161,11 @@ class FallingBlock extends Entity{
 					}
 				}
 			}
+			if(!$this->block->onHitGround($this)){
+				$this->flagForDespawn();
+			}
 		}
-		return parent::onHitGround();
+		return null;
 	}
 
 	public function getBlock() : Block{
