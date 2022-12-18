@@ -60,6 +60,9 @@ class Item implements \JsonSerializable{
 	use ItemEnchantmentHandlingTrait;
 
 	public const TAG_ENCH = "ench";
+	private const TAG_ENCH_ID = "id"; //TAG_Short
+	private const TAG_ENCH_LVL = "lvl"; //TAG_Short
+
 	public const TAG_DISPLAY = "display";
 	public const TAG_BLOCK_ENTITY_TAG = "BlockEntityTag";
 
@@ -67,6 +70,9 @@ class Item implements \JsonSerializable{
 	public const TAG_DISPLAY_LORE = "Lore";
 
 	public const TAG_KEEP_ON_DEATH = "minecraft:keep_on_death";
+
+	private const TAG_CAN_PLACE_ON = "CanPlaceOn"; //TAG_List<TAG_String>
+	private const TAG_CAN_DESTROY = "CanDestroy"; //TAG_List<TAG_String>
 
 	private CompoundTag $nbt;
 
@@ -296,8 +302,8 @@ class Item implements \JsonSerializable{
 		if($enchantments !== null && $enchantments->getTagType() === NBT::TAG_Compound){
 			/** @var CompoundTag $enchantment */
 			foreach($enchantments as $enchantment){
-				$magicNumber = $enchantment->getShort("id", -1);
-				$level = $enchantment->getShort("lvl", 0);
+				$magicNumber = $enchantment->getShort(self::TAG_ENCH_ID, -1);
+				$level = $enchantment->getShort(self::TAG_ENCH_LVL, 0);
 				if($level <= 0){
 					continue;
 				}
@@ -311,7 +317,7 @@ class Item implements \JsonSerializable{
 		$this->blockEntityTag = $tag->getCompoundTag(self::TAG_BLOCK_ENTITY_TAG);
 
 		$this->canPlaceOn = [];
-		$canPlaceOn = $tag->getListTag("CanPlaceOn");
+		$canPlaceOn = $tag->getListTag(self::TAG_CAN_PLACE_ON);
 		if($canPlaceOn !== null && $canPlaceOn->getTagType() === NBT::TAG_String){
 			/** @var StringTag $entry */
 			foreach($canPlaceOn as $entry){
@@ -319,7 +325,7 @@ class Item implements \JsonSerializable{
 			}
 		}
 		$this->canDestroy = [];
-		$canDestroy = $tag->getListTag("CanDestroy");
+		$canDestroy = $tag->getListTag(self::TAG_CAN_DESTROY);
 		if($canDestroy !== null && $canDestroy->getTagType() === NBT::TAG_String){
 			/** @var StringTag $entry */
 			foreach($canDestroy as $entry){
@@ -354,8 +360,8 @@ class Item implements \JsonSerializable{
 			$ench = new ListTag();
 			foreach($this->getEnchantments() as $enchantmentInstance){
 				$ench->push(CompoundTag::create()
-					->setShort("id", EnchantmentIdMap::getInstance()->toId($enchantmentInstance->getType()))
-					->setShort("lvl", $enchantmentInstance->getLevel())
+					->setShort(self::TAG_ENCH_ID, EnchantmentIdMap::getInstance()->toId($enchantmentInstance->getType()))
+					->setShort(self::TAG_ENCH_LVL, $enchantmentInstance->getLevel())
 				);
 			}
 			$tag->setTag(self::TAG_ENCH, $ench);
@@ -372,18 +378,18 @@ class Item implements \JsonSerializable{
 			foreach($this->canPlaceOn as $item){
 				$canPlaceOn->push(new StringTag($item));
 			}
-			$tag->setTag("CanPlaceOn", $canPlaceOn);
+			$tag->setTag(self::TAG_CAN_PLACE_ON, $canPlaceOn);
 		}else{
-			$tag->removeTag("CanPlaceOn");
+			$tag->removeTag(self::TAG_CAN_PLACE_ON);
 		}
 		if(count($this->canDestroy) > 0){
 			$canDestroy = new ListTag();
 			foreach($this->canDestroy as $item){
 				$canDestroy->push(new StringTag($item));
 			}
-			$tag->setTag("CanDestroy", $canDestroy);
+			$tag->setTag(self::TAG_CAN_DESTROY, $canDestroy);
 		}else{
-			$tag->removeTag("CanDestroy");
+			$tag->removeTag(self::TAG_CAN_DESTROY);
 		}
 
 		if($this->keepOnDeath){
