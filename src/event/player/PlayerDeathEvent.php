@@ -107,7 +107,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 				if($deathCause instanceof EntityDamageByChildEntityEvent){
 					$e = $deathCause->getDamager();
 					if($e instanceof Living){
-						$child = $event->getChild();
+						$child = $deathCause->getChild();
 						if($child instanceof Trident){
 							return KnownTranslationFactory::death_attack_trident($name, $e->getDisplayName());
 						}else{
