@@ -1254,7 +1254,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("enchanting_bottle", fn() => Items::EXPERIENCE_BOTTLE());
 		$result->register("ender_pearl", fn() => Items::ENDER_PEARL());
 		$result->register("experience_bottle", fn() => Items::EXPERIENCE_BOTTLE());
-		$result->register('eye_drops', fn() => Items::MEDICINE()->setType(MedicineType::EYE_DROPS()));
+		$result->register("eye_drops", fn() => Items::MEDICINE()->setType(MedicineType::EYE_DROPS()));
 		$result->register("feather", fn() => Items::FEATHER());
 		$result->register("fermented_spider_eye", fn() => Items::FERMENTED_SPIDER_EYE());
 		$result->register("fire_charge", fn() => Items::FIRE_CHARGE());
