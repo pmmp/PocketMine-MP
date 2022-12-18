@@ -66,6 +66,8 @@ class Item implements \JsonSerializable{
 	public const TAG_DISPLAY_NAME = "Name";
 	public const TAG_DISPLAY_LORE = "Lore";
 
+	public const TAG_KEEP_ON_DEATH = "minecraft:keep_on_death";
+
 	private CompoundTag $nbt;
 
 	protected int $count = 1;
@@ -88,6 +90,8 @@ class Item implements \JsonSerializable{
 	 * @phpstan-var array<string, string>
 	 */
 	protected array $canDestroy = [];
+
+	protected bool $keepOnDeath = false;
 
 	/**
 	 * Constructs a new Item type. This constructor should ONLY be used when constructing a new item TYPE to register
@@ -214,6 +218,17 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
+	 * Returns whether players will retain this item on death. If a non-player dies it will be excluded from the drops.
+	 */
+	public function keepOnDeath() : bool{
+		return $this->keepOnDeath;
+	}
+
+	public function setKeepOnDeath(bool $keepOnDeath) : void{
+		$this->keepOnDeath = $keepOnDeath;
+	}
+
+	/**
 	 * Returns whether this Item has a non-empty NBT.
 	 */
 	public function hasNamedTag() : bool{
@@ -311,6 +326,8 @@ class Item implements \JsonSerializable{
 				$this->canDestroy[$entry->getValue()] = $entry->getValue();
 			}
 		}
+
+		$this->keepOnDeath = $tag->getByte(self::TAG_KEEP_ON_DEATH, 0) !== 0;
 	}
 
 	protected function serializeCompoundTag(CompoundTag $tag) : void{
@@ -367,6 +384,12 @@ class Item implements \JsonSerializable{
 			$tag->setTag("CanDestroy", $canDestroy);
 		}else{
 			$tag->removeTag("CanDestroy");
+		}
+
+		if($this->keepOnDeath){
+			$tag->setByte(self::TAG_KEEP_ON_DEATH, 1);
+		}else{
+			$tag->removeTag(self::TAG_KEEP_ON_DEATH);
 		}
 	}
 

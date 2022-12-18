@@ -378,7 +378,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			array_values($this->inventory->getContents()),
 			array_values($this->armorInventory->getContents()),
 			array_values($this->offHandInventory->getContents()),
-		), function(Item $item) : bool{ return !$item->hasEnchantment(VanillaEnchantments::VANISHING()); });
+		), function(Item $item) : bool{ return !$item->hasEnchantment(VanillaEnchantments::VANISHING()) && !$item->keepOnDeath(); });
 	}
 
 	public function saveNBT() : CompoundTag{
