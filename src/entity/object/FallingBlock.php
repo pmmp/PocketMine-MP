@@ -42,6 +42,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
+use pocketmine\world\sound\BlockBreakSound;
 use function abs;
 
 class FallingBlock extends Entity{
@@ -128,14 +129,20 @@ class FallingBlock extends Entity{
 			if($this->onGround || $blockTarget !== null){
 				$this->flagForDespawn();
 
+				$blockResult = $blockTarget ?? $this->block;
 				$block = $world->getBlock($pos);
 				if(!$block->canBeReplaced() || !$world->isInWorld($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ()) || ($this->onGround && abs($this->location->y - $this->location->getFloorY()) > 0.001)){
 					$world->dropItem($this->location, $this->block->asItem());
+					$world->addSound($pos->add(0.5, 0.5, 0.5), new BlockBreakSound($blockResult));
 				}else{
-					$ev = new EntityBlockChangeEvent($this, $block, $blockTarget ?? $this->block);
+					$ev = new EntityBlockChangeEvent($this, $block, $blockResult);
 					$ev->call();
 					if(!$ev->isCancelled()){
-						$world->setBlock($pos, $ev->getTo());
+						$b = $ev->getTo();
+						$world->setBlock($pos, $b);
+						if($this->onGround && $b instanceof Fallable && ($sound = $b->getLandSound()) !== null){
+							$world->addSound($pos->add(0.5, 0.5, 0.5), $sound);
+						}
 					}
 				}
 				$hasUpdate = true;
