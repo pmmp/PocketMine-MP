@@ -117,7 +117,7 @@ class PrimedTNT extends Entity implements Explosive{
 		$ev->call();
 		if(!$ev->isCancelled()){
 			//TODO: deal with underwater TNT (underwater TNT treats water as if it has a blast resistance of 0)
-			$explosion = new Explosion(Position::fromObject($this->location->add(0, $this->size->getHeight() / 2, 0), $this->getWorld()), $ev->getForce(), $this);
+			$explosion = new Explosion(Position::fromObject($this->location->add(0, $this->size->getHeight() / 2, 0), $this->getWorld()), $ev->getRadius(), $this);
 			if($ev->isBlockBreaking()){
 				$explosion->explodeA();
 			}

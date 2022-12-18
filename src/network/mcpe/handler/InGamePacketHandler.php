@@ -306,6 +306,8 @@ class InGamePacketHandler extends PacketHandler{
 	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
 		$result = true;
 
+		$this->inventoryManager->addPredictedSlotChanges($packet->trData->getActions());
+
 		if($packet->trData instanceof NormalTransactionData){
 			$result = $this->handleNormalTransaction($packet->trData);
 		}elseif($packet->trData instanceof MismatchTransactionData){
@@ -355,7 +357,6 @@ class InGamePacketHandler extends PacketHandler{
 				return false;
 			}
 		}
-		$this->inventoryManager->addPredictedSlotChanges($data->getActions());
 
 		if($isCraftingPart){
 			if($this->craftingTransaction === null){
