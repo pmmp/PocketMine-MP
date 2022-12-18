@@ -1357,7 +1357,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("long_weakness_potion", fn() => Items::POTION()->setType(PotionType::LONG_WEAKNESS()));
 		$result->register("long_weakness_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::LONG_WEAKNESS()));
 		$result->register("magma_cream", fn() => Items::MAGMA_CREAM());
-		$result->register('medicine', fn() => Items::MEDICINE());
+		$result->register("medicine", fn() => Items::MEDICINE());
 		$result->register("melon", fn() => Items::MELON());
 		$result->register("melon_seeds", fn() => Items::MELON_SEEDS());
 		$result->register("melon_slice", fn() => Items::MELON());
