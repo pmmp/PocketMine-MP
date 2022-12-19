@@ -55,9 +55,7 @@ class JavaWorldData extends BaseNbtWorldData{
 	private const TAG_HARDCORE = "hardcore";
 	private const TAG_INITIALIZED = "initialized";
 	private const TAG_LAST_PLAYED = "LastPlayed";
-	private const TAG_LIGHTNING_LEVEL = "lightningLevel";
 	private const TAG_RAINING = "raining";
-	private const TAG_RAIN_LEVEL = "rainLevel";
 	private const TAG_RAIN_TIME = "rainTime";
 	private const TAG_ROOT_DATA = "Data";
 	private const TAG_SIZE_ON_DISK = "SizeOnDisk";
@@ -151,16 +149,11 @@ class JavaWorldData extends BaseNbtWorldData{
 	}
 
 	public function getRainLevel() : float{
-		if(($rainLevelTag = $this->compoundTag->getTag(self::TAG_RAIN_LEVEL)) instanceof FloatTag){ //PocketMine/MCPE
-			return $rainLevelTag->getValue();
-		}
-
-		return (float) $this->compoundTag->getByte(self::TAG_RAINING, 0); //PC vanilla
+		return (float) $this->compoundTag->getByte(self::TAG_RAINING, 0);
 	}
 
 	public function setRainLevel(float $level) : void{
-		$this->compoundTag->setFloat(self::TAG_RAIN_LEVEL, $level); //PocketMine/MCPE
-		$this->compoundTag->setByte(self::TAG_RAINING, (int) ceil($level)); //PC vanilla
+		$this->compoundTag->setByte(self::TAG_RAINING, (int) ceil($level));
 	}
 
 	public function getLightningTime() : int{
@@ -172,15 +165,10 @@ class JavaWorldData extends BaseNbtWorldData{
 	}
 
 	public function getLightningLevel() : float{
-		if(($lightningLevelTag = $this->compoundTag->getTag(self::TAG_LIGHTNING_LEVEL)) instanceof FloatTag){ //PocketMine/MCPE
-			return $lightningLevelTag->getValue();
-		}
-
-		return (float) $this->compoundTag->getByte(self::TAG_THUNDERING, 0); //PC vanilla
+		return (float) $this->compoundTag->getByte(self::TAG_THUNDERING, 0);
 	}
 
 	public function setLightningLevel(float $level) : void{
-		$this->compoundTag->setFloat(self::TAG_LIGHTNING_LEVEL, $level); //PocketMine/MCPE
-		$this->compoundTag->setByte(self::TAG_THUNDERING, (int) ceil($level)); //PC vanilla
+		$this->compoundTag->setByte(self::TAG_THUNDERING, (int) ceil($level));
 	}
 }
