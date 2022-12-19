@@ -85,6 +85,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 	private const TAG_HARDCORE = "hardcore";
 	private const TAG_GAME_RULES = "GameRules";
 	private const TAG_LAST_OPENED_WITH_VERSION = "lastOpenedWithVersion";
+	private const TAG_COMMANDS_ENABLED = "commandsEnabled";
 
 	public static function generate(string $path, string $name, WorldCreationOptions $options) : void{
 		switch($options->getGeneratorClass()){
@@ -125,6 +126,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 			->setInt(self::TAG_RAIN_TIME, 0)
 			->setByte(self::TAG_SPAWN_MOBS, 1)
 			->setByte(self::TAG_TEXTURE_PACKS_REQUIRED, 0) //TODO
+			->setByte(self::TAG_COMMANDS_ENABLED, 1)
 			->setTag(self::TAG_LAST_OPENED_WITH_VERSION, new ListTag(array_map(fn(int $v) => new IntTag($v), self::CURRENT_CLIENT_VERSION_TARGET)))
 
 			//Additional PocketMine-MP fields
