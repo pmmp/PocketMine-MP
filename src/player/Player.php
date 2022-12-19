@@ -131,6 +131,7 @@ use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 use Ramsey\Uuid\UuidInterface;
 use function abs;
+use function array_filter;
 use function array_map;
 use function array_shift;
 use function assert;
@@ -176,6 +177,16 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	private const MAX_REACH_DISTANCE_CREATIVE = 13;
 	private const MAX_REACH_DISTANCE_SURVIVAL = 7;
 	private const MAX_REACH_DISTANCE_ENTITY_INTERACTION = 8;
+
+	public const TAG_FIRST_PLAYED = "firstPlayed"; //TAG_Long
+	public const TAG_LAST_PLAYED = "lastPlayed"; //TAG_Long
+	private const TAG_GAME_MODE = "playerGameType"; //TAG_Int
+	private const TAG_SPAWN_WORLD = "SpawnLevel"; //TAG_String
+	private const TAG_SPAWN_X = "SpawnX"; //TAG_Int
+	private const TAG_SPAWN_Y = "SpawnY"; //TAG_Int
+	private const TAG_SPAWN_Z = "SpawnZ"; //TAG_Int
+	public const TAG_LEVEL = "Level"; //TAG_String
+	public const TAG_LAST_KNOWN_XUID = "LastKnownXUID"; //TAG_String
 
 	/**
 	 * Validates the given username.
@@ -345,10 +356,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			}
 		));
 
-		$this->firstPlayed = $nbt->getLong("firstPlayed", $now = (int) (microtime(true) * 1000));
-		$this->lastPlayed = $nbt->getLong("lastPlayed", $now);
+		$this->firstPlayed = $nbt->getLong(self::TAG_FIRST_PLAYED, $now = (int) (microtime(true) * 1000));
+		$this->lastPlayed = $nbt->getLong(self::TAG_LAST_PLAYED, $now);
 
-		if(!$this->server->getForceGamemode() && ($gameModeTag = $nbt->getTag("playerGameType")) instanceof IntTag){
+		if(!$this->server->getForceGamemode() && ($gameModeTag = $nbt->getTag(self::TAG_GAME_MODE)) instanceof IntTag){
 			$this->internalSetGameMode(GameModeIdMap::getInstance()->fromId($gameModeTag->getValue()) ?? GameMode::SURVIVAL()); //TODO: bad hack here to avoid crashes on corrupted data
 		}else{
 			$this->internalSetGameMode($this->server->getGamemode());
@@ -360,8 +371,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->setNameTagAlwaysVisible();
 		$this->setCanClimb();
 
-		if(($world = $this->server->getWorldManager()->getWorldByName($nbt->getString("SpawnLevel", ""))) instanceof World){
-			$this->spawnPosition = new Position($nbt->getInt("SpawnX"), $nbt->getInt("SpawnY"), $nbt->getInt("SpawnZ"), $world);
+		if(($world = $this->server->getWorldManager()->getWorldByName($nbt->getString(self::TAG_SPAWN_WORLD, ""))) instanceof World){
+			$this->spawnPosition = new Position($nbt->getInt(self::TAG_SPAWN_X), $nbt->getInt(self::TAG_SPAWN_Y), $nbt->getInt(self::TAG_SPAWN_Z), $world);
 		}
 	}
 
@@ -2239,23 +2250,23 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function getSaveData() : CompoundTag{
 		$nbt = $this->saveNBT();
 
-		$nbt->setString("LastKnownXUID", $this->xuid);
+		$nbt->setString(self::TAG_LAST_KNOWN_XUID, $this->xuid);
 
 		if($this->location->isValid()){
-			$nbt->setString("Level", $this->getWorld()->getFolderName());
+			$nbt->setString(self::TAG_LEVEL, $this->getWorld()->getFolderName());
 		}
 
 		if($this->hasValidCustomSpawn()){
 			$spawn = $this->getSpawn();
-			$nbt->setString("SpawnLevel", $spawn->getWorld()->getFolderName());
-			$nbt->setInt("SpawnX", $spawn->getFloorX());
-			$nbt->setInt("SpawnY", $spawn->getFloorY());
-			$nbt->setInt("SpawnZ", $spawn->getFloorZ());
+			$nbt->setString(self::TAG_SPAWN_WORLD, $spawn->getWorld()->getFolderName());
+			$nbt->setInt(self::TAG_SPAWN_X, $spawn->getFloorX());
+			$nbt->setInt(self::TAG_SPAWN_Y, $spawn->getFloorY());
+			$nbt->setInt(self::TAG_SPAWN_Z, $spawn->getFloorZ());
 		}
 
-		$nbt->setInt("playerGameType", GameModeIdMap::getInstance()->toId($this->gamemode));
-		$nbt->setLong("firstPlayed", $this->firstPlayed);
-		$nbt->setLong("lastPlayed", (int) floor(microtime(true) * 1000));
+		$nbt->setInt(self::TAG_GAME_MODE, GameModeIdMap::getInstance()->toId($this->gamemode));
+		$nbt->setLong(self::TAG_FIRST_PLAYED, $this->firstPlayed);
+		$nbt->setLong(self::TAG_LAST_PLAYED, (int) floor(microtime(true) * 1000));
 
 		return $nbt;
 	}
@@ -2280,10 +2291,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$this->getWorld()->dropItem($this->location, $item);
 			}
 
+			$clearInventory = fn(Inventory $inventory) => $inventory->setContents(array_filter($inventory->getContents(), fn(Item $item) => $item->keepOnDeath()));
 			$this->inventory->setHeldItemIndex(0);
-			$this->inventory->clearAll();
-			$this->armorInventory->clearAll();
-			$this->offHandInventory->clearAll();
+			$clearInventory($this->inventory);
+			$clearInventory($this->armorInventory);
+			$clearInventory($this->offHandInventory);
 		}
 
 		if(!$ev->getKeepXp()){

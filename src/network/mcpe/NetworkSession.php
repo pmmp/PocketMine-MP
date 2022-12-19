@@ -685,7 +685,7 @@ class NetworkSession{
 		//TODO: we shouldn't be loading player data here at all, but right now we don't have any choice :(
 		$this->cachedOfflinePlayerData = $this->server->getOfflinePlayerData($this->info->getUsername());
 		if($checkXUID){
-			$recordedXUID = $this->cachedOfflinePlayerData !== null ? $this->cachedOfflinePlayerData->getTag("LastKnownXUID") : null;
+			$recordedXUID = $this->cachedOfflinePlayerData !== null ? $this->cachedOfflinePlayerData->getTag(Player::TAG_LAST_KNOWN_XUID) : null;
 			if(!($recordedXUID instanceof StringTag)){
 				$this->logger->debug("No previous XUID recorded, no choice but to trust this player");
 			}elseif(!$kickForXUIDMismatch($recordedXUID->getValue())){

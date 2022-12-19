@@ -254,12 +254,15 @@ use pocketmine\world\World;
  * @method static RawSalmon RAW_SALMON()
  * @method static Record RECORD_11()
  * @method static Record RECORD_13()
+ * @method static Record RECORD_5()
  * @method static Record RECORD_BLOCKS()
  * @method static Record RECORD_CAT()
  * @method static Record RECORD_CHIRP()
  * @method static Record RECORD_FAR()
  * @method static Record RECORD_MALL()
  * @method static Record RECORD_MELLOHI()
+ * @method static Record RECORD_OTHERSIDE()
+ * @method static Record RECORD_PIGSTEP()
  * @method static Record RECORD_STAL()
  * @method static Record RECORD_STRAD()
  * @method static Record RECORD_WAIT()
@@ -496,12 +499,15 @@ final class VanillaItems{
 		self::register("raw_salmon", new RawSalmon(new IID(Ids::RAW_SALMON), "Raw Salmon"));
 		self::register("record_11", new Record(new IID(Ids::RECORD_11), RecordType::DISK_11(), "Record 11"));
 		self::register("record_13", new Record(new IID(Ids::RECORD_13), RecordType::DISK_13(), "Record 13"));
+		self::register("record_5", new Record(new IID(Ids::RECORD_5), RecordType::DISK_5(), "Record 5"));
 		self::register("record_blocks", new Record(new IID(Ids::RECORD_BLOCKS), RecordType::DISK_BLOCKS(), "Record Blocks"));
 		self::register("record_cat", new Record(new IID(Ids::RECORD_CAT), RecordType::DISK_CAT(), "Record Cat"));
 		self::register("record_chirp", new Record(new IID(Ids::RECORD_CHIRP), RecordType::DISK_CHIRP(), "Record Chirp"));
 		self::register("record_far", new Record(new IID(Ids::RECORD_FAR), RecordType::DISK_FAR(), "Record Far"));
 		self::register("record_mall", new Record(new IID(Ids::RECORD_MALL), RecordType::DISK_MALL(), "Record Mall"));
 		self::register("record_mellohi", new Record(new IID(Ids::RECORD_MELLOHI), RecordType::DISK_MELLOHI(), "Record Mellohi"));
+		self::register("record_otherside", new Record(new IID(Ids::RECORD_OTHERSIDE), RecordType::DISK_OTHERSIDE(), "Record Otherside"));
+		self::register("record_pigstep", new Record(new IID(Ids::RECORD_PIGSTEP), RecordType::DISK_PIGSTEP(), "Record Pigstep"));
 		self::register("record_stal", new Record(new IID(Ids::RECORD_STAL), RecordType::DISK_STAL(), "Record Stal"));
 		self::register("record_strad", new Record(new IID(Ids::RECORD_STRAD), RecordType::DISK_STRAD(), "Record Strad"));
 		self::register("record_wait", new Record(new IID(Ids::RECORD_WAIT), RecordType::DISK_WAIT(), "Record Wait"));

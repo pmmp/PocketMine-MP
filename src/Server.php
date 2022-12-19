@@ -557,7 +557,7 @@ class Server{
 		$ev->call();
 		$class = $ev->getPlayerClass();
 
-		if($offlinePlayerData !== null && ($world = $this->worldManager->getWorldByName($offlinePlayerData->getString("Level", ""))) !== null){
+		if($offlinePlayerData !== null && ($world = $this->worldManager->getWorldByName($offlinePlayerData->getString(Player::TAG_LEVEL, ""))) !== null){
 			$playerPos = EntityDataHelper::parseLocation($offlinePlayerData, $world);
 			$spawn = $playerPos->asVector3();
 		}else{

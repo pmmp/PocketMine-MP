@@ -25,6 +25,7 @@ namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
 use pocketmine\entity\object\FallingBlock;
+use pocketmine\world\sound\Sound;
 
 interface Fallable{
 
@@ -52,4 +53,9 @@ interface Fallable{
 	 * Returns the maximum damage the block can deal to an entity when it hits the ground.
 	 */
 	public function getMaxFallDamage() : float;
+
+	/**
+	 * Returns the sound that will be played when FallingBlock hits the ground.
+	 */
+	public function getLandSound() : ?Sound;
 }
