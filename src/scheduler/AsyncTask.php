@@ -183,7 +183,7 @@ abstract class AsyncTask extends \Threaded{
 	 * {@link AsyncTask::onCompletion} is called.
 	 *
 	 * @param mixed $progress The parameter passed to {@link AsyncTask#publishProgress}. It is serialize()'ed
-	 *                         and then unserialize()'ed, as if it has been cloned.
+	 *                        and then unserialize()'ed, as if it has been cloned.
 	 */
 	public function onProgressUpdate($progress) : void{
 

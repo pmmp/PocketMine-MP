@@ -40,6 +40,11 @@ use function json_decode;
 use function json_encode;
 use function ksort;
 use function scandir;
+use const JSON_FORCE_OBJECT;
+use const JSON_PRETTY_PRINT;
+use const JSON_THROW_ON_ERROR;
+use const SCANDIR_SORT_ASCENDING;
+use const SORT_STRING;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
