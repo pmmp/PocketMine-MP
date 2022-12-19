@@ -161,6 +161,12 @@ class World implements ChunkManager{
 	public const DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK = 3;
 
 	/**
+	 * Ticking chunk cache is refreshed after this many ticks. Increasing this value increases the interval between
+	 * cache refreshes, which can cause longer delays before newly loaded chunks start being ticked.
+	 */
+	private const TICKING_CHUNK_CACHE_REFRESH_INTERVAL = 20;
+
+	/**
 	 * @var Player[] entity runtime ID => Player
 	 * @phpstan-var array<int, Player>
 	 */
@@ -321,6 +327,12 @@ class World implements ChunkManager{
 
 	private int $chunkTickRadius;
 	private int $tickedBlocksPerSubchunkPerTick = self::DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK;
+	private int $tickingChunkCacheRefreshTicker = 0;
+	/**
+	 * @var true[]
+	 * @phpstan-var array<int, true>
+	 */
+	private array $tickingChunkCache = [];
 	/**
 	 * @var true[]
 	 * @phpstan-var array<int, true>
@@ -1141,15 +1153,8 @@ class World implements ChunkManager{
 		$this->chunkTickRadius = $radius;
 	}
 
-	private function tickChunks() : void{
-		if($this->chunkTickRadius <= 0 || count($this->tickingLoaders) === 0){
-			return;
-		}
-
-		$this->timings->randomChunkUpdatesChunkSelection->startTiming();
-
-		/** @var bool[] $chunkTickList chunkhash => dummy */
-		$chunkTickList = [];
+	private function selectTickedChunks() : void{
+		$this->tickingChunkCache = [];
 
 		$centerChunks = [];
 
@@ -1170,15 +1175,27 @@ class World implements ChunkManager{
 				$centerChunkZ
 			) as $hash){
 				World::getXZ($hash, $chunkX, $chunkZ);
-				if(!isset($chunkTickList[$hash]) && isset($this->chunks[$hash]) && $this->isChunkTickable($chunkX, $chunkZ)){
-					$chunkTickList[$hash] = true;
+				if(!isset($this->tickingChunkCache[$hash]) && isset($this->chunks[$hash]) && $this->isChunkTickable($chunkX, $chunkZ)){
+					$this->tickingChunkCache[$hash] = true;
 				}
 			}
 		}
+	}
 
-		$this->timings->randomChunkUpdatesChunkSelection->stopTiming();
+	private function tickChunks() : void{
+		if($this->chunkTickRadius <= 0 || count($this->tickingLoaders) === 0){
+			$this->tickingChunkCache = [];
+			return;
+		}
 
-		foreach($chunkTickList as $index => $_){
+		if(++$this->tickingChunkCacheRefreshTicker >= self::TICKING_CHUNK_CACHE_REFRESH_INTERVAL){
+			$this->tickingChunkCacheRefreshTicker = 0;
+			$this->timings->randomChunkUpdatesChunkSelection->startTiming();
+			$this->selectTickedChunks();
+			$this->timings->randomChunkUpdatesChunkSelection->stopTiming();
+		}
+
+		foreach($this->tickingChunkCache as $index => $_){
 			World::getXZ($index, $chunkX, $chunkZ);
 
 			$this->tickChunk($chunkX, $chunkZ);
@@ -2783,6 +2800,7 @@ class World implements ChunkManager{
 		unset($this->chunks[$chunkHash]);
 		unset($this->blockCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);
+		unset($this->tickingChunkCache[$chunkHash]);
 
 		if(array_key_exists($chunkHash, $this->chunkPopulationRequestMap)){
 			$this->logger->debug("Rejecting population promise for chunk $x $z");
