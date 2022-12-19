@@ -27,6 +27,7 @@ use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\Binary;
@@ -49,6 +50,13 @@ class BedrockWorldData extends BaseNbtWorldData{
 
 	public const CURRENT_STORAGE_VERSION = 10;
 	public const CURRENT_STORAGE_NETWORK_VERSION = 560;
+	public const CURRENT_CLIENT_VERSION_TARGET = [
+		1, //major
+		19, //minor
+		50, //patch
+		0, //revision
+		0 //is beta
+	];
 
 	public const GENERATOR_LIMITED = 0;
 	public const GENERATOR_INFINITE = 1;
@@ -76,6 +84,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 	private const TAG_TEXTURE_PACKS_REQUIRED = "texturePacksRequired";
 	private const TAG_HARDCORE = "hardcore";
 	private const TAG_GAME_RULES = "GameRules";
+	private const TAG_LAST_OPENED_WITH_VERSION = "lastOpenedWithVersion";
 
 	public static function generate(string $path, string $name, WorldCreationOptions $options) : void{
 		switch($options->getGeneratorClass()){
@@ -116,6 +125,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 			->setInt(self::TAG_RAIN_TIME, 0)
 			->setByte(self::TAG_SPAWN_MOBS, 1)
 			->setByte(self::TAG_TEXTURE_PACKS_REQUIRED, 0) //TODO
+			->setTag(self::TAG_LAST_OPENED_WITH_VERSION, new ListTag(array_map(fn(int $v) => new IntTag($v), self::CURRENT_CLIENT_VERSION_TARGET)))
 
 			//Additional PocketMine-MP fields
 			->setTag(self::TAG_GAME_RULES, new CompoundTag())
@@ -185,6 +195,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 	public function save() : void{
 		$this->compoundTag->setInt(self::TAG_NETWORK_VERSION, self::CURRENT_STORAGE_NETWORK_VERSION);
 		$this->compoundTag->setInt(self::TAG_STORAGE_VERSION, self::CURRENT_STORAGE_VERSION);
+		$this->compoundTag->setTag(self::TAG_LAST_OPENED_WITH_VERSION, new ListTag(array_map(fn(int $v) => new IntTag($v), self::CURRENT_CLIENT_VERSION_TARGET)));
 
 		$nbt = new LittleEndianNbtSerializer();
 		$buffer = $nbt->write(new TreeRoot($this->compoundTag));
