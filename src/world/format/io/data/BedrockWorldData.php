@@ -40,6 +40,7 @@ use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
 use Symfony\Component\Filesystem\Path;
+use function array_map;
 use function file_get_contents;
 use function file_put_contents;
 use function strlen;
