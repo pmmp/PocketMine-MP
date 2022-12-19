@@ -25,7 +25,6 @@ namespace pocketmine\data\bedrock\item;
 
 use pocketmine\block\Bed;
 use pocketmine\block\Block;
-use pocketmine\block\Chain;
 use pocketmine\block\ItemFrame;
 use pocketmine\block\Skull;
 use pocketmine\block\utils\DyeColor;
