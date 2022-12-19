@@ -71,6 +71,7 @@ use function max;
 use function min;
 use function mt_getrandmax;
 use function mt_rand;
+use function round;
 use function sqrt;
 use const M_PI;
 
@@ -480,7 +481,7 @@ abstract class Living extends Entity{
 				$helmet = $this->armorInventory->getHelmet();
 				if($helmet instanceof Armor){
 					$finalDamage = $source->getFinalDamage();
-					$this->damageItem($helmet, (int) ($finalDamage * 4 + lcg_value() * $finalDamage * 2));
+					$this->damageItem($helmet, (int) round($finalDamage * 4 + lcg_value() * $finalDamage * 2));
 					$this->armorInventory->setHelmet($helmet);
 				}
 			}

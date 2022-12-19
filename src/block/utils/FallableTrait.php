@@ -64,7 +64,6 @@ trait FallableTrait{
 		return true;
 	}
 
-
 	public function getFallDamagePerBlock() : float{
 		return 0.0;
 	}
