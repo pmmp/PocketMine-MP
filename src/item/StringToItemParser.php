@@ -205,6 +205,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("carrots", fn() => Blocks::CARROTS());
 		$result->registerBlock("carved_pumpkin", fn() => Blocks::CARVED_PUMPKIN());
 		$result->registerBlock("cauldron", fn() => Blocks::CAULDRON());
+		$result->registerBlock("chain", fn() => Blocks::CHAIN());
 		$result->registerBlock("chemical_heat", fn() => Blocks::CHEMICAL_HEAT());
 		$result->registerBlock("chemistry_table", fn() => Blocks::COMPOUND_CREATOR());
 		$result->registerBlock("chest", fn() => Blocks::CHEST());
@@ -1160,7 +1161,6 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("brick", fn() => Items::BRICK());
 		$result->register("bucket", fn() => Items::BUCKET());
 		$result->register("carrot", fn() => Items::CARROT());
-		$result->register("chain", fn() => Items::CHAIN());
 		$result->register("chain_boots", fn() => Items::CHAINMAIL_BOOTS());
 		$result->register("chain_chestplate", fn() => Items::CHAINMAIL_CHESTPLATE());
 		$result->register("chain_helmet", fn() => Items::CHAINMAIL_HELMET());

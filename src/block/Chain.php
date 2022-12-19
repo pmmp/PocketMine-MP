@@ -25,8 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\PillarRotationTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 
@@ -37,12 +35,14 @@ final class Chain extends Transparent{
 		return $this->axis === Axis::Y ? SupportType::CENTER() : SupportType::NONE();
 	}
 
-	public function asItem() : Item{
-		return VanillaItems::CHAIN();
-	}
-
 	protected function recalculateCollisionBoxes() : array{
 		$inset = 13 / 32;
-		return [AxisAlignedBB::one()->contract($inset, $inset, $inset)->stretch($this->axis, $inset)];
+
+		$bb = AxisAlignedBB::one();
+		foreach([Axis::Y, Axis::Z, Axis::X] as $axis){
+			$bb->squash($axis, $inset);
+		}
+		$bb->stretch($this->axis, $inset);
+		return [$bb];
 	}
 }

@@ -25,6 +25,7 @@ namespace pocketmine\data\bedrock\item;
 
 use pocketmine\block\Bed;
 use pocketmine\block\Block;
+use pocketmine\block\Chain;
 use pocketmine\block\ItemFrame;
 use pocketmine\block\Skull;
 use pocketmine\block\utils\DyeColor;
@@ -177,7 +178,6 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::BRICK, Items::BRICK());
 		$this->map1to1Item(Ids::BUCKET, Items::BUCKET());
 		$this->map1to1Item(Ids::CARROT, Items::CARROT());
-		$this->map1to1Item(Ids::CHAIN, Items::CHAIN());
 		$this->map1to1Item(Ids::CHAINMAIL_BOOTS, Items::CHAINMAIL_BOOTS());
 		$this->map1to1Item(Ids::CHAINMAIL_CHESTPLATE, Items::CHAINMAIL_CHESTPLATE());
 		$this->map1to1Item(Ids::CHAINMAIL_HELMET, Items::CHAINMAIL_HELMET());
@@ -497,8 +497,10 @@ final class ItemSerializerDeserializerRegistrar{
 	 * complex to implement in a generic way.
 	 */
 	private function registerMiscBlockMappings() : void{
+		$this->deserializer?->mapBlock(Ids::CHAIN, fn() => Blocks::CHAIN());
 		$this->deserializer?->mapBlock(Ids::FRAME, fn() => Blocks::ITEM_FRAME()->setGlowing(false));
 		$this->deserializer?->mapBlock(Ids::GLOW_FRAME, fn() => Blocks::ITEM_FRAME()->setGlowing(true));
+		$this->serializer?->mapBlock(Blocks::CHAIN(), fn(Chain $chain) => new Data(Ids::CHAIN));
 		$this->serializer?->mapBlock(Blocks::ITEM_FRAME(), fn(ItemFrame $block) => new Data($block->isGlowing() ? Ids::GLOW_FRAME : Ids::FRAME));
 	}
 
