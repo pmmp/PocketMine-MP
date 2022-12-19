@@ -83,8 +83,6 @@ class BedrockWorldData extends BaseNbtWorldData{
 	private const TAG_RAIN_TIME = "rainTime";
 	private const TAG_SPAWN_MOBS = "spawnMobs";
 	private const TAG_TEXTURE_PACKS_REQUIRED = "texturePacksRequired";
-	private const TAG_HARDCORE = "hardcore";
-	private const TAG_GAME_RULES = "GameRules";
 	private const TAG_LAST_OPENED_WITH_VERSION = "lastOpenedWithVersion";
 	private const TAG_COMMANDS_ENABLED = "commandsEnabled";
 
@@ -131,8 +129,6 @@ class BedrockWorldData extends BaseNbtWorldData{
 			->setTag(self::TAG_LAST_OPENED_WITH_VERSION, new ListTag(array_map(fn(int $v) => new IntTag($v), self::CURRENT_CLIENT_VERSION_TARGET)))
 
 			//Additional PocketMine-MP fields
-			->setTag(self::TAG_GAME_RULES, new CompoundTag())
-			->setByte(self::TAG_HARDCORE, 0)
 			->setString(self::TAG_GENERATOR_NAME, GeneratorManager::getInstance()->getGeneratorName($options->getGeneratorClass()))
 			->setString(self::TAG_GENERATOR_OPTIONS, $options->getGeneratorOptions());
 
