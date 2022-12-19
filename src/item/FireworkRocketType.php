@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\utils\EnumTrait;
-use pocketmine\world\sound\FireworkBigExplosionSound;
 use pocketmine\world\sound\FireworkExplosionSound;
+use pocketmine\world\sound\FireworkLargeExplosionSound;
 use pocketmine\world\sound\Sound;
 
 /**
