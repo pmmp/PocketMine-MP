@@ -47,8 +47,8 @@ use function time;
 
 class BedrockWorldData extends BaseNbtWorldData{
 
-	public const CURRENT_STORAGE_VERSION = 9;
-	public const CURRENT_STORAGE_NETWORK_VERSION = 527; // 1.19.0
+	public const CURRENT_STORAGE_VERSION = 10;
+	public const CURRENT_STORAGE_NETWORK_VERSION = 560;
 
 	public const GENERATOR_LIMITED = 0;
 	public const GENERATOR_INFINITE = 1;
