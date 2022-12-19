@@ -33,13 +33,13 @@ final class FireworkRocketTypeIdMap{
 	 * @var FireworkRocketType[]
 	 * @phpstan-var array<int, FireworkRocketType>
 	 */
-	private array $idToEnum;
+	private array $idToEnum = [];
 
 	/**
 	 * @var int[]
 	 * @phpstan-var array<int, int>
 	 */
-	private array $enumToId;
+	private array $enumToId = [];
 
 	private function __construct(){
 		$this->register(FireworkRocketTypeIds::SMALL_BALL, FireworkRocketType::SMALL_BALL());
