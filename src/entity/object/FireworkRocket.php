@@ -149,15 +149,12 @@ class FireworkRocket extends Entity{
 				}
 
 				$world = $this->getWorld();
-				$obstructed = false;
+
+				//check for obstructing blocks
 				foreach(VoxelRayTrace::betweenPoints($this->location, $position) as $pos){
 					if($world->getBlockAt((int) $pos->x, (int) $pos->y, (int) $pos->z)->isSolid()){
-						$obstructed = true;
-						break;
+						continue 2;
 					}
-				}
-				if($obstructed){
-					continue;
 				}
 
 				$ev = new EntityDamageByEntityEvent($this, $entity, EntityDamageEvent::CAUSE_ENTITY_EXPLOSION, $force * sqrt((5 - $distance) / 5));
