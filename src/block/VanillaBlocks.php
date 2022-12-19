@@ -829,7 +829,7 @@ final class VanillaBlocks{
 
 		self::register("ender_chest", new EnderChest(new BID(Ids::ENDER_CHEST, TileEnderChest::class), "Ender Chest", new Info(BreakInfo::pickaxe(22.5, ToolTier::WOOD(), 3000.0))));
 		self::register("farmland", new Farmland(new BID(Ids::FARMLAND), "Farmland", new Info(BreakInfo::shovel(0.6), [Tags::DIRT])));
-		self::register("fire", new Fire(new BID(Ids::FIRE), "Fire Block", new Info(BreakInfo::instant())));
+		self::register("fire", new Fire(new BID(Ids::FIRE), "Fire Block", new Info(BreakInfo::instant(), [Tags::FIRE])));
 		self::register("fletching_table", new FletchingTable(new BID(Ids::FLETCHING_TABLE), "Fletching Table", new Info(BreakInfo::axe(2.5, null, 2.5))));
 
 		$flowerTypeInfo = new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS]);
@@ -1457,7 +1457,7 @@ final class VanillaBlocks{
 		self::register("cracked_polished_blackstone_bricks", new Opaque(new BID(Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS), "Cracked Polished Blackstone Bricks", $blackstoneBreakInfo));
 
 		self::register("soul_torch", new Torch(new BID(Ids::SOUL_TORCH), "Soul Torch", new Info(BreakInfo::instant())));
-		self::register("soul_fire", new SoulFire(new BID(Ids::SOUL_FIRE), "Soul Fire", new Info(BreakInfo::instant())));
+		self::register("soul_fire", new SoulFire(new BID(Ids::SOUL_FIRE), "Soul Fire", new Info(BreakInfo::instant(), [Tags::FIRE])));
 
 		//TODO: soul soul ought to have 0.5 hardness (as per java) but it's 1.0 in Bedrock (probably parity bug)
 		self::register("soul_soil", new Opaque(new BID(Ids::SOUL_SOIL), "Soul Soil", new Info(BreakInfo::shovel(1.0))));
