@@ -34,10 +34,10 @@ use pocketmine\world\sound\Sound;
  * @see build/generate-registry-annotations.php
  * @generate-registry-docblock
  *
- * @method static FireworkRocketType BIG_SPHERE()
  * @method static FireworkRocketType BURST()
  * @method static FireworkRocketType CREEPER()
- * @method static FireworkRocketType SMALL_SPHERE()
+ * @method static FireworkRocketType LARGE_BALL()
+ * @method static FireworkRocketType SMALL_BALL()
  * @method static FireworkRocketType STAR()
  */
 final class FireworkRocketType{
@@ -47,8 +47,8 @@ final class FireworkRocketType{
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self("small_sphere", fn() => new FireworkExplosionSound()),
-			new self("big_sphere", fn() => new FireworkBigExplosionSound()),
+			new self("small_ball", fn() => new FireworkExplosionSound()),
+			new self("large_ball", fn() => new FireworkLargeExplosionSound()),
 			new self("star", fn() => new FireworkExplosionSound()),
 			new self("creeper", fn() => new FireworkExplosionSound()),
 			new self("burst", fn() => new FireworkExplosionSound()),
