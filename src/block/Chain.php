@@ -40,9 +40,10 @@ final class Chain extends Transparent{
 
 		$bb = AxisAlignedBB::one();
 		foreach([Axis::Y, Axis::Z, Axis::X] as $axis){
-			$bb->squash($axis, $inset);
+			if($axis !== $this->axis){
+				$bb->squash($axis, $inset);
+			}
 		}
-		$bb->stretch($this->axis, $inset);
 		return [$bb];
 	}
 }

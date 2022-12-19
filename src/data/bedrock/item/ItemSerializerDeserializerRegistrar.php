@@ -135,6 +135,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Block(Ids::BREWING_STAND, Blocks::BREWING_STAND());
 		$this->map1to1Block(Ids::CAKE, Blocks::CAKE());
 		$this->map1to1Block(Ids::CAULDRON, Blocks::CAULDRON());
+		$this->map1to1Block(Ids::CHAIN, Blocks::CHAIN());
 		$this->map1to1Block(Ids::COMPARATOR, Blocks::REDSTONE_COMPARATOR());
 		$this->map1to1Block(Ids::CRIMSON_DOOR, Blocks::CRIMSON_DOOR());
 		$this->map1to1Block(Ids::DARK_OAK_DOOR, Blocks::DARK_OAK_DOOR());
@@ -497,10 +498,8 @@ final class ItemSerializerDeserializerRegistrar{
 	 * complex to implement in a generic way.
 	 */
 	private function registerMiscBlockMappings() : void{
-		$this->deserializer?->mapBlock(Ids::CHAIN, fn() => Blocks::CHAIN());
 		$this->deserializer?->mapBlock(Ids::FRAME, fn() => Blocks::ITEM_FRAME()->setGlowing(false));
 		$this->deserializer?->mapBlock(Ids::GLOW_FRAME, fn() => Blocks::ITEM_FRAME()->setGlowing(true));
-		$this->serializer?->mapBlock(Blocks::CHAIN(), fn(Chain $chain) => new Data(Ids::CHAIN));
 		$this->serializer?->mapBlock(Blocks::ITEM_FRAME(), fn(ItemFrame $block) => new Data($block->isGlowing() ? Ids::GLOW_FRAME : Ids::FRAME));
 	}
 
