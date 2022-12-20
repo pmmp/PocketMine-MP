@@ -27,12 +27,13 @@ use pocketmine\block\utils\PillarRotationTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 
 final class Chain extends Transparent{
 	use PillarRotationTrait;
 
 	public function getSupportType(int $facing) : SupportType{
-		return $this->axis === Axis::Y ? SupportType::CENTER() : SupportType::NONE();
+		return $this->axis === Axis::Y && Facing::axis($facing) === Axis::Y ? SupportType::CENTER() : SupportType::NONE();
 	}
 
 	protected function recalculateCollisionBoxes() : array{
