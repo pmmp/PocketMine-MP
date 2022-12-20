@@ -1332,6 +1332,23 @@ class Server{
 
 		return count($recipients);
 	}
+	
+	/**
+     * Broadcasts a toast-notification (message in the top of the screen).
+     *
+	 * @param string $title
+	 * @param string $body
+	 * @param CommandSender[]|null $recipients
+	 */
+	public function broadcastToastNotification(string $title, string $body, ?array $recipients = null) : int{
+		$recipients = $recipients ?? $this->getPlayerBroadcastSubscribers(self::BROADCAST_CHANNEL_USERS);
+
+		foreach($recipients as $recipient){
+			$recipient->sendToastNotification($title, $body);
+		}
+
+		return count($recipients);
+	}
 
 	/**
 	 * @param Player[]            $players
