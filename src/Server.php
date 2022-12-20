@@ -1338,7 +1338,7 @@ class Server{
      *
 	 * @param string $title
 	 * @param string $body
-	 * @param CommandSender[]|null $recipients
+	 * @param Player[]|null $recipients
 	 */
 	public function broadcastToastNotification(string $title, string $body, ?array $recipients = null) : int{
 		$recipients = $recipients ?? $this->getPlayerBroadcastSubscribers(self::BROADCAST_CHANNEL_USERS);
