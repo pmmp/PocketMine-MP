@@ -33,7 +33,7 @@ final class MedicineTypeIdMap{
 	 * @var MedicineType[]
 	 * @phpstan-var array<int, MedicineType>
 	 */
-	private array $idToEnum;
+	private array $idToEnum = [];
 
 	/**
 	 * @var int[]
