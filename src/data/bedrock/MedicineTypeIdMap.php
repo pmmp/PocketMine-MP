@@ -39,7 +39,7 @@ final class MedicineTypeIdMap{
 	 * @var int[]
 	 * @phpstan-var array<int, int>
 	 */
-	private array $enumToId;
+	private array $enumToId = [];
 
 	private function __construct(){
 		$this->register(MedicineTypeIds::ANTIDOTE, MedicineType::ANTIDOTE());
