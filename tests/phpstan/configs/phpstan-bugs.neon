@@ -16,11 +16,6 @@ parameters:
 			path: ../../../src/entity/projectile/Projectile.php
 
 		-
-			message: "#^Empty array passed to foreach\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/cache/ChunkCache.php
-
-		-
 			message: "#^Match arm comparison between 4 and 4 is always true\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
@@ -51,7 +46,7 @@ parameters:
 			path: ../../../src/plugin/PluginManager.php
 
 		-
-			message: "#^Offset \\(int\\|string\\) on non\\-empty\\-array\\<pocketmine\\\\plugin\\\\Plugin\\> in isset\\(\\) always exists and is not nullable\\.$#"
+			message: "#^Offset \\(int\\|string\\) on array\\<pocketmine\\\\plugin\\\\Plugin\\> in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginManager.php
 
@@ -69,11 +64,6 @@ parameters:
 			message: "#^Property pocketmine\\\\thread\\\\Worker\\:\\:\\$classLoaders \\(\\(iterable\\<ClassLoader\\>&Threaded\\)\\|null\\) does not accept array\\<int, ClassLoader\\>\\|\\(iterable\\<ClassLoader\\>&Threaded\\)\\.$#"
 			count: 1
 			path: ../../../src/thread/Worker.php
-
-		-
-			message: "#^Offset \\(int\\|string\\) on non\\-empty\\-array\\<pocketmine\\\\world\\\\World\\> in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: ../../../src/world/WorldManager.php
 
 		-
 			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"

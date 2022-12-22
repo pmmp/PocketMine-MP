@@ -28,7 +28,7 @@ use function mb_strtolower;
 final class ItemIdMetaUpgradeSchema{
 
 	/**
-	 * @param string[] $renamedIds
+	 * @param string[]   $renamedIds
 	 * @param string[][] $remappedMetas
 	 * @phpstan-param array<string, string> $renamedIds
 	 * @phpstan-param array<string, array<int, string>> $remappedMetas

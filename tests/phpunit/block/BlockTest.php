@@ -29,6 +29,7 @@ use function file_get_contents;
 use function is_array;
 use function json_decode;
 use function print_r;
+use const SORT_STRING;
 
 class BlockTest extends TestCase{
 
