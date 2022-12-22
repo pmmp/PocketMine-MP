@@ -205,6 +205,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("carrots", fn() => Blocks::CARROTS());
 		$result->registerBlock("carved_pumpkin", fn() => Blocks::CARVED_PUMPKIN());
 		$result->registerBlock("cauldron", fn() => Blocks::CAULDRON());
+		$result->registerBlock("chain", fn() => Blocks::CHAIN());
 		$result->registerBlock("chemical_heat", fn() => Blocks::CHEMICAL_HEAT());
 		$result->registerBlock("chemistry_table", fn() => Blocks::COMPOUND_CREATOR());
 		$result->registerBlock("chest", fn() => Blocks::CHEST());
@@ -1422,12 +1423,15 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("raw_salmon", fn() => Items::RAW_SALMON());
 		$result->register("record_11", fn() => Items::RECORD_11());
 		$result->register("record_13", fn() => Items::RECORD_13());
+		$result->register("record_5", fn() => Items::RECORD_5());
 		$result->register("record_blocks", fn() => Items::RECORD_BLOCKS());
 		$result->register("record_cat", fn() => Items::RECORD_CAT());
 		$result->register("record_chirp", fn() => Items::RECORD_CHIRP());
 		$result->register("record_far", fn() => Items::RECORD_FAR());
 		$result->register("record_mall", fn() => Items::RECORD_MALL());
 		$result->register("record_mellohi", fn() => Items::RECORD_MELLOHI());
+		$result->register("record_otherside", fn() => Items::RECORD_OTHERSIDE());
+		$result->register("record_pigstep", fn() => Items::RECORD_PIGSTEP());
 		$result->register("record_stal", fn() => Items::RECORD_STAL());
 		$result->register("record_strad", fn() => Items::RECORD_STRAD());
 		$result->register("record_wait", fn() => Items::RECORD_WAIT());

@@ -45,6 +45,7 @@ use function stream_copy_to_stream;
 use function strpos;
 use function strtolower;
 use function trim;
+use const DIRECTORY_SEPARATOR;
 
 abstract class PluginBase implements Plugin, CommandExecutor{
 	private bool $isEnabled = false;
@@ -201,7 +202,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	}
 
 	/**
-	 * @param string[]      $args
+	 * @param string[] $args
 	 */
 	public function onCommand(CommandSender $sender, Command $command, string $label, array $args) : bool{
 		return false;

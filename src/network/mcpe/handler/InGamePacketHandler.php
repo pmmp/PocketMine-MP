@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\handler;
 use pocketmine\block\BaseSign;
 use pocketmine\block\ItemFrame;
 use pocketmine\block\Lectern;
+use pocketmine\block\tile\Sign;
 use pocketmine\block\utils\SignText;
 use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\entity\Attribute;
@@ -306,6 +307,8 @@ class InGamePacketHandler extends PacketHandler{
 	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
 		$result = true;
 
+		$this->inventoryManager->addPredictedSlotChanges($packet->trData->getActions());
+
 		if($packet->trData instanceof NormalTransactionData){
 			$result = $this->handleNormalTransaction($packet->trData);
 		}elseif($packet->trData instanceof MismatchTransactionData){
@@ -355,7 +358,6 @@ class InGamePacketHandler extends PacketHandler{
 				return false;
 			}
 		}
-		$this->inventoryManager->addPredictedSlotChanges($data->getActions());
 
 		if($isCraftingPart){
 			if($this->craftingTransaction === null){
@@ -649,7 +651,7 @@ class InGamePacketHandler extends PacketHandler{
 		if(!($nbt instanceof CompoundTag)) throw new AssumptionFailedError("PHPStan should ensure this is a CompoundTag"); //for phpstorm's benefit
 
 		if($block instanceof BaseSign){
-			if(($textBlobTag = $nbt->getTag("Text")) instanceof StringTag){
+			if(($textBlobTag = $nbt->getTag(Sign::TAG_TEXT_BLOB)) instanceof StringTag){
 				try{
 					$text = SignText::fromBlob($textBlobTag->getValue());
 				}catch(\InvalidArgumentException $e){

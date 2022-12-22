@@ -21,13 +21,28 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\command;
+namespace pocketmine\block;
 
-interface CommandExecutor{
+use pocketmine\block\utils\PillarRotationTrait;
+use pocketmine\block\utils\SupportType;
+use pocketmine\math\Axis;
+use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 
-	/**
-	 * @param string[] $args
-	 */
-	public function onCommand(CommandSender $sender, Command $command, string $label, array $args) : bool;
+final class Chain extends Transparent{
+	use PillarRotationTrait;
 
+	public function getSupportType(int $facing) : SupportType{
+		return $this->axis === Axis::Y && Facing::axis($facing) === Axis::Y ? SupportType::CENTER() : SupportType::NONE();
+	}
+
+	protected function recalculateCollisionBoxes() : array{
+		$bb = AxisAlignedBB::one();
+		foreach([Axis::Y, Axis::Z, Axis::X] as $axis){
+			if($axis !== $this->axis){
+				$bb->squash($axis, 13 / 32);
+			}
+		}
+		return [$bb];
+	}
 }

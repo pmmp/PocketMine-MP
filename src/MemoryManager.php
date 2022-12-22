@@ -477,7 +477,7 @@ class MemoryManager{
 	}
 
 	/**
-	 * @param object[] $objects reference parameter
+	 * @param object[] $objects   reference parameter
 	 * @param int[]    $refCounts reference parameter
 	 *
 	 * @phpstan-param array<string, object> $objects

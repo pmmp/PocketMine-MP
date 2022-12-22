@@ -63,7 +63,7 @@ class Block{
 	protected ?array $collisionBoxes = null;
 
 	/**
-	 * @param string          $name English name of the block type (TODO: implement translations)
+	 * @param string $name English name of the block type (TODO: implement translations)
 	 */
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->idInfo = $idInfo;
