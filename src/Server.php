@@ -557,7 +557,7 @@ class Server{
 		$ev->call();
 		$class = $ev->getPlayerClass();
 
-		if($offlinePlayerData !== null && ($world = $this->worldManager->getWorldByName($offlinePlayerData->getString("Level", ""))) !== null){
+		if($offlinePlayerData !== null && ($world = $this->worldManager->getWorldByName($offlinePlayerData->getString(Player::TAG_LEVEL, ""))) !== null){
 			$playerPos = EntityDataHelper::parseLocation($offlinePlayerData, $world);
 			$spawn = $playerPos->asVector3();
 		}else{
@@ -1265,7 +1265,7 @@ class Server{
 	}
 
 	/**
-	 * @param CommandSender[]|null        $recipients
+	 * @param CommandSender[]|null $recipients
 	 */
 	public function broadcastMessage(Translatable|string $message, ?array $recipients = null) : int{
 		$recipients = $recipients ?? $this->getBroadcastChannelSubscribers(self::BROADCAST_CHANNEL_USERS);
@@ -1318,9 +1318,9 @@ class Server{
 	}
 
 	/**
-	 * @param int           $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
-	 * @param int           $stay Duration in ticks to stay on screen for
-	 * @param int           $fadeOut Duration in ticks for fade-out.
+	 * @param int           $fadeIn     Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
+	 * @param int           $stay       Duration in ticks to stay on screen for
+	 * @param int           $fadeOut    Duration in ticks for fade-out.
 	 * @param Player[]|null $recipients
 	 */
 	public function broadcastTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1, ?array $recipients = null) : int{

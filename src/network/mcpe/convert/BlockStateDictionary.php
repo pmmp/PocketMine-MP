@@ -36,6 +36,7 @@ use function get_debug_type;
 use function is_array;
 use function is_int;
 use function json_decode;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * Handles translation of network block runtime IDs into blockstate data, and vice versa
@@ -50,7 +51,7 @@ final class BlockStateDictionary{
 	private ?array $idMetaToStateIdLookupCache = null;
 
 	/**
-	 * @param BlockStateDictionaryEntry[]  $states
+	 * @param BlockStateDictionaryEntry[] $states
 	 *
 	 * @phpstan-param list<BlockStateDictionaryEntry> $states
 	 */

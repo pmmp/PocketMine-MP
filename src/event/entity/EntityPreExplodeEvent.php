@@ -42,23 +42,23 @@ class EntityPreExplodeEvent extends EntityEvent implements Cancellable{
 
 	public function __construct(
 		Entity $entity,
-		protected float $force
+		protected float $radius
 	){
-		if($force <= 0){
+		if($radius <= 0){
 			throw new \InvalidArgumentException("Explosion radius must be positive");
 		}
 		$this->entity = $entity;
 	}
 
-	public function getForce() : float{
-		return $this->force;
+	public function getRadius() : float{
+		return $this->radius;
 	}
 
-	public function setForce(float $force) : void{
-		if($force <= 0){
+	public function setRadius(float $radius) : void{
+		if($radius <= 0){
 			throw new \InvalidArgumentException("Explosion radius must be positive");
 		}
-		$this->force = $force;
+		$this->radius = $radius;
 	}
 
 	public function isBlockBreaking() : bool{

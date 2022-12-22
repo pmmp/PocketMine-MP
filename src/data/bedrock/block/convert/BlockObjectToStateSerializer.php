@@ -45,6 +45,7 @@ use pocketmine\block\Candle;
 use pocketmine\block\Carpet;
 use pocketmine\block\Carrot;
 use pocketmine\block\CarvedPumpkin;
+use pocketmine\block\Chain;
 use pocketmine\block\ChemistryTable;
 use pocketmine\block\Chest;
 use pocketmine\block\ChorusFlower;
@@ -711,6 +712,10 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::CARVED_PUMPKIN(), function(CarvedPumpkin $block) : Writer{
 			return Writer::create(Ids::CARVED_PUMPKIN)
 				->writeLegacyHorizontalFacing($block->getFacing());
+		});
+		$this->map(Blocks::CHAIN(), function(Chain $block) : Writer{
+			return Writer::create(Ids::CHAIN)
+				->writePillarAxis($block->getAxis());
 		});
 		$this->map(Blocks::CHEST(), function(Chest $block) : Writer{
 			return Writer::create(Ids::CHEST)
