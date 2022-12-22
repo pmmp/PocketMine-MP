@@ -72,6 +72,11 @@ class GamemodeCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
+		if($target->getGamemode()->equals($gameMode)){
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_gamemode_failure($target->getName()));
+			return true;
+		}
+
 		$target->setGamemode($gameMode);
 		if(!$gameMode->equals($target->getGamemode())){
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_gamemode_failure($target->getName()));
