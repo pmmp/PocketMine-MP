@@ -55,12 +55,12 @@ final class MedicineType{
 	private function __construct(
 		string $enumName,
 		private string $displayName,
-		private Effect $curedEffectGetter
+		private Effect $curedEffect
 	){
 		$this->Enum___construct($enumName);
 	}
 
 	public function getDisplayName() : string{ return $this->displayName; }
 
-	public function getCuredEffect() : Effect{ return $this->curedEffectGetter; }
+	public function getCuredEffect() : Effect{ return $this->curedEffect; }
 }
