@@ -37,12 +37,10 @@ final class Chain extends Transparent{
 	}
 
 	protected function recalculateCollisionBoxes() : array{
-		$inset = 13 / 32;
-
 		$bb = AxisAlignedBB::one();
 		foreach([Axis::Y, Axis::Z, Axis::X] as $axis){
 			if($axis !== $this->axis){
-				$bb->squash($axis, $inset);
+				$bb->squash($axis, 13 / 32);
 			}
 		}
 		return [$bb];
