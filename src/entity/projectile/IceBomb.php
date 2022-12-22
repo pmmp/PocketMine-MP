@@ -43,7 +43,7 @@ class IceBomb extends Throwable{
 	}
 
 	protected function calculateInterceptWithBlock(Block $block, Vector3 $start, Vector3 $end) : ?RayTraceResult{
-		if($block->getTypeId() === VanillaBlocks::WATER()->getTypeId()){
+		if($block->getTypeId() === BlockTypeIds::WATER){
 			$pos = $block->getPosition();
 
 			$hit = AxisAlignedBB::one()->offset($pos->getX(), $pos->getY(), $pos->getZ())->calculateIntercept($start, $end);
