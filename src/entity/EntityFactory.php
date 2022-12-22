@@ -96,7 +96,7 @@ final class EntityFactory{
 				$nbt->getFloat(AreaEffectCloud::TAG_INITIAL_RADIUS, AreaEffectCloud::DEFAULT_RADIUS),
 				$nbt
 			);
-		}, ['AreaEffectCloud', 'minecraft:area_effect_cloud'], LegacyIds::AREA_EFFECT_CLOUD);
+		}, ['AreaEffectCloud', 'minecraft:area_effect_cloud']);
 
 		$this->register(Arrow::class, function(World $world, CompoundTag $nbt) : Arrow{
 			return new Arrow(Helper::parseLocation($nbt, $world), null, $nbt->getByte(Arrow::TAG_CRIT, 0) === 1, $nbt);

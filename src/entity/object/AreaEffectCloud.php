@@ -222,11 +222,32 @@ class AreaEffectCloud extends Entity{
 	}
 
 	/**
-	 * Sets the radius only server-side, client calculates the radius by himself (in blocks).
+	 * Sets the radius (in blocks).
 	 */
 	protected function setRadius(float $radius) : void{
 		$this->radius = $radius;
 		$this->setSize($this->getInitialSizeInfo());
+		$this->networkPropertiesDirty = true;
+	}
+
+	/**
+	 * Returns the amount that the radius of this cloud will add by when it is
+	 * picked up (in blocks). Usually negative resulting in a radius reduction.
+	 *
+	 * Applied when getting dragon breath bottle.
+	 */
+	public function getRadiusChangeOnPickup() : float{
+		return $this->radiusChangeOnPickup;
+	}
+
+	/**
+	 * Sets the amount that the radius of this cloud will add by when it is
+	 * picked up (in blocks). Usually negative resulting in a radius reduction.
+	 *
+	 * Applied when getting dragon breath bottle.
+	 */
+	public function setRadiusChangeOnPickup(float $radiusChangeOnPickup) : void{
+		$this->radiusChangeOnPickup = $radiusChangeOnPickup;
 	}
 
 	/**
@@ -238,12 +259,11 @@ class AreaEffectCloud extends Entity{
 	}
 
 	/**
-	 * Returns the amount that the radius of this cloud will add by when it
+	 * Sets the amount that the radius of this cloud will add by when it
 	 * applies an effect to an entity (in blocks).
 	 */
 	public function setRadiusChangeOnUse(float $radiusChangeOnUse) : void{
 		$this->radiusChangeOnUse = $radiusChangeOnUse;
-		$this->networkPropertiesDirty = true;
 	}
 
 	/**
@@ -259,7 +279,6 @@ class AreaEffectCloud extends Entity{
 	 */
 	public function setRadiusChangePerTick(float $radiusChangePerTick) : void{
 		$this->radiusChangePerTick = $radiusChangePerTick;
-		$this->networkPropertiesDirty = true;
 	}
 
 	/**
@@ -306,7 +325,6 @@ class AreaEffectCloud extends Entity{
 	 */
 	public function setDurationChangeOnUse(int $durationChangeOnUse) : void{
 		$this->durationChangeOnUse = $durationChangeOnUse;
-		$this->networkPropertiesDirty = true;
 	}
 
 	/**
@@ -329,7 +347,7 @@ class AreaEffectCloud extends Entity{
 
 		$this->age += $tickDiff;
 		$radius = $this->radius + ($this->radiusChangePerTick * $tickDiff);
-		if($radius < 0.75){
+		if($radius < 0.5){
 			$this->flagForDespawn();
 			return true;
 		}
@@ -431,12 +449,14 @@ class AreaEffectCloud extends Entity{
 		$spawnTime = $this->getWorld()->getTime() - $this->age;
 		$properties->setInt(EntityMetadataProperties::AREA_EFFECT_CLOUD_SPAWN_TIME, $spawnTime);
 		$properties->setInt(EntityMetadataProperties::AREA_EFFECT_CLOUD_DURATION, $this->duration);
-		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS, $this->initialRadius);
-		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS_PER_TICK, $this->radiusChangePerTick);
-		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS_CHANGE_ON_PICKUP, $this->radiusChangeOnPickup);
+		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS, $this->radius);
 		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_PICKUP_COUNT, $this->pickupCount);
 		$properties->setInt(EntityMetadataProperties::AREA_EFFECT_CLOUD_WAITING, $spawnTime + $this->waiting);
 		$properties->setInt(EntityMetadataProperties::POTION_COLOR, Binary::signInt($this->effectContainer->getBubbleColor()->toARGB()));
 		$properties->setByte(EntityMetadataProperties::POTION_AMBIENT, $this->effectContainer->hasOnlyAmbientEffects() ? 1 : 0);
+
+		//TODO: HACK! we purposely fill these in with invalid values to disable the client-sided radius calculation.
+		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS_CHANGE_ON_PICKUP, 0);
+		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS_PER_TICK, 0);
 	}
 }
