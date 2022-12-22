@@ -45,27 +45,22 @@ final class MedicineType{
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self('antidote', 'Antidote', fn() => VanillaEffects::POISON()),
-			new self('elixir', 'Elixir', fn() => VanillaEffects::WEAKNESS()),
-			new self('eye_drops', 'Eye Drops', fn() => VanillaEffects::BLINDNESS()),
-			new self('tonic', 'Tonic', fn() => VanillaEffects::NAUSEA())
+			new self('antidote', 'Antidote', VanillaEffects::POISON()),
+			new self('elixir', 'Elixir', VanillaEffects::WEAKNESS()),
+			new self('eye_drops', 'Eye Drops', VanillaEffects::BLINDNESS()),
+			new self('tonic', 'Tonic', VanillaEffects::NAUSEA())
 		);
 	}
 
-	/**
-	 * @phpstan-param \Closure() : Effect $curedEffectGetter
-	 */
 	private function __construct(
 		string $enumName,
 		private string $displayName,
-		private \Closure $curedEffectGetter
+		private Effect $curedEffectGetter
 	){
 		$this->Enum___construct($enumName);
 	}
 
 	public function getDisplayName() : string{ return $this->displayName; }
 
-	public function getCuredEffect() : Effect{
-		return ($this->curedEffectGetter)();
-	}
+	public function getCuredEffect() : Effect{ return $this->curedEffectGetter; }
 }
