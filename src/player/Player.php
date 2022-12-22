@@ -132,7 +132,6 @@ use pocketmine\world\World;
 use Ramsey\Uuid\UuidInterface;
 use function abs;
 use function array_filter;
-use function array_map;
 use function assert;
 use function count;
 use function explode;
@@ -1994,21 +1993,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * Sends a direct chat message to a player
 	 */
 	public function sendMessage(Translatable|string $message) : void{
-		if($message instanceof Translatable){
-			//we can't send nested translations to the client, so make sure they are always pre-translated by the server
-			$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $this->getLanguage()->translate($p) : $p, $message->getParameters());
-			if(!$this->server->isLanguageForced()){
-				foreach($parameters as $i => $p){
-					$parameters[$i] = $this->getLanguage()->translateString($p, [], "pocketmine.");
-				}
-				$this->getNetworkSession()->onTranslatedChatMessage($this->getLanguage()->translateString($message->getText(), $parameters, "pocketmine."), $parameters);
-			}else{
-				$this->getNetworkSession()->onRawChatMessage($this->getLanguage()->translateString($message->getText(), $parameters));
-			}
-			return;
-		}
-
-		$this->getNetworkSession()->onRawChatMessage($message);
+		$this->getNetworkSession()->onChatMessage($message);
 	}
 
 	/**
