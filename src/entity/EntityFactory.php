@@ -118,7 +118,7 @@ final class EntityFactory{
 
 		$this->register(IceBomb::class, function(World $world, CompoundTag $nbt) : IceBomb{
 			return new IceBomb(Helper::parseLocation($nbt, $world), null, $nbt);
-		}, ['minecraft:ice_bomb'], LegacyIds::ICE_BOMB);
+		}, ['minecraft:ice_bomb']);
 
 		$this->register(ItemEntity::class, function(World $world, CompoundTag $nbt) : ItemEntity{
 			$itemTag = $nbt->getCompoundTag(ItemEntity::TAG_ITEM);
