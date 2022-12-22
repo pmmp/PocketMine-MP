@@ -79,7 +79,7 @@ class IceBomb extends Throwable{
 		for($x = $posX - 1; $x <= $posX + 1; $x++){
 			for($y = $posY - 1; $y <= $posY + 1; $y++){
 				for($z = $posZ - 1; $z <= $posZ + 1; $z++){
-					if($world->getBlockAt($x, $y, $z)->getTypeId() === VanillaBlocks::WATER()->getTypeId()){
+					if($world->getBlockAt($x, $y, $z)->getTypeId() === BlockTypeIds::WATER){
 						$world->setBlockAt($x, $y, $z, VanillaBlocks::ICE());
 					}
 				}
