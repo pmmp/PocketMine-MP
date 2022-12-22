@@ -539,7 +539,7 @@ final class Utils{
 	 * incompatible.
 	 *
 	 * @param callable|CallbackType $signature Dummy callable with the required parameters and return type
-	 * @param callable              $subject Callable to check the signature of
+	 * @param callable              $subject   Callable to check the signature of
 	 * @phpstan-param anyCallable|CallbackType $signature
 	 * @phpstan-param anyCallable              $subject
 	 *

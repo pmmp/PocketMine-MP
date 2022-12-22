@@ -41,6 +41,13 @@ use pocketmine\world\World;
 use function ceil;
 
 class Painting extends Entity{
+	public const TAG_TILE_X = "TileX"; //TAG_Int
+	public const TAG_TILE_Y = "TileY"; //TAG_Int
+	public const TAG_TILE_Z = "TileZ"; //TAG_Int
+	public const TAG_FACING_JE = "Facing"; //TAG_Byte
+	public const TAG_DIRECTION_BE = "Direction"; //TAG_Byte
+	public const TAG_MOTIVE = "Motive"; //TAG_String
+
 	public static function getNetworkTypeId() : string{ return EntityIds::PAINTING; }
 
 	public const DATA_TO_FACING = [
@@ -88,14 +95,14 @@ class Painting extends Entity{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setInt("TileX", (int) $this->blockIn->x);
-		$nbt->setInt("TileY", (int) $this->blockIn->y);
-		$nbt->setInt("TileZ", (int) $this->blockIn->z);
+		$nbt->setInt(self::TAG_TILE_X, (int) $this->blockIn->x);
+		$nbt->setInt(self::TAG_TILE_Y, (int) $this->blockIn->y);
+		$nbt->setInt(self::TAG_TILE_Z, (int) $this->blockIn->z);
 
-		$nbt->setByte("Facing", self::FACING_TO_DATA[$this->facing]);
-		$nbt->setByte("Direction", self::FACING_TO_DATA[$this->facing]); //Save both for full compatibility
+		$nbt->setByte(self::TAG_FACING_JE, self::FACING_TO_DATA[$this->facing]);
+		$nbt->setByte(self::TAG_DIRECTION_BE, self::FACING_TO_DATA[$this->facing]); //Save both for full compatibility
 
-		$nbt->setString("Motive", $this->motive->getName());
+		$nbt->setString(self::TAG_MOTIVE, $this->motive->getName());
 
 		return $nbt;
 	}

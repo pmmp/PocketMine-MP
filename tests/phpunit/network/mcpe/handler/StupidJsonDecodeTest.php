@@ -57,7 +57,7 @@ class StupidJsonDecodeTest extends TestCase{
 	/**
 	 * @dataProvider stupidJsonDecodeProvider
 	 *
-	 * @param mixed  $expect
+	 * @param mixed $expect
 	 *
 	 * @throws \ReflectionException
 	 */

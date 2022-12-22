@@ -164,8 +164,8 @@ class Chunk{
 	/**
 	 * Sets the biome ID at the specified X/Z chunk block coordinates
 	 *
-	 * @param int $x 0-15
-	 * @param int $z 0-15
+	 * @param int $x       0-15
+	 * @param int $z       0-15
 	 * @param int $biomeId 0-255
 	 */
 	public function setBiomeId(int $x, int $z, int $biomeId) : void{
