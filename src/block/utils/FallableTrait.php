@@ -30,6 +30,7 @@ use pocketmine\entity\object\FallingBlock;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\Position;
+use pocketmine\world\sound\Sound;
 
 /**
  * This trait handles falling behaviour for blocks that need them.
@@ -53,5 +54,17 @@ trait FallableTrait{
 			$fall = new FallingBlock(Location::fromObject($pos->add(0.5, 0, 0.5), $world), $block);
 			$fall->spawnToAll();
 		}
+	}
+
+	public function tickFalling() : ?Block{
+		return null;
+	}
+
+	public function onHitGround(FallingBlock $blockEntity) : bool{
+		return true;
+	}
+
+	public function getLandSound() : ?Sound{
+		return null;
 	}
 }

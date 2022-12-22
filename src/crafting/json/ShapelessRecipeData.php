@@ -47,7 +47,7 @@ final class ShapelessRecipeData{
 
 	/**
 	 * @param RecipeIngredientData[] $input
-	 * @param ItemStackData[] $output
+	 * @param ItemStackData[]        $output
 	 *
 	 * @phpstan-param list<RecipeIngredientData> $input
 	 * @phpstan-param list<ItemStackData> $output

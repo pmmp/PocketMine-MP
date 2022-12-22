@@ -549,6 +549,10 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::CARVED_PUMPKIN()
 				->setFacing($in->readLegacyHorizontalFacing());
 		});
+		$this->map(Ids::CHAIN, function(Reader $in) : Block{
+			return Blocks::CHAIN()
+				->setAxis($in->readPillarAxis());
+		});
 		$this->map(Ids::CHEMISTRY_TABLE, function(Reader $in) : Block{
 			return (match($type = $in->readString(StateNames::CHEMISTRY_TABLE_TYPE)){
 				StringValues::CHEMISTRY_TABLE_TYPE_COMPOUND_CREATOR => Blocks::COMPOUND_CREATOR(),
@@ -1257,6 +1261,10 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFacing($in->readLegacyHorizontalFacing())
 				->setPowered($in->readBool(StateNames::POWERED_BIT));
 		});
+		$this->map(Ids::TWISTING_VINES, function(Reader $in) : Block{
+			return Blocks::TWISTING_VINES()
+				->setAge($in->readBoundedInt(StateNames::TWISTING_VINES_AGE, 0, 25));
+		});
 		$this->map(Ids::UNDERWATER_TORCH, function(Reader $in) : Block{
 			return Blocks::UNDERWATER_TORCH()
 				->setFacing($in->readTorchFacing());
@@ -1315,6 +1323,10 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::WEATHERED_CUT_COPPER, fn() => Helper::decodeCopper(Blocks::CUT_COPPER(), CopperOxidation::WEATHERED()));
 		$this->mapSlab(Ids::WEATHERED_CUT_COPPER_SLAB, Ids::WEATHERED_DOUBLE_CUT_COPPER_SLAB, fn() => Helper::decodeCopper(Blocks::CUT_COPPER_SLAB(), CopperOxidation::WEATHERED()));
 		$this->mapStairs(Ids::WEATHERED_CUT_COPPER_STAIRS, fn() => Helper::decodeCopper(Blocks::CUT_COPPER_STAIRS(), CopperOxidation::WEATHERED()));
+		$this->map(Ids::WEEPING_VINES, function(Reader $in) : Block{
+			return Blocks::WEEPING_VINES()
+				->setAge($in->readBoundedInt(StateNames::WEEPING_VINES_AGE, 0, 25));
+		});
 		$this->map(Ids::WHEAT, fn(Reader $in) => Helper::decodeCrops(Blocks::WHEAT(), $in));
 		$this->map(Ids::WHITE_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::WHITE(), $in));
 		$this->map(Ids::WOOD, fn(Reader $in) : Block => Helper::decodeLog(match($woodType = $in->readString(StateNames::WOOD_TYPE)){

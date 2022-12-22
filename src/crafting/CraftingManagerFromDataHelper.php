@@ -57,6 +57,9 @@ final class CraftingManagerFromDataHelper{
 			//e.g. gold blocks crafted from 9 ingots, but each input item individually had a count of 9
 			throw new SavedDataLoadingException("Recipe inputs should have a count of exactly 1");
 		}
+		if(isset($data->tag)){
+			return new TagWildcardRecipeIngredient($data->tag);
+		}
 
 		$meta = $data->meta ?? null;
 		if($meta === RecipeIngredientData::WILDCARD_META_VALUE){

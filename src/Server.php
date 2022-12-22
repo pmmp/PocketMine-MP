@@ -470,10 +470,7 @@ class Server{
 		return $this->configGroup->getPropertyBool("player.save-player-data", true);
 	}
 
-	/**
-	 * @return OfflinePlayer|Player
-	 */
-	public function getOfflinePlayer(string $name){
+	public function getOfflinePlayer(string $name) : Player|OfflinePlayer|null{
 		$name = strtolower($name);
 		$result = $this->getPlayerExact($name);
 
@@ -560,7 +557,7 @@ class Server{
 		$ev->call();
 		$class = $ev->getPlayerClass();
 
-		if($offlinePlayerData !== null && ($world = $this->worldManager->getWorldByName($offlinePlayerData->getString("Level", ""))) !== null){
+		if($offlinePlayerData !== null && ($world = $this->worldManager->getWorldByName($offlinePlayerData->getString(Player::TAG_LEVEL, ""))) !== null){
 			$playerPos = EntityDataHelper::parseLocation($offlinePlayerData, $world);
 			$spawn = $playerPos->asVector3();
 		}else{
@@ -609,6 +606,10 @@ class Server{
 	}
 
 	/**
+	 * @deprecated This method's results are unpredictable. The string "Steve" will return the player named "SteveJobs",
+	 * until another player named "SteveJ" joins the server, at which point it will return that player instead. Prefer
+	 * filtering the results of {@link Server::getOnlinePlayers()} yourself.
+	 *
 	 * Returns an online player whose name begins with or equals the given string (case insensitive).
 	 * The closest match will be returned, or null if there are no online matches.
 	 *
@@ -1264,7 +1265,7 @@ class Server{
 	}
 
 	/**
-	 * @param CommandSender[]|null        $recipients
+	 * @param CommandSender[]|null $recipients
 	 */
 	public function broadcastMessage(Translatable|string $message, ?array $recipients = null) : int{
 		$recipients = $recipients ?? $this->getBroadcastChannelSubscribers(self::BROADCAST_CHANNEL_USERS);
@@ -1317,9 +1318,9 @@ class Server{
 	}
 
 	/**
-	 * @param int           $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
-	 * @param int           $stay Duration in ticks to stay on screen for
-	 * @param int           $fadeOut Duration in ticks for fade-out.
+	 * @param int           $fadeIn     Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
+	 * @param int           $stay       Duration in ticks to stay on screen for
+	 * @param int           $fadeOut    Duration in ticks for fade-out.
 	 * @param Player[]|null $recipients
 	 */
 	public function broadcastTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1, ?array $recipients = null) : int{
@@ -1534,7 +1535,7 @@ class Server{
 	 * @param mixed[][]|null $trace
 	 * @phpstan-param list<array<string, mixed>>|null $trace
 	 */
-	public function exceptionHandler(\Throwable $e, $trace = null) : void{
+	public function exceptionHandler(\Throwable $e, ?array $trace = null) : void{
 		while(@ob_end_flush()){}
 		global $lastError;
 
@@ -1851,10 +1852,12 @@ class Server{
 		$this->getMemoryManager()->check();
 
 		if($this->console !== null){
+			Timings::$serverCommand->startTiming();
 			while(($line = $this->console->readLine()) !== null){
 				$this->consoleSender ??= new ConsoleCommandSender($this, $this->language);
 				$this->dispatchCommand($this->consoleSender, $line);
 			}
+			Timings::$serverCommand->stopTiming();
 		}
 
 		Timings::$serverTick->stopTiming();

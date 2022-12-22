@@ -41,6 +41,8 @@ use function file_put_contents;
 use function fwrite;
 use function json_encode;
 use function ksort;
+use const JSON_PRETTY_PRINT;
+use const SORT_STRING;
 use const STDERR;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
@@ -82,7 +84,7 @@ function loadUpgradeTable(string $file, bool $reverse) : array{
 }
 
 /**
- * @param true[] $removedPropertiesCache
+ * @param true[]  $removedPropertiesCache
  * @param Tag[][] $remappedPropertyValuesCache
  * @phpstan-param array<string, true> $removedPropertiesCache
  * @phpstan-param array<string, array<string, Tag>> $remappedPropertyValuesCache

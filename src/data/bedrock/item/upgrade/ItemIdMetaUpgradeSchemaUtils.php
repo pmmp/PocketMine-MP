@@ -31,6 +31,8 @@ use function gettype;
 use function is_object;
 use function json_decode;
 use function ksort;
+use const JSON_THROW_ON_ERROR;
+use const SORT_NUMERIC;
 
 final class ItemIdMetaUpgradeSchemaUtils{
 

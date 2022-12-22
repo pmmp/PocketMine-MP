@@ -48,6 +48,8 @@ use function sort;
 use function strrpos;
 use function strtoupper;
 use function substr;
+use const SORT_STRING;
+use const STDERR;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 

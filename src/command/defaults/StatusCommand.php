@@ -78,10 +78,10 @@ class StatusCommand extends VanillaCommand{
 		$sender->sendMessage(TextFormat::GOLD . "Uptime: " . TextFormat::RED . $uptime);
 
 		$tpsColor = TextFormat::GREEN;
-		if($server->getTicksPerSecond() < 17){
-			$tpsColor = TextFormat::GOLD;
-		}elseif($server->getTicksPerSecond() < 12){
+		if($server->getTicksPerSecond() < 12){
 			$tpsColor = TextFormat::RED;
+		}elseif($server->getTicksPerSecond() < 17){
+			$tpsColor = TextFormat::GOLD;
 		}
 
 		$sender->sendMessage(TextFormat::GOLD . "Current TPS: {$tpsColor}{$server->getTicksPerSecond()} ({$server->getTickUsage()}%)");

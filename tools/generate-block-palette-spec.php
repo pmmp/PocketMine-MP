@@ -40,6 +40,9 @@ use function fwrite;
 use function get_class;
 use function json_encode;
 use function ksort;
+use const JSON_PRETTY_PRINT;
+use const SORT_STRING;
+use const STDERR;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 

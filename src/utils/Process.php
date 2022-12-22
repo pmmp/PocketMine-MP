@@ -150,12 +150,14 @@ final class Process{
 
 	/**
 	 * @param string      $command Command to execute
-	 * @param string|null $stdout Reference parameter to write stdout to
-	 * @param string|null $stderr Reference parameter to write stderr to
+	 * @param string|null $stdout  Reference parameter to write stdout to
+	 * @param string|null $stderr  Reference parameter to write stderr to
+	 * @phpstan-param-out string $stdout
+	 * @phpstan-param-out string $stderr
 	 *
 	 * @return int process exit code
 	 */
-	public static function execute(string $command, string &$stdout = null, string &$stderr = null) : int{
+	public static function execute(string $command, ?string &$stdout = null, ?string &$stderr = null) : int{
 		$process = proc_open($command, [
 			["pipe", "r"],
 			["pipe", "w"],
