@@ -199,6 +199,8 @@ jobs:
         with:
           php-version: 8.0
           tools: php-cs-fixer:3.11
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run PHP-CS-Fixer
         run: php-cs-fixer fix --dry-run --diff --ansi
