@@ -106,6 +106,8 @@ class FireworkRocket extends Entity{
 	}
 
 	protected function onFirstUpdate(int $currentTick) : void{
+		parent::onFirstUpdate($currentTick);
+
 		$this->broadcastSound(new FireworkLaunchSound());
 	}
 
