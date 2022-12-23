@@ -27,6 +27,8 @@ use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
+use function strtolower;
+use const LEVELDB_ZLIB_RAW_COMPRESSION;
 
 /**
  * Stores player data in a zlib-compressed LevelDB database on the local disk.
