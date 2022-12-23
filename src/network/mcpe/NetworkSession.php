@@ -746,9 +746,9 @@ class NetworkSession{
 		$this->setHandler(new InGamePacketHandler($this->player, $this, $this->invManager));
 	}
 
-	public function onServerDeath() : void{
+	public function onServerDeath(Translatable|string $deathMessage) : void{
 		if($this->handler instanceof InGamePacketHandler){ //TODO: this is a bad fix for pre-spawn death, this shouldn't be reachable at all at this stage :(
-			$this->setHandler(new DeathPacketHandler($this->player, $this, $this->invManager ?? throw new AssumptionFailedError()));
+			$this->setHandler(new DeathPacketHandler($this->player, $this, $this->invManager ?? throw new AssumptionFailedError(), $deathMessage));
 		}
 	}
 
@@ -933,15 +933,22 @@ class NetworkSession{
 		$this->sendDataPacket(AvailableCommandsPacket::create($commandData, [], [], []));
 	}
 
-	public function onRawChatMessage(string $message) : void{
-		$this->sendDataPacket(TextPacket::raw($message));
-	}
-
-	/**
-	 * @param string[] $parameters
-	 */
-	public function onTranslatedChatMessage(string $key, array $parameters) : void{
-		$this->sendDataPacket(TextPacket::translation($key, $parameters));
+	public function onChatMessage(Translatable|string $message) : void{
+		if($message instanceof Translatable){
+			//we can't send nested translations to the client, so make sure they are always pre-translated by the server
+			$language = $this->player->getLanguage();
+			$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $language->translate($p) : $p, $message->getParameters());
+			if(!$this->server->isLanguageForced()){
+				foreach($parameters as $i => $p){
+					$parameters[$i] = $language->translateString($p, [], "pocketmine.");
+				}
+				$this->sendDataPacket(TextPacket::translation($language->translateString($message->getText(), $parameters, "pocketmine."), $parameters));
+			}else{
+				$this->sendDataPacket(TextPacket::raw($language->translateString($message->getText(), $parameters)));
+			}
+		}else{
+			$this->sendDataPacket(TextPacket::raw($message));
+		}
 	}
 
 	/**

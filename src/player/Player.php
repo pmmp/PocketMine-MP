@@ -132,7 +132,6 @@ use pocketmine\world\World;
 use Ramsey\Uuid\UuidInterface;
 use function abs;
 use function array_filter;
-use function array_map;
 use function array_shift;
 use function assert;
 use function count;
@@ -2012,28 +2011,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * Sends a direct chat message to a player
 	 */
 	public function sendMessage(Translatable|string $message) : void{
-		if($message instanceof Translatable){
-			$this->sendTranslation($message->getText(), $message->getParameters());
-			return;
-		}
-
-		$this->getNetworkSession()->onRawChatMessage($message);
+		$this->getNetworkSession()->onChatMessage($message);
 	}
 
 	/**
+	 * @deprecated Use {@link Player::sendMessage()} with a Translatable instead.
 	 * @param string[]|Translatable[] $parameters
 	 */
 	public function sendTranslation(string $message, array $parameters = []) : void{
-		//we can't send nested translations to the client, so make sure they are always pre-translated by the server
-		$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $this->getLanguage()->translate($p) : $p, $parameters);
-		if(!$this->server->isLanguageForced()){
-			foreach($parameters as $i => $p){
-				$parameters[$i] = $this->getLanguage()->translateString($p, [], "pocketmine.");
-			}
-			$this->getNetworkSession()->onTranslatedChatMessage($this->getLanguage()->translateString($message, $parameters, "pocketmine."), $parameters);
-		}else{
-			$this->sendMessage($this->getLanguage()->translateString($message, $parameters));
-		}
+		$this->sendMessage(new Translatable($message, $parameters));
 	}
 
 	/**
@@ -2309,7 +2295,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->startDeathAnimation();
 
-		$this->getNetworkSession()->onServerDeath();
+		$this->getNetworkSession()->onServerDeath($ev->getDeathMessage());
 	}
 
 	protected function onDeathUpdate(int $tickDiff) : bool{
