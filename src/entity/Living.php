@@ -443,7 +443,7 @@ abstract class Living extends Entity{
 		$source->setModifier(-min($this->getAbsorption(), $source->getFinalDamage()), EntityDamageEvent::MODIFIER_ABSORPTION);
 
 		if($cause === EntityDamageEvent::CAUSE_FALLING_BLOCK && $this->armorInventory->getHelmet() instanceof Armor){
-			$source->setModifier(-min($source->getFinalDamage() / 4, 10), EntityDamageEvent::MODIFIER_HARD_HELMET);
+			$source->setModifier(-($source->getFinalDamage() / 4), EntityDamageEvent::MODIFIER_HARD_HELMET);
 		}
 	}
 
