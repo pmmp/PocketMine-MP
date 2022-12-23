@@ -39,6 +39,9 @@ use function zlib_decode;
 use function zlib_encode;
 use const ZLIB_ENCODING_GZIP;
 
+/**
+ * Stores player data in a single .dat file per player. Each file is gzipped big-endian NBT.
+ */
 final class DatFilePlayerDataProvider implements PlayerDataProvider{
 
 	public function __construct(
