@@ -106,6 +106,10 @@ player:
   #If true, checks that joining players' Xbox user ID (XUID) match what was previously recorded.
   #This also prevents non-XBL players using XBL players' usernames to steal their data on servers with xbox-auth=off.
   verify-xuid: true
+  #Method to use for storing player data. Options include "datfile" (flat .dat files) or "leveldb".
+  #If you need to load player data from a version of PocketMine-MP prior to 4.13.0, use "datfile".
+  #Otherwise, the "leveldb" is recommended for best performance and reduced disk space usage.
+  default-data-format: leveldb
 
 level-settings:
   #The default format that worlds will use when created

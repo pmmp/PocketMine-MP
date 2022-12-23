@@ -71,6 +71,7 @@ use pocketmine\permission\BanList;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\DatFilePlayerDataProvider;
 use pocketmine\player\GameMode;
+use pocketmine\player\LevelDBPlayerDataProvider;
 use pocketmine\player\OfflinePlayer;
 use pocketmine\player\Player;
 use pocketmine\player\PlayerDataLoadException;
@@ -978,7 +979,16 @@ class Server{
 
 			$this->queryInfo = new QueryInfo($this);
 
-			$this->playerDataProvider = new DatFilePlayerDataProvider(Path::join($this->dataPath, "players"));
+			$playerDataProviderType = $this->configGroup->getPropertyString("player.default-data-format", "datfile");
+			$path = Path::join($this->dataPath, "players");
+			if($playerDataProviderType === "datfile"){
+				$this->playerDataProvider = new DatFilePlayerDataProvider($path);
+			}elseif($playerDataProviderType === "leveldb"){
+				$this->playerDataProvider = new LevelDBPlayerDataProvider($path);
+			}else{
+				$this->logger->warning("Invalid default player data storage type selected, using default");
+				$this->playerDataProvider = new LevelDBPlayerDataProvider($path);
+			}
 
 			register_shutdown_function([$this, "crashDump"]);
 
