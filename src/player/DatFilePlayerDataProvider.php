@@ -28,7 +28,6 @@ use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\player;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
@@ -40,7 +39,7 @@ use function zlib_decode;
 use function zlib_encode;
 use const ZLIB_ENCODING_GZIP;
 
-final class DatFilePlayerDataProvider implements player\PlayerDataProvider{
+final class DatFilePlayerDataProvider implements PlayerDataProvider{
 
 	public function __construct(
 		private string $path
