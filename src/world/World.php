@@ -1174,6 +1174,8 @@ class World implements ChunkManager{
 		/** @var bool[] $chunkTickList chunkhash => dummy */
 		$chunkTickList = [];
 
+		$chunkTickableCache = [];
+
 		$centerChunks = [];
 
 		$selector = new ChunkSelector();
@@ -1193,7 +1195,7 @@ class World implements ChunkManager{
 				$centerChunkZ
 			) as $hash){
 				World::getXZ($hash, $chunkX, $chunkZ);
-				if(!isset($chunkTickList[$hash]) && isset($this->chunks[$hash]) && $this->isChunkTickable($chunkX, $chunkZ)){
+				if(!isset($chunkTickList[$hash]) && isset($this->chunks[$hash]) && $this->isChunkTickable($chunkX, $chunkZ, $chunkTickableCache)){
 					$chunkTickList[$hash] = true;
 				}
 			}
@@ -1208,14 +1210,29 @@ class World implements ChunkManager{
 		}
 	}
 
-	private function isChunkTickable(int $chunkX, int $chunkZ) : bool{
+	/**
+	 * @param bool[] &$cache
+	 *
+	 * @phpstan-param array<int, bool> $cache
+	 * @phpstan-param-out array<int, bool> $cache
+	 */
+	private function isChunkTickable(int $chunkX, int $chunkZ, array &$cache) : bool{
 		for($cx = -1; $cx <= 1; ++$cx){
 			for($cz = -1; $cz <= 1; ++$cz){
+				$chunkHash = World::chunkHash($chunkX + $cx, $chunkZ + $cz);
+				if(isset($cache[$chunkHash])){
+					if(!$cache[$chunkHash]){
+						return false;
+					}
+					continue;
+				}
 				if($this->isChunkLocked($chunkX + $cx, $chunkZ + $cz)){
+					$cache[$chunkHash] = false;
 					return false;
 				}
 				$adjacentChunk = $this->getChunk($chunkX + $cx, $chunkZ + $cz);
 				if($adjacentChunk === null || !$adjacentChunk->isPopulated()){
+					$cache[$chunkHash] = false;
 					return false;
 				}
 				$lightPopulatedState = $adjacentChunk->isLightPopulated();
@@ -1223,8 +1240,11 @@ class World implements ChunkManager{
 					if($lightPopulatedState === false){
 						$this->orderLightPopulation($chunkX + $cx, $chunkZ + $cz);
 					}
+					$cache[$chunkHash] = false;
 					return false;
 				}
+
+				$cache[$chunkHash] = true;
 			}
 		}
 
@@ -1267,7 +1287,8 @@ class World implements ChunkManager{
 	private function tickChunk(int $chunkX, int $chunkZ) : void{
 		$chunk = $this->getChunk($chunkX, $chunkZ);
 		if($chunk === null){
-			throw new \InvalidArgumentException("Chunk is not loaded");
+			//the chunk may have been unloaded during a previous chunk's update (e.g. during BlockGrowEvent)
+			return;
 		}
 		foreach($this->getChunkEntities($chunkX, $chunkZ) as $entity){
 			$entity->onRandomUpdate();
