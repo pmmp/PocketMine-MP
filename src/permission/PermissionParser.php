@@ -64,11 +64,7 @@ class PermissionParser{
 	 */
 	public static function defaultFromString($value) : string{
 		if(is_bool($value)){
-			if($value){
-				return "true";
-			}else{
-				return "false";
-			}
+			return $value ? self::DEFAULT_TRUE : self::DEFAULT_FALSE;
 		}
 		$lower = strtolower($value);
 		if(isset(self::DEFAULT_STRING_MAP[$lower])){
