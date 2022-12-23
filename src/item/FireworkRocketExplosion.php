@@ -191,8 +191,6 @@ class FireworkRocketExplosion{
 	}
 
 	public function toCompoundTag() : CompoundTag{
-		$dyeColorIdMap = DyeColorIdMap::getInstance();
-
 		return CompoundTag::create()
 			->setByte(self::TAG_TYPE, FireworkRocketTypeIdMap::getInstance()->toId($this->type))
 			->setByteArray(self::TAG_COLORS, $this->encodeColors($this->colors))
