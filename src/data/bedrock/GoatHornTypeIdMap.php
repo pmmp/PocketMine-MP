@@ -33,13 +33,13 @@ final class GoatHornTypeIdMap{
 	 * @var GoatHornType[]
 	 * @phpstan-var array<int, GoatHornType>
 	 */
-	private array $idToEnum;
+	private array $idToEnum = [];
 
 	/**
 	 * @var int[]
 	 * @phpstan-var array<int, int>
 	 */
-	private array $enumToId;
+	private array $enumToId = [];
 
 	private function __construct(){
 		$this->register(GoatHornTypeIds::PONDER, GoatHornType::PONDER());
