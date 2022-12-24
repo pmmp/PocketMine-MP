@@ -31,6 +31,7 @@ use function array_flip;
 use function file_get_contents;
 use function is_array;
 use function json_decode;
+use const JSON_THROW_ON_ERROR;
 use const pocketmine\BEDROCK_DATA_PATH;
 
 /**

@@ -53,6 +53,10 @@ use const PHP_INT_MAX;
 
 abstract class Projectile extends Entity{
 	private const TAG_STUCK_ON_BLOCK_POS = "StuckToBlockPos";
+	private const TAG_DAMAGE = "damage"; //TAG_Double
+	private const TAG_TILE_X = "tileX"; //TAG_Int
+	private const TAG_TILE_Y = "tileY"; //TAG_Int
+	private const TAG_TILE_Z = "tileZ"; //TAG_Int
 
 	protected float $damage = 0.0;
 	protected ?Vector3 $blockHit = null;
@@ -75,7 +79,7 @@ abstract class Projectile extends Entity{
 
 		$this->setMaxHealth(1);
 		$this->setHealth(1);
-		$this->damage = $nbt->getDouble("damage", $this->damage);
+		$this->damage = $nbt->getDouble(self::TAG_DAMAGE, $this->damage);
 
 		if(($stuckOnBlockPosTag = $nbt->getListTag(self::TAG_STUCK_ON_BLOCK_POS)) !== null){
 			if($stuckOnBlockPosTag->getTagType() !== NBT::TAG_Int || count($stuckOnBlockPosTag) !== 3){
@@ -86,7 +90,7 @@ abstract class Projectile extends Entity{
 			$values = $stuckOnBlockPosTag->getValue();
 
 			$this->blockHit = new Vector3($values[0]->getValue(), $values[1]->getValue(), $values[2]->getValue());
-		}elseif(($tileXTag = $nbt->getTag("tileX")) instanceof IntTag && ($tileYTag = $nbt->getTag("tileY")) instanceof IntTag && ($tileZTag = $nbt->getTag("tileZ")) instanceof IntTag){
+		}elseif(($tileXTag = $nbt->getTag(self::TAG_TILE_X)) instanceof IntTag && ($tileYTag = $nbt->getTag(self::TAG_TILE_Y)) instanceof IntTag && ($tileZTag = $nbt->getTag(self::TAG_TILE_Z)) instanceof IntTag){
 			$this->blockHit = new Vector3($tileXTag->getValue(), $tileYTag->getValue(), $tileZTag->getValue());
 		}
 	}
@@ -124,7 +128,7 @@ abstract class Projectile extends Entity{
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
 
-		$nbt->setDouble("damage", $this->damage);
+		$nbt->setDouble(self::TAG_DAMAGE, $this->damage);
 
 		if($this->blockHit !== null){
 			$nbt->setTag(self::TAG_STUCK_ON_BLOCK_POS, new ListTag([

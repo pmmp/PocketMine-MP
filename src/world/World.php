@@ -51,7 +51,9 @@ use pocketmine\event\world\ChunkLoadEvent;
 use pocketmine\event\world\ChunkPopulateEvent;
 use pocketmine\event\world\ChunkUnloadEvent;
 use pocketmine\event\world\SpawnChangeEvent;
+use pocketmine\event\world\WorldParticleEvent;
 use pocketmine\event\world\WorldSaveEvent;
+use pocketmine\event\world\WorldSoundEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\LegacyStringToItemParser;
@@ -647,7 +649,7 @@ class World implements ChunkManager{
 	 * Returns a list of players who are in the given filter and also using the chunk containing the target position.
 	 * Used for broadcasting sounds and particles with specific targets.
 	 *
-	 * @param Player[]             $allowed
+	 * @param Player[] $allowed
 	 * @phpstan-param list<Player> $allowed
 	 *
 	 * @return array<int, Player>
@@ -669,9 +671,19 @@ class World implements ChunkManager{
 	 * @param Player[]|null $players
 	 */
 	public function addSound(Vector3 $pos, Sound $sound, ?array $players = null) : void{
-		$pk = $sound->encode($pos);
+		$players ??= $this->getViewersForPosition($pos);
+		$ev = new WorldSoundEvent($this, $sound, $pos, $players);
+
+		$ev->call();
+
+		if($ev->isCancelled()){
+			return;
+		}
+
+		$pk = $ev->getSound()->encode($pos);
+		$players = $ev->getRecipients();
 		if(count($pk) > 0){
-			if($players === null){
+			if($players === $this->getViewersForPosition($pos)){
 				foreach($pk as $e){
 					$this->broadcastPacketToViewers($pos, $e);
 				}
@@ -685,14 +697,24 @@ class World implements ChunkManager{
 	 * @param Player[]|null $players
 	 */
 	public function addParticle(Vector3 $pos, Particle $particle, ?array $players = null) : void{
-		$pk = $particle->encode($pos);
+		$players ??= $this->getViewersForPosition($pos);
+		$ev = new WorldParticleEvent($this, $particle, $pos, $players);
+
+		$ev->call();
+
+		if($ev->isCancelled()){
+			return;
+		}
+
+		$pk = $ev->getParticle()->encode($pos);
+		$players = $ev->getRecipients();
 		if(count($pk) > 0){
-			if($players === null){
+			if($players === $this->getViewersForPosition($pos)){
 				foreach($pk as $e){
 					$this->broadcastPacketToViewers($pos, $e);
 				}
 			}else{
-				$this->server->broadcastPackets($this->filterViewersForPosition($pos, $players), $pk);
+				$this->server->broadcastPackets($this->filterViewersForPosition($pos, $ev->getRecipients()), $pk);
 			}
 		}
 	}
@@ -1152,6 +1174,8 @@ class World implements ChunkManager{
 		/** @var bool[] $chunkTickList chunkhash => dummy */
 		$chunkTickList = [];
 
+		$chunkTickableCache = [];
+
 		$centerChunks = [];
 
 		$selector = new ChunkSelector();
@@ -1171,7 +1195,7 @@ class World implements ChunkManager{
 				$centerChunkZ
 			) as $hash){
 				World::getXZ($hash, $chunkX, $chunkZ);
-				if(!isset($chunkTickList[$hash]) && isset($this->chunks[$hash]) && $this->isChunkTickable($chunkX, $chunkZ)){
+				if(!isset($chunkTickList[$hash]) && isset($this->chunks[$hash]) && $this->isChunkTickable($chunkX, $chunkZ, $chunkTickableCache)){
 					$chunkTickList[$hash] = true;
 				}
 			}
@@ -1186,14 +1210,29 @@ class World implements ChunkManager{
 		}
 	}
 
-	private function isChunkTickable(int $chunkX, int $chunkZ) : bool{
+	/**
+	 * @param bool[] &$cache
+	 *
+	 * @phpstan-param array<int, bool> $cache
+	 * @phpstan-param-out array<int, bool> $cache
+	 */
+	private function isChunkTickable(int $chunkX, int $chunkZ, array &$cache) : bool{
 		for($cx = -1; $cx <= 1; ++$cx){
 			for($cz = -1; $cz <= 1; ++$cz){
+				$chunkHash = World::chunkHash($chunkX + $cx, $chunkZ + $cz);
+				if(isset($cache[$chunkHash])){
+					if(!$cache[$chunkHash]){
+						return false;
+					}
+					continue;
+				}
 				if($this->isChunkLocked($chunkX + $cx, $chunkZ + $cz)){
+					$cache[$chunkHash] = false;
 					return false;
 				}
 				$adjacentChunk = $this->getChunk($chunkX + $cx, $chunkZ + $cz);
 				if($adjacentChunk === null || !$adjacentChunk->isPopulated()){
+					$cache[$chunkHash] = false;
 					return false;
 				}
 				$lightPopulatedState = $adjacentChunk->isLightPopulated();
@@ -1201,8 +1240,11 @@ class World implements ChunkManager{
 					if($lightPopulatedState === false){
 						$this->orderLightPopulation($chunkX + $cx, $chunkZ + $cz);
 					}
+					$cache[$chunkHash] = false;
 					return false;
 				}
+
+				$cache[$chunkHash] = true;
 			}
 		}
 
@@ -1245,7 +1287,8 @@ class World implements ChunkManager{
 	private function tickChunk(int $chunkX, int $chunkZ) : void{
 		$chunk = $this->getChunk($chunkX, $chunkZ);
 		if($chunk === null){
-			throw new \InvalidArgumentException("Chunk is not loaded");
+			//the chunk may have been unloaded during a previous chunk's update (e.g. during BlockGrowEvent)
+			return;
 		}
 		foreach($this->getChunkEntities($chunkX, $chunkZ) as $entity){
 			$entity->onRandomUpdate();
@@ -1657,8 +1700,8 @@ class World implements ChunkManager{
 	 * Note: If you're using this for performance-sensitive code, and you're guaranteed to be supplying ints in the
 	 * specified vector, consider using {@link getBlockAt} instead for better performance.
 	 *
-	 * @param bool    $cached Whether to use the block cache for getting the block (faster, but may be inaccurate)
-	 * @param bool    $addToCache Whether to cache the block object created by this method call.
+	 * @param bool $cached     Whether to use the block cache for getting the block (faster, but may be inaccurate)
+	 * @param bool $addToCache Whether to cache the block object created by this method call.
 	 */
 	public function getBlock(Vector3 $pos, bool $cached = true, bool $addToCache = true) : Block{
 		return $this->getBlockAt((int) floor($pos->x), (int) floor($pos->y), (int) floor($pos->z), $cached, $addToCache);
@@ -1670,7 +1713,7 @@ class World implements ChunkManager{
 	 * Note for plugin developers: If you are using this method a lot (thousands of times for many positions for
 	 * example), you may want to set addToCache to false to avoid using excessive amounts of memory.
 	 *
-	 * @param bool $cached Whether to use the block cache for getting the block (faster, but may be inaccurate)
+	 * @param bool $cached     Whether to use the block cache for getting the block (faster, but may be inaccurate)
 	 * @param bool $addToCache Whether to cache the block object created by this method call.
 	 */
 	public function getBlockAt(int $x, int $y, int $z, bool $cached = true, bool $addToCache = true) : Block{
@@ -1821,7 +1864,7 @@ class World implements ChunkManager{
 	 * Tries to break a block using a item, including Player time checks if available
 	 * It'll try to lower the durability if Item is a tool, and set it to Air if broken.
 	 *
-	 * @param Item   &$item reference parameter (if null, can break anything)
+	 * @param Item   &$item          reference parameter (if null, can break anything)
 	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 * @phpstan-param-out Item $item
 	 */
@@ -1927,8 +1970,8 @@ class World implements ChunkManager{
 	/**
 	 * Uses a item on a position and face, placing it or activating the block
 	 *
-	 * @param Player|null $player default null
-	 * @param bool        $playSound Whether to play a block-place sound if the block was placed successfully.
+	 * @param Player|null $player         default null
+	 * @param bool        $playSound      Whether to play a block-place sound if the block was placed successfully.
 	 * @param Item[]      &$returnedItems Items to be added to the target's inventory (or dropped if the inventory is full)
 	 */
 	public function useItemOn(Vector3 $vector, Item &$item, int $face, ?Vector3 $clickVector = null, ?Player $player = null, bool $playSound = false, array &$returnedItems = []) : bool{
@@ -2122,8 +2165,8 @@ class World implements ChunkManager{
 	/**
 	 * Returns the closest Entity to the specified position, within the given radius.
 	 *
-	 * @param string  $entityType Class of entity to use for instanceof
-	 * @param bool    $includeDead Whether to include entitites which are dead
+	 * @param string $entityType  Class of entity to use for instanceof
+	 * @param bool   $includeDead Whether to include entitites which are dead
 	 * @phpstan-template TEntity of Entity
 	 * @phpstan-param class-string<TEntity> $entityType
 	 *
