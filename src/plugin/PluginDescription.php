@@ -37,6 +37,32 @@ use function stripos;
 use function yaml_parse;
 
 class PluginDescription{
+	private const KEY_NAME = "name";
+	private const KEY_VERSION = "version";
+	private const KEY_MAIN = "main";
+	private const KEY_SRC_NAMESPACE_PREFIX = "src-namespace-prefix";
+	private const KEY_API = "api";
+	private const KEY_MCPE_PROTOCOL = "mcpe-protocol";
+	private const KEY_OS = "os";
+	private const KEY_DEPEND = "depend";
+	private const KEY_SOFTDEPEND = "softdepend";
+	private const KEY_LOADBEFORE = "loadbefore";
+	private const KEY_EXTENSIONS = "extensions";
+	private const KEY_WEBSITE = "website";
+	private const KEY_DESCRIPTION = "description";
+	private const KEY_LOGGER_PREFIX = "prefix";
+	private const KEY_LOAD = "load";
+	private const KEY_AUTHOR = "author";
+	private const KEY_AUTHORS = "authors";
+	private const KEY_PERMISSIONS = "permissions";
+
+	private const KEY_COMMANDS = "commands";
+	private const KEY_COMMAND_PERMISSION = "permission";
+	private const KEY_COMMAND_DESCRIPTION = self::KEY_DESCRIPTION;
+	private const KEY_COMMAND_USAGE = "usage";
+	private const KEY_COMMAND_ALIASES = "aliases";
+	private const KEY_COMMAND_PERMISSION_MESSAGE = "permission-message";
+
 	/**
 	 * @var mixed[]
 	 * @phpstan-var array<string, mixed>
@@ -107,49 +133,49 @@ class PluginDescription{
 	private function loadMap(array $plugin) : void{
 		$this->map = $plugin;
 
-		$this->name = $plugin["name"];
+		$this->name = $plugin[self::KEY_NAME];
 		if(preg_match('/^[A-Za-z0-9 _.-]+$/', $this->name) === 0){
 			throw new PluginDescriptionParseException("Invalid Plugin name");
 		}
 		$this->name = str_replace(" ", "_", $this->name);
-		$this->version = (string) $plugin["version"];
-		$this->main = $plugin["main"];
+		$this->version = (string) $plugin[self::KEY_VERSION];
+		$this->main = $plugin[self::KEY_MAIN];
 		if(stripos($this->main, "pocketmine\\") === 0){
 			throw new PluginDescriptionParseException("Invalid Plugin main, cannot start within the PocketMine namespace");
 		}
 
-		$this->srcNamespacePrefix = $plugin["src-namespace-prefix"] ?? "";
+		$this->srcNamespacePrefix = $plugin[self::KEY_SRC_NAMESPACE_PREFIX] ?? "";
 
-		$this->api = array_map("\strval", (array) ($plugin["api"] ?? []));
-		$this->compatibleMcpeProtocols = array_map("\intval", (array) ($plugin["mcpe-protocol"] ?? []));
-		$this->compatibleOperatingSystems = array_map("\strval", (array) ($plugin["os"] ?? []));
+		$this->api = array_map("\strval", (array) ($plugin[self::KEY_API] ?? []));
+		$this->compatibleMcpeProtocols = array_map("\intval", (array) ($plugin[self::KEY_MCPE_PROTOCOL] ?? []));
+		$this->compatibleOperatingSystems = array_map("\strval", (array) ($plugin[self::KEY_OS] ?? []));
 
-		if(isset($plugin["commands"]) && is_array($plugin["commands"])){
-			foreach($plugin["commands"] as $commandName => $commandData){
+		if(isset($plugin[self::KEY_COMMANDS]) && is_array($plugin[self::KEY_COMMANDS])){
+			foreach($plugin[self::KEY_COMMANDS] as $commandName => $commandData){
 				if(!is_string($commandName)){
 					throw new PluginDescriptionParseException("Invalid Plugin commands, key must be the name of the command");
 				}
 				if(!is_array($commandData)){
 					throw new PluginDescriptionParseException("Command $commandName has invalid properties");
 				}
-				if(!isset($commandData["permission"]) || !is_string($commandData["permission"])){
+				if(!isset($commandData[self::KEY_COMMAND_PERMISSION]) || !is_string($commandData[self::KEY_COMMAND_PERMISSION])){
 					throw new PluginDescriptionParseException("Command $commandName does not have a valid permission set");
 				}
 				$this->commands[$commandName] = new PluginDescriptionCommandEntry(
-					$commandData["description"] ?? null,
-					$commandData["usage"] ?? null,
-					$commandData["aliases"] ?? [],
-					$commandData["permission"],
-					$commandData["permission-message"] ?? null
+					$commandData[self::KEY_COMMAND_DESCRIPTION] ?? null,
+					$commandData[self::KEY_COMMAND_USAGE] ?? null,
+					$commandData[self::KEY_COMMAND_ALIASES] ?? [],
+					$commandData[self::KEY_COMMAND_PERMISSION],
+					$commandData[self::KEY_COMMAND_PERMISSION_MESSAGE] ?? null
 				);
 			}
 		}
 
-		if(isset($plugin["depend"])){
-			$this->depend = (array) $plugin["depend"];
+		if(isset($plugin[self::KEY_DEPEND])){
+			$this->depend = (array) $plugin[self::KEY_DEPEND];
 		}
-		if(isset($plugin["extensions"])){
-			$extensions = (array) $plugin["extensions"];
+		if(isset($plugin[self::KEY_EXTENSIONS])){
+			$extensions = (array) $plugin[self::KEY_EXTENSIONS];
 			$isLinear = $extensions === array_values($extensions);
 			foreach($extensions as $k => $v){
 				if($isLinear){
@@ -160,20 +186,20 @@ class PluginDescription{
 			}
 		}
 
-		$this->softDepend = (array) ($plugin["softdepend"] ?? $this->softDepend);
+		$this->softDepend = (array) ($plugin[self::KEY_SOFTDEPEND] ?? $this->softDepend);
 
-		$this->loadBefore = (array) ($plugin["loadbefore"] ?? $this->loadBefore);
+		$this->loadBefore = (array) ($plugin[self::KEY_LOADBEFORE] ?? $this->loadBefore);
 
-		$this->website = (string) ($plugin["website"] ?? $this->website);
+		$this->website = (string) ($plugin[self::KEY_WEBSITE] ?? $this->website);
 
-		$this->description = (string) ($plugin["description"] ?? $this->description);
+		$this->description = (string) ($plugin[self::KEY_DESCRIPTION] ?? $this->description);
 
-		$this->prefix = (string) ($plugin["prefix"] ?? $this->prefix);
+		$this->prefix = (string) ($plugin[self::KEY_LOGGER_PREFIX] ?? $this->prefix);
 
-		if(isset($plugin["load"])){
-			$order = PluginEnableOrder::fromString($plugin["load"]);
+		if(isset($plugin[self::KEY_LOAD])){
+			$order = PluginEnableOrder::fromString($plugin[self::KEY_LOAD]);
 			if($order === null){
-				throw new PluginDescriptionParseException("Invalid Plugin \"load\"");
+				throw new PluginDescriptionParseException("Invalid Plugin \"" . self::KEY_LOAD . "\"");
 			}
 			$this->order = $order;
 		}else{
@@ -181,24 +207,24 @@ class PluginDescription{
 		}
 
 		$this->authors = [];
-		if(isset($plugin["author"])){
-			if(is_array($plugin["author"])){
-				$this->authors = $plugin["author"];
+		if(isset($plugin[self::KEY_AUTHOR])){
+			if(is_array($plugin[self::KEY_AUTHOR])){
+				$this->authors = $plugin[self::KEY_AUTHOR];
 			}else{
-				$this->authors[] = $plugin["author"];
+				$this->authors[] = $plugin[self::KEY_AUTHOR];
 			}
 		}
-		if(isset($plugin["authors"])){
-			foreach($plugin["authors"] as $author){
+		if(isset($plugin[self::KEY_AUTHORS])){
+			foreach($plugin[self::KEY_AUTHORS] as $author){
 				$this->authors[] = $author;
 			}
 		}
 
-		if(isset($plugin["permissions"])){
+		if(isset($plugin[self::KEY_PERMISSIONS])){
 			try{
-				$this->permissions = PermissionParser::loadPermissions($plugin["permissions"]);
+				$this->permissions = PermissionParser::loadPermissions($plugin[self::KEY_PERMISSIONS]);
 			}catch(PermissionParserException $e){
-				throw new PluginDescriptionParseException("Invalid Plugin \"permissions\": " . $e->getMessage(), 0, $e);
+				throw new PluginDescriptionParseException("Invalid Plugin \"" . self::KEY_PERMISSIONS . "\": " . $e->getMessage(), 0, $e);
 			}
 		}
 	}

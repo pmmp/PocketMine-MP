@@ -49,10 +49,7 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\lang\Translatable;
-use pocketmine\nbt\BigEndianNbtSerializer;
-use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\CompressBatchTask;
 use pocketmine\network\mcpe\compression\Compressor;
@@ -72,9 +69,13 @@ use pocketmine\network\query\QueryInfo;
 use pocketmine\network\upnp\UPnPNetworkInterface;
 use pocketmine\permission\BanList;
 use pocketmine\permission\DefaultPermissions;
+use pocketmine\player\DatFilePlayerDataProvider;
 use pocketmine\player\GameMode;
 use pocketmine\player\OfflinePlayer;
 use pocketmine\player\Player;
+use pocketmine\player\PlayerDataLoadException;
+use pocketmine\player\PlayerDataProvider;
+use pocketmine\player\PlayerDataSaveException;
 use pocketmine\player\PlayerInfo;
 use pocketmine\plugin\PharPluginLoader;
 use pocketmine\plugin\Plugin;
@@ -161,12 +162,9 @@ use function time;
 use function touch;
 use function trim;
 use function yaml_parse;
-use function zlib_decode;
-use function zlib_encode;
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 use const PHP_INT_MAX;
-use const ZLIB_ENCODING_GZIP;
 
 /**
  * The class that manages everything
@@ -250,6 +248,8 @@ class Server{
 
 	private string $dataPath;
 	private string $pluginPath;
+
+	private PlayerDataProvider $playerDataProvider;
 
 	/**
 	 * @var string[]
@@ -481,49 +481,22 @@ class Server{
 		return $result;
 	}
 
-	private function getPlayerDataPath(string $username) : string{
-		return Path::join($this->getDataPath(), 'players', strtolower($username) . '.dat');
-	}
-
 	/**
 	 * Returns whether the server has stored any saved data for this player.
 	 */
 	public function hasOfflinePlayerData(string $name) : bool{
-		return file_exists($this->getPlayerDataPath($name));
-	}
-
-	private function handleCorruptedPlayerData(string $name) : void{
-		$path = $this->getPlayerDataPath($name);
-		rename($path, $path . '.bak');
-		$this->logger->error($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_data_playerCorrupted($name)));
+		return $this->playerDataProvider->hasData($name);
 	}
 
 	public function getOfflinePlayerData(string $name) : ?CompoundTag{
 		return Timings::$syncPlayerDataLoad->time(function() use ($name) : ?CompoundTag{
-			$name = strtolower($name);
-			$path = $this->getPlayerDataPath($name);
-
-			if(file_exists($path)){
-				$contents = @file_get_contents($path);
-				if($contents === false){
-					throw new \RuntimeException("Failed to read player data file \"$path\" (permission denied?)");
-				}
-				$decompressed = @zlib_decode($contents);
-				if($decompressed === false){
-					$this->logger->debug("Failed to decompress raw player data for \"$name\"");
-					$this->handleCorruptedPlayerData($name);
-					return null;
-				}
-
-				try{
-					return (new BigEndianNbtSerializer())->read($decompressed)->mustGetCompoundTag();
-				}catch(NbtDataException $e){ //corrupt data
-					$this->logger->debug("Failed to decode NBT data for \"$name\": " . $e->getMessage());
-					$this->handleCorruptedPlayerData($name);
-					return null;
-				}
+			try{
+				return $this->playerDataProvider->loadData($name);
+			}catch(PlayerDataLoadException $e){
+				$this->logger->debug("Failed to load player data for $name: " . $e->getMessage());
+				$this->logger->error($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_data_playerCorrupted($name)));
+				return null;
 			}
-			return null;
 		});
 	}
 
@@ -537,11 +510,9 @@ class Server{
 
 		if(!$ev->isCancelled()){
 			Timings::$syncPlayerDataSave->time(function() use ($name, $ev) : void{
-				$nbt = new BigEndianNbtSerializer();
-				$contents = Utils::assumeNotFalse(zlib_encode($nbt->write(new TreeRoot($ev->getSaveData())), ZLIB_ENCODING_GZIP), "zlib_encode() failed unexpectedly");
 				try{
-					Filesystem::safeFilePutContents($this->getPlayerDataPath($name), $contents);
-				}catch(\RuntimeException $e){
+					$this->playerDataProvider->saveData($name, $ev->getSaveData());
+				}catch(PlayerDataSaveException $e){
 					$this->logger->critical($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_data_saveError($name, $e->getMessage())));
 					$this->logger->logException($e);
 				}
@@ -1003,6 +974,8 @@ class Server{
 			$this->updater = new UpdateChecker($this, $this->configGroup->getPropertyString("auto-updater.host", "update.pmmp.io"));
 
 			$this->queryInfo = new QueryInfo($this);
+
+			$this->playerDataProvider = new DatFilePlayerDataProvider(Path::join($this->dataPath, "players"));
 
 			register_shutdown_function([$this, "crashDump"]);
 
