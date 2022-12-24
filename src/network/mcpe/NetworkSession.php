@@ -823,7 +823,7 @@ class NetworkSession{
 			UpdateAbilitiesPacketLayer::ABILITY_FLYING => $for->isFlying(),
 			UpdateAbilitiesPacketLayer::ABILITY_NO_CLIP => !$for->hasBlockCollision(),
 			UpdateAbilitiesPacketLayer::ABILITY_OPERATOR => $isOp,
-			UpdateAbilitiesPacketLayer::ABILITY_TELEPORT => $for->hasPermission(DefaultPermissionNames::COMMAND_TELEPORT),
+			UpdateAbilitiesPacketLayer::ABILITY_TELEPORT => $for->hasPermission(DefaultPermissionNames::COMMAND_TELEPORT_SELF),
 			UpdateAbilitiesPacketLayer::ABILITY_INVULNERABLE => $for->isCreative(),
 			UpdateAbilitiesPacketLayer::ABILITY_MUTED => false,
 			UpdateAbilitiesPacketLayer::ABILITY_WORLD_BUILDER => false,
