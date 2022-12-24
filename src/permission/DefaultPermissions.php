@@ -44,12 +44,6 @@ abstract class DefaultPermissions{
 		return PermissionManager::getInstance()->getPermission($candidate->getName());
 	}
 
-	private static function registerDeprecatedPermission(string $name) : Permission{
-		$permission = new Permission($name, "Deprecated, kept for backwards compatibility only");
-		PermissionManager::getInstance()->addPermission($permission);
-		return $permission;
-	}
-
 	public static function registerCorePermissions() : void{
 		$consoleRoot = self::registerPermission(new Permission(self::ROOT_CONSOLE, "Grants all console permissions"));
 		$operatorRoot = self::registerPermission(new Permission(self::ROOT_OPERATOR, "Grants all operator permissions"), [$consoleRoot]);
@@ -65,25 +59,15 @@ abstract class DefaultPermissions{
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_DEFAULTGAMEMODE, "Allows the user to change the default gamemode"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_DIFFICULTY, "Allows the user to change the game difficulty"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_DUMPMEMORY, "Allows the user to dump memory contents"), [$consoleRoot]);
-
-		$effectRoot = self::registerDeprecatedPermission(DefaultPermissionNames::COMMAND_EFFECT);
-		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_EFFECT_OTHER, "Allows the user to modify effects of other players"), [$operatorRoot, $effectRoot]);
-		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_EFFECT_SELF, "Allows the user to modify their own effects"), [$operatorRoot, $effectRoot]);
-
-		$enchantRoot = self::registerDeprecatedPermission(DefaultPermissionNames::COMMAND_ENCHANT);
-		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_ENCHANT_OTHER, "Allows the user to enchant the held items of other players"), [$operatorRoot, $enchantRoot]);
-		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_ENCHANT_SELF, "Allows the user to enchant their own held item"), [$operatorRoot, $enchantRoot]);
-
-		$gameModeRoot = self::registerDeprecatedPermission(DefaultPermissionNames::COMMAND_GAMEMODE);
-		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_GAMEMODE_OTHER, "Allows the user to change the game mode of other players"), [$operatorRoot, $gameModeRoot]);
-		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_GAMEMODE_SELF, "Allows the user to change their own game mode"), [$operatorRoot, $gameModeRoot]);
-
+		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_EFFECT_OTHER, "Allows the user to modify effects of other players"), [$operatorRoot]);
+		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_EFFECT_SELF, "Allows the user to modify their own effects"), [$operatorRoot]);
+		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_ENCHANT_OTHER, "Allows the user to enchant the held items of other players"), [$operatorRoot]);
+		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_ENCHANT_SELF, "Allows the user to enchant their own held item"), [$operatorRoot]);
+		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_GAMEMODE_OTHER, "Allows the user to change the game mode of other players"), [$operatorRoot]);
+		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_GAMEMODE_SELF, "Allows the user to change their own game mode"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_GC, "Allows the user to fire garbage collection tasks"), [$operatorRoot]);
-
-		$giveRoot = self::registerDeprecatedPermission(DefaultPermissionNames::COMMAND_GIVE);
-		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_GIVE_OTHER, "Allows the user to give items to other players"), [$operatorRoot, $giveRoot]);
-		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_GIVE_SELF, "Allows the user to give items to themselves"), [$operatorRoot, $giveRoot]);
-
+		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_GIVE_OTHER, "Allows the user to give items to other players"), [$operatorRoot]);
+		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_GIVE_SELF, "Allows the user to give items to themselves"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_HELP, "Allows the user to view the help menu"), [$everyoneRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_KICK, "Allows the user to kick players"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_KILL_OTHER, "Allows the user to kill other players"), [$operatorRoot]);
@@ -100,18 +84,12 @@ abstract class DefaultPermissions{
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_SAY, "Allows the user to talk as the console"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_SEED, "Allows the user to view the seed of the world"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_SETWORLDSPAWN, "Allows the user to change the world spawn"), [$operatorRoot]);
-
-		$spawnpointRoot = self::registerDeprecatedPermission(DefaultPermissionNames::COMMAND_SPAWNPOINT);
-		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_SPAWNPOINT_OTHER, "Allows the user to change the respawn point of other players"), [$operatorRoot, $spawnpointRoot]);
-		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_SPAWNPOINT_SELF, "Allows the user to change their own respawn point"), [$operatorRoot, $spawnpointRoot]);
-
+		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_SPAWNPOINT_OTHER, "Allows the user to change the respawn point of other players"), [$operatorRoot]);
+		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_SPAWNPOINT_SELF, "Allows the user to change their own respawn point"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_STATUS, "Allows the user to view the server performance"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_STOP, "Allows the user to stop the server"), [$operatorRoot]);
-
-		$teleportRoot = self::registerDeprecatedPermission(DefaultPermissionNames::COMMAND_TELEPORT);
-		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TELEPORT_OTHER, "Allows the user to teleport other players"), [$operatorRoot, $teleportRoot]);
-		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TELEPORT_SELF, "Allows the user to teleport themselves"), [$operatorRoot, $teleportRoot]);
-
+		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TELEPORT_OTHER, "Allows the user to teleport other players"), [$operatorRoot]);
+		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TELEPORT_SELF, "Allows the user to teleport themselves"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TELL, "Allows the user to privately message another player"), [$everyoneRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TIME_ADD, "Allows the user to fast-forward time"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TIME_QUERY, "Allows the user query the time"), [$operatorRoot]);
@@ -119,11 +97,8 @@ abstract class DefaultPermissions{
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TIME_START, "Allows the user to restart the time"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TIME_STOP, "Allows the user to stop the time"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TIMINGS, "Allows the user to record timings to analyse server performance"), [$operatorRoot]);
-
-		$titleRoot = self::registerDeprecatedPermission(DefaultPermissionNames::COMMAND_TITLE);
-		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TITLE_OTHER, "Allows the user to send a title to the specified player"), [$operatorRoot, $titleRoot]);
-		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TITLE_SELF, "Allows the user to send a title to themselves"), [$operatorRoot, $titleRoot]);
-
+		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TITLE_OTHER, "Allows the user to send a title to the specified player"), [$operatorRoot]);
+		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TITLE_SELF, "Allows the user to send a title to themselves"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TRANSFERSERVER, "Allows the user to transfer self to another server"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_UNBAN_IP, "Allows the user to unban IP addresses"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_UNBAN_PLAYER, "Allows the user to unban players"), [$operatorRoot]);
