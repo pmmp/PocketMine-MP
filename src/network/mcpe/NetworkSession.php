@@ -424,6 +424,9 @@ class NetworkSession{
 	}
 
 	public function sendDataPacket(ClientboundPacket $packet, bool $immediate = false) : bool{
+		if(!$this->connected){
+			return false;
+		}
 		//Basic safety restriction. TODO: improve this
 		if(!$this->loggedIn && !$packet->canBeSentBeforeLogin()){
 			throw new \InvalidArgumentException("Attempted to send " . get_class($packet) . " to " . $this->getDisplayName() . " too early");
