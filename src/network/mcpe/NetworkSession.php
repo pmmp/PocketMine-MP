@@ -547,11 +547,16 @@ class NetworkSession{
 			$this->disposeHooks->clear();
 			$this->setHandler(null);
 			$this->connected = false;
-			$this->manager->remove($this);
 			$this->logger->info("Session closed due to $reason");
-
-			$this->invManager = null; //break cycles - TODO: this really ought to be deferred until it's safe
 		}
+	}
+
+	/**
+	 * Performs actions after the session has been disconnected. By this point, nothing should be interacting with the
+	 * session, so it's safe to destroy any cycles and perform destructive cleanup.
+	 */
+	private function dispose() : void{
+		$this->invManager = null;
 	}
 
 	/**
@@ -1114,6 +1119,11 @@ class NetworkSession{
 	}
 
 	public function tick() : void{
+		if(!$this->isConnected()){
+			$this->dispose();
+			return;
+		}
+
 		if($this->info === null){
 			if(time() >= $this->connectTime + 10){
 				$this->disconnect("Login timeout");
