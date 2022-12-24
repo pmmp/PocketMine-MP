@@ -29,7 +29,6 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
-use pocketmine\utils\TextFormat;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function count;
