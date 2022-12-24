@@ -23,19 +23,23 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
+use pocketmine\network\mcpe\protocol\DeathInfoPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\RespawnPacket;
 use pocketmine\network\mcpe\protocol\types\PlayerAction;
 use pocketmine\player\Player;
+use function array_map;
 
 class DeathPacketHandler extends PacketHandler{
 	public function __construct(
 		private Player $player,
 		private NetworkSession $session,
-		private InventoryManager $inventoryManager
+		private InventoryManager $inventoryManager,
+		private Translatable|string $deathMessage
 	){}
 
 	public function setUp() : void{
@@ -44,6 +48,26 @@ class DeathPacketHandler extends PacketHandler{
 			RespawnPacket::SEARCHING_FOR_SPAWN,
 			$this->player->getId()
 		));
+
+		/** @var string[] $parameters */
+		$parameters = [];
+		if($this->deathMessage instanceof Translatable){
+			//we can't send nested translations to the client, so make sure they are always pre-translated by the server
+			$language = $this->player->getLanguage();
+			$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $language->translate($p) : $p, $this->deathMessage->getParameters());
+			if(!$this->player->getServer()->isLanguageForced()){
+				foreach($parameters as $i => $p){
+					$parameters[$i] = $language->translateString($p, [], "pocketmine.");
+				}
+				$message = $language->translateString($this->deathMessage->getText(), $parameters, "pocketmine.");
+			}else{
+				$message = $language->translateString($this->deathMessage->getText(), $parameters);
+				$parameters = [];
+			}
+		}else{
+			$message = $this->deathMessage;
+		}
+		$this->session->sendDataPacket(DeathInfoPacket::create($message, $parameters));
 	}
 
 	public function handlePlayerAction(PlayerActionPacket $packet) : bool{

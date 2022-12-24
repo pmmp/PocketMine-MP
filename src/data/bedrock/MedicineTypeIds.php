@@ -21,14 +21,11 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\data\bedrock;
 
-final class BlockTypeTags{
-	private const PREFIX = "pocketmine:";
-
-	public const DIRT = self::PREFIX . "dirt";
-	public const MUD = self::PREFIX . "mud";
-	public const SAND = self::PREFIX . "sand";
-	public const POTTABLE_PLANTS = self::PREFIX . "pottable";
-	public const FIRE = self::PREFIX . "fire";
+final class MedicineTypeIds{
+	public const EYE_DROPS = 0;
+	public const TONIC = 1;
+	public const ANTIDOTE = 2;
+	public const ELIXIR = 3;
 }

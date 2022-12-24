@@ -299,9 +299,10 @@ final class ItemTypeIds{
 	public const FIRE_CHARGE = 20260;
 	public const SUSPICIOUS_STEW = 20261;
 	public const TURTLE_HELMET = 20262;
-	public const NAME_TAG = 20263;
+	public const MEDICINE = 20263;
+	public const NAME_TAG = 20264;
 
-	public const FIRST_UNUSED_ITEM_ID = 20264;
+	public const FIRST_UNUSED_ITEM_ID = 20265;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 

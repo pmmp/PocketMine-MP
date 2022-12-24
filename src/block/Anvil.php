@@ -37,6 +37,8 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\sound\AnvilFallSound;
+use pocketmine\world\sound\Sound;
 use function lcg_value;
 use function round;
 
@@ -108,5 +110,9 @@ class Anvil extends Transparent implements Fallable{
 			}
 		}
 		return true;
+	}
+
+	public function getLandSound() : ?Sound{
+		return new AnvilFallSound();
 	}
 }

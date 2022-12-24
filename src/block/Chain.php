@@ -23,12 +23,26 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-final class BlockTypeTags{
-	private const PREFIX = "pocketmine:";
+use pocketmine\block\utils\PillarRotationTrait;
+use pocketmine\block\utils\SupportType;
+use pocketmine\math\Axis;
+use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 
-	public const DIRT = self::PREFIX . "dirt";
-	public const MUD = self::PREFIX . "mud";
-	public const SAND = self::PREFIX . "sand";
-	public const POTTABLE_PLANTS = self::PREFIX . "pottable";
-	public const FIRE = self::PREFIX . "fire";
+final class Chain extends Transparent{
+	use PillarRotationTrait;
+
+	public function getSupportType(int $facing) : SupportType{
+		return $this->axis === Axis::Y && Facing::axis($facing) === Axis::Y ? SupportType::CENTER() : SupportType::NONE();
+	}
+
+	protected function recalculateCollisionBoxes() : array{
+		$bb = AxisAlignedBB::one();
+		foreach([Axis::Y, Axis::Z, Axis::X] as $axis){
+			if($axis !== $this->axis){
+				$bb->squash($axis, 13 / 32);
+			}
+		}
+		return [$bb];
+	}
 }

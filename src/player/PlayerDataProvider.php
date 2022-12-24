@@ -24,27 +24,29 @@ declare(strict_types=1);
 namespace pocketmine\player;
 
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\LongTag;
 
-class OfflinePlayer implements IPlayer{
-	public function __construct(
-		private string $name,
-		private ?CompoundTag $namedtag
-	){}
+/**
+ * Handles storage of player data. Implementations must treat player names in a case-insensitive manner.
+ */
+interface PlayerDataProvider{
 
-	public function getName() : string{
-		return $this->name;
-	}
+	/**
+	 * Returns whether there are any data associated with the given player name.
+	 */
+	public function hasData(string $name) : bool;
 
-	public function getFirstPlayed() : ?int{
-		return ($this->namedtag !== null && ($firstPlayedTag = $this->namedtag->getTag(Player::TAG_FIRST_PLAYED)) instanceof LongTag) ? $firstPlayedTag->getValue() : null;
-	}
+	/**
+	 * Returns the data associated with the given player name, or null if there is no data.
+	 * TODO: we need an async version of this
+	 *
+	 * @throws PlayerDataLoadException
+	 */
+	public function loadData(string $name) : ?CompoundTag;
 
-	public function getLastPlayed() : ?int{
-		return ($this->namedtag !== null && ($lastPlayedTag = $this->namedtag->getTag(Player::TAG_LAST_PLAYED)) instanceof LongTag) ? $lastPlayedTag->getValue() : null;
-	}
-
-	public function hasPlayedBefore() : bool{
-		return $this->namedtag !== null;
-	}
+	/**
+	 * Saves data for the give player name.
+	 *
+	 * @throws PlayerDataSaveException
+	 */
+	public function saveData(string $name, CompoundTag $data) : void;
 }
