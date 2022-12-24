@@ -154,7 +154,7 @@ final class EntityFactory{
 		}, ['Snowball', 'minecraft:snowball']);
 
 		$this->register(SplashPotion::class, function(World $world, CompoundTag $nbt) : SplashPotion{
-			$potionType = PotionTypeIdMap::getInstance()->fromId($nbt->getShort("PotionId", PotionTypeIds::WATER));
+			$potionType = PotionTypeIdMap::getInstance()->fromId($nbt->getShort(SplashPotion::TAG_POTION_ID, PotionTypeIds::WATER));
 			if($potionType === null){
 				throw new SavedDataLoadingException("No such potion type");
 			}
