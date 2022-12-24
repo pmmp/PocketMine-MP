@@ -35,6 +35,7 @@ use pocketmine\utils\TextFormat;
 use pocketmine\world\World;
 use function array_shift;
 use function count;
+use function implode;
 use function round;
 
 class TeleportCommand extends VanillaCommand{
@@ -46,7 +47,10 @@ class TeleportCommand extends VanillaCommand{
 			KnownTranslationFactory::commands_tp_usage(),
 			["teleport"]
 		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_TELEPORT);
+		$this->setPermission(implode(";", [
+			DefaultPermissionNames::COMMAND_TELEPORT_SELF,
+			DefaultPermissionNames::COMMAND_TELEPORT_OTHER
+		]));
 	}
 
 	private function findPlayer(CommandSender $sender, string $playerName) : ?Player{
@@ -67,31 +71,25 @@ class TeleportCommand extends VanillaCommand{
 			case 1: // /tp targetPlayer
 			case 3: // /tp x y z
 			case 5: // /tp x y z yaw pitch - TODO: 5 args could be target x y z yaw :(
-				if(!($sender instanceof Player)){
-					$sender->sendMessage(TextFormat::RED . "Please provide a player!");
-					return true;
-				}
-
-				$subject = $sender;
-				$targetArgs = $args;
+				$subjectName = null; //self
 				break;
 			case 2: // /tp player1 player2
 			case 4: // /tp player1 x y z - TODO: 4 args could be x y z yaw :(
 			case 6: // /tp player1 x y z yaw pitch
-				$subject = $this->findPlayer($sender, $args[0]);
-				if($subject === null){
-					return true;
-				}
-				$targetArgs = $args;
-				array_shift($targetArgs);
+				$subjectName = array_shift($args);
 				break;
 			default:
 				throw new InvalidCommandSyntaxException();
 		}
 
-		switch(count($targetArgs)){
+		$subject = $this->fetchPermittedPlayerTarget($sender, $subjectName, DefaultPermissionNames::COMMAND_TELEPORT_SELF, DefaultPermissionNames::COMMAND_TELEPORT_OTHER);
+		if($subject === null){
+			return true;
+		}
+
+		switch(count($args)){
 			case 1:
-				$targetPlayer = $this->findPlayer($sender, $targetArgs[0]);
+				$targetPlayer = $this->findPlayer($sender, $args[0]);
 				if($targetPlayer === null){
 					return true;
 				}
@@ -103,17 +101,17 @@ class TeleportCommand extends VanillaCommand{
 			case 3:
 			case 5:
 				$base = $subject->getLocation();
-				if(count($targetArgs) === 5){
-					$yaw = (float) $targetArgs[3];
-					$pitch = (float) $targetArgs[4];
+				if(count($args) === 5){
+					$yaw = (float) $args[3];
+					$pitch = (float) $args[4];
 				}else{
 					$yaw = $base->yaw;
 					$pitch = $base->pitch;
 				}
 
-				$x = $this->getRelativeDouble($base->x, $sender, $targetArgs[0]);
-				$y = $this->getRelativeDouble($base->y, $sender, $targetArgs[1], World::Y_MIN, World::Y_MAX);
-				$z = $this->getRelativeDouble($base->z, $sender, $targetArgs[2]);
+				$x = $this->getRelativeDouble($base->x, $sender, $args[0]);
+				$y = $this->getRelativeDouble($base->y, $sender, $args[1], World::Y_MIN, World::Y_MAX);
+				$z = $this->getRelativeDouble($base->z, $sender, $args[2]);
 				$targetLocation = new Location($x, $y, $z, $base->getWorld(), $yaw, $pitch);
 
 				$subject->teleport($targetLocation);
