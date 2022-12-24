@@ -549,6 +549,10 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::CARVED_PUMPKIN()
 				->setFacing($in->readLegacyHorizontalFacing());
 		});
+		$this->map(Ids::CHAIN, function(Reader $in) : Block{
+			return Blocks::CHAIN()
+				->setAxis($in->readPillarAxis());
+		});
 		$this->map(Ids::CHEMISTRY_TABLE, function(Reader $in) : Block{
 			return (match($type = $in->readString(StateNames::CHEMISTRY_TABLE_TYPE)){
 				StringValues::CHEMISTRY_TABLE_TYPE_COMPOUND_CREATOR => Blocks::COMPOUND_CREATOR(),

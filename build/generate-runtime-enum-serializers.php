@@ -33,6 +33,7 @@ use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\MushroomBlockType;
 use pocketmine\block\utils\SkullType;
 use pocketmine\block\utils\SlabType;
+use pocketmine\item\MedicineType;
 use pocketmine\item\PotionType;
 use pocketmine\item\SuspiciousStewType;
 use function array_key_first;
@@ -48,6 +49,7 @@ use function lcfirst;
 use function log;
 use function ob_get_clean;
 use function ob_start;
+use const SORT_STRING;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -165,6 +167,7 @@ $enumsUsed = [
 	DyeColor::getAll(),
 	FroglightType::getAll(),
 	LeverFacing::getAll(),
+	MedicineType::getAll(),
 	MushroomBlockType::getAll(),
 	SkullType::getAll(),
 	SlabType::getAll(),

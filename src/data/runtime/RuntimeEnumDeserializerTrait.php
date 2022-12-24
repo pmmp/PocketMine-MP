@@ -116,6 +116,16 @@ trait RuntimeEnumDeserializerTrait{
 		};
 	}
 
+	public function medicineType(\pocketmine\item\MedicineType &$value) : void{
+		$value = match($this->readInt(2)){
+			0 => \pocketmine\item\MedicineType::ANTIDOTE(),
+			1 => \pocketmine\item\MedicineType::ELIXIR(),
+			2 => \pocketmine\item\MedicineType::EYE_DROPS(),
+			3 => \pocketmine\item\MedicineType::TONIC(),
+			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for MedicineType")
+		};
+	}
+
 	public function mushroomBlockType(\pocketmine\block\utils\MushroomBlockType &$value) : void{
 		$value = match($this->readInt(4)){
 			0 => \pocketmine\block\utils\MushroomBlockType::ALL_CAP(),
