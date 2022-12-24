@@ -35,12 +35,14 @@ use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\bedrock\GoatHornTypeIdMap;
 use pocketmine\data\bedrock\item\ItemTypeNames as Ids;
 use pocketmine\data\bedrock\item\SavedItemData as Data;
+use pocketmine\data\bedrock\MedicineTypeIdMap;
 use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\data\bedrock\SuspiciousStewTypeIdMap;
 use pocketmine\item\Banner;
 use pocketmine\item\Dye;
 use pocketmine\item\GoatHorn;
 use pocketmine\item\Item;
+use pocketmine\item\Medicine;
 use pocketmine\item\Potion;
 use pocketmine\item\SplashPotion;
 use pocketmine\item\SuspiciousStew;
@@ -475,6 +477,14 @@ final class ItemSerializerDeserializerRegistrar{
 				$item->setType(GoatHornTypeIdMap::getInstance()->fromId($meta) ?? throw new ItemTypeDeserializeException("Unknown goat horn type ID $meta"));
 			},
 			fn(GoatHorn $item) => GoatHornTypeIdMap::getInstance()->toId($item->getType())
+		);
+		$this->map1to1ItemWithMeta(
+			Ids::MEDICINE,
+			Items::MEDICINE(),
+			function(Medicine $item, int $meta) : void{
+				$item->setType(MedicineTypeIdMap::getInstance()->fromId($meta) ?? throw new ItemTypeDeserializeException("Unknown medicine type ID $meta"));
+			},
+			fn(Medicine $item) => MedicineTypeIdMap::getInstance()->toId($item->getType())
 		);
 		$this->map1to1ItemWithMeta(
 			Ids::POTION,
