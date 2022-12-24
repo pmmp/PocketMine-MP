@@ -116,6 +116,16 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
+	public function medicineType(\pocketmine\item\MedicineType $value) : void{
+		$this->int(2, match($value){
+			\pocketmine\item\MedicineType::ANTIDOTE() => 0,
+			\pocketmine\item\MedicineType::ELIXIR() => 1,
+			\pocketmine\item\MedicineType::EYE_DROPS() => 2,
+			\pocketmine\item\MedicineType::TONIC() => 3,
+			default => throw new \pocketmine\utils\AssumptionFailedError("All MedicineType cases should be covered")
+		});
+	}
+
 	public function mushroomBlockType(\pocketmine\block\utils\MushroomBlockType $value) : void{
 		$this->int(4, match($value){
 			\pocketmine\block\utils\MushroomBlockType::ALL_CAP() => 0,
