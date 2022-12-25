@@ -30,10 +30,10 @@ declare(strict_types=1);
 namespace pocketmine\tools\generate_item_upgrade_schema;
 
 use pocketmine\errorhandler\ErrorToExceptionHandler;
+use pocketmine\utils\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use function count;
 use function dirname;
-use function file_get_contents;
 use function file_put_contents;
 use function is_array;
 use function json_decode;
@@ -55,7 +55,7 @@ if(count($argv) !== 4){
 
 [, $mappingTableFile, $upgradeSchemasDir, $outputFile] = $argv;
 
-$target = json_decode(ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents($mappingTableFile)), true, JSON_THROW_ON_ERROR);
+$target = json_decode(Filesystem::fileGetContents($mappingTableFile), true, JSON_THROW_ON_ERROR);
 if(!is_array($target)){
 	\GlobalLogger::get()->error("Invalid mapping table file");
 	exit(1);
@@ -69,7 +69,7 @@ foreach($files as $file){
 		continue;
 	}
 	\GlobalLogger::get()->info("Processing schema file $file");
-	$data = json_decode(ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents(Path::join($upgradeSchemasDir, $file))), associative: true, flags: JSON_THROW_ON_ERROR);
+	$data = json_decode(Filesystem::fileGetContents(Path::join($upgradeSchemasDir, $file)), associative: true, flags: JSON_THROW_ON_ERROR);
 	if(!is_array($data)){
 		\GlobalLogger::get()->error("Invalid schema file $file");
 		exit(1);

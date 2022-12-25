@@ -23,13 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock;
 
-use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
 use function array_keys;
-use function file_get_contents;
 use function gettype;
 use function is_array;
 use function is_string;
@@ -46,7 +45,7 @@ final class ItemTagToIdMap{
 	use SingletonTrait;
 
 	private static function make() : self{
-		$map = json_decode(ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents(Path::join(BEDROCK_DATA_PATH, 'item_tags.json'))), true, flags: JSON_THROW_ON_ERROR);
+		$map = json_decode(Filesystem::fileGetContents(Path::join(BEDROCK_DATA_PATH, 'item_tags.json')), true, flags: JSON_THROW_ON_ERROR);
 		if(!is_array($map)){
 			throw new AssumptionFailedError("Invalid item tag map, expected array");
 		}

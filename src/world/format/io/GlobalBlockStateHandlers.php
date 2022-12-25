@@ -32,9 +32,8 @@ use pocketmine\data\bedrock\block\upgrade\BlockIdMetaUpgrader;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgrader;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaUtils;
 use pocketmine\data\bedrock\block\upgrade\LegacyBlockIdToStringIdMap;
-use pocketmine\errorhandler\ErrorToExceptionHandler;
+use pocketmine\utils\Filesystem;
 use Symfony\Component\Filesystem\Path;
-use function file_get_contents;
 use const pocketmine\BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH;
 
 /**
@@ -69,10 +68,10 @@ final class GlobalBlockStateHandlers{
 			));
 			self::$blockDataUpgrader = new BlockDataUpgrader(
 				BlockIdMetaUpgrader::loadFromString(
-					ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents(Path::join(
+					Filesystem::fileGetContents(Path::join(
 						BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH,
 						'1.12.0_to_1.18.10_blockstate_map.bin'
-					))),
+					)),
 					LegacyBlockIdToStringIdMap::getInstance(),
 					$blockStateUpgrader
 				),
