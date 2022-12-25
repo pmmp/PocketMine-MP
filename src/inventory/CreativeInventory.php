@@ -25,9 +25,9 @@ namespace pocketmine\inventory;
 
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
 use Symfony\Component\Filesystem\Path;
-use function file_get_contents;
 use function json_decode;
 
 final class CreativeInventory{
@@ -37,7 +37,7 @@ final class CreativeInventory{
 	private array $creative = [];
 
 	private function __construct(){
-		$creativeItems = json_decode(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "creativeitems.json")), true);
+		$creativeItems = json_decode(Filesystem::fileGetContents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "creativeitems.json")), true);
 
 		foreach($creativeItems as $data){
 			$item = Item::jsonDeserialize($data);

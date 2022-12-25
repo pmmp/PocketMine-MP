@@ -32,7 +32,6 @@ use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
 use function file_exists;
-use function file_get_contents;
 use function rename;
 use function strtolower;
 use function zlib_decode;
@@ -70,8 +69,8 @@ final class DatFilePlayerDataProvider implements PlayerDataProvider{
 		}
 
 		try{
-			$contents = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents($path));
-		}catch(\ErrorException $e){
+			$contents = Filesystem::fileGetContents($path);
+		}catch(\RuntimeException $e){
 			throw new PlayerDataLoadException("Failed to read player data file \"$path\": " . $e->getMessage(), 0, $e);
 		}
 		try{

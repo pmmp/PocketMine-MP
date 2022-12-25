@@ -26,11 +26,11 @@ namespace pocketmine\network\mcpe\convert;
 use pocketmine\data\bedrock\LegacyItemIdToStringIdMap;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
 use function array_key_exists;
-use function file_get_contents;
 use function is_array;
 use function is_numeric;
 use function is_string;
@@ -67,7 +67,7 @@ final class ItemTranslator{
 	private array $complexNetToCoreMapping = [];
 
 	private static function make() : self{
-		$data = Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'r16_to_current_item_map.json')), "Missing required resource file");
+		$data = Filesystem::fileGetContents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'r16_to_current_item_map.json'));
 		$json = json_decode($data, true);
 		if(!is_array($json) || !isset($json["simple"], $json["complex"]) || !is_array($json["simple"]) || !is_array($json["complex"])){
 			throw new AssumptionFailedError("Invalid item table format");
