@@ -125,7 +125,6 @@ use function count;
 use function date;
 use function fclose;
 use function file_exists;
-use function file_get_contents;
 use function file_put_contents;
 use function filemtime;
 use function fopen;
@@ -774,7 +773,7 @@ class Server{
 			$this->logger->info("Loading server configuration");
 			$pocketmineYmlPath = Path::join($this->dataPath, "pocketmine.yml");
 			if(!file_exists($pocketmineYmlPath)){
-				$content = Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, "pocketmine.yml")), "Missing required resource file");
+				$content = Filesystem::fileGetContents(Path::join(\pocketmine\RESOURCE_PATH, "pocketmine.yml"));
 				if(VersionInfo::IS_DEVELOPMENT_BUILD){
 					$content = str_replace("preferred-channel: stable", "preferred-channel: beta", $content);
 				}
@@ -947,7 +946,7 @@ class Server{
 				copy(Path::join(\pocketmine\RESOURCE_PATH, 'plugin_list.yml'), $graylistFile);
 			}
 			try{
-				$pluginGraylist = PluginGraylist::fromArray(yaml_parse(file_get_contents($graylistFile)));
+				$pluginGraylist = PluginGraylist::fromArray(yaml_parse(Filesystem::fileGetContents($graylistFile)));
 			}catch(\InvalidArgumentException $e){
 				$this->logger->emergency("Failed to load $graylistFile: " . $e->getMessage());
 				$this->forceShutdownExit();

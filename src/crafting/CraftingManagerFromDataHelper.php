@@ -39,11 +39,11 @@ use pocketmine\data\SavedDataLoadingException;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\item\Item;
 use pocketmine\nbt\LittleEndianNbtSerializer;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
 use Symfony\Component\Filesystem\Path;
 use function base64_decode;
-use function file_get_contents;
 use function get_debug_type;
 use function is_array;
 use function is_object;
@@ -156,7 +156,7 @@ final class CraftingManagerFromDataHelper{
 	 * @phpstan-return list<TData>
 	 */
 	public static function loadJsonArrayOfObjectsFile(string $filePath, string $modelCLass) : array{
-		$recipes = json_decode(Utils::assumeNotFalse(file_get_contents($filePath), "Missing required resource file"));
+		$recipes = json_decode(Filesystem::fileGetContents($filePath));
 		if(!is_array($recipes)){
 			throw new SavedDataLoadingException("$filePath root should be an array, got " . get_debug_type($recipes));
 		}

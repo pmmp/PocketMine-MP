@@ -30,6 +30,7 @@ use function dirname;
 use function fclose;
 use function fflush;
 use function file_exists;
+use function file_get_contents;
 use function file_put_contents;
 use function flock;
 use function fopen;
@@ -289,6 +290,23 @@ final class Filesystem{
 				throw new \RuntimeException("Failed to move temporary file contents into target file: " . $copyException->getMessage(), 0, $copyException);
 			}
 			@unlink($temporaryFileName);
+		}
+	}
+
+	/**
+	 * Wrapper around file_get_contents() which throws an exception instead of generating E_* errors.
+	 *
+	 * @phpstan-param resource|null       $context
+	 * @phpstan-param 0|positive-int      $offset
+	 * @phpstan-param 0|positive-int|null $length
+	 *
+	 * @throws \RuntimeException
+	 */
+	public static function fileGetContents(string $fileName, bool $useIncludePath = false, $context = null, int $offset = 0, ?int $length = null) : string{
+		try{
+			return ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents($fileName, $useIncludePath, $context, $offset, $length));
+		}catch(\ErrorException $e){
+			throw new \RuntimeException("Failed to read file $fileName: " . $e->getMessage(), 0, $e);
 		}
 	}
 }

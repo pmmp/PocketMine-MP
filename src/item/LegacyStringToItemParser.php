@@ -27,12 +27,11 @@ use pocketmine\data\bedrock\item\ItemDeserializer;
 use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
 use pocketmine\data\bedrock\item\upgrade\ItemDataUpgrader;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
-use pocketmine\utils\Utils;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
 use Symfony\Component\Filesystem\Path;
 use function explode;
-use function file_get_contents;
 use function is_array;
 use function is_numeric;
 use function is_string;
@@ -60,7 +59,7 @@ final class LegacyStringToItemParser{
 			GlobalItemDataHandlers::getDeserializer()
 		);
 
-		$mappingsRaw = Utils::assumeNotFalse(@file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, 'item_from_string_bc_map.json')), "Missing required resource file");
+		$mappingsRaw = Filesystem::fileGetContents(Path::join(\pocketmine\RESOURCE_PATH, 'item_from_string_bc_map.json'));
 
 		$mappings = json_decode($mappingsRaw, true);
 		if(!is_array($mappings)) throw new AssumptionFailedError("Invalid mappings format, expected array");

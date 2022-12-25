@@ -424,6 +424,9 @@ class NetworkSession{
 	}
 
 	public function sendDataPacket(ClientboundPacket $packet, bool $immediate = false) : bool{
+		if(!$this->connected){
+			return false;
+		}
 		//Basic safety restriction. TODO: improve this
 		if(!$this->loggedIn && !$packet->canBeSentBeforeLogin()){
 			throw new \InvalidArgumentException("Attempted to send " . get_class($packet) . " to " . $this->getDisplayName() . " too early");
@@ -544,17 +547,24 @@ class NetworkSession{
 			$this->disconnectGuard = true;
 			$func();
 			$this->disconnectGuard = false;
+			$this->flushSendBuffer(true);
+			$this->sender->close("");
 			foreach($this->disposeHooks as $callback){
 				$callback();
 			}
 			$this->disposeHooks->clear();
 			$this->setHandler(null);
 			$this->connected = false;
-			$this->manager->remove($this);
 			$this->logger->info("Session closed due to $reason");
-
-			$this->invManager = null; //break cycles - TODO: this really ought to be deferred until it's safe
 		}
+	}
+
+	/**
+	 * Performs actions after the session has been disconnected. By this point, nothing should be interacting with the
+	 * session, so it's safe to destroy any cycles and perform destructive cleanup.
+	 */
+	private function dispose() : void{
+		$this->invManager = null;
 	}
 
 	/**
@@ -562,10 +572,12 @@ class NetworkSession{
 	 */
 	public function disconnect(string $reason, bool $notify = true) : void{
 		$this->tryDisconnect(function() use ($reason, $notify) : void{
+			if($notify){
+				$this->sendDataPacket(DisconnectPacket::create($reason));
+			}
 			if($this->player !== null){
 				$this->player->onPostDisconnect($reason, null);
 			}
-			$this->doServerDisconnect($reason, $notify);
 		}, $reason);
 	}
 
@@ -578,7 +590,6 @@ class NetworkSession{
 			if($this->player !== null){
 				$this->player->onPostDisconnect($reason, null);
 			}
-			$this->doServerDisconnect($reason, false);
 		}, $reason);
 	}
 
@@ -587,19 +598,8 @@ class NetworkSession{
 	 */
 	public function onPlayerDestroyed(string $reason) : void{
 		$this->tryDisconnect(function() use ($reason) : void{
-			$this->doServerDisconnect($reason, true);
+			$this->sendDataPacket(DisconnectPacket::create($reason));
 		}, $reason);
-	}
-
-	/**
-	 * Internal helper function used to handle server disconnections.
-	 */
-	private function doServerDisconnect(string $reason, bool $notify = true) : void{
-		if($notify){
-			$this->sendDataPacket(DisconnectPacket::create($reason !== "" ? $reason : null), true);
-		}
-
-		$this->sender->close($notify ? $reason : "");
 	}
 
 	/**
@@ -1117,6 +1117,11 @@ class NetworkSession{
 	}
 
 	public function tick() : void{
+		if(!$this->isConnected()){
+			$this->dispose();
+			return;
+		}
+
 		if($this->info === null){
 			if(time() >= $this->connectTime + 10){
 				$this->disconnect("Login timeout");

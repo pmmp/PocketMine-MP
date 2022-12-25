@@ -24,16 +24,15 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
-use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
-use function file_get_contents;
 
 final class GlobalItemTypeDictionary{
 	use SingletonTrait;
 
 	private static function make() : self{
-		$data = Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'required_item_list.json')), "Missing required resource file");
+		$data = Filesystem::fileGetContents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'required_item_list.json'));
 		$dictionary = ItemTypeDictionaryFromDataHelper::loadFromString($data);
 		return new self($dictionary);
 	}

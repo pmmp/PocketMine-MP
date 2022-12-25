@@ -33,7 +33,6 @@ use function count;
 use function date;
 use function explode;
 use function file_exists;
-use function file_get_contents;
 use function get_debug_type;
 use function implode;
 use function is_array;
@@ -162,10 +161,7 @@ class Config{
 			$this->config = $default;
 			$this->save();
 		}else{
-			$content = file_get_contents($this->file);
-			if($content === false){
-				throw new \RuntimeException("Unable to load config file");
-			}
+			$content = Filesystem::fileGetContents($this->file);
 			switch($this->type){
 				case Config::PROPERTIES:
 					$config = self::parseProperties($content);

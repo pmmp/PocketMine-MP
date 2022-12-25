@@ -27,9 +27,9 @@ use pocketmine\network\mcpe\protocol\AvailableActorIdentifiersPacket;
 use pocketmine\network\mcpe\protocol\BiomeDefinitionListPacket;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
 use Symfony\Component\Filesystem\Path;
-use function file_get_contents;
 
 class StaticPacketCache{
 	use SingletonTrait;
@@ -38,9 +38,7 @@ class StaticPacketCache{
 	 * @phpstan-return CacheableNbt<\pocketmine\nbt\tag\CompoundTag>
 	 */
 	private static function loadCompoundFromFile(string $filePath) : CacheableNbt{
-		$rawNbt = @file_get_contents($filePath);
-		if($rawNbt === false) throw new \RuntimeException("Failed to read file");
-		return new CacheableNbt((new NetworkNbtSerializer())->read($rawNbt)->mustGetCompoundTag());
+		return new CacheableNbt((new NetworkNbtSerializer())->read(Filesystem::fileGetContents($filePath))->mustGetCompoundTag());
 	}
 
 	private static function make() : self{
