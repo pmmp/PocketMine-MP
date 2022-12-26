@@ -31,6 +31,10 @@ class HandlerList{
 	/** @var RegisteredListener[][] */
 	private array $handlerSlots = [];
 
+	/**
+	 * @phpstan-template TEvent of Event
+	 * @phpstan-param class-string<TEvent> $class
+	 */
 	public function __construct(
 		private string $class,
 		private ?HandlerList $parentList
