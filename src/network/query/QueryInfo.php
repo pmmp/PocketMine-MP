@@ -42,7 +42,7 @@ final class QueryInfo{
 	private bool $listPlugins;
 	/** @var Plugin[] */
 	private array $plugins;
-	/** @var QueryPlayerInfo[] */
+	/** @var string[] */
 	private array $players;
 
 	private string $gametype;
@@ -68,7 +68,7 @@ final class QueryInfo{
 		$this->serverName = $server->getMotd();
 		$this->listPlugins = $server->getConfigGroup()->getPropertyBool("settings.query-plugins", true);
 		$this->plugins = $server->getPluginManager()->getPlugins();
-		$this->players = array_map(fn(Player $p) => new QueryPlayerInfo($p->getName()), $server->getOnlinePlayers());
+		$this->players = array_map(fn(Player $p) => $p->getName(), $server->getOnlinePlayers());
 
 		$this->gametype = ($server->getGamemode()->equals(GameMode::SURVIVAL()) || $server->getGamemode()->equals(GameMode::ADVENTURE())) ? "SMP" : "CMP";
 		$this->version = $server->getVersion();
@@ -123,17 +123,17 @@ final class QueryInfo{
 	}
 
 	/**
-	 * @return QueryPlayerInfo[]
+	 * @return string[]
 	 */
 	public function getPlayerList() : array{
 		return $this->players;
 	}
 
 	/**
-	 * @param QueryPlayerInfo[] $players
+	 * @param string[] $players
 	 */
 	public function setPlayerList(array $players) : void{
-		Utils::validateArrayValueType($players, function(QueryPlayerInfo $_) : void{});
+		Utils::validateArrayValueType($players, function(string $_) : void{});
 		$this->players = $players;
 		$this->destroyCache();
 	}
@@ -227,7 +227,7 @@ final class QueryInfo{
 
 		$query .= "\x00\x01player_\x00\x00";
 		foreach($this->players as $player){
-			$query .= $player->getName() . "\x00";
+			$query .= $player . "\x00";
 		}
 		$query .= "\x00";
 
