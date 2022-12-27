@@ -583,7 +583,9 @@ class NetworkSession{
 
 	public function disconnectIncompatibleProtocol(int $protocolVersion) : void{
 		$this->tryDisconnect(
-			fn() => $this->sendDataPacket(PlayStatusPacket::create($protocolVersion < ProtocolInfo::CURRENT_PROTOCOL ? PlayStatusPacket::LOGIN_FAILED_CLIENT : PlayStatusPacket::LOGIN_FAILED_SERVER), true),
+			function() use ($protocolVersion) : void{
+				$this->sendDataPacket(PlayStatusPacket::create($protocolVersion < ProtocolInfo::CURRENT_PROTOCOL ? PlayStatusPacket::LOGIN_FAILED_CLIENT : PlayStatusPacket::LOGIN_FAILED_SERVER), true);
+			},
 			$this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_disconnect_incompatibleProtocol((string) $protocolVersion))
 		);
 	}
