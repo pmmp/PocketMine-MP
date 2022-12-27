@@ -207,7 +207,7 @@ class NetworkSession{
 		));
 
 		$this->manager->add($this);
-		$this->logger->info("Session opened");
+		$this->logger->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_network_session_open()));
 	}
 
 	private function getLogPrefix() : string{
@@ -227,7 +227,7 @@ class NetworkSession{
 			$this,
 			function(PlayerInfo $info) : void{
 				$this->info = $info;
-				$this->logger->info("Player: " . TextFormat::AQUA . $info->getUsername() . TextFormat::RESET);
+				$this->logger->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_network_session_playerName(TextFormat::AQUA . $info->getUsername() . TextFormat::RESET)));
 				$this->logger->setPrefix($this->getLogPrefix());
 			},
 			\Closure::fromCallable([$this, "setAuthenticationStatus"])
@@ -558,13 +558,7 @@ class NetworkSession{
 			$this->setHandler(null);
 			$this->connected = false;
 
-			if($reason instanceof Translatable){
-				$translated = $this->server->getLanguage()->translate($reason);
-			}else{
-				$translated = $reason;
-			}
-			//TODO: l10n
-			$this->logger->info("Session closed due to $translated");
+			$this->logger->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_network_session_close($reason)));
 		}
 	}
 
