@@ -96,7 +96,6 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\Releasable;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\Language;
 use pocketmine\lang\Translatable;
 use pocketmine\math\Vector3;
@@ -2102,13 +2101,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/**
 	 * Kicks a player from the server
 	 */
-	public function kick(string $reason = "", Translatable|string|null $quitMessage = null) : bool{
+	public function kick(Translatable|string $reason = "", Translatable|string|null $quitMessage = null) : bool{
 		$ev = new PlayerKickEvent($this, $reason, $quitMessage ?? $this->getLeaveMessage());
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$reason = $ev->getReason();
 			if($reason === ""){
-				$reason = KnownTranslationKeys::DISCONNECTIONSCREEN_NOREASON;
+				$reason = KnownTranslationFactory::disconnectionScreen_noReason();
 			}
 			$this->disconnect($reason, $ev->getQuitMessage());
 
@@ -2127,10 +2126,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 *
 	 * Note for internals developers: Do not call this from network sessions. It will cause a feedback loop.
 	 *
-	 * @param string                   $reason      Shown to the player, usually this will appear on their disconnect screen.
+	 * @param Translatable|string      $reason      Shown on the disconnect screen, and in the server log
 	 * @param Translatable|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
-	public function disconnect(string $reason, Translatable|string|null $quitMessage = null) : void{
+	public function disconnect(Translatable|string $reason, Translatable|string|null $quitMessage = null) : void{
 		if(!$this->isConnected()){
 			return;
 		}
@@ -2143,10 +2142,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @internal
 	 * This method executes post-disconnect actions and cleanups.
 	 *
-	 * @param string                   $reason      Shown to the player, usually this will appear on their disconnect screen.
 	 * @param Translatable|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
-	public function onPostDisconnect(string $reason, Translatable|string|null $quitMessage) : void{
+	public function onPostDisconnect(Translatable|string $reason, Translatable|string|null $quitMessage) : void{
 		if($this->isConnected()){
 			throw new \LogicException("Player is still connected");
 		}

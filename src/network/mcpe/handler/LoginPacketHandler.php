@@ -25,7 +25,8 @@ namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\entity\InvalidSkinException;
 use pocketmine\event\player\PlayerPreLoginEvent;
-use pocketmine\lang\KnownTranslationKeys;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\auth\ProcessLoginTask;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\JwtException;
@@ -51,7 +52,7 @@ use function is_array;
 class LoginPacketHandler extends PacketHandler{
 	/**
 	 * @phpstan-param \Closure(PlayerInfo) : void $playerInfoConsumer
-	 * @phpstan-param \Closure(bool $isAuthenticated, bool $authRequired, ?string $error, ?string $clientPubKey) : void $authCallback
+	 * @phpstan-param \Closure(bool $isAuthenticated, bool $authRequired, Translatable|string|null $error, ?string $clientPubKey) : void $authCallback
 	 */
 	public function __construct(
 		private Server $server,
@@ -70,7 +71,7 @@ class LoginPacketHandler extends PacketHandler{
 		$extraData = $this->fetchAuthData($packet->chainDataJwt);
 
 		if(!Player::isValidUserName($extraData->displayName)){
-			$this->session->disconnect(KnownTranslationKeys::DISCONNECTIONSCREEN_INVALIDNAME);
+			$this->session->disconnect(KnownTranslationFactory::disconnectionScreen_invalidName());
 
 			return true;
 		}
@@ -80,7 +81,7 @@ class LoginPacketHandler extends PacketHandler{
 			$skin = SkinAdapterSingleton::get()->fromSkinData(ClientDataToSkinDataHelper::fromClientData($clientData));
 		}catch(\InvalidArgumentException | InvalidSkinException $e){
 			$this->session->getLogger()->debug("Invalid skin: " . $e->getMessage());
-			$this->session->disconnect(KnownTranslationKeys::DISCONNECTIONSCREEN_INVALIDSKIN);
+			$this->session->disconnect(KnownTranslationFactory::disconnectionScreen_invalidSkin());
 
 			return true;
 		}
@@ -116,12 +117,14 @@ class LoginPacketHandler extends PacketHandler{
 			$this->server->requiresAuthentication()
 		);
 		if($this->server->getNetwork()->getConnectionCount() > $this->server->getMaxPlayers()){
-			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_FULL, KnownTranslationKeys::DISCONNECTIONSCREEN_SERVERFULL);
+			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_FULL, KnownTranslationFactory::disconnectionScreen_serverFull());
 		}
 		if(!$this->server->isWhitelisted($playerInfo->getUsername())){
+			//TODO: l10n
 			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_WHITELISTED, "Server is whitelisted");
 		}
 		if($this->server->getNameBans()->isBanned($playerInfo->getUsername()) || $this->server->getIPBans()->isBanned($this->session->getIp())){
+			//TODO: l10n
 			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_BANNED, "You are banned");
 		}
 

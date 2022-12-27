@@ -26,6 +26,7 @@ namespace pocketmine\event\player;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\event\Event;
+use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\NetworkSession;
 
 /**
@@ -35,7 +36,7 @@ use pocketmine\network\mcpe\NetworkSession;
 class PlayerDuplicateLoginEvent extends Event implements Cancellable{
 	use CancellableTrait;
 
-	private string $disconnectMessage = "Logged in from another location";
+	private Translatable|string $disconnectMessage = "Logged in from another location";
 
 	public function __construct(
 		private NetworkSession $connectingSession,
@@ -53,11 +54,11 @@ class PlayerDuplicateLoginEvent extends Event implements Cancellable{
 	/**
 	 * Returns the message shown to the session which gets disconnected.
 	 */
-	public function getDisconnectMessage() : string{
+	public function getDisconnectMessage() : Translatable|string{
 		return $this->disconnectMessage;
 	}
 
-	public function setDisconnectMessage(string $message) : void{
+	public function setDisconnectMessage(Translatable|string $message) : void{
 		$this->disconnectMessage = $message;
 	}
 }

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network;
 
+use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\NetworkSession;
 use function count;
 use function spl_object_id;
@@ -74,7 +75,7 @@ class NetworkSessionManager{
 	/**
 	 * Terminates all connected sessions with the given reason.
 	 */
-	public function close(string $reason = "") : void{
+	public function close(Translatable|string $reason = "") : void{
 		foreach($this->sessions as $session){
 			$session->disconnect($reason);
 		}

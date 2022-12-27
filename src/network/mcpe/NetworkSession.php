@@ -34,7 +34,6 @@ use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\form\Form;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\Translatable;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -230,9 +229,7 @@ class NetworkSession{
 				$this->logger->info("Player: " . TextFormat::AQUA . $info->getUsername() . TextFormat::RESET);
 				$this->logger->setPrefix($this->getLogPrefix());
 			},
-			function(bool $isAuthenticated, bool $authRequired, ?string $error, ?string $clientPubKey) : void{
-				$this->setAuthenticationStatus($isAuthenticated, $authRequired, $error, $clientPubKey);
-			}
+			\Closure::fromCallable([$this, "setAuthenticationStatus"])
 		));
 	}
 
@@ -542,7 +539,7 @@ class NetworkSession{
 	/**
 	 * @phpstan-param \Closure() : void $func
 	 */
-	private function tryDisconnect(\Closure $func, string $reason) : void{
+	private function tryDisconnect(\Closure $func, Translatable|string $reason) : void{
 		if($this->connected && !$this->disconnectGuard){
 			$this->disconnectGuard = true;
 			$func();
@@ -555,7 +552,14 @@ class NetworkSession{
 			$this->disposeHooks->clear();
 			$this->setHandler(null);
 			$this->connected = false;
-			$this->logger->info("Session closed due to $reason");
+
+			if($reason instanceof Translatable){
+				$translated = $this->server->getLanguage()->translate($reason);
+			}else{
+				$translated = $reason;
+			}
+			//TODO: l10n
+			$this->logger->info("Session closed due to $translated");
 		}
 	}
 
@@ -567,13 +571,22 @@ class NetworkSession{
 		$this->invManager = null;
 	}
 
+	private function sendDisconnectPacket(Translatable|string $reason) : void{
+		if($reason instanceof Translatable){
+			$translated = $this->server->getLanguage()->translate($reason);
+		}else{
+			$translated = $reason;
+		}
+		$this->sendDataPacket(DisconnectPacket::create($translated));
+	}
+
 	/**
 	 * Disconnects the session, destroying the associated player (if it exists).
 	 */
-	public function disconnect(string $reason, bool $notify = true) : void{
+	public function disconnect(Translatable|string $reason, bool $notify = true) : void{
 		$this->tryDisconnect(function() use ($reason, $notify) : void{
 			if($notify){
-				$this->sendDataPacket(DisconnectPacket::create($reason));
+				$this->sendDisconnectPacket($reason);
 			}
 			if($this->player !== null){
 				$this->player->onPostDisconnect($reason, null);
@@ -593,7 +606,7 @@ class NetworkSession{
 	/**
 	 * Instructs the remote client to connect to a different server.
 	 */
-	public function transfer(string $ip, int $port, string $reason = "transfer") : void{
+	public function transfer(string $ip, int $port, Translatable|string $reason = "transfer") : void{
 		$this->tryDisconnect(function() use ($ip, $port, $reason) : void{
 			$this->sendDataPacket(TransferPacket::create($ip, $port), true);
 			if($this->player !== null){
@@ -605,9 +618,9 @@ class NetworkSession{
 	/**
 	 * Called by the Player when it is closed (for example due to getting kicked).
 	 */
-	public function onPlayerDestroyed(string $reason) : void{
+	public function onPlayerDestroyed(Translatable|string $reason) : void{
 		$this->tryDisconnect(function() use ($reason) : void{
-			$this->sendDataPacket(DisconnectPacket::create($reason));
+			$this->sendDisconnectPacket($reason);
 		}, $reason);
 	}
 
@@ -623,7 +636,7 @@ class NetworkSession{
 		}, $reason);
 	}
 
-	private function setAuthenticationStatus(bool $authenticated, bool $authRequired, ?string $error, ?string $clientPubKey) : void{
+	private function setAuthenticationStatus(bool $authenticated, bool $authRequired, Translatable|string|null $error, ?string $clientPubKey) : void{
 		if(!$this->connected){
 			return;
 		}
@@ -636,7 +649,7 @@ class NetworkSession{
 		}
 
 		if($error !== null){
-			$this->disconnect($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_disconnect_invalidSession($this->server->getLanguage()->translateString($error))));
+			$this->disconnect(KnownTranslationFactory::pocketmine_disconnect_invalidSession($error));
 
 			return;
 		}
@@ -645,7 +658,7 @@ class NetworkSession{
 
 		if(!$this->authenticated){
 			if($authRequired){
-				$this->disconnect(KnownTranslationKeys::DISCONNECTIONSCREEN_NOTAUTHENTICATED);
+				$this->disconnect(KnownTranslationFactory::disconnectionScreen_notAuthenticated());
 				return;
 			}
 			if($this->info instanceof XboxLivePlayerInfo){
