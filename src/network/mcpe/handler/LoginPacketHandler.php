@@ -71,7 +71,7 @@ class LoginPacketHandler extends PacketHandler{
 		$extraData = $this->fetchAuthData($packet->chainDataJwt);
 
 		if(!Player::isValidUserName($extraData->displayName)){
-			$this->session->disconnect(KnownTranslationFactory::disconnectionScreen_invalidName());
+			$this->session->disconnectWithError(KnownTranslationFactory::disconnectionScreen_invalidName());
 
 			return true;
 		}
@@ -81,7 +81,7 @@ class LoginPacketHandler extends PacketHandler{
 			$skin = SkinAdapterSingleton::get()->fromSkinData(ClientDataToSkinDataHelper::fromClientData($clientData));
 		}catch(\InvalidArgumentException | InvalidSkinException $e){
 			$this->session->getLogger()->debug("Invalid skin: " . $e->getMessage());
-			$this->session->disconnect(KnownTranslationFactory::disconnectionScreen_invalidSkin());
+			$this->session->disconnectWithError(KnownTranslationFactory::disconnectionScreen_invalidSkin());
 
 			return true;
 		}
@@ -120,12 +120,19 @@ class LoginPacketHandler extends PacketHandler{
 			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_FULL, KnownTranslationFactory::disconnectionScreen_serverFull());
 		}
 		if(!$this->server->isWhitelisted($playerInfo->getUsername())){
-			//TODO: l10n
-			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_WHITELISTED, "Server is whitelisted");
+			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_WHITELISTED, KnownTranslationFactory::pocketmine_disconnect_whitelisted());
 		}
-		if($this->server->getNameBans()->isBanned($playerInfo->getUsername()) || $this->server->getIPBans()->isBanned($this->session->getIp())){
-			//TODO: l10n
-			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_BANNED, "You are banned");
+
+		$banMessage = null;
+		if(($banEntry = $this->server->getNameBans()->getEntry($playerInfo->getUsername())) !== null){
+			$banReason = $banEntry->getReason();
+			$banMessage = $banReason === "" ? KnownTranslationFactory::pocketmine_disconnect_ban_noReason() : KnownTranslationFactory::pocketmine_disconnect_ban($banReason);
+		}elseif(($banEntry = $this->server->getIPBans()->getEntry($this->session->getIp())) !== null){
+			$banReason = $banEntry->getReason();
+			$banMessage = KnownTranslationFactory::pocketmine_disconnect_ban($banReason !== "" ? $banReason : KnownTranslationFactory::pocketmine_disconnect_ban_ip());
+		}
+		if($banMessage !== null){
+			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_BANNED, $banMessage);
 		}
 
 		$ev->call();

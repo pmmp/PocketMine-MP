@@ -86,7 +86,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 
 	private function disconnectWithError(string $error) : void{
 		$this->session->getLogger()->error("Error downloading resource packs: " . $error);
-		$this->session->disconnect(KnownTranslationFactory::disconnectionScreen_resourcePack());
+		$this->session->disconnectWithError(KnownTranslationFactory::disconnectionScreen_resourcePack());
 	}
 
 	public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet) : bool{

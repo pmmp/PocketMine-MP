@@ -2081,14 +2081,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/**
 	 * Transfers a player to another server.
 	 *
-	 * @param string $address The IP address or hostname of the destination server
-	 * @param int    $port    The destination port, defaults to 19132
-	 * @param string $message Message to show in the console when closing the player
+	 * @param string                   $address The IP address or hostname of the destination server
+	 * @param int                      $port    The destination port, defaults to 19132
+	 * @param Translatable|string|null $message Message to show in the console when closing the player, null will use the default message
 	 *
 	 * @return bool if transfer was successful.
 	 */
-	public function transfer(string $address, int $port = 19132, string $message = "transfer") : bool{
-		$ev = new PlayerTransferEvent($this, $address, $port, $message);
+	public function transfer(string $address, int $port = 19132, Translatable|string|null $message = null) : bool{
+		$ev = new PlayerTransferEvent($this, $address, $port, $message ?? KnownTranslationFactory::pocketmine_disconnect_transfer());
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$this->getNetworkSession()->transfer($ev->getAddress(), $ev->getPort(), $ev->getMessage());
@@ -2303,7 +2303,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function respawn() : void{
 		if($this->server->isHardcore()){
-			if($this->kick("You have been banned because you died in hardcore mode")){ //this allows plugins to prevent the ban by cancelling PlayerKickEvent
+			if($this->kick(KnownTranslationFactory::pocketmine_disconnect_ban(KnownTranslationFactory::pocketmine_disconnect_ban_hardcore()))){ //this allows plugins to prevent the ban by cancelling PlayerKickEvent
 				$this->server->getNameBans()->addBan($this->getName(), "Died in hardcore mode");
 			}
 			return;

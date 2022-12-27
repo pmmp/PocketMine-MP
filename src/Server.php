@@ -567,7 +567,8 @@ class Server{
 			},
 			static function() use ($playerPromiseResolver, $session) : void{
 				if($session->isConnected()){
-					$session->disconnect("Spawn terrain generation failed");
+					$session->getLogger()->error("Spawn terrain generation failed");
+					$session->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_internal());
 				}
 				$playerPromiseResolver->reject();
 			}

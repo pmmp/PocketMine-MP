@@ -132,6 +132,7 @@ use function get_class;
 use function in_array;
 use function json_encode;
 use function ksort;
+use function random_bytes;
 use function strcasecmp;
 use function strlen;
 use function strtolower;
@@ -236,7 +237,11 @@ class NetworkSession{
 	protected function createPlayer() : void{
 		$this->server->createPlayer($this, $this->info, $this->authenticated, $this->cachedOfflinePlayerData)->onCompletion(
 			\Closure::fromCallable([$this, 'onPlayerCreated']),
-			fn() => $this->disconnect("Player creation failed") //TODO: this should never actually occur... right?
+			function() : void{
+				//TODO: this should never actually occur... right?
+				$this->logger->error("Failed to create player");
+				$this->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_internal());
+			}
 		);
 	}
 
@@ -594,6 +599,10 @@ class NetworkSession{
 		}, $reason);
 	}
 
+	public function disconnectWithError(Translatable|string $reason) : void{
+		$this->disconnect(KnownTranslationFactory::pocketmine_disconnect_error($reason, bin2hex(random_bytes(6))));
+	}
+
 	public function disconnectIncompatibleProtocol(int $protocolVersion) : void{
 		$this->tryDisconnect(
 			function() use ($protocolVersion) : void{
@@ -606,7 +615,8 @@ class NetworkSession{
 	/**
 	 * Instructs the remote client to connect to a different server.
 	 */
-	public function transfer(string $ip, int $port, Translatable|string $reason = "transfer") : void{
+	public function transfer(string $ip, int $port, Translatable|string|null $reason = null) : void{
+		$reason ??= KnownTranslationFactory::pocketmine_disconnect_transfer();
 		$this->tryDisconnect(function() use ($ip, $port, $reason) : void{
 			$this->sendDataPacket(TransferPacket::create($ip, $port), true);
 			if($this->player !== null){
@@ -649,7 +659,7 @@ class NetworkSession{
 		}
 
 		if($error !== null){
-			$this->disconnect(KnownTranslationFactory::pocketmine_disconnect_invalidSession($error));
+			$this->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_invalidSession($error));
 
 			return;
 		}
@@ -1146,7 +1156,7 @@ class NetworkSession{
 
 		if($this->info === null){
 			if(time() >= $this->connectTime + 10){
-				$this->disconnect("Login timeout");
+				$this->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_loginTimeout());
 			}
 
 			return;
