@@ -174,7 +174,7 @@ final class EntityFactory{
 				throw new SavedDataLoadingException("Trident item is invalid");
 			}
 			return new Trident(EntityDataHelper::parseLocation($nbt, $world), $item, null, $nbt);
-		}, ['Trident', 'ThrownTrident', 'minecraft:trident'], LegacyIds::TRIDENT);
+		}, ['Trident', 'ThrownTrident', 'minecraft:trident']);
 
 		$this->register(Squid::class, function(World $world, CompoundTag $nbt) : Squid{
 			return new Squid(Helper::parseLocation($nbt, $world), $nbt);
