@@ -74,6 +74,7 @@ use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
@@ -201,7 +202,6 @@ class NetworkSession{
 		$this->connectTime = time();
 
 		$this->setHandler(new SessionStartPacketHandler(
-			$this->server,
 			$this,
 			fn() => $this->onSessionStartSuccess()
 		));
@@ -579,6 +579,13 @@ class NetworkSession{
 				$this->player->onPostDisconnect($reason, null);
 			}
 		}, $reason);
+	}
+
+	public function disconnectIncompatibleProtocol(int $protocolVersion) : void{
+		$this->tryDisconnect(
+			fn() => $this->sendDataPacket(PlayStatusPacket::create($protocolVersion < ProtocolInfo::CURRENT_PROTOCOL ? PlayStatusPacket::LOGIN_FAILED_CLIENT : PlayStatusPacket::LOGIN_FAILED_SERVER), true),
+			$this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_disconnect_incompatibleProtocol((string) $protocolVersion))
+		);
 	}
 
 	/**
