@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\build\make_release;
 
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
 use pocketmine\VersionInfo;
@@ -30,7 +31,6 @@ use function array_keys;
 use function array_map;
 use function dirname;
 use function fgets;
-use function file_get_contents;
 use function file_put_contents;
 use function fwrite;
 use function getopt;
@@ -50,7 +50,7 @@ use const STR_PAD_LEFT;
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 function replaceVersion(string $versionInfoPath, string $newVersion, bool $isDev, string $channel) : void{
-	$versionInfo = Utils::assumeNotFalse(file_get_contents($versionInfoPath), $versionInfoPath . " should always exist");
+	$versionInfo = Filesystem::fileGetContents($versionInfoPath);
 	$versionInfo = preg_replace(
 		$pattern = '/^([\t ]*public )?const BASE_VERSION = "(\d+)\.(\d+)\.(\d+)(?:-(.*))?";$/m',
 		'$1const BASE_VERSION = "' . $newVersion . '";',
