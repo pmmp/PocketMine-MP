@@ -332,6 +332,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::RAW_COPPER, Items::RAW_COPPER());
 		$this->map1to1Item(Ids::RAW_GOLD, Items::RAW_GOLD());
 		$this->map1to1Item(Ids::RAW_IRON, Items::RAW_IRON());
+		$this->map1to1Item(Ids::RECOVERY_COMPASS, Items::RECOVERY_COMPASS());
 		$this->map1to1Item(Ids::REDSTONE, Items::REDSTONE_DUST());
 		$this->map1to1Item(Ids::ROTTEN_FLESH, Items::ROTTEN_FLESH());
 		$this->map1to1Item(Ids::SALMON, Items::RAW_SALMON());
