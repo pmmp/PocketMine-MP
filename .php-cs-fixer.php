@@ -34,6 +34,10 @@ return (new PhpCsFixer\Config)
 		'concat_space' => [
 			'spacing' => 'one'
 		],
+		'method_argument_space' => [
+			'keep_multiple_spaces_after_comma' => false,
+			'on_multiline' => 'ensure_single_line'
+		],
 		'declare_strict_types' => true,
 		'elseif' => true,
 		'fully_qualified_strict_types' => true,
