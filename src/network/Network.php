@@ -80,6 +80,10 @@ class Network{
 		return $this->sessionManager->getSessionCount();
 	}
 
+	public function getValidConnectionCount() : int{
+		return $this->sessionManager->getValidSessionCount();
+	}
+
 	public function tick() : void{
 		foreach($this->interfaces as $interface){
 			$interface->tick();

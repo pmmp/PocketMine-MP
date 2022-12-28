@@ -229,6 +229,7 @@ class NetworkSession{
 				$this->info = $info;
 				$this->logger->info("Player: " . TextFormat::AQUA . $info->getUsername() . TextFormat::RESET);
 				$this->logger->setPrefix($this->getLogPrefix());
+				$this->manager->markLoginReceived($this);
 			},
 			function(bool $isAuthenticated, bool $authRequired, ?string $error, ?string $clientPubKey) : void{
 				$this->setAuthenticationStatus($isAuthenticated, $authRequired, $error, $clientPubKey);
