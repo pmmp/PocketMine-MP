@@ -81,9 +81,9 @@ use function shell_exec;
 use function spl_object_id;
 use function str_pad;
 use function str_split;
+use function str_starts_with;
 use function stripos;
 use function strlen;
-use function strpos;
 use function substr;
 use function sys_get_temp_dir;
 use function trim;
@@ -273,7 +273,7 @@ final class Utils{
 		if(self::$os === null || $recalculate){
 			$uname = php_uname("s");
 			if(stripos($uname, "Darwin") !== false){
-				if(strpos(php_uname("m"), "iP") === 0){
+				if(str_starts_with(php_uname("m"), "iP")){
 					self::$os = self::OS_IOS;
 				}else{
 					self::$os = self::OS_MACOS;

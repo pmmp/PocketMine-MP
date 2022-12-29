@@ -145,8 +145,8 @@ use function min;
 use function preg_match;
 use function spl_object_id;
 use function sqrt;
+use function str_starts_with;
 use function strlen;
-use function strpos;
 use function strtolower;
 use function substr;
 use function trim;
@@ -1435,7 +1435,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$message = TextFormat::clean($message, false);
 		foreach(explode("\n", $message, $this->messageCounter + 1) as $messagePart){
 			if(trim($messagePart) !== "" && strlen($messagePart) <= self::MAX_CHAT_BYTE_LENGTH && mb_strlen($messagePart, 'UTF-8') <= self::MAX_CHAT_CHAR_LENGTH && $this->messageCounter-- > 0){
-				if(strpos($messagePart, './') === 0){
+				if(str_starts_with($messagePart, './')){
 					$messagePart = substr($messagePart, 1);
 				}
 
@@ -1446,7 +1446,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					break;
 				}
 
-				if(strpos($ev->getMessage(), "/") === 0){
+				if(str_starts_with($ev->getMessage(), "/")){
 					Timings::$playerCommand->startTiming();
 					$this->server->dispatchCommand($ev->getPlayer(), substr($ev->getMessage(), 1));
 					Timings::$playerCommand->stopTiming();

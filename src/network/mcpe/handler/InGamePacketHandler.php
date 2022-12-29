@@ -125,8 +125,8 @@ use function mb_strlen;
 use function microtime;
 use function preg_match;
 use function sprintf;
+use function str_starts_with;
 use function strlen;
-use function strpos;
 use function substr;
 use function trim;
 use const JSON_THROW_ON_ERROR;
@@ -726,7 +726,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleCommandRequest(CommandRequestPacket $packet) : bool{
-		if(strpos($packet->command, '/') === 0){
+		if(str_starts_with($packet->command, '/')){
 			$this->player->chat($packet->command);
 			return true;
 		}
