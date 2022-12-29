@@ -40,7 +40,8 @@ final class ServerConfigGroup{
 
 	public function __construct(
 		private Config $pocketmineYml,
-		private Config $serverProperties
+		private Config $serverProperties,
+		private Config $nethergamesYml
 	){}
 
 	/**
@@ -54,7 +55,10 @@ final class ServerConfigGroup{
 			if(isset($v[$variable])){
 				$this->propertyCache[$variable] = $v[$variable];
 			}else{
-				$this->propertyCache[$variable] = $this->pocketmineYml->getNested($variable);
+				$pmValue = $this->pocketmineYml->getNested($variable);
+				$ngValue = $this->nethergamesYml->getNested($variable);
+
+				$this->propertyCache[$variable] = $pmValue ?? $ngValue;
 			}
 		}
 
@@ -136,5 +140,15 @@ final class ServerConfigGroup{
 		if($this->pocketmineYml->hasChanged()){
 			$this->pocketmineYml->save();
 		}
+		if($this->nethergamesYml->hasChanged()){
+			$this->nethergamesYml->save();
+		}
+	}
+
+	/**
+	 * @internal
+	 */
+	public function getNetherGamesConfig() : Config{
+		return $this->nethergamesYml;
 	}
 }

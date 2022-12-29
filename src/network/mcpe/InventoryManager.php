@@ -48,6 +48,7 @@ use pocketmine\network\mcpe\protocol\CreativeContentPacket;
 use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
@@ -331,6 +332,9 @@ class InventoryManager{
 				$this->remove($id);
 				$this->player->removeCurrentWindow();
 			}
+		}elseif($this->session->getProtocolId() <= ProtocolInfo::PROTOCOL_1_14_60 && $id === 255){
+			// 1.14.60 and lower reserve windowId 255 for some reason
+			return;
 		}else{
 			$this->session->getLogger()->debug("Attempted to close inventory with network ID $id, but current is $this->lastInventoryNetworkId");
 		}
@@ -469,9 +473,15 @@ class InventoryManager{
 	public function syncCreative() : void{
 		$typeConverter = TypeConverter::getInstance();
 
-		$nextEntryId = 1;
-		$this->session->sendDataPacket(CreativeContentPacket::create(array_map(function(Item $item) use($typeConverter, &$nextEntryId) : CreativeContentEntry{
-			return new CreativeContentEntry($nextEntryId++, $typeConverter->coreItemStackToNet($this->session->getProtocolId(), $item));
-		}, $this->player->isSpectator() ? [] : CreativeInventory::getInstance()->getAll())));
+		if($this->session->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_0){
+			$nextEntryId = 1;
+			$this->session->sendDataPacket(CreativeContentPacket::create(array_map(function(Item $item) use($typeConverter, &$nextEntryId) : CreativeContentEntry{
+				return new CreativeContentEntry($nextEntryId++, $typeConverter->coreItemStackToNet($this->session->getProtocolId(), $item));
+			}, $this->player->isSpectator() ? [] : CreativeInventory::getInstance()->getAll())));
+		}else{
+			$this->session->sendDataPacket(InventoryContentPacket::create(ContainerIds::CREATIVE, array_map(function(Item $item) use ($typeConverter) : ItemStackWrapper{
+				return ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($this->session->getProtocolId(), $item));
+			}, $this->player->isSpectator() ? [] : CreativeInventory::getInstance()->getAll())));
+		}
 	}
 }

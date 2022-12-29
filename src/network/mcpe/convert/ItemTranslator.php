@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\data\bedrock\LegacyItemIdToStringIdMap;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
@@ -150,6 +151,10 @@ final class ItemTranslator{
 		if($internalMeta === -1){
 			$internalMeta = 0x7fff;
 		}
+		if($dictionaryProtocol < ProtocolInfo::PROTOCOL_1_16_100) {
+			return [$internalId, $internalMeta];
+		}
+
 		if(isset($this->complexCoreToNetMapping[$dictionaryProtocol][$internalId][$internalMeta])){
 			return [$this->complexCoreToNetMapping[$dictionaryProtocol][$internalId][$internalMeta], 0];
 		}
@@ -176,6 +181,9 @@ final class ItemTranslator{
 	 * @throws TypeConversionException
 	 */
 	public function fromNetworkId(int $dictionaryProtocol, int $networkId, int $networkMeta, ?bool &$isComplexMapping = null) : array{
+		if($dictionaryProtocol < ProtocolInfo::PROTOCOL_1_16_100) {
+			return [$networkId, $networkMeta];
+		}
 		if(isset($this->complexNetToCoreMapping[$dictionaryProtocol][$networkId])){
 			if($networkMeta !== 0){
 				throw new TypeConversionException("Unexpected non-zero network meta on complex item mapping");

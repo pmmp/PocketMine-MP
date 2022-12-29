@@ -50,7 +50,8 @@ class LegacySkinAdapter implements SkinAdapter{
 			json_encode(["geometry" => ["default" => $geometryName]], JSON_THROW_ON_ERROR),
 			SkinImage::fromLegacy($skin->getSkinData()), [],
 			$capeImage,
-			$skin->getGeometryData()
+			$skin->getGeometryData(),
+			geometryName: $geometryName
 		);
 	}
 

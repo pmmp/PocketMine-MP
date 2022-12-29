@@ -38,6 +38,7 @@ use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\InventoryManager;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\GameMode as ProtocolGameMode;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
@@ -67,6 +68,7 @@ class TypeConverter{
 		foreach(GlobalItemTypeDictionary::getInstance()->getDictionaries() as $protocolId => $dictionary){
 			$this->shieldRuntimeIds[$protocolId] = $dictionary->fromStringId("minecraft:shield");
 		}
+		$this->shieldRuntimeIds[ProtocolInfo::PROTOCOL_1_16_20] = ItemIds::SHIELD;
 	}
 
 	/**
@@ -309,6 +311,7 @@ class TypeConverter{
 						throw new TypeConversionException("Unexpected creative action type $action->inventorySlot");
 
 				}
+			case NetworkInventoryAction::SOURCE_CRAFT_SLOT:
 			case NetworkInventoryAction::SOURCE_TODO:
 				//These are used to balance a transaction that involves special actions, like crafting, enchanting, etc.
 				//The vanilla server just accepted these without verifying them. We don't need to care about them since

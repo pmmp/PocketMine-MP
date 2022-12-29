@@ -31,6 +31,8 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
+use function array_filter;
+use function array_keys;
 use function file_get_contents;
 use function is_array;
 use function is_bool;
@@ -41,51 +43,74 @@ use function json_decode;
 final class GlobalItemTypeDictionary{
 	use SingletonTrait;
 
-	private static function make() : self{
-		$protocolPaths = [
-			ProtocolInfo::CURRENT_PROTOCOL => "",
-			ProtocolInfo::PROTOCOL_1_19_40 => "-1.19.40",
-			ProtocolInfo::PROTOCOL_1_19_0 => "-1.19.0",
-			ProtocolInfo::PROTOCOL_1_18_30 => "-1.18.30",
-			ProtocolInfo::PROTOCOL_1_18_10 => "-1.18.10",
-			ProtocolInfo::PROTOCOL_1_18_0 => "-1.18.0",
-			ProtocolInfo::PROTOCOL_1_17_40 => "-1.17.40",
-			ProtocolInfo::PROTOCOL_1_17_30 => "-1.17.30",
-			ProtocolInfo::PROTOCOL_1_17_10 => "-1.17.10",
-			ProtocolInfo::PROTOCOL_1_17_0 => "-1.17.0",
-		];
+	/** @var ItemTypeDictionary[] */
+	private array $dictionaries;
 
-		$dictionaries = [];
+	private const PATHS = [
+		ProtocolInfo::CURRENT_PROTOCOL => "",
+		ProtocolInfo::PROTOCOL_1_19_40 => "-1.19.40",
+		ProtocolInfo::PROTOCOL_1_19_0 => "-1.19.0",
+		ProtocolInfo::PROTOCOL_1_18_30 => "-1.18.30",
+		ProtocolInfo::PROTOCOL_1_18_10 => "-1.18.10",
+		ProtocolInfo::PROTOCOL_1_18_0 => "-1.18.0",
+		ProtocolInfo::PROTOCOL_1_17_40 => "-1.17.40",
+		ProtocolInfo::PROTOCOL_1_17_30 => "-1.17.30",
+		ProtocolInfo::PROTOCOL_1_17_10 => "-1.17.10",
+		ProtocolInfo::PROTOCOL_1_17_0 => "-1.17.0",
+		ProtocolInfo::PROTOCOL_1_16_220 => "-1.16.100",
+		ProtocolInfo::PROTOCOL_1_16_20 => "-1.16.0",
+		ProtocolInfo::PROTOCOL_1_14_60 => "-1.14.0",
+		ProtocolInfo::PROTOCOL_1_13_0 => "-1.13.0",
+		ProtocolInfo::PROTOCOL_1_12_0 => "-1.12.0",
+	];
 
-		foreach ($protocolPaths as $protocolId => $path){
-			$data = Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'required_item_list' . $path . '.json')), "Missing required resource file");
-			$table = json_decode($data, true);
-			if(!is_array($table)){
-				throw new AssumptionFailedError("Invalid item list format");
-			}
+	public function __construct(){
+		$minimalProtocol = Utils::getMinimalProtocol();
+		$protocols = array_filter(array_keys(GlobalItemTypeDictionary::PATHS), fn(int $protocolId) => $protocolId >= $minimalProtocol);
 
-			$params = [];
-			foreach($table as $name => $entry){
-				if(!is_array($entry) || !is_string($name) || !isset($entry["component_based"], $entry["runtime_id"]) || !is_bool($entry["component_based"]) || !is_int($entry["runtime_id"])){
-					throw new AssumptionFailedError("Invalid item list format");
-				}
-				$params[] = new ItemTypeEntry($name, $entry["runtime_id"], $entry["component_based"]);
-			}
-
-			$dictionaries[$protocolId] = new ItemTypeDictionary($params);
+		foreach($protocols as $mappingProtocol){
+			$this->initialize($mappingProtocol);
 		}
-
-		return new self($dictionaries);
 	}
 
-	/**
-	 * @param ItemTypeDictionary[] $dictionaries
-	 */
-	public function __construct(private array $dictionaries){}
+	private function initialize(int $dictionaryProtocol) : void{
+		if(isset($this->dictionaries[$dictionaryProtocol])) {
+			return;
+		}
+
+		$path = self::PATHS[$dictionaryProtocol];
+		$data = Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'required_item_list' . $path . '.json')), "Missing required resource file");
+		$table = json_decode($data, true);
+		if(!is_array($table)){
+			throw new AssumptionFailedError("Invalid item list format");
+		}
+
+		$params = [];
+		foreach($table as $name => $entry){
+			if(!is_array($entry) || !is_string($name) || !isset($entry["component_based"], $entry["runtime_id"]) || !is_bool($entry["component_based"]) || !is_int($entry["runtime_id"])){
+				throw new AssumptionFailedError("Invalid item list format");
+			}
+			$params[] = new ItemTypeEntry($name, $entry["runtime_id"], $entry["component_based"]);
+		}
+
+		$this->dictionaries[$dictionaryProtocol] = new ItemTypeDictionary($params);
+	}
 
 	public static function getDictionaryProtocol(int $protocolId) : int{
 		if($protocolId >= ProtocolInfo::PROTOCOL_1_19_10 && $protocolId < ProtocolInfo::PROTOCOL_1_19_40){
 			return ProtocolInfo::PROTOCOL_1_19_40;
+		}
+
+		if($protocolId >= ProtocolInfo::PROTOCOL_1_16_100 && $protocolId <= ProtocolInfo::PROTOCOL_1_16_210){
+			return ProtocolInfo::PROTOCOL_1_16_220;
+		}
+
+		if($protocolId === ProtocolInfo::PROTOCOL_1_16_0){
+			return ProtocolInfo::PROTOCOL_1_16_20;
+		}
+
+		if($protocolId === ProtocolInfo::PROTOCOL_1_14_0){
+			return ProtocolInfo::PROTOCOL_1_14_60;
 		}
 
 		return $protocolId;
@@ -117,5 +142,8 @@ final class GlobalItemTypeDictionary{
 	 */
 	public function getDictionaries() : array{ return $this->dictionaries; }
 
-	public function getDictionary(int $dictionaryId = ProtocolInfo::CURRENT_PROTOCOL) : ItemTypeDictionary{ return $this->dictionaries[$dictionaryId] ?? $this->dictionaries[ProtocolInfo::CURRENT_PROTOCOL]; }
+	public function getDictionary(int $dictionaryId = ProtocolInfo::CURRENT_PROTOCOL) : ItemTypeDictionary{
+		$this->initialize($dictionaryId);
+		return $this->dictionaries[$dictionaryId] ?? $this->dictionaries[ProtocolInfo::CURRENT_PROTOCOL];
+	}
 }

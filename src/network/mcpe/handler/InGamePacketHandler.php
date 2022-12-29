@@ -172,8 +172,47 @@ class InGamePacketHandler extends ChunkRequestPacketHandler{
 	}
 
 	public function handleMovePlayer(MovePlayerPacket $packet) : bool{
-		//The client sends this every time it lands on the ground, even when using PlayerAuthInputPacket.
-		//Silence the debug spam that this causes.
+		if($this->session->getProtocolId() >= ProtocolInfo::PROTOCOL_1_13_0) {
+			//The client sends this every time it lands on the ground, even when using PlayerAuthInputPacket.
+			//Silence the debug spam that this causes.
+			return true;
+		}
+
+		$rawPos = $packet->position;
+		$rawYaw = $packet->yaw;
+		$rawPitch = $packet->pitch;
+		foreach([$rawPos->x, $rawPos->y, $rawPos->z, $rawYaw, $packet->headYaw, $rawPitch] as $float){
+			if(is_infinite($float) || is_nan($float)){
+				$this->session->getLogger()->debug("Invalid movement received, contains NAN/INF components");
+				return false;
+			}
+		}
+
+		$hasMoved = $this->lastPlayerAuthInputPosition === null || !$this->lastPlayerAuthInputPosition->equals($rawPos);
+		$newPos = $rawPos->round(4)->subtract(0, 1.62, 0);
+
+		if($this->forceMoveSync && $hasMoved){
+			$curPos = $this->player->getLocation();
+
+			if($newPos->distanceSquared($curPos) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
+				$this->session->getLogger()->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $curPos);
+				//Still getting movements from before teleport, ignore them
+				return false;
+			}
+
+			// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
+			$this->forceMoveSync = false;
+		}
+
+		$yaw = fmod($rawYaw, 360);
+		$pitch = fmod($rawPitch, 360);
+		if($yaw < 0){
+			$yaw += 360;
+		}
+
+		$this->lastPlayerAuthInputPosition = $rawPos;
+		$this->player->setRotation($yaw, $pitch);
+		$this->player->handleMovement($newPos);
 		return true;
 	}
 
@@ -345,7 +384,8 @@ class InGamePacketHandler extends ChunkRequestPacketHandler{
 		$converter = TypeConverter::getInstance();
 		foreach($data->getActions() as $networkInventoryAction){
 			if(
-				$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_TODO || (
+				$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_TODO ||
+				$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CRAFT_SLOT || (
 					$this->craftingTransaction !== null &&
 					!$networkInventoryAction->oldItem->getItemStack()->equals($networkInventoryAction->newItem->getItemStack()) &&
 					$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CONTAINER &&
@@ -613,6 +653,25 @@ class InGamePacketHandler extends ChunkRequestPacketHandler{
 			case PlayerAction::CREATIVE_PLAYER_DESTROY_BLOCK:
 				//TODO: do we need to handle this?
 				break;
+			case PlayerAction::START_SNEAK:
+			case PlayerAction::STOP_SNEAK:
+				$this->player->syncPlayerActions($action === PlayerAction::START_SNEAK, null, null, null);
+				break;
+			case PlayerAction::START_SPRINT:
+			case PlayerAction::STOP_SPRINT:
+				$this->player->syncPlayerActions(null, $action === PlayerAction::START_SPRINT, null, null);
+				break;
+			case PlayerAction::START_SWIMMING:
+			case PlayerAction::STOP_SWIMMING:
+				$this->player->syncPlayerActions(null, null, $action === PlayerAction::START_SWIMMING, null);
+				break;
+			case PlayerAction::START_GLIDE:
+			case PlayerAction::STOP_GLIDE:
+				$this->player->syncPlayerActions(null, null, null, $action === PlayerAction::START_GLIDE);
+				break;
+			case PlayerAction::JUMP:
+				$this->player->jump();
+				break;
 			case PlayerAction::START_ITEM_USE_ON:
 			case PlayerAction::STOP_ITEM_USE_ON:
 				//TODO: this has no obvious use and seems only used for analytics in vanilla - ignore it
@@ -622,7 +681,13 @@ class InGamePacketHandler extends ChunkRequestPacketHandler{
 				return false;
 		}
 
-		$this->player->setUsingItem(false);
+		// TODO: garbage hack for older versions:
+		// PlayerAuthInputPacket would've accounted for this, but older versions this isn't the case.
+		if($this->session->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_210){
+			if($action === PlayerAction::STOP_BREAK || PlayerBlockActionWithBlockInfo::isValidActionType($action)){
+				$this->player->setUsingItem(false);
+			}
+		}
 
 		return true;
 	}

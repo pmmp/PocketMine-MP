@@ -817,6 +817,11 @@ class Server{
 				}
 				@file_put_contents($pocketmineYmlPath, $content);
 			}
+			$nethergamesYmlPath = Path::join($this->dataPath, "nethergames.yml");
+			if(!file_exists($nethergamesYmlPath)){
+				$content = Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, "nethergames.yml")), "Missing required resource file");
+				@file_put_contents($nethergamesYmlPath, $content);
+			}
 
 			$this->configGroup = new ServerConfigGroup(
 				new Config($pocketmineYmlPath, Config::YAML, []),
@@ -841,7 +846,8 @@ class Server{
 					"view-distance" => self::DEFAULT_MAX_VIEW_DISTANCE,
 					"xbox-auth" => true,
 					"language" => "eng"
-				])
+				]),
+				new Config($nethergamesYmlPath, Config::YAML, [])
 			);
 
 			$debugLogLevel = $this->configGroup->getPropertyInt("debug.level", 1);

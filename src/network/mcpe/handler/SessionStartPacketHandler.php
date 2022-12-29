@@ -31,6 +31,7 @@ use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\RequestNetworkSettingsPacket;
 use pocketmine\network\mcpe\protocol\types\CompressionAlgorithm;
 use pocketmine\Server;
+use pocketmine\utils\Utils;
 use function in_array;
 
 final class SessionStartPacketHandler extends PacketHandler{
@@ -74,6 +75,7 @@ final class SessionStartPacketHandler extends PacketHandler{
 	}
 
 	protected function isCompatibleProtocol(int $protocolVersion) : bool{
-		return $protocolVersion >= ProtocolInfo::PROTOCOL_1_19_30 && in_array($protocolVersion, ProtocolInfo::ACCEPTED_PROTOCOL, true);
+		$minimalProtocol = Utils::getMinimalProtocol($this->server->getConfigGroup()->getNetherGamesConfig());
+		return $protocolVersion >= ProtocolInfo::PROTOCOL_1_19_30 && in_array($protocolVersion, ProtocolInfo::ACCEPTED_PROTOCOL, true) && $protocolVersion >= $minimalProtocol;
 	}
 }

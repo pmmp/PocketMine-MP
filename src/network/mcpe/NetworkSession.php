@@ -45,6 +45,7 @@ use pocketmine\network\mcpe\cache\ChunkCache;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\network\mcpe\compression\DecompressionException;
+use pocketmine\network\mcpe\compression\ZlibCompressor;
 use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\convert\TypeConverter;
@@ -378,6 +379,9 @@ class NetworkSession{
 		$this->protocolId = $protocolId;
 
 		$this->broadcaster = RakLibInterface::getBroadcaster($this->server, $protocolId);
+		if($this->compressor instanceof ZlibCompressor) {
+			$this->compressor = $this->compressor->copy($protocolId >= ProtocolInfo::PROTOCOL_1_16_0);
+		}
 		$this->packetSerializerContext = new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($protocolId)));
 	}
 
@@ -775,7 +779,11 @@ class NetworkSession{
 				}
 				$this->sendDataPacket(ServerToClientHandshakePacket::create($handshakeJwt), true); //make sure this gets sent before encryption is enabled
 
-				$this->cipher = EncryptionContext::fakeGCM($encryptionKey);
+				if($this->protocolId >= ProtocolInfo::PROTOCOL_1_16_220){
+					$this->cipher = EncryptionContext::fakeGCM($encryptionKey);
+				}else{
+					$this->cipher = EncryptionContext::cfb8($encryptionKey);
+				}
 
 				$this->setHandler(new HandshakePacketHandler(function() : void{
 					$this->onServerLoginSuccess();
