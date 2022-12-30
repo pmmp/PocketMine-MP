@@ -41,8 +41,8 @@ use function file_exists;
 use function fopen;
 use function mkdir;
 use function rtrim;
+use function str_contains;
 use function stream_copy_to_stream;
-use function strpos;
 use function strtolower;
 use function trim;
 use const DIRECTORY_SEPARATOR;
@@ -145,7 +145,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		$pluginCmds = [];
 
 		foreach(Utils::stringifyKeys($this->getDescription()->getCommands()) as $key => $data){
-			if(strpos($key, ":") !== false){
+			if(str_contains($key, ":")){
 				$this->logger->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_commandError($key, $this->getDescription()->getFullName(), ":")));
 				continue;
 			}
@@ -161,7 +161,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 			$aliasList = [];
 			foreach($data->getAliases() as $alias){
-				if(strpos($alias, ":") !== false){
+				if(str_contains($alias, ":")){
 					$this->logger->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_aliasError($alias, $this->getDescription()->getFullName(), ":")));
 					continue;
 				}
