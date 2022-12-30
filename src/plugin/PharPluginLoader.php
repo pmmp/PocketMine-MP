@@ -35,8 +35,7 @@ class PharPluginLoader implements PluginLoader{
 	){}
 
 	public function canLoadPlugin(string $path) : bool{
-		$ext = ".phar";
-		return is_file($path) && str_ends_with($path, $ext);
+		return is_file($path) && str_ends_with($path, ".phar");
 	}
 
 	/**

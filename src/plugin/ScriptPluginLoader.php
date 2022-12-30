@@ -40,8 +40,7 @@ use const FILE_SKIP_EMPTY_LINES;
 class ScriptPluginLoader implements PluginLoader{
 
 	public function canLoadPlugin(string $path) : bool{
-		$ext = ".php";
-		return is_file($path) && str_ends_with($path, $ext);
+		return is_file($path) && str_ends_with($path, ".php");
 	}
 
 	/**
