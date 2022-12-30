@@ -184,11 +184,11 @@ abstract class Timezone{
 	 */
 	private static function parseOffset($offset){
 		//Make signed offsets unsigned for date_parse
-		if(str_contains($offset, '-')){
+		if(str_starts_with($offset, '-')){
 			$negative_offset = true;
 			$offset = str_replace('-', '', $offset);
 		}else{
-			if(str_contains($offset, '+')){
+			if(str_starts_with($offset, '+')){
 				$negative_offset = false;
 				$offset = str_replace('+', '', $offset);
 			}else{
