@@ -66,11 +66,11 @@ class Trident extends Projectile{
 		parent::__construct($location, $shootingEntity, $nbt);
 	}
 
-	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.25, 0.25); }
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.35, 0.25); }
 
 	protected function getInitialDragMultiplier() : float{ return 0.01; }
 
-	protected function getInitialGravity() : float{ return 0.05; }
+	protected function getInitialGravity() : float{ return 0.1; }
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
