@@ -40,7 +40,6 @@ use function readlink;
 use function str_contains;
 use function str_replace;
 use function str_starts_with;
-use function strpos;
 use function substr;
 use function timezone_abbreviations_list;
 use function timezone_name_from_abbr;
@@ -185,11 +184,11 @@ abstract class Timezone{
 	 */
 	private static function parseOffset($offset){
 		//Make signed offsets unsigned for date_parse
-		if(strpos($offset, '-') !== false){
+		if(str_starts_with($offset, '-')){
 			$negative_offset = true;
 			$offset = str_replace('-', '', $offset);
 		}else{
-			if(strpos($offset, '+') !== false){
+			if(str_starts_with($offset, '+')){
 				$negative_offset = false;
 				$offset = str_replace('+', '', $offset);
 			}else{
