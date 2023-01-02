@@ -254,6 +254,9 @@ class InGamePacketHandler extends PacketHandler{
 
 		$useItemTransaction = $packet->getItemInteractionData();
 		if($useItemTransaction !== null){
+			if(count($useItemTransaction->getTransactionData()->getActions()) > 100){
+				throw new PacketHandlingException("Too many actions in item use transaction");
+			}
 			if(!$this->handleUseItemTransaction($useItemTransaction->getTransactionData())){
 				$packetHandled = false;
 				$this->session->getLogger()->debug("Unhandled transaction in PlayerAuthInputPacket (type " . $useItemTransaction->getTransactionData()->getActionType() . ")");
@@ -264,6 +267,9 @@ class InGamePacketHandler extends PacketHandler{
 
 		$blockActions = $packet->getBlockActions();
 		if($blockActions !== null){
+			if(count($blockActions) > 100){
+				throw new PacketHandlingException("Too many block actions in PlayerAuthInputPacket");
+			}
 			foreach($blockActions as $k => $blockAction){
 				$actionHandled = false;
 				if($blockAction instanceof PlayerBlockActionStopBreak){
@@ -309,6 +315,10 @@ class InGamePacketHandler extends PacketHandler{
 
 	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
 		$result = true;
+
+		if(count($packet->trData->getActions()) > 100){
+			throw new PacketHandlingException("Too many actions in inventory transaction");
+		}
 
 		$this->inventoryManager->addPredictedSlotChanges($packet->trData->getActions());
 
