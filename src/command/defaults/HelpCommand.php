@@ -44,9 +44,9 @@ use const SORT_NATURAL;
 
 class HelpCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"help",
 			KnownTranslationFactory::pocketmine_command_help_description(),
 			KnownTranslationFactory::commands_help_usage(),
 			["?"]

@@ -30,11 +30,11 @@ use function date;
 
 class DumpMemoryCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"dumpmemory",
 			"Dumps the memory",
-			"/$name [path]"
+			"/dumpmemory [path]"
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_DUMPMEMORY);
 	}

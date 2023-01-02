@@ -40,9 +40,9 @@ use function min;
 
 class ClearCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"clear",
 			KnownTranslationFactory::pocketmine_command_clear_description(),
 			KnownTranslationFactory::pocketmine_command_clear_usage()
 		);
