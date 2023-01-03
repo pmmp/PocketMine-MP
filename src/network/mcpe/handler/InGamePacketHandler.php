@@ -257,6 +257,7 @@ class InGamePacketHandler extends PacketHandler{
 			if(count($useItemTransaction->getTransactionData()->getActions()) > 100){
 				throw new PacketHandlingException("Too many actions in item use transaction");
 			}
+			$this->inventoryManager->addPredictedSlotChanges($useItemTransaction->getTransactionData()->getActions());
 			if(!$this->handleUseItemTransaction($useItemTransaction->getTransactionData())){
 				$packetHandled = false;
 				$this->session->getLogger()->debug("Unhandled transaction in PlayerAuthInputPacket (type " . $useItemTransaction->getTransactionData()->getActionType() . ")");
