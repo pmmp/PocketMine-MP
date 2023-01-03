@@ -118,7 +118,7 @@ final class ItemTranslator{
 	}
 
 	/**
-	 * @param int[] $simpleMappings
+	 * @param int[]   $simpleMappings
 	 * @param int[][] $complexMappings
 	 * @phpstan-param array<string, int> $simpleMappings
 	 * @phpstan-param array<string, array<int, int>> $complexMappings
@@ -169,6 +169,7 @@ final class ItemTranslator{
 	}
 
 	/**
+	 * @phpstan-param-out bool $isComplexMapping
 	 * @return int[]
 	 * @phpstan-return array{int, int}
 	 * @throws TypeConversionException

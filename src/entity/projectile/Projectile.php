@@ -128,7 +128,7 @@ abstract class Projectile extends Entity{
 	 * Returns the amount of damage this projectile will deal to the entity it hits.
 	 */
 	public function getResultDamage() : int{
-		return (int) ceil($this->motion->length() * $this->damage);
+		return (int) ceil($this->damage);
 	}
 
 	public function saveNBT() : CompoundTag{

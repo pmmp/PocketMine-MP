@@ -187,9 +187,10 @@ final class Filesystem{
 	 * @throws \InvalidArgumentException if the lock file path is invalid (e.g. parent directory doesn't exist, permission denied)
 	 */
 	public static function createLockFile(string $lockFilePath) : ?int{
-		$resource = fopen($lockFilePath, "a+b");
-		if($resource === false){
-			throw new \InvalidArgumentException("Invalid lock file path or read/write permissions denied");
+		try{
+			$resource = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen($lockFilePath, "a+b"));
+		}catch(\ErrorException $e){
+			throw new \InvalidArgumentException("Failed to open lock file: " . $e->getMessage(), 0, $e);
 		}
 		if(!flock($resource, LOCK_EX | LOCK_NB)){
 			//wait for a shared lock to avoid race conditions if two servers started at the same time - this makes sure the

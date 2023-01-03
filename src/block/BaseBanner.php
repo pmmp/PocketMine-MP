@@ -87,7 +87,7 @@ abstract class BaseBanner extends Transparent{
 	}
 
 	/**
-	 * @param BannerPatternLayer[]             $patterns
+	 * @param BannerPatternLayer[] $patterns
 	 *
 	 * @phpstan-param list<BannerPatternLayer> $patterns
 	 * @return $this

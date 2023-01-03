@@ -255,6 +255,10 @@ class InGamePacketHandler extends PacketHandler{
 
 		$useItemTransaction = $packet->getItemInteractionData();
 		if($useItemTransaction !== null){
+			if(count($useItemTransaction->getTransactionData()->getActions()) > 100){
+				throw new PacketHandlingException("Too many actions in item use transaction");
+			}
+			$this->inventoryManager->addPredictedSlotChanges($useItemTransaction->getTransactionData()->getActions());
 			if(!$this->handleUseItemTransaction($useItemTransaction->getTransactionData())){
 				$packetHandled = false;
 				$this->session->getLogger()->debug("Unhandled transaction in PlayerAuthInputPacket (type " . $useItemTransaction->getTransactionData()->getActionType() . ")");
@@ -273,6 +277,9 @@ class InGamePacketHandler extends PacketHandler{
 
 		$blockActions = $packet->getBlockActions();
 		if($blockActions !== null){
+			if(count($blockActions) > 100){
+				throw new PacketHandlingException("Too many block actions in PlayerAuthInputPacket");
+			}
 			foreach($blockActions as $k => $blockAction){
 				$actionHandled = false;
 				if($blockAction instanceof PlayerBlockActionStopBreak){
@@ -319,6 +326,12 @@ class InGamePacketHandler extends PacketHandler{
 	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
 		$result = true;
 
+		if(count($packet->trData->getActions()) > 100){
+			throw new PacketHandlingException("Too many actions in inventory transaction");
+		}
+
+		$this->inventoryManager->addRawPredictedSlotChanges($packet->trData->getActions());
+
 		if($packet->trData instanceof NormalTransactionData){
 			$result = $this->handleNormalTransaction($packet->trData);
 		}elseif($packet->trData instanceof MismatchTransactionData){
@@ -333,9 +346,7 @@ class InGamePacketHandler extends PacketHandler{
 			$result = $this->handleReleaseItemTransaction($packet->trData);
 		}
 
-		if(!$result){
-			$this->inventoryManager->syncAll();
-		}else{
+		if($this->craftingTransaction === null){ //don't sync if we're waiting to complete a crafting transaction
 			$this->inventoryManager->syncMismatchedPredictedSlotChanges();
 		}
 		if($packet->requestId !== 0){
@@ -438,7 +449,6 @@ class InGamePacketHandler extends PacketHandler{
 
 	private function handleUseItemTransaction(UseItemTransactionData $data) : bool{
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
-		$this->inventoryManager->addRawPredictedSlotChanges($data->getActions());
 
 		switch($data->getActionType()){
 			case UseItemTransactionData::ACTION_CLICK_BLOCK:
@@ -524,9 +534,7 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
-		$this->inventoryManager->addRawPredictedSlotChanges($data->getActions());
 
-		//TODO: use transactiondata for rollbacks here
 		switch($data->getActionType()){
 			case UseItemOnEntityTransactionData::ACTION_INTERACT:
 				$this->player->interactEntity($target, $data->getClickPosition());
@@ -541,15 +549,10 @@ class InGamePacketHandler extends PacketHandler{
 
 	private function handleReleaseItemTransaction(ReleaseItemTransactionData $data) : bool{
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
-		$this->inventoryManager->addRawPredictedSlotChanges($data->getActions());
 
-		//TODO: use transactiondata for rollbacks here (resending entire inventory is very wasteful)
-		switch($data->getActionType()){
-			case ReleaseItemTransactionData::ACTION_RELEASE:
-				if(!$this->player->releaseHeldItem()){
-					$this->inventoryManager->syncContents($this->player->getInventory());
-				}
-				return true;
+		if($data->getActionType() == ReleaseItemTransactionData::ACTION_RELEASE){
+			$this->player->releaseHeldItem();
+			return true;
 		}
 
 		return false;

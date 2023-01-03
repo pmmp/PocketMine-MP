@@ -21,13 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\command;
+namespace pocketmine\world\sound;
 
-interface CommandExecutor{
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelEvent;
 
-	/**
-	 * @param string[] $args
-	 */
-	public function onCommand(CommandSender $sender, Command $command, string $label, array $args) : bool;
+class ItemFrameAddItemSound implements Sound{
 
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::create(LevelEvent::SOUND_ITEMFRAME_ADD_ITEM, 0, $pos)];
+	}
 }

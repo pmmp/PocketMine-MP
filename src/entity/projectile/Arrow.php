@@ -38,6 +38,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\player\Player;
 use pocketmine\world\sound\ArrowHitSound;
+use function ceil;
 use function mt_rand;
 use function sqrt;
 
@@ -103,7 +104,7 @@ class Arrow extends Projectile{
 	}
 
 	public function getResultDamage() : int{
-		$base = parent::getResultDamage();
+		$base = (int) ceil($this->motion->length() * parent::getResultDamage());
 		if($this->isCritical()){
 			return ($base + mt_rand(0, (int) ($base / 2) + 1));
 		}else{

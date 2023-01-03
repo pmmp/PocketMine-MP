@@ -187,7 +187,7 @@ abstract class AsyncTask extends \Threaded{
 	 * {@link AsyncTask::onCompletion} is called.
 	 *
 	 * @param mixed $progress The parameter passed to {@link AsyncTask#publishProgress}. It is serialize()'ed
-	 *                         and then unserialize()'ed, as if it has been cloned.
+	 *                        and then unserialize()'ed, as if it has been cloned.
 	 */
 	public function onProgressUpdate($progress) : void{
 
@@ -215,7 +215,7 @@ abstract class AsyncTask extends \Threaded{
 	 * Objects stored in this storage can be retrieved using fetchLocal() on the same thread that this method was called
 	 * from.
 	 *
-	 * @param mixed  $complexData the data to store
+	 * @param mixed $complexData the data to store
 	 */
 	protected function storeLocal(string $key, $complexData) : void{
 		if(self::$threadLocalStorage === null){

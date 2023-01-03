@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
 use pocketmine\network\mcpe\protocol\SetLocalPlayerAsInitializedPacket;
 
 final class SpawnResponsePacketHandler extends PacketHandler{
@@ -33,6 +34,12 @@ final class SpawnResponsePacketHandler extends PacketHandler{
 
 	public function handleSetLocalPlayerAsInitialized(SetLocalPlayerAsInitializedPacket $packet) : bool{
 		($this->responseCallback)();
+		return true;
+	}
+
+	public function handlePlayerAuthInput(PlayerAuthInputPacket $packet) : bool{
+		//the client will send this every tick once we start sending chunks, but we don't handle it in this stage
+		//this is very spammy so we filter it out
 		return true;
 	}
 }

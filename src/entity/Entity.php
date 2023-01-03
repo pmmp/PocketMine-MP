@@ -52,6 +52,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
+use pocketmine\network\mcpe\protocol\types\entity\PropertySyncData;
 use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -997,9 +998,7 @@ abstract class Entity{
 
 		$this->timings->stopTiming();
 
-		//if($this->isStatic())
 		return ($hasUpdate || $this->hasMovementUpdate());
-		//return !($this instanceof Player);
 	}
 
 	final public function scheduleUpdate() : void{
@@ -1479,6 +1478,7 @@ abstract class Entity{
 				return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue(), []);
 			}, $this->attributeMap->getAll()),
 			$this->getAllNetworkData(),
+			new PropertySyncData([], []),
 			[] //TODO: entity links
 		));
 	}
@@ -1598,7 +1598,7 @@ abstract class Entity{
 
 	/**
 	 * @param Player[]|null      $targets
-	 * @param MetadataProperty[] $data Properly formatted entity data, defaults to everything
+	 * @param MetadataProperty[] $data    Properly formatted entity data, defaults to everything
 	 *
 	 * @phpstan-param array<int, MetadataProperty> $data
 	 */

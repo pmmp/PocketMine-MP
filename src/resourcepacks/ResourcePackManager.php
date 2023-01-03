@@ -58,7 +58,7 @@ class ResourcePackManager{
 	private array $encryptionKeys = [];
 
 	/**
-	 * @param string  $path Path to resource-packs directory.
+	 * @param string $path Path to resource-packs directory.
 	 */
 	public function __construct(string $path, \Logger $logger){
 		$this->path = $path;

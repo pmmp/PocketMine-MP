@@ -319,6 +319,9 @@ class PluginManager{
 	/**
 	 * @param string[][] $dependencyLists
 	 * @param Plugin[]   $loadedPlugins
+	 *
+	 * @phpstan-param array<string, list<string>> $dependencyLists
+	 * @phpstan-param-out array<string, list<string>> $dependencyLists
 	 */
 	private function checkDepsForTriage(string $pluginName, string $dependencyType, array &$dependencyLists, array $loadedPlugins, PluginLoadTriage $triage) : void{
 		if(isset($dependencyLists[$pluginName])){
