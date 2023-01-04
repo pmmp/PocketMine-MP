@@ -91,7 +91,7 @@ final class ItemStackResponseBuilder{
 					$slotId,
 					$item->getCount(),
 					$itemStackInfo->getStackId(),
-					$item->hasCustomName() ? $item->getCustomName() : "",
+					$item->getCustomName(),
 					0
 				);
 			}
