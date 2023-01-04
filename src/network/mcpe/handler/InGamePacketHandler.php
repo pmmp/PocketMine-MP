@@ -97,6 +97,8 @@ use pocketmine\network\mcpe\protocol\types\inventory\MismatchTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\inventory\NormalTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\ReleaseItemTransactionData;
+use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\ItemStackRequest;
+use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponse;
 use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
@@ -258,6 +260,8 @@ class InGamePacketHandler extends PacketHandler{
 			if(count($useItemTransaction->getTransactionData()->getActions()) > 100){
 				throw new PacketHandlingException("Too many actions in item use transaction");
 			}
+
+			$this->inventoryManager->setCurrentItemStackRequestId($useItemTransaction->getRequestId());
 			$this->inventoryManager->addRawPredictedSlotChanges($useItemTransaction->getTransactionData()->getActions());
 			if(!$this->handleUseItemTransaction($useItemTransaction->getTransactionData())){
 				$packetHandled = false;
@@ -265,14 +269,13 @@ class InGamePacketHandler extends PacketHandler{
 			}else{
 				$this->inventoryManager->syncMismatchedPredictedSlotChanges();
 			}
+			$this->inventoryManager->setCurrentItemStackRequestId(null);
 		}
 
 		$itemStackRequest = $packet->getItemStackRequest();
 		if($itemStackRequest !== null){
-			$executor = new ItemStackRequestExecutor($this->player, $this->inventoryManager, $itemStackRequest);
-			$transaction = $executor->generateInventoryTransaction();
-			$result = $this->executeInventoryTransaction($transaction);
-			$this->session->sendDataPacket(ItemStackResponsePacket::create([$executor->buildItemStackResponse($result)]));
+			$result = $this->handleSingleItemStackRequest($itemStackRequest);
+			$this->session->sendDataPacket(ItemStackResponsePacket::create([$result]));
 		}
 
 		$blockActions = $packet->getBlockActions();
@@ -330,10 +333,11 @@ class InGamePacketHandler extends PacketHandler{
 			throw new PacketHandlingException("Too many actions in inventory transaction");
 		}
 
+		$this->inventoryManager->setCurrentItemStackRequestId($packet->requestId);
 		$this->inventoryManager->addRawPredictedSlotChanges($packet->trData->getActions());
 
 		if($packet->trData instanceof NormalTransactionData){
-			$result = $this->handleNormalTransaction($packet->trData);
+			$result = $this->handleNormalTransaction($packet->trData, $packet->requestId);
 		}elseif($packet->trData instanceof MismatchTransactionData){
 			$this->session->getLogger()->debug("Mismatch transaction received");
 			$this->inventoryManager->syncAll();
@@ -349,22 +353,14 @@ class InGamePacketHandler extends PacketHandler{
 		if($this->craftingTransaction === null){ //don't sync if we're waiting to complete a crafting transaction
 			$this->inventoryManager->syncMismatchedPredictedSlotChanges();
 		}
-		if($packet->requestId !== 0){
-			$itemStackResponseBuilder = new ItemStackResponseBuilder($packet->requestId, $this->inventoryManager);
-			foreach($packet->requestChangedSlots as $requestChangedSlotsEntry){
-				foreach($requestChangedSlotsEntry->getChangedSlotIndexes() as $slotId){
-					$itemStackResponseBuilder->addSlot($requestChangedSlotsEntry->getContainerId(), $slotId);
-				}
-			}
-			$itemStackResponse = $itemStackResponseBuilder->build($result);
-			$this->session->sendDataPacket(ItemStackResponsePacket::create([$itemStackResponse]));
-			$this->session->getLogger()->debug("Sent item stack response for fake stack request " . $packet->requestId);
-		}
+		$this->inventoryManager->setCurrentItemStackRequestId(null);
 		return $result;
 	}
 
-	private function executeInventoryTransaction(InventoryTransaction $transaction) : bool{
+	private function executeInventoryTransaction(InventoryTransaction $transaction, int $requestId) : bool{
 		$this->player->setUsingItem(false);
+
+		$this->inventoryManager->setCurrentItemStackRequestId($requestId);
 		$this->inventoryManager->addTransactionPredictedSlotChanges($transaction);
 		try{
 			$transaction->execute();
@@ -373,12 +369,15 @@ class InGamePacketHandler extends PacketHandler{
 			$logger->debug("Failed to execute inventory transaction: " . $e->getMessage());
 
 			return false;
+		}finally{
+			$this->inventoryManager->syncMismatchedPredictedSlotChanges();
+			$this->inventoryManager->setCurrentItemStackRequestId(null);
 		}
 
 		return true;
 	}
 
-	private function handleNormalTransaction(NormalTransactionData $data) : bool{
+	private function handleNormalTransaction(NormalTransactionData $data, int $itemStackRequestId) : bool{
 		/** @var InventoryAction[] $actions */
 		$actions = [];
 
@@ -426,7 +425,7 @@ class InGamePacketHandler extends PacketHandler{
 				return true;
 			}
 			try{
-				return $this->executeInventoryTransaction($this->craftingTransaction);
+				return $this->executeInventoryTransaction($this->craftingTransaction, $itemStackRequestId);
 			}finally{
 				$this->craftingTransaction = null;
 			}
@@ -443,7 +442,7 @@ class InGamePacketHandler extends PacketHandler{
 				return true;
 			}
 
-			return $this->executeInventoryTransaction(new InventoryTransaction($this->player, $actions));
+			return $this->executeInventoryTransaction(new InventoryTransaction($this->player, $actions), $itemStackRequestId);
 		}
 	}
 
@@ -558,14 +557,19 @@ class InGamePacketHandler extends PacketHandler{
 		return false;
 	}
 
+	private function handleSingleItemStackRequest(ItemStackRequest $request) : ItemStackResponse{
+		$executor = new ItemStackRequestExecutor($this->player, $this->inventoryManager, $request);
+		$transaction = $executor->generateInventoryTransaction();
+		$result = $this->executeInventoryTransaction($transaction, $request->getRequestId());
+		$this->session->getLogger()->debug("Item stack request " . $request->getRequestId() . " result: " . ($result ? "success" : "failure"));
+
+		return $executor->buildItemStackResponse($result);
+	}
+
 	public function handleItemStackRequest(ItemStackRequestPacket $packet) : bool{
 		$responses = [];
 		foreach($packet->getRequests() as $request){
-			$executor = new ItemStackRequestExecutor($this->player, $this->inventoryManager, $request);
-			$transaction = $executor->generateInventoryTransaction();
-			$result = $this->executeInventoryTransaction($transaction);
-			$this->session->getLogger()->debug("Item stack request " . $request->getRequestId() . " result: " . ($result ? "success" : "failure"));
-			$responses[] = $executor->buildItemStackResponse($result);
+			$responses[] = $this->handleSingleItemStackRequest($request);
 		}
 
 		$this->session->sendDataPacket(ItemStackResponsePacket::create($responses));

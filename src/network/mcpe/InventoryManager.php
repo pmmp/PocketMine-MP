@@ -51,6 +51,7 @@ use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
@@ -100,6 +101,8 @@ class InventoryManager{
 	private ?\Closure $pendingOpenWindowCallback = null;
 
 	private int $nextItemStackId = 1;
+	private ?int $currentItemStackRequestId = null;
+
 	/**
 	 * @var int[][]
 	 * @phpstan-var array<int, array<int, ItemStackInfo>>
@@ -186,7 +189,7 @@ class InventoryManager{
 		return null;
 	}
 
-	public function addPredictedSlotChange(Inventory $inventory, int $slot, Item $item) : void{
+	private function addPredictedSlotChange(Inventory $inventory, int $slot, Item $item) : void{
 		$predictions = ($this->initiatedSlotChanges[spl_object_id($inventory)] ??= new InventoryManagerPredictedChanges($inventory));
 		$predictions->add($slot, $item);
 	}
@@ -221,6 +224,10 @@ class InventoryManager{
 			}
 			$this->addPredictedSlotChange($inventory, $slot, $item);
 		}
+	}
+
+	public function setCurrentItemStackRequestId(?int $id) : void{
+		$this->currentItemStackRequestId = $id;
 	}
 
 	/**
@@ -390,8 +397,25 @@ class InventoryManager{
 					//BDS (Bedrock Dedicated Server) also seems to work this way.
 					$this->session->sendDataPacket(InventoryContentPacket::create($windowId, [$itemStackWrapper]));
 				}else{
+					if($this->currentItemStackRequestId !== null){
+						//TODO: HACK!
+						//When right-clicking to equip armour, the client predicts the content of the armour slot, but
+						//doesn't report it in the transaction packet. The server then sends an InventorySlotPacket to
+						//the client, assuming the slot changed for some other reason, since there is no prediction for
+						//the slot.
+						//However, later requests involving that itemstack will refer to the request ID in which the
+						//armour was equipped, instead of the stack ID provided by the server in the outgoing
+						//InventorySlotPacket. (Perhaps because the item is already the same as the client actually
+						//predicted, but didn't tell us?)
+						//We work around this bug by setting the slot to air and then back to the correct item. In
+						//theory, setting a different count and then back again (or changing any other property) would
+						//also work, but this is simpler.
+						$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $netSlot, new ItemStackWrapper(0, ItemStack::null())));
+					}
 					$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $netSlot, $itemStackWrapper));
 				}
+			}elseif($this->currentItemStackRequestId !== null){
+				$this->trackItemStack($inventory, $slot, $currentItem, $this->currentItemStackRequestId);
 			}
 			$predictions?->remove($slot);
 		}
@@ -498,11 +522,15 @@ class InventoryManager{
 		return $this->nextItemStackId++;
 	}
 
-	public function trackItemStack(Inventory $inventory, int $slotId, Item $item, ?int $itemStackRequestId) : ItemStackInfo{
+	public function getItemStackInfo(Inventory $inventory, int $slot) : ?ItemStackInfo{
+		return $this->itemStackInfos[spl_object_id($inventory)][$slot] ?? null;
+	}
+
+	private function trackItemStack(Inventory $inventory, int $slotId, Item $item, ?int $itemStackRequestId) : ItemStackInfo{
 		$existing = $this->itemStackInfos[spl_object_id($inventory)][$slotId] ?? null;
 		$typeConverter = TypeConverter::getInstance();
 		$itemStack = $typeConverter->coreItemStackToNet($item);
-		if($existing !== null && $existing->getItemStack()->equals($itemStack)){
+		if($existing !== null && $existing->getItemStack()->equals($itemStack) && $existing->getRequestId() === $itemStackRequestId){
 			return $existing;
 		}
 
@@ -515,7 +543,7 @@ class InventoryManager{
 		return new ItemStackWrapper($info->getStackId(), $info->getItemStack());
 	}
 
-	public function matchItemStack(Inventory $inventory, int $slotId, int $itemStackId) : bool{
+	public function matchItemStack(Inventory $inventory, int $slotId, int $clientItemStackId) : bool{
 		$inventoryObjectId = spl_object_id($inventory);
 		if(!isset($this->itemStackInfos[$inventoryObjectId])){
 			$this->session->getLogger()->debug("Attempted to match item preimage unsynced inventory " . get_class($inventory) . "#" . $inventoryObjectId);
@@ -527,10 +555,10 @@ class InventoryManager{
 			return false;
 		}
 
-		if(!($itemStackId < 0 ? $info->getRequestId() === $itemStackId : $info->getStackId() === $itemStackId)){
+		if(!($clientItemStackId < 0 ? $info->getRequestId() === $clientItemStackId : $info->getStackId() === $clientItemStackId)){
 			$this->session->getLogger()->debug(
 				"Mismatched expected itemstack: " . get_class($inventory) . "#" . $inventoryObjectId . ", " .
-				"slot: $slotId, expected: $itemStackId, actual: " . $info->getStackId() . ", last modified by request: " . ($info->getRequestId() ?? "none")
+				"slot: $slotId, client expected: $clientItemStackId, server actual: " . $info->getStackId() . ", last modified by request: " . ($info->getRequestId() ?? "none")
 			);
 			return false;
 		}

@@ -70,14 +70,23 @@ final class ItemStackResponseBuilder{
 			foreach($slotIds as $slotId){
 				[$inventory, $slot] = $this->getInventoryAndSlot($containerInterfaceId, $slotId);
 
+				$itemStackInfo = $this->inventoryManager->getItemStackInfo($inventory, $slot);
+				if($itemStackInfo === null){
+					//TODO: what if a plugin closes the inventory while the transaction is ongoing?
+					throw new \LogicException("ItemStackInfo should never be null for an open inventory");
+				}
+				if($itemStackInfo->getRequestId() !== $this->requestId){
+					//the itemstack may have been synced due to transaction producing results that the client did not
+					//predict correctly, which will wipe out the tracked request ID (intentionally)
+					continue;
+				}
 				$item = $inventory->getItem($slot);
-				$info = $this->inventoryManager->trackItemStack($inventory, $slot, $item, $this->requestId);
 
 				$responseInfosByContainer[$containerInterfaceId][] = new ItemStackResponseSlotInfo(
 					$slotId,
 					$slotId,
-					$info->getItemStack()->getCount(),
-					$info->getStackId(),
+					$item->getCount(),
+					$itemStackInfo->getStackId(),
 					$item->hasCustomName() ? $item->getCustomName() : "",
 					0
 				);
