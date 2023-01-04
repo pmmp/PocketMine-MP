@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\inventory\Inventory;
 use pocketmine\network\mcpe\InventoryManager;
+use pocketmine\network\mcpe\protocol\types\inventory\ContainerUIIds;
 use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponse;
 use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponseContainerInfo;
 use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponseSlotInfo;
@@ -67,6 +68,9 @@ final class ItemStackResponseBuilder{
 	public function build(bool $success) : ItemStackResponse{
 		$responseInfosByContainer = [];
 		foreach($this->changedSlots as $containerInterfaceId => $slotIds){
+			if($containerInterfaceId === ContainerUIIds::CREATED_OUTPUT){
+				continue;
+			}
 			foreach($slotIds as $slotId){
 				[$inventory, $slot] = $this->getInventoryAndSlot($containerInterfaceId, $slotId);
 

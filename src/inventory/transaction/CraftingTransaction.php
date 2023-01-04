@@ -60,9 +60,11 @@ class CraftingTransaction extends InventoryTransaction{
 
 	private CraftingManager $craftingManager;
 
-	public function __construct(Player $source, CraftingManager $craftingManager, array $actions = []){
+	public function __construct(Player $source, CraftingManager $craftingManager, array $actions = [], ?CraftingRecipe $recipe = null, ?int $repetitions = null){
 		parent::__construct($source, $actions);
 		$this->craftingManager = $craftingManager;
+		$this->recipe = $recipe;
+		$this->repetitions = $repetitions;
 	}
 
 	/**
@@ -123,6 +125,18 @@ class CraftingTransaction extends InventoryTransaction{
 		return $iterations;
 	}
 
+	private function validateRecipe(CraftingRecipe $recipe, ?int $expectedRepetitions) : int{
+		//compute number of times recipe was crafted
+		$repetitions = $this->matchRecipeItems($this->outputs, $recipe->getResultsFor($this->source->getCraftingGrid()), false);
+		if($expectedRepetitions !== null && $repetitions !== $expectedRepetitions){
+			throw new TransactionValidationException("Expected $expectedRepetitions repetitions, got $repetitions");
+		}
+		//assert that $repetitions x recipe ingredients should be consumed
+		$this->matchRecipeItems($this->inputs, $recipe->getIngredientList(), true, $repetitions);
+
+		return $repetitions;
+	}
+
 	public function validate() : void{
 		$this->squashDuplicateSlotChanges();
 		if(count($this->actions) < 1){
@@ -131,25 +145,24 @@ class CraftingTransaction extends InventoryTransaction{
 
 		$this->matchItems($this->outputs, $this->inputs);
 
-		$failed = 0;
-		foreach($this->craftingManager->matchRecipeByOutputs($this->outputs) as $recipe){
-			try{
-				//compute number of times recipe was crafted
-				$this->repetitions = $this->matchRecipeItems($this->outputs, $recipe->getResultsFor($this->source->getCraftingGrid()), false);
-				//assert that $repetitions x recipe ingredients should be consumed
-				$this->matchRecipeItems($this->inputs, $recipe->getIngredientList(), true, $this->repetitions);
-
-				//Success!
-				$this->recipe = $recipe;
-				break;
-			}catch(TransactionValidationException $e){
-				//failed
-				++$failed;
-			}
-		}
-
 		if($this->recipe === null){
-			throw new TransactionValidationException("Unable to match a recipe to transaction (tried to match against $failed recipes)");
+			$failed = 0;
+			foreach($this->craftingManager->matchRecipeByOutputs($this->outputs) as $recipe){
+				try{
+					$this->repetitions = $this->validateRecipe($recipe, $this->repetitions);
+					$this->recipe = $recipe;
+					break;
+				}catch(TransactionValidationException $e){
+					//failed
+					++$failed;
+				}
+			}
+
+			if($this->recipe === null){
+				throw new TransactionValidationException("Unable to match a recipe to transaction (tried to match against $failed recipes)");
+			}
+		}else{
+			$this->repetitions = $this->validateRecipe($this->recipe, $this->repetitions);
 		}
 	}
 

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\crafting\CraftingGrid;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
@@ -30,8 +31,8 @@ use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionBuilder;
 use pocketmine\inventory\transaction\TransactionBuilderInventory;
 use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
 use pocketmine\network\mcpe\InventoryManager;
+use pocketmine\network\mcpe\protocol\types\inventory\ContainerUIIds;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftingConsumeInputStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftingMarkSecondaryResultStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftRecipeAutoStackRequestAction;
@@ -46,8 +47,10 @@ use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\PlaceStackRequ
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\SwapStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\TakeStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponse;
+use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
 use function get_class;
 
 final class ItemStackRequestExecutor{
@@ -56,7 +59,11 @@ final class ItemStackRequestExecutor{
 	/** @var ItemStackRequestSlotInfo[] */
 	private array $requestSlotInfos = [];
 
-	private bool $crafting = false;
+	private ?InventoryTransaction $specialTransaction = null;
+
+	/** @var Item[] */
+	private array $craftingResults = [];
+	private int $craftingOutputIndex = 0;
 
 	public function __construct(
 		private Player $player,
@@ -91,37 +98,91 @@ final class ItemStackRequestExecutor{
 	}
 
 	private function transferItems(ItemStackRequestSlotInfo $source, ItemStackRequestSlotInfo $destination, int $count) : void{
-		[$sourceInventory, $sourceSlot] = $this->getBuilderInventoryAndSlot($source);
-		[$targetInventory, $targetSlot] = $this->getBuilderInventoryAndSlot($destination);
-
-		$oldSourceItem = $sourceInventory->getItem($sourceSlot);
-		$oldTargetItem = $targetInventory->getItem($targetSlot);
-
-		if(!$targetInventory->isSlotEmpty($targetSlot) && !$oldTargetItem->canStackWith($oldSourceItem)){
-			throw new PacketHandlingException("Can only transfer items into an empty slot, or a slot containing the same item");
-		}
-		[$newSourceItem, $newTargetItem] = $this->splitStack($oldSourceItem, $count, $oldTargetItem->getCount());
-
-		$sourceInventory->setItem($sourceSlot, $newSourceItem);
-		$targetInventory->setItem($targetSlot, $newTargetItem);
+		$removed = $this->removeItemFromSlot($source, $count);
+		$this->addItemToSlot($destination, $removed, $count);
 	}
 
 	/**
-	 * @phpstan-return array{Item, Item}
+	 * Deducts items from an inventory slot, returning a stack containing the removed items.
 	 */
-	private function splitStack(Item $item, int $transferredCount, int $targetCount) : array{
-		if($item->getCount() < $transferredCount){
-			throw new PacketHandlingException("Cannot take $transferredCount items from a stack of " . $item->getCount());
+	private function removeItemFromSlot(ItemStackRequestSlotInfo $slotInfo, int $count) : Item{
+		$this->requestSlotInfos[] = $slotInfo;
+		[$inventory, $slot] = $this->getBuilderInventoryAndSlot($slotInfo);
+
+		$existingItem = $inventory->getItem($slot);
+		if($existingItem->getCount() < $count){
+			throw new PacketHandlingException("Cannot take $count items from a stack of " . $existingItem->getCount());
 		}
+
+		$removed = $existingItem->pop($count);
+		$inventory->setItem($slot, $existingItem);
+
+		return $removed;
+	}
+
+	/**
+	 * Adds items to the target slot, if they are stackable.
+	 */
+	private function addItemToSlot(ItemStackRequestSlotInfo $slotInfo, Item $item, int $count) : Item{
+		$this->requestSlotInfos[] = $slotInfo;
+		[$inventory, $slot] = $this->getBuilderInventoryAndSlot($slotInfo);
+
+		$existingItem = $inventory->getItem($slot);
+		if(!$existingItem->isNull() && !$existingItem->canStackWith($item)){
+			throw new PacketHandlingException("Can only add items to an empty slot, or a slot containing the same item");
+		}
+
+		//we can't use the existing item here; it may be an empty stack
+		$newItem = clone $item;
+		$newItem->setCount($existingItem->getCount() + $count);
+		$inventory->setItem($slot, $newItem);
 
 		$leftover = clone $item;
-		$removed = $leftover->pop($transferredCount);
-		$removed->setCount($removed->getCount() + $targetCount);
-		if($leftover->isNull()){
-			$leftover = VanillaItems::AIR();
+		$leftover->pop($count);
+
+		return $leftover;
+	}
+
+	private function beginCrafting(int $recipeId, int $repetitions) : void{
+		if($this->specialTransaction !== null){
+			throw new PacketHandlingException("Cannot perform more than 1 special action per request");
+		}
+		if($repetitions < 1){ //TODO: upper bound?
+			throw new PacketHandlingException("Cannot craft a recipe less than 1 time");
+		}
+		$craftingManager = $this->player->getServer()->getCraftingManager();
+		$recipe = $craftingManager->getCraftingRecipeIndex()[$recipeId] ?? null;
+		if($recipe === null){
+			throw new PacketHandlingException("Unknown crafting recipe ID $recipeId");
 		}
 
-		return [$leftover, $removed];
+		$this->specialTransaction = new CraftingTransaction($this->player, $craftingManager, [], $recipe, $repetitions);
+
+		$currentWindow = $this->player->getCurrentWindow();
+		if($currentWindow !== null && !($currentWindow instanceof CraftingGrid)){
+			throw new PacketHandlingException("Cannot complete crafting when the player's current window is not a crafting grid");
+		}
+		$craftingGrid = $currentWindow ?? $this->player->getCraftingGrid();
+
+		$craftingResults = $recipe->getResultsFor($craftingGrid);
+		foreach($craftingResults as $k => $craftingResult){
+			$craftingResult->setCount($craftingResult->getCount() * $repetitions);
+			$this->craftingResults[$k] = $craftingResult;
+		}
+	}
+
+	private function takeCraftingResult(ItemStackRequestSlotInfo $destination, int $count) : void{
+		$recipeResultItem = $this->craftingResults[$this->craftingOutputIndex] ?? null;
+		if($recipeResultItem === null){
+			throw new PacketHandlingException("Cannot refer to nonexisting crafting output index " . $this->craftingOutputIndex);
+		}
+
+		$availableCount = $recipeResultItem->getCount();
+		if($availableCount < $count){
+			throw new PacketHandlingException("Tried to take too many results from crafting");
+		}
+
+		$this->craftingResults[$this->craftingOutputIndex] = $this->addItemToSlot($destination, $recipeResultItem, $count);
 	}
 
 	private function processItemStackRequestAction(ItemStackRequestAction $action) : void{
@@ -129,9 +190,14 @@ final class ItemStackRequestExecutor{
 			$action instanceof TakeStackRequestAction ||
 			$action instanceof PlaceStackRequestAction
 		){
-			$this->requestSlotInfos[] = $action->getSource();
-			$this->requestSlotInfos[] = $action->getDestination();
-			$this->transferItems($action->getSource(), $action->getDestination(), $action->getCount());
+			$source = $action->getSource();
+			$destination = $action->getDestination();
+
+			if($source->getContainerId() === ContainerUIIds::CREATED_OUTPUT && $source->getSlotId() === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
+				$this->takeCraftingResult($destination, $action->getCount());
+			}else{
+				$this->transferItems($source, $destination, $action->getCount());
+			}
 		}elseif($action instanceof SwapStackRequestAction){
 			$this->requestSlotInfos[] = $action->getSlot1();
 			$this->requestSlotInfos[] = $action->getSlot2();
@@ -144,35 +210,35 @@ final class ItemStackRequestExecutor{
 			$inventory1->setItem($slot1, $item2);
 			$inventory2->setItem($slot2, $item1);
 		}elseif($action instanceof DropStackRequestAction){
-			$this->requestSlotInfos[] = $action->getSource();
-			[$inventory, $slot] = $this->getBuilderInventoryAndSlot($action->getSource());
-
-			$oldItem = $inventory->getItem($slot);
-			[$leftover, $dropped] = $this->splitStack($oldItem, $action->getCount(), 0);
-
 			//TODO: this action has a "randomly" field, I have no idea what it's used for
-			$inventory->setItem($slot, $leftover);
+			$dropped = $this->removeItemFromSlot($action->getSource(), $action->getCount());
 			$this->builder->addAction(new DropItemAction($dropped));
+
 		}elseif($action instanceof DestroyStackRequestAction){
-			$this->requestSlotInfos[] = $action->getSource();
-			[$inventory, $slot] = $this->getBuilderInventoryAndSlot($action->getSource());
-
-			$oldItem = $inventory->getItem($slot);
-			[$leftover, $destroyed] = $this->splitStack($oldItem, $action->getCount(), 0);
-
-			$inventory->setItem($slot, $leftover);
+			$destroyed = $this->removeItemFromSlot($action->getSource(), $action->getCount());
 			$this->builder->addAction(new DestroyItemAction($destroyed));
+
+		}elseif($action instanceof CraftRecipeStackRequestAction){
+			$this->beginCrafting($action->getRecipeId(), 1);
+		}elseif($action instanceof CraftRecipeAutoStackRequestAction){
+			$this->beginCrafting($action->getRecipeId(), $action->getRepetitions());
 		}elseif($action instanceof CraftingConsumeInputStackRequestAction){
-			//we don't need this for the PM system
-			$this->requestSlotInfos[] = $action->getSource();
-			$this->crafting = true;
-		}elseif(
-			$action instanceof CraftRecipeStackRequestAction || //TODO
-			$action instanceof CraftRecipeAutoStackRequestAction || //TODO
-			$action instanceof CraftingMarkSecondaryResultStackRequestAction || //no obvious use
-			$action instanceof DeprecatedCraftingResultsStackRequestAction //no obvious use
-		){
-			$this->crafting = true;
+			if(!$this->specialTransaction instanceof CraftingTransaction){
+				throw new PacketHandlingException("Cannot consume crafting input when no crafting transaction is in progress");
+			}
+			$this->removeItemFromSlot($action->getSource(), $action->getCount()); //output discarded - we allow CraftingTransaction to verify the balance
+
+		}elseif($action instanceof CraftingMarkSecondaryResultStackRequestAction){
+			if(!$this->specialTransaction instanceof CraftingTransaction){
+				throw new AssumptionFailedError("Cannot mark crafting result index when no crafting transaction is in progress");
+			}
+			$outputIndex = $action->getCraftingGridSlot();
+			if($outputIndex < 0){
+				throw new PacketHandlingException("Crafting result index cannot be negative");
+			}
+			$this->craftingOutputIndex = $outputIndex;
+		}elseif($action instanceof DeprecatedCraftingResultsStackRequestAction){
+			//no obvious use
 		}else{
 			throw new PacketHandlingException("Unhandled item stack request action: " . get_class($action));
 		}
@@ -184,9 +250,12 @@ final class ItemStackRequestExecutor{
 		}
 		$inventoryActions = $this->builder->generateActions();
 
-		return $this->crafting ?
-			new CraftingTransaction($this->player, $this->player->getServer()->getCraftingManager(), $inventoryActions) :
-			new InventoryTransaction($this->player, $inventoryActions);
+		$transaction = $this->specialTransaction ?? new InventoryTransaction($this->player);
+		foreach($inventoryActions as $action){
+			$transaction->addAction($action);
+		}
+
+		return $transaction;
 	}
 
 	public function buildItemStackResponse(bool $success) : ItemStackResponse{
