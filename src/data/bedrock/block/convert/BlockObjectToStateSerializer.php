@@ -549,6 +549,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::RED_MUSHROOM(), Ids::RED_MUSHROOM);
 		$this->mapSimple(Blocks::RED_NETHER_BRICKS(), Ids::RED_NETHER_BRICK);
 		$this->mapSimple(Blocks::RESERVED6(), Ids::RESERVED6);
+		$this->mapSimple(Blocks::SCULK(), Ids::SCULK);
 		$this->mapSimple(Blocks::SEA_LANTERN(), Ids::SEA_LANTERN);
 		$this->mapSimple(Blocks::SHROOMLIGHT(), Ids::SHROOMLIGHT);
 		$this->mapSimple(Blocks::SHULKER_BOX(), Ids::UNDYED_SHULKER_BOX);
