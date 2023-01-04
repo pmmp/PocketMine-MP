@@ -26,6 +26,7 @@ namespace pocketmine\entity\object;
 use pocketmine\entity\animation\FireworkParticlesAnimation;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
+use pocketmine\entity\Explosive;
 use pocketmine\entity\Living;
 use pocketmine\entity\Location;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -42,7 +43,7 @@ use pocketmine\world\sound\FireworkTwinkleSound;
 use function count;
 use function sqrt;
 
-class FireworkRocket extends Entity{
+class FireworkRocket extends Entity implements Explosive{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::FIREWORKS_ROCKET; }
 
