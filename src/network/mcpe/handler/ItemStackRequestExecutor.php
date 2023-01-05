@@ -190,7 +190,10 @@ final class ItemStackRequestExecutor{
 			$craftingResult->setCount($craftingResult->getCount() * $repetitions);
 			$this->craftingResults[$k] = $craftingResult;
 		}
-		$this->setNextCreatedItem($this->craftingResults[array_key_first($this->craftingResults)]);
+		if(count($this->craftingResults) === 1){
+			//for multi-output recipes, later actions will tell us which result to create and when
+			$this->setNextCreatedItem($this->craftingResults[array_key_first($this->craftingResults)]);
+		}
 	}
 
 	private function takeCreatedItem(ItemStackRequestSlotInfo $destination, int $count) : void{
