@@ -520,7 +520,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	protected function broadcastMovement(bool $teleport = false) : void{
 		parent::broadcastMovement($teleport);
 		if(!$teleport){
-			$legacySpawnedPlayers = array_filter($this->hasSpawned, fn(Player $player) => $player->getNetworkSession()->getProtocolId() < ProtocolInfo::PROTOCOL_1_16_0);
+			$legacySpawnedPlayers = array_filter($this->hasSpawned, fn(Player $player) => $player->getNetworkSession()->getProtocolId() >= ProtocolInfo::PROTOCOL_1_14_0
+				&& $player->getNetworkSession()->getProtocolId() <= ProtocolInfo::PROTOCOL_1_14_60);
 
 			$this->server->broadcastPackets($legacySpawnedPlayers, [MovePlayerPacket::simple(
 				$this->id,
