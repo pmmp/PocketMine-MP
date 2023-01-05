@@ -60,7 +60,6 @@ use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\ObjectSet;
-use function array_map;
 use function array_search;
 use function get_class;
 use function is_int;
@@ -512,10 +511,14 @@ class InventoryManager{
 	public function syncCreative() : void{
 		$typeConverter = TypeConverter::getInstance();
 
-		$nextEntryId = 1;
-		$this->session->sendDataPacket(CreativeContentPacket::create(array_map(function(Item $item) use($typeConverter, &$nextEntryId) : CreativeContentEntry{
-			return new CreativeContentEntry($nextEntryId++, $typeConverter->coreItemStackToNet($item));
-		}, $this->player->isSpectator() ? [] : CreativeInventory::getInstance()->getAll())));
+		$entries = [];
+		if(!$this->player->isSpectator()){
+			//creative inventory may have holes if items were unregistered - ensure network IDs used are always consistent
+			foreach(CreativeInventory::getInstance()->getAll() as $k => $item){
+				$entries[] = new CreativeContentEntry($k, $typeConverter->coreItemStackToNet($item));
+			}
+		}
+		$this->session->sendDataPacket(CreativeContentPacket::create($entries));
 	}
 
 	private function newItemStackId() : int{

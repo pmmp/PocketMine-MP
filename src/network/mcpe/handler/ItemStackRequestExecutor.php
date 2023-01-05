@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\crafting\CraftingGrid;
+use pocketmine\inventory\CreativeInventory;
+use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
@@ -37,6 +39,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftingConsum
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftingMarkSecondaryResultStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftRecipeAutoStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftRecipeStackRequestAction;
+use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CreativeCreateStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\DeprecatedCraftingResultsStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\DestroyStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\DropStackRequestAction;
@@ -51,6 +54,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
+use function array_key_first;
 use function get_class;
 
 final class ItemStackRequestExecutor{
@@ -63,7 +67,10 @@ final class ItemStackRequestExecutor{
 
 	/** @var Item[] */
 	private array $craftingResults = [];
-	private int $craftingOutputIndex = 0;
+
+	private ?Item $nextCreatedItem = null;
+	private bool $createdItemFromCreativeInventory = false;
+	private int $createdItemsTakenCount = 0;
 
 	public function __construct(
 		private Player $player,
@@ -123,7 +130,7 @@ final class ItemStackRequestExecutor{
 	/**
 	 * Adds items to the target slot, if they are stackable.
 	 */
-	private function addItemToSlot(ItemStackRequestSlotInfo $slotInfo, Item $item, int $count) : Item{
+	private function addItemToSlot(ItemStackRequestSlotInfo $slotInfo, Item $item, int $count) : void{
 		$this->requestSlotInfos[] = $slotInfo;
 		[$inventory, $slot] = $this->getBuilderInventoryAndSlot($slotInfo);
 
@@ -136,11 +143,25 @@ final class ItemStackRequestExecutor{
 		$newItem = clone $item;
 		$newItem->setCount($existingItem->getCount() + $count);
 		$inventory->setItem($slot, $newItem);
+	}
 
-		$leftover = clone $item;
-		$leftover->pop($count);
-
-		return $leftover;
+	private function setNextCreatedItem(?Item $item, bool $creative = false) : void{
+		if($item !== null && $item->isNull()){
+			$item = null;
+		}
+		if($this->nextCreatedItem !== null){
+			//while this is more complicated than simply adding the action when the item is taken, this ensures that
+			//plugins can tell the difference between 1 item that got split into 2 slots, vs 2 separate items.
+			if($this->createdItemFromCreativeInventory && $this->createdItemsTakenCount > 0){
+				$this->nextCreatedItem->setCount($this->createdItemsTakenCount);
+				$this->builder->addAction(new CreateItemAction($this->nextCreatedItem));
+			}elseif($this->createdItemsTakenCount < $this->nextCreatedItem->getCount()){
+				throw new PacketHandlingException("Not all of the previous created item was taken");
+			}
+		}
+		$this->nextCreatedItem = $item;
+		$this->createdItemFromCreativeInventory = $creative;
+		$this->createdItemsTakenCount = 0;
 	}
 
 	private function beginCrafting(int $recipeId, int $repetitions) : void{
@@ -169,20 +190,27 @@ final class ItemStackRequestExecutor{
 			$craftingResult->setCount($craftingResult->getCount() * $repetitions);
 			$this->craftingResults[$k] = $craftingResult;
 		}
+		$this->setNextCreatedItem($this->craftingResults[array_key_first($this->craftingResults)]);
 	}
 
-	private function takeCraftingResult(ItemStackRequestSlotInfo $destination, int $count) : void{
-		$recipeResultItem = $this->craftingResults[$this->craftingOutputIndex] ?? null;
-		if($recipeResultItem === null){
-			throw new PacketHandlingException("Cannot refer to nonexisting crafting output index " . $this->craftingOutputIndex);
+	private function takeCreatedItem(ItemStackRequestSlotInfo $destination, int $count) : void{
+		$createdItem = $this->nextCreatedItem;
+		if($createdItem === null){
+			throw new PacketHandlingException("No created item is waiting to be taken");
 		}
 
-		$availableCount = $recipeResultItem->getCount();
-		if($availableCount < $count){
-			throw new PacketHandlingException("Tried to take too many results from crafting");
+		if(!$this->createdItemFromCreativeInventory){
+			$availableCount = $createdItem->getCount() - $this->createdItemsTakenCount;
+			if($count > $availableCount){
+				throw new PacketHandlingException("Not enough created items available to be taken (have $availableCount, tried to take $count)");
+			}
 		}
 
-		$this->craftingResults[$this->craftingOutputIndex] = $this->addItemToSlot($destination, $recipeResultItem, $count);
+		$this->createdItemsTakenCount += $count;
+		$this->addItemToSlot($destination, $createdItem, $count);
+		if(!$this->createdItemFromCreativeInventory && $this->createdItemsTakenCount >= $createdItem->getCount()){
+			$this->setNextCreatedItem(null);
+		}
 	}
 
 	private function processItemStackRequestAction(ItemStackRequestAction $action) : void{
@@ -194,7 +222,7 @@ final class ItemStackRequestExecutor{
 			$destination = $action->getDestination();
 
 			if($source->getContainerId() === ContainerUIIds::CREATED_OUTPUT && $source->getSlotId() === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
-				$this->takeCraftingResult($destination, $action->getCount());
+				$this->takeCreatedItem($destination, $action->getCount());
 			}else{
 				$this->transferItems($source, $destination, $action->getCount());
 			}
@@ -218,6 +246,16 @@ final class ItemStackRequestExecutor{
 			$destroyed = $this->removeItemFromSlot($action->getSource(), $action->getCount());
 			$this->builder->addAction(new DestroyItemAction($destroyed));
 
+		}elseif($action instanceof CreativeCreateStackRequestAction){
+			$item = CreativeInventory::getInstance()->getItem($action->getCreativeItemId());
+			if($item === null){
+				//TODO: the item may have been unregistered after the client was sent the creative contents, leaving a
+				//gap in the creative item list. This probably shouldn't be a violation, but I'm not sure how else to
+				//handle it right now.
+				throw new PacketHandlingException("Tried to create nonexisting creative item " . $action->getCreativeItemId());
+			}
+
+			$this->setNextCreatedItem($item, true);
 		}elseif($action instanceof CraftRecipeStackRequestAction){
 			$this->beginCrafting($action->getRecipeId(), 1);
 		}elseif($action instanceof CraftRecipeAutoStackRequestAction){
@@ -232,11 +270,12 @@ final class ItemStackRequestExecutor{
 			if(!$this->specialTransaction instanceof CraftingTransaction){
 				throw new AssumptionFailedError("Cannot mark crafting result index when no crafting transaction is in progress");
 			}
-			$outputIndex = $action->getCraftingGridSlot();
-			if($outputIndex < 0){
-				throw new PacketHandlingException("Crafting result index cannot be negative");
+
+			$nextResultItem = $this->craftingResults[$action->getCraftingGridSlot()] ?? null;
+			if($nextResultItem === null){
+				throw new PacketHandlingException("No such crafting result index " . $action->getCraftingGridSlot());
 			}
-			$this->craftingOutputIndex = $outputIndex;
+			$this->setNextCreatedItem($nextResultItem);
 		}elseif($action instanceof DeprecatedCraftingResultsStackRequestAction){
 			//no obvious use
 		}else{
@@ -248,6 +287,7 @@ final class ItemStackRequestExecutor{
 		foreach($this->request->getActions() as $action){
 			$this->processItemStackRequestAction($action);
 		}
+		$this->setNextCreatedItem(null);
 		$inventoryActions = $this->builder->generateActions();
 
 		$transaction = $this->specialTransaction ?? new InventoryTransaction($this->player);
