@@ -31,11 +31,11 @@ use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\InvalidSkinException;
 use pocketmine\event\player\PlayerEditBookEvent;
-use pocketmine\inventory\transaction\action\InventoryAction;
+use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
+use pocketmine\inventory\transaction\TransactionBuilder;
 use pocketmine\inventory\transaction\TransactionException;
-use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\VanillaItems;
 use pocketmine\item\WritableBook;
 use pocketmine\item\WritableBookPage;
@@ -99,7 +99,6 @@ use pocketmine\network\mcpe\protocol\types\inventory\NormalTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\ReleaseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\ItemStackRequest;
 use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponse;
-use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\PlayerAction;
@@ -378,72 +377,49 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	private function handleNormalTransaction(NormalTransactionData $data, int $itemStackRequestId) : bool{
-		/** @var InventoryAction[] $actions */
-		$actions = [];
+		//When the ItemStackRequest system is used, this transaction type is only used for dropping items by pressing Q.
+		//I don't know why they don't just use ItemStackRequest for that too, which already supports dropping items by
+		//clicking them outside an open inventory menu, but for now it is what it is.
+		//Fortunately, this means we can be extremely strict about the validation criteria.
 
-		$isCraftingPart = false;
-		$converter = TypeConverter::getInstance();
+		if(count($data->getActions()) > 2){
+			throw new PacketHandlingException("Expected exactly 2 actions for dropping an item");
+		}
+
 		foreach($data->getActions() as $networkInventoryAction){
-			if(
-				$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_TODO || (
-					$this->craftingTransaction !== null &&
-					!$networkInventoryAction->oldItem->getItemStack()->equals($networkInventoryAction->newItem->getItemStack()) &&
-					$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CONTAINER &&
-					$networkInventoryAction->windowId === ContainerIds::UI &&
-					$networkInventoryAction->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT
-				)
-			){
-				$isCraftingPart = true;
-			}
+			if($networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_WORLD){
+				//drop item - we don't need to validate this, we only care about the count
+				//if the resulting actions don't match the client for some reason, it will trigger an automatic
+				//prediction rollback anyway.
+				//it's technically possible to see this more than once, but a normal client should never do that.
+				$inventory = $this->player->getInventory();
+				$heldItem = $inventory->getItemInHand();
 
-			try{
-				$action = $converter->createInventoryAction($networkInventoryAction, $this->player, $this->inventoryManager);
-				if($action !== null){
-					$actions[] = $action;
+				try{
+					$droppedItem = TypeConverter::getInstance()->netItemStackToCore($networkInventoryAction->newItem->getItemStack());
+				}catch(TypeConversionException $e){
+					throw PacketHandlingException::wrap($e);
 				}
-			}catch(TypeConversionException $e){
-				$this->session->getLogger()->debug("Error unpacking inventory action: " . $e->getMessage());
-				return false;
+
+				//TODO: if we can avoid decoding incoming item NBT, it will be faster to compare network ItemStacks
+				//rather than converting to internal itemstacks and using canStackWith() here.
+				if(!$heldItem->canStackWith($droppedItem) || $heldItem->getCount() < $droppedItem->getCount()){
+					return false;
+				}
+
+				//purposely overwritten here - this allows any immutable internal references to be shared
+				$droppedItem = $heldItem->pop($droppedItem->getCount());
+
+				$builder = new TransactionBuilder();
+				$builder->getInventory($inventory)->setItem($inventory->getHeldItemIndex(), $heldItem);
+				$builder->addAction(new DropItemAction($droppedItem));
+
+				$transaction = new InventoryTransaction($this->player, $builder->generateActions());
+				return $this->executeInventoryTransaction($transaction, $itemStackRequestId);
 			}
 		}
 
-		if($isCraftingPart){
-			if($this->craftingTransaction === null){
-				//TODO: this might not be crafting if there is a special inventory open (anvil, enchanting, loom etc)
-				$this->craftingTransaction = new CraftingTransaction($this->player, $this->player->getServer()->getCraftingManager(), $actions);
-			}else{
-				foreach($actions as $action){
-					$this->craftingTransaction->addAction($action);
-				}
-			}
-
-			try{
-				$this->craftingTransaction->validate();
-			}catch(TransactionValidationException $e){
-				//transaction is incomplete - crafting transaction comes in lots of little bits, so we have to collect
-				//all of the parts before we can execute it
-				return true;
-			}
-			try{
-				return $this->executeInventoryTransaction($this->craftingTransaction, $itemStackRequestId);
-			}finally{
-				$this->craftingTransaction = null;
-			}
-		}else{
-			//normal transaction fallthru
-			if($this->craftingTransaction !== null){
-				$this->session->getLogger()->debug("Got unexpected normal inventory action with incomplete crafting transaction, refusing to execute crafting");
-				$this->craftingTransaction = null;
-				return false;
-			}
-
-			if(count($actions) === 0){
-				//TODO: 1.13+ often sends transactions with nothing but useless crap in them, no need for the debug noise
-				return true;
-			}
-
-			return $this->executeInventoryTransaction(new InventoryTransaction($this->player, $actions), $itemStackRequestId);
-		}
+		throw new PacketHandlingException("Legacy 'normal' transactions should only be used for dropping items");
 	}
 
 	private function handleUseItemTransaction(UseItemTransactionData $data) : bool{
