@@ -39,6 +39,7 @@ use pocketmine\utils\RegistryTrait;
  * @method static FireAspectEnchantment FIRE_ASPECT()
  * @method static ProtectionEnchantment FIRE_PROTECTION()
  * @method static Enchantment FLAME()
+ * @method static Enchantment FROST_WALKER()
  * @method static Enchantment INFINITY()
  * @method static KnockbackEnchantment KNOCKBACK()
  * @method static Enchantment MENDING()
@@ -98,6 +99,8 @@ final class VanillaEnchantments{
 		self::register("VANISHING", new Enchantment(KnownTranslationFactory::enchantment_curse_vanishing(), Rarity::MYTHIC, ItemFlags::NONE, ItemFlags::ALL, 1));
 
 		self::register("SWIFT_SNEAK", new Enchantment(KnownTranslationFactory::enchantment_swift_sneak(), Rarity::MYTHIC, ItemFlags::NONE, ItemFlags::LEGS, 3));
+
+		self::register("FROST_WALKER", new Enchantment(KnownTranslationFactory::enchantment_frostwalker(), Rarity::MYTHIC, ItemFlags::NONE, ItemFlags::FEET, 2));
 	}
 
 	protected static function register(string $name, Enchantment $member) : void{
