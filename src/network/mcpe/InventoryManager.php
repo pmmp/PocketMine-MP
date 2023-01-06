@@ -382,51 +382,63 @@ class InventoryManager{
 		}
 	}
 
+	public function onSlotChange(Inventory $inventory, int $slot) : void{
+		$currentItem = $inventory->getItem($slot);
+		$predictions = $this->initiatedSlotChanges[spl_object_id($inventory)] ?? null;
+		$clientSideItem = $predictions?->getSlot($slot);
+		if($clientSideItem === null || !$clientSideItem->equalsExact($currentItem)){
+			//no prediction or incorrect - do not associate this with the currently active itemstack request
+			$this->trackItemStack($inventory, $slot, $currentItem, null);
+			$this->syncSlot($inventory, $slot);
+		}else{
+			//correctly predicted - associate the change with the currently active itemstack request
+			$this->trackItemStack($inventory, $slot, $currentItem, $this->currentItemStackRequestId);
+		}
+		$predictions?->remove($slot);
+	}
+
 	public function syncSlot(Inventory $inventory, int $slot) : void{
+		$itemStackInfo = $this->getItemStackInfo($inventory, $slot);
+		if($itemStackInfo === null){
+			throw new \LogicException("Cannot sync an untracked inventory slot");
+		}
 		$slotMap = $this->complexWindows[spl_object_id($inventory)] ?? null;
 		if($slotMap !== null){
 			$windowId = ContainerIds::UI;
-			$netSlot = $slotMap->mapCoreToNet($slot) ?? null;
+			$netSlot = $slotMap->mapCoreToNet($slot) ?? throw new AssumptionFailedError("We already have an ItemStackInfo, so this should not be null");
 		}else{
-			$windowId = $this->getWindowId($inventory);
+			$windowId = $this->getWindowId($inventory) ?? throw new AssumptionFailedError("We already have an ItemStackInfo, so this should not be null");
 			$netSlot = $slot;
 		}
-		if($windowId !== null && $netSlot !== null){
-			$currentItem = $inventory->getItem($slot);
-			$predictions = $this->initiatedSlotChanges[spl_object_id($inventory)] ?? null;
-			$clientSideItem = $predictions?->getSlot($slot);
-			if($clientSideItem === null || !$clientSideItem->equalsExact($currentItem)){
-				$itemStackWrapper = $this->wrapItemStack($inventory, $slot, $currentItem);
-				if($windowId === ContainerIds::OFFHAND){
-					//TODO: HACK!
-					//The client may sometimes ignore the InventorySlotPacket for the offhand slot.
-					//This can cause a lot of problems (totems, arrows, and more...).
-					//The workaround is to send an InventoryContentPacket instead
-					//BDS (Bedrock Dedicated Server) also seems to work this way.
-					$this->session->sendDataPacket(InventoryContentPacket::create($windowId, [$itemStackWrapper]));
-				}else{
-					if($this->currentItemStackRequestId !== null){
-						//TODO: HACK!
-						//When right-clicking to equip armour, the client predicts the content of the armour slot, but
-						//doesn't report it in the transaction packet. The server then sends an InventorySlotPacket to
-						//the client, assuming the slot changed for some other reason, since there is no prediction for
-						//the slot.
-						//However, later requests involving that itemstack will refer to the request ID in which the
-						//armour was equipped, instead of the stack ID provided by the server in the outgoing
-						//InventorySlotPacket. (Perhaps because the item is already the same as the client actually
-						//predicted, but didn't tell us?)
-						//We work around this bug by setting the slot to air and then back to the correct item. In
-						//theory, setting a different count and then back again (or changing any other property) would
-						//also work, but this is simpler.
-						$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $netSlot, new ItemStackWrapper(0, ItemStack::null())));
-					}
-					$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $netSlot, $itemStackWrapper));
-				}
-			}elseif($this->currentItemStackRequestId !== null){
-				$this->trackItemStack($inventory, $slot, $currentItem, $this->currentItemStackRequestId);
+
+		$itemStackWrapper = new ItemStackWrapper($itemStackInfo->getStackId(), $itemStackInfo->getItemStack());
+		if($windowId === ContainerIds::OFFHAND){
+			//TODO: HACK!
+			//The client may sometimes ignore the InventorySlotPacket for the offhand slot.
+			//This can cause a lot of problems (totems, arrows, and more...).
+			//The workaround is to send an InventoryContentPacket instead
+			//BDS (Bedrock Dedicated Server) also seems to work this way.
+			$this->session->sendDataPacket(InventoryContentPacket::create($windowId, [$itemStackWrapper]));
+		}else{
+			if($this->currentItemStackRequestId !== null){
+				//TODO: HACK!
+				//When right-clicking to equip armour, the client predicts the content of the armour slot, but
+				//doesn't report it in the transaction packet. The server then sends an InventorySlotPacket to
+				//the client, assuming the slot changed for some other reason, since there is no prediction for
+				//the slot.
+				//However, later requests involving that itemstack will refer to the request ID in which the
+				//armour was equipped, instead of the stack ID provided by the server in the outgoing
+				//InventorySlotPacket. (Perhaps because the item is already the same as the client actually
+				//predicted, but didn't tell us?)
+				//We work around this bug by setting the slot to air and then back to the correct item. In
+				//theory, setting a different count and then back again (or changing any other property) would
+				//also work, but this is simpler.
+				$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $netSlot, new ItemStackWrapper(0, ItemStack::null())));
 			}
-			$predictions?->remove($slot);
+			$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $netSlot, $itemStackWrapper));
 		}
+		$predictions = $this->initiatedSlotChanges[spl_object_id($inventory)] ?? null;
+		$predictions?->remove($slot);
 	}
 
 	public function syncContents(Inventory $inventory) : void{
@@ -437,26 +449,25 @@ class InventoryManager{
 			$windowId = $this->getWindowId($inventory);
 		}
 		if($windowId !== null){
+			unset($this->initiatedSlotChanges[spl_object_id($inventory)]);
+			$contents = [];
+			foreach($inventory->getContents(true) as $slot => $item){
+				$info = $this->trackItemStack($inventory, $slot, $item, null);
+				$contents[] = new ItemStackWrapper($info->getStackId(), $info->getItemStack());
+			}
 			if($slotMap !== null){
-				$predictions = $this->initiatedSlotChanges[spl_object_id($inventory)] ?? null;
-				foreach($inventory->getContents(true) as $slotId => $item){
+				foreach($contents as $slotId => $info){
 					$packetSlot = $slotMap->mapCoreToNet($slotId) ?? null;
 					if($packetSlot === null){
 						continue;
 					}
-					$predictions?->remove($slotId);
 					$this->session->sendDataPacket(InventorySlotPacket::create(
 						$windowId,
 						$packetSlot,
-						$this->wrapItemStack($inventory, $slotId, $inventory->getItem($slotId))
+						$info
 					));
 				}
 			}else{
-				unset($this->initiatedSlotChanges[spl_object_id($inventory)]);
-				$contents = [];
-				foreach($inventory->getContents(true) as $slotId => $item){
-					$contents[] = $this->wrapItemStack($inventory, $slotId, $item);
-				}
 				$this->session->sendDataPacket(InventoryContentPacket::create($windowId, $contents));
 			}
 		}
@@ -475,14 +486,13 @@ class InventoryManager{
 		foreach($this->initiatedSlotChanges as $predictions){
 			$inventory = $predictions->getInventory();
 			foreach($predictions->getSlots() as $slot => $expectedItem){
-				if(!$inventory->slotExists($slot)){
+				if(!$inventory->slotExists($slot) || $this->getItemStackInfo($inventory, $slot) === null){
 					continue; //TODO: size desync ???
 				}
-				$actualItem = $inventory->getItem($slot);
-				if(!$actualItem->equalsExact($expectedItem)){
-					$this->session->getLogger()->debug("Detected prediction mismatch in inventory " . get_class($inventory) . "#" . spl_object_id($inventory) . " slot $slot");
-					$this->syncSlot($inventory, $slot);
-				}
+
+				//any prediction that still exists at this point is a slot that was predicted to change but didn't
+				$this->session->getLogger()->debug("Detected prediction mismatch in inventory " . get_class($inventory) . "#" . spl_object_id($inventory) . " slot $slot");
+				$this->syncSlot($inventory, $slot);
 			}
 		}
 
@@ -548,11 +558,6 @@ class InventoryManager{
 
 		$info = new ItemStackInfo($itemStackRequestId, $item->isNull() ? 0 : $this->newItemStackId(), $itemStack);
 		return $this->itemStackInfos[spl_object_id($inventory)][$slotId] = $info;
-	}
-
-	private function wrapItemStack(Inventory $inventory, int $slotId, Item $item) : ItemStackWrapper{
-		$info = $this->trackItemStack($inventory, $slotId, $item, null);
-		return new ItemStackWrapper($info->getStackId(), $info->getItemStack());
 	}
 
 	public function matchItemStack(Inventory $inventory, int $slotId, int $clientItemStackId) : bool{
