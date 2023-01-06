@@ -24,12 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe;
 
 use pocketmine\inventory\Inventory;
-use pocketmine\item\Item;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 
 final class InventoryManagerPredictedChanges{
 	/**
-	 * @var Item[]
-	 * @phpstan-var array<int, Item>
+	 * @var ItemStack[]
+	 * @phpstan-var array<int, ItemStack>
 	 */
 	private array $slots = [];
 
@@ -40,18 +40,18 @@ final class InventoryManagerPredictedChanges{
 	public function getInventory() : Inventory{ return $this->inventory; }
 
 	/**
-	 * @return Item[]
-	 * @phpstan-return array<int, Item>
+	 * @return ItemStack[]
+	 * @phpstan-return array<int, ItemStack>
 	 */
 	public function getSlots() : array{
 		return $this->slots;
 	}
 
-	public function getSlot(int $slot) : ?Item{
+	public function getSlot(int $slot) : ?ItemStack{
 		return $this->slots[$slot] ?? null;
 	}
 
-	public function add(int $slot, Item $item) : void{
+	public function add(int $slot, ItemStack $item) : void{
 		$this->slots[$slot] = $item;
 	}
 

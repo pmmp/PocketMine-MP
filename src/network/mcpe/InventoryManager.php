@@ -38,7 +38,6 @@ use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\convert\TypeConversionException;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
@@ -188,7 +187,7 @@ class InventoryManager{
 		return null;
 	}
 
-	private function addPredictedSlotChange(Inventory $inventory, int $slot, Item $item) : void{
+	private function addPredictedSlotChange(Inventory $inventory, int $slot, ItemStack $item) : void{
 		$predictions = ($this->initiatedSlotChanges[spl_object_id($inventory)] ??= new InventoryManagerPredictedChanges($inventory));
 		$predictions->add($slot, $item);
 	}
@@ -196,7 +195,9 @@ class InventoryManager{
 	public function addTransactionPredictedSlotChanges(InventoryTransaction $tx) : void{
 		foreach($tx->getActions() as $action){
 			if($action instanceof SlotChangeAction){
-				$this->addPredictedSlotChange($action->getInventory(), $action->getSlot(), $action->getTargetItem());
+				//TODO: ItemStackRequestExecutor can probably build these predictions with much lower overhead
+				$itemStack = TypeConverter::getInstance()->coreItemStackToNet($action->getTargetItem());
+				$this->addPredictedSlotChange($action->getInventory(), $action->getSlot(), $itemStack);
 			}
 		}
 	}
@@ -225,12 +226,7 @@ class InventoryManager{
 			}
 
 			[$inventory, $slot] = $info;
-			try{
-				$item = TypeConverter::getInstance()->netItemStackToCore($action->newItem->getItemStack());
-			}catch(TypeConversionException $e){
-				throw new PacketHandlingException($e->getMessage(), 0, $e);
-			}
-			$this->addPredictedSlotChange($inventory, $slot, $item);
+			$this->addPredictedSlotChange($inventory, $slot, $action->newItem->getItemStack());
 		}
 	}
 
@@ -383,10 +379,10 @@ class InventoryManager{
 	}
 
 	public function onSlotChange(Inventory $inventory, int $slot) : void{
-		$currentItem = $inventory->getItem($slot);
+		$currentItem = TypeConverter::getInstance()->coreItemStackToNet($inventory->getItem($slot));
 		$predictions = $this->initiatedSlotChanges[spl_object_id($inventory)] ?? null;
 		$clientSideItem = $predictions?->getSlot($slot);
-		if($clientSideItem === null || !$clientSideItem->equalsExact($currentItem)){
+		if($clientSideItem === null || !$clientSideItem->equals($currentItem)){
 			//no prediction or incorrect - do not associate this with the currently active itemstack request
 			$this->trackItemStack($inventory, $slot, $currentItem, null);
 			$this->syncSlot($inventory, $slot);
@@ -452,7 +448,8 @@ class InventoryManager{
 			unset($this->initiatedSlotChanges[spl_object_id($inventory)]);
 			$contents = [];
 			foreach($inventory->getContents(true) as $slot => $item){
-				$info = $this->trackItemStack($inventory, $slot, $item, null);
+				$itemStack = TypeConverter::getInstance()->coreItemStackToNet($item);
+				$info = $this->trackItemStack($inventory, $slot, $itemStack, null);
 				$contents[] = new ItemStackWrapper($info->getStackId(), $info->getItemStack());
 			}
 			if($slotMap !== null){
@@ -548,15 +545,14 @@ class InventoryManager{
 		return $this->itemStackInfos[spl_object_id($inventory)][$slot] ?? null;
 	}
 
-	private function trackItemStack(Inventory $inventory, int $slotId, Item $item, ?int $itemStackRequestId) : ItemStackInfo{
+	private function trackItemStack(Inventory $inventory, int $slotId, ItemStack $itemStack, ?int $itemStackRequestId) : ItemStackInfo{
 		$existing = $this->itemStackInfos[spl_object_id($inventory)][$slotId] ?? null;
-		$typeConverter = TypeConverter::getInstance();
-		$itemStack = $typeConverter->coreItemStackToNet($item);
 		if($existing !== null && $existing->getItemStack()->equals($itemStack) && $existing->getRequestId() === $itemStackRequestId){
 			return $existing;
 		}
 
-		$info = new ItemStackInfo($itemStackRequestId, $item->isNull() ? 0 : $this->newItemStackId(), $itemStack);
+		//TODO: ItemStack->isNull() would be nice to have here
+		$info = new ItemStackInfo($itemStackRequestId, $itemStack->getId() === 0 ? 0 : $this->newItemStackId(), $itemStack);
 		return $this->itemStackInfos[spl_object_id($inventory)][$slotId] = $info;
 	}
 
