@@ -667,14 +667,14 @@ abstract class Living extends Entity{
 		parent::move($dx, $dy, $dz);
 
 		$frostWalkerLevel = $this->armorInventory->getBoots()->getEnchantmentLevel(VanillaEnchantments::FROST_WALKER());
-		if($frostWalkerLevel > 0 && !$this->isUnderwater() && (abs($dx) > 0.0001 || abs($dz) > 0.0001)){
+		if($frostWalkerLevel > 0 && (abs($dx) > 0.0001 || abs($dz) > 0.0001)){
 			$radius = $frostWalkerLevel + 2;
 			$world = $this->getWorld();
 			for($x = -$radius; $x <= $radius; $x++){
 				for($z = -$radius; $z <= $radius; $z++){
 					$pos = $this->location->add($x, -1, $z)->floor();
 					$block = $world->getBlock($pos);
-					if(!$block instanceof Water || $block->isStill()){
+					if(!$block instanceof Water || !$block->isSource()){
 						continue;
 					}
 					if($world->getBlock($pos->up())->getId() !== BlockLegacyIds::AIR){
