@@ -36,7 +36,7 @@ use pocketmine\item\Item;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerUIIds;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftingConsumeInputStackRequestAction;
-use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftingMarkSecondaryResultStackRequestAction;
+use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftingCreateSpecificResultStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftRecipeAutoStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftRecipeStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CreativeCreateStackRequestAction;
@@ -270,14 +270,14 @@ final class ItemStackRequestExecutor{
 			}
 			$this->removeItemFromSlot($action->getSource(), $action->getCount()); //output discarded - we allow CraftingTransaction to verify the balance
 
-		}elseif($action instanceof CraftingMarkSecondaryResultStackRequestAction){
+		}elseif($action instanceof CraftingCreateSpecificResultStackRequestAction){
 			if(!$this->specialTransaction instanceof CraftingTransaction){
 				throw new AssumptionFailedError("Cannot mark crafting result index when no crafting transaction is in progress");
 			}
 
-			$nextResultItem = $this->craftingResults[$action->getCraftingGridSlot()] ?? null;
+			$nextResultItem = $this->craftingResults[$action->getResultIndex()] ?? null;
 			if($nextResultItem === null){
-				throw new PacketHandlingException("No such crafting result index " . $action->getCraftingGridSlot());
+				throw new PacketHandlingException("No such crafting result index " . $action->getResultIndex());
 			}
 			$this->setNextCreatedItem($nextResultItem);
 		}elseif($action instanceof DeprecatedCraftingResultsStackRequestAction){
