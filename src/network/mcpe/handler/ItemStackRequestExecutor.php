@@ -55,6 +55,7 @@ use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use function array_key_first;
+use function count;
 use function get_class;
 
 final class ItemStackRequestExecutor{
