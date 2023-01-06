@@ -48,9 +48,9 @@ use function rmdir;
 use function rtrim;
 use function scandir;
 use function str_replace;
+use function str_starts_with;
 use function stream_get_contents;
 use function strlen;
-use function strpos;
 use function uksort;
 use function unlink;
 use const DIRECTORY_SEPARATOR;
@@ -167,7 +167,7 @@ final class Filesystem{
 		//this should probably never have integer keys, but it's safer than making PHPStan ignore it
 		foreach(Utils::stringifyKeys(self::$cleanedPaths) as $cleanPath => $replacement){
 			$cleanPath = rtrim(str_replace([DIRECTORY_SEPARATOR, "phar://"], ["/", ""], $cleanPath), "/");
-			if(strpos($result, $cleanPath) === 0){
+			if(str_starts_with($result, $cleanPath)){
 				$result = ltrim(str_replace($cleanPath, $replacement, $result), "/");
 			}
 		}

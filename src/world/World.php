@@ -1386,7 +1386,9 @@ class World implements ChunkManager{
 
 	/**
 	 * Notify the blocks at and around the position that the block at the position may have changed.
-	 * This will cause onNeighbourBlockUpdate() to be called for these blocks.
+	 * This will cause onNearbyBlockChange() to be called for these blocks.
+	 *
+	 * @see Block::onNearbyBlockChange()
 	 */
 	public function notifyNeighbourBlockUpdate(Vector3 $pos) : void{
 		$this->tryAddToNeighbourUpdateQueue($pos);
@@ -1815,10 +1817,7 @@ class World implements ChunkManager{
 
 		if($update){
 			$this->updateAllLight($x, $y, $z);
-			$this->tryAddToNeighbourUpdateQueue($pos);
-			foreach($pos->sides() as $side){
-				$this->tryAddToNeighbourUpdateQueue($side);
-			}
+			$this->notifyNeighbourBlockUpdate($pos);
 		}
 
 		$this->timings->setBlock->stopTiming();

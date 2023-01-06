@@ -35,9 +35,15 @@ use function usort;
 class CraftingManager{
 	use DestructorCallbackTrait;
 
-	/** @var ShapedRecipe[][] */
+	/**
+	 * @var ShapedRecipe[][]
+	 * @phpstan-var array<string, list<ShapedRecipe>>
+	 */
 	protected array $shapedRecipes = [];
-	/** @var ShapelessRecipe[][] */
+	/**
+	 * @var ShapelessRecipe[][]
+	 * @phpstan-var array<string, list<ShapelessRecipe>>
+	 */
 	protected array $shapelessRecipes = [];
 
 	/**
@@ -139,6 +145,7 @@ class CraftingManager{
 
 	/**
 	 * @return ShapelessRecipe[][]
+	 * @phpstan-return array<string, list<ShapelessRecipe>>
 	 */
 	public function getShapelessRecipes() : array{
 		return $this->shapelessRecipes;
@@ -146,6 +153,7 @@ class CraftingManager{
 
 	/**
 	 * @return ShapedRecipe[][]
+	 * @phpstan-return array<string, list<ShapedRecipe>>
 	 */
 	public function getShapedRecipes() : array{
 		return $this->shapedRecipes;
