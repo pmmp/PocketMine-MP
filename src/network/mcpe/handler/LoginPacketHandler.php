@@ -123,7 +123,7 @@ class LoginPacketHandler extends PacketHandler{
 			$this->session->getPort(),
 			$this->server->requiresAuthentication()
 		);
-		if($this->server->getNetwork()->getConnectionCount() > $this->server->getMaxPlayers()){
+		if($this->server->getNetwork()->getValidConnectionCount() > $this->server->getMaxPlayers()){
 			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_FULL, KnownTranslationKeys::DISCONNECTIONSCREEN_SERVERFULL);
 		}
 		if(!$this->server->isWhitelisted($playerInfo->getUsername())){

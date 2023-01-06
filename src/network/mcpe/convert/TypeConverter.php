@@ -175,6 +175,7 @@ class TypeConverter{
 					$nbt = new CompoundTag();
 				}
 				$nbt->setInt(self::DAMAGE_TAG, $itemStack->getDamage());
+				$meta = 0;
 			}elseif($isBlockItem && $itemStack->getMeta() !== 0){
 				//TODO HACK: This foul-smelling code ensures that we can correctly deserialize an item when the
 				//client sends it back to us, because as of 1.16.220, blockitems quietly discard their metadata
@@ -183,6 +184,7 @@ class TypeConverter{
 					$nbt = new CompoundTag();
 				}
 				$nbt->setInt(self::PM_META_TAG, $itemStack->getMeta());
+				$meta = 0;
 			}
 		}
 

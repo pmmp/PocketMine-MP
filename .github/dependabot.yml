@@ -6,6 +6,12 @@ updates:
     interval: daily
     time: "10:00"
   open-pull-requests-limit: 10
+  ignore:
+    #only allow patch updates for locale-data - this has to be updated manually due to codegen
+    - dependency-name: pocketmine/locale-data
+      update-types:
+        - "version-update:semver-major"
+        - "version-update:semver-minor"
 
 - package-ecosystem: gitsubmodule
   directory: "/"
