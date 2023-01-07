@@ -193,6 +193,8 @@ class NetworkSession{
 	 */
 	private ObjectSet $disposeHooks;
 
+	private int $lastUpdateTimeNs;
+
 	public function __construct(
 		private Server $server,
 		private NetworkSessionManager $manager,
@@ -213,6 +215,7 @@ class NetworkSession{
 		$this->disposeHooks = new ObjectSet();
 
 		$this->connectTime = time();
+		$this->lastUpdateTimeNs = hrtime(true);
 
 		$this->setHandler(new SessionStartPacketHandler(
 			$this->server,
@@ -1127,6 +1130,10 @@ class NetworkSession{
 	}
 
 	public function tick() : void{
+		$nowNs = hrtime(true);
+		$timeSinceLastUpdateNs = $nowNs - $this->lastUpdateTimeNs;
+		$this->lastUpdateTimeNs = $nowNs;
+
 		if($this->info === null){
 			if(time() >= $this->connectTime + 10){
 				$this->disconnect("Login timeout");
@@ -1148,6 +1155,15 @@ class NetworkSession{
 		}
 
 		$this->flushSendBuffer();
-		$this->incomingPacketBatchBudget = min($this->incomingPacketBatchBudget + self::INCOMING_PACKET_BATCH_PER_TICK, self::INCOMING_PACKET_BATCH_MAX_BUDGET);
+		$ticksSinceLastUpdate = intdiv($timeSinceLastUpdateNs, 50_000_000);
+		if($ticksSinceLastUpdate > 0){
+			if($ticksSinceLastUpdate > 1){
+				$this->logger->debug("Adding packet budget for $ticksSinceLastUpdate ticks (current budget is $this->incomingPacketBatchBudget)");
+			}
+			$this->incomingPacketBatchBudget = min(
+				$this->incomingPacketBatchBudget + (self::INCOMING_PACKET_BATCH_PER_TICK * $ticksSinceLastUpdate),
+				self::INCOMING_PACKET_BATCH_MAX_BUDGET
+			);
+		}
 	}
 }
