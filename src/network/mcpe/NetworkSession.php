@@ -143,6 +143,7 @@ use function get_class;
 use function in_array;
 use function json_encode;
 use function ksort;
+use function min;
 use function strcasecmp;
 use function strlen;
 use function strpos;
@@ -154,6 +155,19 @@ use const JSON_THROW_ON_ERROR;
 use const SORT_NUMERIC;
 
 class NetworkSession{
+	private const INCOMING_PACKET_BATCH_PER_TICK = 2; //we should normally see only 1 per tick - 2 allows recovery of the budget after a lag spike
+	private const INCOMING_PACKET_BATCH_MAX_BUDGET = 100; //enough to account for a 5-second lag spike
+
+	/**
+	 * At most this many more packets can be received. If this reaches zero, any additional packets received will cause
+	 * the player to be kicked from the server.
+	 * This number is increased every tick up to a maximum limit.
+	 *
+	 * @see self::INCOMING_PACKET_BATCH_PER_TICK
+	 * @see self::INCOMING_PACKET_BATCH_MAX_BUDGET
+	 */
+	private int $incomingPacketBatchBudget = self::INCOMING_PACKET_BATCH_MAX_BUDGET;
+
 	private \PrefixedLogger $logger;
 	private ?Player $player = null;
 	protected ?PlayerInfo $info = null;
@@ -396,6 +410,11 @@ class NetworkSession{
 		if(!$this->connected){
 			return;
 		}
+
+		if($this->incomingPacketBatchBudget <= 0){
+			throw new PacketHandlingException("Receiving packets too fast");
+		}
+		$this->incomingPacketBatchBudget--;
 
 		if($this->cipher !== null){
 			Timings::$playerNetworkReceiveDecrypt->startTiming();
@@ -1273,6 +1292,7 @@ class NetworkSession{
 		}
 
 		$this->flushSendBuffer();
+		$this->incomingPacketBatchBudget = min($this->incomingPacketBatchBudget + self::INCOMING_PACKET_BATCH_PER_TICK, self::INCOMING_PACKET_BATCH_MAX_BUDGET);
 	}
 
 	private function flushChunkCache() : void{
