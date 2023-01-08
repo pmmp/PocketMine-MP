@@ -183,6 +183,19 @@ class Language{
 		return $this->lang;
 	}
 
+	/**
+	 * Replaces translation keys embedded inside a string with their raw values.
+	 * Embedded translation keys must be prefixed by a "%" character.
+	 *
+	 * This is used to allow the "text" field of a Translatable to contain formatting (e.g. colour codes) and
+	 * multiple embedded translation keys.
+	 *
+	 * Normal translations whose "text" is just a single translation key don't need to use this method, and can be
+	 * processed via get() directly.
+	 *
+	 * @param string|null $onlyPrefix If non-null, only translation keys with this prefix will be replaced. This is
+	 *                                used to allow a client to do its own translating of vanilla strings.
+	 */
 	protected function parseTranslation(string $text, ?string $onlyPrefix = null) : string{
 		$newString = "";
 
