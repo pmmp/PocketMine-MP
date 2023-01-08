@@ -2014,14 +2014,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	/**
-	 * @deprecated Use {@link Player::sendMessage()} with a Translatable instead.
-	 * @param string[]|Translatable[] $parameters
-	 */
-	public function sendTranslation(string $message, array $parameters = []) : void{
-		$this->sendMessage(new Translatable($message, $parameters));
-	}
-
-	/**
 	 * @param string[] $args
 	 */
 	public function sendJukeboxPopup(string $key, array $args) : void{
