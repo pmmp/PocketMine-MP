@@ -144,8 +144,10 @@ class Language{
 	 * @param (float|int|string|Translatable)[] $params
 	 */
 	public function translateString(string $str, array $params = [], ?string $onlyPrefix = null) : string{
-		$baseText = $this->get($str);
-		$baseText = $this->parseTranslation(($onlyPrefix === null || str_starts_with($str, $onlyPrefix)) ? $baseText : $str, $onlyPrefix);
+		$baseText = ($onlyPrefix === null || str_starts_with($str, $onlyPrefix)) ? $this->internalGet($str) : null;
+		if($baseText === null){ //key not found, embedded inside format string, or doesn't match prefix
+			$baseText = $this->parseTranslation($str, $onlyPrefix);
+		}
 
 		foreach($params as $i => $p){
 			$replacement = $p instanceof Translatable ? $this->translate($p) : (string) $p;
@@ -157,7 +159,9 @@ class Language{
 
 	public function translate(Translatable $c) : string{
 		$baseText = $this->internalGet($c->getText());
-		$baseText = $this->parseTranslation($baseText ?? $c->getText());
+		if($baseText === null){ //key not found or embedded inside format string
+			$baseText = $this->parseTranslation($c->getText());
+		}
 
 		foreach($c->getParameters() as $i => $p){
 			$replacement = $p instanceof Translatable ? $this->translate($p) : $p;
