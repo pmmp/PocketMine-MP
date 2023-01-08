@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\raklib;
 
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\mcpe\compression\ZlibCompressor;
 use pocketmine\network\mcpe\convert\TypeConverter;
@@ -46,10 +47,8 @@ use raklib\server\ServerEventListener;
 use raklib\utils\InternetAddress;
 use function addcslashes;
 use function base64_encode;
-use function bin2hex;
 use function implode;
 use function mt_rand;
-use function random_bytes;
 use function rtrim;
 use function substr;
 use const PHP_INT_MAX;
@@ -182,14 +181,12 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			try{
 				$session->handleEncoded($buf);
 			}catch(PacketHandlingException $e){
-				$errorId = bin2hex(random_bytes(6));
-
 				$logger = $session->getLogger();
-				$logger->error("Bad packet (error ID $errorId): " . $e->getMessage());
+				$logger->error("Bad packet: " . $e->getMessage());
 
 				//intentionally doesn't use logException, we don't want spammy packet error traces to appear in release mode
 				$logger->debug(implode("\n", Utils::printableExceptionInfo($e)));
-				$session->disconnect("Packet processing error (Error ID: $errorId)");
+				$session->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_badPacket());
 				$this->interface->blockAddress($address, 5);
 			}
 		}

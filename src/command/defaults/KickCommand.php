@@ -55,7 +55,7 @@ class KickCommand extends VanillaCommand{
 		$reason = trim(implode(" ", $args));
 
 		if(($player = $sender->getServer()->getPlayerByPrefix($name)) instanceof Player){
-			$player->kick("Kicked by admin." . ($reason !== "" ? " Reason: " . $reason : ""));
+			$player->kick($reason !== "" ? KnownTranslationFactory::pocketmine_disconnect_kick($reason) : KnownTranslationFactory::pocketmine_disconnect_kick_noReason());
 			if($reason !== ""){
 				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_kick_success_reason($player->getName(), $reason));
 			}else{

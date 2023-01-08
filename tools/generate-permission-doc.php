@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\generate_permission_doc;
 
+use pocketmine\lang\Language;
+use pocketmine\lang\Translatable;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissionManager;
 use pocketmine\utils\Utils;
@@ -58,6 +60,7 @@ function markdownify(string $name) : string{
 	return str_replace(['.', '`', ' '], ['', '', '-'], strtolower($name));
 }
 DefaultPermissions::registerCorePermissions();
+$language = new Language(Language::FALLBACK_LANGUAGE);
 
 $cwd = Utils::assumeNotFalse(getcwd());
 $output = Path::join($cwd, "core-permissions.$format");
@@ -94,12 +97,14 @@ if($format === "md"){
 	fwrite($doc, "\n");
 }
 foreach($permissions as $permission){
+	$description = $permission->getDescription();
+	$plainDescription = $description instanceof Translatable ? $language->translate($description) : $description;
 	if($format === "md"){
 		$link = count($permission->getChildren()) === 0 ? "N/A" : "[Jump](#" . markdownify("Permissions implied by `" . $permission->getName() . "`") . ")";
-		fwrite($doc, "| `" . $permission->getName() . "` | " . $permission->getDescription() . " | $link |\n");
+		fwrite($doc, "| `" . $permission->getName() . "` | $plainDescription | $link |\n");
 	}else{
 		fwrite($doc, "   * - ``" . $permission->getName() . "``\n");
-		fwrite($doc, "     - " . $permission->getDescription() . "\n");
+		fwrite($doc, "     - $plainDescription\n");
 		if(count($permission->getChildren()) === 0){
 			fwrite($doc, "     - N/A\n");
 		}else{

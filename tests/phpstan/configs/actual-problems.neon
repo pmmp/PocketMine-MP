@@ -746,7 +746,7 @@ parameters:
 			path: ../../../src/permission/PermissionParser.php
 
 		-
-			message: "#^Parameter \\#2 \\$description of class pocketmine\\\\permission\\\\Permission constructor expects string\\|null, mixed given\\.$#"
+			message: "#^Parameter \\#2 \\$description of class pocketmine\\\\permission\\\\Permission constructor expects pocketmine\\\\lang\\\\Translatable\\|string\\|null, mixed given\\.$#"
 			count: 1
 			path: ../../../src/permission/PermissionParser.php
 

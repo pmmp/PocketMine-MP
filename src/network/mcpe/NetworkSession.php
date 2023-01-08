@@ -34,7 +34,6 @@ use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\form\Form;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\Translatable;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -74,6 +73,7 @@ use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
@@ -132,6 +132,7 @@ use function get_class;
 use function in_array;
 use function json_encode;
 use function ksort;
+use function random_bytes;
 use function strcasecmp;
 use function strlen;
 use function strtolower;
@@ -201,13 +202,12 @@ class NetworkSession{
 		$this->connectTime = time();
 
 		$this->setHandler(new SessionStartPacketHandler(
-			$this->server,
 			$this,
 			fn() => $this->onSessionStartSuccess()
 		));
 
 		$this->manager->add($this);
-		$this->logger->info("Session opened");
+		$this->logger->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_network_session_open()));
 	}
 
 	private function getLogPrefix() : string{
@@ -227,19 +227,22 @@ class NetworkSession{
 			$this,
 			function(PlayerInfo $info) : void{
 				$this->info = $info;
-				$this->logger->info("Player: " . TextFormat::AQUA . $info->getUsername() . TextFormat::RESET);
+				$this->logger->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_network_session_playerName(TextFormat::AQUA . $info->getUsername() . TextFormat::RESET)));
 				$this->logger->setPrefix($this->getLogPrefix());
+				$this->manager->markLoginReceived($this);
 			},
-			function(bool $isAuthenticated, bool $authRequired, ?string $error, ?string $clientPubKey) : void{
-				$this->setAuthenticationStatus($isAuthenticated, $authRequired, $error, $clientPubKey);
-			}
+			\Closure::fromCallable([$this, "setAuthenticationStatus"])
 		));
 	}
 
 	protected function createPlayer() : void{
 		$this->server->createPlayer($this, $this->info, $this->authenticated, $this->cachedOfflinePlayerData)->onCompletion(
 			\Closure::fromCallable([$this, 'onPlayerCreated']),
-			fn() => $this->disconnect("Player creation failed") //TODO: this should never actually occur... right?
+			function() : void{
+				//TODO: this should never actually occur... right?
+				$this->logger->error("Failed to create player");
+				$this->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_internal());
+			}
 		);
 	}
 
@@ -365,7 +368,7 @@ class NetworkSession{
 		}
 
 		try{
-			foreach((new PacketBatch($decompressed))->getPackets($this->packetPool, $this->packetSerializerContext, 500) as [$packet, $buffer]){
+			foreach((new PacketBatch($decompressed))->getPackets($this->packetPool, $this->packetSerializerContext, 1300) as [$packet, $buffer]){
 				if($packet === null){
 					$this->logger->debug("Unknown packet: " . base64_encode($buffer));
 					throw new PacketHandlingException("Unknown packet received");
@@ -542,7 +545,7 @@ class NetworkSession{
 	/**
 	 * @phpstan-param \Closure() : void $func
 	 */
-	private function tryDisconnect(\Closure $func, string $reason) : void{
+	private function tryDisconnect(\Closure $func, Translatable|string $reason) : void{
 		if($this->connected && !$this->disconnectGuard){
 			$this->disconnectGuard = true;
 			$func();
@@ -555,7 +558,8 @@ class NetworkSession{
 			$this->disposeHooks->clear();
 			$this->setHandler(null);
 			$this->connected = false;
-			$this->logger->info("Session closed due to $reason");
+
+			$this->logger->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_network_session_close($reason)));
 		}
 	}
 
@@ -567,13 +571,22 @@ class NetworkSession{
 		$this->invManager = null;
 	}
 
+	private function sendDisconnectPacket(Translatable|string $reason) : void{
+		if($reason instanceof Translatable){
+			$translated = $this->server->getLanguage()->translate($reason);
+		}else{
+			$translated = $reason;
+		}
+		$this->sendDataPacket(DisconnectPacket::create($translated));
+	}
+
 	/**
 	 * Disconnects the session, destroying the associated player (if it exists).
 	 */
-	public function disconnect(string $reason, bool $notify = true) : void{
+	public function disconnect(Translatable|string $reason, bool $notify = true) : void{
 		$this->tryDisconnect(function() use ($reason, $notify) : void{
 			if($notify){
-				$this->sendDataPacket(DisconnectPacket::create($reason));
+				$this->sendDisconnectPacket($reason);
 			}
 			if($this->player !== null){
 				$this->player->onPostDisconnect($reason, null);
@@ -581,10 +594,24 @@ class NetworkSession{
 		}, $reason);
 	}
 
+	public function disconnectWithError(Translatable|string $reason) : void{
+		$this->disconnect(KnownTranslationFactory::pocketmine_disconnect_error($reason, bin2hex(random_bytes(6))));
+	}
+
+	public function disconnectIncompatibleProtocol(int $protocolVersion) : void{
+		$this->tryDisconnect(
+			function() use ($protocolVersion) : void{
+				$this->sendDataPacket(PlayStatusPacket::create($protocolVersion < ProtocolInfo::CURRENT_PROTOCOL ? PlayStatusPacket::LOGIN_FAILED_CLIENT : PlayStatusPacket::LOGIN_FAILED_SERVER), true);
+			},
+			$this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_disconnect_incompatibleProtocol((string) $protocolVersion))
+		);
+	}
+
 	/**
 	 * Instructs the remote client to connect to a different server.
 	 */
-	public function transfer(string $ip, int $port, string $reason = "transfer") : void{
+	public function transfer(string $ip, int $port, Translatable|string|null $reason = null) : void{
+		$reason ??= KnownTranslationFactory::pocketmine_disconnect_transfer();
 		$this->tryDisconnect(function() use ($ip, $port, $reason) : void{
 			$this->sendDataPacket(TransferPacket::create($ip, $port), true);
 			if($this->player !== null){
@@ -596,9 +623,9 @@ class NetworkSession{
 	/**
 	 * Called by the Player when it is closed (for example due to getting kicked).
 	 */
-	public function onPlayerDestroyed(string $reason) : void{
+	public function onPlayerDestroyed(Translatable|string $reason) : void{
 		$this->tryDisconnect(function() use ($reason) : void{
-			$this->sendDataPacket(DisconnectPacket::create($reason));
+			$this->sendDisconnectPacket($reason);
 		}, $reason);
 	}
 
@@ -614,7 +641,7 @@ class NetworkSession{
 		}, $reason);
 	}
 
-	private function setAuthenticationStatus(bool $authenticated, bool $authRequired, ?string $error, ?string $clientPubKey) : void{
+	private function setAuthenticationStatus(bool $authenticated, bool $authRequired, Translatable|string|null $error, ?string $clientPubKey) : void{
 		if(!$this->connected){
 			return;
 		}
@@ -627,7 +654,7 @@ class NetworkSession{
 		}
 
 		if($error !== null){
-			$this->disconnect($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_disconnect_invalidSession($this->server->getLanguage()->translateString($error))));
+			$this->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_invalidSession($error));
 
 			return;
 		}
@@ -636,7 +663,7 @@ class NetworkSession{
 
 		if(!$this->authenticated){
 			if($authRequired){
-				$this->disconnect(KnownTranslationKeys::DISCONNECTIONSCREEN_NOTAUTHENTICATED);
+				$this->disconnect(KnownTranslationFactory::disconnectionScreen_notAuthenticated());
 				return;
 			}
 			if($this->info instanceof XboxLivePlayerInfo){
@@ -1124,7 +1151,7 @@ class NetworkSession{
 
 		if($this->info === null){
 			if(time() >= $this->connectTime + 10){
-				$this->disconnect("Login timeout");
+				$this->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_loginTimeout());
 			}
 
 			return;

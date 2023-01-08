@@ -96,7 +96,6 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\Releasable;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\Language;
 use pocketmine\lang\Translatable;
 use pocketmine\math\Vector3;
@@ -148,8 +147,8 @@ use function morton2d_encode;
 use function preg_match;
 use function spl_object_id;
 use function sqrt;
+use function str_starts_with;
 use function strlen;
-use function strpos;
 use function strtolower;
 use function substr;
 use function trim;
@@ -1468,11 +1467,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$message = TextFormat::clean($message, false);
 		foreach(explode("\n", $message, $this->messageCounter + 1) as $messagePart){
 			if(trim($messagePart) !== "" && strlen($messagePart) <= self::MAX_CHAT_BYTE_LENGTH && mb_strlen($messagePart, 'UTF-8') <= self::MAX_CHAT_CHAR_LENGTH && $this->messageCounter-- > 0){
-				if(strpos($messagePart, './') === 0){
+				if(str_starts_with($messagePart, './')){
 					$messagePart = substr($messagePart, 1);
 				}
 
-				if(strpos($messagePart, "/") === 0){
+				if(str_starts_with($messagePart, "/")){
 					Timings::$playerCommand->startTiming();
 					$this->server->dispatchCommand($this, substr($messagePart, 1));
 					Timings::$playerCommand->stopTiming();
@@ -2113,14 +2112,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/**
 	 * Transfers a player to another server.
 	 *
-	 * @param string $address The IP address or hostname of the destination server
-	 * @param int    $port    The destination port, defaults to 19132
-	 * @param string $message Message to show in the console when closing the player
+	 * @param string                   $address The IP address or hostname of the destination server
+	 * @param int                      $port    The destination port, defaults to 19132
+	 * @param Translatable|string|null $message Message to show in the console when closing the player, null will use the default message
 	 *
 	 * @return bool if transfer was successful.
 	 */
-	public function transfer(string $address, int $port = 19132, string $message = "transfer") : bool{
-		$ev = new PlayerTransferEvent($this, $address, $port, $message);
+	public function transfer(string $address, int $port = 19132, Translatable|string|null $message = null) : bool{
+		$ev = new PlayerTransferEvent($this, $address, $port, $message ?? KnownTranslationFactory::pocketmine_disconnect_transfer());
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$this->getNetworkSession()->transfer($ev->getAddress(), $ev->getPort(), $ev->getMessage());
@@ -2133,13 +2132,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/**
 	 * Kicks a player from the server
 	 */
-	public function kick(string $reason = "", Translatable|string|null $quitMessage = null) : bool{
+	public function kick(Translatable|string $reason = "", Translatable|string|null $quitMessage = null) : bool{
 		$ev = new PlayerKickEvent($this, $reason, $quitMessage ?? $this->getLeaveMessage());
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$reason = $ev->getReason();
 			if($reason === ""){
-				$reason = KnownTranslationKeys::DISCONNECTIONSCREEN_NOREASON;
+				$reason = KnownTranslationFactory::disconnectionScreen_noReason();
 			}
 			$this->disconnect($reason, $ev->getQuitMessage());
 
@@ -2158,10 +2157,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 *
 	 * Note for internals developers: Do not call this from network sessions. It will cause a feedback loop.
 	 *
-	 * @param string                   $reason      Shown to the player, usually this will appear on their disconnect screen.
+	 * @param Translatable|string      $reason      Shown on the disconnect screen, and in the server log
 	 * @param Translatable|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
-	public function disconnect(string $reason, Translatable|string|null $quitMessage = null) : void{
+	public function disconnect(Translatable|string $reason, Translatable|string|null $quitMessage = null) : void{
 		if(!$this->isConnected()){
 			return;
 		}
@@ -2174,10 +2173,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @internal
 	 * This method executes post-disconnect actions and cleanups.
 	 *
-	 * @param string                   $reason      Shown to the player, usually this will appear on their disconnect screen.
 	 * @param Translatable|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
-	public function onPostDisconnect(string $reason, Translatable|string|null $quitMessage) : void{
+	public function onPostDisconnect(Translatable|string $reason, Translatable|string|null $quitMessage) : void{
 		if($this->isConnected()){
 			throw new \LogicException("Player is still connected");
 		}
@@ -2346,7 +2344,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function respawn() : void{
 		if($this->server->isHardcore()){
-			if($this->kick("You have been banned because you died in hardcore mode")){ //this allows plugins to prevent the ban by cancelling PlayerKickEvent
+			if($this->kick(KnownTranslationFactory::pocketmine_disconnect_ban(KnownTranslationFactory::pocketmine_disconnect_ban_hardcore()))){ //this allows plugins to prevent the ban by cancelling PlayerKickEvent
 				$this->server->getNameBans()->addBan($this->getName(), "Died in hardcore mode");
 			}
 			return;
@@ -2514,7 +2512,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->cursorInventory = new PlayerCursorInventory($this);
 		$this->craftingGrid = new PlayerCraftingInventory($this);
 
-		$this->addPermanentInventories($this->inventory, $this->armorInventory, $this->cursorInventory, $this->offHandInventory);
+		$this->addPermanentInventories($this->inventory, $this->armorInventory, $this->cursorInventory, $this->offHandInventory, $this->craftingGrid);
 
 		//TODO: more windows
 	}

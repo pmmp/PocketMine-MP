@@ -113,7 +113,6 @@ use function array_push;
 use function base64_encode;
 use function count;
 use function fmod;
-use function implode;
 use function in_array;
 use function is_bool;
 use function is_infinite;
@@ -123,12 +122,9 @@ use function json_encode;
 use function max;
 use function mb_strlen;
 use function microtime;
-use function preg_match;
 use function sprintf;
+use function str_starts_with;
 use function strlen;
-use function strpos;
-use function substr;
-use function trim;
 use const JSON_THROW_ON_ERROR;
 
 /**
@@ -251,6 +247,10 @@ class InGamePacketHandler extends PacketHandler{
 
 		$useItemTransaction = $packet->getItemInteractionData();
 		if($useItemTransaction !== null){
+			if(count($useItemTransaction->getTransactionData()->getActions()) > 100){
+				throw new PacketHandlingException("Too many actions in item use transaction");
+			}
+			$this->inventoryManager->addPredictedSlotChanges($useItemTransaction->getTransactionData()->getActions());
 			if(!$this->handleUseItemTransaction($useItemTransaction->getTransactionData())){
 				$packetHandled = false;
 				$this->session->getLogger()->debug("Unhandled transaction in PlayerAuthInputPacket (type " . $useItemTransaction->getTransactionData()->getActionType() . ")");
@@ -261,6 +261,9 @@ class InGamePacketHandler extends PacketHandler{
 
 		$blockActions = $packet->getBlockActions();
 		if($blockActions !== null){
+			if(count($blockActions) > 100){
+				throw new PacketHandlingException("Too many block actions in PlayerAuthInputPacket");
+			}
 			foreach($blockActions as $k => $blockAction){
 				$actionHandled = false;
 				if($blockAction instanceof PlayerBlockActionStopBreak){
@@ -306,6 +309,10 @@ class InGamePacketHandler extends PacketHandler{
 
 	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
 		$result = true;
+
+		if(count($packet->trData->getActions()) > 100){
+			throw new PacketHandlingException("Too many actions in inventory transaction");
+		}
 
 		$this->inventoryManager->addPredictedSlotChanges($packet->trData->getActions());
 
@@ -722,7 +729,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleCommandRequest(CommandRequestPacket $packet) : bool{
-		if(strpos($packet->command, '/') === 0){
+		if(str_starts_with($packet->command, '/')){
 			$this->player->chat($packet->command);
 			return true;
 		}
@@ -861,57 +868,14 @@ class InGamePacketHandler extends PacketHandler{
 			//TODO: make APIs for this to allow plugins to use this information
 			return $this->player->onFormSubmit($packet->formId, null);
 		}elseif($packet->formData !== null){
-			return $this->player->onFormSubmit($packet->formId, self::stupid_json_decode($packet->formData, true));
+			try{
+				$responseData = json_decode($packet->formData, true, self::MAX_FORM_RESPONSE_DEPTH, JSON_THROW_ON_ERROR);
+			}catch(\JsonException $e){
+				throw PacketHandlingException::wrap($e, "Failed to decode form response data");
+			}
+			return $this->player->onFormSubmit($packet->formId, $responseData);
 		}else{
 			throw new PacketHandlingException("Expected either formData or cancelReason to be set in ModalFormResponsePacket");
-		}
-	}
-
-	/**
-	 * Hack to work around a stupid bug in Minecraft W10 which causes empty strings to be sent unquoted in form responses.
-	 *
-	 * @return mixed
-	 * @throws PacketHandlingException
-	 */
-	private static function stupid_json_decode(string $json, bool $assoc = false){
-		if(preg_match('/^\[(.+)\]$/s', $json, $matches) > 0){
-			$raw = $matches[1];
-			$lastComma = -1;
-			$newParts = [];
-			$inQuotes = false;
-			for($i = 0, $len = strlen($raw); $i <= $len; ++$i){
-				if($i === $len || ($raw[$i] === "," && !$inQuotes)){
-					$part = substr($raw, $lastComma + 1, $i - ($lastComma + 1));
-					if(trim($part) === ""){ //regular parts will have quotes or something else that makes them non-empty
-						$part = '""';
-					}
-					$newParts[] = $part;
-					$lastComma = $i;
-				}elseif($raw[$i] === '"'){
-					if(!$inQuotes){
-						$inQuotes = true;
-					}else{
-						$backslashes = 0;
-						for(; $backslashes < $i && $raw[$i - $backslashes - 1] === "\\"; ++$backslashes){}
-						if(($backslashes % 2) === 0){ //unescaped quote
-							$inQuotes = false;
-						}
-					}
-				}
-			}
-
-			$fixed = "[" . implode(",", $newParts) . "]";
-			try{
-				return json_decode($fixed, $assoc, self::MAX_FORM_RESPONSE_DEPTH, JSON_THROW_ON_ERROR);
-			}catch(\JsonException $e){
-				throw PacketHandlingException::wrap($e, "Failed to fix JSON (original: $json, modified: $fixed)");
-			}
-		}
-
-		try{
-			return json_decode($json, $assoc, self::MAX_FORM_RESPONSE_DEPTH, JSON_THROW_ON_ERROR);
-		}catch(\JsonException $e){
-			throw PacketHandlingException::wrap($e);
 		}
 	}
 

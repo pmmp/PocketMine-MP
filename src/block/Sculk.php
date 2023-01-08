@@ -21,18 +21,21 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\auth;
+namespace pocketmine\block;
 
-use pocketmine\lang\Translatable;
+use pocketmine\item\Item;
 
-class VerifyLoginException extends \RuntimeException{
+final class Sculk extends Opaque{
 
-	private Translatable|string $disconnectMessage;
-
-	public function __construct(string $message, Translatable|string|null $disconnectMessage = null, int $code = 0, ?\Throwable $previous = null){
-		parent::__construct($message, $code, $previous);
-		$this->disconnectMessage = $disconnectMessage ?? $message;
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [];
 	}
 
-	public function getDisconnectMessage() : Translatable|string{ return $this->disconnectMessage; }
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
+
+	public function getXpDropAmount() : int{
+		return 1;
+	}
 }
