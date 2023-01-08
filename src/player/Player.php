@@ -988,7 +988,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function setDeathPosition(?Vector3 $pos) : void{
 		if($pos !== null){
 			if($pos instanceof Position && $pos->world !== null){
-				$world =  $pos->world;
+				$world = $pos->world;
 			}else{
 				$world = $this->getWorld();
 			}
@@ -2439,12 +2439,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$properties->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, $this->sleeping !== null ? BlockPosition::fromVector3($this->sleeping) : new BlockPosition(0, 0, 0));
 
 		//TODO: Use apropiate constants
-		$hasDied = $this->deathPosition !== null && $this->deathPosition->world === $this->location->world; //Hack for multi-world
-		if($hasDied){
+		$isInDeathWorld = $this->deathPosition->world === $this->location->world; //Hack for multi-world
+		if($this->deathPosition !== null && $isInDeathWorld){
 			$properties->setBlockPos(127, BlockPosition::fromVector3($this->deathPosition));
 			$properties->setInt(128, DimensionIds::OVERWORLD);
 		}
-		$properties->setByte(129, $hasDied ? 1 : 0);
+		$properties->setByte(129, ($hasDied && $isInDeathWorld) ? 1 : 0);
 	}
 
 	public function sendData(?array $targets, ?array $data = null) : void{
