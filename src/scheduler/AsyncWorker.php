@@ -76,10 +76,8 @@ class AsyncWorker extends Worker{
 	/**
 	 * Saves mixed data into the worker's thread-local object store. This can be used to store objects which you
 	 * want to use on this worker thread from multiple AsyncTasks.
-	 *
-	 * @param mixed  $value
 	 */
-	public function saveToThreadStore(string $identifier, $value) : void{
+	public function saveToThreadStore(string $identifier, mixed $value) : void{
 		if(\Thread::getCurrentThread() !== $this){
 			throw new \LogicException("Thread-local data can only be stored in the thread context");
 		}
@@ -93,10 +91,8 @@ class AsyncWorker extends Worker{
 	 * account for the possibility that what you're trying to retrieve might not exist.
 	 *
 	 * Objects stored in this storage may ONLY be retrieved while the task is running.
-	 *
-	 * @return mixed
 	 */
-	public function getFromThreadStore(string $identifier){
+	public function getFromThreadStore(string $identifier) : mixed{
 		if(\Thread::getCurrentThread() !== $this){
 			throw new \LogicException("Thread-local data can only be fetched in the thread context");
 		}

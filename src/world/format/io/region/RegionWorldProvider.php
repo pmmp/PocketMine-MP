@@ -32,7 +32,7 @@ use pocketmine\world\format\io\ChunkData;
 use pocketmine\world\format\io\data\JavaWorldData;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\WorldData;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function assert;
 use function file_exists;
 use function is_dir;
@@ -92,6 +92,8 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	/**
 	 * @param int $regionX reference parameter
 	 * @param int $regionZ reference parameter
+	 * @phpstan-param-out int $regionX
+	 * @phpstan-param-out int $regionZ
 	 */
 	public static function getRegionIndex(int $chunkX, int $chunkZ, &$regionX, &$regionZ) : void{
 		$regionX = $chunkX >> 5;

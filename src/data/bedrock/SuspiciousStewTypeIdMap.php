@@ -33,13 +33,13 @@ final class SuspiciousStewTypeIdMap{
 	 * @var SuspiciousStewType[]
 	 * @phpstan-var array<int, SuspiciousStewType>
 	 */
-	private array $idToEnum;
+	private array $idToEnum = [];
 
 	/**
 	 * @var int[]
 	 * @phpstan-var array<int, int>
 	 */
-	private array $enumToId;
+	private array $enumToId = [];
 
 	private function __construct(){
 		$this->register(SuspiciousStewTypeIds::POPPY, SuspiciousStewType::POPPY());

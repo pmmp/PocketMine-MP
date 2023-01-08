@@ -36,6 +36,7 @@ use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\item\VanillaItems as Items;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\StringToTParser;
+use function array_keys;
 
 /**
  * Handles parsing items from strings. This is used to interpret names from the /give command (and others).
@@ -204,6 +205,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("carrots", fn() => Blocks::CARROTS());
 		$result->registerBlock("carved_pumpkin", fn() => Blocks::CARVED_PUMPKIN());
 		$result->registerBlock("cauldron", fn() => Blocks::CAULDRON());
+		$result->registerBlock("chain", fn() => Blocks::CHAIN());
 		$result->registerBlock("chemical_heat", fn() => Blocks::CHEMICAL_HEAT());
 		$result->registerBlock("chemistry_table", fn() => Blocks::COMPOUND_CREATOR());
 		$result->registerBlock("chest", fn() => Blocks::CHEST());
@@ -934,6 +936,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("sandstone_stairs", fn() => Blocks::SANDSTONE_STAIRS());
 		$result->registerBlock("sandstone_wall", fn() => Blocks::SANDSTONE_WALL());
 		$result->registerBlock("sapling", fn() => Blocks::OAK_SAPLING());
+		$result->registerBlock("sculk", fn() => Blocks::SCULK());
 		$result->registerBlock("sea_lantern", fn() => Blocks::SEA_LANTERN());
 		$result->registerBlock("sea_pickle", fn() => Blocks::SEA_PICKLE());
 		$result->registerBlock("sealantern", fn() => Blocks::SEA_LANTERN());
@@ -1054,6 +1057,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("trunk", fn() => Blocks::OAK_PLANKS());
 		$result->registerBlock("trunk2", fn() => Blocks::ACACIA_LOG()->setStripped(false));
 		$result->registerBlock("tuff", fn() => Blocks::TUFF());
+		$result->registerBlock("twisting_vines", fn() => Blocks::TWISTING_VINES());
 		$result->registerBlock("underwater_torch", fn() => Blocks::UNDERWATER_TORCH());
 		$result->registerBlock("undyed_shulker_box", fn() => Blocks::SHULKER_BOX());
 		$result->registerBlock("unlit_redstone_torch", fn() => Blocks::REDSTONE_TORCH());
@@ -1084,6 +1088,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("water_lily", fn() => Blocks::LILY_PAD());
 		$result->registerBlock("waterlily", fn() => Blocks::LILY_PAD());
 		$result->registerBlock("web", fn() => Blocks::COBWEB());
+		$result->registerBlock("weeping_vines", fn() => Blocks::WEEPING_VINES());
 		$result->registerBlock("weighted_pressure_plate_heavy", fn() => Blocks::WEIGHTED_PRESSURE_PLATE_HEAVY());
 		$result->registerBlock("weighted_pressure_plate_light", fn() => Blocks::WEIGHTED_PRESSURE_PLATE_LIGHT());
 		$result->registerBlock("wheat_block", fn() => Blocks::WHEAT());
@@ -1129,6 +1134,7 @@ final class StringToItemParser extends StringToTParser{
 
 		$result->register("acacia_boat", fn() => Items::ACACIA_BOAT());
 		$result->register("amethyst_shard", fn() => Items::AMETHYST_SHARD());
+		$result->register("antidote", fn() => Items::MEDICINE()->setType(MedicineType::ANTIDOTE()));
 		$result->register("apple", fn() => Items::APPLE());
 		$result->register("apple_enchanted", fn() => Items::ENCHANTED_GOLDEN_APPLE());
 		$result->register("appleenchanted", fn() => Items::ENCHANTED_GOLDEN_APPLE());
@@ -1244,11 +1250,13 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("dye", fn() => Items::INK_SAC());
 		$result->register("echo_shard", fn() => Items::ECHO_SHARD());
 		$result->register("egg", fn() => Items::EGG());
+		$result->register("elixir", fn() => Items::MEDICINE()->setType(MedicineType::ELIXIR()));
 		$result->register("emerald", fn() => Items::EMERALD());
 		$result->register("enchanted_golden_apple", fn() => Items::ENCHANTED_GOLDEN_APPLE());
 		$result->register("enchanting_bottle", fn() => Items::EXPERIENCE_BOTTLE());
 		$result->register("ender_pearl", fn() => Items::ENDER_PEARL());
 		$result->register("experience_bottle", fn() => Items::EXPERIENCE_BOTTLE());
+		$result->register("eye_drops", fn() => Items::MEDICINE()->setType(MedicineType::EYE_DROPS()));
 		$result->register("feather", fn() => Items::FEATHER());
 		$result->register("fermented_spider_eye", fn() => Items::FERMENTED_SPIDER_EYE());
 		$result->register("fire_charge", fn() => Items::FIRE_CHARGE());
@@ -1418,12 +1426,15 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("raw_salmon", fn() => Items::RAW_SALMON());
 		$result->register("record_11", fn() => Items::RECORD_11());
 		$result->register("record_13", fn() => Items::RECORD_13());
+		$result->register("record_5", fn() => Items::RECORD_5());
 		$result->register("record_blocks", fn() => Items::RECORD_BLOCKS());
 		$result->register("record_cat", fn() => Items::RECORD_CAT());
 		$result->register("record_chirp", fn() => Items::RECORD_CHIRP());
 		$result->register("record_far", fn() => Items::RECORD_FAR());
 		$result->register("record_mall", fn() => Items::RECORD_MALL());
 		$result->register("record_mellohi", fn() => Items::RECORD_MELLOHI());
+		$result->register("record_otherside", fn() => Items::RECORD_OTHERSIDE());
+		$result->register("record_pigstep", fn() => Items::RECORD_PIGSTEP());
 		$result->register("record_stal", fn() => Items::RECORD_STAL());
 		$result->register("record_strad", fn() => Items::RECORD_STRAD());
 		$result->register("record_wait", fn() => Items::RECORD_WAIT());
@@ -1485,7 +1496,9 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("swiftness_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::SWIFTNESS()));
 		$result->register("thick_potion", fn() => Items::POTION()->setType(PotionType::THICK()));
 		$result->register("thick_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::THICK()));
+		$result->register("tonic", fn() => Items::MEDICINE()->setType(MedicineType::TONIC()));
 		$result->register("totem", fn() => Items::TOTEM());
+		$result->register("turtle_helmet", fn() => Items::TURTLE_HELMET());
 		$result->register("turtle_master_potion", fn() => Items::POTION()->setType(PotionType::TURTLE_MASTER()));
 		$result->register("turtle_master_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::TURTLE_MASTER()));
 		$result->register("turtle_shell_piece", fn() => Items::SCUTE());
@@ -1511,6 +1524,18 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("zombie_spawn_egg", fn() => Items::ZOMBIE_SPAWN_EGG());
 	}
 
+	/**
+	 * @var true[][][]
+	 * @phpstan-var array<int, array<int, array<string, true>>>
+	 */
+	private array $reverseMap = [];
+
+	public function register(string $alias, \Closure $callback) : void{
+		parent::register($alias, $callback);
+		$item = $callback($alias);
+		$this->reverseMap[$item->getTypeId()][$item->computeTypeData()][$alias] = true;
+	}
+
 	/** @phpstan-param \Closure(string $input) : Block $callback */
 	public function registerBlock(string $alias, \Closure $callback) : void{
 		$this->register($alias, fn(string $input) => $callback($input)->asItem());
@@ -1518,5 +1543,26 @@ final class StringToItemParser extends StringToTParser{
 
 	public function parse(string $input) : ?Item{
 		return parent::parse($input);
+	}
+
+	/**
+	 * Returns a list of currently registered aliases that resolve to the given item.
+	 *
+	 * @return string[]
+	 * @phpstan-return list<string>
+	 */
+	public function lookupAliases(Item $item) : array{
+		$aliases = $this->reverseMap[$item->getTypeId()][$item->computeTypeData()] ?? [];
+		return array_keys($aliases);
+	}
+
+	/**
+	 * Returns a list of currently registered aliases that resolve to the item form of the given block.
+	 *
+	 * @return string[]
+	 * @phpstan-return list<string>
+	 */
+	public function lookupBlockAliases(Block $block) : array{
+		return $this->lookupAliases($block->asItem());
 	}
 }

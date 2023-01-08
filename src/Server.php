@@ -49,10 +49,7 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\lang\Translatable;
-use pocketmine\nbt\BigEndianNbtSerializer;
-use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\CompressBatchTask;
 use pocketmine\network\mcpe\compression\Compressor;
@@ -72,9 +69,13 @@ use pocketmine\network\query\QueryInfo;
 use pocketmine\network\upnp\UPnPNetworkInterface;
 use pocketmine\permission\BanList;
 use pocketmine\permission\DefaultPermissions;
+use pocketmine\player\DatFilePlayerDataProvider;
 use pocketmine\player\GameMode;
 use pocketmine\player\OfflinePlayer;
 use pocketmine\player\Player;
+use pocketmine\player\PlayerDataLoadException;
+use pocketmine\player\PlayerDataProvider;
+use pocketmine\player\PlayerDataSaveException;
 use pocketmine\player\PlayerInfo;
 use pocketmine\plugin\PharPluginLoader;
 use pocketmine\plugin\Plugin;
@@ -93,6 +94,7 @@ use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\updater\UpdateChecker;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\BroadcastLoggerForwarder;
 use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Internet;
@@ -114,7 +116,7 @@ use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
 use pocketmine\world\WorldManager;
 use Ramsey\Uuid\UuidInterface;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function array_sum;
 use function base64_encode;
 use function cli_set_process_title;
@@ -123,7 +125,6 @@ use function count;
 use function date;
 use function fclose;
 use function file_exists;
-use function file_get_contents;
 use function file_put_contents;
 use function filemtime;
 use function fopen;
@@ -160,12 +161,9 @@ use function time;
 use function touch;
 use function trim;
 use function yaml_parse;
-use function zlib_decode;
-use function zlib_encode;
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 use const PHP_INT_MAX;
-use const ZLIB_ENCODING_GZIP;
 
 /**
  * The class that manages everything
@@ -249,6 +247,8 @@ class Server{
 
 	private string $dataPath;
 	private string $pluginPath;
+
+	private PlayerDataProvider $playerDataProvider;
 
 	/**
 	 * @var string[]
@@ -469,10 +469,7 @@ class Server{
 		return $this->configGroup->getPropertyBool("player.save-player-data", true);
 	}
 
-	/**
-	 * @return OfflinePlayer|Player
-	 */
-	public function getOfflinePlayer(string $name){
+	public function getOfflinePlayer(string $name) : Player|OfflinePlayer|null{
 		$name = strtolower($name);
 		$result = $this->getPlayerExact($name);
 
@@ -483,49 +480,22 @@ class Server{
 		return $result;
 	}
 
-	private function getPlayerDataPath(string $username) : string{
-		return Path::join($this->getDataPath(), 'players', strtolower($username) . '.dat');
-	}
-
 	/**
 	 * Returns whether the server has stored any saved data for this player.
 	 */
 	public function hasOfflinePlayerData(string $name) : bool{
-		return file_exists($this->getPlayerDataPath($name));
-	}
-
-	private function handleCorruptedPlayerData(string $name) : void{
-		$path = $this->getPlayerDataPath($name);
-		rename($path, $path . '.bak');
-		$this->logger->error($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_data_playerCorrupted($name)));
+		return $this->playerDataProvider->hasData($name);
 	}
 
 	public function getOfflinePlayerData(string $name) : ?CompoundTag{
 		return Timings::$syncPlayerDataLoad->time(function() use ($name) : ?CompoundTag{
-			$name = strtolower($name);
-			$path = $this->getPlayerDataPath($name);
-
-			if(file_exists($path)){
-				$contents = @file_get_contents($path);
-				if($contents === false){
-					throw new \RuntimeException("Failed to read player data file \"$path\" (permission denied?)");
-				}
-				$decompressed = @zlib_decode($contents);
-				if($decompressed === false){
-					$this->logger->debug("Failed to decompress raw player data for \"$name\"");
-					$this->handleCorruptedPlayerData($name);
-					return null;
-				}
-
-				try{
-					return (new BigEndianNbtSerializer())->read($decompressed)->mustGetCompoundTag();
-				}catch(NbtDataException $e){ //corrupt data
-					$this->logger->debug("Failed to decode NBT data for \"$name\": " . $e->getMessage());
-					$this->handleCorruptedPlayerData($name);
-					return null;
-				}
+			try{
+				return $this->playerDataProvider->loadData($name);
+			}catch(PlayerDataLoadException $e){
+				$this->logger->debug("Failed to load player data for $name: " . $e->getMessage());
+				$this->logger->error($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_data_playerCorrupted($name)));
+				return null;
 			}
-			return null;
 		});
 	}
 
@@ -539,11 +509,9 @@ class Server{
 
 		if(!$ev->isCancelled()){
 			Timings::$syncPlayerDataSave->time(function() use ($name, $ev) : void{
-				$nbt = new BigEndianNbtSerializer();
-				$contents = Utils::assumeNotFalse(zlib_encode($nbt->write(new TreeRoot($ev->getSaveData())), ZLIB_ENCODING_GZIP), "zlib_encode() failed unexpectedly");
 				try{
-					Filesystem::safeFilePutContents($this->getPlayerDataPath($name), $contents);
-				}catch(\RuntimeException $e){
+					$this->playerDataProvider->saveData($name, $ev->getSaveData());
+				}catch(PlayerDataSaveException $e){
 					$this->logger->critical($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_data_saveError($name, $e->getMessage())));
 					$this->logger->logException($e);
 				}
@@ -559,7 +527,7 @@ class Server{
 		$ev->call();
 		$class = $ev->getPlayerClass();
 
-		if($offlinePlayerData !== null && ($world = $this->worldManager->getWorldByName($offlinePlayerData->getString("Level", ""))) !== null){
+		if($offlinePlayerData !== null && ($world = $this->worldManager->getWorldByName($offlinePlayerData->getString(Player::TAG_LEVEL, ""))) !== null){
 			$playerPos = EntityDataHelper::parseLocation($offlinePlayerData, $world);
 			$spawn = $playerPos->asVector3();
 		}else{
@@ -599,7 +567,8 @@ class Server{
 			},
 			static function() use ($playerPromiseResolver, $session) : void{
 				if($session->isConnected()){
-					$session->disconnect("Spawn terrain generation failed");
+					$session->getLogger()->error("Spawn terrain generation failed");
+					$session->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_internal());
 				}
 				$playerPromiseResolver->reject();
 			}
@@ -608,6 +577,10 @@ class Server{
 	}
 
 	/**
+	 * @deprecated This method's results are unpredictable. The string "Steve" will return the player named "SteveJobs",
+	 * until another player named "SteveJ" joins the server, at which point it will return that player instead. Prefer
+	 * filtering the results of {@link Server::getOnlinePlayers()} yourself.
+	 *
 	 * Returns an online player whose name begins with or equals the given string (case insensitive).
 	 * The closest match will be returned, or null if there are no online matches.
 	 *
@@ -801,7 +774,7 @@ class Server{
 			$this->logger->info("Loading server configuration");
 			$pocketmineYmlPath = Path::join($this->dataPath, "pocketmine.yml");
 			if(!file_exists($pocketmineYmlPath)){
-				$content = Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, "pocketmine.yml")), "Missing required resource file");
+				$content = Filesystem::fileGetContents(Path::join(\pocketmine\RESOURCE_PATH, "pocketmine.yml"));
 				if(VersionInfo::IS_DEVELOPMENT_BUILD){
 					$content = str_replace("preferred-channel: stable", "preferred-channel: beta", $content);
 				}
@@ -974,7 +947,7 @@ class Server{
 				copy(Path::join(\pocketmine\RESOURCE_PATH, 'plugin_list.yml'), $graylistFile);
 			}
 			try{
-				$pluginGraylist = PluginGraylist::fromArray(yaml_parse(file_get_contents($graylistFile)));
+				$pluginGraylist = PluginGraylist::fromArray(yaml_parse(Filesystem::fileGetContents($graylistFile)));
 			}catch(\InvalidArgumentException $e){
 				$this->logger->emergency("Failed to load $graylistFile: " . $e->getMessage());
 				$this->forceShutdownExit();
@@ -1001,6 +974,8 @@ class Server{
 			$this->updater = new UpdateChecker($this, $this->configGroup->getPropertyString("auto-updater.host", "update.pmmp.io"));
 
 			$this->queryInfo = new QueryInfo($this);
+
+			$this->playerDataProvider = new DatFilePlayerDataProvider(Path::join($this->dataPath, "players"));
 
 			register_shutdown_function([$this, "crashDump"]);
 
@@ -1044,11 +1019,11 @@ class Server{
 			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_donate(TextFormat::AQUA . "https://patreon.com/pocketminemp" . TextFormat::RESET)));
 			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_startFinished(strval(round(microtime(true) - $this->startTime, 3)))));
 
-			//TODO: move console parts to a separate component
-			$consoleSender = new ConsoleCommandSender($this, $this->language);
-			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_ADMINISTRATIVE, $consoleSender);
-			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $consoleSender);
+			$forwarder = new BroadcastLoggerForwarder($this, $this->logger, $this->language);
+			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_ADMINISTRATIVE, $forwarder);
+			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $forwarder);
 
+			//TODO: move console parts to a separate component
 			if($this->configGroup->getPropertyBool("console.enable-input", true)){
 				$this->console = new ConsoleReaderChildProcessDaemon($this->logger);
 			}
@@ -1263,7 +1238,7 @@ class Server{
 	}
 
 	/**
-	 * @param CommandSender[]|null        $recipients
+	 * @param CommandSender[]|null $recipients
 	 */
 	public function broadcastMessage(Translatable|string $message, ?array $recipients = null) : int{
 		$recipients = $recipients ?? $this->getBroadcastChannelSubscribers(self::BROADCAST_CHANNEL_USERS);
@@ -1316,9 +1291,9 @@ class Server{
 	}
 
 	/**
-	 * @param int           $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
-	 * @param int           $stay Duration in ticks to stay on screen for
-	 * @param int           $fadeOut Duration in ticks for fade-out.
+	 * @param int           $fadeIn     Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
+	 * @param int           $stay       Duration in ticks to stay on screen for
+	 * @param int           $fadeOut    Duration in ticks for fade-out.
 	 * @param Player[]|null $recipients
 	 */
 	public function broadcastTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1, ?array $recipients = null) : int{
@@ -1358,6 +1333,7 @@ class Server{
 				return false;
 			}
 			$recipients = $ev->getTargets();
+			$packets = $ev->getPackets();
 
 			/** @var PacketBroadcaster[] $broadcasters */
 			$broadcasters = [];
@@ -1532,7 +1508,7 @@ class Server{
 	 * @param mixed[][]|null $trace
 	 * @phpstan-param list<array<string, mixed>>|null $trace
 	 */
-	public function exceptionHandler(\Throwable $e, $trace = null) : void{
+	public function exceptionHandler(\Throwable $e, ?array $trace = null) : void{
 		while(@ob_end_flush()){}
 		global $lastError;
 
@@ -1711,7 +1687,7 @@ class Server{
 		$session = $player->getNetworkSession();
 		$position = $player->getPosition();
 		$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_player_logIn(
-			TextFormat::AQUA . $player->getName() . TextFormat::WHITE,
+			TextFormat::AQUA . $player->getName() . TextFormat::RESET,
 			$session->getIp(),
 			(string) $session->getPort(),
 			(string) $player->getId(),
@@ -1849,10 +1825,12 @@ class Server{
 		$this->getMemoryManager()->check();
 
 		if($this->console !== null){
+			Timings::$serverCommand->startTiming();
 			while(($line = $this->console->readLine()) !== null){
 				$this->consoleSender ??= new ConsoleCommandSender($this, $this->language);
 				$this->dispatchCommand($this->consoleSender, $line);
 			}
+			Timings::$serverCommand->stopTiming();
 		}
 
 		Timings::$serverTick->stopTiming();

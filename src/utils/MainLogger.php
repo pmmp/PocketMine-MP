@@ -172,13 +172,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 		}
 	}
 
-	/**
-	 * @param string $message
-	 * @param string $level
-	 * @param string $prefix
-	 * @param string $color
-	 */
-	protected function send($message, $level, $prefix, $color) : void{
+	protected function send(string $message, string $level, string $prefix, string $color) : void{
 		$time = new \DateTime('now', new \DateTimeZone($this->timezone));
 
 		$thread = \Thread::getCurrentThread();
@@ -190,7 +184,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 			$threadName = (new \ReflectionClass($thread))->getShortName() . " thread";
 		}
 
-		$message = sprintf($this->format, $time->format("H:i:s.v"), $color, $threadName, $prefix, TextFormat::clean($message, false));
+		$message = sprintf($this->format, $time->format("H:i:s.v"), $color, $threadName, $prefix, TextFormat::addBase($color, TextFormat::clean($message, false)));
 
 		if(!Terminal::isInit()){
 			Terminal::init($this->useFormattingCodes); //lazy-init colour codes because we don't know if they've been registered on this thread

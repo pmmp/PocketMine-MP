@@ -78,7 +78,7 @@ class BanIpCommand extends VanillaCommand{
 
 		foreach($sender->getServer()->getOnlinePlayers() as $player){
 			if($player->getNetworkSession()->getIp() === $ip){
-				$player->kick("Banned by admin. Reason: " . ($reason !== "" ? $reason : "IP banned."));
+				$player->kick(KnownTranslationFactory::pocketmine_disconnect_ban($reason !== "" ? $reason : KnownTranslationFactory::pocketmine_disconnect_ban_ip()));
 			}
 		}
 

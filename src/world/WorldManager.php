@@ -39,7 +39,7 @@ use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\generator\InvalidGeneratorOptionsException;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function array_keys;
 use function array_shift;
 use function assert;
@@ -166,7 +166,7 @@ class WorldManager{
 	/**
 	 * Loads a world from the data directory
 	 *
-	 * @param bool   $autoUpgrade Converts worlds to the default format if the world's format is not writable / deprecated
+	 * @param bool $autoUpgrade Converts worlds to the default format if the world's format is not writable / deprecated
 	 *
 	 * @throws WorldException
 	 */

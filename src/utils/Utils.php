@@ -79,11 +79,12 @@ use function preg_match_all;
 use function preg_replace;
 use function shell_exec;
 use function spl_object_id;
+use function str_ends_with;
 use function str_pad;
 use function str_split;
+use function str_starts_with;
 use function stripos;
 use function strlen;
-use function strpos;
 use function substr;
 use function sys_get_temp_dir;
 use function trim;
@@ -119,7 +120,7 @@ final class Utils{
 	 */
 	public static function getNiceClosureName(\Closure $closure) : string{
 		$func = new \ReflectionFunction($closure);
-		if(substr($func->getName(), -strlen('{closure}')) !== '{closure}'){
+		if(!str_ends_with($func->getName(), '{closure}')){
 			//closure wraps a named function, can be done with reflection or fromCallable()
 			//isClosure() is useless here because it just tells us if $func is reflecting a Closure object
 
@@ -273,7 +274,7 @@ final class Utils{
 		if(self::$os === null || $recalculate){
 			$uname = php_uname("s");
 			if(stripos($uname, "Darwin") !== false){
-				if(strpos(php_uname("m"), "iP") === 0){
+				if(str_starts_with(php_uname("m"), "iP")){
 					self::$os = self::OS_IOS;
 				}else{
 					self::$os = self::OS_MACOS;
@@ -313,7 +314,7 @@ final class Utils{
 					}
 				}elseif(($cpuPresent = @file_get_contents("/sys/devices/system/cpu/present")) !== false){
 					if(preg_match("/^([0-9]+)\\-([0-9]+)$/", trim($cpuPresent), $matches) > 0){
-						$processors = (int) ($matches[2] - $matches[1]);
+						$processors = ((int) $matches[2]) - ((int) $matches[1]);
 					}
 				}
 				break;
@@ -345,10 +346,8 @@ final class Utils{
 
 	/**
 	 * Returns a string that can be printed, replaces non-printable characters
-	 *
-	 * @param mixed $str
 	 */
-	public static function printable($str) : string{
+	public static function printable(mixed $str) : string{
 		if(!is_string($str)){
 			return gettype($str);
 		}
@@ -369,10 +368,7 @@ final class Utils{
 		return $hash;
 	}
 
-	/**
-	 * @param object $value
-	 */
-	public static function getReferenceCount($value, bool $includeCurrent = true) : int{
+	public static function getReferenceCount(object $value, bool $includeCurrent = true) : int{
 		ob_start();
 		debug_zval_dump($value);
 		$contents = ob_get_contents();
@@ -539,7 +535,7 @@ final class Utils{
 	 * incompatible.
 	 *
 	 * @param callable|CallbackType $signature Dummy callable with the required parameters and return type
-	 * @param callable              $subject Callable to check the signature of
+	 * @param callable              $subject   Callable to check the signature of
 	 * @phpstan-param anyCallable|CallbackType $signature
 	 * @phpstan-param anyCallable              $subject
 	 *

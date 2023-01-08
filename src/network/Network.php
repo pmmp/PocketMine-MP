@@ -54,7 +54,7 @@ class Network{
 
 	private BidirectionalBandwidthStatsTracker $bandwidthTracker;
 	private string $name;
-	private NetworkSessionManager$sessionManager;
+	private NetworkSessionManager $sessionManager;
 
 	public function __construct(
 		private \Logger $logger
@@ -78,6 +78,10 @@ class Network{
 
 	public function getConnectionCount() : int{
 		return $this->sessionManager->getSessionCount();
+	}
+
+	public function getValidConnectionCount() : int{
+		return $this->sessionManager->getValidSessionCount();
 	}
 
 	public function tick() : void{

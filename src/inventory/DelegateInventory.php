@@ -24,8 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
-use pocketmine\player\Player;
-use function count;
 
 /**
  * An inventory which is backed by another inventory, and acts as a proxy to that inventory.
@@ -37,14 +35,23 @@ class DelegateInventory extends BaseInventory{
 		private Inventory $backingInventory
 	){
 		parent::__construct();
+		$weakThis = \WeakReference::create($this);
 		$this->backingInventory->getListeners()->add($this->inventoryListener = new CallbackInventoryListener(
-			function(Inventory $unused, int $slot, Item $oldItem) : void{
-				$this->onSlotChange($slot, $oldItem);
+			static function(Inventory $unused, int $slot, Item $oldItem) use ($weakThis) : void{
+				if(($strongThis = $weakThis->get()) !== null){
+					$strongThis->onSlotChange($slot, $oldItem);
+				}
 			},
-			function(Inventory $unused, array $oldContents) : void{
-				$this->onContentChange($oldContents);
+			static function(Inventory $unused, array $oldContents) use ($weakThis) : void{
+				if(($strongThis = $weakThis->get()) !== null){
+					$strongThis->onContentChange($oldContents);
+				}
 			}
 		));
+	}
+
+	public function __destruct(){
+		$this->backingInventory->getListeners()->remove($this->inventoryListener);
 	}
 
 	public function getSize() : int{
@@ -65,13 +72,5 @@ class DelegateInventory extends BaseInventory{
 
 	protected function internalSetContents(array $items) : void{
 		$this->backingInventory->setContents($items);
-	}
-
-	public function onClose(Player $who) : void{
-		parent::onClose($who);
-		if(count($this->getViewers()) === 0 && count($this->getListeners()->toArray()) === 1){
-			$this->backingInventory->getListeners()->remove($this->inventoryListener);
-			$this->inventoryListener = CallbackInventoryListener::onAnyChange(static function() : void{}); //break cyclic reference
-		}
 	}
 }

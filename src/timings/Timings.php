@@ -93,6 +93,12 @@ abstract class Timings{
 	/** @var TimingsHandler[] */
 	public static array $pluginTaskTimingMap = [];
 
+	/**
+	 * @var TimingsHandler[]
+	 * @phpstan-var array<string, TimingsHandler>
+	 */
+	private static array $commandTimingMap = [];
+
 	public static TimingsHandler $broadcastPackets;
 
 	public static function init() : void{
@@ -226,5 +232,11 @@ abstract class Timings{
 		}
 
 		return self::$packetSendTimingMap[$pid];
+	}
+
+	public static function getCommandDispatchTimings(string $commandName) : TimingsHandler{
+		self::init();
+
+		return self::$commandTimingMap[$commandName] ??= new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Command - " . $commandName);
 	}
 }
