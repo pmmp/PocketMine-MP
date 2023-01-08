@@ -360,12 +360,16 @@ class NetworkSession{
 			return;
 		}
 
-		if(!function_exists('xdebug_is_debugger_active') || !xdebug_is_debugger_active()){
-			if($this->incomingPacketBatchBudget <= 0){
+		if($this->incomingPacketBatchBudget <= 0){
+			if(!function_exists('xdebug_is_debugger_active') || !xdebug_is_debugger_active()){
 				throw new PacketHandlingException("Receiving packets too fast");
+			}else{
+				//when a debugging session is active, the server may halt at any point for an indefinite length of time,
+				//in which time the client will continue to send packets
+				$this->incomingPacketBatchBudget = self::INCOMING_PACKET_BATCH_MAX_BUDGET;
 			}
-			$this->incomingPacketBatchBudget--;
 		}
+		$this->incomingPacketBatchBudget--;
 
 		if($this->cipher !== null){
 			Timings::$playerNetworkReceiveDecrypt->startTiming();
