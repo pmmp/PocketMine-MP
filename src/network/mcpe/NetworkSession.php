@@ -358,10 +358,12 @@ class NetworkSession{
 			return;
 		}
 
-		if($this->incomingPacketBatchBudget <= 0){
-			throw new PacketHandlingException("Receiving packets too fast");
+		if(!function_exists('xdebug_is_debugger_active') || !xdebug_is_debugger_active()){
+			if($this->incomingPacketBatchBudget <= 0){
+				throw new PacketHandlingException("Receiving packets too fast");
+			}
+			$this->incomingPacketBatchBudget--;
 		}
-		$this->incomingPacketBatchBudget--;
 
 		if($this->cipher !== null){
 			Timings::$playerNetworkReceiveDecrypt->startTiming();
