@@ -128,6 +128,7 @@ use function array_values;
 use function base64_encode;
 use function bin2hex;
 use function count;
+use function function_exists;
 use function get_class;
 use function hrtime;
 use function in_array;
@@ -141,6 +142,7 @@ use function strtolower;
 use function substr;
 use function time;
 use function ucfirst;
+use function xdebug_is_debugger_active;
 use const JSON_THROW_ON_ERROR;
 use const SORT_NUMERIC;
 
