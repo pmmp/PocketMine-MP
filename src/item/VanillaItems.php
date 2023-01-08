@@ -268,6 +268,7 @@ use pocketmine\world\World;
  * @method static Record RECORD_STRAD()
  * @method static Record RECORD_WAIT()
  * @method static Record RECORD_WARD()
+ * @method static Item RECOVERY_COMPASS()
  * @method static Redstone REDSTONE_DUST()
  * @method static RottenFlesh ROTTEN_FLESH()
  * @method static Item SCUTE()
@@ -514,6 +515,7 @@ final class VanillaItems{
 		self::register("record_strad", new Record(new IID(Ids::RECORD_STRAD), RecordType::DISK_STRAD(), "Record Strad"));
 		self::register("record_wait", new Record(new IID(Ids::RECORD_WAIT), RecordType::DISK_WAIT(), "Record Wait"));
 		self::register("record_ward", new Record(new IID(Ids::RECORD_WARD), RecordType::DISK_WARD(), "Record Ward"));
+		self::register("recovery_compass", new Item(new IID(Ids::RECOVERY_COMPASS), "Recovery Compass"));
 		self::register("redstone_dust", new Redstone(new IID(Ids::REDSTONE_DUST), "Redstone"));
 		self::register("rotten_flesh", new RottenFlesh(new IID(Ids::ROTTEN_FLESH), "Rotten Flesh"));
 		self::register("scute", new Item(new IID(Ids::SCUTE), "Scute"));
