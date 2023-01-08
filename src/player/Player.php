@@ -2439,12 +2439,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$properties->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, $this->sleeping !== null ? BlockPosition::fromVector3($this->sleeping) : new BlockPosition(0, 0, 0));
 
 		//TODO: Use apropiate constants
-		$isInDeathWorld = $this->deathPosition->world === $this->location->world; //Hack for multi-world
-		if($this->deathPosition !== null && $isInDeathWorld){
+		if($this->deathPosition !== null && $this->deathPosition->world === $this->location->world){
 			$properties->setBlockPos(127, BlockPosition::fromVector3($this->deathPosition));
 			$properties->setInt(128, DimensionIds::OVERWORLD);
 		}
-		$properties->setByte(129, ($hasDied && $isInDeathWorld) ? 1 : 0);
+		$properties->setByte(129, ($this->deathPosition !== null && $this->deathPosition->world === $this->location->world) ? 1 : 0); //Hack for multi-world
 	}
 
 	public function sendData(?array $targets, ?array $data = null) : void{
