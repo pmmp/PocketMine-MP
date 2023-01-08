@@ -937,9 +937,6 @@ class NetworkSession{
 			$language = $this->player->getLanguage();
 			$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $language->translate($p) : $p, $message->getParameters());
 			if(!$this->server->isLanguageForced()){
-				foreach($parameters as $i => $p){
-					$parameters[$i] = $language->translateString($p, [], "pocketmine.");
-				}
 				$this->sendDataPacket(TextPacket::translation($language->translateString($message->getText(), $parameters, "pocketmine."), $parameters));
 			}else{
 				$this->sendDataPacket(TextPacket::raw($language->translateString($message->getText(), $parameters)));
