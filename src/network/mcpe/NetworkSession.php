@@ -147,7 +147,7 @@ use const JSON_THROW_ON_ERROR;
 use const SORT_NUMERIC;
 
 class NetworkSession{
-	private const INCOMING_PACKET_BATCH_PER_TICK = 2; //we should normally see only 1 per tick - 2 allows recovery of the budget after a lag spike
+	private const INCOMING_PACKET_BATCH_PER_TICK = 2; //usually max 1 per tick, but transactions may arrive separately
 	private const INCOMING_PACKET_BATCH_MAX_BUDGET = 100; //enough to account for a 5-second lag spike
 
 	/**
@@ -1171,7 +1171,7 @@ class NetworkSession{
 				$this->logger->debug("Adding packet budget for $ticksSinceLastUpdate ticks (current budget is $this->incomingPacketBatchBudget)");
 			}
 			$this->incomingPacketBatchBudget = min(
-				$this->incomingPacketBatchBudget + (self::INCOMING_PACKET_BATCH_PER_TICK * $ticksSinceLastUpdate),
+				$this->incomingPacketBatchBudget + (self::INCOMING_PACKET_BATCH_PER_TICK * 2 * $ticksSinceLastUpdate),
 				self::INCOMING_PACKET_BATCH_MAX_BUDGET
 			);
 		}
