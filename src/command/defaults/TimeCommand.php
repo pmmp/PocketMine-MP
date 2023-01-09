@@ -35,9 +35,9 @@ use function implode;
 
 class TimeCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"time",
 			KnownTranslationFactory::pocketmine_command_time_description(),
 			KnownTranslationFactory::pocketmine_command_time_usage()
 		);

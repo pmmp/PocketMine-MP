@@ -35,9 +35,9 @@ use function implode;
 
 class BanCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"ban",
 			KnownTranslationFactory::pocketmine_command_ban_player_description(),
 			KnownTranslationFactory::commands_ban_usage()
 		);

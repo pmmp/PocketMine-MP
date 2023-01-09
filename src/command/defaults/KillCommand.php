@@ -34,9 +34,9 @@ use function implode;
 
 class KillCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"kill",
 			KnownTranslationFactory::pocketmine_command_kill_description(),
 			KnownTranslationFactory::pocketmine_command_kill_usage(),
 			["suicide"]

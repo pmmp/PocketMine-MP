@@ -30,9 +30,9 @@ use pocketmine\permission\DefaultPermissionNames;
 
 class SaveOnCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"save-on",
 			KnownTranslationFactory::pocketmine_command_saveon_description()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_SAVE_ENABLE);
