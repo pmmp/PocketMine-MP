@@ -2285,6 +2285,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$nbt->setInt(self::TAG_DEATH_X, $this->deathPosition->getFloorX());
 			$nbt->setInt(self::TAG_DEATH_Y, $this->deathPosition->getFloorY());
 			$nbt->setInt(self::TAG_DEATH_Z, $this->deathPosition->getFloorZ());
+		}else{
+			$nbt->removeTag(self::TAG_DEATH_WORLD, self::TAG_DEATH_X, self::TAG_DEATH_Y, self::TAG_DEATH_Z);
 		}
 
 		$nbt->setInt(self::TAG_GAME_MODE, GameModeIdMap::getInstance()->toId($this->gamemode));
