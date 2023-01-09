@@ -29,9 +29,11 @@ use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
@@ -150,6 +152,22 @@ final class Bell extends Transparent{
 		}
 
 		return true;
+	}
+
+	public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
+		$faceHit = $hitResult->getHitFace();
+		if($this->attachmentType->equals(BellAttachmentType::CEILING())){
+			$this->ring($faceHit);
+		}
+		if($this->attachmentType->equals(BellAttachmentType::FLOOR()) && Facing::axis($faceHit) === Facing::axis($this->facing)){
+			$this->ring($faceHit);
+		}
+		if(
+			($this->attachmentType->equals(BellAttachmentType::ONE_WALL()) || $this->attachmentType->equals(BellAttachmentType::TWO_WALLS())) &&
+			($faceHit === Facing::rotateY($this->facing, false) || $faceHit === Facing::rotateY($this->facing, true))
+		){
+			$this->ring($faceHit);
+		}
 	}
 
 	public function ring(int $faceHit) : void{
