@@ -139,8 +139,11 @@ use function array_values;
 use function base64_encode;
 use function bin2hex;
 use function count;
+use function function_exists;
 use function get_class;
+use function hrtime;
 use function in_array;
+use function intdiv;
 use function json_encode;
 use function ksort;
 use function min;
@@ -151,11 +154,12 @@ use function strtolower;
 use function substr;
 use function time;
 use function ucfirst;
+use function xdebug_is_debugger_active;
 use const JSON_THROW_ON_ERROR;
 use const SORT_NUMERIC;
 
 class NetworkSession{
-	private const INCOMING_PACKET_BATCH_PER_TICK = 2; //we should normally see only 1 per tick - 2 allows recovery of the budget after a lag spike
+	private const INCOMING_PACKET_BATCH_PER_TICK = 2; //usually max 1 per tick, but transactions may arrive separately
 	private const INCOMING_PACKET_BATCH_MAX_BUDGET = 100; //enough to account for a 5-second lag spike
 
 	/**
@@ -167,6 +171,7 @@ class NetworkSession{
 	 * @see self::INCOMING_PACKET_BATCH_MAX_BUDGET
 	 */
 	private int $incomingPacketBatchBudget = self::INCOMING_PACKET_BATCH_MAX_BUDGET;
+	private int $lastPacketBudgetUpdateTimeNs;
 
 	private \PrefixedLogger $logger;
 	private ?Player $player = null;
@@ -230,6 +235,7 @@ class NetworkSession{
 		$this->disposeHooks = new ObjectSet();
 
 		$this->connectTime = time();
+		$this->lastPacketBudgetUpdateTimeNs = hrtime(true);
 
 		$this->setHandler(new LoginPacketHandler(
 			$this->server,
@@ -412,7 +418,13 @@ class NetworkSession{
 		}
 
 		if($this->incomingPacketBatchBudget <= 0){
-			throw new PacketHandlingException("Receiving packets too fast");
+			if(!function_exists('xdebug_is_debugger_active') || !xdebug_is_debugger_active()){
+				throw new PacketHandlingException("Receiving packets too fast");
+			}else{
+				//when a debugging session is active, the server may halt at any point for an indefinite length of time,
+				//in which time the client will continue to send packets
+				$this->incomingPacketBatchBudget = self::INCOMING_PACKET_BATCH_MAX_BUDGET;
+			}
 		}
 		$this->incomingPacketBatchBudget--;
 
@@ -1292,7 +1304,17 @@ class NetworkSession{
 		}
 
 		$this->flushSendBuffer();
-		$this->incomingPacketBatchBudget = min($this->incomingPacketBatchBudget + self::INCOMING_PACKET_BATCH_PER_TICK, self::INCOMING_PACKET_BATCH_MAX_BUDGET);
+
+		$nowNs = hrtime(true);
+		$timeSinceLastUpdateNs = $nowNs - $this->lastPacketBudgetUpdateTimeNs;
+		if($timeSinceLastUpdateNs > 50_000_000){
+			$ticksSinceLastUpdate = intdiv($timeSinceLastUpdateNs, 50_000_000);
+			$this->incomingPacketBatchBudget = min(
+				$this->incomingPacketBatchBudget + (self::INCOMING_PACKET_BATCH_PER_TICK * 2 * $ticksSinceLastUpdate),
+				self::INCOMING_PACKET_BATCH_MAX_BUDGET
+			);
+			$this->lastPacketBudgetUpdateTimeNs = $nowNs;
+		}
 	}
 
 	private function flushChunkCache() : void{
