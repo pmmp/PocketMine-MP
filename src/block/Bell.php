@@ -137,16 +137,7 @@ final class Bell extends Transparent{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
 			$faceHit = Facing::opposite($player->getHorizontalFacing());
-			if($this->attachmentType->equals(BellAttachmentType::CEILING())){
-				$this->ring($faceHit);
-			}
-			if($this->attachmentType->equals(BellAttachmentType::FLOOR()) && Facing::axis($faceHit) === Facing::axis($this->facing)){
-				$this->ring($faceHit);
-			}
-			if(
-				($this->attachmentType->equals(BellAttachmentType::ONE_WALL()) || $this->attachmentType->equals(BellAttachmentType::TWO_WALLS())) &&
-				($faceHit === Facing::rotateY($this->facing, false) || $faceHit === Facing::rotateY($this->facing, true))
-			){
+			if($this->isValidFaceToRing($faceHit)){
 				$this->ring($faceHit);
 			}
 		}
@@ -155,17 +146,8 @@ final class Bell extends Transparent{
 	}
 
 	public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
-		$faceHit = $hitResult->getHitFace();
-		if($this->attachmentType->equals(BellAttachmentType::CEILING())){
-			$this->ring($faceHit);
-		}
-		if($this->attachmentType->equals(BellAttachmentType::FLOOR()) && Facing::axis($faceHit) === Facing::axis($this->facing)){
-			$this->ring($faceHit);
-		}
-		if(
-			($this->attachmentType->equals(BellAttachmentType::ONE_WALL()) || $this->attachmentType->equals(BellAttachmentType::TWO_WALLS())) &&
-			($faceHit === Facing::rotateY($this->facing, false) || $faceHit === Facing::rotateY($this->facing, true))
-		){
+		$faceHit = Facing::opposite($projectile->getHorizontalFacing());
+		if($this->isValidFaceToRing($faceHit)){
 			$this->ring($faceHit);
 		}
 	}
@@ -177,5 +159,17 @@ final class Bell extends Transparent{
 		if($tile instanceof TileBell){
 			$world->broadcastPacketToViewers($this->position, $tile->createFakeUpdatePacket($faceHit));
 		}
+	}
+
+	private function isValidFaceToRing(int $faceHit) : bool{
+		return (
+			$this->attachmentType->equals(BellAttachmentType::CEILING()) ||
+			$this->attachmentType->equals(BellAttachmentType::FLOOR()) && Facing::axis($faceHit) === Facing::axis($this->facing) ||
+			(
+				$this->attachmentType->equals(BellAttachmentType::ONE_WALL()) ||
+				$this->attachmentType->equals(BellAttachmentType::TWO_WALLS())) &&
+				($faceHit === Facing::rotateY($this->facing, false) || $faceHit === Facing::rotateY($this->facing, true)
+			)
+		);
 	}
 }
