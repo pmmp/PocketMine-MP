@@ -55,6 +55,7 @@ use function phpversion;
 use function preg_replace;
 use function sprintf;
 use function str_split;
+use function str_starts_with;
 use function strpos;
 use function substr;
 use function zend_version;
@@ -237,7 +238,7 @@ class CrashDump{
 
 	private function determinePluginFromFile(string $filePath, bool $crashFrame) : bool{
 		$frameCleanPath = Filesystem::cleanPath($filePath);
-		if(strpos($frameCleanPath, Filesystem::CLEAN_PATH_SRC_PREFIX) !== 0){
+		if(!str_starts_with($frameCleanPath, Filesystem::CLEAN_PATH_SRC_PREFIX)){
 			if($crashFrame){
 				$this->data->plugin_involvement = self::PLUGIN_INVOLVEMENT_DIRECT;
 			}else{
@@ -250,7 +251,7 @@ class CrashDump{
 				$file->setAccessible(true);
 				foreach($this->server->getPluginManager()->getPlugins() as $plugin){
 					$filePath = Filesystem::cleanPath($file->getValue($plugin));
-					if(strpos($frameCleanPath, $filePath) === 0){
+					if(str_starts_with($frameCleanPath, $filePath)){
 						$this->data->plugin = $plugin->getName();
 						break;
 					}

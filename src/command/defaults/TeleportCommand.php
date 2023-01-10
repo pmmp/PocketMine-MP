@@ -40,9 +40,9 @@ use function round;
 
 class TeleportCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"tp",
 			KnownTranslationFactory::pocketmine_command_tp_description(),
 			KnownTranslationFactory::commands_tp_usage(),
 			["teleport"]

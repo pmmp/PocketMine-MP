@@ -37,9 +37,9 @@ use function trim;
 
 class KickCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"kick",
 			KnownTranslationFactory::pocketmine_command_kick_description(),
 			KnownTranslationFactory::commands_kick_usage()
 		);

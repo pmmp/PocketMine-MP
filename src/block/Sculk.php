@@ -21,28 +21,21 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\command\defaults;
+namespace pocketmine\block;
 
-use pocketmine\command\Command;
-use pocketmine\command\CommandSender;
-use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\permission\DefaultPermissionNames;
+use pocketmine\item\Item;
 
-class SaveOffCommand extends VanillaCommand{
+final class Sculk extends Opaque{
 
-	public function __construct(){
-		parent::__construct(
-			"save-off",
-			KnownTranslationFactory::pocketmine_command_saveoff_description()
-		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_SAVE_DISABLE);
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [];
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		$sender->getServer()->getWorldManager()->setAutoSave(false);
-
-		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_save_disabled());
-
+	public function isAffectedBySilkTouch() : bool{
 		return true;
+	}
+
+	public function getXpDropAmount() : int{
+		return 1;
 	}
 }

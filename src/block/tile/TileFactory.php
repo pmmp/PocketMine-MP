@@ -78,7 +78,6 @@ final class TileFactory{
 		$this->register(Skull::class, ["Skull", "minecraft:skull"]);
 
 		//TODO: Campfire
-		//TODO: Cauldron
 		//TODO: ChalkboardBlock
 		//TODO: ChemistryTable
 		//TODO: CommandBlock

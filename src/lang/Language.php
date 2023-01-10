@@ -34,7 +34,9 @@ use function is_dir;
 use function ord;
 use function parse_ini_file;
 use function scandir;
+use function str_ends_with;
 use function str_replace;
+use function str_starts_with;
 use function strlen;
 use function strpos;
 use function strtolower;
@@ -62,7 +64,7 @@ class Language{
 
 			if($allFiles !== false){
 				$files = array_filter($allFiles, function(string $filename) : bool{
-					return substr($filename, -4) === ".ini";
+					return str_ends_with($filename, ".ini");
 				});
 
 				$result = [];
@@ -141,7 +143,7 @@ class Language{
 	 */
 	public function translateString(string $str, array $params = [], ?string $onlyPrefix = null) : string{
 		$baseText = $this->get($str);
-		$baseText = $this->parseTranslation(($onlyPrefix === null || strpos($str, $onlyPrefix) === 0) ? $baseText : $str, $onlyPrefix);
+		$baseText = $this->parseTranslation(($onlyPrefix === null || str_starts_with($str, $onlyPrefix)) ? $baseText : $str, $onlyPrefix);
 
 		foreach($params as $i => $p){
 			$replacement = $p instanceof Translatable ? $this->translate($p) : (string) $p;
