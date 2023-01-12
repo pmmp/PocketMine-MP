@@ -65,7 +65,6 @@ class Torch extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$below = $this->getSide(Facing::DOWN);
 		$face = Facing::opposite($this->facing);
 
 		if(!$this->canBeSupportedBy($this->getSide($face), $this->facing)){
