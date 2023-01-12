@@ -55,5 +55,11 @@ abstract class PressurePlate extends Transparent{
 		return !$block->getSupportType(Facing::UP)->equals(SupportType::NONE());
 	}
 
+	public function onNearbyBlockChange() : void{
+		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
+			$this->position->getWorld()->useBreakOn($this->position);
+		}
+	}
+
 	//TODO
 }
