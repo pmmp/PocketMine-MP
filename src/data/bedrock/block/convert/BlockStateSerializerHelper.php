@@ -32,6 +32,7 @@ use pocketmine\block\DoublePlant;
 use pocketmine\block\FenceGate;
 use pocketmine\block\FloorSign;
 use pocketmine\block\Furnace;
+use pocketmine\block\ItemFrame;
 use pocketmine\block\Leaves;
 use pocketmine\block\Liquid;
 use pocketmine\block\RedMushroomBlock;
@@ -50,6 +51,7 @@ use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockStateNames;
 use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
+use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
@@ -136,6 +138,13 @@ final class BlockStateSerializerHelper{
 	public static function encodeFurnace(Furnace $block, string $unlitId, string $litId) : BlockStateWriter{
 		return BlockStateWriter::create($block->isLit() ? $litId : $unlitId)
 			->writeHorizontalFacing($block->getFacing());
+	}
+
+	public static function encodeItemFrame(ItemFrame $block, string $id) : BlockStateWriter{
+		return Writer::create($id)
+			->writeBool(StateNames::ITEM_FRAME_MAP_BIT, $block->hasMap())
+			->writeBool(StateNames::ITEM_FRAME_PHOTO_BIT, false)
+			->writeFacingDirection($block->getFacing());
 	}
 
 	private static function encodeLeaves(Leaves $block, BlockStateWriter $out) : BlockStateWriter{

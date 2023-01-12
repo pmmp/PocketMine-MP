@@ -627,8 +627,8 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("flower_pot_block", fn() => Blocks::FLOWER_POT());
 		$result->registerBlock("flowing_lava", fn() => Blocks::LAVA());
 		$result->registerBlock("flowing_water", fn() => Blocks::WATER());
-		$result->registerBlock("frame", fn() => Blocks::ITEM_FRAME()->setGlowing(false));
-		$result->registerBlock("frame_block", fn() => Blocks::ITEM_FRAME()->setGlowing(false));
+		$result->registerBlock("frame", fn() => Blocks::ITEM_FRAME());
+		$result->registerBlock("frame_block", fn() => Blocks::ITEM_FRAME());
 		$result->registerBlock("frosted_ice", fn() => Blocks::FROSTED_ICE());
 		$result->registerBlock("furnace", fn() => Blocks::FURNACE());
 		$result->registerBlock("gilded_blackstone", fn() => Blocks::GILDED_BLACKSTONE());
@@ -636,8 +636,9 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("glass_pane", fn() => Blocks::GLASS_PANE());
 		$result->registerBlock("glass_panel", fn() => Blocks::GLASS_PANE());
 		$result->registerBlock("glazed_terracotta", fn() => Blocks::GLAZED_TERRACOTTA());
-		$result->registerBlock("glow_frame", fn() => Blocks::ITEM_FRAME()->setGlowing(true));
-		$result->registerBlock("glow_item_frame", fn() => Blocks::ITEM_FRAME()->setGlowing(true));
+		$result->registerBlock("glow_frame", fn() => Blocks::GLOWING_ITEM_FRAME());
+		$result->registerBlock("glow_item_frame", fn() => Blocks::GLOWING_ITEM_FRAME());
+		$result->registerBlock("glowing_item_frame", fn() => Blocks::GLOWING_ITEM_FRAME());
 		$result->registerBlock("glowing_obsidian", fn() => Blocks::GLOWING_OBSIDIAN());
 		$result->registerBlock("glowing_redstone_ore", fn() => Blocks::REDSTONE_ORE()->setLit(true));
 		$result->registerBlock("glowingobsidian", fn() => Blocks::GLOWING_OBSIDIAN());
@@ -693,8 +694,8 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("iron_ore", fn() => Blocks::IRON_ORE());
 		$result->registerBlock("iron_pressure_plate", fn() => Blocks::WEIGHTED_PRESSURE_PLATE_HEAVY());
 		$result->registerBlock("iron_trapdoor", fn() => Blocks::IRON_TRAPDOOR());
-		$result->registerBlock("item_frame", fn() => Blocks::ITEM_FRAME()->setGlowing(false));
-		$result->registerBlock("item_frame_block", fn() => Blocks::ITEM_FRAME()->setGlowing(false));
+		$result->registerBlock("item_frame", fn() => Blocks::ITEM_FRAME());
+		$result->registerBlock("item_frame_block", fn() => Blocks::ITEM_FRAME());
 		$result->registerBlock("jack_o_lantern", fn() => Blocks::LIT_PUMPKIN());
 		$result->registerBlock("jukebox", fn() => Blocks::JUKEBOX());
 		$result->registerBlock("jungle_button", fn() => Blocks::JUNGLE_BUTTON());
