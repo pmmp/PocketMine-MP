@@ -39,19 +39,23 @@ class WaterLily extends Flowable{
 		return [AxisAlignedBB::one()->contract(1 / 16, 0, 1 / 16)->trim(Facing::UP, 63 / 64)];
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($blockClicked instanceof Water){
-			$up = $blockClicked->getSide(Facing::UP);
-			if($up->canBeReplaced()){
-				return parent::place($tx, $item, $up, $blockClicked, $face, $clickVector, $player);
-			}
-		}
+	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
+		return !$blockReplace instanceof Water && parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
+	}
 
-		return false;
+	private function canBeSupportedBy(Block $block) : bool{
+		return $block instanceof Water;
+	}
+
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if(!$this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN))){
+			return false;
+		}
+		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!($this->getSide(Facing::DOWN) instanceof Water)){
+		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
