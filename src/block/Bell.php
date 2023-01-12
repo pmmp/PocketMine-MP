@@ -161,21 +161,20 @@ final class Bell extends Transparent{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
 			$faceHit = Facing::opposite($player->getHorizontalFacing());
-			if($this->attachmentType->equals(BellAttachmentType::CEILING())){
-				$this->ring($faceHit);
-			}
-			if($this->attachmentType->equals(BellAttachmentType::FLOOR()) && Facing::axis($faceHit) === Facing::axis($this->facing)){
-				$this->ring($faceHit);
-			}
 			if(
-				($this->attachmentType->equals(BellAttachmentType::ONE_WALL()) || $this->attachmentType->equals(BellAttachmentType::TWO_WALLS())) &&
-				($faceHit === Facing::rotateY($this->facing, false) || $faceHit === Facing::rotateY($this->facing, true))
+				$this->attachmentType->equals(BellAttachmentType::CEILING()) ||
+				($this->attachmentType->equals(BellAttachmentType::FLOOR()) && Facing::axis($faceHit) === Facing::axis($this->facing)) ||
+				(
+					($this->attachmentType->equals(BellAttachmentType::ONE_WALL()) || $this->attachmentType->equals(BellAttachmentType::TWO_WALLS())) &&
+					($faceHit === Facing::rotateY($this->facing, false) || $faceHit === Facing::rotateY($this->facing, true))
+				)
 			){
 				$this->ring($faceHit);
+				return true;
 			}
 		}
 
-		return true;
+		return false;
 	}
 
 	public function ring(int $faceHit) : void{
