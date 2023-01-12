@@ -128,20 +128,39 @@ use function array_values;
 use function base64_encode;
 use function bin2hex;
 use function count;
+use function function_exists;
 use function get_class;
+use function hrtime;
 use function in_array;
+use function intdiv;
 use function json_encode;
 use function ksort;
+use function min;
 use function strcasecmp;
 use function strlen;
 use function strtolower;
 use function substr;
 use function time;
 use function ucfirst;
+use function xdebug_is_debugger_active;
 use const JSON_THROW_ON_ERROR;
 use const SORT_NUMERIC;
 
 class NetworkSession{
+	private const INCOMING_PACKET_BATCH_PER_TICK = 2; //usually max 1 per tick, but transactions may arrive separately
+	private const INCOMING_PACKET_BATCH_MAX_BUDGET = 100; //enough to account for a 5-second lag spike
+
+	/**
+	 * At most this many more packets can be received. If this reaches zero, any additional packets received will cause
+	 * the player to be kicked from the server.
+	 * This number is increased every tick up to a maximum limit.
+	 *
+	 * @see self::INCOMING_PACKET_BATCH_PER_TICK
+	 * @see self::INCOMING_PACKET_BATCH_MAX_BUDGET
+	 */
+	private int $incomingPacketBatchBudget = self::INCOMING_PACKET_BATCH_MAX_BUDGET;
+	private int $lastPacketBudgetUpdateTimeNs;
+
 	private \PrefixedLogger $logger;
 	private ?Player $player = null;
 	private ?PlayerInfo $info = null;
@@ -199,6 +218,7 @@ class NetworkSession{
 		$this->disposeHooks = new ObjectSet();
 
 		$this->connectTime = time();
+		$this->lastPacketBudgetUpdateTimeNs = hrtime(true);
 
 		$this->setHandler(new SessionStartPacketHandler(
 			$this->server,
@@ -338,6 +358,17 @@ class NetworkSession{
 		if(!$this->connected){
 			return;
 		}
+
+		if($this->incomingPacketBatchBudget <= 0){
+			if(!function_exists('xdebug_is_debugger_active') || !xdebug_is_debugger_active()){
+				throw new PacketHandlingException("Receiving packets too fast");
+			}else{
+				//when a debugging session is active, the server may halt at any point for an indefinite length of time,
+				//in which time the client will continue to send packets
+				$this->incomingPacketBatchBudget = self::INCOMING_PACKET_BATCH_MAX_BUDGET;
+			}
+		}
+		$this->incomingPacketBatchBudget--;
 
 		if($this->cipher !== null){
 			Timings::$playerNetworkReceiveDecrypt->startTiming();
@@ -1138,5 +1169,16 @@ class NetworkSession{
 		}
 
 		$this->flushSendBuffer();
+
+		$nowNs = hrtime(true);
+		$timeSinceLastUpdateNs = $nowNs - $this->lastPacketBudgetUpdateTimeNs;
+		if($timeSinceLastUpdateNs > 50_000_000){
+			$ticksSinceLastUpdate = intdiv($timeSinceLastUpdateNs, 50_000_000);
+			$this->incomingPacketBatchBudget = min(
+				$this->incomingPacketBatchBudget + (self::INCOMING_PACKET_BATCH_PER_TICK * 2 * $ticksSinceLastUpdate),
+				self::INCOMING_PACKET_BATCH_MAX_BUDGET
+			);
+			$this->lastPacketBudgetUpdateTimeNs = $nowNs;
+		}
 	}
 }
