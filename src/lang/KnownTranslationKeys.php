@@ -260,6 +260,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_COMMAND_DEFAULTGAMEMODE_DESCRIPTION = "pocketmine.command.defaultgamemode.description";
 	public const POCKETMINE_COMMAND_DEOP_DESCRIPTION = "pocketmine.command.deop.description";
 	public const POCKETMINE_COMMAND_DIFFICULTY_DESCRIPTION = "pocketmine.command.difficulty.description";
+	public const POCKETMINE_COMMAND_DUMPMEMORY_DESCRIPTION = "pocketmine.command.dumpmemory.description";
 	public const POCKETMINE_COMMAND_EFFECT_DESCRIPTION = "pocketmine.command.effect.description";
 	public const POCKETMINE_COMMAND_ENCHANT_DESCRIPTION = "pocketmine.command.enchant.description";
 	public const POCKETMINE_COMMAND_ERROR_PERMISSION = "pocketmine.command.error.permission";

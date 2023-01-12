@@ -236,11 +236,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 
 		$locatedSerializer = $this->serializers[$typeId][get_class($blockState)] ?? null;
 		if($locatedSerializer === null){
-			$parents = class_parents($blockState);
-			if($parents === false){
-				throw new AssumptionFailedError("A block class should always have at least one parent");
-			}
-			foreach($parents as $parent){
+			foreach(class_parents($blockState) as $parent){
 				if(isset($this->serializers[$typeId][$parent])){
 					$locatedSerializer = $this->serializers[$typeId][$parent];
 					break;

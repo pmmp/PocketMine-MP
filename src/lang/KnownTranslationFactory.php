@@ -1176,6 +1176,10 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_DIFFICULTY_DESCRIPTION, []);
 	}
 
+	public static function pocketmine_command_dumpmemory_description() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_DUMPMEMORY_DESCRIPTION, []);
+	}
+
 	public static function pocketmine_command_effect_description() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_EFFECT_DESCRIPTION, []);
 	}
