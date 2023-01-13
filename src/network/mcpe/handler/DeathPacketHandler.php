@@ -32,7 +32,6 @@ use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\RespawnPacket;
 use pocketmine\network\mcpe\protocol\types\PlayerAction;
 use pocketmine\player\Player;
-use function array_map;
 
 class DeathPacketHandler extends PacketHandler{
 	public function __construct(
