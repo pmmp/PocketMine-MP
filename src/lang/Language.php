@@ -73,8 +73,8 @@ class Language{
 					try{
 						$code = explode(".", $file)[0];
 						$strings = self::loadLang($path, $code);
-						if(isset($strings["language.name"])){
-							$result[$code] = $strings["language.name"];
+						if(isset($strings[KnownTranslationKeys::LANGUAGE_NAME])){
+							$result[$code] = $strings[KnownTranslationKeys::LANGUAGE_NAME];
 						}
 					}catch(LanguageNotFoundException $e){
 						// no-op
