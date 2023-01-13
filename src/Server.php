@@ -117,6 +117,7 @@ use pocketmine\world\WorldCreationOptions;
 use pocketmine\world\WorldManager;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Filesystem\Path;
+use function array_fill;
 use function array_sum;
 use function base64_encode;
 use function cli_set_process_title;
@@ -181,6 +182,27 @@ class Server{
 	public const DEFAULT_PORT_IPV6 = 19133;
 	public const DEFAULT_MAX_VIEW_DISTANCE = 16;
 
+	/**
+	 * Worlds, network, commands and most other things are polled this many times per second on average.
+	 * Between ticks, the server will sleep to ensure that the average tick rate is maintained.
+	 * It may wake up between ticks if a Snooze notification source is triggered (e.g. to process network packets).
+	 */
+	public const TARGET_TICKS_PER_SECOND = 20;
+	/**
+	 * The average time between ticks, in seconds.
+	 */
+	public const TARGET_SECONDS_PER_TICK = 1 / self::TARGET_TICKS_PER_SECOND;
+	public const TARGET_NANOSECONDS_PER_TICK = 1_000_000_000 / self::TARGET_TICKS_PER_SECOND;
+
+	/**
+	 * The TPS threshold below which the server will generate log warnings.
+	 */
+	private const TPS_OVERLOAD_WARNING_THRESHOLD = self::TARGET_TICKS_PER_SECOND * 0.6;
+
+	private const TICKS_PER_WORLD_CACHE_CLEAR = 5 * self::TARGET_TICKS_PER_SECOND;
+	private const TICKS_PER_TPS_OVERLOAD_WARNING = 5 * self::TARGET_TICKS_PER_SECOND;
+	private const TICKS_PER_STATS_REPORT = 300 * self::TARGET_TICKS_PER_SECOND;
+
 	private static ?Server $instance = null;
 
 	private SleeperHandler $tickSleeper;
@@ -199,7 +221,7 @@ class Server{
 
 	private PluginManager $pluginManager;
 
-	private float $profilingTickRate = 20;
+	private float $profilingTickRate = self::TARGET_TICKS_PER_SECOND;
 
 	private UpdateChecker $updater;
 
@@ -209,10 +231,10 @@ class Server{
 	private int $tickCounter = 0;
 	private float $nextTick = 0;
 	/** @var float[] */
-	private array $tickAverage = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20];
+	private array $tickAverage;
 	/** @var float[] */
-	private array $useAverage = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-	private float $currentTPS = 20;
+	private array $useAverage;
+	private float $currentTPS = self::TARGET_TICKS_PER_SECOND;
 	private float $currentUse = 0;
 	private float $startTime;
 
@@ -748,6 +770,8 @@ class Server{
 		}
 		self::$instance = $this;
 		$this->startTime = microtime(true);
+		$this->tickAverage = array_fill(0, self::TARGET_TICKS_PER_SECOND, self::TARGET_TICKS_PER_SECOND);
+		$this->useAverage = array_fill(0, self::TARGET_TICKS_PER_SECOND, 0);
 
 		$this->tickSleeper = new SleeperHandler();
 
@@ -931,7 +955,7 @@ class Server{
 
 			Timings::init();
 			TimingsHandler::setEnabled($this->configGroup->getPropertyBool("settings.enable-profiling", false));
-			$this->profilingTickRate = $this->configGroup->getPropertyInt("settings.profile-report-trigger", 20);
+			$this->profilingTickRate = $this->configGroup->getPropertyInt("settings.profile-report-trigger", self::TARGET_TICKS_PER_SECOND);
 
 			DefaultPermissions::registerCorePermissions();
 
@@ -969,7 +993,7 @@ class Server{
 
 			$this->worldManager = new WorldManager($this, Path::join($this->dataPath, "worlds"), $providerManager);
 			$this->worldManager->setAutoSave($this->configGroup->getConfigBool("auto-save", $this->worldManager->getAutoSave()));
-			$this->worldManager->setAutoSaveInterval($this->configGroup->getPropertyInt("ticks-per.autosave", 6000));
+			$this->worldManager->setAutoSaveInterval($this->configGroup->getPropertyInt("ticks-per.autosave", $this->worldManager->getAutoSaveInterval()));
 
 			$this->updater = new UpdateChecker($this, $this->configGroup->getPropertyString("auto-updater.host", "update.pmmp.io"));
 
@@ -1009,7 +1033,7 @@ class Server{
 			}
 
 			if($this->configGroup->getPropertyBool("anonymous-statistics.enabled", true)){
-				$this->sendUsageTicker = 6000;
+				$this->sendUsageTicker = self::TICKS_PER_STATS_REPORT;
 				$this->sendUsage(SendUsageTask::TYPE_OPEN);
 			}
 
@@ -1792,11 +1816,11 @@ class Server{
 		$this->network->tick();
 		Timings::$connection->stopTiming();
 
-		if(($this->tickCounter % 20) === 0){
+		if(($this->tickCounter % self::TARGET_TICKS_PER_SECOND) === 0){
 			if($this->doTitleTick){
 				$this->titleTick();
 			}
-			$this->currentTPS = 20;
+			$this->currentTPS = self::TARGET_TICKS_PER_SECOND;
 			$this->currentUse = 0;
 
 			$queryRegenerateEvent = new QueryRegenerateEvent(new QueryInfo($this));
@@ -1808,18 +1832,18 @@ class Server{
 		}
 
 		if($this->sendUsageTicker > 0 && --$this->sendUsageTicker === 0){
-			$this->sendUsageTicker = 6000;
+			$this->sendUsageTicker = self::TICKS_PER_STATS_REPORT;
 			$this->sendUsage(SendUsageTask::TYPE_STATUS);
 		}
 
-		if(($this->tickCounter % 100) === 0){
+		if(($this->tickCounter % self::TICKS_PER_WORLD_CACHE_CLEAR) === 0){
 			foreach($this->worldManager->getWorlds() as $world){
 				$world->clearCache();
 			}
+		}
 
-			if($this->getTicksPerSecondAverage() < 12){
-				$this->logger->warning($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_tickOverload()));
-			}
+		if(($this->tickCounter % self::TICKS_PER_TPS_OVERLOAD_WARNING) === 0 && $this->getTicksPerSecondAverage() < self::TPS_OVERLOAD_WARNING_THRESHOLD){
+			$this->logger->warning($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_tickOverload()));
 		}
 
 		$this->getMemoryManager()->check();
@@ -1836,19 +1860,19 @@ class Server{
 		Timings::$serverTick->stopTiming();
 
 		$now = microtime(true);
-		$this->currentTPS = min(20, 1 / max(0.001, $now - $tickTime));
-		$this->currentUse = min(1, ($now - $tickTime) / 0.05);
+		$this->currentTPS = min(self::TARGET_TICKS_PER_SECOND, 1 / max(0.001, $now - $tickTime));
+		$this->currentUse = min(1, ($now - $tickTime) / self::TARGET_SECONDS_PER_TICK);
 
 		TimingsHandler::tick($this->currentTPS <= $this->profilingTickRate);
 
-		$idx = $this->tickCounter % 20;
+		$idx = $this->tickCounter % self::TARGET_TICKS_PER_SECOND;
 		$this->tickAverage[$idx] = $this->currentTPS;
 		$this->useAverage[$idx] = $this->currentUse;
 
 		if(($this->nextTick - $tickTime) < -1){
 			$this->nextTick = $tickTime;
 		}else{
-			$this->nextTick += 0.05;
+			$this->nextTick += self::TARGET_SECONDS_PER_TICK;
 		}
 	}
 }

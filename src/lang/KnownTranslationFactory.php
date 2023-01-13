@@ -2586,6 +2586,12 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::QUERY_WARNING2, []);
 	}
 
+	public static function record_nowPlaying(Translatable|string $param0) : Translatable{
+		return new Translatable(KnownTranslationKeys::RECORD_NOWPLAYING, [
+			0 => $param0,
+		]);
+	}
+
 	public static function server_port() : Translatable{
 		return new Translatable(KnownTranslationKeys::SERVER_PORT, []);
 	}
