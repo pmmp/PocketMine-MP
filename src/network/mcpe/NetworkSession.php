@@ -991,26 +991,39 @@ class NetworkSession{
 		$this->sendDataPacket(AvailableCommandsPacket::create($commandData, [], [], []));
 	}
 
+	/**
+	 * @return string[][]
+	 * @phpstan-return array{string, string[]}
+	 */
+	public function prepareClientTranslatableMessage(Translatable $message) : array{
+		//we can't send nested translations to the client, so make sure they are always pre-translated by the server
+		$language = $this->player->getLanguage();
+		$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $language->translate($p) : $p, $message->getParameters());
+		return [$language->translateString($message->getText(), $parameters, "pocketmine."), $parameters];
+	}
+
 	public function onChatMessage(Translatable|string $message) : void{
 		if($message instanceof Translatable){
-			$language = $this->player->getLanguage();
 			if(!$this->server->isLanguageForced()){
-				//we can't send nested translations to the client, so make sure they are always pre-translated by the server
-				$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $language->translate($p) : $p, $message->getParameters());
-				$this->sendDataPacket(TextPacket::translation($language->translateString($message->getText(), $parameters, "pocketmine."), $parameters));
+				$this->sendDataPacket(TextPacket::translation(...$this->prepareClientTranslatableMessage($message)));
 			}else{
-				$this->sendDataPacket(TextPacket::raw($language->translate($message)));
+				$this->sendDataPacket(TextPacket::raw($this->player->getLanguage()->translate($message)));
 			}
 		}else{
 			$this->sendDataPacket(TextPacket::raw($message));
 		}
 	}
 
-	/**
-	 * @param string[] $parameters
-	 */
-	public function onJukeboxPopup(string $key, array $parameters) : void{
-		$this->sendDataPacket(TextPacket::jukeboxPopup($key, $parameters));
+	public function onJukeboxPopup(Translatable|string $message) : void{
+		$parameters = [];
+		if($message instanceof Translatable){
+			if(!$this->server->isLanguageForced()){
+				[$message, $parameters] = $this->prepareClientTranslatableMessage($message);
+			}else{
+				$message = $this->player->getLanguage()->translate($message);
+			}
+		}
+		$this->sendDataPacket(TextPacket::jukeboxPopup($message, $parameters));
 	}
 
 	public function onPopup(string $message) : void{

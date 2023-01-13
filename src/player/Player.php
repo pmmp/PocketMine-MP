@@ -2014,11 +2014,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->getNetworkSession()->onChatMessage($message);
 	}
 
-	/**
-	 * @param string[] $args
-	 */
-	public function sendJukeboxPopup(string $key, array $args) : void{
-		$this->getNetworkSession()->onJukeboxPopup($key, $args);
+	public function sendJukeboxPopup(Translatable|string $message) : void{
+		$this->getNetworkSession()->onJukeboxPopup($message);
 	}
 
 	/**
