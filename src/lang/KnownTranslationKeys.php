@@ -549,6 +549,7 @@ final class KnownTranslationKeys{
 	public const QUERY_DISABLE = "query_disable";
 	public const QUERY_WARNING1 = "query_warning1";
 	public const QUERY_WARNING2 = "query_warning2";
+	public const RECORD_NOWPLAYING = "record.nowPlaying";
 	public const SERVER_PORT = "server_port";
 	public const SERVER_PORT_V4 = "server_port_v4";
 	public const SERVER_PORT_V6 = "server_port_v6";
