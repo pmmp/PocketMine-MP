@@ -69,6 +69,10 @@ use const JSON_UNESCAPED_SLASHES;
 use const SORT_NUMERIC;
 
 class MemoryManager{
+	private const DEFAULT_CHECK_RATE = Server::TARGET_TICKS_PER_SECOND;
+	private const DEFAULT_CONTINUOUS_TRIGGER_RATE = Server::TARGET_TICKS_PER_SECOND * 2;
+	private const DEEFAULT_TICKS_PER_GC = 30 * 60 * Server::TARGET_TICKS_PER_SECOND;
+
 	private int $memoryLimit;
 	private int $globalMemoryLimit;
 	private int $checkRate;
@@ -131,11 +135,11 @@ class MemoryManager{
 		}
 
 		$this->globalMemoryLimit = $config->getPropertyInt("memory.global-limit", 0) * 1024 * 1024;
-		$this->checkRate = $config->getPropertyInt("memory.check-rate", 20);
+		$this->checkRate = $config->getPropertyInt("memory.check-rate", self::DEFAULT_CHECK_RATE);
 		$this->continuousTrigger = $config->getPropertyBool("memory.continuous-trigger", true);
-		$this->continuousTriggerRate = $config->getPropertyInt("memory.continuous-trigger-rate", 30);
+		$this->continuousTriggerRate = $config->getPropertyInt("memory.continuous-trigger-rate", self::DEFAULT_CONTINUOUS_TRIGGER_RATE);
 
-		$this->garbageCollectionPeriod = $config->getPropertyInt("memory.garbage-collection.period", 36000);
+		$this->garbageCollectionPeriod = $config->getPropertyInt("memory.garbage-collection.period", self::DEEFAULT_TICKS_PER_GC);
 		$this->garbageCollectionTrigger = $config->getPropertyBool("memory.garbage-collection.low-memory-trigger", true);
 		$this->garbageCollectionAsync = $config->getPropertyBool("memory.garbage-collection.collect-async-worker", true);
 
