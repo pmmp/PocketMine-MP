@@ -350,8 +350,8 @@ class WorldManager{
 			$world->doTick($currentTick);
 			$tickMs = (microtime(true) - $worldTime) * 1000;
 			$world->tickRateTime = $tickMs;
-			if($tickMs >= Server::TARGET_SECONDS_PER_TICK){
-				$world->getLogger()->debug(sprintf("Tick took too long: %gms (%g ticks)", $tickMs, round($tickMs / Server::TARGET_SECONDS_PER_TICK, 2)));
+			if($tickMs >= Server::TARGET_SECONDS_PER_TICK * 1000){
+				$world->getLogger()->debug(sprintf("Tick took too long: %gms (%g ticks)", $tickMs, round($tickMs / (Server::TARGET_SECONDS_PER_TICK * 1000), 2)));
 			}
 		}
 
