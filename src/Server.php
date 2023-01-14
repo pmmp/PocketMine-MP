@@ -580,7 +580,7 @@ class Server{
 				},
 				function() use ($playerPromiseResolver, $session) : void{
 					if($session->isConnected()){
-						$session->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_internal());
+						$session->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_respawn());
 					}
 					$playerPromiseResolver->reject();
 				}

@@ -2349,7 +2349,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			},
 			function() : void{
 				if($this->isConnected()){
-					$this->disconnect("Unable to find a respawn position");
+					$this->getNetworkSession()->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_respawn());
 				}
 			}
 		);
