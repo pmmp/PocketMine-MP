@@ -2846,6 +2846,36 @@ class World implements ChunkManager{
 	}
 
 	/**
+	 * Requests a safe spawn position near the given position, or near the world's spawn position if not provided.
+	 * Terrain near the position will be loaded or generated as needed.
+	 *
+	 * @return Promise Resolved to a Position object, or rejected if the world is unloaded.
+	 * @phpstan-return Promise<Position>
+	 */
+	public function requestSafeSpawn(?Vector3 $spawn = null) : Promise{
+		$resolver = new PromiseResolver();
+		$spawn ??= $this->getSpawnLocation();
+		/*
+		 * TODO: this relies on the assumption that getSafeSpawn() will only alter the Y coordinate of the provided
+		 * position, which is currently OK, but might be a problem in the future.
+		 */
+		$this->requestChunkPopulation($spawn->getFloorX() >> Chunk::COORD_BIT_SIZE, $spawn->getFloorZ() >> Chunk::COORD_BIT_SIZE, null)->onCompletion(
+			function() use ($spawn, $resolver) : void{
+				$spawn = $this->getSafeSpawn($spawn);
+				$resolver->resolve($spawn);
+			},
+			function() use ($resolver) : void{
+				$resolver->reject();
+			}
+		);
+
+		return $resolver->getPromise();
+	}
+
+	/**
+	 * Returns a safe spawn position near the given position, or near the world's spawn position if not provided.
+	 * This function will throw an exception if the terrain is not already generated in advance.
+	 *
 	 * @throws WorldException if the terrain is not generated
 	 */
 	public function getSafeSpawn(?Vector3 $spawn = null) : Position{

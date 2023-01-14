@@ -106,12 +106,12 @@ use pocketmine\utils\SignalHandler;
 use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
-use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProviderManagerEntry;
 use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\generator\InvalidGeneratorOptionsException;
+use pocketmine\world\Position;
 use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
 use pocketmine\world\WorldManager;
@@ -551,50 +551,44 @@ class Server{
 
 		if($offlinePlayerData !== null && ($world = $this->worldManager->getWorldByName($offlinePlayerData->getString(Player::TAG_LEVEL, ""))) !== null){
 			$playerPos = EntityDataHelper::parseLocation($offlinePlayerData, $world);
-			$spawn = $playerPos->asVector3();
 		}else{
 			$world = $this->worldManager->getDefaultWorld();
 			if($world === null){
 				throw new AssumptionFailedError("Default world should always be loaded");
 			}
 			$playerPos = null;
-			$spawn = $world->getSpawnLocation();
 		}
 		/** @phpstan-var PromiseResolver<Player> $playerPromiseResolver */
 		$playerPromiseResolver = new PromiseResolver();
-		$world->requestChunkPopulation($spawn->getFloorX() >> Chunk::COORD_BIT_SIZE, $spawn->getFloorZ() >> Chunk::COORD_BIT_SIZE, null)->onCompletion(
-			function() use ($playerPromiseResolver, $class, $session, $playerInfo, $authenticated, $world, $playerPos, $spawn, $offlinePlayerData) : void{
-				if(!$session->isConnected()){
-					$playerPromiseResolver->reject();
-					return;
-				}
 
-				/* Stick with the original spawn at the time of generation request, even if it changed since then.
-				 * This is because we know for sure that that chunk will be generated, but the one at the new location
-				 * might not be, and it would be much more complex to go back and redo the whole thing.
-				 *
-				 * TODO: this relies on the assumption that getSafeSpawn() will only alter the Y coordinate of the
-				 * provided position. If this assumption is broken, we'll start seeing crashes in here.
-				 */
-
-				/**
-				 * @see Player::__construct()
-				 * @var Player $player
-				 */
-				$player = new $class($this, $session, $playerInfo, $authenticated, $playerPos ?? Location::fromObject($world->getSafeSpawn($spawn), $world), $offlinePlayerData);
-				if(!$player->hasPlayedBefore()){
-					$player->onGround = true;  //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
-				}
-				$playerPromiseResolver->resolve($player);
-			},
-			static function() use ($playerPromiseResolver, $session) : void{
-				if($session->isConnected()){
-					$session->getLogger()->error("Spawn terrain generation failed");
-					$session->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_internal());
-				}
-				$playerPromiseResolver->reject();
+		$createPlayer = function(Location $location) use ($playerPromiseResolver, $class, $session, $playerInfo, $authenticated, $offlinePlayerData) : void{
+			$player = new $class($this, $session, $playerInfo, $authenticated, $location, $offlinePlayerData);
+			if(!$player->hasPlayedBefore()){
+				$player->onGround = true; //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
 			}
-		);
+			$playerPromiseResolver->resolve($player);
+		};
+
+		if($playerPos === null){ //new player or no valid position due to world not being loaded
+			$world->requestSafeSpawn()->onCompletion(
+				function(Position $spawn) use ($createPlayer, $playerPromiseResolver, $session, $world) : void{
+					if(!$session->isConnected()){
+						$playerPromiseResolver->reject();
+						return;
+					}
+					$createPlayer(Location::fromObject($spawn, $world));
+				},
+				function() use ($playerPromiseResolver, $session) : void{
+					if($session->isConnected()){
+						$session->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_internal());
+					}
+					$playerPromiseResolver->reject();
+				}
+			);
+		}else{ //returning player with a valid position - safe spawn not required
+			$createPlayer($playerPos);
+		}
+
 		return $playerPromiseResolver->getPromise();
 	}
 
