@@ -236,11 +236,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 
 		$locatedSerializer = $this->serializers[$typeId][get_class($blockState)] ?? null;
 		if($locatedSerializer === null){
-			$parents = class_parents($blockState);
-			if($parents === false){
-				throw new AssumptionFailedError("A block class should always have at least one parent");
-			}
-			foreach($parents as $parent){
+			foreach(class_parents($blockState) as $parent){
 				if(isset($this->serializers[$typeId][$parent])){
 					$locatedSerializer = $this->serializers[$typeId][$parent];
 					break;
@@ -990,6 +986,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 			})
 				->writeHorizontalFacing($block->getFacing());
 		});
+		$this->map(Blocks::GLOWING_ITEM_FRAME(), fn(ItemFrame $block) => Helper::encodeItemFrame($block, Ids::GLOW_FRAME));
 		$this->map(Blocks::GRANITE(), fn() => Helper::encodeStone(StringValues::STONE_TYPE_GRANITE));
 		$this->map(Blocks::GRANITE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab3($block, StringValues::STONE_SLAB_TYPE_3_GRANITE));
 		$this->mapStairs(Blocks::GRANITE_STAIRS(), Ids::GRANITE_STAIRS);
@@ -1019,12 +1016,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeString(StateNames::MONSTER_EGG_STONE_TYPE, StringValues::MONSTER_EGG_STONE_TYPE_STONE_BRICK));
 		$this->map(Blocks::IRON_DOOR(), fn(Door $block) => Helper::encodeDoor($block, new Writer(Ids::IRON_DOOR)));
 		$this->map(Blocks::IRON_TRAPDOOR(), fn(Trapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::IRON_TRAPDOOR)));
-		$this->map(Blocks::ITEM_FRAME(), function(ItemFrame $block) : Writer{
-			return Writer::create($block->isGlowing() ? Ids::GLOW_FRAME : Ids::FRAME)
-				->writeBool(StateNames::ITEM_FRAME_MAP_BIT, $block->hasMap())
-				->writeBool(StateNames::ITEM_FRAME_PHOTO_BIT, false)
-				->writeFacingDirection($block->getFacing());
-		});
+		$this->map(Blocks::ITEM_FRAME(), fn(ItemFrame $block) => Helper::encodeItemFrame($block, Ids::FRAME));
 		$this->map(Blocks::JUNGLE_BUTTON(), fn(WoodenButton $block) => Helper::encodeButton($block, new Writer(Ids::JUNGLE_BUTTON)));
 		$this->map(Blocks::JUNGLE_DOOR(), fn(WoodenDoor $block) => Helper::encodeDoor($block, new Writer(Ids::JUNGLE_DOOR)));
 		$this->map(Blocks::JUNGLE_FENCE(), fn() => Writer::create(Ids::FENCE)

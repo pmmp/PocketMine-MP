@@ -617,7 +617,7 @@ parameters:
 
 		-
 			message: "#^Cannot call method getLanguage\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
-			count: 2
+			count: 4
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-

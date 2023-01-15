@@ -21,27 +21,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\command\defaults;
+namespace pocketmine\player\chat;
 
-use pocketmine\command\CommandSender;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\permission\DefaultPermissionNames;
-use Symfony\Component\Filesystem\Path;
-use function date;
+use pocketmine\lang\Translatable;
 
-class DumpMemoryCommand extends VanillaCommand{
+/**
+ * Standard chat formatter, formats messages in the default Minecraft way.
+ */
+final class StandardChatFormatter implements ChatFormatter{
 
-	public function __construct(){
-		parent::__construct(
-			"dumpmemory",
-			KnownTranslationFactory::pocketmine_command_dumpmemory_description(),
-			"/dumpmemory [path]"
-		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_DUMPMEMORY);
-	}
-
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		$sender->getServer()->getMemoryManager()->dumpServerMemory($args[0] ?? (Path::join($sender->getServer()->getDataPath(), "memory_dumps", date("D_M_j-H.i.s-T_Y"))), 48, 80);
-		return true;
+	public function format(string $username, string $message) : Translatable{
+		return KnownTranslationFactory::chat_type_text($username, $message);
 	}
 }

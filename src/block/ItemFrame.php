@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
 use pocketmine\block\utils\AnyFacingTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
@@ -44,19 +45,11 @@ class ItemFrame extends Flowable{
 
 	public const ROTATIONS = 8;
 
-	protected bool $glowing = false;
-
 	protected bool $hasMap = false; //makes frame appear large if set
 
 	protected ?Item $framedItem = null;
 	protected int $itemRotation = 0;
 	protected float $itemDropChance = 1.0;
-
-	public function getRequiredTypeDataBits() : int{ return 1; }
-
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
-		$w->bool($this->glowing);
-	}
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
@@ -141,14 +134,6 @@ class ItemFrame extends Flowable{
 		return $this;
 	}
 
-	public function isGlowing() : bool{ return $this->glowing; }
-
-	/** @return $this */
-	public function setGlowing(bool $glowing) : self{
-		$this->glowing = $glowing;
-		return $this;
-	}
-
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->framedItem !== null){
 			$this->itemRotation = ($this->itemRotation + 1) % self::ROTATIONS;
@@ -181,14 +166,18 @@ class ItemFrame extends Flowable{
 		return true;
 	}
 
+	private function canBeSupportedBy(Block $block, int $face) : bool{
+		return !$block->getSupportType($face)->equals(SupportType::NONE());
+	}
+
 	public function onNearbyBlockChange() : void{
-		if(!$this->getSide(Facing::opposite($this->facing))->isSolid()){
+		if(!$this->canBeSupportedBy($this->getSide(Facing::opposite($this->facing)), $this->facing)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$blockClicked->isSolid()){
+		if(!$this->canBeSupportedBy($blockReplace->getSide(Facing::opposite($face)), $face)){
 			return false;
 		}
 

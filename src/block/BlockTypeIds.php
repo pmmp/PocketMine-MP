@@ -708,8 +708,9 @@ final class BlockTypeIds{
 	public const WEEPING_VINES = 10681;
 	public const CHAIN = 10682;
 	public const SCULK = 10683;
+	public const GLOWING_ITEM_FRAME = 10684;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10684;
+	public const FIRST_UNUSED_BLOCK_ID = 10685;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 
