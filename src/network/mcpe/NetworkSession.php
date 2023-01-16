@@ -854,16 +854,16 @@ class NetworkSession{
 			UpdateAbilitiesPacketLayer::ABILITY_OPERATOR => $isOp,
 			UpdateAbilitiesPacketLayer::ABILITY_TELEPORT => $for->hasPermission(DefaultPermissionNames::COMMAND_TELEPORT_SELF),
 			UpdateAbilitiesPacketLayer::ABILITY_INVULNERABLE => $for->isCreative(),
-			UpdateAbilitiesPacketLayer::ABILITY_MUTED => false,
+			UpdateAbilitiesPacketLayer::ABILITY_MUTED => !$for->hasPermission(DefaultPermissionNames::GAME_CHAT),
 			UpdateAbilitiesPacketLayer::ABILITY_WORLD_BUILDER => false,
 			UpdateAbilitiesPacketLayer::ABILITY_INFINITE_RESOURCES => !$for->hasFiniteResources(),
 			UpdateAbilitiesPacketLayer::ABILITY_LIGHTNING => false,
-			UpdateAbilitiesPacketLayer::ABILITY_BUILD => !$for->isSpectator(),
-			UpdateAbilitiesPacketLayer::ABILITY_MINE => !$for->isSpectator(),
-			UpdateAbilitiesPacketLayer::ABILITY_DOORS_AND_SWITCHES => !$for->isSpectator(),
-			UpdateAbilitiesPacketLayer::ABILITY_OPEN_CONTAINERS => !$for->isSpectator(),
-			UpdateAbilitiesPacketLayer::ABILITY_ATTACK_PLAYERS => !$for->isSpectator(),
-			UpdateAbilitiesPacketLayer::ABILITY_ATTACK_MOBS => !$for->isSpectator(),
+			UpdateAbilitiesPacketLayer::ABILITY_BUILD => $for->hasPermission(DefaultPermissionNames::GAME_BLOCK_PLACE),
+			UpdateAbilitiesPacketLayer::ABILITY_MINE => $for->hasPermission(DefaultPermissionNames::GAME_BLOCK_BREAK),
+			UpdateAbilitiesPacketLayer::ABILITY_DOORS_AND_SWITCHES => $for->hasPermission(DefaultPermissionNames::GAME_BLOCK_INTERACT),
+			UpdateAbilitiesPacketLayer::ABILITY_OPEN_CONTAINERS => $for->hasPermission(DefaultPermissionNames::GAME_BLOCK_INTERACT) || $for->hasPermission(DefaultPermissionNames::GAME_ENTITY_INTERACT), //not perfect, but this is a pain to implement right now
+			UpdateAbilitiesPacketLayer::ABILITY_ATTACK_PLAYERS => $for->hasPermission(DefaultPermissionNames::GAME_PLAYER_ATTACK),
+			UpdateAbilitiesPacketLayer::ABILITY_ATTACK_MOBS => $for->hasPermission(DefaultPermissionNames::GAME_ENTITY_ATTACK),
 		];
 
 		$this->sendDataPacket(UpdateAbilitiesPacket::create(

@@ -27,6 +27,7 @@ use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 
 /**

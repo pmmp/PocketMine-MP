@@ -69,6 +69,7 @@ use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\ChunkSelector;
 use pocketmine\player\Player;
 use pocketmine\promise\Promise;
@@ -1869,7 +1870,7 @@ class World implements ChunkManager{
 		if($player !== null){
 			$ev = new BlockBreakEvent($player, $target, $item, $player->isCreative(), $drops, $xpDrop);
 
-			if($target instanceof Air || ($player->isSurvival() && !$target->getBreakInfo()->isBreakable()) || $player->isSpectator()){
+			if($target instanceof Air || ($player->isSurvival() && !$target->getBreakInfo()->isBreakable()) || !$player->hasPermission(DefaultPermissionNames::GAME_BLOCK_BREAK)){
 				$ev->cancel();
 			}
 
@@ -1966,7 +1967,7 @@ class World implements ChunkManager{
 
 		if($player !== null){
 			$ev = new PlayerInteractEvent($player, $item, $blockClicked, $clickVector, $face, PlayerInteractEvent::RIGHT_CLICK_BLOCK);
-			if($player->isSpectator()){
+			if(!$player->hasPermission(DefaultPermissionNames::GAME_BLOCK_INTERACT)){
 				$ev->cancel(); //set it to cancelled so plugins can bypass this
 			}
 
@@ -2020,7 +2021,7 @@ class World implements ChunkManager{
 
 		if($player !== null){
 			$ev = new BlockPlaceEvent($player, $hand, $blockReplace, $blockClicked, $item);
-			if($player->isSpectator()){
+			if(!$player->hasPermission(DefaultPermissionNames::GAME_BLOCK_PLACE)){
 				$ev->cancel();
 			}
 

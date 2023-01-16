@@ -91,7 +91,24 @@ final class DefaultPermissionNames{
 	public const COMMAND_WHITELIST_LIST = "pocketmine.command.whitelist.list";
 	public const COMMAND_WHITELIST_RELOAD = "pocketmine.command.whitelist.reload";
 	public const COMMAND_WHITELIST_REMOVE = "pocketmine.command.whitelist.remove";
+	public const GAME_BLOCK_BREAK = "pocketmine.game.block.break";
+	public const GAME_BLOCK_INTERACT = "pocketmine.game.block.interact";
+	public const GAME_BLOCK_PLACE = "pocketmine.game.block.place";
+	public const GAME_CHAT = "pocketmine.game.chat";
+	public const GAME_ENTITY_ATTACK = "pocketmine.game.entity.attack";
+	public const GAME_ENTITY_INTERACT = "pocketmine.game.entity.interact";
+	public const GAME_FLIGHT = "pocketmine.game.flight";
+	public const GAME_ITEM_CREATE = "pocketmine.game.item.create";
+	public const GAME_ITEM_DROP = "pocketmine.game.item.drop";
+	public const GAME_ITEM_PICKUP = "pocketmine.game.item.pickup";
+	public const GAME_ITEM_USE = "pocketmine.game.item.use";
+	public const GAME_PLAYER_ATTACK = "pocketmine.game.player.attack";
+	public const GAME_PLAYER_INTERACT = "pocketmine.game.player.interact";
 	public const GROUP_CONSOLE = "pocketmine.group.console";
+	public const GROUP_GAMEMODE_ADVENTURE = "pocketmine.group.gamemode.adventure";
+	public const GROUP_GAMEMODE_CREATIVE = "pocketmine.group.gamemode.creative";
+	public const GROUP_GAMEMODE_SPECTATOR = "pocketmine.group.gamemode.spectator";
+	public const GROUP_GAMEMODE_SURVIVAL = "pocketmine.group.gamemode.survival";
 	public const GROUP_OPERATOR = "pocketmine.group.operator";
 	public const GROUP_USER = "pocketmine.group.user";
 }

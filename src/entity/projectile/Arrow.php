@@ -36,6 +36,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\world\sound\ArrowHitSound;
 use function ceil;
@@ -184,7 +185,7 @@ class Arrow extends Projectile{
 		};
 
 		$ev = new EntityItemPickupEvent($player, $this, $item, $playerInventory);
-		if($player->hasFiniteResources() && $playerInventory === null){
+		if(($player->hasFiniteResources() && $playerInventory === null) || !$player->hasPermission(DefaultPermissionNames::GAME_ITEM_PICKUP)){
 			$ev->cancel();
 		}
 		if($this->pickupMode === self::PICKUP_NONE || ($this->pickupMode === self::PICKUP_CREATIVE && !$player->isCreative())){
