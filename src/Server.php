@@ -90,6 +90,7 @@ use pocketmine\scheduler\AsyncPool;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\stats\SendUsageTask;
 use pocketmine\timings\Timings;
+use pocketmine\timings\TimingsAwareSleeperHandler;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\updater\UpdateChecker;
 use pocketmine\utils\AssumptionFailedError;
@@ -781,7 +782,8 @@ class Server{
 		self::$instance = $this;
 		$this->startTime = microtime(true);
 
-		$this->tickSleeper = new SleeperHandler();
+		Timings::init();
+		$this->tickSleeper = new TimingsAwareSleeperHandler(Timings::$serverInterrupts);
 
 		$this->signalHandler = new SignalHandler(function() : void{
 			$this->logger->info("Received signal interrupt, stopping the server");
@@ -961,7 +963,6 @@ class Server{
 			)));
 			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_license($this->getName())));
 
-			Timings::init();
 			TimingsHandler::setEnabled($this->configGroup->getPropertyBool("settings.enable-profiling", false));
 			$this->profilingTickRate = $this->configGroup->getPropertyInt("settings.profile-report-trigger", 20);
 
