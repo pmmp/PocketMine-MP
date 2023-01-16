@@ -21,14 +21,19 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\timings;
+namespace pocketmine;
 
 use pocketmine\snooze\SleeperHandler;
+use pocketmine\timings\TimingsHandler;
+use function hrtime;
 
 /**
  * Custom Snooze sleeper handler which captures notification processing time.
+ * @internal
  */
-final class TimingsAwareSleeperHandler extends SleeperHandler{
+final class TimeTrackingSleeperHandler extends SleeperHandler{
+
+	private int $notificationProcessingTimeNs = 0;
 
 	public function __construct(
 		private TimingsHandler $timings
@@ -36,11 +41,23 @@ final class TimingsAwareSleeperHandler extends SleeperHandler{
 		parent::__construct();
 	}
 
+	/**
+	 * Returns the time in nanoseconds spent processing notifications since the last reset.
+	 */
+	public function getNotificationProcessingTime() : int{ return $this->notificationProcessingTimeNs; }
+
+	/**
+	 * Resets the notification processing time tracker to zero.
+	 */
+	public function resetNotificationProcessingTime() : void{ $this->notificationProcessingTimeNs = 0; }
+
 	public function processNotifications() : void{
+		$startTime = hrtime(true);
 		$this->timings->startTiming();
 		try{
 			parent::processNotifications();
 		}finally{
+			$this->notificationProcessingTimeNs += hrtime(true) - $startTime;
 			$this->timings->stopTiming();
 		}
 	}

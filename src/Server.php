@@ -90,7 +90,7 @@ use pocketmine\scheduler\AsyncPool;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\stats\SendUsageTask;
 use pocketmine\timings\Timings;
-use pocketmine\timings\TimingsAwareSleeperHandler;
+use pocketmine\TimeTrackingSleeperHandler;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\updater\UpdateChecker;
 use pocketmine\utils\AssumptionFailedError;
@@ -187,7 +187,7 @@ class Server{
 
 	private static ?Server $instance = null;
 
-	private SleeperHandler $tickSleeper;
+	private TimeTrackingSleeperHandler $tickSleeper;
 
 	private BanList $banByName;
 
@@ -783,7 +783,7 @@ class Server{
 		$this->startTime = microtime(true);
 
 		Timings::init();
-		$this->tickSleeper = new TimingsAwareSleeperHandler(Timings::$serverInterrupts);
+		$this->tickSleeper = new TimeTrackingSleeperHandler(Timings::$serverInterrupts);
 
 		$this->signalHandler = new SignalHandler(function() : void{
 			$this->logger->info("Received signal interrupt, stopping the server");
@@ -1866,14 +1866,16 @@ class Server{
 		Timings::$serverTick->stopTiming();
 
 		$now = microtime(true);
-		$this->currentTPS = min(20, 1 / max(0.001, $now - $tickTime));
-		$this->currentUse = min(1, ($now - $tickTime) / 0.05);
+		$totalTickTimeSeconds = $now - $tickTime + ($this->tickSleeper->getNotificationProcessingTime() / 1_000_000_000);
+		$this->currentTPS = min(20, 1 / max(0.001, $totalTickTimeSeconds));
+		$this->currentUse = min(1, $totalTickTimeSeconds / 0.05);
 
 		TimingsHandler::tick($this->currentTPS <= $this->profilingTickRate);
 
 		$idx = $this->tickCounter % 20;
 		$this->tickAverage[$idx] = $this->currentTPS;
 		$this->useAverage[$idx] = $this->currentUse;
+		$this->tickSleeper->resetNotificationProcessingTime();
 
 		if(($this->nextTick - $tickTime) < -1){
 			$this->nextTick = $tickTime;
