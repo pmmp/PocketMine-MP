@@ -149,7 +149,7 @@ use const SORT_NUMERIC;
 
 class NetworkSession{
 	private const INCOMING_PACKET_BATCH_PER_TICK = 2; //usually max 1 per tick, but transactions may arrive separately
-	private const INCOMING_PACKET_BATCH_MAX_BUDGET = 100; //enough to account for a 5-second lag spike
+	private const INCOMING_PACKET_BATCH_MAX_BUDGET = 100 * self::INCOMING_PACKET_BATCH_PER_TICK; //enough to account for a 5-second lag spike
 
 	/**
 	 * At most this many more packets can be received. If this reaches zero, any additional packets received will cause
