@@ -29,6 +29,7 @@ namespace pocketmine\world\format;
 use pocketmine\block\Block;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\block\tile\Tile;
+use pocketmine\data\bedrock\BiomeIds;
 use function array_map;
 
 class Chunk{
@@ -59,21 +60,19 @@ class Chunk{
 
 	protected HeightArray $heightMap;
 
-	protected BiomeArray $biomeIds;
-
 	/**
 	 * @param SubChunk[] $subChunks
 	 */
-	public function __construct(array $subChunks, BiomeArray $biomeIds, bool $terrainPopulated){
+	public function __construct(array $subChunks, bool $terrainPopulated){
 		$this->subChunks = new \SplFixedArray(Chunk::MAX_SUBCHUNKS);
 
 		foreach($this->subChunks as $y => $null){
-			$this->subChunks[$y] = $subChunks[$y + self::MIN_SUBCHUNK_INDEX] ?? new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, []);
+			//TODO: we should probably require all subchunks to be provided here
+			$this->subChunks[$y] = $subChunks[$y + self::MIN_SUBCHUNK_INDEX] ?? new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, [], new PalettedBlockArray(BiomeIds::OCEAN));
 		}
 
 		$val = (self::MAX_SUBCHUNK_INDEX + 1) * SubChunk::EDGE_LENGTH;
 		$this->heightMap = HeightArray::fill($val); //TODO: what about lazily initializing this?
-		$this->biomeIds = $biomeIds;
 
 		$this->terrainPopulated = $terrainPopulated;
 	}
@@ -153,8 +152,8 @@ class Chunk{
 	 *
 	 * @return int 0-255
 	 */
-	public function getBiomeId(int $x, int $z) : int{
-		return $this->biomeIds->get($x, $z);
+	public function getBiomeId(int $x, int $y, int $z) : int{
+		return $this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->getBiomeArray()->get($x, $y, $z);
 	}
 
 	/**
@@ -164,8 +163,8 @@ class Chunk{
 	 * @param int $z       0-15
 	 * @param int $biomeId 0-255
 	 */
-	public function setBiomeId(int $x, int $z, int $biomeId) : void{
-		$this->biomeIds->set($x, $z, $biomeId);
+	public function setBiomeId(int $x, int $y, int $z, int $biomeId) : void{
+		$this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->getBiomeArray()->set($x, $y, $z, $biomeId);
 		$this->terrainDirtyFlags |= self::DIRTY_FLAG_BIOMES;
 	}
 
@@ -230,10 +229,6 @@ class Chunk{
 		}
 	}
 
-	public function getBiomeIdArray() : string{
-		return $this->biomeIds->getData();
-	}
-
 	/**
 	 * @return int[]
 	 */
@@ -291,7 +286,7 @@ class Chunk{
 			throw new \InvalidArgumentException("Invalid subchunk Y coordinate $y");
 		}
 
-		$this->subChunks[$y - self::MIN_SUBCHUNK_INDEX] = $subChunk ?? new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, []);
+		$this->subChunks[$y - self::MIN_SUBCHUNK_INDEX] = $subChunk ?? new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, [], new PalettedBlockArray(BiomeIds::OCEAN));
 		$this->setTerrainDirtyFlag(self::DIRTY_FLAG_BLOCKS, true);
 	}
 
@@ -322,7 +317,6 @@ class Chunk{
 			return clone $subChunk;
 		}, $this->subChunks->toArray()));
 		$this->heightMap = clone $this->heightMap;
-		$this->biomeIds = clone $this->biomeIds;
 	}
 
 	/**

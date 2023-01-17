@@ -25,7 +25,6 @@ namespace pocketmine\world\generator;
 
 use pocketmine\block\VanillaBlocks;
 use pocketmine\world\ChunkManager;
-use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\SubChunk;
 use pocketmine\world\generator\object\OreType;
@@ -67,7 +66,7 @@ class Flat extends Generator{
 	}
 
 	protected function generateBaseChunk() : void{
-		$this->chunk = new Chunk([], BiomeArray::fill($this->options->getBiomeId()), false);
+		$this->chunk = new Chunk([], false);
 
 		$structure = $this->options->getStructure();
 		$count = count($structure);

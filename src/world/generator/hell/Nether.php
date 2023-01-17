@@ -34,6 +34,7 @@ use pocketmine\world\generator\noise\Simplex;
 use pocketmine\world\generator\object\OreType;
 use pocketmine\world\generator\populator\Ore;
 use pocketmine\world\generator\populator\Populator;
+use pocketmine\world\World;
 use function abs;
 
 class Nether extends Generator{
@@ -78,7 +79,9 @@ class Nether extends Generator{
 
 		for($x = 0; $x < Chunk::EDGE_LENGTH; ++$x){
 			for($z = 0; $z < Chunk::EDGE_LENGTH; ++$z){
-				$chunk->setBiomeId($x, $z, BiomeIds::HELL);
+				for($y = World::Y_MIN; $y < World::Y_MAX; $y++){
+					$chunk->setBiomeId($x, $y, $z, BiomeIds::HELL);
+				}
 
 				for($y = 0; $y < 128; ++$y){
 					if($y === 0 || $y === 127){
@@ -109,7 +112,7 @@ class Nether extends Generator{
 		}
 
 		$chunk = $world->getChunk($chunkX, $chunkZ);
-		$biome = BiomeRegistry::getInstance()->getBiome($chunk->getBiomeId(7, 7));
+		$biome = BiomeRegistry::getInstance()->getBiome($chunk->getBiomeId(7, 7, 7));
 		$biome->populateChunk($world, $chunkX, $chunkZ, $this->random);
 	}
 }

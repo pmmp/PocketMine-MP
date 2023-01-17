@@ -41,7 +41,7 @@ class GroundCover implements Populator{
 		$biomeRegistry = BiomeRegistry::getInstance();
 		for($x = 0; $x < Chunk::EDGE_LENGTH; ++$x){
 			for($z = 0; $z < Chunk::EDGE_LENGTH; ++$z){
-				$biome = $biomeRegistry->getBiome($chunk->getBiomeId($x, $z));
+				$biome = $biomeRegistry->getBiome($chunk->getBiomeId($x, 0, $z));
 				$cover = $biome->getGroundCover();
 				if(count($cover) > 0){
 					$diffY = 0;
