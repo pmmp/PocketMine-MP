@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
+use pocketmine\data\bedrock\block\BlockStateSerializer;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\NbtException;
@@ -185,6 +186,22 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		//TODO: exceptions
 		return PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
+	}
+
+	private static function serializeBlockPalette(BinaryStream $stream, PalettedBlockArray $blocks, BlockStateSerializer $blockStateSerializer) : void{
+		$stream->putByte($blocks->getBitsPerBlock() << 1);
+		$stream->put($blocks->getWordArray());
+
+		$palette = $blocks->getPalette();
+		if($blocks->getBitsPerBlock() !== 0){
+			$stream->putLInt(count($palette));
+		}
+		$tags = [];
+		foreach($palette as $p){
+			$tags[] = new TreeRoot($blockStateSerializer->serialize($p)->toNbt());
+		}
+
+		$stream->put((new LittleEndianNbtSerializer())->writeMultiple($tags));
 	}
 
 	/**
@@ -353,8 +370,201 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		return ord($chunkVersionRaw);
 	}
 
+	/**
+	 * Deserializes terrain data stored in the 0.9 full-chunk format into subchunks.
+	 *
+	 * @return SubChunk[]
+	 * @phpstan-return array<int, SubChunk>
+	 * @throws CorruptedWorldException
+	 */
+	private function deserializeLegacyTerrainData(string $index, int $chunkVersion) : array{
+		$convertedLegacyExtraData = $this->deserializeLegacyExtraData($index, $chunkVersion);
+
+		$legacyTerrain = $this->db->get($index . ChunkDataKey::LEGACY_TERRAIN);
+		if($legacyTerrain === false){
+			throw new CorruptedChunkException("Missing expected LEGACY_TERRAIN tag for format version $chunkVersion");
+		}
+		$binaryStream = new BinaryStream($legacyTerrain);
+		try{
+			$fullIds = $binaryStream->get(32768);
+			$fullData = $binaryStream->get(16384);
+			$binaryStream->get(32768); //legacy light info, discard it
+		}catch(BinaryDataException $e){
+			throw new CorruptedChunkException($e->getMessage(), 0, $e);
+		}
+
+		try{
+			$binaryStream->get(256); //heightmap, discard it
+			/** @var int[] $unpackedBiomeArray */
+			$unpackedBiomeArray = unpack("N*", $binaryStream->get(1024)); //unpack() will never fail here
+			$biomes3d = ChunkUtils::extrapolate3DBiomes(ChunkUtils::convertBiomeColors(array_values($unpackedBiomeArray))); //never throws
+		}catch(BinaryDataException $e){
+			throw new CorruptedChunkException($e->getMessage(), 0, $e);
+		}
+
+		$subChunks = [];
+		for($yy = 0; $yy < 8; ++$yy){
+			$storages = [$this->palettizeLegacySubChunkFromColumn($fullIds, $fullData, $yy)];
+			if(isset($convertedLegacyExtraData[$yy])){
+				$storages[] = $convertedLegacyExtraData[$yy];
+			}
+			$subChunks[$yy] = new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, $storages, clone $biomes3d);
+		}
+
+		//make sure extrapolated biomes get filled in correctly
+		for($yy = Chunk::MIN_SUBCHUNK_INDEX; $yy <= Chunk::MAX_SUBCHUNK_INDEX; ++$yy){
+			if(!isset($subChunks[$yy])){
+				$subChunks[$yy] = new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, [], clone $biomes3d);
+			}
+		}
+
+		return $subChunks;
+	}
+
+	/**
+	 * Deserializes a subchunk stored in the legacy non-paletted format used from 1.0 until 1.2.13.
+	 */
+	private function deserializeNonPalettedSubChunkData(BinaryStream $binaryStream, int $chunkVersion, ?PalettedBlockArray $convertedLegacyExtraData, PalettedBlockArray $biomePalette) : SubChunk{
+		try{
+			$blocks = $binaryStream->get(4096);
+			$blockData = $binaryStream->get(2048);
+
+			if($chunkVersion < ChunkVersion::v1_1_0){
+				$binaryStream->get(4096); //legacy light info, discard it
+			}
+		}catch(BinaryDataException $e){
+			throw new CorruptedChunkException($e->getMessage(), 0, $e);
+		}
+
+		$storages = [$this->palettizeLegacySubChunkXZY($blocks, $blockData)];
+		if($convertedLegacyExtraData !== null){
+			$storages[] = $convertedLegacyExtraData;
+		}
+
+		return new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, $storages, $biomePalette);
+	}
+
+	/**
+	 * Deserializes subchunk data stored under a subchunk LevelDB key.
+	 *
+	 * @see ChunkDataKey::SUBCHUNK
+	 * @throws CorruptedChunkException
+	 */
+	private function deserializeSubChunkData(BinaryStream $binaryStream, int $chunkVersion, int $subChunkVersion, ?PalettedBlockArray $convertedLegacyExtraData, PalettedBlockArray $biomePalette) : SubChunk{
+		switch($subChunkVersion){
+			case SubChunkVersion::CLASSIC:
+			case SubChunkVersion::CLASSIC_BUG_2: //these are all identical to version 0, but vanilla respects these so we should also
+			case SubChunkVersion::CLASSIC_BUG_3:
+			case SubChunkVersion::CLASSIC_BUG_4:
+			case SubChunkVersion::CLASSIC_BUG_5:
+			case SubChunkVersion::CLASSIC_BUG_6:
+			case SubChunkVersion::CLASSIC_BUG_7:
+				return $this->deserializeNonPalettedSubChunkData($binaryStream, $chunkVersion, $convertedLegacyExtraData, $biomePalette);
+			case SubChunkVersion::PALETTED_SINGLE:
+				$storages = [$this->deserializeBlockPalette($binaryStream)];
+				if($convertedLegacyExtraData !== null){
+					$storages[] = $convertedLegacyExtraData;
+				}
+				return new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, $storages, $biomePalette);
+			case SubChunkVersion::PALETTED_MULTI:
+			case SubChunkVersion::PALETTED_MULTI_WITH_OFFSET:
+				//legacy extradata layers intentionally ignored because they aren't supposed to exist in v8
+
+				$storageCount = $binaryStream->getByte();
+				if($subChunkVersion >= SubChunkVersion::PALETTED_MULTI_WITH_OFFSET){
+					//height ignored; this seems pointless since this is already in the key anyway
+					$binaryStream->getByte();
+				}
+
+				$storages = [];
+				for($k = 0; $k < $storageCount; ++$k){
+					$storages[] = $this->deserializeBlockPalette($binaryStream);
+				}
+				return new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, $storages, $biomePalette);
+			default:
+				//TODO: set chunks read-only so the version on disk doesn't get overwritten
+				throw new CorruptedChunkException("don't know how to decode LevelDB subchunk format version $subChunkVersion");
+		}
+	}
+
 	private static function hasOffsetCavesAndCliffsSubChunks(int $chunkVersion) : bool{
 		return $chunkVersion >= ChunkVersion::v1_16_220_50_unused && $chunkVersion <= ChunkVersion::v1_16_230_50_unused;
+	}
+
+	/**
+	 * Deserializes any subchunks stored under subchunk LevelDB keys, upgrading them to the current format if necessary.
+	 *
+	 * @param PalettedBlockArray[] $convertedLegacyExtraData
+	 * @param PalettedBlockArray[] $biomeArrays
+	 *
+	 * @phpstan-param array<int, PalettedBlockArray> $convertedLegacyExtraData
+	 * @phpstan-param array<int, PalettedBlockArray> $biomeArrays
+	 * @phpstan-param-out bool                       $hasBeenUpgraded
+	 *
+	 * @return SubChunk[]
+	 * @phpstan-return array<int, SubChunk>
+	 */
+	private function deserializeAllSubChunkData(string $index, int $chunkVersion, bool &$hasBeenUpgraded, array $convertedLegacyExtraData, array $biomeArrays) : array{
+		$subChunks = [];
+
+		$subChunkKeyOffset = self::hasOffsetCavesAndCliffsSubChunks($chunkVersion) ? self::CAVES_CLIFFS_EXPERIMENTAL_SUBCHUNK_KEY_OFFSET : 0;
+		for($y = Chunk::MIN_SUBCHUNK_INDEX; $y <= Chunk::MAX_SUBCHUNK_INDEX; ++$y){
+			if(($data = $this->db->get($index . ChunkDataKey::SUBCHUNK . chr($y + $subChunkKeyOffset))) === false){
+				$subChunks[$y] = new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, [], $biomeArrays[$y]);
+				continue;
+			}
+
+			$binaryStream = new BinaryStream($data);
+			if($binaryStream->feof()){
+				throw new CorruptedChunkException("Unexpected empty data for subchunk $y");
+			}
+			$subChunkVersion = $binaryStream->getByte();
+			if($subChunkVersion < self::CURRENT_LEVEL_SUBCHUNK_VERSION){
+				$hasBeenUpgraded = true;
+			}
+
+			$subChunks[$y] = $this->deserializeSubChunkData($binaryStream, $chunkVersion, $subChunkVersion, $convertedLegacyExtraData[$y] ?? null, $biomeArrays[$y]);
+		}
+
+		return $subChunks;
+	}
+
+	/**
+	 * Deserializes any available biome data into an array of paletted biomes. Old 2D biomes are extrapolated to 3D.
+	 *
+	 * @return PalettedBlockArray[]
+	 * @phpstan-return array<int, PalettedBlockArray>
+	 */
+	private function deserializeBiomeData(string $index, int $chunkVersion) : array{
+		$biomeArrays = [];
+		if(($maps2d = $this->db->get($index . ChunkDataKey::HEIGHTMAP_AND_2D_BIOMES)) !== false){
+			$binaryStream = new BinaryStream($maps2d);
+
+			try{
+				$binaryStream->get(512); //heightmap, discard it
+				$biomes3d = ChunkUtils::extrapolate3DBiomes($binaryStream->get(256)); //never throws
+			}catch(BinaryDataException $e){
+				throw new CorruptedChunkException($e->getMessage(), 0, $e);
+			}
+			for($i = Chunk::MIN_SUBCHUNK_INDEX; $i <= Chunk::MAX_SUBCHUNK_INDEX; ++$i){
+				$biomeArrays[$i] = clone $biomes3d;
+			}
+		}elseif(($maps3d = $this->db->get($index . ChunkDataKey::HEIGHTMAP_AND_3D_BIOMES)) !== false){
+			$binaryStream = new BinaryStream($maps3d);
+
+			try{
+				$binaryStream->get(512);
+				$biomeArrays = self::deserialize3dBiomes($binaryStream, $chunkVersion);
+			}catch(BinaryDataException $e){
+				throw new CorruptedChunkException($e->getMessage(), 0, $e);
+			}
+		}else{
+			for($i = Chunk::MIN_SUBCHUNK_INDEX; $i <= Chunk::MAX_SUBCHUNK_INDEX; ++$i){
+				$biomeArrays[$i] = new PalettedBlockArray(BiomeIds::OCEAN); //polyfill
+			}
+		}
+
+		return $biomeArrays;
 	}
 
 	/**
@@ -369,12 +579,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			return null;
 		}
 
-		/** @var SubChunk[] $subChunks */
-		$subChunks = [];
-
 		$hasBeenUpgraded = $chunkVersion < self::CURRENT_LEVEL_CHUNK_VERSION;
-
-		$subChunkKeyOffset = self::hasOffsetCavesAndCliffsSubChunks($chunkVersion) ? self::CAVES_CLIFFS_EXPERIMENTAL_SUBCHUNK_KEY_OFFSET : 0;
 
 		switch($chunkVersion){
 			case ChunkVersion::v1_18_30:
@@ -418,150 +623,13 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				//TODO: check beds
 			case ChunkVersion::v1_0_0:
 				$convertedLegacyExtraData = $this->deserializeLegacyExtraData($index, $chunkVersion);
-
-				$biomeArrays = [];
-				if(($maps2d = $this->db->get($index . ChunkDataKey::HEIGHTMAP_AND_2D_BIOMES)) !== false){
-					$binaryStream = new BinaryStream($maps2d);
-
-					try{
-						$binaryStream->get(512); //heightmap, discard it
-						$biomes3d = ChunkUtils::extrapolate3DBiomes($binaryStream->get(256)); //never throws
-					}catch(BinaryDataException $e){
-						throw new CorruptedChunkException($e->getMessage(), 0, $e);
-					}
-					for($i = Chunk::MIN_SUBCHUNK_INDEX; $i <= Chunk::MAX_SUBCHUNK_INDEX; ++$i){
-						$biomeArrays[$i] = clone $biomes3d;
-					}
-				}elseif(($maps3d = $this->db->get($index . ChunkDataKey::HEIGHTMAP_AND_3D_BIOMES)) !== false){
-					$binaryStream = new BinaryStream($maps3d);
-
-					try{
-						$binaryStream->get(512);
-						$biomeArrays = self::deserialize3dBiomes($binaryStream, $chunkVersion);
-					}catch(BinaryDataException $e){
-						throw new CorruptedChunkException($e->getMessage(), 0, $e);
-					}
-				}else{
-					for($i = Chunk::MIN_SUBCHUNK_INDEX; $i <= Chunk::MAX_SUBCHUNK_INDEX; ++$i){
-						$biomeArrays[$i] = new PalettedBlockArray(BiomeIds::OCEAN); //polyfill
-					}
-				}
-
-				for($y = Chunk::MIN_SUBCHUNK_INDEX; $y <= Chunk::MAX_SUBCHUNK_INDEX; ++$y){
-					if(($data = $this->db->get($index . ChunkDataKey::SUBCHUNK . chr($y + $subChunkKeyOffset))) === false){
-						$subChunks[$y] = new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, [], $biomeArrays[$y]);
-						continue;
-					}
-
-					$binaryStream = new BinaryStream($data);
-					if($binaryStream->feof()){
-						throw new CorruptedChunkException("Unexpected empty data for subchunk $y");
-					}
-					$subChunkVersion = $binaryStream->getByte();
-					if($subChunkVersion < self::CURRENT_LEVEL_SUBCHUNK_VERSION){
-						$hasBeenUpgraded = true;
-					}
-
-					switch($subChunkVersion){
-						case SubChunkVersion::CLASSIC:
-						case SubChunkVersion::CLASSIC_BUG_2: //these are all identical to version 0, but vanilla respects these so we should also
-						case SubChunkVersion::CLASSIC_BUG_3:
-						case SubChunkVersion::CLASSIC_BUG_4:
-						case SubChunkVersion::CLASSIC_BUG_5:
-						case SubChunkVersion::CLASSIC_BUG_6:
-						case SubChunkVersion::CLASSIC_BUG_7:
-							try{
-								$blocks = $binaryStream->get(4096);
-								$blockData = $binaryStream->get(2048);
-
-								if($chunkVersion < ChunkVersion::v1_1_0){
-									$binaryStream->get(4096); //legacy light info, discard it
-									$hasBeenUpgraded = true;
-								}
-							}catch(BinaryDataException $e){
-								throw new CorruptedChunkException($e->getMessage(), 0, $e);
-							}
-
-							$storages = [$this->palettizeLegacySubChunkXZY($blocks, $blockData)];
-							if(isset($convertedLegacyExtraData[$y])){
-								$storages[] = $convertedLegacyExtraData[$y];
-							}
-
-							$subChunks[$y] = new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, $storages, $biomeArrays[$y]);
-							break;
-						case SubChunkVersion::PALETTED_SINGLE:
-							$storages = [$this->deserializeBlockPalette($binaryStream)];
-							if(isset($convertedLegacyExtraData[$y])){
-								$storages[] = $convertedLegacyExtraData[$y];
-							}
-							$subChunks[$y] = new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, $storages, $biomeArrays[$y]);
-							break;
-						case SubChunkVersion::PALETTED_MULTI:
-						case SubChunkVersion::PALETTED_MULTI_WITH_OFFSET:
-							//legacy extradata layers intentionally ignored because they aren't supposed to exist in v8
-							$storageCount = $binaryStream->getByte();
-							if($subChunkVersion >= SubChunkVersion::PALETTED_MULTI_WITH_OFFSET){
-								//height ignored; this seems pointless since this is already in the key anyway
-								$binaryStream->getByte();
-							}
-							if($storageCount > 0){
-								$storages = [];
-
-								for($k = 0; $k < $storageCount; ++$k){
-									$storages[] = $this->deserializeBlockPalette($binaryStream);
-								}
-								$subChunks[$y] = new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, $storages, $biomeArrays[$y]);
-							}
-							break;
-						default:
-							//TODO: set chunks read-only so the version on disk doesn't get overwritten
-							throw new CorruptedChunkException("don't know how to decode LevelDB subchunk format version $subChunkVersion");
-					}
-				}
-
+				$biomeArrays = $this->deserializeBiomeData($index, $chunkVersion);
+				$subChunks = $this->deserializeAllSubChunkData($index, $chunkVersion, $hasBeenUpgraded, $convertedLegacyExtraData, $biomeArrays);
 				break;
 			case ChunkVersion::v0_9_5:
 			case ChunkVersion::v0_9_2:
 			case ChunkVersion::v0_9_0:
-				$convertedLegacyExtraData = $this->deserializeLegacyExtraData($index, $chunkVersion);
-
-				$legacyTerrain = $this->db->get($index . ChunkDataKey::LEGACY_TERRAIN);
-				if($legacyTerrain === false){
-					throw new CorruptedChunkException("Missing expected LEGACY_TERRAIN tag for format version $chunkVersion");
-				}
-				$binaryStream = new BinaryStream($legacyTerrain);
-				try{
-					$fullIds = $binaryStream->get(32768);
-					$fullData = $binaryStream->get(16384);
-					$binaryStream->get(32768); //legacy light info, discard it
-				}catch(BinaryDataException $e){
-					throw new CorruptedChunkException($e->getMessage(), 0, $e);
-				}
-
-				try{
-					$binaryStream->get(256); //heightmap, discard it
-					/** @var int[] $unpackedBiomeArray */
-					$unpackedBiomeArray = unpack("N*", $binaryStream->get(1024)); //unpack() will never fail here
-					$biomes3d = ChunkUtils::extrapolate3DBiomes(ChunkUtils::convertBiomeColors(array_values($unpackedBiomeArray))); //never throws
-				}catch(BinaryDataException $e){
-					throw new CorruptedChunkException($e->getMessage(), 0, $e);
-				}
-
-				for($yy = 0; $yy < 8; ++$yy){
-					$storages = [$this->palettizeLegacySubChunkFromColumn($fullIds, $fullData, $yy)];
-					if(isset($convertedLegacyExtraData[$yy])){
-						$storages[] = $convertedLegacyExtraData[$yy];
-					}
-					$subChunks[$yy] = new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, $storages, clone $biomes3d);
-				}
-
-				//make sure extrapolated biomes get filled in correctly
-				for($yy = Chunk::MIN_SUBCHUNK_INDEX; $yy <= Chunk::MAX_SUBCHUNK_INDEX; ++$yy){
-					if(!isset($subChunks[$yy])){
-						$subChunks[$yy] = new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, [], clone $biomes3d);
-					}
-				}
-
+				$subChunks = $this->deserializeLegacyTerrainData($index, $chunkVersion);
 				break;
 			default:
 				//TODO: set chunks read-only so the version on disk doesn't get overwritten
@@ -639,19 +707,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 					$layers = $subChunk->getBlockLayers();
 					$subStream->putByte(count($layers));
 					foreach($layers as $blocks){
-						$subStream->putByte($blocks->getBitsPerBlock() << 1);
-						$subStream->put($blocks->getWordArray());
-
-						$palette = $blocks->getPalette();
-						if($blocks->getBitsPerBlock() !== 0){
-							$subStream->putLInt(count($palette));
-						}
-						$tags = [];
-						foreach($palette as $p){
-							$tags[] = new TreeRoot($blockStateSerializer->serialize($p)->toNbt());
-						}
-
-						$subStream->put((new LittleEndianNbtSerializer())->writeMultiple($tags));
+						self::serializeBlockPalette($subStream, $blocks, $blockStateSerializer);
 					}
 
 					$write->put($key, $subStream->getBuffer());
