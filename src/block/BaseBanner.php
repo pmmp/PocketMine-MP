@@ -112,7 +112,14 @@ abstract class BaseBanner extends Transparent{
 		return SupportType::NONE();
 	}
 
+	private function canBeSupportedBy(Block $block) : bool{
+		return $block->isSolid();
+	}
+
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if(!$this->canBeSupportedBy($blockReplace->getSide($this->getSupportingFace()))){
+			return false;
+		}
 		if($item instanceof ItemBanner){
 			$this->color = $item->getColor();
 			$this->setPatterns($item->getPatterns());
@@ -124,7 +131,7 @@ abstract class BaseBanner extends Transparent{
 	abstract protected function getSupportingFace() : int;
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide($this->getSupportingFace())->getId() === BlockLegacyIds::AIR){
+		if(!$this->canBeSupportedBy($this->getSide($this->getSupportingFace()))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}

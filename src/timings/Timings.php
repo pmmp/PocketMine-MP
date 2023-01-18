@@ -41,6 +41,8 @@ abstract class Timings{
 	/** @var TimingsHandler */
 	public static $serverTick;
 	/** @var TimingsHandler */
+	public static $serverInterrupts;
+	/** @var TimingsHandler */
 	public static $memoryManager;
 	/** @var TimingsHandler */
 	public static $garbageCollector;
@@ -140,7 +142,8 @@ abstract class Timings{
 		self::$initialized = true;
 
 		self::$fullTick = new TimingsHandler("Full Server Tick");
-		self::$serverTick = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Full Server Tick", self::$fullTick);
+		self::$serverTick = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Server Tick Update Cycle", self::$fullTick);
+		self::$serverInterrupts = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Server Mid-Tick Processing", self::$fullTick);
 		self::$memoryManager = new TimingsHandler("Memory Manager");
 		self::$garbageCollector = new TimingsHandler("Garbage Collector", self::$memoryManager);
 		self::$titleTick = new TimingsHandler("Console Title Tick");
