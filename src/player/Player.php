@@ -2090,16 +2090,24 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	/**
 	 * Kicks a player from the server
+	 *
+	 * @param Translatable|string      $reason                  Shown in the server log - this should be a short one-line message
+	 * @param Translatable|string|null $quitMessage             Message to broadcast to online players (null will use default)
+	 * @param Translatable|string|null $disconnectScreenMessage Shown on the player's disconnection screen (null will use the reason)
 	 */
-	public function kick(Translatable|string $reason = "", Translatable|string|null $quitMessage = null) : bool{
-		$ev = new PlayerKickEvent($this, $reason, $quitMessage ?? $this->getLeaveMessage());
+	public function kick(Translatable|string $reason = "", Translatable|string|null $quitMessage = null, Translatable|string|null $disconnectScreenMessage = null) : bool{
+		$ev = new PlayerKickEvent($this, $reason, $quitMessage ?? $this->getLeaveMessage(), $disconnectScreenMessage);
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$reason = $ev->getReason();
+			$reason = $ev->getDisconnectReason();
 			if($reason === ""){
 				$reason = KnownTranslationFactory::disconnectionScreen_noReason();
 			}
-			$this->disconnect($reason, $ev->getQuitMessage());
+			$disconnectScreenMessage = $ev->getDisconnectScreenMessage() ?? $reason;
+			if($disconnectScreenMessage === ""){
+				$disconnectScreenMessage = KnownTranslationFactory::disconnectionScreen_noReason();
+			}
+			$this->disconnect($reason, $ev->getQuitMessage(), $disconnectScreenMessage);
 
 			return true;
 		}
@@ -2116,15 +2124,16 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 *
 	 * Note for internals developers: Do not call this from network sessions. It will cause a feedback loop.
 	 *
-	 * @param Translatable|string      $reason      Shown on the disconnect screen, and in the server log
-	 * @param Translatable|string|null $quitMessage Message to broadcast to online players (null will use default)
+	 * @param Translatable|string      $reason                  Shown in the server log - this should be a short one-line message
+	 * @param Translatable|string|null $quitMessage             Message to broadcast to online players (null will use default)
+	 * @param Translatable|string|null $disconnectScreenMessage Shown on the player's disconnection screen (null will use the reason)
 	 */
-	public function disconnect(Translatable|string $reason, Translatable|string|null $quitMessage = null) : void{
+	public function disconnect(Translatable|string $reason, Translatable|string|null $quitMessage = null, Translatable|string|null $disconnectScreenMessage = null) : void{
 		if(!$this->isConnected()){
 			return;
 		}
 
-		$this->getNetworkSession()->onPlayerDestroyed($reason);
+		$this->getNetworkSession()->onPlayerDestroyed($reason, $disconnectScreenMessage ?? $reason);
 		$this->onPostDisconnect($reason, $quitMessage);
 	}
 
@@ -2132,6 +2141,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @internal
 	 * This method executes post-disconnect actions and cleanups.
 	 *
+	 * @param Translatable|string      $reason      Shown in the server log - this should be a short one-line message
 	 * @param Translatable|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
 	public function onPostDisconnect(Translatable|string $reason, Translatable|string|null $quitMessage) : void{

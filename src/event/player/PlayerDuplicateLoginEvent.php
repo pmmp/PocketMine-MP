@@ -36,12 +36,15 @@ use pocketmine\network\mcpe\NetworkSession;
  */
 class PlayerDuplicateLoginEvent extends Event implements Cancellable{
 	use CancellableTrait;
+	use PlayerDisconnectEventTrait;
 
 	private Translatable|string $disconnectMessage;
 
 	public function __construct(
 		private NetworkSession $connectingSession,
-		private NetworkSession $existingSession
+		private NetworkSession $existingSession,
+		private Translatable|string $disconnectReason,
+		private Translatable|string|null $disconnectScreenMessage
 	){
 		$this->disconnectMessage = KnownTranslationFactory::disconnectionScreen_loggedinOtherLocation();
 	}

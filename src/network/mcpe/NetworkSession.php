@@ -602,22 +602,25 @@ class NetworkSession{
 		$this->invManager = null;
 	}
 
-	private function sendDisconnectPacket(Translatable|string $reason) : void{
-		if($reason instanceof Translatable){
-			$translated = $this->server->getLanguage()->translate($reason);
+	private function sendDisconnectPacket(Translatable|string $message) : void{
+		if($message instanceof Translatable){
+			$translated = $this->server->getLanguage()->translate($message);
 		}else{
-			$translated = $reason;
+			$translated = $message;
 		}
 		$this->sendDataPacket(DisconnectPacket::create($translated));
 	}
 
 	/**
 	 * Disconnects the session, destroying the associated player (if it exists).
+	 *
+	 * @param Translatable|string      $reason                  Shown in the server log - this should be a short one-line message
+	 * @param Translatable|string|null $disconnectScreenMessage Shown on the player's disconnection screen (null will use the reason)
 	 */
-	public function disconnect(Translatable|string $reason, bool $notify = true) : void{
-		$this->tryDisconnect(function() use ($reason, $notify) : void{
+	public function disconnect(Translatable|string $reason, Translatable|string|null $disconnectScreenMessage = null, bool $notify = true) : void{
+		$this->tryDisconnect(function() use ($reason, $disconnectScreenMessage, $notify) : void{
 			if($notify){
-				$this->sendDisconnectPacket($reason);
+				$this->sendDisconnectPacket($disconnectScreenMessage ?? $reason);
 			}
 			if($this->player !== null){
 				$this->player->onPostDisconnect($reason, null);
@@ -654,9 +657,9 @@ class NetworkSession{
 	/**
 	 * Called by the Player when it is closed (for example due to getting kicked).
 	 */
-	public function onPlayerDestroyed(Translatable|string $reason) : void{
-		$this->tryDisconnect(function() use ($reason) : void{
-			$this->sendDisconnectPacket($reason);
+	public function onPlayerDestroyed(Translatable|string $reason, Translatable|string $disconnectScreenMessage) : void{
+		$this->tryDisconnect(function() use ($disconnectScreenMessage) : void{
+			$this->sendDisconnectPacket($disconnectScreenMessage);
 		}, $reason);
 	}
 
@@ -694,7 +697,7 @@ class NetworkSession{
 
 		if(!$this->authenticated){
 			if($authRequired){
-				$this->disconnect(KnownTranslationFactory::disconnectionScreen_notAuthenticated());
+				$this->disconnect("Not authenticated", KnownTranslationFactory::disconnectionScreen_notAuthenticated());
 				return;
 			}
 			if($this->info instanceof XboxLivePlayerInfo){
@@ -728,14 +731,14 @@ class NetworkSession{
 				if($kickForXUIDMismatch($info instanceof XboxLivePlayerInfo ? $info->getXuid() : "")){
 					return;
 				}
-				$ev = new PlayerDuplicateLoginEvent($this, $existingSession);
+				$ev = new PlayerDuplicateLoginEvent($this, $existingSession, KnownTranslationFactory::disconnectionScreen_loggedinOtherLocation(), null);
 				$ev->call();
 				if($ev->isCancelled()){
-					$this->disconnect($ev->getDisconnectMessage());
+					$this->disconnect($ev->getDisconnectReason(), $ev->getDisconnectScreenMessage());
 					return;
 				}
 
-				$existingSession->disconnect($ev->getDisconnectMessage());
+				$existingSession->disconnect($ev->getDisconnectReason(), $ev->getDisconnectScreenMessage());
 			}
 		}
 
