@@ -18,7 +18,7 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.21.2
+        uses: shivammathur/setup-php@2.23.0
         with:
           php-version: 8.0
 
@@ -69,7 +69,7 @@ jobs:
             ${{ github.workspace }}/build_info.json
 
       - name: Create draft release
-        uses: ncipollo/release-action@v1.11.1
+        uses: ncipollo/release-action@v1.12.0
         with:
           artifacts: ${{ github.workspace }}/PocketMine-MP.phar,${{ github.workspace }}/start.*,${{ github.workspace }}/build_info.json
           commit: ${{ github.sha }}

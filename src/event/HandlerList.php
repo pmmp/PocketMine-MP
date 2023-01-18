@@ -31,6 +31,10 @@ class HandlerList{
 	/** @var RegisteredListener[][] */
 	private array $handlerSlots = [];
 
+	/**
+	 * @phpstan-template TEvent of Event
+	 * @phpstan-param class-string<TEvent> $class
+	 */
 	public function __construct(
 		private string $class,
 		private ?HandlerList $parentList
@@ -57,10 +61,7 @@ class HandlerList{
 		}
 	}
 
-	/**
-	 * @param RegisteredListener|Listener|Plugin $object
-	 */
-	public function unregister($object) : void{
+	public function unregister(RegisteredListener|Plugin|Listener $object) : void{
 		if($object instanceof Plugin || $object instanceof Listener){
 			foreach($this->handlerSlots as $priority => $list){
 				foreach($list as $hash => $listener){
@@ -71,7 +72,7 @@ class HandlerList{
 					}
 				}
 			}
-		}elseif($object instanceof RegisteredListener){
+		}else{
 			if(isset($this->handlerSlots[$object->getPriority()][spl_object_id($object)])){
 				unset($this->handlerSlots[$object->getPriority()][spl_object_id($object)]);
 			}

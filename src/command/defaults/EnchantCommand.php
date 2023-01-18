@@ -29,18 +29,21 @@ use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\StringToEnchantmentParser;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
-use pocketmine\utils\TextFormat;
 use function count;
+use function implode;
 
 class EnchantCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"enchant",
 			KnownTranslationFactory::pocketmine_command_enchant_description(),
 			KnownTranslationFactory::commands_enchant_usage()
 		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_ENCHANT);
+		$this->setPermission(implode(";", [
+			DefaultPermissionNames::COMMAND_ENCHANT_SELF,
+			DefaultPermissionNames::COMMAND_ENCHANT_OTHER
+		]));
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -48,10 +51,8 @@ class EnchantCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $sender->getServer()->getPlayerByPrefix($args[0]);
-
+		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissionNames::COMMAND_ENCHANT_SELF, DefaultPermissionNames::COMMAND_ENCHANT_OTHER);
 		if($player === null){
-			$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound()->prefix(TextFormat::RED));
 			return true;
 		}
 

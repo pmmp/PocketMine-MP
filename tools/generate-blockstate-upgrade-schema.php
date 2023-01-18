@@ -28,19 +28,20 @@ use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchema;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaBlockRemap;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaUtils;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaValueRemap;
-use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use function array_key_first;
 use function count;
 use function dirname;
-use function file_get_contents;
 use function file_put_contents;
 use function fwrite;
 use function json_encode;
 use function ksort;
+use const JSON_PRETTY_PRINT;
+use const SORT_STRING;
 use const STDERR;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
@@ -57,11 +58,7 @@ class BlockStateMapping{
  * @phpstan-return array<string, list<BlockStateMapping>>
  */
 function loadUpgradeTable(string $file, bool $reverse) : array{
-	try{
-		$contents = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents($file));
-	}catch(\ErrorException $e){
-		throw new \RuntimeException("Failed loading mapping table file $file: " . $e->getMessage(), 0, $e);
-	}
+	$contents = Filesystem::fileGetContents($file);
 	$data = (new NetworkNbtSerializer())->readMultiple($contents);
 
 	$result = [];
@@ -82,7 +79,7 @@ function loadUpgradeTable(string $file, bool $reverse) : array{
 }
 
 /**
- * @param true[] $removedPropertiesCache
+ * @param true[]  $removedPropertiesCache
  * @param Tag[][] $remappedPropertyValuesCache
  * @phpstan-param array<string, true> $removedPropertiesCache
  * @phpstan-param array<string, array<string, Tag>> $remappedPropertyValuesCache

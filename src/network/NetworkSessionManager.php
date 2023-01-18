@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network;
 
+use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\NetworkSession;
 use function count;
 use function spl_object_id;
@@ -32,12 +33,25 @@ class NetworkSessionManager{
 	/** @var NetworkSession[] */
 	private array $sessions = [];
 
+	/** @var NetworkSession[] */
+	private array $pendingLoginSessions = [];
+
 	/**
 	 * Adds a network session to the manager. This should only be called on session creation.
 	 */
 	public function add(NetworkSession $session) : void{
 		$idx = spl_object_id($session);
 		$this->sessions[$idx] = $session;
+		$this->pendingLoginSessions[$idx] = $session;
+	}
+
+	/**
+	 * Marks the session as having sent a login request. After this point, they are counted towards the total player
+	 * count.
+	 */
+	public function markLoginReceived(NetworkSession $session) : void{
+		$idx = spl_object_id($session);
+		unset($this->pendingLoginSessions[$idx]);
 	}
 
 	/**
@@ -47,13 +61,22 @@ class NetworkSessionManager{
 	public function remove(NetworkSession $session) : void{
 		$idx = spl_object_id($session);
 		unset($this->sessions[$idx]);
+		unset($this->pendingLoginSessions[$idx]);
 	}
 
 	/**
-	 * Returns the number of known connected sessions.
+	 * Returns the number of known connected sessions, including sessions which have not yet sent a login request.
 	 */
 	public function getSessionCount() : int{
 		return count($this->sessions);
+	}
+
+	/**
+	 * Returns the number of connected sessions which have either sent a login request, or have already completed the
+	 * login sequence.
+	 */
+	public function getValidSessionCount() : int{
+		return count($this->sessions) - count($this->pendingLoginSessions);
 	}
 
 	/** @return NetworkSession[] */
@@ -74,7 +97,7 @@ class NetworkSessionManager{
 	/**
 	 * Terminates all connected sessions with the given reason.
 	 */
-	public function close(string $reason = "") : void{
+	public function close(Translatable|string $reason = "") : void{
 		foreach($this->sessions as $session){
 			$session->disconnect($reason);
 		}

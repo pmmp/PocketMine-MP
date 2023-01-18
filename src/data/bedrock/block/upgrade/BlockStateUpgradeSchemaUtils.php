@@ -27,16 +27,15 @@ use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModel;
 use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModelBlockRemap;
 use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModelTag;
 use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModelValueRemap;
-use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
 use function array_map;
 use function count;
-use function file_get_contents;
 use function get_debug_type;
 use function gettype;
 use function implode;
@@ -275,11 +274,7 @@ final class BlockStateUpgradeSchemaUtils{
 
 			$fullPath = Path::join($path, $filename);
 
-			try{
-				$raw = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents($fullPath));
-			}catch(\ErrorException $e){
-				throw new \RuntimeException("Loading schema file $fullPath: " . $e->getMessage(), 0, $e);
-			}
+			$raw = Filesystem::fileGetContents($fullPath);
 
 			try{
 				$schema = self::loadSchemaFromString($raw, $priority);

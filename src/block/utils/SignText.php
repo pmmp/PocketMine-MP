@@ -31,7 +31,7 @@ use function array_slice;
 use function count;
 use function explode;
 use function is_int;
-use function strpos;
+use function str_contains;
 
 class SignText{
 	public const LINE_COUNT = 4;
@@ -57,7 +57,7 @@ class SignText{
 			foreach($lines as $k => $line){
 				$this->checkLineIndex($k);
 				Utils::checkUTF8($line);
-				if(strpos($line, "\n") !== false){
+				if(str_contains($line, "\n")){
 					throw new \InvalidArgumentException("Line must not contain newlines");
 				}
 				//TODO: add length checks
@@ -87,10 +87,7 @@ class SignText{
 		return $this->lines;
 	}
 
-	/**
-	 * @param int|string $index
-	 */
-	private function checkLineIndex($index) : void{
+	private function checkLineIndex(int|string $index) : void{
 		if(!is_int($index)){
 			throw new \InvalidArgumentException("Index must be an integer");
 		}

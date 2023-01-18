@@ -27,6 +27,7 @@ use pocketmine\block\VanillaBlocks;
 use pocketmine\crafting\ExactRecipeIngredient;
 use pocketmine\crafting\MetaWildcardRecipeIngredient;
 use pocketmine\crafting\RecipeIngredient;
+use pocketmine\crafting\TagWildcardRecipeIngredient;
 use pocketmine\data\bedrock\item\BlockItemIdMap;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
@@ -46,6 +47,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\recipe\IntIdMetaItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient as ProtocolRecipeIngredient;
 use pocketmine\network\mcpe\protocol\types\recipe\StringIdMetaItemDescriptor;
+use pocketmine\network\mcpe\protocol\types\recipe\TagItemDescriptor;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
@@ -118,6 +120,7 @@ class TypeConverter{
 		if($ingredient instanceof MetaWildcardRecipeIngredient){
 			$id = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromStringId($ingredient->getItemId());
 			$meta = self::RECIPE_INPUT_WILDCARD_META;
+			$descriptor = new IntIdMetaItemDescriptor($id, $meta);
 		}elseif($ingredient instanceof ExactRecipeIngredient){
 			$item = $ingredient->getItem();
 			[$id, $meta, $blockRuntimeId] = ItemTranslator::getInstance()->toNetworkId($item);
@@ -127,17 +130,24 @@ class TypeConverter{
 					throw new AssumptionFailedError("Every block state should have an associated meta value");
 				}
 			}
+			$descriptor = new IntIdMetaItemDescriptor($id, $meta);
+		}elseif($ingredient instanceof TagWildcardRecipeIngredient){
+			$descriptor = new TagItemDescriptor($ingredient->getTagName());
 		}else{
 			throw new \LogicException("Unsupported recipe ingredient type " . get_class($ingredient) . ", only " . ExactRecipeIngredient::class . " and " . MetaWildcardRecipeIngredient::class . " are supported");
 		}
 
-		return new ProtocolRecipeIngredient(new IntIdMetaItemDescriptor($id, $meta), 1);
+		return new ProtocolRecipeIngredient($descriptor, 1);
 	}
 
 	public function netRecipeIngredientToCore(ProtocolRecipeIngredient $ingredient) : ?RecipeIngredient{
 		$descriptor = $ingredient->getDescriptor();
 		if($descriptor === null){
 			return null;
+		}
+
+		if($descriptor instanceof TagItemDescriptor){
+			return new TagWildcardRecipeIngredient($descriptor->getTag());
 		}
 
 		if($descriptor instanceof IntIdMetaItemDescriptor){

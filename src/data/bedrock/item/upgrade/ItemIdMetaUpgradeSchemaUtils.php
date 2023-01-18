@@ -24,13 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\item\upgrade;
 
 use pocketmine\data\bedrock\item\upgrade\model\ItemIdMetaUpgradeSchemaModel;
-use pocketmine\errorhandler\ErrorToExceptionHandler;
+use pocketmine\utils\Filesystem;
 use Symfony\Component\Filesystem\Path;
-use function file_get_contents;
 use function gettype;
 use function is_object;
 use function json_decode;
 use function ksort;
+use const JSON_THROW_ON_ERROR;
+use const SORT_NUMERIC;
 
 final class ItemIdMetaUpgradeSchemaUtils{
 
@@ -58,11 +59,7 @@ final class ItemIdMetaUpgradeSchemaUtils{
 
 			$fullPath = Path::join($path, $filename);
 
-			try{
-				$raw = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents($fullPath));
-			}catch(\ErrorException $e){
-				throw new \RuntimeException("Loading schema file $fullPath: " . $e->getMessage(), 0, $e);
-			}
+			$raw = Filesystem::fileGetContents($fullPath);
 
 			try{
 				$schema = self::loadSchemaFromString($raw, $priority);

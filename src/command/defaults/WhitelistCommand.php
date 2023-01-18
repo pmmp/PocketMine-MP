@@ -38,9 +38,9 @@ use const SORT_STRING;
 
 class WhitelistCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"whitelist",
 			KnownTranslationFactory::pocketmine_command_whitelist_description(),
 			KnownTranslationFactory::commands_whitelist_usage()
 		);
@@ -122,7 +122,7 @@ class WhitelistCommand extends VanillaCommand{
 						$server = $sender->getServer();
 						$server->removeWhitelist($args[1]);
 						if(!$server->isWhitelisted($args[1])){
-							$server->getPlayerExact($args[1])?->kick("Server whitelisted.");
+							$server->getPlayerExact($args[1])?->kick(KnownTranslationFactory::pocketmine_disconnect_kick(KnownTranslationFactory::pocketmine_disconnect_whitelisted()));
 						}
 						Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_whitelist_remove_success($args[1]));
 					}
@@ -135,9 +135,10 @@ class WhitelistCommand extends VanillaCommand{
 	}
 
 	private function kickNonWhitelistedPlayers(Server $server) : void{
+		$message = KnownTranslationFactory::pocketmine_disconnect_kick(KnownTranslationFactory::pocketmine_disconnect_whitelisted());
 		foreach($server->getOnlinePlayers() as $player){
 			if(!$server->isWhitelisted($player->getName())){
-				$player->kick("Server whitelisted.");
+				$player->kick($message);
 			}
 		}
 	}

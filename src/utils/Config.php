@@ -33,7 +33,6 @@ use function count;
 use function date;
 use function explode;
 use function file_exists;
-use function file_get_contents;
 use function get_debug_type;
 use function implode;
 use function is_array;
@@ -55,6 +54,7 @@ use const CASE_LOWER;
 use const JSON_BIGINT_AS_STRING;
 use const JSON_PRETTY_PRINT;
 use const JSON_THROW_ON_ERROR;
+use const YAML_UTF8_ENCODING;
 
 /**
  * Config Class for simple config manipulation of multiple formats.
@@ -108,8 +108,8 @@ class Config{
 	];
 
 	/**
-	 * @param string  $file Path of the file to be loaded
-	 * @param int     $type Config type to load, -1 by default (detect)
+	 * @param string  $file    Path of the file to be loaded
+	 * @param int     $type    Config type to load, -1 by default (detect)
 	 * @param mixed[] $default Array with the default values that will be written to the file if it did not exist
 	 * @phpstan-param array<string, mixed> $default
 	 */
@@ -161,10 +161,7 @@ class Config{
 			$this->config = $default;
 			$this->save();
 		}else{
-			$content = file_get_contents($this->file);
-			if($content === false){
-				throw new \RuntimeException("Unable to load config file");
-			}
+			$content = Filesystem::fileGetContents($this->file);
 			switch($this->type){
 				case Config::PROPERTIES:
 					$config = self::parseProperties($content);
@@ -341,11 +338,7 @@ class Config{
 		$this->remove($k);
 	}
 
-	/**
-	 * @param string $key
-	 * @param mixed  $value
-	 */
-	public function setNested($key, $value) : void{
+	public function setNested(string $key, mixed $value) : void{
 		$vars = explode(".", $key);
 		$base = array_shift($vars);
 
@@ -368,13 +361,7 @@ class Config{
 		$this->changed = true;
 	}
 
-	/**
-	 * @param string $key
-	 * @param mixed  $default
-	 *
-	 * @return mixed
-	 */
-	public function getNested($key, $default = null){
+	public function getNested(string $key, mixed $default = null) : mixed{
 		if(isset($this->nestedCache[$key])){
 			return $this->nestedCache[$key];
 		}
@@ -420,21 +407,11 @@ class Config{
 		}
 	}
 
-	/**
-	 * @param string $k
-	 * @param mixed  $default
-	 *
-	 * @return bool|mixed
-	 */
-	public function get($k, $default = false){
+	public function get(string $k, mixed $default = false) : mixed{
 		return $this->config[$k] ?? $default;
 	}
 
-	/**
-	 * @param string $k key to be set
-	 * @param mixed  $v value to set key
-	 */
-	public function set($k, $v = true) : void{
+	public function set(string $k, mixed $v = true) : void{
 		$this->config[$k] = $v;
 		$this->changed = true;
 		foreach(Utils::stringifyKeys($this->nestedCache) as $nestedKey => $nvalue){
@@ -454,10 +431,9 @@ class Config{
 	}
 
 	/**
-	 * @param string $k
-	 * @param bool   $lowercase If set, searches Config in single-case / lowercase.
+	 * @param bool $lowercase If set, searches Config in single-case / lowercase.
 	 */
-	public function exists($k, bool $lowercase = false) : bool{
+	public function exists(string $k, bool $lowercase = false) : bool{
 		if($lowercase){
 			$k = strtolower($k); //Convert requested  key to lower
 			$array = array_change_key_case($this->config, CASE_LOWER); //Change all keys in array to lower
@@ -467,10 +443,7 @@ class Config{
 		}
 	}
 
-	/**
-	 * @param string $k
-	 */
-	public function remove($k) : void{
+	public function remove(string $k) : void{
 		unset($this->config[$k]);
 		$this->changed = true;
 	}
@@ -493,11 +466,12 @@ class Config{
 
 	/**
 	 * @param mixed[] $default
-	 * @param mixed[] $data reference parameter
+	 * @param mixed[] $data    reference parameter
 	 * @phpstan-param array<string, mixed> $default
 	 * @phpstan-param array<string, mixed> $data
+	 * @phpstan-param-out array<string, mixed> $data
 	 */
-	private function fillDefaults(array $default, &$data) : int{
+	private function fillDefaults(array $default, array &$data) : int{
 		$changed = 0;
 		foreach(Utils::stringifyKeys($default) as $k => $v){
 			if(is_array($v)){

@@ -57,9 +57,9 @@ use const PHP_EOL;
 
 class TimingsCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"timings",
 			KnownTranslationFactory::pocketmine_command_timings_description(),
 			KnownTranslationFactory::pocketmine_command_timings_usage()
 		);

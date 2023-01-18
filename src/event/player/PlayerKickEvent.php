@@ -36,7 +36,7 @@ class PlayerKickEvent extends PlayerEvent implements Cancellable{
 
 	public function __construct(
 		Player $player,
-		protected string $reason,
+		protected Translatable|string $reason,
 		protected Translatable|string $quitMessage
 	){
 		$this->player = $player;
@@ -46,7 +46,7 @@ class PlayerKickEvent extends PlayerEvent implements Cancellable{
 	 * Sets the message shown on the kicked player's disconnection screen.
 	 * This message is also displayed in the console and server log.
 	 */
-	public function setReason(string $reason) : void{
+	public function setReason(Translatable|string $reason) : void{
 		$this->reason = $reason;
 	}
 
@@ -55,7 +55,7 @@ class PlayerKickEvent extends PlayerEvent implements Cancellable{
 	 * This message is also displayed in the console and server log.
 	 * When kicked by the /kick command, the default is something like "Kicked by admin.".
 	 */
-	public function getReason() : string{
+	public function getReason() : Translatable|string{
 		return $this->reason;
 	}
 

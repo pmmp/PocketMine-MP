@@ -28,8 +28,8 @@ use pocketmine\utils\Utils;
 use function array_values;
 use function count;
 use function implode;
+use function str_contains;
 use function strlen;
-use function strpos;
 
 class ShapedRecipe implements CraftingRecipe{
 	/** @var string[] */
@@ -45,15 +45,15 @@ class ShapedRecipe implements CraftingRecipe{
 	/**
 	 * Constructs a ShapedRecipe instance.
 	 *
-	 * @param string[]             $shape <br>
-	 *     Array of 1, 2, or 3 strings representing the rows of the recipe.
-	 *     This accepts an array of 1, 2 or 3 strings. Each string should be of the same length and must be at most 3
-	 *     characters long. Each character represents a unique type of ingredient. Spaces are interpreted as air.
-	 * @param RecipeIngredient[]   $ingredients <br>
-	 *     Char => Item map of items to be set into the shape.
-	 *     This accepts an array of Items, indexed by character. Every unique character (except space) in the shape
-	 *     array MUST have a corresponding item in this list. Space character is automatically treated as air.
-	 * @param Item[]               $results List of items that this recipe produces when crafted.
+	 * @param string[]           $shape       <br>
+	 *                                        Array of 1, 2, or 3 strings representing the rows of the recipe.
+	 *                                        This accepts an array of 1, 2 or 3 strings. Each string should be of the same length and must be at most 3
+	 *                                        characters long. Each character represents a unique type of ingredient. Spaces are interpreted as air.
+	 * @param RecipeIngredient[] $ingredients <br>
+	 *                                        Char => Item map of items to be set into the shape.
+	 *                                        This accepts an array of Items, indexed by character. Every unique character (except space) in the shape
+	 *                                        array MUST have a corresponding item in this list. Space character is automatically treated as air.
+	 * @param Item[]             $results     List of items that this recipe produces when crafted.
 	 *
 	 * Note: Recipes **do not** need to be square. Do NOT add padding for empty rows/columns.
 	 */
@@ -85,7 +85,7 @@ class ShapedRecipe implements CraftingRecipe{
 		$this->shape = $shape;
 
 		foreach($ingredients as $char => $i){
-			if(strpos(implode($this->shape), $char) === false){
+			if(!str_contains(implode($this->shape), $char)){
 				throw new \InvalidArgumentException("Symbol '$char' does not appear in the recipe shape");
 			}
 

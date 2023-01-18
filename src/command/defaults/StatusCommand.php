@@ -36,9 +36,9 @@ use function round;
 
 class StatusCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"status",
 			KnownTranslationFactory::pocketmine_command_status_description()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_STATUS);
@@ -78,10 +78,10 @@ class StatusCommand extends VanillaCommand{
 		$sender->sendMessage(TextFormat::GOLD . "Uptime: " . TextFormat::RED . $uptime);
 
 		$tpsColor = TextFormat::GREEN;
-		if($server->getTicksPerSecond() < 17){
-			$tpsColor = TextFormat::GOLD;
-		}elseif($server->getTicksPerSecond() < 12){
+		if($server->getTicksPerSecond() < 12){
 			$tpsColor = TextFormat::RED;
+		}elseif($server->getTicksPerSecond() < 17){
+			$tpsColor = TextFormat::GOLD;
 		}
 
 		$sender->sendMessage(TextFormat::GOLD . "Current TPS: {$tpsColor}{$server->getTicksPerSecond()} ({$server->getTickUsage()}%)");

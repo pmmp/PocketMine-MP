@@ -33,12 +33,25 @@ use pocketmine\utils\ObjectSet;
 interface Inventory{
 	public const MAX_STACK = 64;
 
+	/**
+	 * Returns the number of slots in the inventory.
+	 */
 	public function getSize() : int;
 
+	/**
+	 * Returns the maximum stack size for items in this inventory. Individual item types (such as armor or tools) may
+	 * have a smaller maximum stack size.
+	 */
 	public function getMaxStackSize() : int;
 
+	/**
+	 * Sets the maximum stack size for items in this inventory.
+	 */
 	public function setMaxStackSize(int $size) : void;
 
+	/**
+	 * Returns the item in the specified slot.
+	 */
 	public function getItem(int $index) : Item;
 
 	/**
@@ -65,10 +78,11 @@ interface Inventory{
 	public function setContents(array $items) : void;
 
 	/**
-	 * Stores the given Items in the inventory. This will try to fill
-	 * existing stacks and empty slots as well as it can.
+	 * Stores the given Items in the inventory.
+	 * This will add to any non-full existing stacks first, and then put the remaining items in empty slots if there are
+	 * any available.
 	 *
-	 * Returns the Items that did not fit.
+	 * Returns an array of items which could not fit in the inventory.
 	 *
 	 * @return Item[]
 	 */
@@ -85,15 +99,20 @@ interface Inventory{
 	public function getAddableItemQuantity(Item $item) : int;
 
 	/**
-	 * Checks if the inventory contains any Item with the same material data.
-	 * It will check id, amount, and metadata (if not null)
+	 * Returns whether the total amount of matching items is at least the stack size of the given item. Multiple stacks
+	 * of the same item are added together.
+	 *
+	 * If the input item has specific NBT, only items with the same type and NBT will match. Otherwise, only the item
+	 * type is checked.
 	 */
 	public function contains(Item $item) : bool;
 
 	/**
-	 * Will return all the Items that has the same id and metadata (if not null).
-	 * Won't check amount
-	 * The returned array is indexed by slot number.
+	 * Returns all matching items in the inventory, irrespective of stack size. The returned array is indexed by slot
+	 * number.
+	 *
+	 * If the input item has specific NBT, only items with the same type and NBT will match. Otherwise, only the item
+	 * type is checked.
 	 *
 	 * @return Item[]
 	 * @phpstan-return array<int, Item>
@@ -101,10 +120,10 @@ interface Inventory{
 	public function all(Item $item) : array;
 
 	/**
-	 * Returns the first slot number containing an item with the same ID, damage (if not any-damage), NBT (if not empty)
-	 * and count >= to the count of the specified item stack.
+	 * Returns the first slot number containing a matching item with a stack size greater than or equal to the input item.
 	 *
-	 * If $exact is true, only items with equal ID, damage, NBT and count will match.
+	 * If the input item has specific NBT, or if $exact is true, only items with the same type and NBT will match.
+	 * Otherwise, only the item type is checked.
 	 */
 	public function first(Item $item, bool $exact = false) : int;
 
@@ -119,13 +138,19 @@ interface Inventory{
 	public function isSlotEmpty(int $index) : bool;
 
 	/**
-	 * Will remove all the Items that has the same id and metadata (if not null)
+	 * Clears all slots containing items equivalent to the given item.
+	 *
+	 * If the input item has specific NBT, only items with the same type and NBT will match. Otherwise, only the item
+	 * type is checked.
 	 */
 	public function remove(Item $item) : void;
 
 	/**
-	 * Removes the given Item from the inventory.
-	 * It will return the Items that couldn't be removed.
+	 * Removes items from the inventory in the amounts specified by the given itemstacks.
+	 * Returns an array of items that couldn't be removed.
+	 *
+	 * If the input item has specific NBT, only items with the same type and NBT will match. Otherwise, only the item
+	 * type is checked.
 	 *
 	 * @return Item[]
 	 */

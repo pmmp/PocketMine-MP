@@ -43,6 +43,7 @@ use pocketmine\block\tile\DaylightSensor as TileDaylightSensor;
 use pocketmine\block\tile\EnchantTable as TileEnchantingTable;
 use pocketmine\block\tile\EnderChest as TileEnderChest;
 use pocketmine\block\tile\FlowerPot as TileFlowerPot;
+use pocketmine\block\tile\GlowingItemFrame as TileGlowingItemFrame;
 use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
 use pocketmine\block\tile\Jukebox as TileJukebox;
@@ -55,9 +56,15 @@ use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\tile\Smoker as TileSmoker;
 use pocketmine\block\utils\TreeType;
 use pocketmine\block\utils\WoodType;
+use pocketmine\crafting\FurnaceType;
+use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
+use pocketmine\math\Facing;
+use pocketmine\math\RayTraceResult;
 use pocketmine\utils\CloningRegistryTrait;
+use pocketmine\world\sound\AmethystBlockChimeSound;
+use pocketmine\world\sound\BlockPunchSound;
 use function mb_strtolower;
 
 /**
@@ -147,6 +154,7 @@ use function mb_strtolower;
  * @method static CartographyTable CARTOGRAPHY_TABLE()
  * @method static CarvedPumpkin CARVED_PUMPKIN()
  * @method static Cauldron CAULDRON()
+ * @method static Chain CHAIN()
  * @method static ChemicalHeat CHEMICAL_HEAT()
  * @method static Chest CHEST()
  * @method static Opaque CHISELED_DEEPSLATE()
@@ -402,6 +410,7 @@ use function mb_strtolower;
  * @method static Glass GLASS()
  * @method static GlassPane GLASS_PANE()
  * @method static GlazedTerracotta GLAZED_TERRACOTTA()
+ * @method static ItemFrame GLOWING_ITEM_FRAME()
  * @method static GlowingObsidian GLOWING_OBSIDIAN()
  * @method static Glowstone GLOWSTONE()
  * @method static Opaque GOLD()
@@ -622,6 +631,7 @@ use function mb_strtolower;
  * @method static Slab SANDSTONE_SLAB()
  * @method static Stair SANDSTONE_STAIRS()
  * @method static Wall SANDSTONE_WALL()
+ * @method static Sculk SCULK()
  * @method static SeaLantern SEA_LANTERN()
  * @method static SeaPickle SEA_PICKLE()
  * @method static Opaque SHROOMLIGHT()
@@ -691,6 +701,7 @@ use function mb_strtolower;
  * @method static Tripwire TRIPWIRE()
  * @method static TripwireHook TRIPWIRE_HOOK()
  * @method static Opaque TUFF()
+ * @method static NetherVines TWISTING_VINES()
  * @method static UnderwaterTorch UNDERWATER_TORCH()
  * @method static Vine VINES()
  * @method static WallBanner WALL_BANNER()
@@ -711,6 +722,7 @@ use function mb_strtolower;
  * @method static Opaque WARPED_WART_BLOCK()
  * @method static Water WATER()
  * @method static WaterCauldron WATER_CAULDRON()
+ * @method static NetherVines WEEPING_VINES()
  * @method static WeightedPressurePlateHeavy WEIGHTED_PRESSURE_PLATE_HEAVY()
  * @method static WeightedPressurePlateLight WEIGHTED_PRESSURE_PLATE_LIGHT()
  * @method static Wheat WHEAT()
@@ -821,7 +833,7 @@ final class VanillaBlocks{
 
 		self::register("ender_chest", new EnderChest(new BID(Ids::ENDER_CHEST, TileEnderChest::class), "Ender Chest", new Info(BreakInfo::pickaxe(22.5, ToolTier::WOOD(), 3000.0))));
 		self::register("farmland", new Farmland(new BID(Ids::FARMLAND), "Farmland", new Info(BreakInfo::shovel(0.6), [Tags::DIRT])));
-		self::register("fire", new Fire(new BID(Ids::FIRE), "Fire Block", new Info(BreakInfo::instant())));
+		self::register("fire", new Fire(new BID(Ids::FIRE), "Fire Block", new Info(BreakInfo::instant(), [Tags::FIRE])));
 		self::register("fletching_table", new FletchingTable(new BID(Ids::FLETCHING_TABLE), "Fletching Table", new Info(BreakInfo::axe(2.5, null, 2.5))));
 
 		$flowerTypeInfo = new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS]);
@@ -839,9 +851,9 @@ final class VanillaBlocks{
 		self::register("white_tulip", new Flower(new BID(Ids::WHITE_TULIP), "White Tulip", $flowerTypeInfo));
 		self::register("flower_pot", new FlowerPot(new BID(Ids::FLOWER_POT, TileFlowerPot::class), "Flower Pot", $flowerTypeInfo));
 		self::register("frosted_ice", new FrostedIce(new BID(Ids::FROSTED_ICE), "Frosted Ice", new Info(BreakInfo::pickaxe(2.5))));
-		self::register("furnace", new Furnace(new BID(Ids::FURNACE, TileNormalFurnace::class), "Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD()))));
-		self::register("blast_furnace", new Furnace(new BID(Ids::BLAST_FURNACE, TileBlastFurnace::class), "Blast Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD()))));
-		self::register("smoker", new Furnace(new BID(Ids::SMOKER, TileSmoker::class), "Smoker", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD()))));
+		self::register("furnace", new Furnace(new BID(Ids::FURNACE, TileNormalFurnace::class), "Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD())), FurnaceType::FURNACE()));
+		self::register("blast_furnace", new Furnace(new BID(Ids::BLAST_FURNACE, TileBlastFurnace::class), "Blast Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD())), FurnaceType::BLAST_FURNACE()));
+		self::register("smoker", new Furnace(new BID(Ids::SMOKER, TileSmoker::class), "Smoker", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD())), FurnaceType::SMOKER()));
 
 		$glassBreakInfo = new Info(new BreakInfo(0.3));
 		self::register("glass", new Glass(new BID(Ids::GLASS), "Glass", $glassBreakInfo));
@@ -876,7 +888,11 @@ final class VanillaBlocks{
 		$ironDoorBreakInfo = new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD(), 25.0));
 		self::register("iron_door", new Door(new BID(Ids::IRON_DOOR), "Iron Door", $ironDoorBreakInfo));
 		self::register("iron_trapdoor", new Trapdoor(new BID(Ids::IRON_TRAPDOOR), "Iron Trapdoor", $ironDoorBreakInfo));
-		self::register("item_frame", new ItemFrame(new BID(Ids::ITEM_FRAME, TileItemFrame::class), "Item Frame", new Info(new BreakInfo(0.25))));
+
+		$itemFrameInfo = new Info(new BreakInfo(0.25));
+		self::register("item_frame", new ItemFrame(new BID(Ids::ITEM_FRAME, TileItemFrame::class), "Item Frame", $itemFrameInfo));
+		self::register("glowing_item_frame", new ItemFrame(new BID(Ids::GLOWING_ITEM_FRAME, TileGlowingItemFrame::class), "Glow Item Frame", $itemFrameInfo));
+
 		self::register("jukebox", new Jukebox(new BID(Ids::JUKEBOX, TileJukebox::class), "Jukebox", new Info(BreakInfo::axe(0.8)))); //TODO: in PC the hardness is 2.0, not 0.8, unsure if this is a MCPE bug or not
 		self::register("ladder", new Ladder(new BID(Ids::LADDER), "Ladder", new Info(BreakInfo::axe(0.4))));
 
@@ -1177,6 +1193,7 @@ final class VanillaBlocks{
 		self::register("mangrove_roots", new MangroveRoots(new BID(Ids::MANGROVE_ROOTS), "Mangrove Roots", new Info(BreakInfo::axe(0.7))));
 		self::register("muddy_mangrove_roots", new SimplePillar(new BID(Ids::MUDDY_MANGROVE_ROOTS), "Muddy Mangrove Roots", new Info(BreakInfo::shovel(0.7), [Tags::MUD])));
 		self::register("froglight", new Froglight(new BID(Ids::FROGLIGHT), "Froglight", new Info(new BreakInfo(0.3))));
+		self::register("sculk", new Sculk(new BID(Ids::SCULK), "Sculk", new Info(new BreakInfo(0.6, ToolType::HOE))));
 
 		self::registerBlocksR13();
 		self::registerBlocksR14();
@@ -1449,7 +1466,7 @@ final class VanillaBlocks{
 		self::register("cracked_polished_blackstone_bricks", new Opaque(new BID(Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS), "Cracked Polished Blackstone Bricks", $blackstoneBreakInfo));
 
 		self::register("soul_torch", new Torch(new BID(Ids::SOUL_TORCH), "Soul Torch", new Info(BreakInfo::instant())));
-		self::register("soul_fire", new SoulFire(new BID(Ids::SOUL_FIRE), "Soul Fire", new Info(BreakInfo::instant())));
+		self::register("soul_fire", new SoulFire(new BID(Ids::SOUL_FIRE), "Soul Fire", new Info(BreakInfo::instant(), [Tags::FIRE])));
 
 		//TODO: soul soul ought to have 0.5 hardness (as per java) but it's 1.0 in Bedrock (probably parity bug)
 		self::register("soul_soil", new Opaque(new BID(Ids::SOUL_SOIL), "Soul Soil", new Info(BreakInfo::shovel(1.0))));
@@ -1462,11 +1479,21 @@ final class VanillaBlocks{
 		self::register("crying_obsidian", new class(new BID(Ids::CRYING_OBSIDIAN), "Crying Obsidian", new Info(BreakInfo::pickaxe(35.0 /* 50 in Java */, ToolTier::DIAMOND(), 6000.0))) extends Opaque{
 			public function getLightLevel() : int{ return 10;}
 		});
+
+		self::register("twisting_vines", new NetherVines(new BID(Ids::TWISTING_VINES), "Twisting Vines", new Info(BreakInfo::instant()), Facing::UP));
+		self::register("weeping_vines", new NetherVines(new BID(Ids::WEEPING_VINES), "Weeping Vines", new Info(BreakInfo::instant()), Facing::DOWN));
+
+		self::register("chain", new Chain(new BID(Ids::CHAIN), "Chain", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD()))));
 	}
 
 	private static function registerBlocksR17() : void{
 		//in java this can be acquired using any tool - seems to be a parity issue in bedrock
-		self::register("amethyst", new Opaque(new BID(Ids::AMETHYST), "Amethyst", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD()))));
+		self::register("amethyst", new class(new BID(Ids::AMETHYST), "Amethyst", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD()))) extends Opaque{
+			public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
+				$this->position->getWorld()->addSound($this->position, new AmethystBlockChimeSound());
+				$this->position->getWorld()->addSound($this->position, new BlockPunchSound($this));
+			}
+		});
 
 		self::register("calcite", new Opaque(new BID(Ids::CALCITE), "Calcite", new Info(BreakInfo::pickaxe(0.75, ToolTier::WOOD()))));
 		self::register("tuff", new Opaque(new BID(Ids::TUFF), "Tuff", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD(), 30.0))));

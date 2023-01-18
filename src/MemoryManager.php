@@ -69,6 +69,10 @@ use const JSON_UNESCAPED_SLASHES;
 use const SORT_NUMERIC;
 
 class MemoryManager{
+	private const DEFAULT_CHECK_RATE = Server::TARGET_TICKS_PER_SECOND;
+	private const DEFAULT_CONTINUOUS_TRIGGER_RATE = Server::TARGET_TICKS_PER_SECOND * 2;
+	private const DEEFAULT_TICKS_PER_GC = 30 * 60 * Server::TARGET_TICKS_PER_SECOND;
+
 	private int $memoryLimit;
 	private int $globalMemoryLimit;
 	private int $checkRate;
@@ -113,20 +117,12 @@ class MemoryManager{
 			if($m <= 0){
 				$defaultMemory = 0;
 			}else{
-				switch(mb_strtoupper($matches[2])){
-					case "K":
-						$defaultMemory = intdiv($m, 1024);
-						break;
-					case "M":
-						$defaultMemory = $m;
-						break;
-					case "G":
-						$defaultMemory = $m * 1024;
-						break;
-					default:
-						$defaultMemory = $m;
-						break;
-				}
+				$defaultMemory = match(mb_strtoupper($matches[2])){
+					"K" => intdiv($m, 1024),
+					"M" => $m,
+					"G" => $m * 1024,
+					default => $m,
+				};
 			}
 		}
 
@@ -139,11 +135,11 @@ class MemoryManager{
 		}
 
 		$this->globalMemoryLimit = $config->getPropertyInt("memory.global-limit", 0) * 1024 * 1024;
-		$this->checkRate = $config->getPropertyInt("memory.check-rate", 20);
+		$this->checkRate = $config->getPropertyInt("memory.check-rate", self::DEFAULT_CHECK_RATE);
 		$this->continuousTrigger = $config->getPropertyBool("memory.continuous-trigger", true);
-		$this->continuousTriggerRate = $config->getPropertyInt("memory.continuous-trigger-rate", 30);
+		$this->continuousTriggerRate = $config->getPropertyInt("memory.continuous-trigger-rate", self::DEFAULT_CONTINUOUS_TRIGGER_RATE);
 
-		$this->garbageCollectionPeriod = $config->getPropertyInt("memory.garbage-collection.period", 36000);
+		$this->garbageCollectionPeriod = $config->getPropertyInt("memory.garbage-collection.period", self::DEEFAULT_TICKS_PER_GC);
 		$this->garbageCollectionTrigger = $config->getPropertyBool("memory.garbage-collection.low-memory-trigger", true);
 		$this->garbageCollectionAsync = $config->getPropertyBool("memory.garbage-collection.collect-async-worker", true);
 
@@ -285,10 +281,8 @@ class MemoryManager{
 
 	/**
 	 * Static memory dumper accessible from any thread.
-	 *
-	 * @param mixed   $startingObject
 	 */
-	public static function dumpMemory($startingObject, string $outputFolder, int $maxNesting, int $maxStringSize, \Logger $logger) : void{
+	public static function dumpMemory(mixed $startingObject, string $outputFolder, int $maxNesting, int $maxStringSize, \Logger $logger) : void{
 		$hardLimit = Utils::assumeNotFalse(ini_get('memory_limit'), "memory_limit INI directive should always exist");
 		ini_set('memory_limit', '-1');
 		gc_disable();
@@ -398,7 +392,7 @@ class MemoryManager{
 
 		do{
 			$continue = false;
-			foreach($objects as $hash => $object){
+			foreach(Utils::stringifyKeys($objects) as $hash => $object){
 				if(!is_object($object)){
 					continue;
 				}
@@ -479,13 +473,15 @@ class MemoryManager{
 	}
 
 	/**
-	 * @param mixed    $from
-	 * @param object[] $objects reference parameter
+	 * @param object[] $objects   reference parameter
 	 * @param int[]    $refCounts reference parameter
 	 *
-	 * @return mixed
+	 * @phpstan-param array<string, object> $objects
+	 * @phpstan-param array<string, int> $refCounts
+	 * @phpstan-param-out array<string, object> $objects
+	 * @phpstan-param-out array<string, int> $refCounts
 	 */
-	private static function continueDump($from, array &$objects, array &$refCounts, int $recursion, int $maxNesting, int $maxStringSize){
+	private static function continueDump(mixed $from, array &$objects, array &$refCounts, int $recursion, int $maxNesting, int $maxStringSize) : mixed{
 		if($maxNesting <= 0){
 			return "(error) NESTING LIMIT REACHED";
 		}

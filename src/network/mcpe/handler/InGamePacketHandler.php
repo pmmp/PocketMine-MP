@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\handler;
 use pocketmine\block\BaseSign;
 use pocketmine\block\ItemFrame;
 use pocketmine\block\Lectern;
+use pocketmine\block\tile\Sign;
 use pocketmine\block\utils\SignText;
 use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\entity\Attribute;
@@ -112,7 +113,6 @@ use function array_push;
 use function base64_encode;
 use function count;
 use function fmod;
-use function implode;
 use function in_array;
 use function is_bool;
 use function is_infinite;
@@ -122,12 +122,9 @@ use function json_encode;
 use function max;
 use function mb_strlen;
 use function microtime;
-use function preg_match;
 use function sprintf;
+use function str_starts_with;
 use function strlen;
-use function strpos;
-use function substr;
-use function trim;
 use const JSON_THROW_ON_ERROR;
 
 /**
@@ -248,18 +245,11 @@ class InGamePacketHandler extends PacketHandler{
 
 		$packetHandled = true;
 
-		$useItemTransaction = $packet->getItemInteractionData();
-		if($useItemTransaction !== null){
-			if(!$this->handleUseItemTransaction($useItemTransaction->getTransactionData())){
-				$packetHandled = false;
-				$this->session->getLogger()->debug("Unhandled transaction in PlayerAuthInputPacket (type " . $useItemTransaction->getTransactionData()->getActionType() . ")");
-			}else{
-				$this->inventoryManager->syncMismatchedPredictedSlotChanges();
-			}
-		}
-
 		$blockActions = $packet->getBlockActions();
 		if($blockActions !== null){
+			if(count($blockActions) > 100){
+				throw new PacketHandlingException("Too many block actions in PlayerAuthInputPacket");
+			}
 			foreach($blockActions as $k => $blockAction){
 				$actionHandled = false;
 				if($blockAction instanceof PlayerBlockActionStopBreak){
@@ -272,6 +262,20 @@ class InGamePacketHandler extends PacketHandler{
 					$packetHandled = false;
 					$this->session->getLogger()->debug("Unhandled player block action at offset $k in PlayerAuthInputPacket");
 				}
+			}
+		}
+
+		$useItemTransaction = $packet->getItemInteractionData();
+		if($useItemTransaction !== null){
+			if(count($useItemTransaction->getTransactionData()->getActions()) > 100){
+				throw new PacketHandlingException("Too many actions in item use transaction");
+			}
+			$this->inventoryManager->addPredictedSlotChanges($useItemTransaction->getTransactionData()->getActions());
+			if(!$this->handleUseItemTransaction($useItemTransaction->getTransactionData())){
+				$packetHandled = false;
+				$this->session->getLogger()->debug("Unhandled transaction in PlayerAuthInputPacket (type " . $useItemTransaction->getTransactionData()->getActionType() . ")");
+			}else{
+				$this->inventoryManager->syncMismatchedPredictedSlotChanges();
 			}
 		}
 
@@ -306,6 +310,12 @@ class InGamePacketHandler extends PacketHandler{
 	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
 		$result = true;
 
+		if(count($packet->trData->getActions()) > 100){
+			throw new PacketHandlingException("Too many actions in inventory transaction");
+		}
+
+		$this->inventoryManager->addPredictedSlotChanges($packet->trData->getActions());
+
 		if($packet->trData instanceof NormalTransactionData){
 			$result = $this->handleNormalTransaction($packet->trData);
 		}elseif($packet->trData instanceof MismatchTransactionData){
@@ -320,9 +330,7 @@ class InGamePacketHandler extends PacketHandler{
 			$result = $this->handleReleaseItemTransaction($packet->trData);
 		}
 
-		if(!$result){
-			$this->inventoryManager->syncAll();
-		}else{
+		if($this->craftingTransaction === null){ //don't sync if we're waiting to complete a crafting transaction
 			$this->inventoryManager->syncMismatchedPredictedSlotChanges();
 		}
 		return $result;
@@ -377,15 +385,9 @@ class InGamePacketHandler extends PacketHandler{
 			}
 			$this->player->setUsingItem(false);
 			try{
-				$this->inventoryManager->onTransactionStart($this->craftingTransaction);
 				$this->craftingTransaction->execute();
 			}catch(TransactionException $e){
 				$this->session->getLogger()->debug("Failed to execute crafting transaction: " . $e->getMessage());
-
-				//TODO: only sync slots that the client tried to change
-				foreach($this->craftingTransaction->getInventories() as $inventory){
-					$this->inventoryManager->syncContents($inventory);
-				}
 				return false;
 			}finally{
 				$this->craftingTransaction = null;
@@ -405,18 +407,12 @@ class InGamePacketHandler extends PacketHandler{
 
 			$this->player->setUsingItem(false);
 			$transaction = new InventoryTransaction($this->player, $actions);
-			$this->inventoryManager->onTransactionStart($transaction);
 			try{
 				$transaction->execute();
 			}catch(TransactionException $e){
 				$logger = $this->session->getLogger();
 				$logger->debug("Failed to execute inventory transaction: " . $e->getMessage());
 				$logger->debug("Actions: " . json_encode($data->getActions()));
-
-				foreach($transaction->getInventories() as $inventory){
-					$this->inventoryManager->syncContents($inventory);
-				}
-
 				return false;
 			}
 		}
@@ -426,7 +422,6 @@ class InGamePacketHandler extends PacketHandler{
 
 	private function handleUseItemTransaction(UseItemTransactionData $data) : bool{
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
-		$this->inventoryManager->addPredictedSlotChanges($data->getActions());
 
 		switch($data->getActionType()){
 			case UseItemTransactionData::ACTION_CLICK_BLOCK:
@@ -512,9 +507,7 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
-		$this->inventoryManager->addPredictedSlotChanges($data->getActions());
 
-		//TODO: use transactiondata for rollbacks here
 		switch($data->getActionType()){
 			case UseItemOnEntityTransactionData::ACTION_INTERACT:
 				$this->player->interactEntity($target, $data->getClickPosition());
@@ -529,15 +522,10 @@ class InGamePacketHandler extends PacketHandler{
 
 	private function handleReleaseItemTransaction(ReleaseItemTransactionData $data) : bool{
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
-		$this->inventoryManager->addPredictedSlotChanges($data->getActions());
 
-		//TODO: use transactiondata for rollbacks here (resending entire inventory is very wasteful)
-		switch($data->getActionType()){
-			case ReleaseItemTransactionData::ACTION_RELEASE:
-				if(!$this->player->releaseHeldItem()){
-					$this->inventoryManager->syncContents($this->player->getInventory());
-				}
-				return true;
+		if($data->getActionType() == ReleaseItemTransactionData::ACTION_RELEASE){
+			$this->player->releaseHeldItem();
+			return true;
 		}
 
 		return false;
@@ -670,7 +658,7 @@ class InGamePacketHandler extends PacketHandler{
 		if(!($nbt instanceof CompoundTag)) throw new AssumptionFailedError("PHPStan should ensure this is a CompoundTag"); //for phpstorm's benefit
 
 		if($block instanceof BaseSign){
-			if(($textBlobTag = $nbt->getTag("Text")) instanceof StringTag){
+			if(($textBlobTag = $nbt->getTag(Sign::TAG_TEXT_BLOB)) instanceof StringTag){
 				try{
 					$text = SignText::fromBlob($textBlobTag->getValue());
 				}catch(\InvalidArgumentException $e){
@@ -741,7 +729,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleCommandRequest(CommandRequestPacket $packet) : bool{
-		if(strpos($packet->command, '/') === 0){
+		if(str_starts_with($packet->command, '/')){
 			$this->player->chat($packet->command);
 			return true;
 		}
@@ -880,57 +868,14 @@ class InGamePacketHandler extends PacketHandler{
 			//TODO: make APIs for this to allow plugins to use this information
 			return $this->player->onFormSubmit($packet->formId, null);
 		}elseif($packet->formData !== null){
-			return $this->player->onFormSubmit($packet->formId, self::stupid_json_decode($packet->formData, true));
+			try{
+				$responseData = json_decode($packet->formData, true, self::MAX_FORM_RESPONSE_DEPTH, JSON_THROW_ON_ERROR);
+			}catch(\JsonException $e){
+				throw PacketHandlingException::wrap($e, "Failed to decode form response data");
+			}
+			return $this->player->onFormSubmit($packet->formId, $responseData);
 		}else{
 			throw new PacketHandlingException("Expected either formData or cancelReason to be set in ModalFormResponsePacket");
-		}
-	}
-
-	/**
-	 * Hack to work around a stupid bug in Minecraft W10 which causes empty strings to be sent unquoted in form responses.
-	 *
-	 * @return mixed
-	 * @throws PacketHandlingException
-	 */
-	private static function stupid_json_decode(string $json, bool $assoc = false){
-		if(preg_match('/^\[(.+)\]$/s', $json, $matches) > 0){
-			$raw = $matches[1];
-			$lastComma = -1;
-			$newParts = [];
-			$inQuotes = false;
-			for($i = 0, $len = strlen($raw); $i <= $len; ++$i){
-				if($i === $len || ($raw[$i] === "," && !$inQuotes)){
-					$part = substr($raw, $lastComma + 1, $i - ($lastComma + 1));
-					if(trim($part) === ""){ //regular parts will have quotes or something else that makes them non-empty
-						$part = '""';
-					}
-					$newParts[] = $part;
-					$lastComma = $i;
-				}elseif($raw[$i] === '"'){
-					if(!$inQuotes){
-						$inQuotes = true;
-					}else{
-						$backslashes = 0;
-						for(; $backslashes < $i && $raw[$i - $backslashes - 1] === "\\"; ++$backslashes){}
-						if(($backslashes % 2) === 0){ //unescaped quote
-							$inQuotes = false;
-						}
-					}
-				}
-			}
-
-			$fixed = "[" . implode(",", $newParts) . "]";
-			try{
-				return json_decode($fixed, $assoc, self::MAX_FORM_RESPONSE_DEPTH, JSON_THROW_ON_ERROR);
-			}catch(\JsonException $e){
-				throw PacketHandlingException::wrap($e, "Failed to fix JSON (original: $json, modified: $fixed)");
-			}
-		}
-
-		try{
-			return json_decode($json, $assoc, self::MAX_FORM_RESPONSE_DEPTH, JSON_THROW_ON_ERROR);
-		}catch(\JsonException $e){
-			throw PacketHandlingException::wrap($e);
 		}
 	}
 
