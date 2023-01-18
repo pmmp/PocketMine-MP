@@ -69,8 +69,8 @@ class PlayerPreLoginEvent extends Event implements Cancellable{
 
 	/**
 	 * Returns an object containing self-proclaimed information about the connecting player.
-	 * WARNING: THE PLAYER IS NOT VERIFIED DURING THIS EVENT. At this point, it's unknown if the player is real or a
-	 * hacker.
+	 * WARNING: THE PLAYER IS NOT VERIFIED DURING THIS EVENT. At this point, this could be a hacker posing as another
+	 * player.
 	 */
 	public function getPlayerInfo() : PlayerInfo{
 		return $this->playerInfo;
@@ -109,7 +109,7 @@ class PlayerPreLoginEvent extends Event implements Cancellable{
 	}
 
 	/**
-	 * Sets a reason to disallow the player to continue continue authenticating, with a message.
+	 * Sets a reason to disallow the player to continue authenticating, with a message.
 	 * This can also be used to change kick messages for already-set flags.
 	 */
 	public function setKickReason(int $flag, string $message) : void{
