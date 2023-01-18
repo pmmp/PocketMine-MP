@@ -37,7 +37,6 @@ use pocketmine\network\PacketHandlingException;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\timings\Timings;
-use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\Utils;
 use raklib\generic\SocketException;
 use raklib\protocol\EncapsulatedPacket;
