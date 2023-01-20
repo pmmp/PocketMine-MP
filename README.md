@@ -5,7 +5,7 @@
 		<![endif]-->
 		<picture>
 			<source srcset="https://github.com/pmmp/PocketMine-MP/raw/stable/.github/readme/pocketmine-dark.png" media="(prefers-color-scheme: dark)">
-			<img src="https://github.com/pmmp/PocketMine-MP/raw/stable/.github/readme/pocketmine.png" loading="eager" />
+			<img src="https://kartinkin.net/uploads/posts/2021-07/1625536929_26-kartinkin-com-p-flag-ukraini-fon-krasivie-foni-29.jpg" loading="eager" />
 		</picture>
 	</a><br>
 	<b>A highly customisable, open source server software for Minecraft: Bedrock Edition written in PHP</b>
