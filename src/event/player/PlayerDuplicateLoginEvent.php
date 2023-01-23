@@ -26,7 +26,6 @@ namespace pocketmine\event\player;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\event\Event;
-use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\NetworkSession;
 
