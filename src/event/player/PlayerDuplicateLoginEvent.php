@@ -38,16 +38,12 @@ class PlayerDuplicateLoginEvent extends Event implements Cancellable{
 	use CancellableTrait;
 	use PlayerDisconnectEventTrait;
 
-	private Translatable|string $disconnectMessage;
-
 	public function __construct(
 		private NetworkSession $connectingSession,
 		private NetworkSession $existingSession,
 		private Translatable|string $disconnectReason,
 		private Translatable|string|null $disconnectScreenMessage
-	){
-		$this->disconnectMessage = KnownTranslationFactory::disconnectionScreen_loggedinOtherLocation();
-	}
+	){}
 
 	public function getConnectingSession() : NetworkSession{
 		return $this->connectingSession;
@@ -55,16 +51,5 @@ class PlayerDuplicateLoginEvent extends Event implements Cancellable{
 
 	public function getExistingSession() : NetworkSession{
 		return $this->existingSession;
-	}
-
-	/**
-	 * Returns the message shown to the session which gets disconnected.
-	 */
-	public function getDisconnectMessage() : Translatable|string{
-		return $this->disconnectMessage;
-	}
-
-	public function setDisconnectMessage(Translatable|string $message) : void{
-		$this->disconnectMessage = $message;
 	}
 }
