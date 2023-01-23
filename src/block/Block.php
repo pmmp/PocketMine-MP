@@ -640,12 +640,14 @@ class Block{
 	/**
 	 * Returns the six blocks around this block.
 	 *
+	 * @param int $step Distance in each direction to shift the vector
+	 *
 	 * @return Block[]|\Generator
 	 * @phpstan-return \Generator<int, Block, void, void>
 	 */
-	public function getAllSides() : \Generator{
+	public function getAllSides(int $step = 1) : \Generator{
 		$world = $this->position->getWorld();
-		foreach($this->position->sides() as $vector3){
+		foreach($this->position->sides($step) as $vector3){
 			yield $world->getBlock($vector3);
 		}
 	}
