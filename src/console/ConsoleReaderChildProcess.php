@@ -46,13 +46,17 @@ if($socket === false){
 	throw new \RuntimeException("Failed to connect to server process ($errCode): $errMessage");
 }
 
-$channel = new \Threaded();
+/** @phpstan-var \ThreadedArray<int, string> $channel */
+$channel = new \ThreadedArray();
 $thread = new class($channel) extends \Thread{
+	/**
+	 * @phpstan-param \ThreadedArray<int, string> $channel
+	 */
 	public function __construct(
-		private \Threaded $channel,
+		private \ThreadedArray $channel,
 	){}
 
-	public function run(){
+	public function run() : void{
 		require dirname(__DIR__, 2) . '/vendor/autoload.php';
 
 		$channel = $this->channel;
@@ -75,7 +79,6 @@ while(!feof($socket)){
 		if(count($channel) === 0){
 			$channel->wait(1_000_000);
 		}
-		/** @var string|null $line */
 		$line = $channel->shift();
 		return $line;
 	});

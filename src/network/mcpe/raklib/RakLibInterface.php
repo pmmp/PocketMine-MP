@@ -85,8 +85,10 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 
 		$this->sleeper = new SleeperNotifier();
 
-		$mainToThreadBuffer = new \Threaded();
-		$threadToMainBuffer = new \Threaded();
+		/** @phpstan-var \ThreadedArray<int, string> $mainToThreadBuffer */
+		$mainToThreadBuffer = new \ThreadedArray();
+		/** @phpstan-var \ThreadedArray<int, string> $threadToMainBuffer */
+		$threadToMainBuffer = new \ThreadedArray();
 
 		$this->rakLib = new RakLibServer(
 			$this->server->getLogger(),

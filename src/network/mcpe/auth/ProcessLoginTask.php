@@ -30,6 +30,7 @@ use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\protocol\types\login\JwtChainLinkBody;
 use pocketmine\network\mcpe\protocol\types\login\JwtHeader;
 use pocketmine\scheduler\AsyncTask;
+use pocketmine\thread\NonThreadSafeValue;
 use function base64_decode;
 use function igbinary_serialize;
 use function igbinary_unserialize;
@@ -49,8 +50,10 @@ class ProcessLoginTask extends AsyncTask{
 	 * Whether the keychain signatures were validated correctly. This will be set to an error message if any link in the
 	 * keychain is invalid for whatever reason (bad signature, not in nbf-exp window, etc). If this is non-null, the
 	 * keychain might have been tampered with. The player will always be disconnected if this is non-null.
+	 *
+	 * @phpstan-var NonThreadSafeValue<Translatable>|string|null
 	 */
-	private Translatable|string|null $error = "Unknown";
+	private NonThreadSafeValue|string|null $error = "Unknown";
 	/**
 	 * Whether the player is logged into Xbox Live. This is true if any link in the keychain is signed with the Mojang
 	 * root public key.
@@ -77,7 +80,8 @@ class ProcessLoginTask extends AsyncTask{
 			$this->clientPublicKey = $this->validateChain();
 			$this->error = null;
 		}catch(VerifyLoginException $e){
-			$this->error = $e->getDisconnectMessage();
+			$disconnectMessage = $e->getDisconnectMessage();
+			$this->error = $disconnectMessage instanceof Translatable ? new NonThreadSafeValue($disconnectMessage) : $disconnectMessage;
 		}
 	}
 
@@ -195,6 +199,6 @@ class ProcessLoginTask extends AsyncTask{
 		 * @phpstan-var \Closure(bool, bool, Translatable|string|null, ?string) : void $callback
 		 */
 		$callback = $this->fetchLocal(self::TLS_KEY_ON_COMPLETION);
-		$callback($this->authenticated, $this->authRequired, $this->error, $this->clientPublicKey);
+		$callback($this->authenticated, $this->authRequired, $this->error instanceof NonThreadSafeValue ? $this->error->deserialize() : $this->error, $this->clientPublicKey);
 	}
 }
