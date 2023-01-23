@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5725b919e65c02842812b1fed8a3d77c",
+    "content-hash": "17ca826af1a32c9768cd162e75d10ad5",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -469,16 +469,16 @@
         },
         {
             "name": "pocketmine/classloader",
-            "version": "dev-pthreads-v5",
+            "version": "0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/ClassLoader.git",
-                "reference": "dc98186e947d8940b8f6f4dbb2837f7c961a4812"
+                "reference": "407caf521186ec1f03024f39031cc681ad491026"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/dc98186e947d8940b8f6f4dbb2837f7c961a4812",
-                "reference": "dc98186e947d8940b8f6f4dbb2837f7c961a4812",
+                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/407caf521186ec1f03024f39031cc681ad491026",
+                "reference": "407caf521186ec1f03024f39031cc681ad491026",
                 "shasum": ""
             },
             "require": {
@@ -508,9 +508,9 @@
             "description": "Ad-hoc autoloading components used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/ClassLoader/issues",
-                "source": "https://github.com/pmmp/ClassLoader/tree/pthreads-v5"
+                "source": "https://github.com/pmmp/ClassLoader/tree/0.3.0"
             },
-            "time": "2023-01-20T18:50:37+00:00"
+            "time": "2023-01-23T19:46:53+00:00"
         },
         {
             "name": "pocketmine/color",
@@ -655,16 +655,16 @@
         },
         {
             "name": "pocketmine/log-pthreads",
-            "version": "dev-pthreads-v5",
+            "version": "0.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/LogPthreads.git",
-                "reference": "83a66c9b8c39531b97a3b08c0ea97db967a3c60a"
+                "reference": "0ecfea6dcfc9a9f5c86e126ac1661732de5c5666"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/LogPthreads/zipball/83a66c9b8c39531b97a3b08c0ea97db967a3c60a",
-                "reference": "83a66c9b8c39531b97a3b08c0ea97db967a3c60a",
+                "url": "https://api.github.com/repos/pmmp/LogPthreads/zipball/0ecfea6dcfc9a9f5c86e126ac1661732de5c5666",
+                "reference": "0ecfea6dcfc9a9f5c86e126ac1661732de5c5666",
                 "shasum": ""
             },
             "require": {
@@ -693,9 +693,9 @@
             "description": "Logging components specialized for pthreads used by PocketMine-MP and related projects",
             "support": {
                 "issues": "https://github.com/pmmp/LogPthreads/issues",
-                "source": "https://github.com/pmmp/LogPthreads/tree/pthreads-v5"
+                "source": "https://github.com/pmmp/LogPthreads/tree/0.5.0"
             },
-            "time": "2023-01-20T19:45:45+00:00"
+            "time": "2023-01-23T19:52:12+00:00"
         },
         {
             "name": "pocketmine/math",
@@ -866,16 +866,16 @@
         },
         {
             "name": "pocketmine/snooze",
-            "version": "dev-pthreads-v5",
+            "version": "0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Snooze.git",
-                "reference": "8589ddfa1672215dcc78d8edb7acb4cf67d59d5a"
+                "reference": "6b1d6cc645d674590ff9be2438ac00032f9ee292"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/8589ddfa1672215dcc78d8edb7acb4cf67d59d5a",
-                "reference": "8589ddfa1672215dcc78d8edb7acb4cf67d59d5a",
+                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/6b1d6cc645d674590ff9be2438ac00032f9ee292",
+                "reference": "6b1d6cc645d674590ff9be2438ac00032f9ee292",
                 "shasum": ""
             },
             "require": {
@@ -900,9 +900,9 @@
             "description": "Thread notification management library for code using the pthreads extension",
             "support": {
                 "issues": "https://github.com/pmmp/Snooze/issues",
-                "source": "https://github.com/pmmp/Snooze/tree/pthreads-v5"
+                "source": "https://github.com/pmmp/Snooze/tree/0.4.0"
             },
-            "time": "2023-01-20T18:19:39+00:00"
+            "time": "2023-01-23T19:43:19+00:00"
         },
         {
             "name": "ramsey/collection",
@@ -3374,10 +3374,7 @@
     "stability-flags": {
         "pocketmine/bedrock-block-upgrade-schema": 20,
         "pocketmine/bedrock-data": 20,
-        "pocketmine/bedrock-item-upgrade-schema": 20,
-        "pocketmine/classloader": 20,
-        "pocketmine/log-pthreads": 20,
-        "pocketmine/snooze": 20
+        "pocketmine/bedrock-item-upgrade-schema": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
