@@ -2051,7 +2051,7 @@ class World implements ChunkManager{
 		}
 
 		if($player !== null){
-			$ev = new BlockPlaceEvent($player, $hand, $blockReplace, $blockClicked, $item);
+			$ev = new BlockPlaceEvent($player, $tx, $blockClicked, $item);
 			if($player->isSpectator()){
 				$ev->cancel();
 			}
