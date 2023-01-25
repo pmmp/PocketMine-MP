@@ -140,6 +140,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("andesite_wall", fn() => Blocks::ANDESITE_WALL());
 		$result->registerBlock("anvil", fn() => Blocks::ANVIL());
 		$result->registerBlock("ateupd_block", fn() => Blocks::INFO_UPDATE2());
+		$result->registerBlock("azalea_leaves", fn() => Blocks::AZALEA_LEAVES());
 		$result->registerBlock("azure_bluet", fn() => Blocks::AZURE_BLUET());
 		$result->registerBlock("bamboo", fn() => Blocks::BAMBOO());
 		$result->registerBlock("bamboo_sapling", fn() => Blocks::BAMBOO_SAPLING());
@@ -625,6 +626,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("fletching_table", fn() => Blocks::FLETCHING_TABLE());
 		$result->registerBlock("flower_pot", fn() => Blocks::FLOWER_POT());
 		$result->registerBlock("flower_pot_block", fn() => Blocks::FLOWER_POT());
+		$result->registerBlock("flowering_azalea_leaves", fn() => Blocks::FLOWERING_AZALEA_LEAVES());
 		$result->registerBlock("flowing_lava", fn() => Blocks::LAVA());
 		$result->registerBlock("flowing_water", fn() => Blocks::WATER());
 		$result->registerBlock("frame", fn() => Blocks::ITEM_FRAME());
@@ -755,6 +757,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("mangrove_door", fn() => Blocks::MANGROVE_DOOR());
 		$result->registerBlock("mangrove_fence", fn() => Blocks::MANGROVE_FENCE());
 		$result->registerBlock("mangrove_fence_gate", fn() => Blocks::MANGROVE_FENCE_GATE());
+		$result->registerBlock("mangrove_leaves", fn() => Blocks::MANGROVE_LEAVES());
 		$result->registerBlock("mangrove_log", fn() => Blocks::MANGROVE_LOG()->setStripped(false));
 		$result->registerBlock("mangrove_planks", fn() => Blocks::MANGROVE_PLANKS());
 		$result->registerBlock("mangrove_pressure_plate", fn() => Blocks::MANGROVE_PRESSURE_PLATE());

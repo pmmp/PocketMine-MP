@@ -37,6 +37,7 @@ use pocketmine\block\FloorCoralFan;
 use pocketmine\block\FloorSign;
 use pocketmine\block\GlazedTerracotta;
 use pocketmine\block\ItemFrame;
+use pocketmine\block\Leaves;
 use pocketmine\block\Liquid;
 use pocketmine\block\RedMushroomBlock;
 use pocketmine\block\RedstoneComparator;
@@ -176,6 +177,13 @@ final class BlockStateDeserializerHelper{
 		return $block
 			->setFacing($in->readFacingDirection())
 			->setHasMap($in->readBool(StateNames::ITEM_FRAME_MAP_BIT));
+	}
+
+	/** @throws BlockStateDeserializeException */
+	public static function decodeLeaves(Leaves $block, BlockStateReader $in) : Leaves{
+		return $block
+			->setNoDecay($in->readBool(StateNames::PERSISTENT_BIT))
+			->setCheckDecay($in->readBool(StateNames::UPDATE_BIT));
 	}
 
 	/** @throws BlockStateDeserializeException */

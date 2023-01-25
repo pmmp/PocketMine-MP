@@ -147,7 +147,7 @@ final class BlockStateSerializerHelper{
 			->writeFacingDirection($block->getFacing());
 	}
 
-	private static function encodeLeaves(Leaves $block, BlockStateWriter $out) : BlockStateWriter{
+	public static function encodeLeaves(Leaves $block, BlockStateWriter $out) : BlockStateWriter{
 		return $out
 			->writeBool(BlockStateNames::PERSISTENT_BIT, $block->isNoDecay())
 			->writeBool(BlockStateNames::UPDATE_BIT, $block->isCheckDecay());

@@ -457,6 +457,8 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				})
 				->setFacing($in->readLegacyHorizontalFacing());
 		});
+		$this->map(Ids::AZALEA_LEAVES, fn(Reader $in) => Helper::decodeLeaves(Blocks::AZALEA_LEAVES(), $in));
+		$this->map(Ids::AZALEA_LEAVES_FLOWERED, fn(Reader $in) => Helper::decodeLeaves(Blocks::FLOWERING_AZALEA_LEAVES(), $in));
 		$this->map(Ids::BAMBOO, function(Reader $in) : Block{
 			return Blocks::BAMBOO()
 				->setLeafSize(match($value = $in->readString(StateNames::BAMBOO_LEAF_SIZE)){
@@ -787,26 +789,18 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setHanging($in->readBool(StateNames::HANGING));
 		});
 		$this->map(Ids::LAVA, fn(Reader $in) => Helper::decodeStillLiquid(Blocks::LAVA(), $in));
-		$this->map(Ids::LEAVES, function(Reader $in) : Block{
-			return (match($type = $in->readString(StateNames::OLD_LEAF_TYPE)){
-					StringValues::OLD_LEAF_TYPE_BIRCH => Blocks::BIRCH_LEAVES(),
-					StringValues::OLD_LEAF_TYPE_JUNGLE => Blocks::JUNGLE_LEAVES(),
-					StringValues::OLD_LEAF_TYPE_OAK => Blocks::OAK_LEAVES(),
-					StringValues::OLD_LEAF_TYPE_SPRUCE => Blocks::SPRUCE_LEAVES(),
-					default => throw $in->badValueException(StateNames::OLD_LEAF_TYPE, $type),
-				})
-				->setNoDecay($in->readBool(StateNames::PERSISTENT_BIT))
-				->setCheckDecay($in->readBool(StateNames::UPDATE_BIT));
-		});
-		$this->map(Ids::LEAVES2, function(Reader $in) : Block{
-			return (match($type = $in->readString(StateNames::NEW_LEAF_TYPE)){
-					StringValues::NEW_LEAF_TYPE_ACACIA => Blocks::ACACIA_LEAVES(),
-					StringValues::NEW_LEAF_TYPE_DARK_OAK => Blocks::DARK_OAK_LEAVES(),
-					default => throw $in->badValueException(StateNames::NEW_LEAF_TYPE, $type),
-				})
-				->setNoDecay($in->readBool(StateNames::PERSISTENT_BIT))
-				->setCheckDecay($in->readBool(StateNames::UPDATE_BIT));
-		});
+		$this->map(Ids::LEAVES, fn(Reader $in) => Helper::decodeLeaves(match($type = $in->readString(StateNames::OLD_LEAF_TYPE)){
+			StringValues::OLD_LEAF_TYPE_BIRCH => Blocks::BIRCH_LEAVES(),
+			StringValues::OLD_LEAF_TYPE_JUNGLE => Blocks::JUNGLE_LEAVES(),
+			StringValues::OLD_LEAF_TYPE_OAK => Blocks::OAK_LEAVES(),
+			StringValues::OLD_LEAF_TYPE_SPRUCE => Blocks::SPRUCE_LEAVES(),
+			default => throw $in->badValueException(StateNames::OLD_LEAF_TYPE, $type),
+		}, $in));
+		$this->map(Ids::LEAVES2, fn(Reader $in) => Helper::decodeLeaves(match($type = $in->readString(StateNames::NEW_LEAF_TYPE)){
+			StringValues::NEW_LEAF_TYPE_ACACIA => Blocks::ACACIA_LEAVES(),
+			StringValues::NEW_LEAF_TYPE_DARK_OAK => Blocks::DARK_OAK_LEAVES(),
+			default => throw $in->badValueException(StateNames::NEW_LEAF_TYPE, $type),
+		}, $in));
 		$this->map(Ids::LECTERN, function(Reader $in) : Block{
 			return Blocks::LECTERN()
 				->setFacing($in->readLegacyHorizontalFacing())
@@ -887,6 +881,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::MANGROVE_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::MANGROVE_DOOR(), $in));
 		$this->mapSlab(Ids::MANGROVE_SLAB, Ids::MANGROVE_DOUBLE_SLAB, fn() => Blocks::MANGROVE_SLAB());
 		$this->map(Ids::MANGROVE_FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::MANGROVE_FENCE_GATE(), $in));
+		$this->map(Ids::MANGROVE_LEAVES, fn(Reader $in) => Helper::decodeLeaves(Blocks::MANGROVE_LEAVES(), $in));
 		$this->map(Ids::MANGROVE_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::MANGROVE_LOG(), false, $in));
 		$this->map(Ids::MANGROVE_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::MANGROVE_PRESSURE_PLATE(), $in));
 		$this->mapStairs(Ids::MANGROVE_STAIRS, fn() => Blocks::MANGROVE_STAIRS());

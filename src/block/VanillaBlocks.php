@@ -54,6 +54,7 @@ use pocketmine\block\tile\Note as TileNote;
 use pocketmine\block\tile\ShulkerBox as TileShulkerBox;
 use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\tile\Smoker as TileSmoker;
+use pocketmine\block\utils\LeavesType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\block\utils\WoodType;
 use pocketmine\crafting\FurnaceType;
@@ -99,6 +100,7 @@ use function mb_strtolower;
  * @method static Stair ANDESITE_STAIRS()
  * @method static Wall ANDESITE_WALL()
  * @method static Anvil ANVIL()
+ * @method static Leaves AZALEA_LEAVES()
  * @method static Flower AZURE_BLUET()
  * @method static Bamboo BAMBOO()
  * @method static BambooSapling BAMBOO_SAPLING()
@@ -402,6 +404,7 @@ use function mb_strtolower;
  * @method static TallGrass FERN()
  * @method static Fire FIRE()
  * @method static FletchingTable FLETCHING_TABLE()
+ * @method static Leaves FLOWERING_AZALEA_LEAVES()
  * @method static FlowerPot FLOWER_POT()
  * @method static Froglight FROGLIGHT()
  * @method static FrostedIce FROSTED_ICE()
@@ -485,6 +488,7 @@ use function mb_strtolower;
  * @method static WoodenDoor MANGROVE_DOOR()
  * @method static WoodenFence MANGROVE_FENCE()
  * @method static FenceGate MANGROVE_FENCE_GATE()
+ * @method static Leaves MANGROVE_LEAVES()
  * @method static Wood MANGROVE_LOG()
  * @method static Planks MANGROVE_PLANKS()
  * @method static WoodenPressurePlate MANGROVE_PRESSURE_PLATE()
@@ -1106,7 +1110,10 @@ final class VanillaBlocks{
 		foreach(TreeType::getAll() as $treeType){
 			$name = $treeType->getDisplayName();
 			self::register($treeType->name() . "_sapling", new Sapling(BlockLegacyIdHelper::getSaplingIdentifier($treeType), $name . " Sapling", $saplingTypeInfo, $treeType));
-			self::register($treeType->name() . "_leaves", new Leaves(BlockLegacyIdHelper::getLeavesIdentifier($treeType), $name . " Leaves", $leavesBreakInfo, $treeType));
+		}
+		foreach(LeavesType::getAll() as $leavesType){
+			$name = $leavesType->getDisplayName();
+			self::register($leavesType->name() . "_leaves", new Leaves(BlockLegacyIdHelper::getLeavesIdentifier($leavesType), $name . " Leaves", $leavesBreakInfo, $leavesType));
 		}
 
 		$sandstoneBreakInfo = new Info(BreakInfo::pickaxe(0.8, ToolTier::WOOD()));
