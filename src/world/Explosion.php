@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
+use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\TNT;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
@@ -81,7 +81,7 @@ class Explosion{
 			return false;
 		}
 
-		$blockFactory = BlockFactory::getInstance();
+		$blockFactory = RuntimeBlockStateRegistry::getInstance();
 
 		$mRays = $this->rays - 1;
 		for($i = 0; $i < $this->rays; ++$i){
@@ -112,7 +112,7 @@ class Explosion{
 								continue;
 							}
 
-							$state = $this->subChunkExplorer->currentSubChunk->getFullBlock($vBlockX & SubChunk::COORD_MASK, $vBlockY & SubChunk::COORD_MASK, $vBlockZ & SubChunk::COORD_MASK);
+							$state = $this->subChunkExplorer->currentSubChunk->getBlockStateId($vBlockX & SubChunk::COORD_MASK, $vBlockY & SubChunk::COORD_MASK, $vBlockZ & SubChunk::COORD_MASK);
 
 							$blastResistance = $blockFactory->blastResistance[$state] ?? 0;
 							if($blastResistance >= 0){

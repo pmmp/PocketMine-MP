@@ -85,16 +85,16 @@ class Nether extends Generator{
 
 				for($y = 0; $y < 128; ++$y){
 					if($y === 0 || $y === 127){
-						$chunk->setFullBlock($x, $y, $z, $bedrock);
+						$chunk->setBlockStateId($x, $y, $z, $bedrock);
 						continue;
 					}
 					$noiseValue = (abs($this->emptyHeight - $y) / $this->emptyHeight) * $this->emptyAmplitude - $noise[$x][$z][$y];
 					$noiseValue -= 1 - $this->density;
 
 					if($noiseValue > 0){
-						$chunk->setFullBlock($x, $y, $z, $netherrack);
+						$chunk->setBlockStateId($x, $y, $z, $netherrack);
 					}elseif($y <= $this->waterHeight){
-						$chunk->setFullBlock($x, $y, $z, $stillLava);
+						$chunk->setBlockStateId($x, $y, $z, $stillLava);
 					}
 				}
 			}

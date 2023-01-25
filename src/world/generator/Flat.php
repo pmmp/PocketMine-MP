@@ -77,7 +77,7 @@ class Flat extends Generator{
 
 				for($Z = 0; $Z < SubChunk::EDGE_LENGTH; ++$Z){
 					for($X = 0; $X < SubChunk::EDGE_LENGTH; ++$X){
-						$subchunk->setFullBlock($X, $y, $Z, $id);
+						$subchunk->setBlockStateId($X, $y, $Z, $id);
 					}
 				}
 			}

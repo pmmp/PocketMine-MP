@@ -32,7 +32,6 @@ use pocketmine\block\Bed;
 use pocketmine\block\Beetroot;
 use pocketmine\block\Bell;
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
 use pocketmine\block\BoneBlock;
 use pocketmine\block\BrewingStand;
 use pocketmine\block\BrownMushroomBlock;
@@ -107,6 +106,7 @@ use pocketmine\block\RedstoneOre;
 use pocketmine\block\RedstoneRepeater;
 use pocketmine\block\RedstoneTorch;
 use pocketmine\block\RedstoneWire;
+use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\Sapling;
 use pocketmine\block\SeaPickle;
 use pocketmine\block\SimplePillar;
@@ -197,7 +197,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	public function serialize(int $stateId) : BlockStateData{
 		//TODO: singleton usage not ideal
 		//TODO: we may want to deduplicate cache entries to avoid wasting memory
-		return $this->cache[$stateId] ??= $this->serializeBlock(BlockFactory::getInstance()->fromStateId($stateId));
+		return $this->cache[$stateId] ??= $this->serializeBlock(RuntimeBlockStateRegistry::getInstance()->fromStateId($stateId));
 	}
 
 	/**

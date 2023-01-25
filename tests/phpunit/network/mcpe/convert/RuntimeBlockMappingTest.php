@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\convert;
 
 use PHPUnit\Framework\TestCase;
-use pocketmine\block\BlockFactory;
+use pocketmine\block\RuntimeBlockStateRegistry;
 
 class RuntimeBlockMappingTest extends TestCase{
 
@@ -32,7 +32,7 @@ class RuntimeBlockMappingTest extends TestCase{
 	 * @doesNotPerformAssertions
 	 */
 	public function testAllBlockStatesSerialize() : void{
-		foreach(BlockFactory::getInstance()->getAllKnownStates() as $state){
+		foreach(RuntimeBlockStateRegistry::getInstance()->getAllKnownStates() as $state){
 			RuntimeBlockMapping::getInstance()->toRuntimeId($state->getStateId());
 		}
 	}
