@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\LeavesType;
 use pocketmine\block\utils\SupportType;
-use pocketmine\block\utils\TreeType;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\event\block\LeavesDecayEvent;
