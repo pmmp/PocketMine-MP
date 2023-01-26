@@ -35,6 +35,7 @@ use pocketmine\event\entity\EntityExplodeEvent;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\format\SubChunk;
 use pocketmine\world\particle\HugeExplodeSeedParticle;
 use pocketmine\world\sound\ExplodeSound;
@@ -111,8 +112,12 @@ class Explosion{
 							if($this->subChunkExplorer->moveTo($vBlockX, $vBlockY, $vBlockZ) === SubChunkExplorerStatus::INVALID){
 								continue;
 							}
+							$subChunk = $this->subChunkExplorer->currentSubChunk;
+							if($subChunk === null){
+								throw new AssumptionFailedError("SubChunkExplorer subchunk should not be null here");
+							}
 
-							$state = $this->subChunkExplorer->currentSubChunk->getBlockStateId($vBlockX & SubChunk::COORD_MASK, $vBlockY & SubChunk::COORD_MASK, $vBlockZ & SubChunk::COORD_MASK);
+							$state = $subChunk->getBlockStateId($vBlockX & SubChunk::COORD_MASK, $vBlockY & SubChunk::COORD_MASK, $vBlockZ & SubChunk::COORD_MASK);
 
 							$blastResistance = $blockFactory->blastResistance[$state] ?? 0;
 							if($blastResistance >= 0){

@@ -42,6 +42,7 @@ use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
@@ -216,7 +217,11 @@ class Block{
 	 */
 	public function writeStateToWorld() : void{
 		$world = $this->position->getWorld();
-		$world->getOrLoadChunkAtPosition($this->position)->setBlockStateId($this->position->x & Chunk::COORD_MASK, $this->position->y, $this->position->z & Chunk::COORD_MASK, $this->getStateId());
+		$chunk = $world->getOrLoadChunkAtPosition($this->position);
+		if($chunk === null){
+			throw new AssumptionFailedError("World::setBlock() should have loaded the chunk before calling this method");
+		}
+		$chunk->setBlockStateId($this->position->x & Chunk::COORD_MASK, $this->position->y, $this->position->z & Chunk::COORD_MASK, $this->getStateId());
 
 		$tileType = $this->idInfo->getTileClass();
 		$oldTile = $world->getTile($this->position);
