@@ -208,8 +208,8 @@ class SkyLightUpdate extends LightUpdate{
 	/**
 	 * Recalculates the heightmap for the block column at the specified X/Z chunk coordinates
 	 *
-	 * @param int $x 0-15
-	 * @param int $z 0-15
+	 * @param int                   $x                      0-15
+	 * @param int                   $z                      0-15
 	 * @param \SplFixedArray|bool[] $directSkyLightBlockers
 	 * @phpstan-param \SplFixedArray<bool> $directSkyLightBlockers
 	 *

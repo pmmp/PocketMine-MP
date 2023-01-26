@@ -95,7 +95,7 @@ class Lever extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy($blockClicked, $face)){
+		if(!$this->canBeSupportedBy($blockReplace->getSide(Facing::opposite($face)), $face)){
 			return false;
 		}
 

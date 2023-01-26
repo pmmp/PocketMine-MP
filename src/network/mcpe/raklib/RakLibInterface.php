@@ -36,6 +36,7 @@ use pocketmine\network\NetworkInterfaceStartException;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
+use pocketmine\timings\Timings;
 use pocketmine\utils\Utils;
 use raklib\generic\SocketException;
 use raklib\protocol\EncapsulatedPacket;
@@ -52,6 +53,7 @@ use function mt_rand;
 use function random_bytes;
 use function rtrim;
 use function substr;
+use const PHP_INT_MAX;
 
 class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	/**
@@ -109,7 +111,12 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 
 	public function start() : void{
 		$this->server->getTickSleeper()->addNotifier($this->sleeper, function() : void{
-			while($this->eventReceiver->handle($this));
+			Timings::$connection->startTiming();
+			try{
+				while($this->eventReceiver->handle($this));
+			}finally{
+				Timings::$connection->stopTiming();
+			}
 		});
 		$this->server->getLogger()->debug("Waiting for RakLib to start...");
 		try{

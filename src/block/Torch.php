@@ -65,7 +65,6 @@ class Torch extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$below = $this->getSide(Facing::DOWN);
 		$face = Facing::opposite($this->facing);
 
 		if(!$this->canBeSupportedBy($this->getSide($face), $this->facing)){
@@ -74,10 +73,7 @@ class Torch extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($blockClicked->canBeReplaced() && $this->canBeSupportedBy($blockClicked->getSide(Facing::DOWN), Facing::UP)){
-			$this->facing = Facing::UP;
-			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif($face !== Facing::DOWN && $this->canBeSupportedBy($blockClicked, $face)){
+		if($face !== Facing::DOWN && $this->canBeSupportedBy($blockReplace->getSide(Facing::opposite($face)), $face)){
 			$this->facing = $face;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}else{

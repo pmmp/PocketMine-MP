@@ -29,6 +29,7 @@ use pocketmine\lang\Translatable;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
 use pocketmine\Server;
+use const PHP_INT_MAX;
 
 /**
  * Forwards any messages it receives via sendMessage() to the given logger. Used for forwarding chat messages and

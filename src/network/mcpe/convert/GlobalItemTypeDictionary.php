@@ -26,10 +26,9 @@ namespace pocketmine\network\mcpe\convert;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
-use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
-use function file_get_contents;
 use function is_array;
 use function is_bool;
 use function is_int;
@@ -40,7 +39,7 @@ final class GlobalItemTypeDictionary{
 	use SingletonTrait;
 
 	private static function make() : self{
-		$data = Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'required_item_list.json')), "Missing required resource file");
+		$data = Filesystem::fileGetContents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'required_item_list.json'));
 		$table = json_decode($data, true);
 		if(!is_array($table)){
 			throw new AssumptionFailedError("Invalid item list format");

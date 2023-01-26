@@ -31,6 +31,9 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\sound\ItemFrameAddItemSound;
+use pocketmine\world\sound\ItemFrameRemoveItemSound;
+use pocketmine\world\sound\ItemFrameRotateItemSound;
 use function is_infinite;
 use function is_nan;
 use function lcg_value;
@@ -136,8 +139,12 @@ class ItemFrame extends Flowable{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($this->framedItem !== null){
 			$this->itemRotation = ($this->itemRotation + 1) % self::ROTATIONS;
+
+			$this->position->getWorld()->addSound($this->position, new ItemFrameRotateItemSound());
 		}elseif(!$item->isNull()){
 			$this->framedItem = $item->pop();
+
+			$this->position->getWorld()->addSound($this->position, new ItemFrameAddItemSound());
 		}else{
 			return true;
 		}
@@ -154,6 +161,7 @@ class ItemFrame extends Flowable{
 		$world = $this->position->getWorld();
 		if(lcg_value() <= $this->itemDropChance){
 			$world->dropItem($this->position->add(0.5, 0.5, 0.5), clone $this->framedItem);
+			$world->addSound($this->position, new ItemFrameRemoveItemSound());
 		}
 		$this->setFramedItem(null);
 		$world->setBlock($this->position, $this);
@@ -167,7 +175,7 @@ class ItemFrame extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($face === Facing::DOWN || $face === Facing::UP || !$blockClicked->isSolid()){
+		if($face === Facing::DOWN || $face === Facing::UP || !$blockReplace->getSide(Facing::opposite($face))->isSolid()){
 			return false;
 		}
 
