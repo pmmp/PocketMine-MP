@@ -1510,7 +1510,15 @@ final class VanillaBlocks{
 		self::register("raw_iron", new Opaque(new BID(Ids::RAW_IRON), "Raw Iron Block", new Info(BreakInfo::pickaxe(5, ToolTier::STONE(), 30.0))));
 
 		$deepslateBreakInfo = new Info(BreakInfo::pickaxe(3, ToolTier::WOOD(), 18.0));
-		self::register("deepslate", new SimplePillar(new BID(Ids::DEEPSLATE), "Deepslate", $deepslateBreakInfo));
+		self::register("deepslate", new class(new BID(Ids::DEEPSLATE), "Deepslate", $deepslateBreakInfo) extends SimplePillar{
+			public function getDropsForCompatibleTool(Item $item) : array{
+				return [VanillaBlocks::COBBLED_DEEPSLATE()->asItem()];
+			}
+
+			public function isAffectedBySilkTouch() : bool{
+				return true;
+			}
+		});
 
 		//TODO: parity issue here - in Java this has a hardness of 3.0, but in bedrock it's 3.5
 		self::register("chiseled_deepslate", new Opaque(new BID(Ids::CHISELED_DEEPSLATE), "Chiseled Deepslate", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD(), 18.0))));
