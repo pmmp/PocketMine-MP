@@ -141,7 +141,8 @@ class Normal extends Generator{
 
 		$noise = $this->noiseBase->getFastNoise3D(Chunk::EDGE_LENGTH, 128, Chunk::EDGE_LENGTH, 4, 8, 4, $chunkX * Chunk::EDGE_LENGTH, 0, $chunkZ * Chunk::EDGE_LENGTH);
 
-		$chunk = $world->getChunk($chunkX, $chunkZ);
+		//TODO: why don't we just create and set the chunk here directly?
+		$chunk = $world->getChunk($chunkX, $chunkZ) ?? throw new \InvalidArgumentException("Chunk $chunkX $chunkZ does not yet exist");
 
 		$biomeCache = [];
 
