@@ -731,11 +731,6 @@ parameters:
 			path: ../../../src/network/mcpe/encryption/PrepareEncryptionTask.php
 
 		-
-			message: "#^Method pocketmine\\\\network\\\\mcpe\\\\raklib\\\\PthreadsChannelReader\\:\\:read\\(\\) should return string\\|null but returns mixed\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/raklib/PthreadsChannelReader.php
-
-		-
 			message: "#^Method pocketmine\\\\permission\\\\DefaultPermissions\\:\\:registerPermission\\(\\) should return pocketmine\\\\permission\\\\Permission but returns pocketmine\\\\permission\\\\Permission\\|null\\.$#"
 			count: 1
 			path: ../../../src/permission/DefaultPermissions.php
@@ -832,21 +827,6 @@ parameters:
 
 		-
 			message: "#^Cannot call method handleException\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
-			count: 1
-			path: ../../../src/scheduler/AsyncTask.php
-
-		-
-			message: "#^PHPDoc type pocketmine\\\\scheduler\\\\AsyncWorker\\|null of property pocketmine\\\\scheduler\\\\AsyncTask\\:\\:\\$worker is not the same as PHPDoc type Worker of overridden property Threaded\\:\\:\\$worker\\.$#"
-			count: 1
-			path: ../../../src/scheduler/AsyncTask.php
-
-		-
-			message: "#^Parameter \\#1 \\$str of function igbinary_unserialize expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/scheduler/AsyncTask.php
-
-		-
-			message: "#^Property pocketmine\\\\scheduler\\\\AsyncTask\\:\\:\\$result \\(bool\\|float\\|int\\|string\\|null\\) does not accept mixed\\.$#"
 			count: 1
 			path: ../../../src/scheduler/AsyncTask.php
 
