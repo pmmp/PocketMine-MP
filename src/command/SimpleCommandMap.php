@@ -73,8 +73,8 @@ use pocketmine\utils\TextFormat;
 use function array_shift;
 use function count;
 use function implode;
+use function str_contains;
 use function strcasecmp;
-use function strpos;
 use function strtolower;
 use function trim;
 
@@ -89,46 +89,46 @@ class SimpleCommandMap implements CommandMap{
 
 	private function setDefaultCommands() : void{
 		$this->registerAll("pocketmine", [
-			new BanCommand("ban"),
-			new BanIpCommand("ban-ip"),
-			new BanListCommand("banlist"),
-			new ClearCommand("clear"),
-			new DefaultGamemodeCommand("defaultgamemode"),
-			new DeopCommand("deop"),
-			new DifficultyCommand("difficulty"),
-			new DumpMemoryCommand("dumpmemory"),
-			new EffectCommand("effect"),
-			new EnchantCommand("enchant"),
-			new GamemodeCommand("gamemode"),
-			new GarbageCollectorCommand("gc"),
-			new GiveCommand("give"),
-			new HelpCommand("help"),
-			new KickCommand("kick"),
-			new KillCommand("kill"),
-			new ListCommand("list"),
-			new MeCommand("me"),
-			new OpCommand("op"),
-			new PardonCommand("pardon"),
-			new PardonIpCommand("pardon-ip"),
-			new ParticleCommand("particle"),
-			new PluginsCommand("plugins"),
-			new SaveCommand("save-all"),
-			new SaveOffCommand("save-off"),
-			new SaveOnCommand("save-on"),
-			new SayCommand("say"),
-			new SeedCommand("seed"),
-			new SetWorldSpawnCommand("setworldspawn"),
-			new SpawnpointCommand("spawnpoint"),
-			new StatusCommand("status"),
-			new StopCommand("stop"),
-			new TeleportCommand("tp"),
-			new TellCommand("tell"),
-			new TimeCommand("time"),
-			new TimingsCommand("timings"),
-			new TitleCommand("title"),
-			new TransferServerCommand("transferserver"),
-			new VersionCommand("version"),
-			new WhitelistCommand("whitelist")
+			new BanCommand(),
+			new BanIpCommand(),
+			new BanListCommand(),
+			new ClearCommand(),
+			new DefaultGamemodeCommand(),
+			new DeopCommand(),
+			new DifficultyCommand(),
+			new DumpMemoryCommand(),
+			new EffectCommand(),
+			new EnchantCommand(),
+			new GamemodeCommand(),
+			new GarbageCollectorCommand(),
+			new GiveCommand(),
+			new HelpCommand(),
+			new KickCommand(),
+			new KillCommand(),
+			new ListCommand(),
+			new MeCommand(),
+			new OpCommand(),
+			new PardonCommand(),
+			new PardonIpCommand(),
+			new ParticleCommand(),
+			new PluginsCommand(),
+			new SaveCommand(),
+			new SaveOffCommand(),
+			new SaveOnCommand(),
+			new SayCommand(),
+			new SeedCommand(),
+			new SetWorldSpawnCommand(),
+			new SpawnpointCommand(),
+			new StatusCommand(),
+			new StopCommand(),
+			new TeleportCommand(),
+			new TellCommand(),
+			new TimeCommand(),
+			new TimingsCommand(),
+			new TitleCommand(),
+			new TransferServerCommand(),
+			new VersionCommand(),
+			new WhitelistCommand()
 		]);
 	}
 
@@ -242,7 +242,7 @@ class SimpleCommandMap implements CommandMap{
 		$values = $this->server->getCommandAliases();
 
 		foreach($values as $alias => $commandStrings){
-			if(strpos($alias, ":") !== false){
+			if(str_contains($alias, ":")){
 				$this->server->getLogger()->warning($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_command_alias_illegal($alias)));
 				continue;
 			}

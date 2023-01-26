@@ -18,7 +18,7 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.22.0
+        uses: shivammathur/setup-php@2.23.0
         with:
           php-version: 8.0
 
@@ -55,6 +55,7 @@ jobs:
           echo ::set-output name=MCPE_VERSION::$(php -r 'require "vendor/autoload.php"; echo \pocketmine\network\mcpe\protocol\ProtocolInfo::MINECRAFT_VERSION_NETWORK;')
           echo ::set-output name=PM_VERSION_SHORT::$(php -r 'require "vendor/autoload.php"; $v = explode(".", \pocketmine\VersionInfo::BASE_VERSION); array_pop($v); echo implode(".", $v);')
           echo ::set-output name=PM_VERSION_MD::$(php -r 'require "vendor/autoload.php"; echo str_replace(".", "", \pocketmine\VersionInfo::BASE_VERSION);')
+          echo ::set-output name=CHANGELOG_SUFFIX::$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::BUILD_CHANNEL === "stable" ? "" : "-" . \pocketmine\VersionInfo::BUILD_CHANNEL;')
 
       - name: Generate build info
         run: php build/generate-build-info-json.php ${{ github.sha }} ${{ steps.get-pm-version.outputs.PM_VERSION }} ${{ github.repository }} ${{ steps.build-number.outputs.BUILD_NUMBER }} ${{ github.run_id }} > build_info.json
@@ -80,4 +81,4 @@ jobs:
           body: |
             **For Minecraft: Bedrock Edition ${{ steps.get-pm-version.outputs.MCPE_VERSION }}**
 
-            Please see the [changelogs](${{ github.server_url }}/${{ github.repository }}/blob/${{ steps.get-pm-version.outputs.PM_VERSION }}/changelogs/${{ steps.get-pm-version.outputs.PM_VERSION_SHORT }}.md#${{ steps.get-pm-version.outputs.PM_VERSION_MD }}) for details.
+            Please see the [changelogs](${{ github.server_url }}/${{ github.repository }}/blob/${{ steps.get-pm-version.outputs.PM_VERSION }}/changelogs/${{ steps.get-pm-version.outputs.PM_VERSION_SHORT }}${{ steps.get-pm-version.outputs.CHANGELOG_SUFFIX }}.md#${{ steps.get-pm-version.outputs.PM_VERSION_MD }}) for details.

@@ -36,9 +36,7 @@ use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
-use function chr;
 use function count;
-use function str_repeat;
 
 final class ChunkSerializer{
 	private function __construct(){
@@ -64,13 +62,16 @@ final class ChunkSerializer{
 		$stream = PacketSerializer::encoder($encoderContext);
 
 		$subChunkCount = self::getSubChunkCount($chunk);
-		for($y = Chunk::MIN_SUBCHUNK_INDEX, $writtenCount = 0; $writtenCount < $subChunkCount; ++$y, ++$writtenCount){
+		$writtenCount = 0;
+		for($y = Chunk::MIN_SUBCHUNK_INDEX; $writtenCount < $subChunkCount; ++$y, ++$writtenCount){
 			self::serializeSubChunk($chunk->getSubChunk($y), $blockMapper, $stream, false);
 		}
 
-		//TODO: right now we don't support 3D natively, so we just 3Dify our 2D biomes so they fill the column
-		$encodedBiomePalette = self::serializeBiomesAsPalette($chunk);
-		$stream->put(str_repeat($encodedBiomePalette, 24));
+		$biomeIdMap = LegacyBiomeIdToStringIdMap::getInstance();
+		//all biomes must always be written :(
+		for($y = Chunk::MIN_SUBCHUNK_INDEX; $y <= Chunk::MAX_SUBCHUNK_INDEX; ++$y){
+			self::serializeBiomePalette($chunk->getSubChunk($y)->getBiomeArray(), $biomeIdMap, $stream);
+		}
 
 		$stream->putByte(0); //border block array count
 		//Border block entry format: 1 byte (4 bits X, 4 bits Z). These are however useless since they crash the regular client.
@@ -123,6 +124,28 @@ final class ChunkSerializer{
 		}
 	}
 
+	private static function serializeBiomePalette(PalettedBlockArray $biomePalette, LegacyBiomeIdToStringIdMap $biomeIdMap, PacketSerializer $stream) : void{
+		$biomePaletteBitsPerBlock = $biomePalette->getBitsPerBlock();
+		$stream->putByte(($biomePaletteBitsPerBlock << 1) | 1); //the last bit is non-persistence (like for blocks), though it has no effect on biomes since they always use integer IDs
+		$stream->put($biomePalette->getWordArray());
+
+		//these LSHIFT by 1 uvarints are optimizations: the client expects zigzag varints here
+		//but since we know they are always unsigned, we can avoid the extra fcall overhead of
+		//zigzag and just shift directly.
+		$biomePaletteArray = $biomePalette->getPalette();
+		if($biomePaletteBitsPerBlock !== 0){
+			$stream->putUnsignedVarInt(count($biomePaletteArray) << 1);
+		}
+
+		foreach($biomePaletteArray as $p){
+			if($biomeIdMap->legacyToString($p) === null){
+				//make sure we aren't sending bogus biomes - the 1.18.0 client crashes if we do this
+				$p = BiomeIds::OCEAN;
+			}
+			$stream->put(Binary::writeUnsignedVarInt($p << 1));
+		}
+	}
+
 	public static function serializeTiles(Chunk $chunk) : string{
 		$stream = new BinaryStream();
 		foreach($chunk->getTiles() as $tile){
@@ -132,40 +155,5 @@ final class ChunkSerializer{
 		}
 
 		return $stream->getBuffer();
-	}
-
-	private static function serializeBiomesAsPalette(Chunk $chunk) : string{
-		$biomeIdMap = LegacyBiomeIdToStringIdMap::getInstance();
-		$biomePalette = new PalettedBlockArray($chunk->getBiomeId(0, 0));
-		for($x = 0; $x < 16; ++$x){
-			for($z = 0; $z < 16; ++$z){
-				$biomeId = $chunk->getBiomeId($x, $z);
-				if($biomeIdMap->legacyToString($biomeId) === null){
-					//make sure we aren't sending bogus biomes - the 1.18.0 client crashes if we do this
-					$biomeId = BiomeIds::OCEAN;
-				}
-				for($y = 0; $y < 16; ++$y){
-					$biomePalette->set($x, $y, $z, $biomeId);
-				}
-			}
-		}
-
-		$biomePaletteBitsPerBlock = $biomePalette->getBitsPerBlock();
-		$encodedBiomePalette =
-			chr(($biomePaletteBitsPerBlock << 1) | 1) . //the last bit is non-persistence (like for blocks), though it has no effect on biomes since they always use integer IDs
-			$biomePalette->getWordArray();
-
-		//these LSHIFT by 1 uvarints are optimizations: the client expects zigzag varints here
-		//but since we know they are always unsigned, we can avoid the extra fcall overhead of
-		//zigzag and just shift directly.
-		$biomePaletteArray = $biomePalette->getPalette();
-		if($biomePaletteBitsPerBlock !== 0){
-			$encodedBiomePalette .= Binary::writeUnsignedVarInt(count($biomePaletteArray) << 1);
-		}
-		foreach($biomePaletteArray as $p){
-			$encodedBiomePalette .= Binary::writeUnsignedVarInt($p << 1);
-		}
-
-		return $encodedBiomePalette;
 	}
 }

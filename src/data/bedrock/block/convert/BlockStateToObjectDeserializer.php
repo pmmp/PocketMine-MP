@@ -407,6 +407,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::RED_NETHER_BRICK, fn() => Blocks::RED_NETHER_BRICKS());
 		$this->mapSimple(Ids::REDSTONE_BLOCK, fn() => Blocks::REDSTONE());
 		$this->mapSimple(Ids::RESERVED6, fn() => Blocks::RESERVED6());
+		$this->mapSimple(Ids::SCULK, fn() => Blocks::SCULK());
 		$this->mapSimple(Ids::SEA_LANTERN, fn() => Blocks::SEA_LANTERN());
 		$this->mapSimple(Ids::SHROOMLIGHT, fn() => Blocks::SHROOMLIGHT());
 		$this->mapSimple(Ids::SLIME, fn() => Blocks::SLIME());
@@ -456,6 +457,8 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				})
 				->setFacing($in->readLegacyHorizontalFacing());
 		});
+		$this->map(Ids::AZALEA_LEAVES, fn(Reader $in) => Helper::decodeLeaves(Blocks::AZALEA_LEAVES(), $in));
+		$this->map(Ids::AZALEA_LEAVES_FLOWERED, fn(Reader $in) => Helper::decodeLeaves(Blocks::FLOWERING_AZALEA_LEAVES(), $in));
 		$this->map(Ids::BAMBOO, function(Reader $in) : Block{
 			return Blocks::BAMBOO()
 				->setLeafSize(match($value = $in->readString(StateNames::BAMBOO_LEAF_SIZE)){
@@ -730,7 +733,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		});
 		$this->map(Ids::FLOWING_LAVA, fn(Reader $in) => Helper::decodeFlowingLiquid(Blocks::LAVA(), $in));
 		$this->map(Ids::FLOWING_WATER, fn(Reader $in) => Helper::decodeFlowingLiquid(Blocks::WATER(), $in));
-		$this->map(Ids::FRAME, fn(Reader $in) => Helper::decodeItemFrame($in, false));
+		$this->map(Ids::FRAME, fn(Reader $in) => Helper::decodeItemFrame(Blocks::ITEM_FRAME(), $in));
 		$this->map(Ids::FROSTED_ICE, function(Reader $in) : Block{
 			return Blocks::FROSTED_ICE()
 				->setAge($in->readBoundedInt(StateNames::AGE, 0, 3));
@@ -740,7 +743,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFacing($in->readHorizontalFacing())
 				->setLit(false);
 		});
-		$this->map(Ids::GLOW_FRAME, fn(Reader $in) => Helper::decodeItemFrame($in, true));
+		$this->map(Ids::GLOW_FRAME, fn(Reader $in) => Helper::decodeItemFrame(Blocks::GLOWING_ITEM_FRAME(), $in));
 		$this->map(Ids::GOLDEN_RAIL, function(Reader $in) : Block{
 			return Blocks::POWERED_RAIL()
 				->setPowered($in->readBool(StateNames::RAIL_DATA_BIT))
@@ -786,26 +789,18 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setHanging($in->readBool(StateNames::HANGING));
 		});
 		$this->map(Ids::LAVA, fn(Reader $in) => Helper::decodeStillLiquid(Blocks::LAVA(), $in));
-		$this->map(Ids::LEAVES, function(Reader $in) : Block{
-			return (match($type = $in->readString(StateNames::OLD_LEAF_TYPE)){
-					StringValues::OLD_LEAF_TYPE_BIRCH => Blocks::BIRCH_LEAVES(),
-					StringValues::OLD_LEAF_TYPE_JUNGLE => Blocks::JUNGLE_LEAVES(),
-					StringValues::OLD_LEAF_TYPE_OAK => Blocks::OAK_LEAVES(),
-					StringValues::OLD_LEAF_TYPE_SPRUCE => Blocks::SPRUCE_LEAVES(),
-					default => throw $in->badValueException(StateNames::OLD_LEAF_TYPE, $type),
-				})
-				->setNoDecay($in->readBool(StateNames::PERSISTENT_BIT))
-				->setCheckDecay($in->readBool(StateNames::UPDATE_BIT));
-		});
-		$this->map(Ids::LEAVES2, function(Reader $in) : Block{
-			return (match($type = $in->readString(StateNames::NEW_LEAF_TYPE)){
-					StringValues::NEW_LEAF_TYPE_ACACIA => Blocks::ACACIA_LEAVES(),
-					StringValues::NEW_LEAF_TYPE_DARK_OAK => Blocks::DARK_OAK_LEAVES(),
-					default => throw $in->badValueException(StateNames::NEW_LEAF_TYPE, $type),
-				})
-				->setNoDecay($in->readBool(StateNames::PERSISTENT_BIT))
-				->setCheckDecay($in->readBool(StateNames::UPDATE_BIT));
-		});
+		$this->map(Ids::LEAVES, fn(Reader $in) => Helper::decodeLeaves(match($type = $in->readString(StateNames::OLD_LEAF_TYPE)){
+			StringValues::OLD_LEAF_TYPE_BIRCH => Blocks::BIRCH_LEAVES(),
+			StringValues::OLD_LEAF_TYPE_JUNGLE => Blocks::JUNGLE_LEAVES(),
+			StringValues::OLD_LEAF_TYPE_OAK => Blocks::OAK_LEAVES(),
+			StringValues::OLD_LEAF_TYPE_SPRUCE => Blocks::SPRUCE_LEAVES(),
+			default => throw $in->badValueException(StateNames::OLD_LEAF_TYPE, $type),
+		}, $in));
+		$this->map(Ids::LEAVES2, fn(Reader $in) => Helper::decodeLeaves(match($type = $in->readString(StateNames::NEW_LEAF_TYPE)){
+			StringValues::NEW_LEAF_TYPE_ACACIA => Blocks::ACACIA_LEAVES(),
+			StringValues::NEW_LEAF_TYPE_DARK_OAK => Blocks::DARK_OAK_LEAVES(),
+			default => throw $in->badValueException(StateNames::NEW_LEAF_TYPE, $type),
+		}, $in));
 		$this->map(Ids::LECTERN, function(Reader $in) : Block{
 			return Blocks::LECTERN()
 				->setFacing($in->readLegacyHorizontalFacing())
@@ -886,6 +881,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::MANGROVE_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::MANGROVE_DOOR(), $in));
 		$this->mapSlab(Ids::MANGROVE_SLAB, Ids::MANGROVE_DOUBLE_SLAB, fn() => Blocks::MANGROVE_SLAB());
 		$this->map(Ids::MANGROVE_FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::MANGROVE_FENCE_GATE(), $in));
+		$this->map(Ids::MANGROVE_LEAVES, fn(Reader $in) => Helper::decodeLeaves(Blocks::MANGROVE_LEAVES(), $in));
 		$this->map(Ids::MANGROVE_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::MANGROVE_LOG(), false, $in));
 		$this->map(Ids::MANGROVE_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::MANGROVE_PRESSURE_PLATE(), $in));
 		$this->mapStairs(Ids::MANGROVE_STAIRS, fn() => Blocks::MANGROVE_STAIRS());

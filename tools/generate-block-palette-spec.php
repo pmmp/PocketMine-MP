@@ -23,18 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\tools\generate_block_palette_spec;
 
-use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\BlockStateDictionary;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use function array_values;
 use function count;
 use function dirname;
-use function file_get_contents;
 use function file_put_contents;
 use function fwrite;
 use function get_class;
@@ -54,7 +53,7 @@ if(count($argv) !== 3){
 [, $inputFile, $outputFile] = $argv;
 
 try{
-	$states = BlockStateDictionary::loadPaletteFromString(ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents($inputFile)));
+	$states = BlockStateDictionary::loadPaletteFromString(Filesystem::fileGetContents($inputFile));
 }catch(NbtException){
 	fwrite(STDERR, "Invalid block palette file $argv[1]\n");
 	exit(1);

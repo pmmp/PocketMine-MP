@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\object;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
+use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\utils\Fallable;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\SavedDataLoadingException;
@@ -66,7 +66,7 @@ class FallingBlock extends Entity{
 
 	protected function getInitialGravity() : float{ return 0.04; }
 
-	public static function parseBlockNBT(BlockFactory $factory, CompoundTag $nbt) : Block{
+	public static function parseBlockNBT(RuntimeBlockStateRegistry $factory, CompoundTag $nbt) : Block{
 
 		//TODO: 1.8+ save format
 		$blockDataUpgrader = GlobalBlockStateHandlers::getUpgrader();

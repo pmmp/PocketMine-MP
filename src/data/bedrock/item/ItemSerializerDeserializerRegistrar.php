@@ -25,7 +25,6 @@ namespace pocketmine\data\bedrock\item;
 
 use pocketmine\block\Bed;
 use pocketmine\block\Block;
-use pocketmine\block\ItemFrame;
 use pocketmine\block\Skull;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SkullType;
@@ -34,11 +33,13 @@ use pocketmine\data\bedrock\CompoundTypeIds;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\bedrock\item\ItemTypeNames as Ids;
 use pocketmine\data\bedrock\item\SavedItemData as Data;
+use pocketmine\data\bedrock\MedicineTypeIdMap;
 use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\data\bedrock\SuspiciousStewTypeIdMap;
 use pocketmine\item\Banner;
 use pocketmine\item\Dye;
 use pocketmine\item\Item;
+use pocketmine\item\Medicine;
 use pocketmine\item\Potion;
 use pocketmine\item\SplashPotion;
 use pocketmine\item\SuspiciousStew;
@@ -55,7 +56,6 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->register1to1BlockWithMetaMappings();
 		$this->register1to1ItemWithMetaMappings();
 		$this->register1ToNItemMappings();
-		$this->registerMiscBlockMappings();
 		$this->registerMiscItemMappings();
 	}
 
@@ -139,6 +139,8 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Block(Ids::CRIMSON_DOOR, Blocks::CRIMSON_DOOR());
 		$this->map1to1Block(Ids::DARK_OAK_DOOR, Blocks::DARK_OAK_DOOR());
 		$this->map1to1Block(Ids::FLOWER_POT, Blocks::FLOWER_POT());
+		$this->map1to1Block(Ids::FRAME, Blocks::ITEM_FRAME());
+		$this->map1to1Block(Ids::GLOW_FRAME, Blocks::GLOWING_ITEM_FRAME());
 		$this->map1to1Block(Ids::HOPPER, Blocks::HOPPER());
 		$this->map1to1Block(Ids::IRON_DOOR, Blocks::IRON_DOOR());
 		$this->map1to1Block(Ids::JUNGLE_DOOR, Blocks::JUNGLE_DOOR());
@@ -468,6 +470,14 @@ final class ItemSerializerDeserializerRegistrar{
 			fn(Banner $item) => DyeColorIdMap::getInstance()->toInvertedId($item->getColor())
 		);
 		$this->map1to1ItemWithMeta(
+			Ids::MEDICINE,
+			Items::MEDICINE(),
+			function(Medicine $item, int $meta) : void{
+				$item->setType(MedicineTypeIdMap::getInstance()->fromId($meta) ?? throw new ItemTypeDeserializeException("Unknown medicine type ID $meta"));
+			},
+			fn(Medicine $item) => MedicineTypeIdMap::getInstance()->toId($item->getType())
+		);
+		$this->map1to1ItemWithMeta(
 			Ids::POTION,
 			Items::POTION(),
 			function(Potion $item, int $meta) : void{
@@ -491,19 +501,6 @@ final class ItemSerializerDeserializerRegistrar{
 			},
 			fn(SuspiciousStew $item) => SuspiciousStewTypeIdMap::getInstance()->toId($item->getType())
 		);
-	}
-
-	/**
-	 * Registers serializers and deserializers for blocks that don't fit any other pattern.
-	 * Ideally we want to get rid of this completely, if possible.
-	 *
-	 * Most of these are single PocketMine-MP items which map to multiple IDs depending on their properties, which is
-	 * complex to implement in a generic way.
-	 */
-	private function registerMiscBlockMappings() : void{
-		$this->deserializer?->mapBlock(Ids::FRAME, fn() => Blocks::ITEM_FRAME()->setGlowing(false));
-		$this->deserializer?->mapBlock(Ids::GLOW_FRAME, fn() => Blocks::ITEM_FRAME()->setGlowing(true));
-		$this->serializer?->mapBlock(Blocks::ITEM_FRAME(), fn(ItemFrame $block) => new Data($block->isGlowing() ? Ids::GLOW_FRAME : Ids::FRAME));
 	}
 
 	/**

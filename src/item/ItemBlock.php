@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
+use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
@@ -59,7 +59,7 @@ final class ItemBlock extends Item{
 
 	public function getBlock(?int $clickedFace = null) : Block{
 		//TODO: HACKY MESS, CLEAN IT UP
-		$factory = BlockFactory::getInstance();
+		$factory = RuntimeBlockStateRegistry::getInstance();
 		if(!$factory->isRegistered($this->blockTypeId)){
 			return VanillaBlocks::AIR();
 		}

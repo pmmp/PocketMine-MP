@@ -50,7 +50,7 @@ class BlockLightUpdate extends LightUpdate{
 
 	public function recalculateNode(int $x, int $y, int $z) : void{
 		if($this->subChunkExplorer->moveTo($x, $y, $z) !== SubChunkExplorerStatus::INVALID){
-			$block = $this->subChunkExplorer->currentSubChunk->getFullBlock($x & SubChunk::COORD_MASK, $y & SubChunk::COORD_MASK, $z & SubChunk::COORD_MASK);
+			$block = $this->subChunkExplorer->currentSubChunk->getBlockStateId($x & SubChunk::COORD_MASK, $y & SubChunk::COORD_MASK, $z & SubChunk::COORD_MASK);
 			$this->setAndUpdateLight($x, $y, $z, max($this->lightEmitters[$block] ?? 0, $this->getHighestAdjacentLight($x, $y, $z) - ($this->lightFilters[$block] ?? self::BASE_LIGHT_FILTER)));
 		}
 	}
@@ -83,7 +83,7 @@ class BlockLightUpdate extends LightUpdate{
 		for($x = 0; $x < SubChunk::EDGE_LENGTH; ++$x){
 			for($z = 0; $z < SubChunk::EDGE_LENGTH; ++$z){
 				for($y = 0; $y < SubChunk::EDGE_LENGTH; ++$y){
-					$light = $this->lightEmitters[$subChunk->getFullBlock($x, $y, $z)] ?? 0;
+					$light = $this->lightEmitters[$subChunk->getBlockStateId($x, $y, $z)] ?? 0;
 					if($light > 0){
 						$this->setAndUpdateLight(
 							$baseX + $x,

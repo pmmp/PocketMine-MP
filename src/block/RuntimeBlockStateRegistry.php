@@ -32,10 +32,13 @@ use pocketmine\world\light\LightUpdate;
 use function min;
 
 /**
- * Manages deserializing block types from their legacy blockIDs and metadata.
- * This is primarily needed for loading chunks from disk.
+ * Blocks are stored as state IDs in chunks at runtime (it would waste far too much memory to represent every block as
+ * an object). This class maps block state IDs to their corresponding block objects when reading blocks from chunks at
+ * runtime.
+ *
+ * @internal Plugin devs shouldn't need to interact with this class at all, unless registering a new block type.
  */
-class BlockFactory{
+class RuntimeBlockStateRegistry{
 	use SingletonTrait;
 
 	/**

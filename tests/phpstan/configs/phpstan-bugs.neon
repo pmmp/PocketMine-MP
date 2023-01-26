@@ -46,9 +46,9 @@ parameters:
 			path: ../../../src/plugin/PluginManager.php
 
 		-
-			message: "#^Offset \\(int\\|string\\) on array\\<pocketmine\\\\plugin\\\\Plugin\\> in isset\\(\\) always exists and is not nullable\\.$#"
+			message: "#^Parameter \\#1 \\$work of method Worker\\:\\:stack\\(\\) expects Threaded, pocketmine\\\\scheduler\\\\AsyncTask given\\.$#"
 			count: 1
-			path: ../../../src/plugin/PluginManager.php
+			path: ../../../src/scheduler/AsyncPool.php
 
 		-
 			message: "#^Static property pocketmine\\\\scheduler\\\\AsyncTask\\:\\:\\$threadLocalStorage \\(ArrayObject\\<int, array\\<string, mixed\\>\\>\\|null\\) does not accept non\\-empty\\-array\\<int, non\\-empty\\-array\\<string, mixed\\>\\>\\|ArrayObject\\<int, array\\<string, mixed\\>\\>\\.$#"
@@ -56,12 +56,12 @@ parameters:
 			path: ../../../src/scheduler/AsyncTask.php
 
 		-
-			message: "#^Property pocketmine\\\\thread\\\\Thread\\:\\:\\$classLoaders \\(\\(iterable\\<ClassLoader\\>&Threaded\\)\\|null\\) does not accept array\\<int, ClassLoader\\>\\|\\(iterable\\<ClassLoader\\>&Threaded\\)\\.$#"
+			message: "#^Property pocketmine\\\\thread\\\\Thread\\:\\:\\$classLoaders \\(ThreadedArray\\<int, ClassLoader\\>\\|null\\) does not accept array\\{ClassLoader\\}\\|ThreadedArray\\<int, ClassLoader\\>\\.$#"
 			count: 1
 			path: ../../../src/thread/Thread.php
 
 		-
-			message: "#^Property pocketmine\\\\thread\\\\Worker\\:\\:\\$classLoaders \\(\\(iterable\\<ClassLoader\\>&Threaded\\)\\|null\\) does not accept array\\<int, ClassLoader\\>\\|\\(iterable\\<ClassLoader\\>&Threaded\\)\\.$#"
+			message: "#^Property pocketmine\\\\thread\\\\Worker\\:\\:\\$classLoaders \\(ThreadedArray\\<int, ClassLoader\\>\\|null\\) does not accept array\\{ClassLoader\\}\\|ThreadedArray\\<int, ClassLoader\\>\\.$#"
 			count: 1
 			path: ../../../src/thread/Worker.php
 

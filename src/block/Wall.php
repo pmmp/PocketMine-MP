@@ -104,7 +104,7 @@ class Wall extends Transparent{
 
 		foreach(Facing::HORIZONTAL as $facing){
 			$block = $this->getSide($facing);
-			if($block instanceof static || $block instanceof FenceGate || ($block->isSolid() && !$block->isTransparent())){
+			if($block instanceof static || $block instanceof FenceGate || $block instanceof Thin || ($block->isSolid() && !$block->isTransparent())){
 				if(!isset($this->connections[$facing])){
 					$this->connections[$facing] = WallConnectionType::SHORT();
 					$changed++;

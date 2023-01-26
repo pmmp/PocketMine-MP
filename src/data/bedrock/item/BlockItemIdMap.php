@@ -24,11 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\item;
 
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
-use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
 use function array_flip;
-use function file_get_contents;
 use function is_array;
 use function json_decode;
 use const JSON_THROW_ON_ERROR;
@@ -42,7 +41,7 @@ final class BlockItemIdMap{
 
 	private static function make() : self{
 		$map = json_decode(
-			Utils::assumeNotFalse(file_get_contents(Path::join(BEDROCK_DATA_PATH, 'block_id_to_item_id_map.json')), "Missing required resource file"),
+			Filesystem::fileGetContents(Path::join(BEDROCK_DATA_PATH, 'block_id_to_item_id_map.json')),
 			associative: true,
 			flags: JSON_THROW_ON_ERROR
 		);

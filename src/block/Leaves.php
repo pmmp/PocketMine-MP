@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\LeavesType;
 use pocketmine\block\utils\SupportType;
-use pocketmine\block\utils\TreeType;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\event\block\LeavesDecayEvent;
@@ -39,13 +39,13 @@ use pocketmine\world\World;
 use function mt_rand;
 
 class Leaves extends Transparent{
-	protected TreeType $treeType;
+	protected LeavesType $leavesType; //immutable for now
 	protected bool $noDecay = false;
 	protected bool $checkDecay = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, TreeType $treeType){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, LeavesType $leavesType){
 		parent::__construct($idInfo, $name, $typeInfo);
-		$this->treeType = $treeType;
+		$this->leavesType = $leavesType;
 	}
 
 	public function getRequiredStateDataBits() : int{ return 2; }
@@ -54,6 +54,8 @@ class Leaves extends Transparent{
 		$w->bool($this->noDecay);
 		$w->bool($this->checkDecay);
 	}
+
+	public function getLeavesType() : LeavesType{ return $this->leavesType; }
 
 	public function isNoDecay() : bool{ return $this->noDecay; }
 
@@ -140,17 +142,22 @@ class Leaves extends Transparent{
 
 		$drops = [];
 		if(mt_rand(1, 20) === 1){ //Saplings
-			$drops[] = (match($this->treeType){
-				TreeType::ACACIA() => VanillaBlocks::ACACIA_SAPLING(),
-				TreeType::BIRCH() => VanillaBlocks::BIRCH_SAPLING(),
-				TreeType::DARK_OAK() => VanillaBlocks::DARK_OAK_SAPLING(),
-				TreeType::JUNGLE() => VanillaBlocks::JUNGLE_SAPLING(),
-				TreeType::OAK() => VanillaBlocks::OAK_SAPLING(),
-				TreeType::SPRUCE() => VanillaBlocks::SPRUCE_SAPLING(),
+			$sapling = (match($this->leavesType){
+				LeavesType::ACACIA() => VanillaBlocks::ACACIA_SAPLING(),
+				LeavesType::BIRCH() => VanillaBlocks::BIRCH_SAPLING(),
+				LeavesType::DARK_OAK() => VanillaBlocks::DARK_OAK_SAPLING(),
+				LeavesType::JUNGLE() => VanillaBlocks::JUNGLE_SAPLING(),
+				LeavesType::OAK() => VanillaBlocks::OAK_SAPLING(),
+				LeavesType::SPRUCE() => VanillaBlocks::SPRUCE_SAPLING(),
+				LeavesType::MANGROVE(), //TODO: mangrove propagule
+				LeavesType::AZALEA(), LeavesType::FLOWERING_AZALEA() => null, //TODO: azalea
 				default => throw new AssumptionFailedError("Unreachable")
-			})->asItem();
+			})?->asItem();
+			if($sapling !== null){
+				$drops[] = $sapling;
+			}
 		}
-		if(($this->treeType->equals(TreeType::OAK()) || $this->treeType->equals(TreeType::DARK_OAK())) && mt_rand(1, 200) === 1){ //Apples
+		if(($this->leavesType->equals(LeavesType::OAK()) || $this->leavesType->equals(LeavesType::DARK_OAK())) && mt_rand(1, 200) === 1){ //Apples
 			$drops[] = VanillaItems::APPLE();
 		}
 		if(mt_rand(1, 50) === 1){

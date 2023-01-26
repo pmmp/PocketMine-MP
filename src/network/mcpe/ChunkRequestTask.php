@@ -33,6 +33,7 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\network\mcpe\protocol\types\ChunkPosition;
 use pocketmine\network\mcpe\serializer\ChunkSerializer;
 use pocketmine\scheduler\AsyncTask;
+use pocketmine\thread\NonThreadSafeValue;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
 
@@ -43,14 +44,15 @@ class ChunkRequestTask extends AsyncTask{
 	protected string $chunk;
 	protected int $chunkX;
 	protected int $chunkZ;
-	protected Compressor $compressor;
+	/** @phpstan-var NonThreadSafeValue<Compressor> */
+	protected NonThreadSafeValue $compressor;
 	private string $tiles;
 
 	/**
 	 * @phpstan-param (\Closure() : void)|null $onError
 	 */
 	public function __construct(int $chunkX, int $chunkZ, Chunk $chunk, CompressBatchPromise $promise, Compressor $compressor, ?\Closure $onError = null){
-		$this->compressor = $compressor;
+		$this->compressor = new NonThreadSafeValue($compressor);
 
 		$this->chunk = FastChunkSerializer::serializeTerrain($chunk);
 		$this->chunkX = $chunkX;
@@ -66,7 +68,7 @@ class ChunkRequestTask extends AsyncTask{
 		$subCount = ChunkSerializer::getSubChunkCount($chunk);
 		$encoderContext = new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary());
 		$payload = ChunkSerializer::serializeFullChunk($chunk, RuntimeBlockMapping::getInstance(), $encoderContext, $this->tiles);
-		$this->setResult($this->compressor->compress(PacketBatch::fromPackets($encoderContext, LevelChunkPacket::create(new ChunkPosition($this->chunkX, $this->chunkZ), $subCount, false, null, $payload))->getBuffer()));
+		$this->setResult($this->compressor->deserialize()->compress(PacketBatch::fromPackets($encoderContext, LevelChunkPacket::create(new ChunkPosition($this->chunkX, $this->chunkZ), $subCount, false, null, $payload))->getBuffer()));
 	}
 
 	public function onError() : void{

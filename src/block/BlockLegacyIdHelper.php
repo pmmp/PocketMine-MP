@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\BlockIdentifier as BID;
 use pocketmine\block\BlockTypeIds as Ids;
 use pocketmine\block\tile\Sign as TileSign;
+use pocketmine\block\utils\LeavesType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\block\utils\WoodType;
 use pocketmine\item\VanillaItems;
@@ -108,15 +109,18 @@ final class BlockLegacyIdHelper{
 		});
 	}
 
-	public static function getLeavesIdentifier(TreeType $treeType) : BID{
-		return new BID(match($treeType->id()){
-			TreeType::OAK()->id() => Ids::OAK_LEAVES,
-			TreeType::SPRUCE()->id() => Ids::SPRUCE_LEAVES,
-			TreeType::BIRCH()->id() => Ids::BIRCH_LEAVES,
-			TreeType::JUNGLE()->id() => Ids::JUNGLE_LEAVES,
-			TreeType::ACACIA()->id() => Ids::ACACIA_LEAVES,
-			TreeType::DARK_OAK()->id() => Ids::DARK_OAK_LEAVES,
-			default => throw new AssumptionFailedError("All tree types should be covered")
+	public static function getLeavesIdentifier(LeavesType $leavesType) : BID{
+		return new BID(match($leavesType->id()){
+			LeavesType::OAK()->id() => Ids::OAK_LEAVES,
+			LeavesType::SPRUCE()->id() => Ids::SPRUCE_LEAVES,
+			LeavesType::BIRCH()->id() => Ids::BIRCH_LEAVES,
+			LeavesType::JUNGLE()->id() => Ids::JUNGLE_LEAVES,
+			LeavesType::ACACIA()->id() => Ids::ACACIA_LEAVES,
+			LeavesType::DARK_OAK()->id() => Ids::DARK_OAK_LEAVES,
+			LeavesType::MANGROVE()->id() => Ids::MANGROVE_LEAVES,
+			LeavesType::AZALEA()->id() => Ids::AZALEA_LEAVES,
+			LeavesType::FLOWERING_AZALEA()->id() => Ids::FLOWERING_AZALEA_LEAVES,
+			default => throw new AssumptionFailedError("All leaves types should be covered")
 		});
 	}
 
