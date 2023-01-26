@@ -25,6 +25,8 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\ShulkerBox as TileShulkerBox;
 use pocketmine\block\utils\AnyFacingTrait;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -32,6 +34,12 @@ use pocketmine\world\BlockTransaction;
 
 class ShulkerBox extends Opaque{
 	use AnyFacingTrait;
+
+	public function getRequiredStateDataBits() : int{ return 0; }
+
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		//NOOP - we don't read or write facing here, because the tile persists it
+	}
 
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
@@ -41,12 +49,14 @@ class ShulkerBox extends Opaque{
 		}
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$shulker = $this->position->getWorld()->getTile($this->position);
 		if($shulker instanceof TileShulkerBox){
 			$this->facing = $shulker->getFacing();
 		}
+
+		return $this;
 	}
 
 	public function getMaxStackSize() : int{
@@ -85,7 +95,7 @@ class ShulkerBox extends Opaque{
 		return $result;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 
 			$shulker = $this->position->getWorld()->getTile($this->position);

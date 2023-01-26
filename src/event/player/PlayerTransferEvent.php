@@ -25,6 +25,7 @@ namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\lang\Translatable;
 use pocketmine\player\Player;
 
 /**
@@ -33,18 +34,13 @@ use pocketmine\player\Player;
 class PlayerTransferEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var string */
-	protected $address;
-	/** @var int */
-	protected $port = 19132;
-	/** @var string */
-	protected $message;
-
-	public function __construct(Player $player, string $address, int $port, string $message){
+	public function __construct(
+		Player $player,
+		protected string $address,
+		protected int $port,
+		protected Translatable|string $message
+	){
 		$this->player = $player;
-		$this->address = $address;
-		$this->port = $port;
-		$this->message = $message;
 	}
 
 	/**
@@ -78,14 +74,14 @@ class PlayerTransferEvent extends PlayerEvent implements Cancellable{
 	/**
 	 * Returns the disconnect reason shown in the server log and on the console.
 	 */
-	public function getMessage() : string{
+	public function getMessage() : Translatable|string{
 		return $this->message;
 	}
 
 	/**
 	 * Sets the disconnect reason shown in the server log and on the console.
 	 */
-	public function setMessage(string $message) : void{
+	public function setMessage(Translatable|string $message) : void{
 		$this->message = $message;
 	}
 }

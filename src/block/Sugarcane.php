@@ -23,7 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
@@ -38,16 +39,10 @@ class Sugarcane extends Flowable{
 
 	protected int $age = 0;
 
-	protected function writeStateToMeta() : int{
-		return $this->age;
-	}
+	public function getRequiredStateDataBits() : int{ return 4; }
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, self::MAX_AGE);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(4, 0, self::MAX_AGE, $this->age);
 	}
 
 	private function seekToBottom() : Position{
@@ -67,7 +62,7 @@ class Sugarcane extends Flowable{
 				break;
 			}
 			$b = $world->getBlockAt($pos->x, $pos->y + $y, $pos->z);
-			if($b->getId() === BlockLegacyIds::AIR){
+			if($b->getTypeId() === BlockTypeIds::AIR){
 				$ev = new BlockGrowEvent($b, VanillaBlocks::SUGARCANE());
 				$ev->call();
 				if($ev->isCancelled()){
@@ -95,7 +90,7 @@ class Sugarcane extends Flowable{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer){
 			if($this->grow($this->seekToBottom())){
 				$item->pop();
@@ -107,9 +102,16 @@ class Sugarcane extends Flowable{
 		return false;
 	}
 
+	private function canBeSupportedBy(Block $block) : bool{
+		return
+			$block->hasTypeTag(BlockTypeTags::MUD) ||
+			$block->hasTypeTag(BlockTypeTags::DIRT) ||
+			$block->hasTypeTag(BlockTypeTags::SAND);
+	}
+
 	public function onNearbyBlockChange() : void{
 		$down = $this->getSide(Facing::DOWN);
-		if(!$this->isValidSupport($down)){
+		if(!$down->isSameType($this) && !$this->canBeSupportedBy($down)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -133,7 +135,7 @@ class Sugarcane extends Flowable{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->isSameType($this)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif($this->isValidSupport($down)){
+		}elseif($this->canBeSupportedBy($down)){
 			foreach(Facing::HORIZONTAL as $side){
 				$sideBlock = $down->getSide($side);
 				if($sideBlock instanceof Water || $sideBlock instanceof FrostedIce){
@@ -143,16 +145,5 @@ class Sugarcane extends Flowable{
 		}
 
 		return false;
-	}
-
-	private function isValidSupport(Block $block) : bool{
-		$id = $block->getId();
-		//TODO: rooted dirt, moss block
-		return $block->isSameType($this)
-			|| $id === BlockLegacyIds::GRASS
-			|| $id === BlockLegacyIds::DIRT
-			|| $id === BlockLegacyIds::PODZOL
-			|| $id === BlockLegacyIds::MYCELIUM
-			|| $id === BlockLegacyIds::SAND;
 	}
 }

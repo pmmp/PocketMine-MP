@@ -23,7 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
@@ -38,16 +39,10 @@ abstract class Crops extends Flowable{
 
 	protected int $age = 0;
 
-	protected function writeStateToMeta() : int{
-		return $this->age;
-	}
+	public function getRequiredStateDataBits() : int{ return 3; }
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, self::MAX_AGE);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(3, 0, self::MAX_AGE, $this->age);
 	}
 
 	public function getAge() : int{ return $this->age; }
@@ -62,14 +57,14 @@ abstract class Crops extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($blockReplace->getSide(Facing::DOWN)->getId() === BlockLegacyIds::FARMLAND){
+		if($blockReplace->getSide(Facing::DOWN)->getTypeId() === BlockTypeIds::FARMLAND){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
 		return false;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->age < self::MAX_AGE && $item instanceof Fertilizer){
 			$block = clone $this;
 			$block->age += mt_rand(2, 5);
@@ -91,7 +86,7 @@ abstract class Crops extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->getId() !== BlockLegacyIds::FARMLAND){
+		if($this->getSide(Facing::DOWN)->getTypeId() !== BlockTypeIds::FARMLAND){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}

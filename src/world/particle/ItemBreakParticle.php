@@ -33,7 +33,7 @@ class ItemBreakParticle implements Particle{
 	public function __construct(private Item $item){}
 
 	public function encode(Vector3 $pos) : array{
-		[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($this->item->getId(), $this->item->getMeta());
+		[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($this->item);
 		return [LevelEventPacket::standardParticle(ParticleIds::ITEM_BREAK, ($id << 16) | $meta, $pos)];
 	}
 }

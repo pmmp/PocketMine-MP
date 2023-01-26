@@ -27,6 +27,7 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
+use pocketmine\utils\Utils;
 
 /**
  * Called when packets are sent to network sessions.
@@ -55,5 +56,13 @@ class DataPacketSendEvent extends ServerEvent implements Cancellable{
 	 */
 	public function getPackets() : array{
 		return $this->packets;
+	}
+
+	/**
+	 * @param ClientboundPacket[] $packets
+	 */
+	public function setPackets(array $packets) : void{
+		Utils::validateArrayValueType($packets, function(ClientboundPacket $_) : void{});
+		$this->packets = $packets;
 	}
 }

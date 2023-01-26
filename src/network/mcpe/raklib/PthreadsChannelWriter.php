@@ -26,7 +26,10 @@ namespace pocketmine\network\mcpe\raklib;
 use raklib\server\ipc\InterThreadChannelWriter;
 
 final class PthreadsChannelWriter implements InterThreadChannelWriter{
-	public function __construct(private \Threaded $buffer){}
+	/**
+	 * @phpstan-param \ThreadedArray<int, string> $buffer
+	 */
+	public function __construct(private \ThreadedArray $buffer){}
 
 	public function write(string $str) : void{
 		$this->buffer[] = $str;

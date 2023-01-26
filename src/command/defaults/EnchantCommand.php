@@ -34,9 +34,9 @@ use function implode;
 
 class EnchantCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"enchant",
 			KnownTranslationFactory::pocketmine_command_enchant_description(),
 			KnownTranslationFactory::commands_enchant_usage()
 		);
@@ -47,10 +47,6 @@ class EnchantCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) < 2){
 			throw new InvalidCommandSyntaxException();
 		}

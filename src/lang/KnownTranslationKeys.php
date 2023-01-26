@@ -354,6 +354,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_DISCONNECT_ERROR_BADPACKET = "pocketmine.disconnect.error.badPacket";
 	public const POCKETMINE_DISCONNECT_ERROR_INTERNAL = "pocketmine.disconnect.error.internal";
 	public const POCKETMINE_DISCONNECT_ERROR_LOGINTIMEOUT = "pocketmine.disconnect.error.loginTimeout";
+	public const POCKETMINE_DISCONNECT_ERROR_RESPAWN = "pocketmine.disconnect.error.respawn";
 	public const POCKETMINE_DISCONNECT_INCOMPATIBLEPROTOCOL = "pocketmine.disconnect.incompatibleProtocol";
 	public const POCKETMINE_DISCONNECT_INVALIDSESSION = "pocketmine.disconnect.invalidSession";
 	public const POCKETMINE_DISCONNECT_INVALIDSESSION_BADSIGNATURE = "pocketmine.disconnect.invalidSession.badSignature";

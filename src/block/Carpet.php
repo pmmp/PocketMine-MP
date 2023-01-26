@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\ColorInMetadataTrait;
+use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -33,11 +33,11 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Carpet extends Flowable{
-	use ColorInMetadataTrait;
+	use ColoredTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->color = DyeColor::WHITE();
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
 	public function isSolid() : bool{
@@ -53,7 +53,7 @@ class Carpet extends Flowable{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->getId() !== BlockLegacyIds::AIR){
+		if($down->getTypeId() !== BlockTypeIds::AIR){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
@@ -61,7 +61,7 @@ class Carpet extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->getId() === BlockLegacyIds::AIR){
+		if($this->getSide(Facing::DOWN)->getTypeId() === BlockTypeIds::AIR){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}

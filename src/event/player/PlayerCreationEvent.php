@@ -69,10 +69,9 @@ class PlayerCreationEvent extends Event{
 	/**
 	 * Returns the base class that the final player class must extend.
 	 *
-	 * @return string
 	 * @phpstan-return class-string<Player>
 	 */
-	public function getBaseClass(){
+	public function getBaseClass() : string{
 		return $this->baseClass;
 	}
 
@@ -81,10 +80,9 @@ class PlayerCreationEvent extends Event{
 	 * The new base class must be a subclass of the current base class.
 	 * This can (perhaps) be used to limit the options for custom player classes provided by other plugins.
 	 *
-	 * @param string $class
 	 * @phpstan-param class-string<Player> $class
 	 */
-	public function setBaseClass($class) : void{
+	public function setBaseClass(string $class) : void{
 		if(!is_a($class, $this->baseClass, true)){
 			throw new \RuntimeException("Base class $class must extend " . $this->baseClass);
 		}
@@ -95,10 +93,9 @@ class PlayerCreationEvent extends Event{
 	/**
 	 * Returns the class that will be instantiated to create the player after the event.
 	 *
-	 * @return string
 	 * @phpstan-return class-string<Player>
 	 */
-	public function getPlayerClass(){
+	public function getPlayerClass() : string{
 		return $this->playerClass;
 	}
 
@@ -106,10 +103,9 @@ class PlayerCreationEvent extends Event{
 	 * Sets the class that will be instantiated to create the player after the event. The class must not be abstract,
 	 * and must be an instance of the base class.
 	 *
-	 * @param string $class
 	 * @phpstan-param class-string<Player> $class
 	 */
-	public function setPlayerClass($class) : void{
+	public function setPlayerClass(string $class) : void{
 		Utils::testValidInstance($class, $this->baseClass);
 		$this->playerClass = $class;
 	}
