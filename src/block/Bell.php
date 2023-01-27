@@ -166,9 +166,8 @@ final class Bell extends Transparent{
 			$this->attachmentType->equals(BellAttachmentType::CEILING()) ||
 			($this->attachmentType->equals(BellAttachmentType::FLOOR()) && Facing::axis($faceHit) === Facing::axis($this->facing)) ||
 			(
-				$this->attachmentType->equals(BellAttachmentType::ONE_WALL()) ||
-				$this->attachmentType->equals(BellAttachmentType::TWO_WALLS())) &&
-				($faceHit === Facing::rotateY($this->facing, false) || $faceHit === Facing::rotateY($this->facing, true)
+				($this->attachmentType->equals(BellAttachmentType::ONE_WALL()) || $this->attachmentType->equals(BellAttachmentType::TWO_WALLS())) &&
+				($faceHit === Facing::rotateY($this->facing, false) || $faceHit === Facing::rotateY($this->facing, true))
 			)
 		);
 	}
