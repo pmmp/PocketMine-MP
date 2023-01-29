@@ -167,7 +167,7 @@ class NetworkSession{
 	private ?int $ping = null;
 
 	private ?PacketHandler $handler = null;
-
+	public $packetsReceived = [];
 	private bool $connected = true;
 	private bool $disconnectGuard = false;
 	private bool $loggedIn = false;
