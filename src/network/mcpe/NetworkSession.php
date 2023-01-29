@@ -167,9 +167,6 @@ class NetworkSession{
 	private ?int $ping = null;
 
 	private ?PacketHandler $handler = null;
-	
-	private array $packetsReceived = [];
-
 	private bool $connected = true;
 	private bool $disconnectGuard = false;
 	private bool $loggedIn = false;
@@ -181,8 +178,9 @@ class NetworkSession{
 
 	/** @var Packet[] */
 	private array $sendBuffer = [];
-
+	private array $packetsReceived = [];
 	/**
+	
 	 * @var \SplQueue|CompressBatchPromise[]
 	 * @phpstan-var \SplQueue<CompressBatchPromise>
 	 */
