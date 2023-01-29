@@ -168,7 +168,6 @@ class NetworkSession{
 
 	private ?PacketHandler $handler = null;
 	
-	/** @var array */
 	private array $packetsReceived = [];
 
 	private bool $connected = true;
