@@ -179,10 +179,10 @@ class NetworkSession{
 	/** @var Packet[] */
 	private array $sendBuffer = [];
 	private array $packetsReceived = [
-	string => [
-		'count' => int,
-		'time' => int
-		]
+		string => [
+			'count' => int,
+			'time' => int
+             ]
 	];
 	/**
 	 * @var \SplQueue|CompressBatchPromise[]
