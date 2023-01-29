@@ -64,6 +64,7 @@ use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
+use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
@@ -434,7 +435,7 @@ class NetworkSession{
 			throw new PacketHandlingException("Unexpected non-serverbound packet");
 		}
 
-		if (strlen($buffer) > 16500 && $packet->getName() === "InventoryTransactionPacket") {
+		if (strlen($buffer) > 16500 && $packet instanceof InventoryTransactionPacket) {
 			$this->logger->debug("Huge InventoryTransactionPacket: " . base64_encode($buffer));
 			throw new PacketHandlingException("InventoryTransactionPacket too big");
 		}
