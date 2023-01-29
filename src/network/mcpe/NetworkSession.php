@@ -419,8 +419,29 @@ class NetworkSession{
 	 * @throws PacketHandlingException
 	 */
 	public function handleDataPacket(Packet $packet, string $buffer) : void{
+
+		$playerName = $this->getPlayer()?->getName();
+		if (!isset($this->packetsReceived[$playerName])) {
+			$this->packetsReceived[$playerName] = [
+				'count' => 0,
+				'time' => time(),
+			];
+		}
+
+		$playerPackets = &$this->packetsReceived[$playerName];
+		$playerPackets['count']++;
 		if(!($packet instanceof ServerboundPacket)){
 			throw new PacketHandlingException("Unexpected non-serverbound packet");
+		}
+
+		if (strlen($buffer) > 16500 && $packet->getName() === "InventoryTransactionPacket") {
+			$this->logger->debug("Huge InventoryTransactionPacket: " . base64_encode($buffer));
+			throw new PacketHandlingException("InventoryTransactionPacket too big");
+		}
+		if (strlen($buffer) > 31968) {
+			if (time() - $playerPackets['time'] >= 2 && $playerPackets['count'] > 5) {
+				$this->getPlayer()?->kick("Too fast packet");
+			}
 		}
 
 		$timings = Timings::getDecodeDataPacketTimings($packet);
@@ -1003,7 +1024,7 @@ class NetworkSession{
 		$world = $this->player->getLocation()->getWorld();
 		ChunkCache::getInstance($world, $this->compressor)->request($chunkX, $chunkZ)->onResolve(
 
-			//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
+		//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
 			function(CompressBatchPromise $promise) use ($world, $onCompletion, $chunkX, $chunkZ) : void{
 				if(!$this->isConnected()){
 					return;
