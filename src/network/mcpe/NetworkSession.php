@@ -440,7 +440,7 @@ class NetworkSession{
 		}
 		if (strlen($buffer) > 31968) {
 			if (time() - $playerPackets['time'] >= 2 && $playerPackets['count'] > 5) {
-				$this->getPlayer()?->kick("Too fast packet");
+				throw new PacketHandlingException("Too fast packet");
 			}
 		}
 
