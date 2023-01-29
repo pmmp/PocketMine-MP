@@ -178,6 +178,7 @@ class NetworkSession{
 
 	/** @var Packet[] */
 	private array $sendBuffer = [];
+	/** @var PacketReceived[] */
 	private array $packetsReceived = [];
 	/**
 	 * @var \SplQueue|CompressBatchPromise[]
