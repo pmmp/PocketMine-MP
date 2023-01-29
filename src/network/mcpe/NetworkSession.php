@@ -178,12 +178,7 @@ class NetworkSession{
 
 	/** @var Packet[] */
 	private array $sendBuffer = [];
-	private array $packetsReceived = [
-		string => [
-			'count' => int,
-			'time' => int
-		]
-	];
+	private array $packetsReceived = [];
 	/**
 	 * @var \SplQueue|CompressBatchPromise[]
 	 * @phpstan-var \SplQueue<CompressBatchPromise>
