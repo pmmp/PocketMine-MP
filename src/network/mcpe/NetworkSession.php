@@ -182,7 +182,7 @@ class NetworkSession{
 		string => [
 			'count' => int,
 			'time' => int
-             ]
+		]
 	];
 	/**
 	 * @var \SplQueue|CompressBatchPromise[]
