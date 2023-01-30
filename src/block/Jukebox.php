@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Jukebox as JukeboxTile;
 use pocketmine\item\Item;
 use pocketmine\item\Record;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\sound\RecordSound;
@@ -44,7 +45,7 @@ class Jukebox extends Opaque{
 			if($this->record !== null){
 				$this->ejectRecord();
 			}elseif($item instanceof Record){
-				$player->sendJukeboxPopup("record.nowPlaying", [$player->getLanguage()->translate($item->getRecordType()->getTranslatableName())]);
+				$player->sendJukeboxPopup(KnownTranslationKeys::RECORD_NOWPLAYING, [$player->getLanguage()->translate($item->getRecordType()->getTranslatableName())]);
 				$this->insertRecord($item->pop());
 			}
 		}

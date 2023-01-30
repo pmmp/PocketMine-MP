@@ -30,6 +30,7 @@ use function dirname;
 use function fclose;
 use function fflush;
 use function file_exists;
+use function file_get_contents;
 use function file_put_contents;
 use function flock;
 use function fopen;
@@ -47,9 +48,9 @@ use function rmdir;
 use function rtrim;
 use function scandir;
 use function str_replace;
+use function str_starts_with;
 use function stream_get_contents;
 use function strlen;
-use function strpos;
 use function uksort;
 use function unlink;
 use const DIRECTORY_SEPARATOR;
@@ -171,7 +172,7 @@ final class Filesystem{
 		//this should probably never have integer keys, but it's safer than making PHPStan ignore it
 		foreach(Utils::stringifyKeys(self::$cleanedPaths) as $cleanPath => $replacement){
 			$cleanPath = rtrim(str_replace([DIRECTORY_SEPARATOR, "phar://"], ["/", ""], $cleanPath), "/");
-			if(strpos($result, $cleanPath) === 0){
+			if(str_starts_with($result, $cleanPath)){
 				$result = ltrim(str_replace($cleanPath, $replacement, $result), "/");
 			}
 		}
@@ -294,6 +295,23 @@ final class Filesystem{
 				throw new \RuntimeException("Failed to move temporary file contents into target file: " . $copyException->getMessage(), 0, $copyException);
 			}
 			@unlink($temporaryFileName);
+		}
+	}
+
+	/**
+	 * Wrapper around file_get_contents() which throws an exception instead of generating E_* errors.
+	 *
+	 * @phpstan-param resource|null       $context
+	 * @phpstan-param 0|positive-int      $offset
+	 * @phpstan-param 0|positive-int|null $length
+	 *
+	 * @throws \RuntimeException
+	 */
+	public static function fileGetContents(string $fileName, bool $useIncludePath = false, $context = null, int $offset = 0, ?int $length = null) : string{
+		try{
+			return ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents($fileName, $useIncludePath, $context, $offset, $length));
+		}catch(\ErrorException $e){
+			throw new \RuntimeException("Failed to read file $fileName: " . $e->getMessage(), 0, $e);
 		}
 	}
 }

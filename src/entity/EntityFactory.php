@@ -66,6 +66,9 @@ use function reset;
 final class EntityFactory{
 	use SingletonTrait;
 
+	public const TAG_IDENTIFIER = "identifier"; //TAG_String
+	public const TAG_LEGACY_ID = "id"; //TAG_Int
+
 	/**
 	 * @var \Closure[] save ID => creator function
 	 * @phpstan-var array<int|string, \Closure(World, CompoundTag) : Entity>
@@ -113,9 +116,9 @@ final class EntityFactory{
 		}, ['FallingSand', 'minecraft:falling_block'], LegacyIds::FALLING_BLOCK);
 
 		$this->register(ItemEntity::class, function(World $world, CompoundTag $nbt) : ItemEntity{
-			$itemTag = $nbt->getCompoundTag("Item");
+			$itemTag = $nbt->getCompoundTag(ItemEntity::TAG_ITEM);
 			if($itemTag === null){
-				throw new SavedDataLoadingException("Expected \"Item\" NBT tag not found");
+				throw new SavedDataLoadingException("Expected \"" . ItemEntity::TAG_ITEM . "\" NBT tag not found");
 			}
 
 			$item = Item::nbtDeserialize($itemTag);
@@ -126,14 +129,14 @@ final class EntityFactory{
 		}, ['Item', 'minecraft:item'], LegacyIds::ITEM);
 
 		$this->register(Painting::class, function(World $world, CompoundTag $nbt) : Painting{
-			$motive = PaintingMotive::getMotiveByName($nbt->getString("Motive"));
+			$motive = PaintingMotive::getMotiveByName($nbt->getString(Painting::TAG_MOTIVE));
 			if($motive === null){
 				throw new SavedDataLoadingException("Unknown painting motive");
 			}
-			$blockIn = new Vector3($nbt->getInt("TileX"), $nbt->getInt("TileY"), $nbt->getInt("TileZ"));
-			if(($directionTag = $nbt->getTag("Direction")) instanceof ByteTag){
+			$blockIn = new Vector3($nbt->getInt(Painting::TAG_TILE_X), $nbt->getInt(Painting::TAG_TILE_Y), $nbt->getInt(Painting::TAG_TILE_Z));
+			if(($directionTag = $nbt->getTag(Painting::TAG_DIRECTION_BE)) instanceof ByteTag){
 				$facing = Painting::DATA_TO_FACING[$directionTag->getValue()] ?? Facing::NORTH;
-			}elseif(($facingTag = $nbt->getTag("Facing")) instanceof ByteTag){
+			}elseif(($facingTag = $nbt->getTag(Painting::TAG_FACING_JE)) instanceof ByteTag){
 				$facing = Painting::DATA_TO_FACING[$facingTag->getValue()] ?? Facing::NORTH;
 			}else{
 				throw new SavedDataLoadingException("Missing facing info");
@@ -151,7 +154,7 @@ final class EntityFactory{
 		}, ['Snowball', 'minecraft:snowball'], LegacyIds::SNOWBALL);
 
 		$this->register(SplashPotion::class, function(World $world, CompoundTag $nbt) : SplashPotion{
-			$potionType = PotionTypeIdMap::getInstance()->fromId($nbt->getShort("PotionId", PotionTypeIds::WATER));
+			$potionType = PotionTypeIdMap::getInstance()->fromId($nbt->getShort(SplashPotion::TAG_POTION_ID, PotionTypeIds::WATER));
 			if($potionType === null){
 				throw new SavedDataLoadingException("No such potion type");
 			}
@@ -217,7 +220,7 @@ final class EntityFactory{
 	 */
 	public function createFromData(World $world, CompoundTag $nbt) : ?Entity{
 		try{
-			$saveId = $nbt->getTag("identifier") ?? $nbt->getTag("id");
+			$saveId = $nbt->getTag(self::TAG_IDENTIFIER) ?? $nbt->getTag(self::TAG_LEGACY_ID);
 			$func = null;
 			if($saveId instanceof StringTag){
 				$func = $this->creationFuncs[$saveId->getValue()] ?? null;
@@ -238,7 +241,7 @@ final class EntityFactory{
 
 	public function injectSaveId(string $class, CompoundTag $saveData) : void{
 		if(isset($this->saveNames[$class])){
-			$saveData->setTag("identifier", new StringTag($this->saveNames[$class]));
+			$saveData->setTag(self::TAG_IDENTIFIER, new StringTag($this->saveNames[$class]));
 		}else{
 			throw new \InvalidArgumentException("Entity $class is not registered");
 		}

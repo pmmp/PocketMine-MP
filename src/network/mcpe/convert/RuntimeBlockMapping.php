@@ -30,10 +30,9 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
-use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
-use function file_get_contents;
 
 /**
  * @internal
@@ -57,7 +56,7 @@ final class RuntimeBlockMapping{
 
 	public function __construct(string $canonicalBlockStatesFile, string $r12ToCurrentBlockMapFile){
 		$stream = PacketSerializer::decoder(
-			Utils::assumeNotFalse(file_get_contents($canonicalBlockStatesFile), "Missing required resource file"),
+			Filesystem::fileGetContents($canonicalBlockStatesFile),
 			0,
 			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary())
 		);
@@ -75,7 +74,7 @@ final class RuntimeBlockMapping{
 		/** @var R12ToCurrentBlockMapEntry[] $legacyStateMap */
 		$legacyStateMap = [];
 		$legacyStateMapReader = PacketSerializer::decoder(
-			Utils::assumeNotFalse(file_get_contents($r12ToCurrentBlockMapFile), "Missing required resource file"),
+			Filesystem::fileGetContents($r12ToCurrentBlockMapFile),
 			0,
 			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary())
 		);
