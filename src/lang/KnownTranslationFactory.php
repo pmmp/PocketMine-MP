@@ -1629,6 +1629,10 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_DISCONNECT_ERROR_LOGINTIMEOUT, []);
 	}
 
+	public static function pocketmine_disconnect_error_respawn() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_DISCONNECT_ERROR_RESPAWN, []);
+	}
+
 	public static function pocketmine_disconnect_incompatibleProtocol(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_DISCONNECT_INCOMPATIBLEPROTOCOL, [
 			0 => $param0,
