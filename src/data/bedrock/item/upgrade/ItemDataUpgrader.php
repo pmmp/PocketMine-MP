@@ -40,9 +40,6 @@ use function assert;
 final class ItemDataUpgrader{
 	private const TAG_LEGACY_ID = "id"; //TAG_Short (or TAG_String for Java itemstacks)
 
-	/**
-	 * @phpstan-param array<int, ItemIdMetaUpgradeSchema> $idMetaUpgradeSchemas
-	 */
 	public function __construct(
 		private ItemIdMetaUpgrader $idMetaUpgrader,
 		private LegacyItemIdToStringIdMap $legacyIntToStringIdMap,
