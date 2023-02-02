@@ -38,7 +38,6 @@ use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
 use function array_filter;
 use function array_keys;
-use function file_get_contents;
 use function in_array;
 
 /**
