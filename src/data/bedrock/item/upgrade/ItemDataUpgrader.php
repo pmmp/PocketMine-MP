@@ -36,40 +36,19 @@ use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\utils\Binary;
 use function assert;
-use function ksort;
-use const SORT_NUMERIC;
 
 final class ItemDataUpgrader{
 	private const TAG_LEGACY_ID = "id"; //TAG_Short (or TAG_String for Java itemstacks)
 
 	/**
-	 * @var ItemIdMetaUpgradeSchema[]
-	 * @phpstan-var array<int, ItemIdMetaUpgradeSchema>
-	 */
-	private array $idMetaUpgradeSchemas = [];
-
-	/**
-	 * @param ItemIdMetaUpgradeSchema[] $idMetaUpgradeSchemas
 	 * @phpstan-param array<int, ItemIdMetaUpgradeSchema> $idMetaUpgradeSchemas
 	 */
 	public function __construct(
+		private ItemIdMetaUpgrader $idMetaUpgrader,
 		private LegacyItemIdToStringIdMap $legacyIntToStringIdMap,
 		private R12ItemIdToBlockIdMap $r12ItemIdToBlockIdMap,
 		private BlockDataUpgrader $blockDataUpgrader,
-		array $idMetaUpgradeSchemas
-	){
-		foreach($idMetaUpgradeSchemas as $schema){
-			$this->addIdMetaUpgradeSchema($schema);
-		}
-	}
-
-	public function addIdMetaUpgradeSchema(ItemIdMetaUpgradeSchema $schema) : void{
-		if(isset($this->idMetaUpgradeSchemas[$schema->getSchemaId()])){
-			throw new \InvalidArgumentException("Already have a schema with priority " . $schema->getSchemaId());
-		}
-		$this->idMetaUpgradeSchemas[$schema->getSchemaId()] = $schema;
-		ksort($this->idMetaUpgradeSchemas, SORT_NUMERIC);
-	}
+	){}
 
 	/**
 	 * This function replaces the legacy ItemFactory::get().
@@ -87,7 +66,7 @@ final class ItemDataUpgrader{
 			$blockStateData = null;
 		}
 
-		[$newNameId, $newMeta] = $this->upgradeItemStringIdMeta($rawNameId, $meta);
+		[$newNameId, $newMeta] = $this->idMetaUpgrader->upgradeStringIdMeta($rawNameId, $meta);
 
 		//TODO: this won't account for spawn eggs from before 1.16.100 - perhaps we're lucky and they just left the meta in there anyway?
 
@@ -107,6 +86,8 @@ final class ItemDataUpgrader{
 	 * @throws SavedDataLoadingException if the legacy numeric ID doesn't map to a string ID
 	 */
 	public function upgradeItemTypeDataInt(int $legacyNumericId, int $meta, int $count, ?CompoundTag $nbt) : SavedItemStackData{
+		//do not upgrade the ID beyond this initial step - we need the 1.12 ID for the item ID -> block ID map in the
+		//next step
 		$rawNameId = $this->legacyIntToStringIdMap->legacyToString($legacyNumericId);
 		if($rawNameId === null){
 			throw new SavedDataLoadingException("Unmapped legacy item ID $legacyNumericId");
@@ -158,7 +139,7 @@ final class ItemDataUpgrader{
 			$blockStateData = null;
 		}
 
-		[$newNameId, $newMeta] = $this->upgradeItemStringIdMeta($rawNameId, $meta);
+		[$newNameId, $newMeta] = $this->idMetaUpgrader->upgradeStringIdMeta($rawNameId, $meta);
 
 		//TODO: this won't account for spawn eggs from before 1.16.100 - perhaps we're lucky and they just left the meta in there anyway?
 
@@ -217,21 +198,5 @@ final class ItemDataUpgrader{
 		);
 	}
 
-	/**
-	 * @phpstan-return array{string, int}
-	 */
-	public function upgradeItemStringIdMeta(string $id, int $meta) : array{
-		$newId = $id;
-		$newMeta = $meta;
-		foreach($this->idMetaUpgradeSchemas as $schema){
-			if(($remappedMetaId = $schema->remapMeta($newId, $newMeta)) !== null){
-				$newId = $remappedMetaId;
-				$newMeta = 0;
-			}elseif(($renamedId = $schema->renameId($newId)) !== null){
-				$newId = $renamedId;
-			}
-		}
-
-		return [$newId, $newMeta];
-	}
+	public function getIdMetaUpgrader() : ItemIdMetaUpgrader{ return $this->idMetaUpgrader; }
 }
