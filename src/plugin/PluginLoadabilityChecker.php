@@ -34,6 +34,7 @@ use function extension_loaded;
 use function implode;
 use function in_array;
 use function phpversion;
+use function str_starts_with;
 use function stripos;
 use function strlen;
 use function substr;
@@ -96,7 +97,7 @@ final class PluginLoadabilityChecker{
 				}
 				foreach(["<=", "le", "<>", "!=", "ne", "<", "lt", "==", "=", "eq", ">=", "ge", ">", "gt"] as $comparator){
 					// warning: the > character should be quoted in YAML
-					if(substr($constr, 0, strlen($comparator)) === $comparator){
+					if(str_starts_with($constr, $comparator)){
 						$version = substr($constr, strlen($comparator));
 						if(!version_compare($gotVersion, $version, $comparator)){
 							return KnownTranslationFactory::pocketmine_plugin_incompatibleExtensionVersion(extensionName: $extensionName, extensionVersion: $gotVersion, pluginRequirement: $constr);

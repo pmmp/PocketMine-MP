@@ -39,7 +39,6 @@ use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
 use Symfony\Component\Filesystem\Path;
-use function file_get_contents;
 use function file_put_contents;
 use function strlen;
 use function substr;
@@ -111,9 +110,10 @@ class BedrockWorldData extends BaseNbtWorldData{
 	}
 
 	protected function load() : CompoundTag{
-		$rawLevelData = @file_get_contents($this->dataPath);
-		if($rawLevelData === false){
-			throw new CorruptedWorldException("Failed to read level.dat (permission denied or doesn't exist)");
+		try{
+			$rawLevelData = Filesystem::fileGetContents($this->dataPath);
+		}catch(\RuntimeException $e){
+			throw new CorruptedWorldException($e->getMessage(), 0, $e);
 		}
 		if(strlen($rawLevelData) <= 8){
 			throw new CorruptedWorldException("Truncated level.dat");

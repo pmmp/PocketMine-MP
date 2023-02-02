@@ -45,6 +45,10 @@ use function abs;
 
 class FallingBlock extends Entity{
 
+	private const TAG_TILE_ID = "TileID"; //TAG_Int
+	private const TAG_TILE = "Tile"; //TAG_Byte
+	private const TAG_DATA = "Data"; //TAG_Byte
+
 	public static function getNetworkTypeId() : string{ return EntityIds::FALLING_BLOCK; }
 
 	protected $gravity = 0.04;
@@ -66,9 +70,9 @@ class FallingBlock extends Entity{
 		$blockId = 0;
 
 		//TODO: 1.8+ save format
-		if(($tileIdTag = $nbt->getTag("TileID")) instanceof IntTag){
+		if(($tileIdTag = $nbt->getTag(self::TAG_TILE_ID)) instanceof IntTag){
 			$blockId = $tileIdTag->getValue();
-		}elseif(($tileTag = $nbt->getTag("Tile")) instanceof ByteTag){
+		}elseif(($tileTag = $nbt->getTag(self::TAG_TILE)) instanceof ByteTag){
 			$blockId = $tileTag->getValue();
 		}
 
@@ -76,7 +80,7 @@ class FallingBlock extends Entity{
 			throw new SavedDataLoadingException("Missing block info from NBT");
 		}
 
-		$damage = $nbt->getByte("Data", 0);
+		$damage = $nbt->getByte(self::TAG_DATA, 0);
 
 		return $factory->get($blockId, $damage);
 	}
@@ -139,8 +143,8 @@ class FallingBlock extends Entity{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setInt("TileID", $this->block->getId());
-		$nbt->setByte("Data", $this->block->getMeta());
+		$nbt->setInt(self::TAG_TILE_ID, $this->block->getId());
+		$nbt->setByte(self::TAG_DATA, $this->block->getMeta());
 
 		return $nbt;
 	}

@@ -37,7 +37,6 @@ use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
 use Symfony\Component\Filesystem\Path;
 use function ceil;
-use function file_get_contents;
 use function file_put_contents;
 use function microtime;
 use function zlib_decode;
@@ -75,9 +74,10 @@ class JavaWorldData extends BaseNbtWorldData{
 	}
 
 	protected function load() : CompoundTag{
-		$rawLevelData = @file_get_contents($this->dataPath);
-		if($rawLevelData === false){
-			throw new CorruptedWorldException("Failed to read level.dat (permission denied or doesn't exist)");
+		try{
+			$rawLevelData = Filesystem::fileGetContents($this->dataPath);
+		}catch(\RuntimeException $e){
+			throw new CorruptedWorldException($e->getMessage(), 0, $e);
 		}
 		$nbt = new BigEndianNbtSerializer();
 		$decompressed = @zlib_decode($rawLevelData);

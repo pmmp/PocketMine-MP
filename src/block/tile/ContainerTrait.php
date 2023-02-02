@@ -52,7 +52,7 @@ trait ContainerTrait{
 			$newContents = [];
 			/** @var CompoundTag $itemNBT */
 			foreach($inventoryTag as $itemNBT){
-				$newContents[$itemNBT->getByte("Slot")] = Item::nbtDeserialize($itemNBT);
+				$newContents[$itemNBT->getByte(Item::TAG_SLOT)] = Item::nbtDeserialize($itemNBT);
 			}
 			$inventory->setContents($newContents);
 

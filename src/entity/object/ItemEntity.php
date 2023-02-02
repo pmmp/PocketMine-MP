@@ -43,6 +43,13 @@ use function max;
 
 class ItemEntity extends Entity{
 
+	private const TAG_HEALTH = "Health"; //TAG_Short
+	private const TAG_AGE = "Age"; //TAG_Short
+	private const TAG_PICKUP_DELAY = "PickupDelay"; //TAG_Short
+	private const TAG_OWNER = "Owner"; //TAG_String
+	private const TAG_THROWER = "Thrower"; //TAG_String
+	public const TAG_ITEM = "Item"; //TAG_Compound
+
 	public static function getNetworkTypeId() : string{ return EntityIds::ITEM; }
 
 	public const MERGE_CHECK_PERIOD = 2; //0.1 seconds
@@ -81,17 +88,17 @@ class ItemEntity extends Entity{
 		parent::initEntity($nbt);
 
 		$this->setMaxHealth(5);
-		$this->setHealth($nbt->getShort("Health", (int) $this->getHealth()));
+		$this->setHealth($nbt->getShort(self::TAG_HEALTH, (int) $this->getHealth()));
 
-		$age = $nbt->getShort("Age", 0);
+		$age = $nbt->getShort(self::TAG_AGE, 0);
 		if($age === -32768){
 			$this->despawnDelay = self::NEVER_DESPAWN;
 		}else{
 			$this->despawnDelay = max(0, self::DEFAULT_DESPAWN_DELAY - $age);
 		}
-		$this->pickupDelay = $nbt->getShort("PickupDelay", $this->pickupDelay);
-		$this->owner = $nbt->getString("Owner", $this->owner);
-		$this->thrower = $nbt->getString("Thrower", $this->thrower);
+		$this->pickupDelay = $nbt->getShort(self::TAG_PICKUP_DELAY, $this->pickupDelay);
+		$this->owner = $nbt->getString(self::TAG_OWNER, $this->owner);
+		$this->thrower = $nbt->getString(self::TAG_THROWER, $this->thrower);
 	}
 
 	protected function onFirstUpdate(int $currentTick) : void{
@@ -195,20 +202,20 @@ class ItemEntity extends Entity{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setTag("Item", $this->item->nbtSerialize());
-		$nbt->setShort("Health", (int) $this->getHealth());
+		$nbt->setTag(self::TAG_ITEM, $this->item->nbtSerialize());
+		$nbt->setShort(self::TAG_HEALTH, (int) $this->getHealth());
 		if($this->despawnDelay === self::NEVER_DESPAWN){
 			$age = -32768;
 		}else{
 			$age = self::DEFAULT_DESPAWN_DELAY - $this->despawnDelay;
 		}
-		$nbt->setShort("Age", $age);
-		$nbt->setShort("PickupDelay", $this->pickupDelay);
+		$nbt->setShort(self::TAG_AGE, $age);
+		$nbt->setShort(self::TAG_PICKUP_DELAY, $this->pickupDelay);
 		if($this->owner !== null){
-			$nbt->setString("Owner", $this->owner);
+			$nbt->setString(self::TAG_OWNER, $this->owner);
 		}
 		if($this->thrower !== null){
-			$nbt->setString("Thrower", $this->thrower);
+			$nbt->setString(self::TAG_THROWER, $this->thrower);
 		}
 
 		return $nbt;

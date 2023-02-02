@@ -50,6 +50,12 @@ use const M_PI;
 use const PHP_INT_MAX;
 
 abstract class Projectile extends Entity{
+	private const TAG_DAMAGE = "damage"; //TAG_Double
+	private const TAG_TILE_X = "tileX"; //TAG_Int
+	private const TAG_TILE_Y = "tileY"; //TAG_Int
+	private const TAG_TILE_Z = "tileZ"; //TAG_Int
+	private const TAG_BLOCK_ID = "blockId"; //TAG_Int
+	private const TAG_BLOCK_DATA = "blockData"; //TAG_Byte
 
 	/** @var float */
 	protected $damage = 0.0;
@@ -75,22 +81,22 @@ abstract class Projectile extends Entity{
 
 		$this->setMaxHealth(1);
 		$this->setHealth(1);
-		$this->damage = $nbt->getDouble("damage", $this->damage);
+		$this->damage = $nbt->getDouble(self::TAG_DAMAGE, $this->damage);
 
 		(function() use ($nbt) : void{
-			if(($tileXTag = $nbt->getTag("tileX")) instanceof IntTag && ($tileYTag = $nbt->getTag("tileY")) instanceof IntTag && ($tileZTag = $nbt->getTag("tileZ")) instanceof IntTag){
+			if(($tileXTag = $nbt->getTag(self::TAG_TILE_X)) instanceof IntTag && ($tileYTag = $nbt->getTag(self::TAG_TILE_Y)) instanceof IntTag && ($tileZTag = $nbt->getTag(self::TAG_TILE_Z)) instanceof IntTag){
 				$blockPos = new Vector3($tileXTag->getValue(), $tileYTag->getValue(), $tileZTag->getValue());
 			}else{
 				return;
 			}
 
-			if(($blockIdTag = $nbt->getTag("blockId")) instanceof IntTag){
+			if(($blockIdTag = $nbt->getTag(self::TAG_BLOCK_ID)) instanceof IntTag){
 				$blockId = $blockIdTag->getValue();
 			}else{
 				return;
 			}
 
-			if(($blockDataTag = $nbt->getTag("blockData")) instanceof ByteTag){
+			if(($blockDataTag = $nbt->getTag(self::TAG_BLOCK_DATA)) instanceof ByteTag){
 				$blockData = $blockDataTag->getValue();
 			}else{
 				return;
@@ -134,17 +140,17 @@ abstract class Projectile extends Entity{
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
 
-		$nbt->setDouble("damage", $this->damage);
+		$nbt->setDouble(self::TAG_DAMAGE, $this->damage);
 
 		if($this->blockHit !== null){
 			$pos = $this->blockHit->getPosition();
-			$nbt->setInt("tileX", $pos->x);
-			$nbt->setInt("tileY", $pos->y);
-			$nbt->setInt("tileZ", $pos->z);
+			$nbt->setInt(self::TAG_TILE_X, $pos->x);
+			$nbt->setInt(self::TAG_TILE_Y, $pos->y);
+			$nbt->setInt(self::TAG_TILE_Z, $pos->z);
 
 			//we intentionally use different ones to PC because we don't have stringy IDs
-			$nbt->setInt("blockId", $this->blockHit->getId());
-			$nbt->setByte("blockData", $this->blockHit->getMeta());
+			$nbt->setInt(self::TAG_BLOCK_ID, $this->blockHit->getId());
+			$nbt->setByte(self::TAG_BLOCK_DATA, $this->blockHit->getMeta());
 		}
 
 		return $nbt;

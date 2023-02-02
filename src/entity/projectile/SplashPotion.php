@@ -49,6 +49,8 @@ use function sqrt;
 
 class SplashPotion extends Throwable{
 
+	public const TAG_POTION_ID = "PotionId"; //TAG_Short
+
 	public static function getNetworkTypeId() : string{ return EntityIds::SPLASH_POTION; }
 
 	protected $gravity = 0.05;
@@ -65,7 +67,7 @@ class SplashPotion extends Throwable{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setShort("PotionId", PotionTypeIdMap::getInstance()->toId($this->getPotionType()));
+		$nbt->setShort(self::TAG_POTION_ID, PotionTypeIdMap::getInstance()->toId($this->getPotionType()));
 
 		return $nbt;
 	}

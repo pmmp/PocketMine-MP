@@ -53,6 +53,10 @@ class PermissionParser{
 		"false" => self::DEFAULT_FALSE,
 	];
 
+	private const KEY_DEFAULT = "default";
+	private const KEY_CHILDREN = "children";
+	private const KEY_DESCRIPTION = "description";
+
 	/**
 	 * @param bool|string $value
 	 *
@@ -60,11 +64,7 @@ class PermissionParser{
 	 */
 	public static function defaultFromString($value) : string{
 		if(is_bool($value)){
-			if($value){
-				return "true";
-			}else{
-				return "false";
-			}
+			return $value ? self::DEFAULT_TRUE : self::DEFAULT_FALSE;
 		}
 		$lower = strtolower($value);
 		if(isset(self::DEFAULT_STRING_MAP[$lower])){
@@ -86,16 +86,16 @@ class PermissionParser{
 		$result = [];
 		foreach(Utils::stringifyKeys($data) as $name => $entry){
 			$desc = null;
-			if(isset($entry["default"])){
-				$default = PermissionParser::defaultFromString($entry["default"]);
+			if(isset($entry[self::KEY_DEFAULT])){
+				$default = PermissionParser::defaultFromString($entry[self::KEY_DEFAULT]);
 			}
 
-			if(isset($entry["children"])){
+			if(isset($entry[self::KEY_CHILDREN])){
 				throw new PermissionParserException("Nested permission declarations are no longer supported. Declare each permission separately.");
 			}
 
-			if(isset($entry["description"])){
-				$desc = $entry["description"];
+			if(isset($entry[self::KEY_DESCRIPTION])){
+				$desc = $entry[self::KEY_DESCRIPTION];
 			}
 
 			$result[$default][] = new Permission($name, $desc);

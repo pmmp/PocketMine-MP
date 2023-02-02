@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\handler;
 use pocketmine\block\BaseSign;
 use pocketmine\block\ItemFrame;
 use pocketmine\block\Lectern;
+use pocketmine\block\tile\Sign;
 use pocketmine\block\utils\SignText;
 use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\entity\Attribute;
@@ -125,8 +126,8 @@ use function max;
 use function mb_strlen;
 use function microtime;
 use function sprintf;
+use function str_starts_with;
 use function strlen;
-use function strpos;
 use const JSON_THROW_ON_ERROR;
 
 /**
@@ -755,7 +756,7 @@ class InGamePacketHandler extends ChunkRequestPacketHandler{
 		if(!($nbt instanceof CompoundTag)) throw new AssumptionFailedError("PHPStan should ensure this is a CompoundTag"); //for phpstorm's benefit
 
 		if($block instanceof BaseSign){
-			if(($textBlobTag = $nbt->getTag("Text")) instanceof StringTag){
+			if(($textBlobTag = $nbt->getTag(Sign::TAG_TEXT_BLOB)) instanceof StringTag){
 				try{
 					$text = SignText::fromBlob($textBlobTag->getValue());
 				}catch(\InvalidArgumentException $e){
@@ -826,7 +827,7 @@ class InGamePacketHandler extends ChunkRequestPacketHandler{
 	}
 
 	public function handleCommandRequest(CommandRequestPacket $packet) : bool{
-		if(strpos($packet->command, '/') === 0){
+		if(str_starts_with($packet->command, '/')){
 			$this->player->chat($packet->command);
 			return true;
 		}
