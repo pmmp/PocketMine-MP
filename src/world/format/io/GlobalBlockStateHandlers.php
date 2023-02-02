@@ -84,6 +84,6 @@ final class GlobalBlockStateHandlers{
 	}
 
 	public static function getUnknownBlockStateData() : BlockStateData{
-		return self::$unknownBlockStateData ??= new BlockStateData(BlockTypeNames::INFO_UPDATE, [], BlockStateData::CURRENT_VERSION);
+		return self::$unknownBlockStateData ??= BlockStateData::current(BlockTypeNames::INFO_UPDATE, []);
 	}
 }

@@ -51,7 +51,7 @@ final class BlockDataUpgrader{
 			$blockStateData = $this->upgradeStringIdMeta($id, $data);
 			if($blockStateData === null){
 				//unknown block, invalid ID
-				$blockStateData = new BlockStateData(BlockTypeNames::INFO_UPDATE, [], BlockStateData::CURRENT_VERSION);
+				$blockStateData = BlockStateData::current(BlockTypeNames::INFO_UPDATE, []);
 			}
 		}else{
 			//Modern (post-1.13) blockstate
