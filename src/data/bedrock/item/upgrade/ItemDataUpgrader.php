@@ -64,10 +64,10 @@ final class ItemDataUpgrader{
 	}
 
 	public function addIdMetaUpgradeSchema(ItemIdMetaUpgradeSchema $schema) : void{
-		if(isset($this->idMetaUpgradeSchemas[$schema->getPriority()])){
-			throw new \InvalidArgumentException("Already have a schema with priority " . $schema->getPriority());
+		if(isset($this->idMetaUpgradeSchemas[$schema->getSchemaId()])){
+			throw new \InvalidArgumentException("Already have a schema with priority " . $schema->getSchemaId());
 		}
-		$this->idMetaUpgradeSchemas[$schema->getPriority()] = $schema;
+		$this->idMetaUpgradeSchemas[$schema->getSchemaId()] = $schema;
 		ksort($this->idMetaUpgradeSchemas, SORT_NUMERIC);
 	}
 

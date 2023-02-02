@@ -36,10 +36,10 @@ final class ItemIdMetaUpgradeSchema{
 	public function __construct(
 		private array $renamedIds,
 		private array $remappedMetas,
-		private int $priority
+		private int $schemaId
 	){}
 
-	public function getPriority() : int{ return $this->priority; }
+	public function getSchemaId() : int{ return $this->schemaId; }
 
 	public function renameId(string $id) : ?string{
 		return $this->renamedIds[mb_strtolower($id, 'US-ASCII')] ?? null;
