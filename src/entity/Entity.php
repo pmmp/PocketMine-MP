@@ -1018,9 +1018,7 @@ abstract class Entity{
 		if($this->closed){
 			throw new \LogicException("Cannot schedule update on garbage entity " . get_class($this));
 		}
-		if($this->location->isValid()){
-			$this->getWorld()->updateEntities[$this->id] = $this;
-		}
+		$this->getWorld()->updateEntities[$this->id] = $this;
 	}
 
 	public function onNearbyBlockChange() : void{
@@ -1355,7 +1353,6 @@ abstract class Entity{
 		$this->blocksAround = null;
 
 		if($oldWorld !== $newWorld){
-			$this->networkProperties->clearDirtyProperties();
 			$newWorld->addEntity($this);
 		}else{
 			$newWorld->onEntityMoved($this);

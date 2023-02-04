@@ -184,20 +184,16 @@ abstract class Projectile extends Entity{
 		$entityHit = null;
 		$hitResult = null;
 
-		try {
-			foreach(VoxelRayTrace::betweenPoints($start, $end) as $vector3){
-				$block = $this->getWorld()->getBlockAt($vector3->x, $vector3->y, $vector3->z);
+		foreach(VoxelRayTrace::betweenPoints($start, $end) as $vector3){
+			$block = $this->getWorld()->getBlockAt($vector3->x, $vector3->y, $vector3->z);
 
-				$blockHitResult = $this->calculateInterceptWithBlock($block, $start, $end);
-				if($blockHitResult !== null){
-					$end = $blockHitResult->hitVector;
-					$blockHit = $block;
-					$hitResult = $blockHitResult;
-					break;
-				}
+			$blockHitResult = $this->calculateInterceptWithBlock($block, $start, $end);
+			if($blockHitResult !== null){
+				$end = $blockHitResult->hitVector;
+				$blockHit = $block;
+				$hitResult = $blockHitResult;
+				break;
 			}
-		} catch(\InvalidArgumentException $e){
-			$this->flagForDespawn();
 		}
 
 		$entityDistance = PHP_INT_MAX;

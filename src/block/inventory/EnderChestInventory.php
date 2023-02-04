@@ -82,8 +82,7 @@ class EnderChestInventory extends DelegateInventory implements BlockInventory{
 		$this->animatedBlockInventoryTrait_onClose($who);
 		$enderChest = $this->getHolder()->getWorld()->getTile($this->getHolder());
 		if($enderChest instanceof EnderChest){
-			$viewerCount = $enderChest->getViewerCount() - 1;
-			$enderChest->setViewerCount($viewerCount > 0 ? $viewerCount : 0);
+			$enderChest->setViewerCount($enderChest->getViewerCount() - 1);
 		}
 	}
 }
