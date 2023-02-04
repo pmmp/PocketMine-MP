@@ -105,7 +105,7 @@ class ChunkCache implements ChunkListener{
 		}
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 
-		$mappingProtocol = RuntimeBlockMapping::getMappingProtocol($protocolId);
+		$mappingProtocol = RuntimeBlockMapping::convertProtocol($protocolId);
 
 		if(isset($this->caches[$chunkHash][$mappingProtocol])){
 			++$this->hits;

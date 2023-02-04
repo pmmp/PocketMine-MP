@@ -60,7 +60,6 @@ class PreSpawnPacketHandler extends ChunkRequestPacketHandler{
 	}
 
 	public function setUp() : void{
-		$dictionaryProtocol = GlobalItemTypeDictionary::getDictionaryProtocol($this->session->getProtocolId());
 		$location = $this->player->getLocation();
 		$world = $location->getWorld();
 
@@ -105,7 +104,7 @@ class PreSpawnPacketHandler extends ChunkRequestPacketHandler{
 			false,
 			[],
 			0,
-			GlobalItemTypeDictionary::getInstance()->getDictionary($dictionaryProtocol)->getEntries(),
+			GlobalItemTypeDictionary::getInstance($this->session->getProtocolId())->getDictionary()->getEntries(),
 		));
 
 		$this->session->getLogger()->debug("Sending actor identifiers");
@@ -140,7 +139,7 @@ class PreSpawnPacketHandler extends ChunkRequestPacketHandler{
 		$this->inventoryManager->syncCreative();
 
 		$this->session->getLogger()->debug("Sending crafting data");
-		$this->session->sendDataPacket(CraftingDataCache::getInstance()->getCache($dictionaryProtocol, $this->server->getCraftingManager()));
+		$this->session->sendDataPacket(CraftingDataCache::getInstance($this->session->getProtocolId())->getCache($this->server->getCraftingManager()));
 
 		$this->session->getLogger()->debug("Sending player list");
 		$this->session->syncPlayerList($this->server->getOnlinePlayers());

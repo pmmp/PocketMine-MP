@@ -45,7 +45,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\convert\TypeConversionException;
 use pocketmine\network\mcpe\convert\TypeConverter;
@@ -499,7 +498,7 @@ class InGamePacketHandler extends ChunkRequestPacketHandler{
 			}else{
 				$blocks[] = $blockPos;
 			}
-			foreach($this->player->getWorld()->createBlockUpdatePackets(RuntimeBlockMapping::getMappingProtocol($this->session->getProtocolId()), $blocks) as $packet){
+			foreach($this->player->getWorld()->createBlockUpdatePackets($this->session->getProtocolId(), $blocks) as $packet){
 				$this->session->sendDataPacket($packet);
 			}
 		}
@@ -696,7 +695,7 @@ class InGamePacketHandler extends ChunkRequestPacketHandler{
 
 				try{
 					if(!$block->updateText($this->player, $text)){
-						foreach($this->player->getWorld()->createBlockUpdatePackets(RuntimeBlockMapping::getMappingProtocol($this->session->getProtocolId()), [$pos]) as $updatePacket){
+						foreach($this->player->getWorld()->createBlockUpdatePackets($this->session->getProtocolId(), [$pos]) as $updatePacket){
 							$this->session->sendDataPacket($updatePacket);
 						}
 					}

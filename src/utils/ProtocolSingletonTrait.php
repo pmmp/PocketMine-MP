@@ -23,26 +23,67 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
-trait SingletonTrait{
-	/** @var self|null */
-	private static $instance = null;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\player\Player;
 
-	private static function make() : self{
-		return new self();
+trait ProtocolSingletonTrait{
+	/** @var self[] */
+	private static $instance = [];
+
+	private static function make(int $protocolId) : self{
+		return new self($protocolId);
 	}
 
-	public static function getInstance() : self{
-		if(self::$instance === null){
-			self::$instance = self::make();
+	public static function getInstance(int $protocolId = ProtocolInfo::CURRENT_PROTOCOL) : self{
+		$protocolId = self::convertProtocol($protocolId);
+
+		if(!isset(self::$instance[$protocolId])){
+			self::$instance[$protocolId] = self::make($protocolId);
 		}
+		return self::$instance[$protocolId];
+	}
+
+	/**
+	 * @return array<int, self>
+	 */
+	public static function getAll(bool $create = false) : array{
+		if($create){
+			foreach(ProtocolInfo::ACCEPTED_PROTOCOL as $protocolId){
+				self::getInstance($protocolId);
+			}
+		}
+
 		return self::$instance;
 	}
 
-	public static function setInstance(self $instance) : void{
-		self::$instance = $instance;
+	/**
+	 * @param Player[] $players
+	 *
+	 * @return Player[][]
+	 */
+	public static function sortByProtocol(array $players) : array{
+		$sortPlayers = [];
+
+		foreach($players as $player){
+			$dictionaryProtocol = self::convertProtocol($player->getNetworkSession()->getProtocolId());
+
+			if(isset($sortPlayers[$dictionaryProtocol])){
+				$sortPlayers[$dictionaryProtocol][] = $player;
+			}else{
+				$sortPlayers[$dictionaryProtocol] = [$player];
+			}
+		}
+
+		return $sortPlayers;
+	}
+
+	abstract public static function convertProtocol(int $protocolId) : int;
+
+	public static function setInstance(self $instance, int $protocolId) : void{
+		self::$instance[$protocolId] = $instance;
 	}
 
 	public static function reset() : void{
-		self::$instance = null;
+		self::$instance = [];
 	}
 }

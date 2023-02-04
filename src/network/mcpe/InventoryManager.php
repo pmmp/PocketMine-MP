@@ -476,8 +476,16 @@ class InventoryManager{
 		$typeConverter = TypeConverter::getInstance();
 
 		$nextEntryId = 1;
-		$this->session->sendDataPacket(CreativeContentPacket::create(array_map(function(Item $item) use($typeConverter, &$nextEntryId) : CreativeContentEntry{
-			return new CreativeContentEntry($nextEntryId++, $typeConverter->coreItemStackToNet($this->session->getProtocolId(), $item));
-		}, $this->player->isSpectator() ? [] : CreativeInventory::getInstance()->getAll())));
+		$results = [];
+		foreach($this->player->isSpectator() ? [] : CreativeInventory::getInstance()->getAll() as $item){
+			try {
+				$itemStack = $typeConverter->coreItemStackToNet($this->session->getProtocolId(), $item);
+				$results[] = new CreativeContentEntry($nextEntryId++, $itemStack);
+			} catch(\InvalidArgumentException | AssumptionFailedError $e){
+				//ignore
+			}
+		}
+
+		$this->session->sendDataPacket(CreativeContentPacket::create($results));
 	}
 }
