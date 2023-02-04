@@ -47,8 +47,8 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Binary;
 use pocketmine\utils\ProtocolSingletonTrait;
 use Ramsey\Uuid\Uuid;
-use function array_filter;
 use function array_map;
+use function in_array;
 use function spl_object_id;
 
 final class CraftingDataCache{
@@ -100,22 +100,22 @@ final class CraftingDataCache{
 					default => throw new AssumptionFailedError("Unreachable"),
 				};
 
-				$inputs = array_filter(array_map(function(RecipeIngredient $item) use ($converter) : ?ProtocolRecipeIngredient{
+				$inputs = array_map(function(RecipeIngredient $item) use ($converter) : ?ProtocolRecipeIngredient{
 					try {
 						return $converter->coreRecipeIngredientToNet($this->protocolId, $item);
 					} catch(\InvalidArgumentException $e){
 						return null;
 					}
-				}, $recipe->getIngredientList()));
-				$outputs = array_filter(array_map(function(Item $item) use ($converter) : ?ItemStack{
+				}, $recipe->getIngredientList());
+				$outputs = array_map(function(Item $item) use ($converter) : ?ItemStack{
 					try {
 						return $converter->coreItemStackToNet($this->protocolId, $item);
 					} catch(\InvalidArgumentException | AssumptionFailedError $e){
 						return null;
 					}
-				}, $recipe->getResults()));
+				}, $recipe->getResults());
 
-				if(count($inputs) === 0 || count($outputs) === 0){
+				if(!$this->checkInputValidity($inputs) || !$this->checkOutputValidity($outputs)){
 					continue;
 				}
 
@@ -145,15 +145,15 @@ final class CraftingDataCache{
 					continue;
 				}
 
-				$outputs = array_filter(array_map(function(Item $item) use ($converter) : ?ItemStack{
+				$outputs = array_map(function(Item $item) use ($converter) : ?ItemStack{
 					try {
 						return $converter->coreItemStackToNet($this->protocolId, $item);
 					} catch(\InvalidArgumentException | AssumptionFailedError $e){
 						return null;
 					}
-				}, $recipe->getResults()));
+				}, $recipe->getResults());
 
-				if(count($outputs) === 0){
+				if(!$this->checkOutputValidity($outputs)){
 					continue;
 				}
 
@@ -243,6 +243,20 @@ final class CraftingDataCache{
 
 		Timings::$craftingDataCacheRebuild->stopTiming();
 		return CraftingDataPacket::create($recipesWithTypeIds, $potionTypeRecipes, $potionContainerChangeRecipes, [], true);
+	}
+
+	/**
+	 * @param ProtocolRecipeIngredient[] $inputs
+	 */
+	private function checkInputValidity(array $inputs) : bool{
+		return !in_array(null, $inputs, true);
+	}
+
+	/**
+	 * @param ItemStack[] $outputs
+	 */
+	private function checkOutputValidity(array $outputs) : bool{
+		return !in_array(null, $outputs, true);
 	}
 
 	public static function convertProtocol(int $protocolId) : int{

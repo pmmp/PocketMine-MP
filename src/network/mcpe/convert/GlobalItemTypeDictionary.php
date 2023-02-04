@@ -25,16 +25,9 @@ namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
-use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\ProtocolSingletonTrait;
 use Symfony\Component\Filesystem\Path;
-use function is_array;
-use function is_bool;
-use function is_int;
-use function is_string;
-use function json_decode;
 
 final class GlobalItemTypeDictionary{
 	use ProtocolSingletonTrait;
@@ -50,19 +43,8 @@ final class GlobalItemTypeDictionary{
 
 	private static function make(int $protocolId) : self{
 		$data = Filesystem::fileGetContents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'required_item_list' . self::PATHS[$protocolId] . '.json'));
-		$table = json_decode($data, true);
-		if(!is_array($table)){
-			throw new AssumptionFailedError("Invalid item list format");
-		}
-
-		$params = [];
-		foreach($table as $name => $entry){
-			if(!is_array($entry) || !is_string($name) || !isset($entry["component_based"], $entry["runtime_id"]) || !is_bool($entry["component_based"]) || !is_int($entry["runtime_id"])){
-				throw new AssumptionFailedError("Invalid item list format");
-			}
-			$params[] = new ItemTypeEntry($name, $entry["runtime_id"], $entry["component_based"]);
-		}
-		return new self(new ItemTypeDictionary($params));
+		$dictionary = ItemTypeDictionaryFromDataHelper::loadFromString($data);
+		return new self($dictionary);
 	}
 
 	public function __construct(
