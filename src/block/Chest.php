@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
+use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\ChestPairEvent;
 use pocketmine\item\Item;
@@ -36,7 +36,7 @@ use pocketmine\player\Player;
 
 class Chest extends Transparent{
 	use FacesOppositePlacingPlayerTrait;
-	use NormalHorizontalFacingInMetadataTrait;
+	use HorizontalFacingTrait;
 
 	/**
 	 * @return AxisAlignedBB[]
@@ -74,7 +74,7 @@ class Chest extends Transparent{
 		}
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 
 			$chest = $this->position->getWorld()->getTile($this->position);

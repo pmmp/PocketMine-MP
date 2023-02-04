@@ -25,6 +25,7 @@ namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
+use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\player\PlayerInfo;
 use function array_keys;
@@ -53,19 +54,14 @@ class PlayerPreLoginEvent extends Event implements Cancellable{
 		self::KICK_REASON_BANNED
 	];
 
-	/** @var bool */
-	protected $authRequired;
-
-	/** @var string[] reason const => associated message */
-	protected $kickReasons = [];
+	/** @var Translatable[]|string[] reason const => associated message */
+	protected array $kickReasons = [];
 
 	public function __construct(
 		private PlayerInfo $playerInfo,
 		private NetworkSession $session,
-		bool $authRequired
-	){
-		$this->authRequired = $authRequired;
-	}
+		protected bool $authRequired
+	){}
 
 	/**
 	 * Returns an object containing self-proclaimed information about the connecting player.
@@ -116,7 +112,7 @@ class PlayerPreLoginEvent extends Event implements Cancellable{
 	 * Sets a reason to disallow the player to continue authenticating, with a message.
 	 * This can also be used to change kick messages for already-set flags.
 	 */
-	public function setKickReason(int $flag, string $message) : void{
+	public function setKickReason(int $flag, Translatable|string $message) : void{
 		$this->kickReasons[$flag] = $message;
 	}
 
@@ -147,7 +143,7 @@ class PlayerPreLoginEvent extends Event implements Cancellable{
 	/**
 	 * Returns the kick message provided for the given kick flag, or null if not set.
 	 */
-	public function getKickMessage(int $flag) : ?string{
+	public function getKickMessage(int $flag) : Translatable|string|null{
 		return $this->kickReasons[$flag] ?? null;
 	}
 
@@ -159,7 +155,7 @@ class PlayerPreLoginEvent extends Event implements Cancellable{
 	 *
 	 * @see PlayerPreLoginEvent::KICK_REASON_PRIORITY
 	 */
-	public function getFinalKickMessage() : string{
+	public function getFinalKickMessage() : Translatable|string{
 		foreach(self::KICK_REASON_PRIORITY as $p){
 			if(isset($this->kickReasons[$p])){
 				return $this->kickReasons[$p];

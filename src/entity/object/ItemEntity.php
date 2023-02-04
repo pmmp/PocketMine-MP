@@ -57,22 +57,11 @@ class ItemEntity extends Entity{
 	public const NEVER_DESPAWN = -1;
 	public const MAX_DESPAWN_DELAY = 32767 + self::DEFAULT_DESPAWN_DELAY; //max value storable by mojang NBT :(
 
-	/** @var string */
-	protected $owner = "";
-	/** @var string */
-	protected $thrower = "";
-	/** @var int */
-	protected $pickupDelay = 0;
-	/** @var Item */
-	protected $item;
-
-	protected $gravity = 0.04;
-	protected $drag = 0.02;
-
-	public $canCollide = false;
-
-	/** @var int */
-	protected $despawnDelay = self::DEFAULT_DESPAWN_DELAY;
+	protected string $owner = "";
+	protected string $thrower = "";
+	protected int $pickupDelay = 0;
+	protected int $despawnDelay = self::DEFAULT_DESPAWN_DELAY;
+	protected Item $item;
 
 	public function __construct(Location $location, Item $item, ?CompoundTag $nbt = null){
 		if($item->isNull()){
@@ -83,6 +72,10 @@ class ItemEntity extends Entity{
 	}
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.25, 0.25); }
+
+	protected function getInitialDragMultiplier() : float{ return 0.02; }
+
+	protected function getInitialGravity() : float{ return 0.04; }
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
@@ -211,18 +204,18 @@ class ItemEntity extends Entity{
 		}
 		$nbt->setShort(self::TAG_AGE, $age);
 		$nbt->setShort(self::TAG_PICKUP_DELAY, $this->pickupDelay);
-		if($this->owner !== null){
-			$nbt->setString(self::TAG_OWNER, $this->owner);
-		}
-		if($this->thrower !== null){
-			$nbt->setString(self::TAG_THROWER, $this->thrower);
-		}
+		$nbt->setString(self::TAG_OWNER, $this->owner);
+		$nbt->setString(self::TAG_THROWER, $this->thrower);
 
 		return $nbt;
 	}
 
 	public function getItem() : Item{
 		return $this->item;
+	}
+
+	public function isFireProof() : bool{
+		return $this->item->isFireProof();
 	}
 
 	public function canCollideWith(Entity $entity) : bool{

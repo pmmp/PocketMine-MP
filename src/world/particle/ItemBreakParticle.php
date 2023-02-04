@@ -27,14 +27,13 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\convert\ItemTranslator;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
-use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
 class ItemBreakParticle implements Particle{
 	public function __construct(private Item $item){}
 
 	public function encode(Vector3 $pos) : array{
-		[$id, $meta] = ItemTranslator::getInstance()->toNetworkId(ProtocolInfo::CURRENT_PROTOCOL, $this->item->getId(), $this->item->getMeta());
+		[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($this->item);
 		return [LevelEventPacket::standardParticle(ParticleIds::ITEM_BREAK, ($id << 16) | $meta, $pos)];
 	}
 }

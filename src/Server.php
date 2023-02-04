@@ -497,10 +497,7 @@ class Server{
 		return $this->configGroup->getPropertyBool("player.save-player-data", true);
 	}
 
-	/**
-	 * @return OfflinePlayer|Player
-	 */
-	public function getOfflinePlayer(string $name){
+	public function getOfflinePlayer(string $name) : Player|OfflinePlayer|null{
 		$name = strtolower($name);
 		$result = $this->getPlayerExact($name);
 
@@ -589,8 +586,7 @@ class Server{
 				},
 				function() use ($playerPromiseResolver, $session) : void{
 					if($session->isConnected()){
-						//TODO: this needs to be localized - this might be reached if the spawn world was unloaded while the player was logging in
-						$session->disconnect("Failed to find a safe spawn location");
+						$session->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_respawn());
 					}
 					$playerPromiseResolver->reject();
 				}
@@ -965,7 +961,7 @@ class Server{
 
 			$this->commandMap = new SimpleCommandMap($this);
 
-			$this->craftingManager = CraftingManagerFromDataHelper::make(Path::join(\pocketmine\BEDROCK_DATA_PATH, "recipes.json"));
+			$this->craftingManager = CraftingManagerFromDataHelper::make(Path::join(\pocketmine\BEDROCK_DATA_PATH, "recipes"));
 
 			$this->resourceManager = new ResourcePackManager(Path::join($this->getDataPath(), "resource_packs"), $this->logger);
 
@@ -1361,6 +1357,7 @@ class Server{
 				return false;
 			}
 			$recipients = $ev->getTargets();
+			$packets = $ev->getPackets();
 
 			/** @var PacketBroadcaster[] $broadcasters */
 			$broadcasters = [];
@@ -1536,7 +1533,7 @@ class Server{
 	 * @param mixed[][]|null $trace
 	 * @phpstan-param list<array<string, mixed>>|null $trace
 	 */
-	public function exceptionHandler(\Throwable $e, $trace = null) : void{
+	public function exceptionHandler(\Throwable $e, ?array $trace = null) : void{
 		while(@ob_end_flush()){}
 		global $lastError;
 

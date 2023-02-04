@@ -42,7 +42,7 @@ final class ItemUseOnBlockSound extends MappingSound{
 			LevelSoundEvent::ITEM_USE_ON,
 			$pos,
 			false,
-			RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId(), $this->mappingProtocol)
+			RuntimeBlockMapping::getInstance($this->mappingProtocol)->toRuntimeId($this->block->getStateId())
 		)];
 	}
 }

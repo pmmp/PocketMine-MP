@@ -23,7 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityTrampleFarmlandEvent;
@@ -37,16 +38,10 @@ class Farmland extends Transparent{
 
 	protected int $wetness = 0; //"moisture" blockstate property in PC
 
-	protected function writeStateToMeta() : int{
-		return $this->wetness;
-	}
+	public function getRequiredStateDataBits() : int{ return 3; }
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->wetness = BlockDataSerializer::readBoundedInt("wetness", $stateMeta, 0, self::MAX_WETNESS);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(3, 0, self::MAX_WETNESS, $this->wetness);
 	}
 
 	public function getWetness() : int{ return $this->wetness; }

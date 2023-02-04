@@ -34,9 +34,9 @@ use function implode;
 
 class GamemodeCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"gamemode",
 			KnownTranslationFactory::pocketmine_command_gamemode_description(),
 			KnownTranslationFactory::commands_gamemode_usage()
 		);
@@ -47,10 +47,6 @@ class GamemodeCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) === 0){
 			throw new InvalidCommandSyntaxException();
 		}

@@ -23,9 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\MinimumCostFlowCalculator;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockFormEvent;
 use pocketmine\event\block\BlockSpreadEvent;
@@ -40,8 +41,6 @@ use function lcg_value;
 abstract class Liquid extends Transparent{
 	public const MAX_DECAY = 7;
 
-	protected BlockIdentifierFlattened $idInfoFlattened;
-
 	public int $adjacentSources = 0;
 
 	protected ?Vector3 $flowVector = null;
@@ -50,27 +49,12 @@ abstract class Liquid extends Transparent{
 	protected int $decay = 0; //PC "level" property
 	protected bool $still = false;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
-		$this->idInfoFlattened = $idInfo;
-		parent::__construct($idInfo, $name, $breakInfo);
-	}
+	public function getRequiredStateDataBits() : int{ return 5; }
 
-	public function getId() : int{
-		return $this->still ? $this->idInfoFlattened->getSecondId() : parent::getId();
-	}
-
-	protected function writeStateToMeta() : int{
-		return $this->decay | ($this->falling ? BlockLegacyMetadata::LIQUID_FLAG_FALLING : 0);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->decay = BlockDataSerializer::readBoundedInt("decay", $stateMeta & 0x07, 0, self::MAX_DECAY);
-		$this->falling = ($stateMeta & BlockLegacyMetadata::LIQUID_FLAG_FALLING) !== 0;
-		$this->still = $id === $this->idInfoFlattened->getSecondId();
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->boundedInt(3, 0, self::MAX_DECAY, $this->decay);
+		$w->bool($this->falling);
+		$w->bool($this->still);
 	}
 
 	public function isFalling() : bool{ return $this->falling; }
@@ -170,9 +154,11 @@ abstract class Liquid extends Transparent{
 		return $block->falling ? 0 : $block->decay;
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$this->flowVector = null;
+
+		return $this;
 	}
 
 	public function getFlowVector() : Vector3{
@@ -349,7 +335,7 @@ abstract class Liquid extends Transparent{
 			$ev->call();
 			if(!$ev->isCancelled()){
 				$world = $this->position->getWorld();
-				if($block->getId() !== BlockLegacyIds::AIR){
+				if($block->getTypeId() !== BlockTypeIds::AIR){
 					$world->useBreakOn($block->position);
 				}
 
@@ -380,7 +366,7 @@ abstract class Liquid extends Transparent{
 	}
 
 	protected function liquidCollide(Block $cause, Block $result) : bool{
-		$ev = new BlockFormEvent($this, $result);
+		$ev = new BlockFormEvent($this, $result, $cause);
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$world = $this->position->getWorld();

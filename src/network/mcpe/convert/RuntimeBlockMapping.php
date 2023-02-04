@@ -23,106 +23,121 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
-use pocketmine\block\Block;
-use pocketmine\block\BlockLegacyIds;
-use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
-use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\data\bedrock\block\BlockStateSerializeException;
+use pocketmine\data\bedrock\block\BlockStateSerializer;
+use pocketmine\data\bedrock\block\BlockTypeNames;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
-use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
-use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
-use pocketmine\utils\SingletonTrait;
-use pocketmine\utils\Utils;
+use pocketmine\utils\ProtocolSingletonTrait;
+use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use Symfony\Component\Filesystem\Path;
-use function array_filter;
-use function array_keys;
-use function in_array;
-use function file_get_contents;
 
 /**
  * @internal
  */
 final class RuntimeBlockMapping{
-	use SingletonTrait;
+	use ProtocolSingletonTrait;
 
 	public const CANONICAL_BLOCK_STATES_PATH = 0;
-	public const R12_TO_CURRENT_BLOCK_MAP_PATH = 1;
+	public const BLOCK_STATE_META_MAP_PATH = 1;
 
-	/** @var int[][] */
-	private array $legacyToRuntimeMap = [];
-	/** @var int[][] */
-	private array $runtimeToLegacyMap = [];
-	/** @var CompoundTag[][] */
-	private array $bedrockKnownStates = [];
+	public const PATHS = [
+		ProtocolInfo::CURRENT_PROTOCOL => [
+			self::CANONICAL_BLOCK_STATES_PATH => '',
+			self::BLOCK_STATE_META_MAP_PATH => '',
+		],
+		ProtocolInfo::PROTOCOL_1_19_40 => [
+			self::CANONICAL_BLOCK_STATES_PATH => '-1.19.40',
+			self::BLOCK_STATE_META_MAP_PATH => '-1.19.40',
+		],
+		ProtocolInfo::PROTOCOL_1_19_10 => [
+			self::CANONICAL_BLOCK_STATES_PATH => '-1.19.10',
+			self::BLOCK_STATE_META_MAP_PATH => '-1.19.10',
+		],
+		ProtocolInfo::PROTOCOL_1_18_30 => [
+			self::CANONICAL_BLOCK_STATES_PATH => '-1.18.30',
+			self::BLOCK_STATE_META_MAP_PATH => '-1.19.10',
+		],
+		ProtocolInfo::PROTOCOL_1_18_10 => [
+			self::CANONICAL_BLOCK_STATES_PATH => '-1.18.10',
+			self::BLOCK_STATE_META_MAP_PATH => '-1.19.10',
+		],
+		ProtocolInfo::PROTOCOL_1_18_0 => [
+			self::CANONICAL_BLOCK_STATES_PATH => '-1.18.0',
+			self::BLOCK_STATE_META_MAP_PATH => '-1.19.10',
+		],
+	];
 
-	private static function make() : self{
-		$protocolPaths = [
-			ProtocolInfo::CURRENT_PROTOCOL => [
-				self::CANONICAL_BLOCK_STATES_PATH => '',
-				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '',
-			],
-			ProtocolInfo::PROTOCOL_1_19_40 => [
-				self::CANONICAL_BLOCK_STATES_PATH => '-1.19.40',
-				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '',
-			],
-			ProtocolInfo::PROTOCOL_1_19_10 => [
-				self::CANONICAL_BLOCK_STATES_PATH => '-1.19.10',
-				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '',
-			],
-			ProtocolInfo::PROTOCOL_1_18_30 => [
-				self::CANONICAL_BLOCK_STATES_PATH => '-1.18.30',
-				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '-1.18.30',
-			],
-			ProtocolInfo::PROTOCOL_1_18_10 => [
-				self::CANONICAL_BLOCK_STATES_PATH => '-1.18.10',
-				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '-1.18.10',
-			],
-			ProtocolInfo::PROTOCOL_1_18_0 => [
-				self::CANONICAL_BLOCK_STATES_PATH => '-1.18.0',
-				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '-1.18.0',
-			],
-		];
+	/**
+	 * @var int[]
+	 * @phpstan-var array<int, int>
+	 */
+	private array $networkIdCache = [];
 
-		$canonicalBlockStatesFiles = [];
-		$r12ToCurrentBlockMapFiles = [];
+	/** Used when a blockstate can't be correctly serialized (e.g. because it's unknown) */
+	private BlockStateData $fallbackStateData;
+	private int $fallbackStateId;
 
-		foreach($protocolPaths as $protocol => $paths){
-			$canonicalBlockStatesFiles[$protocol] = Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states" . $paths[self::CANONICAL_BLOCK_STATES_PATH] . ".nbt");
-			$r12ToCurrentBlockMapFiles[$protocol] = Path::join(\pocketmine\BEDROCK_DATA_PATH, "r12_to_current_block_map" . $paths[self::R12_TO_CURRENT_BLOCK_MAP_PATH] . ".bin");
-		}
-
+	private static function make(int $protocolId) : self{
+		$canonicalBlockStatesRaw = Filesystem::fileGetContents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states" . self::PATHS[$protocolId][self::CANONICAL_BLOCK_STATES_PATH] . ".nbt"));
+		$metaMappingRaw = Filesystem::fileGetContents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'block_state_meta_map' . self::PATHS[$protocolId][self::BLOCK_STATE_META_MAP_PATH] . '.json'));
 		return new self(
-			$canonicalBlockStatesFiles,
-			$r12ToCurrentBlockMapFiles
+			BlockStateDictionary::loadFromString($canonicalBlockStatesRaw, $metaMappingRaw),
+			GlobalBlockStateHandlers::getSerializer()
 		);
 	}
 
-	/**
-	 * @param string[] $canonicalBlockStatesFiles
-	 * @param string[] $r12ToCurrentBlockMapFiles
-	 */
-	private function __construct(array $canonicalBlockStatesFiles, array $r12ToCurrentBlockMapFiles){
-		foreach($canonicalBlockStatesFiles as $mappingProtocol => $canonicalBlockStatesFile){
-			$stream = PacketSerializer::decoder(
-				Utils::assumeNotFalse(file_get_contents($canonicalBlockStatesFile), "Missing required resource file"),
-				0,
-				new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($mappingProtocol)))
-			);
-			$list = [];
-			while(!$stream->feof()){
-				$list[] = $stream->getNbtCompoundRoot();
-			}
-			$this->bedrockKnownStates[$mappingProtocol] = $list;
-		}
-
-		foreach($r12ToCurrentBlockMapFiles as $mappingProtocol => $r12ToCurrentBlockMapFile){
-			$this->setupLegacyMappings($mappingProtocol, $r12ToCurrentBlockMapFile);
-		}
+	public function __construct(
+		private BlockStateDictionary $blockStateDictionary,
+		private BlockStateSerializer $blockStateSerializer
+	){
+		$this->fallbackStateId = $this->blockStateDictionary->lookupStateIdFromData(
+				BlockStateData::current(BlockTypeNames::INFO_UPDATE, [])
+			) ?? throw new AssumptionFailedError(BlockTypeNames::INFO_UPDATE . " should always exist");
+		//lookup the state data from the dictionary to avoid keeping two copies of the same data around
+		$this->fallbackStateData = $this->blockStateDictionary->getDataFromStateId($this->fallbackStateId) ?? throw new AssumptionFailedError("We just looked up this state data, so it must exist");
 	}
 
-	public static function getMappingProtocol(int $protocolId) : int{
+	public function toRuntimeId(int $internalStateId) : int{
+		if(isset($this->networkIdCache[$internalStateId])){
+			return $this->networkIdCache[$internalStateId];
+		}
+
+		try{
+			$blockStateData = $this->blockStateSerializer->serialize($internalStateId);
+
+			$networkId = $this->blockStateDictionary->lookupStateIdFromData($blockStateData);
+			if($networkId === null){
+				throw new AssumptionFailedError("Unmapped blockstate returned by blockstate serializer: " . $blockStateData->toNbt());
+			}
+		}catch(BlockStateSerializeException){
+			//TODO: this will swallow any error caused by invalid block properties; this is not ideal, but it should be
+			//covered by unit tests, so this is probably a safe assumption.
+			$networkId = $this->fallbackStateId;
+		}
+
+		return $this->networkIdCache[$internalStateId] = $networkId;
+	}
+
+	/**
+	 * Looks up the network state data associated with the given internal state ID.
+	 */
+	public function toStateData(int $internalStateId) : BlockStateData{
+		//we don't directly use the blockstate serializer here - we can't assume that the network blockstate NBT is the
+		//same as the disk blockstate NBT, in case we decide to have different world version than network version (or in
+		//case someone wants to implement multi version).
+		$networkRuntimeId = $this->toRuntimeId($internalStateId);
+
+		return $this->blockStateDictionary->getDataFromStateId($networkRuntimeId) ?? throw new AssumptionFailedError("We just looked up this state ID, so it must exist");
+	}
+
+	public function getBlockStateDictionary() : BlockStateDictionary{ return $this->blockStateDictionary; }
+
+	public function getFallbackStateData() : BlockStateData{ return $this->fallbackStateData; }
+
+	public static function convertProtocol(int $protocolId) : int{
 		if($protocolId < ProtocolInfo::PROTOCOL_1_19_40){
 			if($protocolId === ProtocolInfo::PROTOCOL_1_19_0){
 				return ProtocolInfo::PROTOCOL_1_19_10;
@@ -134,99 +149,5 @@ final class RuntimeBlockMapping{
 		}
 
 		return $protocolId;
-	}
-
-	/**
-	 * @param Player[] $players
-	 *
-	 * @return Player[][]
-	 */
-	public static function sortByProtocol(array $players) : array{
-		$sortPlayers = [];
-
-		foreach($players as $player){
-			$mappingProtocol = self::getMappingProtocol($player->getNetworkSession()->getProtocolId());
-
-			if(isset($sortPlayers[$mappingProtocol])){
-				$sortPlayers[$mappingProtocol][] = $player;
-			}else{
-				$sortPlayers[$mappingProtocol] = [$player];
-			}
-		}
-
-		return $sortPlayers;
-	}
-
-	private function setupLegacyMappings(int $mappingProtocol, string $r12ToCurrentBlockMapFile) : void{
-		$legacyIdMap = LegacyBlockIdToStringIdMap::getInstance();
-		/** @var R12ToCurrentBlockMapEntry[] $legacyStateMap */
-		$legacyStateMap = [];
-		$legacyStateMapReader = PacketSerializer::decoder(
-			Filesystem::fileGetContents($r12ToCurrentBlockMapFile),
-			0,
-			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($mappingProtocol)))
-		);
-		$nbtReader = new NetworkNbtSerializer();
-		while(!$legacyStateMapReader->feof()){
-			$id = $legacyStateMapReader->getString();
-			$meta = $legacyStateMapReader->getLShort();
-
-			$offset = $legacyStateMapReader->getOffset();
-			$state = $nbtReader->read($legacyStateMapReader->getBuffer(), $offset)->mustGetCompoundTag();
-			$legacyStateMapReader->setOffset($offset);
-			$legacyStateMap[] = new R12ToCurrentBlockMapEntry($id, $meta, $state);
-		}
-
-		/**
-		 * @var int[][] $idToStatesMap string id -> int[] list of candidate state indices
-		 */
-		$idToStatesMap = [];
-		foreach($this->bedrockKnownStates[$mappingProtocol] as $k => $state){
-			$idToStatesMap[$state->getString("name")][] = $k;
-		}
-		foreach($legacyStateMap as $pair){
-			$id = $legacyIdMap->stringToLegacy($pair->getId());
-			if($id === null){
-				throw new \RuntimeException("No legacy ID matches " . $pair->getId());
-			}
-			$data = $pair->getMeta();
-			if($data > 15){
-				//we can't handle metadata with more than 4 bits
-				continue;
-			}
-			$mappedState = $pair->getBlockState();
-			$mappedName = $mappedState->getString("name");
-			if(!isset($idToStatesMap[$mappedName])){
-				throw new \RuntimeException("Mapped new state does not appear in network table");
-			}
-			foreach($idToStatesMap[$mappedName] as $k){
-				$networkState = $this->bedrockKnownStates[$mappingProtocol][$k];
-				if($mappedState->equals($networkState)){
-					$this->registerMapping($mappingProtocol, $k, $id, $data);
-					continue 2;
-				}
-			}
-			throw new \RuntimeException("Mapped new state does not appear in network table");
-		}
-	}
-
-	public function toRuntimeId(int $internalStateId, int $mappingProtocol = ProtocolInfo::CURRENT_PROTOCOL) : int{
-		return $this->legacyToRuntimeMap[$internalStateId][$mappingProtocol] ?? $this->legacyToRuntimeMap[BlockLegacyIds::INFO_UPDATE << Block::INTERNAL_METADATA_BITS][$mappingProtocol];
-	}
-
-	public function fromRuntimeId(int $runtimeId, int $mappingProtocol = ProtocolInfo::CURRENT_PROTOCOL) : int{
-		return $this->runtimeToLegacyMap[$runtimeId][$mappingProtocol];
-	}
-
-	private function registerMapping(int $mappingProtocol, int $staticRuntimeId, int $legacyId, int $legacyMeta) : void{
-		$this->legacyToRuntimeMap[($legacyId << Block::INTERNAL_METADATA_BITS) | $legacyMeta][$mappingProtocol] = $staticRuntimeId;
-		$this->runtimeToLegacyMap[$staticRuntimeId][$mappingProtocol] = ($legacyId << Block::INTERNAL_METADATA_BITS) | $legacyMeta;
-	}
-
-	/**
-	 * @return CompoundTag[]
-	 */
-	public function getBedrockKnownStates(int $mappingProtocol = ProtocolInfo::CURRENT_PROTOCOL) : array{
-		return $this->bedrockKnownStates[$mappingProtocol];
 	}
 }

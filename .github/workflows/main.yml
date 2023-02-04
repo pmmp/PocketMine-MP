@@ -22,7 +22,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
-          pm-version-major: "4"
+          pm-version-major: "5"
 
   phpstan:
     name: PHPStan analysis
@@ -43,7 +43,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
-          pm-version-major: "4"
+          pm-version-major: "5"
 
       - name: Install Composer
         run: curl -sS https://getcomposer.org/installer | php
@@ -82,7 +82,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
-          pm-version-major: "4"
+          pm-version-major: "5"
 
       - name: Install Composer
         run: curl -sS https://getcomposer.org/installer | php
@@ -123,7 +123,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
-          pm-version-major: "4"
+          pm-version-major: "5"
 
       - name: Install Composer
         run: curl -sS https://getcomposer.org/installer | php
@@ -162,7 +162,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
-          pm-version-major: "4"
+          pm-version-major: "5"
 
       - name: Install Composer
         run: curl -sS https://getcomposer.org/installer | php
@@ -185,6 +185,9 @@ jobs:
 
       - name: Regenerate KnownTranslation APIs
         run: php build/generate-known-translation-apis.php
+
+      - name: Regenerate RuntimeEnum(De)serializer
+        run: php build/generate-runtime-enum-serializers.php
 
       - name: Verify code is unchanged
         run: |

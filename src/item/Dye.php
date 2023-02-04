@@ -24,16 +24,30 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\utils\DyeColor;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataWriter;
 
 class Dye extends Item{
 	private DyeColor $color;
 
-	public function __construct(ItemIdentifier $identifier, string $name, DyeColor $color){
+	public function __construct(ItemIdentifier $identifier, string $name){
+		$this->color = DyeColor::BLACK();
 		parent::__construct($identifier, $name);
-		$this->color = $color;
+	}
+
+	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+		$w->dyeColor($this->color);
 	}
 
 	public function getColor() : DyeColor{
 		return $this->color;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setColor(DyeColor $color) : self{
+		$this->color = $color;
+		return $this;
 	}
 }

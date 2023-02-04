@@ -42,19 +42,13 @@ use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 class FloatingTextParticle extends MappingParticle{
 	//TODO: HACK!
 
-	/** @var string */
-	protected $text;
-	/** @var string */
-	protected $title;
-	/** @var int|null */
-	protected $entityId = null;
-	/** @var bool */
-	protected $invisible = false;
+	protected ?int $entityId = null;
+	protected bool $invisible = false;
 
-	public function __construct(string $text, string $title = ""){
-		$this->text = $text;
-		$this->title = $title;
-
+	public function __construct(
+		protected string $text,
+		protected string $title = ""
+	){
 		parent::__construct(VanillaBlocks::AIR());
 	}
 
@@ -103,7 +97,7 @@ class FloatingTextParticle extends MappingParticle{
 				EntityMetadataProperties::BOUNDING_BOX_WIDTH => new FloatMetadataProperty(0.0),
 				EntityMetadataProperties::BOUNDING_BOX_HEIGHT => new FloatMetadataProperty(0.0),
 				EntityMetadataProperties::NAMETAG => new StringMetadataProperty($name),
-				EntityMetadataProperties::VARIANT => new IntMetadataProperty(RuntimeBlockMapping::getInstance()->toRuntimeId($this->b->getFullId(), $this->mappingProtocol)),
+				EntityMetadataProperties::VARIANT => new IntMetadataProperty(RuntimeBlockMapping::getInstance($this->mappingProtocol)->toRuntimeId($this->b->getStateId())),
 				EntityMetadataProperties::ALWAYS_SHOW_NAMETAG => new ByteMetadataProperty(1),
 			];
 			$p[] = AddActorPacket::create(

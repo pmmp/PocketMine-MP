@@ -6,6 +6,11 @@ parameters:
 			path: ../../../build/make-release.php
 
 		-
+			message: "#^Parameter \\#1 \\$pharPath of function pocketmine\\\\build\\\\server_phar\\\\buildPhar expects string, array\\<int, mixed\\>\\|string\\|false given\\.$#"
+			count: 1
+			path: ../../../build/server-phar.php
+
+		-
 			message: "#^Parameter \\#1 \\$strings of function pocketmine\\\\build\\\\server_phar\\\\preg_quote_array expects array\\<string\\>, array\\<int, string\\|false\\> given\\.$#"
 			count: 1
 			path: ../../../build/server-phar.php
@@ -24,6 +29,11 @@ parameters:
 			message: "#^Parameter \\#1 \\$input of function yaml_parse expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/Server.php
+
+		-
+			message: "#^Cannot cast array\\<int, mixed\\>\\|string\\|false to string\\.$#"
+			count: 1
+			path: ../../../src/ServerConfigGroup.php
 
 		-
 			message: "#^Cannot cast mixed to int\\.$#"
@@ -51,7 +61,7 @@ parameters:
 			path: ../../../src/VersionInfo.php
 
 		-
-			message: "#^Cannot call method setFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\format\\\\Chunk\\:\\:setBlockStateId\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/block/Block.php
 
@@ -86,6 +96,21 @@ parameters:
 			path: ../../../src/block/Cactus.php
 
 		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/block/ChorusFlower.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/block/ChorusFlower.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/block/ChorusFlower.php
+
+		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getRealBlockSkyLightAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/block/DaylightSensor.php
@@ -111,7 +136,7 @@ parameters:
 			path: ../../../src/block/DragonEgg.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int\\<0, 255\\> given\\.$#"
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int\\<\\-64, 319\\> given\\.$#"
 			count: 1
 			path: ../../../src/block/DragonEgg.php
 
@@ -436,26 +461,6 @@ parameters:
 			path: ../../../src/command/Command.php
 
 		-
-			message: "#^Cannot call method startTiming\\(\\) on pocketmine\\\\timings\\\\TimingsHandler\\|null\\.$#"
-			count: 1
-			path: ../../../src/command/FormattedCommandAlias.php
-
-		-
-			message: "#^Cannot call method stopTiming\\(\\) on pocketmine\\\\timings\\\\TimingsHandler\\|null\\.$#"
-			count: 1
-			path: ../../../src/command/FormattedCommandAlias.php
-
-		-
-			message: "#^Cannot call method startTiming\\(\\) on pocketmine\\\\timings\\\\TimingsHandler\\|null\\.$#"
-			count: 1
-			path: ../../../src/command/SimpleCommandMap.php
-
-		-
-			message: "#^Cannot call method stopTiming\\(\\) on pocketmine\\\\timings\\\\TimingsHandler\\|null\\.$#"
-			count: 1
-			path: ../../../src/command/SimpleCommandMap.php
-
-		-
 			message: "#^Cannot call method addParticle\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/ParticleCommand.php
@@ -556,11 +561,6 @@ parameters:
 			path: ../../../src/entity/projectile/Projectile.php
 
 		-
-			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setInt\\(\\) expects int, float\\|int given\\.$#"
-			count: 3
-			path: ../../../src/entity/projectile/Projectile.php
-
-		-
 			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
@@ -569,21 +569,6 @@ parameters:
 			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
-
-		-
-			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../../src/inventory/CreativeInventory.php
-
-		-
-			message: "#^Parameter \\#1 \\$data of static method pocketmine\\\\item\\\\Item\\:\\:jsonDeserialize\\(\\) expects array\\{id\\: int, damage\\?\\: int, count\\?\\: int, nbt\\?\\: string, nbt_hex\\?\\: string, nbt_b64\\?\\: string\\}, mixed given\\.$#"
-			count: 1
-			path: ../../../src/inventory/CreativeInventory.php
-
-		-
-			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/inventory/CreativeInventory.php
 
 		-
 			message: "#^Parameter \\#2 \\$recipe of class pocketmine\\\\event\\\\inventory\\\\CraftItemEvent constructor expects pocketmine\\\\crafting\\\\CraftingRecipe, pocketmine\\\\crafting\\\\CraftingRecipe\\|null given\\.$#"
@@ -596,7 +581,22 @@ parameters:
 			path: ../../../src/inventory/transaction/CraftingTransaction.php
 
 		-
-			message: "#^Parameter \\#1 \\$buffer of method pocketmine\\\\nbt\\\\BaseNbtSerializer\\:\\:read\\(\\) expects string, string\\|false given\\.$#"
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 2
+			path: ../../../src/item/Item.php
+
+		-
+			message: "#^Parameter \\#1 \\$buffer of method pocketmine\\\\nbt\\\\BaseNbtSerializer\\:\\:read\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/item/Item.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function base64_decode expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/item/Item.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function hex2bin expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/item/Item.php
 
@@ -617,7 +617,7 @@ parameters:
 
 		-
 			message: "#^Cannot call method getLanguage\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
-			count: 2
+			count: 4
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
@@ -731,11 +731,6 @@ parameters:
 			path: ../../../src/network/mcpe/encryption/PrepareEncryptionTask.php
 
 		-
-			message: "#^Method pocketmine\\\\network\\\\mcpe\\\\raklib\\\\PthreadsChannelReader\\:\\:read\\(\\) should return string\\|null but returns mixed\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/raklib/PthreadsChannelReader.php
-
-		-
 			message: "#^Method pocketmine\\\\permission\\\\DefaultPermissions\\:\\:registerPermission\\(\\) should return pocketmine\\\\permission\\\\Permission but returns pocketmine\\\\permission\\\\Permission\\|null\\.$#"
 			count: 1
 			path: ../../../src/permission/DefaultPermissions.php
@@ -746,7 +741,7 @@ parameters:
 			path: ../../../src/permission/PermissionParser.php
 
 		-
-			message: "#^Parameter \\#2 \\$description of class pocketmine\\\\permission\\\\Permission constructor expects string\\|null, mixed given\\.$#"
+			message: "#^Parameter \\#2 \\$description of class pocketmine\\\\permission\\\\Permission constructor expects pocketmine\\\\lang\\\\Translatable\\|string\\|null, mixed given\\.$#"
 			count: 1
 			path: ../../../src/permission/PermissionParser.php
 
@@ -836,21 +831,6 @@ parameters:
 			path: ../../../src/scheduler/AsyncTask.php
 
 		-
-			message: "#^PHPDoc type pocketmine\\\\scheduler\\\\AsyncWorker\\|null of property pocketmine\\\\scheduler\\\\AsyncTask\\:\\:\\$worker is not the same as PHPDoc type Worker of overridden property Threaded\\:\\:\\$worker\\.$#"
-			count: 1
-			path: ../../../src/scheduler/AsyncTask.php
-
-		-
-			message: "#^Parameter \\#1 \\$str of function igbinary_unserialize expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/scheduler/AsyncTask.php
-
-		-
-			message: "#^Property pocketmine\\\\scheduler\\\\AsyncTask\\:\\:\\$result \\(bool\\|float\\|int\\|string\\|null\\) does not accept mixed\\.$#"
-			count: 1
-			path: ../../../src/scheduler/AsyncTask.php
-
-		-
 			message: "#^Property pocketmine\\\\scheduler\\\\BulkCurlTask\\:\\:\\$operations \\(string\\) does not accept string\\|null\\.$#"
 			count: 1
 			path: ../../../src/scheduler/BulkCurlTask.php
@@ -909,16 +889,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$trace of static method pocketmine\\\\utils\\\\Utils\\:\\:printableTrace\\(\\) expects array\\<int, array\\<string, mixed\\>\\>, array given\\.$#"
 			count: 1
 			path: ../../../src/utils/Utils.php
-
-		-
-			message: "#^Cannot call method getFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/Explosion.php
-
-		-
-			message: "#^Only numeric types are allowed in /, float\\|null given on the left side\\.$#"
-			count: 1
-			path: ../../../src/world/Explosion.php
 
 		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
@@ -1156,28 +1126,8 @@ parameters:
 			path: ../../../src/world/generator/hell/Nether.php
 
 		-
-			message: "#^Cannot call method setBiomeId\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/generator/hell/Nether.php
-
-		-
-			message: "#^Cannot call method setFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 3
-			path: ../../../src/world/generator/hell/Nether.php
-
-		-
 			message: "#^Cannot call method getBiomeId\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
 			count: 1
-			path: ../../../src/world/generator/normal/Normal.php
-
-		-
-			message: "#^Cannot call method setBiomeId\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/generator/normal/Normal.php
-
-		-
-			message: "#^Cannot call method setFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 3
 			path: ../../../src/world/generator/normal/Normal.php
 
 		-
@@ -1201,42 +1151,17 @@ parameters:
 			path: ../../../src/world/generator/object/TallGrass.php
 
 		-
-			message: "#^Cannot call method getBiomeId\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/generator/populator/GroundCover.php
-
-		-
-			message: "#^Cannot call method getFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 2
-			path: ../../../src/world/generator/populator/GroundCover.php
-
-		-
-			message: "#^Cannot call method setFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/generator/populator/GroundCover.php
-
-		-
 			message: "#^Cannot call method getBlockLightArray\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/light/BlockLightUpdate.php
 
 		-
-			message: "#^Cannot call method getFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			message: "#^Cannot call method getBlockStateId\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/light/BlockLightUpdate.php
 
 		-
 			message: "#^Cannot call method getSubChunks\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/light/BlockLightUpdate.php
-
-		-
-			message: "#^Only numeric types are allowed in \\-, int\\|null given on the right side\\.$#"
-			count: 1
-			path: ../../../src/world/light/BlockLightUpdate.php
-
-		-
-			message: "#^Parameter \\#4 \\$newLevel of method pocketmine\\\\world\\\\light\\\\LightUpdate\\:\\:setAndUpdateLight\\(\\) expects int, int\\|null given\\.$#"
 			count: 1
 			path: ../../../src/world/light/BlockLightUpdate.php
 
@@ -1256,12 +1181,7 @@ parameters:
 			path: ../../../src/world/light/LightPopulationTask.php
 
 		-
-			message: "#^Cannot call method getFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/light/LightUpdate.php
-
-		-
-			message: "#^Only numeric types are allowed in \\-, int\\|null given on the right side\\.$#"
+			message: "#^Cannot call method getBlockStateId\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/light/LightUpdate.php
 
@@ -1271,7 +1191,7 @@ parameters:
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-
-			message: "#^Cannot call method getFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			message: "#^Cannot call method getBlockStateId\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/light/SkyLightUpdate.php
 
@@ -1297,16 +1217,6 @@ parameters:
 
 		-
 			message: "#^Cannot call method setHeightMapArray\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/light/SkyLightUpdate.php
-
-		-
-			message: "#^Only booleans are allowed in an if condition, bool\\|null given\\.$#"
-			count: 3
-			path: ../../../src/world/light/SkyLightUpdate.php
-
-		-
-			message: "#^Only numeric types are allowed in \\-, int\\|null given on the right side\\.$#"
 			count: 1
 			path: ../../../src/world/light/SkyLightUpdate.php
 

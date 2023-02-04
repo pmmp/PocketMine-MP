@@ -30,6 +30,6 @@ use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
 class TerrainParticle extends MappingParticle{
 	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::standardParticle(ParticleIds::TERRAIN, RuntimeBlockMapping::getInstance()->toRuntimeId($this->b->getFullId(), $this->mappingProtocol), $pos)];
+		return [LevelEventPacket::standardParticle(ParticleIds::TERRAIN, RuntimeBlockMapping::getInstance($this->mappingProtocol)->toRuntimeId($this->b->getStateId()), $pos)];
 	}
 }

@@ -33,6 +33,6 @@ class BlockPlaceSound extends MappingSound{
 	public function __construct(private Block $block){}
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::PLACE, $pos, false, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId(), $this->mappingProtocol))];
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::PLACE, $pos, false, RuntimeBlockMapping::getInstance($this->mappingProtocol)->toRuntimeId($this->block->getStateId()))];
 	}
 }

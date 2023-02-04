@@ -33,9 +33,9 @@ use function implode;
 
 class TitleCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"title",
 			KnownTranslationFactory::pocketmine_command_title_description(),
 			KnownTranslationFactory::commands_title_usage()
 		);
@@ -46,10 +46,6 @@ class TitleCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) < 2){
 			throw new InvalidCommandSyntaxException();
 		}

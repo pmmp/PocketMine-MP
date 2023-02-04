@@ -28,13 +28,14 @@ use pocketmine\Server;
 use function error_reporting;
 
 trait CommonThreadPartsTrait{
-	/** @var \Threaded|\ClassLoader[]|null  */
-	private ?\Threaded $classLoaders = null;
-	/** @var string|null */
-	protected $composerAutoloaderPath;
+	/**
+	 * @var \ThreadedArray|\ClassLoader[]|null
+	 * @phpstan-var \ThreadedArray<int, \ClassLoader>|null
+	 */
+	private ?\ThreadedArray $classLoaders = null;
+	protected ?string $composerAutoloaderPath = null;
 
-	/** @var bool */
-	protected $isKilled = false;
+	protected bool $isKilled = false;
 
 	/**
 	 * @return \ClassLoader[]
@@ -54,7 +55,7 @@ trait CommonThreadPartsTrait{
 		}
 
 		if($this->classLoaders === null){
-			$this->classLoaders = new \Threaded();
+			$this->classLoaders = new \ThreadedArray();
 		}else{
 			foreach($this->classLoaders as $k => $autoloader){
 				unset($this->classLoaders[$k]);

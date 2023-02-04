@@ -40,7 +40,7 @@ class BlockPunchSound extends MappingSound{
 			LevelSoundEvent::HIT,
 			$pos,
 			false,
-			RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId(), $this->mappingProtocol)
+			RuntimeBlockMapping::getInstance($this->mappingProtocol)->toRuntimeId($this->block->getStateId())
 		)];
 	}
 }

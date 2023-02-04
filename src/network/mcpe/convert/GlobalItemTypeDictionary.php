@@ -26,15 +26,10 @@ namespace pocketmine\network\mcpe\convert;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
-use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
-use pocketmine\utils\SingletonTrait;
-use pocketmine\utils\Utils;
+use pocketmine\utils\ProtocolSingletonTrait;
 use Symfony\Component\Filesystem\Path;
-use function array_filter;
-use function array_keys;
-use function file_get_contents;
 use function is_array;
 use function is_bool;
 use function is_int;
@@ -42,7 +37,7 @@ use function is_string;
 use function json_decode;
 
 final class GlobalItemTypeDictionary{
-	use SingletonTrait;
+	use ProtocolSingletonTrait;
 
 	private const PATHS = [
 		ProtocolInfo::CURRENT_PROTOCOL => "",
@@ -53,68 +48,34 @@ final class GlobalItemTypeDictionary{
 		ProtocolInfo::PROTOCOL_1_18_0 => "-1.18.0",
 	];
 
-	private static function make() : self{
-		$dictionaries = [];
-
-		foreach (self::PATHS as $protocolId => $path){
-			$data = Filesystem::fileGetContents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'required_item_list' . $path . '.json'));
-			$table = json_decode($data, true);
-			if(!is_array($table)){
-				throw new AssumptionFailedError("Invalid item list format");
-			}
-
-			$params = [];
-			foreach($table as $name => $entry){
-				if(!is_array($entry) || !is_string($name) || !isset($entry["component_based"], $entry["runtime_id"]) || !is_bool($entry["component_based"]) || !is_int($entry["runtime_id"])){
-					throw new AssumptionFailedError("Invalid item list format");
-				}
-				$params[] = new ItemTypeEntry($name, $entry["runtime_id"], $entry["component_based"]);
-			}
-
-			$dictionaries[$protocolId] = new ItemTypeDictionary($params);
+	private static function make(int $protocolId) : self{
+		$data = Filesystem::fileGetContents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'required_item_list' . self::PATHS[$protocolId] . '.json'));
+		$table = json_decode($data, true);
+		if(!is_array($table)){
+			throw new AssumptionFailedError("Invalid item list format");
 		}
 
-		return new self($dictionaries);
+		$params = [];
+		foreach($table as $name => $entry){
+			if(!is_array($entry) || !is_string($name) || !isset($entry["component_based"], $entry["runtime_id"]) || !is_bool($entry["component_based"]) || !is_int($entry["runtime_id"])){
+				throw new AssumptionFailedError("Invalid item list format");
+			}
+			$params[] = new ItemTypeEntry($name, $entry["runtime_id"], $entry["component_based"]);
+		}
+		return new self(new ItemTypeDictionary($params));
 	}
 
-	/**
-	 * @param ItemTypeDictionary[] $dictionaries
-	 */
-	public function __construct(private array $dictionaries){}
+	public function __construct(
+		private ItemTypeDictionary $dictionary
+	){}
 
-	public static function getDictionaryProtocol(int $protocolId) : int{
-		if($protocolId >= ProtocolInfo::PROTOCOL_1_19_10 && $protocolId < ProtocolInfo::PROTOCOL_1_19_40){
+	public function getDictionary() : ItemTypeDictionary{ return $this->dictionary; }
+
+	public static function convertProtocol(int $protocolId) : int{
+		if($protocolId >= ProtocolInfo::PROTOCOL_1_19_10 && $protocolId <= ProtocolInfo::PROTOCOL_1_19_40){
 			return ProtocolInfo::PROTOCOL_1_19_40;
 		}
 
 		return $protocolId;
 	}
-
-	/**
-	 * @param Player[] $players
-	 *
-	 * @return Player[][]
-	 */
-	public static function sortByProtocol(array $players) : array{
-		$sortPlayers = [];
-
-		foreach($players as $player){
-			$dictionaryProtocol = self::getDictionaryProtocol($player->getNetworkSession()->getProtocolId());
-
-			if(isset($sortPlayers[$dictionaryProtocol])){
-				$sortPlayers[$dictionaryProtocol][] = $player;
-			}else{
-				$sortPlayers[$dictionaryProtocol] = [$player];
-			}
-		}
-
-		return $sortPlayers;
-	}
-
-	/**
-	 * @return  ItemTypeDictionary[] $dictionaries
-	 */
-	public function getDictionaries() : array{ return $this->dictionaries; }
-
-	public function getDictionary(int $dictionaryId = ProtocolInfo::CURRENT_PROTOCOL) : ItemTypeDictionary{ return $this->dictionaries[$dictionaryId] ?? $this->dictionaries[ProtocolInfo::CURRENT_PROTOCOL]; }
 }

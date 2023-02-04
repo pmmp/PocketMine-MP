@@ -136,21 +136,17 @@ use const JSON_THROW_ON_ERROR;
 class InGamePacketHandler extends ChunkRequestPacketHandler{
 	private const MAX_FORM_RESPONSE_DEPTH = 2; //modal/simple will be 1, custom forms 2 - they will never contain anything other than string|int|float|bool|null
 
-	/** @var CraftingTransaction|null */
-	protected $craftingTransaction = null;
+	protected ?CraftingTransaction $craftingTransaction = null;
 
-	/** @var float */
-	protected $lastRightClickTime = 0.0;
-	/** @var UseItemTransactionData|null */
-	protected $lastRightClickData = null;
+	protected float $lastRightClickTime = 0.0;
+	protected ?UseItemTransactionData $lastRightClickData = null;
 
 	protected ?Vector3 $lastPlayerAuthInputPosition = null;
 	protected ?float $lastPlayerAuthInputYaw = null;
 	protected ?float $lastPlayerAuthInputPitch = null;
 	protected ?int $lastPlayerAuthInputFlags = null;
 
-	/** @var bool */
-	public $forceMoveSync = false;
+	public bool $forceMoveSync = false;
 
 	public function __construct(
 		private Player $player,
