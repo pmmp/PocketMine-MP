@@ -36,17 +36,13 @@ final class CraftingManagerFromDataHelper{
 	/**
 	 * @param Item[] $items
 	 */
-	private static function containsUnknownItems(array $items, bool $wildcardCheck = true) : bool{
+	private static function containsUnknownOutputs(array $items) : bool{
 		$factory = ItemFactory::getInstance();
 		foreach($items as $item){
-			$meta = $item->getMeta();
 			if($item->hasAnyDamageValue()){
-				if($wildcardCheck) {
-					throw new \InvalidArgumentException("Recipe outputs must not have wildcard meta values");
-				}
-				$meta = 0;
+				throw new \InvalidArgumentException("Recipe outputs must not have wildcard meta values");
 			}
-			if(!$factory->isRegistered($item->getId(), $meta)){
+			if(!$factory->isRegistered($item->getId(), $item->getMeta())){
 				return true;
 			}
 		}
@@ -73,13 +69,12 @@ final class CraftingManagerFromDataHelper{
 			if($recipeType === null){
 				continue;
 			}
-			$input = array_map($itemDeserializerFunc, $recipe["input"]);
 			$output = array_map($itemDeserializerFunc, $recipe["output"]);
-			if(self::containsUnknownItems($input, false) || self::containsUnknownItems($output)){
+			if(self::containsUnknownOutputs($output)){
 				continue;
 			}
 			$result->registerShapelessRecipe(new ShapelessRecipe(
-				$input,
+				array_map($itemDeserializerFunc, $recipe["input"]),
 				$output,
 				$recipeType
 			));
@@ -88,14 +83,13 @@ final class CraftingManagerFromDataHelper{
 			if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
 				continue;
 			}
-			$input = array_map($itemDeserializerFunc, $recipe["input"]);
 			$output = array_map($itemDeserializerFunc, $recipe["output"]);
-			if(self::containsUnknownItems($input, false) || self::containsUnknownItems($output)){
+			if(self::containsUnknownOutputs($output)){
 				continue;
 			}
 			$result->registerShapedRecipe(new ShapedRecipe(
 				$recipe["shape"],
-				$input,
+				array_map($itemDeserializerFunc, $recipe["input"]),
 				$output
 			));
 		}
@@ -110,39 +104,33 @@ final class CraftingManagerFromDataHelper{
 			if($furnaceType === null){
 				continue;
 			}
-			$input = Item::jsonDeserialize($recipe["input"]);
 			$output = Item::jsonDeserialize($recipe["output"]);
-			if(self::containsUnknownItems([$input], false) || self::containsUnknownItems([$output])){
+			if(self::containsUnknownOutputs([$output])){
 				continue;
 			}
 			$result->getFurnaceRecipeManager($furnaceType)->register(new FurnaceRecipe(
 				$output,
-				$input
-			));
+				Item::jsonDeserialize($recipe["input"]))
+			);
 		}
 		foreach($recipes["potion_type"] as $recipe){
-			$input = Item::jsonDeserialize($recipe["input"]);
-			$ingredient = Item::jsonDeserialize($recipe["ingredient"]);
 			$output = Item::jsonDeserialize($recipe["output"]);
-			if(self::containsUnknownItems([$input, $ingredient], false) || self::containsUnknownItems([$output])){
+			if(self::containsUnknownOutputs([$output])){
 				continue;
 			}
 			$result->registerPotionTypeRecipe(new PotionTypeRecipe(
-				$input,
-				$ingredient,
+				Item::jsonDeserialize($recipe["input"]),
+				Item::jsonDeserialize($recipe["ingredient"]),
 				$output
 			));
 		}
 		foreach($recipes["potion_container_change"] as $recipe){
-			$ingredient = Item::jsonDeserialize($recipe["ingredient"]);
-			if(!ItemFactory::getInstance()->isRegistered($recipe["input_item_id"])
-				|| !ItemFactory::getInstance()->isRegistered($recipe["output_item_id"])
-				|| self::containsUnknownItems([$ingredient], false)){
+			if(!ItemFactory::getInstance()->isRegistered($recipe["output_item_id"])){
 				continue;
 			}
 			$result->registerPotionContainerChangeRecipe(new PotionContainerChangeRecipe(
 				$recipe["input_item_id"],
-				$ingredient,
+				Item::jsonDeserialize($recipe["ingredient"]),
 				$recipe["output_item_id"]
 			));
 		}

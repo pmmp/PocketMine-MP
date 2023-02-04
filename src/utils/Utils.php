@@ -31,10 +31,8 @@ use DaveRandom\CallbackValidator\CallbackType;
 use pocketmine\entity\Location;
 use pocketmine\errorhandler\ErrorTypeToStringMap;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
-use Symfony\Component\Filesystem\Path;
 use function array_combine;
 use function array_map;
 use function array_reverse;
@@ -54,9 +52,7 @@ use function function_exists;
 use function get_class;
 use function get_current_user;
 use function get_loaded_extensions;
-use function getcwd;
 use function getenv;
-use function getopt;
 use function gettype;
 use function implode;
 use function interface_exists;
@@ -81,7 +77,6 @@ use function preg_grep;
 use function preg_match;
 use function preg_match_all;
 use function preg_replace;
-use function realpath;
 use function shell_exec;
 use function spl_object_id;
 use function str_ends_with;
@@ -94,7 +89,6 @@ use function substr;
 use function sys_get_temp_dir;
 use function trim;
 use function xdebug_get_function_stack;
-use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 use const PHP_INT_MAX;
 use const PHP_INT_SIZE;
@@ -659,32 +653,5 @@ final class Utils{
 
 		//jit not available
 		return null;
-	}
-
-	public static function getMinimalProtocol(?Config $config = null) : int{
-		if($config === null) { // I hate it here, kisses Flonja! :)
-			$cwd = Utils::assumeNotFalse(realpath(Utils::assumeNotFalse(getcwd())));
-			$dataPath = $cwd;
-			$opts = getopt("", ["data:"]);
-			if(isset($opts["data"])){
-				if(is_string($opts["data"])){
-					$dataPath = $opts["data"];
-				}
-			}
-			$dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
-			$nethergamesYmlPath = Path::join($dataPath, "nethergames.yml");
-			if(!file_exists($nethergamesYmlPath)){
-				return ProtocolInfo::PROTOCOL_1_17_0;
-			}
-
-			$config = new Config($nethergamesYmlPath, Config::YAML, []);
-		}
-
-		$minimalProtocolId = $config->getNested("protocol-support.min-accepted-protocol", ProtocolInfo::PROTOCOL_1_17_0);
-		if(!is_int($minimalProtocolId)) {
-			return ProtocolInfo::PROTOCOL_1_17_0;
-		}
-
-		return $minimalProtocolId;
 	}
 }

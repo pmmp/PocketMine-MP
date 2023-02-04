@@ -731,16 +731,6 @@ class World implements ChunkManager{
 					$this->server->broadcastPackets($this->filterViewersForPosition($pos, $pl), $pk);
 				}
 			}
-		}elseif($particle instanceof ProtocolParticle){
-			foreach(ProtocolParticle::sortByProtocol($players) as $particleProtocol => $pl){
-				$particle->setParticleProtocol($particleProtocol);
-
-				$pk = $particle->encode($pos);
-
-				if(count($pk) > 0){
-					$this->server->broadcastPackets($this->filterViewersForPosition($pos, $pl), $pk);
-				}
-			}
 		}else{
 			$pk = $particle->encode($pos);
 

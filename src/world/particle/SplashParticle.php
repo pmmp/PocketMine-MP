@@ -27,9 +27,9 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
-class SplashParticle extends ProtocolParticle{
+class SplashParticle implements Particle{
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::standardParticle(ParticleIds::WATER_SPLASH, 0, $pos, $this->particleProtocol)];
+		return [LevelEventPacket::standardParticle(ParticleIds::WATER_SPLASH, 0, $pos)];
 	}
 }

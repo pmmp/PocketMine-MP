@@ -59,7 +59,8 @@ class SlotChangeAction extends InventoryAction{
 	}
 
 	/**
-	 * Checks if the item in the inventory at the specified slot is the same as this action's source item.
+	 * Checks if the item in the inventory at the specified slot is the same as this action's source item
+	 * and the target item does not exceed the item's maximum stack size.
 	 *
 	 * @throws TransactionValidationException
 	 */

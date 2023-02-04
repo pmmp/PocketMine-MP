@@ -27,11 +27,9 @@ use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
 use function function_exists;
 use function libdeflate_deflate_compress;
-use function libdeflate_zlib_compress;
 use function strlen;
 use function zlib_decode;
 use function zlib_encode;
-use const ZLIB_ENCODING_DEFLATE;
 use const ZLIB_ENCODING_RAW;
 
 final class ZlibCompressor implements Compressor{
@@ -51,16 +49,11 @@ final class ZlibCompressor implements Compressor{
 	public function __construct(
 		private int $level,
 		private int $minCompressionSize,
-		private int $maxDecompressionSize,
-		private bool $needRaw = true
+		private int $maxDecompressionSize
 	){}
 
 	public function willCompress(string $data) : bool{
 		return $this->minCompressionSize > -1 && strlen($data) >= $this->minCompressionSize;
-	}
-
-	public function copy(bool $needRaw) : self{
-		return new self($this->level, $this->minCompressionSize, $this->maxDecompressionSize, $needRaw);
 	}
 
 	/**
@@ -74,16 +67,16 @@ final class ZlibCompressor implements Compressor{
 		return $result;
 	}
 
-	private static function zlib_encode(string $data, int $level, bool $needRaw) : string{
-		return Utils::assumeNotFalse(zlib_encode($data, $needRaw ? ZLIB_ENCODING_RAW : ZLIB_ENCODING_DEFLATE, $level), "ZLIB compression failed");
+	private static function zlib_encode(string $data, int $level) : string{
+		return Utils::assumeNotFalse(zlib_encode($data, ZLIB_ENCODING_RAW, $level), "ZLIB compression failed");
 	}
 
 	public function compress(string $payload) : string{
-		if(function_exists('libdeflate_deflate_compress') && function_exists('libdeflate_zlib_compress')){
+		if(function_exists('libdeflate_deflate_compress')){
 			return $this->willCompress($payload) ?
-				($this->needRaw ? libdeflate_deflate_compress($payload, $this->level) : libdeflate_zlib_compress($payload, $this->level)) :
-				self::zlib_encode($payload, 0, $this->needRaw);
+				libdeflate_deflate_compress($payload, $this->level) :
+				self::zlib_encode($payload, 0);
 		}
-		return self::zlib_encode($payload, $this->willCompress($payload) ? $this->level : 0, $this->needRaw);
+		return self::zlib_encode($payload, $this->willCompress($payload) ? $this->level : 0);
 	}
 }

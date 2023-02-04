@@ -48,10 +48,8 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
-use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
-use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\command\CommandPermissions;
 use pocketmine\network\mcpe\protocol\types\DeviceOS;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
@@ -535,26 +533,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{
 		return $vector3->add(0, 1.621, 0); //TODO: +0.001 hack for MCPE falling underground
-	}
-
-	protected function broadcastMovement(bool $teleport = false) : void{
-		parent::broadcastMovement($teleport);
-		if(!$teleport){
-			$legacySpawnedPlayers = array_filter($this->hasSpawned, fn(Player $player) => $player->getNetworkSession()->getProtocolId() >= ProtocolInfo::PROTOCOL_1_14_0
-				&& $player->getNetworkSession()->getProtocolId() <= ProtocolInfo::PROTOCOL_1_14_60);
-
-			$this->server->broadcastPackets($legacySpawnedPlayers, [MovePlayerPacket::simple(
-				$this->id,
-				$this->getOffsetPosition($this->location),
-				$this->location->pitch,
-				$this->location->yaw,
-				$this->location->yaw,
-				MovePlayerPacket::MODE_NORMAL,
-				$this->onGround,
-				0, //TODO: riding entity ID
-				0 //TODO: tick
-			)]);
-		}
 	}
 
 	protected function onDispose() : void{

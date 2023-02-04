@@ -27,9 +27,9 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
-class PortalParticle extends ProtocolParticle{
+class PortalParticle implements Particle{
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::standardParticle(ParticleIds::PORTAL, 0, $pos, $this->particleProtocol)];
+		return [LevelEventPacket::standardParticle(ParticleIds::PORTAL, 0, $pos)];
 	}
 }

@@ -44,7 +44,6 @@ use pocketmine\player\Player;
 use pocketmine\player\PlayerInfo;
 use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
-use pocketmine\utils\Utils;
 use Ramsey\Uuid\Uuid;
 use function in_array;
 use function is_array;
@@ -221,7 +220,6 @@ class LoginPacketHandler extends ChunkRequestPacketHandler{
 	}
 
 	protected function isCompatibleProtocol(int $protocolVersion) : bool{
-		$minimalProtocol = Utils::getMinimalProtocol($this->server->getConfigGroup()->getNetherGamesConfig());
-		return in_array($protocolVersion, ProtocolInfo::ACCEPTED_PROTOCOL, true) && $protocolVersion >= $minimalProtocol;
+		return in_array($protocolVersion, ProtocolInfo::ACCEPTED_PROTOCOL, true);
 	}
 }

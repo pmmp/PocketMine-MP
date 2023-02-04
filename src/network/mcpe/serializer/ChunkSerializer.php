@@ -35,7 +35,6 @@ use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
-use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
@@ -82,11 +81,9 @@ final class ChunkSerializer{
 
 		$subChunks = [];
 
-		if($mappingProtocol >= ProtocolInfo::PROTOCOL_1_18_0 && $chunk->getDimensionId() === DimensionIds::OVERWORLD){
-			//TODO: HACK! fill in fake subchunks to make up for the new negative space client-side
-			for($y = 0; $y < self::LOWER_PADDING_SIZE; $y++){
-				$subChunks[] = $emptyChunkStream->getBuffer();
-			}
+		//TODO: HACK! fill in fake subchunks to make up for the new negative space client-side
+		for($y = 0; $y < self::LOWER_PADDING_SIZE; $y++){
+			$subChunks[] = $emptyChunkStream->getBuffer();
 		}
 
 		$subChunkCount = self::getSubChunkCount($chunk);
@@ -146,14 +143,7 @@ final class ChunkSerializer{
 
 		foreach($layers as $blocks){
 			$bitsPerBlock = $blocks->getBitsPerBlock();
-			if($stream->getProtocolId() <= ProtocolInfo::PROTOCOL_1_17_0 && $bitsPerBlock === 0){
-				//TODO: we use these in memory, but the game doesn't support them yet
-				//polyfill them with 1-bpb instead
-				$bitsPerBlock = 1;
-				$words = str_repeat("\x00", PalettedBlockArray::getExpectedWordArraySize(1));
-			}else{
-				$words = $blocks->getWordArray();
-			}
+			$words = $blocks->getWordArray();
 			$stream->putByte(($bitsPerBlock << 1) | ($persistentBlockStates ? 0 : 1));
 			$stream->put($words);
 			$palette = $blocks->getPalette();

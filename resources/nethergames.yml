@@ -1,9 +1,0 @@
-# Main configuration file for NetherGames' PocketMine-MP fork
-# These settings are the ones that cannot be included in server.properties and pocketmine.yml
-# New settings/defaults won't appear automatically in this file when upgrading.
-
-protocol-support:
-  #A minimal accepted protocol is to set a limit on what the oldest minecraft protocol can join, set to 0 to disable
-  #The list of all protocols supported can be found at: (default 1.17.0)
-  #https://github.com/NetherGamesMC/BedrockProtocol/blob/master/src/ProtocolInfo.php#L36
-  min-accepted-protocol: 440
