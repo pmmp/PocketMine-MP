@@ -409,6 +409,10 @@ class NetworkSession{
 		return $this->protocolId ?? ProtocolInfo::CURRENT_PROTOCOL;
 	}
 
+	public function getDisposeHooks() : ObjectSet{
+		return $this->disposeHooks;
+	}
+
 	/**
 	 * @throws PacketHandlingException
 	 */
