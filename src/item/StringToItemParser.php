@@ -928,6 +928,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("redstone_wire", fn() => Blocks::REDSTONE_WIRE());
 		$result->registerBlock("reeds", fn() => Blocks::SUGARCANE());
 		$result->registerBlock("reeds_block", fn() => Blocks::SUGARCANE());
+		$result->registerBlock("reinforced_deepslate", fn() => Blocks::REINFORCED_DEEPSLATE());
 		$result->registerBlock("repeater", fn() => Blocks::REDSTONE_REPEATER());
 		$result->registerBlock("repeater_block", fn() => Blocks::REDSTONE_REPEATER());
 		$result->registerBlock("reserved6", fn() => Blocks::RESERVED6());
