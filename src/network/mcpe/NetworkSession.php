@@ -409,6 +409,10 @@ class NetworkSession{
 		return $this->protocolId ?? ProtocolInfo::CURRENT_PROTOCOL;
 	}
 
+	/**
+	 * @return \Closure[]|ObjectSet
+	 * @phpstan-return ObjectSet<\Closure() : void>
+	 */
 	public function getDisposeHooks() : ObjectSet{
 		return $this->disposeHooks;
 	}
