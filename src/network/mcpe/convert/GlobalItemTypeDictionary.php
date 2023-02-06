@@ -38,7 +38,6 @@ final class GlobalItemTypeDictionary{
 		ProtocolInfo::PROTOCOL_1_19_0 => "-1.19.0",
 		ProtocolInfo::PROTOCOL_1_18_30 => "-1.18.30",
 		ProtocolInfo::PROTOCOL_1_18_10 => "-1.18.10",
-		ProtocolInfo::PROTOCOL_1_18_0 => "-1.18.0",
 	];
 
 	private static function make(int $protocolId) : self{

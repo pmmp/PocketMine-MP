@@ -27,12 +27,15 @@ use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
 use pocketmine\data\bedrock\block\BlockStateSerializer;
 use pocketmine\data\bedrock\block\BlockTypeNames;
+use pocketmine\data\bedrock\block\upgrade\BlockStateUpgrader;
+use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaUtils;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\ProtocolSingletonTrait;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use Symfony\Component\Filesystem\Path;
+use const pocketmine\BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH;
 
 /**
  * @internal
@@ -64,10 +67,6 @@ final class RuntimeBlockMapping{
 			self::CANONICAL_BLOCK_STATES_PATH => '-1.18.10',
 			self::BLOCK_STATE_META_MAP_PATH => '-1.19.10',
 		],
-		ProtocolInfo::PROTOCOL_1_18_0 => [
-			self::CANONICAL_BLOCK_STATES_PATH => '-1.18.0',
-			self::BLOCK_STATE_META_MAP_PATH => '-1.19.10',
-		],
 	];
 
 	/**
@@ -83,15 +82,25 @@ final class RuntimeBlockMapping{
 	private static function make(int $protocolId) : self{
 		$canonicalBlockStatesRaw = Filesystem::fileGetContents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states" . self::PATHS[$protocolId][self::CANONICAL_BLOCK_STATES_PATH] . ".nbt"));
 		$metaMappingRaw = Filesystem::fileGetContents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'block_state_meta_map' . self::PATHS[$protocolId][self::BLOCK_STATE_META_MAP_PATH] . '.json'));
+
+		if(($blockStateSchemaId = self::getBlockStateSchemaId($protocolId)) !== null){
+			$blockStateUpgrader = new BlockStateUpgrader(BlockStateUpgradeSchemaUtils::loadSchemas(
+				Path::join(BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH, 'nbt_upgrade_schema'),
+				$blockStateSchemaId
+			));
+		}
+
 		return new self(
 			BlockStateDictionary::loadFromString($canonicalBlockStatesRaw, $metaMappingRaw),
-			GlobalBlockStateHandlers::getSerializer()
+			GlobalBlockStateHandlers::getSerializer(),
+			$blockStateUpgrader ?? null
 		);
 	}
 
 	public function __construct(
 		private BlockStateDictionary $blockStateDictionary,
-		private BlockStateSerializer $blockStateSerializer
+		private BlockStateSerializer $blockStateSerializer,
+		private ?BlockStateUpgrader $blockStateUpgrader
 	){
 		$this->fallbackStateId = $this->blockStateDictionary->lookupStateIdFromData(
 				BlockStateData::current(BlockTypeNames::INFO_UPDATE, [])
@@ -107,6 +116,9 @@ final class RuntimeBlockMapping{
 
 		try{
 			$blockStateData = $this->blockStateSerializer->serialize($internalStateId);
+			if($this->blockStateUpgrader !== null){
+				$blockStateData = $this->blockStateUpgrader->upgrade($blockStateData);
+			}
 
 			$networkId = $this->blockStateDictionary->lookupStateIdFromData($blockStateData);
 			if($networkId === null){
@@ -149,5 +161,15 @@ final class RuntimeBlockMapping{
 		}
 
 		return $protocolId;
+	}
+
+	private static function getBlockStateSchemaId(int $protocolId) : ?int{
+		return match($protocolId){
+			ProtocolInfo::PROTOCOL_1_19_50, ProtocolInfo::PROTOCOL_1_19_40 => 151,
+			ProtocolInfo::PROTOCOL_1_19_10 => 141,
+			ProtocolInfo::PROTOCOL_1_18_30 => 131,
+			ProtocolInfo::PROTOCOL_1_18_10 => null,
+			default => throw new AssumptionFailedError("Unknown protocol ID $protocolId"),
+		};
 	}
 }
