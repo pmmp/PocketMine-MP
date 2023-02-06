@@ -24,6 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
+use pocketmine\entity\Entity;
+use pocketmine\event\block\BlockUpdateEvent;
+use pocketmine\event\player\PlayerPressurePlateTriggerEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -61,5 +64,20 @@ abstract class PressurePlate extends Transparent{
 		}
 	}
 
-	//TODO
+	public function onEntityInside(Entity $entity) : bool{
+		if($entity instanceof Player){
+			$ev = new PlayerPressurePlateTriggerEvent($entity, $this);
+			$ev->call();
+
+			if($ev->isCancelled()){
+				return false;
+			}
+		}
+
+		return parent::onEntityInside($entity);
+	}
+
+	public function hasEntityCollision() : bool{
+		return true;
+	}
 }
