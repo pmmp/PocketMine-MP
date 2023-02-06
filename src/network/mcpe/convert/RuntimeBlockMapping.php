@@ -27,6 +27,8 @@ use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
 use pocketmine\data\bedrock\block\BlockStateSerializer;
 use pocketmine\data\bedrock\block\BlockTypeNames;
+use pocketmine\data\bedrock\block\downgrade\BlockStateDowngrader;
+use pocketmine\data\bedrock\block\downgrade\BlockStateDowngradeSchemaUtils;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgrader;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaUtils;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
@@ -35,6 +37,7 @@ use pocketmine\utils\Filesystem;
 use pocketmine\utils\ProtocolSingletonTrait;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use Symfony\Component\Filesystem\Path;
+use function in_array;
 use const pocketmine\BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH;
 
 /**
@@ -84,7 +87,7 @@ final class RuntimeBlockMapping{
 		$metaMappingRaw = Filesystem::fileGetContents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'block_state_meta_map' . self::PATHS[$protocolId][self::BLOCK_STATE_META_MAP_PATH] . '.json'));
 
 		if(($blockStateSchemaId = self::getBlockStateSchemaId($protocolId)) !== null){
-			$blockStateUpgrader = new BlockStateUpgrader(BlockStateUpgradeSchemaUtils::loadSchemas(
+			$blockStateDowngrader = new BlockStateDowngrader(BlockStateDowngradeSchemaUtils::loadSchemas(
 				Path::join(BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH, 'nbt_upgrade_schema'),
 				$blockStateSchemaId
 			));
@@ -93,14 +96,14 @@ final class RuntimeBlockMapping{
 		return new self(
 			BlockStateDictionary::loadFromString($canonicalBlockStatesRaw, $metaMappingRaw),
 			GlobalBlockStateHandlers::getSerializer(),
-			$blockStateUpgrader ?? null
+			$blockStateDowngrader ?? null
 		);
 	}
 
 	public function __construct(
 		private BlockStateDictionary $blockStateDictionary,
 		private BlockStateSerializer $blockStateSerializer,
-		private ?BlockStateUpgrader $blockStateUpgrader
+		private ?BlockStateDowngrader $blockStateDowngrader
 	){
 		$this->fallbackStateId = $this->blockStateDictionary->lookupStateIdFromData(
 				BlockStateData::current(BlockTypeNames::INFO_UPDATE, [])
@@ -116,8 +119,8 @@ final class RuntimeBlockMapping{
 
 		try{
 			$blockStateData = $this->blockStateSerializer->serialize($internalStateId);
-			if($this->blockStateUpgrader !== null){
-				$blockStateData = $this->blockStateUpgrader->upgrade($blockStateData);
+			if($this->blockStateDowngrader !== null){
+				$blockStateData = $this->blockStateDowngrader->downgrade($blockStateData);
 			}
 
 			$networkId = $this->blockStateDictionary->lookupStateIdFromData($blockStateData);
@@ -150,14 +153,8 @@ final class RuntimeBlockMapping{
 	public function getFallbackStateData() : BlockStateData{ return $this->fallbackStateData; }
 
 	public static function convertProtocol(int $protocolId) : int{
-		if($protocolId < ProtocolInfo::PROTOCOL_1_19_40){
-			if($protocolId === ProtocolInfo::PROTOCOL_1_19_0){
-				return ProtocolInfo::PROTOCOL_1_19_10;
-			}
-
-			if($protocolId >= ProtocolInfo::PROTOCOL_1_19_20){
-				return ProtocolInfo::PROTOCOL_1_19_40;
-			}
+		if(in_array($protocolId, [ProtocolInfo::PROTOCOL_1_19_20, ProtocolInfo::PROTOCOL_1_19_21, ProtocolInfo::PROTOCOL_1_19_30])){
+			return ProtocolInfo::PROTOCOL_1_19_40;
 		}
 
 		return $protocolId;
@@ -165,10 +162,10 @@ final class RuntimeBlockMapping{
 
 	private static function getBlockStateSchemaId(int $protocolId) : ?int{
 		return match($protocolId){
-			ProtocolInfo::PROTOCOL_1_19_50, ProtocolInfo::PROTOCOL_1_19_40 => 151,
-			ProtocolInfo::PROTOCOL_1_19_10 => 141,
-			ProtocolInfo::PROTOCOL_1_18_30 => 131,
-			ProtocolInfo::PROTOCOL_1_18_10 => null,
+			ProtocolInfo::CURRENT_PROTOCOL, ProtocolInfo::PROTOCOL_1_19_40, ProtocolInfo::PROTOCOL_1_19_10 => null,
+			ProtocolInfo::PROTOCOL_1_19_0 => 151,
+			ProtocolInfo::PROTOCOL_1_18_30 => 141,
+			ProtocolInfo::PROTOCOL_1_18_10 => 121,
 			default => throw new AssumptionFailedError("Unknown protocol ID $protocolId"),
 		};
 	}
