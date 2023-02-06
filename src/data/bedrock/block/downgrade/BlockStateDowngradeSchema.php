@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\downgrade;
 
-use pocketmine\data\bedrock\block\upgrade\BlockStateUpgrader;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaBlockRemap;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaValueRemap as ValueRemap;
 use pocketmine\nbt\tag\Tag;

@@ -21,18 +21,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\item\upgrade;
+namespace pocketmine\data\bedrock\item\downgrade;
 
-use pocketmine\data\bedrock\item\downgrade\ItemIdMetaDowngradeSchema;
 use function mb_strtolower;
 
-final class ItemIdMetaUpgradeSchema{
+final class ItemIdMetaDowngradeSchema{
 
 	/**
 	 * @param string[]   $renamedIds
 	 * @param string[][] $remappedMetas
 	 * @phpstan-param array<string, string> $renamedIds
-	 * @phpstan-param array<string, array<int, string>> $remappedMetas
+	 * @phpstan-param array<string, array{string, int}> $remappedMetas
 	 */
 	public function __construct(
 		private array $renamedIds,
@@ -46,24 +45,10 @@ final class ItemIdMetaUpgradeSchema{
 		return $this->renamedIds[mb_strtolower($id, 'US-ASCII')] ?? null;
 	}
 
-	public function remapMeta(string $id, int $meta) : ?string{
-		return $this->remappedMetas[mb_strtolower($id, 'US-ASCII')][$meta] ?? null;
-	}
-
-	public function reverse(): ItemIdMetaDowngradeSchema{
-		$renamedIds = [];
-
-		foreach($this->renamedIds as $old => $new){
-			$renamedIds[$new] = $old;
-		}
-
-		$remappedMetas = [];
-		foreach($this->remappedMetas as $old => $metas){
-			foreach($metas as $meta => $new){
-				$remappedMetas[$new] = [$old, $meta];
-			}
-		}
-
-		return new ItemIdMetaDowngradeSchema($renamedIds, $remappedMetas, $this->schemaId);
+	/**
+	 * @return array{string, int}
+	 */
+	public function remapMeta(string $id) : ?array{
+		return $this->remappedMetas[mb_strtolower($id, 'US-ASCII')] ?? null;
 	}
 }

@@ -35,7 +35,7 @@ final class BlockStateDowngrader{
 	private array $downgradeSchemas = [];
 
 	/**
-	 * @param BlockStateDowngradeSchema[]                   $downgradeSchemas
+	 * @param BlockStateDowngradeSchema[] $downgradeSchemas
 	 *
 	 * @phpstan-param array<int, BlockStateDowngradeSchema> $downgradeSchemas
 	 */

@@ -110,7 +110,7 @@ final class CraftingDataCache{
 				$outputs = array_map(function(Item $item) use ($converter) : ?ItemStack{
 					try {
 						return $converter->coreItemStackToNet($this->protocolId, $item);
-					} catch(\InvalidArgumentException | AssumptionFailedError $e){
+					} catch(\InvalidArgumentException $e){
 						return null;
 					}
 				}, $recipe->getResults());
@@ -148,7 +148,7 @@ final class CraftingDataCache{
 				$outputs = array_map(function(Item $item) use ($converter) : ?ItemStack{
 					try {
 						return $converter->coreItemStackToNet($this->protocolId, $item);
-					} catch(\InvalidArgumentException | AssumptionFailedError $e){
+					} catch(\InvalidArgumentException $e){
 						return null;
 					}
 				}, $recipe->getResults());
@@ -181,7 +181,7 @@ final class CraftingDataCache{
 				try {
 					$input = $converter->coreRecipeIngredientToNet($this->protocolId, $recipe->getInput())->getDescriptor();
 					$output = $converter->coreItemStackToNet($this->protocolId, $recipe->getResult());
-				} catch(\InvalidArgumentException | AssumptionFailedError $e){
+				} catch(\InvalidArgumentException $e){
 					continue;
 				}
 

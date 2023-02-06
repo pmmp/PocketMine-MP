@@ -21,20 +21,19 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\block\downgrade;
+namespace pocketmine\data\bedrock\item\downgrade;
 
-use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaUtils;
+use pocketmine\data\bedrock\item\upgrade\ItemIdMetaUpgradeSchemaUtils;
 use pocketmine\utils\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use function krsort;
 use const SORT_NUMERIC;
 
-final class BlockStateDowngradeSchemaUtils{
+final class ItemIdMetaDowngradeSchemaUtils{
 
 	/**
-	 * Returns a list of schemas ordered by schema ID. Newest schemas appear first.
-	 *
-	 * @return BlockStateDowngradeSchema[]
+	 * @return ItemIdMetaDowngradeSchema[]
+	 * @phpstan-return array<int, ItemIdMetaDowngradeSchema>
 	 */
 	public static function loadSchemas(string $path, int $minSchemaId) : array{
 		$iterator = new \RegexIterator(
@@ -53,7 +52,6 @@ final class BlockStateDowngradeSchemaUtils{
 		foreach($iterator as $matches){
 			$filename = $matches[0];
 			$schemaId = (int) $matches[1];
-
 			if($schemaId < $minSchemaId){
 				continue;
 			}
@@ -63,7 +61,7 @@ final class BlockStateDowngradeSchemaUtils{
 			$raw = Filesystem::fileGetContents($fullPath);
 
 			try{
-				$schema = BlockStateUpgradeSchemaUtils::loadSchemaFromString($raw, $schemaId)->reverse();
+				$schema = ItemIdMetaUpgradeSchemaUtils::loadSchemaFromString($raw, $schemaId)->reverse();
 			}catch(\RuntimeException $e){
 				throw new \RuntimeException("Loading schema file $fullPath: " . $e->getMessage(), 0, $e);
 			}

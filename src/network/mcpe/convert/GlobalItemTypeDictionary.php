@@ -53,10 +53,13 @@ final class GlobalItemTypeDictionary{
 	public function getDictionary() : ItemTypeDictionary{ return $this->dictionary; }
 
 	public static function convertProtocol(int $protocolId) : int{
-		if($protocolId >= ProtocolInfo::PROTOCOL_1_19_10 && $protocolId <= ProtocolInfo::PROTOCOL_1_19_40){
-			return ProtocolInfo::PROTOCOL_1_19_40;
-		}
+		return match ($protocolId) {
+			ProtocolInfo::PROTOCOL_1_19_30,
+			ProtocolInfo::PROTOCOL_1_19_21,
+			ProtocolInfo::PROTOCOL_1_19_20,
+			ProtocolInfo::PROTOCOL_1_19_10 => ProtocolInfo::PROTOCOL_1_19_40,
 
-		return $protocolId;
+			default => $protocolId
+		};
 	}
 }

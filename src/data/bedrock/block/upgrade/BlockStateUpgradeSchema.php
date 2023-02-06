@@ -26,6 +26,7 @@ namespace pocketmine\data\bedrock\block\upgrade;
 use pocketmine\data\bedrock\block\downgrade\BlockStateDowngradeSchema;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaValueRemap as ValueRemap;
 use pocketmine\nbt\tag\Tag;
+use function array_keys;
 use function count;
 
 final class BlockStateUpgradeSchema{

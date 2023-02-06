@@ -30,14 +30,12 @@ use pocketmine\data\bedrock\block\BlockTypeNames;
 use pocketmine\data\bedrock\block\downgrade\BlockStateDowngrader;
 use pocketmine\data\bedrock\block\downgrade\BlockStateDowngradeSchemaUtils;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgrader;
-use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaUtils;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\ProtocolSingletonTrait;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use Symfony\Component\Filesystem\Path;
-use function in_array;
 use const pocketmine\BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH;
 
 /**
@@ -152,12 +150,18 @@ final class RuntimeBlockMapping{
 
 	public function getFallbackStateData() : BlockStateData{ return $this->fallbackStateData; }
 
-	public static function convertProtocol(int $protocolId) : int{
-		if(in_array($protocolId, [ProtocolInfo::PROTOCOL_1_19_20, ProtocolInfo::PROTOCOL_1_19_21, ProtocolInfo::PROTOCOL_1_19_30])){
-			return ProtocolInfo::PROTOCOL_1_19_40;
-		}
+	public function getBlockStateDowngrader() : ?BlockStateDowngrader{ return $this->blockStateDowngrader; }
 
-		return $protocolId;
+	public function getBlockStateUpgrader() : ?BlockStateUpgrader{ return GlobalBlockStateHandlers::getUpgrader()->getBlockStateUpgrader(); }
+
+	public static function convertProtocol(int $protocolId) : int{
+		return match ($protocolId) {
+			ProtocolInfo::PROTOCOL_1_19_30,
+			ProtocolInfo::PROTOCOL_1_19_21,
+			ProtocolInfo::PROTOCOL_1_19_20 => ProtocolInfo::PROTOCOL_1_19_40,
+
+			default => $protocolId
+		};
 	}
 
 	private static function getBlockStateSchemaId(int $protocolId) : ?int{
