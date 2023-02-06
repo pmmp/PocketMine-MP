@@ -136,5 +136,26 @@ abstract class DefaultPermissions{
 		self::registerPermission(new Permission(Names::COMMAND_WHITELIST_LIST, "Allows the user to list all players on the server whitelist"), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_WHITELIST_RELOAD, "Allows the user to reload the server whitelist"), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_WHITELIST_REMOVE, "Allows the user to remove a player from the server whitelist"), [$operatorRoot]);
+
+		self::registerPermission(new Permission(Names::GAME_CHAT, "Allows the user to chat"), [$everyoneRoot]);
+
+		$survivalRoot = self::registerPermission(new Permission(Names::GROUP_GAMEMODE_SURVIVAL));
+		$creativeRoot = self::registerPermission(new Permission(Names::GROUP_GAMEMODE_CREATIVE));
+		$adventureRoot = self::registerPermission(new Permission(Names::GROUP_GAMEMODE_ADVENTURE));
+		self::registerPermission(new Permission(Names::GROUP_GAMEMODE_SPECTATOR)); //not currently used, but will be in the future
+
+		self::registerPermission(new Permission(Names::GAME_BLOCK_BREAK, "Allows the user to break blocks"), [$survivalRoot, $creativeRoot, $adventureRoot]);
+		self::registerPermission(new Permission(Names::GAME_BLOCK_INTERACT, "Allows the user to interact with blocks"), [$survivalRoot, $creativeRoot, $adventureRoot]);
+		self::registerPermission(new Permission(Names::GAME_BLOCK_PLACE, "Allows the user to place blocks"), [$survivalRoot, $creativeRoot, $adventureRoot]);
+		self::registerPermission(new Permission(Names::GAME_ENTITY_ATTACK, "Allows the user to attack entities"), [$survivalRoot, $creativeRoot, $adventureRoot]);
+		self::registerPermission(new Permission(Names::GAME_ENTITY_INTERACT, "Allows the user to interact with entities"), [$survivalRoot, $creativeRoot, $adventureRoot]);
+		self::registerPermission(new Permission(Names::GAME_ITEM_DROP, "Allows the user to drop items"), [$survivalRoot, $creativeRoot, $adventureRoot]);
+		self::registerPermission(new Permission(Names::GAME_ITEM_PICKUP, "Allows the user to pick up items"), [$survivalRoot, $creativeRoot, $adventureRoot]);
+		self::registerPermission(new Permission(Names::GAME_ITEM_USE, "Allows the user to use items such as snowballs"), [$survivalRoot, $creativeRoot, $adventureRoot]);
+		self::registerPermission(new Permission(Names::GAME_PLAYER_ATTACK, "Allows the user to attack other players"), [$survivalRoot, $creativeRoot, $adventureRoot]);
+		self::registerPermission(new Permission(Names::GAME_PLAYER_INTERACT, "Allows the user to interact with other players"), [$survivalRoot, $creativeRoot, $adventureRoot]);
+
+		self::registerPermission(new Permission(Names::GAME_ITEM_CREATE, "Allows the user to use the creative inventory"), [$creativeRoot]);
+		self::registerPermission(new Permission(Names::GAME_FLIGHT, "Allows the user to toggle flight mode"), [$creativeRoot]);
 	}
 }

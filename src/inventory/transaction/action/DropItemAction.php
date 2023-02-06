@@ -27,6 +27,7 @@ use pocketmine\event\player\PlayerDropItemEvent;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 
 /**
@@ -49,7 +50,7 @@ class DropItemAction extends InventoryAction{
 
 	public function onPreExecute(Player $source) : bool{
 		$ev = new PlayerDropItemEvent($source, $this->targetItem);
-		if($source->isSpectator()){
+		if(!$source->hasPermission(DefaultPermissionNames::GAME_ITEM_DROP)){
 			$ev->cancel();
 		}
 		$ev->call();

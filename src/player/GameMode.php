@@ -25,6 +25,7 @@ namespace pocketmine\player;
 
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\EnumTrait;
 use function mb_strtolower;
 
@@ -50,10 +51,10 @@ final class GameMode{
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self("survival", "Survival", KnownTranslationFactory::gameMode_survival(), ["survival", "s", "0"]),
-			new self("creative", "Creative", KnownTranslationFactory::gameMode_creative(), ["creative", "c", "1"]),
-			new self("adventure", "Adventure", KnownTranslationFactory::gameMode_adventure(), ["adventure", "a", "2"]),
-			new self("spectator", "Spectator", KnownTranslationFactory::gameMode_spectator(), ["spectator", "v", "view", "3"])
+			new self("survival", "Survival", KnownTranslationFactory::gameMode_survival(), DefaultPermissionNames::GROUP_GAMEMODE_SURVIVAL, ["survival", "s", "0"]),
+			new self("creative", "Creative", KnownTranslationFactory::gameMode_creative(), DefaultPermissionNames::GROUP_GAMEMODE_CREATIVE, ["creative", "c", "1"]),
+			new self("adventure", "Adventure", KnownTranslationFactory::gameMode_adventure(), DefaultPermissionNames::GROUP_GAMEMODE_ADVENTURE, ["adventure", "a", "2"]),
+			new self("spectator", "Spectator", KnownTranslationFactory::gameMode_spectator(), DefaultPermissionNames::GROUP_GAMEMODE_SPECTATOR, ["spectator", "v", "view", "3"])
 		);
 	}
 
@@ -76,6 +77,7 @@ final class GameMode{
 		string $enumName,
 		private string $englishName,
 		private Translatable $translatableName,
+		private string $permissionGroupName,
 		private array $aliases = []
 	){
 		$this->Enum___construct($enumName);
@@ -86,6 +88,8 @@ final class GameMode{
 	}
 
 	public function getTranslatableName() : Translatable{ return $this->translatableName; }
+
+	public function getPermissionGroupName() : string{ return $this->permissionGroupName; }
 
 	/**
 	 * @return string[]
