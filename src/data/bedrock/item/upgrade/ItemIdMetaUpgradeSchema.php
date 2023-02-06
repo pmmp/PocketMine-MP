@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\item\upgrade;
 
 use pocketmine\data\bedrock\item\downgrade\ItemIdMetaDowngradeSchema;
+use pocketmine\utils\Utils;
 use function mb_strtolower;
 
 final class ItemIdMetaUpgradeSchema{
@@ -50,15 +51,15 @@ final class ItemIdMetaUpgradeSchema{
 		return $this->remappedMetas[mb_strtolower($id, 'US-ASCII')][$meta] ?? null;
 	}
 
-	public function reverse(): ItemIdMetaDowngradeSchema{
+	public function reverse() : ItemIdMetaDowngradeSchema{
 		$renamedIds = [];
 
-		foreach($this->renamedIds as $old => $new){
+		foreach(Utils::stringifyKeys($this->renamedIds) as $old => $new){
 			$renamedIds[$new] = $old;
 		}
 
 		$remappedMetas = [];
-		foreach($this->remappedMetas as $old => $metas){
+		foreach(Utils::stringifyKeys($this->remappedMetas) as $old => $metas){
 			foreach($metas as $meta => $new){
 				$remappedMetas[$new] = [$old, $meta];
 			}

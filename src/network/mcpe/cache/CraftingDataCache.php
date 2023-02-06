@@ -247,6 +247,7 @@ final class CraftingDataCache{
 
 	/**
 	 * @param ProtocolRecipeIngredient[] $inputs
+	 * @phpstan-param array<ProtocolRecipeIngredient|null> $inputs
 	 */
 	private function checkInputValidity(array $inputs) : bool{
 		return !in_array(null, $inputs, true);
@@ -254,6 +255,7 @@ final class CraftingDataCache{
 
 	/**
 	 * @param ItemStack[] $outputs
+	 * @phpstan-param array<ItemStack|null> $outputs
 	 */
 	private function checkOutputValidity(array $outputs) : bool{
 		return !in_array(null, $outputs, true);

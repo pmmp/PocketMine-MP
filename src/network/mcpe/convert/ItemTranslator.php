@@ -152,7 +152,9 @@ final class ItemTranslator{
 				throw new TypeConversionException("Blockstate runtimeID $networkBlockRuntimeId does not correspond to any known blockstate");
 			}
 
-			$blockStateData = $this->runtimeBlockMapping->getBlockStateUpgrader()->upgrade($blockStateData);
+			if(($blockStateUpgrader = $this->runtimeBlockMapping->getBlockStateUpgrader()) !== null){
+				$blockStateData = $blockStateUpgrader->upgrade($blockStateData);
+			}
 		}
 
 		[$stringId, $networkMeta] = GlobalItemDataHandlers::getUpgrader()->getIdMetaUpgrader()->upgradeStringIdMeta($stringId, $networkMeta);

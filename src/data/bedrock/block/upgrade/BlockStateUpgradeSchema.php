@@ -26,6 +26,7 @@ namespace pocketmine\data\bedrock\block\upgrade;
 use pocketmine\data\bedrock\block\downgrade\BlockStateDowngradeSchema;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaValueRemap as ValueRemap;
 use pocketmine\nbt\tag\Tag;
+use pocketmine\utils\Utils;
 use function array_keys;
 use function count;
 
@@ -110,31 +111,31 @@ final class BlockStateUpgradeSchema{
 			$this->schemaId
 		);
 
-		foreach($this->renamedIds as $old => $new){
+		foreach(Utils::stringifyKeys($this->renamedIds) as $old => $new){
 			$downgrade->renamedIds[$new] = $old;
 		}
 
-		foreach($this->addedProperties as $block => $properties){
+		foreach(Utils::stringifyKeys($this->addedProperties) as $block => $properties){
 			$downgrade->removedProperties[$block] = array_keys($properties);
 		}
 
-		foreach($this->removedProperties as $block => $properties){
+		foreach(Utils::stringifyKeys($this->removedProperties) as $block => $properties){
 			$downgrade->addedProperties[$block] = [];
-			foreach($properties as $property){
+			foreach(Utils::stringifyKeys($properties) as $property){
 				//todo: find a way to get the default value for this property
 				//$downgrade->addedProperties[$block][$property] = new Tag();
 			}
 		}
 
-		foreach($this->renamedProperties as $block => $properties){
+		foreach(Utils::stringifyKeys($this->renamedProperties) as $block => $properties){
 			$downgrade->renamedProperties[$block] = [];
-			foreach($properties as $old => $new){
+			foreach(Utils::stringifyKeys($properties) as $old => $new){
 				$downgrade->renamedProperties[$block][$new] = $old;
 			}
 		}
 
-		foreach($this->remappedPropertyValues as $block => $properties){
-			foreach($properties as $property => $remaps){
+		foreach(Utils::stringifyKeys($this->remappedPropertyValues) as $block => $properties){
+			foreach(Utils::stringifyKeys($properties) as $property => $remaps){
 				foreach($remaps as $remap){
 					if(!isset($downgrade->remappedPropertyValues[$block][$property])){
 						$downgrade->remappedPropertyValues[$block][$property] = [];
@@ -145,8 +146,8 @@ final class BlockStateUpgradeSchema{
 			}
 		}
 
-		foreach($this->remappedStates as $block => $remaps){
-			foreach($remaps as $remap){
+		foreach(Utils::stringifyKeys($this->remappedStates) as $block => $remaps){
+			foreach(Utils::stringifyKeys($remaps) as $remap){
 				if(!isset($downgrade->remappedStates[$remap->newName])){
 					$downgrade->remappedStates[$remap->newName] = [];
 				}
