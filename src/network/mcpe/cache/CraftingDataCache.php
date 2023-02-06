@@ -115,7 +115,7 @@ final class CraftingDataCache{
 					}
 				}, $recipe->getResults());
 
-				if(!$this->checkInputValidity($inputs) || !$this->checkOutputValidity($outputs)){
+				if(in_array(null, $inputs, true) || in_array(null, $outputs, true)){
 					continue;
 				}
 
@@ -153,7 +153,7 @@ final class CraftingDataCache{
 					}
 				}, $recipe->getResults());
 
-				if(!$this->checkOutputValidity($outputs)){
+				if(in_array(null, $outputs, true)){
 					continue;
 				}
 
@@ -243,22 +243,6 @@ final class CraftingDataCache{
 
 		Timings::$craftingDataCacheRebuild->stopTiming();
 		return CraftingDataPacket::create($recipesWithTypeIds, $potionTypeRecipes, $potionContainerChangeRecipes, [], true);
-	}
-
-	/**
-	 * @param ProtocolRecipeIngredient[] $inputs
-	 * @phpstan-param array<ProtocolRecipeIngredient|null> $inputs
-	 */
-	private function checkInputValidity(array $inputs) : bool{
-		return !in_array(null, $inputs, true);
-	}
-
-	/**
-	 * @param ItemStack[] $outputs
-	 * @phpstan-param array<ItemStack|null> $outputs
-	 */
-	private function checkOutputValidity(array $outputs) : bool{
-		return !in_array(null, $outputs, true);
 	}
 
 	public static function convertProtocol(int $protocolId) : int{

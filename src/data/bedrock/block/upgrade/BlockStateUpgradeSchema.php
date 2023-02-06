@@ -121,7 +121,7 @@ final class BlockStateUpgradeSchema{
 
 		foreach(Utils::stringifyKeys($this->removedProperties) as $block => $properties){
 			$downgrade->addedProperties[$block] = [];
-			foreach(Utils::stringifyKeys($properties) as $property){
+			foreach($properties as $property){
 				//todo: find a way to get the default value for this property
 				//$downgrade->addedProperties[$block][$property] = new Tag();
 			}
@@ -147,7 +147,7 @@ final class BlockStateUpgradeSchema{
 		}
 
 		foreach(Utils::stringifyKeys($this->remappedStates) as $block => $remaps){
-			foreach(Utils::stringifyKeys($remaps) as $remap){
+			foreach($remaps as $remap){
 				if(!isset($downgrade->remappedStates[$remap->newName])){
 					$downgrade->remappedStates[$remap->newName] = [];
 				}
