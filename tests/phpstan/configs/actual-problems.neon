@@ -6,11 +6,6 @@ parameters:
 			path: ../../../build/make-release.php
 
 		-
-			message: "#^Parameter \\#1 \\$pharPath of function pocketmine\\\\build\\\\server_phar\\\\buildPhar expects string, array\\<int, mixed\\>\\|string\\|false given\\.$#"
-			count: 1
-			path: ../../../build/server-phar.php
-
-		-
 			message: "#^Parameter \\#1 \\$strings of function pocketmine\\\\build\\\\server_phar\\\\preg_quote_array expects array\\<string\\>, array\\<int, string\\|false\\> given\\.$#"
 			count: 1
 			path: ../../../build/server-phar.php
@@ -24,16 +19,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$array of static method pocketmine\\\\plugin\\\\PluginGraylist\\:\\:fromArray\\(\\) expects array, mixed given\\.$#"
 			count: 1
 			path: ../../../src/Server.php
-
-		-
-			message: "#^Parameter \\#1 \\$input of function yaml_parse expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/Server.php
-
-		-
-			message: "#^Cannot cast array\\<int, mixed\\>\\|string\\|false to string\\.$#"
-			count: 1
-			path: ../../../src/ServerConfigGroup.php
 
 		-
 			message: "#^Cannot cast mixed to int\\.$#"
