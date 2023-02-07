@@ -148,7 +148,6 @@ use function min;
 use function random_bytes;
 use function strcasecmp;
 use function strlen;
-use function strpos;
 use function strtolower;
 use function substr;
 use function time;

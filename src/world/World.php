@@ -745,8 +745,8 @@ class World implements ChunkManager{
 			return;
 		}
 
-		foreach($sortedPlayers as $mappingProtocol => $pl){
-			$particle->setProtocolId($mappingProtocol);
+		foreach($sortedPlayers as $protocolId => $pl){
+			$particle->setProtocolId($protocolId);
 
 			$pk = $particle->encode($pos);
 

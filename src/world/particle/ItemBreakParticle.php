@@ -23,9 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\particle;
 
-use pocketmine\item\Item;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\convert\ItemTranslator;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 

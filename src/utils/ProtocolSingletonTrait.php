@@ -65,12 +65,12 @@ trait ProtocolSingletonTrait{
 		$sortPlayers = [];
 
 		foreach($players as $player){
-			$dictionaryProtocol = self::convertProtocol($player->getNetworkSession()->getProtocolId());
+			$protocolId = self::convertProtocol($player->getNetworkSession()->getProtocolId());
 
-			if(isset($sortPlayers[$dictionaryProtocol])){
-				$sortPlayers[$dictionaryProtocol][] = $player;
+			if(isset($sortPlayers[$protocolId])){
+				$sortPlayers[$protocolId][] = $player;
 			}else{
-				$sortPlayers[$dictionaryProtocol] = [$player];
+				$sortPlayers[$protocolId] = [$player];
 			}
 		}
 
