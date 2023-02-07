@@ -477,9 +477,6 @@ class NetworkSession{
 				}
 			}
 		}catch(PacketDecodeException $e){
-			if(strpos($e->getMessage(), "Reached limit of 500 packets in a single batch") === false){
-				$this->logger->logException($e);
-			}
 			throw PacketHandlingException::wrap($e, "Packet batch decode error");
 		}finally{
 			$this->isFirstPacket = false;
@@ -1188,7 +1185,7 @@ class NetworkSession{
 					$this->queueCompressed($compressBatchPromise);
 					$onCompletion();
 
-					if($this->getProtocolId() >= ProtocolInfo::PROTOCOL_1_19_10){
+					if($this->getProtocolId() === ProtocolInfo::PROTOCOL_1_19_10){
 						//TODO: HACK! we send the full tile data here, due to a bug in 1.19.10 which causes items in tiles
 						//(item frames, lecterns) to not load properly when they are sent in a chunk via the classic chunk
 						//sending mechanism. We workaround this bug by sending only bare essential data in LevelChunkPacket

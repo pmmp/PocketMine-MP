@@ -23,16 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\world\sound;
 
-use pocketmine\block\Block;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-class BlockBreakSound extends MappingSound{
-	public function __construct(private Block $block){}
-
+class BlockBreakSound extends BlockSound{
 	public function encode(Vector3 $pos) : array{
-		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::BREAK, $pos, false, RuntimeBlockMapping::getInstance($this->mappingProtocol)->toRuntimeId($this->block->getStateId()))];
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::BREAK, $pos, false, $this->toRuntimeId())];
 	}
 }

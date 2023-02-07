@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
-use pocketmine\event\block\BlockUpdateEvent;
 use pocketmine\event\player\PlayerPressurePlateTriggerEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;

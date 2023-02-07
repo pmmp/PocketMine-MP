@@ -23,26 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\world\sound;
 
-use pocketmine\block\Block;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-final class ItemUseOnBlockSound extends MappingSound{
-
-	public function __construct(
-		private Block $block
-	){}
-
-	public function getBlock() : Block{ return $this->block; }
-
+final class ItemUseOnBlockSound extends BlockSound{
 	public function encode(Vector3 $pos) : array{
 		return [LevelSoundEventPacket::nonActorSound(
 			LevelSoundEvent::ITEM_USE_ON,
 			$pos,
 			false,
-			RuntimeBlockMapping::getInstance($this->mappingProtocol)->toRuntimeId($this->block->getStateId())
+			$this->toRuntimeId()
 		)];
 	}
 }

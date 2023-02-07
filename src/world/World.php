@@ -66,6 +66,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\mcpe\convert\ItemTranslator;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
@@ -99,10 +100,11 @@ use pocketmine\world\light\BlockLightUpdate;
 use pocketmine\world\light\LightPopulationTask;
 use pocketmine\world\light\SkyLightUpdate;
 use pocketmine\world\particle\BlockBreakParticle;
-use pocketmine\world\particle\MappingParticle;
+use pocketmine\world\particle\BlockParticle;
+use pocketmine\world\particle\ItemParticle;
 use pocketmine\world\particle\Particle;
 use pocketmine\world\sound\BlockPlaceSound;
-use pocketmine\world\sound\MappingSound;
+use pocketmine\world\sound\BlockSound;
 use pocketmine\world\sound\Sound;
 use pocketmine\world\utils\SubChunkExplorer;
 use function abs;
@@ -685,9 +687,9 @@ class World implements ChunkManager{
 		}
 
 		$players = $ev->getRecipients();
-		if($sound instanceof MappingSound){
+		if($sound instanceof BlockSound){
 			foreach(RuntimeBlockMapping::sortByProtocol($players) as $mappingProtocol => $pl){
-				$sound->setMappingProtocol($mappingProtocol);
+				$sound->setProtocolId($mappingProtocol);
 
 				$pk = $sound->encode($pos);
 
@@ -724,16 +726,10 @@ class World implements ChunkManager{
 		}
 
 		$players = $ev->getRecipients();
-		if($particle instanceof MappingParticle){
-			foreach(RuntimeBlockMapping::sortByProtocol($players) as $mappingProtocol => $pl){
-				$particle->setMappingProtocol($mappingProtocol);
-
-				$pk = $particle->encode($pos);
-
-				if(count($pk) > 0){
-					$this->server->broadcastPackets($this->filterViewersForPosition($pos, $pl), $pk);
-				}
-			}
+		if($particle instanceof BlockParticle){
+			$sortedPlayers = RuntimeBlockMapping::sortByProtocol($players);
+		} elseif($particle instanceof ItemParticle){
+			$sortedPlayers = ItemTranslator::sortByProtocol($players);
 		}else{
 			$pk = $particle->encode($pos);
 
@@ -745,6 +741,17 @@ class World implements ChunkManager{
 				}else{
 					$this->server->broadcastPackets($this->filterViewersForPosition($pos, $ev->getRecipients()), $pk);
 				}
+			}
+			return;
+		}
+
+		foreach($sortedPlayers as $mappingProtocol => $pl){
+			$particle->setProtocolId($mappingProtocol);
+
+			$pk = $particle->encode($pos);
+
+			if(count($pk) > 0){
+				$this->server->broadcastPackets($this->filterViewersForPosition($pos, $pl), $pk);
 			}
 		}
 	}
@@ -1859,6 +1866,7 @@ class World implements ChunkManager{
 		}
 
 		$itemEntity = new ItemEntity(Location::fromObject($source, $this, lcg_value() * 360, 0), $item);
+
 		$itemEntity->setPickupDelay($delay);
 		$itemEntity->setMotion($motion ?? new Vector3(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1));
 

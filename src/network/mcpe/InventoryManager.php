@@ -481,7 +481,7 @@ class InventoryManager{
 			try {
 				$itemStack = $typeConverter->coreItemStackToNet($this->session->getProtocolId(), $item);
 				$results[] = new CreativeContentEntry($nextEntryId++, $itemStack);
-			} catch(\InvalidArgumentException | AssumptionFailedError $e){
+			} catch(\InvalidArgumentException $e){
 				//ignore
 			}
 		}

@@ -26,7 +26,6 @@ namespace pocketmine\world\particle;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\AddActorPacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\types\entity\ByteMetadataProperty;
@@ -39,7 +38,7 @@ use pocketmine\network\mcpe\protocol\types\entity\LongMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\PropertySyncData;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 
-class FloatingTextParticle extends MappingParticle{
+class FloatingTextParticle extends BlockParticle{
 	//TODO: HACK!
 
 	protected ?int $entityId = null;
@@ -97,7 +96,7 @@ class FloatingTextParticle extends MappingParticle{
 				EntityMetadataProperties::BOUNDING_BOX_WIDTH => new FloatMetadataProperty(0.0),
 				EntityMetadataProperties::BOUNDING_BOX_HEIGHT => new FloatMetadataProperty(0.0),
 				EntityMetadataProperties::NAMETAG => new StringMetadataProperty($name),
-				EntityMetadataProperties::VARIANT => new IntMetadataProperty(RuntimeBlockMapping::getInstance($this->mappingProtocol)->toRuntimeId($this->b->getStateId())),
+				EntityMetadataProperties::VARIANT => new IntMetadataProperty($this->toRuntimeId()),
 				EntityMetadataProperties::ALWAYS_SHOW_NAMETAG => new ByteMetadataProperty(1),
 			];
 			$p[] = AddActorPacket::create(

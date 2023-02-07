@@ -21,13 +21,21 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\sound;
+namespace pocketmine\world\particle;
 
-abstract class MappingSound implements Sound{
+use pocketmine\block\Block;
+use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 
-	protected int $mappingProtocol;
+abstract class BlockParticle implements Particle{
 
-	public function setMappingProtocol(int $mappingProtocol) : void{
-		$this->mappingProtocol = $mappingProtocol;
+	private int $protocolId;
+
+	public function __construct(protected Block $b){}
+
+	public function setProtocolId(int $protocolId) : void{
+		$this->protocolId = $protocolId;
+	}
+	public function toRuntimeId() : int{
+		return RuntimeBlockMapping::getInstance($this->protocolId)->toRuntimeId($this->b->getStateId());
 	}
 }

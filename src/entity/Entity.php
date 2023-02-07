@@ -29,7 +29,7 @@ namespace pocketmine\entity;
 use pocketmine\block\Block;
 use pocketmine\block\Water;
 use pocketmine\entity\animation\Animation;
-use pocketmine\entity\animation\DictionaryAnimation;
+use pocketmine\entity\animation\ItemAnimation;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDespawnEvent;
 use pocketmine\event\entity\EntityMotionEvent;
@@ -63,7 +63,7 @@ use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
-use pocketmine\world\sound\MappingSound;
+use pocketmine\world\sound\BlockSound;
 use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 use function abs;
@@ -1652,9 +1652,9 @@ abstract class Entity{
 	public function broadcastAnimation(Animation $animation, ?array $targets = null) : void{
 		$targets = $targets ?? $this->getViewers();
 
-		if($animation instanceof DictionaryAnimation){
+		if($animation instanceof ItemAnimation){
 			foreach(GlobalItemTypeDictionary::sortByProtocol($targets) as $dictionaryProtocol => $players){
-				$animation->setDictionaryProtocol($dictionaryProtocol);
+				$animation->setProtocolId($dictionaryProtocol);
 
 				$this->server->broadcastPackets($players, $animation->encode());
 			}
@@ -1671,9 +1671,9 @@ abstract class Entity{
 		if(!$this->silent){
 			$targets = $targets ?? $this->getViewers();
 
-			if($sound instanceof MappingSound){
+			if($sound instanceof BlockSound){
 				foreach(RuntimeBlockMapping::sortByProtocol($targets) as $mappingProtocol => $players){
-					$sound->setMappingProtocol($mappingProtocol);
+					$sound->setProtocolId($mappingProtocol);
 
 					$this->server->broadcastPackets($players, $sound->encode($this->location));
 				}

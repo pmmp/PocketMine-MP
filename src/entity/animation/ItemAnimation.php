@@ -23,12 +23,27 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\animation;
 
-abstract class DictionaryAnimation implements Animation{
+use pocketmine\data\bedrock\item\ItemTypeSerializeException;
+use pocketmine\item\Item;
+use pocketmine\network\mcpe\convert\ItemTranslator;
 
-	/** @var int */
-	protected $dictionaryProtocol;
+abstract class ItemAnimation implements Animation{
 
-	public function setDictionaryProtocol(int $dictionaryProtocol) : void{
-		$this->dictionaryProtocol = $dictionaryProtocol;
+	private int $protocolId;
+
+	public function __construct(private Item $item){}
+
+	public function setProtocolId(int $protocolId) : void{
+		$this->protocolId = $protocolId;
+	}
+
+	/**
+	 * @return int[]
+	 * @phpstan-return array{int, int, int}
+	 *
+	 * @throws ItemTypeSerializeException
+	 */
+	public function toNetworkId() : array{
+		return ItemTranslator::getInstance($this->protocolId)->toNetworkId($this->item);
 	}
 }

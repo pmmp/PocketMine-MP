@@ -25,14 +25,13 @@ namespace pocketmine\world\particle;
 
 use pocketmine\block\Block;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\LevelEvent;
 
 /**
  * This particle appears when a player is attacking a block face in survival mode attempting to break it.
  */
-class BlockPunchParticle extends MappingParticle{
+class BlockPunchParticle extends BlockParticle{
 	public function __construct(
 		Block $block,
 		private int $face
@@ -41,6 +40,6 @@ class BlockPunchParticle extends MappingParticle{
 	}
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::create(LevelEvent::PARTICLE_PUNCH_BLOCK, RuntimeBlockMapping::getInstance($this->mappingProtocol)->toRuntimeId($this->b->getStateId()) | ($this->face << 24), $pos)];
+		return [LevelEventPacket::create(LevelEvent::PARTICLE_PUNCH_BLOCK, $this->toRuntimeId() | ($this->face << 24), $pos)];
 	}
 }
