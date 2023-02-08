@@ -30,6 +30,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
 use pocketmine\event\player\PlayerDuplicateLoginEvent;
+use pocketmine\event\server\DataPacketPreReceiveEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\form\Form;
@@ -421,6 +422,15 @@ class NetworkSession{
 	public function handleDataPacket(Packet $packet, string $buffer) : void{
 		if(!($packet instanceof ServerboundPacket)){
 			throw new PacketHandlingException("Unexpected non-serverbound packet");
+		}
+
+		$ev = new DataPacketPreReceiveEvent($this, $packet->pid());
+		$ev->call();
+		if (!$ev->isIgnored() && in_array($packet->pid(), $ev->getIgnoredPackets())) {
+			$ev->setIgnored();
+		}
+		if($ev->isIgnored()){
+			return;
 		}
 
 		$timings = Timings::getDecodeDataPacketTimings($packet);
