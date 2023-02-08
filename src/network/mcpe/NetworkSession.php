@@ -426,7 +426,7 @@ class NetworkSession{
 
 		$ev = new DataPacketPreReceiveEvent($this, $packet->pid());
 		$ev->call();
-		if (!$ev->isIgnored() && in_array($packet->pid(), $ev->getIgnoredPackets())) {
+		if (!$ev->isIgnored() && in_array($packet->pid(), $ev->getIgnoredPackets(), true)) {
 			$ev->setIgnored();
 		}
 		if($ev->isIgnored()){
