@@ -961,7 +961,7 @@ class NetworkSession{
 				AbilitiesLayer::ABILITY_ATTACK_MOBS => !$for->isSpectator(),
 			];
 
-			$this->sendDataPacket(UpdateAbilitiesPacket::create(new AbilitiesData(
+			$pk = UpdateAbilitiesPacket::create(new AbilitiesData(
 				$isOp ? CommandPermissions::OPERATOR : CommandPermissions::NORMAL,
 				$isOp ? PlayerPermissions::OPERATOR : PlayerPermissions::MEMBER,
 				$for->getId(),
@@ -969,7 +969,7 @@ class NetworkSession{
 					//TODO: dynamic flying speed! FINALLY!!!!!!!!!!!!!!!!!
 					new AbilitiesLayer(AbilitiesLayer::LAYER_BASE, $boolAbilities, 0.05, 0.1),
 				]
-			)));
+			));
 		}else{
 			$pk = AdventureSettingsPacket::create(
 				0,
