@@ -30,11 +30,7 @@ use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
-use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
-use function array_filter;
-use function array_keys;
-use function file_get_contents;
 use function is_array;
 use function is_bool;
 use function is_int;
@@ -51,7 +47,6 @@ final class GlobalItemTypeDictionary{
 		ProtocolInfo::PROTOCOL_1_19_0 => "-1.19.0",
 		ProtocolInfo::PROTOCOL_1_18_30 => "-1.18.30",
 		ProtocolInfo::PROTOCOL_1_18_10 => "-1.18.10",
-		ProtocolInfo::PROTOCOL_1_18_0 => "-1.18.0",
 	];
 
 	private static function make() : self{

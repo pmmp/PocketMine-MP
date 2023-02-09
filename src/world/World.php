@@ -99,7 +99,6 @@ use pocketmine\world\light\SkyLightUpdate;
 use pocketmine\world\particle\BlockBreakParticle;
 use pocketmine\world\particle\MappingParticle;
 use pocketmine\world\particle\Particle;
-use pocketmine\world\particle\ProtocolParticle;
 use pocketmine\world\sound\BlockPlaceSound;
 use pocketmine\world\sound\MappingSound;
 use pocketmine\world\sound\Sound;

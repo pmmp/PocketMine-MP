@@ -111,13 +111,9 @@ final class ChunkSerializer{
 	}
 
 	public static function serializeBiomes(Chunk $chunk, PacketSerializer $stream) : void{
-		if($stream->getProtocolId() >= ProtocolInfo::PROTOCOL_1_18_0){
-			//TODO: right now we don't support 3D natively, so we just 3Dify our 2D biomes so they fill the column
-			$encodedBiomePalette = self::serializeBiomesAsPalette($chunk);
-			$stream->put(str_repeat($encodedBiomePalette, $stream->getProtocolId() >= ProtocolInfo::PROTOCOL_1_18_30 ? 24 : 25));
-		}else{
-			$stream->put($chunk->getBiomeIdArray());
-		}
+		//TODO: right now we don't support 3D natively, so we just 3Dify our 2D biomes so they fill the column
+		$encodedBiomePalette = self::serializeBiomesAsPalette($chunk);
+		$stream->put(str_repeat($encodedBiomePalette, $stream->getProtocolId() >= ProtocolInfo::PROTOCOL_1_18_30 ? 24 : 25));
 	}
 
 	public static function serializeBorderBlocks(PacketSerializer $stream) : void {

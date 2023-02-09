@@ -36,9 +36,6 @@ use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
-use function array_filter;
-use function array_keys;
-use function in_array;
 use function file_get_contents;
 
 /**
@@ -82,11 +79,7 @@ final class RuntimeBlockMapping{
 			ProtocolInfo::PROTOCOL_1_18_10 => [
 				self::CANONICAL_BLOCK_STATES_PATH => '-1.18.10',
 				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '-1.18.10',
-			],
-			ProtocolInfo::PROTOCOL_1_18_0 => [
-				self::CANONICAL_BLOCK_STATES_PATH => '-1.18.0',
-				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '-1.18.0',
-			],
+			]
 		];
 
 		$canonicalBlockStatesFiles = [];

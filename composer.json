@@ -34,7 +34,7 @@
       "adhocore/json-comment": "^1.1",
       "fgrosse/phpasn1": "^2.3",
       "netresearch/jsonmapper": "^4.0",
-      "nethergamesmc/bedrock-data": "dev-master",
+      "nethergamesmc/bedrock-data": "dev-1.18.0-min",
       "nethergamesmc/bedrock-protocol": "dev-1.18.0-min",
       "pocketmine/binaryutils": "^0.2.1",
       "pocketmine/callback-validator": "^1.0.2",

@@ -50,7 +50,6 @@ use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
-use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\AbilitiesData;
 use pocketmine\network\mcpe\protocol\types\AbilitiesLayer;
 use pocketmine\network\mcpe\protocol\types\command\CommandPermissions;
