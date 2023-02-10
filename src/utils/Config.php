@@ -396,6 +396,30 @@ class Config{
 		return $this->nestedCache[$key] = $base;
 	}
 
+	public function getNestedString(string $key, string $default = null) : ?string {
+		return is_string($value = $this->getNested($key)) ? $value : $default;
+	}
+
+	public function getNestedInt(string $key, int $default = null) : ?int {
+		return is_int($value = $this->getNested($key)) ? $value : $default;
+	}
+
+	public function getNestedFloat(string $key, float $default = null) : ?float {
+		return is_float($value = $this->getNested($key)) ? $value : $default;
+	}
+
+	public function getNestedBoolean(string $key, bool $default = null) : ?bool {
+		return is_bool($value = $this->getNested($key)) ? $value : $default;
+	}
+
+	/**
+	 * @param mixed[] $default
+	 * @return mixed[]
+	 */
+	public function getNestedArray(string $key, array $default = null) : ?array {
+		return is_array($value = $this->getNested($key)) ? $value : $default;
+	}
+
 	public function removeNested(string $key) : void{
 		$this->nestedCache = [];
 		$this->changed = true;
@@ -439,6 +463,30 @@ class Config{
 				unset($this->nestedCache[$nestedKey]);
 			}
 		}
+	}
+
+	public function getString(string $key, string $default = null) : ?string {
+		return is_string($value = $this->config[$key]) ? $value : $default;
+	}
+
+	public function getInt(string $key, int $default = null) : ?int {
+		return is_int($value = $this->config[$key]) ? $value : $default;
+	}
+
+	public function getBoolean(string $key, bool $default = null) : ?bool {
+		return is_bool($value = $this->config[$key]) ? $value : $default;
+	}
+
+	public function getFloat(string $key, float $default = null) : ?float {
+		return is_float($value = $this->config[$key]) ? $value : $default;
+	}
+
+	/**
+	 * @param mixed[] $default
+	 * @return mixed[]
+	 */
+	public function getArray(string $key, array $default = []) : ?array {
+		return is_array($value = $this->config[$key]) ? $value : $default;
 	}
 
 	/**
