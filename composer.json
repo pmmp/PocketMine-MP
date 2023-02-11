@@ -35,9 +35,9 @@
       "fgrosse/phpasn1": "^2.3",
       "netresearch/jsonmapper": "^4.0",
       "pocketmine/bedrock-block-upgrade-schema": "^1.0.0",
-      "pocketmine/bedrock-data": "~1.13.0+bedrock-1.19.50",
+      "pocketmine/bedrock-data": "~1.14.0+bedrock-1.19.60",
       "pocketmine/bedrock-item-upgrade-schema": "^1.0.0",
-      "pocketmine/bedrock-protocol": "~18.1.0+bedrock-1.19.50",
+      "pocketmine/bedrock-protocol": "~19.0.0+bedrock-1.19.60",
       "pocketmine/binaryutils": "^0.2.1",
       "pocketmine/callback-validator": "^1.0.2",
       "pocketmine/classloader": "^0.2.0",
@@ -56,7 +56,7 @@
       "webmozart/path-util": "^2.3"
    },
    "require-dev": {
-      "phpstan/phpstan": "1.9.14",
+      "phpstan/phpstan": "1.9.17",
       "phpstan/phpstan-phpunit": "^1.1.0",
       "phpstan/phpstan-strict-rules": "^1.2.0",
       "phpunit/phpunit": "^9.2"

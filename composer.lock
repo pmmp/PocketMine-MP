@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a9e05a8358faee33178bac5279d864f4",
+    "content-hash": "89f31843f10576277f645b81a4bef28d",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -276,16 +276,16 @@
         },
         {
             "name": "pocketmine/bedrock-data",
-            "version": "1.13.0+bedrock-1.19.50",
+            "version": "1.14.0+bedrock-1.19.60",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockData.git",
-                "reference": "57337ddc9433a0e245a1ce48c51af05f0573d58d"
+                "reference": "7b06234ec6e1f4fb06ad4b2f177e606c25df9b46"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/57337ddc9433a0e245a1ce48c51af05f0573d58d",
-                "reference": "57337ddc9433a0e245a1ce48c51af05f0573d58d",
+                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/7b06234ec6e1f4fb06ad4b2f177e606c25df9b46",
+                "reference": "7b06234ec6e1f4fb06ad4b2f177e606c25df9b46",
                 "shasum": ""
             },
             "type": "library",
@@ -296,9 +296,9 @@
             "description": "Blobs of data generated from Minecraft: Bedrock Edition, used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockData/issues",
-                "source": "https://github.com/pmmp/BedrockData/tree/bedrock-1.19.50"
+                "source": "https://github.com/pmmp/BedrockData/tree/bedrock-1.19.60"
             },
-            "time": "2022-11-30T16:19:59+00:00"
+            "time": "2023-02-08T18:32:01+00:00"
         },
         {
             "name": "pocketmine/bedrock-item-upgrade-schema",
@@ -328,16 +328,16 @@
         },
         {
             "name": "pocketmine/bedrock-protocol",
-            "version": "18.1.0+bedrock-1.19.50",
+            "version": "19.0.0+bedrock-1.19.60",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "c34f22847a1cc362a3f1c45698576d30d1e8392f"
+                "reference": "3c8cf08d09b8b3fafc209d184e66e50d2e34c06c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/c34f22847a1cc362a3f1c45698576d30d1e8392f",
-                "reference": "c34f22847a1cc362a3f1c45698576d30d1e8392f",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/3c8cf08d09b8b3fafc209d184e66e50d2e34c06c",
+                "reference": "3c8cf08d09b8b3fafc209d184e66e50d2e34c06c",
                 "shasum": ""
             },
             "require": {
@@ -369,9 +369,9 @@
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
-                "source": "https://github.com/pmmp/BedrockProtocol/tree/18.1.0+bedrock-1.19.50"
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/19.0.0+bedrock-1.19.60"
             },
-            "time": "2023-01-20T12:35:30+00:00"
+            "time": "2023-02-08T18:38:02+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
@@ -1884,16 +1884,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.9.14",
+            "version": "1.9.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "e5fcc96289cf737304286a9b505fbed091f02e58"
+                "reference": "204e459e7822f2c586463029f5ecec31bb45a1f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/e5fcc96289cf737304286a9b505fbed091f02e58",
-                "reference": "e5fcc96289cf737304286a9b505fbed091f02e58",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/204e459e7822f2c586463029f5ecec31bb45a1f2",
+                "reference": "204e459e7822f2c586463029f5ecec31bb45a1f2",
                 "shasum": ""
             },
             "require": {
@@ -1923,7 +1923,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.9.14"
+                "source": "https://github.com/phpstan/phpstan/tree/1.9.17"
             },
             "funding": [
                 {
@@ -1939,20 +1939,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-01-19T10:47:09+00:00"
+            "time": "2023-02-08T12:25:00+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
-            "version": "1.3.3",
+            "version": "1.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-phpunit.git",
-                "reference": "54a24bd23e9e80ee918cdc24f909d376c2e273f7"
+                "reference": "d77af96c1aaec28f7c0293677132eaaad079e01b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/54a24bd23e9e80ee918cdc24f909d376c2e273f7",
-                "reference": "54a24bd23e9e80ee918cdc24f909d376c2e273f7",
+                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/d77af96c1aaec28f7c0293677132eaaad079e01b",
+                "reference": "d77af96c1aaec28f7c0293677132eaaad079e01b",
                 "shasum": ""
             },
             "require": {
@@ -1989,9 +1989,9 @@
             "description": "PHPUnit extensions and rules for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-phpunit/issues",
-                "source": "https://github.com/phpstan/phpstan-phpunit/tree/1.3.3"
+                "source": "https://github.com/phpstan/phpstan-phpunit/tree/1.3.4"
             },
-            "time": "2022-12-21T15:25:00+00:00"
+            "time": "2023-02-09T08:05:29+00:00"
         },
         {
             "name": "phpstan/phpstan-strict-rules",
