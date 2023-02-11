@@ -145,6 +145,8 @@ class InGamePacketHandler extends PacketHandler{
 
 	public bool $forceMoveSync = false;
 
+	protected ?string $lastRequestedFullSkinId = null;
+
 	public function __construct(
 		private Player $player,
 		private NetworkSession $session,
@@ -741,6 +743,15 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
+		if($packet->skin->getFullSkinId() === $this->lastRequestedFullSkinId){
+			//TODO: HACK! In 1.19.60, the client sends its skin back to us if we sent it a skin different from the one
+			//it's using. We need to prevent this from causing a feedback loop.
+			$this->session->getLogger()->debug("Refused duplicate skin change request");
+			return true;
+		}
+		$this->lastRequestedFullSkinId = $packet->skin->getFullSkinId();
+
+		$this->session->getLogger()->debug("Processing skin change request");
 		try{
 			$skin = SkinAdapterSingleton::get()->fromSkinData($packet->skin);
 		}catch(InvalidSkinException $e){
