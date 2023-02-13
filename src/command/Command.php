@@ -90,7 +90,7 @@ abstract class Command{
 	}
 
 	/**
-	 * @param string[]|string|null $permissions
+	 * @param string[] $permissions
 	 */
 	public function setPermissions(array $permissions) : void{
 		$permissionManager = PermissionManager::getInstance();
