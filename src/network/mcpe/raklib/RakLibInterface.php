@@ -147,7 +147,12 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		if(isset($this->sessions[$sessionId])){
 			$session = $this->sessions[$sessionId];
 			unset($this->sessions[$sessionId]);
-			$session->onClientDisconnect(DisconnectReason::toString($reason));
+			$session->onClientDisconnect(match($reason){
+				DisconnectReason::CLIENT_DISCONNECT => KnownTranslationFactory::pocketmine_disconnect_clientDisconnect(),
+				DisconnectReason::PEER_TIMEOUT => KnownTranslationFactory::pocketmine_disconnect_error_timeout(),
+				DisconnectReason::CLIENT_RECONNECT => KnownTranslationFactory::pocketmine_disconnect_clientReconnect(),
+				default => "Unknown RakLib disconnect reason (ID $reason)"
+			});
 		}
 	}
 
