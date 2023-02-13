@@ -26,7 +26,6 @@ namespace pocketmine\network\mcpe\raklib;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\thread\NonThreadSafeValue;
 use pocketmine\thread\Thread;
-use raklib\generic\Socket;
 use raklib\generic\SocketException;
 use raklib\server\ipc\RakLibToUserThreadMessageSender;
 use raklib\server\ipc\UserToRakLibThreadMessageReceiver;
