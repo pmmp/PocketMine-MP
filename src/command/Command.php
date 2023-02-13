@@ -33,7 +33,7 @@ use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
 use pocketmine\utils\BroadcastLoggerForwarder;
 use pocketmine\utils\TextFormat;
-use function explode;
+use function implode;
 use function str_replace;
 
 abstract class Command{
@@ -55,7 +55,8 @@ abstract class Command{
 
 	protected Translatable|string $usageMessage;
 
-	private ?string $permission = null;
+	/** @var string[] */
+	private array $permission = [];
 	private ?string $permissionMessage = null;
 
 	/**
@@ -81,19 +82,28 @@ abstract class Command{
 		return $this->name;
 	}
 
-	public function getPermission() : ?string{
+	/**
+	 * @return string[]
+	 */
+	public function getPermission() : array{
 		return $this->permission;
 	}
 
-	public function setPermission(?string $permission) : void{
-		if($permission !== null){
-			foreach(explode(";", $permission) as $perm){
-				if(PermissionManager::getInstance()->getPermission($perm) === null){
-					throw new \InvalidArgumentException("Cannot use non-existing permission \"$perm\"");
-				}
+	/**
+	 * @param string[]|string|null $permissions
+	 */
+	public function setPermissions(array $permissions) : void{
+		$permissionManager = PermissionManager::getInstance();
+		foreach($permissions as $perm){
+			if($permissionManager->getPermission($perm) === null){
+				throw new \InvalidArgumentException("Cannot use non-existing permission \"$perm\"");
 			}
 		}
-		$this->permission = $permission;
+		$this->permission = $permissions;
+	}
+
+	public function setPermission(?string $permission) : void{
+		$this->setPermissions($permission === null ? [] : explode(";", $permission));
 	}
 
 	public function testPermission(CommandSender $target, ?string $permission = null) : bool{
@@ -104,19 +114,15 @@ abstract class Command{
 		if($this->permissionMessage === null){
 			$target->sendMessage(KnownTranslationFactory::pocketmine_command_error_permission($this->name)->prefix(TextFormat::RED));
 		}elseif($this->permissionMessage !== ""){
-			$target->sendMessage(str_replace("<permission>", $permission ?? $this->permission, $this->permissionMessage));
+			$target->sendMessage(str_replace("<permission>", $permission ?? implode(";", $this->permission), $this->permissionMessage));
 		}
 
 		return false;
 	}
 
 	public function testPermissionSilent(CommandSender $target, ?string $permission = null) : bool{
-		$permission ??= $this->permission;
-		if($permission === null || $permission === ""){
-			return false;
-		}
-
-		foreach(explode(";", $permission) as $p){
+		$list = $permission !== null ? [$permission] : $this->permission;
+		foreach($list as $p){
 			if($target->hasPermission($p)){
 				return true;
 			}
