@@ -113,7 +113,7 @@ abstract class Command{
 	public function testPermissionSilent(CommandSender $target, ?string $permission = null) : bool{
 		$permission ??= $this->permission;
 		if($permission === null || $permission === ""){
-			return true;
+			return false;
 		}
 
 		foreach(explode(";", $permission) as $p){
