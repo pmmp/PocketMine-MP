@@ -31,6 +31,7 @@ use raklib\generic\SocketException;
 use raklib\server\ipc\RakLibToUserThreadMessageSender;
 use raklib\server\ipc\UserToRakLibThreadMessageReceiver;
 use raklib\server\Server;
+use raklib\server\ServerSocket;
 use raklib\server\SimpleProtocolAcceptor;
 use raklib\utils\ExceptionTraceCleaner;
 use raklib\utils\InternetAddress;
@@ -119,7 +120,7 @@ class RakLibServer extends Thread{
 			register_shutdown_function([$this, "shutdownHandler"]);
 
 			try{
-				$socket = new Socket($this->address->deserialize());
+				$socket = new ServerSocket($this->address->deserialize());
 			}catch(SocketException $e){
 				$this->setCrashInfo(RakLibThreadCrashInfo::fromThrowable($e));
 				return;
