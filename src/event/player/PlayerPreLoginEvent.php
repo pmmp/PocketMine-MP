@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
 use pocketmine\lang\Translatable;
 use pocketmine\player\PlayerInfo;
@@ -40,7 +39,7 @@ use function count;
  * WARNING: Any information about the player CANNOT be trusted at this stage, because they are not authenticated and
  * could be a hacker posing as another player.
  */
-class PlayerPreLoginEvent extends Event implements Cancellable{
+class PlayerPreLoginEvent extends Event{
 	public const KICK_REASON_PLUGIN = 0;
 	public const KICK_REASON_SERVER_FULL = 1;
 	public const KICK_REASON_SERVER_WHITELISTED = 2;
@@ -159,9 +158,5 @@ class PlayerPreLoginEvent extends Event implements Cancellable{
 		}
 
 		return "";
-	}
-
-	public function isCancelled() : bool{
-		return !$this->isAllowed();
 	}
 }
