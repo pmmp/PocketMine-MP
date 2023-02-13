@@ -1202,7 +1202,7 @@ final class VanillaBlocks{
 		self::register("muddy_mangrove_roots", new SimplePillar(new BID(Ids::MUDDY_MANGROVE_ROOTS), "Muddy Mangrove Roots", new Info(BreakInfo::shovel(0.7), [Tags::MUD])));
 		self::register("froglight", new Froglight(new BID(Ids::FROGLIGHT), "Froglight", new Info(new BreakInfo(0.3))));
 		self::register("sculk", new Sculk(new BID(Ids::SCULK), "Sculk", new Info(new BreakInfo(0.6, ToolType::HOE))));
-		self::register("reinforced_deepslate", new class(new BID(Ids::REINFORCED_DEEPSLATE), "Reinforced Deepslate", new Info(new BreakInfo(55.0))) extends Opaque{
+		self::register("reinforced_deepslate", new class(new BID(Ids::REINFORCED_DEEPSLATE), "Reinforced Deepslate", new Info(new BreakInfo(55.0, ToolType::NONE, 0, 3600.0))) extends Opaque{
 			public function getDropsForCompatibleTool(Item $item) : array{
 				return [];
 			}
