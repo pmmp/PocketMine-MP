@@ -51,6 +51,7 @@ use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\AbilitiesData;
 use pocketmine\network\mcpe\protocol\types\AbilitiesLayer;
 use pocketmine\network\mcpe\protocol\types\command\CommandPermissions;
@@ -69,6 +70,7 @@ use pocketmine\utils\Limits;
 use pocketmine\world\sound\TotemUseSound;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
+use function array_diff;
 use function array_fill;
 use function array_filter;
 use function array_key_exists;
@@ -165,6 +167,10 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	 * @param Player[]|null $targets
 	 */
 	public function sendSkin(?array $targets = null) : void{
+		if($this instanceof Player && $this->getNetworkSession()->getProtocolId() === ProtocolInfo::PROTOCOL_1_19_60){
+			$targets = array_diff($targets ?? $this->hasSpawned, [$this]);
+		}
+
 		$this->server->broadcastPackets($targets ?? $this->hasSpawned, [
 			PlayerSkinPacket::create($this->getUniqueId(), "", "", SkinAdapterSingleton::get()->toSkinData($this->skin))
 		]);
