@@ -62,7 +62,7 @@ class Block{
 	protected ?array $collisionBoxes = null;
 
 	/**
-	 * @param string          $name English name of the block type (TODO: implement translations)
+	 * @param string $name English name of the block type (TODO: implement translations)
 	 */
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		if(($idInfo->getVariant() & $this->getStateBitmask()) !== 0){
@@ -179,10 +179,11 @@ class Block{
 	 * Note: Do not call this directly. Pass the block to {@link World::setBlock()} instead.
 	 */
 	public function writeStateToWorld() : void{
-		$this->position->getWorld()->getOrLoadChunkAtPosition($this->position)->setFullBlock($this->position->x & Chunk::COORD_MASK, $this->position->y, $this->position->z & Chunk::COORD_MASK, $this->getFullId());
+		$world = $this->position->getWorld();
+		$world->getOrLoadChunkAtPosition($this->position)->setFullBlock($this->position->x & Chunk::COORD_MASK, $this->position->y, $this->position->z & Chunk::COORD_MASK, $this->getFullId());
 
 		$tileType = $this->idInfo->getTileClass();
-		$oldTile = $this->position->getWorld()->getTile($this->position);
+		$oldTile = $world->getTile($this->position);
 		if($oldTile !== null){
 			if($tileType === null || !($oldTile instanceof $tileType)){
 				$oldTile->close();
@@ -196,8 +197,8 @@ class Block{
 			 * @var Tile $tile
 			 * @see Tile::__construct()
 			 */
-			$tile = new $tileType($this->position->getWorld(), $this->position->asVector3());
-			$this->position->getWorld()->addTile($tile);
+			$tile = new $tileType($world, $this->position->asVector3());
+			$world->addTile($tile);
 		}
 	}
 
@@ -252,6 +253,14 @@ class Block{
 	 * Generates a block transaction to set all blocks affected by placing this block. Usually this is just the block
 	 * itself, but may be multiple blocks in some cases (such as doors).
 	 *
+	 * @param BlockTransaction $tx           Blocks to be set should be added to this transaction (do not modify thr world directly)
+	 * @param Item             $item         Item used to place the block
+	 * @param Block            $blockReplace Block expected to be replaced
+	 * @param Block            $blockClicked Block that was clicked using the item
+	 * @param int              $face         Face of the clicked block which was clicked
+	 * @param Vector3          $clickVector  Exact position inside the clicked block where the click occurred, relative to the block's position
+	 * @param Player|null      $player       Player who placed the block, or null if it was not a player
+	 *
 	 * @return bool whether the placement should go ahead
 	 */
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
@@ -278,10 +287,11 @@ class Block{
 	 * Do the actions needed so the block is broken with the Item
 	 */
 	public function onBreak(Item $item, ?Player $player = null) : bool{
-		if(($t = $this->position->getWorld()->getTile($this->position)) !== null){
+		$world = $this->position->getWorld();
+		if(($t = $world->getTile($this->position)) !== null){
 			$t->onBlockDestroyed();
 		}
-		$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
+		$world->setBlock($this->position, VanillaBlocks::AIR());
 		return true;
 	}
 

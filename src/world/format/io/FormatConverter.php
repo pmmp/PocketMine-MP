@@ -27,7 +27,7 @@ use pocketmine\utils\Filesystem;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\generator\normal\Normal;
 use pocketmine\world\WorldCreationOptions;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function basename;
 use function crc32;
 use function file_exists;

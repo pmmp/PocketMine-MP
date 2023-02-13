@@ -52,7 +52,7 @@ trait ContainerTrait{
 			$newContents = [];
 			/** @var CompoundTag $itemNBT */
 			foreach($inventoryTag as $itemNBT){
-				$newContents[$itemNBT->getByte("Slot")] = Item::nbtDeserialize($itemNBT);
+				$newContents[$itemNBT->getByte(Item::TAG_SLOT)] = Item::nbtDeserialize($itemNBT);
 			}
 			$inventory->setContents($newContents);
 
@@ -96,8 +96,10 @@ trait ContainerTrait{
 		$inv = $this->getRealInventory();
 		$pos = $this->getPosition();
 
+		$world = $pos->getWorld();
+		$dropPos = $pos->add(0.5, 0.5, 0.5);
 		foreach($inv->getContents() as $k => $item){
-			$pos->getWorld()->dropItem($pos->add(0.5, 0.5, 0.5), $item);
+			$world->dropItem($dropPos, $item);
 		}
 		$inv->clearAll();
 	}

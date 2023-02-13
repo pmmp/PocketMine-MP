@@ -25,7 +25,7 @@ namespace pocketmine\world\format\io\region;
 
 use PHPUnit\Framework\TestCase;
 use pocketmine\world\format\ChunkException;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function bin2hex;
 use function clearstatcache;
 use function file_exists;

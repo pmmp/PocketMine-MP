@@ -124,11 +124,12 @@ class Leaves extends Transparent{
 		if(!$this->noDecay && $this->checkDecay){
 			$ev = new LeavesDecayEvent($this);
 			$ev->call();
+			$world = $this->position->getWorld();
 			if($ev->isCancelled() || $this->findLog($this->position)){
 				$this->checkDecay = false;
-				$this->position->getWorld()->setBlock($this->position, $this, false);
+				$world->setBlock($this->position, $this, false);
 			}else{
-				$this->position->getWorld()->useBreakOn($this->position);
+				$world->useBreakOn($this->position);
 			}
 		}
 	}

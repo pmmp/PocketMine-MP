@@ -27,6 +27,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use function is_numeric;
 use function substr;
@@ -34,6 +35,28 @@ use function substr;
 abstract class VanillaCommand extends Command{
 	public const MAX_COORD = 30000000;
 	public const MIN_COORD = -30000000;
+
+	protected function fetchPermittedPlayerTarget(CommandSender $sender, ?string $target, string $selfPermission, string $otherPermission) : ?Player{
+		if($target !== null){
+			$player = $sender->getServer()->getPlayerByPrefix($target);
+		}elseif($sender instanceof Player){
+			$player = $sender;
+		}else{
+			throw new InvalidCommandSyntaxException();
+		}
+
+		if($player === null){
+			$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound()->prefix(TextFormat::RED));
+			return null;
+		}
+		if(
+			($player === $sender && $this->testPermission($sender, $selfPermission)) ||
+			($player !== $sender && $this->testPermission($sender, $otherPermission))
+		){
+			return $player;
+		}
+		return null;
+	}
 
 	protected function getInteger(CommandSender $sender, string $value, int $min = self::MIN_COORD, int $max = self::MAX_COORD) : int{
 		$i = (int) $value;

@@ -39,7 +39,7 @@ use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\generator\InvalidGeneratorOptionsException;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function array_keys;
 use function array_shift;
 use function assert;
@@ -55,12 +55,14 @@ use function strval;
 use function trim;
 
 class WorldManager{
+	public const TICKS_PER_AUTOSAVE = 300 * Server::TARGET_TICKS_PER_SECOND;
+
 	/** @var World[] */
 	private array $worlds = [];
 	private ?World $defaultWorld = null;
 
 	private bool $autoSave = true;
-	private int $autoSaveTicks = 6000;
+	private int $autoSaveTicks = self::TICKS_PER_AUTOSAVE;
 	private int $autoSaveTicker = 0;
 
 	public function __construct(
@@ -166,7 +168,7 @@ class WorldManager{
 	/**
 	 * Loads a world from the data directory
 	 *
-	 * @param bool   $autoUpgrade Converts worlds to the default format if the world's format is not writable / deprecated
+	 * @param bool $autoUpgrade Converts worlds to the default format if the world's format is not writable / deprecated
 	 *
 	 * @throws WorldException
 	 */
@@ -348,8 +350,8 @@ class WorldManager{
 			$world->doTick($currentTick);
 			$tickMs = (microtime(true) - $worldTime) * 1000;
 			$world->tickRateTime = $tickMs;
-			if($tickMs >= 50){
-				$world->getLogger()->debug(sprintf("Tick took too long: %gms (%g ticks)", $tickMs, round($tickMs / 50, 2)));
+			if($tickMs >= Server::TARGET_SECONDS_PER_TICK * 1000){
+				$world->getLogger()->debug(sprintf("Tick took too long: %gms (%g ticks)", $tickMs, round($tickMs / (Server::TARGET_SECONDS_PER_TICK * 1000), 2)));
 			}
 		}
 

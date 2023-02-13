@@ -30,6 +30,8 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
 use pocketmine\Server;
+use pocketmine\utils\Terminal;
+use pocketmine\utils\TextFormat;
 use function explode;
 use function trim;
 use const PHP_INT_MAX;
@@ -59,13 +61,12 @@ class ConsoleCommandSender implements CommandSender{
 	}
 
 	public function sendMessage(Translatable|string $message) : void{
-		$server = $this->getServer();
 		if($message instanceof Translatable){
 			$message = $this->getLanguage()->translate($message);
 		}
 
 		foreach(explode("\n", trim($message)) as $line){
-			$server->getLogger()->info($line);
+			Terminal::writeLine(TextFormat::GREEN . "Command output | " . TextFormat::addBase(TextFormat::WHITE, $line));
 		}
 	}
 

@@ -62,8 +62,9 @@ class DragonEgg extends Transparent implements Fallable{
 	}
 
 	public function teleport() : void{
+		$world = $this->position->getWorld();
 		for($tries = 0; $tries < 16; ++$tries){
-			$block = $this->position->getWorld()->getBlockAt(
+			$block = $world->getBlockAt(
 				$this->position->x + mt_rand(-16, 16),
 				max(World::Y_MIN, min(World::Y_MAX - 1, $this->position->y + mt_rand(-8, 8))),
 				$this->position->z + mt_rand(-16, 16)
@@ -76,9 +77,9 @@ class DragonEgg extends Transparent implements Fallable{
 				}
 
 				$blockPos = $ev->getTo();
-				$this->position->getWorld()->addParticle($this->position, new DragonEggTeleportParticle($this->position->x - $blockPos->x, $this->position->y - $blockPos->y, $this->position->z - $blockPos->z));
-				$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
-				$this->position->getWorld()->setBlock($blockPos, $this);
+				$world->addParticle($this->position, new DragonEggTeleportParticle($this->position->x - $blockPos->x, $this->position->y - $blockPos->y, $this->position->z - $blockPos->z));
+				$world->setBlock($this->position, VanillaBlocks::AIR());
+				$world->setBlock($blockPos, $this);
 				break;
 			}
 		}

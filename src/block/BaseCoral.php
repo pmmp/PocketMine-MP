@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\CoralTypeTrait;
 use pocketmine\block\utils\SupportType;
+use pocketmine\event\block\BlockDeathEvent;
 use pocketmine\item\Item;
 
 abstract class BaseCoral extends Transparent{
@@ -50,7 +51,11 @@ abstract class BaseCoral extends Transparent{
 
 			//TODO: check water inside the block itself (not supported on the API yet)
 			if(!$hasWater){
-				$world->setBlock($this->position, $this->setDead(true));
+				$ev = new BlockDeathEvent($this, $this->setDead(true));
+				$ev->call();
+				if(!$ev->isCancelled()){
+					$world->setBlock($this->position, $ev->getNewState());
+				}
 			}
 		}
 	}

@@ -37,8 +37,9 @@ use function json_decode;
 use function parse_ini_file;
 use function preg_match;
 use function readlink;
+use function str_contains;
 use function str_replace;
-use function strpos;
+use function str_starts_with;
 use function substr;
 use function timezone_abbreviations_list;
 use function timezone_name_from_abbr;
@@ -61,7 +62,7 @@ abstract class Timezone{
 			 * This is here so that people don't come to us complaining and fill up the issue tracker when they put
 			 * an incorrect timezone abbreviation in php.ini apparently.
 			 */
-			if(strpos($timezone, "/") === false){
+			if(!str_contains($timezone, "/")){
 				$default_timezone = timezone_name_from_abbr($timezone);
 				if($default_timezone !== false){
 					ini_set("date.timezone", $default_timezone);
@@ -165,7 +166,7 @@ abstract class Timezone{
 				return self::parseOffset($offset);
 			case Utils::OS_MACOS:
 				$filename = @readlink('/etc/localtime');
-				if($filename !== false && strpos($filename, '/usr/share/zoneinfo/') === 0){
+				if($filename !== false && str_starts_with($filename, '/usr/share/zoneinfo/')){
 					$timezone = substr($filename, 20);
 					return trim($timezone);
 				}
@@ -183,11 +184,11 @@ abstract class Timezone{
 	 */
 	private static function parseOffset($offset){
 		//Make signed offsets unsigned for date_parse
-		if(strpos($offset, '-') !== false){
+		if(str_starts_with($offset, '-')){
 			$negative_offset = true;
 			$offset = str_replace('-', '', $offset);
 		}else{
-			if(strpos($offset, '+') !== false){
+			if(str_starts_with($offset, '+')){
 				$negative_offset = false;
 				$offset = str_replace('+', '', $offset);
 			}else{
