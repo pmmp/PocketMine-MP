@@ -45,7 +45,6 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddActorPacket;
-use pocketmine\network\mcpe\protocol\MoveActorAbsolutePacket;
 use pocketmine\network\mcpe\protocol\MoveActorDeltaPacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
 use pocketmine\network\mcpe\protocol\types\entity\Attribute as NetworkAttribute;
@@ -220,8 +219,6 @@ abstract class Entity{
 	protected $ownerId = null;
 	/** @var int|null */
 	protected $targetId = null;
-	/** @var Location|null */
-	protected $lastBroadcastedMovement = null;
 
 	private bool $constructorCalled = false;
 
@@ -760,9 +757,9 @@ abstract class Entity{
 		}
 
 		if($teleport || $diffPosition > 0.0001 || $diffRotation > 1.0 || (!$wasStill && $still)){
-			$this->lastLocation = $this->location->asLocation();
-
 			$this->broadcastMovement($teleport);
+
+			$this->lastLocation = $this->location->asLocation();
 		}
 
 		if($diffMotion > 0.0025 || $wasStill !== $still){ //0.05 ** 2
@@ -789,50 +786,35 @@ abstract class Entity{
 				$this->spawnTo($player);
 			}
 		}else{
-			if($this->lastBroadcastedMovement === null) {
-				$this->server->broadcastPackets($this->hasSpawned, [MoveActorAbsolutePacket::create(
-					$this->id,
-					$offsetPosition,
-					$this->location->pitch,
-					$this->location->yaw,
-					$this->location->yaw,
-					(
-						//TODO: if the above hack for #4394 gets removed, we should be setting FLAG_TELEPORT here
-						($this->onGround ? MoveActorAbsolutePacket::FLAG_GROUND : 0)
-					)
-				)]);
-			} else {
-				$deltaLoc = $offsetPosition->subtractVector($this->lastBroadcastedMovement);
-				$pk = new MoveActorDeltaPacket();
-				$pk->actorRuntimeId = $this->id;
-				//TODO: if the above hack for #4394 gets removed, we should be setting FLAG_TELEPORT here
-				$pk->flags = $this->onGround ? MoveActorDeltaPacket::FLAG_GROUND : 0;
-				if($deltaLoc->x != 0.0){
-					$pk->xPos = $offsetPosition->x;
-					$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_X;
-				}
-				if($deltaLoc->y != 0.0){
-					$pk->yPos = $offsetPosition->y;
-					$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_Y;
-				}
-				if($deltaLoc->z !== 0.0){
-					$pk->zPos = $offsetPosition->z;
-					$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_Z;
-				}
-				if(($this->location->pitch - $this->lastBroadcastedMovement->pitch) !== 0.0){
-					$pk->pitch = $this->location->pitch;
-					$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_PITCH;
-				}
-				if(($this->location->yaw - $this->lastBroadcastedMovement->yaw) !== 0.0){
-					$pk->yaw = $this->location->yaw;
-					$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_YAW;
-					$pk->headYaw = $this->location->yaw;
-					$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_HEAD_YAW;
-				}
-				$this->server->broadcastPackets($this->hasSpawned, [$pk]);
+			$deltaLoc = $offsetPosition->subtractVector($this->getOffsetPosition($this->lastLocation));
+			$pk = new MoveActorDeltaPacket();
+			$pk->actorRuntimeId = $this->id;
+			//TODO: if the above hack for #4394 gets removed, we should be setting FLAG_TELEPORT here
+			$pk->flags = $this->onGround ? MoveActorDeltaPacket::FLAG_GROUND : 0;
+			if($deltaLoc->x != 0.0){
+				$pk->xPos = $offsetPosition->x;
+				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_X;
 			}
+			if($deltaLoc->y != 0.0){
+				$pk->yPos = $offsetPosition->y;
+				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_Y;
+			}
+			if($deltaLoc->z !== 0.0){
+				$pk->zPos = $offsetPosition->z;
+				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_Z;
+			}
+			if(($this->location->pitch - $this->lastLocation->pitch) !== 0.0){
+				$pk->pitch = $this->location->pitch;
+				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_PITCH;
+			}
+			if(($this->location->yaw - $this->lastLocation->yaw) !== 0.0){
+				$pk->yaw = $this->location->yaw;
+				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_YAW;
+				$pk->headYaw = $this->location->yaw;
+				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_HEAD_YAW;
+			}
+			$this->server->broadcastPackets($this->hasSpawned, [$pk]);
 		}
-		$this->lastBroadcastedMovement = Location::fromObject($offsetPosition, null, $this->location->yaw, $this->location->pitch);
 	}
 
 	protected function broadcastMotion() : void{
@@ -1513,7 +1495,7 @@ abstract class Entity{
 			$this->getId(), //TODO: actor unique ID
 			$this->getId(),
 			static::getNetworkTypeId(),
-			$this->location->asVector3(),
+			$this->lastLocation->asVector3(),
 			$this->getMotion(),
 			$this->location->pitch,
 			$this->location->yaw,
