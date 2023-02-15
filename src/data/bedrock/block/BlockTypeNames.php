@@ -34,6 +34,7 @@ final class BlockTypeNames{
 	public const ACACIA_BUTTON = "minecraft:acacia_button";
 	public const ACACIA_DOOR = "minecraft:acacia_door";
 	public const ACACIA_FENCE_GATE = "minecraft:acacia_fence_gate";
+	public const ACACIA_HANGING_SIGN = "minecraft:acacia_hanging_sign";
 	public const ACACIA_PRESSURE_PLATE = "minecraft:acacia_pressure_plate";
 	public const ACACIA_STAIRS = "minecraft:acacia_stairs";
 	public const ACACIA_STANDING_SIGN = "minecraft:acacia_standing_sign";
@@ -51,7 +52,25 @@ final class BlockTypeNames{
 	public const AZALEA_LEAVES = "minecraft:azalea_leaves";
 	public const AZALEA_LEAVES_FLOWERED = "minecraft:azalea_leaves_flowered";
 	public const BAMBOO = "minecraft:bamboo";
+	public const BAMBOO_BLOCK = "minecraft:bamboo_block";
+	public const BAMBOO_BUTTON = "minecraft:bamboo_button";
+	public const BAMBOO_DOOR = "minecraft:bamboo_door";
+	public const BAMBOO_DOUBLE_SLAB = "minecraft:bamboo_double_slab";
+	public const BAMBOO_FENCE = "minecraft:bamboo_fence";
+	public const BAMBOO_FENCE_GATE = "minecraft:bamboo_fence_gate";
+	public const BAMBOO_HANGING_SIGN = "minecraft:bamboo_hanging_sign";
+	public const BAMBOO_MOSAIC = "minecraft:bamboo_mosaic";
+	public const BAMBOO_MOSAIC_DOUBLE_SLAB = "minecraft:bamboo_mosaic_double_slab";
+	public const BAMBOO_MOSAIC_SLAB = "minecraft:bamboo_mosaic_slab";
+	public const BAMBOO_MOSAIC_STAIRS = "minecraft:bamboo_mosaic_stairs";
+	public const BAMBOO_PLANKS = "minecraft:bamboo_planks";
+	public const BAMBOO_PRESSURE_PLATE = "minecraft:bamboo_pressure_plate";
 	public const BAMBOO_SAPLING = "minecraft:bamboo_sapling";
+	public const BAMBOO_SLAB = "minecraft:bamboo_slab";
+	public const BAMBOO_STAIRS = "minecraft:bamboo_stairs";
+	public const BAMBOO_STANDING_SIGN = "minecraft:bamboo_standing_sign";
+	public const BAMBOO_TRAPDOOR = "minecraft:bamboo_trapdoor";
+	public const BAMBOO_WALL_SIGN = "minecraft:bamboo_wall_sign";
 	public const BARREL = "minecraft:barrel";
 	public const BARRIER = "minecraft:barrier";
 	public const BASALT = "minecraft:basalt";
@@ -66,6 +85,7 @@ final class BlockTypeNames{
 	public const BIRCH_BUTTON = "minecraft:birch_button";
 	public const BIRCH_DOOR = "minecraft:birch_door";
 	public const BIRCH_FENCE_GATE = "minecraft:birch_fence_gate";
+	public const BIRCH_HANGING_SIGN = "minecraft:birch_hanging_sign";
 	public const BIRCH_PRESSURE_PLATE = "minecraft:birch_pressure_plate";
 	public const BIRCH_STAIRS = "minecraft:birch_stairs";
 	public const BIRCH_STANDING_SIGN = "minecraft:birch_standing_sign";
@@ -117,6 +137,7 @@ final class BlockTypeNames{
 	public const CHEMICAL_HEAT = "minecraft:chemical_heat";
 	public const CHEMISTRY_TABLE = "minecraft:chemistry_table";
 	public const CHEST = "minecraft:chest";
+	public const CHISELED_BOOKSHELF = "minecraft:chiseled_bookshelf";
 	public const CHISELED_DEEPSLATE = "minecraft:chiseled_deepslate";
 	public const CHISELED_NETHER_BRICKS = "minecraft:chiseled_nether_bricks";
 	public const CHISELED_POLISHED_BLACKSTONE = "minecraft:chiseled_polished_blackstone";
@@ -161,6 +182,7 @@ final class BlockTypeNames{
 	public const CRIMSON_FENCE = "minecraft:crimson_fence";
 	public const CRIMSON_FENCE_GATE = "minecraft:crimson_fence_gate";
 	public const CRIMSON_FUNGUS = "minecraft:crimson_fungus";
+	public const CRIMSON_HANGING_SIGN = "minecraft:crimson_hanging_sign";
 	public const CRIMSON_HYPHAE = "minecraft:crimson_hyphae";
 	public const CRIMSON_NYLIUM = "minecraft:crimson_nylium";
 	public const CRIMSON_PLANKS = "minecraft:crimson_planks";
@@ -182,6 +204,7 @@ final class BlockTypeNames{
 	public const DARK_OAK_BUTTON = "minecraft:dark_oak_button";
 	public const DARK_OAK_DOOR = "minecraft:dark_oak_door";
 	public const DARK_OAK_FENCE_GATE = "minecraft:dark_oak_fence_gate";
+	public const DARK_OAK_HANGING_SIGN = "minecraft:dark_oak_hanging_sign";
 	public const DARK_OAK_PRESSURE_PLATE = "minecraft:dark_oak_pressure_plate";
 	public const DARK_OAK_STAIRS = "minecraft:dark_oak_stairs";
 	public const DARK_OAK_TRAPDOOR = "minecraft:dark_oak_trapdoor";
@@ -424,6 +447,7 @@ final class BlockTypeNames{
 	public const JUNGLE_BUTTON = "minecraft:jungle_button";
 	public const JUNGLE_DOOR = "minecraft:jungle_door";
 	public const JUNGLE_FENCE_GATE = "minecraft:jungle_fence_gate";
+	public const JUNGLE_HANGING_SIGN = "minecraft:jungle_hanging_sign";
 	public const JUNGLE_PRESSURE_PLATE = "minecraft:jungle_pressure_plate";
 	public const JUNGLE_STAIRS = "minecraft:jungle_stairs";
 	public const JUNGLE_STANDING_SIGN = "minecraft:jungle_standing_sign";
@@ -472,6 +496,7 @@ final class BlockTypeNames{
 	public const MANGROVE_DOUBLE_SLAB = "minecraft:mangrove_double_slab";
 	public const MANGROVE_FENCE = "minecraft:mangrove_fence";
 	public const MANGROVE_FENCE_GATE = "minecraft:mangrove_fence_gate";
+	public const MANGROVE_HANGING_SIGN = "minecraft:mangrove_hanging_sign";
 	public const MANGROVE_LEAVES = "minecraft:mangrove_leaves";
 	public const MANGROVE_LOG = "minecraft:mangrove_log";
 	public const MANGROVE_PLANKS = "minecraft:mangrove_planks";
@@ -515,6 +540,7 @@ final class BlockTypeNames{
 	public const NETHERREACTOR = "minecraft:netherreactor";
 	public const NORMAL_STONE_STAIRS = "minecraft:normal_stone_stairs";
 	public const NOTEBLOCK = "minecraft:noteblock";
+	public const OAK_HANGING_SIGN = "minecraft:oak_hanging_sign";
 	public const OAK_STAIRS = "minecraft:oak_stairs";
 	public const OBSERVER = "minecraft:observer";
 	public const OBSIDIAN = "minecraft:obsidian";
@@ -642,6 +668,7 @@ final class BlockTypeNames{
 	public const SPRUCE_BUTTON = "minecraft:spruce_button";
 	public const SPRUCE_DOOR = "minecraft:spruce_door";
 	public const SPRUCE_FENCE_GATE = "minecraft:spruce_fence_gate";
+	public const SPRUCE_HANGING_SIGN = "minecraft:spruce_hanging_sign";
 	public const SPRUCE_PRESSURE_PLATE = "minecraft:spruce_pressure_plate";
 	public const SPRUCE_STAIRS = "minecraft:spruce_stairs";
 	public const SPRUCE_STANDING_SIGN = "minecraft:spruce_standing_sign";
@@ -667,6 +694,7 @@ final class BlockTypeNames{
 	public const STONECUTTER = "minecraft:stonecutter";
 	public const STONECUTTER_BLOCK = "minecraft:stonecutter_block";
 	public const STRIPPED_ACACIA_LOG = "minecraft:stripped_acacia_log";
+	public const STRIPPED_BAMBOO_BLOCK = "minecraft:stripped_bamboo_block";
 	public const STRIPPED_BIRCH_LOG = "minecraft:stripped_birch_log";
 	public const STRIPPED_CRIMSON_HYPHAE = "minecraft:stripped_crimson_hyphae";
 	public const STRIPPED_CRIMSON_STEM = "minecraft:stripped_crimson_stem";
@@ -709,6 +737,7 @@ final class BlockTypeNames{
 	public const WARPED_FENCE = "minecraft:warped_fence";
 	public const WARPED_FENCE_GATE = "minecraft:warped_fence_gate";
 	public const WARPED_FUNGUS = "minecraft:warped_fungus";
+	public const WARPED_HANGING_SIGN = "minecraft:warped_hanging_sign";
 	public const WARPED_HYPHAE = "minecraft:warped_hyphae";
 	public const WARPED_NYLIUM = "minecraft:warped_nylium";
 	public const WARPED_PLANKS = "minecraft:warped_planks";
