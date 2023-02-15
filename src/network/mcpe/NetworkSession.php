@@ -361,12 +361,9 @@ class NetworkSession{
 		}
 
 		if($this->incomingPacketBatchBudget <= 0){
-			if(!function_exists('xdebug_is_debugger_active') || !xdebug_is_debugger_active()){
+			$this->updatePacketBudget();
+			if($this->incomingPacketBatchBudget <= 0){
 				throw new PacketHandlingException("Receiving packets too fast");
-			}else{
-				//when a debugging session is active, the server may halt at any point for an indefinite length of time,
-				//in which time the client will continue to send packets
-				$this->incomingPacketBatchBudget = self::INCOMING_PACKET_BATCH_MAX_BUDGET;
 			}
 		}
 		$this->incomingPacketBatchBudget--;
@@ -1143,6 +1140,23 @@ class NetworkSession{
 		$this->sendDataPacket(ToastRequestPacket::create($title, $body));
 	}
 
+	private function updatePacketBudget() : void{
+		$nowNs = hrtime(true);
+		$timeSinceLastUpdateNs = $nowNs - $this->lastPacketBudgetUpdateTimeNs;
+		if($timeSinceLastUpdateNs > 50_000_000){
+			$ticksSinceLastUpdate = intdiv($timeSinceLastUpdateNs, 50_000_000);
+			/*
+			 * If the server takes an abnormally long time to process a tick, add the budget for time difference to
+			 * compensate. This extra budget may be very large, but it will disappear the next time a normal update
+			 * occurs. This ensures that backlogs during a large lag spike don't cause everyone to get kicked.
+			 * As long as all the backlogged packets are processed before the next tick, everything should be OK for
+			 * clients behaving normally.
+			 */
+			$this->incomingPacketBatchBudget = min($this->incomingPacketBatchBudget, self::INCOMING_PACKET_BATCH_MAX_BUDGET) + (self::INCOMING_PACKET_BATCH_PER_TICK * 2 * $ticksSinceLastUpdate);
+			$this->lastPacketBudgetUpdateTimeNs = $nowNs;
+		}
+	}
+
 	public function tick() : void{
 		if(!$this->isConnected()){
 			$this->dispose();
@@ -1170,16 +1184,5 @@ class NetworkSession{
 		}
 
 		$this->flushSendBuffer();
-
-		$nowNs = hrtime(true);
-		$timeSinceLastUpdateNs = $nowNs - $this->lastPacketBudgetUpdateTimeNs;
-		if($timeSinceLastUpdateNs > 50_000_000){
-			$ticksSinceLastUpdate = intdiv($timeSinceLastUpdateNs, 50_000_000);
-			$this->incomingPacketBatchBudget = min(
-				$this->incomingPacketBatchBudget + (self::INCOMING_PACKET_BATCH_PER_TICK * 2 * $ticksSinceLastUpdate),
-				self::INCOMING_PACKET_BATCH_MAX_BUDGET
-			);
-			$this->lastPacketBudgetUpdateTimeNs = $nowNs;
-		}
 	}
 }
