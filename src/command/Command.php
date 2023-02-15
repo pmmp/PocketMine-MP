@@ -33,6 +33,7 @@ use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
 use pocketmine\utils\BroadcastLoggerForwarder;
 use pocketmine\utils\TextFormat;
+use function explode;
 use function implode;
 use function str_replace;
 
