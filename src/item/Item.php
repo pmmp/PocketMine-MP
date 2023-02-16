@@ -32,7 +32,7 @@ use pocketmine\block\BlockToolType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
-use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
@@ -470,7 +470,7 @@ class Item implements \JsonSerializable{
 		return $writer->getValue();
 	}
 
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeType(RuntimeDataDescriber $w) : void{
 		//NOOP
 	}
 

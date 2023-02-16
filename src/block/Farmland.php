@@ -23,8 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityTrampleFarmlandEvent;
@@ -40,7 +39,7 @@ class Farmland extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 3; }
 
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(3, 0, self::MAX_WETNESS, $this->wetness);
 	}
 

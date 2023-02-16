@@ -26,8 +26,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\VanillaBlocks;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 
 /**
  * Class used for Items that directly represent blocks, such as stone, dirt, wood etc.
@@ -53,7 +52,7 @@ final class ItemBlock extends Item{
 		$this->maxStackSize = $block->getMaxStackSize();
 	}
 
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeType(RuntimeDataDescriber $w) : void{
 		$w->int(Block::INTERNAL_STATE_DATA_BITS, $this->blockTypeData);
 	}
 

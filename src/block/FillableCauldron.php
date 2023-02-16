@@ -24,8 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -42,7 +41,7 @@ abstract class FillableCauldron extends Transparent{
 		return 3;
 	}
 
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(3, self::MIN_FILL_LEVEL, self::MAX_FILL_LEVEL, $this->fillLevel);
 	}
 

@@ -24,8 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
@@ -37,7 +36,7 @@ class NetherPortal extends Transparent{
 
 	public function getRequiredStateDataBits() : int{ return 1; }
 
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->horizontalAxis($this->axis);
 	}
 

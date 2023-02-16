@@ -64,8 +64,8 @@ function buildWriterFunc(string $virtualTypeName, string $nativeTypeName, array 
 	$bits = getBitsRequired($memberNames);
 	$lines = [];
 
-	$lines[] = "public function $functionName(\\$nativeTypeName \$value) : void{";
-	$lines[] = "\t\$this->int($bits, match(\$value){";
+	$lines[] = "public function $functionName(\\$nativeTypeName &\$value) : void{";
+	$lines[] = "\t\$this->writeInt($bits, match(\$value){";
 
 	foreach($memberNames as $key => $memberName){
 		$lines[] = "\t\t$memberName => $key,";
@@ -99,6 +99,10 @@ function buildReaderFunc(string $virtualTypeName, string $nativeTypeName, array 
 	$lines[] = "}";
 
 	return $lines;
+}
+
+function buildInterfaceFunc(string $nativeTypeName, string $functionName) : string{
+	return "public function $functionName(\\$nativeTypeName &\$value) : void;";
 }
 
 /**
@@ -143,9 +147,10 @@ $readerFuncs = [
 ];
 $writerFuncs = [
 	"" => [
-		"abstract public function int(int \$bits, int \$value) : void;"
+		"abstract protected function writeInt(int \$bits, int \$value) : void;"
 	]
 ];
+$interfaceFuncs = [];
 
 foreach($enumsUsed as $enumMembers){
 	if(count($enumMembers) === 0){
@@ -169,13 +174,17 @@ foreach($enumsUsed as $enumMembers){
 		$stringifiedMembers,
 		$functionName
 	);
+	$interfaceFuncs[$functionName] = [buildInterfaceFunc(
+		$nativeTypeName,
+		$functionName
+	)];
 }
 
 /**
  * @param string[][] $functions
  * @phpstan-param array<string, list<string>> $functions
  */
-function printFunctions(array $functions, string $className) : void{
+function printFunctions(array $functions, string $className, string $classType) : void{
 	ksort($functions, SORT_STRING);
 
 	ob_start();
@@ -213,14 +222,15 @@ namespace pocketmine\data\runtime;
 
 HEADER;
 
-	echo "trait $className{\n\n";
+	echo "$classType $className{\n\n";
 	echo implode("\n\n", array_map(fn(array $functionLines) => "\t" . implode("\n\t", $functionLines), $functions));
 	echo "\n\n}\n";
 
 	file_put_contents(dirname(__DIR__) . '/src/data/runtime/' . $className . '.php', ob_get_clean());
 }
 
-printFunctions($writerFuncs, "RuntimeEnumSerializerTrait");
-printFunctions($readerFuncs, "RuntimeEnumDeserializerTrait");
+printFunctions($writerFuncs, "RuntimeEnumSerializerTrait", "trait");
+printFunctions($readerFuncs, "RuntimeEnumDeserializerTrait", "trait");
+printFunctions($interfaceFuncs, "RuntimeEnumDescriber", "interface");
 
 echo "Done. Don't forget to run CS fixup after generating code.\n";

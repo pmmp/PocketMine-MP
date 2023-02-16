@@ -24,8 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\LeverFacing;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -47,7 +46,7 @@ class Lever extends Flowable{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->leverFacing($this->facing);
 		$w->bool($this->activated);
 	}

@@ -26,8 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -46,7 +45,7 @@ class RedstoneRepeater extends Flowable{
 
 	public function getRequiredStateDataBits() : int{ return 5; }
 
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->boundedInt(2, self::MIN_DELAY, self::MAX_DELAY, $this->delay);
 		$w->bool($this->powered);

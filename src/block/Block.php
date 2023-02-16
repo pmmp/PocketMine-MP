@@ -29,6 +29,7 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
@@ -174,7 +175,7 @@ class Block{
 		$stateBits = $this->getRequiredStateDataBits();
 		$requiredBits = $typeBits + $stateBits;
 		$writer = new RuntimeDataWriter($requiredBits);
-		$writer->int($typeBits, $this->computeTypeData());
+		$writer->writeInt($typeBits, $this->computeTypeData());
 
 		$this->describeState($writer);
 		$writtenBits = $writer->getOffset() - $typeBits;
@@ -185,11 +186,11 @@ class Block{
 		return $writer->getValue();
 	}
 
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeType(RuntimeDataDescriber $w) : void{
 		//NOOP
 	}
 
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		//NOOP
 	}
 

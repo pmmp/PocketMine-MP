@@ -24,8 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\MushroomBlockType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use function mt_rand;
 
@@ -39,7 +38,7 @@ class RedMushroomBlock extends Opaque{
 
 	public function getRequiredStateDataBits() : int{ return 4; }
 
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->mushroomBlockType($this->mushroomBlockType);
 	}
 
