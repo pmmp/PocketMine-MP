@@ -38,8 +38,6 @@ class Wood extends Opaque{
 
 	private bool $stripped = false;
 
-	public function getRequiredTypeDataBits() : int{ return 1; }
-
 	protected function describeType(RuntimeDataDescriber $w) : void{
 		$w->bool($this->stripped);
 	}

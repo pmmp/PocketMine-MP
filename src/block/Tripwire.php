@@ -33,8 +33,6 @@ class Tripwire extends Flowable{
 	protected bool $connected = false;
 	protected bool $disarmed = false;
 
-	public function getRequiredStateDataBits() : int{ return 4; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->triggered);
 		$w->bool($this->suspended);

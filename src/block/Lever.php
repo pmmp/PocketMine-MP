@@ -44,8 +44,6 @@ class Lever extends Flowable{
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function getRequiredStateDataBits() : int{ return 4; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->leverFacing($this->facing);
 		$w->bool($this->activated);

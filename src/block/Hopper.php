@@ -39,8 +39,6 @@ class Hopper extends Transparent{
 
 	private int $facing = Facing::DOWN;
 
-	public function getRequiredStateDataBits() : int{ return 4; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->facingExcept($this->facing, Facing::UP);
 		$w->bool($this->powered);

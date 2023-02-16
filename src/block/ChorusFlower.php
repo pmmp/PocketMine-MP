@@ -49,8 +49,6 @@ final class ChorusFlower extends Flowable{
 
 	private int $age = self::MIN_AGE;
 
-	public function getRequiredStateDataBits() : int{ return 3; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(3, self::MIN_AGE, self::MAX_AGE, $this->age);
 	}

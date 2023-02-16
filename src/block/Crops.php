@@ -38,8 +38,6 @@ abstract class Crops extends Flowable{
 
 	protected int $age = 0;
 
-	public function getRequiredStateDataBits() : int{ return 3; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(3, 0, self::MAX_AGE, $this->age);
 	}

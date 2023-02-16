@@ -49,13 +49,9 @@ class Skull extends Flowable{
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function getRequiredTypeDataBits() : int{ return 3; }
-
 	protected function describeType(RuntimeDataDescriber $w) : void{
 		$w->skullType($this->skullType);
 	}
-
-	public function getRequiredStateDataBits() : int{ return 3; }
 
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->facingExcept($this->facing, Facing::DOWN);

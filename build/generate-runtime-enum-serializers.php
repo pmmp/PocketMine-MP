@@ -106,6 +106,22 @@ function buildInterfaceFunc(string $nativeTypeName, string $functionName) : stri
 }
 
 /**
+ * @param string[] $memberNames
+ * @phpstan-param list<string> $memberNames
+ *
+ * @return string[]
+ * @phpstan-return list<string>
+ */
+function buildSizeCalculationFunc(string $nativeTypeName, string $functionName, array $memberNames) : array{
+	$lines = [];
+	$lines[] = "public function $functionName(\\$nativeTypeName &\$value) : void{";
+	$lines[] = "\t\$this->addBits(" . getBitsRequired($memberNames) . ");";
+	$lines[] = "}";
+
+	return $lines;
+}
+
+/**
  * @param mixed[] $members
  */
 function getBitsRequired(array $members) : int{
@@ -151,6 +167,11 @@ $writerFuncs = [
 	]
 ];
 $interfaceFuncs = [];
+$sizeCalculationFuncs = [
+	"" => [
+		"abstract protected function addBits(int \$bits) : void;"
+	]
+];
 
 foreach($enumsUsed as $enumMembers){
 	if(count($enumMembers) === 0){
@@ -178,6 +199,11 @@ foreach($enumsUsed as $enumMembers){
 		$nativeTypeName,
 		$functionName
 	)];
+	$sizeCalculationFuncs[$functionName] = buildSizeCalculationFunc(
+		$nativeTypeName,
+		$functionName,
+		$stringifiedMembers
+	);
 }
 
 /**
@@ -232,5 +258,6 @@ HEADER;
 printFunctions($writerFuncs, "RuntimeEnumSerializerTrait", "trait");
 printFunctions($readerFuncs, "RuntimeEnumDeserializerTrait", "trait");
 printFunctions($interfaceFuncs, "RuntimeEnumDescriber", "interface");
+printFunctions($sizeCalculationFuncs, "RuntimeEnumSizeCalculatorTrait", "trait");
 
 echo "Done. Don't forget to run CS fixup after generating code.\n";

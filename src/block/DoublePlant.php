@@ -33,8 +33,6 @@ use pocketmine\world\BlockTransaction;
 class DoublePlant extends Flowable{
 	protected bool $top = false;
 
-	public function getRequiredStateDataBits() : int{ return 1; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->top);
 	}

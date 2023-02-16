@@ -35,8 +35,6 @@ class EndPortalFrame extends Opaque{
 
 	protected bool $eye = false;
 
-	public function getRequiredStateDataBits() : int{ return 3; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->bool($this->eye);

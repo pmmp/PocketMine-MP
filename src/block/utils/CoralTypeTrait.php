@@ -30,8 +30,6 @@ trait CoralTypeTrait{
 	protected CoralType $coralType;
 	protected bool $dead = false;
 
-	public function getRequiredTypeDataBits() : int{ return 4; }
-
 	/** @see Block::describeType() */
 	protected function describeType(RuntimeDataDescriber $w) : void{
 		$w->coralType($this->coralType);

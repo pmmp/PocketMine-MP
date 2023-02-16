@@ -55,8 +55,6 @@ class Bamboo extends Transparent{
 	protected bool $ready = false;
 	protected int $leafSize = self::NO_LEAVES;
 
-	public function getRequiredStateDataBits() : int{ return 4; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(2, self::NO_LEAVES, self::LARGE_LEAVES, $this->leafSize);
 		$w->bool($this->thick);

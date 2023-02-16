@@ -38,8 +38,6 @@ class UnknownBlock extends Transparent{
 		$this->stateData = $stateData;
 	}
 
-	public function getRequiredTypeDataBits() : int{ return Block::INTERNAL_STATE_DATA_BITS; }
-
 	protected function describeType(RuntimeDataDescriber $w) : void{
 		//use type instead of state, so we don't lose any information like colour
 		//this might be an improperly registered plugin block

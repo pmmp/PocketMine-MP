@@ -31,6 +31,7 @@ use pocketmine\block\tile\Tile;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataSizeCalculator;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Projectile;
@@ -63,6 +64,17 @@ class Block{
 
 	/** @var AxisAlignedBB[]|null */
 	protected ?array $collisionBoxes = null;
+
+	/**
+	 * @var int[]
+	 * @phpstan-var array<string, int>
+	 */
+	private static array $typeDataBits = [];
+	/**
+	 * @var int[]
+	 * @phpstan-var array<string, int>
+	 */
+	private static array $stateDataBits = [];
 
 	/**
 	 * @param string $name English name of the block type (TODO: implement translations)
@@ -114,9 +126,25 @@ class Block{
 		return new ItemBlock($this);
 	}
 
-	public function getRequiredTypeDataBits() : int{ return 0; }
+	final public function getRequiredTypeDataBits() : int{
+		$class = get_class($this);
+		if(isset(self::$typeDataBits[$class])){
+			return self::$typeDataBits[$class];
+		}
+		$calculator = new RuntimeDataSizeCalculator();
+		$this->describeType($calculator);
+		return self::$typeDataBits[$class] = $calculator->getBitsUsed();
+	}
 
-	public function getRequiredStateDataBits() : int{ return 0; }
+	final public function getRequiredStateDataBits() : int{
+		$class = get_class($this);
+		if(isset(self::$stateDataBits[$class])){
+			return self::$stateDataBits[$class];
+		}
+		$calculator = new RuntimeDataSizeCalculator();
+		$this->describeState($calculator);
+		return self::$stateDataBits[$class] = $calculator->getBitsUsed();
+	}
 
 	/**
 	 * @internal

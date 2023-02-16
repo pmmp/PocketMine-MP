@@ -30,8 +30,6 @@ trait ColoredTrait{
 	/** @var DyeColor */
 	private $color;
 
-	public function getRequiredTypeDataBits() : int{ return 4; }
-
 	/** @see Block::describeType() */
 	protected function describeType(RuntimeDataDescriber $w) : void{
 		$w->dyeColor($this->color);

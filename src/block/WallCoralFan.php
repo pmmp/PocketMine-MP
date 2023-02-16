@@ -36,8 +36,6 @@ use pocketmine\world\BlockTransaction;
 final class WallCoralFan extends BaseCoral{
 	use HorizontalFacingTrait;
 
-	public function getRequiredStateDataBits() : int{ return parent::getRequiredStateDataBits() + 2; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 	}

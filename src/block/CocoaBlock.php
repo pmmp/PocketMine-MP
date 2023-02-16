@@ -46,8 +46,6 @@ class CocoaBlock extends Transparent{
 
 	protected int $age = 0;
 
-	public function getRequiredStateDataBits() : int{ return 4; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->boundedInt(2, 0, self::MAX_AGE, $this->age);

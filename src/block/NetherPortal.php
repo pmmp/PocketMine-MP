@@ -34,8 +34,6 @@ class NetherPortal extends Transparent{
 
 	protected int $axis = Axis::X;
 
-	public function getRequiredStateDataBits() : int{ return 1; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->horizontalAxis($this->axis);
 	}

@@ -28,8 +28,6 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 trait AnalogRedstoneSignalEmitterTrait{
 	protected int $signalStrength = 0;
 
-	public function getRequiredStateDataBits() : int{ return 4; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(4, 0, 15, $this->signalStrength);
 	}

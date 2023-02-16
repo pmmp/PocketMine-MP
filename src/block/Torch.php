@@ -36,8 +36,6 @@ class Torch extends Flowable{
 
 	protected int $facing = Facing::UP;
 
-	public function getRequiredStateDataBits() : int{ return 3; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->facingExcept($this->facing, Facing::DOWN);
 	}

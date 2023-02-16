@@ -28,8 +28,6 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 class Bedrock extends Opaque{
 	private bool $burnsForever = false;
 
-	public function getRequiredStateDataBits() : int{ return 1; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->burnsForever);
 	}

@@ -37,10 +37,6 @@ abstract class FillableCauldron extends Transparent{
 
 	private int $fillLevel = self::MIN_FILL_LEVEL;
 
-	public function getRequiredStateDataBits() : int{
-		return 3;
-	}
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(3, self::MIN_FILL_LEVEL, self::MAX_FILL_LEVEL, $this->fillLevel);
 	}

@@ -38,8 +38,6 @@ class Barrel extends Opaque{
 
 	protected bool $open = false;
 
-	public function getRequiredStateDataBits() : int{ return 4; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->facing($this->facing);
 		$w->bool($this->open);

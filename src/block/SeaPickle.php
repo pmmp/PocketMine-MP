@@ -38,8 +38,6 @@ class SeaPickle extends Transparent{
 	protected int $count = self::MIN_COUNT;
 	protected bool $underwater = false;
 
-	public function getRequiredStateDataBits() : int{ return 3; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(2, self::MIN_COUNT, self::MAX_COUNT, $this->count);
 		$w->bool($this->underwater);

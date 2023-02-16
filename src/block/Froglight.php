@@ -35,8 +35,6 @@ final class Froglight extends SimplePillar{
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function getRequiredTypeDataBits() : int{ return 2; }
-
 	protected function describeType(RuntimeDataDescriber $w) : void{
 		$w->froglightType($this->froglightType);
 	}

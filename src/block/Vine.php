@@ -39,8 +39,6 @@ class Vine extends Flowable{
 	/** @var int[] */
 	protected array $faces = [];
 
-	public function getRequiredStateDataBits() : int{ return 4; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacingFlags($this->faces);
 	}

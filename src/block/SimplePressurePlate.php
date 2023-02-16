@@ -28,8 +28,6 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 abstract class SimplePressurePlate extends PressurePlate{
 	protected bool $pressed = false;
 
-	public function getRequiredStateDataBits() : int{ return 1; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->pressed);
 	}

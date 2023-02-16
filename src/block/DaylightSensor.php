@@ -41,8 +41,6 @@ class DaylightSensor extends Transparent{
 
 	protected bool $inverted = false;
 
-	public function getRequiredStateDataBits() : int{ return 5; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(4, 0, 15, $this->signalStrength);
 		$w->bool($this->inverted);

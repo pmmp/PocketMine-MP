@@ -37,8 +37,6 @@ class NetherWartPlant extends Flowable{
 
 	protected int $age = 0;
 
-	public function getRequiredStateDataBits() : int{ return 2; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(2, 0, self::MAX_AGE, $this->age);
 	}

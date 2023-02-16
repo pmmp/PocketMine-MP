@@ -28,8 +28,6 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 trait RailPoweredByRedstoneTrait{
 	use PoweredByRedstoneTrait;
 
-	public function getRequiredStateDataBits() : int{ return parent::getRequiredStateDataBits() + 1; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		parent::describeState($w);
 		$w->bool($this->powered);

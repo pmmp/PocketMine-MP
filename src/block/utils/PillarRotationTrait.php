@@ -35,8 +35,6 @@ use pocketmine\world\BlockTransaction;
 trait PillarRotationTrait{
 	protected int $axis = Axis::Y;
 
-	public function getRequiredStateDataBits() : int{ return 2; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->axis($this->axis);
 	}

@@ -42,8 +42,6 @@ class Wall extends Transparent{
 	protected array $connections = [];
 	protected bool $post = false;
 
-	public function getRequiredStateDataBits() : int{ return 9; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->wallConnections($this->connections);
 		$w->bool($this->post);

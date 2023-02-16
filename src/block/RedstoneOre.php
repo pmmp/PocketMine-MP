@@ -33,8 +33,6 @@ use function mt_rand;
 class RedstoneOre extends Opaque{
 	protected bool $lit = false;
 
-	public function getRequiredStateDataBits() : int{ return 1; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->lit);
 	}

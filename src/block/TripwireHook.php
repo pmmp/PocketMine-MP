@@ -38,8 +38,6 @@ class TripwireHook extends Flowable{
 	protected bool $connected = false;
 	protected bool $powered = false;
 
-	public function getRequiredStateDataBits() : int{ return 4; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->bool($this->connected);

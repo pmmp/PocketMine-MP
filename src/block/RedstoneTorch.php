@@ -28,8 +28,6 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 class RedstoneTorch extends Torch{
 	protected bool $lit = true;
 
-	public function getRequiredStateDataBits() : int{ return parent::getRequiredStateDataBits() + 1; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		parent::describeState($w);
 		$w->bool($this->lit);

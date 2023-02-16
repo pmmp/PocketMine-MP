@@ -51,13 +51,9 @@ class Anvil extends Transparent implements Fallable{
 
 	private int $damage = self::UNDAMAGED;
 
-	public function getRequiredTypeDataBits() : int{ return 2; }
-
 	protected function describeType(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(2, self::UNDAMAGED, self::VERY_DAMAGED, $this->damage);
 	}
-
-	public function getRequiredStateDataBits() : int{ return 2; }
 
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);

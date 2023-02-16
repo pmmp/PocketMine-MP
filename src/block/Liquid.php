@@ -48,8 +48,6 @@ abstract class Liquid extends Transparent{
 	protected int $decay = 0; //PC "level" property
 	protected bool $still = false;
 
-	public function getRequiredStateDataBits() : int{ return 5; }
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(3, 0, self::MAX_DECAY, $this->decay);
 		$w->bool($this->falling);

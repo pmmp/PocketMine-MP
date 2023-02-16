@@ -28,8 +28,6 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 class Sponge extends Opaque{
 	protected bool $wet = false;
 
-	public function getRequiredTypeDataBits() : int{ return 1; }
-
 	protected function describeType(RuntimeDataDescriber $w) : void{
 		$w->bool($this->wet);
 	}
