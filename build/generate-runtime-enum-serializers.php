@@ -60,11 +60,10 @@ require dirname(__DIR__) . '/vendor/autoload.php';
  * @return string[]
  * @phpstan-return list<string>
  */
-function buildWriterFunc(string $virtualTypeName, string $nativeTypeName, array $memberNames, string &$functionName) : array{
+function buildWriterFunc(string $virtualTypeName, string $nativeTypeName, array $memberNames, string $functionName) : array{
 	$bits = getBitsRequired($memberNames);
 	$lines = [];
 
-	$functionName = lcfirst($virtualTypeName);
 	$lines[] = "public function $functionName(\\$nativeTypeName \$value) : void{";
 	$lines[] = "\t\$this->int($bits, match(\$value){";
 
@@ -85,11 +84,10 @@ function buildWriterFunc(string $virtualTypeName, string $nativeTypeName, array 
  * @return string[]
  * @phpstan-return list<string>
  */
-function buildReaderFunc(string $virtualTypeName, string $nativeTypeName, array $memberNames, string &$functionName) : array{
+function buildReaderFunc(string $virtualTypeName, string $nativeTypeName, array $memberNames, string $functionName) : array{
 	$bits = getBitsRequired($memberNames);
 	$lines = [];
 
-	$functionName = lcfirst($virtualTypeName);
 	$lines[] = "public function $functionName(\\$nativeTypeName &\$value) : void{";
 	$lines[] = "\t\$value = match(\$this->readInt($bits)){";
 
@@ -122,43 +120,6 @@ function stringifyEnumMembers(array $members, string $enumClass) : array{
 	return array_map(fn(string $enumCaseName) => "\\$enumClass::$enumCaseName()", array_keys($members));
 }
 
-/**
- * @param object[] $enumMembers
- * @phpstan-param array<string, object> $enumMembers
- *
- * @return string[]
- * @phpstan-return list<string>
- */
-function buildEnumWriterFunc(array $enumMembers, string &$functionName) : array{
-	$reflect = new \ReflectionClass($enumMembers[array_key_first($enumMembers)]);
-	return buildWriterFunc(
-		$reflect->getShortName(),
-		$reflect->getName(),
-		stringifyEnumMembers($enumMembers, $reflect->getName()),
-		$functionName
-	);
-}
-
-/**
- * @param object[] $enumMembers
- * @phpstan-param array<string, object> $enumMembers
- *
- * @return string[]
- * @phpstan-return list<string>
- */
-function buildEnumReaderFunc(array $enumMembers, string &$functionName) : array{
-	if(count($enumMembers) === 0){
-		throw new \InvalidArgumentException("Enum members cannot be empty");
-	}
-	$reflect = new \ReflectionClass($enumMembers[array_key_first($enumMembers)]);
-	return buildReaderFunc(
-		$reflect->getShortName(),
-		$reflect->getName(),
-		stringifyEnumMembers($enumMembers, $reflect->getName()),
-		$functionName
-	);
-}
-
 $enumsUsed = [
 	BellAttachmentType::getAll(),
 	CopperOxidation::getAll(),
@@ -185,15 +146,29 @@ $writerFuncs = [
 		"abstract public function int(int \$bits, int \$value) : void;"
 	]
 ];
-$functionName = "";
 
 foreach($enumsUsed as $enumMembers){
-	$writerF = buildEnumWriterFunc($enumMembers, $functionName);
-	/** @var string $functionName */
-	$writerFuncs[$functionName] = $writerF;
-	$readerF = buildEnumReaderFunc($enumMembers, $functionName);
-	/** @var string $functionName */
-	$readerFuncs[$functionName] = $readerF;
+	if(count($enumMembers) === 0){
+		throw new \InvalidArgumentException("Enum members cannot be empty");
+	}
+	$reflect = new \ReflectionClass($enumMembers[array_key_first($enumMembers)]);
+	$virtualTypeName = $reflect->getShortName();
+	$nativeTypeName = $reflect->getName();
+	$functionName = lcfirst($virtualTypeName);
+
+	$stringifiedMembers = stringifyEnumMembers($enumMembers, $nativeTypeName);
+	$writerFuncs[$functionName] = buildWriterFunc(
+		$virtualTypeName,
+		$nativeTypeName,
+		$stringifiedMembers,
+		$functionName
+	);
+	$readerFuncs[$functionName] = buildReaderFunc(
+		$virtualTypeName,
+		$nativeTypeName,
+		$stringifiedMembers,
+		$functionName
+	);
 }
 
 /**
