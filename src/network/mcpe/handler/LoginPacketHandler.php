@@ -46,6 +46,7 @@ use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use Ramsey\Uuid\Uuid;
 use function is_array;
+use function preg_match;
 
 /**
  * Handles the initial login phase of the session. This handler is used as the initial state.
@@ -84,6 +85,27 @@ class LoginPacketHandler extends PacketHandler{
 		}
 
 		$clientData = $this->parseClientData($packet->clientDataJwt);
+
+		//TODO: REMOVE THIS
+		//Mojang forgot to bump the protocol version when they changed protocol in 1.19.62. Check the game version instead.
+		if(preg_match('/^(\d+)\.(\d+)\.(\d+)/', $clientData->GameVersion, $matches) !== 1){
+			throw new PacketHandlingException("Invalid game version format, expected at least 3 digits");
+		}
+		$major = (int) $matches[1];
+		$minor = (int) $matches[2];
+		$patch = (int) $matches[3];
+		if($major === 1 && $minor === 19 && $patch < 62){
+			$this->session->sendDataPacket(PlayStatusPacket::create(PlayStatusPacket::LOGIN_FAILED_CLIENT), true);
+
+			//This pocketmine disconnect message will only be seen by the console (PlayStatusPacket causes the messages to be shown for the client)
+			$this->session->disconnect(
+				$this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_disconnect_incompatibleProtocol("$packet->protocol (< v1.19.62)")),
+				false
+			);
+
+			return true;
+		}
+
 		try{
 			$skin = SkinAdapterSingleton::get()->fromSkinData(ClientDataToSkinDataHelper::fromClientData($clientData));
 		}catch(\InvalidArgumentException | InvalidSkinException $e){
