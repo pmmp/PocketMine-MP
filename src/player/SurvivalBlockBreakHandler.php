@@ -25,6 +25,7 @@ namespace pocketmine\player;
 
 use pocketmine\block\Block;
 use pocketmine\entity\animation\ArmSwingAnimation;
+use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
@@ -32,6 +33,7 @@ use pocketmine\network\mcpe\protocol\types\LevelEvent;
 use pocketmine\world\particle\BlockPunchParticle;
 use pocketmine\world\sound\BlockPunchSound;
 use function abs;
+use function min;
 
 final class SurvivalBlockBreakHandler{
 
@@ -65,8 +67,27 @@ final class SurvivalBlockBreakHandler{
 		if(!$this->block->getBreakInfo()->isBreakable()){
 			return 0.0;
 		}
-		//TODO: improve this to take stuff like swimming, ladders, enchanted tools into account, fix wrong tool break time calculations for bad tools (pmmp/PocketMine-MP#211)
-		$breakTimePerTick = $this->block->getBreakInfo()->getBreakTime($this->player->getInventory()->getItemInHand()) * 20;
+		$breakTimePerSecond = $this->block->getBreakInfo()->getBreakTime($this->player->getInventory()->getItemInHand());
+
+		if($this->player->isUnderwater()){ //TODO: Aqua Affinity enchantment
+			$breakTimePerSecond *= 5;
+		}
+		if(!$this->player->onGround){
+			$breakTimePerSecond *= 5;
+		}
+		if($this->player->canClimb() && $this->player->getWorld()->getBlock($this->player->getPosition())->canClimb()){
+			$breakTimePerSecond *= 5;
+		}
+
+		$effects = $this->player->getEffects();
+		if(($miningFatigue = $effects->get(VanillaEffects::MINING_FATIGUE())) !== null){
+			$breakTimePerSecond *= $breakTimePerSecond / ($breakTimePerSecond * 0.2 ** $miningFatigue->getEffectLevel());
+		}
+		if(($haste = $effects->get(VanillaEffects::HASTE())) !== null){
+			$breakTimePerSecond -= $breakTimePerSecond * 0.2 * min($haste->getEffectLevel(), 5);
+		}
+
+		$breakTimePerTick = $breakTimePerSecond * 20;
 
 		if($breakTimePerTick > 0){
 			return 1 / $breakTimePerTick;

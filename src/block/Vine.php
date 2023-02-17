@@ -108,6 +108,7 @@ class Vine extends Flowable{
 
 	public function onEntityInside(Entity $entity) : bool{
 		$entity->resetFallDistance();
+		$entity->onGround = true;
 		return true;
 	}
 
