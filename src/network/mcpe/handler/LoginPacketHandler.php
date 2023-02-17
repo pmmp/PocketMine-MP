@@ -99,16 +99,8 @@ class LoginPacketHandler extends ChunkRequestPacketHandler{
 		$major = (int) $matches[1];
 		$minor = (int) $matches[2];
 		$patch = (int) $matches[3];
-		if($major === 1 && $minor === 19 && $patch < 62){
-			$this->session->sendDataPacket(PlayStatusPacket::create(PlayStatusPacket::LOGIN_FAILED_CLIENT), true);
-
-			//This pocketmine disconnect message will only be seen by the console (PlayStatusPacket causes the messages to be shown for the client)
-			$this->session->disconnect(
-				$this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_disconnect_incompatibleProtocol("$packet->protocol (< v1.19.62)")),
-				false
-			);
-
-			return true;
+		if($major === 1 && $minor === 19 && $patch === 62){
+			$this->session->setProtocolId(ProtocolInfo::PROTOCOL_1_19_62);
 		}
 
 		try{
