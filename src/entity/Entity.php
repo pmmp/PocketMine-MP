@@ -832,7 +832,7 @@ abstract class Entity{
 				$pk->headYaw = $this->location->yaw;
 				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_HEAD_YAW;
 			}
-			$this->server->broadcastPackets(array_filter($this->hasSpawned, fn($player) => !isset($this->needsInitialMovement[$player->getId()])), [$pk]);
+			$this->server->broadcastPackets(array_filter($this->hasSpawned, fn($player) => !isset($this->needsInitialMovement[spl_object_id($player)])), [$pk]);
 		}
 	}
 
