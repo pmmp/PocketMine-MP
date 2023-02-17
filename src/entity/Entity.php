@@ -818,7 +818,7 @@ abstract class Entity{
 				$pk->headYaw = $this->location->yaw;
 				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_HEAD_YAW;
 			}
-			$this->server->broadcastPackets(array_filter($this->hasSpawned, fn($player) => !$this->needsInitialMovement[spl_object_id($player)]), [$pk]);
+			$this->server->broadcastPackets(array_filter($this->hasSpawned, fn($player) => !isset($this->needsInitialMovement[spl_object_id($player)])), [$pk]);
 
 			if(count($this->needsInitialMovement) !== 0) {
 				$pk2 = MoveActorAbsolutePacket::create(
@@ -832,12 +832,10 @@ abstract class Entity{
 				);
 				$targets = [];
 				foreach($this->needsInitialMovement as $key => $need) {
-					if($need){
-						$targets[] = $this->hasSpawned[$key];
-						$this->needsInitialMovement[$key] = false;
-					}
+					$targets[] = $this->hasSpawned[$key];
 				}
 				$this->server->broadcastPackets($targets, [$pk2]);
+				$this->needsInitialMovement = [];
 			}
 		}
 	}
