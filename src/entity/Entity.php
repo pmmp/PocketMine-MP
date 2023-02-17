@@ -45,6 +45,7 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddActorPacket;
+use pocketmine\network\mcpe\protocol\MoveActorAbsolutePacket;
 use pocketmine\network\mcpe\protocol\MoveActorDeltaPacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
 use pocketmine\network\mcpe\protocol\types\entity\Attribute as NetworkAttribute;
@@ -63,6 +64,7 @@ use pocketmine\world\Position;
 use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 use function abs;
+use function array_filter;
 use function array_map;
 use function assert;
 use function cos;
@@ -219,6 +221,9 @@ abstract class Entity{
 	protected $ownerId = null;
 	/** @var int|null */
 	protected $targetId = null;
+
+	/** @var Player[] */
+	protected $needsInitialMovement = [];
 
 	private bool $constructorCalled = false;
 
@@ -774,7 +779,7 @@ abstract class Entity{
 	}
 
 	protected function broadcastMovement(bool $teleport = false) : void{
-		$offsetPosition = $this->getOffsetPosition($this->location);
+		$offsetLocation = $this->getOffsetPosition($this->location);
 		if($teleport){
 			//TODO: HACK! workaround for https://github.com/pmmp/PocketMine-MP/issues/4394
 			//this happens because MoveActor*Packet doesn't clear interpolation targets on the client, so the entity
@@ -786,34 +791,48 @@ abstract class Entity{
 				$this->spawnTo($player);
 			}
 		}else{
-			$deltaLoc = $offsetPosition->subtractVector($this->getOffsetPosition($this->lastLocation));
+			if(count($this->needsInitialMovement) !== 0) {
+				$pk = MoveActorAbsolutePacket::create(
+					$this->id,
+					$offsetLocation,
+					$this->location->pitch,
+					$this->location->yaw,
+					$this->location->yaw,
+					//TODO: if the above hack for #4394 gets removed, we should be setting FLAG_TELEPORT here
+					$this->onGround ? MoveActorDeltaPacket::FLAG_GROUND : 0,
+				);
+				$this->server->broadcastPackets($this->needsInitialMovement, [$pk]);
+				$this->needsInitialMovement = [];
+			}
+
+			$deltaLoc = $this->getOffsetPosition($this->lastLocation)->subtractVector($offsetLocation);
 			$pk = new MoveActorDeltaPacket();
 			$pk->actorRuntimeId = $this->id;
 			//TODO: if the above hack for #4394 gets removed, we should be setting FLAG_TELEPORT here
 			$pk->flags = $this->onGround ? MoveActorDeltaPacket::FLAG_GROUND : 0;
-			if($deltaLoc->x != 0.0){
-				$pk->xPos = $offsetPosition->x;
+			if($deltaLoc->x !== 0.0){
+				$pk->xPos = $offsetLocation->x;
 				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_X;
 			}
-			if($deltaLoc->y != 0.0){
-				$pk->yPos = $offsetPosition->y;
+			if($deltaLoc->y !== 0.0){
+				$pk->yPos = $offsetLocation->y;
 				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_Y;
 			}
 			if($deltaLoc->z !== 0.0){
-				$pk->zPos = $offsetPosition->z;
+				$pk->zPos = $offsetLocation->z;
 				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_Z;
 			}
-			if(($this->location->pitch - $this->lastLocation->pitch) !== 0.0){
+			if(($this->lastLocation->pitch - $this->location->pitch) !== 0.0){
 				$pk->pitch = $this->location->pitch;
 				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_PITCH;
 			}
-			if(($this->location->yaw - $this->lastLocation->yaw) !== 0.0){
+			if(($this->lastLocation->yaw - $this->location->yaw) !== 0.0){
 				$pk->yaw = $this->location->yaw;
 				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_YAW;
 				$pk->headYaw = $this->location->yaw;
 				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_HEAD_YAW;
 			}
-			$this->server->broadcastPackets($this->hasSpawned, [$pk]);
+			$this->server->broadcastPackets(array_filter($this->hasSpawned, fn($player) => !isset($this->needsInitialMovement[$player->getId()])), [$pk]);
 		}
 	}
 
@@ -1495,7 +1514,7 @@ abstract class Entity{
 			$this->getId(), //TODO: actor unique ID
 			$this->getId(),
 			static::getNetworkTypeId(),
-			$this->lastLocation->asVector3(),
+			$this->location->asVector3(),
 			$this->getMotion(),
 			$this->location->pitch,
 			$this->location->yaw,
@@ -1517,6 +1536,7 @@ abstract class Entity{
 		//the player by sending them entities too early.
 		if(!isset($this->hasSpawned[$id]) && $player->getWorld() === $this->getWorld() && $player->hasReceivedChunk($this->location->getFloorX() >> Chunk::COORD_BIT_SIZE, $this->location->getFloorZ() >> Chunk::COORD_BIT_SIZE)){
 			$this->hasSpawned[$id] = $player;
+			$this->needsInitialMovement[$id] = $player;
 
 			$this->sendSpawnPacket($player);
 		}
@@ -1548,6 +1568,7 @@ abstract class Entity{
 			if($send){
 				$player->getNetworkSession()->onEntityRemoved($this);
 			}
+			unset($this->needsInitialMovement[$id]);
 			unset($this->hasSpawned[$id]);
 		}
 	}
