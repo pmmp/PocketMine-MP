@@ -76,8 +76,7 @@ class ChunkRequestTask extends AsyncTask{
 
 		$blockMapper = RuntimeBlockMapping::getInstance();
 		$encoderContext = new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($this->mappingProtocol)));
-		$encoder = PacketSerializer::encoder($encoderContext);
-		$encoder->setProtocolId($this->mappingProtocol);
+		$encoder = PacketSerializer::encoder($encoderContext, $this->mappingProtocol);
 
 		foreach(ChunkSerializer::serializeSubChunks($chunk, $blockMapper, $encoderContext, $this->mappingProtocol) as $subChunk){
 			$cache->addSubChunk(Binary::readLong(xxhash64($subChunk)), $subChunk);

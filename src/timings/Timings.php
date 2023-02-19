@@ -128,6 +128,9 @@ abstract class Timings{
 	private static array $packetHandleTimingMap = [];
 
 	/** @var TimingsHandler[] */
+	private static array $packetEncodeTimingMap = [];
+
+	/** @var TimingsHandler[] */
 	public static $packetSendTimingMap = [];
 	/** @var TimingsHandler[] */
 	public static $pluginTaskTimingMap = [];
@@ -251,6 +254,14 @@ abstract class Timings{
 		return self::$packetHandleTimingMap[$pid] ??= new TimingsHandler(
 			self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Handler - " . $pk->getName() . " [0x" . dechex($pid) . "]",
 			self::getReceiveDataPacketTimings($pk)
+		);
+	}
+
+	public static function getEncodeDataPacketTimings(ClientboundPacket $pk) : TimingsHandler{
+		$pid = $pk->pid();
+		return self::$packetEncodeTimingMap[$pid] ??= new TimingsHandler(
+			self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Encode - " . $pk->getName() . " [0x" . dechex($pid) . "]",
+			self::getSendDataPacketTimings($pk)
 		);
 	}
 
