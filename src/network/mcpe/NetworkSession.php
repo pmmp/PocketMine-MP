@@ -149,7 +149,6 @@ use function ksort;
 use function min;
 use function strcasecmp;
 use function strlen;
-use function strpos;
 use function strtolower;
 use function substr;
 use function time;
@@ -465,8 +464,21 @@ class NetworkSession{
 				try{
 					$decompressed = $this->compressor->decompress($payload);
 				}catch(DecompressionException $e){
-					$this->logger->debug("Failed to decompress packet: " . base64_encode($payload));
-					throw PacketHandlingException::wrap($e, "Compressed packet batch decode error");
+					if($this->isFirstPacket){
+						$this->logger->debug("Failed to decompress packet, assuming client is using the new compression method");
+
+						$this->enableCompression = false;
+						$this->setHandler(new SessionStartPacketHandler(
+							$this->server,
+							$this,
+							fn() => $this->onSessionStartSuccess()
+						));
+
+						$decompressed = $payload;
+					}else{
+						$this->logger->debug("Failed to decompress packet: " . base64_encode($payload));
+						throw PacketHandlingException::wrap($e, "Compressed packet batch decode error");
+					}
 				}finally{
 					Timings::$playerNetworkReceiveDecompress->stopTiming();
 				}
