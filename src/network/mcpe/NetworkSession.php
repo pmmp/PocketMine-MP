@@ -272,7 +272,7 @@ class NetworkSession{
 			$timings = Timings::getEncodeDataPacketTimings($packet);
 			$timings->startTiming();
 			try{
-				$stream = PacketSerializer::encoder($this->packetSerializerContext);
+				$stream = PacketSerializer::encoder($context);
 				$packet->encode($stream);
 				return $stream->getBuffer();
 			}finally{
