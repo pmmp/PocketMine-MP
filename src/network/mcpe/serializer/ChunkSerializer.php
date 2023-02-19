@@ -72,8 +72,7 @@ final class ChunkSerializer{
 	 */
 	public static function serializeSubChunks(Chunk $chunk, RuntimeBlockMapping $blockMapper, PacketSerializerContext $encoderContext, int $mappingProtocol) : array
 	{
-		$stream = PacketSerializer::encoder($encoderContext);
-		$stream->setProtocolId($mappingProtocol);
+		$stream = PacketSerializer::encoder($encoderContext, $mappingProtocol);
 
 		$emptyChunkStream = clone $stream;
 		$emptyChunkStream->putByte(8); //subchunk version 8
@@ -97,8 +96,7 @@ final class ChunkSerializer{
 	}
 
 	public static function serializeFullChunk(Chunk $chunk, RuntimeBlockMapping $blockMapper, PacketSerializerContext $encoderContext, int $mappingProtocol, ?string $tiles = null) : string{
-		$stream = PacketSerializer::encoder($encoderContext);
-		$stream->setProtocolId($mappingProtocol);
+		$stream = PacketSerializer::encoder($encoderContext, $mappingProtocol);
 
 		foreach(self::serializeSubChunks($chunk, $blockMapper, $encoderContext, $mappingProtocol) as $subChunk){
 			$stream->put($subChunk);

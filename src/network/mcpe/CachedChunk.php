@@ -80,8 +80,13 @@ class CachedChunk{
 	}
 
 	public function compressPackets(int $chunkX, int $chunkZ, string $chunkData, Compressor $compressor, PacketSerializerContext $encoderContext, int $mappingProtocol) : void{
-		$this->packet = $compressor->compress(PacketBatch::fromPackets($mappingProtocol, $encoderContext, $this->createPacket($chunkX, $chunkZ, $chunkData))->getBuffer());
-		$this->cachablePacket = $compressor->compress(PacketBatch::fromPackets($mappingProtocol, $encoderContext, $this->createCachablePacket($chunkX, $chunkZ, $chunkData))->getBuffer());
+		$stream = new BinaryStream();
+		PacketBatch::encodePackets($mappingProtocol, $stream, $encoderContext, [$this->createPacket($chunkX, $chunkZ, $chunkData)]);
+		$this->packet = $compressor->compress($stream->getBuffer());
+
+		$stream = new BinaryStream();
+		PacketBatch::encodePackets($mappingProtocol, $stream, $encoderContext, [$this->createCachablePacket($chunkX, $chunkZ, $chunkData)]);
+		$this->cachablePacket = $compressor->compress($stream->getBuffer());
 	}
 
 	public function getCacheablePacket() : string{
