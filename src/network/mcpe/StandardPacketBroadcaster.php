@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\Server;
+use pocketmine\utils\BinaryStream;
 use function spl_object_id;
 
 final class StandardPacketBroadcaster implements PacketBroadcaster{
@@ -38,7 +39,9 @@ final class StandardPacketBroadcaster implements PacketBroadcaster{
 			$serializerContext = $recipient->getPacketSerializerContext();
 			$bufferId = spl_object_id($serializerContext);
 			if(!isset($buffers[$bufferId])){
-				$buffers[$bufferId] = PacketBatch::fromPackets($serializerContext, ...$packets);
+				$stream = new BinaryStream();
+				NetworkSession::encodePacketBatchTimed($stream, $serializerContext, $packets);
+				$buffers[$bufferId] = $stream->getBuffer();
 			}
 
 			//TODO: different compressors might be compatible, it might not be necessary to split them up by object
@@ -52,14 +55,14 @@ final class StandardPacketBroadcaster implements PacketBroadcaster{
 			$buffer = $buffers[$bufferId];
 			foreach($compressorMap as $compressorId => $compressorTargets){
 				$compressor = $compressors[$compressorId];
-				if(!$compressor->willCompress($buffer->getBuffer())){
+				if(!$compressor->willCompress($buffer)){
 					foreach($compressorTargets as $target){
 						foreach($packets as $pk){
 							$target->addToSendBuffer($pk);
 						}
 					}
 				}else{
-					$promise = $this->server->prepareBatch($buffer, $compressor);
+					$promise = $this->server->prepareBatch(new PacketBatch($buffer), $compressor);
 					foreach($compressorTargets as $target){
 						$target->queueCompressed($promise);
 					}
