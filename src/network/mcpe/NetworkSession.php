@@ -499,7 +499,7 @@ class NetworkSession{
 						throw new PacketHandlingException("Unknown packet received");
 					}
 					try{
-						$this->handleDataPacket($packet, $buffer);
+						$this->handleDataPacket($packet, $this->getProtocolId(), $buffer);
 					}catch(PacketHandlingException $e){
 						$this->logger->debug($packet->getName() . ": " . base64_encode($buffer));
 						throw PacketHandlingException::wrap($e, "Error processing " . $packet->getName());
