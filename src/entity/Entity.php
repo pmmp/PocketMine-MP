@@ -803,6 +803,14 @@ abstract class Entity{
 		$this->server->broadcastPackets($this->hasSpawned, [SetActorMotionPacket::create($this->id, $this->getMotion())]);
 	}
 
+	public function getGravity() : float{
+		return $this->gravity;
+	}
+
+	public function setGravity(float $gravity) : void{
+		$this->gravity = $gravity;
+	}
+
 	public function hasGravity() : bool{
 		return $this->gravityEnabled;
 	}
