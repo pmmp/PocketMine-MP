@@ -122,6 +122,7 @@ use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\BinaryStream;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
@@ -178,7 +179,7 @@ class NetworkSession{
 
 	private ?EncryptionContext $cipher = null;
 
-	/** @var Packet[] */
+	/** @var ClientboundPacket[] */
 	private array $sendBuffer = [];
 
 	/**
@@ -263,6 +264,23 @@ class NetworkSession{
 			\Closure::fromCallable([$this, 'onPlayerCreated']),
 			fn() => $this->disconnect("Player creation failed") //TODO: this should never actually occur... right?
 		);
+	}
+
+	/**
+	 * @param ClientboundPacket[] $packets
+	 */
+	public static function encodePacketBatchTimed(BinaryStream $stream, PacketSerializerContext $context, array $packets) : void{
+		PacketBatch::encodeRaw($stream, array_map(function(ClientboundPacket $packet) use ($context) : string{
+			$timings = Timings::getEncodeDataPacketTimings($packet);
+			$timings->startTiming();
+			try{
+				$stream = PacketSerializer::encoder($context);
+				$packet->encode($stream);
+				return $stream->getBuffer();
+			}finally{
+				$timings->stopTiming();
+			}
+		}, $packets));
 	}
 
 	private function onPlayerCreated(Player $player) : void{
@@ -395,7 +413,13 @@ class NetworkSession{
 		}
 
 		try{
-			foreach((new PacketBatch($decompressed))->getPackets($this->packetPool, $this->packetSerializerContext, 1300) as [$packet, $buffer]){
+			$stream = new BinaryStream($decompressed);
+			$count = 0;
+			foreach(PacketBatch::decodeRaw($stream) as $buffer){
+				if(++$count > 1300){
+					throw new PacketHandlingException("Too many packets in batch");
+				}
+				$packet = $this->packetPool->getPacket($buffer);
 				if($packet === null){
 					$this->logger->debug("Unknown packet: " . base64_encode($buffer));
 					throw new PacketHandlingException("Unknown packet received");
@@ -518,12 +542,14 @@ class NetworkSession{
 				$syncMode = false;
 			}
 
-			$batch = PacketBatch::fromPackets($this->packetSerializerContext, ...$this->sendBuffer);
+			$stream = new BinaryStream();
+			self::encodePacketBatchTimed($stream, $this->packetSerializerContext, $this->sendBuffer);
+
 			if($this->enableCompression){
-				$promise = $this->server->prepareBatch($batch, $this->compressor, $syncMode);
+				$promise = $this->server->prepareBatch(new PacketBatch($stream->getBuffer()), $this->compressor, $syncMode);
 			}else{
 				$promise = new CompressBatchPromise();
-				$promise->resolve($batch->getBuffer());
+				$promise->resolve($stream->getBuffer());
 			}
 			$this->sendBuffer = [];
 			$this->queueCompressedNoBufferFlush($promise, $immediate);
