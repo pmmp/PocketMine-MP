@@ -808,6 +808,7 @@ abstract class Entity{
 	}
 
 	public function setGravity(float $gravity) : void{
+		Utils::checkFloatNotInfOrNaN("gravity", $gravity);
 		$this->gravity = $gravity;
 	}
 
