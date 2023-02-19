@@ -75,6 +75,7 @@ use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
@@ -424,12 +425,17 @@ class NetworkSession{
 			throw new PacketHandlingException("Unexpected non-serverbound packet");
 		}
 
-		$ev = new DataPacketPreReceiveEvent($this, $packet->pid());
-		$ev->call();
-		if (!$ev->isIgnored() && in_array($packet->pid(), $ev->getIgnoredPackets(), true)) {
-			$ev->setIgnored();
+		$ev = new DataPacketPreReceiveEvent($this, $packet->pid(), $buffer);
+		if($ev->getPacketId() === ProtocolInfo::MOVE_PLAYER_PACKET ||
+			$ev->getPacketId() === ProtocolInfo::LEVEL_SOUND_EVENT_PACKET_V1 ||
+			$ev->getPacketId() === ProtocolInfo::SET_ACTOR_MOTION_PACKET ||
+			$ev->getPacketId() === ProtocolInfo::ANIMATE_PACKET ||
+			$ev->getPacketId() === ProtocolInfo::PLAYER_HOTBAR_PACKET ||
+			$ev->getPacketId() === ProtocolInfo::CRAFTING_EVENT_PACKET){
+			$ev->cancel();
 		}
-		if($ev->isIgnored()){
+		$ev->call();
+		if($ev->isCancelled()){
 			return;
 		}
 
