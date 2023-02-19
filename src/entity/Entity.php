@@ -779,7 +779,7 @@ abstract class Entity{
 	}
 
 	protected function broadcastMovement(bool $teleport = false) : void{
-		$offsetLocation = $this->getOffsetPosition($this->location);
+		$currentLocation = $this->getOffsetPosition($this->location);
 		if($teleport){
 			//TODO: HACK! workaround for https://github.com/pmmp/PocketMine-MP/issues/4394
 			//this happens because MoveActor*Packet doesn't clear interpolation targets on the client, so the entity
@@ -791,28 +791,28 @@ abstract class Entity{
 				$this->spawnTo($player);
 			}
 		}else{
-			$deltaLoc = $this->getOffsetPosition($this->lastLocation)->subtractVector($offsetLocation);
+			$lastLocation = $this->getOffsetPosition($this->lastLocation);
 			$pk = new MoveActorDeltaPacket();
 			$pk->actorRuntimeId = $this->id;
 			//TODO: if the above hack for #4394 gets removed, we should be setting FLAG_TELEPORT here
 			$pk->flags = $this->onGround ? MoveActorDeltaPacket::FLAG_GROUND : 0;
-			if($deltaLoc->x !== 0.0){
-				$pk->xPos = $offsetLocation->x;
+			if($lastLocation->x !== $currentLocation->x){
+				$pk->xPos = $currentLocation->x;
 				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_X;
 			}
-			if($deltaLoc->y !== 0.0){
-				$pk->yPos = $offsetLocation->y;
+			if($lastLocation->y !== $currentLocation->y){
+				$pk->yPos = $currentLocation->y;
 				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_Y;
 			}
-			if($deltaLoc->z !== 0.0){
-				$pk->zPos = $offsetLocation->z;
+			if($lastLocation->z !== $currentLocation->z){
+				$pk->zPos = $currentLocation->z;
 				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_Z;
 			}
-			if(($this->lastLocation->pitch - $this->location->pitch) !== 0.0){
+			if($this->lastLocation->pitch !== $this->location->pitch){
 				$pk->pitch = $this->location->pitch;
 				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_PITCH;
 			}
-			if(($this->lastLocation->yaw - $this->location->yaw) !== 0.0){
+			if($this->lastLocation->yaw !== $this->location->yaw){
 				$pk->yaw = $this->location->yaw;
 				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_YAW;
 				$pk->headYaw = $this->location->yaw;
@@ -823,7 +823,7 @@ abstract class Entity{
 			if(count($this->needsInitialMovement) !== 0) {
 				$pk2 = MoveActorAbsolutePacket::create(
 					$this->id,
-					$offsetLocation,
+					$currentLocation,
 					$this->location->pitch,
 					$this->location->yaw,
 					$this->location->yaw,
