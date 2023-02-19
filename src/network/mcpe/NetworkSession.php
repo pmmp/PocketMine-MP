@@ -411,7 +411,13 @@ class NetworkSession{
 		}
 
 		try{
-			foreach((new PacketBatch($decompressed))->getPackets($this->packetPool, $this->packetSerializerContext, 1300) as [$packet, $buffer]){
+			$stream = new BinaryStream($decompressed);
+			$count = 0;
+			foreach(PacketBatch::decodeRaw($stream) as $buffer){
+				if(++$count > 1300){
+					throw new PacketHandlingException("Too many packets in batch");
+				}
+				$packet = $this->packetPool->getPacket($buffer);
 				if($packet === null){
 					$this->logger->debug("Unknown packet: " . base64_encode($buffer));
 					throw new PacketHandlingException("Unknown packet received");
