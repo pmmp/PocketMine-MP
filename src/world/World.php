@@ -3118,59 +3118,63 @@ class World implements ChunkManager{
 
 		Timings::$population->startTiming();
 
-		for($xx = -1; $xx <= 1; ++$xx){
-			for($zz = -1; $zz <= 1; ++$zz){
-				if($this->isChunkLocked($chunkX + $xx, $chunkZ + $zz)){
-					//chunk is already in use by another generation request; queue the request for later
-					return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($chunkX, $chunkZ, $associatedChunkLoader);
+		try{
+			for($xx = -1; $xx <= 1; ++$xx){
+				for($zz = -1; $zz <= 1; ++$zz){
+					if($this->isChunkLocked($chunkX + $xx, $chunkZ + $zz)){
+						//chunk is already in use by another generation request; queue the request for later
+						return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($chunkX, $chunkZ, $associatedChunkLoader);
+					}
 				}
 			}
-		}
 
-		$this->activeChunkPopulationTasks[$chunkHash] = true;
-		if($resolver === null){
-			$resolver = new PromiseResolver();
-			$this->chunkPopulationRequestMap[$chunkHash] = $resolver;
-		}
-
-		$chunkPopulationLockId = new ChunkLockId();
-
-		$temporaryChunkLoader = new class implements ChunkLoader{};
-		for($xx = -1; $xx <= 1; ++$xx){
-			for($zz = -1; $zz <= 1; ++$zz){
-				$this->lockChunk($chunkX + $xx, $chunkZ + $zz, $chunkPopulationLockId);
-				$this->registerChunkLoader($temporaryChunkLoader, $chunkX + $xx, $chunkZ + $zz);
+			$this->activeChunkPopulationTasks[$chunkHash] = true;
+			if($resolver === null){
+				$resolver = new PromiseResolver();
+				$this->chunkPopulationRequestMap[$chunkHash] = $resolver;
 			}
-		}
 
-		$centerChunk = $this->loadChunk($chunkX, $chunkZ);
-		$adjacentChunks = $this->getAdjacentChunks($chunkX, $chunkZ);
-		$task = new PopulationTask(
-			$this->worldId,
-			$chunkX,
-			$chunkZ,
-			$centerChunk,
-			$adjacentChunks,
-			function(Chunk $centerChunk, array $adjacentChunks) use ($chunkPopulationLockId, $chunkX, $chunkZ, $temporaryChunkLoader) : void{
-				if(!$this->isLoaded()){
-					return;
+			$chunkPopulationLockId = new ChunkLockId();
+
+			$temporaryChunkLoader = new class implements ChunkLoader{
+			};
+			for($xx = -1; $xx <= 1; ++$xx){
+				for($zz = -1; $zz <= 1; ++$zz){
+					$this->lockChunk($chunkX + $xx, $chunkZ + $zz, $chunkPopulationLockId);
+					$this->registerChunkLoader($temporaryChunkLoader, $chunkX + $xx, $chunkZ + $zz);
 				}
-
-				$this->generateChunkCallback($chunkPopulationLockId, $chunkX, $chunkZ, $centerChunk, $adjacentChunks, $temporaryChunkLoader);
 			}
-		);
-		$workerId = $this->workerPool->selectWorker();
-		if(!isset($this->workerPool->getRunningWorkers()[$workerId]) && isset($this->generatorRegisteredWorkers[$workerId])){
-			$this->logger->debug("Selected worker $workerId previously had generator registered, but is now offline");
-			unset($this->generatorRegisteredWorkers[$workerId]);
-		}
-		if(!isset($this->generatorRegisteredWorkers[$workerId])){
-			$this->registerGeneratorToWorker($workerId);
-		}
-		$this->workerPool->submitTaskToWorker($task, $workerId);
 
-		Timings::$population->stopTiming();
-		return $resolver->getPromise();
+			$centerChunk = $this->loadChunk($chunkX, $chunkZ);
+			$adjacentChunks = $this->getAdjacentChunks($chunkX, $chunkZ);
+			$task = new PopulationTask(
+				$this->worldId,
+				$chunkX,
+				$chunkZ,
+				$centerChunk,
+				$adjacentChunks,
+				function(Chunk $centerChunk, array $adjacentChunks) use ($chunkPopulationLockId, $chunkX, $chunkZ, $temporaryChunkLoader) : void{
+					if(!$this->isLoaded()){
+						return;
+					}
+
+					$this->generateChunkCallback($chunkPopulationLockId, $chunkX, $chunkZ, $centerChunk, $adjacentChunks, $temporaryChunkLoader);
+				}
+			);
+			$workerId = $this->workerPool->selectWorker();
+			if(!isset($this->workerPool->getRunningWorkers()[$workerId]) && isset($this->generatorRegisteredWorkers[$workerId])){
+				$this->logger->debug("Selected worker $workerId previously had generator registered, but is now offline");
+				unset($this->generatorRegisteredWorkers[$workerId]);
+			}
+			if(!isset($this->generatorRegisteredWorkers[$workerId])){
+				$this->registerGeneratorToWorker($workerId);
+			}
+			$this->workerPool->submitTaskToWorker($task, $workerId);
+
+			return $resolver->getPromise();
+		}finally{
+			Timings::$population->stopTiming();
+		}
 	}
 
 	/**
