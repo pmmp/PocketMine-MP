@@ -37,6 +37,9 @@ use function get_debug_type;
 use function implode;
 use function is_array;
 use function is_bool;
+use function is_int;
+use function is_numeric;
+use function is_string;
 use function json_decode;
 use function json_encode;
 use function preg_match_all;
@@ -397,7 +400,7 @@ class Config{
 	}
 
 	public function getNestedString(string $key, string $default = null) : ?string {
-		return is_string($value = $this->getNested($key)) ? $value : $default;
+		return (is_string($value = $this->getNested($key)) or is_numeric($value)) ? (string) $value : $default;
 	}
 
 	public function getNestedInt(string $key, int $default = null) : ?int {
@@ -405,7 +408,7 @@ class Config{
 	}
 
 	public function getNestedFloat(string $key, float $default = null) : ?float {
-		return is_float($value = $this->getNested($key)) ? $value : $default;
+		return is_numeric($value = $this->getNested($key)) ? (float) $value : $default;
 	}
 
 	public function getNestedBoolean(string $key, bool $default = null) : ?bool {
@@ -466,7 +469,7 @@ class Config{
 	}
 
 	public function getString(string $key, string $default = null) : ?string {
-		return is_string($value = $this->config[$key]) ? $value : $default;
+		return (is_string($value = $this->config[$key]) or is_numeric($value)) ? (string) $value : $default;
 	}
 
 	public function getInt(string $key, int $default = null) : ?int {
@@ -478,7 +481,7 @@ class Config{
 	}
 
 	public function getFloat(string $key, float $default = null) : ?float {
-		return is_float($value = $this->config[$key]) ? $value : $default;
+		return is_numeric($value = $this->config[$key]) ? (float) $value : $default;
 	}
 
 	/**
