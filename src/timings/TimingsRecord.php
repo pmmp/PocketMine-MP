@@ -96,7 +96,7 @@ final class TimingsRecord{
 		self::$records[spl_object_id($this)] = $this;
 	}
 
-	public function getTimerId() : int{ return spl_object_id($this->handler); }
+	public function getTimerId() : int{ return spl_object_id($this); }
 
 	public function getParentTimerId() : ?int{ return $this->parentRecord?->getTimerId(); }
 
