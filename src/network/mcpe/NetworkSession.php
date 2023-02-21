@@ -120,6 +120,7 @@ use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\BinaryStream;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
@@ -129,7 +130,6 @@ use function array_values;
 use function base64_encode;
 use function bin2hex;
 use function count;
-use function function_exists;
 use function get_class;
 use function hrtime;
 use function in_array;
@@ -143,7 +143,6 @@ use function strtolower;
 use function substr;
 use function time;
 use function ucfirst;
-use function xdebug_is_debugger_active;
 use const JSON_THROW_ON_ERROR;
 use const SORT_NUMERIC;
 
@@ -178,7 +177,7 @@ class NetworkSession{
 
 	private ?EncryptionContext $cipher = null;
 
-	/** @var Packet[] */
+	/** @var ClientboundPacket[] */
 	private array $sendBuffer = [];
 
 	/**
@@ -263,6 +262,23 @@ class NetworkSession{
 			\Closure::fromCallable([$this, 'onPlayerCreated']),
 			fn() => $this->disconnect("Player creation failed") //TODO: this should never actually occur... right?
 		);
+	}
+
+	/**
+	 * @param ClientboundPacket[] $packets
+	 */
+	public static function encodePacketBatchTimed(BinaryStream $stream, PacketSerializerContext $context, array $packets) : void{
+		PacketBatch::encodeRaw($stream, array_map(function(ClientboundPacket $packet) use ($context) : string{
+			$timings = Timings::getEncodeDataPacketTimings($packet);
+			$timings->startTiming();
+			try{
+				$stream = PacketSerializer::encoder($context);
+				$packet->encode($stream);
+				return $stream->getBuffer();
+			}finally{
+				$timings->stopTiming();
+			}
+		}, $packets));
 	}
 
 	private function onPlayerCreated(Player $player) : void{
@@ -360,59 +376,67 @@ class NetworkSession{
 			return;
 		}
 
-		if($this->incomingPacketBatchBudget <= 0){
-			if(!function_exists('xdebug_is_debugger_active') || !xdebug_is_debugger_active()){
-				throw new PacketHandlingException("Receiving packets too fast");
-			}else{
-				//when a debugging session is active, the server may halt at any point for an indefinite length of time,
-				//in which time the client will continue to send packets
-				$this->incomingPacketBatchBudget = self::INCOMING_PACKET_BATCH_MAX_BUDGET;
-			}
-		}
-		$this->incomingPacketBatchBudget--;
-
-		if($this->cipher !== null){
-			Timings::$playerNetworkReceiveDecrypt->startTiming();
-			try{
-				$payload = $this->cipher->decrypt($payload);
-			}catch(DecryptionException $e){
-				$this->logger->debug("Encrypted packet: " . base64_encode($payload));
-				throw PacketHandlingException::wrap($e, "Packet decryption error");
-			}finally{
-				Timings::$playerNetworkReceiveDecrypt->stopTiming();
-			}
-		}
-
-		if($this->enableCompression){
-			Timings::$playerNetworkReceiveDecompress->startTiming();
-			try{
-				$decompressed = $this->compressor->decompress($payload);
-			}catch(DecompressionException $e){
-				$this->logger->debug("Failed to decompress packet: " . base64_encode($payload));
-				throw PacketHandlingException::wrap($e, "Compressed packet batch decode error");
-			}finally{
-				Timings::$playerNetworkReceiveDecompress->stopTiming();
-			}
-		}else{
-			$decompressed = $payload;
-		}
-
+		Timings::$playerNetworkReceive->startTiming();
 		try{
-			foreach((new PacketBatch($decompressed))->getPackets($this->packetPool, $this->packetSerializerContext, 1300) as [$packet, $buffer]){
-				if($packet === null){
-					$this->logger->debug("Unknown packet: " . base64_encode($buffer));
-					throw new PacketHandlingException("Unknown packet received");
-				}
-				try{
-					$this->handleDataPacket($packet, $buffer);
-				}catch(PacketHandlingException $e){
-					$this->logger->debug($packet->getName() . ": " . base64_encode($buffer));
-					throw PacketHandlingException::wrap($e, "Error processing " . $packet->getName());
+			if($this->incomingPacketBatchBudget <= 0){
+				$this->updatePacketBudget();
+				if($this->incomingPacketBatchBudget <= 0){
+					throw new PacketHandlingException("Receiving packets too fast");
 				}
 			}
-		}catch(PacketDecodeException $e){
-			$this->logger->logException($e);
-			throw PacketHandlingException::wrap($e, "Packet batch decode error");
+			$this->incomingPacketBatchBudget--;
+
+			if($this->cipher !== null){
+				Timings::$playerNetworkReceiveDecrypt->startTiming();
+				try{
+					$payload = $this->cipher->decrypt($payload);
+				}catch(DecryptionException $e){
+					$this->logger->debug("Encrypted packet: " . base64_encode($payload));
+					throw PacketHandlingException::wrap($e, "Packet decryption error");
+				}finally{
+					Timings::$playerNetworkReceiveDecrypt->stopTiming();
+				}
+			}
+
+			if($this->enableCompression){
+				Timings::$playerNetworkReceiveDecompress->startTiming();
+				try{
+					$decompressed = $this->compressor->decompress($payload);
+				}catch(DecompressionException $e){
+					$this->logger->debug("Failed to decompress packet: " . base64_encode($payload));
+					throw PacketHandlingException::wrap($e, "Compressed packet batch decode error");
+				}finally{
+					Timings::$playerNetworkReceiveDecompress->stopTiming();
+				}
+			}else{
+				$decompressed = $payload;
+			}
+
+			try{
+				$stream = new BinaryStream($decompressed);
+				$count = 0;
+				foreach(PacketBatch::decodeRaw($stream) as $buffer){
+					if(++$count > 1300){
+						throw new PacketHandlingException("Too many packets in batch");
+					}
+					$packet = $this->packetPool->getPacket($buffer);
+					if($packet === null){
+						$this->logger->debug("Unknown packet: " . base64_encode($buffer));
+						throw new PacketHandlingException("Unknown packet received");
+					}
+					try{
+						$this->handleDataPacket($packet, $buffer);
+					}catch(PacketHandlingException $e){
+						$this->logger->debug($packet->getName() . ": " . base64_encode($buffer));
+						throw PacketHandlingException::wrap($e, "Error processing " . $packet->getName());
+					}
+				}
+			}catch(PacketDecodeException $e){
+				$this->logger->logException($e);
+				throw PacketHandlingException::wrap($e, "Packet batch decode error");
+			}
+		}finally{
+			Timings::$playerNetworkReceive->stopTiming();
 		}
 	}
 
@@ -500,22 +524,29 @@ class NetworkSession{
 
 	private function flushSendBuffer(bool $immediate = false) : void{
 		if(count($this->sendBuffer) > 0){
-			$syncMode = null; //automatic
-			if($immediate){
-				$syncMode = true;
-			}elseif($this->forceAsyncCompression){
-				$syncMode = false;
-			}
+			Timings::$playerNetworkSend->startTiming();
+			try{
+				$syncMode = null; //automatic
+				if($immediate){
+					$syncMode = true;
+				}elseif($this->forceAsyncCompression){
+					$syncMode = false;
+				}
 
-			$batch = PacketBatch::fromPackets($this->packetSerializerContext, ...$this->sendBuffer);
-			if($this->enableCompression){
-				$promise = $this->server->prepareBatch($batch, $this->compressor, $syncMode);
-			}else{
-				$promise = new CompressBatchPromise();
-				$promise->resolve($batch->getBuffer());
+				$stream = new BinaryStream();
+				self::encodePacketBatchTimed($stream, $this->packetSerializerContext, $this->sendBuffer);
+
+				if($this->enableCompression){
+					$promise = $this->server->prepareBatch(new PacketBatch($stream->getBuffer()), $this->compressor, $syncMode);
+				}else{
+					$promise = new CompressBatchPromise();
+					$promise->resolve($stream->getBuffer());
+				}
+				$this->sendBuffer = [];
+				$this->queueCompressedNoBufferFlush($promise, $immediate);
+			}finally{
+				Timings::$playerNetworkSend->stopTiming();
 			}
-			$this->sendBuffer = [];
-			$this->queueCompressedNoBufferFlush($promise, $immediate);
 		}
 	}
 
@@ -528,35 +559,45 @@ class NetworkSession{
 	}
 
 	public function queueCompressed(CompressBatchPromise $payload, bool $immediate = false) : void{
-		$this->flushSendBuffer($immediate); //Maintain ordering if possible
-		$this->queueCompressedNoBufferFlush($payload, $immediate);
+		Timings::$playerNetworkSend->startTiming();
+		try{
+			$this->flushSendBuffer($immediate); //Maintain ordering if possible
+			$this->queueCompressedNoBufferFlush($payload, $immediate);
+		}finally{
+			Timings::$playerNetworkSend->stopTiming();
+		}
 	}
 
 	private function queueCompressedNoBufferFlush(CompressBatchPromise $payload, bool $immediate = false) : void{
-		if($immediate){
-			//Skips all queues
-			$this->sendEncoded($payload->getResult(), true);
-		}else{
-			$this->compressedQueue->enqueue($payload);
-			$payload->onResolve(function(CompressBatchPromise $payload) : void{
-				if($this->connected && $this->compressedQueue->bottom() === $payload){
-					$this->compressedQueue->dequeue(); //result unused
-					$this->sendEncoded($payload->getResult());
+		Timings::$playerNetworkSend->startTiming();
+		try{
+			if($immediate){
+				//Skips all queues
+				$this->sendEncoded($payload->getResult(), true);
+			}else{
+				$this->compressedQueue->enqueue($payload);
+				$payload->onResolve(function(CompressBatchPromise $payload) : void{
+					if($this->connected && $this->compressedQueue->bottom() === $payload){
+						$this->compressedQueue->dequeue(); //result unused
+						$this->sendEncoded($payload->getResult());
 
-					while(!$this->compressedQueue->isEmpty()){
-						/** @var CompressBatchPromise $current */
-						$current = $this->compressedQueue->bottom();
-						if($current->hasResult()){
-							$this->compressedQueue->dequeue();
+						while(!$this->compressedQueue->isEmpty()){
+							/** @var CompressBatchPromise $current */
+							$current = $this->compressedQueue->bottom();
+							if($current->hasResult()){
+								$this->compressedQueue->dequeue();
 
-							$this->sendEncoded($current->getResult());
-						}else{
-							//can't send any more queued until this one is ready
-							break;
+								$this->sendEncoded($current->getResult());
+							}else{
+								//can't send any more queued until this one is ready
+								break;
+							}
 						}
 					}
-				}
-			});
+				});
+			}
+		}finally{
+			Timings::$playerNetworkSend->stopTiming();
 		}
 	}
 
@@ -1143,6 +1184,23 @@ class NetworkSession{
 		$this->sendDataPacket(ToastRequestPacket::create($title, $body));
 	}
 
+	private function updatePacketBudget() : void{
+		$nowNs = hrtime(true);
+		$timeSinceLastUpdateNs = $nowNs - $this->lastPacketBudgetUpdateTimeNs;
+		if($timeSinceLastUpdateNs > 50_000_000){
+			$ticksSinceLastUpdate = intdiv($timeSinceLastUpdateNs, 50_000_000);
+			/*
+			 * If the server takes an abnormally long time to process a tick, add the budget for time difference to
+			 * compensate. This extra budget may be very large, but it will disappear the next time a normal update
+			 * occurs. This ensures that backlogs during a large lag spike don't cause everyone to get kicked.
+			 * As long as all the backlogged packets are processed before the next tick, everything should be OK for
+			 * clients behaving normally.
+			 */
+			$this->incomingPacketBatchBudget = min($this->incomingPacketBatchBudget, self::INCOMING_PACKET_BATCH_MAX_BUDGET) + (self::INCOMING_PACKET_BATCH_PER_TICK * 2 * $ticksSinceLastUpdate);
+			$this->lastPacketBudgetUpdateTimeNs = $nowNs;
+		}
+	}
+
 	public function tick() : void{
 		if(!$this->isConnected()){
 			$this->dispose();
@@ -1170,16 +1228,5 @@ class NetworkSession{
 		}
 
 		$this->flushSendBuffer();
-
-		$nowNs = hrtime(true);
-		$timeSinceLastUpdateNs = $nowNs - $this->lastPacketBudgetUpdateTimeNs;
-		if($timeSinceLastUpdateNs > 50_000_000){
-			$ticksSinceLastUpdate = intdiv($timeSinceLastUpdateNs, 50_000_000);
-			$this->incomingPacketBatchBudget = min(
-				$this->incomingPacketBatchBudget + (self::INCOMING_PACKET_BATCH_PER_TICK * 2 * $ticksSinceLastUpdate),
-				self::INCOMING_PACKET_BATCH_MAX_BUDGET
-			);
-			$this->lastPacketBudgetUpdateTimeNs = $nowNs;
-		}
 	}
 }
