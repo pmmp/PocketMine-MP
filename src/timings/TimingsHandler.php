@@ -56,8 +56,8 @@ class TimingsHandler{
 				"Count: $count",
 				"Avg: $avg",
 				"Violations: " . $timings->getViolations(),
-				"Id: " . $timings->getTimerId(),
-				"ParentId: " . ($timings->getParentTimerId() ?? "none")
+				"Id: " . $timings->getId(),
+				"ParentId: " . ($timings->getParentId() ?? "none")
 			]);
 		}
 		$result = [];
@@ -184,8 +184,8 @@ class TimingsHandler{
 
 		$record = TimingsRecord::getCurrentRecord();
 		if($record !== null){
-			if($record->getTimerId() !== spl_object_id($this)){
-				throw new \LogicException("Timer \"" . $record->getName() . "\" (ID " . $record->getTimerId() . ") should have been stopped before stopping timer \"" . $this->name . "\" (ID " . spl_object_id($this) . ")");
+			if($record->getId() !== spl_object_id($this)){
+				throw new \LogicException("Timer \"" . $record->getName() . "\" should have been stopped before stopping timer \"" . $this->name . "\"");
 			}
 			$record->stopTiming($now);
 		}
