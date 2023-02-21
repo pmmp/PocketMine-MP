@@ -63,7 +63,7 @@ final class ItemDataUpgrader{
 			$blockStateData = null;
 		}
 
-		[$newNameId, $newMeta] = $this->idMetaUpgrader->upgradeStringIdMeta($rawNameId, $meta);
+		[$newNameId, $newMeta] = $this->idMetaUpgrader->upgrade($rawNameId, $meta);
 
 		//TODO: this won't account for spawn eggs from before 1.16.100 - perhaps we're lucky and they just left the meta in there anyway?
 
@@ -136,7 +136,7 @@ final class ItemDataUpgrader{
 			$blockStateData = null;
 		}
 
-		[$newNameId, $newMeta] = $this->idMetaUpgrader->upgradeStringIdMeta($rawNameId, $meta);
+		[$newNameId, $newMeta] = $this->idMetaUpgrader->upgrade($rawNameId, $meta);
 
 		//TODO: this won't account for spawn eggs from before 1.16.100 - perhaps we're lucky and they just left the meta in there anyway?
 

@@ -60,7 +60,7 @@ final class ItemIdMetaUpgrader{
 	/**
 	 * @phpstan-return array{string, int}
 	 */
-	public function upgradeStringIdMeta(string $id, int $meta) : array{
+	public function upgrade(string $id, int $meta) : array{
 		$newId = $id;
 		$newMeta = $meta;
 		foreach($this->idMetaUpgradeSchemas as $schema){
