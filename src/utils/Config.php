@@ -400,7 +400,7 @@ class Config{
 	}
 
 	public function getNestedString(string $key, string $default = null) : ?string {
-		return (is_string($value = $this->getNested($key)) or is_numeric($value)) ? (string) $value : $default;
+		return (is_string($value = $this->getNested($key)) || is_numeric($value)) ? (string) $value : $default;
 	}
 
 	public function getNestedInt(string $key, int $default = null) : ?int {
@@ -469,7 +469,7 @@ class Config{
 	}
 
 	public function getString(string $key, string $default = null) : ?string {
-		return (is_string($value = $this->config[$key]) or is_numeric($value)) ? (string) $value : $default;
+		return (is_string($value = $this->config[$key]) || is_numeric($value)) ? (string) $value : $default;
 	}
 
 	public function getInt(string $key, int $default = null) : ?int {
