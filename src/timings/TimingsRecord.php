@@ -24,6 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\timings;
 
 use pocketmine\Server;
+use pocketmine\utils\AssumptionFailedError;
+use function array_pop;
+use function end;
 use function round;
 use function spl_object_id;
 
@@ -38,6 +41,12 @@ final class TimingsRecord{
 	 * @phpstan-var array<int, self>
 	 */
 	private static array $records = [];
+
+	/**
+	 * @var self[]
+	 * @phpstan-var array<int, self>
+	 */
+	private static array $recordStack = [];
 
 	public static function clearRecords() : void{
 		foreach(self::$records as $record){
@@ -81,10 +90,15 @@ final class TimingsRecord{
 
 	public function __construct(
 		//I'm not the biggest fan of this cycle, but it seems to be the most effective way to avoid leaking anything.
-		private TimingsHandler $handler
+		private TimingsHandler $handler,
+		private ?TimingsRecord $parentRecord
 	){
 		self::$records[spl_object_id($this)] = $this;
 	}
+
+	public function getTimerId() : int{ return spl_object_id($this->handler); }
+
+	public function getParentTimerId() : ?int{ return $this->parentRecord?->getTimerId(); }
 
 	public function getName() : string{ return $this->handler->getName(); }
 
@@ -104,11 +118,15 @@ final class TimingsRecord{
 
 	public function startTiming(int $now) : void{
 		$this->start = $now;
+		self::$recordStack[] = $this;
 	}
 
 	public function stopTiming(int $now) : void{
 		if($this->start == 0){
 			return;
+		}
+		if(array_pop(self::$recordStack) !== $this){
+			throw new AssumptionFailedError("stopTiming() called on a non-current timer");
 		}
 		$diff = $now - $this->start;
 		$this->totalTime += $diff;
@@ -116,5 +134,10 @@ final class TimingsRecord{
 		++$this->curCount;
 		++$this->count;
 		$this->start = 0;
+	}
+
+	public static function getCurrentRecord() : ?self{
+		$end = end(self::$recordStack);
+		return $end === false ? null : $end;
 	}
 }
