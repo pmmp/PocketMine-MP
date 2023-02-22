@@ -23,25 +23,35 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
+use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\Server;
 use pocketmine\utils\BinaryStream;
+use function array_map;
 use function spl_object_id;
 
 final class StandardPacketBroadcaster implements PacketBroadcaster{
 	public function __construct(private Server $server){}
 
 	public function broadcastPackets(array $recipients, array $packets) : void{
-		$buffers = [];
+		$batchBuffers = [];
+
+		/** @var string[][] $packetBuffers */
+		$packetBuffers = [];
 		$compressors = [];
+		/** @var NetworkSession[][][] $targetMap */
 		$targetMap = [];
 		foreach($recipients as $recipient){
 			$serializerContext = $recipient->getPacketSerializerContext();
 			$bufferId = spl_object_id($serializerContext);
-			if(!isset($buffers[$bufferId])){
+			if(!isset($batchBuffers[$bufferId])){
+				$packetBuffers[$bufferId] = array_map(function(ClientboundPacket $packet) use ($serializerContext) : string{
+					return NetworkSession::encodePacketTimed(PacketSerializer::encoder($serializerContext), $packet);
+				}, $packets);
 				$stream = new BinaryStream();
-				NetworkSession::encodePacketBatchTimed($stream, $serializerContext, $packets);
-				$buffers[$bufferId] = $stream->getBuffer();
+				PacketBatch::encodeRaw($stream, $packetBuffers[$bufferId]);
+				$batchBuffers[$bufferId] = $stream->getBuffer();
 			}
 
 			//TODO: different compressors might be compatible, it might not be necessary to split them up by object
@@ -52,17 +62,17 @@ final class StandardPacketBroadcaster implements PacketBroadcaster{
 		}
 
 		foreach($targetMap as $bufferId => $compressorMap){
-			$buffer = $buffers[$bufferId];
+			$batchBuffer = $batchBuffers[$bufferId];
 			foreach($compressorMap as $compressorId => $compressorTargets){
 				$compressor = $compressors[$compressorId];
-				if(!$compressor->willCompress($buffer)){
+				if(!$compressor->willCompress($batchBuffer)){
 					foreach($compressorTargets as $target){
-						foreach($packets as $pk){
-							$target->addToSendBuffer($pk);
+						foreach($packetBuffers[$bufferId] as $packetBuffer){
+							$target->addToSendBuffer($packetBuffer);
 						}
 					}
 				}else{
-					$promise = $this->server->prepareBatch(new PacketBatch($buffer), $compressor);
+					$promise = $this->server->prepareBatch(new PacketBatch($batchBuffer), $compressor);
 					foreach($compressorTargets as $target){
 						$target->queueCompressed($promise);
 					}
