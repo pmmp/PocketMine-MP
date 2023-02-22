@@ -887,6 +887,9 @@ class Server{
 			if($this->configGroup->getPropertyInt("network.batch-threshold", 256) >= 0){
 				$netCompressionThreshold = $this->configGroup->getPropertyInt("network.batch-threshold", 256);
 			}
+			if($netCompressionThreshold < 0){
+				$netCompressionThreshold = null;
+			}
 
 			$netCompressionLevel = $this->configGroup->getPropertyInt("network.compression-level", 6);
 			if($netCompressionLevel < 1 || $netCompressionLevel > 9){

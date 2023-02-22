@@ -32,7 +32,7 @@ use function zlib_decode;
 use function zlib_encode;
 use const ZLIB_ENCODING_RAW;
 
-final class ZlibCompressor implements Compressor{
+final class ZlibCompressor implements ThresholdCompressor{
 	use SingletonTrait;
 
 	public const DEFAULT_LEVEL = 7;
@@ -48,12 +48,16 @@ final class ZlibCompressor implements Compressor{
 
 	public function __construct(
 		private int $level,
-		private int $minCompressionSize,
+		private ?int $minCompressionSize,
 		private int $maxDecompressionSize
 	){}
 
+	public function getCompressionThreshold() : ?int{
+		return $this->minCompressionSize;
+	}
+
 	public function willCompress(string $data) : bool{
-		return $this->minCompressionSize > -1 && strlen($data) >= $this->minCompressionSize;
+		return $this->minCompressionSize !== null && strlen($data) >= $this->minCompressionSize;
 	}
 
 	/**
