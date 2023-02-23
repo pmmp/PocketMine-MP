@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ea992cf9b9be39c9d5251b7769f9d044",
+    "content-hash": "8d4f1e461bcbce908a6a51d3e73f0440",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -276,16 +276,16 @@
         },
         {
             "name": "pocketmine/bedrock-data",
-            "version": "dev-modern-world-support",
+            "version": "2.0.0+bedrock-1.19.60",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockData.git",
-                "reference": "27cb4d5133d6cbe30018b759eb97e3fdc7036c3b"
+                "reference": "957e49b2381641af29f595e4f32ded3e76ce4723"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/27cb4d5133d6cbe30018b759eb97e3fdc7036c3b",
-                "reference": "27cb4d5133d6cbe30018b759eb97e3fdc7036c3b",
+                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/957e49b2381641af29f595e4f32ded3e76ce4723",
+                "reference": "957e49b2381641af29f595e4f32ded3e76ce4723",
                 "shasum": ""
             },
             "type": "library",
@@ -296,9 +296,9 @@
             "description": "Blobs of data generated from Minecraft: Bedrock Edition, used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockData/issues",
-                "source": "https://github.com/pmmp/BedrockData/tree/modern-world-support"
+                "source": "https://github.com/pmmp/BedrockData/tree/2.0.0+bedrock-1.19.60"
             },
-            "time": "2023-02-08T18:33:49+00:00"
+            "time": "2023-02-23T21:25:04+00:00"
         },
         {
             "name": "pocketmine/bedrock-item-upgrade-schema",
@@ -3369,9 +3369,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "pocketmine/bedrock-data": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
+use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
 use pocketmine\data\bedrock\block\BlockStateSerializer;
@@ -31,7 +32,6 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
-use Symfony\Component\Filesystem\Path;
 
 /**
  * @internal
@@ -50,8 +50,8 @@ final class RuntimeBlockMapping{
 	private int $fallbackStateId;
 
 	private static function make() : self{
-		$canonicalBlockStatesRaw = Filesystem::fileGetContents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt"));
-		$metaMappingRaw = Filesystem::fileGetContents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'block_state_meta_map.json'));
+		$canonicalBlockStatesRaw = Filesystem::fileGetContents(BedrockDataFiles::CANONICAL_BLOCK_STATES_NBT);
+		$metaMappingRaw = Filesystem::fileGetContents(BedrockDataFiles::BLOCK_STATE_META_MAP_JSON);
 		return new self(
 			BlockStateDictionary::loadFromString($canonicalBlockStatesRaw, $metaMappingRaw),
 			GlobalBlockStateHandlers::getSerializer()

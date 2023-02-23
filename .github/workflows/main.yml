@@ -189,6 +189,9 @@ jobs:
       - name: Regenerate RuntimeEnum(De)serializer
         run: php build/generate-runtime-enum-serializers.php
 
+      - name: Regenerate BedrockData available files constants
+        run: php build/generate-bedrockdata-path-consts.php
+
       - name: Verify code is unchanged
         run: |
           git diff
