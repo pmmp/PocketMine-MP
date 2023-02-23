@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\build\generate_bedrockdata_path_consts;
 
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function dirname;
 use function fclose;
 use function fopen;
