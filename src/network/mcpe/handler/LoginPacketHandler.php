@@ -99,7 +99,7 @@ class LoginPacketHandler extends ChunkRequestPacketHandler{
 		$minor = (int) $matches[2];
 		$patch = (int) $matches[3];
 		if($major === 1 && $minor === 19 && $patch === 62){
-			$this->session->setProtocolId(ProtocolInfo::PROTOCOL_1_19_62);
+			$this->session->setProtocolId(ProtocolInfo::PROTOCOL_1_19_63);
 		}
 
 		try{

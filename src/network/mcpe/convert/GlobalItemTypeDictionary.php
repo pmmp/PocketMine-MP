@@ -79,8 +79,8 @@ final class GlobalItemTypeDictionary{
 	public function __construct(private array $dictionaries){}
 
 	public static function getDictionaryProtocol(int $protocolId) : int{
-		if($protocolId >= ProtocolInfo::PROTOCOL_1_19_62){
-			return ProtocolInfo::PROTOCOL_1_19_60;
+		if($protocolId === ProtocolInfo::PROTOCOL_1_19_60){
+			return ProtocolInfo::PROTOCOL_1_19_63;
 		}
 
 		if($protocolId >= ProtocolInfo::PROTOCOL_1_19_10 && $protocolId < ProtocolInfo::PROTOCOL_1_19_40){
