@@ -64,18 +64,6 @@ class LoginPacketHandler extends PacketHandler{
 	){}
 
 	public function handleLogin(LoginPacket $packet) : bool{
-		if(!$this->isCompatibleProtocol($packet->protocol)){
-			$this->session->sendDataPacket(PlayStatusPacket::create($packet->protocol < ProtocolInfo::CURRENT_PROTOCOL ? PlayStatusPacket::LOGIN_FAILED_CLIENT : PlayStatusPacket::LOGIN_FAILED_SERVER), true);
-
-			//This pocketmine disconnect message will only be seen by the console (PlayStatusPacket causes the messages to be shown for the client)
-			$this->session->disconnect(
-				$this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_disconnect_incompatibleProtocol((string) $packet->protocol)),
-				false
-			);
-
-			return true;
-		}
-
 		$extraData = $this->fetchAuthData($packet->chainDataJwt);
 
 		if(!Player::isValidUserName($extraData->displayName)){
@@ -236,9 +224,5 @@ class LoginPacketHandler extends PacketHandler{
 	protected function processLogin(LoginPacket $packet, bool $authRequired) : void{
 		$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($packet->chainDataJwt->chain, $packet->clientDataJwt, $authRequired, $this->authCallback));
 		$this->session->setHandler(null); //drop packets received during login verification
-	}
-
-	protected function isCompatibleProtocol(int $protocolVersion) : bool{
-		return $protocolVersion === ProtocolInfo::CURRENT_PROTOCOL;
 	}
 }
