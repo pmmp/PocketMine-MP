@@ -25,9 +25,9 @@ namespace pocketmine\inventory;
 
 use pocketmine\crafting\CraftingManagerFromDataHelper;
 use pocketmine\crafting\json\ItemStackData;
+use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\item\Item;
 use pocketmine\utils\SingletonTrait;
-use Symfony\Component\Filesystem\Path;
 
 final class CreativeInventory{
 	use SingletonTrait;
@@ -37,7 +37,7 @@ final class CreativeInventory{
 
 	private function __construct(){
 		$creativeItems = CraftingManagerFromDataHelper::loadJsonArrayOfObjectsFile(
-			Path::join(\pocketmine\BEDROCK_DATA_PATH, "creativeitems.json"),
+			BedrockDataFiles::CREATIVEITEMS_JSON,
 			ItemStackData::class
 		);
 		foreach($creativeItems as $data){

@@ -26,7 +26,10 @@ namespace pocketmine\network\mcpe\raklib;
 use raklib\server\ipc\InterThreadChannelReader;
 
 final class PthreadsChannelReader implements InterThreadChannelReader{
-	public function __construct(private \Threaded $buffer){}
+	/**
+	 * @phpstan-param \ThreadedArray<int, string> $buffer
+	 */
+	public function __construct(private \ThreadedArray $buffer){}
 
 	public function read() : ?string{
 		return $this->buffer->shift();

@@ -29,13 +29,17 @@ use pocketmine\data\runtime\InvalidSerializedRuntimeDataException;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\light\LightUpdate;
+use function get_class;
 use function min;
 
 /**
- * Manages deserializing block types from their legacy blockIDs and metadata.
- * This is primarily needed for loading chunks from disk.
+ * Blocks are stored as state IDs in chunks at runtime (it would waste far too much memory to represent every block as
+ * an object). This class maps block state IDs to their corresponding block objects when reading blocks from chunks at
+ * runtime.
+ *
+ * @internal Plugin devs shouldn't need to interact with this class at all, unless registering a new block type.
  */
-class BlockFactory{
+class RuntimeBlockStateRegistry{
 	use SingletonTrait;
 
 	/**
@@ -79,6 +83,34 @@ class BlockFactory{
 	}
 
 	/**
+	 * Generates all the possible valid blockstates for a given block type.
+	 *
+	 * @phpstan-return \Generator<int, Block, void, void>
+	 */
+	private static function generateAllStatesForType(Block $block) : \Generator{
+		//TODO: this bruteforce approach to discovering all valid states is very inefficient for larger state data sizes
+		//at some point we'll need to find a better way to do this
+		$bits = $block->getRequiredTypeDataBits() + $block->getRequiredStateDataBits();
+		if($bits > Block::INTERNAL_STATE_DATA_BITS){
+			throw new \InvalidArgumentException("Block state data cannot use more than " . Block::INTERNAL_STATE_DATA_BITS . " bits");
+		}
+		for($stateData = 0; $stateData < (1 << $bits); ++$stateData){
+			$v = clone $block;
+			try{
+				$v->decodeStateData($stateData);
+				if($v->computeStateData() !== $stateData){
+					//TODO: this should probably be a hard error
+					throw new \LogicException(get_class($block) . "::decodeStateData() accepts invalid state data (returned " . $v->computeStateData() . " for input $stateData)");
+				}
+			}catch(InvalidSerializedRuntimeDataException){ //invalid property combination, leave it
+				continue;
+			}
+
+			yield $v;
+		}
+	}
+
+	/**
 	 * Maps a block type to its corresponding type ID. This is necessary for the block to be recognized when loading
 	 * from disk, and also when being read at runtime.
 	 *
@@ -99,24 +131,7 @@ class BlockFactory{
 
 		$this->typeIndex[$typeId] = clone $block;
 
-		//TODO: this bruteforce approach to discovering all valid states is very inefficient for larger state data sizes
-		//at some point we'll need to find a better way to do this
-		$bits = $block->getRequiredTypeDataBits() + $block->getRequiredStateDataBits();
-		if($bits > Block::INTERNAL_STATE_DATA_BITS){
-			throw new \InvalidArgumentException("Block state data cannot use more than " . Block::INTERNAL_STATE_DATA_BITS . " bits");
-		}
-		for($stateData = 0; $stateData < (1 << $bits); ++$stateData){
-			$v = clone $block;
-			try{
-				$v->decodeStateData($stateData);
-				if($v->computeStateData() !== $stateData){
-					//if the fullID comes back different, this is a broken state that we can't rely on; map it to default
-					throw new InvalidSerializedRuntimeDataException("Corrupted state");
-				}
-			}catch(InvalidSerializedRuntimeDataException $e){ //invalid property combination, leave it
-				continue;
-			}
-
+		foreach(self::generateAllStatesForType($block) as $v){
 			$this->fillStaticArrays($v->getStateId(), $v);
 		}
 	}

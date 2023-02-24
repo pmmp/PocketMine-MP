@@ -43,6 +43,7 @@ use const pocketmine\BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH;
  * benefits for now.
  */
 final class GlobalBlockStateHandlers{
+	public const MAX_BLOCKSTATE_UPGRADE_SCHEMA_ID = 151; //https://github.com/pmmp/BedrockBlockUpgradeSchema/blob/b0cc441e029cf5a6de5b05dd0f5657208855232b/nbt_upgrade_schema/0151_1.19.0.34_beta_to_1.19.20.json
 
 	private static ?BlockObjectToStateSerializer $blockStateSerializer = null;
 
@@ -64,7 +65,7 @@ final class GlobalBlockStateHandlers{
 		if(self::$blockDataUpgrader === null){
 			$blockStateUpgrader = new BlockStateUpgrader(BlockStateUpgradeSchemaUtils::loadSchemas(
 				Path::join(BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH, 'nbt_upgrade_schema'),
-				BlockStateData::CURRENT_VERSION
+				self::MAX_BLOCKSTATE_UPGRADE_SCHEMA_ID
 			));
 			self::$blockDataUpgrader = new BlockDataUpgrader(
 				BlockIdMetaUpgrader::loadFromString(
@@ -83,6 +84,6 @@ final class GlobalBlockStateHandlers{
 	}
 
 	public static function getUnknownBlockStateData() : BlockStateData{
-		return self::$unknownBlockStateData ??= new BlockStateData(BlockTypeNames::INFO_UPDATE, [], BlockStateData::CURRENT_VERSION);
+		return self::$unknownBlockStateData ??= BlockStateData::current(BlockTypeNames::INFO_UPDATE, []);
 	}
 }

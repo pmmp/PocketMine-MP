@@ -145,6 +145,8 @@ class InGamePacketHandler extends PacketHandler{
 
 	public bool $forceMoveSync = false;
 
+	protected ?string $lastRequestedFullSkinId = null;
+
 	public function __construct(
 		private Player $player,
 		private NetworkSession $session,
@@ -245,20 +247,6 @@ class InGamePacketHandler extends PacketHandler{
 
 		$packetHandled = true;
 
-		$useItemTransaction = $packet->getItemInteractionData();
-		if($useItemTransaction !== null){
-			if(count($useItemTransaction->getTransactionData()->getActions()) > 100){
-				throw new PacketHandlingException("Too many actions in item use transaction");
-			}
-			$this->inventoryManager->addPredictedSlotChanges($useItemTransaction->getTransactionData()->getActions());
-			if(!$this->handleUseItemTransaction($useItemTransaction->getTransactionData())){
-				$packetHandled = false;
-				$this->session->getLogger()->debug("Unhandled transaction in PlayerAuthInputPacket (type " . $useItemTransaction->getTransactionData()->getActionType() . ")");
-			}else{
-				$this->inventoryManager->syncMismatchedPredictedSlotChanges();
-			}
-		}
-
 		$blockActions = $packet->getBlockActions();
 		if($blockActions !== null){
 			if(count($blockActions) > 100){
@@ -276,6 +264,20 @@ class InGamePacketHandler extends PacketHandler{
 					$packetHandled = false;
 					$this->session->getLogger()->debug("Unhandled player block action at offset $k in PlayerAuthInputPacket");
 				}
+			}
+		}
+
+		$useItemTransaction = $packet->getItemInteractionData();
+		if($useItemTransaction !== null){
+			if(count($useItemTransaction->getTransactionData()->getActions()) > 100){
+				throw new PacketHandlingException("Too many actions in item use transaction");
+			}
+			$this->inventoryManager->addPredictedSlotChanges($useItemTransaction->getTransactionData()->getActions());
+			if(!$this->handleUseItemTransaction($useItemTransaction->getTransactionData())){
+				$packetHandled = false;
+				$this->session->getLogger()->debug("Unhandled transaction in PlayerAuthInputPacket (type " . $useItemTransaction->getTransactionData()->getActionType() . ")");
+			}else{
+				$this->inventoryManager->syncMismatchedPredictedSlotChanges();
 			}
 		}
 
@@ -741,6 +743,15 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
+		if($packet->skin->getFullSkinId() === $this->lastRequestedFullSkinId){
+			//TODO: HACK! In 1.19.60, the client sends its skin back to us if we sent it a skin different from the one
+			//it's using. We need to prevent this from causing a feedback loop.
+			$this->session->getLogger()->debug("Refused duplicate skin change request");
+			return true;
+		}
+		$this->lastRequestedFullSkinId = $packet->skin->getFullSkinId();
+
+		$this->session->getLogger()->debug("Processing skin change request");
 		try{
 			$skin = SkinAdapterSingleton::get()->fromSkinData($packet->skin);
 		}catch(InvalidSkinException $e){

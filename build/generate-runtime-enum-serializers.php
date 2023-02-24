@@ -60,13 +60,12 @@ require dirname(__DIR__) . '/vendor/autoload.php';
  * @return string[]
  * @phpstan-return list<string>
  */
-function buildWriterFunc(string $virtualTypeName, string $nativeTypeName, array $memberNames, string &$functionName) : array{
+function buildWriterFunc(string $virtualTypeName, string $nativeTypeName, array $memberNames, string $functionName) : array{
 	$bits = getBitsRequired($memberNames);
 	$lines = [];
 
-	$functionName = lcfirst($virtualTypeName);
-	$lines[] = "public function $functionName(\\$nativeTypeName \$value) : void{";
-	$lines[] = "\t\$this->int($bits, match(\$value){";
+	$lines[] = "public function $functionName(\\$nativeTypeName &\$value) : void{";
+	$lines[] = "\t\$this->writeInt($bits, match(\$value){";
 
 	foreach($memberNames as $key => $memberName){
 		$lines[] = "\t\t$memberName => $key,";
@@ -85,11 +84,10 @@ function buildWriterFunc(string $virtualTypeName, string $nativeTypeName, array 
  * @return string[]
  * @phpstan-return list<string>
  */
-function buildReaderFunc(string $virtualTypeName, string $nativeTypeName, array $memberNames, string &$functionName) : array{
+function buildReaderFunc(string $virtualTypeName, string $nativeTypeName, array $memberNames, string $functionName) : array{
 	$bits = getBitsRequired($memberNames);
 	$lines = [];
 
-	$functionName = lcfirst($virtualTypeName);
 	$lines[] = "public function $functionName(\\$nativeTypeName &\$value) : void{";
 	$lines[] = "\t\$value = match(\$this->readInt($bits)){";
 
@@ -98,6 +96,26 @@ function buildReaderFunc(string $virtualTypeName, string $nativeTypeName, array 
 	}
 	$lines[] = "\t\tdefault => throw new InvalidSerializedRuntimeDataException(\"Invalid serialized value for $virtualTypeName\")";
 	$lines[] = "\t};";
+	$lines[] = "}";
+
+	return $lines;
+}
+
+function buildInterfaceFunc(string $nativeTypeName, string $functionName) : string{
+	return "public function $functionName(\\$nativeTypeName &\$value) : void;";
+}
+
+/**
+ * @param string[] $memberNames
+ * @phpstan-param list<string> $memberNames
+ *
+ * @return string[]
+ * @phpstan-return list<string>
+ */
+function buildSizeCalculationFunc(string $nativeTypeName, string $functionName, array $memberNames) : array{
+	$lines = [];
+	$lines[] = "public function $functionName(\\$nativeTypeName &\$value) : void{";
+	$lines[] = "\t\$this->addBits(" . getBitsRequired($memberNames) . ");";
 	$lines[] = "}";
 
 	return $lines;
@@ -120,43 +138,6 @@ function getBitsRequired(array $members) : int{
 function stringifyEnumMembers(array $members, string $enumClass) : array{
 	ksort($members, SORT_STRING);
 	return array_map(fn(string $enumCaseName) => "\\$enumClass::$enumCaseName()", array_keys($members));
-}
-
-/**
- * @param object[] $enumMembers
- * @phpstan-param array<string, object> $enumMembers
- *
- * @return string[]
- * @phpstan-return list<string>
- */
-function buildEnumWriterFunc(array $enumMembers, string &$functionName) : array{
-	$reflect = new \ReflectionClass($enumMembers[array_key_first($enumMembers)]);
-	return buildWriterFunc(
-		$reflect->getShortName(),
-		$reflect->getName(),
-		stringifyEnumMembers($enumMembers, $reflect->getName()),
-		$functionName
-	);
-}
-
-/**
- * @param object[] $enumMembers
- * @phpstan-param array<string, object> $enumMembers
- *
- * @return string[]
- * @phpstan-return list<string>
- */
-function buildEnumReaderFunc(array $enumMembers, string &$functionName) : array{
-	if(count($enumMembers) === 0){
-		throw new \InvalidArgumentException("Enum members cannot be empty");
-	}
-	$reflect = new \ReflectionClass($enumMembers[array_key_first($enumMembers)]);
-	return buildReaderFunc(
-		$reflect->getShortName(),
-		$reflect->getName(),
-		stringifyEnumMembers($enumMembers, $reflect->getName()),
-		$functionName
-	);
 }
 
 $enumsUsed = [
@@ -182,25 +163,54 @@ $readerFuncs = [
 ];
 $writerFuncs = [
 	"" => [
-		"abstract public function int(int \$bits, int \$value) : void;"
+		"abstract protected function writeInt(int \$bits, int \$value) : void;"
 	]
 ];
-$functionName = "";
+$interfaceFuncs = [];
+$sizeCalculationFuncs = [
+	"" => [
+		"abstract protected function addBits(int \$bits) : void;"
+	]
+];
 
 foreach($enumsUsed as $enumMembers){
-	$writerF = buildEnumWriterFunc($enumMembers, $functionName);
-	/** @var string $functionName */
-	$writerFuncs[$functionName] = $writerF;
-	$readerF = buildEnumReaderFunc($enumMembers, $functionName);
-	/** @var string $functionName */
-	$readerFuncs[$functionName] = $readerF;
+	if(count($enumMembers) === 0){
+		throw new \InvalidArgumentException("Enum members cannot be empty");
+	}
+	$reflect = new \ReflectionClass($enumMembers[array_key_first($enumMembers)]);
+	$virtualTypeName = $reflect->getShortName();
+	$nativeTypeName = $reflect->getName();
+	$functionName = lcfirst($virtualTypeName);
+
+	$stringifiedMembers = stringifyEnumMembers($enumMembers, $nativeTypeName);
+	$writerFuncs[$functionName] = buildWriterFunc(
+		$virtualTypeName,
+		$nativeTypeName,
+		$stringifiedMembers,
+		$functionName
+	);
+	$readerFuncs[$functionName] = buildReaderFunc(
+		$virtualTypeName,
+		$nativeTypeName,
+		$stringifiedMembers,
+		$functionName
+	);
+	$interfaceFuncs[$functionName] = [buildInterfaceFunc(
+		$nativeTypeName,
+		$functionName
+	)];
+	$sizeCalculationFuncs[$functionName] = buildSizeCalculationFunc(
+		$nativeTypeName,
+		$functionName,
+		$stringifiedMembers
+	);
 }
 
 /**
  * @param string[][] $functions
  * @phpstan-param array<string, list<string>> $functions
  */
-function printFunctions(array $functions, string $className) : void{
+function printFunctions(array $functions, string $className, string $classType) : void{
 	ksort($functions, SORT_STRING);
 
 	ob_start();
@@ -238,14 +248,16 @@ namespace pocketmine\data\runtime;
 
 HEADER;
 
-	echo "trait $className{\n\n";
+	echo "$classType $className{\n\n";
 	echo implode("\n\n", array_map(fn(array $functionLines) => "\t" . implode("\n\t", $functionLines), $functions));
 	echo "\n\n}\n";
 
 	file_put_contents(dirname(__DIR__) . '/src/data/runtime/' . $className . '.php', ob_get_clean());
 }
 
-printFunctions($writerFuncs, "RuntimeEnumSerializerTrait");
-printFunctions($readerFuncs, "RuntimeEnumDeserializerTrait");
+printFunctions($writerFuncs, "RuntimeEnumSerializerTrait", "trait");
+printFunctions($readerFuncs, "RuntimeEnumDeserializerTrait", "trait");
+printFunctions($interfaceFuncs, "RuntimeEnumDescriber", "interface");
+printFunctions($sizeCalculationFuncs, "RuntimeEnumSizeCalculatorTrait", "trait");
 
 echo "Done. Don't forget to run CS fixup after generating code.\n";

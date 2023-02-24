@@ -23,8 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 
 /**
@@ -39,9 +38,7 @@ class UnknownBlock extends Transparent{
 		$this->stateData = $stateData;
 	}
 
-	public function getRequiredTypeDataBits() : int{ return Block::INTERNAL_STATE_DATA_BITS; }
-
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeType(RuntimeDataDescriber $w) : void{
 		//use type instead of state, so we don't lose any information like colour
 		//this might be an improperly registered plugin block
 		$w->int(Block::INTERNAL_STATE_DATA_BITS, $this->stateData);

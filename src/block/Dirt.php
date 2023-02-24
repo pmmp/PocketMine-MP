@@ -24,8 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\DirtType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Hoe;
 use pocketmine\item\Item;
@@ -46,9 +45,7 @@ class Dirt extends Opaque{
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function getRequiredTypeDataBits() : int{ return 2; }
-
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeType(RuntimeDataDescriber $w) : void{
 		$w->dirtType($this->dirtType);
 	}
 

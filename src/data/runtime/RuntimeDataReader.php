@@ -30,7 +30,7 @@ use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
 
-final class RuntimeDataReader{
+final class RuntimeDataReader implements RuntimeDataDescriber{
 	use RuntimeEnumDeserializerTrait;
 
 	private int $offset = 0;
@@ -55,12 +55,16 @@ final class RuntimeDataReader{
 		$value = $this->readInt($bits);
 	}
 
-	public function boundedInt(int $bits, int $min, int $max, int &$value) : void{
+	protected function readBoundedInt(int $bits, int $min, int $max) : int{
 		$result = $this->readInt($bits) + $min;
 		if($result < $min || $result > $max){
 			throw new InvalidSerializedRuntimeDataException("Value is outside the range $min - $max");
 		}
-		$value = $result;
+		return $result;
+	}
+
+	public function boundedInt(int $bits, int $min, int $max, int &$value) : void{
+		$value = $this->readBoundedInt($bits, $min, $max);
 	}
 
 	protected function readBool() : bool{
@@ -142,8 +146,7 @@ final class RuntimeDataReader{
 		$result = [];
 		//TODO: we can pack this into 7 bits instead of 8
 		foreach(Facing::HORIZONTAL as $facing){
-			$type = 0;
-			$this->boundedInt(2, 0, 2, $type);
+			$type = $this->readBoundedInt(2, 0, 2);
 			if($type !== 0){
 				$result[$facing] = match($type){
 					1 => WallConnectionType::SHORT(),

@@ -194,6 +194,9 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 			Terminal::writeLine($message);
 			$this->logWriterThread->write($time->format("Y-m-d") . " " . TextFormat::clean($message) . PHP_EOL);
 
+			/**
+			 * @var \ThreadedLoggerAttachment $attachment
+			 */
 			foreach($this->attachments as $attachment){
 				$attachment->log($level, $message);
 			}

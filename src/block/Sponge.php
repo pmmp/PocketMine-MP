@@ -23,15 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 
 class Sponge extends Opaque{
 	protected bool $wet = false;
 
-	public function getRequiredTypeDataBits() : int{ return 1; }
-
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeType(RuntimeDataDescriber $w) : void{
 		$w->bool($this->wet);
 	}
 

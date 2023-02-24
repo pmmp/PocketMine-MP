@@ -58,6 +58,14 @@ final class BlockStateData{
 		private int $version
 	){}
 
+	/**
+	 * @param Tag[] $states
+	 * @phpstan-param array<string, Tag> $states
+	 */
+	public static function current(string $name, array $states) : self{
+		return new self($name, $states, self::CURRENT_VERSION);
+	}
+
 	public function getName() : string{ return $this->name; }
 
 	/**

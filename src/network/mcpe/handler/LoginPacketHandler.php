@@ -33,6 +33,7 @@ use pocketmine\network\mcpe\JwtException;
 use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\LoginPacket;
+use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\login\AuthenticationData;
 use pocketmine\network\mcpe\protocol\types\login\ClientData;
@@ -45,6 +46,7 @@ use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use Ramsey\Uuid\Uuid;
 use function is_array;
+use function preg_match;
 
 /**
  * Handles the initial login phase of the session. This handler is used as the initial state.
@@ -77,6 +79,27 @@ class LoginPacketHandler extends PacketHandler{
 		}
 
 		$clientData = $this->parseClientData($packet->clientDataJwt);
+
+		//TODO: REMOVE THIS
+		//Mojang forgot to bump the protocol version when they changed protocol in 1.19.62. Check the game version instead.
+		if(preg_match('/^(\d+)\.(\d+)\.(\d+)/', $clientData->GameVersion, $matches) !== 1){
+			throw new PacketHandlingException("Invalid game version format, expected at least 3 digits");
+		}
+		$major = (int) $matches[1];
+		$minor = (int) $matches[2];
+		$patch = (int) $matches[3];
+		if($major === 1 && $minor === 19 && $patch < 62){
+			$this->session->sendDataPacket(PlayStatusPacket::create(PlayStatusPacket::LOGIN_FAILED_CLIENT), true);
+
+			//This pocketmine disconnect message will only be seen by the console (PlayStatusPacket causes the messages to be shown for the client)
+			$this->session->disconnect(
+				KnownTranslationFactory::pocketmine_disconnect_incompatibleProtocol("$packet->protocol (< v1.19.62)"),
+				notify: false
+			);
+
+			return true;
+		}
+
 		try{
 			$skin = SkinAdapterSingleton::get()->fromSkinData(ClientDataToSkinDataHelper::fromClientData($clientData));
 		}catch(\InvalidArgumentException | InvalidSkinException $e){
@@ -117,10 +140,10 @@ class LoginPacketHandler extends PacketHandler{
 			$this->server->requiresAuthentication()
 		);
 		if($this->server->getNetwork()->getValidConnectionCount() > $this->server->getMaxPlayers()){
-			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_FULL, KnownTranslationFactory::disconnectionScreen_serverFull());
+			$ev->setKickFlag(PlayerPreLoginEvent::KICK_FLAG_SERVER_FULL, KnownTranslationFactory::disconnectionScreen_serverFull());
 		}
 		if(!$this->server->isWhitelisted($playerInfo->getUsername())){
-			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_WHITELISTED, KnownTranslationFactory::pocketmine_disconnect_whitelisted());
+			$ev->setKickFlag(PlayerPreLoginEvent::KICK_FLAG_SERVER_WHITELISTED, KnownTranslationFactory::pocketmine_disconnect_whitelisted());
 		}
 
 		$banMessage = null;
@@ -132,12 +155,12 @@ class LoginPacketHandler extends PacketHandler{
 			$banMessage = KnownTranslationFactory::pocketmine_disconnect_ban($banReason !== "" ? $banReason : KnownTranslationFactory::pocketmine_disconnect_ban_ip());
 		}
 		if($banMessage !== null){
-			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_BANNED, $banMessage);
+			$ev->setKickFlag(PlayerPreLoginEvent::KICK_FLAG_BANNED, $banMessage);
 		}
 
 		$ev->call();
 		if(!$ev->isAllowed()){
-			$this->session->disconnect($ev->getFinalKickMessage());
+			$this->session->disconnect($ev->getFinalDisconnectReason(), $ev->getFinalDisconnectScreenMessage());
 			return true;
 		}
 

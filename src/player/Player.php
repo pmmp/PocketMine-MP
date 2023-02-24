@@ -115,6 +115,7 @@ use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
+use pocketmine\player\chat\StandardChatFormatter;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
@@ -1476,10 +1477,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					$this->server->dispatchCommand($this, substr($messagePart, 1));
 					Timings::$playerCommand->stopTiming();
 				}else{
-					$ev = new PlayerChatEvent($this, $messagePart, $this->server->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_USERS));
+					$ev = new PlayerChatEvent($this, $messagePart, $this->server->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_USERS), new StandardChatFormatter());
 					$ev->call();
 					if(!$ev->isCancelled()){
-						$this->server->broadcastMessage($this->getServer()->getLanguage()->translateString($ev->getFormat(), [$ev->getPlayer()->getDisplayName(), $ev->getMessage()]), $ev->getRecipients());
+						$this->server->broadcastMessage($ev->getFormatter()->format($ev->getPlayer()->getDisplayName(), $ev->getMessage()), $ev->getRecipients());
 					}
 				}
 			}
@@ -2044,19 +2045,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->getNetworkSession()->onChatMessage($message);
 	}
 
-	/**
-	 * @deprecated Use {@link Player::sendMessage()} with a Translatable instead.
-	 * @param string[]|Translatable[] $parameters
-	 */
-	public function sendTranslation(string $message, array $parameters = []) : void{
-		$this->sendMessage(new Translatable($message, $parameters));
-	}
-
-	/**
-	 * @param string[] $args
-	 */
-	public function sendJukeboxPopup(string $key, array $args) : void{
-		$this->getNetworkSession()->onJukeboxPopup($key, $args);
+	public function sendJukeboxPopup(Translatable|string $message) : void{
+		$this->getNetworkSession()->onJukeboxPopup($message);
 	}
 
 	/**
@@ -2131,16 +2121,24 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	/**
 	 * Kicks a player from the server
+	 *
+	 * @param Translatable|string      $reason                  Shown in the server log - this should be a short one-line message
+	 * @param Translatable|string|null $quitMessage             Message to broadcast to online players (null will use default)
+	 * @param Translatable|string|null $disconnectScreenMessage Shown on the player's disconnection screen (null will use the reason)
 	 */
-	public function kick(Translatable|string $reason = "", Translatable|string|null $quitMessage = null) : bool{
-		$ev = new PlayerKickEvent($this, $reason, $quitMessage ?? $this->getLeaveMessage());
+	public function kick(Translatable|string $reason = "", Translatable|string|null $quitMessage = null, Translatable|string|null $disconnectScreenMessage = null) : bool{
+		$ev = new PlayerKickEvent($this, $reason, $quitMessage ?? $this->getLeaveMessage(), $disconnectScreenMessage);
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$reason = $ev->getReason();
+			$reason = $ev->getDisconnectReason();
 			if($reason === ""){
 				$reason = KnownTranslationFactory::disconnectionScreen_noReason();
 			}
-			$this->disconnect($reason, $ev->getQuitMessage());
+			$disconnectScreenMessage = $ev->getDisconnectScreenMessage() ?? $reason;
+			if($disconnectScreenMessage === ""){
+				$disconnectScreenMessage = KnownTranslationFactory::disconnectionScreen_noReason();
+			}
+			$this->disconnect($reason, $ev->getQuitMessage(), $disconnectScreenMessage);
 
 			return true;
 		}
@@ -2157,15 +2155,16 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 *
 	 * Note for internals developers: Do not call this from network sessions. It will cause a feedback loop.
 	 *
-	 * @param Translatable|string      $reason      Shown on the disconnect screen, and in the server log
-	 * @param Translatable|string|null $quitMessage Message to broadcast to online players (null will use default)
+	 * @param Translatable|string      $reason                  Shown in the server log - this should be a short one-line message
+	 * @param Translatable|string|null $quitMessage             Message to broadcast to online players (null will use default)
+	 * @param Translatable|string|null $disconnectScreenMessage Shown on the player's disconnection screen (null will use the reason)
 	 */
-	public function disconnect(Translatable|string $reason, Translatable|string|null $quitMessage = null) : void{
+	public function disconnect(Translatable|string $reason, Translatable|string|null $quitMessage = null, Translatable|string|null $disconnectScreenMessage = null) : void{
 		if(!$this->isConnected()){
 			return;
 		}
 
-		$this->getNetworkSession()->onPlayerDestroyed($reason);
+		$this->getNetworkSession()->onPlayerDestroyed($reason, $disconnectScreenMessage ?? $reason);
 		$this->onPostDisconnect($reason, $quitMessage);
 	}
 
@@ -2173,6 +2172,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @internal
 	 * This method executes post-disconnect actions and cleanups.
 	 *
+	 * @param Translatable|string      $reason      Shown in the server log - this should be a short one-line message
 	 * @param Translatable|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
 	public function onPostDisconnect(Translatable|string $reason, Translatable|string|null $quitMessage) : void{
@@ -2361,16 +2361,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 		$this->respawnLocked = true;
 
-		$this->logger->debug("Waiting for spawn terrain generation for respawn");
+		$this->logger->debug("Waiting for safe respawn position to be located");
 		$spawn = $this->getSpawn();
-		$spawn->getWorld()->orderChunkPopulation($spawn->getFloorX() >> Chunk::COORD_BIT_SIZE, $spawn->getFloorZ() >> Chunk::COORD_BIT_SIZE, null)->onCompletion(
-			function() use ($spawn) : void{
+		$spawn->getWorld()->requestSafeSpawn($spawn)->onCompletion(
+			function(Position $safeSpawn) : void{
 				if(!$this->isConnected()){
 					return;
 				}
-				$this->logger->debug("Spawn terrain generation done, completing respawn");
-				$spawn = $spawn->getWorld()->getSafeSpawn($spawn);
-				$ev = new PlayerRespawnEvent($this, $spawn);
+				$this->logger->debug("Respawn position located, completing respawn");
+				$ev = new PlayerRespawnEvent($this, $safeSpawn);
 				$ev->call();
 
 				$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getWorld());
@@ -2403,7 +2402,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			},
 			function() : void{
 				if($this->isConnected()){
-					$this->disconnect("Unable to find a respawn position");
+					$this->getNetworkSession()->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_respawn());
 				}
 			}
 		);

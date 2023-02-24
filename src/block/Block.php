@@ -29,7 +29,9 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataSizeCalculator;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Projectile;
@@ -42,6 +44,7 @@ use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
@@ -61,6 +64,17 @@ class Block{
 
 	/** @var AxisAlignedBB[]|null */
 	protected ?array $collisionBoxes = null;
+
+	/**
+	 * @var int[]
+	 * @phpstan-var array<string, int>
+	 */
+	private static array $typeDataBits = [];
+	/**
+	 * @var int[]
+	 * @phpstan-var array<string, int>
+	 */
+	private static array $stateDataBits = [];
 
 	/**
 	 * @param string $name English name of the block type (TODO: implement translations)
@@ -97,7 +111,7 @@ class Block{
 	 * Returns the full blockstate ID of this block. This is a compact way of representing a blockstate used to store
 	 * blocks in chunks at runtime.
 	 *
-	 * This ID can be used to later obtain a copy of this block using {@link BlockFactory::fromStateId()}.
+	 * This ID can be used to later obtain a copy of this block using {@link RuntimeBlockStateRegistry::fromStateId()}.
 	 */
 	public function getStateId() : int{
 		return ($this->getTypeId() << self::INTERNAL_STATE_DATA_BITS) | $this->computeStateData();
@@ -112,9 +126,25 @@ class Block{
 		return new ItemBlock($this);
 	}
 
-	public function getRequiredTypeDataBits() : int{ return 0; }
+	final public function getRequiredTypeDataBits() : int{
+		$class = get_class($this);
+		if(isset(self::$typeDataBits[$class])){
+			return self::$typeDataBits[$class];
+		}
+		$calculator = new RuntimeDataSizeCalculator();
+		$this->describeType($calculator);
+		return self::$typeDataBits[$class] = $calculator->getBitsUsed();
+	}
 
-	public function getRequiredStateDataBits() : int{ return 0; }
+	final public function getRequiredStateDataBits() : int{
+		$class = get_class($this);
+		if(isset(self::$stateDataBits[$class])){
+			return self::$stateDataBits[$class];
+		}
+		$calculator = new RuntimeDataSizeCalculator();
+		$this->describeState($calculator);
+		return self::$stateDataBits[$class] = $calculator->getBitsUsed();
+	}
 
 	/**
 	 * @internal
@@ -173,7 +203,7 @@ class Block{
 		$stateBits = $this->getRequiredStateDataBits();
 		$requiredBits = $typeBits + $stateBits;
 		$writer = new RuntimeDataWriter($requiredBits);
-		$writer->int($typeBits, $this->computeTypeData());
+		$writer->writeInt($typeBits, $this->computeTypeData());
 
 		$this->describeState($writer);
 		$writtenBits = $writer->getOffset() - $typeBits;
@@ -184,11 +214,11 @@ class Block{
 		return $writer->getValue();
 	}
 
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeType(RuntimeDataDescriber $w) : void{
 		//NOOP
 	}
 
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		//NOOP
 	}
 
@@ -216,7 +246,11 @@ class Block{
 	 */
 	public function writeStateToWorld() : void{
 		$world = $this->position->getWorld();
-		$world->getOrLoadChunkAtPosition($this->position)->setFullBlock($this->position->x & Chunk::COORD_MASK, $this->position->y, $this->position->z & Chunk::COORD_MASK, $this->getStateId());
+		$chunk = $world->getOrLoadChunkAtPosition($this->position);
+		if($chunk === null){
+			throw new AssumptionFailedError("World::setBlock() should have loaded the chunk before calling this method");
+		}
+		$chunk->setBlockStateId($this->position->x & Chunk::COORD_MASK, $this->position->y, $this->position->z & Chunk::COORD_MASK, $this->getStateId());
 
 		$tileType = $this->idInfo->getTileClass();
 		$oldTile = $world->getTile($this->position);
@@ -304,6 +338,14 @@ class Block{
 	/**
 	 * Generates a block transaction to set all blocks affected by placing this block. Usually this is just the block
 	 * itself, but may be multiple blocks in some cases (such as doors).
+	 *
+	 * @param BlockTransaction $tx           Blocks to be set should be added to this transaction (do not modify thr world directly)
+	 * @param Item             $item         Item used to place the block
+	 * @param Block            $blockReplace Block expected to be replaced
+	 * @param Block            $blockClicked Block that was clicked using the item
+	 * @param int              $face         Face of the clicked block which was clicked
+	 * @param Vector3          $clickVector  Exact position inside the clicked block where the click occurred, relative to the block's position
+	 * @param Player|null      $player       Player who placed the block, or null if it was not a player
 	 *
 	 * @return bool whether the placement should go ahead
 	 */

@@ -24,8 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\HorizontalFacingTrait;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Axis;
@@ -37,15 +36,13 @@ use pocketmine\world\BlockTransaction;
 final class WallCoralFan extends BaseCoral{
 	use HorizontalFacingTrait;
 
-	public function getRequiredStateDataBits() : int{ return parent::getRequiredStateDataBits() + 2; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$axis = Facing::axis($face);
-		if(($axis !== Axis::X && $axis !== Axis::Z) || !$this->canBeSupportedBy($blockClicked, $face)){
+		if(($axis !== Axis::X && $axis !== Axis::Z) || !$this->canBeSupportedBy($blockReplace->getSide(Facing::opposite($face)), $face)){
 			return false;
 		}
 		$this->facing = $face;

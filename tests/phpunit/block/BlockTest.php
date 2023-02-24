@@ -33,11 +33,11 @@ use const SORT_STRING;
 
 class BlockTest extends TestCase{
 
-	/** @var BlockFactory */
+	/** @var RuntimeBlockStateRegistry */
 	private $blockFactory;
 
 	public function setUp() : void{
-		$this->blockFactory = new BlockFactory();
+		$this->blockFactory = new RuntimeBlockStateRegistry();
 	}
 
 	/**

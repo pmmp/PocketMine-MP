@@ -30,7 +30,7 @@ use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
 use function array_flip;
 
-final class RuntimeDataWriter{
+final class RuntimeDataWriter implements RuntimeDataDescriber{
 	use RuntimeEnumSerializerTrait;
 
 	private int $value = 0;
@@ -40,7 +40,7 @@ final class RuntimeDataWriter{
 		private int $maxBits
 	){}
 
-	public function int(int $bits, int $value) : void{
+	public function writeInt(int $bits, int $value) : void{
 		if($this->offset + $bits > $this->maxBits){
 			throw new \InvalidArgumentException("Bit buffer cannot be larger than $this->maxBits bits (already have $this->offset bits)");
 		}
@@ -52,19 +52,31 @@ final class RuntimeDataWriter{
 		$this->offset += $bits;
 	}
 
-	public function boundedInt(int $bits, int $min, int $max, int $value) : void{
+	public function int(int $bits, int &$value) : void{
+		$this->writeInt($bits, $value);
+	}
+
+	protected function writeBoundedInt(int $bits, int $min, int $max, int $value) : void{
 		if($value < $min || $value > $max){
 			throw new \InvalidArgumentException("Value $value is outside the range $min - $max");
 		}
-		$this->int($bits, $value - $min);
+		$this->writeInt($bits, $value - $min);
 	}
 
-	public function bool(bool $value) : void{
-		$this->int(1, $value ? 1 : 0);
+	public function boundedInt(int $bits, int $min, int $max, int &$value) : void{
+		$this->writeBoundedInt($bits, $min, $max, $value);
 	}
 
-	public function horizontalFacing(int $facing) : void{
-		$this->int(2, match($facing){
+	protected function writeBool(bool $value) : void{
+		$this->writeInt(1, $value ? 1 : 0);
+	}
+
+	public function bool(bool &$value) : void{
+		$this->writeBool($value);
+	}
+
+	public function horizontalFacing(int &$facing) : void{
+		$this->writeInt(2, match($facing){
 			Facing::NORTH => 0,
 			Facing::EAST => 1,
 			Facing::SOUTH => 2,
@@ -76,15 +88,15 @@ final class RuntimeDataWriter{
 	/**
 	 * @param int[] $faces
 	 */
-	public function horizontalFacingFlags(array $faces) : void{
+	public function horizontalFacingFlags(array &$faces) : void{
 		$uniqueFaces = array_flip($faces);
 		foreach(Facing::HORIZONTAL as $facing){
-			$this->bool(isset($uniqueFaces[$facing]));
+			$this->writeBool(isset($uniqueFaces[$facing]));
 		}
 	}
 
-	public function facing(int $facing) : void{
-		$this->int(3, match($facing){
+	public function facing(int &$facing) : void{
+		$this->writeInt(3, match($facing){
 			0 => Facing::DOWN,
 			1 => Facing::UP,
 			2 => Facing::NORTH,
@@ -95,12 +107,12 @@ final class RuntimeDataWriter{
 		});
 	}
 
-	public function facingExcept(int $facing, int $except) : void{
+	public function facingExcept(int &$facing, int $except) : void{
 		$this->facing($facing);
 	}
 
-	public function axis(int $axis) : void{
-		$this->int(2, match($axis){
+	public function axis(int &$axis) : void{
+		$this->writeInt(2, match($axis){
 			Axis::X => 0,
 			Axis::Z => 1,
 			Axis::Y => 2,
@@ -108,8 +120,8 @@ final class RuntimeDataWriter{
 		});
 	}
 
-	public function horizontalAxis(int $axis) : void{
-		$this->int(1, match($axis){
+	public function horizontalAxis(int &$axis) : void{
+		$this->writeInt(1, match($axis){
 			Axis::X => 0,
 			Axis::Z => 1,
 			default => throw new \InvalidArgumentException("Invalid horizontal axis $axis")
@@ -120,10 +132,10 @@ final class RuntimeDataWriter{
 	 * @param WallConnectionType[] $connections
 	 * @phpstan-param array<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST, WallConnectionType> $connections
 	 */
-	public function wallConnections(array $connections) : void{
+	public function wallConnections(array &$connections) : void{
 		//TODO: we can pack this into 7 bits instead of 8
 		foreach(Facing::HORIZONTAL as $facing){
-			$this->boundedInt(2, 0, 2, match($connections[$facing] ?? null){
+			$this->writeBoundedInt(2, 0, 2, match($connections[$facing] ?? null){
 				null => 0,
 				WallConnectionType::SHORT() => 1,
 				WallConnectionType::TALL() => 2,
@@ -136,21 +148,21 @@ final class RuntimeDataWriter{
 	 * @param BrewingStandSlot[] $slots
 	 * @phpstan-param array<int, BrewingStandSlot> $slots
 	 */
-	public function brewingStandSlots(array $slots) : void{
+	public function brewingStandSlots(array &$slots) : void{
 		foreach([
 			BrewingStandSlot::EAST(),
 			BrewingStandSlot::NORTHWEST(),
 			BrewingStandSlot::SOUTHWEST(),
 		] as $member){
-			$this->bool(isset($slots[$member->id()]));
+			$this->writeBool(isset($slots[$member->id()]));
 		}
 	}
 
-	public function railShape(int $railShape) : void{
+	public function railShape(int &$railShape) : void{
 		$this->int(4, $railShape);
 	}
 
-	public function straightOnlyRailShape(int $railShape) : void{
+	public function straightOnlyRailShape(int &$railShape) : void{
 		$this->int(3, $railShape);
 	}
 

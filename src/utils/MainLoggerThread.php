@@ -30,14 +30,15 @@ use function is_resource;
 use function touch;
 
 final class MainLoggerThread extends \Thread{
-	private \Threaded $buffer;
+	/** @phpstan-var \ThreadedArray<int, string> */
+	private \ThreadedArray $buffer;
 	private bool $syncFlush = false;
 	private bool $shutdown = false;
 
 	public function __construct(
 		private string $logFile
 	){
-		$this->buffer = new \Threaded();
+		$this->buffer = new \ThreadedArray();
 		touch($this->logFile);
 	}
 
@@ -72,9 +73,7 @@ final class MainLoggerThread extends \Thread{
 	 * @param resource $logResource
 	 */
 	private function writeLogStream($logResource) : void{
-		while($this->buffer->count() > 0){
-			/** @var string $chunk */
-			$chunk = $this->buffer->shift();
+		while(($chunk = $this->buffer->shift()) !== null){
 			fwrite($logResource, $chunk);
 		}
 

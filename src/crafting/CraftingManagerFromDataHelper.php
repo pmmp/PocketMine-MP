@@ -117,7 +117,7 @@ final class CraftingManagerFromDataHelper{
 					->read(ErrorToExceptionHandler::trapAndRemoveFalse(fn() => base64_decode($blockStatesRaw, true)))
 					->mustGetCompoundTag()
 					->getValue();
-			$blockStateData = new BlockStateData($blockName, $blockStatesTag, BlockStateData::CURRENT_VERSION);
+			$blockStateData = BlockStateData::current($blockName, $blockStatesTag);
 		}else{
 			$blockStateData = null;
 		}

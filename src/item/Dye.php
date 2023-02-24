@@ -24,8 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\utils\DyeColor;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 
 class Dye extends Item{
 	private DyeColor $color;
@@ -35,7 +34,7 @@ class Dye extends Item{
 		parent::__construct($identifier, $name);
 	}
 
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeType(RuntimeDataDescriber $w) : void{
 		$w->dyeColor($this->color);
 	}
 

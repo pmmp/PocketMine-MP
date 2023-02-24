@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
+use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
 use pocketmine\data\bedrock\block\BlockStateSerializer;
@@ -31,7 +32,6 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
-use Symfony\Component\Filesystem\Path;
 
 /**
  * @internal
@@ -50,8 +50,8 @@ final class RuntimeBlockMapping{
 	private int $fallbackStateId;
 
 	private static function make() : self{
-		$canonicalBlockStatesRaw = Filesystem::fileGetContents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt"));
-		$metaMappingRaw = Filesystem::fileGetContents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'block_state_meta_map.json'));
+		$canonicalBlockStatesRaw = Filesystem::fileGetContents(BedrockDataFiles::CANONICAL_BLOCK_STATES_NBT);
+		$metaMappingRaw = Filesystem::fileGetContents(BedrockDataFiles::BLOCK_STATE_META_MAP_JSON);
 		return new self(
 			BlockStateDictionary::loadFromString($canonicalBlockStatesRaw, $metaMappingRaw),
 			GlobalBlockStateHandlers::getSerializer()
@@ -63,7 +63,7 @@ final class RuntimeBlockMapping{
 		private BlockStateSerializer $blockStateSerializer
 	){
 		$this->fallbackStateId = $this->blockStateDictionary->lookupStateIdFromData(
-				new BlockStateData(BlockTypeNames::INFO_UPDATE, [], BlockStateData::CURRENT_VERSION)
+				BlockStateData::current(BlockTypeNames::INFO_UPDATE, [])
 			) ?? throw new AssumptionFailedError(BlockTypeNames::INFO_UPDATE . " should always exist");
 		//lookup the state data from the dictionary to avoid keeping two copies of the same data around
 		$this->fallbackStateData = $this->blockStateDictionary->getDataFromStateId($this->fallbackStateId) ?? throw new AssumptionFailedError("We just looked up this state data, so it must exist");

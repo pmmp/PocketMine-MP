@@ -24,7 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\upgrade;
 
 use pocketmine\data\bedrock\block\BlockStateData;
-use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
+use pocketmine\nbt\LittleEndianNbtSerializer;
+use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
 
 /**
@@ -75,15 +76,24 @@ final class BlockIdMetaUpgrader{
 		$mappingTable = [];
 
 		$legacyStateMapReader = new BinaryStream($data);
-		$nbtReader = new NetworkNbtSerializer();
-		while(!$legacyStateMapReader->feof()){
-			$id = $legacyStateMapReader->get($legacyStateMapReader->getUnsignedVarInt());
-			$meta = $legacyStateMapReader->getLShort();
+		$nbtReader = new LittleEndianNbtSerializer();
 
-			$offset = $legacyStateMapReader->getOffset();
-			$state = $nbtReader->read($legacyStateMapReader->getBuffer(), $offset)->mustGetCompoundTag();
-			$legacyStateMapReader->setOffset($offset);
-			$mappingTable[$id][$meta] = $blockStateUpgrader->upgrade(BlockStateData::fromNbt($state));
+		$idCount = $legacyStateMapReader->getUnsignedVarInt();
+		for($idIndex = 0; $idIndex < $idCount; $idIndex++){
+			$id = $legacyStateMapReader->get($legacyStateMapReader->getUnsignedVarInt());
+
+			$metaCount = $legacyStateMapReader->getUnsignedVarInt();
+			for($metaIndex = 0; $metaIndex < $metaCount; $metaIndex++){
+				$meta = $legacyStateMapReader->getUnsignedVarInt();
+
+				$offset = $legacyStateMapReader->getOffset();
+				$state = $nbtReader->read($legacyStateMapReader->getBuffer(), $offset)->mustGetCompoundTag();
+				$legacyStateMapReader->setOffset($offset);
+				$mappingTable[$id][$meta] = $blockStateUpgrader->upgrade(BlockStateData::fromNbt($state));
+			}
+		}
+		if(!$legacyStateMapReader->feof()){
+			throw new BinaryDataException("Unexpected trailing data in legacy state map data");
 		}
 
 		return new self($mappingTable, $idMap);

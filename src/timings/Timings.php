@@ -38,6 +38,7 @@ abstract class Timings{
 
 	public static TimingsHandler $fullTick;
 	public static TimingsHandler $serverTick;
+	public static TimingsHandler $serverInterrupts;
 	public static TimingsHandler $memoryManager;
 	public static TimingsHandler $garbageCollector;
 	public static TimingsHandler $titleTick;
@@ -89,6 +90,9 @@ abstract class Timings{
 	private static array $packetHandleTimingMap = [];
 
 	/** @var TimingsHandler[] */
+	private static array $packetEncodeTimingMap = [];
+
+	/** @var TimingsHandler[] */
 	public static array $packetSendTimingMap = [];
 	/** @var TimingsHandler[] */
 	public static array $pluginTaskTimingMap = [];
@@ -108,7 +112,8 @@ abstract class Timings{
 		self::$initialized = true;
 
 		self::$fullTick = new TimingsHandler("Full Server Tick");
-		self::$serverTick = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Full Server Tick", self::$fullTick);
+		self::$serverTick = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Server Tick Update Cycle", self::$fullTick);
+		self::$serverInterrupts = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Server Mid-Tick Processing", self::$fullTick);
 		self::$memoryManager = new TimingsHandler("Memory Manager");
 		self::$garbageCollector = new TimingsHandler("Garbage Collector", self::$memoryManager);
 		self::$titleTick = new TimingsHandler("Console Title Tick");
@@ -200,8 +205,7 @@ abstract class Timings{
 		self::init();
 		$pid = $pk->pid();
 		if(!isset(self::$packetReceiveTimingMap[$pid])){
-			$pkName = (new \ReflectionClass($pk))->getShortName();
-			self::$packetReceiveTimingMap[$pid] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "receivePacket - " . $pkName . " [0x" . dechex($pid) . "]", self::$playerNetworkReceive);
+			self::$packetReceiveTimingMap[$pid] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "receivePacket - " . $pk->getName() . " [0x" . dechex($pid) . "]", self::$playerNetworkReceive);
 		}
 
 		return self::$packetReceiveTimingMap[$pid];
@@ -223,12 +227,19 @@ abstract class Timings{
 		);
 	}
 
+	public static function getEncodeDataPacketTimings(ClientboundPacket $pk) : TimingsHandler{
+		$pid = $pk->pid();
+		return self::$packetEncodeTimingMap[$pid] ??= new TimingsHandler(
+			self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Encode - " . $pk->getName() . " [0x" . dechex($pid) . "]",
+			self::getSendDataPacketTimings($pk)
+		);
+	}
+
 	public static function getSendDataPacketTimings(ClientboundPacket $pk) : TimingsHandler{
 		self::init();
 		$pid = $pk->pid();
 		if(!isset(self::$packetSendTimingMap[$pid])){
-			$pkName = (new \ReflectionClass($pk))->getShortName();
-			self::$packetSendTimingMap[$pid] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "sendPacket - " . $pkName . " [0x" . dechex($pid) . "]", self::$playerNetworkSend);
+			self::$packetSendTimingMap[$pid] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "sendPacket - " . $pk->getName() . " [0x" . dechex($pid) . "]", self::$playerNetworkSend);
 		}
 
 		return self::$packetSendTimingMap[$pid];

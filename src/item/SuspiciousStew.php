@@ -23,8 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 
 class SuspiciousStew extends Food{
 
@@ -35,7 +34,7 @@ class SuspiciousStew extends Food{
 		parent::__construct($identifier, $name);
 	}
 
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeType(RuntimeDataDescriber $w) : void{
 		$w->suspiciousStewType($this->suspiciousStewType);
 	}
 

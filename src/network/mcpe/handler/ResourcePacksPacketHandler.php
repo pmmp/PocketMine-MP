@@ -93,7 +93,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 		switch($packet->status){
 			case ResourcePackClientResponsePacket::STATUS_REFUSED:
 				//TODO: add lang strings for this
-				$this->session->disconnect("You must accept resource packs to join this server.", true);
+				$this->session->disconnect("Refused resource packs", "You must accept resource packs to join this server.", true);
 				break;
 			case ResourcePackClientResponsePacket::STATUS_SEND_PACKS:
 				foreach($packet->packIds as $uuid){
