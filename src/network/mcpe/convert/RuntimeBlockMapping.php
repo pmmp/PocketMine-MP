@@ -153,7 +153,8 @@ final class RuntimeBlockMapping{
 		$stream = PacketSerializer::decoder(
 			Filesystem::fileGetContents($canonicalBlockStatesFile),
 			0,
-			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($mappingProtocol)))
+			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($mappingProtocol))),
+			$mappingProtocol
 		);
 		$list = [];
 		while(!$stream->feof()){
@@ -223,7 +224,8 @@ final class RuntimeBlockMapping{
 		$legacyStateMapReader = PacketSerializer::decoder(
 			Filesystem::fileGetContents($r12ToCurrentBlockMapFile),
 			0,
-			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($mappingProtocol)))
+			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($mappingProtocol))),
+			$mappingProtocol
 		);
 		$nbtReader = new NetworkNbtSerializer();
 		while(!$legacyStateMapReader->feof()){

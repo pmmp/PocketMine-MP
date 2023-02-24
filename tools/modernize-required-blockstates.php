@@ -95,9 +95,9 @@ function main(array $argv) : int{
 	$reader = PacketSerializer::decoder(
 		Utils::assumeNotFalse(file_get_contents($file), "Missing required resource file"),
 		0,
-		new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol(0)))
+		new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol(0))),
+		0
 	);
-	$reader->setProtocolId(0);
 	$isLegacy = false;
 	$newContents = "";
 

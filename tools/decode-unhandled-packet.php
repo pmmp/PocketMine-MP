@@ -62,9 +62,9 @@ function main(array $argv) : int{
 	$reader = PacketSerializer::decoder(
 		$packetBuffer,
 		0,
-		new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($protocolId)))
+		new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($protocolId))),
+		$protocolId
 	);
-	$reader->setProtocolId($protocolId);
 	$packet->decode($reader);
 
 	var_dump($packet);

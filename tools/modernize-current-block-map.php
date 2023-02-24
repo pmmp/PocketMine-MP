@@ -100,9 +100,9 @@ function main(array $argv) : int{
 	$reader = PacketSerializer::decoder(
 		Utils::assumeNotFalse(file_get_contents($file), "Missing required resource file"),
 		0,
-		new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol(0)))
+		new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol(0))),
+		0
 	);
-	$reader->setProtocolId(0);
 
 	$newEntries = readOldFormat($reader);
 	usort($newEntries, fn(R12ToCurrentBlockMapEntry $a, R12ToCurrentBlockMapEntry $b) => $a <=> $b);

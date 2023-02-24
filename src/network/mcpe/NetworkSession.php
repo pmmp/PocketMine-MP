@@ -505,8 +505,7 @@ class NetworkSession{
 		$timings = Timings::getDecodeDataPacketTimings($packet);
 		$timings->startTiming();
 		try{
-			$stream = PacketSerializer::decoder($buffer, 0, $this->packetSerializerContext);
-			$stream->setProtocolId($protocolId);
+			$stream = PacketSerializer::decoder($buffer, 0, $this->packetSerializerContext, $protocolId);
 			try{
 				$packet->decode($stream);
 			}catch(PacketDecodeException $e){
