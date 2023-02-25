@@ -1943,25 +1943,26 @@
         },
         {
             "name": "phpstan/phpstan-strict-rules",
-            "version": "1.4.5",
+            "version": "1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-strict-rules.git",
-                "reference": "361f75b06066f3fdaba87c1f57bdb1ffc28d6f1d"
+                "reference": "b7dd96a5503919a43b3cd06a2dced9d4252492f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/361f75b06066f3fdaba87c1f57bdb1ffc28d6f1d",
-                "reference": "361f75b06066f3fdaba87c1f57bdb1ffc28d6f1d",
+                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/b7dd96a5503919a43b3cd06a2dced9d4252492f2",
+                "reference": "b7dd96a5503919a43b3cd06a2dced9d4252492f2",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.2 || ^8.0",
-                "phpstan/phpstan": "^1.9.7"
+                "phpstan/phpstan": "^1.10"
             },
             "require-dev": {
                 "nikic/php-parser": "^4.13.0",
                 "php-parallel-lint/php-parallel-lint": "^1.2",
+                "phpstan/phpstan-deprecation-rules": "^1.1",
                 "phpstan/phpstan-phpunit": "^1.0",
                 "phpunit/phpunit": "^9.5"
             },
@@ -1985,9 +1986,9 @@
             "description": "Extra strict and opinionated rules for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-strict-rules/issues",
-                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/1.4.5"
+                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/1.5.0"
             },
-            "time": "2023-01-11T14:16:29+00:00"
+            "time": "2023-02-21T10:17:10+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
