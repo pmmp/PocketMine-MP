@@ -43,7 +43,7 @@ class BlockGrowEvent extends BaseBlockChangeEvent{
 	 * It returns the player which grows the crop.
 	 * It returns null when the crop grows by itself.
 	 */
-	public function getPlayer(): ?Player {
+	public function getPlayer() : ?Player{
 		return $this->player;
 	}
 }
