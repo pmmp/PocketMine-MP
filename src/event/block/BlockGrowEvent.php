@@ -36,7 +36,7 @@ class BlockGrowEvent extends BaseBlockChangeEvent{
 		Block $newState,
 		private ?Player $player = null
 	){
-		parent::__construct($block, $newState);
+		parent::__construct($block, $newState); 
 	}
 	
 	/**
