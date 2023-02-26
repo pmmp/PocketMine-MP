@@ -23,9 +23,23 @@ declare(strict_types=1);
 
 namespace pocketmine\event\block;
 
+use pocketmine\block\Block;
+use pocketmine\player\Player;
+
 /**
  * Called when plants or crops grow.
  */
 class BlockGrowEvent extends BaseBlockChangeEvent{
-
+	
+	public function __construct(
+		Block $block,
+		Block $newState
+		private ?Player = null
+	){
+		parent::__construct($block, $newState);
+	}
+	
+	public function getPlayer(): ?Player {
+		return $this->player;
+	}
 }
