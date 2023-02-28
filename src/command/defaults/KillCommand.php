@@ -31,6 +31,7 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use function count;
 use function implode;
+use const PHP_INT_MAX;
 
 class KillCommand extends VanillaCommand{
 
