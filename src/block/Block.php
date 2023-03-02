@@ -105,10 +105,14 @@ class Block{
 		return $this->fallbackName;
 	}
 
-
 	/**
-	 * Returns a type ID that identifies this type of block. This does not include information like facing, open/closed,
-	 * powered/unpowered, etc.
+	 * Returns a type ID that identifies this type of block. This allows comparing basic block types, e.g. wool, stone,
+	 * glass, etc.
+	 *
+	 * This does **NOT** include information like facing, open/closed, powered/unpowered, colour, etc. This means that,
+	 * for example, red wool and green wool have the same type ID.
+	 *
+	 * @see BlockTypeIds
 	 */
 	public function getTypeId() : int{
 		return $this->idInfo->getBlockTypeId();
@@ -119,6 +123,11 @@ class Block{
 	 *
 	 * Returns the full blockstate ID of this block. This is a compact way of representing a blockstate used to store
 	 * blocks in chunks at runtime.
+	 *
+	 * This usually encodes all properties of the block, such as facing, open/closed, powered/unpowered, colour, etc.
+	 * However, some blocks (such as signs and chests) may store additional properties in an associated "tile" if they
+	 * have too many possible values to be encoded into the state ID. These extra properties are **NOT** included in
+	 * this function's result.
 	 *
 	 * This ID can be used to later obtain a copy of this block using {@link RuntimeBlockStateRegistry::fromStateId()}.
 	 */
