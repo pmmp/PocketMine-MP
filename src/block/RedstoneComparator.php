@@ -44,7 +44,7 @@ class RedstoneComparator extends Flowable{
 
 	protected bool $isSubtractMode = false;
 
-	public function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->bool($this->isSubtractMode);
 		$w->bool($this->powered);

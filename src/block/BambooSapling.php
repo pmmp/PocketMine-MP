@@ -36,7 +36,7 @@ use pocketmine\world\BlockTransaction;
 final class BambooSapling extends Flowable{
 	private bool $ready = false;
 
-	public function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->ready);
 	}
 

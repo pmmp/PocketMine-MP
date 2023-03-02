@@ -30,7 +30,7 @@ trait SignLikeRotationTrait{
 	/** @var int */
 	private $rotation = 0;
 
-	public function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(4, 0, 15, $this->rotation);
 	}
 

@@ -28,7 +28,7 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 trait RailPoweredByRedstoneTrait{
 	use PoweredByRedstoneTrait;
 
-	public function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		parent::describeState($w);
 		$w->bool($this->powered);
 	}

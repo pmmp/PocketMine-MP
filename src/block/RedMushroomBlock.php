@@ -36,7 +36,7 @@ class RedMushroomBlock extends Opaque{
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->mushroomBlockType($this->mushroomBlockType);
 	}
 

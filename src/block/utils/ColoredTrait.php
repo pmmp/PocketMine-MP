@@ -31,7 +31,7 @@ trait ColoredTrait{
 	private $color;
 
 	/** @see Block::describeType() */
-	public function describeType(RuntimeDataDescriber $w) : void{
+	protected function describeType(RuntimeDataDescriber $w) : void{
 		$w->dyeColor($this->color);
 	}
 

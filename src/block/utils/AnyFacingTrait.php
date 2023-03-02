@@ -29,7 +29,7 @@ use pocketmine\math\Facing;
 trait AnyFacingTrait{
 	protected int $facing = Facing::DOWN;
 
-	public function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->facing($this->facing);
 	}
 

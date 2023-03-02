@@ -214,11 +214,11 @@ class Block{
 		return $writer->getValue();
 	}
 
-	public function describeType(RuntimeDataDescriber $w) : void{
+	protected function describeType(RuntimeDataDescriber $w) : void{
 		//NOOP
 	}
 
-	public function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		//NOOP
 	}
 

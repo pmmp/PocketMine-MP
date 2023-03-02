@@ -34,7 +34,7 @@ class Rail extends BaseRail{
 
 	private int $railShape = BlockLegacyMetadata::RAIL_STRAIGHT_NORTH_SOUTH;
 
-	public function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->railShape($this->railShape);
 	}
 

@@ -50,7 +50,7 @@ class ItemFrame extends Flowable{
 	protected int $itemRotation = 0;
 	protected float $itemDropChance = 1.0;
 
-	public function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->facing($this->facing);
 		$w->bool($this->hasMap);
 	}
