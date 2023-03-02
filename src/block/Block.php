@@ -132,7 +132,7 @@ class Block{
 	 * This ID can be used to later obtain a copy of this block using {@link RuntimeBlockStateRegistry::fromStateId()}.
 	 */
 	public function getStateId() : int{
-		return ($this->getTypeId() << self::INTERNAL_STATE_DATA_BITS) | $this->computeStateData();
+		return ($this->getTypeId() << self::INTERNAL_STATE_DATA_BITS) | $this->computeTypeAndStateData();
 	}
 
 	/**
@@ -214,7 +214,7 @@ class Block{
 	/**
 	 * @internal
 	 */
-	final public function decodeStateData(int $data) : void{
+	final public function decodeTypeAndStateData(int $data) : void{
 		$typeBits = $this->getRequiredTypeDataBits();
 		$stateBits = $this->getRequiredStateDataBits();
 		$reader = new RuntimeDataReader($typeBits + $stateBits, $data);
@@ -246,7 +246,7 @@ class Block{
 	/**
 	 * @internal
 	 */
-	final public function computeStateData() : int{
+	final public function computeTypeAndStateData() : int{
 		$typeBits = $this->getRequiredTypeDataBits();
 		$stateBits = $this->getRequiredStateDataBits();
 		$writer = new RuntimeDataWriter($typeBits + $stateBits);
@@ -720,7 +720,7 @@ class Block{
 	 * @return string
 	 */
 	public function __toString(){
-		return "Block[" . $this->getName() . "] (" . $this->getTypeId() . ":" . $this->computeStateData() . ")";
+		return "Block[" . $this->getName() . "] (" . $this->getTypeId() . ":" . $this->computeTypeAndStateData() . ")";
 	}
 
 	/**
