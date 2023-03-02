@@ -31,9 +31,8 @@ class ItemIdentifier{
 	){}
 
 	public static function fromBlock(Block $block) : self{
-		//negative item type IDs are treated as block IDs
 		//TODO: maybe an ItemBlockIdentifier is in order?
-		return new self(-$block->getTypeId());
+		return new self(ItemTypeIds::fromBlockTypeId($block->getTypeId()));
 	}
 
 	public function getTypeId() : int{ return $this->typeId; }
