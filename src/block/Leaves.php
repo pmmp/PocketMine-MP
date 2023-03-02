@@ -47,7 +47,7 @@ class Leaves extends Transparent{
 		$this->leavesType = $leavesType;
 	}
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	public function describeState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->noDecay);
 		$w->bool($this->checkDecay);
 	}

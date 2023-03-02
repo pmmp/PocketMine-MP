@@ -34,7 +34,7 @@ final class Light extends Flowable{
 
 	private int $level = self::MAX_LIGHT_LEVEL;
 
-	protected function describeType(RuntimeDataDescriber $w) : void{
+	public function describeType(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(4, self::MIN_LIGHT_LEVEL, self::MAX_LIGHT_LEVEL, $this->level);
 	}
 

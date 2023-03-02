@@ -41,7 +41,7 @@ class Slab extends Transparent{
 		$this->slabType = SlabType::BOTTOM();
 	}
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	public function describeState(RuntimeDataDescriber $w) : void{
 		$w->slabType($this->slabType);
 	}
 

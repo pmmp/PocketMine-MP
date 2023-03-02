@@ -46,7 +46,7 @@ class Candle extends Transparent{
 
 	private int $count = self::MIN_COUNT;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	public function describeState(RuntimeDataDescriber $w) : void{
 		$this->encodeLitState($w);
 		$w->boundedInt(2, self::MIN_COUNT, self::MAX_COUNT, $this->count);
 	}

@@ -46,7 +46,7 @@ class Lectern extends Transparent{
 
 	protected bool $producingSignal = false;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	public function describeState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->bool($this->producingSignal);
 	}

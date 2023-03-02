@@ -28,7 +28,7 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 abstract class SimplePressurePlate extends PressurePlate{
 	protected bool $pressed = false;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	public function describeState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->pressed);
 	}
 

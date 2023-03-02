@@ -62,16 +62,9 @@ class BlockTest extends TestCase{
 	 * Test registering a new block which does not yet exist
 	 */
 	public function testRegisterNewBlock() : void{
-		for($i = BlockTypeIds::FIRST_UNUSED_BLOCK_ID; $i < BlockTypeIds::FIRST_UNUSED_BLOCK_ID + 256; ++$i){
-			if(!$this->blockFactory->isRegistered($i)){
-				$b = new StrangeNewBlock(new BlockIdentifier($i), "Strange New Block", new BlockTypeInfo(BlockBreakInfo::instant()));
-				$this->blockFactory->register($b);
-				self::assertInstanceOf(StrangeNewBlock::class, $this->blockFactory->fromStateId($b->getStateId()));
-				return;
-			}
-		}
-
-		throw new \RuntimeException("Can't test registering new blocks because no unused spaces left");
+		$b = new StrangeNewBlock(new BlockIdentifier(BlockTypeIds::newId()), "Strange New Block", new BlockTypeInfo(BlockBreakInfo::instant()));
+		$this->blockFactory->register($b);
+		self::assertInstanceOf(StrangeNewBlock::class, $this->blockFactory->fromStateId($b->getStateId()));
 	}
 
 	/**

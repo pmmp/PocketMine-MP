@@ -32,7 +32,7 @@ class FrostedIce extends Ice{
 
 	protected int $age = 0;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	public function describeState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(2, 0, self::MAX_AGE, $this->age);
 	}
 

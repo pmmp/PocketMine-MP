@@ -45,7 +45,7 @@ class Dirt extends Opaque{
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	protected function describeType(RuntimeDataDescriber $w) : void{
+	public function describeType(RuntimeDataDescriber $w) : void{
 		$w->dirtType($this->dirtType);
 	}
 

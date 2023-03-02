@@ -44,7 +44,7 @@ trait CopperTrait{
 		parent::__construct($identifier, $name, $typeInfo);
 	}
 
-	protected function describeType(RuntimeDataDescriber $w) : void{
+	public function describeType(RuntimeDataDescriber $w) : void{
 		$w->copperOxidation($this->oxidation);
 		$w->bool($this->waxed);
 	}

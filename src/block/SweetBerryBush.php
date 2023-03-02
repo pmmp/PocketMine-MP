@@ -45,7 +45,7 @@ class SweetBerryBush extends Flowable{
 
 	protected int $age = self::STAGE_SAPLING;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	public function describeState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(3, self::STAGE_SAPLING, self::STAGE_MATURE, $this->age);
 	}
 

@@ -36,7 +36,7 @@ class Cake extends BaseCake{
 
 	protected int $bites = 0;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	public function describeState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(3, 0, self::MAX_BITES, $this->bites);
 	}
 

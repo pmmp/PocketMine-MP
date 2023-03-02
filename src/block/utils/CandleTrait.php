@@ -39,7 +39,7 @@ use pocketmine\world\sound\FlintSteelSound;
 trait CandleTrait{
 	private bool $lit = false;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	public function describeState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->lit);
 	}
 

@@ -42,7 +42,7 @@ class Wall extends Transparent{
 	protected array $connections = [];
 	protected bool $post = false;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	public function describeState(RuntimeDataDescriber $w) : void{
 		$w->wallConnections($this->connections);
 		$w->bool($this->post);
 	}
