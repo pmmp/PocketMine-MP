@@ -202,8 +202,7 @@ class Block{
 	 */
 	final public function decodeTypeData(int $data) : void{
 		$typeBits = $this->getRequiredTypeDataBits();
-		$givenBits = $typeBits;
-		$reader = new RuntimeDataReader($givenBits, $data);
+		$reader = new RuntimeDataReader($typeBits, $data);
 
 		$this->describeType($reader);
 		$readBits = $reader->getOffset();
@@ -218,8 +217,7 @@ class Block{
 	final public function decodeStateData(int $data) : void{
 		$typeBits = $this->getRequiredTypeDataBits();
 		$stateBits = $this->getRequiredStateDataBits();
-		$givenBits = $typeBits + $stateBits;
-		$reader = new RuntimeDataReader($givenBits, $data);
+		$reader = new RuntimeDataReader($typeBits + $stateBits, $data);
 		$this->decodeTypeData($reader->readInt($typeBits));
 
 		$this->describeState($reader);
@@ -234,8 +232,7 @@ class Block{
 	 */
 	final public function computeTypeData() : int{
 		$typeBits = $this->getRequiredTypeDataBits();
-		$requiredBits = $typeBits;
-		$writer = new RuntimeDataWriter($requiredBits);
+		$writer = new RuntimeDataWriter($typeBits);
 
 		$this->describeType($writer);
 		$writtenBits = $writer->getOffset();
@@ -252,8 +249,7 @@ class Block{
 	final public function computeStateData() : int{
 		$typeBits = $this->getRequiredTypeDataBits();
 		$stateBits = $this->getRequiredStateDataBits();
-		$requiredBits = $typeBits + $stateBits;
-		$writer = new RuntimeDataWriter($requiredBits);
+		$writer = new RuntimeDataWriter($typeBits + $stateBits);
 		$writer->writeInt($typeBits, $this->computeTypeData());
 
 		$this->describeState($writer);
