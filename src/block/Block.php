@@ -105,6 +105,15 @@ class Block{
 		return $this->fallbackName;
 	}
 
+
+	/**
+	 * Returns a type ID that identifies this type of block. This does not include information like facing, open/closed,
+	 * powered/unpowered, etc.
+	 */
+	public function getTypeId() : int{
+		return $this->idInfo->getBlockTypeId();
+	}
+
 	/**
 	 * @internal
 	 *
@@ -115,6 +124,39 @@ class Block{
 	 */
 	public function getStateId() : int{
 		return ($this->getTypeId() << self::INTERNAL_STATE_DATA_BITS) | $this->computeStateData();
+	}
+
+	/**
+	 * Returns whether the given block has an equivalent type to this one. This compares the type IDs.
+	 */
+	public function isSameType(Block $other) : bool{
+		return $this->getTypeId() === $other->getTypeId();
+	}
+
+	/**
+	 * Returns whether the given block has the same type and properties as this block.
+	 */
+	public function isSameState(Block $other) : bool{
+		return $this->getStateId() === $other->getStateId();
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getTypeTags() : array{
+		return $this->typeInfo->getTypeTags();
+	}
+
+	/**
+	 * Returns whether this block type has the given type tag. Type tags are used as a dynamic way to tag blocks as
+	 * having certain properties, allowing type checks which are more dynamic than hardcoding a bunch of IDs or a bunch
+	 * of instanceof checks.
+	 *
+	 * For example, grass blocks, dirt, farmland, podzol and mycelium are all dirt-like blocks, and support the
+	 * placement of blocks like flowers, so they have a common tag which allows them to be identified as such.
+	 */
+	public function hasTypeTag(string $tag) : bool{
+		return $this->typeInfo->hasTypeTag($tag);
 	}
 
 	/**
@@ -270,47 +312,6 @@ class Block{
 			$tile = new $tileType($world, $this->position->asVector3());
 			$world->addTile($tile);
 		}
-	}
-
-	/**
-	 * Returns a type ID that identifies this type of block. This does not include information like facing, open/closed,
-	 * powered/unpowered, etc.
-	 */
-	public function getTypeId() : int{
-		return $this->idInfo->getBlockTypeId();
-	}
-
-	/**
-	 * Returns whether the given block has an equivalent type to this one. This compares the type IDs.
-	 */
-	public function isSameType(Block $other) : bool{
-		return $this->getTypeId() === $other->getTypeId();
-	}
-
-	/**
-	 * Returns whether the given block has the same type and properties as this block.
-	 */
-	public function isSameState(Block $other) : bool{
-		return $this->getStateId() === $other->getStateId();
-	}
-
-	/**
-	 * @return string[]
-	 */
-	public function getTypeTags() : array{
-		return $this->typeInfo->getTypeTags();
-	}
-
-	/**
-	 * Returns whether this block type has the given type tag. Type tags are used as a dynamic way to tag blocks as
-	 * having certain properties, allowing type checks which are more dynamic than hardcoding a bunch of IDs or a bunch
-	 * of instanceof checks.
-	 *
-	 * For example, grass blocks, dirt, farmland, podzol and mycelium are all dirt-like blocks, and support the
-	 * placement of blocks like flowers, so they have a common tag which allows them to be identified as such.
-	 */
-	public function hasTypeTag(string $tag) : bool{
-		return $this->typeInfo->hasTypeTag($tag);
 	}
 
 	/**
