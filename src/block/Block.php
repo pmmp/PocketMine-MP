@@ -261,10 +261,26 @@ class Block{
 		return $writer->getValue();
 	}
 
+	/**
+	 * Describes properties of this block which apply to both the block and item form of the block.
+	 * Examples of suitable properties include colour, skull type, and any other information which **IS** kept when the
+	 * block is mined or block-picked.
+	 *
+	 * The method implementation must NOT use conditional logic to determine which properties are written. It must
+	 * always write the same properties in the same order, regardless of the current state of the block.
+	 */
 	protected function describeType(RuntimeDataDescriber $w) : void{
 		//NOOP
 	}
 
+	/**
+	 * Describes properties of this block which apply only to the block form of the block.
+	 * Examples of suitable properties include facing, open/closed, powered/unpowered, on/off, and any other information
+	 * which **IS NOT** kept when the block is mined or block-picked.
+	 *
+	 * The method implementation must NOT use conditional logic to determine which properties are written. It must
+	 * always write the same properties in the same order, regardless of the current state of the block.
+	 */
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		//NOOP
 	}
