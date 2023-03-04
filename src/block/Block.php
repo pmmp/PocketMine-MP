@@ -54,7 +54,7 @@ use function get_class;
 use const PHP_INT_MAX;
 
 class Block{
-	public const INTERNAL_STATE_DATA_BITS = 9;
+	public const INTERNAL_STATE_DATA_BITS = 8;
 	public const INTERNAL_STATE_DATA_MASK = ~(~0 << self::INTERNAL_STATE_DATA_BITS);
 
 	protected BlockIdentifier $idInfo;

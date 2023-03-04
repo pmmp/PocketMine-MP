@@ -133,15 +133,18 @@ final class RuntimeDataWriter implements RuntimeDataDescriber{
 	 * @phpstan-param array<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST, WallConnectionType> $connections
 	 */
 	public function wallConnections(array &$connections) : void{
-		//TODO: we can pack this into 7 bits instead of 8
+		$packed = 0;
+		$offset = 0;
 		foreach(Facing::HORIZONTAL as $facing){
-			$this->writeBoundedInt(2, 0, 2, match($connections[$facing] ?? null){
+			$packed += match($connections[$facing] ?? null){
 				null => 0,
 				WallConnectionType::SHORT() => 1,
 				WallConnectionType::TALL() => 2,
 				default => throw new AssumptionFailedError("Unreachable")
-			});
+			} * (3 ** $offset);
+			$offset++;
 		}
+		$this->writeBoundedInt(7, 0, (3 ** 4) - 1, $packed);
 	}
 
 	/**

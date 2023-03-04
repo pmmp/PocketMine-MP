@@ -144,9 +144,10 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 	 */
 	public function wallConnections(array &$connections) : void{
 		$result = [];
-		//TODO: we can pack this into 7 bits instead of 8
+		$offset = 0;
+		$packed = $this->readBoundedInt(7, 0, (3 ** 4) - 1);
 		foreach(Facing::HORIZONTAL as $facing){
-			$type = $this->readBoundedInt(2, 0, 2);
+			$type = intdiv($packed,  (3 ** $offset)) % 3;
 			if($type !== 0){
 				$result[$facing] = match($type){
 					1 => WallConnectionType::SHORT(),
@@ -154,6 +155,7 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 					default => throw new AssumptionFailedError("Unreachable")
 				};
 			}
+			$offset++;
 		}
 
 		$connections = $result;
