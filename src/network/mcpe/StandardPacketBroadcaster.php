@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\Server;
+use pocketmine\timings\Timings;
 use pocketmine\utils\BinaryStream;
 use function spl_object_id;
 use function strlen;
@@ -70,7 +71,7 @@ final class StandardPacketBroadcaster implements PacketBroadcaster{
 					PacketBatch::encodeRaw($stream, $packetBuffers[$bufferId]);
 					$batchBuffer = $stream->getBuffer();
 
-					$promise = $this->server->prepareBatch(new PacketBatch($batchBuffer), $compressor);
+					$promise = $this->server->prepareBatch(new PacketBatch($batchBuffer), $compressor, timings: Timings::$playerNetworkSendCompressBroadcast);
 					foreach($compressorTargets as $target){
 						$target->queueCompressed($promise);
 					}
