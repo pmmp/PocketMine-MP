@@ -29,6 +29,7 @@ use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
+use function intdiv;
 
 final class RuntimeDataReader implements RuntimeDataDescriber{
 	use RuntimeEnumDeserializerTrait;
