@@ -1388,7 +1388,8 @@ class Server{
 			$buffer = $stream->getBuffer();
 
 			if($sync === null){
-				$sync = !($this->networkCompressionAsync && $compressor->willCompress($buffer));
+				$threshold = $compressor->getCompressionThreshold();
+				$sync = !$this->networkCompressionAsync || $threshold === null || strlen($stream->getBuffer()) < $threshold;
 			}
 
 			$promise = new CompressBatchPromise();
