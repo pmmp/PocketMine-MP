@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8cc1526bc08ea72d7a2634604efd954c",
+    "content-hash": "f609218eeb5807151b919d324abedddd",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -199,7 +199,7 @@
         },
         {
             "name": "nethergamesmc/bedrock-data",
-            "version": "dev-1.18.0-min",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/NetherGamesMC/BedrockData.git",
@@ -211,19 +211,20 @@
                 "reference": "17f124c9a6634b735229e9091341173e445c1cf6",
                 "shasum": ""
             },
+            "default-branch": true,
             "type": "library",
             "license": [
                 "CC0-1.0"
             ],
             "description": "Blobs of data generated from Minecraft: Bedrock Edition, used by PocketMine-MP",
             "support": {
-                "source": "https://github.com/NetherGamesMC/BedrockData/tree/1.18.0-min"
+                "source": "https://github.com/NetherGamesMC/BedrockData/tree/master"
             },
             "time": "2023-03-05T15:44:32+00:00"
         },
         {
             "name": "nethergamesmc/bedrock-protocol",
-            "version": "dev-1.18.0-min",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/NetherGamesMC/BedrockProtocol.git",
@@ -251,6 +252,7 @@
                 "phpstan/phpstan-strict-rules": "^1.0.0",
                 "phpunit/phpunit": "^9.5"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -272,7 +274,7 @@
             ],
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
-                "source": "https://github.com/NetherGamesMC/BedrockProtocol/tree/1.18.0-min"
+                "source": "https://github.com/NetherGamesMC/BedrockProtocol/tree/master"
             },
             "time": "2023-03-05T15:43:28+00:00"
         },
