@@ -64,7 +64,6 @@ use pocketmine\world\Position;
 use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 use function abs;
-use function array_filter;
 use function array_map;
 use function assert;
 use function cos;
