@@ -446,14 +446,6 @@ class NetworkSession{
 		}
 
 		$ev = new DataPacketPreReceiveEvent($this, $packet->pid(), $buffer);
-		if($ev->getPacketId() === ProtocolInfo::MOVE_PLAYER_PACKET ||
-			$ev->getPacketId() === ProtocolInfo::LEVEL_SOUND_EVENT_PACKET_V1 ||
-			$ev->getPacketId() === ProtocolInfo::SET_ACTOR_MOTION_PACKET ||
-			$ev->getPacketId() === ProtocolInfo::ANIMATE_PACKET ||
-			$ev->getPacketId() === ProtocolInfo::PLAYER_HOTBAR_PACKET ||
-			$ev->getPacketId() === ProtocolInfo::CRAFTING_EVENT_PACKET){
-			$ev->cancel();
-		}
 		$ev->call();
 		if($ev->isCancelled()){
 			return;
