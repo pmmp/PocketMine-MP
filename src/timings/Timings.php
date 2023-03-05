@@ -52,6 +52,10 @@ abstract class Timings{
 	public static $playerNetworkSend;
 	/** @var TimingsHandler */
 	public static $playerNetworkSendCompress;
+
+	public static TimingsHandler $playerNetworkSendCompressBroadcast;
+	public static TimingsHandler $playerNetworkSendCompressSessionBuffer;
+
 	/** @var TimingsHandler */
 	public static $playerNetworkSendEncrypt;
 	/** @var TimingsHandler */
@@ -153,6 +157,8 @@ abstract class Timings{
 
 		self::$playerNetworkSend = new TimingsHandler("Player Network Send");
 		self::$playerNetworkSendCompress = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Compression", self::$playerNetworkSend);
+		self::$playerNetworkSendCompressBroadcast = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Compression (Broadcast)", self::$playerNetworkSendCompress);
+		self::$playerNetworkSendCompressSessionBuffer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Compression (Session Buffer)", self::$playerNetworkSendCompress);
 		self::$playerNetworkSendEncrypt = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Encryption", self::$playerNetworkSend);
 
 		self::$playerNetworkReceive = new TimingsHandler("Player Network Receive");
@@ -234,8 +240,7 @@ abstract class Timings{
 	public static function getReceiveDataPacketTimings(ServerboundPacket $pk) : TimingsHandler{
 		$pid = $pk->pid();
 		if(!isset(self::$packetReceiveTimingMap[$pid])){
-			$pkName = (new \ReflectionClass($pk))->getShortName();
-			self::$packetReceiveTimingMap[$pid] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "receivePacket - " . $pkName . " [0x" . dechex($pid) . "]", self::$playerNetworkReceive);
+			self::$packetReceiveTimingMap[$pid] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "receivePacket - " . $pk->getName() . " [0x" . dechex($pid) . "]", self::$playerNetworkReceive);
 		}
 
 		return self::$packetReceiveTimingMap[$pid];
@@ -268,8 +273,7 @@ abstract class Timings{
 	public static function getSendDataPacketTimings(ClientboundPacket $pk) : TimingsHandler{
 		$pid = $pk->pid();
 		if(!isset(self::$packetSendTimingMap[$pid])){
-			$pkName = (new \ReflectionClass($pk))->getShortName();
-			self::$packetSendTimingMap[$pid] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "sendPacket - " . $pkName . " [0x" . dechex($pid) . "]", self::$playerNetworkSend);
+			self::$packetSendTimingMap[$pid] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "sendPacket - " . $pk->getName() . " [0x" . dechex($pid) . "]", self::$playerNetworkSend);
 		}
 
 		return self::$packetSendTimingMap[$pid];
