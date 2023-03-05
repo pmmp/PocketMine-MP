@@ -222,8 +222,8 @@ abstract class Entity{
 	/** @var int|null */
 	protected $targetId = null;
 
-	/** @var bool[] */
-	protected $needsInitialMovement = [];
+	/** @var bool */
+	protected $needsAbsoluteMovement = true;
 
 	private bool $constructorCalled = false;
 
@@ -791,37 +791,8 @@ abstract class Entity{
 				$this->spawnTo($player);
 			}
 		}else{
-			$lastLocation = $this->getOffsetPosition($this->lastLocation);
-			$pk = new MoveActorDeltaPacket();
-			$pk->actorRuntimeId = $this->id;
-			//TODO: if the above hack for #4394 gets removed, we should be setting FLAG_TELEPORT here
-			$pk->flags = $this->onGround ? MoveActorDeltaPacket::FLAG_GROUND : 0;
-			if($lastLocation->x !== $currentLocation->x){
-				$pk->xPos = $currentLocation->x;
-				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_X;
-			}
-			if($lastLocation->y !== $currentLocation->y){
-				$pk->yPos = $currentLocation->y;
-				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_Y;
-			}
-			if($lastLocation->z !== $currentLocation->z){
-				$pk->zPos = $currentLocation->z;
-				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_Z;
-			}
-			if($this->lastLocation->pitch !== $this->location->pitch){
-				$pk->pitch = $this->location->pitch;
-				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_PITCH;
-			}
-			if($this->lastLocation->yaw !== $this->location->yaw){
-				$pk->yaw = $this->location->yaw;
-				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_YAW;
-				$pk->headYaw = $this->location->yaw;
-				$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_HEAD_YAW;
-			}
-			$this->server->broadcastPackets(array_filter($this->hasSpawned, fn($player) => !isset($this->needsInitialMovement[spl_object_id($player)])), [$pk]);
-
-			if(count($this->needsInitialMovement) !== 0) {
-				$pk2 = MoveActorAbsolutePacket::create(
+			if($this->needsAbsoluteMovement) {
+				$pk = MoveActorAbsolutePacket::create(
 					$this->id,
 					$currentLocation,
 					$this->location->pitch,
@@ -830,12 +801,37 @@ abstract class Entity{
 					//TODO: if the above hack for #4394 gets removed, we should be setting FLAG_TELEPORT here
 					$this->onGround ? MoveActorDeltaPacket::FLAG_GROUND : 0,
 				);
-				$targets = [];
-				foreach($this->needsInitialMovement as $key => $need) {
-					$targets[] = $this->hasSpawned[$key];
+				$this->server->broadcastPackets($this->hasSpawned, [$pk]);
+				$this->needsAbsoluteMovement = false;
+			}else{
+				$lastLocation = $this->getOffsetPosition($this->lastLocation);
+				$pk = new MoveActorDeltaPacket();
+				$pk->actorRuntimeId = $this->id;
+				//TODO: if the above hack for #4394 gets removed, we should be setting FLAG_TELEPORT here
+				$pk->flags = $this->onGround ? MoveActorDeltaPacket::FLAG_GROUND : 0;
+				if($lastLocation->x !== $currentLocation->x){
+					$pk->xPos = $currentLocation->x;
+					$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_X;
 				}
-				$this->server->broadcastPackets($targets, [$pk2]);
-				$this->needsInitialMovement = [];
+				if($lastLocation->y !== $currentLocation->y){
+					$pk->yPos = $currentLocation->y;
+					$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_Y;
+				}
+				if($lastLocation->z !== $currentLocation->z){
+					$pk->zPos = $currentLocation->z;
+					$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_Z;
+				}
+				if($this->lastLocation->pitch !== $this->location->pitch){
+					$pk->pitch = $this->location->pitch;
+					$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_PITCH;
+				}
+				if($this->lastLocation->yaw !== $this->location->yaw){
+					$pk->yaw = $this->location->yaw;
+					$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_YAW;
+					$pk->headYaw = $this->location->yaw;
+					$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_HEAD_YAW;
+				}
+				$this->server->broadcastPackets($this->hasSpawned, [$pk]);
 			}
 		}
 	}
@@ -1540,7 +1536,7 @@ abstract class Entity{
 		//the player by sending them entities too early.
 		if(!isset($this->hasSpawned[$id]) && $player->getWorld() === $this->getWorld() && $player->hasReceivedChunk($this->location->getFloorX() >> Chunk::COORD_BIT_SIZE, $this->location->getFloorZ() >> Chunk::COORD_BIT_SIZE)){
 			$this->hasSpawned[$id] = $player;
-			$this->needsInitialMovement[$id] = true;
+			$this->needsAbsoluteMovement = true;
 
 			$this->sendSpawnPacket($player);
 		}
@@ -1572,7 +1568,6 @@ abstract class Entity{
 			if($send){
 				$player->getNetworkSession()->onEntityRemoved($this);
 			}
-			unset($this->needsInitialMovement[$id]);
 			unset($this->hasSpawned[$id]);
 		}
 	}
