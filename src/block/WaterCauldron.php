@@ -31,7 +31,6 @@ use pocketmine\item\Armor;
 use pocketmine\item\Banner;
 use pocketmine\item\Dye;
 use pocketmine\item\Item;
-use pocketmine\item\ItemBlock;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\item\Potion;
 use pocketmine\item\PotionType;
@@ -155,7 +154,7 @@ final class WaterCauldron extends FillableCauldron{
 				$this->position->getWorld()->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::CLEAN_BANNER_USE_AMOUNT));
 				$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronCleanItemSound());
 			}
-		}elseif($item instanceof ItemBlock && $item->getBlock()->getTypeId() === BlockTypeIds::DYED_SHULKER_BOX){
+		}elseif(ItemTypeIds::toBlockTypeId($item->getTypeId()) === BlockTypeIds::DYED_SHULKER_BOX){
 			if($this->customWaterColor === null){
 				$newItem = VanillaBlocks::SHULKER_BOX()->asItem();
 				$newItem->setNamedTag($item->getNamedTag());

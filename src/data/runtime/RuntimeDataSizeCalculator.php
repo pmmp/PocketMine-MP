@@ -81,8 +81,7 @@ final class RuntimeDataSizeCalculator implements RuntimeDataDescriber{
 	}
 
 	public function wallConnections(array &$connections) : void{
-		//TODO: this can be reduced to 7 if we pack the trinary values
-		$this->addBits(8);
+		$this->addBits(7);
 	}
 
 	public function brewingStandSlots(array &$slots) : void{

@@ -54,7 +54,7 @@ use function get_class;
 use const PHP_INT_MAX;
 
 class Block{
-	public const INTERNAL_STATE_DATA_BITS = 9;
+	public const INTERNAL_STATE_DATA_BITS = 8;
 	public const INTERNAL_STATE_DATA_MASK = ~(~0 << self::INTERNAL_STATE_DATA_BITS);
 
 	protected BlockIdentifier $idInfo;
@@ -106,15 +106,66 @@ class Block{
 	}
 
 	/**
+	 * Returns a type ID that identifies this type of block. This allows comparing basic block types, e.g. wool, stone,
+	 * glass, etc.
+	 *
+	 * This does **NOT** include information like facing, open/closed, powered/unpowered, colour, etc. This means that,
+	 * for example, red wool and green wool have the same type ID.
+	 *
+	 * @see BlockTypeIds
+	 */
+	public function getTypeId() : int{
+		return $this->idInfo->getBlockTypeId();
+	}
+
+	/**
 	 * @internal
 	 *
 	 * Returns the full blockstate ID of this block. This is a compact way of representing a blockstate used to store
 	 * blocks in chunks at runtime.
 	 *
+	 * This usually encodes all properties of the block, such as facing, open/closed, powered/unpowered, colour, etc.
+	 * However, some blocks (such as signs and chests) may store additional properties in an associated "tile" if they
+	 * have too many possible values to be encoded into the state ID. These extra properties are **NOT** included in
+	 * this function's result.
+	 *
 	 * This ID can be used to later obtain a copy of this block using {@link RuntimeBlockStateRegistry::fromStateId()}.
 	 */
 	public function getStateId() : int{
-		return ($this->getTypeId() << self::INTERNAL_STATE_DATA_BITS) | $this->computeStateData();
+		return ($this->getTypeId() << self::INTERNAL_STATE_DATA_BITS) | $this->computeTypeAndStateData();
+	}
+
+	/**
+	 * Returns whether the given block has an equivalent type to this one. This compares the type IDs.
+	 */
+	public function isSameType(Block $other) : bool{
+		return $this->getTypeId() === $other->getTypeId();
+	}
+
+	/**
+	 * Returns whether the given block has the same type and properties as this block.
+	 */
+	public function isSameState(Block $other) : bool{
+		return $this->getStateId() === $other->getStateId();
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getTypeTags() : array{
+		return $this->typeInfo->getTypeTags();
+	}
+
+	/**
+	 * Returns whether this block type has the given type tag. Type tags are used as a dynamic way to tag blocks as
+	 * having certain properties, allowing type checks which are more dynamic than hardcoding a bunch of IDs or a bunch
+	 * of instanceof checks.
+	 *
+	 * For example, grass blocks, dirt, farmland, podzol and mycelium are all dirt-like blocks, and support the
+	 * placement of blocks like flowers, so they have a common tag which allows them to be identified as such.
+	 */
+	public function hasTypeTag(string $tag) : bool{
+		return $this->typeInfo->hasTypeTag($tag);
 	}
 
 	/**
@@ -151,8 +202,7 @@ class Block{
 	 */
 	final public function decodeTypeData(int $data) : void{
 		$typeBits = $this->getRequiredTypeDataBits();
-		$givenBits = $typeBits;
-		$reader = new RuntimeDataReader($givenBits, $data);
+		$reader = new RuntimeDataReader($typeBits, $data);
 
 		$this->describeType($reader);
 		$readBits = $reader->getOffset();
@@ -164,11 +214,10 @@ class Block{
 	/**
 	 * @internal
 	 */
-	final public function decodeStateData(int $data) : void{
+	final public function decodeTypeAndStateData(int $data) : void{
 		$typeBits = $this->getRequiredTypeDataBits();
 		$stateBits = $this->getRequiredStateDataBits();
-		$givenBits = $typeBits + $stateBits;
-		$reader = new RuntimeDataReader($givenBits, $data);
+		$reader = new RuntimeDataReader($typeBits + $stateBits, $data);
 		$this->decodeTypeData($reader->readInt($typeBits));
 
 		$this->describeState($reader);
@@ -183,8 +232,7 @@ class Block{
 	 */
 	final public function computeTypeData() : int{
 		$typeBits = $this->getRequiredTypeDataBits();
-		$requiredBits = $typeBits;
-		$writer = new RuntimeDataWriter($requiredBits);
+		$writer = new RuntimeDataWriter($typeBits);
 
 		$this->describeType($writer);
 		$writtenBits = $writer->getOffset();
@@ -198,11 +246,10 @@ class Block{
 	/**
 	 * @internal
 	 */
-	final public function computeStateData() : int{
+	final public function computeTypeAndStateData() : int{
 		$typeBits = $this->getRequiredTypeDataBits();
 		$stateBits = $this->getRequiredStateDataBits();
-		$requiredBits = $typeBits + $stateBits;
-		$writer = new RuntimeDataWriter($requiredBits);
+		$writer = new RuntimeDataWriter($typeBits + $stateBits);
 		$writer->writeInt($typeBits, $this->computeTypeData());
 
 		$this->describeState($writer);
@@ -214,10 +261,26 @@ class Block{
 		return $writer->getValue();
 	}
 
+	/**
+	 * Describes properties of this block which apply to both the block and item form of the block.
+	 * Examples of suitable properties include colour, skull type, and any other information which **IS** kept when the
+	 * block is mined or block-picked.
+	 *
+	 * The method implementation must NOT use conditional logic to determine which properties are written. It must
+	 * always write the same properties in the same order, regardless of the current state of the block.
+	 */
 	protected function describeType(RuntimeDataDescriber $w) : void{
 		//NOOP
 	}
 
+	/**
+	 * Describes properties of this block which apply only to the block form of the block.
+	 * Examples of suitable properties include facing, open/closed, powered/unpowered, on/off, and any other information
+	 * which **IS NOT** kept when the block is mined or block-picked.
+	 *
+	 * The method implementation must NOT use conditional logic to determine which properties are written. It must
+	 * always write the same properties in the same order, regardless of the current state of the block.
+	 */
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		//NOOP
 	}
@@ -270,47 +333,6 @@ class Block{
 			$tile = new $tileType($world, $this->position->asVector3());
 			$world->addTile($tile);
 		}
-	}
-
-	/**
-	 * Returns a type ID that identifies this type of block. This does not include information like facing, open/closed,
-	 * powered/unpowered, etc.
-	 */
-	public function getTypeId() : int{
-		return $this->idInfo->getBlockTypeId();
-	}
-
-	/**
-	 * Returns whether the given block has an equivalent type to this one. This compares the type IDs.
-	 */
-	public function isSameType(Block $other) : bool{
-		return $this->getTypeId() === $other->getTypeId();
-	}
-
-	/**
-	 * Returns whether the given block has the same type and properties as this block.
-	 */
-	public function isSameState(Block $other) : bool{
-		return $this->getStateId() === $other->getStateId();
-	}
-
-	/**
-	 * @return string[]
-	 */
-	public function getTypeTags() : array{
-		return $this->typeInfo->getTypeTags();
-	}
-
-	/**
-	 * Returns whether this block type has the given type tag. Type tags are used as a dynamic way to tag blocks as
-	 * having certain properties, allowing type checks which are more dynamic than hardcoding a bunch of IDs or a bunch
-	 * of instanceof checks.
-	 *
-	 * For example, grass blocks, dirt, farmland, podzol and mycelium are all dirt-like blocks, and support the
-	 * placement of blocks like flowers, so they have a common tag which allows them to be identified as such.
-	 */
-	public function hasTypeTag(string $tag) : bool{
-		return $this->typeInfo->hasTypeTag($tag);
 	}
 
 	/**
@@ -698,7 +720,7 @@ class Block{
 	 * @return string
 	 */
 	public function __toString(){
-		return "Block[" . $this->getName() . "] (" . $this->getTypeId() . ":" . $this->computeStateData() . ")";
+		return "Block[" . $this->getName() . "] (" . $this->getTypeId() . ":" . $this->computeTypeAndStateData() . ")";
 	}
 
 	/**

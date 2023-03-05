@@ -44,6 +44,8 @@ abstract class Timings{
 	public static TimingsHandler $titleTick;
 	public static TimingsHandler $playerNetworkSend;
 	public static TimingsHandler $playerNetworkSendCompress;
+	public static TimingsHandler $playerNetworkSendCompressBroadcast;
+	public static TimingsHandler $playerNetworkSendCompressSessionBuffer;
 	public static TimingsHandler $playerNetworkSendEncrypt;
 	public static TimingsHandler $playerNetworkReceive;
 	public static TimingsHandler $playerNetworkReceiveDecompress;
@@ -120,6 +122,8 @@ abstract class Timings{
 
 		self::$playerNetworkSend = new TimingsHandler("Player Network Send");
 		self::$playerNetworkSendCompress = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Compression", self::$playerNetworkSend);
+		self::$playerNetworkSendCompressBroadcast = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Compression (Broadcast)", self::$playerNetworkSendCompress);
+		self::$playerNetworkSendCompressSessionBuffer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Compression (Session Buffer)", self::$playerNetworkSendCompress);
 		self::$playerNetworkSendEncrypt = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Encryption", self::$playerNetworkSend);
 
 		self::$playerNetworkReceive = new TimingsHandler("Player Network Receive");
