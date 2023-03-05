@@ -51,7 +51,7 @@ class Sugarcane extends Flowable{
 		return $bottom;
 	}
 
-	private function grow(Position $pos) : bool{
+	private function grow(Position $pos, ?Player $player = null) : bool{
 		$grew = false;
 		$world = $pos->getWorld();
 		for($y = 1; $y < 3; ++$y){
@@ -60,7 +60,7 @@ class Sugarcane extends Flowable{
 			}
 			$b = $world->getBlockAt($pos->x, $pos->y + $y, $pos->z);
 			if($b->getTypeId() === BlockTypeIds::AIR){
-				$ev = new BlockGrowEvent($b, VanillaBlocks::SUGARCANE());
+				$ev = new BlockGrowEvent($b, VanillaBlocks::SUGARCANE(), $player);
 				$ev->call();
 				if($ev->isCancelled()){
 					break;
@@ -89,7 +89,7 @@ class Sugarcane extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer){
-			if($this->grow($this->seekToBottom())){
+			if($this->grow($this->seekToBottom(), $player)){
 				$item->pop();
 			}
 
