@@ -56,6 +56,7 @@ jobs:
           echo ::set-output name=PM_VERSION_SHORT::$(php -r 'require "vendor/autoload.php"; $v = explode(".", \pocketmine\VersionInfo::BASE_VERSION); array_pop($v); echo implode(".", $v);')
           echo ::set-output name=PM_VERSION_MD::$(php -r 'require "vendor/autoload.php"; echo str_replace(".", "", \pocketmine\VersionInfo::BASE_VERSION);')
           echo ::set-output name=CHANGELOG_SUFFIX::$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::BUILD_CHANNEL === "stable" ? "" : "-" . \pocketmine\VersionInfo::BUILD_CHANNEL;')
+          echo ::set-output name=PRERELEASE::$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::BUILD_CHANNEL === "stable" ? "false" : "true";')
 
       - name: Generate build info
         run: php build/generate-build-info-json.php ${{ github.sha }} ${{ steps.get-pm-version.outputs.PM_VERSION }} ${{ github.repository }} ${{ steps.build-number.outputs.BUILD_NUMBER }} ${{ github.run_id }} > build_info.json
@@ -75,6 +76,7 @@ jobs:
           artifacts: ${{ github.workspace }}/PocketMine-MP.phar,${{ github.workspace }}/start.*,${{ github.workspace }}/build_info.json
           commit: ${{ github.sha }}
           draft: true
+          prerelease: ${{ steps.get-pm-version.outputs.PRERELEASE }}
           name: PocketMine-MP ${{ steps.get-pm-version.outputs.PM_VERSION }}
           tag: ${{ steps.get-pm-version.outputs.PM_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}

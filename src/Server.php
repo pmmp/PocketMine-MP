@@ -896,6 +896,9 @@ class Server{
 			if($this->configGroup->getPropertyInt("network.batch-threshold", 256) >= 0){
 				$netCompressionThreshold = $this->configGroup->getPropertyInt("network.batch-threshold", 256);
 			}
+			if($netCompressionThreshold < 0){
+				$netCompressionThreshold = null;
+			}
 
 			$netCompressionLevel = $this->configGroup->getPropertyInt("network.compression-level", 6);
 			if($netCompressionLevel < 1 || $netCompressionLevel > 9){
@@ -1383,14 +1386,16 @@ class Server{
 	 *
 	 * @param bool|null $sync Compression on the main thread (true) or workers (false). Default is automatic (null).
 	 */
-	public function prepareBatch(PacketBatch $stream, Compressor $compressor, ?bool $sync = null) : CompressBatchPromise{
+	public function prepareBatch(PacketBatch $stream, Compressor $compressor, ?bool $sync = null, ?TimingsHandler $timings = null) : CompressBatchPromise{
+		$timings ??= Timings::$playerNetworkSendCompress;
 		try{
-			Timings::$playerNetworkSendCompress->startTiming();
+			$timings->startTiming();
 
 			$buffer = $stream->getBuffer();
 
 			if($sync === null){
-				$sync = !($this->networkCompressionAsync && $compressor->willCompress($buffer));
+				$threshold = $compressor->getCompressionThreshold();
+				$sync = !$this->networkCompressionAsync || $threshold === null || strlen($stream->getBuffer()) < $threshold;
 			}
 
 			$promise = new CompressBatchPromise();
@@ -1403,7 +1408,7 @@ class Server{
 
 			return $promise;
 		}finally{
-			Timings::$playerNetworkSendCompress->stopTiming();
+			$timings->stopTiming();
 		}
 	}
 

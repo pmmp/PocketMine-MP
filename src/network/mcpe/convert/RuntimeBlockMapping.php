@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
+use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
@@ -35,8 +36,8 @@ use pocketmine\player\Player;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
-use Symfony\Component\Filesystem\Path;
 use function file_get_contents;
+use function str_replace;
 
 /**
  * @internal
@@ -86,8 +87,8 @@ final class RuntimeBlockMapping{
 		$r12ToCurrentBlockMapFiles = [];
 
 		foreach($protocolPaths as $protocol => $paths){
-			$canonicalBlockStatesFiles[$protocol] = Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states" . $paths[self::CANONICAL_BLOCK_STATES_PATH] . ".nbt");
-			$r12ToCurrentBlockMapFiles[$protocol] = Path::join(\pocketmine\BEDROCK_DATA_PATH, "r12_to_current_block_map" . $paths[self::R12_TO_CURRENT_BLOCK_MAP_PATH] . ".bin");
+			$canonicalBlockStatesFiles[$protocol] = str_replace(".nbt", $paths[self::CANONICAL_BLOCK_STATES_PATH] . ".nbt", BedrockDataFiles::CANONICAL_BLOCK_STATES_NBT);
+			$r12ToCurrentBlockMapFiles[$protocol] = str_replace(".bin", $paths[self::R12_TO_CURRENT_BLOCK_MAP_PATH] . ".bin", BedrockDataFiles::R12_TO_CURRENT_BLOCK_MAP_BIN);
 		}
 
 		return new self(

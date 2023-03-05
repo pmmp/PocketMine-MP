@@ -24,18 +24,19 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
-use Symfony\Component\Filesystem\Path;
 use function is_array;
 use function is_bool;
 use function is_int;
 use function is_string;
 use function json_decode;
+use function str_replace;
 
 final class GlobalItemTypeDictionary{
 	use SingletonTrait;
@@ -53,7 +54,7 @@ final class GlobalItemTypeDictionary{
 		$dictionaries = [];
 
 		foreach (self::PATHS as $protocolId => $path){
-			$data = Filesystem::fileGetContents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'required_item_list' . $path . '.json'));
+			$data = Filesystem::fileGetContents(str_replace('.json', $path . '.json', BedrockDataFiles::REQUIRED_ITEM_LIST_JSON));
 			$table = json_decode($data, true);
 			if(!is_array($table)){
 				throw new AssumptionFailedError("Invalid item list format");
