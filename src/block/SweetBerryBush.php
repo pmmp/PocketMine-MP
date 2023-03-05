@@ -87,7 +87,7 @@ class SweetBerryBush extends Flowable{
 			$block = clone $this;
 			$block->age++;
 
-			$ev = new BlockGrowEvent($this, $block);
+			$ev = new BlockGrowEvent($this, $block, $player);
 			$ev->call();
 
 			if(!$ev->isCancelled()){
