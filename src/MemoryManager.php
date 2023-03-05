@@ -49,6 +49,7 @@ use function ini_get;
 use function ini_set;
 use function intdiv;
 use function is_array;
+use function is_float;
 use function is_object;
 use function is_resource;
 use function is_string;
@@ -519,6 +520,8 @@ class MemoryManager{
 			$data = "(string) len(" . strlen($from) . ") " . substr(Utils::printable($from), 0, $maxStringSize);
 		}elseif(is_resource($from)){
 			$data = "(resource) " . print_r($from, true);
+		}elseif(is_float($from)){
+			$data = "(float) $from";
 		}else{
 			$data = $from;
 		}
