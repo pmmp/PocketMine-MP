@@ -28,6 +28,7 @@ use function cli_set_process_title;
 use function count;
 use function dirname;
 use function fwrite;
+use function ini_set;
 use const PHP_EOL;
 use const PTHREADS_INHERIT_NONE;
 use const STDOUT;
