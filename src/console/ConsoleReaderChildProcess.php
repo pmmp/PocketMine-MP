@@ -28,11 +28,16 @@ use function cli_set_process_title;
 use function count;
 use function dirname;
 use function fwrite;
-use function ini_set;
+use const PHP_EOL;
 use const PTHREADS_INHERIT_NONE;
 use const STDOUT;
 
-ini_set('display_errors', 'stderr');
+if(count($argv) !== 2){
+	echo "Usage: " . $argv[0] . " <command prefix token>" . PHP_EOL;
+	exit(1);
+}
+
+$commandToken = $argv[1];
 
 require dirname(__DIR__, 2) . '/vendor/autoload.php';
 
@@ -71,7 +76,8 @@ while(true){
 		$line = $channel->shift();
 		return $line;
 	});
-	if(@fwrite(STDOUT, ($line ?? "") . "\n") === false){
+	$line ??= "";
+	if(@fwrite(STDOUT, $commandToken . ":" . $line . "\n") === false){
 		//Always send even if there's no line, to check if the parent is alive
 		//If the parent process was terminated forcibly, it won't close the connection properly, so feof() will return
 		//false even though the connection is actually broken. However, fwrite() will fail.
