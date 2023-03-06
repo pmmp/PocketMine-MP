@@ -50,6 +50,8 @@ use function sqrt;
 
 class SplashPotion extends Throwable{
 
+	public const TAG_POTION_ID = "PotionId"; //TAG_Short
+
 	public static function getNetworkTypeId() : string{ return EntityIds::SPLASH_POTION; }
 
 	protected $gravity = 0.05;
@@ -66,7 +68,7 @@ class SplashPotion extends Throwable{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setShort("PotionId", PotionTypeIdMap::getInstance()->toId($this->getPotionType()));
+		$nbt->setShort(self::TAG_POTION_ID, PotionTypeIdMap::getInstance()->toId($this->getPotionType()));
 
 		return $nbt;
 	}
@@ -98,8 +100,8 @@ class SplashPotion extends Throwable{
 
 		if($hasEffects){
 			if(!$this->willLinger()){
-				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(4.125, 2.125, 4.125), $this) as $entity){
-					if($entity instanceof Living && $entity->isAlive()){
+				foreach($this->getWorld()->getCollidingEntities($this->boundingBox->expandedCopy(4.125, 2.125, 4.125), $this) as $entity){
+					if($entity instanceof Living){
 						$distanceSquared = $entity->getEyePos()->distanceSquared($this->location);
 						if($distanceSquared > 16){ //4 blocks
 							continue;

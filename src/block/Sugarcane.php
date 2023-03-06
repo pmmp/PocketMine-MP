@@ -31,6 +31,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\Position;
 
 class Sugarcane extends Flowable{
 	public const MAX_AGE = 15;
@@ -49,14 +50,23 @@ class Sugarcane extends Flowable{
 		return 0b1111;
 	}
 
-	private function grow() : bool{
-		$grew = false;
+	private function seekToBottom() : Position{
 		$world = $this->position->getWorld();
+		$bottom = $this->position;
+		while(($next = $world->getBlock($bottom->down()))->isSameType($this)){
+			$bottom = $next->position;
+		}
+		return $bottom;
+	}
+
+	private function grow(Position $pos) : bool{
+		$grew = false;
+		$world = $pos->getWorld();
 		for($y = 1; $y < 3; ++$y){
-			if(!$world->isInWorld($this->position->x, $this->position->y + $y, $this->position->z)){
+			if(!$world->isInWorld($pos->x, $pos->y + $y, $pos->z)){
 				break;
 			}
-			$b = $world->getBlockAt($this->position->x, $this->position->y + $y, $this->position->z);
+			$b = $world->getBlockAt($pos->x, $pos->y + $y, $pos->z);
 			if($b->getId() === BlockLegacyIds::AIR){
 				$ev = new BlockGrowEvent($b, VanillaBlocks::SUGARCANE());
 				$ev->call();
@@ -65,12 +75,12 @@ class Sugarcane extends Flowable{
 				}
 				$world->setBlock($b->position, $ev->getNewState());
 				$grew = true;
-			}else{
+			}elseif(!$b->isSameType($this)){
 				break;
 			}
 		}
 		$this->age = 0;
-		$world->setBlock($this->position, $this);
+		$world->setBlock($pos, $this);
 		return $grew;
 	}
 
@@ -87,7 +97,7 @@ class Sugarcane extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($item instanceof Fertilizer){
-			if(!$this->getSide(Facing::DOWN)->isSameType($this) && $this->grow()){
+			if($this->grow($this->seekToBottom())){
 				$item->pop();
 			}
 
@@ -111,7 +121,7 @@ class Sugarcane extends Flowable{
 	public function onRandomTick() : void{
 		if(!$this->getSide(Facing::DOWN)->isSameType($this)){
 			if($this->age === self::MAX_AGE){
-				$this->grow();
+				$this->grow($this->position);
 			}else{
 				++$this->age;
 				$this->position->getWorld()->setBlock($this->position, $this);

@@ -24,11 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
-use pocketmine\utils\Utils;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function explode;
-use function file_get_contents;
 use function is_array;
 use function is_int;
 use function is_numeric;
@@ -53,7 +52,7 @@ final class LegacyStringToItemParser{
 	private static function make() : self{
 		$result = new self(ItemFactory::getInstance());
 
-		$mappingsRaw = Utils::assumeNotFalse(@file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, 'item_from_string_bc_map.json')), "Missing required resource file");
+		$mappingsRaw = Filesystem::fileGetContents(Path::join(\pocketmine\RESOURCE_PATH, 'item_from_string_bc_map.json'));
 
 		$mappings = json_decode($mappingsRaw, true);
 		if(!is_array($mappings)) throw new AssumptionFailedError("Invalid mappings format, expected array");
@@ -108,8 +107,9 @@ final class LegacyStringToItemParser{
 			throw new LegacyStringToItemParserException("Unable to parse \"" . $b[1] . "\" from \"" . $input . "\" as a valid meta value");
 		}
 
-		if(isset($this->map[strtolower($b[0])])){
-			$item = $this->itemFactory->get($this->map[strtolower($b[0])], $meta);
+		$id = strtolower($b[0]);
+		if(isset($this->map[$id])){
+			$item = $this->itemFactory->get($this->map[$id], $meta);
 		}else{
 			throw new LegacyStringToItemParserException("Unable to resolve \"" . $input . "\" to a valid item");
 		}

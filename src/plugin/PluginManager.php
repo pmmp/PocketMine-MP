@@ -40,7 +40,7 @@ use pocketmine\Server;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function array_diff_key;
 use function array_key_exists;
 use function array_keys;
@@ -62,7 +62,7 @@ use function mkdir;
 use function realpath;
 use function shuffle;
 use function sprintf;
-use function strpos;
+use function str_contains;
 use function strtolower;
 
 /**
@@ -296,7 +296,7 @@ class PluginManager{
 					continue;
 				}
 
-				if(strpos($name, " ") !== false){
+				if(str_contains($name, " ")){
 					$this->server->getLogger()->warning($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_spacesDiscouraged($name)));
 				}
 
@@ -319,6 +319,9 @@ class PluginManager{
 	/**
 	 * @param string[][] $dependencyLists
 	 * @param Plugin[]   $loadedPlugins
+	 *
+	 * @phpstan-param array<string, list<string>> $dependencyLists
+	 * @phpstan-param-out array<string, list<string>> $dependencyLists
 	 */
 	private function checkDepsForTriage(string $pluginName, string $dependencyType, array &$dependencyLists, array $loadedPlugins, PluginLoadTriage $triage) : void{
 		if(isset($dependencyLists[$pluginName])){

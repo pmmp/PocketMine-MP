@@ -52,6 +52,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
+use pocketmine\network\mcpe\protocol\types\entity\PropertySyncData;
 use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -79,6 +80,15 @@ abstract class Entity{
 
 	public const MOTION_THRESHOLD = 0.00001;
 	protected const STEP_CLIP_MULTIPLIER = 0.4;
+
+	private const TAG_FIRE = "Fire"; //TAG_Short
+	private const TAG_ON_GROUND = "OnGround"; //TAG_Byte
+	private const TAG_FALL_DISTANCE = "FallDistance"; //TAG_Float
+	private const TAG_CUSTOM_NAME = "CustomName"; //TAG_String
+	private const TAG_CUSTOM_NAME_VISIBLE = "CustomNameVisible"; //TAG_Byte
+	public const TAG_POS = "Pos"; //TAG_List<TAG_Double>|TAG_List<TAG_Float>
+	public const TAG_MOTION = "Motion"; //TAG_List<TAG_Double>|TAG_List<TAG_Float>
+	public const TAG_ROTATION = "Rotation"; //TAG_List<TAG_Float>
 
 	private static int $entityCount = 1;
 
@@ -232,7 +242,7 @@ abstract class Entity{
 		$this->recalculateBoundingBox();
 
 		if($nbt !== null){
-			$this->motion = EntityDataHelper::parseVec3($nbt, "Motion", true);
+			$this->motion = EntityDataHelper::parseVec3($nbt, self::TAG_MOTION, true);
 		}else{
 			$this->motion = new Vector3(0, 0, 0);
 		}
@@ -249,10 +259,8 @@ abstract class Entity{
 		$this->getWorld()->addEntity($this);
 
 		$this->lastUpdate = $this->server->getTick();
-		(new EntitySpawnEvent($this))->call();
 
 		$this->scheduleUpdate();
-
 	}
 
 	abstract protected function getInitialSizeInfo() : EntitySizeInfo;
@@ -467,17 +475,17 @@ abstract class Entity{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = CompoundTag::create()
-			->setTag("Pos", new ListTag([
+			->setTag(self::TAG_POS, new ListTag([
 				new DoubleTag($this->location->x),
 				new DoubleTag($this->location->y),
 				new DoubleTag($this->location->z)
 			]))
-			->setTag("Motion", new ListTag([
+			->setTag(self::TAG_MOTION, new ListTag([
 				new DoubleTag($this->motion->x),
 				new DoubleTag($this->motion->y),
 				new DoubleTag($this->motion->z)
 			]))
-			->setTag("Rotation", new ListTag([
+			->setTag(self::TAG_ROTATION, new ListTag([
 				new FloatTag($this->location->yaw),
 				new FloatTag($this->location->pitch)
 			]));
@@ -486,33 +494,33 @@ abstract class Entity{
 			EntityFactory::getInstance()->injectSaveId(get_class($this), $nbt);
 
 			if($this->getNameTag() !== ""){
-				$nbt->setString("CustomName", $this->getNameTag());
-				$nbt->setByte("CustomNameVisible", $this->isNameTagVisible() ? 1 : 0);
+				$nbt->setString(self::TAG_CUSTOM_NAME, $this->getNameTag());
+				$nbt->setByte(self::TAG_CUSTOM_NAME_VISIBLE, $this->isNameTagVisible() ? 1 : 0);
 			}
 		}
 
-		$nbt->setFloat("FallDistance", $this->fallDistance);
-		$nbt->setShort("Fire", $this->fireTicks);
-		$nbt->setByte("OnGround", $this->onGround ? 1 : 0);
+		$nbt->setFloat(self::TAG_FALL_DISTANCE, $this->fallDistance);
+		$nbt->setShort(self::TAG_FIRE, $this->fireTicks);
+		$nbt->setByte(self::TAG_ON_GROUND, $this->onGround ? 1 : 0);
 
 		return $nbt;
 	}
 
 	protected function initEntity(CompoundTag $nbt) : void{
-		$this->fireTicks = $nbt->getShort("Fire", 0);
+		$this->fireTicks = $nbt->getShort(self::TAG_FIRE, 0);
 
-		$this->onGround = $nbt->getByte("OnGround", 0) !== 0;
+		$this->onGround = $nbt->getByte(self::TAG_ON_GROUND, 0) !== 0;
 
-		$this->fallDistance = $nbt->getFloat("FallDistance", 0.0);
+		$this->fallDistance = $nbt->getFloat(self::TAG_FALL_DISTANCE, 0.0);
 
-		if(($customNameTag = $nbt->getTag("CustomName")) instanceof StringTag){
+		if(($customNameTag = $nbt->getTag(self::TAG_CUSTOM_NAME)) instanceof StringTag){
 			$this->setNameTag($customNameTag->getValue());
 
-			if(($customNameVisibleTag = $nbt->getTag("CustomNameVisible")) instanceof StringTag){
+			if(($customNameVisibleTag = $nbt->getTag(self::TAG_CUSTOM_NAME_VISIBLE)) instanceof StringTag){
 				//Older versions incorrectly saved this as a string (see 890f72dbf23a77f294169b79590770470041adc4)
 				$this->setNameTagVisible($customNameVisibleTag->getValue() !== "");
 			}else{
-				$this->setNameTagVisible($nbt->getByte("CustomNameVisible", 1) !== 0);
+				$this->setNameTagVisible($nbt->getByte(self::TAG_CUSTOM_NAME_VISIBLE, 1) !== 0);
 			}
 		}
 	}
@@ -795,6 +803,15 @@ abstract class Entity{
 		$this->server->broadcastPackets($this->hasSpawned, [SetActorMotionPacket::create($this->id, $this->getMotion())]);
 	}
 
+	public function getGravity() : float{
+		return $this->gravity;
+	}
+
+	public function setGravity(float $gravity) : void{
+		Utils::checkFloatNotInfOrNaN("gravity", $gravity);
+		$this->gravity = $gravity;
+	}
+
 	public function hasGravity() : bool{
 		return $this->gravityEnabled;
 	}
@@ -937,6 +954,14 @@ abstract class Entity{
 		return (new Vector2(-cos(deg2rad($this->location->yaw) - M_PI_2), -sin(deg2rad($this->location->yaw) - M_PI_2)))->normalize();
 	}
 
+	/**
+	 * Called from onUpdate() on the first tick of a new entity. This is called before any movement processing or
+	 * main ticking logic. Use this to fire any events related to spawning the entity.
+	 */
+	protected function onFirstUpdate(int $currentTick) : void{
+		(new EntitySpawnEvent($this))->call();
+	}
+
 	public function onUpdate(int $currentTick) : bool{
 		if($this->closed){
 			return false;
@@ -952,6 +977,10 @@ abstract class Entity{
 		}
 
 		$this->lastUpdate = $currentTick;
+
+		if($this->justCreated){
+			$this->onFirstUpdate($currentTick);
+		}
 
 		if(!$this->isAlive()){
 			if($this->onDeathUpdate($tickDiff)){
@@ -987,9 +1016,7 @@ abstract class Entity{
 
 		$this->timings->stopTiming();
 
-		//if($this->isStatic())
 		return ($hasUpdate || $this->hasMovementUpdate());
-		//return !($this instanceof Player);
 	}
 
 	final public function scheduleUpdate() : void{
@@ -1469,6 +1496,7 @@ abstract class Entity{
 				return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue(), []);
 			}, $this->attributeMap->getAll()),
 			$this->getAllNetworkData(),
+			new PropertySyncData([], []),
 			[] //TODO: entity links
 		));
 	}
@@ -1588,7 +1616,7 @@ abstract class Entity{
 
 	/**
 	 * @param Player[]|null      $targets
-	 * @param MetadataProperty[] $data Properly formatted entity data, defaults to everything
+	 * @param MetadataProperty[] $data    Properly formatted entity data, defaults to everything
 	 *
 	 * @phpstan-param array<int, MetadataProperty> $data
 	 */

@@ -50,7 +50,7 @@ use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
 use pocketmine\world\WorldCreationOptions;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function array_map;
 use function array_values;
 use function chr;
@@ -191,6 +191,11 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		return PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
 	}
 
+	/**
+	 * @phpstan-param-out int $x
+	 * @phpstan-param-out int $y
+	 * @phpstan-param-out int $z
+	 */
 	protected static function deserializeExtraDataKey(int $chunkVersion, int $key, ?int &$x, ?int &$y, ?int &$z) : void{
 		if($chunkVersion >= ChunkVersion::v1_0_0){
 			$x = ($key >> 12) & 0xf;
@@ -499,7 +504,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	}
 
 	/**
-	 * @param CompoundTag[]      $targets
+	 * @param CompoundTag[] $targets
 	 */
 	private function writeTags(array $targets, string $index, \LevelDBWriteBatch $write) : void{
 		if(count($targets) > 0){

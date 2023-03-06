@@ -24,21 +24,34 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe;
 
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\Server;
+use pocketmine\timings\Timings;
+use pocketmine\utils\BinaryStream;
+use function count;
 use function spl_object_id;
+use function strlen;
 
 final class StandardPacketBroadcaster implements PacketBroadcaster{
 	public function __construct(private Server $server){}
 
 	public function broadcastPackets(array $recipients, array $packets) : void{
-		$buffers = [];
+		$packetBufferTotalLengths = [];
+		$packetBuffers = [];
 		$compressors = [];
+		/** @var NetworkSession[][][] $targetMap */
 		$targetMap = [];
 		foreach($recipients as $recipient){
 			$serializerContext = $recipient->getPacketSerializerContext();
 			$bufferId = spl_object_id($serializerContext);
-			if(!isset($buffers[$bufferId])){
-				$buffers[$bufferId] = PacketBatch::fromPackets($serializerContext, ...$packets);
+			if(!isset($packetBuffers[$bufferId])){
+				$packetBufferTotalLengths[$bufferId] = 0;
+				$packetBuffers[$bufferId] = [];
+				foreach($packets as $packet){
+					$buffer = NetworkSession::encodePacketTimed(PacketSerializer::encoder($serializerContext), $packet);
+					$packetBufferTotalLengths[$bufferId] += strlen($buffer);
+					$packetBuffers[$bufferId][] = $buffer;
+				}
 			}
 
 			//TODO: different compressors might be compatible, it might not be necessary to split them up by object
@@ -49,19 +62,25 @@ final class StandardPacketBroadcaster implements PacketBroadcaster{
 		}
 
 		foreach($targetMap as $bufferId => $compressorMap){
-			$buffer = $buffers[$bufferId];
 			foreach($compressorMap as $compressorId => $compressorTargets){
 				$compressor = $compressors[$compressorId];
-				if(!$compressor->willCompress($buffer->getBuffer())){
-					foreach($compressorTargets as $target){
-						foreach($packets as $pk){
-							$target->addToSendBuffer($pk);
-						}
-					}
-				}else{
-					$promise = $this->server->prepareBatch($buffer, $compressor);
+
+				$threshold = $compressor->getCompressionThreshold();
+				if(count($compressorTargets) > 1 && $threshold !== null && $packetBufferTotalLengths[$bufferId] >= $threshold){
+					//do not prepare shared batch unless we're sure it will be compressed
+					$stream = new BinaryStream();
+					PacketBatch::encodeRaw($stream, $packetBuffers[$bufferId]);
+					$batchBuffer = $stream->getBuffer();
+
+					$promise = $this->server->prepareBatch(new PacketBatch($batchBuffer), $compressor, timings: Timings::$playerNetworkSendCompressBroadcast);
 					foreach($compressorTargets as $target){
 						$target->queueCompressed($promise);
+					}
+				}else{
+					foreach($compressorTargets as $target){
+						foreach($packetBuffers[$bufferId] as $packetBuffer){
+							$target->addToSendBuffer($packetBuffer);
+						}
 					}
 				}
 			}

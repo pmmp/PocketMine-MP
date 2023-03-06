@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use pocketmine\errorhandler\ErrorToExceptionHandler;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function array_change_key_case;
 use function array_fill_keys;
 use function array_keys;
@@ -33,7 +33,6 @@ use function count;
 use function date;
 use function explode;
 use function file_exists;
-use function file_get_contents;
 use function get_debug_type;
 use function implode;
 use function is_array;
@@ -55,6 +54,7 @@ use const CASE_LOWER;
 use const JSON_BIGINT_AS_STRING;
 use const JSON_PRETTY_PRINT;
 use const JSON_THROW_ON_ERROR;
+use const YAML_UTF8_ENCODING;
 
 /**
  * Config Class for simple config manipulation of multiple formats.
@@ -108,8 +108,8 @@ class Config{
 	];
 
 	/**
-	 * @param string  $file Path of the file to be loaded
-	 * @param int     $type Config type to load, -1 by default (detect)
+	 * @param string  $file    Path of the file to be loaded
+	 * @param int     $type    Config type to load, -1 by default (detect)
 	 * @param mixed[] $default Array with the default values that will be written to the file if it did not exist
 	 * @phpstan-param array<string, mixed> $default
 	 */
@@ -161,10 +161,7 @@ class Config{
 			$this->config = $default;
 			$this->save();
 		}else{
-			$content = file_get_contents($this->file);
-			if($content === false){
-				throw new \RuntimeException("Unable to load config file");
-			}
+			$content = Filesystem::fileGetContents($this->file);
 			switch($this->type){
 				case Config::PROPERTIES:
 					$config = self::parseProperties($content);
@@ -493,9 +490,10 @@ class Config{
 
 	/**
 	 * @param mixed[] $default
-	 * @param mixed[] $data reference parameter
+	 * @param mixed[] $data    reference parameter
 	 * @phpstan-param array<string, mixed> $default
 	 * @phpstan-param array<string, mixed> $data
+	 * @phpstan-param-out array<string, mixed> $data
 	 */
 	private function fillDefaults(array $default, &$data) : int{
 		$changed = 0;

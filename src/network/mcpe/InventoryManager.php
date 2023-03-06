@@ -191,8 +191,10 @@ class InventoryManager{
 	 */
 	public function addPredictedSlotChanges(array $networkInventoryActions) : void{
 		foreach($networkInventoryActions as $action){
-			if($action->sourceType === NetworkInventoryAction::SOURCE_CONTAINER && isset($this->windowMap[$action->windowId])){
-				//this won't cover stuff like crafting grid due to too much magic
+			if($action->sourceType === NetworkInventoryAction::SOURCE_CONTAINER && (
+				isset($this->windowMap[$action->windowId]) ||
+				($action->windowId === ContainerIds::UI && isset($this->complexSlotToWindowMap[$action->inventorySlot]))
+			)){
 				try{
 					$item = TypeConverter::getInstance()->netItemStackToCore($action->newItem->getItemStack());
 				}catch(TypeConversionException $e){
@@ -325,7 +327,7 @@ class InventoryManager{
 
 	public function onClientRemoveWindow(int $id) : void{
 		if($id === $this->lastInventoryNetworkId){
-			if($id !== $this->pendingCloseWindowId){
+			if(isset($this->windowMap[$id]) && $id !== $this->pendingCloseWindowId){
 				$this->remove($id);
 				$this->player->removeCurrentWindow();
 			}

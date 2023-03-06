@@ -24,12 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock;
 
 use pocketmine\utils\SingletonTrait;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 
 final class LegacyItemIdToStringIdMap extends LegacyToStringBidirectionalIdMap{
 	use SingletonTrait;
 
 	public function __construct(){
-		parent::__construct(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'item_id_map.json'));
+		parent::__construct(Path::join(\pocketmine\BEDROCK_ITEM_UPGRADE_SCHEMA_PATH, 'item_legacy_id_map.json'));
 	}
 }

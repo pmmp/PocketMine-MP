@@ -25,15 +25,14 @@ namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
+use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
-use pocketmine\utils\Utils;
-use Webmozart\PathUtil\Path;
-use function file_get_contents;
 
 /**
  * @internal
@@ -50,14 +49,14 @@ final class RuntimeBlockMapping{
 
 	private static function make() : self{
 		return new self(
-			Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt"),
-			Path::join(\pocketmine\BEDROCK_DATA_PATH, "r12_to_current_block_map.bin")
+			BedrockDataFiles::CANONICAL_BLOCK_STATES_NBT,
+			BedrockDataFiles::R12_TO_CURRENT_BLOCK_MAP_BIN
 		);
 	}
 
 	public function __construct(string $canonicalBlockStatesFile, string $r12ToCurrentBlockMapFile){
 		$stream = PacketSerializer::decoder(
-			Utils::assumeNotFalse(file_get_contents($canonicalBlockStatesFile), "Missing required resource file"),
+			Filesystem::fileGetContents($canonicalBlockStatesFile),
 			0,
 			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary())
 		);
@@ -75,7 +74,7 @@ final class RuntimeBlockMapping{
 		/** @var R12ToCurrentBlockMapEntry[] $legacyStateMap */
 		$legacyStateMap = [];
 		$legacyStateMapReader = PacketSerializer::decoder(
-			Utils::assumeNotFalse(file_get_contents($r12ToCurrentBlockMapFile), "Missing required resource file"),
+			Filesystem::fileGetContents($r12ToCurrentBlockMapFile),
 			0,
 			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary())
 		);

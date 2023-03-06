@@ -65,7 +65,7 @@ class BlockPlaceEvent extends BlockEvent implements Cancellable{
 	 * Gets the item in hand
 	 */
 	public function getItem() : Item{
-		return $this->item;
+		return clone $this->item;
 	}
 
 	public function getBlockReplaced() : Block{

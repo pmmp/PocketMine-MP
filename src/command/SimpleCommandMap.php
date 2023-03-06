@@ -72,8 +72,8 @@ use pocketmine\utils\TextFormat;
 use function array_shift;
 use function count;
 use function implode;
+use function str_contains;
 use function strcasecmp;
-use function strpos;
 use function strtolower;
 use function trim;
 
@@ -139,7 +139,7 @@ class SimpleCommandMap implements CommandMap{
 
 	public function register(string $fallbackPrefix, Command $command, ?string $label = null) : bool{
 		if($label === null){
-			$label = $command->getName();
+			$label = $command->getLabel();
 		}
 		$label = trim($label);
 		$fallbackPrefix = strtolower(trim($fallbackPrefix));
@@ -238,7 +238,7 @@ class SimpleCommandMap implements CommandMap{
 		$values = $this->server->getCommandAliases();
 
 		foreach($values as $alias => $commandStrings){
-			if(strpos($alias, ":") !== false){
+			if(str_contains($alias, ":")){
 				$this->server->getLogger()->warning($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_command_alias_illegal($alias)));
 				continue;
 			}
@@ -272,10 +272,11 @@ class SimpleCommandMap implements CommandMap{
 			}
 
 			//These registered commands have absolute priority
+			$lowerAlias = strtolower($alias);
 			if(count($targets) > 0){
-				$this->knownCommands[strtolower($alias)] = new FormattedCommandAlias(strtolower($alias), $targets);
+				$this->knownCommands[$lowerAlias] = new FormattedCommandAlias($lowerAlias, $targets);
 			}else{
-				unset($this->knownCommands[strtolower($alias)]);
+				unset($this->knownCommands[$lowerAlias]);
 			}
 
 		}

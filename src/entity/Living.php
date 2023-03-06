@@ -56,6 +56,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\player\Player;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Binary;
+use pocketmine\world\sound\BurpSound;
 use pocketmine\world\sound\EntityLandSound;
 use pocketmine\world\sound\EntityLongFallSound;
 use pocketmine\world\sound\EntityShortFallSound;
@@ -75,6 +76,16 @@ use const M_PI;
 
 abstract class Living extends Entity{
 	protected const DEFAULT_BREATH_TICKS = 300;
+
+	private const TAG_LEGACY_HEALTH = "HealF"; //TAG_Float
+	private const TAG_HEALTH = "Health"; //TAG_Float
+	private const TAG_BREATH_TICKS = "Air"; //TAG_Short
+	private const TAG_ACTIVE_EFFECTS = "ActiveEffects"; //TAG_List<TAG_Compound>
+	private const TAG_EFFECT_ID = "Id"; //TAG_Byte
+	private const TAG_EFFECT_DURATION = "Duration"; //TAG_Int
+	private const TAG_EFFECT_AMPLIFIER = "Amplifier"; //TAG_Byte
+	private const TAG_EFFECT_SHOW_PARTICLES = "ShowParticles"; //TAG_Byte
+	private const TAG_EFFECT_AMBIENT = "Ambient"; //TAG_Byte
 
 	protected $gravity = 0.08;
 	protected $drag = 0.02;
@@ -142,9 +153,9 @@ abstract class Living extends Entity{
 
 		$health = $this->getMaxHealth();
 
-		if(($healFTag = $nbt->getTag("HealF")) instanceof FloatTag){
+		if(($healFTag = $nbt->getTag(self::TAG_LEGACY_HEALTH)) instanceof FloatTag){
 			$health = $healFTag->getValue();
-		}elseif(($healthTag = $nbt->getTag("Health")) instanceof ShortTag){
+		}elseif(($healthTag = $nbt->getTag(self::TAG_HEALTH)) instanceof ShortTag){
 			$health = $healthTag->getValue(); //Older versions of PocketMine-MP incorrectly saved this as a short instead of a float
 		}elseif($healthTag instanceof FloatTag){
 			$health = $healthTag->getValue();
@@ -152,23 +163,23 @@ abstract class Living extends Entity{
 
 		$this->setHealth($health);
 
-		$this->setAirSupplyTicks($nbt->getShort("Air", self::DEFAULT_BREATH_TICKS));
+		$this->setAirSupplyTicks($nbt->getShort(self::TAG_BREATH_TICKS, self::DEFAULT_BREATH_TICKS));
 
 		/** @var CompoundTag[]|ListTag|null $activeEffectsTag */
-		$activeEffectsTag = $nbt->getListTag("ActiveEffects");
+		$activeEffectsTag = $nbt->getListTag(self::TAG_ACTIVE_EFFECTS);
 		if($activeEffectsTag !== null){
 			foreach($activeEffectsTag as $e){
-				$effect = EffectIdMap::getInstance()->fromId($e->getByte("Id"));
+				$effect = EffectIdMap::getInstance()->fromId($e->getByte(self::TAG_EFFECT_ID));
 				if($effect === null){
 					continue;
 				}
 
 				$this->effectManager->add(new EffectInstance(
 					$effect,
-					$e->getInt("Duration"),
-					Binary::unsignByte($e->getByte("Amplifier")),
-					$e->getByte("ShowParticles", 1) !== 0,
-					$e->getByte("Ambient", 0) !== 0
+					$e->getInt(self::TAG_EFFECT_DURATION),
+					Binary::unsignByte($e->getByte(self::TAG_EFFECT_AMPLIFIER)),
+					$e->getByte(self::TAG_EFFECT_SHOW_PARTICLES, 1) !== 0,
+					$e->getByte(self::TAG_EFFECT_AMBIENT, 0) !== 0
 				));
 			}
 		}
@@ -181,6 +192,13 @@ abstract class Living extends Entity{
 		$this->attributeMap->add($this->moveSpeedAttr = AttributeFactory::getInstance()->mustGet(Attribute::MOVEMENT_SPEED));
 		$this->attributeMap->add(AttributeFactory::getInstance()->mustGet(Attribute::ATTACK_DAMAGE));
 		$this->attributeMap->add($this->absorptionAttr = AttributeFactory::getInstance()->mustGet(Attribute::ABSORPTION));
+	}
+
+	/**
+	 * Returns the name used to describe this entity in chat and command outputs.
+	 */
+	public function getDisplayName() : string{
+		return $this->nameTag !== "" ? $this->nameTag : $this->getName();
 	}
 
 	public function setHealth(float $amount) : void{
@@ -255,8 +273,7 @@ abstract class Living extends Entity{
 		$size = $this->getInitialSizeInfo();
 		if($this->isSwimming() || $this->isGliding()){
 			$width = $size->getWidth();
-			//we don't actually know an appropriate eye height for a swimming mob, but 2/3 should be good enough.
-			$this->setSize((new EntitySizeInfo($width, $width, $width * 2 / 3))->scale($this->getScale()));
+			$this->setSize((new EntitySizeInfo($width, $width, $width * 0.9))->scale($this->getScale()));
 		}else{
 			$this->setSize($size->scale($this->getScale()));
 		}
@@ -272,27 +289,31 @@ abstract class Living extends Entity{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setFloat("Health", $this->getHealth());
+		$nbt->setFloat(self::TAG_HEALTH, $this->getHealth());
 
-		$nbt->setShort("Air", $this->getAirSupplyTicks());
+		$nbt->setShort(self::TAG_BREATH_TICKS, $this->getAirSupplyTicks());
 
 		if(count($this->effectManager->all()) > 0){
 			$effects = [];
 			foreach($this->effectManager->all() as $effect){
 				$effects[] = CompoundTag::create()
-					->setByte("Id", EffectIdMap::getInstance()->toId($effect->getType()))
-					->setByte("Amplifier", Binary::signByte($effect->getAmplifier()))
-					->setInt("Duration", $effect->getDuration())
-					->setByte("Ambient", $effect->isAmbient() ? 1 : 0)
-					->setByte("ShowParticles", $effect->isVisible() ? 1 : 0);
+					->setByte(self::TAG_EFFECT_ID, EffectIdMap::getInstance()->toId($effect->getType()))
+					->setByte(self::TAG_EFFECT_AMPLIFIER, Binary::signByte($effect->getAmplifier()))
+					->setInt(self::TAG_EFFECT_DURATION, $effect->getDuration())
+					->setByte(self::TAG_EFFECT_AMBIENT, $effect->isAmbient() ? 1 : 0)
+					->setByte(self::TAG_EFFECT_SHOW_PARTICLES, $effect->isVisible() ? 1 : 0);
 			}
 
-			$nbt->setTag("ActiveEffects", new ListTag($effects));
+			$nbt->setTag(self::TAG_ACTIVE_EFFECTS, new ListTag($effects));
 		}
 
 		return $nbt;
 	}
 
+	/**
+	 * @deprecated This function always returns true, no matter whether the target is in the line of sight or not.
+	 * @see VoxelRayTrace::inDirection() for a more generalized method of ray-tracing to a target.
+	 */
 	public function hasLineOfSight(Entity $entity) : bool{
 		//TODO: head height
 		return true;
@@ -319,6 +340,9 @@ abstract class Living extends Entity{
 	protected function applyConsumptionResults(Consumable $consumable) : void{
 		foreach($consumable->getAdditionalEffects() as $effect){
 			$this->effectManager->add($effect);
+		}
+		if($consumable instanceof FoodSource){
+			$this->broadcastSound(new BurpSound());
 		}
 
 		$consumable->onConsume($this);
@@ -441,7 +465,9 @@ abstract class Living extends Entity{
 	 */
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
 		$this->setAbsorption(max(0, $this->getAbsorption() + $source->getModifier(EntityDamageEvent::MODIFIER_ABSORPTION)));
-		$this->damageArmor($source->getBaseDamage());
+		if($source->canBeReducedByArmor()){
+			$this->damageArmor($source->getBaseDamage());
+		}
 
 		if($source instanceof EntityDamageByEntityEvent && ($attacker = $source->getDamager()) !== null){
 			$damage = 0;

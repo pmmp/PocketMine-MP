@@ -26,9 +26,8 @@ namespace pocketmine\crafting;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\utils\Utils;
+use pocketmine\utils\Filesystem;
 use function array_map;
-use function file_get_contents;
 use function is_array;
 use function json_decode;
 
@@ -52,7 +51,7 @@ final class CraftingManagerFromDataHelper{
 	}
 
 	public static function make(string $filePath) : CraftingManager{
-		$recipes = json_decode(Utils::assumeNotFalse(file_get_contents($filePath), "Missing required resource file"), true);
+		$recipes = json_decode(Filesystem::fileGetContents($filePath), true);
 		if(!is_array($recipes)){
 			throw new AssumptionFailedError("recipes.json root should contain a map of recipe types");
 		}

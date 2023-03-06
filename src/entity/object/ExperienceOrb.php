@@ -40,6 +40,7 @@ class ExperienceOrb extends Entity{
 
 	public const TAG_VALUE_PC = "Value"; //short
 	public const TAG_VALUE_PE = "experience value"; //int (WTF?)
+	private const TAG_AGE = "Age"; //TAG_Short
 
 	/** Max distance an orb will follow a player across. */
 	public const MAX_TARGET_DISTANCE = 8.0;
@@ -109,13 +110,13 @@ class ExperienceOrb extends Entity{
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
-		$this->age = $nbt->getShort("Age", 0);
+		$this->age = $nbt->getShort(self::TAG_AGE, 0);
 	}
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
 
-		$nbt->setShort("Age", $this->age);
+		$nbt->setShort(self::TAG_AGE, $this->age);
 
 		$nbt->setShort(self::TAG_VALUE_PC, $this->getXpValue());
 		$nbt->setInt(self::TAG_VALUE_PE, $this->getXpValue());

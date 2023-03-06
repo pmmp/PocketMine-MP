@@ -27,6 +27,7 @@ use pocketmine\block\utils\SignText;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\utils\Binary;
 use pocketmine\world\World;
 use function array_pad;
 use function array_slice;
@@ -42,6 +43,13 @@ use function sprintf;
 class Sign extends Spawnable{
 	public const TAG_TEXT_BLOB = "Text";
 	public const TAG_TEXT_LINE = "Text%d"; //sprintf()able
+	public const TAG_TEXT_COLOR = "SignTextColor";
+	public const TAG_GLOWING_TEXT = "IgnoreLighting";
+	/**
+	 * This tag is set to indicate that MCPE-117835 has been addressed in whatever version this sign was created.
+	 * @see https://bugs.mojang.com/browse/MCPE-117835
+	 */
+	public const TAG_LEGACY_BUG_RESOLVE = "TextIgnoreLegacyBugResolved";
 
 	/**
 	 * @return string[]
@@ -111,5 +119,11 @@ class Sign extends Spawnable{
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->setString(self::TAG_TEXT_BLOB, implode("\n", $this->text->getLines()));
+
+		//the following are not yet used by the server, but needed to roll back any changes to glowing state or colour
+		//if the client uses dye on the sign
+		$nbt->setInt(self::TAG_TEXT_COLOR, Binary::signInt(0xff_00_00_00));
+		$nbt->setByte(self::TAG_GLOWING_TEXT, 0);
+		$nbt->setByte(self::TAG_LEGACY_BUG_RESOLVE, 1);
 	}
 }

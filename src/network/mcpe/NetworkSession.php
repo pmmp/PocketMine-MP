@@ -90,6 +90,8 @@ use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\ToastRequestPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
+use pocketmine\network\mcpe\protocol\types\AbilitiesData;
+use pocketmine\network\mcpe\protocol\types\AbilitiesLayer;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\command\CommandData;
 use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
@@ -98,11 +100,11 @@ use pocketmine\network\mcpe\protocol\types\command\CommandPermissions;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\entity\Attribute as NetworkAttribute;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
+use pocketmine\network\mcpe\protocol\types\entity\PropertySyncData;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
-use pocketmine\network\mcpe\protocol\types\UpdateAbilitiesPacketLayer;
 use pocketmine\network\mcpe\protocol\UpdateAbilitiesPacket;
 use pocketmine\network\mcpe\protocol\UpdateAdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
@@ -118,6 +120,7 @@ use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\BinaryStream;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
@@ -128,9 +131,12 @@ use function base64_encode;
 use function bin2hex;
 use function count;
 use function get_class;
+use function hrtime;
 use function in_array;
+use function intdiv;
 use function json_encode;
 use function ksort;
+use function min;
 use function strcasecmp;
 use function strlen;
 use function strtolower;
@@ -141,6 +147,20 @@ use const JSON_THROW_ON_ERROR;
 use const SORT_NUMERIC;
 
 class NetworkSession{
+	private const INCOMING_PACKET_BATCH_PER_TICK = 2; //usually max 1 per tick, but transactions may arrive separately
+	private const INCOMING_PACKET_BATCH_MAX_BUDGET = 100 * self::INCOMING_PACKET_BATCH_PER_TICK; //enough to account for a 5-second lag spike
+
+	/**
+	 * At most this many more packets can be received. If this reaches zero, any additional packets received will cause
+	 * the player to be kicked from the server.
+	 * This number is increased every tick up to a maximum limit.
+	 *
+	 * @see self::INCOMING_PACKET_BATCH_PER_TICK
+	 * @see self::INCOMING_PACKET_BATCH_MAX_BUDGET
+	 */
+	private int $incomingPacketBatchBudget = self::INCOMING_PACKET_BATCH_MAX_BUDGET;
+	private int $lastPacketBudgetUpdateTimeNs;
+
 	private \PrefixedLogger $logger;
 	private ?Player $player = null;
 	private ?PlayerInfo $info = null;
@@ -157,7 +177,7 @@ class NetworkSession{
 
 	private ?EncryptionContext $cipher = null;
 
-	/** @var Packet[] */
+	/** @var string[] */
 	private array $sendBuffer = [];
 
 	/**
@@ -198,6 +218,7 @@ class NetworkSession{
 		$this->disposeHooks = new ObjectSet();
 
 		$this->connectTime = time();
+		$this->lastPacketBudgetUpdateTimeNs = hrtime(true);
 
 		$this->setHandler(new SessionStartPacketHandler(
 			$this->server,
@@ -228,6 +249,7 @@ class NetworkSession{
 				$this->info = $info;
 				$this->logger->info("Player: " . TextFormat::AQUA . $info->getUsername() . TextFormat::RESET);
 				$this->logger->setPrefix($this->getLogPrefix());
+				$this->manager->markLoginReceived($this);
 			},
 			function(bool $isAuthenticated, bool $authRequired, ?string $error, ?string $clientPubKey) : void{
 				$this->setAuthenticationStatus($isAuthenticated, $authRequired, $error, $clientPubKey);
@@ -337,48 +359,67 @@ class NetworkSession{
 			return;
 		}
 
-		if($this->cipher !== null){
-			Timings::$playerNetworkReceiveDecrypt->startTiming();
-			try{
-				$payload = $this->cipher->decrypt($payload);
-			}catch(DecryptionException $e){
-				$this->logger->debug("Encrypted packet: " . base64_encode($payload));
-				throw PacketHandlingException::wrap($e, "Packet decryption error");
-			}finally{
-				Timings::$playerNetworkReceiveDecrypt->stopTiming();
-			}
-		}
-
-		if($this->enableCompression){
-			Timings::$playerNetworkReceiveDecompress->startTiming();
-			try{
-				$decompressed = $this->compressor->decompress($payload);
-			}catch(DecompressionException $e){
-				$this->logger->debug("Failed to decompress packet: " . base64_encode($payload));
-				throw PacketHandlingException::wrap($e, "Compressed packet batch decode error");
-			}finally{
-				Timings::$playerNetworkReceiveDecompress->stopTiming();
-			}
-		}else{
-			$decompressed = $payload;
-		}
-
+		Timings::$playerNetworkReceive->startTiming();
 		try{
-			foreach((new PacketBatch($decompressed))->getPackets($this->packetPool, $this->packetSerializerContext, 500) as [$packet, $buffer]){
-				if($packet === null){
-					$this->logger->debug("Unknown packet: " . base64_encode($buffer));
-					throw new PacketHandlingException("Unknown packet received");
-				}
-				try{
-					$this->handleDataPacket($packet, $buffer);
-				}catch(PacketHandlingException $e){
-					$this->logger->debug($packet->getName() . ": " . base64_encode($buffer));
-					throw PacketHandlingException::wrap($e, "Error processing " . $packet->getName());
+			if($this->incomingPacketBatchBudget <= 0){
+				$this->updatePacketBudget();
+				if($this->incomingPacketBatchBudget <= 0){
+					throw new PacketHandlingException("Receiving packets too fast");
 				}
 			}
-		}catch(PacketDecodeException $e){
-			$this->logger->logException($e);
-			throw PacketHandlingException::wrap($e, "Packet batch decode error");
+			$this->incomingPacketBatchBudget--;
+
+			if($this->cipher !== null){
+				Timings::$playerNetworkReceiveDecrypt->startTiming();
+				try{
+					$payload = $this->cipher->decrypt($payload);
+				}catch(DecryptionException $e){
+					$this->logger->debug("Encrypted packet: " . base64_encode($payload));
+					throw PacketHandlingException::wrap($e, "Packet decryption error");
+				}finally{
+					Timings::$playerNetworkReceiveDecrypt->stopTiming();
+				}
+			}
+
+			if($this->enableCompression){
+				Timings::$playerNetworkReceiveDecompress->startTiming();
+				try{
+					$decompressed = $this->compressor->decompress($payload);
+				}catch(DecompressionException $e){
+					$this->logger->debug("Failed to decompress packet: " . base64_encode($payload));
+					throw PacketHandlingException::wrap($e, "Compressed packet batch decode error");
+				}finally{
+					Timings::$playerNetworkReceiveDecompress->stopTiming();
+				}
+			}else{
+				$decompressed = $payload;
+			}
+
+			try{
+				$stream = new BinaryStream($decompressed);
+				$count = 0;
+				foreach(PacketBatch::decodeRaw($stream) as $buffer){
+					if(++$count > 1300){
+						throw new PacketHandlingException("Too many packets in batch");
+					}
+					$packet = $this->packetPool->getPacket($buffer);
+					if($packet === null){
+						$this->logger->debug("Unknown packet: " . base64_encode($buffer));
+						throw new PacketHandlingException("Unknown packet received");
+					}
+					try{
+						$this->handleDataPacket($packet, $buffer);
+					}catch(PacketHandlingException $e){
+						$this->logger->debug($packet->getName() . ": " . base64_encode($buffer));
+						throw PacketHandlingException::wrap($e, "Error processing " . $packet->getName());
+					}
+				}
+			}catch(PacketDecodeException $e){
+				$this->logger->logException($e);
+				throw PacketHandlingException::wrap($e, "Packet batch decode error");
+			}
+		}finally{
+			Timings::$playerNetworkReceive->stopTiming();
 		}
 	}
 
@@ -423,6 +464,9 @@ class NetworkSession{
 	}
 
 	public function sendDataPacket(ClientboundPacket $packet, bool $immediate = false) : bool{
+		if(!$this->connected){
+			return false;
+		}
 		//Basic safety restriction. TODO: improve this
 		if(!$this->loggedIn && !$packet->canBeSentBeforeLogin()){
 			throw new \InvalidArgumentException("Attempted to send " . get_class($packet) . " to " . $this->getDisplayName() . " too early");
@@ -437,7 +481,7 @@ class NetworkSession{
 				return false;
 			}
 
-			$this->addToSendBuffer($packet);
+			$this->addToSendBuffer(self::encodePacketTimed(PacketSerializer::encoder($this->packetSerializerContext), $packet));
 			if($immediate){
 				$this->flushSendBuffer(true);
 			}
@@ -451,34 +495,49 @@ class NetworkSession{
 	/**
 	 * @internal
 	 */
-	public function addToSendBuffer(ClientboundPacket $packet) : void{
-		$timings = Timings::getSendDataPacketTimings($packet);
+	public static function encodePacketTimed(PacketSerializer $serializer, ClientboundPacket $packet) : string{
+		$timings = Timings::getEncodeDataPacketTimings($packet);
 		$timings->startTiming();
 		try{
-			$this->sendBuffer[] = $packet;
+			$packet->encode($serializer);
+			return $serializer->getBuffer();
 		}finally{
 			$timings->stopTiming();
 		}
 	}
 
+	/**
+	 * @internal
+	 */
+	public function addToSendBuffer(string $buffer) : void{
+		$this->sendBuffer[] = $buffer;
+	}
+
 	private function flushSendBuffer(bool $immediate = false) : void{
 		if(count($this->sendBuffer) > 0){
-			$syncMode = null; //automatic
-			if($immediate){
-				$syncMode = true;
-			}elseif($this->forceAsyncCompression){
-				$syncMode = false;
-			}
+			Timings::$playerNetworkSend->startTiming();
+			try{
+				$syncMode = null; //automatic
+				if($immediate){
+					$syncMode = true;
+				}elseif($this->forceAsyncCompression){
+					$syncMode = false;
+				}
 
-			$batch = PacketBatch::fromPackets($this->packetSerializerContext, ...$this->sendBuffer);
-			if($this->enableCompression){
-				$promise = $this->server->prepareBatch($batch, $this->compressor, $syncMode);
-			}else{
-				$promise = new CompressBatchPromise();
-				$promise->resolve($batch->getBuffer());
+				$stream = new BinaryStream();
+				PacketBatch::encodeRaw($stream, $this->sendBuffer);
+
+				if($this->enableCompression){
+					$promise = $this->server->prepareBatch(new PacketBatch($stream->getBuffer()), $this->compressor, $syncMode, Timings::$playerNetworkSendCompressSessionBuffer);
+				}else{
+					$promise = new CompressBatchPromise();
+					$promise->resolve($stream->getBuffer());
+				}
+				$this->sendBuffer = [];
+				$this->queueCompressedNoBufferFlush($promise, $immediate);
+			}finally{
+				Timings::$playerNetworkSend->stopTiming();
 			}
-			$this->sendBuffer = [];
-			$this->queueCompressedNoBufferFlush($promise, $immediate);
 		}
 	}
 
@@ -491,35 +550,45 @@ class NetworkSession{
 	}
 
 	public function queueCompressed(CompressBatchPromise $payload, bool $immediate = false) : void{
-		$this->flushSendBuffer($immediate); //Maintain ordering if possible
-		$this->queueCompressedNoBufferFlush($payload, $immediate);
+		Timings::$playerNetworkSend->startTiming();
+		try{
+			$this->flushSendBuffer($immediate); //Maintain ordering if possible
+			$this->queueCompressedNoBufferFlush($payload, $immediate);
+		}finally{
+			Timings::$playerNetworkSend->stopTiming();
+		}
 	}
 
 	private function queueCompressedNoBufferFlush(CompressBatchPromise $payload, bool $immediate = false) : void{
-		if($immediate){
-			//Skips all queues
-			$this->sendEncoded($payload->getResult(), true);
-		}else{
-			$this->compressedQueue->enqueue($payload);
-			$payload->onResolve(function(CompressBatchPromise $payload) : void{
-				if($this->connected && $this->compressedQueue->bottom() === $payload){
-					$this->compressedQueue->dequeue(); //result unused
-					$this->sendEncoded($payload->getResult());
+		Timings::$playerNetworkSend->startTiming();
+		try{
+			if($immediate){
+				//Skips all queues
+				$this->sendEncoded($payload->getResult(), true);
+			}else{
+				$this->compressedQueue->enqueue($payload);
+				$payload->onResolve(function(CompressBatchPromise $payload) : void{
+					if($this->connected && $this->compressedQueue->bottom() === $payload){
+						$this->compressedQueue->dequeue(); //result unused
+						$this->sendEncoded($payload->getResult());
 
-					while(!$this->compressedQueue->isEmpty()){
-						/** @var CompressBatchPromise $current */
-						$current = $this->compressedQueue->bottom();
-						if($current->hasResult()){
-							$this->compressedQueue->dequeue();
+						while(!$this->compressedQueue->isEmpty()){
+							/** @var CompressBatchPromise $current */
+							$current = $this->compressedQueue->bottom();
+							if($current->hasResult()){
+								$this->compressedQueue->dequeue();
 
-							$this->sendEncoded($current->getResult());
-						}else{
-							//can't send any more queued until this one is ready
-							break;
+								$this->sendEncoded($current->getResult());
+							}else{
+								//can't send any more queued until this one is ready
+								break;
+							}
 						}
 					}
-				}
-			});
+				});
+			}
+		}finally{
+			Timings::$playerNetworkSend->stopTiming();
 		}
 	}
 
@@ -540,17 +609,24 @@ class NetworkSession{
 			$this->disconnectGuard = true;
 			$func();
 			$this->disconnectGuard = false;
+			$this->flushSendBuffer(true);
+			$this->sender->close("");
 			foreach($this->disposeHooks as $callback){
 				$callback();
 			}
 			$this->disposeHooks->clear();
 			$this->setHandler(null);
 			$this->connected = false;
-			$this->manager->remove($this);
 			$this->logger->info("Session closed due to $reason");
-
-			$this->invManager = null; //break cycles - TODO: this really ought to be deferred until it's safe
 		}
+	}
+
+	/**
+	 * Performs actions after the session has been disconnected. By this point, nothing should be interacting with the
+	 * session, so it's safe to destroy any cycles and perform destructive cleanup.
+	 */
+	private function dispose() : void{
+		$this->invManager = null;
 	}
 
 	/**
@@ -558,10 +634,12 @@ class NetworkSession{
 	 */
 	public function disconnect(string $reason, bool $notify = true) : void{
 		$this->tryDisconnect(function() use ($reason, $notify) : void{
+			if($notify){
+				$this->sendDataPacket(DisconnectPacket::create($reason));
+			}
 			if($this->player !== null){
 				$this->player->onPostDisconnect($reason, null);
 			}
-			$this->doServerDisconnect($reason, $notify);
 		}, $reason);
 	}
 
@@ -574,7 +652,6 @@ class NetworkSession{
 			if($this->player !== null){
 				$this->player->onPostDisconnect($reason, null);
 			}
-			$this->doServerDisconnect($reason, false);
 		}, $reason);
 	}
 
@@ -583,19 +660,8 @@ class NetworkSession{
 	 */
 	public function onPlayerDestroyed(string $reason) : void{
 		$this->tryDisconnect(function() use ($reason) : void{
-			$this->doServerDisconnect($reason, true);
+			$this->sendDataPacket(DisconnectPacket::create($reason));
 		}, $reason);
-	}
-
-	/**
-	 * Internal helper function used to handle server disconnections.
-	 */
-	private function doServerDisconnect(string $reason, bool $notify = true) : void{
-		if($notify){
-			$this->sendDataPacket(DisconnectPacket::create($reason !== "" ? $reason : null), true);
-		}
-
-		$this->sender->close($notify ? $reason : "");
 	}
 
 	/**
@@ -681,7 +747,7 @@ class NetworkSession{
 		//TODO: we shouldn't be loading player data here at all, but right now we don't have any choice :(
 		$this->cachedOfflinePlayerData = $this->server->getOfflinePlayerData($this->info->getUsername());
 		if($checkXUID){
-			$recordedXUID = $this->cachedOfflinePlayerData !== null ? $this->cachedOfflinePlayerData->getTag("LastKnownXUID") : null;
+			$recordedXUID = $this->cachedOfflinePlayerData !== null ? $this->cachedOfflinePlayerData->getTag(Player::TAG_LAST_KNOWN_XUID) : null;
 			if(!($recordedXUID instanceof StringTag)){
 				$this->logger->debug("No previous XUID recorded, no choice but to trust this player");
 			}elseif(!$kickForXUIDMismatch($recordedXUID->getValue())){
@@ -742,9 +808,9 @@ class NetworkSession{
 		$this->setHandler(new InGamePacketHandler($this->player, $this, $this->invManager));
 	}
 
-	public function onServerDeath() : void{
+	public function onServerDeath(Translatable|string $deathMessage) : void{
 		if($this->handler instanceof InGamePacketHandler){ //TODO: this is a bad fix for pre-spawn death, this shouldn't be reachable at all at this stage :(
-			$this->setHandler(new DeathPacketHandler($this->player, $this, $this->invManager ?? throw new AssumptionFailedError()));
+			$this->setHandler(new DeathPacketHandler($this->player, $this, $this->invManager ?? throw new AssumptionFailedError(), $deathMessage));
 		}
 	}
 
@@ -815,33 +881,33 @@ class NetworkSession{
 
 		//ALL of these need to be set for the base layer, otherwise the client will cry
 		$boolAbilities = [
-			UpdateAbilitiesPacketLayer::ABILITY_ALLOW_FLIGHT => $for->getAllowFlight(),
-			UpdateAbilitiesPacketLayer::ABILITY_FLYING => $for->isFlying(),
-			UpdateAbilitiesPacketLayer::ABILITY_NO_CLIP => !$for->hasBlockCollision(),
-			UpdateAbilitiesPacketLayer::ABILITY_OPERATOR => $isOp,
-			UpdateAbilitiesPacketLayer::ABILITY_TELEPORT => $for->hasPermission(DefaultPermissionNames::COMMAND_TELEPORT),
-			UpdateAbilitiesPacketLayer::ABILITY_INVULNERABLE => $for->isCreative(),
-			UpdateAbilitiesPacketLayer::ABILITY_MUTED => false,
-			UpdateAbilitiesPacketLayer::ABILITY_WORLD_BUILDER => false,
-			UpdateAbilitiesPacketLayer::ABILITY_INFINITE_RESOURCES => !$for->hasFiniteResources(),
-			UpdateAbilitiesPacketLayer::ABILITY_LIGHTNING => false,
-			UpdateAbilitiesPacketLayer::ABILITY_BUILD => !$for->isSpectator(),
-			UpdateAbilitiesPacketLayer::ABILITY_MINE => !$for->isSpectator(),
-			UpdateAbilitiesPacketLayer::ABILITY_DOORS_AND_SWITCHES => !$for->isSpectator(),
-			UpdateAbilitiesPacketLayer::ABILITY_OPEN_CONTAINERS => !$for->isSpectator(),
-			UpdateAbilitiesPacketLayer::ABILITY_ATTACK_PLAYERS => !$for->isSpectator(),
-			UpdateAbilitiesPacketLayer::ABILITY_ATTACK_MOBS => !$for->isSpectator(),
+			AbilitiesLayer::ABILITY_ALLOW_FLIGHT => $for->getAllowFlight(),
+			AbilitiesLayer::ABILITY_FLYING => $for->isFlying(),
+			AbilitiesLayer::ABILITY_NO_CLIP => !$for->hasBlockCollision(),
+			AbilitiesLayer::ABILITY_OPERATOR => $isOp,
+			AbilitiesLayer::ABILITY_TELEPORT => $for->hasPermission(DefaultPermissionNames::COMMAND_TELEPORT_SELF),
+			AbilitiesLayer::ABILITY_INVULNERABLE => $for->isCreative(),
+			AbilitiesLayer::ABILITY_MUTED => false,
+			AbilitiesLayer::ABILITY_WORLD_BUILDER => false,
+			AbilitiesLayer::ABILITY_INFINITE_RESOURCES => !$for->hasFiniteResources(),
+			AbilitiesLayer::ABILITY_LIGHTNING => false,
+			AbilitiesLayer::ABILITY_BUILD => !$for->isSpectator(),
+			AbilitiesLayer::ABILITY_MINE => !$for->isSpectator(),
+			AbilitiesLayer::ABILITY_DOORS_AND_SWITCHES => !$for->isSpectator(),
+			AbilitiesLayer::ABILITY_OPEN_CONTAINERS => !$for->isSpectator(),
+			AbilitiesLayer::ABILITY_ATTACK_PLAYERS => !$for->isSpectator(),
+			AbilitiesLayer::ABILITY_ATTACK_MOBS => !$for->isSpectator(),
 		];
 
-		$this->sendDataPacket(UpdateAbilitiesPacket::create(
+		$this->sendDataPacket(UpdateAbilitiesPacket::create(new AbilitiesData(
 			$isOp ? CommandPermissions::OPERATOR : CommandPermissions::NORMAL,
 			$isOp ? PlayerPermissions::OPERATOR : PlayerPermissions::MEMBER,
 			$for->getId(),
 			[
 				//TODO: dynamic flying speed! FINALLY!!!!!!!!!!!!!!!!!
-				new UpdateAbilitiesPacketLayer(UpdateAbilitiesPacketLayer::LAYER_BASE, $boolAbilities, 0.05, 0.1),
+				new AbilitiesLayer(AbilitiesLayer::LAYER_BASE, $boolAbilities, 0.05, 0.1),
 			]
-		));
+		)));
 	}
 
 	public function syncAdventureSettings() : void{
@@ -877,7 +943,7 @@ class NetworkSession{
 		//TODO: HACK! as of 1.18.10, the client responds differently to the same data ordered in different orders - for
 		//example, sending HEIGHT in the list before FLAGS when unsetting the SWIMMING flag results in a hitbox glitch
 		ksort($properties, SORT_NUMERIC);
-		$this->sendDataPacket(SetActorDataPacket::create($entity->getId(), $properties, 0));
+		$this->sendDataPacket(SetActorDataPacket::create($entity->getId(), $properties, new PropertySyncData([], []), 0));
 	}
 
 	public function onEntityEffectAdded(Living $entity, EffectInstance $effect, bool $replacesOldEffect) : void{
@@ -896,11 +962,11 @@ class NetworkSession{
 	public function syncAvailableCommands() : void{
 		$commandData = [];
 		foreach($this->server->getCommandMap()->getCommands() as $name => $command){
-			if(isset($commandData[$command->getName()]) || $command->getName() === "help" || !$command->testPermissionSilent($this->player)){
+			if(isset($commandData[$command->getLabel()]) || $command->getLabel() === "help" || !$command->testPermissionSilent($this->player)){
 				continue;
 			}
 
-			$lname = strtolower($command->getName());
+			$lname = strtolower($command->getLabel());
 			$aliases = $command->getAliases();
 			$aliasObj = null;
 			if(count($aliases) > 0){
@@ -908,7 +974,7 @@ class NetworkSession{
 					//work around a client bug which makes the original name not show when aliases are used
 					$aliases[] = $lname;
 				}
-				$aliasObj = new CommandEnum(ucfirst($command->getName()) . "Aliases", array_values($aliases));
+				$aliasObj = new CommandEnum(ucfirst($command->getLabel()) . "Aliases", array_values($aliases));
 			}
 
 			$description = $command->getDescription();
@@ -923,21 +989,25 @@ class NetworkSession{
 				]
 			);
 
-			$commandData[$command->getName()] = $data;
+			$commandData[$command->getLabel()] = $data;
 		}
 
 		$this->sendDataPacket(AvailableCommandsPacket::create($commandData, [], [], []));
 	}
 
-	public function onRawChatMessage(string $message) : void{
-		$this->sendDataPacket(TextPacket::raw($message));
-	}
-
-	/**
-	 * @param string[] $parameters
-	 */
-	public function onTranslatedChatMessage(string $key, array $parameters) : void{
-		$this->sendDataPacket(TextPacket::translation($key, $parameters));
+	public function onChatMessage(Translatable|string $message) : void{
+		if($message instanceof Translatable){
+			$language = $this->player->getLanguage();
+			if(!$this->server->isLanguageForced()){
+				//we can't send nested translations to the client, so make sure they are always pre-translated by the server
+				$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $language->translate($p) : $p, $message->getParameters());
+				$this->sendDataPacket(TextPacket::translation($language->translateString($message->getText(), $parameters, "pocketmine."), $parameters));
+			}else{
+				$this->sendDataPacket(TextPacket::raw($language->translate($message)));
+			}
+		}else{
+			$this->sendDataPacket(TextPacket::raw($message));
+		}
 	}
 
 	/**
@@ -1105,7 +1175,29 @@ class NetworkSession{
 		$this->sendDataPacket(ToastRequestPacket::create($title, $body));
 	}
 
+	private function updatePacketBudget() : void{
+		$nowNs = hrtime(true);
+		$timeSinceLastUpdateNs = $nowNs - $this->lastPacketBudgetUpdateTimeNs;
+		if($timeSinceLastUpdateNs > 50_000_000){
+			$ticksSinceLastUpdate = intdiv($timeSinceLastUpdateNs, 50_000_000);
+			/*
+			 * If the server takes an abnormally long time to process a tick, add the budget for time difference to
+			 * compensate. This extra budget may be very large, but it will disappear the next time a normal update
+			 * occurs. This ensures that backlogs during a large lag spike don't cause everyone to get kicked.
+			 * As long as all the backlogged packets are processed before the next tick, everything should be OK for
+			 * clients behaving normally.
+			 */
+			$this->incomingPacketBatchBudget = min($this->incomingPacketBatchBudget, self::INCOMING_PACKET_BATCH_MAX_BUDGET) + (self::INCOMING_PACKET_BATCH_PER_TICK * 2 * $ticksSinceLastUpdate);
+			$this->lastPacketBudgetUpdateTimeNs = $nowNs;
+		}
+	}
+
 	public function tick() : void{
+		if(!$this->isConnected()){
+			$this->dispose();
+			return;
+		}
+
 		if($this->info === null){
 			if(time() >= $this->connectTime + 10){
 				$this->disconnect("Login timeout");
