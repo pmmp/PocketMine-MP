@@ -32,6 +32,8 @@ use const PHP_EOL;
 use const PTHREADS_INHERIT_NONE;
 use const STDOUT;
 
+ini_set('display_errors', 'stderr');
+
 if(count($argv) !== 2){
 	echo "Usage: " . $argv[0] . " <command prefix token>" . PHP_EOL;
 	exit(1);
