@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
+use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
@@ -32,7 +33,6 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
-use Symfony\Component\Filesystem\Path;
 
 /**
  * @internal
@@ -49,8 +49,8 @@ final class RuntimeBlockMapping{
 
 	private static function make() : self{
 		return new self(
-			Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt"),
-			Path::join(\pocketmine\BEDROCK_DATA_PATH, "r12_to_current_block_map.bin")
+			BedrockDataFiles::CANONICAL_BLOCK_STATES_NBT,
+			BedrockDataFiles::R12_TO_CURRENT_BLOCK_MAP_BIN
 		);
 	}
 
