@@ -9,7 +9,6 @@ jobs:
   build-php:
     name: Prepare PHP
     runs-on: ${{ matrix.image }}
-    concurrency: php-build-${{ matrix.php }}
 
     strategy:
       matrix:
