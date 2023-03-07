@@ -331,16 +331,16 @@
         },
         {
             "name": "pocketmine/bedrock-block-upgrade-schema",
-            "version": "1.0.0",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockBlockUpgradeSchema.git",
-                "reference": "a05ce434eb7f8c11058d26833bc975fe635b23b4"
+                "reference": "78c965a2316986ac0eaf3235d75efb187127e7a2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockBlockUpgradeSchema/zipball/a05ce434eb7f8c11058d26833bc975fe635b23b4",
-                "reference": "a05ce434eb7f8c11058d26833bc975fe635b23b4",
+                "url": "https://api.github.com/repos/pmmp/BedrockBlockUpgradeSchema/zipball/78c965a2316986ac0eaf3235d75efb187127e7a2",
+                "reference": "78c965a2316986ac0eaf3235d75efb187127e7a2",
                 "shasum": ""
             },
             "type": "library",
@@ -351,9 +351,9 @@
             "description": "Schemas describing how to upgrade saved block data in older Minecraft: Bedrock Edition world saves",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockBlockUpgradeSchema/issues",
-                "source": "https://github.com/pmmp/BedrockBlockUpgradeSchema/tree/1.0.0"
+                "source": "https://github.com/pmmp/BedrockBlockUpgradeSchema/tree/1.1.0"
             },
-            "time": "2023-02-01T21:09:54+00:00"
+            "time": "2023-03-06T17:53:36+00:00"
         },
         {
             "name": "pocketmine/bedrock-item-upgrade-schema",
