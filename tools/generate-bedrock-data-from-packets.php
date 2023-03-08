@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -87,13 +87,16 @@ use function fwrite;
 use function get_class;
 use function implode;
 use function is_array;
+use function is_object;
 use function json_encode;
 use function ksort;
+use function mkdir;
 use function ord;
 use function strlen;
 use const FILE_IGNORE_NEW_LINES;
 use const JSON_PRETTY_PRINT;
 use const JSON_THROW_ON_ERROR;
+use const PHP_BINARY;
 use const PHP_EOL;
 use const SORT_NUMERIC;
 use const SORT_STRING;
