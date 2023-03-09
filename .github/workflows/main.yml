@@ -9,7 +9,6 @@ jobs:
   build-php:
     name: Prepare PHP
     runs-on: ${{ matrix.image }}
-    concurrency: php-build-${{ matrix.php }}
 
     strategy:
       matrix:
@@ -185,6 +184,9 @@ jobs:
 
       - name: Regenerate KnownTranslation APIs
         run: php build/generate-known-translation-apis.php
+
+      - name: Regenerate BedrockData available files constants
+        run: php build/generate-bedrockdata-path-consts.php
 
       - name: Verify code is unchanged
         run: |
