@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2230c1697e4d7d490f5957b3a80d80a7",
+    "content-hash": "825f81aefc92c23eb815207e78fe3fda",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -1884,16 +1884,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.10.4",
+            "version": "1.10.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "8d39218664b45a4a42d5be66d2b63dcf8c149982"
+                "reference": "50d089a3e0904b0fe7e2cf2d4fd37d427d64235a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/8d39218664b45a4a42d5be66d2b63dcf8c149982",
-                "reference": "8d39218664b45a4a42d5be66d2b63dcf8c149982",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/50d089a3e0904b0fe7e2cf2d4fd37d427d64235a",
+                "reference": "50d089a3e0904b0fe7e2cf2d4fd37d427d64235a",
                 "shasum": ""
             },
             "require": {
@@ -1923,7 +1923,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.10.4"
+                "source": "https://github.com/phpstan/phpstan/tree/1.10.6"
             },
             "funding": [
                 {
@@ -1939,7 +1939,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-03-06T13:39:20+00:00"
+            "time": "2023-03-09T16:55:12+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
