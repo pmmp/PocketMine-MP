@@ -42,7 +42,6 @@ use pocketmine\network\mcpe\cache\ChunkCache;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\network\mcpe\compression\DecompressionException;
-use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\encryption\DecryptionException;
@@ -189,8 +188,6 @@ class NetworkSession{
 	private bool $forceAsyncCompression = true;
 	private bool $enableCompression = false; //disabled until handshake completed
 
-	private PacketSerializerContext $packetSerializerContext;
-
 	private ?InventoryManager $invManager = null;
 
 	/**
@@ -203,6 +200,7 @@ class NetworkSession{
 		private Server $server,
 		private NetworkSessionManager $manager,
 		private PacketPool $packetPool,
+		private PacketSerializerContext $packetSerializerContext,
 		private PacketSender $sender,
 		private PacketBroadcaster $broadcaster,
 		private Compressor $compressor,
@@ -212,9 +210,6 @@ class NetworkSession{
 		$this->logger = new \PrefixedLogger($this->server->getLogger(), $this->getLogPrefix());
 
 		$this->compressedQueue = new \SplQueue();
-
-		//TODO: allow this to be injected
-		$this->packetSerializerContext = new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary());
 
 		$this->disposeHooks = new ObjectSet();
 

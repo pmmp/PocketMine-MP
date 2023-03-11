@@ -26,11 +26,13 @@ namespace pocketmine\network\mcpe\raklib;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\mcpe\compression\ZlibCompressor;
+use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketBroadcaster;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\network\mcpe\StandardPacketBroadcaster;
 use pocketmine\network\Network;
 use pocketmine\network\NetworkInterfaceStartException;
@@ -79,6 +81,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	private SleeperNotifier $sleeper;
 
 	private PacketBroadcaster $broadcaster;
+	private PacketSerializerContext $packetSerializerContext;
 
 	public function __construct(Server $server, string $ip, int $port, bool $ipV6){
 		$this->server = $server;
@@ -108,7 +111,8 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			new PthreadsChannelWriter($mainToThreadBuffer)
 		);
 
-		$this->broadcaster = new StandardPacketBroadcaster($this->server);
+		$this->packetSerializerContext = new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary());
+		$this->broadcaster = new StandardPacketBroadcaster($this->server, $this->packetSerializerContext);
 	}
 
 	public function start() : void{
@@ -173,6 +177,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			$this->server,
 			$this->network->getSessionManager(),
 			PacketPool::getInstance(),
+			$this->packetSerializerContext,
 			new RakLibPacketSender($sessionId, $this),
 			$this->broadcaster,
 			ZlibCompressor::getInstance(), //TODO: this shouldn't be hardcoded, but we might need the RakNet protocol version to select it
