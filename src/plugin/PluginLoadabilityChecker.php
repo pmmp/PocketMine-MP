@@ -73,7 +73,7 @@ final class PluginLoadabilityChecker{
 		}
 
 		$pluginPhpVersions = $description->getCompatiblePhpVersions();
-		$pluginCompatiblePhpVersions = array_filter($pluginPhpVersions, function(string $version) : bool{ return Utils::arePhpVersionsCompatible($version, PHP_VERSION); });
+		$pluginCompatiblePhpVersions = array_filter($pluginPhpVersions, static fn(string $version) => version_compare(phpversion(), $version, 'le'));
 		if(count($pluginPhpVersions) > 0 && count($pluginCompatiblePhpVersions) < 1){
 			return KnownTranslationFactory::pocketmine_plugin_incompatiblePhpVersion(implode(", ", $pluginPhpVersions));
 		}
