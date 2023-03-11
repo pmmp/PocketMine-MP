@@ -29,8 +29,7 @@ use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
+use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
 
@@ -55,14 +54,14 @@ final class RuntimeBlockMapping{
 	}
 
 	public function __construct(string $canonicalBlockStatesFile, string $r12ToCurrentBlockMapFile){
-		$stream = PacketSerializer::decoder(
-			Filesystem::fileGetContents($canonicalBlockStatesFile),
-			0,
-			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary())
-		);
+		$stream = new BinaryStream(Filesystem::fileGetContents($canonicalBlockStatesFile));
 		$list = [];
+		$nbtReader = new NetworkNbtSerializer();
 		while(!$stream->feof()){
-			$list[] = $stream->getNbtCompoundRoot();
+			$offset = $stream->getOffset();
+			$blockState = $nbtReader->read($stream->getBuffer(), $offset)->mustGetCompoundTag();
+			$stream->setOffset($offset);
+			$list[] = $blockState;
 		}
 		$this->bedrockKnownStates = $list;
 
@@ -73,14 +72,10 @@ final class RuntimeBlockMapping{
 		$legacyIdMap = LegacyBlockIdToStringIdMap::getInstance();
 		/** @var R12ToCurrentBlockMapEntry[] $legacyStateMap */
 		$legacyStateMap = [];
-		$legacyStateMapReader = PacketSerializer::decoder(
-			Filesystem::fileGetContents($r12ToCurrentBlockMapFile),
-			0,
-			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary())
-		);
+		$legacyStateMapReader = new BinaryStream(Filesystem::fileGetContents($r12ToCurrentBlockMapFile));
 		$nbtReader = new NetworkNbtSerializer();
 		while(!$legacyStateMapReader->feof()){
-			$id = $legacyStateMapReader->getString();
+			$id = $legacyStateMapReader->get($legacyStateMapReader->getUnsignedVarInt());
 			$meta = $legacyStateMapReader->getLShort();
 
 			$offset = $legacyStateMapReader->getOffset();
