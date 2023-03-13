@@ -80,6 +80,14 @@ final class BlockStateData{
 
 	public function getVersion() : int{ return $this->version; }
 
+	public function getVersionAsString() : string{
+		$major = ($this->version >> 24) & 0xff;
+		$minor = ($this->version >> 16) & 0xff;
+		$patch = ($this->version >> 8) & 0xff;
+		$revision = $this->version & 0xff;
+		return "$major.$minor.$patch.$revision";
+	}
+
 	/**
 	 * @throws BlockStateDeserializeException
 	 */
