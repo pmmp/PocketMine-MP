@@ -562,7 +562,7 @@ class NetworkSession{
 				return false;
 			}
 
-			$this->addToSendBuffer(self::encodePacketTimed(PacketSerializer::encoder($this->packetSerializerContext), $packet));
+			$this->addToSendBuffer(self::encodePacketTimed(PacketSerializer::encoder($this->packetSerializerContext, $this->getProtocolId()), $packet));
 			if($immediate){
 				$this->flushSendBuffer(true);
 			}

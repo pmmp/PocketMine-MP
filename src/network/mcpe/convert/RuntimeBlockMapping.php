@@ -61,17 +61,21 @@ final class RuntimeBlockMapping{
 				self::CANONICAL_BLOCK_STATES_PATH => '',
 				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '',
 			],
+			ProtocolInfo::PROTOCOL_1_19_63 => [
+				self::CANONICAL_BLOCK_STATES_PATH => '-1.19.63',
+				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '-1.19.63',
+			],
 			ProtocolInfo::PROTOCOL_1_19_50 => [
 				self::CANONICAL_BLOCK_STATES_PATH => '-1.19.50',
-				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '',
+				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '-1.19.63',
 			],
 			ProtocolInfo::PROTOCOL_1_19_40 => [
 				self::CANONICAL_BLOCK_STATES_PATH => '-1.19.40',
-				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '',
+				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '-1.19.63',
 			],
 			ProtocolInfo::PROTOCOL_1_19_10 => [
 				self::CANONICAL_BLOCK_STATES_PATH => '-1.19.10',
-				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '',
+				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '-1.19.63',
 			],
 			ProtocolInfo::PROTOCOL_1_18_30 => [
 				self::CANONICAL_BLOCK_STATES_PATH => '-1.18.30',
@@ -104,7 +108,7 @@ final class RuntimeBlockMapping{
 	private function __construct(array $canonicalBlockStatesFiles, array $r12ToCurrentBlockMapFiles){
 		foreach($canonicalBlockStatesFiles as $mappingProtocol => $canonicalBlockStatesFile){
 			$stream = PacketSerializer::decoder(
-				Utils::assumeNotFalse(file_get_contents($canonicalBlockStatesFile), "Missing required resource file"),
+				Filesystem::fileGetContents($canonicalBlockStatesFile),
 				0,
 				new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($mappingProtocol))),
 				$mappingProtocol
@@ -122,7 +126,7 @@ final class RuntimeBlockMapping{
 	}
 
 	public static function getMappingProtocol(int $protocolId) : int{
-		if($protocolId >= ProtocolInfo::PROTOCOL_1_19_60){
+		if($protocolId === ProtocolInfo::PROTOCOL_1_19_60){
 			return ProtocolInfo::PROTOCOL_1_19_63;
 		}
 
