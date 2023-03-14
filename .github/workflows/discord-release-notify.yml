@@ -32,7 +32,7 @@ jobs:
 
       - name: Get actual tag name
         id: tag-name
-        run: echo ::set-output name=TAG_NAME::$(echo "${{ github.ref }}" | sed 's{^refs/tags/{{')
+        run: echo TAG_NAME=$(echo "${{ github.ref }}" | sed 's{^refs/tags/{{') >> $GITHUB_OUTPUT
 
       - name: Run webhook post script
         run: php .github/workflows/discord-release-embed.php ${{ github.repository }} ${{ steps.tag-name.outputs.TAG_NAME }} ${{ github.token }} ${{ secrets.DISCORD_RELEASE_WEBHOOK }} ${{ secrets.DISCORD_NEWS_PING_ROLE_ID }}
