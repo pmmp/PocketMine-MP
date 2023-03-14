@@ -41,6 +41,8 @@ abstract class Timings{
 	/** @var TimingsHandler */
 	public static $serverTick;
 	/** @var TimingsHandler */
+	public static $serverInterrupts;
+	/** @var TimingsHandler */
 	public static $memoryManager;
 	/** @var TimingsHandler */
 	public static $garbageCollector;
@@ -50,6 +52,10 @@ abstract class Timings{
 	public static $playerNetworkSend;
 	/** @var TimingsHandler */
 	public static $playerNetworkSendCompress;
+
+	public static TimingsHandler $playerNetworkSendCompressBroadcast;
+	public static TimingsHandler $playerNetworkSendCompressSessionBuffer;
+
 	/** @var TimingsHandler */
 	public static $playerNetworkSendEncrypt;
 	/** @var TimingsHandler */
@@ -126,6 +132,9 @@ abstract class Timings{
 	private static array $packetHandleTimingMap = [];
 
 	/** @var TimingsHandler[] */
+	private static array $packetEncodeTimingMap = [];
+
+	/** @var TimingsHandler[] */
 	public static $packetSendTimingMap = [];
 	/** @var TimingsHandler[] */
 	public static $pluginTaskTimingMap = [];
@@ -140,13 +149,16 @@ abstract class Timings{
 		self::$initialized = true;
 
 		self::$fullTick = new TimingsHandler("Full Server Tick");
-		self::$serverTick = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Full Server Tick", self::$fullTick);
+		self::$serverTick = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Server Tick Update Cycle", self::$fullTick);
+		self::$serverInterrupts = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Server Mid-Tick Processing", self::$fullTick);
 		self::$memoryManager = new TimingsHandler("Memory Manager");
 		self::$garbageCollector = new TimingsHandler("Garbage Collector", self::$memoryManager);
 		self::$titleTick = new TimingsHandler("Console Title Tick");
 
 		self::$playerNetworkSend = new TimingsHandler("Player Network Send");
 		self::$playerNetworkSendCompress = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Compression", self::$playerNetworkSend);
+		self::$playerNetworkSendCompressBroadcast = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Compression (Broadcast)", self::$playerNetworkSendCompress);
+		self::$playerNetworkSendCompressSessionBuffer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Compression (Session Buffer)", self::$playerNetworkSendCompress);
 		self::$playerNetworkSendEncrypt = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Encryption", self::$playerNetworkSend);
 
 		self::$playerNetworkReceive = new TimingsHandler("Player Network Receive");
@@ -228,8 +240,7 @@ abstract class Timings{
 	public static function getReceiveDataPacketTimings(ServerboundPacket $pk) : TimingsHandler{
 		$pid = $pk->pid();
 		if(!isset(self::$packetReceiveTimingMap[$pid])){
-			$pkName = (new \ReflectionClass($pk))->getShortName();
-			self::$packetReceiveTimingMap[$pid] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "receivePacket - " . $pkName . " [0x" . dechex($pid) . "]", self::$playerNetworkReceive);
+			self::$packetReceiveTimingMap[$pid] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "receivePacket - " . $pk->getName() . " [0x" . dechex($pid) . "]", self::$playerNetworkReceive);
 		}
 
 		return self::$packetReceiveTimingMap[$pid];
@@ -251,11 +262,18 @@ abstract class Timings{
 		);
 	}
 
+	public static function getEncodeDataPacketTimings(ClientboundPacket $pk) : TimingsHandler{
+		$pid = $pk->pid();
+		return self::$packetEncodeTimingMap[$pid] ??= new TimingsHandler(
+			self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Encode - " . $pk->getName() . " [0x" . dechex($pid) . "]",
+			self::getSendDataPacketTimings($pk)
+		);
+	}
+
 	public static function getSendDataPacketTimings(ClientboundPacket $pk) : TimingsHandler{
 		$pid = $pk->pid();
 		if(!isset(self::$packetSendTimingMap[$pid])){
-			$pkName = (new \ReflectionClass($pk))->getShortName();
-			self::$packetSendTimingMap[$pid] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "sendPacket - " . $pkName . " [0x" . dechex($pid) . "]", self::$playerNetworkSend);
+			self::$packetSendTimingMap[$pid] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "sendPacket - " . $pk->getName() . " [0x" . dechex($pid) . "]", self::$playerNetworkSend);
 		}
 
 		return self::$packetSendTimingMap[$pid];

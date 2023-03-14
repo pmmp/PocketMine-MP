@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Setup PHP and tools
-        uses: shivammathur/setup-php@2.23.0
+        uses: shivammathur/setup-php@2.24.0
         with:
           php-version: 8.0
 
@@ -32,7 +32,7 @@ jobs:
 
       - name: Get actual tag name
         id: tag-name
-        run: echo ::set-output name=TAG_NAME::$(echo "${{ github.ref }}" | sed 's{^refs/tags/{{')
+        run: echo TAG_NAME=$(echo "${{ github.ref }}" | sed 's{^refs/tags/{{') >> $GITHUB_OUTPUT
 
       - name: Run webhook post script
-        run: php .github/workflows/discord-release-embed.php ${{ github.repository }} ${{ steps.tag-name.outputs.TAG_NAME }} ${{ github.token }} ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
+        run: php .github/workflows/discord-release-embed.php ${{ github.repository }} ${{ steps.tag-name.outputs.TAG_NAME }} ${{ github.token }} ${{ secrets.DISCORD_RELEASE_WEBHOOK }} ${{ secrets.DISCORD_NEWS_PING_ROLE_ID }}

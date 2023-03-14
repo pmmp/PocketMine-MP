@@ -29,8 +29,8 @@ use pocketmine\utils\Utils;
 use function array_values;
 use function count;
 use function implode;
+use function str_contains;
 use function strlen;
-use function strpos;
 
 class ShapedRecipe implements CraftingRecipe{
 	/** @var string[] */
@@ -86,7 +86,7 @@ class ShapedRecipe implements CraftingRecipe{
 		$this->shape = $shape;
 
 		foreach($ingredients as $char => $i){
-			if(strpos(implode($this->shape), $char) === false){
+			if(!str_contains(implode($this->shape), $char)){
 				throw new \InvalidArgumentException("Symbol '$char' does not appear in the recipe shape");
 			}
 

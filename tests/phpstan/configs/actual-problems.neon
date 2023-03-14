@@ -6,11 +6,6 @@ parameters:
 			path: ../../../build/make-release.php
 
 		-
-			message: "#^Parameter \\#1 \\$pharPath of function pocketmine\\\\build\\\\server_phar\\\\buildPhar expects string, array\\<int, mixed\\>\\|string\\|false given\\.$#"
-			count: 1
-			path: ../../../build/server-phar.php
-
-		-
 			message: "#^Parameter \\#1 \\$strings of function pocketmine\\\\build\\\\server_phar\\\\preg_quote_array expects array\\<string\\>, array\\<int, string\\|false\\> given\\.$#"
 			count: 1
 			path: ../../../build/server-phar.php
@@ -24,16 +19,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$array of static method pocketmine\\\\plugin\\\\PluginGraylist\\:\\:fromArray\\(\\) expects array, mixed given\\.$#"
 			count: 1
 			path: ../../../src/Server.php
-
-		-
-			message: "#^Parameter \\#1 \\$input of function yaml_parse expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/Server.php
-
-		-
-			message: "#^Cannot cast array\\<int, mixed\\>\\|string\\|false to string\\.$#"
-			count: 1
-			path: ../../../src/ServerConfigGroup.php
 
 		-
 			message: "#^Cannot cast mixed to int\\.$#"
@@ -591,11 +576,6 @@ parameters:
 			path: ../../../src/inventory/CreativeInventory.php
 
 		-
-			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/inventory/CreativeInventory.php
-
-		-
 			message: "#^Parameter \\#2 \\$recipe of class pocketmine\\\\event\\\\inventory\\\\CraftItemEvent constructor expects pocketmine\\\\crafting\\\\CraftingRecipe, pocketmine\\\\crafting\\\\CraftingRecipe\\|null given\\.$#"
 			count: 1
 			path: ../../../src/inventory/transaction/CraftingTransaction.php
@@ -627,7 +607,7 @@ parameters:
 
 		-
 			message: "#^Cannot call method getLanguage\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
-			count: 1
+			count: 2
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
@@ -1313,11 +1293,6 @@ parameters:
 		-
 			message: "#^Only booleans are allowed in an if condition, bool\\|null given\\.$#"
 			count: 3
-			path: ../../../src/world/light/SkyLightUpdate.php
-
-		-
-			message: "#^Only numeric types are allowed in \\+, int\\|false given on the left side\\.$#"
-			count: 1
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-

@@ -253,6 +253,14 @@ class Block{
 	 * Generates a block transaction to set all blocks affected by placing this block. Usually this is just the block
 	 * itself, but may be multiple blocks in some cases (such as doors).
 	 *
+	 * @param BlockTransaction $tx           Blocks to be set should be added to this transaction (do not modify thr world directly)
+	 * @param Item             $item         Item used to place the block
+	 * @param Block            $blockReplace Block expected to be replaced
+	 * @param Block            $blockClicked Block that was clicked using the item
+	 * @param int              $face         Face of the clicked block which was clicked
+	 * @param Vector3          $clickVector  Exact position inside the clicked block where the click occurred, relative to the block's position
+	 * @param Player|null      $player       Player who placed the block, or null if it was not a player
+	 *
 	 * @return bool whether the placement should go ahead
 	 */
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
