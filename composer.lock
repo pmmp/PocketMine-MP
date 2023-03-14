@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1911f5d75ca37c8390925a70f5e08210",
+    "content-hash": "6b14e80d7bc11c76f56056b612e1279b",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -302,16 +302,16 @@
         },
         {
             "name": "pocketmine/bedrock-item-upgrade-schema",
-            "version": "1.0.0",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockItemUpgradeSchema.git",
-                "reference": "7e53f77ea34ba30b1f94d3c24e64e19d3c4296e7"
+                "reference": "aab89a1f121a0c127557a4a0cf981330301c9c45"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockItemUpgradeSchema/zipball/7e53f77ea34ba30b1f94d3c24e64e19d3c4296e7",
-                "reference": "7e53f77ea34ba30b1f94d3c24e64e19d3c4296e7",
+                "url": "https://api.github.com/repos/pmmp/BedrockItemUpgradeSchema/zipball/aab89a1f121a0c127557a4a0cf981330301c9c45",
+                "reference": "aab89a1f121a0c127557a4a0cf981330301c9c45",
                 "shasum": ""
             },
             "type": "library",
@@ -322,9 +322,9 @@
             "description": "JSON schemas for upgrading items found in older Minecraft: Bedrock world saves",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockItemUpgradeSchema/issues",
-                "source": "https://github.com/pmmp/BedrockItemUpgradeSchema/tree/1.0.0"
+                "source": "https://github.com/pmmp/BedrockItemUpgradeSchema/tree/1.1.0"
             },
-            "time": "2023-02-01T22:50:02+00:00"
+            "time": "2023-03-08T22:27:13+00:00"
         },
         {
             "name": "pocketmine/bedrock-protocol",
