@@ -46,7 +46,6 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
-use pocketmine\network\mcpe\convert\TypeConversionException;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
@@ -392,25 +391,23 @@ class InGamePacketHandler extends PacketHandler{
 				//prediction rollback anyway.
 				//it's technically possible to see this more than once, but a normal client should never do that.
 				$inventory = $this->player->getInventory();
-				$heldItem = $inventory->getItemInHand();
 
-				try{
-					$droppedItem = TypeConverter::getInstance()->netItemStackToCore($networkInventoryAction->newItem->getItemStack());
-				}catch(TypeConversionException $e){
-					throw PacketHandlingException::wrap($e);
+				$heldItemStack = $this->inventoryManager->getItemStackInfo($inventory, $inventory->getHeldItemIndex())?->getItemStack();
+				if($heldItemStack === null){
+					throw new AssumptionFailedError("Missing itemstack info for held item");
 				}
-
-				//TODO: if we can avoid decoding incoming item NBT, it will be faster to compare network ItemStacks
-				//rather than converting to internal itemstacks and using canStackWith() here.
-				if(!$heldItem->canStackWith($droppedItem) || $heldItem->getCount() < $droppedItem->getCount()){
+				$droppedItemStack = $networkInventoryAction->newItem->getItemStack();
+				//because the client doesn't tell us the expected itemstack ID, we have to deep-compare our known
+				//itemstack info with the one the client sent. This is costly, but we don't have any other option :(
+				if(!$heldItemStack->equalsWithoutCount($droppedItemStack) || $heldItemStack->getCount() < $droppedItemStack->getCount()){
 					return false;
 				}
 
-				//purposely overwritten here - this allows any immutable internal references to be shared
-				$droppedItem = $heldItem->pop($droppedItem->getCount());
+				$newHeldItem = $inventory->getItemInHand();
+				$droppedItem = $newHeldItem->pop($droppedItemStack->getCount());
 
 				$builder = new TransactionBuilder();
-				$builder->getInventory($inventory)->setItem($inventory->getHeldItemIndex(), $heldItem);
+				$builder->getInventory($inventory)->setItem($inventory->getHeldItemIndex(), $newHeldItem);
 				$builder->addAction(new DropItemAction($droppedItem));
 
 				$transaction = new InventoryTransaction($this->player, $builder->generateActions());
