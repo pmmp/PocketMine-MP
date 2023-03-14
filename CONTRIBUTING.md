@@ -21,7 +21,7 @@ Larger contributions like feature additions should be preceded by a [Change Prop
 ## Choosing a target branch
 PocketMine-MP has three primary branches of development.
 
-| Type of change | `stable` | `next-minor` | `next-major` |
+| Type of change | `stable` | `minor-next` | `major-next` |
 |:---------------|:--------:|:------------:|:------------:|
 | Bug fixes | ✔️ | ✔️ | ✔️ |
 | Improvements to API docs | ✔️ | ✔️ | ✔️ |

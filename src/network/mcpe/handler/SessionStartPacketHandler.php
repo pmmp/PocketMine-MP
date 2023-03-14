@@ -71,9 +71,6 @@ final class SessionStartPacketHandler extends PacketHandler{
 	}
 
 	protected function isCompatibleProtocol(int $protocolVersion) : bool{
-		//TODO: REMOVE THIS
-		//1.19.63 released with an unchanged protocol, but a bumped protocol version, since they forgot to do it in the
-		//previous release. Since they are functionally identical, we can accept both.
-		return $protocolVersion === ProtocolInfo::CURRENT_PROTOCOL || $protocolVersion === 568;
+		return $protocolVersion === ProtocolInfo::CURRENT_PROTOCOL;
 	}
 }

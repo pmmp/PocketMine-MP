@@ -9,12 +9,11 @@ jobs:
   build-php:
     name: Prepare PHP
     runs-on: ${{ matrix.image }}
-    concurrency: php-build-${{ matrix.php }}
 
     strategy:
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.27, 8.1.14, 8.2.1]
+        php: [8.0.28, 8.1.16, 8.2.3]
 
     steps:
       - name: Build and prepare PHP cache
@@ -33,7 +32,7 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.27, 8.1.14, 8.2.1]
+        php: [8.0.28, 8.1.16, 8.2.3]
 
     steps:
       - uses: actions/checkout@v3
@@ -72,7 +71,7 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.27, 8.1.14, 8.2.1]
+        php: [8.0.28, 8.1.16, 8.2.3]
 
     steps:
       - uses: actions/checkout@v3
@@ -111,7 +110,7 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.27, 8.1.14, 8.2.1]
+        php: [8.0.28, 8.1.16, 8.2.3]
 
     steps:
       - uses: actions/checkout@v3
@@ -152,7 +151,7 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.27, 8.1.14, 8.2.1]
+        php: [8.0.28, 8.1.16, 8.2.3]
 
     steps:
       - uses: actions/checkout@v3
