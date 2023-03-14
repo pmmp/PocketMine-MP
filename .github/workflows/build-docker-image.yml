@@ -30,20 +30,20 @@ jobs:
         id: tag-name
         run: |
           VERSION=$(echo "${{ github.ref }}" | sed 's{^refs/tags/{{')
-          echo ::set-output name=TAG_NAME::$VERSION
-          echo ::set-output name=MAJOR::$(echo $VERSION | cut -d. -f1)
-          echo ::set-output name=MINOR::$(echo $VERSION | cut -d. -f1-2)
+          echo TAG_NAME=$VERSION >> $GITHUB_OUTPUT
+          echo MAJOR=$(echo $VERSION | cut -d. -f1) >> $GITHUB_OUTPUT
+          echo MINOR=$(echo $VERSION | cut -d. -f1-2) >> $GITHUB_OUTPUT
 
       - name: Download new release information
         run: curl -f -L ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ steps.tag-name.outputs.TAG_NAME }}/build_info.json -o new_build_info.json
 
       - name: Detect channel
         id: channel
-        run: echo ::set-output name=CHANNEL::$(jq -r '.channel' new_build_info.json)
+        run: echo CHANNEL=$(jq -r '.channel' new_build_info.json) >> $GITHUB_OUTPUT
 
       - name: Get name of Docker repository name
         id: docker-repo-name
-        run: echo ::set-output name=NAME::$(echo "${GITHUB_REPOSITORY,,}")
+        run: echo NAME=$(echo "${GITHUB_REPOSITORY,,}") >> $GITHUB_OUTPUT
 
       - name: Build image for tag
         uses: docker/build-push-action@v4.0.0

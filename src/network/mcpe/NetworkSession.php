@@ -482,7 +482,7 @@ class NetworkSession{
 						throw new PacketHandlingException("Unknown packet received");
 					}
 					try{
-						$this->handleDataPacket($packet, $this->getProtocolId(), $buffer);
+						$this->handleDataPacket($packet, $buffer);
 					}catch(PacketHandlingException $e){
 						$this->logger->debug($packet->getName() . ": " . base64_encode($buffer));
 						throw PacketHandlingException::wrap($e, "Error processing " . $packet->getName());
@@ -500,37 +500,44 @@ class NetworkSession{
 	/**
 	 * @throws PacketHandlingException
 	 */
-	public function handleDataPacket(Packet $packet, int $protocolId, string $buffer) : void{
+	public function handleDataPacket(Packet $packet, string $buffer) : void{
 		if(!($packet instanceof ServerboundPacket)){
 			throw new PacketHandlingException("Unexpected non-serverbound packet");
 		}
 
-		$timings = Timings::getDecodeDataPacketTimings($packet);
+		$timings = Timings::getReceiveDataPacketTimings($packet);
 		$timings->startTiming();
-		try{
-			$stream = PacketSerializer::decoder($buffer, 0, $this->packetSerializerContext, $protocolId);
-			try{
-				$packet->decode($stream);
-			}catch(PacketDecodeException $e){
-				throw PacketHandlingException::wrap($e);
-			}
-			if(!$stream->feof()){
-				$remains = substr($stream->getBuffer(), $stream->getOffset());
-				$this->logger->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": " . bin2hex($remains));
-			}
-		}finally{
-			$timings->stopTiming();
-		}
 
-		$timings = Timings::getHandleDataPacketTimings($packet);
-		$timings->startTiming();
 		try{
-			//TODO: I'm not sure DataPacketReceiveEvent should be included in the handler timings, but it needs to be
-			//included for now to ensure the receivePacket timings are counted the way they were before
-			$ev = new DataPacketReceiveEvent($this, $packet);
-			$ev->call();
-			if(!$ev->isCancelled() && ($this->handler === null || !$packet->handle($this->handler))){
-				$this->logger->debug("Unhandled " . $packet->getName() . ": " . base64_encode($stream->getBuffer()));
+			$decodeTimings = Timings::getDecodeDataPacketTimings($packet);
+			$decodeTimings->startTiming();
+			try{
+				$stream = PacketSerializer::decoder($buffer, 0, $this->packetSerializerContext, $this->getProtocolId());
+				try{
+					$packet->decode($stream);
+				}catch(PacketDecodeException $e){
+					throw PacketHandlingException::wrap($e);
+				}
+				if(!$stream->feof()){
+					$remains = substr($stream->getBuffer(), $stream->getOffset());
+					$this->logger->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": " . bin2hex($remains));
+				}
+			}finally{
+				$decodeTimings->stopTiming();
+			}
+
+			$handlerTimings = Timings::getHandleDataPacketTimings($packet);
+			$handlerTimings->startTiming();
+			try{
+				//TODO: I'm not sure DataPacketReceiveEvent should be included in the handler timings, but it needs to be
+				//included for now to ensure the receivePacket timings are counted the way they were before
+				$ev = new DataPacketReceiveEvent($this, $packet);
+				$ev->call();
+				if(!$ev->isCancelled() && ($this->handler === null || !$packet->handle($this->handler))){
+					$this->logger->debug("Unhandled " . $packet->getName() . ": " . base64_encode($stream->getBuffer()));
+				}
+			}finally{
+				$handlerTimings->stopTiming();
 			}
 		}finally{
 			$timings->stopTiming();
