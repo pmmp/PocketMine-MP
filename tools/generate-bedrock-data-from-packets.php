@@ -53,6 +53,7 @@ use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
+use pocketmine\network\mcpe\protocol\types\recipe\ComplexAliasItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\IntIdMetaItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\MolangItemDescriptor;
@@ -282,6 +283,8 @@ class ParserPacketHandler extends PacketHandler{
 		}elseif($descriptor instanceof MolangItemDescriptor){
 			$data->molang_expression = $descriptor->getMolangExpression();
 			$data->molang_version = $descriptor->getMolangVersion();
+		}elseif($descriptor instanceof ComplexAliasItemDescriptor){
+			$data->name = $descriptor->getAlias();
 		}else{
 			throw new \UnexpectedValueException("Unknown item descriptor type " . get_class($descriptor));
 		}

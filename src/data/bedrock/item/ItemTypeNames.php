@@ -35,7 +35,9 @@ final class ItemTypeNames{
 	public const ALLAY_SPAWN_EGG = "minecraft:allay_spawn_egg";
 	public const AMETHYST_SHARD = "minecraft:amethyst_shard";
 	public const APPLE = "minecraft:apple";
+	public const ARCHER_POTTERY_SHARD = "minecraft:archer_pottery_shard";
 	public const ARMOR_STAND = "minecraft:armor_stand";
+	public const ARMS_UP_POTTERY_SHARD = "minecraft:arms_up_pottery_shard";
 	public const ARROW = "minecraft:arrow";
 	public const AXOLOTL_BUCKET = "minecraft:axolotl_bucket";
 	public const AXOLOTL_SPAWN_EGG = "minecraft:axolotl_spawn_egg";
@@ -74,6 +76,7 @@ final class ItemTypeNames{
 	public const BREWING_STAND = "minecraft:brewing_stand";
 	public const BRICK = "minecraft:brick";
 	public const BROWN_DYE = "minecraft:brown_dye";
+	public const BRUSH = "minecraft:brush";
 	public const BUCKET = "minecraft:bucket";
 	public const CAKE = "minecraft:cake";
 	public const CAMEL_SPAWN_EGG = "minecraft:camel_spawn_egg";
@@ -126,6 +129,7 @@ final class ItemTypeNames{
 	public const DARK_OAK_CHEST_BOAT = "minecraft:dark_oak_chest_boat";
 	public const DARK_OAK_DOOR = "minecraft:dark_oak_door";
 	public const DARK_OAK_SIGN = "minecraft:dark_oak_sign";
+	public const DEBUG_STICK = "minecraft:debug_stick";
 	public const DIAMOND = "minecraft:diamond";
 	public const DIAMOND_AXE = "minecraft:diamond_axe";
 	public const DIAMOND_BOOTS = "minecraft:diamond_boots";
@@ -326,6 +330,7 @@ final class ItemTypeNames{
 	public const POWDER_SNOW_BUCKET = "minecraft:powder_snow_bucket";
 	public const PRISMARINE_CRYSTALS = "minecraft:prismarine_crystals";
 	public const PRISMARINE_SHARD = "minecraft:prismarine_shard";
+	public const PRIZE_POTTERY_SHARD = "minecraft:prize_pottery_shard";
 	public const PUFFERFISH = "minecraft:pufferfish";
 	public const PUFFERFISH_BUCKET = "minecraft:pufferfish_bucket";
 	public const PUFFERFISH_SPAWN_EGG = "minecraft:pufferfish_spawn_egg";
@@ -363,6 +368,7 @@ final class ItemTypeNames{
 	public const SKELETON_SPAWN_EGG = "minecraft:skeleton_spawn_egg";
 	public const SKULL = "minecraft:skull";
 	public const SKULL_BANNER_PATTERN = "minecraft:skull_banner_pattern";
+	public const SKULL_POTTERY_SHARD = "minecraft:skull_pottery_shard";
 	public const SLIME_BALL = "minecraft:slime_ball";
 	public const SLIME_SPAWN_EGG = "minecraft:slime_spawn_egg";
 	public const SNIFFER_SPAWN_EGG = "minecraft:sniffer_spawn_egg";
@@ -396,6 +402,7 @@ final class ItemTypeNames{
 	public const TADPOLE_BUCKET = "minecraft:tadpole_bucket";
 	public const TADPOLE_SPAWN_EGG = "minecraft:tadpole_spawn_egg";
 	public const TNT_MINECART = "minecraft:tnt_minecart";
+	public const TORCHFLOWER_SEEDS = "minecraft:torchflower_seeds";
 	public const TOTEM_OF_UNDYING = "minecraft:totem_of_undying";
 	public const TRADER_LLAMA_SPAWN_EGG = "minecraft:trader_llama_spawn_egg";
 	public const TRIDENT = "minecraft:trident";
@@ -426,6 +433,7 @@ final class ItemTypeNames{
 	public const WOODEN_PICKAXE = "minecraft:wooden_pickaxe";
 	public const WOODEN_SHOVEL = "minecraft:wooden_shovel";
 	public const WOODEN_SWORD = "minecraft:wooden_sword";
+	public const WOOL = "minecraft:wool";
 	public const WRITABLE_BOOK = "minecraft:writable_book";
 	public const WRITTEN_BOOK = "minecraft:written_book";
 	public const YELLOW_DYE = "minecraft:yellow_dye";

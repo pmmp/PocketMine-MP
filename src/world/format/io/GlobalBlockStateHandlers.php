@@ -43,7 +43,7 @@ use const pocketmine\BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH;
  * benefits for now.
  */
 final class GlobalBlockStateHandlers{
-	public const MAX_BLOCKSTATE_UPGRADE_SCHEMA_ID = 161; //0161_1.19.50_to_1.19.60.26_beta.json
+	public const MAX_BLOCKSTATE_UPGRADE_SCHEMA_ID = 171; //0171_1.19.60_to_1.9.70.26_beta.json
 
 	private static ?BlockObjectToStateSerializer $blockStateSerializer = null;
 
