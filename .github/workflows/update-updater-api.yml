@@ -20,14 +20,14 @@ jobs:
 
       - name: Get actual tag name
         id: tag-name
-        run: echo ::set-output name=TAG_NAME::$(echo "${{ github.ref }}" | sed 's{^refs/tags/{{')
+        run: echo TAG_NAME=$(echo "${{ github.ref }}" | sed 's{^refs/tags/{{') >> $GITHUB_OUTPUT
 
       - name: Download new release information
         run: curl -f -L ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ steps.tag-name.outputs.TAG_NAME }}/build_info.json -o new_build_info.json
 
       - name: Detect channel
         id: channel
-        run: echo ::set-output name=CHANNEL::$(jq -r '.channel' new_build_info.json)
+        run: echo CHANNEL=$(jq -r '.channel' new_build_info.json) >> $GITHUB_OUTPUT
 
       - name: Copy release information
         run: |
