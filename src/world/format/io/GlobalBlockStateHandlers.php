@@ -34,6 +34,7 @@ use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaUtils;
 use pocketmine\data\bedrock\block\upgrade\LegacyBlockIdToStringIdMap;
 use pocketmine\utils\Filesystem;
 use Symfony\Component\Filesystem\Path;
+use const PHP_INT_MAX;
 use const pocketmine\BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH;
 
 /**
@@ -43,8 +44,6 @@ use const pocketmine\BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH;
  * benefits for now.
  */
 final class GlobalBlockStateHandlers{
-	public const MAX_BLOCKSTATE_UPGRADE_SCHEMA_ID = 171; //0171_1.19.60_to_1.9.70.26_beta.json
-
 	private static ?BlockObjectToStateSerializer $blockStateSerializer = null;
 
 	private static ?BlockStateToObjectDeserializer $blockStateDeserializer = null;
@@ -65,7 +64,7 @@ final class GlobalBlockStateHandlers{
 		if(self::$blockDataUpgrader === null){
 			$blockStateUpgrader = new BlockStateUpgrader(BlockStateUpgradeSchemaUtils::loadSchemas(
 				Path::join(BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH, 'nbt_upgrade_schema'),
-				self::MAX_BLOCKSTATE_UPGRADE_SCHEMA_ID
+				PHP_INT_MAX
 			));
 			self::$blockDataUpgrader = new BlockDataUpgrader(
 				BlockIdMetaUpgrader::loadFromString(
