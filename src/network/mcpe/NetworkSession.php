@@ -447,18 +447,18 @@ class NetworkSession{
 				$decodeTimings->stopTiming();
 			}
 
-			$handlerTimings = Timings::getHandleDataPacketTimings($packet);
-			$handlerTimings->startTiming();
-			try{
-				//TODO: I'm not sure DataPacketReceiveEvent should be included in the handler timings, but it needs to be
-				//included for now to ensure the receivePacket timings are counted the way they were before
-				$ev = new DataPacketReceiveEvent($this, $packet);
-				$ev->call();
-				if(!$ev->isCancelled() && ($this->handler === null || !$packet->handle($this->handler))){
-					$this->logger->debug("Unhandled " . $packet->getName() . ": " . base64_encode($stream->getBuffer()));
+			$ev = new DataPacketReceiveEvent($this, $packet);
+			$ev->call();
+			if(!$ev->isCancelled()){
+				$handlerTimings = Timings::getHandleDataPacketTimings($packet);
+				$handlerTimings->startTiming();
+				try{
+					if($this->handler === null || !$packet->handle($this->handler)){
+						$this->logger->debug("Unhandled " . $packet->getName() . ": " . base64_encode($stream->getBuffer()));
+					}
+				}finally{
+					$handlerTimings->stopTiming();
 				}
-			}finally{
-				$handlerTimings->stopTiming();
 			}
 		}finally{
 			$timings->stopTiming();
