@@ -44,6 +44,8 @@ use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\mcpe\EntityEventBroadcaster;
+use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\protocol\AddActorPacket;
 use pocketmine\network\mcpe\protocol\MoveActorAbsolutePacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
@@ -756,7 +758,7 @@ abstract class Entity{
 				$this->spawnTo($player);
 			}
 		}else{
-			$this->server->broadcastPackets($this->hasSpawned, [MoveActorAbsolutePacket::create(
+			NetworkBroadcastUtils::broadcastPackets($this->hasSpawned, [MoveActorAbsolutePacket::create(
 				$this->id,
 				$this->getOffsetPosition($this->location),
 				$this->location->pitch,
@@ -771,7 +773,7 @@ abstract class Entity{
 	}
 
 	protected function broadcastMotion() : void{
-		$this->server->broadcastPackets($this->hasSpawned, [SetActorMotionPacket::create($this->id, $this->getMotion())]);
+		NetworkBroadcastUtils::broadcastPackets($this->hasSpawned, [SetActorMotionPacket::create($this->id, $this->getMotion())]);
 	}
 
 	public function getGravity() : float{
@@ -1508,7 +1510,7 @@ abstract class Entity{
 		$id = spl_object_id($player);
 		if(isset($this->hasSpawned[$id])){
 			if($send){
-				$player->getNetworkSession()->onEntityRemoved($this);
+				$player->getNetworkSession()->getEntityEventBroadcaster()->onEntityRemoved([$player->getNetworkSession()], $this);
 			}
 			unset($this->hasSpawned[$id]);
 		}
@@ -1519,9 +1521,11 @@ abstract class Entity{
 	 * player moves, viewers will once again be able to see the entity.
 	 */
 	public function despawnFromAll() : void{
-		foreach($this->hasSpawned as $player){
-			$this->despawnFrom($player);
-		}
+		NetworkBroadcastUtils::broadcastEntityEvent(
+			$this->hasSpawned,
+			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onEntityRemoved($recipients, $this)
+		);
+		$this->hasSpawned = [];
 	}
 
 	/**
@@ -1595,9 +1599,7 @@ abstract class Entity{
 		$targets = $targets ?? $this->hasSpawned;
 		$data = $data ?? $this->getAllNetworkData();
 
-		foreach($targets as $p){
-			$p->getNetworkSession()->syncActorData($this, $data);
-		}
+		NetworkBroadcastUtils::broadcastEntityEvent($targets, fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->syncActorData($recipients, $this, $data));
 	}
 
 	/**
@@ -1651,7 +1653,7 @@ abstract class Entity{
 	 * @param Player[]|null $targets
 	 */
 	public function broadcastAnimation(Animation $animation, ?array $targets = null) : void{
-		$this->server->broadcastPackets($targets ?? $this->getViewers(), $animation->encode());
+		NetworkBroadcastUtils::broadcastPackets($targets ?? $this->getViewers(), $animation->encode());
 	}
 
 	/**
@@ -1660,7 +1662,7 @@ abstract class Entity{
 	 */
 	public function broadcastSound(Sound $sound, ?array $targets = null) : void{
 		if(!$this->silent){
-			$this->server->broadcastPackets($targets ?? $this->getViewers(), $sound->encode($this->location));
+			NetworkBroadcastUtils::broadcastPackets($targets ?? $this->getViewers(), $sound->encode($this->location));
 		}
 	}
 

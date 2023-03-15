@@ -25,13 +25,25 @@ jobs:
       - name: Download new release information
         run: curl -f -L ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ steps.tag-name.outputs.TAG_NAME }}/build_info.json -o new_build_info.json
 
-      - name: Detect channel
+      - name: Detect channels
         id: channel
-        run: echo CHANNEL=$(jq -r '.channel' new_build_info.json) >> $GITHUB_OUTPUT
-
-      - name: Copy release information
         run: |
-          cp new_build_info.json channels/${{ steps.channel.outputs.CHANNEL }}.json
+          CHANNEL=$(jq -r '.channel' new_build_info.json)
+          VERSION=${{ steps.tag-name.outputs.TAG_NAME }}
+          echo CHANNEL=$CHANNEL >> $GITHUB_OUTPUT
+          if [ "$CHANNEL" == "stable" ]; then
+            echo MAJOR=$(echo $VERSION | cut -d. -f1) >> $GITHUB_OUTPUT
+            echo MINOR=$(echo $VERSION | cut -d. -f1-2) >> $GITHUB_OUTPUT
+          else
+            echo MAJOR=$(echo $VERSION | cut -d. -f1)-$CHANNEL >> $GITHUB_OUTPUT
+            echo MINOR=$(echo $VERSION | cut -d. -f1-2)-$CHANNEL >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update channel info
+        run: |
+          cp new_build_info.json "channels/${{ steps.channel.outputs.CHANNEL }}.json"
+          cp new_build_info.json "channels/${{ steps.channel.outputs.MAJOR }}.json"
+          cp new_build_info.json "channels/${{ steps.channel.outputs.MINOR }}.json"
           rm new_build_info.json
 
       - name: Commit changes
