@@ -429,6 +429,7 @@ class NetworkSession{
 
 		$timings = Timings::getReceiveDataPacketTimings($packet);
 		$timings->startTiming();
+
 		try{
 			$ev = new DataPacketPreReceiveEvent($this, $packet->pid(), $buffer);
 			$ev->call();
