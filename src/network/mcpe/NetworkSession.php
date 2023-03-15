@@ -427,14 +427,14 @@ class NetworkSession{
 			throw new PacketHandlingException("Unexpected non-serverbound packet");
 		}
 
+		$timings = Timings::getReceiveDataPacketTimings($packet);
+		$timings->startTiming();
 		$ev = new DataPacketPreReceiveEvent($this, $packet->pid(), $buffer);
 		$ev->call();
 		if($ev->isCancelled()){
+			$timings->stopTiming();
 			return;
 		}
-
-		$timings = Timings::getReceiveDataPacketTimings($packet);
-		$timings->startTiming();
 
 		try{
 			$decodeTimings = Timings::getDecodeDataPacketTimings($packet);
