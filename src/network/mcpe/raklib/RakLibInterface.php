@@ -83,8 +83,11 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	private PacketBroadcaster $broadcaster;
 	private PacketSerializerContext $packetSerializerContext;
 
-	public function __construct(Server $server, string $ip, int $port, bool $ipV6){
+	public function __construct(Server $server, string $ip, int $port, bool $ipV6, PacketBroadcaster $packetBroadcaster, PacketSerializerContext $packetSerializerContext){
 		$this->server = $server;
+		$this->broadcaster = $packetBroadcaster;
+		$this->packetSerializerContext = $packetSerializerContext;
+
 		$this->rakServerId = mt_rand(0, PHP_INT_MAX);
 
 		$this->sleeper = new SleeperNotifier();
@@ -108,9 +111,6 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		$this->interface = new UserToRakLibThreadMessageSender(
 			new PthreadsChannelWriter($mainToThreadBuffer)
 		);
-
-		$this->packetSerializerContext = new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary());
-		$this->broadcaster = new StandardPacketBroadcaster($this->server, $this->packetSerializerContext);
 	}
 
 	public function start() : void{
