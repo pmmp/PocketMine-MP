@@ -27,6 +27,10 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\network\mcpe\NetworkSession;
 
+/**
+ * Called right before a Packet is handled by a NetworkSession {@see NetworkSession::handleDataPacket()}
+ * Canceling this event will prevent the packet from being handled.
+ */
 class DataPacketPreReceiveEvent extends ServerEvent implements Cancellable{
 	use CancellableTrait;
 
