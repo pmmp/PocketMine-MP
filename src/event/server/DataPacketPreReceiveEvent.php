@@ -29,7 +29,7 @@ use pocketmine\network\mcpe\NetworkSession;
 
 /**
  * Called before a packet is decoded and handled by the network session.
- * Cancelling this packet will drop the packet without decoding it, minimizing wasted CPU time.
+ * Cancelling this event will drop the packet without decoding it, minimizing wasted CPU time.
  */
 class DataPacketPreReceiveEvent extends ServerEvent implements Cancellable{
 	use CancellableTrait;
