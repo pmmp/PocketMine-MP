@@ -205,7 +205,6 @@ class NetworkSession{
 
 		$this->manager->add($this);
 		$this->logger->info("Session opened");
-		$this->entityEventBroadcaster = $entityEventBroadcaster;
 	}
 
 	private function getLogPrefix() : string{
