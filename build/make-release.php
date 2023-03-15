@@ -38,7 +38,6 @@ use function is_string;
 use function max;
 use function preg_match;
 use function preg_replace;
-use function sleep;
 use function sprintf;
 use function str_pad;
 use function strlen;
@@ -160,9 +159,6 @@ function main() : void{
 	replaceVersion($versionInfoPath, $nextVer->getBaseVersion(), true, $channel);
 	systemWrapper('git add "' . $versionInfoPath . '"', "failed to stage changes for post-release commit");
 	systemWrapper('git commit -m "' . $nextVer->getBaseVersion() . ' is next" --include "' . $versionInfoPath . '"', "failed to create post-release commit");
-	echo "pushing changes in 5 seconds\n";
-	sleep(5);
-	systemWrapper('git push origin HEAD ' . $currentVer->getBaseVersion(), "failed to push changes to remote");
 }
 
 main();
