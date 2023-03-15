@@ -30,6 +30,7 @@ use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\BinaryStream;
 use function count;
+use function log;
 use function spl_object_id;
 use function strlen;
 
@@ -60,7 +61,8 @@ final class StandardPacketBroadcaster implements PacketBroadcaster{
 		$packetBuffers = [];
 		foreach($packets as $packet){
 			$buffer = NetworkSession::encodePacketTimed(PacketSerializer::encoder($this->protocolContext), $packet);
-			$totalLength += strlen($buffer);
+			//varint length prefix + packet buffer
+			$totalLength += (((int) log(strlen($buffer), 128)) + 1) + strlen($buffer);
 			$packetBuffers[] = $buffer;
 		}
 
