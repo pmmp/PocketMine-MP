@@ -38,8 +38,7 @@ class DataPacketPreReceiveEvent extends ServerEvent implements Cancellable{
 		private NetworkSession $origin,
 		private int $packetId,
 		private string $packetBuffer
-	){
-	}
+	){}
 
 	public function getOrigin() : NetworkSession{
 		return $this->origin;
