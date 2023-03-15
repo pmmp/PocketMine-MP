@@ -1351,6 +1351,7 @@ class Server{
 	/**
 	 * @param Player[]            $players
 	 * @param ClientboundPacket[] $packets
+	 * @deprecated
 	 */
 	public function broadcastPackets(array $players, array $packets) : bool{
 		return NetworkBroadcastUtils::broadcastPackets($players, $packets);
