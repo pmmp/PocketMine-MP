@@ -427,8 +427,8 @@ class NetworkSession{
 			throw new PacketHandlingException("Unexpected non-serverbound packet");
 		}
 
+		$timings = Timings::getReceiveDataPacketTimings($packet);
 		try{
-			$timings = Timings::getReceiveDataPacketTimings($packet);
 			$timings->startTiming();
 			$ev = new DataPacketPreReceiveEvent($this, $packet->pid(), $buffer);
 			$ev->call();
