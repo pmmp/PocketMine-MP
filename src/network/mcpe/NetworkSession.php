@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\event\player\PlayerDuplicateLoginEvent;
-use pocketmine\event\server\DataPacketPreReceiveEvent;
+use pocketmine\event\server\DataPacketDecodeEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\form\Form;
@@ -414,7 +414,7 @@ class NetworkSession{
 		$timings->startTiming();
 
 		try{
-			$ev = new DataPacketPreReceiveEvent($this, $packet->pid(), $buffer);
+			$ev = new DataPacketDecodeEvent($this, $packet->pid(), $buffer);
 			$ev->call();
 			if($ev->isCancelled()){
 				return;
