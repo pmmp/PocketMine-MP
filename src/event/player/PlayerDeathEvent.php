@@ -167,6 +167,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 						}
 					}
 				}
+				break;
 
 			case EntityDamageEvent::CAUSE_CUSTOM:
 				break;
