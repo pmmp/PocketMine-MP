@@ -56,10 +56,8 @@ use pocketmine\network\mcpe\compression\ZlibCompressor;
 use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\encryption\EncryptionContext;
 use pocketmine\network\mcpe\EntityEventBroadcaster;
-use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketBroadcaster;
-use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
@@ -1342,15 +1340,6 @@ class Server{
 		}
 
 		return count($recipients);
-	}
-
-	/**
-	 * @param Player[]            $players
-	 * @param ClientboundPacket[] $packets
-	 * @deprecated
-	 */
-	public function broadcastPackets(array $players, array $packets) : bool{
-		return NetworkBroadcastUtils::broadcastPackets($players, $packets);
 	}
 
 	/**
