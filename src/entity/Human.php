@@ -47,6 +47,8 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\convert\TypeConverter;
+use pocketmine\network\mcpe\EntityEventBroadcaster;
+use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
@@ -174,7 +176,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	 * @param Player[]|null $targets
 	 */
 	public function sendSkin(?array $targets = null) : void{
-		$this->server->broadcastPackets($targets ?? $this->hasSpawned, [
+		NetworkBroadcastUtils::broadcastPackets($targets ?? $this->hasSpawned, [
 			PlayerSkinPacket::create($this->getUniqueId(), "", "", SkinAdapterSingleton::get()->toSkinData($this->skin))
 		]);
 	}
@@ -189,9 +191,10 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	}
 
 	public function emote(string $emoteId) : void{
-		foreach($this->getViewers() as $player){
-			$player->getNetworkSession()->onEmote($this, $emoteId);
-		}
+		NetworkBroadcastUtils::broadcastEntityEvent(
+			$this->getViewers(),
+			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onEmote($recipients, $this, $emoteId)
+		);
 	}
 
 	public function getHungerManager() : HungerManager{
@@ -270,11 +273,10 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->xpManager = new ExperienceManager($this);
 
 		$this->inventory = new PlayerInventory($this);
-		$syncHeldItem = function() : void{
-			foreach($this->getViewers() as $viewer){
-				$viewer->getNetworkSession()->onMobMainHandItemChange($this);
-			}
-		};
+		$syncHeldItem = fn() => NetworkBroadcastUtils::broadcastEntityEvent(
+			$this->getViewers(),
+			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onMobMainHandItemChange($recipients, $this)
+		);
 		$this->inventory->getListeners()->add(new CallbackInventoryListener(
 			function(Inventory $unused, int $slot, Item $unused2) use ($syncHeldItem) : void{
 				if($slot === $this->inventory->getHeldItemIndex()){
@@ -315,11 +317,10 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		if($offHand !== null){
 			$this->offHandInventory->setItem(0, Item::nbtDeserialize($offHand));
 		}
-		$this->offHandInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(function() : void{
-			foreach($this->getViewers() as $viewer){
-				$viewer->getNetworkSession()->onMobOffHandItemChange($this);
-			}
-		}));
+		$this->offHandInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(fn() => NetworkBroadcastUtils::broadcastEntityEvent(
+			$this->getViewers(),
+			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onMobOffHandItemChange($recipients, $this)
+		)));
 
 		$enderChestInventoryTag = $nbt->getListTag(self::TAG_ENDER_CHEST_INVENTORY);
 		if($enderChestInventoryTag !== null){
@@ -333,11 +334,10 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		}
 
 		$this->inventory->setHeldItemIndex($nbt->getInt(self::TAG_SELECTED_INVENTORY_SLOT, 0));
-		$this->inventory->getHeldItemIndexChangeListeners()->add(function(int $oldIndex) : void{
-			foreach($this->getViewers() as $viewer){
-				$viewer->getNetworkSession()->onMobMainHandItemChange($this);
-			}
-		});
+		$this->inventory->getHeldItemIndexChangeListeners()->add(fn() => NetworkBroadcastUtils::broadcastEntityEvent(
+			$this->getViewers(),
+			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onMobMainHandItemChange($recipients, $this)
+		));
 
 		$this->hungerManager->setFood((float) $nbt->getInt(self::TAG_FOOD_LEVEL, (int) $this->hungerManager->getFood()));
 		$this->hungerManager->setExhaustion($nbt->getFloat(self::TAG_FOOD_EXHAUSTION_LEVEL, $this->hungerManager->getExhaustion()));
@@ -490,11 +490,12 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	}
 
 	protected function sendSpawnPacket(Player $player) : void{
+		$networkSession = $player->getNetworkSession();
 		if(!($this instanceof Player)){
-			$player->getNetworkSession()->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($this->uuid, $this->id, $this->getName(), SkinAdapterSingleton::get()->toSkinData($this->skin))]));
+			$networkSession->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($this->uuid, $this->id, $this->getName(), SkinAdapterSingleton::get()->toSkinData($this->skin))]));
 		}
 
-		$player->getNetworkSession()->sendDataPacket(AddPlayerPacket::create(
+		$networkSession->sendDataPacket(AddPlayerPacket::create(
 			$this->getUniqueId(),
 			$this->getName(),
 			$this->getId(),
@@ -524,11 +525,12 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		//TODO: Hack for MCPE 1.2.13: DATA_NAMETAG is useless in AddPlayerPacket, so it has to be sent separately
 		$this->sendData([$player], [EntityMetadataProperties::NAMETAG => new StringMetadataProperty($this->getNameTag())]);
 
-		$player->getNetworkSession()->onMobArmorChange($this);
-		$player->getNetworkSession()->onMobOffHandItemChange($this);
+		$entityEventBroadcaster = $networkSession->getEntityEventBroadcaster();
+		$entityEventBroadcaster->onMobArmorChange([$networkSession], $this);
+		$entityEventBroadcaster->onMobOffHandItemChange([$networkSession], $this);
 
 		if(!($this instanceof Player)){
-			$player->getNetworkSession()->sendDataPacket(PlayerListPacket::remove([PlayerListEntry::createRemovalEntry($this->uuid)]));
+			$networkSession->sendDataPacket(PlayerListPacket::remove([PlayerListEntry::createRemovalEntry($this->uuid)]));
 		}
 	}
 

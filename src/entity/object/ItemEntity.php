@@ -35,6 +35,8 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\convert\TypeConverter;
+use pocketmine\network\mcpe\EntityEventBroadcaster;
+use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\protocol\AddItemActorPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
@@ -113,33 +115,42 @@ class ItemEntity extends Entity{
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		if(!$this->isFlaggedForDespawn() && $this->pickupDelay !== self::NEVER_DESPAWN){ //Infinite delay
+		if($this->isFlaggedForDespawn()){
+			return $hasUpdate;
+		}
+
+		if($this->pickupDelay !== self::NEVER_DESPAWN && $this->pickupDelay > 0){ //Infinite delay
+			$hasUpdate = true;
 			$this->pickupDelay -= $tickDiff;
 			if($this->pickupDelay < 0){
 				$this->pickupDelay = 0;
 			}
-			if($this->hasMovementUpdate() && $this->despawnDelay % self::MERGE_CHECK_PERIOD === 0){
-				$mergeable = [$this]; //in case the merge target ends up not being this
-				$mergeTarget = $this;
-				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(0.5, 0.5, 0.5), $this) as $entity){
-					if(!$entity instanceof ItemEntity || $entity->isFlaggedForDespawn()){
-						continue;
-					}
+		}
 
-					if($entity->isMergeable($this)){
-						$mergeable[] = $entity;
-						if($entity->item->getCount() > $mergeTarget->item->getCount()){
-							$mergeTarget = $entity;
-						}
-					}
+		if($this->hasMovementUpdate() && $this->despawnDelay % self::MERGE_CHECK_PERIOD === 0){
+			$mergeable = [$this]; //in case the merge target ends up not being this
+			$mergeTarget = $this;
+			foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(0.5, 0.5, 0.5), $this) as $entity){
+				if(!$entity instanceof ItemEntity || $entity->isFlaggedForDespawn()){
+					continue;
 				}
-				foreach($mergeable as $itemEntity){
-					if($itemEntity !== $mergeTarget){
-						$itemEntity->tryMergeInto($mergeTarget);
+
+				if($entity->isMergeable($this)){
+					$mergeable[] = $entity;
+					if($entity->item->getCount() > $mergeTarget->item->getCount()){
+						$mergeTarget = $entity;
 					}
 				}
 			}
+			foreach($mergeable as $itemEntity){
+				if($itemEntity !== $mergeTarget){
+					$itemEntity->tryMergeInto($mergeTarget);
+				}
+			}
+		}
 
+		if(!$this->isFlaggedForDespawn() && $this->despawnDelay !== self::NEVER_DESPAWN){
+			$hasUpdate = true;
 			$this->despawnDelay -= $tickDiff;
 			if($this->despawnDelay <= 0){
 				$ev = new ItemDespawnEvent($this);
@@ -148,7 +159,6 @@ class ItemEntity extends Entity{
 					$this->despawnDelay = self::DEFAULT_DESPAWN_DELAY;
 				}else{
 					$this->flagForDespawn();
-					$hasUpdate = true;
 				}
 			}
 		}
@@ -320,9 +330,10 @@ class ItemEntity extends Entity{
 			return;
 		}
 
-		foreach($this->getViewers() as $viewer){
-			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
-		}
+		NetworkBroadcastUtils::broadcastEntityEvent(
+			$this->getViewers(),
+			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onPickUpItem($recipients, $player, $this)
+		);
 
 		$inventory = $ev->getInventory();
 		if($inventory !== null){
