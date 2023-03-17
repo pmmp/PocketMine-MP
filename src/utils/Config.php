@@ -34,6 +34,7 @@ use function date;
 use function explode;
 use function file_exists;
 use function get_debug_type;
+use function gettype;
 use function implode;
 use function is_array;
 use function is_bool;
@@ -400,19 +401,31 @@ class Config{
 	}
 
 	public function getNestedString(string $key, string $default = null) : ?string {
-		return (is_string($value = $this->getNested($key)) || is_numeric($value)) ? (string) $value : $default;
+		if (($value = $this->getNested($key)) !== null && !(is_string($value) || is_numeric($value))) {
+			throw new \TypeError("Expected string, got " . gettype($value));
+		}
+		return $value !== null ? (string) $value : $default;
 	}
 
 	public function getNestedInt(string $key, int $default = null) : ?int {
-		return is_int($value = $this->getNested($key)) ? $value : $default;
+		if (($value = $this->getNested($key)) !== null && !is_int($value)) {
+			throw new \TypeError("Expected int, got " . gettype($value));
+		}
+		return $value ?? $default;
 	}
 
 	public function getNestedFloat(string $key, float $default = null) : ?float {
-		return is_numeric($value = $this->getNested($key)) ? (float) $value : $default;
+		if (($value = $this->getNested($key)) !== null && !is_numeric($value)) {
+			throw new \TypeError("Expected float, got " . gettype($value));
+		}
+		return $value !== null ? (float) $value : $default;
 	}
 
 	public function getNestedBoolean(string $key, bool $default = null) : ?bool {
-		return is_bool($value = $this->getNested($key)) ? $value : $default;
+		if (($value = $this->getNested($key)) !== null && !is_bool($value)) {
+			throw new \TypeError("Expected boolean, got " . gettype($value));
+		}
+		return $value ?? $default;
 	}
 
 	/**
@@ -420,7 +433,10 @@ class Config{
 	 * @return mixed[]
 	 */
 	public function getNestedArray(string $key, array $default = null) : ?array {
-		return is_array($value = $this->getNested($key)) ? $value : $default;
+		if (($value = $this->getNested($key)) !== null && !is_array($value)) {
+			throw new \TypeError("Expected array, got " . gettype($value));
+		}
+		return $value ?? $default;
 	}
 
 	public function removeNested(string $key) : void{
@@ -469,19 +485,31 @@ class Config{
 	}
 
 	public function getString(string $key, string $default = null) : ?string {
-		return (is_string($value = $this->config[$key]) || is_numeric($value)) ? (string) $value : $default;
+		if (($value = $this->get($key, null)) !== null && !(is_string($value) || is_numeric($value))) {
+			throw new \TypeError("Expected string, got " . gettype($value));
+		}
+		return $value !== null ? (string) $value : $default;
 	}
 
 	public function getInt(string $key, int $default = null) : ?int {
-		return is_int($value = $this->config[$key]) ? $value : $default;
+		if (($value = $this->get($key, null)) !== null && !is_int($value)) {
+			throw new \TypeError("Expected int, got " . gettype($value));
+		}
+		return $value ?? $default;
 	}
 
 	public function getBoolean(string $key, bool $default = null) : ?bool {
-		return is_bool($value = $this->config[$key]) ? $value : $default;
+		if (($value = $this->get($key, null)) !== null && !is_bool($value)) {
+			throw new \TypeError("Expected boolean, got " . gettype($value));
+		}
+		return $value ?? $default;
 	}
 
 	public function getFloat(string $key, float $default = null) : ?float {
-		return is_numeric($value = $this->config[$key]) ? (float) $value : $default;
+		if (($value = $this->get($key, null)) !== null && !is_numeric($value)) {
+			throw new \TypeError("Expected float, got " . gettype($value));
+		}
+		return $value !== null ? (float) $value : $default;
 	}
 
 	/**
@@ -489,7 +517,10 @@ class Config{
 	 * @return mixed[]
 	 */
 	public function getArray(string $key, array $default = []) : ?array {
-		return is_array($value = $this->config[$key]) ? $value : $default;
+		if (($value = $this->get($key, null)) !== null && !is_array($value)) {
+			throw new \TypeError("Expected array, got " . gettype($value));
+		}
+		return $value ?? $default;
 	}
 
 	/**
