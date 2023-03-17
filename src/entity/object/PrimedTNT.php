@@ -132,12 +132,8 @@ class PrimedTNT extends Entity implements Explosive{
 		}
 	}
 
-	public function getSpawnItem() : ?Item{
-		return VanillaBlocks::TNT()->setWorksUnderwater($this->worksUnderwater)->asItem();
-	}
-
 	public function getPickedItem() : ?Item{
-		return $this->getSpawnItem();
+		return VanillaBlocks::TNT()->setWorksUnderwater($this->worksUnderwater)->asItem();
 	}
 
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{

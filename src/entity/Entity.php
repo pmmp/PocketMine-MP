@@ -1566,21 +1566,10 @@ abstract class Entity{
 	}
 
 	/**
-	 * Returns the item that can be used to spawn this entity, by default it returns null if there isn't one
-	 */
-	public function getSpawnItem() : ?Item{
-		return VanillaItems::AIR();
-	}
-
-	/**
 	 * Returns the item that players will equip when middle-clicking on this entity.
 	 */
 	public function getPickedItem() : ?Item{
-		$item = $this->getSpawnItem();
-		if($item === null){
-			return null;
-		}
-		return $item;
+		return VanillaItems::AIR();
 	}
 
 	/**

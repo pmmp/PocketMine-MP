@@ -170,12 +170,8 @@ class Painting extends Entity{
 		));
 	}
 
-	public function getSpawnItem() : ?Item{
-		return VanillaItems::PAINTING();
-	}
-
 	public function getPickedItem() : ?Item{
-		return $this->getSpawnItem();
+		return VanillaItems::PAINTING();
 	}
 
 	/**
