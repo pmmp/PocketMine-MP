@@ -37,6 +37,9 @@ abstract class SpawnEgg extends Item{
 	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
 		$entity = $this->createEntity($player->getWorld(), $blockReplace->getPosition()->add(0.5, 0, 0.5), lcg_value() * 360, 0);
 
+		if($this->hasCustomName()){
+			$entity->setNameTag($this->getCustomName());
+		}
 		$this->pop();
 		$entity->spawnToAll();
 		//TODO: what if the entity was marked for deletion?

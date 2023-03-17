@@ -510,12 +510,6 @@ abstract class Entity{
 		return $nbt;
 	}
 
-	public function getCleanedNBT() : CompoundTag{
-		$nbt = $this->saveNBT();
-		$nbt->removeTag("identifier", "Pos", "Motion", "Rotation", "FallDistance", "OnGround");
-		return $nbt;
-	}
-
 	protected function initEntity(CompoundTag $nbt) : void{
 		$this->fireTicks = $nbt->getShort(self::TAG_FIRE, 0);
 
