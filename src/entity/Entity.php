@@ -1574,7 +1574,6 @@ abstract class Entity{
 
 	/**
 	 * Returns the item that players will equip when middle-clicking on this entity.
-	 * If addUserData is true, additional data may be added, such as name tag, fire ticks, etc.
 	 */
 	public function getPickedItem() : ?Item{
 		$item = $this->getSpawnItem();
