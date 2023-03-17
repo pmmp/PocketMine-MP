@@ -18,8 +18,9 @@ require dirname(__DIR__, 2) . '/vendor/autoload.php';
 /**
  * @phpstan-return array<string, mixed>
  */
-function generateDiscordEmbed(string $version, string $channel, string $description, string $detailsUrl, string $sourceUrl, string $pharDownloadUrl, string $buildLogUrl) : array{
+function generateDiscordEmbed(string $version, string $channel, string $description, string $detailsUrl, string $sourceUrl, string $pharDownloadUrl, string $buildLogUrl, int $newsPingRoleId) : array{
 	return [
+		"content" => "<@&$newsPingRoleId> New PocketMine-MP release: $version ($channel)",
 		"embeds" => [
 			[
 				"title" => "New PocketMine-MP release: $version ($channel)",
@@ -35,11 +36,11 @@ DESCRIPTION,
 	];
 }
 
-if(count($argv) !== 5){
-	fwrite(STDERR, "Required arguments: github repo, version, API token\n");
+if(count($argv) !== 6){
+	fwrite(STDERR, "Required arguments: github repo, version, API token, webhook URL, ping role ID\n");
 	exit(1);
 }
-[, $repo, $tagName, $token, $hookURL] = $argv;
+[, $repo, $tagName, $token, $hookURL, $newsPingRoleId] = $argv;
 
 $result = Internet::getURL('https://api.github.com/repos/' . $repo . '/releases/tags/' . $tagName, extraHeaders: [
 	'Authorization: token ' . $token
@@ -86,7 +87,7 @@ $buildLogUrl = $buildInfoJson["build_log_url"];
 
 $description = $releaseInfoJson["body"];
 
-$discordPayload = generateDiscordEmbed($buildInfoJson["base_version"], $buildInfoJson["channel"], $description, $detailsUrl, $sourceUrl, $pharDownloadUrl, $buildLogUrl);
+$discordPayload = generateDiscordEmbed($buildInfoJson["base_version"], $buildInfoJson["channel"], $description, $detailsUrl, $sourceUrl, $pharDownloadUrl, $buildLogUrl, (int) $newsPingRoleId);
 
 $response = Internet::postURL(
 	$hookURL,

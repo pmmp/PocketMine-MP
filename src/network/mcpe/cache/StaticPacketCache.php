@@ -23,13 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\cache;
 
+use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\network\mcpe\protocol\AvailableActorIdentifiersPacket;
 use pocketmine\network\mcpe\protocol\BiomeDefinitionListPacket;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
-use Symfony\Component\Filesystem\Path;
-use function file_get_contents;
 
 class StaticPacketCache{
 	use SingletonTrait;
@@ -38,15 +38,13 @@ class StaticPacketCache{
 	 * @phpstan-return CacheableNbt<\pocketmine\nbt\tag\CompoundTag>
 	 */
 	private static function loadCompoundFromFile(string $filePath) : CacheableNbt{
-		$rawNbt = @file_get_contents($filePath);
-		if($rawNbt === false) throw new \RuntimeException("Failed to read file");
-		return new CacheableNbt((new NetworkNbtSerializer())->read($rawNbt)->mustGetCompoundTag());
+		return new CacheableNbt((new NetworkNbtSerializer())->read(Filesystem::fileGetContents($filePath))->mustGetCompoundTag());
 	}
 
 	private static function make() : self{
 		return new self(
-			BiomeDefinitionListPacket::create(self::loadCompoundFromFile(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'biome_definitions.nbt'))),
-			AvailableActorIdentifiersPacket::create(self::loadCompoundFromFile(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'entity_identifiers.nbt')))
+			BiomeDefinitionListPacket::create(self::loadCompoundFromFile(BedrockDataFiles::BIOME_DEFINITIONS_NBT)),
+			AvailableActorIdentifiersPacket::create(self::loadCompoundFromFile(BedrockDataFiles::ENTITY_IDENTIFIERS_NBT))
 		);
 	}
 

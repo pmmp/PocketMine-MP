@@ -504,7 +504,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	}
 
 	/**
-	 * @param CompoundTag[]      $targets
+	 * @param CompoundTag[] $targets
 	 */
 	private function writeTags(array $targets, string $index, \LevelDBWriteBatch $write) : void{
 		if(count($targets) > 0){

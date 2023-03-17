@@ -44,7 +44,7 @@ final class ServerConfigGroup{
 	){}
 
 	/**
-	 * @param mixed  $defaultValue
+	 * @param mixed $defaultValue
 	 *
 	 * @return mixed
 	 */

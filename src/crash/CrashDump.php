@@ -43,6 +43,7 @@ use function get_loaded_extensions;
 use function json_encode;
 use function ksort;
 use function max;
+use function mb_scrub;
 use function mb_strtoupper;
 use function microtime;
 use function ob_end_clean;
@@ -54,6 +55,7 @@ use function phpversion;
 use function preg_replace;
 use function sprintf;
 use function str_split;
+use function str_starts_with;
 use function strpos;
 use function substr;
 use function zend_version;
@@ -196,12 +198,14 @@ class CrashDump{
 				$error["message"] = substr($error["message"], 0, $pos);
 			}
 		}
+		$error["message"] = mb_scrub($error["message"], 'UTF-8');
 
 		if(isset($lastError)){
 			if(isset($lastError["trace"])){
 				$lastError["trace"] = Utils::printableTrace($lastError["trace"]);
 			}
 			$this->data->lastError = $lastError;
+			$this->data->lastError["message"] = mb_scrub($this->data->lastError["message"], 'UTF-8');
 		}
 
 		$this->data->error = $error;
@@ -234,7 +238,7 @@ class CrashDump{
 
 	private function determinePluginFromFile(string $filePath, bool $crashFrame) : bool{
 		$frameCleanPath = Filesystem::cleanPath($filePath);
-		if(strpos($frameCleanPath, Filesystem::CLEAN_PATH_SRC_PREFIX) !== 0){
+		if(!str_starts_with($frameCleanPath, Filesystem::CLEAN_PATH_SRC_PREFIX)){
 			if($crashFrame){
 				$this->data->plugin_involvement = self::PLUGIN_INVOLVEMENT_DIRECT;
 			}else{
@@ -247,7 +251,7 @@ class CrashDump{
 				$file->setAccessible(true);
 				foreach($this->server->getPluginManager()->getPlugins() as $plugin){
 					$filePath = Filesystem::cleanPath($file->getValue($plugin));
-					if(strpos($frameCleanPath, $filePath) === 0){
+					if(str_starts_with($frameCleanPath, $filePath)){
 						$this->data->plugin = $plugin->getName();
 						break;
 					}

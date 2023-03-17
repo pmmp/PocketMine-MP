@@ -41,6 +41,8 @@ use pocketmine\world\Position;
 
 class PrimedTNT extends Entity implements Explosive{
 
+	private const TAG_FUSE = "Fuse"; //TAG_Short
+
 	public static function getNetworkTypeId() : string{ return EntityIds::TNT; }
 
 	protected $gravity = 0.04;
@@ -83,7 +85,7 @@ class PrimedTNT extends Entity implements Explosive{
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
-		$this->fuse = $nbt->getShort("Fuse", 80);
+		$this->fuse = $nbt->getShort(self::TAG_FUSE, 80);
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
@@ -92,7 +94,7 @@ class PrimedTNT extends Entity implements Explosive{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setShort("Fuse", $this->fuse);
+		$nbt->setShort(self::TAG_FUSE, $this->fuse);
 
 		return $nbt;
 	}

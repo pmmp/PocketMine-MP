@@ -34,9 +34,15 @@ use function usort;
 class CraftingManager{
 	use DestructorCallbackTrait;
 
-	/** @var ShapedRecipe[][] */
+	/**
+	 * @var ShapedRecipe[][]
+	 * @phpstan-var array<string, list<ShapedRecipe>>
+	 */
 	protected $shapedRecipes = [];
-	/** @var ShapelessRecipe[][] */
+	/**
+	 * @var ShapelessRecipe[][]
+	 * @phpstan-var array<string, list<ShapelessRecipe>>
+	 */
 	protected $shapelessRecipes = [];
 
 	/**
@@ -133,6 +139,7 @@ class CraftingManager{
 
 	/**
 	 * @return ShapelessRecipe[][]
+	 * @phpstan-return array<string, list<ShapelessRecipe>>
 	 */
 	public function getShapelessRecipes() : array{
 		return $this->shapelessRecipes;
@@ -140,6 +147,7 @@ class CraftingManager{
 
 	/**
 	 * @return ShapedRecipe[][]
+	 * @phpstan-return array<string, list<ShapedRecipe>>
 	 */
 	public function getShapedRecipes() : array{
 		return $this->shapedRecipes;
@@ -201,7 +209,7 @@ class CraftingManager{
 	}
 
 	/**
-	 * @param Item[]       $outputs
+	 * @param Item[] $outputs
 	 */
 	public function matchRecipe(CraftingGrid $grid, array $outputs) : ?CraftingRecipe{
 		//TODO: try to match special recipes before anything else (first they need to be implemented!)
