@@ -151,11 +151,11 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		}
 	}
 
-	public function onClientDisconnect(int $sessionId, string $reason) : void{
+	public function onClientDisconnect(int $sessionId, int $reason) : void{
 		if(isset($this->sessions[$sessionId])){
 			$session = $this->sessions[$sessionId];
 			unset($this->sessions[$sessionId]);
-			$session->onClientDisconnect($reason);
+			$session->onClientDisconnect(strval($reason));
 		}
 	}
 
