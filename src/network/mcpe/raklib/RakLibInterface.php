@@ -27,10 +27,8 @@ use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\mcpe\compression\ZlibCompressor;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\PacketBroadcaster;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
-use pocketmine\network\mcpe\StandardPacketBroadcaster;
 use pocketmine\network\Network;
 use pocketmine\network\NetworkInterfaceStartException;
 use pocketmine\network\PacketHandlingException;
@@ -78,11 +76,9 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 
 	private SleeperNotifier $sleeper;
 
-	/** @var PacketBroadcaster[] */
-	private static array $broadcasters;
-
 	public function __construct(Server $server, string $ip, int $port, bool $ipV6){
 		$this->server = $server;
+
 		$this->rakServerId = mt_rand(0, PHP_INT_MAX);
 
 		$this->sleeper = new SleeperNotifier();
@@ -106,17 +102,6 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		$this->interface = new UserToRakLibThreadMessageSender(
 			new PthreadsChannelWriter($mainToThreadBuffer)
 		);
-	}
-
-	public static function getBroadcaster(Server $server, int $protocolId) : PacketBroadcaster{
-		if(isset(self::$broadcasters[$protocolId])){
-			return self::$broadcasters[$protocolId];
-		}
-
-		$broadcaster = new StandardPacketBroadcaster($server, $protocolId);
-		self::$broadcasters[$protocolId] = $broadcaster;
-
-		return $broadcaster;
 	}
 
 	public function start() : void{
@@ -176,8 +161,10 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			$this->server,
 			$this->network->getSessionManager(),
 			PacketPool::getInstance(),
+			$this->server->getPacketSerializerContext(),
 			new RakLibPacketSender($sessionId, $this),
-			self::getBroadcaster($this->server, ProtocolInfo::CURRENT_PROTOCOL),
+			$this->server->getPacketBroadcaster(),
+			$this->server->getEntityEventBroadcaster(),
 			ZlibCompressor::getInstance(), //TODO: this shouldn't be hardcoded, but we might need the RakNet protocol version to select it
 			$address,
 			$port
