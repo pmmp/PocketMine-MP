@@ -155,21 +155,22 @@ abstract class Timings{
 		self::$garbageCollector = new TimingsHandler("Garbage Collector", self::$memoryManager);
 		self::$titleTick = new TimingsHandler("Console Title Tick");
 
-		self::$playerNetworkSend = new TimingsHandler("Player Network Send");
+		self::$connection = new TimingsHandler("Connection Handler");
+
+		self::$playerNetworkSend = new TimingsHandler("Player Network Send", self::$connection);
 		self::$playerNetworkSendCompress = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Compression", self::$playerNetworkSend);
 		self::$playerNetworkSendCompressBroadcast = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Compression (Broadcast)", self::$playerNetworkSendCompress);
 		self::$playerNetworkSendCompressSessionBuffer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Compression (Session Buffer)", self::$playerNetworkSendCompress);
 		self::$playerNetworkSendEncrypt = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Encryption", self::$playerNetworkSend);
 
-		self::$playerNetworkReceive = new TimingsHandler("Player Network Receive");
+		self::$playerNetworkReceive = new TimingsHandler("Player Network Receive", self::$connection);
 		self::$playerNetworkReceiveDecompress = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Receive - Decompression", self::$playerNetworkReceive);
 		self::$playerNetworkReceiveDecrypt = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Receive - Decryption", self::$playerNetworkReceive);
 
 		self::$broadcastPackets = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Broadcast Packets", self::$playerNetworkSend);
 
 		self::$playerChunkOrder = new TimingsHandler("Player Order Chunks");
-		self::$playerChunkSend = new TimingsHandler("Player Send Chunks");
-		self::$connection = new TimingsHandler("Connection Handler");
+		self::$playerChunkSend = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Chunks", self::$playerNetworkSend);
 		self::$scheduler = new TimingsHandler("Scheduler");
 		self::$serverCommand = new TimingsHandler("Server Command");
 		self::$worldLoad = new TimingsHandler("World Load");
