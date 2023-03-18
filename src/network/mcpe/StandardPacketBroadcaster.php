@@ -41,9 +41,6 @@ final class StandardPacketBroadcaster implements PacketBroadcaster{
 		private int $protocolId
 	){}
 
-	/**
-	 * @return int
-	 */
 	public function getProtocolId() : int{
 		return $this->protocolId;
 	}
