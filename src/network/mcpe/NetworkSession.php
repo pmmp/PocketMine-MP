@@ -904,6 +904,7 @@ class NetworkSession{
 			AbilitiesLayer::ABILITY_OPEN_CONTAINERS => !$for->isSpectator(),
 			AbilitiesLayer::ABILITY_ATTACK_PLAYERS => !$for->isSpectator(),
 			AbilitiesLayer::ABILITY_ATTACK_MOBS => !$for->isSpectator(),
+			AbilitiesLayer::ABILITY_PRIVILEGED_BUILDER => false,
 		];
 
 		$this->sendDataPacket(UpdateAbilitiesPacket::create(new AbilitiesData(
