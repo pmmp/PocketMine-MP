@@ -95,7 +95,6 @@ class ChunkRequestTask extends AsyncTask{
 			$chunkDataEncoder->getBuffer(),
 			$this->compressor,
 			$encoderContext,
-			$this->mappingProtocol
 		);
 
 		$this->setResult($cache);
