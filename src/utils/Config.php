@@ -400,29 +400,29 @@ class Config{
 		return $this->nestedCache[$key] = $base;
 	}
 
-	public function getNestedString(string $key, string $default = null) : ?string {
-		if (($value = $this->getNested($key)) !== null && !(is_string($value) || is_numeric($value))) {
+	public function getNestedString(string $key, string $default = null) : ?string{
+		if(($value = $this->getNested($key)) !== null && !(is_string($value) || is_numeric($value))){
 			throw new \TypeError("Expected string, got " . gettype($value));
 		}
 		return $value !== null ? (string) $value : $default;
 	}
 
-	public function getNestedInt(string $key, int $default = null) : ?int {
-		if (($value = $this->getNested($key)) !== null && !is_int($value)) {
+	public function getNestedInt(string $key, int $default = null) : ?int{
+		if(($value = $this->getNested($key)) !== null && !is_int($value)){
 			throw new \TypeError("Expected int, got " . gettype($value));
 		}
 		return $value ?? $default;
 	}
 
-	public function getNestedFloat(string $key, float $default = null) : ?float {
-		if (($value = $this->getNested($key)) !== null && !is_numeric($value)) {
+	public function getNestedFloat(string $key, float $default = null) : ?float{
+		if(($value = $this->getNested($key)) !== null && !is_numeric($value)){
 			throw new \TypeError("Expected float, got " . gettype($value));
 		}
 		return $value !== null ? (float) $value : $default;
 	}
 
-	public function getNestedBoolean(string $key, bool $default = null) : ?bool {
-		if (($value = $this->getNested($key)) !== null && !is_bool($value)) {
+	public function getNestedBoolean(string $key, bool $default = null) : ?bool{
+		if(($value = $this->getNested($key)) !== null && !is_bool($value)){
 			throw new \TypeError("Expected boolean, got " . gettype($value));
 		}
 		return $value ?? $default;
@@ -430,10 +430,11 @@ class Config{
 
 	/**
 	 * @param mixed[] $default
+	 *
 	 * @return mixed[]
 	 */
-	public function getNestedArray(string $key, array $default = null) : ?array {
-		if (($value = $this->getNested($key)) !== null && !is_array($value)) {
+	public function getNestedArray(string $key, array $default = null) : ?array{
+		if(($value = $this->getNested($key)) !== null && !is_array($value)){
 			throw new \TypeError("Expected array, got " . gettype($value));
 		}
 		return $value ?? $default;
@@ -484,29 +485,29 @@ class Config{
 		}
 	}
 
-	public function getString(string $key, string $default = null) : ?string {
-		if (($value = $this->get($key, null)) !== null && !(is_string($value) || is_numeric($value))) {
+	public function getString(string $key, string $default = null) : ?string{
+		if(($value = $this->get($key, null)) !== null && !(is_string($value) || is_numeric($value))){
 			throw new \TypeError("Expected string, got " . gettype($value));
 		}
 		return $value !== null ? (string) $value : $default;
 	}
 
-	public function getInt(string $key, int $default = null) : ?int {
-		if (($value = $this->get($key, null)) !== null && !is_int($value)) {
+	public function getInt(string $key, int $default = null) : ?int{
+		if(($value = $this->get($key, null)) !== null && !is_int($value)){
 			throw new \TypeError("Expected int, got " . gettype($value));
 		}
 		return $value ?? $default;
 	}
 
-	public function getBoolean(string $key, bool $default = null) : ?bool {
-		if (($value = $this->get($key, null)) !== null && !is_bool($value)) {
+	public function getBoolean(string $key, bool $default = null) : ?bool{
+		if(($value = $this->get($key, null)) !== null && !is_bool($value)){
 			throw new \TypeError("Expected boolean, got " . gettype($value));
 		}
 		return $value ?? $default;
 	}
 
-	public function getFloat(string $key, float $default = null) : ?float {
-		if (($value = $this->get($key, null)) !== null && !is_numeric($value)) {
+	public function getFloat(string $key, float $default = null) : ?float{
+		if(($value = $this->get($key, null)) !== null && !is_numeric($value)){
 			throw new \TypeError("Expected float, got " . gettype($value));
 		}
 		return $value !== null ? (float) $value : $default;
@@ -514,10 +515,11 @@ class Config{
 
 	/**
 	 * @param mixed[] $default
+	 *
 	 * @return mixed[]
 	 */
-	public function getArray(string $key, array $default = []) : ?array {
-		if (($value = $this->get($key, null)) !== null && !is_array($value)) {
+	public function getArray(string $key, array $default = []) : ?array{
+		if(($value = $this->get($key, null)) !== null && !is_array($value)){
 			throw new \TypeError("Expected array, got " . gettype($value));
 		}
 		return $value ?? $default;
