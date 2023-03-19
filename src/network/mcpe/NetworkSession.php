@@ -429,7 +429,6 @@ class NetworkSession{
 
 						$this->enableCompression = false;
 						$this->setHandler(new SessionStartPacketHandler(
-							$this->server,
 							$this,
 							fn() => $this->onSessionStartSuccess()
 						));
@@ -711,6 +710,15 @@ class NetworkSession{
 				$this->player->onPostDisconnect($reason, null);
 			}
 		}, $reason);
+	}
+
+	public function disconnectIncompatibleProtocol(int $protocolVersion) : void{
+		$this->tryDisconnect(
+			function() use ($protocolVersion) : void{
+				$this->sendDataPacket(PlayStatusPacket::create($protocolVersion < ProtocolInfo::CURRENT_PROTOCOL ? PlayStatusPacket::LOGIN_FAILED_CLIENT : PlayStatusPacket::LOGIN_FAILED_SERVER), true);
+			},
+			$this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_disconnect_incompatibleProtocol((string) $protocolVersion)),
+		);
 	}
 
 	/**

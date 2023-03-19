@@ -683,13 +683,13 @@ class World implements ChunkManager{
 
 		$players = $ev->getRecipients();
 		if($sound instanceof MappingSound){
-			foreach(RuntimeBlockMapping::sortByProtocol($players) as $mappingProtocol => $pl){
+			foreach(RuntimeBlockMapping::sortByProtocol($this->filterViewersForPosition($pos, $players)) as $mappingProtocol => $pl){
 				$sound->setMappingProtocol($mappingProtocol);
 
 				$pk = $sound->encode($pos);
 
 				if(count($pk) > 0){
-					NetworkBroadcastUtils::broadcastPackets($this->filterViewersForPosition($pos, $pl), $pk);
+					NetworkBroadcastUtils::broadcastPackets($pl, $pk);
 				}
 			}
 		}else{
@@ -722,13 +722,13 @@ class World implements ChunkManager{
 
 		$players = $ev->getRecipients();
 		if($particle instanceof MappingParticle){
-			foreach(RuntimeBlockMapping::sortByProtocol($players) as $mappingProtocol => $pl){
+			foreach(RuntimeBlockMapping::sortByProtocol($this->filterViewersForPosition($pos, $players)) as $mappingProtocol => $pl){
 				$particle->setMappingProtocol($mappingProtocol);
 
 				$pk = $particle->encode($pos);
 
 				if(count($pk) > 0){
-					NetworkBroadcastUtils::broadcastPackets($this->filterViewersForPosition($pos, $pl), $pk);
+					NetworkBroadcastUtils::broadcastPackets($pl, $pk);
 				}
 			}
 		}else{
