@@ -107,6 +107,8 @@ abstract class Timings{
 	/** @var TimingsHandler */
 	public static $livingEntityBaseTick;
 
+	public static TimingsHandler $itemEntityBaseTick;
+
 	/** @var TimingsHandler */
 	public static $schedulerSync;
 	/** @var TimingsHandler */
@@ -200,6 +202,7 @@ abstract class Timings{
 
 		self::$entityBaseTick = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Entity Base Tick");
 		self::$livingEntityBaseTick = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Entity Base Tick - Living");
+		self::$itemEntityBaseTick = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Entity Base Tick - ItemEntity");
 
 		self::$schedulerSync = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Scheduler - Sync Tasks");
 		self::$schedulerAsync = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Scheduler - Async Tasks");
