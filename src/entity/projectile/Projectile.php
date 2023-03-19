@@ -175,7 +175,8 @@ abstract class Projectile extends Entity{
 	protected function move(float $dx, float $dy, float $dz) : void{
 		$this->blocksAround = null;
 
-		Timings::$entityMove->startTiming();
+		Timings::$projectileMove->startTiming();
+		Timings::$projectileMoveRayTrace->startTiming();
 
 		$start = $this->location->asVector3();
 		$end = $start->add($dx, $dy, $dz);
@@ -220,6 +221,8 @@ abstract class Projectile extends Entity{
 				$end = $entityHitResult->hitVector;
 			}
 		}
+
+		Timings::$projectileMoveRayTrace->stopTiming();
 
 		$this->location = Location::fromObject(
 			$end,
@@ -268,7 +271,7 @@ abstract class Projectile extends Entity{
 		$this->getWorld()->onEntityMoved($this);
 		$this->checkBlockIntersections();
 
-		Timings::$entityMove->stopTiming();
+		Timings::$projectileMove->stopTiming();
 	}
 
 	/**

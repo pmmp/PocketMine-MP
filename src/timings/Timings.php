@@ -89,6 +89,12 @@ abstract class Timings{
 
 	/** @var TimingsHandler */
 	public static $entityMove;
+
+	public static TimingsHandler $entityMoveCollision;
+
+	public static TimingsHandler $projectileMove;
+	public static TimingsHandler $projectileMoveRayTrace;
+
 	/** @var TimingsHandler */
 	public static $playerCheckNearEntities;
 	/** @var TimingsHandler */
@@ -183,6 +189,11 @@ abstract class Timings{
 		self::$syncPlayerDataSave = new TimingsHandler("Player Data Save");
 
 		self::$entityMove = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Entity Movement");
+		self::$entityMoveCollision = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Entity Movement - Collision Checks", self::$entityMove);
+
+		self::$projectileMove = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Projectile Movement", self::$entityMove);
+		self::$projectileMoveRayTrace = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Projectile Movement - Ray Tracing", self::$projectileMove);
+
 		self::$playerCheckNearEntities = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "checkNearEntities");
 		self::$tickEntity = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Entity Tick");
 		self::$tickTileEntity = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Block Entity Tick");

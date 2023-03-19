@@ -1139,6 +1139,7 @@ abstract class Entity{
 		$this->blocksAround = null;
 
 		Timings::$entityMove->startTiming();
+		Timings::$entityMoveCollision->startTiming();
 
 		$wantedX = $dx;
 		$wantedY = $dy;
@@ -1223,6 +1224,7 @@ abstract class Entity{
 
 			$this->boundingBox = $moveBB;
 		}
+		Timings::$entityMoveCollision->stopTiming();
 
 		$this->location = new Location(
 			($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
