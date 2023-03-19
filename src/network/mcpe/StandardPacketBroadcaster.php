@@ -65,7 +65,7 @@ final class StandardPacketBroadcaster implements PacketBroadcaster{
 		$totalLength = 0;
 		$packetBuffers = [];
 		foreach($packets as $packet){
-			$buffer = NetworkSession::encodePacketTimed(PacketSerializer::encoder($this->protocolContext, $this->protocolId), $packet);
+			$buffer = NetworkSession::encodePacketTimed(PacketSerializer::encoder($this->protocolContext), $packet);
 			//varint length prefix + packet buffer
 			$totalLength += (((int) log(strlen($buffer), 128)) + 1) + strlen($buffer);
 			$packetBuffers[] = $buffer;
