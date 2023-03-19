@@ -41,6 +41,7 @@ use pocketmine\network\mcpe\protocol\AddItemActorPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\player\Player;
+use function count;
 use function max;
 
 class ItemEntity extends Entity{
@@ -204,6 +205,16 @@ class ItemEntity extends Entity{
 
 	protected function applyDragBeforeGravity() : bool{
 		return true;
+	}
+
+	protected function onHitGround() : ?float{
+		$fallBlockPos = $this->location->floor();
+		$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
+		if(count($fallBlock->getCollisionBoxes()) === 0){
+			$fallBlockPos = $fallBlockPos->down();
+			$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
+		}
+		return $fallBlock->onEntityLand($this);
 	}
 
 	public function canSaveWithChunk() : bool{
