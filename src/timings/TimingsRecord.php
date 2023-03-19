@@ -95,6 +95,8 @@ final class TimingsRecord{
 
 	public function getParentId() : ?int{ return $this->parentRecord?->getId(); }
 
+	public function getTimerId() : int{ return spl_object_id($this->handler); }
+
 	public function getName() : string{ return $this->handler->getName(); }
 
 	public function getGroup() : string{ return $this->handler->getGroup(); }
