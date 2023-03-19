@@ -47,6 +47,7 @@ final class TimingsRecord{
 			$record->handler->destroyCycles();
 		}
 		self::$records = [];
+		self::$currentRecord = null;
 	}
 
 	/**
@@ -120,6 +121,11 @@ final class TimingsRecord{
 			return;
 		}
 		if(self::$currentRecord !== $this){
+			if(self::$currentRecord === null){
+				//timings may have been stopped while this timer was running
+				return;
+			}
+
 			throw new AssumptionFailedError("stopTiming() called on a non-current timer");
 		}
 		self::$currentRecord = $this->parentRecord;
