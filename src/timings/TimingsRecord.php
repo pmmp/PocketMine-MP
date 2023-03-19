@@ -25,8 +25,6 @@ namespace pocketmine\timings;
 
 use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
-use function array_pop;
-use function end;
 use function round;
 use function spl_object_id;
 
@@ -42,11 +40,7 @@ final class TimingsRecord{
 	 */
 	private static array $records = [];
 
-	/**
-	 * @var self[]
-	 * @phpstan-var array<int, self>
-	 */
-	private static array $recordStack = [];
+	private static ?self $currentRecord = null;
 
 	public static function clearRecords() : void{
 		foreach(self::$records as $record){
@@ -118,16 +112,17 @@ final class TimingsRecord{
 
 	public function startTiming(int $now) : void{
 		$this->start = $now;
-		self::$recordStack[] = $this;
+		self::$currentRecord = $this;
 	}
 
 	public function stopTiming(int $now) : void{
 		if($this->start == 0){
 			return;
 		}
-		if(array_pop(self::$recordStack) !== $this){
+		if(self::$currentRecord !== $this){
 			throw new AssumptionFailedError("stopTiming() called on a non-current timer");
 		}
+		self::$currentRecord = $this->parentRecord;
 		$diff = $now - $this->start;
 		$this->totalTime += $diff;
 		$this->curTickTotal += $diff;
@@ -137,7 +132,6 @@ final class TimingsRecord{
 	}
 
 	public static function getCurrentRecord() : ?self{
-		$end = end(self::$recordStack);
-		return $end === false ? null : $end;
+		return self::$currentRecord;
 	}
 }
