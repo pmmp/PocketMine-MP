@@ -148,6 +148,8 @@ abstract class Timings{
 	/** @var TimingsHandler */
 	public static $broadcastPackets;
 
+	public static TimingsHandler $playerMove;
+
 	public static function init() : void{
 		if(self::$initialized){
 			return;
@@ -175,6 +177,7 @@ abstract class Timings{
 
 		self::$broadcastPackets = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Broadcast Packets", self::$playerNetworkSend);
 
+		self::$playerMove = new TimingsHandler("Player Movement");
 		self::$playerChunkOrder = new TimingsHandler("Player Order Chunks");
 		self::$playerChunkSend = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Chunks", self::$playerNetworkSend);
 		self::$scheduler = new TimingsHandler("Scheduler");
