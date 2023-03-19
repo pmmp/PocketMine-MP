@@ -173,7 +173,7 @@ final class ItemStackRequestExecutor{
 			throw new PacketHandlingException("Cannot craft a recipe less than 1 time");
 		}
 		$craftingManager = $this->player->getServer()->getCraftingManager();
-		$recipe = $craftingManager->getCraftingRecipeIndex()[$recipeId] ?? null;
+		$recipe = $craftingManager->getCraftingRecipeFromIndex($recipeId);
 		if($recipe === null){
 			throw new PacketHandlingException("Unknown crafting recipe ID $recipeId");
 		}
