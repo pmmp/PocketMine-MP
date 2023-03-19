@@ -491,11 +491,6 @@ parameters:
 			path: ../../../src/command/defaults/TimingsCommand.php
 
 		-
-			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
-			count: 2
-			path: ../../../src/console/ConsoleReader.php
-
-		-
 			message: "#^Parameter \\#1 \\$path of static method pocketmine\\\\utils\\\\Filesystem\\:\\:cleanPath\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/crash/CrashDump.php
