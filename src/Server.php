@@ -1879,7 +1879,7 @@ class Server{
 
 	public function getPacketBroadcaster(int $protocolId = ProtocolInfo::CURRENT_PROTOCOL) : PacketBroadcaster{
 		if(!isset($this->packetBroadcasters[$protocolId])){
-			$this->packetBroadcasters[$protocolId] = new StandardPacketBroadcaster($this, $this->getPacketSerializerContext($protocolId), $protocolId);
+			$this->packetBroadcasters[$protocolId] = new StandardPacketBroadcaster($this, $this->getPacketSerializerContext($protocolId));
 		}
 
 		return $this->packetBroadcasters[$protocolId];

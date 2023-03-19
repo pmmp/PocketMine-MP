@@ -37,12 +37,11 @@ use function strlen;
 final class StandardPacketBroadcaster implements PacketBroadcaster{
 	public function __construct(
 		private Server $server,
-		private PacketSerializerContext $protocolContext,
-		private int $protocolId
+		private PacketSerializerContext $protocolContext
 	){}
 
 	public function getProtocolId() : int{
-		return $this->protocolId;
+		return $this->protocolContext->getProtocolId();
 	}
 
 	public function broadcastPackets(array $recipients, array $packets) : void{
