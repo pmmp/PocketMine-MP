@@ -1212,6 +1212,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @param Vector3 $newPos Coordinates of the player's feet, centered horizontally at the base of their bounding box.
 	 */
 	public function handleMovement(Vector3 $newPos) : void{
+		Timings::$playerMove->startTiming();
+		try{
+			$this->actuallyHandleMovement($newPos);
+		}finally{
+			Timings::$playerMove->stopTiming();
+		}
+	}
+
+	private function actuallyHandleMovement(Vector3 $newPos) : void{
 		$this->moveRateLimit--;
 		if($this->moveRateLimit < 0){
 			return;
@@ -1365,13 +1374,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->timings->startTiming();
 
 		if($this->spawned){
+			Timings::$playerMove->startTiming();
 			$this->processMostRecentMovements();
-			$this->motion = new Vector3(0, 0, 0); //TODO: HACK! (Fixes player knockback being messed up)
+			$this->motion = Vector3::zero(); //TODO: HACK! (Fixes player knockback being messed up)
 			if($this->onGround){
 				$this->inAirTicks = 0;
 			}else{
 				$this->inAirTicks += $tickDiff;
 			}
+			Timings::$playerMove->stopTiming();
 
 			Timings::$entityBaseTick->startTiming();
 			$this->entityBaseTick($tickDiff);
