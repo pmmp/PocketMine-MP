@@ -479,8 +479,9 @@ class InventoryManager{
 			$entry->predictions = [];
 			$entry->pendingSyncs = [];
 			$contents = [];
+			$typeConverter = TypeConverter::getInstance();
 			foreach($inventory->getContents(true) as $slot => $item){
-				$itemStack = TypeConverter::getInstance()->coreItemStackToNet($item);
+				$itemStack = $typeConverter->coreItemStackToNet($item);
 				$info = $this->trackItemStack($entry, $slot, $itemStack, null);
 				$contents[] = new ItemStackWrapper($info->getStackId(), $itemStack);
 			}
