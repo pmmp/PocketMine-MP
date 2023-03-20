@@ -83,12 +83,6 @@ final class ItemStackResponseBuilder{
 				if($itemStackInfo === null){
 					throw new AssumptionFailedError("ItemStackInfo should never be null for an open inventory");
 				}
-				if($itemStackInfo->getRequestId() !== $this->requestId){
-					//the itemstack may have been synced due to transaction producing results that the client did not
-					//predict correctly, which will wipe out the tracked request ID (intentionally)
-					//TODO: is this the correct behaviour?
-					continue;
-				}
 				$item = $inventory->getItem($slot);
 
 				$responseInfosByContainer[$containerInterfaceId][] = new ItemStackResponseSlotInfo(

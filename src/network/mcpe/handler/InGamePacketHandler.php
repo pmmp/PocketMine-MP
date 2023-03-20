@@ -391,14 +391,11 @@ class InGamePacketHandler extends PacketHandler{
 				//it's technically possible to see this more than once, but a normal client should never do that.
 				$inventory = $this->player->getInventory();
 
-				$heldItemStack = $this->inventoryManager->getItemStackInfo($inventory, $inventory->getHeldItemIndex())?->getItemStack();
-				if($heldItemStack === null){
-					throw new AssumptionFailedError("Missing itemstack info for held item");
-				}
+				$heldItemStack = TypeConverter::getInstance()->coreItemStackToNet($inventory->getItemInHand());
 				$droppedItemStack = $networkInventoryAction->newItem->getItemStack();
 				//because the client doesn't tell us the expected itemstack ID, we have to deep-compare our known
 				//itemstack info with the one the client sent. This is costly, but we don't have any other option :(
-				if(!$heldItemStack->equalsWithoutCount($droppedItemStack) || $heldItemStack->getCount() < $droppedItemStack->getCount()){
+				if($heldItemStack->getCount() < $droppedItemStack->getCount() || !$heldItemStack->equalsWithoutCount($droppedItemStack)){
 					return false;
 				}
 
