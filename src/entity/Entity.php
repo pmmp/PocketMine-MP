@@ -246,7 +246,7 @@ abstract class Entity{
 		if($nbt !== null){
 			$this->motion = EntityDataHelper::parseVec3($nbt, self::TAG_MOTION, true);
 		}else{
-			$this->motion = new Vector3(0, 0, 0);
+			$this->motion = Vector3::zero();
 		}
 
 		$this->resetLastMovements();
