@@ -532,6 +532,10 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	private function handleSingleItemStackRequest(ItemStackRequest $request) : ItemStackResponse{
+		if(count($request->getActions()) > 20){
+			//TODO: we can probably lower this limit, but this will do for now
+			throw new PacketHandlingException("Too many actions in ItemStackRequest");
+		}
 		$executor = new ItemStackRequestExecutor($this->player, $this->inventoryManager, $request);
 		try{
 			$transaction = $executor->generateInventoryTransaction();
@@ -547,6 +551,10 @@ class InGamePacketHandler extends PacketHandler{
 
 	public function handleItemStackRequest(ItemStackRequestPacket $packet) : bool{
 		$responses = [];
+		if(count($packet->getRequests()) > 80){
+			//TODO: we can probably lower this limit, but this will do for now
+			throw new PacketHandlingException("Too many requests in ItemStackRequestPacket");
+		}
 		foreach($packet->getRequests() as $request){
 			$responses[] = $this->handleSingleItemStackRequest($request);
 		}
