@@ -541,7 +541,10 @@ class InGamePacketHandler extends PacketHandler{
 			$this->session->getLogger()->debug(implode("\n", Utils::printableExceptionInfo($e)));
 		}
 
-		return $executor->buildItemStackResponse($result);
+		if(!$result){
+			return new ItemStackResponse(ItemStackResponse::RESULT_ERROR, $request->getRequestId());
+		}
+		return $executor->buildItemStackResponse();
 	}
 
 	public function handleItemStackRequest(ItemStackRequestPacket $packet) : bool{

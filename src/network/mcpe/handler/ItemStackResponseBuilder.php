@@ -65,7 +65,7 @@ final class ItemStackResponseBuilder{
 		return [$inventory, $slot];
 	}
 
-	public function build(bool $success) : ItemStackResponse{
+	public function build() : ItemStackResponse{
 		$responseInfosByContainer = [];
 		foreach($this->changedSlots as $containerInterfaceId => $slotIds){
 			if($containerInterfaceId === ContainerUIIds::CREATED_OUTPUT){
@@ -107,6 +107,6 @@ final class ItemStackResponseBuilder{
 			$responseContainerInfos[] = new ItemStackResponseContainerInfo($containerInterfaceId, $responseInfos);
 		}
 
-		return new ItemStackResponse($success ? ItemStackResponse::RESULT_OK : ItemStackResponse::RESULT_ERROR, $this->requestId, $responseContainerInfos);
+		return new ItemStackResponse(ItemStackResponse::RESULT_OK, $this->requestId, $responseContainerInfos);
 	}
 }
