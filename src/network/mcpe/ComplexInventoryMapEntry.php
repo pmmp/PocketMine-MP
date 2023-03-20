@@ -24,38 +24,41 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe;
 
 use pocketmine\inventory\Inventory;
-use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 
-final class InventoryManagerPredictedChanges{
+final class ComplexInventoryMapEntry{
+
 	/**
-	 * @var ItemStack[]
-	 * @phpstan-var array<int, ItemStack>
+	 * @var int[]
+	 * @phpstan-var array<int, int>
 	 */
-	private array $slots = [];
+	private array $reverseSlotMap = [];
 
+	/**
+	 * @param int[] $slotMap
+	 * @phpstan-param array<int, int> $slotMap
+	 */
 	public function __construct(
-		private Inventory $inventory
-	){}
+		private Inventory $inventory,
+		private array $slotMap
+	){
+		foreach($slotMap as $slot => $index){
+			$this->reverseSlotMap[$index] = $slot;
+		}
+	}
 
 	public function getInventory() : Inventory{ return $this->inventory; }
 
 	/**
-	 * @return ItemStack[]
-	 * @phpstan-return array<int, ItemStack>
+	 * @return int[]
+	 * @phpstan-return array<int, int>
 	 */
-	public function getSlots() : array{
-		return $this->slots;
+	public function getSlotMap() : array{ return $this->slotMap; }
+
+	public function mapNetToCore(int $slot) : ?int{
+		return $this->slotMap[$slot] ?? null;
 	}
 
-	public function getSlot(int $slot) : ?ItemStack{
-		return $this->slots[$slot] ?? null;
-	}
-
-	public function add(int $slot, ItemStack $item) : void{
-		$this->slots[$slot] = $item;
-	}
-
-	public function remove(int $slot) : void{
-		unset($this->slots[$slot]);
+	public function mapCoreToNet(int $slot) : ?int{
+		return $this->reverseSlotMap[$slot] ?? null;
 	}
 }

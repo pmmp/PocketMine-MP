@@ -173,6 +173,10 @@ class CraftingManager{
 		return $this->craftingRecipeIndex;
 	}
 
+	public function getCraftingRecipeFromIndex(int $index) : ?CraftingRecipe{
+		return $this->craftingRecipeIndex[$index] ?? null;
+	}
+
 	public function getFurnaceRecipeManager(FurnaceType $furnaceType) : FurnaceRecipeManager{
 		return $this->furnaceRecipeManagers[$furnaceType->id()];
 	}

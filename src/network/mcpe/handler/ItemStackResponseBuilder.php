@@ -29,7 +29,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\ContainerUIIds;
 use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponse;
 use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponseContainerInfo;
 use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponseSlotInfo;
-use pocketmine\network\PacketHandlingException;
+use pocketmine\utils\AssumptionFailedError;
 
 final class ItemStackResponseBuilder{
 
@@ -51,37 +51,42 @@ final class ItemStackResponseBuilder{
 	/**
 	 * @phpstan-return array{Inventory, int}
 	 */
-	private function getInventoryAndSlot(int $containerInterfaceId, int $slotId) : array{
+	private function getInventoryAndSlot(int $containerInterfaceId, int $slotId) : ?array{
 		$windowId = ItemStackContainerIdTranslator::translate($containerInterfaceId, $this->inventoryManager->getCurrentWindowId());
 		$windowAndSlot = $this->inventoryManager->locateWindowAndSlot($windowId, $slotId);
 		if($windowAndSlot === null){
-			throw new PacketHandlingException("Stack request action cannot target an inventory that is not open");
+			return null;
 		}
 		[$inventory, $slot] = $windowAndSlot;
 		if(!$inventory->slotExists($slot)){
-			throw new PacketHandlingException("Stack request action cannot target an inventory slot that does not exist");
+			return null;
 		}
 
 		return [$inventory, $slot];
 	}
 
-	public function build(bool $success) : ItemStackResponse{
+	public function build() : ItemStackResponse{
 		$responseInfosByContainer = [];
 		foreach($this->changedSlots as $containerInterfaceId => $slotIds){
 			if($containerInterfaceId === ContainerUIIds::CREATED_OUTPUT){
 				continue;
 			}
 			foreach($slotIds as $slotId){
-				[$inventory, $slot] = $this->getInventoryAndSlot($containerInterfaceId, $slotId);
+				$inventoryAndSlot = $this->getInventoryAndSlot($containerInterfaceId, $slotId);
+				if($inventoryAndSlot === null){
+					//a plugin may have closed the inventory during an event, or the slot may have been invalid
+					continue;
+				}
+				[$inventory, $slot] = $inventoryAndSlot;
 
 				$itemStackInfo = $this->inventoryManager->getItemStackInfo($inventory, $slot);
 				if($itemStackInfo === null){
-					//TODO: what if a plugin closes the inventory while the transaction is ongoing?
-					throw new \LogicException("ItemStackInfo should never be null for an open inventory");
+					throw new AssumptionFailedError("ItemStackInfo should never be null for an open inventory");
 				}
 				if($itemStackInfo->getRequestId() !== $this->requestId){
 					//the itemstack may have been synced due to transaction producing results that the client did not
 					//predict correctly, which will wipe out the tracked request ID (intentionally)
+					//TODO: is this the correct behaviour?
 					continue;
 				}
 				$item = $inventory->getItem($slot);
@@ -102,6 +107,6 @@ final class ItemStackResponseBuilder{
 			$responseContainerInfos[] = new ItemStackResponseContainerInfo($containerInterfaceId, $responseInfos);
 		}
 
-		return new ItemStackResponse($success ? ItemStackResponse::RESULT_OK : ItemStackResponse::RESULT_ERROR, $this->requestId, $responseContainerInfos);
+		return new ItemStackResponse(ItemStackResponse::RESULT_OK, $this->requestId, $responseContainerInfos);
 	}
 }
