@@ -1146,7 +1146,12 @@ class NetworkSession{
 				$attribute->markSynchronized();
 			}
 		}
-		$this->invManager?->flushPendingUpdates();
+		Timings::$playerNetworkSendInventorySync->startTiming();
+		try{
+			$this->invManager?->flushPendingUpdates();
+		}finally{
+			Timings::$playerNetworkSendInventorySync->stopTiming();
+		}
 
 		$this->flushSendBuffer();
 	}
