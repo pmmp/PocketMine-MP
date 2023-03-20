@@ -47,6 +47,12 @@ class CraftingManager{
 	protected array $shapelessRecipes = [];
 
 	/**
+	 * @var CraftingRecipe[]
+	 * @phpstan-var array<int, CraftingRecipe>
+	 */
+	private array $craftingRecipeIndex = [];
+
+	/**
 	 * @var FurnaceRecipeManager[]
 	 * @phpstan-var array<int, FurnaceRecipeManager>
 	 */
@@ -159,6 +165,18 @@ class CraftingManager{
 		return $this->shapedRecipes;
 	}
 
+	/**
+	 * @return CraftingRecipe[]
+	 * @phpstan-return array<int, CraftingRecipe>
+	 */
+	public function getCraftingRecipeIndex() : array{
+		return $this->craftingRecipeIndex;
+	}
+
+	public function getCraftingRecipeFromIndex(int $index) : ?CraftingRecipe{
+		return $this->craftingRecipeIndex[$index] ?? null;
+	}
+
 	public function getFurnaceRecipeManager(FurnaceType $furnaceType) : FurnaceRecipeManager{
 		return $this->furnaceRecipeManagers[$furnaceType->id()];
 	}
@@ -181,6 +199,7 @@ class CraftingManager{
 
 	public function registerShapedRecipe(ShapedRecipe $recipe) : void{
 		$this->shapedRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
+		$this->craftingRecipeIndex[] = $recipe;
 
 		foreach($this->recipeRegisteredCallbacks as $callback){
 			$callback();
@@ -189,6 +208,7 @@ class CraftingManager{
 
 	public function registerShapelessRecipe(ShapelessRecipe $recipe) : void{
 		$this->shapelessRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
+		$this->craftingRecipeIndex[] = $recipe;
 
 		foreach($this->recipeRegisteredCallbacks as $callback){
 			$callback();
