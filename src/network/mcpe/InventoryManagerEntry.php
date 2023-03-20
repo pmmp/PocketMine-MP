@@ -26,36 +26,21 @@ namespace pocketmine\network\mcpe;
 use pocketmine\inventory\Inventory;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 
-final class InventoryManagerPredictedChanges{
+final class InventoryManagerEntry{
 	/**
 	 * @var ItemStack[]
 	 * @phpstan-var array<int, ItemStack>
 	 */
-	private array $slots = [];
-
-	public function __construct(
-		private Inventory $inventory
-	){}
-
-	public function getInventory() : Inventory{ return $this->inventory; }
+	public array $predictions;
 
 	/**
-	 * @return ItemStack[]
-	 * @phpstan-return array<int, ItemStack>
+	 * @var ItemStackInfo[]
+	 * @phpstan-var array<int, ItemStackInfo>
 	 */
-	public function getSlots() : array{
-		return $this->slots;
-	}
+	public array $itemStackInfos = [];
 
-	public function getSlot(int $slot) : ?ItemStack{
-		return $this->slots[$slot] ?? null;
-	}
-
-	public function add(int $slot, ItemStack $item) : void{
-		$this->slots[$slot] = $item;
-	}
-
-	public function remove(int $slot) : void{
-		unset($this->slots[$slot]);
-	}
+	public function __construct(
+		public Inventory $inventory,
+		public ?ComplexInventoryMapEntry $complexSlotMap = null
+	){}
 }
