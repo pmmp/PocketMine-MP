@@ -412,11 +412,11 @@ class InventoryManager{
 		$clientSideItem = $inventoryEntry->predictions[$slot] ?? null;
 		if($clientSideItem === null || !$clientSideItem->equals($currentItem)){
 			//no prediction or incorrect - do not associate this with the currently active itemstack request
-			$this->trackItemStack($inventory, $slot, $currentItem, null);
+			$this->trackItemStack($inventoryEntry, $slot, $currentItem, null);
 			$inventoryEntry->pendingSyncs[$slot] = $slot;
 		}else{
 			//correctly predicted - associate the change with the currently active itemstack request
-			$this->trackItemStack($inventory, $slot, $currentItem, $this->currentItemStackRequestId);
+			$this->trackItemStack($inventoryEntry, $slot, $currentItem, $this->currentItemStackRequestId);
 		}
 
 		unset($inventoryEntry->predictions[$slot]);
@@ -481,7 +481,7 @@ class InventoryManager{
 			$contents = [];
 			foreach($inventory->getContents(true) as $slot => $item){
 				$itemStack = TypeConverter::getInstance()->coreItemStackToNet($item);
-				$info = $this->trackItemStack($inventory, $slot, $itemStack, null);
+				$info = $this->trackItemStack($entry, $slot, $itemStack, null);
 				$contents[] = new ItemStackWrapper($info->getStackId(), $info->getItemStack());
 			}
 			if($entry->complexSlotMap !== null){
@@ -602,11 +602,7 @@ class InventoryManager{
 		return $entry?->itemStackInfos[$slot] ?? null;
 	}
 
-	private function trackItemStack(Inventory $inventory, int $slotId, ItemStack $itemStack, ?int $itemStackRequestId) : ItemStackInfo{
-		$entry = $this->inventories[spl_object_id($inventory)] ?? null;
-		if($entry === null){
-			throw new \LogicException("Cannot track an item stack for an untracked inventory");
-		}
+	private function trackItemStack(InventoryManagerEntry $entry, int $slotId, ItemStack $itemStack, ?int $itemStackRequestId) : ItemStackInfo{
 		$existing = $entry->itemStackInfos[$slotId] ?? null;
 		if($existing !== null && $existing->getItemStack()->equals($itemStack) && $existing->getRequestId() === $itemStackRequestId){
 			return $existing;
