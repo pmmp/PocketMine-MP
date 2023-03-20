@@ -31,7 +31,7 @@ final class InventoryManagerEntry{
 	 * @var ItemStack[]
 	 * @phpstan-var array<int, ItemStack>
 	 */
-	public array $predictions;
+	public array $predictions = [];
 
 	/**
 	 * @var ItemStackInfo[]
