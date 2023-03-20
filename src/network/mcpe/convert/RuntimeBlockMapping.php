@@ -30,13 +30,10 @@ use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\player\Player;
+use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
-use pocketmine\utils\Utils;
-use function file_get_contents;
 use function str_replace;
 
 /**
@@ -107,15 +104,14 @@ final class RuntimeBlockMapping{
 	 */
 	private function __construct(array $canonicalBlockStatesFiles, array $r12ToCurrentBlockMapFiles){
 		foreach($canonicalBlockStatesFiles as $mappingProtocol => $canonicalBlockStatesFile){
-			$stream = PacketSerializer::decoder(
-				Filesystem::fileGetContents($canonicalBlockStatesFile),
-				0,
-				new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($mappingProtocol))),
-				$mappingProtocol
-			);
+			$stream = new BinaryStream(Filesystem::fileGetContents($canonicalBlockStatesFile));
 			$list = [];
+			$nbtReader = new NetworkNbtSerializer();
 			while(!$stream->feof()){
-				$list[] = $stream->getNbtCompoundRoot();
+				$offset = $stream->getOffset();
+				$blockState = $nbtReader->read($stream->getBuffer(), $offset)->mustGetCompoundTag();
+				$stream->setOffset($offset);
+				$list[] = $blockState;
 			}
 			$this->bedrockKnownStates[$mappingProtocol] = $list;
 		}
@@ -168,15 +164,10 @@ final class RuntimeBlockMapping{
 		$legacyIdMap = LegacyBlockIdToStringIdMap::getInstance();
 		/** @var R12ToCurrentBlockMapEntry[] $legacyStateMap */
 		$legacyStateMap = [];
-		$legacyStateMapReader = PacketSerializer::decoder(
-			Filesystem::fileGetContents($r12ToCurrentBlockMapFile),
-			0,
-			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($mappingProtocol))),
-			$mappingProtocol
-		);
+		$legacyStateMapReader = new BinaryStream(Filesystem::fileGetContents($r12ToCurrentBlockMapFile));
 		$nbtReader = new NetworkNbtSerializer();
 		while(!$legacyStateMapReader->feof()){
-			$id = $legacyStateMapReader->getString();
+			$id = $legacyStateMapReader->get($legacyStateMapReader->getUnsignedVarInt());
 			$meta = $legacyStateMapReader->getLShort();
 
 			$offset = $legacyStateMapReader->getOffset();

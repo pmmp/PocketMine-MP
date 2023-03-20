@@ -79,13 +79,13 @@ class CachedChunk{
 		return $map;
 	}
 
-	public function compressPackets(int $chunkX, int $chunkZ, string $chunkData, Compressor $compressor, PacketSerializerContext $encoderContext, int $mappingProtocol) : void{
+	public function compressPackets(int $chunkX, int $chunkZ, string $chunkData, Compressor $compressor, PacketSerializerContext $encoderContext) : void{
 		$stream = new BinaryStream();
-		PacketBatch::encodePackets($mappingProtocol, $stream, $encoderContext, [$this->createPacket($chunkX, $chunkZ, $chunkData)]);
+		PacketBatch::encodePackets($stream, $encoderContext, [$this->createPacket($chunkX, $chunkZ, $chunkData)]);
 		$this->packet = $compressor->compress($stream->getBuffer());
 
 		$stream = new BinaryStream();
-		PacketBatch::encodePackets($mappingProtocol, $stream, $encoderContext, [$this->createCachablePacket($chunkX, $chunkZ, $chunkData)]);
+		PacketBatch::encodePackets($stream, $encoderContext, [$this->createCachablePacket($chunkX, $chunkZ, $chunkData)]);
 		$this->cachablePacket = $compressor->compress($stream->getBuffer());
 	}
 

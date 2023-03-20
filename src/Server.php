@@ -43,7 +43,6 @@ use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\player\PlayerLoginEvent;
 use pocketmine\event\server\CommandEvent;
-use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
@@ -54,13 +53,19 @@ use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\CompressBatchTask;
 use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\network\mcpe\compression\ZlibCompressor;
+use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\encryption\EncryptionContext;
+use pocketmine\network\mcpe\EntityEventBroadcaster;
+use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketBroadcaster;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\network\mcpe\raklib\RakLibInterface;
+use pocketmine\network\mcpe\StandardEntityEventBroadcaster;
+use pocketmine\network\mcpe\StandardPacketBroadcaster;
 use pocketmine\network\Network;
 use pocketmine\network\NetworkInterfaceStartException;
 use pocketmine\network\query\DedicatedQueryNetworkInterface;
@@ -293,6 +298,13 @@ class Server{
 	 * @phpstan-var array<string, array<int, CommandSender>>
 	 */
 	private array $broadcastSubscribers = [];
+
+	/** @var array<int, PacketSerializerContext> */
+	private array $packetSerializerContexts = [];
+	/** @var array<int, PacketBroadcaster> */
+	private array $packetBroadcasters = [];
+	/** @var array<int, EntityEventBroadcaster> */
+	private array $entityEventBroadcasters = [];
 
 	public function getName() : string{
 		return VersionInfo::NAME;
@@ -1174,7 +1186,12 @@ class Server{
 		return !$anyWorldFailedToLoad;
 	}
 
-	private function startupPrepareConnectableNetworkInterfaces(string $ip, int $port, bool $ipV6, bool $useQuery) : bool{
+	private function startupPrepareConnectableNetworkInterfaces(
+		string $ip,
+		int $port,
+		bool $ipV6,
+		bool $useQuery,
+	) : bool{
 		$prettyIp = $ipV6 ? "[$ip]" : $ip;
 		try{
 			$rakLibRegistered = $this->network->registerInterface(new RakLibInterface($this, $ip, $port, $ipV6));
@@ -1339,46 +1356,10 @@ class Server{
 	/**
 	 * @param Player[]            $players
 	 * @param ClientboundPacket[] $packets
+	 * @deprecated
 	 */
 	public function broadcastPackets(array $players, array $packets) : bool{
-		if(count($packets) === 0){
-			throw new \InvalidArgumentException("Cannot broadcast empty list of packets");
-		}
-
-		return Timings::$broadcastPackets->time(function() use ($players, $packets) : bool{
-			/** @var NetworkSession[] $recipients */
-			$recipients = [];
-			foreach($players as $player){
-				if($player->isConnected()){
-					$recipients[] = $player->getNetworkSession();
-				}
-			}
-			if(count($recipients) === 0){
-				return false;
-			}
-
-			$ev = new DataPacketSendEvent($recipients, $packets);
-			$ev->call();
-			if($ev->isCancelled()){
-				return false;
-			}
-			$recipients = $ev->getTargets();
-
-			/** @var PacketBroadcaster[] $broadcasters */
-			$broadcasters = [];
-			/** @var NetworkSession[][] $broadcasterTargets */
-			$broadcasterTargets = [];
-			foreach($recipients as $recipient){
-				$broadcaster = $recipient->getBroadcaster();
-				$broadcasters[spl_object_id($broadcaster)] = $broadcaster;
-				$broadcasterTargets[spl_object_id($broadcaster)][] = $recipient;
-			}
-			foreach($broadcasters as $broadcaster){
-				$broadcaster->broadcastPackets($broadcasterTargets[spl_object_id($broadcaster)], $packets);
-			}
-
-			return true;
-		});
+		return NetworkBroadcastUtils::broadcastPackets($players, $packets);
 	}
 
 	/**
@@ -1884,5 +1865,31 @@ class Server{
 		}else{
 			$this->nextTick += self::TARGET_SECONDS_PER_TICK;
 		}
+	}
+
+	public function getPacketSerializerContext(int $protocolId = ProtocolInfo::CURRENT_PROTOCOL) : PacketSerializerContext{
+		if(!isset($this->packetSerializerContexts[$protocolId])){
+			$dictionaryId = GlobalItemTypeDictionary::getDictionaryProtocol($protocolId);
+
+			$this->packetSerializerContexts[$protocolId] = new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary($dictionaryId), $protocolId);
+		}
+
+		return $this->packetSerializerContexts[$protocolId];
+	}
+
+	public function getPacketBroadcaster(int $protocolId = ProtocolInfo::CURRENT_PROTOCOL) : PacketBroadcaster{
+		if(!isset($this->packetBroadcasters[$protocolId])){
+			$this->packetBroadcasters[$protocolId] = new StandardPacketBroadcaster($this, $this->getPacketSerializerContext($protocolId));
+		}
+
+		return $this->packetBroadcasters[$protocolId];
+	}
+
+	public function getEntityEventBroadcaster(int $protocolId = ProtocolInfo::CURRENT_PROTOCOL) : EntityEventBroadcaster{
+		if(!isset($this->entityEventBroadcasters[$protocolId])){
+			$this->entityEventBroadcasters[$protocolId] = new StandardEntityEventBroadcaster($this->getPacketBroadcaster($protocolId));
+		}
+
+		return $this->entityEventBroadcasters[$protocolId];
 	}
 }

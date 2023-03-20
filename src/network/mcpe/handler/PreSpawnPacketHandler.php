@@ -115,7 +115,7 @@ class PreSpawnPacketHandler extends ChunkRequestPacketHandler{
 		$this->session->sendDataPacket(StaticPacketCache::getInstance()->getBiomeDefs());
 
 		$this->session->getLogger()->debug("Sending attributes");
-		$this->session->syncAttributes($this->player, $this->player->getAttributeMap()->getAll());
+		$this->session->getEntityEventBroadcaster()->syncAttributes([$this->session], $this->player, $this->player->getAttributeMap()->getAll());
 
 		$this->session->getLogger()->debug("Sending available commands");
 		$this->session->syncAvailableCommands();
@@ -126,7 +126,7 @@ class PreSpawnPacketHandler extends ChunkRequestPacketHandler{
 
 		$this->session->getLogger()->debug("Sending effects");
 		foreach($this->player->getEffects()->all() as $effect){
-			$this->session->onEntityEffectAdded($this->player, $effect, false);
+			$this->session->getEntityEventBroadcaster()->onEntityEffectAdded([$this->session], $this->player, $effect, false);
 		}
 
 		$this->session->getLogger()->debug("Sending actor metadata");
