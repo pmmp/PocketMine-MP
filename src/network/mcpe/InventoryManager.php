@@ -118,16 +118,31 @@ class InventoryManager{
 		});
 	}
 
-	private function add(int $id, Inventory $inventory) : void{
-		$this->inventories[spl_object_id($inventory)] = new InventoryManagerEntry($inventory);
+	private function associateIdWithInventory(int $id, Inventory $inventory) : void{
 		$this->networkIdToInventoryMap[$id] = $inventory;
 	}
 
-	private function addDynamic(Inventory $inventory) : int{
-		$this->inventories[spl_object_id($inventory)] = new InventoryManagerEntry($inventory);
+	private function getNewWindowId() : int{
 		$this->lastInventoryNetworkId = max(ContainerIds::FIRST, ($this->lastInventoryNetworkId + 1) % ContainerIds::LAST);
-		$this->add($this->lastInventoryNetworkId, $inventory);
 		return $this->lastInventoryNetworkId;
+	}
+
+	private function add(int $id, Inventory $inventory) : void{
+		if(isset($this->inventories[spl_object_id($inventory)])){
+			throw new \InvalidArgumentException("Inventory " . get_class($inventory) . " is already tracked");
+		}
+		$this->inventories[spl_object_id($inventory)] = new InventoryManagerEntry($inventory);
+		$this->associateIdWithInventory($id, $inventory);
+	}
+
+	private function addDynamic(Inventory $inventory) : int{
+		if(isset($this->inventories[spl_object_id($inventory)])){
+			throw new \InvalidArgumentException("Inventory " . get_class($inventory) . " is already tracked");
+		}
+		$this->inventories[spl_object_id($inventory)] = new InventoryManagerEntry($inventory);
+		$id = $this->getNewWindowId();
+		$this->add($id, $inventory);
+		return $id;
 	}
 
 	/**
@@ -135,13 +150,16 @@ class InventoryManager{
 	 * @phpstan-param array<int, int>|int $slotMap
 	 */
 	private function addComplex(array|int $slotMap, Inventory $inventory) : void{
-		$entry = new ComplexInventoryMapEntry($inventory, is_int($slotMap) ? [$slotMap => 0] : $slotMap);
+		if(isset($this->inventories[spl_object_id($inventory)])){
+			throw new \InvalidArgumentException("Inventory " . get_class($inventory) . " is already tracked");
+		}
+		$complexSlotMap = new ComplexInventoryMapEntry($inventory, is_int($slotMap) ? [$slotMap => 0] : $slotMap);
 		$this->inventories[spl_object_id($inventory)] = new InventoryManagerEntry(
 			$inventory,
-			$entry
+			$complexSlotMap
 		);
-		foreach($entry->getSlotMap() as $netSlot => $coreSlot){
-			$this->complexSlotToInventoryMap[$netSlot] = $entry;
+		foreach($complexSlotMap->getSlotMap() as $netSlot => $coreSlot){
+			$this->complexSlotToInventoryMap[$netSlot] = $complexSlotMap;
 		}
 	}
 
@@ -329,7 +347,8 @@ class InventoryManager{
 		$this->onCurrentWindowRemove();
 
 		$this->openWindowDeferred(function() : void{
-			$windowId = $this->addDynamic($this->player->getInventory());
+			$windowId = $this->getNewWindowId();
+			$this->associateIdWithInventory($windowId, $this->player->getInventory());
 
 			$this->session->sendDataPacket(ContainerOpenPacket::entityInv(
 				$windowId,
