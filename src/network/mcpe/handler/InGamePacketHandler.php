@@ -136,9 +136,6 @@ use const JSON_THROW_ON_ERROR;
 class InGamePacketHandler extends PacketHandler{
 	private const MAX_FORM_RESPONSE_DEPTH = 2; //modal/simple will be 1, custom forms 2 - they will never contain anything other than string|int|float|bool|null
 
-	/** @var CraftingTransaction|null */
-	protected $craftingTransaction = null;
-
 	/** @var float */
 	protected $lastRightClickTime = 0.0;
 	/** @var UseItemTransactionData|null */
@@ -349,9 +346,7 @@ class InGamePacketHandler extends PacketHandler{
 			$result = $this->handleReleaseItemTransaction($packet->trData);
 		}
 
-		if($this->craftingTransaction === null){ //don't sync if we're waiting to complete a crafting transaction
-			$this->inventoryManager->syncMismatchedPredictedSlotChanges();
-		}
+		$this->inventoryManager->syncMismatchedPredictedSlotChanges();
 		$this->inventoryManager->setCurrentItemStackRequestId(null);
 		return $result;
 	}
