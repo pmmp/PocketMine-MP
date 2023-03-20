@@ -69,18 +69,21 @@ use function spl_object_id;
  * @phpstan-type ContainerOpenClosure \Closure(int $id, Inventory $inventory) : (list<ClientboundPacket>|null)
  */
 class InventoryManager{
-	/** @var Inventory[] */
-	private array $windowMap = [];
 	/**
-	 * @var ComplexWindowMapEntry[]
-	 * @phpstan-var array<int, ComplexWindowMapEntry>
+	 * @var Inventory[] network window ID => Inventory
+	 * @phpstan-var array<int, Inventory>
 	 */
-	private array $complexWindows = [];
+	private array $networkIdToInventoryMap = [];
 	/**
-	 * @var ComplexWindowMapEntry[]
-	 * @phpstan-var array<int, ComplexWindowMapEntry>
+	 * @var ComplexInventoryMapEntry[] spl_object_id(Inventory) => ComplexWindowMapEntry
+	 * @phpstan-var array<int, ComplexInventoryMapEntry>
 	 */
-	private array $complexSlotToWindowMap = [];
+	private array $complexInventorySlotMaps = [];
+	/**
+	 * @var ComplexInventoryMapEntry[] net slot ID => ComplexWindowMapEntry
+	 * @phpstan-var array<int, ComplexInventoryMapEntry>
+	 */
+	private array $complexSlotToInventoryMap = [];
 
 	private int $lastInventoryNetworkId = ContainerIds::FIRST;
 
@@ -126,7 +129,7 @@ class InventoryManager{
 	}
 
 	private function add(int $id, Inventory $inventory) : void{
-		$this->windowMap[$id] = $inventory;
+		$this->networkIdToInventoryMap[$id] = $inventory;
 	}
 
 	private function addDynamic(Inventory $inventory) : int{
@@ -140,29 +143,34 @@ class InventoryManager{
 	 * @phpstan-param array<int, int>|int $slotMap
 	 */
 	private function addComplex(array|int $slotMap, Inventory $inventory) : void{
-		$entry = new ComplexWindowMapEntry($inventory, is_int($slotMap) ? [$slotMap => 0] : $slotMap);
-		$this->complexWindows[spl_object_id($inventory)] = $entry;
+		$entry = new ComplexInventoryMapEntry($inventory, is_int($slotMap) ? [$slotMap => 0] : $slotMap);
+		$this->complexInventorySlotMaps[spl_object_id($inventory)] = $entry;
 		foreach($entry->getSlotMap() as $netSlot => $coreSlot){
-			$this->complexSlotToWindowMap[$netSlot] = $entry;
+			$this->complexSlotToInventoryMap[$netSlot] = $entry;
 		}
 	}
 
 	private function remove(int $id) : void{
-		$inventory = $this->windowMap[$id];
-		unset($this->windowMap[$id]);
+		$inventory = $this->networkIdToInventoryMap[$id];
+		unset($this->networkIdToInventoryMap[$id]);
 		if($this->getWindowId($inventory) === null){
 			$splObjectId = spl_object_id($inventory);
-			unset($this->initiatedSlotChanges[$splObjectId], $this->itemStackInfos[$splObjectId], $this->complexWindows[$splObjectId]);
-			foreach($this->complexSlotToWindowMap as $netSlot => $entry){
+			unset(
+				$this->initiatedSlotChanges[$splObjectId],
+				$this->itemStackInfos[$splObjectId],
+				$this->complexInventorySlotMaps[$splObjectId],
+				$this->pendingSlotSyncs[$splObjectId]
+			);
+			foreach($this->complexSlotToInventoryMap as $netSlot => $entry){
 				if($entry->getInventory() === $inventory){
-					unset($this->complexSlotToWindowMap[$netSlot]);
+					unset($this->complexSlotToInventoryMap[$netSlot]);
 				}
 			}
 		}
 	}
 
 	public function getWindowId(Inventory $inventory) : ?int{
-		return ($id = array_search($inventory, $this->windowMap, true)) !== false ? $id : null;
+		return ($id = array_search($inventory, $this->networkIdToInventoryMap, true)) !== false ? $id : null;
 	}
 
 	public function getCurrentWindowId() : int{
@@ -174,15 +182,15 @@ class InventoryManager{
 	 */
 	public function locateWindowAndSlot(int $windowId, int $netSlotId) : ?array{
 		if($windowId === ContainerIds::UI){
-			$entry = $this->complexSlotToWindowMap[$netSlotId] ?? null;
+			$entry = $this->complexSlotToInventoryMap[$netSlotId] ?? null;
 			if($entry === null){
 				return null;
 			}
 			$coreSlotId = $entry->mapNetToCore($netSlotId);
 			return $coreSlotId !== null ? [$entry->getInventory(), $coreSlotId] : null;
 		}
-		if(isset($this->windowMap[$windowId])){
-			return [$this->windowMap[$windowId], $netSlotId];
+		if(isset($this->networkIdToInventoryMap[$windowId])){
+			return [$this->networkIdToInventoryMap[$windowId], $netSlotId];
 		}
 		return null;
 	}
@@ -344,7 +352,7 @@ class InventoryManager{
 	}
 
 	public function onCurrentWindowRemove() : void{
-		if(isset($this->windowMap[$this->lastInventoryNetworkId])){
+		if(isset($this->networkIdToInventoryMap[$this->lastInventoryNetworkId])){
 			$this->remove($this->lastInventoryNetworkId);
 			$this->session->sendDataPacket(ContainerClosePacket::create($this->lastInventoryNetworkId, true));
 			if($this->pendingCloseWindowId !== null){
@@ -356,7 +364,7 @@ class InventoryManager{
 
 	public function onClientRemoveWindow(int $id) : void{
 		if($id === $this->lastInventoryNetworkId){
-			if(isset($this->windowMap[$id]) && $id !== $this->pendingCloseWindowId){
+			if(isset($this->networkIdToInventoryMap[$id]) && $id !== $this->pendingCloseWindowId){
 				$this->remove($id);
 				$this->player->removeCurrentWindow();
 			}
@@ -398,7 +406,7 @@ class InventoryManager{
 		if($itemStackInfo === null){
 			throw new \LogicException("Cannot sync an untracked inventory slot");
 		}
-		$slotMap = $this->complexWindows[spl_object_id($inventory)] ?? null;
+		$slotMap = $this->complexInventorySlotMaps[spl_object_id($inventory)] ?? null;
 		if($slotMap !== null){
 			$windowId = ContainerIds::UI;
 			$netSlot = $slotMap->mapCoreToNet($slot) ?? throw new AssumptionFailedError("We already have an ItemStackInfo, so this should not be null");
@@ -438,7 +446,7 @@ class InventoryManager{
 	}
 
 	public function syncContents(Inventory $inventory) : void{
-		$slotMap = $this->complexWindows[spl_object_id($inventory)] ?? null;
+		$slotMap = $this->complexInventorySlotMaps[spl_object_id($inventory)] ?? null;
 		if($slotMap !== null){
 			$windowId = ContainerIds::UI;
 		}else{
@@ -471,10 +479,10 @@ class InventoryManager{
 	}
 
 	public function syncAll() : void{
-		foreach($this->windowMap as $inventory){
+		foreach($this->networkIdToInventoryMap as $inventory){
 			$this->syncContents($inventory);
 		}
-		foreach($this->complexWindows as $entry){
+		foreach($this->complexInventorySlotMaps as $entry){
 			$this->syncContents($entry->getInventory());
 		}
 	}
