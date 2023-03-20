@@ -440,7 +440,7 @@ class InventoryManager{
 			//BDS (Bedrock Dedicated Server) also seems to work this way.
 			$this->session->sendDataPacket(InventoryContentPacket::create($windowId, [$itemStackWrapper]));
 		}else{
-			if($this->currentItemStackRequestId !== null){
+			if($windowId === ContainerIds::ARMOR){
 				//TODO: HACK!
 				//When right-clicking to equip armour, the client predicts the content of the armour slot, but
 				//doesn't report it in the transaction packet. The server then sends an InventorySlotPacket to
