@@ -202,7 +202,7 @@ abstract class Entity{
 		if($nbt !== null){
 			$this->motion = EntityDataHelper::parseVec3($nbt, self::TAG_MOTION, true);
 		}else{
-			$this->motion = new Vector3(0, 0, 0);
+			$this->motion = Vector3::zero();
 		}
 
 		$this->resetLastMovements();
@@ -1110,6 +1110,7 @@ abstract class Entity{
 		$this->blocksAround = null;
 
 		Timings::$entityMove->startTiming();
+		Timings::$entityMoveCollision->startTiming();
 
 		$wantedX = $dx;
 		$wantedY = $dy;
@@ -1194,6 +1195,7 @@ abstract class Entity{
 
 			$this->boundingBox = $moveBB;
 		}
+		Timings::$entityMoveCollision->stopTiming();
 
 		$this->location = new Location(
 			($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
