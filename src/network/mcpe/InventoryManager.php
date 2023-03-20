@@ -603,11 +603,6 @@ class InventoryManager{
 	}
 
 	private function trackItemStack(InventoryManagerEntry $entry, int $slotId, ItemStack $itemStack, ?int $itemStackRequestId) : ItemStackInfo{
-		$existing = $entry->itemStackInfos[$slotId] ?? null;
-		if($existing !== null && $existing->getItemStack()->equals($itemStack) && $existing->getRequestId() === $itemStackRequestId){
-			return $existing;
-		}
-
 		//TODO: ItemStack->isNull() would be nice to have here
 		$info = new ItemStackInfo($itemStackRequestId, $itemStack->getId() === 0 ? 0 : $this->newItemStackId(), $itemStack);
 		return $entry->itemStackInfos[$slotId] = $info;
