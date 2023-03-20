@@ -1219,6 +1219,7 @@ class NetworkSession{
 				$attribute->markSynchronized();
 			}
 		}
+		$this->invManager?->flushPendingUpdates();
 
 		$this->flushSendBuffer();
 	}

@@ -35,7 +35,8 @@ use pocketmine\event\player\PlayerEditBookEvent;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionBuilder;
-use pocketmine\inventory\transaction\TransactionException;
+use pocketmine\inventory\transaction\TransactionCancelledException;
+use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\VanillaItems;
 use pocketmine\item\WritableBook;
 use pocketmine\item\WritableBookPage;
@@ -335,7 +336,7 @@ class InGamePacketHandler extends PacketHandler{
 			$result = $this->handleNormalTransaction($packet->trData, $packet->requestId);
 		}elseif($packet->trData instanceof MismatchTransactionData){
 			$this->session->getLogger()->debug("Mismatch transaction received");
-			$this->inventoryManager->syncAll();
+			$this->inventoryManager->requestSyncAll();
 			$result = true;
 		}elseif($packet->trData instanceof UseItemTransactionData){
 			$result = $this->handleUseItemTransaction($packet->trData);
@@ -357,9 +358,14 @@ class InGamePacketHandler extends PacketHandler{
 		$this->inventoryManager->addTransactionPredictedSlotChanges($transaction);
 		try{
 			$transaction->execute();
-		}catch(TransactionException $e){
+		}catch(TransactionValidationException $e){
+			$this->inventoryManager->requestSyncAll();
 			$logger = $this->session->getLogger();
-			$logger->debug("Failed to execute inventory transaction: " . $e->getMessage());
+			$logger->debug("Invalid inventory transaction $requestId: " . $e->getMessage());
+
+			return false;
+		}catch(TransactionCancelledException){
+			$this->session->getLogger()->debug("Inventory transaction $requestId cancelled by a plugin");
 
 			return false;
 		}finally{
@@ -538,6 +544,7 @@ class InGamePacketHandler extends PacketHandler{
 			$result = false;
 			$this->session->getLogger()->debug("ItemStackRequest #" . $request->getRequestId() . " failed: " . $e->getMessage());
 			$this->session->getLogger()->debug(implode("\n", Utils::printableExceptionInfo($e)));
+			$this->inventoryManager->requestSyncAll();
 		}
 
 		if(!$result){

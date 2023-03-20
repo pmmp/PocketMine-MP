@@ -39,6 +39,12 @@ final class InventoryManagerEntry{
 	 */
 	public array $itemStackInfos = [];
 
+	/**
+	 * @var int[]
+	 * @phpstan-var array<int, int>
+	 */
+	public array $pendingSyncs = [];
+
 	public function __construct(
 		public Inventory $inventory,
 		public ?ComplexInventoryMapEntry $complexSlotMap = null

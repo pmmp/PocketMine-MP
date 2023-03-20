@@ -59,8 +59,11 @@ use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\ObjectSet;
+use function array_keys;
 use function array_search;
+use function count;
 use function get_class;
+use function implode;
 use function is_int;
 use function max;
 use function spl_object_id;
@@ -99,6 +102,8 @@ class InventoryManager{
 
 	private int $nextItemStackId = 1;
 	private ?int $currentItemStackRequestId = null;
+
+	private bool $fullSyncRequested = false;
 
 	public function __construct(
 		private Player $player,
@@ -400,7 +405,7 @@ class InventoryManager{
 		if($clientSideItem === null || !$clientSideItem->equals($currentItem)){
 			//no prediction or incorrect - do not associate this with the currently active itemstack request
 			$this->trackItemStack($inventory, $slot, $currentItem, null);
-			$this->syncSlot($inventory, $slot);
+			$inventoryEntry->pendingSyncs[$slot] = $slot;
 		}else{
 			//correctly predicted - associate the change with the currently active itemstack request
 			$this->trackItemStack($inventory, $slot, $currentItem, $this->currentItemStackRequestId);
@@ -452,7 +457,7 @@ class InventoryManager{
 			}
 			$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $netSlot, $itemStackWrapper));
 		}
-		unset($entry->predictions[$slot]);
+		unset($entry->predictions[$slot], $entry->pendingSyncs[$slot]);
 	}
 
 	public function syncContents(Inventory $inventory) : void{
@@ -464,6 +469,7 @@ class InventoryManager{
 		}
 		if($windowId !== null){
 			$entry->predictions = [];
+			$entry->pendingSyncs = [];
 			$contents = [];
 			foreach($inventory->getContents(true) as $slot => $item){
 				$itemStack = TypeConverter::getInstance()->coreItemStackToNet($item);
@@ -494,6 +500,10 @@ class InventoryManager{
 		}
 	}
 
+	public function requestSyncAll() : void{
+		$this->fullSyncRequested = true;
+	}
+
 	public function syncMismatchedPredictedSlotChanges() : void{
 		foreach($this->inventories as $entry){
 			$inventory = $entry->inventory;
@@ -504,10 +514,30 @@ class InventoryManager{
 
 				//any prediction that still exists at this point is a slot that was predicted to change but didn't
 				$this->session->getLogger()->debug("Detected prediction mismatch in inventory " . get_class($inventory) . "#" . spl_object_id($inventory) . " slot $slot");
-				$this->syncSlot($inventory, $slot);
+				$entry->pendingSyncs[$slot] = $slot;
 			}
 
 			$entry->predictions = [];
+		}
+	}
+
+	public function flushPendingUpdates() : void{
+		if($this->fullSyncRequested){
+			$this->fullSyncRequested = false;
+			$this->session->getLogger()->debug("Full inventory sync requested, sending contents of " . count($this->inventories) . " inventories");
+			$this->syncAll();
+		}else{
+			foreach($this->inventories as $entry){
+				if(count($entry->pendingSyncs) === 0){
+					continue;
+				}
+				$inventory = $entry->inventory;
+				$this->session->getLogger()->debug("Syncing slots " . implode(", ", array_keys($entry->pendingSyncs)) . " in inventory " . get_class($inventory) . "#" . spl_object_id($inventory));
+				foreach($entry->pendingSyncs as $slot){
+					$this->syncSlot($inventory, $slot);
+				}
+				$entry->pendingSyncs = [];
+			}
 		}
 	}
 
