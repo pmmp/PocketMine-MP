@@ -422,10 +422,10 @@ class Config{
 	}
 
 	public function getNestedBoolean(string $key, bool $default = null) : ?bool{
-		if(($value = $this->getNested($key)) !== null && !is_bool($value)){
+		if(($value = $this->getNested($key)) !== null && !(is_bool($value) || in_array($value, [0, 1], true))){
 			throw new \TypeError("Expected boolean, got " . gettype($value));
 		}
-		return $value ?? $default;
+		return $value !== null ? (bool) $value : $default;
 	}
 
 	/**
@@ -500,10 +500,10 @@ class Config{
 	}
 
 	public function getBoolean(string $key, bool $default = null) : ?bool{
-		if(($value = $this->get($key, null)) !== null && !is_bool($value)){
+		if(($value = $this->get($key, null)) !== null && !(is_bool($value) || in_array($value, [0, 1], true))){
 			throw new \TypeError("Expected boolean, got " . gettype($value));
 		}
-		return $value ?? $default;
+		return $value !== null ? (bool) $value : $default;
 	}
 
 	public function getFloat(string $key, float $default = null) : ?float{
