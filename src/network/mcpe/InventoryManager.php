@@ -141,10 +141,6 @@ class InventoryManager{
 	}
 
 	private function addDynamic(Inventory $inventory) : int{
-		if(isset($this->inventories[spl_object_id($inventory)])){
-			throw new \InvalidArgumentException("Inventory " . get_class($inventory) . " is already tracked");
-		}
-		$this->inventories[spl_object_id($inventory)] = new InventoryManagerEntry($inventory);
 		$id = $this->getNewWindowId();
 		$this->add($id, $inventory);
 		return $id;
@@ -166,6 +162,17 @@ class InventoryManager{
 		foreach($complexSlotMap->getSlotMap() as $netSlot => $coreSlot){
 			$this->complexSlotToInventoryMap[$netSlot] = $complexSlotMap;
 		}
+	}
+
+	/**
+	 * @param int[]|int $slotMap
+	 * @phpstan-param array<int, int>|int $slotMap
+	 */
+	private function addComplexDynamic(array|int $slotMap, Inventory $inventory) : int{
+		$this->addComplex($slotMap, $inventory);
+		$id = $this->getNewWindowId();
+		$this->associateIdWithInventory($id, $inventory);
+		return $id;
 	}
 
 	private function remove(int $id) : void{
@@ -296,9 +303,10 @@ class InventoryManager{
 		$this->onCurrentWindowRemove();
 
 		$this->openWindowDeferred(function() use ($inventory) : void{
-			$windowId = $this->addDynamic($inventory);
 			if(($slotMap = $this->createComplexSlotMapping($inventory)) !== null){
-				$this->addComplex($slotMap, $inventory);
+				$windowId = $this->addComplexDynamic($slotMap, $inventory);
+			}else{
+				$windowId = $this->addDynamic($inventory);
 			}
 
 			foreach($this->containerOpenCallbacks as $callback){
