@@ -110,11 +110,13 @@ use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
+use pocketmine\utils\Utils;
 use pocketmine\world\format\Chunk;
 use function array_push;
 use function base64_encode;
 use function count;
 use function fmod;
+use function implode;
 use function in_array;
 use function is_bool;
 use function is_infinite;
@@ -531,9 +533,14 @@ class InGamePacketHandler extends PacketHandler{
 
 	private function handleSingleItemStackRequest(ItemStackRequest $request) : ItemStackResponse{
 		$executor = new ItemStackRequestExecutor($this->player, $this->inventoryManager, $request);
-		$transaction = $executor->generateInventoryTransaction();
-		$result = $this->executeInventoryTransaction($transaction, $request->getRequestId());
-		$this->session->getLogger()->debug("Item stack request " . $request->getRequestId() . " result: " . ($result ? "success" : "failure"));
+		try{
+			$transaction = $executor->generateInventoryTransaction();
+			$result = $this->executeInventoryTransaction($transaction, $request->getRequestId());
+		}catch(ItemStackRequestProcessException $e){
+			$result = false;
+			$this->session->getLogger()->debug("ItemStackRequest #" . $request->getRequestId() . " failed: " . $e->getMessage());
+			$this->session->getLogger()->debug(implode("\n", Utils::printableExceptionInfo($e)));
+		}
 
 		return $executor->buildItemStackResponse($result);
 	}

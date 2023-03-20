@@ -555,27 +555,4 @@ class InventoryManager{
 		$info = new ItemStackInfo($itemStackRequestId, $itemStack->getId() === 0 ? 0 : $this->newItemStackId(), $itemStack);
 		return $this->itemStackInfos[spl_object_id($inventory)][$slotId] = $info;
 	}
-
-	public function matchItemStack(Inventory $inventory, int $slotId, int $clientItemStackId) : bool{
-		$inventoryObjectId = spl_object_id($inventory);
-		if(!isset($this->itemStackInfos[$inventoryObjectId])){
-			$this->session->getLogger()->debug("Attempted to match item preimage unsynced inventory " . get_class($inventory) . "#" . $inventoryObjectId);
-			return false;
-		}
-		$info = $this->itemStackInfos[$inventoryObjectId][$slotId] ?? null;
-		if($info === null){
-			$this->session->getLogger()->debug("Attempted to match item preimage for unsynced slot $slotId in " . get_class($inventory) . "#$inventoryObjectId that isn't synced");
-			return false;
-		}
-
-		if(!($clientItemStackId < 0 ? $info->getRequestId() === $clientItemStackId : $info->getStackId() === $clientItemStackId)){
-			$this->session->getLogger()->debug(
-				"Mismatched expected itemstack: " . get_class($inventory) . "#" . $inventoryObjectId . ", " .
-				"slot: $slotId, client expected: $clientItemStackId, server actual: " . $info->getStackId() . ", last modified by request: " . ($info->getRequestId() ?? "none")
-			);
-			return false;
-		}
-
-		return true;
-	}
 }
