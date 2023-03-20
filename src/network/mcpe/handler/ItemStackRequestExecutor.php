@@ -52,12 +52,11 @@ use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\SwapStackReque
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\TakeStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponse;
 use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
-use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use function array_key_first;
 use function count;
-use function get_class;
+use function spl_object_id;
 
 final class ItemStackRequestExecutor{
 	private TransactionBuilder $builder;
