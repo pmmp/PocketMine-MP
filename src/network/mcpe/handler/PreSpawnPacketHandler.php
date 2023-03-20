@@ -98,7 +98,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 			0,
 			0,
 			"",
-			false,
+			true,
 			sprintf("%s %s", VersionInfo::NAME, VersionInfo::VERSION()->getFullVersion(true)),
 			Uuid::fromString(Uuid::NIL),
 			false,

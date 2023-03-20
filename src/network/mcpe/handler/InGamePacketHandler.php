@@ -32,10 +32,10 @@ use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\InvalidSkinException;
 use pocketmine\event\player\PlayerEditBookEvent;
-use pocketmine\inventory\transaction\action\InventoryAction;
-use pocketmine\inventory\transaction\CraftingTransaction;
+use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
-use pocketmine\inventory\transaction\TransactionException;
+use pocketmine\inventory\transaction\TransactionBuilder;
+use pocketmine\inventory\transaction\TransactionCancelledException;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\VanillaItems;
 use pocketmine\item\WritableBook;
@@ -46,7 +46,6 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
-use pocketmine\network\mcpe\convert\TypeConversionException;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
@@ -65,6 +64,8 @@ use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
+use pocketmine\network\mcpe\protocol\ItemStackRequestPacket;
+use pocketmine\network\mcpe\protocol\ItemStackResponsePacket;
 use pocketmine\network\mcpe\protocol\LabTablePacket;
 use pocketmine\network\mcpe\protocol\LecternUpdatePacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
@@ -96,7 +97,8 @@ use pocketmine\network\mcpe\protocol\types\inventory\MismatchTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\inventory\NormalTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\ReleaseItemTransactionData;
-use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
+use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\ItemStackRequest;
+use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponse;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\PlayerAction;
@@ -108,17 +110,18 @@ use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
+use pocketmine\utils\Utils;
 use pocketmine\world\format\Chunk;
 use function array_push;
 use function base64_encode;
 use function count;
 use function fmod;
+use function implode;
 use function in_array;
 use function is_bool;
 use function is_infinite;
 use function is_nan;
 use function json_decode;
-use function json_encode;
 use function max;
 use function mb_strlen;
 use function microtime;
@@ -132,9 +135,6 @@ use const JSON_THROW_ON_ERROR;
  */
 class InGamePacketHandler extends PacketHandler{
 	private const MAX_FORM_RESPONSE_DEPTH = 2; //modal/simple will be 1, custom forms 2 - they will never contain anything other than string|int|float|bool|null
-
-	/** @var CraftingTransaction|null */
-	protected $craftingTransaction = null;
 
 	/** @var float */
 	protected $lastRightClickTime = 0.0;
@@ -276,13 +276,22 @@ class InGamePacketHandler extends PacketHandler{
 			if(count($useItemTransaction->getTransactionData()->getActions()) > 100){
 				throw new PacketHandlingException("Too many actions in item use transaction");
 			}
-			$this->inventoryManager->addPredictedSlotChanges($useItemTransaction->getTransactionData()->getActions());
+
+			$this->inventoryManager->setCurrentItemStackRequestId($useItemTransaction->getRequestId());
+			$this->inventoryManager->addRawPredictedSlotChanges($useItemTransaction->getTransactionData()->getActions());
 			if(!$this->handleUseItemTransaction($useItemTransaction->getTransactionData())){
 				$packetHandled = false;
 				$this->session->getLogger()->debug("Unhandled transaction in PlayerAuthInputPacket (type " . $useItemTransaction->getTransactionData()->getActionType() . ")");
 			}else{
 				$this->inventoryManager->syncMismatchedPredictedSlotChanges();
 			}
+			$this->inventoryManager->setCurrentItemStackRequestId(null);
+		}
+
+		$itemStackRequest = $packet->getItemStackRequest();
+		if($itemStackRequest !== null){
+			$result = $this->handleSingleItemStackRequest($itemStackRequest);
+			$this->session->sendDataPacket(ItemStackResponsePacket::create([$result]));
 		}
 
 		return $packetHandled;
@@ -316,17 +325,18 @@ class InGamePacketHandler extends PacketHandler{
 	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
 		$result = true;
 
-		if(count($packet->trData->getActions()) > 100){
+		if(count($packet->trData->getActions()) > 50){
 			throw new PacketHandlingException("Too many actions in inventory transaction");
 		}
 
-		$this->inventoryManager->addPredictedSlotChanges($packet->trData->getActions());
+		$this->inventoryManager->setCurrentItemStackRequestId($packet->requestId);
+		$this->inventoryManager->addRawPredictedSlotChanges($packet->trData->getActions());
 
 		if($packet->trData instanceof NormalTransactionData){
-			$result = $this->handleNormalTransaction($packet->trData);
+			$result = $this->handleNormalTransaction($packet->trData, $packet->requestId);
 		}elseif($packet->trData instanceof MismatchTransactionData){
 			$this->session->getLogger()->debug("Mismatch transaction received");
-			$this->inventoryManager->syncAll();
+			$this->inventoryManager->requestSyncAll();
 			$result = true;
 		}elseif($packet->trData instanceof UseItemTransactionData){
 			$result = $this->handleUseItemTransaction($packet->trData);
@@ -336,94 +346,78 @@ class InGamePacketHandler extends PacketHandler{
 			$result = $this->handleReleaseItemTransaction($packet->trData);
 		}
 
-		if($this->craftingTransaction === null){ //don't sync if we're waiting to complete a crafting transaction
-			$this->inventoryManager->syncMismatchedPredictedSlotChanges();
-		}
+		$this->inventoryManager->syncMismatchedPredictedSlotChanges();
+		$this->inventoryManager->setCurrentItemStackRequestId(null);
 		return $result;
 	}
 
-	private function handleNormalTransaction(NormalTransactionData $data) : bool{
-		/** @var InventoryAction[] $actions */
-		$actions = [];
+	private function executeInventoryTransaction(InventoryTransaction $transaction, int $requestId) : bool{
+		$this->player->setUsingItem(false);
 
-		$isCraftingPart = false;
-		$converter = TypeConverter::getInstance();
-		foreach($data->getActions() as $networkInventoryAction){
-			if(
-				$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_TODO || (
-					$this->craftingTransaction !== null &&
-					!$networkInventoryAction->oldItem->getItemStack()->equals($networkInventoryAction->newItem->getItemStack()) &&
-					$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CONTAINER &&
-					$networkInventoryAction->windowId === ContainerIds::UI &&
-					$networkInventoryAction->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT
-				)
-			){
-				$isCraftingPart = true;
-			}
+		$this->inventoryManager->setCurrentItemStackRequestId($requestId);
+		$this->inventoryManager->addTransactionPredictedSlotChanges($transaction);
+		try{
+			$transaction->execute();
+		}catch(TransactionValidationException $e){
+			$this->inventoryManager->requestSyncAll();
+			$logger = $this->session->getLogger();
+			$logger->debug("Invalid inventory transaction $requestId: " . $e->getMessage());
 
-			try{
-				$action = $converter->createInventoryAction($networkInventoryAction, $this->player, $this->inventoryManager);
-				if($action !== null){
-					$actions[] = $action;
-				}
-			}catch(TypeConversionException $e){
-				$this->session->getLogger()->debug("Error unpacking inventory action: " . $e->getMessage());
-				return false;
-			}
-		}
+			return false;
+		}catch(TransactionCancelledException){
+			$this->session->getLogger()->debug("Inventory transaction $requestId cancelled by a plugin");
 
-		if($isCraftingPart){
-			if($this->craftingTransaction === null){
-				//TODO: this might not be crafting if there is a special inventory open (anvil, enchanting, loom etc)
-				$this->craftingTransaction = new CraftingTransaction($this->player, $this->player->getServer()->getCraftingManager(), $actions);
-			}else{
-				foreach($actions as $action){
-					$this->craftingTransaction->addAction($action);
-				}
-			}
-
-			try{
-				$this->craftingTransaction->validate();
-			}catch(TransactionValidationException $e){
-				//transaction is incomplete - crafting transaction comes in lots of little bits, so we have to collect
-				//all of the parts before we can execute it
-				return true;
-			}
-			$this->player->setUsingItem(false);
-			try{
-				$this->craftingTransaction->execute();
-			}catch(TransactionException $e){
-				$this->session->getLogger()->debug("Failed to execute crafting transaction: " . $e->getMessage());
-				return false;
-			}finally{
-				$this->craftingTransaction = null;
-			}
-		}else{
-			//normal transaction fallthru
-			if($this->craftingTransaction !== null){
-				$this->session->getLogger()->debug("Got unexpected normal inventory action with incomplete crafting transaction, refusing to execute crafting");
-				$this->craftingTransaction = null;
-				return false;
-			}
-
-			if(count($actions) === 0){
-				//TODO: 1.13+ often sends transactions with nothing but useless crap in them, no need for the debug noise
-				return true;
-			}
-
-			$this->player->setUsingItem(false);
-			$transaction = new InventoryTransaction($this->player, $actions);
-			try{
-				$transaction->execute();
-			}catch(TransactionException $e){
-				$logger = $this->session->getLogger();
-				$logger->debug("Failed to execute inventory transaction: " . $e->getMessage());
-				$logger->debug("Actions: " . json_encode($data->getActions()));
-				return false;
-			}
+			return false;
+		}finally{
+			$this->inventoryManager->syncMismatchedPredictedSlotChanges();
+			$this->inventoryManager->setCurrentItemStackRequestId(null);
 		}
 
 		return true;
+	}
+
+	private function handleNormalTransaction(NormalTransactionData $data, int $itemStackRequestId) : bool{
+		//When the ItemStackRequest system is used, this transaction type is only used for dropping items by pressing Q.
+		//I don't know why they don't just use ItemStackRequest for that too, which already supports dropping items by
+		//clicking them outside an open inventory menu, but for now it is what it is.
+		//Fortunately, this means we can be extremely strict about the validation criteria.
+
+		if(count($data->getActions()) > 2){
+			throw new PacketHandlingException("Expected exactly 2 actions for dropping an item");
+		}
+
+		foreach($data->getActions() as $networkInventoryAction){
+			if($networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_WORLD){
+				//drop item - we don't need to validate this, we only care about the count
+				//if the resulting actions don't match the client for some reason, it will trigger an automatic
+				//prediction rollback anyway.
+				//it's technically possible to see this more than once, but a normal client should never do that.
+				$inventory = $this->player->getInventory();
+
+				$heldItemStack = $this->inventoryManager->getItemStackInfo($inventory, $inventory->getHeldItemIndex())?->getItemStack();
+				if($heldItemStack === null){
+					throw new AssumptionFailedError("Missing itemstack info for held item");
+				}
+				$droppedItemStack = $networkInventoryAction->newItem->getItemStack();
+				//because the client doesn't tell us the expected itemstack ID, we have to deep-compare our known
+				//itemstack info with the one the client sent. This is costly, but we don't have any other option :(
+				if(!$heldItemStack->equalsWithoutCount($droppedItemStack) || $heldItemStack->getCount() < $droppedItemStack->getCount()){
+					return false;
+				}
+
+				$newHeldItem = $inventory->getItemInHand();
+				$droppedItem = $newHeldItem->pop($droppedItemStack->getCount());
+
+				$builder = new TransactionBuilder();
+				$builder->getInventory($inventory)->setItem($inventory->getHeldItemIndex(), $newHeldItem);
+				$builder->addAction(new DropItemAction($droppedItem));
+
+				$transaction = new InventoryTransaction($this->player, $builder->generateActions());
+				return $this->executeInventoryTransaction($transaction, $itemStackRequestId);
+			}
+		}
+
+		throw new PacketHandlingException("Legacy 'normal' transactions should only be used for dropping items");
 	}
 
 	private function handleUseItemTransaction(UseItemTransactionData $data) : bool{
@@ -535,6 +529,43 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		return false;
+	}
+
+	private function handleSingleItemStackRequest(ItemStackRequest $request) : ItemStackResponse{
+		if(count($request->getActions()) > 20){
+			//TODO: we can probably lower this limit, but this will do for now
+			throw new PacketHandlingException("Too many actions in ItemStackRequest");
+		}
+		$executor = new ItemStackRequestExecutor($this->player, $this->inventoryManager, $request);
+		try{
+			$transaction = $executor->generateInventoryTransaction();
+			$result = $this->executeInventoryTransaction($transaction, $request->getRequestId());
+		}catch(ItemStackRequestProcessException $e){
+			$result = false;
+			$this->session->getLogger()->debug("ItemStackRequest #" . $request->getRequestId() . " failed: " . $e->getMessage());
+			$this->session->getLogger()->debug(implode("\n", Utils::printableExceptionInfo($e)));
+			$this->inventoryManager->requestSyncAll();
+		}
+
+		if(!$result){
+			return new ItemStackResponse(ItemStackResponse::RESULT_ERROR, $request->getRequestId());
+		}
+		return $executor->buildItemStackResponse();
+	}
+
+	public function handleItemStackRequest(ItemStackRequestPacket $packet) : bool{
+		$responses = [];
+		if(count($packet->getRequests()) > 80){
+			//TODO: we can probably lower this limit, but this will do for now
+			throw new PacketHandlingException("Too many requests in ItemStackRequestPacket");
+		}
+		foreach($packet->getRequests() as $request){
+			$responses[] = $this->handleSingleItemStackRequest($request);
+		}
+
+		$this->session->sendDataPacket(ItemStackResponsePacket::create($responses));
+
+		return true;
 	}
 
 	public function handleMobEquipment(MobEquipmentPacket $packet) : bool{

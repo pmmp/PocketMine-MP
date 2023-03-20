@@ -24,11 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\block\BlockLegacyIds;
-use pocketmine\inventory\transaction\action\CreateItemAction;
-use pocketmine\inventory\transaction\action\DestroyItemAction;
-use pocketmine\inventory\transaction\action\DropItemAction;
-use pocketmine\inventory\transaction\action\InventoryAction;
-use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -37,17 +32,12 @@ use pocketmine\item\VanillaItems;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\protocol\types\GameMode as ProtocolGameMode;
-use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
-use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
-use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\recipe\IntIdMetaItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
 use pocketmine\network\mcpe\protocol\types\recipe\StringIdMetaItemDescriptor;
 use pocketmine\player\GameMode;
-use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 
@@ -259,62 +249,6 @@ class TypeConverter{
 			);
 		}catch(NbtException $e){
 			throw TypeConversionException::wrap($e, "Bad itemstack NBT data");
-		}
-	}
-
-	/**
-	 * @throws TypeConversionException
-	 */
-	public function createInventoryAction(NetworkInventoryAction $action, Player $player, InventoryManager $inventoryManager) : ?InventoryAction{
-		if($action->oldItem->getItemStack()->equals($action->newItem->getItemStack())){
-			//filter out useless noise in 1.13
-			return null;
-		}
-		try{
-			$old = $this->netItemStackToCore($action->oldItem->getItemStack());
-		}catch(TypeConversionException $e){
-			throw TypeConversionException::wrap($e, "Inventory action: oldItem");
-		}
-		try{
-			$new = $this->netItemStackToCore($action->newItem->getItemStack());
-		}catch(TypeConversionException $e){
-			throw TypeConversionException::wrap($e, "Inventory action: newItem");
-		}
-		switch($action->sourceType){
-			case NetworkInventoryAction::SOURCE_CONTAINER:
-				if($action->windowId === ContainerIds::UI && $action->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
-					return null; //useless noise
-				}
-				$located = $inventoryManager->locateWindowAndSlot($action->windowId, $action->inventorySlot);
-				if($located !== null){
-					[$window, $slot] = $located;
-					return new SlotChangeAction($window, $slot, $old, $new);
-				}
-
-				throw new TypeConversionException("No open container with window ID $action->windowId");
-			case NetworkInventoryAction::SOURCE_WORLD:
-				if($action->inventorySlot !== NetworkInventoryAction::ACTION_MAGIC_SLOT_DROP_ITEM){
-					throw new TypeConversionException("Only expecting drop-item world actions from the client!");
-				}
-
-				return new DropItemAction($new);
-			case NetworkInventoryAction::SOURCE_CREATIVE:
-				switch($action->inventorySlot){
-					case NetworkInventoryAction::ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM:
-						return new DestroyItemAction($new);
-					case NetworkInventoryAction::ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM:
-						return new CreateItemAction($old);
-					default:
-						throw new TypeConversionException("Unexpected creative action type $action->inventorySlot");
-
-				}
-			case NetworkInventoryAction::SOURCE_TODO:
-				//These are used to balance a transaction that involves special actions, like crafting, enchanting, etc.
-				//The vanilla server just accepted these without verifying them. We don't need to care about them since
-				//we verify crafting by checking for imbalances anyway.
-				return null;
-			default:
-				throw new TypeConversionException("Unknown inventory source type $action->sourceType");
 		}
 	}
 }
