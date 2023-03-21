@@ -48,7 +48,7 @@
       "pocketmine/log-pthreads": "^0.4.0",
       "pocketmine/math": "^0.4.0",
       "pocketmine/nbt": "^0.3.2",
-      "pocketmine/raklib": "dev-legacy/0.14",
+      "arabskills/raklib": "dev-legacy/0.14",
       "pocketmine/raklib-ipc": "^0.1.0",
       "pocketmine/snooze": "^0.3.0",
       "ramsey/uuid": "^4.1",
@@ -67,12 +67,12 @@
          "url":  "git@github.com:NetherGamesMC/BedrockData.git"
       },
       {
-         "type": "vcs",
-         "url": "git@github.com:ArabSkillsNetwork/RakLib.git"
+         "type": "git",
+         "url": "https://github.com/ArabSkillsNetwork/RakLib.git"
       },
       {
-         "type": "vcs",
-         "url": "git@github.com:ArabSkillsNetwork/BedrockProtocol.git"
+         "type": "git",
+         "url": "https://github.com/ArabSkillsNetwork/BedrockProtocol.git"
       }
    ],
    "autoload": {
