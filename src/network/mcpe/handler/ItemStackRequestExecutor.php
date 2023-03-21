@@ -208,7 +208,7 @@ final class ItemStackRequestExecutor{
 		if($this->specialTransaction !== null){
 			throw new ItemStackRequestProcessException("Another special transaction is already in progress");
 		}
-		if($repetitions < 1){ //TODO: upper bound?
+		if($repetitions < 1){
 			throw new ItemStackRequestProcessException("Cannot craft a recipe less than 1 time");
 		}
 		if($repetitions > 256){
