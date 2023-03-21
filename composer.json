@@ -37,7 +37,7 @@
       "pocketmine/bedrock-block-upgrade-schema": "~1.1.1+bedrock-1.19.70",
       "nethergamesmc/bedrock-data": "dev-master",
       "pocketmine/bedrock-item-upgrade-schema": "~1.1.0+bedrock-1.19.70",
-      "arabskills/bedrock-protocol": "~20.0.0+bedrock-1.19.70",
+      "arabskills/bedrock-protocol": "dev-master",
       "pocketmine/binaryutils": "^0.2.1",
       "pocketmine/callback-validator": "^1.0.2",
       "pocketmine/classloader": "^0.2.0",
@@ -48,7 +48,7 @@
       "pocketmine/log-pthreads": "^0.4.0",
       "pocketmine/math": "^0.4.0",
       "pocketmine/nbt": "^0.3.2",
-      "arabskills/raklib": "^0.14.2",
+      "arabskills/raklib": "dev-legacy/0.14",
       "pocketmine/raklib-ipc": "^0.1.0",
       "pocketmine/snooze": "^0.3.0",
       "ramsey/uuid": "^4.1",
@@ -65,6 +65,14 @@
       {
          "type": "vcs",
          "url":  "git@github.com:NetherGamesMC/BedrockData.git"
+      },
+      {
+         "type": "git",
+         "url": "https://github.com/ArabSkillsNetwork/RakLib.git"
+      },
+      {
+         "type": "git",
+         "url": "https://github.com/ArabSkillsNetwork/BedrockProtocol.git"
       }
    ],
    "autoload": {
