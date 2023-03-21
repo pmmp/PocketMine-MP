@@ -43,6 +43,9 @@ use pocketmine\player\PlayerInfo;
 use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use Ramsey\Uuid\Uuid;
+use ReflectionClass;
+use ReflectionProperty;
+
 use function in_array;
 use function is_array;
 use function preg_match;
@@ -83,6 +86,9 @@ class LoginPacketHandler extends ChunkRequestPacketHandler{
 
 		$clientData = $this->parseClientData($packet->clientDataJwt);
 
+		$this->session->setWaterdogIp($clientData->Waterdog_IP);
+		$this->session->setWaterdogXUID($clientData->Waterdog_XUID);
+
 		//Mojang forgot to bump the protocol version when they changed protocol in 1.19.62. Check the game version instead.
 		if(preg_match('/^(\d+)\.(\d+)\.(\d+)/', $clientData->GameVersion, $matches) !== 1){
 			throw new PacketHandlingException("Invalid game version format, expected at least 3 digits");
@@ -106,6 +112,7 @@ class LoginPacketHandler extends ChunkRequestPacketHandler{
 		if(!Uuid::isValid($extraData->identity)){
 			throw new PacketHandlingException("Invalid login UUID");
 		}
+
 		$uuid = Uuid::fromString($extraData->identity);
 		if($extraData->XUID !== ""){
 			$playerInfo = new XboxLivePlayerInfo(
@@ -201,7 +208,7 @@ class LoginPacketHandler extends ChunkRequestPacketHandler{
 		}catch(JwtException $e){
 			throw PacketHandlingException::wrap($e);
 		}
-
+		
 		$mapper = new \JsonMapper();
 		$mapper->bEnforceMapType = false; //TODO: we don't really need this as an array, but right now we don't have enough models
 		$mapper->bExceptionOnMissingData = true;
