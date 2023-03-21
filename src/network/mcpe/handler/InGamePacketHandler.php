@@ -398,18 +398,19 @@ class InGamePacketHandler extends PacketHandler{
 				}
 				$inventory = $this->player->getInventory();
 
-				$heldItemStack = TypeConverter::getInstance()->coreItemStackToNet($inventory->getItemInHand());
+				$heldItem = $inventory->getItemInHand();
+				$heldItemStack = TypeConverter::getInstance()->coreItemStackToNet($heldItem);
 				//because the client doesn't tell us the expected itemstack ID, we have to deep-compare our known
 				//itemstack info with the one the client sent. This is costly, but we don't have any other option :(
 				if($heldItemStack->getCount() < $droppedItemStack->getCount() || !$heldItemStack->equalsWithoutCount($droppedItemStack)){
 					return false;
 				}
 
-				$newHeldItem = $inventory->getItemInHand();
-				$droppedItem = $newHeldItem->pop($droppedItemStack->getCount());
+				//this modifies $heldItem
+				$droppedItem = $heldItem->pop($droppedItemStack->getCount());
 
 				$builder = new TransactionBuilder();
-				$builder->getInventory($inventory)->setItem($inventory->getHeldItemIndex(), $newHeldItem);
+				$builder->getInventory($inventory)->setItem($inventory->getHeldItemIndex(), $heldItem);
 				$builder->addAction(new DropItemAction($droppedItem));
 
 				$transaction = new InventoryTransaction($this->player, $builder->generateActions());
