@@ -211,6 +211,12 @@ final class ItemStackRequestExecutor{
 		if($repetitions < 1){ //TODO: upper bound?
 			throw new ItemStackRequestProcessException("Cannot craft a recipe less than 1 time");
 		}
+		if($repetitions > 256){
+			//TODO: we can probably lower this limit to 64, but I'm unsure if there are cases where the client may
+			//request more than 64 repetitions of a recipe.
+			//It's already hard-limited to 256 repetitions in the protocol, so this is just a sanity check.
+			throw new ItemStackRequestProcessException("Cannot craft a recipe more than 256 times");
+		}
 		$craftingManager = $this->player->getServer()->getCraftingManager();
 		$recipe = $craftingManager->getCraftingRecipeFromIndex($recipeId);
 		if($recipe === null){
