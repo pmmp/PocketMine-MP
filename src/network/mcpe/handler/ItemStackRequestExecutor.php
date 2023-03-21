@@ -141,6 +141,9 @@ final class ItemStackRequestExecutor{
 	private function removeItemFromSlot(ItemStackRequestSlotInfo $slotInfo, int $count) : Item{
 		$this->requestSlotInfos[] = $slotInfo;
 		[$inventory, $slot] = $this->getBuilderInventoryAndSlot($slotInfo);
+		if($count === 0){
+			throw new ItemStackRequestProcessException($this->prettyInventoryAndSlot($inventory, $slot) . ": Cannot take 0 items from a stack");
+		}
 
 		$existingItem = $inventory->getItem($slot);
 		if($existingItem->getCount() < $count){
