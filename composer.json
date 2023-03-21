@@ -67,12 +67,12 @@
          "url":  "git@github.com:NetherGamesMC/BedrockData.git"
       },
       {
-         "type": "git",
-         "url": "https://github.com/ArabSkillsNetwork/RakLib.git"
+         "type": "vcs",
+         "url": "git@github.com:ArabSkillsNetwork/RakLib.git"
       },
       {
-         "type": "git",
-         "url": "https://github.com/ArabSkillsNetwork/BedrockProtocol.git"
+         "type": "vcs",
+         "url": "git@github.com:ArabSkillsNetwork/BedrockProtocol.git"
       }
    ],
    "autoload": {
