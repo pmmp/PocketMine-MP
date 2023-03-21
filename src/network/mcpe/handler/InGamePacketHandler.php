@@ -387,15 +387,18 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		foreach($data->getActions() as $networkInventoryAction){
-			if($networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_WORLD){
+			if($networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_WORLD && $networkInventoryAction->inventorySlot == NetworkInventoryAction::ACTION_MAGIC_SLOT_DROP_ITEM){
 				//drop item - we don't need to validate this, we only care about the count
 				//if the resulting actions don't match the client for some reason, it will trigger an automatic
 				//prediction rollback anyway.
 				//it's technically possible to see this more than once, but a normal client should never do that.
+				$droppedItemStack = $networkInventoryAction->newItem->getItemStack();
+				if($droppedItemStack->getCount() <= 0){
+					throw new PacketHandlingException("Expected positive count for dropped item");
+				}
 				$inventory = $this->player->getInventory();
 
 				$heldItemStack = TypeConverter::getInstance()->coreItemStackToNet($inventory->getItemInHand());
-				$droppedItemStack = $networkInventoryAction->newItem->getItemStack();
 				//because the client doesn't tell us the expected itemstack ID, we have to deep-compare our known
 				//itemstack info with the one the client sent. This is costly, but we don't have any other option :(
 				if($heldItemStack->getCount() < $droppedItemStack->getCount() || !$heldItemStack->equalsWithoutCount($droppedItemStack)){
