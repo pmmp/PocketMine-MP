@@ -190,6 +190,9 @@ class NetworkSession{
 	 */
 	private ObjectSet $disposeHooks;
 
+	private string $Waterdog_IP;
+	private string $Waterdog_XUID;
+
 	public function __construct(
 		private Server $server,
 		private NetworkSessionManager $manager,
@@ -336,6 +339,22 @@ class NetworkSession{
 
 	public function getPort() : int{
 		return $this->port;
+	}
+
+	final public function setWaterdogIp(string $ip){
+		$this->Waterdog_IP = $ip;
+	}
+
+	public function getWaterdogIp(): string{
+		return $this->Waterdog_IP ?? "";
+	}
+	
+	final public function setWaterdogXUID(string $xuid){
+		$this->Waterdog_XUID = $xuid;
+	}
+
+	public function getWaterdogXUID(): string{
+		return $this->Waterdog_XUID ?? "";
 	}
 
 	public function getDisplayName() : string{
