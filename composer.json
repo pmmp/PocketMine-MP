@@ -49,7 +49,7 @@
       "pocketmine/math": "^0.4.0",
       "pocketmine/nbt": "^0.3.2",
       "arabskills/raklib": "dev-legacy/0.14",
-      "pocketmine/raklib-ipc": "^0.1.0",
+      "arabskills/raklib-ipc": "^0.1.0",
       "pocketmine/snooze": "^0.3.0",
       "ramsey/uuid": "^4.1",
       "symfony/filesystem": "^5.4",
@@ -73,6 +73,10 @@
       {
          "type": "git",
          "url": "https://github.com/ArabSkillsNetwork/BedrockProtocol.git"
+      },
+      {
+         "type": "git",
+         "url": "https://github.com/ArabSkillsNetwork/RakLibIpc.git"
       }
    ],
    "autoload": {
