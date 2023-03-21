@@ -141,8 +141,9 @@ final class ItemStackRequestExecutor{
 	private function removeItemFromSlot(ItemStackRequestSlotInfo $slotInfo, int $count) : Item{
 		$this->requestSlotInfos[] = $slotInfo;
 		[$inventory, $slot] = $this->getBuilderInventoryAndSlot($slotInfo);
-		if($count === 0){
-			throw new ItemStackRequestProcessException($this->prettyInventoryAndSlot($inventory, $slot) . ": Cannot take 0 items from a stack");
+		if($count < 1){
+			//this should be impossible at the protocol level, but in case of buggy core code this will prevent exploits
+			throw new ItemStackRequestProcessException($this->prettyInventoryAndSlot($inventory, $slot) . ": Cannot take less than 1 items from a stack");
 		}
 
 		$existingItem = $inventory->getItem($slot);
@@ -162,6 +163,10 @@ final class ItemStackRequestExecutor{
 	private function addItemToSlot(ItemStackRequestSlotInfo $slotInfo, Item $item, int $count) : void{
 		$this->requestSlotInfos[] = $slotInfo;
 		[$inventory, $slot] = $this->getBuilderInventoryAndSlot($slotInfo);
+		if($count < 1){
+			//this should be impossible at the protocol level, but in case of buggy core code this will prevent exploits
+			throw new ItemStackRequestProcessException($this->prettyInventoryAndSlot($inventory, $slot) . ": Cannot take less than 1 items from a stack");
+		}
 
 		$existingItem = $inventory->getItem($slot);
 		if(!$existingItem->isNull() && !$existingItem->canStackWith($item)){
@@ -232,6 +237,10 @@ final class ItemStackRequestExecutor{
 	}
 
 	private function takeCreatedItem(ItemStackRequestSlotInfo $destination, int $count) : void{
+		if($count < 1){
+			//this should be impossible at the protocol level, but in case of buggy core code this will prevent exploits
+			throw new ItemStackRequestProcessException("Cannot take less than 1 created item");
+		}
 		$createdItem = $this->nextCreatedItem;
 		if($createdItem === null){
 			throw new ItemStackRequestProcessException("No created item is waiting to be taken");
