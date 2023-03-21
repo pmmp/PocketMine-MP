@@ -129,6 +129,9 @@ class ItemStackRequestExecutor{
 		return [$this->builder->getInventory($inventory), $slot];
 	}
 
+	/**
+	 * @throws ItemStackRequestProcessException
+	 */
 	protected function transferItems(ItemStackRequestSlotInfo $source, ItemStackRequestSlotInfo $destination, int $count) : void{
 		$removed = $this->removeItemFromSlot($source, $count);
 		$this->addItemToSlot($destination, $removed, $count);
@@ -159,6 +162,7 @@ class ItemStackRequestExecutor{
 
 	/**
 	 * Adds items to the target slot, if they are stackable.
+	 * @throws ItemStackRequestProcessException
 	 */
 	protected function addItemToSlot(ItemStackRequestSlotInfo $slotInfo, Item $item, int $count) : void{
 		$this->requestSlotInfos[] = $slotInfo;
@@ -242,6 +246,9 @@ class ItemStackRequestExecutor{
 		}
 	}
 
+	/**
+	 * @throws ItemStackRequestProcessException
+	 */
 	protected function takeCreatedItem(ItemStackRequestSlotInfo $destination, int $count) : void{
 		if($count < 1){
 			//this should be impossible at the protocol level, but in case of buggy core code this will prevent exploits
