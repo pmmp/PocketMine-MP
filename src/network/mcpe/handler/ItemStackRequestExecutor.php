@@ -58,7 +58,7 @@ use function array_key_first;
 use function count;
 use function spl_object_id;
 
-final class ItemStackRequestExecutor{
+class ItemStackRequestExecutor{
 	private TransactionBuilder $builder;
 
 	/** @var ItemStackRequestSlotInfo[] */
@@ -81,7 +81,7 @@ final class ItemStackRequestExecutor{
 		$this->builder = new TransactionBuilder();
 	}
 
-	private function prettyInventoryAndSlot(Inventory $inventory, int $slot) : string{
+	protected function prettyInventoryAndSlot(Inventory $inventory, int $slot) : string{
 		if($inventory instanceof TransactionBuilderInventory){
 			$inventory = $inventory->getActualInventory();
 		}
@@ -111,7 +111,7 @@ final class ItemStackRequestExecutor{
 	 *
 	 * @throws ItemStackRequestProcessException
 	 */
-	private function getBuilderInventoryAndSlot(ItemStackRequestSlotInfo $info) : array{
+	protected function getBuilderInventoryAndSlot(ItemStackRequestSlotInfo $info) : array{
 		$windowId = ItemStackContainerIdTranslator::translate($info->getContainerId(), $this->inventoryManager->getCurrentWindowId());
 		$windowAndSlot = $this->inventoryManager->locateWindowAndSlot($windowId, $info->getSlotId());
 		if($windowAndSlot === null){
@@ -129,7 +129,7 @@ final class ItemStackRequestExecutor{
 		return [$this->builder->getInventory($inventory), $slot];
 	}
 
-	private function transferItems(ItemStackRequestSlotInfo $source, ItemStackRequestSlotInfo $destination, int $count) : void{
+	protected function transferItems(ItemStackRequestSlotInfo $source, ItemStackRequestSlotInfo $destination, int $count) : void{
 		$removed = $this->removeItemFromSlot($source, $count);
 		$this->addItemToSlot($destination, $removed, $count);
 	}
@@ -138,7 +138,7 @@ final class ItemStackRequestExecutor{
 	 * Deducts items from an inventory slot, returning a stack containing the removed items.
 	 * @throws ItemStackRequestProcessException
 	 */
-	private function removeItemFromSlot(ItemStackRequestSlotInfo $slotInfo, int $count) : Item{
+	protected function removeItemFromSlot(ItemStackRequestSlotInfo $slotInfo, int $count) : Item{
 		$this->requestSlotInfos[] = $slotInfo;
 		[$inventory, $slot] = $this->getBuilderInventoryAndSlot($slotInfo);
 		if($count < 1){
@@ -160,7 +160,7 @@ final class ItemStackRequestExecutor{
 	/**
 	 * Adds items to the target slot, if they are stackable.
 	 */
-	private function addItemToSlot(ItemStackRequestSlotInfo $slotInfo, Item $item, int $count) : void{
+	protected function addItemToSlot(ItemStackRequestSlotInfo $slotInfo, Item $item, int $count) : void{
 		$this->requestSlotInfos[] = $slotInfo;
 		[$inventory, $slot] = $this->getBuilderInventoryAndSlot($slotInfo);
 		if($count < 1){
@@ -182,7 +182,7 @@ final class ItemStackRequestExecutor{
 	/**
 	 * @throws ItemStackRequestProcessException
 	 */
-	private function setNextCreatedItem(?Item $item, bool $creative = false) : void{
+	protected function setNextCreatedItem(?Item $item, bool $creative = false) : void{
 		if($item !== null && $item->isNull()){
 			$item = null;
 		}
@@ -204,7 +204,7 @@ final class ItemStackRequestExecutor{
 	/**
 	 * @throws ItemStackRequestProcessException
 	 */
-	private function beginCrafting(int $recipeId, int $repetitions) : void{
+	protected function beginCrafting(int $recipeId, int $repetitions) : void{
 		if($this->specialTransaction !== null){
 			throw new ItemStackRequestProcessException("Another special transaction is already in progress");
 		}
@@ -242,7 +242,7 @@ final class ItemStackRequestExecutor{
 		}
 	}
 
-	private function takeCreatedItem(ItemStackRequestSlotInfo $destination, int $count) : void{
+	protected function takeCreatedItem(ItemStackRequestSlotInfo $destination, int $count) : void{
 		if($count < 1){
 			//this should be impossible at the protocol level, but in case of buggy core code this will prevent exploits
 			throw new ItemStackRequestProcessException("Cannot take less than 1 created item");
@@ -282,7 +282,7 @@ final class ItemStackRequestExecutor{
 	/**
 	 * @throws ItemStackRequestProcessException
 	 */
-	private function processItemStackRequestAction(ItemStackRequestAction $action) : void{
+	protected function processItemStackRequestAction(ItemStackRequestAction $action) : void{
 		if(
 			$action instanceof TakeStackRequestAction ||
 			$action instanceof PlaceStackRequestAction
