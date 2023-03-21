@@ -43,8 +43,6 @@ use pocketmine\player\PlayerInfo;
 use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use Ramsey\Uuid\Uuid;
-use ReflectionClass;
-use ReflectionProperty;
 
 use function in_array;
 use function is_array;
