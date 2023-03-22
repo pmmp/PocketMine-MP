@@ -109,6 +109,7 @@ use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\TextFormat;
@@ -464,7 +465,7 @@ class NetworkSession{
 						throw PacketHandlingException::wrap($e, "Error processing " . $packet->getName());
 					}
 				}
-			}catch(PacketDecodeException $e){
+			}catch(PacketDecodeException|BinaryDataException $e){
 				$this->logger->logException($e);
 				throw PacketHandlingException::wrap($e, "Packet batch decode error");
 			}
@@ -978,6 +979,7 @@ class NetworkSession{
 				AbilitiesLayer::ABILITY_OPEN_CONTAINERS => !$for->isSpectator(),
 				AbilitiesLayer::ABILITY_ATTACK_PLAYERS => !$for->isSpectator(),
 				AbilitiesLayer::ABILITY_ATTACK_MOBS => !$for->isSpectator(),
+				AbilitiesLayer::ABILITY_PRIVILEGED_BUILDER => false,
 			];
 
 			$pk = UpdateAbilitiesPacket::create(new AbilitiesData(

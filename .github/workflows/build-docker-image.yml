@@ -20,6 +20,13 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Clone pmmp/PocketMine-Docker repository
         uses: actions/checkout@v3
         with:
@@ -52,7 +59,7 @@ jobs:
           context: ./pocketmine-mp
           tags: |
             ${{ steps.docker-repo-name.outputs.NAME }}:${{ steps.tag-name.outputs.TAG_NAME }}
-#            ghcr.io/${{ steps.docker-repo-name.outputs.NAME }}:${{ steps.tag-name.outputs.TAG_NAME }}
+            ghcr.io/${{ steps.docker-repo-name.outputs.NAME }}:${{ steps.tag-name.outputs.TAG_NAME }}
           build-args: |
             PMMP_TAG=${{ steps.tag-name.outputs.TAG_NAME }}
             PMMP_REPO=${{ github.repository }}
@@ -65,7 +72,7 @@ jobs:
           context: ./pocketmine-mp
           tags: |
             ${{ steps.docker-repo-name.outputs.NAME }}:${{ steps.tag-name.outputs.MAJOR }}
-#            ghcr.io/${{ steps.docker-repo-name.outputs.NAME }}:${{ steps.tag-name.outputs.MAJOR }}
+            ghcr.io/${{ steps.docker-repo-name.outputs.NAME }}:${{ steps.tag-name.outputs.MAJOR }}
           build-args: |
             PMMP_TAG=${{ steps.tag-name.outputs.TAG_NAME }}
             PMMP_REPO=${{ github.repository }}
@@ -78,7 +85,7 @@ jobs:
           context: ./pocketmine-mp
           tags: |
             ${{ steps.docker-repo-name.outputs.NAME }}:${{ steps.tag-name.outputs.MINOR }}
-#            ghcr.io/${{ steps.docker-repo-name.outputs.NAME }}:${{ steps.tag-name.outputs.MINOR }}
+            ghcr.io/${{ steps.docker-repo-name.outputs.NAME }}:${{ steps.tag-name.outputs.MINOR }}
           build-args: |
             PMMP_TAG=${{ steps.tag-name.outputs.TAG_NAME }}
             PMMP_REPO=${{ github.repository }}
@@ -91,7 +98,7 @@ jobs:
           context: ./pocketmine-mp
           tags: |
             ${{ steps.docker-repo-name.outputs.NAME }}:latest
-#            ghcr.io/${{ steps.docker-repo-name.outputs.NAME }}:latest
+            ghcr.io/${{ steps.docker-repo-name.outputs.NAME }}:latest
           build-args: |
             PMMP_TAG=${{ steps.tag-name.outputs.TAG_NAME }}
             PMMP_REPO=${{ github.repository }}
