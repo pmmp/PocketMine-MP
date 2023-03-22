@@ -102,6 +102,7 @@ use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\TextFormat;
@@ -393,7 +394,7 @@ class NetworkSession{
 						throw PacketHandlingException::wrap($e, "Error processing " . $packet->getName());
 					}
 				}
-			}catch(PacketDecodeException $e){
+			}catch(PacketDecodeException|BinaryDataException $e){
 				$this->logger->logException($e);
 				throw PacketHandlingException::wrap($e, "Packet batch decode error");
 			}

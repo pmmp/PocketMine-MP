@@ -383,35 +383,51 @@ class InGamePacketHandler extends PacketHandler{
 			throw new PacketHandlingException("Expected exactly 2 actions for dropping an item");
 		}
 
+		$sourceSlot = null;
+		$clientItemStack = null;
+		$droppedCount = null;
+
 		foreach($data->getActions() as $networkInventoryAction){
-			if($networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_WORLD){
-				//drop item - we don't need to validate this, we only care about the count
-				//if the resulting actions don't match the client for some reason, it will trigger an automatic
-				//prediction rollback anyway.
-				//it's technically possible to see this more than once, but a normal client should never do that.
-				$inventory = $this->player->getInventory();
-
-				$heldItemStack = TypeConverter::getInstance()->coreItemStackToNet($inventory->getItemInHand());
-				$droppedItemStack = $networkInventoryAction->newItem->getItemStack();
-				//because the client doesn't tell us the expected itemstack ID, we have to deep-compare our known
-				//itemstack info with the one the client sent. This is costly, but we don't have any other option :(
-				if($heldItemStack->getCount() < $droppedItemStack->getCount() || !$heldItemStack->equalsWithoutCount($droppedItemStack)){
-					return false;
+			if($networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_WORLD && $networkInventoryAction->inventorySlot == NetworkInventoryAction::ACTION_MAGIC_SLOT_DROP_ITEM){
+				$droppedCount = $networkInventoryAction->newItem->getItemStack()->getCount();
+				if($droppedCount <= 0){
+					throw new PacketHandlingException("Expected positive count for dropped item");
 				}
-
-				$newHeldItem = $inventory->getItemInHand();
-				$droppedItem = $newHeldItem->pop($droppedItemStack->getCount());
-
-				$builder = new TransactionBuilder();
-				$builder->getInventory($inventory)->setItem($inventory->getHeldItemIndex(), $newHeldItem);
-				$builder->addAction(new DropItemAction($droppedItem));
-
-				$transaction = new InventoryTransaction($this->player, $builder->generateActions());
-				return $this->executeInventoryTransaction($transaction, $itemStackRequestId);
+			}elseif($networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CONTAINER && $networkInventoryAction->windowId === ContainerIds::INVENTORY){
+				//mobile players can drop an item from a non-selected hotbar slot
+				$sourceSlot = $networkInventoryAction->inventorySlot;
+				$clientItemStack = $networkInventoryAction->oldItem->getItemStack();
+			}else{
+				throw new PacketHandlingException("Unexpected action type in drop item transaction");
 			}
 		}
+		if($sourceSlot === null || $clientItemStack === null || $droppedCount === null){
+			throw new PacketHandlingException("Missing information in drop item transaction, need source slot, client item stack and dropped count");
+		}
 
-		throw new PacketHandlingException("Legacy 'normal' transactions should only be used for dropping items");
+		$inventory = $this->player->getInventory();
+
+		if(!$inventory->slotExists($sourceSlot)){
+			return false; //TODO: size desync??
+		}
+
+		$sourceSlotItem = $inventory->getItem($sourceSlot);
+		$serverItemStack = TypeConverter::getInstance()->coreItemStackToNet($sourceSlotItem);
+		//because the client doesn't tell us the expected itemstack ID, we have to deep-compare our known
+		//itemstack info with the one the client sent. This is costly, but we don't have any other option :(
+		if(!$serverItemStack->equals($clientItemStack)){
+			return false;
+		}
+
+		//this modifies $sourceSlotItem
+		$droppedItem = $sourceSlotItem->pop($droppedCount);
+
+		$builder = new TransactionBuilder();
+		$builder->getInventory($inventory)->setItem($sourceSlot, $sourceSlotItem);
+		$builder->addAction(new DropItemAction($droppedItem));
+
+		$transaction = new InventoryTransaction($this->player, $builder->generateActions());
+		return $this->executeInventoryTransaction($transaction, $itemStackRequestId);
 	}
 
 	private function handleUseItemTransaction(UseItemTransactionData $data) : bool{
