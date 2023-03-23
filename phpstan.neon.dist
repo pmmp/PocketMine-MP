@@ -5,7 +5,6 @@ includes:
 	- tests/phpstan/configs/impossible-generics.neon
 	- tests/phpstan/configs/php-bugs.neon
 	- tests/phpstan/configs/phpstan-bugs.neon
-	- tests/phpstan/configs/runtime-type-checks.neon
 	- tests/phpstan/configs/spl-fixed-array-sucks.neon
 	- vendor/phpstan/phpstan-phpunit/extension.neon
 	- vendor/phpstan/phpstan-phpunit/rules.neon
