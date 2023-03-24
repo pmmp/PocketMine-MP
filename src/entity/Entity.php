@@ -46,6 +46,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddActorPacket;
 use pocketmine\network\mcpe\protocol\MoveActorAbsolutePacket;
+use pocketmine\network\mcpe\protocol\MoveActorDeltaPacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
 use pocketmine\network\mcpe\protocol\types\entity\Attribute as NetworkAttribute;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
@@ -219,6 +220,9 @@ abstract class Entity{
 	protected $ownerId = null;
 	/** @var int|null */
 	protected $targetId = null;
+
+	/** @var bool */
+	protected $needsAbsoluteMovement = true;
 
 	private bool $constructorCalled = false;
 
@@ -757,9 +761,9 @@ abstract class Entity{
 		}
 
 		if($teleport || $diffPosition > 0.0001 || $diffRotation > 1.0 || (!$wasStill && $still)){
-			$this->lastLocation = $this->location->asLocation();
-
 			$this->broadcastMovement($teleport);
+
+			$this->lastLocation = $this->location->asLocation();
 		}
 
 		if($diffMotion > 0.0025 || $wasStill !== $still){ //0.05 ** 2
@@ -774,6 +778,7 @@ abstract class Entity{
 	}
 
 	protected function broadcastMovement(bool $teleport = false) : void{
+		$currentLocation = $this->getOffsetPosition($this->location);
 		if($teleport){
 			//TODO: HACK! workaround for https://github.com/pmmp/PocketMine-MP/issues/4394
 			//this happens because MoveActor*Packet doesn't clear interpolation targets on the client, so the entity
@@ -785,17 +790,48 @@ abstract class Entity{
 				$this->spawnTo($player);
 			}
 		}else{
-			$this->server->broadcastPackets($this->hasSpawned, [MoveActorAbsolutePacket::create(
-				$this->id,
-				$this->getOffsetPosition($this->location),
-				$this->location->pitch,
-				$this->location->yaw,
-				$this->location->yaw,
-				(
+			if($this->needsAbsoluteMovement) {
+				$pk = MoveActorAbsolutePacket::create(
+					$this->id,
+					$currentLocation,
+					$this->location->pitch,
+					$this->location->yaw,
+					$this->location->yaw,
 					//TODO: if the above hack for #4394 gets removed, we should be setting FLAG_TELEPORT here
-					($this->onGround ? MoveActorAbsolutePacket::FLAG_GROUND : 0)
-				)
-			)]);
+					$this->onGround ? MoveActorDeltaPacket::FLAG_GROUND : 0,
+				);
+				$this->server->broadcastPackets($this->hasSpawned, [$pk]);
+				$this->needsAbsoluteMovement = false;
+			}else{
+				$lastLocation = $this->getOffsetPosition($this->lastLocation);
+				$pk = new MoveActorDeltaPacket();
+				$pk->actorRuntimeId = $this->id;
+				//TODO: if the above hack for #4394 gets removed, we should be setting FLAG_TELEPORT here
+				$pk->flags = $this->onGround ? MoveActorDeltaPacket::FLAG_GROUND : 0;
+				if($lastLocation->x !== $currentLocation->x){
+					$pk->xPos = $currentLocation->x;
+					$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_X;
+				}
+				if($lastLocation->y !== $currentLocation->y){
+					$pk->yPos = $currentLocation->y;
+					$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_Y;
+				}
+				if($lastLocation->z !== $currentLocation->z){
+					$pk->zPos = $currentLocation->z;
+					$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_Z;
+				}
+				if($this->lastLocation->pitch !== $this->location->pitch){
+					$pk->pitch = $this->location->pitch;
+					$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_PITCH;
+				}
+				if($this->lastLocation->yaw !== $this->location->yaw){
+					$pk->yaw = $this->location->yaw;
+					$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_YAW;
+					$pk->headYaw = $this->location->yaw;
+					$pk->flags |= MoveActorDeltaPacket::FLAG_HAS_HEAD_YAW;
+				}
+				$this->server->broadcastPackets($this->hasSpawned, [$pk]);
+			}
 		}
 	}
 
@@ -1508,6 +1544,7 @@ abstract class Entity{
 		//the player by sending them entities too early.
 		if(!isset($this->hasSpawned[$id]) && $player->getWorld() === $this->getWorld() && $player->hasReceivedChunk($this->location->getFloorX() >> Chunk::COORD_BIT_SIZE, $this->location->getFloorZ() >> Chunk::COORD_BIT_SIZE)){
 			$this->hasSpawned[$id] = $player;
+			$this->needsAbsoluteMovement = true;
 
 			$this->sendSpawnPacket($player);
 		}

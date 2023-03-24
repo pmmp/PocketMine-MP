@@ -1286,8 +1286,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				return;
 			}
 
-			$this->lastLocation = $to;
 			$this->broadcastMovement();
+			$this->lastLocation = $to;
 
 			$horizontalDistanceTravelled = sqrt((($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2));
 			if($horizontalDistanceTravelled > 0){
