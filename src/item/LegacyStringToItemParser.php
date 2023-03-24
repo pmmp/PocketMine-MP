@@ -49,6 +49,9 @@ use function trim;
  * Avoid using this wherever possible. Unless you need to parse item strings containing meta (e.g. "dye:4", "351:4") or
  * item IDs (e.g. "351"), you should prefer the newer StringToItemParser, which is much more user-friendly, more
  * flexible, and also supports registering custom aliases for any item in any state.
+ *
+ * WARNING: This class does NOT support items added during or after PocketMine-MP 5.0.0. Use StringToItemParser for
+ * modern items.
  */
 final class LegacyStringToItemParser{
 	use SingletonTrait;
