@@ -44,6 +44,7 @@ PocketMine-MP has three primary branches of development.
   - Examples of **disruptive** changes include changing the way the server is run, world format changes (since those require downtime for the user to convert their world).
 - **API** includes all public and protected classes, functions and constants (unless marked as `@internal`).
   - Private members are not part of the API, **unless in a trait**.
+  - The `pocketmine\network\mcpe` package is considered implicitly `@internal` in its entirety (see its [README](src/network/mcpe/README.md) for more details).
 - Minecraft's protocol changes are considered necessary internal changes, and are **not** subject to the same rules.
   - Protocol changes must always be released in a new minor version, since they disrupt user experience by requiring a client update.
 - BC-breaking changes to the internal network API are allowed, but only in new minor versions. This ensures that plugins which use the internal network API will not break (though they shouldn't use such API anyway).
