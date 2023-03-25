@@ -413,8 +413,13 @@ class InventoryManager{
 	}
 
 	public function onSlotChange(Inventory $inventory, int $slot) : void{
+		$inventoryEntry = $this->inventories[spl_object_id($inventory)] ?? null;
+		if($inventoryEntry === null){
+			//this can happen when an inventory changed during InventoryCloseEvent, or when a temporary inventory
+			//is cleared before removal.
+			return;
+		}
 		$currentItem = TypeConverter::getInstance()->coreItemStackToNet($inventory->getItem($slot));
-		$inventoryEntry = $this->inventories[spl_object_id($inventory)];
 		$clientSideItem = $inventoryEntry->predictions[$slot] ?? null;
 		if($clientSideItem === null || !$clientSideItem->equals($currentItem)){
 			//no prediction or incorrect - do not associate this with the currently active itemstack request
@@ -475,7 +480,12 @@ class InventoryManager{
 	}
 
 	public function syncContents(Inventory $inventory) : void{
-		$entry = $this->inventories[spl_object_id($inventory)];
+		$entry = $this->inventories[spl_object_id($inventory)] ?? null;
+		if($entry === null){
+			//this can happen when an inventory changed during InventoryCloseEvent, or when a temporary inventory
+			//is cleared before removal.
+			return;
+		}
 		if($entry->complexSlotMap !== null){
 			$windowId = ContainerIds::UI;
 		}else{
