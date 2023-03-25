@@ -21,21 +21,22 @@ Larger contributions like feature additions should be preceded by a [Change Prop
 ## Choosing a target branch
 PocketMine-MP has three primary branches of development.
 
-| Type of change | `stable` | `minor-next` | `major-next` |
-|:---------------|:--------:|:------------:|:------------:|
-| Bug fixes | ✔️ | ✔️ | ✔️ |
-| Improvements to API docs | ✔️ | ✔️ | ✔️ |
-| Cleaning up code | ❌ | ✔️ | ✔️ |
-| Changing code formatting or style | ❌ | ✔️ | ✔️ |
-| Addition of new core features | ❌ | 🟡 Only if non-disruptive | ✔️ |
-| Changing core behaviour (e.g. making something use threads) | ❌ | ✔️ | ✔️ |
-| Addition of new configuration options | ❌ | 🟡 Only if optional | ✔️ |
-| Addition of new API classes, methods or constants | ❌ | ✔️ | ✔️ |
-| Deprecating API classes, methods or constants | ❌ | ✔️ | ✔️ |
-| Adding optional parameters to an API method | ❌ | ✔️ | ✔️ |
-| Changing API behaviour | ❌ | 🟡 Only if backwards-compatible | ✔️ |
-| Removal of API | ❌ | ❌ | ✔️ |
-| Backwards-incompatible API change (e.g. renaming a method) | ❌ | ❌ | ✔️ |
+| Type of change                                                                              | `stable` |          `minor-next`           | `major-next` |
+|:--------------------------------------------------------------------------------------------|:--------:|:-------------------------------:|:------------:|
+| Bug fixes                                                                                   |    ✔️    |               ✔️                |      ✔️      |
+| Improvements to API docs                                                                    |    ✔️    |               ✔️                |      ✔️      |
+| Cleaning up code                                                                            |    ❌     |               ✔️                |      ✔️      |
+| Changing code formatting or style                                                           |    ❌     |               ✔️                |      ✔️      |
+| Addition of new core features                                                               |    ❌     |    🟡 Only if non-disruptive    |      ✔️      |
+| Changing core behaviour (e.g. making something use threads)                                 |    ❌     |               ✔️                |      ✔️      |
+| Addition of new configuration options                                                       |    ❌     |       🟡 Only if optional       |      ✔️      |
+| Addition of new API classes, methods or constants                                           |    ❌     |               ✔️                |      ✔️      |
+| Deprecating API classes, methods or constants                                               |    ❌     |               ✔️                |      ✔️      |
+| Adding optional parameters to an API method                                                 |    ❌     |               ✔️                |      ✔️      |
+| Changing API behaviour                                                                      |    ❌     | 🟡 Only if backwards-compatible |      ✔️      |
+| Removal of API                                                                              |    ❌     |                ❌                |      ✔️      |
+| Backwards-incompatible API change (e.g. renaming a method)                                  |    ❌     |                ❌                |      ✔️      |
+| Backwards-incompatible internals change (e.g. changing things in `pocketmine\network\mcpe`) |    ❌     |               ✔️                |      ✔️      |
 
 ### Notes
 - **Non-disruptive** means that usage should not be significantly altered by the change.
@@ -43,6 +44,10 @@ PocketMine-MP has three primary branches of development.
   - Examples of **disruptive** changes include changing the way the server is run, world format changes (since those require downtime for the user to convert their world).
 - **API** includes all public and protected classes, functions and constants (unless marked as `@internal`).
   - Private members are not part of the API, **unless in a trait**.
+  - The `pocketmine\network\mcpe` package is considered implicitly `@internal` in its entirety (see its [README](src/network/mcpe/README.md) for more details).
+- Minecraft's protocol changes are considered necessary internal changes, and are **not** subject to the same rules.
+  - Protocol changes must always be released in a new minor version, since they disrupt user experience by requiring a client update.
+- BC-breaking changes to the internal network API are allowed, but only in new minor versions. This ensures that plugins which use the internal network API will not break (though they shouldn't use such API anyway).
 
 ## Making a pull request
 The basic procedure to create a pull request is:
