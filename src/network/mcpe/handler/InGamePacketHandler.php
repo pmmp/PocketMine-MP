@@ -377,13 +377,21 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	private function handleNormalTransaction(NormalTransactionData $data, int $itemStackRequestId) : bool{
-		//When the ItemStackRequest system is used, this transaction type is only used for dropping items by pressing Q.
+		//When the ItemStackRequest system is used, this transaction type is used for dropping items by pressing Q.
 		//I don't know why they don't just use ItemStackRequest for that too, which already supports dropping items by
 		//clicking them outside an open inventory menu, but for now it is what it is.
-		//Fortunately, this means we can be extremely strict about the validation criteria.
+		//Fortunately, this means we can be much stricter about the validation criteria.
 
-		if(count($data->getActions()) > 2){
-			throw new PacketHandlingException("Expected exactly 2 actions for dropping an item");
+		$actionCount = count($data->getActions());
+		if($actionCount > 2){
+			if($actionCount > 5){
+				throw new PacketHandlingException("Too many actions ($actionCount) in normal inventory transaction");
+			}
+
+			//Due to a bug in the game, this transaction type is still sent when a player edits a book. We don't need
+			//these transactions for editing books, since we have BookEditPacket, so we can just ignore them.
+			$this->session->getLogger()->debug("Ignoring normal inventory transaction with $actionCount actions (drop-item should have exactly 2 actions)");
+			return false;
 		}
 
 		$sourceSlot = null;
@@ -401,11 +409,13 @@ class InGamePacketHandler extends PacketHandler{
 				$sourceSlot = $networkInventoryAction->inventorySlot;
 				$clientItemStack = $networkInventoryAction->oldItem->getItemStack();
 			}else{
-				throw new PacketHandlingException("Unexpected action type in drop item transaction");
+				$this->session->getLogger()->debug("Unexpected inventory action type $networkInventoryAction->sourceType in drop item transaction");
+				return false;
 			}
 		}
 		if($sourceSlot === null || $clientItemStack === null || $droppedCount === null){
-			throw new PacketHandlingException("Missing information in drop item transaction, need source slot, client item stack and dropped count");
+			$this->session->getLogger()->debug("Missing information in drop item transaction, need source slot, client item stack and dropped count");
+			return false;
 		}
 
 		$inventory = $this->player->getInventory();
