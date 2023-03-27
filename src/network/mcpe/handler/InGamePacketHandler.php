@@ -415,6 +415,9 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		$sourceSlotItem = $inventory->getItem($sourceSlot);
+		if($sourceSlotItem->getCount() < $droppedCount){
+			return false;
+		}
 		$serverItemStack = TypeConverter::getInstance()->coreItemStackToNet($sourceSlotItem);
 		//because the client doesn't tell us the expected itemstack ID, we have to deep-compare our known
 		//itemstack info with the one the client sent. This is costly, but we don't have any other option :(
