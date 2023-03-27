@@ -191,7 +191,7 @@ abstract class LightUpdate{
 		$ly = $y & SubChunk::COORD_MASK;
 		$lz = $z & SubChunk::COORD_MASK;
 		$current = $lightArray->get($lx, $ly, $lz);
-		$potentialLight = $newAdjacentLevel - ($this->lightFilters[$this->subChunkExplorer->currentSubChunk->getFullBlock($lx, $ly, $lz)] ?? self::BASE_LIGHT_FILTER);
+		$potentialLight = $newAdjacentLevel - ($this->lightFilters[$this->subChunkExplorer->currentSubChunk->getBlockStateId($lx, $ly, $lz)] ?? self::BASE_LIGHT_FILTER);
 
 		if($current < $potentialLight){
 			$lightArray->set($lx, $ly, $lz, $potentialLight);

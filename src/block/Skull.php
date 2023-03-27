@@ -25,8 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\utils\SkullType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -50,15 +49,11 @@ class Skull extends Flowable{
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function getRequiredTypeDataBits() : int{ return 3; }
-
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeType(RuntimeDataDescriber $w) : void{
 		$w->skullType($this->skullType);
 	}
 
-	public function getRequiredStateDataBits() : int{ return 3; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->facingExcept($this->facing, Facing::DOWN);
 	}
 

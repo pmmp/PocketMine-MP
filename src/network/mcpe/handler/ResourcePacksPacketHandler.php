@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
-use pocketmine\lang\KnownTranslationKeys;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkDataPacket;
@@ -86,14 +86,14 @@ class ResourcePacksPacketHandler extends PacketHandler{
 
 	private function disconnectWithError(string $error) : void{
 		$this->session->getLogger()->error("Error downloading resource packs: " . $error);
-		$this->session->disconnect(KnownTranslationKeys::DISCONNECTIONSCREEN_RESOURCEPACK);
+		$this->session->disconnectWithError(KnownTranslationFactory::disconnectionScreen_resourcePack());
 	}
 
 	public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet) : bool{
 		switch($packet->status){
 			case ResourcePackClientResponsePacket::STATUS_REFUSED:
 				//TODO: add lang strings for this
-				$this->session->disconnect("You must accept resource packs to join this server.", true);
+				$this->session->disconnect("Refused resource packs", "You must accept resource packs to join this server.", true);
 				break;
 			case ResourcePackClientResponsePacket::STATUS_SEND_PACKS:
 				foreach($packet->packIds as $uuid){

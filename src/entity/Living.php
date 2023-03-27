@@ -50,6 +50,8 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
+use pocketmine\network\mcpe\EntityEventBroadcaster;
+use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
@@ -128,13 +130,10 @@ abstract class Living extends Entity{
 
 		$this->armorInventory = new ArmorInventory($this);
 		//TODO: load/save armor inventory contents
-		$this->armorInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(
-			function(Inventory $unused) : void{
-				foreach($this->getViewers() as $viewer){
-					$viewer->getNetworkSession()->onMobArmorChange($this);
-				}
-			}
-		));
+		$this->armorInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(fn() => NetworkBroadcastUtils::broadcastEntityEvent(
+			$this->getViewers(),
+			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onMobArmorChange($recipients, $this)
+		)));
 
 		$health = $this->getMaxHealth();
 
@@ -293,16 +292,6 @@ abstract class Living extends Entity{
 		}
 
 		return $nbt;
-	}
-
-	/**
-	 * @deprecated This function always returns true, no matter whether the target is in the line of sight or not.
-	 * @see VoxelRayTrace::inDirection() for a more generalized method of ray-tracing to a target.
-	 */
-	public function hasLineOfSight(Entity $entity) : bool{
-		//TODO: head height
-		return true;
-		//return $this->getLevelNonNull()->rayTraceBlocks(Vector3::createVector($this->x, $this->y + $this->height, $this->z), Vector3::createVector($entity->x, $entity->y + $entity->height, $entity->z)) === null;
 	}
 
 	public function getEffects() : EffectManager{
@@ -855,7 +844,8 @@ abstract class Living extends Entity{
 	protected function sendSpawnPacket(Player $player) : void{
 		parent::sendSpawnPacket($player);
 
-		$player->getNetworkSession()->onMobArmorChange($this);
+		$networkSession = $player->getNetworkSession();
+		$networkSession->getEntityEventBroadcaster()->onMobArmorChange([$networkSession], $this);
 	}
 
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{

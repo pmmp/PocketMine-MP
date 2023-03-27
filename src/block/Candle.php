@@ -25,8 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\CandleTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -47,11 +46,7 @@ class Candle extends Transparent{
 
 	private int $count = self::MIN_COUNT;
 
-	public function getRequiredStateDataBits() : int{
-		return 3;
-	}
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$this->encodeLitState($w);
 		$w->boundedInt(2, self::MIN_COUNT, self::MAX_COUNT, $this->count);
 	}

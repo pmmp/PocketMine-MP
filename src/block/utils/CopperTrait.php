@@ -25,8 +25,7 @@ namespace pocketmine\block\utils;
 
 use pocketmine\block\BlockIdentifier;
 use pocketmine\block\BlockTypeInfo;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Axe;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
@@ -45,9 +44,7 @@ trait CopperTrait{
 		parent::__construct($identifier, $name, $typeInfo);
 	}
 
-	public function getRequiredTypeDataBits() : int{ return 3; }
-
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeType(RuntimeDataDescriber $w) : void{
 		$w->copperOxidation($this->oxidation);
 		$w->bool($this->waxed);
 	}

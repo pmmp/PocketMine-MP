@@ -36,9 +36,9 @@ use const SORT_STRING;
 
 class PluginsCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"plugins",
 			KnownTranslationFactory::pocketmine_command_plugins_description(),
 			null,
 			["pl"]

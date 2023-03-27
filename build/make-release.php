@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\build\make_release;
 
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
 use pocketmine\VersionInfo;
@@ -30,17 +31,17 @@ use function array_keys;
 use function array_map;
 use function dirname;
 use function fgets;
-use function file_get_contents;
 use function file_put_contents;
 use function fwrite;
 use function getopt;
 use function is_string;
 use function max;
+use function preg_match;
 use function preg_replace;
-use function sleep;
 use function sprintf;
 use function str_pad;
 use function strlen;
+use function strtolower;
 use function system;
 use const STDERR;
 use const STDIN;
@@ -50,7 +51,7 @@ use const STR_PAD_LEFT;
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 function replaceVersion(string $versionInfoPath, string $newVersion, bool $isDev, string $channel) : void{
-	$versionInfo = Utils::assumeNotFalse(file_get_contents($versionInfoPath), $versionInfoPath . " should always exist");
+	$versionInfo = Filesystem::fileGetContents($versionInfoPath);
 	$versionInfo = preg_replace(
 		$pattern = '/^([\t ]*public )?const BASE_VERSION = "(\d+)\.(\d+)\.(\d+)(?:-(.*))?";$/m',
 		'$1const BASE_VERSION = "' . $newVersion . '";',
@@ -102,22 +103,43 @@ function main() : void{
 		$filteredOpts[$optName] = $optValue;
 	}
 
+	$channel = $filteredOpts["channel"] ?? null;
 	if(isset($filteredOpts["current"])){
 		$currentVer = new VersionString($filteredOpts["current"]);
 	}else{
 		$currentVer = new VersionString(VersionInfo::BASE_VERSION);
 	}
-	if(isset($filteredOpts["next"])){
-		$nextVer = new VersionString($filteredOpts["next"]);
+
+	$nextVer = isset($filteredOpts["next"]) ? new VersionString($filteredOpts["next"]) : null;
+
+	$suffix = $currentVer->getSuffix();
+	if($suffix !== ""){
+		if($channel === "stable"){
+			fwrite(STDERR, "error: cannot release a suffixed build into the stable channel\n");
+			exit(1);
+		}
+		if(preg_match('/^([A-Za-z]+)(\d+)$/', $suffix, $matches) !== 1){
+			echo "error: invalid current version suffix \"$suffix\"; aborting\n";
+			exit(1);
+		}
+		$nextVer ??= new VersionString(sprintf(
+			"%u.%u.%u-%s%u",
+			$currentVer->getMajor(),
+			$currentVer->getMinor(),
+			$currentVer->getPatch(),
+			$matches[1],
+			((int) $matches[2]) + 1
+		));
+		$channel ??= strtolower($matches[1]);
 	}else{
-		$nextVer = new VersionString(sprintf(
+		$nextVer ??= new VersionString(sprintf(
 			"%u.%u.%u",
 			$currentVer->getMajor(),
 			$currentVer->getMinor(),
 			$currentVer->getPatch() + 1
 		));
+		$channel ??= "stable";
 	}
-	$channel = $filteredOpts["channel"] ?? VersionInfo::BUILD_CHANNEL;
 
 	echo "About to tag version $currentVer. Next version will be $nextVer.\n";
 	echo "$currentVer will be published on release channel \"$channel\".\n";
@@ -137,9 +159,6 @@ function main() : void{
 	replaceVersion($versionInfoPath, $nextVer->getBaseVersion(), true, $channel);
 	systemWrapper('git add "' . $versionInfoPath . '"', "failed to stage changes for post-release commit");
 	systemWrapper('git commit -m "' . $nextVer->getBaseVersion() . ' is next" --include "' . $versionInfoPath . '"', "failed to create post-release commit");
-	echo "pushing changes in 5 seconds\n";
-	sleep(5);
-	systemWrapper('git push origin HEAD ' . $currentVer->getBaseVersion(), "failed to push changes to remote");
 }
 
 main();

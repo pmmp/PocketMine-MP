@@ -23,24 +23,25 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\upgrade\model;
 
+use function count;
+
 final class BlockStateUpgradeSchemaModelBlockRemap{
 
 	/**
-	 * @var BlockStateUpgradeSchemaModelTag[]
-	 * @phpstan-var array<string, BlockStateUpgradeSchemaModelTag>
+	 * @var BlockStateUpgradeSchemaModelTag[]|null
+	 * @phpstan-var array<string, BlockStateUpgradeSchemaModelTag>|null
 	 * @required
 	 */
-	public array $oldState;
+	public ?array $oldState;
 
 	/** @required */
 	public string $newName;
 
 	/**
-	 * @var BlockStateUpgradeSchemaModelTag[]
-	 * @phpstan-var array<string, BlockStateUpgradeSchemaModelTag>
-	 * @required
+	 * @var BlockStateUpgradeSchemaModelTag[]|null
+	 * @phpstan-var array<string, BlockStateUpgradeSchemaModelTag>|null
 	 */
-	public array $newState;
+	public ?array $newState;
 
 	/**
 	 * @param BlockStateUpgradeSchemaModelTag[] $oldState
@@ -49,8 +50,8 @@ final class BlockStateUpgradeSchemaModelBlockRemap{
 	 * @phpstan-param array<string, BlockStateUpgradeSchemaModelTag> $newState
 	 */
 	public function __construct(array $oldState, string $newName, array $newState){
-		$this->oldState = $oldState;
+		$this->oldState = count($oldState) === 0 ? null : $oldState;
 		$this->newName = $newName;
-		$this->newState = $newState;
+		$this->newState = count($newState) === 0 ? null : $newState;
 	}
 }

@@ -27,16 +27,15 @@ use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModel;
 use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModelBlockRemap;
 use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModelTag;
 use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModelValueRemap;
-use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
 use function array_map;
 use function count;
-use function file_get_contents;
 use function get_debug_type;
 use function gettype;
 use function implode;
@@ -111,13 +110,13 @@ final class BlockStateUpgradeSchemaUtils{
 		};
 	}
 
-	public static function fromJsonModel(BlockStateUpgradeSchemaModel $model, int $priority) : BlockStateUpgradeSchema{
+	public static function fromJsonModel(BlockStateUpgradeSchemaModel $model, int $schemaId) : BlockStateUpgradeSchema{
 		$result = new BlockStateUpgradeSchema(
 			$model->maxVersionMajor,
 			$model->maxVersionMinor,
 			$model->maxVersionPatch,
 			$model->maxVersionRevision,
-			$priority
+			$schemaId
 		);
 		$result->renamedIds = $model->renamedIds ?? [];
 		$result->renamedProperties = $model->renamedProperties ?? [];
@@ -151,9 +150,9 @@ final class BlockStateUpgradeSchemaUtils{
 		foreach(Utils::stringifyKeys($model->remappedStates ?? []) as $oldBlockName => $remaps){
 			foreach($remaps as $remap){
 				$result->remappedStates[$oldBlockName][] = new BlockStateUpgradeSchemaBlockRemap(
-					array_map(fn(BlockStateUpgradeSchemaModelTag $tag) => self::jsonModelToTag($tag), $remap->oldState),
+					array_map(fn(BlockStateUpgradeSchemaModelTag $tag) => self::jsonModelToTag($tag), $remap->oldState ?? []),
 					$remap->newName,
-					array_map(fn(BlockStateUpgradeSchemaModelTag $tag) => self::jsonModelToTag($tag), $remap->newState),
+					array_map(fn(BlockStateUpgradeSchemaModelTag $tag) => self::jsonModelToTag($tag), $remap->newState ?? []),
 				);
 			}
 		}
@@ -251,11 +250,11 @@ final class BlockStateUpgradeSchemaUtils{
 	}
 
 	/**
-	 * Returns a list of schemas ordered by priority. Oldest schemas appear first.
+	 * Returns a list of schemas ordered by schema ID. Oldest schemas appear first.
 	 *
 	 * @return BlockStateUpgradeSchema[]
 	 */
-	public static function loadSchemas(string $path, int $currentVersion) : array{
+	public static function loadSchemas(string $path, int $maxSchemaId) : array{
 		$iterator = new \RegexIterator(
 			new \FilesystemIterator(
 				$path,
@@ -271,36 +270,30 @@ final class BlockStateUpgradeSchemaUtils{
 		/** @var string[] $matches */
 		foreach($iterator as $matches){
 			$filename = $matches[0];
-			$priority = (int) $matches[1];
+			$schemaId = (int) $matches[1];
+
+			if($schemaId > $maxSchemaId){
+				continue;
+			}
 
 			$fullPath = Path::join($path, $filename);
 
-			try{
-				$raw = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents($fullPath));
-			}catch(\ErrorException $e){
-				throw new \RuntimeException("Loading schema file $fullPath: " . $e->getMessage(), 0, $e);
-			}
+			$raw = Filesystem::fileGetContents($fullPath);
 
 			try{
-				$schema = self::loadSchemaFromString($raw, $priority);
+				$schema = self::loadSchemaFromString($raw, $schemaId);
 			}catch(\RuntimeException $e){
 				throw new \RuntimeException("Loading schema file $fullPath: " . $e->getMessage(), 0, $e);
 			}
 
-			if($schema->getVersionId() > $currentVersion){
-				//this might be a beta schema which shouldn't be applicable
-				//TODO: why do we load the whole schema just to throw it away if it's too new? ...
-				continue;
-			}
-
-			$result[$priority] = $schema;
+			$result[$schemaId] = $schema;
 		}
 
 		ksort($result, SORT_NUMERIC);
 		return $result;
 	}
 
-	public static function loadSchemaFromString(string $raw, int $priority) : BlockStateUpgradeSchema{
+	public static function loadSchemaFromString(string $raw, int $schemaId) : BlockStateUpgradeSchema{
 		try{
 			$json = json_decode($raw, false, flags: JSON_THROW_ON_ERROR);
 		}catch(\JsonException $e){
@@ -317,6 +310,6 @@ final class BlockStateUpgradeSchemaUtils{
 			throw new \RuntimeException($e->getMessage(), 0, $e);
 		}
 
-		return self::fromJsonModel($model, $priority);
+		return self::fromJsonModel($model, $schemaId);
 	}
 }

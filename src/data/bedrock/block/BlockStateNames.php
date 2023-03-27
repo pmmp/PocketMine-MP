@@ -44,9 +44,11 @@ final class BlockStateNames{
 	public const BITE_COUNTER = "bite_counter";
 	public const BLOCK_LIGHT_LEVEL = "block_light_level";
 	public const BLOOM = "bloom";
+	public const BOOKS_STORED = "books_stored";
 	public const BREWING_STAND_SLOT_A_BIT = "brewing_stand_slot_a_bit";
 	public const BREWING_STAND_SLOT_B_BIT = "brewing_stand_slot_b_bit";
 	public const BREWING_STAND_SLOT_C_BIT = "brewing_stand_slot_c_bit";
+	public const BRUSHED_PROGRESS = "brushed_progress";
 	public const BUTTON_PRESSED_BIT = "button_pressed_bit";
 	public const CAN_SUMMON = "can_summon";
 	public const CANDLES = "candles";

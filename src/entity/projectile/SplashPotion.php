@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\projectile;
 
-use pocketmine\block\BlockTypeIds;
+use pocketmine\block\BlockTypeTags;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\color\Color;
 use pocketmine\data\bedrock\PotionTypeIdMap;
@@ -50,6 +50,8 @@ use function sqrt;
 
 class SplashPotion extends Throwable{
 
+	public const TAG_POTION_ID = "PotionId"; //TAG_Short
+
 	public static function getNetworkTypeId() : string{ return EntityIds::SPLASH_POTION; }
 
 	protected bool $linger = false;
@@ -64,7 +66,7 @@ class SplashPotion extends Throwable{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setShort("PotionId", PotionTypeIdMap::getInstance()->toId($this->getPotionType()));
+		$nbt->setShort(self::TAG_POTION_ID, PotionTypeIdMap::getInstance()->toId($this->getPotionType()));
 
 		return $nbt;
 	}
@@ -130,11 +132,11 @@ class SplashPotion extends Throwable{
 		}elseif($event instanceof ProjectileHitBlockEvent && $this->getPotionType()->equals(PotionType::WATER())){
 			$blockIn = $event->getBlockHit()->getSide($event->getRayTraceResult()->getHitFace());
 
-			if($blockIn->getTypeId() === BlockTypeIds::FIRE){
+			if($blockIn->hasTypeTag(BlockTypeTags::FIRE)){
 				$this->getWorld()->setBlock($blockIn->getPosition(), VanillaBlocks::AIR());
 			}
 			foreach($blockIn->getHorizontalSides() as $horizontalSide){
-				if($horizontalSide->getTypeId() === BlockTypeIds::FIRE){
+				if($horizontalSide->hasTypeTag(BlockTypeTags::FIRE)){
 					$this->getWorld()->setBlock($horizontalSide->getPosition(), VanillaBlocks::AIR());
 				}
 			}

@@ -24,15 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\PoweredByRedstoneTrait;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 
 class RedstoneLamp extends Opaque{
 	use PoweredByRedstoneTrait;
 
-	public function getRequiredStateDataBits() : int{ return 1; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->powered);
 	}
 

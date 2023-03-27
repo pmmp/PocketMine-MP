@@ -31,7 +31,7 @@ use function ksort;
 use const SORT_NUMERIC;
 
 final class BlockStateUpgrader{
-	/** @var BlockStateUpgradeSchema[][] */
+	/** @var BlockStateUpgradeSchema[] */
 	private array $upgradeSchemas = [];
 
 	/**
@@ -45,59 +45,54 @@ final class BlockStateUpgrader{
 	}
 
 	public function addSchema(BlockStateUpgradeSchema $schema) : void{
-		$schemaList = $this->upgradeSchemas[$schema->getVersionId()] ?? [];
-
-		$priority = $schema->getPriority();
-		if(isset($schemaList[$priority])){
-			throw new \InvalidArgumentException("Cannot add two schemas to the same version with the same priority");
+		$schemaId = $schema->getSchemaId();
+		if(isset($this->upgradeSchemas[$schemaId])){
+			throw new \InvalidArgumentException("Cannot add two schemas with the same schema ID");
 		}
-		$schemaList[$priority] = $schema;
-		ksort($schemaList, SORT_NUMERIC);
-		$this->upgradeSchemas[$schema->getVersionId()] = $schemaList;
+		$this->upgradeSchemas[$schemaId] = $schema;
 
 		ksort($this->upgradeSchemas, SORT_NUMERIC);
 	}
 
 	public function upgrade(BlockStateData $blockStateData) : BlockStateData{
 		$version = $blockStateData->getVersion();
-		foreach($this->upgradeSchemas as $resultVersion => $schemas){
+		foreach($this->upgradeSchemas as $schema){
+			$resultVersion = $schema->getVersionId();
 			if($version > $resultVersion){
 				//even if this is actually the same version, we have to apply it anyway because mojang are dumb and
 				//didn't always bump the blockstate version when changing it :(
 				continue;
 			}
-			foreach($schemas as $schema){
-				$oldName = $blockStateData->getName();
-				$oldState = $blockStateData->getStates();
-				if(isset($schema->remappedStates[$oldName])){
-					foreach($schema->remappedStates[$oldName] as $remap){
-						if(count($oldState) !== count($remap->oldState)){
-							continue; //try next state
-						}
-						foreach(Utils::stringifyKeys($oldState) as $k => $v){
-							if(!isset($remap->oldState[$k]) || !$remap->oldState[$k]->equals($v)){
-								continue 2; //try next state
-							}
-						}
-
-						$blockStateData = new BlockStateData($remap->newName, $remap->newState, $resultVersion);
-						continue 2; //try next schema
+			$oldName = $blockStateData->getName();
+			$oldState = $blockStateData->getStates();
+			if(isset($schema->remappedStates[$oldName])){
+				foreach($schema->remappedStates[$oldName] as $remap){
+					if(count($oldState) !== count($remap->oldState)){
+						continue; //try next state
 					}
+					foreach(Utils::stringifyKeys($oldState) as $k => $v){
+						if(!isset($remap->oldState[$k]) || !$remap->oldState[$k]->equals($v)){
+							continue 2; //try next state
+						}
+					}
+
+					$blockStateData = new BlockStateData($remap->newName, $remap->newState, $resultVersion);
+					continue 2; //try next schema
 				}
-				$newName = $schema->renamedIds[$oldName] ?? null;
+			}
+			$newName = $schema->renamedIds[$oldName] ?? null;
 
-				$stateChanges = 0;
-				$states = $blockStateData->getStates();
+			$stateChanges = 0;
+			$states = $blockStateData->getStates();
 
-				$states = $this->applyPropertyAdded($schema, $oldName, $states, $stateChanges);
-				$states = $this->applyPropertyRemoved($schema, $oldName, $states, $stateChanges);
-				$states = $this->applyPropertyRenamedOrValueChanged($schema, $oldName, $states, $stateChanges);
-				$states = $this->applyPropertyValueChanged($schema, $oldName, $states, $stateChanges);
+			$states = $this->applyPropertyAdded($schema, $oldName, $states, $stateChanges);
+			$states = $this->applyPropertyRemoved($schema, $oldName, $states, $stateChanges);
+			$states = $this->applyPropertyRenamedOrValueChanged($schema, $oldName, $states, $stateChanges);
+			$states = $this->applyPropertyValueChanged($schema, $oldName, $states, $stateChanges);
 
-				if($newName !== null || $stateChanges > 0){
-					$blockStateData = new BlockStateData($newName ?? $oldName, $states, $resultVersion);
-					//don't break out; we may need to further upgrade the state
-				}
+			if($newName !== null || $stateChanges > 0){
+				$blockStateData = new BlockStateData($newName ?? $oldName, $states, $resultVersion);
+				//don't break out; we may need to further upgrade the state
 			}
 		}
 

@@ -205,6 +205,7 @@ use pocketmine\world\World;
  * @method static Armor LEATHER_TUNIC()
  * @method static Item MAGMA_CREAM()
  * @method static ItemBlockWallOrFloor MANGROVE_SIGN()
+ * @method static Medicine MEDICINE()
  * @method static Melon MELON()
  * @method static MelonSeeds MELON_SEEDS()
  * @method static MilkBucket MILK_BUCKET()
@@ -456,6 +457,7 @@ final class VanillaItems{
 		self::register("leather", new Item(new IID(Ids::LEATHER), "Leather"));
 		self::register("magma_cream", new Item(new IID(Ids::MAGMA_CREAM), "Magma Cream"));
 		self::register("mangrove_sign", new ItemBlockWallOrFloor(new IID(Ids::MANGROVE_SIGN), Blocks::MANGROVE_SIGN(), Blocks::MANGROVE_WALL_SIGN()));
+		self::register("medicine", new Medicine(new IID(Ids::MEDICINE), "Medicine"));
 		self::register("melon", new Melon(new IID(Ids::MELON), "Melon"));
 		self::register("melon_seeds", new MelonSeeds(new IID(Ids::MELON_SEEDS), "Melon Seeds"));
 		self::register("milk_bucket", new MilkBucket(new IID(Ids::MILK_BUCKET), "Milk Bucket"));

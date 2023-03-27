@@ -23,8 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -35,9 +34,7 @@ final class Light extends Flowable{
 
 	private int $level = self::MAX_LIGHT_LEVEL;
 
-	public function getRequiredTypeDataBits() : int{ return 4; }
-
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeType(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(4, self::MIN_LIGHT_LEVEL, self::MAX_LIGHT_LEVEL, $this->level);
 	}
 

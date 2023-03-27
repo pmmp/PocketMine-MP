@@ -25,8 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\RailConnectionInfo;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\math\Facing;
 use function array_keys;
 use function implode;
@@ -35,9 +34,7 @@ class Rail extends BaseRail{
 
 	private int $railShape = BlockLegacyMetadata::RAIL_STRAIGHT_NORTH_SOUTH;
 
-	public function getRequiredStateDataBits() : int{ return 4; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->railShape($this->railShape);
 	}
 

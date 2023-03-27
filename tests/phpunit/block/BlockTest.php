@@ -33,11 +33,11 @@ use const SORT_STRING;
 
 class BlockTest extends TestCase{
 
-	/** @var BlockFactory */
+	/** @var RuntimeBlockStateRegistry */
 	private $blockFactory;
 
 	public function setUp() : void{
-		$this->blockFactory = new BlockFactory();
+		$this->blockFactory = new RuntimeBlockStateRegistry();
 	}
 
 	/**
@@ -126,7 +126,7 @@ class BlockTest extends TestCase{
 
 		$states = $this->blockFactory->getAllKnownStates();
 		foreach($states as $stateId => $state){
-			self::assertArrayHasKey($stateId, $knownStates, "New block state $stateId (" . $state->getTypeId() . ":" . $state->computeStateData() . ", " . print_r($state, true) . ") - consistency check may need regenerating");
+			self::assertArrayHasKey($stateId, $knownStates, "New block state $stateId (" . $state->getTypeId() . ":" . $state->computeTypeAndStateData() . ", " . print_r($state, true) . ") - consistency check may need regenerating");
 			self::assertSame($knownStates[$stateId], $state->getName());
 		}
 		asort($knownStates, SORT_STRING);

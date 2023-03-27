@@ -66,7 +66,7 @@ class SkyLightUpdate extends LightUpdate{
 		$chunk = $this->subChunkExplorer->currentChunk;
 
 		$oldHeightMap = $chunk->getHeightMap($x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK);
-		$source = $this->subChunkExplorer->currentSubChunk->getFullBlock($x & SubChunk::COORD_MASK, $y & SubChunk::COORD_MASK, $z & SubChunk::COORD_MASK);
+		$source = $this->subChunkExplorer->currentSubChunk->getBlockStateId($x & SubChunk::COORD_MASK, $y & SubChunk::COORD_MASK, $z & SubChunk::COORD_MASK);
 
 		$yPlusOne = $y + 1;
 
@@ -194,7 +194,7 @@ class SkyLightUpdate extends LightUpdate{
 					$result->set($x, $z, World::Y_MIN);
 				}else{
 					for(; $y >= World::Y_MIN; --$y){
-						if(isset($directSkyLightBlockers[$chunk->getFullBlock($x, $y, $z)])){
+						if(isset($directSkyLightBlockers[$chunk->getBlockStateId($x, $y, $z)])){
 							$result->set($x, $z, $y + 1);
 							break;
 						}
@@ -221,7 +221,7 @@ class SkyLightUpdate extends LightUpdate{
 			return World::Y_MIN;
 		}
 		for(; $y >= World::Y_MIN; --$y){
-			if(isset($directSkyLightBlockers[$chunk->getFullBlock($x, $y, $z)])){
+			if(isset($directSkyLightBlockers[$chunk->getBlockStateId($x, $y, $z)])){
 				break;
 			}
 		}

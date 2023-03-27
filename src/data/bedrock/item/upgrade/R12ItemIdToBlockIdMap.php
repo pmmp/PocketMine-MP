@@ -24,10 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\item\upgrade;
 
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
-use function file_get_contents;
 use function is_array;
 use function is_string;
 use function json_decode;
@@ -47,7 +47,7 @@ final class R12ItemIdToBlockIdMap{
 
 	private static function make() : self{
 		$map = json_decode(
-			Utils::assumeNotFalse(file_get_contents(Path::join(BEDROCK_ITEM_UPGRADE_SCHEMA_PATH, '1.12.0_item_id_to_block_id_map.json')), "Missing required resource file"),
+			Filesystem::fileGetContents(Path::join(BEDROCK_ITEM_UPGRADE_SCHEMA_PATH, '1.12.0_item_id_to_block_id_map.json')),
 			associative: true,
 			flags: JSON_THROW_ON_ERROR
 		);

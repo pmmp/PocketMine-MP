@@ -24,17 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 
 trait ColoredTrait{
 	/** @var DyeColor */
 	private $color;
 
-	public function getRequiredTypeDataBits() : int{ return 4; }
-
 	/** @see Block::describeType() */
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeType(RuntimeDataDescriber $w) : void{
 		$w->dyeColor($this->color);
 	}
 
