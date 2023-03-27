@@ -576,9 +576,13 @@ class InventoryManager{
 		$playerInventory = $this->player->getInventory();
 		$selected = $playerInventory->getHeldItemIndex();
 		if($selected !== $this->clientSelectedHotbarSlot){
-			$itemStackInfo = $this->getItemStackInfo($playerInventory, $selected);
+			$inventoryEntry = $this->inventories[spl_object_id($playerInventory)] ?? null;
+			if($inventoryEntry === null){
+				throw new AssumptionFailedError("Player inventory should always be tracked");
+			}
+			$itemStackInfo = $inventoryEntry->itemStackInfos[$selected] ?? null;
 			if($itemStackInfo === null){
-				throw new AssumptionFailedError("Player inventory slots should always be tracked");
+				throw new AssumptionFailedError("Untracked player inventory slot $selected");
 			}
 
 			$this->session->sendDataPacket(MobEquipmentPacket::create(
