@@ -432,7 +432,7 @@ abstract class Living extends Entity{
 		$source->setModifier(-min($this->getAbsorption(), $source->getFinalDamage()), EntityDamageEvent::MODIFIER_ABSORPTION);
 
 		if($cause === EntityDamageEvent::CAUSE_FALLING_BLOCK && $this->armorInventory->getHelmet() instanceof Armor){
-			$source->setModifier(-($source->getFinalDamage() / 4), EntityDamageEvent::MODIFIER_HARD_HELMET);
+			$source->setModifier(-($source->getFinalDamage() / 4), EntityDamageEvent::MODIFIER_ARMOR_HELMET);
 		}
 	}
 
@@ -466,7 +466,7 @@ abstract class Living extends Entity{
 				$attacker->attack(new EntityDamageByEntityEvent($this, $attacker, EntityDamageEvent::CAUSE_MAGIC, $damage));
 			}
 
-			if($source->getModifier(EntityDamageEvent::MODIFIER_HARD_HELMET) < 0){
+			if($source->getModifier(EntityDamageEvent::MODIFIER_ARMOR_HELMET) < 0){
 				$helmet = $this->armorInventory->getHelmet();
 				if($helmet instanceof Armor){
 					$finalDamage = $source->getFinalDamage();
