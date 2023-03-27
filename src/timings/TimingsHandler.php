@@ -25,6 +25,7 @@ namespace pocketmine\timings;
 
 use pocketmine\entity\Living;
 use pocketmine\Server;
+use pocketmine\utils\Utils;
 use function count;
 use function hrtime;
 
@@ -51,7 +52,7 @@ class TimingsHandler{
 		}
 		$result = [];
 
-		foreach($groups as $groupName => $lines){
+		foreach(Utils::stringifyKeys($groups) as $groupName => $lines){
 			$result[] = $groupName;
 			foreach($lines as $line){
 				$result[] = "    $line";
