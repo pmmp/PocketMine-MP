@@ -88,6 +88,8 @@ final class TimingsRecord{
 
 	public function getName() : string{ return $this->handler->getName(); }
 
+	public function getGroup() : string{ return $this->handler->getGroup(); }
+
 	public function getCount() : int{ return $this->count; }
 
 	public function getCurCount() : int{ return $this->curCount; }

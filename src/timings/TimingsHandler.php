@@ -25,6 +25,7 @@ namespace pocketmine\timings;
 
 use pocketmine\entity\Living;
 use pocketmine\Server;
+use pocketmine\utils\Utils;
 use function count;
 use function hrtime;
 
@@ -34,7 +35,7 @@ class TimingsHandler{
 
 	/** @return string[] */
 	public static function printTimings() : array{
-		$result = ["Minecraft"];
+		$groups = [];
 
 		foreach(TimingsRecord::getAll() as $timings){
 			$time = $timings->getTotalTime();
@@ -46,7 +47,16 @@ class TimingsHandler{
 
 			$avg = $time / $count;
 
-			$result[] = "    " . $timings->getName() . " Time: $time Count: " . $count . " Avg: $avg Violations: " . $timings->getViolations();
+			$group = $timings->getGroup();
+			$groups[$group][] = $timings->getName() . " Time: $time Count: " . $count . " Avg: $avg Violations: " . $timings->getViolations();
+		}
+		$result = [];
+
+		foreach(Utils::stringifyKeys($groups) as $groupName => $lines){
+			$result[] = $groupName;
+			foreach($lines as $line){
+				$result[] = "    $line";
+			}
 		}
 
 		$result[] = "# Version " . Server::getInstance()->getVersion();
@@ -102,10 +112,13 @@ class TimingsHandler{
 
 	public function __construct(
 		private string $name,
-		private ?TimingsHandler $parent = null
+		private ?TimingsHandler $parent = null,
+		private string $group = "Minecraft"
 	){}
 
 	public function getName() : string{ return $this->name; }
+
+	public function getGroup() : string{ return $this->group; }
 
 	public function startTiming() : void{
 		if(self::$enabled){

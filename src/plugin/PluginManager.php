@@ -63,7 +63,10 @@ use function realpath;
 use function shuffle;
 use function sprintf;
 use function str_contains;
+use function str_starts_with;
+use function strlen;
 use function strtolower;
+use function substr;
 
 /**
  * Manages all the plugins
@@ -651,7 +654,12 @@ class PluginManager{
 			throw new PluginException("Plugin attempted to register event handler " . $handlerName . "() to event " . $event . " while not enabled");
 		}
 
-		$timings = new TimingsHandler("Plugin: " . $plugin->getDescription()->getFullName() . " Event: " . $handlerName . "(" . (new \ReflectionClass($event))->getShortName() . ")");
+		$prefix = $plugin->getDescription()->getSrcNamespacePrefix();
+		if(str_starts_with($handlerName, $prefix)){
+			$handlerName = substr($handlerName, strlen($prefix) + 1);
+		}
+
+		$timings = new TimingsHandler($handlerName . "(" . (new \ReflectionClass($event))->getShortName() . ")", group: $plugin->getDescription()->getFullName());
 
 		$registeredListener = new RegisteredListener($handler, $priority, $plugin, $handleCancelled, $timings);
 		HandlerListManager::global()->getListFor($event)->register($registeredListener);
