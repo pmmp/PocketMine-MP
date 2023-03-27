@@ -558,8 +558,17 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	private function handleSingleItemStackRequest(ItemStackRequest $request) : ItemStackResponse{
-		if(count($request->getActions()) > 20){
-			//TODO: we can probably lower this limit, but this will do for now
+		if(count($request->getActions()) > 60){
+			//recipe book auto crafting can affect all slots of the inventory when consuming inputs or producing outputs
+			//this means there could be as many as 50 CraftingConsumeInput actions or Place (taking the result) actions
+			//in a single request (there are certain ways items can be arranged which will result in the same stack
+			//being taken from multiple times, but this is behaviour with a calculable limit)
+			//this means there SHOULD be AT MOST 53 actions in a single request, but 60 is a nice round number.
+			//n64Stacks = ?
+			//n1Stacks = 45 - n64Stacks
+			//nItemsRequiredFor1Craft = 9
+			//nResults = floor((n1Stacks + (n64Stacks * 64)) / nItemsRequiredFor1Craft)
+			//nTakeActionsTotal = floor(64 / nResults) + max(1, 64 % nResults) + ((nResults * nItemsRequiredFor1Craft) - (n64Stacks * 64))
 			throw new PacketHandlingException("Too many actions in ItemStackRequest");
 		}
 		$executor = new ItemStackRequestExecutor($this->player, $this->inventoryManager, $request);
