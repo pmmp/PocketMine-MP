@@ -26,6 +26,7 @@ declare(strict_types=1);
  */
 namespace pocketmine\event;
 
+use pocketmine\timings\Timings;
 use function get_class;
 
 abstract class Event{
@@ -51,6 +52,9 @@ abstract class Event{
 			throw new \RuntimeException("Recursive event call detected (reached max depth of " . self::MAX_EVENT_CALL_DEPTH . " calls)");
 		}
 
+		$timings = Timings::getEventTimings($this);
+		$timings->startTiming();
+
 		$handlerList = HandlerListManager::global()->getListFor(get_class($this));
 
 		++self::$eventCallDepth;
@@ -67,6 +71,7 @@ abstract class Event{
 			}
 		}finally{
 			--self::$eventCallDepth;
+			$timings->stopTiming();
 		}
 	}
 }
