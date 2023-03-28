@@ -25,6 +25,7 @@ namespace pocketmine\timings;
 
 use pocketmine\block\tile\Tile;
 use pocketmine\entity\Entity;
+use pocketmine\event\Event;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\scheduler\TaskHandler;
