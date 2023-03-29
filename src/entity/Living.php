@@ -73,6 +73,7 @@ use function max;
 use function min;
 use function mt_getrandmax;
 use function mt_rand;
+use function round;
 use function sqrt;
 use const M_PI;
 
@@ -429,6 +430,10 @@ abstract class Living extends Entity{
 		$source->setModifier(-$source->getFinalDamage() * min(ceil(min($totalEpf, 25) * (mt_rand(50, 100) / 100)), 20) * 0.04, EntityDamageEvent::MODIFIER_ARMOR_ENCHANTMENTS);
 
 		$source->setModifier(-min($this->getAbsorption(), $source->getFinalDamage()), EntityDamageEvent::MODIFIER_ABSORPTION);
+
+		if($cause === EntityDamageEvent::CAUSE_FALLING_BLOCK && $this->armorInventory->getHelmet() instanceof Armor){
+			$source->setModifier(-($source->getFinalDamage() / 4), EntityDamageEvent::MODIFIER_ARMOR_HELMET);
+		}
 	}
 
 	/**
@@ -459,6 +464,15 @@ abstract class Living extends Entity{
 
 			if($damage > 0){
 				$attacker->attack(new EntityDamageByEntityEvent($this, $attacker, EntityDamageEvent::CAUSE_MAGIC, $damage));
+			}
+
+			if($source->getModifier(EntityDamageEvent::MODIFIER_ARMOR_HELMET) < 0){
+				$helmet = $this->armorInventory->getHelmet();
+				if($helmet instanceof Armor){
+					$finalDamage = $source->getFinalDamage();
+					$this->damageItem($helmet, (int) round($finalDamage * 4 + lcg_value() * $finalDamage * 2));
+					$this->armorInventory->setHelmet($helmet);
+				}
 			}
 		}
 	}
