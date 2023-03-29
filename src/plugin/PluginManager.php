@@ -655,7 +655,7 @@ class PluginManager{
 		}
 
 		$prefix = $plugin->getDescription()->getSrcNamespacePrefix();
-		if(str_starts_with($handlerName, $prefix)){
+		if(str_starts_with($handlerName, $prefix) && $prefix !== ""){
 			$handlerName = substr($handlerName, strlen($prefix) + 1);
 		}
 
