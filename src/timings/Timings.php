@@ -27,6 +27,7 @@ use pocketmine\block\tile\Tile;
 use pocketmine\entity\Entity;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
+use pocketmine\player\Player;
 use pocketmine\scheduler\TaskHandler;
 
 abstract class Timings{
@@ -236,8 +237,14 @@ abstract class Timings{
 	}
 
 	public static function getEntityTimings(Entity $entity) : TimingsHandler{
-		$entityType = (new \ReflectionClass($entity))->getShortName();
+		$reflect = new \ReflectionClass($entity);
+		$entityType = $reflect->getShortName();
 		if(!isset(self::$entityTypeTimingMap[$entityType])){
+			//the timings viewer calculates average player count by looking at this timer, so we need to ensure it has
+			//a name it can identify. However, we also want to make it obvious if this is a custom Player class.
+			if($entity instanceof Player && $reflect->getName() !== Player::class){
+				$entityType = "Player (" . $reflect->getName() . ")";
+			}
 			self::$entityTypeTimingMap[$entityType] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Entity Tick - " . $entityType, self::$tickEntity);
 		}
 
