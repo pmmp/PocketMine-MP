@@ -28,9 +28,9 @@ use pocketmine\entity\Entity;
 use pocketmine\event\Event;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
+use pocketmine\player\Player;
 use pocketmine\scheduler\TaskHandler;
 use function get_class;
-use function str_starts_with;
 
 abstract class Timings{
 	public const INCLUDED_BY_OTHER_TIMINGS_PREFIX = "** ";
@@ -202,8 +202,14 @@ abstract class Timings{
 
 	public static function getEntityTimings(Entity $entity) : TimingsHandler{
 		self::init();
-		$entityType = (new \ReflectionClass($entity))->getShortName();
+		$reflect = new \ReflectionClass($entity);
+		$entityType = $reflect->getShortName();
 		if(!isset(self::$entityTypeTimingMap[$entityType])){
+			//the timings viewer calculates average player count by looking at this timer, so we need to ensure it has
+			//a name it can identify. However, we also want to make it obvious if this is a custom Player class.
+			if($entity instanceof Player && $reflect->getName() !== Player::class){
+				$entityType = "Player (" . $reflect->getName() . ")";
+			}
 			self::$entityTypeTimingMap[$entityType] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Entity Tick - " . $entityType, self::$tickEntity);
 		}
 
@@ -273,12 +279,7 @@ abstract class Timings{
 	public static function getEventTimings(Event $event) : TimingsHandler{
 		$eventClass = get_class($event);
 		if(!isset(self::$events[$eventClass])){
-			if(str_starts_with($eventClass, "pocketmine\\event\\")){
-				$name = (new \ReflectionClass($event))->getShortName();
-			}else{
-				$name = $eventClass;
-			}
-			self::$events[$eventClass] = new TimingsHandler($name, group: "Events");
+			self::$events[$eventClass] = new TimingsHandler($eventClass, group: "Events");
 		}
 
 		return self::$events[$eventClass];

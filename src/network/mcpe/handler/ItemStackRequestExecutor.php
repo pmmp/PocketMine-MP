@@ -113,7 +113,12 @@ class ItemStackRequestExecutor{
 	 */
 	protected function getBuilderInventoryAndSlot(ItemStackRequestSlotInfo $info) : array{
 		$windowId = ItemStackContainerIdTranslator::translate($info->getContainerId(), $this->inventoryManager->getCurrentWindowId());
-		$windowAndSlot = $this->inventoryManager->locateWindowAndSlot($windowId, $info->getSlotId());
+		$slotId = $info->getSlotId();
+		if($info->getContainerId() === ContainerUIIds::OFFHAND && $slotId === 1){
+			//TODO: HACK! The client sends an incorrect slot ID for the offhand as of 1.19.70
+			$slotId = 0;
+		}
+		$windowAndSlot = $this->inventoryManager->locateWindowAndSlot($windowId, $slotId);
 		if($windowAndSlot === null){
 			throw new ItemStackRequestProcessException("No open inventory matches container UI ID: " . $info->getContainerId() . ", slot ID: " . $info->getSlotId());
 		}

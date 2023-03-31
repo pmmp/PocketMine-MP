@@ -24,7 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\timings;
 
 use pocketmine\Server;
-use function round;
+use pocketmine\utils\AssumptionFailedError;
+use function floor;
 use function spl_object_id;
 
 /**
@@ -39,11 +40,14 @@ final class TimingsRecord{
 	 */
 	private static array $records = [];
 
+	private static ?self $currentRecord = null;
+
 	public static function clearRecords() : void{
 		foreach(self::$records as $record){
 			$record->handler->destroyCycles();
 		}
 		self::$records = [];
+		self::$currentRecord = null;
 	}
 
 	/**
@@ -56,7 +60,7 @@ final class TimingsRecord{
 		if($measure){
 			foreach(self::$records as $record){
 				if($record->curTickTotal > Server::TARGET_NANOSECONDS_PER_TICK){
-					$record->violations += (int) round($record->curTickTotal / Server::TARGET_NANOSECONDS_PER_TICK);
+					$record->violations += (int) floor($record->curTickTotal / Server::TARGET_NANOSECONDS_PER_TICK);
 				}
 				$record->curTickTotal = 0;
 				$record->curCount = 0;
@@ -81,10 +85,17 @@ final class TimingsRecord{
 
 	public function __construct(
 		//I'm not the biggest fan of this cycle, but it seems to be the most effective way to avoid leaking anything.
-		private TimingsHandler $handler
+		private TimingsHandler $handler,
+		private ?TimingsRecord $parentRecord
 	){
 		self::$records[spl_object_id($this)] = $this;
 	}
+
+	public function getId() : int{ return spl_object_id($this); }
+
+	public function getParentId() : ?int{ return $this->parentRecord?->getId(); }
+
+	public function getTimerId() : int{ return spl_object_id($this->handler); }
 
 	public function getName() : string{ return $this->handler->getName(); }
 
@@ -104,17 +115,31 @@ final class TimingsRecord{
 
 	public function startTiming(int $now) : void{
 		$this->start = $now;
+		self::$currentRecord = $this;
 	}
 
 	public function stopTiming(int $now) : void{
 		if($this->start == 0){
 			return;
 		}
+		if(self::$currentRecord !== $this){
+			if(self::$currentRecord === null){
+				//timings may have been stopped while this timer was running
+				return;
+			}
+
+			throw new AssumptionFailedError("stopTiming() called on a non-current timer");
+		}
+		self::$currentRecord = $this->parentRecord;
 		$diff = $now - $this->start;
 		$this->totalTime += $diff;
 		$this->curTickTotal += $diff;
 		++$this->curCount;
 		++$this->count;
 		$this->start = 0;
+	}
+
+	public static function getCurrentRecord() : ?self{
+		return self::$currentRecord;
 	}
 }
