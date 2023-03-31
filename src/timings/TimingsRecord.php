@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\timings;
 
 use pocketmine\Server;
-use function round;
+use function floor;
 use function spl_object_id;
 
 /**
@@ -56,7 +56,7 @@ final class TimingsRecord{
 		if($measure){
 			foreach(self::$records as $record){
 				if($record->curTickTotal > Server::TARGET_NANOSECONDS_PER_TICK){
-					$record->violations += (int) round($record->curTickTotal / Server::TARGET_NANOSECONDS_PER_TICK);
+					$record->violations += (int) floor($record->curTickTotal / Server::TARGET_NANOSECONDS_PER_TICK);
 				}
 				$record->curTickTotal = 0;
 				$record->curCount = 0;
