@@ -304,12 +304,7 @@ abstract class Timings{
 	public static function getEventTimings(Event $event) : TimingsHandler{
 		$eventClass = get_class($event);
 		if(!isset(self::$events[$eventClass])){
-			if(str_starts_with($eventClass, "pocketmine\\event\\")){
-				$name = (new \ReflectionClass($event))->getShortName();
-			}else{
-				$name = $eventClass;
-			}
-			self::$events[$eventClass] = new TimingsHandler($name, group: "Events");
+			self::$events[$eventClass] = new TimingsHandler($eventClass, group: "Events");
 		}
 
 		return self::$events[$eventClass];
