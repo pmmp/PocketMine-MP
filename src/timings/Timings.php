@@ -31,6 +31,7 @@ use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\player\Player;
 use pocketmine\scheduler\TaskHandler;
 use function get_class;
+use function str_starts_with;
 
 abstract class Timings{
 	public const INCLUDED_BY_OTHER_TIMINGS_PREFIX = "** ";
