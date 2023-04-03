@@ -62,7 +62,6 @@ final class NetworkBroadcastUtils{
 			if($ev->isCancelled()){
 				return false;
 			}
-			$sessions = $ev->getTargets();
 
 			/** @var PacketBroadcaster[] $uniqueBroadcasters */
 			$uniqueBroadcasters = [];
