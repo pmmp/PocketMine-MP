@@ -31,6 +31,7 @@ use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\player\Player;
 use pocketmine\scheduler\TaskHandler;
 use function get_class;
+use function str_starts_with;
 
 abstract class Timings{
 	public const INCLUDED_BY_OTHER_TIMINGS_PREFIX = "** ";
@@ -279,7 +280,12 @@ abstract class Timings{
 	public static function getEventTimings(Event $event) : TimingsHandler{
 		$eventClass = get_class($event);
 		if(!isset(self::$events[$eventClass])){
-			self::$events[$eventClass] = new TimingsHandler($eventClass, group: "Events");
+			if(str_starts_with($eventClass, "pocketmine\\event\\")){
+				$name = (new \ReflectionClass($event))->getShortName();
+			}else{
+				$name = $eventClass;
+			}
+			self::$events[$eventClass] = new TimingsHandler($name, group: "Events");
 		}
 
 		return self::$events[$eventClass];
