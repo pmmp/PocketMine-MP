@@ -147,6 +147,11 @@ class ItemStackRequestExecutor{
 	 * @throws ItemStackRequestProcessException
 	 */
 	protected function removeItemFromSlot(ItemStackRequestSlotInfo $slotInfo, int $count) : Item{
+		if($slotInfo->getContainerId() === ContainerUIIds::CREATED_OUTPUT && $slotInfo->getSlotId() === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
+			//special case for the "created item" output slot
+			//TODO: do we need to send a response for this slot info?
+			return $this->takeCreatedItem($count);
+		}
 		$this->requestSlotInfos[] = $slotInfo;
 		[$inventory, $slot] = $this->getBuilderInventoryAndSlot($slotInfo);
 		if($count < 1){
@@ -186,6 +191,13 @@ class ItemStackRequestExecutor{
 		$newItem = clone $item;
 		$newItem->setCount($existingItem->getCount() + $count);
 		$inventory->setItem($slot, $newItem);
+	}
+
+	protected function dropItem(Item $item, int $count) : void{
+		if($count < 1){
+			throw new ItemStackRequestProcessException("Cannot drop less than 1 of an item");
+		}
+		$this->builder->addAction(new DropItemAction((clone $item)->setCount($count)));
 	}
 
 	/**
@@ -254,7 +266,7 @@ class ItemStackRequestExecutor{
 	/**
 	 * @throws ItemStackRequestProcessException
 	 */
-	protected function takeCreatedItem(ItemStackRequestSlotInfo $destination, int $count) : void{
+	protected function takeCreatedItem(int $count) : Item{
 		if($count < 1){
 			//this should be impossible at the protocol level, but in case of buggy core code this will prevent exploits
 			throw new ItemStackRequestProcessException("Cannot take less than 1 created item");
@@ -272,10 +284,12 @@ class ItemStackRequestExecutor{
 		}
 
 		$this->createdItemsTakenCount += $count;
-		$this->addItemToSlot($destination, $createdItem, $count);
+		$createdItem = clone $createdItem;
+		$createdItem->setCount($count);
 		if(!$this->createdItemFromCreativeInventory && $this->createdItemsTakenCount >= $createdItem->getCount()){
 			$this->setNextCreatedItem(null);
 		}
+		return $createdItem;
 	}
 
 	/**
@@ -299,14 +313,7 @@ class ItemStackRequestExecutor{
 			$action instanceof TakeStackRequestAction ||
 			$action instanceof PlaceStackRequestAction
 		){
-			$source = $action->getSource();
-			$destination = $action->getDestination();
-
-			if($source->getContainerId() === ContainerUIIds::CREATED_OUTPUT && $source->getSlotId() === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
-				$this->takeCreatedItem($destination, $action->getCount());
-			}else{
-				$this->transferItems($source, $destination, $action->getCount());
-			}
+			$this->transferItems($action->getSource(), $action->getDestination(), $action->getCount());
 		}elseif($action instanceof SwapStackRequestAction){
 			$this->requestSlotInfos[] = $action->getSlot1();
 			$this->requestSlotInfos[] = $action->getSlot2();
