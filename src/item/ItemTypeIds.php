@@ -320,9 +320,9 @@ final class ItemTypeIds{
 		return -$blockTypeId;
 	}
 
-	public static function toBlockTypeId(int $itemTypeId) : int{
-		if($itemTypeId > 0){
-			throw new \InvalidArgumentException("Item type ID $itemTypeId does not represent a block");
+	public static function toBlockTypeId(int $itemTypeId) : ?int{
+		if($itemTypeId > 0){ //not a blockitem
+			return null;
 		}
 		return -$itemTypeId;
 	}
