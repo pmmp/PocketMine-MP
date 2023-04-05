@@ -76,9 +76,7 @@ class HandlerList{
 				}
 			}
 		}elseif($object instanceof RegisteredListener){
-			if(isset($this->handlerSlots[$object->getPriority()][spl_object_id($object)])){
-				unset($this->handlerSlots[$object->getPriority()][spl_object_id($object)]);
-			}
+			unset($this->handlerSlots[$object->getPriority()][spl_object_id($object)]);
 		}
 	}
 
