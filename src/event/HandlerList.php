@@ -31,6 +31,11 @@ class HandlerList{
 	/** @var RegisteredListener[][] */
 	private array $handlerSlots = [];
 
+	private RegisteredListenerCache $handlerCache;
+
+	/** @var RegisteredListenerCache[] */
+	private array $affectedHandlerCaches = [];
+
 	/**
 	 * @phpstan-template TEvent of Event
 	 * @phpstan-param class-string<TEvent> $class
@@ -39,6 +44,11 @@ class HandlerList{
 		private string $class,
 		private ?HandlerList $parentList
 	){
+		$this->handlerCache = new RegisteredListenerCache();
+		for($list = $this; $list !== null; $list = $list->parentList){
+			$list->affectedHandlerCaches[spl_object_id($this->handlerCache)] = $this->handlerCache;
+		}
+
 		$this->handlerSlots = array_fill_keys(EventPriority::ALL, []);
 	}
 
@@ -50,6 +60,7 @@ class HandlerList{
 			throw new \InvalidArgumentException("This listener is already registered to priority {$listener->getPriority()} of event {$this->class}");
 		}
 		$this->handlerSlots[$listener->getPriority()][spl_object_id($listener)] = $listener;
+		$this->invalidateAffectedCaches();
 	}
 
 	/**
@@ -59,6 +70,7 @@ class HandlerList{
 		foreach($listeners as $listener){
 			$this->register($listener);
 		}
+		$this->invalidateAffectedCaches();
 	}
 
 	/**
@@ -78,10 +90,12 @@ class HandlerList{
 		}elseif($object instanceof RegisteredListener){
 			unset($this->handlerSlots[$object->getPriority()][spl_object_id($object)]);
 		}
+		$this->invalidateAffectedCaches();
 	}
 
 	public function clear() : void{
 		$this->handlerSlots = array_fill_keys(EventPriority::ALL, []);
+		$this->invalidateAffectedCaches();
 	}
 
 	/**
@@ -93,5 +107,40 @@ class HandlerList{
 
 	public function getParent() : ?HandlerList{
 		return $this->parentList;
+	}
+
+	/**
+	 * Invalidates all known caches which might be affected by this list's contents.
+	 */
+	private function invalidateAffectedCaches() : void{
+		foreach($this->affectedHandlerCaches as $cache){
+			$cache->list = null;
+		}
+	}
+
+	/**
+	 * @return RegisteredListener[]
+	 * @phpstan-return list<RegisteredListener>
+	 */
+	public function getListenerList() : array{
+		if($this->handlerCache->list !== null){
+			return $this->handlerCache->list;
+		}
+
+		$handlerLists = [];
+		for($currentList = $this; $currentList !== null; $currentList = $currentList->parentList){
+			$handlerLists[] = $currentList;
+		}
+
+		$listeners = [];
+		foreach(EventPriority::ALL as $priority){
+			foreach($handlerLists as $currentList){
+				foreach($currentList->getListenersByPriority($priority) as $registration){
+					$listeners[] = $registration;
+				}
+			}
+		}
+
+		return $this->handlerCache->list = $listeners;
 	}
 }
