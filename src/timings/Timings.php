@@ -227,7 +227,7 @@ abstract class Timings{
 	}
 
 	public static function getScheduledTaskTimings(TaskHandler $task, int $period) : TimingsHandler{
-		$name = "Task: " . $task->getOwnerName() . " Runnable: " . $task->getTaskName();
+		$name = "Task: " . $task->getTaskName();
 
 		if($period > 0){
 			$name .= "(interval:" . $period . ")";
@@ -236,7 +236,7 @@ abstract class Timings{
 		}
 
 		if(!isset(self::$pluginTaskTimingMap[$name])){
-			self::$pluginTaskTimingMap[$name] = new TimingsHandler($name, self::$schedulerSync);
+			self::$pluginTaskTimingMap[$name] = new TimingsHandler($name, self::$schedulerSync, $task->getOwnerName());
 		}
 
 		return self::$pluginTaskTimingMap[$name];
