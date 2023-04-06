@@ -58,7 +58,9 @@ class TimingsHandler{
 				"Violations: " . $timings->getViolations(),
 				"RecordId: " . $timings->getId(),
 				"ParentRecordId: " . ($timings->getParentId() ?? "none"),
-				"TimerId: " . $timings->getTimerId()
+				"TimerId: " . $timings->getTimerId(),
+				"Ticks: " . $timings->getTicksActive(),
+				"Peak: " . $timings->getPeakTime(),
 			]);
 		}
 		$result = [];

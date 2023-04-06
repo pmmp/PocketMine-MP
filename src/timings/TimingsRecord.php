@@ -59,11 +59,17 @@ final class TimingsRecord{
 	public static function tick(bool $measure = true) : void{
 		if($measure){
 			foreach(self::$records as $record){
-				if($record->curTickTotal > Server::TARGET_NANOSECONDS_PER_TICK){
-					$record->violations += (int) floor($record->curTickTotal / Server::TARGET_NANOSECONDS_PER_TICK);
+				if($record->curCount > 0){
+					if($record->curTickTotal > Server::TARGET_NANOSECONDS_PER_TICK){
+						$record->violations += (int) floor($record->curTickTotal / Server::TARGET_NANOSECONDS_PER_TICK);
+					}
+					if($record->curTickTotal > $record->peakTime){
+						$record->peakTime = $record->curTickTotal;
+					}
+					$record->curTickTotal = 0;
+					$record->curCount = 0;
+					$record->ticksActive++;
 				}
-				$record->curTickTotal = 0;
-				$record->curCount = 0;
 			}
 		}else{
 			foreach(self::$records as $record){
@@ -82,6 +88,8 @@ final class TimingsRecord{
 	private int $totalTime = 0;
 	private int $curTickTotal = 0;
 	private int $violations = 0;
+	private int $ticksActive = 0;
+	private int $peakTime = 0;
 
 	public function __construct(
 		//I'm not the biggest fan of this cycle, but it seems to be the most effective way to avoid leaking anything.
@@ -112,6 +120,10 @@ final class TimingsRecord{
 	public function getCurTickTotal() : float{ return $this->curTickTotal; }
 
 	public function getViolations() : int{ return $this->violations; }
+
+	public function getTicksActive() : int{ return $this->ticksActive; }
+
+	public function getPeakTime() : float{ return $this->peakTime; }
 
 	public function startTiming(int $now) : void{
 		$this->start = $now;
