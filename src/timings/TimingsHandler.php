@@ -32,6 +32,8 @@ use function implode;
 use function spl_object_id;
 
 class TimingsHandler{
+	private const FORMAT_VERSION = 1;
+
 	private static bool $enabled = false;
 	private static int $timingStart = 0;
 
@@ -88,6 +90,7 @@ class TimingsHandler{
 
 		$result[] = "# Entities " . $entities;
 		$result[] = "# LivingEntities " . $livingEntities;
+		$result[] = "# FormatVersion " . self::FORMAT_VERSION;
 
 		$sampleTime = hrtime(true) - self::$timingStart;
 		$result[] = "Sample time $sampleTime (" . ($sampleTime / 1000000000) . "s)";
