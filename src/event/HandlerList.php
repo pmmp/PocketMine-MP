@@ -24,8 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\event;
 
 use pocketmine\plugin\Plugin;
-use function array_fill_keys;
+use function array_merge;
+use function krsort;
 use function spl_object_id;
+use const SORT_NUMERIC;
 
 class HandlerList{
 	/** @var RegisteredListener[][] */
@@ -48,8 +50,6 @@ class HandlerList{
 		for($list = $this; $list !== null; $list = $list->parentList){
 			$list->affectedHandlerCaches[spl_object_id($this->handlerCache)] = $this->handlerCache;
 		}
-
-		$this->handlerSlots = array_fill_keys(EventPriority::ALL, []);
 	}
 
 	/**
@@ -94,7 +94,7 @@ class HandlerList{
 	}
 
 	public function clear() : void{
-		$this->handlerSlots = array_fill_keys(EventPriority::ALL, []);
+		$this->handlerSlots = [];
 		$this->invalidateAffectedCaches();
 	}
 
@@ -132,14 +132,16 @@ class HandlerList{
 			$handlerLists[] = $currentList;
 		}
 
-		$listeners = [];
-		foreach(EventPriority::ALL as $priority){
-			foreach($handlerLists as $currentList){
-				foreach($currentList->getListenersByPriority($priority) as $registration){
-					$listeners[] = $registration;
-				}
+		$listenersByPriority = [];
+		foreach($handlerLists as $currentList){
+			foreach($currentList->handlerSlots as $priority => $listeners){
+				$listenersByPriority[$priority] = array_merge($listenersByPriority[$priority] ?? [], $listeners);
 			}
 		}
+
+		//TODO: why on earth do the priorities have higher values for lower priority?
+		krsort($listenersByPriority, SORT_NUMERIC);
+		$listeners = array_merge(...$listenersByPriority);
 
 		return $this->handlerCache->list = $listeners;
 	}
