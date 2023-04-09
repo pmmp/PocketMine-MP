@@ -40,9 +40,9 @@ final class BlockStateData{
 	 */
 	public const CURRENT_VERSION =
 		(1 << 24) | //major
-		(18 << 16) | //minor
-		(10 << 8) | //patch
-		(1); //revision
+		(19 << 16) | //minor
+		(70 << 8) | //patch
+		(15); //revision
 
 	public const TAG_NAME = "name";
 	public const TAG_STATES = "states";
@@ -79,6 +79,14 @@ final class BlockStateData{
 	}
 
 	public function getVersion() : int{ return $this->version; }
+
+	public function getVersionAsString() : string{
+		$major = ($this->version >> 24) & 0xff;
+		$minor = ($this->version >> 16) & 0xff;
+		$patch = ($this->version >> 8) & 0xff;
+		$revision = $this->version & 0xff;
+		return "$major.$minor.$patch.$revision";
+	}
 
 	/**
 	 * @throws BlockStateDeserializeException

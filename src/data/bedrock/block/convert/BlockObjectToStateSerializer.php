@@ -189,6 +189,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 
 	public function __construct(){
 		$this->registerCandleSerializers();
+		$this->registerFlatColorBlockSerializers();
 		$this->registerCauldronSerializers();
 		$this->registerSimpleSerializers();
 		$this->registerSerializers();
@@ -301,6 +302,51 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 			DyeColor::YELLOW() => Ids::YELLOW_CANDLE_CAKE,
 			default => throw new AssumptionFailedError("Unhandled DyeColor " . $block->getColor()->name())
 		})->writeBool(StateNames::LIT, $block->isLit()));
+	}
+
+	public function registerFlatColorBlockSerializers() : void{
+		$this->map(Blocks::GLAZED_TERRACOTTA(), function(GlazedTerracotta $block) : Writer{
+			return Writer::create(match($color = $block->getColor()){
+				DyeColor::BLACK() => Ids::BLACK_GLAZED_TERRACOTTA,
+				DyeColor::BLUE() => Ids::BLUE_GLAZED_TERRACOTTA,
+				DyeColor::BROWN() => Ids::BROWN_GLAZED_TERRACOTTA,
+				DyeColor::CYAN() => Ids::CYAN_GLAZED_TERRACOTTA,
+				DyeColor::GRAY() => Ids::GRAY_GLAZED_TERRACOTTA,
+				DyeColor::GREEN() => Ids::GREEN_GLAZED_TERRACOTTA,
+				DyeColor::LIGHT_BLUE() => Ids::LIGHT_BLUE_GLAZED_TERRACOTTA,
+				DyeColor::LIGHT_GRAY() => Ids::SILVER_GLAZED_TERRACOTTA,
+				DyeColor::LIME() => Ids::LIME_GLAZED_TERRACOTTA,
+				DyeColor::MAGENTA() => Ids::MAGENTA_GLAZED_TERRACOTTA,
+				DyeColor::ORANGE() => Ids::ORANGE_GLAZED_TERRACOTTA,
+				DyeColor::PINK() => Ids::PINK_GLAZED_TERRACOTTA,
+				DyeColor::PURPLE() => Ids::PURPLE_GLAZED_TERRACOTTA,
+				DyeColor::RED() => Ids::RED_GLAZED_TERRACOTTA,
+				DyeColor::WHITE() => Ids::WHITE_GLAZED_TERRACOTTA,
+				DyeColor::YELLOW() => Ids::YELLOW_GLAZED_TERRACOTTA,
+				default => throw new AssumptionFailedError("Unhandled dye colour " . $color->name())
+			})
+				->writeHorizontalFacing($block->getFacing());
+		});
+
+		$this->map(Blocks::WOOL(), fn(Wool $block) => Writer::create(match($color = $block->getColor()){
+			DyeColor::BLACK() => Ids::BLACK_WOOL,
+			DyeColor::BLUE() => Ids::BLUE_WOOL,
+			DyeColor::BROWN() => Ids::BROWN_WOOL,
+			DyeColor::CYAN() => Ids::CYAN_WOOL,
+			DyeColor::GRAY() => Ids::GRAY_WOOL,
+			DyeColor::GREEN() => Ids::GREEN_WOOL,
+			DyeColor::LIGHT_BLUE() => Ids::LIGHT_BLUE_WOOL,
+			DyeColor::LIGHT_GRAY() => Ids::LIGHT_GRAY_WOOL,
+			DyeColor::LIME() => Ids::LIME_WOOL,
+			DyeColor::MAGENTA() => Ids::MAGENTA_WOOL,
+			DyeColor::ORANGE() => Ids::ORANGE_WOOL,
+			DyeColor::PINK() => Ids::PINK_WOOL,
+			DyeColor::PURPLE() => Ids::PURPLE_WOOL,
+			DyeColor::RED() => Ids::RED_WOOL,
+			DyeColor::WHITE() => Ids::WHITE_WOOL,
+			DyeColor::YELLOW() => Ids::YELLOW_WOOL,
+			default => throw new AssumptionFailedError("Unhandled dye colour " . $color->name())
+		}));
 	}
 
 	private function registerCauldronSerializers() : void{
@@ -967,28 +1013,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeInt(StateNames::AGE, $block->getAge());
 		});
 		$this->map(Blocks::FURNACE(), fn(Furnace $block) => Helper::encodeFurnace($block, Ids::FURNACE, Ids::LIT_FURNACE));
-		$this->map(Blocks::GLAZED_TERRACOTTA(), function(GlazedTerracotta $block) : Writer{
-			return Writer::create(match ($color = $block->getColor()) {
-				DyeColor::BLACK() => Ids::BLACK_GLAZED_TERRACOTTA,
-				DyeColor::BLUE() => Ids::BLUE_GLAZED_TERRACOTTA,
-				DyeColor::BROWN() => Ids::BROWN_GLAZED_TERRACOTTA,
-				DyeColor::CYAN() => Ids::CYAN_GLAZED_TERRACOTTA,
-				DyeColor::GRAY() => Ids::GRAY_GLAZED_TERRACOTTA,
-				DyeColor::GREEN() => Ids::GREEN_GLAZED_TERRACOTTA,
-				DyeColor::LIGHT_BLUE() => Ids::LIGHT_BLUE_GLAZED_TERRACOTTA,
-				DyeColor::LIGHT_GRAY() => Ids::SILVER_GLAZED_TERRACOTTA,
-				DyeColor::LIME() => Ids::LIME_GLAZED_TERRACOTTA,
-				DyeColor::MAGENTA() => Ids::MAGENTA_GLAZED_TERRACOTTA,
-				DyeColor::ORANGE() => Ids::ORANGE_GLAZED_TERRACOTTA,
-				DyeColor::PINK() => Ids::PINK_GLAZED_TERRACOTTA,
-				DyeColor::PURPLE() => Ids::PURPLE_GLAZED_TERRACOTTA,
-				DyeColor::RED() => Ids::RED_GLAZED_TERRACOTTA,
-				DyeColor::WHITE() => Ids::WHITE_GLAZED_TERRACOTTA,
-				DyeColor::YELLOW() => Ids::YELLOW_GLAZED_TERRACOTTA,
-				default => throw new AssumptionFailedError("Unhandled dye colour " . $color->name())
-			})
-				->writeHorizontalFacing($block->getFacing());
-		});
 		$this->map(Blocks::GLOWING_ITEM_FRAME(), fn(ItemFrame $block) => Helper::encodeItemFrame($block, Ids::GLOW_FRAME));
 		$this->map(Blocks::GRANITE(), fn() => Helper::encodeStone(StringValues::STONE_TYPE_GRANITE));
 		$this->map(Blocks::GRANITE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab3($block, StringValues::STONE_SLAB_TYPE_3_GRANITE));
@@ -1446,9 +1470,5 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::WHEAT(), fn(Wheat $block) => Helper::encodeCrops($block, new Writer(Ids::WHEAT)));
 		$this->map(Blocks::WHITE_TULIP(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_TULIP_WHITE));
-		$this->map(Blocks::WOOL(), function(Wool $block) : Writer{
-			return Writer::create(Ids::WOOL)
-				->writeColor($block->getColor());
-		});
 	}
 }

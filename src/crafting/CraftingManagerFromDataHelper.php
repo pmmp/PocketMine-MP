@@ -333,6 +333,8 @@ final class CraftingManagerFromDataHelper{
 			));
 		}
 
+		//TODO: smithing
+
 		return $result;
 	}
 }

@@ -651,7 +651,7 @@ class PluginManager{
 			throw new PluginException("Plugin attempted to register event handler " . $handlerName . "() to event " . $event . " while not enabled");
 		}
 
-		$timings = new TimingsHandler("Plugin: " . $plugin->getDescription()->getFullName() . " Event: " . $handlerName . "(" . (new \ReflectionClass($event))->getShortName() . ")");
+		$timings = new TimingsHandler($handlerName . "(" . (new \ReflectionClass($event))->getShortName() . ")", group: $plugin->getDescription()->getFullName());
 
 		$registeredListener = new RegisteredListener($handler, $priority, $plugin, $handleCancelled, $timings);
 		HandlerListManager::global()->getListFor($event)->register($registeredListener);

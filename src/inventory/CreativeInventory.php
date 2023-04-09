@@ -28,6 +28,7 @@ use pocketmine\crafting\json\ItemStackData;
 use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\item\Item;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\utils\Utils;
 
 final class CreativeInventory{
 	use SingletonTrait;
@@ -62,11 +63,11 @@ final class CreativeInventory{
 	 * @return Item[]
 	 */
 	public function getAll() : array{
-		return $this->creative;
+		return Utils::cloneObjectArray($this->creative);
 	}
 
 	public function getItem(int $index) : ?Item{
-		return $this->creative[$index] ?? null;
+		return isset($this->creative[$index]) ? clone $this->creative[$index] : null;
 	}
 
 	public function getItemIndex(Item $item) : int{

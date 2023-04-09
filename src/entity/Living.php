@@ -50,6 +50,8 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
+use pocketmine\network\mcpe\EntityEventBroadcaster;
+use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
@@ -71,6 +73,7 @@ use function max;
 use function min;
 use function mt_getrandmax;
 use function mt_rand;
+use function round;
 use function sqrt;
 use const M_PI;
 
@@ -127,13 +130,10 @@ abstract class Living extends Entity{
 
 		$this->armorInventory = new ArmorInventory($this);
 		//TODO: load/save armor inventory contents
-		$this->armorInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(
-			function(Inventory $unused) : void{
-				foreach($this->getViewers() as $viewer){
-					$viewer->getNetworkSession()->onMobArmorChange($this);
-				}
-			}
-		));
+		$this->armorInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(fn() => NetworkBroadcastUtils::broadcastEntityEvent(
+			$this->getViewers(),
+			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onMobArmorChange($recipients, $this)
+		)));
 
 		$health = $this->getMaxHealth();
 
@@ -430,6 +430,10 @@ abstract class Living extends Entity{
 		$source->setModifier(-$source->getFinalDamage() * min(ceil(min($totalEpf, 25) * (mt_rand(50, 100) / 100)), 20) * 0.04, EntityDamageEvent::MODIFIER_ARMOR_ENCHANTMENTS);
 
 		$source->setModifier(-min($this->getAbsorption(), $source->getFinalDamage()), EntityDamageEvent::MODIFIER_ABSORPTION);
+
+		if($cause === EntityDamageEvent::CAUSE_FALLING_BLOCK && $this->armorInventory->getHelmet() instanceof Armor){
+			$source->setModifier(-($source->getFinalDamage() / 4), EntityDamageEvent::MODIFIER_ARMOR_HELMET);
+		}
 	}
 
 	/**
@@ -460,6 +464,15 @@ abstract class Living extends Entity{
 
 			if($damage > 0){
 				$attacker->attack(new EntityDamageByEntityEvent($this, $attacker, EntityDamageEvent::CAUSE_MAGIC, $damage));
+			}
+
+			if($source->getModifier(EntityDamageEvent::MODIFIER_ARMOR_HELMET) < 0){
+				$helmet = $this->armorInventory->getHelmet();
+				if($helmet instanceof Armor){
+					$finalDamage = $source->getFinalDamage();
+					$this->damageItem($helmet, (int) round($finalDamage * 4 + lcg_value() * $finalDamage * 2));
+					$this->armorInventory->setHelmet($helmet);
+				}
 			}
 		}
 	}
@@ -831,7 +844,8 @@ abstract class Living extends Entity{
 	protected function sendSpawnPacket(Player $player) : void{
 		parent::sendSpawnPacket($player);
 
-		$player->getNetworkSession()->onMobArmorChange($this);
+		$networkSession = $player->getNetworkSession();
+		$networkSession->getEntityEventBroadcaster()->onMobArmorChange([$networkSession], $this);
 	}
 
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{

@@ -107,6 +107,14 @@ class Anvil extends Transparent implements Fallable{
 		return true;
 	}
 
+	public function getFallDamagePerBlock() : float{
+		return 2.0;
+	}
+
+	public function getMaxFallDamage() : float{
+		return 40.0;
+	}
+
 	public function getLandSound() : ?Sound{
 		return new AnvilFallSound();
 	}

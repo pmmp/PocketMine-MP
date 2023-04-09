@@ -24,41 +24,29 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe;
 
 use pocketmine\inventory\Inventory;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 
-final class ComplexWindowMapEntry{
+final class InventoryManagerEntry{
+	/**
+	 * @var ItemStack[]
+	 * @phpstan-var array<int, ItemStack>
+	 */
+	public array $predictions = [];
+
+	/**
+	 * @var ItemStackInfo[]
+	 * @phpstan-var array<int, ItemStackInfo>
+	 */
+	public array $itemStackInfos = [];
 
 	/**
 	 * @var int[]
-	 * @phpstan-var array<int, int>
+	 * @phpstan-var array<int, ItemStack>
 	 */
-	private array $reverseSlotMap = [];
+	public array $pendingSyncs = [];
 
-	/**
-	 * @param int[] $slotMap
-	 * @phpstan-param array<int, int> $slotMap
-	 */
 	public function __construct(
-		private Inventory $inventory,
-		private array $slotMap
-	){
-		foreach($slotMap as $slot => $index){
-			$this->reverseSlotMap[$index] = $slot;
-		}
-	}
-
-	public function getInventory() : Inventory{ return $this->inventory; }
-
-	/**
-	 * @return int[]
-	 * @phpstan-return array<int, int>
-	 */
-	public function getSlotMap() : array{ return $this->slotMap; }
-
-	public function mapNetToCore(int $slot) : ?int{
-		return $this->slotMap[$slot] ?? null;
-	}
-
-	public function mapCoreToNet(int $slot) : ?int{
-		return $this->reverseSlotMap[$slot] ?? null;
-	}
+		public Inventory $inventory,
+		public ?ComplexInventoryMapEntry $complexSlotMap = null
+	){}
 }
