@@ -128,19 +128,14 @@ use function ucfirst;
 use const JSON_THROW_ON_ERROR;
 
 class NetworkSession{
-	private const INCOMING_PACKET_BATCH_PER_TICK = 2; //usually max 1 per tick, but transactions may arrive separately
-	private const INCOMING_PACKET_BATCH_MAX_BUDGET = 100 * self::INCOMING_PACKET_BATCH_PER_TICK; //enough to account for a 5-second lag spike
+	private const INCOMING_PACKET_BATCH_PER_TICK = 2; //usually max 1 per tick, but transactions arrive separately
+	private const INCOMING_PACKET_BATCH_BUFFER_TICKS = 100; //enough to account for a 5-second lag spike
 
-	/**
-	 * At most this many more packets can be received. If this reaches zero, any additional packets received will cause
-	 * the player to be kicked from the server.
-	 * This number is increased every tick up to a maximum limit.
-	 *
-	 * @see self::INCOMING_PACKET_BATCH_PER_TICK
-	 * @see self::INCOMING_PACKET_BATCH_MAX_BUDGET
-	 */
-	private int $incomingPacketBatchBudget = self::INCOMING_PACKET_BATCH_MAX_BUDGET;
-	private int $lastPacketBudgetUpdateTimeNs;
+	private const INCOMING_GAME_PACKETS_PER_TICK = 2;
+	private const INCOMING_GAME_PACKETS_BUFFER_TICKS = 100;
+
+	private PacketRateLimiter $packetBatchLimiter;
+	private PacketRateLimiter $gamePacketLimiter;
 
 	private \PrefixedLogger $logger;
 	private ?Player $player = null;
@@ -196,7 +191,8 @@ class NetworkSession{
 		$this->disposeHooks = new ObjectSet();
 
 		$this->connectTime = time();
-		$this->lastPacketBudgetUpdateTimeNs = hrtime(true);
+		$this->packetBatchLimiter = new PacketRateLimiter("Packet Batches", self::INCOMING_PACKET_BATCH_PER_TICK, self::INCOMING_PACKET_BATCH_BUFFER_TICKS);
+		$this->gamePacketLimiter = new PacketRateLimiter("Game Packets", self::INCOMING_GAME_PACKETS_PER_TICK, self::INCOMING_GAME_PACKETS_BUFFER_TICKS);
 
 		$this->setHandler(new SessionStartPacketHandler(
 			$this->server,
@@ -339,13 +335,7 @@ class NetworkSession{
 
 		Timings::$playerNetworkReceive->startTiming();
 		try{
-			if($this->incomingPacketBatchBudget <= 0){
-				$this->updatePacketBudget();
-				if($this->incomingPacketBatchBudget <= 0){
-					throw new PacketHandlingException("Receiving packets too fast");
-				}
-			}
-			$this->incomingPacketBatchBudget--;
+			$this->packetBatchLimiter->decrement();
 
 			if($this->cipher !== null){
 				Timings::$playerNetworkReceiveDecrypt->startTiming();
@@ -377,6 +367,7 @@ class NetworkSession{
 				$stream = new BinaryStream($decompressed);
 				$count = 0;
 				foreach(PacketBatch::decodeRaw($stream) as $buffer){
+					$this->gamePacketLimiter->decrement();
 					if(++$count > 100){
 						throw new PacketHandlingException("Too many packets in batch");
 					}
@@ -1103,23 +1094,6 @@ class NetworkSession{
 
 	public function onToastNotification(string $title, string $body) : void{
 		$this->sendDataPacket(ToastRequestPacket::create($title, $body));
-	}
-
-	private function updatePacketBudget() : void{
-		$nowNs = hrtime(true);
-		$timeSinceLastUpdateNs = $nowNs - $this->lastPacketBudgetUpdateTimeNs;
-		if($timeSinceLastUpdateNs > 50_000_000){
-			$ticksSinceLastUpdate = intdiv($timeSinceLastUpdateNs, 50_000_000);
-			/*
-			 * If the server takes an abnormally long time to process a tick, add the budget for time difference to
-			 * compensate. This extra budget may be very large, but it will disappear the next time a normal update
-			 * occurs. This ensures that backlogs during a large lag spike don't cause everyone to get kicked.
-			 * As long as all the backlogged packets are processed before the next tick, everything should be OK for
-			 * clients behaving normally.
-			 */
-			$this->incomingPacketBatchBudget = min($this->incomingPacketBatchBudget, self::INCOMING_PACKET_BATCH_MAX_BUDGET) + (self::INCOMING_PACKET_BATCH_PER_TICK * 2 * $ticksSinceLastUpdate);
-			$this->lastPacketBudgetUpdateTimeNs = $nowNs;
-		}
 	}
 
 	public function tick() : void{
