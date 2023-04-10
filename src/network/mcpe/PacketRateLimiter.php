@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe;
 
 use pocketmine\network\PacketHandlingException;
+use function hrtime;
 use function intdiv;
 use function min;
 
