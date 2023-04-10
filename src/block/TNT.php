@@ -80,7 +80,7 @@ class TNT extends Opaque{
 
 	public function onBreak(Item $item, ?Player $player = null) : bool{
 		if($this->unstable){
-			$this->ignite();
+			$this->ignite(cause: $player);
 			return true;
 		}
 		return parent::onBreak($item, $player);
@@ -91,7 +91,7 @@ class TNT extends Opaque{
 			if($item instanceof Durable){
 				$item->applyDamage(1);
 			}
-			$this->ignite();
+			$this->ignite(cause: $player);
 			return true;
 		}
 
@@ -104,7 +104,7 @@ class TNT extends Opaque{
 
 	public function onEntityInside(Entity $entity) : bool{
 		if($entity instanceof Arrow && $entity->isOnFire()){
-			$this->ignite();
+			$this->ignite(cause: $entity);
 			return false;
 		}
 		return true;
