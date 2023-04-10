@@ -223,8 +223,8 @@ class World implements ChunkManager{
 	private array $tickingLoaderCounter = [];
 
 	/**
-	 * @var ChunkTicker[][] chunkHash => [spl_object_id => ChunkTicker]
-	 * @phpstan-var array<ChunkPosHash, array<int, ChunkTicker>>
+	 * @var TickingChunkEntry[] chunkHash => TickingChunkEntry
+	 * @phpstan-var array<ChunkPosHash, TickingChunkEntry>
 	 */
 	private array $tickingChunks = [];
 
@@ -1160,7 +1160,7 @@ class World implements ChunkManager{
 	 * registered to it.
 	 */
 	public function registerTickingChunk(ChunkTicker $ticker, int $chunkX, int $chunkZ) : void{
-		$this->tickingChunks[World::chunkHash($chunkX, $chunkZ)][spl_object_id($ticker)] = $ticker;
+		$this->tickingChunks[World::chunkHash($chunkX, $chunkZ)]->tickers[spl_object_id($ticker)] = $ticker;
 	}
 
 	/**
@@ -1170,9 +1170,9 @@ class World implements ChunkManager{
 	public function unregisterTickingChunk(ChunkTicker $ticker, int $chunkX, int $chunkZ) : void{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		$tickerId = spl_object_id($ticker);
-		if(isset($this->tickingChunks[$chunkHash][$tickerId])){
-			unset($this->tickingChunks[$chunkHash][$tickerId]);
-			if(count($this->tickingChunks[$chunkHash]) === 0){
+		if(isset($this->tickingChunks[$chunkHash]->tickers[$tickerId])){
+			unset($this->tickingChunks[$chunkHash]->tickers[$tickerId]);
+			if(count($this->tickingChunks[$chunkHash]->tickers) === 0){
 				unset($this->tickingChunks[$chunkHash]);
 			}
 		}
@@ -1228,9 +1228,17 @@ class World implements ChunkManager{
 
 		$chunkTickableCache = [];
 
-		foreach($this->tickingChunks as $hash => $tickingChunkLoaders){
+		foreach($this->tickingChunks as $hash => $entry){
 			World::getXZ($hash, $chunkX, $chunkZ);
-			if(!isset($chunkTickList[$hash]) && isset($this->chunks[$hash]) && $this->isChunkTickable($chunkX, $chunkZ, $chunkTickableCache)){
+			if(!isset($chunkTickList[$hash])){
+				if(!$entry->ready){
+					if($this->isChunkTickable($chunkX, $chunkZ, $chunkTickableCache)){
+						$entry->ready = true;
+					}else{
+						//the chunk has been flagged as temporarily not tickable, so we don't want to tick it this time
+						continue;
+					}
+				}
 				$chunkTickList[$hash] = true;
 			}
 		}
@@ -1291,11 +1299,28 @@ class World implements ChunkManager{
 		return true;
 	}
 
+	/**
+	 * Marks the 3x3 chunks around the specified chunk as not ready to be ticked. This is used to prevent chunk ticking
+	 * while a chunk is being populated, light-populated, or unloaded.
+	 * Each chunk will be rechecked every tick until it is ready to be ticked again.
+	 */
+	private function markTickingChunkUnavailable(int $chunkX, int $chunkZ) : void{
+		for($cx = -1; $cx <= 1; ++$cx){
+			for($cz = -1; $cz <= 1; ++$cz){
+				$chunkHash = World::chunkHash($chunkX + $cx, $chunkZ + $cz);
+				if(isset($this->tickingChunks[$chunkHash])){
+					$this->tickingChunks[$chunkHash]->ready = false;
+				}
+			}
+		}
+	}
+
 	private function orderLightPopulation(int $chunkX, int $chunkZ) : void{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		$lightPopulatedState = $this->chunks[$chunkHash]->isLightPopulated();
 		if($lightPopulatedState === false){
 			$this->chunks[$chunkHash]->setLightPopulated(null);
+			$this->markTickingChunkUnavailable($chunkX, $chunkZ);
 
 			$this->workerPool->submitTask(new LightPopulationTask(
 				$this->chunks[$chunkHash],
@@ -2363,6 +2388,7 @@ class World implements ChunkManager{
 			throw new \InvalidArgumentException("Chunk $chunkX $chunkZ is already locked");
 		}
 		$this->chunkLock[$chunkHash] = $lockId;
+		$this->markTickingChunkUnavailable($chunkX, $chunkZ);
 	}
 
 	/**
@@ -2428,6 +2454,7 @@ class World implements ChunkManager{
 		unset($this->blockCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);
 		$chunk->setTerrainDirty();
+		$this->markTickingChunkUnavailable($chunkX, $chunkZ); //this replacement chunk may not meet the conditions for ticking
 
 		if(!$this->isChunkInUse($chunkX, $chunkZ)){
 			$this->unloadChunkRequest($chunkX, $chunkZ);
@@ -2870,6 +2897,8 @@ class World implements ChunkManager{
 		unset($this->chunks[$chunkHash]);
 		unset($this->blockCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);
+		unset($this->tickingChunks[$chunkHash]);
+		$this->markTickingChunkUnavailable($x, $z);
 
 		if(array_key_exists($chunkHash, $this->chunkPopulationRequestMap)){
 			$this->logger->debug("Rejecting population promise for chunk $x $z");
