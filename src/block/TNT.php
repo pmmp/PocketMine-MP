@@ -27,6 +27,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
 use pocketmine\entity\object\PrimedTNT;
 use pocketmine\entity\projectile\Arrow;
+use pocketmine\event\entity\EntityIgniteEvent;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\FlintSteel;
@@ -109,7 +110,7 @@ class TNT extends Opaque{
 		return true;
 	}
 
-	public function ignite(int $fuse = 80) : void{
+	public function ignite(int $fuse = 80, ?Entity $cause = null) : void{
 		$world = $this->position->getWorld();
 		$world->setBlock($this->position, VanillaBlocks::AIR());
 
@@ -119,6 +120,14 @@ class TNT extends Opaque{
 		$tnt->setFuse($fuse);
 		$tnt->setWorksUnderwater($this->worksUnderwater);
 		$tnt->setMotion(new Vector3(-sin($mot) * 0.02, 0.2, -cos($mot) * 0.02));
+
+		$ev = new EntityIgniteEvent($tnt, $cause);
+		$ev->call();
+
+		if($ev->isCancelled()){
+			$tnt->flagForDespawn();
+			return;
+		}
 
 		$tnt->spawnToAll();
 		$tnt->broadcastSound(new IgniteSound());
