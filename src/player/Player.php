@@ -1233,7 +1233,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$revert = false;
 
-		if($distanceSquared > 100){
+		if($distanceSquared > 225){ //15 blocks
 			//TODO: this is probably too big if we process every movement
 			/* !!! BEWARE YE WHO ENTER HERE !!!
 			 *
@@ -1245,7 +1245,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			 * If you must tamper with this code, be aware that this can cause very nasty results. Do not waste our time
 			 * asking for help if you suffer the consequences of messing with this.
 			 */
-			$this->logger->debug("Moved too fast, reverting movement");
+			$this->logger->debug("Moved too fast (" . sqrt($distanceSquared) . " blocks in 1 movement), reverting movement");
 			$this->logger->debug("Old position: " . $oldPos->asVector3() . ", new position: " . $newPos);
 			$revert = true;
 		}elseif(!$this->getWorld()->isInLoadedTerrain($newPos)){

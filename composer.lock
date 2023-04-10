@@ -199,16 +199,16 @@
         },
         {
             "name": "netresearch/jsonmapper",
-            "version": "v4.1.0",
+            "version": "v4.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cweiske/jsonmapper.git",
-                "reference": "cfa81ea1d35294d64adb9c68aa4cb9e92400e53f"
+                "reference": "f60565f8c0566a31acf06884cdaa591867ecc956"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cweiske/jsonmapper/zipball/cfa81ea1d35294d64adb9c68aa4cb9e92400e53f",
-                "reference": "cfa81ea1d35294d64adb9c68aa4cb9e92400e53f",
+                "url": "https://api.github.com/repos/cweiske/jsonmapper/zipball/f60565f8c0566a31acf06884cdaa591867ecc956",
+                "reference": "f60565f8c0566a31acf06884cdaa591867ecc956",
                 "shasum": ""
             },
             "require": {
@@ -244,9 +244,9 @@
             "support": {
                 "email": "cweiske@cweiske.de",
                 "issues": "https://github.com/cweiske/jsonmapper/issues",
-                "source": "https://github.com/cweiske/jsonmapper/tree/v4.1.0"
+                "source": "https://github.com/cweiske/jsonmapper/tree/v4.2.0"
             },
-            "time": "2022-12-08T20:46:14+00:00"
+            "time": "2023-04-09T17:37:40+00:00"
         },
         {
             "name": "pocketmine/bedrock-block-upgrade-schema",
@@ -328,16 +328,16 @@
         },
         {
             "name": "pocketmine/bedrock-protocol",
-            "version": "20.1.1+bedrock-1.19.70",
+            "version": "20.1.2+bedrock-1.19.70",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "455dbad93d29b4489b60910a41e38b8007b26563"
+                "reference": "2787c531039b3d92fa3ec92f28b95158dc24b915"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/455dbad93d29b4489b60910a41e38b8007b26563",
-                "reference": "455dbad93d29b4489b60910a41e38b8007b26563",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/2787c531039b3d92fa3ec92f28b95158dc24b915",
+                "reference": "2787c531039b3d92fa3ec92f28b95158dc24b915",
                 "shasum": ""
             },
             "require": {
@@ -369,9 +369,9 @@
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
-                "source": "https://github.com/pmmp/BedrockProtocol/tree/20.1.1+bedrock-1.19.70"
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/20.1.2+bedrock-1.19.70"
             },
-            "time": "2023-03-29T22:38:17+00:00"
+            "time": "2023-04-10T11:40:32+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
@@ -512,23 +512,23 @@
         },
         {
             "name": "pocketmine/color",
-            "version": "0.3.0",
+            "version": "0.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Color.git",
-                "reference": "8cb346d0a21ad3287cc8d7175e4b643416607249"
+                "reference": "a0421f1e9e0b0c619300fb92d593283378f6a5e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Color/zipball/8cb346d0a21ad3287cc8d7175e4b643416607249",
-                "reference": "8cb346d0a21ad3287cc8d7175e4b643416607249",
+                "url": "https://api.github.com/repos/pmmp/Color/zipball/a0421f1e9e0b0c619300fb92d593283378f6a5e1",
+                "reference": "a0421f1e9e0b0c619300fb92d593283378f6a5e1",
                 "shasum": ""
             },
             "require": {
                 "php": "^8.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "1.9.4",
+                "phpstan/phpstan": "1.10.3",
                 "phpstan/phpstan-strict-rules": "^1.2.0"
             },
             "type": "library",
@@ -544,9 +544,9 @@
             "description": "Color handling library used by PocketMine-MP and related projects",
             "support": {
                 "issues": "https://github.com/pmmp/Color/issues",
-                "source": "https://github.com/pmmp/Color/tree/0.3.0"
+                "source": "https://github.com/pmmp/Color/tree/0.3.1"
             },
-            "time": "2022-12-18T19:49:21+00:00"
+            "time": "2023-04-10T11:38:05+00:00"
         },
         {
             "name": "pocketmine/errorhandler",
@@ -738,16 +738,16 @@
         },
         {
             "name": "pocketmine/nbt",
-            "version": "0.3.3",
+            "version": "0.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "f4321be50df1a18b9f4e94d428a2e68a6e2ac2b4"
+                "reference": "62c02464c6708b2467c1e1a2af01af09d5114eda"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/f4321be50df1a18b9f4e94d428a2e68a6e2ac2b4",
-                "reference": "f4321be50df1a18b9f4e94d428a2e68a6e2ac2b4",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/62c02464c6708b2467c1e1a2af01af09d5114eda",
+                "reference": "62c02464c6708b2467c1e1a2af01af09d5114eda",
                 "shasum": ""
             },
             "require": {
@@ -757,7 +757,7 @@
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "1.7.7",
+                "phpstan/phpstan": "1.10.3",
                 "phpstan/phpstan-strict-rules": "^1.0",
                 "phpunit/phpunit": "^9.5"
             },
@@ -774,9 +774,9 @@
             "description": "PHP library for working with Named Binary Tags",
             "support": {
                 "issues": "https://github.com/pmmp/NBT/issues",
-                "source": "https://github.com/pmmp/NBT/tree/0.3.3"
+                "source": "https://github.com/pmmp/NBT/tree/0.3.4"
             },
-            "time": "2022-07-06T14:13:26+00:00"
+            "time": "2023-04-10T11:31:20+00:00"
         },
         {
             "name": "pocketmine/raklib",

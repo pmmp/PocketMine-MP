@@ -32,6 +32,8 @@ use function implode;
 use function spl_object_id;
 
 class TimingsHandler{
+	private const FORMAT_VERSION = 1;
+
 	private static bool $enabled = false;
 	private static int $timingStart = 0;
 
@@ -58,7 +60,9 @@ class TimingsHandler{
 				"Violations: " . $timings->getViolations(),
 				"RecordId: " . $timings->getId(),
 				"ParentRecordId: " . ($timings->getParentId() ?? "none"),
-				"TimerId: " . $timings->getTimerId()
+				"TimerId: " . $timings->getTimerId(),
+				"Ticks: " . $timings->getTicksActive(),
+				"Peak: " . $timings->getPeakTime(),
 			]);
 		}
 		$result = [];
@@ -86,6 +90,7 @@ class TimingsHandler{
 
 		$result[] = "# Entities " . $entities;
 		$result[] = "# LivingEntities " . $livingEntities;
+		$result[] = "# FormatVersion " . self::FORMAT_VERSION;
 
 		$sampleTime = hrtime(true) - self::$timingStart;
 		$result[] = "Sample time $sampleTime (" . ($sampleTime / 1000000000) . "s)";

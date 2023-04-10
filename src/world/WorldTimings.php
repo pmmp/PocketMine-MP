@@ -53,27 +53,27 @@ class WorldTimings{
 	public function __construct(World $world){
 		$name = $world->getFolderName() . " - ";
 
-		$this->setBlock = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "setBlock");
-		$this->doBlockLightUpdates = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Block Light Updates");
-		$this->doBlockSkyLightUpdates = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Sky Light Updates");
+		$this->setBlock = new TimingsHandler($name . "setBlock", group: Timings::GROUP_BREAKDOWN);
+		$this->doBlockLightUpdates = new TimingsHandler($name . "Block Light Updates", group: Timings::GROUP_BREAKDOWN);
+		$this->doBlockSkyLightUpdates = new TimingsHandler($name . "Sky Light Updates", group: Timings::GROUP_BREAKDOWN);
 
-		$this->doChunkUnload = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Unload Chunks");
-		$this->scheduledBlockUpdates = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Scheduled Block Updates");
-		$this->randomChunkUpdates = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Random Chunk Updates");
-		$this->randomChunkUpdatesChunkSelection = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Random Chunk Updates - Chunk Selection");
-		$this->doChunkGC = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Garbage Collection");
-		$this->entityTick = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Tick Entities");
+		$this->doChunkUnload = new TimingsHandler($name . "Unload Chunks", group: Timings::GROUP_BREAKDOWN);
+		$this->scheduledBlockUpdates = new TimingsHandler($name . "Scheduled Block Updates", group: Timings::GROUP_BREAKDOWN);
+		$this->randomChunkUpdates = new TimingsHandler($name . "Random Chunk Updates", group: Timings::GROUP_BREAKDOWN);
+		$this->randomChunkUpdatesChunkSelection = new TimingsHandler($name . "Random Chunk Updates - Chunk Selection", group: Timings::GROUP_BREAKDOWN);
+		$this->doChunkGC = new TimingsHandler($name . "Garbage Collection", group: Timings::GROUP_BREAKDOWN);
+		$this->entityTick = new TimingsHandler($name . "Tick Entities", group: Timings::GROUP_BREAKDOWN);
 
 		Timings::init(); //make sure the timers we want are available
-		$this->syncChunkSend = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Player Send Chunks", Timings::$playerChunkSend);
-		$this->syncChunkSendPrepare = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Player Send Chunk Prepare", Timings::$playerChunkSend);
+		$this->syncChunkSend = new TimingsHandler($name . "Player Send Chunks", Timings::$playerChunkSend, group: Timings::GROUP_BREAKDOWN);
+		$this->syncChunkSendPrepare = new TimingsHandler($name . "Player Send Chunk Prepare", Timings::$playerChunkSend, group: Timings::GROUP_BREAKDOWN);
 
-		$this->syncChunkLoad = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Chunk Load", Timings::$worldLoad);
-		$this->syncChunkLoadData = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Chunk Load - Data");
-		$this->syncChunkLoadFixInvalidBlocks = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Chunk Load - Fix Invalid Blocks");
-		$this->syncChunkLoadEntities = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Chunk Load - Entities");
-		$this->syncChunkLoadTileEntities = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Chunk Load - TileEntities");
-		$this->syncChunkSave = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Chunk Save", Timings::$worldSave);
+		$this->syncChunkLoad = new TimingsHandler($name . "Chunk Load", Timings::$worldLoad, group: Timings::GROUP_BREAKDOWN);
+		$this->syncChunkLoadData = new TimingsHandler($name . "Chunk Load - Data", group: Timings::GROUP_BREAKDOWN);
+		$this->syncChunkLoadFixInvalidBlocks = new TimingsHandler($name . "Chunk Load - Fix Invalid Blocks", group: Timings::GROUP_BREAKDOWN);
+		$this->syncChunkLoadEntities = new TimingsHandler($name . "Chunk Load - Entities", group: Timings::GROUP_BREAKDOWN);
+		$this->syncChunkLoadTileEntities = new TimingsHandler($name . "Chunk Load - TileEntities", group: Timings::GROUP_BREAKDOWN);
+		$this->syncChunkSave = new TimingsHandler($name . "Chunk Save", Timings::$worldSave, group: Timings::GROUP_BREAKDOWN);
 
 		$this->doTick = new TimingsHandler($name . "World Tick");
 	}

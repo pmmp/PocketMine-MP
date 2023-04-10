@@ -163,6 +163,7 @@ class TimingsCommand extends VanillaCommand{
 							Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsRead(
 								"https://" . $host . "/?id=" . $response["id"]));
 						}else{
+							$sender->getServer()->getLogger()->debug("Invalid response from timings server: " . $result->getBody());
 							Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_pasteError());
 						}
 					}
