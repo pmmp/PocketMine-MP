@@ -1234,18 +1234,16 @@ class World implements ChunkManager{
 		$chunkTickableCache = [];
 
 		foreach($this->tickingChunks as $hash => $entry){
-			World::getXZ($hash, $chunkX, $chunkZ);
-			if(!isset($chunkTickList[$hash])){
-				if(!$entry->ready){
-					if($this->isChunkTickable($chunkX, $chunkZ, $chunkTickableCache)){
-						$entry->ready = true;
-					}else{
-						//the chunk has been flagged as temporarily not tickable, so we don't want to tick it this time
-						continue;
-					}
+			if(!$entry->ready){
+				World::getXZ($hash, $chunkX, $chunkZ);
+				if($this->isChunkTickable($chunkX, $chunkZ, $chunkTickableCache)){
+					$entry->ready = true;
+				}else{
+					//the chunk has been flagged as temporarily not tickable, so we don't want to tick it this time
+					continue;
 				}
-				$chunkTickList[$hash] = true;
 			}
+			$chunkTickList[$hash] = true;
 		}
 
 		//TODO: REMOVE THIS
