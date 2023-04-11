@@ -84,9 +84,6 @@ class ExperienceOrb extends Entity{
 		return $result;
 	}
 
-	/** @deprecated */
-	protected int $age = 0;
-
 	/** Ticker used for determining interval in which to look for new target players. */
 	protected int $lookForTargetTime = 0;
 
@@ -111,11 +108,11 @@ class ExperienceOrb extends Entity{
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
-		$this->age = $nbt->getShort(self::TAG_AGE, 0);
-		if($this->age === -32768){
+		$age = $nbt->getShort(self::TAG_AGE, 0);
+		if($age === -32768){
 			$this->despawnDelay = self::NEVER_DESPAWN;
 		}else{
-			$this->despawnDelay = max(0, self::DEFAULT_DESPAWN_DELAY - $this->age);
+			$this->despawnDelay = max(0, self::DEFAULT_DESPAWN_DELAY - $age);
 		}
 	}
 
@@ -180,7 +177,6 @@ class ExperienceOrb extends Entity{
 	protected function entityBaseTick(int $tickDiff = 1) : bool{
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		$this->age += $tickDiff;
 		$this->despawnDelay -= $tickDiff;
 		if($this->despawnDelay <= 0){
 			$this->flagForDespawn();

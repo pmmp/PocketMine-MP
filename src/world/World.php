@@ -71,7 +71,6 @@ use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
-use pocketmine\player\ChunkSelector;
 use pocketmine\player\Player;
 use pocketmine\promise\Promise;
 use pocketmine\promise\PromiseResolver;
@@ -208,21 +207,6 @@ class World implements ChunkManager{
 
 	private int $minY;
 	private int $maxY;
-
-	/**
-	 * @var TickingChunkLoader[] spl_object_id => TickingChunkLoader
-	 * @phpstan-var array<int, TickingChunkLoader>
-	 *
-	 * @deprecated
-	 */
-	private array $tickingLoaders = [];
-	/**
-	 * @var int[] spl_object_id => number of chunks
-	 * @phpstan-var array<int, int>
-	 *
-	 * @deprecated
-	 */
-	private array $tickingLoaderCounter = [];
 
 	/**
 	 * @var TickingChunkEntry[] chunkHash => TickingChunkEntry
@@ -799,15 +783,6 @@ class World implements ChunkManager{
 
 		$this->chunkLoaders[$chunkHash][$loaderId] = $loader;
 
-		if($loader instanceof TickingChunkLoader){
-			if(!isset($this->tickingLoaders[$loaderId])){
-				$this->tickingLoaderCounter[$loaderId] = 1;
-				$this->tickingLoaders[$loaderId] = $loader;
-			}else{
-				++$this->tickingLoaderCounter[$loaderId];
-			}
-		}
-
 		$this->cancelUnloadChunkRequest($chunkX, $chunkZ);
 
 		if($autoLoad){
@@ -827,11 +802,6 @@ class World implements ChunkManager{
 					$this->chunkPopulationRequestMap[$chunkHash]->reject();
 					unset($this->chunkPopulationRequestMap[$chunkHash]);
 				}
-			}
-
-			if(isset($this->tickingLoaderCounter[$loaderId]) && --$this->tickingLoaderCounter[$loaderId] === 0){
-				unset($this->tickingLoaderCounter[$loaderId]);
-				unset($this->tickingLoaders[$loaderId]);
 			}
 		}
 	}
@@ -1206,46 +1176,8 @@ class World implements ChunkManager{
 		}
 	}
 
-	/**
-	 * @deprecated
-	 *
-	 * @param true[] $chunkTickList
-	 * @param bool[] $chunkTickableCache
-	 *
-	 * @phpstan-param array<int, true> $chunkTickList
-	 * @phpstan-param array<int, bool> $chunkTickableCache
-	 * @phpstan-param-out array<int, true> $chunkTickList
-	 * @phpstan-param-out array<int, bool> $chunkTickableCache
-	 */
-	private function selectTickableChunksLegacy(array &$chunkTickList, array &$chunkTickableCache) : void{
-		$centerChunks = [];
-
-		$selector = new ChunkSelector();
-		foreach($this->tickingLoaders as $loader){
-			$centerChunkX = (int) floor($loader->getX()) >> Chunk::COORD_BIT_SIZE;
-			$centerChunkZ = (int) floor($loader->getZ()) >> Chunk::COORD_BIT_SIZE;
-			$centerChunkPosHash = World::chunkHash($centerChunkX, $centerChunkZ);
-			if(isset($centerChunks[$centerChunkPosHash])){
-				//we already queued chunks in this radius because of a previous loader on the same chunk
-				continue;
-			}
-			$centerChunks[$centerChunkPosHash] = true;
-
-			foreach($selector->selectChunks(
-				$this->chunkTickRadius,
-				$centerChunkX,
-				$centerChunkZ
-			) as $hash){
-				World::getXZ($hash, $chunkX, $chunkZ);
-				if(!isset($chunkTickList[$hash]) && isset($this->chunks[$hash]) && $this->isChunkTickable($chunkX, $chunkZ, $chunkTickableCache)){
-					$chunkTickList[$hash] = true;
-				}
-			}
-		}
-	}
-
 	private function tickChunks() : void{
-		if($this->chunkTickRadius <= 0 || (count($this->tickingChunks) === 0 && count($this->tickingLoaders) === 0)){
+		if($this->chunkTickRadius <= 0 || count($this->tickingChunks) === 0){
 			return;
 		}
 
@@ -1267,12 +1199,6 @@ class World implements ChunkManager{
 				}
 			}
 			$chunkTickList[$hash] = true;
-		}
-
-		//TODO: REMOVE THIS
-		//backwards compatibility for TickingChunkLoader, although I'm not sure this is really necessary in practice
-		if(count($this->tickingLoaders) !== 0){
-			$this->selectTickableChunksLegacy($chunkTickList, $chunkTickableCache);
 		}
 
 		$this->timings->randomChunkUpdatesChunkSelection->stopTiming();

@@ -34,12 +34,6 @@ use function get_class;
 use function str_starts_with;
 
 abstract class Timings{
-	/**
-	 * @deprecated This was used by the old timings viewer to make a timer appear in the Breakdown section of a timings
-	 * report. Provide a group to your timer's constructor instead.
-	 * @see Timings::GROUP_BREAKDOWN
-	 */
-	public const INCLUDED_BY_OTHER_TIMINGS_PREFIX = "** ";
 	public const GROUP_BREAKDOWN = "Minecraft - Breakdown";
 
 	private static bool $initialized = false;
