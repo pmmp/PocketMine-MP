@@ -212,13 +212,24 @@ class World implements ChunkManager{
 	/**
 	 * @var TickingChunkLoader[] spl_object_id => TickingChunkLoader
 	 * @phpstan-var array<int, TickingChunkLoader>
+	 *
+	 * @deprecated
 	 */
 	private array $tickingLoaders = [];
 	/**
 	 * @var int[] spl_object_id => number of chunks
 	 * @phpstan-var array<int, int>
+	 *
+	 * @deprecated
 	 */
 	private array $tickingLoaderCounter = [];
+
+	/**
+	 * @var TickingChunkEntry[] chunkHash => TickingChunkEntry
+	 * @phpstan-var array<ChunkPosHash, TickingChunkEntry>
+	 */
+	private array $tickingChunks = [];
+
 	/**
 	 * @var ChunkLoader[][] chunkHash => [spl_object_id => ChunkLoader]
 	 * @phpstan-var array<ChunkPosHash, array<int, ChunkLoader>>
@@ -1152,32 +1163,61 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * Returns the radius of chunks to be ticked around each ticking chunk loader (usually players). This is referred to
-	 * as "simulation distance" in the Minecraft: Bedrock world options screen.
+	 * Returns the radius of chunks to be ticked around each player. This is referred to as "simulation distance" in the
+	 * Minecraft: Bedrock world options screen.
 	 */
 	public function getChunkTickRadius() : int{
 		return $this->chunkTickRadius;
 	}
 
 	/**
-	 * Sets the radius of chunks ticked around each ticking chunk loader (usually players).
+	 * Sets the radius of chunks ticked around each player. This may not take effect immediately, since each player
+	 * needs to recalculate their tick radius.
 	 */
 	public function setChunkTickRadius(int $radius) : void{
 		$this->chunkTickRadius = $radius;
 	}
 
-	private function tickChunks() : void{
-		if($this->chunkTickRadius <= 0 || count($this->tickingLoaders) === 0){
-			return;
+	/**
+	 * Instructs the World to tick the specified chunk, for as long as this chunk ticker (or any other chunk ticker) is
+	 * registered to it.
+	 */
+	public function registerTickingChunk(ChunkTicker $ticker, int $chunkX, int $chunkZ) : void{
+		$chunkPosHash = World::chunkHash($chunkX, $chunkZ);
+		$entry = $this->tickingChunks[$chunkPosHash] ?? null;
+		if($entry === null){
+			$entry = $this->tickingChunks[$chunkPosHash] = new TickingChunkEntry();
 		}
+		$entry->tickers[spl_object_id($ticker)] = $ticker;
+	}
 
-		$this->timings->randomChunkUpdatesChunkSelection->startTiming();
+	/**
+	 * Unregisters the given chunk ticker from the specified chunk. If there are other tickers still registered to the
+	 * chunk, it will continue to be ticked.
+	 */
+	public function unregisterTickingChunk(ChunkTicker $ticker, int $chunkX, int $chunkZ) : void{
+		$chunkHash = World::chunkHash($chunkX, $chunkZ);
+		$tickerId = spl_object_id($ticker);
+		if(isset($this->tickingChunks[$chunkHash]->tickers[$tickerId])){
+			unset($this->tickingChunks[$chunkHash]->tickers[$tickerId]);
+			if(count($this->tickingChunks[$chunkHash]->tickers) === 0){
+				unset($this->tickingChunks[$chunkHash]);
+			}
+		}
+	}
 
-		/** @var bool[] $chunkTickList chunkhash => dummy */
-		$chunkTickList = [];
-
-		$chunkTickableCache = [];
-
+	/**
+	 * @deprecated
+	 *
+	 * @param true[] $chunkTickList
+	 * @param bool[] $chunkTickableCache
+	 *
+	 * @phpstan-param array<int, true> $chunkTickList
+	 * @phpstan-param array<int, bool> $chunkTickableCache
+	 * @phpstan-param-out array<int, true> $chunkTickList
+	 * @phpstan-param-out array<int, bool> $chunkTickableCache
+	 */
+	private function selectTickableChunksLegacy(array &$chunkTickList, array &$chunkTickableCache) : void{
 		$centerChunks = [];
 
 		$selector = new ChunkSelector();
@@ -1201,6 +1241,38 @@ class World implements ChunkManager{
 					$chunkTickList[$hash] = true;
 				}
 			}
+		}
+	}
+
+	private function tickChunks() : void{
+		if($this->chunkTickRadius <= 0 || (count($this->tickingChunks) === 0 && count($this->tickingLoaders) === 0)){
+			return;
+		}
+
+		$this->timings->randomChunkUpdatesChunkSelection->startTiming();
+
+		/** @var bool[] $chunkTickList chunkhash => dummy */
+		$chunkTickList = [];
+
+		$chunkTickableCache = [];
+
+		foreach($this->tickingChunks as $hash => $entry){
+			if(!$entry->ready){
+				World::getXZ($hash, $chunkX, $chunkZ);
+				if($this->isChunkTickable($chunkX, $chunkZ, $chunkTickableCache)){
+					$entry->ready = true;
+				}else{
+					//the chunk has been flagged as temporarily not tickable, so we don't want to tick it this time
+					continue;
+				}
+			}
+			$chunkTickList[$hash] = true;
+		}
+
+		//TODO: REMOVE THIS
+		//backwards compatibility for TickingChunkLoader, although I'm not sure this is really necessary in practice
+		if(count($this->tickingLoaders) !== 0){
+			$this->selectTickableChunksLegacy($chunkTickList, $chunkTickableCache);
 		}
 
 		$this->timings->randomChunkUpdatesChunkSelection->stopTiming();
@@ -1253,11 +1325,28 @@ class World implements ChunkManager{
 		return true;
 	}
 
+	/**
+	 * Marks the 3x3 chunks around the specified chunk as not ready to be ticked. This is used to prevent chunk ticking
+	 * while a chunk is being populated, light-populated, or unloaded.
+	 * Each chunk will be rechecked every tick until it is ready to be ticked again.
+	 */
+	private function markTickingChunkUnavailable(int $chunkX, int $chunkZ) : void{
+		for($cx = -1; $cx <= 1; ++$cx){
+			for($cz = -1; $cz <= 1; ++$cz){
+				$chunkHash = World::chunkHash($chunkX + $cx, $chunkZ + $cz);
+				if(isset($this->tickingChunks[$chunkHash])){
+					$this->tickingChunks[$chunkHash]->ready = false;
+				}
+			}
+		}
+	}
+
 	private function orderLightPopulation(int $chunkX, int $chunkZ) : void{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		$lightPopulatedState = $this->chunks[$chunkHash]->isLightPopulated();
 		if($lightPopulatedState === false){
 			$this->chunks[$chunkHash]->setLightPopulated(null);
+			$this->markTickingChunkUnavailable($chunkX, $chunkZ);
 
 			$this->workerPool->submitTask(new LightPopulationTask(
 				$this->chunks[$chunkHash],
@@ -2332,6 +2421,7 @@ class World implements ChunkManager{
 			throw new \InvalidArgumentException("Chunk $chunkX $chunkZ is already locked");
 		}
 		$this->chunkLock[$chunkHash] = $lockId;
+		$this->markTickingChunkUnavailable($chunkX, $chunkZ);
 	}
 
 	/**
@@ -2397,6 +2487,7 @@ class World implements ChunkManager{
 		unset($this->blockCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);
 		$chunk->setTerrainDirty();
+		$this->markTickingChunkUnavailable($chunkX, $chunkZ); //this replacement chunk may not meet the conditions for ticking
 
 		if(!$this->isChunkInUse($chunkX, $chunkZ)){
 			$this->unloadChunkRequest($chunkX, $chunkZ);
@@ -2819,6 +2910,8 @@ class World implements ChunkManager{
 		unset($this->chunks[$chunkHash]);
 		unset($this->blockCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);
+		unset($this->tickingChunks[$chunkHash]);
+		$this->markTickingChunkUnavailable($x, $z);
 
 		if(array_key_exists($chunkHash, $this->chunkPopulationRequestMap)){
 			$this->logger->debug("Rejecting population promise for chunk $x $z");

@@ -21,27 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\player;
-
-use pocketmine\math\Vector3;
-use pocketmine\world\TickingChunkLoader;
+namespace pocketmine\world;
 
 /**
- * @deprecated This class was only needed to implement TickingChunkLoader, which is now deprecated.
- * ChunkTicker should be registered on ticking chunks to make them tick instead.
+ * Used to signal to the World that a chunk should be ticked.
+ *
+ * @see World::registerTickingChunk()
+ * @see World::unregisterTickingChunk()
  */
-final class PlayerChunkLoader implements TickingChunkLoader{
-	public function __construct(private Vector3 $currentLocation){}
+final class ChunkTicker{
 
-	public function setCurrentLocation(Vector3 $currentLocation) : void{
-		$this->currentLocation = $currentLocation;
-	}
-
-	public function getX() : float{
-		return $this->currentLocation->getFloorX();
-	}
-
-	public function getZ() : float{
-		return $this->currentLocation->getFloorZ();
-	}
 }
