@@ -1160,7 +1160,12 @@ class World implements ChunkManager{
 	 * registered to it.
 	 */
 	public function registerTickingChunk(ChunkTicker $ticker, int $chunkX, int $chunkZ) : void{
-		$this->tickingChunks[World::chunkHash($chunkX, $chunkZ)]->tickers[spl_object_id($ticker)] = $ticker;
+		$chunkPosHash = World::chunkHash($chunkX, $chunkZ);
+		$entry = $this->tickingChunks[$chunkPosHash] ?? null;
+		if($entry === null){
+			$entry = $this->tickingChunks[$chunkPosHash] = new TickingChunkEntry();
+		}
+		$entry->tickers[spl_object_id($ticker)] = $ticker;
 	}
 
 	/**
