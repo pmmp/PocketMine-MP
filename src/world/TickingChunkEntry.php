@@ -21,27 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\player;
+namespace pocketmine\world;
 
-use pocketmine\math\Vector3;
-use pocketmine\world\TickingChunkLoader;
+final class TickingChunkEntry{
+	/**
+	 * @var ChunkTicker[] spl_object_id => ChunkTicker
+	 * @phpstan-var array<int, ChunkTicker>
+	 */
+	public array $tickers = [];
 
-/**
- * @deprecated This class was only needed to implement TickingChunkLoader, which is now deprecated.
- * ChunkTicker should be registered on ticking chunks to make them tick instead.
- */
-final class PlayerChunkLoader implements TickingChunkLoader{
-	public function __construct(private Vector3 $currentLocation){}
-
-	public function setCurrentLocation(Vector3 $currentLocation) : void{
-		$this->currentLocation = $currentLocation;
-	}
-
-	public function getX() : float{
-		return $this->currentLocation->getFloorX();
-	}
-
-	public function getZ() : float{
-		return $this->currentLocation->getFloorZ();
-	}
+	public bool $ready = false;
 }
