@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\world;
 
+/**
+ * @internal
+ */
 final class TickingChunkEntry{
 	/**
 	 * @var ChunkTicker[] spl_object_id => ChunkTicker
