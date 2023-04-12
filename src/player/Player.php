@@ -79,6 +79,7 @@ use pocketmine\event\player\PlayerViewDistanceChangeEvent;
 use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
 use pocketmine\inventory\CallbackInventoryListener;
+use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCraftingInventory;
 use pocketmine\inventory\PlayerCursorInventory;
@@ -215,6 +216,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected array $permanentWindows = [];
 	protected PlayerCursorInventory $cursorInventory;
 	protected PlayerCraftingInventory $craftingGrid;
+	protected CreativeInventory $creativeInventory;
 
 	protected int $messageCounter = 2;
 
@@ -304,6 +306,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->uuid = $this->playerInfo->getUuid();
 		$this->xuid = $this->playerInfo instanceof XboxLivePlayerInfo ? $this->playerInfo->getXuid() : "";
+
+		$this->creativeInventory = CreativeInventory::getInstance();
 
 		$rootPermissions = [DefaultPermissions::ROOT_USER => true];
 		if($this->server->isOp($this->username)){
@@ -2503,6 +2507,17 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function getCraftingGrid() : CraftingGrid{
 		return $this->craftingGrid;
+	}
+
+	public function getCreativeInventory() : CreativeInventory{
+		return $this->creativeInventory;
+	}
+
+	public function setCreativeInventory(CreativeInventory $inventory) : void{
+		$this->creativeInventory = $inventory;
+		if($this->isConnected()){
+			$this->getNetworkSession()->getInvManager()->syncCreative();
+		}
 	}
 
 	/**

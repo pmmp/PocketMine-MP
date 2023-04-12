@@ -33,7 +33,6 @@ use pocketmine\block\inventory\HopperInventory;
 use pocketmine\block\inventory\LoomInventory;
 use pocketmine\block\inventory\StonecutterInventory;
 use pocketmine\crafting\FurnaceType;
-use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
@@ -602,7 +601,7 @@ class InventoryManager{
 		$entries = [];
 		if(!$this->player->isSpectator()){
 			//creative inventory may have holes if items were unregistered - ensure network IDs used are always consistent
-			foreach(CreativeInventory::getInstance()->getAll() as $k => $item){
+			foreach($this->player->getCreativeInventory()->getAll() as $k => $item){
 				$entries[] = new CreativeContentEntry($k, $typeConverter->coreItemStackToNet($item));
 			}
 		}
