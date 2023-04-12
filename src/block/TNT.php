@@ -29,7 +29,6 @@ use pocketmine\entity\object\PrimedTNT;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\event\entity\EntityIgniteByBlockEvent;
 use pocketmine\event\entity\EntityIgniteByEntityEvent;
-use pocketmine\event\entity\EntityIgniteEvent;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\FlintSteel;
