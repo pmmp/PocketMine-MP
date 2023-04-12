@@ -284,12 +284,12 @@ class ItemStackRequestExecutor{
 		}
 
 		$this->createdItemsTakenCount += $count;
-		$createdItem = clone $createdItem;
-		$createdItem->setCount($count);
+		$takenItem = clone $createdItem;
+		$takenItem->setCount($count);
 		if(!$this->createdItemFromCreativeInventory && $this->createdItemsTakenCount >= $createdItem->getCount()){
 			$this->setNextCreatedItem(null);
 		}
-		return $createdItem;
+		return $takenItem;
 	}
 
 	/**
