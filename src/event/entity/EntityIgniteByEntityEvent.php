@@ -24,18 +24,23 @@ declare(strict_types=1);
 namespace pocketmine\event\entity;
 
 use pocketmine\entity\Entity;
-use pocketmine\event\CancellableTrait;
 
 /**
- * Called when entity is ignited.
- * @phpstan-extends EntityEvent<Entity>
+ * Called when entity is ignited by an entity.
  */
-class EntityIgniteEvent extends EntityEvent{
-	use CancellableTrait;
+final class EntityIgniteByEntityEvent extends EntityIgniteEvent{
 
 	public function __construct(
-		Entity $entity
+		Entity $entity,
+		private Entity $cause
 	){
-		$this->entity = $entity;
+		parent::__construct($entity);
+	}
+
+	/**
+	 * Returns the entity that ignited the entity.
+	 */
+	public function getCause() : Entity{
+		return $this->cause;
 	}
 }

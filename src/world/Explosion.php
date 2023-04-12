@@ -205,7 +205,7 @@ class Explosion{
 		foreach($this->affectedBlocks as $block){
 			$pos = $block->getPosition();
 			if($block instanceof TNT){
-				$block->ignite(mt_rand(10, 30));
+				$block->ignite(mt_rand(10, 30), $block);
 			}else{
 				if(mt_rand(0, 100) < $yield){
 					foreach($block->getDrops($air) as $drop){

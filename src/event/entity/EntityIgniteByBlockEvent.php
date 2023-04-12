@@ -23,19 +23,25 @@ declare(strict_types=1);
 
 namespace pocketmine\event\entity;
 
+use pocketmine\block\Block;
 use pocketmine\entity\Entity;
-use pocketmine\event\CancellableTrait;
 
 /**
- * Called when entity is ignited.
- * @phpstan-extends EntityEvent<Entity>
+ * Called when entity is ignited by a block.
  */
-class EntityIgniteEvent extends EntityEvent{
-	use CancellableTrait;
+final class EntityIgniteByBlockEvent extends EntityIgniteEvent{
 
 	public function __construct(
-		Entity $entity
+		Entity $entity,
+		private Block $cause
 	){
-		$this->entity = $entity;
+		parent::__construct($entity);
+	}
+
+	/**
+	 * Returns the block that ignited the entity.
+	 */
+	public function getCause() : Block{
+		return $this->cause;
 	}
 }
