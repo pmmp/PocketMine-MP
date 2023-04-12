@@ -2516,7 +2516,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function setCreativeInventory(CreativeInventory $inventory) : void{
 		$this->creativeInventory = $inventory;
 		if($this->isConnected()){
-			$this->getNetworkSession()->getInvManager()->syncCreative();
+			$this->getNetworkSession()->getInvManager()?->syncCreative();
 		}
 	}
 
