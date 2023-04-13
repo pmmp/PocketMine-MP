@@ -52,7 +52,7 @@ class NetherVines extends Flowable{
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(5, 0, self::MAX_AGE, $this->age);
 	}
 

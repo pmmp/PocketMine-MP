@@ -76,6 +76,8 @@ class Block{
 	 */
 	private static array $stateDataBits = [];
 
+	private int $defaultStateData;
+
 	/**
 	 * @param string $name English name of the block type (TODO: implement translations)
 	 */
@@ -84,6 +86,8 @@ class Block{
 		$this->fallbackName = $name;
 		$this->typeInfo = $typeInfo;
 		$this->position = new Position(0, 0, 0, null);
+
+		$this->defaultStateData = $this->computeStateData();
 	}
 
 	public function __clone(){
@@ -174,7 +178,9 @@ class Block{
 	 * Type information such as colour, wood type, etc. is preserved.
 	 */
 	public function asItem() : Item{
-		return new ItemBlock($this);
+		$normalized = clone $this;
+		$normalized->decodeStateData($this->defaultStateData);
+		return new ItemBlock($normalized);
 	}
 
 	final public function getRequiredTypeDataBits() : int{
@@ -211,6 +217,17 @@ class Block{
 		}
 	}
 
+	private function decodeStateData(int $data) : void{
+		$stateBits = $this->getRequiredStateDataBits();
+		$reader = new RuntimeDataReader($stateBits, $data);
+
+		$this->describeState($reader);
+		$readBits = $reader->getOffset();
+		if($stateBits !== $readBits){
+			throw new \LogicException(get_class($this) . ": Exactly $stateBits bits of state data were provided, but $readBits were read");
+		}
+	}
+
 	/**
 	 * @internal
 	 */
@@ -219,12 +236,7 @@ class Block{
 		$stateBits = $this->getRequiredStateDataBits();
 		$reader = new RuntimeDataReader($typeBits + $stateBits, $data);
 		$this->decodeTypeData($reader->readInt($typeBits));
-
-		$this->describeState($reader);
-		$readBits = $reader->getOffset() - $typeBits;
-		if($stateBits !== $readBits){
-			throw new \LogicException(get_class($this) . ": Exactly $stateBits bits of state data were provided, but $readBits were read");
-		}
+		$this->decodeStateData($reader->readInt($stateBits));
 	}
 
 	/**
@@ -243,6 +255,19 @@ class Block{
 		return $writer->getValue();
 	}
 
+	private function computeStateData() : int{
+		$stateBits = $this->getRequiredStateDataBits();
+		$writer = new RuntimeDataWriter($stateBits);
+
+		$this->describeState($writer);
+		$writtenBits = $writer->getOffset();
+		if($stateBits !== $writtenBits){
+			throw new \LogicException(get_class($this) . ": Exactly $stateBits bits of state data were expected, but $writtenBits were written");
+		}
+
+		return $writer->getValue();
+	}
+
 	/**
 	 * @internal
 	 */
@@ -251,12 +276,7 @@ class Block{
 		$stateBits = $this->getRequiredStateDataBits();
 		$writer = new RuntimeDataWriter($typeBits + $stateBits);
 		$writer->writeInt($typeBits, $this->computeTypeData());
-
-		$this->describeState($writer);
-		$writtenBits = $writer->getOffset() - $typeBits;
-		if($stateBits !== $writtenBits){
-			throw new \LogicException(get_class($this) . ": Exactly $stateBits bits of state data were expected, but $writtenBits were written");
-		}
+		$writer->writeInt($stateBits, $this->computeStateData());
 
 		return $writer->getValue();
 	}
@@ -269,7 +289,7 @@ class Block{
 	 * The method implementation must NOT use conditional logic to determine which properties are written. It must
 	 * always write the same properties in the same order, regardless of the current state of the block.
 	 */
-	protected function describeType(RuntimeDataDescriber $w) : void{
+	public function describeType(RuntimeDataDescriber $w) : void{
 		//NOOP
 	}
 
