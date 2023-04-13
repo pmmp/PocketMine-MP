@@ -65,17 +65,8 @@ class Block{
 	/** @var AxisAlignedBB[]|null */
 	protected ?array $collisionBoxes = null;
 
-	/**
-	 * @var int[]
-	 * @phpstan-var array<string, int>
-	 */
-	private static array $typeDataBits = [];
-	/**
-	 * @var int[]
-	 * @phpstan-var array<string, int>
-	 */
-	private static array $stateDataBits = [];
-
+	private int $requiredTypeDataBits;
+	private int $requiredStateDataBits;
 	private int $defaultStateData;
 
 	/**
@@ -86,6 +77,14 @@ class Block{
 		$this->fallbackName = $name;
 		$this->typeInfo = $typeInfo;
 		$this->position = new Position(0, 0, 0, null);
+
+		$calculator = new RuntimeDataSizeCalculator();
+		$this->describeType($calculator);
+		$this->requiredTypeDataBits = $calculator->getBitsUsed();
+
+		$calculator = new RuntimeDataSizeCalculator();
+		$this->describeState($calculator);
+		$this->requiredStateDataBits = $calculator->getBitsUsed();
 
 		$this->defaultStateData = $this->computeStateData();
 	}
@@ -184,47 +183,33 @@ class Block{
 	}
 
 	final public function getRequiredTypeDataBits() : int{
-		$class = get_class($this);
-		if(isset(self::$typeDataBits[$class])){
-			return self::$typeDataBits[$class];
-		}
-		$calculator = new RuntimeDataSizeCalculator();
-		$this->describeType($calculator);
-		return self::$typeDataBits[$class] = $calculator->getBitsUsed();
+		return $this->requiredTypeDataBits;
 	}
 
 	final public function getRequiredStateDataBits() : int{
-		$class = get_class($this);
-		if(isset(self::$stateDataBits[$class])){
-			return self::$stateDataBits[$class];
-		}
-		$calculator = new RuntimeDataSizeCalculator();
-		$this->describeState($calculator);
-		return self::$stateDataBits[$class] = $calculator->getBitsUsed();
+		return $this->requiredStateDataBits;
 	}
 
 	/**
 	 * @internal
 	 */
 	final public function decodeTypeData(int $data) : void{
-		$typeBits = $this->getRequiredTypeDataBits();
-		$reader = new RuntimeDataReader($typeBits, $data);
+		$reader = new RuntimeDataReader($this->requiredTypeDataBits, $data);
 
 		$this->describeType($reader);
 		$readBits = $reader->getOffset();
-		if($typeBits !== $readBits){
-			throw new \LogicException(get_class($this) . ": Exactly $typeBits bits of type data were provided, but $readBits were read");
+		if($this->requiredTypeDataBits !== $readBits){
+			throw new \LogicException(get_class($this) . ": Exactly $this->requiredTypeDataBits bits of type data were provided, but $readBits were read");
 		}
 	}
 
 	private function decodeStateData(int $data) : void{
-		$stateBits = $this->getRequiredStateDataBits();
-		$reader = new RuntimeDataReader($stateBits, $data);
+		$reader = new RuntimeDataReader($this->requiredStateDataBits, $data);
 
 		$this->describeState($reader);
 		$readBits = $reader->getOffset();
-		if($stateBits !== $readBits){
-			throw new \LogicException(get_class($this) . ": Exactly $stateBits bits of state data were provided, but $readBits were read");
+		if($this->requiredStateDataBits !== $readBits){
+			throw new \LogicException(get_class($this) . ": Exactly $this->requiredStateDataBits bits of state data were provided, but $readBits were read");
 		}
 	}
 
@@ -232,37 +217,33 @@ class Block{
 	 * @internal
 	 */
 	final public function decodeTypeAndStateData(int $data) : void{
-		$typeBits = $this->getRequiredTypeDataBits();
-		$stateBits = $this->getRequiredStateDataBits();
-		$reader = new RuntimeDataReader($typeBits + $stateBits, $data);
-		$this->decodeTypeData($reader->readInt($typeBits));
-		$this->decodeStateData($reader->readInt($stateBits));
+		$reader = new RuntimeDataReader($this->requiredTypeDataBits + $this->requiredStateDataBits, $data);
+		$this->decodeTypeData($reader->readInt($this->requiredTypeDataBits));
+		$this->decodeStateData($reader->readInt($this->requiredStateDataBits));
 	}
 
 	/**
 	 * @internal
 	 */
 	final public function computeTypeData() : int{
-		$typeBits = $this->getRequiredTypeDataBits();
-		$writer = new RuntimeDataWriter($typeBits);
+		$writer = new RuntimeDataWriter($this->requiredTypeDataBits);
 
 		$this->describeType($writer);
 		$writtenBits = $writer->getOffset();
-		if($typeBits !== $writtenBits){
-			throw new \LogicException(get_class($this) . ": Exactly $typeBits bits of type data were expected, but $writtenBits were written");
+		if($this->requiredTypeDataBits !== $writtenBits){
+			throw new \LogicException(get_class($this) . ": Exactly $this->requiredTypeDataBits bits of type data were expected, but $writtenBits were written");
 		}
 
 		return $writer->getValue();
 	}
 
 	private function computeStateData() : int{
-		$stateBits = $this->getRequiredStateDataBits();
-		$writer = new RuntimeDataWriter($stateBits);
+		$writer = new RuntimeDataWriter($this->requiredStateDataBits);
 
 		$this->describeState($writer);
 		$writtenBits = $writer->getOffset();
-		if($stateBits !== $writtenBits){
-			throw new \LogicException(get_class($this) . ": Exactly $stateBits bits of state data were expected, but $writtenBits were written");
+		if($this->requiredStateDataBits !== $writtenBits){
+			throw new \LogicException(get_class($this) . ": Exactly $this->requiredStateDataBits bits of state data were expected, but $writtenBits were written");
 		}
 
 		return $writer->getValue();
@@ -272,11 +253,9 @@ class Block{
 	 * @internal
 	 */
 	final public function computeTypeAndStateData() : int{
-		$typeBits = $this->getRequiredTypeDataBits();
-		$stateBits = $this->getRequiredStateDataBits();
-		$writer = new RuntimeDataWriter($typeBits + $stateBits);
-		$writer->writeInt($typeBits, $this->computeTypeData());
-		$writer->writeInt($stateBits, $this->computeStateData());
+		$writer = new RuntimeDataWriter($this->requiredTypeDataBits + $this->requiredStateDataBits);
+		$writer->writeInt($this->requiredTypeDataBits, $this->computeTypeData());
+		$writer->writeInt($this->requiredStateDataBits, $this->computeStateData());
 
 		return $writer->getValue();
 	}
