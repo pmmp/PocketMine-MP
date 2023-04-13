@@ -679,7 +679,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		$write = new \LevelDBWriteBatch();
 
-		$previousVersion = $this->readVersion($chunkX, $chunkZ);
 		$write->put($index . ChunkDataKey::NEW_VERSION, chr(self::CURRENT_LEVEL_CHUNK_VERSION));
 
 		$chunk = $chunkData->getChunk();
