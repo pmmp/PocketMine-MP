@@ -62,7 +62,7 @@ use function mkdir;
 use function realpath;
 use function shuffle;
 use function sprintf;
-use function strpos;
+use function str_contains;
 use function strtolower;
 
 /**
@@ -296,7 +296,7 @@ class PluginManager{
 					continue;
 				}
 
-				if(strpos($name, " ") !== false){
+				if(str_contains($name, " ")){
 					$this->server->getLogger()->warning($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_spacesDiscouraged($name)));
 				}
 
@@ -651,7 +651,7 @@ class PluginManager{
 			throw new PluginException("Plugin attempted to register event handler " . $handlerName . "() to event " . $event . " while not enabled");
 		}
 
-		$timings = new TimingsHandler("Plugin: " . $plugin->getDescription()->getFullName() . " Event: " . $handlerName . "(" . (new \ReflectionClass($event))->getShortName() . ")");
+		$timings = new TimingsHandler($handlerName . "(" . (new \ReflectionClass($event))->getShortName() . ")", group: $plugin->getDescription()->getFullName());
 
 		$registeredListener = new RegisteredListener($handler, $priority, $plugin, $handleCancelled, $timings);
 		HandlerListManager::global()->getListFor($event)->register($registeredListener);

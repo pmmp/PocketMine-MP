@@ -139,7 +139,7 @@ abstract class Command{
 	public function setLabel(string $name) : bool{
 		$this->nextLabel = $name;
 		if(!$this->isRegistered()){
-			$this->timings = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Command: " . $name);
+			$this->timings = new TimingsHandler("Command: " . $name, group: Timings::GROUP_BREAKDOWN);
 			$this->label = $name;
 
 			return true;

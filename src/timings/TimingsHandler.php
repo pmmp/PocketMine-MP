@@ -25,16 +25,21 @@ namespace pocketmine\timings;
 
 use pocketmine\entity\Living;
 use pocketmine\Server;
+use pocketmine\utils\Utils;
 use function count;
 use function hrtime;
+use function implode;
+use function spl_object_id;
 
 class TimingsHandler{
+	private const FORMAT_VERSION = 1;
+
 	private static bool $enabled = false;
 	private static int $timingStart = 0;
 
 	/** @return string[] */
 	public static function printTimings() : array{
-		$result = ["Minecraft"];
+		$groups = [];
 
 		foreach(TimingsRecord::getAll() as $timings){
 			$time = $timings->getTotalTime();
@@ -46,7 +51,27 @@ class TimingsHandler{
 
 			$avg = $time / $count;
 
-			$result[] = "    " . $timings->getName() . " Time: $time Count: " . $count . " Avg: $avg Violations: " . $timings->getViolations();
+			$group = $timings->getGroup();
+			$groups[$group][] = implode(" ", [
+				$timings->getName(),
+				"Time: $time",
+				"Count: $count",
+				"Avg: $avg",
+				"Violations: " . $timings->getViolations(),
+				"RecordId: " . $timings->getId(),
+				"ParentRecordId: " . ($timings->getParentId() ?? "none"),
+				"TimerId: " . $timings->getTimerId(),
+				"Ticks: " . $timings->getTicksActive(),
+				"Peak: " . $timings->getPeakTime(),
+			]);
+		}
+		$result = [];
+
+		foreach(Utils::stringifyKeys($groups) as $groupName => $lines){
+			$result[] = $groupName;
+			foreach($lines as $line){
+				$result[] = "    $line";
+			}
 		}
 
 		$result[] = "# Version " . Server::getInstance()->getVersion();
@@ -65,6 +90,7 @@ class TimingsHandler{
 
 		$result[] = "# Entities " . $entities;
 		$result[] = "# LivingEntities " . $livingEntities;
+		$result[] = "# FormatVersion " . self::FORMAT_VERSION;
 
 		$sampleTime = hrtime(true) - self::$timingStart;
 		$result[] = "Sample time $sampleTime (" . ($sampleTime / 1000000000) . "s)";
@@ -97,15 +123,24 @@ class TimingsHandler{
 		}
 	}
 
-	private ?TimingsRecord $record = null;
+	private ?TimingsRecord $rootRecord = null;
 	private int $timingDepth = 0;
+
+	/**
+	 * @var TimingsRecord[]
+	 * @phpstan-var array<int, TimingsRecord>
+	 */
+	private array $recordsByParent = [];
 
 	public function __construct(
 		private string $name,
-		private ?TimingsHandler $parent = null
+		private ?TimingsHandler $parent = null,
+		private string $group = "Minecraft"
 	){}
 
 	public function getName() : string{ return $this->name; }
+
+	public function getGroup() : string{ return $this->group; }
 
 	public function startTiming() : void{
 		if(self::$enabled){
@@ -115,13 +150,24 @@ class TimingsHandler{
 
 	private function internalStartTiming(int $now) : void{
 		if(++$this->timingDepth === 1){
-			if($this->record === null){
-				$this->record = new TimingsRecord($this);
-			}
-			$this->record->startTiming($now);
 			if($this->parent !== null){
 				$this->parent->internalStartTiming($now);
 			}
+
+			$current = TimingsRecord::getCurrentRecord();
+			if($current !== null){
+				$record = $this->recordsByParent[spl_object_id($current)] ?? null;
+				if($record === null){
+					$record = new TimingsRecord($this, $current);
+					$this->recordsByParent[spl_object_id($current)] = $record;
+				}
+			}else{
+				if($this->rootRecord === null){
+					$this->rootRecord = new TimingsRecord($this, null);
+				}
+				$record = $this->rootRecord;
+			}
+			$record->startTiming($now);
 		}
 	}
 
@@ -142,9 +188,12 @@ class TimingsHandler{
 			return;
 		}
 
-		if($this->record !== null){
-			//this might be null if a timings reset occurred while the timer was running
-			$this->record->stopTiming($now);
+		$record = TimingsRecord::getCurrentRecord();
+		if($record !== null){
+			if($record->getTimerId() !== spl_object_id($this)){
+				throw new \LogicException("Timer \"" . $record->getName() . "\" should have been stopped before stopping timer \"" . $this->name . "\"");
+			}
+			$record->stopTiming($now);
 		}
 		if($this->parent !== null){
 			$this->parent->internalStopTiming($now);
@@ -171,6 +220,7 @@ class TimingsHandler{
 	 * @internal
 	 */
 	public function destroyCycles() : void{
-		$this->record = null;
+		$this->rootRecord = null;
+		$this->recordsByParent = [];
 	}
 }

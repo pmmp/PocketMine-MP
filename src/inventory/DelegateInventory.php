@@ -30,6 +30,7 @@ use pocketmine\item\Item;
  */
 class DelegateInventory extends BaseInventory{
 	private InventoryListener $inventoryListener;
+	private bool $backingInventoryChanging = false;
 
 	public function __construct(
 		private Inventory $backingInventory
@@ -39,12 +40,22 @@ class DelegateInventory extends BaseInventory{
 		$this->backingInventory->getListeners()->add($this->inventoryListener = new CallbackInventoryListener(
 			static function(Inventory $unused, int $slot, Item $oldItem) use ($weakThis) : void{
 				if(($strongThis = $weakThis->get()) !== null){
-					$strongThis->onSlotChange($slot, $oldItem);
+					$strongThis->backingInventoryChanging = true;
+					try{
+						$strongThis->onSlotChange($slot, $oldItem);
+					}finally{
+						$strongThis->backingInventoryChanging = false;
+					}
 				}
 			},
 			static function(Inventory $unused, array $oldContents) use ($weakThis) : void{
 				if(($strongThis = $weakThis->get()) !== null){
-					$strongThis->onContentChange($oldContents);
+					$strongThis->backingInventoryChanging = true;
+					try{
+						$strongThis->onContentChange($oldContents);
+					}finally{
+						$strongThis->backingInventoryChanging = false;
+					}
 				}
 			}
 		));
@@ -72,5 +83,17 @@ class DelegateInventory extends BaseInventory{
 
 	protected function internalSetContents(array $items) : void{
 		$this->backingInventory->setContents($items);
+	}
+
+	protected function onSlotChange(int $index, Item $before) : void{
+		if($this->backingInventoryChanging){
+			parent::onSlotChange($index, $before);
+		}
+	}
+
+	protected function onContentChange(array $itemsBefore) : void{
+		if($this->backingInventoryChanging){
+			parent::onContentChange($itemsBefore);
+		}
 	}
 }

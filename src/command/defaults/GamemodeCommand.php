@@ -29,9 +29,8 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\GameMode;
-use pocketmine\player\Player;
-use pocketmine\utils\TextFormat;
 use function count;
+use function implode;
 
 class GamemodeCommand extends VanillaCommand{
 
@@ -41,7 +40,10 @@ class GamemodeCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_gamemode_description(),
 			KnownTranslationFactory::commands_gamemode_usage()
 		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_GAMEMODE);
+		$this->setPermission(implode(";", [
+			DefaultPermissionNames::COMMAND_GAMEMODE_SELF,
+			DefaultPermissionNames::COMMAND_GAMEMODE_OTHER
+		]));
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -59,17 +61,9 @@ class GamemodeCommand extends VanillaCommand{
 			return true;
 		}
 
-		if(isset($args[1])){
-			$target = $sender->getServer()->getPlayerByPrefix($args[1]);
-			if($target === null){
-				$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound()->prefix(TextFormat::RED));
-
-				return true;
-			}
-		}elseif($sender instanceof Player){
-			$target = $sender;
-		}else{
-			throw new InvalidCommandSyntaxException();
+		$target = $this->fetchPermittedPlayerTarget($sender, $args[1] ?? null, DefaultPermissionNames::COMMAND_GAMEMODE_SELF, DefaultPermissionNames::COMMAND_GAMEMODE_OTHER);
+		if($target === null){
+			return true;
 		}
 
 		if($target->getGamemode()->equals($gameMode)){

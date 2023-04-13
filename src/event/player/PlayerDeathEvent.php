@@ -98,17 +98,15 @@ class PlayerDeathEvent extends EntityDeathEvent{
 					if($e instanceof Player){
 						return KnownTranslationFactory::death_attack_player($name, $e->getDisplayName());
 					}elseif($e instanceof Living){
-						return KnownTranslationFactory::death_attack_mob($name, $e->getNameTag() !== "" ? $e->getNameTag() : $e->getName());
+						return KnownTranslationFactory::death_attack_mob($name, $e->getDisplayName());
 					}
 				}
 				break;
 			case EntityDamageEvent::CAUSE_PROJECTILE:
 				if($deathCause instanceof EntityDamageByEntityEvent){
 					$e = $deathCause->getDamager();
-					if($e instanceof Player){
+					if($e instanceof Living){
 						return KnownTranslationFactory::death_attack_arrow($name, $e->getDisplayName());
-					}elseif($e instanceof Living){
-						return KnownTranslationFactory::death_attack_arrow($name, $e->getNameTag() !== "" ? $e->getNameTag() : $e->getName());
 					}
 				}
 				break;
@@ -149,10 +147,8 @@ class PlayerDeathEvent extends EntityDeathEvent{
 			case EntityDamageEvent::CAUSE_ENTITY_EXPLOSION:
 				if($deathCause instanceof EntityDamageByEntityEvent){
 					$e = $deathCause->getDamager();
-					if($e instanceof Player){
+					if($e instanceof Living){
 						return KnownTranslationFactory::death_attack_explosion_player($name, $e->getDisplayName());
-					}elseif($e instanceof Living){
-						return KnownTranslationFactory::death_attack_explosion_player($name, $e->getNameTag() !== "" ? $e->getNameTag() : $e->getName());
 					}
 				}
 				return KnownTranslationFactory::death_attack_explosion($name);

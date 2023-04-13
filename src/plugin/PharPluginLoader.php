@@ -24,8 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\plugin;
 
 use function is_file;
-use function strlen;
-use function substr;
+use function str_ends_with;
 
 /**
  * Handles different types of plugins
@@ -36,8 +35,7 @@ class PharPluginLoader implements PluginLoader{
 	){}
 
 	public function canLoadPlugin(string $path) : bool{
-		$ext = ".phar";
-		return is_file($path) && substr($path, -strlen($ext)) === $ext;
+		return is_file($path) && str_ends_with($path, ".phar");
 	}
 
 	/**

@@ -348,7 +348,7 @@ abstract class BaseInventory implements Inventory{
 			if($invManager === null){
 				continue;
 			}
-			$invManager->syncSlot($this, $index);
+			$invManager->onSlotChange($this, $index);
 		}
 	}
 

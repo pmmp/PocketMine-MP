@@ -44,6 +44,8 @@ use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\mcpe\EntityEventBroadcaster;
+use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\protocol\AddActorPacket;
 use pocketmine\network\mcpe\protocol\MoveActorAbsolutePacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
@@ -80,6 +82,15 @@ abstract class Entity{
 
 	public const MOTION_THRESHOLD = 0.00001;
 	protected const STEP_CLIP_MULTIPLIER = 0.4;
+
+	private const TAG_FIRE = "Fire"; //TAG_Short
+	private const TAG_ON_GROUND = "OnGround"; //TAG_Byte
+	private const TAG_FALL_DISTANCE = "FallDistance"; //TAG_Float
+	private const TAG_CUSTOM_NAME = "CustomName"; //TAG_String
+	private const TAG_CUSTOM_NAME_VISIBLE = "CustomNameVisible"; //TAG_Byte
+	public const TAG_POS = "Pos"; //TAG_List<TAG_Double>|TAG_List<TAG_Float>
+	public const TAG_MOTION = "Motion"; //TAG_List<TAG_Double>|TAG_List<TAG_Float>
+	public const TAG_ROTATION = "Rotation"; //TAG_List<TAG_Float>
 
 	private static int $entityCount = 1;
 
@@ -233,9 +244,9 @@ abstract class Entity{
 		$this->recalculateBoundingBox();
 
 		if($nbt !== null){
-			$this->motion = EntityDataHelper::parseVec3($nbt, "Motion", true);
+			$this->motion = EntityDataHelper::parseVec3($nbt, self::TAG_MOTION, true);
 		}else{
-			$this->motion = new Vector3(0, 0, 0);
+			$this->motion = Vector3::zero();
 		}
 
 		$this->resetLastMovements();
@@ -466,17 +477,17 @@ abstract class Entity{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = CompoundTag::create()
-			->setTag("Pos", new ListTag([
+			->setTag(self::TAG_POS, new ListTag([
 				new DoubleTag($this->location->x),
 				new DoubleTag($this->location->y),
 				new DoubleTag($this->location->z)
 			]))
-			->setTag("Motion", new ListTag([
+			->setTag(self::TAG_MOTION, new ListTag([
 				new DoubleTag($this->motion->x),
 				new DoubleTag($this->motion->y),
 				new DoubleTag($this->motion->z)
 			]))
-			->setTag("Rotation", new ListTag([
+			->setTag(self::TAG_ROTATION, new ListTag([
 				new FloatTag($this->location->yaw),
 				new FloatTag($this->location->pitch)
 			]));
@@ -485,33 +496,33 @@ abstract class Entity{
 			EntityFactory::getInstance()->injectSaveId(get_class($this), $nbt);
 
 			if($this->getNameTag() !== ""){
-				$nbt->setString("CustomName", $this->getNameTag());
-				$nbt->setByte("CustomNameVisible", $this->isNameTagVisible() ? 1 : 0);
+				$nbt->setString(self::TAG_CUSTOM_NAME, $this->getNameTag());
+				$nbt->setByte(self::TAG_CUSTOM_NAME_VISIBLE, $this->isNameTagVisible() ? 1 : 0);
 			}
 		}
 
-		$nbt->setFloat("FallDistance", $this->fallDistance);
-		$nbt->setShort("Fire", $this->fireTicks);
-		$nbt->setByte("OnGround", $this->onGround ? 1 : 0);
+		$nbt->setFloat(self::TAG_FALL_DISTANCE, $this->fallDistance);
+		$nbt->setShort(self::TAG_FIRE, $this->fireTicks);
+		$nbt->setByte(self::TAG_ON_GROUND, $this->onGround ? 1 : 0);
 
 		return $nbt;
 	}
 
 	protected function initEntity(CompoundTag $nbt) : void{
-		$this->fireTicks = $nbt->getShort("Fire", 0);
+		$this->fireTicks = $nbt->getShort(self::TAG_FIRE, 0);
 
-		$this->onGround = $nbt->getByte("OnGround", 0) !== 0;
+		$this->onGround = $nbt->getByte(self::TAG_ON_GROUND, 0) !== 0;
 
-		$this->fallDistance = $nbt->getFloat("FallDistance", 0.0);
+		$this->fallDistance = $nbt->getFloat(self::TAG_FALL_DISTANCE, 0.0);
 
-		if(($customNameTag = $nbt->getTag("CustomName")) instanceof StringTag){
+		if(($customNameTag = $nbt->getTag(self::TAG_CUSTOM_NAME)) instanceof StringTag){
 			$this->setNameTag($customNameTag->getValue());
 
-			if(($customNameVisibleTag = $nbt->getTag("CustomNameVisible")) instanceof StringTag){
+			if(($customNameVisibleTag = $nbt->getTag(self::TAG_CUSTOM_NAME_VISIBLE)) instanceof StringTag){
 				//Older versions incorrectly saved this as a string (see 890f72dbf23a77f294169b79590770470041adc4)
 				$this->setNameTagVisible($customNameVisibleTag->getValue() !== "");
 			}else{
-				$this->setNameTagVisible($nbt->getByte("CustomNameVisible", 1) !== 0);
+				$this->setNameTagVisible($nbt->getByte(self::TAG_CUSTOM_NAME_VISIBLE, 1) !== 0);
 			}
 		}
 	}
@@ -776,7 +787,7 @@ abstract class Entity{
 				$this->spawnTo($player);
 			}
 		}else{
-			$this->server->broadcastPackets($this->hasSpawned, [MoveActorAbsolutePacket::create(
+			NetworkBroadcastUtils::broadcastPackets($this->hasSpawned, [MoveActorAbsolutePacket::create(
 				$this->id,
 				$this->getOffsetPosition($this->location),
 				$this->location->pitch,
@@ -791,7 +802,16 @@ abstract class Entity{
 	}
 
 	protected function broadcastMotion() : void{
-		$this->server->broadcastPackets($this->hasSpawned, [SetActorMotionPacket::create($this->id, $this->getMotion())]);
+		NetworkBroadcastUtils::broadcastPackets($this->hasSpawned, [SetActorMotionPacket::create($this->id, $this->getMotion())]);
+	}
+
+	public function getGravity() : float{
+		return $this->gravity;
+	}
+
+	public function setGravity(float $gravity) : void{
+		Utils::checkFloatNotInfOrNaN("gravity", $gravity);
+		$this->gravity = $gravity;
 	}
 
 	public function hasGravity() : bool{
@@ -1119,6 +1139,7 @@ abstract class Entity{
 		$this->blocksAround = null;
 
 		Timings::$entityMove->startTiming();
+		Timings::$entityMoveCollision->startTiming();
 
 		$wantedX = $dx;
 		$wantedY = $dy;
@@ -1203,6 +1224,7 @@ abstract class Entity{
 
 			$this->boundingBox = $moveBB;
 		}
+		Timings::$entityMoveCollision->stopTiming();
 
 		$this->location = new Location(
 			($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
@@ -1519,7 +1541,7 @@ abstract class Entity{
 		$id = spl_object_id($player);
 		if(isset($this->hasSpawned[$id])){
 			if($send){
-				$player->getNetworkSession()->onEntityRemoved($this);
+				$player->getNetworkSession()->getEntityEventBroadcaster()->onEntityRemoved([$player->getNetworkSession()], $this);
 			}
 			unset($this->hasSpawned[$id]);
 		}
@@ -1530,9 +1552,11 @@ abstract class Entity{
 	 * player moves, viewers will once again be able to see the entity.
 	 */
 	public function despawnFromAll() : void{
-		foreach($this->hasSpawned as $player){
-			$this->despawnFrom($player);
-		}
+		NetworkBroadcastUtils::broadcastEntityEvent(
+			$this->hasSpawned,
+			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onEntityRemoved($recipients, $this)
+		);
+		$this->hasSpawned = [];
 	}
 
 	/**
@@ -1606,9 +1630,7 @@ abstract class Entity{
 		$targets = $targets ?? $this->hasSpawned;
 		$data = $data ?? $this->getAllNetworkData();
 
-		foreach($targets as $p){
-			$p->getNetworkSession()->syncActorData($this, $data);
-		}
+		NetworkBroadcastUtils::broadcastEntityEvent($targets, fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->syncActorData($recipients, $this, $data));
 	}
 
 	/**
@@ -1662,7 +1684,7 @@ abstract class Entity{
 	 * @param Player[]|null $targets
 	 */
 	public function broadcastAnimation(Animation $animation, ?array $targets = null) : void{
-		$this->server->broadcastPackets($targets ?? $this->getViewers(), $animation->encode());
+		NetworkBroadcastUtils::broadcastPackets($targets ?? $this->getViewers(), $animation->encode());
 	}
 
 	/**
@@ -1671,7 +1693,7 @@ abstract class Entity{
 	 */
 	public function broadcastSound(Sound $sound, ?array $targets = null) : void{
 		if(!$this->silent){
-			$this->server->broadcastPackets($targets ?? $this->getViewers(), $sound->encode($this->location));
+			NetworkBroadcastUtils::broadcastPackets($targets ?? $this->getViewers(), $sound->encode($this->location));
 		}
 	}
 

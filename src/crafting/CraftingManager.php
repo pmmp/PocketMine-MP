@@ -34,10 +34,22 @@ use function usort;
 class CraftingManager{
 	use DestructorCallbackTrait;
 
-	/** @var ShapedRecipe[][] */
+	/**
+	 * @var ShapedRecipe[][]
+	 * @phpstan-var array<string, list<ShapedRecipe>>
+	 */
 	protected $shapedRecipes = [];
-	/** @var ShapelessRecipe[][] */
+	/**
+	 * @var ShapelessRecipe[][]
+	 * @phpstan-var array<string, list<ShapelessRecipe>>
+	 */
 	protected $shapelessRecipes = [];
+
+	/**
+	 * @var CraftingRecipe[]
+	 * @phpstan-var array<int, CraftingRecipe>
+	 */
+	private array $craftingRecipeIndex = [];
 
 	/**
 	 * @var FurnaceRecipeManager[]
@@ -133,6 +145,7 @@ class CraftingManager{
 
 	/**
 	 * @return ShapelessRecipe[][]
+	 * @phpstan-return array<string, list<ShapelessRecipe>>
 	 */
 	public function getShapelessRecipes() : array{
 		return $this->shapelessRecipes;
@@ -140,9 +153,22 @@ class CraftingManager{
 
 	/**
 	 * @return ShapedRecipe[][]
+	 * @phpstan-return array<string, list<ShapedRecipe>>
 	 */
 	public function getShapedRecipes() : array{
 		return $this->shapedRecipes;
+	}
+
+	/**
+	 * @return CraftingRecipe[]
+	 * @phpstan-return array<int, CraftingRecipe>
+	 */
+	public function getCraftingRecipeIndex() : array{
+		return $this->craftingRecipeIndex;
+	}
+
+	public function getCraftingRecipeFromIndex(int $index) : ?CraftingRecipe{
+		return $this->craftingRecipeIndex[$index] ?? null;
 	}
 
 	public function getFurnaceRecipeManager(FurnaceType $furnaceType) : FurnaceRecipeManager{
@@ -167,6 +193,7 @@ class CraftingManager{
 
 	public function registerShapedRecipe(ShapedRecipe $recipe) : void{
 		$this->shapedRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
+		$this->craftingRecipeIndex[] = $recipe;
 
 		foreach($this->recipeRegisteredCallbacks as $callback){
 			$callback();
@@ -175,6 +202,7 @@ class CraftingManager{
 
 	public function registerShapelessRecipe(ShapelessRecipe $recipe) : void{
 		$this->shapelessRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
+		$this->craftingRecipeIndex[] = $recipe;
 
 		foreach($this->recipeRegisteredCallbacks as $callback){
 			$callback();

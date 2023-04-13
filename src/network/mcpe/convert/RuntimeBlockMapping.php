@@ -25,15 +25,13 @@ namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
+use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
+use pocketmine\utils\BinaryStream;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
-use pocketmine\utils\Utils;
-use Symfony\Component\Filesystem\Path;
-use function file_get_contents;
 
 /**
  * @internal
@@ -50,20 +48,20 @@ final class RuntimeBlockMapping{
 
 	private static function make() : self{
 		return new self(
-			Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt"),
-			Path::join(\pocketmine\BEDROCK_DATA_PATH, "r12_to_current_block_map.bin")
+			BedrockDataFiles::CANONICAL_BLOCK_STATES_NBT,
+			BedrockDataFiles::R12_TO_CURRENT_BLOCK_MAP_BIN
 		);
 	}
 
 	public function __construct(string $canonicalBlockStatesFile, string $r12ToCurrentBlockMapFile){
-		$stream = PacketSerializer::decoder(
-			Utils::assumeNotFalse(file_get_contents($canonicalBlockStatesFile), "Missing required resource file"),
-			0,
-			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary())
-		);
+		$stream = new BinaryStream(Filesystem::fileGetContents($canonicalBlockStatesFile));
 		$list = [];
+		$nbtReader = new NetworkNbtSerializer();
 		while(!$stream->feof()){
-			$list[] = $stream->getNbtCompoundRoot();
+			$offset = $stream->getOffset();
+			$blockState = $nbtReader->read($stream->getBuffer(), $offset)->mustGetCompoundTag();
+			$stream->setOffset($offset);
+			$list[] = $blockState;
 		}
 		$this->bedrockKnownStates = $list;
 
@@ -74,14 +72,10 @@ final class RuntimeBlockMapping{
 		$legacyIdMap = LegacyBlockIdToStringIdMap::getInstance();
 		/** @var R12ToCurrentBlockMapEntry[] $legacyStateMap */
 		$legacyStateMap = [];
-		$legacyStateMapReader = PacketSerializer::decoder(
-			Utils::assumeNotFalse(file_get_contents($r12ToCurrentBlockMapFile), "Missing required resource file"),
-			0,
-			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary())
-		);
+		$legacyStateMapReader = new BinaryStream(Filesystem::fileGetContents($r12ToCurrentBlockMapFile));
 		$nbtReader = new NetworkNbtSerializer();
 		while(!$legacyStateMapReader->feof()){
-			$id = $legacyStateMapReader->getString();
+			$id = $legacyStateMapReader->get($legacyStateMapReader->getUnsignedVarInt());
 			$meta = $legacyStateMapReader->getLShort();
 
 			$offset = $legacyStateMapReader->getOffset();

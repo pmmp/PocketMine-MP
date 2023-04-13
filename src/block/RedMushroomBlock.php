@@ -34,12 +34,17 @@ class RedMushroomBlock extends Opaque{
 	protected MushroomBlockType $mushroomBlockType;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
-		$this->mushroomBlockType = MushroomBlockType::PORES();
+		$this->mushroomBlockType = MushroomBlockType::ALL_CAP();
 		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	protected function writeStateToMeta() : int{
 		return MushroomBlockTypeIdMap::getInstance()->toId($this->mushroomBlockType);
+	}
+
+	protected function writeStateToItemMeta() : int{
+		//these blocks always drop as all-cap, but may exist in other forms in the inventory (particularly creative)
+		return BlockLegacyMetadata::MUSHROOM_BLOCK_ALL_CAP;
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
