@@ -140,6 +140,9 @@ class Block{
 
 	/**
 	 * Returns whether the given block has an equivalent type to this one. This compares the type IDs.
+	 *
+	 * Type properties (e.g. colour, skull type, etc.) are not compared. This means that different colours of wool,
+	 * concrete, etc. will all be considered as having the same type.
 	 */
 	public function isSameType(Block $other) : bool{
 		return $this->getTypeId() === $other->getTypeId();
