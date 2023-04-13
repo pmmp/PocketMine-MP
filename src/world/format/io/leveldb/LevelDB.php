@@ -627,7 +627,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				$subChunks = $this->deserializeLegacyTerrainData($index, $chunkVersion);
 				break;
 			default:
-				//TODO: set chunks read-only so the version on disk doesn't get overwritten
 				throw new CorruptedChunkException("don't know how to decode chunk format version $chunkVersion");
 		}
 
@@ -664,7 +663,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		//TODO: tile ticks, biome states (?)
 
 		$chunk = new Chunk(
-			$subChunks, //TODO: maybe missing biomes should be an error?
+			$subChunks,
 			$terrainPopulated
 		);
 

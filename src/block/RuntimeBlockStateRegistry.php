@@ -99,7 +99,6 @@ class RuntimeBlockStateRegistry{
 			try{
 				$v->decodeTypeAndStateData($stateData);
 				if($v->computeTypeAndStateData() !== $stateData){
-					//TODO: this should probably be a hard error
 					throw new \LogicException(get_class($block) . "::decodeStateData() accepts invalid state data (returned " . $v->computeTypeAndStateData() . " for input $stateData)");
 				}
 			}catch(InvalidSerializedRuntimeDataException){ //invalid property combination, leave it
