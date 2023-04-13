@@ -190,10 +190,7 @@ class Block{
 		return $this->requiredStateDataBits;
 	}
 
-	/**
-	 * @internal
-	 */
-	final public function decodeTypeData(int $data) : void{
+	private function decodeTypeData(int $data) : void{
 		$reader = new RuntimeDataReader($this->requiredTypeDataBits, $data);
 
 		$this->describeType($reader);
@@ -222,10 +219,7 @@ class Block{
 		$this->decodeStateData($reader->readInt($this->requiredStateDataBits));
 	}
 
-	/**
-	 * @internal
-	 */
-	final public function computeTypeData() : int{
+	private function computeTypeData() : int{
 		$writer = new RuntimeDataWriter($this->requiredTypeDataBits);
 
 		$this->describeType($writer);
