@@ -276,17 +276,15 @@ abstract class Timings{
 	}
 
 	public static function getReceiveDataPacketTimings(ServerboundPacket $pk) : TimingsHandler{
-		$pid = $pk->pid();
-		if(!isset(self::$packetReceiveTimingMap[$pid])){
-			self::$packetReceiveTimingMap[$pid] = new TimingsHandler("Receive - " . $pk->getName(), self::$playerNetworkReceive, group: self::GROUP_BREAKDOWN);
+		if(!isset(self::$packetReceiveTimingMap[$pk::class])){
+			self::$packetReceiveTimingMap[$pk::class] = new TimingsHandler("Receive - " . $pk->getName(), self::$playerNetworkReceive, group: self::GROUP_BREAKDOWN);
 		}
 
-		return self::$packetReceiveTimingMap[$pid];
+		return self::$packetReceiveTimingMap[$pk::class];
 	}
 
 	public static function getDecodeDataPacketTimings(ServerboundPacket $pk) : TimingsHandler{
-		$pid = $pk->pid();
-		return self::$packetDecodeTimingMap[$pid] ??= new TimingsHandler(
+		return self::$packetDecodeTimingMap[$pk::class] ??= new TimingsHandler(
 			"Decode - " . $pk->getName(),
 			self::getReceiveDataPacketTimings($pk),
 			group: self::GROUP_BREAKDOWN
@@ -294,8 +292,7 @@ abstract class Timings{
 	}
 
 	public static function getHandleDataPacketTimings(ServerboundPacket $pk) : TimingsHandler{
-		$pid = $pk->pid();
-		return self::$packetHandleTimingMap[$pid] ??= new TimingsHandler(
+		return self::$packetHandleTimingMap[$pk::class] ??= new TimingsHandler(
 			"Handler - " . $pk->getName(),
 			self::getReceiveDataPacketTimings($pk),
 			group: self::GROUP_BREAKDOWN
@@ -303,8 +300,7 @@ abstract class Timings{
 	}
 
 	public static function getEncodeDataPacketTimings(ClientboundPacket $pk) : TimingsHandler{
-		$pid = $pk->pid();
-		return self::$packetEncodeTimingMap[$pid] ??= new TimingsHandler(
+		return self::$packetEncodeTimingMap[$pk::class] ??= new TimingsHandler(
 			"Encode - " . $pk->getName(),
 			self::getSendDataPacketTimings($pk),
 			group: self::GROUP_BREAKDOWN
@@ -312,12 +308,11 @@ abstract class Timings{
 	}
 
 	public static function getSendDataPacketTimings(ClientboundPacket $pk) : TimingsHandler{
-		$pid = $pk->pid();
-		if(!isset(self::$packetSendTimingMap[$pid])){
-			self::$packetSendTimingMap[$pid] = new TimingsHandler("Send - " . $pk->getName(), self::$playerNetworkSend, group: self::GROUP_BREAKDOWN);
+		if(!isset(self::$packetSendTimingMap[$pk::class])){
+			self::$packetSendTimingMap[$pk::class] = new TimingsHandler("Send - " . $pk->getName(), self::$playerNetworkSend, group: self::GROUP_BREAKDOWN);
 		}
 
-		return self::$packetSendTimingMap[$pid];
+		return self::$packetSendTimingMap[$pk::class];
 	}
 
 	public static function getEventTimings(Event $event) : TimingsHandler{
