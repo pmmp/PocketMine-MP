@@ -250,29 +250,42 @@ abstract class Timings{
 		return self::$pluginTaskTimingMap[$name];
 	}
 
+	/**
+	 * @phpstan-template T of object
+	 * @phpstan-param class-string<T> $class
+	 */
+	private static function shortenCoreClassName(string $class, string $prefix) : string{
+		if(str_starts_with($class, $prefix)){
+			return (new \ReflectionClass($class))->getShortName();
+		}
+		return $class;
+	}
+
 	public static function getEntityTimings(Entity $entity) : TimingsHandler{
-		$reflect = new \ReflectionClass($entity);
-		$entityType = $reflect->getShortName();
-		if(!isset(self::$entityTypeTimingMap[$entityType])){
-			//the timings viewer calculates average player count by looking at this timer, so we need to ensure it has
-			//a name it can identify. However, we also want to make it obvious if this is a custom Player class.
-			$displayName = $entityType;
-			if($entity instanceof Player && $reflect->getName() !== Player::class){
-				$displayName = "Player (" . $reflect->getName() . ")";
+		if(!isset(self::$entityTypeTimingMap[$entity::class])){
+			if($entity instanceof Player){
+				//the timings viewer calculates average player count by looking at this timer, so we need to ensure it has
+				//a name it can identify. However, we also want to make it obvious if this is a custom Player class.
+				$displayName = $entity::class !== Player::class ? "Player (" . $entity::class . ")" : "Player";
+			}else{
+				$displayName = self::shortenCoreClassName($entity::class, "pocketmine\\entity\\");
 			}
-			self::$entityTypeTimingMap[$entityType] = new TimingsHandler("Entity Tick - " . $displayName, self::$tickEntity, group: self::GROUP_BREAKDOWN);
+			self::$entityTypeTimingMap[$entity::class] = new TimingsHandler("Entity Tick - " . $displayName, self::$tickEntity, group: self::GROUP_BREAKDOWN);
 		}
 
-		return self::$entityTypeTimingMap[$entityType];
+		return self::$entityTypeTimingMap[$entity::class];
 	}
 
 	public static function getTileEntityTimings(Tile $tile) : TimingsHandler{
-		$tileType = (new \ReflectionClass($tile))->getShortName();
-		if(!isset(self::$tileEntityTypeTimingMap[$tileType])){
-			self::$tileEntityTypeTimingMap[$tileType] = new TimingsHandler("Block Entity Tick - " . $tileType, self::$tickTileEntity, group: self::GROUP_BREAKDOWN);
+		if(!isset(self::$tileEntityTypeTimingMap[$tile::class])){
+			self::$tileEntityTypeTimingMap[$tile::class] = new TimingsHandler(
+				"Block Entity Tick - " . self::shortenCoreClassName($tile::class, "pocketmine\\block\\tile\\"),
+				self::$tickTileEntity,
+				group: self::GROUP_BREAKDOWN
+			);
 		}
 
-		return self::$tileEntityTypeTimingMap[$tileType];
+		return self::$tileEntityTypeTimingMap[$tile::class];
 	}
 
 	public static function getReceiveDataPacketTimings(ServerboundPacket $pk) : TimingsHandler{
@@ -318,12 +331,7 @@ abstract class Timings{
 	public static function getEventTimings(Event $event) : TimingsHandler{
 		$eventClass = get_class($event);
 		if(!isset(self::$events[$eventClass])){
-			if(str_starts_with($eventClass, "pocketmine\\event\\")){
-				$name = (new \ReflectionClass($event))->getShortName();
-			}else{
-				$name = $eventClass;
-			}
-			self::$events[$eventClass] = new TimingsHandler($name, group: "Events");
+			self::$events[$eventClass] = new TimingsHandler(self::shortenCoreClassName($eventClass, "pocketmine\\event\\"), group: "Events");
 		}
 
 		return self::$events[$eventClass];
