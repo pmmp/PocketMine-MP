@@ -256,10 +256,11 @@ abstract class Timings{
 		if(!isset(self::$entityTypeTimingMap[$entityType])){
 			//the timings viewer calculates average player count by looking at this timer, so we need to ensure it has
 			//a name it can identify. However, we also want to make it obvious if this is a custom Player class.
+			$displayName = $entityType;
 			if($entity instanceof Player && $reflect->getName() !== Player::class){
-				$entityType = "Player (" . $reflect->getName() . ")";
+				$displayName = "Player (" . $reflect->getName() . ")";
 			}
-			self::$entityTypeTimingMap[$entityType] = new TimingsHandler("Entity Tick - " . $entityType, self::$tickEntity, group: self::GROUP_BREAKDOWN);
+			self::$entityTypeTimingMap[$entityType] = new TimingsHandler("Entity Tick - " . $displayName, self::$tickEntity, group: self::GROUP_BREAKDOWN);
 		}
 
 		return self::$entityTypeTimingMap[$entityType];
