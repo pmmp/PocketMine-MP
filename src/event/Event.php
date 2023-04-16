@@ -27,6 +27,7 @@ declare(strict_types=1);
 namespace pocketmine\event;
 
 use pocketmine\timings\Timings;
+use function count;
 use function get_class;
 
 abstract class Event{
@@ -66,5 +67,15 @@ abstract class Event{
 			--self::$eventCallDepth;
 			$timings->stopTiming();
 		}
+	}
+
+	/**
+	 * Returns whether the current class context has any registered global handlers.
+	 * This can be used in hot code paths to avoid unnecessary event object creation.
+	 *
+	 * Usage: SomeEventClass::hasHandlers()
+	 */
+	public static function hasHandlers() : bool{
+		return count(HandlerListManager::global()->getListFor(static::class)->getListenerList()) > 0;
 	}
 }
