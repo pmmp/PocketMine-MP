@@ -42,6 +42,7 @@ final class CreativeInventoryCache{
 		$this->isHit = false;
 	}
 
+	/** @return CreativeContentEntry[] */
 	public function getEntries() : array{
 		if(!$this->isHit){
 			$this->regenerate();
