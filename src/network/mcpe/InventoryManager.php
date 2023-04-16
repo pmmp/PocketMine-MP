@@ -34,6 +34,7 @@ use pocketmine\block\inventory\LoomInventory;
 use pocketmine\block\inventory\StonecutterInventory;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\inventory\CreativeInventory;
+use pocketmine\inventory\CreativeInventoryCache;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
@@ -597,16 +598,7 @@ class InventoryManager{
 	}
 
 	public function syncCreative() : void{
-		$typeConverter = TypeConverter::getInstance();
-
-		$entries = [];
-		if(!$this->player->isSpectator()){
-			//creative inventory may have holes if items were unregistered - ensure network IDs used are always consistent
-			foreach(CreativeInventory::getInstance()->getAll() as $k => $item){
-				$entries[] = new CreativeContentEntry($k, $typeConverter->coreItemStackToNet($item));
-			}
-		}
-		$this->session->sendDataPacket(CreativeContentPacket::create($entries));
+		$this->session->sendDataPacket(CreativeContentPacket::create(CreativeInventoryCache::getInstance()->getEntries()));
 	}
 
 	private function newItemStackId() : int{

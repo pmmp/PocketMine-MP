@@ -55,6 +55,7 @@ final class CreativeInventory{
 	 */
 	public function clear() : void{
 		$this->creative = [];
+		CreativeInventoryCache::getInstance()->creativeInventoryChanged();
 	}
 
 	/**
@@ -84,6 +85,7 @@ final class CreativeInventory{
 	 */
 	public function add(Item $item) : void{
 		$this->creative[] = clone $item;
+		CreativeInventoryCache::getInstance()->creativeInventoryChanged();
 	}
 
 	/**
@@ -94,6 +96,7 @@ final class CreativeInventory{
 		$index = $this->getItemIndex($item);
 		if($index !== -1){
 			unset($this->creative[$index]);
+			CreativeInventoryCache::getInstance()->creativeInventoryChanged();
 		}
 	}
 
