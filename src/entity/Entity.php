@@ -1325,10 +1325,12 @@ abstract class Entity{
 			}
 		}
 
-		$vector = Vector3::sum(...$vectors);
-		if($vector->lengthSquared() > 0){
-			$d = 0.014;
-			$this->motion = $this->motion->addVector($vector->normalize()->multiply($d));
+		if(count($vectors) > 0){
+			$vector = Vector3::sum(...$vectors);
+			if($vector->lengthSquared() > 0){
+				$d = 0.014;
+				$this->motion = $this->motion->addVector($vector->normalize()->multiply($d));
+			}
 		}
 	}
 
