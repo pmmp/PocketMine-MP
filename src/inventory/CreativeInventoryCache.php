@@ -30,7 +30,7 @@ use pocketmine\utils\SingletonTrait;
 final class CreativeInventoryCache{
 	use SingletonTrait;
 
-	/** @var CreativeContentEntry[] $entries  */
+	/** @var CreativeContentEntry[] $entries */
 	private array $entries = [];
 	private bool $isHit = false;
 
@@ -43,7 +43,7 @@ final class CreativeInventoryCache{
 	}
 
 	public function getEntries() : array{
-		if(!$this->isHit) {
+		if(!$this->isHit){
 			$this->regenerate();
 		}
 		return $this->entries;
