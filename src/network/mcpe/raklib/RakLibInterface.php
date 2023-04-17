@@ -53,6 +53,7 @@ use function implode;
 use function mt_rand;
 use function random_bytes;
 use function rtrim;
+use function str_split;
 use function substr;
 use const PHP_INT_MAX;
 
@@ -196,7 +197,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			try{
 				$session->handleEncoded($buf);
 			}catch(PacketHandlingException $e){
-				$errorId = bin2hex(random_bytes(6));
+				$errorId = implode("-", str_split(bin2hex(random_bytes(6)), 4));
 
 				$logger = $session->getLogger();
 				$logger->error("Bad packet (error ID $errorId): " . $e->getMessage());
