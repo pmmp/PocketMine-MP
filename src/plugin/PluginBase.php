@@ -76,7 +76,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		$this->configFile = Path::join($this->dataFolder, "config.yml");
 
 		foreach(PluginTranslations::getLanguageList($this->file . 'resources/translations') as $language){
-			$this->translations[$language] = new PluginTranslations($this->getName(), $language, $this->file . 'resources/translations' . $language);
+			$this->translations[$language] = new PluginTranslations($this->getName(), $language, $this->file . 'resources/translations');
 		}
 
 		$prefix = $this->getDescription()->getPrefix();
