@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\utils\Utils;
@@ -38,14 +39,22 @@ final class PluginTranslations extends Language{
 
 	public static function getLanguageList(string $path = "") : array{
 		if(str_contains($path, ".phar/")){
-			$languages = [];
+			$result = [];
 			/** @var \SplFileInfo $resource */
 			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path)) as $resource){
 				if($resource->isFile()){
-					$languages[] = str_replace(DIRECTORY_SEPARATOR, "/", substr((string) $resource, strlen($path) + 1, -strlen($resource->getExtension()) - 1));
+					try{
+						$code = str_replace(DIRECTORY_SEPARATOR, "/", substr((string) $resource, strlen($path) + 1, -strlen($resource->getExtension()) - 1));
+						$strings = self::loadLang($path, $code);
+						if(isset($strings[KnownTranslationKeys::LANGUAGE_NAME])){
+							$result[$code] = $strings[KnownTranslationKeys::LANGUAGE_NAME];
+						}
+					}catch(LanguageNotFoundException $e){
+						// no-op
+					}
 				}
 			}
-			return $languages;
+			return $result;
 		}elseif(is_dir($path) || $path === ""){
 			return parent::getLanguageList($path);
 		}
