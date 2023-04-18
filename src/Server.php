@@ -47,6 +47,7 @@ use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
+use pocketmine\lang\ServerLanguage;
 use pocketmine\lang\Translatable;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
@@ -267,7 +268,7 @@ class Server{
 	private Network $network;
 	private bool $networkCompressionAsync = true;
 
-	private Language $language;
+	private ServerLanguage $language;
 	private bool $forceLanguage = false;
 
 	private UuidInterface $serverID;
@@ -323,7 +324,7 @@ class Server{
 	}
 
 	public function getResourcePath() : string{
-		return \pocketmine\RESOURCE_PATH;
+		return RESOURCE_PATH;
 	}
 
 	public function getDataPath() : string{
@@ -802,7 +803,7 @@ class Server{
 			$this->logger->info("Loading server configuration");
 			$pocketmineYmlPath = Path::join($this->dataPath, "pocketmine.yml");
 			if(!file_exists($pocketmineYmlPath)){
-				$content = Filesystem::fileGetContents(Path::join(\pocketmine\RESOURCE_PATH, "pocketmine.yml"));
+				$content = Filesystem::fileGetContents(Path::join(RESOURCE_PATH, "pocketmine.yml"));
 				if(VersionInfo::IS_DEVELOPMENT_BUILD){
 					$content = str_replace("preferred-channel: stable", "preferred-channel: beta", $content);
 				}
@@ -843,11 +844,11 @@ class Server{
 			$this->forceLanguage = $this->configGroup->getPropertyBool("settings.force-language", false);
 			$selectedLang = $this->configGroup->getConfigString("language", $this->configGroup->getPropertyString("settings.language", Language::FALLBACK_LANGUAGE));
 			try{
-				$this->language = new Language($selectedLang);
+				$this->language = new ServerLanguage($selectedLang);
 			}catch(LanguageNotFoundException $e){
 				$this->logger->error($e->getMessage());
 				try{
-					$this->language = new Language(Language::FALLBACK_LANGUAGE);
+					$this->language = new ServerLanguage(Language::FALLBACK_LANGUAGE);
 				}catch(LanguageNotFoundException $e){
 					$this->logger->emergency("Fallback language \"" . Language::FALLBACK_LANGUAGE . "\" not found");
 					return;
@@ -967,14 +968,14 @@ class Server{
 
 			$this->commandMap = new SimpleCommandMap($this);
 
-			$this->craftingManager = CraftingManagerFromDataHelper::make(Path::join(\pocketmine\RESOURCE_PATH, "legacy_recipes.json"));
+			$this->craftingManager = CraftingManagerFromDataHelper::make(Path::join(RESOURCE_PATH, "legacy_recipes.json"));
 
 			$this->resourceManager = new ResourcePackManager(Path::join($this->getDataPath(), "resource_packs"), $this->logger);
 
 			$pluginGraylist = null;
 			$graylistFile = Path::join($this->dataPath, "plugin_list.yml");
 			if(!file_exists($graylistFile)){
-				copy(Path::join(\pocketmine\RESOURCE_PATH, 'plugin_list.yml'), $graylistFile);
+				copy(Path::join(RESOURCE_PATH, 'plugin_list.yml'), $graylistFile);
 			}
 			try{
 				$pluginGraylist = PluginGraylist::fromArray(yaml_parse(Filesystem::fileGetContents($graylistFile)));
@@ -1733,7 +1734,7 @@ class Server{
 		$this->uniquePlayers = [];
 	}
 
-	public function getLanguage() : Language{
+	public function getLanguage() : ServerLanguage{
 		return $this->language;
 	}
 
