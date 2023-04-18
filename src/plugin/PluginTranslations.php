@@ -5,17 +5,26 @@ declare(strict_types=1);
 namespace pocketmine\plugin;
 
 use pocketmine\lang\Language;
-use pocketmine\lang\LanguageNotFoundException;
+use pocketmine\utils\Utils;
+use function str_starts_with;
 
 final class PluginTranslations extends Language{
-	private string $fallbackName;
 
-	/**
-	 * @throws LanguageNotFoundException
-	 */
-	public function __construct(string $lang, ?string $path = null, string $fallback = self::FALLBACK_LANGUAGE){
-		$this->fallbackName = $fallback;
-		parent::__construct($lang, $path, $fallback);
+	public function __construct(private string $pluginNamespace, string $lang, ?string $path = null, private string $fallbackName = self::FALLBACK_LANGUAGE){
+		parent::__construct($lang, $path, $fallbackName);
+		// make sure all keys are prefixed with the plugin namespace
+		foreach(Utils::stringifyKeys($this->lang) as $key => $value){
+			if(!str_starts_with($key, $this->pluginNamespace . '.')){
+				$this->lang[$pluginNamespace . '.' . $key] = $value;
+				unset($this->lang[$key]);
+			}
+		}
+		foreach(Utils::stringifyKeys($this->fallbackLang) as $key => $value){
+			if(!str_starts_with($key, $this->pluginNamespace . '.')){
+				$this->fallbackLang[$pluginNamespace . '.' . $key] = $value;
+				unset($this->fallbackLang[$key]);
+			}
+		}
 	}
 
 	public function getFallbackLang() : string{
@@ -28,6 +37,10 @@ final class PluginTranslations extends Language{
 	 */
 	public function getAllFallback() : array{
 		return $this->fallbackLang;
+	}
+
+	public function getPluginNamespace() : string{
+		return $this->pluginNamespace;
 	}
 
 }
