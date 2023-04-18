@@ -24,10 +24,28 @@ declare(strict_types=1);
 namespace pocketmine\plugin;
 
 use pocketmine\lang\Language;
+use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\utils\Utils;
 use function str_starts_with;
 
 final class PluginTranslations extends Language{
+
+	public static function getLanguageList(string $path = "") : array{
+		if(str_contains($path, ".phar/")){
+			$languages = [];
+			/** @var \SplFileInfo $resource */
+			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path)) as $resource){
+				if($resource->isFile()){
+					$languages[] = str_replace(DIRECTORY_SEPARATOR, "/", substr((string) $resource, strlen($path) + 1, -strlen($resource->getExtension()) - 1));
+				}
+			}
+			return $languages;
+		}elseif(is_dir($path) || $path === ""){
+			return parent::getLanguageList($path);
+		}
+
+		throw new LanguageNotFoundException("Language path $path does not exist or is not a resource");
+	}
 
 	public function __construct(private string $pluginNamespace, string $lang, ?string $path = null, private string $fallbackName = self::FALLBACK_LANGUAGE){
 		parent::__construct($lang, $path, $fallbackName);
