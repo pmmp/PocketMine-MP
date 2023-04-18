@@ -26,7 +26,13 @@ namespace pocketmine\plugin;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\utils\Utils;
+use function is_dir;
+use function str_contains;
+use function str_replace;
 use function str_starts_with;
+use function strlen;
+use function substr;
+use const DIRECTORY_SEPARATOR;
 
 final class PluginTranslations extends Language{
 
