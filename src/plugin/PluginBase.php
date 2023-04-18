@@ -28,6 +28,7 @@ use pocketmine\command\CommandExecutor;
 use pocketmine\command\CommandSender;
 use pocketmine\command\PluginCommand;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\lang\Language;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
@@ -53,6 +54,12 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	private ?Config $config = null;
 	private string $configFile;
 
+	/**
+	 * @var PluginTranslations[]
+	 * @phpstan-var array<string, PluginTranslations>
+	 */
+	private array $translations = [];
+
 	private PluginLogger $logger;
 	private TaskScheduler $scheduler;
 
@@ -68,6 +75,10 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		//TODO: this is accessed externally via reflection, not unused
 		$this->file = rtrim($file, "/" . DIRECTORY_SEPARATOR) . "/";
 		$this->configFile = Path::join($this->dataFolder, "config.yml");
+
+		foreach(Language::getLanguageList($this->file . 'translations') as $language){
+			$this->translations[$language] = new PluginTranslations($language, $this->file . 'translations' . $language);
+		}
 
 		$prefix = $this->getDescription()->getPrefix();
 		$this->logger = new PluginLogger($server->getLogger(), $prefix !== "" ? $prefix : $this->getName());
@@ -116,6 +127,9 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 			$this->isEnabled = $enabled;
 			if($this->isEnabled){
 				$this->onEnable();
+				foreach($this->getTranslations() as $translation){
+					$this->server->getLanguage()->mergeTranslations($translation);
+				}
 			}else{
 				$this->onDisable();
 			}
@@ -279,6 +293,18 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	public function reloadConfig() : void{
 		$this->saveDefaultConfig();
 		$this->config = new Config($this->configFile);
+	}
+
+	public function addTranslations(PluginTranslations $language) : void{
+		$this->translations[$language->getLang()] = $language;
+	}
+
+	/**
+	 * @return PluginTranslations[]
+	 * @phpstan-return array<string, PluginTranslations>
+	 */
+	public function getTranslations() : array{
+		return $this->translations;
 	}
 
 	final public function getServer() : Server{
