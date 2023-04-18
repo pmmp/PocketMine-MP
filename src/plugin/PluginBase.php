@@ -28,7 +28,6 @@ use pocketmine\command\CommandExecutor;
 use pocketmine\command\CommandSender;
 use pocketmine\command\PluginCommand;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\Language;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
@@ -76,8 +75,8 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		$this->file = rtrim($file, "/" . DIRECTORY_SEPARATOR) . "/";
 		$this->configFile = Path::join($this->dataFolder, "config.yml");
 
-		foreach(Language::getLanguageList($this->file . 'translations') as $language){
-			$this->translations[$language] = new PluginTranslations($this->getName(), $language, $this->file . 'translations' . $language);
+		foreach(PluginTranslations::getLanguageList($this->file . 'resources/translations') as $language){
+			$this->translations[$language] = new PluginTranslations($this->getName(), $language, $this->file . 'resources/translations' . $language);
 		}
 
 		$prefix = $this->getDescription()->getPrefix();
