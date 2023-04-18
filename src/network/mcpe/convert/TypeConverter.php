@@ -143,7 +143,9 @@ class TypeConverter{
 			$nbt = clone $nbt;
 		}
 
-		$idMeta = ItemTranslator::getInstance()->toNetworkIdQuiet($itemStack->getId(), $itemStack->getMeta());
+		$internalId = $itemStack->getId();
+		$internalMeta = $itemStack->getMeta();
+		$idMeta = ItemTranslator::getInstance()->toNetworkIdQuiet($internalId, $internalMeta);
 		if($idMeta === null){
 			//Display unmapped items as INFO_UPDATE, but stick something in their NBT to make sure they don't stack with
 			//other unmapped items.
@@ -151,8 +153,8 @@ class TypeConverter{
 			if($nbt === null){
 				$nbt = new CompoundTag();
 			}
-			$nbt->setInt(self::PM_ID_TAG, $itemStack->getId());
-			$nbt->setInt(self::PM_META_TAG, $itemStack->getMeta());
+			$nbt->setInt(self::PM_ID_TAG, $internalId);
+			$nbt->setInt(self::PM_META_TAG, $internalMeta);
 		}else{
 			[$id, $meta] = $idMeta;
 
@@ -171,7 +173,7 @@ class TypeConverter{
 		}
 
 		$blockRuntimeId = 0;
-		if($itemStack->getId() < 256){
+		if($internalId < 256){
 			$block = $itemStack->getBlock();
 			if($block->getId() !== BlockLegacyIds::AIR){
 				$blockRuntimeId = RuntimeBlockMapping::getInstance()->toRuntimeId($block->getFullId());
