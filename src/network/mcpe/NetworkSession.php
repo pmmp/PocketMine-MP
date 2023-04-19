@@ -113,6 +113,7 @@ use function array_values;
 use function base64_encode;
 use function bin2hex;
 use function count;
+use function explode;
 use function get_class;
 use function in_array;
 use function json_encode;
@@ -949,10 +950,15 @@ class NetworkSession{
 
 	public function onChatMessage(Translatable|string $message) : void{
 		if($message instanceof Translatable){
-			$language = $this->player->getLanguage();
-			//we can't send nested translations to the client, so make sure they are always pre-translated by the server
-			$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $language->translate($p) : $p, $message->getParameters());
-			$this->sendDataPacket(TextPacket::translation($language->translateString($message->getText(), $parameters), $parameters));
+			$language = Server::getInstance()->getLanguage();
+			$namespace = explode('.', $message->getText())[0] ?? '';
+			if(!in_array($namespace, $language->getNamespaces(), true) || !$this->server->isLanguageForced()){
+				//we can't send nested translations to the client, so make sure they are always pre-translated by the server
+				$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $language->translate($p) : $p, $message->getParameters());
+				$this->sendDataPacket(TextPacket::translation($language->translateString($message->getText(), $parameters), $parameters));
+			}else{
+				$this->sendDataPacket(TextPacket::raw($language->translate($message)));
+			}
 		}else{
 			$this->sendDataPacket(TextPacket::raw($message));
 		}
