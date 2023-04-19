@@ -34,6 +34,8 @@ use pocketmine\network\mcpe\protocol\types\PlayerAction;
 use pocketmine\player\Player;
 use pocketmine\Server;
 use function array_map;
+use function explode;
+use function in_array;
 
 class DeathPacketHandler extends PacketHandler{
 	public function __construct(

@@ -39,6 +39,7 @@ use function dirname;
 use function fclose;
 use function file_exists;
 use function fopen;
+use function is_dir;
 use function mkdir;
 use function rtrim;
 use function str_contains;
