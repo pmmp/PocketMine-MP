@@ -128,8 +128,12 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 			$this->isEnabled = $enabled;
 			if($this->isEnabled){
 				$this->onEnable();
-				foreach($this->getTranslations() as $translation){
-					$this->server->getLanguage()->mergeTranslations($translation);
+				try{
+					foreach($this->getTranslations() as $translation){
+						$this->server->getLanguage()->mergeTranslations($translation);
+					}
+				}catch(\InvalidArgumentException $e){
+					throw new DisablePluginException($e->getMessage(), $e->getCode(), $e);
 				}
 			}else{
 				$this->onDisable();
