@@ -30,6 +30,9 @@ use function str_starts_with;
 
 final class ServerLanguage extends Language{
 
+	/** @var string[] $namespaces */
+	private array $namespaces = [];
+
 	public function mergeTranslations(PluginTranslations $language) : void{
 		if($this->getLang() !== $language->getLang()){
 			throw new \InvalidArgumentException("Cannot merge translations from different languages");
@@ -55,6 +58,14 @@ final class ServerLanguage extends Language{
 		}
 		$this->lang = array_merge($this->lang, $language->getAll());
 		$this->fallbackLang = array_merge($this->fallbackLang, $language->getAllFallback());
+		$this->namespaces[] = $language->getPluginNamespace();
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getNamespaces() : array{
+		return $this->namespaces;
 	}
 
 }
