@@ -31,7 +31,7 @@ use function str_starts_with;
 final class ServerLanguage extends Language{
 
 	/** @var string[] $namespaces */
-	private array $namespaces = [];
+	private array $namespaces = ['pocketmine'];
 
 	public function mergeTranslations(PluginTranslations $language) : void{
 		if($this->getLang() !== $language->getLang()){
