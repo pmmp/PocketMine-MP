@@ -950,9 +950,9 @@ class NetworkSession{
 
 	public function onChatMessage(Translatable|string $message) : void{
 		if($message instanceof Translatable){
-			$language = Server::getInstance()->getLanguage();
+			$language = $this->player->getLanguage();
 			$namespace = explode(".", $message->getText())[0] ?? "";
-			if(!in_array($namespace, $language->getNamespaces(), true) && !$this->server->isLanguageForced()){
+			if(!in_array($namespace, Server::getInstance()->getLanguage()->getNamespaces(), true) && !$this->server->isLanguageForced()){
 				//we can't send nested translations to the client, so make sure they are always pre-translated by the server
 				$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $language->translate($p) : $p, $message->getParameters());
 				$this->sendDataPacket(TextPacket::translation($language->translateString($message->getText(), $parameters), $parameters));

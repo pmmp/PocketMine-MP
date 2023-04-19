@@ -55,9 +55,9 @@ class DeathPacketHandler extends PacketHandler{
 		/** @var string[] $parameters */
 		$parameters = [];
 		if($this->deathMessage instanceof Translatable){
-			$language = Server::getInstance()->getLanguage();
+			$language = $this->player->getLanguage();
 			$namespace = explode(".", $this->deathMessage->getText())[0] ?? "";
-			if(!in_array($namespace, $language->getNamespaces(), true) && !$this->player->getServer()->isLanguageForced()){
+			if(!in_array($namespace, Server::getInstance()->getLanguage()->getNamespaces(), true) && !$this->player->getServer()->isLanguageForced()){
 				//we can't send nested translations to the client, so make sure they are always pre-translated by the server
 				$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $language->translate($p) : $p, $this->deathMessage->getParameters());
 				$message = $language->translateString($this->deathMessage->getText(), $parameters);
