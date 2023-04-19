@@ -353,30 +353,35 @@ class Item implements \JsonSerializable{
 	}
 
 	protected function serializeCompoundTag(CompoundTag $tag) : void{
-		$display = $tag->getCompoundTag(self::TAG_DISPLAY) ?? new CompoundTag();
+		$display = $tag->getCompoundTag(self::TAG_DISPLAY);
 
-		$this->hasCustomName() ?
-			$display->setString(self::TAG_DISPLAY_NAME, $this->getCustomName()) :
-			$display->removeTag(self::TAG_DISPLAY_NAME);
+		if($this->customName !== ""){
+			$display ??= new CompoundTag();
+			$display->setString(self::TAG_DISPLAY_NAME, $this->customName);
+		}else{
+			$display?->removeTag(self::TAG_DISPLAY_NAME);
+		}
 
 		if(count($this->lore) > 0){
 			$loreTag = new ListTag();
 			foreach($this->lore as $line){
 				$loreTag->push(new StringTag($line));
 			}
+			$display ??= new CompoundTag();
 			$display->setTag(self::TAG_DISPLAY_LORE, $loreTag);
 		}else{
-			$display->removeTag(self::TAG_DISPLAY_LORE);
+			$display?->removeTag(self::TAG_DISPLAY_LORE);
 		}
-		$display->count() > 0 ?
+		$display !== null && $display->count() > 0 ?
 			$tag->setTag(self::TAG_DISPLAY, $display) :
 			$tag->removeTag(self::TAG_DISPLAY);
 
-		if($this->hasEnchantments()){
+		if(count($this->enchantments) > 0){
 			$ench = new ListTag();
-			foreach($this->getEnchantments() as $enchantmentInstance){
+			$enchantmentIdMap = EnchantmentIdMap::getInstance();
+			foreach($this->enchantments as $enchantmentInstance){
 				$ench->push(CompoundTag::create()
-					->setShort(self::TAG_ENCH_ID, EnchantmentIdMap::getInstance()->toId($enchantmentInstance->getType()))
+					->setShort(self::TAG_ENCH_ID, $enchantmentIdMap->toId($enchantmentInstance->getType()))
 					->setShort(self::TAG_ENCH_LVL, $enchantmentInstance->getLevel())
 				);
 			}
@@ -385,8 +390,8 @@ class Item implements \JsonSerializable{
 			$tag->removeTag(self::TAG_ENCH);
 		}
 
-		($blockData = $this->getCustomBlockData()) !== null ?
-			$tag->setTag(self::TAG_BLOCK_ENTITY_TAG, clone $blockData) :
+		$this->blockEntityTag !== null ?
+			$tag->setTag(self::TAG_BLOCK_ENTITY_TAG, clone $this->blockEntityTag) :
 			$tag->removeTag(self::TAG_BLOCK_ENTITY_TAG);
 
 		if(count($this->canPlaceOn) > 0){
