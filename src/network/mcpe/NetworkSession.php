@@ -955,7 +955,7 @@ class NetworkSession{
 			if(!in_array($namespace, $this->server->getLanguage()->getNamespaces(), true) && !$this->server->isLanguageForced()){
 				//we can't send nested translations to the client, so make sure they are always pre-translated by the server
 				$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $language->translate($p) : $p, $message->getParameters());
-				$this->sendDataPacket(TextPacket::translation($language->translateString($message->getText(), $parameters), $parameters));
+				$this->sendDataPacket(TextPacket::translation($language->translateString($message->getText(), $parameters, "pocketmine."), $parameters));
 			}else{
 				$this->sendDataPacket(TextPacket::raw($language->translate($message)));
 			}
