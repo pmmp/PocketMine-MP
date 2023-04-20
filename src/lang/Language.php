@@ -132,7 +132,7 @@ class Language{
 		$this->fallbackName = strtolower($fallback);
 
 		if($path === null){
-			$path = LOCALE_DATA_PATH;
+			$path = \pocketmine\LOCALE_DATA_PATH;
 		}
 
 		$this->lang = self::loadLang($path, $this->langName);
