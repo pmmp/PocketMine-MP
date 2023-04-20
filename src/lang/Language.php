@@ -42,7 +42,6 @@ use function strpos;
 use function strtolower;
 use function substr;
 use const INI_SCANNER_RAW;
-use const pocketmine\LOCALE_DATA_PATH;
 use const SCANDIR_SORT_NONE;
 
 class Language{
@@ -57,7 +56,7 @@ class Language{
 	 */
 	public static function getLanguageList(string $path = "") : array{
 		if($path === ""){
-			$path = LOCALE_DATA_PATH;
+			$path = \pocketmine\LOCALE_DATA_PATH;
 		}
 
 		if(str_contains($path, ".phar/")){
