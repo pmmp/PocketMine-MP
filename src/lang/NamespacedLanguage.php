@@ -25,7 +25,7 @@ namespace pocketmine\lang;
 
 use pocketmine\utils\Utils;
 
-class NamespacedLanguage extends Language{
+final class NamespacedLanguage extends Language{
 
 	/** @var string[] $namespaces */
 	private static array $namespaces = ['pocketmine'];
