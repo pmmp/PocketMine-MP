@@ -24,6 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\lang;
 
 use pocketmine\utils\Utils;
+use function explode;
+use function in_array;
+use function str_starts_with;
 
 final class NamespacedLanguage extends Language{
 
