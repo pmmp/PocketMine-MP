@@ -78,4 +78,8 @@ final class NamespacedLanguage extends Language{
 		self::$namespaces[] = $namespace;
 	}
 
+	public function getNamespace() : string{
+		return $this->namespace;
+	}
+
 }
