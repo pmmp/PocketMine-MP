@@ -31,6 +31,7 @@ use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\form\Form;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
+use pocketmine\lang\NamespacedLanguage;
 use pocketmine\lang\Translatable;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -952,7 +953,7 @@ class NetworkSession{
 		if($message instanceof Translatable){
 			$language = $this->player->getLanguage();
 			$namespace = explode(".", $message->getText())[0];
-			if(!in_array($namespace, $this->server->getLanguage()->getNamespaces(), true) && !$this->server->isLanguageForced()){
+			if(!in_array($namespace, NamespacedLanguage::getNamespaces(), true) && !$this->server->isLanguageForced()){
 				//we can't send nested translations to the client, so make sure they are always pre-translated by the server
 				$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $language->translate($p) : $p, $message->getParameters());
 				$this->sendDataPacket(TextPacket::translation($language->translateString($message->getText(), $parameters, "pocketmine."), $parameters));
