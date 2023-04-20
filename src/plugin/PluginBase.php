@@ -28,6 +28,8 @@ use pocketmine\command\CommandExecutor;
 use pocketmine\command\CommandSender;
 use pocketmine\command\PluginCommand;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\lang\Language;
+use pocketmine\lang\NamespacedLanguage;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
@@ -55,8 +57,8 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	private string $configFile;
 
 	/**
-	 * @var PluginTranslations[]
-	 * @phpstan-var array<string, PluginTranslations>
+	 * @var NamespacedLanguage[]
+	 * @phpstan-var array<string, NamespacedLanguage>
 	 */
 	private array $translations = [];
 
@@ -78,8 +80,8 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 		$translations = Path::join($file, 'resources', 'translations');
 		if(is_dir($translations) || ($loader->getAccessProtocol() === 'phar://' && isset((new \Phar($file))['resources/translations']))){ // TODO: script plugins
-			foreach(Utils::stringifyKeys(PluginTranslations::getLanguageList($translations)) as $code => $language){
-				$this->translations[$code] = new PluginTranslations($this->getName(), $code, $translations);
+			foreach(Utils::stringifyKeys(Language::getLanguageList($translations)) as $code => $language){
+				$this->translations[$code] = new NamespacedLanguage($this->getName(), $code, $translations);
 			}
 		}
 
@@ -132,7 +134,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 				$this->onEnable();
 				try{
 					foreach($this->getTranslations() as $translation){
-						$this->server->getLanguage()->mergeTranslations($translation);
+						$this->server->getLanguage()->merge($translation);
 					}
 				}catch(\InvalidArgumentException $e){
 					throw new DisablePluginException($e->getMessage(), $e->getCode(), $e);
@@ -302,13 +304,13 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		$this->config = new Config($this->configFile);
 	}
 
-	public function addTranslations(PluginTranslations $language) : void{
+	public function addTranslations(NamespacedLanguage $language) : void{
 		$this->translations[$language->getLang()] = $language;
 	}
 
 	/**
-	 * @return PluginTranslations[]
-	 * @phpstan-return array<string, PluginTranslations>
+	 * @return NamespacedLanguage[]
+	 * @phpstan-return array<string, NamespacedLanguage>
 	 */
 	public function getTranslations() : array{
 		return $this->translations;

@@ -47,7 +47,6 @@ use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
-use pocketmine\lang\ServerLanguage;
 use pocketmine\lang\Translatable;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
@@ -268,7 +267,7 @@ class Server{
 	private Network $network;
 	private bool $networkCompressionAsync = true;
 
-	private ServerLanguage $language;
+	private Language $language;
 	private bool $forceLanguage = false;
 
 	private UuidInterface $serverID;
@@ -844,11 +843,11 @@ class Server{
 			$this->forceLanguage = $this->configGroup->getPropertyBool("settings.force-language", false);
 			$selectedLang = $this->configGroup->getConfigString("language", $this->configGroup->getPropertyString("settings.language", Language::FALLBACK_LANGUAGE));
 			try{
-				$this->language = new ServerLanguage($selectedLang);
+				$this->language = new Language($selectedLang);
 			}catch(LanguageNotFoundException $e){
 				$this->logger->error($e->getMessage());
 				try{
-					$this->language = new ServerLanguage(Language::FALLBACK_LANGUAGE);
+					$this->language = new Language(Language::FALLBACK_LANGUAGE);
 				}catch(LanguageNotFoundException $e){
 					$this->logger->emergency("Fallback language \"" . Language::FALLBACK_LANGUAGE . "\" not found");
 					return;
@@ -1734,7 +1733,7 @@ class Server{
 		$this->uniquePlayers = [];
 	}
 
-	public function getLanguage() : ServerLanguage{
+	public function getLanguage() : Language{
 		return $this->language;
 	}
 
