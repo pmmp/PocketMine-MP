@@ -1922,7 +1922,7 @@ class World implements ChunkManager{
 				$itemParser = LegacyStringToItemParser::getInstance();
 				foreach($item->getCanDestroy() as $v){
 					$entry = $itemParser->parse($v);
-					if($entry->getBlock()->isSameType($target)){
+					if($entry->getBlock()->hasSameTypeId($target)){
 						$canBreak = true;
 						break;
 					}
@@ -2077,7 +2077,7 @@ class World implements ChunkManager{
 				$itemParser = LegacyStringToItemParser::getInstance();
 				foreach($item->getCanPlaceOn() as $v){
 					$entry = $itemParser->parse($v);
-					if($entry->getBlock()->isSameType($blockClicked)){
+					if($entry->getBlock()->hasSameTypeId($blockClicked)){
 						$canPlace = true;
 						break;
 					}

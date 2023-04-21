@@ -69,7 +69,7 @@ class Slab extends Transparent{
 			return true;
 		}
 
-		if($blockReplace instanceof Slab && !$blockReplace->slabType->equals(SlabType::DOUBLE()) && $blockReplace->isSameType($this)){
+		if($blockReplace instanceof Slab && !$blockReplace->slabType->equals(SlabType::DOUBLE()) && $blockReplace->hasSameTypeId($this)){
 			if($blockReplace->slabType->equals(SlabType::TOP())){ //Trying to combine with top slab
 				return $clickVector->y <= 0.5 || (!$isClickedBlock && $face === Facing::UP);
 			}else{
@@ -81,7 +81,7 @@ class Slab extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($blockReplace instanceof Slab && !$blockReplace->slabType->equals(SlabType::DOUBLE()) && $blockReplace->isSameType($this) && (
+		if($blockReplace instanceof Slab && !$blockReplace->slabType->equals(SlabType::DOUBLE()) && $blockReplace->hasSameTypeId($this) && (
 			($blockReplace->slabType->equals(SlabType::TOP()) && ($clickVector->y <= 0.5 || $face === Facing::UP)) ||
 			($blockReplace->slabType->equals(SlabType::BOTTOM()) && ($clickVector->y >= 0.5 || $face === Facing::DOWN))
 		)){

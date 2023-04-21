@@ -87,7 +87,7 @@ class NetherVines extends Flowable{
 	}
 
 	private function canBeSupportedBy(Block $block) : bool{
-		return $block->getSupportType($this->getSupportFace())->hasCenterSupport() || $block->isSameType($this);
+		return $block->getSupportType($this->getSupportFace())->hasCenterSupport() || $block->hasSameTypeId($this);
 	}
 
 	public function onNearbyBlockChange() : void{
@@ -101,7 +101,7 @@ class NetherVines extends Flowable{
 	 */
 	private function seekToTip() : NetherVines{
 		$top = $this;
-		while(($next = $top->getSide($this->growthFace)) instanceof NetherVines && $next->isSameType($this)){
+		while(($next = $top->getSide($this->growthFace)) instanceof NetherVines && $next->hasSameTypeId($this)){
 			$top = $next;
 		}
 		return $top;

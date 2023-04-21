@@ -131,7 +131,7 @@ class Bamboo extends Transparent{
 	private function seekToTop() : Bamboo{
 		$world = $this->position->getWorld();
 		$top = $this;
-		while(($next = $world->getBlock($top->position->up())) instanceof Bamboo && $next->isSameType($this)){
+		while(($next = $world->getBlock($top->position->up())) instanceof Bamboo && $next->hasSameTypeId($this)){
 			$top = $next;
 		}
 		return $top;
@@ -156,7 +156,7 @@ class Bamboo extends Transparent{
 	public function onNearbyBlockChange() : void{
 		$world = $this->position->getWorld();
 		$below = $world->getBlock($this->position->down());
-		if(!$this->canBeSupportedBy($below) && !$below->isSameType($this)){
+		if(!$this->canBeSupportedBy($below) && !$below->hasSameTypeId($this)){
 			$world->useBreakOn($this->position);
 		}
 	}
@@ -168,7 +168,7 @@ class Bamboo extends Transparent{
 		}
 
 		$height = 1;
-		while($world->getBlock($this->position->subtract(0, $height, 0))->isSameType($this)){
+		while($world->getBlock($this->position->subtract(0, $height, 0))->hasSameTypeId($this)){
 			if(++$height >= $maxHeight){
 				return false;
 			}
