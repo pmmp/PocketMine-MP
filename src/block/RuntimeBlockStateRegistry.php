@@ -25,11 +25,9 @@ namespace pocketmine\block;
 
 use pocketmine\block\BlockBreakInfo as BreakInfo;
 use pocketmine\block\BlockIdentifier as BID;
-use pocketmine\data\runtime\InvalidSerializedRuntimeDataException;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\light\LightUpdate;
-use function get_class;
 use function min;
 
 /**
@@ -83,33 +81,6 @@ class RuntimeBlockStateRegistry{
 	}
 
 	/**
-	 * Generates all the possible valid blockstates for a given block type.
-	 *
-	 * @phpstan-return \Generator<int, Block, void, void>
-	 */
-	private static function generateAllStatesForType(Block $block) : \Generator{
-		//TODO: this bruteforce approach to discovering all valid states is very inefficient for larger state data sizes
-		//at some point we'll need to find a better way to do this
-		$bits = $block->getRequiredTypeDataBits() + $block->getRequiredStateDataBits();
-		if($bits > Block::INTERNAL_STATE_DATA_BITS){
-			throw new \InvalidArgumentException("Block state data cannot use more than " . Block::INTERNAL_STATE_DATA_BITS . " bits");
-		}
-		for($stateData = 0; $stateData < (1 << $bits); ++$stateData){
-			$v = clone $block;
-			try{
-				$v->decodeTypeAndStateData($stateData);
-				if($v->computeTypeAndStateData() !== $stateData){
-					throw new \LogicException(get_class($block) . "::decodeStateData() accepts invalid state data (returned " . $v->computeTypeAndStateData() . " for input $stateData)");
-				}
-			}catch(InvalidSerializedRuntimeDataException){ //invalid property combination, leave it
-				continue;
-			}
-
-			yield $v;
-		}
-	}
-
-	/**
 	 * Maps a block type to its corresponding type ID. This is necessary for the block to be recognized when loading
 	 * from disk, and also when being read at runtime.
 	 *
@@ -130,7 +101,7 @@ class RuntimeBlockStateRegistry{
 
 		$this->typeIndex[$typeId] = clone $block;
 
-		foreach(self::generateAllStatesForType($block) as $v){
+		foreach($block->generateStatePermutations() as $v){
 			$this->fillStaticArrays($v->getStateId(), $v);
 		}
 	}

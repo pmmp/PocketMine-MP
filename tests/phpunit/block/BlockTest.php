@@ -119,7 +119,7 @@ class BlockTest extends TestCase{
 
 		$states = $this->blockFactory->getAllKnownStates();
 		foreach($states as $stateId => $state){
-			self::assertArrayHasKey($stateId, $knownStates, "New block state $stateId (" . $state->getTypeId() . ":" . $state->computeTypeAndStateData() . ", " . print_r($state, true) . ") - consistency check may need regenerating");
+			self::assertArrayHasKey($stateId, $knownStates, "New block state $stateId (" . print_r($state, true) . ") - consistency check may need regenerating");
 			self::assertSame($knownStates[$stateId], $state->getName());
 		}
 		asort($knownStates, SORT_STRING);

@@ -29,6 +29,7 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\InvalidSerializedRuntimeDataException;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataSizeCalculator;
@@ -185,14 +186,6 @@ class Block{
 		return new ItemBlock($normalized);
 	}
 
-	final public function getRequiredTypeDataBits() : int{
-		return $this->requiredTypeDataBits;
-	}
-
-	final public function getRequiredStateDataBits() : int{
-		return $this->requiredStateDataBits;
-	}
-
 	private function decodeTypeData(int $data) : void{
 		$reader = new RuntimeDataReader($this->requiredTypeDataBits, $data);
 
@@ -213,10 +206,7 @@ class Block{
 		}
 	}
 
-	/**
-	 * @internal
-	 */
-	final public function decodeTypeAndStateData(int $data) : void{
+	private function decodeTypeAndStateData(int $data) : void{
 		$reader = new RuntimeDataReader($this->requiredTypeDataBits + $this->requiredStateDataBits, $data);
 		$this->decodeTypeData($reader->readInt($this->requiredTypeDataBits));
 		$this->decodeStateData($reader->readInt($this->requiredStateDataBits));
@@ -246,10 +236,7 @@ class Block{
 		return $writer->getValue();
 	}
 
-	/**
-	 * @internal
-	 */
-	final public function computeTypeAndStateData() : int{
+	private function computeTypeAndStateData() : int{
 		$writer = new RuntimeDataWriter($this->requiredTypeDataBits + $this->requiredStateDataBits);
 		$writer->writeInt($this->requiredTypeDataBits, $this->computeTypeData());
 		$writer->writeInt($this->requiredStateDataBits, $this->computeStateData());
@@ -279,6 +266,35 @@ class Block{
 	 */
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		//NOOP
+	}
+
+	/**
+	 * Generates copies of this Block in all possible state permutations.
+	 * Every possible combination of known properties (e.g. facing, open/closed, powered/unpowered, on/off) will be
+	 * generated.
+	 *
+	 * @phpstan-return \Generator<int, Block, void, void>
+	 */
+	public function generateStatePermutations() : \Generator{
+		//TODO: this bruteforce approach to discovering all valid states is very inefficient for larger state data sizes
+		//at some point we'll need to find a better way to do this
+		$bits = $this->requiredTypeDataBits + $this->requiredStateDataBits;
+		if($bits > Block::INTERNAL_STATE_DATA_BITS){
+			throw new \LogicException("Block state data cannot use more than " . Block::INTERNAL_STATE_DATA_BITS . " bits");
+		}
+		for($stateData = 0; $stateData < (1 << $bits); ++$stateData){
+			$v = clone $this;
+			try{
+				$v->decodeTypeAndStateData($stateData);
+				if($v->computeTypeAndStateData() !== $stateData){
+					throw new \LogicException(static::class . "::decodeStateData() accepts invalid state data (returned " . $v->computeTypeAndStateData() . " for input $stateData)");
+				}
+			}catch(InvalidSerializedRuntimeDataException){ //invalid property combination, leave it
+				continue;
+			}
+
+			yield $v;
+		}
 	}
 
 	/**
