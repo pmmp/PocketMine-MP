@@ -173,9 +173,11 @@ class TypeConverter{
 		if($itemStack->isNull()){
 			return ItemStack::null();
 		}
-		$nbt = null;
-		if($itemStack->hasNamedTag()){
-			$nbt = clone $itemStack->getNamedTag();
+		$nbt = $itemStack->getNamedTag();
+		if($nbt->count() === 0){
+			$nbt = null;
+		}else{
+			$nbt = clone $nbt;
 		}
 
 		$idMeta = ItemTranslator::getInstance()->toNetworkIdQuiet($itemStack);

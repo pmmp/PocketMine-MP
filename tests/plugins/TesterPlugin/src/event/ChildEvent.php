@@ -21,34 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\utils;
+namespace pmmp\TesterPlugin\event;
 
-use pocketmine\block\Block;
-use pocketmine\data\runtime\RuntimeDataDescriber;
+class ChildEvent extends ParentEvent{
 
-trait CoralTypeTrait{
-	protected CoralType $coralType;
-	protected bool $dead = false;
-
-	/** @see Block::describeType() */
-	public function describeType(RuntimeDataDescriber $w) : void{
-		$w->coralType($this->coralType);
-		$w->bool($this->dead);
-	}
-
-	public function getCoralType() : CoralType{ return $this->coralType; }
-
-	/** @return $this */
-	public function setCoralType(CoralType $coralType) : self{
-		$this->coralType = $coralType;
-		return $this;
-	}
-
-	public function isDead() : bool{ return $this->dead; }
-
-	/** @return $this */
-	public function setDead(bool $dead) : self{
-		$this->dead = $dead;
-		return $this;
-	}
 }

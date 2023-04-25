@@ -79,7 +79,7 @@ class Cactus extends Transparent{
 	}
 
 	private function canBeSupportedBy(Block $block) : bool{
-		return $block->isSameType($this) || $block->hasTypeTag(BlockTypeTags::SAND);
+		return $block->hasSameTypeId($this) || $block->hasTypeTag(BlockTypeTags::SAND);
 	}
 
 	public function onNearbyBlockChange() : void{
@@ -102,7 +102,7 @@ class Cactus extends Transparent{
 	}
 
 	public function onRandomTick() : void{
-		if(!$this->getSide(Facing::DOWN)->isSameType($this)){
+		if(!$this->getSide(Facing::DOWN)->hasSameTypeId($this)){
 			$world = $this->position->getWorld();
 			if($this->age === self::MAX_AGE){
 				for($y = 1; $y < 3; ++$y){

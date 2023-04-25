@@ -21,34 +21,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\utils;
+namespace pocketmine\world;
 
-use pocketmine\block\Block;
-use pocketmine\data\runtime\RuntimeDataDescriber;
+/**
+ * @internal
+ */
+final class TickingChunkEntry{
+	/**
+	 * @var ChunkTicker[] spl_object_id => ChunkTicker
+	 * @phpstan-var array<int, ChunkTicker>
+	 */
+	public array $tickers = [];
 
-trait CoralTypeTrait{
-	protected CoralType $coralType;
-	protected bool $dead = false;
-
-	/** @see Block::describeType() */
-	public function describeType(RuntimeDataDescriber $w) : void{
-		$w->coralType($this->coralType);
-		$w->bool($this->dead);
-	}
-
-	public function getCoralType() : CoralType{ return $this->coralType; }
-
-	/** @return $this */
-	public function setCoralType(CoralType $coralType) : self{
-		$this->coralType = $coralType;
-		return $this;
-	}
-
-	public function isDead() : bool{ return $this->dead; }
-
-	/** @return $this */
-	public function setDead(bool $dead) : self{
-		$this->dead = $dead;
-		return $this;
-	}
+	public bool $ready = false;
 }

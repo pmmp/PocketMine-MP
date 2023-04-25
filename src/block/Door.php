@@ -53,7 +53,7 @@ class Door extends Transparent{
 
 		//copy door properties from other half
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
-		if($other instanceof Door && $other->isSameType($this)){
+		if($other instanceof Door && $other->hasSameTypeId($this)){
 			if($this->top){
 				$this->facing = $other->facing;
 				$this->open = $other->open;
@@ -126,7 +126,7 @@ class Door extends Transparent{
 			$next = $this->getSide(Facing::rotateY($this->facing, false));
 			$next2 = $this->getSide(Facing::rotateY($this->facing, true));
 
-			if($next->isSameType($this) || (!$next2->isTransparent() && $next->isTransparent())){ //Door hinge
+			if($next->hasSameTypeId($this) || (!$next2->isTransparent() && $next->isTransparent())){ //Door hinge
 				$this->hingeRight = true;
 			}
 
@@ -145,7 +145,7 @@ class Door extends Transparent{
 
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
 		$world = $this->position->getWorld();
-		if($other instanceof Door && $other->isSameType($this)){
+		if($other instanceof Door && $other->hasSameTypeId($this)){
 			$other->open = $this->open;
 			$world->setBlock($other->position, $other);
 		}
@@ -166,7 +166,7 @@ class Door extends Transparent{
 
 	public function getAffectedBlocks() : array{
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
-		if($other->isSameType($this)){
+		if($other->hasSameTypeId($this)){
 			return [$this, $other];
 		}
 		return parent::getAffectedBlocks();

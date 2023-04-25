@@ -29,6 +29,7 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\InvalidSerializedRuntimeDataException;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataSizeCalculator;
@@ -65,16 +66,9 @@ class Block{
 	/** @var AxisAlignedBB[]|null */
 	protected ?array $collisionBoxes = null;
 
-	/**
-	 * @var int[]
-	 * @phpstan-var array<string, int>
-	 */
-	private static array $typeDataBits = [];
-	/**
-	 * @var int[]
-	 * @phpstan-var array<string, int>
-	 */
-	private static array $stateDataBits = [];
+	private int $requiredTypeDataBits;
+	private int $requiredStateDataBits;
+	private int $defaultStateData;
 
 	/**
 	 * @param string $name English name of the block type (TODO: implement translations)
@@ -84,6 +78,16 @@ class Block{
 		$this->fallbackName = $name;
 		$this->typeInfo = $typeInfo;
 		$this->position = new Position(0, 0, 0, null);
+
+		$calculator = new RuntimeDataSizeCalculator();
+		$this->describeType($calculator);
+		$this->requiredTypeDataBits = $calculator->getBitsUsed();
+
+		$calculator = new RuntimeDataSizeCalculator();
+		$this->describeState($calculator);
+		$this->requiredStateDataBits = $calculator->getBitsUsed();
+
+		$this->defaultStateData = $this->computeStateData();
 	}
 
 	public function __clone(){
@@ -137,8 +141,11 @@ class Block{
 
 	/**
 	 * Returns whether the given block has an equivalent type to this one. This compares the type IDs.
+	 *
+	 * Type properties (e.g. colour, skull type, etc.) are not compared. This means that different colours of wool,
+	 * concrete, etc. will all be considered as having the same type.
 	 */
-	public function isSameType(Block $other) : bool{
+	public function hasSameTypeId(Block $other) : bool{
 		return $this->getTypeId() === $other->getTypeId();
 	}
 
@@ -174,89 +181,65 @@ class Block{
 	 * Type information such as colour, wood type, etc. is preserved.
 	 */
 	public function asItem() : Item{
-		return new ItemBlock($this);
+		$normalized = clone $this;
+		$normalized->decodeStateData($this->defaultStateData);
+		return new ItemBlock($normalized);
 	}
 
-	final public function getRequiredTypeDataBits() : int{
-		$class = get_class($this);
-		if(isset(self::$typeDataBits[$class])){
-			return self::$typeDataBits[$class];
-		}
-		$calculator = new RuntimeDataSizeCalculator();
-		$this->describeType($calculator);
-		return self::$typeDataBits[$class] = $calculator->getBitsUsed();
-	}
-
-	final public function getRequiredStateDataBits() : int{
-		$class = get_class($this);
-		if(isset(self::$stateDataBits[$class])){
-			return self::$stateDataBits[$class];
-		}
-		$calculator = new RuntimeDataSizeCalculator();
-		$this->describeState($calculator);
-		return self::$stateDataBits[$class] = $calculator->getBitsUsed();
-	}
-
-	/**
-	 * @internal
-	 */
-	final public function decodeTypeData(int $data) : void{
-		$typeBits = $this->getRequiredTypeDataBits();
-		$reader = new RuntimeDataReader($typeBits, $data);
+	private function decodeTypeData(int $data) : void{
+		$reader = new RuntimeDataReader($this->requiredTypeDataBits, $data);
 
 		$this->describeType($reader);
 		$readBits = $reader->getOffset();
-		if($typeBits !== $readBits){
-			throw new \LogicException(get_class($this) . ": Exactly $typeBits bits of type data were provided, but $readBits were read");
+		if($this->requiredTypeDataBits !== $readBits){
+			throw new \LogicException(get_class($this) . ": Exactly $this->requiredTypeDataBits bits of type data were provided, but $readBits were read");
 		}
 	}
 
-	/**
-	 * @internal
-	 */
-	final public function decodeTypeAndStateData(int $data) : void{
-		$typeBits = $this->getRequiredTypeDataBits();
-		$stateBits = $this->getRequiredStateDataBits();
-		$reader = new RuntimeDataReader($typeBits + $stateBits, $data);
-		$this->decodeTypeData($reader->readInt($typeBits));
+	private function decodeStateData(int $data) : void{
+		$reader = new RuntimeDataReader($this->requiredStateDataBits, $data);
 
 		$this->describeState($reader);
-		$readBits = $reader->getOffset() - $typeBits;
-		if($stateBits !== $readBits){
-			throw new \LogicException(get_class($this) . ": Exactly $stateBits bits of state data were provided, but $readBits were read");
+		$readBits = $reader->getOffset();
+		if($this->requiredStateDataBits !== $readBits){
+			throw new \LogicException(get_class($this) . ": Exactly $this->requiredStateDataBits bits of state data were provided, but $readBits were read");
 		}
 	}
 
-	/**
-	 * @internal
-	 */
-	final public function computeTypeData() : int{
-		$typeBits = $this->getRequiredTypeDataBits();
-		$writer = new RuntimeDataWriter($typeBits);
+	private function decodeTypeAndStateData(int $data) : void{
+		$reader = new RuntimeDataReader($this->requiredTypeDataBits + $this->requiredStateDataBits, $data);
+		$this->decodeTypeData($reader->readInt($this->requiredTypeDataBits));
+		$this->decodeStateData($reader->readInt($this->requiredStateDataBits));
+	}
+
+	private function computeTypeData() : int{
+		$writer = new RuntimeDataWriter($this->requiredTypeDataBits);
 
 		$this->describeType($writer);
 		$writtenBits = $writer->getOffset();
-		if($typeBits !== $writtenBits){
-			throw new \LogicException(get_class($this) . ": Exactly $typeBits bits of type data were expected, but $writtenBits were written");
+		if($this->requiredTypeDataBits !== $writtenBits){
+			throw new \LogicException(get_class($this) . ": Exactly $this->requiredTypeDataBits bits of type data were expected, but $writtenBits were written");
 		}
 
 		return $writer->getValue();
 	}
 
-	/**
-	 * @internal
-	 */
-	final public function computeTypeAndStateData() : int{
-		$typeBits = $this->getRequiredTypeDataBits();
-		$stateBits = $this->getRequiredStateDataBits();
-		$writer = new RuntimeDataWriter($typeBits + $stateBits);
-		$writer->writeInt($typeBits, $this->computeTypeData());
+	private function computeStateData() : int{
+		$writer = new RuntimeDataWriter($this->requiredStateDataBits);
 
 		$this->describeState($writer);
-		$writtenBits = $writer->getOffset() - $typeBits;
-		if($stateBits !== $writtenBits){
-			throw new \LogicException(get_class($this) . ": Exactly $stateBits bits of state data were expected, but $writtenBits were written");
+		$writtenBits = $writer->getOffset();
+		if($this->requiredStateDataBits !== $writtenBits){
+			throw new \LogicException(get_class($this) . ": Exactly $this->requiredStateDataBits bits of state data were expected, but $writtenBits were written");
 		}
+
+		return $writer->getValue();
+	}
+
+	private function computeTypeAndStateData() : int{
+		$writer = new RuntimeDataWriter($this->requiredTypeDataBits + $this->requiredStateDataBits);
+		$writer->writeInt($this->requiredTypeDataBits, $this->computeTypeData());
+		$writer->writeInt($this->requiredStateDataBits, $this->computeStateData());
 
 		return $writer->getValue();
 	}
@@ -269,7 +252,7 @@ class Block{
 	 * The method implementation must NOT use conditional logic to determine which properties are written. It must
 	 * always write the same properties in the same order, regardless of the current state of the block.
 	 */
-	protected function describeType(RuntimeDataDescriber $w) : void{
+	public function describeType(RuntimeDataDescriber $w) : void{
 		//NOOP
 	}
 
@@ -283,6 +266,35 @@ class Block{
 	 */
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		//NOOP
+	}
+
+	/**
+	 * Generates copies of this Block in all possible state permutations.
+	 * Every possible combination of known properties (e.g. facing, open/closed, powered/unpowered, on/off) will be
+	 * generated.
+	 *
+	 * @phpstan-return \Generator<int, Block, void, void>
+	 */
+	public function generateStatePermutations() : \Generator{
+		//TODO: this bruteforce approach to discovering all valid states is very inefficient for larger state data sizes
+		//at some point we'll need to find a better way to do this
+		$bits = $this->requiredTypeDataBits + $this->requiredStateDataBits;
+		if($bits > Block::INTERNAL_STATE_DATA_BITS){
+			throw new \LogicException("Block state data cannot use more than " . Block::INTERNAL_STATE_DATA_BITS . " bits");
+		}
+		for($stateData = 0; $stateData < (1 << $bits); ++$stateData){
+			$v = clone $this;
+			try{
+				$v->decodeTypeAndStateData($stateData);
+				if($v->computeTypeAndStateData() !== $stateData){
+					throw new \LogicException(static::class . "::decodeStateData() accepts invalid state data (returned " . $v->computeTypeAndStateData() . " for input $stateData)");
+				}
+			}catch(InvalidSerializedRuntimeDataException){ //invalid property combination, leave it
+				continue;
+			}
+
+			yield $v;
+		}
 	}
 
 	/**

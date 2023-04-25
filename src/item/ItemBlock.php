@@ -24,8 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\block\RuntimeBlockStateRegistry;
-use pocketmine\block\VanillaBlocks;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 
 /**
@@ -35,47 +33,29 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
  * just place wheat crops when used on the ground).
  */
 final class ItemBlock extends Item{
-	private int $blockTypeId;
-	private int $blockTypeData;
-
-	private int $fuelTime;
-	private bool $fireProof;
-	private int $maxStackSize;
-
-	public function __construct(Block $block){
+	public function __construct(
+		private Block $block
+	){
 		parent::__construct(ItemIdentifier::fromBlock($block), $block->getName());
-		$this->blockTypeId = $block->getTypeId();
-		$this->blockTypeData = $block->computeTypeData();
-
-		$this->fuelTime = $block->getFuelTime();
-		$this->fireProof = $block->isFireProofAsItem();
-		$this->maxStackSize = $block->getMaxStackSize();
 	}
 
 	protected function describeType(RuntimeDataDescriber $w) : void{
-		$w->int(Block::INTERNAL_STATE_DATA_BITS, $this->blockTypeData);
+		$this->block->describeType($w);
 	}
 
 	public function getBlock(?int $clickedFace = null) : Block{
-		//TODO: HACKY MESS, CLEAN IT UP
-		$factory = RuntimeBlockStateRegistry::getInstance();
-		if(!$factory->isRegistered($this->blockTypeId)){
-			return VanillaBlocks::AIR();
-		}
-		$blockType = $factory->fromTypeId($this->blockTypeId);
-		$blockType->decodeTypeData($this->blockTypeData);
-		return $blockType;
+		return clone $this->block;
 	}
 
 	public function getFuelTime() : int{
-		return $this->fuelTime;
+		return $this->block->getFuelTime();
 	}
 
 	public function isFireProof() : bool{
-		return $this->fireProof;
+		return $this->block->isFireProofAsItem();
 	}
 
 	public function getMaxStackSize() : int{
-		return $this->maxStackSize;
+		return $this->block->getMaxStackSize();
 	}
 }

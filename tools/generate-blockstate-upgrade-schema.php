@@ -30,7 +30,6 @@ use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaUtils;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaValueRemap;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use function array_key_first;
@@ -196,7 +195,14 @@ function generateBlockStateUpgradeSchema(array $upgradeTable) : BlockStateUpgrad
 			if($foundVersion === -1 || $mapping->new->getVersion() === $foundVersion){
 				$foundVersion = $mapping->new->getVersion();
 			}else{
-				throw new AssumptionFailedError("Mixed versions found");
+				$logger = \GlobalLogger::get();
+				$logger->emergency("Mismatched upgraded versions found: $foundVersion and " . $mapping->new->getVersion());
+				$logger->emergency("Mismatched new state: " . $mapping->new->toNbt());
+				$logger->emergency("This is probably because the game didn't recognize the input blockstate, so it was returned unchanged.");
+				$logger->emergency("This is usually because the block is locked behind an experimental toggle that isn't enabled on the world you used when generating this upgrade table.");
+				$logger->emergency("You can test this in a vanilla game using the /give or /setblock commands to try and acquire the block. Keep trying different experiments until you find the right one.");
+
+				exit(1);
 			}
 		}
 	}

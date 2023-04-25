@@ -65,7 +65,7 @@ class DoublePlant extends Flowable{
 
 		return (
 			$other instanceof DoublePlant &&
-			$other->isSameType($this) &&
+			$other->hasSameTypeId($this) &&
 			$other->top !== $this->top
 		);
 	}

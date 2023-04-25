@@ -95,7 +95,7 @@ class Candle extends Transparent{
 	}
 
 	protected function getCandleIfCompatibleType(Block $block) : ?Candle{
-		return $block instanceof Candle && $block->isSameType($this) ? $block : null;
+		return $block instanceof Candle && $block->hasSameTypeId($this) ? $block : null;
 	}
 
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{

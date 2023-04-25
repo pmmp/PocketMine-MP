@@ -58,15 +58,8 @@ abstract class Event{
 
 		++self::$eventCallDepth;
 		try{
-			foreach(EventPriority::ALL as $priority){
-				$currentList = $handlerList;
-				while($currentList !== null){
-					foreach($currentList->getListenersByPriority($priority) as $registration){
-						$registration->callEvent($this);
-					}
-
-					$currentList = $currentList->getParent();
-				}
+			foreach($handlerList->getListenerList() as $registration){
+				$registration->callEvent($this);
 			}
 		}finally{
 			--self::$eventCallDepth;

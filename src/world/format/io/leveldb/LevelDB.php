@@ -27,7 +27,6 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
-use pocketmine\data\bedrock\block\BlockStateSerializer;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\NbtException;
@@ -158,14 +157,12 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		$paletteSize = $bitsPerBlock === 0 ? 1 : $stream->getLInt();
 
-		$blockDataUpgrader = GlobalBlockStateHandlers::getUpgrader();
-		$blockStateDeserializer = GlobalBlockStateHandlers::getDeserializer();
 		for($i = 0; $i < $paletteSize; ++$i){
 			try{
 				$offset = $stream->getOffset();
 
 				$blockStateNbt = $nbt->read($stream->getBuffer(), $offset)->mustGetCompoundTag();
-				$blockStateData = $blockDataUpgrader->upgradeBlockStateNbt($blockStateNbt);
+				$blockStateData = $this->blockDataUpgrader->upgradeBlockStateNbt($blockStateNbt);
 				if($blockStateData === null){
 					//upgrading blockstates should always succeed, regardless of whether they've been implemented or not
 					throw new BlockStateDeserializeException("Invalid or improperly mapped legacy blockstate: " . $blockStateNbt->toString());
@@ -173,11 +170,11 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				$stream->setOffset($offset);
 
 				try{
-					$palette[] = $blockStateDeserializer->deserialize($blockStateData);
+					$palette[] = $this->blockStateDeserializer->deserialize($blockStateData);
 				}catch(BlockStateDeserializeException){
 					//TODO: remember data for unknown states so we can implement them later
 					//TODO: log this
-					$palette[] = $blockStateDeserializer->deserialize(GlobalBlockStateHandlers::getUnknownBlockStateData());
+					$palette[] = $this->blockStateDeserializer->deserialize(GlobalBlockStateHandlers::getUnknownBlockStateData());
 				}
 			}catch(NbtException | BlockStateDeserializeException $e){
 				throw new CorruptedChunkException("Invalid blockstate NBT at offset $i in paletted storage: " . $e->getMessage(), 0, $e);
@@ -188,7 +185,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		return PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
 	}
 
-	private static function serializeBlockPalette(BinaryStream $stream, PalettedBlockArray $blocks, BlockStateSerializer $blockStateSerializer) : void{
+	private function serializeBlockPalette(BinaryStream $stream, PalettedBlockArray $blocks) : void{
 		$stream->putByte($blocks->getBitsPerBlock() << 1);
 		$stream->put($blocks->getWordArray());
 
@@ -198,7 +195,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		}
 		$tags = [];
 		foreach($palette as $p){
-			$tags[] = new TreeRoot($blockStateSerializer->serialize($p)->toNbt());
+			$tags[] = new TreeRoot($this->blockStateSerializer->serialize($p)->toNbt());
 		}
 
 		$stream->put((new LittleEndianNbtSerializer())->writeMultiple($tags));
@@ -327,8 +324,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$binaryStream = new BinaryStream($extraRawData);
 		$count = $binaryStream->getLInt();
 
-		$blockDataUpgrader = GlobalBlockStateHandlers::getUpgrader();
-		$blockStateDeserializer = GlobalBlockStateHandlers::getDeserializer();
 		for($i = 0; $i < $count; ++$i){
 			$key = $binaryStream->getLInt();
 			$value = $binaryStream->getLShort();
@@ -340,13 +335,13 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 			$blockId = $value & 0xff;
 			$blockData = ($value >> 8) & 0xf;
-			$blockStateData = $blockDataUpgrader->upgradeIntIdMeta($blockId, $blockData);
+			$blockStateData = $this->blockDataUpgrader->upgradeIntIdMeta($blockId, $blockData);
 			if($blockStateData === null){
 				//TODO: we could preserve this in case it's supported in the future, but this was historically only
 				//used for grass anyway, so we probably don't need to care
 				continue;
 			}
-			$blockStateId = $blockStateDeserializer->deserialize($blockStateData);
+			$blockStateId = $this->blockStateDeserializer->deserialize($blockStateData);
 
 			if(!isset($extraDataLayers[$ySub])){
 				$extraDataLayers[$ySub] = new PalettedBlockArray(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS);
@@ -632,7 +627,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				$subChunks = $this->deserializeLegacyTerrainData($index, $chunkVersion);
 				break;
 			default:
-				//TODO: set chunks read-only so the version on disk doesn't get overwritten
 				throw new CorruptedChunkException("don't know how to decode chunk format version $chunkVersion");
 		}
 
@@ -669,7 +663,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		//TODO: tile ticks, biome states (?)
 
 		$chunk = new Chunk(
-			$subChunks, //TODO: maybe missing biomes should be an error?
+			$subChunks,
 			$terrainPopulated
 		);
 
@@ -685,7 +679,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		$write = new \LevelDBWriteBatch();
 
-		$previousVersion = $this->readVersion($chunkX, $chunkZ);
 		$write->put($index . ChunkDataKey::NEW_VERSION, chr(self::CURRENT_LEVEL_CHUNK_VERSION));
 
 		$chunk = $chunkData->getChunk();
@@ -693,9 +686,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		if($chunk->getTerrainDirtyFlag(Chunk::DIRTY_FLAG_BLOCKS)){
 			$subChunks = $chunk->getSubChunks();
 
-			//TODO: this should not rely on globals, but in PM4 we have no other option, and it's not worse than what we
-			//were doing before anyway ...
-			$blockStateSerializer = GlobalBlockStateHandlers::getSerializer();
 			foreach($subChunks as $y => $subChunk){
 				$key = $index . ChunkDataKey::SUBCHUNK . chr($y);
 				if($subChunk->isEmptyAuthoritative()){
@@ -707,7 +697,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 					$layers = $subChunk->getBlockLayers();
 					$subStream->putByte(count($layers));
 					foreach($layers as $blocks){
-						self::serializeBlockPalette($subStream, $blocks, $blockStateSerializer);
+						$this->serializeBlockPalette($subStream, $blocks);
 					}
 
 					$write->put($key, $subStream->getBuffer());

@@ -52,7 +52,7 @@ class NetherVines extends Flowable{
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(5, 0, self::MAX_AGE, $this->age);
 	}
 
@@ -87,7 +87,7 @@ class NetherVines extends Flowable{
 	}
 
 	private function canBeSupportedBy(Block $block) : bool{
-		return $block->getSupportType($this->getSupportFace())->hasCenterSupport() || $block->isSameType($this);
+		return $block->getSupportType($this->getSupportFace())->hasCenterSupport() || $block->hasSameTypeId($this);
 	}
 
 	public function onNearbyBlockChange() : void{
@@ -101,7 +101,7 @@ class NetherVines extends Flowable{
 	 */
 	private function seekToTip() : NetherVines{
 		$top = $this;
-		while(($next = $top->getSide($this->growthFace)) instanceof NetherVines && $next->isSameType($this)){
+		while(($next = $top->getSide($this->growthFace)) instanceof NetherVines && $next->hasSameTypeId($this)){
 			$top = $next;
 		}
 		return $top;
