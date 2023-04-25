@@ -31,7 +31,7 @@ use pocketmine\player\Player;
  */
 class BlockGrowEvent extends BaseBlockChangeEvent
 {
-
+  
     public function __construct(
         Block $block,
         Block $newState,
