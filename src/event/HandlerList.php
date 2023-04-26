@@ -102,7 +102,7 @@ class HandlerList{
 	 * @return RegisteredListener[]
 	 */
 	public function getListenersByPriority(int $priority) : array{
-		return $this->handlerSlots[$priority];
+		return $this->handlerSlots[$priority] ?? [];
 	}
 
 	public function getParent() : ?HandlerList{
