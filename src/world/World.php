@@ -1242,29 +1242,33 @@ class World implements ChunkManager{
 			return;
 		}
 
-		$this->timings->randomChunkUpdatesChunkSelection->startTiming();
+		if(count($this->recheckTickingChunks) > 0 || count($this->tickingLoaders) > 0){
+			$this->timings->randomChunkUpdatesChunkSelection->startTiming();
 
-		$chunkTickableCache = [];
+			$chunkTickableCache = [];
 
-		foreach($this->recheckTickingChunks as $hash => $_){
-			World::getXZ($hash, $chunkX, $chunkZ);
-			if($this->isChunkTickable($chunkX, $chunkZ, $chunkTickableCache)){
-				$this->validTickingChunks[$hash] = $hash;
+			foreach($this->recheckTickingChunks as $hash => $_){
+				World::getXZ($hash, $chunkX, $chunkZ);
+				if($this->isChunkTickable($chunkX, $chunkZ, $chunkTickableCache)){
+					$this->validTickingChunks[$hash] = $hash;
+				}
 			}
+			$this->recheckTickingChunks = [];
+
+			//TODO: REMOVE THIS - we need a local var to add extra chunks to if we have legacy ticking loaders
+			//this is copy-on-write, so it won't have any performance impact if there are no legacy ticking loaders
+			$chunkTickList = $this->validTickingChunks;
+
+			//TODO: REMOVE THIS
+			//backwards compatibility for TickingChunkLoader, although I'm not sure this is really necessary in practice
+			if(count($this->tickingLoaders) !== 0){
+				$this->selectTickableChunksLegacy($chunkTickList, $chunkTickableCache);
+			}
+
+			$this->timings->randomChunkUpdatesChunkSelection->stopTiming();
+		}else{
+			$chunkTickList = $this->validTickingChunks;
 		}
-		$this->recheckTickingChunks = [];
-
-		//TODO: REMOVE THIS - we need a local var to add extra chunks to if we have legacy ticking loaders
-		//this is copy-on-write, so it won't have any performance impact if there are no legacy ticking loaders
-		$chunkTickList = $this->validTickingChunks;
-
-		//TODO: REMOVE THIS
-		//backwards compatibility for TickingChunkLoader, although I'm not sure this is really necessary in practice
-		if(count($this->tickingLoaders) !== 0){
-			$this->selectTickableChunksLegacy($chunkTickList, $chunkTickableCache);
-		}
-
-		$this->timings->randomChunkUpdatesChunkSelection->stopTiming();
 
 		foreach($chunkTickList as $index => $_){
 			World::getXZ($index, $chunkX, $chunkZ);
