@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\player;
 
+use pocketmine\block\BaseSign;
 use pocketmine\block\Bed;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\UnknownBlock;
@@ -899,6 +900,31 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	/**
+	 * @param true[] $oldTickingChunks
+	 * @param true[] $newTickingChunks
+	 *
+	 * @phpstan-param array<int, true> $oldTickingChunks
+	 * @phpstan-param array<int, true> $newTickingChunks
+	 */
+	private function updateTickingChunkRegistrations(array $oldTickingChunks, array $newTickingChunks) : void{
+		$world = $this->getWorld();
+		foreach($oldTickingChunks as $hash => $_){
+			if(!isset($newTickingChunks[$hash]) && !isset($this->loadQueue[$hash])){
+				//we are (probably) still using this chunk, but it's no longer within ticking range
+				World::getXZ($hash, $tickingChunkX, $tickingChunkZ);
+				$world->unregisterTickingChunk($this->chunkTicker, $tickingChunkX, $tickingChunkZ);
+			}
+		}
+		foreach($newTickingChunks as $hash => $_){
+			if(!isset($oldTickingChunks[$hash]) && !isset($this->loadQueue[$hash])){
+				//we were already using this chunk, but it is now within ticking range
+				World::getXZ($hash, $tickingChunkX, $tickingChunkZ);
+				$world->registerTickingChunk($this->chunkTicker, $tickingChunkX, $tickingChunkZ);
+			}
+		}
+	}
+
+	/**
 	 * Calculates which new chunks this player needs to use, and which currently-used chunks it needs to stop using.
 	 * This is based on factors including the player's current render radius and current position.
 	 */
@@ -934,15 +960,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			World::getXZ($index, $X, $Z);
 			$this->unloadChunk($X, $Z);
 		}
-		foreach($this->tickingChunks as $hash => $_){
-			//any chunks we encounter here are still used by the player, but may no longer be within ticking range
-			if(!isset($tickingChunks[$hash]) && !isset($newOrder[$hash])){
-				World::getXZ($hash, $tickingChunkX, $tickingChunkZ);
-				$world->unregisterTickingChunk($this->chunkTicker, $tickingChunkX, $tickingChunkZ);
-			}
-		}
 
 		$this->loadQueue = $newOrder;
+
+		$this->updateTickingChunkRegistrations($this->tickingChunks, $tickingChunks);
 		$this->tickingChunks = $tickingChunks;
 
 		if(count($this->loadQueue) > 0 || count($unloadChunks) > 0){
@@ -2626,6 +2647,20 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$inventory->onClose($this);
 		}
 		$this->permanentWindows = [];
+	}
+
+	/**
+	 * Opens the player's sign editor GUI for the sign at the given position.
+	 * TODO: add support for editing the rear side of the sign (not currently supported due to technical limitations)
+	 */
+	public function openSignEditor(Vector3 $position) : void{
+		$block = $this->getWorld()->getBlock($position);
+		if($block instanceof BaseSign){
+			$this->getWorld()->setBlock($position, $block->setEditorEntityRuntimeId($this->getId()));
+			$this->getNetworkSession()->onOpenSignEditor($position, true);
+		}else{
+			throw new \InvalidArgumentException("Block at this position is not a sign");
+		}
 	}
 
 	use ChunkListenerNoOpTrait {
