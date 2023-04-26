@@ -748,7 +748,7 @@ class InGamePacketHandler extends PacketHandler{
 		if(!($nbt instanceof CompoundTag)) throw new AssumptionFailedError("PHPStan should ensure this is a CompoundTag"); //for phpstorm's benefit
 
 		if($block instanceof BaseSign){
-			if(($textBlobTag = $nbt->getTag(Sign::TAG_TEXT_BLOB)) instanceof StringTag){
+			if(($textBlobTag = $nbt->getCompoundTag(Sign::TAG_FRONT_TEXT)?->getTag(Sign::TAG_TEXT_BLOB)) instanceof StringTag){
 				try{
 					$text = SignText::fromBlob($textBlobTag->getValue());
 				}catch(\InvalidArgumentException $e){
