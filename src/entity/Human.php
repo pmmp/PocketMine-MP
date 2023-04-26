@@ -92,7 +92,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	private const TAG_XP_PROGRESS = "XpP"; //TAG_Float
 	private const TAG_LIFETIME_XP_TOTAL = "XpTotal"; //TAG_Int
 	private const TAG_XP_SEED = "XpSeed"; //TAG_Int
-	private const TAG_NAME_TAG = "NameTag"; //TAG_String
 	private const TAG_SKIN = "Skin"; //TAG_Compound
 	private const TAG_SKIN_NAME = "Name"; //TAG_String
 	private const TAG_SKIN_DATA = "Data"; //TAG_ByteArray
@@ -245,10 +244,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	 * For Human entities which are not players, sets their properties such as nametag, skin and UUID from NBT.
 	 */
 	protected function initHumanData(CompoundTag $nbt) : void{
-		if(($nameTagTag = $nbt->getTag(self::TAG_NAME_TAG)) instanceof StringTag){
-			$this->setNameTag($nameTagTag->getValue());
-		}
-
 		//TODO: use of NIL UUID for namespace is a hack; we should provide a proper UUID for the namespace
 		$this->uuid = Uuid::uuid3(Uuid::NIL, ((string) $this->getId()) . $this->skin->getSkinData() . $this->getNameTag());
 	}

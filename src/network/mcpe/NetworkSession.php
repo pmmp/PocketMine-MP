@@ -60,6 +60,7 @@ use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\NetworkChunkPublisherUpdatePacket;
+use pocketmine\network\mcpe\protocol\OpenSignPacket;
 use pocketmine\network\mcpe\protocol\Packet;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\PacketPool;
@@ -1091,6 +1092,10 @@ class NetworkSession{
 
 	public function onToastNotification(string $title, string $body) : void{
 		$this->sendDataPacket(ToastRequestPacket::create($title, $body));
+	}
+
+	public function onOpenSignEditor(Vector3 $signPosition, bool $frontSide) : void{
+		$this->sendDataPacket(OpenSignPacket::create(BlockPosition::fromVector3($signPosition), $frontSide));
 	}
 
 	public function tick() : void{
