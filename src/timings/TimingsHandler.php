@@ -174,12 +174,12 @@ class TimingsHandler{
 		}
 
 		$record = TimingsRecord::getCurrentRecord();
-		if($record !== null){
-			if($record->getTimerId() !== spl_object_id($this)){
-				throw new \LogicException("Timer \"" . $record->getName() . "\" should have been stopped before stopping timer \"" . $this->name . "\"");
-			}
+		$timerId = spl_object_id($this);
+		for(; $record !== null && $record->getTimerId() !== $timerId; $record = TimingsRecord::getCurrentRecord()){
+			\GlobalLogger::get()->error("Timer \"" . $record->getName() . "\" should have been stopped before stopping timer \"" . $this->name . "\"");
 			$record->stopTiming($now);
 		}
+		$record?->stopTiming($now);
 		if($this->parent !== null){
 			$this->parent->internalStopTiming($now);
 		}

@@ -56,7 +56,7 @@ class CraftingManager{
 	 * @var FurnaceRecipeManager[]
 	 * @phpstan-var array<int, FurnaceRecipeManager>
 	 */
-	protected array $furnaceRecipeManagers;
+	protected array $furnaceRecipeManagers = [];
 
 	/**
 	 * @var PotionTypeRecipe[][]
