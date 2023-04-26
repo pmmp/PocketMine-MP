@@ -97,6 +97,15 @@ abstract class BaseSign extends Transparent{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
+	public function onPostPlace() : void{
+		$player = $this->editorEntityRuntimeId !== null ?
+			$this->position->getWorld()->getEntity($this->editorEntityRuntimeId) :
+			null;
+		if($player instanceof Player){
+			$player->openSignEditor($this->position);
+		}
+	}
+
 	/**
 	 * Returns an object containing information about the sign text.
 	 */
@@ -107,6 +116,19 @@ abstract class BaseSign extends Transparent{
 	/** @return $this */
 	public function setText(SignText $text) : self{
 		$this->text = $text;
+		return $this;
+	}
+
+	/**
+	 * Sets the runtime entity ID of the player editing this sign. Only this player will be able to edit the sign.
+	 * This is used to prevent multiple players from editing the same sign at the same time, and to prevent players
+	 * from editing signs they didn't place.
+	 */
+	public function getEditorEntityRuntimeId() : ?int{ return $this->editorEntityRuntimeId; }
+
+	/** @return $this */
+	public function setEditorEntityRuntimeId(?int $editorEntityRuntimeId) : self{
+		$this->editorEntityRuntimeId = $editorEntityRuntimeId;
 		return $this;
 	}
 
@@ -133,6 +155,7 @@ abstract class BaseSign extends Transparent{
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$this->setText($ev->getNewText());
+			$this->setEditorEntityRuntimeId(null);
 			$this->position->getWorld()->setBlock($this->position, $this);
 			return true;
 		}
