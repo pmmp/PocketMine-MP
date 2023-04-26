@@ -13,11 +13,11 @@ jobs:
     strategy:
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.28, 8.1.16, 8.2.3]
+        php: [8.0.28, 8.1.18, 8.2.5]
 
     steps:
       - name: Build and prepare PHP cache
-        uses: pmmp/setup-php-action@6dd74c145250109942b08fc63cd5118edd2fd256
+        uses: pmmp/setup-php-action@c7fb29d83535320922068087c7285bdedbbfa3c2
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
@@ -32,13 +32,13 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.28, 8.1.16, 8.2.3]
+        php: [8.0.28, 8.1.18, 8.2.5]
 
     steps:
       - uses: actions/checkout@v3
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@6dd74c145250109942b08fc63cd5118edd2fd256
+        uses: pmmp/setup-php-action@c7fb29d83535320922068087c7285bdedbbfa3c2
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
@@ -71,13 +71,13 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.28, 8.1.16, 8.2.3]
+        php: [8.0.28, 8.1.18, 8.2.5]
 
     steps:
       - uses: actions/checkout@v3
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@6dd74c145250109942b08fc63cd5118edd2fd256
+        uses: pmmp/setup-php-action@c7fb29d83535320922068087c7285bdedbbfa3c2
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
@@ -110,7 +110,7 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.28, 8.1.16, 8.2.3]
+        php: [8.0.28, 8.1.18, 8.2.5]
 
     steps:
       - uses: actions/checkout@v3
@@ -118,7 +118,7 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@6dd74c145250109942b08fc63cd5118edd2fd256
+        uses: pmmp/setup-php-action@c7fb29d83535320922068087c7285bdedbbfa3c2
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
@@ -151,13 +151,13 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.28, 8.1.16, 8.2.3]
+        php: [8.0.28, 8.1.18, 8.2.5]
 
     steps:
       - uses: actions/checkout@v3
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@6dd74c145250109942b08fc63cd5118edd2fd256
+        uses: pmmp/setup-php-action@c7fb29d83535320922068087c7285bdedbbfa3c2
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
@@ -208,8 +208,8 @@ jobs:
       - name: Setup PHP and tools
         uses: shivammathur/setup-php@2.24.0
         with:
-          php-version: 8.0
-          tools: php-cs-fixer:3.11
+          php-version: 8.1
+          tools: php-cs-fixer:3.16
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
