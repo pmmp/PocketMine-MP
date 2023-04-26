@@ -1161,6 +1161,7 @@ class World implements ChunkManager{
 	 * ticking.
 	 *
 	 * @return int[]
+	 * @phpstan-return list<ChunkPosHash>
 	 */
 	public function getTickingChunks() : array{
 		return array_keys($this->tickingChunks);
