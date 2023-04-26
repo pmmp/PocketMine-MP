@@ -1172,14 +1172,14 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * Returns a list of chunk position hashes (as returned by World::chunkHash()) which are currently registered for
+	 * Returns a list of chunk position hashes (as returned by World::chunkHash()) which are currently valid for
 	 * ticking.
 	 *
 	 * @return int[]
 	 * @phpstan-return list<ChunkPosHash>
 	 */
 	public function getTickingChunks() : array{
-		return array_keys($this->tickingChunks);
+		return array_keys($this->validTickingChunks);
 	}
 
 	/**
