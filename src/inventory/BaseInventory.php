@@ -152,8 +152,8 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function firstEmpty() : int{
-		foreach($this->getContents(true) as $i => $slot){
-			if($slot->isNull()){
+		for($i = 0, $size = $this->getSize(); $i < $size; $i++){
+			if($this->isSlotEmpty($i)){
 				return $i;
 			}
 		}
@@ -172,13 +172,15 @@ abstract class BaseInventory implements Inventory{
 	public function getAddableItemQuantity(Item $item) : int{
 		$count = $item->getCount();
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
-			$slot = $this->getItem($i);
-			if($item->canStackWith($slot)){
-				if(($diff = min($slot->getMaxStackSize(), $item->getMaxStackSize()) - $slot->getCount()) > 0){
-					$count -= $diff;
-				}
-			}elseif($slot->isNull()){
+			if($this->isSlotEmpty($i)){
 				$count -= min($this->getMaxStackSize(), $item->getMaxStackSize());
+			}else{
+				$slot = $this->getItem($i);
+				if($item->canStackWith($slot)){
+					if(($diff = min($slot->getMaxStackSize(), $item->getMaxStackSize()) - $slot->getCount()) > 0){
+						$count -= $diff;
+					}
+				}
 			}
 
 			if($count <= 0){
@@ -216,11 +218,11 @@ abstract class BaseInventory implements Inventory{
 		$emptySlots = [];
 
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
-			$item = $this->getItem($i);
-			if($item->isNull()){
+			if($this->isSlotEmpty($i)){
 				$emptySlots[] = $i;
 				continue;
 			}
+			$item = $this->getItem($i);
 
 			if($slot->canStackWith($item) && $item->getCount() < $item->getMaxStackSize()){
 				$amount = min($item->getMaxStackSize() - $item->getCount(), $slot->getCount(), $this->getMaxStackSize());
@@ -273,10 +275,10 @@ abstract class BaseInventory implements Inventory{
 		}
 
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
-			$item = $this->getItem($i);
-			if($item->isNull()){
+			if($this->isSlotEmpty($i)){
 				continue;
 			}
+			$item = $this->getItem($i);
 
 			foreach($itemSlots as $index => $slot){
 				if($slot->equals($item, !$slot->hasAnyDamageValue(), $slot->hasNamedTag())){

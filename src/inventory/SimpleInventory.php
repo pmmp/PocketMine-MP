@@ -83,4 +83,8 @@ class SimpleInventory extends BaseInventory{
 			}
 		}
 	}
+
+	public function isSlotEmpty(int $index) : bool{
+		return $this->slots[$index] === null || $this->slots[$index]->isNull();
+	}
 }
