@@ -205,11 +205,13 @@ class InventoryManager{
 			if($entry === null){
 				return null;
 			}
+			$inventory = $entry->getInventory();
 			$coreSlotId = $entry->mapNetToCore($netSlotId);
-			return $coreSlotId !== null ? [$entry->getInventory(), $coreSlotId] : null;
+			return $coreSlotId !== null && $inventory->slotExists($coreSlotId) ? [$inventory, $coreSlotId] : null;
 		}
-		if(isset($this->networkIdToInventoryMap[$windowId])){
-			return [$this->networkIdToInventoryMap[$windowId], $netSlotId];
+		$inventory = $this->networkIdToInventoryMap[$windowId] ?? null;
+		if($inventory !== null && $inventory->slotExists($netSlotId)){
+			return [$inventory, $netSlotId];
 		}
 		return null;
 	}
