@@ -216,25 +216,25 @@ abstract class BaseInventory implements Inventory{
 		return $returnSlots;
 	}
 
-	private function internalAddItem(Item $slot) : Item{
+	private function internalAddItem(Item $newItem) : Item{
 		$emptySlots = [];
 
-		$maxStackSize = min($this->getMaxStackSize(), $slot->getMaxStackSize());
+		$maxStackSize = min($this->getMaxStackSize(), $newItem->getMaxStackSize());
 
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
 			if($this->isSlotEmpty($i)){
 				$emptySlots[] = $i;
 				continue;
 			}
-			$item = $this->getItem($i);
+			$slotItem = $this->getItem($i);
 
-			if($slot->canStackWith($item) && $item->getCount() < $maxStackSize){
-				$amount = min($maxStackSize - $item->getCount(), $slot->getCount());
+			if($newItem->canStackWith($slotItem) && $slotItem->getCount() < $maxStackSize){
+				$amount = min($maxStackSize - $slotItem->getCount(), $newItem->getCount());
 				if($amount > 0){
-					$slot->setCount($slot->getCount() - $amount);
-					$item->setCount($item->getCount() + $amount);
-					$this->setItem($i, $item);
-					if($slot->getCount() <= 0){
+					$newItem->setCount($newItem->getCount() - $amount);
+					$slotItem->setCount($slotItem->getCount() + $amount);
+					$this->setItem($i, $slotItem);
+					if($newItem->getCount() <= 0){
 						break;
 					}
 				}
@@ -243,18 +243,18 @@ abstract class BaseInventory implements Inventory{
 
 		if(count($emptySlots) > 0){
 			foreach($emptySlots as $slotIndex){
-				$amount = min($maxStackSize, $slot->getCount());
-				$slot->setCount($slot->getCount() - $amount);
-				$item = clone $slot;
-				$item->setCount($amount);
-				$this->setItem($slotIndex, $item);
-				if($slot->getCount() <= 0){
+				$amount = min($maxStackSize, $newItem->getCount());
+				$newItem->setCount($newItem->getCount() - $amount);
+				$slotItem = clone $newItem;
+				$slotItem->setCount($amount);
+				$this->setItem($slotIndex, $slotItem);
+				if($newItem->getCount() <= 0){
 					break;
 				}
 			}
 		}
 
-		return $slot;
+		return $newItem;
 	}
 
 	public function remove(Item $item) : void{
