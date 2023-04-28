@@ -31,6 +31,7 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
@@ -42,7 +43,9 @@ use function gettype;
 use function implode;
 use function is_object;
 use function json_decode;
+use function json_encode;
 use function ksort;
+use function sort;
 use function str_pad;
 use function strval;
 use const JSON_THROW_ON_ERROR;
@@ -170,7 +173,10 @@ final class BlockStateUpgradeSchemaUtils{
 		$dedupTableMap = [];
 		$counter = 0;
 
-		foreach(Utils::stringifyKeys($schema->remappedPropertyValues) as $blockName => $remaps){
+		$orderedRemappedValues = $schema->remappedPropertyValues;
+		ksort($orderedRemappedValues);
+		foreach(Utils::stringifyKeys($orderedRemappedValues) as $blockName => $remaps){
+			ksort($remaps);
 			foreach(Utils::stringifyKeys($remaps) as $propertyName => $remappedValues){
 				$remappedValuesMap = [];
 				foreach($remappedValues as $oldNew){
@@ -215,6 +221,12 @@ final class BlockStateUpgradeSchemaUtils{
 				);
 			}
 		}
+		ksort($modelTable);
+		ksort($dedupMapping);
+		foreach(Utils::stringifyKeys($dedupMapping) as $blockName => $properties){
+			ksort($properties);
+			$dedupMapping[$blockName] = $properties;
+		}
 
 		$model->remappedPropertyValuesIndex = $modelTable;
 		$model->remappedPropertyValues = $dedupMapping;
@@ -226,26 +238,58 @@ final class BlockStateUpgradeSchemaUtils{
 		$result->maxVersionMinor = $schema->maxVersionMinor;
 		$result->maxVersionPatch = $schema->maxVersionPatch;
 		$result->maxVersionRevision = $schema->maxVersionRevision;
+
 		$result->renamedIds = $schema->renamedIds;
+		ksort($result->renamedIds);
+
 		$result->renamedProperties = $schema->renamedProperties;
+		ksort($result->renamedProperties);
+		foreach(Utils::stringifyKeys($result->renamedProperties) as $blockName => $properties){
+			ksort($properties);
+			$result->renamedProperties[$blockName] = $properties;
+		}
+
 		$result->removedProperties = $schema->removedProperties;
+		ksort($result->removedProperties);
+		foreach(Utils::stringifyKeys($result->removedProperties) as $blockName => $properties){
+			sort($properties); //yes, this is intended to sort(), not ksort()
+			$result->removedProperties[$blockName] = $properties;
+		}
 
 		foreach(Utils::stringifyKeys($schema->addedProperties) as $blockName => $properties){
+			$addedProperties = [];
 			foreach(Utils::stringifyKeys($properties) as $propertyName => $propertyValue){
-				$result->addedProperties[$blockName][$propertyName] = self::tagToJsonModel($propertyValue);
+				$addedProperties[$propertyName] = self::tagToJsonModel($propertyValue);
 			}
+			ksort($addedProperties);
+			$result->addedProperties[$blockName] = $addedProperties;
+		}
+		if(isset($result->addedProperties)){
+			ksort($result->addedProperties);
 		}
 
 		self::buildRemappedValuesIndex($schema, $result);
 
 		foreach(Utils::stringifyKeys($schema->remappedStates) as $oldBlockName => $remaps){
+			$keyedRemaps = [];
 			foreach($remaps as $remap){
-				$result->remappedStates[$oldBlockName][] = new BlockStateUpgradeSchemaModelBlockRemap(
+				$modelRemap = new BlockStateUpgradeSchemaModelBlockRemap(
 					array_map(fn(Tag $tag) => self::tagToJsonModel($tag), $remap->oldState),
 					$remap->newName,
 					array_map(fn(Tag $tag) => self::tagToJsonModel($tag), $remap->newState),
 				);
+				$key = json_encode($modelRemap);
+				if(isset($keyedRemaps[$key])){
+					continue;
+					throw new AssumptionFailedError("Duplicate remap: $key");
+				}
+				$keyedRemaps[$key] = $modelRemap;
 			}
+			ksort($keyedRemaps);
+			$result->remappedStates[$oldBlockName] = array_values($keyedRemaps);
+		}
+		if(isset($result->remappedStates)){
+			ksort($result->remappedStates);
 		}
 
 		return $result;
