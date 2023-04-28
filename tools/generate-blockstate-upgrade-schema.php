@@ -358,6 +358,15 @@ function generateBlockStateUpgradeSchema(array $upgradeTable) : BlockStateUpgrad
 				processState($mapping->old, $mapping->new, $result, $removedPropertiesCache, $remappedPropertyValuesCache);
 			}
 		}else{
+			if(isset($newNameFound[$oldName])){
+				//some of the states stayed under the same ID - we can process these as normal states
+				foreach($blockStateMappings as $k => $mapping){
+					if($mapping->new->getName() === $oldName){
+						processState($mapping->old, $mapping->new, $result, $removedPropertiesCache, $remappedPropertyValuesCache);
+						unset($blockStateMappings[$k]);
+					}
+				}
+			}
 			//block mapped to multiple different new IDs; we can't guess these, so we just do a plain old remap
 			foreach($blockStateMappings as $mapping){
 				if(!$mapping->old->equals($mapping->new)){
