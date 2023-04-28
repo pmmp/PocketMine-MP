@@ -279,9 +279,9 @@ final class BlockStateUpgradeSchemaUtils{
 					array_map(fn(Tag $tag) => self::tagToJsonModel($tag), $remap->newState),
 				);
 				$key = json_encode($modelRemap);
+				assert(!isset($keyedRemaps[$key]));
 				if(isset($keyedRemaps[$key])){
 					continue;
-					throw new AssumptionFailedError("Duplicate remap: $key");
 				}
 				$keyedRemaps[$key] = $modelRemap;
 			}
