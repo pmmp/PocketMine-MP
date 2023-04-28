@@ -35,6 +35,7 @@ use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
 use function array_map;
+use function array_values;
 use function count;
 use function get_debug_type;
 use function gettype;
@@ -175,6 +176,7 @@ final class BlockStateUpgradeSchemaUtils{
 				foreach($remappedValues as $oldNew){
 					$remappedValuesMap[$oldNew->old->toString()] = $oldNew;
 				}
+				ksort($remappedValuesMap);
 
 				foreach(Utils::stringifyKeys($dedupTableMap) as $dedupName => $dedupValuesMap){
 					if(count($remappedValuesMap) !== count($dedupValuesMap)){
@@ -199,7 +201,7 @@ final class BlockStateUpgradeSchemaUtils{
 				//no match, add the values to the table
 				$newDedupName = $propertyName . "_" . str_pad(strval($counter++), 2, "0", STR_PAD_LEFT);
 				$dedupTableMap[$newDedupName] = $remappedValuesMap;
-				$dedupTable[$newDedupName] = $remappedValues;
+				$dedupTable[$newDedupName] = array_values($remappedValuesMap);
 				$dedupMapping[$blockName][$propertyName] = $newDedupName;
 			}
 		}
