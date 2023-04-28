@@ -28,6 +28,7 @@ use pocketmine\nbt\tag\Tag;
 use pocketmine\utils\Utils;
 use function count;
 use function ksort;
+use function max;
 use const SORT_NUMERIC;
 
 final class BlockStateUpgrader{
