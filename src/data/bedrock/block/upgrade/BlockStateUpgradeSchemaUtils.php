@@ -157,6 +157,7 @@ final class BlockStateUpgradeSchemaUtils{
 					array_map(fn(BlockStateUpgradeSchemaModelTag $tag) => self::jsonModelToTag($tag), $remap->oldState ?? []),
 					$remap->newName,
 					array_map(fn(BlockStateUpgradeSchemaModelTag $tag) => self::jsonModelToTag($tag), $remap->newState ?? []),
+					$remap->copiedState ?? []
 				);
 			}
 		}
@@ -277,7 +278,11 @@ final class BlockStateUpgradeSchemaUtils{
 					array_map(fn(Tag $tag) => self::tagToJsonModel($tag), $remap->oldState),
 					$remap->newName,
 					array_map(fn(Tag $tag) => self::tagToJsonModel($tag), $remap->newState),
+					$remap->copiedState
 				);
+				if(count($modelRemap->copiedState) === 0){
+					unset($modelRemap->copiedState); //avoid polluting the JSON
+				}
 				$key = json_encode($modelRemap);
 				assert(!isset($keyedRemaps[$key]));
 				if(isset($keyedRemaps[$key])){

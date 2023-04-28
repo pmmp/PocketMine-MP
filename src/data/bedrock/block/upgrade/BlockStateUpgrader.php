@@ -70,16 +70,23 @@ final class BlockStateUpgrader{
 			$oldState = $blockStateData->getStates();
 			if(isset($schema->remappedStates[$oldName])){
 				foreach($schema->remappedStates[$oldName] as $remap){
-					if(count($oldState) !== count($remap->oldState)){
+					if(count($remap->oldState) > count($oldState)){
+						//match criteria has more requirements than we have state properties
 						continue; //try next state
 					}
-					foreach(Utils::stringifyKeys($oldState) as $k => $v){
-						if(!isset($remap->oldState[$k]) || !$remap->oldState[$k]->equals($v)){
+					foreach(Utils::stringifyKeys($remap->oldState) as $k => $v){
+						if(!isset($oldState[$k]) || !$oldState[$k]->equals($v)){
 							continue 2; //try next state
 						}
 					}
+					$newState = $remap->newState;
+					foreach($remap->copiedState as $stateName){
+						if(isset($oldState[$stateName])){
+							$newState[$stateName] = $oldState[$stateName];
+						}
+					}
 
-					$blockStateData = new BlockStateData($remap->newName, $remap->newState, $resultVersion);
+					$blockStateData = new BlockStateData($remap->newName, $newState, $resultVersion);
 					continue 2; //try next schema
 				}
 			}
