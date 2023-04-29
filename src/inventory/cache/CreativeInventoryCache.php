@@ -28,6 +28,7 @@ use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\CreativeContentPacket;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
 use pocketmine\utils\SingletonTrait;
+use function spl_object_id;
 
 final class CreativeInventoryCache{
 	use SingletonTrait;
