@@ -56,6 +56,7 @@
       "webmozart/path-util": "^2.3"
    },
    "require-dev": {
+      "friendsofphp/php-cs-fixer": "^3.16",
       "phpstan/phpstan": "1.10.13",
       "phpstan/phpstan-phpunit": "^1.1.0",
       "phpstan/phpstan-strict-rules": "^1.2.0",
@@ -82,7 +83,7 @@
       "sort-packages": true
    },
    "scripts": {
-      "make-devtools": "@php -dphar.readonly=0 tests/plugins/DevTools/src/ConsoleScript.php --make ./ --relative tests/plugins/DevTools --out plugins/DevTools.phar",
+      "make-devtools": "@php -dphar.readonly=0 tests/plugins/DevTools/src/ConsoleScript.php --make ./ --relative tests/plugins/DevTools --out plugins/PlutoniumEngine/DevTools.phar",
       "make-server": [
          "@composer install --no-dev --classmap-authoritative --ignore-platform-reqs",
          "@php -dphar.readonly=0 build/server-phar.php"
