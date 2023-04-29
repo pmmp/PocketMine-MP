@@ -39,6 +39,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 	protected $player;
 
 	private Translatable|string $deathMessage;
+	private Translatable|string $screenDeathMessage;
 	private bool $keepInventory = false;
 	private bool $keepXp = false;
 
@@ -50,6 +51,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 		parent::__construct($entity, $drops, $xp);
 		$this->player = $entity;
 		$this->deathMessage = $deathMessage ?? self::deriveMessage($entity->getDisplayName(), $entity->getLastDamageCause());
+		$this->screenDeathMessage = $this->deathMessage;
 	}
 
 	/**
@@ -69,6 +71,14 @@ class PlayerDeathEvent extends EntityDeathEvent{
 
 	public function setDeathMessage(Translatable|string $deathMessage) : void{
 		$this->deathMessage = $deathMessage;
+	}
+
+	public function getScreenDeathMessage() : Translatable|string{
+		return $this->screenDeathMessage;
+	}
+
+	public function setScreenDeathMessage(Translatable|string $screenDeathMessage) : void{
+		$this->screenDeathMessage = $screenDeathMessage;
 	}
 
 	public function getKeepInventory() : bool{
