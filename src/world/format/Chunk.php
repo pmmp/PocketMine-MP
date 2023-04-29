@@ -148,6 +148,7 @@ class Chunk{
 	 * Returns the biome ID at the specified X/Z chunk block coordinates
 	 *
 	 * @param int $x 0-15
+	 * @param int $y 0-255
 	 * @param int $z 0-15
 	 *
 	 * @return int 0-255
@@ -160,6 +161,7 @@ class Chunk{
 	 * Sets the biome ID at the specified X/Z chunk block coordinates
 	 *
 	 * @param int $x       0-15
+	 * @param int $y       0-255
 	 * @param int $z       0-15
 	 * @param int $biomeId 0-255
 	 */
