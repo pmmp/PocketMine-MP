@@ -21,44 +21,48 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\inventory;
+namespace pocketmine\inventory\cache;
 
+use pocketmine\inventory\CreativeInventory;
 use pocketmine\network\mcpe\convert\TypeConverter;
+use pocketmine\network\mcpe\protocol\CreativeContentPacket;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
 use pocketmine\utils\SingletonTrait;
 
 final class CreativeInventoryCache{
 	use SingletonTrait;
 
-	/** @var CreativeContentEntry[] $entries */
-	private array $entries = [];
-	private bool $isHit = false;
+	/**
+	 * @var CreativeContentPacket[]
+	 * @phpstan-var array<int, CreativeContentPacket>
+	 */
+	private array $caches = [];
 
-	public function isHit() : bool{
-		return $this->isHit;
-	}
-
-	public function creativeInventoryChanged() : void{
-		$this->isHit = false;
-	}
-
-	/** @return CreativeContentEntry[] */
-	public function getEntries() : array{
-		if(!$this->isHit){
-			$this->regenerate();
+	public function getCache(CreativeInventory $inventory) : CreativeContentPacket {
+		$id = spl_object_id($inventory);
+		if(!isset($this->caches[$id])){
+			$inventory->getDestructorCallbacks()->add(function() use ($id) : void{
+				unset($this->caches[$id]);
+			});
+			$inventory->getContentChangedCallbacks()->add(function() use ($id) : void{
+				unset($this->caches[$id]);
+			});
+			$this->caches[$id] = $this->buildCreativeInventoryCache($inventory);
 		}
-		return $this->entries;
+		return $this->caches[$id];
 	}
 
-	private function regenerate() : void{
-		$this->entries = [];
-
+	/**
+	 * Rebuild the cache for the given inventory.
+	 */
+	private function buildCreativeInventoryCache(CreativeInventory $inventory) : CreativeContentPacket{
+		$entries = [];
 		$typeConverter = TypeConverter::getInstance();
 		//creative inventory may have holes if items were unregistered - ensure network IDs used are always consistent
-		foreach(CreativeInventory::getInstance()->getAll() as $k => $item){
-			$this->entries[] = new CreativeContentEntry($k, $typeConverter->coreItemStackToNet($item));
+		foreach($inventory->getAll() as $k => $item){
+			$entries[] = new CreativeContentEntry($k, $typeConverter->coreItemStackToNet($item));
 		}
 
-		$this->isHit = true;
+		return CreativeContentPacket::create($entries);
 	}
 }
