@@ -51,6 +51,7 @@ use pocketmine\event\world\ChunkLoadEvent;
 use pocketmine\event\world\ChunkPopulateEvent;
 use pocketmine\event\world\ChunkUnloadEvent;
 use pocketmine\event\world\SpawnChangeEvent;
+use pocketmine\event\world\WorldDisplayNameChangeEvent;
 use pocketmine\event\world\WorldParticleEvent;
 use pocketmine\event\world\WorldSaveEvent;
 use pocketmine\event\world\WorldSoundEvent;
@@ -2969,6 +2970,16 @@ class World implements ChunkManager{
 	 */
 	public function getDisplayName() : string{
 		return $this->displayName;
+	}
+
+	/**
+	 * Sets the World display name.
+	 */
+	public function setDisplayName(string $name) : void{
+		(new WorldDisplayNameChangeEvent($this, $this->displayName, $name))->call();
+
+		$this->displayName = $name;
+		$this->provider->getWorldData()->setName($name);
 	}
 
 	/**
