@@ -168,29 +168,12 @@ final class BlockStateSerializerHelper{
 			->writeInt(BlockStateNames::LIQUID_DEPTH, $block->getDecay() | ($block->isFalling() ? 0x8 : 0));
 	}
 
-	private static function encodeLog(Wood $block, BlockStateWriter $out) : BlockStateWriter{
+	public static function encodeLog(Wood $block, string $unstrippedId, string $strippedId) : BlockStateWriter{
+		$out = $block->isStripped() ?
+			BlockStateWriter::create($strippedId) :
+			BlockStateWriter::create($unstrippedId);
 		return $out
 			->writePillarAxis($block->getAxis());
-	}
-
-	public static function encodeLog1(Wood $block, string $unstrippedType, string $strippedId) : BlockStateWriter{
-		return self::encodeLog($block, $block->isStripped() ?
-			BlockStateWriter::create($strippedId) :
-			BlockStateWriter::create(Ids::LOG)->writeString(BlockStateNames::OLD_LOG_TYPE, $unstrippedType));
-	}
-
-	public static function encodeLog2(Wood $block, string $unstrippedType, string $strippedId) : BlockStateWriter{
-		return self::encodeLog($block, $block->isStripped() ?
-			BlockStateWriter::create($strippedId) :
-			BlockStateWriter::create(Ids::LOG2)->writeString(BlockStateNames::NEW_LOG_TYPE, $unstrippedType)
-		);
-	}
-
-	public static function encodeNewLog(Wood $block, string $unstrippedId, string $strippedId) : BlockStateWriter{
-		return self::encodeLog($block, $block->isStripped() ?
-			BlockStateWriter::create($strippedId) :
-			BlockStateWriter::create($unstrippedId)
-		);
 	}
 
 	public static function encodeMushroomBlock(RedMushroomBlock $block, BlockStateWriter $out) : BlockStateWriter{

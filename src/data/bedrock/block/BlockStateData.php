@@ -41,8 +41,8 @@ final class BlockStateData{
 	public const CURRENT_VERSION =
 		(1 << 24) | //major
 		(19 << 16) | //minor
-		(70 << 8) | //patch
-		(15); //revision
+		(80 << 8) | //patch
+		(11); //revision
 
 	public const TAG_NAME = "name";
 	public const TAG_STATES = "states";

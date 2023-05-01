@@ -105,6 +105,7 @@ use pocketmine\world\utils\SubChunkExplorer;
 use function abs;
 use function array_filter;
 use function array_key_exists;
+use function array_keys;
 use function array_map;
 use function array_merge;
 use function array_sum;
@@ -1146,6 +1147,17 @@ class World implements ChunkManager{
 	 */
 	public function setChunkTickRadius(int $radius) : void{
 		$this->chunkTickRadius = $radius;
+	}
+
+	/**
+	 * Returns a list of chunk position hashes (as returned by World::chunkHash()) which are currently registered for
+	 * ticking.
+	 *
+	 * @return int[]
+	 * @phpstan-return list<ChunkPosHash>
+	 */
+	public function getTickingChunks() : array{
+		return array_keys($this->tickingChunks);
 	}
 
 	/**

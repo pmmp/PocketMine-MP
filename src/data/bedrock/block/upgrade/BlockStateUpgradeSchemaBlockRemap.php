@@ -27,14 +27,18 @@ use pocketmine\nbt\tag\Tag;
 
 final class BlockStateUpgradeSchemaBlockRemap{
 	/**
-	 * @param Tag[] $oldState
-	 * @param Tag[] $newState
+	 * @param Tag[]    $oldState
+	 * @param Tag[]    $newState
+	 * @param string[] $copiedState
+	 *
 	 * @phpstan-param array<string, Tag> $oldState
 	 * @phpstan-param array<string, Tag> $newState
+	 * @phpstan-param list<string>       $copiedState
 	 */
 	public function __construct(
 		public array $oldState,
 		public string $newName,
-		public array $newState
+		public array $newState,
+		public array $copiedState
 	){}
 }
