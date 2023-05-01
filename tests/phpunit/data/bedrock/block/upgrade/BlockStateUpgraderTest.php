@@ -107,7 +107,8 @@ class BlockStateUpgraderTest extends TestCase{
 		$stateData = $getStateData();
 		$upgradedStateData = $this->upgrade($stateData, $getStateData);
 
-		self::assertSame($stateData, $upgradedStateData, "Adding a property that already exists with a different value should not alter the state");
+		//the object may not be the same due to
+		self::assertTrue($stateData->equals($upgradedStateData), "Adding a property that already exists with a different value should not alter the state");
 	}
 
 	private function prepareRemovePropertySchema(BlockStateUpgradeSchema $schema) : void{

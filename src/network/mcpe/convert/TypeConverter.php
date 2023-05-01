@@ -188,7 +188,7 @@ class TypeConverter{
 			if($nbt === null){
 				$nbt = new CompoundTag();
 			}
-			$nbt->setInt(self::PM_ID_TAG, morton2d_encode($itemStack->getTypeId(), $itemStack->computeTypeData()));
+			$nbt->setLong(self::PM_ID_TAG, morton2d_encode($itemStack->getTypeId(), $itemStack->computeTypeData()));
 		}else{
 			[$id, $meta, $blockRuntimeId] = $idMeta;
 		}

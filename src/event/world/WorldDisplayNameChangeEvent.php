@@ -21,26 +21,28 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\crafting\json;
+namespace pocketmine\event\world;
 
-final class SmithingTransformRecipeData{
+use pocketmine\world\World;
 
-	/** @required */
-	public RecipeIngredientData $template;
-	/** @required */
-	public RecipeIngredientData $input;
-	/** @required */
-	public RecipeIngredientData $addition;
-	/** @required */
-	public ItemStackData $output;
-	/** @required */
-	public string $block;
+/**
+ * Called when a world's display name is changed.
+ */
+final class WorldDisplayNameChangeEvent extends WorldEvent{
 
-	public function __construct(RecipeIngredientData $template, RecipeIngredientData $input, RecipeIngredientData $addition, ItemStackData $output, string $block){
-		$this->template = $template;
-		$this->input = $input;
-		$this->addition = $addition;
-		$this->output = $output;
-		$this->block = $block;
+	public function __construct(
+		World $world,
+		private string $oldName,
+		private string $newName
+	){
+		parent::__construct($world);
+	}
+
+	public function getOldName() : string{
+		return $this->oldName;
+	}
+
+	public function getNewName() : string{
+		return $this->newName;
 	}
 }

@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\crafting\json;
 
-final class SmithingTransformRecipeData{
+final class SmithingTrimRecipeData{
 
 	/** @required */
 	public RecipeIngredientData $template;
@@ -32,15 +32,12 @@ final class SmithingTransformRecipeData{
 	/** @required */
 	public RecipeIngredientData $addition;
 	/** @required */
-	public ItemStackData $output;
-	/** @required */
 	public string $block;
 
-	public function __construct(RecipeIngredientData $template, RecipeIngredientData $input, RecipeIngredientData $addition, ItemStackData $output, string $block){
+	public function __construct(RecipeIngredientData $template, RecipeIngredientData $input, RecipeIngredientData $addition, string $block){
 		$this->template = $template;
 		$this->input = $input;
 		$this->addition = $addition;
-		$this->output = $output;
 		$this->block = $block;
 	}
 }

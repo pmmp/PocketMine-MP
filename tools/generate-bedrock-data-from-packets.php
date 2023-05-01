@@ -31,6 +31,7 @@ use pocketmine\crafting\json\RecipeIngredientData;
 use pocketmine\crafting\json\ShapedRecipeData;
 use pocketmine\crafting\json\ShapelessRecipeData;
 use pocketmine\crafting\json\SmithingTransformRecipeData;
+use pocketmine\crafting\json\SmithingTrimRecipeData;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
@@ -62,6 +63,7 @@ use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
 use pocketmine\network\mcpe\protocol\types\recipe\ShapedRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\ShapelessRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\SmithingTransformRecipe;
+use pocketmine\network\mcpe\protocol\types\recipe\SmithingTrimRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\StringIdMetaItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\TagItemDescriptor;
 use pocketmine\network\PacketHandlingException;
@@ -348,9 +350,19 @@ class ParserPacketHandler extends PacketHandler{
 
 	private function smithingRecipeToJson(SmithingTransformRecipe $recipe) : SmithingTransformRecipeData{
 		return new SmithingTransformRecipeData(
+			$this->recipeIngredientToJson($recipe->getTemplate()),
 			$this->recipeIngredientToJson($recipe->getInput()),
 			$this->recipeIngredientToJson($recipe->getAddition()),
 			$this->itemStackToJson($recipe->getOutput()),
+			$recipe->getBlockName()
+		);
+	}
+
+	private function smithingTrimRecipeToJson(SmithingTrimRecipe $recipe) : SmithingTrimRecipeData{
+		return new SmithingTrimRecipeData(
+			$this->recipeIngredientToJson($recipe->getTemplate()),
+			$this->recipeIngredientToJson($recipe->getInput()),
+			$this->recipeIngredientToJson($recipe->getAddition()),
 			$recipe->getBlockName()
 		);
 	}
@@ -374,6 +386,7 @@ class ParserPacketHandler extends PacketHandler{
 				CraftingDataPacket::ENTRY_SHAPELESS_CHEMISTRY => "shapeless_chemistry",
 				CraftingDataPacket::ENTRY_SHAPED_CHEMISTRY => "shaped_chemistry",
 				CraftingDataPacket::ENTRY_SMITHING_TRANSFORM => "smithing",
+				CraftingDataPacket::ENTRY_SMITHING_TRIM => "smithing_trim",
 			];
 			if(!isset($typeMap[$entry->getTypeId()])){
 				throw new \UnexpectedValueException("Unknown recipe type ID " . $entry->getTypeId());
@@ -390,6 +403,8 @@ class ParserPacketHandler extends PacketHandler{
 				$recipes[$mappedType][] = $this->furnaceRecipeToJson($entry);
 			}elseif($entry instanceof SmithingTransformRecipe){
 				$recipes[$mappedType][] = $this->smithingRecipeToJson($entry);
+			}elseif($entry instanceof SmithingTrimRecipe){
+				$recipes[$mappedType][] = $this->smithingTrimRecipeToJson($entry);
 			}else{
 				throw new AssumptionFailedError("Unknown recipe type " . get_class($entry));
 			}

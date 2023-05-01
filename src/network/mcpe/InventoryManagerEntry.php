@@ -40,7 +40,7 @@ final class InventoryManagerEntry{
 	public array $itemStackInfos = [];
 
 	/**
-	 * @var int[]
+	 * @var ItemStack[]
 	 * @phpstan-var array<int, ItemStack>
 	 */
 	public array $pendingSyncs = [];

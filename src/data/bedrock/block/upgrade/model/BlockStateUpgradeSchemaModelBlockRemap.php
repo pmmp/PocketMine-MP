@@ -44,14 +44,24 @@ final class BlockStateUpgradeSchemaModelBlockRemap{
 	public ?array $newState;
 
 	/**
+	 * @var string[]
+	 * @phpstan-var list<string>
+	 * May not be present in older schemas
+	 */
+	public array $copiedState;
+
+	/**
 	 * @param BlockStateUpgradeSchemaModelTag[] $oldState
 	 * @param BlockStateUpgradeSchemaModelTag[] $newState
+	 * @param string[]                          $copiedState
 	 * @phpstan-param array<string, BlockStateUpgradeSchemaModelTag> $oldState
 	 * @phpstan-param array<string, BlockStateUpgradeSchemaModelTag> $newState
+	 * @phpstan-param list<string> $copiedState
 	 */
-	public function __construct(array $oldState, string $newName, array $newState){
+	public function __construct(array $oldState, string $newName, array $newState, array $copiedState){
 		$this->oldState = count($oldState) === 0 ? null : $oldState;
 		$this->newName = $newName;
 		$this->newState = count($newState) === 0 ? null : $newState;
+		$this->copiedState = $copiedState;
 	}
 }

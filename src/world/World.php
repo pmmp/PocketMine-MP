@@ -51,6 +51,7 @@ use pocketmine\event\world\ChunkLoadEvent;
 use pocketmine\event\world\ChunkPopulateEvent;
 use pocketmine\event\world\ChunkUnloadEvent;
 use pocketmine\event\world\SpawnChangeEvent;
+use pocketmine\event\world\WorldDisplayNameChangeEvent;
 use pocketmine\event\world\WorldParticleEvent;
 use pocketmine\event\world\WorldSaveEvent;
 use pocketmine\event\world\WorldSoundEvent;
@@ -105,6 +106,7 @@ use pocketmine\world\utils\SubChunkExplorer;
 use function abs;
 use function array_filter;
 use function array_key_exists;
+use function array_keys;
 use function array_map;
 use function array_merge;
 use function array_sum;
@@ -1146,6 +1148,17 @@ class World implements ChunkManager{
 	 */
 	public function setChunkTickRadius(int $radius) : void{
 		$this->chunkTickRadius = $radius;
+	}
+
+	/**
+	 * Returns a list of chunk position hashes (as returned by World::chunkHash()) which are currently registered for
+	 * ticking.
+	 *
+	 * @return int[]
+	 * @phpstan-return list<ChunkPosHash>
+	 */
+	public function getTickingChunks() : array{
+		return array_keys($this->tickingChunks);
 	}
 
 	/**
@@ -2957,6 +2970,16 @@ class World implements ChunkManager{
 	 */
 	public function getDisplayName() : string{
 		return $this->displayName;
+	}
+
+	/**
+	 * Sets the World display name.
+	 */
+	public function setDisplayName(string $name) : void{
+		(new WorldDisplayNameChangeEvent($this, $this->displayName, $name))->call();
+
+		$this->displayName = $name;
+		$this->provider->getWorldData()->setName($name);
 	}
 
 	/**

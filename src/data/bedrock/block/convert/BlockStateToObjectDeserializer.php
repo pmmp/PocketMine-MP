@@ -39,6 +39,7 @@ use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\VanillaBlocks as Blocks;
+use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
@@ -72,6 +73,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->registerCandleDeserializers();
 		$this->registerFlatColorBlockDeserializers();
 		$this->registerCauldronDeserializers();
+		$this->registerWoodBlockDeserializers();
 		$this->registerSimpleDeserializers();
 		$this->registerDeserializers();
 	}
@@ -115,6 +117,12 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 	 */
 	public function mapStairs(string $id, \Closure $getBlock) : void{
 		$this->map($id, fn(Reader $in) : Stair => Helper::decodeStairs($getBlock(), $in));
+	}
+
+	/** @phpstan-param \Closure() : Wood $getBlock */
+	public function mapLog(string $unstrippedId, string $strippedId, \Closure $getBlock) : void{
+		$this->map($unstrippedId, fn(Reader $in) => Helper::decodeLog($getBlock(), false, $in));
+		$this->map($strippedId, fn(Reader $in) => Helper::decodeLog($getBlock(), true, $in));
 	}
 
 	private function registerCandleDeserializers() : void{
@@ -212,6 +220,22 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		};
 		$this->map(Ids::CAULDRON, $deserializer);
 		$this->map(Ids::LAVA_CAULDRON, $deserializer);
+	}
+
+	private function registerWoodBlockDeserializers() : void{
+		$this->mapSimple(Ids::ACACIA_FENCE, fn() => Blocks::ACACIA_FENCE());
+		$this->mapSimple(Ids::BIRCH_FENCE, fn() => Blocks::BIRCH_FENCE());
+		$this->mapSimple(Ids::DARK_OAK_FENCE, fn() => Blocks::DARK_OAK_FENCE());
+		$this->mapSimple(Ids::JUNGLE_FENCE, fn() => Blocks::JUNGLE_FENCE());
+		$this->mapSimple(Ids::OAK_FENCE, fn() => Blocks::OAK_FENCE());
+		$this->mapSimple(Ids::SPRUCE_FENCE, fn() => Blocks::SPRUCE_FENCE());
+
+		$this->mapLog(Ids::ACACIA_LOG, Ids::STRIPPED_ACACIA_LOG, fn() => Blocks::ACACIA_LOG());
+		$this->mapLog(Ids::BIRCH_LOG, Ids::STRIPPED_BIRCH_LOG, fn() => Blocks::BIRCH_LOG());
+		$this->mapLog(Ids::DARK_OAK_LOG, Ids::STRIPPED_DARK_OAK_LOG, fn() => Blocks::DARK_OAK_LOG());
+		$this->mapLog(Ids::JUNGLE_LOG, Ids::STRIPPED_JUNGLE_LOG, fn() => Blocks::JUNGLE_LOG());
+		$this->mapLog(Ids::OAK_LOG, Ids::STRIPPED_OAK_LOG, fn() => Blocks::OAK_LOG());
+		$this->mapLog(Ids::SPRUCE_LOG, Ids::STRIPPED_SPRUCE_LOG, fn() => Blocks::SPRUCE_LOG());
 	}
 
 	private function registerSimpleDeserializers() : void{
@@ -745,17 +769,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::FARMLAND()
 				->setWetness($in->readBoundedInt(StateNames::MOISTURIZED_AMOUNT, 0, 7));
 		});
-		$this->map(Ids::FENCE, function(Reader $in) : Block{
-			return match($woodName = $in->readString(StateNames::WOOD_TYPE)){
-				StringValues::WOOD_TYPE_OAK => Blocks::OAK_FENCE(),
-				StringValues::WOOD_TYPE_SPRUCE => Blocks::SPRUCE_FENCE(),
-				StringValues::WOOD_TYPE_BIRCH => Blocks::BIRCH_FENCE(),
-				StringValues::WOOD_TYPE_JUNGLE => Blocks::JUNGLE_FENCE(),
-				StringValues::WOOD_TYPE_ACACIA => Blocks::ACACIA_FENCE(),
-				StringValues::WOOD_TYPE_DARK_OAK => Blocks::DARK_OAK_FENCE(),
-				default => throw $in->badValueException(StateNames::WOOD_TYPE, $woodName),
-			};
-		});
 		$this->map(Ids::FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::OAK_FENCE_GATE(), $in));
 		$this->map(Ids::FIRE, function(Reader $in) : Block{
 			return Blocks::FIRE()
@@ -890,18 +903,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFacing($in->readHorizontalFacing())
 				->setLit(true);
 		});
-		$this->map(Ids::LOG, fn(Reader $in) => Helper::decodeLog(match($type = $in->readString(StateNames::OLD_LOG_TYPE)){
-			StringValues::OLD_LOG_TYPE_BIRCH => Blocks::BIRCH_LOG(),
-			StringValues::OLD_LOG_TYPE_JUNGLE => Blocks::JUNGLE_LOG(),
-			StringValues::OLD_LOG_TYPE_OAK => Blocks::OAK_LOG(),
-			StringValues::OLD_LOG_TYPE_SPRUCE => Blocks::SPRUCE_LOG(),
-			default => throw $in->badValueException(StateNames::OLD_LOG_TYPE, $type),
-		}, false, $in));
-		$this->map(Ids::LOG2, fn(Reader $in) => Helper::decodeLog(match($type = $in->readString(StateNames::NEW_LOG_TYPE)){
-			StringValues::NEW_LOG_TYPE_ACACIA => Blocks::ACACIA_LOG(),
-			StringValues::NEW_LOG_TYPE_DARK_OAK => Blocks::DARK_OAK_LOG(),
-			default => throw $in->badValueException(StateNames::NEW_LOG_TYPE, $type),
-		}, false, $in));
 		$this->map(Ids::LOOM, function(Reader $in) : Block{
 			return Blocks::LOOM()
 				->setFacing($in->readLegacyHorizontalFacing());
@@ -1229,16 +1230,10 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::STONECUTTER()
 				->setFacing($in->readHorizontalFacing());
 		});
-		$this->map(Ids::STRIPPED_ACACIA_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::ACACIA_LOG(), true, $in));
-		$this->map(Ids::STRIPPED_BIRCH_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::BIRCH_LOG(), true, $in));
 		$this->map(Ids::STRIPPED_CRIMSON_HYPHAE, fn(Reader $in) => Helper::decodeLog(Blocks::CRIMSON_HYPHAE(), true, $in));
 		$this->map(Ids::STRIPPED_CRIMSON_STEM, fn(Reader $in) => Helper::decodeLog(Blocks::CRIMSON_STEM(), true, $in));
-		$this->map(Ids::STRIPPED_DARK_OAK_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::DARK_OAK_LOG(), true, $in));
-		$this->map(Ids::STRIPPED_JUNGLE_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::JUNGLE_LOG(), true, $in));
 		$this->map(Ids::STRIPPED_MANGROVE_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::MANGROVE_LOG(), true, $in));
 		$this->map(Ids::STRIPPED_MANGROVE_WOOD, fn(Reader $in) => Helper::decodeLog(Blocks::MANGROVE_WOOD(), true, $in));
-		$this->map(Ids::STRIPPED_OAK_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::OAK_LOG(), true, $in));
-		$this->map(Ids::STRIPPED_SPRUCE_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::SPRUCE_LOG(), true, $in));
 		$this->map(Ids::STRIPPED_WARPED_HYPHAE, fn(Reader $in) => Helper::decodeLog(Blocks::WARPED_HYPHAE(), true, $in));
 		$this->map(Ids::STRIPPED_WARPED_STEM, fn(Reader $in) => Helper::decodeLog(Blocks::WARPED_STEM(), true, $in));
 		$this->map(Ids::SWEET_BERRY_BUSH, function(Reader $in) : Block{

@@ -102,10 +102,8 @@ final class BlockStateNames{
 	public const MONSTER_EGG_STONE_TYPE = "monster_egg_stone_type";
 	public const MULTI_FACE_DIRECTION_BITS = "multi_face_direction_bits";
 	public const NEW_LEAF_TYPE = "new_leaf_type";
-	public const NEW_LOG_TYPE = "new_log_type";
 	public const OCCUPIED_BIT = "occupied_bit";
 	public const OLD_LEAF_TYPE = "old_leaf_type";
-	public const OLD_LOG_TYPE = "old_log_type";
 	public const OPEN_BIT = "open_bit";
 	public const OUTPUT_LIT_BIT = "output_lit_bit";
 	public const OUTPUT_SUBTRACT_BIT = "output_subtract_bit";
