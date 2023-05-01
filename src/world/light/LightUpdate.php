@@ -106,9 +106,6 @@ abstract class LightUpdate{
 						$context->removalQueue->enqueue([$x, $y, $z, $oldLevel]);
 					}
 				}
-			}elseif($this->getEffectiveLight($x, $y, $z) > 0){ //outside the chunk (e.g. virtual sky light from y=256)
-				$context->spreadVisited[$blockHash] = true;
-				$context->spreadQueue->enqueue([$x, $y, $z]);
 			}
 		}
 		return $context;
@@ -129,9 +126,6 @@ abstract class LightUpdate{
 
 				if($this->subChunkExplorer->moveTo($cx, $cy, $cz) !== SubChunkExplorerStatus::INVALID){
 					$this->computeRemoveLight($cx, $cy, $cz, $oldAdjacentLight, $context);
-				}elseif($this->getEffectiveLight($cx, $cy, $cz) > 0 && !isset($context->spreadVisited[$index = World::blockHash($cx, $cy, $cz)])){
-					$context->spreadVisited[$index] = true;
-					$context->spreadQueue->enqueue([$cx, $cy, $cz]);
 				}
 			}
 		}
@@ -142,7 +136,10 @@ abstract class LightUpdate{
 
 			unset($context->spreadVisited[World::blockHash($x, $y, $z)]);
 
-			$newAdjacentLight = $this->getEffectiveLight($x, $y, $z);
+			if($this->subChunkExplorer->moveTo($x, $y, $z) === SubChunkExplorerStatus::INVALID){
+				continue;
+			}
+			$newAdjacentLight = $this->getCurrentLightArray()->get($x & SubChunk::COORD_MASK, $y & SubChunk::COORD_MASK, $z & SubChunk::COORD_MASK);
 			if($newAdjacentLight <= 0){
 				continue;
 			}
