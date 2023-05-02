@@ -67,9 +67,10 @@ abstract class BaseWorldProvider implements WorldProvider{
 
 		$newPalette = [];
 		foreach($palette as $k => $legacyIdMeta){
-			$newStateData = $this->blockDataUpgrader->upgradeIntIdMeta($legacyIdMeta >> 4, $legacyIdMeta & 0xf);
-			if($newStateData === null){
-				//TODO: remember data for unknown states so we can implement them later
+			//TODO: remember data for unknown states so we can implement them later
+			try{
+				$newStateData = $this->blockDataUpgrader->upgradeIntIdMeta($legacyIdMeta >> 4, $legacyIdMeta & 0xf);
+			}catch(BlockStateDeserializeException $e){
 				$newStateData = GlobalBlockStateHandlers::getUnknownBlockStateData();
 			}
 

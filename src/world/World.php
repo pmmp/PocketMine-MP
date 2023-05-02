@@ -37,6 +37,7 @@ use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
@@ -526,9 +527,10 @@ class World implements ChunkManager{
 			if($item !== null){
 				$block = $item->getBlock();
 			}elseif(preg_match("/^-?\d+$/", $name) === 1){
-				//TODO: this may throw if the ID/meta was invalid
-				$blockStateData = GlobalBlockStateHandlers::getUpgrader()->upgradeIntIdMeta((int) $name, 0);
-				if($blockStateData === null){
+				//TODO: this is a really sketchy hack - remove this as soon as possible
+				try{
+					$blockStateData = GlobalBlockStateHandlers::getUpgrader()->upgradeIntIdMeta((int) $name, 0);
+				}catch(BlockStateDeserializeException){
 					continue;
 				}
 				$block = RuntimeBlockStateRegistry::getInstance()->fromStateId(GlobalBlockStateHandlers::getDeserializer()->deserialize($blockStateData));
