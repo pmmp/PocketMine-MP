@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\upgrade;
 
 use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
@@ -41,14 +42,22 @@ final class BlockIdMetaUpgrader{
 		private LegacyBlockIdToStringIdMap $legacyNumericIdMap
 	){}
 
-	public function fromStringIdMeta(string $id, int $meta) : ?BlockStateData{
-		return $this->mappingTable[$id][$meta] ?? $this->mappingTable[$id][0] ?? null;
+	/**
+	 * @throws BlockStateDeserializeException
+	 */
+	public function fromStringIdMeta(string $id, int $meta) : BlockStateData{
+		return $this->mappingTable[$id][$meta] ??
+			$this->mappingTable[$id][0] ??
+			throw new BlockStateDeserializeException("Unknown legacy block string ID $id");
 	}
 
-	public function fromIntIdMeta(int $id, int $meta) : ?BlockStateData{
+	/**
+	 * @throws BlockStateDeserializeException
+	 */
+	public function fromIntIdMeta(int $id, int $meta) : BlockStateData{
 		$stringId = $this->legacyNumericIdMap->legacyToString($id);
 		if($stringId === null){
-			return null;
+			throw new BlockStateDeserializeException("Unknown legacy block numeric ID $id");
 		}
 		return $this->fromStringIdMeta($stringId, $meta);
 	}

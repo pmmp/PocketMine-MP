@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\upgrade;
 
 use pocketmine\data\bedrock\block\BlockStateData;
-use pocketmine\data\bedrock\block\BlockTypeNames;
+use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\nbt\tag\CompoundTag;
 
 final class BlockDataUpgrader{
@@ -34,25 +34,30 @@ final class BlockDataUpgrader{
 		private BlockStateUpgrader $blockStateUpgrader
 	){}
 
-	public function upgradeIntIdMeta(int $id, int $meta) : ?BlockStateData{
+	/**
+	 * @throws BlockStateDeserializeException
+	 */
+	public function upgradeIntIdMeta(int $id, int $meta) : BlockStateData{
 		return $this->blockIdMetaUpgrader->fromIntIdMeta($id, $meta);
 	}
 
-	public function upgradeStringIdMeta(string $id, int $meta) : ?BlockStateData{
+	/**
+	 * @throws BlockStateDeserializeException
+	 */
+	public function upgradeStringIdMeta(string $id, int $meta) : BlockStateData{
 		return $this->blockIdMetaUpgrader->fromStringIdMeta($id, $meta);
 	}
 
-	public function upgradeBlockStateNbt(CompoundTag $tag) : ?BlockStateData{
+	/**
+	 * @throws BlockStateDeserializeException
+	 */
+	public function upgradeBlockStateNbt(CompoundTag $tag) : BlockStateData{
 		if($tag->getTag("name") !== null && $tag->getTag("val") !== null){
 			//Legacy (pre-1.13) blockstate - upgrade it to a version we understand
 			$id = $tag->getString("name");
 			$data = $tag->getShort("val");
 
 			$blockStateData = $this->upgradeStringIdMeta($id, $data);
-			if($blockStateData === null){
-				//unknown block, invalid ID
-				$blockStateData = BlockStateData::current(BlockTypeNames::INFO_UPDATE, []);
-			}
 		}else{
 			//Modern (post-1.13) blockstate
 			$blockStateData = BlockStateData::fromNbt($tag);
