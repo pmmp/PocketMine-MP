@@ -102,9 +102,9 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		]);
 	}
 
-	public function __construct(string $path){
+	public function __construct(string $path, \Logger $logger){
 		self::checkForLevelDBExtension();
-		parent::__construct($path);
+		parent::__construct($path, $logger);
 
 		try{
 			$this->db = self::createDB($path);

@@ -41,7 +41,8 @@ abstract class BaseWorldProvider implements WorldProvider{
 	protected BlockStateSerializer $blockStateSerializer;
 
 	public function __construct(
-		protected string $path
+		protected string $path,
+		protected \Logger $logger
 	){
 		if(!file_exists($path)){
 			throw new WorldException("World does not exist");
