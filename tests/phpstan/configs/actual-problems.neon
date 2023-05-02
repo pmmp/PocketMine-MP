@@ -1161,18 +1161,13 @@ parameters:
 			path: ../../../src/world/light/LightPopulationTask.php
 
 		-
-			message: "#^Cannot call method getBlockStateId\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/light/LightUpdate.php
-
-		-
 			message: "#^Cannot call method getBlockSkyLightArray\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-
 			message: "#^Cannot call method getBlockStateId\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
-			count: 1
+			count: 2
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-

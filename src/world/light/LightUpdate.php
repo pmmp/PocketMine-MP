@@ -176,7 +176,7 @@ abstract class LightUpdate{
 					$subChunk = $subChunkExplorer->currentSubChunk;
 					$lightArray = $this->getCurrentLightArray();
 				}
-				assert($lightArray !== null);
+				assert($subChunk !== null);
 				$this->computeSpreadLight($cx, $cy, $cz, $newAdjacentLight, $context, $lightArray, $subChunk);
 			}
 		}
