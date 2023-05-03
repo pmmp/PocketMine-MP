@@ -58,7 +58,7 @@ class TypeConverter{
 	private const RECIPE_INPUT_WILDCARD_META = 0x7fff;
 
 	private BlockItemIdMap $blockItemIdMap;
-	private RuntimeBlockMapping $blockTranslator;
+	private BlockTranslator $blockTranslator;
 	private ItemTranslator $itemTranslator;
 	private ItemTypeDictionary $itemTypeDictionary;
 	private int $shieldRuntimeId;
@@ -69,7 +69,7 @@ class TypeConverter{
 
 		$canonicalBlockStatesRaw = Filesystem::fileGetContents(BedrockDataFiles::CANONICAL_BLOCK_STATES_NBT);
 		$metaMappingRaw = Filesystem::fileGetContents(BedrockDataFiles::BLOCK_STATE_META_MAP_JSON);
-		$this->blockTranslator = new RuntimeBlockMapping(
+		$this->blockTranslator = new BlockTranslator(
 			BlockStateDictionary::loadFromString($canonicalBlockStatesRaw, $metaMappingRaw),
 			GlobalBlockStateHandlers::getSerializer()
 		);
@@ -85,7 +85,7 @@ class TypeConverter{
 		);
 	}
 
-	public function getBlockTranslator() : RuntimeBlockMapping{ return $this->blockTranslator; }
+	public function getBlockTranslator() : BlockTranslator{ return $this->blockTranslator; }
 
 	public function getItemTypeDictionary() : ItemTypeDictionary{ return $this->itemTypeDictionary; }
 

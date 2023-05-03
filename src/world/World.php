@@ -1062,7 +1062,7 @@ class World implements ChunkManager{
 	public function createBlockUpdatePackets(array $blocks) : array{
 		$packets = [];
 
-		$blockMapping = TypeConverter::getInstance()->getBlockTranslator();
+		$blockTranslator = TypeConverter::getInstance()->getBlockTranslator();
 
 		foreach($blocks as $b){
 			if(!($b instanceof Vector3)){
@@ -1074,7 +1074,7 @@ class World implements ChunkManager{
 
 			$tile = $this->getTileAt($b->x, $b->y, $b->z);
 			if($tile instanceof Spawnable && count($fakeStateProperties = $tile->getRenderUpdateBugWorkaroundStateProperties($fullBlock)) > 0){
-				$originalStateData = $blockMapping->toStateData($fullBlock->getStateId());
+				$originalStateData = $blockTranslator->toStateData($fullBlock->getStateId());
 				$fakeStateData = new BlockStateData(
 					$originalStateData->getName(),
 					array_merge($originalStateData->getStates(), $fakeStateProperties),
@@ -1082,14 +1082,14 @@ class World implements ChunkManager{
 				);
 				$packets[] = UpdateBlockPacket::create(
 					$blockPosition,
-					$blockMapping->getBlockStateDictionary()->lookupStateIdFromData($fakeStateData) ?? throw new AssumptionFailedError("Unmapped fake blockstate data: " . $fakeStateData->toNbt()),
+					$blockTranslator->getBlockStateDictionary()->lookupStateIdFromData($fakeStateData) ?? throw new AssumptionFailedError("Unmapped fake blockstate data: " . $fakeStateData->toNbt()),
 					UpdateBlockPacket::FLAG_NETWORK,
 					UpdateBlockPacket::DATA_LAYER_NORMAL
 				);
 			}
 			$packets[] = UpdateBlockPacket::create(
 				$blockPosition,
-				$blockMapping->toRuntimeId($fullBlock->getStateId()),
+				$blockTranslator->toRuntimeId($fullBlock->getStateId()),
 				UpdateBlockPacket::FLAG_NETWORK,
 				UpdateBlockPacket::DATA_LAYER_NORMAL
 			);

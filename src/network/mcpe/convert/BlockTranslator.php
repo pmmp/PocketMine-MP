@@ -32,7 +32,7 @@ use pocketmine\utils\AssumptionFailedError;
 /**
  * @internal
  */
-final class RuntimeBlockMapping{
+final class BlockTranslator{
 	/**
 	 * @var int[]
 	 * @phpstan-var array<int, int>

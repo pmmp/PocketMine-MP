@@ -27,7 +27,7 @@ use pocketmine\block\tile\Spawnable;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\LegacyBiomeIdToStringIdMap;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
+use pocketmine\network\mcpe\convert\BlockTranslator;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
@@ -58,13 +58,13 @@ final class ChunkSerializer{
 		return 0;
 	}
 
-	public static function serializeFullChunk(Chunk $chunk, RuntimeBlockMapping $blockMapper, PacketSerializerContext $encoderContext, ?string $tiles = null) : string{
+	public static function serializeFullChunk(Chunk $chunk, BlockTranslator $blockTranslator, PacketSerializerContext $encoderContext, ?string $tiles = null) : string{
 		$stream = PacketSerializer::encoder($encoderContext);
 
 		$subChunkCount = self::getSubChunkCount($chunk);
 		$writtenCount = 0;
 		for($y = Chunk::MIN_SUBCHUNK_INDEX; $writtenCount < $subChunkCount; ++$y, ++$writtenCount){
-			self::serializeSubChunk($chunk->getSubChunk($y), $blockMapper, $stream, false);
+			self::serializeSubChunk($chunk->getSubChunk($y), $blockTranslator, $stream, false);
 		}
 
 		$biomeIdMap = LegacyBiomeIdToStringIdMap::getInstance();
@@ -84,13 +84,13 @@ final class ChunkSerializer{
 		return $stream->getBuffer();
 	}
 
-	public static function serializeSubChunk(SubChunk $subChunk, RuntimeBlockMapping $blockMapper, PacketSerializer $stream, bool $persistentBlockStates) : void{
+	public static function serializeSubChunk(SubChunk $subChunk, BlockTranslator $blockTranslator, PacketSerializer $stream, bool $persistentBlockStates) : void{
 		$layers = $subChunk->getBlockLayers();
 		$stream->putByte(8); //version
 
 		$stream->putByte(count($layers));
 
-		$blockStateDictionary = $blockMapper->getBlockStateDictionary();
+		$blockStateDictionary = $blockTranslator->getBlockStateDictionary();
 
 		foreach($layers as $blocks){
 			$bitsPerBlock = $blocks->getBitsPerBlock();
@@ -109,16 +109,16 @@ final class ChunkSerializer{
 				$nbtSerializer = new NetworkNbtSerializer();
 				foreach($palette as $p){
 					//TODO: introduce a binary cache for this
-					$state = $blockStateDictionary->getDataFromStateId($blockMapper->toRuntimeId($p));
+					$state = $blockStateDictionary->getDataFromStateId($blockTranslator->toRuntimeId($p));
 					if($state === null){
-						$state = $blockMapper->getFallbackStateData();
+						$state = $blockTranslator->getFallbackStateData();
 					}
 
 					$stream->put($nbtSerializer->write(new TreeRoot($state->toNbt())));
 				}
 			}else{
 				foreach($palette as $p){
-					$stream->put(Binary::writeUnsignedVarInt($blockMapper->toRuntimeId($p) << 1));
+					$stream->put(Binary::writeUnsignedVarInt($blockTranslator->toRuntimeId($p) << 1));
 				}
 			}
 		}

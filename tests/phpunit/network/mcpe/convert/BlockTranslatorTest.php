@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\convert;
 use PHPUnit\Framework\TestCase;
 use pocketmine\block\RuntimeBlockStateRegistry;
 
-class RuntimeBlockMappingTest extends TestCase{
+class BlockTranslatorTest extends TestCase{
 
 	/**
 	 * @doesNotPerformAssertions
