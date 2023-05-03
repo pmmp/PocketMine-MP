@@ -130,6 +130,7 @@ final class BlockStateDictionary{
 
 		$entries = [];
 
+		$uniqueNames = [];
 		foreach(self::loadPaletteFromString($blockPaletteContents) as $i => $state){
 			$meta = $metaMap[$i] ?? null;
 			if($meta === null){
@@ -138,7 +139,8 @@ final class BlockStateDictionary{
 			if(!is_int($meta)){
 				throw new \InvalidArgumentException("Invalid metaMap offset $i, expected int, got " . get_debug_type($meta));
 			}
-			$entries[$i] = new BlockStateDictionaryEntry($state, $meta);
+			$uniqueName = $uniqueNames[$state->getName()] ??= $state->getName();
+			$entries[$i] = new BlockStateDictionaryEntry($uniqueName, $state->getStates(), $meta);
 		}
 
 		return new self($entries);

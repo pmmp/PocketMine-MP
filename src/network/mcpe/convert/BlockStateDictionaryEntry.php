@@ -34,15 +34,17 @@ use const SORT_STRING;
 
 final class BlockStateDictionaryEntry{
 
-	private string $stateName;
 	private string $rawStateProperties;
 
+	/**
+	 * @param Tag[] $stateProperties
+	 */
 	public function __construct(
-		BlockStateData $stateData,
+		private string $stateName,
+		array $stateProperties,
 		private int $meta
 	){
-		$this->stateName = $stateData->getName();
-		$this->rawStateProperties = self::encodeStateProperties($stateData->getStates());
+		$this->rawStateProperties = self::encodeStateProperties($stateProperties);
 	}
 
 	public function getStateName() : string{ return $this->stateName; }
