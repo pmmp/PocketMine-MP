@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\data\bedrock\block\BlockTypeNames;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
@@ -31,6 +32,7 @@ use function array_map;
 use function get_debug_type;
 use function is_array;
 use function is_int;
+use function is_string;
 use function json_decode;
 use const JSON_THROW_ON_ERROR;
 
@@ -131,6 +133,15 @@ final class BlockStateDictionary{
 		$entries = [];
 
 		$uniqueNames = [];
+
+		//this hack allows the internal cache index to use interned strings which are already available in the
+		//core code anyway, saving around 40 KB of memory
+		foreach((new \ReflectionClass(BlockTypeNames::class))->getConstants() as $value){
+			if(is_string($value)){
+				$uniqueNames[$value] = $value;
+			}
+		}
+
 		foreach(self::loadPaletteFromString($blockPaletteContents) as $i => $state){
 			$meta = $metaMap[$i] ?? null;
 			if($meta === null){
