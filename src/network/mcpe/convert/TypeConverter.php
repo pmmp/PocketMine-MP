@@ -79,14 +79,6 @@ class TypeConverter{
 		}
 	}
 
-	public function protocolGameModeName(GameMode $gameMode) : string{
-		switch($gameMode->id()){
-			case GameMode::SURVIVAL()->id(): return "Survival";
-			case GameMode::ADVENTURE()->id(): return "Adventure";
-			default: return "Creative";
-		}
-	}
-
 	public function protocolGameModeToCore(int $gameMode) : ?GameMode{
 		switch($gameMode){
 			case ProtocolGameMode::SURVIVAL:

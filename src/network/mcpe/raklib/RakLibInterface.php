@@ -26,7 +26,6 @@ namespace pocketmine\network\mcpe\raklib;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\mcpe\compression\ZlibCompressor;
-use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\EntityEventBroadcaster;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketBroadcaster;
@@ -36,6 +35,7 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\network\Network;
 use pocketmine\network\NetworkInterfaceStartException;
 use pocketmine\network\PacketHandlingException;
+use pocketmine\player\GameMode;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\timings\Timings;
@@ -255,7 +255,11 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 				$info->getMaxPlayerCount(),
 				$this->rakServerId,
 				$this->server->getName(),
-				TypeConverter::getInstance()->protocolGameModeName($this->server->getGamemode())
+				match($this->server->getGamemode()){
+					GameMode::SURVIVAL() => "Survival",
+					GameMode::ADVENTURE() => "Adventure",
+					default => "Creative"
+				}
 			]) . ";"
 		);
 	}
