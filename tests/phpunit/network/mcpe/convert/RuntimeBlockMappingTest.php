@@ -32,8 +32,9 @@ class RuntimeBlockMappingTest extends TestCase{
 	 * @doesNotPerformAssertions
 	 */
 	public function testAllBlockStatesSerialize() : void{
+		$blockTranslator = TypeConverter::getInstance()->getBlockTranslator();
 		foreach(RuntimeBlockStateRegistry::getInstance()->getAllKnownStates() as $state){
-			RuntimeBlockMapping::getInstance()->toRuntimeId($state->getStateId());
+			$blockTranslator->toRuntimeId($state->getStateId());
 		}
 	}
 }

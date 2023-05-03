@@ -67,7 +67,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
@@ -1062,7 +1062,7 @@ class World implements ChunkManager{
 	public function createBlockUpdatePackets(array $blocks) : array{
 		$packets = [];
 
-		$blockMapping = RuntimeBlockMapping::getInstance();
+		$blockMapping = TypeConverter::getInstance()->getBlockTranslator();
 
 		foreach($blocks as $b){
 			if(!($b instanceof Vector3)){

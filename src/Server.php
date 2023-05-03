@@ -53,7 +53,7 @@ use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\CompressBatchTask;
 use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\network\mcpe\compression\ZlibCompressor;
-use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\encryption\EncryptionContext;
 use pocketmine\network\mcpe\EntityEventBroadcaster;
 use pocketmine\network\mcpe\NetworkSession;
@@ -1204,7 +1204,7 @@ class Server{
 	private function startupPrepareNetworkInterfaces() : bool{
 		$useQuery = $this->configGroup->getConfigBool("enable-query", true);
 
-		$packetSerializerContext = new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary());
+		$packetSerializerContext = new PacketSerializerContext(TypeConverter::getInstance()->getItemTypeDictionary());
 		$packetBroadcaster = new StandardPacketBroadcaster($this, $packetSerializerContext);
 		$entityEventBroadcaster = new StandardEntityEventBroadcaster($packetBroadcaster);
 

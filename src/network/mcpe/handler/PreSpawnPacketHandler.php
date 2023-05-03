@@ -26,7 +26,6 @@ namespace pocketmine\network\mcpe\handler;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\cache\CraftingDataCache;
 use pocketmine\network\mcpe\cache\StaticPacketCache;
-use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
@@ -108,7 +107,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 				false,
 				[],
 				0,
-				GlobalItemTypeDictionary::getInstance()->getDictionary()->getEntries(),
+				TypeConverter::getInstance()->getItemTypeDictionary()->getEntries(),
 			));
 
 			$this->session->getLogger()->debug("Sending actor identifiers");
