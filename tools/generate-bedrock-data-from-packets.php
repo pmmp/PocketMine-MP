@@ -150,7 +150,7 @@ class ParserPacketHandler extends PacketHandler{
 			if($meta !== 0){
 				throw new PacketHandlingException("Unexpected non-zero blockitem meta");
 			}
-			$blockState = $this->blockTranslator->getBlockStateDictionary()->getDataFromStateId($itemStack->getBlockRuntimeId()) ?? null;
+			$blockState = $this->blockTranslator->getBlockStateDictionary()->generateDataFromStateId($itemStack->getBlockRuntimeId()) ?? null;
 			if($blockState === null){
 				throw new PacketHandlingException("Unmapped blockstate ID " . $itemStack->getBlockRuntimeId());
 			}
@@ -270,7 +270,7 @@ class ParserPacketHandler extends PacketHandler{
 			if($meta !== 32767){
 				$blockStateId = $this->blockTranslator->getBlockStateDictionary()->lookupStateIdFromIdMeta($data->name, $meta);
 				if($blockStateId !== null){
-					$blockState = $this->blockTranslator->getBlockStateDictionary()->getDataFromStateId($blockStateId);
+					$blockState = $this->blockTranslator->getBlockStateDictionary()->generateDataFromStateId($blockStateId);
 					if($blockState !== null && count($blockState->getStates()) > 0){
 						$data->block_states = self::blockStatePropertiesToString($blockState);
 					}

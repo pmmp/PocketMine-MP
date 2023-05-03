@@ -24,15 +24,60 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\nbt\LittleEndianNbtSerializer;
+use pocketmine\nbt\tag\Tag;
+use pocketmine\nbt\TreeRoot;
+use function array_map;
+use function count;
+use function ksort;
+use const SORT_STRING;
 
 final class BlockStateDictionaryEntry{
 
-	public function __construct(
-		private BlockStateData $stateData,
-		private int $meta
-	){}
+	private string $stateName;
+	private string $rawStateProperties;
 
-	public function getStateData() : BlockStateData{ return $this->stateData; }
+	public function __construct(
+		BlockStateData $stateData,
+		private int $meta
+	){
+		$this->stateName = $stateData->getName();
+		$this->rawStateProperties = self::encodeStateProperties($stateData->getStates());
+	}
+
+	public function getStateName() : string{ return $this->stateName; }
+
+	public function getRawStateProperties() : string{ return $this->rawStateProperties; }
+
+	public function generateStateData() : BlockStateData{
+		return new BlockStateData(
+			$this->stateName,
+			self::decodeStateProperties($this->rawStateProperties),
+			BlockStateData::CURRENT_VERSION
+		);
+	}
 
 	public function getMeta() : int{ return $this->meta; }
+
+	/**
+	 * @return Tag[]
+	 */
+	public static function decodeStateProperties(string $rawProperties) : array{
+		if($rawProperties === ""){
+			return [];
+		}
+		return array_map(fn(TreeRoot $root) => $root->getTag(), (new LittleEndianNbtSerializer())->readMultiple($rawProperties));
+	}
+
+	/**
+	 * @param Tag[] $properties
+	 */
+	public static function encodeStateProperties(array $properties) : string{
+		if(count($properties) === 0){
+			return "";
+		}
+		//TODO: make a more efficient encoding - NBT will do for now, but it's not very compact
+		ksort($properties, SORT_STRING);
+		return (new LittleEndianNbtSerializer())->writeMultiple(array_map(fn(Tag $tag) => new TreeRoot($tag), $properties));
+	}
 }

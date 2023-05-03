@@ -109,7 +109,7 @@ final class ChunkSerializer{
 				$nbtSerializer = new NetworkNbtSerializer();
 				foreach($palette as $p){
 					//TODO: introduce a binary cache for this
-					$state = $blockStateDictionary->getDataFromStateId($blockTranslator->toRuntimeId($p));
+					$state = $blockStateDictionary->generateDataFromStateId($blockTranslator->toRuntimeId($p));
 					if($state === null){
 						$state = $blockTranslator->getFallbackStateData();
 					}

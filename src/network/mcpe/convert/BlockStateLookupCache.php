@@ -35,7 +35,7 @@ final class BlockStateLookupCache{
 
 	/**
 	 * @var int[][]
-	 * @phpstan-var array<string, array<int, BlockStateData>>
+	 * @phpstan-var array<string, array<string, int>>
 	 */
 	private array $nameToNetworkIdsLookup = [];
 
@@ -46,18 +46,18 @@ final class BlockStateLookupCache{
 	private array $nameToSingleNetworkIdLookup = [];
 
 	/**
-	 * @param BlockStateData[] $blockStates
-	 * @phpstan-param list<BlockStateData> $blockStates
+	 * @param BlockStateDictionaryEntry[] $blockStates
+	 * @phpstan-param list<BlockStateDictionaryEntry> $blockStates
 	 */
 	public function __construct(array $blockStates){
 		foreach($blockStates as $stateId => $stateNbt){
-			$this->nameToNetworkIdsLookup[$stateNbt->getName()][$stateId] = $stateNbt;
+			$this->nameToNetworkIdsLookup[$stateNbt->getStateName()][$stateNbt->getRawStateProperties()] = $stateId;
 		}
 
 		//setup fast path for stateless blocks
 		foreach(Utils::stringifyKeys($this->nameToNetworkIdsLookup) as $name => $stateIds){
 			if(count($stateIds) === 1){
-				$this->nameToSingleNetworkIdLookup[$name] = array_key_first($stateIds);
+				$this->nameToSingleNetworkIdLookup[$name] = $stateIds[array_key_first($stateIds)];
 			}
 		}
 	}
@@ -73,14 +73,6 @@ final class BlockStateLookupCache{
 			return $this->nameToSingleNetworkIdLookup[$name];
 		}
 
-		if(isset($this->nameToNetworkIdsLookup[$name])){
-			foreach($this->nameToNetworkIdsLookup[$name] as $stateId => $stateNbt){
-				if($stateNbt->equals($data)){
-					return $stateId;
-				}
-			}
-		}
-
-		return null;
+		return $this->nameToNetworkIdsLookup[$name][BlockStateDictionaryEntry::encodeStateProperties($data->getStates())] ?? null;
 	}
 }

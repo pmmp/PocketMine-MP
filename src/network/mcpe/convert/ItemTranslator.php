@@ -107,7 +107,7 @@ final class ItemTranslator{
 
 		$blockStateData = null;
 		if($networkBlockRuntimeId !== self::NO_BLOCK_RUNTIME_ID){
-			$blockStateData = $this->blockStateDictionary->getDataFromStateId($networkBlockRuntimeId);
+			$blockStateData = $this->blockStateDictionary->generateDataFromStateId($networkBlockRuntimeId);
 			if($blockStateData === null){
 				throw new TypeConversionException("Blockstate runtimeID $networkBlockRuntimeId does not correspond to any known blockstate");
 			}

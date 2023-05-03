@@ -51,7 +51,7 @@ final class BlockTranslator{
 				BlockStateData::current(BlockTypeNames::INFO_UPDATE, [])
 			) ?? throw new AssumptionFailedError(BlockTypeNames::INFO_UPDATE . " should always exist");
 		//lookup the state data from the dictionary to avoid keeping two copies of the same data around
-		$this->fallbackStateData = $this->blockStateDictionary->getDataFromStateId($this->fallbackStateId) ?? throw new AssumptionFailedError("We just looked up this state data, so it must exist");
+		$this->fallbackStateData = $this->blockStateDictionary->generateDataFromStateId($this->fallbackStateId) ?? throw new AssumptionFailedError("We just looked up this state data, so it must exist");
 	}
 
 	public function toRuntimeId(int $internalStateId) : int{
@@ -84,7 +84,7 @@ final class BlockTranslator{
 		//case someone wants to implement multi version).
 		$networkRuntimeId = $this->toRuntimeId($internalStateId);
 
-		return $this->blockStateDictionary->getDataFromStateId($networkRuntimeId) ?? throw new AssumptionFailedError("We just looked up this state ID, so it must exist");
+		return $this->blockStateDictionary->generateDataFromStateId($networkRuntimeId) ?? throw new AssumptionFailedError("We just looked up this state ID, so it must exist");
 	}
 
 	public function getBlockStateDictionary() : BlockStateDictionary{ return $this->blockStateDictionary; }

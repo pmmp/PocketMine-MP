@@ -25,10 +25,6 @@ namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\nbt\NbtDataException;
-use pocketmine\nbt\tag\ByteTag;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use function array_map;
@@ -58,7 +54,7 @@ final class BlockStateDictionary{
 	public function __construct(
 		private array $states
 	){
-		$this->stateDataToStateIdLookupCache = new BlockStateLookupCache(array_map(fn(BlockStateDictionaryEntry $entry) => $entry->getStateData(), $this->states));
+		$this->stateDataToStateIdLookupCache = new BlockStateLookupCache($this->states);
 	}
 
 	/**
@@ -71,15 +67,15 @@ final class BlockStateDictionary{
 			$this->idMetaToStateIdLookupCache = [];
 
 			foreach($this->states as $i => $state){
-				$this->idMetaToStateIdLookupCache[$state->getMeta()][$state->getStateData()->getName()] = $i;
+				$this->idMetaToStateIdLookupCache[$state->getMeta()][$state->getStateName()] = $i;
 			}
 		}
 
 		return $this->idMetaToStateIdLookupCache;
 	}
 
-	public function getDataFromStateId(int $networkRuntimeId) : ?BlockStateData{
-		return ($this->states[$networkRuntimeId] ?? null)?->getStateData();
+	public function generateDataFromStateId(int $networkRuntimeId) : ?BlockStateData{
+		return ($this->states[$networkRuntimeId] ?? null)?->generateStateData();
 	}
 
 	/**
@@ -114,46 +110,14 @@ final class BlockStateDictionary{
 	public function getStates() : array{ return $this->states; }
 
 	/**
-	 * @param string[] $keyIndex
-	 * @param (ByteTag|StringTag|IntTag)[][] $valueIndex
-	 * @phpstan-param array<string, string> $keyIndex
-	 * @phpstan-param array<int, array<int|string, ByteTag|IntTag|StringTag>> $valueIndex
-	 */
-	private static function deduplicateCompound(CompoundTag $tag, array &$keyIndex, array &$valueIndex) : CompoundTag{
-		if($tag->count() === 0){
-			return $tag;
-		}
-
-		$newTag = CompoundTag::create();
-		foreach($tag as $key => $value){
-			$key = $keyIndex[$key] ??= $key;
-
-			if($value instanceof CompoundTag){
-				$value = self::deduplicateCompound($value, $keyIndex, $valueIndex);
-			}elseif($value instanceof ByteTag || $value instanceof IntTag || $value instanceof StringTag){
-				$value = $valueIndex[$value->getType()][$value->getValue()] ??= $value;
-			}
-
-			$newTag->setTag($key, $value);
-		}
-
-		return $newTag;
-	}
-
-	/**
 	 * @return BlockStateData[]
 	 * @phpstan-return list<BlockStateData>
 	 *
 	 * @throws NbtDataException
 	 */
 	public static function loadPaletteFromString(string $blockPaletteContents) : array{
-		$keyIndex = [];
-		$valueIndex = [];
-
 		return array_map(
-			function(TreeRoot $root) use (&$keyIndex, &$valueIndex) : BlockStateData{
-				return BlockStateData::fromNbt(self::deduplicateCompound($root->mustGetCompoundTag(), $keyIndex, $valueIndex));
-			},
+			fn(TreeRoot $root) => BlockStateData::fromNbt($root->mustGetCompoundTag()),
 			(new NetworkNbtSerializer())->readMultiple($blockPaletteContents)
 		);
 	}
