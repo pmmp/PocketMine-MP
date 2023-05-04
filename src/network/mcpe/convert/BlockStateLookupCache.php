@@ -58,6 +58,7 @@ final class BlockStateLookupCache{
 		foreach(Utils::stringifyKeys($this->nameToNetworkIdsLookup) as $name => $stateIds){
 			if(count($stateIds) === 1){
 				$this->nameToSingleNetworkIdLookup[$name] = $stateIds[array_key_first($stateIds)];
+				unset($this->nameToNetworkIdsLookup[$name]);
 			}
 		}
 	}
