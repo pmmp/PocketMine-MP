@@ -27,7 +27,10 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Filesystem;
@@ -53,15 +56,45 @@ final class RuntimeBlockMapping{
 		);
 	}
 
+	/**
+	 * @param string[] $keyIndex
+	 * @param (ByteTag|StringTag|IntTag)[][] $valueIndex
+	 * @phpstan-param array<string, string> $keyIndex
+	 * @phpstan-param array<int, array<int|string, ByteTag|IntTag|StringTag>> $valueIndex
+	 */
+	private static function deduplicateCompound(CompoundTag $tag, array &$keyIndex, array &$valueIndex) : CompoundTag{
+		if($tag->count() === 0){
+			return $tag;
+		}
+
+		$newTag = CompoundTag::create();
+		foreach($tag as $key => $value){
+			$key = $keyIndex[$key] ??= $key;
+
+			if($value instanceof CompoundTag){
+				$value = self::deduplicateCompound($value, $keyIndex, $valueIndex);
+			}elseif($value instanceof ByteTag || $value instanceof IntTag || $value instanceof StringTag){
+				$value = $valueIndex[$value->getType()][$value->getValue()] ??= $value;
+			}
+
+			$newTag->setTag($key, $value);
+		}
+
+		return $newTag;
+	}
+
 	public function __construct(string $canonicalBlockStatesFile, string $r12ToCurrentBlockMapFile){
 		$stream = new BinaryStream(Filesystem::fileGetContents($canonicalBlockStatesFile));
 		$list = [];
 		$nbtReader = new NetworkNbtSerializer();
+
+		$keyIndex = [];
+		$valueIndex = [];
 		while(!$stream->feof()){
 			$offset = $stream->getOffset();
 			$blockState = $nbtReader->read($stream->getBuffer(), $offset)->mustGetCompoundTag();
 			$stream->setOffset($offset);
-			$list[] = $blockState;
+			$list[] = self::deduplicateCompound($blockState, $keyIndex, $valueIndex);
 		}
 		$this->bedrockKnownStates = $list;
 
