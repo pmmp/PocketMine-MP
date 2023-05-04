@@ -203,6 +203,7 @@ use pocketmine\world\World;
  * @method static Armor LEATHER_PANTS()
  * @method static Armor LEATHER_TUNIC()
  * @method static Item MAGMA_CREAM()
+ * @method static Boat MANGROVE_BOAT()
  * @method static ItemBlockWallOrFloor MANGROVE_SIGN()
  * @method static Medicine MEDICINE()
  * @method static Melon MELON()
@@ -547,6 +548,7 @@ final class VanillaItems{
 				BoatType::JUNGLE() => Ids::JUNGLE_BOAT,
 				BoatType::ACACIA() => Ids::ACACIA_BOAT,
 				BoatType::DARK_OAK() => Ids::DARK_OAK_BOAT,
+				BoatType::MANGROVE() => Ids::MANGROVE_BOAT,
 				default => throw new AssumptionFailedError("Unhandled tree type " . $type->name())
 			}), $type->getDisplayName() . " Boat", $type));
 		}

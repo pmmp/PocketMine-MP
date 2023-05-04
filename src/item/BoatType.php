@@ -36,6 +36,7 @@ use pocketmine\utils\EnumTrait;
  * @method static BoatType BIRCH()
  * @method static BoatType DARK_OAK()
  * @method static BoatType JUNGLE()
+ * @method static BoatType MANGROVE()
  * @method static BoatType OAK()
  * @method static BoatType SPRUCE()
  */
@@ -52,6 +53,7 @@ final class BoatType{
 			new self("jungle", WoodType::JUNGLE()),
 			new self("acacia", WoodType::ACACIA()),
 			new self("dark_oak", WoodType::DARK_OAK()),
+			new self("mangrove", WoodType::MANGROVE()),
 		);
 	}
 

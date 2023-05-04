@@ -274,6 +274,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::LEATHER_HELMET, Items::LEATHER_CAP());
 		$this->map1to1Item(Ids::LEATHER_LEGGINGS, Items::LEATHER_PANTS());
 		$this->map1to1Item(Ids::MAGMA_CREAM, Items::MAGMA_CREAM());
+		$this->map1to1Item(Ids::MANGROVE_BOAT, Items::MANGROVE_BOAT());
 		$this->map1to1Item(Ids::MANGROVE_SIGN, Items::MANGROVE_SIGN());
 		$this->map1to1Item(Ids::MELON_SEEDS, Items::MELON_SEEDS());
 		$this->map1to1Item(Ids::MELON_SLICE, Items::MELON());
