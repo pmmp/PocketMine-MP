@@ -55,7 +55,7 @@ use pocketmine\block\tile\ShulkerBox as TileShulkerBox;
 use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\tile\Smoker as TileSmoker;
 use pocketmine\block\utils\LeavesType;
-use pocketmine\block\utils\TreeType;
+use pocketmine\block\utils\SaplingType;
 use pocketmine\block\utils\WoodType;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\entity\projectile\Projectile;
@@ -1108,9 +1108,9 @@ final class VanillaBlocks{
 		});
 		$saplingTypeInfo = new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS]);
 
-		foreach(TreeType::getAll() as $treeType){
-			$name = $treeType->getDisplayName();
-			self::register($treeType->name() . "_sapling", new Sapling(BlockLegacyIdHelper::getSaplingIdentifier($treeType), $name . " Sapling", $saplingTypeInfo, $treeType));
+		foreach(SaplingType::getAll() as $saplingType){
+			$name = $saplingType->getDisplayName();
+			self::register($saplingType->name() . "_sapling", new Sapling(BlockLegacyIdHelper::getSaplingIdentifier($saplingType), $name . " Sapling", $saplingTypeInfo, $saplingType));
 		}
 		foreach(LeavesType::getAll() as $leavesType){
 			$name = $leavesType->getDisplayName();

@@ -27,7 +27,7 @@ use pocketmine\block\BlockIdentifier as BID;
 use pocketmine\block\BlockTypeIds as Ids;
 use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\utils\LeavesType;
-use pocketmine\block\utils\TreeType;
+use pocketmine\block\utils\SaplingType;
 use pocketmine\block\utils\WoodType;
 use pocketmine\item\VanillaItems;
 use pocketmine\utils\AssumptionFailedError;
@@ -124,14 +124,14 @@ final class BlockLegacyIdHelper{
 		});
 	}
 
-	public static function getSaplingIdentifier(TreeType $treeType) : BID{
+	public static function getSaplingIdentifier(SaplingType $treeType) : BID{
 		return new BID(match($treeType->id()){
-			TreeType::OAK()->id() => Ids::OAK_SAPLING,
-			TreeType::SPRUCE()->id() => Ids::SPRUCE_SAPLING,
-			TreeType::BIRCH()->id() => Ids::BIRCH_SAPLING,
-			TreeType::JUNGLE()->id() => Ids::JUNGLE_SAPLING,
-			TreeType::ACACIA()->id() => Ids::ACACIA_SAPLING,
-			TreeType::DARK_OAK()->id() => Ids::DARK_OAK_SAPLING,
+			SaplingType::OAK()->id() => Ids::OAK_SAPLING,
+			SaplingType::SPRUCE()->id() => Ids::SPRUCE_SAPLING,
+			SaplingType::BIRCH()->id() => Ids::BIRCH_SAPLING,
+			SaplingType::JUNGLE()->id() => Ids::JUNGLE_SAPLING,
+			SaplingType::ACACIA()->id() => Ids::ACACIA_SAPLING,
+			SaplingType::DARK_OAK()->id() => Ids::DARK_OAK_SAPLING,
 			default => throw new AssumptionFailedError("All tree types should be covered")
 		});
 	}
