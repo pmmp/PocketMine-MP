@@ -27,10 +27,12 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
+use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Filesystem;
@@ -72,7 +74,7 @@ final class RuntimeBlockMapping{
 			$key = $keyIndex[$key] ??= $key;
 
 			if($value instanceof CompoundTag){
-				$value = self::deduplicateCompound($value, $keyIndex, $valueIndex);
+				$value = $valueIndex[$value->getType()][(new LittleEndianNbtSerializer())->write(new TreeRoot($value))] ??= self::deduplicateCompound($value, $keyIndex, $valueIndex);
 			}elseif($value instanceof ByteTag || $value instanceof IntTag || $value instanceof StringTag){
 				$value = $valueIndex[$value->getType()][$value->getValue()] ??= $value;
 			}
