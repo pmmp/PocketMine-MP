@@ -27,6 +27,8 @@ use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\utils\Utils;
 use function array_key_first;
 use function count;
+use function is_array;
+use function is_int;
 
 /**
  * Facilitates quickly looking up a block's state ID based on its NBT.
@@ -34,31 +36,27 @@ use function count;
 final class BlockStateLookupCache{
 
 	/**
-	 * @var int[][]
-	 * @phpstan-var array<string, array<string, int>>
+	 * @var int[][]|int[]
+	 * @phpstan-var array<string, array<string, int>|int>
 	 */
 	private array $nameToNetworkIdsLookup = [];
-
-	/**
-	 * @var int[]
-	 * @phpstan-var array<string, int>
-	 */
-	private array $nameToSingleNetworkIdLookup = [];
 
 	/**
 	 * @param BlockStateDictionaryEntry[] $blockStates
 	 * @phpstan-param list<BlockStateDictionaryEntry> $blockStates
 	 */
 	public function __construct(array $blockStates){
+		$table = [];
 		foreach($blockStates as $stateId => $stateNbt){
-			$this->nameToNetworkIdsLookup[$stateNbt->getStateName()][$stateNbt->getRawStateProperties()] = $stateId;
+			$table[$stateNbt->getStateName()][$stateNbt->getRawStateProperties()] = $stateId;
 		}
 
 		//setup fast path for stateless blocks
-		foreach(Utils::stringifyKeys($this->nameToNetworkIdsLookup) as $name => $stateIds){
+		foreach(Utils::stringifyKeys($table) as $name => $stateIds){
 			if(count($stateIds) === 1){
-				$this->nameToSingleNetworkIdLookup[$name] = $stateIds[array_key_first($stateIds)];
-				unset($this->nameToNetworkIdsLookup[$name]);
+				$this->nameToNetworkIdsLookup[$name] = $stateIds[array_key_first($stateIds)];
+			}else{
+				$this->nameToNetworkIdsLookup[$name] = $stateIds;
 			}
 		}
 	}
@@ -70,10 +68,11 @@ final class BlockStateLookupCache{
 	public function lookupStateId(BlockStateData $data) : ?int{
 		$name = $data->getName();
 
-		if(isset($this->nameToSingleNetworkIdLookup[$name])){
-			return $this->nameToSingleNetworkIdLookup[$name];
-		}
-
-		return $this->nameToNetworkIdsLookup[$name][BlockStateDictionaryEntry::encodeStateProperties($data->getStates())] ?? null;
+		$lookup = $this->nameToNetworkIdsLookup[$name] ?? null;
+		return match(true){
+			$lookup === null => null,
+			is_int($lookup) => $lookup,
+			is_array($lookup) => $lookup[BlockStateDictionaryEntry::encodeStateProperties($data->getStates())] ?? null
+		};
 	}
 }
