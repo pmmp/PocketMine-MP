@@ -206,6 +206,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public bool $spawned = false;
 
 	protected string $username;
+	protected string $lowerCaseUsername;
 	protected string $displayName;
 	protected string $xuid = "";
 	protected bool $authenticated;
@@ -300,6 +301,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->authenticated = $authenticated;
 
 		$this->username = $username;
+		$this->lowerCaseUsername = strtolower($username);
 		$this->displayName = $this->username;
 		$this->locale = $this->playerInfo->getLocale();
 
@@ -602,10 +604,17 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	/**
-	 * Gets the username
+	 * Returns the username
 	 */
 	public function getName() : string{
 		return $this->username;
+	}
+
+	/**
+	 * Returns the username in lower case
+	 */
+	public function getLowerCaseName() : string{
+		return $this->lowerCaseUsername;
 	}
 
 	/**
