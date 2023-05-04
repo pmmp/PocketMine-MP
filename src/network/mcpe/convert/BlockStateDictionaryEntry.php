@@ -33,6 +33,11 @@ use function ksort;
 use const SORT_STRING;
 
 final class BlockStateDictionaryEntry{
+	/**
+	 * @var string[]
+	 * @phpstan-var array<string, string>
+	 */
+	private static array $uniqueRawStates = [];
 
 	private string $rawStateProperties;
 
@@ -44,7 +49,8 @@ final class BlockStateDictionaryEntry{
 		array $stateProperties,
 		private int $meta
 	){
-		$this->rawStateProperties = self::encodeStateProperties($stateProperties);
+		$rawStateProperties = self::encodeStateProperties($stateProperties);
+		$this->rawStateProperties = self::$uniqueRawStates[$rawStateProperties] ??= $rawStateProperties;
 	}
 
 	public function getStateName() : string{ return $this->stateName; }
