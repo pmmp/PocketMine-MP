@@ -28,7 +28,10 @@ use pocketmine\data\bedrock\block\BlockTypeNames;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
+use pocketmine\utils\Utils;
+use function array_key_first;
 use function array_map;
+use function count;
 use function get_debug_type;
 use function is_array;
 use function is_int;
@@ -40,8 +43,12 @@ use const JSON_THROW_ON_ERROR;
  * Handles translation of network block runtime IDs into blockstate data, and vice versa
  */
 final class BlockStateDictionary{
+	/**
+	 * @var int[][]|int[]
+	 * @phpstan-var array<string, array<string, int>|int>
+	 */
+	private array $stateDataToStateIdLookup = [];
 
-	private BlockStateLookupCache $stateDataToStateIdLookupCache;
 	/**
 	 * @var int[][]|null
 	 * @phpstan-var array<int, array<string, int>>|null
@@ -56,7 +63,19 @@ final class BlockStateDictionary{
 	public function __construct(
 		private array $states
 	){
-		$this->stateDataToStateIdLookupCache = new BlockStateLookupCache($this->states);
+		$table = [];
+		foreach($this->states as $stateId => $stateNbt){
+			$table[$stateNbt->getStateName()][$stateNbt->getRawStateProperties()] = $stateId;
+		}
+
+		//setup fast path for stateless blocks
+		foreach(Utils::stringifyKeys($table) as $name => $stateIds){
+			if(count($stateIds) === 1){
+				$this->stateDataToStateIdLookup[$name] = $stateIds[array_key_first($stateIds)];
+			}else{
+				$this->stateDataToStateIdLookup[$name] = $stateIds;
+			}
+		}
 	}
 
 	/**
@@ -85,7 +104,14 @@ final class BlockStateDictionary{
 	 * Returns null if there were no matches.
 	 */
 	public function lookupStateIdFromData(BlockStateData $data) : ?int{
-		return $this->stateDataToStateIdLookupCache->lookupStateId($data);
+		$name = $data->getName();
+
+		$lookup = $this->stateDataToStateIdLookup[$name] ?? null;
+		return match(true){
+			$lookup === null => null,
+			is_int($lookup) => $lookup,
+			is_array($lookup) => $lookup[BlockStateDictionaryEntry::encodeStateProperties($data->getStates())] ?? null
+		};
 	}
 
 	/**
