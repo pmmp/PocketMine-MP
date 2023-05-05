@@ -51,7 +51,7 @@ final class BlockStateDictionary{
 
 	/**
 	 * @var int[][]|null
-	 * @phpstan-var array<int, array<string, int>>|null
+	 * @phpstan-var array<string, array<int, int>|int>|null
 	 */
 	private ?array $idMetaToStateIdLookupCache = null;
 
@@ -80,15 +80,25 @@ final class BlockStateDictionary{
 
 	/**
 	 * @return int[][]
-	 * @phpstan-return array<int, array<string, int>>
+	 * @phpstan-return array<string, array<int, int>|int>
 	 */
 	private function getIdMetaToStateIdLookup() : array{
 		if($this->idMetaToStateIdLookupCache === null){
+			$table = [];
 			//TODO: if we ever allow mutating the dictionary, this would need to be rebuilt on modification
-			$this->idMetaToStateIdLookupCache = [];
 
 			foreach($this->states as $i => $state){
-				$this->idMetaToStateIdLookupCache[$state->getMeta()][$state->getStateName()] = $i;
+				$table[$state->getStateName()][$state->getMeta()] = $i;
+			}
+
+			$this->idMetaToStateIdLookupCache = [];
+			foreach(Utils::stringifyKeys($table) as $name => $metaToStateId){
+				//if only one meta value exists
+				if(count($metaToStateId) === 1){
+					$this->idMetaToStateIdLookupCache[$name] = $metaToStateId[array_key_first($metaToStateId)];
+				}else{
+					$this->idMetaToStateIdLookupCache[$name] = $metaToStateId;
+				}
 			}
 		}
 
@@ -127,7 +137,12 @@ final class BlockStateDictionary{
 	 * This is used for deserializing crafting recipe inputs.
 	 */
 	public function lookupStateIdFromIdMeta(string $id, int $meta) : ?int{
-		return $this->getIdMetaToStateIdLookup()[$meta][$id] ?? null;
+		$metas = $this->getIdMetaToStateIdLookup()[$id] ?? null;
+		return match(true){
+			$metas === null => null,
+			is_int($metas) => $metas,
+			is_array($metas) => $metas[$meta] ?? null
+		};
 	}
 
 	/**
