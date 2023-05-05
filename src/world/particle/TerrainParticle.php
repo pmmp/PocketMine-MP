@@ -33,6 +33,6 @@ class TerrainParticle implements Particle{
 	public function __construct(private Block $b){}
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::standardParticle(ParticleIds::TERRAIN, TypeConverter::getInstance()->getBlockTranslator()->toRuntimeId($this->b->getStateId()), $pos)];
+		return [LevelEventPacket::standardParticle(ParticleIds::TERRAIN, TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkId($this->b->getStateId()), $pos)];
 	}
 }

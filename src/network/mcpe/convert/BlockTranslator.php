@@ -54,7 +54,7 @@ final class BlockTranslator{
 		$this->fallbackStateData = $this->blockStateDictionary->generateDataFromStateId($this->fallbackStateId) ?? throw new AssumptionFailedError("We just looked up this state data, so it must exist");
 	}
 
-	public function toRuntimeId(int $internalStateId) : int{
+	public function internalIdToNetworkId(int $internalStateId) : int{
 		if(isset($this->networkIdCache[$internalStateId])){
 			return $this->networkIdCache[$internalStateId];
 		}
@@ -78,11 +78,11 @@ final class BlockTranslator{
 	/**
 	 * Looks up the network state data associated with the given internal state ID.
 	 */
-	public function toStateData(int $internalStateId) : BlockStateData{
+	public function internalIdToNetworkStateData(int $internalStateId) : BlockStateData{
 		//we don't directly use the blockstate serializer here - we can't assume that the network blockstate NBT is the
 		//same as the disk blockstate NBT, in case we decide to have different world version than network version (or in
 		//case someone wants to implement multi version).
-		$networkRuntimeId = $this->toRuntimeId($internalStateId);
+		$networkRuntimeId = $this->internalIdToNetworkId($internalStateId);
 
 		return $this->blockStateDictionary->generateDataFromStateId($networkRuntimeId) ?? throw new AssumptionFailedError("We just looked up this state ID, so it must exist");
 	}

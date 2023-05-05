@@ -34,6 +34,6 @@ class BlockBreakParticle implements Particle{
 	public function __construct(private Block $b){}
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::create(LevelEvent::PARTICLE_DESTROY, TypeConverter::getInstance()->getBlockTranslator()->toRuntimeId($this->b->getStateId()), $pos)];
+		return [LevelEventPacket::create(LevelEvent::PARTICLE_DESTROY, TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkId($this->b->getStateId()), $pos)];
 	}
 }

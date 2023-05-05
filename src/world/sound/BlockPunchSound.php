@@ -40,7 +40,7 @@ class BlockPunchSound implements Sound{
 			LevelSoundEvent::HIT,
 			$pos,
 			false,
-			TypeConverter::getInstance()->getBlockTranslator()->toRuntimeId($this->block->getStateId())
+			TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkId($this->block->getStateId())
 		)];
 	}
 }

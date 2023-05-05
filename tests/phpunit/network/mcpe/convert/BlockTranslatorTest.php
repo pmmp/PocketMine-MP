@@ -34,7 +34,7 @@ class BlockTranslatorTest extends TestCase{
 	public function testAllBlockStatesSerialize() : void{
 		$blockTranslator = TypeConverter::getInstance()->getBlockTranslator();
 		foreach(RuntimeBlockStateRegistry::getInstance()->getAllKnownStates() as $state){
-			$blockTranslator->toRuntimeId($state->getStateId());
+			$blockTranslator->internalIdToNetworkId($state->getStateId());
 		}
 	}
 }

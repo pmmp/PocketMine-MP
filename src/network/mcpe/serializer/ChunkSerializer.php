@@ -109,7 +109,7 @@ final class ChunkSerializer{
 				$nbtSerializer = new NetworkNbtSerializer();
 				foreach($palette as $p){
 					//TODO: introduce a binary cache for this
-					$state = $blockStateDictionary->generateDataFromStateId($blockTranslator->toRuntimeId($p));
+					$state = $blockStateDictionary->generateDataFromStateId($blockTranslator->internalIdToNetworkId($p));
 					if($state === null){
 						$state = $blockTranslator->getFallbackStateData();
 					}
@@ -118,7 +118,7 @@ final class ChunkSerializer{
 				}
 			}else{
 				foreach($palette as $p){
-					$stream->put(Binary::writeUnsignedVarInt($blockTranslator->toRuntimeId($p) << 1));
+					$stream->put(Binary::writeUnsignedVarInt($blockTranslator->internalIdToNetworkId($p) << 1));
 				}
 			}
 		}

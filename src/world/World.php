@@ -1074,7 +1074,7 @@ class World implements ChunkManager{
 
 			$tile = $this->getTileAt($b->x, $b->y, $b->z);
 			if($tile instanceof Spawnable && count($fakeStateProperties = $tile->getRenderUpdateBugWorkaroundStateProperties($fullBlock)) > 0){
-				$originalStateData = $blockTranslator->toStateData($fullBlock->getStateId());
+				$originalStateData = $blockTranslator->internalIdToNetworkStateData($fullBlock->getStateId());
 				$fakeStateData = new BlockStateData(
 					$originalStateData->getName(),
 					array_merge($originalStateData->getStates(), $fakeStateProperties),
@@ -1089,7 +1089,7 @@ class World implements ChunkManager{
 			}
 			$packets[] = UpdateBlockPacket::create(
 				$blockPosition,
-				$blockTranslator->toRuntimeId($fullBlock->getStateId()),
+				$blockTranslator->internalIdToNetworkId($fullBlock->getStateId()),
 				UpdateBlockPacket::FLAG_NETWORK,
 				UpdateBlockPacket::DATA_LAYER_NORMAL
 			);

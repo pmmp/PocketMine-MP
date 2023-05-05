@@ -197,7 +197,7 @@ class FallingBlock extends Entity{
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
 		parent::syncNetworkData($properties);
 
-		$properties->setInt(EntityMetadataProperties::VARIANT, TypeConverter::getInstance()->getBlockTranslator()->toRuntimeId($this->block->getStateId()));
+		$properties->setInt(EntityMetadataProperties::VARIANT, TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkId($this->block->getStateId()));
 	}
 
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{

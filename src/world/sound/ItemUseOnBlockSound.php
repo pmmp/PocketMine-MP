@@ -42,7 +42,7 @@ final class ItemUseOnBlockSound implements Sound{
 			LevelSoundEvent::ITEM_USE_ON,
 			$pos,
 			false,
-			TypeConverter::getInstance()->getBlockTranslator()->toRuntimeId($this->block->getStateId())
+			TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkId($this->block->getStateId())
 		)];
 	}
 }
