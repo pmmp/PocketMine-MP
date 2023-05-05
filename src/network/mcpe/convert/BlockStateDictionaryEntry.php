@@ -25,9 +25,9 @@ namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\nbt\LittleEndianNbtSerializer;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\nbt\TreeRoot;
-use function array_map;
 use function count;
 use function ksort;
 use const SORT_STRING;
@@ -74,7 +74,7 @@ final class BlockStateDictionaryEntry{
 		if($rawProperties === ""){
 			return [];
 		}
-		return array_map(fn(TreeRoot $root) => $root->getTag(), (new LittleEndianNbtSerializer())->readMultiple($rawProperties));
+		return (new LittleEndianNbtSerializer())->read($rawProperties)->mustGetCompoundTag()->getValue();
 	}
 
 	/**
@@ -86,6 +86,10 @@ final class BlockStateDictionaryEntry{
 		}
 		//TODO: make a more efficient encoding - NBT will do for now, but it's not very compact
 		ksort($properties, SORT_STRING);
-		return (new LittleEndianNbtSerializer())->writeMultiple(array_map(fn(Tag $tag) => new TreeRoot($tag), $properties));
+		$tag = new CompoundTag();
+		foreach($properties as $k => $v){
+			$tag->setTag($k, $v);
+		}
+		return (new LittleEndianNbtSerializer())->write(new TreeRoot($tag));
 	}
 }
