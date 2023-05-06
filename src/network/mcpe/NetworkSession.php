@@ -894,6 +894,12 @@ class NetworkSession{
 			[
 				//TODO: dynamic flying speed! FINALLY!!!!!!!!!!!!!!!!!
 				new AbilitiesLayer(AbilitiesLayer::LAYER_BASE, $boolAbilities, 0.05, 0.1),
+
+				//TODO: HACK! In 1.19.80, the client starts falling in our faux spectator mode when it clips into a
+				//block. I have no idea why this works, since we don't actually use the real spectator mode.
+				new AbilitiesLayer(AbilitiesLayer::LAYER_SPECTATOR, [
+					AbilitiesLayer::ABILITY_FLYING => true,
+				], null, null)
 			]
 		)));
 	}
