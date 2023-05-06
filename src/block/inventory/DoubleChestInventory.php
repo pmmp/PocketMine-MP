@@ -85,6 +85,20 @@ class DoubleChestInventory extends BaseInventory implements BlockInventory, Inve
 		$this->right->setContents($rightContents);
 	}
 
+	protected function getMatchingItemCount(int $slot, Item $test, bool $checkTags) : int{
+		$leftSize = $this->left->getSize();
+		return $slot < $leftSize ?
+			$this->left->getMatchingItemCount($slot, $test, $checkTags) :
+			$this->right->getMatchingItemCount($slot - $leftSize, $test, $checkTags);
+	}
+
+	public function isSlotEmpty(int $index) : bool{
+		$leftSize = $this->left->getSize();
+		return $index < $leftSize ?
+			$this->left->isSlotEmpty($index) :
+			$this->right->isSlotEmpty($index - $leftSize);
+	}
+
 	protected function getOpenSound() : Sound{ return new ChestOpenSound(); }
 
 	protected function getCloseSound() : Sound{ return new ChestCloseSound(); }

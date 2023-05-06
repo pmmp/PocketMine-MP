@@ -118,6 +118,8 @@ abstract class Timings{
 
 	/** @var TimingsHandler[] */
 	private static array $events = [];
+	/** @var TimingsHandler[][] */
+	private static array $eventHandlers = [];
 
 	public static function init() : void{
 		if(self::$initialized){
@@ -298,5 +300,17 @@ abstract class Timings{
 		}
 
 		return self::$events[$eventClass];
+	}
+
+	/**
+	 * @phpstan-template TEvent of Event
+	 * @phpstan-param class-string<TEvent> $event
+	 */
+	public static function getEventHandlerTimings(string $event, string $handlerName, string $group) : TimingsHandler{
+		if(!isset(self::$eventHandlers[$event][$handlerName])){
+			self::$eventHandlers[$event][$handlerName] = new TimingsHandler($handlerName . "(" . self::shortenCoreClassName($event, "pocketmine\\event\\") . ")", group: $group);
+		}
+
+		return self::$eventHandlers[$event][$handlerName];
 	}
 }
