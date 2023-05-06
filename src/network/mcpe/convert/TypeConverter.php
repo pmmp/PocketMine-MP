@@ -63,6 +63,8 @@ class TypeConverter{
 	private ItemTypeDictionary $itemTypeDictionary;
 	private int $shieldRuntimeId;
 
+	private SkinAdapter $skinAdapter;
+
 	public function __construct(){
 		//TODO: inject stuff via constructor
 		$this->blockItemIdMap = BlockItemIdMap::getInstance();
@@ -83,6 +85,8 @@ class TypeConverter{
 			GlobalItemDataHandlers::getSerializer(),
 			GlobalItemDataHandlers::getDeserializer()
 		);
+
+		$this->skinAdapter = new LegacySkinAdapter();
 	}
 
 	public function getBlockTranslator() : BlockTranslator{ return $this->blockTranslator; }
@@ -90,6 +94,12 @@ class TypeConverter{
 	public function getItemTypeDictionary() : ItemTypeDictionary{ return $this->itemTypeDictionary; }
 
 	public function getItemTranslator() : ItemTranslator{ return $this->itemTranslator; }
+
+	public function getSkinAdapter() : SkinAdapter{ return $this->skinAdapter; }
+
+	public function setSkinAdapter(SkinAdapter $skinAdapter) : void{
+		$this->skinAdapter = $skinAdapter;
+	}
 
 	/**
 	 * Returns a client-friendly gamemode of the specified real gamemode
