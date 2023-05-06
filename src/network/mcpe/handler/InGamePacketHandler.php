@@ -443,7 +443,7 @@ class InGamePacketHandler extends PacketHandler{
 		if($sourceSlotItem->getCount() < $droppedCount){
 			return false;
 		}
-		$serverItemStack = TypeConverter::getInstance()->coreItemStackToNet($sourceSlotItem);
+		$serverItemStack = $this->session->getTypeConverter()->coreItemStackToNet($sourceSlotItem);
 		//because the client doesn't tell us the expected itemstack ID, we have to deep-compare our known
 		//itemstack info with the one the client sent. This is costly, but we don't have any other option :(
 		if(!$serverItemStack->equals($clientItemStack)){
@@ -776,7 +776,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
-		$gameMode = TypeConverter::getInstance()->protocolGameModeToCore($packet->gamemode);
+		$gameMode = $this->session->getTypeConverter()->protocolGameModeToCore($packet->gamemode);
 		if($gameMode === null || !$gameMode->equals($this->player->getGamemode())){
 			//Set this back to default. TODO: handle this properly
 			$this->session->syncGameMode($this->player->getGamemode(), true);

@@ -182,6 +182,7 @@ class NetworkSession{
 		private PacketBroadcaster $broadcaster,
 		private EntityEventBroadcaster $entityEventBroadcaster,
 		private Compressor $compressor,
+		private TypeConverter $typeConverter,
 		private string $ip,
 		private int $port
 	){
@@ -538,6 +539,8 @@ class NetworkSession{
 		return $this->compressor;
 	}
 
+	public function getTypeConverter() : TypeConverter{ return $this->typeConverter; }
+
 	public function queueCompressed(CompressBatchPromise $payload, bool $immediate = false) : void{
 		Timings::$playerNetworkSend->startTiming();
 		try{
@@ -887,7 +890,7 @@ class NetworkSession{
 	}
 
 	public function syncGameMode(GameMode $mode, bool $isRollback = false) : void{
-		$this->sendDataPacket(SetPlayerGameTypePacket::create(TypeConverter::getInstance()->coreGameModeToProtocol($mode)));
+		$this->sendDataPacket(SetPlayerGameTypePacket::create($this->typeConverter->coreGameModeToProtocol($mode)));
 		if($this->player !== null){
 			$this->syncAbilities($this->player);
 			$this->syncAdventureSettings(); //TODO: we might be able to do this with the abilities packet alone
