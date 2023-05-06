@@ -42,9 +42,12 @@ final class TimingsRecord{
 
 	private static ?self $currentRecord = null;
 
-	public static function clearRecords() : void{
+	/**
+	 * @internal
+	 */
+	public static function reset() : void{
 		foreach(self::$records as $record){
-			$record->handler->destroyCycles();
+			$record->handler->reset();
 		}
 		self::$records = [];
 		self::$currentRecord = null;
