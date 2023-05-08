@@ -299,9 +299,11 @@ final class ItemTypeIds{
 	public const FIRE_CHARGE = 20260;
 	public const SUSPICIOUS_STEW = 20261;
 	public const TURTLE_HELMET = 20262;
-	public const GLOW_BERRIES = 20263;
+	public const MEDICINE = 20263;
+	public const MANGROVE_BOAT = 20264;
+	public const GLOW_BERRIES = 20265;
 
-	public const FIRST_UNUSED_ITEM_ID = 20264;
+	public const FIRST_UNUSED_ITEM_ID = 20266;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 
@@ -310,5 +312,20 @@ final class ItemTypeIds{
 	 */
 	public static function newId() : int{
 		return self::$nextDynamicId++;
+	}
+
+	public static function fromBlockTypeId(int $blockTypeId) : int{
+		if($blockTypeId < 0){
+			throw new \InvalidArgumentException("Block type IDs cannot be negative");
+		}
+		//negative item type IDs are treated as block IDs
+		return -$blockTypeId;
+	}
+
+	public static function toBlockTypeId(int $itemTypeId) : ?int{
+		if($itemTypeId > 0){ //not a blockitem
+			return null;
+		}
+		return -$itemTypeId;
 	}
 }

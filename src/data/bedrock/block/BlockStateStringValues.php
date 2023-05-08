@@ -141,18 +141,10 @@ final class BlockStateStringValues{
 	public const NEW_LEAF_TYPE_ACACIA = "acacia";
 	public const NEW_LEAF_TYPE_DARK_OAK = "dark_oak";
 
-	public const NEW_LOG_TYPE_ACACIA = "acacia";
-	public const NEW_LOG_TYPE_DARK_OAK = "dark_oak";
-
 	public const OLD_LEAF_TYPE_BIRCH = "birch";
 	public const OLD_LEAF_TYPE_JUNGLE = "jungle";
 	public const OLD_LEAF_TYPE_OAK = "oak";
 	public const OLD_LEAF_TYPE_SPRUCE = "spruce";
-
-	public const OLD_LOG_TYPE_BIRCH = "birch";
-	public const OLD_LOG_TYPE_JUNGLE = "jungle";
-	public const OLD_LOG_TYPE_OAK = "oak";
-	public const OLD_LOG_TYPE_SPRUCE = "spruce";
 
 	public const PILLAR_AXIS_X = "x";
 	public const PILLAR_AXIS_Y = "y";

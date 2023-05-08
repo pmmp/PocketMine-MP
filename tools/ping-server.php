@@ -49,9 +49,13 @@ use function socket_strerror;
 use function strlen;
 use function time;
 use function trim;
+use const AF_INET;
 use const MSG_DONTROUTE;
 use const PHP_BINARY;
 use const PHP_INT_MAX;
+use const SOCK_DGRAM;
+use const SOL_UDP;
+use const STDIN;
 
 require_once 'vendor/autoload.php';
 

@@ -40,7 +40,7 @@ class PlayerQuitEvent extends PlayerEvent{
 	public function __construct(
 		Player $player,
 		protected Translatable|string $quitMessage,
-		protected string $quitReason
+		protected Translatable|string $quitReason
 	){
 		$this->player = $player;
 	}
@@ -62,7 +62,7 @@ class PlayerQuitEvent extends PlayerEvent{
 	/**
 	 * Returns the disconnect reason shown in the server log and on the console.
 	 */
-	public function getQuitReason() : string{
+	public function getQuitReason() : Translatable|string{
 		return $this->quitReason;
 	}
 }

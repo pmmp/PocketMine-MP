@@ -23,8 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
@@ -39,16 +38,14 @@ class Sugarcane extends Flowable{
 
 	protected int $age = 0;
 
-	public function getRequiredStateDataBits() : int{ return 4; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(4, 0, self::MAX_AGE, $this->age);
 	}
 
 	private function seekToBottom() : Position{
 		$world = $this->position->getWorld();
 		$bottom = $this->position;
-		while(($next = $world->getBlock($bottom->down()))->isSameType($this)){
+		while(($next = $world->getBlock($bottom->down()))->hasSameTypeId($this)){
 			$bottom = $next->position;
 		}
 		return $bottom;
@@ -70,7 +67,7 @@ class Sugarcane extends Flowable{
 				}
 				$world->setBlock($b->position, $ev->getNewState());
 				$grew = true;
-			}elseif(!$b->isSameType($this)){
+			}elseif(!$b->hasSameTypeId($this)){
 				break;
 			}
 		}
@@ -111,7 +108,7 @@ class Sugarcane extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		$down = $this->getSide(Facing::DOWN);
-		if(!$down->isSameType($this) && !$this->canBeSupportedBy($down)){
+		if(!$down->hasSameTypeId($this) && !$this->canBeSupportedBy($down)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -121,7 +118,7 @@ class Sugarcane extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if(!$this->getSide(Facing::DOWN)->isSameType($this)){
+		if(!$this->getSide(Facing::DOWN)->hasSameTypeId($this)){
 			if($this->age === self::MAX_AGE){
 				$this->grow($this->position);
 			}else{
@@ -133,7 +130,7 @@ class Sugarcane extends Flowable{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->isSameType($this)){
+		if($down->hasSameTypeId($this)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}elseif($this->canBeSupportedBy($down)){
 			foreach(Facing::HORIZONTAL as $side){

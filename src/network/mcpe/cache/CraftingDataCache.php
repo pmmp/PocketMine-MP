@@ -26,9 +26,10 @@ namespace pocketmine\network\mcpe\cache;
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\crafting\RecipeIngredient;
+use pocketmine\crafting\ShapedRecipe;
+use pocketmine\crafting\ShapelessRecipe;
 use pocketmine\crafting\ShapelessRecipeType;
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
@@ -78,12 +79,12 @@ final class CraftingDataCache{
 	private function buildCraftingDataCache(CraftingManager $manager) : CraftingDataPacket{
 		Timings::$craftingDataCacheRebuild->startTiming();
 
-		$counter = 0;
 		$nullUUID = Uuid::fromString(Uuid::NIL);
 		$converter = TypeConverter::getInstance();
 		$recipesWithTypeIds = [];
-		foreach($manager->getShapelessRecipes() as $list){
-			foreach($list as $recipe){
+
+		foreach($manager->getCraftingRecipeIndex() as $index => $recipe){
+			if($recipe instanceof ShapelessRecipe){
 				$typeTag = match($recipe->getType()->id()){
 					ShapelessRecipeType::CRAFTING()->id() => CraftingRecipeBlockName::CRAFTING_TABLE,
 					ShapelessRecipeType::STONECUTTER()->id() => CraftingRecipeBlockName::STONECUTTER,
@@ -93,7 +94,7 @@ final class CraftingDataCache{
 				};
 				$recipesWithTypeIds[] = new ProtocolShapelessRecipe(
 					CraftingDataPacket::ENTRY_SHAPELESS,
-					Binary::writeInt(++$counter),
+					Binary::writeInt($index),
 					array_map(function(RecipeIngredient $item) use ($converter) : ProtocolRecipeIngredient{
 						return $converter->coreRecipeIngredientToNet($item);
 					}, $recipe->getIngredientList()),
@@ -103,12 +104,9 @@ final class CraftingDataCache{
 					$nullUUID,
 					$typeTag,
 					50,
-					$counter
+					$index
 				);
-			}
-		}
-		foreach($manager->getShapedRecipes() as $list){
-			foreach($list as $recipe){
+			}elseif($recipe instanceof ShapedRecipe){
 				$inputs = [];
 
 				for($row = 0, $height = $recipe->getHeight(); $row < $height; ++$row){
@@ -118,7 +116,7 @@ final class CraftingDataCache{
 				}
 				$recipesWithTypeIds[] = $r = new ProtocolShapedRecipe(
 					CraftingDataPacket::ENTRY_SHAPED,
-					Binary::writeInt(++$counter),
+					Binary::writeInt($index),
 					$inputs,
 					array_map(function(Item $item) use ($converter) : ItemStack{
 						return $converter->coreItemStackToNet($item);
@@ -126,8 +124,10 @@ final class CraftingDataCache{
 					$nullUUID,
 					CraftingRecipeBlockName::CRAFTING_TABLE,
 					50,
-					$counter
+					$index
 				);
+			}else{
+				//TODO: probably special recipe types
 			}
 		}
 
@@ -172,7 +172,7 @@ final class CraftingDataCache{
 		}
 
 		$potionContainerChangeRecipes = [];
-		$itemTypeDictionary = GlobalItemTypeDictionary::getInstance()->getDictionary();
+		$itemTypeDictionary = TypeConverter::getInstance()->getItemTypeDictionary();
 		foreach($manager->getPotionContainerChangeRecipes() as $recipe){
 			$input = $itemTypeDictionary->fromStringId($recipe->getInputItemId());
 			$ingredient = $converter->coreRecipeIngredientToNet($recipe->getIngredient())->getDescriptor();

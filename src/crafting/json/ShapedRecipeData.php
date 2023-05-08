@@ -54,9 +54,9 @@ final class ShapedRecipeData{
 	/**
 	 * TODO: convert this to use promoted properties - avoiding them for now since it would break JsonMapper
 	 *
-	 * @param string[] $shape
+	 * @param string[]               $shape
 	 * @param RecipeIngredientData[] $input
-	 * @param ItemStackData[] $output
+	 * @param ItemStackData[]        $output
 	 *
 	 * @phpstan-param list<string> $shape
 	 * @phpstan-param array<string, RecipeIngredientData> $input

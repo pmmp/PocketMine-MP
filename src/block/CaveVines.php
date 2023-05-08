@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\CaveVinesType;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\data\runtime\RuntimeDataReader;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
@@ -51,19 +52,11 @@ class CaveVines extends Flowable{
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function getRequiredTypeDataBits() : int{
-		return 2;
-	}
-
-	public function describeType(RuntimeDataWriter|RuntimeDataReader $w) : void{
+	public function describeType(RuntimeDataDescriber $w) : void{
 		$w->caveVinesType($this->type);
 	}
 
-	public function getRequiredStateDataBits() : int{
-		return 5;
-	}
-
-	public function describeState(RuntimeDataWriter|RuntimeDataReader $w) : void{
+	public function describeState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(5, 0, self::MAX_AGE, $this->age);
 	}
 
@@ -99,7 +92,7 @@ class CaveVines extends Flowable{
 	}
 
 	private function canBeSupportedBy(Block $block) : bool{
-		return $block->getSupportType(Facing::DOWN)->equals(SupportType::FULL()) || $block->isSameType($this);
+		return $block->getSupportType(Facing::DOWN)->equals(SupportType::FULL()) || $block->hasSameTypeId($this);
 	}
 
 	public function onNearbyBlockChange() : void{
@@ -125,7 +118,7 @@ class CaveVines extends Flowable{
 			return true;
 		}
 		if($item instanceof Fertilizer){
-			$ev = new BlockGrowEvent($this, (clone $this)->setType(!$this->getSide(Facing::DOWN)->isSameType($this) ?
+			$ev = new BlockGrowEvent($this, (clone $this)->setType(!$this->getSide(Facing::DOWN)->hasSameTypeId($this) ?
 				CaveVinesType::HEAD_WITH_BERRIES() : CaveVinesType::BODY_WITH_BERRIES()
 			));
 			$ev->call();
@@ -141,7 +134,7 @@ class CaveVines extends Flowable{
 
 	public function onRandomTick() : void{
 		if(!$this->type->equals(CaveVinesType::BODY())){
-			$tip = !$this->getSide(Facing::DOWN)->isSameType($this);
+			$tip = !$this->getSide(Facing::DOWN)->hasSameTypeId($this);
 			if($tip !== $this->type->isTip()){
 				$this->position->getWorld()->setBlock($this->position, $this->setType(
 					$tip ? CaveVinesType::HEAD_WITH_BERRIES() : CaveVinesType::BODY_WITH_BERRIES()

@@ -103,13 +103,10 @@ final class ItemSerializer{
 
 			$locatedSerializer = $this->itemSerializers[$index][get_class($item)] ?? null;
 			if($locatedSerializer === null){
-				$parents = class_parents($item);
-				if($parents !== false){
-					foreach($parents as $parent){
-						if(isset($this->itemSerializers[$index][$parent])){
-							$locatedSerializer = $this->itemSerializers[$index][$parent];
-							break;
-						}
+				foreach(class_parents($item) as $parent){
+					if(isset($this->itemSerializers[$index][$parent])){
+						$locatedSerializer = $this->itemSerializers[$index][$parent];
+						break;
 					}
 				}
 			}
@@ -162,13 +159,10 @@ final class ItemSerializer{
 
 		$locatedSerializer = $this->blockItemSerializers[$index][get_class($block)] ?? null;
 		if($locatedSerializer === null){
-			$parents = class_parents($block);
-			if($parents !== false){
-				foreach($parents as $parent){
-					if(isset($this->blockItemSerializers[$index][$parent])){
-						$locatedSerializer = $this->blockItemSerializers[$index][$parent];
-						break;
-					}
+			foreach(class_parents($block) as $parent){
+				if(isset($this->blockItemSerializers[$index][$parent])){
+					$locatedSerializer = $this->blockItemSerializers[$index][$parent];
+					break;
 				}
 			}
 		}

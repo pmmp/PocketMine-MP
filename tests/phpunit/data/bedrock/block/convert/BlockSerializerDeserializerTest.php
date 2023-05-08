@@ -26,8 +26,8 @@ namespace pocketmine\data\bedrock\block\convert;
 use PHPUnit\Framework\TestCase;
 use pocketmine\block\BaseBanner;
 use pocketmine\block\Bed;
-use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockTypeIds;
+use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\Skull;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
@@ -43,7 +43,7 @@ final class BlockSerializerDeserializerTest extends TestCase{
 	}
 
 	public function testAllKnownBlockStatesSerializableAndDeserializable() : void{
-		foreach(BlockFactory::getInstance()->getAllKnownStates() as $block){
+		foreach(RuntimeBlockStateRegistry::getInstance()->getAllKnownStates() as $block){
 			try{
 				$blockStateData = $this->serializer->serializeBlock($block);
 			}catch(BlockStateSerializeException $e){
