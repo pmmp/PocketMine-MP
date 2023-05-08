@@ -25,6 +25,7 @@ namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\Bamboo;
 use pocketmine\block\Block;
+use pocketmine\block\CaveVines;
 use pocketmine\block\ChorusFlower;
 use pocketmine\block\Light;
 use pocketmine\block\Slab;
@@ -610,6 +611,24 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::CARVED_PUMPKIN, function(Reader $in) : Block{
 			return Blocks::CARVED_PUMPKIN()
 				->setFacing($in->readLegacyHorizontalFacing());
+		});
+		$this->map(Ids::CAVE_VINES, function(Reader $in) : CaveVines{
+			return Blocks::CAVE_VINES()
+				->setBerries(false)
+				->setHead(false)
+				->setAge($in->readBoundedInt(StateNames::GROWING_PLANT_AGE, 0, 25));
+		});
+		$this->map(Ids::CAVE_VINES_BODY_WITH_BERRIES, function(Reader $in) : CaveVines{
+			return Blocks::CAVE_VINES()
+				->setBerries(true)
+				->setHead(false)
+				->setAge($in->readBoundedInt(StateNames::GROWING_PLANT_AGE, 0, 25));
+		});
+		$this->map(Ids::CAVE_VINES_HEAD_WITH_BERRIES, function(Reader $in) : CaveVines{
+			return Blocks::CAVE_VINES()
+				->setBerries(true)
+				->setHead(true)
+				->setAge($in->readBoundedInt(StateNames::GROWING_PLANT_AGE, 0, 25));
 		});
 		$this->map(Ids::CHAIN, function(Reader $in) : Block{
 			return Blocks::CHAIN()
