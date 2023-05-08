@@ -117,7 +117,7 @@ final class CreativeInventory{
 		return $this->contentChangedCallbacks;
 	}
 
-	private function onContentChange() : void {
+	private function onContentChange() : void{
 		foreach($this->contentChangedCallbacks as $callback){
 			$callback();
 		}

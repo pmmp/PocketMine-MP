@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\inventory\cache;
+namespace pocketmine\network\mcpe\cache;
 
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\network\mcpe\convert\TypeConverter;
@@ -39,7 +39,7 @@ final class CreativeInventoryCache{
 	 */
 	private array $caches = [];
 
-	public function getCache(CreativeInventory $inventory) : CreativeContentPacket {
+	public function getCache(CreativeInventory $inventory) : CreativeContentPacket{
 		$id = spl_object_id($inventory);
 		if(!isset($this->caches[$id])){
 			$inventory->getDestructorCallbacks()->add(function() use ($id) : void{
