@@ -29,13 +29,13 @@ use pocketmine\player\Player;
 /**
  * Called when plants or crops grow.
  */
-class BlockGrowEvent extends BaseBlockChangeEvent {
+class BlockGrowEvent extends BaseBlockChangeEvent{
 
 	public function __construct(
 		Block $block,
 		Block $newState,
 		private ?Player $player = null,
-	) {
+	){
 		parent::__construct($block, $newState);
 	}
 
