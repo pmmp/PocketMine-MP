@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\item\upgrade;
 
+use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\upgrade\BlockDataUpgrader;
 use pocketmine\data\bedrock\item\SavedItemData;
 use pocketmine\data\bedrock\item\SavedItemStackData;
@@ -57,7 +58,11 @@ final class ItemDataUpgrader{
 	 */
 	public function upgradeItemTypeDataString(string $rawNameId, int $meta, int $count, ?CompoundTag $nbt) : SavedItemStackData{
 		if(($r12BlockId = $this->r12ItemIdToBlockIdMap->itemIdToBlockId($rawNameId)) !== null){
-			$blockStateData = $this->blockDataUpgrader->upgradeStringIdMeta($r12BlockId, $meta);
+			try{
+				$blockStateData = $this->blockDataUpgrader->upgradeStringIdMeta($r12BlockId, $meta);
+			}catch(BlockStateDeserializeException $e){
+				throw new SavedDataLoadingException("Failed to deserialize blockstate for legacy blockitem: " . $e->getMessage(), 0, $e);
+			}
 		}else{
 			//probably a standard item
 			$blockStateData = null;
@@ -124,12 +129,17 @@ final class ItemDataUpgrader{
 
 		$blockStateNbt = $tag->getCompoundTag(SavedItemData::TAG_BLOCK);
 		if($blockStateNbt !== null){
-			$blockStateData = $this->blockDataUpgrader->upgradeBlockStateNbt($blockStateNbt);
+			try{
+				$blockStateData = $this->blockDataUpgrader->upgradeBlockStateNbt($blockStateNbt);
+			}catch(BlockStateDeserializeException $e){
+				throw new SavedDataLoadingException("Failed to deserialize blockstate for blockitem: " . $e->getMessage(), 0, $e);
+			}
 		}elseif(($r12BlockId = $this->r12ItemIdToBlockIdMap->itemIdToBlockId($rawNameId)) !== null){
 			//this is a legacy blockitem represented by ID + meta
-			$blockStateData = $this->blockDataUpgrader->upgradeStringIdMeta($r12BlockId, $meta);
-			if($blockStateData === null){
-				throw new SavedDataLoadingException("Expected a blockstate to be associated with this block");
+			try{
+				$blockStateData = $this->blockDataUpgrader->upgradeStringIdMeta($r12BlockId, $meta);
+			}catch(BlockStateDeserializeException $e){
+				throw new SavedDataLoadingException("Failed to deserialize blockstate for legacy blockitem: " . $e->getMessage(), 0, $e);
 			}
 		}else{
 			//probably a standard item

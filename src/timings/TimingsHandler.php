@@ -96,7 +96,7 @@ class TimingsHandler{
 	}
 
 	public static function reload() : void{
-		TimingsRecord::clearRecords();
+		TimingsRecord::reset();
 		if(self::$enabled){
 			self::$timingStart = hrtime(true);
 		}
@@ -204,8 +204,9 @@ class TimingsHandler{
 	/**
 	 * @internal
 	 */
-	public function destroyCycles() : void{
+	public function reset() : void{
 		$this->rootRecord = null;
 		$this->recordsByParent = [];
+		$this->timingDepth = 0;
 	}
 }

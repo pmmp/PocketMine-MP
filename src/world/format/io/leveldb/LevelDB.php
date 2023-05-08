@@ -29,7 +29,6 @@ use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
-use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\Binary;
@@ -102,9 +101,9 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		]);
 	}
 
-	public function __construct(string $path){
+	public function __construct(string $path, \Logger $logger){
 		self::checkForLevelDBExtension();
-		parent::__construct($path);
+		parent::__construct($path, $logger);
 
 		try{
 			$this->db = self::createDB($path);
@@ -144,7 +143,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	protected function deserializeBlockPalette(BinaryStream $stream) : PalettedBlockArray{
+	protected function deserializeBlockPalette(BinaryStream $stream, \Logger $logger) : PalettedBlockArray{
 		$bitsPerBlock = $stream->getByte() >> 1;
 
 		try{
@@ -160,24 +159,27 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		for($i = 0; $i < $paletteSize; ++$i){
 			try{
 				$offset = $stream->getOffset();
-
 				$blockStateNbt = $nbt->read($stream->getBuffer(), $offset)->mustGetCompoundTag();
-				$blockStateData = $this->blockDataUpgrader->upgradeBlockStateNbt($blockStateNbt);
-				if($blockStateData === null){
-					//upgrading blockstates should always succeed, regardless of whether they've been implemented or not
-					throw new BlockStateDeserializeException("Invalid or improperly mapped legacy blockstate: " . $blockStateNbt->toString());
-				}
 				$stream->setOffset($offset);
-
-				try{
-					$palette[] = $this->blockStateDeserializer->deserialize($blockStateData);
-				}catch(BlockStateDeserializeException){
-					//TODO: remember data for unknown states so we can implement them later
-					//TODO: log this
-					$palette[] = $this->blockStateDeserializer->deserialize(GlobalBlockStateHandlers::getUnknownBlockStateData());
-				}
-			}catch(NbtException | BlockStateDeserializeException $e){
+			}catch(NbtDataException $e){
+				//NBT borked, unrecoverable
 				throw new CorruptedChunkException("Invalid blockstate NBT at offset $i in paletted storage: " . $e->getMessage(), 0, $e);
+			}
+
+			//TODO: remember data for unknown states so we can implement them later
+			try{
+				$blockStateData = $this->blockDataUpgrader->upgradeBlockStateNbt($blockStateNbt);
+			}catch(BlockStateDeserializeException $e){
+				//while not ideal, this is not a fatal error
+				$logger->error("Failed to upgrade blockstate: " . $e->getMessage() . " offset $i in palette, blockstate NBT: " . $blockStateNbt->toString());
+				$palette[] = $this->blockStateDeserializer->deserialize(GlobalBlockStateHandlers::getUnknownBlockStateData());
+				continue;
+			}
+			try{
+				$palette[] = $this->blockStateDeserializer->deserialize($blockStateData);
+			}catch(BlockStateDeserializeException $e){
+				$logger->error("Failed to deserialize blockstate: " . $e->getMessage() . " offset $i in palette, blockstate NBT: " . $blockStateNbt->toString());
+				$palette[] = $this->blockStateDeserializer->deserialize(GlobalBlockStateHandlers::getUnknownBlockStateData());
 			}
 		}
 
@@ -253,7 +255,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	 * @return PalettedBlockArray[]
 	 * @phpstan-return array<int, PalettedBlockArray>
 	 */
-	private static function deserialize3dBiomes(BinaryStream $stream, int $chunkVersion) : array{
+	private static function deserialize3dBiomes(BinaryStream $stream, int $chunkVersion, \Logger $logger) : array{
 		$previous = null;
 		$result = [];
 		$nextIndex = Chunk::MIN_SUBCHUNK_INDEX;
@@ -279,7 +281,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			}
 		}
 		if(!$stream->feof()){
-			throw new CorruptedChunkException("3D biomes data contains extra unread data");
+			//maybe bad output produced by a third-party conversion tool like Chunker
+			$logger->error("Unexpected trailing data after 3D biomes data");
 		}
 
 		return $result;
@@ -314,7 +317,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	/**
 	 * @return PalettedBlockArray[]
 	 */
-	protected function deserializeLegacyExtraData(string $index, int $chunkVersion) : array{
+	protected function deserializeLegacyExtraData(string $index, int $chunkVersion, \Logger $logger) : array{
 		if(($extraRawData = $this->db->get($index . ChunkDataKey::LEGACY_BLOCK_EXTRA_DATA)) === false || $extraRawData === ""){
 			return [];
 		}
@@ -335,12 +338,15 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 			$blockId = $value & 0xff;
 			$blockData = ($value >> 8) & 0xf;
-			$blockStateData = $this->blockDataUpgrader->upgradeIntIdMeta($blockId, $blockData);
-			if($blockStateData === null){
+			try{
+				$blockStateData = $this->blockDataUpgrader->upgradeIntIdMeta($blockId, $blockData);
+			}catch(BlockStateDeserializeException $e){
 				//TODO: we could preserve this in case it's supported in the future, but this was historically only
 				//used for grass anyway, so we probably don't need to care
+				$logger->error("Failed to upgrade legacy extra block: " . $e->getMessage() . " ($blockId:$blockData)");
 				continue;
 			}
+			//assume this won't throw
 			$blockStateId = $this->blockStateDeserializer->deserialize($blockStateData);
 
 			if(!isset($extraDataLayers[$ySub])){
@@ -372,8 +378,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	 * @phpstan-return array<int, SubChunk>
 	 * @throws CorruptedWorldException
 	 */
-	private function deserializeLegacyTerrainData(string $index, int $chunkVersion) : array{
-		$convertedLegacyExtraData = $this->deserializeLegacyExtraData($index, $chunkVersion);
+	private function deserializeLegacyTerrainData(string $index, int $chunkVersion, \Logger $logger) : array{
+		$convertedLegacyExtraData = $this->deserializeLegacyExtraData($index, $chunkVersion, $logger);
 
 		$legacyTerrain = $this->db->get($index . ChunkDataKey::LEGACY_TERRAIN);
 		if($legacyTerrain === false){
@@ -395,6 +401,9 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			$biomes3d = ChunkUtils::extrapolate3DBiomes(ChunkUtils::convertBiomeColors(array_values($unpackedBiomeArray))); //never throws
 		}catch(BinaryDataException $e){
 			throw new CorruptedChunkException($e->getMessage(), 0, $e);
+		}
+		if(!$binaryStream->feof()){
+			$logger->error("Unexpected trailing data in legacy terrain data");
 		}
 
 		$subChunks = [];
@@ -419,16 +428,23 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	/**
 	 * Deserializes a subchunk stored in the legacy non-paletted format used from 1.0 until 1.2.13.
 	 */
-	private function deserializeNonPalettedSubChunkData(BinaryStream $binaryStream, int $chunkVersion, ?PalettedBlockArray $convertedLegacyExtraData, PalettedBlockArray $biomePalette) : SubChunk{
+	private function deserializeNonPalettedSubChunkData(BinaryStream $binaryStream, int $chunkVersion, ?PalettedBlockArray $convertedLegacyExtraData, PalettedBlockArray $biomePalette, \Logger $logger) : SubChunk{
 		try{
 			$blocks = $binaryStream->get(4096);
 			$blockData = $binaryStream->get(2048);
-
-			if($chunkVersion < ChunkVersion::v1_1_0){
-				$binaryStream->get(4096); //legacy light info, discard it
-			}
 		}catch(BinaryDataException $e){
 			throw new CorruptedChunkException($e->getMessage(), 0, $e);
+		}
+
+		if($chunkVersion < ChunkVersion::v1_1_0){
+			try{
+				$binaryStream->get(4096); //legacy light info, discard it
+				if(!$binaryStream->feof()){
+					$logger->error("Unexpected trailing data in legacy subchunk data");
+				}
+			}catch(BinaryDataException $e){
+				$logger->error("Failed to read legacy subchunk light info: " . $e->getMessage());
+			}
 		}
 
 		$storages = [$this->palettizeLegacySubChunkXZY($blocks, $blockData)];
@@ -445,7 +461,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	 * @see ChunkDataKey::SUBCHUNK
 	 * @throws CorruptedChunkException
 	 */
-	private function deserializeSubChunkData(BinaryStream $binaryStream, int $chunkVersion, int $subChunkVersion, ?PalettedBlockArray $convertedLegacyExtraData, PalettedBlockArray $biomePalette) : SubChunk{
+	private function deserializeSubChunkData(BinaryStream $binaryStream, int $chunkVersion, int $subChunkVersion, ?PalettedBlockArray $convertedLegacyExtraData, PalettedBlockArray $biomePalette, \Logger $logger) : SubChunk{
 		switch($subChunkVersion){
 			case SubChunkVersion::CLASSIC:
 			case SubChunkVersion::CLASSIC_BUG_2: //these are all identical to version 0, but vanilla respects these so we should also
@@ -454,9 +470,9 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			case SubChunkVersion::CLASSIC_BUG_5:
 			case SubChunkVersion::CLASSIC_BUG_6:
 			case SubChunkVersion::CLASSIC_BUG_7:
-				return $this->deserializeNonPalettedSubChunkData($binaryStream, $chunkVersion, $convertedLegacyExtraData, $biomePalette);
+				return $this->deserializeNonPalettedSubChunkData($binaryStream, $chunkVersion, $convertedLegacyExtraData, $biomePalette, $logger);
 			case SubChunkVersion::PALETTED_SINGLE:
-				$storages = [$this->deserializeBlockPalette($binaryStream)];
+				$storages = [$this->deserializeBlockPalette($binaryStream, $logger)];
 				if($convertedLegacyExtraData !== null){
 					$storages[] = $convertedLegacyExtraData;
 				}
@@ -473,11 +489,11 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 				$storages = [];
 				for($k = 0; $k < $storageCount; ++$k){
-					$storages[] = $this->deserializeBlockPalette($binaryStream);
+					$storages[] = $this->deserializeBlockPalette($binaryStream, $logger);
 				}
 				return new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, $storages, $biomePalette);
 			default:
-				//TODO: set chunks read-only so the version on disk doesn't get overwritten
+				//this should never happen - an unsupported chunk appearing in a supported world is a sign of corruption
 				throw new CorruptedChunkException("don't know how to decode LevelDB subchunk format version $subChunkVersion");
 		}
 	}
@@ -499,7 +515,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	 * @return SubChunk[]
 	 * @phpstan-return array<int, SubChunk>
 	 */
-	private function deserializeAllSubChunkData(string $index, int $chunkVersion, bool &$hasBeenUpgraded, array $convertedLegacyExtraData, array $biomeArrays) : array{
+	private function deserializeAllSubChunkData(string $index, int $chunkVersion, bool &$hasBeenUpgraded, array $convertedLegacyExtraData, array $biomeArrays, \Logger $logger) : array{
 		$subChunks = [];
 
 		$subChunkKeyOffset = self::hasOffsetCavesAndCliffsSubChunks($chunkVersion) ? self::CAVES_CLIFFS_EXPERIMENTAL_SUBCHUNK_KEY_OFFSET : 0;
@@ -518,7 +534,14 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				$hasBeenUpgraded = true;
 			}
 
-			$subChunks[$y] = $this->deserializeSubChunkData($binaryStream, $chunkVersion, $subChunkVersion, $convertedLegacyExtraData[$y] ?? null, $biomeArrays[$y]);
+			$subChunks[$y] = $this->deserializeSubChunkData(
+				$binaryStream,
+				$chunkVersion,
+				$subChunkVersion,
+				$convertedLegacyExtraData[$y] ?? null,
+				$biomeArrays[$y],
+				new \PrefixedLogger($logger, "Subchunk y=$y v$subChunkVersion")
+			);
 		}
 
 		return $subChunks;
@@ -530,7 +553,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	 * @return PalettedBlockArray[]
 	 * @phpstan-return array<int, PalettedBlockArray>
 	 */
-	private function deserializeBiomeData(string $index, int $chunkVersion) : array{
+	private function deserializeBiomeData(string $index, int $chunkVersion, \Logger $logger) : array{
 		$biomeArrays = [];
 		if(($maps2d = $this->db->get($index . ChunkDataKey::HEIGHTMAP_AND_2D_BIOMES)) !== false){
 			$binaryStream = new BinaryStream($maps2d);
@@ -538,6 +561,9 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			try{
 				$binaryStream->get(512); //heightmap, discard it
 				$biomes3d = ChunkUtils::extrapolate3DBiomes($binaryStream->get(256)); //never throws
+				if(!$binaryStream->feof()){
+					$logger->error("Unexpected trailing data after 2D biome data");
+				}
 			}catch(BinaryDataException $e){
 				throw new CorruptedChunkException($e->getMessage(), 0, $e);
 			}
@@ -549,11 +575,12 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 			try{
 				$binaryStream->get(512);
-				$biomeArrays = self::deserialize3dBiomes($binaryStream, $chunkVersion);
+				$biomeArrays = self::deserialize3dBiomes($binaryStream, $chunkVersion, $logger);
 			}catch(BinaryDataException $e){
 				throw new CorruptedChunkException($e->getMessage(), 0, $e);
 			}
 		}else{
+			$logger->error("Missing biome data, using default ocean biome");
 			for($i = Chunk::MIN_SUBCHUNK_INDEX; $i <= Chunk::MAX_SUBCHUNK_INDEX; ++$i){
 				$biomeArrays[$i] = new PalettedBlockArray(BiomeIds::OCEAN); //polyfill
 			}
@@ -573,6 +600,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			//TODO: this might be a slightly-corrupted chunk with a missing version field
 			return null;
 		}
+
+		$logger = new \PrefixedLogger($this->logger, "Loading chunk x=$chunkX z=$chunkZ v$chunkVersion");
 
 		$hasBeenUpgraded = $chunkVersion < self::CURRENT_LEVEL_CHUNK_VERSION;
 
@@ -617,14 +646,14 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			case ChunkVersion::v1_1_0:
 				//TODO: check beds
 			case ChunkVersion::v1_0_0:
-				$convertedLegacyExtraData = $this->deserializeLegacyExtraData($index, $chunkVersion);
-				$biomeArrays = $this->deserializeBiomeData($index, $chunkVersion);
-				$subChunks = $this->deserializeAllSubChunkData($index, $chunkVersion, $hasBeenUpgraded, $convertedLegacyExtraData, $biomeArrays);
+				$convertedLegacyExtraData = $this->deserializeLegacyExtraData($index, $chunkVersion, $logger);
+				$biomeArrays = $this->deserializeBiomeData($index, $chunkVersion, $logger);
+				$subChunks = $this->deserializeAllSubChunkData($index, $chunkVersion, $hasBeenUpgraded, $convertedLegacyExtraData, $biomeArrays, $logger);
 				break;
 			case ChunkVersion::v0_9_5:
 			case ChunkVersion::v0_9_2:
 			case ChunkVersion::v0_9_0:
-				$subChunks = $this->deserializeLegacyTerrainData($index, $chunkVersion);
+				$subChunks = $this->deserializeLegacyTerrainData($index, $chunkVersion, $logger);
 				break;
 			default:
 				throw new CorruptedChunkException("don't know how to decode chunk format version $chunkVersion");
@@ -668,6 +697,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		);
 
 		if($hasBeenUpgraded){
+			$logger->debug("Flagging chunk as dirty due to upgraded data");
 			$chunk->setTerrainDirty(); //trigger rewriting chunk to disk if it was converted from an older format
 		}
 

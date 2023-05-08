@@ -38,7 +38,6 @@ use pocketmine\network\mcpe\cache\ChunkCache;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\network\mcpe\compression\DecompressionException;
-use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\encryption\DecryptionException;
 use pocketmine\network\mcpe\encryption\EncryptionContext;
@@ -182,6 +181,7 @@ class NetworkSession{
 		private PacketBroadcaster $broadcaster,
 		private EntityEventBroadcaster $entityEventBroadcaster,
 		private Compressor $compressor,
+		private TypeConverter $typeConverter,
 		private string $ip,
 		private int $port
 	){
@@ -538,6 +538,8 @@ class NetworkSession{
 		return $this->compressor;
 	}
 
+	public function getTypeConverter() : TypeConverter{ return $this->typeConverter; }
+
 	public function queueCompressed(CompressBatchPromise $payload, bool $immediate = false) : void{
 		Timings::$playerNetworkSend->startTiming();
 		try{
@@ -887,7 +889,7 @@ class NetworkSession{
 	}
 
 	public function syncGameMode(GameMode $mode, bool $isRollback = false) : void{
-		$this->sendDataPacket(SetPlayerGameTypePacket::create(TypeConverter::getInstance()->coreGameModeToProtocol($mode)));
+		$this->sendDataPacket(SetPlayerGameTypePacket::create($this->typeConverter->coreGameModeToProtocol($mode)));
 		if($this->player !== null){
 			$this->syncAbilities($this->player);
 			$this->syncAdventureSettings(); //TODO: we might be able to do this with the abilities packet alone
@@ -921,14 +923,26 @@ class NetworkSession{
 			AbilitiesLayer::ABILITY_PRIVILEGED_BUILDER => false,
 		];
 
+		$layers = [
+			//TODO: dynamic flying speed! FINALLY!!!!!!!!!!!!!!!!!
+			new AbilitiesLayer(AbilitiesLayer::LAYER_BASE, $boolAbilities, 0.05, 0.1),
+		];
+		if(!$for->hasBlockCollision()){
+			//TODO: HACK! In 1.19.80, the client starts falling in our faux spectator mode when it clips into a
+			//block. We can't seem to prevent this short of forcing the player to always fly when block collision is
+			//disabled. Also, for some reason the client always reads flight state from this layer if present, even
+			//though the player isn't in spectator mode.
+
+			$layers[] = new AbilitiesLayer(AbilitiesLayer::LAYER_SPECTATOR, [
+				AbilitiesLayer::ABILITY_FLYING => true,
+			], null, null);
+		}
+
 		$this->sendDataPacket(UpdateAbilitiesPacket::create(new AbilitiesData(
 			$isOp ? CommandPermissions::OPERATOR : CommandPermissions::NORMAL,
 			$isOp ? PlayerPermissions::OPERATOR : PlayerPermissions::MEMBER,
 			$for->getId(),
-			[
-				//TODO: dynamic flying speed! FINALLY!!!!!!!!!!!!!!!!!
-				new AbilitiesLayer(AbilitiesLayer::LAYER_BASE, $boolAbilities, 0.05, 0.1),
-			]
+			$layers
 		)));
 	}
 
@@ -1099,12 +1113,12 @@ class NetworkSession{
 	 */
 	public function syncPlayerList(array $players) : void{
 		$this->sendDataPacket(PlayerListPacket::add(array_map(function(Player $player) : PlayerListEntry{
-			return PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), SkinAdapterSingleton::get()->toSkinData($player->getSkin()), $player->getXuid());
+			return PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), TypeConverter::getInstance()->getSkinAdapter()->toSkinData($player->getSkin()), $player->getXuid());
 		}, $players)));
 	}
 
 	public function onPlayerAdded(Player $p) : void{
-		$this->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($p->getUniqueId(), $p->getId(), $p->getDisplayName(), SkinAdapterSingleton::get()->toSkinData($p->getSkin()), $p->getXuid())]));
+		$this->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($p->getUniqueId(), $p->getId(), $p->getDisplayName(), TypeConverter::getInstance()->getSkinAdapter()->toSkinData($p->getSkin()), $p->getXuid())]));
 	}
 
 	public function onPlayerRemoved(Player $p) : void{

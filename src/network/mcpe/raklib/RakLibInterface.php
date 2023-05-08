@@ -36,6 +36,7 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\network\Network;
 use pocketmine\network\NetworkInterfaceStartException;
 use pocketmine\network\PacketHandlingException;
+use pocketmine\player\GameMode;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\timings\Timings;
@@ -82,12 +83,23 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	private PacketBroadcaster $packetBroadcaster;
 	private EntityEventBroadcaster $entityEventBroadcaster;
 	private PacketSerializerContext $packetSerializerContext;
+	private TypeConverter $typeConverter;
 
-	public function __construct(Server $server, string $ip, int $port, bool $ipV6, PacketBroadcaster $packetBroadcaster, EntityEventBroadcaster $entityEventBroadcaster, PacketSerializerContext $packetSerializerContext){
+	public function __construct(
+		Server $server,
+		string $ip,
+		int $port,
+		bool $ipV6,
+		PacketBroadcaster $packetBroadcaster,
+		EntityEventBroadcaster $entityEventBroadcaster,
+		PacketSerializerContext $packetSerializerContext,
+		TypeConverter $typeConverter
+	){
 		$this->server = $server;
 		$this->packetBroadcaster = $packetBroadcaster;
 		$this->packetSerializerContext = $packetSerializerContext;
 		$this->entityEventBroadcaster = $entityEventBroadcaster;
+		$this->typeConverter = $typeConverter;
 
 		$this->rakServerId = mt_rand(0, PHP_INT_MAX);
 
@@ -183,6 +195,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			$this->packetBroadcaster,
 			$this->entityEventBroadcaster,
 			ZlibCompressor::getInstance(), //TODO: this shouldn't be hardcoded, but we might need the RakNet protocol version to select it
+			$this->typeConverter,
 			$address,
 			$port
 		);
@@ -255,7 +268,11 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 				$info->getMaxPlayerCount(),
 				$this->rakServerId,
 				$this->server->getName(),
-				TypeConverter::getInstance()->protocolGameModeName($this->server->getGamemode())
+				match($this->server->getGamemode()){
+					GameMode::SURVIVAL() => "Survival",
+					GameMode::ADVENTURE() => "Adventure",
+					default => "Creative"
+				}
 			]) . ";"
 		);
 	}

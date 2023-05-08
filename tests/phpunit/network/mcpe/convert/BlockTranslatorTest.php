@@ -23,23 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
-use pocketmine\data\bedrock\BedrockDataFiles;
-use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
-use pocketmine\utils\Filesystem;
-use pocketmine\utils\SingletonTrait;
+use PHPUnit\Framework\TestCase;
+use pocketmine\block\RuntimeBlockStateRegistry;
 
-final class GlobalItemTypeDictionary{
-	use SingletonTrait;
+class BlockTranslatorTest extends TestCase{
 
-	private static function make() : self{
-		$data = Filesystem::fileGetContents(BedrockDataFiles::REQUIRED_ITEM_LIST_JSON);
-		$dictionary = ItemTypeDictionaryFromDataHelper::loadFromString($data);
-		return new self($dictionary);
+	/**
+	 * @doesNotPerformAssertions
+	 */
+	public function testAllBlockStatesSerialize() : void{
+		$blockTranslator = TypeConverter::getInstance()->getBlockTranslator();
+		foreach(RuntimeBlockStateRegistry::getInstance()->getAllKnownStates() as $state){
+			$blockTranslator->internalIdToNetworkId($state->getStateId());
+		}
 	}
-
-	public function __construct(
-		private ItemTypeDictionary $dictionary
-	){}
-
-	public function getDictionary() : ItemTypeDictionary{ return $this->dictionary; }
 }

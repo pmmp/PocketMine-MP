@@ -67,7 +67,7 @@ class FormatConverter{
 		return $this->backupPath;
 	}
 
-	public function execute() : WritableWorldProvider{
+	public function execute() : void{
 		$new = $this->generateNew();
 
 		$this->populateLevelData($new->getWorldData());
@@ -91,7 +91,6 @@ class FormatConverter{
 		}
 
 		$this->logger->info("Conversion completed");
-		return $this->newProvider->fromPath($path);
 	}
 
 	private function generateNew() : WritableWorldProvider{
@@ -113,7 +112,7 @@ class FormatConverter{
 			->setDifficulty($data->getDifficulty())
 		);
 
-		return $this->newProvider->fromPath($convertedOutput);
+		return $this->newProvider->fromPath($convertedOutput, $this->logger);
 	}
 
 	private function populateLevelData(WorldData $data) : void{

@@ -23,22 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
-use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
 use pocketmine\data\bedrock\block\BlockStateSerializer;
 use pocketmine\data\bedrock\block\BlockTypeNames;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\utils\Filesystem;
-use pocketmine\utils\SingletonTrait;
-use pocketmine\world\format\io\GlobalBlockStateHandlers;
 
 /**
  * @internal
  */
-final class RuntimeBlockMapping{
-	use SingletonTrait;
-
+final class BlockTranslator{
 	/**
 	 * @var int[]
 	 * @phpstan-var array<int, int>
@@ -49,27 +43,16 @@ final class RuntimeBlockMapping{
 	private BlockStateData $fallbackStateData;
 	private int $fallbackStateId;
 
-	private static function make() : self{
-		$canonicalBlockStatesRaw = Filesystem::fileGetContents(BedrockDataFiles::CANONICAL_BLOCK_STATES_NBT);
-		$metaMappingRaw = Filesystem::fileGetContents(BedrockDataFiles::BLOCK_STATE_META_MAP_JSON);
-		return new self(
-			BlockStateDictionary::loadFromString($canonicalBlockStatesRaw, $metaMappingRaw),
-			GlobalBlockStateHandlers::getSerializer()
-		);
-	}
-
 	public function __construct(
 		private BlockStateDictionary $blockStateDictionary,
 		private BlockStateSerializer $blockStateSerializer
 	){
-		$this->fallbackStateId = $this->blockStateDictionary->lookupStateIdFromData(
-				BlockStateData::current(BlockTypeNames::INFO_UPDATE, [])
-			) ?? throw new AssumptionFailedError(BlockTypeNames::INFO_UPDATE . " should always exist");
-		//lookup the state data from the dictionary to avoid keeping two copies of the same data around
-		$this->fallbackStateData = $this->blockStateDictionary->getDataFromStateId($this->fallbackStateId) ?? throw new AssumptionFailedError("We just looked up this state data, so it must exist");
+		$this->fallbackStateData = BlockStateData::current(BlockTypeNames::INFO_UPDATE, []);
+		$this->fallbackStateId = $this->blockStateDictionary->lookupStateIdFromData($this->fallbackStateData) ??
+			throw new AssumptionFailedError(BlockTypeNames::INFO_UPDATE . " should always exist");
 	}
 
-	public function toRuntimeId(int $internalStateId) : int{
+	public function internalIdToNetworkId(int $internalStateId) : int{
 		if(isset($this->networkIdCache[$internalStateId])){
 			return $this->networkIdCache[$internalStateId];
 		}
@@ -93,13 +76,13 @@ final class RuntimeBlockMapping{
 	/**
 	 * Looks up the network state data associated with the given internal state ID.
 	 */
-	public function toStateData(int $internalStateId) : BlockStateData{
+	public function internalIdToNetworkStateData(int $internalStateId) : BlockStateData{
 		//we don't directly use the blockstate serializer here - we can't assume that the network blockstate NBT is the
 		//same as the disk blockstate NBT, in case we decide to have different world version than network version (or in
 		//case someone wants to implement multi version).
-		$networkRuntimeId = $this->toRuntimeId($internalStateId);
+		$networkRuntimeId = $this->internalIdToNetworkId($internalStateId);
 
-		return $this->blockStateDictionary->getDataFromStateId($networkRuntimeId) ?? throw new AssumptionFailedError("We just looked up this state ID, so it must exist");
+		return $this->blockStateDictionary->generateDataFromStateId($networkRuntimeId) ?? throw new AssumptionFailedError("We just looked up this state ID, so it must exist");
 	}
 
 	public function getBlockStateDictionary() : BlockStateDictionary{ return $this->blockStateDictionary; }

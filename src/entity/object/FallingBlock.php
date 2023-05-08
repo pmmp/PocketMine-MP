@@ -39,7 +39,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
@@ -75,7 +75,11 @@ class FallingBlock extends Entity{
 		//TODO: 1.8+ save format
 		$blockDataUpgrader = GlobalBlockStateHandlers::getUpgrader();
 		if(($fallingBlockTag = $nbt->getCompoundTag(self::TAG_FALLING_BLOCK)) !== null){
-			$blockStateData = $blockDataUpgrader->upgradeBlockStateNbt($fallingBlockTag);
+			try{
+				$blockStateData = $blockDataUpgrader->upgradeBlockStateNbt($fallingBlockTag);
+			}catch(BlockStateDeserializeException $e){
+				throw new SavedDataLoadingException("Invalid falling block blockstate: " . $e->getMessage(), 0, $e);
+			}
 		}else{
 			if(($tileIdTag = $nbt->getTag(self::TAG_TILE_ID)) instanceof IntTag){
 				$blockId = $tileIdTag->getValue();
@@ -86,10 +90,11 @@ class FallingBlock extends Entity{
 			}
 			$damage = $nbt->getByte(self::TAG_DATA, 0);
 
-			$blockStateData = $blockDataUpgrader->upgradeIntIdMeta($blockId, $damage);
-		}
-		if($blockStateData === null){
-			throw new SavedDataLoadingException("Invalid legacy falling block");
+			try{
+				$blockStateData = $blockDataUpgrader->upgradeIntIdMeta($blockId, $damage);
+			}catch(BlockStateDeserializeException $e){
+				throw new SavedDataLoadingException("Invalid legacy falling block data: " . $e->getMessage(), 0, $e);
+			}
 		}
 
 		try{
@@ -192,7 +197,7 @@ class FallingBlock extends Entity{
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
 		parent::syncNetworkData($properties);
 
-		$properties->setInt(EntityMetadataProperties::VARIANT, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getStateId()));
+		$properties->setInt(EntityMetadataProperties::VARIANT, TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkId($this->block->getStateId()));
 	}
 
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{

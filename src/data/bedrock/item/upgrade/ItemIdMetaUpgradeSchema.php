@@ -41,6 +41,18 @@ final class ItemIdMetaUpgradeSchema{
 
 	public function getSchemaId() : int{ return $this->schemaId; }
 
+	/**
+	 * @return string[]
+	 * @phpstan-return array<string, string>
+	 */
+	public function getRenamedIds() : array{ return $this->renamedIds; }
+
+	/**
+	 * @return string[][]
+	 * @phpstan-return array<string, array<int, string>>
+	 */
+	public function getRemappedMetas() : array{ return $this->remappedMetas; }
+
 	public function renameId(string $id) : ?string{
 		return $this->renamedIds[mb_strtolower($id, 'US-ASCII')] ?? null;
 	}

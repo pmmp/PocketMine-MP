@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\utils\RecordType;
-use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\entity\Entity;
@@ -204,6 +203,7 @@ use pocketmine\world\World;
  * @method static Armor LEATHER_PANTS()
  * @method static Armor LEATHER_TUNIC()
  * @method static Item MAGMA_CREAM()
+ * @method static Boat MANGROVE_BOAT()
  * @method static ItemBlockWallOrFloor MANGROVE_SIGN()
  * @method static Medicine MEDICINE()
  * @method static Melon MELON()
@@ -539,15 +539,16 @@ final class VanillaItems{
 		self::register("writable_book", new WritableBook(new IID(Ids::WRITABLE_BOOK), "Book & Quill"));
 		self::register("written_book", new WrittenBook(new IID(Ids::WRITTEN_BOOK), "Written Book"));
 
-		foreach(TreeType::getAll() as $type){
-			//TODO: tree type should be dynamic in the future, but we're staying static for now for the sake of consistency
+		foreach(BoatType::getAll() as $type){
+			//boat type is static, because different types of wood may have different properties
 			self::register($type->name() . "_boat", new Boat(new IID(match($type){
-				TreeType::OAK() => Ids::OAK_BOAT,
-				TreeType::SPRUCE() => Ids::SPRUCE_BOAT,
-				TreeType::BIRCH() => Ids::BIRCH_BOAT,
-				TreeType::JUNGLE() => Ids::JUNGLE_BOAT,
-				TreeType::ACACIA() => Ids::ACACIA_BOAT,
-				TreeType::DARK_OAK() => Ids::DARK_OAK_BOAT,
+				BoatType::OAK() => Ids::OAK_BOAT,
+				BoatType::SPRUCE() => Ids::SPRUCE_BOAT,
+				BoatType::BIRCH() => Ids::BIRCH_BOAT,
+				BoatType::JUNGLE() => Ids::JUNGLE_BOAT,
+				BoatType::ACACIA() => Ids::ACACIA_BOAT,
+				BoatType::DARK_OAK() => Ids::DARK_OAK_BOAT,
+				BoatType::MANGROVE() => Ids::MANGROVE_BOAT,
 				default => throw new AssumptionFailedError("Unhandled tree type " . $type->name())
 			}), $type->getDisplayName() . " Boat", $type));
 		}
