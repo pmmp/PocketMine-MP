@@ -30,7 +30,6 @@ use pocketmine\event\world\WorldUnloadEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\player\ChunkSelector;
 use pocketmine\Server;
-use pocketmine\timings\Timings;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
@@ -391,7 +390,6 @@ class WorldManager{
 	}
 
 	private function doAutoSave() : void{
-		Timings::$worldSave->startTiming();
 		foreach($this->worlds as $world){
 			foreach($world->getPlayers() as $player){
 				if($player->spawned){
@@ -400,6 +398,5 @@ class WorldManager{
 			}
 			$world->save(false);
 		}
-		Timings::$worldSave->stopTiming();
 	}
 }
