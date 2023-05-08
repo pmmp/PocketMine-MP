@@ -74,7 +74,7 @@ final class BlockSerializerDeserializerTest extends TestCase{
 				$newBlock->setColor($block->getColor());
 			}elseif($block instanceof Skull && $newBlock instanceof Skull){
 				$newBlock->setSkullType($block->getSkullType());
-			}elseif($block instanceof CaveVines && !$block->hasBerries()){
+			}elseif($block instanceof CaveVines && $newBlock instanceof CaveVines && !$block->hasBerries()){
 				$newBlock->setHead($block->isHead());
 			}
 
