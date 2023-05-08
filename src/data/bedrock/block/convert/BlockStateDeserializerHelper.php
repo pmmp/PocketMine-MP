@@ -165,13 +165,6 @@ final class BlockStateDeserializerHelper{
 			->setRotation($in->readBoundedInt(BlockStateNames::GROUND_SIGN_DIRECTION, 0, 15));
 	}
 
-	/** @throws BlockStateDeserializeException */
-	public static function decodeGlazedTerracotta(DyeColor $color, BlockStateReader $in) : GlazedTerracotta{
-		return VanillaBlocks::GLAZED_TERRACOTTA()
-			->setColor($color)
-			->setFacing($in->readHorizontalFacing());
-	}
-
 	public static function decodeItemFrame(ItemFrame $block, BlockStateReader $in) : ItemFrame{
 		$in->todo(StateNames::ITEM_FRAME_PHOTO_BIT); //TODO: not sure what the point of this is
 		return $block

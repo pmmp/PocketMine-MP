@@ -194,7 +194,10 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			Ids::WHITE_GLAZED_TERRACOTTA => DyeColor::WHITE(),
 			Ids::YELLOW_GLAZED_TERRACOTTA => DyeColor::YELLOW(),
 		] as $id => $color){
-			$this->map($id, fn(Reader $in) => Helper::decodeGlazedTerracotta($color, $in));
+			$this->map($id, fn(Reader $in) => Blocks::GLAZED_TERRACOTTA()
+				->setColor($color)
+				->setFacing($in->readHorizontalFacing())
+			);
 		}
 
 		foreach([
