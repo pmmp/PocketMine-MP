@@ -65,7 +65,6 @@ class WorldTimings{
 	private static function newTimer(string $worldName, string $timerName) : TimingsHandler{
 		$aggregator = self::$aggregators[$timerName] ??= new TimingsHandler("Worlds - $timerName"); //displayed in Minecraft primary table
 
-		//TODO: maybe a dedicated group per world would be better?
 		return new TimingsHandler("$worldName - $timerName", $aggregator, Timings::GROUP_BREAKDOWN);
 	}
 
