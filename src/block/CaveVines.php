@@ -23,11 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\CaveVinesType;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Fertilizer;
@@ -43,30 +40,33 @@ use function mt_rand;
 class CaveVines extends Flowable{
 	public const MAX_AGE = 25;
 
-	protected CaveVinesType $type;
-
 	protected int $age = 0;
+	protected bool $berries = false;
+	protected bool $head = false;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->type = CaveVinesType::BODY();
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function describeType(RuntimeDataDescriber $w) : void{
-		$w->caveVinesType($this->type);
-	}
-
-	public function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(5, 0, self::MAX_AGE, $this->age);
+		$w->bool($this->berries);
+		$w->bool($this->head);
 	}
 
-	public function getType() : CaveVinesType{
-		return $this->type;
-	}
+	public function hasBerries() : bool{ return $this->berries; }
 
 	/** @return $this */
-	public function setType(CaveVinesType $type) : self{
-		$this->type = $type;
+	public function setBerries(bool $berries) : self{
+		$this->berries = $berries;
+		return $this;
+	}
+
+	public function isHead() : bool{ return $this->head; }
+
+	/** @return $this */
+	public function setHead(bool $head) : self{
+		$this->head = $head;
 		return $this;
 	}
 
@@ -88,7 +88,7 @@ class CaveVines extends Flowable{
 	}
 
 	public function getLightLevel() : int{
-		return $this->type->hasBerries() ? 14 : 0;
+		return $this->berries ? 14 : 0;
 	}
 
 	private function canBeSupportedBy(Block $block) : bool{
@@ -110,17 +110,18 @@ class CaveVines extends Flowable{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($this->type->hasBerries()){
+		if($this->berries){
 			$this->position->getWorld()->dropItem($this->position, $this->asItem());
 			$this->position->getWorld()->addSound($this->position, new GlowBerriesPickSound());
 
-			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::CAVE_VINES()->setAge(mt_rand(0, self::MAX_AGE)));
+			$this->position->getWorld()->setBlock($this->position, $this->setBerries(false));
 			return true;
 		}
 		if($item instanceof Fertilizer){
-			$ev = new BlockGrowEvent($this, (clone $this)->setType(!$this->getSide(Facing::DOWN)->hasSameTypeId($this) ?
-				CaveVinesType::HEAD_WITH_BERRIES() : CaveVinesType::BODY_WITH_BERRIES()
-			));
+			$ev = new BlockGrowEvent($this, (clone $this)
+				->setBerries(true)
+				->setHead(!$this->getSide(Facing::DOWN)->hasSameTypeId($this))
+			);
 			$ev->call();
 			if($ev->isCancelled()){
 				return false;
@@ -133,13 +134,9 @@ class CaveVines extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if(!$this->type->equals(CaveVinesType::BODY())){
-			$tip = !$this->getSide(Facing::DOWN)->hasSameTypeId($this);
-			if($tip !== $this->type->isTip()){
-				$this->position->getWorld()->setBlock($this->position, $this->setType(
-					$tip ? CaveVinesType::HEAD_WITH_BERRIES() : CaveVinesType::BODY_WITH_BERRIES()
-				));
-			}
+		$head = !$this->getSide(Facing::DOWN)->hasSameTypeId($this);
+		if($head !== $this->head){
+			$this->position->getWorld()->setBlock($this->position, $this->setHead($head));
 		}
 
 		if($this->age < self::MAX_AGE && mt_rand(1, 10) === 1){
@@ -150,7 +147,7 @@ class CaveVines extends Flowable{
 				if($block->getTypeId() === BlockTypeIds::AIR){
 					$ev = new BlockGrowEvent($block, VanillaBlocks::CAVE_VINES()
 						->setAge($this->age + 1)
-						->setType(mt_rand(1, 9) === 1 ? CaveVinesType::HEAD_WITH_BERRIES() : CaveVinesType::BODY())
+						->setBerries(mt_rand(1, 9) === 1)
 					);
 
 					$ev->call();
@@ -181,7 +178,7 @@ class CaveVines extends Flowable{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		return $this->type->hasBerries() ? [$this->asItem()] : [];
+		return $this->berries ? [$this->asItem()] : [];
 	}
 
 	public function isAffectedBySilkTouch() : bool{

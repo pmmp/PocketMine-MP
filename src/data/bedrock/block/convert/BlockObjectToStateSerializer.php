@@ -135,7 +135,6 @@ use pocketmine\block\Tripwire;
 use pocketmine\block\TripwireHook;
 use pocketmine\block\UnderwaterTorch;
 use pocketmine\block\utils\BrewingStandSlot;
-use pocketmine\block\utils\CaveVinesType;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
 use pocketmine\block\utils\DyeColor;
@@ -776,12 +775,14 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeLegacyHorizontalFacing($block->getFacing());
 		});
 		$this->map(Blocks::CAVE_VINES(), function(CaveVines $block) : Writer{
-			return Writer::create(match($block->getType()){
-				CaveVinesType::BODY() => Ids::CAVE_VINES,
-				CaveVinesType::BODY_WITH_BERRIES() => Ids::CAVE_VINES_BODY_WITH_BERRIES,
-				CaveVinesType::HEAD_WITH_BERRIES() => Ids::CAVE_VINES_HEAD_WITH_BERRIES,
-				default => throw new AssumptionFailedError("Unhandled Cave Vines type " . $block->getType()->name())
-			})
+			//I have no idea why this only has 3 IDs - there are 4 in Java and 4 visually distinct states in Bedrock
+			return Writer::create($block->hasBerries() ?
+				($block->isHead() ?
+					Ids::CAVE_VINES_HEAD_WITH_BERRIES :
+					Ids::CAVE_VINES_BODY_WITH_BERRIES
+				) :
+				Ids::CAVE_VINES
+			)
 				->writeInt(StateNames::GROWING_PLANT_AGE, $block->getAge());
 		});
 		$this->map(Blocks::CHAIN(), function(Chain $block) : Writer{

@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\build\generate_runtime_enum_serializers;
 
 use pocketmine\block\utils\BellAttachmentType;
-use pocketmine\block\utils\CaveVinesType;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
@@ -143,7 +142,6 @@ function stringifyEnumMembers(array $members, string $enumClass) : array{
 
 $enumsUsed = [
 	BellAttachmentType::getAll(),
-	CaveVinesType::getAll(),
 	CopperOxidation::getAll(),
 	CoralType::getAll(),
 	DirtType::getAll(),

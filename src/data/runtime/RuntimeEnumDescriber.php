@@ -31,8 +31,6 @@ interface RuntimeEnumDescriber{
 
 	public function bellAttachmentType(\pocketmine\block\utils\BellAttachmentType &$value) : void;
 
-	public function caveVinesType(\pocketmine\block\utils\CaveVinesType &$value) : void;
-
 	public function copperOxidation(\pocketmine\block\utils\CopperOxidation &$value) : void;
 
 	public function coralType(\pocketmine\block\utils\CoralType &$value) : void;

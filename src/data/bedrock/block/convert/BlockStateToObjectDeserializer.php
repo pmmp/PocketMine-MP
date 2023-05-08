@@ -32,7 +32,6 @@ use pocketmine\block\Slab;
 use pocketmine\block\Stair;
 use pocketmine\block\SweetBerryBush;
 use pocketmine\block\utils\BrewingStandSlot;
-use pocketmine\block\utils\CaveVinesType;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
@@ -615,17 +614,20 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		});
 		$this->map(Ids::CAVE_VINES, function(Reader $in) : CaveVines{
 			return Blocks::CAVE_VINES()
-				->setType(CaveVinesType::BODY())
+				->setBerries(false)
+				->setHead(false)
 				->setAge($in->readBoundedInt(StateNames::GROWING_PLANT_AGE, 0, 25));
 		});
 		$this->map(Ids::CAVE_VINES_BODY_WITH_BERRIES, function(Reader $in) : CaveVines{
 			return Blocks::CAVE_VINES()
-				->setType(CaveVinesType::BODY_WITH_BERRIES())
+				->setBerries(true)
+				->setHead(false)
 				->setAge($in->readBoundedInt(StateNames::GROWING_PLANT_AGE, 0, 25));
 		});
 		$this->map(Ids::CAVE_VINES_HEAD_WITH_BERRIES, function(Reader $in) : CaveVines{
 			return Blocks::CAVE_VINES()
-				->setType(CaveVinesType::HEAD_WITH_BERRIES())
+				->setBerries(true)
+				->setHead(true)
 				->setAge($in->readBoundedInt(StateNames::GROWING_PLANT_AGE, 0, 25));
 		});
 		$this->map(Ids::CHAIN, function(Reader $in) : Block{

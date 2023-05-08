@@ -35,10 +35,6 @@ trait RuntimeEnumSizeCalculatorTrait{
 		$this->addBits(2);
 	}
 
-	public function caveVinesType(\pocketmine\block\utils\CaveVinesType &$value) : void{
-		$this->addBits(2);
-	}
-
 	public function copperOxidation(\pocketmine\block\utils\CopperOxidation &$value) : void{
 		$this->addBits(2);
 	}
