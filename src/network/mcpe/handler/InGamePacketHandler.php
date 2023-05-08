@@ -328,6 +328,9 @@ class InGamePacketHandler extends PacketHandler{
 		if(count($packet->trData->getActions()) > 50){
 			throw new PacketHandlingException("Too many actions in inventory transaction");
 		}
+		if(count($packet->requestChangedSlots) > 10){
+			throw new PacketHandlingException("Too many slot sync requests in inventory transaction");
+		}
 
 		$this->inventoryManager->setCurrentItemStackRequestId($packet->requestId);
 		$this->inventoryManager->addRawPredictedSlotChanges($packet->trData->getActions());
@@ -347,6 +350,21 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		$this->inventoryManager->syncMismatchedPredictedSlotChanges();
+
+		//requestChangedSlots asks the server to always send out the contents of the specified slots, even if they
+		//haven't changed. Handling these is necessary to ensure the client inventory stays in sync if the server
+		//rejects the transaction. The most common example of this is equipping armor by right-click, which doesn't send
+		//a legacy prediction action for the destination armor slot.
+		foreach($packet->requestChangedSlots as $containerInfo){
+			foreach($containerInfo->getChangedSlotIndexes() as $netSlot){
+				[$windowId, $slot] = ItemStackContainerIdTranslator::translate($containerInfo->getContainerId(), $this->inventoryManager->getCurrentWindowId(), $netSlot);
+				$inventoryAndSlot = $this->inventoryManager->locateWindowAndSlot($windowId, $slot);
+				if($inventoryAndSlot !== null){ //trigger the normal slot sync logic
+					$this->inventoryManager->onSlotChange($inventoryAndSlot[0], $inventoryAndSlot[1]);
+				}
+			}
+		}
+
 		$this->inventoryManager->setCurrentItemStackRequestId(null);
 		return $result;
 	}
@@ -730,7 +748,7 @@ class InGamePacketHandler extends PacketHandler{
 		if(!($nbt instanceof CompoundTag)) throw new AssumptionFailedError("PHPStan should ensure this is a CompoundTag"); //for phpstorm's benefit
 
 		if($block instanceof BaseSign){
-			if(($textBlobTag = $nbt->getTag(Sign::TAG_TEXT_BLOB)) instanceof StringTag){
+			if(($textBlobTag = $nbt->getCompoundTag(Sign::TAG_FRONT_TEXT)?->getTag(Sign::TAG_TEXT_BLOB)) instanceof StringTag){
 				try{
 					$text = SignText::fromBlob($textBlobTag->getValue());
 				}catch(\InvalidArgumentException $e){

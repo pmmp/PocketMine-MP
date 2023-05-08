@@ -115,6 +115,8 @@ abstract class Entity{
 	/** @var Block[]|null */
 	protected $blocksAround;
 
+	private bool $checkBlockIntersectionsNextTick = true;
+
 	/** @var Location */
 	protected $location;
 	/** @var Location */
@@ -649,7 +651,10 @@ abstract class Entity{
 
 		$hasUpdate = false;
 
-		$this->checkBlockIntersections();
+		if($this->checkBlockIntersectionsNextTick){
+			$this->checkBlockIntersections();
+		}
+		$this->checkBlockIntersectionsNextTick = true;
 
 		if($this->location->y <= World::Y_MIN - 16 && $this->isAlive()){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_VOID, 10);
@@ -1308,6 +1313,7 @@ abstract class Entity{
 	}
 
 	protected function checkBlockIntersections() : void{
+		$this->checkBlockIntersectionsNextTick = false;
 		$vectors = [];
 
 		foreach($this->getBlocksAroundWithEntityInsideActions() as $block){
@@ -1319,10 +1325,12 @@ abstract class Entity{
 			}
 		}
 
-		$vector = Vector3::sum(...$vectors);
-		if($vector->lengthSquared() > 0){
-			$d = 0.014;
-			$this->motion = $this->motion->addVector($vector->normalize()->multiply($d));
+		if(count($vectors) > 0){
+			$vector = Vector3::sum(...$vectors);
+			if($vector->lengthSquared() > 0){
+				$d = 0.014;
+				$this->motion = $this->motion->addVector($vector->normalize()->multiply($d));
+			}
 		}
 	}
 

@@ -27,7 +27,12 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
+use pocketmine\nbt\LittleEndianNbtSerializer;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Filesystem;
@@ -43,8 +48,8 @@ final class RuntimeBlockMapping{
 	private array $legacyToRuntimeMap = [];
 	/** @var int[] */
 	private array $runtimeToLegacyMap = [];
-	/** @var CompoundTag[] */
-	private array $bedrockKnownStates;
+	/** @var CompoundTag[]|null */
+	private ?array $bedrockKnownStates = null;
 
 	private static function make() : self{
 		return new self(
@@ -53,22 +58,40 @@ final class RuntimeBlockMapping{
 		);
 	}
 
-	public function __construct(string $canonicalBlockStatesFile, string $r12ToCurrentBlockMapFile){
-		$stream = new BinaryStream(Filesystem::fileGetContents($canonicalBlockStatesFile));
-		$list = [];
-		$nbtReader = new NetworkNbtSerializer();
-		while(!$stream->feof()){
-			$offset = $stream->getOffset();
-			$blockState = $nbtReader->read($stream->getBuffer(), $offset)->mustGetCompoundTag();
-			$stream->setOffset($offset);
-			$list[] = $blockState;
+	/**
+	 * @param string[] $keyIndex
+	 * @param (ByteTag|StringTag|IntTag)[][] $valueIndex
+	 * @phpstan-param array<string, string> $keyIndex
+	 * @phpstan-param array<int, array<int|string, ByteTag|IntTag|StringTag>> $valueIndex
+	 */
+	private static function deduplicateCompound(CompoundTag $tag, array &$keyIndex, array &$valueIndex) : CompoundTag{
+		if($tag->count() === 0){
+			return $tag;
 		}
-		$this->bedrockKnownStates = $list;
 
-		$this->setupLegacyMappings($r12ToCurrentBlockMapFile);
+		$newTag = CompoundTag::create();
+		foreach($tag as $key => $value){
+			$key = $keyIndex[$key] ??= $key;
+
+			if($value instanceof CompoundTag){
+				$value = $valueIndex[$value->getType()][(new LittleEndianNbtSerializer())->write(new TreeRoot($value))] ??= self::deduplicateCompound($value, $keyIndex, $valueIndex);
+			}elseif($value instanceof ByteTag || $value instanceof IntTag || $value instanceof StringTag){
+				$value = $valueIndex[$value->getType()][$value->getValue()] ??= $value;
+			}
+
+			$newTag->setTag($key, $value);
+		}
+
+		return $newTag;
 	}
 
-	private function setupLegacyMappings(string $r12ToCurrentBlockMapFile) : void{
+	public function __construct(
+		private string $canonicalBlockStatesFile,
+		string $r12ToCurrentBlockMapFile
+	){
+		//do not cache this - we only need it to set up mappings under normal circumstances
+		$bedrockKnownStates = $this->loadBedrockKnownStates();
+
 		$legacyIdMap = LegacyBlockIdToStringIdMap::getInstance();
 		/** @var R12ToCurrentBlockMapEntry[] $legacyStateMap */
 		$legacyStateMap = [];
@@ -88,7 +111,7 @@ final class RuntimeBlockMapping{
 		 * @var int[][] $idToStatesMap string id -> int[] list of candidate state indices
 		 */
 		$idToStatesMap = [];
-		foreach($this->bedrockKnownStates as $k => $state){
+		foreach($bedrockKnownStates as $k => $state){
 			$idToStatesMap[$state->getString("name")][] = $k;
 		}
 		foreach($legacyStateMap as $pair){
@@ -107,7 +130,7 @@ final class RuntimeBlockMapping{
 				throw new \RuntimeException("Mapped new state does not appear in network table");
 			}
 			foreach($idToStatesMap[$mappedName] as $k){
-				$networkState = $this->bedrockKnownStates[$k];
+				$networkState = $bedrockKnownStates[$k];
 				if($mappedState->equals($networkState)){
 					$this->registerMapping($k, $id, $data);
 					continue 2;
@@ -115,6 +138,25 @@ final class RuntimeBlockMapping{
 			}
 			throw new \RuntimeException("Mapped new state does not appear in network table");
 		}
+	}
+
+	/**
+	 * @return CompoundTag[]
+	 */
+	private function loadBedrockKnownStates() : array{
+		$stream = new BinaryStream(Filesystem::fileGetContents($this->canonicalBlockStatesFile));
+		$list = [];
+		$nbtReader = new NetworkNbtSerializer();
+
+		$keyIndex = [];
+		$valueIndex = [];
+		while(!$stream->feof()){
+			$offset = $stream->getOffset();
+			$blockState = $nbtReader->read($stream->getBuffer(), $offset)->mustGetCompoundTag();
+			$stream->setOffset($offset);
+			$list[] = self::deduplicateCompound($blockState, $keyIndex, $valueIndex);
+		}
+		return $list;
 	}
 
 	public function toRuntimeId(int $internalStateId) : int{
@@ -131,9 +173,14 @@ final class RuntimeBlockMapping{
 	}
 
 	/**
+	 * WARNING: This method may load the palette from disk, which is a slow operation.
+	 * Afterwards, it will cache the palette in memory, which requires (in some cases) tens of MB of memory.
+	 * Avoid using this where possible.
+	 *
+	 * @deprecated
 	 * @return CompoundTag[]
 	 */
 	public function getBedrockKnownStates() : array{
-		return $this->bedrockKnownStates;
+		return $this->bedrockKnownStates ??= $this->loadBedrockKnownStates();
 	}
 }

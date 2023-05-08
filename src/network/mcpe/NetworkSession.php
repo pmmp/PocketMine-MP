@@ -60,6 +60,7 @@ use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\NetworkChunkPublisherUpdatePacket;
+use pocketmine\network\mcpe\protocol\OpenSignPacket;
 use pocketmine\network\mcpe\protocol\Packet;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\PacketPool;
@@ -886,14 +887,26 @@ class NetworkSession{
 			AbilitiesLayer::ABILITY_PRIVILEGED_BUILDER => false,
 		];
 
+		$layers = [
+			//TODO: dynamic flying speed! FINALLY!!!!!!!!!!!!!!!!!
+			new AbilitiesLayer(AbilitiesLayer::LAYER_BASE, $boolAbilities, 0.05, 0.1),
+		];
+		if(!$for->hasBlockCollision()){
+			//TODO: HACK! In 1.19.80, the client starts falling in our faux spectator mode when it clips into a
+			//block. We can't seem to prevent this short of forcing the player to always fly when block collision is
+			//disabled. Also, for some reason the client always reads flight state from this layer if present, even
+			//though the player isn't in spectator mode.
+
+			$layers[] = new AbilitiesLayer(AbilitiesLayer::LAYER_SPECTATOR, [
+				AbilitiesLayer::ABILITY_FLYING => true,
+			], null, null);
+		}
+
 		$this->sendDataPacket(UpdateAbilitiesPacket::create(new AbilitiesData(
 			$isOp ? CommandPermissions::OPERATOR : CommandPermissions::NORMAL,
 			$isOp ? PlayerPermissions::OPERATOR : PlayerPermissions::MEMBER,
 			$for->getId(),
-			[
-				//TODO: dynamic flying speed! FINALLY!!!!!!!!!!!!!!!!!
-				new AbilitiesLayer(AbilitiesLayer::LAYER_BASE, $boolAbilities, 0.05, 0.1),
-			]
+			$layers
 		)));
 	}
 
@@ -1091,6 +1104,10 @@ class NetworkSession{
 
 	public function onToastNotification(string $title, string $body) : void{
 		$this->sendDataPacket(ToastRequestPacket::create($title, $body));
+	}
+
+	public function onOpenSignEditor(Vector3 $signPosition, bool $frontSide) : void{
+		$this->sendDataPacket(OpenSignPacket::create(BlockPosition::fromVector3($signPosition), $frontSide));
 	}
 
 	public function tick() : void{

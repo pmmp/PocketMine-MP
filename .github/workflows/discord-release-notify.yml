@@ -15,7 +15,7 @@ jobs:
       - name: Setup PHP and tools
         uses: shivammathur/setup-php@2.24.0
         with:
-          php-version: 8.0
+          php-version: 8.1
 
       - name: Restore Composer package cache
         uses: actions/cache@v3

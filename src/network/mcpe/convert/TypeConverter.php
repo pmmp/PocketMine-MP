@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
+use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
@@ -135,14 +136,16 @@ class TypeConverter{
 		if($itemStack->isNull()){
 			return ItemStack::null();
 		}
-		$nbt = null;
-		if($itemStack->hasNamedTag()){
-			$nbt = clone $itemStack->getNamedTag();
+		$nbt = $itemStack->getNamedTag();
+		if($nbt->count() === 0){
+			$nbt = null;
+		}else{
+			$nbt = clone $nbt;
 		}
 
-		$isBlockItem = $itemStack->getId() < 256;
-
-		$idMeta = ItemTranslator::getInstance()->toNetworkIdQuiet($itemStack->getId(), $itemStack->getMeta());
+		$internalId = $itemStack->getId();
+		$internalMeta = $itemStack->getMeta();
+		$idMeta = ItemTranslator::getInstance()->toNetworkIdQuiet($internalId, $internalMeta);
 		if($idMeta === null){
 			//Display unmapped items as INFO_UPDATE, but stick something in their NBT to make sure they don't stack with
 			//other unmapped items.
@@ -150,8 +153,8 @@ class TypeConverter{
 			if($nbt === null){
 				$nbt = new CompoundTag();
 			}
-			$nbt->setInt(self::PM_ID_TAG, $itemStack->getId());
-			$nbt->setInt(self::PM_META_TAG, $itemStack->getMeta());
+			$nbt->setInt(self::PM_ID_TAG, $internalId);
+			$nbt->setInt(self::PM_META_TAG, $internalMeta);
 		}else{
 			[$id, $meta] = $idMeta;
 
@@ -166,23 +169,15 @@ class TypeConverter{
 				}
 				$nbt->setInt(self::DAMAGE_TAG, $itemStack->getDamage());
 				$meta = 0;
-			}elseif($isBlockItem && $itemStack->getMeta() !== 0){
-				//TODO HACK: This foul-smelling code ensures that we can correctly deserialize an item when the
-				//client sends it back to us, because as of 1.16.220, blockitems quietly discard their metadata
-				//client-side. Aside from being very annoying, this also breaks various server-side behaviours.
-				if($nbt === null){
-					$nbt = new CompoundTag();
-				}
-				$nbt->setInt(self::PM_META_TAG, $itemStack->getMeta());
-				$meta = 0;
 			}
 		}
 
 		$blockRuntimeId = 0;
-		if($isBlockItem){
+		if($internalId < 256){
 			$block = $itemStack->getBlock();
 			if($block->getId() !== BlockLegacyIds::AIR){
 				$blockRuntimeId = RuntimeBlockMapping::getInstance()->toRuntimeId($block->getFullId());
+				$meta = 0;
 			}
 		}
 
@@ -208,6 +203,11 @@ class TypeConverter{
 		$compound = $itemStack->getNbt();
 
 		[$id, $meta] = ItemTranslator::getInstance()->fromNetworkId($itemStack->getId(), $itemStack->getMeta());
+		if($itemStack->getBlockRuntimeId() !== 0){
+			//blockitem meta is zeroed out by the client, so we have to infer it from the block runtime ID
+			$blockFullId = RuntimeBlockMapping::getInstance()->fromRuntimeId($itemStack->getBlockRuntimeId());
+			$meta = $blockFullId & Block::INTERNAL_METADATA_MASK;
+		}
 
 		if($compound !== null){
 			$compound = clone $compound;
@@ -222,12 +222,6 @@ class TypeConverter{
 					$compound->removeTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION);
 					$compound->setTag(self::DAMAGE_TAG, $conflicted);
 				}
-			}elseif(($metaTag = $compound->getTag(self::PM_META_TAG)) instanceof IntTag){
-				//TODO HACK: This foul-smelling code ensures that we can correctly deserialize an item when the
-				//client sends it back to us, because as of 1.16.220, blockitems quietly discard their metadata
-				//client-side. Aside from being very annoying, this also breaks various server-side behaviours.
-				$meta = $metaTag->getValue();
-				$compound->removeTag(self::PM_META_TAG);
 			}
 			if($compound->count() === 0){
 				$compound = null;
