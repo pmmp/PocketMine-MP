@@ -54,15 +54,28 @@ class FireworkStar extends Item{
 		return $this;
 	}
 
+	/**
+	 * Returns the displayed color of the item.
+	 * The mixture of explosion colors, or the custom color if it is set.
+	 */
 	public function getColor() : Color{
 		return $this->customColor ?? $this->explosion->getColorMix();
 	}
 
+	/**
+	 * Returns the displayed custom color of the item that overrides
+	 * the mixture of explosion colors, or null is it is not set.
+	 */
 	public function getCustomColor() : ?Color{
 		return $this->customColor;
 	}
 
-	/** @return $this */
+	/**
+	 * Sets the displayed custom color of the item that overrides
+	 * the mixture of explosion colors, or removes if $color is null.
+	 *
+	 * @return $this
+	 */
 	public function setCustomColor(?Color $color) : self{
 		$this->customColor = $color;
 		return $this;
