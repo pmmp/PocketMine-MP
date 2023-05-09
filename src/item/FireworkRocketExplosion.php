@@ -32,7 +32,6 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
 use function array_key_first;
-use function array_values;
 use function count;
 use function strlen;
 
