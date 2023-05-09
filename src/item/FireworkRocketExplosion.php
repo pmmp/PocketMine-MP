@@ -134,7 +134,7 @@ class FireworkRocketExplosion{
 	/**
 	 * Returns the flash color of the explosion.
 	 */
-	public function getMainColor() : DyeColor{
+	public function getFlashColor() : DyeColor{
 		return $this->colors[array_key_first($this->colors)];
 	}
 
