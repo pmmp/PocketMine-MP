@@ -47,25 +47,22 @@ final class FireworkRocketType{
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self("small_ball", fn() => new FireworkExplosionSound()),
-			new self("large_ball", fn() => new FireworkLargeExplosionSound()),
-			new self("star", fn() => new FireworkExplosionSound()),
-			new self("creeper", fn() => new FireworkExplosionSound()),
-			new self("burst", fn() => new FireworkExplosionSound()),
+			new self("small_ball", new FireworkExplosionSound()),
+			new self("large_ball", new FireworkLargeExplosionSound()),
+			new self("star", new FireworkExplosionSound()),
+			new self("creeper", new FireworkExplosionSound()),
+			new self("burst", new FireworkExplosionSound()),
 		);
 	}
 
-	/**
-	 * @phpstan-param \Closure() : Sound $soundGetter
-	 */
 	private function __construct(
 		string $enumName,
-		private \Closure $soundGetter
+		private Sound $sound
 	){
 		$this->Enum___construct($enumName);
 	}
 
 	public function getSound() : Sound{
-		return ($this->soundGetter)();
+		return $this->sound;
 	}
 }
