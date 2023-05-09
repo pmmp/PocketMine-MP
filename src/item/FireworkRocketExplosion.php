@@ -102,9 +102,9 @@ class FireworkRocketExplosion{
 	public function __construct(
 		protected FireworkRocketType $type,
 		protected array $colors,
-		protected array $fadeColors,
-		protected bool $twinkle,
-		protected bool $trail
+		protected array $fadeColors = [],
+		protected bool $twinkle = false,
+		protected bool $trail = false
 	){
 		if(count($colors) === 0){
 			throw new \InvalidArgumentException("Colors list cannot be empty");
