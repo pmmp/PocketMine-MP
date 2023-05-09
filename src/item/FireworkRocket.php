@@ -58,12 +58,16 @@ class FireworkRocket extends Item{
 	/**
 	 * Sets the flight duration of the firework.
 	 * This value will be used to get a random value for the lifetime of the entity.
+	 *
+	 * @return $this
 	 */
-	public function setFlightDuration(int $duration) : void{
+	public function setFlightDuration(int $duration) : self{
 		if($duration < 1 || $duration > 127){
 			throw new \InvalidArgumentException("Flight duration must be in range 1-127");
 		}
 		$this->flightDuration = $duration;
+
+		return $this;
 	}
 
 	/**
@@ -75,10 +79,14 @@ class FireworkRocket extends Item{
 
 	/**
 	 * @param FireworkRocketExplosion[] $explosions
+	 *
+	 * @return $this
 	 */
-	public function setExplosions(array $explosions) : void{
+	public function setExplosions(array $explosions) : self{
 		Utils::validateArrayValueType($explosions, function(FireworkRocketExplosion $_) : void{});
 		$this->explosions = $explosions;
+
+		return $this;
 	}
 
 	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
