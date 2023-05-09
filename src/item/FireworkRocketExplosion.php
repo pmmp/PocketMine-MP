@@ -79,6 +79,20 @@ class FireworkRocketExplosion{
 		return $colors;
 	}
 
+	/**
+	 * @param DyeColor[] $colors
+	 */
+	protected static function encodeColors(array $colors) : string{
+		$colorsBytes = "";
+
+		$dyeColorIdMap = DyeColorIdMap::getInstance();
+		foreach($colors as $color){
+			$colorsBytes .= Binary::writeByte($dyeColorIdMap->toInvertedId($color));
+		}
+
+		return $colorsBytes;
+	}
+
 	/** @var \Closure(DyeColor) : void */
 	protected \Closure $colorsValidator;
 
@@ -194,24 +208,10 @@ class FireworkRocketExplosion{
 	public function toCompoundTag() : CompoundTag{
 		return CompoundTag::create()
 			->setByte(self::TAG_TYPE, FireworkRocketTypeIdMap::getInstance()->toId($this->type))
-			->setByteArray(self::TAG_COLORS, $this->encodeColors($this->colors))
-			->setByteArray(self::TAG_FADE_COLORS, $this->encodeColors($this->fadeColors))
+			->setByteArray(self::TAG_COLORS, self::encodeColors($this->colors))
+			->setByteArray(self::TAG_FADE_COLORS, self::encodeColors($this->fadeColors))
 			->setByte(self::TAG_TWINKLE, $this->twinkle ? 1 : 0)
 			->setByte(self::TAG_TRAIL, $this->trail ? 1 : 0)
 		;
-	}
-
-	/**
-	 * @param DyeColor[] $colors
-	 */
-	protected function encodeColors(array $colors) : string{
-		$colorsBytes = "";
-
-		$dyeColorIdMap = DyeColorIdMap::getInstance();
-		foreach($colors as $color){
-			$colorsBytes .= Binary::writeByte($dyeColorIdMap->toInvertedId($color));
-		}
-
-		return $colorsBytes;
 	}
 }
