@@ -122,6 +122,8 @@ class FireworkRocketExplosion{
 	}
 
 	/**
+	 * Returns the colors of the particles.
+	 *
 	 * @return DyeColor[]
 	 * @phpstan-return non-empty-list<DyeColor>
 	 */
@@ -130,14 +132,14 @@ class FireworkRocketExplosion{
 	}
 
 	/**
-	 * Returns the main color, this defines stuff like meta.
+	 * Returns the flash color of the explosion.
 	 */
 	public function getMainColor() : DyeColor{
 		return $this->colors[array_key_first($this->colors)];
 	}
 
 	/**
-	 * Returns the mix of all colors.
+	 * Returns the mixure of colors form {@link FireworkRocketExplosion::getColors()})
 	 */
 	public function getColorMix() : Color{
 		/** @var Color[] $colors */
@@ -149,6 +151,9 @@ class FireworkRocketExplosion{
 	}
 
 	/**
+	 * Returns the colors to which the particles will change their color after a few seconds.
+	 * If it is empty, there will be no color change in the particles.
+	 *
 	 * @return DyeColor[]
 	 * @phpstan-return list<DyeColor>
 	 */
@@ -156,10 +161,16 @@ class FireworkRocketExplosion{
 		return $this->fadeColors;
 	}
 
+	/**
+	 * Returns whether the explosion has a flickering effect.
+	 */
 	public function willTwinkle() : bool{
 		return $this->twinkle;
 	}
 
+	/**
+	 * Returns whether the particles has a trail effect.
+	 */
 	public function getTrail() : bool{
 		return $this->trail;
 	}
