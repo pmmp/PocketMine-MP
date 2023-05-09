@@ -476,9 +476,9 @@ final class ItemSerializerDeserializerRegistrar{
 			Ids::FIREWORK_STAR,
 			Items::FIREWORK_STAR(),
 			function(FireworkStar $item, int $meta) : void{
-				$item->getExplosion()->setColors([DyeColorIdMap::getInstance()->fromInvertedId($meta) ?? throw new ItemTypeDeserializeException("Unknown firework star meta $meta")]);
+				// Colors will be defined by CompoundTag deserialization.
 			},
-			fn(FireworkStar $item) => DyeColorIdMap::getInstance()->toInvertedId($item->getExplosion()->getMainColor())
+			fn(FireworkStar $item) => DyeColorIdMap::getInstance()->toInvertedId($item->getExplosion()->getFlashColor())
 		);
 		$this->map1to1ItemWithMeta(
 			Ids::MEDICINE,
