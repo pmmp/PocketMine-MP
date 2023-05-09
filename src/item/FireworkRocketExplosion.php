@@ -156,7 +156,7 @@ class FireworkRocketExplosion{
 	}
 
 	/**
-	 * Returns a the mix of all colors.
+	 * Returns the mix of all colors.
 	 */
 	public function getColorMix() : Color{
 		/** @var Color[] $colors */
