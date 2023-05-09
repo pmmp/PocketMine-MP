@@ -93,9 +93,6 @@ class FireworkRocketExplosion{
 		return $colorsBytes;
 	}
 
-	/** @var \Closure(DyeColor) : void */
-	protected \Closure $colorsValidator;
-
 	/**
 	 * @param DyeColor[] $colors
 	 * @param DyeColor[] $fadeColors
@@ -107,23 +104,18 @@ class FireworkRocketExplosion{
 		protected bool $twinkle,
 		protected bool $trail
 	){
-		$this->colorsValidator = function(DyeColor $_) : void{};
-
 		if(count($colors) === 0){
 			throw new \InvalidArgumentException("Colors list cannot be empty");
 		}
-		$this->setColors($colors);
-		$this->setFadeColors($fadeColors);
+
+		$colorsValidator = function(DyeColor $_) : void{};
+
+		Utils::validateArrayValueType($colors, $colorsValidator);
+		Utils::validateArrayValueType($fadeColors, $colorsValidator);
 	}
 
 	public function getType() : FireworkRocketType{
 		return $this->type;
-	}
-
-	/** @return $this */
-	public function setType(FireworkRocketType $type) : self{
-		$this->type = $type;
-		return $this;
 	}
 
 	/**
@@ -131,21 +123,6 @@ class FireworkRocketExplosion{
 	 */
 	public function getColors() : array{
 		return $this->colors;
-	}
-
-	/**
-	 * @param DyeColor[] $colors
-	 *
-	 * @return $this
-	 */
-	public function setColors(array $colors) : self{
-		if(count($colors) === 0){
-			throw new \InvalidArgumentException("Colors list cannot be empty");
-		}
-		Utils::validateArrayValueType($colors, $this->colorsValidator);
-		$this->colors = array_values($colors);
-
-		return $this;
 	}
 
 	/**
@@ -174,35 +151,12 @@ class FireworkRocketExplosion{
 		return $this->fadeColors;
 	}
 
-	/**
-	 * @param DyeColor[] $colors
-	 *
-	 * @return $this
-	 */
-	public function setFadeColors(array $colors) : self{
-		Utils::validateArrayValueType($colors, $this->colorsValidator);
-		$this->fadeColors = array_values($colors);
-		return $this;
-	}
-
 	public function willTwinkle() : bool{
 		return $this->twinkle;
 	}
 
-	/** @return $this */
-	public function setTwinkle(bool $twinkle) : self{
-		$this->twinkle = $twinkle;
-		return $this;
-	}
-
 	public function getTrail() : bool{
 		return $this->trail;
-	}
-
-	/** @return $this */
-	public function setTrail(bool $trail) : self{
-		$this->trail = $trail;
-		return $this;
 	}
 
 	public function toCompoundTag() : CompoundTag{
