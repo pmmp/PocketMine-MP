@@ -38,8 +38,8 @@ use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
+use pocketmine\world\sound\FireworkCrackleSound;
 use pocketmine\world\sound\FireworkLaunchSound;
-use pocketmine\world\sound\FireworkTwinkleSound;
 use function count;
 use function sqrt;
 
@@ -133,7 +133,7 @@ class FireworkRocket extends Entity implements Explosive{
 			foreach($explosions as $explosion){
 				$this->broadcastSound($explosion->getType()->getSound());
 				if($explosion->willTwinkle()){
-					$this->broadcastSound(new FireworkTwinkleSound());
+					$this->broadcastSound(new FireworkCrackleSound());
 				}
 			}
 
