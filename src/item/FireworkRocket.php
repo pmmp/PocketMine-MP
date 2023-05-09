@@ -40,7 +40,7 @@ use function mt_rand;
 class FireworkRocket extends Item{
 
 	protected const TAG_FIREWORK_DATA = "Fireworks"; //TAG_Compound
-	protected const TAG_FLIGH_DURATION = "Flight"; //TAG_Byte
+	protected const TAG_FLIGHT_DURATION = "Flight"; //TAG_Byte
 	protected const TAG_EXPLOSIONS = "Explosions"; //TAG_List
 
 	protected int $flightDuration = 1;
@@ -120,7 +120,7 @@ class FireworkRocket extends Item{
 			throw new SavedDataLoadingException("Missing firework data");
 		}
 
-		$this->setFlightDuration($fireworksTag->getByte(self::TAG_FLIGH_DURATION, 1));
+		$this->setFlightDuration($fireworksTag->getByte(self::TAG_FLIGHT_DURATION, 1));
 
 		if(($explosions = $fireworksTag->getListTag(self::TAG_EXPLOSIONS)) instanceof ListTag){
 			/** @var CompoundTag $explosion */
@@ -134,7 +134,7 @@ class FireworkRocket extends Item{
 		parent::serializeCompoundTag($tag);
 
 		$fireworksTag = CompoundTag::create();
-		$fireworksTag->setByte(self::TAG_FLIGH_DURATION, $this->flightDuration);
+		$fireworksTag->setByte(self::TAG_FLIGHT_DURATION, $this->flightDuration);
 
 		$explosions = new ListTag();
 		foreach($this->explosions as $explosion){
