@@ -116,9 +116,7 @@ class FireworkRocket extends Entity implements Explosive{
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
 		if(!$this->isFlaggedForDespawn()){
-			$this->motion->x *= 1.15;
-			$this->motion->y += 0.04;
-			$this->motion->z *= 1.15;
+			$this->addMotion($this->motion->x * 0.15, 0.04, $this->motion->z * 0.15);
 
 			if($this->ticksLived >= $this->lifeTicks){
 				$this->explode();
