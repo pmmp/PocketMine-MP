@@ -61,6 +61,7 @@ class FireworkRocketExplosion{
 
 	/**
 	 * @return DyeColor[]
+	 * @phpstan-return list<DyeColor>
 	 */
 	protected static function decodeColors(string $colorsBytes) : array{
 		$colors = [];
@@ -96,6 +97,8 @@ class FireworkRocketExplosion{
 	/**
 	 * @param DyeColor[] $colors
 	 * @param DyeColor[] $fadeColors
+	 * @phpstan-param non-empty-list<DyeColor> $colors
+	 * @phpstan-param list<DyeColor> $fadeColors
 	 */
 	public function __construct(
 		protected FireworkRocketType $type,
@@ -120,6 +123,7 @@ class FireworkRocketExplosion{
 
 	/**
 	 * @return DyeColor[]
+	 * @phpstan-return non-empty-list<DyeColor>
 	 */
 	public function getColors() : array{
 		return $this->colors;
@@ -146,6 +150,7 @@ class FireworkRocketExplosion{
 
 	/**
 	 * @return DyeColor[]
+	 * @phpstan-return list<DyeColor>
 	 */
 	public function getFadeColors() : array{
 		return $this->fadeColors;
