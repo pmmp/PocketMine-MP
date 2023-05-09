@@ -67,14 +67,8 @@ class FireworkStar extends Item{
 	}
 
 	/** @return $this */
-	public function setCustomColor(Color $color) : self{
+	public function setCustomColor(?Color $color) : self{
 		$this->customColor = $color;
-		return $this;
-	}
-
-	/** @return $this */
-	public function clearCustomColor() : self{
-		$this->customColor = null;
 		return $this;
 	}
 
