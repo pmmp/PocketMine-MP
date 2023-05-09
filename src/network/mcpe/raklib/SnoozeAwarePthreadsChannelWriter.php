@@ -27,8 +27,11 @@ use pocketmine\snooze\SleeperNotifier;
 use raklib\server\ipc\InterThreadChannelWriter;
 
 final class SnoozeAwarePthreadsChannelWriter implements InterThreadChannelWriter{
+	/**
+	 * @phpstan-param \ThreadedArray<int, string> $buffer
+	 */
 	public function __construct(
-		private \Threaded $buffer,
+		private \ThreadedArray $buffer,
 		private SleeperNotifier $notifier
 	){}
 

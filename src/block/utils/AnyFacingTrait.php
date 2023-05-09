@@ -23,16 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\math\Facing;
 
 trait AnyFacingTrait{
 	protected int $facing = Facing::DOWN;
 
-	public function getRequiredStateDataBits() : int{ return 3; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->facing($this->facing);
 	}
 

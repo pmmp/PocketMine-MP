@@ -47,7 +47,7 @@ abstract class Stem extends Crops{
 			}else{
 				$grow = $this->getPlant();
 				foreach(Facing::HORIZONTAL as $side){
-					if($this->getSide($side)->isSameType($grow)){
+					if($this->getSide($side)->hasSameTypeId($grow)){
 						return;
 					}
 				}

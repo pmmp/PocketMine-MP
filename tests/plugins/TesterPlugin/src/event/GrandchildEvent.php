@@ -21,25 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\convert;
+namespace pmmp\TesterPlugin\event;
 
-use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
-use pocketmine\utils\Filesystem;
-use pocketmine\utils\SingletonTrait;
-use Symfony\Component\Filesystem\Path;
+class GrandchildEvent extends ChildEvent{
 
-final class GlobalItemTypeDictionary{
-	use SingletonTrait;
-
-	private static function make() : self{
-		$data = Filesystem::fileGetContents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'required_item_list.json'));
-		$dictionary = ItemTypeDictionaryFromDataHelper::loadFromString($data);
-		return new self($dictionary);
-	}
-
-	public function __construct(
-		private ItemTypeDictionary $dictionary
-	){}
-
-	public function getDictionary() : ItemTypeDictionary{ return $this->dictionary; }
 }

@@ -27,17 +27,21 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\mcpe\compression\ZlibCompressor;
 use pocketmine\network\mcpe\convert\TypeConverter;
+use pocketmine\network\mcpe\EntityEventBroadcaster;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketBroadcaster;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
-use pocketmine\network\mcpe\StandardPacketBroadcaster;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\network\Network;
 use pocketmine\network\NetworkInterfaceStartException;
 use pocketmine\network\PacketHandlingException;
+use pocketmine\player\GameMode;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
+use pocketmine\timings\Timings;
 use pocketmine\utils\Utils;
+use raklib\generic\DisconnectReason;
 use raklib\generic\SocketException;
 use raklib\protocol\EncapsulatedPacket;
 use raklib\protocol\PacketReliability;
@@ -76,16 +80,35 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 
 	private SleeperNotifier $sleeper;
 
-	private PacketBroadcaster $broadcaster;
+	private PacketBroadcaster $packetBroadcaster;
+	private EntityEventBroadcaster $entityEventBroadcaster;
+	private PacketSerializerContext $packetSerializerContext;
+	private TypeConverter $typeConverter;
 
-	public function __construct(Server $server, string $ip, int $port, bool $ipV6){
+	public function __construct(
+		Server $server,
+		string $ip,
+		int $port,
+		bool $ipV6,
+		PacketBroadcaster $packetBroadcaster,
+		EntityEventBroadcaster $entityEventBroadcaster,
+		PacketSerializerContext $packetSerializerContext,
+		TypeConverter $typeConverter
+	){
 		$this->server = $server;
+		$this->packetBroadcaster = $packetBroadcaster;
+		$this->packetSerializerContext = $packetSerializerContext;
+		$this->entityEventBroadcaster = $entityEventBroadcaster;
+		$this->typeConverter = $typeConverter;
+
 		$this->rakServerId = mt_rand(0, PHP_INT_MAX);
 
 		$this->sleeper = new SleeperNotifier();
 
-		$mainToThreadBuffer = new \Threaded();
-		$threadToMainBuffer = new \Threaded();
+		/** @phpstan-var \ThreadedArray<int, string> $mainToThreadBuffer */
+		$mainToThreadBuffer = new \ThreadedArray();
+		/** @phpstan-var \ThreadedArray<int, string> $threadToMainBuffer */
+		$threadToMainBuffer = new \ThreadedArray();
 
 		$this->rakLib = new RakLibServer(
 			$this->server->getLogger(),
@@ -103,13 +126,16 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		$this->interface = new UserToRakLibThreadMessageSender(
 			new PthreadsChannelWriter($mainToThreadBuffer)
 		);
-
-		$this->broadcaster = new StandardPacketBroadcaster($this->server);
 	}
 
 	public function start() : void{
 		$this->server->getTickSleeper()->addNotifier($this->sleeper, function() : void{
-			while($this->eventReceiver->handle($this));
+			Timings::$connection->startTiming();
+			try{
+				while($this->eventReceiver->handle($this));
+			}finally{
+				Timings::$connection->stopTiming();
+			}
 		});
 		$this->server->getLogger()->debug("Waiting for RakLib to start...");
 		try{
@@ -134,11 +160,16 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		}
 	}
 
-	public function onClientDisconnect(int $sessionId, string $reason) : void{
+	public function onClientDisconnect(int $sessionId, int $reason) : void{
 		if(isset($this->sessions[$sessionId])){
 			$session = $this->sessions[$sessionId];
 			unset($this->sessions[$sessionId]);
-			$session->onClientDisconnect($reason);
+			$session->onClientDisconnect(match($reason){
+				DisconnectReason::CLIENT_DISCONNECT => KnownTranslationFactory::pocketmine_disconnect_clientDisconnect(),
+				DisconnectReason::PEER_TIMEOUT => KnownTranslationFactory::pocketmine_disconnect_error_timeout(),
+				DisconnectReason::CLIENT_RECONNECT => KnownTranslationFactory::pocketmine_disconnect_clientReconnect(),
+				default => "Unknown RakLib disconnect reason (ID $reason)"
+			});
 		}
 	}
 
@@ -159,9 +190,12 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			$this->server,
 			$this->network->getSessionManager(),
 			PacketPool::getInstance(),
+			$this->packetSerializerContext,
 			new RakLibPacketSender($sessionId, $this),
-			$this->broadcaster,
+			$this->packetBroadcaster,
+			$this->entityEventBroadcaster,
 			ZlibCompressor::getInstance(), //TODO: this shouldn't be hardcoded, but we might need the RakNet protocol version to select it
+			$this->typeConverter,
 			$address,
 			$port
 		);
@@ -178,6 +212,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			$session = $this->sessions[$sessionId];
 			$address = $session->getIp();
 			$buf = substr($packet, 1);
+			$name = $session->getDisplayName();
 			try{
 				$session->handleEncoded($buf);
 			}catch(PacketHandlingException $e){
@@ -188,6 +223,10 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 				$logger->debug(implode("\n", Utils::printableExceptionInfo($e)));
 				$session->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_badPacket());
 				$this->interface->blockAddress($address, 5);
+			}catch(\Throwable $e){
+				//record the name of the player who caused the crash, to make it easier to find the reproducing steps
+				$this->server->getLogger()->emergency("Crash occurred while handling a packet from session: $name");
+				throw $e;
 			}
 		}
 	}
@@ -229,7 +268,11 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 				$info->getMaxPlayerCount(),
 				$this->rakServerId,
 				$this->server->getName(),
-				TypeConverter::getInstance()->protocolGameModeName($this->server->getGamemode())
+				match($this->server->getGamemode()){
+					GameMode::SURVIVAL() => "Survival",
+					GameMode::ADVENTURE() => "Adventure",
+					default => "Creative"
+				}
 			]) . ";"
 		);
 	}

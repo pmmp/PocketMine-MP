@@ -21,22 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\convert;
+namespace pocketmine\player\chat;
+
+use pocketmine\lang\Translatable;
 
 /**
- * Accessor for SkinAdapter
+ * Formats chat messages for broadcasting. Used in PlayerChatEvent.
  */
-class SkinAdapterSingleton{
-	private static ?SkinAdapter $skinAdapter = null;
-
-	public static function get() : SkinAdapter{
-		if(self::$skinAdapter === null){
-			self::$skinAdapter = new LegacySkinAdapter();
-		}
-		return self::$skinAdapter;
-	}
-
-	public static function set(SkinAdapter $adapter) : void{
-		self::$skinAdapter = $adapter;
-	}
+interface ChatFormatter{
+	/**
+	 * Returns the formatted message to broadcast.
+	 * This can return a plain string (which will be used as-is) or a Translatable (which will be translated into
+	 * each recipient's language).
+	 */
+	public function format(string $username, string $message) : Translatable|string;
 }

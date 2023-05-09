@@ -23,42 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use pocketmine\inventory\Inventory;
+final class ItemStackInfo{
 
-final class ComplexWindowMapEntry{
-
-	/**
-	 * @var int[]
-	 * @phpstan-var array<int, int>
-	 */
-	private array $reverseSlotMap = [];
-
-	/**
-	 * @param int[] $slotMap
-	 * @phpstan-param array<int, int> $slotMap
-	 */
 	public function __construct(
-		private Inventory $inventory,
-		private array $slotMap
-	){
-		foreach($slotMap as $slot => $index){
-			$this->reverseSlotMap[$index] = $slot;
-		}
-	}
+		private ?int $requestId,
+		private int $stackId
+	){}
 
-	public function getInventory() : Inventory{ return $this->inventory; }
+	public function getRequestId() : ?int{ return $this->requestId; }
 
-	/**
-	 * @return int[]
-	 * @phpstan-return array<int, int>
-	 */
-	public function getSlotMap() : array{ return $this->slotMap; }
-
-	public function mapNetToCore(int $slot) : ?int{
-		return $this->slotMap[$slot] ?? null;
-	}
-
-	public function mapCoreToNet(int $slot) : ?int{
-		return $this->reverseSlotMap[$slot] ?? null;
-	}
+	public function getStackId() : int{ return $this->stackId; }
 }

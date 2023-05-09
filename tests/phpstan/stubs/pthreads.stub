@@ -1,6 +1,33 @@
 <?php
 
 /**
- * @implements \Traversable<array-key, mixed>
+ * @implements \IteratorAggregate<array-key, mixed>
  */
-class Threaded implements \Traversable{}
+abstract class ThreadedBase implements \IteratorAggregate{
+
+    /**
+     * @template TReturn
+     * @param \Closure() : TReturn $function
+     * @param mixed ...$args
+     * @return TReturn
+     */
+    public function synchronized(\Closure $function, mixed ...$args) : mixed{}
+}
+
+/**
+ * @template TKey of array-key
+ * @template TValue
+ * @implements ArrayAccess<TKey, TValue>
+ */
+final class ThreadedArray extends ThreadedBase implements Countable, ArrayAccess{
+
+    /**
+     * @return TValue|null
+     */
+    public function pop() : mixed{}
+
+    /**
+     * @return TValue|null
+     */
+    public function shift() : mixed{}
+}

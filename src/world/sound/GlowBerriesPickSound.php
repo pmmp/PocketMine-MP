@@ -21,19 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\convert;
+namespace pocketmine\world\sound;
 
-use PHPUnit\Framework\TestCase;
-use pocketmine\block\BlockFactory;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-class RuntimeBlockMappingTest extends TestCase{
+class GlowBerriesPickSound implements Sound{
 
-	/**
-	 * @doesNotPerformAssertions
-	 */
-	public function testAllBlockStatesSerialize() : void{
-		foreach(BlockFactory::getInstance()->getAllKnownStates() as $state){
-			RuntimeBlockMapping::getInstance()->toRuntimeId($state->getStateId());
-		}
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::CAVE_VINES_PICK_BERRIES, $pos, false)];
 	}
 }

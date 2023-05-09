@@ -21,16 +21,21 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world;
+namespace pocketmine\player\chat;
+
+use function str_replace;
 
 /**
- * TickingChunkLoader includes all of the same functionality as ChunkLoader (it can be used in the same way).
- * However, using this version will also cause chunks around the loader's reported coordinates to get random block
- * updates.
+ * Legacy raw string chat formatter with the same behaviour as the old PlayerChatEvent::setFormat() API.
+ * The format string should contain the placeholders {%0} and {%1} for the username and message respectively.
  */
-interface TickingChunkLoader extends ChunkLoader{
+final class LegacyRawChatFormatter implements ChatFormatter{
 
-	public function getX() : float;
+	public function __construct(
+		private string $format
+	){}
 
-	public function getZ() : float;
+	public function format(string $username, string $message) : string{
+		return str_replace(["{%0}", "{%1}"], [$username, $message], $this->format);
+	}
 }

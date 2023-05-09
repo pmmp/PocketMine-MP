@@ -1176,6 +1176,10 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_DIFFICULTY_DESCRIPTION, []);
 	}
 
+	public static function pocketmine_command_dumpmemory_description() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_DUMPMEMORY_DESCRIPTION, []);
+	}
+
 	public static function pocketmine_command_effect_description() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_EFFECT_DESCRIPTION, []);
 	}
@@ -1602,6 +1606,14 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_DISCONNECT_BAN_NOREASON, []);
 	}
 
+	public static function pocketmine_disconnect_clientDisconnect() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_DISCONNECT_CLIENTDISCONNECT, []);
+	}
+
+	public static function pocketmine_disconnect_clientReconnect() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_DISCONNECT_CLIENTRECONNECT, []);
+	}
+
 	public static function pocketmine_disconnect_error(Translatable|string $error, Translatable|string $errorId) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_DISCONNECT_ERROR, [
 			"error" => $error,
@@ -1623,6 +1635,14 @@ final class KnownTranslationFactory{
 
 	public static function pocketmine_disconnect_error_loginTimeout() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_DISCONNECT_ERROR_LOGINTIMEOUT, []);
+	}
+
+	public static function pocketmine_disconnect_error_respawn() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_DISCONNECT_ERROR_RESPAWN, []);
+	}
+
+	public static function pocketmine_disconnect_error_timeout() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_DISCONNECT_ERROR_TIMEOUT, []);
 	}
 
 	public static function pocketmine_disconnect_incompatibleProtocol(Translatable|string $param0) : Translatable{
@@ -2580,6 +2600,12 @@ final class KnownTranslationFactory{
 
 	public static function query_warning2() : Translatable{
 		return new Translatable(KnownTranslationKeys::QUERY_WARNING2, []);
+	}
+
+	public static function record_nowPlaying(Translatable|string $param0) : Translatable{
+		return new Translatable(KnownTranslationKeys::RECORD_NOWPLAYING, [
+			0 => $param0,
+		]);
 	}
 
 	public static function server_port() : Translatable{

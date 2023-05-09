@@ -23,8 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
 use pocketmine\math\AxisAlignedBB;
@@ -37,9 +36,7 @@ class Cake extends BaseCake{
 
 	protected int $bites = 0;
 
-	public function getRequiredStateDataBits() : int{ return 3; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(3, 0, self::MAX_BITES, $this->bites);
 	}
 

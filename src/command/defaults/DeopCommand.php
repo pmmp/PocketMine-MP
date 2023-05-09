@@ -35,9 +35,9 @@ use function count;
 
 class DeopCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"deop",
 			KnownTranslationFactory::pocketmine_command_deop_description(),
 			KnownTranslationFactory::commands_deop_usage()
 		);

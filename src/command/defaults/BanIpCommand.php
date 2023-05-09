@@ -36,9 +36,9 @@ use function inet_pton;
 
 class BanIpCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"ban-ip",
 			KnownTranslationFactory::pocketmine_command_ban_ip_description(),
 			KnownTranslationFactory::commands_banip_usage()
 		);

@@ -33,11 +33,11 @@ use const SORT_STRING;
 
 class BlockTest extends TestCase{
 
-	/** @var BlockFactory */
+	/** @var RuntimeBlockStateRegistry */
 	private $blockFactory;
 
 	public function setUp() : void{
-		$this->blockFactory = new BlockFactory();
+		$this->blockFactory = new RuntimeBlockStateRegistry();
 	}
 
 	/**
@@ -62,16 +62,9 @@ class BlockTest extends TestCase{
 	 * Test registering a new block which does not yet exist
 	 */
 	public function testRegisterNewBlock() : void{
-		for($i = BlockTypeIds::FIRST_UNUSED_BLOCK_ID; $i < BlockTypeIds::FIRST_UNUSED_BLOCK_ID + 256; ++$i){
-			if(!$this->blockFactory->isRegistered($i)){
-				$b = new StrangeNewBlock(new BlockIdentifier($i), "Strange New Block", new BlockTypeInfo(BlockBreakInfo::instant()));
-				$this->blockFactory->register($b);
-				self::assertInstanceOf(StrangeNewBlock::class, $this->blockFactory->fromStateId($b->getStateId()));
-				return;
-			}
-		}
-
-		throw new \RuntimeException("Can't test registering new blocks because no unused spaces left");
+		$b = new StrangeNewBlock(new BlockIdentifier(BlockTypeIds::newId()), "Strange New Block", new BlockTypeInfo(BlockBreakInfo::instant()));
+		$this->blockFactory->register($b);
+		self::assertInstanceOf(StrangeNewBlock::class, $this->blockFactory->fromStateId($b->getStateId()));
 	}
 
 	/**
@@ -126,7 +119,7 @@ class BlockTest extends TestCase{
 
 		$states = $this->blockFactory->getAllKnownStates();
 		foreach($states as $stateId => $state){
-			self::assertArrayHasKey($stateId, $knownStates, "New block state $stateId (" . $state->getTypeId() . ":" . $state->computeStateData() . ", " . print_r($state, true) . ") - consistency check may need regenerating");
+			self::assertArrayHasKey($stateId, $knownStates, "New block state $stateId (" . print_r($state, true) . ") - consistency check may need regenerating");
 			self::assertSame($knownStates[$stateId], $state->getName());
 		}
 		asort($knownStates, SORT_STRING);

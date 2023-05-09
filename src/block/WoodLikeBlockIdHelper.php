@@ -26,14 +26,26 @@ namespace pocketmine\block;
 use pocketmine\block\BlockIdentifier as BID;
 use pocketmine\block\BlockTypeIds as Ids;
 use pocketmine\block\tile\Sign as TileSign;
-use pocketmine\block\utils\TreeType;
+use pocketmine\block\utils\LeavesType;
+use pocketmine\block\utils\SaplingType;
 use pocketmine\block\utils\WoodType;
 use pocketmine\item\VanillaItems;
 use pocketmine\utils\AssumptionFailedError;
 
-final class BlockLegacyIdHelper{
+/**
+ * All wood-like blocks have different IDs for different wood types.
+ *
+ * We can't make these dynamic, because some types of wood have different type properties (e.g. crimson and warped planks
+ * are not flammable, but all other planks are).
+ *
+ * In the future, it's entirely within the realm of reason that the other types of wood may differ in other ways, such
+ * as flammability, hardness, required tool tier, etc.
+ * Therefore, to stay on the safe side of Mojang, wood-like blocks have static types. This does unfortunately generate
+ * a lot of ugly code.
+ */
+final class WoodLikeBlockIdHelper{
 
-	public static function getWoodenPlanksIdentifier(WoodType $type) : BID{
+	public static function getPlanksIdentifier(WoodType $type) : BID{
 		return new BID(match($type->id()){
 			WoodType::OAK()->id() => Ids::OAK_PLANKS,
 			WoodType::SPRUCE()->id() => Ids::SPRUCE_PLANKS,
@@ -48,7 +60,7 @@ final class BlockLegacyIdHelper{
 		});
 	}
 
-	public static function getWoodenFenceIdentifier(WoodType $type) : BID{
+	public static function getFenceIdentifier(WoodType $type) : BID{
 		return new BID(match($type->id()){
 			WoodType::OAK()->id() => Ids::OAK_FENCE,
 			WoodType::SPRUCE()->id() => Ids::SPRUCE_FENCE,
@@ -63,7 +75,7 @@ final class BlockLegacyIdHelper{
 		});
 	}
 
-	public static function getWoodenSlabIdentifier(WoodType $type) : BID{
+	public static function getSlabIdentifier(WoodType $type) : BID{
 		return new BID(match($type->id()){
 			WoodType::OAK()->id() => Ids::OAK_SLAB,
 			WoodType::SPRUCE()->id() => Ids::SPRUCE_SLAB,
@@ -108,26 +120,29 @@ final class BlockLegacyIdHelper{
 		});
 	}
 
-	public static function getLeavesIdentifier(TreeType $treeType) : BID{
-		return new BID(match($treeType->id()){
-			TreeType::OAK()->id() => Ids::OAK_LEAVES,
-			TreeType::SPRUCE()->id() => Ids::SPRUCE_LEAVES,
-			TreeType::BIRCH()->id() => Ids::BIRCH_LEAVES,
-			TreeType::JUNGLE()->id() => Ids::JUNGLE_LEAVES,
-			TreeType::ACACIA()->id() => Ids::ACACIA_LEAVES,
-			TreeType::DARK_OAK()->id() => Ids::DARK_OAK_LEAVES,
-			default => throw new AssumptionFailedError("All tree types should be covered")
+	public static function getLeavesIdentifier(LeavesType $leavesType) : BID{
+		return new BID(match($leavesType->id()){
+			LeavesType::OAK()->id() => Ids::OAK_LEAVES,
+			LeavesType::SPRUCE()->id() => Ids::SPRUCE_LEAVES,
+			LeavesType::BIRCH()->id() => Ids::BIRCH_LEAVES,
+			LeavesType::JUNGLE()->id() => Ids::JUNGLE_LEAVES,
+			LeavesType::ACACIA()->id() => Ids::ACACIA_LEAVES,
+			LeavesType::DARK_OAK()->id() => Ids::DARK_OAK_LEAVES,
+			LeavesType::MANGROVE()->id() => Ids::MANGROVE_LEAVES,
+			LeavesType::AZALEA()->id() => Ids::AZALEA_LEAVES,
+			LeavesType::FLOWERING_AZALEA()->id() => Ids::FLOWERING_AZALEA_LEAVES,
+			default => throw new AssumptionFailedError("All leaves types should be covered")
 		});
 	}
 
-	public static function getSaplingIdentifier(TreeType $treeType) : BID{
+	public static function getSaplingIdentifier(SaplingType $treeType) : BID{
 		return new BID(match($treeType->id()){
-			TreeType::OAK()->id() => Ids::OAK_SAPLING,
-			TreeType::SPRUCE()->id() => Ids::SPRUCE_SAPLING,
-			TreeType::BIRCH()->id() => Ids::BIRCH_SAPLING,
-			TreeType::JUNGLE()->id() => Ids::JUNGLE_SAPLING,
-			TreeType::ACACIA()->id() => Ids::ACACIA_SAPLING,
-			TreeType::DARK_OAK()->id() => Ids::DARK_OAK_SAPLING,
+			SaplingType::OAK()->id() => Ids::OAK_SAPLING,
+			SaplingType::SPRUCE()->id() => Ids::SPRUCE_SAPLING,
+			SaplingType::BIRCH()->id() => Ids::BIRCH_SAPLING,
+			SaplingType::JUNGLE()->id() => Ids::JUNGLE_SAPLING,
+			SaplingType::ACACIA()->id() => Ids::ACACIA_SAPLING,
+			SaplingType::DARK_OAK()->id() => Ids::DARK_OAK_SAPLING,
 			default => throw new AssumptionFailedError("All tree types should be covered")
 		});
 	}
@@ -136,7 +151,7 @@ final class BlockLegacyIdHelper{
 	 * @return BID[]|\Closure[]
 	 * @phpstan-return array{BID, BID, \Closure() : \pocketmine\item\Item}
 	 */
-	public static function getWoodenSignInfo(WoodType $treeType) : array{
+	public static function getSignInfo(WoodType $treeType) : array{
 		switch($treeType->id()){
 			case WoodType::OAK()->id():
 				return [
@@ -197,7 +212,7 @@ final class BlockLegacyIdHelper{
 		throw new AssumptionFailedError("Switch should cover all wood types");
 	}
 
-	public static function getWoodenTrapdoorIdentifier(WoodType $treeType) : BlockIdentifier{
+	public static function getTrapdoorIdentifier(WoodType $treeType) : BlockIdentifier{
 		return new BID(match($treeType->id()){
 			WoodType::OAK()->id() => Ids::OAK_TRAPDOOR,
 			WoodType::SPRUCE()->id() => Ids::SPRUCE_TRAPDOOR,
@@ -212,7 +227,7 @@ final class BlockLegacyIdHelper{
 		});
 	}
 
-	public static function getWoodenButtonIdentifier(WoodType $treeType) : BlockIdentifier{
+	public static function getButtonIdentifier(WoodType $treeType) : BlockIdentifier{
 		return new BID(match($treeType->id()){
 			WoodType::OAK()->id() => Ids::OAK_BUTTON,
 			WoodType::SPRUCE()->id() => Ids::SPRUCE_BUTTON,
@@ -227,7 +242,7 @@ final class BlockLegacyIdHelper{
 		});
 	}
 
-	public static function getWoodenPressurePlateIdentifier(WoodType $treeType) : BlockIdentifier{
+	public static function getPressurePlateIdentifier(WoodType $treeType) : BlockIdentifier{
 		return new BID(match($treeType->id()){
 			WoodType::OAK()->id() => Ids::OAK_PRESSURE_PLATE,
 			WoodType::SPRUCE()->id() => Ids::SPRUCE_PRESSURE_PLATE,
@@ -242,7 +257,7 @@ final class BlockLegacyIdHelper{
 		});
 	}
 
-	public static function getWoodenDoorIdentifier(WoodType $treeType) : BlockIdentifier{
+	public static function getDoorIdentifier(WoodType $treeType) : BlockIdentifier{
 		return new BID(match($treeType->id()){
 			WoodType::OAK()->id() => Ids::OAK_DOOR,
 			WoodType::SPRUCE()->id() => Ids::SPRUCE_DOOR,
@@ -257,7 +272,7 @@ final class BlockLegacyIdHelper{
 		});
 	}
 
-	public static function getWoodenFenceGateIdentifier(WoodType $treeType) : BlockIdentifier{
+	public static function getFenceGateIdentifier(WoodType $treeType) : BlockIdentifier{
 		return new BID(match($treeType->id()){
 			WoodType::OAK()->id() => Ids::OAK_FENCE_GATE,
 			WoodType::SPRUCE()->id() => Ids::SPRUCE_FENCE_GATE,
@@ -272,7 +287,7 @@ final class BlockLegacyIdHelper{
 		});
 	}
 
-	public static function getWoodenStairsIdentifier(WoodType $treeType) : BlockIdentifier{
+	public static function getStairsIdentifier(WoodType $treeType) : BlockIdentifier{
 		return new BID(match($treeType->id()){
 			WoodType::OAK()->id() => Ids::OAK_STAIRS,
 			WoodType::SPRUCE()->id() => Ids::SPRUCE_STAIRS,

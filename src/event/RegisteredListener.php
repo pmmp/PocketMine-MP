@@ -57,8 +57,11 @@ class RegisteredListener{
 			return;
 		}
 		$this->timings->startTiming();
-		($this->handler)($event);
-		$this->timings->stopTiming();
+		try{
+			($this->handler)($event);
+		}finally{
+			$this->timings->stopTiming();
+		}
 	}
 
 	public function isHandlingCancelled() : bool{

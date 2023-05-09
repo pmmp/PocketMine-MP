@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\utils;
+namespace pocketmine\world\generator\object;
 
 use pocketmine\utils\EnumTrait;
 
@@ -51,7 +51,10 @@ final class TreeType{
 			new TreeType("birch", "Birch"),
 			new TreeType("jungle", "Jungle"),
 			new TreeType("acacia", "Acacia"),
-			new TreeType("dark_oak", "Dark Oak")
+			new TreeType("dark_oak", "Dark Oak"),
+			//TODO: cherry blossom, mangrove, azalea
+			//TODO: do crimson and warped "trees" belong here? I'm not sure if they're actually trees or just fungi
+			//TODO: perhaps huge mushrooms should be here too???
 		);
 	}
 

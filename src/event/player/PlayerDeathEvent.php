@@ -25,6 +25,7 @@ namespace pocketmine\event\player;
 
 use pocketmine\block\BlockTypeIds;
 use pocketmine\entity\Living;
+use pocketmine\entity\object\FallingBlock;
 use pocketmine\entity\object\FireworkRocket;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -157,6 +158,19 @@ class PlayerDeathEvent extends EntityDeathEvent{
 
 			case EntityDamageEvent::CAUSE_MAGIC:
 				return KnownTranslationFactory::death_attack_magic($name);
+
+			case EntityDamageEvent::CAUSE_FALLING_BLOCK:
+				if($deathCause instanceof EntityDamageByEntityEvent){
+					$e = $deathCause->getDamager();
+					if($e instanceof FallingBlock){
+						if($e->getBlock()->getTypeId() === BlockTypeIds::ANVIL){
+							return KnownTranslationFactory::death_attack_anvil($name);
+						}else{
+							return KnownTranslationFactory::death_attack_fallingBlock($name);
+						}
+					}
+				}
+				break;
 
 			case EntityDamageEvent::CAUSE_CUSTOM:
 				break;

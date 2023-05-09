@@ -21,23 +21,26 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\player;
+namespace pocketmine\crafting\json;
 
-use pocketmine\math\Vector3;
-use pocketmine\world\TickingChunkLoader;
+final class SmithingTransformRecipeData{
 
-final class PlayerChunkLoader implements TickingChunkLoader{
-	public function __construct(private Vector3 $currentLocation){}
+	/** @required */
+	public RecipeIngredientData $template;
+	/** @required */
+	public RecipeIngredientData $input;
+	/** @required */
+	public RecipeIngredientData $addition;
+	/** @required */
+	public ItemStackData $output;
+	/** @required */
+	public string $block;
 
-	public function setCurrentLocation(Vector3 $currentLocation) : void{
-		$this->currentLocation = $currentLocation;
-	}
-
-	public function getX() : float{
-		return $this->currentLocation->getFloorX();
-	}
-
-	public function getZ() : float{
-		return $this->currentLocation->getFloorZ();
+	public function __construct(RecipeIngredientData $template, RecipeIngredientData $input, RecipeIngredientData $addition, ItemStackData $output, string $block){
+		$this->template = $template;
+		$this->input = $input;
+		$this->addition = $addition;
+		$this->output = $output;
+		$this->block = $block;
 	}
 }

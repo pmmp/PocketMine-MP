@@ -37,6 +37,7 @@ use pocketmine\block\FloorCoralFan;
 use pocketmine\block\FloorSign;
 use pocketmine\block\GlazedTerracotta;
 use pocketmine\block\ItemFrame;
+use pocketmine\block\Leaves;
 use pocketmine\block\Liquid;
 use pocketmine\block\RedMushroomBlock;
 use pocketmine\block\RedstoneComparator;
@@ -49,7 +50,6 @@ use pocketmine\block\Trapdoor;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks;
-use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Wall;
 use pocketmine\block\WallCoralFan;
 use pocketmine\block\WallSign;
@@ -165,19 +165,18 @@ final class BlockStateDeserializerHelper{
 			->setRotation($in->readBoundedInt(BlockStateNames::GROUND_SIGN_DIRECTION, 0, 15));
 	}
 
-	/** @throws BlockStateDeserializeException */
-	public static function decodeGlazedTerracotta(DyeColor $color, BlockStateReader $in) : GlazedTerracotta{
-		return VanillaBlocks::GLAZED_TERRACOTTA()
-			->setColor($color)
-			->setFacing($in->readHorizontalFacing());
+	public static function decodeItemFrame(ItemFrame $block, BlockStateReader $in) : ItemFrame{
+		$in->todo(StateNames::ITEM_FRAME_PHOTO_BIT); //TODO: not sure what the point of this is
+		return $block
+			->setFacing($in->readFacingDirection())
+			->setHasMap($in->readBool(StateNames::ITEM_FRAME_MAP_BIT));
 	}
 
-	public static function decodeItemFrame(BlockStateReader $in, bool $glowing) : ItemFrame{
-		$in->todo(StateNames::ITEM_FRAME_PHOTO_BIT); //TODO: not sure what the point of this is
-		return Blocks::ITEM_FRAME()
-			->setFacing($in->readFacingDirection())
-			->setHasMap($in->readBool(StateNames::ITEM_FRAME_MAP_BIT))
-			->setGlowing($glowing);
+	/** @throws BlockStateDeserializeException */
+	public static function decodeLeaves(Leaves $block, BlockStateReader $in) : Leaves{
+		return $block
+			->setNoDecay($in->readBool(StateNames::PERSISTENT_BIT))
+			->setCheckDecay($in->readBool(StateNames::UPDATE_BIT));
 	}
 
 	/** @throws BlockStateDeserializeException */
