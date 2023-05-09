@@ -67,11 +67,12 @@ class FireworkRocketExplosion{
 
 		$dyeColorIdMap = DyeColorIdMap::getInstance();
 		for($i = 0; $i < strlen($colorsBytes); $i++){
-			$color = $dyeColorIdMap->fromInvertedId(Binary::readByte($colorsBytes[$i]));
+			$colorByte = Binary::readByte($colorsBytes[$i]);
+			$color = $dyeColorIdMap->fromInvertedId($colorByte);
 			if($color !== null){
 				$colors[] = $color;
 			}else{
-				//TODO: should throw an exception?
+				throw new SavedDataLoadingException("Unknown color $colorByte");
 			}
 		}
 
