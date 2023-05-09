@@ -29,7 +29,9 @@ use pocketmine\network\mcpe\protocol\types\ActorEvent;
 
 final class FireworkParticlesAnimation implements Animation{
 
-	public function __construct(private FireworkRocket $entity){}
+	public function __construct(
+		private FireworkRocket $entity
+	){}
 
 	public function encode() : array{
 		return [
