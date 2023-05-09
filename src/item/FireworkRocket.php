@@ -53,8 +53,8 @@ class FireworkRocket extends Item{
 	}
 
 	public function setFlightDuration(int $duration) : void{
-		if($duration < 1 || $duration > 255){
-			throw new \InvalidArgumentException("Flight duration must be in range 1-255");
+		if($duration < 1 || $duration > 127){
+			throw new \InvalidArgumentException("Flight duration must be in range 1-127");
 		}
 		$this->flightDuration = $duration;
 	}
