@@ -58,10 +58,6 @@ class FireworkStar extends Item{
 		return $this->customColor ?? $this->explosion->getColorMix();
 	}
 
-	public function hasCustomColor() : bool{
-		return $this->customColor !== null;
-	}
-
 	public function getCustomColor() : ?Color{
 		return $this->customColor;
 	}
