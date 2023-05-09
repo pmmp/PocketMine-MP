@@ -89,11 +89,7 @@ class FireworkStar extends Item{
 
 		$customColor = Color::fromARGB(Binary::unsignInt($tag->getInt(self::TAG_CUSTOM_COLOR)));
 		$color = $this->explosion->getColorMix();
-		if($customColor->getA() !== $color->getA() ||
-			$customColor->getR() !== $color->getR() ||
-			$customColor->getG() !== $color->getG() ||
-			$customColor->getB() !== $color->getB()
-		){ //check that $customColor is actually custom.
+		if(!$customColor->equals($color)){ //check that $customColor is actually custom.
 			$this->customColor = $customColor;
 		}
 	}
