@@ -76,7 +76,7 @@ class FireworkStar extends Item{
 		parent::deserializeCompoundTag($tag);
 
 		$explosionTag = $tag->getTag(self::TAG_EXPLOSION);
-		if (!$explosionTag instanceof CompoundTag) {
+		if(!$explosionTag instanceof CompoundTag){
 			throw new SavedDataLoadingException("Missing explosion data");
 		}
 		$this->explosion = FireworkRocketExplosion::fromCompoundTag($explosionTag);
