@@ -43,7 +43,7 @@ class FireworkRocket extends Item{
 	protected const TAG_FLIGHT_DURATION = "Flight"; //TAG_Byte
 	public const TAG_EXPLOSIONS = "Explosions"; //TAG_List
 
-	protected int $flightDuration = 1;
+	protected int $flightDurationMultiplier = 1;
 
 	/** @var FireworkRocketExplosion[] */
 	protected array $explosions = [];
@@ -54,8 +54,8 @@ class FireworkRocket extends Item{
 	 *
 	 * The higher this value, the longer the flight duration.
 	 */
-	public function getFlightDuration() : int{
-		return $this->flightDuration;
+	public function getFlightDurationMultiplier() : int{
+		return $this->flightDurationMultiplier;
 	}
 
 	/**
@@ -66,11 +66,11 @@ class FireworkRocket extends Item{
 	 *
 	 * @return $this
 	 */
-	public function setFlightDuration(int $duration) : self{
+	public function setFlightDurationMultiplier(int $duration) : self{
 		if($duration < 1 || $duration > 127){
 			throw new \InvalidArgumentException("Flight duration must be in range 1-127");
 		}
-		$this->flightDuration = $duration;
+		$this->flightDurationMultiplier = $duration;
 
 		return $this;
 	}
@@ -107,7 +107,7 @@ class FireworkRocket extends Item{
 			default => throw new AssumptionFailedError("Invalid facing $face")
 		};
 
-		$randomDuration = (($this->flightDuration + 1) * 10) + mt_rand(0, 12);
+		$randomDuration = (($this->flightDurationMultiplier + 1) * 10) + mt_rand(0, 12);
 
 		$entity = new FireworkEntity(Location::fromObject($position, $player->getWorld(), lcg_value() * 360, 90), $randomDuration, $this->explosions);
 		$entity->setOwningEntity($player);
@@ -127,7 +127,7 @@ class FireworkRocket extends Item{
 			throw new SavedDataLoadingException("Missing firework data");
 		}
 
-		$this->setFlightDuration($fireworksTag->getByte(self::TAG_FLIGHT_DURATION, 1));
+		$this->setFlightDurationMultiplier($fireworksTag->getByte(self::TAG_FLIGHT_DURATION, 1));
 
 		if(($explosions = $fireworksTag->getListTag(self::TAG_EXPLOSIONS)) instanceof ListTag){
 			/** @var CompoundTag $explosion */
@@ -141,7 +141,7 @@ class FireworkRocket extends Item{
 		parent::serializeCompoundTag($tag);
 
 		$fireworksTag = CompoundTag::create();
-		$fireworksTag->setByte(self::TAG_FLIGHT_DURATION, $this->flightDuration);
+		$fireworksTag->setByte(self::TAG_FLIGHT_DURATION, $this->flightDurationMultiplier);
 
 		$explosions = new ListTag();
 		foreach($this->explosions as $explosion){
