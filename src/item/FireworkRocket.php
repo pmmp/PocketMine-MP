@@ -49,15 +49,20 @@ class FireworkRocket extends Item{
 	protected array $explosions = [];
 
 	/**
-	 * Returns the flight duration of the firework (equals the amount of gunpowder used in crafting the rocket).
+	 * Returns the value that will be used to calculate a randomized flight duration
+	 * for the firework (equals the amount of gunpowder used in crafting the rocket).
+	 *
+	 * The higher this value, the longer the flight duration.
 	 */
 	public function getFlightDuration() : int{
 		return $this->flightDuration;
 	}
 
 	/**
-	 * Sets the flight duration of the firework.
-	 * This value will be used to get a random value for the lifetime of the entity.
+	 * Sets the value that will be used to calculate a randomized flight duration
+	 * for the firework.
+	 *
+	 * The higher this value, the longer the flight duration.
 	 *
 	 * @return $this
 	 */
