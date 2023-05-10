@@ -138,7 +138,7 @@ class FireworkRocketExplosion{
 	}
 
 	/**
-	 * Returns the mixure of colors form {@link FireworkRocketExplosion::getColors()})
+	 * Returns the mixure of colors from {@link FireworkRocketExplosion::getColors()})
 	 */
 	public function getColorMix() : Color{
 		/** @var Color[] $colors */
