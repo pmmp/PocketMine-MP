@@ -39,9 +39,9 @@ use function mt_rand;
 
 class FireworkRocket extends Item{
 
-	protected const TAG_FIREWORK_DATA = "Fireworks"; //TAG_Compound
+	public const TAG_FIREWORK_DATA = "Fireworks"; //TAG_Compound
 	protected const TAG_FLIGHT_DURATION = "Flight"; //TAG_Byte
-	protected const TAG_EXPLOSIONS = "Explosions"; //TAG_List
+	public const TAG_EXPLOSIONS = "Explosions"; //TAG_List
 
 	protected int $flightDuration = 1;
 
@@ -104,10 +104,12 @@ class FireworkRocket extends Item{
 
 		$randomDuration = (($this->flightDuration + 1) * 10) + mt_rand(0, 12);
 
-		$entity = new FireworkEntity(Location::fromObject($position, $player->getWorld(), lcg_value() * 360, 90), $randomDuration, $this->pop());
+		$entity = new FireworkEntity(Location::fromObject($position, $player->getWorld(), lcg_value() * 360, 90), $randomDuration, $this->explosions);
 		$entity->setOwningEntity($player);
 		$entity->setMotion(new Vector3(lcg_value() * 0.001, 0.05, lcg_value() * 0.001));
 		$entity->spawnToAll();
+
+		$this->pop();
 
 		return ItemUseResult::SUCCESS();
 	}

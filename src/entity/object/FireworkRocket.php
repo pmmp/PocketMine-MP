@@ -32,12 +32,15 @@ use pocketmine\entity\Location;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\FireworkRocket as FireworkItem;
+use pocketmine\item\FireworkRocketExplosion;
 use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
+use pocketmine\utils\Utils;
 use pocketmine\world\sound\FireworkCrackleSound;
 use pocketmine\world\sound\FireworkLaunchSound;
 use function count;
@@ -50,14 +53,18 @@ class FireworkRocket extends Entity implements Explosive{
 	/* Maximum number of ticks this will live for. */
 	protected int $lifeTicks;
 
-	protected FireworkItem $item;
+	/** @var FireworkRocketExplosion[] */
+	protected array $explosions = [];
 
-	public function __construct(Location $location, int $lifeTicks, FireworkItem $item, ?CompoundTag $nbt = null){
+	/**
+	 * @param FireworkRocketExplosion[] $explosions
+	 */
+	public function __construct(Location $location, int $lifeTicks, array $explosions, ?CompoundTag $nbt = null){
 		if ($lifeTicks < 0) {
 			throw new \InvalidArgumentException("Life ticks cannot be negative");
 		}
 		$this->lifeTicks = $lifeTicks;
-		$this->item = $item;
+		$this->setExplosions($explosions);
 
 		parent::__construct($location, $nbt);
 	}
@@ -88,13 +95,21 @@ class FireworkRocket extends Entity implements Explosive{
 		return $this;
 	}
 
-	public function getItem() : FireworkItem{
-		return clone $this->item;
+	/**
+	 * @return FireworkRocketExplosion[]
+	 */
+	public function getExplosions() : array{
+		return $this->explosions;
 	}
 
-	/** @return $this */
-	public function setItem(FireworkItem $item) : self{
-		$this->item = clone $item;
+	/**
+	 * @param FireworkRocketExplosion[] $explosions
+	 *
+	 * @return $this
+	 */
+	public function setExplosions(array $explosions) : self{
+		Utils::validateArrayValueType($explosions, function(FireworkRocketExplosion $_) : void{});
+		$this->explosions = $explosions;
 		return $this;
 	}
 
@@ -127,10 +142,9 @@ class FireworkRocket extends Entity implements Explosive{
 	}
 
 	public function explode() : void{
-		$explosions = $this->item->getExplosions();
-		if(($expCount = count($explosions)) !== 0){
+		if(($expCount = count($this->explosions)) !== 0){
 			$this->broadcastAnimation(new FireworkParticlesAnimation($this));
-			foreach($explosions as $explosion){
+			foreach($this->explosions as $explosion){
 				$this->broadcastSound($explosion->getType()->getSound());
 				if($explosion->willTwinkle()){
 					$this->broadcastSound(new FireworkCrackleSound());
@@ -173,6 +187,16 @@ class FireworkRocket extends Entity implements Explosive{
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
 		parent::syncNetworkData($properties);
 
-		$properties->setCompoundTag(EntityMetadataProperties::FIREWORK_ITEM, new CacheableNbt($this->item->getNamedTag()));
+		$explosions = new ListTag();
+		foreach($this->explosions as $explosion){
+			$explosions->push($explosion->toCompoundTag());
+		}
+		$fireworksData = CompoundTag::create()
+			->setTag(FireworkItem::TAG_FIREWORK_DATA, CompoundTag::create()
+				->setTag(FireworkItem::TAG_EXPLOSIONS, $explosions)
+			)
+		;
+
+		$properties->setCompoundTag(EntityMetadataProperties::FIREWORK_ITEM, new CacheableNbt($fireworksData));
 	}
 }
