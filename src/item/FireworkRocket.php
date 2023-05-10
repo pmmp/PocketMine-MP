@@ -122,14 +122,14 @@ class FireworkRocket extends Item{
 	protected function deserializeCompoundTag(CompoundTag $tag) : void{
 		parent::deserializeCompoundTag($tag);
 
-		$fireworksTag = $tag->getCompoundTag(self::TAG_FIREWORK_DATA);
-		if($fireworksTag === null){
+		$fireworkData = $tag->getCompoundTag(self::TAG_FIREWORK_DATA);
+		if($fireworkData === null){
 			throw new SavedDataLoadingException("Missing firework data");
 		}
 
-		$this->setFlightDurationMultiplier($fireworksTag->getByte(self::TAG_FLIGHT_DURATION, 1));
+		$this->setFlightDurationMultiplier($fireworkData->getByte(self::TAG_FLIGHT_DURATION, 1));
 
-		if(($explosions = $fireworksTag->getListTag(self::TAG_EXPLOSIONS)) instanceof ListTag){
+		if(($explosions = $fireworkData->getListTag(self::TAG_EXPLOSIONS)) instanceof ListTag){
 			/** @var CompoundTag $explosion */
 			foreach($explosions as $explosion){
 				$this->explosions[] = FireworkRocketExplosion::fromCompoundTag($explosion);
@@ -140,15 +140,15 @@ class FireworkRocket extends Item{
 	protected function serializeCompoundTag(CompoundTag $tag) : void{
 		parent::serializeCompoundTag($tag);
 
-		$fireworksTag = CompoundTag::create();
-		$fireworksTag->setByte(self::TAG_FLIGHT_DURATION, $this->flightDurationMultiplier);
+		$fireworkData = CompoundTag::create();
+		$fireworkData->setByte(self::TAG_FLIGHT_DURATION, $this->flightDurationMultiplier);
 
 		$explosions = new ListTag();
 		foreach($this->explosions as $explosion){
 			$explosions->push($explosion->toCompoundTag());
 		}
-		$fireworksTag->setTag(self::TAG_EXPLOSIONS, $explosions);
+		$fireworkData->setTag(self::TAG_EXPLOSIONS, $explosions);
 
-		$tag->setTag(self::TAG_FIREWORK_DATA, $fireworksTag);
+		$tag->setTag(self::TAG_FIREWORK_DATA, $fireworkData);
 	}
 }
