@@ -156,6 +156,12 @@ class BedrockWorldData extends BaseNbtWorldData{
 		if($version > self::CURRENT_STORAGE_VERSION){
 			throw new UnsupportedWorldFormatException("LevelDB world format version $version is currently unsupported");
 		}
+		//StorageVersion is rarely updated - instead, the game relies on the NetworkVersion tag, which is synced with
+		//the network protocol version for that version.
+		$protocolVersion = $worldData->getInt(self::TAG_NETWORK_VERSION, Limits::INT32_MAX);
+		if($protocolVersion > self::CURRENT_STORAGE_NETWORK_VERSION){
+			throw new UnsupportedWorldFormatException("LevelDB world protocol version $protocolVersion is currently unsupported");
+		}
 
 		return $worldData;
 	}
