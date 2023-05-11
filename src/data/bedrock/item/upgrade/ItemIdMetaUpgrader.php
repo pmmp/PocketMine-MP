@@ -58,6 +58,12 @@ final class ItemIdMetaUpgrader{
 	}
 
 	/**
+	 * @return ItemIdMetaUpgradeSchema[]
+	 * @phpstan-return array<int, ItemIdMetaUpgradeSchema>
+	 */
+	public function getSchemas() : array{ return $this->idMetaUpgradeSchemas; }
+
+	/**
 	 * @phpstan-return array{string, int}
 	 */
 	public function upgrade(string $id, int $meta) : array{

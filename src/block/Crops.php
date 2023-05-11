@@ -69,7 +69,7 @@ abstract class Crops extends Flowable{
 				$block->age = self::MAX_AGE;
 			}
 
-			$ev = new BlockGrowEvent($this, $block);
+			$ev = new BlockGrowEvent($this, $block, $player);
 			$ev->call();
 			if(!$ev->isCancelled()){
 				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());

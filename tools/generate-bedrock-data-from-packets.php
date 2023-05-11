@@ -39,7 +39,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\convert\BlockStateDictionary;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
+use pocketmine\network\mcpe\convert\BlockTranslator;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\AvailableActorIdentifiersPacket;
 use pocketmine\network\mcpe\protocol\BiomeDefinitionListPacket;
@@ -109,10 +109,10 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 class ParserPacketHandler extends PacketHandler{
 
 	public ?ItemTypeDictionary $itemTypeDictionary = null;
-	private RuntimeBlockMapping $blockMapping;
+	private BlockTranslator $blockTranslator;
 
 	public function __construct(private string $bedrockDataPath){
-		$this->blockMapping = new RuntimeBlockMapping(
+		$this->blockTranslator = new BlockTranslator(
 			BlockStateDictionary::loadFromString(
 				Filesystem::fileGetContents(Path::join($this->bedrockDataPath, "canonical_block_states.nbt")),
 				Filesystem::fileGetContents(Path::join($this->bedrockDataPath, "block_state_meta_map.json")),
@@ -150,7 +150,7 @@ class ParserPacketHandler extends PacketHandler{
 			if($meta !== 0){
 				throw new PacketHandlingException("Unexpected non-zero blockitem meta");
 			}
-			$blockState = $this->blockMapping->getBlockStateDictionary()->getDataFromStateId($itemStack->getBlockRuntimeId()) ?? null;
+			$blockState = $this->blockTranslator->getBlockStateDictionary()->generateDataFromStateId($itemStack->getBlockRuntimeId()) ?? null;
 			if($blockState === null){
 				throw new PacketHandlingException("Unmapped blockstate ID " . $itemStack->getBlockRuntimeId());
 			}
@@ -268,9 +268,9 @@ class ParserPacketHandler extends PacketHandler{
 			}
 			$meta = $descriptor->getMeta();
 			if($meta !== 32767){
-				$blockStateId = $this->blockMapping->getBlockStateDictionary()->lookupStateIdFromIdMeta($data->name, $meta);
+				$blockStateId = $this->blockTranslator->getBlockStateDictionary()->lookupStateIdFromIdMeta($data->name, $meta);
 				if($blockStateId !== null){
-					$blockState = $this->blockMapping->getBlockStateDictionary()->getDataFromStateId($blockStateId);
+					$blockState = $this->blockTranslator->getBlockStateDictionary()->generateDataFromStateId($blockStateId);
 					if($blockState !== null && count($blockState->getStates()) > 0){
 						$data->block_states = self::blockStatePropertiesToString($blockState);
 					}

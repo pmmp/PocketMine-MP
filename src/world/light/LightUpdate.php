@@ -28,6 +28,7 @@ use pocketmine\world\format\SubChunk;
 use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use pocketmine\world\World;
+use function assert;
 use function max;
 
 //TODO: make light updates asynchronous
@@ -115,6 +116,9 @@ abstract class LightUpdate{
 		$context = $this->prepareNodes();
 
 		$touched = 0;
+		$lightArray = null;
+		$subChunkExplorer = $this->subChunkExplorer;
+		$subChunkExplorer->invalidate();
 		while(!$context->removalQueue->isEmpty()){
 			$touched++;
 			[$x, $y, $z, $oldAdjacentLight] = $context->removalQueue->dequeue();
@@ -124,22 +128,37 @@ abstract class LightUpdate{
 				$cy = $y + $oy;
 				$cz = $z + $oz;
 
-				if($this->subChunkExplorer->moveTo($cx, $cy, $cz) !== SubChunkExplorerStatus::INVALID){
-					$this->computeRemoveLight($cx, $cy, $cz, $oldAdjacentLight, $context);
+				$moveStatus = $subChunkExplorer->moveTo($cx, $cy, $cz);
+				if($moveStatus === SubChunkExplorerStatus::INVALID){
+					continue;
 				}
+				if($moveStatus === SubChunkExplorerStatus::MOVED){
+					$lightArray = $this->getCurrentLightArray();
+				}
+				assert($lightArray !== null);
+				$this->computeRemoveLight($cx, $cy, $cz, $oldAdjacentLight, $context, $lightArray);
 			}
 		}
 
+		$subChunk = null;
+		$subChunkExplorer->invalidate();
 		while(!$context->spreadQueue->isEmpty()){
 			$touched++;
 			[$x, $y, $z] = $context->spreadQueue->dequeue();
 
 			unset($context->spreadVisited[World::blockHash($x, $y, $z)]);
 
-			if($this->subChunkExplorer->moveTo($x, $y, $z) === SubChunkExplorerStatus::INVALID){
+			$moveStatus = $subChunkExplorer->moveTo($x, $y, $z);
+			if($moveStatus === SubChunkExplorerStatus::INVALID){
 				continue;
 			}
-			$newAdjacentLight = $this->getCurrentLightArray()->get($x & SubChunk::COORD_MASK, $y & SubChunk::COORD_MASK, $z & SubChunk::COORD_MASK);
+			if($moveStatus === SubChunkExplorerStatus::MOVED){
+				$subChunk = $subChunkExplorer->currentSubChunk;
+				$lightArray = $this->getCurrentLightArray();
+			}
+			assert($lightArray !== null);
+
+			$newAdjacentLight = $lightArray->get($x & SubChunk::COORD_MASK, $y & SubChunk::COORD_MASK, $z & SubChunk::COORD_MASK);
 			if($newAdjacentLight <= 0){
 				continue;
 			}
@@ -149,17 +168,23 @@ abstract class LightUpdate{
 				$cy = $y + $oy;
 				$cz = $z + $oz;
 
-				if($this->subChunkExplorer->moveTo($cx, $cy, $cz) !== SubChunkExplorerStatus::INVALID){
-					$this->computeSpreadLight($cx, $cy, $cz, $newAdjacentLight, $context);
+				$moveStatus = $subChunkExplorer->moveTo($cx, $cy, $cz);
+				if($moveStatus === SubChunkExplorerStatus::INVALID){
+					continue;
 				}
+				if($moveStatus === SubChunkExplorerStatus::MOVED){
+					$subChunk = $subChunkExplorer->currentSubChunk;
+					$lightArray = $this->getCurrentLightArray();
+				}
+				assert($subChunk !== null);
+				$this->computeSpreadLight($cx, $cy, $cz, $newAdjacentLight, $context, $lightArray, $subChunk);
 			}
 		}
 
 		return $touched;
 	}
 
-	protected function computeRemoveLight(int $x, int $y, int $z, int $oldAdjacentLevel, LightPropagationContext $context) : void{
-		$lightArray = $this->getCurrentLightArray();
+	protected function computeRemoveLight(int $x, int $y, int $z, int $oldAdjacentLevel, LightPropagationContext $context, LightArray $lightArray) : void{
 		$lx = $x & SubChunk::COORD_MASK;
 		$ly = $y & SubChunk::COORD_MASK;
 		$lz = $z & SubChunk::COORD_MASK;
@@ -182,13 +207,12 @@ abstract class LightUpdate{
 		}
 	}
 
-	protected function computeSpreadLight(int $x, int $y, int $z, int $newAdjacentLevel, LightPropagationContext $context) : void{
-		$lightArray = $this->getCurrentLightArray();
+	protected function computeSpreadLight(int $x, int $y, int $z, int $newAdjacentLevel, LightPropagationContext $context, LightArray $lightArray, SubChunk $subChunk) : void{
 		$lx = $x & SubChunk::COORD_MASK;
 		$ly = $y & SubChunk::COORD_MASK;
 		$lz = $z & SubChunk::COORD_MASK;
 		$current = $lightArray->get($lx, $ly, $lz);
-		$potentialLight = $newAdjacentLevel - ($this->lightFilters[$this->subChunkExplorer->currentSubChunk->getBlockStateId($lx, $ly, $lz)] ?? self::BASE_LIGHT_FILTER);
+		$potentialLight = $newAdjacentLevel - ($this->lightFilters[$subChunk->getBlockStateId($lx, $ly, $lz)] ?? self::BASE_LIGHT_FILTER);
 
 		if($current < $potentialLight){
 			$lightArray->set($lx, $ly, $lz, $potentialLight);

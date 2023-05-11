@@ -94,7 +94,7 @@ class CocoaBlock extends Transparent{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($item instanceof Fertilizer && $this->grow()){
+		if($item instanceof Fertilizer && $this->grow($player)){
 			$item->pop();
 
 			return true;
@@ -119,11 +119,11 @@ class CocoaBlock extends Transparent{
 		}
 	}
 
-	private function grow() : bool{
+	private function grow(?Player $player = null) : bool{
 		if($this->age < self::MAX_AGE){
 			$block = clone $this;
 			$block->age++;
-			$ev = new BlockGrowEvent($this, $block);
+			$ev = new BlockGrowEvent($this, $block, $player);
 			$ev->call();
 			if(!$ev->isCancelled()){
 				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());

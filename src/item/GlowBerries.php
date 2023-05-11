@@ -21,19 +21,22 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\convert;
+namespace pocketmine\item;
 
-use PHPUnit\Framework\TestCase;
-use pocketmine\block\RuntimeBlockStateRegistry;
+use pocketmine\block\Block;
+use pocketmine\block\VanillaBlocks;
 
-class RuntimeBlockMappingTest extends TestCase{
+class GlowBerries extends Food{
 
-	/**
-	 * @doesNotPerformAssertions
-	 */
-	public function testAllBlockStatesSerialize() : void{
-		foreach(RuntimeBlockStateRegistry::getInstance()->getAllKnownStates() as $state){
-			RuntimeBlockMapping::getInstance()->toRuntimeId($state->getStateId());
-		}
+	public function getFoodRestore() : int{
+		return 2;
+	}
+
+	public function getSaturationRestore() : float{
+		return 0.4;
+	}
+
+	public function getBlock(?int $clickedFace = null) : Block{
+		return VanillaBlocks::CAVE_VINES();
 	}
 }

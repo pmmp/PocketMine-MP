@@ -44,6 +44,7 @@ use pocketmine\block\Candle;
 use pocketmine\block\Carpet;
 use pocketmine\block\Carrot;
 use pocketmine\block\CarvedPumpkin;
+use pocketmine\block\CaveVines;
 use pocketmine\block\Chain;
 use pocketmine\block\ChemistryTable;
 use pocketmine\block\Chest;
@@ -772,6 +773,17 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::CARVED_PUMPKIN(), function(CarvedPumpkin $block) : Writer{
 			return Writer::create(Ids::CARVED_PUMPKIN)
 				->writeLegacyHorizontalFacing($block->getFacing());
+		});
+		$this->map(Blocks::CAVE_VINES(), function(CaveVines $block) : Writer{
+			//I have no idea why this only has 3 IDs - there are 4 in Java and 4 visually distinct states in Bedrock
+			return Writer::create($block->hasBerries() ?
+				($block->isHead() ?
+					Ids::CAVE_VINES_HEAD_WITH_BERRIES :
+					Ids::CAVE_VINES_BODY_WITH_BERRIES
+				) :
+				Ids::CAVE_VINES
+			)
+				->writeInt(StateNames::GROWING_PLANT_AGE, $block->getAge());
 		});
 		$this->map(Blocks::CHAIN(), function(Chain $block) : Writer{
 			return Writer::create(Ids::CHAIN)

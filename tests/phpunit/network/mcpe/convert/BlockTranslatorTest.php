@@ -21,17 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world;
+namespace pocketmine\network\mcpe\convert;
 
-/**
- * @internal
- */
-final class TickingChunkEntry{
+use PHPUnit\Framework\TestCase;
+use pocketmine\block\RuntimeBlockStateRegistry;
+
+class BlockTranslatorTest extends TestCase{
+
 	/**
-	 * @var ChunkTicker[] spl_object_id => ChunkTicker
-	 * @phpstan-var array<int, ChunkTicker>
+	 * @doesNotPerformAssertions
 	 */
-	public array $tickers = [];
-
-	public bool $ready = false;
+	public function testAllBlockStatesSerialize() : void{
+		$blockTranslator = TypeConverter::getInstance()->getBlockTranslator();
+		foreach(RuntimeBlockStateRegistry::getInstance()->getAllKnownStates() as $state){
+			$blockTranslator->internalIdToNetworkId($state->getStateId());
+		}
+	}
 }

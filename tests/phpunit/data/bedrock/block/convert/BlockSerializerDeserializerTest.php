@@ -27,6 +27,7 @@ use PHPUnit\Framework\TestCase;
 use pocketmine\block\BaseBanner;
 use pocketmine\block\Bed;
 use pocketmine\block\BlockTypeIds;
+use pocketmine\block\CaveVines;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\Skull;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
@@ -61,9 +62,11 @@ final class BlockSerializerDeserializerTest extends TestCase{
 			}
 
 			//The following are workarounds for differences in blockstate representation in Bedrock vs PM
-			//In these cases, some properties are not stored in the blockstate (but rather in the block entity NBT), but
-			//they do form part of the internal blockstate hash in PM. This leads to inconsistencies when serializing
-			//and deserializing blockstates.
+			//In some cases, some properties are not stored in the blockstate (but rather in the block entity NBT), but
+			//they do form part of the internal blockstate hash in PM. In other cases, PM allows representing states
+			//that don't exist in Bedrock, such as the cave vines head without berries, which is a state that visually
+			//exists in Bedrock, but doesn't have its own ID.
+			//This leads to inconsistencies when serializing and deserializing blockstates which we need to correct for.
 			if(
 				($block instanceof BaseBanner && $newBlock instanceof BaseBanner) ||
 				($block instanceof Bed && $newBlock instanceof Bed)
@@ -71,6 +74,8 @@ final class BlockSerializerDeserializerTest extends TestCase{
 				$newBlock->setColor($block->getColor());
 			}elseif($block instanceof Skull && $newBlock instanceof Skull){
 				$newBlock->setSkullType($block->getSkullType());
+			}elseif($block instanceof CaveVines && $newBlock instanceof CaveVines && !$block->hasBerries()){
+				$newBlock->setHead($block->isHead());
 			}
 
 			self::assertSame($block->getStateId(), $newBlock->getStateId(), "Mismatch of blockstate for " . $block->getName() . ", " . print_r($block, true) . " vs " . print_r($newBlock, true));

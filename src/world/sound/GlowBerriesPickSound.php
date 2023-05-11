@@ -21,25 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\convert;
+namespace pocketmine\world\sound;
 
-use pocketmine\data\bedrock\BedrockDataFiles;
-use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
-use pocketmine\utils\Filesystem;
-use pocketmine\utils\SingletonTrait;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-final class GlobalItemTypeDictionary{
-	use SingletonTrait;
+class GlowBerriesPickSound implements Sound{
 
-	private static function make() : self{
-		$data = Filesystem::fileGetContents(BedrockDataFiles::REQUIRED_ITEM_LIST_JSON);
-		$dictionary = ItemTypeDictionaryFromDataHelper::loadFromString($data);
-		return new self($dictionary);
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::CAVE_VINES_PICK_BERRIES, $pos, false)];
 	}
-
-	public function __construct(
-		private ItemTypeDictionary $dictionary
-	){}
-
-	public function getDictionary() : ItemTypeDictionary{ return $this->dictionary; }
 }

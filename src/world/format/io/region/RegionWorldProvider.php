@@ -118,12 +118,11 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 			try{
 				$this->regions[$index] = RegionLoader::loadExisting($path);
 			}catch(CorruptedRegionException $e){
-				$logger = \GlobalLogger::get();
-				$logger->error("Corrupted region file detected: " . $e->getMessage());
+				$this->logger->error("Corrupted region file detected: " . $e->getMessage());
 
 				$backupPath = $path . ".bak." . time();
 				rename($path, $backupPath);
-				$logger->error("Corrupted region file has been backed up to " . $backupPath);
+				$this->logger->error("Corrupted region file has been backed up to " . $backupPath);
 
 				$this->regions[$index] = RegionLoader::createNew($path);
 			}
