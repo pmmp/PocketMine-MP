@@ -32,8 +32,6 @@ use pocketmine\item\CoralFan;
 use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
 use pocketmine\item\VanillaItems as Items;
-use pocketmine\utils\AssumptionFailedError;
-use function class_parents;
 use function get_class;
 
 final class ItemSerializer{
