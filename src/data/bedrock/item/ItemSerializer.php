@@ -66,11 +66,7 @@ final class ItemSerializer{
 	 */
 	public function map(Item $item, \Closure $serializer) : void{
 		$index = $item->getTypeId();
-		if(isset($this->itemSerializers[$index])){
-			//TODO: REMOVE ME
-			throw new AssumptionFailedError("Registering the same item twice!");
-		}
-		$this->itemSerializers[$index][get_class($item)] = $serializer;
+		$this->itemSerializers[$index] = $serializer;
 	}
 
 	/**
@@ -80,10 +76,7 @@ final class ItemSerializer{
 	 */
 	public function mapBlock(Block $block, \Closure $serializer) : void{
 		$index = $block->getTypeId();
-		if(isset($this->blockItemSerializers[$index])){
-			throw new AssumptionFailedError("Registering the same blockitem twice!");
-		}
-		$this->blockItemSerializers[$index][get_class($block)] = $serializer;
+		$this->blockItemSerializers[$index] = $serializer;
 	}
 
 	/**
@@ -101,15 +94,7 @@ final class ItemSerializer{
 		}else{
 			$index = $item->getTypeId();
 
-			$locatedSerializer = $this->itemSerializers[$index][get_class($item)] ?? null;
-			if($locatedSerializer === null){
-				foreach(class_parents($item) as $parent){
-					if(isset($this->itemSerializers[$index][$parent])){
-						$locatedSerializer = $this->itemSerializers[$index][$parent];
-						break;
-					}
-				}
-			}
+			$locatedSerializer = $this->itemSerializers[$index] ?? null;
 
 			if($locatedSerializer === null){
 				throw new ItemTypeSerializeException("No serializer registered for " . get_class($item) . " ($index) " . $item->getName());
@@ -157,15 +142,7 @@ final class ItemSerializer{
 	private function serializeBlockItem(Block $block) : Data{
 		$index = $block->getTypeId();
 
-		$locatedSerializer = $this->blockItemSerializers[$index][get_class($block)] ?? null;
-		if($locatedSerializer === null){
-			foreach(class_parents($block) as $parent){
-				if(isset($this->blockItemSerializers[$index][$parent])){
-					$locatedSerializer = $this->blockItemSerializers[$index][$parent];
-					break;
-				}
-			}
-		}
+		$locatedSerializer = $this->blockItemSerializers[$index] ?? null;
 
 		if($locatedSerializer !== null){
 			/** @phpstan-var \Closure(TBlockType) : Data $serializer */

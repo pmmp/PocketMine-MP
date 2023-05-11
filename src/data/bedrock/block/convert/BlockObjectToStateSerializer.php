@@ -209,11 +209,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	 * @phpstan-param \Closure(TBlockType) : Writer $serializer
 	 */
 	public function map(Block $block, \Closure $serializer) : void{
-		if(isset($this->serializers[$block->getTypeId()])){
-			//TODO: REMOVE ME
-			throw new AssumptionFailedError("Registering the same block twice!");
-		}
-		$this->serializers[$block->getTypeId()][get_class($block)] = $serializer;
+		$this->serializers[$block->getTypeId()] = $serializer;
 	}
 
 	public function mapSimple(Block $block, string $id) : void{
@@ -241,15 +237,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	public function serializeBlock(Block $blockState) : BlockStateData{
 		$typeId = $blockState->getTypeId();
 
-		$locatedSerializer = $this->serializers[$typeId][get_class($blockState)] ?? null;
-		if($locatedSerializer === null){
-			foreach(class_parents($blockState) as $parent){
-				if(isset($this->serializers[$typeId][$parent])){
-					$locatedSerializer = $this->serializers[$typeId][$parent];
-					break;
-				}
-			}
-		}
+		$locatedSerializer = $this->serializers[$typeId] ?? null;
 
 		if($locatedSerializer === null){
 			throw new BlockStateSerializeException("No serializer registered for " . get_class($blockState) . " with type ID $typeId");
