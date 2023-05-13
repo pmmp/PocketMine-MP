@@ -2531,7 +2531,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	/**
-	 * Returns the default CreativeInventory instance if no custom one was set.
+	 * Returns the creative inventory shown to the player.
+	 * Unless changed by a plugin, this is usually the same for all players.
 	 */
 	public function getCreativeInventory() : CreativeInventory{
 		return $this->creativeInventory;
@@ -2539,7 +2540,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	/**
 	 * To set a custom creative inventory, you need to make a clone of a CreativeInventory instance.
-	 * Make sure to use this method only in or after `PlayerJoinEvent` to sync the contents on the client.
+	 * Make sure to use this method only in or after `PlayerLoginEvent` to sync the contents on the client.
 	 */
 	public function setCreativeInventory(CreativeInventory $inventory) : void{
 		$this->creativeInventory = $inventory;
