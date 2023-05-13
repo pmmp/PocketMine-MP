@@ -33,7 +33,7 @@ class Wheat extends Crops{
 		if($this->age >= self::MAX_AGE){
 			return [
 				VanillaItems::WHEAT(),
-				VanillaItems::WHEAT_SEEDS()->setCount(mt_rand(0, 3))
+				VanillaItems::WHEAT_SEEDS()->setCount(mt_rand(1, 4))
 			];
 		}else{
 			return [
