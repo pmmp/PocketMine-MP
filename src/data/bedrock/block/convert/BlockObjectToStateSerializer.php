@@ -177,7 +177,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	 * describe the bottom type of a type hierarchy only containing Block.
 	 *
 	 * @var \Closure[][]
-	 * @phpstan-var array<int, array<class-string, \Closure(never) : Writer>>
+	 * @phpstan-var array<int, \Closure(never) : Writer>
 	 */
 	private array $serializers = [];
 

@@ -39,14 +39,14 @@ final class ItemSerializer{
 	 * These callables actually accept Item, but for the sake of type completeness, it has to be never, since we can't
 	 * describe the bottom type of a type hierarchy only containing Item.
 	 *
-	 * @var \Closure[][]
-	 * @phpstan-var array<int, array<class-string, \Closure(never) : Data>>
+	 * @var \Closure[]
+	 * @phpstan-var array<int,  \Closure(never) : Data>
 	 */
 	private array $itemSerializers = [];
 
 	/**
-	 * @var \Closure[][]
-	 * @phpstan-var array<int, array<class-string, \Closure(never) : Data>>
+	 * @var \Closure[]
+	 * @phpstan-var array<int, \Closure(never) : Data>
 	 */
 	private array $blockItemSerializers = [];
 
