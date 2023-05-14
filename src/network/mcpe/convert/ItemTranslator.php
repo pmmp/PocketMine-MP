@@ -110,6 +110,12 @@ final class ItemTranslator{
 					//new item without a fixed legacy ID - we can't handle this right now
 					continue;
 				}
+				if(isset($complexMappings[$newId]) && $complexMappings[$newId][0] === $intId && $complexMappings[$newId][1] <= $meta){
+					//TODO: HACK! Multiple legacy ID/meta pairs can be mapped to the same new ID (see minecraft:log)
+					//Assume that the first one is the most relevant for now
+					//However, this could catch fire in the future if this assumption is broken
+					continue;
+				}
 				$complexMappings[$newId] = [$intId, (int) $meta];
 			}
 		}
