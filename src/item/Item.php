@@ -55,6 +55,7 @@ use function count;
 use function gettype;
 use function hex2bin;
 use function is_string;
+use function morton2d_encode;
 
 class Item implements \JsonSerializable{
 	use ItemEnchantmentHandlingTrait;
@@ -469,7 +470,11 @@ class Item implements \JsonSerializable{
 		return $this->identifier->getTypeId();
 	}
 
-	final public function computeStateData() : int{
+	final public function getStateId() : int{
+		return morton2d_encode($this->identifier->getTypeId(), $this->computeStateData());
+	}
+
+	private function computeStateData() : int{
 		$writer = new RuntimeDataWriter(16); //TODO: max bits should be a constant instead of being hardcoded all over the place
 		$this->describeState($writer);
 		return $writer->getValue();
@@ -630,8 +635,7 @@ class Item implements \JsonSerializable{
 	 * @param bool $checkCompound Whether to verify that the items' NBT match.
 	 */
 	final public function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
-		return $this->getTypeId() === $item->getTypeId() &&
-			$this->computeStateData() === $item->computeStateData() &&
+		return $this->getStateId() === $item->getStateId() &&
 			(!$checkCompound || $this->getNamedTag()->equals($item->getNamedTag()));
 	}
 

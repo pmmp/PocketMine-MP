@@ -146,7 +146,6 @@ use function max;
 use function mb_strlen;
 use function microtime;
 use function min;
-use function morton2d_encode;
 use function preg_match;
 use function spl_object_id;
 use function sqrt;
@@ -687,7 +686,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function getItemCooldownExpiry(Item $item) : int{
 		$this->checkItemCooldowns();
-		return $this->usedItemsCooldown[morton2d_encode($item->getTypeId(), $item->computeStateData())] ?? 0;
+		return $this->usedItemsCooldown[$item->getStateId()] ?? 0;
 	}
 
 	/**
@@ -695,7 +694,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function hasItemCooldown(Item $item) : bool{
 		$this->checkItemCooldowns();
-		return isset($this->usedItemsCooldown[morton2d_encode($item->getTypeId(), $item->computeStateData())]);
+		return isset($this->usedItemsCooldown[$item->getStateId()]);
 	}
 
 	/**
@@ -704,7 +703,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function resetItemCooldown(Item $item, ?int $ticks = null) : void{
 		$ticks = $ticks ?? $item->getCooldownTicks();
 		if($ticks > 0){
-			$this->usedItemsCooldown[morton2d_encode($item->getTypeId(), $item->computeStateData())] = $this->server->getTick() + $ticks;
+			$this->usedItemsCooldown[$item->getStateId()] = $this->server->getTick() + $ticks;
 		}
 	}
 
