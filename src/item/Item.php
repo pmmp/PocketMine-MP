@@ -469,13 +469,17 @@ class Item implements \JsonSerializable{
 		return $this->identifier->getTypeId();
 	}
 
-	final public function computeTypeData() : int{
+	final public function computeStateData() : int{
 		$writer = new RuntimeDataWriter(16); //TODO: max bits should be a constant instead of being hardcoded all over the place
-		$this->describeType($writer);
+		$this->describeState($writer);
 		return $writer->getValue();
 	}
 
-	protected function describeType(RuntimeDataDescriber $w) : void{
+	/**
+	 * Describes state properties of the item, such as colour, skull type, etc.
+	 * This allows associating basic extra data with the item at runtime in a more efficient format than NBT.
+	 */
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		//NOOP
 	}
 
@@ -627,7 +631,7 @@ class Item implements \JsonSerializable{
 	 */
 	final public function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
 		return $this->getTypeId() === $item->getTypeId() &&
-			$this->computeTypeData() === $item->computeTypeData() &&
+			$this->computeStateData() === $item->computeStateData() &&
 			(!$checkCompound || $this->getNamedTag()->equals($item->getNamedTag()));
 	}
 
@@ -646,7 +650,7 @@ class Item implements \JsonSerializable{
 	}
 
 	final public function __toString() : string{
-		return "Item " . $this->name . " (" . $this->getTypeId() . ":" . $this->computeTypeData() . ")x" . $this->count . ($this->hasNamedTag() ? " tags:0x" . base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($this->getNamedTag()))) : "");
+		return "Item " . $this->name . " (" . $this->getTypeId() . ":" . $this->computeStateData() . ")x" . $this->count . ($this->hasNamedTag() ? " tags:0x" . base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($this->getNamedTag()))) : "");
 	}
 
 	/**

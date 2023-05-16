@@ -1540,7 +1540,7 @@ final class StringToItemParser extends StringToTParser{
 	public function register(string $alias, \Closure $callback) : void{
 		parent::register($alias, $callback);
 		$item = $callback($alias);
-		$this->reverseMap[$item->getTypeId()][$item->computeTypeData()][$alias] = true;
+		$this->reverseMap[$item->getTypeId()][$item->computeStateData()][$alias] = true;
 	}
 
 	/** @phpstan-param \Closure(string $input) : Block $callback */
@@ -1559,7 +1559,7 @@ final class StringToItemParser extends StringToTParser{
 	 * @phpstan-return list<string>
 	 */
 	public function lookupAliases(Item $item) : array{
-		$aliases = $this->reverseMap[$item->getTypeId()][$item->computeTypeData()] ?? [];
+		$aliases = $this->reverseMap[$item->getTypeId()][$item->computeStateData()] ?? [];
 		return array_keys($aliases);
 	}
 

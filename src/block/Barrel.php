@@ -38,7 +38,7 @@ class Barrel extends Opaque{
 
 	protected bool $open = false;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->facing($this->facing);
 		$w->bool($this->open);
 	}

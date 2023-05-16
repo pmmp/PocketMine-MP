@@ -34,7 +34,7 @@ class SuspiciousStew extends Food{
 		parent::__construct($identifier, $name);
 	}
 
-	protected function describeType(RuntimeDataDescriber $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->suspiciousStewType($this->suspiciousStewType);
 	}
 

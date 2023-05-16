@@ -36,7 +36,7 @@ class Torch extends Flowable{
 
 	protected int $facing = Facing::UP;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->facingExcept($this->facing, Facing::DOWN);
 	}
 

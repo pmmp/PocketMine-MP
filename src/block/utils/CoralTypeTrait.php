@@ -30,8 +30,8 @@ trait CoralTypeTrait{
 	protected CoralType $coralType;
 	protected bool $dead = false;
 
-	/** @see Block::describeType() */
-	public function describeType(RuntimeDataDescriber $w) : void{
+	/** @see Block::describeBlockItemState() */
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
 		$w->coralType($this->coralType);
 		$w->bool($this->dead);
 	}

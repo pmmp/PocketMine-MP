@@ -38,7 +38,7 @@ abstract class Button extends Flowable{
 
 	protected bool $pressed = false;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->facing($this->facing);
 		$w->bool($this->pressed);
 	}

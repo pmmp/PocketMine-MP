@@ -37,7 +37,7 @@ use function rad2deg;
 final class FloorCoralFan extends BaseCoral{
 	private int $axis = Axis::X;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalAxis($this->axis);
 	}
 

@@ -38,7 +38,7 @@ abstract class Crops extends Flowable{
 
 	protected int $age = 0;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(3, 0, self::MAX_AGE, $this->age);
 	}
 

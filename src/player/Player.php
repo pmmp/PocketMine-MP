@@ -687,7 +687,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function getItemCooldownExpiry(Item $item) : int{
 		$this->checkItemCooldowns();
-		return $this->usedItemsCooldown[morton2d_encode($item->getTypeId(), $item->computeTypeData())] ?? 0;
+		return $this->usedItemsCooldown[morton2d_encode($item->getTypeId(), $item->computeStateData())] ?? 0;
 	}
 
 	/**
@@ -695,7 +695,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function hasItemCooldown(Item $item) : bool{
 		$this->checkItemCooldowns();
-		return isset($this->usedItemsCooldown[morton2d_encode($item->getTypeId(), $item->computeTypeData())]);
+		return isset($this->usedItemsCooldown[morton2d_encode($item->getTypeId(), $item->computeStateData())]);
 	}
 
 	/**
@@ -704,7 +704,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function resetItemCooldown(Item $item, ?int $ticks = null) : void{
 		$ticks = $ticks ?? $item->getCooldownTicks();
 		if($ticks > 0){
-			$this->usedItemsCooldown[morton2d_encode($item->getTypeId(), $item->computeTypeData())] = $this->server->getTick() + $ticks;
+			$this->usedItemsCooldown[morton2d_encode($item->getTypeId(), $item->computeStateData())] = $this->server->getTick() + $ticks;
 		}
 	}
 

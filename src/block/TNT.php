@@ -45,11 +45,11 @@ class TNT extends Opaque{
 	protected bool $unstable = false; //TODO: Usage unclear, seems to be a weird hack in vanilla
 	protected bool $worksUnderwater = false;
 
-	public function describeType(RuntimeDataDescriber $w) : void{
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->worksUnderwater);
 	}
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->unstable);
 	}
 

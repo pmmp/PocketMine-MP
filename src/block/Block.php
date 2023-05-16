@@ -66,9 +66,9 @@ class Block{
 	/** @var AxisAlignedBB[]|null */
 	protected ?array $collisionBoxes = null;
 
-	private int $requiredTypeDataBits;
-	private int $requiredStateDataBits;
-	private int $defaultStateData;
+	private int $requiredBlockItemStateDataBits;
+	private int $requiredBlockOnlyStateDataBits;
+	private int $defaultBlockOnlyStateData;
 
 	/**
 	 * @param string $name English name of the block type (TODO: implement translations)
@@ -80,14 +80,14 @@ class Block{
 		$this->position = new Position(0, 0, 0, null);
 
 		$calculator = new RuntimeDataSizeCalculator();
-		$this->describeType($calculator);
-		$this->requiredTypeDataBits = $calculator->getBitsUsed();
+		$this->describeBlockItemState($calculator);
+		$this->requiredBlockItemStateDataBits = $calculator->getBitsUsed();
 
 		$calculator = new RuntimeDataSizeCalculator();
-		$this->describeState($calculator);
-		$this->requiredStateDataBits = $calculator->getBitsUsed();
+		$this->describeBlockOnlyState($calculator);
+		$this->requiredBlockOnlyStateDataBits = $calculator->getBitsUsed();
 
-		$this->defaultStateData = $this->computeStateData();
+		$this->defaultBlockOnlyStateData = $this->encodeBlockOnlyState();
 	}
 
 	public function __clone(){
@@ -111,10 +111,10 @@ class Block{
 
 	/**
 	 * Returns a type ID that identifies this type of block. This allows comparing basic block types, e.g. wool, stone,
-	 * glass, etc.
+	 * glass, etc. Type ID will not change for a given block type.
 	 *
-	 * This does **NOT** include information like facing, open/closed, powered/unpowered, colour, etc. This means that,
-	 * for example, red wool and green wool have the same type ID.
+	 * Information such as colour, powered, open/closed, etc. is **not** included in this ID.
+	 * If you want to get a state ID that includes this information, use {@link Block::getStateId()} instead.
 	 *
 	 * @see BlockTypeIds
 	 */
@@ -129,21 +129,22 @@ class Block{
 	 * blocks in chunks at runtime.
 	 *
 	 * This usually encodes all properties of the block, such as facing, open/closed, powered/unpowered, colour, etc.
-	 * However, some blocks (such as signs and chests) may store additional properties in an associated "tile" if they
+	 * State ID may change depending on the properties of the block (e.g. a torch facing east will have a different
+	 * state ID to one facing west).
+	 *
+	 * Some blocks (such as signs and chests) may store additional properties in an associated "tile" if they
 	 * have too many possible values to be encoded into the state ID. These extra properties are **NOT** included in
 	 * this function's result.
 	 *
-	 * This ID can be used to later obtain a copy of this block using {@link RuntimeBlockStateRegistry::fromStateId()}.
+	 * This ID can be used to later obtain a copy of the block with the same state properties by using
+	 * {@link RuntimeBlockStateRegistry::fromStateId()}.
 	 */
 	public function getStateId() : int{
-		return ($this->getTypeId() << self::INTERNAL_STATE_DATA_BITS) | $this->computeTypeAndStateData();
+		return ($this->getTypeId() << self::INTERNAL_STATE_DATA_BITS) | $this->encodeFullState();
 	}
 
 	/**
-	 * Returns whether the given block has an equivalent type to this one. This compares the type IDs.
-	 *
-	 * Type properties (e.g. colour, skull type, etc.) are not compared. This means that different colours of wool,
-	 * concrete, etc. will all be considered as having the same type.
+	 * Returns whether the given block has the same type ID as this one.
 	 */
 	public function hasSameTypeId(Block $other) : bool{
 		return $this->getTypeId() === $other->getTypeId();
@@ -151,6 +152,8 @@ class Block{
 
 	/**
 	 * Returns whether the given block has the same type and properties as this block.
+	 *
+	 * Note: Tile data (e.g. sign text, chest contents) are not compared here.
 	 */
 	public function isSameState(Block $other) : bool{
 		return $this->getStateId() === $other->getStateId();
@@ -177,69 +180,69 @@ class Block{
 
 	/**
 	 * Returns the block as an item.
-	 * State information such as facing, powered/unpowered, open/closed, etc., is discarded.
-	 * Type information such as colour, wood type, etc. is preserved.
+	 * Block-only state such as facing, powered/unpowered, open/closed, etc., is discarded.
+	 * Block-item state such as colour, wood type, etc. is preserved.
 	 */
 	public function asItem() : Item{
 		$normalized = clone $this;
-		$normalized->decodeStateData($this->defaultStateData);
+		$normalized->decodeBlockOnlyState($this->defaultBlockOnlyStateData);
 		return new ItemBlock($normalized);
 	}
 
-	private function decodeTypeData(int $data) : void{
-		$reader = new RuntimeDataReader($this->requiredTypeDataBits, $data);
+	private function decodeBlockItemState(int $data) : void{
+		$reader = new RuntimeDataReader($this->requiredBlockItemStateDataBits, $data);
 
-		$this->describeType($reader);
+		$this->describeBlockItemState($reader);
 		$readBits = $reader->getOffset();
-		if($this->requiredTypeDataBits !== $readBits){
-			throw new \LogicException(get_class($this) . ": Exactly $this->requiredTypeDataBits bits of type data were provided, but $readBits were read");
+		if($this->requiredBlockItemStateDataBits !== $readBits){
+			throw new \LogicException(get_class($this) . ": Exactly $this->requiredBlockItemStateDataBits bits of block-item state data were provided, but $readBits were read");
 		}
 	}
 
-	private function decodeStateData(int $data) : void{
-		$reader = new RuntimeDataReader($this->requiredStateDataBits, $data);
+	private function decodeBlockOnlyState(int $data) : void{
+		$reader = new RuntimeDataReader($this->requiredBlockOnlyStateDataBits, $data);
 
-		$this->describeState($reader);
+		$this->describeBlockOnlyState($reader);
 		$readBits = $reader->getOffset();
-		if($this->requiredStateDataBits !== $readBits){
-			throw new \LogicException(get_class($this) . ": Exactly $this->requiredStateDataBits bits of state data were provided, but $readBits were read");
+		if($this->requiredBlockOnlyStateDataBits !== $readBits){
+			throw new \LogicException(get_class($this) . ": Exactly $this->requiredBlockOnlyStateDataBits bits of block-only state data were provided, but $readBits were read");
 		}
 	}
 
-	private function decodeTypeAndStateData(int $data) : void{
-		$reader = new RuntimeDataReader($this->requiredTypeDataBits + $this->requiredStateDataBits, $data);
-		$this->decodeTypeData($reader->readInt($this->requiredTypeDataBits));
-		$this->decodeStateData($reader->readInt($this->requiredStateDataBits));
+	private function decodeFullState(int $data) : void{
+		$reader = new RuntimeDataReader($this->requiredBlockItemStateDataBits + $this->requiredBlockOnlyStateDataBits, $data);
+		$this->decodeBlockItemState($reader->readInt($this->requiredBlockItemStateDataBits));
+		$this->decodeBlockOnlyState($reader->readInt($this->requiredBlockOnlyStateDataBits));
 	}
 
-	private function computeTypeData() : int{
-		$writer = new RuntimeDataWriter($this->requiredTypeDataBits);
+	private function encodeBlockItemState() : int{
+		$writer = new RuntimeDataWriter($this->requiredBlockItemStateDataBits);
 
-		$this->describeType($writer);
+		$this->describeBlockItemState($writer);
 		$writtenBits = $writer->getOffset();
-		if($this->requiredTypeDataBits !== $writtenBits){
-			throw new \LogicException(get_class($this) . ": Exactly $this->requiredTypeDataBits bits of type data were expected, but $writtenBits were written");
+		if($this->requiredBlockItemStateDataBits !== $writtenBits){
+			throw new \LogicException(get_class($this) . ": Exactly $this->requiredBlockItemStateDataBits bits of block-item state data were expected, but $writtenBits were written");
 		}
 
 		return $writer->getValue();
 	}
 
-	private function computeStateData() : int{
-		$writer = new RuntimeDataWriter($this->requiredStateDataBits);
+	private function encodeBlockOnlyState() : int{
+		$writer = new RuntimeDataWriter($this->requiredBlockOnlyStateDataBits);
 
-		$this->describeState($writer);
+		$this->describeBlockOnlyState($writer);
 		$writtenBits = $writer->getOffset();
-		if($this->requiredStateDataBits !== $writtenBits){
-			throw new \LogicException(get_class($this) . ": Exactly $this->requiredStateDataBits bits of state data were expected, but $writtenBits were written");
+		if($this->requiredBlockOnlyStateDataBits !== $writtenBits){
+			throw new \LogicException(get_class($this) . ": Exactly $this->requiredBlockOnlyStateDataBits bits of block-only state data were expected, but $writtenBits were written");
 		}
 
 		return $writer->getValue();
 	}
 
-	private function computeTypeAndStateData() : int{
-		$writer = new RuntimeDataWriter($this->requiredTypeDataBits + $this->requiredStateDataBits);
-		$writer->writeInt($this->requiredTypeDataBits, $this->computeTypeData());
-		$writer->writeInt($this->requiredStateDataBits, $this->computeStateData());
+	private function encodeFullState() : int{
+		$writer = new RuntimeDataWriter($this->requiredBlockItemStateDataBits + $this->requiredBlockOnlyStateDataBits);
+		$writer->writeInt($this->requiredBlockItemStateDataBits, $this->encodeBlockItemState());
+		$writer->writeInt($this->requiredBlockOnlyStateDataBits, $this->encodeBlockOnlyState());
 
 		return $writer->getValue();
 	}
@@ -252,7 +255,7 @@ class Block{
 	 * The method implementation must NOT use conditional logic to determine which properties are written. It must
 	 * always write the same properties in the same order, regardless of the current state of the block.
 	 */
-	public function describeType(RuntimeDataDescriber $w) : void{
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
 		//NOOP
 	}
 
@@ -264,7 +267,7 @@ class Block{
 	 * The method implementation must NOT use conditional logic to determine which properties are written. It must
 	 * always write the same properties in the same order, regardless of the current state of the block.
 	 */
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		//NOOP
 	}
 
@@ -278,16 +281,16 @@ class Block{
 	public function generateStatePermutations() : \Generator{
 		//TODO: this bruteforce approach to discovering all valid states is very inefficient for larger state data sizes
 		//at some point we'll need to find a better way to do this
-		$bits = $this->requiredTypeDataBits + $this->requiredStateDataBits;
+		$bits = $this->requiredBlockItemStateDataBits + $this->requiredBlockOnlyStateDataBits;
 		if($bits > Block::INTERNAL_STATE_DATA_BITS){
 			throw new \LogicException("Block state data cannot use more than " . Block::INTERNAL_STATE_DATA_BITS . " bits");
 		}
 		for($stateData = 0; $stateData < (1 << $bits); ++$stateData){
 			$v = clone $this;
 			try{
-				$v->decodeTypeAndStateData($stateData);
-				if($v->computeTypeAndStateData() !== $stateData){
-					throw new \LogicException(static::class . "::decodeStateData() accepts invalid state data (returned " . $v->computeTypeAndStateData() . " for input $stateData)");
+				$v->decodeFullState($stateData);
+				if($v->encodeFullState() !== $stateData){
+					throw new \LogicException(static::class . "::decodeStateData() accepts invalid state data (returned " . $v->encodeFullState() . " for input $stateData)");
 				}
 			}catch(InvalidSerializedRuntimeDataException){ //invalid property combination, leave it
 				continue;
@@ -732,7 +735,7 @@ class Block{
 	 * @return string
 	 */
 	public function __toString(){
-		return "Block[" . $this->getName() . "] (" . $this->getTypeId() . ":" . $this->computeTypeAndStateData() . ")";
+		return "Block[" . $this->getName() . "] (" . $this->getTypeId() . ":" . $this->encodeFullState() . ")";
 	}
 
 	/**

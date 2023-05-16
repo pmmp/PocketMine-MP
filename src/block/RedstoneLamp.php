@@ -29,7 +29,7 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 class RedstoneLamp extends Opaque{
 	use PoweredByRedstoneTrait;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->powered);
 	}
 

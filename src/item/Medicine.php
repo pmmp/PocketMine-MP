@@ -36,7 +36,7 @@ class Medicine extends Item implements ConsumableItem{
 		parent::__construct($identifier, $name);
 	}
 
-	protected function describeType(RuntimeDataDescriber $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->medicineType($this->medicineType);
 	}
 

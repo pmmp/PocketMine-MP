@@ -34,7 +34,7 @@ use pocketmine\world\BlockTransaction;
 class ShulkerBox extends Opaque{
 	use AnyFacingTrait;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		//NOOP - we don't read or write facing here, because the tile persists it
 	}
 

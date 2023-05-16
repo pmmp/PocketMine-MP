@@ -30,7 +30,7 @@ use pocketmine\math\Facing;
 trait HorizontalFacingTrait{
 	protected int $facing = Facing::NORTH;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 	}
 

@@ -40,7 +40,7 @@ class Trapdoor extends Transparent{
 	protected bool $open = false;
 	protected bool $top = false;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->bool($this->top);
 		$w->bool($this->open);

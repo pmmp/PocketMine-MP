@@ -43,7 +43,7 @@ class Lantern extends Transparent{
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->hanging);
 	}
 

@@ -37,7 +37,7 @@ use pocketmine\world\BlockTransaction;
 
 class Candle extends Transparent{
 	use CandleTrait {
-		describeState as encodeLitState;
+		describeBlockOnlyState as encodeLitState;
 		getLightLevel as getBaseLightLevel;
 	}
 
@@ -46,7 +46,7 @@ class Candle extends Transparent{
 
 	private int $count = self::MIN_COUNT;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$this->encodeLitState($w);
 		$w->boundedInt(2, self::MIN_COUNT, self::MAX_COUNT, $this->count);
 	}

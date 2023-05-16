@@ -103,7 +103,7 @@ class CraftingManager{
 	 */
 	public static function sort(Item $i1, Item $i2) : int{
 		//Use spaceship operator to compare each property, then try the next one if they are equivalent.
-		($retval = $i1->getTypeId() <=> $i2->getTypeId()) === 0 && ($retval = $i1->computeTypeData() <=> $i2->computeTypeData()) === 0 && ($retval = $i1->getCount() <=> $i2->getCount()) === 0;
+		($retval = $i1->getTypeId() <=> $i2->getTypeId()) === 0 && ($retval = $i1->computeStateData() <=> $i2->computeStateData()) === 0 && ($retval = $i1->getCount() <=> $i2->getCount()) === 0;
 
 		return $retval;
 	}
@@ -142,7 +142,7 @@ class CraftingManager{
 		foreach($outputs as $o){
 			//count is not written because the outputs might be from multiple repetitions of a single recipe
 			//this reduces the accuracy of the hash, but it won't matter in most cases.
-			$result->putVarInt(morton2d_encode($o->getTypeId(), $o->computeTypeData()));
+			$result->putVarInt(morton2d_encode($o->getTypeId(), $o->computeStateData()));
 			$result->put((new LittleEndianNbtSerializer())->write(new TreeRoot($o->getNamedTag())));
 		}
 
@@ -283,8 +283,8 @@ class CraftingManager{
 	}
 
 	public function matchBrewingRecipe(Item $input, Item $ingredient) : ?BrewingRecipe{
-		$inputHash = morton2d_encode($input->getTypeId(), $input->computeTypeData());
-		$ingredientHash = morton2d_encode($ingredient->getTypeId(), $ingredient->computeTypeData());
+		$inputHash = morton2d_encode($input->getTypeId(), $input->computeStateData());
+		$ingredientHash = morton2d_encode($ingredient->getTypeId(), $ingredient->computeStateData());
 		$cached = $this->brewingRecipeCache[$inputHash][$ingredientHash] ?? null;
 		if($cached !== null){
 			return $cached;

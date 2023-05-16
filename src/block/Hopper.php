@@ -39,7 +39,7 @@ class Hopper extends Transparent{
 
 	private int $facing = Facing::DOWN;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->facingExcept($this->facing, Facing::UP);
 		$w->bool($this->powered);
 	}

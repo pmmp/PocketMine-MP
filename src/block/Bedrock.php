@@ -28,7 +28,7 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 class Bedrock extends Opaque{
 	private bool $burnsForever = false;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->burnsForever);
 	}
 

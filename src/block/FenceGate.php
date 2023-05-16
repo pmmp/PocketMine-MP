@@ -42,7 +42,7 @@ class FenceGate extends Transparent{
 	protected bool $open = false;
 	protected bool $inWall = false;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->bool($this->open);
 		$w->bool($this->inWall);

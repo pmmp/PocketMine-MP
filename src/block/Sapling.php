@@ -46,7 +46,7 @@ class Sapling extends Flowable{
 		$this->saplingType = $saplingType;
 	}
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->ready);
 	}
 

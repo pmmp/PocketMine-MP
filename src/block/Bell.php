@@ -48,7 +48,7 @@ final class Bell extends Transparent{
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->bellAttachmentType($this->attachmentType);
 		$w->horizontalFacing($this->facing);
 	}
