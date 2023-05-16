@@ -107,7 +107,6 @@ use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\TextFormat;
-use pocketmine\utils\Utils;
 use pocketmine\world\Position;
 use function array_map;
 use function array_values;
