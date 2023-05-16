@@ -853,7 +853,7 @@ final class VanillaBlocks{
 		self::register("pink_tulip", new Flower(new BID(Ids::PINK_TULIP), "Pink Tulip", $flowerTypeInfo));
 		self::register("red_tulip", new Flower(new BID(Ids::RED_TULIP), "Red Tulip", $flowerTypeInfo));
 		self::register("white_tulip", new Flower(new BID(Ids::WHITE_TULIP), "White Tulip", $flowerTypeInfo));
-		self::register("flower_pot", new FlowerPot(new BID(Ids::FLOWER_POT, TileFlowerPot::class), "Flower Pot", $flowerTypeInfo));
+		self::register("flower_pot", new FlowerPot(new BID(Ids::FLOWER_POT, TileFlowerPot::class), "Flower Pot", new Info(BreakInfo::instant())));
 		self::register("frosted_ice", new FrostedIce(new BID(Ids::FROSTED_ICE), "Frosted Ice", new Info(BreakInfo::pickaxe(2.5))));
 		self::register("furnace", new Furnace(new BID(Ids::FURNACE, TileNormalFurnace::class), "Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD())), FurnaceType::FURNACE()));
 		self::register("blast_furnace", new Furnace(new BID(Ids::BLAST_FURNACE, TileBlastFurnace::class), "Blast Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD())), FurnaceType::BLAST_FURNACE()));
