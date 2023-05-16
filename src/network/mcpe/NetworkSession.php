@@ -1000,8 +1000,6 @@ class NetworkSession{
 	 * @phpstan-param \Closure() : void $onCompletion
 	 */
 	public function startUsingChunk(int $chunkX, int $chunkZ, \Closure $onCompletion) : void{
-		Utils::validateCallableSignature(function() : void{}, $onCompletion);
-
 		$world = $this->player->getLocation()->getWorld();
 		ChunkCache::getInstance($world, $this->compressor)->request($chunkX, $chunkZ)->onResolve(
 
