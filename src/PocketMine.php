@@ -265,9 +265,6 @@ JIT_WARNING
 				exit(1);
 			}
 		}
-		if(extension_loaded('parallel')){
-			\parallel\bootstrap(\pocketmine\COMPOSER_AUTOLOADER_PATH);
-		}
 
 		ErrorToExceptionHandler::set();
 
