@@ -110,7 +110,8 @@ class StatusCommand extends VanillaCommand{
 			$worldName = $world->getFolderName() !== $world->getDisplayName() ? " (" . $world->getDisplayName() . ")" : "";
 			$timeColor = $world->getTickRateTime() > 40 ? TextFormat::RED : TextFormat::YELLOW;
 			$sender->sendMessage(TextFormat::GOLD . "World \"{$world->getFolderName()}\"$worldName: " .
-				TextFormat::RED . number_format(count($world->getLoadedChunks())) . TextFormat::GREEN . " chunks, " .
+				TextFormat::RED . number_format(count($world->getLoadedChunks())) . TextFormat::GREEN . " loaded chunks, " .
+				TextFormat::RED . number_format(count($world->getTickingChunks())) . TextFormat::GREEN . " ticking chunks, " .
 				TextFormat::RED . number_format(count($world->getEntities())) . TextFormat::GREEN . " entities. " .
 				"Time $timeColor" . round($world->getTickRateTime(), 2) . "ms"
 			);

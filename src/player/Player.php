@@ -1191,7 +1191,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * TODO: make this a dynamic ability instead of being hardcoded
 	 */
 	public function hasFiniteResources() : bool{
-		return $this->gamemode->equals(GameMode::SURVIVAL()) || $this->gamemode->equals(GameMode::ADVENTURE());
+		return !$this->gamemode->equals(GameMode::CREATIVE());
 	}
 
 	public function isFireProof() : bool{
@@ -1657,7 +1657,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$ev = new PlayerBlockPickEvent($this, $block, $item);
 		$existingSlot = $this->inventory->first($item);
-		if($existingSlot === -1 && ($this->hasFiniteResources() || $this->isSpectator())){
+		if($existingSlot === -1 && $this->hasFiniteResources()){
 			$ev->cancel();
 		}
 		$ev->call();

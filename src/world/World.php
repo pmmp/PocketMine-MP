@@ -77,7 +77,6 @@ use pocketmine\promise\PromiseResolver;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\Server;
 use pocketmine\ServerConfigGroup;
-use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
 use pocketmine\utils\ReversePriorityQueue;
@@ -104,6 +103,7 @@ use pocketmine\world\utils\SubChunkExplorer;
 use function abs;
 use function array_filter;
 use function array_key_exists;
+use function array_keys;
 use function array_map;
 use function array_merge;
 use function array_sum;
@@ -223,10 +223,25 @@ class World implements ChunkManager{
 	private array $tickingLoaderCounter = [];
 
 	/**
-	 * @var TickingChunkEntry[] chunkHash => TickingChunkEntry
-	 * @phpstan-var array<ChunkPosHash, TickingChunkEntry>
+	 * @var ChunkTicker[][] chunkHash => [spl_object_id => ChunkTicker]
+	 * @phpstan-var array<ChunkPosHash, array<int, ChunkTicker>>
 	 */
-	private array $tickingChunks = [];
+	private array $registeredTickingChunks = [];
+
+	/**
+	 * Set of chunks which are definitely ready for ticking.
+	 *
+	 * @var int[]
+	 * @phpstan-var array<ChunkPosHash, ChunkPosHash>
+	 */
+	private array $validTickingChunks = [];
+
+	/**
+	 * Set of chunks which might be ready for ticking. These will be checked at the next tick.
+	 * @var int[]
+	 * @phpstan-var array<ChunkPosHash, ChunkPosHash>
+	 */
+	private array $recheckTickingChunks = [];
 
 	/**
 	 * @var ChunkLoader[][] chunkHash => [spl_object_id => ChunkLoader]
@@ -983,7 +998,6 @@ class World implements ChunkManager{
 
 		$this->timings->entityTick->startTiming();
 		//Update entities that need update
-		Timings::$tickEntity->startTiming();
 		foreach($this->updateEntities as $id => $entity){
 			if($entity->isClosed() || $entity->isFlaggedForDespawn() || !$entity->onUpdate($currentTick)){
 				unset($this->updateEntities[$id]);
@@ -992,7 +1006,6 @@ class World implements ChunkManager{
 				$entity->close();
 			}
 		}
-		Timings::$tickEntity->stopTiming();
 		$this->timings->entityTick->stopTiming();
 
 		$this->timings->randomChunkUpdates->startTiming();
@@ -1156,16 +1169,24 @@ class World implements ChunkManager{
 	}
 
 	/**
+	 * Returns a list of chunk position hashes (as returned by World::chunkHash()) which are currently valid for
+	 * ticking.
+	 *
+	 * @return int[]
+	 * @phpstan-return list<ChunkPosHash>
+	 */
+	public function getTickingChunks() : array{
+		return array_keys($this->validTickingChunks);
+	}
+
+	/**
 	 * Instructs the World to tick the specified chunk, for as long as this chunk ticker (or any other chunk ticker) is
 	 * registered to it.
 	 */
 	public function registerTickingChunk(ChunkTicker $ticker, int $chunkX, int $chunkZ) : void{
 		$chunkPosHash = World::chunkHash($chunkX, $chunkZ);
-		$entry = $this->tickingChunks[$chunkPosHash] ?? null;
-		if($entry === null){
-			$entry = $this->tickingChunks[$chunkPosHash] = new TickingChunkEntry();
-		}
-		$entry->tickers[spl_object_id($ticker)] = $ticker;
+		$this->registeredTickingChunks[$chunkPosHash][spl_object_id($ticker)] = $ticker;
+		$this->recheckTickingChunks[$chunkPosHash] = $chunkPosHash;
 	}
 
 	/**
@@ -1175,10 +1196,14 @@ class World implements ChunkManager{
 	public function unregisterTickingChunk(ChunkTicker $ticker, int $chunkX, int $chunkZ) : void{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		$tickerId = spl_object_id($ticker);
-		if(isset($this->tickingChunks[$chunkHash]->tickers[$tickerId])){
-			unset($this->tickingChunks[$chunkHash]->tickers[$tickerId]);
-			if(count($this->tickingChunks[$chunkHash]->tickers) === 0){
-				unset($this->tickingChunks[$chunkHash]);
+		if(isset($this->registeredTickingChunks[$chunkHash][$tickerId])){
+			unset($this->registeredTickingChunks[$chunkHash][$tickerId]);
+			if(count($this->registeredTickingChunks[$chunkHash]) === 0){
+				unset(
+					$this->registeredTickingChunks[$chunkHash],
+					$this->recheckTickingChunks[$chunkHash],
+					$this->validTickingChunks[$chunkHash]
+				);
 			}
 		}
 	}
@@ -1222,37 +1247,37 @@ class World implements ChunkManager{
 	}
 
 	private function tickChunks() : void{
-		if($this->chunkTickRadius <= 0 || (count($this->tickingChunks) === 0 && count($this->tickingLoaders) === 0)){
+		if($this->chunkTickRadius <= 0 || (count($this->registeredTickingChunks) === 0 && count($this->tickingLoaders) === 0)){
 			return;
 		}
 
-		$this->timings->randomChunkUpdatesChunkSelection->startTiming();
+		if(count($this->recheckTickingChunks) > 0 || count($this->tickingLoaders) > 0){
+			$this->timings->randomChunkUpdatesChunkSelection->startTiming();
 
-		/** @var bool[] $chunkTickList chunkhash => dummy */
-		$chunkTickList = [];
+			$chunkTickableCache = [];
 
-		$chunkTickableCache = [];
-
-		foreach($this->tickingChunks as $hash => $entry){
-			if(!$entry->ready){
+			foreach($this->recheckTickingChunks as $hash => $_){
 				World::getXZ($hash, $chunkX, $chunkZ);
 				if($this->isChunkTickable($chunkX, $chunkZ, $chunkTickableCache)){
-					$entry->ready = true;
-				}else{
-					//the chunk has been flagged as temporarily not tickable, so we don't want to tick it this time
-					continue;
+					$this->validTickingChunks[$hash] = $hash;
 				}
 			}
-			$chunkTickList[$hash] = true;
-		}
+			$this->recheckTickingChunks = [];
 
-		//TODO: REMOVE THIS
-		//backwards compatibility for TickingChunkLoader, although I'm not sure this is really necessary in practice
-		if(count($this->tickingLoaders) !== 0){
-			$this->selectTickableChunksLegacy($chunkTickList, $chunkTickableCache);
-		}
+			//TODO: REMOVE THIS - we need a local var to add extra chunks to if we have legacy ticking loaders
+			//this is copy-on-write, so it won't have any performance impact if there are no legacy ticking loaders
+			$chunkTickList = $this->validTickingChunks;
 
-		$this->timings->randomChunkUpdatesChunkSelection->stopTiming();
+			//TODO: REMOVE THIS
+			//backwards compatibility for TickingChunkLoader, although I'm not sure this is really necessary in practice
+			if(count($this->tickingLoaders) !== 0){
+				$this->selectTickableChunksLegacy($chunkTickList, $chunkTickableCache);
+			}
+
+			$this->timings->randomChunkUpdatesChunkSelection->stopTiming();
+		}else{
+			$chunkTickList = $this->validTickingChunks;
+		}
 
 		foreach($chunkTickList as $index => $_){
 			World::getXZ($index, $chunkX, $chunkZ);
@@ -1303,16 +1328,23 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * Marks the 3x3 chunks around the specified chunk as not ready to be ticked. This is used to prevent chunk ticking
-	 * while a chunk is being populated, light-populated, or unloaded.
-	 * Each chunk will be rechecked every tick until it is ready to be ticked again.
+	 * Marks the 3x3 square of chunks centered on the specified chunk for chunk ticking eligibility recheck.
+	 *
+	 * This should be used whenever the chunk's eligibility to be ticked is changed. This includes:
+	 * - Loading/unloading the chunk (the chunk may be registered for ticking before it is loaded)
+	 * - Locking/unlocking the chunk (e.g. world population)
+	 * - Light populated state change (i.e. scheduled for light population, or light population completed)
+	 * - Arbitrary chunk replacement (i.e. setChunk() or similar)
 	 */
-	private function markTickingChunkUnavailable(int $chunkX, int $chunkZ) : void{
+	private function markTickingChunkForRecheck(int $chunkX, int $chunkZ) : void{
 		for($cx = -1; $cx <= 1; ++$cx){
 			for($cz = -1; $cz <= 1; ++$cz){
 				$chunkHash = World::chunkHash($chunkX + $cx, $chunkZ + $cz);
-				if(isset($this->tickingChunks[$chunkHash])){
-					$this->tickingChunks[$chunkHash]->ready = false;
+				unset($this->validTickingChunks[$chunkHash]);
+				if(isset($this->registeredTickingChunks[$chunkHash])){
+					$this->recheckTickingChunks[$chunkHash] = $chunkHash;
+				}else{
+					unset($this->recheckTickingChunks[$chunkHash]);
 				}
 			}
 		}
@@ -1323,7 +1355,7 @@ class World implements ChunkManager{
 		$lightPopulatedState = $this->chunks[$chunkHash]->isLightPopulated();
 		if($lightPopulatedState === false){
 			$this->chunks[$chunkHash]->setLightPopulated(null);
-			$this->markTickingChunkUnavailable($chunkX, $chunkZ);
+			$this->markTickingChunkForRecheck($chunkX, $chunkZ);
 
 			$this->workerPool->submitTask(new LightPopulationTask(
 				$this->chunks[$chunkHash],
@@ -1347,6 +1379,7 @@ class World implements ChunkManager{
 						$chunk->getSubChunk($y)->setBlockSkyLightArray($lightArray);
 					}
 					$chunk->setLightPopulated(true);
+					$this->markTickingChunkForRecheck($chunkX, $chunkZ);
 				}
 			));
 		}
@@ -1403,9 +1436,14 @@ class World implements ChunkManager{
 
 		(new WorldSaveEvent($this))->call();
 
+		$timings = $this->timings->syncDataSave;
+		$timings->startTiming();
+
 		$this->provider->getWorldData()->setTime($this->time);
 		$this->saveChunks();
 		$this->provider->getWorldData()->save();
+
+		$timings->stopTiming();
 
 		return true;
 	}
@@ -2391,7 +2429,7 @@ class World implements ChunkManager{
 			throw new \InvalidArgumentException("Chunk $chunkX $chunkZ is already locked");
 		}
 		$this->chunkLock[$chunkHash] = $lockId;
-		$this->markTickingChunkUnavailable($chunkX, $chunkZ);
+		$this->markTickingChunkForRecheck($chunkX, $chunkZ);
 	}
 
 	/**
@@ -2406,6 +2444,7 @@ class World implements ChunkManager{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		if(isset($this->chunkLock[$chunkHash]) && ($lockId === null || $this->chunkLock[$chunkHash] === $lockId)){
 			unset($this->chunkLock[$chunkHash]);
+			$this->markTickingChunkForRecheck($chunkX, $chunkZ);
 			return true;
 		}
 		return false;
@@ -2457,7 +2496,7 @@ class World implements ChunkManager{
 		unset($this->blockCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);
 		$chunk->setTerrainDirty();
-		$this->markTickingChunkUnavailable($chunkX, $chunkZ); //this replacement chunk may not meet the conditions for ticking
+		$this->markTickingChunkForRecheck($chunkX, $chunkZ); //this replacement chunk may not meet the conditions for ticking
 
 		if(!$this->isChunkInUse($chunkX, $chunkZ)){
 			$this->unloadChunkRequest($chunkX, $chunkZ);
@@ -2739,6 +2778,7 @@ class World implements ChunkManager{
 		foreach($this->getChunkListeners($x, $z) as $listener){
 			$listener->onChunkLoaded($x, $z, $this->chunks[$chunkHash]);
 		}
+		$this->markTickingChunkForRecheck($x, $z); //tickers may have been registered before the chunk was loaded
 
 		$this->timings->syncChunkLoad->stopTiming();
 
@@ -2900,8 +2940,8 @@ class World implements ChunkManager{
 		unset($this->chunks[$chunkHash]);
 		unset($this->blockCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);
-		unset($this->tickingChunks[$chunkHash]);
-		$this->markTickingChunkUnavailable($x, $z);
+		unset($this->registeredTickingChunks[$chunkHash]);
+		$this->markTickingChunkForRecheck($x, $z);
 
 		if(array_key_exists($chunkHash, $this->chunkPopulationRequestMap)){
 			$this->logger->debug("Rejecting population promise for chunk $x $z");
@@ -3210,7 +3250,8 @@ class World implements ChunkManager{
 	private function internalOrderChunkPopulation(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader, ?PromiseResolver $resolver) : Promise{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 
-		Timings::$population->startTiming();
+		$timings = $this->timings->chunkPopulationOrder;
+		$timings->startTiming();
 
 		try{
 			for($xx = -1; $xx <= 1; ++$xx){
@@ -3267,7 +3308,7 @@ class World implements ChunkManager{
 
 			return $resolver->getPromise();
 		}finally{
-			Timings::$population->stopTiming();
+			$timings->stopTiming();
 		}
 	}
 
@@ -3276,7 +3317,8 @@ class World implements ChunkManager{
 	 * @phpstan-param array<int, Chunk> $adjacentChunks
 	 */
 	private function generateChunkCallback(ChunkLockId $chunkLockId, int $x, int $z, Chunk $chunk, array $adjacentChunks, ChunkLoader $temporaryChunkLoader) : void{
-		Timings::$generationCallback->startTiming();
+		$timings = $this->timings->chunkPopulationCompletion;
+		$timings->startTiming();
 
 		$dirtyChunks = 0;
 		for($xx = -1; $xx <= 1; ++$xx){
@@ -3345,7 +3387,7 @@ class World implements ChunkManager{
 
 			$this->drainPopulationRequestQueue();
 		}
-		Timings::$generationCallback->stopTiming();
+		$timings->stopTiming();
 	}
 
 	public function doChunkGarbageCollection() : void{
