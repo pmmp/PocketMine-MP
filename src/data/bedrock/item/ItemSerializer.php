@@ -67,8 +67,7 @@ final class ItemSerializer{
 	public function map(Item $item, \Closure $serializer) : void{
 		$index = $item->getTypeId();
 		if(isset($this->itemSerializers[$index])){
-			//TODO: REMOVE ME
-			throw new AssumptionFailedError("Registering the same item twice!");
+			throw new \InvalidArgumentException("Item type ID " . $index . " already has a serializer registered");
 		}
 		$this->itemSerializers[$index][get_class($item)] = $serializer;
 	}

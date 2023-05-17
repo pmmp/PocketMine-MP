@@ -210,8 +210,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	 */
 	public function map(Block $block, \Closure $serializer) : void{
 		if(isset($this->serializers[$block->getTypeId()])){
-			//TODO: REMOVE ME
-			throw new AssumptionFailedError("Registering the same block twice!");
+			throw new \InvalidArgumentException("Block type ID " . $block->getTypeId() . " already has a serializer registered");
 		}
 		$this->serializers[$block->getTypeId()][get_class($block)] = $serializer;
 	}

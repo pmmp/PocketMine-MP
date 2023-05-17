@@ -50,15 +50,6 @@ class BlockTest extends TestCase{
 	}
 
 	/**
-	 * Test registering a block deliberately overwriting another block works as expected
-	 */
-	public function testDeliberateOverrideBlock() : void{
-		$block = new MyCustomBlock(new BlockIdentifier(BlockTypeIds::COBBLESTONE), "Cobblestone", new BlockTypeInfo(BlockBreakInfo::instant()));
-		$this->blockFactory->register($block, true);
-		self::assertInstanceOf(MyCustomBlock::class, $this->blockFactory->fromStateId($block->getStateId()));
-	}
-
-	/**
 	 * Test registering a new block which does not yet exist
 	 */
 	public function testRegisterNewBlock() : void{
