@@ -1532,8 +1532,8 @@ final class StringToItemParser extends StringToTParser{
 	}
 
 	/**
-	 * @var true[][][]
-	 * @phpstan-var array<int, array<int, array<string, true>>>
+	 * @var true[][]
+	 * @phpstan-var array<int, array<string, true>>
 	 */
 	private array $reverseMap = [];
 
