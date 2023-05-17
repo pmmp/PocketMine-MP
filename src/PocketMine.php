@@ -50,7 +50,7 @@ namespace pocketmine {
 
 	require_once __DIR__ . '/VersionInfo.php';
 
-	const MIN_PHP_VERSION = "8.0.0";
+	const MIN_PHP_VERSION = "8.1.0";
 
 	/**
 	 * @param string $message
@@ -264,9 +264,6 @@ JIT_WARNING
 				critical_error("Please synchronize Composer dependencies before running the server.");
 				exit(1);
 			}
-		}
-		if(extension_loaded('parallel')){
-			\parallel\bootstrap(\pocketmine\COMPOSER_AUTOLOADER_PATH);
 		}
 
 		ErrorToExceptionHandler::set();

@@ -242,7 +242,6 @@ class AsyncPool{
 		while(!$queue->isEmpty()){
 			/** @var AsyncTask $task */
 			$task = $queue->bottom();
-			$task->checkProgressUpdates();
 			if($task->isFinished()){ //make sure the task actually executed before trying to collect
 				$queue->dequeue();
 
@@ -263,6 +262,7 @@ class AsyncPool{
 					$task->onCompletion();
 				}
 			}else{
+				$task->checkProgressUpdates();
 				$more = true;
 				break; //current task is still running, skip to next worker
 			}

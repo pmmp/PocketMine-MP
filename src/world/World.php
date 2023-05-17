@@ -79,7 +79,6 @@ use pocketmine\promise\PromiseResolver;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\Server;
 use pocketmine\ServerConfigGroup;
-use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
 use pocketmine\utils\ReversePriorityQueue;
@@ -980,7 +979,6 @@ class World implements ChunkManager{
 
 		$this->timings->entityTick->startTiming();
 		//Update entities that need update
-		Timings::$tickEntity->startTiming();
 		foreach($this->updateEntities as $id => $entity){
 			if($entity->isClosed() || $entity->isFlaggedForDespawn() || !$entity->onUpdate($currentTick)){
 				unset($this->updateEntities[$id]);
@@ -989,7 +987,6 @@ class World implements ChunkManager{
 				$entity->close();
 			}
 		}
-		Timings::$tickEntity->stopTiming();
 		$this->timings->entityTick->stopTiming();
 
 		$this->timings->randomChunkUpdates->startTiming();
@@ -1385,9 +1382,14 @@ class World implements ChunkManager{
 
 		(new WorldSaveEvent($this))->call();
 
+		$timings = $this->timings->syncDataSave;
+		$timings->startTiming();
+
 		$this->provider->getWorldData()->setTime($this->time);
 		$this->saveChunks();
 		$this->provider->getWorldData()->save();
+
+		$timings->stopTiming();
 
 		return true;
 	}
@@ -3191,7 +3193,8 @@ class World implements ChunkManager{
 	private function internalOrderChunkPopulation(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader, ?PromiseResolver $resolver) : Promise{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 
-		Timings::$population->startTiming();
+		$timings = $this->timings->chunkPopulationOrder;
+		$timings->startTiming();
 
 		try{
 			for($xx = -1; $xx <= 1; ++$xx){
@@ -3248,7 +3251,7 @@ class World implements ChunkManager{
 
 			return $resolver->getPromise();
 		}finally{
-			Timings::$population->stopTiming();
+			$timings->stopTiming();
 		}
 	}
 
@@ -3257,7 +3260,8 @@ class World implements ChunkManager{
 	 * @phpstan-param array<int, Chunk> $adjacentChunks
 	 */
 	private function generateChunkCallback(ChunkLockId $chunkLockId, int $x, int $z, Chunk $chunk, array $adjacentChunks, ChunkLoader $temporaryChunkLoader) : void{
-		Timings::$generationCallback->startTiming();
+		$timings = $this->timings->chunkPopulationCompletion;
+		$timings->startTiming();
 
 		$dirtyChunks = 0;
 		for($xx = -1; $xx <= 1; ++$xx){
@@ -3326,7 +3330,7 @@ class World implements ChunkManager{
 
 			$this->drainPopulationRequestQueue();
 		}
-		Timings::$generationCallback->stopTiming();
+		$timings->stopTiming();
 	}
 
 	public function doChunkGarbageCollection() : void{
