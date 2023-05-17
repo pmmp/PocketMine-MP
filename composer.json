@@ -5,7 +5,7 @@
    "homepage": "https://pmmp.io",
    "license": "LGPL-3.0",
    "require": {
-      "php": "^8.0",
+      "php": "^8.1",
       "php-64bit": "*",
       "ext-chunkutils2": "^0.3.1",
       "ext-crypto": "^0.3.1",
@@ -77,7 +77,7 @@
    },
    "config": {
       "platform": {
-         "php": "8.0.0"
+         "php": "8.1.0"
       },
       "sort-packages": true
    },
