@@ -169,7 +169,7 @@ class ItemFrame extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->getSide(Facing::opposite($this->facing))->isSolid()){
+		if($this->getSide(Facing::opposite($this->facing)) instanceof Flowable){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
