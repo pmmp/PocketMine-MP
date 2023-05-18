@@ -424,6 +424,10 @@ class Block{
 				return $this->getSilkTouchDrops($item);
 			}
 
+			if ($this->isAffectedByFortune() && $item->hasEnchantment(VanillaEnchantments::FORTUNE())) {
+				return $this->getFortuneDrops($item);
+			}
+
 			return $this->getDropsForCompatibleTool($item);
 		}
 
@@ -458,6 +462,15 @@ class Block{
 	}
 
 	/**
+	 * Returns an array of Items to be dropped when the block is broken using a tool enchanted with Fortune.
+	 *
+	 * @return Item[]
+	 */
+	public function getFortuneDrops(Item $item) : array{
+		return [$this->getDropsForCompatibleTool($item)];
+	}
+
+	/**
 	 * Returns how much XP will be dropped by breaking this block with the given item.
 	 */
 	public function getXpDropForTool(Item $item) : int{
@@ -479,6 +492,13 @@ class Block{
 	 * Returns whether Silk Touch enchanted tools will cause this block to drop as itself.
 	 */
 	public function isAffectedBySilkTouch() : bool{
+		return false;
+	}
+
+	/**
+	 * Returns whether Fortune enchanted tools will cause this block to drop more items.
+	 */
+	public function isAffectedByFortune() : bool{
 		return false;
 	}
 

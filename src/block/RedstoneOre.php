@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
@@ -30,6 +31,8 @@ use pocketmine\player\Player;
 use function mt_rand;
 
 class RedstoneOre extends Opaque{
+	public const MINIMUM_DROPS = 4;
+	public const MAXIMUM_DROPS = 5;
 
 	protected BlockIdentifierFlattened $idInfoFlattened;
 
@@ -102,5 +105,20 @@ class RedstoneOre extends Opaque{
 
 	protected function getXpDropAmount() : int{
 		return mt_rand(1, 5);
+	}
+
+	public function isAffectedByFortune() : bool{
+		return true;
+	}
+
+	public function getFortuneDrops(Item $item) : array{
+		$fortuneEnchantment = VanillaEnchantments::FORTUNE();
+		return $fortuneEnchantment->mineralDrops(
+			VanillaItems::REDSTONE_DUST(),
+			self::MINIMUM_DROPS,
+			self::MAXIMUM_DROPS,
+			$item->getEnchantmentLevel($fortuneEnchantment),
+			1
+		);
 	}
 }

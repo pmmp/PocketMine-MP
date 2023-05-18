@@ -23,11 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use function mt_rand;
 
 class DiamondOre extends Opaque{
+	public const MINIMUM_DROPS = 1;
+	public const MAXIMUM_DROPS = 1;
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
@@ -41,5 +44,19 @@ class DiamondOre extends Opaque{
 
 	protected function getXpDropAmount() : int{
 		return mt_rand(3, 7);
+	}
+
+	public function isAffectedByFortune() : bool{
+		return true;
+	}
+
+	public function getFortuneDrops(Item $item) : array{
+		$fortuneEnchantment = VanillaEnchantments::FORTUNE();
+		return $fortuneEnchantment->mineralDrops(
+			VanillaItems::DIAMOND(),
+			self::MINIMUM_DROPS,
+			self::MAXIMUM_DROPS,
+			$item->getEnchantmentLevel($fortuneEnchantment)
+		);
 	}
 }
