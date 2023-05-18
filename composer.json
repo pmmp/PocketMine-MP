@@ -52,7 +52,7 @@
       "pocketmine/raklib-ipc": "^0.1.0",
       "pocketmine/snooze": "^0.3.0",
       "ramsey/uuid": "^4.1",
-      "symfony/filesystem": "^5.4",
+      "symfony/filesystem": "^6.2",
       "webmozart/path-util": "^2.3"
    },
    "require-dev": {
