@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use function mt_rand;
@@ -30,16 +31,39 @@ use function mt_rand;
 class Potato extends Crops{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		$result = [
-			VanillaItems::POTATO()->setCount($this->age >= self::MAX_AGE ? mt_rand(1, 5) : 1)
-		];
-		if($this->age >= self::MAX_AGE && mt_rand(0, 49) === 0){
-			$result[] = VanillaItems::POISONOUS_POTATO();
-		}
-		return $result;
+		return $this->getDropsForFortuneLevel();
 	}
 
 	public function getPickedItem(bool $addUserData = false) : Item{
 		return VanillaItems::POTATO();
+	}
+
+	public function isAffectedByFortune() : bool{
+		return true;
+	}
+
+	public function getFortuneDrops(Item $item) : array{
+		return $this->getDropsForFortuneLevel(
+			$item->getEnchantmentLevel(VanillaEnchantments::FORTUNE())
+		);
+	}
+
+	/** @return Item[] */
+	private function getDropsForFortuneLevel(int $level = 0) : array{
+		if ($this->age >= self::MAX_AGE) {
+			$result = VanillaEnchantments::FORTUNE()->binomialDrops(
+				VanillaItems::POTATO(),
+				$level,
+				1
+			);
+		} else {
+			$result = [
+				VanillaItems::POTATO()
+			];
+		}
+		if($this->age >= self::MAX_AGE && mt_rand(0, 49) === 0){
+			$result[] = VanillaItems::POISONOUS_POTATO();
+		}
+		return $result;
 	}
 }

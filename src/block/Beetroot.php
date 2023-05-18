@@ -23,26 +23,45 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use function mt_rand;
+use function array_merge;
 
 class Beetroot extends Crops{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if($this->age >= self::MAX_AGE){
-			return [
-				VanillaItems::BEETROOT(),
-				VanillaItems::BEETROOT_SEEDS()->setCount(mt_rand(0, 3))
-			];
-		}
-
-		return [
-			VanillaItems::BEETROOT_SEEDS()
-		];
+		return $this->getDropsForFortuneLevel();
 	}
 
 	public function getPickedItem(bool $addUserData = false) : Item{
 		return VanillaItems::BEETROOT_SEEDS();
+	}
+
+	public function isAffectedByFortune() : bool{
+		return true;
+	}
+
+	public function getFortuneDrops(Item $item) : array{
+		return $this->getDropsForFortuneLevel(
+			$item->getEnchantmentLevel(VanillaEnchantments::FORTUNE())
+		);
+	}
+
+	/** @return Item[] */
+	private function getDropsForFortuneLevel(int $level = 0) : array{
+		if ($this->age >= self::MAX_AGE) {
+			return array_merge(
+				[VanillaItems::BEETROOT()],
+				VanillaEnchantments::FORTUNE()->binomialDrops(
+					VanillaItems::BEETROOT_SEEDS(),
+					$level
+				)
+			);
+		} else {
+			return [
+				VanillaItems::BEETROOT_SEEDS()
+			];
+		}
 	}
 }

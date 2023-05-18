@@ -23,26 +23,45 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use function mt_rand;
+use function array_merge;
 
 class Wheat extends Crops{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if($this->age >= self::MAX_AGE){
-			return [
-				VanillaItems::WHEAT(),
-				VanillaItems::WHEAT_SEEDS()->setCount(mt_rand(0, 3))
-			];
-		}else{
-			return [
-				VanillaItems::WHEAT_SEEDS()
-			];
-		}
+		return $this->getDropsForFortuneLevel();
 	}
 
 	public function getPickedItem(bool $addUserData = false) : Item{
 		return VanillaItems::WHEAT_SEEDS();
+	}
+
+	public function isAffectedByFortune() : bool{
+		return true;
+	}
+
+	public function getFortuneDrops(Item $item) : array{
+		return $this->getDropsForFortuneLevel(
+			$item->getEnchantmentLevel(VanillaEnchantments::FORTUNE())
+		);
+	}
+
+	/** @return Item[] */
+	private function getDropsForFortuneLevel(int $level = 0) : array{
+		if ($this->age >= self::MAX_AGE) {
+			return array_merge(
+				[VanillaItems::WHEAT()],
+				VanillaEnchantments::FORTUNE()->binomialDrops(
+					VanillaItems::WHEAT_SEEDS(),
+					$level
+				)
+			);
+		} else {
+			return [
+				VanillaItems::WHEAT_SEEDS()
+			];
+		}
 	}
 }

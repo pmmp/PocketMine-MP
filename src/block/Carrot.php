@@ -23,19 +23,42 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use function mt_rand;
 
 class Carrot extends Crops{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			VanillaItems::CARROT()->setCount($this->age >= self::MAX_AGE ? mt_rand(1, 4) : 1)
-		];
+		return $this->getDropsForFortuneLevel();
 	}
 
 	public function getPickedItem(bool $addUserData = false) : Item{
 		return VanillaItems::CARROT();
+	}
+
+	public function isAffectedByFortune() : bool{
+		return true;
+	}
+
+	public function getFortuneDrops(Item $item) : array{
+		return $this->getDropsForFortuneLevel(
+			$item->getEnchantmentLevel(VanillaEnchantments::FORTUNE())
+		);
+	}
+
+	/** @return Item[] */
+	private function getDropsForFortuneLevel(int $level = 0) : array{
+		if ($this->age >= self::MAX_AGE) {
+			return VanillaEnchantments::FORTUNE()->binomialDrops(
+				VanillaItems::CARROT(),
+				$level,
+				1
+			);
+		} else {
+			return [
+				VanillaItems::CARROT()
+			];
+		}
 	}
 }
