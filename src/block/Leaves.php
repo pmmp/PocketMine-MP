@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\event\block\LeavesDecayEvent;
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
@@ -144,18 +145,7 @@ class Leaves extends Transparent{
 			return parent::getDropsForCompatibleTool($item);
 		}
 
-		$drops = [];
-		if(mt_rand(1, 20) === 1){ //Saplings
-			$drops[] = ItemFactory::getInstance()->get(ItemIds::SAPLING, $this->treeType->getMagicNumber());
-		}
-		if(($this->treeType->equals(TreeType::OAK()) || $this->treeType->equals(TreeType::DARK_OAK())) && mt_rand(1, 200) === 1){ //Apples
-			$drops[] = VanillaItems::APPLE();
-		}
-		if(mt_rand(1, 50) === 1){
-			$drops[] = VanillaItems::STICK()->setCount(mt_rand(1, 2));
-		}
-
-		return $drops;
+		return $this->getDropsForFortuneLevel();
 	}
 
 	public function isAffectedBySilkTouch() : bool{
@@ -172,5 +162,33 @@ class Leaves extends Transparent{
 
 	public function getSupportType(int $facing) : SupportType{
 		return SupportType::NONE();
+	}
+
+	public function isAffectedByFortune() : bool{
+		return true;
+	}
+
+	public function getFortuneDrops(Item $item) : array{
+		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0){
+			return parent::getDropsForCompatibleTool($item);
+		}
+
+		return $this->getDropsForFortuneLevel($item->getEnchantmentLevel(VanillaEnchantments::FORTUNE()));
+	}
+
+	private function getDropsForFortuneLevel(int $level = 0) : array{
+		$drops = [];
+		if(mt_rand(1, 20 - 4 * $level) === 1){ //Saplings
+			// TODO: according to the wiki, the jungle saplings have a different drop rate
+			$drops[] = ItemFactory::getInstance()->get(ItemIds::SAPLING, $this->treeType->getMagicNumber());
+		}
+		if(($this->treeType->equals(TreeType::OAK()) || $this->treeType->equals(TreeType::DARK_OAK())) && mt_rand(1, 200 - 20 * $level) === 1){ //Apples
+			$drops[] = VanillaItems::APPLE();
+		}
+		if(mt_rand(1, 50 - 5 * $level) === 1){
+			$drops[] = VanillaItems::STICK()->setCount(mt_rand(1, 2));
+		}
+
+		return $drops;
 	}
 }

@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use function mt_rand;
@@ -48,5 +49,20 @@ class Gravel extends Opaque implements Fallable{
 
 	public function tickFalling() : ?Block{
 		return null;
+	}
+
+	public function isAffectedByFortune() : bool{
+		return true;
+	}
+
+	public function getFortuneDrops(Item $item) : array{
+		$fortuneLevel = $item->getEnchantmentLevel(VanillaEnchantments::FORTUNE());
+		if(mt_rand(1, 10 - 3 * $fortuneLevel) === 1){
+			return [
+				VanillaItems::FLINT()
+			];
+		}
+
+		return parent::getDropsForCompatibleTool($item);
 	}
 }
