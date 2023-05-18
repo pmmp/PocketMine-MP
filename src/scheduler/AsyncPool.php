@@ -25,6 +25,7 @@ namespace pocketmine\scheduler;
 
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\snooze\SleeperNotifier;
+use pocketmine\timings\Timings;
 use pocketmine\utils\Utils;
 use function array_keys;
 use function array_map;
@@ -252,7 +253,9 @@ class AsyncPool{
 
 				if($task->isCrashed()){
 					$this->logger->critical("Could not execute asynchronous task " . (new \ReflectionClass($task))->getShortName() . ": Task crashed");
-					$task->onError();
+					Timings::getAsyncTasksErrorTimings($task)->time(function() use ($task) : void{
+						$task->onError();
+					});
 				}elseif(!$task->hasCancelledRun()){
 					/*
 					 * It's possible for a task to submit a progress update and then finish before the progress
@@ -264,7 +267,9 @@ class AsyncPool{
 					 * been consumed before completing.
 					 */
 					$task->checkProgressUpdates();
-					$task->onCompletion();
+					Timings::getAsyncTasksCompletionTimings($task)->time(function() use ($task) : void{
+						$task->onCompletion();
+					});
 				}
 			}else{
 				$task->checkProgressUpdates();

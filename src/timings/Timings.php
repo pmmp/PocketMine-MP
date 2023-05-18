@@ -29,6 +29,7 @@ use pocketmine\event\Event;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\player\Player;
+use pocketmine\scheduler\AsyncTask;
 use pocketmine\scheduler\TaskHandler;
 use function get_class;
 use function str_starts_with;
@@ -156,6 +157,12 @@ abstract class Timings{
 	private static array $events = [];
 	/** @var TimingsHandler[][] */
 	private static array $eventHandlers = [];
+	/** @var TimingsHandler[] */
+	private static array $asyncTasksProgressUpdate = [];
+	/** @var TimingsHandler[] */
+	private static array $asyncTasksCompletion = [];
+	/** @var TimingsHandler[] */
+	private static array $asyncTasksError = [];
 
 	public static function init() : void{
 		if(self::$initialized){
@@ -329,5 +336,44 @@ abstract class Timings{
 		}
 
 		return self::$eventHandlers[$event][$handlerName];
+	}
+
+	public static function getAsyncTasksProgressUpdateTimings(AsyncTask $task) : TimingsHandler{
+		$taskClass = get_class($task);
+		if(!isset(self::$asyncTasksProgressUpdate[$taskClass])){
+			self::$asyncTasksProgressUpdate[$taskClass] = new TimingsHandler(
+				"AsyncTask Progress Update - " . $taskClass,
+				self::$schedulerAsync,
+				self::GROUP_BREAKDOWN
+			);
+		}
+
+		return self::$asyncTasksProgressUpdate[$taskClass];
+	}
+
+	public static function getAsyncTasksCompletionTimings(AsyncTask $task) : TimingsHandler{
+		$taskClass = get_class($task);
+		if(!isset(self::$asyncTasksCompletion[$taskClass])){
+			self::$asyncTasksCompletion[$taskClass] = new TimingsHandler(
+				"AsyncTask Completion - " . $taskClass,
+				self::$schedulerAsync,
+				self::GROUP_BREAKDOWN
+			);
+		}
+
+		return self::$asyncTasksCompletion[$taskClass];
+	}
+
+	public static function getAsyncTasksErrorTimings(AsyncTask $task) : TimingsHandler{
+		$taskClass = get_class($task);
+		if(!isset(self::$asyncTasksError[$taskClass])){
+			self::$asyncTasksError[$taskClass] = new TimingsHandler(
+				"AsyncTask Error - " . $taskClass,
+				self::$schedulerAsync,
+				self::GROUP_BREAKDOWN
+			);
+		}
+
+		return self::$asyncTasksError[$taskClass];
 	}
 }

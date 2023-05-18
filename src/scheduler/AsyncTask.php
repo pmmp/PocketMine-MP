@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
+use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
 use function igbinary_serialize;
 use function igbinary_unserialize;
@@ -175,9 +176,15 @@ abstract class AsyncTask extends \Threaded{
 	 * @internal Only call from AsyncPool.php on the main thread
 	 */
 	public function checkProgressUpdates() : void{
-		while($this->progressUpdates->count() !== 0){
-			$progress = $this->progressUpdates->shift();
-			$this->onProgressUpdate(igbinary_unserialize($progress));
+		$timing = Timings::getAsyncTasksProgressUpdateTimings($this);
+		$timing->startTiming();
+		try{
+			while($this->progressUpdates->count() !== 0){
+				$progress = $this->progressUpdates->shift();
+				$this->onProgressUpdate(igbinary_unserialize($progress));
+			}
+		} finally{
+			$timing->stopTiming();
 		}
 	}
 
