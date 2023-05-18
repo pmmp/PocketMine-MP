@@ -34,8 +34,8 @@ class UnknownBlock extends Transparent{
 	private int $stateData;
 
 	public function __construct(BlockIdentifier $idInfo, BlockTypeInfo $typeInfo, int $stateData){
-		parent::__construct($idInfo, "Unknown", $typeInfo);
 		$this->stateData = $stateData;
+		parent::__construct($idInfo, "Unknown", $typeInfo);
 	}
 
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
