@@ -24,27 +24,42 @@ declare(strict_types=1);
 namespace pocketmine\item\enchantment;
 
 use pocketmine\item\Item;
+use function min;
 use function mt_getrandmax;
 use function mt_rand;
+use const PHP_INT_MAX;
 
 class FortuneEnchantment extends Enchantment{
 	/**
-	 * @param ?int $step Defines the step that will be added to the maximum at each wealth level.
-	 *                   Default: $max * ($fortuneLevel + 1), if set :  $max + $step * $fortuneLevel
+	 * Gives a weight of 2 to a normal drop chance and adds a weight of 1 for each extra drop multiplier.
+	 *
 	 * @return Item[]
 	 */
-	public function mineralDrops(Item $item, int $min, int $max, int $fortuneLevel, ?int $step = null) : array{
+	public function mineralDrops(Item $item, int $min, int $max, int $fortuneLevel) : array{
 		$count = mt_rand($min, $max);
 		$chanceForNoMoreDrop = 2 / ($fortuneLevel + 2);
 		$rdm = mt_rand() / mt_getrandmax();
 		if ($fortuneLevel > 0 && $rdm > $chanceForNoMoreDrop) {
-			if ($step !== null) {
-				$maxBonus = $max + $step * $fortuneLevel;
-			} else {
-				$maxBonus = $max * ($fortuneLevel + 1);
-			}
-			$count = mt_rand($min, $maxBonus);
+			$count = mt_rand($min, $max * ($fortuneLevel + 1));
 		}
+		return [
+			$item->setCount($count)
+		];
+	}
+
+	/**
+	 * Discreet drop, increases the maximum number of items that can be dropped by the fortune level.
+	 *
+	 * @param int $maximumDropLimitation As minecraft doc, this is the maximum number of drops that can be dropped by this enchantment.
+	 *                                   If a drop higher than these maximums is rolled, it is rounded down to the capacity.
+	 * @return Item[]
+	 */
+	public function discreteDrops(Item $item, int $min, int $max, int $fortuneLevel, int $maximumDropLimitation = PHP_INT_MAX) : array{
+		$max = min(
+			$maximumDropLimitation,
+			$max + $fortuneLevel
+		);
+		$count = mt_rand($min, $max);
 		return [
 			$item->setCount($count)
 		];

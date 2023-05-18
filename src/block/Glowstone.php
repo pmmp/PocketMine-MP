@@ -23,11 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use function mt_rand;
 
 class Glowstone extends Transparent{
+	public const MINIMUM_DROPS = 2;
+	public const MAXIMUM_DROPS = 4;
 
 	public function getLightLevel() : int{
 		return 15;
@@ -35,11 +38,26 @@ class Glowstone extends Transparent{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			VanillaItems::GLOWSTONE_DUST()->setCount(mt_rand(2, 4))
+			VanillaItems::GLOWSTONE_DUST()->setCount(mt_rand(self::MINIMUM_DROPS, self::MAXIMUM_DROPS))
 		];
 	}
 
 	public function isAffectedBySilkTouch() : bool{
 		return true;
+	}
+
+	public function isAffectedByFortune() : bool{
+		return true;
+	}
+
+	public function getFortuneDrops(Item $item) : array{
+		$fortuneEnchantment = VanillaEnchantments::FORTUNE();
+		return $fortuneEnchantment->discreteDrops(
+			VanillaItems::GLOWSTONE_DUST(),
+			self::MINIMUM_DROPS,
+			self::MAXIMUM_DROPS,
+			$item->getEnchantmentLevel($fortuneEnchantment),
+			4
+		);
 	}
 }

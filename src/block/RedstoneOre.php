@@ -113,12 +113,11 @@ class RedstoneOre extends Opaque{
 
 	public function getFortuneDrops(Item $item) : array{
 		$fortuneEnchantment = VanillaEnchantments::FORTUNE();
-		return $fortuneEnchantment->mineralDrops(
+		return $fortuneEnchantment->discreteDrops(
 			VanillaItems::REDSTONE_DUST(),
 			self::MINIMUM_DROPS,
 			self::MAXIMUM_DROPS,
-			$item->getEnchantmentLevel($fortuneEnchantment),
-			1
+			$item->getEnchantmentLevel($fortuneEnchantment)
 		);
 	}
 }
