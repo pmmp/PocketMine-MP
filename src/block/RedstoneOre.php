@@ -95,7 +95,7 @@ class RedstoneOre extends Opaque{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			VanillaItems::REDSTONE_DUST()->setCount(mt_rand(4, 5))
+			VanillaItems::REDSTONE_DUST()->setCount(mt_rand(self::MINIMUM_DROPS, self::MAXIMUM_DROPS))
 		];
 	}
 

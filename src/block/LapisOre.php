@@ -34,7 +34,7 @@ class LapisOre extends Opaque{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			VanillaItems::LAPIS_LAZULI()->setCount(mt_rand(4, 8))
+			VanillaItems::LAPIS_LAZULI()->setCount(mt_rand(self::MINIMUM_DROPS, self::MAXIMUM_DROPS))
 		];
 	}
 

@@ -23,13 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
-use function mt_rand;
 
 class TallGrass extends Flowable{
 
@@ -53,13 +52,7 @@ class TallGrass extends Flowable{
 	}
 
 	public function getDropsForIncompatibleTool(Item $item) : array{
-		if(mt_rand(0, 15) === 0){
-			return [
-				VanillaItems::WHEAT_SEEDS()
-			];
-		}
-
-		return [];
+		return VanillaEnchantments::FORTUNE()->grassDrops(0);
 	}
 
 	public function getFlameEncouragement() : int{
@@ -68,5 +61,16 @@ class TallGrass extends Flowable{
 
 	public function getFlammability() : int{
 		return 100;
+	}
+
+	public function isAffectedByFortune() : bool{
+		return true;
+	}
+
+	public function getFortuneDrops(Item $item) : array{
+		$fortune = VanillaEnchantments::FORTUNE();
+		return $fortune->grassDrops(
+			$item->getEnchantmentLevel($fortune)
+		);
 	}
 }

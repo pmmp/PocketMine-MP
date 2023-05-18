@@ -23,9 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
-use function mt_rand;
 
 class DoubleTallGrass extends DoublePlant{
 
@@ -34,9 +33,20 @@ class DoubleTallGrass extends DoublePlant{
 	}
 
 	public function getDropsForIncompatibleTool(Item $item) : array{
-		if($this->top && mt_rand(0, 7) === 0){
-			return [VanillaItems::WHEAT_SEEDS()];
+		if($this->top){
+			return VanillaEnchantments::FORTUNE()->grassDrops(0);
 		}
 		return [];
+	}
+
+	public function isAffectedByFortune() : bool{
+		return true;
+	}
+
+	public function getFortuneDrops(Item $item) : array{
+		$fortune = VanillaEnchantments::FORTUNE();
+		return $fortune->grassDrops(
+			$item->getEnchantmentLevel($fortune)
+		);
 	}
 }

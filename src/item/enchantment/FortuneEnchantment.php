@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item\enchantment;
 
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use function min;
 use function mt_getrandmax;
 use function mt_rand;
@@ -63,5 +64,25 @@ class FortuneEnchantment extends Enchantment{
 		return [
 			$item->setCount($count)
 		];
+	}
+
+	/**
+	 * Grass have a fixed chance to drop wheat seed.
+	 * Fortune level increases the maximum number of seeds that can be dropped.
+	 * A discrete uniform distribution is used to determine the number of seeds dropped.
+	 *
+	 * @return Item[]
+	 */
+	public function grassDrops(int $fortuneLevel) : array{
+		if(mt_rand(0, 7) === 0){
+			$drop = mt_rand(1, 7);
+			if ($drop <= 1 + 2 * $fortuneLevel) {
+				return [
+					VanillaItems::WHEAT_SEEDS()->setCount($drop)
+				];
+			}
+		}
+
+		return [];
 	}
 }
