@@ -467,7 +467,7 @@ class Block{
 	 * @return Item[]
 	 */
 	public function getFortuneDrops(Item $item) : array{
-		return [$this->getDropsForCompatibleTool($item)];
+		return $this->getDropsForCompatibleTool($item);
 	}
 
 	/**

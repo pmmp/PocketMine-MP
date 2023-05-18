@@ -89,10 +89,10 @@ class FortuneEnchantment extends Enchantment{
 	/**
 	 * Binomial drop, the fortune level increases the number of tests for the distribution.
 	 *
-	 * @param int $p The probability of the item being dropped.
+	 * @param float $p The probability of the item being dropped.
 	 * @return Item[]
 	 */
-	public function binomialDrops(Item $item, int $fortuneLevel = 0, int $baseCount = 0, int $p = 4 / 7) : array{
+	public function binomialDrops(Item $item, int $fortuneLevel = 0, int $baseCount = 0, float $p = 4 / 7) : array{
 		$count = $baseCount;
 		for($i = 0; $i < 3 + $fortuneLevel; ++$i){
 			if(mt_rand() / mt_getrandmax() < $p){

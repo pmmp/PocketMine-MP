@@ -176,6 +176,7 @@ class Leaves extends Transparent{
 		return $this->getDropsForFortuneLevel($item->getEnchantmentLevel(VanillaEnchantments::FORTUNE()));
 	}
 
+	/** @return Item[] */
 	private function getDropsForFortuneLevel(int $level = 0) : array{
 		$drops = [];
 		if(mt_rand(1, 20 - 4 * $level) === 1){ //Saplings
