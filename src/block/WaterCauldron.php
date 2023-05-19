@@ -108,14 +108,14 @@ final class WaterCauldron extends FillableCauldron{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if(($newColor = match($item->getTypeId()){
-				ItemTypeIds::LAPIS_LAZULI => DyeColor::BLUE()->getRgbValue(),
-				ItemTypeIds::INK_SAC => DyeColor::BLACK()->getRgbValue(),
-				ItemTypeIds::COCOA_BEANS => DyeColor::BROWN()->getRgbValue(),
-				ItemTypeIds::BONE_MEAL => DyeColor::WHITE()->getRgbValue(),
-				ItemTypeIds::DYE => $item instanceof Dye ? $item->getColor()->getRgbValue() : null,
+		if(($dyeColor = match($item->getTypeId()){
+				ItemTypeIds::LAPIS_LAZULI => DyeColor::BLUE(),
+				ItemTypeIds::INK_SAC => DyeColor::BLACK(),
+				ItemTypeIds::COCOA_BEANS => DyeColor::BROWN(),
+				ItemTypeIds::BONE_MEAL => DyeColor::WHITE(),
+				ItemTypeIds::DYE => $item instanceof Dye ? $item->getColor() : null,
 				default => null
-			}) !== null && $newColor->toRGBA() !== $this->customWaterColor?->toRGBA()
+			}) !== null && ($newColor = $dyeColor->getRgbValue())->toRGBA() !== $this->customWaterColor?->toRGBA()
 		){
 			$this->position->getWorld()->setBlock($this->position, $this->setCustomWaterColor($this->customWaterColor === null ? $newColor : Color::mix($this->customWaterColor, $newColor)));
 			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronAddDyeSound());
