@@ -33,15 +33,21 @@ final class ItemStackContainerIdTranslator{
 		//NOOP
 	}
 
-	public static function translate(int $containerInterfaceId, int $currentWindowId) : int{
+	/**
+	 * @return int[]
+	 * @phpstan-return array{int, int}
+	 * @throws PacketHandlingException
+	 */
+	public static function translate(int $containerInterfaceId, int $currentWindowId, int $slotId) : array{
 		return match($containerInterfaceId){
-			ContainerUIIds::ARMOR => ContainerIds::ARMOR,
+			ContainerUIIds::ARMOR => [ContainerIds::ARMOR, $slotId],
 
 			ContainerUIIds::HOTBAR,
 			ContainerUIIds::INVENTORY,
-			ContainerUIIds::COMBINED_HOTBAR_AND_INVENTORY => ContainerIds::INVENTORY,
+			ContainerUIIds::COMBINED_HOTBAR_AND_INVENTORY => [ContainerIds::INVENTORY, $slotId],
 
-			ContainerUIIds::OFFHAND => ContainerIds::OFFHAND,
+			//TODO: HACK! The client sends an incorrect slot ID for the offhand as of 1.19.70 (though this doesn't really matter since the offhand has only 1 slot anyway)
+			ContainerUIIds::OFFHAND => [ContainerIds::OFFHAND, 0],
 
 			ContainerUIIds::ANVIL_INPUT,
 			ContainerUIIds::ANVIL_MATERIAL,
@@ -68,7 +74,7 @@ final class ItemStackContainerIdTranslator{
 			ContainerUIIds::TRADE2_INGREDIENT1,
 			ContainerUIIds::TRADE2_INGREDIENT2,
 			ContainerUIIds::TRADE_INGREDIENT1,
-			ContainerUIIds::TRADE_INGREDIENT2 => ContainerIds::UI,
+			ContainerUIIds::TRADE_INGREDIENT2 => [ContainerIds::UI, $slotId],
 
 			ContainerUIIds::BARREL,
 			ContainerUIIds::BLAST_FURNACE_INGREDIENT,
@@ -80,7 +86,7 @@ final class ItemStackContainerIdTranslator{
 			ContainerUIIds::FURNACE_RESULT,
 			ContainerUIIds::LEVEL_ENTITY, //chest
 			ContainerUIIds::SHULKER_BOX,
-			ContainerUIIds::SMOKER_INGREDIENT => $currentWindowId,
+			ContainerUIIds::SMOKER_INGREDIENT => [$currentWindowId, $slotId],
 
 			//all preview slots are ignored, since the client shouldn't be modifying those directly
 
