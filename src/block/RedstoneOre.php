@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\enchantment\VanillaEnchantments;
+use pocketmine\block\utils\FortuneTrait;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
@@ -31,6 +31,8 @@ use pocketmine\player\Player;
 use function mt_rand;
 
 class RedstoneOre extends Opaque{
+	use FortuneTrait;
+
 	public const MINIMUM_DROPS = 4;
 	public const MAXIMUM_DROPS = 5;
 
@@ -93,12 +95,6 @@ class RedstoneOre extends Opaque{
 		}
 	}
 
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			VanillaItems::REDSTONE_DUST()->setCount(mt_rand(self::MINIMUM_DROPS, self::MAXIMUM_DROPS))
-		];
-	}
-
 	public function isAffectedBySilkTouch() : bool{
 		return true;
 	}
@@ -107,17 +103,15 @@ class RedstoneOre extends Opaque{
 		return mt_rand(1, 5);
 	}
 
-	public function isAffectedByFortune() : bool{
-		return true;
-	}
-
-	public function getFortuneDrops(Item $item) : array{
-		$fortuneEnchantment = VanillaEnchantments::FORTUNE();
-		return $fortuneEnchantment->discreteDrops(
+	/**
+	 * @return Item[]
+	 */
+	protected function getFortuneDropsForLevel(int $level) : array{
+		return $this->discreteDrops(
 			VanillaItems::REDSTONE_DUST(),
 			self::MINIMUM_DROPS,
 			self::MAXIMUM_DROPS,
-			$item->getEnchantmentLevel($fortuneEnchantment)
+			$level
 		);
 	}
 }

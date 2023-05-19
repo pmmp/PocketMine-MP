@@ -23,20 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\enchantment\VanillaEnchantments;
+use pocketmine\block\utils\FortuneTrait;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use function mt_rand;
 
 class EmeraldOre extends Opaque{
+	use FortuneTrait;
+
 	public const MINIMUM_DROPS = 1;
 	public const MAXIMUM_DROPS = 1;
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			VanillaItems::EMERALD()
-		];
-	}
 
 	public function isAffectedBySilkTouch() : bool{
 		return true;
@@ -46,13 +42,15 @@ class EmeraldOre extends Opaque{
 		return mt_rand(3, 7);
 	}
 
-	public function getFortuneDrops(Item $item) : array{
-		$fortuneEnchantment = VanillaEnchantments::FORTUNE();
-		return $fortuneEnchantment->mineralDrops(
+	/**
+	 * @return Item[]
+	 */
+	protected function getFortuneDropsForLevel(int $level) : array{
+		return $this->weightedDrops(
 			VanillaItems::EMERALD(),
 			self::MINIMUM_DROPS,
 			self::MAXIMUM_DROPS,
-			$item->getEnchantmentLevel($fortuneEnchantment)
+			$level
 		);
 	}
 }

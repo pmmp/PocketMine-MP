@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\FortuneTrait;
 use pocketmine\event\block\BlockGrowEvent;
-use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -34,6 +34,8 @@ use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
 class NetherWartPlant extends Flowable{
+	use FortuneTrait;
+
 	public const MAX_AGE = 3;
 	public const MINIMUM_DROPS = 2;
 	public const MAXIMUM_DROPS = 4;
@@ -94,24 +96,16 @@ class NetherWartPlant extends Flowable{
 		}
 	}
 
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			$this->asItem()->setCount($this->age === self::MAX_AGE ? mt_rand(self::MINIMUM_DROPS, self::MAXIMUM_DROPS) : 1)
-		];
-	}
-
-	public function isAffectedByFortune() : bool{
-		return true;
-	}
-
-	public function getFortuneDrops(Item $item) : array{
-		$fortuneEnchantment = VanillaEnchantments::FORTUNE();
+	/**
+	 * @return Item[]
+	 */
+	protected function getFortuneDropsForLevel(int $level) : array{
 		if ($this->age === self::MAX_AGE) {
-			return $fortuneEnchantment->discreteDrops(
+			return $this->discreteDrops(
 				$this->asItem(),
 				self::MINIMUM_DROPS,
 				self::MAXIMUM_DROPS,
-				$item->getEnchantmentLevel($fortuneEnchantment)
+				$level
 			);
 		} else {
 			return [$this->asItem()];

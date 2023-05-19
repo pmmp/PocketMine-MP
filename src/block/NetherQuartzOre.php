@@ -23,20 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\enchantment\VanillaEnchantments;
+use pocketmine\block\utils\FortuneTrait;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use function mt_rand;
 
 class NetherQuartzOre extends Opaque{
+	use FortuneTrait;
+
 	public const MINIMUM_DROPS = 1;
 	public const MAXIMUM_DROPS = 1;
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			VanillaItems::NETHER_QUARTZ()
-		];
-	}
 
 	public function isAffectedBySilkTouch() : bool{
 		return true;
@@ -46,17 +42,15 @@ class NetherQuartzOre extends Opaque{
 		return mt_rand(2, 5);
 	}
 
-	public function isAffectedByFortune() : bool{
-		return true;
-	}
-
-	public function getFortuneDrops(Item $item) : array{
-		$fortuneEnchantment = VanillaEnchantments::FORTUNE();
-		return $fortuneEnchantment->mineralDrops(
+	/**
+	 * @return Item[]
+	 */
+	protected function getFortuneDropsForLevel(int $level) : array{
+		return $this->weightedDrops(
 			VanillaItems::NETHER_QUARTZ(),
 			self::MINIMUM_DROPS,
 			self::MAXIMUM_DROPS,
-			$item->getEnchantmentLevel($fortuneEnchantment)
+			$level
 		);
 	}
 }

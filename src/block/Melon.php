@@ -23,36 +23,29 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\enchantment\VanillaEnchantments;
+use pocketmine\block\utils\FortuneTrait;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use function mt_rand;
 
 class Melon extends Opaque{
+	use FortuneTrait;
+
 	public const MINIMUM_DROPS = 3;
 	public const MAXIMUM_DROPS = 7;
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			VanillaItems::MELON()->setCount(mt_rand(self::MINIMUM_DROPS, self::MAXIMUM_DROPS))
-		];
-	}
 
 	public function isAffectedBySilkTouch() : bool{
 		return true;
 	}
 
-	public function isAffectedByFortune() : bool{
-		return true;
-	}
-
-	public function getFortuneDrops(Item $item) : array{
-		$fortuneEnchantment = VanillaEnchantments::FORTUNE();
-		return $fortuneEnchantment->discreteDrops(
+	/**
+	 * @return Item[]
+	 */
+	protected function getFortuneDropsForLevel(int $level) : array{
+		return $this->discreteDrops(
 			VanillaItems::MELON(),
 			self::MINIMUM_DROPS,
 			self::MAXIMUM_DROPS,
-			$item->getEnchantmentLevel($fortuneEnchantment),
+			$level,
 			9
 		);
 	}

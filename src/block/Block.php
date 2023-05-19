@@ -424,7 +424,7 @@ class Block{
 				return $this->getSilkTouchDrops($item);
 			}
 
-			if ($this->isAffectedByFortune() && $item->hasEnchantment(VanillaEnchantments::FORTUNE())) {
+			if ($item->hasEnchantment(VanillaEnchantments::FORTUNE())) {
 				return $this->getFortuneDrops($item);
 			}
 
@@ -492,13 +492,6 @@ class Block{
 	 * Returns whether Silk Touch enchanted tools will cause this block to drop as itself.
 	 */
 	public function isAffectedBySilkTouch() : bool{
-		return false;
-	}
-
-	/**
-	 * Returns whether Fortune enchanted tools will cause this block to drop more items.
-	 */
-	public function isAffectedByFortune() : bool{
 		return false;
 	}
 

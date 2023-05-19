@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\event\block\LeavesDecayEvent;
@@ -39,6 +40,7 @@ use pocketmine\world\World;
 use function mt_rand;
 
 class Leaves extends Transparent{
+	use FortuneTrait;
 
 	protected TreeType $treeType;
 	protected bool $noDecay = false;
@@ -145,7 +147,7 @@ class Leaves extends Transparent{
 			return parent::getDropsForCompatibleTool($item);
 		}
 
-		return $this->getDropsForFortuneLevel();
+		return $this->getFortuneDropsForLevel(0);
 	}
 
 	public function isAffectedBySilkTouch() : bool{
@@ -164,20 +166,20 @@ class Leaves extends Transparent{
 		return SupportType::NONE();
 	}
 
-	public function isAffectedByFortune() : bool{
-		return true;
-	}
-
 	public function getFortuneDrops(Item $item) : array{
 		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0){
 			return parent::getDropsForCompatibleTool($item);
 		}
 
-		return $this->getDropsForFortuneLevel($item->getEnchantmentLevel(VanillaEnchantments::FORTUNE()));
+		return $this->getFortuneDropsForLevel(
+			$item->getEnchantmentLevel(VanillaEnchantments::FORTUNE())
+		);
 	}
 
-	/** @return Item[] */
-	private function getDropsForFortuneLevel(int $level = 0) : array{
+	/**
+	 * @return Item[]
+	 */
+	protected function getFortuneDropsForLevel(int $level) : array{
 		$drops = [];
 		if(mt_rand(1, 20 - 4 * $level) === 1){ //Saplings
 			// TODO: according to the wiki, the jungle saplings have a different drop rate
