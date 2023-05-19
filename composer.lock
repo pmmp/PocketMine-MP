@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8cd9901818949493821aaf543667aac4",
+    "content-hash": "e913903f9b2491e95e91e6d7f05e9540",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -1084,23 +1084,22 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v5.4.23",
+            "version": "v6.2.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "b2f79d86cd9e7de0fff6d03baa80eaed7a5f38b5"
+                "reference": "fd588debf7d1bc16a2c84b4b3b71145d9946b894"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/b2f79d86cd9e7de0fff6d03baa80eaed7a5f38b5",
-                "reference": "b2f79d86cd9e7de0fff6d03baa80eaed7a5f38b5",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/fd588debf7d1bc16a2c84b4b3b71145d9946b894",
+                "reference": "fd588debf7d1bc16a2c84b4b3b71145d9946b894",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.2.5",
+                "php": ">=8.1",
                 "symfony/polyfill-ctype": "~1.8",
-                "symfony/polyfill-mbstring": "~1.8",
-                "symfony/polyfill-php80": "^1.16"
+                "symfony/polyfill-mbstring": "~1.8"
             },
             "type": "library",
             "autoload": {
@@ -1128,7 +1127,7 @@
             "description": "Provides basic utilities for the filesystem",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/filesystem/tree/v5.4.23"
+                "source": "https://github.com/symfony/filesystem/tree/v6.2.10"
             },
             "funding": [
                 {
@@ -1144,7 +1143,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-03-02T11:38:35+00:00"
+            "time": "2023-04-18T13:46:08+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -1294,89 +1293,6 @@
             ],
             "support": {
                 "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.27.0"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2022-11-03T14:55:06+00:00"
-        },
-        {
-            "name": "symfony/polyfill-php80",
-            "version": "v1.27.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/polyfill-php80.git",
-                "reference": "7a6ff3f1959bb01aefccb463a0f2cd3d3d2fd936"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/7a6ff3f1959bb01aefccb463a0f2cd3d3d2fd936",
-                "reference": "7a6ff3f1959bb01aefccb463a0f2cd3d3d2fd936",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.1"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-main": "1.27-dev"
-                },
-                "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ],
-                "psr-4": {
-                    "Symfony\\Polyfill\\Php80\\": ""
-                },
-                "classmap": [
-                    "Resources/stubs"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Ion Bazan",
-                    "email": "ion.bazan@gmail.com"
-                },
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony polyfill backporting some PHP 8.0+ features to lower PHP versions",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "compatibility",
-                "polyfill",
-                "portable",
-                "shim"
-            ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-php80/tree/v1.27.0"
             },
             "funding": [
                 {
