@@ -18,6 +18,30 @@ Larger contributions like feature additions should be preceded by a [Change Prop
 ## Other things you'll need
 - [git](https://git-scm.com/)
 
+## List of `pocketmine` namespaces which are in other repos
+PocketMine-MP has several dependencies which are independent from the main server code. Most of them use the `pocketmine` namespace.
+Some of these add extra classes to packages which already exist in PocketMine-MP.
+
+Take a look at the table below if you can't find the class or function you're looking for.
+
+| Source URL                                                      | Namespace, class or function                                                                                                             |
+|:----------------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------|
+| [pmmp/BedrockProtocol](https://github.com/pmmp/BedrockProtocol) | `pocketmine\network\mcpe\protocol`                                                                                                       |
+| [pmmp/BinaryUtils](https://github.com/pmmp/BinaryUtils)         | `pocketmine\utils\BinaryDataException`</br>`pocketmine\utils\BinaryStream`</br>`pocketmine\utils\Binary`                                 |
+| [pmmp/ClassLoader](https://github.com/pmmp/`ClassLoader`)       | `BaseClassLoader`</br>`ClassLoader`</br>`DynamicClassLoader`                                                                             |
+| [pmmp/Color](https://github.com/pmmp/Color)                     | `pocketmine\color`                                                                                                                       |
+| [pmmp/ErrorHandler](https://github.com/pmmp/ErrorHandler)       | `pocketmine\errorhandler`                                                                                                                |
+| [pmmp/LogPthreads](https://github.com/pmmp/LogPthreads)         | `ThreadedLoggerAttachment`</br>`ThreadedLogger`</br>`AttachableThreadedLogger`                                                           |
+| [pmmp/Log](https://github.com/pmmp/Log)                         | `AttachableLogger`</br>`BufferedLogger`</br>`GlobalLogger`</br>`LogLevel`</br>`Logger`</br>`PrefixedLogger`</br>`SimpleLogger`           |
+| [pmmp/Math](https://github.com/pmmp/Math)                       | `pocketmine\math`                                                                                                                        |
+| [pmmp/NBT](https://github.com/pmmp/NBT)                         | `pocketmine\nbt`                                                                                                                         |
+| [pmmp/RakLibIpc](https://github.com/pmmp/RakLibIpc)             | `raklib\server\ipc`                                                                                                                      |
+| [pmmp/RakLib](https://github.com/pmmp/RakLib)                   | `raklib`                                                                                                                                 |
+| [pmmp/Snooze](https://github.com/pmmp/Snooze)                   | `pocketmine\snooze`                                                                                                                      |
+| [pmmp/ext-chunkutils2](https://github.com/pmmp/ext-chunkutils2) | `pocketmine\world\format\LightArray`</br>`pocketmine\world\format\PalettedBlockArray`</br>`pocketmine\world\format\io\SubChunkConverter` |
+| [pmmp/ext-morton](https://github.com/pmmp/ext-morton)           | `morton2d_decode`</br>`morton2d_encode`</br>`morton3d_decode`</br>`morton3d_encode`                                                      |
+| [pmmp/ext-libdeflate](https://github.com/pmmp/ext-libdeflate)   | `libdeflate_deflate_compress`</br>`libdeflate_gzip_compress`</br>`libdeflate_zlib_compress`                                              |
+
 ## Choosing a target branch
 PocketMine-MP has three primary branches of development.
 

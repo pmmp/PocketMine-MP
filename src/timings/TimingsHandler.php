@@ -30,7 +30,7 @@ use function implode;
 use function spl_object_id;
 
 class TimingsHandler{
-	private const FORMAT_VERSION = 1;
+	private const FORMAT_VERSION = 2; //peak timings fix
 
 	private static bool $enabled = false;
 	private static int $timingStart = 0;
