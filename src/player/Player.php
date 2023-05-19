@@ -2540,7 +2540,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	/**
 	 * To set a custom creative inventory, you need to make a clone of a CreativeInventory instance.
-	 * Make sure to use this method only in or after `PlayerLoginEvent` to sync the contents on the client.
 	 */
 	public function setCreativeInventory(CreativeInventory $inventory) : void{
 		$this->creativeInventory = $inventory;
