@@ -441,11 +441,6 @@ parameters:
 			path: ../../../src/block/tile/Spawnable.php
 
 		-
-			message: "#^Parameter \\#2 \\$replace of function str_replace expects array\\|string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/command/Command.php
-
-		-
 			message: "#^Cannot call method addParticle\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/ParticleCommand.php
@@ -801,29 +796,9 @@ parameters:
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
 
 		-
-			message: "#^Cannot call method getNotifier\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
-			count: 1
-			path: ../../../src/scheduler/AsyncTask.php
-
-		-
-			message: "#^Cannot call method handleException\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
-			count: 1
-			path: ../../../src/scheduler/AsyncTask.php
-
-		-
 			message: "#^Property pocketmine\\\\scheduler\\\\BulkCurlTask\\:\\:\\$operations \\(string\\) does not accept string\\|null\\.$#"
 			count: 1
 			path: ../../../src/scheduler/BulkCurlTask.php
-
-		-
-			message: "#^Cannot call method getAsyncWorkerId\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
-			count: 1
-			path: ../../../src/scheduler/DumpWorkerMemoryTask.php
-
-		-
-			message: "#^Cannot call method getLogger\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
-			count: 1
-			path: ../../../src/scheduler/DumpWorkerMemoryTask.php
 
 		-
 			message: "#^Cannot call method getNextRun\\(\\) on array\\<string, int\\|pocketmine\\\\scheduler\\\\TaskHandler\\>\\|int\\|pocketmine\\\\scheduler\\\\TaskHandler\\.$#"
