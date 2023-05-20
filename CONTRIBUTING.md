@@ -31,7 +31,6 @@ Take a look at the table below if you can't find the class or function you're lo
 | [pmmp/ClassLoader](https://github.com/pmmp/`ClassLoader`)       | `BaseClassLoader`</br>`ClassLoader`</br>`DynamicClassLoader`                                                                             |
 | [pmmp/Color](https://github.com/pmmp/Color)                     | `pocketmine\color`                                                                                                                       |
 | [pmmp/ErrorHandler](https://github.com/pmmp/ErrorHandler)       | `pocketmine\errorhandler`                                                                                                                |
-| [pmmp/LogPthreads](https://github.com/pmmp/LogPthreads)         | `ThreadedLoggerAttachment`</br>`ThreadedLogger`</br>`AttachableThreadedLogger`                                                           |
 | [pmmp/Log](https://github.com/pmmp/Log)                         | `AttachableLogger`</br>`BufferedLogger`</br>`GlobalLogger`</br>`LogLevel`</br>`Logger`</br>`PrefixedLogger`</br>`SimpleLogger`           |
 | [pmmp/Math](https://github.com/pmmp/Math)                       | `pocketmine\math`                                                                                                                        |
 | [pmmp/NBT](https://github.com/pmmp/NBT)                         | `pocketmine\nbt`                                                                                                                         |
