@@ -169,7 +169,6 @@ use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
-use function class_parents;
 use function get_class;
 
 final class BlockObjectToStateSerializer implements BlockStateSerializer{
@@ -177,8 +176,8 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	 * These callables actually accept Block, but for the sake of type completeness, it has to be never, since we can't
 	 * describe the bottom type of a type hierarchy only containing Block.
 	 *
-	 * @var \Closure[][]
-	 * @phpstan-var array<int, array<class-string, \Closure(never) : Writer>>
+	 * @var \Closure[]
+	 * @phpstan-var array<int, \Closure(never) : Writer>
 	 */
 	private array $serializers = [];
 
@@ -212,7 +211,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		if(isset($this->serializers[$block->getTypeId()])){
 			throw new \InvalidArgumentException("Block type ID " . $block->getTypeId() . " already has a serializer registered");
 		}
-		$this->serializers[$block->getTypeId()][get_class($block)] = $serializer;
+		$this->serializers[$block->getTypeId()] = $serializer;
 	}
 
 	public function mapSimple(Block $block, string $id) : void{
@@ -240,21 +239,16 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	public function serializeBlock(Block $blockState) : BlockStateData{
 		$typeId = $blockState->getTypeId();
 
-		$locatedSerializer = $this->serializers[$typeId][get_class($blockState)] ?? null;
-		if($locatedSerializer === null){
-			foreach(class_parents($blockState) as $parent){
-				if(isset($this->serializers[$typeId][$parent])){
-					$locatedSerializer = $this->serializers[$typeId][$parent];
-					break;
-				}
-			}
-		}
-
+		$locatedSerializer = $this->serializers[$typeId] ?? null;
 		if($locatedSerializer === null){
 			throw new BlockStateSerializeException("No serializer registered for " . get_class($blockState) . " with type ID $typeId");
 		}
 
 		/**
+		 * TODO: there is no guarantee that this type actually matches that of $blockState - a plugin may have stolen
+		 * the type ID of the block (which never makes sense, even in a world where overriding block types is a thing).
+		 * In the future we'll need some way to guarantee that type IDs are never reused (perhaps spl_object_id()?)
+		 *
 		 * @var \Closure $serializer
 		 * @phpstan-var \Closure(TBlockType) : Writer $serializer
 		 */

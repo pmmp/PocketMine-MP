@@ -33,7 +33,6 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
 use pocketmine\item\VanillaItems as Items;
 use pocketmine\utils\AssumptionFailedError;
-use function class_parents;
 use function get_class;
 
 final class ItemSerializer{
@@ -41,14 +40,14 @@ final class ItemSerializer{
 	 * These callables actually accept Item, but for the sake of type completeness, it has to be never, since we can't
 	 * describe the bottom type of a type hierarchy only containing Item.
 	 *
-	 * @var \Closure[][]
-	 * @phpstan-var array<int, array<class-string, \Closure(never) : Data>>
+	 * @var \Closure[]
+	 * @phpstan-var array<int, \Closure(never) : Data>
 	 */
 	private array $itemSerializers = [];
 
 	/**
 	 * @var \Closure[][]
-	 * @phpstan-var array<int, array<class-string, \Closure(never) : Data>>
+	 * @phpstan-var array<int, \Closure(never) : Data>
 	 */
 	private array $blockItemSerializers = [];
 
@@ -69,7 +68,7 @@ final class ItemSerializer{
 		if(isset($this->itemSerializers[$index])){
 			throw new \InvalidArgumentException("Item type ID " . $index . " already has a serializer registered");
 		}
-		$this->itemSerializers[$index][get_class($item)] = $serializer;
+		$this->itemSerializers[$index] = $serializer;
 	}
 
 	/**
@@ -82,7 +81,7 @@ final class ItemSerializer{
 		if(isset($this->blockItemSerializers[$index])){
 			throw new AssumptionFailedError("Registering the same blockitem twice!");
 		}
-		$this->blockItemSerializers[$index][get_class($block)] = $serializer;
+		$this->blockItemSerializers[$index] = $serializer;
 	}
 
 	/**
@@ -100,21 +99,16 @@ final class ItemSerializer{
 		}else{
 			$index = $item->getTypeId();
 
-			$locatedSerializer = $this->itemSerializers[$index][get_class($item)] ?? null;
-			if($locatedSerializer === null){
-				foreach(class_parents($item) as $parent){
-					if(isset($this->itemSerializers[$index][$parent])){
-						$locatedSerializer = $this->itemSerializers[$index][$parent];
-						break;
-					}
-				}
-			}
-
+			$locatedSerializer = $this->itemSerializers[$index] ?? null;
 			if($locatedSerializer === null){
 				throw new ItemTypeSerializeException("No serializer registered for " . get_class($item) . " ($index) " . $item->getName());
 			}
 
 			/**
+			 * TODO: there is no guarantee that this type actually matches that of $item - a plugin may have stolen
+			 * the type ID of the item (which never makes sense, even in a world where overriding item types is a thing).
+			 * In the future we'll need some way to guarantee that type IDs are never reused (perhaps spl_object_id()?)
+			 *
 			 * @var \Closure $serializer
 			 * @phpstan-var \Closure(TItemType) : Data $serializer
 			 */
@@ -156,18 +150,15 @@ final class ItemSerializer{
 	private function serializeBlockItem(Block $block) : Data{
 		$index = $block->getTypeId();
 
-		$locatedSerializer = $this->blockItemSerializers[$index][get_class($block)] ?? null;
-		if($locatedSerializer === null){
-			foreach(class_parents($block) as $parent){
-				if(isset($this->blockItemSerializers[$index][$parent])){
-					$locatedSerializer = $this->blockItemSerializers[$index][$parent];
-					break;
-				}
-			}
-		}
-
+		$locatedSerializer = $this->blockItemSerializers[$index] ?? null;
 		if($locatedSerializer !== null){
-			/** @phpstan-var \Closure(TBlockType) : Data $serializer */
+			/**
+			 * TODO: there is no guarantee that this type actually matches that of $block - a plugin may have stolen
+			 * the type ID of the block (which never makes sense, even in a world where overriding block types is a thing).
+			 * In the future we'll need some way to guarantee that type IDs are never reused (perhaps spl_object_id()?)
+			 *
+			 * @phpstan-var \Closure(TBlockType) : Data $serializer
+			 */
 			$serializer = $locatedSerializer;
 			$data = $serializer($block);
 		}else{
