@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "507c2a45350440a7717ed089190fe4f0",
+    "content-hash": "0dc836612512d87a694945ffb87a4096",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -650,51 +650,6 @@
                 "source": "https://github.com/pmmp/Log/tree/0.4.0"
             },
             "time": "2021-06-18T19:08:09+00:00"
-        },
-        {
-            "name": "pocketmine/log-pthreads",
-            "version": "dev-stable",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/pmmp/LogPthreads.git",
-                "reference": "bb3b5395042d12ec0d7ad5c855fd86eaf12869d3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/LogPthreads/zipball/bb3b5395042d12ec0d7ad5c855fd86eaf12869d3",
-                "reference": "bb3b5395042d12ec0d7ad5c855fd86eaf12869d3",
-                "shasum": ""
-            },
-            "require": {
-                "ext-pmmpthread": "^6.0",
-                "php": "^8.1",
-                "pocketmine/log": "^0.4.0"
-            },
-            "conflict": {
-                "pocketmine/spl": "<0.4"
-            },
-            "require-dev": {
-                "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "1.10.3",
-                "phpstan/phpstan-strict-rules": "^1.0"
-            },
-            "default-branch": true,
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "./src"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL-3.0"
-            ],
-            "description": "Logging components specialized for pthreads used by PocketMine-MP and related projects",
-            "support": {
-                "issues": "https://github.com/pmmp/LogPthreads/issues",
-                "source": "https://github.com/pmmp/LogPthreads/tree/stable"
-            },
-            "time": "2023-05-19T23:38:36+00:00"
         },
         {
             "name": "pocketmine/math",
@@ -3298,7 +3253,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "pocketmine/classloader": 20,
-        "pocketmine/log-pthreads": 20,
         "pocketmine/snooze": 20
     },
     "prefer-stable": false,

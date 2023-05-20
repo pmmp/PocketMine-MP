@@ -25,13 +25,15 @@ namespace pocketmine\utils;
 
 use LogLevel;
 use pmmp\thread\Thread as NativeThread;
+use pocketmine\thread\log\AttachableThreadSafeLogger;
+use pocketmine\thread\log\ThreadSafeLoggerAttachment;
 use pocketmine\thread\Thread;
 use pocketmine\thread\Worker;
 use function implode;
 use function sprintf;
 use const PHP_EOL;
 
-class MainLogger extends \AttachableThreadSafeLogger implements \BufferedLogger{
+class MainLogger extends AttachableThreadSafeLogger implements \BufferedLogger{
 	protected bool $logDebug;
 
 	private string $format = TextFormat::AQUA . "[%s] " . TextFormat::RESET . "%s[%s/%s]: %s" . TextFormat::RESET;
@@ -195,7 +197,7 @@ class MainLogger extends \AttachableThreadSafeLogger implements \BufferedLogger{
 			$this->logWriterThread->write($time->format("Y-m-d") . " " . TextFormat::clean($message) . PHP_EOL);
 
 			/**
-			 * @var \ThreadSafeLoggerAttachment $attachment
+			 * @var ThreadSafeLoggerAttachment $attachment
 			 */
 			foreach($this->attachments as $attachment){
 				$attachment->log($level, $message);

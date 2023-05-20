@@ -25,6 +25,7 @@ namespace pocketmine\scheduler;
 
 use pmmp\thread\Thread as NativeThread;
 use pocketmine\snooze\SleeperNotifier;
+use pocketmine\thread\log\ThreadSafeLogger;
 use pocketmine\thread\Worker;
 use function gc_enable;
 use function ini_set;
@@ -34,7 +35,7 @@ class AsyncWorker extends Worker{
 	private static array $store = [];
 
 	public function __construct(
-		private \ThreadSafeLogger $logger,
+		private ThreadSafeLogger $logger,
 		private int $id,
 		private int $memoryLimit,
 		private SleeperNotifier $notifier
@@ -58,7 +59,7 @@ class AsyncWorker extends Worker{
 		}
 	}
 
-	public function getLogger() : \ThreadSafeLogger{
+	public function getLogger() : ThreadSafeLogger{
 		return $this->logger;
 	}
 

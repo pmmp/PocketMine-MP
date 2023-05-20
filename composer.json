@@ -45,7 +45,6 @@
       "pocketmine/errorhandler": "^0.6.0",
       "pocketmine/locale-data": "~2.19.0",
       "pocketmine/log": "^0.4.0",
-      "pocketmine/log-pthreads": "dev-stable",
       "pocketmine/math": "^0.4.0",
       "pocketmine/nbt": "^0.3.2",
       "pocketmine/raklib": "^0.15.0",
