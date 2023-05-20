@@ -664,10 +664,16 @@ abstract class Living extends Entity{
 	}
 
 	protected function move(float $dx, float $dy, float $dz) : void{
+		$oldX = $this->location->x;
+		$oldZ = $this->location->z;
+
 		parent::move($dx, $dy, $dz);
 
+		$diffX = abs($this->location->x - $oldX);
+		$diffZ = abs($this->location->z - $oldZ);
+
 		$frostWalkerLevel = $this->armorInventory->getBoots()->getEnchantmentLevel(VanillaEnchantments::FROST_WALKER());
-		if($frostWalkerLevel > 0 && (abs($dx) > 0.0001 || abs($dz) > 0.0001)){
+		if($frostWalkerLevel > 0 && ($diffX > 0.0001 || $diffZ > 0.0001)){
 			$radius = $frostWalkerLevel + 2;
 			$world = $this->getWorld();
 			for($x = -$radius; $x <= $radius; $x++){
