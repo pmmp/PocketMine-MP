@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
+use pmmp\thread\Thread as NativeThread;
+use pmmp\thread\ThreadSafeArray;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\utils\Utils;
@@ -33,14 +35,13 @@ use function count;
 use function spl_object_id;
 use function time;
 use const PHP_INT_MAX;
-use const PTHREADS_INHERIT_INI;
 
 /**
  * Manages general-purpose worker threads used for processing asynchronous tasks, and the tasks submitted to those
  * workers.
  */
 class AsyncPool{
-	private const WORKER_START_OPTIONS = PTHREADS_INHERIT_INI;
+	private const WORKER_START_OPTIONS = NativeThread::INHERIT_INI | NativeThread::INHERIT_COMMENTS;
 
 	/**
 	 * @var \SplQueue[]|AsyncTask[][]
@@ -69,7 +70,7 @@ class AsyncPool{
 		protected int $size,
 		private int $workerMemoryLimit,
 		private \ClassLoader $classLoader,
-		private \ThreadedLogger $logger,
+		private \ThreadSafeLogger $logger,
 		private SleeperHandler $eventLoop
 	){}
 
@@ -158,7 +159,7 @@ class AsyncPool{
 			throw new \InvalidArgumentException("Cannot submit the same AsyncTask instance more than once");
 		}
 
-		$task->progressUpdates = new \ThreadedArray();
+		$task->progressUpdates = new ThreadSafeArray();
 		$task->setSubmitted();
 
 		$this->getWorker($worker)->stack($task);

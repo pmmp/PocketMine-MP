@@ -1,9 +1,11 @@
 <?php
 
+namespace pmmp\thread;
+
 /**
  * @implements \IteratorAggregate<array-key, mixed>
  */
-abstract class ThreadedBase implements \IteratorAggregate{
+abstract class ThreadSafe implements \IteratorAggregate{
 
     /**
      * @template TReturn
@@ -17,9 +19,9 @@ abstract class ThreadedBase implements \IteratorAggregate{
 /**
  * @template TKey of array-key
  * @template TValue
- * @implements ArrayAccess<TKey, TValue>
+ * @implements \ArrayAccess<TKey, TValue>
  */
-final class ThreadedArray extends ThreadedBase implements Countable, ArrayAccess{
+final class ThreadSafeArray extends ThreadSafe implements \Countable, \ArrayAccess{
 
     /**
      * @return TValue|null

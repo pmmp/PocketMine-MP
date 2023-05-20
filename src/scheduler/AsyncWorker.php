@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
+use pmmp\thread\Thread as NativeThread;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\thread\Worker;
 use function gc_enable;
@@ -33,7 +34,7 @@ class AsyncWorker extends Worker{
 	private static array $store = [];
 
 	public function __construct(
-		private \ThreadedLogger $logger,
+		private \ThreadSafeLogger $logger,
 		private int $id,
 		private int $memoryLimit,
 		private SleeperNotifier $notifier
@@ -57,7 +58,7 @@ class AsyncWorker extends Worker{
 		}
 	}
 
-	public function getLogger() : \ThreadedLogger{
+	public function getLogger() : \ThreadSafeLogger{
 		return $this->logger;
 	}
 
@@ -78,7 +79,7 @@ class AsyncWorker extends Worker{
 	 * want to use on this worker thread from multiple AsyncTasks.
 	 */
 	public function saveToThreadStore(string $identifier, mixed $value) : void{
-		if(\Thread::getCurrentThread() !== $this){
+		if(NativeThread::getCurrentThread() !== $this){
 			throw new \LogicException("Thread-local data can only be stored in the thread context");
 		}
 		self::$store[$identifier] = $value;
@@ -93,7 +94,7 @@ class AsyncWorker extends Worker{
 	 * Objects stored in this storage may ONLY be retrieved while the task is running.
 	 */
 	public function getFromThreadStore(string $identifier) : mixed{
-		if(\Thread::getCurrentThread() !== $this){
+		if(NativeThread::getCurrentThread() !== $this){
 			throw new \LogicException("Thread-local data can only be fetched in the thread context");
 		}
 		return self::$store[$identifier] ?? null;
@@ -103,7 +104,7 @@ class AsyncWorker extends Worker{
 	 * Removes previously-stored mixed data from the worker's thread-local object store.
 	 */
 	public function removeFromThreadStore(string $identifier) : void{
-		if(\Thread::getCurrentThread() !== $this){
+		if(NativeThread::getCurrentThread() !== $this){
 			throw new \LogicException("Thread-local data can only be removed in the thread context");
 		}
 		unset(self::$store[$identifier]);

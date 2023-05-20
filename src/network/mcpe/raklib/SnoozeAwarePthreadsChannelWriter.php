@@ -23,15 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\raklib;
 
+use pmmp\thread\ThreadSafeArray;
 use pocketmine\snooze\SleeperNotifier;
 use raklib\server\ipc\InterThreadChannelWriter;
 
 final class SnoozeAwarePthreadsChannelWriter implements InterThreadChannelWriter{
 	/**
-	 * @phpstan-param \ThreadedArray<int, string> $buffer
+	 * @phpstan-param ThreadSafeArray<int, string> $buffer
 	 */
 	public function __construct(
-		private \ThreadedArray $buffer,
+		private ThreadSafeArray $buffer,
 		private SleeperNotifier $notifier
 	){}
 

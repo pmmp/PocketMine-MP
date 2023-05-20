@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8c09886bd34e74a61c3ea1ee2be3b2e9",
+    "content-hash": "507c2a45350440a7717ed089190fe4f0",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -466,32 +466,33 @@
         },
         {
             "name": "pocketmine/classloader",
-            "version": "0.3.0",
+            "version": "dev-stable",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/ClassLoader.git",
-                "reference": "407caf521186ec1f03024f39031cc681ad491026"
+                "reference": "e15c9b4d310581d2d2c9bf2794869cb940e011e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/407caf521186ec1f03024f39031cc681ad491026",
-                "reference": "407caf521186ec1f03024f39031cc681ad491026",
+                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/e15c9b4d310581d2d2c9bf2794869cb940e011e1",
+                "reference": "e15c9b4d310581d2d2c9bf2794869cb940e011e1",
                 "shasum": ""
             },
             "require": {
-                "ext-pthreads": "^5.0",
+                "ext-pmmpthread": "^6.0",
                 "ext-reflection": "*",
-                "php": "^8.0"
+                "php": "^8.1"
             },
             "conflict": {
                 "pocketmine/spl": "<0.4"
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "1.9.4",
+                "phpstan/phpstan": "1.10.15",
                 "phpstan/phpstan-strict-rules": "^1.0",
                 "phpunit/phpunit": "^9.5"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "classmap": [
@@ -505,9 +506,9 @@
             "description": "Ad-hoc autoloading components used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/ClassLoader/issues",
-                "source": "https://github.com/pmmp/ClassLoader/tree/0.3.0"
+                "source": "https://github.com/pmmp/ClassLoader/tree/stable"
             },
-            "time": "2023-01-23T19:46:53+00:00"
+            "time": "2023-05-19T23:39:02+00:00"
         },
         {
             "name": "pocketmine/color",
@@ -652,21 +653,21 @@
         },
         {
             "name": "pocketmine/log-pthreads",
-            "version": "0.5.0",
+            "version": "dev-stable",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/LogPthreads.git",
-                "reference": "0ecfea6dcfc9a9f5c86e126ac1661732de5c5666"
+                "reference": "bb3b5395042d12ec0d7ad5c855fd86eaf12869d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/LogPthreads/zipball/0ecfea6dcfc9a9f5c86e126ac1661732de5c5666",
-                "reference": "0ecfea6dcfc9a9f5c86e126ac1661732de5c5666",
+                "url": "https://api.github.com/repos/pmmp/LogPthreads/zipball/bb3b5395042d12ec0d7ad5c855fd86eaf12869d3",
+                "reference": "bb3b5395042d12ec0d7ad5c855fd86eaf12869d3",
                 "shasum": ""
             },
             "require": {
-                "ext-pthreads": "^5.0",
-                "php": "^8.0",
+                "ext-pmmpthread": "^6.0",
+                "php": "^8.1",
                 "pocketmine/log": "^0.4.0"
             },
             "conflict": {
@@ -674,9 +675,10 @@
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "1.8.11",
+                "phpstan/phpstan": "1.10.3",
                 "phpstan/phpstan-strict-rules": "^1.0"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "classmap": [
@@ -690,9 +692,9 @@
             "description": "Logging components specialized for pthreads used by PocketMine-MP and related projects",
             "support": {
                 "issues": "https://github.com/pmmp/LogPthreads/issues",
-                "source": "https://github.com/pmmp/LogPthreads/tree/0.5.0"
+                "source": "https://github.com/pmmp/LogPthreads/tree/stable"
             },
-            "time": "2023-01-23T19:52:12+00:00"
+            "time": "2023-05-19T23:38:36+00:00"
         },
         {
             "name": "pocketmine/math",
@@ -863,27 +865,28 @@
         },
         {
             "name": "pocketmine/snooze",
-            "version": "0.4.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Snooze.git",
-                "reference": "6b1d6cc645d674590ff9be2438ac00032f9ee292"
+                "reference": "3207a201cbb10eebb4a96749678f7adef216bb71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/6b1d6cc645d674590ff9be2438ac00032f9ee292",
-                "reference": "6b1d6cc645d674590ff9be2438ac00032f9ee292",
+                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/3207a201cbb10eebb4a96749678f7adef216bb71",
+                "reference": "3207a201cbb10eebb4a96749678f7adef216bb71",
                 "shasum": ""
             },
             "require": {
-                "ext-pthreads": "^5.0",
-                "php-64bit": "^8.0"
+                "ext-pmmpthread": "^6.0",
+                "php-64bit": "^8.1"
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "1.9.14",
+                "phpstan/phpstan": "1.10.3",
                 "phpstan/phpstan-strict-rules": "^1.0"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -897,9 +900,9 @@
             "description": "Thread notification management library for code using the pthreads extension",
             "support": {
                 "issues": "https://github.com/pmmp/Snooze/issues",
-                "source": "https://github.com/pmmp/Snooze/tree/0.4.0"
+                "source": "https://github.com/pmmp/Snooze/tree/master"
             },
-            "time": "2023-01-23T19:43:19+00:00"
+            "time": "2023-05-19T23:38:19+00:00"
         },
         {
             "name": "ramsey/collection",
@@ -1527,16 +1530,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.15.4",
+            "version": "v4.15.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "6bb5176bc4af8bcb7d926f88718db9b96a2d4290"
+                "reference": "11e2663a5bc9db5d714eedb4277ee300403b4a9e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/6bb5176bc4af8bcb7d926f88718db9b96a2d4290",
-                "reference": "6bb5176bc4af8bcb7d926f88718db9b96a2d4290",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/11e2663a5bc9db5d714eedb4277ee300403b4a9e",
+                "reference": "11e2663a5bc9db5d714eedb4277ee300403b4a9e",
                 "shasum": ""
             },
             "require": {
@@ -1577,9 +1580,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v4.15.4"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v4.15.5"
             },
-            "time": "2023-03-05T19:49:14+00:00"
+            "time": "2023-05-19T20:20:00+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -3293,7 +3296,11 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "pocketmine/classloader": 20,
+        "pocketmine/log-pthreads": 20,
+        "pocketmine/snooze": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
@@ -3314,7 +3321,7 @@
         "ext-openssl": "*",
         "ext-pcre": "*",
         "ext-phar": "*",
-        "ext-pthreads": "^5.1",
+        "ext-pmmpthread": "^6.0",
         "ext-reflection": "*",
         "ext-simplexml": "*",
         "ext-sockets": "*",

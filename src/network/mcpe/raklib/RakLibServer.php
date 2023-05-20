@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\raklib;
 
+use pmmp\thread\Thread as NativeThread;
+use pmmp\thread\ThreadSafeArray;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\thread\NonThreadSafeValue;
 use pocketmine\thread\Thread;
@@ -38,7 +40,6 @@ use function error_get_last;
 use function gc_enable;
 use function ini_set;
 use function register_shutdown_function;
-use const PTHREADS_INHERIT_NONE;
 
 class RakLibServer extends Thread{
 	protected bool $cleanShutdown = false;
@@ -50,13 +51,13 @@ class RakLibServer extends Thread{
 	protected NonThreadSafeValue $address;
 
 	/**
-	 * @phpstan-param \ThreadedArray<int, string> $mainToThreadBuffer
-	 * @phpstan-param \ThreadedArray<int, string> $threadToMainBuffer
+	 * @phpstan-param ThreadSafeArray<int, string> $mainToThreadBuffer
+	 * @phpstan-param ThreadSafeArray<int, string> $threadToMainBuffer
 	 */
 	public function __construct(
-		protected \ThreadedLogger $logger,
-		protected \ThreadedArray $mainToThreadBuffer,
-		protected \ThreadedArray $threadToMainBuffer,
+		protected \ThreadSafeLogger $logger,
+		protected ThreadSafeArray $mainToThreadBuffer,
+		protected ThreadSafeArray $threadToMainBuffer,
 		InternetAddress $address,
 		protected int $serverId,
 		protected int $maxMtuSize,
@@ -88,13 +89,13 @@ class RakLibServer extends Thread{
 	}
 
 	private function setCrashInfo(RakLibThreadCrashInfo $info) : void{
-		$this->synchronized(function(RakLibThreadCrashInfo $info) : void{
+		$this->synchronized(function() use ($info) : void{
 			$this->crashInfo = new NonThreadSafeValue($info);
 			$this->notify();
-		}, $info);
+		});
 	}
 
-	public function startAndWait(int $options = PTHREADS_INHERIT_NONE) : void{
+	public function startAndWait(int $options = NativeThread::INHERIT_NONE) : void{
 		$this->start($options);
 		$this->synchronized(function() : void{
 			while(!$this->ready && $this->crashInfo === null){

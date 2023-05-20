@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\raklib;
 
+use pmmp\thread\ThreadSafeArray;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\mcpe\compression\ZlibCompressor;
@@ -105,10 +106,10 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 
 		$this->sleeper = new SleeperNotifier();
 
-		/** @phpstan-var \ThreadedArray<int, string> $mainToThreadBuffer */
-		$mainToThreadBuffer = new \ThreadedArray();
-		/** @phpstan-var \ThreadedArray<int, string> $threadToMainBuffer */
-		$threadToMainBuffer = new \ThreadedArray();
+		/** @phpstan-var ThreadSafeArray<int, string> $mainToThreadBuffer */
+		$mainToThreadBuffer = new ThreadSafeArray();
+		/** @phpstan-var ThreadSafeArray<int, string> $threadToMainBuffer */
+		$threadToMainBuffer = new ThreadSafeArray();
 
 		$this->rakLib = new RakLibServer(
 			$this->server->getLogger(),

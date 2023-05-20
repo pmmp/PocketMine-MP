@@ -338,7 +338,7 @@ JIT_WARNING
 			$logger->info("Stopping other threads");
 
 			$killer = new ServerKiller(8);
-			$killer->start(PTHREADS_INHERIT_NONE);
+			$killer->start();
 			usleep(10000); //Fixes ServerKiller not being able to start on single-core machines
 
 			if(ThreadManager::getInstance()->stopAll() > 0){

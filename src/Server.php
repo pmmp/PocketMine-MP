@@ -417,7 +417,7 @@ class Server{
 		return $this->autoloader;
 	}
 
-	public function getLogger() : \AttachableThreadedLogger{
+	public function getLogger() : \AttachableThreadSafeLogger{
 		return $this->logger;
 	}
 
@@ -760,7 +760,7 @@ class Server{
 
 	public function __construct(
 		private \DynamicClassLoader $autoloader,
-		private \AttachableThreadedLogger $logger,
+		private \AttachableThreadSafeLogger $logger,
 		string $dataPath,
 		string $pluginPath
 	){

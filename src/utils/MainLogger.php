@@ -24,14 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use LogLevel;
+use pmmp\thread\Thread as NativeThread;
 use pocketmine\thread\Thread;
 use pocketmine\thread\Worker;
 use function implode;
 use function sprintf;
 use const PHP_EOL;
-use const PTHREADS_INHERIT_NONE;
 
-class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
+class MainLogger extends \AttachableThreadSafeLogger implements \BufferedLogger{
 	protected bool $logDebug;
 
 	private string $format = TextFormat::AQUA . "[%s] " . TextFormat::RESET . "%s[%s/%s]: %s" . TextFormat::RESET;
@@ -52,7 +52,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 		$this->timezone = $timezone->getName();
 
 		$this->logWriterThread = new MainLoggerThread($logFile);
-		$this->logWriterThread->start(PTHREADS_INHERIT_NONE);
+		$this->logWriterThread->start(NativeThread::INHERIT_NONE);
 	}
 
 	/**
@@ -165,7 +165,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 	}
 
 	public function shutdownLogWriterThread() : void{
-		if(\Thread::getCurrentThreadId() === $this->logWriterThread->getCreatorId()){
+		if(NativeThread::getCurrentThreadId() === $this->logWriterThread->getCreatorId()){
 			$this->logWriterThread->shutdown();
 		}else{
 			throw new \LogicException("Only the creator thread can shutdown the logger thread");
@@ -175,7 +175,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 	protected function send(string $message, string $level, string $prefix, string $color) : void{
 		$time = new \DateTime('now', new \DateTimeZone($this->timezone));
 
-		$thread = \Thread::getCurrentThread();
+		$thread = NativeThread::getCurrentThread();
 		if($thread === null){
 			$threadName = $this->mainThreadName . " thread";
 		}elseif($thread instanceof Thread || $thread instanceof Worker){
@@ -195,7 +195,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 			$this->logWriterThread->write($time->format("Y-m-d") . " " . TextFormat::clean($message) . PHP_EOL);
 
 			/**
-			 * @var \ThreadedLoggerAttachment $attachment
+			 * @var \ThreadSafeLoggerAttachment $attachment
 			 */
 			foreach($this->attachments as $attachment){
 				$attachment->log($level, $message);
@@ -208,7 +208,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 	}
 
 	public function __destruct(){
-		if(!$this->logWriterThread->isJoined() && \Thread::getCurrentThreadId() === $this->logWriterThread->getCreatorId()){
+		if(!$this->logWriterThread->isJoined() && NativeThread::getCurrentThreadId() === $this->logWriterThread->getCreatorId()){
 			$this->shutdownLogWriterThread();
 		}
 	}
