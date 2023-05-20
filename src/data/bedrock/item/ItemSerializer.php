@@ -46,7 +46,7 @@ final class ItemSerializer{
 	private array $itemSerializers = [];
 
 	/**
-	 * @var \Closure[][]
+	 * @var \Closure[]
 	 * @phpstan-var array<int, \Closure(never) : Data>
 	 */
 	private array $blockItemSerializers = [];
