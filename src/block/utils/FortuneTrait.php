@@ -26,6 +26,7 @@ namespace pocketmine\block\utils;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
+use function array_merge;
 use function min;
 use function mt_getrandmax;
 use function mt_rand;
@@ -71,19 +72,22 @@ trait FortuneTrait{
 	/**
 	 * Binomial drop, the fortune level increases the number of tests for the distribution.
 	 *
-	 * @param float $p The probability of the item being dropped.
+	 * @param float  $p          The probability of the item being dropped.
+	 * @param Item[] $extraDrops Extra drops to add to the result.
 	 * @return Item[]
 	 */
-	protected function binomialDrops(Item $item, int $fortuneLevel = 0, int $baseCount = 0, float $p = 4 / 7) : array{
+	protected function binomialDrops(Item $item, int $fortuneLevel = 0, int $baseCount = 0, float $p = 4 / 7, array $extraDrops = []) : array{
 		$count = $baseCount;
 		for($i = 0; $i < 3 + $fortuneLevel; ++$i){
 			if(mt_rand() / mt_getrandmax() < $p){
 				++$count;
 			}
 		}
-		return [
-			$item->setCount($count)
-		];
+		return array_merge(
+			$extraDrops, [
+				$item->setCount($count)
+			]
+		);
 	}
 
 	/**
@@ -107,18 +111,18 @@ trait FortuneTrait{
 	}
 
 	/**
-	 * Discret drop, increases the maximum number of items that can be dropped by the fortune level.
+	 * Discrete drop increases the maximum number of items that can be dropped by the fortune level.
 	 *
-	 * @param int $maximumDropLimitation As minecraft doc, this is the maximum number of drops that can be dropped by this enchantment.
-	 *                                   If a drop higher than these maximums is rolled, it is rounded down to the capacity.
+	 * @param int $maximum As minecraft doc, this is the maximum number of drops that can be dropped by this enchantment.
+	 *                     If a drop higher than these maximums is rolled, it is rounded down to the capacity.
 	 * @return Item[]
 	 */
-	protected function discreteDrops(Item $item, int $min, int $max, int $fortuneLevel, int $maximumDropLimitation = PHP_INT_MAX) : array{
+	protected function discreteDrops(Item $item, int $minBaseAmount, int $maxBaseAmount, int $fortuneLevel, int $maximum = PHP_INT_MAX) : array{
 		$max = min(
-			$maximumDropLimitation,
-			$max + $fortuneLevel
+			$maximum,
+			$maxBaseAmount + $fortuneLevel
 		);
-		$count = mt_rand($min, $max);
+		$count = mt_rand($minBaseAmount, $max);
 		return [
 			$item->setCount($count)
 		];

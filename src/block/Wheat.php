@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\block\utils\FortuneTrait;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use function array_merge;
 
 class Wheat extends Crops{
 	use FortuneTrait;
@@ -40,12 +39,12 @@ class Wheat extends Crops{
 	 */
 	protected function getFortuneDropsForLevel(int $level) : array{
 		if ($this->age >= self::MAX_AGE) {
-			return array_merge(
-				[VanillaItems::WHEAT()],
-				$this->binomialDrops(
-					VanillaItems::WHEAT_SEEDS(),
-					$level
-				)
+			return $this->binomialDrops(
+				VanillaItems::WHEAT_SEEDS(),
+				$level,
+				extraDrops: [
+					VanillaItems::WHEAT()
+				]
 			);
 		} else {
 			return [
