@@ -32,7 +32,6 @@ use pocketmine\item\CoralFan;
 use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
 use pocketmine\item\VanillaItems as Items;
-use pocketmine\utils\AssumptionFailedError;
 use function get_class;
 
 final class ItemSerializer{
@@ -79,7 +78,7 @@ final class ItemSerializer{
 	public function mapBlock(Block $block, \Closure $serializer) : void{
 		$index = $block->getTypeId();
 		if(isset($this->blockItemSerializers[$index])){
-			throw new AssumptionFailedError("Registering the same blockitem twice!");
+			throw new \InvalidArgumentException("Block type ID " . $index . " already has a serializer registered");
 		}
 		$this->blockItemSerializers[$index] = $serializer;
 	}
