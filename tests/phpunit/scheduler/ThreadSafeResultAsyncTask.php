@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
-use pmmp\thread\ThreadSafe;
 use pmmp\thread\ThreadSafeArray;
 use pocketmine\promise\PromiseResolver;
 
@@ -31,7 +30,7 @@ class ThreadSafeResultAsyncTask extends AsyncTask{
 	private const TLS_KEY_PROMISE = "promise";
 
 	/**
-	 * @phpstan-param PromiseResolver<ThreadSafe> $promise
+	 * @phpstan-param PromiseResolver<ThreadSafeArray<array-key, mixed>> $promise
 	 */
 	public function __construct(
 		PromiseResolver $promise
@@ -48,8 +47,10 @@ class ThreadSafeResultAsyncTask extends AsyncTask{
 	}
 
 	public function onCompletion() : void{
-		/** @var PromiseResolver<ThreadSafe> $promise */
+		/** @var PromiseResolver<ThreadSafeArray<array-key, mixed>> $promise */
 		$promise = $this->fetchLocal(self::TLS_KEY_PROMISE);
-		$promise->resolve($this->getResult());
+		/** @var ThreadSafeArray<array-key, mixed> $result */
+		$result = $this->getResult();
+		$promise->resolve($result);
 	}
 }
