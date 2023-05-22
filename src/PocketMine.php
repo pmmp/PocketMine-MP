@@ -26,6 +26,7 @@ namespace pocketmine {
 	use Composer\InstalledVersions;
 	use pocketmine\errorhandler\ErrorToExceptionHandler;
 	use pocketmine\thread\ThreadManager;
+	use pocketmine\thread\ThreadSafeClassLoader;
 	use pocketmine\utils\Filesystem;
 	use pocketmine\utils\MainLogger;
 	use pocketmine\utils\Process;
@@ -327,7 +328,7 @@ JIT_WARNING
 			/*
 			 * We now use the Composer autoloader, but this autoloader is still for loading plugins.
 			 */
-			$autoloader = new \BaseClassLoader();
+			$autoloader = new ThreadSafeClassLoader();
 			$autoloader->register(false);
 
 			new Server($autoloader, $logger, $dataPath, $pluginPath);

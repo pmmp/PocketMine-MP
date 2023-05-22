@@ -40,7 +40,6 @@
       "pocketmine/bedrock-protocol": "~21.0.0+bedrock-1.19.80",
       "pocketmine/binaryutils": "^0.2.1",
       "pocketmine/callback-validator": "^1.0.2",
-      "pocketmine/classloader": "dev-stable",
       "pocketmine/color": "^0.3.0",
       "pocketmine/errorhandler": "^0.6.0",
       "pocketmine/locale-data": "~2.19.0",

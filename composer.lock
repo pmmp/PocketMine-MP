@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0dc836612512d87a694945ffb87a4096",
+    "content-hash": "812a98ecf031488987b3216e785fee19",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -463,52 +463,6 @@
                 "source": "https://github.com/pmmp/CallbackValidator/tree/1.0.3"
             },
             "time": "2020-12-11T01:45:37+00:00"
-        },
-        {
-            "name": "pocketmine/classloader",
-            "version": "dev-stable",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/pmmp/ClassLoader.git",
-                "reference": "e15c9b4d310581d2d2c9bf2794869cb940e011e1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/e15c9b4d310581d2d2c9bf2794869cb940e011e1",
-                "reference": "e15c9b4d310581d2d2c9bf2794869cb940e011e1",
-                "shasum": ""
-            },
-            "require": {
-                "ext-pmmpthread": "^6.0",
-                "ext-reflection": "*",
-                "php": "^8.1"
-            },
-            "conflict": {
-                "pocketmine/spl": "<0.4"
-            },
-            "require-dev": {
-                "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "1.10.15",
-                "phpstan/phpstan-strict-rules": "^1.0",
-                "phpunit/phpunit": "^9.5"
-            },
-            "default-branch": true,
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "./src"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL-3.0"
-            ],
-            "description": "Ad-hoc autoloading components used by PocketMine-MP",
-            "support": {
-                "issues": "https://github.com/pmmp/ClassLoader/issues",
-                "source": "https://github.com/pmmp/ClassLoader/tree/stable"
-            },
-            "time": "2023-05-19T23:39:02+00:00"
         },
         {
             "name": "pocketmine/color",
@@ -3252,7 +3206,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "pocketmine/classloader": 20,
         "pocketmine/snooze": 20
     },
     "prefer-stable": false,
