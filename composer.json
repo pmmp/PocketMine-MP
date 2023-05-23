@@ -48,7 +48,7 @@
       "pocketmine/nbt": "^0.3.2",
       "pocketmine/raklib": "^0.15.0",
       "pocketmine/raklib-ipc": "^0.2.0",
-      "pocketmine/snooze": "dev-master",
+      "pocketmine/snooze": "^0.5.0",
       "ramsey/uuid": "^4.1",
       "symfony/filesystem": "^5.4"
    },

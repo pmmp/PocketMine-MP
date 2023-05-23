@@ -39,7 +39,6 @@ use pocketmine\network\NetworkInterfaceStartException;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\GameMode;
 use pocketmine\Server;
-use pocketmine\snooze\SleeperNotifier;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Utils;
 use raklib\generic\DisconnectReason;
@@ -79,7 +78,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	private RakLibToUserThreadMessageReceiver $eventReceiver;
 	private UserToRakLibThreadMessageSender $interface;
 
-	private SleeperNotifier $sleeper;
+	private int $sleeperNotifierId;
 
 	private PacketBroadcaster $packetBroadcaster;
 	private EntityEventBroadcaster $entityEventBroadcaster;
@@ -104,7 +103,15 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 
 		$this->rakServerId = mt_rand(0, PHP_INT_MAX);
 
-		$this->sleeper = new SleeperNotifier();
+		$sleeperEntry = $this->server->getTickSleeper()->addNotifier(function() : void{
+			Timings::$connection->startTiming();
+			try{
+				while($this->eventReceiver->handle($this));
+			}finally{
+				Timings::$connection->stopTiming();
+			}
+		});
+		$this->sleeperNotifierId = $sleeperEntry->getNotifierId();
 
 		/** @phpstan-var ThreadSafeArray<int, string> $mainToThreadBuffer */
 		$mainToThreadBuffer = new ThreadSafeArray();
@@ -119,7 +126,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			$this->rakServerId,
 			$this->server->getConfigGroup()->getPropertyInt("network.max-mtu-size", 1492),
 			self::MCPE_RAKNET_PROTOCOL_VERSION,
-			$this->sleeper
+			$sleeperEntry
 		);
 		$this->eventReceiver = new RakLibToUserThreadMessageReceiver(
 			new PthreadsChannelReader($threadToMainBuffer)
@@ -130,14 +137,6 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	}
 
 	public function start() : void{
-		$this->server->getTickSleeper()->addNotifier($this->sleeper, function() : void{
-			Timings::$connection->startTiming();
-			try{
-				while($this->eventReceiver->handle($this));
-			}finally{
-				Timings::$connection->stopTiming();
-			}
-		});
 		$this->server->getLogger()->debug("Waiting for RakLib to start...");
 		try{
 			$this->rakLib->startAndWait();
@@ -182,7 +181,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	}
 
 	public function shutdown() : void{
-		$this->server->getTickSleeper()->removeNotifier($this->sleeper);
+		$this->server->getTickSleeper()->removeNotifier($this->sleeperNotifierId);
 		$this->rakLib->quit();
 	}
 

@@ -26,7 +26,6 @@ namespace pocketmine\scheduler;
 use pmmp\thread\Thread as NativeThread;
 use pmmp\thread\ThreadSafeArray;
 use pocketmine\snooze\SleeperHandler;
-use pocketmine\snooze\SleeperNotifier;
 use pocketmine\thread\log\ThreadSafeLogger;
 use pocketmine\thread\ThreadSafeClassLoader;
 use pocketmine\utils\Utils;
@@ -52,8 +51,8 @@ class AsyncPool{
 	private array $taskQueues = [];
 
 	/**
-	 * @var AsyncWorker[]
-	 * @phpstan-var array<int, AsyncWorker>
+	 * @var AsyncPoolWorkerEntry[]
+	 * @phpstan-var array<int, AsyncPoolWorkerEntry>
 	 */
 	private array $workers = [];
 	/**
@@ -132,13 +131,12 @@ class AsyncPool{
 	 */
 	private function getWorker(int $worker) : AsyncWorker{
 		if(!isset($this->workers[$worker])){
-			$notifier = new SleeperNotifier();
-			$this->workers[$worker] = new AsyncWorker($this->logger, $worker, $this->workerMemoryLimit, $notifier);
-			$this->eventLoop->addNotifier($notifier, function() use ($worker) : void{
+			$sleeperEntry = $this->eventLoop->addNotifier(function() use ($worker) : void{
 				$this->collectTasksFromWorker($worker);
 			});
-			$this->workers[$worker]->setClassLoaders([$this->classLoader]);
-			$this->workers[$worker]->start(self::WORKER_START_OPTIONS);
+			$this->workers[$worker] = new AsyncPoolWorkerEntry(new AsyncWorker($this->logger, $worker, $this->workerMemoryLimit, $sleeperEntry), $sleeperEntry->getNotifierId());
+			$this->workers[$worker]->worker->setClassLoaders([$this->classLoader]);
+			$this->workers[$worker]->worker->start(self::WORKER_START_OPTIONS);
 
 			$this->taskQueues[$worker] = new \SplQueue();
 
@@ -147,7 +145,7 @@ class AsyncPool{
 			}
 		}
 
-		return $this->workers[$worker];
+		return $this->workers[$worker]->worker;
 	}
 
 	/**
@@ -270,7 +268,7 @@ class AsyncPool{
 				break; //current task is still running, skip to next worker
 			}
 		}
-		$this->workers[$worker]->collect();
+		$this->workers[$worker]->worker->collect();
 		return $more;
 	}
 
@@ -289,8 +287,8 @@ class AsyncPool{
 		$time = time();
 		foreach($this->taskQueues as $i => $queue){
 			if((!isset($this->workerLastUsed[$i]) || $this->workerLastUsed[$i] + 300 < $time) && $queue->isEmpty()){
-				$this->workers[$i]->quit();
-				$this->eventLoop->removeNotifier($this->workers[$i]->getNotifier());
+				$this->workers[$i]->worker->quit();
+				$this->eventLoop->removeNotifier($this->workers[$i]->sleeperNotifierId);
 				unset($this->workers[$i], $this->taskQueues[$i], $this->workerLastUsed[$i]);
 				$ret++;
 			}
@@ -308,8 +306,8 @@ class AsyncPool{
 		}
 
 		foreach($this->workers as $worker){
-			$worker->quit();
-			$this->eventLoop->removeNotifier($worker->getNotifier());
+			$worker->worker->quit();
+			$this->eventLoop->removeNotifier($worker->sleeperNotifierId);
 		}
 		$this->workers = [];
 		$this->taskQueues = [];

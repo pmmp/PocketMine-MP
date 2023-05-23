@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "812a98ecf031488987b3216e785fee19",
+    "content-hash": "4bccf431b24bf685b0829ea44e54e806",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -774,16 +774,16 @@
         },
         {
             "name": "pocketmine/snooze",
-            "version": "dev-master",
+            "version": "0.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Snooze.git",
-                "reference": "3207a201cbb10eebb4a96749678f7adef216bb71"
+                "reference": "a86d9ee60ce44755d166d3c7ba4b8b8be8360915"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/3207a201cbb10eebb4a96749678f7adef216bb71",
-                "reference": "3207a201cbb10eebb4a96749678f7adef216bb71",
+                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/a86d9ee60ce44755d166d3c7ba4b8b8be8360915",
+                "reference": "a86d9ee60ce44755d166d3c7ba4b8b8be8360915",
                 "shasum": ""
             },
             "require": {
@@ -795,7 +795,6 @@
                 "phpstan/phpstan": "1.10.3",
                 "phpstan/phpstan-strict-rules": "^1.0"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -809,9 +808,9 @@
             "description": "Thread notification management library for code using the pthreads extension",
             "support": {
                 "issues": "https://github.com/pmmp/Snooze/issues",
-                "source": "https://github.com/pmmp/Snooze/tree/master"
+                "source": "https://github.com/pmmp/Snooze/tree/0.5.0"
             },
-            "time": "2023-05-19T23:38:19+00:00"
+            "time": "2023-05-22T23:43:01+00:00"
         },
         {
             "name": "ramsey/collection",
@@ -3205,9 +3204,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "pocketmine/snooze": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
