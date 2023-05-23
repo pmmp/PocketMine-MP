@@ -23,10 +23,28 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
+use function time;
+
 final class AsyncPoolWorkerEntry{
+
+	public int $lastUsed;
+	/**
+	 * @var \SplQueue|AsyncTask[]
+	 * @phpstan-var \SplQueue<AsyncTask>
+	 */
+	public \SplQueue $tasks;
 
 	public function __construct(
 		public readonly AsyncWorker $worker,
 		public readonly int $sleeperNotifierId
-	){}
+	){
+		$this->lastUsed = time();
+		$this->tasks = new \SplQueue();
+	}
+
+	public function submit(AsyncTask $task) : void{
+		$this->tasks->enqueue($task);
+		$this->lastUsed = time();
+		$this->worker->stack($task);
+	}
 }
