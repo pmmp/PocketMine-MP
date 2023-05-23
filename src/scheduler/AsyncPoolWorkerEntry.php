@@ -25,6 +25,9 @@ namespace pocketmine\scheduler;
 
 use function time;
 
+/**
+ * @internal
+ */
 final class AsyncPoolWorkerEntry{
 
 	public int $lastUsed;
