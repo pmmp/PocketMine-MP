@@ -141,6 +141,11 @@ class Block{
 	 */
 	public function getStateId() : int{
 		$typeId = $this->getTypeId();
+		//TODO: this XOR mask improves hashtable distribution, but it's only effective if the number of unique block
+		//type IDs is larger than the number of available state data bits. We should probably hash (e.g. using xxhash)
+		//the type ID to create a better mask.
+		//Alternatively, we could hash the whole state ID, but this is currently problematic, since we currently need
+		//to be able to recover the state data from the state ID because of UnknownBlock.
 		return ($typeId << self::INTERNAL_STATE_DATA_BITS) | ($this->encodeFullState() ^ ($typeId & self::INTERNAL_STATE_DATA_MASK));
 	}
 
