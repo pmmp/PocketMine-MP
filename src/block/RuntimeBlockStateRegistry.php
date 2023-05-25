@@ -123,7 +123,7 @@ class RuntimeBlockStateRegistry{
 			$block = clone $this->fullList[$stateId];
 		}else{
 			$typeId = $stateId >> Block::INTERNAL_STATE_DATA_BITS;
-			$stateData = $stateId & Block::INTERNAL_STATE_DATA_MASK;
+			$stateData = ($stateId ^ $typeId) & Block::INTERNAL_STATE_DATA_MASK;
 			$block = new UnknownBlock(new BID($typeId), new BlockTypeInfo(BreakInfo::instant()), $stateData);
 		}
 
