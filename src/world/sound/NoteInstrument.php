@@ -38,28 +38,15 @@ use pocketmine\utils\EnumTrait;
  * @method static NoteInstrument SNARE()
  */
 final class NoteInstrument{
-	use EnumTrait {
-		__construct as Enum___construct;
-	}
+	use EnumTrait;
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self("piano", 0),
-			new self("bass_drum", 1),
-			new self("snare", 2),
-			new self("clicks_and_sticks", 3),
-			new self("double_bass", 4)
+			new self("piano"),
+			new self("bass_drum"),
+			new self("snare"),
+			new self("clicks_and_sticks"),
+			new self("double_bass")
 		);
-	}
-
-	private function __construct(
-		string $name,
-		private int $magicNumber
-	){
-		$this->Enum___construct($name);
-	}
-
-	public function getMagicNumber() : int{
-		return $this->magicNumber;
 	}
 }

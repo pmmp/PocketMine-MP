@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\block\utils\MobHeadType;
+use pocketmine\data\bedrock\MobHeadTypeIdMap;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
@@ -50,11 +52,11 @@ class MobHead extends Spawnable{
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		if(($skullTypeTag = $nbt->getTag(self::TAG_SKULL_TYPE)) instanceof ByteTag){
-			try{
-				$this->mobHeadType = MobHeadType::fromMagicNumber($skullTypeTag->getValue());
-			}catch(\InvalidArgumentException $e){
-				//bad data, drop it
+			$mobHeadType = MobHeadTypeIdMap::getInstance()->fromId($skullTypeTag->getValue());
+			if($mobHeadType === null){
+				throw new SavedDataLoadingException("Invalid skull type tag value " . $skullTypeTag->getValue());
 			}
+			$this->mobHeadType = $mobHeadType;
 		}
 		$rotation = $nbt->getByte(self::TAG_ROT, 0);
 		if($rotation >= 0 && $rotation <= 15){
@@ -63,7 +65,7 @@ class MobHead extends Spawnable{
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
-		$nbt->setByte(self::TAG_SKULL_TYPE, $this->mobHeadType->getMagicNumber());
+		$nbt->setByte(self::TAG_SKULL_TYPE, MobHeadTypeIdMap::getInstance()->toId($this->mobHeadType));
 		$nbt->setByte(self::TAG_ROT, $this->rotation);
 	}
 
@@ -84,7 +86,7 @@ class MobHead extends Spawnable{
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		$nbt->setByte(self::TAG_SKULL_TYPE, $this->mobHeadType->getMagicNumber());
+		$nbt->setByte(self::TAG_SKULL_TYPE, MobHeadTypeIdMap::getInstance()->toId($this->mobHeadType));
 		$nbt->setByte(self::TAG_ROT, $this->rotation);
 	}
 }

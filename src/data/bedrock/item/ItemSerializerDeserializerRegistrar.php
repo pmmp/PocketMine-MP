@@ -27,13 +27,13 @@ use pocketmine\block\Bed;
 use pocketmine\block\Block;
 use pocketmine\block\MobHead;
 use pocketmine\block\utils\DyeColor;
-use pocketmine\block\utils\MobHeadType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\data\bedrock\CompoundTypeIds;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\bedrock\item\ItemTypeNames as Ids;
 use pocketmine\data\bedrock\item\SavedItemData as Data;
 use pocketmine\data\bedrock\MedicineTypeIdMap;
+use pocketmine\data\bedrock\MobHeadTypeIdMap;
 use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\data\bedrock\SuspiciousStewTypeIdMap;
 use pocketmine\item\Banner;
@@ -445,14 +445,9 @@ final class ItemSerializerDeserializerRegistrar{
 			Ids::SKULL,
 			Blocks::MOB_HEAD(),
 			function(MobHead $block, int $meta) : void{
-				try{
-					$skullType = MobHeadType::fromMagicNumber($meta);
-				}catch(\InvalidArgumentException $e){
-					throw new ItemTypeDeserializeException($e->getMessage(), 0, $e);
-				}
-				$block->setMobHeadType($skullType);
+				$block->setMobHeadType(MobHeadTypeIdMap::getInstance()->fromId($meta) ?? throw new ItemTypeDeserializeException("Unknown mob head type ID $meta"));
 			},
-			fn(MobHead $block) => $block->getMobHeadType()->getMagicNumber()
+			fn(MobHead $block) => MobHeadTypeIdMap::getInstance()->toId($block->getMobHeadType())
 		);
 	}
 

@@ -40,54 +40,28 @@ use pocketmine\utils\EnumTrait;
  */
 final class MobHeadType{
 	use EnumTrait {
-		register as Enum_register;
 		__construct as Enum___construct;
 	}
 
-	/** @var MobHeadType[] */
-	private static array $numericIdMap = [];
-
 	protected static function setup() : void{
 		self::registerAll(
-			new MobHeadType("skeleton", "Skeleton Skull", 0),
-			new MobHeadType("wither_skeleton", "Wither Skeleton Skull", 1),
-			new MobHeadType("zombie", "Zombie Head", 2),
-			new MobHeadType("player", "Player Head", 3),
-			new MobHeadType("creeper", "Creeper Head", 4),
-			new MobHeadType("dragon", "Dragon Head", 5)
+			new MobHeadType("skeleton", "Skeleton Skull"),
+			new MobHeadType("wither_skeleton", "Wither Skeleton Skull"),
+			new MobHeadType("zombie", "Zombie Head"),
+			new MobHeadType("player", "Player Head"),
+			new MobHeadType("creeper", "Creeper Head"),
+			new MobHeadType("dragon", "Dragon Head")
 		);
-	}
-
-	protected static function register(MobHeadType $type) : void{
-		self::Enum_register($type);
-		self::$numericIdMap[$type->getMagicNumber()] = $type;
-	}
-
-	/**
-	 * @internal
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	public static function fromMagicNumber(int $magicNumber) : MobHeadType{
-		if(!isset(self::$numericIdMap[$magicNumber])){
-			throw new \InvalidArgumentException("Unknown skull type magic number $magicNumber");
-		}
-		return self::$numericIdMap[$magicNumber];
 	}
 
 	private function __construct(
 		string $enumName,
-		private string $displayName,
-		private int $magicNumber
+		private string $displayName
 	){
 		$this->Enum___construct($enumName);
 	}
 
 	public function getDisplayName() : string{
 		return $this->displayName;
-	}
-
-	public function getMagicNumber() : int{
-		return $this->magicNumber;
 	}
 }
