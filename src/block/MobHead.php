@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\tile\Skull as TileSkull;
-use pocketmine\block\utils\SkullType;
+use pocketmine\block\tile\MobHead as TileMobHead;
+use pocketmine\block\utils\MobHeadType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -35,22 +35,22 @@ use pocketmine\world\BlockTransaction;
 use function assert;
 use function floor;
 
-class Skull extends Flowable{
+class MobHead extends Flowable{
 	public const MIN_ROTATION = 0;
 	public const MAX_ROTATION = 15;
 
-	protected SkullType $skullType;
+	protected MobHeadType $mobHeadType;
 
 	protected int $facing = Facing::NORTH;
 	protected int $rotation = self::MIN_ROTATION; //TODO: split this into floor skull and wall skull handling
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->skullType = SkullType::SKELETON(); //TODO: this should be a parameter
+		$this->mobHeadType = MobHeadType::SKELETON(); //TODO: this should be a parameter
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
-		$w->skullType($this->skullType);
+		$w->mobHeadType($this->mobHeadType);
 	}
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
@@ -60,8 +60,8 @@ class Skull extends Flowable{
 	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
-		if($tile instanceof TileSkull){
-			$this->skullType = $tile->getSkullType();
+		if($tile instanceof TileMobHead){
+			$this->mobHeadType = $tile->getMobHeadType();
 			$this->rotation = $tile->getRotation();
 		}
 
@@ -72,18 +72,18 @@ class Skull extends Flowable{
 		parent::writeStateToWorld();
 		//extra block properties storage hack
 		$tile = $this->position->getWorld()->getTile($this->position);
-		assert($tile instanceof TileSkull);
+		assert($tile instanceof TileMobHead);
 		$tile->setRotation($this->rotation);
-		$tile->setSkullType($this->skullType);
+		$tile->setMobHeadType($this->mobHeadType);
 	}
 
-	public function getSkullType() : SkullType{
-		return $this->skullType;
+	public function getMobHeadType() : MobHeadType{
+		return $this->mobHeadType;
 	}
 
 	/** @return $this */
-	public function setSkullType(SkullType $skullType) : self{
-		$this->skullType = $skullType;
+	public function setMobHeadType(MobHeadType $mobHeadType) : self{
+		$this->mobHeadType = $mobHeadType;
 		return $this;
 	}
 

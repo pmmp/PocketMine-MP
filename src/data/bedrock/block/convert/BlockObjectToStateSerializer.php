@@ -93,6 +93,7 @@ use pocketmine\block\LightningRod;
 use pocketmine\block\LitPumpkin;
 use pocketmine\block\Loom;
 use pocketmine\block\MelonStem;
+use pocketmine\block\MobHead;
 use pocketmine\block\NetherPortal;
 use pocketmine\block\NetherVines;
 use pocketmine\block\NetherWartPlant;
@@ -112,7 +113,6 @@ use pocketmine\block\Sapling;
 use pocketmine\block\SeaPickle;
 use pocketmine\block\SimplePillar;
 use pocketmine\block\SimplePressurePlate;
-use pocketmine\block\Skull;
 use pocketmine\block\Slab;
 use pocketmine\block\SnowLayer;
 use pocketmine\block\Sponge;
@@ -1148,7 +1148,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::MATERIAL_REDUCER(), fn(ChemistryTable $block) => Helper::encodeChemistryTable($block, StringValues::CHEMISTRY_TABLE_TYPE_MATERIAL_REDUCER, new Writer(Ids::CHEMISTRY_TABLE)));
 		$this->map(Blocks::MELON_STEM(), fn(MelonStem $block) => Helper::encodeStem($block, new Writer(Ids::MELON_STEM)));
-		$this->map(Blocks::MOB_HEAD(), function(Skull $block) : Writer{
+		$this->map(Blocks::MOB_HEAD(), function(MobHead $block) : Writer{
 			return Writer::create(Ids::SKULL)
 				->writeFacingWithoutDown($block->getFacing());
 		});

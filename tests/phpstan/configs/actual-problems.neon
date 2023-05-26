@@ -426,14 +426,14 @@ parameters:
 			path: ../../../src/block/tile/Chest.php
 
 		-
-			message: "#^Constant pocketmine\\\\block\\\\tile\\\\Skull\\:\\:TAG_MOUTH_MOVING is unused\\.$#"
+			message: "#^Constant pocketmine\\\\block\\\\tile\\\\MobHead\\:\\:TAG_MOUTH_MOVING is unused\\.$#"
 			count: 1
-			path: ../../../src/block/tile/Skull.php
+			path: ../../../src/block/tile/MobHead.php
 
 		-
-			message: "#^Constant pocketmine\\\\block\\\\tile\\\\Skull\\:\\:TAG_MOUTH_TICK_COUNT is unused\\.$#"
+			message: "#^Constant pocketmine\\\\block\\\\tile\\\\MobHead\\:\\:TAG_MOUTH_TICK_COUNT is unused\\.$#"
 			count: 1
-			path: ../../../src/block/tile/Skull.php
+			path: ../../../src/block/tile/MobHead.php
 
 		-
 			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setInt\\(\\) expects int, float\\|int given\\.$#"

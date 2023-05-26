@@ -31,34 +31,34 @@ use pocketmine\utils\EnumTrait;
  * @see build/generate-registry-annotations.php
  * @generate-registry-docblock
  *
- * @method static SkullType CREEPER()
- * @method static SkullType DRAGON()
- * @method static SkullType PLAYER()
- * @method static SkullType SKELETON()
- * @method static SkullType WITHER_SKELETON()
- * @method static SkullType ZOMBIE()
+ * @method static MobHeadType CREEPER()
+ * @method static MobHeadType DRAGON()
+ * @method static MobHeadType PLAYER()
+ * @method static MobHeadType SKELETON()
+ * @method static MobHeadType WITHER_SKELETON()
+ * @method static MobHeadType ZOMBIE()
  */
-final class SkullType{
+final class MobHeadType{
 	use EnumTrait {
 		register as Enum_register;
 		__construct as Enum___construct;
 	}
 
-	/** @var SkullType[] */
+	/** @var MobHeadType[] */
 	private static array $numericIdMap = [];
 
 	protected static function setup() : void{
 		self::registerAll(
-			new SkullType("skeleton", "Skeleton Skull", 0),
-			new SkullType("wither_skeleton", "Wither Skeleton Skull", 1),
-			new SkullType("zombie", "Zombie Head", 2),
-			new SkullType("player", "Player Head", 3),
-			new SkullType("creeper", "Creeper Head", 4),
-			new SkullType("dragon", "Dragon Head", 5)
+			new MobHeadType("skeleton", "Skeleton Skull", 0),
+			new MobHeadType("wither_skeleton", "Wither Skeleton Skull", 1),
+			new MobHeadType("zombie", "Zombie Head", 2),
+			new MobHeadType("player", "Player Head", 3),
+			new MobHeadType("creeper", "Creeper Head", 4),
+			new MobHeadType("dragon", "Dragon Head", 5)
 		);
 	}
 
-	protected static function register(SkullType $type) : void{
+	protected static function register(MobHeadType $type) : void{
 		self::Enum_register($type);
 		self::$numericIdMap[$type->getMagicNumber()] = $type;
 	}
@@ -68,7 +68,7 @@ final class SkullType{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public static function fromMagicNumber(int $magicNumber) : SkullType{
+	public static function fromMagicNumber(int $magicNumber) : MobHeadType{
 		if(!isset(self::$numericIdMap[$magicNumber])){
 			throw new \InvalidArgumentException("Unknown skull type magic number $magicNumber");
 		}

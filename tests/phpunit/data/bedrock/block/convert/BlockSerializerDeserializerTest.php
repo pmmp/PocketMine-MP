@@ -28,8 +28,8 @@ use pocketmine\block\BaseBanner;
 use pocketmine\block\Bed;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\block\CaveVines;
+use pocketmine\block\MobHead;
 use pocketmine\block\RuntimeBlockStateRegistry;
-use pocketmine\block\Skull;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
 use function print_r;
@@ -72,8 +72,8 @@ final class BlockSerializerDeserializerTest extends TestCase{
 				($block instanceof Bed && $newBlock instanceof Bed)
 			){
 				$newBlock->setColor($block->getColor());
-			}elseif($block instanceof Skull && $newBlock instanceof Skull){
-				$newBlock->setSkullType($block->getSkullType());
+			}elseif($block instanceof MobHead && $newBlock instanceof MobHead){
+				$newBlock->setMobHeadType($block->getMobHeadType());
 			}elseif($block instanceof CaveVines && $newBlock instanceof CaveVines && !$block->hasBerries()){
 				$newBlock->setHead($block->isHead());
 			}

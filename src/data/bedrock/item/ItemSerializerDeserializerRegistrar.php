@@ -25,9 +25,9 @@ namespace pocketmine\data\bedrock\item;
 
 use pocketmine\block\Bed;
 use pocketmine\block\Block;
-use pocketmine\block\Skull;
+use pocketmine\block\MobHead;
 use pocketmine\block\utils\DyeColor;
-use pocketmine\block\utils\SkullType;
+use pocketmine\block\utils\MobHeadType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\data\bedrock\CompoundTypeIds;
 use pocketmine\data\bedrock\DyeColorIdMap;
@@ -444,15 +444,15 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1BlockWithMeta(
 			Ids::SKULL,
 			Blocks::MOB_HEAD(),
-			function(Skull $block, int $meta) : void{
+			function(MobHead $block, int $meta) : void{
 				try{
-					$skullType = SkullType::fromMagicNumber($meta);
+					$skullType = MobHeadType::fromMagicNumber($meta);
 				}catch(\InvalidArgumentException $e){
 					throw new ItemTypeDeserializeException($e->getMessage(), 0, $e);
 				}
-				$block->setSkullType($skullType);
+				$block->setMobHeadType($skullType);
 			},
-			fn(Skull $block) => $block->getSkullType()->getMagicNumber()
+			fn(MobHead $block) => $block->getMobHeadType()->getMagicNumber()
 		);
 	}
 
