@@ -621,7 +621,7 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Cannot call method setImmobile\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
+			message: "#^Cannot call method setNoClientPredictions\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
 			count: 2
 			path: ../../../src/network/mcpe/NetworkSession.php
 
