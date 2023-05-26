@@ -809,7 +809,7 @@ class NetworkSession{
 
 	private function beginSpawnSequence() : void{
 		$this->setHandler(new PreSpawnPacketHandler($this->server, $this->player, $this, $this->invManager));
-		$this->player->setImmobile(); //TODO: HACK: fix client-side falling pre-spawn
+		$this->player->setNoClientPredictions(); //TODO: HACK: fix client-side falling pre-spawn
 
 		$this->logger->debug("Waiting for chunk radius request");
 	}
@@ -824,7 +824,7 @@ class NetworkSession{
 
 	private function onClientSpawnResponse() : void{
 		$this->logger->debug("Received spawn response, entering in-game phase");
-		$this->player->setImmobile(false); //TODO: HACK: we set this during the spawn sequence to prevent the client sending junk movements
+		$this->player->setNoClientPredictions(false); //TODO: HACK: we set this during the spawn sequence to prevent the client sending junk movements
 		$this->player->doFirstSpawn();
 		$this->forceAsyncCompression = false;
 		$this->setHandler(new InGamePacketHandler($this->player, $this, $this->invManager));
