@@ -95,7 +95,7 @@ class LoginPacketHandler extends PacketHandler{
 		}else{
 			$playerInfo = new PlayerInfo(
 				$extraData->displayName,
-				null, //we can't trust UUIDs of non-XBL players - replace this with a server-generated UUID
+				$uuid,
 				$skin,
 				$clientData->LanguageCode,
 				(array) $clientData

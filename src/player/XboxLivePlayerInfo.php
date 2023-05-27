@@ -48,7 +48,7 @@ final class XboxLivePlayerInfo extends PlayerInfo{
 	public function withoutXboxData() : PlayerInfo{
 		return new PlayerInfo(
 			$this->getUsername(),
-			null, //we can't trust UUIDs of non-XBL players - replace this with a server-generated UUID
+			$this->getUuid(),
 			$this->getSkin(),
 			$this->getLocale(),
 			$this->getExtraData()
