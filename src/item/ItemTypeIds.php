@@ -24,11 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 /**
- * Enum of all the item runtime IDs used by PocketMine-MP. These IDs are specific to PocketMine-MP and have no
- * relevance to any Minecraft vanilla things.
+ * Every item in {@link VanillaItems} has a corresponding constant in this class. These constants can be used to
+ * identify and compare item types efficiently using {@link Item::getTypeId()}.
  *
- * WARNING: DO NOT STORE THESE IDS. They can and will change without warning.
- * They should ONLY be used to IDENTIFY items at runtime.
+ * WARNING: These are NOT a replacement for Minecraft legacy IDs. Do **NOT** hardcode their values, or store them in
+ * configs or databases. They will change without warning.
  */
 final class ItemTypeIds{
 
