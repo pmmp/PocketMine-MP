@@ -25,6 +25,7 @@ namespace pocketmine\player;
 
 use pocketmine\entity\Skin;
 use pocketmine\utils\TextFormat;
+use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 /**
@@ -32,17 +33,34 @@ use Ramsey\Uuid\UuidInterface;
  */
 class PlayerInfo{
 	/**
+	 * Namespace for server-generated UUIDs for unauthenticated (non-XBL) players.
+	 * This must not be changed.
+	 */
+	private const UNAUTHENTICATED_PLAYER_UUID_NS = '6a6424c0-a26f-43b7-8e72-4176d051748d';
+
+	private UuidInterface $uuid;
+	/**
 	 * @param mixed[] $extraData
 	 * @phpstan-param array<string, mixed> $extraData
 	 */
 	public function __construct(
 		private string $username,
-		private UuidInterface $uuid,
+		?UuidInterface $uuid,
 		private Skin $skin,
 		private string $locale,
 		private array $extraData = []
 	){
 		$this->username = TextFormat::clean($username);
+		$this->uuid = $uuid ?? self::generateServerAuthoritativeUuid($this->username);
+	}
+
+	/**
+	 * Generates a UUID based on the player's username. This is used for any non-authenticated player, as we can't
+	 * trust UUIDs sent by unauthenticated players.
+	 */
+	public static function generateServerAuthoritativeUuid(string $username) : UuidInterface{
+		//TODO: should we be cleaning the username here?
+		return Uuid::uuid5(self::UNAUTHENTICATED_PLAYER_UUID_NS, TextFormat::clean($username));
 	}
 
 	public function getUsername() : string{
