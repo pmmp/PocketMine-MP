@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\world\format\io\region;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockTypeIds;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
@@ -96,7 +95,7 @@ trait LegacyAnvilChunkTrait{
 		}
 		for($y = Chunk::MIN_SUBCHUNK_INDEX; $y <= Chunk::MAX_SUBCHUNK_INDEX; ++$y){
 			if(!isset($subChunks[$y])){
-				$subChunks[$y] = new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, [], clone $biomes3d);
+				$subChunks[$y] = new SubChunk(Block::EMPTY_STATE_ID, [], clone $biomes3d);
 			}
 		}
 

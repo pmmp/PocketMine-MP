@@ -119,4 +119,9 @@ class BlockTest extends TestCase{
 			self::assertSame($name, $states[$k]->getName());
 		}
 	}
+
+	public function testEmptyStateId() : void{
+		$block = $this->blockFactory->fromStateId(Block::EMPTY_STATE_ID);
+		self::assertInstanceOf(Air::class, $block);
+	}
 }

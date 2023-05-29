@@ -58,6 +58,11 @@ class Block{
 	public const INTERNAL_STATE_DATA_BITS = 8;
 	public const INTERNAL_STATE_DATA_MASK = ~(~0 << self::INTERNAL_STATE_DATA_BITS);
 
+	/**
+	 * @internal
+	 */
+	public const EMPTY_STATE_ID = (BlockTypeIds::AIR << self::INTERNAL_STATE_DATA_BITS) | (BlockTypeIds::AIR & self::INTERNAL_STATE_DATA_MASK);
+
 	protected BlockIdentifier $idInfo;
 	protected string $fallbackName;
 	protected BlockTypeInfo $typeInfo;
