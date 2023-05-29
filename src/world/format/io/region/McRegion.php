@@ -37,6 +37,7 @@ use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\ChunkData;
 use pocketmine\world\format\io\ChunkUtils;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
+use pocketmine\world\format\io\LoadedChunkData;
 use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
 use function strlen;
@@ -46,7 +47,7 @@ class McRegion extends RegionWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	protected function deserializeChunk(string $data) : ?ChunkData{
+	protected function deserializeChunk(string $data) : ?LoadedChunkData{
 		$decompressed = @zlib_decode($data);
 		if($decompressed === false){
 			throw new CorruptedChunkException("Failed to decompress chunk NBT");
@@ -98,13 +99,17 @@ class McRegion extends RegionWorldProvider{
 			}
 		}
 
-		return new ChunkData(
-			new Chunk(
-				$subChunks,
-				$chunk->getByte("TerrainPopulated", 0) !== 0
+		return new LoadedChunkData(
+			data: new ChunkData(
+				new Chunk(
+					$subChunks,
+					$chunk->getByte("TerrainPopulated", 0) !== 0
+				),
+				($entitiesTag = $chunk->getTag("Entities")) instanceof ListTag ? self::getCompoundList("Entities", $entitiesTag) : [],
+				($tilesTag = $chunk->getTag("TileEntities")) instanceof ListTag ? self::getCompoundList("TileEntities", $tilesTag) : [],
 			),
-			($entitiesTag = $chunk->getTag("Entities")) instanceof ListTag ? self::getCompoundList("Entities", $entitiesTag) : [],
-			($tilesTag = $chunk->getTag("TileEntities")) instanceof ListTag ? self::getCompoundList("TileEntities", $tilesTag) : [],
+			upgraded: true,
+			fixerFlags: LoadedChunkData::FIXER_FLAG_ALL
 		);
 	}
 

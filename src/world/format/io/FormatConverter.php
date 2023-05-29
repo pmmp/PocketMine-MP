@@ -140,10 +140,11 @@ class FormatConverter{
 
 		$start = microtime(true);
 		$thisRound = $start;
-		foreach($this->oldProvider->getAllChunks(true, $this->logger) as $coords => $chunk){
+		foreach($this->oldProvider->getAllChunks(true, $this->logger) as $coords => $loadedChunkData){
 			[$chunkX, $chunkZ] = $coords;
-			$chunk->getChunk()->setTerrainDirty();
-			$new->saveChunk($chunkX, $chunkZ, $chunk);
+			$chunkData = $loadedChunkData->getData();
+			$chunkData->getChunk()->setTerrainDirty();
+			$new->saveChunk($chunkX, $chunkZ, $chunkData);
 			$counter++;
 			if(($counter % $this->chunksPerProgressUpdate) === 0){
 				$time = microtime(true);

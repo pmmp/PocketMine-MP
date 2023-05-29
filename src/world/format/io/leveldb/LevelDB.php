@@ -44,6 +44,7 @@ use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
+use pocketmine\world\format\io\LoadedChunkData;
 use pocketmine\world\format\io\WorldData;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\format\PalettedBlockArray;
@@ -593,7 +594,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	public function loadChunk(int $chunkX, int $chunkZ) : ?ChunkData{
+	public function loadChunk(int $chunkX, int $chunkZ) : ?LoadedChunkData{
 		$index = LevelDB::chunkIndex($chunkX, $chunkZ);
 
 		$chunkVersion = $this->readVersion($chunkX, $chunkZ);
@@ -704,7 +705,11 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			$chunk->setTerrainDirty(); //trigger rewriting chunk to disk if it was converted from an older format
 		}
 
-		return new ChunkData($chunk, $entities, $tiles);
+		return new LoadedChunkData(
+			data: new ChunkData($chunk, $entities, $tiles),
+			upgraded: $hasBeenUpgraded,
+			fixerFlags: LoadedChunkData::FIXER_FLAG_ALL //TODO: fill this by version rather than just setting all flags
+		);
 	}
 
 	public function saveChunk(int $chunkX, int $chunkZ, ChunkData $chunkData) : void{

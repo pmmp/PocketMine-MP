@@ -2702,25 +2702,25 @@ class World implements ChunkManager{
 
 		$this->timings->syncChunkLoadData->startTiming();
 
-		$chunk = null;
+		$loadedChunkData = null;
 
 		try{
-			$chunk = $this->provider->loadChunk($x, $z);
+			$loadedChunkData = $this->provider->loadChunk($x, $z);
 		}catch(CorruptedChunkException $e){
 			$this->logger->critical("Failed to load chunk x=$x z=$z: " . $e->getMessage());
 		}
 
 		$this->timings->syncChunkLoadData->stopTiming();
 
-		if($chunk === null){
+		if($loadedChunkData === null){
 			$this->timings->syncChunkLoad->stopTiming();
 			return null;
 		}
 
-		$this->chunks[$chunkHash] = $chunk->getChunk();
+		$this->chunks[$chunkHash] = $loadedChunkData->getData()->getChunk();
 		unset($this->blockCache[$chunkHash]);
 
-		$this->initChunk($x, $z, $chunk);
+		$this->initChunk($x, $z, $loadedChunkData->getData());
 
 		(new ChunkLoadEvent($this, $x, $z, $this->chunks[$chunkHash], false))->call();
 
