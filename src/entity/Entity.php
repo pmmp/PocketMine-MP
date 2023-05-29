@@ -60,6 +60,7 @@ use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\Utils;
+use pocketmine\VersionInfo;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\sound\Sound;
@@ -488,6 +489,8 @@ abstract class Entity{
 		$nbt->setFloat(self::TAG_FALL_DISTANCE, $this->fallDistance);
 		$nbt->setShort(self::TAG_FIRE, $this->fireTicks);
 		$nbt->setByte(self::TAG_ON_GROUND, $this->onGround ? 1 : 0);
+
+		$nbt->setLong(VersionInfo::TAG_WORLD_DATA_VERSION, VersionInfo::WORLD_DATA_VERSION);
 
 		return $nbt;
 	}

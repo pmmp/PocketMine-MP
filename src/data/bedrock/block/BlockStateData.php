@@ -27,6 +27,7 @@ use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\utils\Utils;
+use pocketmine\VersionInfo;
 use function array_keys;
 use function count;
 use function implode;
@@ -96,12 +97,13 @@ final class BlockStateData{
 			$name = $nbt->getString(self::TAG_NAME);
 			$states = $nbt->getCompoundTag(self::TAG_STATES) ?? throw new BlockStateDeserializeException("Missing tag \"" . self::TAG_STATES . "\"");
 			$version = $nbt->getInt(self::TAG_VERSION, 0);
+			//TODO: read version from VersionInfo::TAG_WORLD_DATA_VERSION - we may need it to fix up old blockstates
 		}catch(NbtException $e){
 			throw new BlockStateDeserializeException($e->getMessage(), 0, $e);
 		}
 
 		$allKeys = $nbt->getValue();
-		unset($allKeys[self::TAG_NAME], $allKeys[self::TAG_STATES], $allKeys[self::TAG_VERSION]);
+		unset($allKeys[self::TAG_NAME], $allKeys[self::TAG_STATES], $allKeys[self::TAG_VERSION], $allKeys[VersionInfo::TAG_WORLD_DATA_VERSION]);
 		if(count($allKeys) !== 0){
 			throw new BlockStateDeserializeException("Unexpected extra keys: " . implode(", ", array_keys($allKeys)));
 		}
@@ -117,7 +119,8 @@ final class BlockStateData{
 		return CompoundTag::create()
 			->setString(self::TAG_NAME, $this->name)
 			->setInt(self::TAG_VERSION, $this->version)
-			->setTag(self::TAG_STATES, $statesTag);
+			->setTag(self::TAG_STATES, $statesTag)
+			->setLong(VersionInfo::TAG_WORLD_DATA_VERSION, VersionInfo::WORLD_DATA_VERSION);
 	}
 
 	public function equals(self $that) : bool{

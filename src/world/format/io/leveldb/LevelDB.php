@@ -34,6 +34,7 @@ use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
+use pocketmine\VersionInfo;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\BaseWorldProvider;
 use pocketmine\world\format\io\ChunkData;
@@ -601,6 +602,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			return null;
 		}
 
+		//TODO: read PM_DATA_VERSION - we'll need it to fix up old chunks
+
 		$logger = new \PrefixedLogger($this->logger, "Loading chunk x=$chunkX z=$chunkZ v$chunkVersion");
 
 		$hasBeenUpgraded = $chunkVersion < self::CURRENT_LEVEL_CHUNK_VERSION;
@@ -710,6 +713,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$write = new \LevelDBWriteBatch();
 
 		$write->put($index . ChunkDataKey::NEW_VERSION, chr(self::CURRENT_LEVEL_CHUNK_VERSION));
+		$write->put($index . ChunkDataKey::PM_DATA_VERSION, Binary::writeLLong(VersionInfo::WORLD_DATA_VERSION));
 
 		$chunk = $chunkData->getChunk();
 

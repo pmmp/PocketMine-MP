@@ -149,6 +149,7 @@ final class ItemDataUpgrader{
 		[$newNameId, $newMeta] = $this->idMetaUpgrader->upgrade($rawNameId, $meta);
 
 		//TODO: this won't account for spawn eggs from before 1.16.100 - perhaps we're lucky and they just left the meta in there anyway?
+		//TODO: read version from VersionInfo::TAG_WORLD_DATA_VERSION - we may need it to fix up old items
 
 		return new SavedItemData($newNameId, $newMeta, $blockStateData, $tag->getCompoundTag(SavedItemData::TAG_TAG));
 	}
