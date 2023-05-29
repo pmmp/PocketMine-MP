@@ -695,18 +695,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		//TODO: tile ticks, biome states (?)
 
-		$chunk = new Chunk(
-			$subChunks,
-			$terrainPopulated
-		);
-
-		if($hasBeenUpgraded){
-			$logger->debug("Flagging chunk as dirty due to upgraded data");
-			$chunk->setTerrainDirty(); //trigger rewriting chunk to disk if it was converted from an older format
-		}
-
 		return new LoadedChunkData(
-			data: new ChunkData($chunk, $entities, $tiles),
+			data: new ChunkData(new Chunk($subChunks, $terrainPopulated), $entities, $tiles),
 			upgraded: $hasBeenUpgraded,
 			fixerFlags: LoadedChunkData::FIXER_FLAG_ALL //TODO: fill this by version rather than just setting all flags
 		);

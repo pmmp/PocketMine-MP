@@ -44,7 +44,7 @@ class Chunk{
 	public const COORD_BIT_SIZE = SubChunk::COORD_BIT_SIZE;
 	public const COORD_MASK = SubChunk::COORD_MASK;
 
-	private int $terrainDirtyFlags = 0;
+	private int $terrainDirtyFlags = ~0;
 
 	protected ?bool $lightPopulated = false;
 	protected bool $terrainPopulated = false;

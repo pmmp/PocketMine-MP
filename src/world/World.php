@@ -2717,7 +2717,13 @@ class World implements ChunkManager{
 			return null;
 		}
 
-		$this->chunks[$chunkHash] = $loadedChunkData->getData()->getChunk();
+		$chunk = $loadedChunkData->getData()->getChunk();
+		if(!$loadedChunkData->isUpgraded()){
+			$chunk->clearTerrainDirtyFlags();
+		}else{
+			$this->logger->debug("Chunk $x $z has been upgraded, will be saved at the next autosave opportunity");
+		}
+		$this->chunks[$chunkHash] = $chunk;
 		unset($this->blockCache[$chunkHash]);
 
 		$this->initChunk($x, $z, $loadedChunkData->getData());
