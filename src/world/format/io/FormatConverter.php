@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\format\io;
 
 use pocketmine\utils\Filesystem;
+use pocketmine\world\format\Chunk;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\generator\normal\Normal;
 use pocketmine\world\WorldCreationOptions;
@@ -142,9 +143,7 @@ class FormatConverter{
 		$thisRound = $start;
 		foreach($this->oldProvider->getAllChunks(true, $this->logger) as $coords => $loadedChunkData){
 			[$chunkX, $chunkZ] = $coords;
-			$chunkData = $loadedChunkData->getData();
-			$chunkData->getChunk()->setTerrainDirty();
-			$new->saveChunk($chunkX, $chunkZ, $chunkData);
+			$new->saveChunk($chunkX, $chunkZ, $loadedChunkData->getData(), ~0);
 			$counter++;
 			if(($counter % $this->chunksPerProgressUpdate) === 0){
 				$time = microtime(true);

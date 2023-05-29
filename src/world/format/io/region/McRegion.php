@@ -101,10 +101,8 @@ class McRegion extends RegionWorldProvider{
 
 		return new LoadedChunkData(
 			data: new ChunkData(
-				new Chunk(
-					$subChunks,
-					$chunk->getByte("TerrainPopulated", 0) !== 0
-				),
+				$subChunks,
+				$chunk->getByte("TerrainPopulated", 0) !== 0,
 				($entitiesTag = $chunk->getTag("Entities")) instanceof ListTag ? self::getCompoundList("Entities", $entitiesTag) : [],
 				($tilesTag = $chunk->getTag("TileEntities")) instanceof ListTag ? self::getCompoundList("TileEntities", $tilesTag) : [],
 			),
