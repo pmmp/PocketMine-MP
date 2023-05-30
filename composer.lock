@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8cd9901818949493821aaf543667aac4",
+    "content-hash": "6982184bc024b09473e58578eb7ee8bf",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -198,16 +198,16 @@
         },
         {
             "name": "netresearch/jsonmapper",
-            "version": "v4.2.0",
+            "version": "dev-array-in-string-property-error",
             "source": {
                 "type": "git",
-                "url": "https://github.com/cweiske/jsonmapper.git",
-                "reference": "f60565f8c0566a31acf06884cdaa591867ecc956"
+                "url": "https://github.com/dktapps/jsonmapper.git",
+                "reference": "4a82d1b98b99d682b660d6caa9b3816b2abc794c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cweiske/jsonmapper/zipball/f60565f8c0566a31acf06884cdaa591867ecc956",
-                "reference": "f60565f8c0566a31acf06884cdaa591867ecc956",
+                "url": "https://api.github.com/repos/dktapps/jsonmapper/zipball/4a82d1b98b99d682b660d6caa9b3816b2abc794c",
+                "reference": "4a82d1b98b99d682b660d6caa9b3816b2abc794c",
                 "shasum": ""
             },
             "require": {
@@ -227,7 +227,6 @@
                     "JsonMapper": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "OSL-3.0"
             ],
@@ -243,9 +242,9 @@
             "support": {
                 "email": "cweiske@cweiske.de",
                 "issues": "https://github.com/cweiske/jsonmapper/issues",
-                "source": "https://github.com/cweiske/jsonmapper/tree/v4.2.0"
+                "source": "https://github.com/dktapps/jsonmapper/tree/array-in-string-property-error"
             },
-            "time": "2023-04-09T17:37:40+00:00"
+            "time": "2023-05-30T13:10:31+00:00"
         },
         {
             "name": "pocketmine/bedrock-block-upgrade-schema",
@@ -3276,9 +3275,18 @@
             "time": "2021-07-28T10:34:58+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "netresearch/jsonmapper",
+            "version": "dev-array-in-string-property-error",
+            "alias": "4.2.0",
+            "alias_normalized": "4.2.0.0"
+        }
+    ],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "netresearch/jsonmapper": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
