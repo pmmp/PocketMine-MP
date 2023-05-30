@@ -33,7 +33,7 @@
       "composer-runtime-api": "^2.0",
       "adhocore/json-comment": "^1.1",
       "fgrosse/phpasn1": "^2.3",
-      "netresearch/jsonmapper": "^4.0",
+      "netresearch/jsonmapper": "dev-array-in-string-property-error as 4.2.0",
       "pocketmine/bedrock-block-upgrade-schema": "~2.1.0+bedrock-1.19.80",
       "pocketmine/bedrock-data": "~2.2.0+bedrock-1.19.80",
       "pocketmine/bedrock-item-upgrade-schema": "~1.2.0+bedrock-1.19.80",
@@ -93,5 +93,11 @@
       "update-translation-apis": [
          "@php build/generate-known-translation-apis.php"
       ]
-   }
+   },
+   "repositories": [
+      {
+         "type": "vcs",
+         "url": "https://github.com/dktapps/JsonMapper.git"
+      }
+   ]
 }
