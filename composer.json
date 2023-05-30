@@ -33,7 +33,7 @@
       "composer-runtime-api": "^2.0",
       "adhocore/json-comment": "^1.1",
       "fgrosse/phpasn1": "^2.3",
-      "netresearch/jsonmapper": "^4.0",
+      "netresearch/jsonmapper": "dev-array-in-string-property-error as 4.2.0",
       "pocketmine/bedrock-block-upgrade-schema": "~2.1.0+bedrock-1.19.80",
       "pocketmine/bedrock-data": "~2.2.0+bedrock-1.19.80",
       "pocketmine/bedrock-item-upgrade-schema": "~1.2.0+bedrock-1.19.80",
@@ -50,13 +50,13 @@
       "pocketmine/raklib-ipc": "^0.2.0",
       "pocketmine/snooze": "^0.5.0",
       "ramsey/uuid": "^4.1",
-      "symfony/filesystem": "^5.4"
+      "symfony/filesystem": "^6.2"
    },
    "require-dev": {
       "phpstan/phpstan": "1.10.15",
       "phpstan/phpstan-phpunit": "^1.1.0",
       "phpstan/phpstan-strict-rules": "^1.2.0",
-      "phpunit/phpunit": "^9.2"
+      "phpunit/phpunit": "^10.1"
    },
    "autoload": {
       "psr-4": {
@@ -90,5 +90,11 @@
       "update-translation-apis": [
          "@php build/generate-known-translation-apis.php"
       ]
-   }
+   },
+   "repositories": [
+      {
+         "type": "vcs",
+         "url": "https://github.com/dktapps/JsonMapper.git"
+      }
+   ]
 }

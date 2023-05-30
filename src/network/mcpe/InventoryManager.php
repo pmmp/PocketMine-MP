@@ -39,18 +39,16 @@ use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
-use pocketmine\item\Item;
+use pocketmine\network\mcpe\cache\CreativeInventoryCache;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
-use pocketmine\network\mcpe\protocol\CreativeContentPacket;
 use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
-use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
@@ -605,16 +603,7 @@ class InventoryManager{
 	}
 
 	public function syncCreative() : void{
-		$typeConverter = $this->session->getTypeConverter();
-
-		$entries = [];
-		if(!$this->player->isSpectator()){
-			//creative inventory may have holes if items were unregistered - ensure network IDs used are always consistent
-			foreach(CreativeInventory::getInstance()->getAll() as $k => $item){
-				$entries[] = new CreativeContentEntry($k, $typeConverter->coreItemStackToNet($item));
-			}
-		}
-		$this->session->sendDataPacket(CreativeContentPacket::create($entries));
+		$this->session->sendDataPacket(CreativeInventoryCache::getInstance()->getCache(CreativeInventory::getInstance()));
 	}
 
 	private function newItemStackId() : int{
