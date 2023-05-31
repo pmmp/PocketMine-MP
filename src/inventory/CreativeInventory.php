@@ -28,7 +28,6 @@ use pocketmine\crafting\json\ItemStackData;
 use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\item\Item;
 use pocketmine\utils\DestructorCallbackTrait;
-use pocketmine\utils\Filesystem;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
