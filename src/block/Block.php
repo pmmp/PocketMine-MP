@@ -73,7 +73,8 @@ class Block{
 
 	private int $requiredBlockItemStateDataBits;
 	private int $requiredBlockOnlyStateDataBits;
-	private int $defaultBlockOnlyStateData;
+
+	private Block $defaultState;
 
 	/**
 	 * @param string $name English name of the block type (TODO: implement translations)
@@ -92,7 +93,7 @@ class Block{
 		$this->describeBlockOnlyState($calculator);
 		$this->requiredBlockOnlyStateDataBits = $calculator->getBitsUsed();
 
-		$this->defaultBlockOnlyStateData = $this->encodeBlockOnlyState();
+		$this->defaultState = clone $this;
 	}
 
 	public function __clone(){
@@ -193,10 +194,11 @@ class Block{
 	 * Returns the block as an item.
 	 * Block-only state such as facing, powered/unpowered, open/closed, etc., is discarded.
 	 * Block-item state such as colour, wood type, etc. is preserved.
+	 * Complex state properties stored in the tile data (e.g. inventory) are discarded.
 	 */
 	public function asItem() : Item{
-		$normalized = clone $this;
-		$normalized->decodeBlockOnlyState($this->defaultBlockOnlyStateData);
+		$normalized = clone $this->defaultState;
+		$normalized->decodeBlockItemState($this->encodeBlockItemState());
 		return new ItemBlock($normalized);
 	}
 
