@@ -24,35 +24,55 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Sign as TileSign;
+use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SignText;
 use pocketmine\block\utils\SupportType;
+use pocketmine\block\utils\WoodType;
+use pocketmine\block\utils\WoodTypeTrait;
+use pocketmine\color\Color;
 use pocketmine\event\block\SignChangeEvent;
+use pocketmine\item\Dye;
 use pocketmine\item\Item;
+use pocketmine\item\ItemTypeIds;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\sound\DyeUseSound;
+use pocketmine\world\sound\InkSacUseSound;
 use function array_map;
 use function assert;
 use function strlen;
 
 abstract class BaseSign extends Transparent{
+	use WoodTypeTrait;
+
 	protected SignText $text;
 	protected ?int $editorEntityRuntimeId = null;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
-		parent::__construct($idInfo, $name, $breakInfo);
+	/** @var \Closure() : Item */
+	private \Closure $asItemCallback;
+
+	/**
+	 * @param \Closure() : Item $asItemCallback
+	 */
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, WoodType $woodType, \Closure $asItemCallback){
+		$this->woodType = $woodType;
+		parent::__construct($idInfo, $name, $typeInfo);
 		$this->text = new SignText();
+		$this->asItemCallback = $asItemCallback;
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileSign){
 			$this->text = $tile->getText();
 			$this->editorEntityRuntimeId = $tile->getEditorEntityRuntimeId();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{
@@ -85,7 +105,7 @@ abstract class BaseSign extends Transparent{
 	abstract protected function getSupportingFace() : int;
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide($this->getSupportingFace())->getId() === BlockLegacyIds::AIR){
+		if($this->getSide($this->getSupportingFace())->getTypeId() === BlockTypeIds::AIR){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -104,6 +124,55 @@ abstract class BaseSign extends Transparent{
 		if($player instanceof Player){
 			$player->openSignEditor($this->position);
 		}
+	}
+
+	private function doSignChange(SignText $newText, Player $player, Item $item) : bool{
+		$ev = new SignChangeEvent($this, $player, $newText);
+		$ev->call();
+		if(!$ev->isCancelled()){
+			$this->text = $ev->getNewText();
+			$this->position->getWorld()->setBlock($this->position, $this);
+			$item->pop();
+			return true;
+		}
+
+		return false;
+	}
+
+	private function changeSignGlowingState(bool $glowing, Player $player, Item $item) : bool{
+		if($this->text->isGlowing() !== $glowing && $this->doSignChange(new SignText($this->text->getLines(), $this->text->getBaseColor(), $glowing), $player, $item)){
+			$this->position->getWorld()->addSound($this->position, new InkSacUseSound());
+			return true;
+		}
+		return false;
+	}
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		if($player === null){
+			return false;
+		}
+		$dyeColor = $item instanceof Dye ? $item->getColor() : match($item->getTypeId()){
+			ItemTypeIds::BONE_MEAL => DyeColor::WHITE(),
+			ItemTypeIds::LAPIS_LAZULI => DyeColor::BLUE(),
+			ItemTypeIds::COCOA_BEANS => DyeColor::BROWN(),
+			default => null
+		};
+		if($dyeColor !== null){
+			$color = $dyeColor->equals(DyeColor::BLACK()) ? new Color(0, 0, 0) : $dyeColor->getRgbValue();
+			if($color->toARGB() === $this->text->getBaseColor()->toARGB()){
+				return false;
+			}
+
+			if($this->doSignChange(new SignText($this->text->getLines(), $color, $this->text->isGlowing()), $player, $item)){
+				$this->position->getWorld()->addSound($this->position, new DyeUseSound());
+				return true;
+			}
+		}elseif($item->getTypeId() === ItemTypeIds::INK_SAC){
+			return $this->changeSignGlowingState(false, $player, $item);
+		}elseif($item->getTypeId() === ItemTypeIds::GLOW_INK_SAC){
+			return $this->changeSignGlowingState(true, $player, $item);
+		}
+		return false;
 	}
 
 	/**
@@ -161,5 +230,9 @@ abstract class BaseSign extends Transparent{
 		}
 
 		return false;
+	}
+
+	public function asItem() : Item{
+		return ($this->asItemCallback)();
 	}
 }

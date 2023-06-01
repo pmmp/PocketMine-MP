@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cae150ae8bac086e74a390a96ad48ac4",
+    "content-hash": "41475569123dfa40907df1071269ee5f",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -414,52 +414,6 @@
             "time": "2020-12-11T01:45:37+00:00"
         },
         {
-            "name": "pocketmine/classloader",
-            "version": "0.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/pmmp/ClassLoader.git",
-                "reference": "49ea303993efdfb39cd302e2156d50aa78209e78"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/49ea303993efdfb39cd302e2156d50aa78209e78",
-                "reference": "49ea303993efdfb39cd302e2156d50aa78209e78",
-                "shasum": ""
-            },
-            "require": {
-                "ext-pthreads": "~3.2.0 || ^4.0",
-                "ext-reflection": "*",
-                "php": "^8.0"
-            },
-            "conflict": {
-                "pocketmine/spl": "<0.4"
-            },
-            "require-dev": {
-                "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "0.12.99",
-                "phpstan/phpstan-strict-rules": "^0.12.4",
-                "phpunit/phpunit": "^9.5"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "./src"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL-3.0"
-            ],
-            "description": "Ad-hoc autoloading components used by PocketMine-MP",
-            "support": {
-                "issues": "https://github.com/pmmp/ClassLoader/issues",
-                "source": "https://github.com/pmmp/ClassLoader/tree/0.2.0"
-            },
-            "abandoned": "pocketmine/pocketmine-mp",
-            "time": "2021-11-01T20:17:27+00:00"
-        },
-        {
             "name": "pocketmine/color",
             "version": "0.3.1",
             "source": {
@@ -601,51 +555,6 @@
             "time": "2021-06-18T19:08:09+00:00"
         },
         {
-            "name": "pocketmine/log-pthreads",
-            "version": "0.4.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/pmmp/LogPthreads.git",
-                "reference": "61f709e8cf36bcc24e4efe02acded680a1ce23cd"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/LogPthreads/zipball/61f709e8cf36bcc24e4efe02acded680a1ce23cd",
-                "reference": "61f709e8cf36bcc24e4efe02acded680a1ce23cd",
-                "shasum": ""
-            },
-            "require": {
-                "ext-pthreads": "~3.2.0 || ^4.0",
-                "php": "^7.4 || ^8.0",
-                "pocketmine/log": "^0.4.0"
-            },
-            "conflict": {
-                "pocketmine/spl": "<0.4"
-            },
-            "require-dev": {
-                "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "0.12.88",
-                "phpstan/phpstan-strict-rules": "^0.12.4"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "./src"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL-3.0"
-            ],
-            "description": "Logging components specialized for pthreads used by PocketMine-MP and related projects",
-            "support": {
-                "issues": "https://github.com/pmmp/LogPthreads/issues",
-                "source": "https://github.com/pmmp/LogPthreads/tree/0.4.0"
-            },
-            "abandoned": "pocketmine/pocketmine-mp",
-            "time": "2021-11-01T21:42:09+00:00"
-        },
-        {
             "name": "pocketmine/math",
             "version": "0.4.3",
             "source": {
@@ -784,16 +693,16 @@
         },
         {
             "name": "pocketmine/raklib",
-            "version": "0.14.6",
+            "version": "0.15.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "aeca667d5ecc4cc18fded612f29e3511bbf62f42"
+                "reference": "79b7b4d1d7516dc6e322514453645ad9452b20ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/aeca667d5ecc4cc18fded612f29e3511bbf62f42",
-                "reference": "aeca667d5ecc4cc18fded612f29e3511bbf62f42",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/79b7b4d1d7516dc6e322514453645ad9452b20ca",
+                "reference": "79b7b4d1d7516dc6e322514453645ad9452b20ca",
                 "shasum": ""
             },
             "require": {
@@ -821,33 +730,33 @@
             "description": "A RakNet server implementation written in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/RakLib/issues",
-                "source": "https://github.com/pmmp/RakLib/tree/0.14.6"
+                "source": "https://github.com/pmmp/RakLib/tree/0.15.1"
             },
-            "time": "2023-03-07T15:10:23+00:00"
+            "time": "2023-03-07T15:10:34+00:00"
         },
         {
             "name": "pocketmine/raklib-ipc",
-            "version": "0.1.1",
+            "version": "0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLibIpc.git",
-                "reference": "922a6444b0c6c7daaa5aa5a832107e1ec4738aed"
+                "reference": "26ed56fa9db06e4ca6e8920c0ede2e01e219bb9c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLibIpc/zipball/922a6444b0c6c7daaa5aa5a832107e1ec4738aed",
-                "reference": "922a6444b0c6c7daaa5aa5a832107e1ec4738aed",
+                "url": "https://api.github.com/repos/pmmp/RakLibIpc/zipball/26ed56fa9db06e4ca6e8920c0ede2e01e219bb9c",
+                "reference": "26ed56fa9db06e4ca6e8920c0ede2e01e219bb9c",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.4 || ^8.0",
+                "php": "^8.0",
                 "php-64bit": "*",
                 "pocketmine/binaryutils": "^0.2.0",
-                "pocketmine/raklib": "^0.13.1 || ^0.14.0"
+                "pocketmine/raklib": "^0.15.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "0.12.81",
-                "phpstan/phpstan-strict-rules": "^0.12.2"
+                "phpstan/phpstan": "1.9.17",
+                "phpstan/phpstan-strict-rules": "^1.0.0"
             },
             "type": "library",
             "autoload": {
@@ -862,32 +771,32 @@
             "description": "Channel-based protocols for inter-thread/inter-process communication with RakLib",
             "support": {
                 "issues": "https://github.com/pmmp/RakLibIpc/issues",
-                "source": "https://github.com/pmmp/RakLibIpc/tree/0.1.1"
+                "source": "https://github.com/pmmp/RakLibIpc/tree/0.2.0"
             },
-            "time": "2021-09-22T17:01:12+00:00"
+            "time": "2023-02-13T13:40:40+00:00"
         },
         {
             "name": "pocketmine/snooze",
-            "version": "0.3.1",
+            "version": "0.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Snooze.git",
-                "reference": "0ac8fc2a781c419a1f64ebca4d5835028f59e29b"
+                "reference": "a86d9ee60ce44755d166d3c7ba4b8b8be8360915"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/0ac8fc2a781c419a1f64ebca4d5835028f59e29b",
-                "reference": "0ac8fc2a781c419a1f64ebca4d5835028f59e29b",
+                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/a86d9ee60ce44755d166d3c7ba4b8b8be8360915",
+                "reference": "a86d9ee60ce44755d166d3c7ba4b8b8be8360915",
                 "shasum": ""
             },
             "require": {
-                "ext-pthreads": "~3.2.0 || ^4.0",
-                "php-64bit": "^7.3 || ^8.0"
+                "ext-pmmpthread": "^6.0",
+                "php-64bit": "^8.1"
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "0.12.99",
-                "phpstan/phpstan-strict-rules": "^0.12.4"
+                "phpstan/phpstan": "1.10.3",
+                "phpstan/phpstan-strict-rules": "^1.0"
             },
             "type": "library",
             "autoload": {
@@ -902,9 +811,9 @@
             "description": "Thread notification management library for code using the pthreads extension",
             "support": {
                 "issues": "https://github.com/pmmp/Snooze/issues",
-                "source": "https://github.com/pmmp/Snooze/tree/0.3.1"
+                "source": "https://github.com/pmmp/Snooze/tree/0.5.0"
             },
-            "time": "2021-11-01T20:50:08+00:00"
+            "time": "2023-05-22T23:43:01+00:00"
         },
         {
             "name": "ramsey/collection",
@@ -1089,23 +998,22 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v5.4.23",
+            "version": "v6.2.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "b2f79d86cd9e7de0fff6d03baa80eaed7a5f38b5"
+                "reference": "fd588debf7d1bc16a2c84b4b3b71145d9946b894"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/b2f79d86cd9e7de0fff6d03baa80eaed7a5f38b5",
-                "reference": "b2f79d86cd9e7de0fff6d03baa80eaed7a5f38b5",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/fd588debf7d1bc16a2c84b4b3b71145d9946b894",
+                "reference": "fd588debf7d1bc16a2c84b4b3b71145d9946b894",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.2.5",
+                "php": ">=8.1",
                 "symfony/polyfill-ctype": "~1.8",
-                "symfony/polyfill-mbstring": "~1.8",
-                "symfony/polyfill-php80": "^1.16"
+                "symfony/polyfill-mbstring": "~1.8"
             },
             "type": "library",
             "autoload": {
@@ -1133,7 +1041,7 @@
             "description": "Provides basic utilities for the filesystem",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/filesystem/tree/v5.4.23"
+                "source": "https://github.com/symfony/filesystem/tree/v6.2.10"
             },
             "funding": [
                 {
@@ -1149,7 +1057,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-03-02T11:38:35+00:00"
+            "time": "2023-04-18T13:46:08+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -1315,198 +1223,6 @@
                 }
             ],
             "time": "2022-11-03T14:55:06+00:00"
-        },
-        {
-            "name": "symfony/polyfill-php80",
-            "version": "v1.27.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/polyfill-php80.git",
-                "reference": "7a6ff3f1959bb01aefccb463a0f2cd3d3d2fd936"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/7a6ff3f1959bb01aefccb463a0f2cd3d3d2fd936",
-                "reference": "7a6ff3f1959bb01aefccb463a0f2cd3d3d2fd936",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.1"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-main": "1.27-dev"
-                },
-                "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ],
-                "psr-4": {
-                    "Symfony\\Polyfill\\Php80\\": ""
-                },
-                "classmap": [
-                    "Resources/stubs"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Ion Bazan",
-                    "email": "ion.bazan@gmail.com"
-                },
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony polyfill backporting some PHP 8.0+ features to lower PHP versions",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "compatibility",
-                "polyfill",
-                "portable",
-                "shim"
-            ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-php80/tree/v1.27.0"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2022-11-03T14:55:06+00:00"
-        },
-        {
-            "name": "webmozart/assert",
-            "version": "1.11.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/webmozarts/assert.git",
-                "reference": "11cb2199493b2f8a3b53e7f19068fc6aac760991"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/webmozarts/assert/zipball/11cb2199493b2f8a3b53e7f19068fc6aac760991",
-                "reference": "11cb2199493b2f8a3b53e7f19068fc6aac760991",
-                "shasum": ""
-            },
-            "require": {
-                "ext-ctype": "*",
-                "php": "^7.2 || ^8.0"
-            },
-            "conflict": {
-                "phpstan/phpstan": "<0.12.20",
-                "vimeo/psalm": "<4.6.1 || 4.6.2"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^8.5.13"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.10-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Webmozart\\Assert\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Bernhard Schussek",
-                    "email": "bschussek@gmail.com"
-                }
-            ],
-            "description": "Assertions to validate method input/output with nice error messages.",
-            "keywords": [
-                "assert",
-                "check",
-                "validate"
-            ],
-            "support": {
-                "issues": "https://github.com/webmozarts/assert/issues",
-                "source": "https://github.com/webmozarts/assert/tree/1.11.0"
-            },
-            "time": "2022-06-03T18:03:27+00:00"
-        },
-        {
-            "name": "webmozart/path-util",
-            "version": "2.3.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/webmozart/path-util.git",
-                "reference": "d939f7edc24c9a1bb9c0dee5cb05d8e859490725"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/path-util/zipball/d939f7edc24c9a1bb9c0dee5cb05d8e859490725",
-                "reference": "d939f7edc24c9a1bb9c0dee5cb05d8e859490725",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3",
-                "webmozart/assert": "~1.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^4.6",
-                "sebastian/version": "^1.0.1"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.3-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Webmozart\\PathUtil\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Bernhard Schussek",
-                    "email": "bschussek@gmail.com"
-                }
-            ],
-            "description": "A robust cross-platform utility for normalizing, comparing and modifying file paths.",
-            "support": {
-                "issues": "https://github.com/webmozart/path-util/issues",
-                "source": "https://github.com/webmozart/path-util/tree/2.3.0"
-            },
-            "abandoned": "symfony/filesystem",
-            "time": "2015-12-17T08:42:14+00:00"
         }
     ],
     "packages-dev": [
@@ -3304,7 +3020,7 @@
         "ext-openssl": "*",
         "ext-pcre": "*",
         "ext-phar": "*",
-        "ext-pthreads": "^4.0",
+        "ext-pmmpthread": "^6.0",
         "ext-reflection": "*",
         "ext-simplexml": "*",
         "ext-sockets": "*",

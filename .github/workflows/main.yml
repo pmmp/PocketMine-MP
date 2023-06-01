@@ -24,7 +24,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
-          pm-version-major: "4"
+          pm-version-major: "5"
 
       - name: Restore Composer package cache
         uses: actions/cache@v3
@@ -59,7 +59,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
-          pm-version-major: "4"
+          pm-version-major: "5"
 
       - name: Restore Composer package cache
         uses: actions/cache@v3
@@ -96,7 +96,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
-          pm-version-major: "4"
+          pm-version-major: "5"
 
       - name: Restore Composer package cache
         uses: actions/cache@v3
@@ -131,7 +131,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
-          pm-version-major: "4"
+          pm-version-major: "5"
 
       - name: Restore Composer package cache
         uses: actions/cache@v3
@@ -151,6 +151,9 @@ jobs:
 
       - name: Regenerate KnownTranslation APIs
         run: php build/generate-known-translation-apis.php
+
+      - name: Regenerate RuntimeEnum(De)serializer
+        run: php build/generate-runtime-enum-serializers.php
 
       - name: Regenerate BedrockData available files constants
         run: php build/generate-bedrockdata-path-consts.php

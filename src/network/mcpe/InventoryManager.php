@@ -26,30 +26,29 @@ namespace pocketmine\network\mcpe;
 use pocketmine\block\inventory\AnvilInventory;
 use pocketmine\block\inventory\BlockInventory;
 use pocketmine\block\inventory\BrewingStandInventory;
+use pocketmine\block\inventory\CartographyTableInventory;
 use pocketmine\block\inventory\CraftingTableInventory;
 use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\block\inventory\HopperInventory;
 use pocketmine\block\inventory\LoomInventory;
+use pocketmine\block\inventory\SmithingTableInventory;
 use pocketmine\block\inventory\StonecutterInventory;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
-use pocketmine\item\Item;
-use pocketmine\network\mcpe\convert\TypeConverter;
+use pocketmine\network\mcpe\cache\CreativeInventoryCache;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
-use pocketmine\network\mcpe\protocol\CreativeContentPacket;
 use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
-use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
@@ -221,10 +220,11 @@ class InventoryManager{
 	}
 
 	public function addTransactionPredictedSlotChanges(InventoryTransaction $tx) : void{
+		$typeConverter = $this->session->getTypeConverter();
 		foreach($tx->getActions() as $action){
 			if($action instanceof SlotChangeAction){
 				//TODO: ItemStackRequestExecutor can probably build these predictions with much lower overhead
-				$itemStack = TypeConverter::getInstance()->coreItemStackToNet($action->getTargetItem());
+				$itemStack = $typeConverter->coreItemStackToNet($action->getTargetItem());
 				$this->addPredictedSlotChange($action->getInventory(), $action->getSlot(), $itemStack);
 			}
 		}
@@ -297,6 +297,8 @@ class InventoryManager{
 			$inventory instanceof LoomInventory => UIInventorySlotOffset::LOOM,
 			$inventory instanceof StonecutterInventory => [UIInventorySlotOffset::STONE_CUTTER_INPUT => StonecutterInventory::SLOT_INPUT],
 			$inventory instanceof CraftingTableInventory => UIInventorySlotOffset::CRAFTING3X3_INPUT,
+			$inventory instanceof CartographyTableInventory => UIInventorySlotOffset::CARTOGRAPHY_TABLE,
+			$inventory instanceof SmithingTableInventory => UIInventorySlotOffset::SMITHING_TABLE,
 			default => null,
 		};
 	}
@@ -351,6 +353,8 @@ class InventoryManager{
 				$inv instanceof HopperInventory => WindowTypes::HOPPER,
 				$inv instanceof CraftingTableInventory => WindowTypes::WORKBENCH,
 				$inv instanceof StonecutterInventory => WindowTypes::STONECUTTER,
+				$inv instanceof CartographyTableInventory => WindowTypes::CARTOGRAPHY,
+				$inv instanceof SmithingTableInventory => WindowTypes::SMITHING_TABLE,
 				default => WindowTypes::CONTAINER
 			};
 			return [ContainerOpenPacket::blockInv($id, $windowType, $blockPosition)];
@@ -415,7 +419,7 @@ class InventoryManager{
 			//is cleared before removal.
 			return;
 		}
-		$currentItem = TypeConverter::getInstance()->coreItemStackToNet($inventory->getItem($slot));
+		$currentItem = $this->session->getTypeConverter()->coreItemStackToNet($inventory->getItem($slot));
 		$clientSideItem = $inventoryEntry->predictions[$slot] ?? null;
 		if($clientSideItem === null || !$clientSideItem->equals($currentItem)){
 			//no prediction or incorrect - do not associate this with the currently active itemstack request
@@ -491,7 +495,7 @@ class InventoryManager{
 			$entry->predictions = [];
 			$entry->pendingSyncs = [];
 			$contents = [];
-			$typeConverter = TypeConverter::getInstance();
+			$typeConverter = $this->session->getTypeConverter();
 			foreach($inventory->getContents(true) as $slot => $item){
 				$itemStack = $typeConverter->coreItemStackToNet($item);
 				$info = $this->trackItemStack($entry, $slot, $itemStack, null);
@@ -526,7 +530,7 @@ class InventoryManager{
 	}
 
 	public function syncMismatchedPredictedSlotChanges() : void{
-		$typeConverter = TypeConverter::getInstance();
+		$typeConverter = $this->session->getTypeConverter();
 		foreach($this->inventories as $entry){
 			$inventory = $entry->inventory;
 			foreach($entry->predictions as $slot => $expectedItem){
@@ -589,7 +593,7 @@ class InventoryManager{
 
 			$this->session->sendDataPacket(MobEquipmentPacket::create(
 				$this->player->getId(),
-				new ItemStackWrapper($itemStackInfo->getStackId(), TypeConverter::getInstance()->coreItemStackToNet($playerInventory->getItemInHand())),
+				new ItemStackWrapper($itemStackInfo->getStackId(), $this->session->getTypeConverter()->coreItemStackToNet($playerInventory->getItemInHand())),
 				$selected,
 				$selected,
 				ContainerIds::INVENTORY
@@ -599,16 +603,7 @@ class InventoryManager{
 	}
 
 	public function syncCreative() : void{
-		$typeConverter = TypeConverter::getInstance();
-
-		$entries = [];
-		if(!$this->player->isSpectator()){
-			//creative inventory may have holes if items were unregistered - ensure network IDs used are always consistent
-			foreach(CreativeInventory::getInstance()->getAll() as $k => $item){
-				$entries[] = new CreativeContentEntry($k, $typeConverter->coreItemStackToNet($item));
-			}
-		}
-		$this->session->sendDataPacket(CreativeContentPacket::create($entries));
+		$this->session->sendDataPacket(CreativeInventoryCache::getInstance()->getCache(CreativeInventory::getInstance()));
 	}
 
 	private function newItemStackId() : int{

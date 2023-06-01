@@ -23,40 +23,23 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\MushroomBlockType;
-use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use function mt_rand;
 
 class RedMushroomBlock extends Opaque{
-
 	protected MushroomBlockType $mushroomBlockType;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->mushroomBlockType = MushroomBlockType::ALL_CAP();
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	protected function writeStateToMeta() : int{
-		return MushroomBlockTypeIdMap::getInstance()->toId($this->mushroomBlockType);
-	}
-
-	protected function writeStateToItemMeta() : int{
-		//these blocks always drop as all-cap, but may exist in other forms in the inventory (particularly creative)
-		return BlockLegacyMetadata::MUSHROOM_BLOCK_ALL_CAP;
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$type = MushroomBlockTypeIdMap::getInstance()->fromId($stateMeta);
-		if($type === null){
-			throw new InvalidBlockStateException("No such mushroom variant $stateMeta");
-		}
-		$this->mushroomBlockType = $type;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
+		//these blocks always drop as all-cap, but may exist in other forms in the inventory (particularly creative),
+		//so this information needs to be kept in the type info
+		$w->mushroomBlockType($this->mushroomBlockType);
 	}
 
 	public function getMushroomBlockType() : MushroomBlockType{ return $this->mushroomBlockType; }
@@ -75,5 +58,13 @@ class RedMushroomBlock extends Opaque{
 
 	public function isAffectedBySilkTouch() : bool{
 		return true;
+	}
+
+	public function getSilkTouchDrops(Item $item) : array{
+		return [(clone $this)->setMushroomBlockType(MushroomBlockType::ALL_CAP())->asItem()];
+	}
+
+	public function getPickedItem(bool $addUserData = false) : Item{
+		return (clone $this)->setMushroomBlockType(MushroomBlockType::ALL_CAP())->asItem();
 	}
 }
