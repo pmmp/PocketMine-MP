@@ -27,6 +27,8 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
 use pocketmine\entity\object\PrimedTNT;
 use pocketmine\entity\projectile\Arrow;
+use pocketmine\event\entity\EntityIgniteByBlockEvent;
+use pocketmine\event\entity\EntityIgniteByEntityEvent;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\FlintSteel;
@@ -79,7 +81,7 @@ class TNT extends Opaque{
 
 	public function onBreak(Item $item, ?Player $player = null) : bool{
 		if($this->unstable){
-			$this->ignite();
+			$this->ignite(cause: $player);
 			return true;
 		}
 		return parent::onBreak($item, $player);
@@ -90,7 +92,7 @@ class TNT extends Opaque{
 			if($item instanceof Durable){
 				$item->applyDamage(1);
 			}
-			$this->ignite();
+			$this->ignite(cause: $player);
 			return true;
 		}
 
@@ -103,13 +105,13 @@ class TNT extends Opaque{
 
 	public function onEntityInside(Entity $entity) : bool{
 		if($entity instanceof Arrow && $entity->isOnFire()){
-			$this->ignite();
+			$this->ignite(cause: $entity);
 			return false;
 		}
 		return true;
 	}
 
-	public function ignite(int $fuse = 80) : void{
+	public function ignite(int $fuse = 80, Entity|Block $cause = null) : void{
 		$world = $this->position->getWorld();
 		$world->setBlock($this->position, VanillaBlocks::AIR());
 
@@ -119,6 +121,15 @@ class TNT extends Opaque{
 		$tnt->setFuse($fuse);
 		$tnt->setWorksUnderwater($this->worksUnderwater);
 		$tnt->setMotion(new Vector3(-sin($mot) * 0.02, 0.2, -cos($mot) * 0.02));
+
+		if($cause !== null){
+			$ev = $cause instanceof Entity ? new EntityIgniteByEntityEvent($tnt, $cause) : new EntityIgniteByBlockEvent($tnt, $cause);
+			$ev->call();
+			if($ev->isCancelled()){
+				$tnt->flagForDespawn();
+				return;
+			}
+		}
 
 		$tnt->spawnToAll();
 		$tnt->broadcastSound(new IgniteSound());
