@@ -37,6 +37,8 @@ abstract class Terminal{
 	public static string $FORMAT_BOLD = "";
 	public static string $FORMAT_OBFUSCATED = "";
 	public static string $FORMAT_ITALIC = "";
+	public static string $FORMAT_UNDERLINE = "";
+	public static string $FORMAT_STRIKETHROUGH = "";
 
 	public static string $FORMAT_RESET = "";
 
@@ -95,6 +97,8 @@ abstract class Terminal{
 		self::$FORMAT_BOLD = "\x1b[1m";
 		self::$FORMAT_OBFUSCATED = "";
 		self::$FORMAT_ITALIC = "\x1b[3m";
+		self::$FORMAT_UNDERLINE = "\x1b[4m";
+		self::$FORMAT_STRIKETHROUGH = "\x1b[9m";
 
 		self::$FORMAT_RESET = "\x1b[m";
 
@@ -136,6 +140,8 @@ abstract class Terminal{
 		self::$FORMAT_BOLD = $tput("bold");
 		self::$FORMAT_OBFUSCATED = $tput("smacs");
 		self::$FORMAT_ITALIC = $tput("sitm");
+		self::$FORMAT_UNDERLINE = $tput("smul");
+		self::$FORMAT_STRIKETHROUGH = "\x1b[9m"; //`tput `;
 
 		self::$FORMAT_RESET = $tput("sgr0");
 
@@ -219,6 +225,8 @@ abstract class Terminal{
 				TextFormat::BOLD => Terminal::$FORMAT_BOLD,
 				TextFormat::OBFUSCATED => Terminal::$FORMAT_OBFUSCATED,
 				TextFormat::ITALIC => Terminal::$FORMAT_ITALIC,
+				TextFormat::UNDERLINE => Terminal::$FORMAT_UNDERLINE,
+				TextFormat::STRIKETHROUGH => Terminal::$FORMAT_STRIKETHROUGH,
 				TextFormat::RESET => Terminal::$FORMAT_RESET,
 				TextFormat::BLACK => Terminal::$COLOR_BLACK,
 				TextFormat::DARK_BLUE => Terminal::$COLOR_DARK_BLUE,
@@ -238,7 +246,7 @@ abstract class Terminal{
 				TextFormat::WHITE => Terminal::$COLOR_WHITE,
 				TextFormat::MINECOIN_GOLD => Terminal::$COLOR_MINECOIN_GOLD,
                 TextFormat::MATERIAL_QUARTZ => Terminal::$COLOR_MATERIAL_QUARTZ,
-                TextFormat::MATERIAL_IRON => seTerminallf::$COLOR_MATERIAL_IRON,
+                TextFormat::MATERIAL_IRON => Terminal::$COLOR_MATERIAL_IRON,
                 TextFormat::MATERIAL_NETHERITE => Terminal::$COLOR_MATERIAL_NETHERITE,
                 TextFormat::MATERIAL_REDSTONE => Terminal::$COLOR_MATERIAL_REDSTONE,
                 TextFormat::MATERIAL_COPPER => Terminal::$COLOR_MATERIAL_COPPER,

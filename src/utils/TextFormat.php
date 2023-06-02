@@ -62,7 +62,7 @@ abstract class TextFormat{
 	public const LIGHT_PURPLE = TextFormat::ESCAPE . "d";
 	public const YELLOW = TextFormat::ESCAPE . "e";
 	public const WHITE = TextFormat::ESCAPE . "f";
-	public const MINECOIN_GOLD  = TextFormat::ESCAPE . "g";
+	public const MINECOIN_GOLD = TextFormat::ESCAPE . "g";
 	public const MATERIAL_QUARTZ = TextFormat::ESCAPE . "h";
 	public const MATERIAL_IRON = TextFormat::ESCAPE . "i";
 	public const MATERIAL_NETHERITE = TextFormat::ESCAPE . "j";
@@ -91,7 +91,7 @@ abstract class TextFormat{
 		self::LIGHT_PURPLE => self::LIGHT_PURPLE,
 		self::YELLOW => self::YELLOW,
 		self::WHITE => self::WHITE,
-		self::MINECOIN_GOLD  => self::MINECOIN_GOLD ,
+		self::MINECOIN_GOLD => self::MINECOIN_GOLD,
 		self::MATERIAL_QUARTZ => self::MATERIAL_QUARTZ,
 		self::MATERIAL_IRON => self::MATERIAL_IRON,
 		self::MATERIAL_NETHERITE => self::MATERIAL_NETHERITE,
@@ -106,11 +106,15 @@ abstract class TextFormat{
 
 	public const OBFUSCATED = TextFormat::ESCAPE . "k";
 	public const BOLD = TextFormat::ESCAPE . "l";
+	public const STRIKETHROUGH = TextFormat::ESCAPE . "m";
+	public const UNDERLINE = TextFormat::ESCAPE . "n";
 	public const ITALIC = TextFormat::ESCAPE . "o";
 
 	public const FORMATS = [
 		self::OBFUSCATED => self::OBFUSCATED,
 		self::BOLD => self::BOLD,
+		self::STRIKETHROUGH => self::STRIKETHROUGH,
+		self::UNDERLINE => self::UNDERLINE,
 		self::ITALIC => self::ITALIC,
 	];
 
@@ -219,6 +223,14 @@ abstract class TextFormat{
 					$newString .= "<span style=font-style:italic>";
 					++$tokens;
 					break;
+				case TextFormat::UNDERLINE:
+					$newString .= "<span style=text-decoration:underline>";
+					++$tokens;
+					break;
+				case TextFormat::STRIKETHROUGH:
+					$newString .= "<span style=text-decoration:line-through>";
+					++$tokens;
+					break;
 				case TextFormat::RESET:
 					$newString .= str_repeat("</span>", $tokens);
 					$tokens = 0;
@@ -289,48 +301,48 @@ abstract class TextFormat{
 					$newString .= "<span style=color:#FFF>";
 					++$tokens;
 					break;
-				case TextFormat::MINECOIN_GOLD :
+				case TextFormat::MINECOIN_GOLD:
 					$newString .= "<span style=color:#dd0>";
 					++$tokens;
 					break;
 				case TextFormat::MATERIAL_QUARTZ:
-					$newString .= "<span style=color:#e2d3d1>";
+					$newString .= "<span style=color:#E3D4D1>";
 					++$tokens;
 					break;
 				case TextFormat::MATERIAL_IRON:
-					$newString .= "<span style=color:#cec9c9>";
+					$newString .= "<span style=color:#CECACA>";
 					++$tokens;
 					break;
 				case TextFormat::MATERIAL_NETHERITE:
-					$newString .= "<span style=color:#44393a>";
+					$newString .= "<span style=color:#443A3B>";
 					++$tokens;
 					break;
 				case TextFormat::MATERIAL_REDSTONE:
-					$newString .= "<span style=color:#961506>";
+					$newString .= "<span style=color:#971607>";
 					++$tokens;
 					break;
 				case TextFormat::MATERIAL_COPPER:
-					$newString .= "<span style=color:#b4684d>";
+					$newString .= "<span style=color:#B4684D>";
 					++$tokens;
 					break;
 				case TextFormat::MATERIAL_GOLD:
-					$newString .= "<span style=color:#deb02c>";
+					$newString .= "<span style=color:#DEB12D>";
 					++$tokens;
 					break;
 				case TextFormat::MATERIAL_EMERALD:
-					$newString .= "<span style=color:#119f36>";
+					$newString .= "<span style=color:#47A036>";
 					++$tokens;
 					break;
 				case TextFormat::MATERIAL_DIAMOND:
-					$newString .= "<span style=color:#2cb9a8>";
+					$newString .= "<span style=color:#2CBAA8>";
 					++$tokens;
 					break;
 				case TextFormat::MATERIAL_LAPIS:
-					$newString .= "<span style=color:#20487a>";
+					$newString .= "<span style=color:#21497B>";
 					++$tokens;
 					break;
 				case TextFormat::MATERIAL_AMETHYST:
-					$newString .= "<span style=color:#9a5cc5>";
+					$newString .= "<span style=color:#9A5CC6>";
 					++$tokens;
 					break;
 				default:
