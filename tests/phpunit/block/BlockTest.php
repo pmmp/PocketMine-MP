@@ -124,4 +124,12 @@ class BlockTest extends TestCase{
 		$block = $this->blockFactory->fromStateId(Block::EMPTY_STATE_ID);
 		self::assertInstanceOf(Air::class, $block);
 	}
+
+	public function testAsItemFromItem() : void{
+		$block = VanillaBlocks::FLOWER_POT();
+		$item = $block->asItem();
+		$defaultBlock = $item->getBlock();
+		$item2 = $defaultBlock->asItem();
+		self::assertTrue($item2->equalsExact($item));
+	}
 }

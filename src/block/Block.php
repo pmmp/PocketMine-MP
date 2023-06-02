@@ -93,7 +93,9 @@ class Block{
 		$this->describeBlockOnlyState($calculator);
 		$this->requiredBlockOnlyStateDataBits = $calculator->getBitsUsed();
 
-		$this->defaultState = clone $this;
+		$defaultState = clone $this;
+		$this->defaultState = $defaultState;
+		$defaultState->defaultState = $defaultState;
 	}
 
 	public function __clone(){
