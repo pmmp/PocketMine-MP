@@ -30,6 +30,7 @@ use function dirname;
 use function fclose;
 use function fflush;
 use function file_exists;
+use function file_get_contents;
 use function file_put_contents;
 use function flock;
 use function fopen;
@@ -47,9 +48,9 @@ use function rmdir;
 use function rtrim;
 use function scandir;
 use function str_replace;
+use function str_starts_with;
 use function stream_get_contents;
 use function strlen;
-use function strpos;
 use function uksort;
 use function unlink;
 use const DIRECTORY_SEPARATOR;
@@ -159,19 +160,14 @@ final class Filesystem{
 	 */
 	public static function getCleanedPaths() : array{ return self::$cleanedPaths; }
 
-	/**
-	 * @param string $path
-	 *
-	 * @return string
-	 */
-	public static function cleanPath($path){
+	public static function cleanPath(string $path) : string{
 		$result = str_replace([DIRECTORY_SEPARATOR, ".php", "phar://"], ["/", "", ""], $path);
 
 		//remove relative paths
 		//this should probably never have integer keys, but it's safer than making PHPStan ignore it
 		foreach(Utils::stringifyKeys(self::$cleanedPaths) as $cleanPath => $replacement){
 			$cleanPath = rtrim(str_replace([DIRECTORY_SEPARATOR, "phar://"], ["/", ""], $cleanPath), "/");
-			if(strpos($result, $cleanPath) === 0){
+			if(str_starts_with($result, $cleanPath)){
 				$result = ltrim(str_replace($cleanPath, $replacement, $result), "/");
 			}
 		}
@@ -187,9 +183,10 @@ final class Filesystem{
 	 * @throws \InvalidArgumentException if the lock file path is invalid (e.g. parent directory doesn't exist, permission denied)
 	 */
 	public static function createLockFile(string $lockFilePath) : ?int{
-		$resource = fopen($lockFilePath, "a+b");
-		if($resource === false){
-			throw new \InvalidArgumentException("Invalid lock file path or read/write permissions denied");
+		try{
+			$resource = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen($lockFilePath, "a+b"));
+		}catch(\ErrorException $e){
+			throw new \InvalidArgumentException("Failed to open lock file: " . $e->getMessage(), 0, $e);
 		}
 		if(!flock($resource, LOCK_EX | LOCK_NB)){
 			//wait for a shared lock to avoid race conditions if two servers started at the same time - this makes sure the
@@ -293,6 +290,23 @@ final class Filesystem{
 				throw new \RuntimeException("Failed to move temporary file contents into target file: " . $copyException->getMessage(), 0, $copyException);
 			}
 			@unlink($temporaryFileName);
+		}
+	}
+
+	/**
+	 * Wrapper around file_get_contents() which throws an exception instead of generating E_* errors.
+	 *
+	 * @phpstan-param resource|null       $context
+	 * @phpstan-param 0|positive-int      $offset
+	 * @phpstan-param 0|positive-int|null $length
+	 *
+	 * @throws \RuntimeException
+	 */
+	public static function fileGetContents(string $fileName, bool $useIncludePath = false, $context = null, int $offset = 0, ?int $length = null) : string{
+		try{
+			return ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents($fileName, $useIncludePath, $context, $offset, $length));
+		}catch(\ErrorException $e){
+			throw new \RuntimeException("Failed to read file $fileName: " . $e->getMessage(), 0, $e);
 		}
 	}
 }

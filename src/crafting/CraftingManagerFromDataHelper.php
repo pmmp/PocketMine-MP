@@ -39,11 +39,11 @@ use pocketmine\data\SavedDataLoadingException;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\item\Item;
 use pocketmine\nbt\LittleEndianNbtSerializer;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
 use Symfony\Component\Filesystem\Path;
 use function base64_decode;
-use function file_get_contents;
 use function get_debug_type;
 use function is_array;
 use function is_object;
@@ -52,13 +52,13 @@ use function json_decode;
 final class CraftingManagerFromDataHelper{
 
 	private static function deserializeIngredient(RecipeIngredientData $data) : ?RecipeIngredient{
-		if(!isset($data->name)){
-			return null; //TODO: not yet implemented
-		}
 		if(isset($data->count) && $data->count !== 1){
 			//every case we've seen so far where this isn't the case, it's been a bug and the count was ignored anyway
 			//e.g. gold blocks crafted from 9 ingots, but each input item individually had a count of 9
 			throw new SavedDataLoadingException("Recipe inputs should have a count of exactly 1");
+		}
+		if(isset($data->tag)){
+			return new TagWildcardRecipeIngredient($data->tag);
 		}
 
 		$meta = $data->meta ?? null;
@@ -117,7 +117,7 @@ final class CraftingManagerFromDataHelper{
 					->read(ErrorToExceptionHandler::trapAndRemoveFalse(fn() => base64_decode($blockStatesRaw, true)))
 					->mustGetCompoundTag()
 					->getValue();
-			$blockStateData = new BlockStateData($blockName, $blockStatesTag, BlockStateData::CURRENT_VERSION);
+			$blockStateData = BlockStateData::current($blockName, $blockStatesTag);
 		}else{
 			$blockStateData = null;
 		}
@@ -156,7 +156,7 @@ final class CraftingManagerFromDataHelper{
 	 * @phpstan-return list<TData>
 	 */
 	public static function loadJsonArrayOfObjectsFile(string $filePath, string $modelCLass) : array{
-		$recipes = json_decode(Utils::assumeNotFalse(file_get_contents($filePath), "Missing required resource file"));
+		$recipes = json_decode(Filesystem::fileGetContents($filePath));
 		if(!is_array($recipes)){
 			throw new SavedDataLoadingException("$filePath root should be an array, got " . get_debug_type($recipes));
 		}
@@ -332,6 +332,8 @@ final class CraftingManagerFromDataHelper{
 				$outputId
 			));
 		}
+
+		//TODO: smithing
 
 		return $result;
 	}

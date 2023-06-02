@@ -25,6 +25,7 @@ namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\Bamboo;
 use pocketmine\block\Block;
+use pocketmine\block\CaveVines;
 use pocketmine\block\ChorusFlower;
 use pocketmine\block\Light;
 use pocketmine\block\Slab;
@@ -39,6 +40,7 @@ use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\VanillaBlocks as Blocks;
+use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
@@ -70,7 +72,9 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 
 	public function __construct(){
 		$this->registerCandleDeserializers();
+		$this->registerFlatColorBlockDeserializers();
 		$this->registerCauldronDeserializers();
+		$this->registerWoodBlockDeserializers();
 		$this->registerSimpleDeserializers();
 		$this->registerDeserializers();
 	}
@@ -116,46 +120,106 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map($id, fn(Reader $in) : Stair => Helper::decodeStairs($getBlock(), $in));
 	}
 
+	/** @phpstan-param \Closure() : Wood $getBlock */
+	public function mapLog(string $unstrippedId, string $strippedId, \Closure $getBlock) : void{
+		$this->map($unstrippedId, fn(Reader $in) => Helper::decodeLog($getBlock(), false, $in));
+		$this->map($strippedId, fn(Reader $in) => Helper::decodeLog($getBlock(), true, $in));
+	}
+
 	private function registerCandleDeserializers() : void{
 		$this->map(Ids::CANDLE, fn(Reader $in) => Helper::decodeCandle(Blocks::CANDLE(), $in));
-		$dyedCandleDeserializer = fn(DyeColor $color) => fn(Reader $in) => Helper::decodeCandle(Blocks::DYED_CANDLE()->setColor($color), $in);
-		$this->map(Ids::BLACK_CANDLE, $dyedCandleDeserializer(DyeColor::BLACK()));
-		$this->map(Ids::BLUE_CANDLE, $dyedCandleDeserializer(DyeColor::BLUE()));
-		$this->map(Ids::BROWN_CANDLE, $dyedCandleDeserializer(DyeColor::BROWN()));
-		$this->map(Ids::CYAN_CANDLE, $dyedCandleDeserializer(DyeColor::CYAN()));
-		$this->map(Ids::GRAY_CANDLE, $dyedCandleDeserializer(DyeColor::GRAY()));
-		$this->map(Ids::GREEN_CANDLE, $dyedCandleDeserializer(DyeColor::GREEN()));
-		$this->map(Ids::LIGHT_BLUE_CANDLE, $dyedCandleDeserializer(DyeColor::LIGHT_BLUE()));
-		$this->map(Ids::LIGHT_GRAY_CANDLE, $dyedCandleDeserializer(DyeColor::LIGHT_GRAY()));
-		$this->map(Ids::LIME_CANDLE, $dyedCandleDeserializer(DyeColor::LIME()));
-		$this->map(Ids::MAGENTA_CANDLE, $dyedCandleDeserializer(DyeColor::MAGENTA()));
-		$this->map(Ids::ORANGE_CANDLE, $dyedCandleDeserializer(DyeColor::ORANGE()));
-		$this->map(Ids::PINK_CANDLE, $dyedCandleDeserializer(DyeColor::PINK()));
-		$this->map(Ids::PURPLE_CANDLE, $dyedCandleDeserializer(DyeColor::PURPLE()));
-		$this->map(Ids::RED_CANDLE, $dyedCandleDeserializer(DyeColor::RED()));
-		$this->map(Ids::WHITE_CANDLE, $dyedCandleDeserializer(DyeColor::WHITE()));
-		$this->map(Ids::YELLOW_CANDLE, $dyedCandleDeserializer(DyeColor::YELLOW()));
+		foreach([
+			Ids::BLACK_CANDLE => DyeColor::BLACK(),
+			Ids::BLUE_CANDLE => DyeColor::BLUE(),
+			Ids::BROWN_CANDLE => DyeColor::BROWN(),
+			Ids::CYAN_CANDLE => DyeColor::CYAN(),
+			Ids::GRAY_CANDLE => DyeColor::GRAY(),
+			Ids::GREEN_CANDLE => DyeColor::GREEN(),
+			Ids::LIGHT_BLUE_CANDLE => DyeColor::LIGHT_BLUE(),
+			Ids::LIGHT_GRAY_CANDLE => DyeColor::LIGHT_GRAY(),
+			Ids::LIME_CANDLE => DyeColor::LIME(),
+			Ids::MAGENTA_CANDLE => DyeColor::MAGENTA(),
+			Ids::ORANGE_CANDLE => DyeColor::ORANGE(),
+			Ids::PINK_CANDLE => DyeColor::PINK(),
+			Ids::PURPLE_CANDLE => DyeColor::PURPLE(),
+			Ids::RED_CANDLE => DyeColor::RED(),
+			Ids::WHITE_CANDLE => DyeColor::WHITE(),
+			Ids::YELLOW_CANDLE => DyeColor::YELLOW(),
+		] as $id => $color){
+			$this->map($id, fn(Reader $in) => Helper::decodeCandle(Blocks::DYED_CANDLE()->setColor($color), $in));
+		}
 
 		$this->map(Ids::CANDLE_CAKE, fn(Reader $in) => Blocks::CAKE_WITH_CANDLE()->setLit($in->readBool(StateNames::LIT)));
-		$cakeWithDyedCandleDeserializer = fn(DyeColor $color) => fn(Reader $in) => Blocks::CAKE_WITH_DYED_CANDLE()
-			->setColor($color)
-			->setLit($in->readBool(StateNames::LIT));
-		$this->map(Ids::BLACK_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::BLACK()));
-		$this->map(Ids::BLUE_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::BLUE()));
-		$this->map(Ids::BROWN_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::BROWN()));
-		$this->map(Ids::CYAN_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::CYAN()));
-		$this->map(Ids::GRAY_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::GRAY()));
-		$this->map(Ids::GREEN_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::GREEN()));
-		$this->map(Ids::LIGHT_BLUE_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::LIGHT_BLUE()));
-		$this->map(Ids::LIGHT_GRAY_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::LIGHT_GRAY()));
-		$this->map(Ids::LIME_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::LIME()));
-		$this->map(Ids::MAGENTA_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::MAGENTA()));
-		$this->map(Ids::ORANGE_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::ORANGE()));
-		$this->map(Ids::PINK_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::PINK()));
-		$this->map(Ids::PURPLE_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::PURPLE()));
-		$this->map(Ids::RED_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::RED()));
-		$this->map(Ids::WHITE_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::WHITE()));
-		$this->map(Ids::YELLOW_CANDLE_CAKE, $cakeWithDyedCandleDeserializer(DyeColor::YELLOW()));
+		foreach([
+			Ids::BLACK_CANDLE_CAKE => DyeColor::BLACK(),
+			Ids::BLUE_CANDLE_CAKE => DyeColor::BLUE(),
+			Ids::BROWN_CANDLE_CAKE => DyeColor::BROWN(),
+			Ids::CYAN_CANDLE_CAKE => DyeColor::CYAN(),
+			Ids::GRAY_CANDLE_CAKE => DyeColor::GRAY(),
+			Ids::GREEN_CANDLE_CAKE => DyeColor::GREEN(),
+			Ids::LIGHT_BLUE_CANDLE_CAKE => DyeColor::LIGHT_BLUE(),
+			Ids::LIGHT_GRAY_CANDLE_CAKE => DyeColor::LIGHT_GRAY(),
+			Ids::LIME_CANDLE_CAKE => DyeColor::LIME(),
+			Ids::MAGENTA_CANDLE_CAKE => DyeColor::MAGENTA(),
+			Ids::ORANGE_CANDLE_CAKE => DyeColor::ORANGE(),
+			Ids::PINK_CANDLE_CAKE => DyeColor::PINK(),
+			Ids::PURPLE_CANDLE_CAKE => DyeColor::PURPLE(),
+			Ids::RED_CANDLE_CAKE => DyeColor::RED(),
+			Ids::WHITE_CANDLE_CAKE => DyeColor::WHITE(),
+			Ids::YELLOW_CANDLE_CAKE => DyeColor::YELLOW(),
+		] as $id => $color){
+			$this->map($id, fn(Reader $in) => Blocks::CAKE_WITH_DYED_CANDLE()
+				->setColor($color)
+				->setLit($in->readBool(StateNames::LIT))
+			);
+		}
+	}
+
+	private function registerFlatColorBlockDeserializers() : void{
+		foreach([
+			Ids::BLACK_GLAZED_TERRACOTTA => DyeColor::BLACK(),
+			Ids::BLUE_GLAZED_TERRACOTTA => DyeColor::BLUE(),
+			Ids::BROWN_GLAZED_TERRACOTTA => DyeColor::BROWN(),
+			Ids::CYAN_GLAZED_TERRACOTTA => DyeColor::CYAN(),
+			Ids::GRAY_GLAZED_TERRACOTTA => DyeColor::GRAY(),
+			Ids::GREEN_GLAZED_TERRACOTTA => DyeColor::GREEN(),
+			Ids::LIGHT_BLUE_GLAZED_TERRACOTTA => DyeColor::LIGHT_BLUE(),
+			Ids::SILVER_GLAZED_TERRACOTTA => DyeColor::LIGHT_GRAY(),
+			Ids::LIME_GLAZED_TERRACOTTA => DyeColor::LIME(),
+			Ids::MAGENTA_GLAZED_TERRACOTTA => DyeColor::MAGENTA(),
+			Ids::ORANGE_GLAZED_TERRACOTTA => DyeColor::ORANGE(),
+			Ids::PINK_GLAZED_TERRACOTTA => DyeColor::PINK(),
+			Ids::PURPLE_GLAZED_TERRACOTTA => DyeColor::PURPLE(),
+			Ids::RED_GLAZED_TERRACOTTA => DyeColor::RED(),
+			Ids::WHITE_GLAZED_TERRACOTTA => DyeColor::WHITE(),
+			Ids::YELLOW_GLAZED_TERRACOTTA => DyeColor::YELLOW(),
+		] as $id => $color){
+			$this->map($id, fn(Reader $in) => Blocks::GLAZED_TERRACOTTA()
+				->setColor($color)
+				->setFacing($in->readHorizontalFacing())
+			);
+		}
+
+		foreach([
+			Ids::BLACK_WOOL => DyeColor::BLACK(),
+			Ids::BLUE_WOOL => DyeColor::BLUE(),
+			Ids::BROWN_WOOL => DyeColor::BROWN(),
+			Ids::CYAN_WOOL => DyeColor::CYAN(),
+			Ids::GRAY_WOOL => DyeColor::GRAY(),
+			Ids::GREEN_WOOL => DyeColor::GREEN(),
+			Ids::LIGHT_BLUE_WOOL => DyeColor::LIGHT_BLUE(),
+			Ids::LIGHT_GRAY_WOOL => DyeColor::LIGHT_GRAY(),
+			Ids::LIME_WOOL => DyeColor::LIME(),
+			Ids::MAGENTA_WOOL => DyeColor::MAGENTA(),
+			Ids::ORANGE_WOOL => DyeColor::ORANGE(),
+			Ids::PINK_WOOL => DyeColor::PINK(),
+			Ids::PURPLE_WOOL => DyeColor::PURPLE(),
+			Ids::RED_WOOL => DyeColor::RED(),
+			Ids::WHITE_WOOL => DyeColor::WHITE(),
+			Ids::YELLOW_WOOL => DyeColor::YELLOW(),
+		] as $id => $color){
+			$this->mapSimple($id, fn() => Blocks::WOOL()->setColor($color));
+		}
 	}
 
 	private function registerCauldronDeserializers() : void{
@@ -175,6 +239,22 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		};
 		$this->map(Ids::CAULDRON, $deserializer);
 		$this->map(Ids::LAVA_CAULDRON, $deserializer);
+	}
+
+	private function registerWoodBlockDeserializers() : void{
+		$this->mapSimple(Ids::ACACIA_FENCE, fn() => Blocks::ACACIA_FENCE());
+		$this->mapSimple(Ids::BIRCH_FENCE, fn() => Blocks::BIRCH_FENCE());
+		$this->mapSimple(Ids::DARK_OAK_FENCE, fn() => Blocks::DARK_OAK_FENCE());
+		$this->mapSimple(Ids::JUNGLE_FENCE, fn() => Blocks::JUNGLE_FENCE());
+		$this->mapSimple(Ids::OAK_FENCE, fn() => Blocks::OAK_FENCE());
+		$this->mapSimple(Ids::SPRUCE_FENCE, fn() => Blocks::SPRUCE_FENCE());
+
+		$this->mapLog(Ids::ACACIA_LOG, Ids::STRIPPED_ACACIA_LOG, fn() => Blocks::ACACIA_LOG());
+		$this->mapLog(Ids::BIRCH_LOG, Ids::STRIPPED_BIRCH_LOG, fn() => Blocks::BIRCH_LOG());
+		$this->mapLog(Ids::DARK_OAK_LOG, Ids::STRIPPED_DARK_OAK_LOG, fn() => Blocks::DARK_OAK_LOG());
+		$this->mapLog(Ids::JUNGLE_LOG, Ids::STRIPPED_JUNGLE_LOG, fn() => Blocks::JUNGLE_LOG());
+		$this->mapLog(Ids::OAK_LOG, Ids::STRIPPED_OAK_LOG, fn() => Blocks::OAK_LOG());
+		$this->mapLog(Ids::SPRUCE_LOG, Ids::STRIPPED_SPRUCE_LOG, fn() => Blocks::SPRUCE_LOG());
 	}
 
 	private function registerSimpleDeserializers() : void{
@@ -406,7 +486,9 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::RED_MUSHROOM, fn() => Blocks::RED_MUSHROOM());
 		$this->mapSimple(Ids::RED_NETHER_BRICK, fn() => Blocks::RED_NETHER_BRICKS());
 		$this->mapSimple(Ids::REDSTONE_BLOCK, fn() => Blocks::REDSTONE());
+		$this->mapSimple(Ids::REINFORCED_DEEPSLATE, fn() => Blocks::REINFORCED_DEEPSLATE());
 		$this->mapSimple(Ids::RESERVED6, fn() => Blocks::RESERVED6());
+		$this->mapSimple(Ids::SCULK, fn() => Blocks::SCULK());
 		$this->mapSimple(Ids::SEA_LANTERN, fn() => Blocks::SEA_LANTERN());
 		$this->mapSimple(Ids::SHROOMLIGHT, fn() => Blocks::SHROOMLIGHT());
 		$this->mapSimple(Ids::SLIME, fn() => Blocks::SLIME());
@@ -456,6 +538,8 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				})
 				->setFacing($in->readLegacyHorizontalFacing());
 		});
+		$this->map(Ids::AZALEA_LEAVES, fn(Reader $in) => Helper::decodeLeaves(Blocks::AZALEA_LEAVES(), $in));
+		$this->map(Ids::AZALEA_LEAVES_FLOWERED, fn(Reader $in) => Helper::decodeLeaves(Blocks::FLOWERING_AZALEA_LEAVES(), $in));
 		$this->map(Ids::BAMBOO, function(Reader $in) : Block{
 			return Blocks::BAMBOO()
 				->setLeafSize(match($value = $in->readString(StateNames::BAMBOO_LEAF_SIZE)){
@@ -512,13 +596,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSlab(Ids::BLACKSTONE_SLAB, Ids::BLACKSTONE_DOUBLE_SLAB, fn() => Blocks::BLACKSTONE_SLAB());
 		$this->mapStairs(Ids::BLACKSTONE_STAIRS, fn() => Blocks::BLACKSTONE_STAIRS());
 		$this->map(Ids::BLACKSTONE_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::BLACKSTONE_WALL(), $in));
-		$this->map(Ids::BLACK_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::BLACK(), $in));
 		$this->map(Ids::BLAST_FURNACE, function(Reader $in) : Block{
 			return Blocks::BLAST_FURNACE()
 				->setFacing($in->readHorizontalFacing())
 				->setLit(false);
 		});
-		$this->map(Ids::BLUE_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::BLUE(), $in));
 		$this->map(Ids::BONE_BLOCK, function(Reader $in) : Block{
 			$in->ignored(StateNames::DEPRECATED);
 			return Blocks::BONE_BLOCK()->setAxis($in->readPillarAxis());
@@ -530,7 +612,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setSlot(BrewingStandSlot::NORTHWEST(), $in->readBool(StateNames::BREWING_STAND_SLOT_C_BIT));
 		});
 		$this->mapStairs(Ids::BRICK_STAIRS, fn() => Blocks::BRICK_STAIRS());
-		$this->map(Ids::BROWN_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::BROWN(), $in));
 		$this->map(Ids::BROWN_MUSHROOM_BLOCK, fn(Reader $in) => Helper::decodeMushroomBlock(Blocks::BROWN_MUSHROOM_BLOCK(), $in));
 		$this->map(Ids::CACTUS, function(Reader $in) : Block{
 			return Blocks::CACTUS()
@@ -548,6 +629,28 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::CARVED_PUMPKIN, function(Reader $in) : Block{
 			return Blocks::CARVED_PUMPKIN()
 				->setFacing($in->readLegacyHorizontalFacing());
+		});
+		$this->map(Ids::CAVE_VINES, function(Reader $in) : CaveVines{
+			return Blocks::CAVE_VINES()
+				->setBerries(false)
+				->setHead(false)
+				->setAge($in->readBoundedInt(StateNames::GROWING_PLANT_AGE, 0, 25));
+		});
+		$this->map(Ids::CAVE_VINES_BODY_WITH_BERRIES, function(Reader $in) : CaveVines{
+			return Blocks::CAVE_VINES()
+				->setBerries(true)
+				->setHead(false)
+				->setAge($in->readBoundedInt(StateNames::GROWING_PLANT_AGE, 0, 25));
+		});
+		$this->map(Ids::CAVE_VINES_HEAD_WITH_BERRIES, function(Reader $in) : CaveVines{
+			return Blocks::CAVE_VINES()
+				->setBerries(true)
+				->setHead(true)
+				->setAge($in->readBoundedInt(StateNames::GROWING_PLANT_AGE, 0, 25));
+		});
+		$this->map(Ids::CHAIN, function(Reader $in) : Block{
+			return Blocks::CHAIN()
+				->setAxis($in->readPillarAxis());
 		});
 		$this->map(Ids::CHEMISTRY_TABLE, function(Reader $in) : Block{
 			return (match($type = $in->readString(StateNames::CHEMISTRY_TABLE_TYPE)){
@@ -631,7 +734,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::CRIMSON_STEM, fn(Reader $in) => Helper::decodeLog(Blocks::CRIMSON_STEM(), false, $in));
 		$this->map(Ids::CRIMSON_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::CRIMSON_TRAPDOOR(), $in));
 		$this->map(Ids::CRIMSON_WALL_SIGN, fn(Reader $in) => Helper::decodeWallSign(Blocks::CRIMSON_WALL_SIGN(), $in));
-		$this->map(Ids::CYAN_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::CYAN(), $in));
 		$this->map(Ids::DARK_OAK_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::DARK_OAK_BUTTON(), $in));
 		$this->map(Ids::DARK_OAK_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::DARK_OAK_DOOR(), $in));
 		$this->map(Ids::DARK_OAK_FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::DARK_OAK_FENCE_GATE(), $in));
@@ -704,17 +806,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::FARMLAND()
 				->setWetness($in->readBoundedInt(StateNames::MOISTURIZED_AMOUNT, 0, 7));
 		});
-		$this->map(Ids::FENCE, function(Reader $in) : Block{
-			return match($woodName = $in->readString(StateNames::WOOD_TYPE)){
-				StringValues::WOOD_TYPE_OAK => Blocks::OAK_FENCE(),
-				StringValues::WOOD_TYPE_SPRUCE => Blocks::SPRUCE_FENCE(),
-				StringValues::WOOD_TYPE_BIRCH => Blocks::BIRCH_FENCE(),
-				StringValues::WOOD_TYPE_JUNGLE => Blocks::JUNGLE_FENCE(),
-				StringValues::WOOD_TYPE_ACACIA => Blocks::ACACIA_FENCE(),
-				StringValues::WOOD_TYPE_DARK_OAK => Blocks::DARK_OAK_FENCE(),
-				default => throw $in->badValueException(StateNames::WOOD_TYPE, $woodName),
-			};
-		});
 		$this->map(Ids::FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::OAK_FENCE_GATE(), $in));
 		$this->map(Ids::FIRE, function(Reader $in) : Block{
 			return Blocks::FIRE()
@@ -726,7 +817,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		});
 		$this->map(Ids::FLOWING_LAVA, fn(Reader $in) => Helper::decodeFlowingLiquid(Blocks::LAVA(), $in));
 		$this->map(Ids::FLOWING_WATER, fn(Reader $in) => Helper::decodeFlowingLiquid(Blocks::WATER(), $in));
-		$this->map(Ids::FRAME, fn(Reader $in) => Helper::decodeItemFrame($in, false));
+		$this->map(Ids::FRAME, fn(Reader $in) => Helper::decodeItemFrame(Blocks::ITEM_FRAME(), $in));
 		$this->map(Ids::FROSTED_ICE, function(Reader $in) : Block{
 			return Blocks::FROSTED_ICE()
 				->setAge($in->readBoundedInt(StateNames::AGE, 0, 3));
@@ -737,15 +828,13 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setLit(false);
 		});
 		$this->map(Ids::GLOW_LICHEN, fn(Reader $in) => Blocks::GLOW_LICHEN()->setFaces($in->readFacingFlags()));
-		$this->map(Ids::GLOW_FRAME, fn(Reader $in) => Helper::decodeItemFrame($in, true));
+		$this->map(Ids::GLOW_FRAME, fn(Reader $in) => Helper::decodeItemFrame(Blocks::GLOWING_ITEM_FRAME(), $in));
 		$this->map(Ids::GOLDEN_RAIL, function(Reader $in) : Block{
 			return Blocks::POWERED_RAIL()
 				->setPowered($in->readBool(StateNames::RAIL_DATA_BIT))
 				->setShape($in->readBoundedInt(StateNames::RAIL_DIRECTION, 0, 5));
 		});
 		$this->mapStairs(Ids::GRANITE_STAIRS, fn() => Blocks::GRANITE_STAIRS());
-		$this->map(Ids::GRAY_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::GRAY(), $in));
-		$this->map(Ids::GREEN_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::GREEN(), $in));
 		$this->map(Ids::HARD_STAINED_GLASS, function(Reader $in) : Block{
 			return Blocks::STAINED_HARDENED_GLASS()
 				->setColor($in->readColor());
@@ -783,26 +872,18 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setHanging($in->readBool(StateNames::HANGING));
 		});
 		$this->map(Ids::LAVA, fn(Reader $in) => Helper::decodeStillLiquid(Blocks::LAVA(), $in));
-		$this->map(Ids::LEAVES, function(Reader $in) : Block{
-			return (match($type = $in->readString(StateNames::OLD_LEAF_TYPE)){
-					StringValues::OLD_LEAF_TYPE_BIRCH => Blocks::BIRCH_LEAVES(),
-					StringValues::OLD_LEAF_TYPE_JUNGLE => Blocks::JUNGLE_LEAVES(),
-					StringValues::OLD_LEAF_TYPE_OAK => Blocks::OAK_LEAVES(),
-					StringValues::OLD_LEAF_TYPE_SPRUCE => Blocks::SPRUCE_LEAVES(),
-					default => throw $in->badValueException(StateNames::OLD_LEAF_TYPE, $type),
-				})
-				->setNoDecay($in->readBool(StateNames::PERSISTENT_BIT))
-				->setCheckDecay($in->readBool(StateNames::UPDATE_BIT));
-		});
-		$this->map(Ids::LEAVES2, function(Reader $in) : Block{
-			return (match($type = $in->readString(StateNames::NEW_LEAF_TYPE)){
-					StringValues::NEW_LEAF_TYPE_ACACIA => Blocks::ACACIA_LEAVES(),
-					StringValues::NEW_LEAF_TYPE_DARK_OAK => Blocks::DARK_OAK_LEAVES(),
-					default => throw $in->badValueException(StateNames::NEW_LEAF_TYPE, $type),
-				})
-				->setNoDecay($in->readBool(StateNames::PERSISTENT_BIT))
-				->setCheckDecay($in->readBool(StateNames::UPDATE_BIT));
-		});
+		$this->map(Ids::LEAVES, fn(Reader $in) => Helper::decodeLeaves(match($type = $in->readString(StateNames::OLD_LEAF_TYPE)){
+			StringValues::OLD_LEAF_TYPE_BIRCH => Blocks::BIRCH_LEAVES(),
+			StringValues::OLD_LEAF_TYPE_JUNGLE => Blocks::JUNGLE_LEAVES(),
+			StringValues::OLD_LEAF_TYPE_OAK => Blocks::OAK_LEAVES(),
+			StringValues::OLD_LEAF_TYPE_SPRUCE => Blocks::SPRUCE_LEAVES(),
+			default => throw $in->badValueException(StateNames::OLD_LEAF_TYPE, $type),
+		}, $in));
+		$this->map(Ids::LEAVES2, fn(Reader $in) => Helper::decodeLeaves(match($type = $in->readString(StateNames::NEW_LEAF_TYPE)){
+			StringValues::NEW_LEAF_TYPE_ACACIA => Blocks::ACACIA_LEAVES(),
+			StringValues::NEW_LEAF_TYPE_DARK_OAK => Blocks::DARK_OAK_LEAVES(),
+			default => throw $in->badValueException(StateNames::NEW_LEAF_TYPE, $type),
+		}, $in));
 		$this->map(Ids::LECTERN, function(Reader $in) : Block{
 			return Blocks::LECTERN()
 				->setFacing($in->readLegacyHorizontalFacing())
@@ -831,9 +912,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::LIGHTNING_ROD()
 				->setFacing($in->readFacingDirection());
 		});
-		$this->map(Ids::LIGHT_BLUE_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::LIGHT_BLUE(), $in));
 		$this->map(Ids::LIGHT_WEIGHTED_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeWeightedPressurePlate(Blocks::WEIGHTED_PRESSURE_PLATE_LIGHT(), $in));
-		$this->map(Ids::LIME_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::LIME(), $in));
 		$this->map(Ids::LIT_BLAST_FURNACE, function(Reader $in) : Block{
 			return Blocks::BLAST_FURNACE()
 				->setFacing($in->readHorizontalFacing())
@@ -862,27 +941,15 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFacing($in->readHorizontalFacing())
 				->setLit(true);
 		});
-		$this->map(Ids::LOG, fn(Reader $in) => Helper::decodeLog(match($type = $in->readString(StateNames::OLD_LOG_TYPE)){
-			StringValues::OLD_LOG_TYPE_BIRCH => Blocks::BIRCH_LOG(),
-			StringValues::OLD_LOG_TYPE_JUNGLE => Blocks::JUNGLE_LOG(),
-			StringValues::OLD_LOG_TYPE_OAK => Blocks::OAK_LOG(),
-			StringValues::OLD_LOG_TYPE_SPRUCE => Blocks::SPRUCE_LOG(),
-			default => throw $in->badValueException(StateNames::OLD_LOG_TYPE, $type),
-		}, false, $in));
-		$this->map(Ids::LOG2, fn(Reader $in) => Helper::decodeLog(match($type = $in->readString(StateNames::NEW_LOG_TYPE)){
-			StringValues::NEW_LOG_TYPE_ACACIA => Blocks::ACACIA_LOG(),
-			StringValues::NEW_LOG_TYPE_DARK_OAK => Blocks::DARK_OAK_LOG(),
-			default => throw $in->badValueException(StateNames::NEW_LOG_TYPE, $type),
-		}, false, $in));
 		$this->map(Ids::LOOM, function(Reader $in) : Block{
 			return Blocks::LOOM()
 				->setFacing($in->readLegacyHorizontalFacing());
 		});
-		$this->map(Ids::MAGENTA_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::MAGENTA(), $in));
 		$this->map(Ids::MANGROVE_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::MANGROVE_BUTTON(), $in));
 		$this->map(Ids::MANGROVE_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::MANGROVE_DOOR(), $in));
 		$this->mapSlab(Ids::MANGROVE_SLAB, Ids::MANGROVE_DOUBLE_SLAB, fn() => Blocks::MANGROVE_SLAB());
 		$this->map(Ids::MANGROVE_FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::MANGROVE_FENCE_GATE(), $in));
+		$this->map(Ids::MANGROVE_LEAVES, fn(Reader $in) => Helper::decodeLeaves(Blocks::MANGROVE_LEAVES(), $in));
 		$this->map(Ids::MANGROVE_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::MANGROVE_LOG(), false, $in));
 		$this->map(Ids::MANGROVE_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::MANGROVE_PRESSURE_PLATE(), $in));
 		$this->mapStairs(Ids::MANGROVE_STAIRS, fn() => Blocks::MANGROVE_STAIRS());
@@ -922,13 +989,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapStairs(Ids::NORMAL_STONE_STAIRS, fn() => Blocks::STONE_STAIRS());
 		$this->mapStairs(Ids::OAK_STAIRS, fn() => Blocks::OAK_STAIRS());
 		$this->map(Ids::OCHRE_FROGLIGHT, fn(Reader $in) => Blocks::FROGLIGHT()->setFroglightType(FroglightType::OCHRE())->setAxis($in->readPillarAxis()));
-		$this->map(Ids::ORANGE_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::ORANGE(), $in));
 		$this->map(Ids::OXIDIZED_COPPER, fn() => Helper::decodeCopper(Blocks::COPPER(), CopperOxidation::OXIDIZED()));
 		$this->map(Ids::OXIDIZED_CUT_COPPER, fn() => Helper::decodeCopper(Blocks::CUT_COPPER(), CopperOxidation::OXIDIZED()));
 		$this->mapSlab(Ids::OXIDIZED_CUT_COPPER_SLAB, Ids::OXIDIZED_DOUBLE_CUT_COPPER_SLAB, fn() => Helper::decodeCopper(Blocks::CUT_COPPER_SLAB(), CopperOxidation::OXIDIZED()));
 		$this->mapStairs(Ids::OXIDIZED_CUT_COPPER_STAIRS, fn() => Helper::decodeCopper(Blocks::CUT_COPPER_STAIRS(), CopperOxidation::OXIDIZED()));
 		$this->map(Ids::PEARLESCENT_FROGLIGHT, fn(Reader $in) => Blocks::FROGLIGHT()->setFroglightType(FroglightType::PEARLESCENT())->setAxis($in->readPillarAxis()));
-		$this->map(Ids::PINK_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::PINK(), $in));
 		$this->map(Ids::PLANKS, function(Reader $in) : Block{
 			return match($woodName = $in->readString(StateNames::WOOD_TYPE)){
 				StringValues::WOOD_TYPE_OAK => Blocks::OAK_PLANKS(),
@@ -986,7 +1051,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::PUMPKIN();
 		});
 		$this->map(Ids::PUMPKIN_STEM, fn(Reader $in) => Helper::decodeStem(Blocks::PUMPKIN_STEM(), $in));
-		$this->map(Ids::PURPLE_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::PURPLE(), $in));
 		$this->map(Ids::PURPUR_BLOCK, function(Reader $in) : Block{
 			$type = $in->readString(StateNames::CHISEL_TYPE);
 			if($type === StringValues::CHISEL_TYPE_LINES){
@@ -1039,7 +1103,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				default => throw $in->badValueException(StateNames::FLOWER_TYPE, $type),
 			};
 		});
-		$this->map(Ids::RED_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::RED(), $in));
 		$this->map(Ids::RED_MUSHROOM_BLOCK, fn(Reader $in) => Helper::decodeMushroomBlock(Blocks::RED_MUSHROOM_BLOCK(), $in));
 		$this->mapStairs(Ids::RED_NETHER_BRICK_STAIRS, fn() => Blocks::RED_NETHER_BRICK_STAIRS());
 		$this->map(Ids::RED_SANDSTONE, function(Reader $in) : Block{
@@ -1111,7 +1174,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::DYED_SHULKER_BOX()
 				->setColor($in->readColor());
 		});
-		$this->map(Ids::SILVER_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::LIGHT_GRAY(), $in));
 		$this->map(Ids::SKULL, function(Reader $in) : Block{
 			return Blocks::MOB_HEAD()
 				->setFacing($in->readFacingWithoutDown());
@@ -1206,16 +1268,10 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::STONECUTTER()
 				->setFacing($in->readHorizontalFacing());
 		});
-		$this->map(Ids::STRIPPED_ACACIA_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::ACACIA_LOG(), true, $in));
-		$this->map(Ids::STRIPPED_BIRCH_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::BIRCH_LOG(), true, $in));
 		$this->map(Ids::STRIPPED_CRIMSON_HYPHAE, fn(Reader $in) => Helper::decodeLog(Blocks::CRIMSON_HYPHAE(), true, $in));
 		$this->map(Ids::STRIPPED_CRIMSON_STEM, fn(Reader $in) => Helper::decodeLog(Blocks::CRIMSON_STEM(), true, $in));
-		$this->map(Ids::STRIPPED_DARK_OAK_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::DARK_OAK_LOG(), true, $in));
-		$this->map(Ids::STRIPPED_JUNGLE_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::JUNGLE_LOG(), true, $in));
 		$this->map(Ids::STRIPPED_MANGROVE_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::MANGROVE_LOG(), true, $in));
 		$this->map(Ids::STRIPPED_MANGROVE_WOOD, fn(Reader $in) => Helper::decodeLog(Blocks::MANGROVE_WOOD(), true, $in));
-		$this->map(Ids::STRIPPED_OAK_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::OAK_LOG(), true, $in));
-		$this->map(Ids::STRIPPED_SPRUCE_LOG, fn(Reader $in) => Helper::decodeLog(Blocks::SPRUCE_LOG(), true, $in));
 		$this->map(Ids::STRIPPED_WARPED_HYPHAE, fn(Reader $in) => Helper::decodeLog(Blocks::WARPED_HYPHAE(), true, $in));
 		$this->map(Ids::STRIPPED_WARPED_STEM, fn(Reader $in) => Helper::decodeLog(Blocks::WARPED_STEM(), true, $in));
 		$this->map(Ids::SWEET_BERRY_BUSH, function(Reader $in) : Block{
@@ -1325,7 +1381,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setAge($in->readBoundedInt(StateNames::WEEPING_VINES_AGE, 0, 25));
 		});
 		$this->map(Ids::WHEAT, fn(Reader $in) => Helper::decodeCrops(Blocks::WHEAT(), $in));
-		$this->map(Ids::WHITE_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::WHITE(), $in));
 		$this->map(Ids::WOOD, fn(Reader $in) : Block => Helper::decodeLog(match($woodType = $in->readString(StateNames::WOOD_TYPE)){
 			StringValues::WOOD_TYPE_ACACIA => Blocks::ACACIA_WOOD(),
 			StringValues::WOOD_TYPE_BIRCH => Blocks::BIRCH_WOOD(),
@@ -1339,11 +1394,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::WOODEN_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::OAK_DOOR(), $in));
 		$this->map(Ids::WOODEN_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::OAK_PRESSURE_PLATE(), $in));
 		$this->mapSlab(Ids::WOODEN_SLAB, Ids::DOUBLE_WOODEN_SLAB, fn(Reader $in) => Helper::mapWoodenSlabType($in));
-		$this->map(Ids::WOOL, function(Reader $in) : Block{
-			return Blocks::WOOL()
-				->setColor($in->readColor());
-		});
-		$this->map(Ids::YELLOW_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(DyeColor::YELLOW(), $in));
 	}
 
 	/** @throws BlockStateDeserializeException */

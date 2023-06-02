@@ -25,20 +25,21 @@ namespace pocketmine\data\bedrock\item;
 
 use pocketmine\block\Bed;
 use pocketmine\block\Block;
-use pocketmine\block\ItemFrame;
-use pocketmine\block\Skull;
+use pocketmine\block\MobHead;
 use pocketmine\block\utils\DyeColor;
-use pocketmine\block\utils\SkullType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\data\bedrock\CompoundTypeIds;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\bedrock\item\ItemTypeNames as Ids;
 use pocketmine\data\bedrock\item\SavedItemData as Data;
+use pocketmine\data\bedrock\MedicineTypeIdMap;
+use pocketmine\data\bedrock\MobHeadTypeIdMap;
 use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\data\bedrock\SuspiciousStewTypeIdMap;
 use pocketmine\item\Banner;
 use pocketmine\item\Dye;
 use pocketmine\item\Item;
+use pocketmine\item\Medicine;
 use pocketmine\item\Potion;
 use pocketmine\item\SplashPotion;
 use pocketmine\item\SuspiciousStew;
@@ -55,7 +56,6 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->register1to1BlockWithMetaMappings();
 		$this->register1to1ItemWithMetaMappings();
 		$this->register1ToNItemMappings();
-		$this->registerMiscBlockMappings();
 		$this->registerMiscItemMappings();
 	}
 
@@ -134,10 +134,13 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Block(Ids::BREWING_STAND, Blocks::BREWING_STAND());
 		$this->map1to1Block(Ids::CAKE, Blocks::CAKE());
 		$this->map1to1Block(Ids::CAULDRON, Blocks::CAULDRON());
+		$this->map1to1Block(Ids::CHAIN, Blocks::CHAIN());
 		$this->map1to1Block(Ids::COMPARATOR, Blocks::REDSTONE_COMPARATOR());
 		$this->map1to1Block(Ids::CRIMSON_DOOR, Blocks::CRIMSON_DOOR());
 		$this->map1to1Block(Ids::DARK_OAK_DOOR, Blocks::DARK_OAK_DOOR());
 		$this->map1to1Block(Ids::FLOWER_POT, Blocks::FLOWER_POT());
+		$this->map1to1Block(Ids::FRAME, Blocks::ITEM_FRAME());
+		$this->map1to1Block(Ids::GLOW_FRAME, Blocks::GLOWING_ITEM_FRAME());
 		$this->map1to1Block(Ids::HOPPER, Blocks::HOPPER());
 		$this->map1to1Block(Ids::IRON_DOOR, Blocks::IRON_DOOR());
 		$this->map1to1Block(Ids::JUNGLE_DOOR, Blocks::JUNGLE_DOOR());
@@ -230,6 +233,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::GHAST_TEAR, Items::GHAST_TEAR());
 		$this->map1to1Item(Ids::GLASS_BOTTLE, Items::GLASS_BOTTLE());
 		$this->map1to1Item(Ids::GLISTERING_MELON_SLICE, Items::GLISTERING_MELON());
+		$this->map1to1Item(Ids::GLOW_BERRIES, Items::GLOW_BERRIES());
 		$this->map1to1Item(Ids::GLOW_INK_SAC, Items::GLOW_INK_SAC());
 		$this->map1to1Item(Ids::GLOWSTONE_DUST, Items::GLOWSTONE_DUST());
 		$this->map1to1Item(Ids::GOLD_INGOT, Items::GOLD_INGOT());
@@ -271,6 +275,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::LEATHER_HELMET, Items::LEATHER_CAP());
 		$this->map1to1Item(Ids::LEATHER_LEGGINGS, Items::LEATHER_PANTS());
 		$this->map1to1Item(Ids::MAGMA_CREAM, Items::MAGMA_CREAM());
+		$this->map1to1Item(Ids::MANGROVE_BOAT, Items::MANGROVE_BOAT());
 		$this->map1to1Item(Ids::MANGROVE_SIGN, Items::MANGROVE_SIGN());
 		$this->map1to1Item(Ids::MELON_SEEDS, Items::MELON_SEEDS());
 		$this->map1to1Item(Ids::MELON_SLICE, Items::MELON());
@@ -279,12 +284,15 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::MUSHROOM_STEW, Items::MUSHROOM_STEW());
 		$this->map1to1Item(Ids::MUSIC_DISC_11, Items::RECORD_11());
 		$this->map1to1Item(Ids::MUSIC_DISC_13, Items::RECORD_13());
+		$this->map1to1Item(Ids::MUSIC_DISC_5, Items::RECORD_5());
 		$this->map1to1Item(Ids::MUSIC_DISC_BLOCKS, Items::RECORD_BLOCKS());
 		$this->map1to1Item(Ids::MUSIC_DISC_CAT, Items::RECORD_CAT());
 		$this->map1to1Item(Ids::MUSIC_DISC_CHIRP, Items::RECORD_CHIRP());
 		$this->map1to1Item(Ids::MUSIC_DISC_FAR, Items::RECORD_FAR());
 		$this->map1to1Item(Ids::MUSIC_DISC_MALL, Items::RECORD_MALL());
 		$this->map1to1Item(Ids::MUSIC_DISC_MELLOHI, Items::RECORD_MELLOHI());
+		$this->map1to1Item(Ids::MUSIC_DISC_OTHERSIDE, Items::RECORD_OTHERSIDE());
+		$this->map1to1Item(Ids::MUSIC_DISC_PIGSTEP, Items::RECORD_PIGSTEP());
 		$this->map1to1Item(Ids::MUSIC_DISC_STAL, Items::RECORD_STAL());
 		$this->map1to1Item(Ids::MUSIC_DISC_STRAD, Items::RECORD_STRAD());
 		$this->map1to1Item(Ids::MUSIC_DISC_WAIT, Items::RECORD_WAIT());
@@ -436,15 +444,10 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1BlockWithMeta(
 			Ids::SKULL,
 			Blocks::MOB_HEAD(),
-			function(Skull $block, int $meta) : void{
-				try{
-					$skullType = SkullType::fromMagicNumber($meta);
-				}catch(\InvalidArgumentException $e){
-					throw new ItemTypeDeserializeException($e->getMessage(), 0, $e);
-				}
-				$block->setSkullType($skullType);
+			function(MobHead $block, int $meta) : void{
+				$block->setMobHeadType(MobHeadTypeIdMap::getInstance()->fromId($meta) ?? throw new ItemTypeDeserializeException("Unknown mob head type ID $meta"));
 			},
-			fn(Skull $block) => $block->getSkullType()->getMagicNumber()
+			fn(MobHead $block) => MobHeadTypeIdMap::getInstance()->toId($block->getMobHeadType())
 		);
 	}
 
@@ -461,6 +464,14 @@ final class ItemSerializerDeserializerRegistrar{
 				$item->setColor(DyeColorIdMap::getInstance()->fromInvertedId($meta) ?? throw new ItemTypeDeserializeException("Unknown banner meta $meta"));
 			},
 			fn(Banner $item) => DyeColorIdMap::getInstance()->toInvertedId($item->getColor())
+		);
+		$this->map1to1ItemWithMeta(
+			Ids::MEDICINE,
+			Items::MEDICINE(),
+			function(Medicine $item, int $meta) : void{
+				$item->setType(MedicineTypeIdMap::getInstance()->fromId($meta) ?? throw new ItemTypeDeserializeException("Unknown medicine type ID $meta"));
+			},
+			fn(Medicine $item) => MedicineTypeIdMap::getInstance()->toId($item->getType())
 		);
 		$this->map1to1ItemWithMeta(
 			Ids::POTION,
@@ -486,19 +497,6 @@ final class ItemSerializerDeserializerRegistrar{
 			},
 			fn(SuspiciousStew $item) => SuspiciousStewTypeIdMap::getInstance()->toId($item->getType())
 		);
-	}
-
-	/**
-	 * Registers serializers and deserializers for blocks that don't fit any other pattern.
-	 * Ideally we want to get rid of this completely, if possible.
-	 *
-	 * Most of these are single PocketMine-MP items which map to multiple IDs depending on their properties, which is
-	 * complex to implement in a generic way.
-	 */
-	private function registerMiscBlockMappings() : void{
-		$this->deserializer?->mapBlock(Ids::FRAME, fn() => Blocks::ITEM_FRAME()->setGlowing(false));
-		$this->deserializer?->mapBlock(Ids::GLOW_FRAME, fn() => Blocks::ITEM_FRAME()->setGlowing(true));
-		$this->serializer?->mapBlock(Blocks::ITEM_FRAME(), fn(ItemFrame $block) => new Data($block->isGlowing() ? Ids::GLOW_FRAME : Ids::FRAME));
 	}
 
 	/**

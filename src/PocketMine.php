@@ -26,6 +26,7 @@ namespace pocketmine {
 	use Composer\InstalledVersions;
 	use pocketmine\errorhandler\ErrorToExceptionHandler;
 	use pocketmine\thread\ThreadManager;
+	use pocketmine\thread\ThreadSafeClassLoader;
 	use pocketmine\utils\Filesystem;
 	use pocketmine\utils\MainLogger;
 	use pocketmine\utils\Process;
@@ -39,15 +40,18 @@ namespace pocketmine {
 	use function extension_loaded;
 	use function function_exists;
 	use function getcwd;
+	use function is_dir;
+	use function mkdir;
 	use function phpversion;
 	use function preg_match;
 	use function preg_quote;
 	use function realpath;
 	use function version_compare;
+	use const DIRECTORY_SEPARATOR;
 
 	require_once __DIR__ . '/VersionInfo.php';
 
-	const MIN_PHP_VERSION = "8.0.0";
+	const MIN_PHP_VERSION = "8.1.0";
 
 	/**
 	 * @param string $message
@@ -100,7 +104,7 @@ namespace pocketmine {
 			"openssl" => "OpenSSL",
 			"pcre" => "PCRE",
 			"phar" => "Phar",
-			"pthreads" => "pthreads",
+			"pmmpthread" => "pmmpthread",
 			"reflection" => "Reflection",
 			"sockets" => "Sockets",
 			"spl" => "SPL",
@@ -115,12 +119,9 @@ namespace pocketmine {
 			}
 		}
 
-		if(($pthreads_version = phpversion("pthreads")) !== false){
-			if(substr_count($pthreads_version, ".") < 2){
-				$pthreads_version = "0.$pthreads_version";
-			}
-			if(version_compare($pthreads_version, "4.0.0") < 0 || version_compare($pthreads_version, "5.0.0") > 0){
-				$messages[] = "pthreads ^4.0.0 is required, while you have $pthreads_version.";
+		if(($pmmpthread_version = phpversion("pmmpthread")) !== false){
+			if(version_compare($pmmpthread_version, "6.0.0-beta1") < 0 || version_compare($pmmpthread_version, "7.0.0") >= 0){
+				$messages[] = "pmmpthread ^6.0.0 is required, while you have $pmmpthread_version.";
 			}
 		}
 
@@ -262,9 +263,6 @@ JIT_WARNING
 				exit(1);
 			}
 		}
-		if(extension_loaded('parallel')){
-			\parallel\bootstrap(\pocketmine\COMPOSER_AUTOLOADER_PATH);
-		}
 
 		ErrorToExceptionHandler::set();
 
@@ -273,24 +271,32 @@ JIT_WARNING
 		$pluginPath = getopt_string("plugins") ?? $cwd . DIRECTORY_SEPARATOR . "plugins";
 		Filesystem::addCleanedPath($pluginPath, Filesystem::CLEAN_PATH_PLUGINS_PREFIX);
 
-		if(!@mkdir($dataPath, 0777, true) && (!is_dir($dataPath) || !is_writable($dataPath))){
+		if(!@mkdir($dataPath, 0777, true) && !is_dir($dataPath)){
 			critical_error("Unable to create/access data directory at $dataPath. Check that the target location is accessible by the current user.");
 			exit(1);
 		}
 		//this has to be done after we're sure the data path exists
 		$dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
-		if(!@mkdir($pluginPath, 0777, true) && (!is_dir($pluginPath) || !is_writable($pluginPath))){
-			critical_error("Unable to create plugin directory at $pluginPath. Check that the target location is accessible by the current user.");
-			exit(1);
-		}
-		$pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
 
 		$lockFilePath = Path::join($dataPath, 'server.lock');
-		if(($pid = Filesystem::createLockFile($lockFilePath)) !== null){
+		try{
+			$pid = Filesystem::createLockFile($lockFilePath);
+		}catch(\InvalidArgumentException $e){
+			critical_error($e->getMessage());
+			critical_error("Please ensure that there is enough space on the disk and that the current user has read/write permissions to the selected data directory $dataPath.");
+			exit(1);
+		}
+		if($pid !== null){
 			critical_error("Another " . VersionInfo::NAME . " instance (PID $pid) is already using this folder (" . realpath($dataPath) . ").");
 			critical_error("Please stop the other server first before running a new one.");
 			exit(1);
 		}
+
+		if(!@mkdir($pluginPath, 0777, true) && !is_dir($pluginPath)){
+			critical_error("Unable to create plugin directory at $pluginPath. Check that the target location is accessible by the current user.");
+			exit(1);
+		}
+		$pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
 
 		//Logger has a dependency on timezone
 		Timezone::init();
@@ -322,7 +328,7 @@ JIT_WARNING
 			/*
 			 * We now use the Composer autoloader, but this autoloader is still for loading plugins.
 			 */
-			$autoloader = new \BaseClassLoader();
+			$autoloader = new ThreadSafeClassLoader();
 			$autoloader->register(false);
 
 			new Server($autoloader, $logger, $dataPath, $pluginPath);
@@ -330,7 +336,7 @@ JIT_WARNING
 			$logger->info("Stopping other threads");
 
 			$killer = new ServerKiller(8);
-			$killer->start(PTHREADS_INHERIT_NONE);
+			$killer->start();
 			usleep(10000); //Fixes ServerKiller not being able to start on single-core machines
 
 			if(ThreadManager::getInstance()->stopAll() > 0){

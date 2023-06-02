@@ -23,6 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+/**
+ * This trait offers the same functionality as RegistryTrait, but also clones any returned objects to prevent outside
+ * modification.
+ */
 trait CloningRegistryTrait{
 	use RegistryTrait;
 

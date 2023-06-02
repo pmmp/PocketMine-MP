@@ -24,8 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\math\AxisAlignedBB;
@@ -41,9 +40,7 @@ class GlowLichen extends Transparent{
 	/** @var int[] */
 	protected array $faces = [];
 
-	public function getRequiredStateDataBits() : int{ return 6; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->facingFlags($this->faces);
 	}
 

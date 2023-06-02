@@ -23,16 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 
 class DetectorRail extends StraightOnlyRail{
 	protected bool $activated = false;
 
-	public function getRequiredStateDataBits() : int{ return 4; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
-		parent::describeState($w);
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		parent::describeBlockOnlyState($w);
 		$w->bool($this->activated);
 	}
 

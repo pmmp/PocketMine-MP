@@ -28,14 +28,18 @@ use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\entity\object\FallingBlock;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\sound\AnvilFallSound;
+use pocketmine\world\sound\Sound;
+use function lcg_value;
+use function round;
 
 class Anvil extends Transparent implements Fallable{
 	use FallableTrait;
@@ -47,15 +51,11 @@ class Anvil extends Transparent implements Fallable{
 
 	private int $damage = self::UNDAMAGED;
 
-	public function getRequiredTypeDataBits() : int{ return 2; }
-
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(2, self::UNDAMAGED, self::VERY_DAMAGED, $this->damage);
 	}
 
-	public function getRequiredStateDataBits() : int{ return 2; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 	}
 
@@ -94,5 +94,28 @@ class Anvil extends Transparent implements Fallable{
 			$this->facing = Facing::rotateY($player->getHorizontalFacing(), true);
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+	}
+
+	public function onHitGround(FallingBlock $blockEntity) : bool{
+		if(lcg_value() < 0.05 + (round($blockEntity->getFallDistance()) - 1) * 0.05){
+			if($this->damage !== self::VERY_DAMAGED){
+				$this->damage = $this->damage + 1;
+			}else{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public function getFallDamagePerBlock() : float{
+		return 2.0;
+	}
+
+	public function getMaxFallDamage() : float{
+		return 40.0;
+	}
+
+	public function getLandSound() : ?Sound{
+		return new AnvilFallSound();
 	}
 }

@@ -28,9 +28,8 @@ use function count;
 use function file;
 use function implode;
 use function is_file;
-use function strlen;
-use function strpos;
-use function substr;
+use function str_contains;
+use function str_ends_with;
 use const FILE_IGNORE_NEW_LINES;
 use const FILE_SKIP_EMPTY_LINES;
 
@@ -41,8 +40,7 @@ use const FILE_SKIP_EMPTY_LINES;
 class ScriptPluginLoader implements PluginLoader{
 
 	public function canLoadPlugin(string $path) : bool{
-		$ext = ".php";
-		return is_file($path) && substr($path, -strlen($ext)) === $ext;
+		return is_file($path) && str_ends_with($path, ".php");
 	}
 
 	/**
@@ -66,7 +64,7 @@ class ScriptPluginLoader implements PluginLoader{
 		$docCommentLines = [];
 		foreach($content as $line){
 			if(!$insideHeader){
-				if(strpos($line, "/**") !== false){
+				if(str_contains($line, "/**")){
 					$insideHeader = true;
 				}else{
 					continue;
@@ -75,7 +73,7 @@ class ScriptPluginLoader implements PluginLoader{
 
 			$docCommentLines[] = $line;
 
-			if(strpos($line, "*/") !== false){
+			if(str_contains($line, "*/")){
 				break;
 			}
 		}

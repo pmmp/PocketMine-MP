@@ -26,8 +26,8 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\crafting\FurnaceType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -37,13 +37,22 @@ class Furnace extends Opaque{
 	use FacesOppositePlacingPlayerTrait;
 	use HorizontalFacingTrait;
 
+	protected FurnaceType $furnaceType;
+
 	protected bool $lit = false;
 
-	public function getRequiredStateDataBits() : int{ return 3; }
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, FurnaceType $furnaceType){
+		$this->furnaceType = $furnaceType;
+		parent::__construct($idInfo, $name, $typeInfo);
+	}
 
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->bool($this->lit);
+	}
+
+	public function getFurnaceType() : FurnaceType{
+		return $this->furnaceType;
 	}
 
 	public function getLightLevel() : int{

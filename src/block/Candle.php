@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\CandleTrait;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -37,7 +37,7 @@ use pocketmine\world\BlockTransaction;
 
 class Candle extends Transparent{
 	use CandleTrait {
-		describeState as encodeLitState;
+		describeBlockOnlyState as encodeLitState;
 		getLightLevel as getBaseLightLevel;
 	}
 
@@ -46,11 +46,7 @@ class Candle extends Transparent{
 
 	private int $count = self::MIN_COUNT;
 
-	public function getRequiredStateDataBits() : int{
-		return 3;
-	}
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$this->encodeLitState($w);
 		$w->boundedInt(2, self::MIN_COUNT, self::MAX_COUNT, $this->count);
 	}
@@ -94,8 +90,12 @@ class Candle extends Transparent{
 		];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	protected function getCandleIfCompatibleType(Block $block) : ?Candle{
-		return $block instanceof Candle && $block->isSameType($this) ? $block : null;
+		return $block instanceof Candle && $block->hasSameTypeId($this) ? $block : null;
 	}
 
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{

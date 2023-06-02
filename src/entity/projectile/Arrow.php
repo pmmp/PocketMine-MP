@@ -33,6 +33,8 @@ use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\RayTraceResult;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\EntityEventBroadcaster;
+use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
@@ -52,6 +54,7 @@ class Arrow extends Projectile{
 
 	private const TAG_PICKUP = "pickup"; //TAG_Byte
 	public const TAG_CRIT = "crit"; //TAG_Byte
+	private const TAG_LIFE = "life"; //TAG_Short
 
 	protected float $damage = 2.0;
 	protected int $pickupMode = self::PICKUP_ANY;
@@ -75,14 +78,14 @@ class Arrow extends Projectile{
 
 		$this->pickupMode = $nbt->getByte(self::TAG_PICKUP, self::PICKUP_ANY);
 		$this->critical = $nbt->getByte(self::TAG_CRIT, 0) === 1;
-		$this->collideTicks = $nbt->getShort("life", $this->collideTicks);
+		$this->collideTicks = $nbt->getShort(self::TAG_LIFE, $this->collideTicks);
 	}
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
 		$nbt->setByte(self::TAG_PICKUP, $this->pickupMode);
 		$nbt->setByte(self::TAG_CRIT, $this->critical ? 1 : 0);
-		$nbt->setShort("life", $this->collideTicks);
+		$nbt->setShort(self::TAG_LIFE, $this->collideTicks);
 		return $nbt;
 	}
 
@@ -187,9 +190,10 @@ class Arrow extends Projectile{
 			return;
 		}
 
-		foreach($this->getViewers() as $viewer){
-			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
-		}
+		NetworkBroadcastUtils::broadcastEntityEvent(
+			$this->getViewers(),
+			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onPickUpItem($recipients, $player, $this)
+		);
 
 		$ev->getInventory()?->addItem($ev->getItem());
 		$this->flagForDespawn();

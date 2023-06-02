@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\utils\RecordType;
-use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\entity\Entity;
@@ -164,6 +163,7 @@ use pocketmine\world\World;
  * @method static GlassBottle GLASS_BOTTLE()
  * @method static Item GLISTERING_MELON()
  * @method static Item GLOWSTONE_DUST()
+ * @method static GlowBerries GLOW_BERRIES()
  * @method static Item GLOW_INK_SAC()
  * @method static GoldenApple GOLDEN_APPLE()
  * @method static Axe GOLDEN_AXE()
@@ -204,7 +204,9 @@ use pocketmine\world\World;
  * @method static Armor LEATHER_PANTS()
  * @method static Armor LEATHER_TUNIC()
  * @method static Item MAGMA_CREAM()
+ * @method static Boat MANGROVE_BOAT()
  * @method static ItemBlockWallOrFloor MANGROVE_SIGN()
+ * @method static Medicine MEDICINE()
  * @method static Melon MELON()
  * @method static MelonSeeds MELON_SEEDS()
  * @method static MilkBucket MILK_BUCKET()
@@ -254,12 +256,15 @@ use pocketmine\world\World;
  * @method static RawSalmon RAW_SALMON()
  * @method static Record RECORD_11()
  * @method static Record RECORD_13()
+ * @method static Record RECORD_5()
  * @method static Record RECORD_BLOCKS()
  * @method static Record RECORD_CAT()
  * @method static Record RECORD_CHIRP()
  * @method static Record RECORD_FAR()
  * @method static Record RECORD_MALL()
  * @method static Record RECORD_MELLOHI()
+ * @method static Record RECORD_OTHERSIDE()
+ * @method static Record RECORD_PIGSTEP()
  * @method static Record RECORD_STAL()
  * @method static Record RECORD_STRAD()
  * @method static Record RECORD_WAIT()
@@ -434,6 +439,7 @@ final class VanillaItems{
 		self::register("ghast_tear", new Item(new IID(Ids::GHAST_TEAR), "Ghast Tear"));
 		self::register("glass_bottle", new GlassBottle(new IID(Ids::GLASS_BOTTLE), "Glass Bottle"));
 		self::register("glistering_melon", new Item(new IID(Ids::GLISTERING_MELON), "Glistering Melon"));
+		self::register("glow_berries", new GlowBerries(new IID(Ids::GLOW_BERRIES), "Glow Berries"));
 		self::register("glow_ink_sac", new Item(new IID(Ids::GLOW_INK_SAC), "Glow Ink Sac"));
 		self::register("glowstone_dust", new Item(new IID(Ids::GLOWSTONE_DUST), "Glowstone Dust"));
 		self::register("gold_ingot", new Item(new IID(Ids::GOLD_INGOT), "Gold Ingot"));
@@ -453,6 +459,7 @@ final class VanillaItems{
 		self::register("leather", new Item(new IID(Ids::LEATHER), "Leather"));
 		self::register("magma_cream", new Item(new IID(Ids::MAGMA_CREAM), "Magma Cream"));
 		self::register("mangrove_sign", new ItemBlockWallOrFloor(new IID(Ids::MANGROVE_SIGN), Blocks::MANGROVE_SIGN(), Blocks::MANGROVE_WALL_SIGN()));
+		self::register("medicine", new Medicine(new IID(Ids::MEDICINE), "Medicine"));
 		self::register("melon", new Melon(new IID(Ids::MELON), "Melon"));
 		self::register("melon_seeds", new MelonSeeds(new IID(Ids::MELON_SEEDS), "Melon Seeds"));
 		self::register("milk_bucket", new MilkBucket(new IID(Ids::MILK_BUCKET), "Milk Bucket"));
@@ -496,12 +503,15 @@ final class VanillaItems{
 		self::register("raw_salmon", new RawSalmon(new IID(Ids::RAW_SALMON), "Raw Salmon"));
 		self::register("record_11", new Record(new IID(Ids::RECORD_11), RecordType::DISK_11(), "Record 11"));
 		self::register("record_13", new Record(new IID(Ids::RECORD_13), RecordType::DISK_13(), "Record 13"));
+		self::register("record_5", new Record(new IID(Ids::RECORD_5), RecordType::DISK_5(), "Record 5"));
 		self::register("record_blocks", new Record(new IID(Ids::RECORD_BLOCKS), RecordType::DISK_BLOCKS(), "Record Blocks"));
 		self::register("record_cat", new Record(new IID(Ids::RECORD_CAT), RecordType::DISK_CAT(), "Record Cat"));
 		self::register("record_chirp", new Record(new IID(Ids::RECORD_CHIRP), RecordType::DISK_CHIRP(), "Record Chirp"));
 		self::register("record_far", new Record(new IID(Ids::RECORD_FAR), RecordType::DISK_FAR(), "Record Far"));
 		self::register("record_mall", new Record(new IID(Ids::RECORD_MALL), RecordType::DISK_MALL(), "Record Mall"));
 		self::register("record_mellohi", new Record(new IID(Ids::RECORD_MELLOHI), RecordType::DISK_MELLOHI(), "Record Mellohi"));
+		self::register("record_otherside", new Record(new IID(Ids::RECORD_OTHERSIDE), RecordType::DISK_OTHERSIDE(), "Record Otherside"));
+		self::register("record_pigstep", new Record(new IID(Ids::RECORD_PIGSTEP), RecordType::DISK_PIGSTEP(), "Record Pigstep"));
 		self::register("record_stal", new Record(new IID(Ids::RECORD_STAL), RecordType::DISK_STAL(), "Record Stal"));
 		self::register("record_strad", new Record(new IID(Ids::RECORD_STRAD), RecordType::DISK_STRAD(), "Record Strad"));
 		self::register("record_wait", new Record(new IID(Ids::RECORD_WAIT), RecordType::DISK_WAIT(), "Record Wait"));
@@ -531,15 +541,16 @@ final class VanillaItems{
 		self::register("writable_book", new WritableBook(new IID(Ids::WRITABLE_BOOK), "Book & Quill"));
 		self::register("written_book", new WrittenBook(new IID(Ids::WRITTEN_BOOK), "Written Book"));
 
-		foreach(TreeType::getAll() as $type){
-			//TODO: tree type should be dynamic in the future, but we're staying static for now for the sake of consistency
+		foreach(BoatType::getAll() as $type){
+			//boat type is static, because different types of wood may have different properties
 			self::register($type->name() . "_boat", new Boat(new IID(match($type){
-				TreeType::OAK() => Ids::OAK_BOAT,
-				TreeType::SPRUCE() => Ids::SPRUCE_BOAT,
-				TreeType::BIRCH() => Ids::BIRCH_BOAT,
-				TreeType::JUNGLE() => Ids::JUNGLE_BOAT,
-				TreeType::ACACIA() => Ids::ACACIA_BOAT,
-				TreeType::DARK_OAK() => Ids::DARK_OAK_BOAT,
+				BoatType::OAK() => Ids::OAK_BOAT,
+				BoatType::SPRUCE() => Ids::SPRUCE_BOAT,
+				BoatType::BIRCH() => Ids::BIRCH_BOAT,
+				BoatType::JUNGLE() => Ids::JUNGLE_BOAT,
+				BoatType::ACACIA() => Ids::ACACIA_BOAT,
+				BoatType::DARK_OAK() => Ids::DARK_OAK_BOAT,
+				BoatType::MANGROVE() => Ids::MANGROVE_BOAT,
 				default => throw new AssumptionFailedError("Unhandled tree type " . $type->name())
 			}), $type->getDisplayName() . " Boat", $type));
 		}
