@@ -49,8 +49,4 @@ final class SporeBlossom extends Flowable{
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [];
-	}
 }
