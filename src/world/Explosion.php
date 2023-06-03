@@ -209,9 +209,7 @@ class Explosion{
 						$this->world->dropItem($pos->add(0.5, 0.5, 0.5), $drop);
 					}
 				}
-				if(($t = $this->world->getTileAt($pos->x, $pos->y, $pos->z)) !== null){
-					$t->onBlockDestroyed(); //needed to create drops for inventories
-				}
+				$block->onDestroy();
 				$this->world->setBlockAt($pos->x, $pos->y, $pos->z, $airBlock);
 			}
 		}
