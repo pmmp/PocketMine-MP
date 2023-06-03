@@ -25,15 +25,18 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\event\block\BlockSpreadEvent;
+use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
-use pocketmine\item\ItemTypeIds;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\World;
 use function array_key_first;
 use function count;
+use function shuffle;
 
 class GlowLichen extends Transparent{
 
@@ -134,9 +137,109 @@ class GlowLichen extends Transparent{
 		}
 	}
 
+	private function getSpreadBlock(Block $replace, int $spreadFace) : ?Block{
+		if($replace instanceof self && $replace->hasSameTypeId($this)){
+			if($replace->hasFace($spreadFace)){
+				return null;
+			}
+			$result = $replace;
+		}elseif($replace->getTypeId() === BlockTypeIds::AIR){
+			$result = VanillaBlocks::GLOW_LICHEN();
+		}else{
+			//TODO: if this is a water block, generate a waterlogged block
+			return null;
+		}
+		if($result->hasFace($spreadFace)){
+			return null;
+		}
+		return $result->setFace($spreadFace, true);
+	}
+
+	private function spread(World $world, Vector3 $replacePos, int $spreadFace) : bool{
+		$supportBlock = $world->getBlock($replacePos->getSide($spreadFace));
+		$supportFace = Facing::opposite($spreadFace);
+
+		if(!$supportBlock->getSupportType($supportFace)->equals(SupportType::FULL())){
+			return false;
+		}
+
+		$replacedBlock = $supportBlock->getSide($supportFace);
+		$replacementBlock = $this->getSpreadBlock($replacedBlock, Facing::opposite($supportFace));
+		if($replacementBlock === null){
+			return false;
+		}
+
+		$ev = new BlockSpreadEvent($replacedBlock, $this, $replacementBlock);
+		$ev->call();
+		if(!$ev->isCancelled()){
+			$world->setBlock($replacedBlock->getPosition(), $ev->getNewState());
+			return true;
+		}
+
+		return false;
+	}
+
+	private function spreadAroundSupport(int $sourceFace) : bool{
+		$world = $this->position->getWorld();
+
+		$supportBlock = $this->getSide($sourceFace);
+		foreach($supportBlock->position->sidesAroundAxis(Facing::axis($sourceFace)) as $supportFace => $replacePos){
+			if($this->spread($world, $replacePos, Facing::opposite($supportFace))){
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private function spreadAdjacentToSupport(int $sourceFace) : bool{
+		$world = $this->position->getWorld();
+
+		foreach($this->position->sidesAroundAxis(Facing::axis($sourceFace)) as $replacePos){
+			if($this->spread($world, $replacePos, $sourceFace)){
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private function spreadWithinSelf(int $sourceFace) : bool{
+		foreach(Facing::ALL as $spreadFace){
+			if(Facing::axis($spreadFace) === Facing::axis($sourceFace)){
+				continue;
+			}
+
+			if(!$this->hasFace($spreadFace) && $this->spread($this->position->getWorld(), $this->position, $spreadFace)){
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($item->getTypeId() === ItemTypeIds::BONE_MEAL){
-			//TODO: spreading
+		if($item instanceof Fertilizer && count($this->faces) > 0){
+			$shuffledFaces = $this->faces;
+			shuffle($shuffledFaces);
+
+			$spreadMethods = [
+				$this->spreadAroundSupport(...),
+				$this->spreadAdjacentToSupport(...),
+				$this->spreadWithinSelf(...),
+			];
+			shuffle($spreadMethods);
+
+			foreach($shuffledFaces as $sourceFace){
+				foreach($spreadMethods as $spreadMethod){
+					if($spreadMethod($sourceFace)){
+						$item->pop();
+						break 2;
+					}
+				}
+			}
+
+			return true;
 		}
 		return false;
 	}
