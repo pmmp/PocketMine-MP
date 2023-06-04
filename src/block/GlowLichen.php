@@ -47,25 +47,6 @@ class GlowLichen extends Transparent{
 		$w->facingFlags($this->faces);
 	}
 
-	public function getLightLevel() : int{
-		return 7;
-	}
-
-	public function isSolid() : bool{
-		return false;
-	}
-
-	/**
-	 * @return AxisAlignedBB[]
-	 */
-	protected function recalculateCollisionBoxes() : array{
-		return [];
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
-	}
-
 	/** @return int[] */
 	public function getFaces() : array{ return $this->faces; }
 
@@ -96,6 +77,25 @@ class GlowLichen extends Transparent{
 			unset($this->faces[$face]);
 		}
 		return $this;
+	}
+
+	public function getLightLevel() : int{
+		return 7;
+	}
+
+	public function isSolid() : bool{
+		return false;
+	}
+
+	/**
+	 * @return AxisAlignedBB[]
+	 */
+	protected function recalculateCollisionBoxes() : array{
+		return [];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 
 	public function canBeReplaced() : bool{
