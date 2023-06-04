@@ -311,7 +311,7 @@ abstract class Timings{
 		$taskClass = $task::class;
 		if(!isset(self::$asyncTasksProgressUpdate[$taskClass])){
 			self::$asyncTasksProgressUpdate[$taskClass] = new TimingsHandler(
-				"Progress Updates - " . self::shortenCoreClassName($taskClass, "pocketmine\\"),
+				"AsyncTask - " . self::shortenCoreClassName($taskClass, "pocketmine\\") . "::onProgressUpdate()",
 				self::$schedulerAsync ?? null,
 				$group
 			);
@@ -324,7 +324,7 @@ abstract class Timings{
 		$taskClass = $task::class;
 		if(!isset(self::$asyncTasksCompletion[$taskClass])){
 			self::$asyncTasksCompletion[$taskClass] = new TimingsHandler(
-				"Completion - " . self::shortenCoreClassName($taskClass, "pocketmine\\"),
+				"AsyncTask - " . self::shortenCoreClassName($taskClass, "pocketmine\\") . "::onCompletion()",
 				self::$schedulerAsync ?? null,
 				$group
 			);
@@ -337,7 +337,7 @@ abstract class Timings{
 		$taskClass = $task::class;
 		if(!isset(self::$asyncTasksError[$taskClass])){
 			self::$asyncTasksError[$taskClass] = new TimingsHandler(
-				"Error - " . self::shortenCoreClassName($taskClass, "pocketmine\\"),
+				"AsyncTask - " . self::shortenCoreClassName($taskClass, "pocketmine\\") . "::onError()",
 				self::$schedulerAsync ?? null,
 				$group
 			);
