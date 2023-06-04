@@ -36,7 +36,7 @@ class RedMushroomBlock extends Opaque{
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function describeType(RuntimeDataDescriber $w) : void{
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
 		//these blocks always drop as all-cap, but may exist in other forms in the inventory (particularly creative),
 		//so this information needs to be kept in the type info
 		$w->mushroomBlockType($this->mushroomBlockType);

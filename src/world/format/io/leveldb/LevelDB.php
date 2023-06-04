@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\world\format\io\leveldb;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockTypeIds;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\nbt\LittleEndianNbtSerializer;
@@ -34,6 +33,7 @@ use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
+use pocketmine\VersionInfo;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\BaseWorldProvider;
 use pocketmine\world\format\io\ChunkData;
@@ -43,6 +43,7 @@ use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
+use pocketmine\world\format\io\LoadedChunkData;
 use pocketmine\world\format\io\WorldData;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\format\PalettedBlockArray;
@@ -288,12 +289,15 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		return $result;
 	}
 
-	private static function serialize3dBiomes(BinaryStream $stream, Chunk $chunk) : void{
+	/**
+	 * @param SubChunk[] $subChunks
+	 */
+	private static function serialize3dBiomes(BinaryStream $stream, array $subChunks) : void{
 		//TODO: the server-side min/max may not coincide with the world storage min/max - we may need additional logic to handle this
 		for($y = Chunk::MIN_SUBCHUNK_INDEX; $y <= Chunk::MAX_SUBCHUNK_INDEX; $y++){
 			//TODO: is it worth trying to use the previous palette if it's the same as the current one? vanilla supports
 			//this, but it's not clear if it's worth the effort to implement.
-			self::serializeBiomePalette($stream, $chunk->getSubChunk($y)->getBiomeArray());
+			self::serializeBiomePalette($stream, $subChunks[$y]->getBiomeArray());
 		}
 	}
 
@@ -350,7 +354,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			$blockStateId = $this->blockStateDeserializer->deserialize($blockStateData);
 
 			if(!isset($extraDataLayers[$ySub])){
-				$extraDataLayers[$ySub] = new PalettedBlockArray(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS);
+				$extraDataLayers[$ySub] = new PalettedBlockArray(Block::EMPTY_STATE_ID);
 			}
 			$extraDataLayers[$ySub]->set($x, $y, $z, $blockStateId);
 		}
@@ -412,13 +416,13 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			if(isset($convertedLegacyExtraData[$yy])){
 				$storages[] = $convertedLegacyExtraData[$yy];
 			}
-			$subChunks[$yy] = new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, $storages, clone $biomes3d);
+			$subChunks[$yy] = new SubChunk(Block::EMPTY_STATE_ID, $storages, clone $biomes3d);
 		}
 
 		//make sure extrapolated biomes get filled in correctly
 		for($yy = Chunk::MIN_SUBCHUNK_INDEX; $yy <= Chunk::MAX_SUBCHUNK_INDEX; ++$yy){
 			if(!isset($subChunks[$yy])){
-				$subChunks[$yy] = new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, [], clone $biomes3d);
+				$subChunks[$yy] = new SubChunk(Block::EMPTY_STATE_ID, [], clone $biomes3d);
 			}
 		}
 
@@ -452,7 +456,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			$storages[] = $convertedLegacyExtraData;
 		}
 
-		return new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, $storages, $biomePalette);
+		return new SubChunk(Block::EMPTY_STATE_ID, $storages, $biomePalette);
 	}
 
 	/**
@@ -476,7 +480,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				if($convertedLegacyExtraData !== null){
 					$storages[] = $convertedLegacyExtraData;
 				}
-				return new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, $storages, $biomePalette);
+				return new SubChunk(Block::EMPTY_STATE_ID, $storages, $biomePalette);
 			case SubChunkVersion::PALETTED_MULTI:
 			case SubChunkVersion::PALETTED_MULTI_WITH_OFFSET:
 				//legacy extradata layers intentionally ignored because they aren't supposed to exist in v8
@@ -491,7 +495,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				for($k = 0; $k < $storageCount; ++$k){
 					$storages[] = $this->deserializeBlockPalette($binaryStream, $logger);
 				}
-				return new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, $storages, $biomePalette);
+				return new SubChunk(Block::EMPTY_STATE_ID, $storages, $biomePalette);
 			default:
 				//this should never happen - an unsupported chunk appearing in a supported world is a sign of corruption
 				throw new CorruptedChunkException("don't know how to decode LevelDB subchunk format version $subChunkVersion");
@@ -521,7 +525,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$subChunkKeyOffset = self::hasOffsetCavesAndCliffsSubChunks($chunkVersion) ? self::CAVES_CLIFFS_EXPERIMENTAL_SUBCHUNK_KEY_OFFSET : 0;
 		for($y = Chunk::MIN_SUBCHUNK_INDEX; $y <= Chunk::MAX_SUBCHUNK_INDEX; ++$y){
 			if(($data = $this->db->get($index . ChunkDataKey::SUBCHUNK . chr($y + $subChunkKeyOffset))) === false){
-				$subChunks[$y] = new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, [], $biomeArrays[$y]);
+				$subChunks[$y] = new SubChunk(Block::EMPTY_STATE_ID, [], $biomeArrays[$y]);
 				continue;
 			}
 
@@ -592,7 +596,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	public function loadChunk(int $chunkX, int $chunkZ) : ?ChunkData{
+	public function loadChunk(int $chunkX, int $chunkZ) : ?LoadedChunkData{
 		$index = LevelDB::chunkIndex($chunkX, $chunkZ);
 
 		$chunkVersion = $this->readVersion($chunkX, $chunkZ);
@@ -600,6 +604,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			//TODO: this might be a slightly-corrupted chunk with a missing version field
 			return null;
 		}
+
+		//TODO: read PM_DATA_VERSION - we'll need it to fix up old chunks
 
 		$logger = new \PrefixedLogger($this->logger, "Loading chunk x=$chunkX z=$chunkZ v$chunkVersion");
 
@@ -691,30 +697,24 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		//TODO: tile ticks, biome states (?)
 
-		$chunk = new Chunk(
-			$subChunks,
-			$terrainPopulated
+		return new LoadedChunkData(
+			data: new ChunkData($subChunks, $terrainPopulated, $entities, $tiles),
+			upgraded: $hasBeenUpgraded,
+			fixerFlags: LoadedChunkData::FIXER_FLAG_ALL //TODO: fill this by version rather than just setting all flags
 		);
-
-		if($hasBeenUpgraded){
-			$logger->debug("Flagging chunk as dirty due to upgraded data");
-			$chunk->setTerrainDirty(); //trigger rewriting chunk to disk if it was converted from an older format
-		}
-
-		return new ChunkData($chunk, $entities, $tiles);
 	}
 
-	public function saveChunk(int $chunkX, int $chunkZ, ChunkData $chunkData) : void{
+	public function saveChunk(int $chunkX, int $chunkZ, ChunkData $chunkData, int $dirtyFlags) : void{
 		$index = LevelDB::chunkIndex($chunkX, $chunkZ);
 
 		$write = new \LevelDBWriteBatch();
 
 		$write->put($index . ChunkDataKey::NEW_VERSION, chr(self::CURRENT_LEVEL_CHUNK_VERSION));
+		$write->put($index . ChunkDataKey::PM_DATA_VERSION, Binary::writeLLong(VersionInfo::WORLD_DATA_VERSION));
 
-		$chunk = $chunkData->getChunk();
+		$subChunks = $chunkData->getSubChunks();
 
-		if($chunk->getTerrainDirtyFlag(Chunk::DIRTY_FLAG_BLOCKS)){
-			$subChunks = $chunk->getSubChunks();
+		if(($dirtyFlags & Chunk::DIRTY_FLAG_BLOCKS) !== 0){
 
 			foreach($subChunks as $y => $subChunk){
 				$key = $index . ChunkDataKey::SUBCHUNK . chr($y);
@@ -735,16 +735,16 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			}
 		}
 
-		if($chunk->getTerrainDirtyFlag(Chunk::DIRTY_FLAG_BIOMES)){
+		if(($dirtyFlags & Chunk::DIRTY_FLAG_BIOMES) !== 0){
 			$write->delete($index . ChunkDataKey::HEIGHTMAP_AND_2D_BIOMES);
 			$stream = new BinaryStream();
 			$stream->put(str_repeat("\x00", 512)); //fake heightmap
-			self::serialize3dBiomes($stream, $chunk);
+			self::serialize3dBiomes($stream, $subChunks);
 			$write->put($index . ChunkDataKey::HEIGHTMAP_AND_3D_BIOMES, $stream->getBuffer());
 		}
 
 		//TODO: use this properly
-		$write->put($index . ChunkDataKey::FINALIZATION, chr($chunk->isPopulated() ? self::FINALISATION_DONE : self::FINALISATION_NEEDS_POPULATION));
+		$write->put($index . ChunkDataKey::FINALIZATION, chr($chunkData->isPopulated() ? self::FINALISATION_DONE : self::FINALISATION_NEEDS_POPULATION));
 
 		$this->writeTags($chunkData->getTileNBT(), $index . ChunkDataKey::BLOCK_ENTITIES, $write);
 		$this->writeTags($chunkData->getEntityNBT(), $index . ChunkDataKey::ENTITIES, $write);

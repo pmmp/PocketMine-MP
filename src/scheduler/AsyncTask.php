@@ -23,7 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
+use pmmp\thread\Runnable;
+use pmmp\thread\Thread as NativeThread;
+use pmmp\thread\ThreadSafe;
+use pmmp\thread\ThreadSafeArray;
 use pocketmine\thread\NonThreadSafeValue;
+use function assert;
 use function igbinary_serialize;
 use function igbinary_unserialize;
 use function is_null;
@@ -54,7 +59,7 @@ use function spl_object_id;
  * If you want to store non-thread-safe objects to access when the task completes, store them using
  * {@link AsyncTask::storeLocal}.
  */
-abstract class AsyncTask extends \ThreadedRunnable{
+abstract class AsyncTask extends Runnable{
 	/**
 	 * @var \ArrayObject|mixed[]|null object hash => mixed data
 	 * @phpstan-var \ArrayObject<int, array<string, mixed>>|null
@@ -63,14 +68,10 @@ abstract class AsyncTask extends \ThreadedRunnable{
 	 */
 	private static ?\ArrayObject $threadLocalStorage = null;
 
-	/** @var AsyncWorker|null $worker */
-	public $worker = null;
+	/** @phpstan-var ThreadSafeArray<int, string> */
+	public ThreadSafeArray $progressUpdates;
 
-	/** @phpstan-var \ThreadedArray<int, string> */
-	public \ThreadedArray $progressUpdates;
-
-	/** @phpstan-var NonThreadSafeValue<mixed>|string|int|bool|float|null */
-	private NonThreadSafeValue|string|int|bool|null|float $result = null;
+	private ThreadSafe|string|int|bool|null|float $result = null;
 	private bool $cancelRun = false;
 	private bool $submitted = false;
 
@@ -85,12 +86,15 @@ abstract class AsyncTask extends \ThreadedRunnable{
 				$this->onRun();
 			}catch(\Throwable $e){
 				$this->crashed = true;
-				$this->worker->handleException($e);
+
+				\GlobalLogger::get()->logException($e);
 			}
 		}
 
 		$this->finished = true;
-		$this->worker->getNotifier()->wakeupSleeper();
+		$worker = NativeThread::getCurrentThread();
+		assert($worker instanceof AsyncWorker);
+		$worker->getNotifier()->wakeupSleeper();
 	}
 
 	public function isCrashed() : bool{
@@ -120,7 +124,7 @@ abstract class AsyncTask extends \ThreadedRunnable{
 	}
 
 	public function setResult(mixed $result) : void{
-		$this->result = is_scalar($result) || is_null($result) ? $result : new NonThreadSafeValue($result);
+		$this->result = is_scalar($result) || is_null($result) || $result instanceof ThreadSafe ? $result : new NonThreadSafeValue($result);
 	}
 
 	public function cancelRun() : void{

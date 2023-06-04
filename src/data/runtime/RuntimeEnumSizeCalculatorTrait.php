@@ -63,16 +63,16 @@ trait RuntimeEnumSizeCalculatorTrait{
 		$this->addBits(2);
 	}
 
+	public function mobHeadType(\pocketmine\block\utils\MobHeadType &$value) : void{
+		$this->addBits(3);
+	}
+
 	public function mushroomBlockType(\pocketmine\block\utils\MushroomBlockType &$value) : void{
 		$this->addBits(4);
 	}
 
 	public function potionType(\pocketmine\item\PotionType &$value) : void{
 		$this->addBits(6);
-	}
-
-	public function skullType(\pocketmine\block\utils\SkullType &$value) : void{
-		$this->addBits(3);
 	}
 
 	public function slabType(\pocketmine\block\utils\SlabType &$value) : void{

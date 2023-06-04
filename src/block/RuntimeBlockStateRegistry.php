@@ -81,22 +81,16 @@ class RuntimeBlockStateRegistry{
 	}
 
 	/**
-	 * Maps a block type to its corresponding type ID. This is necessary for the block to be recognized when loading
-	 * from disk, and also when being read at runtime.
+	 * Maps a block type's state permutations to its corresponding state IDs. This is necessary for the block to be
+	 * recognized when fetching it by its state ID from chunks at runtime.
 	 *
-	 * NOTE: If you are registering a new block type, you will need to add it to the creative inventory yourself - it
-	 * will not automatically appear there.
-	 *
-	 * @param bool $override Whether to override existing registrations
-	 *
-	 * @throws \InvalidArgumentException if something attempted to override an already-registered block without specifying the
-	 * $override parameter.
+	 * @throws \InvalidArgumentException if the desired block type ID is already registered
 	 */
-	public function register(Block $block, bool $override = false) : void{
+	public function register(Block $block) : void{
 		$typeId = $block->getTypeId();
 
-		if(!$override && isset($this->typeIndex[$typeId])){
-			throw new \InvalidArgumentException("Block ID $typeId is already used by another block, and override was not requested");
+		if(isset($this->typeIndex[$typeId])){
+			throw new \InvalidArgumentException("Block ID $typeId is already used by another block");
 		}
 
 		$this->typeIndex[$typeId] = clone $block;
@@ -129,7 +123,7 @@ class RuntimeBlockStateRegistry{
 			$block = clone $this->fullList[$stateId];
 		}else{
 			$typeId = $stateId >> Block::INTERNAL_STATE_DATA_BITS;
-			$stateData = $stateId & Block::INTERNAL_STATE_DATA_MASK;
+			$stateData = ($stateId ^ $typeId) & Block::INTERNAL_STATE_DATA_MASK;
 			$block = new UnknownBlock(new BID($typeId), new BlockTypeInfo(BreakInfo::instant()), $stateData);
 		}
 

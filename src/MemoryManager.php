@@ -314,9 +314,6 @@ class MemoryManager{
 					continue;
 				}
 
-				if(!$property->isPublic()){
-					$property->setAccessible(true);
-				}
 				if(!$property->isInitialized()){
 					continue;
 				}
@@ -439,9 +436,6 @@ class MemoryManager{
 								}else{
 									continue;
 								}
-							}
-							if(!$property->isPublic()){
-								$property->setAccessible(true);
 							}
 							if(!$property->isInitialized($object)){
 								continue;

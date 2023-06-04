@@ -59,10 +59,6 @@ abstract class Timings{
 	public static TimingsHandler $connection;
 	public static TimingsHandler $scheduler;
 	public static TimingsHandler $serverCommand;
-	public static TimingsHandler $worldLoad;
-	public static TimingsHandler $worldSave;
-	public static TimingsHandler $population;
-	public static TimingsHandler $generationCallback;
 	public static TimingsHandler $permissibleCalculation;
 	public static TimingsHandler $permissibleCalculationDiff;
 	public static TimingsHandler $permissibleCalculationCallback;
@@ -71,8 +67,6 @@ abstract class Timings{
 	public static TimingsHandler $projectileMove;
 	public static TimingsHandler $projectileMoveRayTrace;
 	public static TimingsHandler $playerCheckNearEntities;
-	public static TimingsHandler $tickEntity;
-	public static TimingsHandler $tickTileEntity;
 	public static TimingsHandler $entityBaseTick;
 	public static TimingsHandler $livingEntityBaseTick;
 	public static TimingsHandler $itemEntityBaseTick;
@@ -155,10 +149,6 @@ abstract class Timings{
 		self::$playerChunkSend = new TimingsHandler("Player Network Send - Chunks", self::$playerNetworkSend, group: self::GROUP_BREAKDOWN);
 		self::$scheduler = new TimingsHandler("Scheduler");
 		self::$serverCommand = new TimingsHandler("Server Command");
-		self::$worldLoad = new TimingsHandler("World Load");
-		self::$worldSave = new TimingsHandler("World Save");
-		self::$population = new TimingsHandler("World Population");
-		self::$generationCallback = new TimingsHandler("World Generation Callback");
 		self::$permissibleCalculation = new TimingsHandler("Permissible Calculation");
 		self::$permissibleCalculationDiff = new TimingsHandler("Permissible Calculation - Diff", self::$permissibleCalculation, group: self::GROUP_BREAKDOWN);
 		self::$permissibleCalculationCallback = new TimingsHandler("Permissible Calculation - Callbacks", self::$permissibleCalculation, group: self::GROUP_BREAKDOWN);
@@ -173,9 +163,6 @@ abstract class Timings{
 		self::$projectileMoveRayTrace = new TimingsHandler("Projectile Movement - Ray Tracing", self::$projectileMove, group: self::GROUP_BREAKDOWN);
 
 		self::$playerCheckNearEntities = new TimingsHandler("checkNearEntities", group: self::GROUP_BREAKDOWN);
-		self::$tickEntity = new TimingsHandler("Entity Tick", group: self::GROUP_BREAKDOWN);
-		self::$tickTileEntity = new TimingsHandler("Block Entity Tick", group: self::GROUP_BREAKDOWN);
-
 		self::$entityBaseTick = new TimingsHandler("Entity Base Tick", group: self::GROUP_BREAKDOWN);
 		self::$livingEntityBaseTick = new TimingsHandler("Entity Base Tick - Living", group: self::GROUP_BREAKDOWN);
 		self::$itemEntityBaseTick = new TimingsHandler("Entity Base Tick - ItemEntity", group: self::GROUP_BREAKDOWN);
@@ -226,7 +213,7 @@ abstract class Timings{
 			}else{
 				$displayName = self::shortenCoreClassName($entity::class, "pocketmine\\entity\\");
 			}
-			self::$entityTypeTimingMap[$entity::class] = new TimingsHandler("Entity Tick - " . $displayName, self::$tickEntity, group: self::GROUP_BREAKDOWN);
+			self::$entityTypeTimingMap[$entity::class] = new TimingsHandler("Entity Tick - " . $displayName, group: self::GROUP_BREAKDOWN);
 		}
 
 		return self::$entityTypeTimingMap[$entity::class];
@@ -237,7 +224,6 @@ abstract class Timings{
 		if(!isset(self::$tileEntityTypeTimingMap[$tile::class])){
 			self::$tileEntityTypeTimingMap[$tile::class] = new TimingsHandler(
 				"Block Entity Tick - " . self::shortenCoreClassName($tile::class, "pocketmine\\block\\tile\\"),
-				self::$tickTileEntity,
 				group: self::GROUP_BREAKDOWN
 			);
 		}

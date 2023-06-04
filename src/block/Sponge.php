@@ -28,7 +28,7 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 class Sponge extends Opaque{
 	protected bool $wet = false;
 
-	public function describeType(RuntimeDataDescriber $w) : void{
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->wet);
 	}
 

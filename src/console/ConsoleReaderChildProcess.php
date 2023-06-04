@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\console;
 
+use pmmp\thread\Thread as NativeThread;
+use pmmp\thread\ThreadSafeArray;
 use pocketmine\utils\Process;
 use function cli_set_process_title;
 use function count;
@@ -30,7 +32,6 @@ use function dirname;
 use function feof;
 use function fwrite;
 use function stream_socket_client;
-use const PTHREADS_INHERIT_NONE;
 
 require dirname(__DIR__, 2) . '/vendor/autoload.php';
 
@@ -46,14 +47,14 @@ if($socket === false){
 	throw new \RuntimeException("Failed to connect to server process ($errCode): $errMessage");
 }
 
-/** @phpstan-var \ThreadedArray<int, string> $channel */
-$channel = new \ThreadedArray();
-$thread = new class($channel) extends \Thread{
+/** @phpstan-var ThreadSafeArray<int, string> $channel */
+$channel = new ThreadSafeArray();
+$thread = new class($channel) extends NativeThread{
 	/**
-	 * @phpstan-param \ThreadedArray<int, string> $channel
+	 * @phpstan-param ThreadSafeArray<int, string> $channel
 	 */
 	public function __construct(
-		private \ThreadedArray $channel,
+		private ThreadSafeArray $channel,
 	){}
 
 	public function run() : void{
@@ -73,7 +74,7 @@ $thread = new class($channel) extends \Thread{
 	}
 };
 
-$thread->start(PTHREADS_INHERIT_NONE);
+$thread->start(NativeThread::INHERIT_NONE);
 while(!feof($socket)){
 	$line = $channel->synchronized(function() use ($channel) : ?string{
 		if(count($channel) === 0){

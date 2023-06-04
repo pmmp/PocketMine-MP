@@ -63,7 +63,7 @@ class Banner extends ItemBlockWallOrFloor{
 		return $this;
 	}
 
-	protected function describeType(RuntimeDataDescriber $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->dyeColor($this->color);
 	}
 

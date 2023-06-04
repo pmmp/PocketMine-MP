@@ -44,7 +44,7 @@ class CaveVines extends Flowable{
 	protected bool $berries = false;
 	protected bool $head = false;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(5, 0, self::MAX_AGE, $this->age);
 		$w->bool($this->berries);
 		$w->bool($this->head);

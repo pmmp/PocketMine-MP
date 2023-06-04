@@ -79,6 +79,7 @@ use pocketmine\block\Froglight;
 use pocketmine\block\FrostedIce;
 use pocketmine\block\Furnace;
 use pocketmine\block\GlazedTerracotta;
+use pocketmine\block\GlowLichen;
 use pocketmine\block\HayBale;
 use pocketmine\block\Hopper;
 use pocketmine\block\ItemFrame;
@@ -93,6 +94,7 @@ use pocketmine\block\LightningRod;
 use pocketmine\block\LitPumpkin;
 use pocketmine\block\Loom;
 use pocketmine\block\MelonStem;
+use pocketmine\block\MobHead;
 use pocketmine\block\NetherPortal;
 use pocketmine\block\NetherVines;
 use pocketmine\block\NetherWartPlant;
@@ -112,7 +114,6 @@ use pocketmine\block\Sapling;
 use pocketmine\block\SeaPickle;
 use pocketmine\block\SimplePillar;
 use pocketmine\block\SimplePressurePlate;
-use pocketmine\block\Skull;
 use pocketmine\block\Slab;
 use pocketmine\block\SnowLayer;
 use pocketmine\block\Sponge;
@@ -169,7 +170,6 @@ use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
-use function class_parents;
 use function get_class;
 
 final class BlockObjectToStateSerializer implements BlockStateSerializer{
@@ -177,8 +177,8 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	 * These callables actually accept Block, but for the sake of type completeness, it has to be never, since we can't
 	 * describe the bottom type of a type hierarchy only containing Block.
 	 *
-	 * @var \Closure[][]
-	 * @phpstan-var array<int, array<class-string, \Closure(never) : Writer>>
+	 * @var \Closure[]
+	 * @phpstan-var array<int, \Closure(never) : Writer>
 	 */
 	private array $serializers = [];
 
@@ -210,10 +210,9 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	 */
 	public function map(Block $block, \Closure $serializer) : void{
 		if(isset($this->serializers[$block->getTypeId()])){
-			//TODO: REMOVE ME
-			throw new AssumptionFailedError("Registering the same block twice!");
+			throw new \InvalidArgumentException("Block type ID " . $block->getTypeId() . " already has a serializer registered");
 		}
-		$this->serializers[$block->getTypeId()][get_class($block)] = $serializer;
+		$this->serializers[$block->getTypeId()] = $serializer;
 	}
 
 	public function mapSimple(Block $block, string $id) : void{
@@ -241,21 +240,16 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	public function serializeBlock(Block $blockState) : BlockStateData{
 		$typeId = $blockState->getTypeId();
 
-		$locatedSerializer = $this->serializers[$typeId][get_class($blockState)] ?? null;
-		if($locatedSerializer === null){
-			foreach(class_parents($blockState) as $parent){
-				if(isset($this->serializers[$typeId][$parent])){
-					$locatedSerializer = $this->serializers[$typeId][$parent];
-					break;
-				}
-			}
-		}
-
+		$locatedSerializer = $this->serializers[$typeId] ?? null;
 		if($locatedSerializer === null){
 			throw new BlockStateSerializeException("No serializer registered for " . get_class($blockState) . " with type ID $typeId");
 		}
 
 		/**
+		 * TODO: there is no guarantee that this type actually matches that of $blockState - a plugin may have stolen
+		 * the type ID of the block (which never makes sense, even in a world where overriding block types is a thing).
+		 * In the future we'll need some way to guarantee that type IDs are never reused (perhaps spl_object_id()?)
+		 *
 		 * @var \Closure $serializer
 		 * @phpstan-var \Closure(TBlockType) : Writer $serializer
 		 */
@@ -1037,6 +1031,10 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeInt(StateNames::AGE, $block->getAge());
 		});
 		$this->map(Blocks::FURNACE(), fn(Furnace $block) => Helper::encodeFurnace($block, Ids::FURNACE, Ids::LIT_FURNACE));
+		$this->map(Blocks::GLOW_LICHEN(), function(GlowLichen $block) : Writer{
+			return Writer::create(Ids::GLOW_LICHEN)
+				->writeFacingFlags($block->getFaces());
+		});
 		$this->map(Blocks::GLOWING_ITEM_FRAME(), fn(ItemFrame $block) => Helper::encodeItemFrame($block, Ids::GLOW_FRAME));
 		$this->map(Blocks::GRANITE(), fn() => Helper::encodeStone(StringValues::STONE_TYPE_GRANITE));
 		$this->map(Blocks::GRANITE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab3($block, StringValues::STONE_SLAB_TYPE_3_GRANITE));
@@ -1155,7 +1153,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::MATERIAL_REDUCER(), fn(ChemistryTable $block) => Helper::encodeChemistryTable($block, StringValues::CHEMISTRY_TABLE_TYPE_MATERIAL_REDUCER, new Writer(Ids::CHEMISTRY_TABLE)));
 		$this->map(Blocks::MELON_STEM(), fn(MelonStem $block) => Helper::encodeStem($block, new Writer(Ids::MELON_STEM)));
-		$this->map(Blocks::MOB_HEAD(), function(Skull $block) : Writer{
+		$this->map(Blocks::MOB_HEAD(), function(MobHead $block) : Writer{
 			return Writer::create(Ids::SKULL)
 				->writeFacingWithoutDown($block->getFacing());
 		});

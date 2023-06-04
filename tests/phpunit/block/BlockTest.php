@@ -50,15 +50,6 @@ class BlockTest extends TestCase{
 	}
 
 	/**
-	 * Test registering a block deliberately overwriting another block works as expected
-	 */
-	public function testDeliberateOverrideBlock() : void{
-		$block = new MyCustomBlock(new BlockIdentifier(BlockTypeIds::COBBLESTONE), "Cobblestone", new BlockTypeInfo(BlockBreakInfo::instant()));
-		$this->blockFactory->register($block, true);
-		self::assertInstanceOf(MyCustomBlock::class, $this->blockFactory->fromStateId($block->getStateId()));
-	}
-
-	/**
 	 * Test registering a new block which does not yet exist
 	 */
 	public function testRegisterNewBlock() : void{
@@ -127,5 +118,18 @@ class BlockTest extends TestCase{
 			self::assertArrayHasKey($k, $states, "Missing previously-known block state $k " . ($k >> Block::INTERNAL_STATE_DATA_BITS) . ":" . ($k & Block::INTERNAL_STATE_DATA_MASK) . " ($name)");
 			self::assertSame($name, $states[$k]->getName());
 		}
+	}
+
+	public function testEmptyStateId() : void{
+		$block = $this->blockFactory->fromStateId(Block::EMPTY_STATE_ID);
+		self::assertInstanceOf(Air::class, $block);
+	}
+
+	public function testAsItemFromItem() : void{
+		$block = VanillaBlocks::FLOWER_POT();
+		$item = $block->asItem();
+		$defaultBlock = $item->getBlock();
+		$item2 = $defaultBlock->asItem();
+		self::assertTrue($item2->equalsExact($item));
 	}
 }

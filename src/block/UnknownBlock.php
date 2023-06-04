@@ -34,11 +34,11 @@ class UnknownBlock extends Transparent{
 	private int $stateData;
 
 	public function __construct(BlockIdentifier $idInfo, BlockTypeInfo $typeInfo, int $stateData){
-		parent::__construct($idInfo, "Unknown", $typeInfo);
 		$this->stateData = $stateData;
+		parent::__construct($idInfo, "Unknown", $typeInfo);
 	}
 
-	public function describeType(RuntimeDataDescriber $w) : void{
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
 		//use type instead of state, so we don't lose any information like colour
 		//this might be an improperly registered plugin block
 		$w->int(Block::INTERNAL_STATE_DATA_BITS, $this->stateData);

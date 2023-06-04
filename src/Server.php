@@ -92,6 +92,8 @@ use pocketmine\resourcepacks\ResourcePackManager;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\stats\SendUsageTask;
+use pocketmine\thread\log\AttachableThreadSafeLogger;
+use pocketmine\thread\ThreadSafeClassLoader;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\updater\UpdateChecker;
@@ -205,6 +207,8 @@ class Server{
 	private const TICKS_PER_TPS_OVERLOAD_WARNING = 5 * self::TARGET_TICKS_PER_SECOND;
 	private const TICKS_PER_STATS_REPORT = 300 * self::TARGET_TICKS_PER_SECOND;
 
+	private const DEFAULT_ASYNC_COMPRESSION_THRESHOLD = 10_000;
+
 	private static ?Server $instance = null;
 
 	private TimeTrackingSleeperHandler $tickSleeper;
@@ -263,6 +267,7 @@ class Server{
 
 	private Network $network;
 	private bool $networkCompressionAsync = true;
+	private int $networkCompressionAsyncThreshold = self::DEFAULT_ASYNC_COMPRESSION_THRESHOLD;
 
 	private Language $language;
 	private bool $forceLanguage = false;
@@ -410,11 +415,11 @@ class Server{
 		return $this->configGroup->getConfigString("motd", self::DEFAULT_SERVER_NAME);
 	}
 
-	public function getLoader() : \DynamicClassLoader{
+	public function getLoader() : ThreadSafeClassLoader{
 		return $this->autoloader;
 	}
 
-	public function getLogger() : \AttachableThreadedLogger{
+	public function getLogger() : AttachableThreadSafeLogger{
 		return $this->logger;
 	}
 
@@ -756,8 +761,8 @@ class Server{
 	}
 
 	public function __construct(
-		private \DynamicClassLoader $autoloader,
-		private \AttachableThreadedLogger $logger,
+		private ThreadSafeClassLoader $autoloader,
+		private AttachableThreadSafeLogger $logger,
 		string $dataPath,
 		string $pluginPath
 	){
@@ -901,6 +906,10 @@ class Server{
 			ZlibCompressor::setInstance(new ZlibCompressor($netCompressionLevel, $netCompressionThreshold, ZlibCompressor::DEFAULT_MAX_DECOMPRESSION_SIZE));
 
 			$this->networkCompressionAsync = $this->configGroup->getPropertyBool("network.async-compression", true);
+			$this->networkCompressionAsyncThreshold = max(
+				$this->configGroup->getPropertyInt("network.async-compression-threshold", self::DEFAULT_ASYNC_COMPRESSION_THRESHOLD),
+				$netCompressionThreshold ?? self::DEFAULT_ASYNC_COMPRESSION_THRESHOLD
+			);
 
 			EncryptionContext::$ENABLED = $this->configGroup->getPropertyBool("network.enable-encryption", true);
 
@@ -1359,7 +1368,7 @@ class Server{
 			}
 
 			$promise = new CompressBatchPromise();
-			if(!$sync){
+			if(!$sync && strlen($buffer) >= $this->networkCompressionAsyncThreshold){
 				$task = new CompressBatchTask($buffer, $promise, $compressor);
 				$this->asyncPool->submitTask($task);
 			}else{

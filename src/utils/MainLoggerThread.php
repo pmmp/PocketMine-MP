@@ -23,22 +23,24 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use pmmp\thread\Thread;
+use pmmp\thread\ThreadSafeArray;
 use function fclose;
 use function fopen;
 use function fwrite;
 use function is_resource;
 use function touch;
 
-final class MainLoggerThread extends \Thread{
-	/** @phpstan-var \ThreadedArray<int, string> */
-	private \ThreadedArray $buffer;
+final class MainLoggerThread extends Thread{
+	/** @phpstan-var ThreadSafeArray<int, string> */
+	private ThreadSafeArray $buffer;
 	private bool $syncFlush = false;
 	private bool $shutdown = false;
 
 	public function __construct(
 		private string $logFile
 	){
-		$this->buffer = new \ThreadedArray();
+		$this->buffer = new ThreadSafeArray();
 		touch($this->logFile);
 	}
 

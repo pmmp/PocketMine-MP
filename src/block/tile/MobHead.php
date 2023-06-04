@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
-use pocketmine\block\utils\SkullType;
+use pocketmine\block\utils\MobHeadType;
+use pocketmine\data\bedrock\MobHeadTypeIdMap;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
@@ -31,60 +33,60 @@ use pocketmine\world\World;
 
 /**
  * @deprecated
- * @see \pocketmine\block\Skull
+ * @see \pocketmine\block\MobHead
  */
-class Skull extends Spawnable{
+class MobHead extends Spawnable{
 
 	private const TAG_SKULL_TYPE = "SkullType"; //TAG_Byte
 	private const TAG_ROT = "Rot"; //TAG_Byte
 	private const TAG_MOUTH_MOVING = "MouthMoving"; //TAG_Byte
 	private const TAG_MOUTH_TICK_COUNT = "MouthTickCount"; //TAG_Int
 
-	private SkullType $skullType;
-	private int $skullRotation = 0;
+	private MobHeadType $mobHeadType;
+	private int $rotation = 0;
 
 	public function __construct(World $world, Vector3 $pos){
-		$this->skullType = SkullType::SKELETON();
+		$this->mobHeadType = MobHeadType::SKELETON();
 		parent::__construct($world, $pos);
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		if(($skullTypeTag = $nbt->getTag(self::TAG_SKULL_TYPE)) instanceof ByteTag){
-			try{
-				$this->skullType = SkullType::fromMagicNumber($skullTypeTag->getValue());
-			}catch(\InvalidArgumentException $e){
-				//bad data, drop it
+			$mobHeadType = MobHeadTypeIdMap::getInstance()->fromId($skullTypeTag->getValue());
+			if($mobHeadType === null){
+				throw new SavedDataLoadingException("Invalid skull type tag value " . $skullTypeTag->getValue());
 			}
+			$this->mobHeadType = $mobHeadType;
 		}
 		$rotation = $nbt->getByte(self::TAG_ROT, 0);
 		if($rotation >= 0 && $rotation <= 15){
-			$this->skullRotation = $rotation;
+			$this->rotation = $rotation;
 		}
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
-		$nbt->setByte(self::TAG_SKULL_TYPE, $this->skullType->getMagicNumber());
-		$nbt->setByte(self::TAG_ROT, $this->skullRotation);
+		$nbt->setByte(self::TAG_SKULL_TYPE, MobHeadTypeIdMap::getInstance()->toId($this->mobHeadType));
+		$nbt->setByte(self::TAG_ROT, $this->rotation);
 	}
 
-	public function setSkullType(SkullType $type) : void{
-		$this->skullType = $type;
+	public function setMobHeadType(MobHeadType $type) : void{
+		$this->mobHeadType = $type;
 	}
 
-	public function getSkullType() : SkullType{
-		return $this->skullType;
+	public function getMobHeadType() : MobHeadType{
+		return $this->mobHeadType;
 	}
 
 	public function getRotation() : int{
-		return $this->skullRotation;
+		return $this->rotation;
 	}
 
 	public function setRotation(int $rotation) : void{
-		$this->skullRotation = $rotation;
+		$this->rotation = $rotation;
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		$nbt->setByte(self::TAG_SKULL_TYPE, $this->skullType->getMagicNumber());
-		$nbt->setByte(self::TAG_ROT, $this->skullRotation);
+		$nbt->setByte(self::TAG_SKULL_TYPE, MobHeadTypeIdMap::getInstance()->toId($this->mobHeadType));
+		$nbt->setByte(self::TAG_ROT, $this->rotation);
 	}
 }

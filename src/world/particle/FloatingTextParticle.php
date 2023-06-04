@@ -87,7 +87,7 @@ class FloatingTextParticle implements Particle{
 			$name = $this->title . ($this->text !== "" ? "\n" . $this->text : "");
 
 			$actorFlags = (
-				1 << EntityMetadataFlags::IMMOBILE
+				1 << EntityMetadataFlags::NO_AI
 			);
 			$actorMetadata = [
 				EntityMetadataProperties::FLAGS => new LongMetadataProperty($actorFlags),

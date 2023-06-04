@@ -146,7 +146,6 @@ use function max;
 use function mb_strlen;
 use function microtime;
 use function min;
-use function morton2d_encode;
 use function preg_match;
 use function spl_object_id;
 use function sqrt;
@@ -687,7 +686,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function getItemCooldownExpiry(Item $item) : int{
 		$this->checkItemCooldowns();
-		return $this->usedItemsCooldown[morton2d_encode($item->getTypeId(), $item->computeTypeData())] ?? 0;
+		return $this->usedItemsCooldown[$item->getStateId()] ?? 0;
 	}
 
 	/**
@@ -695,7 +694,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function hasItemCooldown(Item $item) : bool{
 		$this->checkItemCooldowns();
-		return isset($this->usedItemsCooldown[morton2d_encode($item->getTypeId(), $item->computeTypeData())]);
+		return isset($this->usedItemsCooldown[$item->getStateId()]);
 	}
 
 	/**
@@ -704,7 +703,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function resetItemCooldown(Item $item, ?int $ticks = null) : void{
 		$ticks = $ticks ?? $item->getCooldownTicks();
 		if($ticks > 0){
-			$this->usedItemsCooldown[morton2d_encode($item->getTypeId(), $item->computeTypeData())] = $this->server->getTick() + $ticks;
+			$this->usedItemsCooldown[$item->getStateId()] = $this->server->getTick() + $ticks;
 		}
 	}
 
@@ -1193,7 +1192,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * TODO: make this a dynamic ability instead of being hardcoded
 	 */
 	public function hasFiniteResources() : bool{
-		return $this->gamemode->equals(GameMode::SURVIVAL()) || $this->gamemode->equals(GameMode::ADVENTURE());
+		return !$this->gamemode->equals(GameMode::CREATIVE());
 	}
 
 	public function isFireProof() : bool{
@@ -1686,7 +1685,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$ev = new PlayerBlockPickEvent($this, $block, $item);
 		$existingSlot = $this->inventory->first($item);
-		if($existingSlot === -1 && ($this->hasFiniteResources() || $this->isSpectator())){
+		if($existingSlot === -1 && $this->hasFiniteResources()){
 			$ev->cancel();
 		}
 		$ev->call();
@@ -2351,7 +2350,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->startDeathAnimation();
 
-		$this->getNetworkSession()->onServerDeath($ev->getDeathMessage());
+		$this->getNetworkSession()->onServerDeath($ev->getDeathScreenMessage());
 	}
 
 	protected function onDeathUpdate(int $tickDiff) : bool{

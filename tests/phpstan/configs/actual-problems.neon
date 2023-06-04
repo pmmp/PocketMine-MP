@@ -426,24 +426,19 @@ parameters:
 			path: ../../../src/block/tile/Chest.php
 
 		-
-			message: "#^Constant pocketmine\\\\block\\\\tile\\\\Skull\\:\\:TAG_MOUTH_MOVING is unused\\.$#"
+			message: "#^Constant pocketmine\\\\block\\\\tile\\\\MobHead\\:\\:TAG_MOUTH_MOVING is unused\\.$#"
 			count: 1
-			path: ../../../src/block/tile/Skull.php
+			path: ../../../src/block/tile/MobHead.php
 
 		-
-			message: "#^Constant pocketmine\\\\block\\\\tile\\\\Skull\\:\\:TAG_MOUTH_TICK_COUNT is unused\\.$#"
+			message: "#^Constant pocketmine\\\\block\\\\tile\\\\MobHead\\:\\:TAG_MOUTH_TICK_COUNT is unused\\.$#"
 			count: 1
-			path: ../../../src/block/tile/Skull.php
+			path: ../../../src/block/tile/MobHead.php
 
 		-
 			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setInt\\(\\) expects int, float\\|int given\\.$#"
 			count: 3
 			path: ../../../src/block/tile/Spawnable.php
-
-		-
-			message: "#^Parameter \\#2 \\$replace of function str_replace expects array\\|string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/command/Command.php
 
 		-
 			message: "#^Cannot call method addParticle\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
@@ -626,7 +621,7 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Cannot call method setImmobile\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
+			message: "#^Cannot call method setNoClientPredictions\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
 			count: 2
 			path: ../../../src/network/mcpe/NetworkSession.php
 
@@ -801,29 +796,9 @@ parameters:
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
 
 		-
-			message: "#^Cannot call method getNotifier\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
-			count: 1
-			path: ../../../src/scheduler/AsyncTask.php
-
-		-
-			message: "#^Cannot call method handleException\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
-			count: 1
-			path: ../../../src/scheduler/AsyncTask.php
-
-		-
 			message: "#^Property pocketmine\\\\scheduler\\\\BulkCurlTask\\:\\:\\$operations \\(string\\) does not accept string\\|null\\.$#"
 			count: 1
 			path: ../../../src/scheduler/BulkCurlTask.php
-
-		-
-			message: "#^Cannot call method getAsyncWorkerId\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
-			count: 1
-			path: ../../../src/scheduler/DumpWorkerMemoryTask.php
-
-		-
-			message: "#^Cannot call method getLogger\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
-			count: 1
-			path: ../../../src/scheduler/DumpWorkerMemoryTask.php
 
 		-
 			message: "#^Cannot call method getNextRun\\(\\) on array\\<string, int\\|pocketmine\\\\scheduler\\\\TaskHandler\\>\\|int\\|pocketmine\\\\scheduler\\\\TaskHandler\\.$#"

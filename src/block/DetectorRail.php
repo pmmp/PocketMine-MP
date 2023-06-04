@@ -28,8 +28,8 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 class DetectorRail extends StraightOnlyRail{
 	protected bool $activated = false;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
-		parent::describeState($w);
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		parent::describeBlockOnlyState($w);
 		$w->bool($this->activated);
 	}
 

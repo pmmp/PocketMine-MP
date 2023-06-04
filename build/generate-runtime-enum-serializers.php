@@ -30,8 +30,8 @@ use pocketmine\block\utils\DirtType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
+use pocketmine\block\utils\MobHeadType;
 use pocketmine\block\utils\MushroomBlockType;
-use pocketmine\block\utils\SkullType;
 use pocketmine\block\utils\SlabType;
 use pocketmine\item\MedicineType;
 use pocketmine\item\PotionType;
@@ -150,7 +150,7 @@ $enumsUsed = [
 	LeverFacing::getAll(),
 	MedicineType::getAll(),
 	MushroomBlockType::getAll(),
-	SkullType::getAll(),
+	MobHeadType::getAll(),
 	SlabType::getAll(),
 	SuspiciousStewType::getAll(),
 	PotionType::getAll()

@@ -42,6 +42,8 @@ use pocketmine\utils\AssumptionFailedError;
  * as flammability, hardness, required tool tier, etc.
  * Therefore, to stay on the safe side of Mojang, wood-like blocks have static types. This does unfortunately generate
  * a lot of ugly code.
+ *
+ * @internal
  */
 final class WoodLikeBlockIdHelper{
 

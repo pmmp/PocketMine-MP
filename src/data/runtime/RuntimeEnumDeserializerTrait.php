@@ -126,6 +126,18 @@ trait RuntimeEnumDeserializerTrait{
 		};
 	}
 
+	public function mobHeadType(\pocketmine\block\utils\MobHeadType &$value) : void{
+		$value = match($this->readInt(3)){
+			0 => \pocketmine\block\utils\MobHeadType::CREEPER(),
+			1 => \pocketmine\block\utils\MobHeadType::DRAGON(),
+			2 => \pocketmine\block\utils\MobHeadType::PLAYER(),
+			3 => \pocketmine\block\utils\MobHeadType::SKELETON(),
+			4 => \pocketmine\block\utils\MobHeadType::WITHER_SKELETON(),
+			5 => \pocketmine\block\utils\MobHeadType::ZOMBIE(),
+			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for MobHeadType")
+		};
+	}
+
 	public function mushroomBlockType(\pocketmine\block\utils\MushroomBlockType &$value) : void{
 		$value = match($this->readInt(4)){
 			0 => \pocketmine\block\utils\MushroomBlockType::ALL_CAP(),
@@ -188,18 +200,6 @@ trait RuntimeEnumDeserializerTrait{
 			40 => \pocketmine\item\PotionType::WEAKNESS(),
 			41 => \pocketmine\item\PotionType::WITHER(),
 			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for PotionType")
-		};
-	}
-
-	public function skullType(\pocketmine\block\utils\SkullType &$value) : void{
-		$value = match($this->readInt(3)){
-			0 => \pocketmine\block\utils\SkullType::CREEPER(),
-			1 => \pocketmine\block\utils\SkullType::DRAGON(),
-			2 => \pocketmine\block\utils\SkullType::PLAYER(),
-			3 => \pocketmine\block\utils\SkullType::SKELETON(),
-			4 => \pocketmine\block\utils\SkullType::WITHER_SKELETON(),
-			5 => \pocketmine\block\utils\SkullType::ZOMBIE(),
-			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for SkullType")
 		};
 	}
 

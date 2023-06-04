@@ -31,63 +31,37 @@ use pocketmine\utils\EnumTrait;
  * @see build/generate-registry-annotations.php
  * @generate-registry-docblock
  *
- * @method static SkullType CREEPER()
- * @method static SkullType DRAGON()
- * @method static SkullType PLAYER()
- * @method static SkullType SKELETON()
- * @method static SkullType WITHER_SKELETON()
- * @method static SkullType ZOMBIE()
+ * @method static MobHeadType CREEPER()
+ * @method static MobHeadType DRAGON()
+ * @method static MobHeadType PLAYER()
+ * @method static MobHeadType SKELETON()
+ * @method static MobHeadType WITHER_SKELETON()
+ * @method static MobHeadType ZOMBIE()
  */
-final class SkullType{
+final class MobHeadType{
 	use EnumTrait {
-		register as Enum_register;
 		__construct as Enum___construct;
 	}
 
-	/** @var SkullType[] */
-	private static array $numericIdMap = [];
-
 	protected static function setup() : void{
 		self::registerAll(
-			new SkullType("skeleton", "Skeleton Skull", 0),
-			new SkullType("wither_skeleton", "Wither Skeleton Skull", 1),
-			new SkullType("zombie", "Zombie Head", 2),
-			new SkullType("player", "Player Head", 3),
-			new SkullType("creeper", "Creeper Head", 4),
-			new SkullType("dragon", "Dragon Head", 5)
+			new MobHeadType("skeleton", "Skeleton Skull"),
+			new MobHeadType("wither_skeleton", "Wither Skeleton Skull"),
+			new MobHeadType("zombie", "Zombie Head"),
+			new MobHeadType("player", "Player Head"),
+			new MobHeadType("creeper", "Creeper Head"),
+			new MobHeadType("dragon", "Dragon Head")
 		);
-	}
-
-	protected static function register(SkullType $type) : void{
-		self::Enum_register($type);
-		self::$numericIdMap[$type->getMagicNumber()] = $type;
-	}
-
-	/**
-	 * @internal
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	public static function fromMagicNumber(int $magicNumber) : SkullType{
-		if(!isset(self::$numericIdMap[$magicNumber])){
-			throw new \InvalidArgumentException("Unknown skull type magic number $magicNumber");
-		}
-		return self::$numericIdMap[$magicNumber];
 	}
 
 	private function __construct(
 		string $enumName,
-		private string $displayName,
-		private int $magicNumber
+		private string $displayName
 	){
 		$this->Enum___construct($enumName);
 	}
 
 	public function getDisplayName() : string{
 		return $this->displayName;
-	}
-
-	public function getMagicNumber() : int{
-		return $this->magicNumber;
 	}
 }

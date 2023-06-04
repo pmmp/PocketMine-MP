@@ -38,7 +38,7 @@ class Wood extends Opaque{
 
 	private bool $stripped = false;
 
-	public function describeType(RuntimeDataDescriber $w) : void{
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->stripped);
 	}
 

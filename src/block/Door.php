@@ -41,7 +41,7 @@ class Door extends Transparent{
 	protected bool $hingeRight = false;
 	protected bool $open = false;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->bool($this->top);
 		$w->bool($this->hingeRight);

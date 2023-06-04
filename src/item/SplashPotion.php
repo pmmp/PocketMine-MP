@@ -38,7 +38,7 @@ class SplashPotion extends ProjectileItem{
 		parent::__construct($identifier, $name);
 	}
 
-	protected function describeType(RuntimeDataDescriber $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->potionType($this->potionType);
 	}
 

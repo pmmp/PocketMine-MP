@@ -41,7 +41,7 @@ class Slab extends Transparent{
 		parent::__construct($idInfo, $name . " Slab", $typeInfo);
 	}
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->slabType($this->slabType);
 	}
 

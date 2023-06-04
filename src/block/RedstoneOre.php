@@ -33,7 +33,7 @@ use function mt_rand;
 class RedstoneOre extends Opaque{
 	protected bool $lit = false;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->lit);
 	}
 

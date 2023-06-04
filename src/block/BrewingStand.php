@@ -43,7 +43,7 @@ class BrewingStand extends Transparent{
 	 */
 	protected array $slots = [];
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->brewingStandSlots($this->slots);
 	}
 

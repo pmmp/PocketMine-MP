@@ -44,7 +44,7 @@ class Lever extends Flowable{
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->leverFacing($this->facing);
 		$w->bool($this->activated);
 	}

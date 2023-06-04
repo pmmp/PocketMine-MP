@@ -41,7 +41,7 @@ class Cactus extends Transparent{
 
 	protected int $age = 0;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(4, 0, self::MAX_AGE, $this->age);
 	}
 

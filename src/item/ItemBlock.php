@@ -39,8 +39,8 @@ final class ItemBlock extends Item{
 		parent::__construct(ItemIdentifier::fromBlock($block), $block->getName());
 	}
 
-	protected function describeType(RuntimeDataDescriber $w) : void{
-		$this->block->describeType($w);
+	protected function describeState(RuntimeDataDescriber $w) : void{
+		$this->block->describeBlockItemState($w);
 	}
 
 	public function getBlock(?int $clickedFace = null) : Block{

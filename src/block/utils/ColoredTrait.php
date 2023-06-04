@@ -30,8 +30,8 @@ trait ColoredTrait{
 	/** @var DyeColor */
 	private $color;
 
-	/** @see Block::describeType() */
-	public function describeType(RuntimeDataDescriber $w) : void{
+	/** @see Block::describeBlockItemState() */
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
 		$w->dyeColor($this->color);
 	}
 

@@ -6,11 +6,6 @@ parameters:
 			path: ../../../src/block/BaseBanner.php
 
 		-
-			message: "#^Comparison operation \"\\<\" between int\\<1, max\\> and 1 is always false\\.$#"
-			count: 1
-			path: ../../../src/console/ConsoleCommandSender.php
-
-		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
@@ -36,39 +31,14 @@ parameters:
 			path: ../../../src/network/mcpe/raklib/SnoozeAwarePthreadsChannelWriter.php
 
 		-
-			message: "#^Comparison operation \"\\<\" between int\\<1, max\\> and 1 is always false\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
-
-		-
 			message: "#^Dead catch \\- RuntimeException is never thrown in the try block\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginManager.php
 
 		-
-			message: "#^Parameter \\#1 \\$work of method Worker\\:\\:stack\\(\\) expects Threaded, pocketmine\\\\scheduler\\\\AsyncTask given\\.$#"
-			count: 1
-			path: ../../../src/scheduler/AsyncPool.php
-
-		-
 			message: "#^Static property pocketmine\\\\scheduler\\\\AsyncTask\\:\\:\\$threadLocalStorage \\(ArrayObject\\<int, array\\<string, mixed\\>\\>\\|null\\) does not accept non\\-empty\\-array\\<int, non\\-empty\\-array\\<string, mixed\\>\\>\\|ArrayObject\\<int, array\\<string, mixed\\>\\>\\.$#"
 			count: 1
 			path: ../../../src/scheduler/AsyncTask.php
-
-		-
-			message: "#^Property pocketmine\\\\thread\\\\Thread\\:\\:\\$classLoaders \\(ThreadedArray\\<int, ClassLoader\\>\\|null\\) does not accept array\\{ClassLoader\\}\\|ThreadedArray\\<int, ClassLoader\\>\\.$#"
-			count: 1
-			path: ../../../src/thread/Thread.php
-
-		-
-			message: "#^Property pocketmine\\\\thread\\\\Worker\\:\\:\\$classLoaders \\(ThreadedArray\\<int, ClassLoader\\>\\|null\\) does not accept array\\{ClassLoader\\}\\|ThreadedArray\\<int, ClassLoader\\>\\.$#"
-			count: 1
-			path: ../../../src/thread/Worker.php
-
-		-
-			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
-			count: 2
-			path: ../../../src/world/format/io/region/RegionLoader.php
 
 		-
 			message: "#^Casting to int something that's already int\\.$#"

@@ -33,7 +33,7 @@ use pocketmine\math\Facing;
 
 final class CoralFan extends Item{
 	use CoralTypeTrait {
-		describeType as encodeCoralType;
+		describeBlockItemState as encodeCoralType;
 	}
 
 	public function __construct(ItemIdentifier $identifier){
@@ -41,7 +41,7 @@ final class CoralFan extends Item{
 		parent::__construct($identifier, VanillaBlocks::CORAL_FAN()->getName());
 	}
 
-	protected function describeType(RuntimeDataDescriber $w) : void{
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		//this is aliased to ensure a compile error in case the functions in Item or Block start to differ in future
 		//right now we can directly reuse encodeType from CoralTypeTrait, but that might silently stop working if Item
 		//were to be altered. CoralTypeTrait was originally intended for blocks, so it's better not to assume anything.

@@ -60,6 +60,7 @@ use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\Utils;
+use pocketmine\VersionInfo;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\sound\Sound;
@@ -170,7 +171,7 @@ abstract class Entity{
 
 	protected bool $canClimb = false;
 	protected bool $canClimbWalls = false;
-	protected bool $immobile = false;
+	protected bool $noClientPredictions = false;
 	protected bool $invisible = false;
 	protected bool $silent = false;
 
@@ -314,12 +315,24 @@ abstract class Entity{
 		$this->networkPropertiesDirty = true;
 	}
 
-	public function isImmobile() : bool{
-		return $this->immobile;
+	/**
+	 * Returns whether clients may predict this entity's behaviour and movement. Used for things like water movement,
+	 * burning, and movement smoothing (interpolation).
+	 */
+	public function hasNoClientPredictions() : bool{
+		return $this->noClientPredictions;
 	}
 
-	public function setImmobile(bool $value = true) : void{
-		$this->immobile = $value;
+	/**
+	 * Things such as movement in water, burning, etc. may be predicted by the client. This is sometimes not desirable,
+	 * since server-side logic may differ from client-side prediction. However, things like movement smoothing
+	 * (interpolation) are also controlled by this, so it should be used with care.
+	 *
+	 * Setting this flag will also disable player movement inputs, but this should not be relied on, as cheat clients
+	 * will be able to bypass it.
+	 */
+	public function setNoClientPredictions(bool $value = true) : void{
+		$this->noClientPredictions = $value;
 		$this->networkPropertiesDirty = true;
 	}
 
@@ -476,6 +489,8 @@ abstract class Entity{
 		$nbt->setFloat(self::TAG_FALL_DISTANCE, $this->fallDistance);
 		$nbt->setShort(self::TAG_FIRE, $this->fireTicks);
 		$nbt->setByte(self::TAG_ON_GROUND, $this->onGround ? 1 : 0);
+
+		$nbt->setLong(VersionInfo::TAG_WORLD_DATA_VERSION, VersionInfo::WORLD_DATA_VERSION);
 
 		return $nbt;
 	}
@@ -730,7 +745,7 @@ abstract class Entity{
 		$wasStill = $this->lastMotion->lengthSquared() == 0.0;
 		if($wasStill !== $still){
 			//TODO: hack for client-side AI interference: prevent client sided movement when motion is 0
-			$this->setImmobile($still);
+			$this->setNoClientPredictions($still);
 		}
 
 		if($teleport || $diffPosition > 0.0001 || $diffRotation > 1.0 || (!$wasStill && $still)){
@@ -1651,7 +1666,7 @@ abstract class Entity{
 		$properties->setGenericFlag(EntityMetadataFlags::CAN_CLIMB, $this->canClimb);
 		$properties->setGenericFlag(EntityMetadataFlags::CAN_SHOW_NAMETAG, $this->nameTagVisible);
 		$properties->setGenericFlag(EntityMetadataFlags::HAS_COLLISION, true);
-		$properties->setGenericFlag(EntityMetadataFlags::IMMOBILE, $this->immobile);
+		$properties->setGenericFlag(EntityMetadataFlags::NO_AI, $this->noClientPredictions);
 		$properties->setGenericFlag(EntityMetadataFlags::INVISIBLE, $this->invisible);
 		$properties->setGenericFlag(EntityMetadataFlags::SILENT, $this->silent);
 		$properties->setGenericFlag(EntityMetadataFlags::ONFIRE, $this->isOnFire());

@@ -43,7 +43,7 @@ class RedstoneRepeater extends Flowable{
 
 	protected int $delay = self::MIN_DELAY;
 
-	protected function describeState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->boundedInt(2, self::MIN_DELAY, self::MAX_DELAY, $this->delay);
 		$w->bool($this->powered);
