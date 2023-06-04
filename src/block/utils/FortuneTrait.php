@@ -27,7 +27,6 @@ use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use function array_merge;
-use function assert;
 use function min;
 use function mt_getrandmax;
 use function mt_rand;
@@ -60,7 +59,9 @@ trait FortuneTrait{
 	 * @return Item[]
 	 */
 	protected function weightedDrops(Item $item, int $min, int $max, int $fortuneLevel) : array{
-		assert($min <= $max, "Minimum drop amount must be less than or equal to maximum drop amount");
+		if ($max < $min) {
+			throw new \InvalidArgumentException("Maximum drop amount must be greater than or equal to minimum drop amount");
+		}
 
 		if ($fortuneLevel > 0 && mt_rand() / mt_getrandmax() > 2 / ($fortuneLevel + 2)) {
 			$count = mt_rand($min, $max * ($fortuneLevel + 1));
@@ -121,7 +122,9 @@ trait FortuneTrait{
 	 * @return Item[]
 	 */
 	protected function discreteDrops(Item $item, int $minBaseAmount, int $maxBaseAmount, int $fortuneLevel, int $maximum = PHP_INT_MAX) : array{
-		assert($minBaseAmount <= $maxBaseAmount, "Minimum base drop amount must be less than or equal to maximum base drop amount");
+		if ($maxBaseAmount < $minBaseAmount) {
+			throw new \InvalidArgumentException("Minimum base drop amount must be less than or equal to maximum base drop amount");
+		}
 
 		$max = min(
 			$maximum,
