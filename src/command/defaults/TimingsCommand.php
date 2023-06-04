@@ -35,7 +35,7 @@ use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\InternetException;
 use pocketmine\utils\InternetRequestResult;
 use pocketmine\utils\Utils;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function count;
 use function fclose;
 use function file_exists;
@@ -57,9 +57,9 @@ use const PHP_EOL;
 
 class TimingsCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"timings",
 			KnownTranslationFactory::pocketmine_command_timings_description(),
 			KnownTranslationFactory::pocketmine_command_timings_usage()
 		);
@@ -67,10 +67,6 @@ class TimingsCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) !== 1){
 			throw new InvalidCommandSyntaxException();
 		}
@@ -167,6 +163,7 @@ class TimingsCommand extends VanillaCommand{
 							Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsRead(
 								"https://" . $host . "/?id=" . $response["id"]));
 						}else{
+							$sender->getServer()->getLogger()->debug("Invalid response from timings server (" . $result->getCode() . "): " . $result->getBody());
 							Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_pasteError());
 						}
 					}

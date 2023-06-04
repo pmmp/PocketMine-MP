@@ -18,6 +18,59 @@ Larger contributions like feature additions should be preceded by a [Change Prop
 ## Other things you'll need
 - [git](https://git-scm.com/)
 
+## List of `pocketmine` namespaces which are in other repos
+PocketMine-MP has several dependencies which are independent from the main server code. Most of them use the `pocketmine` namespace.
+Some of these add extra classes to packages which already exist in PocketMine-MP.
+
+Take a look at the table below if you can't find the class or function you're looking for.
+
+| Source URL                                                      | Namespace, class or function                                                                                                             |
+|:----------------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------|
+| [pmmp/BedrockProtocol](https://github.com/pmmp/BedrockProtocol) | `pocketmine\network\mcpe\protocol`                                                                                                       |
+| [pmmp/BinaryUtils](https://github.com/pmmp/BinaryUtils)         | `pocketmine\utils\BinaryDataException`</br>`pocketmine\utils\BinaryStream`</br>`pocketmine\utils\Binary`                                 |
+| [pmmp/Color](https://github.com/pmmp/Color)                     | `pocketmine\color`                                                                                                                       |
+| [pmmp/ErrorHandler](https://github.com/pmmp/ErrorHandler)       | `pocketmine\errorhandler`                                                                                                                |
+| [pmmp/Log](https://github.com/pmmp/Log)                         | `AttachableLogger`</br>`BufferedLogger`</br>`GlobalLogger`</br>`LogLevel`</br>`Logger`</br>`PrefixedLogger`</br>`SimpleLogger`           |
+| [pmmp/Math](https://github.com/pmmp/Math)                       | `pocketmine\math`                                                                                                                        |
+| [pmmp/NBT](https://github.com/pmmp/NBT)                         | `pocketmine\nbt`                                                                                                                         |
+| [pmmp/RakLibIpc](https://github.com/pmmp/RakLibIpc)             | `raklib\server\ipc`                                                                                                                      |
+| [pmmp/RakLib](https://github.com/pmmp/RakLib)                   | `raklib`                                                                                                                                 |
+| [pmmp/Snooze](https://github.com/pmmp/Snooze)                   | `pocketmine\snooze`                                                                                                                      |
+| [pmmp/ext-chunkutils2](https://github.com/pmmp/ext-chunkutils2) | `pocketmine\world\format\LightArray`</br>`pocketmine\world\format\PalettedBlockArray`</br>`pocketmine\world\format\io\SubChunkConverter` |
+| [pmmp/ext-morton](https://github.com/pmmp/ext-morton)           | `morton2d_decode`</br>`morton2d_encode`</br>`morton3d_decode`</br>`morton3d_encode`                                                      |
+| [pmmp/ext-libdeflate](https://github.com/pmmp/ext-libdeflate)   | `libdeflate_deflate_compress`</br>`libdeflate_gzip_compress`</br>`libdeflate_zlib_compress`                                              |
+
+## Choosing a target branch
+PocketMine-MP has three primary branches of development.
+
+| Type of change                                                                              | `stable` |          `minor-next`           | `major-next` |
+|:--------------------------------------------------------------------------------------------|:--------:|:-------------------------------:|:------------:|
+| Bug fixes                                                                                   |    ✔️    |               ✔️                |      ✔️      |
+| Improvements to API docs                                                                    |    ✔️    |               ✔️                |      ✔️      |
+| Cleaning up code                                                                            |    ❌     |               ✔️                |      ✔️      |
+| Changing code formatting or style                                                           |    ❌     |               ✔️                |      ✔️      |
+| Addition of new core features                                                               |    ❌     |    🟡 Only if non-disruptive    |      ✔️      |
+| Changing core behaviour (e.g. making something use threads)                                 |    ❌     |               ✔️                |      ✔️      |
+| Addition of new configuration options                                                       |    ❌     |       🟡 Only if optional       |      ✔️      |
+| Addition of new API classes, methods or constants                                           |    ❌     |               ✔️                |      ✔️      |
+| Deprecating API classes, methods or constants                                               |    ❌     |               ✔️                |      ✔️      |
+| Adding optional parameters to an API method                                                 |    ❌     |               ✔️                |      ✔️      |
+| Changing API behaviour                                                                      |    ❌     | 🟡 Only if backwards-compatible |      ✔️      |
+| Removal of API                                                                              |    ❌     |                ❌                |      ✔️      |
+| Backwards-incompatible API change (e.g. renaming a method)                                  |    ❌     |                ❌                |      ✔️      |
+| Backwards-incompatible internals change (e.g. changing things in `pocketmine\network\mcpe`) |    ❌     |               ✔️                |      ✔️      |
+
+### Notes
+- **Non-disruptive** means that usage should not be significantly altered by the change.
+  - Examples of **non-disruptive** changes include adding new commands, or gameplay features like blocks and items.
+  - Examples of **disruptive** changes include changing the way the server is run, world format changes (since those require downtime for the user to convert their world).
+- **API** includes all public and protected classes, functions and constants (unless marked as `@internal`).
+  - Private members are not part of the API, **unless in a trait**.
+  - The `pocketmine\network\mcpe` package is considered implicitly `@internal` in its entirety (see its [README](src/network/mcpe/README.md) for more details).
+- Minecraft's protocol changes are considered necessary internal changes, and are **not** subject to the same rules.
+  - Protocol changes must always be released in a new minor version, since they disrupt user experience by requiring a client update.
+- BC-breaking changes to the internal network API are allowed, but only in new minor versions. This ensures that plugins which use the internal network API will not break (though they shouldn't use such API anyway).
+
 ## Making a pull request
 The basic procedure to create a pull request is:
 1. [Fork the repository on GitHub](https://github.com/pmmp/PocketMine-MP/fork). This gives you your own copy of the repository to make changes to.

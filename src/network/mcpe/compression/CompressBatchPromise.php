@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\compression;
 
-use pocketmine\utils\Utils;
 use function array_push;
 
 class CompressBatchPromise{
@@ -42,9 +41,6 @@ class CompressBatchPromise{
 	 */
 	public function onResolve(\Closure ...$callbacks) : void{
 		$this->checkCancelled();
-		foreach($callbacks as $callback){
-			Utils::validateCallableSignature(function(CompressBatchPromise $promise) : void{}, $callback);
-		}
 		if($this->result !== null){
 			foreach($callbacks as $callback){
 				$callback($this);

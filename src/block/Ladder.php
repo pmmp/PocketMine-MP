@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
+use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
@@ -36,7 +36,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Ladder extends Transparent{
-	use NormalHorizontalFacingInMetadataTrait;
+	use HorizontalFacingTrait;
 
 	public function hasEntityCollision() : bool{
 		return true;
@@ -70,7 +70,7 @@ class Ladder extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->canBeSupportedBy($blockClicked, $face) && Facing::axis($face) !== Axis::Y){
+		if($this->canBeSupportedBy($blockReplace->getSide(Facing::opposite($face)), $face) && Facing::axis($face) !== Axis::Y){
 			$this->facing = $face;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}

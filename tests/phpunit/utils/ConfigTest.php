@@ -32,7 +32,7 @@ class ConfigTest extends TestCase{
 	 * @return \Generator|mixed[][]
 	 * @phpstan-return \Generator<int, array{string, mixed[]}, void, void>
 	 */
-	public function fixYamlIndexesProvider() : \Generator{
+	public static function fixYamlIndexesProvider() : \Generator{
 		yield ["x: 1\ny: 2\nz: 3\n", [
 			"x" => 1,
 			"y" => 2,

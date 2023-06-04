@@ -29,21 +29,26 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use function count;
 
+/**
+ * Thin blocks behave like glass panes. They connect to full-cube blocks horizontally adjacent to them if possible.
+ */
 class Thin extends Transparent{
 	/** @var bool[] facing => dummy */
 	protected array $connections = [];
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 
 		foreach(Facing::HORIZONTAL as $facing){
 			$side = $this->getSide($facing);
-			if($side instanceof Thin || $side->isFullCube()){
+			if($side instanceof Thin || $side instanceof Wall || $side->isFullCube()){
 				$this->connections[$facing] = true;
 			}else{
 				unset($this->connections[$facing]);
 			}
 		}
+
+		return $this;
 	}
 
 	protected function recalculateCollisionBoxes() : array{

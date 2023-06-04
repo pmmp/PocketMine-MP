@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\BlockMeltEvent;
 use function mt_rand;
 
@@ -32,16 +32,8 @@ class FrostedIce extends Ice{
 
 	protected int $age = 0;
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, self::MAX_AGE);
-	}
-
-	protected function writeStateToMeta() : int{
-		return $this->age;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b11;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->boundedInt(2, 0, self::MAX_AGE, $this->age);
 	}
 
 	public function getAge() : int{ return $this->age; }
@@ -56,16 +48,18 @@ class FrostedIce extends Ice{
 	}
 
 	public function onNearbyBlockChange() : void{
+		$world = $this->position->getWorld();
 		if(!$this->checkAdjacentBlocks(2)){
-			$this->position->getWorld()->useBreakOn($this->position);
+			$world->useBreakOn($this->position);
 		}else{
-			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(20, 40));
+			$world->scheduleDelayedBlockUpdate($this->position, mt_rand(20, 40));
 		}
 	}
 
 	public function onRandomTick() : void{
+		$world = $this->position->getWorld();
 		if((!$this->checkAdjacentBlocks(4) || mt_rand(0, 2) === 0) &&
-			$this->position->getWorld()->getHighestAdjacentFullLightAt($this->position->x, $this->position->y, $this->position->z) >= 12 - $this->age){
+			$world->getHighestAdjacentFullLightAt($this->position->x, $this->position->y, $this->position->z) >= 12 - $this->age){
 			if($this->tryMelt()){
 				foreach($this->getAllSides() as $block){
 					if($block instanceof FrostedIce){
@@ -74,7 +68,7 @@ class FrostedIce extends Ice{
 				}
 			}
 		}else{
-			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(20, 40));
+			$world->scheduleDelayedBlockUpdate($this->position, mt_rand(20, 40));
 		}
 	}
 
@@ -106,18 +100,19 @@ class FrostedIce extends Ice{
 	 * @return bool Whether the ice was destroyed.
 	 */
 	private function tryMelt() : bool{
+		$world = $this->position->getWorld();
 		if($this->age >= self::MAX_AGE){
 			$ev = new BlockMeltEvent($this, VanillaBlocks::WATER());
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
+				$world->setBlock($this->position, $ev->getNewState());
 			}
 			return true;
 		}
 
 		$this->age++;
-		$this->position->getWorld()->setBlock($this->position, $this);
-		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(20, 40));
+		$world->setBlock($this->position, $this);
+		$world->scheduleDelayedBlockUpdate($this->position, mt_rand(20, 40));
 		return false;
 	}
 }

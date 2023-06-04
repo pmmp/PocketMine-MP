@@ -6,21 +6,6 @@ parameters:
 			path: ../../../src/block/BaseBanner.php
 
 		-
-			message: "#^Comparison operation \"\\<\" between int\\<1, max\\> and 1 is always false\\.$#"
-			count: 1
-			path: ../../../src/console/ConsoleCommandSender.php
-
-		-
-			message: "#^Method pocketmine\\\\crafting\\\\CraftingManager\\:\\:getDestructorCallbacks\\(\\) should return pocketmine\\\\utils\\\\ObjectSet\\<Closure\\(\\)\\: void\\> but returns pocketmine\\\\utils\\\\ObjectSet\\<Closure\\(\\)\\: void\\>\\|pocketmine\\\\utils\\\\ObjectSet\\<object\\>\\.$#"
-			count: 1
-			path: ../../../src/crafting/CraftingManager.php
-
-		-
-			message: "#^Property pocketmine\\\\crafting\\\\CraftingManager\\:\\:\\$destructorCallbacks \\(pocketmine\\\\utils\\\\ObjectSet\\<Closure\\(\\)\\: void\\>\\|null\\) does not accept pocketmine\\\\utils\\\\ObjectSet\\<object\\>\\.$#"
-			count: 1
-			path: ../../../src/crafting/CraftingManager.php
-
-		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
@@ -36,11 +21,6 @@ parameters:
 			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
 
 		-
-			message: "#^Negated boolean expression is always true\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
-
-		-
 			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\raklib\\\\PthreadsChannelWriter\\:\\:\\$buffer is never read, only written\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/raklib/PthreadsChannelWriter.php
@@ -49,11 +29,6 @@ parameters:
 			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\raklib\\\\SnoozeAwarePthreadsChannelWriter\\:\\:\\$buffer is never read, only written\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/raklib/SnoozeAwarePthreadsChannelWriter.php
-
-		-
-			message: "#^Comparison operation \"\\<\" between int\\<1, max\\> and 1 is always false\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
 
 		-
 			message: "#^Dead catch \\- RuntimeException is never thrown in the try block\\.$#"
@@ -66,17 +41,7 @@ parameters:
 			path: ../../../src/scheduler/AsyncTask.php
 
 		-
-			message: "#^Property pocketmine\\\\thread\\\\Thread\\:\\:\\$classLoaders \\(\\(iterable\\<ClassLoader\\>&Threaded\\)\\|null\\) does not accept array\\<int, ClassLoader\\>\\|\\(iterable\\<ClassLoader\\>&Threaded\\)\\.$#"
+			message: "#^Casting to int something that's already int\\.$#"
 			count: 1
-			path: ../../../src/thread/Thread.php
-
-		-
-			message: "#^Property pocketmine\\\\thread\\\\Worker\\:\\:\\$classLoaders \\(\\(iterable\\<ClassLoader\\>&Threaded\\)\\|null\\) does not accept array\\<int, ClassLoader\\>\\|\\(iterable\\<ClassLoader\\>&Threaded\\)\\.$#"
-			count: 1
-			path: ../../../src/thread/Worker.php
-
-		-
-			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
-			count: 2
-			path: ../../../src/world/format/io/region/RegionLoader.php
+			path: ../../../src/world/generator/normal/Normal.php
 

@@ -23,6 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+/**
+ * This trait allows a class to simulate a Java-style enum. Members are exposed as static methods and handled via
+ * __callStatic().
+ *
+ * Classes using this trait need to include \@method tags in their class docblock for every enum member.
+ * Alternatively, just put \@generate-registry-docblock in the docblock and run tools/generate-registry-annotations.php
+ */
 trait EnumTrait{
 	use RegistryTrait;
 	use NotCloneable;
@@ -48,6 +55,7 @@ trait EnumTrait{
 	 * This is overridden to change the return typehint.
 	 *
 	 * @return self[]
+	 * @phpstan-return array<string, self>
 	 */
 	public static function getAll() : array{
 		//phpstan doesn't support generic traits yet :(

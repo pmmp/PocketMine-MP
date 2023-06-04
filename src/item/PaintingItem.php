@@ -37,7 +37,7 @@ use function count;
 
 class PaintingItem extends Item{
 
-	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		if(Facing::axis($face) === Axis::Y){
 			return ItemUseResult::NONE();
 		}

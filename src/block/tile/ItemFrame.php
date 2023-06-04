@@ -27,6 +27,7 @@ use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\world\World;
 
 /**
@@ -58,7 +59,9 @@ class ItemFrame extends Spawnable{
 	protected function writeSaveData(CompoundTag $nbt) : void{
 		$nbt->setFloat(self::TAG_ITEM_DROP_CHANCE, $this->itemDropChance);
 		$nbt->setByte(self::TAG_ITEM_ROTATION, $this->itemRotation);
-		$nbt->setTag(self::TAG_ITEM, $this->item->nbtSerialize());
+		if(!$this->item->isNull()){
+			$nbt->setTag(self::TAG_ITEM, $this->item->nbtSerialize());
+		}
 	}
 
 	public function hasItem() : bool{
@@ -96,6 +99,8 @@ class ItemFrame extends Spawnable{
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->setFloat(self::TAG_ITEM_DROP_CHANCE, $this->itemDropChance);
 		$nbt->setByte(self::TAG_ITEM_ROTATION, $this->itemRotation);
-		$nbt->setTag(self::TAG_ITEM, $this->item->nbtSerialize());
+		if(!$this->item->isNull()){
+			$nbt->setTag(self::TAG_ITEM, TypeConverter::getInstance()->getItemTranslator()->toNetworkNbt($this->item));
+		}
 	}
 }

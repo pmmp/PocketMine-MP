@@ -39,7 +39,7 @@ use pocketmine\utils\Internet;
 use pocketmine\utils\InternetException;
 use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function fgets;
 use function sleep;
 use function strtolower;

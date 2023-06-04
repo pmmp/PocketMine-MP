@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
@@ -37,17 +38,9 @@ class SeaPickle extends Transparent{
 	protected int $count = self::MIN_COUNT;
 	protected bool $underwater = false;
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->count = ($stateMeta & 0x03) + 1;
-		$this->underwater = ($stateMeta & BlockLegacyMetadata::SEA_PICKLE_FLAG_NOT_UNDERWATER) === 0;
-	}
-
-	protected function writeStateToMeta() : int{
-		return ($this->count - 1) | ($this->underwater ? 0 : BlockLegacyMetadata::SEA_PICKLE_FLAG_NOT_UNDERWATER);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->boundedInt(2, self::MIN_COUNT, self::MAX_COUNT, $this->count);
+		$w->bool($this->underwater);
 	}
 
 	public function getCount() : int{ return $this->count; }
@@ -102,9 +95,9 @@ class SeaPickle extends Transparent{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		//TODO: bonemeal logic (requires coral)
-		return parent::onInteract($item, $face, $clickVector, $player);
+		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

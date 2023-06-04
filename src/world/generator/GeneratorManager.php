@@ -40,7 +40,7 @@ final class GeneratorManager{
 	private array $list = [];
 
 	public function __construct(){
-		$this->addGenerator(Flat::class, "flat", \Closure::fromCallable(function(string $preset) : ?InvalidGeneratorOptionsException{
+		$this->addGenerator(Flat::class, "flat", function(string $preset) : ?InvalidGeneratorOptionsException{
 			if($preset === ""){
 				return null;
 			}
@@ -50,7 +50,7 @@ final class GeneratorManager{
 			}catch(InvalidGeneratorOptionsException $e){
 				return $e;
 			}
-		}));
+		});
 		$this->addGenerator(Normal::class, "normal", fn() => null);
 		$this->addGenerator(Normal::class, "default", fn() => null);
 		$this->addGenerator(Nether::class, "hell", fn() => null);
@@ -58,10 +58,10 @@ final class GeneratorManager{
 	}
 
 	/**
-	 * @param string                          $class Fully qualified name of class that extends \pocketmine\world\generator\Generator
-	 * @param string                          $name Alias for this generator type that can be written in configs
-	 * @param \Closure                        $presetValidator Callback to validate generator options for new worlds
-	 * @param bool                            $overwrite Whether to force overwriting any existing registered generator with the same name
+	 * @param string   $class           Fully qualified name of class that extends \pocketmine\world\generator\Generator
+	 * @param string   $name            Alias for this generator type that can be written in configs
+	 * @param \Closure $presetValidator Callback to validate generator options for new worlds
+	 * @param bool     $overwrite       Whether to force overwriting any existing registered generator with the same name
 	 *
 	 * @phpstan-param \Closure(string) : ?InvalidGeneratorOptionsException $presetValidator
 	 *

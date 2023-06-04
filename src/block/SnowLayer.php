@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\BlockMeltEvent;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
@@ -46,16 +46,8 @@ class SnowLayer extends Flowable implements Fallable{
 
 	protected int $layers = self::MIN_LAYERS;
 
-	protected function writeStateToMeta() : int{
-		return $this->layers - 1;
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->layers = BlockDataSerializer::readBoundedInt("layers", $stateMeta + 1, self::MIN_LAYERS, self::MAX_LAYERS);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->boundedInt(3, self::MIN_LAYERS, self::MAX_LAYERS, $this->layers);
 	}
 
 	public function getLayers() : int{ return $this->layers; }
@@ -111,17 +103,14 @@ class SnowLayer extends Flowable implements Fallable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->position->getWorld()->getBlockLightAt($this->position->x, $this->position->y, $this->position->z) >= 12){
+		$world = $this->position->getWorld();
+		if($world->getBlockLightAt($this->position->x, $this->position->y, $this->position->z) >= 12){
 			$ev = new BlockMeltEvent($this, VanillaBlocks::AIR());
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
+				$world->setBlock($this->position, $ev->getNewState());
 			}
 		}
-	}
-
-	public function tickFalling() : ?Block{
-		return null;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

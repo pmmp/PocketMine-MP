@@ -35,7 +35,7 @@ final class StringToEnchantmentParser extends StringToTParser{
 	use SingletonTrait;
 
 	private static function make() : self{
-		$result = new self;
+		$result = new self();
 
 		$result->register("blast_protection", fn() => VanillaEnchantments::BLAST_PROTECTION());
 		$result->register("efficiency", fn() => VanillaEnchantments::EFFICIENCY());
@@ -53,6 +53,7 @@ final class StringToEnchantmentParser extends StringToTParser{
 		$result->register("respiration", fn() => VanillaEnchantments::RESPIRATION());
 		$result->register("sharpness", fn() => VanillaEnchantments::SHARPNESS());
 		$result->register("silk_touch", fn() => VanillaEnchantments::SILK_TOUCH());
+		$result->register("swift_sneak", fn() => VanillaEnchantments::SWIFT_SNEAK());
 		$result->register("thorns", fn() => VanillaEnchantments::THORNS());
 		$result->register("unbreaking", fn() => VanillaEnchantments::UNBREAKING());
 		$result->register("vanishing", fn() => VanillaEnchantments::VANISHING());

@@ -70,8 +70,7 @@ class PluginGraylist{
 		}
 		$isWhitelist = match($array["mode"]){
 			"whitelist" => true,
-			"blacklist" => false,
-			default => throw new \InvalidArgumentException("\"mode\" must be either \"whitelist\" or \"blacklist\"")
+			"blacklist" => false
 		};
 		$plugins = [];
 		if(isset($array["plugins"])){
