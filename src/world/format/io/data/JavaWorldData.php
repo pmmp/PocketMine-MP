@@ -30,13 +30,13 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
+use pocketmine\VersionInfo;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
 use Symfony\Component\Filesystem\Path;
 use function ceil;
-use function file_get_contents;
 use function file_put_contents;
 use function microtime;
 use function zlib_decode;
@@ -90,9 +90,10 @@ class JavaWorldData extends BaseNbtWorldData{
 	}
 
 	protected function load() : CompoundTag{
-		$rawLevelData = @file_get_contents($this->dataPath);
-		if($rawLevelData === false){
-			throw new CorruptedWorldException("Failed to read level.dat (permission denied or doesn't exist)");
+		try{
+			$rawLevelData = Filesystem::fileGetContents($this->dataPath);
+		}catch(\RuntimeException $e){
+			throw new CorruptedWorldException($e->getMessage(), 0, $e);
 		}
 		$nbt = new BigEndianNbtSerializer();
 		$decompressed = @zlib_decode($rawLevelData);
@@ -126,6 +127,8 @@ class JavaWorldData extends BaseNbtWorldData{
 	}
 
 	public function save() : void{
+		$this->compoundTag->setLong(VersionInfo::TAG_WORLD_DATA_VERSION, VersionInfo::WORLD_DATA_VERSION);
+
 		$nbt = new BigEndianNbtSerializer();
 		$buffer = Utils::assumeNotFalse(zlib_encode($nbt->write(new TreeRoot(CompoundTag::create()->setTag(self::TAG_ROOT_DATA, $this->compoundTag))), ZLIB_ENCODING_GZIP));
 		Filesystem::safeFilePutContents($this->dataPath, $buffer);

@@ -24,8 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
@@ -42,9 +41,7 @@ class Cactus extends Transparent{
 
 	protected int $age = 0;
 
-	public function getRequiredStateDataBits() : int{ return 4; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(4, 0, self::MAX_AGE, $this->age);
 	}
 
@@ -82,7 +79,7 @@ class Cactus extends Transparent{
 	}
 
 	private function canBeSupportedBy(Block $block) : bool{
-		return $block->isSameType($this) || $block->hasTypeTag(BlockTypeTags::SAND);
+		return $block->hasSameTypeId($this) || $block->hasTypeTag(BlockTypeTags::SAND);
 	}
 
 	public function onNearbyBlockChange() : void{
@@ -105,7 +102,7 @@ class Cactus extends Transparent{
 	}
 
 	public function onRandomTick() : void{
-		if(!$this->getSide(Facing::DOWN)->isSameType($this)){
+		if(!$this->getSide(Facing::DOWN)->hasSameTypeId($this)){
 			$world = $this->position->getWorld();
 			if($this->age === self::MAX_AGE){
 				for($y = 1; $y < 3; ++$y){

@@ -38,8 +38,8 @@ use function posix_kill;
 use function preg_match;
 use function proc_close;
 use function proc_open;
+use function str_starts_with;
 use function stream_get_contents;
-use function strpos;
 use function trim;
 
 final class Process{
@@ -99,9 +99,9 @@ final class Process{
 			if($mappings === false) throw new AssumptionFailedError("/proc/self/maps should always be accessible");
 			foreach($mappings as $line){
 				if(preg_match("#([a-z0-9]+)\\-([a-z0-9]+) [rwxp\\-]{4} [a-z0-9]+ [^\\[]*\\[([a-zA-z0-9]+)\\]#", trim($line), $matches) > 0){
-					if(strpos($matches[3], "heap") === 0){
+					if(str_starts_with($matches[3], "heap")){
 						$heap += (int) hexdec($matches[2]) - (int) hexdec($matches[1]);
-					}elseif(strpos($matches[3], "stack") === 0){
+					}elseif(str_starts_with($matches[3], "stack")){
 						$stack += (int) hexdec($matches[2]) - (int) hexdec($matches[1]);
 					}
 				}

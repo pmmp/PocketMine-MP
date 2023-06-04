@@ -24,13 +24,20 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\compression;
 
 interface Compressor{
-
-	public function willCompress(string $data) : bool;
-
 	/**
 	 * @throws DecompressionException
 	 */
 	public function decompress(string $payload) : string;
 
 	public function compress(string $payload) : string;
+
+	/**
+	 * Returns the minimum size of packet batch that the compressor will attempt to compress.
+	 *
+	 * The compressor's output **MUST** still be valid input for the decompressor even if the compressor input is
+	 * below this threshold.
+	 * However, it may choose to use a cheaper compression option (e.g. zlib level 0, which simply wraps the data and
+	 * doesn't attempt to compress it) to avoid wasting CPU time.
+	 */
+	public function getCompressionThreshold() : ?int;
 }

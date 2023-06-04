@@ -27,22 +27,26 @@ use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModel;
 use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModelBlockRemap;
 use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModelTag;
 use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModelValueRemap;
-use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
+use function array_key_last;
 use function array_map;
+use function array_values;
+use function assert;
 use function count;
-use function file_get_contents;
 use function get_debug_type;
 use function gettype;
 use function implode;
 use function is_object;
 use function json_decode;
+use function json_encode;
 use function ksort;
+use function sort;
 use function str_pad;
 use function strval;
 use const JSON_THROW_ON_ERROR;
@@ -111,13 +115,13 @@ final class BlockStateUpgradeSchemaUtils{
 		};
 	}
 
-	public static function fromJsonModel(BlockStateUpgradeSchemaModel $model, int $priority) : BlockStateUpgradeSchema{
+	public static function fromJsonModel(BlockStateUpgradeSchemaModel $model, int $schemaId) : BlockStateUpgradeSchema{
 		$result = new BlockStateUpgradeSchema(
 			$model->maxVersionMajor,
 			$model->maxVersionMinor,
 			$model->maxVersionPatch,
 			$model->maxVersionRevision,
-			$priority
+			$schemaId
 		);
 		$result->renamedIds = $model->renamedIds ?? [];
 		$result->renamedProperties = $model->renamedProperties ?? [];
@@ -151,9 +155,10 @@ final class BlockStateUpgradeSchemaUtils{
 		foreach(Utils::stringifyKeys($model->remappedStates ?? []) as $oldBlockName => $remaps){
 			foreach($remaps as $remap){
 				$result->remappedStates[$oldBlockName][] = new BlockStateUpgradeSchemaBlockRemap(
-					array_map(fn(BlockStateUpgradeSchemaModelTag $tag) => self::jsonModelToTag($tag), $remap->oldState),
+					array_map(fn(BlockStateUpgradeSchemaModelTag $tag) => self::jsonModelToTag($tag), $remap->oldState ?? []),
 					$remap->newName,
-					array_map(fn(BlockStateUpgradeSchemaModelTag $tag) => self::jsonModelToTag($tag), $remap->newState),
+					array_map(fn(BlockStateUpgradeSchemaModelTag $tag) => self::jsonModelToTag($tag), $remap->newState ?? []),
+					$remap->copiedState ?? []
 				);
 			}
 		}
@@ -166,57 +171,75 @@ final class BlockStateUpgradeSchemaUtils{
 			return;
 		}
 		$dedupMapping = [];
-		$dedupTable = [];
 		$dedupTableMap = [];
-		$counter = 0;
 
-		foreach(Utils::stringifyKeys($schema->remappedPropertyValues) as $blockName => $remaps){
+		$orderedRemappedValues = $schema->remappedPropertyValues;
+		ksort($orderedRemappedValues);
+		foreach(Utils::stringifyKeys($orderedRemappedValues) as $blockName => $remaps){
+			ksort($remaps);
 			foreach(Utils::stringifyKeys($remaps) as $propertyName => $remappedValues){
 				$remappedValuesMap = [];
 				foreach($remappedValues as $oldNew){
 					$remappedValuesMap[$oldNew->old->toString()] = $oldNew;
 				}
+				ksort($remappedValuesMap);
 
-				foreach(Utils::stringifyKeys($dedupTableMap) as $dedupName => $dedupValuesMap){
-					if(count($remappedValuesMap) !== count($dedupValuesMap)){
-						continue;
-					}
-
-					foreach(Utils::stringifyKeys($remappedValuesMap) as $oldHash => $remappedOldNew){
-						if(
-							!isset($dedupValuesMap[$oldHash]) ||
-							!$remappedOldNew->old->equals($dedupValuesMap[$oldHash]->old) ||
-							!$remappedOldNew->new->equals($dedupValuesMap[$oldHash]->new)
-						){
-							continue 2;
+				if(isset($dedupTableMap[$propertyName])){
+					foreach($dedupTableMap[$propertyName] as $k => $dedupValuesMap){
+						if(count($remappedValuesMap) !== count($dedupValuesMap)){
+							continue;
 						}
-					}
 
-					//we found a match
-					$dedupMapping[$blockName][$propertyName] = $dedupName;
-					continue 2;
+						foreach(Utils::stringifyKeys($remappedValuesMap) as $oldHash => $remappedOldNew){
+							if(
+								!isset($dedupValuesMap[$oldHash]) ||
+								!$remappedOldNew->old->equals($dedupValuesMap[$oldHash]->old) ||
+								!$remappedOldNew->new->equals($dedupValuesMap[$oldHash]->new)
+							){
+								continue 2;
+							}
+						}
+
+						//we found a match
+						$dedupMapping[$blockName][$propertyName] = $k;
+						continue 2;
+					}
 				}
 
 				//no match, add the values to the table
-				$newDedupName = $propertyName . "_" . str_pad(strval($counter++), 2, "0", STR_PAD_LEFT);
-				$dedupTableMap[$newDedupName] = $remappedValuesMap;
-				$dedupTable[$newDedupName] = $remappedValues;
-				$dedupMapping[$blockName][$propertyName] = $newDedupName;
+				$dedupTableMap[$propertyName][] = $remappedValuesMap;
+				$dedupMapping[$blockName][$propertyName] = array_key_last($dedupTableMap[$propertyName]);
 			}
 		}
 
 		$modelTable = [];
-		foreach(Utils::stringifyKeys($dedupTable) as $dedupName => $valuePairs){
-			foreach($valuePairs as $k => $pair){
-				$modelTable[$dedupName][$k] = new BlockStateUpgradeSchemaModelValueRemap(
-					BlockStateUpgradeSchemaUtils::tagToJsonModel($pair->old),
-					BlockStateUpgradeSchemaUtils::tagToJsonModel($pair->new),
-				);
+		foreach(Utils::stringifyKeys($dedupTableMap) as $propertyName => $mappingSet){
+			foreach($mappingSet as $setId => $valuePairs){
+				$newDedupName = $propertyName . "_" . str_pad(strval($setId), 2, "0", STR_PAD_LEFT);
+				foreach($valuePairs as $pair){
+					$modelTable[$newDedupName][] = new BlockStateUpgradeSchemaModelValueRemap(
+						BlockStateUpgradeSchemaUtils::tagToJsonModel($pair->old),
+						BlockStateUpgradeSchemaUtils::tagToJsonModel($pair->new),
+					);
+				}
+			}
+		}
+		$modelDedupMapping = [];
+		foreach(Utils::stringifyKeys($dedupMapping) as $blockName => $properties){
+			foreach(Utils::stringifyKeys($properties) as $propertyName => $dedupTableIndex){
+				$modelDedupMapping[$blockName][$propertyName] = $propertyName . "_" . str_pad(strval($dedupTableIndex), 2, "0", STR_PAD_LEFT);
 			}
 		}
 
+		ksort($modelTable);
+		ksort($modelDedupMapping);
+		foreach(Utils::stringifyKeys($dedupMapping) as $blockName => $properties){
+			ksort($properties);
+			$dedupMapping[$blockName] = $properties;
+		}
+
 		$model->remappedPropertyValuesIndex = $modelTable;
-		$model->remappedPropertyValues = $dedupMapping;
+		$model->remappedPropertyValues = $modelDedupMapping;
 	}
 
 	public static function toJsonModel(BlockStateUpgradeSchema $schema) : BlockStateUpgradeSchemaModel{
@@ -225,37 +248,73 @@ final class BlockStateUpgradeSchemaUtils{
 		$result->maxVersionMinor = $schema->maxVersionMinor;
 		$result->maxVersionPatch = $schema->maxVersionPatch;
 		$result->maxVersionRevision = $schema->maxVersionRevision;
+
 		$result->renamedIds = $schema->renamedIds;
+		ksort($result->renamedIds);
+
 		$result->renamedProperties = $schema->renamedProperties;
+		ksort($result->renamedProperties);
+		foreach(Utils::stringifyKeys($result->renamedProperties) as $blockName => $properties){
+			ksort($properties);
+			$result->renamedProperties[$blockName] = $properties;
+		}
+
 		$result->removedProperties = $schema->removedProperties;
+		ksort($result->removedProperties);
+		foreach(Utils::stringifyKeys($result->removedProperties) as $blockName => $properties){
+			sort($properties); //yes, this is intended to sort(), not ksort()
+			$result->removedProperties[$blockName] = $properties;
+		}
 
 		foreach(Utils::stringifyKeys($schema->addedProperties) as $blockName => $properties){
+			$addedProperties = [];
 			foreach(Utils::stringifyKeys($properties) as $propertyName => $propertyValue){
-				$result->addedProperties[$blockName][$propertyName] = self::tagToJsonModel($propertyValue);
+				$addedProperties[$propertyName] = self::tagToJsonModel($propertyValue);
 			}
+			ksort($addedProperties);
+			$result->addedProperties[$blockName] = $addedProperties;
+		}
+		if(isset($result->addedProperties)){
+			ksort($result->addedProperties);
 		}
 
 		self::buildRemappedValuesIndex($schema, $result);
 
 		foreach(Utils::stringifyKeys($schema->remappedStates) as $oldBlockName => $remaps){
+			$keyedRemaps = [];
 			foreach($remaps as $remap){
-				$result->remappedStates[$oldBlockName][] = new BlockStateUpgradeSchemaModelBlockRemap(
+				$modelRemap = new BlockStateUpgradeSchemaModelBlockRemap(
 					array_map(fn(Tag $tag) => self::tagToJsonModel($tag), $remap->oldState),
 					$remap->newName,
 					array_map(fn(Tag $tag) => self::tagToJsonModel($tag), $remap->newState),
+					$remap->copiedState
 				);
+				if(count($modelRemap->copiedState) === 0){
+					unset($modelRemap->copiedState); //avoid polluting the JSON
+				}
+				$key = json_encode($modelRemap);
+				assert(!isset($keyedRemaps[$key]));
+				if(isset($keyedRemaps[$key])){
+					continue;
+				}
+				$keyedRemaps[$key] = $modelRemap;
 			}
+			ksort($keyedRemaps);
+			$result->remappedStates[$oldBlockName] = array_values($keyedRemaps);
+		}
+		if(isset($result->remappedStates)){
+			ksort($result->remappedStates);
 		}
 
 		return $result;
 	}
 
 	/**
-	 * Returns a list of schemas ordered by priority. Oldest schemas appear first.
+	 * Returns a list of schemas ordered by schema ID. Oldest schemas appear first.
 	 *
 	 * @return BlockStateUpgradeSchema[]
 	 */
-	public static function loadSchemas(string $path, int $currentVersion) : array{
+	public static function loadSchemas(string $path, int $maxSchemaId) : array{
 		$iterator = new \RegexIterator(
 			new \FilesystemIterator(
 				$path,
@@ -271,36 +330,30 @@ final class BlockStateUpgradeSchemaUtils{
 		/** @var string[] $matches */
 		foreach($iterator as $matches){
 			$filename = $matches[0];
-			$priority = (int) $matches[1];
+			$schemaId = (int) $matches[1];
+
+			if($schemaId > $maxSchemaId){
+				continue;
+			}
 
 			$fullPath = Path::join($path, $filename);
 
-			try{
-				$raw = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents($fullPath));
-			}catch(\ErrorException $e){
-				throw new \RuntimeException("Loading schema file $fullPath: " . $e->getMessage(), 0, $e);
-			}
+			$raw = Filesystem::fileGetContents($fullPath);
 
 			try{
-				$schema = self::loadSchemaFromString($raw, $priority);
+				$schema = self::loadSchemaFromString($raw, $schemaId);
 			}catch(\RuntimeException $e){
 				throw new \RuntimeException("Loading schema file $fullPath: " . $e->getMessage(), 0, $e);
 			}
 
-			if($schema->getVersionId() > $currentVersion){
-				//this might be a beta schema which shouldn't be applicable
-				//TODO: why do we load the whole schema just to throw it away if it's too new? ...
-				continue;
-			}
-
-			$result[$priority] = $schema;
+			$result[$schemaId] = $schema;
 		}
 
 		ksort($result, SORT_NUMERIC);
 		return $result;
 	}
 
-	public static function loadSchemaFromString(string $raw, int $priority) : BlockStateUpgradeSchema{
+	public static function loadSchemaFromString(string $raw, int $schemaId) : BlockStateUpgradeSchema{
 		try{
 			$json = json_decode($raw, false, flags: JSON_THROW_ON_ERROR);
 		}catch(\JsonException $e){
@@ -317,6 +370,6 @@ final class BlockStateUpgradeSchemaUtils{
 			throw new \RuntimeException($e->getMessage(), 0, $e);
 		}
 
-		return self::fromJsonModel($model, $priority);
+		return self::fromJsonModel($model, $schemaId);
 	}
 }

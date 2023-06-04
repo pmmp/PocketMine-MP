@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\item;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
+use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateDeserializer;
 use pocketmine\data\bedrock\block\convert\UnsupportedBlockStateException;
@@ -51,6 +51,9 @@ final class ItemDeserializer{
 	 * @phpstan-param \Closure(Data) : Item $deserializer
 	 */
 	public function map(string $id, \Closure $deserializer) : void{
+		if(isset($this->deserializers[$id])){
+			throw new \InvalidArgumentException("Deserializer is already assigned for \"$id\"");
+		}
 		$this->deserializers[$id] = $deserializer;
 	}
 
@@ -76,7 +79,7 @@ final class ItemDeserializer{
 			}
 
 			//TODO: worth caching this or not?
-			return BlockFactory::getInstance()->fromStateId($block)->asItem();
+			return RuntimeBlockStateRegistry::getInstance()->fromStateId($block)->asItem();
 		}
 		$id = $data->getName();
 		if(!isset($this->deserializers[$id])){
