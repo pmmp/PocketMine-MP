@@ -26,8 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\WoodType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
@@ -47,9 +46,7 @@ class CocoaBlock extends Transparent{
 
 	protected int $age = 0;
 
-	public function getRequiredStateDataBits() : int{ return 4; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->boundedInt(2, 0, self::MAX_AGE, $this->age);
 	}
@@ -97,7 +94,7 @@ class CocoaBlock extends Transparent{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($item instanceof Fertilizer && $this->grow()){
+		if($item instanceof Fertilizer && $this->grow($player)){
 			$item->pop();
 
 			return true;
@@ -122,11 +119,11 @@ class CocoaBlock extends Transparent{
 		}
 	}
 
-	private function grow() : bool{
+	private function grow(?Player $player = null) : bool{
 		if($this->age < self::MAX_AGE){
 			$block = clone $this;
 			$block->age++;
-			$ev = new BlockGrowEvent($this, $block);
+			$ev = new BlockGrowEvent($this, $block, $player);
 			$ev->call();
 			if(!$ev->isCancelled()){
 				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());

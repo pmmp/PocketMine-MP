@@ -36,9 +36,9 @@ use function count;
 
 class SetWorldSpawnCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"setworldspawn",
 			KnownTranslationFactory::pocketmine_command_setworldspawn_description(),
 			KnownTranslationFactory::commands_setworldspawn_usage()
 		);

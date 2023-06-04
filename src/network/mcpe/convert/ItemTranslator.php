@@ -32,25 +32,12 @@ use pocketmine\item\Item;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\utils\SingletonTrait;
-use pocketmine\world\format\io\GlobalItemDataHandlers;
 
 /**
  * This class handles translation between network item ID+metadata to PocketMine-MP internal ID+metadata and vice versa.
  */
 final class ItemTranslator{
 	public const NO_BLOCK_RUNTIME_ID = 0;
-
-	use SingletonTrait;
-
-	private static function make() : self{
-		return new self(
-			GlobalItemTypeDictionary::getInstance()->getDictionary(),
-			RuntimeBlockMapping::getInstance()->getBlockStateDictionary(),
-			GlobalItemDataHandlers::getSerializer(),
-			GlobalItemDataHandlers::getDeserializer()
-		);
-	}
 
 	public function __construct(
 		private ItemTypeDictionary $itemTypeDictionary,
@@ -120,7 +107,7 @@ final class ItemTranslator{
 
 		$blockStateData = null;
 		if($networkBlockRuntimeId !== self::NO_BLOCK_RUNTIME_ID){
-			$blockStateData = $this->blockStateDictionary->getDataFromStateId($networkBlockRuntimeId);
+			$blockStateData = $this->blockStateDictionary->generateDataFromStateId($networkBlockRuntimeId);
 			if($blockStateData === null){
 				throw new TypeConversionException("Blockstate runtimeID $networkBlockRuntimeId does not correspond to any known blockstate");
 			}

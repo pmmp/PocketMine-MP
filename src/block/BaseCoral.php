@@ -34,8 +34,8 @@ abstract class BaseCoral extends Transparent{
 	use CoralTypeTrait;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		parent::__construct($idInfo, $name, $typeInfo);
 		$this->coralType = CoralType::TUBE();
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
 	public function onNearbyBlockChange() : void{
