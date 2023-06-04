@@ -38,6 +38,7 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\generator\object\TreeType;
 use pocketmine\world\World;
+use function max;
 use function mt_rand;
 
 class Leaves extends Transparent{
@@ -177,7 +178,7 @@ class Leaves extends Transparent{
 	 */
 	protected function getFortuneDropsForLevel(int $level) : array{
 		$drops = [];
-		if(mt_rand(1, 20 - 4 * $level) === 1){ //Saplings
+		if(mt_rand(1, max(20 - 4 * $level, 1)) === 1){ //Saplings
 			// TODO: according to the wiki, the jungle saplings have a different drop rate
 			$sapling = (match($this->leavesType){
 				LeavesType::ACACIA() => VanillaBlocks::ACACIA_SAPLING(),
@@ -194,10 +195,10 @@ class Leaves extends Transparent{
 				$drops[] = $sapling;
 			}
 		}
-		if(($this->leavesType->equals(LeavesType::OAK()) || $this->leavesType->equals(LeavesType::DARK_OAK())) && mt_rand(1, 200 - 20 * $level) === 1){ //Apples
+		if(($this->leavesType->equals(LeavesType::OAK()) || $this->leavesType->equals(LeavesType::DARK_OAK())) && mt_rand(1, max(200 - 20 * $level, 1)) === 1){ //Apples
 			$drops[] = VanillaItems::APPLE();
 		}
-		if(mt_rand(1, 50 - 5 * $level) === 1){
+		if(mt_rand(1, max(50 - 5 * $level, 1)) === 1){
 			$drops[] = VanillaItems::STICK()->setCount(mt_rand(1, 2));
 		}
 

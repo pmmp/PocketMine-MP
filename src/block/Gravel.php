@@ -28,6 +28,7 @@ use pocketmine\block\utils\FallableTrait;
 use pocketmine\block\utils\FortuneTrait;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
+use function max;
 use function mt_rand;
 
 class Gravel extends Opaque implements Fallable{
@@ -46,7 +47,7 @@ class Gravel extends Opaque implements Fallable{
 	 * @return Item[]
 	 */
 	protected function getFortuneDropsForLevel(int $level) : array{
-		if(mt_rand(1, 10 - 3 * $level) === 1){
+		if(mt_rand(1, max(10 - 3 * $level, 1)) === 1){
 			return [
 				VanillaItems::FLINT()
 			];
