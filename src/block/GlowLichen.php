@@ -149,9 +149,6 @@ class GlowLichen extends Transparent{
 			//TODO: if this is a water block, generate a waterlogged block
 			return null;
 		}
-		if($result->hasFace($spreadFace)){
-			return null;
-		}
 		return $result->setFace($spreadFace, true);
 	}
 
