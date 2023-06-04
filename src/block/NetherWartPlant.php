@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\FortuneTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\BlockGrowEvent;

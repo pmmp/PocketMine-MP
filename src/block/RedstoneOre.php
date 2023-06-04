@@ -37,8 +37,6 @@ class RedstoneOre extends Opaque{
 	public const MINIMUM_DROPS = 4;
 	public const MAXIMUM_DROPS = 5;
 
-	protected BlockIdentifierFlattened $idInfoFlattened;
-
 	protected bool $lit = false;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{

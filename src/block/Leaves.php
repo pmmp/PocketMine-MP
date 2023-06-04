@@ -36,6 +36,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\generator\object\TreeType;
 use pocketmine\world\World;
 use function mt_rand;
 
