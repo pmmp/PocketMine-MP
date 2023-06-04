@@ -179,12 +179,28 @@ class GlowLichen extends Transparent{
 		return false;
 	}
 
+	/**
+	 * @phpstan-return \Generator<int, int, void, void>
+	 */
+	private static function getShuffledSpreadFaces(int $sourceFace) : \Generator{
+		$skipAxis = Facing::axis($sourceFace);
+
+		$faces = Facing::ALL;
+		shuffle($faces);
+		foreach($faces as $spreadFace){
+			if(Facing::axis($spreadFace) !== $skipAxis){
+				yield $spreadFace;
+			}
+		}
+	}
+
 	private function spreadAroundSupport(int $sourceFace) : bool{
 		$world = $this->position->getWorld();
 
-		$supportBlock = $this->getSide($sourceFace);
-		foreach($supportBlock->position->sidesAroundAxis(Facing::axis($sourceFace)) as $supportFace => $replacePos){
-			if($this->spread($world, $replacePos, Facing::opposite($supportFace))){
+		$supportPos = $this->position->getSide($sourceFace);
+		foreach(self::getShuffledSpreadFaces($sourceFace) as $spreadFace){
+			$replacePos = $supportPos->getSide($spreadFace);
+			if($this->spread($world, $replacePos, Facing::opposite($spreadFace))){
 				return true;
 			}
 		}
@@ -195,21 +211,17 @@ class GlowLichen extends Transparent{
 	private function spreadAdjacentToSupport(int $sourceFace) : bool{
 		$world = $this->position->getWorld();
 
-		foreach($this->position->sidesAroundAxis(Facing::axis($sourceFace)) as $replacePos){
+		foreach(self::getShuffledSpreadFaces($sourceFace) as $spreadFace){
+			$replacePos = $this->position->getSide($spreadFace);
 			if($this->spread($world, $replacePos, $sourceFace)){
 				return true;
 			}
 		}
-
 		return false;
 	}
 
 	private function spreadWithinSelf(int $sourceFace) : bool{
-		foreach(Facing::ALL as $spreadFace){
-			if(Facing::axis($spreadFace) === Facing::axis($sourceFace)){
-				continue;
-			}
-
+		foreach(self::getShuffledSpreadFaces($sourceFace) as $spreadFace){
 			if(!$this->hasFace($spreadFace) && $this->spread($this->position->getWorld(), $this->position, $spreadFace)){
 				return true;
 			}
