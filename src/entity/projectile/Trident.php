@@ -34,6 +34,8 @@ use pocketmine\item\Trident as TridentItem;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\EntityEventBroadcaster;
+use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
@@ -166,9 +168,10 @@ class Trident extends Projectile{
 
 		if($shouldDespawn){
 			//even if the item was not actually picked up, the animation must be displayed.
-			foreach($this->getViewers() as $viewer){
-				$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
-			}
+			NetworkBroadcastUtils::broadcastEntityEvent(
+				$this->getViewers(),
+				fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onPickUpItem($recipients, $player, $this)
+			);
 			$this->flagForDespawn();
 		}
 	}
