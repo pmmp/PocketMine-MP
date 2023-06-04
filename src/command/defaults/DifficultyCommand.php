@@ -33,9 +33,9 @@ use function count;
 
 class DifficultyCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"difficulty",
 			KnownTranslationFactory::pocketmine_command_difficulty_description(),
 			KnownTranslationFactory::commands_difficulty_usage()
 		);
@@ -43,10 +43,6 @@ class DifficultyCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) !== 1){
 			throw new InvalidCommandSyntaxException();
 		}

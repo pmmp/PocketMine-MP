@@ -23,8 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\data\runtime\RuntimeDataDescriber;
+
 class DetectorRail extends StraightOnlyRail{
 	protected bool $activated = false;
+
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		parent::describeBlockOnlyState($w);
+		$w->bool($this->activated);
+	}
 
 	public function isActivated() : bool{ return $this->activated; }
 
@@ -33,19 +40,5 @@ class DetectorRail extends StraightOnlyRail{
 		$this->activated = $activated;
 		return $this;
 	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		parent::readStateFromData($id, $stateMeta & ~BlockLegacyMetadata::REDSTONE_RAIL_FLAG_POWERED);
-		$this->activated = ($stateMeta & BlockLegacyMetadata::REDSTONE_RAIL_FLAG_POWERED) !== 0;
-	}
-
-	protected function writeStateToMeta() : int{
-		return parent::writeStateToMeta() | ($this->activated ? BlockLegacyMetadata::REDSTONE_RAIL_FLAG_POWERED : 0);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
 	//TODO
 }

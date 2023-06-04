@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\FortuneTrait;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
@@ -40,17 +41,8 @@ class RedstoneOre extends Opaque{
 
 	protected bool $lit = false;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
-		$this->idInfoFlattened = $idInfo;
-		parent::__construct($idInfo, $name, $breakInfo);
-	}
-
-	public function getId() : int{
-		return $this->lit ? $this->idInfoFlattened->getSecondId() : parent::getId();
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->lit = $id === $this->idInfoFlattened->getSecondId();
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->bool($this->lit);
 	}
 
 	public function isLit() : bool{
@@ -69,7 +61,7 @@ class RedstoneOre extends Opaque{
 		return $this->lit ? 9 : 0;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if(!$this->lit){
 			$this->lit = true;
 			$this->position->getWorld()->setBlock($this->position, $this); //no return here - this shouldn't prevent block placement

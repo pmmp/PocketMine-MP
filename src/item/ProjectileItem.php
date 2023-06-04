@@ -36,7 +36,7 @@ abstract class ProjectileItem extends Item{
 
 	abstract protected function createEntity(Location $location, Player $thrower) : Throwable;
 
-	public function onClickAir(Player $player, Vector3 $directionVector) : ItemUseResult{
+	public function onClickAir(Player $player, Vector3 $directionVector, array &$returnedItems) : ItemUseResult{
 		$location = $player->getLocation();
 
 		$projectile = $this->createEntity(Location::fromObject($player->getEyePos(), $player->getWorld(), $location->yaw, $location->pitch), $player);

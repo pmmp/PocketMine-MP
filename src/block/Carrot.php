@@ -30,7 +30,7 @@ use pocketmine\item\VanillaItems;
 class Carrot extends Crops{
 	use FortuneTrait;
 
-	public function getPickedItem(bool $addUserData = false) : Item{
+	public function asItem() : Item{
 		return VanillaItems::CARROT();
 	}
 

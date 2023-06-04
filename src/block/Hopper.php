@@ -24,10 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Hopper as TileHopper;
-use pocketmine\block\utils\BlockDataSerializer;
-use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -40,21 +39,9 @@ class Hopper extends Transparent{
 
 	private int $facing = Facing::DOWN;
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$facing = BlockDataSerializer::readFacing($stateMeta & 0x07);
-		if($facing === Facing::UP){
-			throw new InvalidBlockStateException("Hopper may not face upward");
-		}
-		$this->facing = $facing;
-		$this->powered = ($stateMeta & BlockLegacyMetadata::HOPPER_FLAG_POWERED) !== 0;
-	}
-
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeFacing($this->facing) | ($this->powered ? BlockLegacyMetadata::HOPPER_FLAG_POWERED : 0);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->facingExcept($this->facing, Facing::UP);
+		$w->bool($this->powered);
 	}
 
 	public function getFacing() : int{ return $this->facing; }
@@ -93,7 +80,7 @@ class Hopper extends Transparent{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
 			$tile = $this->position->getWorld()->getTile($this->position);
 			if($tile instanceof TileHopper){ //TODO: find a way to have inventories open on click without this boilerplate in every block

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\block\Liquid;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\event\player\PlayerBucketFillEvent;
@@ -36,28 +37,29 @@ class Bucket extends Item{
 		return 16;
 	}
 
-	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		//TODO: move this to generic placement logic
 		if($blockClicked instanceof Liquid && $blockClicked->isSource()){
 			$stack = clone $this;
 			$stack->pop();
 
-			$resultItem = ItemFactory::getInstance()->get(ItemIds::BUCKET, $blockClicked->getFlowingForm()->getId());
+			$resultItem = match($blockClicked->getTypeId()){
+				BlockTypeIds::LAVA => VanillaItems::LAVA_BUCKET(),
+				BlockTypeIds::WATER => VanillaItems::WATER_BUCKET(),
+				default => null
+			};
+			if($resultItem === null){
+				return ItemUseResult::FAIL();
+			}
+
 			$ev = new PlayerBucketFillEvent($player, $blockReplace, $face, $this, $resultItem);
 			$ev->call();
 			if(!$ev->isCancelled()){
 				$player->getWorld()->setBlock($blockClicked->getPosition(), VanillaBlocks::AIR());
 				$player->getWorld()->addSound($blockClicked->getPosition()->add(0.5, 0.5, 0.5), $blockClicked->getBucketFillSound());
-				if($player->hasFiniteResources()){
-					if($stack->getCount() === 0){
-						$player->getInventory()->setItemInHand($ev->getItem());
-					}else{
-						$player->getInventory()->setItemInHand($stack);
-						$player->getInventory()->addItem($ev->getItem());
-					}
-				}else{
-					$player->getInventory()->addItem($ev->getItem());
-				}
+
+				$this->pop();
+				$returnedItems[] = $ev->getItem();
 				return ItemUseResult::SUCCESS();
 			}
 

@@ -55,4 +55,8 @@ class Potato extends Crops{
 		}
 		return $result;
 	}
+
+	public function asItem() : Item{
+		return VanillaItems::POTATO();
+	}
 }

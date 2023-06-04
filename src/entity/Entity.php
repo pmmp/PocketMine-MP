@@ -60,6 +60,7 @@ use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\Utils;
+use pocketmine\VersionInfo;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\sound\Sound;
@@ -102,127 +103,80 @@ abstract class Entity{
 	}
 
 	/** @var Player[] */
-	protected $hasSpawned = [];
+	protected array $hasSpawned = [];
 
-	/** @var int */
-	protected $id;
+	protected int $id;
 
 	private EntityMetadataCollection $networkProperties;
 
-	/** @var EntityDamageEvent|null */
-	protected $lastDamageCause = null;
+	protected ?EntityDamageEvent $lastDamageCause = null;
 
 	/** @var Block[]|null */
-	protected $blocksAround;
+	protected ?array $blocksAround = null;
 
+	protected Location $location;
+	protected Location $lastLocation;
+	protected Vector3 $motion;
+	protected Vector3 $lastMotion;
+	protected bool $forceMovementUpdate = false;
 	private bool $checkBlockIntersectionsNextTick = true;
 
-	/** @var Location */
-	protected $location;
-	/** @var Location */
-	protected $lastLocation;
-	/** @var Vector3 */
-	protected $motion;
-	/** @var Vector3 */
-	protected $lastMotion;
-	/** @var bool */
-	protected $forceMovementUpdate = false;
+	public AxisAlignedBB $boundingBox;
+	public bool $onGround = false;
 
-	/** @var AxisAlignedBB */
-	public $boundingBox;
-	/** @var bool */
-	public $onGround = false;
-
-	/** @var EntitySizeInfo */
-	public $size;
+	public EntitySizeInfo $size;
 
 	private float $health = 20.0;
 	private int $maxHealth = 20;
 
-	/** @var float */
-	protected $ySize = 0.0;
-	/** @var float */
-	protected $stepHeight = 0.0;
-	/** @var bool */
-	public $keepMovement = false;
+	protected float $ySize = 0.0;
+	protected float $stepHeight = 0.0;
+	public bool $keepMovement = false;
 
-	/** @var float */
-	public $fallDistance = 0.0;
-	/** @var int */
-	public $ticksLived = 0;
-	/** @var int */
-	public $lastUpdate;
-	/** @var int */
-	protected $fireTicks = 0;
-	/** @var bool */
-	public $canCollide = true;
-
-	/** @var bool */
-	protected $isStatic = false;
+	public float $fallDistance = 0.0;
+	public int $ticksLived = 0;
+	public int $lastUpdate;
+	protected int $fireTicks = 0;
 
 	private bool $savedWithChunk = true;
 
-	/** @var bool */
-	public $isCollided = false;
-	/** @var bool */
-	public $isCollidedHorizontally = false;
-	/** @var bool */
-	public $isCollidedVertically = false;
+	public bool $isCollided = false;
+	public bool $isCollidedHorizontally = false;
+	public bool $isCollidedVertically = false;
 
-	/** @var int */
-	public $noDamageTicks = 0;
-	/** @var bool */
-	protected $justCreated = true;
+	public int $noDamageTicks = 0;
+	protected bool $justCreated = true;
 
-	/** @var AttributeMap */
-	protected $attributeMap;
+	protected AttributeMap $attributeMap;
 
-	/** @var float */
-	protected $gravity;
-	/** @var float */
-	protected $drag;
-	/** @var bool */
-	protected $gravityEnabled = true;
+	protected float $gravity;
+	protected float $drag;
+	protected bool $gravityEnabled = true;
 
-	/** @var Server */
-	protected $server;
+	protected Server $server;
 
-	/** @var bool */
-	protected $closed = false;
+	protected bool $closed = false;
 	private bool $closeInFlight = false;
 	private bool $needsDespawn = false;
 
-	/** @var TimingsHandler */
-	protected $timings;
+	protected TimingsHandler $timings;
 
 	protected bool $networkPropertiesDirty = false;
 
-	/** @var string */
-	protected $nameTag = "";
-	/** @var bool */
-	protected $nameTagVisible = true;
-	/** @var bool */
-	protected $alwaysShowNameTag = false;
-	/** @var string */
-	protected $scoreTag = "";
-	/** @var float */
-	protected $scale = 1.0;
+	protected string $nameTag = "";
+	protected bool $nameTagVisible = true;
+	protected bool $alwaysShowNameTag = false;
+	protected string $scoreTag = "";
+	protected float $scale = 1.0;
 
-	/** @var bool */
-	protected $canClimb = false;
-	/** @var bool */
-	protected $canClimbWalls = false;
-	/** @var bool */
-	protected $immobile = false;
-	/** @var bool */
-	protected $invisible = false;
-	/** @var bool */
-	protected $silent = false;
+	protected bool $canClimb = false;
+	protected bool $canClimbWalls = false;
+	protected bool $noClientPredictions = false;
+	protected bool $invisible = false;
+	protected bool $silent = false;
 
-	/** @var int|null */
-	protected $ownerId = null;
-	/** @var int|null */
-	protected $targetId = null;
+	protected ?int $ownerId = null;
+	protected ?int $targetId = null;
 
 	private bool $constructorCalled = false;
 
@@ -236,6 +190,8 @@ abstract class Entity{
 		$this->timings = Timings::getEntityTimings($this);
 
 		$this->size = $this->getInitialSizeInfo();
+		$this->drag = $this->getInitialDragMultiplier();
+		$this->gravity = $this->getInitialGravity();
 
 		$this->id = self::nextRuntimeId();
 		$this->server = $location->getWorld()->getServer();
@@ -268,6 +224,21 @@ abstract class Entity{
 	}
 
 	abstract protected function getInitialSizeInfo() : EntitySizeInfo;
+
+	/**
+	 * Returns the percentage by which the entity's velocity is reduced per tick when moving through air.
+	 * The entity's velocity is multiplied by 1 minus this value.
+	 *
+	 * @return float 0-1
+	 */
+	abstract protected function getInitialDragMultiplier() : float;
+
+	/**
+	 * Returns the downwards acceleration of the entity when falling, in blocks/tick².
+	 *
+	 * @return float minimum 0
+	 */
+	abstract protected function getInitialGravity() : float;
 
 	public function getNameTag() : string{
 		return $this->nameTag;
@@ -344,12 +315,24 @@ abstract class Entity{
 		$this->networkPropertiesDirty = true;
 	}
 
-	public function isImmobile() : bool{
-		return $this->immobile;
+	/**
+	 * Returns whether clients may predict this entity's behaviour and movement. Used for things like water movement,
+	 * burning, and movement smoothing (interpolation).
+	 */
+	public function hasNoClientPredictions() : bool{
+		return $this->noClientPredictions;
 	}
 
-	public function setImmobile(bool $value = true) : void{
-		$this->immobile = $value;
+	/**
+	 * Things such as movement in water, burning, etc. may be predicted by the client. This is sometimes not desirable,
+	 * since server-side logic may differ from client-side prediction. However, things like movement smoothing
+	 * (interpolation) are also controlled by this, so it should be used with care.
+	 *
+	 * Setting this flag will also disable player movement inputs, but this should not be relied on, as cheat clients
+	 * will be able to bypass it.
+	 */
+	public function setNoClientPredictions(bool $value = true) : void{
+		$this->noClientPredictions = $value;
 		$this->networkPropertiesDirty = true;
 	}
 
@@ -506,6 +489,8 @@ abstract class Entity{
 		$nbt->setFloat(self::TAG_FALL_DISTANCE, $this->fallDistance);
 		$nbt->setShort(self::TAG_FIRE, $this->fireTicks);
 		$nbt->setByte(self::TAG_ON_GROUND, $this->onGround ? 1 : 0);
+
+		$nbt->setLong(VersionInfo::TAG_WORLD_DATA_VERSION, VersionInfo::WORLD_DATA_VERSION);
 
 		return $nbt;
 	}
@@ -760,7 +745,7 @@ abstract class Entity{
 		$wasStill = $this->lastMotion->lengthSquared() == 0.0;
 		if($wasStill !== $still){
 			//TODO: hack for client-side AI interference: prevent client sided movement when motion is 0
-			$this->setImmobile($still);
+			$this->setNoClientPredictions($still);
 		}
 
 		if($teleport || $diffPosition > 0.0001 || $diffRotation > 1.0 || (!$wasStill && $still)){
@@ -1681,7 +1666,7 @@ abstract class Entity{
 		$properties->setGenericFlag(EntityMetadataFlags::CAN_CLIMB, $this->canClimb);
 		$properties->setGenericFlag(EntityMetadataFlags::CAN_SHOW_NAMETAG, $this->nameTagVisible);
 		$properties->setGenericFlag(EntityMetadataFlags::HAS_COLLISION, true);
-		$properties->setGenericFlag(EntityMetadataFlags::IMMOBILE, $this->immobile);
+		$properties->setGenericFlag(EntityMetadataFlags::NO_AI, $this->noClientPredictions);
 		$properties->setGenericFlag(EntityMetadataFlags::INVISIBLE, $this->invisible);
 		$properties->setGenericFlag(EntityMetadataFlags::SILENT, $this->silent);
 		$properties->setGenericFlag(EntityMetadataFlags::ONFIRE, $this->isOnFire());

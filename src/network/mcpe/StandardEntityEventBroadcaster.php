@@ -51,7 +51,8 @@ use const SORT_NUMERIC;
 final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 
 	public function __construct(
-		private StandardPacketBroadcaster $broadcaster
+		private StandardPacketBroadcaster $broadcaster,
+		private TypeConverter $typeConverter
 	){}
 
 	/**
@@ -103,7 +104,7 @@ final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 		$inv = $mob->getInventory();
 		$this->sendDataPacket($recipients, MobEquipmentPacket::create(
 			$mob->getId(),
-			ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($inv->getItemInHand())),
+			ItemStackWrapper::legacy($this->typeConverter->coreItemStackToNet($inv->getItemInHand())),
 			$inv->getHeldItemIndex(),
 			$inv->getHeldItemIndex(),
 			ContainerIds::INVENTORY
@@ -114,7 +115,7 @@ final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 		$inv = $mob->getOffHandInventory();
 		$this->sendDataPacket($recipients, MobEquipmentPacket::create(
 			$mob->getId(),
-			ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($inv->getItem(0))),
+			ItemStackWrapper::legacy($this->typeConverter->coreItemStackToNet($inv->getItem(0))),
 			0,
 			0,
 			ContainerIds::OFFHAND
@@ -123,7 +124,7 @@ final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 
 	public function onMobArmorChange(array $recipients, Living $mob) : void{
 		$inv = $mob->getArmorInventory();
-		$converter = TypeConverter::getInstance();
+		$converter = $this->typeConverter;
 		$this->sendDataPacket($recipients, MobArmorEquipmentPacket::create(
 			$mob->getId(),
 			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getHelmet())),

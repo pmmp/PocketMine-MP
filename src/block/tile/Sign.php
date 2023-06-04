@@ -24,8 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\block\utils\SignText;
+use pocketmine\color\Color;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\utils\Binary;
 use pocketmine\world\World;
@@ -64,11 +67,8 @@ class Sign extends Spawnable{
 		return array_slice(array_pad(explode("\n", $blob), 4, ""), 0, 4);
 	}
 
-	/** @var SignText */
-	protected $text;
-
-	/** @var int|null */
-	protected $editorEntityRuntimeId = null;
+	protected SignText $text;
+	protected ?int $editorEntityRuntimeId = null;
 
 	public function __construct(World $world, Vector3 $pos){
 		$this->text = new SignText();
@@ -77,7 +77,20 @@ class Sign extends Spawnable{
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		if(($textBlobTag = $nbt->getTag(self::TAG_TEXT_BLOB)) instanceof StringTag){ //MCPE 1.2 save format
-			$this->text = SignText::fromBlob(mb_scrub($textBlobTag->getValue(), 'UTF-8'));
+			$baseColor = new Color(0, 0, 0);
+			$glowingText = false;
+			if(($baseColorTag = $nbt->getTag(self::TAG_TEXT_COLOR)) instanceof IntTag){
+				$baseColor = Color::fromARGB(Binary::unsignInt($baseColorTag->getValue()));
+			}
+			if(
+				($glowingTextTag = $nbt->getTag(self::TAG_GLOWING_TEXT)) instanceof ByteTag &&
+				($lightingBugResolvedTag = $nbt->getTag(self::TAG_LEGACY_BUG_RESOLVE)) instanceof ByteTag
+			){
+				//both of these must be 1 - if only one is set, it's a leftover from 1.16.210 experimental features
+				//see https://bugs.mojang.com/browse/MCPE-117835
+				$glowingText = $glowingTextTag->getValue() !== 0 && $lightingBugResolvedTag->getValue() !== 0;
+			}
+			$this->text = SignText::fromBlob(mb_scrub($textBlobTag->getValue(), 'UTF-8'), $baseColor, $glowingText);
 		}else{
 			$text = [];
 			for($i = 0; $i < SignText::LINE_COUNT; ++$i){
@@ -97,6 +110,9 @@ class Sign extends Spawnable{
 			$textKey = sprintf(self::TAG_TEXT_LINE, $i + 1);
 			$nbt->setString($textKey, $this->text->getLine($i));
 		}
+		$nbt->setInt(self::TAG_TEXT_COLOR, Binary::signInt($this->text->getBaseColor()->toARGB()));
+		$nbt->setByte(self::TAG_GLOWING_TEXT, $this->text->isGlowing() ? 1 : 0);
+		$nbt->setByte(self::TAG_LEGACY_BUG_RESOLVE, 1);
 	}
 
 	public function getText() : SignText{
@@ -124,21 +140,19 @@ class Sign extends Spawnable{
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		$textPolyfill = function(CompoundTag $textTag) : CompoundTag{
-			//the following are not yet used by the server, but needed to roll back any changes to glowing state or colour
-			//if the client uses dye on the sign
-			return $textTag
-				->setInt(self::TAG_TEXT_COLOR, Binary::signInt(0xff_00_00_00))
-				->setByte(self::TAG_GLOWING_TEXT, 0)
-				->setByte(self::TAG_PERSIST_FORMATTING, 1); //TODO: not sure what this is used for
-		};
-		$nbt->setTag(self::TAG_FRONT_TEXT, $textPolyfill(CompoundTag::create()
+		$nbt->setTag(self::TAG_FRONT_TEXT, CompoundTag::create()
 			->setString(self::TAG_TEXT_BLOB, implode("\n", $this->text->getLines()))
-		));
+			->setInt(self::TAG_TEXT_COLOR, Binary::signInt($this->text->getBaseColor()->toARGB()))
+			->setByte(self::TAG_GLOWING_TEXT, $this->text->isGlowing() ? 1 : 0)
+			->setByte(self::TAG_PERSIST_FORMATTING, 1) //TODO: not sure what this is used for
+		);
 		//TODO: this is not yet used by the server, but needed to rollback any client-side changes to the back text
-		$nbt->setTag(self::TAG_BACK_TEXT, $textPolyfill(CompoundTag::create()
+		$nbt->setTag(self::TAG_BACK_TEXT, CompoundTag::create()
 			->setString(self::TAG_TEXT_BLOB, "")
-		));
+			->setInt(self::TAG_TEXT_COLOR, Binary::signInt(0xff_00_00_00))
+			->setByte(self::TAG_GLOWING_TEXT, 0)
+			->setByte(self::TAG_PERSIST_FORMATTING, 1)
+		);
 		$nbt->setByte(self::TAG_WAXED, 0);
 		$nbt->setLong(self::TAG_LOCKED_FOR_EDITING_BY, $this->editorEntityRuntimeId ?? -1);
 	}

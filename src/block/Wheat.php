@@ -52,4 +52,8 @@ class Wheat extends Crops{
 			];
 		}
 	}
+
+	public function asItem() : Item{
+		return VanillaItems::WHEAT_SEEDS();
+	}
 }
