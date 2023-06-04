@@ -827,6 +827,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFacing($in->readHorizontalFacing())
 				->setLit(false);
 		});
+		$this->map(Ids::GLOW_LICHEN, fn(Reader $in) => Blocks::GLOW_LICHEN()->setFaces($in->readFacingFlags()));
 		$this->map(Ids::GLOW_FRAME, fn(Reader $in) => Helper::decodeItemFrame(Blocks::GLOWING_ITEM_FRAME(), $in));
 		$this->map(Ids::GOLDEN_RAIL, function(Reader $in) : Block{
 			return Blocks::POWERED_RAIL()

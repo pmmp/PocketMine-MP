@@ -39,6 +39,11 @@ interface RuntimeDataDescriber extends RuntimeEnumDescriber{
 	/**
 	 * @param int[] $faces
 	 */
+	public function facingFlags(array &$faces) : void;
+
+	/**
+	 * @param int[] $faces
+	 */
 	public function horizontalFacingFlags(array &$faces) : void;
 
 	public function facing(int &$facing) : void;

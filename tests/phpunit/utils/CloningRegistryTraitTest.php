@@ -30,7 +30,7 @@ final class CloningRegistryTraitTest extends TestCase{
 	/**
 	 * @phpstan-return \Generator<int, array{\Closure() : \stdClass}, void, void>
 	 */
-	public function cloningRegistryMembersProvider() : \Generator{
+	public static function cloningRegistryMembersProvider() : \Generator{
 		yield [function() : \stdClass{ return TestCloningRegistry::TEST1(); }];
 		yield [function() : \stdClass{ return TestCloningRegistry::TEST2(); }];
 		yield [function() : \stdClass{ return TestCloningRegistry::TEST3(); }];

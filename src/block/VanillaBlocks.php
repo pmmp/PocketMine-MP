@@ -417,6 +417,7 @@ use function mb_strtolower;
  * @method static ItemFrame GLOWING_ITEM_FRAME()
  * @method static GlowingObsidian GLOWING_OBSIDIAN()
  * @method static Glowstone GLOWSTONE()
+ * @method static GlowLichen GLOW_LICHEN()
  * @method static Opaque GOLD()
  * @method static GoldOre GOLD_ORE()
  * @method static Opaque GRANITE()
@@ -864,6 +865,7 @@ final class VanillaBlocks{
 		self::register("glass_pane", new GlassPane(new BID(Ids::GLASS_PANE), "Glass Pane", $glassBreakInfo));
 		self::register("glowing_obsidian", new GlowingObsidian(new BID(Ids::GLOWING_OBSIDIAN), "Glowing Obsidian", new Info(BreakInfo::pickaxe(10.0, ToolTier::DIAMOND(), 50.0))));
 		self::register("glowstone", new Glowstone(new BID(Ids::GLOWSTONE), "Glowstone", new Info(BreakInfo::pickaxe(0.3))));
+		self::register("glow_lichen", new GlowLichen(new BID(Ids::GLOW_LICHEN), "Glow Lichen", new Info(BreakInfo::axe(0.2, null, 0.2))));
 		self::register("gold", new Opaque(new BID(Ids::GOLD), "Gold Block", new Info(BreakInfo::pickaxe(3.0, ToolTier::IRON(), 30.0))));
 
 		$grassBreakInfo = BreakInfo::shovel(0.6);
