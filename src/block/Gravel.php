@@ -45,8 +45,4 @@ class Gravel extends Opaque implements Fallable{
 	public function isAffectedBySilkTouch() : bool{
 		return true;
 	}
-
-	public function tickFalling() : ?Block{
-		return null;
-	}
 }

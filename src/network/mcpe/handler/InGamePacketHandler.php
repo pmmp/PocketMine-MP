@@ -45,8 +45,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
-use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
@@ -136,18 +134,15 @@ use const JSON_THROW_ON_ERROR;
 class InGamePacketHandler extends PacketHandler{
 	private const MAX_FORM_RESPONSE_DEPTH = 2; //modal/simple will be 1, custom forms 2 - they will never contain anything other than string|int|float|bool|null
 
-	/** @var float */
-	protected $lastRightClickTime = 0.0;
-	/** @var UseItemTransactionData|null */
-	protected $lastRightClickData = null;
+	protected float $lastRightClickTime = 0.0;
+	protected ?UseItemTransactionData $lastRightClickData = null;
 
 	protected ?Vector3 $lastPlayerAuthInputPosition = null;
 	protected ?float $lastPlayerAuthInputYaw = null;
 	protected ?float $lastPlayerAuthInputPitch = null;
 	protected ?int $lastPlayerAuthInputFlags = null;
 
-	/** @var bool */
-	public $forceMoveSync = false;
+	public bool $forceMoveSync = false;
 
 	protected ?string $lastRequestedFullSkinId = null;
 
@@ -446,7 +441,7 @@ class InGamePacketHandler extends PacketHandler{
 		if($sourceSlotItem->getCount() < $droppedCount){
 			return false;
 		}
-		$serverItemStack = TypeConverter::getInstance()->coreItemStackToNet($sourceSlotItem);
+		$serverItemStack = $this->session->getTypeConverter()->coreItemStackToNet($sourceSlotItem);
 		//because the client doesn't tell us the expected itemstack ID, we have to deep-compare our known
 		//itemstack info with the one the client sent. This is costly, but we don't have any other option :(
 		if(!$serverItemStack->equals($clientItemStack)){
@@ -779,7 +774,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
-		$gameMode = TypeConverter::getInstance()->protocolGameModeToCore($packet->gamemode);
+		$gameMode = $this->session->getTypeConverter()->protocolGameModeToCore($packet->gamemode);
 		if($gameMode === null || !$gameMode->equals($this->player->getGamemode())){
 			//Set this back to default. TODO: handle this properly
 			$this->session->syncGameMode($this->player->getGamemode(), true);
@@ -841,7 +836,7 @@ class InGamePacketHandler extends PacketHandler{
 
 		$this->session->getLogger()->debug("Processing skin change request");
 		try{
-			$skin = SkinAdapterSingleton::get()->fromSkinData($packet->skin);
+			$skin = $this->session->getTypeConverter()->getSkinAdapter()->fromSkinData($packet->skin);
 		}catch(InvalidSkinException $e){
 			throw PacketHandlingException::wrap($e, "Invalid skin in PlayerSkinPacket");
 		}

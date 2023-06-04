@@ -24,21 +24,26 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\compression;
 
 use pocketmine\scheduler\AsyncTask;
+use pocketmine\thread\NonThreadSafeValue;
 
 class CompressBatchTask extends AsyncTask{
 
 	private const TLS_KEY_PROMISE = "promise";
 
+	/** @phpstan-var NonThreadSafeValue<Compressor> */
+	private NonThreadSafeValue $compressor;
+
 	public function __construct(
 		private string $data,
 		CompressBatchPromise $promise,
-		private Compressor $compressor
+		Compressor $compressor
 	){
+		$this->compressor = new NonThreadSafeValue($compressor);
 		$this->storeLocal(self::TLS_KEY_PROMISE, $promise);
 	}
 
 	public function onRun() : void{
-		$this->setResult($this->compressor->compress($this->data));
+		$this->setResult($this->compressor->deserialize()->compress($this->data));
 	}
 
 	public function onCompletion() : void{
