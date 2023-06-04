@@ -24,8 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Bamboo as ItemBamboo;
 use pocketmine\item\Fertilizer;
@@ -56,9 +55,7 @@ class Bamboo extends Transparent{
 	protected bool $ready = false;
 	protected int $leafSize = self::NO_LEAVES;
 
-	public function getRequiredStateDataBits() : int{ return 4; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(2, self::NO_LEAVES, self::LARGE_LEAVES, $this->leafSize);
 		$w->bool($this->thick);
 		$w->bool($this->ready);
@@ -134,7 +131,7 @@ class Bamboo extends Transparent{
 	private function seekToTop() : Bamboo{
 		$world = $this->position->getWorld();
 		$top = $this;
-		while(($next = $world->getBlock($top->position->up())) instanceof Bamboo && $next->isSameType($this)){
+		while(($next = $world->getBlock($top->position->up())) instanceof Bamboo && $next->hasSameTypeId($this)){
 			$top = $next;
 		}
 		return $top;
@@ -159,7 +156,7 @@ class Bamboo extends Transparent{
 	public function onNearbyBlockChange() : void{
 		$world = $this->position->getWorld();
 		$below = $world->getBlock($this->position->down());
-		if(!$this->canBeSupportedBy($below) && !$below->isSameType($this)){
+		if(!$this->canBeSupportedBy($below) && !$below->hasSameTypeId($this)){
 			$world->useBreakOn($this->position);
 		}
 	}
@@ -171,7 +168,7 @@ class Bamboo extends Transparent{
 		}
 
 		$height = 1;
-		while($world->getBlock($this->position->subtract(0, $height, 0))->isSameType($this)){
+		while($world->getBlock($this->position->subtract(0, $height, 0))->hasSameTypeId($this)){
 			if(++$height >= $maxHeight){
 				return false;
 			}

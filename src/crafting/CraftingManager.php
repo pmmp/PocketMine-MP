@@ -29,22 +29,33 @@ use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\DestructorCallbackTrait;
 use pocketmine\utils\ObjectSet;
-use function morton2d_encode;
 use function usort;
 
 class CraftingManager{
 	use DestructorCallbackTrait;
 
-	/** @var ShapedRecipe[][] */
+	/**
+	 * @var ShapedRecipe[][]
+	 * @phpstan-var array<string, list<ShapedRecipe>>
+	 */
 	protected array $shapedRecipes = [];
-	/** @var ShapelessRecipe[][] */
+	/**
+	 * @var ShapelessRecipe[][]
+	 * @phpstan-var array<string, list<ShapelessRecipe>>
+	 */
 	protected array $shapelessRecipes = [];
+
+	/**
+	 * @var CraftingRecipe[]
+	 * @phpstan-var array<int, CraftingRecipe>
+	 */
+	private array $craftingRecipeIndex = [];
 
 	/**
 	 * @var FurnaceRecipeManager[]
 	 * @phpstan-var array<int, FurnaceRecipeManager>
 	 */
-	protected array $furnaceRecipeManagers;
+	protected array $furnaceRecipeManagers = [];
 
 	/**
 	 * @var PotionTypeRecipe[][]
@@ -91,7 +102,7 @@ class CraftingManager{
 	 */
 	public static function sort(Item $i1, Item $i2) : int{
 		//Use spaceship operator to compare each property, then try the next one if they are equivalent.
-		($retval = $i1->getTypeId() <=> $i2->getTypeId()) === 0 && ($retval = $i1->computeTypeData() <=> $i2->computeTypeData()) === 0 && ($retval = $i1->getCount() <=> $i2->getCount()) === 0;
+		($retval = $i1->getStateId() <=> $i2->getStateId()) === 0 && ($retval = $i1->getCount() <=> $i2->getCount()) === 0;
 
 		return $retval;
 	}
@@ -130,7 +141,7 @@ class CraftingManager{
 		foreach($outputs as $o){
 			//count is not written because the outputs might be from multiple repetitions of a single recipe
 			//this reduces the accuracy of the hash, but it won't matter in most cases.
-			$result->putVarInt(morton2d_encode($o->getTypeId(), $o->computeTypeData()));
+			$result->putVarInt($o->getStateId());
 			$result->put((new LittleEndianNbtSerializer())->write(new TreeRoot($o->getNamedTag())));
 		}
 
@@ -139,6 +150,7 @@ class CraftingManager{
 
 	/**
 	 * @return ShapelessRecipe[][]
+	 * @phpstan-return array<string, list<ShapelessRecipe>>
 	 */
 	public function getShapelessRecipes() : array{
 		return $this->shapelessRecipes;
@@ -146,9 +158,22 @@ class CraftingManager{
 
 	/**
 	 * @return ShapedRecipe[][]
+	 * @phpstan-return array<string, list<ShapedRecipe>>
 	 */
 	public function getShapedRecipes() : array{
 		return $this->shapedRecipes;
+	}
+
+	/**
+	 * @return CraftingRecipe[]
+	 * @phpstan-return array<int, CraftingRecipe>
+	 */
+	public function getCraftingRecipeIndex() : array{
+		return $this->craftingRecipeIndex;
+	}
+
+	public function getCraftingRecipeFromIndex(int $index) : ?CraftingRecipe{
+		return $this->craftingRecipeIndex[$index] ?? null;
 	}
 
 	public function getFurnaceRecipeManager(FurnaceType $furnaceType) : FurnaceRecipeManager{
@@ -173,6 +198,7 @@ class CraftingManager{
 
 	public function registerShapedRecipe(ShapedRecipe $recipe) : void{
 		$this->shapedRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
+		$this->craftingRecipeIndex[] = $recipe;
 
 		foreach($this->recipeRegisteredCallbacks as $callback){
 			$callback();
@@ -181,6 +207,7 @@ class CraftingManager{
 
 	public function registerShapelessRecipe(ShapelessRecipe $recipe) : void{
 		$this->shapelessRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
+		$this->craftingRecipeIndex[] = $recipe;
 
 		foreach($this->recipeRegisteredCallbacks as $callback){
 			$callback();
@@ -255,8 +282,8 @@ class CraftingManager{
 	}
 
 	public function matchBrewingRecipe(Item $input, Item $ingredient) : ?BrewingRecipe{
-		$inputHash = morton2d_encode($input->getTypeId(), $input->computeTypeData());
-		$ingredientHash = morton2d_encode($ingredient->getTypeId(), $ingredient->computeTypeData());
+		$inputHash = $input->getStateId();
+		$ingredientHash = $ingredient->getStateId();
 		$cached = $this->brewingRecipeCache[$inputHash][$ingredientHash] ?? null;
 		if($cached !== null){
 			return $cached;

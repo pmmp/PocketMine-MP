@@ -48,12 +48,12 @@ final class ZlibCompressor implements Compressor{
 
 	public function __construct(
 		private int $level,
-		private int $minCompressionSize,
+		private ?int $minCompressionSize,
 		private int $maxDecompressionSize
 	){}
 
-	public function willCompress(string $data) : bool{
-		return $this->minCompressionSize > -1 && strlen($data) >= $this->minCompressionSize;
+	public function getCompressionThreshold() : ?int{
+		return $this->minCompressionSize;
 	}
 
 	/**
@@ -72,11 +72,12 @@ final class ZlibCompressor implements Compressor{
 	}
 
 	public function compress(string $payload) : string{
+		$compressible = $this->minCompressionSize !== null && strlen($payload) >= $this->minCompressionSize;
 		if(function_exists('libdeflate_deflate_compress')){
-			return $this->willCompress($payload) ?
+			return $compressible ?
 				libdeflate_deflate_compress($payload, $this->level) :
 				self::zlib_encode($payload, 0);
 		}
-		return self::zlib_encode($payload, $this->willCompress($payload) ? $this->level : 0);
+		return self::zlib_encode($payload, $compressible ? $this->level : 0);
 	}
 }

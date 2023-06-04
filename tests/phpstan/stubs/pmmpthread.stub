@@ -1,0 +1,35 @@
+<?php
+
+namespace pmmp\thread;
+
+/**
+ * @implements \IteratorAggregate<array-key, mixed>
+ */
+abstract class ThreadSafe implements \IteratorAggregate{
+
+    /**
+     * @template TReturn
+     * @param \Closure() : TReturn $function
+     * @param mixed ...$args
+     * @return TReturn
+     */
+    public function synchronized(\Closure $function, mixed ...$args) : mixed{}
+}
+
+/**
+ * @template TKey of array-key
+ * @template TValue
+ * @implements \ArrayAccess<TKey, TValue>
+ */
+final class ThreadSafeArray extends ThreadSafe implements \Countable, \ArrayAccess{
+
+    /**
+     * @return TValue|null
+     */
+    public function pop() : mixed{}
+
+    /**
+     * @return TValue|null
+     */
+    public function shift() : mixed{}
+}
