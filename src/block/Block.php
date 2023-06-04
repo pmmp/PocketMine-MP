@@ -428,7 +428,7 @@ class Block{
 	 */
 	public function onBreak(Item $item, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->onDestroy();
-		$world->setBlock($this->position, VanillaBlocks::AIR());
+		$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
 		return true;
 	}
 
@@ -436,8 +436,7 @@ class Block{
 	 * Called when this block is destroyed either when a player breaks it or is hit by an explosion.
 	 */
 	public function onDestroy() : void{
-		$world = $this->position->getWorld();
-		if(($t = $world->getTile($this->position)) !== null){
+		if(($t = $this->position->getWorld()->getTile($this->position)) !== null){
 			$t->onBlockDestroyed(); //needed to create drops for inventories
 		}
 	}
