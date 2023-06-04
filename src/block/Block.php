@@ -566,7 +566,7 @@ class Block{
 				return $this->getSilkTouchDrops($item);
 			}
 
-			if ($item->hasEnchantment(VanillaEnchantments::FORTUNE())) {
+			if ($item->hasEnchantment(VanillaEnchantments::FORTUNE())){
 				return $this->getFortuneDrops($item);
 			}
 
