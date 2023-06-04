@@ -27,7 +27,6 @@ use pocketmine\item\Item;
 use pocketmine\item\Record;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\convert\TypeConverter;
-use pocketmine\world\sound\RecordStopSound;
 
 class Jukebox extends Spawnable{
 	private const TAG_RECORD = "RecordItem"; //Item CompoundTag
@@ -62,9 +61,5 @@ class Jukebox extends Spawnable{
 		if($this->record !== null){
 			$nbt->setTag(self::TAG_RECORD, TypeConverter::getInstance()->getItemTranslator()->toNetworkNbt($this->record));
 		}
-	}
-
-	protected function onBlockDestroyedHook() : void{
-		$this->position->getWorld()->addSound($this->position, new RecordStopSound());
 	}
 }
