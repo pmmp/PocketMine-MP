@@ -120,8 +120,8 @@ namespace pocketmine {
 		}
 
 		if(($pmmpthread_version = phpversion("pmmpthread")) !== false){
-			if(version_compare($pmmpthread_version, "6.0.0-beta1") < 0 || version_compare($pmmpthread_version, "7.0.0") >= 0){
-				$messages[] = "pmmpthread ^6.0.0 is required, while you have $pmmpthread_version.";
+			if(version_compare($pmmpthread_version, "6.0.1") < 0 || version_compare($pmmpthread_version, "7.0.0") >= 0){
+				$messages[] = "pmmpthread ^6.0.1 is required, while you have $pmmpthread_version.";
 			}
 		}
 
