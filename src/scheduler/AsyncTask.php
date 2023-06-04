@@ -28,7 +28,6 @@ use pmmp\thread\Thread as NativeThread;
 use pmmp\thread\ThreadSafe;
 use pmmp\thread\ThreadSafeArray;
 use pocketmine\thread\NonThreadSafeValue;
-use pocketmine\timings\Timings;
 use function assert;
 use function igbinary_serialize;
 use function igbinary_unserialize;
@@ -171,14 +170,8 @@ abstract class AsyncTask extends Runnable{
 	 * @internal Only call from AsyncPool.php on the main thread
 	 */
 	public function checkProgressUpdates() : void{
-		$timing = Timings::getAsyncTasksProgressUpdateTimings($this);
-		$timing->startTiming();
-		try{
-			while(($progress = $this->progressUpdates->shift()) !== null){
-				$this->onProgressUpdate(igbinary_unserialize($progress));
-			}
-		} finally{
-			$timing->stopTiming();
+		while(($progress = $this->progressUpdates->shift()) !== null){
+			$this->onProgressUpdate(igbinary_unserialize($progress));
 		}
 	}
 

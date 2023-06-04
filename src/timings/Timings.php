@@ -307,39 +307,39 @@ abstract class Timings{
 		return self::$eventHandlers[$event][$handlerName];
 	}
 
-	public static function getAsyncTasksProgressUpdateTimings(AsyncTask $task) : TimingsHandler{
-		$taskClass = get_class($task);
+	public static function getAsyncTasksProgressUpdateTimings(AsyncTask $task, string $group = self::GROUP_BREAKDOWN) : TimingsHandler{
+		$taskClass = $task::class;
 		if(!isset(self::$asyncTasksProgressUpdate[$taskClass])){
 			self::$asyncTasksProgressUpdate[$taskClass] = new TimingsHandler(
-				"AsyncTask Progress Update - " . $taskClass,
+				"Progress Updates - " . self::shortenCoreClassName($taskClass, "pocketmine\\"),
 				self::$schedulerAsync,
-				self::GROUP_BREAKDOWN
+				$group
 			);
 		}
 
 		return self::$asyncTasksProgressUpdate[$taskClass];
 	}
 
-	public static function getAsyncTasksCompletionTimings(AsyncTask $task) : TimingsHandler{
-		$taskClass = get_class($task);
+	public static function getAsyncTasksCompletionTimings(AsyncTask $task, string $group = self::GROUP_BREAKDOWN) : TimingsHandler{
+		$taskClass = $task::class;
 		if(!isset(self::$asyncTasksCompletion[$taskClass])){
 			self::$asyncTasksCompletion[$taskClass] = new TimingsHandler(
-				"AsyncTask Completion - " . $taskClass,
+				"Completion - " . self::shortenCoreClassName($taskClass, "pocketmine\\"),
 				self::$schedulerAsync,
-				self::GROUP_BREAKDOWN
+				$group
 			);
 		}
 
 		return self::$asyncTasksCompletion[$taskClass];
 	}
 
-	public static function getAsyncTasksErrorTimings(AsyncTask $task) : TimingsHandler{
-		$taskClass = get_class($task);
+	public static function getAsyncTasksErrorTimings(AsyncTask $task, string $group = self::GROUP_BREAKDOWN) : TimingsHandler{
+		$taskClass = $task::class;
 		if(!isset(self::$asyncTasksError[$taskClass])){
 			self::$asyncTasksError[$taskClass] = new TimingsHandler(
-				"AsyncTask Error - " . $taskClass,
+				"Error - " . self::shortenCoreClassName($taskClass, "pocketmine\\"),
 				self::$schedulerAsync,
-				self::GROUP_BREAKDOWN
+				$group
 			);
 		}
 

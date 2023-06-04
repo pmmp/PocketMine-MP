@@ -247,7 +247,9 @@ class AsyncPool{
 					 * lost. Thus, it's necessary to do one last check here to make sure all progress updates have
 					 * been consumed before completing.
 					 */
-					$task->checkProgressUpdates();
+					Timings::getAsyncTasksProgressUpdateTimings($task)->time(function() use ($task) : void{
+						$task->checkProgressUpdates();
+					});
 					Timings::getAsyncTasksCompletionTimings($task)->time(function() use ($task) : void{
 						$task->onCompletion();
 					});
