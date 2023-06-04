@@ -79,6 +79,7 @@ use pocketmine\block\Froglight;
 use pocketmine\block\FrostedIce;
 use pocketmine\block\Furnace;
 use pocketmine\block\GlazedTerracotta;
+use pocketmine\block\GlowLichen;
 use pocketmine\block\HayBale;
 use pocketmine\block\Hopper;
 use pocketmine\block\ItemFrame;
@@ -1030,6 +1031,10 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeInt(StateNames::AGE, $block->getAge());
 		});
 		$this->map(Blocks::FURNACE(), fn(Furnace $block) => Helper::encodeFurnace($block, Ids::FURNACE, Ids::LIT_FURNACE));
+		$this->map(Blocks::GLOW_LICHEN(), function(GlowLichen $block) : Writer{
+			return Writer::create(Ids::GLOW_LICHEN)
+				->writeFacingFlags($block->getFaces());
+		});
 		$this->map(Blocks::GLOWING_ITEM_FRAME(), fn(ItemFrame $block) => Helper::encodeItemFrame($block, Ids::GLOW_FRAME));
 		$this->map(Blocks::GRANITE(), fn() => Helper::encodeStone(StringValues::STONE_TYPE_GRANITE));
 		$this->map(Blocks::GRANITE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab3($block, StringValues::STONE_SLAB_TYPE_3_GRANITE));

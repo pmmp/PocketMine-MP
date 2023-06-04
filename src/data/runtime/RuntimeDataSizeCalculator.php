@@ -56,12 +56,12 @@ final class RuntimeDataSizeCalculator implements RuntimeDataDescriber{
 		$this->addBits(2);
 	}
 
-	/**
-	 * @inheritDoc
-	 */
+	public function facingFlags(array &$faces) : void{
+		$this->addBits(count(Facing::ALL));
+	}
+
 	public function horizontalFacingFlags(array &$faces) : void{
 		$this->addBits(count(Facing::HORIZONTAL));
-		// TODO: Implement horizontalFacingFlags() method.
 	}
 
 	public function facing(int &$facing) : void{
