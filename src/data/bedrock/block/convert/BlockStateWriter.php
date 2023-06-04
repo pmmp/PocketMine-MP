@@ -281,6 +281,6 @@ final class BlockStateWriter{
 	}
 
 	public function getBlockStateData() : BlockStateData{
-		return new BlockStateData($this->id, $this->states, BlockStateData::CURRENT_VERSION);
+		return BlockStateData::current($this->id, $this->states);
 	}
 }

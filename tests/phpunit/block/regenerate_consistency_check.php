@@ -22,17 +22,17 @@
 declare(strict_types=1);
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
+use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\utils\AssumptionFailedError;
 
 require dirname(__DIR__, 3) . '/vendor/autoload.php';
 
 /* This script needs to be re-run after any intentional blockfactory change (adding or removing a block state). */
 
-$factory = new \pocketmine\block\BlockFactory();
+$factory = new \pocketmine\block\RuntimeBlockStateRegistry();
 $remaps = [];
 $new = [];
-foreach(BlockFactory::getInstance()->getAllKnownStates() as $index => $block){
+foreach(RuntimeBlockStateRegistry::getInstance()->getAllKnownStates() as $index => $block){
 	if($index !== $block->getStateId()){
 		throw new AssumptionFailedError("State index should always match state ID");
 	}

@@ -23,14 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\resourcepacks;
 
-use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\utils\Config;
+use pocketmine\utils\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use function array_keys;
 use function copy;
 use function count;
 use function file_exists;
-use function file_get_contents;
 use function gettype;
 use function is_array;
 use function is_dir;
@@ -104,10 +103,8 @@ class ResourcePackManager{
 				$keyPath = Path::join($this->path, $pack . ".key");
 				if(file_exists($keyPath)){
 					try{
-						$key = ErrorToExceptionHandler::trapAndRemoveFalse(
-							fn() => file_get_contents($keyPath)
-						);
-					}catch(\ErrorException $e){
+						$key = Filesystem::fileGetContents($keyPath);
+					}catch(\RuntimeException $e){
 						throw new ResourcePackException("Could not read encryption key file: " . $e->getMessage(), 0, $e);
 					}
 					$key = rtrim($key, "\r\n");

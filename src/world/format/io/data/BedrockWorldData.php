@@ -33,6 +33,7 @@ use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Limits;
+use pocketmine\VersionInfo;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\generator\Flat;
@@ -41,7 +42,6 @@ use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
 use Symfony\Component\Filesystem\Path;
 use function array_map;
-use function file_get_contents;
 use function file_put_contents;
 use function strlen;
 use function substr;
@@ -50,11 +50,11 @@ use function time;
 class BedrockWorldData extends BaseNbtWorldData{
 
 	public const CURRENT_STORAGE_VERSION = 10;
-	public const CURRENT_STORAGE_NETWORK_VERSION = 560;
+	public const CURRENT_STORAGE_NETWORK_VERSION = 582;
 	public const CURRENT_CLIENT_VERSION_TARGET = [
 		1, //major
 		19, //minor
-		50, //patch
+		80, //patch
 		0, //revision
 		0 //is beta
 	];
@@ -138,9 +138,10 @@ class BedrockWorldData extends BaseNbtWorldData{
 	}
 
 	protected function load() : CompoundTag{
-		$rawLevelData = @file_get_contents($this->dataPath);
-		if($rawLevelData === false){
-			throw new CorruptedWorldException("Failed to read level.dat (permission denied or doesn't exist)");
+		try{
+			$rawLevelData = Filesystem::fileGetContents($this->dataPath);
+		}catch(\RuntimeException $e){
+			throw new CorruptedWorldException($e->getMessage(), 0, $e);
 		}
 		if(strlen($rawLevelData) <= 8){
 			throw new CorruptedWorldException("Truncated level.dat");
@@ -155,6 +156,12 @@ class BedrockWorldData extends BaseNbtWorldData{
 		$version = $worldData->getInt(self::TAG_STORAGE_VERSION, Limits::INT32_MAX);
 		if($version > self::CURRENT_STORAGE_VERSION){
 			throw new UnsupportedWorldFormatException("LevelDB world format version $version is currently unsupported");
+		}
+		//StorageVersion is rarely updated - instead, the game relies on the NetworkVersion tag, which is synced with
+		//the network protocol version for that version.
+		$protocolVersion = $worldData->getInt(self::TAG_NETWORK_VERSION, Limits::INT32_MAX);
+		if($protocolVersion > self::CURRENT_STORAGE_NETWORK_VERSION){
+			throw new UnsupportedWorldFormatException("LevelDB world protocol version $protocolVersion is currently unsupported");
 		}
 
 		return $worldData;
@@ -195,6 +202,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 		$this->compoundTag->setInt(self::TAG_NETWORK_VERSION, self::CURRENT_STORAGE_NETWORK_VERSION);
 		$this->compoundTag->setInt(self::TAG_STORAGE_VERSION, self::CURRENT_STORAGE_VERSION);
 		$this->compoundTag->setTag(self::TAG_LAST_OPENED_WITH_VERSION, new ListTag(array_map(fn(int $v) => new IntTag($v), self::CURRENT_CLIENT_VERSION_TARGET)));
+		$this->compoundTag->setLong(VersionInfo::TAG_WORLD_DATA_VERSION, VersionInfo::WORLD_DATA_VERSION);
 
 		$nbt = new LittleEndianNbtSerializer();
 		$buffer = $nbt->write(new TreeRoot($this->compoundTag));

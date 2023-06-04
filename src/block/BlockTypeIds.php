@@ -24,11 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 /**
- * Enum of all the block runtime IDs used by PocketMine-MP. These IDs are specific to PocketMine-MP and have no
- * relevance to any Minecraft vanilla things.
+ * Every block in {@link VanillaBlocks} has a corresponding constant in this class. These constants can be used to
+ * identify and compare block types efficiently using {@link Block::getTypeId()}.
  *
- * WARNING: DO NOT STORE THESE IDS. They can and will change without warning.
- * They should ONLY be used to IDENTIFY blocks at runtime.
+ * Type ID is also used internally as part of block state ID, which is used to store blocks and their simple properties
+ * in a memory-efficient way in chunks at runtime.
+ *
+ * WARNING: These are NOT a replacement for Minecraft legacy IDs. Do **NOT** hardcode their values, or store them in
+ * configs or databases. They will change without warning.
  */
 final class BlockTypeIds{
 
@@ -707,8 +710,15 @@ final class BlockTypeIds{
 	public const TWISTING_VINES = 10680;
 	public const WEEPING_VINES = 10681;
 	public const CHAIN = 10682;
+	public const SCULK = 10683;
+	public const GLOWING_ITEM_FRAME = 10684;
+	public const MANGROVE_LEAVES = 10685;
+	public const AZALEA_LEAVES = 10686;
+	public const FLOWERING_AZALEA_LEAVES = 10687;
+	public const REINFORCED_DEEPSLATE = 10688;
+	public const CAVE_VINES = 10689;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10683;
+	public const FIRST_UNUSED_BLOCK_ID = 10690;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 

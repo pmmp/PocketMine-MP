@@ -27,6 +27,7 @@ use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\utils\Utils;
+use pocketmine\VersionInfo;
 use function array_keys;
 use function count;
 use function implode;
@@ -40,9 +41,9 @@ final class BlockStateData{
 	 */
 	public const CURRENT_VERSION =
 		(1 << 24) | //major
-		(18 << 16) | //minor
-		(10 << 8) | //patch
-		(1); //revision
+		(19 << 16) | //minor
+		(80 << 8) | //patch
+		(11); //revision
 
 	public const TAG_NAME = "name";
 	public const TAG_STATES = "states";
@@ -58,6 +59,14 @@ final class BlockStateData{
 		private int $version
 	){}
 
+	/**
+	 * @param Tag[] $states
+	 * @phpstan-param array<string, Tag> $states
+	 */
+	public static function current(string $name, array $states) : self{
+		return new self($name, $states, self::CURRENT_VERSION);
+	}
+
 	public function getName() : string{ return $this->name; }
 
 	/**
@@ -72,6 +81,14 @@ final class BlockStateData{
 
 	public function getVersion() : int{ return $this->version; }
 
+	public function getVersionAsString() : string{
+		$major = ($this->version >> 24) & 0xff;
+		$minor = ($this->version >> 16) & 0xff;
+		$patch = ($this->version >> 8) & 0xff;
+		$revision = $this->version & 0xff;
+		return "$major.$minor.$patch.$revision";
+	}
+
 	/**
 	 * @throws BlockStateDeserializeException
 	 */
@@ -80,12 +97,13 @@ final class BlockStateData{
 			$name = $nbt->getString(self::TAG_NAME);
 			$states = $nbt->getCompoundTag(self::TAG_STATES) ?? throw new BlockStateDeserializeException("Missing tag \"" . self::TAG_STATES . "\"");
 			$version = $nbt->getInt(self::TAG_VERSION, 0);
+			//TODO: read version from VersionInfo::TAG_WORLD_DATA_VERSION - we may need it to fix up old blockstates
 		}catch(NbtException $e){
 			throw new BlockStateDeserializeException($e->getMessage(), 0, $e);
 		}
 
 		$allKeys = $nbt->getValue();
-		unset($allKeys[self::TAG_NAME], $allKeys[self::TAG_STATES], $allKeys[self::TAG_VERSION]);
+		unset($allKeys[self::TAG_NAME], $allKeys[self::TAG_STATES], $allKeys[self::TAG_VERSION], $allKeys[VersionInfo::TAG_WORLD_DATA_VERSION]);
 		if(count($allKeys) !== 0){
 			throw new BlockStateDeserializeException("Unexpected extra keys: " . implode(", ", array_keys($allKeys)));
 		}
@@ -101,7 +119,8 @@ final class BlockStateData{
 		return CompoundTag::create()
 			->setString(self::TAG_NAME, $this->name)
 			->setInt(self::TAG_VERSION, $this->version)
-			->setTag(self::TAG_STATES, $statesTag);
+			->setTag(self::TAG_STATES, $statesTag)
+			->setLong(VersionInfo::TAG_WORLD_DATA_VERSION, VersionInfo::WORLD_DATA_VERSION);
 	}
 
 	public function equals(self $that) : bool{
