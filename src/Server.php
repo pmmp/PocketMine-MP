@@ -207,8 +207,6 @@ class Server{
 	private const TICKS_PER_TPS_OVERLOAD_WARNING = 5 * self::TARGET_TICKS_PER_SECOND;
 	private const TICKS_PER_STATS_REPORT = 300 * self::TARGET_TICKS_PER_SECOND;
 
-	private const DEFAULT_ASYNC_COMPRESSION_THRESHOLD = 10_000;
-
 	private static ?Server $instance = null;
 
 	private TimeTrackingSleeperHandler $tickSleeper;
