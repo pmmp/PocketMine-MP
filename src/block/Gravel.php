@@ -35,14 +35,6 @@ class Gravel extends Opaque implements Fallable{
 	use FallableTrait;
 	use FortuneTrait;
 
-	public function isAffectedBySilkTouch() : bool{
-		return true;
-	}
-
-	public function tickFalling() : ?Block{
-		return null;
-	}
-
 	/**
 	 * @return Item[]
 	 */
@@ -54,5 +46,9 @@ class Gravel extends Opaque implements Fallable{
 		}
 
 		return [$this->asItem()];
+	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
 	}
 }

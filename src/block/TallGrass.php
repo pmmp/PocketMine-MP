@@ -55,18 +55,18 @@ class TallGrass extends Flowable{
 		}
 	}
 
+	/**
+	 * @return Item[]
+	 */
+	protected function getFortuneDropsForLevel(int $level) : array{
+		return $this->grassDrops($level);
+	}
+
 	public function getFlameEncouragement() : int{
 		return 60;
 	}
 
 	public function getFlammability() : int{
 		return 100;
-	}
-
-	/**
-	 * @return Item[]
-	 */
-	protected function getFortuneDropsForLevel(int $level) : array{
-		return $this->grassDrops($level);
 	}
 }

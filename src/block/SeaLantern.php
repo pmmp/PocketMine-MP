@@ -37,10 +37,6 @@ class SeaLantern extends Transparent{
 		return 15;
 	}
 
-	public function isAffectedBySilkTouch() : bool{
-		return true;
-	}
-
 	/**
 	 * @return Item[]
 	 */
@@ -52,5 +48,9 @@ class SeaLantern extends Transparent{
 			$level,
 			5
 		);
+	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
 	}
 }

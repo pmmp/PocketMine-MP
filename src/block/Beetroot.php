@@ -30,10 +30,6 @@ use pocketmine\item\VanillaItems;
 class Beetroot extends Crops{
 	use FortuneTrait;
 
-	public function asItem() : Item{
-		return VanillaItems::BEETROOT_SEEDS();
-	}
-
 	/**
 	 * @return Item[]
 	 */
@@ -51,5 +47,9 @@ class Beetroot extends Crops{
 				VanillaItems::BEETROOT_SEEDS()
 			];
 		}
+	}
+
+	public function asItem() : Item{
+		return VanillaItems::BEETROOT_SEEDS();
 	}
 }

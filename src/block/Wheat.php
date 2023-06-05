@@ -30,10 +30,6 @@ use pocketmine\item\VanillaItems;
 class Wheat extends Crops{
 	use FortuneTrait;
 
-	public function getPickedItem(bool $addUserData = false) : Item{
-		return VanillaItems::WHEAT_SEEDS();
-	}
-
 	/**
 	 * @return Item[]
 	 */

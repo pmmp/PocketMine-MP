@@ -33,10 +33,6 @@ class Melon extends Opaque{
 	public const MINIMUM_DROPS = 3;
 	public const MAXIMUM_DROPS = 7;
 
-	public function isAffectedBySilkTouch() : bool{
-		return true;
-	}
-
 	/**
 	 * @return Item[]
 	 */
@@ -48,5 +44,9 @@ class Melon extends Opaque{
 			$level,
 			9
 		);
+	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
 	}
 }

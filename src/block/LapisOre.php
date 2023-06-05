@@ -34,14 +34,6 @@ class LapisOre extends Opaque{
 	public const MINIMUM_DROPS = 4;
 	public const MAXIMUM_DROPS = 9;
 
-	public function isAffectedBySilkTouch() : bool{
-		return true;
-	}
-
-	protected function getXpDropAmount() : int{
-		return mt_rand(2, 5);
-	}
-
 	/**
 	 * @return Item[]
 	 */
@@ -52,5 +44,13 @@ class LapisOre extends Opaque{
 			self::MAXIMUM_DROPS,
 			$level
 		);
+	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
+
+	protected function getXpDropAmount() : int{
+		return mt_rand(2, 5);
 	}
 }

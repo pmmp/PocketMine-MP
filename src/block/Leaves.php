@@ -36,7 +36,6 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
-use pocketmine\world\generator\object\TreeType;
 use pocketmine\world\World;
 use function max;
 use function mt_rand;
@@ -45,7 +44,6 @@ class Leaves extends Transparent{
 	use FortuneTrait;
 
 	protected LeavesType $leavesType; //immutable for now
-	protected TreeType $treeType;
 	protected bool $noDecay = false;
 	protected bool $checkDecay = false;
 
@@ -147,22 +145,6 @@ class Leaves extends Transparent{
 		return $this->getFortuneDropsForLevel(0);
 	}
 
-	public function isAffectedBySilkTouch() : bool{
-		return true;
-	}
-
-	public function getFlameEncouragement() : int{
-		return 30;
-	}
-
-	public function getFlammability() : int{
-		return 60;
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
-	}
-
 	public function getFortuneDrops(Item $item) : array{
 		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0){
 			return parent::getDropsForCompatibleTool($item);
@@ -203,5 +185,21 @@ class Leaves extends Transparent{
 		}
 
 		return $drops;
+	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
+
+	public function getFlameEncouragement() : int{
+		return 30;
+	}
+
+	public function getFlammability() : int{
+		return 60;
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 }

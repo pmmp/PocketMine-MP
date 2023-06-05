@@ -31,10 +31,6 @@ use function mt_rand;
 class Potato extends Crops{
 	use FortuneTrait;
 
-	public function getPickedItem(bool $addUserData = false) : Item{
-		return VanillaItems::POTATO();
-	}
-
 	/**
 	 * @return Item[]
 	 */

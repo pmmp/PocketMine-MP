@@ -34,14 +34,6 @@ class NetherQuartzOre extends Opaque{
 	public const MINIMUM_DROPS = 1;
 	public const MAXIMUM_DROPS = 1;
 
-	public function isAffectedBySilkTouch() : bool{
-		return true;
-	}
-
-	protected function getXpDropAmount() : int{
-		return mt_rand(2, 5);
-	}
-
 	/**
 	 * @return Item[]
 	 */
@@ -52,5 +44,13 @@ class NetherQuartzOre extends Opaque{
 			self::MAXIMUM_DROPS,
 			$level
 		);
+	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
+
+	protected function getXpDropAmount() : int{
+		return mt_rand(2, 5);
 	}
 }

@@ -85,14 +85,6 @@ class RedstoneOre extends Opaque{
 		}
 	}
 
-	public function isAffectedBySilkTouch() : bool{
-		return true;
-	}
-
-	protected function getXpDropAmount() : int{
-		return mt_rand(1, 5);
-	}
-
 	/**
 	 * @return Item[]
 	 */
@@ -103,5 +95,13 @@ class RedstoneOre extends Opaque{
 			self::MAXIMUM_DROPS,
 			$level
 		);
+	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
+
+	protected function getXpDropAmount() : int{
+		return mt_rand(1, 5);
 	}
 }
