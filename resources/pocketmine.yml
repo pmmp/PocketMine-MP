@@ -89,11 +89,6 @@ network:
   #Set to 0 to disable, or "auto" to try to detect the number of available CPU cores.
   #Higher values will allow using more CPU cores on large servers, but will also increase memory usage.
   compression-threads: 0
-  #Use AsyncTasks for compression during the main game session. Increases latency, but may reduce main thread load
-  async-compression: false
-  #Threshold for async compression, in bytes. Only packets larger than this will be compressed asynchronously
-  #Due to large overhead of AsyncTask, async compression isn't worth it except for large packets
-  async-compression-threshold: 10000
   #Experimental. Use UPnP to automatically port forward
   upnp-forwarding: false
   #Maximum size in bytes of packets sent over the network (default 1492 bytes). Packets larger than this will be
