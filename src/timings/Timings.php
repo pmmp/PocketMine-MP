@@ -312,7 +312,7 @@ abstract class Timings{
 		if(!isset(self::$asyncTasksProgressUpdate[$taskClass])){
 			self::init();
 			self::$asyncTasksProgressUpdate[$taskClass] = new TimingsHandler(
-				"AsyncTask - " . self::shortenCoreClassName($taskClass, "pocketmine\\") . "::onProgressUpdate()",
+				"AsyncTask - Progress checks - " . self::shortenCoreClassName($taskClass, "pocketmine\\"),
 				self::$schedulerAsync,
 				$group
 			);
