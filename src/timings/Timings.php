@@ -308,7 +308,7 @@ abstract class Timings{
 	}
 
 	public static function getAsyncTasksProgressUpdateTimings(AsyncTask $task, string $group = self::GROUP_BREAKDOWN) : TimingsHandler{
-		if (!isset(self::$schedulerAsync)) {
+		if (!isset(self::$schedulerAsync)){
 			self::init();
 		}
 		$taskClass = $task::class;
@@ -324,7 +324,7 @@ abstract class Timings{
 	}
 
 	public static function getAsyncTasksCompletionTimings(AsyncTask $task, string $group = self::GROUP_BREAKDOWN) : TimingsHandler{
-		if (!isset(self::$schedulerAsync)) {
+		if (!isset(self::$schedulerAsync)){
 			self::init();
 		}
 		$taskClass = $task::class;
@@ -340,7 +340,7 @@ abstract class Timings{
 	}
 
 	public static function getAsyncTasksErrorTimings(AsyncTask $task, string $group = self::GROUP_BREAKDOWN) : TimingsHandler{
-		if (!isset(self::$schedulerAsync)) {
+		if (!isset(self::$schedulerAsync)){
 			self::init();
 		}
 		$taskClass = $task::class;
