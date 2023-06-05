@@ -85,6 +85,10 @@ network:
   batch-threshold: 256
   #Compression level used when sending batched packets. Higher = more CPU, less bandwidth usage
   compression-level: 6
+  #EXPERIMENTAL! Max threads to use for packet compression. If disabled, compression will be done on the main thread.
+  #Set to 0 to disable, or "auto" to try to detect the number of available CPU cores.
+  #Higher values will allow using more CPU cores on large servers, but will also increase memory usage.
+  compression-threads: 0
   #Use AsyncTasks for compression during the main game session. Increases latency, but may reduce main thread load
   async-compression: false
   #Threshold for async compression, in bytes. Only packets larger than this will be compressed asynchronously
