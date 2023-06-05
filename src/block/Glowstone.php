@@ -33,6 +33,10 @@ class Glowstone extends Transparent{
 	public const MINIMUM_DROPS = 2;
 	public const MAXIMUM_DROPS = 4;
 
+	public function getLightLevel() : int{
+		return 15;
+	}
+
 	/**
 	 * @return Item[]
 	 */
@@ -44,10 +48,6 @@ class Glowstone extends Transparent{
 			$level,
 			4
 		);
-	}
-
-	public function getLightLevel() : int{
-		return 15;
 	}
 
 	public function isAffectedBySilkTouch() : bool{
