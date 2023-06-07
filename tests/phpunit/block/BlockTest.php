@@ -104,7 +104,7 @@ class BlockTest extends TestCase{
 	 * @return int[][]
 	 * @phpstan-return list<array{int,int}>
 	 */
-	public function blockGetProvider() : array{
+	public static function blockGetProvider() : array{
 		return [
 			[BlockLegacyIds::STONE, 5],
 			[BlockLegacyIds::GOLD_BLOCK, 0],
