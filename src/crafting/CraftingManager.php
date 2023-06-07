@@ -80,11 +80,16 @@ class CraftingManager{
 	/** @phpstan-var ObjectSet<\Closure() : void> */
 	private ObjectSet $recipeRegisteredCallbacks;
 
+	/** @phpstan-var ObjectSet<\Closure() : void> */
+	private ObjectSet $recipeUnregisteredCallbacks;
+
 	public function __construct(){
 		$this->recipeRegisteredCallbacks = new ObjectSet();
 		foreach(FurnaceType::getAll() as $furnaceType){
 			$this->furnaceRecipeManagers[$furnaceType->id()] = new FurnaceRecipeManager();
 		}
+
+		$this->recipeUnregisteredCallbacks = new ObjectSet();
 
 		$recipeRegisteredCallbacks = $this->recipeRegisteredCallbacks;
 		foreach($this->furnaceRecipeManagers as $furnaceRecipeManager){
@@ -98,6 +103,9 @@ class CraftingManager{
 
 	/** @phpstan-return ObjectSet<\Closure() : void> */
 	public function getRecipeRegisteredCallbacks() : ObjectSet{ return $this->recipeRegisteredCallbacks; }
+
+	/** @phpstan-return ObjectSet<\Closure() : void> */
+	public function getRecipeUnregisteredCallbacks() : ObjectSet{ return $this->recipeUnregisteredCallbacks; }
 
 	/**
 	 * Function used to arrange Shapeless Recipe ingredient lists into a consistent order.
@@ -229,7 +237,7 @@ class CraftingManager{
 		}
 
 		if($edited){
-			foreach($this->recipeRegisteredCallbacks as $callback){
+			foreach($this->recipeUnregisteredCallbacks as $callback){
 				$callback();
 			}
 		}
@@ -266,7 +274,7 @@ class CraftingManager{
 		}
 
 		if($edited){
-			foreach($this->recipeRegisteredCallbacks as $callback){
+			foreach($this->recipeUnregisteredCallbacks as $callback){
 				$callback();
 			}
 		}
@@ -285,7 +293,7 @@ class CraftingManager{
 		if($recipeIndex !== false){
 			unset($this->potionTypeRecipes[$recipeIndex]);
 
-			foreach($this->recipeRegisteredCallbacks as $callback){
+			foreach($this->recipeUnregisteredCallbacks as $callback){
 				$callback();
 			}
 		}
@@ -304,7 +312,7 @@ class CraftingManager{
 		if($recipeIndex !== false){
 			unset($this->potionContainerChangeRecipes[$recipeIndex]);
 
-			foreach($this->recipeRegisteredCallbacks as $callback){
+			foreach($this->recipeUnregisteredCallbacks as $callback){
 				$callback();
 			}
 		}
