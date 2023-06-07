@@ -427,7 +427,6 @@ class Block{
 	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if full)
 	 */
 	public function onBreak(Item $item, ?Player $player = null, array &$returnedItems = []) : bool{
-		$this->onDestroy();
 		$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
 		return true;
 	}
