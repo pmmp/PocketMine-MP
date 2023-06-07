@@ -29,6 +29,8 @@ use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\DestructorCallbackTrait;
 use pocketmine\utils\ObjectSet;
+use function array_search;
+use function count;
 use function usort;
 
 class CraftingManager{
@@ -205,12 +207,68 @@ class CraftingManager{
 		}
 	}
 
+	public function unregisterShapedRecipe(ShapedRecipe $recipe) : void{
+		$edited = false;
+		$hash = self::hashOutputs($recipe->getResults());
+
+		foreach($this->shapedRecipes[$hash] ?? [] as $i => $r){
+			if($r === $recipe){
+				unset($this->shapedRecipes[$hash][$i]);
+				if(count($this->shapedRecipes[$hash]) === 0){
+					unset($this->shapedRecipes[$hash]);
+					$edited = true;
+				}
+				break;
+			}
+		}
+
+		$index = array_search($recipe, $this->craftingRecipeIndex, true);
+		if($index !== false){
+			unset($this->craftingRecipeIndex[$index]);
+			$edited = true;
+		}
+
+		if($edited){
+			foreach($this->recipeRegisteredCallbacks as $callback){
+				$callback();
+			}
+		}
+	}
+
 	public function registerShapelessRecipe(ShapelessRecipe $recipe) : void{
 		$this->shapelessRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 		$this->craftingRecipeIndex[] = $recipe;
 
 		foreach($this->recipeRegisteredCallbacks as $callback){
 			$callback();
+		}
+	}
+
+	public function unregisterShapelessRecipe(ShapelessRecipe $recipe) : void{
+		$edited = false;
+		$hash = self::hashOutputs($recipe->getResults());
+
+		foreach($this->shapelessRecipes[$hash] ?? [] as $i => $r){
+			if($r === $recipe){
+				unset($this->shapelessRecipes[$hash][$i]);
+				if(count($this->shapelessRecipes[$hash]) === 0){
+					unset($this->shapelessRecipes[$hash]);
+					$edited = true;
+				}
+				break;
+			}
+		}
+
+		$index = array_search($recipe, $this->craftingRecipeIndex, true);
+		if($index !== false){
+			unset($this->craftingRecipeIndex[$index]);
+			$edited = true;
+		}
+
+		if($edited){
+			foreach($this->recipeRegisteredCallbacks as $callback){
+				$callback();
+			}
 		}
 	}
 
@@ -222,11 +280,33 @@ class CraftingManager{
 		}
 	}
 
+	public function unregisterPotionTypeRecipe(PotionTypeRecipe $recipe) : void{
+		$recipeIndex = array_search($recipe, $this->potionTypeRecipes, true);
+		if($recipeIndex !== false){
+			unset($this->potionTypeRecipes[$recipeIndex]);
+
+			foreach($this->recipeRegisteredCallbacks as $callback){
+				$callback();
+			}
+		}
+	}
+
 	public function registerPotionContainerChangeRecipe(PotionContainerChangeRecipe $recipe) : void{
 		$this->potionContainerChangeRecipes[] = $recipe;
 
 		foreach($this->recipeRegisteredCallbacks as $callback){
 			$callback();
+		}
+	}
+
+	public function unregisterPotionContainerChangeRecipe(PotionContainerChangeRecipe $recipe) : void{
+		$recipeIndex = array_search($recipe, $this->potionContainerChangeRecipes, true);
+		if($recipeIndex !== false){
+			unset($this->potionContainerChangeRecipes[$recipeIndex]);
+
+			foreach($this->recipeRegisteredCallbacks as $callback){
+				$callback();
+			}
 		}
 	}
 

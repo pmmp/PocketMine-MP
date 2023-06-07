@@ -25,6 +25,7 @@ namespace pocketmine\crafting;
 
 use pocketmine\item\Item;
 use pocketmine\utils\ObjectSet;
+use function array_search;
 
 final class FurnaceRecipeManager{
 	/** @var FurnaceRecipe[] */
@@ -61,6 +62,17 @@ final class FurnaceRecipeManager{
 		$this->furnaceRecipes[] = $recipe;
 		foreach($this->recipeRegisteredCallbacks as $callback){
 			$callback($recipe);
+		}
+	}
+
+	public function unregister(FurnaceRecipe $recipe) : void{
+		$index = array_search($recipe, $this->furnaceRecipes, true);
+		if($index !== false){
+			unset($this->furnaceRecipes[$index]);
+
+			foreach($this->recipeRegisteredCallbacks as $callback){
+				$callback($recipe);
+			}
 		}
 	}
 
