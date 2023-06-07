@@ -2013,11 +2013,6 @@ class World implements ChunkManager{
 
 		$target->onBreak($item, $player, $returnedItems);
 		$target->onDestroy();
-
-		$tile = $this->getTile($target->getPosition());
-		if($tile !== null){
-			$tile->onBlockDestroyed();
-		}
 	}
 
 	/**
