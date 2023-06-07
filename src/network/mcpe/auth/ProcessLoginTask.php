@@ -38,7 +38,10 @@ use function time;
 class ProcessLoginTask extends AsyncTask{
 	private const TLS_KEY_ON_COMPLETION = "completion";
 
-	public const MOJANG_ROOT_PUBLIC_KEY = "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAE8ELkixyLcwlZryUQcu1TvPOmI2B7vX83ndnWRUaXm74wFfa5f/lwQNTfrLVHa2PmenpGI6JhIMUJaWZrjmMj90NoKNFSNBuKdm8rYiXsfaz3K36x/1U26HpG0ZxK/V1V";
+	public const MOJANG_OLD_ROOT_PUBLIC_KEY = "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAE8ELkixyLcwlZryUQcu1TvPOmI2B7vX83ndnWRUaXm74wFfa5f/lwQNTfrLVHa2PmenpGI6JhIMUJaWZrjmMj90NoKNFSNBuKdm8rYiXsfaz3K36x/1U26HpG0ZxK/V1V";
+	public const MOJANG_OLD_KEY_EXPIRY = 1688169600; //2023-07-01 00:00:00 UTC - there is no official date for the changeover to the new key, so this is a guess
+
+	public const MOJANG_ROOT_PUBLIC_KEY = "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAECRXueJeTDqNRRgJi/vlRufByu/2G0i2Ebt6YMar5QX/R0DIIyrJMcUpruK4QveTfJSTp3Shlq4Gk34cD/4GUWwkv0DVuzeuB+tXija7HBxii03NHDbPAD0AKnLr2wdAp";
 
 	private const CLOCK_DRIFT_MAX = 60;
 
@@ -151,7 +154,7 @@ class ProcessLoginTask extends AsyncTask{
 			throw new VerifyLoginException($e->getMessage(), 0, $e);
 		}
 
-		if($headers->x5u === self::MOJANG_ROOT_PUBLIC_KEY){
+		if($headers->x5u === self::MOJANG_ROOT_PUBLIC_KEY || (time() < self::MOJANG_OLD_KEY_EXPIRY && $headers->x5u === self::MOJANG_OLD_ROOT_PUBLIC_KEY)){
 			$this->authenticated = true; //we're signed into xbox live
 		}
 
