@@ -85,11 +85,11 @@ class CraftingManager{
 
 	public function __construct(){
 		$this->recipeRegisteredCallbacks = new ObjectSet();
+		$this->recipeUnregisteredCallbacks = new ObjectSet();
+
 		foreach(FurnaceType::getAll() as $furnaceType){
 			$this->furnaceRecipeManagers[$furnaceType->id()] = new FurnaceRecipeManager();
 		}
-
-		$this->recipeUnregisteredCallbacks = new ObjectSet();
 
 		$recipeRegisteredCallbacks = $this->recipeRegisteredCallbacks;
 		$recipeUnregisteredCallbacks = $this->recipeUnregisteredCallbacks;
