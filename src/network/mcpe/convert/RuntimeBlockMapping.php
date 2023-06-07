@@ -59,7 +59,7 @@ final class RuntimeBlockMapping{
 	}
 
 	/**
-	 * @param string[] $keyIndex
+	 * @param string[]                       $keyIndex
 	 * @param (ByteTag|StringTag|IntTag)[][] $valueIndex
 	 * @phpstan-param array<string, string> $keyIndex
 	 * @phpstan-param array<int, array<int|string, ByteTag|IntTag|StringTag>> $valueIndex
