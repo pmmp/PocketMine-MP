@@ -165,6 +165,20 @@ final class BlockStateWriter{
 		});
 	}
 
+	/**
+	 * Used by pumpkins as of 1.20.0.23 beta
+	 * @return $this
+	 */
+	public function writeCardinalHorizontalFacing(int $value) : self{
+		return $this->writeString(BlockStateNames::CARDINAL_DIRECTION, match($value){
+			Facing::SOUTH => StringValues::CARDINAL_DIRECTION_SOUTH,
+			Facing::WEST => StringValues::CARDINAL_DIRECTION_WEST,
+			Facing::NORTH => StringValues::CARDINAL_DIRECTION_NORTH,
+			Facing::EAST => StringValues::CARDINAL_DIRECTION_EAST,
+			default => throw new BlockStateSerializeException("Invalid horizontal facing $value")
+		});
+	}
+
 	/** @return $this */
 	public function writeColor(DyeColor $color) : self{
 		$this->writeString(BlockStateNames::COLOR, match($color->id()){

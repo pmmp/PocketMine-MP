@@ -209,6 +209,20 @@ final class BlockStateReader{
 		]);
 	}
 
+	/**
+	 * Used by pumpkins as of 1.20.0.23 beta
+	 * @throws BlockStateDeserializeException
+	 */
+	public function readCardinalHorizontalFacing() : int{
+		return match($raw = $this->readString(BlockStateNames::CARDINAL_DIRECTION)){
+			StringValues::CARDINAL_DIRECTION_NORTH => Facing::NORTH,
+			StringValues::CARDINAL_DIRECTION_SOUTH => Facing::SOUTH,
+			StringValues::CARDINAL_DIRECTION_WEST => Facing::WEST,
+			StringValues::CARDINAL_DIRECTION_EAST => Facing::EAST,
+			default => throw $this->badValueException(BlockStateNames::CARDINAL_DIRECTION, $raw)
+		};
+	}
+
 	/** @throws BlockStateDeserializeException */
 	public function readColor() : DyeColor{
 		//	 * color (StringTag) = black, blue, brown, cyan, gray, green, light_blue, lime, magenta, orange, pink, purple, red, silver, white, yellow

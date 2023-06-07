@@ -93,8 +93,8 @@ final class BlockStateSerializerHelper{
 			->writeTorchFacing($block->getFacing());
 	}
 
-	public static function encodeCauldron(string $liquid, int $fillLevel, BlockStateWriter $out) : BlockStateWriter{
-		return $out
+	public static function encodeCauldron(string $liquid, int $fillLevel) : BlockStateWriter{
+		return Writer::create(Ids::CAULDRON)
 			->writeString(BlockStateNames::CAULDRON_LIQUID, $liquid)
 			->writeInt(BlockStateNames::FILL_LEVEL, $fillLevel);
 	}

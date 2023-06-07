@@ -131,6 +131,11 @@ final class BlockStateStringValues{
 	public const LEVER_DIRECTION_UP_NORTH_SOUTH = "up_north_south";
 	public const LEVER_DIRECTION_WEST = "west";
 
+	public const CARDINAL_DIRECTION_EAST = "east";
+	public const CARDINAL_DIRECTION_NORTH = "north";
+	public const CARDINAL_DIRECTION_SOUTH = "south";
+	public const CARDINAL_DIRECTION_WEST = "west";
+
 	public const MONSTER_EGG_STONE_TYPE_CHISELED_STONE_BRICK = "chiseled_stone_brick";
 	public const MONSTER_EGG_STONE_TYPE_COBBLESTONE = "cobblestone";
 	public const MONSTER_EGG_STONE_TYPE_CRACKED_STONE_BRICK = "cracked_stone_brick";

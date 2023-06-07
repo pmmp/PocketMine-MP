@@ -191,6 +191,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	public function __construct(){
 		$this->registerCandleSerializers();
 		$this->registerFlatColorBlockSerializers();
+		$this->registerFlatCoralSerializers();
 		$this->registerCauldronSerializers();
 		$this->registerWoodBlockSerializers();
 		$this->registerSimpleSerializers();
@@ -347,14 +348,47 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 			DyeColor::YELLOW() => Ids::YELLOW_WOOL,
 			default => throw new AssumptionFailedError("Unhandled dye colour " . $color->name())
 		}));
+
+		$this->map(Blocks::CARPET(), fn(Carpet $block) => Writer::create(match($color = $block->getColor()){
+			DyeColor::BLACK() => Ids::BLACK_CARPET,
+			DyeColor::BLUE() => Ids::BLUE_CARPET,
+			DyeColor::BROWN() => Ids::BROWN_CARPET,
+			DyeColor::CYAN() => Ids::CYAN_CARPET,
+			DyeColor::GRAY() => Ids::GRAY_CARPET,
+			DyeColor::GREEN() => Ids::GREEN_CARPET,
+			DyeColor::LIGHT_BLUE() => Ids::LIGHT_BLUE_CARPET,
+			DyeColor::LIGHT_GRAY() => Ids::LIGHT_GRAY_CARPET,
+			DyeColor::LIME() => Ids::LIME_CARPET,
+			DyeColor::MAGENTA() => Ids::MAGENTA_CARPET,
+			DyeColor::ORANGE() => Ids::ORANGE_CARPET,
+			DyeColor::PINK() => Ids::PINK_CARPET,
+			DyeColor::PURPLE() => Ids::PURPLE_CARPET,
+			DyeColor::RED() => Ids::RED_CARPET,
+			DyeColor::WHITE() => Ids::WHITE_CARPET,
+			DyeColor::YELLOW() => Ids::YELLOW_CARPET,
+			default => throw new AssumptionFailedError("Unhandled dye colour " . $color->name())
+		}));
+	}
+
+	private function registerFlatCoralSerializers() : void{
+		$this->map(Blocks::CORAL(), fn(Coral $block) => Writer::create(
+			match($coralType = $block->getCoralType()){
+				CoralType::BRAIN() => $block->isDead() ? Ids::DEAD_BRAIN_CORAL : Ids::BRAIN_CORAL,
+				CoralType::BUBBLE() => $block->isDead() ? Ids::DEAD_BUBBLE_CORAL : Ids::BUBBLE_CORAL,
+				CoralType::FIRE() => $block->isDead() ? Ids::DEAD_FIRE_CORAL : Ids::FIRE_CORAL,
+				CoralType::HORN() => $block->isDead() ? Ids::DEAD_HORN_CORAL : Ids::HORN_CORAL,
+				CoralType::TUBE() => $block->isDead() ? Ids::DEAD_TUBE_CORAL : Ids::TUBE_CORAL,
+				default => throw new AssumptionFailedError("Unhandled coral type " . $coralType->name())
+			}
+		));
 	}
 
 	private function registerCauldronSerializers() : void{
-		$this->map(Blocks::CAULDRON(), fn() => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, 0, new Writer(Ids::CAULDRON)));
-		$this->map(Blocks::LAVA_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_LAVA, $b->getFillLevel(), new Writer(Ids::LAVA_CAULDRON)));
+		$this->map(Blocks::CAULDRON(), fn() => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, 0));
+		$this->map(Blocks::LAVA_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_LAVA, $b->getFillLevel()));
 		//potion cauldrons store their real information in the block actor data
-		$this->map(Blocks::POTION_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, $b->getFillLevel(), new Writer(Ids::CAULDRON)));
-		$this->map(Blocks::WATER_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, $b->getFillLevel(), new Writer(Ids::CAULDRON)));
+		$this->map(Blocks::POTION_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, $b->getFillLevel()));
+		$this->map(Blocks::WATER_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, $b->getFillLevel()));
 	}
 
 	private function registerWoodBlockSerializers() : void{
@@ -759,14 +793,10 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::CAKE)
 				->writeInt(StateNames::BITE_COUNTER, $block->getBites());
 		});
-		$this->map(Blocks::CARPET(), function(Carpet $block) : Writer{
-			return Writer::create(Ids::CARPET)
-				->writeColor($block->getColor());
-		});
 		$this->map(Blocks::CARROTS(), fn(Carrot $block) => Helper::encodeCrops($block, new Writer(Ids::CARROTS)));
 		$this->map(Blocks::CARVED_PUMPKIN(), function(CarvedPumpkin $block) : Writer{
 			return Writer::create(Ids::CARVED_PUMPKIN)
-				->writeLegacyHorizontalFacing($block->getFacing());
+				->writeCardinalHorizontalFacing($block->getFacing());
 		});
 		$this->map(Blocks::CAVE_VINES(), function(CaveVines $block) : Writer{
 			//I have no idea why this only has 3 IDs - there are 4 in Java and 4 visually distinct states in Bedrock
@@ -888,11 +918,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::CONCRETE_POWDER(), function(ConcretePowder $block) : Writer{
 			return Writer::create(Ids::CONCRETE_POWDER)
 				->writeColor($block->getColor());
-		});
-		$this->map(Blocks::CORAL(), function(Coral $block) : Writer{
-			return Writer::create(Ids::CORAL)
-				->writeBool(StateNames::DEAD_BIT, $block->isDead())
-				->writeCoralType($block->getCoralType());
 		});
 		$this->map(Blocks::CORAL_BLOCK(), function(CoralBlock $block) : Writer{
 			return Writer::create(Ids::CORAL_BLOCK)
@@ -1123,7 +1148,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::LILY_OF_THE_VALLEY(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_LILY_OF_THE_VALLEY));
 		$this->map(Blocks::LIT_PUMPKIN(), function(LitPumpkin $block) : Writer{
 			return Writer::create(Ids::LIT_PUMPKIN)
-				->writeLegacyHorizontalFacing($block->getFacing());
+				->writeCardinalHorizontalFacing($block->getFacing());
 		});
 		$this->map(Blocks::LOOM(), function(Loom $block) : Writer{
 			return Writer::create(Ids::LOOM)
@@ -1246,7 +1271,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::PRISMARINE_WALL(), fn(Wall $block) => Helper::encodeLegacyWall($block, StringValues::WALL_BLOCK_TYPE_PRISMARINE));
 		$this->map(Blocks::PUMPKIN(), function() : Writer{
 			return Writer::create(Ids::PUMPKIN)
-				->writeLegacyHorizontalFacing(Facing::SOUTH); //no longer used
+				->writeCardinalHorizontalFacing(Facing::SOUTH); //no longer used
 		});
 		$this->map(Blocks::PUMPKIN_STEM(), fn(PumpkinStem $block) => Helper::encodeStem($block, new Writer(Ids::PUMPKIN_STEM)));
 		$this->map(Blocks::PURPLE_TORCH(), fn(Torch $block) => Helper::encodeColoredTorch($block, true, Writer::create(Ids::COLORED_TORCH_BP)));

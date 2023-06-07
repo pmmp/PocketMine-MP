@@ -73,6 +73,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 	public function __construct(){
 		$this->registerCandleDeserializers();
 		$this->registerFlatColorBlockDeserializers();
+		$this->registerFlatCoralDeserializers();
 		$this->registerCauldronDeserializers();
 		$this->registerWoodBlockDeserializers();
 		$this->registerSimpleDeserializers();
@@ -220,6 +221,48 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		] as $id => $color){
 			$this->mapSimple($id, fn() => Blocks::WOOL()->setColor($color));
 		}
+
+		foreach([
+			Ids::BLACK_CARPET => DyeColor::BLACK(),
+			Ids::BLUE_CARPET => DyeColor::BLUE(),
+			Ids::BROWN_CARPET => DyeColor::BROWN(),
+			Ids::CYAN_CARPET => DyeColor::CYAN(),
+			Ids::GRAY_CARPET => DyeColor::GRAY(),
+			Ids::GREEN_CARPET => DyeColor::GREEN(),
+			Ids::LIGHT_BLUE_CARPET => DyeColor::LIGHT_BLUE(),
+			Ids::LIGHT_GRAY_CARPET => DyeColor::LIGHT_GRAY(),
+			Ids::LIME_CARPET => DyeColor::LIME(),
+			Ids::MAGENTA_CARPET => DyeColor::MAGENTA(),
+			Ids::ORANGE_CARPET => DyeColor::ORANGE(),
+			Ids::PINK_CARPET => DyeColor::PINK(),
+			Ids::PURPLE_CARPET => DyeColor::PURPLE(),
+			Ids::RED_CARPET => DyeColor::RED(),
+			Ids::WHITE_CARPET => DyeColor::WHITE(),
+			Ids::YELLOW_CARPET => DyeColor::YELLOW(),
+		] as $id => $color){
+			$this->mapSimple($id, fn() => Blocks::CARPET()->setColor($color));
+		}
+	}
+
+	private function registerFlatCoralDeserializers() : void{
+		foreach([
+			Ids::BRAIN_CORAL => CoralType::BRAIN(),
+			Ids::BUBBLE_CORAL => CoralType::BUBBLE(),
+			Ids::FIRE_CORAL => CoralType::FIRE(),
+			Ids::HORN_CORAL => CoralType::HORN(),
+			Ids::TUBE_CORAL => CoralType::TUBE(),
+		] as $id => $coralType){
+			$this->mapSimple($id, fn() => Blocks::CORAL()->setCoralType($coralType)->setDead(false));
+		}
+		foreach([
+			Ids::DEAD_BRAIN_CORAL => CoralType::BRAIN(),
+			Ids::DEAD_BUBBLE_CORAL => CoralType::BUBBLE(),
+			Ids::DEAD_FIRE_CORAL => CoralType::FIRE(),
+			Ids::DEAD_HORN_CORAL => CoralType::HORN(),
+			Ids::DEAD_TUBE_CORAL => CoralType::TUBE(),
+		] as $id => $coralType){
+			$this->mapSimple($id, fn() => Blocks::CORAL()->setCoralType($coralType)->setDead(true));
+		}
 	}
 
 	private function registerCauldronDeserializers() : void{
@@ -238,7 +281,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			})->setFillLevel($level);
 		};
 		$this->map(Ids::CAULDRON, $deserializer);
-		$this->map(Ids::LAVA_CAULDRON, $deserializer);
 	}
 
 	private function registerWoodBlockDeserializers() : void{
@@ -621,14 +663,10 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::CAKE()
 				->setBites($in->readBoundedInt(StateNames::BITE_COUNTER, 0, 6));
 		});
-		$this->map(Ids::CARPET, function(Reader $in) : Block{
-			return Blocks::CARPET()
-				->setColor($in->readColor());
-		});
 		$this->map(Ids::CARROTS, fn(Reader $in) => Helper::decodeCrops(Blocks::CARROTS(), $in));
 		$this->map(Ids::CARVED_PUMPKIN, function(Reader $in) : Block{
 			return Blocks::CARVED_PUMPKIN()
-				->setFacing($in->readLegacyHorizontalFacing());
+				->setFacing($in->readCardinalHorizontalFacing());
 		});
 		$this->map(Ids::CAVE_VINES, function(Reader $in) : CaveVines{
 			return Blocks::CAVE_VINES()
@@ -700,11 +738,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::CUT_COPPER, fn() => Helper::decodeCopper(Blocks::CUT_COPPER(), CopperOxidation::NONE()));
 		$this->mapSlab(Ids::CUT_COPPER_SLAB, Ids::DOUBLE_CUT_COPPER_SLAB, fn() => Helper::decodeCopper(Blocks::CUT_COPPER_SLAB(), CopperOxidation::NONE()));
 		$this->mapStairs(Ids::CUT_COPPER_STAIRS, fn() => Helper::decodeCopper(Blocks::CUT_COPPER_STAIRS(), CopperOxidation::NONE()));
-		$this->map(Ids::CORAL, function(Reader $in) : Block{
-			return Blocks::CORAL()
-				->setCoralType($in->readCoralType())
-				->setDead($in->readBool(StateNames::DEAD_BIT));
-		});
 		$this->map(Ids::CORAL_BLOCK, function(Reader $in) : Block{
 			return Blocks::CORAL_BLOCK()
 				->setCoralType($in->readCoralType())
@@ -926,7 +959,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		});
 		$this->map(Ids::LIT_PUMPKIN, function(Reader $in) : Block{
 			return Blocks::LIT_PUMPKIN()
-				->setFacing($in->readLegacyHorizontalFacing());
+				->setFacing($in->readCardinalHorizontalFacing());
 		});
 		$this->map(Ids::LIT_REDSTONE_LAMP, function() : Block{
 			return Blocks::REDSTONE_LAMP()
@@ -1047,7 +1080,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapStairs(Ids::PRISMARINE_BRICKS_STAIRS, fn() => Blocks::PRISMARINE_BRICKS_STAIRS());
 		$this->mapStairs(Ids::PRISMARINE_STAIRS, fn() => Blocks::PRISMARINE_STAIRS());
 		$this->map(Ids::PUMPKIN, function(Reader $in) : Block{
-			$in->ignored(StateNames::DIRECTION); //obsolete
+			$in->ignored(StateNames::CARDINAL_DIRECTION); //obsolete
 			return Blocks::PUMPKIN();
 		});
 		$this->map(Ids::PUMPKIN_STEM, fn(Reader $in) => Helper::decodeStem(Blocks::PUMPKIN_STEM(), $in));
