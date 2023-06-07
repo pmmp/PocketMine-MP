@@ -40,8 +40,12 @@ final class FurnaceRecipeManager{
 	/** @phpstan-var ObjectSet<\Closure(FurnaceRecipe) : void> */
 	private ObjectSet $recipeRegisteredCallbacks;
 
+	/** @phpstan-return ObjectSet<\Closure(FurnaceRecipe) : void> */
+	private ObjectSet $recipeUnregisteredCallbacks;
+
 	public function __construct(){
 		$this->recipeRegisteredCallbacks = new ObjectSet();
+		$this->recipeUnregisteredCallbacks = new ObjectSet();
 	}
 
 	/**
@@ -49,6 +53,13 @@ final class FurnaceRecipeManager{
 	 */
 	public function getRecipeRegisteredCallbacks() : ObjectSet{
 		return $this->recipeRegisteredCallbacks;
+	}
+
+	/**
+	 * @phpstan-return ObjectSet<\Closure(FurnaceRecipe) : void>
+	 */
+	public function getRecipeUnregisteredCallbacks() : ObjectSet{
+		return $this->recipeUnregisteredCallbacks;
 	}
 
 	/**
@@ -70,7 +81,7 @@ final class FurnaceRecipeManager{
 		if($index !== false){
 			unset($this->furnaceRecipes[$index]);
 
-			foreach($this->recipeRegisteredCallbacks as $callback){
+			foreach($this->recipeUnregisteredCallbacks as $callback){
 				$callback($recipe);
 			}
 		}

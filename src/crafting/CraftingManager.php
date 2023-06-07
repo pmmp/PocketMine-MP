@@ -92,9 +92,15 @@ class CraftingManager{
 		$this->recipeUnregisteredCallbacks = new ObjectSet();
 
 		$recipeRegisteredCallbacks = $this->recipeRegisteredCallbacks;
+		$recipeUnregisteredCallbacks = $this->recipeUnregisteredCallbacks;
 		foreach($this->furnaceRecipeManagers as $furnaceRecipeManager){
 			$furnaceRecipeManager->getRecipeRegisteredCallbacks()->add(static function(FurnaceRecipe $recipe) use ($recipeRegisteredCallbacks) : void{
 				foreach($recipeRegisteredCallbacks as $callback){
+					$callback();
+				}
+			});
+			$furnaceRecipeManager->getRecipeUnregisteredCallbacks()->add(static function(FurnaceRecipe $recipe) use ($recipeUnregisteredCallbacks) : void{
+				foreach($recipeUnregisteredCallbacks as $callback){
 					$callback();
 				}
 			});
