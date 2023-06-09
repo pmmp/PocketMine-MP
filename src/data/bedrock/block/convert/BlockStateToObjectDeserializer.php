@@ -77,6 +77,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->registerCauldronDeserializers();
 		$this->registerFlatWoodBlockDeserializers();
 		$this->registerLegacyWoodBlockDeserializers();
+		$this->registerLeavesDeserializers();
 		$this->registerSimpleDeserializers();
 		$this->registerDeserializers();
 	}
@@ -449,6 +450,27 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		}, $in->readBool(StateNames::STRIPPED_BIT), $in));
 	}
 
+	private function registerLeavesDeserializers() : void{
+		//flattened IDs
+		$this->map(Ids::AZALEA_LEAVES, fn(Reader $in) => Helper::decodeLeaves(Blocks::AZALEA_LEAVES(), $in));
+		$this->map(Ids::AZALEA_LEAVES_FLOWERED, fn(Reader $in) => Helper::decodeLeaves(Blocks::FLOWERING_AZALEA_LEAVES(), $in));
+		$this->map(Ids::MANGROVE_LEAVES, fn(Reader $in) => Helper::decodeLeaves(Blocks::MANGROVE_LEAVES(), $in));
+
+		//legacy mess
+		$this->map(Ids::LEAVES, fn(Reader $in) => Helper::decodeLeaves(match($type = $in->readString(StateNames::OLD_LEAF_TYPE)){
+			StringValues::OLD_LEAF_TYPE_BIRCH => Blocks::BIRCH_LEAVES(),
+			StringValues::OLD_LEAF_TYPE_JUNGLE => Blocks::JUNGLE_LEAVES(),
+			StringValues::OLD_LEAF_TYPE_OAK => Blocks::OAK_LEAVES(),
+			StringValues::OLD_LEAF_TYPE_SPRUCE => Blocks::SPRUCE_LEAVES(),
+			default => throw $in->badValueException(StateNames::OLD_LEAF_TYPE, $type),
+		}, $in));
+		$this->map(Ids::LEAVES2, fn(Reader $in) => Helper::decodeLeaves(match($type = $in->readString(StateNames::NEW_LEAF_TYPE)){
+			StringValues::NEW_LEAF_TYPE_ACACIA => Blocks::ACACIA_LEAVES(),
+			StringValues::NEW_LEAF_TYPE_DARK_OAK => Blocks::DARK_OAK_LEAVES(),
+			default => throw $in->badValueException(StateNames::NEW_LEAF_TYPE, $type),
+		}, $in));
+	}
+
 	private function registerSimpleDeserializers() : void{
 		$this->mapSimple(Ids::AIR, fn() => Blocks::AIR());
 		$this->mapSimple(Ids::AMETHYST_BLOCK, fn() => Blocks::AMETHYST());
@@ -716,8 +738,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				})
 				->setFacing($in->readLegacyHorizontalFacing());
 		});
-		$this->map(Ids::AZALEA_LEAVES, fn(Reader $in) => Helper::decodeLeaves(Blocks::AZALEA_LEAVES(), $in));
-		$this->map(Ids::AZALEA_LEAVES_FLOWERED, fn(Reader $in) => Helper::decodeLeaves(Blocks::FLOWERING_AZALEA_LEAVES(), $in));
 		$this->map(Ids::BAMBOO, function(Reader $in) : Block{
 			return Blocks::BAMBOO()
 				->setLeafSize(match($value = $in->readString(StateNames::BAMBOO_LEAF_SIZE)){
@@ -1005,18 +1025,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setHanging($in->readBool(StateNames::HANGING));
 		});
 		$this->map(Ids::LAVA, fn(Reader $in) => Helper::decodeStillLiquid(Blocks::LAVA(), $in));
-		$this->map(Ids::LEAVES, fn(Reader $in) => Helper::decodeLeaves(match($type = $in->readString(StateNames::OLD_LEAF_TYPE)){
-			StringValues::OLD_LEAF_TYPE_BIRCH => Blocks::BIRCH_LEAVES(),
-			StringValues::OLD_LEAF_TYPE_JUNGLE => Blocks::JUNGLE_LEAVES(),
-			StringValues::OLD_LEAF_TYPE_OAK => Blocks::OAK_LEAVES(),
-			StringValues::OLD_LEAF_TYPE_SPRUCE => Blocks::SPRUCE_LEAVES(),
-			default => throw $in->badValueException(StateNames::OLD_LEAF_TYPE, $type),
-		}, $in));
-		$this->map(Ids::LEAVES2, fn(Reader $in) => Helper::decodeLeaves(match($type = $in->readString(StateNames::NEW_LEAF_TYPE)){
-			StringValues::NEW_LEAF_TYPE_ACACIA => Blocks::ACACIA_LEAVES(),
-			StringValues::NEW_LEAF_TYPE_DARK_OAK => Blocks::DARK_OAK_LEAVES(),
-			default => throw $in->badValueException(StateNames::NEW_LEAF_TYPE, $type),
-		}, $in));
 		$this->map(Ids::LECTERN, function(Reader $in) : Block{
 			return Blocks::LECTERN()
 				->setFacing($in->readLegacyHorizontalFacing())
@@ -1078,7 +1086,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::LOOM()
 				->setFacing($in->readLegacyHorizontalFacing());
 		});
-		$this->map(Ids::MANGROVE_LEAVES, fn(Reader $in) => Helper::decodeLeaves(Blocks::MANGROVE_LEAVES(), $in));
 		$this->map(Ids::MELON_STEM, fn(Reader $in) => Helper::decodeStem(Blocks::MELON_STEM(), $in));
 		$this->map(Ids::MONSTER_EGG, function(Reader $in) : Block{
 			return match($type = $in->readString(StateNames::MONSTER_EGG_STONE_TYPE)){
