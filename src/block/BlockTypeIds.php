@@ -718,8 +718,23 @@ final class BlockTypeIds{
 	public const REINFORCED_DEEPSLATE = 10688;
 	public const CAVE_VINES = 10689;
 	public const GLOW_LICHEN = 10690;
+	public const CHERRY_BUTTON = 10691;
+	public const CHERRY_DOOR = 10692;
+	public const CHERRY_FENCE = 10693;
+	public const CHERRY_FENCE_GATE = 10694;
+	public const CHERRY_LEAVES = 10695;
+	public const CHERRY_LOG = 10696;
+	public const CHERRY_PLANKS = 10697;
+	public const CHERRY_PRESSURE_PLATE = 10698;
+	public const CHERRY_SAPLING = 10699;
+	public const CHERRY_SIGN = 10700;
+	public const CHERRY_SLAB = 10701;
+	public const CHERRY_STAIRS = 10702;
+	public const CHERRY_TRAPDOOR = 10703;
+	public const CHERRY_WALL_SIGN = 10704;
+	public const CHERRY_WOOD = 10705;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10691;
+	public const FIRST_UNUSED_BLOCK_ID = 10706;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 

@@ -309,6 +309,24 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapStairs(Ids::BIRCH_STAIRS, fn() => Blocks::BIRCH_STAIRS());
 		//wood, planks and slabs still use the old way of storing wood type
 
+		$this->map(Ids::CHERRY_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::CHERRY_BUTTON(), $in));
+		$this->map(Ids::CHERRY_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::CHERRY_DOOR(), $in));
+		$this->map(Ids::CHERRY_FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::CHERRY_FENCE_GATE(), $in));
+		$this->map(Ids::CHERRY_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::CHERRY_PRESSURE_PLATE(), $in));
+		$this->map(Ids::CHERRY_STANDING_SIGN, fn(Reader $in) => Helper::decodeFloorSign(Blocks::CHERRY_SIGN(), $in));
+		$this->map(Ids::CHERRY_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::CHERRY_TRAPDOOR(), $in));
+		$this->map(Ids::CHERRY_WALL_SIGN, fn(Reader $in) => Helper::decodeWallSign(Blocks::CHERRY_WALL_SIGN(), $in));
+		$this->mapLog(Ids::CHERRY_LOG, Ids::STRIPPED_CHERRY_LOG, fn() => Blocks::CHERRY_LOG());
+		$this->mapSimple(Ids::CHERRY_FENCE, fn() => Blocks::CHERRY_FENCE());
+		$this->mapSimple(Ids::CHERRY_PLANKS, fn() => Blocks::CHERRY_PLANKS());
+		$this->mapSlab(Ids::CHERRY_SLAB, Ids::CHERRY_DOUBLE_SLAB, fn() => Blocks::CHERRY_SLAB());
+		$this->mapStairs(Ids::CHERRY_STAIRS, fn() => Blocks::CHERRY_STAIRS());
+		$this->map(Ids::CHERRY_WOOD, function(Reader $in){
+			$in->ignored(StateNames::STRIPPED_BIT); //this is also ignored by vanilla
+			return Helper::decodeLog(Blocks::CHERRY_WOOD(), false, $in);
+		});
+		$this->map(Ids::STRIPPED_CHERRY_WOOD, fn(Reader $in) => Helper::decodeLog(Blocks::CHERRY_WOOD(), true, $in));
+
 		$this->map(Ids::CRIMSON_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::CRIMSON_BUTTON(), $in));
 		$this->map(Ids::CRIMSON_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::CRIMSON_DOOR(), $in));
 		$this->map(Ids::CRIMSON_FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::CRIMSON_FENCE_GATE(), $in));
