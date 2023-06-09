@@ -30,6 +30,9 @@ namespace pocketmine\block;
  * Type ID is also used internally as part of block state ID, which is used to store blocks and their simple properties
  * in a memory-efficient way in chunks at runtime.
  *
+ * WARNING: These constants are generated from {@link VanillaBlocks} by build/generate-type-id-consts.php.
+ * Do not modify them manually.
+ *
  * WARNING: These are NOT a replacement for Minecraft legacy IDs. Do **NOT** hardcode their values, or store them in
  * configs or databases. They will change without warning.
  */
@@ -40,7 +43,6 @@ final class BlockTypeIds{
 	}
 
 	public const AIR = 10000;
-
 	public const ACACIA_BUTTON = 10001;
 	public const ACACIA_DOOR = 10002;
 	public const ACACIA_FENCE = 10003;
@@ -90,9 +92,7 @@ final class BlockTypeIds{
 	public const BIRCH_TRAPDOOR = 10047;
 	public const BIRCH_WALL_SIGN = 10048;
 	public const BIRCH_WOOD = 10049;
-
 	public const BLAST_FURNACE = 10051;
-
 	public const BLUE_ICE = 10053;
 	public const BLUE_ORCHID = 10054;
 	public const BLUE_TORCH = 10055;
@@ -103,7 +103,6 @@ final class BlockTypeIds{
 	public const BRICK_STAIRS = 10060;
 	public const BRICK_WALL = 10061;
 	public const BRICKS = 10062;
-
 	public const BROWN_MUSHROOM = 10064;
 	public const BROWN_MUSHROOM_BLOCK = 10065;
 	public const CACTUS = 10066;
@@ -139,7 +138,6 @@ final class BlockTypeIds{
 	public const CUT_RED_SANDSTONE_SLAB = 10096;
 	public const CUT_SANDSTONE = 10097;
 	public const CUT_SANDSTONE_SLAB = 10098;
-
 	public const DANDELION = 10100;
 	public const DARK_OAK_BUTTON = 10101;
 	public const DARK_OAK_DOOR = 10102;
@@ -325,7 +323,6 @@ final class BlockTypeIds{
 	public const GRASS = 10282;
 	public const GRASS_PATH = 10283;
 	public const GRAVEL = 10284;
-
 	public const GREEN_TORCH = 10287;
 	public const HARDENED_CLAY = 10288;
 	public const HARDENED_GLASS = 10289;
@@ -374,14 +371,11 @@ final class BlockTypeIds{
 	public const LECTERN = 10332;
 	public const LEGACY_STONECUTTER = 10333;
 	public const LEVER = 10334;
-
 	public const LILAC = 10337;
 	public const LILY_OF_THE_VALLEY = 10338;
 	public const LILY_PAD = 10339;
-
 	public const LIT_PUMPKIN = 10341;
 	public const LOOM = 10342;
-
 	public const MAGMA = 10344;
 	public const MATERIAL_REDUCER = 10345;
 	public const MELON = 10346;
@@ -426,12 +420,10 @@ final class BlockTypeIds{
 	public const OAK_WALL_SIGN = 10385;
 	public const OAK_WOOD = 10386;
 	public const OBSIDIAN = 10387;
-
 	public const ORANGE_TULIP = 10389;
 	public const OXEYE_DAISY = 10390;
 	public const PACKED_ICE = 10391;
 	public const PEONY = 10392;
-
 	public const PINK_TULIP = 10394;
 	public const PODZOL = 10395;
 	public const POLISHED_ANDESITE = 10396;
@@ -455,7 +447,6 @@ final class BlockTypeIds{
 	public const PRISMARINE_WALL = 10414;
 	public const PUMPKIN = 10415;
 	public const PUMPKIN_STEM = 10416;
-
 	public const PURPLE_TORCH = 10418;
 	public const PURPUR = 10419;
 	public const PURPUR_PILLAR = 10420;
@@ -466,7 +457,6 @@ final class BlockTypeIds{
 	public const QUARTZ_SLAB = 10425;
 	public const QUARTZ_STAIRS = 10426;
 	public const RAIL = 10427;
-
 	public const RED_MUSHROOM = 10429;
 	public const RED_MUSHROOM_BLOCK = 10430;
 	public const RED_NETHER_BRICK_SLAB = 10431;
@@ -544,7 +534,6 @@ final class BlockTypeIds{
 	public const STONE_SLAB = 10503;
 	public const STONE_STAIRS = 10504;
 	public const STONECUTTER = 10505;
-
 	public const SUGARCANE = 10518;
 	public const SUNFLOWER = 10519;
 	public const SWEET_BERRY_BUSH = 10520;
@@ -562,10 +551,8 @@ final class BlockTypeIds{
 	public const WEIGHTED_PRESSURE_PLATE_HEAVY = 10532;
 	public const WEIGHTED_PRESSURE_PLATE_LIGHT = 10533;
 	public const WHEAT = 10534;
-
 	public const WHITE_TULIP = 10536;
 	public const WOOL = 10537;
-
 	public const GLAZED_TERRACOTTA = 10539;
 	public const AMETHYST = 10540;
 	public const ANCIENT_DEBRIS = 10541;
@@ -701,7 +688,6 @@ final class BlockTypeIds{
 	public const WATER_CAULDRON = 10671;
 	public const LAVA_CAULDRON = 10672;
 	public const POTION_CAULDRON = 10673;
-	public const POWDER_SNOW_CAULDRON = 10674;
 	public const CHORUS_FLOWER = 10675;
 	public const CHORUS_PLANT = 10676;
 	public const MANGROVE_ROOTS = 10677;
@@ -718,8 +704,9 @@ final class BlockTypeIds{
 	public const REINFORCED_DEEPSLATE = 10688;
 	public const CAVE_VINES = 10689;
 	public const GLOW_LICHEN = 10690;
+	public const POWDER_SNOW_CAULDRON = 10691;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10691;
+	public const FIRST_UNUSED_BLOCK_ID = 10692;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 

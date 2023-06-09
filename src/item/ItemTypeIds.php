@@ -27,6 +27,9 @@ namespace pocketmine\item;
  * Every item in {@link VanillaItems} has a corresponding constant in this class. These constants can be used to
  * identify and compare item types efficiently using {@link Item::getTypeId()}.
  *
+ * WARNING: These constants are generated from {@link VanillaItems} by build/generate-type-id-consts.php. Do not
+ * modify them manually.
+ *
  * WARNING: These are NOT a replacement for Minecraft legacy IDs. Do **NOT** hardcode their values, or store them in
  * configs or databases. They will change without warning.
  */
@@ -43,7 +46,6 @@ final class ItemTypeIds{
 	public const BAKED_POTATO = 20004;
 	public const BAMBOO = 20005;
 	public const BANNER = 20006;
-
 	public const BEETROOT = 20008;
 	public const BEETROOT_SEEDS = 20009;
 	public const BEETROOT_SOUP = 20010;
@@ -189,7 +191,6 @@ final class ItemTypeIds{
 	public const MELON_SEEDS = 20150;
 	public const MILK_BUCKET = 20151;
 	public const MINECART = 20152;
-
 	public const MUSHROOM_STEW = 20154;
 	public const NAUTILUS_SHELL = 20155;
 	public const NETHER_BRICK = 20156;
@@ -294,16 +295,16 @@ final class ItemTypeIds{
 	public const RAW_GOLD = 20255;
 	public const SPYGLASS = 20256;
 	public const NETHERITE_SCRAP = 20257;
-	public const POWDER_SNOW_BUCKET = 20258;
-	public const LINGERING_POTION = 20259;
 	public const FIRE_CHARGE = 20260;
 	public const SUSPICIOUS_STEW = 20261;
 	public const TURTLE_HELMET = 20262;
 	public const MEDICINE = 20263;
 	public const MANGROVE_BOAT = 20264;
 	public const GLOW_BERRIES = 20265;
+	public const POWDER_SNOW_BUCKET = 20266;
+	public const LINGERING_POTION = 20267;
 
-	public const FIRST_UNUSED_ITEM_ID = 20266;
+	public const FIRST_UNUSED_ITEM_ID = 20268;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 
