@@ -582,6 +582,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	private function registerLeavesSerializers() : void{
 		//flattened IDs
 		$this->map(Blocks::AZALEA_LEAVES(), fn(Leaves $block) => Helper::encodeLeaves($block, new Writer(Ids::AZALEA_LEAVES)));
+		$this->map(Blocks::CHERRY_LEAVES(), fn(Leaves $block) => Helper::encodeLeaves($block, new Writer(Ids::CHERRY_LEAVES)));
 		$this->map(Blocks::FLOWERING_AZALEA_LEAVES(), fn(Leaves $block) => Helper::encodeLeaves($block, new Writer(Ids::AZALEA_LEAVES_FLOWERED)));
 		$this->map(Blocks::MANGROVE_LEAVES(), fn(Leaves $block) => Helper::encodeLeaves($block, new Writer(Ids::MANGROVE_LEAVES)));
 

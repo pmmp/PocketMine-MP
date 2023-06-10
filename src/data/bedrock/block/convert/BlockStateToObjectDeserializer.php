@@ -454,6 +454,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		//flattened IDs
 		$this->map(Ids::AZALEA_LEAVES, fn(Reader $in) => Helper::decodeLeaves(Blocks::AZALEA_LEAVES(), $in));
 		$this->map(Ids::AZALEA_LEAVES_FLOWERED, fn(Reader $in) => Helper::decodeLeaves(Blocks::FLOWERING_AZALEA_LEAVES(), $in));
+		$this->map(Ids::CHERRY_LEAVES, fn(Reader $in) => Helper::decodeLeaves(Blocks::CHERRY_LEAVES(), $in));
 		$this->map(Ids::MANGROVE_LEAVES, fn(Reader $in) => Helper::decodeLeaves(Blocks::MANGROVE_LEAVES(), $in));
 
 		//legacy mess

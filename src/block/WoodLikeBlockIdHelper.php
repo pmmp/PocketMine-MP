@@ -138,6 +138,7 @@ final class WoodLikeBlockIdHelper{
 			LeavesType::MANGROVE()->id() => Ids::MANGROVE_LEAVES,
 			LeavesType::AZALEA()->id() => Ids::AZALEA_LEAVES,
 			LeavesType::FLOWERING_AZALEA()->id() => Ids::FLOWERING_AZALEA_LEAVES,
+			LeavesType::CHERRY()->id() => Ids::CHERRY_LEAVES,
 			default => throw new AssumptionFailedError("All leaves types should be covered")
 		});
 	}

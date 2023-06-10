@@ -163,6 +163,7 @@ use function mb_strtolower;
  * @method static WoodenDoor CHERRY_DOOR()
  * @method static WoodenFence CHERRY_FENCE()
  * @method static FenceGate CHERRY_FENCE_GATE()
+ * @method static Leaves CHERRY_LEAVES()
  * @method static Wood CHERRY_LOG()
  * @method static Planks CHERRY_PLANKS()
  * @method static WoodenPressurePlate CHERRY_PRESSURE_PLATE()

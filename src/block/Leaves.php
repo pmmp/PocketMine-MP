@@ -148,6 +148,7 @@ class Leaves extends Transparent{
 				LeavesType::SPRUCE() => VanillaBlocks::SPRUCE_SAPLING(),
 				LeavesType::MANGROVE(), //TODO: mangrove propagule
 				LeavesType::AZALEA(), LeavesType::FLOWERING_AZALEA() => null, //TODO: azalea
+				LeavesType::CHERRY() => null, //TODO: cherry
 				default => throw new AssumptionFailedError("Unreachable")
 			})?->asItem();
 			if($sapling !== null){
