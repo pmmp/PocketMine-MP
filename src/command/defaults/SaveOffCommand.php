@@ -30,19 +30,15 @@ use pocketmine\permission\DefaultPermissionNames;
 
 class SaveOffCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"save-off",
 			KnownTranslationFactory::pocketmine_command_saveoff_description()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_SAVE_DISABLE);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		$sender->getServer()->getWorldManager()->setAutoSave(false);
 
 		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_save_disabled());

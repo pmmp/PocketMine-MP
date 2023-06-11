@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\light;
 
-use pocketmine\block\BlockFactory;
+use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
@@ -37,8 +37,7 @@ use function igbinary_unserialize;
 class LightPopulationTask extends AsyncTask{
 	private const TLS_KEY_COMPLETION_CALLBACK = "onCompletion";
 
-	/** @var string */
-	public $chunk;
+	public string $chunk;
 
 	private string $resultHeightMap;
 	private string $resultSkyLightArrays;
@@ -58,7 +57,7 @@ class LightPopulationTask extends AsyncTask{
 		$manager = new SimpleChunkManager(World::Y_MIN, World::Y_MAX);
 		$manager->setChunk(0, 0, $chunk);
 
-		$blockFactory = BlockFactory::getInstance();
+		$blockFactory = RuntimeBlockStateRegistry::getInstance();
 		foreach([
 			"Block" => new BlockLightUpdate(new SubChunkExplorer($manager), $blockFactory->lightFilter, $blockFactory->light),
 			"Sky" => new SkyLightUpdate(new SubChunkExplorer($manager), $blockFactory->lightFilter, $blockFactory->blocksDirectSkyLight),

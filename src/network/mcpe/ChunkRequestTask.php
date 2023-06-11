@@ -25,14 +25,14 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Compressor;
-use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\LevelChunkPacket;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\network\mcpe\protocol\types\ChunkPosition;
 use pocketmine\network\mcpe\serializer\ChunkSerializer;
 use pocketmine\scheduler\AsyncTask;
+use pocketmine\thread\NonThreadSafeValue;
 use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
@@ -41,23 +41,18 @@ class ChunkRequestTask extends AsyncTask{
 	private const TLS_KEY_PROMISE = "promise";
 	private const TLS_KEY_ERROR_HOOK = "errorHook";
 
-	/** @var string */
-	protected $chunk;
-	/** @var int */
-	protected $chunkX;
-	/** @var int */
-	protected $chunkZ;
-
-	/** @var Compressor */
-	protected $compressor;
-
+	protected string $chunk;
+	protected int $chunkX;
+	protected int $chunkZ;
+	/** @phpstan-var NonThreadSafeValue<Compressor> */
+	protected NonThreadSafeValue $compressor;
 	private string $tiles;
 
 	/**
 	 * @phpstan-param (\Closure() : void)|null $onError
 	 */
 	public function __construct(int $chunkX, int $chunkZ, Chunk $chunk, CompressBatchPromise $promise, Compressor $compressor, ?\Closure $onError = null){
-		$this->compressor = $compressor;
+		$this->compressor = new NonThreadSafeValue($compressor);
 
 		$this->chunk = FastChunkSerializer::serializeTerrain($chunk);
 		$this->chunkX = $chunkX;
@@ -70,13 +65,14 @@ class ChunkRequestTask extends AsyncTask{
 
 	public function onRun() : void{
 		$chunk = FastChunkSerializer::deserializeTerrain($this->chunk);
-		$subCount = ChunkSerializer::getSubChunkCount($chunk) + ChunkSerializer::LOWER_PADDING_SIZE;
-		$encoderContext = new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary());
-		$payload = ChunkSerializer::serializeFullChunk($chunk, RuntimeBlockMapping::getInstance(), $encoderContext, $this->tiles);
+		$subCount = ChunkSerializer::getSubChunkCount($chunk);
+		$converter = TypeConverter::getInstance();
+		$encoderContext = new PacketSerializerContext($converter->getItemTypeDictionary());
+		$payload = ChunkSerializer::serializeFullChunk($chunk, $converter->getBlockTranslator(), $encoderContext, $this->tiles);
 
 		$stream = new BinaryStream();
 		PacketBatch::encodePackets($stream, $encoderContext, [LevelChunkPacket::create(new ChunkPosition($this->chunkX, $this->chunkZ), $subCount, false, null, $payload)]);
-		$this->setResult($this->compressor->compress($stream->getBuffer()));
+		$this->setResult($this->compressor->deserialize()->compress($stream->getBuffer()));
 	}
 
 	public function onError() : void{

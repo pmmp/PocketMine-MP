@@ -34,6 +34,7 @@ use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\VersionInfo;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function get_class;
@@ -45,12 +46,9 @@ abstract class Tile{
 	public const TAG_Y = "y";
 	public const TAG_Z = "z";
 
-	/** @var Position */
-	protected $position;
-	/** @var bool */
-	public $closed = false;
-	/** @var TimingsHandler */
-	protected $timings;
+	protected Position $position;
+	public bool $closed = false;
+	protected TimingsHandler $timings;
 
 	public function __construct(World $world, Vector3 $pos){
 		$this->position = Position::fromObject($pos, $world);
@@ -74,7 +72,8 @@ abstract class Tile{
 			->setString(self::TAG_ID, TileFactory::getInstance()->getSaveId(get_class($this)))
 			->setInt(self::TAG_X, $this->position->getFloorX())
 			->setInt(self::TAG_Y, $this->position->getFloorY())
-			->setInt(self::TAG_Z, $this->position->getFloorZ());
+			->setInt(self::TAG_Z, $this->position->getFloorZ())
+			->setLong(VersionInfo::TAG_WORLD_DATA_VERSION, VersionInfo::WORLD_DATA_VERSION);
 		$this->writeSaveData($nbt);
 
 		return $nbt;

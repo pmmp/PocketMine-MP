@@ -24,32 +24,31 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use PHPUnit\Framework\TestCase;
+use pocketmine\block\VanillaBlocks;
 
 class LegacyStringToItemParserTest extends TestCase{
 
 	/**
 	 * @return mixed[][]
-	 * @phpstan-return list<array{string,int,int}>
+	 * @phpstan-return list<array{string,Item}>
 	 */
-	public function itemFromStringProvider() : array{
+	public static function itemFromStringProvider() : array{
 		return [
-			["dye:4", ItemIds::DYE, 4],
-			["351", ItemIds::DYE, 0],
-			["351:4", ItemIds::DYE, 4],
-			["stone:3", ItemIds::STONE, 3],
-			["minecraft:string", ItemIds::STRING, 0],
-			["diamond_pickaxe", ItemIds::DIAMOND_PICKAXE, 0],
-			["diamond_pickaxe:5", ItemIds::DIAMOND_PICKAXE, 5]
+			["dye:4", VanillaItems::LAPIS_LAZULI()],
+			["351", VanillaItems::INK_SAC()],
+			["351:4", VanillaItems::LAPIS_LAZULI()],
+			["stone:3", VanillaBlocks::DIORITE()->asItem()],
+			["minecraft:string", VanillaItems::STRING()],
+			["diamond_pickaxe", VanillaItems::DIAMOND_PICKAXE()]
 		];
 	}
 
 	/**
 	 * @dataProvider itemFromStringProvider
 	 */
-	public function testFromStringSingle(string $string, int $id, int $meta) : void{
+	public function testFromStringSingle(string $string, Item $expected) : void{
 		$item = LegacyStringToItemParser::getInstance()->parse($string);
 
-		self::assertEquals($id, $item->getId());
-		self::assertEquals($meta, $item->getMeta());
+		self::assertTrue($item->equals($expected));
 	}
 }

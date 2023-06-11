@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
@@ -38,31 +39,16 @@ class Vine extends Flowable{
 	/** @var int[] */
 	protected array $faces = [];
 
-	protected function writeStateToMeta() : int{
-		return
-			(isset($this->faces[Facing::SOUTH]) ? BlockLegacyMetadata::VINE_FLAG_SOUTH : 0) |
-			(isset($this->faces[Facing::WEST]) ? BlockLegacyMetadata::VINE_FLAG_WEST : 0) |
-			(isset($this->faces[Facing::NORTH]) ? BlockLegacyMetadata::VINE_FLAG_NORTH : 0) |
-			(isset($this->faces[Facing::EAST]) ? BlockLegacyMetadata::VINE_FLAG_EAST : 0);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->setFaceFromMeta($stateMeta, BlockLegacyMetadata::VINE_FLAG_SOUTH, Facing::SOUTH);
-		$this->setFaceFromMeta($stateMeta, BlockLegacyMetadata::VINE_FLAG_WEST, Facing::WEST);
-		$this->setFaceFromMeta($stateMeta, BlockLegacyMetadata::VINE_FLAG_NORTH, Facing::NORTH);
-		$this->setFaceFromMeta($stateMeta, BlockLegacyMetadata::VINE_FLAG_EAST, Facing::EAST);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
-	private function setFaceFromMeta(int $meta, int $flag, int $face) : void{
-		$this->setFace($face, ($meta & $flag) !== 0);
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->horizontalFacingFlags($this->faces);
 	}
 
 	/** @return int[] */
 	public function getFaces() : array{ return $this->faces; }
+
+	public function hasFace(int $face) : bool{
+		return isset($this->faces[$face]);
+	}
 
 	/**
 	 * @param int[] $faces

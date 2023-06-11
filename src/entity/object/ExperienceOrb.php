@@ -84,29 +84,13 @@ class ExperienceOrb extends Entity{
 		return $result;
 	}
 
-	public $gravity = 0.04;
-	public $drag = 0.02;
+	/** Ticker used for determining interval in which to look for new target players. */
+	protected int $lookForTargetTime = 0;
 
-	/**
-	 * @var int
-	 * @deprecated
-	 */
-	protected $age = 0;
+	/** Runtime entity ID of the player this XP orb is targeting. */
+	protected ?int $targetPlayerRuntimeId = null;
 
-	/**
-	 * @var int
-	 * Ticker used for determining interval in which to look for new target players.
-	 */
-	protected $lookForTargetTime = 0;
-
-	/**
-	 * @var int|null
-	 * Runtime entity ID of the player this XP orb is targeting.
-	 */
-	protected $targetPlayerRuntimeId = null;
-
-	/** @var int */
-	protected $xpValue;
+	protected int $xpValue;
 
 	private int $despawnDelay = self::DEFAULT_DESPAWN_DELAY;
 
@@ -117,14 +101,18 @@ class ExperienceOrb extends Entity{
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.25, 0.25); }
 
+	protected function getInitialDragMultiplier() : float{ return 0.02; }
+
+	protected function getInitialGravity() : float{ return 0.04; }
+
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
-		$this->age = $nbt->getShort(self::TAG_AGE, 0);
-		if($this->age === -32768){
+		$age = $nbt->getShort(self::TAG_AGE, 0);
+		if($age === -32768){
 			$this->despawnDelay = self::NEVER_DESPAWN;
 		}else{
-			$this->despawnDelay = max(0, self::DEFAULT_DESPAWN_DELAY - $this->age);
+			$this->despawnDelay = max(0, self::DEFAULT_DESPAWN_DELAY - $age);
 		}
 	}
 
@@ -189,7 +177,6 @@ class ExperienceOrb extends Entity{
 	protected function entityBaseTick(int $tickDiff = 1) : bool{
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		$this->age += $tickDiff;
 		$this->despawnDelay -= $tickDiff;
 		if($this->despawnDelay <= 0){
 			$this->flagForDespawn();
