@@ -68,8 +68,8 @@ abstract class AsyncTask extends Runnable{
 	 */
 	private static ?\ArrayObject $threadLocalStorage = null;
 
-	/** @phpstan-var ThreadSafeArray<int, string> */
-	public ThreadSafeArray $progressUpdates;
+	/** @phpstan-var ThreadSafeArray<int, string>|null */
+	private ?ThreadSafeArray $progressUpdates = null;
 
 	private ThreadSafe|string|int|bool|null|float $result = null;
 	private bool $cancelRun = false;
@@ -163,15 +163,22 @@ abstract class AsyncTask extends Runnable{
 	 * @param mixed $progress A value that can be safely serialize()'ed.
 	 */
 	public function publishProgress(mixed $progress) : void{
-		$this->progressUpdates[] = igbinary_serialize($progress) ?? throw new \InvalidArgumentException("Progress must be serializable");
+		$progressUpdates = $this->progressUpdates;
+		if($progressUpdates === null){
+			$progressUpdates = $this->progressUpdates = new ThreadSafeArray();
+		}
+		$progressUpdates[] = igbinary_serialize($progress) ?? throw new \InvalidArgumentException("Progress must be serializable");
 	}
 
 	/**
 	 * @internal Only call from AsyncPool.php on the main thread
 	 */
 	public function checkProgressUpdates() : void{
-		while(($progress = $this->progressUpdates->shift()) !== null){
-			$this->onProgressUpdate(igbinary_unserialize($progress));
+		$progressUpdates = $this->progressUpdates;
+		if($progressUpdates !== null){
+			while(($progress = $progressUpdates->shift()) !== null){
+				$this->onProgressUpdate(igbinary_unserialize($progress));
+			}
 		}
 	}
 

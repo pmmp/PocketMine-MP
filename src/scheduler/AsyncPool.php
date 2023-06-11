@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\scheduler;
 
 use pmmp\thread\Thread as NativeThread;
-use pmmp\thread\ThreadSafeArray;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\thread\log\ThreadSafeLogger;
 use pocketmine\thread\ThreadSafeClassLoader;
@@ -146,7 +145,6 @@ class AsyncPool{
 			throw new \InvalidArgumentException("Cannot submit the same AsyncTask instance more than once");
 		}
 
-		$task->progressUpdates = new ThreadSafeArray();
 		$task->setSubmitted();
 
 		$this->getWorker($worker)->submit($task);
