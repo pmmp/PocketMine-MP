@@ -76,7 +76,7 @@ class ChiseledBookshelf extends Spawnable{
 	/**
 	 * @param (WritableBookBase|Book)[] $items
 	 */
-	public function setItems(array $items): void {
+	public function setItems(array $items) : void{
 		$this->items = $items;
 	}
 }
