@@ -28,7 +28,6 @@ use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Book;
-use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\item\WritableBookBase;
@@ -134,11 +133,15 @@ class ChiseledBookshelf extends Opaque {
 		return true;
 	}
 
-	public function getDrops(Item $item) : array{
-		return ($item->hasEnchantment(VanillaEnchantments::SILK_TOUCH()) ? [$this->asItem(), ...$this->items] : $this->items);
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return $this->items;
 	}
 
 	public function isAffectedBySilkTouch() : bool{
 		return true;
+	}
+
+	public function getSilkTouchDrops(Item $item) : array{
+		return [$this->asItem(), ...$this->items];
 	}
 }
