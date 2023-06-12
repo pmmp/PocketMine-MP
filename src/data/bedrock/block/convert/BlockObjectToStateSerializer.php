@@ -48,6 +48,7 @@ use pocketmine\block\CaveVines;
 use pocketmine\block\Chain;
 use pocketmine\block\ChemistryTable;
 use pocketmine\block\Chest;
+use pocketmine\block\ChiseledBookshelf;
 use pocketmine\block\ChorusFlower;
 use pocketmine\block\CocoaBlock;
 use pocketmine\block\Concrete;
@@ -971,6 +972,11 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::CHEST(), function(Chest $block) : Writer{
 			return Writer::create(Ids::CHEST)
 				->writeHorizontalFacing($block->getFacing());
+		});
+		$this->map(Blocks::CHISELED_BOOKSHELF(), function (ChiseledBookshelf $block) : Writer{
+			return Writer::create(Ids::CHISELED_BOOKSHELF)
+				->writeLegacyHorizontalFacing($block->getFacing())
+				->writeInt(StateNames::BOOKS_STORED, $block->getCachedBooksBit());
 		});
 		$this->map(Blocks::CHISELED_QUARTZ(), fn(SimplePillar $block) => Helper::encodeQuartz(StringValues::CHISEL_TYPE_CHISELED, $block->getAxis()));
 		$this->map(Blocks::CHISELED_RED_SANDSTONE(), fn() => Helper::encodeSandstone(Ids::RED_SANDSTONE, StringValues::SAND_STONE_TYPE_HEIROGLYPHS));

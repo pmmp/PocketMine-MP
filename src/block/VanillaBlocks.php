@@ -38,6 +38,7 @@ use pocketmine\block\tile\BlastFurnace as TileBlastFurnace;
 use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\tile\Cauldron as TileCauldron;
 use pocketmine\block\tile\Chest as TileChest;
+use pocketmine\block\tile\ChiseledBookshelf as TileChiseledBookshelf;
 use pocketmine\block\tile\Comparator as TileComparator;
 use pocketmine\block\tile\DaylightSensor as TileDaylightSensor;
 use pocketmine\block\tile\EnchantTable as TileEnchantingTable;
@@ -138,6 +139,7 @@ use function mb_strtolower;
  * @method static Torch BLUE_TORCH()
  * @method static BoneBlock BONE_BLOCK()
  * @method static Bookshelf BOOKSHELF()
+ * @method static ChiseledBookshelf CHISELED_BOOKSHELF()
  * @method static BrewingStand BREWING_STAND()
  * @method static Opaque BRICKS()
  * @method static Slab BRICK_SLAB()
@@ -802,6 +804,7 @@ final class VanillaBlocks{
 		self::register("blue_ice", new BlueIce(new BID(Ids::BLUE_ICE), "Blue Ice", new Info(BreakInfo::pickaxe(2.8))));
 		self::register("bone_block", new BoneBlock(new BID(Ids::BONE_BLOCK), "Bone Block", new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD()))));
 		self::register("bookshelf", new Bookshelf(new BID(Ids::BOOKSHELF), "Bookshelf", new Info(BreakInfo::axe(1.5))));
+		self::register("chiseled_bookshelf", new ChiseledBookshelf(new BID(Ids::CHISELED_BOOKSHELF, TileChiseledBookshelf::class), "Chiseled Bookshelf", new Info(BreakInfo::axe(1.5))));
 		self::register("brewing_stand", new BrewingStand(new BID(Ids::BREWING_STAND, TileBrewingStand::class), "Brewing Stand", new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD()))));
 
 		$bricksBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD(), 30.0));
