@@ -52,7 +52,7 @@ class ChiseledBookshelf extends Spawnable{
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		$itemsTag = $nbt->getListTag(self::TAG_ITEMS);
-		if($itemsTag !== null and $itemsTag->getTagType() === NBT::TAG_Compound){
+		if($itemsTag !== null && $itemsTag->getTagType() === NBT::TAG_Compound){
 			/** @var CompoundTag $itemNBT */
 			foreach($itemsTag->getValue() as $itemNBT){
 				/** @var WritableBookBase|Book $item */
