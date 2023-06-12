@@ -29,6 +29,7 @@ use pocketmine\event\world\WorldLoadEvent;
 use pocketmine\event\world\WorldUnloadEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\player\ChunkSelector;
+use pocketmine\scheduler\AsyncPool;
 use pocketmine\Server;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
@@ -246,8 +247,7 @@ class WorldManager{
 			$this->server->getLogger()->notice($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_conversion_finish($name, $converter->getBackupPath())));
 		}
 
-		$world = new World($this->server, $name, $provider, $this->server->getAsyncPool());
-
+		$world = new World($this->server, $name, $provider);
 		$this->worlds[$world->getId()] = $world;
 		$world->setAutoSave($this->autoSave);
 

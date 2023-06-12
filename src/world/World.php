@@ -82,6 +82,7 @@ use pocketmine\ServerConfigGroup;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
 use pocketmine\utils\ReversePriorityQueue;
+use pocketmine\utils\Utils;
 use pocketmine\world\biome\Biome;
 use pocketmine\world\biome\BiomeRegistry;
 use pocketmine\world\format\Chunk;
@@ -363,6 +364,9 @@ class World implements ChunkManager{
 
 	private \Logger $logger;
 
+
+	private AsyncPool $asyncPool;
+
 	/**
 	 * @phpstan-return ChunkPosHash
 	 */
@@ -468,13 +472,23 @@ class World implements ChunkManager{
 		private Server $server,
 		string $name, //TODO: this should be folderName (named arguments BC break)
 		private WritableWorldProvider $provider,
-		private AsyncPool $workerPool
 	){
 		$this->folderName = $name;
 		$this->worldId = self::$worldIdCounter++;
 
 		$this->displayName = $this->provider->getWorldData()->getName();
 		$this->logger = new \PrefixedLogger($server->getLogger(), "World: $this->displayName");
+		if(($poolSize = $this->server->getConfigGroup()->getPropertyString("settings.async-workers-world", "auto")) === "auto"){
+			$poolSize = 2;
+			$processors = Utils::getCoreCount() - 2;
+
+			if($processors > 0){
+				$poolSize = max(1, $processors);
+			}
+		}else{
+			$poolSize = max(1, (int) $poolSize);
+		}
+		$this->asyncPool = new AsyncPool($poolSize, max(-1, $this->server->getConfigGroup()->getPropertyInt("memory.async-worker-hard-limit", 256)), $this->server->autoloader, $this->server->getLogger(), $this->server->getTickSleeper());
 
 		$this->minY = $this->provider->getWorldMinY();
 		$this->maxY = $this->provider->getWorldMaxY();
@@ -513,6 +527,7 @@ class World implements ChunkManager{
 			$this->logger->warning("\"chunk-ticking.per-tick\" setting is deprecated, but you've used it to disable chunk ticking. Set \"chunk-ticking.tick-radius\" to 0 in \"pocketmine.yml\" instead.");
 			$this->chunkTickRadius = 0;
 		}
+
 		$this->tickedBlocksPerSubchunkPerTick = $cfg->getPropertyInt("chunk-ticking.blocks-per-subchunk-per-tick", self::DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK);
 		$this->maxConcurrentChunkPopulationTasks = $cfg->getPropertyInt("chunk-generation.population-queue-size", 2);
 
@@ -520,16 +535,23 @@ class World implements ChunkManager{
 
 		$this->timings = new WorldTimings($this);
 
-		$this->workerPool->addWorkerStartHook($workerStartHook = function(int $workerId) : void{
+		$this->asyncPool->addWorkerStartHook($workerStartHook = function(int $workerId) : void{
 			if(array_key_exists($workerId, $this->generatorRegisteredWorkers)){
 				$this->logger->debug("Worker $workerId with previously registered generator restarted, flagging as unregistered");
 				unset($this->generatorRegisteredWorkers[$workerId]);
 			}
 		});
-		$workerPool = $this->workerPool;
+		$workerPool = $this->asyncPool;
 		$this->addOnUnloadCallback(static function() use ($workerPool, $workerStartHook) : void{
 			$workerPool->removeWorkerStartHook($workerStartHook);
 		});
+	}
+
+	/**
+	 * @return AsyncPool
+	 */
+	public function getAsyncPool() : AsyncPool{
+		return $this->asyncPool;
 	}
 
 	private function initRandomTickBlocksFromConfig(ServerConfigGroup $cfg) : void{
@@ -572,14 +594,14 @@ class World implements ChunkManager{
 
 	public function registerGeneratorToWorker(int $worker) : void{
 		$this->logger->debug("Registering generator on worker $worker");
-		$this->workerPool->submitTaskToWorker(new GeneratorRegisterTask($this, $this->generator, $this->provider->getWorldData()->getGeneratorOptions()), $worker);
+		$this->asyncPool->submitTaskToWorker(new GeneratorRegisterTask($this, $this->generator, $this->provider->getWorldData()->getGeneratorOptions()), $worker);
 		$this->generatorRegisteredWorkers[$worker] = true;
 	}
 
 	public function unregisterGenerator() : void{
-		foreach($this->workerPool->getRunningWorkers() as $i){
+		foreach($this->asyncPool->getRunningWorkers() as $i){
 			if(isset($this->generatorRegisteredWorkers[$i])){
-				$this->workerPool->submitTaskToWorker(new GeneratorUnregisterTask($this), $i);
+				$this->asyncPool->submitTaskToWorker(new GeneratorUnregisterTask($this), $i);
 			}
 		}
 		$this->generatorRegisteredWorkers = [];
@@ -612,6 +634,7 @@ class World implements ChunkManager{
 	 * @internal
 	 */
 	public function onUnload() : void{
+
 		if($this->unloaded){
 			throw new \LogicException("Tried to close a world which is already closed");
 		}
@@ -641,6 +664,13 @@ class World implements ChunkManager{
 		}
 
 		$this->save();
+
+
+
+		if(isset($this->asyncPool)){
+			$this->logger->debug("Shutting down async task worker pool");
+			$this->asyncPool->shutdown();
+		}
 
 		$this->unregisterGenerator();
 
@@ -1303,7 +1333,7 @@ class World implements ChunkManager{
 			$this->chunks[$chunkHash]->setLightPopulated(null);
 			$this->markTickingChunkForRecheck($chunkX, $chunkZ);
 
-			$this->workerPool->submitTask(new LightPopulationTask(
+			$this->asyncPool->submitTask(new LightPopulationTask(
 				$this->chunks[$chunkHash],
 				function(array $blockLight, array $skyLight, array $heightMap) use ($chunkX, $chunkZ) : void{
 					/**
@@ -3248,15 +3278,15 @@ class World implements ChunkManager{
 					$this->generateChunkCallback($chunkPopulationLockId, $chunkX, $chunkZ, $centerChunk, $adjacentChunks, $temporaryChunkLoader);
 				}
 			);
-			$workerId = $this->workerPool->selectWorker();
-			if(!isset($this->workerPool->getRunningWorkers()[$workerId]) && isset($this->generatorRegisteredWorkers[$workerId])){
+			$workerId = $this->asyncPool->selectWorker();
+			if(!isset($this->asyncPool->getRunningWorkers()[$workerId]) && isset($this->generatorRegisteredWorkers[$workerId])){
 				$this->logger->debug("Selected worker $workerId previously had generator registered, but is now offline");
 				unset($this->generatorRegisteredWorkers[$workerId]);
 			}
 			if(!isset($this->generatorRegisteredWorkers[$workerId])){
 				$this->registerGeneratorToWorker($workerId);
 			}
-			$this->workerPool->submitTaskToWorker($task, $workerId);
+			$this->asyncPool->submitTaskToWorker($task, $workerId);
 
 			return $resolver->getPromise();
 		}finally{

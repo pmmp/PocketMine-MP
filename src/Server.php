@@ -761,7 +761,7 @@ class Server{
 	}
 
 	public function __construct(
-		private ThreadSafeClassLoader $autoloader,
+		public  readonly ThreadSafeClassLoader $autoloader,
 		private AttachableThreadSafeLogger $logger,
 		string $dataPath,
 		string $pluginPath
@@ -888,7 +888,7 @@ class Server{
 				$poolSize = max(1, (int) $poolSize);
 			}
 
-			$this->asyncPool = new AsyncPool($poolSize, max(-1, $this->configGroup->getPropertyInt("memory.async-worker-hard-limit", 256)), $this->autoloader, $this->logger, $this->tickSleeper);
+			$this->asyncPool = new AsyncPool($poolSize, max(-1, $this->configGroup->getPropertyInt("memory.async-worker-world-hard-limit", 256)), $this->autoloader, $this->logger, $this->tickSleeper);
 
 			$netCompressionThreshold = -1;
 			if($this->configGroup->getPropertyInt("network.batch-threshold", 256) >= 0){
