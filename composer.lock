@@ -224,16 +224,16 @@
         },
         {
             "name": "pocketmine/bedrock-data",
-            "version": "2.3.0+bedrock-1.20.0",
+            "version": "2.3.1+bedrock-1.20.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockData.git",
-                "reference": "b3dd3f4b8e3b6759c5d84de6ec85bb20b668c3a9"
+                "reference": "fb89ccdc039252462d8d068a769635e24151b7e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/b3dd3f4b8e3b6759c5d84de6ec85bb20b668c3a9",
-                "reference": "b3dd3f4b8e3b6759c5d84de6ec85bb20b668c3a9",
+                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/fb89ccdc039252462d8d068a769635e24151b7e2",
+                "reference": "fb89ccdc039252462d8d068a769635e24151b7e2",
                 "shasum": ""
             },
             "type": "library",
@@ -244,9 +244,9 @@
             "description": "Blobs of data generated from Minecraft: Bedrock Edition, used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockData/issues",
-                "source": "https://github.com/pmmp/BedrockData/tree/bedrock-1.20.0"
+                "source": "https://github.com/pmmp/BedrockData/tree/2.3.1+bedrock-1.20.0"
             },
-            "time": "2023-06-07T19:06:47+00:00"
+            "time": "2023-06-13T16:42:09+00:00"
         },
         {
             "name": "pocketmine/bedrock-item-upgrade-schema",
