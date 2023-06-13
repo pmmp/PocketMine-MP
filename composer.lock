@@ -224,16 +224,16 @@
         },
         {
             "name": "pocketmine/bedrock-data",
-            "version": "2.3.0+bedrock-1.20.0",
+            "version": "2.3.1+bedrock-1.20.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockData.git",
-                "reference": "b3dd3f4b8e3b6759c5d84de6ec85bb20b668c3a9"
+                "reference": "fb89ccdc039252462d8d068a769635e24151b7e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/b3dd3f4b8e3b6759c5d84de6ec85bb20b668c3a9",
-                "reference": "b3dd3f4b8e3b6759c5d84de6ec85bb20b668c3a9",
+                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/fb89ccdc039252462d8d068a769635e24151b7e2",
+                "reference": "fb89ccdc039252462d8d068a769635e24151b7e2",
                 "shasum": ""
             },
             "type": "library",
@@ -244,9 +244,9 @@
             "description": "Blobs of data generated from Minecraft: Bedrock Edition, used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockData/issues",
-                "source": "https://github.com/pmmp/BedrockData/tree/bedrock-1.20.0"
+                "source": "https://github.com/pmmp/BedrockData/tree/2.3.1+bedrock-1.20.0"
             },
-            "time": "2023-06-07T19:06:47+00:00"
+            "time": "2023-06-13T16:42:09+00:00"
         },
         {
             "name": "pocketmine/bedrock-item-upgrade-schema",
@@ -1937,16 +1937,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "10.2.1",
+            "version": "10.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "599b33294350e8f51163119d5670512f98b0490d"
+                "reference": "1ab521b24b88b88310c40c26c0cc4a94ba40ff95"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/599b33294350e8f51163119d5670512f98b0490d",
-                "reference": "599b33294350e8f51163119d5670512f98b0490d",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/1ab521b24b88b88310c40c26c0cc4a94ba40ff95",
+                "reference": "1ab521b24b88b88310c40c26c0cc4a94ba40ff95",
                 "shasum": ""
             },
             "require": {
@@ -2018,7 +2018,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.2.1"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.2.2"
             },
             "funding": [
                 {
@@ -2034,7 +2034,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-06-05T05:15:51+00:00"
+            "time": "2023-06-11T06:15:20+00:00"
         },
         {
             "name": "sebastian/cli-parser",
