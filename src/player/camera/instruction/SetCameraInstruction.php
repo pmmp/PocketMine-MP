@@ -41,8 +41,8 @@ class SetCameraInstruction implements CameraInstruction{
 	private const TAG_POSITION = "pos"; //TAG_Compound & TAG_List<TAG_Float>
 
 	private const TAG_ROTATION = "rot"; //TAG_Compound
-	private const TAG_ROTATION_YAW = "yaw"; //TAG_Float
-	private const TAG_ROTATION_PITCH = "pitch"; //TAG_Float
+	private const TAG_ROTATION_YAW = "y"; //TAG_Float
+	private const TAG_ROTATION_PITCH = "x"; //TAG_Float
 
 	private const TAG_EASE = "ease"; //TAG_Compound
 	private const TAG_EASE_TYPE = "type"; //TAG_String
@@ -69,7 +69,7 @@ class SetCameraInstruction implements CameraInstruction{
 				);
 			}
 			if (($yaw = $this->state->getYaw()) !== null && ($pitch = $this->state->getPitch()) !== null) {
-				$tag->setTag(self::TAG_ROTATION, CompoundTag::create()
+				$setTag->setTag(self::TAG_ROTATION, CompoundTag::create()
 					->setFloat(self::TAG_ROTATION_YAW, $yaw)
 					->setFloat(self::TAG_ROTATION_PITCH, $pitch)
 				);

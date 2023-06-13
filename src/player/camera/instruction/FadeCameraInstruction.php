@@ -33,8 +33,10 @@ class FadeCameraInstruction implements CameraInstruction{
 
 	private const TAG_COLOR = "color"; //TAG_Compound
 	private const TAG_COLOR_R = "r"; //TAG_Float
-	private const TAG_COLOR_G = "g"; //TAG_Float
-	private const TAG_COLOR_B = "b"; //TAG_Float
+
+	/** TODO: Blue and green are swapped... */
+	private const TAG_COLOR_G = "b"; //TAG_Float
+	private const TAG_COLOR_B = "g"; //TAG_Float
 
 	private const TAG_TIME = "time"; //TAG_Compound
 	private const TAG_FADE_IN = "fadeIn"; //TAG_Float
