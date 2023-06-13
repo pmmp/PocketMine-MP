@@ -114,9 +114,15 @@ abstract class Command{
 
 		if($this->permissionMessage instanceof Translatable || $this->permissionMessage === null){
 			$message = $this->permissionMessage ?? KnownTranslationFactory::pocketmine_command_error_permission($this->name);
-			$target->sendMessage($message->prefix(TextFormat::RED));
+			$message = $message->prefix(TextFormat::RED);
 		}elseif($this->permissionMessage !== ""){
-			$target->sendMessage(str_replace("<permission>", $permission ?? implode(";", $this->permission), $this->permissionMessage));
+			$message = str_replace("<permission>", $permission ?? implode(";", $this->permission), $this->permissionMessage);
+		}else{
+			$message = null;
+		}
+
+		if($message !== null){
+			$target->sendMessage($message);
 		}
 
 		return false;
