@@ -112,13 +112,12 @@ abstract class Command{
 			return true;
 		}
 
+		$message = null;
 		if($this->permissionMessage instanceof Translatable || $this->permissionMessage === null){
 			$message = $this->permissionMessage ?? KnownTranslationFactory::pocketmine_command_error_permission($this->name);
 			$message = $message->prefix(TextFormat::RED);
 		}elseif($this->permissionMessage !== ""){
 			$message = str_replace("<permission>", $permission ?? implode(";", $this->permission), $this->permissionMessage);
-		}else{
-			$message = null;
 		}
 
 		if($message !== null){
