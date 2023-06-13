@@ -112,17 +112,14 @@ abstract class Command{
 			return true;
 		}
 
-		$message = null;
-		if($this->permissionMessage instanceof Translatable || $this->permissionMessage === null){
-			$message = $this->permissionMessage ?? KnownTranslationFactory::pocketmine_command_error_permission($this->name);
+		$message = $this->permissionMessage ?? KnownTranslationFactory::pocketmine_command_error_permission($this->name);
+		if($message instanceof Translatable){
 			$message = $message->prefix(TextFormat::RED);
-		}elseif($this->permissionMessage !== ""){
-			$message = str_replace("<permission>", $permission ?? implode(";", $this->permission), $this->permissionMessage);
+		}elseif($message !== ""){
+			$message = str_replace("<permission>", $permission ?? implode(";", $this->permission), $message);
 		}
 
-		if($message !== null){
-			$target->sendMessage($message);
-		}
+		$target->sendMessage($message);
 
 		return false;
 	}
