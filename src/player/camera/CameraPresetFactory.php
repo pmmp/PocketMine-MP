@@ -23,7 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\player\camera;
 
-use pocketmine\entity\Location;
+use pocketmine\player\camera\element\CameraState;
+use pocketmine\math\Vector3;
 use pocketmine\utils\SingletonTrait;
 
 /**
@@ -50,7 +51,7 @@ final class CameraPresetFactory{
 		$this->register(new CameraPreset("minecraft:first_person"));
 		$this->register(new CameraPreset("minecraft:third_person"));
 		$this->register(new CameraPreset("minecraft:third_person_front"));
-		$this->register(new CameraPreset("minecraft:free", "", new Location(0, 0, 0, null, 0, 0)));
+		$this->register(new CameraPreset("minecraft:free", "", new CameraState(Vector3::zero(), 0, 0)));
 	}
 
 	/**
@@ -70,11 +71,11 @@ final class CameraPresetFactory{
 		}
 
 		$this->presets[$id] = $preset;
-		$this->presets[$id] = $nextRuntimeId++;
+		$this->runtimeIds[$id] = $this->nextRuntimeId++;
 	}
 
 	public function fromId(string $identifier) : CameraPreset{
-		if (!$this->isRegistered()) {
+		if (!$this->isRegistered($identifier)) {
 			throw new \InvalidArgumentException("\"$identifier\" is not registered");
 		}
 
@@ -82,7 +83,7 @@ final class CameraPresetFactory{
 	}
 
 	public function getRuntimeId(string $identifier) : int{
-		if (!$this->isRegistered()) {
+		if (!$this->isRegistered($identifier)) {
 			throw new \InvalidArgumentException("\"$identifier\" is not registered");
 		}
 

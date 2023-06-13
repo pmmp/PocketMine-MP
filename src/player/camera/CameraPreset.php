@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\player\camera;
 
+use pocketmine\player\camera\element\CameraState;
 use pocketmine\entity\Location;
 use pocketmine\nbt\tag\CompoundTag;
 
@@ -41,7 +42,7 @@ final class CameraPreset{
 	public function __construct(
 		private string $identifier,
 		private string $inheritFrom = "",
-		private ?Location $location = null
+		private ?CameraState $state = null
 	){
 	}
 
@@ -53,8 +54,8 @@ final class CameraPreset{
 		return $this->inheritFrom;
 	}
 
-	public function getLocation() : ?Location{
-		return $this->location;
+	public function getCameraState() : ?CameraState{
+		return $this->state;
 	}
 
 	public function toCompoundTag() : CompoundTag{
@@ -62,13 +63,16 @@ final class CameraPreset{
 			->setString(self::TAG_IDENTIFIER, $this->identifier)
 			->setString(self::TAG_INHERIT_FROM, $this->inheritFrom);
 
-		if ($this->location !== null) {
-			$tag->setFloat(self::TAG_POSITION_X, $this->location->x)
-				->setFloat(self::TAG_POSITION_Y, $this->location->y)
-				->setFloat(self::TAG_POSITION_Z, $this->location->z)
-
-				->setFloat(self::TAG_ROTATION_YAW, $this->location->yaw)
-				->setFloat(self::TAG_ROTATION_PITCH, $this->location->pitch);
+		if ($this->state !== null) {
+			if (($position = $this->state->getPosition()) !== null) {
+				$tag->setFloat(self::TAG_POSITION_X, $position->x)
+					->setFloat(self::TAG_POSITION_Y, $position->y)
+					->setFloat(self::TAG_POSITION_Z, $position->z);
+			}
+			if (($yaw = $this->state->getYaw()) !== null && ($pitch = $this->state->getPitch()) !== null) {
+				$tag->setFloat(self::TAG_ROTATION_YAW, $yaw)
+					->setFloat(self::TAG_ROTATION_PITCH, $pitch);
+			}
 		}
 
 		return $tag;

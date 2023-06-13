@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\player\camera\instruction;
 
 use pocketmine\color\Color;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ByteTag;
 
 class FadeCameraInstruction implements CameraInstruction{

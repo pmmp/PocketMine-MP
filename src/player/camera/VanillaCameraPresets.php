@@ -37,10 +37,14 @@ use pocketmine\utils\RegistryTrait;
  * @method static CameraPreset THIRD_PERSON_FRONT()
  */
 final class VanillaCameraPresets{
-	use CloningRegistryTrait;
+	use RegistryTrait;
 
 	private function __construct(){
 		//NOOP
+	}
+
+	protected static function register(string $name, CameraPreset $member) : void{
+		self::_registryRegister($name, $member);
 	}
 
 	/**
