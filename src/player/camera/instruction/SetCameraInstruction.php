@@ -24,13 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\player\camera\instruction;
 
 use pocketmine\data\bedrock\CameraEaseTypeIdMap;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\FloatTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\player\camera\CameraPreset;
 use pocketmine\player\camera\CameraPresetFactory;
 use pocketmine\player\camera\element\CameraEase;
 use pocketmine\player\camera\element\CameraState;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\ListTag;
 
 class SetCameraInstruction implements CameraInstruction{
 

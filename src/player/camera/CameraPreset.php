@@ -23,9 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\player\camera;
 
-use pocketmine\player\camera\element\CameraState;
-use pocketmine\entity\Location;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\player\camera\element\CameraState;
 
 final class CameraPreset{
 

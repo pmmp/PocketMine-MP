@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\player\camera;
 
-use pocketmine\player\camera\element\CameraState;
 use pocketmine\math\Vector3;
+use pocketmine\player\camera\element\CameraState;
 use pocketmine\utils\SingletonTrait;
 
 /**
@@ -46,7 +46,7 @@ final class CameraPresetFactory{
 	private array $runtimeIds = [];
 
 	private int $nextRuntimeId = 0;
-	
+
 	public function __construct(){
 		$this->register(new CameraPreset("minecraft:first_person"));
 		$this->register(new CameraPreset("minecraft:third_person"));

@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\player\camera\element;
 
-use pocketmine\nbt\tag\CompoundTag;
-
 /**
  * Interface implemented by camera elements.
  */

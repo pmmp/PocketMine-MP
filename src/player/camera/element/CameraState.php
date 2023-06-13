@@ -23,11 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\player\camera\element;
 
-use pocketmine\data\bedrock\CameraEaseTypeIdMap;
 use pocketmine\entity\Location;
-use pocketmine\player\camera\CameraEaseType;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
 use function atan2;
 use function sqrt;
 use const M_PI;

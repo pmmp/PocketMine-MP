@@ -23,9 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\player\camera\element;
 
-use pocketmine\data\bedrock\CameraEaseTypeIdMap;
 use pocketmine\player\camera\CameraEaseType;
-use pocketmine\nbt\tag\CompoundTag;
 
 class CameraEase implements CameraElement{
 

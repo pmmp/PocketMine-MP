@@ -25,7 +25,6 @@ namespace pocketmine\player\camera\instruction;
 
 use pocketmine\color\Color;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ByteTag;
 
 class FadeCameraInstruction implements CameraInstruction{
 
@@ -61,14 +60,12 @@ class FadeCameraInstruction implements CameraInstruction{
 				//doesn't support alpha (opacity) :(
 			);
 		}
-		
 
 		$fadeTag->setTag(self::TAG_TIME, CompoundTag::create()
 			->setFloat(self::TAG_FADE_IN, $this->fadeInSeconds)
 			->setFloat(self::TAG_HOLD, $this->holdSeconds)
 			->setFloat(self::TAG_FADE_OUT, $this->fadeOutSeconds)
 		);
-
 
 		$tag->setTag(self::TAG_FADE, $fadeTag);
 
