@@ -115,6 +115,7 @@ use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
+use pocketmine\player\camera\instruction\CameraInstruction;
 use pocketmine\player\chat\StandardChatFormatter;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -2093,6 +2094,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function sendToastNotification(string $title, string $body) : void{
 		$this->getNetworkSession()->onToastNotification($title, $body);
+	}
+
+	public function sendCameraInstruction(CameraInstruction $instruction) : void{
+		$this->getNetworkSession()->onCameraInstruction($instruction);
 	}
 
 	/**
