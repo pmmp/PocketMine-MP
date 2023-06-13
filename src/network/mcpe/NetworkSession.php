@@ -1169,8 +1169,13 @@ class NetworkSession{
 		$this->sendDataPacket(ToastRequestPacket::create($title, $body));
 	}
 
-	public function onCameraInstruction(CameraInstruction $instruction) : void{
-		$this->sendDataPacket(CameraInstructionPacket::create(new CacheableNbt($instruction->writeInstructionData(CompoundTag::create()))));
+	public function onCameraInstruction(CameraInstruction ...$instructions) : void{
+		$instructionsData = CompoundTag::create();
+		foreach ($instructions as $instruction) {
+			$instruction->writeInstructionData($instructionsData);
+		}
+
+		$this->sendDataPacket(CameraInstructionPacket::create(new CacheableNbt($instructionsData)));
 	}
 
 	public function onOpenSignEditor(Vector3 $signPosition, bool $frontSide) : void{

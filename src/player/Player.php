@@ -2096,8 +2096,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->getNetworkSession()->onToastNotification($title, $body);
 	}
 
-	public function sendCameraInstruction(CameraInstruction $instruction) : void{
-		$this->getNetworkSession()->onCameraInstruction($instruction);
+	public function sendCameraInstruction(CameraInstruction ...$instructions) : void{
+		$this->getNetworkSession()->onCameraInstruction(...$instructions);
 	}
 
 	/**
