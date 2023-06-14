@@ -33,6 +33,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use function mt_rand;
 
 class SmallDripleaf extends Transparent{
 	use HorizontalFacingTrait;

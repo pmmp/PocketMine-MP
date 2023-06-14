@@ -35,7 +35,6 @@ use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
-use pocketmine\block\utils\DripleafTiltType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;

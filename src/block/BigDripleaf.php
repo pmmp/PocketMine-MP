@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\DripleafTiltType;
-use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -34,7 +33,6 @@ use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
-use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\RayTraceResult;
