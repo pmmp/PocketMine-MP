@@ -50,7 +50,7 @@ class FadeCameraInstruction implements CameraInstruction{
 	) {
 	}
 
-	public function writeInstructionData(CompoundTag $tag) : CompoundTag{
+	public function writeInstructionData(CompoundTag $tag) : void{
 		$fadeTag = CompoundTag::create();
 		if ($this->color !== null) {
 			$fadeTag->setTag(self::TAG_COLOR, CompoundTag::create()
@@ -68,7 +68,5 @@ class FadeCameraInstruction implements CameraInstruction{
 		);
 
 		$tag->setTag(self::TAG_FADE, $fadeTag);
-
-		return $tag;
 	}
 }

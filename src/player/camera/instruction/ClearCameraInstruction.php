@@ -29,9 +29,7 @@ class ClearCameraInstruction implements CameraInstruction{
 
 	private const TAG_CLEAR = "clear"; //TAG_Byte
 
-	public function writeInstructionData(CompoundTag $tag) : CompoundTag{
+	public function writeInstructionData(CompoundTag $tag) : void{
 		$tag->setByte(self::TAG_CLEAR, 1);
-
-		return $tag;
 	}
 }

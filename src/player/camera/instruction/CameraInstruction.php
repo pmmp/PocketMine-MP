@@ -33,5 +33,5 @@ interface CameraInstruction{
 	/**
 	 * Writes this instriction in a CompoundTag in order to be sent to the client.
 	 */
-	public function writeInstructionData(CompoundTag $tag) : CompoundTag;
+	public function writeInstructionData(CompoundTag $tag) : void;
 }

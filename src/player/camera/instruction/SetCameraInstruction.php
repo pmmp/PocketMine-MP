@@ -55,7 +55,7 @@ class SetCameraInstruction implements CameraInstruction{
 	) {
 	}
 
-	public function writeInstructionData(CompoundTag $tag) : CompoundTag{
+	public function writeInstructionData(CompoundTag $tag) : void{
 		$setTag = CompoundTag::create();
 
 		if ($this->state !== null) {
@@ -85,6 +85,6 @@ class SetCameraInstruction implements CameraInstruction{
 
 		$setTag->setInt(self::TAG_PRESET, CameraPresetFactory::getInstance()->getRuntimeId($this->preset->getIdentifier()));
 
-		return $tag->setTag(self::TAG_SET, $setTag);
+		$tag->setTag(self::TAG_SET, $setTag);
 	}
 }
