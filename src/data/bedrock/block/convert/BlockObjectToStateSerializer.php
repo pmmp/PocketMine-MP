@@ -31,6 +31,7 @@ use pocketmine\block\Barrel;
 use pocketmine\block\Bed;
 use pocketmine\block\Beetroot;
 use pocketmine\block\Bell;
+use pocketmine\block\BigDripleaf;
 use pocketmine\block\Block;
 use pocketmine\block\BoneBlock;
 use pocketmine\block\BrewingStand;
@@ -115,6 +116,7 @@ use pocketmine\block\SeaPickle;
 use pocketmine\block\SimplePillar;
 use pocketmine\block\SimplePressurePlate;
 use pocketmine\block\Slab;
+use pocketmine\block\SmallDripleaf;
 use pocketmine\block\SnowLayer;
 use pocketmine\block\Sponge;
 use pocketmine\block\StainedGlass;
@@ -918,6 +920,12 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeLegacyHorizontalFacing($block->getFacing());
 
 		});
+		$this->map(Blocks::BIG_DRIPLEAF(), function(BigDripleaf $block) : Writer{
+			return Writer::create(Ids::BIG_DRIPLEAF)
+				->writeLegacyHorizontalFacing($block->getFacing())
+				->writeDripleafTiltType($block->getTilt())
+				->writeBool(StateNames::BIG_DRIPLEAF_HEAD, $block->isHead());
+		});
 		$this->map(Blocks::BIRCH_SAPLING(), fn(Sapling $block) => Helper::encodeSapling($block, StringValues::SAPLING_TYPE_BIRCH));
 		$this->mapSlab(Blocks::BLACKSTONE_SLAB(), Ids::BLACKSTONE_SLAB, Ids::BLACKSTONE_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::BLACKSTONE_STAIRS(), Ids::BLACKSTONE_STAIRS);
@@ -1421,6 +1429,11 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::SEA_PICKLE)
 				->writeBool(StateNames::DEAD_BIT, !$block->isUnderwater())
 				->writeInt(StateNames::CLUSTER_COUNT, $block->getCount() - 1);
+		});
+		$this->map(Blocks::SMALL_DRIPLEAF(), function(SmallDripleaf $block) : Writer{
+			return Writer::create(Ids::SMALL_DRIPLEAF_BLOCK)
+				->writeLegacyHorizontalFacing($block->getFacing())
+				->writeBool(StateNames::UPPER_BLOCK_BIT, $block->isUpperBlock());
 		});
 		$this->map(Blocks::SMOKER(), fn(Furnace $block) => Helper::encodeFurnace($block, Ids::SMOKER, Ids::LIT_SMOKER));
 		$this->map(Blocks::SMOOTH_QUARTZ(), fn() => Helper::encodeQuartz(StringValues::CHISEL_TYPE_SMOOTH, Axis::Y));

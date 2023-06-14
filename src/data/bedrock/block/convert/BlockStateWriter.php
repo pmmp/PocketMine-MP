@@ -25,6 +25,7 @@ namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\CoralType;
+use pocketmine\block\utils\DripleafTiltType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\WallConnectionType;
@@ -314,6 +315,18 @@ final class BlockStateWriter{
 			WallConnectionType::SHORT() => StringValues::WALL_CONNECTION_TYPE_EAST_SHORT,
 			WallConnectionType::TALL() => StringValues::WALL_CONNECTION_TYPE_EAST_TALL,
 			default => throw new BlockStateSerializeException("Invalid Wall connection type " . $wallConnectionType->name())
+		});
+		return $this;
+	}
+
+	/** @return $this */
+	public function writeDripleafTiltType(DripleafTiltType $tiltType) : self{
+		$this->writeString(BlockStateNames::BIG_DRIPLEAF_TILT, match($tiltType->id()){
+			DripleafTiltType::NONE()->id() => StringValues::BIG_DRIPLEAF_TILT_NONE,
+			DripleafTiltType::UNSTABLE()->id() => StringValues::BIG_DRIPLEAF_TILT_UNSTABLE,
+			DripleafTiltType::PARTIAL()->id() => StringValues::BIG_DRIPLEAF_TILT_PARTIAL_TILT,
+			DripleafTiltType::FULL()->id() => StringValues::BIG_DRIPLEAF_TILT_FULL_TILT,
+			default => throw new BlockStateSerializeException("Invalid Dripleaf tilt type " . $tiltType->name())
 		});
 		return $this;
 	}

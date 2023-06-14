@@ -37,6 +37,8 @@ interface RuntimeEnumDescriber{
 
 	public function dirtType(\pocketmine\block\utils\DirtType &$value) : void;
 
+	public function dripleafTiltType(\pocketmine\block\utils\DripleafTiltType &$value) : void;
+
 	public function dyeColor(\pocketmine\block\utils\DyeColor &$value) : void;
 
 	public function froglightType(\pocketmine\block\utils\FroglightType &$value) : void;
