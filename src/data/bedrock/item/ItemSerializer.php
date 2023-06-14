@@ -177,6 +177,7 @@ final class ItemSerializer{
 			throw new ItemTypeSerializeException($e->getMessage(), 0, $e);
 		}
 
+		//TODO: this really ought to throw if there's no blockitem ID
 		$itemNameId = BlockItemIdMap::getInstance()->lookupItemId($blockStateData->getName()) ?? $blockStateData->getName();
 
 		return new Data($itemNameId, 0, $blockStateData);
