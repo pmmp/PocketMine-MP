@@ -43,14 +43,14 @@ class ChiseledBookshelf extends Opaque {
 	use HorizontalFacingTrait;
 	use FacesOppositePlacingPlayerTrait;
 
-	private int $booksBit = 0;
+	public const SLOTS = 6;
 
 	/** @var (WritableBookBase|Book)[] $items */
 	private array $items = [];
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
-		$w->int(6, $this->booksBit);
+		$w->chiseledBookshelfSlots($this->items);
 	}
 
 	public function readStateFromWorld() : Block{
@@ -74,31 +74,30 @@ class ChiseledBookshelf extends Opaque {
 		return $this->items[$index] ?? null;
 	}
 
-	public function setItem(int $index, WritableBookBase|Book|null $item) : void{
+	public function setItem(int $index, WritableBookBase|Book|null $item) : self{
 		if($item === null){
 			if(isset($this->items[$index])){
 				unset($this->items[$index]);
 			}
-			return;
+			return $this;
 		}
 		$this->items[$index] = $item;
-	}
-
-	public function recalculateBooksBit() : int{
-		$bit = 0;
-		foreach($this->items as $index => $item){
-			$bit |= 1 << $index;
-		}
-		return $this->booksBit = $bit;
-	}
-
-	public function setCachedBooksBit(int $booksBit) : self{
-		$this->booksBit = $booksBit;
 		return $this;
 	}
 
-	public function getCachedBooksBit() : int{
-		return $this->booksBit ?? $this->recalculateBooksBit();
+	/**
+	 * @param (WritableBookBase|Book)[] $items
+	 */
+	public function setItems(array $items) : self{
+		$this->items = $items;
+		return $this;
+	}
+
+	/**
+	 * @return (WritableBookBase|Book)[]
+	 */
+	public function getItems() : array{
+		return $this->items;
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
@@ -128,7 +127,6 @@ class ChiseledBookshelf extends Opaque {
 			 /** @var WritableBookBase|Book $item */
 			 $this->setItem($index, $item->pop());
 		}
-		$this->recalculateBooksBit();
 		$this->position->getWorld()->setBlock($this->position, $this);
 		return true;
 	}

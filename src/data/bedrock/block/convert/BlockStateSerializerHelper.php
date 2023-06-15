@@ -26,6 +26,7 @@ namespace pocketmine\data\bedrock\block\convert;
 use pocketmine\block\Button;
 use pocketmine\block\Candle;
 use pocketmine\block\ChemistryTable;
+use pocketmine\block\ChiseledBookshelf;
 use pocketmine\block\Crops;
 use pocketmine\block\Door;
 use pocketmine\block\DoublePlant;
@@ -55,6 +56,7 @@ use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
+use function array_keys;
 
 final class BlockStateSerializerHelper{
 
@@ -287,5 +289,16 @@ final class BlockStateSerializerHelper{
 	public static function encodeWoodenSlab(Slab $block, string $typeValue) : BlockStateWriter{
 		return self::encodeSlab($block, Ids::WOODEN_SLAB, Ids::DOUBLE_WOODEN_SLAB)
 			->writeString(BlockStateNames::WOOD_TYPE, $typeValue);
+	}
+
+	public static function encodeChiseledBookshelf(ChiseledBookshelf $block) : BlockStateWriter{
+		$slots = array_keys($block->getItems());
+		$bit = 0;
+		foreach($slots as $slot){
+			$bit |= 1 << $slot;
+		}
+		return Writer::create(Ids::CHISELED_BOOKSHELF)
+			->writeLegacyHorizontalFacing($block->getFacing())
+			->writeInt(StateNames::BOOKS_STORED, $bit);
 	}
 }

@@ -95,4 +95,8 @@ final class RuntimeDataSizeCalculator implements RuntimeDataDescriber{
 	public function straightOnlyRailShape(int &$railShape) : void{
 		$this->addBits(3);
 	}
+
+	public function chiseledBookshelfSlots(array &$slots) : void{
+		$this->addBits(6);
+	}
 }

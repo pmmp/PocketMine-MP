@@ -25,6 +25,9 @@ namespace pocketmine\data\runtime;
 
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\WallConnectionType;
+use pocketmine\item\Book;
+use pocketmine\item\Item;
+use pocketmine\item\WritableBookBase;
 use pocketmine\math\Facing;
 
 interface RuntimeDataDescriber extends RuntimeEnumDescriber{
@@ -69,4 +72,10 @@ interface RuntimeDataDescriber extends RuntimeEnumDescriber{
 	public function railShape(int &$railShape) : void;
 
 	public function straightOnlyRailShape(int &$railShape) : void;
+
+	/**
+	 * @param Item[] $slots
+	 * @phpstan-param array<int, Book|WritableBookBase> $slots
+	 */
+	public function chiseledBookshelfSlots(array &$slots) : void;
 }

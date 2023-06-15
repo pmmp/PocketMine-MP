@@ -23,9 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\data\runtime;
 
+use pocketmine\block\ChiseledBookshelf;
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\RailConnectionInfo;
 use pocketmine\block\utils\WallConnectionType;
+use pocketmine\item\Book;
+use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
+use pocketmine\item\WritableBookBase;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
@@ -211,6 +216,20 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 		}
 
 		$railShape = $result;
+	}
+
+	/**
+	 * @param Item[] $slots
+	 * @phpstan-param array<int, Book|WritableBookBase> $slots
+	 */
+	public function chiseledBookshelfSlots(array &$slots) : void{
+		$result = [];
+		for ($slot = 0; $slot < ChiseledBookshelf::SLOTS; $slot++){
+			if ($this->readBool()){
+				$result[$slot] = VanillaItems::BOOK();
+			}
+		}
+		$slots = $result;
 	}
 
 	public function getOffset() : int{ return $this->offset; }

@@ -59,9 +59,13 @@ use pocketmine\data\bedrock\block\BlockStateNames;
 use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
 use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
+use pocketmine\item\Book;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
+use function array_fill;
+use function array_filter;
 
 final class BlockStateDeserializerHelper{
 
@@ -372,5 +376,13 @@ final class BlockStateDeserializerHelper{
 			StringValues::WOOD_TYPE_SPRUCE => VanillaBlocks::SPRUCE_SLAB(),
 			default => throw $in->badValueException(BlockStateNames::WOOD_TYPE, $type),
 		};
+	}
+
+	public static function mapChiseledBookshelf(BlockStateReader $in) : Block{
+		$bit = $in->readInt(StateNames::BOOKS_STORED);
+		$items = array_filter(array_fill(0, 6, VanillaItems::BOOK()), fn(Book $book, int $slot) => (($bit & (1 << $slot)) === (1 << $slot)), ARRAY_FILTER_USE_BOTH);
+		return VanillaBlocks::CHISELED_BOOKSHELF()
+			->setFacing($in->readLegacyHorizontalFacing())
+			->setItems($items);
 	}
 }

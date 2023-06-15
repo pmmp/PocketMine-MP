@@ -839,11 +839,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::CHAIN()
 				->setAxis($in->readPillarAxis());
 		});
-		$this->map(Ids::CHISELED_BOOKSHELF, function (Reader $in) : Block{
-			return Blocks::CHISELED_BOOKSHELF()
-				->setFacing($in->readLegacyHorizontalFacing())
-				->setCachedBooksBit($in->readInt(StateNames::BOOKS_STORED));
-		});
+		$this->map(Ids::CHISELED_BOOKSHELF, fn(Reader $in) => Helper::mapChiseledBookshelf($in));
 		$this->map(Ids::CHEMISTRY_TABLE, function(Reader $in) : Block{
 			return (match($type = $in->readString(StateNames::CHEMISTRY_TABLE_TYPE)){
 				StringValues::CHEMISTRY_TABLE_TYPE_COMPOUND_CREATOR => Blocks::COMPOUND_CREATOR(),
