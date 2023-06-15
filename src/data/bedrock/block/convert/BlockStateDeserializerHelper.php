@@ -66,6 +66,7 @@ use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
 use function array_fill;
 use function array_filter;
+use const ARRAY_FILTER_USE_BOTH;
 
 final class BlockStateDeserializerHelper{
 
@@ -380,7 +381,9 @@ final class BlockStateDeserializerHelper{
 
 	public static function mapChiseledBookshelf(BlockStateReader $in) : Block{
 		$bit = $in->readInt(StateNames::BOOKS_STORED);
-		$items = array_filter(array_fill(0, 6, VanillaItems::BOOK()), fn(Book $book, int $slot) => (($bit & (1 << $slot)) === (1 << $slot)), ARRAY_FILTER_USE_BOTH);
+		$items = array_filter(array_fill(0, 6, VanillaItems::BOOK()),
+			fn(Book $book, int $slot) => (($bit & (1 << $slot)) === (1 << $slot)),
+			ARRAY_FILTER_USE_BOTH);
 		return VanillaBlocks::CHISELED_BOOKSHELF()
 			->setFacing($in->readLegacyHorizontalFacing())
 			->setItems($items);
