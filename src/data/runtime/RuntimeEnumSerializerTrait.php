@@ -134,6 +134,7 @@ trait RuntimeEnumSerializerTrait{
 			\pocketmine\block\utils\MobHeadType::SKELETON() => 3,
 			\pocketmine\block\utils\MobHeadType::WITHER_SKELETON() => 4,
 			\pocketmine\block\utils\MobHeadType::ZOMBIE() => 5,
+			\pocketmine\block\utils\MobHeadType::PIGLIN() => 6,
 			default => throw new \pocketmine\utils\AssumptionFailedError("All MobHeadType cases should be covered")
 		});
 	}

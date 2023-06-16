@@ -48,6 +48,7 @@ final class MobHeadTypeIdMap{
 		$this->register(3, MobHeadType::PLAYER());
 		$this->register(4, MobHeadType::CREEPER());
 		$this->register(5, MobHeadType::DRAGON());
+		$this->register(6, MobHeadType::PIGLIN());
 	}
 
 	private function register(int $id, MobHeadType $type) : void{

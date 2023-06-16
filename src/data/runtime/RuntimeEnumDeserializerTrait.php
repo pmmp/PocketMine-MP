@@ -134,6 +134,7 @@ trait RuntimeEnumDeserializerTrait{
 			3 => \pocketmine\block\utils\MobHeadType::SKELETON(),
 			4 => \pocketmine\block\utils\MobHeadType::WITHER_SKELETON(),
 			5 => \pocketmine\block\utils\MobHeadType::ZOMBIE(),
+			6 => \pocketmine\block\utils\MobHeadType::PIGLIN(),
 			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for MobHeadType")
 		};
 	}
