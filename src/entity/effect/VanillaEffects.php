@@ -54,6 +54,7 @@ use pocketmine\utils\RegistryTrait;
  * @method static RegenerationEffect REGENERATION()
  * @method static Effect RESISTANCE()
  * @method static SaturationEffect SATURATION()
+ * @method static SlowFallingEffect SLOW_FALLING(
  * @method static SlownessEffect SLOWNESS()
  * @method static SpeedEffect SPEED()
  * @method static Effect STRENGTH()
@@ -87,7 +88,7 @@ final class VanillaEffects{
 		self::register("regeneration", new RegenerationEffect(KnownTranslationFactory::potion_regeneration(), new Color(0xcd, 0x5c, 0xab)));
 		self::register("resistance", new Effect(KnownTranslationFactory::potion_resistance(), new Color(0x99, 0x45, 0x3a)));
 		self::register("saturation", new SaturationEffect(KnownTranslationFactory::potion_saturation(), new Color(0xf8, 0x24, 0x23)));
-		//TODO: slow_falling
+		self::register("slow_falling", new SlawwFallingEffect(KnownTranslationFactory::potion_SlowFalling(), new Color(0xf8, 0x24, 0x23)));
 		self::register("slowness", new SlownessEffect(KnownTranslationFactory::potion_moveSlowdown(), new Color(0x5a, 0x6c, 0x81), true));
 		self::register("speed", new SpeedEffect(KnownTranslationFactory::potion_moveSpeed(), new Color(0x7c, 0xaf, 0xc6)));
 		self::register("strength", new Effect(KnownTranslationFactory::potion_damageBoost(), new Color(0x93, 0x24, 0x23)));
