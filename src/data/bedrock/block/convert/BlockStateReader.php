@@ -25,7 +25,6 @@ namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\CoralType;
-use pocketmine\block\utils\DripleafTiltType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\WallConnectionType;
@@ -347,17 +346,6 @@ final class BlockStateReader{
 			StringValues::WALL_CONNECTION_TYPE_EAST_SHORT => WallConnectionType::SHORT(),
 			StringValues::WALL_CONNECTION_TYPE_EAST_TALL => WallConnectionType::TALL(),
 			default => throw $this->badValueException($name, $type),
-		};
-	}
-
-	/** @throws BlockStateDeserializeException */
-	public function readDripleafTiltType() : DripleafTiltType{
-		return match($type = $this->readString(BlockStateNames::BIG_DRIPLEAF_TILT)){
-			StringValues::BIG_DRIPLEAF_TILT_NONE => DripleafTiltType::NONE(),
-			StringValues::BIG_DRIPLEAF_TILT_UNSTABLE => DripleafTiltType::UNSTABLE(),
-			StringValues::BIG_DRIPLEAF_TILT_PARTIAL_TILT => DripleafTiltType::PARTIAL(),
-			StringValues::BIG_DRIPLEAF_TILT_FULL_TILT => DripleafTiltType::FULL(),
-			default => throw $this->badValueException(BlockStateNames::BIG_DRIPLEAF_TILT, $type),
 		};
 	}
 

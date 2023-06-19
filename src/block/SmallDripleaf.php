@@ -33,25 +33,26 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\Position;
 use function mt_rand;
 
 class SmallDripleaf extends Transparent{
 	use HorizontalFacingTrait;
 
-	protected bool $upperBlock = false;
+	protected bool $top = false;
 
 	public function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
-		$w->bool($this->upperBlock);
+		$w->bool($this->top);
 	}
 
-	public function isUpperBlock() : bool{
-		return $this->upperBlock;
+	public function isTop() : bool{
+		return $this->top;
 	}
 
 	/** @return $this */
-	public function setUpperBlock(bool $upperBlock) : self{
-		$this->upperBlock = $upperBlock;
+	public function setTop(bool $top) : self{
+		$this->top = $top;
 		return $this;
 	}
 
@@ -63,11 +64,11 @@ class SmallDripleaf extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->upperBlock && !$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
+		if(!$this->top && !$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
 			$this->position->getWorld()->useBreakOn($this->position);
 			return;
 		}
-		$face = $this->upperBlock ? Facing::DOWN : Facing::UP;
+		$face = $this->top ? Facing::DOWN : Facing::UP;
 		if(!$this->getSide($face)->hasSameTypeId($this)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
@@ -84,7 +85,7 @@ class SmallDripleaf extends Transparent{
 
 		$tx->addBlock($block->getPosition(), VanillaBlocks::SMALL_DRIPLEAF()
 			->setFacing($this->facing)
-			->setUpperBlock(true)
+			->setTop(true)
 		);
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
@@ -97,51 +98,66 @@ class SmallDripleaf extends Transparent{
 		return false;
 	}
 
+	private function canGrowTo(Position $pos) : bool{
+		$world = $pos->getWorld();
+		if(!$world->isInWorld($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ())){
+			return false;
+		}
+		$block = $world->getBlock($pos);
+		return $block->hasSameTypeId($this) || $block->getTypeId() === BlockTypeIds::AIR;
+	}
+
 	private function grow(?Player $player) : bool{
-		$bottomBlock = $this->upperBlock ? $this->getSide(Facing::DOWN) : $this;
+		$bottomBlock = $this->top ? $this->getSide(Facing::DOWN) : $this;
 		if(!$this->hasSameTypeId($bottomBlock)){
 			return false;
 		}
-		$top = $bottomBlock->getPosition();
-		$world = $top->getWorld();
+		$world = $this->position->getWorld();
 		$tx = new BlockTransaction($world);
-		$growed = 0;
-
-		for($i = 0; $i < mt_rand(2, 5); $i++){
+		$high = mt_rand(2, 5);
+		$grown = 0;
+		for($i = 0; $i < $high; $i++){
 			$pos = $bottomBlock->getSide(Facing::UP, $i)->getPosition();
-			if(!$world->isInWorld($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ())){
+			if(!$this->canGrowTo($pos)){
 				break;
 			}
-			$replace = $world->getBlock($pos);
-			if(!$replace->hasSameTypeId($this) && $replace->getTypeId() !== BlockTypeIds::AIR){
-				break;
-			}
-			$tx->addBlock($pos, VanillaBlocks::BIG_DRIPLEAF()->setFacing($this->facing));
-			$growed++;
-			$top = $pos;
+			$block = ++$grown < $high && $this->canGrowTo($pos->getSide(Facing::UP)) ?
+				VanillaBlocks::BIG_DRIPLEAF_STEM() :
+				VanillaBlocks::BIG_DRIPLEAF();
+			$tx->addBlock($pos, $block->setFacing($this->facing));
 		}
-
-		if($growed > 1){
-			$block = $tx->fetchBlock($top);
-			if($block instanceof BigDripleaf && $block->getTypeId() === BlockTypeIds::BIG_DRIPLEAF){
-				$block->setHead(true);
-
-				$ev = new StructureGrowEvent($bottomBlock, $tx, $player);
-				$ev->call();
-				if(!$ev->isCancelled()){
-					return $tx->apply();
-				}
+		if($grown > 1){
+			$ev = new StructureGrowEvent($bottomBlock, $tx, $player);
+			$ev->call();
+			if(!$ev->isCancelled()){
+				return $tx->apply();
 			}
 		}
 
 		return false;
 	}
 
+	public function getAffectedBlocks() : array{
+		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
+		if($other->hasSameTypeId($this)){
+			return [$this, $other];
+		}
+		return parent::getAffectedBlocks();
+	}
+
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0){
+		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0 && !$this->top){
 			return [$this->asItem()];
 		}
 		return [];
+	}
+
+	public function getFlameEncouragement() : int{
+		return 15;
+	}
+
+	public function getFlammability() : int{
+		return 100;
 	}
 
 	public function getSupportType(int $facing) : SupportType{

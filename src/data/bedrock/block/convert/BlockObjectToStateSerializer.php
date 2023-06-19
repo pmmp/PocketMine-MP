@@ -32,6 +32,7 @@ use pocketmine\block\Bed;
 use pocketmine\block\Beetroot;
 use pocketmine\block\Bell;
 use pocketmine\block\BigDripleaf;
+use pocketmine\block\BigDripleafStem;
 use pocketmine\block\Block;
 use pocketmine\block\BoneBlock;
 use pocketmine\block\BrewingStand;
@@ -140,6 +141,7 @@ use pocketmine\block\UnderwaterTorch;
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
+use pocketmine\block\utils\DripleafTiltType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
@@ -923,8 +925,20 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::BIG_DRIPLEAF(), function(BigDripleaf $block) : Writer{
 			return Writer::create(Ids::BIG_DRIPLEAF)
 				->writeLegacyHorizontalFacing($block->getFacing())
-				->writeDripleafTiltType($block->getTilt())
-				->writeBool(StateNames::BIG_DRIPLEAF_HEAD, $block->isHead());
+				->writeString(StateNames::BIG_DRIPLEAF_TILT, match($block->getTilt()->id()){
+					DripleafTiltType::NONE()->id() => StringValues::BIG_DRIPLEAF_TILT_NONE,
+					DripleafTiltType::UNSTABLE()->id() => StringValues::BIG_DRIPLEAF_TILT_UNSTABLE,
+					DripleafTiltType::PARTIAL()->id() => StringValues::BIG_DRIPLEAF_TILT_PARTIAL_TILT,
+					DripleafTiltType::FULL()->id() => StringValues::BIG_DRIPLEAF_TILT_FULL_TILT,
+					default => throw new BlockStateSerializeException("Invalid Dripleaf tilt type " . $block->getTilt()->name())
+				})
+				->writeBool(StateNames::BIG_DRIPLEAF_HEAD, true);
+		});
+		$this->map(Blocks::BIG_DRIPLEAF_STEM(), function(BigDripleafStem $block) : Writer{
+			return Writer::create(Ids::BIG_DRIPLEAF)
+				->writeLegacyHorizontalFacing($block->getFacing())
+				->writeString(StateNames::BIG_DRIPLEAF_TILT, StringValues::BIG_DRIPLEAF_TILT_NONE)
+				->writeBool(StateNames::BIG_DRIPLEAF_HEAD, false);
 		});
 		$this->map(Blocks::BIRCH_SAPLING(), fn(Sapling $block) => Helper::encodeSapling($block, StringValues::SAPLING_TYPE_BIRCH));
 		$this->mapSlab(Blocks::BLACKSTONE_SLAB(), Ids::BLACKSTONE_SLAB, Ids::BLACKSTONE_DOUBLE_SLAB);
@@ -1433,7 +1447,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::SMALL_DRIPLEAF(), function(SmallDripleaf $block) : Writer{
 			return Writer::create(Ids::SMALL_DRIPLEAF_BLOCK)
 				->writeLegacyHorizontalFacing($block->getFacing())
-				->writeBool(StateNames::UPPER_BLOCK_BIT, $block->isUpperBlock());
+				->writeBool(StateNames::UPPER_BLOCK_BIT, $block->isTop());
 		});
 		$this->map(Blocks::SMOKER(), fn(Furnace $block) => Helper::encodeFurnace($block, Ids::SMOKER, Ids::LIT_SMOKER));
 		$this->map(Blocks::SMOOTH_QUARTZ(), fn() => Helper::encodeQuartz(StringValues::CHISEL_TYPE_SMOOTH, Axis::Y));

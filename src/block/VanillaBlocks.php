@@ -114,6 +114,7 @@ use function mb_strtolower;
  * @method static Beetroot BEETROOTS()
  * @method static Bell BELL()
  * @method static BigDripleaf BIG_DRIPLEAF()
+ * @method static BigDripleafStem BIG_DRIPLEAF_STEM()
  * @method static WoodenButton BIRCH_BUTTON()
  * @method static WoodenDoor BIRCH_DOOR()
  * @method static WoodenFence BIRCH_FENCE()
@@ -1603,6 +1604,7 @@ final class VanillaBlocks{
 
 		self::register("small_dripleaf", new SmallDripleaf(new BID(Ids::SMALL_DRIPLEAF), "Small Dripleaf", new Info(BreakInfo::instant(BlockToolType::SHEARS))));
 		self::register("big_dripleaf", new BigDripleaf(new BID(Ids::BIG_DRIPLEAF), "Big Dripleaf", new Info(BreakInfo::instant())));
+		self::register("big_dripleaf_stem", new BigDripleafStem(new BID(Ids::BIG_DRIPLEAF_STEM), "Big Dripleaf Stem", new Info(BreakInfo::instant())));
 	}
 
 	private static function registerBlocksR18() : void{
