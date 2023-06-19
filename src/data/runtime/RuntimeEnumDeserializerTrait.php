@@ -130,10 +130,11 @@ trait RuntimeEnumDeserializerTrait{
 		$value = match($this->readInt(3)){
 			0 => \pocketmine\block\utils\MobHeadType::CREEPER(),
 			1 => \pocketmine\block\utils\MobHeadType::DRAGON(),
-			2 => \pocketmine\block\utils\MobHeadType::PLAYER(),
-			3 => \pocketmine\block\utils\MobHeadType::SKELETON(),
-			4 => \pocketmine\block\utils\MobHeadType::WITHER_SKELETON(),
-			5 => \pocketmine\block\utils\MobHeadType::ZOMBIE(),
+			2 => \pocketmine\block\utils\MobHeadType::PIGLIN(),
+			3 => \pocketmine\block\utils\MobHeadType::PLAYER(),
+			4 => \pocketmine\block\utils\MobHeadType::SKELETON(),
+			5 => \pocketmine\block\utils\MobHeadType::WITHER_SKELETON(),
+			6 => \pocketmine\block\utils\MobHeadType::ZOMBIE(),
 			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for MobHeadType")
 		};
 	}

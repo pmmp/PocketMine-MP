@@ -1196,7 +1196,7 @@ parameters:
 			path: ../../phpunit/event/HandlerListManagerTest.php
 
 		-
-			message: "#^Property pocketmine\\\\event\\\\HandlerListManagerTest\\:\\:\\$resolveParentFunc \\(Closure\\(ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\)\\: ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\|null\\) does not accept Closure\\|null\\.$#"
+			message: "#^Property pocketmine\\\\event\\\\HandlerListManagerTest\\:\\:\\$resolveParentFunc \\(Closure\\(ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\)\\: \\(ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\|null\\)\\) does not accept Closure\\|null\\.$#"
 			count: 1
 			path: ../../phpunit/event/HandlerListManagerTest.php
 

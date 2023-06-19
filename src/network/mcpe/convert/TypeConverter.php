@@ -82,7 +82,8 @@ class TypeConverter{
 			$this->itemTypeDictionary,
 			$this->blockTranslator->getBlockStateDictionary(),
 			GlobalItemDataHandlers::getSerializer(),
-			GlobalItemDataHandlers::getDeserializer()
+			GlobalItemDataHandlers::getDeserializer(),
+			$this->blockItemIdMap
 		);
 
 		$this->skinAdapter = new LegacySkinAdapter();
@@ -147,7 +148,7 @@ class TypeConverter{
 		}elseif($ingredient instanceof ExactRecipeIngredient){
 			$item = $ingredient->getItem();
 			[$id, $meta, $blockRuntimeId] = $this->itemTranslator->toNetworkId($item);
-			if($blockRuntimeId !== ItemTranslator::NO_BLOCK_RUNTIME_ID){
+			if($blockRuntimeId !== null){
 				$meta = $this->blockTranslator->getBlockStateDictionary()->getMetaFromStateId($blockRuntimeId);
 				if($meta === null){
 					throw new AssumptionFailedError("Every block state should have an associated meta value");
@@ -230,7 +231,7 @@ class TypeConverter{
 			$id,
 			$meta,
 			$itemStack->getCount(),
-			$blockRuntimeId,
+			$blockRuntimeId ?? ItemTranslator::NO_BLOCK_RUNTIME_ID,
 			$nbt,
 			[],
 			[],

@@ -159,6 +159,20 @@ use function mb_strtolower;
  * @method static CaveVines CAVE_VINES()
  * @method static Chain CHAIN()
  * @method static ChemicalHeat CHEMICAL_HEAT()
+ * @method static WoodenButton CHERRY_BUTTON()
+ * @method static WoodenDoor CHERRY_DOOR()
+ * @method static WoodenFence CHERRY_FENCE()
+ * @method static FenceGate CHERRY_FENCE_GATE()
+ * @method static Leaves CHERRY_LEAVES()
+ * @method static Wood CHERRY_LOG()
+ * @method static Planks CHERRY_PLANKS()
+ * @method static WoodenPressurePlate CHERRY_PRESSURE_PLATE()
+ * @method static FloorSign CHERRY_SIGN()
+ * @method static WoodenSlab CHERRY_SLAB()
+ * @method static WoodenStairs CHERRY_STAIRS()
+ * @method static WoodenTrapdoor CHERRY_TRAPDOOR()
+ * @method static WallSign CHERRY_WALL_SIGN()
+ * @method static Wood CHERRY_WOOD()
  * @method static Chest CHEST()
  * @method static Opaque CHISELED_DEEPSLATE()
  * @method static Opaque CHISELED_NETHER_BRICKS()
@@ -417,6 +431,7 @@ use function mb_strtolower;
  * @method static ItemFrame GLOWING_ITEM_FRAME()
  * @method static GlowingObsidian GLOWING_OBSIDIAN()
  * @method static Glowstone GLOWSTONE()
+ * @method static GlowLichen GLOW_LICHEN()
  * @method static Opaque GOLD()
  * @method static GoldOre GOLD_ORE()
  * @method static Opaque GRANITE()
@@ -864,6 +879,7 @@ final class VanillaBlocks{
 		self::register("glass_pane", new GlassPane(new BID(Ids::GLASS_PANE), "Glass Pane", $glassBreakInfo));
 		self::register("glowing_obsidian", new GlowingObsidian(new BID(Ids::GLOWING_OBSIDIAN), "Glowing Obsidian", new Info(BreakInfo::pickaxe(10.0, ToolTier::DIAMOND(), 50.0))));
 		self::register("glowstone", new Glowstone(new BID(Ids::GLOWSTONE), "Glowstone", new Info(BreakInfo::pickaxe(0.3))));
+		self::register("glow_lichen", new GlowLichen(new BID(Ids::GLOW_LICHEN), "Glow Lichen", new Info(BreakInfo::axe(0.2, null, 0.2))));
 		self::register("gold", new Opaque(new BID(Ids::GOLD), "Gold Block", new Info(BreakInfo::pickaxe(3.0, ToolTier::IRON(), 30.0))));
 
 		$grassBreakInfo = BreakInfo::shovel(0.6);

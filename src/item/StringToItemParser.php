@@ -647,6 +647,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("glowingobsidian", fn() => Blocks::GLOWING_OBSIDIAN());
 		$result->registerBlock("glowstone", fn() => Blocks::GLOWSTONE());
 		$result->registerBlock("glowstone_block", fn() => Blocks::GLOWSTONE());
+		$result->registerBlock("glow_lichen", fn() => Blocks::GLOW_LICHEN());
 		$result->registerBlock("gold", fn() => Blocks::GOLD());
 		$result->registerBlock("gold_block", fn() => Blocks::GOLD());
 		$result->registerBlock("gold_ore", fn() => Blocks::GOLD_ORE());
@@ -842,6 +843,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("packed_mud", fn() => Blocks::PACKED_MUD());
 		$result->registerBlock("peony", fn() => Blocks::PEONY());
 		$result->registerBlock("pink_tulip", fn() => Blocks::PINK_TULIP());
+		$result->registerBlock("piglin_head", fn() => Blocks::MOB_HEAD()->setMobHeadType(MobHeadType::PIGLIN()));
 		$result->registerBlock("plank", fn() => Blocks::OAK_PLANKS());
 		$result->registerBlock("planks", fn() => Blocks::OAK_PLANKS());
 		$result->registerBlock("player_head", fn() => Blocks::MOB_HEAD()->setMobHeadType(MobHeadType::PLAYER()));
