@@ -1066,6 +1066,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("trunk2", fn() => Blocks::ACACIA_LOG()->setStripped(false));
 		$result->registerBlock("tuff", fn() => Blocks::TUFF());
 		$result->registerBlock("twisting_vines", fn() => Blocks::TWISTING_VINES());
+		$result->registerBlock("underwater_tnt", fn() => Blocks::TNT()->setWorksUnderwater(true));
 		$result->registerBlock("underwater_torch", fn() => Blocks::UNDERWATER_TORCH());
 		$result->registerBlock("undyed_shulker_box", fn() => Blocks::SHULKER_BOX());
 		$result->registerBlock("unlit_redstone_torch", fn() => Blocks::REDSTONE_TORCH());
