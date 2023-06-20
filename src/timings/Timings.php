@@ -116,11 +116,11 @@ abstract class Timings{
 	/** @var TimingsHandler[][] */
 	private static array $eventHandlers = [];
 	/** @var TimingsHandler[] */
-	private static array $asyncTasksProgressUpdate = [];
+	private static array $asyncTaskProgressUpdate = [];
 	/** @var TimingsHandler[] */
-	private static array $asyncTasksCompletion = [];
+	private static array $asyncTaskCompletion = [];
 	/** @var TimingsHandler[] */
-	private static array $asyncTasksError = [];
+	private static array $asyncTaskError = [];
 
 	public static function init() : void{
 		if(self::$initialized){
@@ -307,45 +307,45 @@ abstract class Timings{
 		return self::$eventHandlers[$event][$handlerName];
 	}
 
-	public static function getAsyncTasksProgressUpdateTimings(AsyncTask $task, string $group = self::GROUP_BREAKDOWN) : TimingsHandler{
+	public static function getAsyncTaskProgressUpdateTimings(AsyncTask $task, string $group = self::GROUP_BREAKDOWN) : TimingsHandler{
 		$taskClass = $task::class;
-		if(!isset(self::$asyncTasksProgressUpdate[$taskClass])){
+		if(!isset(self::$asyncTaskProgressUpdate[$taskClass])){
 			self::init();
-			self::$asyncTasksProgressUpdate[$taskClass] = new TimingsHandler(
-				"AsyncTask - Progress checks - " . self::shortenCoreClassName($taskClass, "pocketmine\\"),
+			self::$asyncTaskProgressUpdate[$taskClass] = new TimingsHandler(
+				"AsyncTask: " . self::shortenCoreClassName($taskClass, "pocketmine\\") . " - Progress Updates",
 				self::$schedulerAsync,
 				$group
 			);
 		}
 
-		return self::$asyncTasksProgressUpdate[$taskClass];
+		return self::$asyncTaskProgressUpdate[$taskClass];
 	}
 
-	public static function getAsyncTasksCompletionTimings(AsyncTask $task, string $group = self::GROUP_BREAKDOWN) : TimingsHandler{
+	public static function getAsyncTaskCompletionTimings(AsyncTask $task, string $group = self::GROUP_BREAKDOWN) : TimingsHandler{
 		$taskClass = $task::class;
-		if(!isset(self::$asyncTasksCompletion[$taskClass])){
+		if(!isset(self::$asyncTaskCompletion[$taskClass])){
 			self::init();
-			self::$asyncTasksCompletion[$taskClass] = new TimingsHandler(
-				"AsyncTask - " . self::shortenCoreClassName($taskClass, "pocketmine\\") . "::onCompletion()",
+			self::$asyncTaskCompletion[$taskClass] = new TimingsHandler(
+				"AsyncTask: " . self::shortenCoreClassName($taskClass, "pocketmine\\") . " - Completion Handler",
 				self::$schedulerAsync,
 				$group
 			);
 		}
 
-		return self::$asyncTasksCompletion[$taskClass];
+		return self::$asyncTaskCompletion[$taskClass];
 	}
 
-	public static function getAsyncTasksErrorTimings(AsyncTask $task, string $group = self::GROUP_BREAKDOWN) : TimingsHandler{
+	public static function getAsyncTaskErrorTimings(AsyncTask $task, string $group = self::GROUP_BREAKDOWN) : TimingsHandler{
 		$taskClass = $task::class;
-		if(!isset(self::$asyncTasksError[$taskClass])){
+		if(!isset(self::$asyncTaskError[$taskClass])){
 			self::init();
-			self::$asyncTasksError[$taskClass] = new TimingsHandler(
-				"AsyncTask - " . self::shortenCoreClassName($taskClass, "pocketmine\\") . "::onError()",
+			self::$asyncTaskError[$taskClass] = new TimingsHandler(
+				"AsyncTask: " . self::shortenCoreClassName($taskClass, "pocketmine\\") . " - Error Handler",
 				self::$schedulerAsync,
 				$group
 			);
 		}
 
-		return self::$asyncTasksError[$taskClass];
+		return self::$asyncTaskError[$taskClass];
 	}
 }

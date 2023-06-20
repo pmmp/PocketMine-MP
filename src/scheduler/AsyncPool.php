@@ -232,7 +232,7 @@ class AsyncPool{
 
 				if($task->isCrashed()){
 					$this->logger->critical("Could not execute asynchronous task " . (new \ReflectionClass($task))->getShortName() . ": Task crashed");
-					Timings::getAsyncTasksErrorTimings($task)->time(function() use ($task) : void{
+					Timings::getAsyncTaskErrorTimings($task)->time(function() use ($task) : void{
 						$task->onError();
 					});
 				}elseif(!$task->hasCancelledRun()){
@@ -246,7 +246,7 @@ class AsyncPool{
 					 * been consumed before completing.
 					 */
 					$this->checkTaskProgressUpdates($task);
-					Timings::getAsyncTasksCompletionTimings($task)->time(function() use ($task) : void{
+					Timings::getAsyncTaskCompletionTimings($task)->time(function() use ($task) : void{
 						$task->onCompletion();
 					});
 				}
@@ -301,7 +301,7 @@ class AsyncPool{
 	}
 
 	private function checkTaskProgressUpdates(AsyncTask $task) : void{
-		Timings::getAsyncTasksProgressUpdateTimings($task)->time(function() use ($task) : void{
+		Timings::getAsyncTaskProgressUpdateTimings($task)->time(function() use ($task) : void{
 			$task->checkProgressUpdates();
 		});
 	}
