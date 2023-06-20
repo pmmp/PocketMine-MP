@@ -27,6 +27,7 @@ use pmmp\thread\Thread as NativeThread;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\thread\log\ThreadSafeLogger;
 use pocketmine\thread\ThreadSafeClassLoader;
+use pocketmine\timings\Timings;
 use pocketmine\utils\Utils;
 use function array_keys;
 use function array_map;
@@ -231,7 +232,9 @@ class AsyncPool{
 
 				if($task->isCrashed()){
 					$this->logger->critical("Could not execute asynchronous task " . (new \ReflectionClass($task))->getShortName() . ": Task crashed");
-					$task->onError();
+					Timings::getAsyncTaskErrorTimings($task)->time(function() use ($task) : void{
+						$task->onError();
+					});
 				}elseif(!$task->hasCancelledRun()){
 					/*
 					 * It's possible for a task to submit a progress update and then finish before the progress
@@ -242,11 +245,13 @@ class AsyncPool{
 					 * lost. Thus, it's necessary to do one last check here to make sure all progress updates have
 					 * been consumed before completing.
 					 */
-					$task->checkProgressUpdates();
-					$task->onCompletion();
+					$this->checkTaskProgressUpdates($task);
+					Timings::getAsyncTaskCompletionTimings($task)->time(function() use ($task) : void{
+						$task->onCompletion();
+					});
 				}
 			}else{
-				$task->checkProgressUpdates();
+				$this->checkTaskProgressUpdates($task);
 				$more = true;
 				break; //current task is still running, skip to next worker
 			}
@@ -293,5 +298,11 @@ class AsyncPool{
 			$this->eventLoop->removeNotifier($worker->sleeperNotifierId);
 		}
 		$this->workers = [];
+	}
+
+	private function checkTaskProgressUpdates(AsyncTask $task) : void{
+		Timings::getAsyncTaskProgressUpdateTimings($task)->time(function() use ($task) : void{
+			$task->checkProgressUpdates();
+		});
 	}
 }
