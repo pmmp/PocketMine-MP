@@ -106,8 +106,10 @@ abstract class TextFormat{
 
 	public const OBFUSCATED = TextFormat::ESCAPE . "k";
 	public const BOLD = TextFormat::ESCAPE . "l";
-	public const STRIKETHROUGH = TextFormat::ESCAPE . "";
-	public const UNDERLINE = TextFormat::ESCAPE . "";
+	/** @deprecated */
+	public const STRIKETHROUGH = "";
+	/** @deprecated */
+	public const UNDERLINE = "";
 	public const ITALIC = TextFormat::ESCAPE . "o";
 
 	public const FORMATS = [
