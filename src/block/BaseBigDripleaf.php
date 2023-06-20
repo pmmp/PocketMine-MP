@@ -38,7 +38,7 @@ abstract class BaseBigDripleaf extends Transparent{
 
 	abstract protected function isHead() : bool;
 
-	private function canBeSupportedBy(Block $block, bool $head = false) : bool{
+	private function canBeSupportedBy(Block $block, bool $head) : bool{
 		//TODO: Moss block
 		return
 			$block instanceof BaseBigDripleaf && $block->isHead() === $head ||
@@ -50,7 +50,7 @@ abstract class BaseBigDripleaf extends Transparent{
 	public function onNearbyBlockChange() : void{
 		if(
 			(!$this->isHead() && !$this->getSide(Facing::UP) instanceof BaseBigDripleaf) ||
-			!$this->canBeSupportedBy($this->getSide(Facing::DOWN))
+			!$this->canBeSupportedBy($this->getSide(Facing::DOWN), false)
 		){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
