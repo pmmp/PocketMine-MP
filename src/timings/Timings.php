@@ -115,6 +115,11 @@ abstract class Timings{
 	private static array $events = [];
 	/** @var TimingsHandler[][] */
 	private static array $eventHandlers = [];
+
+	private static TimingsHandler $asyncTaskProgressUpdateParent;
+	private static TimingsHandler $asyncTaskCompletionParent;
+	private static TimingsHandler $asyncTaskErrorParent;
+
 	/** @var TimingsHandler[] */
 	private static array $asyncTaskProgressUpdate = [];
 	/** @var TimingsHandler[] */
@@ -175,7 +180,11 @@ abstract class Timings{
 		self::$itemEntityBaseTick = new TimingsHandler("Entity Base Tick - ItemEntity", group: self::GROUP_BREAKDOWN);
 
 		self::$schedulerSync = new TimingsHandler("Scheduler - Sync Tasks", group: self::GROUP_BREAKDOWN);
+
 		self::$schedulerAsync = new TimingsHandler("Scheduler - Async Tasks", group: self::GROUP_BREAKDOWN);
+		self::$asyncTaskProgressUpdateParent = new TimingsHandler("Async Tasks - Progress Updates", self::$schedulerAsync, group: self::GROUP_BREAKDOWN);
+		self::$asyncTaskCompletionParent = new TimingsHandler("Async Tasks - Completion Handlers", self::$schedulerAsync, group: self::GROUP_BREAKDOWN);
+		self::$asyncTaskErrorParent = new TimingsHandler("Async Tasks - Error Handlers", self::$schedulerAsync, group: self::GROUP_BREAKDOWN);
 
 		self::$playerCommand = new TimingsHandler("Player Command", group: self::GROUP_BREAKDOWN);
 		self::$craftingDataCacheRebuild = new TimingsHandler("Build CraftingDataPacket Cache", group: self::GROUP_BREAKDOWN);
@@ -312,8 +321,8 @@ abstract class Timings{
 		if(!isset(self::$asyncTaskProgressUpdate[$taskClass])){
 			self::init();
 			self::$asyncTaskProgressUpdate[$taskClass] = new TimingsHandler(
-				"AsyncTask: " . self::shortenCoreClassName($taskClass, "pocketmine\\") . " - Progress Updates",
-				self::$schedulerAsync,
+				"AsyncTask - " . self::shortenCoreClassName($taskClass, "pocketmine\\") . " - Progress Updates",
+				self::$asyncTaskProgressUpdateParent,
 				$group
 			);
 		}
@@ -326,8 +335,8 @@ abstract class Timings{
 		if(!isset(self::$asyncTaskCompletion[$taskClass])){
 			self::init();
 			self::$asyncTaskCompletion[$taskClass] = new TimingsHandler(
-				"AsyncTask: " . self::shortenCoreClassName($taskClass, "pocketmine\\") . " - Completion Handler",
-				self::$schedulerAsync,
+				"AsyncTask - " . self::shortenCoreClassName($taskClass, "pocketmine\\") . " - Completion Handler",
+				self::$asyncTaskCompletionParent,
 				$group
 			);
 		}
@@ -340,8 +349,8 @@ abstract class Timings{
 		if(!isset(self::$asyncTaskError[$taskClass])){
 			self::init();
 			self::$asyncTaskError[$taskClass] = new TimingsHandler(
-				"AsyncTask: " . self::shortenCoreClassName($taskClass, "pocketmine\\") . " - Error Handler",
-				self::$schedulerAsync,
+				"AsyncTask - " . self::shortenCoreClassName($taskClass, "pocketmine\\") . " - Error Handler",
+				self::$asyncTaskErrorParent,
 				$group
 			);
 		}
