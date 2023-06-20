@@ -38,10 +38,10 @@ abstract class BaseBigDripleaf extends Transparent{
 
 	abstract protected function isHead() : bool;
 
-	private function canBeSupportedBy(Block $block) : bool{
+	private function canBeSupportedBy(Block $block, bool $head = false) : bool{
 		//TODO: Moss block
 		return
-			$block instanceof BaseBigDripleaf ||
+			$block instanceof BaseBigDripleaf && $block->isHead() === $head ||
 			$block->getTypeId() === BlockTypeIds::CLAY ||
 			$block->hasTypeTag(BlockTypeTags::DIRT) ||
 			$block->hasTypeTag(BlockTypeTags::MUD);
@@ -58,7 +58,7 @@ abstract class BaseBigDripleaf extends Transparent{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$block = $blockReplace->getSide(Facing::DOWN);
-		if(!$this->canBeSupportedBy($block)){
+		if(!$this->canBeSupportedBy($block, true)){
 			return false;
 		}
 		if($player !== null){
