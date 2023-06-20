@@ -104,7 +104,6 @@ class BigDripleaf extends BaseBigDripleaf{
 		if(!$this->tilt->equals(DripleafTiltType::FULL())){
 			return [
 				AxisAlignedBB::one()
-					 ->extend(Facing::DOWN, 1)
 					 ->trim(Facing::DOWN, 11 / 16)
 					 ->trim(Facing::UP, match($this->tilt->id()){
 						 DripleafTiltType::NONE()->id(), DripleafTiltType::UNSTABLE()->id() => 1 / 16,
