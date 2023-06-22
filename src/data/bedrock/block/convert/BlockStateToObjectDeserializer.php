@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\Bamboo;
-use pocketmine\block\BigDripleaf;
 use pocketmine\block\Block;
 use pocketmine\block\CaveVines;
 use pocketmine\block\ChorusFlower;
@@ -787,24 +786,20 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setAttachmentType($in->readBellAttachmentType());
 		});
 		$this->map(Ids::BIG_DRIPLEAF, function(Reader $in) : Block{
-			$block =
-				($head = $in->readBool(StateNames::BIG_DRIPLEAF_HEAD)) ?
-					Blocks::BIG_DRIPLEAF() :
-					Blocks::BIG_DRIPLEAF_STEM();
-			$block->setFacing($in->readLegacyHorizontalFacing());
-			if($head){
-				/** @var BigDripleaf $block */
-				$block->setTilt(match($type = $in->readString(StateNames::BIG_DRIPLEAF_TILT)){
-					StringValues::BIG_DRIPLEAF_TILT_NONE => DripleafTiltType::NONE(),
-					StringValues::BIG_DRIPLEAF_TILT_UNSTABLE => DripleafTiltType::UNSTABLE(),
-					StringValues::BIG_DRIPLEAF_TILT_PARTIAL_TILT => DripleafTiltType::PARTIAL(),
-					StringValues::BIG_DRIPLEAF_TILT_FULL_TILT => DripleafTiltType::FULL(),
-					default => throw $in->badValueException(StateNames::BIG_DRIPLEAF_TILT, $type),
-				});
-			} else {
+			if($in->readBool(StateNames::BIG_DRIPLEAF_HEAD)){
+				return Blocks::BIG_DRIPLEAF()
+					->setFacing($in->readLegacyHorizontalFacing())
+					->setTilt(match($type = $in->readString(StateNames::BIG_DRIPLEAF_TILT)){
+						StringValues::BIG_DRIPLEAF_TILT_NONE => DripleafTiltType::NONE(),
+						StringValues::BIG_DRIPLEAF_TILT_UNSTABLE => DripleafTiltType::UNSTABLE(),
+						StringValues::BIG_DRIPLEAF_TILT_PARTIAL_TILT => DripleafTiltType::PARTIAL(),
+						StringValues::BIG_DRIPLEAF_TILT_FULL_TILT => DripleafTiltType::FULL(),
+						default => throw $in->badValueException(StateNames::BIG_DRIPLEAF_TILT, $type),
+					});
+			}else{
 				$in->ignored(StateNames::BIG_DRIPLEAF_TILT);
+				return Blocks::BIG_DRIPLEAF_STEM()->setFacing($in->readLegacyHorizontalFacing());
 			}
-			return $block;
 		});
 		$this->mapSlab(Ids::BLACKSTONE_SLAB, Ids::BLACKSTONE_DOUBLE_SLAB, fn() => Blocks::BLACKSTONE_SLAB());
 		$this->mapStairs(Ids::BLACKSTONE_STAIRS, fn() => Blocks::BLACKSTONE_STAIRS());
