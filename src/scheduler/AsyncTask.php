@@ -75,20 +75,13 @@ abstract class AsyncTask extends Runnable{
 	private bool $cancelRun = false;
 	private bool $submitted = false;
 
-	private bool $crashed = false;
 	private bool $finished = false;
 
 	public function run() : void{
 		$this->result = null;
 
 		if(!$this->cancelRun){
-			try{
-				$this->onRun();
-			}catch(\Throwable $e){
-				$this->crashed = true;
-
-				\GlobalLogger::get()->logException($e);
-			}
+			$this->onRun();
 		}
 
 		$this->finished = true;
@@ -97,8 +90,11 @@ abstract class AsyncTask extends Runnable{
 		$worker->getNotifier()->wakeupSleeper();
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function isCrashed() : bool{
-		return $this->crashed || $this->isTerminated();
+		return $this->isTerminated();
 	}
 
 	/**
@@ -106,7 +102,7 @@ abstract class AsyncTask extends Runnable{
 	 * because it is not true prior to task execution.
 	 */
 	public function isFinished() : bool{
-		return $this->finished || $this->isCrashed();
+		return $this->finished || $this->isTerminated();
 	}
 
 	public function hasResult() : bool{
@@ -195,8 +191,7 @@ abstract class AsyncTask extends Runnable{
 	}
 
 	/**
-	 * Called from the main thread when the async task experiences an error during onRun(). Use this for things like
-	 * promise rejection.
+	 * @deprecated No longer used
 	 */
 	public function onError() : void{
 

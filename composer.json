@@ -22,7 +22,7 @@
       "ext-openssl": "*",
       "ext-pcre": "*",
       "ext-phar": "*",
-      "ext-pmmpthread": "^6.0.1",
+      "ext-pmmpthread": "^6.0.4",
       "ext-reflection": "*",
       "ext-simplexml": "*",
       "ext-sockets": "*",

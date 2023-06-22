@@ -28,11 +28,13 @@ use pocketmine\snooze\SleeperHandler;
 use pocketmine\thread\log\ThreadSafeLogger;
 use pocketmine\thread\ThreadSafeClassLoader;
 use pocketmine\timings\Timings;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use function array_keys;
 use function array_map;
 use function assert;
 use function count;
+use function get_class;
 use function spl_object_id;
 use function time;
 use const PHP_INT_MAX;
@@ -130,6 +132,8 @@ class AsyncPool{
 			foreach($this->workerStartHooks as $hook){
 				$hook($workerId);
 			}
+		}else{
+			$this->checkCrashedWorker($workerId, null);
 		}
 
 		return $this->workers[$workerId];
@@ -198,6 +202,28 @@ class AsyncPool{
 		return $worker;
 	}
 
+	private function checkCrashedWorker(int $workerId, ?AsyncTask $crashedTask) : void{
+		$entry = $this->workers[$workerId];
+		if($entry->worker->isTerminated()){
+			if($crashedTask === null){
+				foreach($entry->tasks as $task){
+					if($task->isTerminated()){
+						$crashedTask = $task;
+						break;
+					}elseif(!$task->isFinished()){
+						break;
+					}
+				}
+			}
+			if($crashedTask !== null){
+				$message = "Worker $workerId crashed while running task " . get_class($crashedTask) . "#" . spl_object_id($crashedTask);
+			}else{
+				$message = "Worker $workerId crashed for unknown reason";
+			}
+			throw new \RuntimeException($message);
+		}
+	}
+
 	/**
 	 * Collects finished and/or crashed tasks from the workers, firing their on-completion hooks where appropriate.
 	 *
@@ -230,11 +256,9 @@ class AsyncPool{
 			if($task->isFinished()){ //make sure the task actually executed before trying to collect
 				$queue->dequeue();
 
-				if($task->isCrashed()){
-					$this->logger->critical("Could not execute asynchronous task " . (new \ReflectionClass($task))->getShortName() . ": Task crashed");
-					Timings::getAsyncTaskErrorTimings($task)->time(function() use ($task) : void{
-						$task->onError();
-					});
+				if($task->isTerminated()){
+					$this->checkCrashedWorker($worker, $task);
+					throw new AssumptionFailedError("checkCrashedWorker() should have thrown an exception, making this unreachable");
 				}elseif(!$task->hasCancelledRun()){
 					/*
 					 * It's possible for a task to submit a progress update and then finish before the progress
