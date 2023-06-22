@@ -122,15 +122,15 @@ abstract class Terminal{
 		self::$COLOR_WHITE = $color(231);
 		self::$COLOR_MINECOIN_GOLD = $color(184);
 		self::$COLOR_MATERIAL_QUARTZ = $color(188);
-        self::$COLOR_MATERIAL_IRON = $color(188);
-        self::$COLOR_MATERIAL_NETHERITE = $color(59);
-        self::$COLOR_MATERIAL_REDSTONE = $color(124);
-        self::$COLOR_MATERIAL_COPPER = $color(174);
-        self::$COLOR_MATERIAL_GOLD = $color(179);
+        self::$COLOR_MATERIAL_IRON = $color(251);
+        self::$COLOR_MATERIAL_NETHERITE = $color(237);
+        self::$COLOR_MATERIAL_REDSTONE = $color(88);
+        self::$COLOR_MATERIAL_COPPER = $color(131);
+        self::$COLOR_MATERIAL_GOLD = $color(178);
         self::$COLOR_MATERIAL_EMERALD = $color(35);
-        self::$COLOR_MATERIAL_DIAMOND = $color(79);
-        self::$COLOR_MATERIAL_LAPIS = $color(60);
-        self::$COLOR_MATERIAL_AMETHYST = $color(140);
+        self::$COLOR_MATERIAL_DIAMOND = $color(37);
+        self::$COLOR_MATERIAL_LAPIS = $color(24);
+        self::$COLOR_MATERIAL_AMETHYST = $color(98);
 	}
 
 	protected static function getEscapeCodes() : void{
@@ -164,16 +164,16 @@ abstract class Terminal{
 			self::$COLOR_YELLOW = $colors >= 256 ? $setaf(227) : $setaf(11);
 			self::$COLOR_WHITE = $colors >= 256 ? $setaf(231) : $setaf(15);
 			self::$COLOR_MINECOIN_GOLD = $colors >= 256 ? $setaf(184) : $setaf(11);
-			self::$COLOR_MATERIAL_QUARTZ = $colors >= 256 ? $setaf(188) : $setaf(14);
-			self::$COLOR_MATERIAL_IRON = $colors >= 256 ? $setaf(188) : $setaf(7);
-			self::$COLOR_MATERIAL_NETHERITE = $colors >= 256 ? $setaf(59) : $setaf(8);
-			self::$COLOR_MATERIAL_REDSTONE = $colors >= 256 ? $setaf(124) : $setaf(9);
-			self::$COLOR_MATERIAL_COPPER = $colors >= 256 ? $setaf(174) : $setaf(3);
-			self::$COLOR_MATERIAL_GOLD = $colors >= 256 ? $setaf(179) : $setaf(3);
+			self::$COLOR_MATERIAL_QUARTZ = $colors >= 256 ? $setaf(188) : $setaf(7);
+			self::$COLOR_MATERIAL_IRON = $colors >= 256 ? $setaf(251) : $setaf(7);
+			self::$COLOR_MATERIAL_NETHERITE = $colors >= 256 ? $setaf(237) : $setaf(1);
+			self::$COLOR_MATERIAL_REDSTONE = $colors >= 256 ? $setaf(88) : $setaf(9);
+			self::$COLOR_MATERIAL_COPPER = $colors >= 256 ? $setaf(131) : $setaf(3);
+			self::$COLOR_MATERIAL_GOLD = $colors >= 256 ? $setaf(178) : $setaf(11);
 			self::$COLOR_MATERIAL_EMERALD = $colors >= 256 ? $setaf(35) : $setaf(2);
-			self::$COLOR_MATERIAL_DIAMOND = $colors >= 256 ? $setaf(79) : $setaf(6);
-			self::$COLOR_MATERIAL_LAPIS = $colors >= 256 ? $setaf(60) : $setaf(12);
-			self::$COLOR_MATERIAL_AMETHYST = $colors >= 256 ? $setaf(140) : $setaf(5);
+			self::$COLOR_MATERIAL_DIAMOND = $colors >= 256 ? $setaf(37) : $setaf(14);
+			self::$COLOR_MATERIAL_LAPIS = $colors >= 256 ? $setaf(24) : $setaf(12);
+			self::$COLOR_MATERIAL_AMETHYST = $colors >= 256 ? $setaf(98) : $setaf(13);
 		}else{
 			self::$COLOR_BLACK = self::$COLOR_DARK_GRAY = self::$COLOR_MATERIAL_NETHERITE = $setaf(0);
 			self::$COLOR_RED = self::$COLOR_DARK_RED = self::$COLOR_MATERIAL_REDSTONE = self::$COLOR_MATERIAL_COPPER = $setaf(1);

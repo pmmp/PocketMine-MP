@@ -152,7 +152,7 @@ abstract class TextFormat{
 	 * @return string[]
 	 */
 	public static function tokenize(string $string) : array{
-		$result = preg_split("/(" . TextFormat::ESCAPE . "[0-9a-gk-or])/u", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+		$result = preg_split("/(" . TextFormat::ESCAPE . "[0-9a-u])/u", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 		if($result === false) throw self::makePcreError();
 		return $result;
 	}
@@ -166,7 +166,7 @@ abstract class TextFormat{
 		$string = mb_scrub($string, 'UTF-8');
 		$string = self::preg_replace("/[\x{E000}-\x{F8FF}]/u", "", $string); //remove unicode private-use-area characters (they might break the console)
 		if($removeFormat){
-			$string = str_replace(TextFormat::ESCAPE, "", self::preg_replace("/" . TextFormat::ESCAPE . "[0-9a-gk-or]/u", "", $string));
+			$string = str_replace(TextFormat::ESCAPE, "", self::preg_replace("/" . TextFormat::ESCAPE . "[0-9a-u]/u", "", $string));
 		}
 		return str_replace("\x1b", "", self::preg_replace("/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/u", "", $string));
 	}
@@ -177,7 +177,7 @@ abstract class TextFormat{
 	 * @param string $placeholder default "&"
 	 */
 	public static function colorize(string $string, string $placeholder = "&") : string{
-		return self::preg_replace('/' . preg_quote($placeholder, "/") . '([0-9a-gk-or])/u', TextFormat::ESCAPE . '$1', $string);
+		return self::preg_replace('/' . preg_quote($placeholder, "/") . '([0-9a-u])/u', TextFormat::ESCAPE . '$1', $string);
 	}
 
 	/**
@@ -305,6 +305,46 @@ abstract class TextFormat{
 					break;
 				case TextFormat::MINECOIN_GOLD:
 					$newString .= "<span style=color:#dd0>";
+					++$tokens;
+					break;
+				case TextFormat::MATERIAL_QUARTZ:
+					$newString .= "<span style=color:#e2d3d1>";
+					++$tokens;
+					break;
+				case TextFormat::MATERIAL_IRON:
+					$newString .= "<span style=color:#cec9c9>";
+					++$tokens;
+					break;
+				case TextFormat::MATERIAL_NETHERITE:
+					$newString .= "<span style=color:#44393a>";
+					++$tokens;
+					break;
+				case TextFormat::MATERIAL_REDSTONE:
+					$newString .= "<span style=color:#961506>";
+					++$tokens;
+					break;
+				case TextFormat::MATERIAL_COPPER:
+					$newString .= "<span style=color:#b4684d>";
+					++$tokens;
+					break;
+				case TextFormat::MATERIAL_GOLD:
+					$newString .= "<span style=color:#deb02c>";
+					++$tokens;
+					break;
+				case TextFormat::MATERIAL_EMERALD:
+					$newString .= "<span style=color:#119f36>";
+					++$tokens;
+					break;
+				case TextFormat::MATERIAL_DIAMOND:
+					$newString .= "<span style=color:#2cb9a8>";
+					++$tokens;
+					break;
+				case TextFormat::MATERIAL_LAPIS:
+					$newString .= "<span style=color:#20487a>";
+					++$tokens;
+					break;
+				case TextFormat::MATERIAL_AMETHYST:
+					$newString .= "<span style=color:#9a5cc5>";
 					++$tokens;
 					break;
 				default:
