@@ -58,7 +58,7 @@ abstract class Command{
 
 	/** @var string[] */
 	private array $permission = [];
-	private null|string|Translatable $permissionMessage = null;
+	private Translatable|string|null $permissionMessage = null;
 
 	/**
 	 * @param string[] $aliases
@@ -190,7 +190,7 @@ abstract class Command{
 		return $this->activeAliases;
 	}
 
-	public function getPermissionMessage() : null|string|Translatable{
+	public function getPermissionMessage() : Translatable|string|null{
 		return $this->permissionMessage;
 	}
 
@@ -216,7 +216,7 @@ abstract class Command{
 		$this->description = $description;
 	}
 
-	public function setPermissionMessage(string|Translatable $permissionMessage) : void{
+	public function setPermissionMessage(Translatable|string $permissionMessage) : void{
 		$this->permissionMessage = $permissionMessage;
 	}
 
