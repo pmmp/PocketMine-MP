@@ -31,6 +31,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\particle\BoneMealParticle;
 use function mt_rand;
 
 abstract class Crops extends Flowable{
@@ -73,6 +74,7 @@ abstract class Crops extends Flowable{
 			$ev->call();
 			if(!$ev->isCancelled()){
 				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
+				$this->position->getWorld()->addParticle($this->position, new BoneMealParticle());
 				$item->pop();
 			}
 

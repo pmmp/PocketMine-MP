@@ -32,6 +32,7 @@ use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\particle\BoneMealParticle;
 
 final class BambooSapling extends Flowable{
 	private bool $ready = false;
@@ -66,6 +67,9 @@ final class BambooSapling extends Flowable{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer || $item instanceof ItemBamboo){
 			if($this->grow($player)){
+				if($item instanceof Fertilizer){
+					$this->position->getWorld()->addParticle($this->position, new BoneMealParticle());
+				}
 				$item->pop();
 				return true;
 			}

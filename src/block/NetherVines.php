@@ -33,6 +33,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\particle\BoneMealParticle;
 use function min;
 use function mt_rand;
 
@@ -118,6 +119,7 @@ class NetherVines extends Flowable{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer){
 			if($this->grow($player, mt_rand(1, 5))){
+				$this->position->getWorld()->addParticle($this->position, new BoneMealParticle());
 				$item->pop();
 			}
 			return true;

@@ -37,6 +37,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\particle\BoneMealParticle;
 use function mt_rand;
 
 class CocoaBlock extends Transparent{
@@ -95,6 +96,7 @@ class CocoaBlock extends Transparent{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer && $this->grow($player)){
+			$this->position->getWorld()->addParticle($this->position, new BoneMealParticle());
 			$item->pop();
 
 			return true;

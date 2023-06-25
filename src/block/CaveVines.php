@@ -34,6 +34,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\particle\BoneMealParticle;
 use pocketmine\world\sound\GlowBerriesPickSound;
 use function mt_rand;
 
@@ -124,6 +125,7 @@ class CaveVines extends Flowable{
 			}
 			$item->pop();
 			$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
+			$this->position->getWorld()->addParticle($this->position, new BoneMealParticle());
 			return true;
 		}
 		return false;

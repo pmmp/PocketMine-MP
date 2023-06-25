@@ -31,6 +31,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\particle\BoneMealParticle;
 use pocketmine\world\Position;
 
 class Sugarcane extends Flowable{
@@ -90,6 +91,7 @@ class Sugarcane extends Flowable{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer){
 			if($this->grow($this->seekToBottom(), $player)){
+				$this->position->getWorld()->addParticle($this->position, new BoneMealParticle());
 				$item->pop();
 			}
 

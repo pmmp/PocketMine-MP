@@ -34,6 +34,7 @@ use pocketmine\item\SplashPotion;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\particle\BoneMealParticle;
 use pocketmine\world\sound\ItemUseOnBlockSound;
 use pocketmine\world\sound\WaterSplashSound;
 
@@ -79,7 +80,7 @@ class Dirt extends Opaque{
 
 			$item->pop();
 			$world->setBlock($down->position, VanillaBlocks::HANGING_ROOTS());
-			//TODO: bonemeal particles, growth sounds
+			$world->addParticle($this->position, new BoneMealParticle());
 		}elseif(($item instanceof Potion || $item instanceof SplashPotion) && $item->getType()->equals(PotionType::WATER())){
 			$item->pop();
 			$world->setBlock($this->position, VanillaBlocks::MUD());

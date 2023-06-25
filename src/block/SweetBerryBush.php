@@ -35,6 +35,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\particle\BoneMealParticle;
 use function mt_rand;
 
 class SweetBerryBush extends Flowable{
@@ -92,6 +93,7 @@ class SweetBerryBush extends Flowable{
 
 			if(!$ev->isCancelled()){
 				$world->setBlock($this->position, $ev->getNewState());
+				$world->addParticle($this->position, new BoneMealParticle());
 				$item->pop();
 			}
 

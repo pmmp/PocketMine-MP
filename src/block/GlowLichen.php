@@ -33,6 +33,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\particle\BoneMealParticle;
 use pocketmine\world\World;
 use function array_key_first;
 use function count;
@@ -242,6 +243,7 @@ class GlowLichen extends Transparent{
 			foreach($shuffledFaces as $sourceFace){
 				foreach($spreadMethods as $spreadMethod){
 					if($spreadMethod($sourceFace)){
+						$this->position->getWorld()->addParticle($this->position, new BoneMealParticle());
 						$item->pop();
 						break 2;
 					}

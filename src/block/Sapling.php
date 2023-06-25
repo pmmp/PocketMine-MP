@@ -34,6 +34,7 @@ use pocketmine\player\Player;
 use pocketmine\utils\Random;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\generator\object\TreeFactory;
+use pocketmine\world\particle\BoneMealParticle;
 use function mt_rand;
 
 class Sapling extends Flowable{
@@ -69,6 +70,7 @@ class Sapling extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer && $this->grow($player)){
+			$this->position->getWorld()->addParticle($this->position, new BoneMealParticle());
 			$item->pop();
 
 			return true;

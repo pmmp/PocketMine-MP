@@ -34,6 +34,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\Random;
 use pocketmine\world\generator\object\TallGrass as TallGrassObject;
+use pocketmine\world\particle\BoneMealParticle;
 use pocketmine\world\sound\ItemUseOnBlockSound;
 use function mt_rand;
 
@@ -97,6 +98,7 @@ class Grass extends Opaque{
 		if($item instanceof Fertilizer){
 			$item->pop();
 			TallGrassObject::growGrass($world, $this->position, new Random(mt_rand()), 8, 2);
+			$world->addParticle($this->position, new BoneMealParticle());
 
 			return true;
 		}elseif($item instanceof Hoe){

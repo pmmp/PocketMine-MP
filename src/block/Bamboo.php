@@ -35,6 +35,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\particle\BoneMealParticle;
 use function count;
 use function gmp_add;
 use function gmp_and;
@@ -141,6 +142,7 @@ class Bamboo extends Transparent{
 		if($item instanceof Fertilizer){
 			$top = $this->seekToTop();
 			if($top->grow(self::getMaxHeight($top->position->getFloorX(), $top->position->getFloorZ()), mt_rand(1, 2), $player)){
+				$this->position->getWorld()->addParticle($this->position, new BoneMealParticle());
 				$item->pop();
 				return true;
 			}
