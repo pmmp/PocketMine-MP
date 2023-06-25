@@ -115,8 +115,6 @@ abstract class TextFormat{
 	public const FORMATS = [
 		self::OBFUSCATED => self::OBFUSCATED,
 		self::BOLD => self::BOLD,
-		self::STRIKETHROUGH => self::STRIKETHROUGH,
-		self::UNDERLINE => self::UNDERLINE,
 		self::ITALIC => self::ITALIC,
 	];
 
