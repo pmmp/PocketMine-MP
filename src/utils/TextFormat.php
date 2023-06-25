@@ -225,14 +225,6 @@ abstract class TextFormat{
 					$newString .= "<span style=font-style:italic>";
 					++$tokens;
 					break;
-				case TextFormat::UNDERLINE:
-					$newString .= "<span style=text-decoration:underline>";
-					++$tokens;
-					break;
-				case TextFormat::STRIKETHROUGH:
-					$newString .= "<span style=text-decoration:line-through>";
-					++$tokens;
-					break;
 				case TextFormat::RESET:
 					$newString .= str_repeat("</span>", $tokens);
 					$tokens = 0;

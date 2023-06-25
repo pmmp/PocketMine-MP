@@ -122,15 +122,15 @@ abstract class Terminal{
 		self::$COLOR_WHITE = $color(231);
 		self::$COLOR_MINECOIN_GOLD = $color(184);
 		self::$COLOR_MATERIAL_QUARTZ = $color(188);
-        self::$COLOR_MATERIAL_IRON = $color(251);
-        self::$COLOR_MATERIAL_NETHERITE = $color(237);
-        self::$COLOR_MATERIAL_REDSTONE = $color(88);
-        self::$COLOR_MATERIAL_COPPER = $color(131);
-        self::$COLOR_MATERIAL_GOLD = $color(178);
-        self::$COLOR_MATERIAL_EMERALD = $color(35);
-        self::$COLOR_MATERIAL_DIAMOND = $color(37);
-        self::$COLOR_MATERIAL_LAPIS = $color(24);
-        self::$COLOR_MATERIAL_AMETHYST = $color(98);
+		self::$COLOR_MATERIAL_IRON = $color(251);
+		self::$COLOR_MATERIAL_NETHERITE = $color(237);
+		self::$COLOR_MATERIAL_REDSTONE = $color(88);
+		self::$COLOR_MATERIAL_COPPER = $color(131);
+		self::$COLOR_MATERIAL_GOLD = $color(178);
+		self::$COLOR_MATERIAL_EMERALD = $color(35);
+		self::$COLOR_MATERIAL_DIAMOND = $color(37);
+		self::$COLOR_MATERIAL_LAPIS = $color(24);
+		self::$COLOR_MATERIAL_AMETHYST = $color(98);
 	}
 
 	protected static function getEscapeCodes() : void{
@@ -221,12 +221,10 @@ abstract class Terminal{
 	public static function toANSI(string $string) : string{
 		$newString = "";
 		foreach(TextFormat::tokenize($string) as $token){
-			$newString .= match($token){
+			$newString .= match ($token) {
 				TextFormat::BOLD => Terminal::$FORMAT_BOLD,
 				TextFormat::OBFUSCATED => Terminal::$FORMAT_OBFUSCATED,
 				TextFormat::ITALIC => Terminal::$FORMAT_ITALIC,
-				TextFormat::UNDERLINE => Terminal::$FORMAT_UNDERLINE,
-				TextFormat::STRIKETHROUGH => Terminal::$FORMAT_STRIKETHROUGH,
 				TextFormat::RESET => Terminal::$FORMAT_RESET,
 				TextFormat::BLACK => Terminal::$COLOR_BLACK,
 				TextFormat::DARK_BLUE => Terminal::$COLOR_DARK_BLUE,
@@ -246,15 +244,15 @@ abstract class Terminal{
 				TextFormat::WHITE => Terminal::$COLOR_WHITE,
 				TextFormat::MINECOIN_GOLD => Terminal::$COLOR_MINECOIN_GOLD,
 				TextFormat::MATERIAL_QUARTZ => Terminal::$COLOR_MATERIAL_QUARTZ,
-                TextFormat::MATERIAL_IRON => Terminal::$COLOR_MATERIAL_IRON,
+				TextFormat::MATERIAL_IRON => Terminal::$COLOR_MATERIAL_IRON,
 				TextFormat::MATERIAL_NETHERITE => Terminal::$COLOR_MATERIAL_NETHERITE,
-                TextFormat::MATERIAL_REDSTONE => Terminal::$COLOR_MATERIAL_REDSTONE,
-                TextFormat::MATERIAL_COPPER => Terminal::$COLOR_MATERIAL_COPPER,
-                TextFormat::MATERIAL_GOLD => Terminal::$COLOR_MATERIAL_GOLD,
-                TextFormat::MATERIAL_EMERALD => Terminal::$COLOR_MATERIAL_EMERALD,
-                TextFormat::MATERIAL_DIAMOND => Terminal::$COLOR_MATERIAL_DIAMOND,
-                TextFormat::MATERIAL_LAPIS => Terminal::$COLOR_MATERIAL_LAPIS,
-                TextFormat::MATERIAL_AMETHYST => Terminal::$COLOR_MATERIAL_AMETHYST,
+				TextFormat::MATERIAL_REDSTONE => Terminal::$COLOR_MATERIAL_REDSTONE,
+				TextFormat::MATERIAL_COPPER => Terminal::$COLOR_MATERIAL_COPPER,
+				TextFormat::MATERIAL_GOLD => Terminal::$COLOR_MATERIAL_GOLD,
+				TextFormat::MATERIAL_EMERALD => Terminal::$COLOR_MATERIAL_EMERALD,
+				TextFormat::MATERIAL_DIAMOND => Terminal::$COLOR_MATERIAL_DIAMOND,
+				TextFormat::MATERIAL_LAPIS => Terminal::$COLOR_MATERIAL_LAPIS,
+				TextFormat::MATERIAL_AMETHYST => Terminal::$COLOR_MATERIAL_AMETHYST,
 				default => $token,
 			};
 		}
