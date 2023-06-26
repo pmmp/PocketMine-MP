@@ -40,6 +40,7 @@ final class BlockStateUpgradeSchemaModelBlockRemap{
 	/**
 	 * @var BlockStateUpgradeSchemaModelTag[]|null
 	 * @phpstan-var array<string, BlockStateUpgradeSchemaModelTag>|null
+	 * @required
 	 */
 	public ?array $newState;
 
