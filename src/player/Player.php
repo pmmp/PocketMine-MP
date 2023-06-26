@@ -1129,7 +1129,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	/**
-	 * Sets the gamemode, and if needed, kicks the Player.
+	 * Sets the provided gamemode.
 	 */
 	public function setGamemode(GameMode $gm) : bool{
 		if($this->gamemode->equals($gm)){
