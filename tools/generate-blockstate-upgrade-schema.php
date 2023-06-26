@@ -26,9 +26,11 @@ namespace pocketmine\tools\generate_blockstate_upgrade_schema;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchema;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaBlockRemap;
+use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaFlattenedName;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaUtils;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaValueRemap;
 use pocketmine\nbt\LittleEndianNbtSerializer;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
@@ -39,12 +41,11 @@ use function array_filter;
 use function array_key_first;
 use function array_keys;
 use function array_map;
-use function array_merge;
 use function array_shift;
 use function array_values;
-use function assert;
 use function count;
 use function dirname;
+use function explode;
 use function file_put_contents;
 use function fwrite;
 use function implode;
@@ -291,7 +292,7 @@ function processRemappedStates(array $upgradeTable) : array{
 
 	foreach($upgradeTable as $pair){
 		if(count($pair->old->getStates()) === 0 || count($pair->new->getStates()) === 0){
-			//all states have changed in some way - compression not possible
+			//all states have changed in some way - no states are copied over
 			$unchangedStatesByNewName[$pair->new->getName()] = [];
 			continue;
 		}
@@ -327,76 +328,110 @@ function processRemappedStates(array $upgradeTable) : array{
 		$unchangedStatesByNewName[$newName] = $unchangedStates;
 	}
 
-	$compressedRemaps = [];
+	$flattenedProperties = [];
+	$notFlattenedProperties = [];
+	$notFlattenedPropertyValues = [];
+	foreach($upgradeTable as $pair){
+		foreach(Utils::stringifyKeys($pair->old->getStates()) as $propertyName => $propertyValue){
+			if(isset($notFlattenedProperties[$propertyName])){
+				continue;
+			}
+			if(!$propertyValue instanceof StringTag){
+				$notFlattenedProperties[$propertyName] = true;
+				continue;
+			}
+			$rawValue = $propertyValue->getValue();
+			if($rawValue === ""){
+				$notFlattenedProperties[$propertyName] = true;
+				continue;
+			}
+			$parts = explode($rawValue, $pair->new->getName(), 2);
+			if(count($parts) !== 2){
+				//the new name does not contain the property value, but it may still be able to be flattened in other cases
+				$notFlattenedPropertyValues[$propertyName][$rawValue] = $rawValue;
+				continue;
+			}
+			[$prefix, $suffix] = $parts;
 
-	foreach($upgradeTable as $remap){
-		$oldState = $remap->old->getStates();
-		$newState = $remap->new->getStates();
-
-		if(count($oldState) === 0 || count($newState) === 0){
-			//all states have changed in some way - compression not possible
-			assert(!isset($unchangedStatesByNewName[$remap->new->getName()]));
-			$compressedRemaps[$remap->new->getName()][] = new BlockStateUpgradeSchemaBlockRemap(
-				$oldState,
-				$remap->new->getName(),
-				$newState,
-				[]
+			$filter = $pair->old->getStates();
+			foreach($unchangedStatesByNewName[$pair->new->getName()] as $unchangedPropertyName){
+				unset($filter[$unchangedPropertyName]);
+			}
+			unset($filter[$propertyName]);
+			$rawFilter = encodeOrderedProperties($filter);
+			$flattenRule = new BlockStateUpgradeSchemaFlattenedName(
+				prefix: $prefix,
+				flattenedProperty: $propertyName,
+				suffix: $suffix
 			);
-			continue;
+			if(!isset($flattenedProperties[$propertyName][$rawFilter])){
+				$flattenedProperties[$propertyName][$rawFilter] = $flattenRule;
+			}elseif(!$flattenRule->equals($flattenedProperties[$propertyName][$rawFilter])){
+				$notFlattenedProperties[$propertyName] = true;
+			}
 		}
+	}
+	foreach(Utils::stringifyKeys($notFlattenedProperties) as $propertyName => $_){
+		unset($flattenedProperties[$propertyName]);
+	}
+
+	ksort($flattenedProperties, SORT_STRING);
+	$flattenProperty = array_key_first($flattenedProperties);
+
+	$list = [];
+
+	foreach($upgradeTable as $pair){
+		$oldState = $pair->old->getStates();
+		$newState = $pair->new->getStates();
 
 		$cleanedOldState = $oldState;
 		$cleanedNewState = $newState;
+		$newName = $pair->new->getName();
 
-		foreach($unchangedStatesByNewName[$remap->new->getName()] as $propertyName){
+		foreach($unchangedStatesByNewName[$newName] as $propertyName){
 			unset($cleanedOldState[$propertyName]);
 			unset($cleanedNewState[$propertyName]);
 		}
 		ksort($cleanedOldState);
 		ksort($cleanedNewState);
-
-		$duplicate = false;
-		$compressedRemaps[$remap->new->getName()] ??= [];
-		foreach($compressedRemaps[$remap->new->getName()] as $k => $compressedRemap){
-			if(
-				count($compressedRemap->oldState) !== count($cleanedOldState) ||
-				count($compressedRemap->newState) !== count($cleanedNewState)
-			){
-				continue;
+		$flattened = false;
+		if($flattenProperty !== null){
+			$flattenedValue = $cleanedOldState[$flattenProperty] ?? null;
+			if(!$flattenedValue instanceof StringTag){
+				throw new AssumptionFailedError("This should always be a TAG_String");
 			}
-			foreach(Utils::stringifyKeys($cleanedOldState) as $propertyName => $propertyValue){
-				if(!isset($compressedRemap->oldState[$propertyName]) || !$compressedRemap->oldState[$propertyName]->equals($propertyValue)){
-					//different filter value
-					continue 2;
-				}
+			if(!isset($notFlattenedPropertyValues[$flattenProperty][$flattenedValue->getValue()])){
+				unset($cleanedOldState[$flattenProperty]);
+				$flattened = true;
 			}
-			foreach(Utils::stringifyKeys($cleanedNewState) as $propertyName => $propertyValue){
-				if(!isset($compressedRemap->newState[$propertyName]) || !$compressedRemap->newState[$propertyName]->equals($propertyValue)){
-					//different replacement value
-					continue 2;
-				}
-			}
-			$duplicate = true;
-			break;
 		}
-		if(!$duplicate){
-			$compressedRemaps[$remap->new->getName()][] = new BlockStateUpgradeSchemaBlockRemap(
-				$cleanedOldState,
-				$remap->new->getName(),
-				$cleanedNewState,
-				$unchangedStatesByNewName[$remap->new->getName()]
-			);
+		$rawOldState = encodeOrderedProperties($cleanedOldState);
+		$newNameRule = $flattenProperty !== null && $flattened ?
+			$flattenedProperties[$flattenProperty][$rawOldState] ?? throw new AssumptionFailedError("This should always be set") :
+			$newName;
+
+		$remap = new BlockStateUpgradeSchemaBlockRemap(
+			$cleanedOldState,
+			$newNameRule,
+			$cleanedNewState,
+			$unchangedStatesByNewName[$pair->new->getName()]
+		);
+
+		$existing = $list[$rawOldState] ?? null;
+		if($existing === null || $existing->equals($remap)){
+			$list[$rawOldState] = $remap;
+		}else{
+			//match criteria is borked
+			throw new AssumptionFailedError("Match criteria resulted in two ambiguous remaps");
 		}
 	}
-
-	$list = array_merge(...array_values($compressedRemaps));
 
 	//more specific filters must come before less specific ones, in case of a remap on a certain value which is
 	//otherwise unchanged
 	usort($list, function(BlockStateUpgradeSchemaBlockRemap $a, BlockStateUpgradeSchemaBlockRemap $b) : int{
 		return count($b->oldState) <=> count($a->oldState);
 	});
-	return $list;
+	return array_values($list);
 }
 
 /**

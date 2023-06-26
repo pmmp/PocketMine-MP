@@ -34,8 +34,16 @@ final class BlockStateUpgradeSchemaModelBlockRemap{
 	 */
 	public ?array $oldState;
 
-	/** @required */
+	/**
+	 * Either this or newFlattenedName must be present
+	 * Due to technical limitations of jsonmapper, we can't use a union type here
+	 */
 	public string $newName;
+	/**
+	 * Either this or newName must be present
+	 * Due to technical limitations of jsonmapper, we can't use a union type here
+	 */
+	public BlockStateUpgradeSchemaModelFlattenedName $newFlattenedName;
 
 	/**
 	 * @var BlockStateUpgradeSchemaModelTag[]|null
@@ -59,9 +67,13 @@ final class BlockStateUpgradeSchemaModelBlockRemap{
 	 * @phpstan-param array<string, BlockStateUpgradeSchemaModelTag> $newState
 	 * @phpstan-param list<string> $copiedState
 	 */
-	public function __construct(array $oldState, string $newName, array $newState, array $copiedState){
+	public function __construct(array $oldState, string|BlockStateUpgradeSchemaModelFlattenedName $newNameRule, array $newState, array $copiedState){
 		$this->oldState = count($oldState) === 0 ? null : $oldState;
-		$this->newName = $newName;
+		if($newNameRule instanceof BlockStateUpgradeSchemaModelFlattenedName){
+			$this->newFlattenedName = $newNameRule;
+		}else{
+			$this->newName = $newNameRule;
+		}
 		$this->newState = count($newState) === 0 ? null : $newState;
 		$this->copiedState = $copiedState;
 	}
