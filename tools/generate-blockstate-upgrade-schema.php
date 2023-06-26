@@ -280,15 +280,13 @@ function processStateGroup(string $oldName, array $upgradeTable, BlockStateUpgra
  * This significantly reduces the output size during flattening when the flattened block has many permutations
  * (e.g. walls).
  *
- * @param BlockStateUpgradeSchemaBlockRemap[] $stateRemaps
- * @param BlockStateMapping[]                 $upgradeTable
- * @phpstan-param list<BlockStateUpgradeSchemaBlockRemap> $stateRemaps
+ * @param BlockStateMapping[] $upgradeTable
  * @phpstan-param array<string, BlockStateMapping>        $upgradeTable
  *
  * @return BlockStateUpgradeSchemaBlockRemap[]
  * @phpstan-return list<BlockStateUpgradeSchemaBlockRemap>
  */
-function compressRemappedStates(array $upgradeTable, array $stateRemaps) : array{
+function processRemappedStates(array $upgradeTable) : array{
 	$unchangedStatesByNewName = [];
 
 	foreach($upgradeTable as $pair){
@@ -331,21 +329,26 @@ function compressRemappedStates(array $upgradeTable, array $stateRemaps) : array
 
 	$compressedRemaps = [];
 
-	foreach($stateRemaps as $remap){
-		$oldState = $remap->oldState;
-		$newState = $remap->newState;
+	foreach($upgradeTable as $remap){
+		$oldState = $remap->old->getStates();
+		$newState = $remap->new->getStates();
 
-		if($oldState === null || $newState === null){
-			//no unchanged states - no compression possible
-			assert(!isset($unchangedStatesByNewName[$remap->newName]));
-			$compressedRemaps[$remap->newName][] = $remap;
+		if(count($oldState) === 0 || count($newState) === 0){
+			//all states have changed in some way - compression not possible
+			assert(!isset($unchangedStatesByNewName[$remap->new->getName()]));
+			$compressedRemaps[$remap->new->getName()][] = new BlockStateUpgradeSchemaBlockRemap(
+				$oldState,
+				$remap->new->getName(),
+				$newState,
+				[]
+			);
 			continue;
 		}
 
 		$cleanedOldState = $oldState;
 		$cleanedNewState = $newState;
 
-		foreach($unchangedStatesByNewName[$remap->newName] as $propertyName){
+		foreach($unchangedStatesByNewName[$remap->new->getName()] as $propertyName){
 			unset($cleanedOldState[$propertyName]);
 			unset($cleanedNewState[$propertyName]);
 		}
@@ -353,10 +356,8 @@ function compressRemappedStates(array $upgradeTable, array $stateRemaps) : array
 		ksort($cleanedNewState);
 
 		$duplicate = false;
-		$compressedRemaps[$remap->newName] ??= [];
-		foreach($compressedRemaps[$remap->newName] as $k => $compressedRemap){
-			assert($compressedRemap->oldState !== null && $compressedRemap->newState !== null);
-
+		$compressedRemaps[$remap->new->getName()] ??= [];
+		foreach($compressedRemaps[$remap->new->getName()] as $k => $compressedRemap){
 			if(
 				count($compressedRemap->oldState) !== count($cleanedOldState) ||
 				count($compressedRemap->newState) !== count($cleanedNewState)
@@ -379,11 +380,11 @@ function compressRemappedStates(array $upgradeTable, array $stateRemaps) : array
 			break;
 		}
 		if(!$duplicate){
-			$compressedRemaps[$remap->newName][] = new BlockStateUpgradeSchemaBlockRemap(
+			$compressedRemaps[$remap->new->getName()][] = new BlockStateUpgradeSchemaBlockRemap(
 				$cleanedOldState,
-				$remap->newName,
+				$remap->new->getName(),
 				$cleanedNewState,
-				$unchangedStatesByNewName[$remap->newName]
+				$unchangedStatesByNewName[$remap->new->getName()]
 			);
 		}
 	}
@@ -455,20 +456,8 @@ function generateBlockStateUpgradeSchema(array $upgradeTable) : BlockStateUpgrad
 				}
 			}
 			//block mapped to multiple different new IDs; we can't guess these, so we just do a plain old remap
-			foreach($blockStateMappings as $mapping){
-				if(!$mapping->old->equals($mapping->new)){
-					$result->remappedStates[$mapping->old->getName()][] = new BlockStateUpgradeSchemaBlockRemap(
-						$mapping->old->getStates(),
-						$mapping->new->getName(),
-						$mapping->new->getStates(),
-						[]
-					);
-				}
-			}
+			$result->remappedStates[$oldName] = processRemappedStates($blockStateMappings);
 		}
-	}
-	foreach(Utils::stringifyKeys($result->remappedStates) as $oldName => $remap){
-		$result->remappedStates[$oldName] = compressRemappedStates($upgradeTable[$oldName], $remap);
 	}
 
 	return $result;
