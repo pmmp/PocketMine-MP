@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Liquid;
 use pocketmine\entity\Living;
+use pocketmine\event\entity\EntityTeleportEvent;
 use pocketmine\math\Vector3;
 use pocketmine\world\sound\EndermanTeleportSound;
 use function min;
@@ -76,7 +77,7 @@ class ChorusFruit extends Food{
 
 			//Sounds are broadcasted at both source and destination
 			$world->addSound($origin, new EndermanTeleportSound());
-			$consumer->teleport($target = new Vector3($x + 0.5, $y + 1, $z + 0.5));
+			$consumer->teleport($target = new Vector3($x + 0.5, $y + 1, $z + 0.5), null, null, EntityTeleportEvent::CAUSE_ITEM);
 			$world->addSound($target, new EndermanTeleportSound());
 
 			break;

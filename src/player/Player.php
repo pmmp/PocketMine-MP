@@ -45,6 +45,7 @@ use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Skin;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityTeleportEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\inventory\InventoryOpenEvent;
 use pocketmine\event\player\PlayerBedEnterEvent;
@@ -1339,7 +1340,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			}
 
 			if($to->distanceSquared($ev->getTo()) > 0.01){ //If plugins modify the destination
-				$this->teleport($ev->getTo());
+				$this->teleport($ev->getTo(), null, null, EntityTeleportEvent::CAUSE_PATCH);
 				return;
 			}
 
@@ -2387,7 +2388,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$ev->call();
 
 				$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getWorld());
-				$this->teleport($realSpawn);
+				$this->teleport($realSpawn, null, null, EntityTeleportEvent::CAUSE_RESPAWN);
 
 				$this->setSprinting(false);
 				$this->setSneaking(false);
@@ -2487,8 +2488,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->ySize = 0;
 	}
 
-	public function teleport(Vector3 $pos, ?float $yaw = null, ?float $pitch = null) : bool{
-		if(parent::teleport($pos, $yaw, $pitch)){
+	public function teleport(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, int $cause = EntityTeleportEvent::CAUSE_PLUGIN) : bool{
+		if(parent::teleport($pos, $yaw, $pitch, $cause)){
 
 			$this->removeCurrentWindow();
 			$this->stopSleep();

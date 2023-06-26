@@ -35,10 +35,18 @@ use pocketmine\world\Position;
 class EntityTeleportEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
+    public const CAUSE_PLUGIN = 0;
+    public const CAUSE_ITEM = 1;
+    public const CAUSE_WORLD = 2;
+    public const CAUSE_RESPAWN = 3;
+    public const CAUSE_PATCH = 4;
+    public const CAUSE_COMMAND = 5;
+
 	public function __construct(
 		Entity $entity,
 		private Position $from,
-		private Position $to
+		private Position $to,
+        private int $cause
 	){
 		$this->entity = $entity;
 	}
@@ -50,6 +58,16 @@ class EntityTeleportEvent extends EntityEvent implements Cancellable{
 	public function getTo() : Position{
 		return $this->to;
 	}
+
+    public function getCause(): int
+    {
+        return $this->cause;
+    }
+
+    public function setCause(int $cause): void
+    {
+        $this->cause = $cause;
+    }
 
 	public function setTo(Position $to) : void{
 		Utils::checkVector3NotInfOrNaN($to);
