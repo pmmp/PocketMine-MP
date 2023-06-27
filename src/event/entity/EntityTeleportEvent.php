@@ -59,12 +59,12 @@ class EntityTeleportEvent extends EntityEvent implements Cancellable{
 		return $this->to;
 	}
 
-	public function getCause(): int
+	public function getCause() : int
 	{
 		return $this->cause;
 	}
 
-	public function setCause(int $cause): void
+	public function setCause(int $cause) : void
 	{
 		$this->cause = $cause;
 	}
