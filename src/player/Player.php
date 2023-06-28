@@ -1340,7 +1340,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			}
 
 			if($to->distanceSquared($ev->getTo()) > 0.01){ //If plugins modify the destination
-				$this->teleport($ev->getTo(), null, null, EntityTeleportEvent::CAUSE_PATCH);
+				$this->teleport($ev->getTo());
 				return;
 			}
 
