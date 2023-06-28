@@ -90,7 +90,7 @@ class TeleportCommand extends VanillaCommand{
 					return true;
 				}
 
-				$subject->teleport($targetPlayer->getLocation(), null, null, EntityTeleportEvent::CAUSE_COMMAND);
+				$subject->teleport($targetPlayer->getLocation(), cause: EntityTeleportEvent::CAUSE_COMMAND);
 				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_tp_success($subject->getName(), $targetPlayer->getName()));
 
 				return true;
@@ -110,7 +110,7 @@ class TeleportCommand extends VanillaCommand{
 				$z = $this->getRelativeDouble($base->z, $sender, $args[2]);
 				$targetLocation = new Location($x, $y, $z, $base->getWorld(), $yaw, $pitch);
 
-				$subject->teleport($targetLocation, null, null, EntityTeleportEvent::CAUSE_COMMAND);
+				$subject->teleport($targetLocation, cause: EntityTeleportEvent::CAUSE_COMMAND);
 				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_tp_success_coordinates(
 					$subject->getName(),
 					(string) round($targetLocation->x, 2),

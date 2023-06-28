@@ -151,7 +151,7 @@ class WorldManager{
 				if($safeSpawn === null){
 					$player->disconnect("Forced default world unload");
 				}else{
-					$player->teleport($safeSpawn, null, null, EntityTeleportEvent::CAUSE_WORLD);
+					$player->teleport($safeSpawn, cause: EntityTeleportEvent::CAUSE_WORLD);
 				}
 			}
 		}
