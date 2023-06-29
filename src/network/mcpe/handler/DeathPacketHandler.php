@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\lang\NamespacedLanguage;
 use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
@@ -32,6 +33,8 @@ use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\RespawnPacket;
 use pocketmine\network\mcpe\protocol\types\PlayerAction;
 use pocketmine\player\Player;
+use function explode;
+use function in_array;
 
 class DeathPacketHandler extends PacketHandler{
 	public function __construct(
@@ -52,7 +55,8 @@ class DeathPacketHandler extends PacketHandler{
 		$parameters = [];
 		if($this->deathMessage instanceof Translatable){
 			$language = $this->player->getLanguage();
-			if(!$this->player->getServer()->isLanguageForced()){
+			$namespace = explode(".", $this->deathMessage->getText())[0];
+			if(!in_array($namespace, NamespacedLanguage::getNamespaces(), true) && !$this->player->getServer()->isLanguageForced()){
 				[$message, $parameters] = $this->session->prepareClientTranslatableMessage($this->deathMessage);
 			}else{
 				$message = $language->translate($this->deathMessage);
