@@ -69,4 +69,36 @@ class AsyncPoolTest extends TestCase{
 		}
 		self::assertTrue(PublishProgressRaceAsyncTask::$success, "Progress was not reported before task completion");
 	}
+
+	/**
+	 * This test ensures that the fix for an exotic AsyncTask::__destruct() reentrancy bug has not regressed.
+	 *
+	 * Due to an unset() in the function body, other AsyncTask::__destruct() calls could be triggered during
+	 * an AsyncTask's destruction. If done in the wrong way, this could lead to a crash.
+	 *
+	 * @doesNotPerformAssertions This test is checking for a crash condition, not a specific output.
+	 */
+	public function testTaskDestructorReentrancy() : void{
+		$this->pool->submitTask(new class extends AsyncTask{
+			public function __construct(){
+				$this->storeLocal("task", new class extends AsyncTask{
+
+					public function __construct(){
+						$this->storeLocal("dummy", 1);
+					}
+
+					public function onRun() : void{
+						//dummy
+					}
+				});
+			}
+
+			public function onRun() : void{
+				//dummy
+			}
+		});
+		while($this->pool->collectTasks()){
+			usleep(50 * 1000);
+		}
+	}
 }
