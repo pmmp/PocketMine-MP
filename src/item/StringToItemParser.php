@@ -208,6 +208,19 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("cauldron", fn() => Blocks::CAULDRON());
 		$result->registerBlock("cave_vines", fn() => Blocks::CAVE_VINES());
 		$result->registerBlock("chain", fn() => Blocks::CHAIN());
+		$result->registerBlock("cherry_button", fn() => Blocks::CHERRY_BUTTON());
+		$result->registerBlock("cherry_door", fn() => Blocks::CHERRY_DOOR());
+		$result->registerBlock("cherry_fence", fn() => Blocks::CHERRY_FENCE());
+		$result->registerBlock("cherry_fence_gate", fn() => Blocks::CHERRY_FENCE_GATE());
+		$result->registerBlock("cherry_leaves", fn() => Blocks::CHERRY_LEAVES());
+		$result->registerBlock("cherry_log", fn() => Blocks::CHERRY_LOG());
+		$result->registerBlock("cherry_planks", fn() => Blocks::CHERRY_PLANKS());
+		$result->registerBlock("cherry_pressure_plate", fn() => Blocks::CHERRY_PRESSURE_PLATE());
+		$result->registerBlock("cherry_sign", fn() => Blocks::CHERRY_SIGN());
+		$result->registerBlock("cherry_slab", fn() => Blocks::CHERRY_SLAB());
+		$result->registerBlock("cherry_stairs", fn() => Blocks::CHERRY_STAIRS());
+		$result->registerBlock("cherry_trapdoor", fn() => Blocks::CHERRY_TRAPDOOR());
+		$result->registerBlock("cherry_wood", fn() => Blocks::CHERRY_WOOD());
 		$result->registerBlock("chemical_heat", fn() => Blocks::CHEMICAL_HEAT());
 		$result->registerBlock("chemistry_table", fn() => Blocks::COMPOUND_CREATOR());
 		$result->registerBlock("chest", fn() => Blocks::CHEST());
@@ -843,6 +856,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("packed_mud", fn() => Blocks::PACKED_MUD());
 		$result->registerBlock("peony", fn() => Blocks::PEONY());
 		$result->registerBlock("pink_tulip", fn() => Blocks::PINK_TULIP());
+		$result->registerBlock("piglin_head", fn() => Blocks::MOB_HEAD()->setMobHeadType(MobHeadType::PIGLIN()));
 		$result->registerBlock("plank", fn() => Blocks::OAK_PLANKS());
 		$result->registerBlock("planks", fn() => Blocks::OAK_PLANKS());
 		$result->registerBlock("player_head", fn() => Blocks::MOB_HEAD()->setMobHeadType(MobHeadType::PLAYER()));
@@ -1065,6 +1079,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("trunk2", fn() => Blocks::ACACIA_LOG()->setStripped(false));
 		$result->registerBlock("tuff", fn() => Blocks::TUFF());
 		$result->registerBlock("twisting_vines", fn() => Blocks::TWISTING_VINES());
+		$result->registerBlock("underwater_tnt", fn() => Blocks::TNT()->setWorksUnderwater(true));
 		$result->registerBlock("underwater_torch", fn() => Blocks::UNDERWATER_TORCH());
 		$result->registerBlock("undyed_shulker_box", fn() => Blocks::SHULKER_BOX());
 		$result->registerBlock("unlit_redstone_torch", fn() => Blocks::REDSTONE_TORCH());
