@@ -252,9 +252,15 @@ abstract class AsyncTask extends \Threaded{
 	final public function __destruct(){
 		$this->reallyDestruct();
 		if(self::$threadLocalStorage !== null && isset(self::$threadLocalStorage[$h = spl_object_id($this)])){
-			unset(self::$threadLocalStorage[$h]);
-			if(self::$threadLocalStorage->count() === 0){
+			//Beware changing this code!
+			//This code may cause the GC to be triggered, causing destruction of other AsyncTasks (which may or may not
+			//have been indirectly referenced by the TLS).
+			//This may cause the code to be re-entered from a different context unexpectedly, causing a crash if handled
+			//incorrectly.
+			if(self::$threadLocalStorage->count() === 1){
 				self::$threadLocalStorage = null;
+			}else{
+				unset(self::$threadLocalStorage[$h]);
 			}
 		}
 	}
