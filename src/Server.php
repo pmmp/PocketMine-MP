@@ -1054,6 +1054,11 @@ class Server{
 
 			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_defaultGameMode($this->getGamemode()->getTranslatableName())));
 			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_donate(TextFormat::AQUA . "https://patreon.com/pocketminemp" . TextFormat::RESET)));
+
+			$this->logger->alert($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_obsolete_warning1("4.x", "5.0")));
+			$this->logger->alert($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_obsolete_warning2("4.x", "2023-09-01")));
+			$this->logger->alert($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_obsolete_warning3("https://github.com/pmmp/PocketMine-MP/issues/5784")));
+
 			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_startFinished(strval(round(microtime(true) - $this->startTime, 3)))));
 
 			$forwarder = new BroadcastLoggerForwarder($this, $this->logger, $this->language);
