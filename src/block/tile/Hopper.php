@@ -35,6 +35,10 @@ class Hopper extends Spawnable implements Container, Nameable{
 
 	private const TAG_TRANSFER_COOLDOWN = "TransferCooldown";
 
+	public const DEFAULT_TRANSFER_COOLDOWN = 10;
+
+
+
 	private HopperInventory $inventory;
 	private int $transferCooldown = 0;
 
@@ -75,5 +79,13 @@ class Hopper extends Spawnable implements Container, Nameable{
 
 	public function getRealInventory() : HopperInventory{
 		return $this->inventory;
+	}
+
+	public function getTransferCooldown() : int{
+		return $this->transferCooldown;
+	}
+
+	public function setTransferCooldown(int $transferCooldown) : void{
+		$this->transferCooldown = $transferCooldown;
 	}
 }
