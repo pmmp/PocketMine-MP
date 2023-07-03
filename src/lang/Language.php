@@ -23,7 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\lang;
 
+use InvalidArgumentException;
 use pocketmine\utils\Utils;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
 use Symfony\Component\Filesystem\Path;
 use function array_filter;
 use function array_map;
@@ -35,7 +39,6 @@ use function is_dir;
 use function ord;
 use function parse_ini_file;
 use function scandir;
-use function str_contains;
 use function str_ends_with;
 use function str_replace;
 use function str_starts_with;
@@ -62,7 +65,7 @@ class Language{
 			$path = \pocketmine\LOCALE_DATA_PATH;
 		}
 
-		if(str_contains($path, ".phar/")){
+		if(str_starts_with($path, "phar://")){
 			$result = [];
 			/** @var \SplFileInfo $resource */
 			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path)) as $resource){
