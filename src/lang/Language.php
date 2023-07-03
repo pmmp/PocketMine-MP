@@ -67,8 +67,8 @@ class Language{
 
 		if(str_starts_with($path, "phar://")){
 			$result = [];
-			/** @var \SplFileInfo $resource */
-			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path)) as $resource){
+			/** @var SplFileInfo $resource */
+			foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path)) as $resource){
 				if($resource->isFile()){
 					try{
 						$code = str_replace(DIRECTORY_SEPARATOR, "/", substr((string) $resource, strlen($path) + 1, -strlen($resource->getExtension()) - 1));
@@ -170,10 +170,10 @@ class Language{
 
 	public function merge(Language $language) : void{
 		if($this->getLang() !== $language->getLang()){
-			throw new \InvalidArgumentException("Cannot merge translations from different languages");
+			throw new InvalidArgumentException("Cannot merge translations from different languages");
 		}
 		if($this->getLang() !== $language->getFallbackLang()){
-			throw new \InvalidArgumentException("Cannot merge fallback translations from different languages");
+			throw new InvalidArgumentException("Cannot merge fallback translations from different languages");
 		}
 		$this->lang = array_merge($this->lang, $language->getAll());
 		$this->fallbackLang = array_merge($this->fallbackLang, $language->getAllFallback());
