@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3b102702eabc31fd8b2651db6c259397",
+    "content-hash": "ff0fa864a7853011bf4620d870c47ac7",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -198,16 +198,16 @@
         },
         {
             "name": "pocketmine/bedrock-block-upgrade-schema",
-            "version": "2.2.0",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockBlockUpgradeSchema.git",
-                "reference": "79bb3ad542ef19e828fdf1fa6adc54f1fa4b3bb5"
+                "reference": "8b72c47109e174ac7f17c3ac546748f8e49a5fdf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockBlockUpgradeSchema/zipball/79bb3ad542ef19e828fdf1fa6adc54f1fa4b3bb5",
-                "reference": "79bb3ad542ef19e828fdf1fa6adc54f1fa4b3bb5",
+                "url": "https://api.github.com/repos/pmmp/BedrockBlockUpgradeSchema/zipball/8b72c47109e174ac7f17c3ac546748f8e49a5fdf",
+                "reference": "8b72c47109e174ac7f17c3ac546748f8e49a5fdf",
                 "shasum": ""
             },
             "type": "library",
@@ -218,9 +218,9 @@
             "description": "Schemas describing how to upgrade saved block data in older Minecraft: Bedrock Edition world saves",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockBlockUpgradeSchema/issues",
-                "source": "https://github.com/pmmp/BedrockBlockUpgradeSchema/tree/2.2.0"
+                "source": "https://github.com/pmmp/BedrockBlockUpgradeSchema/tree/3.0.0"
             },
-            "time": "2023-05-04T21:49:36+00:00"
+            "time": "2023-07-03T16:35:44+00:00"
         },
         {
             "name": "pocketmine/bedrock-data",
@@ -3020,7 +3020,7 @@
         "ext-openssl": "*",
         "ext-pcre": "*",
         "ext-phar": "*",
-        "ext-pmmpthread": "^6.0.1",
+        "ext-pmmpthread": "^6.0.4",
         "ext-reflection": "*",
         "ext-simplexml": "*",
         "ext-sockets": "*",
