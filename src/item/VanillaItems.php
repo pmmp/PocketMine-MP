@@ -53,6 +53,7 @@ use pocketmine\world\World;
  * @method static Arrow ARROW()
  * @method static BakedPotato BAKED_POTATO()
  * @method static Bamboo BAMBOO()
+ * @method static Boat BAMBOO_RAFT()
  * @method static ItemBlockWallOrFloor BAMBOO_SIGN()
  * @method static Banner BANNER()
  * @method static Beetroot BEETROOT()
@@ -547,7 +548,7 @@ final class VanillaItems{
 
 		foreach(BoatType::getAll() as $type){
 			//boat type is static, because different types of wood may have different properties
-			self::register($type->name() . "_boat", new Boat(new IID(match($type){
+			self::register($type->name() . "_" . (mb_strtolower($type->getSuffix() ?? "boat", 'US-ASCII')), new Boat(new IID(match($type){
 				BoatType::OAK() => Ids::OAK_BOAT,
 				BoatType::SPRUCE() => Ids::SPRUCE_BOAT,
 				BoatType::BIRCH() => Ids::BIRCH_BOAT,
@@ -555,8 +556,9 @@ final class VanillaItems{
 				BoatType::ACACIA() => Ids::ACACIA_BOAT,
 				BoatType::DARK_OAK() => Ids::DARK_OAK_BOAT,
 				BoatType::MANGROVE() => Ids::MANGROVE_BOAT,
+				BoatType::BAMBOO() => Ids::BAMBOO_RAFT,
 				default => throw new AssumptionFailedError("Unhandled tree type " . $type->name())
-			}), $type->getDisplayName() . " Boat", $type));
+			}), $type->getDisplayName() . " " . ($type->getSuffix() ?? "Boat"), $type));
 		}
 	}
 
