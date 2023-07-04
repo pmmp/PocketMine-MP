@@ -31,6 +31,7 @@ namespace pocketmine\utils;
  * Alternatively, just put \@generate-registry-docblock in the docblock and run tools/generate-registry-annotations.php
  */
 trait EnumTrait{
+	/** @phpstan-use RegistryTrait<self> */
 	use RegistryTrait;
 	use NotCloneable;
 	use NotSerializable;

@@ -62,6 +62,7 @@ use pocketmine\utils\RegistryTrait;
  * @method static WitherEffect WITHER()
  */
 final class VanillaEffects{
+	/** @phpstan-use RegistryTrait<Effect> */
 	use RegistryTrait;
 
 	protected static function setup() : void{

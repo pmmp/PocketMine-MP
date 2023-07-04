@@ -34,11 +34,13 @@ use function preg_match;
  *
  * Classes using this trait need to include \@method tags in their class docblock for every faux constant.
  * Alternatively, just put \@generate-registry-docblock in the docblock and run tools/generate-registry-annotations.php
+ *
+ * @phpstan-template T of object
  */
 trait RegistryTrait{
 	/**
 	 * @var object[]
-	 * @phpstan-var array<string, object>
+	 * @phpstan-var array<string, T>
 	 */
 	private static $members = null;
 
@@ -50,6 +52,8 @@ trait RegistryTrait{
 
 	/**
 	 * Adds the given object to the registry.
+	 *
+	 * @phpstan-param T $member
 	 *
 	 * @throws \InvalidArgumentException
 	 */
@@ -82,6 +86,8 @@ trait RegistryTrait{
 	}
 
 	/**
+	 * @phpstan-return T
+	 *
 	 * @throws \InvalidArgumentException
 	 */
 	private static function _registryFromString(string $name) : object{
@@ -90,9 +96,16 @@ trait RegistryTrait{
 		if(!isset(self::$members[$upperName])){
 			throw new \InvalidArgumentException("No such registry member: " . self::class . "::" . $upperName);
 		}
-		return self::preprocessMember(self::$members[$upperName]);
+		/** @phpstan-var T $return */
+		$return = self::preprocessMember(self::$members[$upperName]);
+		return $return;
 	}
 
+	/**
+	 * @phpstan-param T $member
+	 *
+	 * @phpstan-return T
+	 */
 	protected static function preprocessMember(object $member) : object{
 		return $member;
 	}
@@ -103,6 +116,7 @@ trait RegistryTrait{
 	 * @phpstan-param list<mixed> $arguments
 	 *
 	 * @return object
+	 * @phpstan-return T
 	 */
 	public static function __callStatic($name, $arguments){
 		if(count($arguments) > 0){
@@ -117,12 +131,14 @@ trait RegistryTrait{
 
 	/**
 	 * @return object[]
-	 * @phpstan-return array<string, object>
+	 * @phpstan-return array<string, T>
 	 */
 	private static function _registryGetAll() : array{
 		self::checkInit();
 		return array_map(function(object $o) : object{
-			return self::preprocessMember($o);
+			/** @phpstan-var T $return */
+			$return = self::preprocessMember($o);
+			return $return;
 		}, self::$members);
 	}
 }

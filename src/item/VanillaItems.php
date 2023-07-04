@@ -310,6 +310,7 @@ use pocketmine\world\World;
  * @method static SpawnEgg ZOMBIE_SPAWN_EGG()
  */
 final class VanillaItems{
+	/** @phpstan-use CloningRegistryTrait<Item> */
 	use CloningRegistryTrait;
 
 	private function __construct(){
@@ -325,10 +326,7 @@ final class VanillaItems{
 	 * @phpstan-return array<string, Item>
 	 */
 	public static function getAll() : array{
-		//phpstan doesn't support generic traits yet :(
-		/** @var Item[] $result */
-		$result = self::_registryGetAll();
-		return $result;
+		return self::_registryGetAll();
 	}
 
 	protected static function setup() : void{
