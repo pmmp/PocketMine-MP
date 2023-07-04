@@ -103,7 +103,22 @@ use function mb_strtolower;
  * @method static Leaves AZALEA_LEAVES()
  * @method static Flower AZURE_BLUET()
  * @method static Bamboo BAMBOO()
+ * @method static Wood BAMBOO_BLOCK()
+ * @method static WoodenButton BAMBOO_BUTTON()
+ * @method static WoodenDoor BAMBOO_DOOR()
+ * @method static WoodenFence BAMBOO_FENCE()
+ * @method static FenceGate BAMBOO_FENCE_GATE()
+ * @method static Planks BAMBOO_MOSAIC()
+ * @method static WoodenSlab BAMBOO_MOSAIC_SLAB()
+ * @method static WoodenStairs BAMBOO_MOSAIC_STAIRS()
+ * @method static Planks BAMBOO_PLANKS()
+ * @method static WoodenPressurePlate BAMBOO_PRESSURE_PLATE()
  * @method static BambooSapling BAMBOO_SAPLING()
+ * @method static FloorSign BAMBOO_SIGN()
+ * @method static WoodenSlab BAMBOO_SLAB()
+ * @method static WoodenStairs BAMBOO_STAIRS()
+ * @method static WoodenTrapdoor BAMBOO_TRAPDOOR()
+ * @method static WallSign BAMBOO_WALL_SIGN()
  * @method static FloorBanner BANNER()
  * @method static Barrel BARREL()
  * @method static Transparent BARRIER()
@@ -1249,7 +1264,13 @@ final class VanillaBlocks{
 			$idName = fn(string $suffix) => $woodType->name() . "_" . $suffix;
 
 			self::register($idName(mb_strtolower($woodType->getStandardLogSuffix() ?? "log", 'US-ASCII')), new Wood(WoodLikeBlockIdHelper::getLogIdentifier($woodType), $name . " " . ($woodType->getStandardLogSuffix() ?? "Log"), $logBreakInfo, $woodType));
-			self::register($idName(mb_strtolower($woodType->getAllSidedLogSuffix() ?? "wood", 'US-ASCII')), new Wood(WoodLikeBlockIdHelper::getAllSidedLogIdentifier($woodType), $name . " " . ($woodType->getAllSidedLogSuffix() ?? "Wood"), $logBreakInfo, $woodType));
+			if(WoodType::BAMBOO()->equals($woodType)) {
+				self::register("bamboo_mosaic", new Planks(new BID(Ids::BAMBOO_MOSAIC), "Bamboo Mosaic", $planksBreakInfo, $woodType));
+				self::register("bamboo_mosaic_slab", new WoodenSlab(new BID(Ids::BAMBOO_MOSAIC_SLAB), "Bamboo Slab", $planksBreakInfo, $woodType));
+				self::register("bamboo_mosaic_stairs", new WoodenStairs(new BID(Ids::BAMBOO_MOSAIC_STAIRS), "Bamboo Stairs", $planksBreakInfo, $woodType));
+			} else {
+				self::register($idName(mb_strtolower($woodType->getAllSidedLogSuffix() ?? "wood", 'US-ASCII')), new Wood(WoodLikeBlockIdHelper::getAllSidedLogIdentifier($woodType), $name . " " . ($woodType->getAllSidedLogSuffix() ?? "Wood"), $logBreakInfo, $woodType));
+			}
 
 			self::register($idName("planks"), new Planks(WoodLikeBlockIdHelper::getPlanksIdentifier($woodType), $name . " Planks", $planksBreakInfo, $woodType));
 			self::register($idName("fence"), new WoodenFence(WoodLikeBlockIdHelper::getFenceIdentifier($woodType), $name . " Fence", $planksBreakInfo, $woodType));
