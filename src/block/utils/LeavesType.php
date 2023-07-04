@@ -34,6 +34,7 @@ use pocketmine\utils\EnumTrait;
  * @method static LeavesType ACACIA()
  * @method static LeavesType AZALEA()
  * @method static LeavesType BIRCH()
+ * @method static LeavesType CHERRY()
  * @method static LeavesType DARK_OAK()
  * @method static LeavesType FLOWERING_AZALEA()
  * @method static LeavesType JUNGLE()
@@ -57,7 +58,8 @@ final class LeavesType{
 			new self("dark_oak", "Dark Oak"),
 			new self("mangrove", "Mangrove"),
 			new self("azalea", "Azalea"),
-			new self("flowering_azalea", "Flowering Azalea")
+			new self("flowering_azalea", "Flowering Azalea"),
+			new self("cherry", "Cherry")
 		);
 	}
 

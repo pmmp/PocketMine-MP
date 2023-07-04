@@ -31,7 +31,7 @@ use function str_repeat;
 
 final class VersionInfo{
 	public const NAME = "PocketMine-MP";
-	public const BASE_VERSION = "5.1.4";
+	public const BASE_VERSION = "5.2.0";
 	public const IS_DEVELOPMENT_BUILD = true;
 	public const BUILD_CHANNEL = "stable";
 

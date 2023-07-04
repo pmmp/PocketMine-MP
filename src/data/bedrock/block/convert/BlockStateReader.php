@@ -28,6 +28,7 @@ use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\WallConnectionType;
+use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateNames;
@@ -132,6 +133,29 @@ final class BlockStateReader{
 			4 => Facing::WEST,
 			5 => Facing::EAST
 		]);
+	}
+
+	/**
+	 * @return int[]
+	 * @phpstan-return array<int, int>
+	 */
+	public function readFacingFlags() : array{
+		$result = [];
+		$flags = $this->readBoundedInt(BlockStateNames::MULTI_FACE_DIRECTION_BITS, 0, 63);
+		foreach([
+			BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_DOWN => Facing::DOWN,
+			BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_UP => Facing::UP,
+			BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_NORTH => Facing::NORTH,
+			BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_SOUTH => Facing::SOUTH,
+			BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_WEST => Facing::WEST,
+			BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_EAST => Facing::EAST
+		] as $flag => $facing){
+			if(($flags & $flag) !== 0){
+				$result[$facing] = $facing;
+			}
+		}
+
+		return $result;
 	}
 
 	/** @throws BlockStateDeserializeException */
