@@ -40,7 +40,7 @@ trait RegistryTrait{
 	 * @var object[]
 	 * @phpstan-var array<string, object>
 	 */
-	private static array $members = null;
+	private static ?array $members = null;
 
 	private static function verifyName(string $name) : void{
 		if(preg_match('/^(?!\d)[A-Za-z\d_]+$/u', $name) === 0){
