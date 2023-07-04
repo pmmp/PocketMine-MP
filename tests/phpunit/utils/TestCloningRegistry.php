@@ -33,21 +33,18 @@ namespace pocketmine\utils;
  * @method static \stdClass TEST3()
  */
 final class TestCloningRegistry{
+	/** @phpstan-use CloningRegistryTrait<\stdClass> */
 	use CloningRegistryTrait;
 
 	/**
 	 * @return \stdClass[]
 	 */
 	public static function getAll() : array{
-		/** @var \stdClass[] $result */
-		$result = self::_registryGetAll();
-		return $result;
+		return self::_registryGetAll();
 	}
 
 	public static function fromString(string $s) : \stdClass{
-		/** @var \stdClass $result */
-		$result = self::_registryFromString($s);
-		return $result;
+		return self::_registryFromString($s);
 	}
 
 	protected static function setup() : void{
