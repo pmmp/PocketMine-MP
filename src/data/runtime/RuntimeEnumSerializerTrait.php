@@ -130,10 +130,11 @@ trait RuntimeEnumSerializerTrait{
 		$this->writeInt(3, match($value){
 			\pocketmine\block\utils\MobHeadType::CREEPER() => 0,
 			\pocketmine\block\utils\MobHeadType::DRAGON() => 1,
-			\pocketmine\block\utils\MobHeadType::PLAYER() => 2,
-			\pocketmine\block\utils\MobHeadType::SKELETON() => 3,
-			\pocketmine\block\utils\MobHeadType::WITHER_SKELETON() => 4,
-			\pocketmine\block\utils\MobHeadType::ZOMBIE() => 5,
+			\pocketmine\block\utils\MobHeadType::PIGLIN() => 2,
+			\pocketmine\block\utils\MobHeadType::PLAYER() => 3,
+			\pocketmine\block\utils\MobHeadType::SKELETON() => 4,
+			\pocketmine\block\utils\MobHeadType::WITHER_SKELETON() => 5,
+			\pocketmine\block\utils\MobHeadType::ZOMBIE() => 6,
 			default => throw new \pocketmine\utils\AssumptionFailedError("All MobHeadType cases should be covered")
 		});
 	}

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\build\generate_item_serializer_ids;
 
+use pocketmine\data\bedrock\item\BlockItemIdMap;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\network\mcpe\convert\ItemTypeDictionaryFromDataHelper;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
@@ -45,10 +46,10 @@ function constifyMcId(string $id) : string{
 	return strtoupper(explode(":", $id, 2)[1]);
 }
 
-function generateItemIds(ItemTypeDictionary $dictionary) : void{
+function generateItemIds(ItemTypeDictionary $dictionary, BlockItemIdMap $blockItemIdMap) : void{
 	$ids = [];
 	foreach($dictionary->getEntries() as $entry){
-		if($entry->getNumericId() < 256){ //blockitems are serialized via BlockStateSerializer
+		if($entry->getStringId() === "minecraft:air" || $blockItemIdMap->lookupBlockId($entry->getStringId()) !== null){ //blockitems are serialized via BlockStateSerializer
 			continue;
 		}
 		$ids[$entry->getStringId()] = $entry->getStringId();
@@ -92,6 +93,7 @@ if($raw === false){
 }
 
 $dictionary = ItemTypeDictionaryFromDataHelper::loadFromString($raw);
-generateItemIds($dictionary);
+$blockItemIdMap = BlockItemIdMap::getInstance();
+generateItemIds($dictionary, $blockItemIdMap);
 
 echo "Done. Don't forget to run CS fixup after generating code.\n";

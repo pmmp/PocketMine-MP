@@ -25,6 +25,7 @@ namespace pocketmine\data\bedrock\block\upgrade;
 
 use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModel;
 use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModelBlockRemap;
+use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModelFlattenedName;
 use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModelTag;
 use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModelValueRemap;
 use pocketmine\nbt\tag\ByteTag;
@@ -43,12 +44,14 @@ use function get_debug_type;
 use function gettype;
 use function implode;
 use function is_object;
+use function is_string;
 use function json_decode;
 use function json_encode;
 use function ksort;
 use function sort;
 use function str_pad;
 use function strval;
+use function usort;
 use const JSON_THROW_ON_ERROR;
 use const SORT_NUMERIC;
 use const STR_PAD_LEFT;
@@ -154,9 +157,17 @@ final class BlockStateUpgradeSchemaUtils{
 
 		foreach(Utils::stringifyKeys($model->remappedStates ?? []) as $oldBlockName => $remaps){
 			foreach($remaps as $remap){
+				if(isset($remap->newName) === isset($remap->newFlattenedName)){
+					throw new \UnexpectedValueException("Expected exactly one of 'newName' or 'newFlattenedName' properties to be set");
+				}
+
 				$result->remappedStates[$oldBlockName][] = new BlockStateUpgradeSchemaBlockRemap(
 					array_map(fn(BlockStateUpgradeSchemaModelTag $tag) => self::jsonModelToTag($tag), $remap->oldState ?? []),
-					$remap->newName,
+					$remap->newName ?? new BlockStateUpgradeSchemaFlattenedName(
+						$remap->newFlattenedName->prefix,
+						$remap->newFlattenedName->flattenedProperty,
+						$remap->newFlattenedName->suffix
+					),
 					array_map(fn(BlockStateUpgradeSchemaModelTag $tag) => self::jsonModelToTag($tag), $remap->newState ?? []),
 					$remap->copiedState ?? []
 				);
@@ -285,7 +296,13 @@ final class BlockStateUpgradeSchemaUtils{
 			foreach($remaps as $remap){
 				$modelRemap = new BlockStateUpgradeSchemaModelBlockRemap(
 					array_map(fn(Tag $tag) => self::tagToJsonModel($tag), $remap->oldState),
-					$remap->newName,
+					is_string($remap->newName) ?
+						$remap->newName :
+						new BlockStateUpgradeSchemaModelFlattenedName(
+							$remap->newName->prefix,
+							$remap->newName->flattenedProperty,
+							$remap->newName->suffix
+						),
 					array_map(fn(Tag $tag) => self::tagToJsonModel($tag), $remap->newState),
 					$remap->copiedState
 				);
@@ -299,7 +316,15 @@ final class BlockStateUpgradeSchemaUtils{
 				}
 				$keyedRemaps[$key] = $modelRemap;
 			}
-			ksort($keyedRemaps);
+			usort($keyedRemaps, function(BlockStateUpgradeSchemaModelBlockRemap $a, BlockStateUpgradeSchemaModelBlockRemap $b) : int{
+				//remaps with more specific criteria must come first
+				$filterSizeCompare = count($b->oldState ?? []) <=> count($a->oldState ?? []);
+				if($filterSizeCompare !== 0){
+					return $filterSizeCompare;
+				}
+				//remaps with the same number of criteria should be sorted alphabetically, but this is not strictly necessary
+				return json_encode($a->oldState ?? []) <=> json_encode($b->oldState ?? []);
+			});
 			$result->remappedStates[$oldBlockName] = array_values($keyedRemaps);
 		}
 		if(isset($result->remappedStates)){

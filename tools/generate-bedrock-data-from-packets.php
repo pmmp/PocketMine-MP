@@ -33,6 +33,7 @@ use pocketmine\crafting\json\ShapelessRecipeData;
 use pocketmine\crafting\json\SmithingTransformRecipeData;
 use pocketmine\crafting\json\SmithingTrimRecipeData;
 use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\data\bedrock\item\BlockItemIdMap;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
@@ -40,6 +41,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\convert\BlockStateDictionary;
 use pocketmine\network\mcpe\convert\BlockTranslator;
+use pocketmine\network\mcpe\convert\ItemTranslator;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\AvailableActorIdentifiersPacket;
 use pocketmine\network\mcpe\protocol\BiomeDefinitionListPacket;
@@ -110,6 +112,7 @@ class ParserPacketHandler extends PacketHandler{
 
 	public ?ItemTypeDictionary $itemTypeDictionary = null;
 	private BlockTranslator $blockTranslator;
+	private BlockItemIdMap $blockItemIdMap;
 
 	public function __construct(private string $bedrockDataPath){
 		$this->blockTranslator = new BlockTranslator(
@@ -119,6 +122,7 @@ class ParserPacketHandler extends PacketHandler{
 			),
 			GlobalBlockStateHandlers::getSerializer()
 		);
+		$this->blockItemIdMap = BlockItemIdMap::getInstance();
 	}
 
 	private static function blockStatePropertiesToString(BlockStateData $blockStateData) : string{
@@ -136,7 +140,8 @@ class ParserPacketHandler extends PacketHandler{
 		if($this->itemTypeDictionary === null){
 			throw new PacketHandlingException("Can't process item yet; haven't received item type dictionary");
 		}
-		$data = new ItemStackData($this->itemTypeDictionary->fromIntId($itemStack->getId()));
+		$itemStringId = $this->itemTypeDictionary->fromIntId($itemStack->getId());
+		$data = new ItemStackData($itemStringId);
 
 		if($itemStack->getCount() !== 1){
 			$data->count = $itemStack->getCount();
@@ -146,7 +151,7 @@ class ParserPacketHandler extends PacketHandler{
 		if($meta === 32767){
 			$meta = 0; //kick wildcard magic bullshit
 		}
-		if($itemStack->getBlockRuntimeId() !== 0){
+		if($this->blockItemIdMap->lookupBlockId($itemStringId) !== null){
 			if($meta !== 0){
 				throw new PacketHandlingException("Unexpected non-zero blockitem meta");
 			}
@@ -159,6 +164,8 @@ class ParserPacketHandler extends PacketHandler{
 			if(count($stateProperties) > 0){
 				$data->block_states = self::blockStatePropertiesToString($blockState);
 			}
+		}elseif($itemStack->getBlockRuntimeId() !== ItemTranslator::NO_BLOCK_RUNTIME_ID){
+			throw new PacketHandlingException("Non-blockitems should have a zero block runtime ID");
 		}elseif($meta !== 0){
 			$data->meta = $meta;
 		}
