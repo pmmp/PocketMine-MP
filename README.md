@@ -26,7 +26,7 @@
 - [Docker image](https://github.com/pmmp/PocketMine-MP/pkgs/container/pocketmine-mp)
 - [Plugin repository](https://poggit.pmmp.io/plugins)
 
-## Discussion/Help
+## Community & Support
 - [Forums](https://forums.pmmp.io/)
 - [Discord](https://discord.gg/bmSAZBG)
 - [StackOverflow](https://stackoverflow.com/tags/pocketmine)
