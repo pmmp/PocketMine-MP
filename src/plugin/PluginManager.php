@@ -486,6 +486,7 @@ class PluginManager{
 		return true; //TODO: maybe this should be an error?
 	}
 
+	/** @internal */
 	public function disablePlugins() : void{
 		while(count($this->enabledPlugins) > 0){
 			foreach($this->enabledPlugins as $plugin){
@@ -503,7 +504,7 @@ class PluginManager{
 		}
 	}
 
-	public function disablePlugin(Plugin $plugin) : void{
+	private function disablePlugin(Plugin $plugin) : void{
 		if($plugin->isEnabled()){
 			$this->server->getLogger()->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_disable($plugin->getDescription()->getFullName())));
 			(new PluginDisableEvent($plugin))->call();
@@ -530,13 +531,6 @@ class PluginManager{
 				$p->getScheduler()->mainThreadHeartbeat($currentTick);
 			}
 		}
-	}
-
-	public function clearPlugins() : void{
-		$this->disablePlugins();
-		$this->plugins = [];
-		$this->enabledPlugins = [];
-		$this->fileAssociations = [];
 	}
 
 	/**
