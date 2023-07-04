@@ -98,6 +98,7 @@ trait RegistryTrait{
 		}
 		/** @phpstan-var T $return */
 		$return = self::preprocessMember(self::$members[$upperName]);
+		// We need to force typing here, otherwise PHPStan understands that it's an object and not T
 		return $return;
 	}
 
@@ -138,6 +139,7 @@ trait RegistryTrait{
 		return array_map(function(object $o) : object{
 			/** @phpstan-var T $return */
 			$return = self::preprocessMember($o);
+			// We need to force typing here, otherwise PHPStan understands that it's an object and not T
 			return $return;
 		}, self::$members);
 	}
