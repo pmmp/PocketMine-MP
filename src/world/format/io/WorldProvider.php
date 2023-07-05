@@ -43,7 +43,7 @@ interface WorldProvider{
 	 *
 	 * @throws CorruptedChunkException
 	 */
-	public function loadChunk(int $chunkX, int $chunkZ) : ?ChunkData;
+	public function loadChunk(int $chunkX, int $chunkZ) : ?LoadedChunkData;
 
 	/**
 	 * Performs garbage collection in the world provider, such as cleaning up regions in Region-based worlds.
@@ -63,8 +63,8 @@ interface WorldProvider{
 	/**
 	 * Returns a generator which yields all the chunks in this world.
 	 *
-	 * @return \Generator|ChunkData[]
-	 * @phpstan-return \Generator<array{int, int}, ChunkData, void, void>
+	 * @return \Generator|LoadedChunkData[]
+	 * @phpstan-return \Generator<array{int, int}, LoadedChunkData, void, void>
 	 * @throws CorruptedChunkException
 	 */
 	public function getAllChunks(bool $skipCorrupted = false, ?\Logger $logger = null) : \Generator;

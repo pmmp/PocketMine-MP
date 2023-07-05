@@ -57,6 +57,7 @@ final class TileFactory{
 		$this->register(Bell::class, ["Bell", "minecraft:bell"]);
 		$this->register(BlastFurnace::class, ["BlastFurnace", "minecraft:blast_furnace"]);
 		$this->register(BrewingStand::class, ["BrewingStand", "minecraft:brewing_stand"]);
+		$this->register(Cauldron::class, ["Cauldron", "minecraft:cauldron"]);
 		$this->register(Chest::class, ["Chest", "minecraft:chest"]);
 		$this->register(Comparator::class, ["Comparator", "minecraft:comparator"]);
 		$this->register(DaylightSensor::class, ["DaylightDetector", "minecraft:daylight_detector"]);
@@ -73,10 +74,11 @@ final class TileFactory{
 		$this->register(ShulkerBox::class, ["ShulkerBox", "minecraft:shulker_box"]);
 		$this->register(Sign::class, ["Sign", "minecraft:sign"]);
 		$this->register(Smoker::class, ["Smoker", "minecraft:smoker"]);
-		$this->register(Skull::class, ["Skull", "minecraft:skull"]);
+		$this->register(SporeBlossom::class, ["SporeBlossom", "minecraft:spore_blossom"]);
+		$this->register(MobHead::class, ["Skull", "minecraft:skull"]);
+		$this->register(GlowingItemFrame::class, ["GlowItemFrame"]);
 
 		//TODO: Campfire
-		//TODO: Cauldron
 		//TODO: ChalkboardBlock
 		//TODO: ChemistryTable
 		//TODO: CommandBlock

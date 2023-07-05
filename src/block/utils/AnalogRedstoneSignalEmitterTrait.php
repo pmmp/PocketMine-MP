@@ -23,8 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\data\runtime\RuntimeDataDescriber;
+
 trait AnalogRedstoneSignalEmitterTrait{
 	protected int $signalStrength = 0;
+
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->boundedInt(4, 0, 15, $this->signalStrength);
+	}
 
 	public function getOutputSignalStrength() : int{ return $this->signalStrength; }
 

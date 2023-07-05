@@ -30,19 +30,15 @@ use pocketmine\player\Player;
 
 class SeedCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"seed",
 			KnownTranslationFactory::pocketmine_command_seed_description()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_SEED);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if($sender instanceof Player){
 			$seed = $sender->getPosition()->getWorld()->getSeed();
 		}else{

@@ -28,15 +28,15 @@ final class PluginLoadTriage{
 	 * @var PluginLoadTriageEntry[]
 	 * @phpstan-var array<string, PluginLoadTriageEntry>
 	 */
-	public $plugins = [];
+	public array $plugins = [];
 	/**
 	 * @var string[][]
 	 * @phpstan-var array<string, list<string>>
 	 */
-	public $dependencies = [];
+	public array $dependencies = [];
 	/**
 	 * @var string[][]
 	 * @phpstan-var array<string, list<string>>
 	 */
-	public $softDependencies = [];
+	public array $softDependencies = [];
 }

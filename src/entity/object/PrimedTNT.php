@@ -27,7 +27,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Explosive;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\entity\ExplosionPrimeEvent;
+use pocketmine\event\entity\EntityPreExplodeEvent;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
@@ -43,17 +43,14 @@ class PrimedTNT extends Entity implements Explosive{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::TNT; }
 
-	protected $gravity = 0.04;
-	protected $drag = 0.02;
-
-	/** @var int */
-	protected $fuse;
-
+	protected int $fuse;
 	protected bool $worksUnderwater = false;
 
-	public $canCollide = false;
-
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.98, 0.98); }
+
+	protected function getInitialDragMultiplier() : float{ return 0.02; }
+
+	protected function getInitialGravity() : float{ return 0.04; }
 
 	public function getFuse() : int{
 		return $this->fuse;
@@ -118,11 +115,11 @@ class PrimedTNT extends Entity implements Explosive{
 	}
 
 	public function explode() : void{
-		$ev = new ExplosionPrimeEvent($this, 4);
+		$ev = new EntityPreExplodeEvent($this, 4);
 		$ev->call();
 		if(!$ev->isCancelled()){
 			//TODO: deal with underwater TNT (underwater TNT treats water as if it has a blast resistance of 0)
-			$explosion = new Explosion(Position::fromObject($this->location->add(0, $this->size->getHeight() / 2, 0), $this->getWorld()), $ev->getForce(), $this);
+			$explosion = new Explosion(Position::fromObject($this->location->add(0, $this->size->getHeight() / 2, 0), $this->getWorld()), $ev->getRadius(), $this);
 			if($ev->isBlockBreaking()){
 				$explosion->explodeA();
 			}

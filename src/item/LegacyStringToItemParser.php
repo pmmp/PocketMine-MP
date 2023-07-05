@@ -23,14 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\data\bedrock\item\ItemDeserializer;
+use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
+use pocketmine\data\bedrock\item\upgrade\ItemDataUpgrader;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\world\format\io\GlobalItemDataHandlers;
 use Symfony\Component\Filesystem\Path;
 use function explode;
 use function is_array;
-use function is_int;
 use function is_numeric;
+use function is_string;
 use function json_decode;
 use function str_replace;
 use function strtolower;
@@ -45,12 +49,18 @@ use function trim;
  * Avoid using this wherever possible. Unless you need to parse item strings containing meta (e.g. "dye:4", "351:4") or
  * item IDs (e.g. "351"), you should prefer the newer StringToItemParser, which is much more user-friendly, more
  * flexible, and also supports registering custom aliases for any item in any state.
+ *
+ * WARNING: This class does NOT support items added during or after PocketMine-MP 5.0.0. Use StringToItemParser for
+ * modern items.
  */
 final class LegacyStringToItemParser{
 	use SingletonTrait;
 
 	private static function make() : self{
-		$result = new self(ItemFactory::getInstance());
+		$result = new self(
+			GlobalItemDataHandlers::getUpgrader(),
+			GlobalItemDataHandlers::getDeserializer()
+		);
 
 		$mappingsRaw = Filesystem::fileGetContents(Path::join(\pocketmine\RESOURCE_PATH, 'item_from_string_bc_map.json'));
 
@@ -58,7 +68,7 @@ final class LegacyStringToItemParser{
 		if(!is_array($mappings)) throw new AssumptionFailedError("Invalid mappings format, expected array");
 
 		foreach($mappings as $name => $id){
-			if(!is_int($id)) throw new AssumptionFailedError("Invalid mappings format, expected int values");
+			if(!is_string($id)) throw new AssumptionFailedError("Invalid mappings format, expected string values");
 			$result->addMapping((string) $name, $id);
 		}
 
@@ -66,20 +76,23 @@ final class LegacyStringToItemParser{
 	}
 
 	/**
-	 * @var int[]
-	 * @phpstan-var array<string, int>
+	 * @var string[]
+	 * @phpstan-var array<string, string>
 	 */
 	private array $map = [];
 
-	public function __construct(private ItemFactory $itemFactory){}
+	public function __construct(
+		private ItemDataUpgrader $itemDataUpgrader,
+		private ItemDeserializer $itemDeserializer
+	){}
 
-	public function addMapping(string $alias, int $id) : void{
+	public function addMapping(string $alias, string $id) : void{
 		$this->map[$alias] = $id;
 	}
 
 	/**
-	 * @return int[]
-	 * @phpstan-return array<string, int>
+	 * @return string[]
+	 * @phpstan-return array<string, string>
 	 */
 	public function getMappings() : array{
 		return $this->map;
@@ -107,14 +120,23 @@ final class LegacyStringToItemParser{
 			throw new LegacyStringToItemParserException("Unable to parse \"" . $b[1] . "\" from \"" . $input . "\" as a valid meta value");
 		}
 
-		$id = strtolower($b[0]);
-		if(isset($this->map[$id])){
-			$item = $this->itemFactory->get($this->map[$id], $meta);
-		}else{
-			throw new LegacyStringToItemParserException("Unable to resolve \"" . $input . "\" to a valid item");
+		$lower = strtolower($b[0]);
+		if($lower === "0" || $lower === "air"){
+			//item deserializer doesn't recognize air items since they aren't supposed to exist
+			return VanillaItems::AIR();
 		}
 
-		return $item;
+		$legacyId = $this->map[$lower] ?? null;
+		if($legacyId === null){
+			throw new LegacyStringToItemParserException("Unable to resolve \"" . $input . "\" to a valid item");
+		}
+		$itemData = $this->itemDataUpgrader->upgradeItemTypeDataString($legacyId, $meta, 1, null);
+
+		try{
+			return $this->itemDeserializer->deserializeStack($itemData);
+		}catch(ItemTypeDeserializeException $e){
+			throw new LegacyStringToItemParserException($e->getMessage(), 0, $e);
+		}
 	}
 
 	protected function reprocess(string $input) : string{

@@ -38,15 +38,14 @@ use function spl_object_id;
  * This class provides everything needed to implement an inventory, minus the underlying storage system.
  */
 abstract class BaseInventory implements Inventory{
-	/** @var int */
-	protected $maxStackSize = Inventory::MAX_STACK;
+	protected int $maxStackSize = Inventory::MAX_STACK;
 	/** @var Player[] */
-	protected $viewers = [];
+	protected array $viewers = [];
 	/**
 	 * @var InventoryListener[]|ObjectSet
 	 * @phpstan-var ObjectSet<InventoryListener>
 	 */
-	protected $listeners;
+	protected ObjectSet $listeners;
 
 	public function __construct(){
 		$this->listeners = new ObjectSet();
@@ -112,17 +111,16 @@ abstract class BaseInventory implements Inventory{
 	 * Helper for utility functions which search the inventory.
 	 * TODO: make this abstract instead of providing a slow default implementation (BC break)
 	 */
-	protected function getMatchingItemCount(int $slot, Item $test, bool $checkDamage, bool $checkTags) : int{
+	protected function getMatchingItemCount(int $slot, Item $test, bool $checkTags) : int{
 		$item = $this->getItem($slot);
-		return $item->equals($test, $checkDamage, $checkTags) ? $item->getCount() : 0;
+		return $item->equals($test, true, $checkTags) ? $item->getCount() : 0;
 	}
 
 	public function contains(Item $item) : bool{
 		$count = max(1, $item->getCount());
-		$checkDamage = !$item->hasAnyDamageValue();
 		$checkTags = $item->hasNamedTag();
 		for($i = 0, $size = $this->getSize(); $i < $size; $i++){
-			$slotCount = $this->getMatchingItemCount($i, $item, $checkDamage, $checkTags);
+			$slotCount = $this->getMatchingItemCount($i, $item, $checkTags);
 			if($slotCount > 0){
 				$count -= $slotCount;
 				if($count <= 0){
@@ -136,10 +134,9 @@ abstract class BaseInventory implements Inventory{
 
 	public function all(Item $item) : array{
 		$slots = [];
-		$checkDamage = !$item->hasAnyDamageValue();
 		$checkTags = $item->hasNamedTag();
 		for($i = 0, $size = $this->getSize(); $i < $size; $i++){
-			if($this->getMatchingItemCount($i, $item, $checkDamage, $checkTags) > 0){
+			if($this->getMatchingItemCount($i, $item, $checkTags) > 0){
 				$slots[$i] = $this->getItem($i);
 			}
 		}
@@ -149,11 +146,10 @@ abstract class BaseInventory implements Inventory{
 
 	public function first(Item $item, bool $exact = false) : int{
 		$count = $exact ? $item->getCount() : max(1, $item->getCount());
-		$checkDamage = $exact || !$item->hasAnyDamageValue();
 		$checkTags = $exact || $item->hasNamedTag();
 
 		for($i = 0, $size = $this->getSize(); $i < $size; $i++){
-			$slotCount = $this->getMatchingItemCount($i, $item, $checkDamage, $checkTags);
+			$slotCount = $this->getMatchingItemCount($i, $item, $checkTags);
 			if($slotCount > 0 && ($slotCount === $count || (!$exact && $slotCount > $count))){
 				return $i;
 			}
@@ -192,7 +188,7 @@ abstract class BaseInventory implements Inventory{
 			if($this->isSlotEmpty($i)){
 				$count -= $maxStackSize;
 			}else{
-				$slotCount = $this->getMatchingItemCount($i, $item, true, true);
+				$slotCount = $this->getMatchingItemCount($i, $item, true);
 				if($slotCount > 0 && ($diff = $maxStackSize - $slotCount) > 0){
 					$count -= $diff;
 				}
@@ -239,7 +235,7 @@ abstract class BaseInventory implements Inventory{
 				$emptySlots[] = $i;
 				continue;
 			}
-			$slotCount = $this->getMatchingItemCount($i, $newItem, true, true);
+			$slotCount = $this->getMatchingItemCount($i, $newItem, true);
 			if($slotCount === 0){
 				continue;
 			}
@@ -275,11 +271,10 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function remove(Item $item) : void{
-		$checkDamage = !$item->hasAnyDamageValue();
 		$checkTags = $item->hasNamedTag();
 
 		for($i = 0, $size = $this->getSize(); $i < $size; $i++){
-			if($this->getMatchingItemCount($i, $item, $checkDamage, $checkTags) > 0){
+			if($this->getMatchingItemCount($i, $item, $checkTags) > 0){
 				$this->clear($i);
 			}
 		}
@@ -301,7 +296,7 @@ abstract class BaseInventory implements Inventory{
 			}
 
 			foreach($searchItems as $index => $search){
-				$slotCount = $this->getMatchingItemCount($i, $search, !$search->hasAnyDamageValue(), $search->hasNamedTag());
+				$slotCount = $this->getMatchingItemCount($i, $search, $search->hasNamedTag());
 				if($slotCount > 0){
 					$amount = min($slotCount, $search->getCount());
 					$search->setCount($search->getCount() - $amount);

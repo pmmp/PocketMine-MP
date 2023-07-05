@@ -23,15 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\item\Durable;
+use pocketmine\crafting\CraftingManagerFromDataHelper;
+use pocketmine\crafting\json\ItemStackData;
+use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\item\Item;
 use pocketmine\utils\DestructorCallbackTrait;
-use pocketmine\utils\Filesystem;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
-use Symfony\Component\Filesystem\Path;
-use function json_decode;
 
 final class CreativeInventory{
 	use SingletonTrait;
@@ -45,12 +44,14 @@ final class CreativeInventory{
 
 	private function __construct(){
 		$this->contentChangedCallbacks = new ObjectSet();
-
-		$creativeItems = json_decode(Filesystem::fileGetContents(Path::join(\pocketmine\RESOURCE_PATH, "legacy_creativeitems.json")), true);
-
+		$creativeItems = CraftingManagerFromDataHelper::loadJsonArrayOfObjectsFile(
+			BedrockDataFiles::CREATIVEITEMS_JSON,
+			ItemStackData::class
+		);
 		foreach($creativeItems as $data){
-			$item = Item::jsonDeserialize($data);
-			if($item->getName() === "Unknown"){
+			$item = CraftingManagerFromDataHelper::deserializeItemStack($data);
+			if($item === null){
+				//unknown item
 				continue;
 			}
 			$this->add($item);
@@ -79,7 +80,7 @@ final class CreativeInventory{
 
 	public function getItemIndex(Item $item) : int{
 		foreach($this->creative as $i => $d){
-			if($item->equals($d, !($item instanceof Durable))){
+			if($item->equals($d, true, false)){
 				return $i;
 			}
 		}
