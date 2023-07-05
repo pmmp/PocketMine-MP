@@ -1249,6 +1249,8 @@ final class VanillaBlocks{
 		self::registerOres();
 		self::registerWoodenBlocks();
 		self::registerCauldronBlocks();
+
+		self::registerBambooMosaicBlocks();
 	}
 
 	private static function registerWoodenBlocks() : void{
@@ -1264,11 +1266,7 @@ final class VanillaBlocks{
 			$idName = fn(string $suffix) => $woodType->name() . "_" . $suffix;
 
 			self::register($idName(mb_strtolower($woodType->getStandardLogSuffix() ?? "log", 'US-ASCII')), new Wood(WoodLikeBlockIdHelper::getLogIdentifier($woodType), $name . " " . ($woodType->getStandardLogSuffix() ?? "Log"), $logBreakInfo, $woodType));
-			if(WoodType::BAMBOO()->equals($woodType)) {
-				self::register("bamboo_mosaic", new Planks(new BID(Ids::BAMBOO_MOSAIC), "Bamboo Mosaic", $planksBreakInfo, $woodType));
-				self::register("bamboo_mosaic_slab", new WoodenSlab(new BID(Ids::BAMBOO_MOSAIC_SLAB), "Bamboo Slab", $planksBreakInfo, $woodType));
-				self::register("bamboo_mosaic_stairs", new WoodenStairs(new BID(Ids::BAMBOO_MOSAIC_STAIRS), "Bamboo Stairs", $planksBreakInfo, $woodType));
-			} else {
+			if(!WoodType::BAMBOO()->equals($woodType)) {
 				self::register($idName(mb_strtolower($woodType->getAllSidedLogSuffix() ?? "wood", 'US-ASCII')), new Wood(WoodLikeBlockIdHelper::getAllSidedLogIdentifier($woodType), $name . " " . ($woodType->getAllSidedLogSuffix() ?? "Wood"), $logBreakInfo, $woodType));
 			}
 
@@ -1644,5 +1642,14 @@ final class VanillaBlocks{
 		self::register("water_cauldron", new WaterCauldron(new BID(Ids::WATER_CAULDRON, TileCauldron::class), "Water Cauldron", $cauldronBreakInfo));
 		self::register("lava_cauldron", new LavaCauldron(new BID(Ids::LAVA_CAULDRON, TileCauldron::class), "Lava Cauldron", $cauldronBreakInfo));
 		self::register("potion_cauldron", new PotionCauldron(new BID(Ids::POTION_CAULDRON, TileCauldron::class), "Potion Cauldron", $cauldronBreakInfo));
+	}
+
+	private static function registerBambooMosaicBlocks() : void{
+		$woodType = WoodType::BAMBOO();
+		$planksBreakInfo = new Info(BreakInfo::axe(2.0, null, 15.0));
+
+		self::register("bamboo_mosaic", new Planks(new BID(Ids::BAMBOO_MOSAIC), "Bamboo Mosaic", $planksBreakInfo, $woodType));
+		self::register("bamboo_mosaic_slab", new WoodenSlab(new BID(Ids::BAMBOO_MOSAIC_SLAB), "Bamboo Slab", $planksBreakInfo, $woodType));
+		self::register("bamboo_mosaic_stairs", new WoodenStairs(new BID(Ids::BAMBOO_MOSAIC_STAIRS), "Bamboo Stairs", $planksBreakInfo, $woodType));
 	}
 }
