@@ -33,7 +33,7 @@ use pocketmine\utils\EnumTrait;
  * @generate-registry-docblock
  *
  * @method static BoatType ACACIA()
- * @method static BoatType BAMBOO)
+ * @method static BoatType BAMBOO()
  * @method static BoatType BIRCH()
  * @method static BoatType DARK_OAK()
  * @method static BoatType JUNGLE()

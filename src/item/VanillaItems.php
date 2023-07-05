@@ -38,6 +38,7 @@ use pocketmine\math\Vector3;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\CloningRegistryTrait;
 use pocketmine\world\World;
+use function mb_strtolower;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
