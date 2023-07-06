@@ -23,19 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
+use pocketmine\utils\SingletonTrait;
 use function count;
 use function spl_object_id;
 
 class PermissionManager{
-	private static ?self $instance = null;
-
-	public static function getInstance() : PermissionManager{
-		if(self::$instance === null){
-			self::$instance = new self();
-		}
-
-		return self::$instance;
-	}
+	use SingletonTrait;
 
 	/** @var Permission[] */
 	protected array $permissions = [];
