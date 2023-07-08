@@ -88,7 +88,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 				fn(SplFileInfo $resource) => str_contains($resource->getPath(), "resources/translations/") && $resource->getExtension() === "ini"
 			)
 		));
-		if($translations !== null){
+		if($translations !== null && $translations !== ''){
 			foreach(Utils::stringifyKeys(Language::getLanguageList($translations)) as $code => $language){
 				$this->translations[$code] = new NamespacedLanguage($this->getName(), $code, $translations);
 			}
