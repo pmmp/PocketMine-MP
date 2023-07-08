@@ -38,6 +38,8 @@ use pocketmine\utils\Config;
 use pocketmine\utils\Utils;
 use SplFileInfo;
 use Symfony\Component\Filesystem\Path;
+use function array_filter;
+use function array_map;
 use function count;
 use function dirname;
 use function fclose;
@@ -86,7 +88,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 				fn(SplFileInfo $resource) => str_contains($resource->getPath(), "resources/translations/") && $resource->getExtension() === "ini"
 			)
 		));
-		if($translations !== null) {
+		if($translations !== null){
 			foreach(Utils::stringifyKeys(Language::getLanguageList($translations)) as $code => $language){
 				$this->translations[$code] = new NamespacedLanguage($this->getName(), $code, $translations);
 			}
