@@ -35,13 +35,13 @@ use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Config;
 use pocketmine\utils\Utils;
+use SplFileInfo;
 use Symfony\Component\Filesystem\Path;
 use function count;
 use function dirname;
 use function fclose;
 use function file_exists;
 use function fopen;
-use function is_dir;
 use function mkdir;
 use function rtrim;
 use function str_contains;
@@ -78,8 +78,14 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		$this->file = rtrim($file, "/" . DIRECTORY_SEPARATOR) . "/";
 		$this->configFile = Path::join($this->dataFolder, "config.yml");
 
-		$translations = Path::join($file, 'resources', 'translations');
-		if(is_dir($translations) || ($loader->getAccessProtocol() === 'phar://' && isset((new \Phar($file))['resources/translations']))){ // TODO: script plugins
+		$translations = Path::getLongestCommonBasePath(...array_map(
+			fn(SplFileInfo $resource) => $resource->getPathname(),
+			array_filter(
+				$resourceProvider->getResources(),
+				fn(SplFileInfo $resource) => str_contains($resource->getPath(), "resources/translations/") && $resource->getExtension() === "ini"
+			)
+		));
+		if($translations !== null) {
 			foreach(Utils::stringifyKeys(Language::getLanguageList($translations)) as $code => $language){
 				$this->translations[$code] = new NamespacedLanguage($this->getName(), $code, $translations);
 			}
@@ -274,7 +280,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	/**
 	 * Returns all the resources packaged with the plugin in the form ["path/in/resources" => SplFileInfo]
 	 *
-	 * @return \SplFileInfo[]
+	 * @return SplFileInfo[]
 	 */
 	public function getResources() : array{
 		return $this->resourceProvider->getResources();

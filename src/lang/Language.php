@@ -24,12 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\lang;
 
 use InvalidArgumentException;
+use Phar;
 use pocketmine\utils\Utils;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SplFileInfo;
 use Symfony\Component\Filesystem\Path;
-use function array_filter;
 use function array_map;
 use function array_merge;
 use function count;
@@ -38,17 +38,13 @@ use function file_exists;
 use function is_dir;
 use function ord;
 use function parse_ini_file;
-use function scandir;
-use function str_ends_with;
 use function str_replace;
 use function str_starts_with;
 use function strlen;
 use function strpos;
 use function strtolower;
 use function substr;
-use const DIRECTORY_SEPARATOR;
 use const INI_SCANNER_RAW;
-use const SCANDIR_SORT_NONE;
 
 class Language{
 
@@ -65,13 +61,13 @@ class Language{
 			$path = \pocketmine\LOCALE_DATA_PATH;
 		}
 
-		if(str_starts_with($path, "phar://")){
+		if(is_dir($path) || file_exists((Path::makeRelative($path, Phar::running(false))))) {
 			$result = [];
 			/** @var SplFileInfo $resource */
 			foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path)) as $resource){
-				if($resource->isFile()){
+				if($resource->getExtension() === 'ini' && $resource->isFile()){
 					try{
-						$code = str_replace(DIRECTORY_SEPARATOR, "/", substr((string) $resource, strlen($path) + 1, -strlen($resource->getExtension()) - 1));
+						$code = explode(".", $resource->getFilename())[0];
 						$strings = self::loadLang($path, $code);
 						if(isset($strings[KnownTranslationKeys::LANGUAGE_NAME])){
 							$result[$code] = $strings[KnownTranslationKeys::LANGUAGE_NAME];
@@ -82,30 +78,6 @@ class Language{
 				}
 			}
 			return $result;
-		}elseif(is_dir($path)){
-			$allFiles = scandir($path, SCANDIR_SORT_NONE);
-
-			if($allFiles !== false){
-				$files = array_filter($allFiles, function(string $filename) : bool{
-					return str_ends_with($filename, ".ini");
-				});
-
-				$result = [];
-
-				foreach($files as $file){
-					try{
-						$code = explode(".", $file)[0];
-						$strings = self::loadLang($path, $code);
-						if(isset($strings[KnownTranslationKeys::LANGUAGE_NAME])){
-							$result[$code] = $strings[KnownTranslationKeys::LANGUAGE_NAME];
-						}
-					}catch(LanguageNotFoundException $e){
-						// no-op
-					}
-				}
-
-				return $result;
-			}
 		}
 
 		throw new LanguageNotFoundException("Language directory $path does not exist or is not a directory");
