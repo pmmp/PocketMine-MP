@@ -29,6 +29,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\PluginCommand;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
+use pocketmine\lang\LanguageMismatchException;
 use pocketmine\lang\NamespacedLanguage;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
@@ -142,7 +143,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 					foreach($this->getTranslations() as $translation){
 						$this->server->getLanguage()->merge($translation);
 					}
-				}catch(\InvalidArgumentException $e){
+				}catch(LanguageMismatchException $e){
 					throw new DisablePluginException($e->getMessage(), $e->getCode(), $e);
 				}
 			}else{

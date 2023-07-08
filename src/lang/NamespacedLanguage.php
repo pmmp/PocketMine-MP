@@ -61,20 +61,20 @@ final class NamespacedLanguage extends Language{
 		$namespace = "";
 		foreach(Utils::stringifyKeys($language->getAll()) as $key => $value){
 			if(isset($this->lang[$key])){
-				throw new \InvalidArgumentException("Duplicate translation key '$key' is not allowed");
+				throw new LanguageMismatchException("Duplicate translation key '$key' is not allowed");
 			}
 			$namespace = explode(".", $key)[0];
 			if(in_array($namespace, self::$namespaces, true)){
-				throw new \InvalidArgumentException("'$namespace' translation namespace is reserved");
+				throw new LanguageMismatchException("'$namespace' translation namespace is reserved");
 			}
 		}
 		foreach(Utils::stringifyKeys($language->getAllFallback()) as $key => $value){
 			if(isset($this->fallbackLang[$key])){
-				throw new \InvalidArgumentException("Duplicate fallback translation key '$key' is not allowed");
+				throw new LanguageMismatchException("Duplicate fallback translation key '$key' is not allowed");
 			}
 			$namespace = explode(".", $key)[0];
 			if(in_array($namespace, self::$namespaces, true)){
-				throw new \InvalidArgumentException("'$namespace' translation namespace is reserved");
+				throw new LanguageMismatchException("'$namespace' translation namespace is reserved");
 			}
 		}
 		parent::merge($language);
