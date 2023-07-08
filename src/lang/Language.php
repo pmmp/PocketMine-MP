@@ -77,6 +77,7 @@ class Language{
 					}
 				}
 			}
+
 			return $result;
 		}
 
