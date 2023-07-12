@@ -59,7 +59,7 @@ abstract class StringToTParser{
 	}
 
 	/**
-	 * Tries to parse the specified string into an enchantment.
+	 * Tries to parse the specified string into a value of T.
 	 * @phpstan-return T|null
 	 */
 	public function parse(string $input){
