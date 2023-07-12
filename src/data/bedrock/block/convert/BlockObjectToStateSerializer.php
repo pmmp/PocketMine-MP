@@ -370,6 +370,46 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 			DyeColor::YELLOW() => Ids::YELLOW_CARPET,
 			default => throw new AssumptionFailedError("Unhandled dye colour " . $color->name())
 		}));
+
+		$this->map(Blocks::DYED_SHULKER_BOX(), fn(DyedShulkerBox $block) => Writer::create(match($color = $block->getColor()){
+			DyeColor::BLACK() => Ids::BLACK_SHULKER_BOX,
+			DyeColor::BLUE() => Ids::BLUE_SHULKER_BOX,
+			DyeColor::BROWN() => Ids::BROWN_SHULKER_BOX,
+			DyeColor::CYAN() => Ids::CYAN_SHULKER_BOX,
+			DyeColor::GRAY() => Ids::GRAY_SHULKER_BOX,
+			DyeColor::GREEN() => Ids::GREEN_SHULKER_BOX,
+			DyeColor::LIGHT_BLUE() => Ids::LIGHT_BLUE_SHULKER_BOX,
+			DyeColor::LIGHT_GRAY() => Ids::LIGHT_GRAY_SHULKER_BOX,
+			DyeColor::LIME() => Ids::LIME_SHULKER_BOX,
+			DyeColor::MAGENTA() => Ids::MAGENTA_SHULKER_BOX,
+			DyeColor::ORANGE() => Ids::ORANGE_SHULKER_BOX,
+			DyeColor::PINK() => Ids::PINK_SHULKER_BOX,
+			DyeColor::PURPLE() => Ids::PURPLE_SHULKER_BOX,
+			DyeColor::RED() => Ids::RED_SHULKER_BOX,
+			DyeColor::WHITE() => Ids::WHITE_SHULKER_BOX,
+			DyeColor::YELLOW() => Ids::YELLOW_SHULKER_BOX,
+			default => throw new AssumptionFailedError("Unhandled dye colour " . $color->name())
+		}));
+
+		$this->map(Blocks::CONCRETE(), fn(Concrete $block) => Writer::create(match($color = $block->getColor()){
+			DyeColor::BLACK() => Ids::BLACK_CONCRETE,
+			DyeColor::BLUE() => Ids::BLUE_CONCRETE,
+			DyeColor::BROWN() => Ids::BROWN_CONCRETE,
+			DyeColor::CYAN() => Ids::CYAN_CONCRETE,
+			DyeColor::GRAY() => Ids::GRAY_CONCRETE,
+			DyeColor::GREEN() => Ids::GREEN_CONCRETE,
+			DyeColor::LIGHT_BLUE() => Ids::LIGHT_BLUE_CONCRETE,
+			DyeColor::LIGHT_GRAY() => Ids::LIGHT_GRAY_CONCRETE,
+			DyeColor::LIME() => Ids::LIME_CONCRETE,
+			DyeColor::MAGENTA() => Ids::MAGENTA_CONCRETE,
+			DyeColor::ORANGE() => Ids::ORANGE_CONCRETE,
+			DyeColor::PINK() => Ids::PINK_CONCRETE,
+			DyeColor::PURPLE() => Ids::PURPLE_CONCRETE,
+			DyeColor::RED() => Ids::RED_CONCRETE,
+			DyeColor::WHITE() => Ids::WHITE_CONCRETE,
+			DyeColor::YELLOW() => Ids::YELLOW_CONCRETE,
+			default => throw new AssumptionFailedError("Unhandled dye colour " . $color->name())
+		}));
 	}
 
 	private function registerFlatCoralSerializers() : void{
@@ -1066,10 +1106,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeLegacyHorizontalFacing(Facing::opposite($block->getFacing()));
 		});
 		$this->map(Blocks::COMPOUND_CREATOR(), fn(ChemistryTable $block) => Helper::encodeChemistryTable($block, StringValues::CHEMISTRY_TABLE_TYPE_COMPOUND_CREATOR, new Writer(Ids::CHEMISTRY_TABLE)));
-		$this->map(Blocks::CONCRETE(), function(Concrete $block) : Writer{
-			return Writer::create(Ids::CONCRETE)
-				->writeColor($block->getColor());
-		});
 		$this->map(Blocks::CONCRETE_POWDER(), function(ConcretePowder $block) : Writer{
 			return Writer::create(Ids::CONCRETE_POWDER)
 				->writeColor($block->getColor());
@@ -1136,10 +1172,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				});
 		});
 		$this->map(Blocks::DOUBLE_TALLGRASS(), fn(DoubleTallGrass $block) => Helper::encodeDoublePlant($block, StringValues::DOUBLE_PLANT_TYPE_GRASS, Writer::create(Ids::DOUBLE_PLANT)));
-		$this->map(Blocks::DYED_SHULKER_BOX(), function(DyedShulkerBox $block) : Writer{
-			return Writer::create(Ids::SHULKER_BOX)
-				->writeColor($block->getColor());
-		});
 		$this->map(Blocks::ELEMENT_CONSTRUCTOR(), fn(ChemistryTable $block) => Helper::encodeChemistryTable($block, StringValues::CHEMISTRY_TABLE_TYPE_ELEMENT_CONSTRUCTOR, new Writer(Ids::CHEMISTRY_TABLE)));
 		$this->map(Blocks::ENDER_CHEST(), function(EnderChest $block) : Writer{
 			return Writer::create(Ids::ENDER_CHEST)

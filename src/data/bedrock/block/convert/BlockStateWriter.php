@@ -170,11 +170,11 @@ final class BlockStateWriter{
 	 * @return $this
 	 */
 	public function writeCardinalHorizontalFacing(int $value) : self{
-		return $this->writeString(BlockStateNames::CARDINAL_DIRECTION, match($value){
-			Facing::SOUTH => StringValues::CARDINAL_DIRECTION_SOUTH,
-			Facing::WEST => StringValues::CARDINAL_DIRECTION_WEST,
-			Facing::NORTH => StringValues::CARDINAL_DIRECTION_NORTH,
-			Facing::EAST => StringValues::CARDINAL_DIRECTION_EAST,
+		return $this->writeString(BlockStateNames::MC_CARDINAL_DIRECTION, match($value){
+			Facing::SOUTH => StringValues::MC_CARDINAL_DIRECTION_SOUTH,
+			Facing::WEST => StringValues::MC_CARDINAL_DIRECTION_WEST,
+			Facing::NORTH => StringValues::MC_CARDINAL_DIRECTION_NORTH,
+			Facing::EAST => StringValues::MC_CARDINAL_DIRECTION_EAST,
 			default => throw new BlockStateSerializeException("Invalid horizontal facing $value")
 		});
 	}
