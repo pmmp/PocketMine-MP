@@ -80,7 +80,7 @@ trait FortuneTrait{
 	 * @param Item[] $extraDrops Extra drops to add to the result.
 	 * @return Item[]
 	 */
-	protected function binomialDrops(Item $item, int $fortuneLevel = 0, int $baseCount = 0, float $p = 4 / 7, array $extraDrops = []) : array{
+	protected function binomialDrops(Item $item, int $fortuneLevel, int $baseCount = 0, float $p = 4 / 7, array $extraDrops = []) : array{
 		$count = $baseCount;
 		for($i = 0; $i < 3 + $fortuneLevel; ++$i){
 			if(mt_rand() / mt_getrandmax() < $p){
