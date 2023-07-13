@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\WoodTypeTrait;
+use pocketmine\block\utils\PlanksTypeTrait;
 
 class WoodenStairs extends Stair{
-	use WoodTypeTrait;
+	use PlanksTypeTrait;
 
 	public function getFlameEncouragement() : int{
 		return 5;

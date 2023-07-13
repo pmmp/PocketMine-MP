@@ -55,6 +55,7 @@ use pocketmine\block\tile\Note as TileNote;
 use pocketmine\block\tile\ShulkerBox as TileShulkerBox;
 use pocketmine\block\tile\Smoker as TileSmoker;
 use pocketmine\block\utils\LeavesType;
+use pocketmine\block\utils\PlanksType;
 use pocketmine\block\utils\SaplingType;
 use pocketmine\block\utils\WoodType;
 use pocketmine\crafting\FurnaceType;
@@ -1251,12 +1252,9 @@ final class VanillaBlocks{
 			self::register($idName(mb_strtolower($woodType->getStandardLogSuffix() ?? "log", 'US-ASCII')), new Wood(WoodLikeBlockIdHelper::getLogIdentifier($woodType), $name . " " . ($woodType->getStandardLogSuffix() ?? "Log"), $logBreakInfo, $woodType));
 			self::register($idName(mb_strtolower($woodType->getAllSidedLogSuffix() ?? "wood", 'US-ASCII')), new Wood(WoodLikeBlockIdHelper::getAllSidedLogIdentifier($woodType), $name . " " . ($woodType->getAllSidedLogSuffix() ?? "Wood"), $logBreakInfo, $woodType));
 
-			self::register($idName("planks"), new Planks(WoodLikeBlockIdHelper::getPlanksIdentifier($woodType), $name . " Planks", $planksBreakInfo, $woodType));
 			self::register($idName("fence"), new WoodenFence(WoodLikeBlockIdHelper::getFenceIdentifier($woodType), $name . " Fence", $planksBreakInfo, $woodType));
-			self::register($idName("slab"), new WoodenSlab(WoodLikeBlockIdHelper::getSlabIdentifier($woodType), $name, $planksBreakInfo, $woodType));
 
 			self::register($idName("fence_gate"), new FenceGate(WoodLikeBlockIdHelper::getFenceGateIdentifier($woodType), $name . " Fence Gate", $planksBreakInfo, $woodType));
-			self::register($idName("stairs"), new WoodenStairs(WoodLikeBlockIdHelper::getStairsIdentifier($woodType), $name . " Stairs", $planksBreakInfo, $woodType));
 			self::register($idName("door"), new WoodenDoor(WoodLikeBlockIdHelper::getDoorIdentifier($woodType), $name . " Door", $woodenDoorBreakInfo, $woodType));
 
 			self::register($idName("button"), new WoodenButton(WoodLikeBlockIdHelper::getButtonIdentifier($woodType), $name . " Button", $woodenButtonBreakInfo, $woodType));
@@ -1266,6 +1264,15 @@ final class VanillaBlocks{
 			[$floorSignId, $wallSignId, $signAsItem] = WoodLikeBlockIdHelper::getSignInfo($woodType);
 			self::register($idName("sign"), new FloorSign($floorSignId, $name . " Sign", $signBreakInfo, $woodType, $signAsItem));
 			self::register($idName("wall_sign"), new WallSign($wallSignId, $name . " Wall Sign", $signBreakInfo, $woodType, $signAsItem));
+		}
+
+		foreach(PlanksType::getAll() as $planksType){
+			$name = $planksType->getDisplayName();
+			$idName = fn(string $suffix) => $planksType->name() . "_" . $suffix;
+
+			self::register($idName("planks"), new Planks(PlanksLikeBlockIdHelper::getPlanksIdentifier($planksType), $name . " Planks", $planksBreakInfo, $planksType));
+			self::register($idName("slab"), new WoodenSlab(PlanksLikeBlockIdHelper::getSlabIdentifier($planksType), $name, $planksBreakInfo, $planksType));
+			self::register($idName("stairs"), new WoodenStairs(PlanksLikeBlockIdHelper::getStairsIdentifier($planksType), $name . " Stairs", $planksBreakInfo, $planksType));
 		}
 	}
 
