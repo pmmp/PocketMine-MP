@@ -43,9 +43,9 @@ class SeaLantern extends Transparent{
 	protected function getFortuneDropsForLevel(int $level) : array{
 		return $this->discreteDrops(
 			VanillaItems::PRISMARINE_CRYSTALS(),
+			$level,
 			self::MINIMUM_DROPS,
 			self::MAXIMUM_DROPS,
-			$level,
 			5
 		);
 	}

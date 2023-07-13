@@ -39,9 +39,9 @@ class Melon extends Opaque{
 	protected function getFortuneDropsForLevel(int $level) : array{
 		return $this->discreteDrops(
 			VanillaItems::MELON(),
+			$level,
 			self::MINIMUM_DROPS,
 			self::MAXIMUM_DROPS,
-			$level,
 			9
 		);
 	}

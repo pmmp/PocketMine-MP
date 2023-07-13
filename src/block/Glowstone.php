@@ -43,9 +43,9 @@ class Glowstone extends Transparent{
 	protected function getFortuneDropsForLevel(int $level) : array{
 		return $this->discreteDrops(
 			VanillaItems::GLOWSTONE_DUST(),
+			$level,
 			self::MINIMUM_DROPS,
 			self::MAXIMUM_DROPS,
-			$level,
 			4
 		);
 	}

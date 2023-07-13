@@ -91,9 +91,9 @@ class RedstoneOre extends Opaque{
 	protected function getFortuneDropsForLevel(int $level) : array{
 		return $this->discreteDrops(
 			VanillaItems::REDSTONE_DUST(),
+			$level,
 			self::MINIMUM_DROPS,
-			self::MAXIMUM_DROPS,
-			$level
+			self::MAXIMUM_DROPS
 		);
 	}
 

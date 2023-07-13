@@ -40,9 +40,9 @@ class LapisOre extends Opaque{
 	protected function getFortuneDropsForLevel(int $level) : array{
 		return $this->weightedDrops(
 			VanillaItems::LAPIS_LAZULI(),
+			$level,
 			self::MINIMUM_DROPS,
-			self::MAXIMUM_DROPS,
-			$level
+			self::MAXIMUM_DROPS
 		);
 	}
 

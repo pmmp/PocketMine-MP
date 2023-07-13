@@ -54,11 +54,15 @@ trait FortuneTrait{
 	abstract protected function getFortuneDropsForLevel(int $level) : array;
 
 	/**
-	 * Gives a weight of 2 to a normal drop chance and adds a weight of 1 for each extra drop multiplier.
+	 * If a random number between 0-1 is greater than 2/(level+2), this multiplies the max drop amount by level+1, and
+	 * picks a random amount between the minimum and multiplied maximum. Each level of fortune increases the chance of
+	 * fortune activation, and also increases the maximum drop limit when activated.
+	 *
+	 * Otherwise, returns a random amount of the item between the minimum and original maximum.
 	 *
 	 * @return Item[]
 	 */
-	protected function weightedDrops(Item $item, int $min, int $max, int $fortuneLevel) : array{
+	protected function weightedDrops(Item $item, int $fortuneLevel, int $min, int $max) : array{
 		if($max < $min){
 			throw new \InvalidArgumentException("Maximum drop amount must be greater than or equal to minimum drop amount");
 		}
@@ -74,16 +78,18 @@ trait FortuneTrait{
 	}
 
 	/**
-	 * Binomial drop, the fortune level increases the number of tests for the distribution.
+	 * Increases the drop amount according to a binomial distribution. The function will roll 3+level times, and add 1
+	 * if a random number between 0-1 is less than the given probability. Each level of fortune adds one extra roll.
 	 *
-	 * @param float  $p          The probability of the item being dropped.
-	 * @param Item[] $extraDrops Extra drops to add to the result.
+	 * @param float  $chance     The chance of adding 1 to the amount for each roll, must be in the range 0-1
+	 * @param Item[] $extraDrops Extra drops to add to the result
+	 *
 	 * @return Item[]
 	 */
-	protected function binomialDrops(Item $item, int $fortuneLevel, int $baseCount = 0, float $p = 4 / 7, array $extraDrops = []) : array{
-		$count = $baseCount;
+	protected function binomialDrops(Item $item, int $fortuneLevel, int $min = 0, float $chance = 4 / 7, array $extraDrops = []) : array{
+		$count = $min;
 		for($i = 0; $i < 3 + $fortuneLevel; ++$i){
-			if(mt_rand() / mt_getrandmax() < $p){
+			if(mt_rand() / mt_getrandmax() < $chance){
 				++$count;
 			}
 		}
@@ -115,23 +121,24 @@ trait FortuneTrait{
 	}
 
 	/**
-	 * Discrete drop increases the maximum number of items that can be dropped by the fortune level.
+	 * Adds the fortune level to the base max and picks a random number between the minimim and adjusted maximum.
+	 * Each amount in the range has an equal chance of being picked.
 	 *
-	 * @param int $maximum As minecraft doc, this is the maximum number of drops that can be dropped by this enchantment.
-	 *                     If a drop higher than these maximums is rolled, it is rounded down to the capacity.
+	 * @param int $maxBase  Maximum base amount, as if the fortune level was 0
+	 * @param int $maxLimit Maximum amount to return, regardless of the other parameters
 	 *
 	 * @return Item[]
 	 */
-	protected function discreteDrops(Item $item, int $minBaseAmount, int $maxBaseAmount, int $fortuneLevel, int $maximum = PHP_INT_MAX) : array{
-		if($maxBaseAmount < $minBaseAmount){
+	protected function discreteDrops(Item $item, int $fortuneLevel, int $min, int $maxBase, int $maxLimit = PHP_INT_MAX) : array{
+		if($maxBase < $min){
 			throw new \InvalidArgumentException("Minimum base drop amount must be less than or equal to maximum base drop amount");
 		}
 
 		$max = min(
-			$maximum,
-			$maxBaseAmount + $fortuneLevel
+			$maxLimit,
+			$maxBase + $fortuneLevel
 		);
-		$count = mt_rand($minBaseAmount, $max);
+		$count = mt_rand($min, $max);
 		return [
 			$item->setCount($count)
 		];

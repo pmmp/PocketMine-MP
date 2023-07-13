@@ -40,9 +40,9 @@ class NetherQuartzOre extends Opaque{
 	protected function getFortuneDropsForLevel(int $level) : array{
 		return $this->weightedDrops(
 			VanillaItems::NETHER_QUARTZ(),
+			$level,
 			self::MINIMUM_DROPS,
-			self::MAXIMUM_DROPS,
-			$level
+			self::MAXIMUM_DROPS
 		);
 	}
 

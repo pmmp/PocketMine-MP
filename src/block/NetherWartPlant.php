@@ -95,9 +95,9 @@ class NetherWartPlant extends Flowable{
 		if($this->age === self::MAX_AGE){
 			return $this->discreteDrops(
 				$this->asItem(),
+				$level,
 				self::MINIMUM_DROPS,
-				self::MAXIMUM_DROPS,
-				$level
+				self::MAXIMUM_DROPS
 			);
 		}else{
 			return [$this->asItem()];
