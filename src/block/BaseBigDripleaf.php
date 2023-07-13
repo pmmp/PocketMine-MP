@@ -41,7 +41,7 @@ abstract class BaseBigDripleaf extends Transparent{
 	private function canBeSupportedBy(Block $block, bool $head) : bool{
 		//TODO: Moss block
 		return
-			$block instanceof BaseBigDripleaf && $block->isHead() === $head ||
+			($block instanceof BaseBigDripleaf && $block->isHead() === $head) ||
 			$block->getTypeId() === BlockTypeIds::CLAY ||
 			$block->hasTypeTag(BlockTypeTags::DIRT) ||
 			$block->hasTypeTag(BlockTypeTags::MUD);
