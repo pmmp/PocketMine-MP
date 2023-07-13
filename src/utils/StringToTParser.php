@@ -59,7 +59,7 @@ abstract class StringToTParser{
 	}
 
 	/**
-	 * Tries to parse the specified string into a value of T.
+	 * Tries to parse the specified string into a corresponding instance of T.
 	 * @phpstan-return T|null
 	 */
 	public function parse(string $input){
