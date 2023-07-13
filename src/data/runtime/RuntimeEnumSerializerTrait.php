@@ -130,10 +130,11 @@ trait RuntimeEnumSerializerTrait{
 		$this->writeInt(3, match($value){
 			\pocketmine\block\utils\MobHeadType::CREEPER() => 0,
 			\pocketmine\block\utils\MobHeadType::DRAGON() => 1,
-			\pocketmine\block\utils\MobHeadType::PLAYER() => 2,
-			\pocketmine\block\utils\MobHeadType::SKELETON() => 3,
-			\pocketmine\block\utils\MobHeadType::WITHER_SKELETON() => 4,
-			\pocketmine\block\utils\MobHeadType::ZOMBIE() => 5,
+			\pocketmine\block\utils\MobHeadType::PIGLIN() => 2,
+			\pocketmine\block\utils\MobHeadType::PLAYER() => 3,
+			\pocketmine\block\utils\MobHeadType::SKELETON() => 4,
+			\pocketmine\block\utils\MobHeadType::WITHER_SKELETON() => 5,
+			\pocketmine\block\utils\MobHeadType::ZOMBIE() => 6,
 			default => throw new \pocketmine\utils\AssumptionFailedError("All MobHeadType cases should be covered")
 		});
 	}
@@ -189,16 +190,17 @@ trait RuntimeEnumSerializerTrait{
 			\pocketmine\item\PotionType::STRONG_LEAPING() => 29,
 			\pocketmine\item\PotionType::STRONG_POISON() => 30,
 			\pocketmine\item\PotionType::STRONG_REGENERATION() => 31,
-			\pocketmine\item\PotionType::STRONG_STRENGTH() => 32,
-			\pocketmine\item\PotionType::STRONG_SWIFTNESS() => 33,
-			\pocketmine\item\PotionType::STRONG_TURTLE_MASTER() => 34,
-			\pocketmine\item\PotionType::SWIFTNESS() => 35,
-			\pocketmine\item\PotionType::THICK() => 36,
-			\pocketmine\item\PotionType::TURTLE_MASTER() => 37,
-			\pocketmine\item\PotionType::WATER() => 38,
-			\pocketmine\item\PotionType::WATER_BREATHING() => 39,
-			\pocketmine\item\PotionType::WEAKNESS() => 40,
-			\pocketmine\item\PotionType::WITHER() => 41,
+			\pocketmine\item\PotionType::STRONG_SLOWNESS() => 32,
+			\pocketmine\item\PotionType::STRONG_STRENGTH() => 33,
+			\pocketmine\item\PotionType::STRONG_SWIFTNESS() => 34,
+			\pocketmine\item\PotionType::STRONG_TURTLE_MASTER() => 35,
+			\pocketmine\item\PotionType::SWIFTNESS() => 36,
+			\pocketmine\item\PotionType::THICK() => 37,
+			\pocketmine\item\PotionType::TURTLE_MASTER() => 38,
+			\pocketmine\item\PotionType::WATER() => 39,
+			\pocketmine\item\PotionType::WATER_BREATHING() => 40,
+			\pocketmine\item\PotionType::WEAKNESS() => 41,
+			\pocketmine\item\PotionType::WITHER() => 42,
 			default => throw new \pocketmine\utils\AssumptionFailedError("All PotionType cases should be covered")
 		});
 	}

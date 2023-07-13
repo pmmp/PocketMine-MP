@@ -33,6 +33,7 @@ use pocketmine\utils\EnumTrait;
  *
  * @method static MobHeadType CREEPER()
  * @method static MobHeadType DRAGON()
+ * @method static MobHeadType PIGLIN()
  * @method static MobHeadType PLAYER()
  * @method static MobHeadType SKELETON()
  * @method static MobHeadType WITHER_SKELETON()
@@ -50,7 +51,8 @@ final class MobHeadType{
 			new MobHeadType("zombie", "Zombie Head"),
 			new MobHeadType("player", "Player Head"),
 			new MobHeadType("creeper", "Creeper Head"),
-			new MobHeadType("dragon", "Dragon Head")
+			new MobHeadType("dragon", "Dragon Head"),
+			new MobHeadType("piglin", "Piglin Head")
 		);
 	}
 

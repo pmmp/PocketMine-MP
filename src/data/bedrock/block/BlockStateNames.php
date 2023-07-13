@@ -98,6 +98,8 @@ final class BlockStateNames{
 	public const LEVER_DIRECTION = "lever_direction";
 	public const LIQUID_DEPTH = "liquid_depth";
 	public const LIT = "lit";
+	public const MC_CARDINAL_DIRECTION = "minecraft:cardinal_direction";
+	public const MC_FACING_DIRECTION = "minecraft:facing_direction";
 	public const MOISTURIZED_AMOUNT = "moisturized_amount";
 	public const MONSTER_EGG_STONE_TYPE = "monster_egg_stone_type";
 	public const MULTI_FACE_DIRECTION_BITS = "multi_face_direction_bits";
@@ -122,6 +124,7 @@ final class BlockStateNames{
 	public const SAND_STONE_TYPE = "sand_stone_type";
 	public const SAND_TYPE = "sand_type";
 	public const SAPLING_TYPE = "sapling_type";
+	public const SCULK_SENSOR_PHASE = "sculk_sensor_phase";
 	public const SEA_GRASS_TYPE = "sea_grass_type";
 	public const SPONGE_TYPE = "sponge_type";
 	public const STABILITY = "stability";

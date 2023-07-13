@@ -111,9 +111,9 @@ use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\Chunk;
 use function array_push;
-use function base64_encode;
 use function count;
 use function fmod;
+use function get_debug_type;
 use function implode;
 use function in_array;
 use function is_bool;
@@ -743,27 +743,32 @@ class InGamePacketHandler extends PacketHandler{
 		if(!($nbt instanceof CompoundTag)) throw new AssumptionFailedError("PHPStan should ensure this is a CompoundTag"); //for phpstorm's benefit
 
 		if($block instanceof BaseSign){
-			if(($textBlobTag = $nbt->getCompoundTag(Sign::TAG_FRONT_TEXT)?->getTag(Sign::TAG_TEXT_BLOB)) instanceof StringTag){
-				try{
-					$text = SignText::fromBlob($textBlobTag->getValue());
-				}catch(\InvalidArgumentException $e){
-					throw PacketHandlingException::wrap($e, "Invalid sign text update");
-				}
-
-				try{
-					if(!$block->updateText($this->player, $text)){
-						foreach($this->player->getWorld()->createBlockUpdatePackets([$pos]) as $updatePacket){
-							$this->session->sendDataPacket($updatePacket);
-						}
-					}
-				}catch(\UnexpectedValueException $e){
-					throw PacketHandlingException::wrap($e);
-				}
-
-				return true;
+			$frontTextTag = $nbt->getTag(Sign::TAG_FRONT_TEXT);
+			if(!$frontTextTag instanceof CompoundTag){
+				throw new PacketHandlingException("Invalid tag type " . get_debug_type($frontTextTag) . " for tag \"" . Sign::TAG_FRONT_TEXT . "\" in sign update data");
+			}
+			$textBlobTag = $frontTextTag->getTag(Sign::TAG_TEXT_BLOB);
+			if(!$textBlobTag instanceof StringTag){
+				throw new PacketHandlingException("Invalid tag type " . get_debug_type($textBlobTag) . " for tag \"" . Sign::TAG_TEXT_BLOB . "\" in sign update data");
 			}
 
-			$this->session->getLogger()->debug("Invalid sign update data: " . base64_encode($packet->nbt->getEncodedNbt()));
+			try{
+				$text = SignText::fromBlob($textBlobTag->getValue());
+			}catch(\InvalidArgumentException $e){
+				throw PacketHandlingException::wrap($e, "Invalid sign text update");
+			}
+
+			try{
+				if(!$block->updateText($this->player, $text)){
+					foreach($this->player->getWorld()->createBlockUpdatePackets([$pos]) as $updatePacket){
+						$this->session->sendDataPacket($updatePacket);
+					}
+				}
+			}catch(\UnexpectedValueException $e){
+				throw PacketHandlingException::wrap($e);
+			}
+
+			return true;
 		}
 
 		return false;
