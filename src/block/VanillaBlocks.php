@@ -1649,7 +1649,7 @@ final class VanillaBlocks{
 		$planksBreakInfo = new Info(BreakInfo::axe(2.0, null, 15.0));
 
 		self::register("bamboo_mosaic", new Planks(new BID(Ids::BAMBOO_MOSAIC), "Bamboo Mosaic", $planksBreakInfo, $woodType));
-		self::register("bamboo_mosaic_slab", new WoodenSlab(new BID(Ids::BAMBOO_MOSAIC_SLAB), "Bamboo Slab", $planksBreakInfo, $woodType));
-		self::register("bamboo_mosaic_stairs", new WoodenStairs(new BID(Ids::BAMBOO_MOSAIC_STAIRS), "Bamboo Stairs", $planksBreakInfo, $woodType));
+		self::register("bamboo_mosaic_slab", new WoodenSlab(new BID(Ids::BAMBOO_MOSAIC_SLAB), "Bamboo Mosaic Slab", $planksBreakInfo, $woodType));
+		self::register("bamboo_mosaic_stairs", new WoodenStairs(new BID(Ids::BAMBOO_MOSAIC_STAIRS), "Bamboo Mosaic Stairs", $planksBreakInfo, $woodType));
 	}
 }
