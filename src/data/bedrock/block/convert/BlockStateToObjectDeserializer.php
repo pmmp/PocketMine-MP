@@ -244,6 +244,48 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		] as $id => $color){
 			$this->mapSimple($id, fn() => Blocks::CARPET()->setColor($color));
 		}
+
+		foreach([
+			Ids::BLACK_SHULKER_BOX => DyeColor::BLACK(),
+			Ids::BLUE_SHULKER_BOX => DyeColor::BLUE(),
+			Ids::BROWN_SHULKER_BOX => DyeColor::BROWN(),
+			Ids::CYAN_SHULKER_BOX => DyeColor::CYAN(),
+			Ids::GRAY_SHULKER_BOX => DyeColor::GRAY(),
+			Ids::GREEN_SHULKER_BOX => DyeColor::GREEN(),
+			Ids::LIGHT_BLUE_SHULKER_BOX => DyeColor::LIGHT_BLUE(),
+			Ids::LIGHT_GRAY_SHULKER_BOX => DyeColor::LIGHT_GRAY(),
+			Ids::LIME_SHULKER_BOX => DyeColor::LIME(),
+			Ids::MAGENTA_SHULKER_BOX => DyeColor::MAGENTA(),
+			Ids::ORANGE_SHULKER_BOX => DyeColor::ORANGE(),
+			Ids::PINK_SHULKER_BOX => DyeColor::PINK(),
+			Ids::PURPLE_SHULKER_BOX => DyeColor::PURPLE(),
+			Ids::RED_SHULKER_BOX => DyeColor::RED(),
+			Ids::WHITE_SHULKER_BOX => DyeColor::WHITE(),
+			Ids::YELLOW_SHULKER_BOX => DyeColor::YELLOW(),
+		] as $id => $color){
+			$this->mapSimple($id, fn() => Blocks::DYED_SHULKER_BOX()->setColor($color));
+		}
+
+		foreach([
+			Ids::BLACK_CONCRETE => DyeColor::BLACK(),
+			Ids::BLUE_CONCRETE => DyeColor::BLUE(),
+			Ids::BROWN_CONCRETE => DyeColor::BROWN(),
+			Ids::CYAN_CONCRETE => DyeColor::CYAN(),
+			Ids::GRAY_CONCRETE => DyeColor::GRAY(),
+			Ids::GREEN_CONCRETE => DyeColor::GREEN(),
+			Ids::LIGHT_BLUE_CONCRETE => DyeColor::LIGHT_BLUE(),
+			Ids::LIGHT_GRAY_CONCRETE => DyeColor::LIGHT_GRAY(),
+			Ids::LIME_CONCRETE => DyeColor::LIME(),
+			Ids::MAGENTA_CONCRETE => DyeColor::MAGENTA(),
+			Ids::ORANGE_CONCRETE => DyeColor::ORANGE(),
+			Ids::PINK_CONCRETE => DyeColor::PINK(),
+			Ids::PURPLE_CONCRETE => DyeColor::PURPLE(),
+			Ids::RED_CONCRETE => DyeColor::RED(),
+			Ids::WHITE_CONCRETE => DyeColor::WHITE(),
+			Ids::YELLOW_CONCRETE => DyeColor::YELLOW(),
+		] as $id => $color){
+			$this->mapSimple($id, fn() => Blocks::CONCRETE()->setColor($color));
+		}
 	}
 
 	private function registerFlatCoralDeserializers() : void{
@@ -875,10 +917,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				Blocks::GREEN_TORCH()->setFacing($in->readTorchFacing()) :
 				Blocks::RED_TORCH()->setFacing($in->readTorchFacing());
 		});
-		$this->map(Ids::CONCRETE, function(Reader $in) : Block{
-			return Blocks::CONCRETE()
-				->setColor($in->readColor());
-		});
 		$this->map(Ids::CONCRETE_POWDER, function(Reader $in) : Block{
 			return Blocks::CONCRETE_POWDER()
 				->setColor($in->readColor());
@@ -1162,7 +1200,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapStairs(Ids::PRISMARINE_BRICKS_STAIRS, fn() => Blocks::PRISMARINE_BRICKS_STAIRS());
 		$this->mapStairs(Ids::PRISMARINE_STAIRS, fn() => Blocks::PRISMARINE_STAIRS());
 		$this->map(Ids::PUMPKIN, function(Reader $in) : Block{
-			$in->ignored(StateNames::CARDINAL_DIRECTION); //obsolete
+			$in->ignored(StateNames::MC_CARDINAL_DIRECTION); //obsolete
 			return Blocks::PUMPKIN();
 		});
 		$this->map(Ids::PUMPKIN_STEM, fn(Reader $in) => Helper::decodeStem(Blocks::PUMPKIN_STEM(), $in));
@@ -1284,10 +1322,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::SEA_PICKLE()
 				->setCount($in->readBoundedInt(StateNames::CLUSTER_COUNT, 0, 3) + 1)
 				->setUnderwater(!$in->readBool(StateNames::DEAD_BIT));
-		});
-		$this->map(Ids::SHULKER_BOX, function(Reader $in) : Block{
-			return Blocks::DYED_SHULKER_BOX()
-				->setColor($in->readColor());
 		});
 		$this->map(Ids::SKULL, function(Reader $in) : Block{
 			return Blocks::MOB_HEAD()
