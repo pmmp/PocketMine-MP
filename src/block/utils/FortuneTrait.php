@@ -44,8 +44,7 @@ trait FortuneTrait{
 	 * @return Item[]
 	 */
 	public function getFortuneDrops(Item $item) : array{
-		$fortuneEnchantment = VanillaEnchantments::FORTUNE();
-		return $this->getFortuneDropsForLevel($item->getEnchantmentLevel($fortuneEnchantment));
+		return $this->getFortuneDropsForLevel($item->getEnchantmentLevel(VanillaEnchantments::FORTUNE()));
 	}
 
 	/**
