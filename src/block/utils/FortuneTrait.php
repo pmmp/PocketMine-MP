@@ -59,13 +59,13 @@ trait FortuneTrait{
 	 * @return Item[]
 	 */
 	protected function weightedDrops(Item $item, int $min, int $max, int $fortuneLevel) : array{
-		if ($max < $min) {
+		if($max < $min){
 			throw new \InvalidArgumentException("Maximum drop amount must be greater than or equal to minimum drop amount");
 		}
 
-		if ($fortuneLevel > 0 && mt_rand() / mt_getrandmax() > 2 / ($fortuneLevel + 2)) {
+		if($fortuneLevel > 0 && mt_rand() / mt_getrandmax() > 2 / ($fortuneLevel + 2)){
 			$count = mt_rand($min, $max * ($fortuneLevel + 1));
-		} else {
+		}else{
 			$count = mt_rand($min, $max);
 		}
 		return [
@@ -101,10 +101,10 @@ trait FortuneTrait{
 	 *
 	 * @return Item[]
 	 */
-	protected function grassDrops(int $fortuneLevel) : array {
+	protected function grassDrops(int $fortuneLevel) : array{
 		if(mt_rand(0, 7) === 0){
 			$drop = mt_rand(1, 7);
-			if ($drop <= 1 + 2 * $fortuneLevel) {
+			if($drop <= 1 + 2 * $fortuneLevel){
 				return [
 					VanillaItems::WHEAT_SEEDS()->setCount($drop)
 				];
@@ -119,10 +119,11 @@ trait FortuneTrait{
 	 *
 	 * @param int $maximum As minecraft doc, this is the maximum number of drops that can be dropped by this enchantment.
 	 *                     If a drop higher than these maximums is rolled, it is rounded down to the capacity.
+	 *
 	 * @return Item[]
 	 */
 	protected function discreteDrops(Item $item, int $minBaseAmount, int $maxBaseAmount, int $fortuneLevel, int $maximum = PHP_INT_MAX) : array{
-		if ($maxBaseAmount < $minBaseAmount) {
+		if($maxBaseAmount < $minBaseAmount){
 			throw new \InvalidArgumentException("Minimum base drop amount must be less than or equal to maximum base drop amount");
 		}
 

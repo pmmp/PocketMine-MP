@@ -92,14 +92,14 @@ class NetherWartPlant extends Flowable{
 	 * @return Item[]
 	 */
 	protected function getFortuneDropsForLevel(int $level) : array{
-		if ($this->age === self::MAX_AGE) {
+		if($this->age === self::MAX_AGE){
 			return $this->discreteDrops(
 				$this->asItem(),
 				self::MINIMUM_DROPS,
 				self::MAXIMUM_DROPS,
 				$level
 			);
-		} else {
+		}else{
 			return [$this->asItem()];
 		}
 	}

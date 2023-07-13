@@ -41,7 +41,7 @@ class DoubleTallGrass extends DoublePlant{
 	 * @return Item[]
 	 */
 	protected function getFortuneDropsForLevel(int $level) : array{
-		if ($this->top) {
+		if($this->top){
 			return $this->grassDrops($level);
 		}
 		return [];

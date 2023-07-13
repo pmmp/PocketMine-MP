@@ -35,13 +35,13 @@ class Potato extends Crops{
 	 * @return Item[]
 	 */
 	protected function getFortuneDropsForLevel(int $level) : array{
-		if ($this->age >= self::MAX_AGE) {
+		if($this->age >= self::MAX_AGE){
 			$result = $this->binomialDrops(
 				VanillaItems::POTATO(),
 				$level,
 				1
 			);
-		} else {
+		}else{
 			$result = [
 				VanillaItems::POTATO()
 			];

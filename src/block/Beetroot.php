@@ -34,7 +34,7 @@ class Beetroot extends Crops{
 	 * @return Item[]
 	 */
 	protected function getFortuneDropsForLevel(int $level) : array{
-		if ($this->age >= self::MAX_AGE) {
+		if($this->age >= self::MAX_AGE){
 			return $this->binomialDrops(
 				VanillaItems::BEETROOT_SEEDS(),
 				$level,
@@ -42,7 +42,7 @@ class Beetroot extends Crops{
 					VanillaItems::BEETROOT()
 				]
 			);
-		} else {
+		}else{
 			return [
 				VanillaItems::BEETROOT_SEEDS()
 			];

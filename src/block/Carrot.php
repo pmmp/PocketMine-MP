@@ -34,13 +34,13 @@ class Carrot extends Crops{
 	 * @return Item[]
 	 */
 	protected function getFortuneDropsForLevel(int $level) : array{
-		if ($this->age >= self::MAX_AGE) {
+		if($this->age >= self::MAX_AGE){
 			return $this->binomialDrops(
 				VanillaItems::CARROT(),
 				$level,
 				1
 			);
-		} else {
+		}else{
 			return [
 				VanillaItems::CARROT()
 			];

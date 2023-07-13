@@ -34,7 +34,7 @@ class Wheat extends Crops{
 	 * @return Item[]
 	 */
 	protected function getFortuneDropsForLevel(int $level) : array{
-		if ($this->age >= self::MAX_AGE) {
+		if($this->age >= self::MAX_AGE){
 			return $this->binomialDrops(
 				VanillaItems::WHEAT_SEEDS(),
 				$level,
@@ -42,7 +42,7 @@ class Wheat extends Crops{
 					VanillaItems::WHEAT()
 				]
 			);
-		} else {
+		}else{
 			return [
 				VanillaItems::WHEAT_SEEDS()
 			];
