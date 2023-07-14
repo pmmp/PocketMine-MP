@@ -35,7 +35,7 @@ class Glowstone extends Transparent{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			VanillaItems::GLOWSTONE_DUST()->setCount(FortuneDropHelper::discrete($item, 2, 4))
+			VanillaItems::GLOWSTONE_DUST()->setCount(FortuneDropHelper::discrete($item, 2, 4, 4))
 		];
 	}
 

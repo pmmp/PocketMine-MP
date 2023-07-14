@@ -123,10 +123,7 @@ final class FortuneDropHelper{
 			throw new \InvalidArgumentException("Minimum base drop amount must be less than or equal to maximum base drop amount");
 		}
 
-		$max = min(
-			$maxLimit,
-			$maxBase + $usedItem->getEnchantmentLevel(VanillaEnchantments::FORTUNE())
-		);
-		return mt_rand($min, $max);
+		$drop = mt_rand($min, $maxBase + $usedItem->getEnchantmentLevel(VanillaEnchantments::FORTUNE()));
+		return min($drop, $maxLimit);
 	}
 }
