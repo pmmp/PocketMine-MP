@@ -32,10 +32,6 @@ use pocketmine\player\Player;
 use function mt_rand;
 
 class RedstoneOre extends Opaque{
-
-	public const MINIMUM_DROPS = 4;
-	public const MAXIMUM_DROPS = 5;
-
 	protected bool $lit = false;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{

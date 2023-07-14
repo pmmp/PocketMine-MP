@@ -42,7 +42,7 @@ class Gravel extends Opaque implements Fallable{
 			];
 		}
 
-		return [$this->asItem()];
+		return parent::getDropsForCompatibleTool($item);
 	}
 
 	public function isAffectedBySilkTouch() : bool{

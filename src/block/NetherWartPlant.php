@@ -34,7 +34,6 @@ use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
 class NetherWartPlant extends Flowable{
-
 	public const MAX_AGE = 3;
 
 	protected int $age = 0;
