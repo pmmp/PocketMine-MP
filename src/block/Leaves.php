@@ -139,7 +139,7 @@ class Leaves extends Transparent{
 		}
 
 		$drops = [];
-		if(FortuneDropHelper::bonusChance($item, 20, 4)){ //Saplings
+		if(FortuneDropHelper::bonusChanceDivisor($item, 20, 4)){ //Saplings
 			// TODO: according to the wiki, the jungle saplings have a different drop rate
 			$sapling = (match($this->leavesType){
 				LeavesType::ACACIA() => VanillaBlocks::ACACIA_SAPLING(),
@@ -159,11 +159,11 @@ class Leaves extends Transparent{
 		}
 		if(
 			($this->leavesType->equals(LeavesType::OAK()) || $this->leavesType->equals(LeavesType::DARK_OAK())) &&
-			FortuneDropHelper::bonusChance($item, 200, 20)
+			FortuneDropHelper::bonusChanceDivisor($item, 200, 20)
 		){ //Apples
 			$drops[] = VanillaItems::APPLE();
 		}
-		if(FortuneDropHelper::bonusChance($item, 50, 5)){
+		if(FortuneDropHelper::bonusChanceDivisor($item, 50, 5)){
 			$drops[] = VanillaItems::STICK()->setCount(mt_rand(1, 2));
 		}
 

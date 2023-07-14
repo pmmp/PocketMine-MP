@@ -33,7 +33,7 @@ class Gravel extends Opaque implements Fallable{
 	use FallableTrait;
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if(FortuneDropHelper::bonusChance($item, 10, 3)){
+		if(FortuneDropHelper::bonusChanceDivisor($item, 10, 3)){
 			return [
 				VanillaItems::FLINT()
 			];

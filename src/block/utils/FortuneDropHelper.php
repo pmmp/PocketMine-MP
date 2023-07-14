@@ -95,7 +95,7 @@ final class FortuneDropHelper{
 	 * @return Item[]
 	 */
 	public static function grass(Item $usedItem) : array{
-		if(FortuneDropHelper::bonusChance($usedItem, 8, 2)){
+		if(FortuneDropHelper::bonusChanceDivisor($usedItem, 8, 2)){
 			return [
 				VanillaItems::WHEAT_SEEDS()
 			];
@@ -122,16 +122,28 @@ final class FortuneDropHelper{
 	}
 
 	/**
-	 * Calculates a chance of getting an extra bonus drop, influenced by the fortune level.
-	 * The chance is 1/(bound+(fortuneLevel*subtract)).
+	 * Calculates a chance of getting an extra bonus drop by reducing the chance divisor by a given amount per fortune
+	 * level.
 	 *
-	 * @param int $bound    The base chance of getting a bonus drop
-	 * @param int $subtract The amount to subtract from the bound for each level of fortune
+	 * @param int $divisorBase             The number to divide 1 by to get the chance, as if the fortune level was 0
+	 * @param int $divisorSubtractPerLevel The amount to subtract from the divisor for each level of fortune
 	 *
 	 * @return bool whether the bonus drop should be added
 	 */
-	public static function bonusChance(Item $usedItem, int $bound, int $subtract) : bool{
+	public static function bonusChanceDivisor(Item $usedItem, int $divisorBase, int $divisorSubtractPerLevel) : bool{
 		$fortuneLevel = $usedItem->getEnchantmentLevel(VanillaEnchantments::FORTUNE());
-		return mt_rand(1, max(1, $bound - ($fortuneLevel * $subtract))) === 1;
+		return mt_rand(1, max(1, $divisorBase - ($fortuneLevel * $divisorSubtractPerLevel))) === 1;
+	}
+
+	/**
+	 * Calculates a chance of getting an extra bonus drop by increasing the chance by a fixed amount per fortune level.
+	 *
+	 * @param float $chanceBase          The base chance of getting a bonus drop, as if the fortune level was 0
+	 * @param float $addedChancePerLevel The amount to add to the chance for each level of fortune
+	 */
+	public static function bonusChanceFixed(Item $usedItem, float $chanceBase, float $addedChancePerLevel) : bool{
+		$fortuneLevel = $usedItem->getEnchantmentLevel(VanillaEnchantments::FORTUNE());
+		$chance = min(1, $chanceBase + ($fortuneLevel * $addedChancePerLevel));
+		return mt_rand() / mt_getrandmax() < $chance;
 	}
 }

@@ -31,7 +31,7 @@ use function mt_rand;
 final class GildedBlackstone extends Opaque{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if(FortuneDropHelper::bonusChance($item, 10, 3)){
+		if(FortuneDropHelper::bonusChanceDivisor($item, 10, 3)){
 			return [VanillaItems::GOLD_NUGGET()->setCount(mt_rand(2, 5))];
 		}
 
