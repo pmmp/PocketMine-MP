@@ -27,6 +27,7 @@ use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use function max;
+use function min;
 use function mt_getrandmax;
 use function mt_rand;
 
