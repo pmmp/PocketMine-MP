@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
+use function min;
 
 class Glowstone extends Transparent{
 
@@ -35,7 +36,7 @@ class Glowstone extends Transparent{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			VanillaItems::GLOWSTONE_DUST()->setCount(FortuneDropHelper::discrete($item, 2, 4))
+			VanillaItems::GLOWSTONE_DUST()->setCount(min(4, FortuneDropHelper::discrete($item, 2, 4)))
 		];
 	}
 

@@ -111,19 +111,15 @@ final class FortuneDropHelper{
 	 * Each amount in the range has an equal chance of being picked.
 	 *
 	 * @param int $maxBase  Maximum base amount, as if the fortune level was 0
-	 * @param int $maxLimit Maximum amount, regardless of the other parameters
 	 *
 	 * @return int the number of items to drop
 	 */
-	public static function discrete(Item $usedItem, int $min, int $maxBase, int $maxLimit = PHP_INT_MAX) : int{
+	public static function discrete(Item $usedItem, int $min, int $maxBase) : int{
 		if($maxBase < $min){
 			throw new \InvalidArgumentException("Minimum base drop amount must be less than or equal to maximum base drop amount");
 		}
 
-		$max = min(
-			$maxLimit,
-			$maxBase + $usedItem->getEnchantmentLevel(VanillaEnchantments::FORTUNE())
-		);
+		$max = $maxBase + $usedItem->getEnchantmentLevel(VanillaEnchantments::FORTUNE());
 		return mt_rand($min, $max);
 	}
 
