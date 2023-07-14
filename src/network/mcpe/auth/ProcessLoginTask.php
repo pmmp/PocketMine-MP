@@ -156,7 +156,7 @@ class ProcessLoginTask extends AsyncTask{
 			$signingKeyOpenSSL = JwtUtils::parseDerPublicKey($headerDerKey);
 		}catch(JwtException $e){
 			//TODO: we shouldn't be showing this internal information to the client
-			throw new VerifyLoginException("Invalid JWT public key: " . $e->getMessage(), null, 0, $e);
+			throw new VerifyLoginException("Invalid JWT public key: " . $e->getMessage(), 0, $e);
 		}
 		try{
 			if(!JwtUtils::verify($jwt, $signingKeyOpenSSL)){
@@ -200,7 +200,7 @@ class ProcessLoginTask extends AsyncTask{
 				//verify key format and parameters
 				JwtUtils::parseDerPublicKey($identityPublicKey);
 			}catch(JwtException $e){
-				throw new VerifyLoginException("Invalid identityPublicKey: " . $e->getMessage(), null, 0, $e);
+				throw new VerifyLoginException("Invalid identityPublicKey: " . $e->getMessage(), 0, $e);
 			}
 			$currentPublicKey = $identityPublicKey; //if there are further links, the next link should be signed with this
 		}
