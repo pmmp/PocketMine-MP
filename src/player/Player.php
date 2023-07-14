@@ -489,10 +489,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return $this->blockCollision;
 	}
 
+	private function internalSetFlying(bool $value) : void{
+		$this->flying = $value;
+		$this->resetFallDistance();
+	}
+
 	public function setFlying(bool $value) : void{
 		if($this->flying !== $value){
-			$this->flying = $value;
-			$this->resetFallDistance();
+			$this->internalSetFlying($value);
 			$this->getNetworkSession()->syncAbilities($this);
 		}
 	}
@@ -1112,11 +1116,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->allowFlight = $this->gamemode->equals(GameMode::CREATIVE());
 		$this->hungerManager->setEnabled($this->isSurvival());
+		$this->blockCollision = !$this->isSpectator();
+		$this->setSilent($this->isSpectator());
 
 		if($this->isSpectator()){
-			$this->setFlying(true);
-			$this->setHasBlockCollision(false);
-			$this->setSilent();
+			$this->internalSetFlying(true);
 			$this->onGround = false;
 
 			//TODO: HACK! this syncs the onground flag with the client so that flying works properly
@@ -1124,10 +1128,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->sendPosition($this->location, null, null, MovePlayerPacket::MODE_TELEPORT);
 		}else{
 			if($this->isSurvival()){
-				$this->setFlying(false);
+				$this->internalSetFlying(false);
 			}
-			$this->setHasBlockCollision(true);
-			$this->setSilent(false);
 			$this->checkGroundState(0, 0, 0, 0, 0, 0);
 		}
 	}
@@ -1139,19 +1141,19 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($this->gamemode->equals($gm)){
 			return false;
 		}
-
 		$ev = new PlayerGameModeChangeEvent($this, $gm);
 		$ev->call();
+
 		if($ev->isCancelled()){
 			return false;
 		}
-
+		$oldGameMode = $this->gamemode;
 		$this->internalSetGameMode($gm);
 
-		if($this->isSpectator()){
-			$this->despawnFromAll();
-		}else{
+		if ($oldGameMode->equals(GameMode::SPECTATOR())) {
 			$this->spawnToAll();
+		} elseif ($gm->equals(GameMode::SPECTATOR())) {
+			$this->despawnFromAll();
 		}
 
 		$this->getNetworkSession()->syncGameMode($this->gamemode);
