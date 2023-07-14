@@ -26,12 +26,13 @@ namespace pocketmine\block;
 use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
+use function min;
 
 class Melon extends Opaque{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			VanillaItems::MELON()->setCount(FortuneDropHelper::discrete($item, 3, 7, 9))
+			VanillaItems::MELON()->setCount(min(9, FortuneDropHelper::discrete($item, 3, 7)))
 		];
 	}
 
