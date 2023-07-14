@@ -1506,6 +1506,8 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("strong_poison_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::STRONG_POISON()));
 		$result->register("strong_regeneration_potion", fn() => Items::POTION()->setType(PotionType::STRONG_REGENERATION()));
 		$result->register("strong_regeneration_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::STRONG_REGENERATION()));
+		$result->register("strong_slowness_potion", fn() => Items::POTION()->setType(PotionType::STRONG_SLOWNESS()));
+		$result->register("strong_slowness_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::STRONG_SLOWNESS()));
 		$result->register("strong_strength_potion", fn() => Items::POTION()->setType(PotionType::STRONG_STRENGTH()));
 		$result->register("strong_strength_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::STRONG_STRENGTH()));
 		$result->register("strong_swiftness_potion", fn() => Items::POTION()->setType(PotionType::STRONG_SWIFTNESS()));
