@@ -124,6 +124,7 @@ final class ItemTypeNames{
 	public const COMPARATOR = "minecraft:comparator";
 	public const COMPASS = "minecraft:compass";
 	public const COMPOUND = "minecraft:compound";
+	public const CONCRETE = "minecraft:concrete";
 	public const COOKED_BEEF = "minecraft:cooked_beef";
 	public const COOKED_CHICKEN = "minecraft:cooked_chicken";
 	public const COOKED_COD = "minecraft:cooked_cod";
@@ -405,6 +406,7 @@ final class ItemTypeNames{
 	public const SHEEP_SPAWN_EGG = "minecraft:sheep_spawn_egg";
 	public const SHELTER_POTTERY_SHERD = "minecraft:shelter_pottery_sherd";
 	public const SHIELD = "minecraft:shield";
+	public const SHULKER_BOX = "minecraft:shulker_box";
 	public const SHULKER_SHELL = "minecraft:shulker_shell";
 	public const SHULKER_SPAWN_EGG = "minecraft:shulker_spawn_egg";
 	public const SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:silence_armor_trim_smithing_template";
