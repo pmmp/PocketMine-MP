@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use function mt_rand;
 
 final class NetherGoldOre extends Opaque{
 

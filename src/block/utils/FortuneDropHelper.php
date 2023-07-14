@@ -27,10 +27,8 @@ use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use function max;
-use function min;
 use function mt_getrandmax;
 use function mt_rand;
-use const PHP_INT_MAX;
 
 final class FortuneDropHelper{
 	/**
@@ -110,7 +108,7 @@ final class FortuneDropHelper{
 	 * Adds the fortune level to the base max and picks a random number between the minimim and adjusted maximum.
 	 * Each amount in the range has an equal chance of being picked.
 	 *
-	 * @param int $maxBase  Maximum base amount, as if the fortune level was 0
+	 * @param int $maxBase Maximum base amount, as if the fortune level was 0
 	 *
 	 * @return int the number of items to drop
 	 */
