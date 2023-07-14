@@ -23,25 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\FortuneTrait;
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 
 class Wheat extends Crops{
-	use FortuneTrait;
 
-	/**
-	 * @return Item[]
-	 */
-	protected function getFortuneDropsForLevel(int $level) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		if($this->age >= self::MAX_AGE){
-			return $this->binomialDrops(
-				VanillaItems::WHEAT_SEEDS(),
-				$level,
-				extraDrops: [
-					VanillaItems::WHEAT()
-				]
-			);
+			return [
+				VanillaItems::WHEAT(),
+				VanillaItems::WHEAT_SEEDS()->setCount(FortuneDropHelper::binomial($item, 0))
+			];
 		}else{
 			return [
 				VanillaItems::WHEAT_SEEDS()

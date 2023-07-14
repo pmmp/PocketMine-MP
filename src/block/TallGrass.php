@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\FortuneTrait;
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -31,7 +31,6 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class TallGrass extends Flowable{
-	use FortuneTrait;
 
 	public function canBeReplaced() : bool{
 		return true;
@@ -55,11 +54,8 @@ class TallGrass extends Flowable{
 		}
 	}
 
-	/**
-	 * @return Item[]
-	 */
-	protected function getFortuneDropsForLevel(int $level) : array{
-		return $this->grassDrops($level);
+	public function getDropsForIncompatibleTool(Item $item) : array{
+		return FortuneDropHelper::grass($item);
 	}
 
 	public function getFlameEncouragement() : int{

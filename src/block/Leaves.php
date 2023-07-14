@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\FortuneTrait;
 use pocketmine\block\utils\LeavesType;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -41,7 +40,6 @@ use function max;
 use function mt_rand;
 
 class Leaves extends Transparent{
-	use FortuneTrait;
 
 	protected LeavesType $leavesType; //immutable for now
 	protected bool $noDecay = false;
@@ -142,23 +140,8 @@ class Leaves extends Transparent{
 			return parent::getDropsForCompatibleTool($item);
 		}
 
-		return $this->getFortuneDropsForLevel(0);
-	}
+		$level = $item->getEnchantmentLevel(VanillaEnchantments::FORTUNE());
 
-	public function getFortuneDrops(Item $item) : array{
-		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0){
-			return parent::getDropsForCompatibleTool($item);
-		}
-
-		return $this->getFortuneDropsForLevel(
-			$item->getEnchantmentLevel(VanillaEnchantments::FORTUNE())
-		);
-	}
-
-	/**
-	 * @return Item[]
-	 */
-	protected function getFortuneDropsForLevel(int $level) : array{
 		$drops = [];
 		if(mt_rand(1, max(20 - 4 * $level, 1)) === 1){ //Saplings
 			// TODO: according to the wiki, the jungle saplings have a different drop rate

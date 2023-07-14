@@ -23,28 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\FortuneTrait;
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 
 class Carrot extends Crops{
-	use FortuneTrait;
 
-	/**
-	 * @return Item[]
-	 */
-	protected function getFortuneDropsForLevel(int $level) : array{
-		if($this->age >= self::MAX_AGE){
-			return $this->binomialDrops(
-				VanillaItems::CARROT(),
-				$level,
-				1
-			);
-		}else{
-			return [
-				VanillaItems::CARROT()
-			];
-		}
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			VanillaItems::CARROT()->setCount($this->age >= self::MAX_AGE ? FortuneDropHelper::binomial($item, 1) : 1)
+		];
 	}
 
 	public function asItem() : Item{

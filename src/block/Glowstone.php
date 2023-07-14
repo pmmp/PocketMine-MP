@@ -23,31 +23,20 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\FortuneTrait;
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 
 class Glowstone extends Transparent{
-	use FortuneTrait;
-
-	public const MINIMUM_DROPS = 2;
-	public const MAXIMUM_DROPS = 4;
 
 	public function getLightLevel() : int{
 		return 15;
 	}
 
-	/**
-	 * @return Item[]
-	 */
-	protected function getFortuneDropsForLevel(int $level) : array{
-		return $this->discreteDrops(
-			VanillaItems::GLOWSTONE_DUST(),
-			$level,
-			self::MINIMUM_DROPS,
-			self::MAXIMUM_DROPS,
-			4
-		);
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			VanillaItems::GLOWSTONE_DUST()->setCount(FortuneDropHelper::discrete($item, 2, 4))
+		];
 	}
 
 	public function isAffectedBySilkTouch() : bool{

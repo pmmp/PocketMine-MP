@@ -23,26 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\FortuneTrait;
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 
 class DoubleTallGrass extends DoublePlant{
-	use FortuneTrait;
 
 	public function canBeReplaced() : bool{
 		return true;
 	}
 
 	public function getDropsForIncompatibleTool(Item $item) : array{
-		return $this->getFortuneDropsForLevel(0);
-	}
-
-	/**
-	 * @return Item[]
-	 */
-	protected function getFortuneDropsForLevel(int $level) : array{
 		if($this->top){
-			return $this->grassDrops($level);
+			return FortuneDropHelper::grass($item);
 		}
 		return [];
 	}

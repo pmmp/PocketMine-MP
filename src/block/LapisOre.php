@@ -23,27 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\FortuneTrait;
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use function mt_rand;
 
 class LapisOre extends Opaque{
-	use FortuneTrait;
 
-	public const MINIMUM_DROPS = 4;
-	public const MAXIMUM_DROPS = 9;
-
-	/**
-	 * @return Item[]
-	 */
-	protected function getFortuneDropsForLevel(int $level) : array{
-		return $this->weightedDrops(
-			VanillaItems::LAPIS_LAZULI(),
-			$level,
-			self::MINIMUM_DROPS,
-			self::MAXIMUM_DROPS
-		);
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			VanillaItems::LAPIS_LAZULI()->setCount(FortuneDropHelper::weighted($item, min: 4, maxBase: 9))
+		];
 	}
 
 	public function isAffectedBySilkTouch() : bool{

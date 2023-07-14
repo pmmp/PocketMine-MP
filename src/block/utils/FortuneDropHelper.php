@@ -26,32 +26,12 @@ namespace pocketmine\block\utils;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use function array_merge;
 use function min;
 use function mt_getrandmax;
 use function mt_rand;
 use const PHP_INT_MAX;
 
-trait FortuneTrait{
-	/**
-	 * @return Item[]
-	 */
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return $this->getFortuneDrops($item);
-	}
-
-	/**
-	 * @return Item[]
-	 */
-	public function getFortuneDrops(Item $item) : array{
-		return $this->getFortuneDropsForLevel($item->getEnchantmentLevel(VanillaEnchantments::FORTUNE()));
-	}
-
-	/**
-	 * @return Item[]
-	 */
-	abstract protected function getFortuneDropsForLevel(int $level) : array;
-
+final class FortuneDropHelper{
 	/**
 	 * If a random number between 0-1 is greater than 2/(level+2), this multiplies the max drop amount by level+1, and
 	 * picks a random amount between the minimum and multiplied maximum. Each level of fortune increases the chance of
@@ -59,44 +39,50 @@ trait FortuneTrait{
 	 *
 	 * Otherwise, returns a random amount of the item between the minimum and original maximum.
 	 *
-	 * @return Item[]
+	 * @param Item $usedItem The item used to break the block
+	 * @param int  $min      Minimum amount
+	 * @param int  $maxBase  Maximum amount, as if fortune level was 0
+	 *
+	 * @return int the number of items to drop
 	 */
-	protected function weightedDrops(Item $item, int $fortuneLevel, int $min, int $max) : array{
-		if($max < $min){
+	public static function weighted(Item $usedItem, int $min, int $maxBase) : int{
+		if($maxBase < $min){
 			throw new \InvalidArgumentException("Maximum drop amount must be greater than or equal to minimum drop amount");
 		}
 
-		if($fortuneLevel > 0 && mt_rand() / mt_getrandmax() > 2 / ($fortuneLevel + 2)){
-			$count = mt_rand($min, $max * ($fortuneLevel + 1));
-		}else{
-			$count = mt_rand($min, $max);
-		}
-		return [
-			$item->setCount($count)
-		];
+		$fortuneLevel = $usedItem->getEnchantmentLevel(VanillaEnchantments::FORTUNE());
+
+		return mt_rand($min,
+			$fortuneLevel > 0 && mt_rand() / mt_getrandmax() > 2 / ($fortuneLevel + 2) ?
+				$maxBase * ($fortuneLevel + 1) :
+				$maxBase
+		);
 	}
 
 	/**
-	 * Increases the drop amount according to a binomial distribution. The function will roll 3+level times, and add 1
+	 * Increases the drop amount according to a binomial distribution. The function will roll maxBase+level times, and add 1
 	 * if a random number between 0-1 is less than the given probability. Each level of fortune adds one extra roll.
 	 *
-	 * @param float  $chance     The chance of adding 1 to the amount for each roll, must be in the range 0-1
-	 * @param Item[] $extraDrops Extra drops to add to the result
+	 * As many as maxBase+level items can be dropped. This applies even if the fortune level is 0.
 	 *
-	 * @return Item[]
+	 * @param float $chance   The chance of adding 1 to the amount for each roll, must be in the range 0-1
+	 * @param int   $min      Minimum amount
+	 * @param int   $minRolls Number of rolls if fortune level is 0, added to fortune level to calculate total rolls
+	 *
+	 * @return int the number of items to drop
 	 */
-	protected function binomialDrops(Item $item, int $fortuneLevel, int $min = 0, float $chance = 4 / 7, array $extraDrops = []) : array{
+	public static function binomial(Item $usedItem, int $min, int $minRolls = 3, float $chance = 4 / 7) : int{
+		$fortuneLevel = $usedItem->getEnchantmentLevel(VanillaEnchantments::FORTUNE());
+
 		$count = $min;
-		for($i = 0; $i < 3 + $fortuneLevel; ++$i){
+		$rolls = $minRolls + $fortuneLevel;
+		for($i = 0; $i < $rolls; ++$i){
 			if(mt_rand() / mt_getrandmax() < $chance){
 				++$count;
 			}
 		}
-		return array_merge(
-			$extraDrops, [
-				$item->setCount($count)
-			]
-		);
+
+		return $count;
 	}
 
 	/**
@@ -104,9 +90,13 @@ trait FortuneTrait{
 	 * Fortune level increases the maximum number of seeds that can be dropped.
 	 * A discrete uniform distribution is used to determine the number of seeds dropped.
 	 *
+	 * TODO: I'm not sure this really belongs here, but it's preferable not to duplicate this code between grass and
+	 * tall grass.
+	 *
 	 * @return Item[]
 	 */
-	protected function grassDrops(int $fortuneLevel) : array{
+	public static function grass(Item $usedItem) : array{
+		$fortuneLevel = $usedItem->getEnchantmentLevel(VanillaEnchantments::FORTUNE());
 		if(mt_rand(0, 7) === 0){
 			$drop = mt_rand(1, 7);
 			if($drop <= 1 + 2 * $fortuneLevel){
@@ -124,22 +114,19 @@ trait FortuneTrait{
 	 * Each amount in the range has an equal chance of being picked.
 	 *
 	 * @param int $maxBase  Maximum base amount, as if the fortune level was 0
-	 * @param int $maxLimit Maximum amount to return, regardless of the other parameters
+	 * @param int $maxLimit Maximum amount, regardless of the other parameters
 	 *
-	 * @return Item[]
+	 * @return int the number of items to drop
 	 */
-	protected function discreteDrops(Item $item, int $fortuneLevel, int $min, int $maxBase, int $maxLimit = PHP_INT_MAX) : array{
+	public static function discrete(Item $usedItem, int $min, int $maxBase, int $maxLimit = PHP_INT_MAX) : int{
 		if($maxBase < $min){
 			throw new \InvalidArgumentException("Minimum base drop amount must be less than or equal to maximum base drop amount");
 		}
 
 		$max = min(
 			$maxLimit,
-			$maxBase + $fortuneLevel
+			$maxBase + $usedItem->getEnchantmentLevel(VanillaEnchantments::FORTUNE())
 		);
-		$count = mt_rand($min, $max);
-		return [
-			$item->setCount($count)
-		];
+		return mt_rand($min, $max);
 	}
 }

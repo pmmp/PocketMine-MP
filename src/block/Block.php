@@ -567,10 +567,6 @@ class Block{
 				return $this->getSilkTouchDrops($item);
 			}
 
-			if($item->hasEnchantment(VanillaEnchantments::FORTUNE())){
-				return $this->getFortuneDrops($item);
-			}
-
 			return $this->getDropsForCompatibleTool($item);
 		}
 
@@ -602,15 +598,6 @@ class Block{
 	 */
 	public function getSilkTouchDrops(Item $item) : array{
 		return [$this->asItem()];
-	}
-
-	/**
-	 * Returns an array of Items to be dropped when the block is broken using a tool enchanted with Fortune.
-	 *
-	 * @return Item[]
-	 */
-	public function getFortuneDrops(Item $item) : array{
-		return $this->getDropsForCompatibleTool($item);
 	}
 
 	/**

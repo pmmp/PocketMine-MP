@@ -23,25 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\FortuneTrait;
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 
 class Beetroot extends Crops{
-	use FortuneTrait;
 
-	/**
-	 * @return Item[]
-	 */
-	protected function getFortuneDropsForLevel(int $level) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		if($this->age >= self::MAX_AGE){
-			return $this->binomialDrops(
-				VanillaItems::BEETROOT_SEEDS(),
-				$level,
-				extraDrops: [
-					VanillaItems::BEETROOT()
-				]
-			);
+			return [
+				VanillaItems::BEETROOT_SEEDS()->setCount(FortuneDropHelper::binomial($item, 0)),
+				VanillaItems::BEETROOT()
+			];
 		}else{
 			return [
 				VanillaItems::BEETROOT_SEEDS()

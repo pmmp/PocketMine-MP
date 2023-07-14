@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
-use pocketmine\block\utils\FortuneTrait;
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use function max;
@@ -33,13 +33,10 @@ use function mt_rand;
 
 class Gravel extends Opaque implements Fallable{
 	use FallableTrait;
-	use FortuneTrait;
 
-	/**
-	 * @return Item[]
-	 */
-	protected function getFortuneDropsForLevel(int $level) : array{
-		if(mt_rand(1, max(10 - 3 * $level, 1)) === 1){
+	public function getDropsForCompatibleTool(Item $item) : array{
+		$fortuneLevel = $item->getEnchantmentLevel(VanillaEnchantments::FORTUNE());
+		if(mt_rand(1, max(10 - 3 * $fortuneLevel, 1)) === 1){
 			return [
 				VanillaItems::FLINT()
 			];
