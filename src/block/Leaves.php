@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\block\utils\LeavesType;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\LeavesDecayEvent;
-use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
@@ -36,7 +36,6 @@ use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\World;
-use function max;
 use function mt_rand;
 
 class Leaves extends Transparent{
@@ -139,10 +138,8 @@ class Leaves extends Transparent{
 			return parent::getDropsForCompatibleTool($item);
 		}
 
-		$fortuneLevel = $item->getEnchantmentLevel(VanillaEnchantments::FORTUNE());
-
 		$drops = [];
-		if(mt_rand(1, max(20 - 4 * $fortuneLevel, 1)) === 1){ //Saplings
+		if(FortuneDropHelper::bonusChance($item, 20, 4)){ //Saplings
 			// TODO: according to the wiki, the jungle saplings have a different drop rate
 			$sapling = (match($this->leavesType){
 				LeavesType::ACACIA() => VanillaBlocks::ACACIA_SAPLING(),
@@ -160,10 +157,13 @@ class Leaves extends Transparent{
 				$drops[] = $sapling;
 			}
 		}
-		if(($this->leavesType->equals(LeavesType::OAK()) || $this->leavesType->equals(LeavesType::DARK_OAK())) && mt_rand(1, max(200 - 20 * $fortuneLevel, 1)) === 1){ //Apples
+		if(
+			($this->leavesType->equals(LeavesType::OAK()) || $this->leavesType->equals(LeavesType::DARK_OAK())) &&
+			FortuneDropHelper::bonusChance($item, 200, 20)
+		){ //Apples
 			$drops[] = VanillaItems::APPLE();
 		}
-		if(mt_rand(1, max(50 - 5 * $fortuneLevel, 1)) === 1){
+		if(FortuneDropHelper::bonusChance($item, 50, 5)){
 			$drops[] = VanillaItems::STICK()->setCount(mt_rand(1, 2));
 		}
 

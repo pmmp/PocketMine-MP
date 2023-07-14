@@ -26,6 +26,7 @@ namespace pocketmine\block\utils;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
+use function max;
 use function min;
 use function mt_getrandmax;
 use function mt_rand;
@@ -96,14 +97,10 @@ final class FortuneDropHelper{
 	 * @return Item[]
 	 */
 	public static function grass(Item $usedItem) : array{
-		$fortuneLevel = $usedItem->getEnchantmentLevel(VanillaEnchantments::FORTUNE());
-		if(mt_rand(0, 7) === 0){
-			$drop = mt_rand(1, 7);
-			if($drop <= 1 + 2 * $fortuneLevel){
-				return [
-					VanillaItems::WHEAT_SEEDS()->setCount($drop)
-				];
-			}
+		if(FortuneDropHelper::bonusChance($usedItem, 8, 2)){
+			return [
+				VanillaItems::WHEAT_SEEDS()
+			];
 		}
 
 		return [];
@@ -128,5 +125,19 @@ final class FortuneDropHelper{
 			$maxBase + $usedItem->getEnchantmentLevel(VanillaEnchantments::FORTUNE())
 		);
 		return mt_rand($min, $max);
+	}
+
+	/**
+	 * Calculates a chance of getting an extra bonus drop, influenced by the fortune level.
+	 * The chance is 1/(bound+(fortuneLevel*subtract)).
+	 *
+	 * @param int $bound    The base chance of getting a bonus drop
+	 * @param int $subtract The amount to subtract from the bound for each level of fortune
+	 *
+	 * @return bool whether the bonus drop should be added
+	 */
+	public static function bonusChance(Item $usedItem, int $bound, int $subtract) : bool{
+		$fortuneLevel = $usedItem->getEnchantmentLevel(VanillaEnchantments::FORTUNE());
+		return mt_rand(1, max(1, $bound - ($fortuneLevel * $subtract))) === 1;
 	}
 }
