@@ -61,6 +61,7 @@ use const OPENSSL_ALGO_SHA384;
 use const STR_PAD_LEFT;
 
 final class JwtUtils{
+	public const BEDROCK_SIGNING_KEY_CURVE_NAME = "secp384r1";
 
 	/**
 	 * @return string[]
@@ -202,6 +203,17 @@ final class JwtUtils{
 		$signingKeyOpenSSL = openssl_pkey_get_public(sprintf("-----BEGIN PUBLIC KEY-----\n%s\n-----END PUBLIC KEY-----\n", base64_encode($derKey)));
 		if($signingKeyOpenSSL === false){
 			throw new JwtException("OpenSSL failed to parse key: " . openssl_error_string());
+		}
+		$details = openssl_pkey_get_details($signingKeyOpenSSL);
+		if($details === false){
+			throw new JwtException("OpenSSL failed to get details from key: " . openssl_error_string());
+		}
+		if(!isset($details['ec']['curve_name'])){
+			throw new JwtException("Expected an EC key");
+		}
+		$curve = $details['ec']['curve_name'];
+		if($curve !== self::BEDROCK_SIGNING_KEY_CURVE_NAME){
+			throw new JwtException("Key must belong to curve " . self::BEDROCK_SIGNING_KEY_CURVE_NAME . ", got $curve");
 		}
 		return $signingKeyOpenSSL;
 	}
