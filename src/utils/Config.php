@@ -50,7 +50,6 @@ use function trim;
 use function unserialize;
 use function yaml_emit;
 use function yaml_parse;
-use const CASE_LOWER;
 use const JSON_BIGINT_AS_STRING;
 use const JSON_PRETTY_PRINT;
 use const JSON_THROW_ON_ERROR;
