@@ -100,7 +100,7 @@ class Hopper extends Transparent{
 		$world->scheduleDelayedBlockUpdate($this->position, 8);
 	}
 
-	private function transferFirstItem(){
+	private function transferFirstItem(): void{
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileHopper){
 			$hopperEmpty = true;
