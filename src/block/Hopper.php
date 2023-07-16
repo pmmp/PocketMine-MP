@@ -77,6 +77,9 @@ class Hopper extends Transparent{
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->facing = $face === Facing::DOWN ? Facing::DOWN : Facing::opposite($face);
 
+		$world = $this->position->getWorld();
+		$world->scheduleDelayedBlockUpdate($blockReplace->position, 8);
+
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
@@ -92,7 +95,45 @@ class Hopper extends Transparent{
 	}
 
 	public function onScheduledUpdate() : void{
-		//TODO
+		$world = $this->position->getWorld();
+		$this->transferFirstItem();
+		$world->scheduleDelayedBlockUpdate($this->position, 8);
+	}
+
+	private function transferFirstItem(){
+		$tile = $this->position->getWorld()->getTile($this->position);
+		if($tile instanceof TileHopper){
+			$hopperEmpty = true;
+
+			$itemStack = $tile->getInventory()->getItem(0);
+
+			for($i = 0; $i < 5; $i++){
+				if($hopperEmpty === false) continue;
+
+				$itemStack = $tile->getInventory()->getItem($i);
+
+				if(!$itemStack->isNull()){
+					$hopperEmpty = false;
+				}
+			}
+
+			if($hopperEmpty) return;
+
+			$singleItem = $itemStack->pop(1);
+
+			$facingBlock = $this->getSide($this->facing);
+
+			if($facingBlock instanceof Hopper){
+				$facingTile = $this->position->getWorld()->getTile($facingBlock->position);
+
+				if($facingTile instanceof TileHopper){
+					if($facingTile->getInventory()->canAddItem($singleItem)){
+						$tile->getInventory()->removeItem($singleItem);
+						$facingTile->getInventory()->addItem($singleItem);
+					}
+				}
+			}
+		}
 	}
 
 	//TODO: redstone logic, sucking logic
