@@ -102,37 +102,27 @@ class Hopper extends Transparent{
 
 	private function transferFirstItem() : void{
 		$tile = $this->position->getWorld()->getTile($this->position);
-		if($tile instanceof TileHopper){
-			$hopperEmpty = true;
+		if(!$tile instanceof TileHopper) return;
 
-			$itemStack = $tile->getInventory()->getItem(0);
+		$facingBlock = $this->getSide($this->facing);
+		if(!$facingBlock instanceof Hopper) return;
 
-			for($i = 0; $i < 5; $i++){
-				if($hopperEmpty === false) continue;
+		$facingTile = $this->position->getWorld()->getTile($facingBlock->position);
+		if(!$facingTile instanceof TileHopper) return;
 
-				$itemStack = $tile->getInventory()->getItem($i);
+		for($i = 0; $i < 5; $i++){
+			$itemStack = $tile->getInventory()->getItem($i);
 
-				if(!$itemStack->isNull()){
-					$hopperEmpty = false;
-				}
-			}
-
-			if($hopperEmpty) return;
+			if($itemStack->isNull()) continue;
 
 			$singleItem = $itemStack->pop(1);
 
-			$facingBlock = $this->getSide($this->facing);
-
-			if($facingBlock instanceof Hopper){
-				$facingTile = $this->position->getWorld()->getTile($facingBlock->position);
-
-				if($facingTile instanceof TileHopper){
-					if($facingTile->getInventory()->canAddItem($singleItem)){
-						$tile->getInventory()->removeItem($singleItem);
-						$facingTile->getInventory()->addItem($singleItem);
-					}
-				}
+			if($facingTile->getInventory()->canAddItem($singleItem)){
+				$tile->getInventory()->removeItem($singleItem);
+				$facingTile->getInventory()->addItem($singleItem);
 			}
+
+			break;
 		}
 	}
 
