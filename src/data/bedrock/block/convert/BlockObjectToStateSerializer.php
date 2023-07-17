@@ -141,7 +141,7 @@ use pocketmine\block\UnderwaterTorch;
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
-use pocketmine\block\utils\DripleafTiltType;
+use pocketmine\block\utils\DripleafState;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
@@ -965,12 +965,12 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::BIG_DRIPLEAF_HEAD(), function(BigDripleafHead $block) : Writer{
 			return Writer::create(Ids::BIG_DRIPLEAF)
 				->writeLegacyHorizontalFacing($block->getFacing())
-				->writeString(StateNames::BIG_DRIPLEAF_TILT, match($block->getTilt()->id()){
-					DripleafTiltType::NONE()->id() => StringValues::BIG_DRIPLEAF_TILT_NONE,
-					DripleafTiltType::UNSTABLE()->id() => StringValues::BIG_DRIPLEAF_TILT_UNSTABLE,
-					DripleafTiltType::PARTIAL()->id() => StringValues::BIG_DRIPLEAF_TILT_PARTIAL_TILT,
-					DripleafTiltType::FULL()->id() => StringValues::BIG_DRIPLEAF_TILT_FULL_TILT,
-					default => throw new BlockStateSerializeException("Invalid Dripleaf tilt type " . $block->getTilt()->name())
+				->writeString(StateNames::BIG_DRIPLEAF_TILT, match($block->getLeafState()->id()){
+					DripleafState::STABLE()->id() => StringValues::BIG_DRIPLEAF_TILT_NONE,
+					DripleafState::UNSTABLE()->id() => StringValues::BIG_DRIPLEAF_TILT_UNSTABLE,
+					DripleafState::PARTIAL_TILT()->id() => StringValues::BIG_DRIPLEAF_TILT_PARTIAL_TILT,
+					DripleafState::FULL_TILT()->id() => StringValues::BIG_DRIPLEAF_TILT_FULL_TILT,
+					default => throw new BlockStateSerializeException("Invalid Dripleaf tilt type " . $block->getLeafState()->name())
 				})
 				->writeBool(StateNames::BIG_DRIPLEAF_HEAD, true);
 		});

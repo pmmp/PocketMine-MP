@@ -31,12 +31,12 @@ use pocketmine\utils\EnumTrait;
  * @see build/generate-registry-annotations.php
  * @generate-registry-docblock
  *
- * @method static DripleafTiltType FULL()
- * @method static DripleafTiltType NONE()
- * @method static DripleafTiltType PARTIAL()
- * @method static DripleafTiltType UNSTABLE()
+ * @method static DripleafState FULL_TILT()
+ * @method static DripleafState PARTIAL_TILT()
+ * @method static DripleafState STABLE()
+ * @method static DripleafState UNSTABLE()
  */
-final class DripleafTiltType{
+final class DripleafState{
 	use EnumTrait {
 		register as Enum_register;
 		__construct as Enum___construct;
@@ -44,10 +44,10 @@ final class DripleafTiltType{
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self("none", 1),
+			new self("stable", 1),
 			new self("unstable", 15),
-			new self("partial", 15),
-			new self("full", 100)
+			new self("partial_tilt", 15),
+			new self("full_tilt", 100)
 		);
 	}
 

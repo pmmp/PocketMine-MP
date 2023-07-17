@@ -35,7 +35,7 @@ use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
-use pocketmine\block\utils\DripleafTiltType;
+use pocketmine\block\utils\DripleafState;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
@@ -831,11 +831,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			if($in->readBool(StateNames::BIG_DRIPLEAF_HEAD)){
 				return Blocks::BIG_DRIPLEAF_HEAD()
 					->setFacing($in->readLegacyHorizontalFacing())
-					->setTilt(match($type = $in->readString(StateNames::BIG_DRIPLEAF_TILT)){
-						StringValues::BIG_DRIPLEAF_TILT_NONE => DripleafTiltType::NONE(),
-						StringValues::BIG_DRIPLEAF_TILT_UNSTABLE => DripleafTiltType::UNSTABLE(),
-						StringValues::BIG_DRIPLEAF_TILT_PARTIAL_TILT => DripleafTiltType::PARTIAL(),
-						StringValues::BIG_DRIPLEAF_TILT_FULL_TILT => DripleafTiltType::FULL(),
+					->setLeafState(match($type = $in->readString(StateNames::BIG_DRIPLEAF_TILT)){
+						StringValues::BIG_DRIPLEAF_TILT_NONE => DripleafState::STABLE(),
+						StringValues::BIG_DRIPLEAF_TILT_UNSTABLE => DripleafState::UNSTABLE(),
+						StringValues::BIG_DRIPLEAF_TILT_PARTIAL_TILT => DripleafState::PARTIAL_TILT(),
+						StringValues::BIG_DRIPLEAF_TILT_FULL_TILT => DripleafState::FULL_TILT(),
 						default => throw $in->badValueException(StateNames::BIG_DRIPLEAF_TILT, $type),
 					});
 			}else{

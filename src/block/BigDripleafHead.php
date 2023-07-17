@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\DripleafTiltType;
+use pocketmine\block\utils\DripleafState;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Projectile;
@@ -36,29 +36,29 @@ use pocketmine\world\sound\DripleafTiltUpSound;
 
 class BigDripleafHead extends BaseBigDripleaf{
 
-	protected DripleafTiltType $tilt;
+	protected DripleafState $leafState;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->tilt = DripleafTiltType::NONE();
+		$this->leafState = DripleafState::STABLE();
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		parent::describeBlockOnlyState($w);
-		$w->dripleafTiltType($this->tilt);
+		$w->dripleafState($this->leafState);
 	}
 
 	protected function isHead() : bool{
 		return true;
 	}
 
-	public function getTilt() : DripleafTiltType{
-		return $this->tilt;
+	public function getLeafState() : DripleafState{
+		return $this->leafState;
 	}
 
 	/** @return $this */
-	public function setTilt(DripleafTiltType $tilt) : self{
-		$this->tilt = $tilt;
+	public function setLeafState(DripleafState $leafState) : self{
+		$this->leafState = $leafState;
 		return $this;
 	}
 
@@ -66,33 +66,33 @@ class BigDripleafHead extends BaseBigDripleaf{
 		return true;
 	}
 
-	private function setTiltAndScheduleTick(DripleafTiltType $tilt) : void{
-		$this->position->getWorld()->setBlock($this->position, $this->setTilt($tilt));
+	private function setTiltAndScheduleTick(DripleafState $tilt) : void{
+		$this->position->getWorld()->setBlock($this->position, $this->setLeafState($tilt));
 		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, $tilt->getUpdateTicks());
 	}
 
 	public function onEntityInside(Entity $entity) : bool{
-		if(!$entity instanceof Projectile && $this->tilt->equals(DripleafTiltType::NONE())){
-			$this->setTiltAndScheduleTick(DripleafTiltType::UNSTABLE());
+		if(!$entity instanceof Projectile && $this->leafState->equals(DripleafState::STABLE())){
+			$this->setTiltAndScheduleTick(DripleafState::UNSTABLE());
 			return true;
 		}
 		return false;
 	}
 
 	public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
-		$this->setTiltAndScheduleTick(DripleafTiltType::FULL());
+		$this->setTiltAndScheduleTick(DripleafState::FULL_TILT());
 		$this->position->getWorld()->addSound($this->position, new DripleafTiltDownSound());
 	}
 
 	public function onScheduledUpdate() : void{
-		if(!$this->tilt->equals(DripleafTiltType::NONE())){
-			if($this->tilt->equals(DripleafTiltType::FULL())){
-				$this->position->getWorld()->setBlock($this->position, $this->setTilt(DripleafTiltType::NONE()));
+		if(!$this->leafState->equals(DripleafState::STABLE())){
+			if($this->leafState->equals(DripleafState::FULL_TILT())){
+				$this->position->getWorld()->setBlock($this->position, $this->setLeafState(DripleafState::STABLE()));
 				$this->position->getWorld()->addSound($this->position, new DripleafTiltUpSound());
 			}else{
-				$this->setTiltAndScheduleTick(match ($this->tilt->id()) {
-					DripleafTiltType::UNSTABLE()->id() => DripleafTiltType::PARTIAL(),
-					DripleafTiltType::PARTIAL()->id() => DripleafTiltType::FULL(),
+				$this->setTiltAndScheduleTick(match ($this->leafState->id()) {
+					DripleafState::UNSTABLE()->id() => DripleafState::PARTIAL_TILT(),
+					DripleafState::PARTIAL_TILT()->id() => DripleafState::FULL_TILT(),
 					default => throw new AssumptionFailedError("All types should be covered")
 				});
 				$this->position->getWorld()->addSound($this->position, new DripleafTiltDownSound());
@@ -101,13 +101,13 @@ class BigDripleafHead extends BaseBigDripleaf{
 	}
 
 	protected function recalculateCollisionBoxes() : array{
-		if(!$this->tilt->equals(DripleafTiltType::FULL())){
+		if(!$this->leafState->equals(DripleafState::FULL_TILT())){
 			return [
 				AxisAlignedBB::one()
 					 ->trim(Facing::DOWN, 11 / 16)
-					 ->trim(Facing::UP, match($this->tilt->id()){
-						 DripleafTiltType::NONE()->id(), DripleafTiltType::UNSTABLE()->id() => 1 / 16,
-						 DripleafTiltType::PARTIAL()->id() => 3 / 16,
+					 ->trim(Facing::UP, match($this->leafState->id()){
+						 DripleafState::STABLE()->id(), DripleafState::UNSTABLE()->id() => 1 / 16,
+						 DripleafState::PARTIAL_TILT()->id() => 3 / 16,
 						 default => throw new AssumptionFailedError("All types should be covered")
 					 })
 			];

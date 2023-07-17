@@ -71,13 +71,13 @@ trait RuntimeEnumDeserializerTrait{
 		};
 	}
 
-	public function dripleafTiltType(\pocketmine\block\utils\DripleafTiltType &$value) : void{
+	public function dripleafState(\pocketmine\block\utils\DripleafState &$value) : void{
 		$value = match($this->readInt(2)){
-			0 => \pocketmine\block\utils\DripleafTiltType::FULL(),
-			1 => \pocketmine\block\utils\DripleafTiltType::NONE(),
-			2 => \pocketmine\block\utils\DripleafTiltType::PARTIAL(),
-			3 => \pocketmine\block\utils\DripleafTiltType::UNSTABLE(),
-			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for DripleafTiltType")
+			0 => \pocketmine\block\utils\DripleafState::FULL_TILT(),
+			1 => \pocketmine\block\utils\DripleafState::PARTIAL_TILT(),
+			2 => \pocketmine\block\utils\DripleafState::STABLE(),
+			3 => \pocketmine\block\utils\DripleafState::UNSTABLE(),
+			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for DripleafState")
 		};
 	}
 

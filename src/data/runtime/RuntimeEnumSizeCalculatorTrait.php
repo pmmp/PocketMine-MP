@@ -47,7 +47,7 @@ trait RuntimeEnumSizeCalculatorTrait{
 		$this->addBits(2);
 	}
 
-	public function dripleafTiltType(\pocketmine\block\utils\DripleafTiltType &$value) : void{
+	public function dripleafState(\pocketmine\block\utils\DripleafState &$value) : void{
 		$this->addBits(2);
 	}
 

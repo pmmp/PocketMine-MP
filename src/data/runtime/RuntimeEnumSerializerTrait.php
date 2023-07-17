@@ -71,13 +71,13 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
-	public function dripleafTiltType(\pocketmine\block\utils\DripleafTiltType &$value) : void{
+	public function dripleafState(\pocketmine\block\utils\DripleafState &$value) : void{
 		$this->writeInt(2, match($value){
-			\pocketmine\block\utils\DripleafTiltType::FULL() => 0,
-			\pocketmine\block\utils\DripleafTiltType::NONE() => 1,
-			\pocketmine\block\utils\DripleafTiltType::PARTIAL() => 2,
-			\pocketmine\block\utils\DripleafTiltType::UNSTABLE() => 3,
-			default => throw new \pocketmine\utils\AssumptionFailedError("All DripleafTiltType cases should be covered")
+			\pocketmine\block\utils\DripleafState::FULL_TILT() => 0,
+			\pocketmine\block\utils\DripleafState::PARTIAL_TILT() => 1,
+			\pocketmine\block\utils\DripleafState::STABLE() => 2,
+			\pocketmine\block\utils\DripleafState::UNSTABLE() => 3,
+			default => throw new \pocketmine\utils\AssumptionFailedError("All DripleafState cases should be covered")
 		});
 	}
 
