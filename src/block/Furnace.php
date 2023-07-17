@@ -100,7 +100,10 @@ class Furnace extends Opaque implements HopperInteractable{
 		$furnanceTile = $this->position->getWorld()->getTile($this->position);
 		if(!$furnanceTile instanceof TileFurnace) return;
 
-		$hopperFacing = $tileHopper->getBlock()->getFacing();
+		$hopperBlock = $tileHopper->getBlock();
+		if(!$hopperBlock instanceof Hopper) return;
+		
+		$hopperFacing = $hopperBlock->getFacing();
 		$hopperInventory = $tileHopper->getInventory();
 		$furnanceInventory = $furnanceTile->getInventory();
 
