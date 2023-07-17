@@ -146,7 +146,7 @@ class SmallDripleaf extends Transparent{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0 && !$this->top){
+		if(!$this->top){
 			return [$this->asItem()];
 		}
 		return [];
