@@ -114,14 +114,14 @@ class SmallDripleaf extends Transparent{
 		}
 		$world = $this->position->getWorld();
 		$tx = new BlockTransaction($world);
-		$high = mt_rand(2, 5);
+		$height = mt_rand(2, 5);
 		$grown = 0;
-		for($i = 0; $i < $high; $i++){
+		for($i = 0; $i < $height; $i++){
 			$pos = $bottomBlock->getSide(Facing::UP, $i)->getPosition();
 			if(!$this->canGrowTo($pos)){
 				break;
 			}
-			$block = ++$grown < $high && $this->canGrowTo($pos->getSide(Facing::UP)) ?
+			$block = ++$grown < $height && $this->canGrowTo($pos->getSide(Facing::UP)) ?
 				VanillaBlocks::BIG_DRIPLEAF_STEM() :
 				VanillaBlocks::BIG_DRIPLEAF_HEAD();
 			$tx->addBlock($pos, $block->setFacing($this->facing));
