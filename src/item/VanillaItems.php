@@ -39,6 +39,7 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\CloningRegistryTrait;
 use pocketmine\world\sound\ArmorEquipChainSound;
 use pocketmine\world\sound\ArmorEquipDiamondSound;
+use pocketmine\world\sound\ArmorEquipGenericSound;
 use pocketmine\world\sound\ArmorEquipGoldSound;
 use pocketmine\world\sound\ArmorEquipIronSound;
 use pocketmine\world\sound\ArmorEquipLeatherSound;
@@ -622,6 +623,7 @@ final class VanillaItems{
 		$ironSound = new ArmorEquipIronSound();
 		$leatherSound = new ArmorEquipLeatherSound();
 		$netheriteSound = new ArmorEquipNetheriteSound();
+		$genericSound = new ArmorEquipGenericSound();
 
 		self::register("chainmail_boots", new Armor(new IID(Ids::CHAINMAIL_BOOTS), "Chainmail Boots", new ArmorTypeInfo(1, 196, ArmorInventory::SLOT_FEET), $chainSound));
 		self::register("diamond_boots", new Armor(new IID(Ids::DIAMOND_BOOTS), "Diamond Boots", new ArmorTypeInfo(3, 430, ArmorInventory::SLOT_FEET, 2), $diamondSound));
@@ -643,7 +645,7 @@ final class VanillaItems{
 		self::register("iron_helmet", new Armor(new IID(Ids::IRON_HELMET), "Iron Helmet", new ArmorTypeInfo(2, 166, ArmorInventory::SLOT_HEAD), $ironSound));
 		self::register("leather_cap", new Armor(new IID(Ids::LEATHER_CAP), "Leather Cap", new ArmorTypeInfo(1, 56, ArmorInventory::SLOT_HEAD), $leatherSound));
 		self::register("netherite_helmet", new Armor(new IID(Ids::NETHERITE_HELMET), "Netherite Helmet", new ArmorTypeInfo(3, 408, ArmorInventory::SLOT_HEAD, 3, true), $netheriteSound));
-		self::register("turtle_helmet", new TurtleHelmet(new IID(Ids::TURTLE_HELMET), "Turtle Shell", new ArmorTypeInfo(2, 276, ArmorInventory::SLOT_HEAD)));
+		self::register("turtle_helmet", new TurtleHelmet(new IID(Ids::TURTLE_HELMET), "Turtle Shell", new ArmorTypeInfo(2, 276, ArmorInventory::SLOT_HEAD), $genericSound));
 
 		self::register("chainmail_leggings", new Armor(new IID(Ids::CHAINMAIL_LEGGINGS), "Chainmail Leggings", new ArmorTypeInfo(4, 226, ArmorInventory::SLOT_LEGS), $chainSound));
 		self::register("diamond_leggings", new Armor(new IID(Ids::DIAMOND_LEGGINGS), "Diamond Leggings", new ArmorTypeInfo(6, 496, ArmorInventory::SLOT_LEGS, 2), $diamondSound));

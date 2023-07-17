@@ -81,14 +81,6 @@ class Armor extends Durable{
 	}
 
 	/**
-	 * @return $this
-	 */
-	public function setEquipSound(?Sound $equipSound) : self{
-		$this->equipSound = $equipSound;
-		return $this;
-	}
-
-	/**
 	 * Returns the dyed colour of this armour piece. This generally only applies to leather armour.
 	 */
 	public function getCustomColor() : ?Color{
