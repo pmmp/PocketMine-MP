@@ -71,17 +71,33 @@ class BigDripleafHead extends BaseBigDripleaf{
 		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, $tilt->getUpdateTicks());
 	}
 
+	private function getLeafTopOffset() : float{
+		return match($this->leafState){
+			DripleafState::STABLE(), DripleafState::UNSTABLE() => 1 / 16,
+			DripleafState::PARTIAL_TILT() => 3 / 16,
+			default => 0
+		};
+	}
+
 	public function onEntityInside(Entity $entity) : bool{
 		if(!$entity instanceof Projectile && $this->leafState->equals(DripleafState::STABLE())){
-			$this->setTiltAndScheduleTick(DripleafState::UNSTABLE());
-			return true;
+			//the entity must be standing on top of the leaf - do not collapse if the entity is standing underneath
+			$intersection = AxisAlignedBB::one()
+				->offset($this->position->x, $this->position->y, $this->position->z)
+				->trim(Facing::DOWN, 1 - $this->getLeafTopOffset());
+			if($entity->getBoundingBox()->intersectsWith($intersection)){
+				$this->setTiltAndScheduleTick(DripleafState::UNSTABLE());
+				return false;
+			}
 		}
-		return false;
+		return true;
 	}
 
 	public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
-		$this->setTiltAndScheduleTick(DripleafState::FULL_TILT());
-		$this->position->getWorld()->addSound($this->position, new DripleafTiltDownSound());
+		if(!$this->leafState->equals(DripleafState::FULL_TILT())){
+			$this->setTiltAndScheduleTick(DripleafState::FULL_TILT());
+			$this->position->getWorld()->addSound($this->position, new DripleafTiltDownSound());
+		}
 	}
 
 	public function onScheduledUpdate() : void{
@@ -105,11 +121,7 @@ class BigDripleafHead extends BaseBigDripleaf{
 			return [
 				AxisAlignedBB::one()
 					 ->trim(Facing::DOWN, 11 / 16)
-					 ->trim(Facing::UP, match($this->leafState->id()){
-						 DripleafState::STABLE()->id(), DripleafState::UNSTABLE()->id() => 1 / 16,
-						 DripleafState::PARTIAL_TILT()->id() => 3 / 16,
-						 default => throw new AssumptionFailedError("All types should be covered")
-					 })
+					 ->trim(Facing::UP, $this->getLeafTopOffset())
 			];
 		}
 		return [];
