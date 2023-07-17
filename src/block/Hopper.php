@@ -36,7 +36,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class Hopper extends Transparent{
+class Hopper extends Transparent implements HopperInteractable{
 	use PoweredByRedstoneTrait;
 
 	private int $facing = Facing::DOWN;
@@ -98,29 +98,23 @@ class Hopper extends Transparent{
 
 	public function onScheduledUpdate() : void{
 		$world = $this->position->getWorld();
-		$this->push();
 		$world->scheduleDelayedBlockUpdate($this->position, 8);
-	}
 
-	public function push() : void{
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if(!$tile instanceof TileHopper) return;
-
+		
 		$facingBlock = $this->getSide($this->facing);
+		if(!$facingBlock instanceof HopperInteractable) return;
 
-		match($facingBlock::class){
-			Hopper::class => $this->transferToHopper($tile, $facingBlock),
-			Furnace::class => $this->transferToFurnance($tile, $facingBlock),
-			default => null
-		};
+		$facingBlock->pull($tile);
 	}
 
-	private function transferToHopper(TileHopper $tileHopper, Hopper $facingBlock) : void{
-		$facingTile = $this->position->getWorld()->getTile($facingBlock->position);
-		if(!$facingTile instanceof TileHopper) return;
+	public function pull(TileHopper $tileHopper) : void{
+		$hopperTile = $this->position->getWorld()->getTile($this->position);
+		if(!$hopperTile instanceof TileHopper) return;
 
 		$sourceInventory = $tileHopper->getInventory();
-		$targetInventory = $facingTile->getInventory();
+		$targetInventory = $hopperTile->getInventory();
 
 		for($i = 0; $i < 5; $i++){
 			$itemStack = $sourceInventory->getItem($i);
@@ -130,55 +124,12 @@ class Hopper extends Transparent{
 			$singleItem = $itemStack->pop(1);
 
 			if($targetInventory->canAddItem($singleItem)){
-				$this->transferItem($sourceInventory, $targetInventory, $singleItem);
+				$sourceInventory->removeItem($singleItem);
+				$targetInventory->addItem($singleItem);
 			}
 
 			break;
 		}
-	}
-
-	private function transferToFurnance(TileHopper $tileHopper, Furnace $facingBlock) : void{
-		$facingTile = $this->position->getWorld()->getTile($facingBlock->position);
-		if(!$facingTile instanceof TileFurnance) return;
-
-		$hopperFacing = $tileHopper->getBlock()->getFacing();
-		$inventory = $tileHopper->getInventory();
-		$furnanceInventory = $facingTile->getInventory();
-
-		for($i = 0; $i < 5; $i++){
-			$itemStack = $inventory->getItem($i);
-			
-			if($itemStack->isNull()) continue;
-			
-			$singleItem = $itemStack->pop(1);
-			$typeId = $singleItem->getTypeId();
-			
-			if($hopperFacing === Facing::DOWN && $furnanceInventory->canAddSmelting($singleItem)){
-				$this->transferItem($inventory, $furnanceInventory, $singleItem, 0);
-			}elseif($hopperFacing !== Facing::DOWN && $hopperFacing !== Facing::UP && $furnanceInventory->canAddFuel($singleItem)){
-				$this->transferItem($inventory, $furnanceInventory, $singleItem, 1);
-			}
-		}
-	}
-
-	private function transferItem(SimpleInventory $sourceInventory, SimpleInventory $targetInventory, Item $item, int $slot = null) : void{
-		$sourceInventory->removeItem($item);
-
-		if($slot === null){
-			$sourceInventory->removeItem($item);
-			$targetInventory->addItem($item);
-			return;
-		}
-
-		$currentItem = $targetInventory->getItem($slot);
-
-		if($currentItem->isNull()){
-			$targetInventory->setItem($slot, $item);
-			return;
-		}
-
-		$currentItem->setCount($currentItem->getCount() + 1);
-		$targetInventory->setItem($slot, $currentItem);
 	}
 
 	//TODO: redstone logic, sucking logic

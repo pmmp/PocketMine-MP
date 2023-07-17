@@ -24,16 +24,19 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Furnace as TileFurnace;
+use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\inventory\SimpleInventory;
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function mt_rand;
 
-class Furnace extends Opaque{
+class Furnace extends Opaque implements HopperInteractable{
 	use FacesOppositePlacingPlayerTrait;
 	use HorizontalFacingTrait;
 
@@ -91,5 +94,48 @@ class Furnace extends Opaque{
 			}
 			$world->scheduleDelayedBlockUpdate($this->position, 1); //TODO: check this
 		}
+	}
+
+	public function pull(TileHopper $tileHopper) : void{
+		$furnanceTile = $this->position->getWorld()->getTile($this->position);
+		if(!$furnanceTile instanceof TileFurnace) return;
+
+		$hopperFacing = $tileHopper->getBlock()->getFacing();
+		$hopperInventory = $tileHopper->getInventory();
+		$furnanceInventory = $furnanceTile->getInventory();
+
+		for($i = 0; $i < 5; $i++){
+			$itemStack = $hopperInventory->getItem($i);
+
+			if($itemStack->isNull()) continue;
+
+			$singleItem = $itemStack->pop(1);
+
+			if($hopperFacing === Facing::DOWN && $furnanceInventory->canAddSmelting($singleItem)){
+				$this->transferItem($hopperInventory, $furnanceInventory, $singleItem, 0);
+			}elseif($hopperFacing !== Facing::DOWN && $hopperFacing !== Facing::UP && $furnanceInventory->canAddFuel($singleItem)){
+				$this->transferItem($hopperInventory, $furnanceInventory, $singleItem, 1);
+			}
+		}
+	}
+
+	private function transferItem(SimpleInventory $sourceInventory, SimpleInventory $targetInventory, Item $item, int $slot = null) : void{
+		$sourceInventory->removeItem($item);
+
+		if($slot === null){
+			$sourceInventory->removeItem($item);
+			$targetInventory->addItem($item);
+			return;
+		}
+
+		$currentItem = $targetInventory->getItem($slot);
+
+		if($currentItem->isNull()){
+			$targetInventory->setItem($slot, $item);
+			return;
+		}
+
+		$currentItem->setCount($currentItem->getCount() + 1);
+		$targetInventory->setItem($slot, $currentItem);
 	}
 }
