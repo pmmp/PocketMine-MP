@@ -107,7 +107,7 @@ class FurnaceInventory extends SimpleInventory implements BlockInventory{
 	}
 
 	public function canAddSmelting(Item $item) : bool{
-		if(!in_array($item->getTypeId(), $this->furnanceAcceptedInputs)) return false;
+		if(!in_array($item->getTypeId(), $this->furnanceAcceptedInputs, true)) return false;
 
 		if($this->getSmelting()->isNull()) return true;
 
@@ -116,7 +116,7 @@ class FurnaceInventory extends SimpleInventory implements BlockInventory{
 
 	public function canAddFuel(Item $item) : bool{
 		$typeId = $item->getTypeId();
-		if(!in_array(ItemTypeIds::toBlockTypeId($typeId), $this->furnanceAcceptedFuels) && $typeId != ItemTypeIds::CHARCOAL) return false;
+		if(!in_array(ItemTypeIds::toBlockTypeId($typeId), $this->furnanceAcceptedFuels, true) && $typeId != ItemTypeIds::CHARCOAL) return false;
 
 		if($this->getFuel()->isNull()) return true;
 
