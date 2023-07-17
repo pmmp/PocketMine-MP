@@ -146,12 +146,12 @@ class Hopper extends Transparent{
 
 		for($i = 0; $i < 5; $i++){
 			$itemStack = $inventory->getItem($i);
-	
+			
 			if($itemStack->isNull()) continue;
-	
+			
 			$singleItem = $itemStack->pop(1);
 			$typeId = $singleItem->getTypeId();
-
+			
 			if($hopperFacing === Facing::DOWN && $furnanceInventory->canAddSmelting($singleItem)){
 				$this->transferItem($inventory, $furnanceInventory, $singleItem, 0);
 			}elseif($hopperFacing !== Facing::DOWN && $hopperFacing !== Facing::UP && $furnanceInventory->canAddFuel($singleItem)){
