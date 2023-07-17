@@ -27,8 +27,8 @@ use pocketmine\block\BlockIdentifier as BID;
 use pocketmine\block\BlockTypeIds as Ids;
 use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\utils\LeavesType;
-use pocketmine\block\utils\SaplingType;
 use pocketmine\block\utils\LogType;
+use pocketmine\block\utils\SaplingType;
 use pocketmine\item\VanillaItems;
 use pocketmine\utils\AssumptionFailedError;
 
