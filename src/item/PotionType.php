@@ -65,6 +65,7 @@ use pocketmine\utils\EnumTrait;
  * @method static PotionType STRONG_LEAPING()
  * @method static PotionType STRONG_POISON()
  * @method static PotionType STRONG_REGENERATION()
+ * @method static PotionType STRONG_SLOWNESS()
  * @method static PotionType STRONG_STRENGTH()
  * @method static PotionType STRONG_SWIFTNESS()
  * @method static PotionType STRONG_TURTLE_MASTER()
@@ -201,6 +202,9 @@ final class PotionType{
 			]),
 			new self("long_slow_falling", "Long Slow Falling", fn() => [
 				//TODO
+			]),
+			new self("strong_slowness", "Strong Slowness", fn() => [
+				new EffectInstance(VanillaEffects::SLOWNESS(), 20 * 20, 3)
 			])
 		);
 	}

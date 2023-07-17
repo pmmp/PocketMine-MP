@@ -34,6 +34,7 @@ use pocketmine\world\generator\noise\Simplex;
 use pocketmine\world\generator\object\OreType;
 use pocketmine\world\generator\populator\Ore;
 use pocketmine\world\generator\populator\Populator;
+use pocketmine\world\World;
 use function abs;
 
 class Nether extends Generator{
@@ -70,28 +71,31 @@ class Nether extends Generator{
 
 		$noise = $this->noiseBase->getFastNoise3D(Chunk::EDGE_LENGTH, 128, Chunk::EDGE_LENGTH, 4, 8, 4, $chunkX * Chunk::EDGE_LENGTH, 0, $chunkZ * Chunk::EDGE_LENGTH);
 
-		$chunk = $world->getChunk($chunkX, $chunkZ);
+		//TODO: why don't we just create and set the chunk here directly?
+		$chunk = $world->getChunk($chunkX, $chunkZ) ?? throw new \InvalidArgumentException("Chunk $chunkX $chunkZ does not yet exist");
 
-		$bedrock = VanillaBlocks::BEDROCK()->getFullId();
-		$netherrack = VanillaBlocks::NETHERRACK()->getFullId();
-		$stillLava = VanillaBlocks::LAVA()->getFullId();
+		$bedrock = VanillaBlocks::BEDROCK()->getStateId();
+		$netherrack = VanillaBlocks::NETHERRACK()->getStateId();
+		$stillLava = VanillaBlocks::LAVA()->getStateId();
 
 		for($x = 0; $x < Chunk::EDGE_LENGTH; ++$x){
 			for($z = 0; $z < Chunk::EDGE_LENGTH; ++$z){
-				$chunk->setBiomeId($x, $z, BiomeIds::HELL);
+				for($y = World::Y_MIN; $y < World::Y_MAX; $y++){
+					$chunk->setBiomeId($x, $y, $z, BiomeIds::HELL);
+				}
 
 				for($y = 0; $y < 128; ++$y){
 					if($y === 0 || $y === 127){
-						$chunk->setFullBlock($x, $y, $z, $bedrock);
+						$chunk->setBlockStateId($x, $y, $z, $bedrock);
 						continue;
 					}
 					$noiseValue = (abs($this->emptyHeight - $y) / $this->emptyHeight) * $this->emptyAmplitude - $noise[$x][$z][$y];
 					$noiseValue -= 1 - $this->density;
 
 					if($noiseValue > 0){
-						$chunk->setFullBlock($x, $y, $z, $netherrack);
+						$chunk->setBlockStateId($x, $y, $z, $netherrack);
 					}elseif($y <= $this->waterHeight){
-						$chunk->setFullBlock($x, $y, $z, $stillLava);
+						$chunk->setBlockStateId($x, $y, $z, $stillLava);
 					}
 				}
 			}
@@ -109,7 +113,7 @@ class Nether extends Generator{
 		}
 
 		$chunk = $world->getChunk($chunkX, $chunkZ);
-		$biome = BiomeRegistry::getInstance()->getBiome($chunk->getBiomeId(7, 7));
+		$biome = BiomeRegistry::getInstance()->getBiome($chunk->getBiomeId(7, 7, 7));
 		$biome->populateChunk($world, $chunkX, $chunkZ, $this->random);
 	}
 }

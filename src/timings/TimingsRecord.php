@@ -24,7 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\timings;
 
 use pocketmine\Server;
-use function round;
+use pocketmine\utils\AssumptionFailedError;
+use function floor;
 use function spl_object_id;
 
 /**
@@ -39,11 +40,17 @@ final class TimingsRecord{
 	 */
 	private static array $records = [];
 
-	public static function clearRecords() : void{
+	private static ?self $currentRecord = null;
+
+	/**
+	 * @internal
+	 */
+	public static function reset() : void{
 		foreach(self::$records as $record){
-			$record->handler->destroyCycles();
+			$record->handler->reset();
 		}
 		self::$records = [];
+		self::$currentRecord = null;
 	}
 
 	/**
@@ -55,11 +62,14 @@ final class TimingsRecord{
 	public static function tick(bool $measure = true) : void{
 		if($measure){
 			foreach(self::$records as $record){
-				if($record->curTickTotal > Server::TARGET_NANOSECONDS_PER_TICK){
-					$record->violations += (int) round($record->curTickTotal / Server::TARGET_NANOSECONDS_PER_TICK);
+				if($record->curCount > 0){
+					if($record->curTickTotal > Server::TARGET_NANOSECONDS_PER_TICK){
+						$record->violations += (int) floor($record->curTickTotal / Server::TARGET_NANOSECONDS_PER_TICK);
+					}
+					$record->curTickTotal = 0;
+					$record->curCount = 0;
+					$record->ticksActive++;
 				}
-				$record->curTickTotal = 0;
-				$record->curCount = 0;
 			}
 		}else{
 			foreach(self::$records as $record){
@@ -78,15 +88,26 @@ final class TimingsRecord{
 	private int $totalTime = 0;
 	private int $curTickTotal = 0;
 	private int $violations = 0;
+	private int $ticksActive = 0;
+	private int $peakTime = 0;
 
 	public function __construct(
 		//I'm not the biggest fan of this cycle, but it seems to be the most effective way to avoid leaking anything.
-		private TimingsHandler $handler
+		private TimingsHandler $handler,
+		private ?TimingsRecord $parentRecord
 	){
 		self::$records[spl_object_id($this)] = $this;
 	}
 
+	public function getId() : int{ return spl_object_id($this); }
+
+	public function getParentId() : ?int{ return $this->parentRecord?->getId(); }
+
+	public function getTimerId() : int{ return spl_object_id($this->handler); }
+
 	public function getName() : string{ return $this->handler->getName(); }
+
+	public function getGroup() : string{ return $this->handler->getGroup(); }
 
 	public function getCount() : int{ return $this->count; }
 
@@ -100,19 +121,40 @@ final class TimingsRecord{
 
 	public function getViolations() : int{ return $this->violations; }
 
+	public function getTicksActive() : int{ return $this->ticksActive; }
+
+	public function getPeakTime() : int{ return $this->peakTime; }
+
 	public function startTiming(int $now) : void{
 		$this->start = $now;
+		self::$currentRecord = $this;
 	}
 
 	public function stopTiming(int $now) : void{
 		if($this->start == 0){
 			return;
 		}
+		if(self::$currentRecord !== $this){
+			if(self::$currentRecord === null){
+				//timings may have been stopped while this timer was running
+				return;
+			}
+
+			throw new AssumptionFailedError("stopTiming() called on a non-current timer");
+		}
+		self::$currentRecord = $this->parentRecord;
 		$diff = $now - $this->start;
 		$this->totalTime += $diff;
 		$this->curTickTotal += $diff;
 		++$this->curCount;
 		++$this->count;
 		$this->start = 0;
+		if($diff > $this->peakTime){
+			$this->peakTime = $diff;
+		}
+	}
+
+	public static function getCurrentRecord() : ?self{
+		return self::$currentRecord;
 	}
 }

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\ToolTier;
 use function get_class;
 
 class BlockBreakInfo{
@@ -50,6 +51,22 @@ class BlockBreakInfo{
 		?float $blastResistance = null
 	){
 		$this->blastResistance = $blastResistance ?? $hardness * 5;
+	}
+
+	public static function tier(float $hardness, int $toolType, ToolTier $toolTier, ?float $blastResistance = null) : self{
+		return new self($hardness, $toolType, $toolTier->getHarvestLevel(), $blastResistance);
+	}
+
+	public static function pickaxe(float $hardness, ?ToolTier $toolTier = null, ?float $blastResistance = null) : self{
+		return new self($hardness, BlockToolType::PICKAXE, $toolTier?->getHarvestLevel() ?? 0, $blastResistance);
+	}
+
+	public static function shovel(float $hardness, ?ToolTier $toolTier = null, ?float $blastResistance = null) : self{
+		return new self($hardness, BlockToolType::SHOVEL, $toolTier?->getHarvestLevel() ?? 0, $blastResistance);
+	}
+
+	public static function axe(float $hardness, ?ToolTier $toolTier = null, ?float $blastResistance = null) : self{
+		return new self($hardness, BlockToolType::AXE, $toolTier?->getHarvestLevel() ?? 0, $blastResistance);
 	}
 
 	public static function instant(int $toolType = BlockToolType::NONE, int $toolHarvestLevel = 0) : self{

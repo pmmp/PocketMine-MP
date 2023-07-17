@@ -45,8 +45,7 @@ class Armor extends Durable{
 
 	private ?Sound $equipSound;
 
-	/** @var Color|null */
-	protected $customColor = null;
+	protected ?Color $customColor = null;
 
 	public function __construct(ItemIdentifier $identifier, string $name, ArmorTypeInfo $info, ?Sound $equipSound = null){
 		parent::__construct($identifier, $name);
@@ -71,6 +70,10 @@ class Armor extends Durable{
 
 	public function getMaxStackSize() : int{
 		return 1;
+	}
+
+	public function isFireProof() : bool{
+		return $this->armorInfo->isFireProof();
 	}
 
 	public function getEquipSound() : ?Sound{
@@ -142,7 +145,7 @@ class Armor extends Durable{
 		return 0;
 	}
 
-	public function onClickAir(Player $player, Vector3 $directionVector) : ItemUseResult{
+	public function onClickAir(Player $player, Vector3 $directionVector, array &$returnedItems) : ItemUseResult{
 		$existing = $player->getArmorInventory()->getItem($this->getArmorSlot());
 		$thisCopy = clone $this;
 		$new = $thisCopy->pop();
@@ -150,11 +153,10 @@ class Armor extends Durable{
 		if($this->equipSound !== null){
 			$player->getLocation()->getWorld()->addSound($player->getLocation(), $this->equipSound);
 		}
-		if($thisCopy->getCount() === 0){
-			$player->getInventory()->setItemInHand($existing);
-		}else{ //if the stack size was bigger than 1 (usually won't happen, but might be caused by plugins
-			$player->getInventory()->setItemInHand($thisCopy);
-			$player->getInventory()->addItem($existing);
+		$player->getInventory()->setItemInHand($existing);
+		if(!$thisCopy->isNull()){
+			//if the stack size was bigger than 1 (usually won't happen, but might be caused by plugins)
+			$returnedItems[] = $thisCopy;
 		}
 		return ItemUseResult::SUCCESS();
 	}
