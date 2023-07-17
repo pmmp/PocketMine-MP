@@ -28,6 +28,7 @@ use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\inventory\SimpleInventory;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -101,7 +102,7 @@ class Hopper extends Transparent{
 		$world->scheduleDelayedBlockUpdate($this->position, 8);
 	}
 
-	public function push(){
+	public function push() : void{
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if(!$tile instanceof TileHopper) return;
 
@@ -160,7 +161,7 @@ class Hopper extends Transparent{
 		}
 	}
 
-	private function transferItem($sourceInventory, $targetInventory, Item $item, int $slot = null) : void{
+	private function transferItem(SimpleInventory $sourceInventory, SimpleInventory $targetInventory, Item $item, int $slot = null) : void{
 		$sourceInventory->removeItem($item);
 
 		if($slot === null){
