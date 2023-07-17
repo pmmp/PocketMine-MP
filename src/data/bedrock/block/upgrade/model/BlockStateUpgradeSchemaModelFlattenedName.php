@@ -21,26 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\data\bedrock\block\upgrade\model;
 
-use pocketmine\block\utils\FortuneDropHelper;
-use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
-use function mt_rand;
+final class BlockStateUpgradeSchemaModelFlattenedName{
 
-class NetherQuartzOre extends Opaque{
+	/** @required */
+	public string $prefix;
+	/** @required */
+	public string $flattenedProperty;
+	/** @required */
+	public string $suffix;
 
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			VanillaItems::NETHER_QUARTZ()->setCount(FortuneDropHelper::weighted($item, min: 1, maxBase: 1))
-		];
-	}
-
-	public function isAffectedBySilkTouch() : bool{
-		return true;
-	}
-
-	protected function getXpDropAmount() : int{
-		return mt_rand(2, 5);
+	public function __construct(string $prefix, string $flattenedProperty, string $suffix){
+		$this->prefix = $prefix;
+		$this->flattenedProperty = $flattenedProperty;
+		$this->suffix = $suffix;
 	}
 }

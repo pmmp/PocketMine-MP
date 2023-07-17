@@ -214,12 +214,12 @@ final class BlockStateReader{
 	 * @throws BlockStateDeserializeException
 	 */
 	public function readCardinalHorizontalFacing() : int{
-		return match($raw = $this->readString(BlockStateNames::CARDINAL_DIRECTION)){
-			StringValues::CARDINAL_DIRECTION_NORTH => Facing::NORTH,
-			StringValues::CARDINAL_DIRECTION_SOUTH => Facing::SOUTH,
-			StringValues::CARDINAL_DIRECTION_WEST => Facing::WEST,
-			StringValues::CARDINAL_DIRECTION_EAST => Facing::EAST,
-			default => throw $this->badValueException(BlockStateNames::CARDINAL_DIRECTION, $raw)
+		return match($raw = $this->readString(BlockStateNames::MC_CARDINAL_DIRECTION)){
+			StringValues::MC_CARDINAL_DIRECTION_NORTH => Facing::NORTH,
+			StringValues::MC_CARDINAL_DIRECTION_SOUTH => Facing::SOUTH,
+			StringValues::MC_CARDINAL_DIRECTION_WEST => Facing::WEST,
+			StringValues::MC_CARDINAL_DIRECTION_EAST => Facing::EAST,
+			default => throw $this->badValueException(BlockStateNames::MC_CARDINAL_DIRECTION, $raw)
 		};
 	}
 

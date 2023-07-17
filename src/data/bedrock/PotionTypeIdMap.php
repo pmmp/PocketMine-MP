@@ -84,6 +84,7 @@ final class PotionTypeIdMap{
 		$this->register(PotionTypeIds::STRONG_TURTLE_MASTER, PotionType::STRONG_TURTLE_MASTER());
 		$this->register(PotionTypeIds::SLOW_FALLING, PotionType::SLOW_FALLING());
 		$this->register(PotionTypeIds::LONG_SLOW_FALLING, PotionType::LONG_SLOW_FALLING());
+		$this->register(PotionTypeIds::STRONG_SLOWNESS, PotionType::STRONG_SLOWNESS());
 	}
 
 	private function register(int $id, PotionType $type) : void{

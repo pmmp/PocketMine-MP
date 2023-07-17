@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
@@ -108,13 +109,14 @@ class SweetBerryBush extends Flowable{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if(($dropAmount = $this->getBerryDropAmount()) > 0){
-			return [
-				$this->asItem()->setCount($dropAmount)
-			];
-		}
-
-		return [];
+		$count = match($this->age){
+			self::STAGE_MATURE => FortuneDropHelper::discrete($item, 2, 3),
+			self::STAGE_BUSH_SOME_BERRIES => FortuneDropHelper::discrete($item, 1, 2),
+			default => 0
+		};
+		return [
+			$this->asItem()->setCount($count)
+		];
 	}
 
 	public function onNearbyBlockChange() : void{
