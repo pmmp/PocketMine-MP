@@ -34,7 +34,7 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\sound\DripleafTiltDownSound;
 use pocketmine\world\sound\DripleafTiltUpSound;
 
-class BigDripleaf extends BaseBigDripleaf{
+class BigDripleafHead extends BaseBigDripleaf{
 
 	protected DripleafTiltType $tilt;
 

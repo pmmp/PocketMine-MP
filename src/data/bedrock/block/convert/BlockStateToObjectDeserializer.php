@@ -829,7 +829,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		});
 		$this->map(Ids::BIG_DRIPLEAF, function(Reader $in) : Block{
 			if($in->readBool(StateNames::BIG_DRIPLEAF_HEAD)){
-				return Blocks::BIG_DRIPLEAF()
+				return Blocks::BIG_DRIPLEAF_HEAD()
 					->setFacing($in->readLegacyHorizontalFacing())
 					->setTilt(match($type = $in->readString(StateNames::BIG_DRIPLEAF_TILT)){
 						StringValues::BIG_DRIPLEAF_TILT_NONE => DripleafTiltType::NONE(),

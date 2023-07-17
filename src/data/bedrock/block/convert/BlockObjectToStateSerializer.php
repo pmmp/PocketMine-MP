@@ -31,7 +31,7 @@ use pocketmine\block\Barrel;
 use pocketmine\block\Bed;
 use pocketmine\block\Beetroot;
 use pocketmine\block\Bell;
-use pocketmine\block\BigDripleaf;
+use pocketmine\block\BigDripleafHead;
 use pocketmine\block\BigDripleafStem;
 use pocketmine\block\Block;
 use pocketmine\block\BoneBlock;
@@ -962,7 +962,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeLegacyHorizontalFacing($block->getFacing());
 
 		});
-		$this->map(Blocks::BIG_DRIPLEAF(), function(BigDripleaf $block) : Writer{
+		$this->map(Blocks::BIG_DRIPLEAF_HEAD(), function(BigDripleafHead $block) : Writer{
 			return Writer::create(Ids::BIG_DRIPLEAF)
 				->writeLegacyHorizontalFacing($block->getFacing())
 				->writeString(StateNames::BIG_DRIPLEAF_TILT, match($block->getTilt()->id()){

@@ -123,7 +123,7 @@ class SmallDripleaf extends Transparent{
 			}
 			$block = ++$grown < $high && $this->canGrowTo($pos->getSide(Facing::UP)) ?
 				VanillaBlocks::BIG_DRIPLEAF_STEM() :
-				VanillaBlocks::BIG_DRIPLEAF();
+				VanillaBlocks::BIG_DRIPLEAF_HEAD();
 			$tx->addBlock($pos, $block->setFacing($this->facing));
 		}
 		if($grown > 1){

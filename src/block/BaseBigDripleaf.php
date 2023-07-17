@@ -111,7 +111,7 @@ abstract class BaseBigDripleaf extends Transparent{
 		$tx = new BlockTransaction($world);
 
 		$tx->addBlock($pos, VanillaBlocks::BIG_DRIPLEAF_STEM()->setFacing($head->getFacing()));
-		$tx->addBlock($up, VanillaBlocks::BIG_DRIPLEAF()->setFacing($head->getFacing()));
+		$tx->addBlock($up, VanillaBlocks::BIG_DRIPLEAF_HEAD()->setFacing($head->getFacing()));
 
 		$ev = new StructureGrowEvent($head, $tx, $player);
 		$ev->call();

@@ -36,6 +36,6 @@ class BigDripleafStem extends BaseBigDripleaf{
 	}
 
 	public function asItem() : Item{
-		return VanillaBlocks::BIG_DRIPLEAF()->asItem();
+		return VanillaBlocks::BIG_DRIPLEAF_HEAD()->asItem();
 	}
 }
