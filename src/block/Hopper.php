@@ -154,7 +154,7 @@ class Hopper extends Transparent{
 
 			if($hopperFacing === Facing::DOWN && $furnanceInventory->canAddSmelting($singleItem)){
 				$this->transferItem($inventory, $furnanceInventory, $singleItem, 0);
-			}else if($hopperFacing !== Facing::DOWN && $hopperFacing !== Facing::UP && $furnanceInventory->canAddFuel($singleItem)){
+			}elseif($hopperFacing !== Facing::DOWN && $hopperFacing !== Facing::UP && $furnanceInventory->canAddFuel($singleItem)){
 				$this->transferItem($inventory, $furnanceInventory, $singleItem, 1);
 			}
 		}
