@@ -106,7 +106,7 @@ class BigDripleafHead extends BaseBigDripleaf{
 				$this->position->getWorld()->setBlock($this->position, $this->setLeafState(DripleafState::STABLE()));
 				$this->position->getWorld()->addSound($this->position, new DripleafTiltUpSound());
 			}else{
-				$this->setTiltAndScheduleTick(match ($this->leafState->id()) {
+				$this->setTiltAndScheduleTick(match($this->leafState->id()){
 					DripleafState::UNSTABLE()->id() => DripleafState::PARTIAL_TILT(),
 					DripleafState::PARTIAL_TILT()->id() => DripleafState::FULL_TILT(),
 					default => throw new AssumptionFailedError("All types should be covered")
@@ -120,8 +120,8 @@ class BigDripleafHead extends BaseBigDripleaf{
 		if(!$this->leafState->equals(DripleafState::FULL_TILT())){
 			return [
 				AxisAlignedBB::one()
-					 ->trim(Facing::DOWN, 11 / 16)
-					 ->trim(Facing::UP, $this->getLeafTopOffset())
+					->trim(Facing::DOWN, 11 / 16)
+					->trim(Facing::UP, $this->getLeafTopOffset())
 			];
 		}
 		return [];
