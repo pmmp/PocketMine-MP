@@ -44,22 +44,22 @@ final class DripleafState{
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self("stable", 1),
-			new self("unstable", 15),
-			new self("partial_tilt", 15),
+			new self("stable", null),
+			new self("unstable", 10),
+			new self("partial_tilt", 10),
 			new self("full_tilt", 100)
 		);
 	}
 
 	private function __construct(
 		string $enumName,
-		private int $updateTicks
+		private ?int $scheduledUpdateDelayTicks
 	){
 		$this->Enum___construct($enumName);
 	}
 
-	public function getUpdateTicks() : int{
-		return $this->updateTicks;
+	public function getScheduledUpdateDelayTicks() : ?int{
+		return $this->scheduledUpdateDelayTicks;
 	}
 
 }

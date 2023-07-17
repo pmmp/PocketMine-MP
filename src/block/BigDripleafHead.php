@@ -68,7 +68,10 @@ class BigDripleafHead extends BaseBigDripleaf{
 
 	private function setTiltAndScheduleTick(DripleafState $tilt) : void{
 		$this->position->getWorld()->setBlock($this->position, $this->setLeafState($tilt));
-		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, $tilt->getUpdateTicks());
+		$delay = $tilt->getScheduledUpdateDelayTicks();
+		if($delay !== null){
+			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, $delay);
+		}
 	}
 
 	private function getLeafTopOffset() : float{
