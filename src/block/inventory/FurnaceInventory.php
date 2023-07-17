@@ -23,9 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory;
 
+use pocketmine\block\BlockTypeIds;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\item\Item;
+use pocketmine\item\ItemTypeIds;
 use pocketmine\item\VanillaItems;
 use pocketmine\world\Position;
 
@@ -35,6 +37,40 @@ class FurnaceInventory extends SimpleInventory implements BlockInventory{
 	public const SLOT_INPUT = 0;
 	public const SLOT_FUEL = 1;
 	public const SLOT_RESULT = 2;
+
+	private array $furnanceAcceptedInputs = [
+		ItemTypeIds::RAW_BEEF,
+		ItemTypeIds::RAW_PORKCHOP,
+		ItemTypeIds::RAW_CHICKEN,
+		ItemTypeIds::RAW_MUTTON,
+		ItemTypeIds::RAW_RABBIT,
+		ItemTypeIds::RAW_SALMON,
+		// Need to add raw cod
+	];
+
+	private array $furnanceAcceptedFuels = [
+		BlockTypeIds::OAK_PLANKS,
+		BlockTypeIds::SPRUCE_PLANKS,
+		BlockTypeIds::BIRCH_PLANKS,
+		BlockTypeIds::JUNGLE_PLANKS,
+		BlockTypeIds::ACACIA_PLANKS,
+		BlockTypeIds::DARK_OAK_PLANKS,
+		BlockTypeIds::OAK_PLANKS,
+		BlockTypeIds::MANGROVE_PLANKS,
+		BlockTypeIds::CHERRY_PLANKS,
+		BlockTypeIds::CRIMSON_PLANKS,
+		BlockTypeIds::WARPED_PLANKS,
+		BlockTypeIds::OAK_LOG,
+		BlockTypeIds::SPRUCE_LOG,
+		BlockTypeIds::BIRCH_LOG,
+		BlockTypeIds::OAK_PLANKS,
+		BlockTypeIds::JUNGLE_LOG,
+		BlockTypeIds::ACACIA_LOG,
+		BlockTypeIds::DARK_OAK_LOG,
+		BlockTypeIds::MANGROVE_LOG,
+		BlockTypeIds::CHERRY_LOG,
+		//Need to add stripped logs
+	];
 
 	public function __construct(
 		Position $holder,
@@ -71,12 +107,17 @@ class FurnaceInventory extends SimpleInventory implements BlockInventory{
 	}
 
 	public function canAddSmelting(Item $item) : bool{
+		if(!in_array($item->getTypeId(), $this->furnanceAcceptedInputs)) return false;
+
 		if($this->getSmelting()->isNull()) return true;
 
 		return $this->getSmelting()->getTypeId() === $item->getTypeId();
 	}
 
 	public function canAddFuel(Item $item) : bool{
+		$typeId = $item->getTypeId();
+		if(!in_array(ItemTypeIds::toBlockTypeId($typeId), $this->furnanceAcceptedFuels) && $typeId != ItemTypeIds::CHARCOAL) return false;
+
 		if($this->getFuel()->isNull()) return true;
 
 		return $this->getFuel()->getTypeId() === $item->getTypeId();

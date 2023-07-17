@@ -41,39 +41,6 @@ class Hopper extends Transparent{
 
 	private int $facing = Facing::DOWN;
 
-	private array $furnanceAcceptedInputs = [
-		ItemTypeIds::RAW_BEEF,
-		ItemTypeIds::RAW_PORKCHOP,
-		ItemTypeIds::RAW_CHICKEN,
-		ItemTypeIds::RAW_MUTTON,
-		ItemTypeIds::RAW_RABBIT,
-		ItemTypeIds::RAW_SALMON,
-		// Need to add raw cod
-	];
-	private array $furnanceAcceptedFuels = [
-		BlockTypeIds::OAK_PLANKS,
-		BlockTypeIds::SPRUCE_PLANKS,
-		BlockTypeIds::BIRCH_PLANKS,
-		BlockTypeIds::JUNGLE_PLANKS,
-		BlockTypeIds::ACACIA_PLANKS,
-		BlockTypeIds::DARK_OAK_PLANKS,
-		BlockTypeIds::OAK_PLANKS,
-		BlockTypeIds::MANGROVE_PLANKS,
-		BlockTypeIds::CHERRY_PLANKS,
-		BlockTypeIds::CRIMSON_PLANKS,
-		BlockTypeIds::WARPED_PLANKS,
-		BlockTypeIds::OAK_LOG,
-		BlockTypeIds::SPRUCE_LOG,
-		BlockTypeIds::BIRCH_LOG,
-		BlockTypeIds::OAK_PLANKS,
-		BlockTypeIds::JUNGLE_LOG,
-		BlockTypeIds::ACACIA_LOG,
-		BlockTypeIds::DARK_OAK_LOG,
-		BlockTypeIds::MANGROVE_LOG,
-		BlockTypeIds::CHERRY_LOG,
-		//Need to add stripped logs
-	];
-
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->facingExcept($this->facing, Facing::UP);
 		$w->bool($this->powered);
@@ -186,9 +153,9 @@ class Hopper extends Transparent{
 			$singleItem = $itemStack->pop(1);
 			$typeId = $singleItem->getTypeId();
 
-			if($hopperFacing === Facing::DOWN && in_array($typeId, $this->furnanceAcceptedInputs) && $furnanceInventory->canAddSmelting($singleItem)){
+			if($hopperFacing === Facing::DOWN && $furnanceInventory->canAddSmelting($singleItem)){
 				$this->transferItem($inventory, $furnanceInventory, $singleItem, 0);
-			}else if($hopperFacing !== Facing::DOWN && $hopperFacing !== Facing::UP && (in_array(ItemTypeIds::toBlockTypeId($typeId), $this->furnanceAcceptedFuels) || $typeId == ItemTypeIds::CHARCOAL) && $furnanceInventory->canAddFuel($singleItem)){
+			}else if($hopperFacing !== Facing::DOWN && $hopperFacing !== Facing::UP && $furnanceInventory->canAddFuel($singleItem)){
 				$this->transferItem($inventory, $furnanceInventory, $singleItem, 1);
 			}
 		}
