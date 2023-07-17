@@ -155,6 +155,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("beetroot_block", fn() => Blocks::BEETROOTS());
 		$result->registerBlock("beetroots", fn() => Blocks::BEETROOTS());
 		$result->registerBlock("bell", fn() => Blocks::BELL());
+		$result->registerBlock("big_dripleaf", fn() => Blocks::BIG_DRIPLEAF_HEAD());
 		$result->registerBlock("birch_button", fn() => Blocks::BIRCH_BUTTON());
 		$result->registerBlock("birch_door", fn() => Blocks::BIRCH_DOOR());
 		$result->registerBlock("birch_door_block", fn() => Blocks::BIRCH_DOOR());
@@ -972,6 +973,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("slabs", fn() => Blocks::SMOOTH_STONE_SLAB());
 		$result->registerBlock("slime", fn() => Blocks::SLIME());
 		$result->registerBlock("slime_block", fn() => Blocks::SLIME());
+		$result->registerBlock("small_dripleaf", fn() => Blocks::SMALL_DRIPLEAF());
 		$result->registerBlock("smoker", fn() => Blocks::SMOKER());
 		$result->registerBlock("smooth_basalt", fn() => Blocks::SMOOTH_BASALT());
 		$result->registerBlock("smooth_quartz", fn() => Blocks::SMOOTH_QUARTZ());
