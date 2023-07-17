@@ -27,7 +27,7 @@ use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SignText;
 use pocketmine\block\utils\SupportType;
-use pocketmine\block\utils\WoodType;
+use pocketmine\block\utils\LogType;
 use pocketmine\block\utils\WoodTypeTrait;
 use pocketmine\color\Color;
 use pocketmine\event\block\SignChangeEvent;
@@ -57,7 +57,7 @@ abstract class BaseSign extends Transparent{
 	/**
 	 * @param \Closure() : Item $asItemCallback
 	 */
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, WoodType $woodType, \Closure $asItemCallback){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, LogType $woodType, \Closure $asItemCallback){
 		$this->woodType = $woodType;
 		parent::__construct($idInfo, $name, $typeInfo);
 		$this->text = new SignText();

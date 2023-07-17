@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\block\utils\WoodType;
+use pocketmine\block\utils\LogType;
 use pocketmine\utils\EnumTrait;
 
 /**
@@ -47,24 +47,24 @@ final class BoatType{
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self("oak", WoodType::OAK()),
-			new self("spruce", WoodType::SPRUCE()),
-			new self("birch", WoodType::BIRCH()),
-			new self("jungle", WoodType::JUNGLE()),
-			new self("acacia", WoodType::ACACIA()),
-			new self("dark_oak", WoodType::DARK_OAK()),
-			new self("mangrove", WoodType::MANGROVE()),
+			new self("oak", LogType::OAK()),
+			new self("spruce", LogType::SPRUCE()),
+			new self("birch", LogType::BIRCH()),
+			new self("jungle", LogType::JUNGLE()),
+			new self("acacia", LogType::ACACIA()),
+			new self("dark_oak", LogType::DARK_OAK()),
+			new self("mangrove", LogType::MANGROVE()),
 		);
 	}
 
 	private function __construct(
 		string $enumName,
-		private WoodType $woodType,
+		private LogType $woodType,
 	){
 		$this->Enum___construct($enumName);
 	}
 
-	public function getWoodType() : WoodType{ return $this->woodType; }
+	public function getWoodType() : LogType{ return $this->woodType; }
 
 	public function getDisplayName() : string{
 		return $this->woodType->getDisplayName();

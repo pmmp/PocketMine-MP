@@ -57,7 +57,7 @@ use pocketmine\block\tile\Smoker as TileSmoker;
 use pocketmine\block\utils\LeavesType;
 use pocketmine\block\utils\PlanksType;
 use pocketmine\block\utils\SaplingType;
-use pocketmine\block\utils\WoodType;
+use pocketmine\block\utils\LogType;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\Item;
@@ -1245,7 +1245,7 @@ final class VanillaBlocks{
 		$woodenButtonBreakInfo = new Info(BreakInfo::axe(0.5));
 		$woodenPressurePlateBreakInfo = new Info(BreakInfo::axe(0.5));
 
-		foreach(WoodType::getAll() as $woodType){
+		foreach(LogType::getAll() as $woodType){
 			$name = $woodType->getDisplayName();
 			$idName = fn(string $suffix) => $woodType->name() . "_" . $suffix;
 

@@ -31,18 +31,18 @@ use pocketmine\utils\EnumTrait;
  * @see build/generate-registry-annotations.php
  * @generate-registry-docblock
  *
- * @method static WoodType ACACIA()
- * @method static WoodType BIRCH()
- * @method static WoodType CHERRY()
- * @method static WoodType CRIMSON()
- * @method static WoodType DARK_OAK()
- * @method static WoodType JUNGLE()
- * @method static WoodType MANGROVE()
- * @method static WoodType OAK()
- * @method static WoodType SPRUCE()
- * @method static WoodType WARPED()
+ * @method static LogType ACACIA()
+ * @method static LogType BIRCH()
+ * @method static LogType CHERRY()
+ * @method static LogType CRIMSON()
+ * @method static LogType DARK_OAK()
+ * @method static LogType JUNGLE()
+ * @method static LogType MANGROVE()
+ * @method static LogType OAK()
+ * @method static LogType SPRUCE()
+ * @method static LogType WARPED()
  */
-final class WoodType{
+final class LogType{
 	use EnumTrait {
 		__construct as private Enum___construct;
 	}

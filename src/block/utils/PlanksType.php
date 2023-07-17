@@ -59,7 +59,7 @@ final class PlanksType{
 	 */
 	private static function fromWoodType() : array {
 		$ret = [];
-		foreach(WoodType::getAll() as $type) {
+		foreach(LogType::getAll() as $type) {
 			$ret[] = new self($type->name(), $type->getDisplayName(), $type->isFlammable());
 		}
 		return $ret;

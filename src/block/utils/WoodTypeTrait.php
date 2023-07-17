@@ -27,14 +27,14 @@ use pocketmine\block\BlockIdentifier;
 use pocketmine\block\BlockTypeInfo;
 
 trait WoodTypeTrait{
-	private WoodType $woodType; //immutable for now
+	private LogType $woodType; //immutable for now
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, WoodType $woodType){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, LogType $woodType){
 		$this->woodType = $woodType;
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function getWoodType() : WoodType{
+	public function getWoodType() : LogType{
 		return $this->woodType;
 	}
 }
