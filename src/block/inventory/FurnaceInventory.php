@@ -28,8 +28,6 @@ use pocketmine\inventory\SimpleInventory;
 use pocketmine\item\Item;
 use pocketmine\world\Position;
 
-use function in_array;
-
 class FurnaceInventory extends SimpleInventory implements BlockInventory{
 	use BlockInventoryTrait;
 
