@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Hopper as TileHopper;
+use pocketmine\block\tile\Furnace as TileFurnance;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -33,11 +34,45 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\item\ItemTypeIds;
 
 class Hopper extends Transparent{
 	use PoweredByRedstoneTrait;
 
 	private int $facing = Facing::DOWN;
+
+	private array $furnanceAcceptedInputs = [
+		ItemTypeIds::RAW_BEEF,
+		ItemTypeIds::RAW_PORKCHOP,
+		ItemTypeIds::RAW_CHICKEN,
+		ItemTypeIds::RAW_MUTTON,
+		ItemTypeIds::RAW_RABBIT,
+		ItemTypeIds::RAW_SALMON,
+		// Need to add raw cod
+	];
+	private array $furnanceAcceptedFuels = [
+		BlockTypeIds::OAK_PLANKS,
+		BlockTypeIds::SPRUCE_PLANKS,
+		BlockTypeIds::BIRCH_PLANKS,
+		BlockTypeIds::JUNGLE_PLANKS,
+		BlockTypeIds::ACACIA_PLANKS,
+		BlockTypeIds::DARK_OAK_PLANKS,
+		BlockTypeIds::OAK_PLANKS,
+		BlockTypeIds::MANGROVE_PLANKS,
+		BlockTypeIds::CHERRY_PLANKS,
+		BlockTypeIds::CRIMSON_PLANKS,
+		BlockTypeIds::WARPED_PLANKS,
+		BlockTypeIds::OAK_LOG,
+		BlockTypeIds::SPRUCE_LOG,
+		BlockTypeIds::BIRCH_LOG,
+		BlockTypeIds::OAK_PLANKS,
+		BlockTypeIds::JUNGLE_LOG,
+		BlockTypeIds::ACACIA_LOG,
+		BlockTypeIds::DARK_OAK_LOG,
+		BlockTypeIds::MANGROVE_LOG,
+		BlockTypeIds::CHERRY_LOG,
+		//Need to add stripped logs
+	];
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->facingExcept($this->facing, Facing::UP);
@@ -96,34 +131,87 @@ class Hopper extends Transparent{
 
 	public function onScheduledUpdate() : void{
 		$world = $this->position->getWorld();
-		$this->transferFirstItem();
+		$this->push();
 		$world->scheduleDelayedBlockUpdate($this->position, 8);
 	}
 
-	private function transferFirstItem() : void{
+	public function push(){
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if(!$tile instanceof TileHopper) return;
 
 		$facingBlock = $this->getSide($this->facing);
-		if(!$facingBlock instanceof Hopper) return;
 
+		match($facingBlock::class){
+			Hopper::class => $this->transferToHopper($tile, $facingBlock),
+			Furnace::class => $this->transferToFurnance($tile, $facingBlock),
+			default => null
+		};
+	}
+
+	private function transferToHopper(TileHopper $tileHopper, Hopper $facingBlock) : void{
 		$facingTile = $this->position->getWorld()->getTile($facingBlock->position);
 		if(!$facingTile instanceof TileHopper) return;
 
+		$sourceInventory = $tileHopper->getInventory();
+		$targetInventory = $facingTile->getInventory();
+
 		for($i = 0; $i < 5; $i++){
-			$itemStack = $tile->getInventory()->getItem($i);
+			$itemStack = $sourceInventory->getItem($i);
 
 			if($itemStack->isNull()) continue;
 
 			$singleItem = $itemStack->pop(1);
 
-			if($facingTile->getInventory()->canAddItem($singleItem)){
-				$tile->getInventory()->removeItem($singleItem);
-				$facingTile->getInventory()->addItem($singleItem);
+			if($targetInventory->canAddItem($singleItem)){
+				$this->transferItem($sourceInventory, $targetInventory, $singleItem);
 			}
 
 			break;
 		}
+	}
+
+	private function transferToFurnance(TileHopper $tileHopper, Furnace $facingBlock) : void{
+		$facingTile = $this->position->getWorld()->getTile($facingBlock->position);
+		if(!$facingTile instanceof TileFurnance) return;
+
+		$hopperFacing = $tileHopper->getBlock()->getFacing();
+		$inventory = $tileHopper->getInventory();
+		$furnanceInventory = $facingTile->getInventory();
+
+		for($i = 0; $i < 5; $i++){
+			$itemStack = $inventory->getItem($i);
+	
+			if($itemStack->isNull()) continue;
+	
+			$singleItem = $itemStack->pop(1);
+			$typeId = $singleItem->getTypeId();
+
+			if($hopperFacing === Facing::DOWN && in_array($typeId, $this->furnanceAcceptedInputs) && $furnanceInventory->canAddSmelting($singleItem)){
+				$this->transferItem($inventory, $furnanceInventory, $singleItem, 0);
+			}else if($hopperFacing !== Facing::DOWN && $hopperFacing !== Facing::UP && (in_array(ItemTypeIds::toBlockTypeId($typeId), $this->furnanceAcceptedFuels) || $typeId == ItemTypeIds::CHARCOAL) && $furnanceInventory->canAddFuel($singleItem)){
+				$this->transferItem($inventory, $furnanceInventory, $singleItem, 1);
+			}
+		}
+	}
+
+	private function transferItem($sourceInventory, $targetInventory, Item $item, int $slot = null) : void{
+		$sourceInventory->removeItem($item);
+
+		if($slot === null){
+			$sourceInventory->removeItem($item);
+			$targetInventory->addItem($item);
+			return;
+		}
+
+		$currentItem = $targetInventory->getItem($slot);
+
+		if($currentItem->isNull()){
+			$targetInventory->setItem($slot, $item);
+			return;
+		}
+
+		$currentItem->setCount($currentItem->getCount() + 1);
+		$targetInventory->setItem($slot, $currentItem);
 	}
 
 	//TODO: redstone logic, sucking logic
