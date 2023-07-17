@@ -23,12 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\tile\Furnace as TileFurnance;
 use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
-use pocketmine\inventory\SimpleInventory;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -105,7 +103,7 @@ class Hopper extends Transparent implements HopperInteractable{
 		
 		$facingBlock = $this->getSide($this->facing);
 		if(!$facingBlock instanceof HopperInteractable) return;
-
+		
 		$facingBlock->pull($tile);
 	}
 
