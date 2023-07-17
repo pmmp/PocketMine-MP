@@ -26,6 +26,7 @@ namespace pocketmine\block\inventory;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\world\Position;
 
 class FurnaceInventory extends SimpleInventory implements BlockInventory{
@@ -67,5 +68,17 @@ class FurnaceInventory extends SimpleInventory implements BlockInventory{
 
 	public function setSmelting(Item $item) : void{
 		$this->setItem(self::SLOT_INPUT, $item);
+	}
+
+	public function canAddSmelting(Item $item) : bool{
+		if($this->getSmelting()->isNull()) return true;
+
+		return $this->getSmelting()->getTypeId() === $item->getTypeId();
+	}
+
+	public function canAddFuel(Item $item) : bool{
+		if($this->getFuel()->isNull()) return true;
+
+		return $this->getFuel()->getTypeId() === $item->getTypeId();
 	}
 }
