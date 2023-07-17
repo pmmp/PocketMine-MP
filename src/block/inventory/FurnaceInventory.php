@@ -23,11 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory;
 
-use pocketmine\block\BlockTypeIds;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\item\Item;
-use pocketmine\item\ItemTypeIds;
 use pocketmine\world\Position;
 
 use function in_array;
