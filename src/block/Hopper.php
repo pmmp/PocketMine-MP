@@ -100,10 +100,10 @@ class Hopper extends Transparent implements HopperInteractable{
 		
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if(!$tile instanceof TileHopper) return;
-
+		
 		$facingBlock = $this->getSide($this->facing);
 		if(!$facingBlock instanceof HopperInteractable) return;
-
+		
 		$facingBlock->pull($tile);
 	}
 
