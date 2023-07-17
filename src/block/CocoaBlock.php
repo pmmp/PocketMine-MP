@@ -81,7 +81,7 @@ class CocoaBlock extends Transparent{
 	}
 
 	private function canAttachTo(Block $block) : bool{
-		return $block instanceof Wood && $block->getWoodType()->equals(LogType::JUNGLE());
+		return $block instanceof Wood && $block->getLogType()->equals(LogType::JUNGLE());
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

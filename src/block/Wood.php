@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\LogTypeTrait;
 use pocketmine\block\utils\PillarRotationTrait;
-use pocketmine\block\utils\WoodTypeTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Axe;
 use pocketmine\item\Item;
@@ -34,7 +34,7 @@ use pocketmine\world\sound\ItemUseOnBlockSound;
 
 class Wood extends Opaque{
 	use PillarRotationTrait;
-	use WoodTypeTrait;
+	use LogTypeTrait;
 
 	private bool $stripped = false;
 
@@ -51,15 +51,15 @@ class Wood extends Opaque{
 	}
 
 	public function getFuelTime() : int{
-		return $this->woodType->isFlammable() ? 300 : 0;
+		return $this->logType->isFlammable() ? 300 : 0;
 	}
 
 	public function getFlameEncouragement() : int{
-		return $this->woodType->isFlammable() ? 5 : 0;
+		return $this->logType->isFlammable() ? 5 : 0;
 	}
 
 	public function getFlammability() : int{
-		return $this->woodType->isFlammable() ? 5 : 0;
+		return $this->logType->isFlammable() ? 5 : 0;
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{

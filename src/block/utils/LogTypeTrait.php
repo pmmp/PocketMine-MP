@@ -26,15 +26,15 @@ namespace pocketmine\block\utils;
 use pocketmine\block\BlockIdentifier;
 use pocketmine\block\BlockTypeInfo;
 
-trait WoodTypeTrait{
-	private LogType $woodType; //immutable for now
+trait LogTypeTrait{
+	private LogType $logType; //immutable for now
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, LogType $woodType){
-		$this->woodType = $woodType;
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, LogType $logType){
+		$this->logType = $logType;
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function getWoodType() : LogType{
-		return $this->woodType;
+	public function getLogType() : LogType{
+		return $this->logType;
 	}
 }

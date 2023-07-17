@@ -59,14 +59,14 @@ final class BoatType{
 
 	private function __construct(
 		string $enumName,
-		private LogType $woodType,
+		private LogType $logType,
 	){
 		$this->Enum___construct($enumName);
 	}
 
-	public function getWoodType() : LogType{ return $this->woodType; }
+	public function getLogType() : LogType{ return $this->logType; }
 
 	public function getDisplayName() : string{
-		return $this->woodType->getDisplayName();
+		return $this->logType->getDisplayName();
 	}
 }

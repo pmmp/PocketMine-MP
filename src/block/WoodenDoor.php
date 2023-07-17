@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\WoodTypeTrait;
+use pocketmine\block\utils\LogTypeTrait;
 
 class WoodenDoor extends Door{
-	use WoodTypeTrait;
+	use LogTypeTrait;
 }

@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\WoodTypeTrait;
+use pocketmine\block\utils\LogTypeTrait;
 
 class WoodenPressurePlate extends SimplePressurePlate{
-	use WoodTypeTrait;
+	use LogTypeTrait;
 
 	public function getFuelTime() : int{
 		return 300;

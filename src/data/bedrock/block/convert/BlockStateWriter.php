@@ -269,7 +269,7 @@ final class BlockStateWriter{
 	}
 
 	/** @return $this */
-	public function writeLegacyWoodType(LogType $treeType) : self{
+	public function writeLegacyLogType(LogType $treeType) : self{
 		$this->writeString(BlockStateNames::WOOD_TYPE, match($treeType->id()){
 			LogType::OAK()->id() => StringValues::WOOD_TYPE_OAK,
 			LogType::SPRUCE()->id() => StringValues::WOOD_TYPE_SPRUCE,
