@@ -755,6 +755,7 @@ use function mb_strtolower;
  * @method static Wool WOOL()
  */
 final class VanillaBlocks{
+	/** @phpstan-use CloningRegistryTrait<Block> */
 	use CloningRegistryTrait;
 
 	private function __construct(){

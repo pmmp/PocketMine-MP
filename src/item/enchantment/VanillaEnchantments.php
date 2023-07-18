@@ -56,6 +56,7 @@ use pocketmine\utils\RegistryTrait;
  * @method static Enchantment VANISHING()
  */
 final class VanillaEnchantments{
+	/** @phpstan-use RegistryTrait<Enchantment> */
 	use RegistryTrait;
 
 	protected static function setup() : void{
