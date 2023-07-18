@@ -17,13 +17,12 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\world\generator\object;
 
-use pocketmine\block\utils\TreeType;
 use pocketmine\utils\Random;
 
 final class TreeFactory{

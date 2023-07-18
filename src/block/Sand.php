@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,8 +28,4 @@ use pocketmine\block\utils\FallableTrait;
 
 class Sand extends Opaque implements Fallable{
 	use FallableTrait;
-
-	public function tickFalling() : ?Block{
-		return null;
-	}
 }

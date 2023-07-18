@@ -17,16 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\world\generator;
 
-use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
 use pocketmine\world\SimpleChunkManager;
@@ -41,10 +39,6 @@ use function igbinary_unserialize;
 class PopulationTask extends AsyncTask{
 	private const TLS_KEY_ON_COMPLETION = "onCompletion";
 
-	private int $worldId;
-	private int $chunkX;
-	private int $chunkZ;
-
 	private ?string $chunk;
 
 	private string $adjacentChunks;
@@ -54,10 +48,14 @@ class PopulationTask extends AsyncTask{
 	 * @phpstan-param array<int, Chunk|null> $adjacentChunks
 	 * @phpstan-param OnCompletion $onCompletion
 	 */
-	public function __construct(int $worldId, int $chunkX, int $chunkZ, ?Chunk $chunk, array $adjacentChunks, \Closure $onCompletion){
-		$this->worldId = $worldId;
-		$this->chunkX = $chunkX;
-		$this->chunkZ = $chunkZ;
+	public function __construct(
+		private int $worldId,
+		private int $chunkX,
+		private int $chunkZ,
+		?Chunk $chunk,
+		array $adjacentChunks,
+		\Closure $onCompletion
+	){
 		$this->chunk = $chunk !== null ? FastChunkSerializer::serializeTerrain($chunk) : null;
 
 		$this->adjacentChunks = igbinary_serialize(array_map(
@@ -81,7 +79,14 @@ class PopulationTask extends AsyncTask{
 		/** @var string[] $serialChunks */
 		$serialChunks = igbinary_unserialize($this->adjacentChunks);
 		$chunks = array_map(
-			fn(?string $serialized) => $serialized !== null ? FastChunkSerializer::deserializeTerrain($serialized) : null,
+			function(?string $serialized) : ?Chunk{
+				if($serialized === null){
+					return null;
+				}
+				$chunk = FastChunkSerializer::deserializeTerrain($serialized);
+				$chunk->clearTerrainDirtyFlags(); //this allows us to avoid sending existing chunks back to the main thread if they haven't changed during generation
+				return $chunk;
+			},
 			$serialChunks
 		);
 
@@ -112,15 +117,13 @@ class PopulationTask extends AsyncTask{
 	}
 
 	private static function setOrGenerateChunk(SimpleChunkManager $manager, Generator $generator, int $chunkX, int $chunkZ, ?Chunk $chunk) : Chunk{
-		$manager->setChunk($chunkX, $chunkZ, $chunk ?? new Chunk([], BiomeArray::fill(BiomeIds::OCEAN), false));
+		$manager->setChunk($chunkX, $chunkZ, $chunk ?? new Chunk([], false));
 		if($chunk === null){
 			$generator->generateChunk($manager, $chunkX, $chunkZ);
 			$chunk = $manager->getChunk($chunkX, $chunkZ);
 			if($chunk === null){
 				throw new AssumptionFailedError("We just set this chunk, so it must exist");
 			}
-			$chunk->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_BLOCKS, true);
-			$chunk->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_BIOMES, true);
 		}
 		return $chunk;
 	}

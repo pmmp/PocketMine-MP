@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,7 +25,7 @@ namespace pocketmine\build\generate_known_translation_apis;
 
 use pocketmine\lang\Translatable;
 use pocketmine\utils\Utils;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function array_map;
 use function count;
 use function dirname;
@@ -75,7 +75,7 @@ const SHARED_HEADER = <<<'HEADER'
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 

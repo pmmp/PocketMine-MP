@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -34,7 +34,7 @@ use function spl_object_id;
  */
 trait ItemEnchantmentHandlingTrait{
 	/** @var EnchantmentInstance[] */
-	protected $enchantments = [];
+	protected array $enchantments = [];
 
 	public function hasEnchantments() : bool{
 		return count($this->enchantments) > 0;

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,26 +28,15 @@ use pocketmine\utils\Limits;
 use function max;
 
 class EffectInstance{
-	/** @var Effect */
-	private $effectType;
-
-	/** @var int */
-	private $duration;
-
-	/** @var int */
-	private $amplifier;
-
-	/** @var bool */
-	private $visible;
-
-	/** @var bool */
-	private $ambient;
-
-	/** @var Color */
-	private $color;
+	private Effect $effectType;
+	private int $duration;
+	private int $amplifier;
+	private bool $visible;
+	private bool $ambient;
+	private Color $color;
 
 	/**
-	 * @param int|null   $duration Passing null will use the effect type's default duration
+	 * @param int|null $duration Passing null will use the effect type's default duration
 	 */
 	public function __construct(Effect $effectType, ?int $duration = null, int $amplifier = 0, bool $visible = true, bool $ambient = false, ?Color $overrideColor = null){
 		$this->effectType = $effectType;

@@ -17,12 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\color\Color;
 use pocketmine\utils\Utils;
 use function array_fill;
 use function array_pad;
@@ -30,22 +31,24 @@ use function array_slice;
 use function count;
 use function explode;
 use function is_int;
-use function strpos;
+use function str_contains;
 
 class SignText{
 	public const LINE_COUNT = 4;
 
 	/** @var string[] */
-	private $lines;
+	private array $lines;
+	private Color $baseColor;
+	private bool $glowing;
 
 	/**
-	 * @param string[]|null $lines index-sensitive; omitting an index will leave it unchanged
+	 * @param string[]|null $lines index-sensitive; keys 0-3 will be used, regardless of array order
 	 *
 	 * @throws \InvalidArgumentException if the array size is greater than 4
 	 * @throws \InvalidArgumentException if invalid keys (out of bounds or string) are found in the array
 	 * @throws \InvalidArgumentException if any line is not valid UTF-8 or contains a newline
 	 */
-	public function __construct(?array $lines = null){
+	public function __construct(?array $lines = null, ?Color $baseColor = null, bool $glowing = false){
 		$this->lines = array_fill(0, self::LINE_COUNT, "");
 		if($lines !== null){
 			if(count($lines) > self::LINE_COUNT){
@@ -54,13 +57,15 @@ class SignText{
 			foreach($lines as $k => $line){
 				$this->checkLineIndex($k);
 				Utils::checkUTF8($line);
-				if(strpos($line, "\n") !== false){
+				if(str_contains($line, "\n")){
 					throw new \InvalidArgumentException("Line must not contain newlines");
 				}
 				//TODO: add length checks
 				$this->lines[$k] = $line;
 			}
 		}
+		$this->baseColor = $baseColor ?? new Color(0, 0, 0);
+		$this->glowing = $glowing;
 	}
 
 	/**
@@ -69,8 +74,8 @@ class SignText{
 	 *
 	 * @throws \InvalidArgumentException if the text is not valid UTF-8
 	 */
-	public static function fromBlob(string $blob) : SignText{
-		return new self(array_slice(array_pad(explode("\n", $blob), self::LINE_COUNT, ""), 0, self::LINE_COUNT));
+	public static function fromBlob(string $blob, ?Color $baseColor = null, bool $glowing = false) : SignText{
+		return new self(array_slice(array_pad(explode("\n", $blob), self::LINE_COUNT, ""), 0, self::LINE_COUNT), $baseColor, $glowing);
 	}
 
 	/**
@@ -82,10 +87,7 @@ class SignText{
 		return $this->lines;
 	}
 
-	/**
-	 * @param int|string $index
-	 */
-	private function checkLineIndex($index) : void{
+	private function checkLineIndex(int|string $index) : void{
 		if(!is_int($index)){
 			throw new \InvalidArgumentException("Index must be an integer");
 		}
@@ -102,5 +104,20 @@ class SignText{
 	public function getLine(int $index) : string{
 		$this->checkLineIndex($index);
 		return $this->lines[$index];
+	}
+
+	/**
+	 * Returns the base text color of sign. Color codes using the § escape character will override this color when used.
+	 */
+	public function getBaseColor() : Color{
+		return $this->baseColor;
+	}
+
+	/**
+	 * Returns whether the sign text is glowing. When true, the text will have an outline (usually a darker tone of the
+	 * base color, or white for black text), and will glow in the dark, making it readable without any light sources.
+	 */
+	public function isGlowing() : bool{
+		return $this->glowing;
 	}
 }

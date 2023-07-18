@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -46,6 +46,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	public const MODIFIER_TOTEM = 8;
 	public const MODIFIER_WEAPON_ENCHANTMENTS = 9;
 	public const MODIFIER_PREVIOUS_DAMAGE_COOLDOWN = 10;
+	public const MODIFIER_ARMOR_HELMET = 11;
 
 	public const CAUSE_CONTACT = 0;
 	public const CAUSE_ENTITY_ATTACK = 1;
@@ -63,32 +64,27 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	public const CAUSE_MAGIC = 13;
 	public const CAUSE_CUSTOM = 14;
 	public const CAUSE_STARVATION = 15;
+	public const CAUSE_FALLING_BLOCK = 16;
 
-	/** @var int */
-	private $cause;
-	/** @var float */
-	private $baseDamage;
-	/** @var float */
-	private $originalBase;
+	private float $baseDamage;
+	private float $originalBase;
 
 	/** @var float[] */
-	private $modifiers;
-	/** @var float[] */
-	private $originals;
-
-	/** @var int */
-	private $attackCooldown = 10;
+	private array $originals;
+	private int $attackCooldown = 10;
 
 	/**
 	 * @param float[] $modifiers
 	 */
-	public function __construct(Entity $entity, int $cause, float $damage, array $modifiers = []){
+	public function __construct(
+		Entity $entity,
+		private int $cause,
+		float $damage,
+		private array $modifiers = []
+	){
 		$this->entity = $entity;
-		$this->cause = $cause;
 		$this->baseDamage = $this->originalBase = $damage;
-
-		$this->modifiers = $modifiers;
-		$this->originals = $this->modifiers;
+		$this->originals = $modifiers;
 	}
 
 	public function getCause() : int{

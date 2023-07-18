@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -44,19 +44,19 @@ class PermissibleInternal implements Permissible{
 	 * @var bool[]
 	 * @phpstan-var array<string, bool>
 	 */
-	private $rootPermissions;
+	private array $rootPermissions;
 
 	/** @var PermissionAttachment[] */
-	private $attachments = [];
+	private array $attachments = [];
 
 	/** @var PermissionAttachmentInfo[] */
-	private $permissions = [];
+	private array $permissions = [];
 
 	/**
 	 * @var ObjectSet|\Closure[]
 	 * @phpstan-var ObjectSet<\Closure(array<string, bool> $changedPermissionsOldValues) : void>
 	 */
-	private $permissionRecalculationCallbacks;
+	private ObjectSet $permissionRecalculationCallbacks;
 
 	/**
 	 * @param bool[] $basePermissions
@@ -69,7 +69,7 @@ class PermissibleInternal implements Permissible{
 		$this->recalculatePermissions();
 	}
 
-	public function setBasePermission($name, bool $grant) : void{
+	public function setBasePermission(Permission|string $name, bool $grant) : void{
 		if($name instanceof Permission){
 			$name = $name->getName();
 		}
@@ -77,22 +77,16 @@ class PermissibleInternal implements Permissible{
 		$this->recalculatePermissions();
 	}
 
-	public function unsetBasePermission($name) : void{
+	public function unsetBasePermission(Permission|string $name) : void{
 		unset($this->rootPermissions[$name instanceof Permission ? $name->getName() : $name]);
 		$this->recalculatePermissions();
 	}
 
-	/**
-	 * @param Permission|string $name
-	 */
-	public function isPermissionSet($name) : bool{
+	public function isPermissionSet(Permission|string $name) : bool{
 		return isset($this->permissions[$name instanceof Permission ? $name->getName() : $name]);
 	}
 
-	/**
-	 * @param Permission|string $name
-	 */
-	public function hasPermission($name) : bool{
+	public function hasPermission(Permission|string $name) : bool{
 		if($name instanceof Permission){
 			$name = $name->getName();
 		}

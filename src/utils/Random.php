@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -35,20 +35,12 @@ class Random{
 	public const Z = 521288629;
 	public const W = 88675123;
 
-	/** @var int */
-	private $x;
+	private int $x;
+	private int $y;
+	private int $z;
+	private int $w;
 
-	/** @var int */
-	private $y;
-
-	/** @var int */
-	private $z;
-
-	/** @var int */
-	private $w;
-
-	/** @var int */
-	protected $seed;
+	protected int $seed;
 
 	/**
 	 * @param int $seed Integer to be used as seed.
@@ -122,7 +114,7 @@ class Random{
 	 * Returns a random integer between $start and $end
 	 *
 	 * @param int $start default 0
-	 * @param int $end default 0x7fffffff
+	 * @param int $end   default 0x7fffffff
 	 */
 	public function nextRange(int $start = 0, int $end = 0x7fffffff) : int{
 		return $start + ($this->nextInt() % ($end + 1 - $start));

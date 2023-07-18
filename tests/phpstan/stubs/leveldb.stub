@@ -9,3 +9,10 @@ class LevelDB{
 	 */
 	public function get($key, array $read_options = []){}
 }
+
+/**
+ * @implements Iterator<string, string>
+ */
+class LevelDBIterator implements Iterator{
+
+}

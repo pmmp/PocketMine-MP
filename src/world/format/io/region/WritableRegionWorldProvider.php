@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,7 +27,7 @@ use pocketmine\world\format\io\ChunkData;
 use pocketmine\world\format\io\data\JavaWorldData;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\WorldCreationOptions;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function file_exists;
 use function mkdir;
 
@@ -53,7 +53,7 @@ abstract class WritableRegionWorldProvider extends RegionWorldProvider implement
 
 	abstract protected function serializeChunk(ChunkData $chunk) : string;
 
-	public function saveChunk(int $chunkX, int $chunkZ, ChunkData $chunkData) : void{
+	public function saveChunk(int $chunkX, int $chunkZ, ChunkData $chunkData, int $dirtyFlags) : void{
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
 		$this->loadRegion($regionX, $regionZ)->writeChunk($chunkX & 0x1f, $chunkZ & 0x1f, $this->serializeChunk($chunkData));
 	}

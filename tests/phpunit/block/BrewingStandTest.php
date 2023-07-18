@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use PHPUnit\Framework\TestCase;
 use pocketmine\block\utils\BrewingStandSlot;
+use function array_values;
 use function count;
 
 class BrewingStandTest extends TestCase{
@@ -32,8 +33,8 @@ class BrewingStandTest extends TestCase{
 	/**
 	 * @phpstan-return \Generator<int, array{list<BrewingStandSlot>}, void, void>
 	 */
-	public function slotsProvider() : \Generator{
-		yield [BrewingStandSlot::getAll()];
+	public static function slotsProvider() : \Generator{
+		yield [array_values(BrewingStandSlot::getAll())];
 		yield [[BrewingStandSlot::EAST()]];
 		yield [[BrewingStandSlot::EAST(), BrewingStandSlot::NORTHWEST()]];
 	}

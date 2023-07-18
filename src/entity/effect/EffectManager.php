@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -33,31 +33,26 @@ use function count;
 use function spl_object_id;
 
 class EffectManager{
-
-	/** @var Living */
-	private $entity;
-
 	/** @var EffectInstance[] */
-	protected $effects = [];
+	protected array $effects = [];
 
-	/** @var Color */
-	protected $bubbleColor;
-	/** @var bool */
-	protected $onlyAmbientEffects = false;
+	protected Color $bubbleColor;
+	protected bool $onlyAmbientEffects = false;
 
 	/**
 	 * @var \Closure[]|ObjectSet
 	 * @phpstan-var ObjectSet<\Closure(EffectInstance, bool $replacesOldEffect) : void>
 	 */
-	protected $effectAddHooks;
+	protected ObjectSet $effectAddHooks;
 	/**
 	 * @var \Closure[]|ObjectSet
 	 * @phpstan-var ObjectSet<\Closure(EffectInstance) : void>
 	 */
-	protected $effectRemoveHooks;
+	protected ObjectSet $effectRemoveHooks;
 
-	public function __construct(Living $entity){
-		$this->entity = $entity;
+	public function __construct(
+		private Living $entity
+	){
 		$this->bubbleColor = new Color(0, 0, 0, 0);
 		$this->effectAddHooks = new ObjectSet();
 		$this->effectRemoveHooks = new ObjectSet();
@@ -87,14 +82,11 @@ class EffectManager{
 		$index = spl_object_id($effectType);
 		if(isset($this->effects[$index])){
 			$effect = $this->effects[$index];
-			$hasExpired = $effect->hasExpired();
 			$ev = new EntityEffectRemoveEvent($this->entity, $effect);
 			$ev->call();
 			if($ev->isCancelled()){
-				if($hasExpired && !$ev->getEffect()->hasExpired()){ //altered duration of an expired effect to make it not get removed
-					foreach($this->effectAddHooks as $hook){
-						$hook($ev->getEffect(), true);
-					}
+				foreach($this->effectAddHooks as $hook){
+					$hook($ev->getEffect(), true);
 				}
 				return;
 			}

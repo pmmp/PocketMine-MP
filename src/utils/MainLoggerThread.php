@@ -17,29 +17,31 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use pmmp\thread\Thread;
+use pmmp\thread\ThreadSafeArray;
 use function fclose;
 use function fopen;
 use function fwrite;
 use function is_resource;
 use function touch;
 
-final class MainLoggerThread extends \Thread{
-
-	private string $logFile;
-	private \Threaded $buffer;
+final class MainLoggerThread extends Thread{
+	/** @phpstan-var ThreadSafeArray<int, string> */
+	private ThreadSafeArray $buffer;
 	private bool $syncFlush = false;
 	private bool $shutdown = false;
 
-	public function __construct(string $logFile){
-		$this->buffer = new \Threaded();
-		touch($logFile);
-		$this->logFile = $logFile;
+	public function __construct(
+		private string $logFile
+	){
+		$this->buffer = new ThreadSafeArray();
+		touch($this->logFile);
 	}
 
 	public function write(string $line) : void{
@@ -73,9 +75,7 @@ final class MainLoggerThread extends \Thread{
 	 * @param resource $logResource
 	 */
 	private function writeLogStream($logResource) : void{
-		while($this->buffer->count() > 0){
-			/** @var string $chunk */
-			$chunk = $this->buffer->shift();
+		while(($chunk = $this->buffer->shift()) !== null){
 			fwrite($logResource, $chunk);
 		}
 

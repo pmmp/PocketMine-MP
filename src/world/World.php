@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,14 +28,16 @@ namespace pocketmine\world;
 
 use pocketmine\block\Air;
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\BlockTypeIds;
+use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\tile\TileFactory;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\BiomeIds;
+use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
@@ -50,7 +52,10 @@ use pocketmine\event\world\ChunkLoadEvent;
 use pocketmine\event\world\ChunkPopulateEvent;
 use pocketmine\event\world\ChunkUnloadEvent;
 use pocketmine\event\world\SpawnChangeEvent;
+use pocketmine\event\world\WorldDisplayNameChangeEvent;
+use pocketmine\event\world\WorldParticleEvent;
 use pocketmine\event\world\WorldSaveEvent;
+use pocketmine\event\world\WorldSoundEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\LegacyStringToItemParser;
@@ -58,10 +63,12 @@ use pocketmine\item\StringToItemParser;
 use pocketmine\item\VanillaItems;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
+use pocketmine\network\mcpe\convert\TypeConverter;
+use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
@@ -72,7 +79,6 @@ use pocketmine\promise\PromiseResolver;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\Server;
 use pocketmine\ServerConfigGroup;
-use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
 use pocketmine\utils\ReversePriorityQueue;
@@ -81,6 +87,7 @@ use pocketmine\world\biome\BiomeRegistry;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\ChunkData;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
+use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\format\LightArray;
 use pocketmine\world\format\SubChunk;
@@ -99,6 +106,7 @@ use pocketmine\world\utils\SubChunkExplorer;
 use function abs;
 use function array_filter;
 use function array_key_exists;
+use function array_keys;
 use function array_map;
 use function array_merge;
 use function array_sum;
@@ -129,13 +137,17 @@ use const PHP_INT_MIN;
 
 #include <rules/World.h>
 
+/**
+ * @phpstan-type ChunkPosHash int
+ * @phpstan-type BlockPosHash int
+ * @phpstan-type ChunkBlockPosHash int
+ */
 class World implements ChunkManager{
 
-	/** @var int */
-	private static $worldIdCounter = 1;
+	private static int $worldIdCounter = 1;
 
-	public const Y_MAX = 256;
-	public const Y_MIN = 0;
+	public const Y_MAX = 320;
+	public const Y_MIN = -64;
 
 	public const TIME_DAY = 1000;
 	public const TIME_NOON = 6000;
@@ -153,183 +165,214 @@ class World implements ChunkManager{
 
 	public const DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK = 3;
 
-	/** @var Player[] */
-	private $players = [];
-
-	/** @var Entity[] */
-	private $entities = [];
 	/**
-	 * @var Vector3[]
+	 * @var Player[] entity runtime ID => Player
+	 * @phpstan-var array<int, Player>
+	 */
+	private array $players = [];
+
+	/**
+	 * @var Entity[] entity runtime ID => Entity
+	 * @phpstan-var array<int, Entity>
+	 */
+	private array $entities = [];
+	/**
+	 * @var Vector3[] entity runtime ID => Vector3
 	 * @phpstan-var array<int, Vector3>
 	 */
-	private $entityLastKnownPositions = [];
+	private array $entityLastKnownPositions = [];
 
 	/**
-	 * @var Entity[][]
-	 * @phpstan-var array<int, array<int, Entity>>
+	 * @var Entity[][] chunkHash => [entity runtime ID => Entity]
+	 * @phpstan-var array<ChunkPosHash, array<int, Entity>>
 	 */
 	private array $entitiesByChunk = [];
 
-	/** @var Entity[] */
-	public $updateEntities = [];
-	/** @var Block[][] */
-	private $blockCache = [];
+	/**
+	 * @var Entity[] entity runtime ID => Entity
+	 * @phpstan-var array<int, Entity>
+	 */
+	public array $updateEntities = [];
 
-	/** @var int */
-	private $sendTimeTicker = 0;
+	private bool $inDynamicStateRecalculation = false;
+	/**
+	 * @var Block[][] chunkHash => [relativeBlockHash => Block]
+	 * @phpstan-var array<ChunkPosHash, array<ChunkBlockPosHash, Block>>
+	 */
+	private array $blockCache = [];
 
-	/** @var Server */
-	private $server;
+	private int $sendTimeTicker = 0;
 
-	/** @var int */
-	private $worldId;
+	private int $worldId;
 
-	/** @var WritableWorldProvider */
-	private $provider;
-	/** @var int */
-	private $providerGarbageCollectionTicker = 0;
+	private int $providerGarbageCollectionTicker = 0;
 
-	/** @var int */
-	private $minY;
-	/** @var int */
-	private $maxY;
-
-	/** @var TickingChunkLoader[] */
-	private $tickingLoaders = [];
-	/** @var int[] */
-	private $tickingLoaderCounter = [];
-	/** @var ChunkLoader[][] */
-	private $chunkLoaders = [];
-
-	/** @var ChunkListener[][] */
-	private $chunkListeners = [];
-	/** @var Player[][] */
-	private $playerChunkListeners = [];
-
-	/** @var ClientboundPacket[][] */
-	private $packetBuffersByChunk = [];
-
-	/** @var float[] */
-	private $unloadQueue = [];
-
-	/** @var int */
-	private $time;
-	/** @var bool */
-	public $stopTime = false;
-
-	/** @var float */
-	private $sunAnglePercentage = 0.0;
-	/** @var int */
-	private $skyLightReduction = 0;
-
-	/** @var string */
-	private $folderName;
-	/** @var string */
-	private $displayName;
-
-	/** @var Chunk[] */
-	private $chunks = [];
-
-	/** @var Vector3[][] */
-	private $changedBlocks = [];
+	private int $minY;
+	private int $maxY;
 
 	/**
-	 * @var ReversePriorityQueue
-	 * @phpstan-var ReversePriorityQueue<int, Vector3>
+	 * @var ChunkTicker[][] chunkHash => [spl_object_id => ChunkTicker]
+	 * @phpstan-var array<ChunkPosHash, array<int, ChunkTicker>>
 	 */
-	private $scheduledBlockUpdateQueue;
-	/** @var int[] */
-	private $scheduledBlockUpdateQueueIndex = [];
+	private array $registeredTickingChunks = [];
 
 	/**
-	 * @var \SplQueue
-	 * @phpstan-var \SplQueue<int>
+	 * Set of chunks which are definitely ready for ticking.
+	 *
+	 * @var int[]
+	 * @phpstan-var array<ChunkPosHash, ChunkPosHash>
 	 */
-	private $neighbourBlockUpdateQueue;
-	/** @var bool[] blockhash => dummy */
-	private $neighbourBlockUpdateQueueIndex = [];
+	private array $validTickingChunks = [];
 
-	/** @var bool[] */
-	private $activeChunkPopulationTasks = [];
-	/** @var ChunkLockId[] */
-	private $chunkLock = [];
-	/** @var int */
-	private $maxConcurrentChunkPopulationTasks = 2;
+	/**
+	 * Set of chunks which might be ready for ticking. These will be checked at the next tick.
+	 * @var int[]
+	 * @phpstan-var array<ChunkPosHash, ChunkPosHash>
+	 */
+	private array $recheckTickingChunks = [];
+
+	/**
+	 * @var ChunkLoader[][] chunkHash => [spl_object_id => ChunkLoader]
+	 * @phpstan-var array<ChunkPosHash, array<int, ChunkLoader>>
+	 */
+	private array $chunkLoaders = [];
+
+	/**
+	 * @var ChunkListener[][] chunkHash => [spl_object_id => ChunkListener]
+	 * @phpstan-var array<ChunkPosHash, array<int, ChunkListener>>
+	 */
+	private array $chunkListeners = [];
+	/**
+	 * @var Player[][] chunkHash => [spl_object_id => Player]
+	 * @phpstan-var array<ChunkPosHash, array<int, Player>>
+	 */
+	private array $playerChunkListeners = [];
+
+	/**
+	 * @var ClientboundPacket[][]
+	 * @phpstan-var array<ChunkPosHash, list<ClientboundPacket>>
+	 */
+	private array $packetBuffersByChunk = [];
+
+	/**
+	 * @var float[] chunkHash => timestamp of request
+	 * @phpstan-var array<ChunkPosHash, float>
+	 */
+	private array $unloadQueue = [];
+
+	private int $time;
+	public bool $stopTime = false;
+
+	private float $sunAnglePercentage = 0.0;
+	private int $skyLightReduction = 0;
+
+	private string $folderName;
+	private string $displayName;
+
+	/**
+	 * @var Chunk[]
+	 * @phpstan-var array<ChunkPosHash, Chunk>
+	 */
+	private array $chunks = [];
+
+	/**
+	 * @var Vector3[][] chunkHash => [relativeBlockHash => Vector3]
+	 * @phpstan-var array<ChunkPosHash, array<ChunkBlockPosHash, Vector3>>
+	 */
+	private array $changedBlocks = [];
+
+	/** @phpstan-var ReversePriorityQueue<int, Vector3> */
+	private ReversePriorityQueue $scheduledBlockUpdateQueue;
+	/**
+	 * @var int[] blockHash => tick delay
+	 * @phpstan-var array<BlockPosHash, int>
+	 */
+	private array $scheduledBlockUpdateQueueIndex = [];
+
+	/** @phpstan-var \SplQueue<int> */
+	private \SplQueue $neighbourBlockUpdateQueue;
+	/**
+	 * @var true[] blockhash => dummy
+	 * @phpstan-var array<BlockPosHash, true>
+	 */
+	private array $neighbourBlockUpdateQueueIndex = [];
+
+	/**
+	 * @var bool[] chunkHash => isValid
+	 * @phpstan-var array<ChunkPosHash, bool>
+	 */
+	private array $activeChunkPopulationTasks = [];
+	/**
+	 * @var ChunkLockId[]
+	 * @phpstan-var array<ChunkPosHash, ChunkLockId>
+	 */
+	private array $chunkLock = [];
+	private int $maxConcurrentChunkPopulationTasks = 2;
 	/**
 	 * @var PromiseResolver[] chunkHash => promise
-	 * @phpstan-var array<int, PromiseResolver<Chunk>>
+	 * @phpstan-var array<ChunkPosHash, PromiseResolver<Chunk>>
 	 */
 	private array $chunkPopulationRequestMap = [];
 	/**
 	 * @var \SplQueue (queue of chunkHashes)
-	 * @phpstan-var \SplQueue<int>
+	 * @phpstan-var \SplQueue<ChunkPosHash>
 	 */
 	private \SplQueue $chunkPopulationRequestQueue;
 	/**
 	 * @var true[] chunkHash => dummy
-	 * @phpstan-var array<int, true>
+	 * @phpstan-var array<ChunkPosHash, true>
 	 */
 	private array $chunkPopulationRequestQueueIndex = [];
 
-	/** @var bool[] */
-	private $generatorRegisteredWorkers = [];
-
-	/** @var bool */
-	private $autoSave = true;
-
-	/** @var int */
-	private $sleepTicks = 0;
-
-	/** @var int */
-	private $chunkTickRadius;
-	/** @var int */
-	private $chunksPerTick;
-	/** @var int */
-	private $tickedBlocksPerSubchunkPerTick = self::DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK;
-	/** @var bool[] */
-	private $randomTickBlocks = [];
-
-	/** @var WorldTimings */
-	public $timings;
-
-	/** @var float */
-	public $tickRateTime = 0;
-
-	/** @var bool */
-	private $doingTick = false;
-
 	/**
-	 * @var string
-	 * @phpstan-var class-string<\pocketmine\world\generator\Generator>
+	 * @var true[]
+	 * @phpstan-var array<int, true>
 	 */
-	private $generator;
+	private array $generatorRegisteredWorkers = [];
 
-	/** @var bool */
-	private $unloaded = false;
+	private bool $autoSave = true;
+
+	private int $sleepTicks = 0;
+
+	private int $chunkTickRadius;
+	private int $tickedBlocksPerSubchunkPerTick = self::DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK;
+	/**
+	 * @var true[]
+	 * @phpstan-var array<int, true>
+	 */
+	private array $randomTickBlocks = [];
+
+	public WorldTimings $timings;
+
+	public float $tickRateTime = 0;
+
+	private bool $doingTick = false;
+
+	/** @phpstan-var class-string<\pocketmine\world\generator\Generator> */
+	private string $generator;
+
+	private bool $unloaded = false;
 	/**
 	 * @var \Closure[]
 	 * @phpstan-var array<int, \Closure() : void>
 	 */
-	private $unloadCallbacks = [];
+	private array $unloadCallbacks = [];
 
-	/** @var BlockLightUpdate|null */
-	private $blockLightUpdate = null;
-	/** @var SkyLightUpdate|null */
-	private $skyLightUpdate = null;
+	private ?BlockLightUpdate $blockLightUpdate = null;
+	private ?SkyLightUpdate $skyLightUpdate = null;
 
-	/** @var \Logger */
-	private $logger;
+	private \Logger $logger;
 
-	/** @var AsyncPool */
-	private $workerPool;
-
+	/**
+	 * @phpstan-return ChunkPosHash
+	 */
 	public static function chunkHash(int $x, int $z) : int{
 		return morton2d_encode($x, $z);
 	}
 
 	private const MORTON3D_BIT_SIZE = 21;
 	private const BLOCKHASH_Y_BITS = 9;
-	private const BLOCKHASH_Y_PADDING = 128; //size (in blocks) of padding after both boundaries of the Y axis
+	private const BLOCKHASH_Y_PADDING = 64; //size (in blocks) of padding after both boundaries of the Y axis
 	private const BLOCKHASH_Y_OFFSET = self::BLOCKHASH_Y_PADDING - self::Y_MIN;
 	private const BLOCKHASH_Y_MASK = (1 << self::BLOCKHASH_Y_BITS) - 1;
 	private const BLOCKHASH_XZ_MASK = (1 << self::MORTON3D_BIT_SIZE) - 1;
@@ -339,6 +382,9 @@ class World implements ChunkManager{
 	private const BLOCKHASH_X_SHIFT = self::BLOCKHASH_Y_BITS;
 	private const BLOCKHASH_Z_SHIFT = self::BLOCKHASH_X_SHIFT + self::BLOCKHASH_XZ_EXTRA_BITS;
 
+	/**
+	 * @phpstan-return BlockPosHash
+	 */
 	public static function blockHash(int $x, int $y, int $z) : int{
 		$shiftedY = $y + self::BLOCKHASH_Y_OFFSET;
 		if(($shiftedY & (~0 << self::BLOCKHASH_Y_BITS)) !== 0){
@@ -363,6 +409,12 @@ class World implements ChunkManager{
 		return morton3d_encode($x, $y, $z);
 	}
 
+	/**
+	 * @phpstan-param BlockPosHash $hash
+	 * @phpstan-param-out int      $x
+	 * @phpstan-param-out int      $y
+	 * @phpstan-param-out int      $z
+	 */
 	public static function getBlockXYZ(int $hash, ?int &$x, ?int &$y, ?int &$z) : void{
 		[$baseX, $baseY, $baseZ] = morton3d_decode($hash);
 
@@ -374,6 +426,11 @@ class World implements ChunkManager{
 		$z = (($baseZ & self::BLOCKHASH_XZ_MASK) | $extraZ) << self::BLOCKHASH_XZ_SIGN_SHIFT >> self::BLOCKHASH_XZ_SIGN_SHIFT;
 	}
 
+	/**
+	 * @phpstan-param ChunkPosHash $hash
+	 * @phpstan-param-out int      $x
+	 * @phpstan-param-out int      $z
+	 */
 	public static function getXZ(int $hash, ?int &$x, ?int &$z) : void{
 		[$x, $z] = morton2d_decode($hash);
 	}
@@ -407,12 +464,14 @@ class World implements ChunkManager{
 	/**
 	 * Init the default world data
 	 */
-	public function __construct(Server $server, string $name, WritableWorldProvider $provider, AsyncPool $workerPool){
+	public function __construct(
+		private Server $server,
+		string $name, //TODO: this should be folderName (named arguments BC break)
+		private WritableWorldProvider $provider,
+		private AsyncPool $workerPool
+	){
+		$this->folderName = $name;
 		$this->worldId = self::$worldIdCounter++;
-		$this->server = $server;
-
-		$this->provider = $provider;
-		$this->workerPool = $workerPool;
 
 		$this->displayName = $this->provider->getWorldData()->getName();
 		$this->logger = new \PrefixedLogger($server->getLogger(), "World: $this->displayName");
@@ -440,8 +499,6 @@ class World implements ChunkManager{
 			}
 		});
 
-		$this->folderName = $name;
-
 		$this->scheduledBlockUpdateQueue = new ReversePriorityQueue();
 		$this->scheduledBlockUpdateQueue->setExtractFlags(\SplPriorityQueue::EXTR_BOTH);
 
@@ -450,8 +507,12 @@ class World implements ChunkManager{
 		$this->time = $this->provider->getWorldData()->getTime();
 
 		$cfg = $this->server->getConfigGroup();
-		$this->chunkTickRadius = min($this->server->getViewDistance(), max(1, $cfg->getPropertyInt("chunk-ticking.tick-radius", 4)));
-		$this->chunksPerTick = $cfg->getPropertyInt("chunk-ticking.per-tick", 40);
+		$this->chunkTickRadius = min($this->server->getViewDistance(), max(0, $cfg->getPropertyInt("chunk-ticking.tick-radius", 4)));
+		if($cfg->getPropertyInt("chunk-ticking.per-tick", 40) <= 0){
+			//TODO: this needs l10n
+			$this->logger->warning("\"chunk-ticking.per-tick\" setting is deprecated, but you've used it to disable chunk ticking. Set \"chunk-ticking.tick-radius\" to 0 in \"pocketmine.yml\" instead.");
+			$this->chunkTickRadius = 0;
+		}
 		$this->tickedBlocksPerSubchunkPerTick = $cfg->getPropertyInt("chunk-ticking.blocks-per-subchunk-per-tick", self::DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK);
 		$this->maxConcurrentChunkPopulationTasks = $cfg->getPropertyInt("chunk-generation.population-queue-size", 2);
 
@@ -480,21 +541,27 @@ class World implements ChunkManager{
 			if($item !== null){
 				$block = $item->getBlock();
 			}elseif(preg_match("/^-?\d+$/", $name) === 1){
-				$block = BlockFactory::getInstance()->get((int) $name, 0);
+				//TODO: this is a really sketchy hack - remove this as soon as possible
+				try{
+					$blockStateData = GlobalBlockStateHandlers::getUpgrader()->upgradeIntIdMeta((int) $name, 0);
+				}catch(BlockStateDeserializeException){
+					continue;
+				}
+				$block = RuntimeBlockStateRegistry::getInstance()->fromStateId(GlobalBlockStateHandlers::getDeserializer()->deserialize($blockStateData));
 			}else{
 				//TODO: we probably ought to log an error here
 				continue;
 			}
 
-			if($block->getId() !== BlockLegacyIds::AIR){
+			if($block->getTypeId() !== BlockTypeIds::AIR){
 				$dontTickBlocks[$block->getTypeId()] = $name;
 			}
 		}
 
-		foreach(BlockFactory::getInstance()->getAllKnownStates() as $state){
+		foreach(RuntimeBlockStateRegistry::getInstance()->getAllKnownStates() as $state){
 			$dontTickName = $dontTickBlocks[$state->getTypeId()] ?? null;
 			if($dontTickName === null && $state->ticksRandomly()){
-				$this->randomTickBlocks[$state->getFullId()] = true;
+				$this->randomTickBlocks[$state->getStateId()] = true;
 			}
 		}
 	}
@@ -594,17 +661,49 @@ class World implements ChunkManager{
 	}
 
 	/**
+	 * Returns a list of players who are in the given filter and also using the chunk containing the target position.
+	 * Used for broadcasting sounds and particles with specific targets.
+	 *
+	 * @param Player[] $allowed
+	 * @phpstan-param list<Player> $allowed
+	 *
+	 * @return array<int, Player>
+	 */
+	private function filterViewersForPosition(Vector3 $pos, array $allowed) : array{
+		$candidates = $this->getViewersForPosition($pos);
+		$filtered = [];
+		foreach($allowed as $player){
+			$k = spl_object_id($player);
+			if(isset($candidates[$k])){
+				$filtered[$k] = $candidates[$k];
+			}
+		}
+
+		return $filtered;
+	}
+
+	/**
 	 * @param Player[]|null $players
 	 */
 	public function addSound(Vector3 $pos, Sound $sound, ?array $players = null) : void{
-		$pk = $sound->encode($pos);
+		$players ??= $this->getViewersForPosition($pos);
+		$ev = new WorldSoundEvent($this, $sound, $pos, $players);
+
+		$ev->call();
+
+		if($ev->isCancelled()){
+			return;
+		}
+
+		$pk = $ev->getSound()->encode($pos);
+		$players = $ev->getRecipients();
 		if(count($pk) > 0){
-			if($players === null){
+			if($players === $this->getViewersForPosition($pos)){
 				foreach($pk as $e){
 					$this->broadcastPacketToViewers($pos, $e);
 				}
 			}else{
-				$this->server->broadcastPackets($players, $pk);
+				NetworkBroadcastUtils::broadcastPackets($this->filterViewersForPosition($pos, $players), $pk);
 			}
 		}
 	}
@@ -613,14 +712,24 @@ class World implements ChunkManager{
 	 * @param Player[]|null $players
 	 */
 	public function addParticle(Vector3 $pos, Particle $particle, ?array $players = null) : void{
-		$pk = $particle->encode($pos);
+		$players ??= $this->getViewersForPosition($pos);
+		$ev = new WorldParticleEvent($this, $particle, $pos, $players);
+
+		$ev->call();
+
+		if($ev->isCancelled()){
+			return;
+		}
+
+		$pk = $ev->getParticle()->encode($pos);
+		$players = $ev->getRecipients();
 		if(count($pk) > 0){
-			if($players === null){
+			if($players === $this->getViewersForPosition($pos)){
 				foreach($pk as $e){
 					$this->broadcastPacketToViewers($pos, $e);
 				}
 			}else{
-				$this->server->broadcastPackets($players, $pk);
+				NetworkBroadcastUtils::broadcastPackets($this->filterViewersForPosition($pos, $ev->getRecipients()), $pk);
 			}
 		}
 	}
@@ -639,7 +748,8 @@ class World implements ChunkManager{
 	 *
 	 * Returns a list of players who have the target chunk within their view distance.
 	 *
-	 * @return Player[]
+	 * @return Player[] spl_object_id => Player
+	 * @phpstan-return array<int, Player>
 	 */
 	public function getChunkPlayers(int $chunkX, int $chunkZ) : array{
 		return $this->playerChunkListeners[World::chunkHash($chunkX, $chunkZ)] ?? [];
@@ -649,6 +759,7 @@ class World implements ChunkManager{
 	 * Gets the chunk loaders being used in a specific chunk
 	 *
 	 * @return ChunkLoader[]
+	 * @phpstan-return array<int, ChunkLoader>
 	 */
 	public function getChunkLoaders(int $chunkX, int $chunkZ) : array{
 		return $this->chunkLoaders[World::chunkHash($chunkX, $chunkZ)] ?? [];
@@ -657,7 +768,8 @@ class World implements ChunkManager{
 	/**
 	 * Returns an array of players who have the target position within their view distance.
 	 *
-	 * @return Player[]
+	 * @return Player[] spl_object_id => Player
+	 * @phpstan-return array<int, Player>
 	 */
 	public function getViewersForPosition(Vector3 $pos) : array{
 		return $this->getChunkPlayers($pos->getFloorX() >> Chunk::COORD_BIT_SIZE, $pos->getFloorZ() >> Chunk::COORD_BIT_SIZE);
@@ -689,15 +801,6 @@ class World implements ChunkManager{
 
 		$this->chunkLoaders[$chunkHash][$loaderId] = $loader;
 
-		if($loader instanceof TickingChunkLoader){
-			if(!isset($this->tickingLoaders[$loaderId])){
-				$this->tickingLoaderCounter[$loaderId] = 1;
-				$this->tickingLoaders[$loaderId] = $loader;
-			}else{
-				++$this->tickingLoaderCounter[$loaderId];
-			}
-		}
-
 		$this->cancelUnloadChunkRequest($chunkX, $chunkZ);
 
 		if($autoLoad){
@@ -717,11 +820,6 @@ class World implements ChunkManager{
 					$this->chunkPopulationRequestMap[$chunkHash]->reject();
 					unset($this->chunkPopulationRequestMap[$chunkHash]);
 				}
-			}
-
-			if(isset($this->tickingLoaderCounter[$loaderId]) && --$this->tickingLoaderCounter[$loaderId] === 0){
-				unset($this->tickingLoaderCounter[$loaderId]);
-				unset($this->tickingLoaders[$loaderId]);
 			}
 		}
 	}
@@ -772,6 +870,7 @@ class World implements ChunkManager{
 	 * Returns all the listeners attached to this chunk.
 	 *
 	 * @return ChunkListener[]
+	 * @phpstan-return array<int, ChunkListener>
 	 */
 	public function getChunkListeners(int $chunkX, int $chunkZ) : array{
 		return $this->chunkListeners[World::chunkHash($chunkX, $chunkZ)] ?? [];
@@ -860,7 +959,11 @@ class World implements ChunkManager{
 			}
 
 			$block = $this->getBlockAt($x, $y, $z);
-			$block->readStateFromWorld(); //for blocks like fences, force recalculation of connected AABBs
+			$replacement = $block->readStateFromWorld(); //for blocks like fences, force recalculation of connected AABBs
+			if($replacement !== $block){
+				$replacement->position($this, $x, $y, $z);
+				$block = $replacement;
+			}
 
 			$ev = new BlockUpdateEvent($block);
 			$ev->call();
@@ -876,7 +979,6 @@ class World implements ChunkManager{
 
 		$this->timings->entityTick->startTiming();
 		//Update entities that need update
-		Timings::$tickEntity->startTiming();
 		foreach($this->updateEntities as $id => $entity){
 			if($entity->isClosed() || $entity->isFlaggedForDespawn() || !$entity->onUpdate($currentTick)){
 				unset($this->updateEntities[$id]);
@@ -885,7 +987,6 @@ class World implements ChunkManager{
 				$entity->close();
 			}
 		}
-		Timings::$tickEntity->stopTiming();
 		$this->timings->entityTick->stopTiming();
 
 		$this->timings->randomChunkUpdates->startTiming();
@@ -926,7 +1027,7 @@ class World implements ChunkManager{
 			World::getXZ($index, $chunkX, $chunkZ);
 			$chunkPlayers = $this->getChunkPlayers($chunkX, $chunkZ);
 			if(count($chunkPlayers) > 0){
-				$this->server->broadcastPackets($chunkPlayers, $entries);
+				NetworkBroadcastUtils::broadcastPackets($chunkPlayers, $entries);
 			}
 		}
 
@@ -965,13 +1066,15 @@ class World implements ChunkManager{
 
 	/**
 	 * @param Vector3[] $blocks
+	 * @phpstan-param list<Vector3> $blocks
 	 *
 	 * @return ClientboundPacket[]
+	 * @phpstan-return list<ClientboundPacket>
 	 */
 	public function createBlockUpdatePackets(array $blocks) : array{
 		$packets = [];
 
-		$blockMapping = RuntimeBlockMapping::getInstance();
+		$blockTranslator = TypeConverter::getInstance()->getBlockTranslator();
 
 		foreach($blocks as $b){
 			if(!($b instanceof Vector3)){
@@ -980,14 +1083,29 @@ class World implements ChunkManager{
 
 			$fullBlock = $this->getBlockAt($b->x, $b->y, $b->z);
 			$blockPosition = BlockPosition::fromVector3($b);
+
+			$tile = $this->getTileAt($b->x, $b->y, $b->z);
+			if($tile instanceof Spawnable && count($fakeStateProperties = $tile->getRenderUpdateBugWorkaroundStateProperties($fullBlock)) > 0){
+				$originalStateData = $blockTranslator->internalIdToNetworkStateData($fullBlock->getStateId());
+				$fakeStateData = new BlockStateData(
+					$originalStateData->getName(),
+					array_merge($originalStateData->getStates(), $fakeStateProperties),
+					$originalStateData->getVersion()
+				);
+				$packets[] = UpdateBlockPacket::create(
+					$blockPosition,
+					$blockTranslator->getBlockStateDictionary()->lookupStateIdFromData($fakeStateData) ?? throw new AssumptionFailedError("Unmapped fake blockstate data: " . $fakeStateData->toNbt()),
+					UpdateBlockPacket::FLAG_NETWORK,
+					UpdateBlockPacket::DATA_LAYER_NORMAL
+				);
+			}
 			$packets[] = UpdateBlockPacket::create(
 				$blockPosition,
-				$blockMapping->toRuntimeId($fullBlock->getFullId()),
+				$blockTranslator->internalIdToNetworkId($fullBlock->getStateId()),
 				UpdateBlockPacket::FLAG_NETWORK,
 				UpdateBlockPacket::DATA_LAYER_NORMAL
 			);
 
-			$tile = $this->getTileAt($b->x, $b->y, $b->z);
 			if($tile instanceof Spawnable){
 				$packets[] = BlockActorDataPacket::create($blockPosition, $tile->getSerializedSpawnCompound());
 			}
@@ -1012,7 +1130,8 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * @return bool[] fullID => bool
+	 * @return true[] fullID => dummy
+	 * @phpstan-return array<int, true>
 	 */
 	public function getRandomTickedBlocks() : array{
 		return $this->randomTickBlocks;
@@ -1022,58 +1141,120 @@ class World implements ChunkManager{
 		if($block instanceof UnknownBlock){
 			throw new \InvalidArgumentException("Cannot do random-tick on unknown block");
 		}
-		$this->randomTickBlocks[$block->getFullId()] = true;
+		$this->randomTickBlocks[$block->getStateId()] = true;
 	}
 
 	public function removeRandomTickedBlock(Block $block) : void{
-		unset($this->randomTickBlocks[$block->getFullId()]);
+		unset($this->randomTickBlocks[$block->getStateId()]);
+	}
+
+	/**
+	 * Returns the radius of chunks to be ticked around each player. This is referred to as "simulation distance" in the
+	 * Minecraft: Bedrock world options screen.
+	 */
+	public function getChunkTickRadius() : int{
+		return $this->chunkTickRadius;
+	}
+
+	/**
+	 * Sets the radius of chunks ticked around each player. This may not take effect immediately, since each player
+	 * needs to recalculate their tick radius.
+	 */
+	public function setChunkTickRadius(int $radius) : void{
+		$this->chunkTickRadius = $radius;
+	}
+
+	/**
+	 * Returns a list of chunk position hashes (as returned by World::chunkHash()) which are currently valid for
+	 * ticking.
+	 *
+	 * @return int[]
+	 * @phpstan-return list<ChunkPosHash>
+	 */
+	public function getTickingChunks() : array{
+		return array_keys($this->validTickingChunks);
+	}
+
+	/**
+	 * Instructs the World to tick the specified chunk, for as long as this chunk ticker (or any other chunk ticker) is
+	 * registered to it.
+	 */
+	public function registerTickingChunk(ChunkTicker $ticker, int $chunkX, int $chunkZ) : void{
+		$chunkPosHash = World::chunkHash($chunkX, $chunkZ);
+		$this->registeredTickingChunks[$chunkPosHash][spl_object_id($ticker)] = $ticker;
+		$this->recheckTickingChunks[$chunkPosHash] = $chunkPosHash;
+	}
+
+	/**
+	 * Unregisters the given chunk ticker from the specified chunk. If there are other tickers still registered to the
+	 * chunk, it will continue to be ticked.
+	 */
+	public function unregisterTickingChunk(ChunkTicker $ticker, int $chunkX, int $chunkZ) : void{
+		$chunkHash = World::chunkHash($chunkX, $chunkZ);
+		$tickerId = spl_object_id($ticker);
+		if(isset($this->registeredTickingChunks[$chunkHash][$tickerId])){
+			unset($this->registeredTickingChunks[$chunkHash][$tickerId]);
+			if(count($this->registeredTickingChunks[$chunkHash]) === 0){
+				unset(
+					$this->registeredTickingChunks[$chunkHash],
+					$this->recheckTickingChunks[$chunkHash],
+					$this->validTickingChunks[$chunkHash]
+				);
+			}
+		}
 	}
 
 	private function tickChunks() : void{
-		if($this->chunksPerTick <= 0 || count($this->tickingLoaders) === 0){
+		if($this->chunkTickRadius <= 0 || count($this->registeredTickingChunks) === 0){
 			return;
 		}
 
-		$this->timings->randomChunkUpdatesChunkSelection->startTiming();
+		if(count($this->recheckTickingChunks) > 0){
+			$this->timings->randomChunkUpdatesChunkSelection->startTiming();
 
-		/** @var bool[] $chunkTickList chunkhash => dummy */
-		$chunkTickList = [];
+			$chunkTickableCache = [];
 
-		$chunksPerLoader = min(200, max(1, (int) ((($this->chunksPerTick - count($this->tickingLoaders)) / count($this->tickingLoaders)) + 0.5)));
-		$randRange = 3 + $chunksPerLoader / 30;
-		$randRange = (int) ($randRange > $this->chunkTickRadius ? $this->chunkTickRadius : $randRange);
-
-		foreach($this->tickingLoaders as $loader){
-			$chunkX = (int) floor($loader->getX()) >> Chunk::COORD_BIT_SIZE;
-			$chunkZ = (int) floor($loader->getZ()) >> Chunk::COORD_BIT_SIZE;
-
-			for($chunk = 0; $chunk < $chunksPerLoader; ++$chunk){
-				$dx = mt_rand(-$randRange, $randRange);
-				$dz = mt_rand(-$randRange, $randRange);
-				$hash = World::chunkHash($dx + $chunkX, $dz + $chunkZ);
-				if(!isset($chunkTickList[$hash]) && isset($this->chunks[$hash]) && $this->isChunkTickable($dx + $chunkX, $dz + $chunkZ)){
-					$chunkTickList[$hash] = true;
+			foreach($this->recheckTickingChunks as $hash => $_){
+				World::getXZ($hash, $chunkX, $chunkZ);
+				if($this->isChunkTickable($chunkX, $chunkZ, $chunkTickableCache)){
+					$this->validTickingChunks[$hash] = $hash;
 				}
 			}
+			$this->recheckTickingChunks = [];
+
+			$this->timings->randomChunkUpdatesChunkSelection->stopTiming();
 		}
 
-		$this->timings->randomChunkUpdatesChunkSelection->stopTiming();
-
-		foreach($chunkTickList as $index => $_){
+		foreach($this->validTickingChunks as $index => $_){
 			World::getXZ($index, $chunkX, $chunkZ);
 
 			$this->tickChunk($chunkX, $chunkZ);
 		}
 	}
 
-	private function isChunkTickable(int $chunkX, int $chunkZ) : bool{
+	/**
+	 * @param bool[] &$cache
+	 *
+	 * @phpstan-param array<int, bool> $cache
+	 * @phpstan-param-out array<int, bool> $cache
+	 */
+	private function isChunkTickable(int $chunkX, int $chunkZ, array &$cache) : bool{
 		for($cx = -1; $cx <= 1; ++$cx){
 			for($cz = -1; $cz <= 1; ++$cz){
+				$chunkHash = World::chunkHash($chunkX + $cx, $chunkZ + $cz);
+				if(isset($cache[$chunkHash])){
+					if(!$cache[$chunkHash]){
+						return false;
+					}
+					continue;
+				}
 				if($this->isChunkLocked($chunkX + $cx, $chunkZ + $cz)){
+					$cache[$chunkHash] = false;
 					return false;
 				}
 				$adjacentChunk = $this->getChunk($chunkX + $cx, $chunkZ + $cz);
 				if($adjacentChunk === null || !$adjacentChunk->isPopulated()){
+					$cache[$chunkHash] = false;
 					return false;
 				}
 				$lightPopulatedState = $adjacentChunk->isLightPopulated();
@@ -1081,12 +1262,38 @@ class World implements ChunkManager{
 					if($lightPopulatedState === false){
 						$this->orderLightPopulation($chunkX + $cx, $chunkZ + $cz);
 					}
+					$cache[$chunkHash] = false;
 					return false;
 				}
+
+				$cache[$chunkHash] = true;
 			}
 		}
 
 		return true;
+	}
+
+	/**
+	 * Marks the 3x3 square of chunks centered on the specified chunk for chunk ticking eligibility recheck.
+	 *
+	 * This should be used whenever the chunk's eligibility to be ticked is changed. This includes:
+	 * - Loading/unloading the chunk (the chunk may be registered for ticking before it is loaded)
+	 * - Locking/unlocking the chunk (e.g. world population)
+	 * - Light populated state change (i.e. scheduled for light population, or light population completed)
+	 * - Arbitrary chunk replacement (i.e. setChunk() or similar)
+	 */
+	private function markTickingChunkForRecheck(int $chunkX, int $chunkZ) : void{
+		for($cx = -1; $cx <= 1; ++$cx){
+			for($cz = -1; $cz <= 1; ++$cz){
+				$chunkHash = World::chunkHash($chunkX + $cx, $chunkZ + $cz);
+				unset($this->validTickingChunks[$chunkHash]);
+				if(isset($this->registeredTickingChunks[$chunkHash])){
+					$this->recheckTickingChunks[$chunkHash] = $chunkHash;
+				}else{
+					unset($this->recheckTickingChunks[$chunkHash]);
+				}
+			}
+		}
 	}
 
 	private function orderLightPopulation(int $chunkX, int $chunkZ) : void{
@@ -1094,6 +1301,7 @@ class World implements ChunkManager{
 		$lightPopulatedState = $this->chunks[$chunkHash]->isLightPopulated();
 		if($lightPopulatedState === false){
 			$this->chunks[$chunkHash]->setLightPopulated(null);
+			$this->markTickingChunkForRecheck($chunkX, $chunkZ);
 
 			$this->workerPool->submitTask(new LightPopulationTask(
 				$this->chunks[$chunkHash],
@@ -1117,6 +1325,7 @@ class World implements ChunkManager{
 						$chunk->getSubChunk($y)->setBlockSkyLightArray($lightArray);
 					}
 					$chunk->setLightPopulated(true);
+					$this->markTickingChunkForRecheck($chunkX, $chunkZ);
 				}
 			));
 		}
@@ -1125,13 +1334,14 @@ class World implements ChunkManager{
 	private function tickChunk(int $chunkX, int $chunkZ) : void{
 		$chunk = $this->getChunk($chunkX, $chunkZ);
 		if($chunk === null){
-			throw new \InvalidArgumentException("Chunk is not loaded");
+			//the chunk may have been unloaded during a previous chunk's update (e.g. during BlockGrowEvent)
+			return;
 		}
 		foreach($this->getChunkEntities($chunkX, $chunkZ) as $entity){
 			$entity->onRandomUpdate();
 		}
 
-		$blockFactory = BlockFactory::getInstance();
+		$blockFactory = RuntimeBlockStateRegistry::getInstance();
 		foreach($chunk->getSubChunks() as $Y => $subChunk){
 			if(!$subChunk->isEmptyFast()){
 				$k = 0;
@@ -1145,10 +1355,10 @@ class World implements ChunkManager{
 					$z = ($k >> (SubChunk::COORD_BIT_SIZE * 2)) & SubChunk::COORD_MASK;
 					$k >>= (SubChunk::COORD_BIT_SIZE * 3);
 
-					$state = $subChunk->getFullBlock($x, $y, $z);
+					$state = $subChunk->getBlockStateId($x, $y, $z);
 
 					if(isset($this->randomTickBlocks[$state])){
-						$block = $blockFactory->fromFullBlock($state);
+						$block = $blockFactory->fromStateId($state);
 						$block->position($this, $chunkX * Chunk::EDGE_LENGTH + $x, ($Y << SubChunk::COORD_BIT_SIZE) + $y, $chunkZ * Chunk::EDGE_LENGTH + $z);
 						$block->onRandomTick();
 					}
@@ -1172,9 +1382,14 @@ class World implements ChunkManager{
 
 		(new WorldSaveEvent($this))->call();
 
+		$timings = $this->timings->syncDataSave;
+		$timings->startTiming();
+
 		$this->provider->getWorldData()->setTime($this->time);
 		$this->saveChunks();
 		$this->provider->getWorldData()->save();
+
+		$timings->stopTiming();
 
 		return true;
 	}
@@ -1185,10 +1400,11 @@ class World implements ChunkManager{
 			foreach($this->chunks as $chunkHash => $chunk){
 				self::getXZ($chunkHash, $chunkX, $chunkZ);
 				$this->provider->saveChunk($chunkX, $chunkZ, new ChunkData(
-					$chunk,
+					$chunk->getSubChunks(),
+					$chunk->isPopulated(),
 					array_map(fn(Entity $e) => $e->saveNBT(), array_filter($this->getChunkEntities($chunkX, $chunkZ), fn(Entity $e) => $e->canSaveWithChunk())),
 					array_map(fn(Tile $t) => $t->saveNBT(), $chunk->getTiles()),
-				));
+				), $chunk->getTerrainDirtyFlags());
 				$chunk->clearTerrainDirtyFlags();
 			}
 		}finally{
@@ -1223,7 +1439,9 @@ class World implements ChunkManager{
 
 	/**
 	 * Notify the blocks at and around the position that the block at the position may have changed.
-	 * This will cause onNeighbourBlockUpdate() to be called for these blocks.
+	 * This will cause onNearbyBlockChange() to be called for these blocks.
+	 *
+	 * @see Block::onNearbyBlockChange()
 	 */
 	public function notifyNeighbourBlockUpdate(Vector3 $pos) : void{
 		$this->tryAddToNeighbourUpdateQueue($pos);
@@ -1234,6 +1452,7 @@ class World implements ChunkManager{
 
 	/**
 	 * @return Block[]
+	 * @phpstan-return list<Block>
 	 */
 	public function getCollisionBlocks(AxisAlignedBB $bb, bool $targetFirst = false) : array{
 		$minX = (int) floor($bb->minX - 1);
@@ -1274,6 +1493,7 @@ class World implements ChunkManager{
 
 	/**
 	 * @return AxisAlignedBB[]
+	 * @phpstan-return list<AxisAlignedBB>
 	 */
 	public function getCollisionBoxes(Entity $entity, AxisAlignedBB $bb, bool $entities = true) : array{
 		$minX = (int) floor($bb->minX - 1);
@@ -1312,7 +1532,7 @@ class World implements ChunkManager{
 	 * get an angle in radians, or by 360 to get an angle in degrees.
 	 */
 	public function computeSunAnglePercentage() : float{
-		$timeProgress = ($this->time % 24000) / 24000;
+		$timeProgress = ($this->time % self::TIME_FULL) / self::TIME_FULL;
 
 		//0.0 needs to be high noon, not dusk
 		$sunProgress = $timeProgress + ($timeProgress < 0.25 ? 0.75 : -0.25);
@@ -1441,7 +1661,7 @@ class World implements ChunkManager{
 			return;
 		}
 
-		$blockFactory = BlockFactory::getInstance();
+		$blockFactory = RuntimeBlockStateRegistry::getInstance();
 		$this->timings->doBlockSkyLightUpdates->startTiming();
 		if($this->skyLightUpdate === null){
 			$this->skyLightUpdate = new SkyLightUpdate(new SubChunkExplorer($this), $blockFactory->lightFilter, $blockFactory->blocksDirectSkyLight);
@@ -1535,8 +1755,8 @@ class World implements ChunkManager{
 	 * Note: If you're using this for performance-sensitive code, and you're guaranteed to be supplying ints in the
 	 * specified vector, consider using {@link getBlockAt} instead for better performance.
 	 *
-	 * @param bool    $cached Whether to use the block cache for getting the block (faster, but may be inaccurate)
-	 * @param bool    $addToCache Whether to cache the block object created by this method call.
+	 * @param bool $cached     Whether to use the block cache for getting the block (faster, but may be inaccurate)
+	 * @param bool $addToCache Whether to cache the block object created by this method call.
 	 */
 	public function getBlock(Vector3 $pos, bool $cached = true, bool $addToCache = true) : Block{
 		return $this->getBlockAt((int) floor($pos->x), (int) floor($pos->y), (int) floor($pos->z), $cached, $addToCache);
@@ -1548,7 +1768,7 @@ class World implements ChunkManager{
 	 * Note for plugin developers: If you are using this method a lot (thousands of times for many positions for
 	 * example), you may want to set addToCache to false to avoid using excessive amounts of memory.
 	 *
-	 * @param bool $cached Whether to use the block cache for getting the block (faster, but may be inaccurate)
+	 * @param bool $cached     Whether to use the block cache for getting the block (faster, but may be inaccurate)
 	 * @param bool $addToCache Whether to cache the block object created by this method call.
 	 */
 	public function getBlockAt(int $x, int $y, int $z, bool $cached = true, bool $addToCache = true) : Block{
@@ -1564,7 +1784,7 @@ class World implements ChunkManager{
 
 			$chunk = $this->chunks[$chunkHash] ?? null;
 			if($chunk !== null){
-				$block = BlockFactory::getInstance()->fromFullBlock($chunk->getFullBlock($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK));
+				$block = RuntimeBlockStateRegistry::getInstance()->fromStateId($chunk->getBlockStateId($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK));
 			}else{
 				$addToCache = false;
 				$block = VanillaBlocks::AIR();
@@ -1575,17 +1795,19 @@ class World implements ChunkManager{
 
 		$block->position($this, $x, $y, $z);
 
-		static $dynamicStateRead = false;
-
-		if($dynamicStateRead){
+		if($this->inDynamicStateRecalculation){
 			//this call was generated by a parent getBlock() call calculating dynamic stateinfo
 			//don't calculate dynamic state and don't add to block cache (since it won't have dynamic state calculated).
 			//this ensures that it's impossible for dynamic state properties to recursively depend on each other.
 			$addToCache = false;
 		}else{
-			$dynamicStateRead = true;
-			$block->readStateFromWorld();
-			$dynamicStateRead = false;
+			$this->inDynamicStateRecalculation = true;
+			$replacement = $block->readStateFromWorld();
+			if($replacement !== $block){
+				$replacement->position($this, $x, $y, $z);
+				$block = $replacement;
+			}
+			$this->inDynamicStateRecalculation = false;
 		}
 
 		if($addToCache && $relativeBlockHash !== null){
@@ -1648,10 +1870,7 @@ class World implements ChunkManager{
 
 		if($update){
 			$this->updateAllLight($x, $y, $z);
-			$this->tryAddToNeighbourUpdateQueue($pos);
-			foreach($pos->sides() as $side){
-				$this->tryAddToNeighbourUpdateQueue($side);
-			}
+			$this->notifyNeighbourBlockUpdate($pos);
 		}
 
 		$this->timings->setBlock->stopTiming();
@@ -1675,6 +1894,7 @@ class World implements ChunkManager{
 	 * Drops XP orbs into the world for the specified amount, splitting the amount into several orbs if necessary.
 	 *
 	 * @return ExperienceOrb[]
+	 * @phpstan-return list<ExperienceOrb>
 	 */
 	public function dropExperience(Vector3 $pos, int $amount) : array{
 		/** @var ExperienceOrb[] $orbs */
@@ -1696,9 +1916,11 @@ class World implements ChunkManager{
 	 * Tries to break a block using a item, including Player time checks if available
 	 * It'll try to lower the durability if Item is a tool, and set it to Air if broken.
 	 *
-	 * @param Item    $item reference parameter (if null, can break anything)
+	 * @param Item   &$item          reference parameter (if null, can break anything)
+	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
+	 * @phpstan-param-out Item $item
 	 */
-	public function useBreakOn(Vector3 $vector, Item &$item = null, ?Player $player = null, bool $createParticles = false) : bool{
+	public function useBreakOn(Vector3 $vector, Item &$item = null, ?Player $player = null, bool $createParticles = false, array &$returnedItems = []) : bool{
 		$vector = $vector->floor();
 
 		$chunkX = $vector->getFloorX() >> Chunk::COORD_BIT_SIZE;
@@ -1736,7 +1958,7 @@ class World implements ChunkManager{
 				$itemParser = LegacyStringToItemParser::getInstance();
 				foreach($item->getCanDestroy() as $v){
 					$entry = $itemParser->parse($v);
-					if($entry->getBlock()->isSameType($target)){
+					if($entry->getBlock()->hasSameTypeId($target)){
 						$canBreak = true;
 						break;
 					}
@@ -1760,10 +1982,10 @@ class World implements ChunkManager{
 		}
 
 		foreach($affectedBlocks as $t){
-			$this->destroyBlockInternal($t, $item, $player, $createParticles);
+			$this->destroyBlockInternal($t, $item, $player, $createParticles, $returnedItems);
 		}
 
-		$item->onDestroyBlock($target);
+		$item->onDestroyBlock($target, $returnedItems);
 
 		if(count($drops) > 0){
 			$dropPos = $vector->add(0.5, 0.5, 0.5);
@@ -1781,12 +2003,15 @@ class World implements ChunkManager{
 		return true;
 	}
 
-	private function destroyBlockInternal(Block $target, Item $item, ?Player $player = null, bool $createParticles = false) : void{
+	/**
+	 * @param Item[] &$returnedItems
+	 */
+	private function destroyBlockInternal(Block $target, Item $item, ?Player $player, bool $createParticles, array &$returnedItems) : void{
 		if($createParticles){
 			$this->addParticle($target->getPosition()->add(0.5, 0.5, 0.5), new BlockBreakParticle($target));
 		}
 
-		$target->onBreak($item, $player);
+		$target->onBreak($item, $player, $returnedItems);
 
 		$tile = $this->getTile($target->getPosition());
 		if($tile !== null){
@@ -1797,15 +2022,22 @@ class World implements ChunkManager{
 	/**
 	 * Uses a item on a position and face, placing it or activating the block
 	 *
-	 * @param Player|null  $player default null
-	 * @param bool         $playSound Whether to play a block-place sound if the block was placed successfully.
+	 * @param Player|null $player         default null
+	 * @param bool        $playSound      Whether to play a block-place sound if the block was placed successfully.
+	 * @param Item[]      &$returnedItems Items to be added to the target's inventory (or dropped if the inventory is full)
 	 */
-	public function useItemOn(Vector3 $vector, Item &$item, int $face, ?Vector3 $clickVector = null, ?Player $player = null, bool $playSound = false) : bool{
+	public function useItemOn(Vector3 $vector, Item &$item, int $face, ?Vector3 $clickVector = null, ?Player $player = null, bool $playSound = false, array &$returnedItems = []) : bool{
 		$blockClicked = $this->getBlock($vector);
 		$blockReplace = $blockClicked->getSide($face);
 
 		if($clickVector === null){
 			$clickVector = new Vector3(0.0, 0.0, 0.0);
+		}else{
+			$clickVector = new Vector3(
+				min(1.0, max(0.0, $clickVector->x)),
+				min(1.0, max(0.0, $clickVector->y)),
+				min(1.0, max(0.0, $clickVector->z))
+			);
 		}
 
 		if(!$this->isInWorld($blockReplace->getPosition()->x, $blockReplace->getPosition()->y, $blockReplace->getPosition()->z)){
@@ -1818,7 +2050,7 @@ class World implements ChunkManager{
 			return false;
 		}
 
-		if($blockClicked->getId() === BlockLegacyIds::AIR){
+		if($blockClicked->getTypeId() === BlockTypeIds::AIR){
 			return false;
 		}
 
@@ -1830,18 +2062,18 @@ class World implements ChunkManager{
 
 			$ev->call();
 			if(!$ev->isCancelled()){
-				if((!$player->isSneaking() || $item->isNull()) && $blockClicked->onInteract($item, $face, $clickVector, $player)){
+				if((!$player->isSneaking() || $item->isNull()) && $blockClicked->onInteract($item, $face, $clickVector, $player, $returnedItems)){
 					return true;
 				}
 
-				$result = $item->onInteractBlock($player, $blockReplace, $blockClicked, $face, $clickVector);
+				$result = $item->onInteractBlock($player, $blockReplace, $blockClicked, $face, $clickVector, $returnedItems);
 				if(!$result->equals(ItemUseResult::NONE())){
 					return $result->equals(ItemUseResult::SUCCESS());
 				}
 			}else{
 				return false;
 			}
-		}elseif($blockClicked->onInteract($item, $face, $clickVector, $player)){
+		}elseif($blockClicked->onInteract($item, $face, $clickVector, $player, $returnedItems)){
 			return true;
 		}
 
@@ -1853,6 +2085,10 @@ class World implements ChunkManager{
 
 		if($hand->canBePlacedAt($blockClicked, $clickVector, $face, true)){
 			$blockReplace = $blockClicked;
+			//TODO: while this mimics the vanilla behaviour with replaceable blocks, we should really pass some other
+			//value like NULL and let place() deal with it. This will look like a bug to anyone who doesn't know about
+			//the vanilla behaviour.
+			$face = Facing::UP;
 			$hand->position($this, $blockReplace->getPosition()->x, $blockReplace->getPosition()->y, $blockReplace->getPosition()->z);
 		}elseif(!$hand->canBePlacedAt($blockReplace, $clickVector, $face, false)){
 			return false;
@@ -1873,7 +2109,7 @@ class World implements ChunkManager{
 		}
 
 		if($player !== null){
-			$ev = new BlockPlaceEvent($player, $hand, $blockReplace, $blockClicked, $item);
+			$ev = new BlockPlaceEvent($player, $tx, $blockClicked, $item);
 			if($player->isSpectator()){
 				$ev->cancel();
 			}
@@ -1883,7 +2119,7 @@ class World implements ChunkManager{
 				$itemParser = LegacyStringToItemParser::getInstance();
 				foreach($item->getCanPlaceOn() as $v){
 					$entry = $itemParser->parse($v);
-					if($entry->getBlock()->isSameType($blockClicked)){
+					if($entry->getBlock()->hasSameTypeId($blockClicked)){
 						$canPlace = true;
 						break;
 					}
@@ -1927,27 +2163,31 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * Gets the list of all the entities in this world
+	 * Returns a list of all the entities in this world, indexed by their entity runtime IDs
 	 *
 	 * @return Entity[]
+	 * @phpstan-return array<int, Entity>
 	 */
 	public function getEntities() : array{
 		return $this->entities;
 	}
 
 	/**
-	 * Returns the entities colliding the current one inside the AxisAlignedBB
+	 * Returns all collidable entities whose bounding boxes intersect the given bounding box.
+	 * If an entity is given, it will be excluded from the result.
+	 * If a non-collidable entity is given, the result will be empty.
+	 *
+	 * This function is the same as {@link World::getNearbyEntities()}, but with additional collidability filters.
 	 *
 	 * @return Entity[]
+	 * @phpstan-return array<int, Entity>
 	 */
 	public function getCollidingEntities(AxisAlignedBB $bb, ?Entity $entity = null) : array{
 		$nearby = [];
 
-		if($entity === null || $entity->canCollide){
-			foreach($this->getNearbyEntities($bb, $entity) as $ent){
-				if($ent->canBeCollidedWith() && ($entity === null || $entity->canCollideWith($ent))){
-					$nearby[] = $ent;
-				}
+		foreach($this->getNearbyEntities($bb, $entity) as $ent){
+			if($ent->canBeCollidedWith() && ($entity === null || $entity->canCollideWith($ent))){
+				$nearby[] = $ent;
 			}
 		}
 
@@ -1955,9 +2195,10 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * Returns the entities near the current one inside the AxisAlignedBB
+	 * Returns all entities whose bounding boxes intersect the given bounding box, excluding the given entity.
 	 *
 	 * @return Entity[]
+	 * @phpstan-return array<int, Entity>
 	 */
 	public function getNearbyEntities(AxisAlignedBB $bb, ?Entity $entity = null) : array{
 		$nearby = [];
@@ -1986,8 +2227,8 @@ class World implements ChunkManager{
 	/**
 	 * Returns the closest Entity to the specified position, within the given radius.
 	 *
-	 * @param string  $entityType Class of entity to use for instanceof
-	 * @param bool    $includeDead Whether to include entitites which are dead
+	 * @param string $entityType  Class of entity to use for instanceof
+	 * @param bool   $includeDead Whether to include entitites which are dead
 	 * @phpstan-template TEntity of Entity
 	 * @phpstan-param class-string<TEntity> $entityType
 	 *
@@ -2034,7 +2275,8 @@ class World implements ChunkManager{
 	/**
 	 * Returns a list of the players in this world
 	 *
-	 * @return Player[]
+	 * @return Player[] entity runtime ID => Player
+	 * @phpstan-return array<int, Player>
 	 */
 	public function getPlayers() : array{
 		return $this->players;
@@ -2057,23 +2299,23 @@ class World implements ChunkManager{
 		return ($chunk = $this->loadChunk($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)) !== null ? $chunk->getTile($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK) : null;
 	}
 
-	public function getBiomeId(int $x, int $z) : int{
+	public function getBiomeId(int $x, int $y, int $z) : int{
 		if(($chunk = $this->loadChunk($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)) !== null){
-			return $chunk->getBiomeId($x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK);
+			return $chunk->getBiomeId($x & Chunk::COORD_MASK, $y & Chunk::COORD_MASK, $z & Chunk::COORD_MASK);
 		}
 		return BiomeIds::OCEAN; //TODO: this should probably throw instead (terrain not generated yet)
 	}
 
-	public function getBiome(int $x, int $z) : Biome{
-		return BiomeRegistry::getInstance()->getBiome($this->getBiomeId($x, $z));
+	public function getBiome(int $x, int $y, int $z) : Biome{
+		return BiomeRegistry::getInstance()->getBiome($this->getBiomeId($x, $y, $z));
 	}
 
-	public function setBiomeId(int $x, int $z, int $biomeId) : void{
+	public function setBiomeId(int $x, int $y, int $z, int $biomeId) : void{
 		$chunkX = $x >> Chunk::COORD_BIT_SIZE;
 		$chunkZ = $z >> Chunk::COORD_BIT_SIZE;
 		$this->unlockChunk($chunkX, $chunkZ, null);
 		if(($chunk = $this->loadChunk($chunkX, $chunkZ)) !== null){
-			$chunk->setBiomeId($x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK, $biomeId);
+			$chunk->setBiomeId($x & Chunk::COORD_MASK, $y & Chunk::COORD_MASK, $z & Chunk::COORD_MASK, $biomeId);
 		}else{
 			//if we allowed this, the modifications would be lost when the chunk is created
 			throw new WorldException("Cannot set biome in a non-generated chunk");
@@ -2081,7 +2323,8 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * @return Chunk[]
+	 * @return Chunk[] chunkHash => Chunk
+	 * @phpstan-return array<ChunkPosHash, Chunk>
 	 */
 	public function getLoadedChunks() : array{
 		return $this->chunks;
@@ -2092,7 +2335,8 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * @return Entity[]
+	 * @return Entity[] entity runtime ID => Entity
+	 * @phpstan-return array<int, Entity>
 	 */
 	public function getChunkEntities(int $chunkX, int $chunkZ) : array{
 		return $this->entitiesByChunk[World::chunkHash($chunkX, $chunkZ)] ?? [];
@@ -2108,7 +2352,8 @@ class World implements ChunkManager{
 	/**
 	 * Returns the chunks adjacent to the specified chunk.
 	 *
-	 * @return Chunk[]|null[]
+	 * @return Chunk[]|null[] chunkHash => Chunk|null
+	 * @phpstan-return array<ChunkPosHash, Chunk|null>
 	 */
 	public function getAdjacentChunks(int $x, int $z) : array{
 		$result = [];
@@ -2144,6 +2389,7 @@ class World implements ChunkManager{
 			throw new \InvalidArgumentException("Chunk $chunkX $chunkZ is already locked");
 		}
 		$this->chunkLock[$chunkHash] = $lockId;
+		$this->markTickingChunkForRecheck($chunkX, $chunkZ);
 	}
 
 	/**
@@ -2158,6 +2404,7 @@ class World implements ChunkManager{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		if(isset($this->chunkLock[$chunkHash]) && ($lockId === null || $this->chunkLock[$chunkHash] === $lockId)){
 			unset($this->chunkLock[$chunkHash]);
+			$this->markTickingChunkForRecheck($chunkX, $chunkZ);
 			return true;
 		}
 		return false;
@@ -2184,7 +2431,7 @@ class World implements ChunkManager{
 				$localY = $tilePosition->getFloorY();
 				$localZ = $tilePosition->getFloorZ() & Chunk::COORD_MASK;
 
-				$newBlock = BlockFactory::getInstance()->fromFullBlock($chunk->getFullBlock($localX, $localY, $localZ));
+				$newBlock = RuntimeBlockStateRegistry::getInstance()->fromStateId($chunk->getBlockStateId($localX, $localY, $localZ));
 				$expectedTileClass = $newBlock->getIdInfo()->getTileClass();
 				if(
 					$expectedTileClass === null || //new block doesn't expect a tile
@@ -2209,6 +2456,7 @@ class World implements ChunkManager{
 		unset($this->blockCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);
 		$chunk->setTerrainDirty();
+		$this->markTickingChunkForRecheck($chunkX, $chunkZ); //this replacement chunk may not meet the conditions for ticking
 
 		if(!$this->isChunkInUse($chunkX, $chunkZ)){
 			$this->unloadChunkRequest($chunkX, $chunkZ);
@@ -2461,25 +2709,32 @@ class World implements ChunkManager{
 
 		$this->timings->syncChunkLoadData->startTiming();
 
-		$chunk = null;
+		$loadedChunkData = null;
 
 		try{
-			$chunk = $this->provider->loadChunk($x, $z);
+			$loadedChunkData = $this->provider->loadChunk($x, $z);
 		}catch(CorruptedChunkException $e){
 			$this->logger->critical("Failed to load chunk x=$x z=$z: " . $e->getMessage());
 		}
 
 		$this->timings->syncChunkLoadData->stopTiming();
 
-		if($chunk === null){
+		if($loadedChunkData === null){
 			$this->timings->syncChunkLoad->stopTiming();
 			return null;
 		}
 
-		$this->chunks[$chunkHash] = $chunk->getChunk();
+		$chunkData = $loadedChunkData->getData();
+		$chunk = new Chunk($chunkData->getSubChunks(), $chunkData->isPopulated());
+		if(!$loadedChunkData->isUpgraded()){
+			$chunk->clearTerrainDirtyFlags();
+		}else{
+			$this->logger->debug("Chunk $x $z has been upgraded, will be saved at the next autosave opportunity");
+		}
+		$this->chunks[$chunkHash] = $chunk;
 		unset($this->blockCache[$chunkHash]);
 
-		$this->initChunk($x, $z, $chunk);
+		$this->initChunk($x, $z, $chunkData);
 
 		(new ChunkLoadEvent($this, $x, $z, $this->chunks[$chunkHash], false))->call();
 
@@ -2490,6 +2745,7 @@ class World implements ChunkManager{
 		foreach($this->getChunkListeners($x, $z) as $listener){
 			$listener->onChunkLoaded($x, $z, $this->chunks[$chunkHash]);
 		}
+		$this->markTickingChunkForRecheck($x, $z); //tickers may have been registered before the chunk was loaded
 
 		$this->timings->syncChunkLoad->stopTiming();
 
@@ -2498,26 +2754,6 @@ class World implements ChunkManager{
 
 	private function initChunk(int $chunkX, int $chunkZ, ChunkData $chunkData) : void{
 		$logger = new \PrefixedLogger($this->logger, "Loading chunk $chunkX $chunkZ");
-
-		$this->timings->syncChunkLoadFixInvalidBlocks->startTiming();
-		$blockFactory = BlockFactory::getInstance();
-		$invalidBlocks = 0;
-		foreach($chunkData->getChunk()->getSubChunks() as $subChunk){
-			foreach($subChunk->getBlockLayers() as $blockLayer){
-				foreach($blockLayer->getPalette() as $blockStateId){
-					$mappedStateId = $blockFactory->getMappedStateId($blockStateId);
-					if($mappedStateId !== $blockStateId){
-						$blockLayer->replaceAll($blockStateId, $mappedStateId);
-						$invalidBlocks++;
-					}
-				}
-			}
-		}
-		if($invalidBlocks > 0){
-			$logger->debug("Fixed $invalidBlocks invalid blockstates");
-			$chunkData->getChunk()->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_BLOCKS, true);
-		}
-		$this->timings->syncChunkLoadFixInvalidBlocks->stopTiming();
 
 		if(count($chunkData->getEntityNBT()) !== 0){
 			$this->timings->syncChunkLoadEntities->startTiming();
@@ -2531,7 +2767,7 @@ class World implements ChunkManager{
 					continue;
 				}
 				if($entity === null){
-					$saveIdTag = $nbt->getTag("id") ?? $nbt->getTag("identifier");
+					$saveIdTag = $nbt->getTag("identifier") ?? $nbt->getTag("id");
 					$saveId = "<unknown>";
 					if($saveIdTag instanceof StringTag){
 						$saveId = $saveIdTag->getValue();
@@ -2625,10 +2861,11 @@ class World implements ChunkManager{
 				$this->timings->syncChunkSave->startTiming();
 				try{
 					$this->provider->saveChunk($x, $z, new ChunkData(
-						$chunk,
+						$chunk->getSubChunks(),
+						$chunk->isPopulated(),
 						array_map(fn(Entity $e) => $e->saveNBT(), array_filter($this->getChunkEntities($x, $z), fn(Entity $e) => $e->canSaveWithChunk())),
 						array_map(fn(Tile $t) => $t->saveNBT(), $chunk->getTiles()),
-					));
+					), $chunk->getTerrainDirtyFlags());
 				}finally{
 					$this->timings->syncChunkSave->stopTiming();
 				}
@@ -2651,10 +2888,17 @@ class World implements ChunkManager{
 		unset($this->chunks[$chunkHash]);
 		unset($this->blockCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);
+		unset($this->registeredTickingChunks[$chunkHash]);
+		$this->markTickingChunkForRecheck($x, $z);
 
 		if(array_key_exists($chunkHash, $this->chunkPopulationRequestMap)){
+			$this->logger->debug("Rejecting population promise for chunk $x $z");
 			$this->chunkPopulationRequestMap[$chunkHash]->reject();
 			unset($this->chunkPopulationRequestMap[$chunkHash]);
+			if(isset($this->activeChunkPopulationTasks[$chunkHash])){
+				$this->logger->debug("Marking population task for chunk $x $z as orphaned");
+				$this->activeChunkPopulationTasks[$chunkHash] = false;
+			}
 		}
 
 		$this->timings->doChunkUnload->stopTiming();
@@ -2674,6 +2918,36 @@ class World implements ChunkManager{
 	}
 
 	/**
+	 * Requests a safe spawn position near the given position, or near the world's spawn position if not provided.
+	 * Terrain near the position will be loaded or generated as needed.
+	 *
+	 * @return Promise Resolved to a Position object, or rejected if the world is unloaded.
+	 * @phpstan-return Promise<Position>
+	 */
+	public function requestSafeSpawn(?Vector3 $spawn = null) : Promise{
+		$resolver = new PromiseResolver();
+		$spawn ??= $this->getSpawnLocation();
+		/*
+		 * TODO: this relies on the assumption that getSafeSpawn() will only alter the Y coordinate of the provided
+		 * position, which is currently OK, but might be a problem in the future.
+		 */
+		$this->requestChunkPopulation($spawn->getFloorX() >> Chunk::COORD_BIT_SIZE, $spawn->getFloorZ() >> Chunk::COORD_BIT_SIZE, null)->onCompletion(
+			function() use ($spawn, $resolver) : void{
+				$spawn = $this->getSafeSpawn($spawn);
+				$resolver->resolve($spawn);
+			},
+			function() use ($resolver) : void{
+				$resolver->reject();
+			}
+		);
+
+		return $resolver->getPromise();
+	}
+
+	/**
+	 * Returns a safe spawn position near the given position, or near the world's spawn position if not provided.
+	 * This function will throw an exception if the terrain is not already generated in advance.
+	 *
 	 * @throws WorldException if the terrain is not generated
 	 */
 	public function getSafeSpawn(?Vector3 $spawn = null) : Position{
@@ -2690,13 +2964,13 @@ class World implements ChunkManager{
 		$x = (int) $v->x;
 		$z = (int) $v->z;
 		$y = (int) min($max - 2, $v->y);
-		$wasAir = $this->getBlockAt($x, $y - 1, $z)->getId() === BlockLegacyIds::AIR; //TODO: bad hack, clean up
+		$wasAir = $this->getBlockAt($x, $y - 1, $z)->getTypeId() === BlockTypeIds::AIR; //TODO: bad hack, clean up
 		for(; $y > $this->minY; --$y){
 			if($this->getBlockAt($x, $y, $z)->isFullCube()){
 				if($wasAir){
 					$y++;
-					break;
 				}
+				break;
 			}else{
 				$wasAir = true;
 			}
@@ -2735,6 +3009,16 @@ class World implements ChunkManager{
 	 */
 	public function getDisplayName() : string{
 		return $this->displayName;
+	}
+
+	/**
+	 * Sets the World display name.
+	 */
+	public function setDisplayName(string $name) : void{
+		(new WorldDisplayNameChangeEvent($this, $this->displayName, $name))->call();
+
+		$this->displayName = $name;
+		$this->provider->getWorldData()->setName($name);
 	}
 
 	/**
@@ -2830,7 +3114,7 @@ class World implements ChunkManager{
 			unset($this->chunkPopulationRequestQueueIndex[$nextChunkHash]);
 			World::getXZ($nextChunkHash, $nextChunkX, $nextChunkZ);
 			if(isset($this->chunkPopulationRequestMap[$nextChunkHash])){
-				assert(!isset($this->activeChunkPopulationTasks[$nextChunkHash]), "Population for chunk $nextChunkX $nextChunkZ already running");
+				assert(!($this->activeChunkPopulationTasks[$nextChunkHash] ?? false), "Population for chunk $nextChunkX $nextChunkZ already running");
 				if(
 					!$this->orderChunkPopulation($nextChunkX, $nextChunkZ, null)->isResolved() &&
 					!isset($this->activeChunkPopulationTasks[$nextChunkHash])
@@ -2924,61 +3208,66 @@ class World implements ChunkManager{
 	private function internalOrderChunkPopulation(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader, ?PromiseResolver $resolver) : Promise{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 
-		Timings::$population->startTiming();
+		$timings = $this->timings->chunkPopulationOrder;
+		$timings->startTiming();
 
-		for($xx = -1; $xx <= 1; ++$xx){
-			for($zz = -1; $zz <= 1; ++$zz){
-				if($this->isChunkLocked($chunkX + $xx, $chunkZ + $zz)){
-					//chunk is already in use by another generation request; queue the request for later
-					return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($chunkX, $chunkZ, $associatedChunkLoader);
+		try{
+			for($xx = -1; $xx <= 1; ++$xx){
+				for($zz = -1; $zz <= 1; ++$zz){
+					if($this->isChunkLocked($chunkX + $xx, $chunkZ + $zz)){
+						//chunk is already in use by another generation request; queue the request for later
+						return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($chunkX, $chunkZ, $associatedChunkLoader);
+					}
 				}
 			}
-		}
 
-		$this->activeChunkPopulationTasks[$chunkHash] = true;
-		if($resolver === null){
-			$resolver = new PromiseResolver();
-			$this->chunkPopulationRequestMap[$chunkHash] = $resolver;
-		}
-
-		$chunkPopulationLockId = new ChunkLockId();
-
-		$temporaryChunkLoader = new class implements ChunkLoader{};
-		for($xx = -1; $xx <= 1; ++$xx){
-			for($zz = -1; $zz <= 1; ++$zz){
-				$this->lockChunk($chunkX + $xx, $chunkZ + $zz, $chunkPopulationLockId);
-				$this->registerChunkLoader($temporaryChunkLoader, $chunkX + $xx, $chunkZ + $zz);
+			$this->activeChunkPopulationTasks[$chunkHash] = true;
+			if($resolver === null){
+				$resolver = new PromiseResolver();
+				$this->chunkPopulationRequestMap[$chunkHash] = $resolver;
 			}
-		}
 
-		$centerChunk = $this->loadChunk($chunkX, $chunkZ);
-		$adjacentChunks = $this->getAdjacentChunks($chunkX, $chunkZ);
-		$task = new PopulationTask(
-			$this->worldId,
-			$chunkX,
-			$chunkZ,
-			$centerChunk,
-			$adjacentChunks,
-			function(Chunk $centerChunk, array $adjacentChunks) use ($chunkPopulationLockId, $chunkX, $chunkZ, $temporaryChunkLoader) : void{
-				if(!$this->isLoaded()){
-					return;
+			$chunkPopulationLockId = new ChunkLockId();
+
+			$temporaryChunkLoader = new class implements ChunkLoader{
+			};
+			for($xx = -1; $xx <= 1; ++$xx){
+				for($zz = -1; $zz <= 1; ++$zz){
+					$this->lockChunk($chunkX + $xx, $chunkZ + $zz, $chunkPopulationLockId);
+					$this->registerChunkLoader($temporaryChunkLoader, $chunkX + $xx, $chunkZ + $zz);
 				}
-
-				$this->generateChunkCallback($chunkPopulationLockId, $chunkX, $chunkZ, $centerChunk, $adjacentChunks, $temporaryChunkLoader);
 			}
-		);
-		$workerId = $this->workerPool->selectWorker();
-		if(!isset($this->workerPool->getRunningWorkers()[$workerId]) && isset($this->generatorRegisteredWorkers[$workerId])){
-			$this->logger->debug("Selected worker $workerId previously had generator registered, but is now offline");
-			unset($this->generatorRegisteredWorkers[$workerId]);
-		}
-		if(!isset($this->generatorRegisteredWorkers[$workerId])){
-			$this->registerGeneratorToWorker($workerId);
-		}
-		$this->workerPool->submitTaskToWorker($task, $workerId);
 
-		Timings::$population->stopTiming();
-		return $resolver->getPromise();
+			$centerChunk = $this->loadChunk($chunkX, $chunkZ);
+			$adjacentChunks = $this->getAdjacentChunks($chunkX, $chunkZ);
+			$task = new PopulationTask(
+				$this->worldId,
+				$chunkX,
+				$chunkZ,
+				$centerChunk,
+				$adjacentChunks,
+				function(Chunk $centerChunk, array $adjacentChunks) use ($chunkPopulationLockId, $chunkX, $chunkZ, $temporaryChunkLoader) : void{
+					if(!$this->isLoaded()){
+						return;
+					}
+
+					$this->generateChunkCallback($chunkPopulationLockId, $chunkX, $chunkZ, $centerChunk, $adjacentChunks, $temporaryChunkLoader);
+				}
+			);
+			$workerId = $this->workerPool->selectWorker();
+			if(!isset($this->workerPool->getRunningWorkers()[$workerId]) && isset($this->generatorRegisteredWorkers[$workerId])){
+				$this->logger->debug("Selected worker $workerId previously had generator registered, but is now offline");
+				unset($this->generatorRegisteredWorkers[$workerId]);
+			}
+			if(!isset($this->generatorRegisteredWorkers[$workerId])){
+				$this->registerGeneratorToWorker($workerId);
+			}
+			$this->workerPool->submitTaskToWorker($task, $workerId);
+
+			return $resolver->getPromise();
+		}finally{
+			$timings->stopTiming();
+		}
 	}
 
 	/**
@@ -2986,7 +3275,8 @@ class World implements ChunkManager{
 	 * @phpstan-param array<int, Chunk> $adjacentChunks
 	 */
 	private function generateChunkCallback(ChunkLockId $chunkLockId, int $x, int $z, Chunk $chunk, array $adjacentChunks, ChunkLoader $temporaryChunkLoader) : void{
-		Timings::$generationCallback->startTiming();
+		$timings = $this->timings->chunkPopulationCompletion;
+		$timings->startTiming();
 
 		$dirtyChunks = 0;
 		for($xx = -1; $xx <= 1; ++$xx){
@@ -2999,10 +3289,13 @@ class World implements ChunkManager{
 		}
 
 		$index = World::chunkHash($x, $z);
-		if(!isset($this->chunkPopulationRequestMap[$index])){
-			$this->logger->debug("Discarding population result for chunk x=$x,z=$z - promise was already broken");
+		if(!isset($this->activeChunkPopulationTasks[$index])){
+			throw new AssumptionFailedError("This should always be set, regardless of whether the task was orphaned or not");
+		}
+		if(!$this->activeChunkPopulationTasks[$index]){
+			$this->logger->debug("Discarding orphaned population result for chunk x=$x,z=$z");
 			unset($this->activeChunkPopulationTasks[$index]);
-		}elseif(isset($this->activeChunkPopulationTasks[$index])){
+		}else{
 			if($dirtyChunks === 0){
 				$oldChunk = $this->loadChunk($x, $z);
 				$this->setChunk($x, $z, $chunk);
@@ -3035,9 +3328,14 @@ class World implements ChunkManager{
 			unset($this->activeChunkPopulationTasks[$index]);
 
 			if($dirtyChunks === 0){
-				$promise = $this->chunkPopulationRequestMap[$index];
-				unset($this->chunkPopulationRequestMap[$index]);
-				$promise->resolve($chunk);
+				$promise = $this->chunkPopulationRequestMap[$index] ?? null;
+				if($promise !== null){
+					unset($this->chunkPopulationRequestMap[$index]);
+					$promise->resolve($chunk);
+				}else{
+					//Handlers of ChunkPopulateEvent, ChunkLoadEvent, or just ChunkListeners can cause this
+					$this->logger->debug("Unable to resolve population promise for chunk x=$x,z=$z - populated chunk was forcibly unloaded while setting modified chunks");
+				}
 			}else{
 				//request failed, stick it back on the queue
 				//we didn't resolve the promise or touch it in any way, so any fake chunk loaders are still valid and
@@ -3047,7 +3345,7 @@ class World implements ChunkManager{
 
 			$this->drainPopulationRequestQueue();
 		}
-		Timings::$generationCallback->stopTiming();
+		$timings->stopTiming();
 	}
 
 	public function doChunkGarbageCollection() : void{

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -46,7 +46,7 @@ final class GameMode{
 	}
 
 	/** @var self[] */
-	protected static $aliasMap = [];
+	protected static array $aliasMap = [];
 
 	protected static function setup() : void{
 		self::registerAll(
@@ -69,18 +69,16 @@ final class GameMode{
 		return self::$aliasMap[mb_strtolower($str)] ?? null;
 	}
 
-	/** @var string */
-	private $englishName;
-	/** @var string[] */
-	private $aliases;
-
 	/**
 	 * @param string[] $aliases
 	 */
-	private function __construct(string $enumName, string $englishName, private Translatable $translatableName, array $aliases = []){
+	private function __construct(
+		string $enumName,
+		private string $englishName,
+		private Translatable $translatableName,
+		private array $aliases = []
+	){
 		$this->Enum___construct($enumName);
-		$this->englishName = $englishName;
-		$this->aliases = $aliases;
 	}
 
 	public function getEnglishName() : string{

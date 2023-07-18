@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -33,13 +33,13 @@ final class PotionTypeIdMap{
 	 * @var PotionType[]
 	 * @phpstan-var array<int, PotionType>
 	 */
-	private array $idToEnum;
+	private array $idToEnum = [];
 
 	/**
 	 * @var int[]
 	 * @phpstan-var array<int, int>
 	 */
-	private array $enumToId;
+	private array $enumToId = [];
 
 	private function __construct(){
 		$this->register(PotionTypeIds::WATER, PotionType::WATER());

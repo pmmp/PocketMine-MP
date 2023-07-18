@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,7 +25,6 @@ namespace pocketmine\world\generator;
 
 use pocketmine\block\VanillaBlocks;
 use pocketmine\world\ChunkManager;
-use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\SubChunk;
 use pocketmine\world\generator\object\OreType;
@@ -34,11 +33,9 @@ use pocketmine\world\generator\populator\Populator;
 use function count;
 
 class Flat extends Generator{
-
-	/** @var Chunk */
-	private $chunk;
+	private Chunk $chunk;
 	/** @var Populator[] */
-	private $populators = [];
+	private array $populators = [];
 
 	private FlatGeneratorOptions $options;
 
@@ -69,7 +66,7 @@ class Flat extends Generator{
 	}
 
 	protected function generateBaseChunk() : void{
-		$this->chunk = new Chunk([], BiomeArray::fill($this->options->getBiomeId()), false);
+		$this->chunk = new Chunk([], false);
 
 		$structure = $this->options->getStructure();
 		$count = count($structure);
@@ -80,7 +77,7 @@ class Flat extends Generator{
 
 				for($Z = 0; $Z < SubChunk::EDGE_LENGTH; ++$Z){
 					for($X = 0; $X < SubChunk::EDGE_LENGTH; ++$X){
-						$subchunk->setFullBlock($X, $y, $Z, $id);
+						$subchunk->setBlockStateId($X, $y, $Z, $id);
 					}
 				}
 			}

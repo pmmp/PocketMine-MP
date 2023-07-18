@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -48,6 +48,10 @@ final class TransactionBuilderInventory extends BaseInventory{
 	){
 		parent::__construct();
 		$this->changedSlots = new \SplFixedArray($this->actualInventory->getSize());
+	}
+
+	public function getActualInventory() : Inventory{
+		return $this->actualInventory;
 	}
 
 	protected function internalSetContents(array $items) : void{

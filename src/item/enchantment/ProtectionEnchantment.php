@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,10 +29,9 @@ use function array_flip;
 use function floor;
 
 class ProtectionEnchantment extends Enchantment{
-	/** @var float */
-	protected $typeModifier;
+	protected float $typeModifier;
 	/** @var int[]|null */
-	protected $applicableDamageTypes = null;
+	protected ?array $applicableDamageTypes = null;
 
 	/**
 	 * ProtectionEnchantment constructor.

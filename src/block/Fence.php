@@ -17,12 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -36,7 +37,7 @@ class Fence extends Transparent{
 		return 0.25;
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 
 		foreach(Facing::HORIZONTAL as $facing){
@@ -47,6 +48,8 @@ class Fence extends Transparent{
 				unset($this->connections[$facing]);
 			}
 		}
+
+		return $this;
 	}
 
 	/**
@@ -92,5 +95,9 @@ class Fence extends Transparent{
 		}
 
 		return $bbs;
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return Facing::axis($facing) === Axis::Y ? SupportType::CENTER() : SupportType::NONE();
 	}
 }

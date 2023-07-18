@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,10 +26,27 @@ namespace pocketmine\utils;
 use function array_map;
 use function count;
 use function mb_strtoupper;
+use function preg_match;
 
+/**
+ * This trait allows a class to simulate object class constants, since PHP doesn't currently support this.
+ * These faux constants are exposed in static class methods, which are handled using __callStatic().
+ *
+ * Classes using this trait need to include \@method tags in their class docblock for every faux constant.
+ * Alternatively, just put \@generate-registry-docblock in the docblock and run tools/generate-registry-annotations.php
+ */
 trait RegistryTrait{
-	/** @var object[] */
+	/**
+	 * @var object[]
+	 * @phpstan-var array<string, object>
+	 */
 	private static $members = null;
+
+	private static function verifyName(string $name) : void{
+		if(preg_match('/^(?!\d)[A-Za-z\d_]+$/u', $name) === 0){
+			throw new \InvalidArgumentException("Invalid member name \"$name\", should only contain letters, numbers and underscores, and must not start with a number");
+		}
+	}
 
 	/**
 	 * Adds the given object to the registry.
@@ -37,6 +54,7 @@ trait RegistryTrait{
 	 * @throws \InvalidArgumentException
 	 */
 	private static function _registryRegister(string $name, object $member) : void{
+		self::verifyName($name);
 		$upperName = mb_strtoupper($name);
 		if(isset(self::$members[$upperName])){
 			throw new \InvalidArgumentException("\"$upperName\" is already reserved");
@@ -99,6 +117,7 @@ trait RegistryTrait{
 
 	/**
 	 * @return object[]
+	 * @phpstan-return array<string, object>
 	 */
 	private static function _registryGetAll() : array{
 		self::checkInit();

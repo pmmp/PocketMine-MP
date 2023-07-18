@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -47,7 +47,6 @@ final class RakLibThreadCrashInfo{
 		return new self(null, $info["message"], $info["file"], $info["line"]);
 	}
 
-	/** @return string|null */
 	public function getClass() : ?string{ return $this->class; }
 
 	public function getMessage() : string{ return $this->message; }

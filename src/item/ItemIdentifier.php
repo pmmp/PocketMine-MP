@@ -17,32 +17,23 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\item;
 
-final class ItemIdentifier{
+use pocketmine\block\Block;
 
-	/** @var int */
-	private $id;
-	/** @var int */
-	private $meta;
+class ItemIdentifier{
+	public function __construct(
+		private int $typeId
+	){}
 
-	public function __construct(int $id, int $meta){
-		if($id < -0x8000 || $id > 0x7fff){ //signed short range
-			throw new \InvalidArgumentException("ID must be in range " . -0x8000 . " - " . 0x7fff);
-		}
-		$this->id = $id;
-		$this->meta = $meta !== -1 ? $meta & 0x7FFF : -1;
+	public static function fromBlock(Block $block) : self{
+		//TODO: maybe an ItemBlockIdentifier is in order?
+		return new self(ItemTypeIds::fromBlockTypeId($block->getTypeId()));
 	}
 
-	public function getId() : int{
-		return $this->id;
-	}
-
-	public function getMeta() : int{
-		return $this->meta;
-	}
+	public function getTypeId() : int{ return $this->typeId; }
 }

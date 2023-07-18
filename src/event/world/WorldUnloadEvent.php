@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,7 +27,7 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 
 /**
- * Called when a World is unloaded
+ * Called when a world is unloaded from memory.
  */
 class WorldUnloadEvent extends WorldEvent implements Cancellable{
 	use CancellableTrait;

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -44,15 +44,11 @@ class Chest extends Spawnable implements Container, Nameable{
 	public const TAG_PAIRZ = "pairz";
 	public const TAG_PAIR_LEAD = "pairlead";
 
-	/** @var ChestInventory */
-	protected $inventory;
-	/** @var DoubleChestInventory|null */
-	protected $doubleInventory = null;
+	protected ChestInventory $inventory;
+	protected ?DoubleChestInventory $doubleInventory = null;
 
-	/** @var int|null */
-	private $pairX;
-	/** @var int|null */
-	private $pairZ;
+	private ?int $pairX = null;
+	private ?int $pairZ = null;
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
@@ -118,20 +114,14 @@ class Chest extends Spawnable implements Container, Nameable{
 		$this->containerTraitBlockDestroyedHook();
 	}
 
-	/**
-	 * @return ChestInventory|DoubleChestInventory
-	 */
-	public function getInventory(){
+	public function getInventory() : ChestInventory|DoubleChestInventory{
 		if($this->isPaired() && $this->doubleInventory === null){
 			$this->checkPairing();
 		}
 		return $this->doubleInventory instanceof DoubleChestInventory ? $this->doubleInventory : $this->inventory;
 	}
 
-	/**
-	 * @return ChestInventory
-	 */
-	public function getRealInventory(){
+	public function getRealInventory() : ChestInventory{
 		return $this->inventory;
 	}
 
@@ -188,8 +178,8 @@ class Chest extends Spawnable implements Container, Nameable{
 
 		$this->createPair($tile);
 
-		$this->setDirty();
-		$tile->setDirty();
+		$this->clearSpawnCompoundCache();
+		$tile->clearSpawnCompoundCache();
 		$this->checkPairing();
 
 		return true;
@@ -211,12 +201,12 @@ class Chest extends Spawnable implements Container, Nameable{
 		$tile = $this->getPair();
 		$this->pairX = $this->pairZ = null;
 
-		$this->setDirty();
+		$this->clearSpawnCompoundCache();
 
 		if($tile instanceof Chest){
 			$tile->pairX = $tile->pairZ = null;
 			$tile->checkPairing();
-			$tile->setDirty();
+			$tile->clearSpawnCompoundCache();
 		}
 		$this->checkPairing();
 

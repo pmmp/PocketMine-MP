@@ -17,13 +17,16 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\WoodTypeTrait;
+
 class WoodenTrapdoor extends Trapdoor{
+	use WoodTypeTrait;
 
 	public function getFuelTime() : int{
 		return 300;

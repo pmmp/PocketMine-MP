@@ -17,16 +17,18 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\StairShape;
+use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
+use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -39,25 +41,17 @@ class Stair extends Transparent{
 	protected bool $upsideDown = false;
 	protected StairShape $shape;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->shape = StairShape::STRAIGHT();
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::write5MinusHorizontalFacing($this->facing) | ($this->upsideDown ? BlockLegacyMetadata::STAIR_FLAG_UPSIDE_DOWN : 0);
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->bool($this->upsideDown);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::read5MinusHorizontalFacing($stateMeta);
-		$this->upsideDown = ($stateMeta & BlockLegacyMetadata::STAIR_FLAG_UPSIDE_DOWN) !== 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
-	}
-
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 
 		$clockwise = Facing::rotateY($this->facing, true);
@@ -68,6 +62,8 @@ class Stair extends Transparent{
 		}else{
 			$this->shape = StairShape::STRAIGHT();
 		}
+
+		return $this;
 	}
 
 	public function isUpsideDown() : bool{ return $this->upsideDown; }
@@ -109,6 +105,19 @@ class Stair extends Transparent{
 		$bbs[] = $topStep;
 
 		return $bbs;
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		if(
+			$facing === Facing::UP && $this->isUpsideDown() ||
+			$facing === Facing::DOWN && !$this->isUpsideDown() ||
+			($facing === $this->facing && !$this->shape->equals(StairShape::OUTER_LEFT()) && !$this->shape->equals(StairShape::OUTER_RIGHT())) ||
+			($facing === Facing::rotate($this->facing, Axis::Y, false) && $this->shape->equals(StairShape::INNER_LEFT())) ||
+			($facing === Facing::rotate($this->facing, Axis::Y, true) && $this->shape->equals(StairShape::INNER_RIGHT()))
+		){
+			return SupportType::FULL();
+		}
+		return SupportType::NONE();
 	}
 
 	private function getPossibleCornerFacing(bool $oppositeFacing) : ?int{

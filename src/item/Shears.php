@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -44,7 +44,7 @@ class Shears extends Tool{
 		return 15;
 	}
 
-	public function onDestroyBlock(Block $block) : bool{
+	public function onDestroyBlock(Block $block, array &$returnedItems) : bool{
 		return $this->applyDamage(1);
 	}
 }

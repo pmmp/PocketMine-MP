@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,35 +29,31 @@ use pocketmine\lang\Translatable;
 use pocketmine\player\Player;
 
 /**
- * Called when a player leaves the server
+ * Called when a player is kicked (forcibly disconnected) from the server, e.g. if an operator used /kick.
  */
 class PlayerKickEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
+	use PlayerDisconnectEventTrait;
 
-	/** @var Translatable|string */
-	protected $quitMessage;
-
-	/** @var string */
-	protected $reason;
-
-	public function __construct(Player $player, string $reason, Translatable|string $quitMessage){
+	public function __construct(
+		Player $player,
+		protected Translatable|string $disconnectReason,
+		protected Translatable|string $quitMessage,
+		protected Translatable|string|null $disconnectScreenMessage
+	){
 		$this->player = $player;
-		$this->quitMessage = $quitMessage;
-		$this->reason = $reason;
 	}
 
-	public function setReason(string $reason) : void{
-		$this->reason = $reason;
-	}
-
-	public function getReason() : string{
-		return $this->reason;
-	}
-
+	/**
+	 * Sets the quit message broadcasted to other players.
+	 */
 	public function setQuitMessage(Translatable|string $quitMessage) : void{
 		$this->quitMessage = $quitMessage;
 	}
 
+	/**
+	 * Returns the quit message broadcasted to other players, e.g. "Steve left the game".
+	 */
 	public function getQuitMessage() : Translatable|string{
 		return $this->quitMessage;
 	}

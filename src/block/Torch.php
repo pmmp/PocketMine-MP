@@ -17,14 +17,16 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
+use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -34,17 +36,8 @@ class Torch extends Flowable{
 
 	protected int $facing = Facing::UP;
 
-	protected function writeStateToMeta() : int{
-		return $this->facing === Facing::UP ? 5 : 6 - BlockDataSerializer::writeHorizontalFacing($this->facing);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$facingMeta = $stateMeta & 0x7;
-		$this->facing = $facingMeta === 5 ? Facing::UP : BlockDataSerializer::readHorizontalFacing(6 - $facingMeta);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->facingExcept($this->facing, Facing::DOWN);
 	}
 
 	public function getFacing() : int{ return $this->facing; }
@@ -63,19 +56,15 @@ class Torch extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$below = $this->getSide(Facing::DOWN);
 		$face = Facing::opposite($this->facing);
 
-		if($this->getSide($face)->isTransparent() && !($face === Facing::DOWN && ($below->getId() === BlockLegacyIds::FENCE || $below->getId() === BlockLegacyIds::COBBLESTONE_WALL))){
+		if(!$this->canBeSupportedBy($this->getSide($face), $this->facing)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($blockClicked->canBeReplaced() && !$blockClicked->getSide(Facing::DOWN)->isTransparent()){
-			$this->facing = Facing::UP;
-			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif($face !== Facing::DOWN && (!$blockClicked->isTransparent() || ($face === Facing::UP && ($blockClicked->getId() === BlockLegacyIds::FENCE || $blockClicked->getId() === BlockLegacyIds::COBBLESTONE_WALL)))){
+		if($face !== Facing::DOWN && $this->canBeSupportedBy($blockReplace->getSide(Facing::opposite($face)), $face)){
 			$this->facing = $face;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}else{
@@ -87,12 +76,17 @@ class Torch extends Flowable{
 				Facing::DOWN
 			] as $side){
 				$block = $this->getSide($side);
-				if(!$block->isTransparent()){
+				if($this->canBeSupportedBy($block, Facing::opposite($side))){
 					$this->facing = Facing::opposite($side);
 					return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 				}
 			}
 		}
 		return false;
+	}
+
+	private function canBeSupportedBy(Block $support, int $face) : bool{
+		return ($face === Facing::UP && $support->getSupportType($face)->hasCenterSupport()) ||
+			(Facing::axis($face) !== Axis::Y && $support->getSupportType($face)->equals(SupportType::FULL()));
 	}
 }
