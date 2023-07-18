@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -41,15 +41,9 @@ use function preg_match;
 use function strlen;
 
 class ZippedResourcePack implements ResourcePack{
-
-	/** @var string */
-	protected $path;
-
-	/** @var Manifest */
-	protected $manifest;
-
-	/** @var string|null */
-	protected $sha256 = null;
+	protected string $path;
+	protected Manifest $manifest;
+	protected ?string $sha256 = null;
 
 	/** @var resource */
 	protected $fileResource;
@@ -63,6 +57,13 @@ class ZippedResourcePack implements ResourcePack{
 
 		if(!file_exists($zipPath)){
 			throw new ResourcePackException("File not found");
+		}
+		$size = filesize($zipPath);
+		if($size === false){
+			throw new ResourcePackException("Unable to determine size of file");
+		}
+		if($size === 0){
+			throw new ResourcePackException("Empty file, probably corrupted");
 		}
 
 		$archive = new \ZipArchive();

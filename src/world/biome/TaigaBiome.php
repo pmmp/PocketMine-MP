@@ -17,13 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\world\biome;
 
-use pocketmine\block\utils\TreeType;
+use pocketmine\world\generator\object\TreeType;
 use pocketmine\world\generator\populator\TallGrass;
 use pocketmine\world\generator\populator\Tree;
 

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -57,7 +57,7 @@ interface ResourcePack{
 	 * Note that resource packs must **always** be in zip archive format for sending.
 	 * A folder resource loader may need to perform on-the-fly compression for this purpose.
 	 *
-	 * @param int $start Offset to start reading the chunk from
+	 * @param int $start  Offset to start reading the chunk from
 	 * @param int $length Maximum length of data to return.
 	 *
 	 * @return string byte-array

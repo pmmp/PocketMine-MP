@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,15 +25,16 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Bell as TileBell;
 use pocketmine\block\utils\BellAttachmentType;
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
-use pocketmine\block\utils\InvalidBlockStateException;
+use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\BellRingSound;
 
@@ -42,41 +43,14 @@ final class Bell extends Transparent{
 
 	private BellAttachmentType $attachmentType;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->attachmentType = BellAttachmentType::FLOOR();
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->setFacing(BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03));
-
-		$attachmentType = [
-			BlockLegacyMetadata::BELL_ATTACHMENT_FLOOR => BellAttachmentType::FLOOR(),
-			BlockLegacyMetadata::BELL_ATTACHMENT_CEILING => BellAttachmentType::CEILING(),
-			BlockLegacyMetadata::BELL_ATTACHMENT_ONE_WALL => BellAttachmentType::ONE_WALL(),
-			BlockLegacyMetadata::BELL_ATTACHMENT_TWO_WALLS => BellAttachmentType::TWO_WALLS()
-		][($stateMeta >> 2) & 0b11] ?? null;
-		if($attachmentType === null){
-			throw new InvalidBlockStateException("No such attachment type");
-		}
-		$this->setAttachmentType($attachmentType);
-	}
-
-	public function writeStateToMeta() : int{
-		$attachmentTypeMeta = [
-			BellAttachmentType::FLOOR()->id() => BlockLegacyMetadata::BELL_ATTACHMENT_FLOOR,
-			BellAttachmentType::CEILING()->id() => BlockLegacyMetadata::BELL_ATTACHMENT_CEILING,
-			BellAttachmentType::ONE_WALL()->id() => BlockLegacyMetadata::BELL_ATTACHMENT_ONE_WALL,
-			BellAttachmentType::TWO_WALLS()->id() => BlockLegacyMetadata::BELL_ATTACHMENT_TWO_WALLS
-		][$this->getAttachmentType()->id()] ?? null;
-		if($attachmentTypeMeta === null){
-			throw new AssumptionFailedError("Mapping should cover all cases");
-		}
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->getFacing()) | ($attachmentTypeMeta << 2);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->bellAttachmentType($this->attachmentType);
+		$w->horizontalFacing($this->facing);
 	}
 
 	protected function recalculateCollisionBoxes() : array{
@@ -101,6 +75,10 @@ final class Bell extends Transparent{
 		];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function getAttachmentType() : BellAttachmentType{ return $this->attachmentType; }
 
 	/** @return $this */
@@ -109,14 +87,13 @@ final class Bell extends Transparent{
 		return $this;
 	}
 
-	private function canBeSupportedBy(Block $block) : bool{
-		//TODO: this isn't the actual logic, but it's the closest approximation we can support for now
-		return $block->isSolid();
+	private function canBeSupportedBy(Block $block, int $face) : bool{
+		return !$block->getSupportType($face)->equals(SupportType::NONE());
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($face === Facing::UP){
-			if(!$this->canBeSupportedBy($tx->fetchBlock($this->position->down()))){
+			if(!$this->canBeSupportedBy($tx->fetchBlock($this->position->down()), Facing::UP)){
 				return false;
 			}
 			if($player !== null){
@@ -124,18 +101,18 @@ final class Bell extends Transparent{
 			}
 			$this->setAttachmentType(BellAttachmentType::FLOOR());
 		}elseif($face === Facing::DOWN){
-			if(!$this->canBeSupportedBy($tx->fetchBlock($this->position->up()))){
+			if(!$this->canBeSupportedBy($tx->fetchBlock($this->position->up()), Facing::DOWN)){
 				return false;
 			}
 			$this->setAttachmentType(BellAttachmentType::CEILING());
 		}else{
 			$this->setFacing($face);
-			if($this->canBeSupportedBy($tx->fetchBlock($this->position->getSide(Facing::opposite($face))))){
+			if($this->canBeSupportedBy($tx->fetchBlock($this->position->getSide(Facing::opposite($face))), $face)){
 				$this->setAttachmentType(BellAttachmentType::ONE_WALL());
 			}else{
 				return false;
 			}
-			if($this->canBeSupportedBy($tx->fetchBlock($this->position->getSide($face)))){
+			if($this->canBeSupportedBy($tx->fetchBlock($this->position->getSide($face)), Facing::opposite($face))){
 				$this->setAttachmentType(BellAttachmentType::TWO_WALLS());
 			}
 		}
@@ -144,44 +121,56 @@ final class Bell extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		if(
-			($this->attachmentType->equals(BellAttachmentType::CEILING()) && !$this->canBeSupportedBy($this->getSide(Facing::UP))) ||
-			($this->attachmentType->equals(BellAttachmentType::FLOOR()) && !$this->canBeSupportedBy($this->getSide(Facing::DOWN))) ||
-			($this->attachmentType->equals(BellAttachmentType::ONE_WALL()) && !$this->canBeSupportedBy($this->getSide(Facing::opposite($this->facing)))) ||
-			($this->attachmentType->equals(BellAttachmentType::TWO_WALLS()) && (!$this->canBeSupportedBy($this->getSide($this->facing)) || !$this->canBeSupportedBy($this->getSide(Facing::opposite($this->facing)))))
+			($this->attachmentType->equals(BellAttachmentType::CEILING()) && !$this->canBeSupportedBy($this->getSide(Facing::UP), Facing::DOWN)) ||
+			($this->attachmentType->equals(BellAttachmentType::FLOOR()) && !$this->canBeSupportedBy($this->getSide(Facing::DOWN), Facing::UP)) ||
+			($this->attachmentType->equals(BellAttachmentType::ONE_WALL()) && !$this->canBeSupportedBy($this->getSide(Facing::opposite($this->facing)), $this->facing)) ||
+			($this->attachmentType->equals(BellAttachmentType::TWO_WALLS()) && (!$this->canBeSupportedBy($this->getSide($this->facing), Facing::opposite($this->facing)) || !$this->canBeSupportedBy($this->getSide(Facing::opposite($this->facing)), $this->facing)))
 		){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
 			$faceHit = Facing::opposite($player->getHorizontalFacing());
-			if($this->attachmentType->equals(BellAttachmentType::CEILING())){
+			if($this->isValidFaceToRing($faceHit)){
 				$this->ring($faceHit);
-			}
-			if($this->attachmentType->equals(BellAttachmentType::FLOOR()) && Facing::axis($faceHit) === Facing::axis($this->facing)){
-				$this->ring($faceHit);
-			}
-			if(
-				($this->attachmentType->equals(BellAttachmentType::ONE_WALL()) || $this->attachmentType->equals(BellAttachmentType::TWO_WALLS())) &&
-				($faceHit === Facing::rotateY($this->facing, false) || $faceHit === Facing::rotateY($this->facing, true))
-			){
-				$this->ring($faceHit);
+				return true;
 			}
 		}
 
-		return true;
+		return false;
+	}
+
+	public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
+		$faceHit = Facing::opposite($projectile->getHorizontalFacing());
+		if($this->isValidFaceToRing($faceHit)){
+			$this->ring($faceHit);
+		}
 	}
 
 	public function ring(int $faceHit) : void{
-		$this->position->getWorld()->addSound($this->position, new BellRingSound());
-		$tile = $this->position->getWorld()->getTile($this->position);
+		$world = $this->position->getWorld();
+		$world->addSound($this->position, new BellRingSound());
+		$tile = $world->getTile($this->position);
 		if($tile instanceof TileBell){
-			$this->position->getWorld()->broadcastPacketToViewers($this->position, $tile->createFakeUpdatePacket($faceHit));
+			$world->broadcastPacketToViewers($this->position, $tile->createFakeUpdatePacket($faceHit));
 		}
 	}
 
 	public function getDropsForIncompatibleTool(Item $item) : array{
 		return [$this->asItem()];
+	}
+
+
+	private function isValidFaceToRing(int $faceHit) : bool{
+		return (
+			$this->attachmentType->equals(BellAttachmentType::CEILING()) ||
+			($this->attachmentType->equals(BellAttachmentType::FLOOR()) && Facing::axis($faceHit) === Facing::axis($this->facing)) ||
+			(
+				($this->attachmentType->equals(BellAttachmentType::ONE_WALL()) || $this->attachmentType->equals(BellAttachmentType::TWO_WALLS())) &&
+				($faceHit === Facing::rotateY($this->facing, false) || $faceHit === Facing::rotateY($this->facing, true))
+			)
+		);
 	}
 }

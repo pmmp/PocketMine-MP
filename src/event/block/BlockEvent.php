@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,12 +30,9 @@ use pocketmine\block\Block;
 use pocketmine\event\Event;
 
 abstract class BlockEvent extends Event{
-	/** @var Block */
-	protected $block;
-
-	public function __construct(Block $block){
-		$this->block = $block;
-	}
+	public function __construct(
+		protected Block $block
+	){}
 
 	public function getBlock() : Block{
 		return $this->block;

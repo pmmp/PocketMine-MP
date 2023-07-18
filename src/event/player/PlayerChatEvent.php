@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,6 +26,7 @@ namespace pocketmine\event\player;
 use pocketmine\command\CommandSender;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\player\chat\ChatFormatter;
 use pocketmine\player\Player;
 use pocketmine\utils\Utils;
 
@@ -35,25 +36,16 @@ use pocketmine\utils\Utils;
 class PlayerChatEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var string */
-	protected $message;
-
-	/** @var string */
-	protected $format;
-
-	/** @var CommandSender[] */
-	protected $recipients = [];
-
 	/**
 	 * @param CommandSender[] $recipients
 	 */
-	public function __construct(Player $player, string $message, array $recipients, string $format = "chat.type.text"){
+	public function __construct(
+		Player $player,
+		protected string $message,
+		protected array $recipients,
+		protected ChatFormatter $formatter
+	){
 		$this->player = $player;
-		$this->message = $message;
-
-		$this->format = $format;
-
-		$this->recipients = $recipients;
 	}
 
 	public function getMessage() : string{
@@ -71,12 +63,12 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 		$this->player = $player;
 	}
 
-	public function getFormat() : string{
-		return $this->format;
+	public function getFormatter() : ChatFormatter{
+		return $this->formatter;
 	}
 
-	public function setFormat(string $format) : void{
-		$this->format = $format;
+	public function setFormatter(ChatFormatter $formatter) : void{
+		$this->formatter = $formatter;
 	}
 
 	/**

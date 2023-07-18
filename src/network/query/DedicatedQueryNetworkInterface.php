@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -40,6 +40,7 @@ use function strlen;
 use function time;
 use function trim;
 use const AF_INET;
+use const AF_INET6;
 use const IPPROTO_IPV6;
 use const IPV6_V6ONLY;
 use const PHP_INT_MAX;
@@ -59,29 +60,22 @@ use const SOL_UDP;
  * or running on a different port than Query.
  */
 final class DedicatedQueryNetworkInterface implements AdvancedNetworkInterface{
-
-	/** @var string */
-	private $ip;
-	/** @var int */
-	private $port;
-	/** @var \Logger */
-	private $logger;
 	private \Socket $socket;
-	/** @var Network */
-	private $network;
+	private Network $network;
 	/**
 	 * @var int[] address => timeout time
 	 * @phpstan-var array<string, int>
 	 */
-	private $blockedIps = [];
+	private array $blockedIps = [];
 	/** @var string[] */
-	private $rawPacketPatterns = [];
+	private array $rawPacketPatterns = [];
 
-	public function __construct(string $ip, int $port, bool $ipV6, \Logger $logger){
-		$this->ip = $ip;
-		$this->port = $port;
-		$this->logger = $logger;
-
+	public function __construct(
+		private string $ip,
+		private int $port,
+		bool $ipV6,
+		private \Logger $logger
+	){
 		$socket = @socket_create($ipV6 ? AF_INET6 : AF_INET, SOCK_DGRAM, SOL_UDP);
 		if($socket === false){
 			throw new \RuntimeException("Failed to create socket");

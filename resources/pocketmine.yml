@@ -85,8 +85,11 @@ network:
   batch-threshold: 256
   #Compression level used when sending batched packets. Higher = more CPU, less bandwidth usage
   compression-level: 6
-  #Use AsyncTasks for compression. Adds half/one tick delay, less CPU load on main thread
+  #Use AsyncTasks for compression during the main game session. Increases latency, but may reduce main thread load
   async-compression: false
+  #Threshold for async compression, in bytes. Only packets larger than this will be compressed asynchronously
+  #Due to large overhead of AsyncTask, async compression isn't worth it except for large packets
+  async-compression-threshold: 10000
   #Experimental. Use UPnP to automatically port forward
   upnp-forwarding: false
   #Maximum size in bytes of packets sent over the network (default 1492 bytes). Packets larger than this will be
@@ -119,8 +122,6 @@ chunk-sending:
   spawn-radius: 4
 
 chunk-ticking:
-  #Max amount of chunks processed each tick
-  per-tick: 40
   #Radius of chunks around a player to tick
   tick-radius: 3
   #Number of blocks inside ticking areas' subchunks that get ticked every tick. Higher values will accelerate events
@@ -168,14 +169,44 @@ timings:
   host: timings.pmmp.io
 
 console:
+  #Whether to accept commands via the console. If disabled, anything typed on the console will be ignored.
+  #Useful to save resources on headless servers where the console is never used (e.g. hosted server, Docker, etc.)
+  enable-input: true
   #Choose whether to enable server stats reporting on the console title.
   #NOTE: The title ticker will be disabled regardless if console colours are not enabled.
   title-tick: true
 
 aliases:
-  #Examples:
-  #showtheversion: version
+  ##This section allows you to add, remove or remap command aliases.
+  ##A single alias can call one or more other commands (or aliases).
+  ##Aliases defined here will override any command aliases declared by plugins or PocketMine-MP itself.
+
+  ##To remove an alias, set it to [], like so (note that prefixed aliases like "pocketmine:stop" will remain and can't
+  ##be removed):
+  #stop: []
+
+  ##Commands are not removed, only their aliases. You can still refer to a command using its full (prefixed)
+  ##name, even if all its aliases are overwritten. The full name is usually something like "pocketmine:commandname" or
+  ##"pluginname:commandname".
+  #abort: [pocketmine:stop]
+
+  ##To add an alias, list the command(s) that it calls:
+  #showtheversion: [version]
   #savestop: [save-all, stop]
+
+  ##To invoke another command with arguments, use $1 to pass the first argument, $2 for the second etc:
+  #giveadmin: [op $1] ## `giveadmin alex` -> `op alex`
+  #kill: [suicide, say "I tried to kill $1"] ## `kill alex` -> `suicide` + `say "I tried to kill alex"`
+  #giverandom: [give $1 $2, say "Someone has just received a $2!"] ## `giverandom alex diamond` -> `give alex diamond` + `say "Someone has just received a diamond!"`
+
+  ##To make arguments mandatory (so that the command fails if they are not provided), use $$, e.g. $$1, $$2:
+  #makeadmin: [op $$1] ## `makeadmin alex` -> `op alex`, `makeadmin` with no arguments = error
+
+  ##To pass through a range of arguments, put a - (hyphen) after the index:
+  #tpalias: [tp $1-] ## `tpalias 256 70 256` -> `tp 256 70 256` - this passes arguments 1 and everything after it to the `tp` command
+
+  ##To change an existing command alias and make it do something else:
+  #tp: [suicide]
 
 worlds:
   #These settings will override the generator set in server.properties and allows loading multiple worlds

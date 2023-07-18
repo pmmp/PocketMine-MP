@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -33,7 +33,7 @@ class InstantDamageEffect extends InstantEffect{
 
 	public function applyEffect(Living $entity, EffectInstance $instance, float $potency = 1.0, ?Entity $source = null) : void{
 		//TODO: add particles (witch spell)
-		$damage = (4 << $instance->getAmplifier()) * $potency;
+		$damage = (6 << $instance->getAmplifier()) * $potency;
 		if($source !== null){
 			$sourceOwner = $source->getOwningEntity();
 			if($sourceOwner !== null){

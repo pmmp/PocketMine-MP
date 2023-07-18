@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,7 +28,7 @@ trait SingletonTrait{
 	private static $instance = null;
 
 	private static function make() : self{
-		return new self;
+		return new self();
 	}
 
 	public static function getInstance() : self{

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,6 +26,7 @@ namespace pocketmine\event\player;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\event\Event;
+use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\NetworkSession;
 
 /**
@@ -34,18 +35,14 @@ use pocketmine\network\mcpe\NetworkSession;
  */
 class PlayerDuplicateLoginEvent extends Event implements Cancellable{
 	use CancellableTrait;
+	use PlayerDisconnectEventTrait;
 
-	/** @var NetworkSession */
-	private $connectingSession;
-	/** @var NetworkSession */
-	private $existingSession;
-	/** @var string */
-	private $disconnectMessage = "Logged in from another location";
-
-	public function __construct(NetworkSession $connectingSession, NetworkSession $existingSession){
-		$this->connectingSession = $connectingSession;
-		$this->existingSession = $existingSession;
-	}
+	public function __construct(
+		private NetworkSession $connectingSession,
+		private NetworkSession $existingSession,
+		private Translatable|string $disconnectReason,
+		private Translatable|string|null $disconnectScreenMessage
+	){}
 
 	public function getConnectingSession() : NetworkSession{
 		return $this->connectingSession;
@@ -53,16 +50,5 @@ class PlayerDuplicateLoginEvent extends Event implements Cancellable{
 
 	public function getExistingSession() : NetworkSession{
 		return $this->existingSession;
-	}
-
-	/**
-	 * Returns the message shown to the session which gets disconnected.
-	 */
-	public function getDisconnectMessage() : string{
-		return $this->disconnectMessage;
-	}
-
-	public function setDisconnectMessage(string $message) : void{
-		$this->disconnectMessage = $message;
 	}
 }

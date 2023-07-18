@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -33,7 +33,7 @@ use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Config;
 use pocketmine\utils\Utils;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function count;
 use function dirname;
 use function fclose;
@@ -41,47 +41,29 @@ use function file_exists;
 use function fopen;
 use function mkdir;
 use function rtrim;
+use function str_contains;
 use function stream_copy_to_stream;
-use function strpos;
 use function strtolower;
 use function trim;
+use const DIRECTORY_SEPARATOR;
 
 abstract class PluginBase implements Plugin, CommandExecutor{
+	private bool $isEnabled = false;
 
-	/** @var PluginLoader */
-	private $loader;
+	private ?Config $config = null;
+	private string $configFile;
 
-	/** @var Server */
-	private $server;
+	private PluginLogger $logger;
+	private TaskScheduler $scheduler;
 
-	/** @var bool */
-	private $isEnabled = false;
-
-	/** @var PluginDescription */
-	private $description;
-
-	/** @var string */
-	private $dataFolder;
-	/** @var Config|null */
-	private $config = null;
-	/** @var string */
-	private $configFile;
-	/** @var string */
-	private $file;
-
-	/** @var PluginLogger */
-	private $logger;
-
-	/** @var TaskScheduler */
-	private $scheduler;
-
-	/** @var ResourceProvider */
-	private $resourceProvider;
-
-	public function __construct(PluginLoader $loader, Server $server, PluginDescription $description, string $dataFolder, string $file, ResourceProvider $resourceProvider){
-		$this->loader = $loader;
-		$this->server = $server;
-		$this->description = $description;
+	public function __construct(
+		private PluginLoader $loader,
+		private Server $server,
+		private PluginDescription $description,
+		private string $dataFolder,
+		private string $file,
+		private ResourceProvider $resourceProvider
+	){
 		$this->dataFolder = rtrim($dataFolder, "/" . DIRECTORY_SEPARATOR) . "/";
 		//TODO: this is accessed externally via reflection, not unused
 		$this->file = rtrim($file, "/" . DIRECTORY_SEPARATOR) . "/";
@@ -90,7 +72,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		$prefix = $this->getDescription()->getPrefix();
 		$this->logger = new PluginLogger($server->getLogger(), $prefix !== "" ? $prefix : $this->getName());
 		$this->scheduler = new TaskScheduler($this->getFullName());
-		$this->resourceProvider = $resourceProvider;
 
 		$this->onLoad();
 
@@ -164,7 +145,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		$pluginCmds = [];
 
 		foreach(Utils::stringifyKeys($this->getDescription()->getCommands()) as $key => $data){
-			if(strpos($key, ":") !== false){
+			if(str_contains($key, ":")){
 				$this->logger->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_commandError($key, $this->getDescription()->getFullName(), ":")));
 				continue;
 			}
@@ -180,7 +161,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 			$aliasList = [];
 			foreach($data->getAliases() as $alias){
-				if(strpos($alias, ":") !== false){
+				if(str_contains($alias, ":")){
 					$this->logger->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_aliasError($alias, $this->getDescription()->getFullName(), ":")));
 					continue;
 				}
@@ -221,7 +202,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	}
 
 	/**
-	 * @param string[]      $args
+	 * @param string[] $args
 	 */
 	public function onCommand(CommandSender $sender, Command $command, string $label, array $args) : bool{
 		return false;

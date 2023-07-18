@@ -17,14 +17,15 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\entity\Living;
+use pocketmine\entity\object\FallingBlock;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -35,13 +36,12 @@ use pocketmine\lang\Translatable;
 use pocketmine\player\Player;
 
 class PlayerDeathEvent extends EntityDeathEvent{
-	/** @var Player */
-	protected $player;
+	protected Player $player;
 
-	/** @var Translatable|string */
-	private $deathMessage;
-	/** @var bool */
-	private $keepInventory = false;
+	private Translatable|string $deathMessage;
+	private Translatable|string $deathScreenMessage;
+	private bool $keepInventory = false;
+	private bool $keepXp = false;
 
 	/**
 	 * @param Item[]                   $drops
@@ -51,6 +51,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 		parent::__construct($entity, $drops, $xp);
 		$this->player = $entity;
 		$this->deathMessage = $deathMessage ?? self::deriveMessage($entity->getDisplayName(), $entity->getLastDamageCause());
+		$this->deathScreenMessage = $this->deathMessage;
 	}
 
 	/**
@@ -72,12 +73,28 @@ class PlayerDeathEvent extends EntityDeathEvent{
 		$this->deathMessage = $deathMessage;
 	}
 
+	public function getDeathScreenMessage() : Translatable|string{
+		return $this->deathScreenMessage;
+	}
+
+	public function setDeathScreenMessage(Translatable|string $deathScreenMessage) : void{
+		$this->deathScreenMessage = $deathScreenMessage;
+	}
+
 	public function getKeepInventory() : bool{
 		return $this->keepInventory;
 	}
 
 	public function setKeepInventory(bool $keepInventory) : void{
 		$this->keepInventory = $keepInventory;
+	}
+
+	public function getKeepXp() : bool{
+		return $this->keepXp;
+	}
+
+	public function setKeepXp(bool $keepXp) : void{
+		$this->keepXp = $keepXp;
 	}
 
 	/**
@@ -91,17 +108,15 @@ class PlayerDeathEvent extends EntityDeathEvent{
 					if($e instanceof Player){
 						return KnownTranslationFactory::death_attack_player($name, $e->getDisplayName());
 					}elseif($e instanceof Living){
-						return KnownTranslationFactory::death_attack_mob($name, $e->getNameTag() !== "" ? $e->getNameTag() : $e->getName());
+						return KnownTranslationFactory::death_attack_mob($name, $e->getDisplayName());
 					}
 				}
 				break;
 			case EntityDamageEvent::CAUSE_PROJECTILE:
 				if($deathCause instanceof EntityDamageByEntityEvent){
 					$e = $deathCause->getDamager();
-					if($e instanceof Player){
+					if($e instanceof Living){
 						return KnownTranslationFactory::death_attack_arrow($name, $e->getDisplayName());
-					}elseif($e instanceof Living){
-						return KnownTranslationFactory::death_attack_arrow($name, $e->getNameTag() !== "" ? $e->getNameTag() : $e->getName());
 					}
 				}
 				break;
@@ -132,7 +147,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 
 			case EntityDamageEvent::CAUSE_CONTACT:
 				if($deathCause instanceof EntityDamageByBlockEvent){
-					if($deathCause->getDamager()->getId() === BlockLegacyIds::CACTUS){
+					if($deathCause->getDamager()->getTypeId() === BlockTypeIds::CACTUS){
 						return KnownTranslationFactory::death_attack_cactus($name);
 					}
 				}
@@ -142,16 +157,27 @@ class PlayerDeathEvent extends EntityDeathEvent{
 			case EntityDamageEvent::CAUSE_ENTITY_EXPLOSION:
 				if($deathCause instanceof EntityDamageByEntityEvent){
 					$e = $deathCause->getDamager();
-					if($e instanceof Player){
+					if($e instanceof Living){
 						return KnownTranslationFactory::death_attack_explosion_player($name, $e->getDisplayName());
-					}elseif($e instanceof Living){
-						return KnownTranslationFactory::death_attack_explosion_player($name, $e->getNameTag() !== "" ? $e->getNameTag() : $e->getName());
 					}
 				}
 				return KnownTranslationFactory::death_attack_explosion($name);
 
 			case EntityDamageEvent::CAUSE_MAGIC:
 				return KnownTranslationFactory::death_attack_magic($name);
+
+			case EntityDamageEvent::CAUSE_FALLING_BLOCK:
+				if($deathCause instanceof EntityDamageByEntityEvent){
+					$e = $deathCause->getDamager();
+					if($e instanceof FallingBlock){
+						if($e->getBlock()->getTypeId() === BlockTypeIds::ANVIL){
+							return KnownTranslationFactory::death_attack_anvil($name);
+						}else{
+							return KnownTranslationFactory::death_attack_fallingBlock($name);
+						}
+					}
+				}
+				break;
 
 			case EntityDamageEvent::CAUSE_CUSTOM:
 				break;

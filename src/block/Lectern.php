@@ -17,16 +17,17 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Lectern as TileLectern;
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\item\WritableBookBase;
 use pocketmine\math\AxisAlignedBB;
@@ -42,24 +43,23 @@ class Lectern extends Transparent{
 
 	protected int $viewedPage = 0;
 	protected ?WritableBookBase $book = null;
+
 	protected bool $producingSignal = false;
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
-		$this->producingSignal = ($stateMeta & BlockLegacyMetadata::LECTERN_FLAG_POWERED) !== 0;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->bool($this->producingSignal);
 	}
 
-	public function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) | ($this->producingSignal ? BlockLegacyMetadata::LECTERN_FLAG_POWERED : 0);
-	}
-
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileLectern){
 			$this->viewedPage = $tile->getViewedPage();
 			$this->book = $tile->getBook();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{
@@ -69,10 +69,6 @@ class Lectern extends Transparent{
 			$tile->setViewedPage($this->viewedPage);
 			$tile->setBook($this->book);
 		}
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
 	}
 
 	public function getFlammability() : int{
@@ -90,6 +86,10 @@ class Lectern extends Transparent{
 
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 0.1)];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 
 	public function isProducingSignal() : bool{ return $this->producingSignal; }
@@ -121,10 +121,11 @@ class Lectern extends Transparent{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->book === null && $item instanceof WritableBookBase){
-			$this->position->getWorld()->setBlock($this->position, $this->setBook($item));
-			$this->position->getWorld()->addSound($this->position, new LecternPlaceBookSound());
+			$world = $this->position->getWorld();
+			$world->setBlock($this->position, $this->setBook($item));
+			$world->addSound($this->position, new LecternPlaceBookSound());
 			$item->pop();
 		}
 		return true;
@@ -132,8 +133,9 @@ class Lectern extends Transparent{
 
 	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
 		if($this->book !== null){
-			$this->position->getWorld()->dropItem($this->position->up(), $this->book);
-			$this->position->getWorld()->setBlock($this->position, $this->setBook(null));
+			$world = $this->position->getWorld();
+			$world->dropItem($this->position->up(), $this->book);
+			$world->setBlock($this->position, $this->setBook(null));
 		}
 		return false;
 	}
@@ -147,12 +149,13 @@ class Lectern extends Transparent{
 		}
 
 		$this->viewedPage = $newPage;
+		$world = $this->position->getWorld();
 		if(!$this->producingSignal){
 			$this->producingSignal = true;
-			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
+			$world->scheduleDelayedBlockUpdate($this->position, 1);
 		}
 
-		$this->position->getWorld()->setBlock($this->position, $this);
+		$world->setBlock($this->position, $this);
 
 		return true;
 	}

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -34,21 +34,15 @@ use function substr;
 class EncryptionContext{
 	private const CHECKSUM_ALGO = "sha256";
 
-	/** @var bool */
-	public static $ENABLED = true;
+	public static bool $ENABLED = true;
 
-	/** @var string */
-	private $key;
+	private string $key;
 
-	/** @var Cipher */
-	private $decryptCipher;
+	private Cipher $decryptCipher;
+	private int $decryptCounter = 0;
 
-	/** @var int */
-	private $decryptCounter = 0;
-	/** @var Cipher */
-	private $encryptCipher;
-	/** @var int */
-	private $encryptCounter = 0;
+	private Cipher $encryptCipher;
+	private int $encryptCounter = 0;
 
 	public function __construct(string $encryptionKey, string $algorithm, string $iv){
 		$this->key = $encryptionKey;

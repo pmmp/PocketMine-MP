@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,17 +32,14 @@ use function json_decode;
 class UpdateCheckTask extends AsyncTask{
 	private const TLS_KEY_UPDATER = "updater";
 
-	/** @var string */
-	private $endpoint;
-	/** @var string */
-	private $channel;
-	/** @var string */
-	private $error = "Unknown error";
+	private string $error = "Unknown error";
 
-	public function __construct(UpdateChecker $updater, string $endpoint, string $channel){
+	public function __construct(
+		UpdateChecker $updater,
+		private string $endpoint,
+		private string $channel
+	){
 		$this->storeLocal(self::TLS_KEY_UPDATER, $updater);
-		$this->endpoint = $endpoint;
-		$this->channel = $channel;
 	}
 
 	public function onRun() : void{

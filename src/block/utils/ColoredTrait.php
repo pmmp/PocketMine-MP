@@ -17,15 +17,23 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\block\Block;
+use pocketmine\data\runtime\RuntimeDataDescriber;
+
 trait ColoredTrait{
 	/** @var DyeColor */
 	private $color;
+
+	/** @see Block::describeBlockItemState() */
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
+		$w->dyeColor($this->color);
+	}
 
 	public function getColor() : DyeColor{ return $this->color; }
 

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -35,29 +35,29 @@ abstract class Stem extends Crops{
 
 	public function onRandomTick() : void{
 		if(mt_rand(0, 2) === 1){
-			if($this->age < 7){
+			$world = $this->position->getWorld();
+			if($this->age < self::MAX_AGE){
 				$block = clone $this;
 				++$block->age;
 				$ev = new BlockGrowEvent($this, $block);
 				$ev->call();
 				if(!$ev->isCancelled()){
-					$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
+					$world->setBlock($this->position, $ev->getNewState());
 				}
 			}else{
 				$grow = $this->getPlant();
 				foreach(Facing::HORIZONTAL as $side){
-					if($this->getSide($side)->isSameType($grow)){
+					if($this->getSide($side)->hasSameTypeId($grow)){
 						return;
 					}
 				}
 
 				$side = $this->getSide(Facing::HORIZONTAL[array_rand(Facing::HORIZONTAL)]);
-				$d = $side->getSide(Facing::DOWN);
-				if($side->getId() === BlockLegacyIds::AIR && ($d->getId() === BlockLegacyIds::FARMLAND || $d->getId() === BlockLegacyIds::GRASS || $d->getId() === BlockLegacyIds::DIRT)){
+				if($side->getTypeId() === BlockTypeIds::AIR && $side->getSide(Facing::DOWN)->hasTypeTag(BlockTypeTags::DIRT)){
 					$ev = new BlockGrowEvent($side, $grow);
 					$ev->call();
 					if(!$ev->isCancelled()){
-						$this->position->getWorld()->setBlock($side->position, $ev->getNewState());
+						$world->setBlock($side->position, $ev->getNewState());
 					}
 				}
 			}

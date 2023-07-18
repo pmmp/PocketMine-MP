@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -44,9 +44,5 @@ class Gravel extends Opaque implements Fallable{
 
 	public function isAffectedBySilkTouch() : bool{
 		return true;
-	}
-
-	public function tickFalling() : ?Block{
-		return null;
 	}
 }

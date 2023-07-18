@@ -17,37 +17,56 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
+use pocketmine\block\Block;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use function get_class;
 
 abstract class Spawnable extends Tile{
-	/**
-	 * @var CacheableNbt|null
-	 * @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag>|null
-	 */
-	private $spawnCompoundCache = null;
-	/** @var bool */
-	private $dirty = true; //default dirty, until it's been spawned appropriately on the world
+	/** @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag>|null */
+	private ?CacheableNbt $spawnCompoundCache = null;
 
 	/**
-	 * Returns whether the tile needs to be respawned to viewers.
+	 * @deprecated
 	 */
 	public function isDirty() : bool{
-		return $this->dirty;
+		return $this->spawnCompoundCache === null;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function setDirty(bool $dirty = true) : void{
-		if($dirty){
-			$this->spawnCompoundCache = null;
-		}
-		$this->dirty = $dirty;
+		$this->clearSpawnCompoundCache();
+	}
+
+	public function clearSpawnCompoundCache() : void{
+		$this->spawnCompoundCache = null;
+	}
+
+	/**
+	 * The Bedrock client won't re-render a block if the block's state properties didn't change. This is a problem when
+	 * the tile may affect the block's appearance. For example, a cauldron's liquid changes colour based on the dye
+	 * inside.
+	 *
+	 * This is worked around in vanilla by modifying one of the block's state properties to a different value, and then
+	 * changing it back again. Since we don't want to litter core implementation with hacks like this, we brush it under
+	 * the rug into Tile.
+	 *
+	 * @return ByteTag[]|IntTag[]|StringTag[]
+	 * @phpstan-return array<string, IntTag|StringTag|ByteTag>
+	 */
+	public function getRenderUpdateBugWorkaroundStateProperties(Block $block) : array{
+		return [];
 	}
 
 	/**

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,28 +32,18 @@ class SubChunk{
 	public const COORD_MASK = ~(~0 << self::COORD_BIT_SIZE);
 	public const EDGE_LENGTH = 1 << self::COORD_BIT_SIZE;
 
-	/** @var int */
-	private $emptyBlockId;
-	/** @var PalettedBlockArray[] */
-	private $blockLayers;
-
-	/** @var LightArray|null */
-	private $blockLight;
-	/** @var LightArray|null */
-	private $skyLight;
-
 	/**
 	 * SubChunk constructor.
 	 *
-	 * @param PalettedBlockArray[] $blocks
+	 * @param PalettedBlockArray[] $blockLayers
 	 */
-	public function __construct(int $emptyBlockId, array $blocks, ?LightArray $skyLight = null, ?LightArray $blockLight = null){
-		$this->emptyBlockId = $emptyBlockId;
-		$this->blockLayers = $blocks;
-
-		$this->skyLight = $skyLight;
-		$this->blockLight = $blockLight;
-	}
+	public function __construct(
+		private int $emptyBlockId,
+		private array $blockLayers,
+		private PalettedBlockArray $biomes,
+		private ?LightArray $skyLight = null,
+		private ?LightArray $blockLight = null
+	){}
 
 	/**
 	 * Returns whether this subchunk contains any non-air blocks.
@@ -79,14 +69,14 @@ class SubChunk{
 	 */
 	public function getEmptyBlockId() : int{ return $this->emptyBlockId; }
 
-	public function getFullBlock(int $x, int $y, int $z) : int{
+	public function getBlockStateId(int $x, int $y, int $z) : int{
 		if(count($this->blockLayers) === 0){
 			return $this->emptyBlockId;
 		}
 		return $this->blockLayers[0]->get($x, $y, $z);
 	}
 
-	public function setFullBlock(int $x, int $y, int $z, int $block) : void{
+	public function setBlockStateId(int $x, int $y, int $z, int $block) : void{
 		if(count($this->blockLayers) === 0){
 			$this->blockLayers[] = new PalettedBlockArray($this->emptyBlockId);
 		}
@@ -112,6 +102,8 @@ class SubChunk{
 
 		return null; //highest block not in this subchunk
 	}
+
+	public function getBiomeArray() : PalettedBlockArray{ return $this->biomes; }
 
 	public function getBlockSkyLightArray() : LightArray{
 		return $this->skyLight ??= LightArray::fill(0);
@@ -148,6 +140,7 @@ class SubChunk{
 			unset($this->blockLayers[$k]);
 		}
 		$this->blockLayers = array_values($this->blockLayers);
+		$this->biomes->collectGarbage();
 
 		if($this->skyLight !== null && $this->skyLight->isUniform(0)){
 			$this->skyLight = null;
@@ -161,6 +154,7 @@ class SubChunk{
 		$this->blockLayers = array_map(function(PalettedBlockArray $array) : PalettedBlockArray{
 			return clone $array;
 		}, $this->blockLayers);
+		$this->biomes = clone $this->biomes;
 
 		if($this->skyLight !== null){
 			$this->skyLight = clone $this->skyLight;
