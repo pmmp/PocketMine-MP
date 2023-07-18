@@ -1258,11 +1258,11 @@ final class VanillaBlocks{
 			$idName = fn(string $suffix) => $planksType->name() . "_" . $suffix;
 
 			self::register($idName("planks"), new Planks(WoodLikeBlockIdHelper::getPlanksIdentifier($planksType), $name . " Planks", $planksBreakInfo, $planksType));
-			self::register($idName("slab"), new WoodenSlab(WoodLikeBlockIdHelper::getSlabIdentifier($planksType), $name, $planksBreakInfo, $planksType));
-			self::register($idName("stairs"), new WoodenStairs(WoodLikeBlockIdHelper::getStairsIdentifier($planksType), $name . " Stairs", $planksBreakInfo, $planksType));
-
 			self::register($idName("fence"), new WoodenFence(WoodLikeBlockIdHelper::getFenceIdentifier($planksType), $name . " Fence", $planksBreakInfo, $planksType));
+			self::register($idName("slab"), new WoodenSlab(WoodLikeBlockIdHelper::getSlabIdentifier($planksType), $name, $planksBreakInfo, $planksType));
+
 			self::register($idName("fence_gate"), new FenceGate(WoodLikeBlockIdHelper::getFenceGateIdentifier($planksType), $name . " Fence Gate", $planksBreakInfo, $planksType));
+			self::register($idName("stairs"), new WoodenStairs(WoodLikeBlockIdHelper::getStairsIdentifier($planksType), $name . " Stairs", $planksBreakInfo, $planksType));
 			self::register($idName("door"), new WoodenDoor(WoodLikeBlockIdHelper::getDoorIdentifier($planksType), $name . " Door", $woodenDoorBreakInfo, $planksType));
 
 			self::register($idName("button"), new WoodenButton(WoodLikeBlockIdHelper::getButtonIdentifier($planksType), $name . " Button", $woodenButtonBreakInfo, $planksType));

@@ -75,7 +75,7 @@ final class WoodLikeBlockIdHelper{
 			PlanksType::CRIMSON()->id() => Ids::CRIMSON_FENCE,
 			PlanksType::WARPED()->id() => Ids::WARPED_FENCE,
 			PlanksType::CHERRY()->id() => Ids::CHERRY_FENCE,
-			default => throw new AssumptionFailedError("All tree types should be covered")
+			default => throw new AssumptionFailedError("All planks types should be covered")
 		});
 	}
 
@@ -237,7 +237,7 @@ final class WoodLikeBlockIdHelper{
 			PlanksType::CRIMSON()->id() => Ids::CRIMSON_TRAPDOOR,
 			PlanksType::WARPED()->id() => Ids::WARPED_TRAPDOOR,
 			PlanksType::CHERRY()->id() => Ids::CHERRY_TRAPDOOR,
-			default => throw new AssumptionFailedError("All wood types should be covered")
+			default => throw new AssumptionFailedError("All planks types should be covered")
 		});
 	}
 
@@ -253,7 +253,7 @@ final class WoodLikeBlockIdHelper{
 			PlanksType::CRIMSON()->id() => Ids::CRIMSON_BUTTON,
 			PlanksType::WARPED()->id() => Ids::WARPED_BUTTON,
 			PlanksType::CHERRY()->id() => Ids::CHERRY_BUTTON,
-			default => throw new AssumptionFailedError("All wood types should be covered")
+			default => throw new AssumptionFailedError("All planks types should be covered")
 		});
 	}
 
@@ -269,7 +269,7 @@ final class WoodLikeBlockIdHelper{
 			PlanksType::CRIMSON()->id() => Ids::CRIMSON_PRESSURE_PLATE,
 			PlanksType::WARPED()->id() => Ids::WARPED_PRESSURE_PLATE,
 			PlanksType::CHERRY()->id() => Ids::CHERRY_PRESSURE_PLATE,
-			default => throw new AssumptionFailedError("All wood types should be covered")
+			default => throw new AssumptionFailedError("All planks types should be covered")
 		});
 	}
 
