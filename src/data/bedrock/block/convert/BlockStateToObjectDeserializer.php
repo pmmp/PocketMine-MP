@@ -35,6 +35,7 @@ use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
+use pocketmine\block\utils\DripleafState;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
@@ -243,6 +244,48 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			Ids::YELLOW_CARPET => DyeColor::YELLOW(),
 		] as $id => $color){
 			$this->mapSimple($id, fn() => Blocks::CARPET()->setColor($color));
+		}
+
+		foreach([
+			Ids::BLACK_SHULKER_BOX => DyeColor::BLACK(),
+			Ids::BLUE_SHULKER_BOX => DyeColor::BLUE(),
+			Ids::BROWN_SHULKER_BOX => DyeColor::BROWN(),
+			Ids::CYAN_SHULKER_BOX => DyeColor::CYAN(),
+			Ids::GRAY_SHULKER_BOX => DyeColor::GRAY(),
+			Ids::GREEN_SHULKER_BOX => DyeColor::GREEN(),
+			Ids::LIGHT_BLUE_SHULKER_BOX => DyeColor::LIGHT_BLUE(),
+			Ids::LIGHT_GRAY_SHULKER_BOX => DyeColor::LIGHT_GRAY(),
+			Ids::LIME_SHULKER_BOX => DyeColor::LIME(),
+			Ids::MAGENTA_SHULKER_BOX => DyeColor::MAGENTA(),
+			Ids::ORANGE_SHULKER_BOX => DyeColor::ORANGE(),
+			Ids::PINK_SHULKER_BOX => DyeColor::PINK(),
+			Ids::PURPLE_SHULKER_BOX => DyeColor::PURPLE(),
+			Ids::RED_SHULKER_BOX => DyeColor::RED(),
+			Ids::WHITE_SHULKER_BOX => DyeColor::WHITE(),
+			Ids::YELLOW_SHULKER_BOX => DyeColor::YELLOW(),
+		] as $id => $color){
+			$this->mapSimple($id, fn() => Blocks::DYED_SHULKER_BOX()->setColor($color));
+		}
+
+		foreach([
+			Ids::BLACK_CONCRETE => DyeColor::BLACK(),
+			Ids::BLUE_CONCRETE => DyeColor::BLUE(),
+			Ids::BROWN_CONCRETE => DyeColor::BROWN(),
+			Ids::CYAN_CONCRETE => DyeColor::CYAN(),
+			Ids::GRAY_CONCRETE => DyeColor::GRAY(),
+			Ids::GREEN_CONCRETE => DyeColor::GREEN(),
+			Ids::LIGHT_BLUE_CONCRETE => DyeColor::LIGHT_BLUE(),
+			Ids::LIGHT_GRAY_CONCRETE => DyeColor::LIGHT_GRAY(),
+			Ids::LIME_CONCRETE => DyeColor::LIME(),
+			Ids::MAGENTA_CONCRETE => DyeColor::MAGENTA(),
+			Ids::ORANGE_CONCRETE => DyeColor::ORANGE(),
+			Ids::PINK_CONCRETE => DyeColor::PINK(),
+			Ids::PURPLE_CONCRETE => DyeColor::PURPLE(),
+			Ids::RED_CONCRETE => DyeColor::RED(),
+			Ids::WHITE_CONCRETE => DyeColor::WHITE(),
+			Ids::YELLOW_CONCRETE => DyeColor::YELLOW(),
+		] as $id => $color){
+			$this->mapSimple($id, fn() => Blocks::CONCRETE()->setColor($color));
 		}
 	}
 
@@ -784,6 +827,22 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFacing($in->readLegacyHorizontalFacing())
 				->setAttachmentType($in->readBellAttachmentType());
 		});
+		$this->map(Ids::BIG_DRIPLEAF, function(Reader $in) : Block{
+			if($in->readBool(StateNames::BIG_DRIPLEAF_HEAD)){
+				return Blocks::BIG_DRIPLEAF_HEAD()
+					->setFacing($in->readLegacyHorizontalFacing())
+					->setLeafState(match($type = $in->readString(StateNames::BIG_DRIPLEAF_TILT)){
+						StringValues::BIG_DRIPLEAF_TILT_NONE => DripleafState::STABLE(),
+						StringValues::BIG_DRIPLEAF_TILT_UNSTABLE => DripleafState::UNSTABLE(),
+						StringValues::BIG_DRIPLEAF_TILT_PARTIAL_TILT => DripleafState::PARTIAL_TILT(),
+						StringValues::BIG_DRIPLEAF_TILT_FULL_TILT => DripleafState::FULL_TILT(),
+						default => throw $in->badValueException(StateNames::BIG_DRIPLEAF_TILT, $type),
+					});
+			}else{
+				$in->ignored(StateNames::BIG_DRIPLEAF_TILT);
+				return Blocks::BIG_DRIPLEAF_STEM()->setFacing($in->readLegacyHorizontalFacing());
+			}
+		});
 		$this->mapSlab(Ids::BLACKSTONE_SLAB, Ids::BLACKSTONE_DOUBLE_SLAB, fn() => Blocks::BLACKSTONE_SLAB());
 		$this->mapStairs(Ids::BLACKSTONE_STAIRS, fn() => Blocks::BLACKSTONE_STAIRS());
 		$this->map(Ids::BLACKSTONE_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::BLACKSTONE_WALL(), $in));
@@ -874,10 +933,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return $in->readBool(StateNames::COLOR_BIT) ?
 				Blocks::GREEN_TORCH()->setFacing($in->readTorchFacing()) :
 				Blocks::RED_TORCH()->setFacing($in->readTorchFacing());
-		});
-		$this->map(Ids::CONCRETE, function(Reader $in) : Block{
-			return Blocks::CONCRETE()
-				->setColor($in->readColor());
 		});
 		$this->map(Ids::CONCRETE_POWDER, function(Reader $in) : Block{
 			return Blocks::CONCRETE_POWDER()
@@ -1162,7 +1217,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapStairs(Ids::PRISMARINE_BRICKS_STAIRS, fn() => Blocks::PRISMARINE_BRICKS_STAIRS());
 		$this->mapStairs(Ids::PRISMARINE_STAIRS, fn() => Blocks::PRISMARINE_STAIRS());
 		$this->map(Ids::PUMPKIN, function(Reader $in) : Block{
-			$in->ignored(StateNames::CARDINAL_DIRECTION); //obsolete
+			$in->ignored(StateNames::MC_CARDINAL_DIRECTION); //obsolete
 			return Blocks::PUMPKIN();
 		});
 		$this->map(Ids::PUMPKIN_STEM, fn(Reader $in) => Helper::decodeStem(Blocks::PUMPKIN_STEM(), $in));
@@ -1285,10 +1340,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setCount($in->readBoundedInt(StateNames::CLUSTER_COUNT, 0, 3) + 1)
 				->setUnderwater(!$in->readBool(StateNames::DEAD_BIT));
 		});
-		$this->map(Ids::SHULKER_BOX, function(Reader $in) : Block{
-			return Blocks::DYED_SHULKER_BOX()
-				->setColor($in->readColor());
-		});
 		$this->map(Ids::SKULL, function(Reader $in) : Block{
 			return Blocks::MOB_HEAD()
 				->setFacing($in->readFacingWithoutDown());
@@ -1297,6 +1348,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::SMOKER()
 				->setFacing($in->readHorizontalFacing())
 				->setLit(false);
+		});
+		$this->map(Ids::SMALL_DRIPLEAF_BLOCK, function(Reader $in) : Block{
+			return Blocks::SMALL_DRIPLEAF()
+				->setFacing($in->readLegacyHorizontalFacing())
+				->setTop($in->readBool(StateNames::UPPER_BLOCK_BIT));
 		});
 		$this->mapStairs(Ids::SMOOTH_QUARTZ_STAIRS, fn() => Blocks::SMOOTH_QUARTZ_STAIRS());
 		$this->mapStairs(Ids::SMOOTH_RED_SANDSTONE_STAIRS, fn() => Blocks::SMOOTH_RED_SANDSTONE_STAIRS());

@@ -27,6 +27,14 @@ use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Facing;
 
+/**
+ * Interface implemented by {@link RuntimeDataReader}, {@link RuntimeDataWriter} and {@link RuntimeDataSizeCalculator}.
+ * Used to describe the structure of runtime data to an implementation.
+ *
+ * This interface should be considered **sealed**.
+ * You may use it as a type for parameters and return values, but it should not be implemented outside of this package.
+ * New methods may be added without warning.
+ */
 interface RuntimeDataDescriber extends RuntimeEnumDescriber{
 	public function int(int $bits, int &$value) : void;
 

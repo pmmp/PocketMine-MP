@@ -21,26 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\world\sound;
 
-use pocketmine\block\utils\FortuneDropHelper;
-use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
-use function mt_rand;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-class NetherQuartzOre extends Opaque{
+class DripleafTiltUpSound implements Sound{
 
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			VanillaItems::NETHER_QUARTZ()->setCount(FortuneDropHelper::weighted($item, min: 1, maxBase: 1))
-		];
-	}
-
-	public function isAffectedBySilkTouch() : bool{
-		return true;
-	}
-
-	protected function getXpDropAmount() : int{
-		return mt_rand(2, 5);
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::TILT_UP_BIG_DRIPLEAF, $pos, false)];
 	}
 }

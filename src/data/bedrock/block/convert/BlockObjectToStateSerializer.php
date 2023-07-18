@@ -31,6 +31,8 @@ use pocketmine\block\Barrel;
 use pocketmine\block\Bed;
 use pocketmine\block\Beetroot;
 use pocketmine\block\Bell;
+use pocketmine\block\BigDripleafHead;
+use pocketmine\block\BigDripleafStem;
 use pocketmine\block\Block;
 use pocketmine\block\BoneBlock;
 use pocketmine\block\BrewingStand;
@@ -115,6 +117,7 @@ use pocketmine\block\SeaPickle;
 use pocketmine\block\SimplePillar;
 use pocketmine\block\SimplePressurePlate;
 use pocketmine\block\Slab;
+use pocketmine\block\SmallDripleaf;
 use pocketmine\block\SnowLayer;
 use pocketmine\block\Sponge;
 use pocketmine\block\StainedGlass;
@@ -138,6 +141,7 @@ use pocketmine\block\UnderwaterTorch;
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
+use pocketmine\block\utils\DripleafState;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
@@ -368,6 +372,46 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 			DyeColor::RED() => Ids::RED_CARPET,
 			DyeColor::WHITE() => Ids::WHITE_CARPET,
 			DyeColor::YELLOW() => Ids::YELLOW_CARPET,
+			default => throw new AssumptionFailedError("Unhandled dye colour " . $color->name())
+		}));
+
+		$this->map(Blocks::DYED_SHULKER_BOX(), fn(DyedShulkerBox $block) => Writer::create(match($color = $block->getColor()){
+			DyeColor::BLACK() => Ids::BLACK_SHULKER_BOX,
+			DyeColor::BLUE() => Ids::BLUE_SHULKER_BOX,
+			DyeColor::BROWN() => Ids::BROWN_SHULKER_BOX,
+			DyeColor::CYAN() => Ids::CYAN_SHULKER_BOX,
+			DyeColor::GRAY() => Ids::GRAY_SHULKER_BOX,
+			DyeColor::GREEN() => Ids::GREEN_SHULKER_BOX,
+			DyeColor::LIGHT_BLUE() => Ids::LIGHT_BLUE_SHULKER_BOX,
+			DyeColor::LIGHT_GRAY() => Ids::LIGHT_GRAY_SHULKER_BOX,
+			DyeColor::LIME() => Ids::LIME_SHULKER_BOX,
+			DyeColor::MAGENTA() => Ids::MAGENTA_SHULKER_BOX,
+			DyeColor::ORANGE() => Ids::ORANGE_SHULKER_BOX,
+			DyeColor::PINK() => Ids::PINK_SHULKER_BOX,
+			DyeColor::PURPLE() => Ids::PURPLE_SHULKER_BOX,
+			DyeColor::RED() => Ids::RED_SHULKER_BOX,
+			DyeColor::WHITE() => Ids::WHITE_SHULKER_BOX,
+			DyeColor::YELLOW() => Ids::YELLOW_SHULKER_BOX,
+			default => throw new AssumptionFailedError("Unhandled dye colour " . $color->name())
+		}));
+
+		$this->map(Blocks::CONCRETE(), fn(Concrete $block) => Writer::create(match($color = $block->getColor()){
+			DyeColor::BLACK() => Ids::BLACK_CONCRETE,
+			DyeColor::BLUE() => Ids::BLUE_CONCRETE,
+			DyeColor::BROWN() => Ids::BROWN_CONCRETE,
+			DyeColor::CYAN() => Ids::CYAN_CONCRETE,
+			DyeColor::GRAY() => Ids::GRAY_CONCRETE,
+			DyeColor::GREEN() => Ids::GREEN_CONCRETE,
+			DyeColor::LIGHT_BLUE() => Ids::LIGHT_BLUE_CONCRETE,
+			DyeColor::LIGHT_GRAY() => Ids::LIGHT_GRAY_CONCRETE,
+			DyeColor::LIME() => Ids::LIME_CONCRETE,
+			DyeColor::MAGENTA() => Ids::MAGENTA_CONCRETE,
+			DyeColor::ORANGE() => Ids::ORANGE_CONCRETE,
+			DyeColor::PINK() => Ids::PINK_CONCRETE,
+			DyeColor::PURPLE() => Ids::PURPLE_CONCRETE,
+			DyeColor::RED() => Ids::RED_CONCRETE,
+			DyeColor::WHITE() => Ids::WHITE_CONCRETE,
+			DyeColor::YELLOW() => Ids::YELLOW_CONCRETE,
 			default => throw new AssumptionFailedError("Unhandled dye colour " . $color->name())
 		}));
 	}
@@ -918,6 +962,24 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeLegacyHorizontalFacing($block->getFacing());
 
 		});
+		$this->map(Blocks::BIG_DRIPLEAF_HEAD(), function(BigDripleafHead $block) : Writer{
+			return Writer::create(Ids::BIG_DRIPLEAF)
+				->writeLegacyHorizontalFacing($block->getFacing())
+				->writeString(StateNames::BIG_DRIPLEAF_TILT, match($block->getLeafState()->id()){
+					DripleafState::STABLE()->id() => StringValues::BIG_DRIPLEAF_TILT_NONE,
+					DripleafState::UNSTABLE()->id() => StringValues::BIG_DRIPLEAF_TILT_UNSTABLE,
+					DripleafState::PARTIAL_TILT()->id() => StringValues::BIG_DRIPLEAF_TILT_PARTIAL_TILT,
+					DripleafState::FULL_TILT()->id() => StringValues::BIG_DRIPLEAF_TILT_FULL_TILT,
+					default => throw new BlockStateSerializeException("Invalid Dripleaf tilt type " . $block->getLeafState()->name())
+				})
+				->writeBool(StateNames::BIG_DRIPLEAF_HEAD, true);
+		});
+		$this->map(Blocks::BIG_DRIPLEAF_STEM(), function(BigDripleafStem $block) : Writer{
+			return Writer::create(Ids::BIG_DRIPLEAF)
+				->writeLegacyHorizontalFacing($block->getFacing())
+				->writeString(StateNames::BIG_DRIPLEAF_TILT, StringValues::BIG_DRIPLEAF_TILT_NONE)
+				->writeBool(StateNames::BIG_DRIPLEAF_HEAD, false);
+		});
 		$this->map(Blocks::BIRCH_SAPLING(), fn(Sapling $block) => Helper::encodeSapling($block, StringValues::SAPLING_TYPE_BIRCH));
 		$this->mapSlab(Blocks::BLACKSTONE_SLAB(), Ids::BLACKSTONE_SLAB, Ids::BLACKSTONE_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::BLACKSTONE_STAIRS(), Ids::BLACKSTONE_STAIRS);
@@ -1066,10 +1128,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeLegacyHorizontalFacing(Facing::opposite($block->getFacing()));
 		});
 		$this->map(Blocks::COMPOUND_CREATOR(), fn(ChemistryTable $block) => Helper::encodeChemistryTable($block, StringValues::CHEMISTRY_TABLE_TYPE_COMPOUND_CREATOR, new Writer(Ids::CHEMISTRY_TABLE)));
-		$this->map(Blocks::CONCRETE(), function(Concrete $block) : Writer{
-			return Writer::create(Ids::CONCRETE)
-				->writeColor($block->getColor());
-		});
 		$this->map(Blocks::CONCRETE_POWDER(), function(ConcretePowder $block) : Writer{
 			return Writer::create(Ids::CONCRETE_POWDER)
 				->writeColor($block->getColor());
@@ -1136,10 +1194,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				});
 		});
 		$this->map(Blocks::DOUBLE_TALLGRASS(), fn(DoubleTallGrass $block) => Helper::encodeDoublePlant($block, StringValues::DOUBLE_PLANT_TYPE_GRASS, Writer::create(Ids::DOUBLE_PLANT)));
-		$this->map(Blocks::DYED_SHULKER_BOX(), function(DyedShulkerBox $block) : Writer{
-			return Writer::create(Ids::SHULKER_BOX)
-				->writeColor($block->getColor());
-		});
 		$this->map(Blocks::ELEMENT_CONSTRUCTOR(), fn(ChemistryTable $block) => Helper::encodeChemistryTable($block, StringValues::CHEMISTRY_TABLE_TYPE_ELEMENT_CONSTRUCTOR, new Writer(Ids::CHEMISTRY_TABLE)));
 		$this->map(Blocks::ENDER_CHEST(), function(EnderChest $block) : Writer{
 			return Writer::create(Ids::ENDER_CHEST)
@@ -1421,6 +1475,11 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::SEA_PICKLE)
 				->writeBool(StateNames::DEAD_BIT, !$block->isUnderwater())
 				->writeInt(StateNames::CLUSTER_COUNT, $block->getCount() - 1);
+		});
+		$this->map(Blocks::SMALL_DRIPLEAF(), function(SmallDripleaf $block) : Writer{
+			return Writer::create(Ids::SMALL_DRIPLEAF_BLOCK)
+				->writeLegacyHorizontalFacing($block->getFacing())
+				->writeBool(StateNames::UPPER_BLOCK_BIT, $block->isTop());
 		});
 		$this->map(Blocks::SMOKER(), fn(Furnace $block) => Helper::encodeFurnace($block, Ids::SMOKER, Ids::LIT_SMOKER));
 		$this->map(Blocks::SMOOTH_QUARTZ(), fn() => Helper::encodeQuartz(StringValues::CHISEL_TYPE_SMOOTH, Axis::Y));

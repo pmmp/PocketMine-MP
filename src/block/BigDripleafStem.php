@@ -23,24 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
-use function mt_rand;
 
-class NetherQuartzOre extends Opaque{
+class BigDripleafStem extends BaseBigDripleaf{
 
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			VanillaItems::NETHER_QUARTZ()->setCount(FortuneDropHelper::weighted($item, min: 1, maxBase: 1))
-		];
+	protected function isHead() : bool{
+		return false;
 	}
 
-	public function isAffectedBySilkTouch() : bool{
-		return true;
+	protected function recalculateCollisionBoxes() : array{
+		return [];
 	}
 
-	protected function getXpDropAmount() : int{
-		return mt_rand(2, 5);
+	public function asItem() : Item{
+		return VanillaBlocks::BIG_DRIPLEAF_HEAD()->asItem();
 	}
 }
