@@ -23,30 +23,32 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\block\BlockLegacyMetadata as Meta;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\utils\SingletonTrait;
+use SplFixedArray;
 
-class CompostFactory{
+final class CompostFactory{
 	use SingletonTrait;
 
+	protected const DEFAULT_PERCENTAGE = 0;
+
 	/**
-	 * @var int[]
-	 * @phpstan-var array<int, int>
+	 * @var SplFixedArray|(int|null)[]
+	 * @phpstan-var SplFixedArray<int|null>
 	 */
-	private array $list = [];
+	protected SplFixedArray $list;
 
 	public function __construct(){
 		//region ---30% percentage compost---
 		$this->register(VanillaItems::BEETROOT_SEEDS(), 30);
 		$this->register(VanillaItems::DRIED_KELP(), 30);
-		//Glow Berry (?, ?, 30)
+		$this->register(VanillaItems::GLOW_BERRIES(), 30);
 		$this->register(VanillaBlocks::TALL_GRASS()->asItem(), 30);
 		$this->register(VanillaBlocks::FERN()->asItem(), 30);
 		$this->register(VanillaBlocks::GRASS()->asItem(), 30);
-		//Hanging roots (574, 0, 30)
+		$this->register(VanillaBlocks::HANGING_ROOTS()->asItem(), 30);
 		//Kelp (335, 0, 30)
 		$this->register(VanillaBlocks::OAK_LEAVES()->asItem(), 30);
 		$this->register(VanillaBlocks::ACACIA_LEAVES()->asItem(), 30);
@@ -54,7 +56,7 @@ class CompostFactory{
 		$this->register(VanillaBlocks::DARK_OAK_LEAVES()->asItem(), 30);
 		$this->register(VanillaBlocks::JUNGLE_LEAVES()->asItem(), 30);
 		$this->register(VanillaBlocks::SPRUCE_LEAVES()->asItem(), 30);
-		//Azalea Leaves (579, 0, 30)
+		$this->register(VanillaBlocks::AZALEA_LEAVES()->asItem(), 30);
 		$this->register(VanillaItems::MELON_SEEDS(), 30);
 		//Moss Carpet (590, 0, 30)
 		$this->register(VanillaItems::PUMPKIN_SEEDS(), 30);
@@ -72,7 +74,7 @@ class CompostFactory{
 		// region: 50% percentage compost
 		$this->register(VanillaBlocks::CACTUS()->asItem(), 50);
 		$this->register(VanillaBlocks::DRIED_KELP()->asItem(), 50);
-		//Flowering Azalea Leaves (580, 0, 50)
+		$this->register(VanillaBlocks::FLOWERING_AZALEA_LEAVES()->asItem(), 50);
 		//Glow Lichen (666, 0, 50)
 		$this->register(VanillaItems::MELON(), 50);
 		//Nether Sprouts (Block: 493, Item: 760, 50)
@@ -82,8 +84,8 @@ class CompostFactory{
 		$this->registerFlowers();
 
 		$this->register(VanillaBlocks::VINES()->asItem(), 50);
-		// Weeping Vines (486, 0, 50)
-		//Twisting Vines (542, 0, 50)
+		$this->register(VanillaBlocks::WEEPING_VINES()->asItem(), 50);
+		$this->register(VanillaBlocks::TWISTING_VINES()->asItem(), 50);
 
 		// region: 65% percentage compost
 		$this->register(VanillaItems::APPLE(), 65);
@@ -99,16 +101,16 @@ class CompostFactory{
 
 		$this->register(VanillaBLOCKS::BROWN_MUSHROOM()->asItem(), 65);
 		$this->register(VanillaBLOCKS::RED_MUSHROOM()->asItem(), 65);
-
-		$this->registerMushroomBlocks();
+		$this->register(VanillaBLOCKS::BROWN_MUSHROOM_BLOCK()->asItem(), 65);
+		$this->register(VanillaBLOCKS::RED_MUSHROOM_BLOCK()->asItem(), 65);
 
 		$this->register(VanillaBlocks::NETHER_WART()->asItem(), 65);
 		$this->register(VanillaItems::POTATO(), 65);
 		$this->register(VanillaBlocks::PUMPKIN()->asItem(), 65);
 		$this->register(VanillaBlocks::CARVED_PUMPKIN()->asItem(), 65);
 		$this->register(VanillaBlocks::SEA_PICKLE()->asItem(), 65);
-		//Shroomlight (485, 0, 65)
-		//Spore Blossom (567, 0, 65)
+		$this->register(VanillaBlocks::SHROOMLIGHT()->asItem(), 65);
+		$this->register(VanillaBlocks::SPORE_BLOSSOM()->asItem(), 65);
 		$this->register(VanillaItems::WHEAT(), 65);
 		//Crimson fungus (483, 0, 65)
 		//Warped fungus (484, 0, 65)
@@ -122,7 +124,7 @@ class CompostFactory{
 		//Flowering Azalea (593, 0, 85)
 		$this->register(VanillaBlocks::HAY_BALE()->asItem(), 85);
 		$this->register(VanillaBlocks::NETHER_WART_BLOCK()->asItem(), 85);
-		//Warped Wart Block (482, 0, 85)
+		$this->register(VanillaBlocks::WARPED_WART_BLOCK()->asItem(), 85);
 
 		// region: 100% percentage compost
 		$this->register(VanillaBlocks::CAKE()->asItem(), 100);
@@ -150,61 +152,20 @@ class CompostFactory{
 		$this->register(VanillaBlocks::PEONY()->asItem(), 65);
 	}
 
-	private function registerMushroomBlocks() : void{
-		foreach ([VanillaBlocks::BROWN_MUSHROOM_BLOCK(), VanillaBlocks::RED_MUSHROOM_BLOCK()] as $block) {
-			foreach (
-				[
-					Meta::MUSHROOM_BLOCK_ALL_PORES,
-					Meta::MUSHROOM_BLOCK_CAP_NORTHWEST_CORNER,
-					Meta::MUSHROOM_BLOCK_CAP_NORTH_SIDE,
-					Meta::MUSHROOM_BLOCK_CAP_NORTHEAST_CORNER,
-					Meta::MUSHROOM_BLOCK_CAP_WEST_SIDE,
-					Meta::MUSHROOM_BLOCK_CAP_TOP_ONLY,
-					Meta::MUSHROOM_BLOCK_CAP_EAST_SIDE,
-					Meta::MUSHROOM_BLOCK_CAP_SOUTHWEST_CORNER,
-					Meta::MUSHROOM_BLOCK_CAP_SOUTH_SIDE,
-					Meta::MUSHROOM_BLOCK_CAP_SOUTHEAST_CORNER,
-					Meta::MUSHROOM_BLOCK_ALL_CAP,
-				] as $meta
-			) {
-				$block->readStateFromData($block->getId(), $meta);
-				$this->register($block->asItem(), 85);
-			}
-
-			//and the invalid states
-			for ($meta = 11; $meta <= 13; ++$meta){
-				$this->remap($block->asItem()->getId(), $meta, 85);
-			}
-			$this->remap($block->asItem()->getId(), Meta::MUSHROOM_BLOCK_STEM, 85);
-			$this->remap($block->asItem()->getId(), Meta::MUSHROOM_BLOCK_ALL_STEM, 65);
-		}
-	}
-
 	public function register(Item $item, int $percentage, bool $overwrite = false) : bool{
-		return $this->remap($item->getId(), $item->getMeta(), $percentage, $overwrite);
-	}
-
-	public function remap(int $id, int $meta, int $percentage, bool $overwrite = false) : bool{
-		$fullId = $this->getListOffset($id, $meta);
-		if (!isset($this->list[$fullId]) || $overwrite) {
-			$this->list[$fullId] = $percentage;
+		$type_id = $item->getTypeId();
+		if (($overwrite || !isset($this->list[$type_id])) && !$item->isNull()) {
+			$this->list[$type_id] = $percentage;
 			return true;
 		}
 		return false;
 	}
 
 	public function isCompostable(Item $item) : bool{
-		return !$item->isNull() && isset($this->list[$this->getListOffset($item->getId(), $item->getMeta())]);
+		return !$item->isNull() && isset($this->list[$item->getTypeId()]);
 	}
 
 	public function getPercentage(Item $item) : int{
-		return $this->list[$this->getListOffset($item->getId(), $item->getMeta())] ?? 0;
-	}
-
-	private function getListOffset(int $id, int $meta = 0) : int{
-		if($id < -0x8000 || $id > 0x7fff){
-			throw new \InvalidArgumentException("ID must be in range " . -32768 . " - " . 32767);
-		}
-		return (($id & 0xffff) << 16) | ($meta & 0xffff);
+		return $this->list[$item->getTypeId()] ?? self::DEFAULT_PERCENTAGE;
 	}
 }
