@@ -637,9 +637,12 @@ abstract class Living extends Entity{
 			}
 
 			foreach($this->armorInventory->getContents() as $index => $item){
+				$oldItem = clone $item;
 				if($item->onTickWorn($this)){
 					$hasUpdate = true;
-					$this->armorInventory->setItem($index, $item);
+					if(!$item->equalsExact($oldItem)){
+						$this->armorInventory->setItem($index, $item);
+					}
 				}
 			}
 		}
