@@ -33,7 +33,7 @@ use function sprintf;
 
 final class ThreadCrashInfo extends ThreadSafe{
 
-	/** @phpstan-var ThreadSafeArray<ThreadCrashInfoFrame> */
+	/** @phpstan-var ThreadSafeArray<int, ThreadCrashInfoFrame> */
 	private ThreadSafeArray $trace;
 
 	/**
