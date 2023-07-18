@@ -34,7 +34,7 @@ class FarmlandWetnessChangeEvent extends BlockUpdateEvent{
 	public function __construct(
 		Block $block,
 		private int $oldWetness,
-    private int $newWetness,
+		private int $newWetness,
 	){
 		parent::__construct($block);
 	}
