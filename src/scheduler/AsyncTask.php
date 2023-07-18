@@ -72,17 +72,14 @@ abstract class AsyncTask extends Runnable{
 	private ?ThreadSafeArray $progressUpdates = null;
 
 	private ThreadSafe|string|int|bool|null|float $result = null;
-	private bool $cancelRun = false;
-	private bool $submitted = false;
 
+	private bool $submitted = false;
 	private bool $finished = false;
 
 	public function run() : void{
 		$this->result = null;
 
-		if(!$this->cancelRun){
-			$this->onRun();
-		}
+		$this->onRun();
 
 		$this->finished = true;
 		$worker = NativeThread::getCurrentThread();
@@ -123,12 +120,18 @@ abstract class AsyncTask extends Runnable{
 		$this->result = is_scalar($result) || is_null($result) || $result instanceof ThreadSafe ? $result : new NonThreadSafeValue($result);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function cancelRun() : void{
-		$this->cancelRun = true;
+		//NOOP
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function hasCancelledRun() : bool{
-		return $this->cancelRun;
+		return false;
 	}
 
 	public function setSubmitted() : void{

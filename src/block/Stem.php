@@ -55,6 +55,7 @@ abstract class Stem extends Crops{
 		if($this->facing !== Facing::UP && !$this->getSide($this->facing)->hasSameTypeId($this->getPlant())){
 			$this->position->getWorld()->setBlock($this->position, $this->setFacing(Facing::UP));
 		}
+		parent::onNearbyBlockChange();
 	}
 
 	public function onRandomTick() : void{

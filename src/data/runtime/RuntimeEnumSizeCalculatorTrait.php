@@ -47,6 +47,10 @@ trait RuntimeEnumSizeCalculatorTrait{
 		$this->addBits(2);
 	}
 
+	public function dripleafState(\pocketmine\block\utils\DripleafState &$value) : void{
+		$this->addBits(2);
+	}
+
 	public function dyeColor(\pocketmine\block\utils\DyeColor &$value) : void{
 		$this->addBits(4);
 	}

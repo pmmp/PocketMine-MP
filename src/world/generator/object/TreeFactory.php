@@ -49,6 +49,8 @@ final class TreeFactory{
 			}else{*/
 
 			//}
+		}elseif($type->equals(TreeType::ACACIA())){
+			return new AcaciaTree();
 		}
 		return null;
 	}

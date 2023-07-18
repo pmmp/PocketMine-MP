@@ -259,7 +259,7 @@ class AsyncPool{
 				if($task->isTerminated()){
 					$this->checkCrashedWorker($worker, $task);
 					throw new AssumptionFailedError("checkCrashedWorker() should have thrown an exception, making this unreachable");
-				}elseif(!$task->hasCancelledRun()){
+				}else{
 					/*
 					 * It's possible for a task to submit a progress update and then finish before the progress
 					 * update is detected by the parent thread, so here we consume any missed updates.

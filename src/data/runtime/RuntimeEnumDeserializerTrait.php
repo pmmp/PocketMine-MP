@@ -71,6 +71,16 @@ trait RuntimeEnumDeserializerTrait{
 		};
 	}
 
+	public function dripleafState(\pocketmine\block\utils\DripleafState &$value) : void{
+		$value = match($this->readInt(2)){
+			0 => \pocketmine\block\utils\DripleafState::FULL_TILT(),
+			1 => \pocketmine\block\utils\DripleafState::PARTIAL_TILT(),
+			2 => \pocketmine\block\utils\DripleafState::STABLE(),
+			3 => \pocketmine\block\utils\DripleafState::UNSTABLE(),
+			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for DripleafState")
+		};
+	}
+
 	public function dyeColor(\pocketmine\block\utils\DyeColor &$value) : void{
 		$value = match($this->readInt(4)){
 			0 => \pocketmine\block\utils\DyeColor::BLACK(),
