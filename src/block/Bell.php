@@ -162,7 +162,6 @@ final class Bell extends Transparent{
 		return [$this->asItem()];
 	}
 
-
 	private function isValidFaceToRing(int $faceHit) : bool{
 		return (
 			$this->attachmentType->equals(BellAttachmentType::CEILING()) ||
