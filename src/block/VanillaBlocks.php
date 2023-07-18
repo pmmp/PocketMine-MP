@@ -1251,28 +1251,27 @@ final class VanillaBlocks{
 
 			self::register($idName(mb_strtolower($logType->getStandardLogSuffix() ?? "log", 'US-ASCII')), new Wood(WoodLikeBlockIdHelper::getLogIdentifier($logType), $name . " " . ($logType->getStandardLogSuffix() ?? "Log"), $logBreakInfo, $logType));
 			self::register($idName(mb_strtolower($logType->getAllSidedLogSuffix() ?? "wood", 'US-ASCII')), new Wood(WoodLikeBlockIdHelper::getAllSidedLogIdentifier($logType), $name . " " . ($logType->getAllSidedLogSuffix() ?? "Wood"), $logBreakInfo, $logType));
-
-			self::register($idName("fence"), new WoodenFence(WoodLikeBlockIdHelper::getFenceIdentifier($logType), $name . " Fence", $planksBreakInfo, $logType));
-
-			self::register($idName("fence_gate"), new FenceGate(WoodLikeBlockIdHelper::getFenceGateIdentifier($logType), $name . " Fence Gate", $planksBreakInfo, $logType));
-			self::register($idName("door"), new WoodenDoor(WoodLikeBlockIdHelper::getDoorIdentifier($logType), $name . " Door", $woodenDoorBreakInfo, $logType));
-
-			self::register($idName("button"), new WoodenButton(WoodLikeBlockIdHelper::getButtonIdentifier($logType), $name . " Button", $woodenButtonBreakInfo, $logType));
-			self::register($idName("pressure_plate"), new WoodenPressurePlate(WoodLikeBlockIdHelper::getPressurePlateIdentifier($logType), $name . " Pressure Plate", $woodenPressurePlateBreakInfo, $logType));
-			self::register($idName("trapdoor"), new WoodenTrapdoor(WoodLikeBlockIdHelper::getTrapdoorIdentifier($logType), $name . " Trapdoor", $woodenDoorBreakInfo, $logType));
-
-			[$floorSignId, $wallSignId, $signAsItem] = WoodLikeBlockIdHelper::getSignInfo($logType);
-			self::register($idName("sign"), new FloorSign($floorSignId, $name . " Sign", $signBreakInfo, $logType, $signAsItem));
-			self::register($idName("wall_sign"), new WallSign($wallSignId, $name . " Wall Sign", $signBreakInfo, $logType, $signAsItem));
 		}
 
 		foreach(PlanksType::getAll() as $planksType){
 			$name = $planksType->getDisplayName();
 			$idName = fn(string $suffix) => $planksType->name() . "_" . $suffix;
 
-			self::register($idName("planks"), new Planks(PlanksLikeBlockIdHelper::getPlanksIdentifier($planksType), $name . " Planks", $planksBreakInfo, $planksType));
-			self::register($idName("slab"), new WoodenSlab(PlanksLikeBlockIdHelper::getSlabIdentifier($planksType), $name, $planksBreakInfo, $planksType));
-			self::register($idName("stairs"), new WoodenStairs(PlanksLikeBlockIdHelper::getStairsIdentifier($planksType), $name . " Stairs", $planksBreakInfo, $planksType));
+			self::register($idName("planks"), new Planks(WoodLikeBlockIdHelper::getPlanksIdentifier($planksType), $name . " Planks", $planksBreakInfo, $planksType));
+			self::register($idName("slab"), new WoodenSlab(WoodLikeBlockIdHelper::getSlabIdentifier($planksType), $name, $planksBreakInfo, $planksType));
+			self::register($idName("stairs"), new WoodenStairs(WoodLikeBlockIdHelper::getStairsIdentifier($planksType), $name . " Stairs", $planksBreakInfo, $planksType));
+
+			self::register($idName("fence"), new WoodenFence(WoodLikeBlockIdHelper::getFenceIdentifier($planksType), $name . " Fence", $planksBreakInfo, $planksType));
+			self::register($idName("fence_gate"), new FenceGate(WoodLikeBlockIdHelper::getFenceGateIdentifier($planksType), $name . " Fence Gate", $planksBreakInfo, $planksType));
+			self::register($idName("door"), new WoodenDoor(WoodLikeBlockIdHelper::getDoorIdentifier($planksType), $name . " Door", $woodenDoorBreakInfo, $planksType));
+
+			self::register($idName("button"), new WoodenButton(WoodLikeBlockIdHelper::getButtonIdentifier($planksType), $name . " Button", $woodenButtonBreakInfo, $planksType));
+			self::register($idName("pressure_plate"), new WoodenPressurePlate(WoodLikeBlockIdHelper::getPressurePlateIdentifier($planksType), $name . " Pressure Plate", $woodenPressurePlateBreakInfo, $planksType));
+			self::register($idName("trapdoor"), new WoodenTrapdoor(WoodLikeBlockIdHelper::getTrapdoorIdentifier($planksType), $name . " Trapdoor", $woodenDoorBreakInfo, $planksType));
+
+			[$floorSignId, $wallSignId, $signAsItem] = WoodLikeBlockIdHelper::getSignInfo($planksType);
+			self::register($idName("sign"), new FloorSign($floorSignId, $name . " Sign", $signBreakInfo, $planksType, $signAsItem));
+			self::register($idName("wall_sign"), new WallSign($wallSignId, $name . " Wall Sign", $signBreakInfo, $planksType, $signAsItem));
 		}
 	}
 

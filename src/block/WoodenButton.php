@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\LogTypeTrait;
+use pocketmine\block\utils\PlanksTypeTrait;
 
 class WoodenButton extends Button{
-	use LogTypeTrait;
+	use PlanksTypeTrait;
 
 	protected function getActivationTime() : int{
 		return 30;

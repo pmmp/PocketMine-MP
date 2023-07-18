@@ -48,21 +48,9 @@ final class PlanksType{
 	}
 
 	protected static function setup() : void{
-		self::registerAll(
-			// TODO: bamboo mosaic
-			...self::fromLogType()
-		);
-	}
-
-	/**
-	 * @return self[]
-	 */
-	private static function fromLogType() : array {
-		$ret = [];
 		foreach(LogType::getAll() as $type) {
-			$ret[] = new self($type->name(), $type->getDisplayName(), $type->isFlammable());
+			self::register(new self($type->name(), $type->getDisplayName(), $type->isFlammable()));
 		}
-		return $ret;
 	}
 
 	private function __construct(
