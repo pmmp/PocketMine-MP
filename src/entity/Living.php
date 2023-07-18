@@ -484,14 +484,16 @@ abstract class Living extends Entity{
 	public function damageArmor(float $damage) : void{
 		$durabilityRemoved = (int) max(floor($damage / 4), 1);
 
-		$armor = $this->armorInventory->getContents(true);
-		foreach($armor as $item){
+		$armor = $this->armorInventory->getContents();
+		foreach($armor as $slotId => $item){
 			if($item instanceof Armor){
+				$oldItem = clone $item;
 				$this->damageItem($item, $durabilityRemoved);
+				if(!$item->equalsExact($oldItem)){
+					$this->armorInventory->setItem($slotId, $item);
+				}
 			}
 		}
-
-		$this->armorInventory->setContents($armor);
 	}
 
 	private function damageItem(Durable $item, int $durabilityRemoved) : void{
