@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,18 +27,13 @@ use pocketmine\block\VanillaBlocks;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\utils\SingletonTrait;
-use SplFixedArray;
 
 final class CompostFactory{
 	use SingletonTrait;
 
 	protected const DEFAULT_PERCENTAGE = 0;
 
-	/**
-	 * @var SplFixedArray|(int|null)[]
-	 * @phpstan-var SplFixedArray<int|null>
-	 */
-	protected SplFixedArray $list;
+	protected array $list = [];
 
 	public function __construct(){
 		//region ---30% percentage compost---
