@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
-use pocketmine\crafting\CraftingGrid;
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\CreateItemAction;
@@ -112,12 +111,7 @@ class ItemStackRequestExecutor{
 	 * @throws ItemStackRequestProcessException
 	 */
 	protected function getBuilderInventoryAndSlot(ItemStackRequestSlotInfo $info) : array{
-		$windowId = ItemStackContainerIdTranslator::translate($info->getContainerId(), $this->inventoryManager->getCurrentWindowId());
-		$slotId = $info->getSlotId();
-		if($info->getContainerId() === ContainerUIIds::OFFHAND && $slotId === 1){
-			//TODO: HACK! The client sends an incorrect slot ID for the offhand as of 1.19.70
-			$slotId = 0;
-		}
+		[$windowId, $slotId] = ItemStackContainerIdTranslator::translate($info->getContainerId(), $this->inventoryManager->getCurrentWindowId(), $info->getSlotId());
 		$windowAndSlot = $this->inventoryManager->locateWindowAndSlot($windowId, $slotId);
 		if($windowAndSlot === null){
 			throw new ItemStackRequestProcessException("No open inventory matches container UI ID: " . $info->getContainerId() . ", slot ID: " . $info->getSlotId());
@@ -246,13 +240,11 @@ class ItemStackRequestExecutor{
 
 		$this->specialTransaction = new CraftingTransaction($this->player, $craftingManager, [], $recipe, $repetitions);
 
-		$currentWindow = $this->player->getCurrentWindow();
-		if($currentWindow !== null && !($currentWindow instanceof CraftingGrid)){
-			throw new ItemStackRequestProcessException("Player's current window is not a crafting grid");
-		}
-		$craftingGrid = $currentWindow ?? $this->player->getCraftingGrid();
-
-		$craftingResults = $recipe->getResultsFor($craftingGrid);
+		//TODO: Since the system assumes that crafting can only be done in the crafting grid, we have to give it a
+		//crafting grid to make the API happy. No implementation of getResultsFor() actually uses the crafting grid
+		//right now, so this will work, but this will become a problem in the future for things like shulker boxes and
+		//custom crafting recipes.
+		$craftingResults = $recipe->getResultsFor($this->player->getCraftingGrid());
 		foreach($craftingResults as $k => $craftingResult){
 			$craftingResult->setCount($craftingResult->getCount() * $repetitions);
 			$this->craftingResults[$k] = $craftingResult;

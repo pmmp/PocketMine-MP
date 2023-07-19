@@ -23,14 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
-use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\NetworkSettingsPacket;
-use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\RequestNetworkSettingsPacket;
 use pocketmine\network\mcpe\protocol\types\CompressionAlgorithm;
-use pocketmine\Server;
 
 final class SessionStartPacketHandler extends PacketHandler{
 
@@ -38,7 +35,6 @@ final class SessionStartPacketHandler extends PacketHandler{
 	 * @phpstan-param \Closure() : void $onSuccess
 	 */
 	public function __construct(
-		private Server $server,
 		private NetworkSession $session,
 		private \Closure $onSuccess
 	){}
@@ -46,13 +42,7 @@ final class SessionStartPacketHandler extends PacketHandler{
 	public function handleRequestNetworkSettings(RequestNetworkSettingsPacket $packet) : bool{
 		$protocolVersion = $packet->getProtocolVersion();
 		if(!$this->isCompatibleProtocol($protocolVersion)){
-			$this->session->sendDataPacket(PlayStatusPacket::create($protocolVersion < ProtocolInfo::CURRENT_PROTOCOL ? PlayStatusPacket::LOGIN_FAILED_CLIENT : PlayStatusPacket::LOGIN_FAILED_SERVER), true);
-
-			//This pocketmine disconnect message will only be seen by the console (PlayStatusPacket causes the messages to be shown for the client)
-			$this->session->disconnect(
-				$this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_disconnect_incompatibleProtocol((string) $protocolVersion)),
-				false
-			);
+			$this->session->disconnectIncompatibleProtocol($protocolVersion);
 
 			return true;
 		}

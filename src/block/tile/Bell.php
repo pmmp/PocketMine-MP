@@ -23,12 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\math\Facing;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
+use pocketmine\utils\AssumptionFailedError;
 
 final class Bell extends Spawnable{
 	public const TAG_DIRECTION = "Direction"; //TAG_Int
@@ -80,7 +80,13 @@ final class Bell extends Spawnable{
 	public function createFakeUpdatePacket(int $bellHitFace) : BlockActorDataPacket{
 		$nbt = $this->getSpawnCompound();
 		$nbt->setByte(self::TAG_RINGING, 1);
-		$nbt->setInt(self::TAG_DIRECTION, BlockDataSerializer::writeLegacyHorizontalFacing($bellHitFace));
+		$nbt->setInt(self::TAG_DIRECTION, match($bellHitFace){
+			Facing::SOUTH => 0,
+			Facing::WEST => 1,
+			Facing::NORTH => 2,
+			Facing::EAST => 3,
+			default => throw new AssumptionFailedError("Unreachable")
+		});
 		$nbt->setInt(self::TAG_TICKS, 0);
 		return BlockActorDataPacket::create(BlockPosition::fromVector3($this->position), new CacheableNbt($nbt));
 	}

@@ -32,8 +32,7 @@ class Barrel extends Spawnable implements Container, Nameable{
 	use NameableTrait;
 	use ContainerTrait;
 
-	/** @var BarrelInventory */
-	protected $inventory;
+	protected BarrelInventory $inventory;
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
@@ -57,17 +56,11 @@ class Barrel extends Spawnable implements Container, Nameable{
 		}
 	}
 
-	/**
-	 * @return BarrelInventory
-	 */
-	public function getInventory(){
+	public function getInventory() : BarrelInventory{
 		return $this->inventory;
 	}
 
-	/**
-	 * @return BarrelInventory
-	 */
-	public function getRealInventory(){
+	public function getRealInventory() : BarrelInventory{
 		return $this->inventory;
 	}
 

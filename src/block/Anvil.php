@@ -24,17 +24,22 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\inventory\AnvilInventory;
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\entity\object\FallingBlock;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\sound\AnvilFallSound;
+use pocketmine\world\sound\Sound;
+use function lcg_value;
+use function round;
 
 class Anvil extends Transparent implements Fallable{
 	use FallableTrait;
@@ -46,21 +51,12 @@ class Anvil extends Transparent implements Fallable{
 
 	private int $damage = self::UNDAMAGED;
 
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) | ($this->damage << 2);
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
+		$w->boundedInt(2, self::UNDAMAGED, self::VERY_DAMAGED, $this->damage);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x3);
-		$this->damage = BlockDataSerializer::readBoundedInt("damage", $stateMeta >> 2, self::UNDAMAGED, self::VERY_DAMAGED);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
-	protected function writeStateToItemMeta() : int{
-		return $this->damage << 2;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->horizontalFacing($this->facing);
 	}
 
 	public function getDamage() : int{ return $this->damage; }
@@ -85,7 +81,7 @@ class Anvil extends Transparent implements Fallable{
 		return SupportType::NONE();
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 			$player->setCurrentWindow(new AnvilInventory($this->position));
 		}
@@ -100,7 +96,26 @@ class Anvil extends Transparent implements Fallable{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function tickFalling() : ?Block{
-		return null;
+	public function onHitGround(FallingBlock $blockEntity) : bool{
+		if(lcg_value() < 0.05 + (round($blockEntity->getFallDistance()) - 1) * 0.05){
+			if($this->damage !== self::VERY_DAMAGED){
+				$this->damage = $this->damage + 1;
+			}else{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public function getFallDamagePerBlock() : float{
+		return 2.0;
+	}
+
+	public function getMaxFallDamage() : float{
+		return 40.0;
+	}
+
+	public function getLandSound() : ?Sound{
+		return new AnvilFallSound();
 	}
 }

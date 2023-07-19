@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
 
-use pocketmine\block\BlockFactory;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\color\Color;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\StringToItemParser;
 use pocketmine\item\VanillaItems;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\math\Vector3;
@@ -70,14 +70,13 @@ use function explode;
 use function max;
 use function microtime;
 use function mt_rand;
-use function str_starts_with;
 use function strtolower;
 
 class ParticleCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"particle",
 			KnownTranslationFactory::pocketmine_command_particle_description(),
 			KnownTranslationFactory::pocketmine_command_particle_usage()
 		);
@@ -85,10 +84,6 @@ class ParticleCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) < 7){
 			throw new InvalidCommandSyntaxException();
 		}
@@ -114,7 +109,7 @@ class ParticleCommand extends VanillaCommand{
 
 		$count = isset($args[7]) ? max(1, (int) $args[7]) : 1;
 
-		$data = isset($args[8]) ? (int) $args[8] : null;
+		$data = $args[8] ?? null;
 
 		$particle = $this->getParticle($name, $data);
 
@@ -138,7 +133,7 @@ class ParticleCommand extends VanillaCommand{
 		return true;
 	}
 
-	private function getParticle(string $name, ?int $data = null) : ?Particle{
+	private function getParticle(string $name, ?string $data = null) : ?Particle{
 		switch($name){
 			case "explode":
 				return new ExplodeParticle();
@@ -156,7 +151,7 @@ class ParticleCommand extends VanillaCommand{
 			case "crit":
 				return new CriticalParticle();
 			case "smoke":
-				return new SmokeParticle($data ?? 0);
+				return new SmokeParticle((int) ($data ?? 0));
 			case "spell":
 				return new EnchantParticle(new Color(0, 0, 0, 255)); //TODO: colour support
 			case "instantspell":
@@ -175,25 +170,31 @@ class ParticleCommand extends VanillaCommand{
 			case "lava":
 				return new LavaParticle();
 			case "reddust":
-				return new RedstoneParticle($data ?? 1);
+				return new RedstoneParticle((int) ($data ?? 1));
 			case "snowballpoof":
 				return new ItemBreakParticle(VanillaItems::SNOWBALL());
 			case "slime":
 				return new ItemBreakParticle(VanillaItems::SLIMEBALL());
 			case "itembreak":
-				if($data !== null && $data !== 0){
-					return new ItemBreakParticle(ItemFactory::getInstance()->get($data));
+				if($data !== null){
+					$item = StringToItemParser::getInstance()->parse($data);
+					if($item !== null && !$item->isNull()){
+						return new ItemBreakParticle($item);
+					}
 				}
 				break;
 			case "terrain":
-				if($data !== null && $data !== 0){
-					return new TerrainParticle(BlockFactory::getInstance()->get($data, 0));
+				if($data !== null){
+					$block = StringToItemParser::getInstance()->parse($data)?->getBlock();
+					if($block !== null && $block->getTypeId() !== BlockTypeIds::AIR){
+						return new TerrainParticle($block);
+					}
 				}
 				break;
 			case "heart":
-				return new HeartParticle($data ?? 0);
+				return new HeartParticle((int) ($data ?? 0));
 			case "ink":
-				return new InkParticle($data ?? 0);
+				return new InkParticle((int) ($data ?? 0));
 			case "droplet":
 				return new RainSplashParticle();
 			case "enchantmenttable":
@@ -203,26 +204,32 @@ class ParticleCommand extends VanillaCommand{
 			case "angryvillager":
 				return new AngryVillagerParticle();
 			case "forcefield":
-				return new BlockForceFieldParticle($data ?? 0);
+				return new BlockForceFieldParticle((int) ($data ?? 0));
 			case "mobflame":
 				return new EntityFlameParticle();
-		}
-
-		if(str_starts_with($name, "iconcrack_")){
-			$d = explode("_", $name);
-			if(count($d) === 3){
-				return new ItemBreakParticle(ItemFactory::getInstance()->get((int) $d[1], (int) $d[2]));
-			}
-		}elseif(str_starts_with($name, "blockcrack_")){
-			$d = explode("_", $name);
-			if(count($d) === 2){
-				return new TerrainParticle(BlockFactory::getInstance()->get(((int) $d[1]) & 0xff, ((int) $d[1]) >> 12));
-			}
-		}elseif(str_starts_with($name, "blockdust_")){
-			$d = explode("_", $name);
-			if(count($d) >= 4){
-				return new DustParticle(new Color(((int) $d[1]) & 0xff, ((int) $d[2]) & 0xff, ((int) $d[3]) & 0xff, isset($d[4]) ? ((int) $d[4]) & 0xff : 255));
-			}
+			case "iconcrack":
+				if($data !== null && ($item = StringToItemParser::getInstance()->parse($data)) !== null && !$item->isNull()){
+					return new ItemBreakParticle($item);
+				}
+				break;
+			case "blockcrack":
+				if($data !== null && ($block = StringToItemParser::getInstance()->parse($data)?->getBlock()) !== null && $block->getTypeId() !== BlockTypeIds::AIR){
+					return new TerrainParticle($block);
+				}
+				break;
+			case "blockdust":
+				if($data !== null){
+					$d = explode("_", $data);
+					if(count($d) >= 3){
+						return new DustParticle(new Color(
+							((int) $d[0]) & 0xff,
+							((int) $d[1]) & 0xff,
+							((int) $d[2]) & 0xff,
+							((int) ($d[3] ?? 255)) & 0xff
+						));
+					}
+				}
+				break;
 		}
 
 		return null;

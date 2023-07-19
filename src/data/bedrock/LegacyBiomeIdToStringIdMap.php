@@ -25,7 +25,7 @@ namespace pocketmine\data\bedrock;
 
 use pocketmine\utils\SingletonTrait;
 
-final class LegacyBiomeIdToStringIdMap extends LegacyToStringBidirectionalIdMap{
+final class LegacyBiomeIdToStringIdMap extends LegacyToStringIdMap{
 	use SingletonTrait;
 
 	public function __construct(){

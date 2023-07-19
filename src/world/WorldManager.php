@@ -30,7 +30,6 @@ use pocketmine\event\world\WorldUnloadEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\player\ChunkSelector;
 use pocketmine\Server;
-use pocketmine\timings\Timings;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
@@ -197,7 +196,7 @@ class WorldManager{
 		$providerClass = array_shift($providers);
 
 		try{
-			$provider = $providerClass->fromPath($path);
+			$provider = $providerClass->fromPath($path, new \PrefixedLogger($this->server->getLogger(), "World Provider: $name"));
 		}catch(CorruptedWorldException $e){
 			$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_loadError(
 				$name,
@@ -239,8 +238,10 @@ class WorldManager{
 			}
 			$this->server->getLogger()->notice($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_conversion_start($name)));
 
-			$converter = new FormatConverter($provider, $this->providerManager->getDefault(), Path::join($this->server->getDataPath(), "backups", "worlds"), $this->server->getLogger());
-			$provider = $converter->execute();
+			$providerClass = $this->providerManager->getDefault();
+			$converter = new FormatConverter($provider, $providerClass, Path::join($this->server->getDataPath(), "backups", "worlds"), $this->server->getLogger());
+			$converter->execute();
+			$provider = $providerClass->fromPath($path, new \PrefixedLogger($this->server->getLogger(), "World Provider: $name"));
 
 			$this->server->getLogger()->notice($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_conversion_finish($name, $converter->getBackupPath())));
 		}
@@ -270,7 +271,7 @@ class WorldManager{
 		$path = $this->getWorldPath($name);
 		$providerEntry->generate($path, $name, $options);
 
-		$world = new World($this->server, $name, $providerEntry->fromPath($path), $this->server->getAsyncPool());
+		$world = new World($this->server, $name, $providerEntry->fromPath($path, new \PrefixedLogger($this->server->getLogger(), "World Provider: $name")), $this->server->getAsyncPool());
 		$this->worlds[$world->getId()] = $world;
 
 		$world->setAutoSave($this->autoSave);
@@ -391,7 +392,6 @@ class WorldManager{
 	}
 
 	private function doAutoSave() : void{
-		Timings::$worldSave->startTiming();
 		foreach($this->worlds as $world){
 			foreach($world->getPlayers() as $player){
 				if($player->spawned){
@@ -400,6 +400,5 @@ class WorldManager{
 			}
 			$world->save(false);
 		}
-		Timings::$worldSave->stopTiming();
 	}
 }
