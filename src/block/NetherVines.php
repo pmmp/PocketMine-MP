@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
@@ -179,7 +180,7 @@ class NetherVines extends Flowable{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0 || mt_rand(1, 3) === 1){
+		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0 || FortuneDropHelper::bonusChanceFixed($item, 1 / 3, 2 / 9)){
 			return [$this->asItem()];
 		}
 		return [];
