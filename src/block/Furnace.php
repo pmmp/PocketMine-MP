@@ -107,7 +107,7 @@ class Furnace extends Opaque implements HopperInteractable{
 		$hopperInventory = $tileHopper->getInventory();
 		$furnanceInventory = $furnanceTile->getInventory();
 
-		for($i = 0; $i < 5; $i++){
+		for($i = 0; $i < $furnanceInventory->getSize(); $i++){
 			$itemStack = $hopperInventory->getItem($i);
 
 			if($itemStack->isNull()) continue;
@@ -115,9 +115,9 @@ class Furnace extends Opaque implements HopperInteractable{
 			$singleItem = $itemStack->pop(1);
 
 			if($hopperFacing === Facing::DOWN && $furnanceInventory->canAddSmelting($singleItem)){
-				$this->transferItem($hopperInventory, $furnanceInventory, $singleItem, 0);
+				$this->transferItem($hopperInventory, $furnanceInventory, $singleItem, $furnanceInventory::SLOT_INPUT);
 			}elseif($hopperFacing !== Facing::DOWN && $hopperFacing !== Facing::UP && $furnanceInventory->canAddFuel($singleItem)){
-				$this->transferItem($hopperInventory, $furnanceInventory, $singleItem, 1);
+				$this->transferItem($hopperInventory, $furnanceInventory, $singleItem, $furnanceInventory::SLOT_FUEL);
 			}
 		}
 	}

@@ -114,7 +114,7 @@ class Hopper extends Transparent implements HopperInteractable{
 		$sourceInventory = $tileHopper->getInventory();
 		$targetInventory = $hopperTile->getInventory();
 
-		for($i = 0; $i < 5; $i++){
+		for($i = 0; $i < $sourceInventory->getSize(); $i++){
 			$itemStack = $sourceInventory->getItem($i);
 
 			if($itemStack->isNull()) continue;
