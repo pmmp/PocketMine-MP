@@ -19,7 +19,6 @@ rm PocketMine-MP.phar 2> /dev/null
 mkdir "$DATA_DIR"
 mkdir "$PLUGINS_DIR"
 
-cd ../../..
 composer make-server
 
 if [ -f PocketMine-MP.phar ]; then
