@@ -96,12 +96,12 @@ class Furnace extends Opaque implements HopperInteractable{
 		}
 	}
 
-	public function pull(TileHopper $tileHopper) : void{
+	public function pull(TileHopper $tileHopper) : bool{
 		$furnanceTile = $this->position->getWorld()->getTile($this->position);
-		if(!$furnanceTile instanceof TileFurnace) return;
+		if(!$furnanceTile instanceof TileFurnace) return false;
 
 		$hopperBlock = $tileHopper->getBlock();
-		if(!$hopperBlock instanceof Hopper) return;
+		if(!$hopperBlock instanceof Hopper) return false;
 
 		$hopperFacing = $hopperBlock->getFacing();
 		$hopperInventory = $tileHopper->getInventory();
@@ -116,10 +116,14 @@ class Furnace extends Opaque implements HopperInteractable{
 
 			if($hopperFacing === Facing::DOWN && $furnanceInventory->canAddSmelting($singleItem)){
 				$this->transferItem($hopperInventory, $furnanceInventory, $singleItem, $furnanceInventory::SLOT_INPUT);
+				return true;
 			}elseif($hopperFacing !== Facing::DOWN && $hopperFacing !== Facing::UP && $furnanceInventory->canAddFuel($singleItem)){
 				$this->transferItem($hopperInventory, $furnanceInventory, $singleItem, $furnanceInventory::SLOT_FUEL);
+				return true;
 			}
 		}
+
+		return false;
 	}
 
 	private function transferItem(SimpleInventory $sourceInventory, SimpleInventory $targetInventory, Item $item, int $slot) : void{
