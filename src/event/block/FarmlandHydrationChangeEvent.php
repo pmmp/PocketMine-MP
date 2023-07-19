@@ -29,7 +29,7 @@ use pocketmine\block\Farmland;
 /**
  * Called when farmland wetness is updated.
  */
-class FarmlandWetnessChangeEvent extends BlockUpdateEvent{
+class FarmlandHydrationChangeEvent extends BlockUpdateEvent{
 
 	public function __construct(
 		Block $block,
