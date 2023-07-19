@@ -33,6 +33,10 @@ final class CompostFactory{
 
 	protected const DEFAULT_PERCENTAGE = 0;
 
+	/**
+	 * @var int[]
+	 * @phpstan-var array<int, int>
+	 */
 	protected array $list = [];
 
 	public function __construct(){
@@ -52,6 +56,8 @@ final class CompostFactory{
 		$this->register(VanillaBlocks::JUNGLE_LEAVES()->asItem(), 30);
 		$this->register(VanillaBlocks::SPRUCE_LEAVES()->asItem(), 30);
 		$this->register(VanillaBlocks::AZALEA_LEAVES()->asItem(), 30);
+		$this->register(VanillaBlocks::MANGROVE_LEAVES()->asItem(), 30);
+		$this->register(VanillaBlocks::CHERRY_LEAVES()->asItem(), 30);
 		$this->register(VanillaItems::MELON_SEEDS(), 30);
 		//Moss Carpet (590, 0, 30)
 		$this->register(VanillaItems::PUMPKIN_SEEDS(), 30);
@@ -62,7 +68,7 @@ final class CompostFactory{
 		$this->register(VanillaBlocks::ACACIA_SAPLING()->asItem(), 30);
 		$this->register(VanillaBlocks::DARK_OAK_SAPLING()->asItem(), 30);
 		//Sea grass (385, 0, 30)
-		//Small Dripleaf (591, 0, 30)
+		$this->register(VanillaBlocks::SMALL_DRIPLEAF()->asItem(), 30);
 		$this->register(VanillaItems::SWEET_BERRIES(), 30);
 		$this->register(VanillaItems::WHEAT_SEEDS(), 30);
 
@@ -70,7 +76,7 @@ final class CompostFactory{
 		$this->register(VanillaBlocks::CACTUS()->asItem(), 50);
 		$this->register(VanillaBlocks::DRIED_KELP()->asItem(), 50);
 		$this->register(VanillaBlocks::FLOWERING_AZALEA_LEAVES()->asItem(), 50);
-		//Glow Lichen (666, 0, 50)
+		$this->register(VanillaBlocks::GLOW_LICHEN()->asItem(), 50);
 		$this->register(VanillaItems::MELON(), 50);
 		//Nether Sprouts (Block: 493, Item: 760, 50)
 		$this->register(VanillaBlocks::SUGARCANE()->asItem(), 50);
@@ -86,7 +92,8 @@ final class CompostFactory{
 		$this->register(VanillaItems::APPLE(), 65);
 		//Azalea (592, 0, 65);
 		$this->register(VanillaItems::BEETROOT(), 65);
-		//Big Dripleaf (578, 0, 65);
+
+		$this->register(VanillaBlocks::BIG_DRIPLEAF_HEAD()->asItem(), 30);
 		$this->register(VanillaItems::CARROT(), 65);
 		$this->register(VanillaItems::COCOA_BEANS(), 65);
 		$this->register(VanillaBlocks::LARGE_FERN()->asItem(), 65);
