@@ -26,5 +26,5 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Hopper as TileHopper;
 
 interface HopperInteractable{
-	public function pull(TileHopper $tileHopper) : void;
+	public function pull(TileHopper $tileHopper) : bool;
 }
