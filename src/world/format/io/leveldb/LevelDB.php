@@ -179,8 +179,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 					throw new CorruptedChunkException("CustomItemAPI borked 0 bpb palette should always have a length of 1");
 				}
 				$logger->error("Unexpected palette size for 0 bpb palette");
-			}else{
-				$logger->debug("Normal 0 bpb palette found :)");
 			}
 		}else{
 			$paletteSize = $stream->getLInt();
