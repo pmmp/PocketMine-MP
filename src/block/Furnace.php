@@ -122,14 +122,8 @@ class Furnace extends Opaque implements HopperInteractable{
 		}
 	}
 
-	private function transferItem(SimpleInventory $sourceInventory, SimpleInventory $targetInventory, Item $item, int $slot = null) : void{
+	private function transferItem(SimpleInventory $sourceInventory, SimpleInventory $targetInventory, Item $item, int $slot) : void{
 		$sourceInventory->removeItem($item);
-
-		if($slot === null){
-			$sourceInventory->removeItem($item);
-			$targetInventory->addItem($item);
-			return;
-		}
 
 		$currentItem = $targetInventory->getItem($slot);
 
