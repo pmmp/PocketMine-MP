@@ -917,6 +917,10 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				Blocks::GREEN_TORCH()->setFacing($in->readTorchFacing()) :
 				Blocks::RED_TORCH()->setFacing($in->readTorchFacing());
 		});
+		$this->map(Ids::COMPOSTER, function(Reader $in) : Block{
+			return Blocks::COMPOSTER()
+				->setFillLevel($in->readBoundedInt(StateNames::COMPOSTER_FILL_LEVEL, 0, 8));
+		});
 		$this->map(Ids::CONCRETE_POWDER, function(Reader $in) : Block{
 			return Blocks::CONCRETE_POWDER()
 				->setColor($in->readColor());

@@ -50,6 +50,7 @@ use pocketmine\block\ChemistryTable;
 use pocketmine\block\Chest;
 use pocketmine\block\ChorusFlower;
 use pocketmine\block\CocoaBlock;
+use pocketmine\block\Composter;
 use pocketmine\block\Concrete;
 use pocketmine\block\ConcretePowder;
 use pocketmine\block\Copper;
@@ -1026,6 +1027,10 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::COBBLESTONE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab1($block, StringValues::STONE_SLAB_TYPE_COBBLESTONE));
 		$this->mapStairs(Blocks::COBBLESTONE_STAIRS(), Ids::STONE_STAIRS);
 		$this->map(Blocks::COBBLESTONE_WALL(), fn(Wall $block) => Helper::encodeLegacyWall($block, StringValues::WALL_BLOCK_TYPE_COBBLESTONE));
+		$this->map(Blocks::COMPOSTER(), function(Composter $block) : Writer{
+			return Writer::create(Ids::COMPOSTER)
+				->writeInt(StateNames::COMPOSTER_FILL_LEVEL, $block->getFillLevel());
+		});
 		$this->map(Blocks::COPPER(), function(Copper $block) : Writer{
 			$oxidation = $block->getOxidation();
 			return new Writer($block->isWaxed() ?

@@ -197,6 +197,7 @@ use function mb_strtolower;
  * @method static Cobweb COBWEB()
  * @method static CocoaBlock COCOA_POD()
  * @method static ChemistryTable COMPOUND_CREATOR()
+ * @method static Composter COMPOSTER()
  * @method static Concrete CONCRETE()
  * @method static ConcretePowder CONCRETE_POWDER()
  * @method static Copper COPPER()
@@ -825,8 +826,10 @@ final class VanillaBlocks{
 		self::register("mossy_cobblestone_stairs", new Stair(new BID(Ids::MOSSY_COBBLESTONE_STAIRS), "Mossy Cobblestone Stairs", $cobblestoneBreakInfo));
 
 		self::register("cobweb", new Cobweb(new BID(Ids::COBWEB), "Cobweb", new Info(new BreakInfo(4.0, ToolType::SWORD | ToolType::SHEARS, 1))));
+		self::register("composter", new Composter(new BID(Ids::COMPOSTER), "Composter", new Info(BreakInfo::axe(2))));
 		self::register("cocoa_pod", new CocoaBlock(new BID(Ids::COCOA_POD), "Cocoa Block", new Info(BreakInfo::axe(0.2, null, 15.0))));
 		self::register("coral_block", new CoralBlock(new BID(Ids::CORAL_BLOCK), "Coral Block", new Info(BreakInfo::pickaxe(7.0, ToolTier::WOOD()))));
+
 		self::register("daylight_sensor", new DaylightSensor(new BID(Ids::DAYLIGHT_SENSOR, TileDaylightSensor::class), "Daylight Sensor", new Info(BreakInfo::axe(0.2))));
 		self::register("dead_bush", new DeadBush(new BID(Ids::DEAD_BUSH), "Dead Bush", new Info(BreakInfo::instant(ToolType::SHEARS, 1), [Tags::POTTABLE_PLANTS])));
 		self::register("detector_rail", new DetectorRail(new BID(Ids::DETECTOR_RAIL), "Detector Rail", $railBreakInfo));

@@ -17,20 +17,21 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\CompostFactory;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\BlockTransaction;
 use pocketmine\world\particle\CropGrowthEmitterParticle;
 use pocketmine\world\sound\ComposterEmptySound;
 use pocketmine\world\sound\ComposterFillSound;
@@ -40,23 +41,15 @@ use function max;
 use function mt_rand;
 
 class Composter extends Transparent{
+	public const READY = 8;
 
-	protected int $fill_level = 0;
+	public const MIN_LEVEL = 0;
+	public const MAX_LEVEL = 7;
 
-	protected function writeStateToMeta() : int{
-		return $this->fill_level;
-	}
+	protected int $fill_level = self::MIN_LEVEL;
 
-	public function writeStateToItemMeta() : int{
-		return $this->fill_level;
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->fill_level = BlockDataSerializer::readBoundedInt("composter_fill_level", $stateMeta, 0, 8);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->boundedInt(4, self::MIN_LEVEL, self::READY, $this->fill_level);
 	}
 
 	protected function recalculateCollisionBoxes() : array{
@@ -70,37 +63,47 @@ class Composter extends Transparent{
 	}
 
 	public function isEmpty() : bool{
-		return $this->fill_level === 0;
+		return $this->fill_level === self::MIN_LEVEL;
 	}
 
 	public function isReady() : bool{
-		return $this->fill_level === 8;
+		return $this->fill_level === self::READY;
 	}
 
 	public function getFillLevel() : int{
 		return $this->fill_level;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	/** @return $this */
+	public function setFillLevel(int $fill_level) : self{
+		if($fill_level < 0 || $fill_level > self::READY){
+			throw new \InvalidArgumentException("Fill level  must be in range 0 ... " . self::READY);
+		}
+		$this->fill_level = $fill_level;
+		return $this;
+	}
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if (($player instanceof Player) && $this->compost(clone $item)) {
 			$item->pop();
 		}
 		return true;
 	}
 
+	public function onScheduledUpdate() : void{
+		if ($this->fill_level === self::MAX_LEVEL) {
+			$this->position->getWorld()->addSound($this->position, new ComposterReadySound());
+			$this->fill_level = self::READY;
+			$this->position->getWorld()->setBlock($this->position, $this);
+		}
+	}
+
 	public function compost(Item $item) : bool{
-		if ($this->fill_level >= 8) {
-			$this->position->getWorld()->dropItem(
-				$this->position->add(0.5, 0.85, 0.5),
-				VanillaItems::BONE_MEAL(),
-				new Vector3(0, 0, 0)
-			);
-			$this->position->getWorld()->addSound($this->position, new ComposterEmptySound());
-
-			$this->position->getWorld()->addParticle($this->position, new CropGrowthEmitterParticle());
-
-			$this->fill_level = 0;
-			$this->position->getWorld()->setBlock($this->position->add(0.5, 0.5, 0.5), $this);
+		if ($this->fill_level === self::MAX_LEVEL) {
+			return false;
+		}
+		if ($this->fill_level === self::READY) {
+			$this->empty(true);
 			return false;
 		}
 		if (!CompostFactory::getInstance()->isCompostable($item)) {
@@ -109,17 +112,36 @@ class Composter extends Transparent{
 		$this->position->getWorld()->addParticle($this->position->add(0.5, 0.5, 0.5), new CropGrowthEmitterParticle());
 
 		if (mt_rand(1, 100) <= CompostFactory::getInstance()->getPercentage($item)) {
+			$this->position->getWorld()->addSound($this->position, new ComposterFillSuccessSound());
 			++$this->fill_level;
-			$this->position->getWorld()->addSound($this->position, $this->fill_level === 8 ? new ComposterReadySound() : new ComposterFillSuccessSound());
-			$this->position->getWorld()->setBlock($this->position, $this);
+			if ($this->fill_level === self::MAX_LEVEL) {
+				$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20);
+			}
 		} else {
 			$this->position->getWorld()->addSound($this->position, new ComposterFillSound());
 		}
+
+		$this->position->getWorld()->setBlock($this->position, $this);
 		return true;
 	}
 
+	public function empty(bool $hasDrop = false) : void{
+		if ($hasDrop && $this->fill_level === self::READY) {
+			$this->position->getWorld()->dropItem(
+				$this->position->add(0.5, 0.85, 0.5),
+				VanillaItems::BONE_MEAL(),
+				new Vector3(0, 0, 0)
+			);
+			$this->position->getWorld()->addParticle($this->position, new CropGrowthEmitterParticle());
+		}
+
+		$this->position->getWorld()->addSound($this->position, new ComposterEmptySound());
+		$this->fill_level = self::MIN_LEVEL;
+		$this->position->getWorld()->setBlock($this->position, $this);
+	}
+
 	public function getDropsForCompatibleTool(Item $item) : array{
-		return $this->fill_level === 8 ? [
+		return $this->fill_level === self::READY ? [
 			VanillaBlocks::COMPOSTER()->asItem(),
 			VanillaItems::BONE_MEAL()
 		] : [
