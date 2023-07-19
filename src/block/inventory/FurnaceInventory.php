@@ -72,14 +72,22 @@ class FurnaceInventory extends SimpleInventory implements BlockInventory{
 	public function canAddSmelting(Item $item) : bool{
 		if($this->getSmelting()->isNull()) return true;
 
+		$currentInput = $this->getSmelting();
+
+		if($currentInput->getCount() === $currentInput->getMaxStackSize()) return false;
+
 		return $item->canStackWith($this->getSmelting());
 	}
 
 	public function canAddFuel(Item $item) : bool{
 		if($item->getFuelTime() == 0) return false;
 
-		if($this->getFuel()->isNull()) return true;
+		$currentFuel = $this->getFuel();
 
-		return $item->canStackWith($this->getFuel());
+		if($currentFuel->isNull()) return true;
+
+		if($currentFuel->getCount() === $currentFuel->getMaxStackSize()) return false;
+
+		return $item->canStackWith($currentFuel);
 	}
 }
