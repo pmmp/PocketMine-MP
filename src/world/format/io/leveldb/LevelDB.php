@@ -304,6 +304,11 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				if($nextIndex <= Chunk::MAX_SUBCHUNK_INDEX){ //older versions wrote additional superfluous biome palettes
 					$result[$nextIndex++] = $decoded;
 				}
+				if($stream->feof() && $nextIndex >= Chunk::MAX_SUBCHUNK_INDEX){
+					//not enough padding biome arrays for the given version - this is non-critical since we discard the excess anyway, but this should be logged
+					$logger->error("Wrong number of 3D biome palettes: expected $expectedCount, but got " . ($i + 1) . " - this is not a problem, but may indicate a corrupted chunk");
+					break;
+				}
 			}catch(BinaryDataException $e){
 				throw new CorruptedChunkException("Failed to deserialize biome palette $i: " . $e->getMessage(), 0, $e);
 			}
