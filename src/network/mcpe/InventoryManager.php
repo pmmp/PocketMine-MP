@@ -108,7 +108,7 @@ class InventoryManager{
 		private NetworkSession $session
 	){
 		$this->containerOpenCallbacks = new ObjectSet();
-		$this->containerOpenCallbacks->add(\Closure::fromCallable([self::class, 'createContainerOpen']));
+		$this->containerOpenCallbacks->add(self::createContainerOpen(...));
 
 		$this->add(ContainerIds::INVENTORY, $this->player->getInventory());
 		$this->add(ContainerIds::OFFHAND, $this->player->getOffHandInventory());

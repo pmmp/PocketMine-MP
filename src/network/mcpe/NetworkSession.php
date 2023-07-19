@@ -225,13 +225,13 @@ class NetworkSession{
 				$this->logger->setPrefix($this->getLogPrefix());
 				$this->manager->markLoginReceived($this);
 			},
-			\Closure::fromCallable([$this, "setAuthenticationStatus"])
+			$this->setAuthenticationStatus(...)
 		));
 	}
 
 	protected function createPlayer() : void{
 		$this->server->createPlayer($this, $this->info, $this->authenticated, $this->cachedOfflinePlayerData)->onCompletion(
-			\Closure::fromCallable([$this, 'onPlayerCreated']),
+			$this->onPlayerCreated(...),
 			function() : void{
 				//TODO: this should never actually occur... right?
 				$this->logger->error("Failed to create player");

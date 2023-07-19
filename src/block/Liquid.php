@@ -312,7 +312,7 @@ abstract class Liquid extends Transparent{
 			}
 
 			if($adjacentDecay <= self::MAX_DECAY){
-				$calculator = new MinimumCostFlowCalculator($world, $this->getFlowDecayPerBlock(), \Closure::fromCallable([$this, 'canFlowInto']));
+				$calculator = new MinimumCostFlowCalculator($world, $this->getFlowDecayPerBlock(), $this->canFlowInto(...));
 				foreach($calculator->getOptimalFlowDirections($this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ()) as $facing){
 					$this->flowIntoBlock($world->getBlock($this->position->getSide($facing)), $adjacentDecay, false);
 				}
