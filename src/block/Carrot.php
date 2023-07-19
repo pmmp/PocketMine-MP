@@ -23,15 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use function mt_rand;
 
 class Carrot extends Crops{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			VanillaItems::CARROT()->setCount($this->age >= self::MAX_AGE ? mt_rand(1, 4) : 1)
+			VanillaItems::CARROT()->setCount($this->age >= self::MAX_AGE ? FortuneDropHelper::binomial($item, 1) : 1)
 		];
 	}
 

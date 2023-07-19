@@ -39,7 +39,6 @@ use pocketmine\world\format\io\FastChunkSerializer;
 
 class ChunkRequestTask extends AsyncTask{
 	private const TLS_KEY_PROMISE = "promise";
-	private const TLS_KEY_ERROR_HOOK = "errorHook";
 
 	protected string $chunk;
 	protected int $chunkX;
@@ -48,10 +47,7 @@ class ChunkRequestTask extends AsyncTask{
 	protected NonThreadSafeValue $compressor;
 	private string $tiles;
 
-	/**
-	 * @phpstan-param (\Closure() : void)|null $onError
-	 */
-	public function __construct(int $chunkX, int $chunkZ, Chunk $chunk, CompressBatchPromise $promise, Compressor $compressor, ?\Closure $onError = null){
+	public function __construct(int $chunkX, int $chunkZ, Chunk $chunk, CompressBatchPromise $promise, Compressor $compressor){
 		$this->compressor = new NonThreadSafeValue($compressor);
 
 		$this->chunk = FastChunkSerializer::serializeTerrain($chunk);
@@ -60,7 +56,6 @@ class ChunkRequestTask extends AsyncTask{
 		$this->tiles = ChunkSerializer::serializeTiles($chunk);
 
 		$this->storeLocal(self::TLS_KEY_PROMISE, $promise);
-		$this->storeLocal(self::TLS_KEY_ERROR_HOOK, $onError);
 	}
 
 	public function onRun() : void{
@@ -73,17 +68,6 @@ class ChunkRequestTask extends AsyncTask{
 		$stream = new BinaryStream();
 		PacketBatch::encodePackets($stream, $encoderContext, [LevelChunkPacket::create(new ChunkPosition($this->chunkX, $this->chunkZ), $subCount, false, null, $payload)]);
 		$this->setResult($this->compressor->deserialize()->compress($stream->getBuffer()));
-	}
-
-	public function onError() : void{
-		/**
-		 * @var \Closure|null $hook
-		 * @phpstan-var (\Closure() : void)|null $hook
-		 */
-		$hook = $this->fetchLocal(self::TLS_KEY_ERROR_HOOK);
-		if($hook !== null){
-			$hook();
-		}
 	}
 
 	public function onCompletion() : void{

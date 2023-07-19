@@ -135,6 +135,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Block(Ids::CAKE, Blocks::CAKE());
 		$this->map1to1Block(Ids::CAULDRON, Blocks::CAULDRON());
 		$this->map1to1Block(Ids::CHAIN, Blocks::CHAIN());
+		$this->map1to1Block(Ids::CHERRY_DOOR, Blocks::CHERRY_DOOR());
 		$this->map1to1Block(Ids::COMPARATOR, Blocks::REDSTONE_COMPARATOR());
 		$this->map1to1Block(Ids::CRIMSON_DOOR, Blocks::CRIMSON_DOOR());
 		$this->map1to1Block(Ids::DARK_OAK_DOOR, Blocks::DARK_OAK_DOOR());
@@ -185,6 +186,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::CHAINMAIL_HELMET, Items::CHAINMAIL_HELMET());
 		$this->map1to1Item(Ids::CHAINMAIL_LEGGINGS, Items::CHAINMAIL_LEGGINGS());
 		$this->map1to1Item(Ids::CHARCOAL, Items::CHARCOAL());
+		$this->map1to1Item(Ids::CHERRY_SIGN, Items::CHERRY_SIGN());
 		$this->map1to1Item(Ids::CHICKEN, Items::RAW_CHICKEN());
 		$this->map1to1Item(Ids::CHORUS_FRUIT, Items::CHORUS_FRUIT());
 		$this->map1to1Item(Ids::CLAY_BALL, Items::CLAY());

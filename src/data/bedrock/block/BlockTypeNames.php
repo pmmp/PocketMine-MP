@@ -98,7 +98,9 @@ final class BlockTypeNames{
 	public const BLACK_CANDLE = "minecraft:black_candle";
 	public const BLACK_CANDLE_CAKE = "minecraft:black_candle_cake";
 	public const BLACK_CARPET = "minecraft:black_carpet";
+	public const BLACK_CONCRETE = "minecraft:black_concrete";
 	public const BLACK_GLAZED_TERRACOTTA = "minecraft:black_glazed_terracotta";
+	public const BLACK_SHULKER_BOX = "minecraft:black_shulker_box";
 	public const BLACK_WOOL = "minecraft:black_wool";
 	public const BLACKSTONE = "minecraft:blackstone";
 	public const BLACKSTONE_DOUBLE_SLAB = "minecraft:blackstone_double_slab";
@@ -109,8 +111,10 @@ final class BlockTypeNames{
 	public const BLUE_CANDLE = "minecraft:blue_candle";
 	public const BLUE_CANDLE_CAKE = "minecraft:blue_candle_cake";
 	public const BLUE_CARPET = "minecraft:blue_carpet";
+	public const BLUE_CONCRETE = "minecraft:blue_concrete";
 	public const BLUE_GLAZED_TERRACOTTA = "minecraft:blue_glazed_terracotta";
 	public const BLUE_ICE = "minecraft:blue_ice";
+	public const BLUE_SHULKER_BOX = "minecraft:blue_shulker_box";
 	public const BLUE_WOOL = "minecraft:blue_wool";
 	public const BONE_BLOCK = "minecraft:bone_block";
 	public const BOOKSHELF = "minecraft:bookshelf";
@@ -122,9 +126,11 @@ final class BlockTypeNames{
 	public const BROWN_CANDLE = "minecraft:brown_candle";
 	public const BROWN_CANDLE_CAKE = "minecraft:brown_candle_cake";
 	public const BROWN_CARPET = "minecraft:brown_carpet";
+	public const BROWN_CONCRETE = "minecraft:brown_concrete";
 	public const BROWN_GLAZED_TERRACOTTA = "minecraft:brown_glazed_terracotta";
 	public const BROWN_MUSHROOM = "minecraft:brown_mushroom";
 	public const BROWN_MUSHROOM_BLOCK = "minecraft:brown_mushroom_block";
+	public const BROWN_SHULKER_BOX = "minecraft:brown_shulker_box";
 	public const BROWN_WOOL = "minecraft:brown_wool";
 	public const BUBBLE_COLUMN = "minecraft:bubble_column";
 	public const BUBBLE_CORAL = "minecraft:bubble_coral";
@@ -188,7 +194,6 @@ final class BlockTypeNames{
 	public const COLORED_TORCH_RG = "minecraft:colored_torch_rg";
 	public const COMMAND_BLOCK = "minecraft:command_block";
 	public const COMPOSTER = "minecraft:composter";
-	public const CONCRETE = "minecraft:concrete";
 	public const CONCRETE_POWDER = "minecraft:concrete_powder";
 	public const CONDUIT = "minecraft:conduit";
 	public const COPPER_BLOCK = "minecraft:copper_block";
@@ -229,7 +234,9 @@ final class BlockTypeNames{
 	public const CYAN_CANDLE = "minecraft:cyan_candle";
 	public const CYAN_CANDLE_CAKE = "minecraft:cyan_candle_cake";
 	public const CYAN_CARPET = "minecraft:cyan_carpet";
+	public const CYAN_CONCRETE = "minecraft:cyan_concrete";
 	public const CYAN_GLAZED_TERRACOTTA = "minecraft:cyan_glazed_terracotta";
+	public const CYAN_SHULKER_BOX = "minecraft:cyan_shulker_box";
 	public const CYAN_WOOL = "minecraft:cyan_wool";
 	public const DARK_OAK_BUTTON = "minecraft:dark_oak_button";
 	public const DARK_OAK_DOOR = "minecraft:dark_oak_door";
@@ -455,12 +462,16 @@ final class BlockTypeNames{
 	public const GRAY_CANDLE = "minecraft:gray_candle";
 	public const GRAY_CANDLE_CAKE = "minecraft:gray_candle_cake";
 	public const GRAY_CARPET = "minecraft:gray_carpet";
+	public const GRAY_CONCRETE = "minecraft:gray_concrete";
 	public const GRAY_GLAZED_TERRACOTTA = "minecraft:gray_glazed_terracotta";
+	public const GRAY_SHULKER_BOX = "minecraft:gray_shulker_box";
 	public const GRAY_WOOL = "minecraft:gray_wool";
 	public const GREEN_CANDLE = "minecraft:green_candle";
 	public const GREEN_CANDLE_CAKE = "minecraft:green_candle_cake";
 	public const GREEN_CARPET = "minecraft:green_carpet";
+	public const GREEN_CONCRETE = "minecraft:green_concrete";
 	public const GREEN_GLAZED_TERRACOTTA = "minecraft:green_glazed_terracotta";
+	public const GREEN_SHULKER_BOX = "minecraft:green_shulker_box";
 	public const GREEN_WOOL = "minecraft:green_wool";
 	public const GRINDSTONE = "minecraft:grindstone";
 	public const HANGING_ROOTS = "minecraft:hanging_roots";
@@ -513,18 +524,24 @@ final class BlockTypeNames{
 	public const LIGHT_BLUE_CANDLE = "minecraft:light_blue_candle";
 	public const LIGHT_BLUE_CANDLE_CAKE = "minecraft:light_blue_candle_cake";
 	public const LIGHT_BLUE_CARPET = "minecraft:light_blue_carpet";
+	public const LIGHT_BLUE_CONCRETE = "minecraft:light_blue_concrete";
 	public const LIGHT_BLUE_GLAZED_TERRACOTTA = "minecraft:light_blue_glazed_terracotta";
+	public const LIGHT_BLUE_SHULKER_BOX = "minecraft:light_blue_shulker_box";
 	public const LIGHT_BLUE_WOOL = "minecraft:light_blue_wool";
 	public const LIGHT_GRAY_CANDLE = "minecraft:light_gray_candle";
 	public const LIGHT_GRAY_CANDLE_CAKE = "minecraft:light_gray_candle_cake";
 	public const LIGHT_GRAY_CARPET = "minecraft:light_gray_carpet";
+	public const LIGHT_GRAY_CONCRETE = "minecraft:light_gray_concrete";
+	public const LIGHT_GRAY_SHULKER_BOX = "minecraft:light_gray_shulker_box";
 	public const LIGHT_GRAY_WOOL = "minecraft:light_gray_wool";
 	public const LIGHT_WEIGHTED_PRESSURE_PLATE = "minecraft:light_weighted_pressure_plate";
 	public const LIGHTNING_ROD = "minecraft:lightning_rod";
 	public const LIME_CANDLE = "minecraft:lime_candle";
 	public const LIME_CANDLE_CAKE = "minecraft:lime_candle_cake";
 	public const LIME_CARPET = "minecraft:lime_carpet";
+	public const LIME_CONCRETE = "minecraft:lime_concrete";
 	public const LIME_GLAZED_TERRACOTTA = "minecraft:lime_glazed_terracotta";
+	public const LIME_SHULKER_BOX = "minecraft:lime_shulker_box";
 	public const LIME_WOOL = "minecraft:lime_wool";
 	public const LIT_BLAST_FURNACE = "minecraft:lit_blast_furnace";
 	public const LIT_DEEPSLATE_REDSTONE_ORE = "minecraft:lit_deepslate_redstone_ore";
@@ -538,7 +555,9 @@ final class BlockTypeNames{
 	public const MAGENTA_CANDLE = "minecraft:magenta_candle";
 	public const MAGENTA_CANDLE_CAKE = "minecraft:magenta_candle_cake";
 	public const MAGENTA_CARPET = "minecraft:magenta_carpet";
+	public const MAGENTA_CONCRETE = "minecraft:magenta_concrete";
 	public const MAGENTA_GLAZED_TERRACOTTA = "minecraft:magenta_glazed_terracotta";
+	public const MAGENTA_SHULKER_BOX = "minecraft:magenta_shulker_box";
 	public const MAGENTA_WOOL = "minecraft:magenta_wool";
 	public const MAGMA = "minecraft:magma";
 	public const MANGROVE_BUTTON = "minecraft:mangrove_button";
@@ -600,7 +619,9 @@ final class BlockTypeNames{
 	public const ORANGE_CANDLE = "minecraft:orange_candle";
 	public const ORANGE_CANDLE_CAKE = "minecraft:orange_candle_cake";
 	public const ORANGE_CARPET = "minecraft:orange_carpet";
+	public const ORANGE_CONCRETE = "minecraft:orange_concrete";
 	public const ORANGE_GLAZED_TERRACOTTA = "minecraft:orange_glazed_terracotta";
+	public const ORANGE_SHULKER_BOX = "minecraft:orange_shulker_box";
 	public const ORANGE_WOOL = "minecraft:orange_wool";
 	public const OXIDIZED_COPPER = "minecraft:oxidized_copper";
 	public const OXIDIZED_CUT_COPPER = "minecraft:oxidized_cut_copper";
@@ -613,8 +634,10 @@ final class BlockTypeNames{
 	public const PINK_CANDLE = "minecraft:pink_candle";
 	public const PINK_CANDLE_CAKE = "minecraft:pink_candle_cake";
 	public const PINK_CARPET = "minecraft:pink_carpet";
+	public const PINK_CONCRETE = "minecraft:pink_concrete";
 	public const PINK_GLAZED_TERRACOTTA = "minecraft:pink_glazed_terracotta";
 	public const PINK_PETALS = "minecraft:pink_petals";
+	public const PINK_SHULKER_BOX = "minecraft:pink_shulker_box";
 	public const PINK_WOOL = "minecraft:pink_wool";
 	public const PISTON = "minecraft:piston";
 	public const PISTON_ARM_COLLISION = "minecraft:piston_arm_collision";
@@ -657,7 +680,9 @@ final class BlockTypeNames{
 	public const PURPLE_CANDLE = "minecraft:purple_candle";
 	public const PURPLE_CANDLE_CAKE = "minecraft:purple_candle_cake";
 	public const PURPLE_CARPET = "minecraft:purple_carpet";
+	public const PURPLE_CONCRETE = "minecraft:purple_concrete";
 	public const PURPLE_GLAZED_TERRACOTTA = "minecraft:purple_glazed_terracotta";
+	public const PURPLE_SHULKER_BOX = "minecraft:purple_shulker_box";
 	public const PURPLE_WOOL = "minecraft:purple_wool";
 	public const PURPUR_BLOCK = "minecraft:purpur_block";
 	public const PURPUR_STAIRS = "minecraft:purpur_stairs";
@@ -672,6 +697,7 @@ final class BlockTypeNames{
 	public const RED_CANDLE = "minecraft:red_candle";
 	public const RED_CANDLE_CAKE = "minecraft:red_candle_cake";
 	public const RED_CARPET = "minecraft:red_carpet";
+	public const RED_CONCRETE = "minecraft:red_concrete";
 	public const RED_FLOWER = "minecraft:red_flower";
 	public const RED_GLAZED_TERRACOTTA = "minecraft:red_glazed_terracotta";
 	public const RED_MUSHROOM = "minecraft:red_mushroom";
@@ -680,6 +706,7 @@ final class BlockTypeNames{
 	public const RED_NETHER_BRICK_STAIRS = "minecraft:red_nether_brick_stairs";
 	public const RED_SANDSTONE = "minecraft:red_sandstone";
 	public const RED_SANDSTONE_STAIRS = "minecraft:red_sandstone_stairs";
+	public const RED_SHULKER_BOX = "minecraft:red_shulker_box";
 	public const RED_WOOL = "minecraft:red_wool";
 	public const REDSTONE_BLOCK = "minecraft:redstone_block";
 	public const REDSTONE_LAMP = "minecraft:redstone_lamp";
@@ -705,7 +732,6 @@ final class BlockTypeNames{
 	public const SEA_PICKLE = "minecraft:sea_pickle";
 	public const SEAGRASS = "minecraft:seagrass";
 	public const SHROOMLIGHT = "minecraft:shroomlight";
-	public const SHULKER_BOX = "minecraft:shulker_box";
 	public const SILVER_GLAZED_TERRACOTTA = "minecraft:silver_glazed_terracotta";
 	public const SKULL = "minecraft:skull";
 	public const SLIME = "minecraft:slime";
@@ -856,7 +882,9 @@ final class BlockTypeNames{
 	public const WHITE_CANDLE = "minecraft:white_candle";
 	public const WHITE_CANDLE_CAKE = "minecraft:white_candle_cake";
 	public const WHITE_CARPET = "minecraft:white_carpet";
+	public const WHITE_CONCRETE = "minecraft:white_concrete";
 	public const WHITE_GLAZED_TERRACOTTA = "minecraft:white_glazed_terracotta";
+	public const WHITE_SHULKER_BOX = "minecraft:white_shulker_box";
 	public const WHITE_WOOL = "minecraft:white_wool";
 	public const WITHER_ROSE = "minecraft:wither_rose";
 	public const WOOD = "minecraft:wood";
@@ -867,7 +895,9 @@ final class BlockTypeNames{
 	public const YELLOW_CANDLE = "minecraft:yellow_candle";
 	public const YELLOW_CANDLE_CAKE = "minecraft:yellow_candle_cake";
 	public const YELLOW_CARPET = "minecraft:yellow_carpet";
+	public const YELLOW_CONCRETE = "minecraft:yellow_concrete";
 	public const YELLOW_FLOWER = "minecraft:yellow_flower";
 	public const YELLOW_GLAZED_TERRACOTTA = "minecraft:yellow_glazed_terracotta";
+	public const YELLOW_SHULKER_BOX = "minecraft:yellow_shulker_box";
 	public const YELLOW_WOOL = "minecraft:yellow_wool";
 }

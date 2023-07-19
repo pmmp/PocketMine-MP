@@ -27,6 +27,7 @@ use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
+use pocketmine\block\utils\DripleafState;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
@@ -145,6 +146,7 @@ $enumsUsed = [
 	CopperOxidation::getAll(),
 	CoralType::getAll(),
 	DirtType::getAll(),
+	DripleafState::getAll(),
 	DyeColor::getAll(),
 	FroglightType::getAll(),
 	LeverFacing::getAll(),

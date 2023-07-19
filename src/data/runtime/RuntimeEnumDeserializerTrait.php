@@ -71,6 +71,16 @@ trait RuntimeEnumDeserializerTrait{
 		};
 	}
 
+	public function dripleafState(\pocketmine\block\utils\DripleafState &$value) : void{
+		$value = match($this->readInt(2)){
+			0 => \pocketmine\block\utils\DripleafState::FULL_TILT(),
+			1 => \pocketmine\block\utils\DripleafState::PARTIAL_TILT(),
+			2 => \pocketmine\block\utils\DripleafState::STABLE(),
+			3 => \pocketmine\block\utils\DripleafState::UNSTABLE(),
+			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for DripleafState")
+		};
+	}
+
 	public function dyeColor(\pocketmine\block\utils\DyeColor &$value) : void{
 		$value = match($this->readInt(4)){
 			0 => \pocketmine\block\utils\DyeColor::BLACK(),
@@ -130,10 +140,11 @@ trait RuntimeEnumDeserializerTrait{
 		$value = match($this->readInt(3)){
 			0 => \pocketmine\block\utils\MobHeadType::CREEPER(),
 			1 => \pocketmine\block\utils\MobHeadType::DRAGON(),
-			2 => \pocketmine\block\utils\MobHeadType::PLAYER(),
-			3 => \pocketmine\block\utils\MobHeadType::SKELETON(),
-			4 => \pocketmine\block\utils\MobHeadType::WITHER_SKELETON(),
-			5 => \pocketmine\block\utils\MobHeadType::ZOMBIE(),
+			2 => \pocketmine\block\utils\MobHeadType::PIGLIN(),
+			3 => \pocketmine\block\utils\MobHeadType::PLAYER(),
+			4 => \pocketmine\block\utils\MobHeadType::SKELETON(),
+			5 => \pocketmine\block\utils\MobHeadType::WITHER_SKELETON(),
+			6 => \pocketmine\block\utils\MobHeadType::ZOMBIE(),
 			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for MobHeadType")
 		};
 	}
@@ -189,16 +200,17 @@ trait RuntimeEnumDeserializerTrait{
 			29 => \pocketmine\item\PotionType::STRONG_LEAPING(),
 			30 => \pocketmine\item\PotionType::STRONG_POISON(),
 			31 => \pocketmine\item\PotionType::STRONG_REGENERATION(),
-			32 => \pocketmine\item\PotionType::STRONG_STRENGTH(),
-			33 => \pocketmine\item\PotionType::STRONG_SWIFTNESS(),
-			34 => \pocketmine\item\PotionType::STRONG_TURTLE_MASTER(),
-			35 => \pocketmine\item\PotionType::SWIFTNESS(),
-			36 => \pocketmine\item\PotionType::THICK(),
-			37 => \pocketmine\item\PotionType::TURTLE_MASTER(),
-			38 => \pocketmine\item\PotionType::WATER(),
-			39 => \pocketmine\item\PotionType::WATER_BREATHING(),
-			40 => \pocketmine\item\PotionType::WEAKNESS(),
-			41 => \pocketmine\item\PotionType::WITHER(),
+			32 => \pocketmine\item\PotionType::STRONG_SLOWNESS(),
+			33 => \pocketmine\item\PotionType::STRONG_STRENGTH(),
+			34 => \pocketmine\item\PotionType::STRONG_SWIFTNESS(),
+			35 => \pocketmine\item\PotionType::STRONG_TURTLE_MASTER(),
+			36 => \pocketmine\item\PotionType::SWIFTNESS(),
+			37 => \pocketmine\item\PotionType::THICK(),
+			38 => \pocketmine\item\PotionType::TURTLE_MASTER(),
+			39 => \pocketmine\item\PotionType::WATER(),
+			40 => \pocketmine\item\PotionType::WATER_BREATHING(),
+			41 => \pocketmine\item\PotionType::WEAKNESS(),
+			42 => \pocketmine\item\PotionType::WITHER(),
 			default => throw new InvalidSerializedRuntimeDataException("Invalid serialized value for PotionType")
 		};
 	}

@@ -217,6 +217,7 @@ abstract class Living extends Entity{
 	public function setSneaking(bool $value = true) : void{
 		$this->sneaking = $value;
 		$this->networkPropertiesDirty = true;
+		$this->recalculateSize();
 	}
 
 	public function isSprinting() : bool{
@@ -258,6 +259,8 @@ abstract class Living extends Entity{
 		if($this->isSwimming() || $this->isGliding()){
 			$width = $size->getWidth();
 			$this->setSize((new EntitySizeInfo($width, $width, $width * 0.9))->scale($this->getScale()));
+		}elseif($this->isSneaking()){
+			$this->setSize((new EntitySizeInfo(3 / 4 * $size->getHeight(), $size->getWidth(), 3 / 4 * $size->getEyeHeight()))->scale($this->getScale()));
 		}else{
 			$this->setSize($size->scale($this->getScale()));
 		}
@@ -484,14 +487,16 @@ abstract class Living extends Entity{
 	public function damageArmor(float $damage) : void{
 		$durabilityRemoved = (int) max(floor($damage / 4), 1);
 
-		$armor = $this->armorInventory->getContents(true);
-		foreach($armor as $item){
+		$armor = $this->armorInventory->getContents();
+		foreach($armor as $slotId => $item){
 			if($item instanceof Armor){
+				$oldItem = clone $item;
 				$this->damageItem($item, $durabilityRemoved);
+				if(!$item->equalsExact($oldItem)){
+					$this->armorInventory->setItem($slotId, $item);
+				}
 			}
 		}
-
-		$this->armorInventory->setContents($armor);
 	}
 
 	private function damageItem(Durable $item, int $durabilityRemoved) : void{
@@ -637,9 +642,12 @@ abstract class Living extends Entity{
 			}
 
 			foreach($this->armorInventory->getContents() as $index => $item){
+				$oldItem = clone $item;
 				if($item->onTickWorn($this)){
 					$hasUpdate = true;
-					$this->armorInventory->setItem($index, $item);
+					if(!$item->equalsExact($oldItem)){
+						$this->armorInventory->setItem($index, $item);
+					}
 				}
 			}
 		}

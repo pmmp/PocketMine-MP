@@ -28,6 +28,7 @@ use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\WallConnectionType;
+use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateNames;
@@ -134,6 +135,29 @@ final class BlockStateReader{
 		]);
 	}
 
+	/**
+	 * @return int[]
+	 * @phpstan-return array<int, int>
+	 */
+	public function readFacingFlags() : array{
+		$result = [];
+		$flags = $this->readBoundedInt(BlockStateNames::MULTI_FACE_DIRECTION_BITS, 0, 63);
+		foreach([
+			BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_DOWN => Facing::DOWN,
+			BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_UP => Facing::UP,
+			BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_NORTH => Facing::NORTH,
+			BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_SOUTH => Facing::SOUTH,
+			BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_WEST => Facing::WEST,
+			BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_EAST => Facing::EAST
+		] as $flag => $facing){
+			if(($flags & $flag) !== 0){
+				$result[$facing] = $facing;
+			}
+		}
+
+		return $result;
+	}
+
 	/** @throws BlockStateDeserializeException */
 	public function readEndRodFacingDirection() : int{
 		$result = $this->readFacingDirection();
@@ -190,12 +214,12 @@ final class BlockStateReader{
 	 * @throws BlockStateDeserializeException
 	 */
 	public function readCardinalHorizontalFacing() : int{
-		return match($raw = $this->readString(BlockStateNames::CARDINAL_DIRECTION)){
-			StringValues::CARDINAL_DIRECTION_NORTH => Facing::NORTH,
-			StringValues::CARDINAL_DIRECTION_SOUTH => Facing::SOUTH,
-			StringValues::CARDINAL_DIRECTION_WEST => Facing::WEST,
-			StringValues::CARDINAL_DIRECTION_EAST => Facing::EAST,
-			default => throw $this->badValueException(BlockStateNames::CARDINAL_DIRECTION, $raw)
+		return match($raw = $this->readString(BlockStateNames::MC_CARDINAL_DIRECTION)){
+			StringValues::MC_CARDINAL_DIRECTION_NORTH => Facing::NORTH,
+			StringValues::MC_CARDINAL_DIRECTION_SOUTH => Facing::SOUTH,
+			StringValues::MC_CARDINAL_DIRECTION_WEST => Facing::WEST,
+			StringValues::MC_CARDINAL_DIRECTION_EAST => Facing::EAST,
+			default => throw $this->badValueException(BlockStateNames::MC_CARDINAL_DIRECTION, $raw)
 		};
 	}
 

@@ -113,6 +113,8 @@ use function mb_strtolower;
  * @method static Bedrock BEDROCK()
  * @method static Beetroot BEETROOTS()
  * @method static Bell BELL()
+ * @method static BigDripleafHead BIG_DRIPLEAF_HEAD()
+ * @method static BigDripleafStem BIG_DRIPLEAF_STEM()
  * @method static WoodenButton BIRCH_BUTTON()
  * @method static WoodenDoor BIRCH_DOOR()
  * @method static WoodenFence BIRCH_FENCE()
@@ -159,6 +161,20 @@ use function mb_strtolower;
  * @method static CaveVines CAVE_VINES()
  * @method static Chain CHAIN()
  * @method static ChemicalHeat CHEMICAL_HEAT()
+ * @method static WoodenButton CHERRY_BUTTON()
+ * @method static WoodenDoor CHERRY_DOOR()
+ * @method static WoodenFence CHERRY_FENCE()
+ * @method static FenceGate CHERRY_FENCE_GATE()
+ * @method static Leaves CHERRY_LEAVES()
+ * @method static Wood CHERRY_LOG()
+ * @method static Planks CHERRY_PLANKS()
+ * @method static WoodenPressurePlate CHERRY_PRESSURE_PLATE()
+ * @method static FloorSign CHERRY_SIGN()
+ * @method static WoodenSlab CHERRY_SLAB()
+ * @method static WoodenStairs CHERRY_STAIRS()
+ * @method static WoodenTrapdoor CHERRY_TRAPDOOR()
+ * @method static WallSign CHERRY_WALL_SIGN()
+ * @method static Wood CHERRY_WOOD()
  * @method static Chest CHEST()
  * @method static Opaque CHISELED_DEEPSLATE()
  * @method static Opaque CHISELED_NETHER_BRICKS()
@@ -417,6 +433,7 @@ use function mb_strtolower;
  * @method static ItemFrame GLOWING_ITEM_FRAME()
  * @method static GlowingObsidian GLOWING_OBSIDIAN()
  * @method static Glowstone GLOWSTONE()
+ * @method static GlowLichen GLOW_LICHEN()
  * @method static Opaque GOLD()
  * @method static GoldOre GOLD_ORE()
  * @method static Opaque GRANITE()
@@ -643,6 +660,7 @@ use function mb_strtolower;
  * @method static Opaque SHROOMLIGHT()
  * @method static ShulkerBox SHULKER_BOX()
  * @method static Slime SLIME()
+ * @method static SmallDripleaf SMALL_DRIPLEAF()
  * @method static SmithingTable SMITHING_TABLE()
  * @method static Furnace SMOKER()
  * @method static Opaque SMOOTH_BASALT()
@@ -864,6 +882,7 @@ final class VanillaBlocks{
 		self::register("glass_pane", new GlassPane(new BID(Ids::GLASS_PANE), "Glass Pane", $glassBreakInfo));
 		self::register("glowing_obsidian", new GlowingObsidian(new BID(Ids::GLOWING_OBSIDIAN), "Glowing Obsidian", new Info(BreakInfo::pickaxe(10.0, ToolTier::DIAMOND(), 50.0))));
 		self::register("glowstone", new Glowstone(new BID(Ids::GLOWSTONE), "Glowstone", new Info(BreakInfo::pickaxe(0.3))));
+		self::register("glow_lichen", new GlowLichen(new BID(Ids::GLOW_LICHEN), "Glow Lichen", new Info(BreakInfo::axe(0.2, null, 0.2))));
 		self::register("gold", new Opaque(new BID(Ids::GOLD), "Gold Block", new Info(BreakInfo::pickaxe(3.0, ToolTier::IRON(), 30.0))));
 
 		$grassBreakInfo = BreakInfo::shovel(0.6);
@@ -1582,6 +1601,10 @@ final class VanillaBlocks{
 		self::register("hanging_roots", new HangingRoots(new BID(Ids::HANGING_ROOTS), "Hanging Roots", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
 
 		self::register("cave_vines", new CaveVines(new BID(Ids::CAVE_VINES), "Cave Vines", new Info(BreakInfo::instant())));
+
+		self::register("small_dripleaf", new SmallDripleaf(new BID(Ids::SMALL_DRIPLEAF), "Small Dripleaf", new Info(BreakInfo::instant(BlockToolType::SHEARS, toolHarvestLevel: 1))));
+		self::register("big_dripleaf_head", new BigDripleafHead(new BID(Ids::BIG_DRIPLEAF_HEAD), "Big Dripleaf", new Info(BreakInfo::instant())));
+		self::register("big_dripleaf_stem", new BigDripleafStem(new BID(Ids::BIG_DRIPLEAF_STEM), "Big Dripleaf Stem", new Info(BreakInfo::instant())));
 	}
 
 	private static function registerBlocksR18() : void{

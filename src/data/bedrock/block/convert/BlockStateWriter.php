@@ -29,6 +29,7 @@ use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\block\utils\WoodType;
+use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateNames;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
@@ -39,6 +40,7 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
+use pocketmine\utils\AssumptionFailedError;
 
 final class BlockStateWriter{
 
@@ -86,6 +88,28 @@ final class BlockStateWriter{
 			default => throw new BlockStateSerializeException("Invalid Facing $value")
 		});
 		return $this;
+	}
+
+	/**
+	 * @param int[] $faces
+	 * @phpstan-param array<int, int> $faces
+	 * @return $this
+	 */
+	public function writeFacingFlags(array $faces) : self{
+		$result = 0;
+		foreach($faces as $face){
+			$result |= match($face){
+				Facing::DOWN => BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_DOWN,
+				Facing::UP => BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_UP,
+				Facing::NORTH => BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_NORTH,
+				Facing::SOUTH => BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_SOUTH,
+				Facing::WEST => BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_WEST,
+				Facing::EAST => BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_EAST,
+				default => throw new AssumptionFailedError("Unhandled face $face")
+			};
+		}
+
+		return $this->writeInt(BlockStateNames::MULTI_FACE_DIRECTION_BITS, $result);
 	}
 
 	/** @return $this */
@@ -146,11 +170,11 @@ final class BlockStateWriter{
 	 * @return $this
 	 */
 	public function writeCardinalHorizontalFacing(int $value) : self{
-		return $this->writeString(BlockStateNames::CARDINAL_DIRECTION, match($value){
-			Facing::SOUTH => StringValues::CARDINAL_DIRECTION_SOUTH,
-			Facing::WEST => StringValues::CARDINAL_DIRECTION_WEST,
-			Facing::NORTH => StringValues::CARDINAL_DIRECTION_NORTH,
-			Facing::EAST => StringValues::CARDINAL_DIRECTION_EAST,
+		return $this->writeString(BlockStateNames::MC_CARDINAL_DIRECTION, match($value){
+			Facing::SOUTH => StringValues::MC_CARDINAL_DIRECTION_SOUTH,
+			Facing::WEST => StringValues::MC_CARDINAL_DIRECTION_WEST,
+			Facing::NORTH => StringValues::MC_CARDINAL_DIRECTION_NORTH,
+			Facing::EAST => StringValues::MC_CARDINAL_DIRECTION_EAST,
 			default => throw new BlockStateSerializeException("Invalid horizontal facing $value")
 		});
 	}

@@ -51,7 +51,7 @@ use const SORT_NUMERIC;
 final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 
 	public function __construct(
-		private StandardPacketBroadcaster $broadcaster,
+		private PacketBroadcaster $broadcaster,
 		private TypeConverter $typeConverter
 	){}
 
