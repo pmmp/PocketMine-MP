@@ -116,9 +116,7 @@ class InventoryManager{
 		$this->addComplex(UIInventorySlotOffset::CURSOR, $this->player->getCursorInventory());
 		$this->addComplex(UIInventorySlotOffset::CRAFTING2X2_INPUT, $this->player->getCraftingGrid());
 
-		$this->player->getInventory()->getHeldItemIndexChangeListeners()->add(function() : void{
-			$this->syncSelectedHotbarSlot();
-		});
+		$this->player->getInventory()->getHeldItemIndexChangeListeners()->add($this->syncSelectedHotbarSlot(...));
 	}
 
 	private function associateIdWithInventory(int $id, Inventory $inventory) : void{

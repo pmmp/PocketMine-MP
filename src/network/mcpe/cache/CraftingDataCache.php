@@ -95,12 +95,8 @@ final class CraftingDataCache{
 				$recipesWithTypeIds[] = new ProtocolShapelessRecipe(
 					CraftingDataPacket::ENTRY_SHAPELESS,
 					Binary::writeInt($index),
-					array_map(function(RecipeIngredient $item) use ($converter) : ProtocolRecipeIngredient{
-						return $converter->coreRecipeIngredientToNet($item);
-					}, $recipe->getIngredientList()),
-					array_map(function(Item $item) use ($converter) : ItemStack{
-						return $converter->coreItemStackToNet($item);
-					}, $recipe->getResults()),
+					array_map($converter->coreRecipeIngredientToNet(...), $recipe->getIngredientList()),
+					array_map($converter->coreItemStackToNet(...), $recipe->getResults()),
 					$nullUUID,
 					$typeTag,
 					50,
@@ -118,9 +114,7 @@ final class CraftingDataCache{
 					CraftingDataPacket::ENTRY_SHAPED,
 					Binary::writeInt($index),
 					$inputs,
-					array_map(function(Item $item) use ($converter) : ItemStack{
-						return $converter->coreItemStackToNet($item);
-					}, $recipe->getResults()),
+					array_map($converter->coreItemStackToNet(...), $recipe->getResults()),
 					$nullUUID,
 					CraftingRecipeBlockName::CRAFTING_TABLE,
 					50,
