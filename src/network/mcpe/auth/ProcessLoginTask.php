@@ -34,7 +34,6 @@ use pocketmine\thread\NonThreadSafeValue;
 use function base64_decode;
 use function igbinary_serialize;
 use function igbinary_unserialize;
-use function openssl_error_string;
 use function time;
 
 class ProcessLoginTask extends AsyncTask{
@@ -164,7 +163,8 @@ class ProcessLoginTask extends AsyncTask{
 		try{
 			$signingKeyOpenSSL = JwtUtils::parseDerPublicKey($headerDerKey);
 		}catch(JwtException $e){
-			throw new VerifyLoginException("Invalid JWT public key: " . openssl_error_string());
+			//TODO: we shouldn't be showing this internal information to the client
+			throw new VerifyLoginException("Invalid JWT public key: " . $e->getMessage(), null, 0, $e);
 		}
 		try{
 			if(!JwtUtils::verify($jwt, $signingKeyOpenSSL)){
@@ -203,6 +203,12 @@ class ProcessLoginTask extends AsyncTask{
 			$identityPublicKey = base64_decode($claims->identityPublicKey, true);
 			if($identityPublicKey === false){
 				throw new VerifyLoginException("Invalid identityPublicKey: base64 error decoding");
+			}
+			try{
+				//verify key format and parameters
+				JwtUtils::parseDerPublicKey($identityPublicKey);
+			}catch(JwtException $e){
+				throw new VerifyLoginException("Invalid identityPublicKey: " . $e->getMessage(), null, 0, $e);
 			}
 			$currentPublicKey = $identityPublicKey; //if there are further links, the next link should be signed with this
 		}
