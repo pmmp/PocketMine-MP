@@ -118,8 +118,6 @@ class Hopper extends Transparent implements HopperInteractable{
 		$world->scheduleDelayedBlockUpdate($this->position, $updateTime);
 	}
 
-	
-
 	public function pull(TileHopper $tileHopper) : bool{
 		$blockAbove = $this->getSide(Facing::UP);
 		if(!$blockAbove instanceof Chest) return false;
