@@ -90,4 +90,4 @@ while(!feof($socket)){
 //For simplicity's sake, we don't bother with a graceful shutdown here.
 //The parent process would normally forcibly terminate the child process anyway, so we only reach this point if the
 //parent process was terminated forcibly and didn't clean up after itself.
-Process::kill(Process::pid(), false);
+Process::kill(Process::pid());
