@@ -103,12 +103,12 @@ class Hopper extends Transparent implements HopperInteractable{
 		$facingBlock = $this->getSide($this->facing);
 		if(!$facingBlock instanceof HopperInteractable) return;
 
-		$updateTime = $facingBlock->pull($tile) ? 8 : 1;
+		$updateTime = $facingBlock->push($tile) ? 8 : 1;
 
 		$world->scheduleDelayedBlockUpdate($this->position, $updateTime);
 	}
 
-	public function pull(TileHopper $tileHopper) : bool{
+	public function push(TileHopper $tileHopper) : bool{
 		$hopperTile = $this->position->getWorld()->getTile($this->position);
 		if(!$hopperTile instanceof TileHopper) return false;
 
