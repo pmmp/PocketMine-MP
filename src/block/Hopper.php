@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\SupportType;
@@ -98,14 +99,53 @@ class Hopper extends Transparent implements HopperInteractable{
 		$world = $this->position->getWorld();
 
 		$tile = $this->position->getWorld()->getTile($this->position);
-		if(!$tile instanceof TileHopper) return;
+		if(!$tile instanceof TileHopper) { $world->scheduleDelayedBlockUpdate($this->position, 1); return; }
 
 		$facingBlock = $this->getSide($this->facing);
-		if(!$facingBlock instanceof HopperInteractable) return;
+		$topBlock = $this->getSide(Facing::UP);
+		if(!$facingBlock instanceof HopperInteractable && !$topBlock instanceof Chest) { $world->scheduleDelayedBlockUpdate($this->position, 1); return; }
 
+		$pullSuccess = $this->pull($tile);
+
+		if($pullSuccess && !$facingBlock instanceof HopperInteractable){
+			$world->scheduleDelayedBlockUpdate($this->position, 8);
+			return;
+		}
+
+		if(!$facingBlock instanceof HopperInteractable) { $world->scheduleDelayedBlockUpdate($this->position, 1); return; }
 		$updateTime = $facingBlock->push($tile) ? 8 : 1;
 
 		$world->scheduleDelayedBlockUpdate($this->position, $updateTime);
+	}
+
+	
+
+	public function pull(TileHopper $tileHopper) : bool{
+		$blockAbove = $this->getSide(Facing::UP);
+		if(!$blockAbove instanceof Chest) return false;
+
+		$tileChest = $blockAbove->position->getWorld()->getTile($blockAbove->position);
+		if(!$tileChest instanceof TileChest) return false;
+
+		$sourceInventory = $tileChest->getInventory();
+		$targetInventory = $tileHopper->getInventory();
+
+		for($i = 0; $i < $sourceInventory->getSize(); $i++){
+			$itemStack = $sourceInventory->getItem($i);
+
+			if($itemStack->isNull()) continue;
+
+			$singleItem = $itemStack->pop(1);
+
+			if(!$targetInventory->canAddItem($singleItem)) continue;
+
+			$sourceInventory->removeItem($singleItem);
+			$targetInventory->addItem($singleItem);
+
+			return true;
+		}
+
+		return false;
 	}
 
 	public function push(TileHopper $tileHopper) : bool{
