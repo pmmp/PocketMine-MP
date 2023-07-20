@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Chest as TileChest;
+use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
@@ -34,7 +35,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
-class Chest extends Transparent{
+class Chest extends Transparent implements HopperInteractable{
 	use FacesOppositePlacingPlayerTrait;
 	use HorizontalFacingTrait;
 
@@ -96,5 +97,30 @@ class Chest extends Transparent{
 
 	public function getFuelTime() : int{
 		return 300;
+	}
+
+	public function pull(TileHopper $tileHopper) : bool{
+		$chestTile = $this->position->getWorld()->getTile($this->position);
+		if(!$chestTile instanceof TileChest) return false;
+
+		$sourceInventory = $tileHopper->getInventory();
+		$targetInventory = $chestTile->getInventory();
+
+		for($i = 0; $i < $sourceInventory->getSize(); $i++){
+			$itemStack = $sourceInventory->getItem($i);
+
+			if($itemStack->isNull()) continue;
+
+			$singleItem = $itemStack->pop(1);
+
+			if(!$targetInventory->canAddItem($singleItem)) continue;
+
+			$sourceInventory->removeItem($singleItem);
+			$targetInventory->addItem($singleItem);
+
+			return true;
+		}
+
+		return false;
 	}
 }
