@@ -35,6 +35,7 @@ use pocketmine\entity\animation\Animation;
 use pocketmine\entity\animation\ArmSwingAnimation;
 use pocketmine\entity\animation\CriticalHitAnimation;
 use pocketmine\entity\Attribute;
+use pocketmine\entity\Consumable;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
@@ -671,6 +672,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function setUsingItem(bool $value) : void{
 		$this->startAction = $value ? $this->server->getTick() : -1;
 		$this->networkPropertiesDirty = true;
+	}
+
+	/**
+	 * Allow eating
+	 */
+	public function forceAllowEating() : bool{
+		return $this->isCreative() || $this->getWorld()->getDifficulty() === World::DIFFICULTY_PEACEFUL;
 	}
 
 	/**
@@ -1998,6 +2006,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				parent::emote($emoteId);
 			}
 		}
+	}
+
+	public function consumeObject(Consumable $consumable, bool $forceEating = false) : bool{
+		return parent::consumeObject($consumable, $this->forceAllowEating() || $forceEating);
 	}
 
 	/**
