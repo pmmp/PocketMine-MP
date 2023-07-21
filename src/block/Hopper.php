@@ -28,6 +28,7 @@ use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\inventory\SimpleInventory;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -128,22 +129,7 @@ class Hopper extends Transparent implements HopperInteractable{
 		$sourceInventory = $tile->getInventory();
 		$targetInventory = $tileHopper->getInventory();
 
-		for($i = 0; $i < $sourceInventory->getSize(); $i++){
-			$itemStack = $sourceInventory->getItem($i);
-
-			if($itemStack->isNull()) continue;
-
-			$singleItem = $itemStack->pop(1);
-
-			if(!$targetInventory->canAddItem($singleItem)) continue;
-
-			$sourceInventory->removeItem($singleItem);
-			$targetInventory->addItem($singleItem);
-
-			return true;
-		}
-
-		return false;
+		return $this->transferItem($sourceInventory, $targetInventory);
 	}
 
 	public function push(TileHopper $tileHopper) : bool{
@@ -153,6 +139,10 @@ class Hopper extends Transparent implements HopperInteractable{
 		$sourceInventory = $tileHopper->getInventory();
 		$targetInventory = $hopperTile->getInventory();
 
+		return $this->transferItem($sourceInventory, $targetInventory);
+	}
+
+	private function transferItem(SimpleInventory $sourceInventory, SimpleInventory $targetInventory) : bool{
 		for($i = 0; $i < $sourceInventory->getSize(); $i++){
 			$itemStack = $sourceInventory->getItem($i);
 
