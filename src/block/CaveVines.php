@@ -87,18 +87,18 @@ class CaveVines extends Flowable{
 		return $this->berries ? 14 : 0;
 	}
 
-	private function canBeSupportedBy(Block $block) : bool{
-		return $block->getSupportType(Facing::DOWN)->equals(SupportType::FULL()) || $block->hasSameTypeId($this);
+	private function canBeSupportedAt(Block $block) : bool{
+		return $block->getAdjacentSupportType(Facing::UP)->equals(SupportType::FULL()) || $block->hasSameTypeId($this);
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->getSide(Facing::UP))){
+		if(!$this->canBeSupportedAt($this)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy($blockReplace->getSide(Facing::UP))){
+		if(!$this->canBeSupportedAt($blockReplace)){
 			return false;
 		}
 		$this->age = mt_rand(0, self::MAX_AGE);

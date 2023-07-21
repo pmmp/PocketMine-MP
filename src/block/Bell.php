@@ -87,13 +87,13 @@ final class Bell extends Transparent{
 		return $this;
 	}
 
-	private function canBeSupportedBy(Block $block, int $face) : bool{
-		return !$block->getSupportType($face)->equals(SupportType::NONE());
+	private function canBeSupportedAt(Block $block, int $face) : bool{
+		return !$block->getAdjacentSupportType($face)->equals(SupportType::NONE());
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($face === Facing::UP){
-			if(!$this->canBeSupportedBy($tx->fetchBlock($this->position->down()), Facing::UP)){
+			if(!$this->canBeSupportedAt($blockReplace, Facing::DOWN)){
 				return false;
 			}
 			if($player !== null){
@@ -101,18 +101,18 @@ final class Bell extends Transparent{
 			}
 			$this->setAttachmentType(BellAttachmentType::FLOOR());
 		}elseif($face === Facing::DOWN){
-			if(!$this->canBeSupportedBy($tx->fetchBlock($this->position->up()), Facing::DOWN)){
+			if(!$this->canBeSupportedAt($blockReplace, Facing::UP)){
 				return false;
 			}
 			$this->setAttachmentType(BellAttachmentType::CEILING());
 		}else{
 			$this->setFacing($face);
-			if($this->canBeSupportedBy($tx->fetchBlock($this->position->getSide(Facing::opposite($face))), $face)){
+			if($this->canBeSupportedAt($blockReplace, Facing::opposite($face))){
 				$this->setAttachmentType(BellAttachmentType::ONE_WALL());
 			}else{
 				return false;
 			}
-			if($this->canBeSupportedBy($tx->fetchBlock($this->position->getSide($face)), Facing::opposite($face))){
+			if($this->canBeSupportedAt($blockReplace, $face)){
 				$this->setAttachmentType(BellAttachmentType::TWO_WALLS());
 			}
 		}
@@ -121,10 +121,10 @@ final class Bell extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		if(
-			($this->attachmentType->equals(BellAttachmentType::CEILING()) && !$this->canBeSupportedBy($this->getSide(Facing::UP), Facing::DOWN)) ||
-			($this->attachmentType->equals(BellAttachmentType::FLOOR()) && !$this->canBeSupportedBy($this->getSide(Facing::DOWN), Facing::UP)) ||
-			($this->attachmentType->equals(BellAttachmentType::ONE_WALL()) && !$this->canBeSupportedBy($this->getSide(Facing::opposite($this->facing)), $this->facing)) ||
-			($this->attachmentType->equals(BellAttachmentType::TWO_WALLS()) && (!$this->canBeSupportedBy($this->getSide($this->facing), Facing::opposite($this->facing)) || !$this->canBeSupportedBy($this->getSide(Facing::opposite($this->facing)), $this->facing)))
+			($this->attachmentType->equals(BellAttachmentType::CEILING()) && !$this->canBeSupportedAt($this, Facing::UP)) ||
+			($this->attachmentType->equals(BellAttachmentType::FLOOR()) && !$this->canBeSupportedAt($this, Facing::DOWN)) ||
+			($this->attachmentType->equals(BellAttachmentType::ONE_WALL()) && !$this->canBeSupportedAt($this, Facing::opposite($this->facing))) ||
+			($this->attachmentType->equals(BellAttachmentType::TWO_WALLS()) && (!$this->canBeSupportedAt($this, $this->facing) || !$this->canBeSupportedAt($this, Facing::opposite($this->facing))))
 		){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
