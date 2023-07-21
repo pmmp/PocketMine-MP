@@ -34,6 +34,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\Server;
 
 class Hopper extends Transparent implements HopperInteractable{
 	use PoweredByRedstoneTrait;
@@ -103,7 +104,7 @@ class Hopper extends Transparent implements HopperInteractable{
 
 		$facingBlock = $this->getSide($this->facing);
 		$topBlock = $this->getSide(Facing::UP);
-		if(!$facingBlock instanceof HopperInteractable && !$topBlock instanceof Chest) { $world->scheduleDelayedBlockUpdate($this->position, 1); return; }
+		if(!$facingBlock instanceof HopperInteractable && !$topBlock instanceof Chest && !$topBlock instanceof Hopper) { $world->scheduleDelayedBlockUpdate($this->position, 1); return; }
 
 		$pullSuccess = $this->pull($tile);
 
@@ -120,12 +121,12 @@ class Hopper extends Transparent implements HopperInteractable{
 
 	public function pull(TileHopper $tileHopper) : bool{
 		$blockAbove = $this->getSide(Facing::UP);
-		if(!$blockAbove instanceof Chest) return false;
+		if(!$blockAbove instanceof Chest && !$blockAbove instanceof Hopper) return false;
 
-		$tileChest = $blockAbove->position->getWorld()->getTile($blockAbove->position);
-		if(!$tileChest instanceof TileChest) return false;
+		$tile = $blockAbove->position->getWorld()->getTile($blockAbove->position);
+		if(!$tile instanceof TileChest && !$tile instanceof TileHopper) return false;
 
-		$sourceInventory = $tileChest->getInventory();
+		$sourceInventory = $tile->getInventory();
 		$targetInventory = $tileHopper->getInventory();
 
 		for($i = 0; $i < $sourceInventory->getSize(); $i++){
