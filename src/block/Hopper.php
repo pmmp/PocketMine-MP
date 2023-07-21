@@ -34,7 +34,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
-use pocketmine\Server;
 
 class Hopper extends Transparent implements HopperInteractable{
 	use PoweredByRedstoneTrait;
