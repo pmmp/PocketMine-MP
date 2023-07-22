@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\BlockBurnEvent;
 use pocketmine\event\block\BlockSpreadEvent;
@@ -58,12 +59,16 @@ class Fire extends BaseFire{
 		return 1;
 	}
 
+	private function canBeSupportedBy(Block $block) : bool{
+		return $block->getSupportType(Facing::UP)->equals(SupportType::FULL());
+	}
+
 	public function onNearbyBlockChange() : void{
 		$world = $this->position->getWorld();
 		$down = $this->getSide(Facing::DOWN);
 		if(SoulFire::canBeSupportedBy($down)){
 			$world->setBlock($this->position, VanillaBlocks::SOUL_FIRE());
-		}elseif($down->isTransparent() && !$this->hasAdjacentFlammableBlocks()){
+		}elseif(!$this->canBeSupportedBy($this->getSide(Facing::DOWN)) && !$this->hasAdjacentFlammableBlocks()){
 			$world->setBlock($this->position, VanillaBlocks::AIR());
 		}else{
 			$world->scheduleDelayedBlockUpdate($this->position, mt_rand(30, 40));
