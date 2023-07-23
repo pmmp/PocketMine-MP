@@ -490,9 +490,6 @@ class PluginManager{
 	public function disablePlugins() : void{
 		while(count($this->enabledPlugins) > 0){
 			foreach($this->enabledPlugins as $plugin){
-				if(!$plugin->isEnabled()){
-					continue; //in case a plugin disabled another plugin
-				}
 				$name = $plugin->getDescription()->getName();
 				if(isset($this->pluginDependents[$name]) && count($this->pluginDependents[$name]) > 0){
 					$this->server->getLogger()->debug("Deferring disable of plugin $name due to dependent plugins still enabled: " . implode(", ", array_keys($this->pluginDependents[$name])));
@@ -525,11 +522,7 @@ class PluginManager{
 
 	public function tickSchedulers(int $currentTick) : void{
 		foreach($this->enabledPlugins as $pluginName => $p){
-			if(isset($this->enabledPlugins[$pluginName])){
-				//the plugin may have been disabled as a result of updating other plugins' schedulers, and therefore
-				//removed from enabledPlugins; however, foreach will still see it due to copy-on-write
-				$p->getScheduler()->mainThreadHeartbeat($currentTick);
-			}
+			$p->getScheduler()->mainThreadHeartbeat($currentTick);
 		}
 	}
 
