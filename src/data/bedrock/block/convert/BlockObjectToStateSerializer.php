@@ -211,8 +211,8 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	 * @phpstan-param TBlockType $block
 	 * @phpstan-param \Closure(TBlockType) : Writer $serializer
 	 */
-	public function map(Block $block, \Closure $serializer) : void{
-		if(isset($this->serializers[$block->getTypeId()])){
+	public function map(Block $block, \Closure $serializer, bool $replace = false) : void{
+		if(!$replace && isset($this->serializers[$block->getTypeId()])){
 			throw new \InvalidArgumentException("Block type ID " . $block->getTypeId() . " already has a serializer registered");
 		}
 		$this->serializers[$block->getTypeId()] = $serializer;

@@ -62,9 +62,9 @@ final class ItemSerializer{
 	 * @phpstan-param TItemType $item
 	 * @phpstan-param \Closure(TItemType) : Data $serializer
 	 */
-	public function map(Item $item, \Closure $serializer) : void{
+	public function map(Item $item, \Closure $serializer, bool $replace = false) : void{
 		$index = $item->getTypeId();
-		if(isset($this->itemSerializers[$index])){
+		if(!$replace && isset($this->itemSerializers[$index])){
 			throw new \InvalidArgumentException("Item type ID " . $index . " already has a serializer registered");
 		}
 		$this->itemSerializers[$index] = $serializer;
@@ -75,9 +75,9 @@ final class ItemSerializer{
 	 * @phpstan-param TBlockType $block
 	 * @phpstan-param \Closure(TBlockType) : Data $serializer
 	 */
-	public function mapBlock(Block $block, \Closure $serializer) : void{
+	public function mapBlock(Block $block, \Closure $serializer, bool $replace = false) : void{
 		$index = $block->getTypeId();
-		if(isset($this->blockItemSerializers[$index])){
+		if(!$replace && isset($this->blockItemSerializers[$index])){
 			throw new \InvalidArgumentException("Block type ID " . $index . " already has a serializer registered");
 		}
 		$this->blockItemSerializers[$index] = $serializer;

@@ -84,12 +84,12 @@ class RuntimeBlockStateRegistry{
 	 * Maps a block type's state permutations to its corresponding state IDs. This is necessary for the block to be
 	 * recognized when fetching it by its state ID from chunks at runtime.
 	 *
-	 * @throws \InvalidArgumentException if the desired block type ID is already registered
+	 * @throws \InvalidArgumentException if the desired block type ID is already registered and $replace is set to false
 	 */
-	public function register(Block $block) : void{
+	public function register(Block $block, bool $replace = false) : void{
 		$typeId = $block->getTypeId();
 
-		if(isset($this->typeIndex[$typeId])){
+		if(!$replace && isset($this->typeIndex[$typeId])){
 			throw new \InvalidArgumentException("Block ID $typeId is already used by another block");
 		}
 

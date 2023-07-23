@@ -50,8 +50,8 @@ final class ItemDeserializer{
 	/**
 	 * @phpstan-param \Closure(Data) : Item $deserializer
 	 */
-	public function map(string $id, \Closure $deserializer) : void{
-		if(isset($this->deserializers[$id])){
+	public function map(string $id, \Closure $deserializer, bool $replace = false) : void{
+		if(!$replace && isset($this->deserializers[$id])){
 			throw new \InvalidArgumentException("Deserializer is already assigned for \"$id\"");
 		}
 		$this->deserializers[$id] = $deserializer;
