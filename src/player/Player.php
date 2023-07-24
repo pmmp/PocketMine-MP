@@ -2006,19 +2006,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 	}
 
-	public function consumeObject(Consumable $consumable) : bool{
-		if ($consumable instanceof FoodSource) {
-			if ($this instanceof Player && $this->allowForceEating()) {
-				return parent::consumeObject($consumable);
-			}
-			if ($consumable->requiresHunger() && !$this->getHungerManager()->isHungry()){
-				return false;
-			}
-		}
-
-		return parent::consumeObject($consumable);
-	}
-
 	/**
 	 * Drops an item on the ground in front of the player.
 	 */
