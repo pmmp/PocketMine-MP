@@ -24,7 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Hopper as TileHopper;
+use pocketmine\inventory\BaseInventory;
 
 interface HopperInteractable{
-	public function push(TileHopper $tileHopper) : bool;
+	public function push(BaseInventory $targetInventory) : bool;
+	public function pull(TileHopper $tileHopper) : bool;
 }

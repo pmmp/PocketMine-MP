@@ -23,12 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\inventory\BaseInventory;
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -96,34 +98,55 @@ class Furnace extends Opaque implements HopperInteractable{
 		}
 	}
 
-	public function push(TileHopper $tileHopper) : bool{
-		$furnanceTile = $this->position->getWorld()->getTile($this->position);
-		if(!$furnanceTile instanceof TileFurnace) return false;
+	public function pull(TileHopper $tileHopper) : bool{
+		$currentTile = $this->position->getWorld()->getTile($this->position);
+		if(!$currentTile instanceof TileFurnace) return false;
+
+		$targetInventory = $currentTile->getInventory();
+		if(!$targetInventory instanceof FurnaceInventory) return false;
 
 		$hopperBlock = $tileHopper->getBlock();
 		if(!$hopperBlock instanceof Hopper) return false;
 
 		$hopperFacing = $hopperBlock->getFacing();
-		$hopperInventory = $tileHopper->getInventory();
-		$furnanceInventory = $furnanceTile->getInventory();
 
-		for($i = 0; $i < $furnanceInventory->getSize(); $i++){
-			$itemStack = $hopperInventory->getItem($i);
+		$sourceInventory = $tileHopper->getInventory();
+
+		for($i = 0; $i < $targetInventory->getSize(); $i++){
+			$itemStack = $sourceInventory->getItem($i);
 
 			if($itemStack->isNull()) continue;
 
 			$singleItem = $itemStack->pop(1);
 
-			if($hopperFacing === Facing::DOWN && $furnanceInventory->canAddSmelting($singleItem)){
-				$this->transferItem($hopperInventory, $furnanceInventory, $singleItem, $furnanceInventory::SLOT_INPUT);
+			if($hopperFacing === Facing::DOWN && $targetInventory->canAddSmelting($singleItem)){
+				$this->transferItem($sourceInventory, $targetInventory, $singleItem, $targetInventory::SLOT_INPUT);
 				return true;
-			}elseif($hopperFacing !== Facing::DOWN && $hopperFacing !== Facing::UP && $furnanceInventory->canAddFuel($singleItem)){
-				$this->transferItem($hopperInventory, $furnanceInventory, $singleItem, $furnanceInventory::SLOT_FUEL);
+			}elseif($hopperFacing !== Facing::DOWN && $hopperFacing !== Facing::UP && $targetInventory->canAddFuel($singleItem)){
+				$this->transferItem($sourceInventory, $targetInventory, $singleItem, $targetInventory::SLOT_FUEL);
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	public function push(BaseInventory $targetInventory) : bool{
+		$currentTile = $this->position->getWorld()->getTile($this->position);
+		if(!$currentTile instanceof TileFurnace) return false;
+
+		$sourceInventory = $currentTile->getInventory();
+
+		$itemStack = $sourceInventory->getItem($sourceInventory::SLOT_RESULT);
+
+		if($itemStack->isNull()) return false;
+
+		$singleItem = $itemStack->pop(1);
+
+		$sourceInventory->removeItem($singleItem);
+		$targetInventory->addItem($singleItem);
+
+		return true;
 	}
 
 	private function transferItem(SimpleInventory $sourceInventory, SimpleInventory $targetInventory, Item $item, int $slot) : void{

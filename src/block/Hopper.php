@@ -23,12 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
-use pocketmine\inventory\SimpleInventory;
+use pocketmine\inventory\BaseInventory;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -99,50 +98,48 @@ class Hopper extends Transparent implements HopperInteractable{
 	public function onScheduledUpdate() : void{
 		$world = $this->position->getWorld();
 
-		$tile = $this->position->getWorld()->getTile($this->position);
-		if(!$tile instanceof TileHopper) { $world->scheduleDelayedBlockUpdate($this->position, 1); return; }
-
 		$facingBlock = $this->getSide($this->facing);
 		$topBlock = $this->getSide(Facing::UP);
-		if(!$facingBlock instanceof HopperInteractable && !$topBlock instanceof Chest && !$topBlock instanceof Hopper) { $world->scheduleDelayedBlockUpdate($this->position, 1); return; }
 
-		$pullSuccess = $this->pull($tile);
-
-		if($pullSuccess && !$facingBlock instanceof HopperInteractable){
-			$world->scheduleDelayedBlockUpdate($this->position, 8);
-			return;
+		if($topBlock instanceof HopperInteractable){
+			$tileHopper = $this->position->getWorld()->getTile($this->position);
+			if($tileHopper instanceof TileHopper){
+				$pushSuccess = $topBlock->push($tileHopper->getInventory());
+			}
 		}
 
-		if(!$facingBlock instanceof HopperInteractable) { $world->scheduleDelayedBlockUpdate($this->position, 1); return; }
-		$updateTime = $facingBlock->push($tile) ? 8 : 1;
+		if($facingBlock instanceof HopperInteractable){
+			$tileHopper = $this->position->getWorld()->getTile($this->position);
+			if($tileHopper instanceof TileHopper){
+				$pullSuccess = $facingBlock->pull($tileHopper);
+			}
+		}
 
-		$world->scheduleDelayedBlockUpdate($this->position, $updateTime);
+		$nextTick = ($pushSuccess || $pullSuccess) ? 8 : 1;
+
+		$world->scheduleDelayedBlockUpdate($this->position, $nextTick);
 	}
 
 	public function pull(TileHopper $tileHopper) : bool{
-		$blockAbove = $this->getSide(Facing::UP);
-		if(!$blockAbove instanceof Chest && !$blockAbove instanceof Hopper) return false;
-
-		$tile = $blockAbove->position->getWorld()->getTile($blockAbove->position);
-		if(!$tile instanceof TileChest && !$tile instanceof TileHopper) return false;
-
-		$sourceInventory = $tile->getInventory();
-		$targetInventory = $tileHopper->getInventory();
-
-		return $this->transferItem($sourceInventory, $targetInventory);
-	}
-
-	public function push(TileHopper $tileHopper) : bool{
-		$hopperTile = $this->position->getWorld()->getTile($this->position);
-		if(!$hopperTile instanceof TileHopper) return false;
+		$currentTile = $this->position->getWorld()->getTile($this->position);
+		if(!$currentTile instanceof TileHopper) return false;
 
 		$sourceInventory = $tileHopper->getInventory();
-		$targetInventory = $hopperTile->getInventory();
+		$targetInventory = $currentTile->getInventory();
 
 		return $this->transferItem($sourceInventory, $targetInventory);
 	}
 
-	private function transferItem(SimpleInventory $sourceInventory, SimpleInventory $targetInventory) : bool{
+	public function push(BaseInventory $targetInventory) : bool{
+		$currentTile = $this->position->getWorld()->getTile($this->position);
+		if(!$currentTile instanceof TileHopper) return false;
+
+		$sourceInventory = $currentTile->getInventory();
+
+		return $this->transferItem($sourceInventory, $targetInventory);
+	}
+
+	private function transferItem(BaseInventory $sourceInventory, BaseInventory $targetInventory) : bool{
 		for($i = 0; $i < $sourceInventory->getSize(); $i++){
 			$itemStack = $sourceInventory->getItem($i);
 

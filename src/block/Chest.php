@@ -29,6 +29,7 @@ use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\ChestPairEvent;
+use pocketmine\inventory\BaseInventory;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -99,13 +100,26 @@ class Chest extends Transparent implements HopperInteractable{
 		return 300;
 	}
 
-	public function push(TileHopper $tileHopper) : bool{
-		$chestTile = $this->position->getWorld()->getTile($this->position);
-		if(!$chestTile instanceof TileChest) return false;
+	public function pull(TileHopper $tileHopper) : bool{
+		$currentTile = $this->position->getWorld()->getTile($this->position);
+		if(!$currentTile instanceof TileChest) return false;
 
 		$sourceInventory = $tileHopper->getInventory();
-		$targetInventory = $chestTile->getInventory();
+		$targetInventory = $currentTile->getInventory();
 
+		return $this->transferItem($sourceInventory, $targetInventory);
+	}
+
+	public function push(BaseInventory $targetInventory) : bool{
+		$currentTile = $this->position->getWorld()->getTile($this->position);
+		if(!$currentTile instanceof TileChest) return false;
+
+		$sourceInventory = $currentTile->getInventory();
+
+		return $this->transferItem($sourceInventory, $targetInventory);
+	}
+
+	private function transferItem(BaseInventory $sourceInventory, BaseInventory $targetInventory) : bool{
 		for($i = 0; $i < $sourceInventory->getSize(); $i++){
 			$itemStack = $sourceInventory->getItem($i);
 
