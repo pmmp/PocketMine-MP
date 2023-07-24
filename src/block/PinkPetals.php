@@ -59,13 +59,14 @@ class PinkPetals extends Flowable{
 		return $this;
 	}
 
-	private function canBeSupportedBy(Block $block) : bool{
+	private function canBeSupportedAt(Block $block) : bool{
+		$supportBlock = $block->getSide(Facing::DOWN);
 		//TODO: Moss block
-		return $block->hasTypeTag(BlockTypeTags::DIRT) || $block->hasTypeTag(BlockTypeTags::MUD);
+		return $supportBlock->hasTypeTag(BlockTypeTags::DIRT) || $supportBlock->hasTypeTag(BlockTypeTags::MUD);
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
+		if(!$this->canBeSupportedAt($this)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -75,8 +76,7 @@ class PinkPetals extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$block = $blockReplace->getSide(Facing::DOWN);
-		if(!$this->canBeSupportedBy($block)){
+		if(!$this->canBeSupportedAt($this)){
 			return false;
 		}
 		if($blockReplace instanceof PinkPetals && $blockReplace->getCount() < self::MAX_COUNT){
