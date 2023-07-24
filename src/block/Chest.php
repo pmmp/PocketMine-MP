@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\ChestPairEvent;
 use pocketmine\inventory\BaseInventory;
@@ -38,7 +37,6 @@ use pocketmine\player\Player;
 
 class Chest extends Transparent implements HopperInteractable{
 	use FacesOppositePlacingPlayerTrait;
-	use HorizontalFacingTrait;
 
 	/**
 	 * @return AxisAlignedBB[]

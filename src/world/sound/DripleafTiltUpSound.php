@@ -21,18 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\world\sound;
 
-use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\item\Item;
 use pocketmine\math\Vector3;
-use pocketmine\player\Player;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-final class ChemistryTable extends Opaque{
-	use FacesOppositePlacingPlayerTrait;
+class DripleafTiltUpSound implements Sound{
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		//TODO
-		return false;
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::TILT_UP_BIG_DRIPLEAF, $pos, false)];
 	}
 }

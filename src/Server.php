@@ -1009,7 +1009,7 @@ class Server{
 
 			$this->playerDataProvider = new DatFilePlayerDataProvider(Path::join($this->dataPath, "players"));
 
-			register_shutdown_function([$this, "crashDump"]);
+			register_shutdown_function($this->crashDump(...));
 
 			$loadErrorCount = 0;
 			$this->pluginManager->loadPlugins($this->pluginPath, $loadErrorCount);

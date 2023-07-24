@@ -23,9 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
-use function mt_rand;
 
 class DoubleTallGrass extends DoublePlant{
 
@@ -34,8 +33,8 @@ class DoubleTallGrass extends DoublePlant{
 	}
 
 	public function getDropsForIncompatibleTool(Item $item) : array{
-		if($this->top && mt_rand(0, 7) === 0){
-			return [VanillaItems::WHEAT_SEEDS()];
+		if($this->top){
+			return FortuneDropHelper::grass($item);
 		}
 		return [];
 	}

@@ -23,16 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\item\Item;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
 
-final class ChemistryTable extends Opaque{
-	use FacesOppositePlacingPlayerTrait;
+class BigDripleafStem extends BaseBigDripleaf{
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		//TODO
+	protected function isHead() : bool{
 		return false;
+	}
+
+	protected function recalculateCollisionBoxes() : array{
+		return [];
+	}
+
+	public function asItem() : Item{
+		return VanillaBlocks::BIG_DRIPLEAF_HEAD()->asItem();
 	}
 }

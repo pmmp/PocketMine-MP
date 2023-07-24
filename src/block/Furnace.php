@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\inventory\BaseInventory;
@@ -39,7 +38,6 @@ use function mt_rand;
 
 class Furnace extends Opaque implements HopperInteractable{
 	use FacesOppositePlacingPlayerTrait;
-	use HorizontalFacingTrait;
 
 	protected FurnaceType $furnaceType;
 

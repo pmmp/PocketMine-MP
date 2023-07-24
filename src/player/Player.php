@@ -80,6 +80,7 @@ use pocketmine\event\player\PlayerViewDistanceChangeEvent;
 use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
 use pocketmine\inventory\CallbackInventoryListener;
+use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCraftingInventory;
 use pocketmine\inventory\PlayerCursorInventory;
@@ -217,6 +218,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected array $permanentWindows = [];
 	protected PlayerCursorInventory $cursorInventory;
 	protected PlayerCraftingInventory $craftingGrid;
+	protected CreativeInventory $creativeInventory;
 
 	protected int $messageCounter = 2;
 
@@ -306,6 +308,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->uuid = $this->playerInfo->getUuid();
 		$this->xuid = $this->playerInfo instanceof XboxLivePlayerInfo ? $this->playerInfo->getXuid() : "";
+
+		$this->creativeInventory = CreativeInventory::getInstance();
 
 		$rootPermissions = [DefaultPermissions::ROOT_USER => true];
 		if($this->server->isOp($this->username)){
@@ -2530,6 +2534,24 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function getCraftingGrid() : CraftingGrid{
 		return $this->craftingGrid;
+	}
+
+	/**
+	 * Returns the creative inventory shown to the player.
+	 * Unless changed by a plugin, this is usually the same for all players.
+	 */
+	public function getCreativeInventory() : CreativeInventory{
+		return $this->creativeInventory;
+	}
+
+	/**
+	 * To set a custom creative inventory, you need to make a clone of a CreativeInventory instance.
+	 */
+	public function setCreativeInventory(CreativeInventory $inventory) : void{
+		$this->creativeInventory = $inventory;
+		if($this->spawned && $this->isConnected()){
+			$this->getNetworkSession()->getInvManager()?->syncCreative();
+		}
 	}
 
 	/**

@@ -733,8 +733,11 @@ final class BlockTypeIds{
 	public const CHERRY_TRAPDOOR = 10703;
 	public const CHERRY_WALL_SIGN = 10704;
 	public const CHERRY_WOOD = 10705;
+	public const SMALL_DRIPLEAF = 10706;
+	public const BIG_DRIPLEAF_HEAD = 10707;
+	public const BIG_DRIPLEAF_STEM = 10708;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10706;
+	public const FIRST_UNUSED_BLOCK_ID = 10709;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 

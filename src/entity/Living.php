@@ -217,6 +217,7 @@ abstract class Living extends Entity{
 	public function setSneaking(bool $value = true) : void{
 		$this->sneaking = $value;
 		$this->networkPropertiesDirty = true;
+		$this->recalculateSize();
 	}
 
 	public function isSprinting() : bool{
@@ -258,6 +259,8 @@ abstract class Living extends Entity{
 		if($this->isSwimming() || $this->isGliding()){
 			$width = $size->getWidth();
 			$this->setSize((new EntitySizeInfo($width, $width, $width * 0.9))->scale($this->getScale()));
+		}elseif($this->isSneaking()){
+			$this->setSize((new EntitySizeInfo(3 / 4 * $size->getHeight(), $size->getWidth(), 3 / 4 * $size->getEyeHeight()))->scale($this->getScale()));
 		}else{
 			$this->setSize($size->scale($this->getScale()));
 		}
