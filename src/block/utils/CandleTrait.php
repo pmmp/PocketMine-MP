@@ -24,8 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
-use pocketmine\block\CakeWithCandle;
-use pocketmine\block\Candle;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\Durable;
