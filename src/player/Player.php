@@ -677,7 +677,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/**
 	 * Allow eating
 	 */
-	public function forceAllowEating() : bool{
+	public function allowForceEating () : bool{
 		return $this->isCreative() || $this->getWorld()->getDifficulty() === World::DIFFICULTY_PEACEFUL;
 	}
 
@@ -2006,10 +2006,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				parent::emote($emoteId);
 			}
 		}
-	}
-
-	public function consumeObject(Consumable $consumable, bool $forceEating = false) : bool{
-		return parent::consumeObject($consumable, $this->forceAllowEating() || $forceEating);
 	}
 
 	/**

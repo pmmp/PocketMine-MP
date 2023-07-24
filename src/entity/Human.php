@@ -190,10 +190,16 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return $this->hungerManager;
 	}
 
-	public function consumeObject(Consumable $consumable, bool $forceEating = false) : bool{
-		if (($consumable instanceof FoodSource) && !$forceEating && $consumable->requiresHunger() && !$this->getHungerManager()->isHungry()){
-			return false;
+	public function consumeObject(Consumable $consumable) : bool{
+		if ($consumable instanceof FoodSource) {
+			if ($this instanceof Player && $this->allowForceEating()) {
+				return parent::consumeObject($consumable);
+			}
+			if ($consumable->requiresHunger() && !$this->getHungerManager()->isHungry()){
+				return false;
+			}
 		}
+
 		return parent::consumeObject($consumable);
 	}
 
