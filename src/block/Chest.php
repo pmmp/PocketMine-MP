@@ -120,9 +120,7 @@ class Chest extends Transparent implements HopperInteractable{
 	}
 
 	private function transferItem(BaseInventory $sourceInventory, BaseInventory $targetInventory) : bool{
-		for($i = 0; $i < $sourceInventory->getSize(); $i++){
-			$itemStack = $sourceInventory->getItem($i);
-
+		foreach($sourceInventory->getContents() as $itemStack){
 			if($itemStack->isNull()) continue;
 
 			$singleItem = $itemStack->pop(1);
