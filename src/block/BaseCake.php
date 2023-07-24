@@ -50,7 +50,7 @@ abstract class BaseCake extends Transparent implements FoodSource{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->getTypeId() === BlockTypeIds::AIR){ //Replace with common break method
-			$this->position->getWorld()->useBreakOn($this->position);
+			$this->position->getWorld()->useBreakOn($this->position, createParticles: true);
 		}
 	}
 

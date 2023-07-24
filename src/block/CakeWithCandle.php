@@ -63,6 +63,10 @@ class CakeWithCandle extends BaseCake{
 		return [$this->getCandle()->asItem()];
 	}
 
+	public function getDropsForIncompatibleTool(Item $item) : array{
+		return [$this->getCandle()->asItem()];
+	}
+
 	public function getPickedItem(bool $addUserData = false) : Item{
 		return VanillaBlocks::CAKE()->asItem();
 	}
@@ -72,7 +76,7 @@ class CakeWithCandle extends BaseCake{
 	}
 
 	public function onConsume(Living $consumer) : void{
-		parent::onConsume($consumer);
 		$this->position->getWorld()->dropItem($this->position->add(0.5, 0.5, 0.5), $this->getCandle()->asItem());
+		parent::onConsume($consumer);
 	}
 }

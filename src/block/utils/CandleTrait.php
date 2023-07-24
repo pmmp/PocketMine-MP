@@ -24,12 +24,17 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
+use pocketmine\block\CakeWithCandle;
+use pocketmine\block\Candle;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\VanillaEnchantments;
+use pocketmine\item\FireCharge;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
+use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -49,29 +54,50 @@ trait CandleTrait{
 
 	public function isLit() : bool{ return $this->lit; }
 
-	/** @return $this */
+	/**
+	 * @param bool $lit
+	 *
+	 * @return CandleTrait|CakeWithCandle|Candle
+	 */
 	public function setLit(bool $lit) : self{
 		$this->lit = $lit;
 		return $this;
 	}
 
+	protected function hitCandle(Player $player) : bool{
+		$aabb = AxisAlignedBB::one()
+			->contract(1 / 16, 0, 1 / 16)
+			->trim(Facing::DOWN, 0.5)
+			->trim(Facing::UP, 1 - 0.85000002)
+			->offset($this->position->x, $this->position->y, $this->position->z);
+
+		$eyeVector = $player->getEyePos();
+		$dVector = $eyeVector->addVector($player->getDirectionVector()->multiply(7));
+
+		$result = $aabb->calculateIntercept($eyeVector, $dVector);
+		return $result !== null;
+	}
+
 	/** @see Block::onInteract() */
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($item->getTypeId() === ItemTypeIds::FLINT_AND_STEEL || $item->hasEnchantment(VanillaEnchantments::FIRE_ASPECT())){
-			if($this->lit){
+		if ($item->getTypeId() === ItemTypeIds::FIRE_CHARGE || $item->getTypeId() === ItemTypeIds::FLINT_AND_STEEL || $item->hasEnchantment(VanillaEnchantments::FIRE_ASPECT())) {
+			if ($this->lit) {
 				return true;
 			}
-			if($item instanceof Durable){
+			if ($item instanceof FireCharge) {
+				$item->pop();
+			}
+			if ($item instanceof Durable) {
 				$item->applyDamage(1);
 			}
+
 			$this->position->getWorld()->addSound($this->position, new FlintSteelSound());
 			$this->position->getWorld()->setBlock($this->position, $this->setLit(true));
-
 			return true;
 		}
 		if($item->isNull()){ //candle can only be extinguished with an empty hand
-			if(!$this->lit){
-				return true;
+			if ((!$this->lit) || ($player !== null && !$this->hitCandle($player))) {
+				return false;
 			}
 			$this->position->getWorld()->addSound($this->position, new FireExtinguishSound());
 			$this->position->getWorld()->setBlock($this->position, $this->setLit(false));

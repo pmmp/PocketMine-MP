@@ -52,7 +52,9 @@ class Cake extends BaseCake{
 		];
 	}
 
-	public function getBites() : int{ return $this->bites; }
+	public function getBites() : int{
+		return $this->bites;
+	}
 
 	/** @return $this */
 	public function setBites(int $bites) : self{
@@ -64,17 +66,16 @@ class Cake extends BaseCake{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($item instanceof ItemBlock){
+		if($item instanceof ItemBlock && $this->bites === 0){
 			$block = $item->getBlock();
-			$resultBlock = null;
-			if($block->getTypeId() === BlockTypeIds::CANDLE){
-				$resultBlock = VanillaBlocks::CAKE_WITH_CANDLE();
-			}elseif($block instanceof DyedCandle){
-				$resultBlock = VanillaBlocks::CAKE_WITH_DYED_CANDLE()->setColor($block->getColor());
-			}
+			$resultBlock = match (true) {
+				$block instanceof DyedCandle => VanillaBlocks::CAKE_WITH_DYED_CANDLE()->setColor($block->getColor()),
+				$block instanceof Candle => VanillaBlocks::CAKE_WITH_CANDLE(),
+				default => null
+			};
 
 			if($resultBlock !== null){
-				$this->position->getWorld()->setBlock($this->position, $resultBlock);
+				$this->getPosition()->getWorld()->setBlock($this->position, $resultBlock);
 				$item->pop();
 				return true;
 			}
@@ -83,12 +84,15 @@ class Cake extends BaseCake{
 		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
 	}
 
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [];
+	}
+
 	public function getResidue() : Block{
-		$clone = clone $this;
-		$clone->bites++;
-		if($clone->bites > self::MAX_BITES){
-			$clone = VanillaBlocks::AIR();
+		if ($this->bites === self::MAX_BITES) {
+			return VanillaBlocks::AIR();
 		}
-		return $clone;
+		$this->bites++;
+		return $this;
 	}
 }
