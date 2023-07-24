@@ -519,7 +519,12 @@ abstract class Entity{
 	}
 
 	public function attack(EntityDamageEvent $source) : void{
-		if($this->isFireProof() && ($source->getCause() === EntityDamageEvent::CAUSE_FIRE || $source->getCause() === EntityDamageEvent::CAUSE_FIRE_TICK)){
+		if($this->isFireProof() && (
+				$source->getCause() === EntityDamageEvent::CAUSE_FIRE ||
+				$source->getCause() === EntityDamageEvent::CAUSE_FIRE_TICK ||
+				$source->getCause() === EntityDamageEvent::CAUSE_LAVA
+			)
+		){
 			$source->cancel();
 		}
 		$source->call();
@@ -686,8 +691,10 @@ abstract class Entity{
 		if($fireTicks < 0 || $fireTicks > 0x7fff){
 			throw new \InvalidArgumentException("Fire ticks must be in range 0 ... " . 0x7fff . ", got $fireTicks");
 		}
-		$this->fireTicks = $fireTicks;
-		$this->networkPropertiesDirty = true;
+		if(!$this->isFireProof()){
+			$this->fireTicks = $fireTicks;
+			$this->networkPropertiesDirty = true;
+		}
 	}
 
 	public function extinguish() : void{
@@ -700,11 +707,12 @@ abstract class Entity{
 	}
 
 	protected function doOnFireTick(int $tickDiff = 1) : bool{
-		if($this->isFireProof() && $this->fireTicks > 1){
-			$this->fireTicks = 1;
-		}else{
-			$this->fireTicks -= $tickDiff;
+		if($this->isFireProof() && $this->isOnFire()){
+			$this->extinguish();
+			return false;
 		}
+
+		$this->fireTicks -= $tickDiff;
 
 		if(($this->fireTicks % 20 === 0) || $tickDiff > 20){
 			$this->dealFireDamage();

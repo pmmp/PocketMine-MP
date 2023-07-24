@@ -48,12 +48,7 @@ class FrostedIce extends Ice{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$world = $this->position->getWorld();
-		if(!$this->checkAdjacentBlocks(2)){
-			$world->useBreakOn($this->position);
-		}else{
-			$world->scheduleDelayedBlockUpdate($this->position, mt_rand(20, 40));
-		}
+		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(20, 40));
 	}
 
 	public function onRandomTick() : void{
