@@ -107,14 +107,14 @@ class Hopper extends Transparent implements HopperInteractable{
 		if($topBlock instanceof HopperInteractable){
 			$tileHopper = $this->position->getWorld()->getTile($this->position);
 			if($tileHopper instanceof TileHopper){
-				$pushSuccess = $topBlock->push($tileHopper->getInventory());
+				$pushSuccess = $topBlock->pushTo($tileHopper->getInventory());
 			}
 		}
 
 		if($facingBlock instanceof HopperInteractable){
 			$tileHopper = $this->position->getWorld()->getTile($this->position);
 			if($tileHopper instanceof TileHopper){
-				$pullSuccess = $facingBlock->pull($tileHopper);
+				$pullSuccess = $facingBlock->pullFrom($tileHopper);
 			}
 		}
 
@@ -123,7 +123,7 @@ class Hopper extends Transparent implements HopperInteractable{
 		$world->scheduleDelayedBlockUpdate($this->position, $nextTick);
 	}
 
-	public function pull(TileHopper $tileHopper) : bool{
+	public function pullFrom(TileHopper $tileHopper) : bool{
 		$currentTile = $this->position->getWorld()->getTile($this->position);
 		if(!$currentTile instanceof TileHopper) return false;
 
@@ -133,7 +133,7 @@ class Hopper extends Transparent implements HopperInteractable{
 		return $this->transferItem($sourceInventory, $targetInventory);
 	}
 
-	public function push(BaseInventory $targetInventory) : bool{
+	public function pushTo(BaseInventory $targetInventory) : bool{
 		$currentTile = $this->position->getWorld()->getTile($this->position);
 		if(!$currentTile instanceof TileHopper) return false;
 

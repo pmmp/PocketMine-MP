@@ -100,7 +100,7 @@ class Chest extends Transparent implements HopperInteractable{
 		return 300;
 	}
 
-	public function pull(TileHopper $tileHopper) : bool{
+	public function pullFrom(TileHopper $tileHopper) : bool{
 		$currentTile = $this->position->getWorld()->getTile($this->position);
 		if(!$currentTile instanceof TileChest) return false;
 
@@ -110,7 +110,7 @@ class Chest extends Transparent implements HopperInteractable{
 		return $this->transferItem($sourceInventory, $targetInventory);
 	}
 
-	public function push(BaseInventory $targetInventory) : bool{
+	public function pushTo(BaseInventory $targetInventory) : bool{
 		$currentTile = $this->position->getWorld()->getTile($this->position);
 		if(!$currentTile instanceof TileChest) return false;
 

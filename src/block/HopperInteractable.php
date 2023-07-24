@@ -27,6 +27,6 @@ use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\inventory\BaseInventory;
 
 interface HopperInteractable{
-	public function push(BaseInventory $targetInventory) : bool;
-	public function pull(TileHopper $tileHopper) : bool;
+	public function pushTo(BaseInventory $targetInventory) : bool;
+	public function pullFrom(TileHopper $tileHopper) : bool;
 }

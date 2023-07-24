@@ -97,7 +97,7 @@ class Furnace extends Opaque implements HopperInteractable{
 		}
 	}
 
-	public function pull(TileHopper $tileHopper) : bool{
+	public function pullFrom(TileHopper $tileHopper) : bool{
 		$currentTile = $this->position->getWorld()->getTile($this->position);
 		if(!$currentTile instanceof TileFurnace) return false;
 
@@ -129,7 +129,7 @@ class Furnace extends Opaque implements HopperInteractable{
 		return false;
 	}
 
-	public function push(BaseInventory $targetInventory) : bool{
+	public function pushTo(BaseInventory $targetInventory) : bool{
 		$currentTile = $this->position->getWorld()->getTile($this->position);
 		if(!$currentTile instanceof TileFurnace) return false;
 
