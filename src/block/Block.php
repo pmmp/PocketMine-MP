@@ -41,6 +41,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -861,6 +862,10 @@ class Block{
 	 */
 	public function getSupportType(int $facing) : SupportType{
 		return SupportType::FULL();
+	}
+
+	protected function getAdjacentSupportType(int $facing) : SupportType{
+		return $this->getSide($facing)->getSupportType(Facing::opposite($facing));
 	}
 
 	public function isFullCube() : bool{

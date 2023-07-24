@@ -1011,7 +1011,7 @@ class Server{
 
 			$this->playerDataProvider = new DatFilePlayerDataProvider(Path::join($this->dataPath, "players"));
 
-			register_shutdown_function([$this, "crashDump"]);
+			register_shutdown_function($this->crashDump(...));
 
 			$loadErrorCount = 0;
 			$this->pluginManager->loadPlugins($this->pluginPath, $loadErrorCount);
@@ -1429,7 +1429,7 @@ class Server{
 
 	private function forceShutdownExit() : void{
 		$this->forceShutdown();
-		Process::kill(Process::pid(), true);
+		Process::kill(Process::pid());
 	}
 
 	public function forceShutdown() : void{
@@ -1497,7 +1497,7 @@ class Server{
 		}catch(\Throwable $e){
 			$this->logger->logException($e);
 			$this->logger->emergency("Crashed while crashing, killing process");
-			@Process::kill(Process::pid(), true);
+			@Process::kill(Process::pid());
 		}
 
 	}
@@ -1651,7 +1651,7 @@ class Server{
 			echo "--- Waiting $spacing seconds to throttle automatic restart (you can kill the process safely now) ---" . PHP_EOL;
 			sleep($spacing);
 		}
-		@Process::kill(Process::pid(), true);
+		@Process::kill(Process::pid());
 		exit(1);
 	}
 
