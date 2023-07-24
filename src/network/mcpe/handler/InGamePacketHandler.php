@@ -237,7 +237,7 @@ class InGamePacketHandler extends PacketHandler{
 				$this->player->jump();
 			}
 			if($packet->hasFlag(PlayerAuthInputFlags::MISSED_SWING)){
-				$this->player->attackAir();
+				$this->player->missSwing();
 			}
 		}
 
