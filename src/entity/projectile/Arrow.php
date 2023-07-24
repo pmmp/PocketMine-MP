@@ -33,6 +33,8 @@ use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\RayTraceResult;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\EntityEventBroadcaster;
+use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
@@ -54,23 +56,11 @@ class Arrow extends Projectile{
 	public const TAG_CRIT = "crit"; //TAG_Byte
 	private const TAG_LIFE = "life"; //TAG_Short
 
-	protected $gravity = 0.05;
-	protected $drag = 0.01;
-
-	/** @var float */
-	protected $damage = 2.0;
-
-	/** @var int */
-	protected $pickupMode = self::PICKUP_ANY;
-
-	/** @var float */
-	protected $punchKnockback = 0.0;
-
-	/** @var int */
-	protected $collideTicks = 0;
-
-	/** @var bool */
-	protected $critical = false;
+	protected float $damage = 2.0;
+	protected int $pickupMode = self::PICKUP_ANY;
+	protected float $punchKnockback = 0.0;
+	protected int $collideTicks = 0;
+	protected bool $critical = false;
 
 	public function __construct(Location $location, ?Entity $shootingEntity, bool $critical, ?CompoundTag $nbt = null){
 		parent::__construct($location, $shootingEntity, $nbt);
@@ -78,6 +68,10 @@ class Arrow extends Projectile{
 	}
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.25, 0.25); }
+
+	protected function getInitialDragMultiplier() : float{ return 0.01; }
+
+	protected function getInitialGravity() : float{ return 0.05; }
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
@@ -196,9 +190,10 @@ class Arrow extends Projectile{
 			return;
 		}
 
-		foreach($this->getViewers() as $viewer){
-			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
-		}
+		NetworkBroadcastUtils::broadcastEntityEvent(
+			$this->getViewers(),
+			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onPickUpItem($recipients, $player, $this)
+		);
 
 		$ev->getInventory()?->addItem($ev->getItem());
 		$this->flagForDespawn();

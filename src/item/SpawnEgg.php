@@ -34,7 +34,7 @@ abstract class SpawnEgg extends Item{
 
 	abstract protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity;
 
-	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		$entity = $this->createEntity($player->getWorld(), $blockReplace->getPosition()->add(0.5, 0, 0.5), lcg_value() * 360, 0);
 
 		if($this->hasCustomName()){

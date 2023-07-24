@@ -28,15 +28,11 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\LevelEvent;
 
 class MobSpawnParticle implements Particle{
-	/** @var int */
-	protected $width;
-	/** @var int */
-	protected $height;
-
-	public function __construct(int $width = 0, int $height = 0){
+	public function __construct(
+		protected int $width = 0,
+		protected int $height = 0
+	){
 		//TODO: bounds checks
-		$this->width = $width;
-		$this->height = $height;
 	}
 
 	public function encode(Vector3 $pos) : array{

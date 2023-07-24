@@ -26,7 +26,7 @@ namespace pocketmine\world\sound;
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
@@ -43,7 +43,7 @@ class EntityLandSound implements Sound{
 		return [LevelSoundEventPacket::create(
 			LevelSoundEvent::LAND,
 			$pos,
-			RuntimeBlockMapping::getInstance()->toRuntimeId($this->blockLandedOn->getFullId()),
+			TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkId($this->blockLandedOn->getStateId()),
 			$this->entity::getNetworkTypeId(),
 			false, //TODO: does isBaby have any relevance here?
 			false

@@ -28,9 +28,9 @@ use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\world\format\io\BaseWorldProvider;
-use pocketmine\world\format\io\ChunkData;
 use pocketmine\world\format\io\data\JavaWorldData;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
+use pocketmine\world\format\io\LoadedChunkData;
 use pocketmine\world\format\io\WorldData;
 use Symfony\Component\Filesystem\Path;
 use function assert;
@@ -73,7 +73,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	}
 
 	/** @var RegionLoader[] */
-	protected $regions = [];
+	protected array $regions = [];
 
 	protected function loadLevelData() : WorldData{
 		return new JavaWorldData(Path::join($this->getPath(), "level.dat"));
@@ -118,12 +118,11 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 			try{
 				$this->regions[$index] = RegionLoader::loadExisting($path);
 			}catch(CorruptedRegionException $e){
-				$logger = \GlobalLogger::get();
-				$logger->error("Corrupted region file detected: " . $e->getMessage());
+				$this->logger->error("Corrupted region file detected: " . $e->getMessage());
 
 				$backupPath = $path . ".bak." . time();
 				rename($path, $backupPath);
-				$logger->error("Corrupted region file has been backed up to " . $backupPath);
+				$this->logger->error("Corrupted region file has been backed up to " . $backupPath);
 
 				$this->regions[$index] = RegionLoader::createNew($path);
 			}
@@ -148,7 +147,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	abstract protected function deserializeChunk(string $data) : ?ChunkData;
+	abstract protected function deserializeChunk(string $data) : ?LoadedChunkData;
 
 	/**
 	 * @return CompoundTag[]
@@ -190,7 +189,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	public function loadChunk(int $chunkX, int $chunkZ) : ?ChunkData{
+	public function loadChunk(int $chunkX, int $chunkZ) : ?LoadedChunkData{
 		$regionX = $regionZ = null;
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
 		assert(is_int($regionX) && is_int($regionZ));

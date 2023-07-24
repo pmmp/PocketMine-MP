@@ -27,5 +27,5 @@ interface WritableWorldProvider extends WorldProvider{
 	/**
 	 * Saves a chunk (usually to disk).
 	 */
-	public function saveChunk(int $chunkX, int $chunkZ, ChunkData $chunkData) : void;
+	public function saveChunk(int $chunkX, int $chunkZ, ChunkData $chunkData, int $dirtyFlags) : void;
 }

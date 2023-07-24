@@ -43,7 +43,6 @@ use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\player\PlayerLoginEvent;
 use pocketmine\event\server\CommandEvent;
-use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
@@ -54,13 +53,16 @@ use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\CompressBatchTask;
 use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\network\mcpe\compression\ZlibCompressor;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\encryption\EncryptionContext;
+use pocketmine\network\mcpe\EntityEventBroadcaster;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketBroadcaster;
-use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
-use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\network\mcpe\raklib\RakLibInterface;
+use pocketmine\network\mcpe\StandardEntityEventBroadcaster;
+use pocketmine\network\mcpe\StandardPacketBroadcaster;
 use pocketmine\network\Network;
 use pocketmine\network\NetworkInterfaceStartException;
 use pocketmine\network\query\DedicatedQueryNetworkInterface;
@@ -90,6 +92,8 @@ use pocketmine\resourcepacks\ResourcePackManager;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\stats\SendUsageTask;
+use pocketmine\thread\log\AttachableThreadSafeLogger;
+use pocketmine\thread\ThreadSafeClassLoader;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\updater\UpdateChecker;
@@ -203,6 +207,8 @@ class Server{
 	private const TICKS_PER_TPS_OVERLOAD_WARNING = 5 * self::TARGET_TICKS_PER_SECOND;
 	private const TICKS_PER_STATS_REPORT = 300 * self::TARGET_TICKS_PER_SECOND;
 
+	private const DEFAULT_ASYNC_COMPRESSION_THRESHOLD = 10_000;
+
 	private static ?Server $instance = null;
 
 	private TimeTrackingSleeperHandler $tickSleeper;
@@ -261,6 +267,7 @@ class Server{
 
 	private Network $network;
 	private bool $networkCompressionAsync = true;
+	private int $networkCompressionAsyncThreshold = self::DEFAULT_ASYNC_COMPRESSION_THRESHOLD;
 
 	private Language $language;
 	private bool $forceLanguage = false;
@@ -408,11 +415,11 @@ class Server{
 		return $this->configGroup->getConfigString("motd", self::DEFAULT_SERVER_NAME);
 	}
 
-	public function getLoader() : \DynamicClassLoader{
+	public function getLoader() : ThreadSafeClassLoader{
 		return $this->autoloader;
 	}
 
-	public function getLogger() : \AttachableThreadedLogger{
+	public function getLogger() : AttachableThreadSafeLogger{
 		return $this->logger;
 	}
 
@@ -491,10 +498,7 @@ class Server{
 		return $this->configGroup->getPropertyBool("player.save-player-data", true);
 	}
 
-	/**
-	 * @return OfflinePlayer|Player
-	 */
-	public function getOfflinePlayer(string $name){
+	public function getOfflinePlayer(string $name) : Player|OfflinePlayer|null{
 		$name = strtolower($name);
 		$result = $this->getPlayerExact($name);
 
@@ -583,8 +587,7 @@ class Server{
 				},
 				function() use ($playerPromiseResolver, $session) : void{
 					if($session->isConnected()){
-						//TODO: this needs to be localized - this might be reached if the spawn world was unloaded while the player was logging in
-						$session->disconnect("Failed to find a safe spawn location");
+						$session->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_respawn());
 					}
 					$playerPromiseResolver->reject();
 				}
@@ -758,8 +761,8 @@ class Server{
 	}
 
 	public function __construct(
-		private \DynamicClassLoader $autoloader,
-		private \AttachableThreadedLogger $logger,
+		private ThreadSafeClassLoader $autoloader,
+		private AttachableThreadSafeLogger $logger,
 		string $dataPath,
 		string $pluginPath
 	){
@@ -891,6 +894,9 @@ class Server{
 			if($this->configGroup->getPropertyInt("network.batch-threshold", 256) >= 0){
 				$netCompressionThreshold = $this->configGroup->getPropertyInt("network.batch-threshold", 256);
 			}
+			if($netCompressionThreshold < 0){
+				$netCompressionThreshold = null;
+			}
 
 			$netCompressionLevel = $this->configGroup->getPropertyInt("network.compression-level", 6);
 			if($netCompressionLevel < 1 || $netCompressionLevel > 9){
@@ -900,6 +906,10 @@ class Server{
 			ZlibCompressor::setInstance(new ZlibCompressor($netCompressionLevel, $netCompressionThreshold, ZlibCompressor::DEFAULT_MAX_DECOMPRESSION_SIZE));
 
 			$this->networkCompressionAsync = $this->configGroup->getPropertyBool("network.async-compression", true);
+			$this->networkCompressionAsyncThreshold = max(
+				$this->configGroup->getPropertyInt("network.async-compression-threshold", self::DEFAULT_ASYNC_COMPRESSION_THRESHOLD),
+				$netCompressionThreshold ?? self::DEFAULT_ASYNC_COMPRESSION_THRESHOLD
+			);
 
 			EncryptionContext::$ENABLED = $this->configGroup->getPropertyBool("network.enable-encryption", true);
 
@@ -959,7 +969,7 @@ class Server{
 
 			$this->commandMap = new SimpleCommandMap($this);
 
-			$this->craftingManager = CraftingManagerFromDataHelper::make(Path::join(\pocketmine\BEDROCK_DATA_PATH, "recipes.json"));
+			$this->craftingManager = CraftingManagerFromDataHelper::make(Path::join(\pocketmine\BEDROCK_DATA_PATH, "recipes"));
 
 			$this->resourceManager = new ResourcePackManager(Path::join($this->getDataPath(), "resource_packs"), $this->logger);
 
@@ -999,7 +1009,7 @@ class Server{
 
 			$this->playerDataProvider = new DatFilePlayerDataProvider(Path::join($this->dataPath, "players"));
 
-			register_shutdown_function([$this, "crashDump"]);
+			register_shutdown_function($this->crashDump(...));
 
 			$loadErrorCount = 0;
 			$this->pluginManager->loadPlugins($this->pluginPath, $loadErrorCount);
@@ -1166,10 +1176,19 @@ class Server{
 		return !$anyWorldFailedToLoad;
 	}
 
-	private function startupPrepareConnectableNetworkInterfaces(string $ip, int $port, bool $ipV6, bool $useQuery) : bool{
+	private function startupPrepareConnectableNetworkInterfaces(
+		string $ip,
+		int $port,
+		bool $ipV6,
+		bool $useQuery,
+		PacketBroadcaster $packetBroadcaster,
+		EntityEventBroadcaster $entityEventBroadcaster,
+		PacketSerializerContext $packetSerializerContext,
+		TypeConverter $typeConverter
+	) : bool{
 		$prettyIp = $ipV6 ? "[$ip]" : $ip;
 		try{
-			$rakLibRegistered = $this->network->registerInterface(new RakLibInterface($this, $ip, $port, $ipV6));
+			$rakLibRegistered = $this->network->registerInterface(new RakLibInterface($this, $ip, $port, $ipV6, $packetBroadcaster, $entityEventBroadcaster, $packetSerializerContext, $typeConverter));
 		}catch(NetworkInterfaceStartException $e){
 			$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_networkStartFailed(
 				$ip,
@@ -1195,11 +1214,16 @@ class Server{
 	private function startupPrepareNetworkInterfaces() : bool{
 		$useQuery = $this->configGroup->getConfigBool("enable-query", true);
 
+		$typeConverter = TypeConverter::getInstance();
+		$packetSerializerContext = new PacketSerializerContext($typeConverter->getItemTypeDictionary());
+		$packetBroadcaster = new StandardPacketBroadcaster($this, $packetSerializerContext);
+		$entityEventBroadcaster = new StandardEntityEventBroadcaster($packetBroadcaster, $typeConverter);
+
 		if(
-			!$this->startupPrepareConnectableNetworkInterfaces($this->getIp(), $this->getPort(), false, $useQuery) ||
+			!$this->startupPrepareConnectableNetworkInterfaces($this->getIp(), $this->getPort(), false, $useQuery, $packetBroadcaster, $entityEventBroadcaster, $packetSerializerContext, $typeConverter) ||
 			(
 				$this->configGroup->getConfigBool("enable-ipv6", true) &&
-				!$this->startupPrepareConnectableNetworkInterfaces($this->getIpV6(), $this->getPortV6(), true, $useQuery)
+				!$this->startupPrepareConnectableNetworkInterfaces($this->getIpV6(), $this->getPortV6(), true, $useQuery, $packetBroadcaster, $entityEventBroadcaster, $packetSerializerContext, $typeConverter)
 			)
 		){
 			return false;
@@ -1329,67 +1353,22 @@ class Server{
 	}
 
 	/**
-	 * @param Player[]            $players
-	 * @param ClientboundPacket[] $packets
-	 */
-	public function broadcastPackets(array $players, array $packets) : bool{
-		if(count($packets) === 0){
-			throw new \InvalidArgumentException("Cannot broadcast empty list of packets");
-		}
-
-		return Timings::$broadcastPackets->time(function() use ($players, $packets) : bool{
-			/** @var NetworkSession[] $recipients */
-			$recipients = [];
-			foreach($players as $player){
-				if($player->isConnected()){
-					$recipients[] = $player->getNetworkSession();
-				}
-			}
-			if(count($recipients) === 0){
-				return false;
-			}
-
-			$ev = new DataPacketSendEvent($recipients, $packets);
-			$ev->call();
-			if($ev->isCancelled()){
-				return false;
-			}
-			$recipients = $ev->getTargets();
-
-			/** @var PacketBroadcaster[] $broadcasters */
-			$broadcasters = [];
-			/** @var NetworkSession[][] $broadcasterTargets */
-			$broadcasterTargets = [];
-			foreach($recipients as $recipient){
-				$broadcaster = $recipient->getBroadcaster();
-				$broadcasters[spl_object_id($broadcaster)] = $broadcaster;
-				$broadcasterTargets[spl_object_id($broadcaster)][] = $recipient;
-			}
-			foreach($broadcasters as $broadcaster){
-				$broadcaster->broadcastPackets($broadcasterTargets[spl_object_id($broadcaster)], $packets);
-			}
-
-			return true;
-		});
-	}
-
-	/**
 	 * Broadcasts a list of packets in a batch to a list of players
 	 *
 	 * @param bool|null $sync Compression on the main thread (true) or workers (false). Default is automatic (null).
 	 */
-	public function prepareBatch(PacketBatch $stream, Compressor $compressor, ?bool $sync = null) : CompressBatchPromise{
+	public function prepareBatch(string $buffer, Compressor $compressor, ?bool $sync = null, ?TimingsHandler $timings = null) : CompressBatchPromise{
+		$timings ??= Timings::$playerNetworkSendCompress;
 		try{
-			Timings::$playerNetworkSendCompress->startTiming();
-
-			$buffer = $stream->getBuffer();
+			$timings->startTiming();
 
 			if($sync === null){
-				$sync = !($this->networkCompressionAsync && $compressor->willCompress($buffer));
+				$threshold = $compressor->getCompressionThreshold();
+				$sync = !$this->networkCompressionAsync || $threshold === null || strlen($buffer) < $threshold;
 			}
 
 			$promise = new CompressBatchPromise();
-			if(!$sync){
+			if(!$sync && strlen($buffer) >= $this->networkCompressionAsyncThreshold){
 				$task = new CompressBatchTask($buffer, $promise, $compressor);
 				$this->asyncPool->submitTask($task);
 			}else{
@@ -1398,7 +1377,7 @@ class Server{
 
 			return $promise;
 		}finally{
-			Timings::$playerNetworkSendCompress->stopTiming();
+			$timings->stopTiming();
 		}
 	}
 
@@ -1529,7 +1508,7 @@ class Server{
 	 * @param mixed[][]|null $trace
 	 * @phpstan-param list<array<string, mixed>>|null $trace
 	 */
-	public function exceptionHandler(\Throwable $e, $trace = null) : void{
+	public function exceptionHandler(\Throwable $e, ?array $trace = null) : void{
 		while(@ob_end_flush()){}
 		global $lastError;
 

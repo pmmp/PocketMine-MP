@@ -157,7 +157,7 @@ final class Process{
 	 *
 	 * @return int process exit code
 	 */
-	public static function execute(string $command, string &$stdout = null, string &$stderr = null) : int{
+	public static function execute(string $command, ?string &$stdout = null, ?string &$stderr = null) : int{
 		$process = proc_open($command, [
 			["pipe", "r"],
 			["pipe", "w"],

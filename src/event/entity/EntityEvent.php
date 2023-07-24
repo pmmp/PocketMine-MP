@@ -33,11 +33,8 @@ use pocketmine\event\Event;
  * @phpstan-template TEntity of Entity
  */
 abstract class EntityEvent extends Event{
-	/**
-	 * @var Entity
-	 * @phpstan-var TEntity
-	 */
-	protected $entity;
+	/** @phpstan-var TEntity */
+	protected Entity $entity;
 
 	/**
 	 * @return Entity

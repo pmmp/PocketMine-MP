@@ -64,19 +64,15 @@ use const SOCK_DGRAM;
 use const SOL_UDP;
 
 class Internet{
-	/** @var string|false */
-	public static $ip = false;
-	/** @var bool */
-	public static $online = true;
+	public static string|false $ip = false;
+	public static bool $online = true;
 
 	/**
 	 * Lazily gets the External IP using an external service and caches the result
 	 *
 	 * @param bool $force default false, force IP check even when cached
-	 *
-	 * @return string|false
 	 */
-	public static function getIP(bool $force = false){
+	public static function getIP(bool $force = false) : string|false{
 		if(!self::$online){
 			return false;
 		}elseif(self::$ip !== false && !$force){
@@ -171,7 +167,7 @@ class Internet{
 	 * @phpstan-param TErrorVar                    $err
 	 * @phpstan-param-out TErrorVar|string         $err
 	 */
-	public static function postURL(string $page, $args, int $timeout = 10, array $extraHeaders = [], &$err = null) : ?InternetRequestResult{
+	public static function postURL(string $page, array|string $args, int $timeout = 10, array $extraHeaders = [], &$err = null) : ?InternetRequestResult{
 		try{
 			return self::simpleCurl($page, $timeout, $extraHeaders, [
 				CURLOPT_POST => 1,
@@ -187,7 +183,7 @@ class Internet{
 	 * General cURL shorthand function.
 	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
 	 *
-	 * @param float|int     $timeout      The maximum connect timeout and timeout in seconds, correct to ms.
+	 * @param float         $timeout      The maximum connect timeout and timeout in seconds, correct to ms.
 	 * @param string[]      $extraHeaders extra headers to send as a plain string array
 	 * @param array         $extraOpts    extra CURLOPT_* to set as an [opt => value] map
 	 * @param \Closure|null $onSuccess    function to be called if there is no error. Accepts a resource argument as the cURL handle.
@@ -197,7 +193,7 @@ class Internet{
 	 *
 	 * @throws InternetException if a cURL error occurs
 	 */
-	public static function simpleCurl(string $page, $timeout = 10, array $extraHeaders = [], array $extraOpts = [], ?\Closure $onSuccess = null) : InternetRequestResult{
+	public static function simpleCurl(string $page, float $timeout = 10, array $extraHeaders = [], array $extraOpts = [], ?\Closure $onSuccess = null) : InternetRequestResult{
 		if(!self::$online){
 			throw new InternetException("Cannot execute web request while offline");
 		}

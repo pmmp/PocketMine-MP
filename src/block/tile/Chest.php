@@ -44,10 +44,8 @@ class Chest extends Spawnable implements Container, Nameable{
 	public const TAG_PAIRZ = "pairz";
 	public const TAG_PAIR_LEAD = "pairlead";
 
-	/** @var ChestInventory */
-	protected $inventory;
-	/** @var DoubleChestInventory|null */
-	protected $doubleInventory = null;
+	protected ChestInventory $inventory;
+	protected ?DoubleChestInventory $doubleInventory = null;
 
 	private ?int $pairX = null;
 	private ?int $pairZ = null;
@@ -116,20 +114,14 @@ class Chest extends Spawnable implements Container, Nameable{
 		$this->containerTraitBlockDestroyedHook();
 	}
 
-	/**
-	 * @return ChestInventory|DoubleChestInventory
-	 */
-	public function getInventory(){
+	public function getInventory() : ChestInventory|DoubleChestInventory{
 		if($this->isPaired() && $this->doubleInventory === null){
 			$this->checkPairing();
 		}
 		return $this->doubleInventory instanceof DoubleChestInventory ? $this->doubleInventory : $this->inventory;
 	}
 
-	/**
-	 * @return ChestInventory
-	 */
-	public function getRealInventory(){
+	public function getRealInventory() : ChestInventory{
 		return $this->inventory;
 	}
 

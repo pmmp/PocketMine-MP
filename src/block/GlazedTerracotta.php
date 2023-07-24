@@ -23,10 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\ColoredTrait;
+use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
+use pocketmine\block\utils\HorizontalFacingTrait;
 
 class GlazedTerracotta extends Opaque{
+	use ColoredTrait;
 	use FacesOppositePlacingPlayerTrait;
-	use NormalHorizontalFacingInMetadataTrait;
+	use HorizontalFacingTrait;
+
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
+		$this->color = DyeColor::BLACK();
+		parent::__construct($idInfo, $name, $typeInfo);
+	}
 }

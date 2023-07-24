@@ -33,34 +33,15 @@ use pocketmine\player\Player;
  */
 class PlayerKickEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
+	use PlayerDisconnectEventTrait;
 
-	/** @var Translatable|string */
-	protected $quitMessage;
-
-	/** @var string */
-	protected $reason;
-
-	public function __construct(Player $player, string $reason, Translatable|string $quitMessage){
+	public function __construct(
+		Player $player,
+		protected Translatable|string $disconnectReason,
+		protected Translatable|string $quitMessage,
+		protected Translatable|string|null $disconnectScreenMessage
+	){
 		$this->player = $player;
-		$this->quitMessage = $quitMessage;
-		$this->reason = $reason;
-	}
-
-	/**
-	 * Sets the message shown on the kicked player's disconnection screen.
-	 * This message is also displayed in the console and server log.
-	 */
-	public function setReason(string $reason) : void{
-		$this->reason = $reason;
-	}
-
-	/**
-	 * Returns the message shown on the kicked player's disconnection screen.
-	 * This message is also displayed in the console and server log.
-	 * When kicked by the /kick command, the default is something like "Kicked by admin.".
-	 */
-	public function getReason() : string{
-		return $this->reason;
 	}
 
 	/**
