@@ -75,7 +75,7 @@ class Cake extends BaseCake{
 			};
 
 			if($resultBlock !== null){
-				$this->getPosition()->getWorld()->setBlock($this->position, $resultBlock);
+				$this->position->getWorld()->setBlock($this->position, $resultBlock);
 				$item->pop();
 				return true;
 			}
