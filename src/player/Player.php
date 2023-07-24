@@ -1600,7 +1600,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$ev = new PlayerBlockPickEvent($this, $block, $pickedItem);
 		$checkExistingSlot = function(Item $item) use ($ev) : int{
 			$existingSlot = $this->inventory->first($item);
-			if($existingSlot === -1 && ($this->hasFiniteResources() || $this->isSpectator())){
+			if($existingSlot === -1 && $this->hasFiniteResources()){
 				$ev->cancel();
 			}
 			return $existingSlot;
