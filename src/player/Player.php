@@ -66,6 +66,7 @@ use pocketmine\event\player\PlayerItemUseEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerJumpEvent;
 use pocketmine\event\player\PlayerKickEvent;
+use pocketmine\event\player\PlayerMissedSwingEvent;
 use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\player\PlayerPostChunkSendEvent;
 use pocketmine\event\player\PlayerQuitEvent;
@@ -1892,6 +1893,18 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		return true;
+	}
+
+	/**
+	 * Performs a left-click (attack) action on air and plays sound
+	 * if it's been successfully
+	 */
+	public function attackAir() : void{
+		$ev = new PlayerMissedSwingEvent($this);
+		$ev->call();
+		if(!$ev->isCancelled()){
+			$this->broadcastSound(new EntityAttackNoDamageSound());
+		}
 	}
 
 	/**

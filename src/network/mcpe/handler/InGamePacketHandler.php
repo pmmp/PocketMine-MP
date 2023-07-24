@@ -110,7 +110,6 @@ use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\Chunk;
-use pocketmine\world\sound\EntityAttackNoDamageSound;
 use function array_push;
 use function count;
 use function fmod;
@@ -238,7 +237,7 @@ class InGamePacketHandler extends PacketHandler{
 				$this->player->jump();
 			}
 			if($packet->hasFlag(PlayerAuthInputFlags::MISSED_SWING)){
-				$this->player->broadcastSound(new EntityAttackNoDamageSound());
+				$this->player->attackAir();
 			}
 		}
 
