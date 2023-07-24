@@ -61,5 +61,20 @@ abstract class PressurePlate extends Transparent{
 		}
 	}
 
-	//TODO
+	public function onEntityInside(Entity $entity) : bool{
+		if($entity instanceof Player){
+			$ev = new PlayerPressurePlateTriggerEvent($entity, $this);
+			$ev->call();
+
+			if($ev->isCancelled()){
+				return false;
+			}
+		}
+
+		return parent::onEntityInside($entity);
+	}
+
+	public function hasEntityCollision() : bool{
+		return true;
+	}
 }
