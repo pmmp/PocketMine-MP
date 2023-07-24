@@ -520,7 +520,9 @@ abstract class Living extends Entity{
 			$source->cancel();
 		}
 
-		$this->applyDamageModifiers($source);
+		if($source->getCause() !== EntityDamageEvent::CAUSE_SUICIDE){
+			$this->applyDamageModifiers($source);
+		}
 
 		if($source instanceof EntityDamageByEntityEvent && (
 			$source->getCause() === EntityDamageEvent::CAUSE_BLOCK_EXPLOSION ||
