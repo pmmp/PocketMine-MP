@@ -101,6 +101,9 @@ class Hopper extends Transparent implements HopperInteractable{
 		$facingBlock = $this->getSide($this->facing);
 		$topBlock = $this->getSide(Facing::UP);
 
+		$pushSuccess = false;
+		$pullSuccess = false;
+
 		if($topBlock instanceof HopperInteractable){
 			$tileHopper = $this->position->getWorld()->getTile($this->position);
 			if($tileHopper instanceof TileHopper){
@@ -115,7 +118,7 @@ class Hopper extends Transparent implements HopperInteractable{
 			}
 		}
 
-		$nextTick = ($pushSuccess ?? false || $pullSuccess ?? false) ? 8 : 1;
+		$nextTick = ($pushSuccess || $pullSuccess ) ? 8 : 1;
 
 		$world->scheduleDelayedBlockUpdate($this->position, $nextTick);
 	}
