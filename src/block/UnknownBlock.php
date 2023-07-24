@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 
 /**
@@ -30,8 +31,17 @@ use pocketmine\item\Item;
  */
 class UnknownBlock extends Transparent{
 
-	public function __construct(BlockIdentifier $idInfo, BlockBreakInfo $breakInfo){
-		parent::__construct($idInfo, "Unknown", $breakInfo);
+	private int $stateData;
+
+	public function __construct(BlockIdentifier $idInfo, BlockTypeInfo $typeInfo, int $stateData){
+		$this->stateData = $stateData;
+		parent::__construct($idInfo, "Unknown", $typeInfo);
+	}
+
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
+		//use type instead of state, so we don't lose any information like colour
+		//this might be an improperly registered plugin block
+		$w->int(Block::INTERNAL_STATE_DATA_BITS, $this->stateData);
 	}
 
 	public function canBePlaced() : bool{

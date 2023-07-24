@@ -23,28 +23,30 @@ declare(strict_types=1);
 
 namespace pocketmine\thread;
 
+use pmmp\thread\ThreadSafeArray;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\Server;
 use function error_reporting;
 
 trait CommonThreadPartsTrait{
-	/** @var \Threaded|\ClassLoader[]|null  */
-	private ?\Threaded $classLoaders = null;
-	/** @var string|null */
-	protected $composerAutoloaderPath;
+	/**
+	 * @var ThreadSafeArray|ThreadSafeClassLoader[]|null
+	 * @phpstan-var ThreadSafeArray<int, ThreadSafeClassLoader>|null
+	 */
+	private ?ThreadSafeArray $classLoaders = null;
+	protected ?string $composerAutoloaderPath = null;
 
-	/** @var bool */
-	protected $isKilled = false;
+	protected bool $isKilled = false;
 
 	/**
-	 * @return \ClassLoader[]
+	 * @return ThreadSafeClassLoader[]
 	 */
 	public function getClassLoaders() : ?array{
 		return $this->classLoaders !== null ? (array) $this->classLoaders : null;
 	}
 
 	/**
-	 * @param \ClassLoader[] $autoloaders
+	 * @param ThreadSafeClassLoader[] $autoloaders
 	 */
 	public function setClassLoaders(?array $autoloaders = null) : void{
 		$this->composerAutoloaderPath = \pocketmine\COMPOSER_AUTOLOADER_PATH;
@@ -54,14 +56,15 @@ trait CommonThreadPartsTrait{
 		}
 
 		if($this->classLoaders === null){
-			$this->classLoaders = new \Threaded();
+			$loaders = $this->classLoaders = new ThreadSafeArray();
 		}else{
+			$loaders = $this->classLoaders;
 			foreach($this->classLoaders as $k => $autoloader){
 				unset($this->classLoaders[$k]);
 			}
 		}
 		foreach($autoloaders as $autoloader){
-			$this->classLoaders[] = $autoloader;
+			$loaders[] = $autoloader;
 		}
 	}
 
@@ -79,7 +82,7 @@ trait CommonThreadPartsTrait{
 		$autoloaders = $this->classLoaders;
 		if($autoloaders !== null){
 			foreach($autoloaders as $autoloader){
-				/** @var \ClassLoader $autoloader */
+				/** @var ThreadSafeClassLoader $autoloader */
 				$autoloader->register(false);
 			}
 		}

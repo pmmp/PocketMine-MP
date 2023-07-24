@@ -48,32 +48,19 @@ class Attribute{
 	public const ZOMBIE_SPAWN_REINFORCEMENTS = self::MC_PREFIX . "zombie.spawn_reinforcements";
 	public const LAVA_MOVEMENT = self::MC_PREFIX . "lava_movement";
 
-	/** @var string */
-	protected $id;
-	/** @var float */
-	protected $minValue;
-	/** @var float */
-	protected $maxValue;
-	/** @var float */
-	protected $defaultValue;
-	/** @var float */
-	protected $currentValue;
-	/** @var bool */
-	protected $shouldSend;
+	protected float $currentValue;
+	protected bool $desynchronized = true;
 
-	/** @var bool */
-	protected $desynchronized = true;
-
-	public function __construct(string $id, float $minValue, float $maxValue, float $defaultValue, bool $shouldSend = true){
+	public function __construct(
+		protected string $id,
+		protected float $minValue,
+		protected float $maxValue,
+		protected float $defaultValue,
+		protected bool $shouldSend = true
+	){
 		if($minValue > $maxValue || $defaultValue > $maxValue || $defaultValue < $minValue){
 			throw new \InvalidArgumentException("Invalid ranges: min value: $minValue, max value: $maxValue, $defaultValue: $defaultValue");
 		}
-		$this->id = $id;
-		$this->minValue = $minValue;
-		$this->maxValue = $maxValue;
-		$this->defaultValue = $defaultValue;
-		$this->shouldSend = $shouldSend;
-
 		$this->currentValue = $this->defaultValue;
 	}
 

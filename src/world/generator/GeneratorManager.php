@@ -40,7 +40,7 @@ final class GeneratorManager{
 	private array $list = [];
 
 	public function __construct(){
-		$this->addGenerator(Flat::class, "flat", \Closure::fromCallable(function(string $preset) : ?InvalidGeneratorOptionsException{
+		$this->addGenerator(Flat::class, "flat", function(string $preset) : ?InvalidGeneratorOptionsException{
 			if($preset === ""){
 				return null;
 			}
@@ -50,7 +50,7 @@ final class GeneratorManager{
 			}catch(InvalidGeneratorOptionsException $e){
 				return $e;
 			}
-		}));
+		});
 		$this->addGenerator(Normal::class, "normal", fn() => null);
 		$this->addGenerator(Normal::class, "default", fn() => null);
 		$this->addGenerator(Nether::class, "hell", fn() => null);

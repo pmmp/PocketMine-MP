@@ -25,16 +25,16 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Bell as TileBell;
 use pocketmine\block\utils\BellAttachmentType;
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
-use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\BellRingSound;
 
@@ -43,41 +43,14 @@ final class Bell extends Transparent{
 
 	private BellAttachmentType $attachmentType;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->attachmentType = BellAttachmentType::FLOOR();
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->setFacing(BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03));
-
-		$attachmentType = [
-			BlockLegacyMetadata::BELL_ATTACHMENT_FLOOR => BellAttachmentType::FLOOR(),
-			BlockLegacyMetadata::BELL_ATTACHMENT_CEILING => BellAttachmentType::CEILING(),
-			BlockLegacyMetadata::BELL_ATTACHMENT_ONE_WALL => BellAttachmentType::ONE_WALL(),
-			BlockLegacyMetadata::BELL_ATTACHMENT_TWO_WALLS => BellAttachmentType::TWO_WALLS()
-		][($stateMeta >> 2) & 0b11] ?? null;
-		if($attachmentType === null){
-			throw new InvalidBlockStateException("No such attachment type");
-		}
-		$this->setAttachmentType($attachmentType);
-	}
-
-	public function writeStateToMeta() : int{
-		$attachmentTypeMeta = [
-			BellAttachmentType::FLOOR()->id() => BlockLegacyMetadata::BELL_ATTACHMENT_FLOOR,
-			BellAttachmentType::CEILING()->id() => BlockLegacyMetadata::BELL_ATTACHMENT_CEILING,
-			BellAttachmentType::ONE_WALL()->id() => BlockLegacyMetadata::BELL_ATTACHMENT_ONE_WALL,
-			BellAttachmentType::TWO_WALLS()->id() => BlockLegacyMetadata::BELL_ATTACHMENT_TWO_WALLS
-		][$this->getAttachmentType()->id()] ?? null;
-		if($attachmentTypeMeta === null){
-			throw new AssumptionFailedError("Mapping should cover all cases");
-		}
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->getFacing()) | ($attachmentTypeMeta << 2);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->bellAttachmentType($this->attachmentType);
+		$w->horizontalFacing($this->facing);
 	}
 
 	protected function recalculateCollisionBoxes() : array{
@@ -157,23 +130,23 @@ final class Bell extends Transparent{
 		}
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
 			$faceHit = Facing::opposite($player->getHorizontalFacing());
-			if(
-				$this->attachmentType->equals(BellAttachmentType::CEILING()) ||
-				($this->attachmentType->equals(BellAttachmentType::FLOOR()) && Facing::axis($faceHit) === Facing::axis($this->facing)) ||
-				(
-					($this->attachmentType->equals(BellAttachmentType::ONE_WALL()) || $this->attachmentType->equals(BellAttachmentType::TWO_WALLS())) &&
-					($faceHit === Facing::rotateY($this->facing, false) || $faceHit === Facing::rotateY($this->facing, true))
-				)
-			){
+			if($this->isValidFaceToRing($faceHit)){
 				$this->ring($faceHit);
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
+		$faceHit = Facing::opposite($projectile->getHorizontalFacing());
+		if($this->isValidFaceToRing($faceHit)){
+			$this->ring($faceHit);
+		}
 	}
 
 	public function ring(int $faceHit) : void{
@@ -183,5 +156,16 @@ final class Bell extends Transparent{
 		if($tile instanceof TileBell){
 			$world->broadcastPacketToViewers($this->position, $tile->createFakeUpdatePacket($faceHit));
 		}
+	}
+
+	private function isValidFaceToRing(int $faceHit) : bool{
+		return (
+			$this->attachmentType->equals(BellAttachmentType::CEILING()) ||
+			($this->attachmentType->equals(BellAttachmentType::FLOOR()) && Facing::axis($faceHit) === Facing::axis($this->facing)) ||
+			(
+				($this->attachmentType->equals(BellAttachmentType::ONE_WALL()) || $this->attachmentType->equals(BellAttachmentType::TWO_WALLS())) &&
+				($faceHit === Facing::rotateY($this->facing, false) || $faceHit === Facing::rotateY($this->facing, true))
+			)
+		);
 	}
 }

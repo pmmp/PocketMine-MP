@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\inventory\StonecutterInventory;
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
@@ -38,19 +37,7 @@ class Stonecutter extends Transparent{
 	use FacesOppositePlacingPlayerTrait;
 	use HorizontalFacingTrait;
 
-	public function writeStateToMeta() : int{
-		return BlockDataSerializer::writeHorizontalFacing($this->facing);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readHorizontalFacing($stateMeta);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
-	}
-
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
 			$player->setCurrentWindow(new StonecutterInventory($this->position));
 		}

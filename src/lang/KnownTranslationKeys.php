@@ -349,12 +349,15 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_DISCONNECT_BAN_HARDCORE = "pocketmine.disconnect.ban.hardcore";
 	public const POCKETMINE_DISCONNECT_BAN_IP = "pocketmine.disconnect.ban.ip";
 	public const POCKETMINE_DISCONNECT_BAN_NOREASON = "pocketmine.disconnect.ban.noReason";
+	public const POCKETMINE_DISCONNECT_CLIENTDISCONNECT = "pocketmine.disconnect.clientDisconnect";
+	public const POCKETMINE_DISCONNECT_CLIENTRECONNECT = "pocketmine.disconnect.clientReconnect";
 	public const POCKETMINE_DISCONNECT_ERROR = "pocketmine.disconnect.error";
 	public const POCKETMINE_DISCONNECT_ERROR_AUTHENTICATION = "pocketmine.disconnect.error.authentication";
 	public const POCKETMINE_DISCONNECT_ERROR_BADPACKET = "pocketmine.disconnect.error.badPacket";
 	public const POCKETMINE_DISCONNECT_ERROR_INTERNAL = "pocketmine.disconnect.error.internal";
 	public const POCKETMINE_DISCONNECT_ERROR_LOGINTIMEOUT = "pocketmine.disconnect.error.loginTimeout";
 	public const POCKETMINE_DISCONNECT_ERROR_RESPAWN = "pocketmine.disconnect.error.respawn";
+	public const POCKETMINE_DISCONNECT_ERROR_TIMEOUT = "pocketmine.disconnect.error.timeout";
 	public const POCKETMINE_DISCONNECT_INCOMPATIBLEPROTOCOL = "pocketmine.disconnect.incompatibleProtocol";
 	public const POCKETMINE_DISCONNECT_INVALIDSESSION = "pocketmine.disconnect.invalidSession";
 	public const POCKETMINE_DISCONNECT_INVALIDSESSION_BADSIGNATURE = "pocketmine.disconnect.invalidSession.badSignature";

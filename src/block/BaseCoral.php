@@ -28,34 +28,28 @@ use pocketmine\block\utils\CoralTypeTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\BlockDeathEvent;
 use pocketmine\item\Item;
+use function mt_rand;
 
 abstract class BaseCoral extends Transparent{
 	use CoralTypeTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
-		parent::__construct($idInfo, $name, $breakInfo);
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->coralType = CoralType::TUBE();
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->dead){
-			$world = $this->position->getWorld();
+			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(40, 200));
+		}
+	}
 
-			$hasWater = false;
-			foreach($this->position->sides() as $vector3){
-				if($world->getBlock($vector3) instanceof Water){
-					$hasWater = true;
-					break;
-				}
-			}
-
-			//TODO: check water inside the block itself (not supported on the API yet)
-			if(!$hasWater){
-				$ev = new BlockDeathEvent($this, $this->setDead(true));
-				$ev->call();
-				if(!$ev->isCancelled()){
-					$world->setBlock($this->position, $ev->getNewState());
-				}
+	public function onScheduledUpdate() : void{
+		if(!$this->dead && !$this->isCoveredWithWater()){
+			$ev = new BlockDeathEvent($this, $this->setDead(true));
+			$ev->call();
+			if(!$ev->isCancelled()){
+				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
 			}
 		}
 	}
@@ -69,6 +63,21 @@ abstract class BaseCoral extends Transparent{
 	}
 
 	public function isSolid() : bool{ return false; }
+
+	protected function isCoveredWithWater() : bool{
+		$world = $this->position->getWorld();
+
+		$hasWater = false;
+		foreach($this->position->sides() as $vector3){
+			if($world->getBlock($vector3) instanceof Water){
+				$hasWater = true;
+				break;
+			}
+		}
+
+		//TODO: check water inside the block itself (not supported on the API yet)
+		return $hasWater;
+	}
 
 	protected function recalculateCollisionBoxes() : array{ return []; }
 

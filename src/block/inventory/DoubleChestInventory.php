@@ -41,7 +41,7 @@ class DoubleChestInventory extends BaseInventory implements BlockInventory, Inve
 		parent::__construct();
 	}
 
-	public function getInventory(){
+	public function getInventory() : self{
 		return $this;
 	}
 
@@ -83,6 +83,20 @@ class DoubleChestInventory extends BaseInventory implements BlockInventory, Inve
 		}
 		$this->left->setContents($leftContents);
 		$this->right->setContents($rightContents);
+	}
+
+	protected function getMatchingItemCount(int $slot, Item $test, bool $checkTags) : int{
+		$leftSize = $this->left->getSize();
+		return $slot < $leftSize ?
+			$this->left->getMatchingItemCount($slot, $test, $checkTags) :
+			$this->right->getMatchingItemCount($slot - $leftSize, $test, $checkTags);
+	}
+
+	public function isSlotEmpty(int $index) : bool{
+		$leftSize = $this->left->getSize();
+		return $index < $leftSize ?
+			$this->left->isSlotEmpty($index) :
+			$this->right->isSlotEmpty($index - $leftSize);
 	}
 
 	protected function getOpenSound() : Sound{ return new ChestOpenSound(); }

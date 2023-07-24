@@ -39,7 +39,7 @@ class Potato extends Crops{
 		return $result;
 	}
 
-	public function getPickedItem(bool $addUserData = false) : Item{
+	public function asItem() : Item{
 		return VanillaItems::POTATO();
 	}
 }

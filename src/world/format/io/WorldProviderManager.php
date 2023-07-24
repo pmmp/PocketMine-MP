@@ -36,18 +36,18 @@ final class WorldProviderManager{
 	 * @var WorldProviderManagerEntry[]
 	 * @phpstan-var array<string, WorldProviderManagerEntry>
 	 */
-	protected $providers = [];
+	protected array $providers = [];
 
 	private WritableWorldProviderManagerEntry $default;
 
 	public function __construct(){
-		$leveldb = new WritableWorldProviderManagerEntry(\Closure::fromCallable([LevelDB::class, 'isValid']), fn(string $path) => new LevelDB($path), \Closure::fromCallable([LevelDB::class, 'generate']));
+		$leveldb = new WritableWorldProviderManagerEntry(\Closure::fromCallable([LevelDB::class, 'isValid']), fn(string $path, \Logger $logger) => new LevelDB($path, $logger), \Closure::fromCallable([LevelDB::class, 'generate']));
 		$this->default = $leveldb;
 		$this->addProvider($leveldb, "leveldb");
 
-		$this->addProvider(new ReadOnlyWorldProviderManagerEntry(\Closure::fromCallable([Anvil::class, 'isValid']), fn(string $path) => new Anvil($path)), "anvil");
-		$this->addProvider(new ReadOnlyWorldProviderManagerEntry(\Closure::fromCallable([McRegion::class, 'isValid']), fn(string $path) => new McRegion($path)), "mcregion");
-		$this->addProvider(new ReadOnlyWorldProviderManagerEntry(\Closure::fromCallable([PMAnvil::class, 'isValid']), fn(string $path) => new PMAnvil($path)), "pmanvil");
+		$this->addProvider(new ReadOnlyWorldProviderManagerEntry(\Closure::fromCallable([Anvil::class, 'isValid']), fn(string $path, \Logger $logger) => new Anvil($path, $logger)), "anvil");
+		$this->addProvider(new ReadOnlyWorldProviderManagerEntry(\Closure::fromCallable([McRegion::class, 'isValid']), fn(string $path, \Logger $logger) => new McRegion($path, $logger)), "mcregion");
+		$this->addProvider(new ReadOnlyWorldProviderManagerEntry(\Closure::fromCallable([PMAnvil::class, 'isValid']), fn(string $path, \Logger $logger) => new PMAnvil($path, $logger)), "pmanvil");
 	}
 
 	/**

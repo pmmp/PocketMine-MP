@@ -39,11 +39,8 @@ use const PHP_INT_MAX;
 class ConsoleCommandSender implements CommandSender{
 	use PermissibleDelegateTrait;
 
-	/**
-	 * @var int|null
-	 * @phpstan-var positive-int|null
-	 */
-	protected $lineHeight = null;
+	/** @phpstan-var positive-int|null */
+	protected ?int $lineHeight = null;
 
 	public function __construct(
 		private Server $server,

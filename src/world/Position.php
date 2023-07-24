@@ -28,16 +28,9 @@ use pocketmine\utils\AssumptionFailedError;
 use function assert;
 
 class Position extends Vector3{
+	public ?World $world = null;
 
-	/** @var World|null */
-	public $world = null;
-
-	/**
-	 * @param float|int $x
-	 * @param float|int $y
-	 * @param float|int $z
-	 */
-	public function __construct($x, $y, $z, ?World $world){
+	public function __construct(float|int $x, float|int $y, float|int $z, ?World $world){
 		parent::__construct($x, $y, $z);
 		if($world !== null && !$world->isLoaded()){
 			throw new \InvalidArgumentException("Specified world has been unloaded and cannot be used");

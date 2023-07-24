@@ -23,14 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\entity\Entity;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Location;
 use pocketmine\entity\object\PrimedTNT;
-use pocketmine\entity\projectile\Arrow;
+use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\FlintSteel;
 use pocketmine\item\Item;
+use pocketmine\item\ItemTypeIds;
+use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\Random;
@@ -40,25 +42,15 @@ use function sin;
 use const M_PI;
 
 class TNT extends Opaque{
-
 	protected bool $unstable = false; //TODO: Usage unclear, seems to be a weird hack in vanilla
 	protected bool $worksUnderwater = false;
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->unstable = ($stateMeta & BlockLegacyMetadata::TNT_FLAG_UNSTABLE) !== 0;
-		$this->worksUnderwater = ($stateMeta & BlockLegacyMetadata::TNT_FLAG_UNDERWATER) !== 0;
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
+		$w->bool($this->worksUnderwater);
 	}
 
-	protected function writeStateToMeta() : int{
-		return ($this->unstable ? BlockLegacyMetadata::TNT_FLAG_UNSTABLE : 0) | ($this->worksUnderwater ? BlockLegacyMetadata::TNT_FLAG_UNDERWATER : 0);
-	}
-
-	protected function writeStateToItemMeta() : int{
-		return $this->worksUnderwater ? BlockLegacyMetadata::TNT_FLAG_UNDERWATER : 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b11;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->bool($this->unstable);
 	}
 
 	public function isUnstable() : bool{ return $this->unstable; }
@@ -77,15 +69,20 @@ class TNT extends Opaque{
 		return $this;
 	}
 
-	public function onBreak(Item $item, ?Player $player = null) : bool{
+	public function onBreak(Item $item, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->unstable){
 			$this->ignite();
 			return true;
 		}
-		return parent::onBreak($item, $player);
+		return parent::onBreak($item, $player, $returnedItems);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		if($item->getTypeId() === ItemTypeIds::FIRE_CHARGE){
+			$item->pop();
+			$this->ignite();
+			return true;
+		}
 		if($item instanceof FlintSteel || $item->hasEnchantment(VanillaEnchantments::FIRE_ASPECT())){
 			if($item instanceof Durable){
 				$item->applyDamage(1);
@@ -95,18 +92,6 @@ class TNT extends Opaque{
 		}
 
 		return false;
-	}
-
-	public function hasEntityCollision() : bool{
-		return true;
-	}
-
-	public function onEntityInside(Entity $entity) : bool{
-		if($entity instanceof Arrow && $entity->isOnFire()){
-			$this->ignite();
-			return false;
-		}
-		return true;
 	}
 
 	public function ignite(int $fuse = 80) : void{
@@ -134,5 +119,11 @@ class TNT extends Opaque{
 
 	public function onIncinerate() : void{
 		$this->ignite();
+	}
+
+	public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
+		if($projectile->isOnFire()){
+			$this->ignite();
+		}
 	}
 }

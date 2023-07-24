@@ -25,7 +25,4 @@ namespace pocketmine\block;
 
 class OutOfBoundsBlock extends Block{
 
-	public function getName() : string{
-		return "Out of Bounds Block";
-	}
 }

@@ -24,10 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Lectern as TileLectern;
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\item\WritableBookBase;
 use pocketmine\math\AxisAlignedBB;
@@ -43,24 +43,23 @@ class Lectern extends Transparent{
 
 	protected int $viewedPage = 0;
 	protected ?WritableBookBase $book = null;
+
 	protected bool $producingSignal = false;
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
-		$this->producingSignal = ($stateMeta & BlockLegacyMetadata::LECTERN_FLAG_POWERED) !== 0;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->bool($this->producingSignal);
 	}
 
-	public function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) | ($this->producingSignal ? BlockLegacyMetadata::LECTERN_FLAG_POWERED : 0);
-	}
-
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileLectern){
 			$this->viewedPage = $tile->getViewedPage();
 			$this->book = $tile->getBook();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{
@@ -70,10 +69,6 @@ class Lectern extends Transparent{
 			$tile->setViewedPage($this->viewedPage);
 			$tile->setBook($this->book);
 		}
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
 	}
 
 	public function getFlammability() : int{
@@ -126,7 +121,7 @@ class Lectern extends Transparent{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->book === null && $item instanceof WritableBookBase){
 			$world = $this->position->getWorld();
 			$world->setBlock($this->position, $this->setBook($item));

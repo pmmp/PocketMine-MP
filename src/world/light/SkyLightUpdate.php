@@ -34,15 +34,15 @@ use function max;
 
 class SkyLightUpdate extends LightUpdate{
 	/**
-	 * @param \SplFixedArray|int[]  $lightFilters
-	 * @param \SplFixedArray|bool[] $directSkyLightBlockers
-	 * @phpstan-param \SplFixedArray<int>  $lightFilters
-	 * @phpstan-param \SplFixedArray<bool> $directSkyLightBlockers
+	 * @param int[]  $lightFilters
+	 * @param true[] $directSkyLightBlockers
+	 * @phpstan-param array<int, int>  $lightFilters
+	 * @phpstan-param array<int, true> $directSkyLightBlockers
 	 */
 	public function __construct(
 		SubChunkExplorer $subChunkExplorer,
-		\SplFixedArray $lightFilters,
-		private \SplFixedArray $directSkyLightBlockers
+		array $lightFilters,
+		private array $directSkyLightBlockers
 	){
 		parent::__construct($subChunkExplorer, $lightFilters);
 	}
@@ -66,7 +66,7 @@ class SkyLightUpdate extends LightUpdate{
 		$chunk = $this->subChunkExplorer->currentChunk;
 
 		$oldHeightMap = $chunk->getHeightMap($x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK);
-		$source = $this->subChunkExplorer->currentSubChunk->getFullBlock($x & SubChunk::COORD_MASK, $y & SubChunk::COORD_MASK, $z & SubChunk::COORD_MASK);
+		$source = $this->subChunkExplorer->currentSubChunk->getBlockStateId($x & SubChunk::COORD_MASK, $y & SubChunk::COORD_MASK, $z & SubChunk::COORD_MASK);
 
 		$yPlusOne = $y + 1;
 
@@ -74,7 +74,7 @@ class SkyLightUpdate extends LightUpdate{
 			$newHeightMap = self::recalculateHeightMapColumn($chunk, $x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK, $this->directSkyLightBlockers);
 			$chunk->setHeightMap($x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK, $newHeightMap);
 		}elseif($yPlusOne > $oldHeightMap){ //Block changed above the heightmap.
-			if($this->directSkyLightBlockers[$source]){
+			if(isset($this->directSkyLightBlockers[$source])){
 				$chunk->setHeightMap($x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK, $yPlusOne);
 				$newHeightMap = $yPlusOne;
 			}else{ //Block changed which has no effect on direct sky light, for example placing or removing glass.
@@ -84,16 +84,17 @@ class SkyLightUpdate extends LightUpdate{
 			$newHeightMap = $oldHeightMap;
 		}
 
-		if($newHeightMap > $oldHeightMap){ //Heightmap increase, block placed, remove sky light
-			for($i = $y; $i >= $oldHeightMap; --$i){
+		if($newHeightMap >= $oldHeightMap){
+			for($i = $y - 1; $i >= $oldHeightMap; --$i){
 				$this->setAndUpdateLight($x, $i, $z, 0); //Remove all light beneath, adjacent recalculation will handle the rest.
 			}
-		}elseif($newHeightMap < $oldHeightMap){ //Heightmap decrease, block changed or removed, add sky light
+
+			//recalculate light for the placed block from its surroundings - this avoids having to check effective light during propagation
+			$this->setAndUpdateLight($x, $y, $z, max(0, $this->getHighestAdjacentLight($x, $y, $z) - ($this->lightFilters[$source] ?? self::BASE_LIGHT_FILTER)));
+		}else{ //Heightmap decrease, block changed or removed, add sky light
 			for($i = $y; $i >= $newHeightMap; --$i){
 				$this->setAndUpdateLight($x, $i, $z, 15);
 			}
-		}else{ //No heightmap change, block changed "underground"
-			$this->setAndUpdateLight($x, $y, $z, max(0, $this->getHighestAdjacentLight($x, $y, $z) - $this->lightFilters[$source]));
 		}
 	}
 
@@ -124,35 +125,45 @@ class SkyLightUpdate extends LightUpdate{
 		for($x = 0; $x < Chunk::EDGE_LENGTH; ++$x){
 			for($z = 0; $z < Chunk::EDGE_LENGTH; ++$z){
 				$currentHeight = $chunk->getHeightMap($x, $z);
-				$maxAdjacentHeight = World::Y_MIN;
-				if($x !== 0){
-					$maxAdjacentHeight = max($maxAdjacentHeight, $chunk->getHeightMap($x - 1, $z));
-				}
-				if($x !== 15){
-					$maxAdjacentHeight = max($maxAdjacentHeight, $chunk->getHeightMap($x + 1, $z));
-				}
-				if($z !== 0){
-					$maxAdjacentHeight = max($maxAdjacentHeight, $chunk->getHeightMap($x, $z - 1));
-				}
-				if($z !== 15){
-					$maxAdjacentHeight = max($maxAdjacentHeight, $chunk->getHeightMap($x, $z + 1));
-				}
 
-				/*
-				 * We skip the top two blocks between current height and max adjacent (if there's a difference) because:
-				 * - the block next to the highest adjacent will do nothing during propagation (it's surrounded by 15s)
-				 * - the block below that block will do the same as the node in the highest adjacent
-				 * NOTE: If block opacity becomes direction-aware in the future, the second point will become invalid.
-				 */
-				$nodeColumnEnd = max($currentHeight, $maxAdjacentHeight - 2);
-
-				for($y = $currentHeight; $y <= $nodeColumnEnd; $y++){
-					$this->setAndUpdateLight($x + $baseX, $y, $z + $baseZ, 15);
-					$lightSources++;
-				}
-				for($y = $nodeColumnEnd + 1, $yMax = $lowestClearSubChunk * SubChunk::EDGE_LENGTH; $y < $yMax; $y++){
+				if($currentHeight === World::Y_MAX){
+					//this column has a light-filtering block in the top cell - make sure it's lit from above the world
+					//light from above the world bounds will not be checked during propagation
+					$y = $currentHeight - 1;
 					if($this->subChunkExplorer->moveTo($x + $baseX, $y, $z + $baseZ) !== SubChunkExplorerStatus::INVALID){
-						$this->getCurrentLightArray()->set($x, $y & SubChunk::COORD_MASK, $z, 15);
+						$block = $this->subChunkExplorer->currentSubChunk->getBlockStateId($x, $y & SubChunk::COORD_MASK, $z);
+						$this->setAndUpdateLight($x + $baseX, $y, $z + $baseZ, max(0, 15 - ($this->lightFilters[$block] ?? self::BASE_LIGHT_FILTER)));
+					}
+				}else{
+					$maxAdjacentHeight = World::Y_MIN;
+					if($x !== 0){
+						$maxAdjacentHeight = max($maxAdjacentHeight, $chunk->getHeightMap($x - 1, $z));
+					}
+					if($x !== 15){
+						$maxAdjacentHeight = max($maxAdjacentHeight, $chunk->getHeightMap($x + 1, $z));
+					}
+					if($z !== 0){
+						$maxAdjacentHeight = max($maxAdjacentHeight, $chunk->getHeightMap($x, $z - 1));
+					}
+					if($z !== 15){
+						$maxAdjacentHeight = max($maxAdjacentHeight, $chunk->getHeightMap($x, $z + 1));
+					}
+
+					/*
+					 * We skip the top two blocks between current height and max adjacent (if there's a difference) because:
+					 * - the block next to the highest adjacent will do nothing during propagation (it's surrounded by 15s)
+					 * - the block below that block will do the same as the node in the highest adjacent
+					 * NOTE: If block opacity becomes direction-aware in the future, the second point will become invalid.
+					 */
+					$nodeColumnEnd = max($currentHeight, $maxAdjacentHeight - 2);
+					for($y = $currentHeight; $y <= $nodeColumnEnd; $y++){
+						$this->setAndUpdateLight($x + $baseX, $y, $z + $baseZ, 15);
+						$lightSources++;
+					}
+					for($y = $nodeColumnEnd + 1, $yMax = $lowestClearSubChunk * SubChunk::EDGE_LENGTH; $y < $yMax; $y++){
+						if($this->subChunkExplorer->moveTo($x + $baseX, $y, $z + $baseZ) !== SubChunkExplorerStatus::INVALID){
+							$this->getCurrentLightArray()->set($x, $y & SubChunk::COORD_MASK, $z, 15);
+						}
 					}
 				}
 			}
@@ -164,10 +175,10 @@ class SkyLightUpdate extends LightUpdate{
 	/**
 	 * Recalculates the heightmap for the whole chunk.
 	 *
-	 * @param \SplFixedArray|bool[] $directSkyLightBlockers
-	 * @phpstan-param \SplFixedArray<bool> $directSkyLightBlockers
+	 * @param true[] $directSkyLightBlockers
+	 * @phpstan-param array<int, true> $directSkyLightBlockers
 	 */
-	private static function recalculateHeightMap(Chunk $chunk, \SplFixedArray $directSkyLightBlockers) : HeightArray{
+	private static function recalculateHeightMap(Chunk $chunk, array $directSkyLightBlockers) : HeightArray{
 		$maxSubChunkY = Chunk::MAX_SUBCHUNK_INDEX;
 		for(; $maxSubChunkY >= Chunk::MIN_SUBCHUNK_INDEX; $maxSubChunkY--){
 			if(!$chunk->getSubChunk($maxSubChunkY)->isEmptyFast()){
@@ -194,7 +205,7 @@ class SkyLightUpdate extends LightUpdate{
 					$result->set($x, $z, World::Y_MIN);
 				}else{
 					for(; $y >= World::Y_MIN; --$y){
-						if($directSkyLightBlockers[$chunk->getFullBlock($x, $y, $z)]){
+						if(isset($directSkyLightBlockers[$chunk->getBlockStateId($x, $y, $z)])){
 							$result->set($x, $z, $y + 1);
 							break;
 						}
@@ -208,20 +219,20 @@ class SkyLightUpdate extends LightUpdate{
 	/**
 	 * Recalculates the heightmap for the block column at the specified X/Z chunk coordinates
 	 *
-	 * @param int                   $x                      0-15
-	 * @param int                   $z                      0-15
-	 * @param \SplFixedArray|bool[] $directSkyLightBlockers
-	 * @phpstan-param \SplFixedArray<bool> $directSkyLightBlockers
+	 * @param int    $x                      0-15
+	 * @param int    $z                      0-15
+	 * @param true[] $directSkyLightBlockers
+	 * @phpstan-param array<int, true> $directSkyLightBlockers
 	 *
 	 * @return int New calculated heightmap value (0-256 inclusive)
 	 */
-	private static function recalculateHeightMapColumn(Chunk $chunk, int $x, int $z, \SplFixedArray $directSkyLightBlockers) : int{
+	private static function recalculateHeightMapColumn(Chunk $chunk, int $x, int $z, array $directSkyLightBlockers) : int{
 		$y = $chunk->getHighestBlockAt($x, $z);
 		if($y === null){
 			return World::Y_MIN;
 		}
 		for(; $y >= World::Y_MIN; --$y){
-			if($directSkyLightBlockers[$chunk->getFullBlock($x, $y, $z)]){
+			if(isset($directSkyLightBlockers[$chunk->getBlockStateId($x, $y, $z)])){
 				break;
 			}
 		}

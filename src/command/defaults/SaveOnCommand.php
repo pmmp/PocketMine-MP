@@ -30,19 +30,15 @@ use pocketmine\permission\DefaultPermissionNames;
 
 class SaveOnCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"save-on",
 			KnownTranslationFactory::pocketmine_command_saveon_description()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_SAVE_ENABLE);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		$sender->getServer()->getWorldManager()->setAutoSave(true);
 
 		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_save_enabled());
