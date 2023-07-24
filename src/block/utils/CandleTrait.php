@@ -54,11 +54,7 @@ trait CandleTrait{
 
 	public function isLit() : bool{ return $this->lit; }
 
-	/**
-	 * @param bool $lit
-	 *
-	 * @return CandleTrait|CakeWithCandle|Candle
-	 */
+	/** @return $this */
 	public function setLit(bool $lit) : self{
 		$this->lit = $lit;
 		return $this;
