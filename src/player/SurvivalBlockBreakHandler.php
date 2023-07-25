@@ -87,10 +87,10 @@ final class SurvivalBlockBreakHandler{
 			$breakTimeSeconds -= $breakTimeSeconds * 0.2 * min($haste->getEffectLevel(), 5);
 		}
 
-		$breakTimePerTick = $breakTimeSeconds * 20;
+		$breakTimeTicks = $breakTimeSeconds * 20;
 
-		if($breakTimePerTick > 0){
-			return 1 / $breakTimePerTick;
+		if($breakTimeTicks > 0){
+			return 1 / $breakTimeTicks;
 		}
 		return 1;
 	}
