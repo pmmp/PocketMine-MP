@@ -27,6 +27,6 @@ use pocketmine\block\Hopper;
 use pocketmine\inventory\BaseInventory;
 
 interface HopperInteractable{
-	public function pushTo(BaseInventory $targetInventory) : bool;
-	public function pullFrom(BaseInventory $sourceInventory, Hopper $hopperBlock) : bool;
+	public function doHopperPush(BaseInventory $targetInventory) : bool;
+	public function doHopperPull(BaseInventory $sourceInventory, Hopper $hopperBlock) : bool;
 }
