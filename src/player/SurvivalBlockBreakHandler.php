@@ -81,7 +81,7 @@ final class SurvivalBlockBreakHandler{
 
 		$effects = $this->player->getEffects();
 		if(($miningFatigue = $effects->get(VanillaEffects::MINING_FATIGUE())) !== null){
-			$breakTimeSeconds *= $breakTimeSeconds / ($breakTimeSeconds * 0.2 ** $miningFatigue->getEffectLevel());
+			$breakTimeSeconds *= 4.75 ** $miningFatigue->getEffectLevel();
 		}
 		if(($haste = $effects->get(VanillaEffects::HASTE())) !== null){
 			$breakTimeSeconds -= $breakTimeSeconds * 0.2 * min($haste->getEffectLevel(), 5);
