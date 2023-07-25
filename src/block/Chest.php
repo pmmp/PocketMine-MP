@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\block\utils\HopperInteractableTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\ChestPairEvent;
 use pocketmine\inventory\BaseInventory;
@@ -37,6 +38,7 @@ use pocketmine\player\Player;
 
 class Chest extends Transparent implements HopperInteractable{
 	use FacesOppositePlacingPlayerTrait;
+	use HopperInteractableTrait;
 
 	/**
 	 * @return AxisAlignedBB[]
@@ -118,26 +120,5 @@ class Chest extends Transparent implements HopperInteractable{
 		$sourceInventory = $currentTile->getInventory();
 
 		return $this->transferItem($sourceInventory, $targetInventory);
-	}
-
-	private function transferItem(BaseInventory $sourceInventory, BaseInventory $targetInventory) : bool{
-		foreach($sourceInventory->getContents() as $itemStack){
-			if($itemStack->isNull()){
-				continue;
-			}
-
-			$singleItem = $itemStack->pop(1);
-
-			if(!$targetInventory->canAddItem($singleItem)){
-				continue;
-			}
-
-			$sourceInventory->removeItem($singleItem);
-			$targetInventory->addItem($singleItem);
-
-			return true;
-		}
-
-		return false;
 	}
 }

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Hopper as TileHopper;
+use pocketmine\block\utils\HopperInteractableTrait;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -37,6 +38,7 @@ use pocketmine\world\BlockTransaction;
 
 class Hopper extends Transparent implements HopperInteractable{
 	use PoweredByRedstoneTrait;
+	use HopperInteractableTrait;
 
 	private int $facing = Facing::DOWN;
 
@@ -145,27 +147,6 @@ class Hopper extends Transparent implements HopperInteractable{
 		$sourceInventory = $currentTile->getInventory();
 
 		return $this->transferItem($sourceInventory, $targetInventory);
-	}
-
-	private function transferItem(BaseInventory $sourceInventory, BaseInventory $targetInventory) : bool{
-		foreach($sourceInventory->getContents() as $itemStack){
-			if($itemStack->isNull()){
-				continue;
-			}
-
-			$singleItem = $itemStack->pop(1);
-
-			if(!$targetInventory->canAddItem($singleItem)){
-				continue;
-			}
-
-			$sourceInventory->removeItem($singleItem);
-			$targetInventory->addItem($singleItem);
-
-			return true;
-		}
-
-		return false;
 	}
 
 	//TODO: redstone logic, sucking logic
