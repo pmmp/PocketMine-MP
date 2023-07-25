@@ -30,12 +30,11 @@ use pocketmine\player\Player;
 class PlayerToggleSneakEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var bool */
-	protected $isSneaking;
-
-	public function __construct(Player $player, bool $isSneaking){
+	public function __construct(
+		Player $player,
+		protected bool $isSneaking
+	){
 		$this->player = $player;
-		$this->isSneaking = $isSneaking;
 	}
 
 	public function isSneaking() : bool{

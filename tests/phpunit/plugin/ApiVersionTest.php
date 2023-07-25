@@ -32,7 +32,7 @@ class ApiVersionTest extends TestCase{
 	 * @return \Generator|mixed[][]
 	 * @phpstan-return \Generator<int, array{string, string, bool}, void, void>
 	 */
-	public function compatibleApiProvider() : \Generator{
+	public static function compatibleApiProvider() : \Generator{
 		yield ["3.0.0", "3.0.0", true];
 		yield ["3.1.0", "3.0.0", true];
 		yield ["3.0.0", "3.1.0", false];
@@ -58,7 +58,7 @@ class ApiVersionTest extends TestCase{
 	 * @return mixed[][][]
 	 * @phpstan-return \Generator<int, array{list<string>, list<string>}, void, void>
 	 */
-	public function ambiguousVersionsProvider() : \Generator{
+	public static function ambiguousVersionsProvider() : \Generator{
 		yield [["3.0.0"], []];
 		yield [["3.0.0", "3.0.1"], ["3.0.0", "3.0.1"]];
 		yield [["3.0.0", "3.1.0", "4.0.0"], ["3.0.0", "3.1.0"]];

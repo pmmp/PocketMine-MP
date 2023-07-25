@@ -36,12 +36,15 @@ use pocketmine\utils\EnumTrait;
  *
  * @method static RecordType DISK_11()
  * @method static RecordType DISK_13()
+ * @method static RecordType DISK_5()
  * @method static RecordType DISK_BLOCKS()
  * @method static RecordType DISK_CAT()
  * @method static RecordType DISK_CHIRP()
  * @method static RecordType DISK_FAR()
  * @method static RecordType DISK_MALL()
  * @method static RecordType DISK_MELLOHI()
+ * @method static RecordType DISK_OTHERSIDE()
+ * @method static RecordType DISK_PIGSTEP()
  * @method static RecordType DISK_STAL()
  * @method static RecordType DISK_STRAD()
  * @method static RecordType DISK_WAIT()
@@ -55,18 +58,20 @@ final class RecordType{
 	protected static function setup() : void{
 		self::registerAll(
 			new RecordType("disk_13", "C418 - 13", LevelSoundEvent::RECORD_13, KnownTranslationFactory::item_record_13_desc()),
+			new RecordType("disk_5", "Samuel Åberg - 5", LevelSoundEvent::RECORD_5, KnownTranslationFactory::item_record_5_desc()),
 			new RecordType("disk_cat", "C418 - cat", LevelSoundEvent::RECORD_CAT, KnownTranslationFactory::item_record_cat_desc()),
 			new RecordType("disk_blocks", "C418 - blocks", LevelSoundEvent::RECORD_BLOCKS, KnownTranslationFactory::item_record_blocks_desc()),
 			new RecordType("disk_chirp", "C418 - chirp", LevelSoundEvent::RECORD_CHIRP, KnownTranslationFactory::item_record_chirp_desc()),
 			new RecordType("disk_far", "C418 - far", LevelSoundEvent::RECORD_FAR, KnownTranslationFactory::item_record_far_desc()),
 			new RecordType("disk_mall", "C418 - mall", LevelSoundEvent::RECORD_MALL, KnownTranslationFactory::item_record_mall_desc()),
 			new RecordType("disk_mellohi", "C418 - mellohi", LevelSoundEvent::RECORD_MELLOHI, KnownTranslationFactory::item_record_mellohi_desc()),
+			new RecordType("disk_otherside", "Lena Raine - otherside", LevelSoundEvent::RECORD_OTHERSIDE, KnownTranslationFactory::item_record_otherside_desc()),
+			new RecordType("disk_pigstep", "Lena Raine - Pigstep", LevelSoundEvent::RECORD_PIGSTEP, KnownTranslationFactory::item_record_pigstep_desc()),
 			new RecordType("disk_stal", "C418 - stal", LevelSoundEvent::RECORD_STAL, KnownTranslationFactory::item_record_stal_desc()),
 			new RecordType("disk_strad", "C418 - strad", LevelSoundEvent::RECORD_STRAD, KnownTranslationFactory::item_record_strad_desc()),
 			new RecordType("disk_ward", "C418 - ward", LevelSoundEvent::RECORD_WARD, KnownTranslationFactory::item_record_ward_desc()),
 			new RecordType("disk_11", "C418 - 11", LevelSoundEvent::RECORD_11, KnownTranslationFactory::item_record_11_desc()),
 			new RecordType("disk_wait", "C418 - wait", LevelSoundEvent::RECORD_WAIT, KnownTranslationFactory::item_record_wait_desc())
-			//TODO: Lena Raine - Pigstep
 		);
 	}
 

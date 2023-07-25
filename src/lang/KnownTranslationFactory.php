@@ -1606,6 +1606,14 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_DISCONNECT_BAN_NOREASON, []);
 	}
 
+	public static function pocketmine_disconnect_clientDisconnect() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_DISCONNECT_CLIENTDISCONNECT, []);
+	}
+
+	public static function pocketmine_disconnect_clientReconnect() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_DISCONNECT_CLIENTRECONNECT, []);
+	}
+
 	public static function pocketmine_disconnect_error(Translatable|string $error, Translatable|string $errorId) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_DISCONNECT_ERROR, [
 			"error" => $error,
@@ -1631,6 +1639,10 @@ final class KnownTranslationFactory{
 
 	public static function pocketmine_disconnect_error_respawn() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_DISCONNECT_ERROR_RESPAWN, []);
+	}
+
+	public static function pocketmine_disconnect_error_timeout() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_DISCONNECT_ERROR_TIMEOUT, []);
 	}
 
 	public static function pocketmine_disconnect_incompatibleProtocol(Translatable|string $param0) : Translatable{

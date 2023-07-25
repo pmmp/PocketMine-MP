@@ -346,10 +346,8 @@ final class Utils{
 
 	/**
 	 * Returns a string that can be printed, replaces non-printable characters
-	 *
-	 * @param mixed $str
 	 */
-	public static function printable($str) : string{
+	public static function printable(mixed $str) : string{
 		if(!is_string($str)){
 			return gettype($str);
 		}
@@ -370,10 +368,7 @@ final class Utils{
 		return $hash;
 	}
 
-	/**
-	 * @param object $value
-	 */
-	public static function getReferenceCount($value, bool $includeCurrent = true) : int{
+	public static function getReferenceCount(object $value, bool $includeCurrent = true) : int{
 		ob_start();
 		debug_zval_dump($value);
 		$contents = ob_get_contents();

@@ -32,7 +32,7 @@ class Note extends Opaque{
 
 	private int $pitch = self::MIN_PITCH;
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileNote){
@@ -40,6 +40,8 @@ class Note extends Opaque{
 		}else{
 			$this->pitch = self::MIN_PITCH;
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{

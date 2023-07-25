@@ -74,7 +74,7 @@ class RegionLoaderTest extends TestCase{
 	 * @return \Generator|int[][]
 	 * @phpstan-return \Generator<int, array{int,int}, void, void>
 	 */
-	public function outOfBoundsCoordsProvider() : \Generator{
+	public static function outOfBoundsCoordsProvider() : \Generator{
 		yield [-1, -1];
 		yield [32, 32];
 		yield [-1, 32];

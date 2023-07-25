@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock;
 
-use pocketmine\block\BlockLegacyMetadata as LegacyMeta;
 use pocketmine\block\utils\MushroomBlockType;
+use pocketmine\data\bedrock\block\BlockLegacyMetadata as LegacyMeta;
 use pocketmine\utils\SingletonTrait;
 use function array_key_exists;
 

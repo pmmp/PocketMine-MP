@@ -54,7 +54,7 @@ class LiquidBucket extends Item{
 		return VanillaItems::BUCKET();
 	}
 
-	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		if(!$blockReplace->canBeReplaced()){
 			return ItemUseResult::NONE();
 		}
@@ -68,9 +68,8 @@ class LiquidBucket extends Item{
 			$player->getWorld()->setBlock($blockReplace->getPosition(), $resultBlock->getFlowingForm());
 			$player->getWorld()->addSound($blockReplace->getPosition()->add(0.5, 0.5, 0.5), $resultBlock->getBucketEmptySound());
 
-			if($player->hasFiniteResources()){
-				$player->getInventory()->setItemInHand($ev->getItem());
-			}
+			$this->pop();
+			$returnedItems[] = $ev->getItem();
 			return ItemUseResult::SUCCESS();
 		}
 

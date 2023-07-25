@@ -31,34 +31,18 @@ class BlockIdentifier{
 	 * @phpstan-param class-string<Tile>|null $tileClass
 	 */
 	public function __construct(
-		private int $blockId,
-		private int $variant,
-		private ?int $itemId = null,
+		private int $blockTypeId,
 		private ?string $tileClass = null
 	){
+		if($blockTypeId < 0){
+			throw new \InvalidArgumentException("Block type ID may not be negative");
+		}
 		if($tileClass !== null){
 			Utils::testValidInstance($tileClass, Tile::class);
 		}
 	}
 
-	public function getBlockId() : int{
-		return $this->blockId;
-	}
-
-	/**
-	 * @return int[]
-	 */
-	public function getAllBlockIds() : array{
-		return [$this->blockId];
-	}
-
-	public function getVariant() : int{
-		return $this->variant;
-	}
-
-	public function getItemId() : int{
-		return $this->itemId ?? ($this->blockId > 255 ? 255 - $this->blockId : $this->blockId);
-	}
+	public function getBlockTypeId() : int{ return $this->blockTypeId; }
 
 	/**
 	 * @phpstan-return class-string<Tile>|null

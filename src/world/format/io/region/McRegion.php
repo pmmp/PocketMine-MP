@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\world\format\io\region;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockLegacyIds;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
@@ -33,20 +32,21 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\ChunkData;
 use pocketmine\world\format\io\ChunkUtils;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
-use pocketmine\world\format\io\SubChunkConverter;
+use pocketmine\world\format\io\LoadedChunkData;
+use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
+use function strlen;
 use function zlib_decode;
 
 class McRegion extends RegionWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	protected function deserializeChunk(string $data) : ?ChunkData{
+	protected function deserializeChunk(string $data) : ?LoadedChunkData{
 		$decompressed = @zlib_decode($data);
 		if($decompressed === false){
 			throw new CorruptedChunkException("Failed to decompress chunk NBT");
@@ -70,38 +70,43 @@ class McRegion extends RegionWorldProvider{
 			//trying to read it.
 			return null;
 		}
+
+		$makeBiomeArray = function(string $biomeIds) : PalettedBlockArray{
+			if(strlen($biomeIds) !== 256){
+				throw new CorruptedChunkException("Expected biome array to be exactly 256 bytes, got " . strlen($biomeIds));
+			}
+			return ChunkUtils::extrapolate3DBiomes($biomeIds);
+		};
+		if(($biomeColorsTag = $chunk->getTag("BiomeColors")) instanceof IntArrayTag){
+			$biomes3d = $makeBiomeArray(ChunkUtils::convertBiomeColors($biomeColorsTag->getValue())); //Convert back to original format
+		}elseif(($biomesTag = $chunk->getTag("Biomes")) instanceof ByteArrayTag){
+			$biomes3d = $makeBiomeArray($biomesTag->getValue());
+		}else{
+			$biomes3d = new PalettedBlockArray(BiomeIds::OCEAN);
+		}
+
 		$subChunks = [];
 		$fullIds = self::readFixedSizeByteArray($chunk, "Blocks", 32768);
 		$fullData = self::readFixedSizeByteArray($chunk, "Data", 16384);
 
 		for($y = 0; $y < 8; ++$y){
-			$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, [SubChunkConverter::convertSubChunkFromLegacyColumn($fullIds, $fullData, $y)]);
+			$subChunks[$y] = new SubChunk(Block::EMPTY_STATE_ID, [$this->palettizeLegacySubChunkFromColumn($fullIds, $fullData, $y)], clone $biomes3d);
 		}
-
-		$makeBiomeArray = function(string $biomeIds) : BiomeArray{
-			try{
-				return new BiomeArray($biomeIds);
-			}catch(\InvalidArgumentException $e){
-				throw new CorruptedChunkException($e->getMessage(), 0, $e);
+		for($y = Chunk::MIN_SUBCHUNK_INDEX; $y <= Chunk::MAX_SUBCHUNK_INDEX; ++$y){
+			if(!isset($subChunks[$y])){
+				$subChunks[$y] = new SubChunk(Block::EMPTY_STATE_ID, [], clone $biomes3d);
 			}
-		};
-		$biomeIds = null;
-		if(($biomeColorsTag = $chunk->getTag("BiomeColors")) instanceof IntArrayTag){
-			$biomeIds = $makeBiomeArray(ChunkUtils::convertBiomeColors($biomeColorsTag->getValue())); //Convert back to original format
-		}elseif(($biomesTag = $chunk->getTag("Biomes")) instanceof ByteArrayTag){
-			$biomeIds = $makeBiomeArray($biomesTag->getValue());
-		}else{
-			$biomeIds = BiomeArray::fill(BiomeIds::OCEAN);
 		}
 
-		return new ChunkData(
-			new Chunk(
+		return new LoadedChunkData(
+			data: new ChunkData(
 				$subChunks,
-				$biomeIds,
-				$chunk->getByte("TerrainPopulated", 0) !== 0
+				$chunk->getByte("TerrainPopulated", 0) !== 0,
+				($entitiesTag = $chunk->getTag("Entities")) instanceof ListTag ? self::getCompoundList("Entities", $entitiesTag) : [],
+				($tilesTag = $chunk->getTag("TileEntities")) instanceof ListTag ? self::getCompoundList("TileEntities", $tilesTag) : [],
 			),
-			($entitiesTag = $chunk->getTag("Entities")) instanceof ListTag ? self::getCompoundList("Entities", $entitiesTag) : [],
-			($tilesTag = $chunk->getTag("TileEntities")) instanceof ListTag ? self::getCompoundList("TileEntities", $tilesTag) : [],
+			upgraded: true,
+			fixerFlags: LoadedChunkData::FIXER_FLAG_ALL
 		);
 	}
 

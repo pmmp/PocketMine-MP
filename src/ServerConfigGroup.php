@@ -43,12 +43,7 @@ final class ServerConfigGroup{
 		private Config $serverProperties
 	){}
 
-	/**
-	 * @param mixed $defaultValue
-	 *
-	 * @return mixed
-	 */
-	public function getProperty(string $variable, $defaultValue = null){
+	public function getProperty(string $variable, mixed $defaultValue = null) : mixed{
 		if(!array_key_exists($variable, $this->propertyCache)){
 			$v = getopt("", ["$variable::"]);
 			if(isset($v[$variable])){

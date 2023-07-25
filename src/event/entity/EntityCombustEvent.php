@@ -33,8 +33,7 @@ use pocketmine\event\CancellableTrait;
 class EntityCombustEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var int */
-	protected $duration;
+	protected int $duration;
 
 	public function __construct(Entity $combustee, int $duration){
 		$this->entity = $combustee;

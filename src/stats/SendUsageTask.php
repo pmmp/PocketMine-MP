@@ -49,10 +49,8 @@ class SendUsageTask extends AsyncTask{
 	public const TYPE_STATUS = 2;
 	public const TYPE_CLOSE = 3;
 
-	/** @var string */
-	public $endpoint;
-	/** @var string */
-	public $data;
+	public string $endpoint;
+	public string $data;
 
 	/**
 	 * @param string[] $playerList

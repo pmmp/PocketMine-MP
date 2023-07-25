@@ -29,10 +29,9 @@ use function array_flip;
 use function floor;
 
 class ProtectionEnchantment extends Enchantment{
-	/** @var float */
-	protected $typeModifier;
+	protected float $typeModifier;
 	/** @var int[]|null */
-	protected $applicableDamageTypes = null;
+	protected ?array $applicableDamageTypes = null;
 
 	/**
 	 * ProtectionEnchantment constructor.
