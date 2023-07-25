@@ -140,7 +140,7 @@ class Furnace extends Opaque implements HopperInteractable{
 
 		$sourceInventory = $currentTile->getInventory();
 
-		$itemStack = $sourceInventory->getItem($sourceInventory::SLOT_RESULT);
+		$itemStack = $sourceInventory->getResult();
 
 		if($itemStack->isNull()){
 			return false;
