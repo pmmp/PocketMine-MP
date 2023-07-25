@@ -113,7 +113,7 @@ class EnderCrystal extends Entity implements Explosive{
 		if($this->beamTarget !== null){
 			$nbt->setInt(self::TAG_BLOCKTARGET_X, $this->beamTarget->getFloorX());
 			$nbt->setInt(self::TAG_BLOCKTARGET_Y, $this->beamTarget->getFloorY());
-			$nbt->setInt(self::TAG_BLOCKTARGET_Z, $this->beamTarget->getFloorY());
+			$nbt->setInt(self::TAG_BLOCKTARGET_Z, $this->beamTarget->getFloorZ());
 		}
 		return $nbt;
 	}
