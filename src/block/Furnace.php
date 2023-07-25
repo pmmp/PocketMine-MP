@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
@@ -120,10 +121,10 @@ class Furnace extends Opaque implements HopperInteractable{
 			$singleItem = $itemStack->pop(1);
 
 			if($hopperFacing === Facing::DOWN && $targetInventory->canAddSmelting($singleItem)){
-				$this->transferItem($sourceInventory, $targetInventory, $singleItem, $targetInventory::SLOT_INPUT);
+				$this->transferItem($sourceInventory, $targetInventory, $singleItem, FurnaceInventory::SLOT_INPUT);
 				return true;
 			}elseif($hopperFacing !== Facing::DOWN && $hopperFacing !== Facing::UP && $targetInventory->canAddFuel($singleItem)){
-				$this->transferItem($sourceInventory, $targetInventory, $singleItem, $targetInventory::SLOT_FUEL);
+				$this->transferItem($sourceInventory, $targetInventory, $singleItem, FurnaceInventory::SLOT_FUEL);
 				return true;
 			}
 		}
