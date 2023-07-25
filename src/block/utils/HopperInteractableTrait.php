@@ -32,7 +32,7 @@ trait HopperInteractableTrait{
 				continue;
 			}
 
-			$singleItem = $itemStack->pop(1);
+			$singleItem = $itemStack->pop();
 
 			if(!$targetInventory->canAddItem($singleItem)){
 				continue;
