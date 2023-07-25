@@ -47,7 +47,7 @@ class EnderCrystal extends Entity implements Explosive{
 	public static function getNetworkTypeId() : string{ return EntityIds::ENDER_CRYSTAL; }
 
 	protected bool $showBase = false;
-	protected ?Vector3 $beamPosition = null;
+	protected ?Vector3 $beamTarget = null;
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(2.0, 2.0); }
 
@@ -68,12 +68,12 @@ class EnderCrystal extends Entity implements Explosive{
 		$this->networkPropertiesDirty = true;
 	}
 
-	public function getBeamPosition() : ?Vector3{
-		return $this->beamPosition;
+	public function getBeamTarget() : ?Vector3{
+		return $this->beamTarget;
 	}
 
-	public function setBeamPosition(?Vector3 $beamPosition) : void{
-		$this->beamPosition = $beamPosition;
+	public function setBeamTarget(?Vector3 $beamTarget) : void{
+		$this->beamTarget = $beamTarget;
 		$this->networkPropertiesDirty = true;
 	}
 
@@ -102,7 +102,7 @@ class EnderCrystal extends Entity implements Explosive{
 		$beamZ = $nbt->getInt(self::TAG_BLOCKTARGET_Z, 0);
 
 		if($beamX !== 0 || $beamY !== 0 || $beamZ !== 0){
-			$this->setBeamPosition(new Vector3($beamX, $beamY, $beamZ));
+			$this->setBeamTarget(new Vector3($beamX, $beamY, $beamZ));
 		}
 	}
 
@@ -110,10 +110,10 @@ class EnderCrystal extends Entity implements Explosive{
 		$nbt = parent::saveNBT();
 
 		$nbt->setByte(self::TAG_SHOWBASE, $this->showBase ? 1 : 0);
-		if($this->beamPosition !== null){
-			$nbt->setInt(self::TAG_BLOCKTARGET_X, $this->beamPosition->getX());
-			$nbt->setInt(self::TAG_BLOCKTARGET_Y, $this->beamPosition->getY());
-			$nbt->setInt(self::TAG_BLOCKTARGET_Z, $this->beamPosition->getZ());
+		if($this->beamTarget !== null){
+			$nbt->setInt(self::TAG_BLOCKTARGET_X, $this->beamTarget->getX());
+			$nbt->setInt(self::TAG_BLOCKTARGET_Y, $this->beamTarget->getY());
+			$nbt->setInt(self::TAG_BLOCKTARGET_Z, $this->beamTarget->getZ());
 		}
 		return $nbt;
 	}
@@ -134,8 +134,8 @@ class EnderCrystal extends Entity implements Explosive{
 		parent::syncNetworkData($properties);
 
 		$properties->setGenericFlag(EntityMetadataFlags::SHOWBASE, $this->showBase);
-		if($this->beamPosition !== null){
-			$properties->setBlockPos(EntityMetadataProperties::BLOCK_TARGET, BlockPosition::fromVector3($this->beamPosition));
+		if($this->beamTarget !== null){
+			$properties->setBlockPos(EntityMetadataProperties::BLOCK_TARGET, BlockPosition::fromVector3($this->beamTarget));
 		}
 	}
 }
