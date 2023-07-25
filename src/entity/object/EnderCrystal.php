@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,7 +27,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Explosive;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\entity\ExplosionPrimeEvent;
+use pocketmine\event\entity\EntityPreExplodeEvent;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
@@ -36,17 +36,21 @@ use pocketmine\world\Explosion;
 use pocketmine\world\Position;
 
 class EnderCrystal extends Entity implements Explosive{
+	private const TAG_SHOWBASE = "ShowBottom"; //TAG_Byte
 
 	public static function getNetworkTypeId() : string{ return EntityIds::ENDER_CRYSTAL; }
 
-	private const TAG_SHOWBASE = "ShowBottom"; //TAG_Byte
-
-	protected $gravity = 0.0;
-	protected $drag = 0.0;
-
 	protected bool $showBase = false;
 
-	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.98, 0.98); }
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(2.0, 2.0); }
+
+	protected function getInitialDragMultiplier() : float{ return 1.0; }
+
+	protected function getInitialGravity() : float{ return 0.0; }
+
+	public function isFireProof() : bool{
+		return true;
+	}
 
 	public function showBase() : bool{
 		return $this->showBase;
@@ -58,25 +62,22 @@ class EnderCrystal extends Entity implements Explosive{
 	}
 
 	public function attack(EntityDamageEvent $source) : void{
+		parent::attack($source);
 		if(
-			$source->getCause() !== EntityDamageEvent::CAUSE_FIRE &&
-			$source->getCause() !== EntityDamageEvent::CAUSE_FIRE_TICK &&
-		    $source->getCause() !== EntityDamageEvent::CAUSE_LAVA
+			$source->getCause() !== EntityDamageEvent::CAUSE_VOID &&
+			!$this->isFlaggedForDespawn() &&
+			!$source->isCancelled()
 		){
-			parent::attack($source);
-			if(!$this->isFlaggedForDespawn() && !$source->isCancelled()){
-				$this->flagForDespawn();
-				$this->explode();
-			}
+			$this->flagForDespawn();
+			$this->explode();
 		}
-	}
-
-	public function isFireProof() : bool{
-		return true;
 	}
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
+
+		$this->setMaxHealth(1);
+		$this->setHealth(1);
 
 		$this->setShowBase($nbt->getByte(self::TAG_SHOWBASE, 0) === 1);
 	}
@@ -89,10 +90,10 @@ class EnderCrystal extends Entity implements Explosive{
 	}
 
 	public function explode() : void{
-		$ev = new ExplosionPrimeEvent($this, 6);
+		$ev = new EntityPreExplodeEvent($this, 6);
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$explosion = new Explosion(Position::fromObject($this->location->add(0, 0.5, 0), $this->getWorld()), $ev->getForce(), $this);
+			$explosion = new Explosion(Position::fromObject($this->location->add(0, $this->size->getHeight() / 2, 0), $this->getWorld()), $ev->getRadius(), $this);
 			if($ev->isBlockBreaking()){
 				$explosion->explodeA();
 			}
@@ -104,6 +105,5 @@ class EnderCrystal extends Entity implements Explosive{
 		parent::syncNetworkData($properties);
 
 		$properties->setGenericFlag(EntityMetadataFlags::SHOWBASE, $this->showBase);
-		$properties->setGenericFlag(EntityMetadataFlags::ONFIRE, false); //TODO: Hack to prevent fire animation
 	}
 }

@@ -17,32 +17,37 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\block\Air;
-use pocketmine\block\Bedrock;
 use pocketmine\block\Block;
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\entity\Location;
 use pocketmine\entity\object\EnderCrystal;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function count;
 
 class EndCrystal extends Item{
 
-	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
-		if($blockClicked->getId() == BlockLegacyIds::OBSIDIAN || $blockClicked instanceof Bedrock){
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
+		if($blockClicked->getTypeId() === BlockTypeIds::OBSIDIAN || $blockClicked->getTypeId() === BlockTypeIds::BEDROCK){
 			$pos = $blockClicked->getPosition();
 			$world = $pos->getWorld();
-			$entities = $world->getNearbyEntities(new AxisAlignedBB($pos->getX(), $pos->getY(), $pos->getZ(), $pos->getX() + 1, $pos->getY() + 2, $pos->getZ() + 1));
-			if(count($entities) === 0 && $world->getBlock($pos->up()) instanceof Air && $world->getBlock($pos->up(2)) instanceof Air){
-				$crystal = new EnderCrystal(Location::fromObject($pos->add(0.5, 1.5, 0.5), $world));
+			$bb = AxisAlignedBB::one()
+				->offset($pos->getX(), $pos->getY(), $pos->getZ())
+				->extend(Facing::UP, 1);
+			if(
+				count($world->getNearbyEntities($bb)) === 0 &&
+				$world->getBlock($pos->up())->getTypeId() === BlockTypeIds::AIR &&
+				$world->getBlock($pos->up(2))->getTypeId() === BlockTypeIds::AIR
+			){
+				$crystal = new EnderCrystal(Location::fromObject($pos->add(0.5, 1, 0.5), $world));
 				$crystal->spawnToAll();
 
 				$this->pop();
