@@ -69,14 +69,18 @@ final class BlockStateUpgradeSchema{
 		public int $maxVersionMinor,
 		public int $maxVersionPatch,
 		public int $maxVersionRevision,
-		private int $priority
+		private int $schemaId
 	){}
 
+	/**
+	 * @deprecated This is defined by Mojang, and therefore cannot be relied on. Use getSchemaId() instead for
+	 * internal version management.
+	 */
 	public function getVersionId() : int{
 		return ($this->maxVersionMajor << 24) | ($this->maxVersionMinor << 16) | ($this->maxVersionPatch << 8) | $this->maxVersionRevision;
 	}
 
-	public function getPriority() : int{ return $this->priority; }
+	public function getSchemaId() : int{ return $this->schemaId; }
 
 	public function isEmpty() : bool{
 		foreach([

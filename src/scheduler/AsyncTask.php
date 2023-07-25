@@ -23,7 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
+use pmmp\thread\Runnable;
+use pmmp\thread\Thread as NativeThread;
+use pmmp\thread\ThreadSafe;
+use pmmp\thread\ThreadSafeArray;
 use pocketmine\thread\NonThreadSafeValue;
+use function assert;
 use function igbinary_serialize;
 use function igbinary_unserialize;
 use function is_null;
@@ -54,47 +59,39 @@ use function spl_object_id;
  * If you want to store non-thread-safe objects to access when the task completes, store them using
  * {@link AsyncTask::storeLocal}.
  */
-abstract class AsyncTask extends \ThreadedRunnable{
+abstract class AsyncTask extends Runnable{
 	/**
-	 * @var \ArrayObject|mixed[]|null object hash => mixed data
-	 * @phpstan-var \ArrayObject<int, array<string, mixed>>|null
+	 * @var mixed[][] object hash => mixed data
+	 * @phpstan-var array<int, array<string, mixed>>
 	 *
-	 * Used to store objects which are only needed on one thread and should not be serialized.
+	 * Used to store thread-local data to be used by onCompletion().
 	 */
-	private static ?\ArrayObject $threadLocalStorage = null;
+	private static array $threadLocalStorage = [];
 
-	/** @var AsyncWorker|null $worker */
-	public $worker = null;
+	/** @phpstan-var ThreadSafeArray<int, string>|null */
+	private ?ThreadSafeArray $progressUpdates = null;
 
-	/** @phpstan-var \ThreadedArray<int, string> */
-	public \ThreadedArray $progressUpdates;
+	private ThreadSafe|string|int|bool|null|float $result = null;
 
-	/** @phpstan-var NonThreadSafeValue<mixed>|string|int|bool|float|null */
-	private NonThreadSafeValue|string|int|bool|null|float $result = null;
-	private bool $cancelRun = false;
 	private bool $submitted = false;
-
-	private bool $crashed = false;
 	private bool $finished = false;
 
 	public function run() : void{
 		$this->result = null;
 
-		if(!$this->cancelRun){
-			try{
-				$this->onRun();
-			}catch(\Throwable $e){
-				$this->crashed = true;
-				$this->worker->handleException($e);
-			}
-		}
+		$this->onRun();
 
 		$this->finished = true;
-		$this->worker->getNotifier()->wakeupSleeper();
+		$worker = NativeThread::getCurrentThread();
+		assert($worker instanceof AsyncWorker);
+		$worker->getNotifier()->wakeupSleeper();
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function isCrashed() : bool{
-		return $this->crashed || $this->isTerminated();
+		return $this->isTerminated();
 	}
 
 	/**
@@ -102,7 +99,7 @@ abstract class AsyncTask extends \ThreadedRunnable{
 	 * because it is not true prior to task execution.
 	 */
 	public function isFinished() : bool{
-		return $this->finished || $this->isCrashed();
+		return $this->finished || $this->isTerminated();
 	}
 
 	public function hasResult() : bool{
@@ -120,15 +117,21 @@ abstract class AsyncTask extends \ThreadedRunnable{
 	}
 
 	public function setResult(mixed $result) : void{
-		$this->result = is_scalar($result) || is_null($result) ? $result : new NonThreadSafeValue($result);
+		$this->result = is_scalar($result) || is_null($result) || $result instanceof ThreadSafe ? $result : new NonThreadSafeValue($result);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function cancelRun() : void{
-		$this->cancelRun = true;
+		//NOOP
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function hasCancelledRun() : bool{
-		return $this->cancelRun;
+		return false;
 	}
 
 	public function setSubmitted() : void{
@@ -159,15 +162,22 @@ abstract class AsyncTask extends \ThreadedRunnable{
 	 * @param mixed $progress A value that can be safely serialize()'ed.
 	 */
 	public function publishProgress(mixed $progress) : void{
-		$this->progressUpdates[] = igbinary_serialize($progress) ?? throw new \InvalidArgumentException("Progress must be serializable");
+		$progressUpdates = $this->progressUpdates;
+		if($progressUpdates === null){
+			$progressUpdates = $this->progressUpdates = new ThreadSafeArray();
+		}
+		$progressUpdates[] = igbinary_serialize($progress) ?? throw new \InvalidArgumentException("Progress must be serializable");
 	}
 
 	/**
 	 * @internal Only call from AsyncPool.php on the main thread
 	 */
 	public function checkProgressUpdates() : void{
-		while(($progress = $this->progressUpdates->shift()) !== null){
-			$this->onProgressUpdate(igbinary_unserialize($progress));
+		$progressUpdates = $this->progressUpdates;
+		if($progressUpdates !== null){
+			while(($progress = $progressUpdates->shift()) !== null){
+				$this->onProgressUpdate(igbinary_unserialize($progress));
+			}
 		}
 	}
 
@@ -184,8 +194,7 @@ abstract class AsyncTask extends \ThreadedRunnable{
 	}
 
 	/**
-	 * Called from the main thread when the async task experiences an error during onRun(). Use this for things like
-	 * promise rejection.
+	 * @deprecated No longer used
 	 */
 	public function onError() : void{
 
@@ -206,15 +215,6 @@ abstract class AsyncTask extends \ThreadedRunnable{
 	 * from.
 	 */
 	protected function storeLocal(string $key, mixed $complexData) : void{
-		if(self::$threadLocalStorage === null){
-			/*
-			 * It's necessary to use an object (not array) here because pthreads is stupid. Non-default array statics
-			 * will be inherited when task classes are copied to the worker thread, which would cause unwanted
-			 * inheritance of primitive thread-locals, which we really don't want for various reasons.
-			 * It won't try to inherit objects though, so this is the easiest solution.
-			 */
-			self::$threadLocalStorage = new \ArrayObject();
-		}
 		self::$threadLocalStorage[spl_object_id($this)][$key] = $complexData;
 	}
 
@@ -230,7 +230,7 @@ abstract class AsyncTask extends \ThreadedRunnable{
 	 */
 	protected function fetchLocal(string $key){
 		$id = spl_object_id($this);
-		if(self::$threadLocalStorage === null || !isset(self::$threadLocalStorage[$id][$key])){
+		if(!isset(self::$threadLocalStorage[$id][$key])){
 			throw new \InvalidArgumentException("No matching thread-local data found on this thread");
 		}
 
@@ -239,12 +239,7 @@ abstract class AsyncTask extends \ThreadedRunnable{
 
 	final public function __destruct(){
 		$this->reallyDestruct();
-		if(self::$threadLocalStorage !== null && isset(self::$threadLocalStorage[$h = spl_object_id($this)])){
-			unset(self::$threadLocalStorage[$h]);
-			if(self::$threadLocalStorage->count() === 0){
-				self::$threadLocalStorage = null;
-			}
-		}
+		unset(self::$threadLocalStorage[spl_object_id($this)]);
 	}
 
 	/**

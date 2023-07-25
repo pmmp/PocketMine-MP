@@ -28,12 +28,10 @@ use pocketmine\event\player\PlayerPreLoginEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\auth\ProcessLoginTask;
-use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\JwtException;
 use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\LoginPacket;
-use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\login\AuthenticationData;
 use pocketmine\network\mcpe\protocol\types\login\ClientData;
 use pocketmine\network\mcpe\protocol\types\login\ClientDataToSkinDataHelper;
@@ -62,12 +60,6 @@ class LoginPacketHandler extends PacketHandler{
 	){}
 
 	public function handleLogin(LoginPacket $packet) : bool{
-		if(!$this->isCompatibleProtocol($packet->protocol)){
-			$this->session->disconnectIncompatibleProtocol($packet->protocol);
-
-			return true;
-		}
-
 		$extraData = $this->fetchAuthData($packet->chainDataJwt);
 
 		if(!Player::isValidUserName($extraData->displayName)){
@@ -77,8 +69,9 @@ class LoginPacketHandler extends PacketHandler{
 		}
 
 		$clientData = $this->parseClientData($packet->clientDataJwt);
+
 		try{
-			$skin = SkinAdapterSingleton::get()->fromSkinData(ClientDataToSkinDataHelper::fromClientData($clientData));
+			$skin = $this->session->getTypeConverter()->getSkinAdapter()->fromSkinData(ClientDataToSkinDataHelper::fromClientData($clientData));
 		}catch(\InvalidArgumentException | InvalidSkinException $e){
 			$this->session->getLogger()->debug("Invalid skin: " . $e->getMessage());
 			$this->session->disconnectWithError(KnownTranslationFactory::disconnectionScreen_invalidSkin());
@@ -117,10 +110,10 @@ class LoginPacketHandler extends PacketHandler{
 			$this->server->requiresAuthentication()
 		);
 		if($this->server->getNetwork()->getValidConnectionCount() > $this->server->getMaxPlayers()){
-			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_FULL, KnownTranslationFactory::disconnectionScreen_serverFull());
+			$ev->setKickFlag(PlayerPreLoginEvent::KICK_FLAG_SERVER_FULL, KnownTranslationFactory::disconnectionScreen_serverFull());
 		}
 		if(!$this->server->isWhitelisted($playerInfo->getUsername())){
-			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_WHITELISTED, KnownTranslationFactory::pocketmine_disconnect_whitelisted());
+			$ev->setKickFlag(PlayerPreLoginEvent::KICK_FLAG_SERVER_WHITELISTED, KnownTranslationFactory::pocketmine_disconnect_whitelisted());
 		}
 
 		$banMessage = null;
@@ -132,12 +125,12 @@ class LoginPacketHandler extends PacketHandler{
 			$banMessage = KnownTranslationFactory::pocketmine_disconnect_ban($banReason !== "" ? $banReason : KnownTranslationFactory::pocketmine_disconnect_ban_ip());
 		}
 		if($banMessage !== null){
-			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_BANNED, $banMessage);
+			$ev->setKickFlag(PlayerPreLoginEvent::KICK_FLAG_BANNED, $banMessage);
 		}
 
 		$ev->call();
 		if(!$ev->isAllowed()){
-			$this->session->disconnect($ev->getFinalKickMessage());
+			$this->session->disconnect($ev->getFinalDisconnectReason(), $ev->getFinalDisconnectScreenMessage());
 			return true;
 		}
 
@@ -216,9 +209,5 @@ class LoginPacketHandler extends PacketHandler{
 	protected function processLogin(LoginPacket $packet, bool $authRequired) : void{
 		$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($packet->chainDataJwt->chain, $packet->clientDataJwt, $authRequired, $this->authCallback));
 		$this->session->setHandler(null); //drop packets received during login verification
-	}
-
-	protected function isCompatibleProtocol(int $protocolVersion) : bool{
-		return $protocolVersion === ProtocolInfo::CURRENT_PROTOCOL;
 	}
 }

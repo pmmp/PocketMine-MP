@@ -25,10 +25,8 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Lectern as TileLectern;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\item\WritableBookBase;
 use pocketmine\math\AxisAlignedBB;
@@ -40,16 +38,13 @@ use function count;
 
 class Lectern extends Transparent{
 	use FacesOppositePlacingPlayerTrait;
-	use HorizontalFacingTrait;
 
 	protected int $viewedPage = 0;
 	protected ?WritableBookBase $book = null;
 
 	protected bool $producingSignal = false;
 
-	public function getRequiredStateDataBits() : int{ return 3; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->bool($this->producingSignal);
 	}

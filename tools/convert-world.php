@@ -74,7 +74,7 @@ if(count($oldProviderClasses) > 1){
 	exit(1);
 }
 $oldProviderClass = array_shift($oldProviderClasses);
-$oldProvider = $oldProviderClass->fromPath($inputPath);
+$oldProvider = $oldProviderClass->fromPath($inputPath, new \PrefixedLogger(\GlobalLogger::get(), "Old World Provider"));
 
 $converter = new FormatConverter($oldProvider, $writableFormats[$args["format"]], $backupPath, GlobalLogger::get());
 $converter->execute();

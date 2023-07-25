@@ -35,24 +35,20 @@ use pocketmine\block\inventory\LoomInventory;
 use pocketmine\block\inventory\SmithingTableInventory;
 use pocketmine\block\inventory\StonecutterInventory;
 use pocketmine\crafting\FurnaceType;
-use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
-use pocketmine\item\Item;
-use pocketmine\network\mcpe\convert\TypeConversionException;
-use pocketmine\network\mcpe\convert\TypeConverter;
+use pocketmine\network\mcpe\cache\CreativeInventoryCache;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
-use pocketmine\network\mcpe\protocol\CreativeContentPacket;
 use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
-use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
@@ -61,9 +57,11 @@ use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\ObjectSet;
-use function array_map;
+use function array_keys;
 use function array_search;
+use function count;
 use function get_class;
+use function implode;
 use function is_int;
 use function max;
 use function spl_object_id;
@@ -72,26 +70,25 @@ use function spl_object_id;
  * @phpstan-type ContainerOpenClosure \Closure(int $id, Inventory $inventory) : (list<ClientboundPacket>|null)
  */
 class InventoryManager{
-	/** @var Inventory[] */
-	private array $windowMap = [];
 	/**
-	 * @var ComplexWindowMapEntry[]
-	 * @phpstan-var array<int, ComplexWindowMapEntry>
+	 * @var InventoryManagerEntry[] spl_object_id(Inventory) => InventoryManagerEntry
+	 * @phpstan-var array<int, InventoryManagerEntry>
 	 */
-	private array $complexWindows = [];
+	private array $inventories = [];
+
 	/**
-	 * @var ComplexWindowMapEntry[]
-	 * @phpstan-var array<int, ComplexWindowMapEntry>
+	 * @var Inventory[] network window ID => Inventory
+	 * @phpstan-var array<int, Inventory>
 	 */
-	private array $complexSlotToWindowMap = [];
+	private array $networkIdToInventoryMap = [];
+	/**
+	 * @var ComplexInventoryMapEntry[] net slot ID => ComplexWindowMapEntry
+	 * @phpstan-var array<int, ComplexInventoryMapEntry>
+	 */
+	private array $complexSlotToInventoryMap = [];
 
 	private int $lastInventoryNetworkId = ContainerIds::FIRST;
 
-	/**
-	 * @var Item[][]
-	 * @phpstan-var array<int, array<int, Item>>
-	 */
-	private array $initiatedSlotChanges = [];
 	private int $clientSelectedHotbarSlot = -1;
 
 	/** @phpstan-var ObjectSet<ContainerOpenClosure> */
@@ -101,12 +98,17 @@ class InventoryManager{
 	/** @phpstan-var \Closure() : void */
 	private ?\Closure $pendingOpenWindowCallback = null;
 
+	private int $nextItemStackId = 1;
+	private ?int $currentItemStackRequestId = null;
+
+	private bool $fullSyncRequested = false;
+
 	public function __construct(
 		private Player $player,
 		private NetworkSession $session
 	){
 		$this->containerOpenCallbacks = new ObjectSet();
-		$this->containerOpenCallbacks->add(\Closure::fromCallable([self::class, 'createContainerOpen']));
+		$this->containerOpenCallbacks->add(self::createContainerOpen(...));
 
 		$this->add(ContainerIds::INVENTORY, $this->player->getInventory());
 		$this->add(ContainerIds::OFFHAND, $this->player->getOffHandInventory());
@@ -114,19 +116,30 @@ class InventoryManager{
 		$this->addComplex(UIInventorySlotOffset::CURSOR, $this->player->getCursorInventory());
 		$this->addComplex(UIInventorySlotOffset::CRAFTING2X2_INPUT, $this->player->getCraftingGrid());
 
-		$this->player->getInventory()->getHeldItemIndexChangeListeners()->add(function() : void{
-			$this->syncSelectedHotbarSlot();
-		});
+		$this->player->getInventory()->getHeldItemIndexChangeListeners()->add($this->syncSelectedHotbarSlot(...));
+	}
+
+	private function associateIdWithInventory(int $id, Inventory $inventory) : void{
+		$this->networkIdToInventoryMap[$id] = $inventory;
+	}
+
+	private function getNewWindowId() : int{
+		$this->lastInventoryNetworkId = max(ContainerIds::FIRST, ($this->lastInventoryNetworkId + 1) % ContainerIds::LAST);
+		return $this->lastInventoryNetworkId;
 	}
 
 	private function add(int $id, Inventory $inventory) : void{
-		$this->windowMap[$id] = $inventory;
+		if(isset($this->inventories[spl_object_id($inventory)])){
+			throw new \InvalidArgumentException("Inventory " . get_class($inventory) . " is already tracked");
+		}
+		$this->inventories[spl_object_id($inventory)] = new InventoryManagerEntry($inventory);
+		$this->associateIdWithInventory($id, $inventory);
 	}
 
 	private function addDynamic(Inventory $inventory) : int{
-		$this->lastInventoryNetworkId = max(ContainerIds::FIRST, ($this->lastInventoryNetworkId + 1) % ContainerIds::LAST);
-		$this->add($this->lastInventoryNetworkId, $inventory);
-		return $this->lastInventoryNetworkId;
+		$id = $this->getNewWindowId();
+		$this->add($id, $inventory);
+		return $id;
 	}
 
 	/**
@@ -134,26 +147,45 @@ class InventoryManager{
 	 * @phpstan-param array<int, int>|int $slotMap
 	 */
 	private function addComplex(array|int $slotMap, Inventory $inventory) : void{
-		$entry = new ComplexWindowMapEntry($inventory, is_int($slotMap) ? [$slotMap => 0] : $slotMap);
-		$this->complexWindows[spl_object_id($inventory)] = $entry;
-		foreach($entry->getSlotMap() as $netSlot => $coreSlot){
-			$this->complexSlotToWindowMap[$netSlot] = $entry;
+		if(isset($this->inventories[spl_object_id($inventory)])){
+			throw new \InvalidArgumentException("Inventory " . get_class($inventory) . " is already tracked");
+		}
+		$complexSlotMap = new ComplexInventoryMapEntry($inventory, is_int($slotMap) ? [$slotMap => 0] : $slotMap);
+		$this->inventories[spl_object_id($inventory)] = new InventoryManagerEntry(
+			$inventory,
+			$complexSlotMap
+		);
+		foreach($complexSlotMap->getSlotMap() as $netSlot => $coreSlot){
+			$this->complexSlotToInventoryMap[$netSlot] = $complexSlotMap;
 		}
 	}
 
+	/**
+	 * @param int[]|int $slotMap
+	 * @phpstan-param array<int, int>|int $slotMap
+	 */
+	private function addComplexDynamic(array|int $slotMap, Inventory $inventory) : int{
+		$this->addComplex($slotMap, $inventory);
+		$id = $this->getNewWindowId();
+		$this->associateIdWithInventory($id, $inventory);
+		return $id;
+	}
+
 	private function remove(int $id) : void{
-		$inventory = $this->windowMap[$id];
-		$splObjectId = spl_object_id($inventory);
-		unset($this->windowMap[$id], $this->initiatedSlotChanges[$id], $this->complexWindows[$splObjectId]);
-		foreach($this->complexSlotToWindowMap as $netSlot => $entry){
-			if($entry->getInventory() === $inventory){
-				unset($this->complexSlotToWindowMap[$netSlot]);
+		$inventory = $this->networkIdToInventoryMap[$id];
+		unset($this->networkIdToInventoryMap[$id]);
+		if($this->getWindowId($inventory) === null){
+			unset($this->inventories[spl_object_id($inventory)]);
+			foreach($this->complexSlotToInventoryMap as $netSlot => $entry){
+				if($entry->getInventory() === $inventory){
+					unset($this->complexSlotToInventoryMap[$netSlot]);
+				}
 			}
 		}
 	}
 
 	public function getWindowId(Inventory $inventory) : ?int{
-		return ($id = array_search($inventory, $this->windowMap, true)) !== false ? $id : null;
+		return ($id = array_search($inventory, $this->networkIdToInventoryMap, true)) !== false ? $id : null;
 	}
 
 	public function getCurrentWindowId() : int{
@@ -161,28 +193,36 @@ class InventoryManager{
 	}
 
 	/**
-	 * @phpstan-return array{Inventory, int}
+	 * @phpstan-return array{Inventory, int}|null
 	 */
 	public function locateWindowAndSlot(int $windowId, int $netSlotId) : ?array{
 		if($windowId === ContainerIds::UI){
-			$entry = $this->complexSlotToWindowMap[$netSlotId] ?? null;
+			$entry = $this->complexSlotToInventoryMap[$netSlotId] ?? null;
 			if($entry === null){
 				return null;
 			}
+			$inventory = $entry->getInventory();
 			$coreSlotId = $entry->mapNetToCore($netSlotId);
-			return $coreSlotId !== null ? [$entry->getInventory(), $coreSlotId] : null;
+			return $coreSlotId !== null && $inventory->slotExists($coreSlotId) ? [$inventory, $coreSlotId] : null;
 		}
-		if(isset($this->windowMap[$windowId])){
-			return [$this->windowMap[$windowId], $netSlotId];
+		$inventory = $this->networkIdToInventoryMap[$windowId] ?? null;
+		if($inventory !== null && $inventory->slotExists($netSlotId)){
+			return [$inventory, $netSlotId];
 		}
 		return null;
 	}
 
-	public function onTransactionStart(InventoryTransaction $tx) : void{
+	private function addPredictedSlotChange(Inventory $inventory, int $slot, ItemStack $item) : void{
+		$this->inventories[spl_object_id($inventory)]->predictions[$slot] = $item;
+	}
+
+	public function addTransactionPredictedSlotChanges(InventoryTransaction $tx) : void{
+		$typeConverter = $this->session->getTypeConverter();
 		foreach($tx->getActions() as $action){
-			if($action instanceof SlotChangeAction && ($windowId = $this->getWindowId($action->getInventory())) !== null){
-				//in some cases the inventory might not have a window ID, but still be referenced by a transaction (e.g. crafting grid changes), so we can't unconditionally record the change here or we might leak things
-				$this->initiatedSlotChanges[$windowId][$action->getSlot()] = $action->getTargetItem();
+			if($action instanceof SlotChangeAction){
+				//TODO: ItemStackRequestExecutor can probably build these predictions with much lower overhead
+				$itemStack = $typeConverter->coreItemStackToNet($action->getTargetItem());
+				$this->addPredictedSlotChange($action->getInventory(), $action->getSlot(), $itemStack);
 			}
 		}
 	}
@@ -191,20 +231,32 @@ class InventoryManager{
 	 * @param NetworkInventoryAction[] $networkInventoryActions
 	 * @throws PacketHandlingException
 	 */
-	public function addPredictedSlotChanges(array $networkInventoryActions) : void{
+	public function addRawPredictedSlotChanges(array $networkInventoryActions) : void{
 		foreach($networkInventoryActions as $action){
-			if($action->sourceType === NetworkInventoryAction::SOURCE_CONTAINER && (
-				isset($this->windowMap[$action->windowId]) ||
-				($action->windowId === ContainerIds::UI && isset($this->complexSlotToWindowMap[$action->inventorySlot]))
-			)){
-				try{
-					$item = TypeConverter::getInstance()->netItemStackToCore($action->newItem->getItemStack());
-				}catch(TypeConversionException $e){
-					throw new PacketHandlingException($e->getMessage(), 0, $e);
-				}
-				$this->initiatedSlotChanges[$action->windowId][$action->inventorySlot] = $item;
+			if($action->sourceType !== NetworkInventoryAction::SOURCE_CONTAINER){
+				continue;
 			}
+
+			//legacy transactions should not modify or predict anything other than these inventories, since these are
+			//the only ones accessible when not in-game (ItemStackRequest is used for everything else)
+			if(match($action->windowId){
+				ContainerIds::INVENTORY, ContainerIds::OFFHAND, ContainerIds::ARMOR => false,
+				default => true
+			}){
+				throw new PacketHandlingException("Legacy transactions cannot predict changes to inventory with ID " . $action->windowId);
+			}
+			$info = $this->locateWindowAndSlot($action->windowId, $action->inventorySlot);
+			if($info === null){
+				continue;
+			}
+
+			[$inventory, $slot] = $info;
+			$this->addPredictedSlotChange($inventory, $slot, $action->newItem->getItemStack());
 		}
+	}
+
+	public function setCurrentItemStackRequestId(?int $id) : void{
+		$this->currentItemStackRequestId = $id;
 	}
 
 	/**
@@ -252,9 +304,10 @@ class InventoryManager{
 		$this->onCurrentWindowRemove();
 
 		$this->openWindowDeferred(function() use ($inventory) : void{
-			$windowId = $this->addDynamic($inventory);
 			if(($slotMap = $this->createComplexSlotMapping($inventory)) !== null){
-				$this->addComplex($slotMap, $inventory);
+				$windowId = $this->addComplexDynamic($slotMap, $inventory);
+			}else{
+				$windowId = $this->addDynamic($inventory);
 			}
 
 			foreach($this->containerOpenCallbacks as $callback){
@@ -310,7 +363,8 @@ class InventoryManager{
 		$this->onCurrentWindowRemove();
 
 		$this->openWindowDeferred(function() : void{
-			$windowId = $this->addDynamic($this->player->getInventory());
+			$windowId = $this->getNewWindowId();
+			$this->associateIdWithInventory($windowId, $this->player->getInventory());
 
 			$this->session->sendDataPacket(ContainerOpenPacket::entityInv(
 				$windowId,
@@ -321,7 +375,7 @@ class InventoryManager{
 	}
 
 	public function onCurrentWindowRemove() : void{
-		if(isset($this->windowMap[$this->lastInventoryNetworkId])){
+		if(isset($this->networkIdToInventoryMap[$this->lastInventoryNetworkId])){
 			$this->remove($this->lastInventoryNetworkId);
 			$this->session->sendDataPacket(ContainerClosePacket::create($this->lastInventoryNetworkId, true));
 			if($this->pendingCloseWindowId !== null){
@@ -333,7 +387,7 @@ class InventoryManager{
 
 	public function onClientRemoveWindow(int $id) : void{
 		if($id === $this->lastInventoryNetworkId){
-			if(isset($this->windowMap[$id]) && $id !== $this->pendingCloseWindowId){
+			if(isset($this->networkIdToInventoryMap[$id]) && $id !== $this->pendingCloseWindowId){
 				$this->remove($id);
 				$this->player->removeCurrentWindow();
 			}
@@ -355,96 +409,159 @@ class InventoryManager{
 		}
 	}
 
-	public function syncSlot(Inventory $inventory, int $slot) : void{
-		$slotMap = $this->complexWindows[spl_object_id($inventory)] ?? null;
-		if($slotMap !== null){
-			$windowId = ContainerIds::UI;
-			$netSlot = $slotMap->mapCoreToNet($slot) ?? null;
+	public function onSlotChange(Inventory $inventory, int $slot) : void{
+		$inventoryEntry = $this->inventories[spl_object_id($inventory)] ?? null;
+		if($inventoryEntry === null){
+			//this can happen when an inventory changed during InventoryCloseEvent, or when a temporary inventory
+			//is cleared before removal.
+			return;
+		}
+		$currentItem = $this->session->getTypeConverter()->coreItemStackToNet($inventory->getItem($slot));
+		$clientSideItem = $inventoryEntry->predictions[$slot] ?? null;
+		if($clientSideItem === null || !$clientSideItem->equals($currentItem)){
+			//no prediction or incorrect - do not associate this with the currently active itemstack request
+			$this->trackItemStack($inventoryEntry, $slot, $currentItem, null);
+			$inventoryEntry->pendingSyncs[$slot] = $currentItem;
 		}else{
-			$windowId = $this->getWindowId($inventory);
+			//correctly predicted - associate the change with the currently active itemstack request
+			$this->trackItemStack($inventoryEntry, $slot, $currentItem, $this->currentItemStackRequestId);
+		}
+
+		unset($inventoryEntry->predictions[$slot]);
+	}
+
+	public function syncSlot(Inventory $inventory, int $slot, ItemStack $itemStack) : void{
+		$entry = $this->inventories[spl_object_id($inventory)] ?? null;
+		if($entry === null){
+			throw new \LogicException("Cannot sync an untracked inventory");
+		}
+		$itemStackInfo = $entry->itemStackInfos[$slot];
+		if($itemStackInfo === null){
+			throw new \LogicException("Cannot sync an untracked inventory slot");
+		}
+		if($entry->complexSlotMap !== null){
+			$windowId = ContainerIds::UI;
+			$netSlot = $entry->complexSlotMap->mapCoreToNet($slot) ?? throw new AssumptionFailedError("We already have an ItemStackInfo, so this should not be null");
+		}else{
+			$windowId = $this->getWindowId($inventory) ?? throw new AssumptionFailedError("We already have an ItemStackInfo, so this should not be null");
 			$netSlot = $slot;
 		}
-		if($windowId !== null && $netSlot !== null){
-			$currentItem = $inventory->getItem($slot);
-			$clientSideItem = $this->initiatedSlotChanges[$windowId][$netSlot] ?? null;
-			if($clientSideItem === null || !$clientSideItem->equalsExact($currentItem)){
-				$itemStackWrapper = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($currentItem));
-				if($windowId === ContainerIds::OFFHAND){
-					//TODO: HACK!
-					//The client may sometimes ignore the InventorySlotPacket for the offhand slot.
-					//This can cause a lot of problems (totems, arrows, and more...).
-					//The workaround is to send an InventoryContentPacket instead
-					//BDS (Bedrock Dedicated Server) also seems to work this way.
-					$this->session->sendDataPacket(InventoryContentPacket::create($windowId, [$itemStackWrapper]));
-				}else{
-					$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $netSlot, $itemStackWrapper));
-				}
+
+		$itemStackWrapper = new ItemStackWrapper($itemStackInfo->getStackId(), $itemStack);
+		if($windowId === ContainerIds::OFFHAND){
+			//TODO: HACK!
+			//The client may sometimes ignore the InventorySlotPacket for the offhand slot.
+			//This can cause a lot of problems (totems, arrows, and more...).
+			//The workaround is to send an InventoryContentPacket instead
+			//BDS (Bedrock Dedicated Server) also seems to work this way.
+			$this->session->sendDataPacket(InventoryContentPacket::create($windowId, [$itemStackWrapper]));
+		}else{
+			if($windowId === ContainerIds::ARMOR){
+				//TODO: HACK!
+				//When right-clicking to equip armour, the client predicts the content of the armour slot, but
+				//doesn't report it in the transaction packet. The server then sends an InventorySlotPacket to
+				//the client, assuming the slot changed for some other reason, since there is no prediction for
+				//the slot.
+				//However, later requests involving that itemstack will refer to the request ID in which the
+				//armour was equipped, instead of the stack ID provided by the server in the outgoing
+				//InventorySlotPacket. (Perhaps because the item is already the same as the client actually
+				//predicted, but didn't tell us?)
+				//We work around this bug by setting the slot to air and then back to the correct item. In
+				//theory, setting a different count and then back again (or changing any other property) would
+				//also work, but this is simpler.
+				$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $netSlot, new ItemStackWrapper(0, ItemStack::null())));
 			}
-			unset($this->initiatedSlotChanges[$windowId][$netSlot]);
+			$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $netSlot, $itemStackWrapper));
 		}
+		unset($entry->predictions[$slot], $entry->pendingSyncs[$slot]);
 	}
 
 	public function syncContents(Inventory $inventory) : void{
-		$slotMap = $this->complexWindows[spl_object_id($inventory)] ?? null;
-		if($slotMap !== null){
+		$entry = $this->inventories[spl_object_id($inventory)] ?? null;
+		if($entry === null){
+			//this can happen when an inventory changed during InventoryCloseEvent, or when a temporary inventory
+			//is cleared before removal.
+			return;
+		}
+		if($entry->complexSlotMap !== null){
 			$windowId = ContainerIds::UI;
 		}else{
 			$windowId = $this->getWindowId($inventory);
 		}
-		$typeConverter = TypeConverter::getInstance();
 		if($windowId !== null){
-			if($slotMap !== null){
-				foreach($inventory->getContents(true) as $slotId => $item){
-					$packetSlot = $slotMap->mapCoreToNet($slotId) ?? null;
+			$entry->predictions = [];
+			$entry->pendingSyncs = [];
+			$contents = [];
+			$typeConverter = $this->session->getTypeConverter();
+			foreach($inventory->getContents(true) as $slot => $item){
+				$itemStack = $typeConverter->coreItemStackToNet($item);
+				$info = $this->trackItemStack($entry, $slot, $itemStack, null);
+				$contents[] = new ItemStackWrapper($info->getStackId(), $itemStack);
+			}
+			if($entry->complexSlotMap !== null){
+				foreach($contents as $slotId => $info){
+					$packetSlot = $entry->complexSlotMap->mapCoreToNet($slotId) ?? null;
 					if($packetSlot === null){
 						continue;
 					}
-					unset($this->initiatedSlotChanges[$windowId][$packetSlot]);
 					$this->session->sendDataPacket(InventorySlotPacket::create(
 						$windowId,
 						$packetSlot,
-						ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($inventory->getItem($slotId)))
+						$info
 					));
 				}
 			}else{
-				unset($this->initiatedSlotChanges[$windowId]);
-				$this->session->sendDataPacket(InventoryContentPacket::create($windowId, array_map(function(Item $itemStack) use ($typeConverter) : ItemStackWrapper{
-					return ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($itemStack));
-				}, $inventory->getContents(true))));
+				$this->session->sendDataPacket(InventoryContentPacket::create($windowId, $contents));
 			}
 		}
 	}
 
 	public function syncAll() : void{
-		foreach($this->windowMap as $inventory){
-			$this->syncContents($inventory);
-		}
-		foreach($this->complexWindows as $entry){
-			$this->syncContents($entry->getInventory());
+		foreach($this->inventories as $entry){
+			$this->syncContents($entry->inventory);
 		}
 	}
 
-	public function syncMismatchedPredictedSlotChanges() : void{
-		foreach($this->initiatedSlotChanges as $windowId => $slots){
-			foreach($slots as $netSlot => $expectedItem){
-				$located = $this->locateWindowAndSlot($windowId, $netSlot);
-				if($located === null){
-					continue;
-				}
-				[$inventory, $slot] = $located;
+	public function requestSyncAll() : void{
+		$this->fullSyncRequested = true;
+	}
 
-				if(!$inventory->slotExists($slot)){
+	public function syncMismatchedPredictedSlotChanges() : void{
+		$typeConverter = $this->session->getTypeConverter();
+		foreach($this->inventories as $entry){
+			$inventory = $entry->inventory;
+			foreach($entry->predictions as $slot => $expectedItem){
+				if(!$inventory->slotExists($slot) || $entry->itemStackInfos[$slot] === null){
 					continue; //TODO: size desync ???
 				}
-				$actualItem = $inventory->getItem($slot);
-				if(!$actualItem->equalsExact($expectedItem)){
-					$this->session->getLogger()->debug("Detected prediction mismatch in inventory " . get_class($inventory) . "#" . spl_object_id($inventory) . " slot $slot");
-					$this->syncSlot($inventory, $slot);
+
+				//any prediction that still exists at this point is a slot that was predicted to change but didn't
+				$this->session->getLogger()->debug("Detected prediction mismatch in inventory " . get_class($inventory) . "#" . spl_object_id($inventory) . " slot $slot");
+				$entry->pendingSyncs[$slot] = $typeConverter->coreItemStackToNet($inventory->getItem($slot));
+			}
+
+			$entry->predictions = [];
+		}
+	}
+
+	public function flushPendingUpdates() : void{
+		if($this->fullSyncRequested){
+			$this->fullSyncRequested = false;
+			$this->session->getLogger()->debug("Full inventory sync requested, sending contents of " . count($this->inventories) . " inventories");
+			$this->syncAll();
+		}else{
+			foreach($this->inventories as $entry){
+				if(count($entry->pendingSyncs) === 0){
+					continue;
 				}
+				$inventory = $entry->inventory;
+				$this->session->getLogger()->debug("Syncing slots " . implode(", ", array_keys($entry->pendingSyncs)) . " in inventory " . get_class($inventory) . "#" . spl_object_id($inventory));
+				foreach($entry->pendingSyncs as $slot => $itemStack){
+					$this->syncSlot($inventory, $slot, $itemStack);
+				}
+				$entry->pendingSyncs = [];
 			}
 		}
-
-		$this->initiatedSlotChanges = [];
 	}
 
 	public function syncData(Inventory $inventory, int $propertyId, int $value) : void{
@@ -459,11 +576,21 @@ class InventoryManager{
 	}
 
 	public function syncSelectedHotbarSlot() : void{
-		$selected = $this->player->getInventory()->getHeldItemIndex();
+		$playerInventory = $this->player->getInventory();
+		$selected = $playerInventory->getHeldItemIndex();
 		if($selected !== $this->clientSelectedHotbarSlot){
+			$inventoryEntry = $this->inventories[spl_object_id($playerInventory)] ?? null;
+			if($inventoryEntry === null){
+				throw new AssumptionFailedError("Player inventory should always be tracked");
+			}
+			$itemStackInfo = $inventoryEntry->itemStackInfos[$selected] ?? null;
+			if($itemStackInfo === null){
+				throw new AssumptionFailedError("Untracked player inventory slot $selected");
+			}
+
 			$this->session->sendDataPacket(MobEquipmentPacket::create(
 				$this->player->getId(),
-				ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->player->getInventory()->getItemInHand())),
+				new ItemStackWrapper($itemStackInfo->getStackId(), $this->session->getTypeConverter()->coreItemStackToNet($playerInventory->getItemInHand())),
 				$selected,
 				$selected,
 				ContainerIds::INVENTORY
@@ -473,11 +600,21 @@ class InventoryManager{
 	}
 
 	public function syncCreative() : void{
-		$typeConverter = TypeConverter::getInstance();
+		$this->session->sendDataPacket(CreativeInventoryCache::getInstance()->getCache($this->player->getCreativeInventory()));
+	}
 
-		$nextEntryId = 1;
-		$this->session->sendDataPacket(CreativeContentPacket::create(array_map(function(Item $item) use($typeConverter, &$nextEntryId) : CreativeContentEntry{
-			return new CreativeContentEntry($nextEntryId++, $typeConverter->coreItemStackToNet($item));
-		}, $this->player->isSpectator() ? [] : CreativeInventory::getInstance()->getAll())));
+	private function newItemStackId() : int{
+		return $this->nextItemStackId++;
+	}
+
+	public function getItemStackInfo(Inventory $inventory, int $slot) : ?ItemStackInfo{
+		$entry = $this->inventories[spl_object_id($inventory)] ?? null;
+		return $entry?->itemStackInfos[$slot] ?? null;
+	}
+
+	private function trackItemStack(InventoryManagerEntry $entry, int $slotId, ItemStack $itemStack, ?int $itemStackRequestId) : ItemStackInfo{
+		//TODO: ItemStack->isNull() would be nice to have here
+		$info = new ItemStackInfo($itemStackRequestId, $itemStack->getId() === 0 ? 0 : $this->newItemStackId());
+		return $entry->itemStackInfos[$slotId] = $info;
 	}
 }

@@ -49,6 +49,7 @@ use function ini_get;
 use function ini_set;
 use function intdiv;
 use function is_array;
+use function is_float;
 use function is_object;
 use function is_resource;
 use function is_string;
@@ -71,7 +72,7 @@ use const SORT_NUMERIC;
 class MemoryManager{
 	private const DEFAULT_CHECK_RATE = Server::TARGET_TICKS_PER_SECOND;
 	private const DEFAULT_CONTINUOUS_TRIGGER_RATE = Server::TARGET_TICKS_PER_SECOND * 2;
-	private const DEEFAULT_TICKS_PER_GC = 30 * 60 * Server::TARGET_TICKS_PER_SECOND;
+	private const DEFAULT_TICKS_PER_GC = 30 * 60 * Server::TARGET_TICKS_PER_SECOND;
 
 	private int $memoryLimit;
 	private int $globalMemoryLimit;
@@ -139,7 +140,7 @@ class MemoryManager{
 		$this->continuousTrigger = $config->getPropertyBool("memory.continuous-trigger", true);
 		$this->continuousTriggerRate = $config->getPropertyInt("memory.continuous-trigger-rate", self::DEFAULT_CONTINUOUS_TRIGGER_RATE);
 
-		$this->garbageCollectionPeriod = $config->getPropertyInt("memory.garbage-collection.period", self::DEEFAULT_TICKS_PER_GC);
+		$this->garbageCollectionPeriod = $config->getPropertyInt("memory.garbage-collection.period", self::DEFAULT_TICKS_PER_GC);
 		$this->garbageCollectionTrigger = $config->getPropertyBool("memory.garbage-collection.low-memory-trigger", true);
 		$this->garbageCollectionAsync = $config->getPropertyBool("memory.garbage-collection.collect-async-worker", true);
 
@@ -313,9 +314,6 @@ class MemoryManager{
 					continue;
 				}
 
-				if(!$property->isPublic()){
-					$property->setAccessible(true);
-				}
 				if(!$property->isInitialized()){
 					continue;
 				}
@@ -439,9 +437,6 @@ class MemoryManager{
 									continue;
 								}
 							}
-							if(!$property->isPublic()){
-								$property->setAccessible(true);
-							}
 							if(!$property->isInitialized($object)){
 								continue;
 							}
@@ -514,6 +509,8 @@ class MemoryManager{
 			$data = "(string) len(" . strlen($from) . ") " . substr(Utils::printable($from), 0, $maxStringSize);
 		}elseif(is_resource($from)){
 			$data = "(resource) " . print_r($from, true);
+		}elseif(is_float($from)){
+			$data = "(float) $from";
 		}else{
 			$data = $from;
 		}

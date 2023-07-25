@@ -40,7 +40,7 @@ final class ChorusPlant extends Flowable{
 		$bb = AxisAlignedBB::one();
 		foreach($this->getAllSides() as $facing => $block){
 			$id = $block->getTypeId();
-			if($id !== BlockTypeIds::END_STONE && $id !== BlockTypeIds::CHORUS_FLOWER && !$block->isSameType($this)){
+			if($id !== BlockTypeIds::END_STONE && $id !== BlockTypeIds::CHORUS_FLOWER && !$block->hasSameTypeId($this)){
 				$bb->trim($facing, 2 / 16);
 			}
 		}
@@ -49,7 +49,7 @@ final class ChorusPlant extends Flowable{
 	}
 
 	private function canBeSupportedBy(Block $block) : bool{
-		return $block->isSameType($this) || $block->getTypeId() === BlockTypeIds::END_STONE;
+		return $block->hasSameTypeId($this) || $block->getTypeId() === BlockTypeIds::END_STONE;
 	}
 
 	private function canStay(Position $position) : bool{

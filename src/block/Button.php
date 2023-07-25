@@ -24,8 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\AnyFacingTrait;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -39,9 +38,7 @@ abstract class Button extends Flowable{
 
 	protected bool $pressed = false;
 
-	public function getRequiredStateDataBits() : int{ return 4; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->facing($this->facing);
 		$w->bool($this->pressed);
 	}
@@ -55,7 +52,7 @@ abstract class Button extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->canBeSupportedBy($blockReplace->getSide(Facing::opposite($face)), $face)){
+		if($this->canBeSupportedAt($blockReplace, $face)){
 			$this->facing = $face;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
@@ -86,12 +83,12 @@ abstract class Button extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->getSide(Facing::opposite($this->facing)), $this->facing)){
+		if(!$this->canBeSupportedAt($this, $this->facing)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
-	private function canBeSupportedBy(Block $support, int $face) : bool{
-		return $support->getSupportType($face)->hasCenterSupport();
+	private function canBeSupportedAt(Block $block, int $face) : bool{
+		return $block->getAdjacentSupportType(Facing::opposite($face))->hasCenterSupport();
 	}
 }

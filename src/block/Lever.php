@@ -24,8 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\LeverFacing;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -45,9 +44,7 @@ class Lever extends Flowable{
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function getRequiredStateDataBits() : int{ return 4; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->leverFacing($this->facing);
 		$w->bool($this->activated);
 	}
@@ -69,7 +66,7 @@ class Lever extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy($blockReplace->getSide(Facing::opposite($face)), $face)){
+		if(!$this->canBeSupportedAt($blockReplace, Facing::opposite($face))){
 			return false;
 		}
 
@@ -93,8 +90,7 @@ class Lever extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$facing = $this->facing->getFacing();
-		if(!$this->canBeSupportedBy($this->getSide(Facing::opposite($facing)), $facing)){
+		if(!$this->canBeSupportedAt($this, Facing::opposite($this->facing->getFacing()))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -110,8 +106,8 @@ class Lever extends Flowable{
 		return true;
 	}
 
-	private function canBeSupportedBy(Block $block, int $face) : bool{
-		return $block->getSupportType($face)->hasCenterSupport();
+	private function canBeSupportedAt(Block $block, int $face) : bool{
+		return $block->getAdjacentSupportType($face)->hasCenterSupport();
 	}
 
 	//TODO

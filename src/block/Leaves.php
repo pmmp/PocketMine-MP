@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\block\utils\LeavesType;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
@@ -48,9 +48,7 @@ class Leaves extends Transparent{
 		$this->leavesType = $leavesType;
 	}
 
-	public function getRequiredStateDataBits() : int{ return 2; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->noDecay);
 		$w->bool($this->checkDecay);
 	}
@@ -141,7 +139,8 @@ class Leaves extends Transparent{
 		}
 
 		$drops = [];
-		if(mt_rand(1, 20) === 1){ //Saplings
+		if(FortuneDropHelper::bonusChanceDivisor($item, 20, 4)){ //Saplings
+			// TODO: according to the wiki, the jungle saplings have a different drop rate
 			$sapling = (match($this->leavesType){
 				LeavesType::ACACIA() => VanillaBlocks::ACACIA_SAPLING(),
 				LeavesType::BIRCH() => VanillaBlocks::BIRCH_SAPLING(),
@@ -151,16 +150,20 @@ class Leaves extends Transparent{
 				LeavesType::SPRUCE() => VanillaBlocks::SPRUCE_SAPLING(),
 				LeavesType::MANGROVE(), //TODO: mangrove propagule
 				LeavesType::AZALEA(), LeavesType::FLOWERING_AZALEA() => null, //TODO: azalea
+				LeavesType::CHERRY() => null, //TODO: cherry
 				default => throw new AssumptionFailedError("Unreachable")
 			})?->asItem();
 			if($sapling !== null){
 				$drops[] = $sapling;
 			}
 		}
-		if(($this->leavesType->equals(LeavesType::OAK()) || $this->leavesType->equals(LeavesType::DARK_OAK())) && mt_rand(1, 200) === 1){ //Apples
+		if(
+			($this->leavesType->equals(LeavesType::OAK()) || $this->leavesType->equals(LeavesType::DARK_OAK())) &&
+			FortuneDropHelper::bonusChanceDivisor($item, 200, 20)
+		){ //Apples
 			$drops[] = VanillaItems::APPLE();
 		}
-		if(mt_rand(1, 50) === 1){
+		if(FortuneDropHelper::bonusChanceDivisor($item, 50, 5)){
 			$drops[] = VanillaItems::STICK()->setCount(mt_rand(1, 2));
 		}
 

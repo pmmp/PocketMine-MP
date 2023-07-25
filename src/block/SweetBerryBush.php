@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\block\utils\FortuneDropHelper;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\block\BlockGrowEvent;
@@ -46,9 +46,7 @@ class SweetBerryBush extends Flowable{
 
 	protected int $age = self::STAGE_SAPLING;
 
-	public function getRequiredStateDataBits() : int{ return 3; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(3, self::STAGE_SAPLING, self::STAGE_MATURE, $this->age);
 	}
 
@@ -90,7 +88,7 @@ class SweetBerryBush extends Flowable{
 			$block = clone $this;
 			$block->age++;
 
-			$ev = new BlockGrowEvent($this, $block);
+			$ev = new BlockGrowEvent($this, $block, $player);
 			$ev->call();
 
 			if(!$ev->isCancelled()){
@@ -111,13 +109,14 @@ class SweetBerryBush extends Flowable{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if(($dropAmount = $this->getBerryDropAmount()) > 0){
-			return [
-				$this->asItem()->setCount($dropAmount)
-			];
-		}
-
-		return [];
+		$count = match($this->age){
+			self::STAGE_MATURE => FortuneDropHelper::discrete($item, 2, 3),
+			self::STAGE_BUSH_SOME_BERRIES => FortuneDropHelper::discrete($item, 1, 2),
+			default => 0
+		};
+		return [
+			$this->asItem()->setCount($count)
+		];
 	}
 
 	public function onNearbyBlockChange() : void{

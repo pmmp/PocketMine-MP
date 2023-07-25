@@ -28,32 +28,26 @@ use pocketmine\crafting\ExactRecipeIngredient;
 use pocketmine\crafting\MetaWildcardRecipeIngredient;
 use pocketmine\crafting\RecipeIngredient;
 use pocketmine\crafting\TagWildcardRecipeIngredient;
+use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\data\bedrock\item\BlockItemIdMap;
-use pocketmine\inventory\transaction\action\CreateItemAction;
-use pocketmine\inventory\transaction\action\DestroyItemAction;
-use pocketmine\inventory\transaction\action\DropItemAction;
-use pocketmine\inventory\transaction\action\InventoryAction;
-use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\InventoryManager;
+use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\types\GameMode as ProtocolGameMode;
-use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
-use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
-use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\recipe\IntIdMetaItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient as ProtocolRecipeIngredient;
 use pocketmine\network\mcpe\protocol\types\recipe\StringIdMetaItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\TagItemDescriptor;
 use pocketmine\player\GameMode;
-use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\world\format\io\GlobalBlockStateHandlers;
+use pocketmine\world\format\io\GlobalItemDataHandlers;
 use function get_class;
-use function morton2d_encode;
 
 class TypeConverter{
 	use SingletonTrait;
@@ -62,11 +56,49 @@ class TypeConverter{
 
 	private const RECIPE_INPUT_WILDCARD_META = 0x7fff;
 
+	private BlockItemIdMap $blockItemIdMap;
+	private BlockTranslator $blockTranslator;
+	private ItemTranslator $itemTranslator;
+	private ItemTypeDictionary $itemTypeDictionary;
 	private int $shieldRuntimeId;
+
+	private SkinAdapter $skinAdapter;
 
 	public function __construct(){
 		//TODO: inject stuff via constructor
-		$this->shieldRuntimeId = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromStringId("minecraft:shield");
+		$this->blockItemIdMap = BlockItemIdMap::getInstance();
+
+		$canonicalBlockStatesRaw = Filesystem::fileGetContents(BedrockDataFiles::CANONICAL_BLOCK_STATES_NBT);
+		$metaMappingRaw = Filesystem::fileGetContents(BedrockDataFiles::BLOCK_STATE_META_MAP_JSON);
+		$this->blockTranslator = new BlockTranslator(
+			BlockStateDictionary::loadFromString($canonicalBlockStatesRaw, $metaMappingRaw),
+			GlobalBlockStateHandlers::getSerializer()
+		);
+
+		$this->itemTypeDictionary = ItemTypeDictionaryFromDataHelper::loadFromString(Filesystem::fileGetContents(BedrockDataFiles::REQUIRED_ITEM_LIST_JSON));
+		$this->shieldRuntimeId = $this->itemTypeDictionary->fromStringId("minecraft:shield");
+
+		$this->itemTranslator = new ItemTranslator(
+			$this->itemTypeDictionary,
+			$this->blockTranslator->getBlockStateDictionary(),
+			GlobalItemDataHandlers::getSerializer(),
+			GlobalItemDataHandlers::getDeserializer(),
+			$this->blockItemIdMap
+		);
+
+		$this->skinAdapter = new LegacySkinAdapter();
+	}
+
+	public function getBlockTranslator() : BlockTranslator{ return $this->blockTranslator; }
+
+	public function getItemTypeDictionary() : ItemTypeDictionary{ return $this->itemTypeDictionary; }
+
+	public function getItemTranslator() : ItemTranslator{ return $this->itemTranslator; }
+
+	public function getSkinAdapter() : SkinAdapter{ return $this->skinAdapter; }
+
+	public function setSkinAdapter(SkinAdapter $skinAdapter) : void{
+		$this->skinAdapter = $skinAdapter;
 	}
 
 	/**
@@ -86,14 +118,6 @@ class TypeConverter{
 				return ProtocolGameMode::ADVENTURE;
 			default:
 				throw new AssumptionFailedError("Unknown game mode");
-		}
-	}
-
-	public function protocolGameModeName(GameMode $gameMode) : string{
-		switch($gameMode->id()){
-			case GameMode::SURVIVAL()->id(): return "Survival";
-			case GameMode::ADVENTURE()->id(): return "Adventure";
-			default: return "Creative";
 		}
 	}
 
@@ -118,14 +142,14 @@ class TypeConverter{
 			return new ProtocolRecipeIngredient(null, 0);
 		}
 		if($ingredient instanceof MetaWildcardRecipeIngredient){
-			$id = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromStringId($ingredient->getItemId());
+			$id = $this->itemTypeDictionary->fromStringId($ingredient->getItemId());
 			$meta = self::RECIPE_INPUT_WILDCARD_META;
 			$descriptor = new IntIdMetaItemDescriptor($id, $meta);
 		}elseif($ingredient instanceof ExactRecipeIngredient){
 			$item = $ingredient->getItem();
-			[$id, $meta, $blockRuntimeId] = ItemTranslator::getInstance()->toNetworkId($item);
-			if($blockRuntimeId !== ItemTranslator::NO_BLOCK_RUNTIME_ID){
-				$meta = RuntimeBlockMapping::getInstance()->getBlockStateDictionary()->getMetaFromStateId($blockRuntimeId);
+			[$id, $meta, $blockRuntimeId] = $this->itemTranslator->toNetworkId($item);
+			if($blockRuntimeId !== null){
+				$meta = $this->blockTranslator->getBlockStateDictionary()->getMetaFromStateId($blockRuntimeId);
 				if($meta === null){
 					throw new AssumptionFailedError("Every block state should have an associated meta value");
 				}
@@ -151,7 +175,7 @@ class TypeConverter{
 		}
 
 		if($descriptor instanceof IntIdMetaItemDescriptor){
-			$stringId = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromIntId($descriptor->getId());
+			$stringId = $this->itemTypeDictionary->fromIntId($descriptor->getId());
 			$meta = $descriptor->getMeta();
 		}elseif($descriptor instanceof StringIdMetaItemDescriptor){
 			$stringId = $descriptor->getId();
@@ -165,14 +189,14 @@ class TypeConverter{
 		}
 
 		$blockRuntimeId = null;
-		if(($blockId = BlockItemIdMap::getInstance()->lookupBlockId($stringId)) !== null){
-			$blockRuntimeId = RuntimeBlockMapping::getInstance()->getBlockStateDictionary()->lookupStateIdFromIdMeta($blockId, $meta);
+		if(($blockId = $this->blockItemIdMap->lookupBlockId($stringId)) !== null){
+			$blockRuntimeId = $this->blockTranslator->getBlockStateDictionary()->lookupStateIdFromIdMeta($blockId, $meta);
 			if($blockRuntimeId !== null){
 				$meta = 0;
 			}
 		}
-		$result = ItemTranslator::getInstance()->fromNetworkId(
-			GlobalItemTypeDictionary::getInstance()->getDictionary()->fromStringId($stringId),
+		$result = $this->itemTranslator->fromNetworkId(
+			$this->itemTypeDictionary->fromStringId($stringId),
 			$meta,
 			$blockRuntimeId ?? ItemTranslator::NO_BLOCK_RUNTIME_ID
 		);
@@ -183,20 +207,22 @@ class TypeConverter{
 		if($itemStack->isNull()){
 			return ItemStack::null();
 		}
-		$nbt = null;
-		if($itemStack->hasNamedTag()){
-			$nbt = clone $itemStack->getNamedTag();
+		$nbt = $itemStack->getNamedTag();
+		if($nbt->count() === 0){
+			$nbt = null;
+		}else{
+			$nbt = clone $nbt;
 		}
 
-		$idMeta = ItemTranslator::getInstance()->toNetworkIdQuiet($itemStack);
+		$idMeta = $this->itemTranslator->toNetworkIdQuiet($itemStack);
 		if($idMeta === null){
 			//Display unmapped items as INFO_UPDATE, but stick something in their NBT to make sure they don't stack with
 			//other unmapped items.
-			[$id, $meta, $blockRuntimeId] = ItemTranslator::getInstance()->toNetworkId(VanillaBlocks::INFO_UPDATE()->asItem());
+			[$id, $meta, $blockRuntimeId] = $this->itemTranslator->toNetworkId(VanillaBlocks::INFO_UPDATE()->asItem());
 			if($nbt === null){
 				$nbt = new CompoundTag();
 			}
-			$nbt->setInt(self::PM_ID_TAG, morton2d_encode($itemStack->getTypeId(), $itemStack->computeTypeData()));
+			$nbt->setLong(self::PM_ID_TAG, $itemStack->getStateId());
 		}else{
 			[$id, $meta, $blockRuntimeId] = $idMeta;
 		}
@@ -205,7 +231,7 @@ class TypeConverter{
 			$id,
 			$meta,
 			$itemStack->getCount(),
-			$blockRuntimeId,
+			$blockRuntimeId ?? ItemTranslator::NO_BLOCK_RUNTIME_ID,
 			$nbt,
 			[],
 			[],
@@ -222,7 +248,7 @@ class TypeConverter{
 		}
 		$compound = $itemStack->getNbt();
 
-		$itemResult = ItemTranslator::getInstance()->fromNetworkId($itemStack->getId(), $itemStack->getMeta(), $itemStack->getBlockRuntimeId());
+		$itemResult = $this->itemTranslator->fromNetworkId($itemStack->getId(), $itemStack->getMeta(), $itemStack->getBlockRuntimeId());
 
 		if($compound !== null){
 			$compound = clone $compound;
@@ -238,61 +264,5 @@ class TypeConverter{
 		}
 
 		return $itemResult;
-	}
-
-	/**
-	 * @throws TypeConversionException
-	 */
-	public function createInventoryAction(NetworkInventoryAction $action, Player $player, InventoryManager $inventoryManager) : ?InventoryAction{
-		if($action->oldItem->getItemStack()->equals($action->newItem->getItemStack())){
-			//filter out useless noise in 1.13
-			return null;
-		}
-		try{
-			$old = $this->netItemStackToCore($action->oldItem->getItemStack());
-		}catch(TypeConversionException $e){
-			throw TypeConversionException::wrap($e, "Inventory action: oldItem");
-		}
-		try{
-			$new = $this->netItemStackToCore($action->newItem->getItemStack());
-		}catch(TypeConversionException $e){
-			throw TypeConversionException::wrap($e, "Inventory action: newItem");
-		}
-		switch($action->sourceType){
-			case NetworkInventoryAction::SOURCE_CONTAINER:
-				if($action->windowId === ContainerIds::UI && $action->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
-					return null; //useless noise
-				}
-				$located = $inventoryManager->locateWindowAndSlot($action->windowId, $action->inventorySlot);
-				if($located !== null){
-					[$window, $slot] = $located;
-					return new SlotChangeAction($window, $slot, $old, $new);
-				}
-
-				throw new TypeConversionException("No open container with window ID $action->windowId");
-			case NetworkInventoryAction::SOURCE_WORLD:
-				if($action->inventorySlot !== NetworkInventoryAction::ACTION_MAGIC_SLOT_DROP_ITEM){
-					throw new TypeConversionException("Only expecting drop-item world actions from the client!");
-				}
-
-				return new DropItemAction($new);
-			case NetworkInventoryAction::SOURCE_CREATIVE:
-				switch($action->inventorySlot){
-					case NetworkInventoryAction::ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM:
-						return new DestroyItemAction($new);
-					case NetworkInventoryAction::ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM:
-						return new CreateItemAction($old);
-					default:
-						throw new TypeConversionException("Unexpected creative action type $action->inventorySlot");
-
-				}
-			case NetworkInventoryAction::SOURCE_TODO:
-				//These are used to balance a transaction that involves special actions, like crafting, enchanting, etc.
-				//The vanilla server just accepted these without verifying them. We don't need to care about them since
-				//we verify crafting by checking for imbalances anyway.
-				return null;
-			default:
-				throw new TypeConversionException("Unknown inventory source type $action->sourceType");
-		}
 	}
 }

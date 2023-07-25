@@ -43,6 +43,18 @@ interface Fallable{
 	public function onHitGround(FallingBlock $blockEntity) : bool;
 
 	/**
+	 * Returns the damage caused per fallen block. This is multiplied by the fall distance (and capped according to
+	 * {@link Fallable::getMaxFallDamage()}) to calculate the damage dealt to any entities who intersect with the block
+	 * when it hits the ground.
+	 */
+	public function getFallDamagePerBlock() : float;
+
+	/**
+	 * Returns the maximum damage the block can deal to an entity when it hits the ground.
+	 */
+	public function getMaxFallDamage() : float;
+
+	/**
 	 * Returns the sound that will be played when FallingBlock hits the ground.
 	 */
 	public function getLandSound() : ?Sound;

@@ -50,28 +50,12 @@ class BlockTest extends TestCase{
 	}
 
 	/**
-	 * Test registering a block deliberately overwriting another block works as expected
-	 */
-	public function testDeliberateOverrideBlock() : void{
-		$block = new MyCustomBlock(new BlockIdentifier(BlockTypeIds::COBBLESTONE), "Cobblestone", new BlockTypeInfo(BlockBreakInfo::instant()));
-		$this->blockFactory->register($block, true);
-		self::assertInstanceOf(MyCustomBlock::class, $this->blockFactory->fromStateId($block->getStateId()));
-	}
-
-	/**
 	 * Test registering a new block which does not yet exist
 	 */
 	public function testRegisterNewBlock() : void{
-		for($i = BlockTypeIds::FIRST_UNUSED_BLOCK_ID; $i < BlockTypeIds::FIRST_UNUSED_BLOCK_ID + 256; ++$i){
-			if(!$this->blockFactory->isRegistered($i)){
-				$b = new StrangeNewBlock(new BlockIdentifier($i), "Strange New Block", new BlockTypeInfo(BlockBreakInfo::instant()));
-				$this->blockFactory->register($b);
-				self::assertInstanceOf(StrangeNewBlock::class, $this->blockFactory->fromStateId($b->getStateId()));
-				return;
-			}
-		}
-
-		throw new \RuntimeException("Can't test registering new blocks because no unused spaces left");
+		$b = new StrangeNewBlock(new BlockIdentifier(BlockTypeIds::newId()), "Strange New Block", new BlockTypeInfo(BlockBreakInfo::instant()));
+		$this->blockFactory->register($b);
+		self::assertInstanceOf(StrangeNewBlock::class, $this->blockFactory->fromStateId($b->getStateId()));
 	}
 
 	/**
@@ -126,7 +110,7 @@ class BlockTest extends TestCase{
 
 		$states = $this->blockFactory->getAllKnownStates();
 		foreach($states as $stateId => $state){
-			self::assertArrayHasKey($stateId, $knownStates, "New block state $stateId (" . $state->getTypeId() . ":" . $state->computeStateData() . ", " . print_r($state, true) . ") - consistency check may need regenerating");
+			self::assertArrayHasKey($stateId, $knownStates, "New block state $stateId (" . print_r($state, true) . ") - consistency check may need regenerating");
 			self::assertSame($knownStates[$stateId], $state->getName());
 		}
 		asort($knownStates, SORT_STRING);
@@ -134,5 +118,18 @@ class BlockTest extends TestCase{
 			self::assertArrayHasKey($k, $states, "Missing previously-known block state $k " . ($k >> Block::INTERNAL_STATE_DATA_BITS) . ":" . ($k & Block::INTERNAL_STATE_DATA_MASK) . " ($name)");
 			self::assertSame($name, $states[$k]->getName());
 		}
+	}
+
+	public function testEmptyStateId() : void{
+		$block = $this->blockFactory->fromStateId(Block::EMPTY_STATE_ID);
+		self::assertInstanceOf(Air::class, $block);
+	}
+
+	public function testAsItemFromItem() : void{
+		$block = VanillaBlocks::FLOWER_POT();
+		$item = $block->asItem();
+		$defaultBlock = $item->getBlock();
+		$item2 = $defaultBlock->asItem();
+		self::assertTrue($item2->equalsExact($item));
 	}
 }

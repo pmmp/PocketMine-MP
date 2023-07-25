@@ -24,11 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 /**
- * Enum of all the block runtime IDs used by PocketMine-MP. These IDs are specific to PocketMine-MP and have no
- * relevance to any Minecraft vanilla things.
+ * Every block in {@link VanillaBlocks} has a corresponding constant in this class. These constants can be used to
+ * identify and compare block types efficiently using {@link Block::getTypeId()}.
  *
- * WARNING: DO NOT STORE THESE IDS. They can and will change without warning.
- * They should ONLY be used to IDENTIFY blocks at runtime.
+ * Type ID is also used internally as part of block state ID, which is used to store blocks and their simple properties
+ * in a memory-efficient way in chunks at runtime.
+ *
+ * WARNING: These are NOT a replacement for Minecraft legacy IDs. Do **NOT** hardcode their values, or store them in
+ * configs or databases. They will change without warning.
  */
 final class BlockTypeIds{
 
@@ -712,8 +715,29 @@ final class BlockTypeIds{
 	public const MANGROVE_LEAVES = 10685;
 	public const AZALEA_LEAVES = 10686;
 	public const FLOWERING_AZALEA_LEAVES = 10687;
+	public const REINFORCED_DEEPSLATE = 10688;
+	public const CAVE_VINES = 10689;
+	public const GLOW_LICHEN = 10690;
+	public const CHERRY_BUTTON = 10691;
+	public const CHERRY_DOOR = 10692;
+	public const CHERRY_FENCE = 10693;
+	public const CHERRY_FENCE_GATE = 10694;
+	public const CHERRY_LEAVES = 10695;
+	public const CHERRY_LOG = 10696;
+	public const CHERRY_PLANKS = 10697;
+	public const CHERRY_PRESSURE_PLATE = 10698;
+	public const CHERRY_SAPLING = 10699;
+	public const CHERRY_SIGN = 10700;
+	public const CHERRY_SLAB = 10701;
+	public const CHERRY_STAIRS = 10702;
+	public const CHERRY_TRAPDOOR = 10703;
+	public const CHERRY_WALL_SIGN = 10704;
+	public const CHERRY_WOOD = 10705;
+	public const SMALL_DRIPLEAF = 10706;
+	public const BIG_DRIPLEAF_HEAD = 10707;
+	public const BIG_DRIPLEAF_STEM = 10708;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10688;
+	public const FIRST_UNUSED_BLOCK_ID = 10709;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 

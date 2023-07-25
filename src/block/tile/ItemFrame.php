@@ -27,7 +27,7 @@ use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\convert\ItemTranslator;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\world\World;
 
 /**
@@ -100,7 +100,7 @@ class ItemFrame extends Spawnable{
 		$nbt->setFloat(self::TAG_ITEM_DROP_CHANCE, $this->itemDropChance);
 		$nbt->setByte(self::TAG_ITEM_ROTATION, $this->itemRotation);
 		if(!$this->item->isNull()){
-			$nbt->setTag(self::TAG_ITEM, ItemTranslator::getInstance()->toNetworkNbt($this->item));
+			$nbt->setTag(self::TAG_ITEM, TypeConverter::getInstance()->getItemTranslator()->toNetworkNbt($this->item));
 		}
 	}
 }

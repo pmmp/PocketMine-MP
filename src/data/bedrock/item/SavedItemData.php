@@ -25,6 +25,7 @@ namespace pocketmine\data\bedrock\item;
 
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\VersionInfo;
 
 final class SavedItemData{
 
@@ -59,6 +60,7 @@ final class SavedItemData{
 		if($this->tag !== null){
 			$result->setTag(self::TAG_TAG, $this->tag);
 		}
+		$result->setLong(VersionInfo::TAG_WORLD_DATA_VERSION, VersionInfo::WORLD_DATA_VERSION);
 
 		return $result;
 	}

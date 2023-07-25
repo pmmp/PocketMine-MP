@@ -29,8 +29,9 @@ use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
+use function intdiv;
 
-final class RuntimeDataReader{
+final class RuntimeDataReader implements RuntimeDataDescriber{
 	use RuntimeEnumDeserializerTrait;
 
 	private int $offset = 0;
@@ -55,12 +56,16 @@ final class RuntimeDataReader{
 		$value = $this->readInt($bits);
 	}
 
-	public function boundedInt(int $bits, int $min, int $max, int &$value) : void{
+	protected function readBoundedInt(int $bits, int $min, int $max) : int{
 		$result = $this->readInt($bits) + $min;
 		if($result < $min || $result > $max){
 			throw new InvalidSerializedRuntimeDataException("Value is outside the range $min - $max");
 		}
-		$value = $result;
+		return $result;
+	}
+
+	public function boundedInt(int $bits, int $min, int $max, int &$value) : void{
+		$value = $this->readBoundedInt($bits, $min, $max);
 	}
 
 	protected function readBool() : bool{
@@ -79,6 +84,20 @@ final class RuntimeDataReader{
 			3 => Facing::WEST,
 			default => throw new AssumptionFailedError("Unreachable")
 		};
+	}
+
+	/**
+	 * @param int[] $faces
+	 */
+	public function facingFlags(array &$faces) : void{
+		$result = [];
+		foreach(Facing::ALL as $facing){
+			if($this->readBool()){
+				$result[$facing] = $facing;
+			}
+		}
+
+		$faces = $result;
 	}
 
 	/**
@@ -140,10 +159,10 @@ final class RuntimeDataReader{
 	 */
 	public function wallConnections(array &$connections) : void{
 		$result = [];
-		//TODO: we can pack this into 7 bits instead of 8
+		$offset = 0;
+		$packed = $this->readBoundedInt(7, 0, (3 ** 4) - 1);
 		foreach(Facing::HORIZONTAL as $facing){
-			$type = 0;
-			$this->boundedInt(2, 0, 2, $type);
+			$type = intdiv($packed,  (3 ** $offset)) % 3;
 			if($type !== 0){
 				$result[$facing] = match($type){
 					1 => WallConnectionType::SHORT(),
@@ -151,6 +170,7 @@ final class RuntimeDataReader{
 					default => throw new AssumptionFailedError("Unreachable")
 				};
 			}
+			$offset++;
 		}
 
 		$connections = $result;

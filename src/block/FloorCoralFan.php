@@ -23,8 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Axis;
@@ -38,9 +37,7 @@ use function rad2deg;
 final class FloorCoralFan extends BaseCoral{
 	private int $axis = Axis::X;
 
-	public function getRequiredStateDataBits() : int{ return parent::getRequiredStateDataBits() + 1; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalAxis($this->axis);
 	}
 
@@ -56,7 +53,7 @@ final class FloorCoralFan extends BaseCoral{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy($tx->fetchBlock($blockReplace->getPosition()->down()))){
+		if(!$this->canBeSupportedAt($blockReplace)){
 			return false;
 		}
 		if($player !== null){
@@ -78,15 +75,15 @@ final class FloorCoralFan extends BaseCoral{
 
 	public function onNearbyBlockChange() : void{
 		$world = $this->position->getWorld();
-		if(!$this->canBeSupportedBy($world->getBlock($this->position->down()))){
+		if(!$this->canBeSupportedAt($this)){
 			$world->useBreakOn($this->position);
 		}else{
 			parent::onNearbyBlockChange();
 		}
 	}
 
-	private function canBeSupportedBy(Block $block) : bool{
-		return $block->getSupportType(Facing::UP)->hasCenterSupport();
+	private function canBeSupportedAt(Block $block) : bool{
+		return $block->getAdjacentSupportType(Facing::DOWN)->hasCenterSupport();
 	}
 
 	public function asItem() : Item{

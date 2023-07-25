@@ -51,7 +51,7 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 		protected int $action = PlayerInteractEvent::RIGHT_CLICK_BLOCK
 	){
 		$this->player = $player;
-		$this->touchVector = $touchVector ?? new Vector3(0, 0, 0);
+		$this->touchVector = $touchVector ?? Vector3::zero();
 	}
 
 	public function getAction() : int{

@@ -24,14 +24,18 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\upgrade;
 
 use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\utils\Utils;
 use function count;
+use function is_string;
 use function ksort;
+use function max;
+use function sprintf;
 use const SORT_NUMERIC;
 
 final class BlockStateUpgrader{
-	/** @var BlockStateUpgradeSchema[][] */
+	/** @var BlockStateUpgradeSchema[] */
 	private array $upgradeSchemas = [];
 
 	/**
@@ -45,62 +49,85 @@ final class BlockStateUpgrader{
 	}
 
 	public function addSchema(BlockStateUpgradeSchema $schema) : void{
-		$schemaList = $this->upgradeSchemas[$schema->getVersionId()] ?? [];
-
-		$priority = $schema->getPriority();
-		if(isset($schemaList[$priority])){
-			throw new \InvalidArgumentException("Cannot add two schemas to the same version with the same priority");
+		$schemaId = $schema->getSchemaId();
+		if(isset($this->upgradeSchemas[$schemaId])){
+			throw new \InvalidArgumentException("Cannot add two schemas with the same schema ID");
 		}
-		$schemaList[$priority] = $schema;
-		ksort($schemaList, SORT_NUMERIC);
-		$this->upgradeSchemas[$schema->getVersionId()] = $schemaList;
+		$this->upgradeSchemas[$schemaId] = $schema;
 
 		ksort($this->upgradeSchemas, SORT_NUMERIC);
 	}
 
 	public function upgrade(BlockStateData $blockStateData) : BlockStateData{
 		$version = $blockStateData->getVersion();
-		foreach($this->upgradeSchemas as $resultVersion => $schemas){
+		$highestVersion = $version;
+		foreach($this->upgradeSchemas as $schema){
+			$resultVersion = $schema->getVersionId();
+			$highestVersion = max($highestVersion, $resultVersion);
 			if($version > $resultVersion){
 				//even if this is actually the same version, we have to apply it anyway because mojang are dumb and
 				//didn't always bump the blockstate version when changing it :(
 				continue;
 			}
-			foreach($schemas as $schema){
-				$oldName = $blockStateData->getName();
-				$oldState = $blockStateData->getStates();
-				if(isset($schema->remappedStates[$oldName])){
-					foreach($schema->remappedStates[$oldName] as $remap){
-						if(count($oldState) !== count($remap->oldState)){
-							continue; //try next state
-						}
-						foreach(Utils::stringifyKeys($oldState) as $k => $v){
-							if(!isset($remap->oldState[$k]) || !$remap->oldState[$k]->equals($v)){
-								continue 2; //try next state
-							}
-						}
-
-						$blockStateData = new BlockStateData($remap->newName, $remap->newState, $resultVersion);
-						continue 2; //try next schema
+			$oldName = $blockStateData->getName();
+			$oldState = $blockStateData->getStates();
+			if(isset($schema->remappedStates[$oldName])){
+				foreach($schema->remappedStates[$oldName] as $remap){
+					if(count($remap->oldState) > count($oldState)){
+						//match criteria has more requirements than we have state properties
+						continue; //try next state
 					}
+					foreach(Utils::stringifyKeys($remap->oldState) as $k => $v){
+						if(!isset($oldState[$k]) || !$oldState[$k]->equals($v)){
+							continue 2; //try next state
+						}
+					}
+
+					if(is_string($remap->newName)){
+						$newName = $remap->newName;
+					}else{
+						$flattenedValue = $oldState[$remap->newName->flattenedProperty];
+						if($flattenedValue instanceof StringTag){
+							$newName = sprintf("%s%s%s", $remap->newName->prefix, $flattenedValue->getValue(), $remap->newName->suffix);
+							unset($oldState[$remap->newName->flattenedProperty]);
+						}else{
+							//flattened property is not a TAG_String, so this transformation is not applicable
+							continue;
+						}
+					}
+
+					$newState = $remap->newState;
+					foreach($remap->copiedState as $stateName){
+						if(isset($oldState[$stateName])){
+							$newState[$stateName] = $oldState[$stateName];
+						}
+					}
+
+					$blockStateData = new BlockStateData($newName, $newState, $resultVersion);
+					continue 2; //try next schema
 				}
-				$newName = $schema->renamedIds[$oldName] ?? null;
+			}
+			$newName = $schema->renamedIds[$oldName] ?? null;
 
-				$stateChanges = 0;
-				$states = $blockStateData->getStates();
+			$stateChanges = 0;
+			$states = $blockStateData->getStates();
 
-				$states = $this->applyPropertyAdded($schema, $oldName, $states, $stateChanges);
-				$states = $this->applyPropertyRemoved($schema, $oldName, $states, $stateChanges);
-				$states = $this->applyPropertyRenamedOrValueChanged($schema, $oldName, $states, $stateChanges);
-				$states = $this->applyPropertyValueChanged($schema, $oldName, $states, $stateChanges);
+			$states = $this->applyPropertyAdded($schema, $oldName, $states, $stateChanges);
+			$states = $this->applyPropertyRemoved($schema, $oldName, $states, $stateChanges);
+			$states = $this->applyPropertyRenamedOrValueChanged($schema, $oldName, $states, $stateChanges);
+			$states = $this->applyPropertyValueChanged($schema, $oldName, $states, $stateChanges);
 
-				if($newName !== null || $stateChanges > 0){
-					$blockStateData = new BlockStateData($newName ?? $oldName, $states, $resultVersion);
-					//don't break out; we may need to further upgrade the state
-				}
+			if($newName !== null || $stateChanges > 0){
+				$blockStateData = new BlockStateData($newName ?? $oldName, $states, $resultVersion);
+				//don't break out; we may need to further upgrade the state
 			}
 		}
 
+		if($highestVersion > $version){
+			//always update the version number of the blockstate, even if it didn't change - this is needed for
+			//external tools
+			$blockStateData = new BlockStateData($blockStateData->getName(), $blockStateData->getStates(), $highestVersion);
+		}
 		return $blockStateData;
 	}
 

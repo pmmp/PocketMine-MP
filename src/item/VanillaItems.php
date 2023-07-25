@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\utils\RecordType;
-use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\entity\Entity;
@@ -115,6 +114,7 @@ use pocketmine\world\World;
  * @method static Item CHEMICAL_SULPHATE()
  * @method static Item CHEMICAL_TUNGSTEN_CHLORIDE()
  * @method static Item CHEMICAL_WATER()
+ * @method static ItemBlockWallOrFloor CHERRY_SIGN()
  * @method static ChorusFruit CHORUS_FRUIT()
  * @method static Item CLAY()
  * @method static Clock CLOCK()
@@ -164,6 +164,7 @@ use pocketmine\world\World;
  * @method static GlassBottle GLASS_BOTTLE()
  * @method static Item GLISTERING_MELON()
  * @method static Item GLOWSTONE_DUST()
+ * @method static GlowBerries GLOW_BERRIES()
  * @method static Item GLOW_INK_SAC()
  * @method static GoldenApple GOLDEN_APPLE()
  * @method static Axe GOLDEN_AXE()
@@ -205,6 +206,7 @@ use pocketmine\world\World;
  * @method static Armor LEATHER_PANTS()
  * @method static Armor LEATHER_TUNIC()
  * @method static Item MAGMA_CREAM()
+ * @method static Boat MANGROVE_BOAT()
  * @method static ItemBlockWallOrFloor MANGROVE_SIGN()
  * @method static Medicine MEDICINE()
  * @method static Melon MELON()
@@ -362,6 +364,7 @@ final class VanillaItems{
 		self::register("bucket", new Bucket(new IID(Ids::BUCKET), "Bucket"));
 		self::register("carrot", new Carrot(new IID(Ids::CARROT), "Carrot"));
 		self::register("charcoal", new Coal(new IID(Ids::CHARCOAL), "Charcoal"));
+		self::register("cherry_sign", new ItemBlockWallOrFloor(new IID(Ids::CHERRY_SIGN), Blocks::CHERRY_SIGN(), Blocks::CHERRY_WALL_SIGN()));
 		self::register("chemical_aluminium_oxide", new Item(new IID(Ids::CHEMICAL_ALUMINIUM_OXIDE), "Aluminium Oxide"));
 		self::register("chemical_ammonia", new Item(new IID(Ids::CHEMICAL_AMMONIA), "Ammonia"));
 		self::register("chemical_barium_sulphate", new Item(new IID(Ids::CHEMICAL_BARIUM_SULPHATE), "Barium Sulphate"));
@@ -439,6 +442,7 @@ final class VanillaItems{
 		self::register("ghast_tear", new Item(new IID(Ids::GHAST_TEAR), "Ghast Tear"));
 		self::register("glass_bottle", new GlassBottle(new IID(Ids::GLASS_BOTTLE), "Glass Bottle"));
 		self::register("glistering_melon", new Item(new IID(Ids::GLISTERING_MELON), "Glistering Melon"));
+		self::register("glow_berries", new GlowBerries(new IID(Ids::GLOW_BERRIES), "Glow Berries"));
 		self::register("glow_ink_sac", new Item(new IID(Ids::GLOW_INK_SAC), "Glow Ink Sac"));
 		self::register("glowstone_dust", new Item(new IID(Ids::GLOWSTONE_DUST), "Glowstone Dust"));
 		self::register("gold_ingot", new Item(new IID(Ids::GOLD_INGOT), "Gold Ingot"));
@@ -541,15 +545,16 @@ final class VanillaItems{
 		self::register("writable_book", new WritableBook(new IID(Ids::WRITABLE_BOOK), "Book & Quill"));
 		self::register("written_book", new WrittenBook(new IID(Ids::WRITTEN_BOOK), "Written Book"));
 
-		foreach(TreeType::getAll() as $type){
-			//TODO: tree type should be dynamic in the future, but we're staying static for now for the sake of consistency
+		foreach(BoatType::getAll() as $type){
+			//boat type is static, because different types of wood may have different properties
 			self::register($type->name() . "_boat", new Boat(new IID(match($type){
-				TreeType::OAK() => Ids::OAK_BOAT,
-				TreeType::SPRUCE() => Ids::SPRUCE_BOAT,
-				TreeType::BIRCH() => Ids::BIRCH_BOAT,
-				TreeType::JUNGLE() => Ids::JUNGLE_BOAT,
-				TreeType::ACACIA() => Ids::ACACIA_BOAT,
-				TreeType::DARK_OAK() => Ids::DARK_OAK_BOAT,
+				BoatType::OAK() => Ids::OAK_BOAT,
+				BoatType::SPRUCE() => Ids::SPRUCE_BOAT,
+				BoatType::BIRCH() => Ids::BIRCH_BOAT,
+				BoatType::JUNGLE() => Ids::JUNGLE_BOAT,
+				BoatType::ACACIA() => Ids::ACACIA_BOAT,
+				BoatType::DARK_OAK() => Ids::DARK_OAK_BOAT,
+				BoatType::MANGROVE() => Ids::MANGROVE_BOAT,
 				default => throw new AssumptionFailedError("Unhandled tree type " . $type->name())
 			}), $type->getDisplayName() . " Boat", $type));
 		}

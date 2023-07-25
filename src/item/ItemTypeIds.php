@@ -24,11 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 /**
- * Enum of all the item runtime IDs used by PocketMine-MP. These IDs are specific to PocketMine-MP and have no
- * relevance to any Minecraft vanilla things.
+ * Every item in {@link VanillaItems} has a corresponding constant in this class. These constants can be used to
+ * identify and compare item types efficiently using {@link Item::getTypeId()}.
  *
- * WARNING: DO NOT STORE THESE IDS. They can and will change without warning.
- * They should ONLY be used to IDENTIFY items at runtime.
+ * WARNING: These are NOT a replacement for Minecraft legacy IDs. Do **NOT** hardcode their values, or store them in
+ * configs or databases. They will change without warning.
  */
 final class ItemTypeIds{
 
@@ -300,9 +300,12 @@ final class ItemTypeIds{
 	public const SUSPICIOUS_STEW = 20261;
 	public const TURTLE_HELMET = 20262;
 	public const MEDICINE = 20263;
-	public const ICE_BOMB = 20264;
+	public const MANGROVE_BOAT = 20264;
+	public const GLOW_BERRIES = 20265;
+	public const CHERRY_SIGN = 20266;
+  public const ICE_BOMB = 20267;
 
-	public const FIRST_UNUSED_ITEM_ID = 20265;
+	public const FIRST_UNUSED_ITEM_ID = 20268;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 
@@ -311,5 +314,20 @@ final class ItemTypeIds{
 	 */
 	public static function newId() : int{
 		return self::$nextDynamicId++;
+	}
+
+	public static function fromBlockTypeId(int $blockTypeId) : int{
+		if($blockTypeId < 0){
+			throw new \InvalidArgumentException("Block type IDs cannot be negative");
+		}
+		//negative item type IDs are treated as block IDs
+		return -$blockTypeId;
+	}
+
+	public static function toBlockTypeId(int $itemTypeId) : ?int{
+		if($itemTypeId > 0){ //not a blockitem
+			return null;
+		}
+		return -$itemTypeId;
 	}
 }

@@ -48,14 +48,14 @@ use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
 use pocketmine\block\tile\Jukebox as TileJukebox;
 use pocketmine\block\tile\Lectern as TileLectern;
+use pocketmine\block\tile\MobHead as TileMobHead;
 use pocketmine\block\tile\MonsterSpawner as TileMonsterSpawner;
 use pocketmine\block\tile\NormalFurnace as TileNormalFurnace;
 use pocketmine\block\tile\Note as TileNote;
 use pocketmine\block\tile\ShulkerBox as TileShulkerBox;
-use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\tile\Smoker as TileSmoker;
 use pocketmine\block\utils\LeavesType;
-use pocketmine\block\utils\TreeType;
+use pocketmine\block\utils\SaplingType;
 use pocketmine\block\utils\WoodType;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\entity\projectile\Projectile;
@@ -113,6 +113,8 @@ use function mb_strtolower;
  * @method static Bedrock BEDROCK()
  * @method static Beetroot BEETROOTS()
  * @method static Bell BELL()
+ * @method static BigDripleafHead BIG_DRIPLEAF_HEAD()
+ * @method static BigDripleafStem BIG_DRIPLEAF_STEM()
  * @method static WoodenButton BIRCH_BUTTON()
  * @method static WoodenDoor BIRCH_DOOR()
  * @method static WoodenFence BIRCH_FENCE()
@@ -156,8 +158,23 @@ use function mb_strtolower;
  * @method static CartographyTable CARTOGRAPHY_TABLE()
  * @method static CarvedPumpkin CARVED_PUMPKIN()
  * @method static Cauldron CAULDRON()
+ * @method static CaveVines CAVE_VINES()
  * @method static Chain CHAIN()
  * @method static ChemicalHeat CHEMICAL_HEAT()
+ * @method static WoodenButton CHERRY_BUTTON()
+ * @method static WoodenDoor CHERRY_DOOR()
+ * @method static WoodenFence CHERRY_FENCE()
+ * @method static FenceGate CHERRY_FENCE_GATE()
+ * @method static Leaves CHERRY_LEAVES()
+ * @method static Wood CHERRY_LOG()
+ * @method static Planks CHERRY_PLANKS()
+ * @method static WoodenPressurePlate CHERRY_PRESSURE_PLATE()
+ * @method static FloorSign CHERRY_SIGN()
+ * @method static WoodenSlab CHERRY_SLAB()
+ * @method static WoodenStairs CHERRY_STAIRS()
+ * @method static WoodenTrapdoor CHERRY_TRAPDOOR()
+ * @method static WallSign CHERRY_WALL_SIGN()
+ * @method static Wood CHERRY_WOOD()
  * @method static Chest CHEST()
  * @method static Opaque CHISELED_DEEPSLATE()
  * @method static Opaque CHISELED_NETHER_BRICKS()
@@ -416,6 +433,7 @@ use function mb_strtolower;
  * @method static ItemFrame GLOWING_ITEM_FRAME()
  * @method static GlowingObsidian GLOWING_OBSIDIAN()
  * @method static Glowstone GLOWSTONE()
+ * @method static GlowLichen GLOW_LICHEN()
  * @method static Opaque GOLD()
  * @method static GoldOre GOLD_ORE()
  * @method static Opaque GRANITE()
@@ -502,7 +520,7 @@ use function mb_strtolower;
  * @method static ChemistryTable MATERIAL_REDUCER()
  * @method static Melon MELON()
  * @method static MelonStem MELON_STEM()
- * @method static Skull MOB_HEAD()
+ * @method static MobHead MOB_HEAD()
  * @method static MonsterSpawner MONSTER_SPAWNER()
  * @method static Opaque MOSSY_COBBLESTONE()
  * @method static Slab MOSSY_COBBLESTONE_SLAB()
@@ -628,6 +646,7 @@ use function mb_strtolower;
  * @method static Wall RED_SANDSTONE_WALL()
  * @method static Torch RED_TORCH()
  * @method static Flower RED_TULIP()
+ * @method static Opaque REINFORCED_DEEPSLATE()
  * @method static Reserved6 RESERVED6()
  * @method static DoublePlant ROSE_BUSH()
  * @method static Sand SAND()
@@ -641,6 +660,7 @@ use function mb_strtolower;
  * @method static Opaque SHROOMLIGHT()
  * @method static ShulkerBox SHULKER_BOX()
  * @method static Slime SLIME()
+ * @method static SmallDripleaf SMALL_DRIPLEAF()
  * @method static SmithingTable SMITHING_TABLE()
  * @method static Furnace SMOKER()
  * @method static Opaque SMOOTH_BASALT()
@@ -810,7 +830,6 @@ final class VanillaBlocks{
 		self::register("cobweb", new Cobweb(new BID(Ids::COBWEB), "Cobweb", new Info(new BreakInfo(4.0, ToolType::SWORD | ToolType::SHEARS, 1))));
 		self::register("cocoa_pod", new CocoaBlock(new BID(Ids::COCOA_POD), "Cocoa Block", new Info(BreakInfo::axe(0.2, null, 15.0))));
 		self::register("coral_block", new CoralBlock(new BID(Ids::CORAL_BLOCK), "Coral Block", new Info(BreakInfo::pickaxe(7.0, ToolTier::WOOD()))));
-		self::register("crafting_table", new CraftingTable(new BID(Ids::CRAFTING_TABLE), "Crafting Table", new Info(BreakInfo::axe(2.5))));
 		self::register("daylight_sensor", new DaylightSensor(new BID(Ids::DAYLIGHT_SENSOR, TileDaylightSensor::class), "Daylight Sensor", new Info(BreakInfo::axe(0.2))));
 		self::register("dead_bush", new DeadBush(new BID(Ids::DEAD_BUSH), "Dead Bush", new Info(BreakInfo::instant(ToolType::SHEARS, 1), [Tags::POTTABLE_PLANTS])));
 		self::register("detector_rail", new DetectorRail(new BID(Ids::DETECTOR_RAIL), "Detector Rail", $railBreakInfo));
@@ -838,7 +857,6 @@ final class VanillaBlocks{
 		self::register("ender_chest", new EnderChest(new BID(Ids::ENDER_CHEST, TileEnderChest::class), "Ender Chest", new Info(BreakInfo::pickaxe(22.5, ToolTier::WOOD(), 3000.0))));
 		self::register("farmland", new Farmland(new BID(Ids::FARMLAND), "Farmland", new Info(BreakInfo::shovel(0.6), [Tags::DIRT])));
 		self::register("fire", new Fire(new BID(Ids::FIRE), "Fire Block", new Info(BreakInfo::instant(), [Tags::FIRE])));
-		self::register("fletching_table", new FletchingTable(new BID(Ids::FLETCHING_TABLE), "Fletching Table", new Info(BreakInfo::axe(2.5, null, 2.5))));
 
 		$flowerTypeInfo = new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS]);
 		self::register("dandelion", new Flower(new BID(Ids::DANDELION), "Dandelion", $flowerTypeInfo));
@@ -853,7 +871,7 @@ final class VanillaBlocks{
 		self::register("pink_tulip", new Flower(new BID(Ids::PINK_TULIP), "Pink Tulip", $flowerTypeInfo));
 		self::register("red_tulip", new Flower(new BID(Ids::RED_TULIP), "Red Tulip", $flowerTypeInfo));
 		self::register("white_tulip", new Flower(new BID(Ids::WHITE_TULIP), "White Tulip", $flowerTypeInfo));
-		self::register("flower_pot", new FlowerPot(new BID(Ids::FLOWER_POT, TileFlowerPot::class), "Flower Pot", $flowerTypeInfo));
+		self::register("flower_pot", new FlowerPot(new BID(Ids::FLOWER_POT, TileFlowerPot::class), "Flower Pot", new Info(BreakInfo::instant())));
 		self::register("frosted_ice", new FrostedIce(new BID(Ids::FROSTED_ICE), "Frosted Ice", new Info(BreakInfo::pickaxe(2.5))));
 		self::register("furnace", new Furnace(new BID(Ids::FURNACE, TileNormalFurnace::class), "Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD())), FurnaceType::FURNACE()));
 		self::register("blast_furnace", new Furnace(new BID(Ids::BLAST_FURNACE, TileBlastFurnace::class), "Blast Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD())), FurnaceType::BLAST_FURNACE()));
@@ -864,6 +882,7 @@ final class VanillaBlocks{
 		self::register("glass_pane", new GlassPane(new BID(Ids::GLASS_PANE), "Glass Pane", $glassBreakInfo));
 		self::register("glowing_obsidian", new GlowingObsidian(new BID(Ids::GLOWING_OBSIDIAN), "Glowing Obsidian", new Info(BreakInfo::pickaxe(10.0, ToolTier::DIAMOND(), 50.0))));
 		self::register("glowstone", new Glowstone(new BID(Ids::GLOWSTONE), "Glowstone", new Info(BreakInfo::pickaxe(0.3))));
+		self::register("glow_lichen", new GlowLichen(new BID(Ids::GLOW_LICHEN), "Glow Lichen", new Info(BreakInfo::axe(0.2, null, 0.2))));
 		self::register("gold", new Opaque(new BID(Ids::GOLD), "Gold Block", new Info(BreakInfo::pickaxe(3.0, ToolTier::IRON(), 30.0))));
 
 		$grassBreakInfo = BreakInfo::shovel(0.6);
@@ -908,7 +927,6 @@ final class VanillaBlocks{
 		self::register("lava", new Lava(new BID(Ids::LAVA), "Lava", new Info(BreakInfo::indestructible(500.0))));
 		self::register("lectern", new Lectern(new BID(Ids::LECTERN, TileLectern::class), "Lectern", new Info(BreakInfo::axe(2.0))));
 		self::register("lever", new Lever(new BID(Ids::LEVER), "Lever", new Info(new BreakInfo(0.5))));
-		self::register("loom", new Loom(new BID(Ids::LOOM), "Loom", new Info(BreakInfo::axe(2.5))));
 		self::register("magma", new Magma(new BID(Ids::MAGMA), "Magma Block", new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD()))));
 		self::register("melon", new Melon(new BID(Ids::MELON), "Melon Block", new Info(BreakInfo::axe(1.0))));
 		self::register("melon_stem", new MelonStem(new BID(Ids::MELON_STEM), "Melon Stem", new Info(BreakInfo::instant())));
@@ -982,7 +1000,7 @@ final class VanillaBlocks{
 
 		self::register("sea_lantern", new SeaLantern(new BID(Ids::SEA_LANTERN), "Sea Lantern", new Info(new BreakInfo(0.3))));
 		self::register("sea_pickle", new SeaPickle(new BID(Ids::SEA_PICKLE), "Sea Pickle", new Info(BreakInfo::instant())));
-		self::register("mob_head", new Skull(new BID(Ids::MOB_HEAD, TileSkull::class), "Mob Head", new Info(new BreakInfo(1.0))));
+		self::register("mob_head", new MobHead(new BID(Ids::MOB_HEAD, TileMobHead::class), "Mob Head", new Info(new BreakInfo(1.0))));
 		self::register("slime", new Slime(new BID(Ids::SLIME), "Slime Block", new Info(BreakInfo::instant())));
 		self::register("snow", new Snow(new BID(Ids::SNOW), "Snow Block", new Info(BreakInfo::shovel(0.2, ToolTier::WOOD()))));
 		self::register("snow_layer", new SnowLayer(new BID(Ids::SNOW_LAYER), "Snow Layer", new Info(BreakInfo::shovel(0.1, ToolTier::WOOD()))));
@@ -1107,13 +1125,13 @@ final class VanillaBlocks{
 		});
 		$saplingTypeInfo = new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS]);
 
-		foreach(TreeType::getAll() as $treeType){
-			$name = $treeType->getDisplayName();
-			self::register($treeType->name() . "_sapling", new Sapling(BlockLegacyIdHelper::getSaplingIdentifier($treeType), $name . " Sapling", $saplingTypeInfo, $treeType));
+		foreach(SaplingType::getAll() as $saplingType){
+			$name = $saplingType->getDisplayName();
+			self::register($saplingType->name() . "_sapling", new Sapling(WoodLikeBlockIdHelper::getSaplingIdentifier($saplingType), $name . " Sapling", $saplingTypeInfo, $saplingType));
 		}
 		foreach(LeavesType::getAll() as $leavesType){
 			$name = $leavesType->getDisplayName();
-			self::register($leavesType->name() . "_leaves", new Leaves(BlockLegacyIdHelper::getLeavesIdentifier($leavesType), $name . " Leaves", $leavesBreakInfo, $leavesType));
+			self::register($leavesType->name() . "_leaves", new Leaves(WoodLikeBlockIdHelper::getLeavesIdentifier($leavesType), $name . " Leaves", $leavesBreakInfo, $leavesType));
 		}
 
 		$sandstoneBreakInfo = new Info(BreakInfo::pickaxe(0.8, ToolTier::WOOD()));
@@ -1201,6 +1219,11 @@ final class VanillaBlocks{
 		self::register("muddy_mangrove_roots", new SimplePillar(new BID(Ids::MUDDY_MANGROVE_ROOTS), "Muddy Mangrove Roots", new Info(BreakInfo::shovel(0.7), [Tags::MUD])));
 		self::register("froglight", new Froglight(new BID(Ids::FROGLIGHT), "Froglight", new Info(new BreakInfo(0.3))));
 		self::register("sculk", new Sculk(new BID(Ids::SCULK), "Sculk", new Info(new BreakInfo(0.6, ToolType::HOE))));
+		self::register("reinforced_deepslate", new class(new BID(Ids::REINFORCED_DEEPSLATE), "Reinforced Deepslate", new Info(new BreakInfo(55.0, ToolType::NONE, 0, 3600.0))) extends Opaque{
+			public function getDropsForCompatibleTool(Item $item) : array{
+				return [];
+			}
+		});
 
 		self::registerBlocksR13();
 		self::registerBlocksR14();
@@ -1228,22 +1251,22 @@ final class VanillaBlocks{
 			$name = $woodType->getDisplayName();
 			$idName = fn(string $suffix) => $woodType->name() . "_" . $suffix;
 
-			self::register($idName(mb_strtolower($woodType->getStandardLogSuffix() ?? "log", 'US-ASCII')), new Wood(BlockLegacyIdHelper::getLogIdentifier($woodType), $name . " " . ($woodType->getStandardLogSuffix() ?? "Log"), $logBreakInfo, $woodType));
-			self::register($idName(mb_strtolower($woodType->getAllSidedLogSuffix() ?? "wood", 'US-ASCII')), new Wood(BlockLegacyIdHelper::getAllSidedLogIdentifier($woodType), $name . " " . ($woodType->getAllSidedLogSuffix() ?? "Wood"), $logBreakInfo, $woodType));
+			self::register($idName(mb_strtolower($woodType->getStandardLogSuffix() ?? "log", 'US-ASCII')), new Wood(WoodLikeBlockIdHelper::getLogIdentifier($woodType), $name . " " . ($woodType->getStandardLogSuffix() ?? "Log"), $logBreakInfo, $woodType));
+			self::register($idName(mb_strtolower($woodType->getAllSidedLogSuffix() ?? "wood", 'US-ASCII')), new Wood(WoodLikeBlockIdHelper::getAllSidedLogIdentifier($woodType), $name . " " . ($woodType->getAllSidedLogSuffix() ?? "Wood"), $logBreakInfo, $woodType));
 
-			self::register($idName("planks"), new Planks(BlockLegacyIdHelper::getWoodenPlanksIdentifier($woodType), $name . " Planks", $planksBreakInfo, $woodType));
-			self::register($idName("fence"), new WoodenFence(BlockLegacyIdHelper::getWoodenFenceIdentifier($woodType), $name . " Fence", $planksBreakInfo, $woodType));
-			self::register($idName("slab"), new WoodenSlab(BlockLegacyIdHelper::getWoodenSlabIdentifier($woodType), $name, $planksBreakInfo, $woodType));
+			self::register($idName("planks"), new Planks(WoodLikeBlockIdHelper::getPlanksIdentifier($woodType), $name . " Planks", $planksBreakInfo, $woodType));
+			self::register($idName("fence"), new WoodenFence(WoodLikeBlockIdHelper::getFenceIdentifier($woodType), $name . " Fence", $planksBreakInfo, $woodType));
+			self::register($idName("slab"), new WoodenSlab(WoodLikeBlockIdHelper::getSlabIdentifier($woodType), $name, $planksBreakInfo, $woodType));
 
-			self::register($idName("fence_gate"), new FenceGate(BlockLegacyIdHelper::getWoodenFenceGateIdentifier($woodType), $name . " Fence Gate", $planksBreakInfo, $woodType));
-			self::register($idName("stairs"), new WoodenStairs(BlockLegacyIdHelper::getWoodenStairsIdentifier($woodType), $name . " Stairs", $planksBreakInfo, $woodType));
-			self::register($idName("door"), new WoodenDoor(BlockLegacyIdHelper::getWoodenDoorIdentifier($woodType), $name . " Door", $woodenDoorBreakInfo, $woodType));
+			self::register($idName("fence_gate"), new FenceGate(WoodLikeBlockIdHelper::getFenceGateIdentifier($woodType), $name . " Fence Gate", $planksBreakInfo, $woodType));
+			self::register($idName("stairs"), new WoodenStairs(WoodLikeBlockIdHelper::getStairsIdentifier($woodType), $name . " Stairs", $planksBreakInfo, $woodType));
+			self::register($idName("door"), new WoodenDoor(WoodLikeBlockIdHelper::getDoorIdentifier($woodType), $name . " Door", $woodenDoorBreakInfo, $woodType));
 
-			self::register($idName("button"), new WoodenButton(BlockLegacyIdHelper::getWoodenButtonIdentifier($woodType), $name . " Button", $woodenButtonBreakInfo, $woodType));
-			self::register($idName("pressure_plate"), new WoodenPressurePlate(BlockLegacyIdHelper::getWoodenPressurePlateIdentifier($woodType), $name . " Pressure Plate", $woodenPressurePlateBreakInfo, $woodType));
-			self::register($idName("trapdoor"), new WoodenTrapdoor(BlockLegacyIdHelper::getWoodenTrapdoorIdentifier($woodType), $name . " Trapdoor", $woodenDoorBreakInfo, $woodType));
+			self::register($idName("button"), new WoodenButton(WoodLikeBlockIdHelper::getButtonIdentifier($woodType), $name . " Button", $woodenButtonBreakInfo, $woodType));
+			self::register($idName("pressure_plate"), new WoodenPressurePlate(WoodLikeBlockIdHelper::getPressurePlateIdentifier($woodType), $name . " Pressure Plate", $woodenPressurePlateBreakInfo, $woodType));
+			self::register($idName("trapdoor"), new WoodenTrapdoor(WoodLikeBlockIdHelper::getTrapdoorIdentifier($woodType), $name . " Trapdoor", $woodenDoorBreakInfo, $woodType));
 
-			[$floorSignId, $wallSignId, $signAsItem] = BlockLegacyIdHelper::getWoodenSignInfo($woodType);
+			[$floorSignId, $wallSignId, $signAsItem] = WoodLikeBlockIdHelper::getSignInfo($woodType);
 			self::register($idName("sign"), new FloorSign($floorSignId, $name . " Sign", $signBreakInfo, $woodType, $signAsItem));
 			self::register($idName("wall_sign"), new WallSign($wallSignId, $name . " Wall Sign", $signBreakInfo, $woodType, $signAsItem));
 		}
@@ -1264,124 +1287,127 @@ final class VanillaBlocks{
 		$instaBreak = new Info(BreakInfo::instant());
 		self::register("element_zero", new Opaque(new BID(Ids::ELEMENT_ZERO), "???", $instaBreak));
 
-		self::register("element_hydrogen", new Element(new BID(Ids::ELEMENT_HYDROGEN), "Hydrogen", $instaBreak, "h", 1, 5));
-		self::register("element_helium", new Element(new BID(Ids::ELEMENT_HELIUM), "Helium", $instaBreak, "he", 2, 7));
-		self::register("element_lithium", new Element(new BID(Ids::ELEMENT_LITHIUM), "Lithium", $instaBreak, "li", 3, 0));
-		self::register("element_beryllium", new Element(new BID(Ids::ELEMENT_BERYLLIUM), "Beryllium", $instaBreak, "be", 4, 1));
-		self::register("element_boron", new Element(new BID(Ids::ELEMENT_BORON), "Boron", $instaBreak, "b", 5, 4));
-		self::register("element_carbon", new Element(new BID(Ids::ELEMENT_CARBON), "Carbon", $instaBreak, "c", 6, 5));
-		self::register("element_nitrogen", new Element(new BID(Ids::ELEMENT_NITROGEN), "Nitrogen", $instaBreak, "n", 7, 5));
-		self::register("element_oxygen", new Element(new BID(Ids::ELEMENT_OXYGEN), "Oxygen", $instaBreak, "o", 8, 5));
-		self::register("element_fluorine", new Element(new BID(Ids::ELEMENT_FLUORINE), "Fluorine", $instaBreak, "f", 9, 6));
-		self::register("element_neon", new Element(new BID(Ids::ELEMENT_NEON), "Neon", $instaBreak, "ne", 10, 7));
-		self::register("element_sodium", new Element(new BID(Ids::ELEMENT_SODIUM), "Sodium", $instaBreak, "na", 11, 0));
-		self::register("element_magnesium", new Element(new BID(Ids::ELEMENT_MAGNESIUM), "Magnesium", $instaBreak, "mg", 12, 1));
-		self::register("element_aluminum", new Element(new BID(Ids::ELEMENT_ALUMINUM), "Aluminum", $instaBreak, "al", 13, 3));
-		self::register("element_silicon", new Element(new BID(Ids::ELEMENT_SILICON), "Silicon", $instaBreak, "si", 14, 4));
-		self::register("element_phosphorus", new Element(new BID(Ids::ELEMENT_PHOSPHORUS), "Phosphorus", $instaBreak, "p", 15, 5));
-		self::register("element_sulfur", new Element(new BID(Ids::ELEMENT_SULFUR), "Sulfur", $instaBreak, "s", 16, 5));
-		self::register("element_chlorine", new Element(new BID(Ids::ELEMENT_CHLORINE), "Chlorine", $instaBreak, "cl", 17, 6));
-		self::register("element_argon", new Element(new BID(Ids::ELEMENT_ARGON), "Argon", $instaBreak, "ar", 18, 7));
-		self::register("element_potassium", new Element(new BID(Ids::ELEMENT_POTASSIUM), "Potassium", $instaBreak, "k", 19, 0));
-		self::register("element_calcium", new Element(new BID(Ids::ELEMENT_CALCIUM), "Calcium", $instaBreak, "ca", 20, 1));
-		self::register("element_scandium", new Element(new BID(Ids::ELEMENT_SCANDIUM), "Scandium", $instaBreak, "sc", 21, 2));
-		self::register("element_titanium", new Element(new BID(Ids::ELEMENT_TITANIUM), "Titanium", $instaBreak, "ti", 22, 2));
-		self::register("element_vanadium", new Element(new BID(Ids::ELEMENT_VANADIUM), "Vanadium", $instaBreak, "v", 23, 2));
-		self::register("element_chromium", new Element(new BID(Ids::ELEMENT_CHROMIUM), "Chromium", $instaBreak, "cr", 24, 2));
-		self::register("element_manganese", new Element(new BID(Ids::ELEMENT_MANGANESE), "Manganese", $instaBreak, "mn", 25, 2));
-		self::register("element_iron", new Element(new BID(Ids::ELEMENT_IRON), "Iron", $instaBreak, "fe", 26, 2));
-		self::register("element_cobalt", new Element(new BID(Ids::ELEMENT_COBALT), "Cobalt", $instaBreak, "co", 27, 2));
-		self::register("element_nickel", new Element(new BID(Ids::ELEMENT_NICKEL), "Nickel", $instaBreak, "ni", 28, 2));
-		self::register("element_copper", new Element(new BID(Ids::ELEMENT_COPPER), "Copper", $instaBreak, "cu", 29, 2));
-		self::register("element_zinc", new Element(new BID(Ids::ELEMENT_ZINC), "Zinc", $instaBreak, "zn", 30, 2));
-		self::register("element_gallium", new Element(new BID(Ids::ELEMENT_GALLIUM), "Gallium", $instaBreak, "ga", 31, 3));
-		self::register("element_germanium", new Element(new BID(Ids::ELEMENT_GERMANIUM), "Germanium", $instaBreak, "ge", 32, 4));
-		self::register("element_arsenic", new Element(new BID(Ids::ELEMENT_ARSENIC), "Arsenic", $instaBreak, "as", 33, 4));
-		self::register("element_selenium", new Element(new BID(Ids::ELEMENT_SELENIUM), "Selenium", $instaBreak, "se", 34, 5));
-		self::register("element_bromine", new Element(new BID(Ids::ELEMENT_BROMINE), "Bromine", $instaBreak, "br", 35, 6));
-		self::register("element_krypton", new Element(new BID(Ids::ELEMENT_KRYPTON), "Krypton", $instaBreak, "kr", 36, 7));
-		self::register("element_rubidium", new Element(new BID(Ids::ELEMENT_RUBIDIUM), "Rubidium", $instaBreak, "rb", 37, 0));
-		self::register("element_strontium", new Element(new BID(Ids::ELEMENT_STRONTIUM), "Strontium", $instaBreak, "sr", 38, 1));
-		self::register("element_yttrium", new Element(new BID(Ids::ELEMENT_YTTRIUM), "Yttrium", $instaBreak, "y", 39, 2));
-		self::register("element_zirconium", new Element(new BID(Ids::ELEMENT_ZIRCONIUM), "Zirconium", $instaBreak, "zr", 40, 2));
-		self::register("element_niobium", new Element(new BID(Ids::ELEMENT_NIOBIUM), "Niobium", $instaBreak, "nb", 41, 2));
-		self::register("element_molybdenum", new Element(new BID(Ids::ELEMENT_MOLYBDENUM), "Molybdenum", $instaBreak, "mo", 42, 2));
-		self::register("element_technetium", new Element(new BID(Ids::ELEMENT_TECHNETIUM), "Technetium", $instaBreak, "tc", 43, 2));
-		self::register("element_ruthenium", new Element(new BID(Ids::ELEMENT_RUTHENIUM), "Ruthenium", $instaBreak, "ru", 44, 2));
-		self::register("element_rhodium", new Element(new BID(Ids::ELEMENT_RHODIUM), "Rhodium", $instaBreak, "rh", 45, 2));
-		self::register("element_palladium", new Element(new BID(Ids::ELEMENT_PALLADIUM), "Palladium", $instaBreak, "pd", 46, 2));
-		self::register("element_silver", new Element(new BID(Ids::ELEMENT_SILVER), "Silver", $instaBreak, "ag", 47, 2));
-		self::register("element_cadmium", new Element(new BID(Ids::ELEMENT_CADMIUM), "Cadmium", $instaBreak, "cd", 48, 2));
-		self::register("element_indium", new Element(new BID(Ids::ELEMENT_INDIUM), "Indium", $instaBreak, "in", 49, 3));
-		self::register("element_tin", new Element(new BID(Ids::ELEMENT_TIN), "Tin", $instaBreak, "sn", 50, 3));
-		self::register("element_antimony", new Element(new BID(Ids::ELEMENT_ANTIMONY), "Antimony", $instaBreak, "sb", 51, 4));
-		self::register("element_tellurium", new Element(new BID(Ids::ELEMENT_TELLURIUM), "Tellurium", $instaBreak, "te", 52, 4));
-		self::register("element_iodine", new Element(new BID(Ids::ELEMENT_IODINE), "Iodine", $instaBreak, "i", 53, 6));
-		self::register("element_xenon", new Element(new BID(Ids::ELEMENT_XENON), "Xenon", $instaBreak, "xe", 54, 7));
-		self::register("element_cesium", new Element(new BID(Ids::ELEMENT_CESIUM), "Cesium", $instaBreak, "cs", 55, 0));
-		self::register("element_barium", new Element(new BID(Ids::ELEMENT_BARIUM), "Barium", $instaBreak, "ba", 56, 1));
-		self::register("element_lanthanum", new Element(new BID(Ids::ELEMENT_LANTHANUM), "Lanthanum", $instaBreak, "la", 57, 8));
-		self::register("element_cerium", new Element(new BID(Ids::ELEMENT_CERIUM), "Cerium", $instaBreak, "ce", 58, 8));
-		self::register("element_praseodymium", new Element(new BID(Ids::ELEMENT_PRASEODYMIUM), "Praseodymium", $instaBreak, "pr", 59, 8));
-		self::register("element_neodymium", new Element(new BID(Ids::ELEMENT_NEODYMIUM), "Neodymium", $instaBreak, "nd", 60, 8));
-		self::register("element_promethium", new Element(new BID(Ids::ELEMENT_PROMETHIUM), "Promethium", $instaBreak, "pm", 61, 8));
-		self::register("element_samarium", new Element(new BID(Ids::ELEMENT_SAMARIUM), "Samarium", $instaBreak, "sm", 62, 8));
-		self::register("element_europium", new Element(new BID(Ids::ELEMENT_EUROPIUM), "Europium", $instaBreak, "eu", 63, 8));
-		self::register("element_gadolinium", new Element(new BID(Ids::ELEMENT_GADOLINIUM), "Gadolinium", $instaBreak, "gd", 64, 8));
-		self::register("element_terbium", new Element(new BID(Ids::ELEMENT_TERBIUM), "Terbium", $instaBreak, "tb", 65, 8));
-		self::register("element_dysprosium", new Element(new BID(Ids::ELEMENT_DYSPROSIUM), "Dysprosium", $instaBreak, "dy", 66, 8));
-		self::register("element_holmium", new Element(new BID(Ids::ELEMENT_HOLMIUM), "Holmium", $instaBreak, "ho", 67, 8));
-		self::register("element_erbium", new Element(new BID(Ids::ELEMENT_ERBIUM), "Erbium", $instaBreak, "er", 68, 8));
-		self::register("element_thulium", new Element(new BID(Ids::ELEMENT_THULIUM), "Thulium", $instaBreak, "tm", 69, 8));
-		self::register("element_ytterbium", new Element(new BID(Ids::ELEMENT_YTTERBIUM), "Ytterbium", $instaBreak, "yb", 70, 8));
-		self::register("element_lutetium", new Element(new BID(Ids::ELEMENT_LUTETIUM), "Lutetium", $instaBreak, "lu", 71, 8));
-		self::register("element_hafnium", new Element(new BID(Ids::ELEMENT_HAFNIUM), "Hafnium", $instaBreak, "hf", 72, 2));
-		self::register("element_tantalum", new Element(new BID(Ids::ELEMENT_TANTALUM), "Tantalum", $instaBreak, "ta", 73, 2));
-		self::register("element_tungsten", new Element(new BID(Ids::ELEMENT_TUNGSTEN), "Tungsten", $instaBreak, "w", 74, 2));
-		self::register("element_rhenium", new Element(new BID(Ids::ELEMENT_RHENIUM), "Rhenium", $instaBreak, "re", 75, 2));
-		self::register("element_osmium", new Element(new BID(Ids::ELEMENT_OSMIUM), "Osmium", $instaBreak, "os", 76, 2));
-		self::register("element_iridium", new Element(new BID(Ids::ELEMENT_IRIDIUM), "Iridium", $instaBreak, "ir", 77, 2));
-		self::register("element_platinum", new Element(new BID(Ids::ELEMENT_PLATINUM), "Platinum", $instaBreak, "pt", 78, 2));
-		self::register("element_gold", new Element(new BID(Ids::ELEMENT_GOLD), "Gold", $instaBreak, "au", 79, 2));
-		self::register("element_mercury", new Element(new BID(Ids::ELEMENT_MERCURY), "Mercury", $instaBreak, "hg", 80, 2));
-		self::register("element_thallium", new Element(new BID(Ids::ELEMENT_THALLIUM), "Thallium", $instaBreak, "tl", 81, 3));
-		self::register("element_lead", new Element(new BID(Ids::ELEMENT_LEAD), "Lead", $instaBreak, "pb", 82, 3));
-		self::register("element_bismuth", new Element(new BID(Ids::ELEMENT_BISMUTH), "Bismuth", $instaBreak, "bi", 83, 3));
-		self::register("element_polonium", new Element(new BID(Ids::ELEMENT_POLONIUM), "Polonium", $instaBreak, "po", 84, 4));
-		self::register("element_astatine", new Element(new BID(Ids::ELEMENT_ASTATINE), "Astatine", $instaBreak, "at", 85, 6));
-		self::register("element_radon", new Element(new BID(Ids::ELEMENT_RADON), "Radon", $instaBreak, "rn", 86, 7));
-		self::register("element_francium", new Element(new BID(Ids::ELEMENT_FRANCIUM), "Francium", $instaBreak, "fr", 87, 0));
-		self::register("element_radium", new Element(new BID(Ids::ELEMENT_RADIUM), "Radium", $instaBreak, "ra", 88, 1));
-		self::register("element_actinium", new Element(new BID(Ids::ELEMENT_ACTINIUM), "Actinium", $instaBreak, "ac", 89, 9));
-		self::register("element_thorium", new Element(new BID(Ids::ELEMENT_THORIUM), "Thorium", $instaBreak, "th", 90, 9));
-		self::register("element_protactinium", new Element(new BID(Ids::ELEMENT_PROTACTINIUM), "Protactinium", $instaBreak, "pa", 91, 9));
-		self::register("element_uranium", new Element(new BID(Ids::ELEMENT_URANIUM), "Uranium", $instaBreak, "u", 92, 9));
-		self::register("element_neptunium", new Element(new BID(Ids::ELEMENT_NEPTUNIUM), "Neptunium", $instaBreak, "np", 93, 9));
-		self::register("element_plutonium", new Element(new BID(Ids::ELEMENT_PLUTONIUM), "Plutonium", $instaBreak, "pu", 94, 9));
-		self::register("element_americium", new Element(new BID(Ids::ELEMENT_AMERICIUM), "Americium", $instaBreak, "am", 95, 9));
-		self::register("element_curium", new Element(new BID(Ids::ELEMENT_CURIUM), "Curium", $instaBreak, "cm", 96, 9));
-		self::register("element_berkelium", new Element(new BID(Ids::ELEMENT_BERKELIUM), "Berkelium", $instaBreak, "bk", 97, 9));
-		self::register("element_californium", new Element(new BID(Ids::ELEMENT_CALIFORNIUM), "Californium", $instaBreak, "cf", 98, 9));
-		self::register("element_einsteinium", new Element(new BID(Ids::ELEMENT_EINSTEINIUM), "Einsteinium", $instaBreak, "es", 99, 9));
-		self::register("element_fermium", new Element(new BID(Ids::ELEMENT_FERMIUM), "Fermium", $instaBreak, "fm", 100, 9));
-		self::register("element_mendelevium", new Element(new BID(Ids::ELEMENT_MENDELEVIUM), "Mendelevium", $instaBreak, "md", 101, 9));
-		self::register("element_nobelium", new Element(new BID(Ids::ELEMENT_NOBELIUM), "Nobelium", $instaBreak, "no", 102, 9));
-		self::register("element_lawrencium", new Element(new BID(Ids::ELEMENT_LAWRENCIUM), "Lawrencium", $instaBreak, "lr", 103, 9));
-		self::register("element_rutherfordium", new Element(new BID(Ids::ELEMENT_RUTHERFORDIUM), "Rutherfordium", $instaBreak, "rf", 104, 2));
-		self::register("element_dubnium", new Element(new BID(Ids::ELEMENT_DUBNIUM), "Dubnium", $instaBreak, "db", 105, 2));
-		self::register("element_seaborgium", new Element(new BID(Ids::ELEMENT_SEABORGIUM), "Seaborgium", $instaBreak, "sg", 106, 2));
-		self::register("element_bohrium", new Element(new BID(Ids::ELEMENT_BOHRIUM), "Bohrium", $instaBreak, "bh", 107, 2));
-		self::register("element_hassium", new Element(new BID(Ids::ELEMENT_HASSIUM), "Hassium", $instaBreak, "hs", 108, 2));
-		self::register("element_meitnerium", new Element(new BID(Ids::ELEMENT_MEITNERIUM), "Meitnerium", $instaBreak, "mt", 109, 2));
-		self::register("element_darmstadtium", new Element(new BID(Ids::ELEMENT_DARMSTADTIUM), "Darmstadtium", $instaBreak, "ds", 110, 2));
-		self::register("element_roentgenium", new Element(new BID(Ids::ELEMENT_ROENTGENIUM), "Roentgenium", $instaBreak, "rg", 111, 2));
-		self::register("element_copernicium", new Element(new BID(Ids::ELEMENT_COPERNICIUM), "Copernicium", $instaBreak, "cn", 112, 2));
-		self::register("element_nihonium", new Element(new BID(Ids::ELEMENT_NIHONIUM), "Nihonium", $instaBreak, "nh", 113, 3));
-		self::register("element_flerovium", new Element(new BID(Ids::ELEMENT_FLEROVIUM), "Flerovium", $instaBreak, "fl", 114, 3));
-		self::register("element_moscovium", new Element(new BID(Ids::ELEMENT_MOSCOVIUM), "Moscovium", $instaBreak, "mc", 115, 3));
-		self::register("element_livermorium", new Element(new BID(Ids::ELEMENT_LIVERMORIUM), "Livermorium", $instaBreak, "lv", 116, 3));
-		self::register("element_tennessine", new Element(new BID(Ids::ELEMENT_TENNESSINE), "Tennessine", $instaBreak, "ts", 117, 6));
-		self::register("element_oganesson", new Element(new BID(Ids::ELEMENT_OGANESSON), "Oganesson", $instaBreak, "og", 118, 7));
+		$register = fn(string $name, int $id, string $displayName, string $symbol, int $atomicWeight, int $group) =>
+			self::register("element_$name", new Element(new BID($id), $displayName, $instaBreak, $symbol, $atomicWeight, $group));
+
+		$register("hydrogen", Ids::ELEMENT_HYDROGEN, "Hydrogen", "h", 1, 5);
+		$register("helium", Ids::ELEMENT_HELIUM, "Helium", "he", 2, 7);
+		$register("lithium", Ids::ELEMENT_LITHIUM, "Lithium", "li", 3, 0);
+		$register("beryllium", Ids::ELEMENT_BERYLLIUM, "Beryllium", "be", 4, 1);
+		$register("boron", Ids::ELEMENT_BORON, "Boron", "b", 5, 4);
+		$register("carbon", Ids::ELEMENT_CARBON, "Carbon", "c", 6, 5);
+		$register("nitrogen", Ids::ELEMENT_NITROGEN, "Nitrogen", "n", 7, 5);
+		$register("oxygen", Ids::ELEMENT_OXYGEN, "Oxygen", "o", 8, 5);
+		$register("fluorine", Ids::ELEMENT_FLUORINE, "Fluorine", "f", 9, 6);
+		$register("neon", Ids::ELEMENT_NEON, "Neon", "ne", 10, 7);
+		$register("sodium", Ids::ELEMENT_SODIUM, "Sodium", "na", 11, 0);
+		$register("magnesium", Ids::ELEMENT_MAGNESIUM, "Magnesium", "mg", 12, 1);
+		$register("aluminum", Ids::ELEMENT_ALUMINUM, "Aluminum", "al", 13, 3);
+		$register("silicon", Ids::ELEMENT_SILICON, "Silicon", "si", 14, 4);
+		$register("phosphorus", Ids::ELEMENT_PHOSPHORUS, "Phosphorus", "p", 15, 5);
+		$register("sulfur", Ids::ELEMENT_SULFUR, "Sulfur", "s", 16, 5);
+		$register("chlorine", Ids::ELEMENT_CHLORINE, "Chlorine", "cl", 17, 6);
+		$register("argon", Ids::ELEMENT_ARGON, "Argon", "ar", 18, 7);
+		$register("potassium", Ids::ELEMENT_POTASSIUM, "Potassium", "k", 19, 0);
+		$register("calcium", Ids::ELEMENT_CALCIUM, "Calcium", "ca", 20, 1);
+		$register("scandium", Ids::ELEMENT_SCANDIUM, "Scandium", "sc", 21, 2);
+		$register("titanium", Ids::ELEMENT_TITANIUM, "Titanium", "ti", 22, 2);
+		$register("vanadium", Ids::ELEMENT_VANADIUM, "Vanadium", "v", 23, 2);
+		$register("chromium", Ids::ELEMENT_CHROMIUM, "Chromium", "cr", 24, 2);
+		$register("manganese", Ids::ELEMENT_MANGANESE, "Manganese", "mn", 25, 2);
+		$register("iron", Ids::ELEMENT_IRON, "Iron", "fe", 26, 2);
+		$register("cobalt", Ids::ELEMENT_COBALT, "Cobalt", "co", 27, 2);
+		$register("nickel", Ids::ELEMENT_NICKEL, "Nickel", "ni", 28, 2);
+		$register("copper", Ids::ELEMENT_COPPER, "Copper", "cu", 29, 2);
+		$register("zinc", Ids::ELEMENT_ZINC, "Zinc", "zn", 30, 2);
+		$register("gallium", Ids::ELEMENT_GALLIUM, "Gallium", "ga", 31, 3);
+		$register("germanium", Ids::ELEMENT_GERMANIUM, "Germanium", "ge", 32, 4);
+		$register("arsenic", Ids::ELEMENT_ARSENIC, "Arsenic", "as", 33, 4);
+		$register("selenium", Ids::ELEMENT_SELENIUM, "Selenium", "se", 34, 5);
+		$register("bromine", Ids::ELEMENT_BROMINE, "Bromine", "br", 35, 6);
+		$register("krypton", Ids::ELEMENT_KRYPTON, "Krypton", "kr", 36, 7);
+		$register("rubidium", Ids::ELEMENT_RUBIDIUM, "Rubidium", "rb", 37, 0);
+		$register("strontium", Ids::ELEMENT_STRONTIUM, "Strontium", "sr", 38, 1);
+		$register("yttrium", Ids::ELEMENT_YTTRIUM, "Yttrium", "y", 39, 2);
+		$register("zirconium", Ids::ELEMENT_ZIRCONIUM, "Zirconium", "zr", 40, 2);
+		$register("niobium", Ids::ELEMENT_NIOBIUM, "Niobium", "nb", 41, 2);
+		$register("molybdenum", Ids::ELEMENT_MOLYBDENUM, "Molybdenum", "mo", 42, 2);
+		$register("technetium", Ids::ELEMENT_TECHNETIUM, "Technetium", "tc", 43, 2);
+		$register("ruthenium", Ids::ELEMENT_RUTHENIUM, "Ruthenium", "ru", 44, 2);
+		$register("rhodium", Ids::ELEMENT_RHODIUM, "Rhodium", "rh", 45, 2);
+		$register("palladium", Ids::ELEMENT_PALLADIUM, "Palladium", "pd", 46, 2);
+		$register("silver", Ids::ELEMENT_SILVER, "Silver", "ag", 47, 2);
+		$register("cadmium", Ids::ELEMENT_CADMIUM, "Cadmium", "cd", 48, 2);
+		$register("indium", Ids::ELEMENT_INDIUM, "Indium", "in", 49, 3);
+		$register("tin", Ids::ELEMENT_TIN, "Tin", "sn", 50, 3);
+		$register("antimony", Ids::ELEMENT_ANTIMONY, "Antimony", "sb", 51, 4);
+		$register("tellurium", Ids::ELEMENT_TELLURIUM, "Tellurium", "te", 52, 4);
+		$register("iodine", Ids::ELEMENT_IODINE, "Iodine", "i", 53, 6);
+		$register("xenon", Ids::ELEMENT_XENON, "Xenon", "xe", 54, 7);
+		$register("cesium", Ids::ELEMENT_CESIUM, "Cesium", "cs", 55, 0);
+		$register("barium", Ids::ELEMENT_BARIUM, "Barium", "ba", 56, 1);
+		$register("lanthanum", Ids::ELEMENT_LANTHANUM, "Lanthanum", "la", 57, 8);
+		$register("cerium", Ids::ELEMENT_CERIUM, "Cerium", "ce", 58, 8);
+		$register("praseodymium", Ids::ELEMENT_PRASEODYMIUM, "Praseodymium", "pr", 59, 8);
+		$register("neodymium", Ids::ELEMENT_NEODYMIUM, "Neodymium", "nd", 60, 8);
+		$register("promethium", Ids::ELEMENT_PROMETHIUM, "Promethium", "pm", 61, 8);
+		$register("samarium", Ids::ELEMENT_SAMARIUM, "Samarium", "sm", 62, 8);
+		$register("europium", Ids::ELEMENT_EUROPIUM, "Europium", "eu", 63, 8);
+		$register("gadolinium", Ids::ELEMENT_GADOLINIUM, "Gadolinium", "gd", 64, 8);
+		$register("terbium", Ids::ELEMENT_TERBIUM, "Terbium", "tb", 65, 8);
+		$register("dysprosium", Ids::ELEMENT_DYSPROSIUM, "Dysprosium", "dy", 66, 8);
+		$register("holmium", Ids::ELEMENT_HOLMIUM, "Holmium", "ho", 67, 8);
+		$register("erbium", Ids::ELEMENT_ERBIUM, "Erbium", "er", 68, 8);
+		$register("thulium", Ids::ELEMENT_THULIUM, "Thulium", "tm", 69, 8);
+		$register("ytterbium", Ids::ELEMENT_YTTERBIUM, "Ytterbium", "yb", 70, 8);
+		$register("lutetium", Ids::ELEMENT_LUTETIUM, "Lutetium", "lu", 71, 8);
+		$register("hafnium", Ids::ELEMENT_HAFNIUM, "Hafnium", "hf", 72, 2);
+		$register("tantalum", Ids::ELEMENT_TANTALUM, "Tantalum", "ta", 73, 2);
+		$register("tungsten", Ids::ELEMENT_TUNGSTEN, "Tungsten", "w", 74, 2);
+		$register("rhenium", Ids::ELEMENT_RHENIUM, "Rhenium", "re", 75, 2);
+		$register("osmium", Ids::ELEMENT_OSMIUM, "Osmium", "os", 76, 2);
+		$register("iridium", Ids::ELEMENT_IRIDIUM, "Iridium", "ir", 77, 2);
+		$register("platinum", Ids::ELEMENT_PLATINUM, "Platinum", "pt", 78, 2);
+		$register("gold", Ids::ELEMENT_GOLD, "Gold", "au", 79, 2);
+		$register("mercury", Ids::ELEMENT_MERCURY, "Mercury", "hg", 80, 2);
+		$register("thallium", Ids::ELEMENT_THALLIUM, "Thallium", "tl", 81, 3);
+		$register("lead", Ids::ELEMENT_LEAD, "Lead", "pb", 82, 3);
+		$register("bismuth", Ids::ELEMENT_BISMUTH, "Bismuth", "bi", 83, 3);
+		$register("polonium", Ids::ELEMENT_POLONIUM, "Polonium", "po", 84, 4);
+		$register("astatine", Ids::ELEMENT_ASTATINE, "Astatine", "at", 85, 6);
+		$register("radon", Ids::ELEMENT_RADON, "Radon", "rn", 86, 7);
+		$register("francium", Ids::ELEMENT_FRANCIUM, "Francium", "fr", 87, 0);
+		$register("radium", Ids::ELEMENT_RADIUM, "Radium", "ra", 88, 1);
+		$register("actinium", Ids::ELEMENT_ACTINIUM, "Actinium", "ac", 89, 9);
+		$register("thorium", Ids::ELEMENT_THORIUM, "Thorium", "th", 90, 9);
+		$register("protactinium", Ids::ELEMENT_PROTACTINIUM, "Protactinium", "pa", 91, 9);
+		$register("uranium", Ids::ELEMENT_URANIUM, "Uranium", "u", 92, 9);
+		$register("neptunium", Ids::ELEMENT_NEPTUNIUM, "Neptunium", "np", 93, 9);
+		$register("plutonium", Ids::ELEMENT_PLUTONIUM, "Plutonium", "pu", 94, 9);
+		$register("americium", Ids::ELEMENT_AMERICIUM, "Americium", "am", 95, 9);
+		$register("curium", Ids::ELEMENT_CURIUM, "Curium", "cm", 96, 9);
+		$register("berkelium", Ids::ELEMENT_BERKELIUM, "Berkelium", "bk", 97, 9);
+		$register("californium", Ids::ELEMENT_CALIFORNIUM, "Californium", "cf", 98, 9);
+		$register("einsteinium", Ids::ELEMENT_EINSTEINIUM, "Einsteinium", "es", 99, 9);
+		$register("fermium", Ids::ELEMENT_FERMIUM, "Fermium", "fm", 100, 9);
+		$register("mendelevium", Ids::ELEMENT_MENDELEVIUM, "Mendelevium", "md", 101, 9);
+		$register("nobelium", Ids::ELEMENT_NOBELIUM, "Nobelium", "no", 102, 9);
+		$register("lawrencium", Ids::ELEMENT_LAWRENCIUM, "Lawrencium", "lr", 103, 9);
+		$register("rutherfordium", Ids::ELEMENT_RUTHERFORDIUM, "Rutherfordium", "rf", 104, 2);
+		$register("dubnium", Ids::ELEMENT_DUBNIUM, "Dubnium", "db", 105, 2);
+		$register("seaborgium", Ids::ELEMENT_SEABORGIUM, "Seaborgium", "sg", 106, 2);
+		$register("bohrium", Ids::ELEMENT_BOHRIUM, "Bohrium", "bh", 107, 2);
+		$register("hassium", Ids::ELEMENT_HASSIUM, "Hassium", "hs", 108, 2);
+		$register("meitnerium", Ids::ELEMENT_MEITNERIUM, "Meitnerium", "mt", 109, 2);
+		$register("darmstadtium", Ids::ELEMENT_DARMSTADTIUM, "Darmstadtium", "ds", 110, 2);
+		$register("roentgenium", Ids::ELEMENT_ROENTGENIUM, "Roentgenium", "rg", 111, 2);
+		$register("copernicium", Ids::ELEMENT_COPERNICIUM, "Copernicium", "cn", 112, 2);
+		$register("nihonium", Ids::ELEMENT_NIHONIUM, "Nihonium", "nh", 113, 3);
+		$register("flerovium", Ids::ELEMENT_FLEROVIUM, "Flerovium", "fl", 114, 3);
+		$register("moscovium", Ids::ELEMENT_MOSCOVIUM, "Moscovium", "mc", 115, 3);
+		$register("livermorium", Ids::ELEMENT_LIVERMORIUM, "Livermorium", "lv", 116, 3);
+		$register("tennessine", Ids::ELEMENT_TENNESSINE, "Tennessine", "ts", 117, 6);
+		$register("oganesson", Ids::ELEMENT_OGANESSON, "Oganesson", "og", 118, 7);
 	}
 
 	private static function registerOres() : void{
@@ -1414,6 +1440,9 @@ final class VanillaBlocks{
 		//TODO: this is the same for all wooden crafting blocks
 		$craftingBlockBreakInfo = new Info(BreakInfo::axe(2.5));
 		self::register("cartography_table", new CartographyTable(new BID(Ids::CARTOGRAPHY_TABLE), "Cartography Table", $craftingBlockBreakInfo));
+		self::register("crafting_table", new CraftingTable(new BID(Ids::CRAFTING_TABLE), "Crafting Table", $craftingBlockBreakInfo));
+		self::register("fletching_table", new FletchingTable(new BID(Ids::FLETCHING_TABLE), "Fletching Table", $craftingBlockBreakInfo));
+		self::register("loom", new Loom(new BID(Ids::LOOM), "Loom", $craftingBlockBreakInfo));
 		self::register("smithing_table", new SmithingTable(new BID(Ids::SMITHING_TABLE), "Smithing Table", $craftingBlockBreakInfo));
 	}
 
@@ -1570,6 +1599,12 @@ final class VanillaBlocks{
 		self::register("cake_with_dyed_candle", new CakeWithDyedCandle(new BID(Ids::CAKE_WITH_DYED_CANDLE), "Cake With Dyed Candle", $cakeBreakInfo));
 
 		self::register("hanging_roots", new HangingRoots(new BID(Ids::HANGING_ROOTS), "Hanging Roots", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
+
+		self::register("cave_vines", new CaveVines(new BID(Ids::CAVE_VINES), "Cave Vines", new Info(BreakInfo::instant())));
+
+		self::register("small_dripleaf", new SmallDripleaf(new BID(Ids::SMALL_DRIPLEAF), "Small Dripleaf", new Info(BreakInfo::instant(BlockToolType::SHEARS, toolHarvestLevel: 1))));
+		self::register("big_dripleaf_head", new BigDripleafHead(new BID(Ids::BIG_DRIPLEAF_HEAD), "Big Dripleaf", new Info(BreakInfo::instant())));
+		self::register("big_dripleaf_stem", new BigDripleafStem(new BID(Ids::BIG_DRIPLEAF_STEM), "Big Dripleaf Stem", new Info(BreakInfo::instant())));
 	}
 
 	private static function registerBlocksR18() : void{

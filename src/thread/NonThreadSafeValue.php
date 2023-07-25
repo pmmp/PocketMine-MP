@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\thread;
 
+use pmmp\thread\ThreadSafe;
 use function get_debug_type;
 use function igbinary_serialize;
 use function igbinary_unserialize;
@@ -34,7 +35,7 @@ use function igbinary_unserialize;
  *
  * @phpstan-template TValue
  */
-final class NonThreadSafeValue extends \ThreadedBase{
+final class NonThreadSafeValue extends ThreadSafe{
 	private string $variable;
 
 	/**

@@ -1,7 +1,0 @@
-parameters:
-	ignoreErrors:
-		-
-			message: "#^Instanceof between pocketmine\\\\nbt\\\\tag\\\\CompoundTag and pocketmine\\\\nbt\\\\tag\\\\CompoundTag will always evaluate to true\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
-

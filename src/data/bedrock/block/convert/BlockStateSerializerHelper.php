@@ -93,8 +93,8 @@ final class BlockStateSerializerHelper{
 			->writeTorchFacing($block->getFacing());
 	}
 
-	public static function encodeCauldron(string $liquid, int $fillLevel, BlockStateWriter $out) : BlockStateWriter{
-		return $out
+	public static function encodeCauldron(string $liquid, int $fillLevel) : BlockStateWriter{
+		return Writer::create(Ids::CAULDRON)
 			->writeString(BlockStateNames::CAULDRON_LIQUID, $liquid)
 			->writeInt(BlockStateNames::FILL_LEVEL, $fillLevel);
 	}
@@ -168,29 +168,12 @@ final class BlockStateSerializerHelper{
 			->writeInt(BlockStateNames::LIQUID_DEPTH, $block->getDecay() | ($block->isFalling() ? 0x8 : 0));
 	}
 
-	private static function encodeLog(Wood $block, BlockStateWriter $out) : BlockStateWriter{
+	public static function encodeLog(Wood $block, string $unstrippedId, string $strippedId) : BlockStateWriter{
+		$out = $block->isStripped() ?
+			BlockStateWriter::create($strippedId) :
+			BlockStateWriter::create($unstrippedId);
 		return $out
 			->writePillarAxis($block->getAxis());
-	}
-
-	public static function encodeLog1(Wood $block, string $unstrippedType, string $strippedId) : BlockStateWriter{
-		return self::encodeLog($block, $block->isStripped() ?
-			BlockStateWriter::create($strippedId) :
-			BlockStateWriter::create(Ids::LOG)->writeString(BlockStateNames::OLD_LOG_TYPE, $unstrippedType));
-	}
-
-	public static function encodeLog2(Wood $block, string $unstrippedType, string $strippedId) : BlockStateWriter{
-		return self::encodeLog($block, $block->isStripped() ?
-			BlockStateWriter::create($strippedId) :
-			BlockStateWriter::create(Ids::LOG2)->writeString(BlockStateNames::NEW_LOG_TYPE, $unstrippedType)
-		);
-	}
-
-	public static function encodeNewLog(Wood $block, string $unstrippedId, string $strippedId) : BlockStateWriter{
-		return self::encodeLog($block, $block->isStripped() ?
-			BlockStateWriter::create($strippedId) :
-			BlockStateWriter::create($unstrippedId)
-		);
 	}
 
 	public static function encodeMushroomBlock(RedMushroomBlock $block, BlockStateWriter $out) : BlockStateWriter{
@@ -240,8 +223,12 @@ final class BlockStateSerializerHelper{
 	}
 
 	public static function encodeStem(Stem $block, BlockStateWriter $out) : BlockStateWriter{
+		//In PM, we use Facing::UP to indicate that the stem is not attached to a pumpkin/melon, since this makes the
+		//most intuitive sense (the stem is pointing at the sky). However, Bedrock uses the DOWN state for this, which
+		//is absurd, and I refuse to make our API similarly absurd.
+		$facing = $block->getFacing();
 		return self::encodeCrops($block, $out)
-			->writeHorizontalFacing(Facing::NORTH); //TODO: PM impl doesn't support this yet
+			->writeFacingWithoutUp($facing === Facing::UP ? Facing::DOWN : $facing);
 	}
 
 	public static function encodeStone(string $type) : BlockStateWriter{

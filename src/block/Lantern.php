@@ -24,8 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -44,9 +43,7 @@ class Lantern extends Transparent{
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function getRequiredStateDataBits() : int{ return 1; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->hanging);
 	}
 
@@ -80,22 +77,23 @@ class Lantern extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy($blockReplace->getSide(Facing::UP), Facing::DOWN) && !$this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN), Facing::UP)){
+		$downSupport = $this->canBeSupportedAt($blockReplace, Facing::DOWN);
+		if(!$downSupport && !$this->canBeSupportedAt($blockReplace, Facing::UP)){
 			return false;
 		}
 
-		$this->hanging = ($face === Facing::DOWN || !$this->canBeSupportedBy($this->position->getWorld()->getBlock($blockReplace->getPosition()->down()), Facing::UP));
+		$this->hanging = $face === Facing::DOWN || !$downSupport;
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onNearbyBlockChange() : void{
 		$face = $this->hanging ? Facing::UP : Facing::DOWN;
-		if(!$this->canBeSupportedBy($this->getSide($face), Facing::opposite($face))){
+		if(!$this->canBeSupportedAt($this, $face)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
-	private function canBeSupportedBy(Block $block, int $face) : bool{
-		return $block->getSupportType($face)->hasCenterSupport();
+	private function canBeSupportedAt(Block $block, int $face) : bool{
+		return $block->getAdjacentSupportType($face)->hasCenterSupport();
 	}
 }

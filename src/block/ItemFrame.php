@@ -26,8 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
 use pocketmine\block\utils\AnyFacingTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -51,9 +50,7 @@ class ItemFrame extends Flowable{
 	protected int $itemRotation = 0;
 	protected float $itemDropChance = 1.0;
 
-	public function getRequiredStateDataBits() : int{ return 4; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->facing($this->facing);
 		$w->bool($this->hasMap);
 	}
@@ -166,18 +163,18 @@ class ItemFrame extends Flowable{
 		return true;
 	}
 
-	private function canBeSupportedBy(Block $block, int $face) : bool{
-		return !$block->getSupportType($face)->equals(SupportType::NONE());
+	private function canBeSupportedAt(Block $block, int $face) : bool{
+		return !$block->getAdjacentSupportType($face)->equals(SupportType::NONE());
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->getSide(Facing::opposite($this->facing)), $this->facing)){
+		if(!$this->canBeSupportedAt($this, Facing::opposite($this->facing))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy($blockReplace->getSide(Facing::opposite($face)), $face)){
+		if(!$this->canBeSupportedAt($blockReplace, Facing::opposite($face))){
 			return false;
 		}
 

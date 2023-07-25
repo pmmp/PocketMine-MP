@@ -139,6 +139,10 @@ class SimpleCommandMap implements CommandMap{
 	}
 
 	public function register(string $fallbackPrefix, Command $command, ?string $label = null) : bool{
+		if(count($command->getPermissions()) === 0){
+			throw new \InvalidArgumentException("Commands must have a permission set");
+		}
+
 		if($label === null){
 			$label = $command->getLabel();
 		}

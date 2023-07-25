@@ -44,14 +44,14 @@ class WhitelistCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_whitelist_description(),
 			KnownTranslationFactory::commands_whitelist_usage()
 		);
-		$this->setPermission(implode(";", [
+		$this->setPermissions([
 			DefaultPermissionNames::COMMAND_WHITELIST_RELOAD,
 			DefaultPermissionNames::COMMAND_WHITELIST_ENABLE,
 			DefaultPermissionNames::COMMAND_WHITELIST_DISABLE,
 			DefaultPermissionNames::COMMAND_WHITELIST_LIST,
 			DefaultPermissionNames::COMMAND_WHITELIST_ADD,
 			DefaultPermissionNames::COMMAND_WHITELIST_REMOVE
-		]));
+		]);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

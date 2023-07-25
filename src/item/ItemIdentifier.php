@@ -31,12 +31,8 @@ class ItemIdentifier{
 	){}
 
 	public static function fromBlock(Block $block) : self{
-		//negative item type IDs are treated as block IDs
 		//TODO: maybe an ItemBlockIdentifier is in order?
-		//TODO: this isn't vanilla-compliant, but it'll do for now - we only use the "legacy" item ID/meta for full type
-		//indexing right now, because item type IDs aren't granular enough
-		//this should be removed once that's addressed
-		return new self(-$block->getTypeId());
+		return new self(ItemTypeIds::fromBlockTypeId($block->getTypeId()));
 	}
 
 	public function getTypeId() : int{ return $this->typeId; }

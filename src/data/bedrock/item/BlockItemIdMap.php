@@ -23,15 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\item;
 
+use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
-use Symfony\Component\Filesystem\Path;
 use function array_flip;
 use function is_array;
 use function json_decode;
 use const JSON_THROW_ON_ERROR;
-use const pocketmine\BEDROCK_DATA_PATH;
 
 /**
  * Bidirectional map of block IDs to their corresponding blockitem IDs, used for storing items on disk
@@ -41,7 +40,7 @@ final class BlockItemIdMap{
 
 	private static function make() : self{
 		$map = json_decode(
-			Filesystem::fileGetContents(Path::join(BEDROCK_DATA_PATH, 'block_id_to_item_id_map.json')),
+			Filesystem::fileGetContents(BedrockDataFiles::BLOCK_ID_TO_ITEM_ID_MAP_JSON),
 			associative: true,
 			flags: JSON_THROW_ON_ERROR
 		);

@@ -35,7 +35,6 @@ use pocketmine\block\Door;
 use pocketmine\block\FenceGate;
 use pocketmine\block\FloorCoralFan;
 use pocketmine\block\FloorSign;
-use pocketmine\block\GlazedTerracotta;
 use pocketmine\block\ItemFrame;
 use pocketmine\block\Leaves;
 use pocketmine\block\Liquid;
@@ -48,7 +47,6 @@ use pocketmine\block\Stair;
 use pocketmine\block\Stem;
 use pocketmine\block\Trapdoor;
 use pocketmine\block\utils\CopperOxidation;
-use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\block\Wall;
 use pocketmine\block\WallCoralFan;
@@ -165,13 +163,6 @@ final class BlockStateDeserializerHelper{
 			->setRotation($in->readBoundedInt(BlockStateNames::GROUND_SIGN_DIRECTION, 0, 15));
 	}
 
-	/** @throws BlockStateDeserializeException */
-	public static function decodeGlazedTerracotta(DyeColor $color, BlockStateReader $in) : GlazedTerracotta{
-		return VanillaBlocks::GLAZED_TERRACOTTA()
-			->setColor($color)
-			->setFacing($in->readHorizontalFacing());
-	}
-
 	public static function decodeItemFrame(ItemFrame $block, BlockStateReader $in) : ItemFrame{
 		$in->todo(StateNames::ITEM_FRAME_PHOTO_BIT); //TODO: not sure what the point of this is
 		return $block
@@ -245,9 +236,12 @@ final class BlockStateDeserializerHelper{
 
 	/** @throws BlockStateDeserializeException */
 	public static function decodeStem(Stem $block, BlockStateReader $in) : Stem{
-		//TODO: our stems don't support facings yet (facing_direction)
-		$in->todo(BlockStateNames::FACING_DIRECTION);
-		return self::decodeCrops($block, $in);
+		//In PM, we use Facing::UP to indicate that the stem is not attached to a pumpkin/melon, since this makes the
+		//most intuitive sense (the stem is pointing at the sky). However, Bedrock uses the DOWN state for this, which
+		//is absurd, and I refuse to make our API similarly absurd.
+		$facing = $in->readFacingWithoutUp();
+		return self::decodeCrops($block, $in)
+			->setFacing($facing === Facing::DOWN ? Facing::UP : $facing);
 	}
 
 	/** @throws BlockStateDeserializeException */

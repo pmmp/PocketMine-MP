@@ -43,7 +43,12 @@ class BlockPlaceEvent extends Event implements Cancellable{
 		protected BlockTransaction $transaction,
 		protected Block $blockAgainst,
 		protected Item $item
-	){}
+	){
+		$world = $this->blockAgainst->getPosition()->getWorld();
+		foreach($this->transaction->getBlocks() as [$x, $y, $z, $block]){
+			$block->position($world, $x, $y, $z);
+		}
+	}
 
 	/**
 	 * Returns the player who is placing the block.

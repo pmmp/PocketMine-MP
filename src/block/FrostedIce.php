@@ -23,8 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\BlockMeltEvent;
 use function mt_rand;
 
@@ -33,9 +32,7 @@ class FrostedIce extends Ice{
 
 	protected int $age = 0;
 
-	public function getRequiredStateDataBits() : int{ return 2; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(2, 0, self::MAX_AGE, $this->age);
 	}
 
@@ -51,12 +48,7 @@ class FrostedIce extends Ice{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$world = $this->position->getWorld();
-		if(!$this->checkAdjacentBlocks(2)){
-			$world->useBreakOn($this->position);
-		}else{
-			$world->scheduleDelayedBlockUpdate($this->position, mt_rand(20, 40));
-		}
+		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(20, 40));
 	}
 
 	public function onRandomTick() : void{

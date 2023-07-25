@@ -32,12 +32,12 @@ use pocketmine\world\BlockTransaction;
 
 final class SporeBlossom extends Flowable{
 
-	private function canBeSupportedBy(Block $block) : bool{
-		return $block->getSupportType(Facing::DOWN)->equals(SupportType::FULL());
+	private function canBeSupportedAt(Block $block) : bool{
+		return $block->getAdjacentSupportType(Facing::UP)->equals(SupportType::FULL());
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy($blockReplace->getSide(Facing::UP))){
+		if(!$this->canBeSupportedAt($blockReplace)){
 			return false;
 		}
 
@@ -45,12 +45,8 @@ final class SporeBlossom extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->getSide(Facing::UP))){
+		if(!$this->canBeSupportedAt($this)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
-	}
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [];
 	}
 }

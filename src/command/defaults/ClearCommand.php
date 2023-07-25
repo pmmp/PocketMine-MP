@@ -35,7 +35,6 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\TextFormat;
 use function count;
-use function implode;
 use function min;
 
 class ClearCommand extends VanillaCommand{
@@ -46,7 +45,7 @@ class ClearCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_clear_description(),
 			KnownTranslationFactory::pocketmine_command_clear_usage()
 		);
-		$this->setPermission(implode(";", [DefaultPermissionNames::COMMAND_CLEAR_SELF, DefaultPermissionNames::COMMAND_CLEAR_OTHER]));
+		$this->setPermissions([DefaultPermissionNames::COMMAND_CLEAR_SELF, DefaultPermissionNames::COMMAND_CLEAR_OTHER]);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

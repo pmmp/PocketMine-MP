@@ -23,8 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityTrampleFarmlandEvent;
@@ -38,9 +37,7 @@ class Farmland extends Transparent{
 
 	protected int $wetness = 0; //"moisture" blockstate property in PC
 
-	public function getRequiredStateDataBits() : int{ return 3; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(3, 0, self::MAX_WETNESS, $this->wetness);
 	}
 
@@ -59,7 +56,7 @@ class Farmland extends Transparent{
 	 * @return AxisAlignedBB[]
 	 */
 	protected function recalculateCollisionBoxes() : array{
-		return [AxisAlignedBB::one()]; //TODO: this should be trimmed at the top by 1/16, but MCPE currently treats them as a full block (https://bugs.mojang.com/browse/MCPE-12109)
+		return [AxisAlignedBB::one()->trim(Facing::UP, 1 / 16)];
 	}
 
 	public function onNearbyBlockChange() : void{

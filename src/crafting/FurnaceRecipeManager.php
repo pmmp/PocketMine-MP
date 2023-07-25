@@ -25,7 +25,6 @@ namespace pocketmine\crafting;
 
 use pocketmine\item\Item;
 use pocketmine\utils\ObjectSet;
-use function morton2d_encode;
 
 final class FurnaceRecipeManager{
 	/** @var FurnaceRecipe[] */
@@ -66,7 +65,7 @@ final class FurnaceRecipeManager{
 	}
 
 	public function match(Item $input) : ?FurnaceRecipe{
-		$index = morton2d_encode($input->getTypeId(), $input->computeTypeData());
+		$index = $input->getStateId();
 		$simpleRecipe = $this->lookupCache[$index] ?? null;
 		if($simpleRecipe !== null){
 			return $simpleRecipe;

@@ -37,7 +37,7 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissionManager;
 use pocketmine\permission\PermissionParser;
 use pocketmine\Server;
-use pocketmine\timings\TimingsHandler;
+use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
@@ -486,12 +486,10 @@ class PluginManager{
 		return true; //TODO: maybe this should be an error?
 	}
 
+	/** @internal */
 	public function disablePlugins() : void{
 		while(count($this->enabledPlugins) > 0){
 			foreach($this->enabledPlugins as $plugin){
-				if(!$plugin->isEnabled()){
-					continue; //in case a plugin disabled another plugin
-				}
 				$name = $plugin->getDescription()->getName();
 				if(isset($this->pluginDependents[$name]) && count($this->pluginDependents[$name]) > 0){
 					$this->server->getLogger()->debug("Deferring disable of plugin $name due to dependent plugins still enabled: " . implode(", ", array_keys($this->pluginDependents[$name])));
@@ -503,7 +501,7 @@ class PluginManager{
 		}
 	}
 
-	public function disablePlugin(Plugin $plugin) : void{
+	private function disablePlugin(Plugin $plugin) : void{
 		if($plugin->isEnabled()){
 			$this->server->getLogger()->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_disable($plugin->getDescription()->getFullName())));
 			(new PluginDisableEvent($plugin))->call();
@@ -524,19 +522,8 @@ class PluginManager{
 
 	public function tickSchedulers(int $currentTick) : void{
 		foreach($this->enabledPlugins as $pluginName => $p){
-			if(isset($this->enabledPlugins[$pluginName])){
-				//the plugin may have been disabled as a result of updating other plugins' schedulers, and therefore
-				//removed from enabledPlugins; however, foreach will still see it due to copy-on-write
-				$p->getScheduler()->mainThreadHeartbeat($currentTick);
-			}
+			$p->getScheduler()->mainThreadHeartbeat($currentTick);
 		}
-	}
-
-	public function clearPlugins() : void{
-		$this->disablePlugins();
-		$this->plugins = [];
-		$this->enabledPlugins = [];
-		$this->fileAssociations = [];
 	}
 
 	/**
@@ -651,7 +638,7 @@ class PluginManager{
 			throw new PluginException("Plugin attempted to register event handler " . $handlerName . "() to event " . $event . " while not enabled");
 		}
 
-		$timings = new TimingsHandler("Plugin: " . $plugin->getDescription()->getFullName() . " Event: " . $handlerName . "(" . (new \ReflectionClass($event))->getShortName() . ")");
+		$timings = Timings::getEventHandlerTimings($event, $handlerName, $plugin->getDescription()->getFullName());
 
 		$registeredListener = new RegisteredListener($handler, $priority, $plugin, $handleCancelled, $timings);
 		HandlerListManager::global()->getListFor($event)->register($registeredListener);

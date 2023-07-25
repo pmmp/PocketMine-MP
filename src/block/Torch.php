@@ -24,10 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
-use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -37,9 +35,7 @@ class Torch extends Flowable{
 
 	protected int $facing = Facing::UP;
 
-	public function getRequiredStateDataBits() : int{ return 3; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->facingExcept($this->facing, Facing::DOWN);
 	}
 
@@ -59,15 +55,13 @@ class Torch extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$face = Facing::opposite($this->facing);
-
-		if(!$this->canBeSupportedBy($this->getSide($face), $this->facing)){
+		if(!$this->canBeSupportedAt($this, Facing::opposite($this->facing))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($face !== Facing::DOWN && $this->canBeSupportedBy($blockReplace->getSide(Facing::opposite($face)), $face)){
+		if($face !== Facing::DOWN && $this->canBeSupportedAt($blockReplace, Facing::opposite($face))){
 			$this->facing = $face;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}else{
@@ -78,8 +72,7 @@ class Torch extends Flowable{
 				Facing::EAST,
 				Facing::DOWN
 			] as $side){
-				$block = $this->getSide($side);
-				if($this->canBeSupportedBy($block, Facing::opposite($side))){
+				if($this->canBeSupportedAt($blockReplace, $side)){
 					$this->facing = Facing::opposite($side);
 					return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 				}
@@ -88,8 +81,9 @@ class Torch extends Flowable{
 		return false;
 	}
 
-	private function canBeSupportedBy(Block $support, int $face) : bool{
-		return ($face === Facing::UP && $support->getSupportType($face)->hasCenterSupport()) ||
-			(Facing::axis($face) !== Axis::Y && $support->getSupportType($face)->equals(SupportType::FULL()));
+	private function canBeSupportedAt(Block $block, int $face) : bool{
+		return $face === Facing::DOWN ?
+			$block->getAdjacentSupportType($face)->hasCenterSupport() :
+			$block->getAdjacentSupportType($face)->equals(SupportType::FULL());
 	}
 }

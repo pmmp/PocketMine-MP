@@ -33,6 +33,7 @@ use pocketmine\utils\EnumTrait;
  *
  * @method static WoodType ACACIA()
  * @method static WoodType BIRCH()
+ * @method static WoodType CHERRY()
  * @method static WoodType CRIMSON()
  * @method static WoodType DARK_OAK()
  * @method static WoodType JUNGLE()
@@ -56,7 +57,8 @@ final class WoodType{
 			new self("dark_oak", "Dark Oak", true),
 			new self("mangrove", "Mangrove", true),
 			new self("crimson", "Crimson", false, "Stem", "Hyphae"),
-			new self("warped", "Warped", false, "Stem", "Hyphae")
+			new self("warped", "Warped", false, "Stem", "Hyphae"),
+			new self("cherry", "Cherry", true),
 		);
 	}
 

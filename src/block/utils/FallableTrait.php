@@ -64,6 +64,14 @@ trait FallableTrait{
 		return true;
 	}
 
+	public function getFallDamagePerBlock() : float{
+		return 0.0;
+	}
+
+	public function getMaxFallDamage() : float{
+		return 0.0;
+	}
+
 	public function getLandSound() : ?Sound{
 		return null;
 	}

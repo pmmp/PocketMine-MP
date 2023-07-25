@@ -25,10 +25,8 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\crafting\FurnaceType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -36,7 +34,6 @@ use function mt_rand;
 
 class Furnace extends Opaque{
 	use FacesOppositePlacingPlayerTrait;
-	use HorizontalFacingTrait;
 
 	protected FurnaceType $furnaceType;
 
@@ -47,9 +44,7 @@ class Furnace extends Opaque{
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function getRequiredStateDataBits() : int{ return 3; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->bool($this->lit);
 	}

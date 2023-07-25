@@ -39,7 +39,7 @@ final class ItemIdMetaUpgradeSchemaUtils{
 	 * @return ItemIdMetaUpgradeSchema[]
 	 * @phpstan-return array<int, ItemIdMetaUpgradeSchema>
 	 */
-	public static function loadSchemas(string $path) : array{
+	public static function loadSchemas(string $path, int $maxSchemaId) : array{
 		$iterator = new \RegexIterator(
 			new \FilesystemIterator(
 				$path,
@@ -55,26 +55,29 @@ final class ItemIdMetaUpgradeSchemaUtils{
 		/** @var string[] $matches */
 		foreach($iterator as $matches){
 			$filename = $matches[0];
-			$priority = (int) $matches[1];
+			$schemaId = (int) $matches[1];
+			if($schemaId > $maxSchemaId){
+				continue;
+			}
 
 			$fullPath = Path::join($path, $filename);
 
 			$raw = Filesystem::fileGetContents($fullPath);
 
 			try{
-				$schema = self::loadSchemaFromString($raw, $priority);
+				$schema = self::loadSchemaFromString($raw, $schemaId);
 			}catch(\RuntimeException $e){
 				throw new \RuntimeException("Loading schema file $fullPath: " . $e->getMessage(), 0, $e);
 			}
 
-			$result[$priority] = $schema;
+			$result[$schemaId] = $schema;
 		}
 
 		ksort($result, SORT_NUMERIC);
 		return $result;
 	}
 
-	public static function loadSchemaFromString(string $raw, int $priority) : ItemIdMetaUpgradeSchema{
+	public static function loadSchemaFromString(string $raw, int $schemaId) : ItemIdMetaUpgradeSchema{
 		try{
 			$json = json_decode($raw, false, flags: JSON_THROW_ON_ERROR);
 		}catch(\JsonException $e){
@@ -91,6 +94,6 @@ final class ItemIdMetaUpgradeSchemaUtils{
 			throw new \RuntimeException($e->getMessage(), 0, $e);
 		}
 
-		return new ItemIdMetaUpgradeSchema($model->renamedIds, $model->remappedMetas, $priority);
+		return new ItemIdMetaUpgradeSchema($model->renamedIds, $model->remappedMetas, $schemaId);
 	}
 }

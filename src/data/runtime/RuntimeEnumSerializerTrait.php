@@ -29,10 +29,10 @@ namespace pocketmine\data\runtime;
  */
 trait RuntimeEnumSerializerTrait{
 
-	abstract public function int(int $bits, int $value) : void;
+	abstract protected function writeInt(int $bits, int $value) : void;
 
-	public function bellAttachmentType(\pocketmine\block\utils\BellAttachmentType $value) : void{
-		$this->int(2, match($value){
+	public function bellAttachmentType(\pocketmine\block\utils\BellAttachmentType &$value) : void{
+		$this->writeInt(2, match($value){
 			\pocketmine\block\utils\BellAttachmentType::CEILING() => 0,
 			\pocketmine\block\utils\BellAttachmentType::FLOOR() => 1,
 			\pocketmine\block\utils\BellAttachmentType::ONE_WALL() => 2,
@@ -41,8 +41,8 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
-	public function copperOxidation(\pocketmine\block\utils\CopperOxidation $value) : void{
-		$this->int(2, match($value){
+	public function copperOxidation(\pocketmine\block\utils\CopperOxidation &$value) : void{
+		$this->writeInt(2, match($value){
 			\pocketmine\block\utils\CopperOxidation::EXPOSED() => 0,
 			\pocketmine\block\utils\CopperOxidation::NONE() => 1,
 			\pocketmine\block\utils\CopperOxidation::OXIDIZED() => 2,
@@ -51,8 +51,8 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
-	public function coralType(\pocketmine\block\utils\CoralType $value) : void{
-		$this->int(3, match($value){
+	public function coralType(\pocketmine\block\utils\CoralType &$value) : void{
+		$this->writeInt(3, match($value){
 			\pocketmine\block\utils\CoralType::BRAIN() => 0,
 			\pocketmine\block\utils\CoralType::BUBBLE() => 1,
 			\pocketmine\block\utils\CoralType::FIRE() => 2,
@@ -62,8 +62,8 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
-	public function dirtType(\pocketmine\block\utils\DirtType $value) : void{
-		$this->int(2, match($value){
+	public function dirtType(\pocketmine\block\utils\DirtType &$value) : void{
+		$this->writeInt(2, match($value){
 			\pocketmine\block\utils\DirtType::COARSE() => 0,
 			\pocketmine\block\utils\DirtType::NORMAL() => 1,
 			\pocketmine\block\utils\DirtType::ROOTED() => 2,
@@ -71,8 +71,18 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
-	public function dyeColor(\pocketmine\block\utils\DyeColor $value) : void{
-		$this->int(4, match($value){
+	public function dripleafState(\pocketmine\block\utils\DripleafState &$value) : void{
+		$this->writeInt(2, match($value){
+			\pocketmine\block\utils\DripleafState::FULL_TILT() => 0,
+			\pocketmine\block\utils\DripleafState::PARTIAL_TILT() => 1,
+			\pocketmine\block\utils\DripleafState::STABLE() => 2,
+			\pocketmine\block\utils\DripleafState::UNSTABLE() => 3,
+			default => throw new \pocketmine\utils\AssumptionFailedError("All DripleafState cases should be covered")
+		});
+	}
+
+	public function dyeColor(\pocketmine\block\utils\DyeColor &$value) : void{
+		$this->writeInt(4, match($value){
 			\pocketmine\block\utils\DyeColor::BLACK() => 0,
 			\pocketmine\block\utils\DyeColor::BLUE() => 1,
 			\pocketmine\block\utils\DyeColor::BROWN() => 2,
@@ -93,8 +103,8 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
-	public function froglightType(\pocketmine\block\utils\FroglightType $value) : void{
-		$this->int(2, match($value){
+	public function froglightType(\pocketmine\block\utils\FroglightType &$value) : void{
+		$this->writeInt(2, match($value){
 			\pocketmine\block\utils\FroglightType::OCHRE() => 0,
 			\pocketmine\block\utils\FroglightType::PEARLESCENT() => 1,
 			\pocketmine\block\utils\FroglightType::VERDANT() => 2,
@@ -102,8 +112,8 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
-	public function leverFacing(\pocketmine\block\utils\LeverFacing $value) : void{
-		$this->int(3, match($value){
+	public function leverFacing(\pocketmine\block\utils\LeverFacing &$value) : void{
+		$this->writeInt(3, match($value){
 			\pocketmine\block\utils\LeverFacing::DOWN_AXIS_X() => 0,
 			\pocketmine\block\utils\LeverFacing::DOWN_AXIS_Z() => 1,
 			\pocketmine\block\utils\LeverFacing::EAST() => 2,
@@ -116,8 +126,8 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
-	public function medicineType(\pocketmine\item\MedicineType $value) : void{
-		$this->int(2, match($value){
+	public function medicineType(\pocketmine\item\MedicineType &$value) : void{
+		$this->writeInt(2, match($value){
 			\pocketmine\item\MedicineType::ANTIDOTE() => 0,
 			\pocketmine\item\MedicineType::ELIXIR() => 1,
 			\pocketmine\item\MedicineType::EYE_DROPS() => 2,
@@ -126,8 +136,21 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
-	public function mushroomBlockType(\pocketmine\block\utils\MushroomBlockType $value) : void{
-		$this->int(4, match($value){
+	public function mobHeadType(\pocketmine\block\utils\MobHeadType &$value) : void{
+		$this->writeInt(3, match($value){
+			\pocketmine\block\utils\MobHeadType::CREEPER() => 0,
+			\pocketmine\block\utils\MobHeadType::DRAGON() => 1,
+			\pocketmine\block\utils\MobHeadType::PIGLIN() => 2,
+			\pocketmine\block\utils\MobHeadType::PLAYER() => 3,
+			\pocketmine\block\utils\MobHeadType::SKELETON() => 4,
+			\pocketmine\block\utils\MobHeadType::WITHER_SKELETON() => 5,
+			\pocketmine\block\utils\MobHeadType::ZOMBIE() => 6,
+			default => throw new \pocketmine\utils\AssumptionFailedError("All MobHeadType cases should be covered")
+		});
+	}
+
+	public function mushroomBlockType(\pocketmine\block\utils\MushroomBlockType &$value) : void{
+		$this->writeInt(4, match($value){
 			\pocketmine\block\utils\MushroomBlockType::ALL_CAP() => 0,
 			\pocketmine\block\utils\MushroomBlockType::CAP_EAST() => 1,
 			\pocketmine\block\utils\MushroomBlockType::CAP_MIDDLE() => 2,
@@ -143,8 +166,8 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
-	public function potionType(\pocketmine\item\PotionType $value) : void{
-		$this->int(6, match($value){
+	public function potionType(\pocketmine\item\PotionType &$value) : void{
+		$this->writeInt(6, match($value){
 			\pocketmine\item\PotionType::AWKWARD() => 0,
 			\pocketmine\item\PotionType::FIRE_RESISTANCE() => 1,
 			\pocketmine\item\PotionType::HARMING() => 2,
@@ -177,34 +200,23 @@ trait RuntimeEnumSerializerTrait{
 			\pocketmine\item\PotionType::STRONG_LEAPING() => 29,
 			\pocketmine\item\PotionType::STRONG_POISON() => 30,
 			\pocketmine\item\PotionType::STRONG_REGENERATION() => 31,
-			\pocketmine\item\PotionType::STRONG_STRENGTH() => 32,
-			\pocketmine\item\PotionType::STRONG_SWIFTNESS() => 33,
-			\pocketmine\item\PotionType::STRONG_TURTLE_MASTER() => 34,
-			\pocketmine\item\PotionType::SWIFTNESS() => 35,
-			\pocketmine\item\PotionType::THICK() => 36,
-			\pocketmine\item\PotionType::TURTLE_MASTER() => 37,
-			\pocketmine\item\PotionType::WATER() => 38,
-			\pocketmine\item\PotionType::WATER_BREATHING() => 39,
-			\pocketmine\item\PotionType::WEAKNESS() => 40,
-			\pocketmine\item\PotionType::WITHER() => 41,
+			\pocketmine\item\PotionType::STRONG_SLOWNESS() => 32,
+			\pocketmine\item\PotionType::STRONG_STRENGTH() => 33,
+			\pocketmine\item\PotionType::STRONG_SWIFTNESS() => 34,
+			\pocketmine\item\PotionType::STRONG_TURTLE_MASTER() => 35,
+			\pocketmine\item\PotionType::SWIFTNESS() => 36,
+			\pocketmine\item\PotionType::THICK() => 37,
+			\pocketmine\item\PotionType::TURTLE_MASTER() => 38,
+			\pocketmine\item\PotionType::WATER() => 39,
+			\pocketmine\item\PotionType::WATER_BREATHING() => 40,
+			\pocketmine\item\PotionType::WEAKNESS() => 41,
+			\pocketmine\item\PotionType::WITHER() => 42,
 			default => throw new \pocketmine\utils\AssumptionFailedError("All PotionType cases should be covered")
 		});
 	}
 
-	public function skullType(\pocketmine\block\utils\SkullType $value) : void{
-		$this->int(3, match($value){
-			\pocketmine\block\utils\SkullType::CREEPER() => 0,
-			\pocketmine\block\utils\SkullType::DRAGON() => 1,
-			\pocketmine\block\utils\SkullType::PLAYER() => 2,
-			\pocketmine\block\utils\SkullType::SKELETON() => 3,
-			\pocketmine\block\utils\SkullType::WITHER_SKELETON() => 4,
-			\pocketmine\block\utils\SkullType::ZOMBIE() => 5,
-			default => throw new \pocketmine\utils\AssumptionFailedError("All SkullType cases should be covered")
-		});
-	}
-
-	public function slabType(\pocketmine\block\utils\SlabType $value) : void{
-		$this->int(2, match($value){
+	public function slabType(\pocketmine\block\utils\SlabType &$value) : void{
+		$this->writeInt(2, match($value){
 			\pocketmine\block\utils\SlabType::BOTTOM() => 0,
 			\pocketmine\block\utils\SlabType::DOUBLE() => 1,
 			\pocketmine\block\utils\SlabType::TOP() => 2,
@@ -212,8 +224,8 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
-	public function suspiciousStewType(\pocketmine\item\SuspiciousStewType $value) : void{
-		$this->int(4, match($value){
+	public function suspiciousStewType(\pocketmine\item\SuspiciousStewType &$value) : void{
+		$this->writeInt(4, match($value){
 			\pocketmine\item\SuspiciousStewType::ALLIUM() => 0,
 			\pocketmine\item\SuspiciousStewType::AZURE_BLUET() => 1,
 			\pocketmine\item\SuspiciousStewType::BLUE_ORCHID() => 2,

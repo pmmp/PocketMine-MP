@@ -25,8 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\MinimumCostFlowCalculator;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockFormEvent;
 use pocketmine\event\block\BlockSpreadEvent;
@@ -49,9 +48,7 @@ abstract class Liquid extends Transparent{
 	protected int $decay = 0; //PC "level" property
 	protected bool $still = false;
 
-	public function getRequiredStateDataBits() : int{ return 5; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(3, 0, self::MAX_DECAY, $this->decay);
 		$w->bool($this->falling);
 		$w->bool($this->still);
@@ -147,7 +144,7 @@ abstract class Liquid extends Transparent{
 	}
 
 	protected function getEffectiveFlowDecay(Block $block) : int{
-		if(!($block instanceof Liquid) || !$block->isSameType($this)){
+		if(!($block instanceof Liquid) || !$block->hasSameTypeId($this)){
 			return -1;
 		}
 
@@ -285,7 +282,7 @@ abstract class Liquid extends Transparent{
 			$minAdjacentSources = $this->getMinAdjacentSourcesToFormSource();
 			if($minAdjacentSources !== null && $this->adjacentSources >= $minAdjacentSources){
 				$bottomBlock = $world->getBlockAt($this->position->x, $this->position->y - 1, $this->position->z);
-				if($bottomBlock->isSolid() || ($bottomBlock instanceof Liquid && $bottomBlock->isSameType($this) && $bottomBlock->isSource())){
+				if($bottomBlock->isSolid() || ($bottomBlock instanceof Liquid && $bottomBlock->hasSameTypeId($this) && $bottomBlock->isSource())){
 					$newDecay = 0;
 					$falling = false;
 				}
@@ -315,7 +312,7 @@ abstract class Liquid extends Transparent{
 			}
 
 			if($adjacentDecay <= self::MAX_DECAY){
-				$calculator = new MinimumCostFlowCalculator($world, $this->getFlowDecayPerBlock(), \Closure::fromCallable([$this, 'canFlowInto']));
+				$calculator = new MinimumCostFlowCalculator($world, $this->getFlowDecayPerBlock(), $this->canFlowInto(...));
 				foreach($calculator->getOptimalFlowDirections($this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ()) as $facing){
 					$this->flowIntoBlock($world->getBlock($this->position->getSide($facing)), $adjacentDecay, false);
 				}
@@ -346,7 +343,7 @@ abstract class Liquid extends Transparent{
 
 	/** @phpstan-impure */
 	private function getSmallestFlowDecay(Block $block, int $decay) : int{
-		if(!($block instanceof Liquid) || !$block->isSameType($this)){
+		if(!($block instanceof Liquid) || !$block->hasSameTypeId($this)){
 			return $decay;
 		}
 

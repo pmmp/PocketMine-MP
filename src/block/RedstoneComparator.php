@@ -28,8 +28,7 @@ use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -45,9 +44,7 @@ class RedstoneComparator extends Flowable{
 
 	protected bool $isSubtractMode = false;
 
-	public function getRequiredStateDataBits() : int{ return 4; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->bool($this->isSubtractMode);
 		$w->bool($this->powered);
@@ -88,7 +85,7 @@ class RedstoneComparator extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN))){
+		if($this->canBeSupportedAt($blockReplace)){
 			if($player !== null){
 				$this->facing = Facing::opposite($player->getHorizontalFacing());
 			}
@@ -105,13 +102,13 @@ class RedstoneComparator extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
+		if(!$this->canBeSupportedAt($this)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
-	private function canBeSupportedBy(Block $block) : bool{
-		return !$block->getSupportType(Facing::UP)->equals(SupportType::NONE());
+	private function canBeSupportedAt(Block $block) : bool{
+		return !$block->getAdjacentSupportType(Facing::DOWN)->equals(SupportType::NONE());
 	}
 
 	//TODO: redstone functionality

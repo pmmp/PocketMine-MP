@@ -44,9 +44,11 @@ final class BlockStateNames{
 	public const BITE_COUNTER = "bite_counter";
 	public const BLOCK_LIGHT_LEVEL = "block_light_level";
 	public const BLOOM = "bloom";
+	public const BOOKS_STORED = "books_stored";
 	public const BREWING_STAND_SLOT_A_BIT = "brewing_stand_slot_a_bit";
 	public const BREWING_STAND_SLOT_B_BIT = "brewing_stand_slot_b_bit";
 	public const BREWING_STAND_SLOT_C_BIT = "brewing_stand_slot_c_bit";
+	public const BRUSHED_PROGRESS = "brushed_progress";
 	public const BUTTON_PRESSED_BIT = "button_pressed_bit";
 	public const CAN_SUMMON = "can_summon";
 	public const CANDLES = "candles";
@@ -96,14 +98,14 @@ final class BlockStateNames{
 	public const LEVER_DIRECTION = "lever_direction";
 	public const LIQUID_DEPTH = "liquid_depth";
 	public const LIT = "lit";
+	public const MC_CARDINAL_DIRECTION = "minecraft:cardinal_direction";
+	public const MC_FACING_DIRECTION = "minecraft:facing_direction";
 	public const MOISTURIZED_AMOUNT = "moisturized_amount";
 	public const MONSTER_EGG_STONE_TYPE = "monster_egg_stone_type";
 	public const MULTI_FACE_DIRECTION_BITS = "multi_face_direction_bits";
 	public const NEW_LEAF_TYPE = "new_leaf_type";
-	public const NEW_LOG_TYPE = "new_log_type";
 	public const OCCUPIED_BIT = "occupied_bit";
 	public const OLD_LEAF_TYPE = "old_leaf_type";
-	public const OLD_LOG_TYPE = "old_log_type";
 	public const OPEN_BIT = "open_bit";
 	public const OUTPUT_LIT_BIT = "output_lit_bit";
 	public const OUTPUT_SUBTRACT_BIT = "output_subtract_bit";
@@ -122,6 +124,7 @@ final class BlockStateNames{
 	public const SAND_STONE_TYPE = "sand_stone_type";
 	public const SAND_TYPE = "sand_type";
 	public const SAPLING_TYPE = "sapling_type";
+	public const SCULK_SENSOR_PHASE = "sculk_sensor_phase";
 	public const SEA_GRASS_TYPE = "sea_grass_type";
 	public const SPONGE_TYPE = "sponge_type";
 	public const STABILITY = "stability";

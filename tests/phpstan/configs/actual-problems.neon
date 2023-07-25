@@ -6,11 +6,6 @@ parameters:
 			path: ../../../build/make-release.php
 
 		-
-			message: "#^Parameter \\#1 \\$pharPath of function pocketmine\\\\build\\\\server_phar\\\\buildPhar expects string, array\\<int, mixed\\>\\|string\\|false given\\.$#"
-			count: 1
-			path: ../../../build/server-phar.php
-
-		-
 			message: "#^Parameter \\#1 \\$strings of function pocketmine\\\\build\\\\server_phar\\\\preg_quote_array expects array\\<string\\>, array\\<int, string\\|false\\> given\\.$#"
 			count: 1
 			path: ../../../build/server-phar.php
@@ -24,16 +19,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$array of static method pocketmine\\\\plugin\\\\PluginGraylist\\:\\:fromArray\\(\\) expects array, mixed given\\.$#"
 			count: 1
 			path: ../../../src/Server.php
-
-		-
-			message: "#^Parameter \\#1 \\$input of function yaml_parse expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/Server.php
-
-		-
-			message: "#^Cannot cast array\\<int, mixed\\>\\|string\\|false to string\\.$#"
-			count: 1
-			path: ../../../src/ServerConfigGroup.php
 
 		-
 			message: "#^Cannot cast mixed to int\\.$#"
@@ -441,24 +426,19 @@ parameters:
 			path: ../../../src/block/tile/Chest.php
 
 		-
-			message: "#^Constant pocketmine\\\\block\\\\tile\\\\Skull\\:\\:TAG_MOUTH_MOVING is unused\\.$#"
+			message: "#^Constant pocketmine\\\\block\\\\tile\\\\MobHead\\:\\:TAG_MOUTH_MOVING is unused\\.$#"
 			count: 1
-			path: ../../../src/block/tile/Skull.php
+			path: ../../../src/block/tile/MobHead.php
 
 		-
-			message: "#^Constant pocketmine\\\\block\\\\tile\\\\Skull\\:\\:TAG_MOUTH_TICK_COUNT is unused\\.$#"
+			message: "#^Constant pocketmine\\\\block\\\\tile\\\\MobHead\\:\\:TAG_MOUTH_TICK_COUNT is unused\\.$#"
 			count: 1
-			path: ../../../src/block/tile/Skull.php
+			path: ../../../src/block/tile/MobHead.php
 
 		-
 			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setInt\\(\\) expects int, float\\|int given\\.$#"
 			count: 3
 			path: ../../../src/block/tile/Spawnable.php
-
-		-
-			message: "#^Parameter \\#2 \\$replace of function str_replace expects array\\|string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/command/Command.php
 
 		-
 			message: "#^Cannot call method addParticle\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
@@ -499,11 +479,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$stream of function stream_get_contents expects resource, resource\\|false given\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/TimingsCommand.php
-
-		-
-			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
-			count: 2
-			path: ../../../src/console/ConsoleReader.php
 
 		-
 			message: "#^Parameter \\#1 \\$path of static method pocketmine\\\\utils\\\\Filesystem\\:\\:cleanPath\\(\\) expects string, mixed given\\.$#"
@@ -646,7 +621,7 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Cannot call method setImmobile\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
+			message: "#^Cannot call method setNoClientPredictions\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
 			count: 2
 			path: ../../../src/network/mcpe/NetworkSession.php
 
@@ -657,21 +632,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$clientPub of class pocketmine\\\\network\\\\mcpe\\\\encryption\\\\PrepareEncryptionTask constructor expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/NetworkSession.php
-
-		-
-			message: "#^Parameter \\#1 \\$entity of method pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\:\\:onEntityEffectAdded\\(\\) expects pocketmine\\\\entity\\\\Living, pocketmine\\\\player\\\\Player\\|null given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/NetworkSession.php
-
-		-
-			message: "#^Parameter \\#1 \\$entity of method pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\:\\:onEntityEffectRemoved\\(\\) expects pocketmine\\\\entity\\\\Living, pocketmine\\\\player\\\\Player\\|null given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/NetworkSession.php
-
-		-
-			message: "#^Parameter \\#1 \\$entity of method pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\:\\:syncAttributes\\(\\) expects pocketmine\\\\entity\\\\Living, pocketmine\\\\player\\\\Player\\|null given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
@@ -692,6 +652,21 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$target of method pocketmine\\\\command\\\\Command\\:\\:testPermissionSilent\\(\\) expects pocketmine\\\\command\\\\CommandSender, pocketmine\\\\player\\\\Player\\|null given\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
+			message: "#^Parameter \\#2 \\$entity of method pocketmine\\\\network\\\\mcpe\\\\EntityEventBroadcaster\\:\\:onEntityEffectAdded\\(\\) expects pocketmine\\\\entity\\\\Living, pocketmine\\\\player\\\\Player\\|null given\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
+			message: "#^Parameter \\#2 \\$entity of method pocketmine\\\\network\\\\mcpe\\\\EntityEventBroadcaster\\:\\:onEntityEffectRemoved\\(\\) expects pocketmine\\\\entity\\\\Living, pocketmine\\\\player\\\\Player\\|null given\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
+			message: "#^Parameter \\#2 \\$entity of method pocketmine\\\\network\\\\mcpe\\\\EntityEventBroadcaster\\:\\:syncAttributes\\(\\) expects pocketmine\\\\entity\\\\Living, pocketmine\\\\player\\\\Player\\|null given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
@@ -821,29 +796,9 @@ parameters:
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
 
 		-
-			message: "#^Cannot call method getNotifier\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
-			count: 1
-			path: ../../../src/scheduler/AsyncTask.php
-
-		-
-			message: "#^Cannot call method handleException\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
-			count: 1
-			path: ../../../src/scheduler/AsyncTask.php
-
-		-
 			message: "#^Property pocketmine\\\\scheduler\\\\BulkCurlTask\\:\\:\\$operations \\(string\\) does not accept string\\|null\\.$#"
 			count: 1
 			path: ../../../src/scheduler/BulkCurlTask.php
-
-		-
-			message: "#^Cannot call method getAsyncWorkerId\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
-			count: 1
-			path: ../../../src/scheduler/DumpWorkerMemoryTask.php
-
-		-
-			message: "#^Cannot call method getLogger\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
-			count: 1
-			path: ../../../src/scheduler/DumpWorkerMemoryTask.php
 
 		-
 			message: "#^Cannot call method getNextRun\\(\\) on array\\<string, int\\|pocketmine\\\\scheduler\\\\TaskHandler\\>\\|int\\|pocketmine\\\\scheduler\\\\TaskHandler\\.$#"
@@ -1181,18 +1136,13 @@ parameters:
 			path: ../../../src/world/light/LightPopulationTask.php
 
 		-
-			message: "#^Cannot call method getBlockStateId\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/light/LightUpdate.php
-
-		-
 			message: "#^Cannot call method getBlockSkyLightArray\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-
 			message: "#^Cannot call method getBlockStateId\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
-			count: 1
+			count: 2
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-
@@ -1246,7 +1196,7 @@ parameters:
 			path: ../../phpunit/event/HandlerListManagerTest.php
 
 		-
-			message: "#^Property pocketmine\\\\event\\\\HandlerListManagerTest\\:\\:\\$resolveParentFunc \\(Closure\\(ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\)\\: ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\|null\\) does not accept Closure\\|null\\.$#"
+			message: "#^Property pocketmine\\\\event\\\\HandlerListManagerTest\\:\\:\\$resolveParentFunc \\(Closure\\(ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\)\\: \\(ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\|null\\)\\) does not accept Closure\\|null\\.$#"
 			count: 1
 			path: ../../phpunit/event/HandlerListManagerTest.php
 

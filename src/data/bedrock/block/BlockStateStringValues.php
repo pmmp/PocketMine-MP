@@ -131,6 +131,18 @@ final class BlockStateStringValues{
 	public const LEVER_DIRECTION_UP_NORTH_SOUTH = "up_north_south";
 	public const LEVER_DIRECTION_WEST = "west";
 
+	public const MC_CARDINAL_DIRECTION_EAST = "east";
+	public const MC_CARDINAL_DIRECTION_NORTH = "north";
+	public const MC_CARDINAL_DIRECTION_SOUTH = "south";
+	public const MC_CARDINAL_DIRECTION_WEST = "west";
+
+	public const MC_FACING_DIRECTION_DOWN = "down";
+	public const MC_FACING_DIRECTION_EAST = "east";
+	public const MC_FACING_DIRECTION_NORTH = "north";
+	public const MC_FACING_DIRECTION_SOUTH = "south";
+	public const MC_FACING_DIRECTION_UP = "up";
+	public const MC_FACING_DIRECTION_WEST = "west";
+
 	public const MONSTER_EGG_STONE_TYPE_CHISELED_STONE_BRICK = "chiseled_stone_brick";
 	public const MONSTER_EGG_STONE_TYPE_COBBLESTONE = "cobblestone";
 	public const MONSTER_EGG_STONE_TYPE_CRACKED_STONE_BRICK = "cracked_stone_brick";
@@ -141,18 +153,10 @@ final class BlockStateStringValues{
 	public const NEW_LEAF_TYPE_ACACIA = "acacia";
 	public const NEW_LEAF_TYPE_DARK_OAK = "dark_oak";
 
-	public const NEW_LOG_TYPE_ACACIA = "acacia";
-	public const NEW_LOG_TYPE_DARK_OAK = "dark_oak";
-
 	public const OLD_LEAF_TYPE_BIRCH = "birch";
 	public const OLD_LEAF_TYPE_JUNGLE = "jungle";
 	public const OLD_LEAF_TYPE_OAK = "oak";
 	public const OLD_LEAF_TYPE_SPRUCE = "spruce";
-
-	public const OLD_LOG_TYPE_BIRCH = "birch";
-	public const OLD_LOG_TYPE_JUNGLE = "jungle";
-	public const OLD_LOG_TYPE_OAK = "oak";
-	public const OLD_LOG_TYPE_SPRUCE = "spruce";
 
 	public const PILLAR_AXIS_X = "x";
 	public const PILLAR_AXIS_Y = "y";

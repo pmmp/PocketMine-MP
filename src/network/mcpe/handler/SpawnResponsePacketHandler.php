@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
+use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\SetLocalPlayerAsInitializedPacket;
 
 final class SpawnResponsePacketHandler extends PacketHandler{
@@ -34,6 +35,13 @@ final class SpawnResponsePacketHandler extends PacketHandler{
 
 	public function handleSetLocalPlayerAsInitialized(SetLocalPlayerAsInitializedPacket $packet) : bool{
 		($this->responseCallback)();
+		return true;
+	}
+
+	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
+		//TODO: REMOVE THIS
+		//As of 1.19.60, we receive this packet during pre-spawn for no obvious reason. The skin is still sent in the
+		//login packet, so we can ignore this one. If unhandled, this packet makes a huge debug spam in the log.
 		return true;
 	}
 

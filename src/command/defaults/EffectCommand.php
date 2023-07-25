@@ -32,7 +32,6 @@ use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
 use function count;
-use function implode;
 use function strtolower;
 
 class EffectCommand extends VanillaCommand{
@@ -43,10 +42,10 @@ class EffectCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_effect_description(),
 			KnownTranslationFactory::commands_effect_usage()
 		);
-		$this->setPermission(implode(";", [
+		$this->setPermissions([
 			DefaultPermissionNames::COMMAND_EFFECT_SELF,
 			DefaultPermissionNames::COMMAND_EFFECT_OTHER
-		]));
+		]);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

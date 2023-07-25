@@ -23,13 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
-use function mt_rand;
 
 class TallGrass extends Flowable{
 
@@ -56,13 +55,7 @@ class TallGrass extends Flowable{
 	}
 
 	public function getDropsForIncompatibleTool(Item $item) : array{
-		if(mt_rand(0, 15) === 0){
-			return [
-				VanillaItems::WHEAT_SEEDS()
-			];
-		}
-
-		return [];
+		return FortuneDropHelper::grass($item);
 	}
 
 	public function getFlameEncouragement() : int{

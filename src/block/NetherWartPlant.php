@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\block\utils\FortuneDropHelper;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -38,9 +38,7 @@ class NetherWartPlant extends Flowable{
 
 	protected int $age = 0;
 
-	public function getRequiredStateDataBits() : int{ return 2; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(2, 0, self::MAX_AGE, $this->age);
 	}
 
@@ -88,7 +86,7 @@ class NetherWartPlant extends Flowable{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			$this->asItem()->setCount($this->age === self::MAX_AGE ? mt_rand(2, 4) : 1)
+			$this->asItem()->setCount($this->age === self::MAX_AGE ? FortuneDropHelper::discrete($item, 2, 4) : 1)
 		];
 	}
 }

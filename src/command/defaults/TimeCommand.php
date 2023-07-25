@@ -31,7 +31,6 @@ use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\world\World;
 use function count;
-use function implode;
 
 class TimeCommand extends VanillaCommand{
 
@@ -41,13 +40,13 @@ class TimeCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_time_description(),
 			KnownTranslationFactory::pocketmine_command_time_usage()
 		);
-		$this->setPermission(implode(";", [
+		$this->setPermissions([
 			DefaultPermissionNames::COMMAND_TIME_ADD,
 			DefaultPermissionNames::COMMAND_TIME_SET,
 			DefaultPermissionNames::COMMAND_TIME_START,
 			DefaultPermissionNames::COMMAND_TIME_STOP,
 			DefaultPermissionNames::COMMAND_TIME_QUERY
-		]));
+		]);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

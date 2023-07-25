@@ -24,21 +24,16 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\HorizontalFacingTrait;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 
 class EndPortalFrame extends Opaque{
 	use FacesOppositePlacingPlayerTrait;
-	use HorizontalFacingTrait;
 
 	protected bool $eye = false;
 
-	public function getRequiredStateDataBits() : int{ return 3; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->bool($this->eye);
 	}

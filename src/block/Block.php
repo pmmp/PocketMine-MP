@@ -29,7 +29,10 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\InvalidSerializedRuntimeDataException;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataSizeCalculator;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Projectile;
@@ -38,6 +41,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -52,8 +56,13 @@ use function get_class;
 use const PHP_INT_MAX;
 
 class Block{
-	public const INTERNAL_STATE_DATA_BITS = 9;
+	public const INTERNAL_STATE_DATA_BITS = 8;
 	public const INTERNAL_STATE_DATA_MASK = ~(~0 << self::INTERNAL_STATE_DATA_BITS);
+
+	/**
+	 * @internal
+	 */
+	public const EMPTY_STATE_ID = (BlockTypeIds::AIR << self::INTERNAL_STATE_DATA_BITS) | (BlockTypeIds::AIR & self::INTERNAL_STATE_DATA_MASK);
 
 	protected BlockIdentifier $idInfo;
 	protected string $fallbackName;
@@ -63,6 +72,11 @@ class Block{
 	/** @var AxisAlignedBB[]|null */
 	protected ?array $collisionBoxes = null;
 
+	private int $requiredBlockItemStateDataBits;
+	private int $requiredBlockOnlyStateDataBits;
+
+	private Block $defaultState;
+
 	/**
 	 * @param string $name English name of the block type (TODO: implement translations)
 	 */
@@ -71,6 +85,18 @@ class Block{
 		$this->fallbackName = $name;
 		$this->typeInfo = $typeInfo;
 		$this->position = new Position(0, 0, 0, null);
+
+		$calculator = new RuntimeDataSizeCalculator();
+		$this->describeBlockItemState($calculator);
+		$this->requiredBlockItemStateDataBits = $calculator->getBitsUsed();
+
+		$calculator = new RuntimeDataSizeCalculator();
+		$this->describeBlockOnlyState($calculator);
+		$this->requiredBlockOnlyStateDataBits = $calculator->getBitsUsed();
+
+		$defaultState = clone $this;
+		$this->defaultState = $defaultState;
+		$defaultState->defaultState = $defaultState;
 	}
 
 	public function __clone(){
@@ -93,104 +119,201 @@ class Block{
 	}
 
 	/**
+	 * Returns a type ID that identifies this type of block. This allows comparing basic block types, e.g. wool, stone,
+	 * glass, etc. Type ID will not change for a given block type.
+	 *
+	 * Information such as colour, powered, open/closed, etc. is **not** included in this ID.
+	 * If you want to get a state ID that includes this information, use {@link Block::getStateId()} instead.
+	 *
+	 * @see BlockTypeIds
+	 */
+	public function getTypeId() : int{
+		return $this->idInfo->getBlockTypeId();
+	}
+
+	/**
 	 * @internal
 	 *
 	 * Returns the full blockstate ID of this block. This is a compact way of representing a blockstate used to store
 	 * blocks in chunks at runtime.
 	 *
-	 * This ID can be used to later obtain a copy of this block using {@link RuntimeBlockStateRegistry::fromStateId()}.
+	 * This usually encodes all properties of the block, such as facing, open/closed, powered/unpowered, colour, etc.
+	 * State ID may change depending on the properties of the block (e.g. a torch facing east will have a different
+	 * state ID to one facing west).
+	 *
+	 * Some blocks (such as signs and chests) may store additional properties in an associated "tile" if they
+	 * have too many possible values to be encoded into the state ID. These extra properties are **NOT** included in
+	 * this function's result.
+	 *
+	 * This ID can be used to later obtain a copy of the block with the same state properties by using
+	 * {@link RuntimeBlockStateRegistry::fromStateId()}.
 	 */
 	public function getStateId() : int{
-		return ($this->getTypeId() << self::INTERNAL_STATE_DATA_BITS) | $this->computeStateData();
+		$typeId = $this->getTypeId();
+		//TODO: this XOR mask improves hashtable distribution, but it's only effective if the number of unique block
+		//type IDs is larger than the number of available state data bits. We should probably hash (e.g. using xxhash)
+		//the type ID to create a better mask.
+		//Alternatively, we could hash the whole state ID, but this is currently problematic, since we currently need
+		//to be able to recover the state data from the state ID because of UnknownBlock.
+		return ($typeId << self::INTERNAL_STATE_DATA_BITS) | ($this->encodeFullState() ^ ($typeId & self::INTERNAL_STATE_DATA_MASK));
+	}
+
+	/**
+	 * Returns whether the given block has the same type ID as this one.
+	 */
+	public function hasSameTypeId(Block $other) : bool{
+		return $this->getTypeId() === $other->getTypeId();
+	}
+
+	/**
+	 * Returns whether the given block has the same type and properties as this block.
+	 *
+	 * Note: Tile data (e.g. sign text, chest contents) are not compared here.
+	 */
+	public function isSameState(Block $other) : bool{
+		return $this->getStateId() === $other->getStateId();
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getTypeTags() : array{
+		return $this->typeInfo->getTypeTags();
+	}
+
+	/**
+	 * Returns whether this block type has the given type tag. Type tags are used as a dynamic way to tag blocks as
+	 * having certain properties, allowing type checks which are more dynamic than hardcoding a bunch of IDs or a bunch
+	 * of instanceof checks.
+	 *
+	 * For example, grass blocks, dirt, farmland, podzol and mycelium are all dirt-like blocks, and support the
+	 * placement of blocks like flowers, so they have a common tag which allows them to be identified as such.
+	 */
+	public function hasTypeTag(string $tag) : bool{
+		return $this->typeInfo->hasTypeTag($tag);
 	}
 
 	/**
 	 * Returns the block as an item.
-	 * State information such as facing, powered/unpowered, open/closed, etc., is discarded.
-	 * Type information such as colour, wood type, etc. is preserved.
+	 * Block-only state such as facing, powered/unpowered, open/closed, etc., is discarded.
+	 * Block-item state such as colour, wood type, etc. is preserved.
+	 * Complex state properties stored in the tile data (e.g. inventory) are discarded.
 	 */
 	public function asItem() : Item{
-		return new ItemBlock($this);
+		$normalized = clone $this->defaultState;
+		$normalized->decodeBlockItemState($this->encodeBlockItemState());
+		return new ItemBlock($normalized);
 	}
 
-	public function getRequiredTypeDataBits() : int{ return 0; }
+	private function decodeBlockItemState(int $data) : void{
+		$reader = new RuntimeDataReader($this->requiredBlockItemStateDataBits, $data);
 
-	public function getRequiredStateDataBits() : int{ return 0; }
-
-	/**
-	 * @internal
-	 */
-	final public function decodeTypeData(int $data) : void{
-		$typeBits = $this->getRequiredTypeDataBits();
-		$givenBits = $typeBits;
-		$reader = new RuntimeDataReader($givenBits, $data);
-
-		$this->describeType($reader);
+		$this->describeBlockItemState($reader);
 		$readBits = $reader->getOffset();
-		if($typeBits !== $readBits){
-			throw new \LogicException(get_class($this) . ": Exactly $typeBits bits of type data were provided, but $readBits were read");
+		if($this->requiredBlockItemStateDataBits !== $readBits){
+			throw new \LogicException(get_class($this) . ": Exactly $this->requiredBlockItemStateDataBits bits of block-item state data were provided, but $readBits were read");
 		}
 	}
 
-	/**
-	 * @internal
-	 */
-	final public function decodeStateData(int $data) : void{
-		$typeBits = $this->getRequiredTypeDataBits();
-		$stateBits = $this->getRequiredStateDataBits();
-		$givenBits = $typeBits + $stateBits;
-		$reader = new RuntimeDataReader($givenBits, $data);
-		$this->decodeTypeData($reader->readInt($typeBits));
+	private function decodeBlockOnlyState(int $data) : void{
+		$reader = new RuntimeDataReader($this->requiredBlockOnlyStateDataBits, $data);
 
-		$this->describeState($reader);
-		$readBits = $reader->getOffset() - $typeBits;
-		if($stateBits !== $readBits){
-			throw new \LogicException(get_class($this) . ": Exactly $stateBits bits of state data were provided, but $readBits were read");
+		$this->describeBlockOnlyState($reader);
+		$readBits = $reader->getOffset();
+		if($this->requiredBlockOnlyStateDataBits !== $readBits){
+			throw new \LogicException(get_class($this) . ": Exactly $this->requiredBlockOnlyStateDataBits bits of block-only state data were provided, but $readBits were read");
 		}
 	}
 
-	/**
-	 * @internal
-	 */
-	final public function computeTypeData() : int{
-		$typeBits = $this->getRequiredTypeDataBits();
-		$requiredBits = $typeBits;
-		$writer = new RuntimeDataWriter($requiredBits);
+	private function decodeFullState(int $data) : void{
+		$reader = new RuntimeDataReader($this->requiredBlockItemStateDataBits + $this->requiredBlockOnlyStateDataBits, $data);
+		$this->decodeBlockItemState($reader->readInt($this->requiredBlockItemStateDataBits));
+		$this->decodeBlockOnlyState($reader->readInt($this->requiredBlockOnlyStateDataBits));
+	}
 
-		$this->describeType($writer);
+	private function encodeBlockItemState() : int{
+		$writer = new RuntimeDataWriter($this->requiredBlockItemStateDataBits);
+
+		$this->describeBlockItemState($writer);
 		$writtenBits = $writer->getOffset();
-		if($typeBits !== $writtenBits){
-			throw new \LogicException(get_class($this) . ": Exactly $typeBits bits of type data were expected, but $writtenBits were written");
+		if($this->requiredBlockItemStateDataBits !== $writtenBits){
+			throw new \LogicException(get_class($this) . ": Exactly $this->requiredBlockItemStateDataBits bits of block-item state data were expected, but $writtenBits were written");
 		}
+
+		return $writer->getValue();
+	}
+
+	private function encodeBlockOnlyState() : int{
+		$writer = new RuntimeDataWriter($this->requiredBlockOnlyStateDataBits);
+
+		$this->describeBlockOnlyState($writer);
+		$writtenBits = $writer->getOffset();
+		if($this->requiredBlockOnlyStateDataBits !== $writtenBits){
+			throw new \LogicException(get_class($this) . ": Exactly $this->requiredBlockOnlyStateDataBits bits of block-only state data were expected, but $writtenBits were written");
+		}
+
+		return $writer->getValue();
+	}
+
+	private function encodeFullState() : int{
+		$writer = new RuntimeDataWriter($this->requiredBlockItemStateDataBits + $this->requiredBlockOnlyStateDataBits);
+		$writer->writeInt($this->requiredBlockItemStateDataBits, $this->encodeBlockItemState());
+		$writer->writeInt($this->requiredBlockOnlyStateDataBits, $this->encodeBlockOnlyState());
 
 		return $writer->getValue();
 	}
 
 	/**
-	 * @internal
+	 * Describes properties of this block which apply to both the block and item form of the block.
+	 * Examples of suitable properties include colour, skull type, and any other information which **IS** kept when the
+	 * block is mined or block-picked.
+	 *
+	 * The method implementation must NOT use conditional logic to determine which properties are written. It must
+	 * always write the same properties in the same order, regardless of the current state of the block.
 	 */
-	final public function computeStateData() : int{
-		$typeBits = $this->getRequiredTypeDataBits();
-		$stateBits = $this->getRequiredStateDataBits();
-		$requiredBits = $typeBits + $stateBits;
-		$writer = new RuntimeDataWriter($requiredBits);
-		$writer->int($typeBits, $this->computeTypeData());
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
+		//NOOP
+	}
 
-		$this->describeState($writer);
-		$writtenBits = $writer->getOffset() - $typeBits;
-		if($stateBits !== $writtenBits){
-			throw new \LogicException(get_class($this) . ": Exactly $stateBits bits of state data were expected, but $writtenBits were written");
+	/**
+	 * Describes properties of this block which apply only to the block form of the block.
+	 * Examples of suitable properties include facing, open/closed, powered/unpowered, on/off, and any other information
+	 * which **IS NOT** kept when the block is mined or block-picked.
+	 *
+	 * The method implementation must NOT use conditional logic to determine which properties are written. It must
+	 * always write the same properties in the same order, regardless of the current state of the block.
+	 */
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		//NOOP
+	}
+
+	/**
+	 * Generates copies of this Block in all possible state permutations.
+	 * Every possible combination of known properties (e.g. facing, open/closed, powered/unpowered, on/off) will be
+	 * generated.
+	 *
+	 * @phpstan-return \Generator<int, Block, void, void>
+	 */
+	public function generateStatePermutations() : \Generator{
+		//TODO: this bruteforce approach to discovering all valid states is very inefficient for larger state data sizes
+		//at some point we'll need to find a better way to do this
+		$bits = $this->requiredBlockItemStateDataBits + $this->requiredBlockOnlyStateDataBits;
+		if($bits > Block::INTERNAL_STATE_DATA_BITS){
+			throw new \LogicException("Block state data cannot use more than " . Block::INTERNAL_STATE_DATA_BITS . " bits");
 		}
+		for($stateData = 0; $stateData < (1 << $bits); ++$stateData){
+			$v = clone $this;
+			try{
+				$v->decodeFullState($stateData);
+				if($v->encodeFullState() !== $stateData){
+					throw new \LogicException(static::class . "::decodeStateData() accepts invalid state data (returned " . $v->encodeFullState() . " for input $stateData)");
+				}
+			}catch(InvalidSerializedRuntimeDataException){ //invalid property combination, leave it
+				continue;
+			}
 
-		return $writer->getValue();
-	}
-
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
-		//NOOP
-	}
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
-		//NOOP
+			yield $v;
+		}
 	}
 
 	/**
@@ -241,47 +364,6 @@ class Block{
 			$tile = new $tileType($world, $this->position->asVector3());
 			$world->addTile($tile);
 		}
-	}
-
-	/**
-	 * Returns a type ID that identifies this type of block. This does not include information like facing, open/closed,
-	 * powered/unpowered, etc.
-	 */
-	public function getTypeId() : int{
-		return $this->idInfo->getBlockTypeId();
-	}
-
-	/**
-	 * Returns whether the given block has an equivalent type to this one. This compares the type IDs.
-	 */
-	public function isSameType(Block $other) : bool{
-		return $this->getTypeId() === $other->getTypeId();
-	}
-
-	/**
-	 * Returns whether the given block has the same type and properties as this block.
-	 */
-	public function isSameState(Block $other) : bool{
-		return $this->getStateId() === $other->getStateId();
-	}
-
-	/**
-	 * @return string[]
-	 */
-	public function getTypeTags() : array{
-		return $this->typeInfo->getTypeTags();
-	}
-
-	/**
-	 * Returns whether this block type has the given type tag. Type tags are used as a dynamic way to tag blocks as
-	 * having certain properties, allowing type checks which are more dynamic than hardcoding a bunch of IDs or a bunch
-	 * of instanceof checks.
-	 *
-	 * For example, grass blocks, dirt, farmland, podzol and mycelium are all dirt-like blocks, and support the
-	 * placement of blocks like flowers, so they have a common tag which allows them to be identified as such.
-	 */
-	public function hasTypeTag(string $tag) : bool{
-		return $this->typeInfo->hasTypeTag($tag);
 	}
 
 	/**
@@ -386,7 +468,8 @@ class Block{
 	/**
 	 * Do actions when interacted by Item. Returns if it has done anything
 	 *
-	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
+	 * @param Vector3 $clickVector    Exact position where the click occurred, relative to the block's integer position
+	 * @param Item[]  &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		return false;
@@ -669,7 +752,7 @@ class Block{
 	 * @return string
 	 */
 	public function __toString(){
-		return "Block[" . $this->getName() . "] (" . $this->getTypeId() . ":" . $this->computeStateData() . ")";
+		return "Block[" . $this->getName() . "] (" . $this->getTypeId() . ":" . $this->encodeFullState() . ")";
 	}
 
 	/**
@@ -779,6 +862,10 @@ class Block{
 	 */
 	public function getSupportType(int $facing) : SupportType{
 		return SupportType::FULL();
+	}
+
+	protected function getAdjacentSupportType(int $facing) : SupportType{
+		return $this->getSide($facing)->getSupportType(Facing::opposite($facing));
 	}
 
 	public function isFullCube() : bool{

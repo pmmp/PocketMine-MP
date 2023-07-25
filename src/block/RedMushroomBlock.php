@@ -24,8 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\MushroomBlockType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use function mt_rand;
 
@@ -33,13 +32,13 @@ class RedMushroomBlock extends Opaque{
 	protected MushroomBlockType $mushroomBlockType;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->mushroomBlockType = MushroomBlockType::PORES();
+		$this->mushroomBlockType = MushroomBlockType::ALL_CAP();
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function getRequiredStateDataBits() : int{ return 4; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
+		//these blocks always drop as all-cap, but may exist in other forms in the inventory (particularly creative),
+		//so this information needs to be kept in the type info
 		$w->mushroomBlockType($this->mushroomBlockType);
 	}
 
@@ -59,5 +58,13 @@ class RedMushroomBlock extends Opaque{
 
 	public function isAffectedBySilkTouch() : bool{
 		return true;
+	}
+
+	public function getSilkTouchDrops(Item $item) : array{
+		return [(clone $this)->setMushroomBlockType(MushroomBlockType::ALL_CAP())->asItem()];
+	}
+
+	public function getPickedItem(bool $addUserData = false) : Item{
+		return (clone $this)->setMushroomBlockType(MushroomBlockType::ALL_CAP())->asItem();
 	}
 }

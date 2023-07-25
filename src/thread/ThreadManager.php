@@ -23,9 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\thread;
 
+use pmmp\thread\ThreadSafe;
+use pmmp\thread\ThreadSafeArray;
 use function spl_object_id;
 
-class ThreadManager extends \ThreadedBase{
+class ThreadManager extends ThreadSafe{
 
 	private static ?self $instance = null;
 
@@ -40,11 +42,11 @@ class ThreadManager extends \ThreadedBase{
 		return self::$instance;
 	}
 
-	/** @phpstan-var \ThreadedArray<int, Thread|Worker> */
-	private \ThreadedArray $threads;
+	/** @phpstan-var ThreadSafeArray<int, Thread|Worker> */
+	private ThreadSafeArray $threads;
 
 	private function __construct(){
-		$this->threads = new \ThreadedArray();
+		$this->threads = new ThreadSafeArray();
 	}
 
 	public function add(Worker|Thread $thread) : void{

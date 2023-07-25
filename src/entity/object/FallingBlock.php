@@ -30,20 +30,24 @@ use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
+use pocketmine\entity\Living;
 use pocketmine\entity\Location;
 use pocketmine\event\entity\EntityBlockChangeEvent;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use pocketmine\world\sound\BlockBreakSound;
 use function abs;
+use function min;
+use function round;
 
 class FallingBlock extends Entity{
 	private const TAG_FALLING_BLOCK = "FallingBlock"; //TAG_Compound
@@ -71,7 +75,11 @@ class FallingBlock extends Entity{
 		//TODO: 1.8+ save format
 		$blockDataUpgrader = GlobalBlockStateHandlers::getUpgrader();
 		if(($fallingBlockTag = $nbt->getCompoundTag(self::TAG_FALLING_BLOCK)) !== null){
-			$blockStateData = $blockDataUpgrader->upgradeBlockStateNbt($fallingBlockTag);
+			try{
+				$blockStateData = $blockDataUpgrader->upgradeBlockStateNbt($fallingBlockTag);
+			}catch(BlockStateDeserializeException $e){
+				throw new SavedDataLoadingException("Invalid falling block blockstate: " . $e->getMessage(), 0, $e);
+			}
 		}else{
 			if(($tileIdTag = $nbt->getTag(self::TAG_TILE_ID)) instanceof IntTag){
 				$blockId = $tileIdTag->getValue();
@@ -82,10 +90,11 @@ class FallingBlock extends Entity{
 			}
 			$damage = $nbt->getByte(self::TAG_DATA, 0);
 
-			$blockStateData = $blockDataUpgrader->upgradeIntIdMeta($blockId, $damage);
-		}
-		if($blockStateData === null){
-			throw new SavedDataLoadingException("Invalid legacy falling block");
+			try{
+				$blockStateData = $blockDataUpgrader->upgradeIntIdMeta($blockId, $damage);
+			}catch(BlockStateDeserializeException $e){
+				throw new SavedDataLoadingException("Invalid legacy falling block data: " . $e->getMessage(), 0, $e);
+			}
 		}
 
 		try{
@@ -156,8 +165,20 @@ class FallingBlock extends Entity{
 	}
 
 	protected function onHitGround() : ?float{
-		if($this->block instanceof Fallable && !$this->block->onHitGround($this)){
-			$this->flagForDespawn();
+		if($this->block instanceof Fallable){
+			$damagePerBlock = $this->block->getFallDamagePerBlock();
+			if($damagePerBlock > 0 && ($fallenBlocks = round($this->fallDistance) - 1) > 0){
+				$damage = min($fallenBlocks * $damagePerBlock, $this->block->getMaxFallDamage());
+				foreach($this->getWorld()->getCollidingEntities($this->getBoundingBox()) as $entity){
+					if($entity instanceof Living){
+						$ev = new EntityDamageByEntityEvent($this, $entity, EntityDamageEvent::CAUSE_FALLING_BLOCK, $damage);
+						$entity->attack($ev);
+					}
+				}
+			}
+			if(!$this->block->onHitGround($this)){
+				$this->flagForDespawn();
+			}
 		}
 		return null;
 	}
@@ -176,7 +197,7 @@ class FallingBlock extends Entity{
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
 		parent::syncNetworkData($properties);
 
-		$properties->setInt(EntityMetadataProperties::VARIANT, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getStateId()));
+		$properties->setInt(EntityMetadataProperties::VARIANT, TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkId($this->block->getStateId()));
 	}
 
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{
