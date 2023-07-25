@@ -98,6 +98,12 @@ class Hopper extends Transparent implements HopperInteractable{
 	public function onScheduledUpdate() : void{
 		$world = $this->position->getWorld();
 
+		$hopperBlock = $this->position->getWorld()->getBlock($this->position);
+		if(!$hopperBlock instanceof Hopper) return;
+
+		$tileHopper = $this->position->getWorld()->getTile($this->position);
+		if(!$tileHopper instanceof TileHopper) return;
+
 		$facingBlock = $this->getSide($this->facing);
 		$topBlock = $this->getSide(Facing::UP);
 
@@ -105,17 +111,11 @@ class Hopper extends Transparent implements HopperInteractable{
 		$pullSuccess = false;
 
 		if($topBlock instanceof HopperInteractable){
-			$tileHopper = $this->position->getWorld()->getTile($this->position);
-			if($tileHopper instanceof TileHopper){
-				$pushSuccess = $topBlock->pushTo($tileHopper->getInventory());
-			}
+			$pushSuccess = $topBlock->pushTo($tileHopper->getInventory());
 		}
 
 		if($facingBlock instanceof HopperInteractable){
-			$tileHopper = $this->position->getWorld()->getTile($this->position);
-			if($tileHopper instanceof TileHopper){
-				$pullSuccess = $facingBlock->pullFrom($tileHopper);
-			}
+			$pullSuccess = $facingBlock->pullFrom($tileHopper->getInventory(), $hopperBlock);
 		}
 
 		$nextTick = ($pushSuccess || $pullSuccess ) ? 8 : 1;
@@ -123,11 +123,10 @@ class Hopper extends Transparent implements HopperInteractable{
 		$world->scheduleDelayedBlockUpdate($this->position, $nextTick);
 	}
 
-	public function pullFrom(TileHopper $tileHopper) : bool{
+	public function pullFrom(BaseInventory $sourceInventory, Hopper $hopperBlock) : bool{
 		$currentTile = $this->position->getWorld()->getTile($this->position);
 		if(!$currentTile instanceof TileHopper) return false;
 
-		$sourceInventory = $tileHopper->getInventory();
 		$targetInventory = $currentTile->getInventory();
 
 		return $this->transferItem($sourceInventory, $targetInventory);

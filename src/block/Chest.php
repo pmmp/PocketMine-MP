@@ -98,11 +98,10 @@ class Chest extends Transparent implements HopperInteractable{
 		return 300;
 	}
 
-	public function pullFrom(TileHopper $tileHopper) : bool{
+	public function pullFrom(BaseInventory $sourceInventory, Hopper $hopperBlock) : bool{
 		$currentTile = $this->position->getWorld()->getTile($this->position);
 		if(!$currentTile instanceof TileChest) return false;
 
-		$sourceInventory = $tileHopper->getInventory();
 		$targetInventory = $currentTile->getInventory();
 
 		return $this->transferItem($sourceInventory, $targetInventory);
