@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Chest as TileChest;
-use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HopperInteractableTrait;
 use pocketmine\block\utils\SupportType;
