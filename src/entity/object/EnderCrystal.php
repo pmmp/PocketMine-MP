@@ -30,6 +30,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityPreExplodeEvent;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
@@ -97,12 +98,12 @@ class EnderCrystal extends Entity implements Explosive{
 
 		$this->setShowBase($nbt->getByte(self::TAG_SHOWBASE, 0) === 1);
 
-		$beamX = $nbt->getInt(self::TAG_BLOCKTARGET_X, 0);
-		$beamY = $nbt->getInt(self::TAG_BLOCKTARGET_Y, 0);
-		$beamZ = $nbt->getInt(self::TAG_BLOCKTARGET_Z, 0);
-
-		if($beamX !== 0 || $beamY !== 0 || $beamZ !== 0){
-			$this->setBeamTarget(new Vector3($beamX, $beamY, $beamZ));
+		if(
+			($beamXTag = $nbt->getTag(self::TAG_BLOCKTARGET_X)) instanceof IntTag &&
+			($beamYTag = $nbt->getTag(self::TAG_BLOCKTARGET_Y)) instanceof IntTag &&
+			($beamZTag = $nbt->getTag(self::TAG_BLOCKTARGET_Z)) instanceof IntTag
+		){
+			$this->setBeamTarget(new Vector3($beamXTag->getValue(), $beamYTag->getValue(), $beamZTag->getValue()));
 		}
 	}
 
