@@ -90,6 +90,7 @@ use pocketmine\network\mcpe\protocol\SubClientLoginPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\types\ActorEvent;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
+use pocketmine\network\mcpe\protocol\types\InputMode;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\MismatchTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
@@ -237,7 +238,7 @@ class InGamePacketHandler extends PacketHandler{
 				$this->player->jump();
 			}
 			if($packet->hasFlag(PlayerAuthInputFlags::MISSED_SWING)){
-				$this->player->missSwing();
+				$this->player->missSwing($packet->getInputMode() !== InputMode::TOUCHSCREEN);
 			}
 		}
 
