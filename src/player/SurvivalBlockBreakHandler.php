@@ -67,27 +67,27 @@ final class SurvivalBlockBreakHandler{
 		if(!$this->block->getBreakInfo()->isBreakable()){
 			return 0.0;
 		}
-		$breakTimePerSecond = $this->block->getBreakInfo()->getBreakTime($this->player->getInventory()->getItemInHand());
+		$breakTimeSeconds = $this->block->getBreakInfo()->getBreakTime($this->player->getInventory()->getItemInHand());
 
 		if($this->player->isUnderwater()){ //TODO: Aqua Affinity enchantment
-			$breakTimePerSecond *= 5;
+			$breakTimeSeconds *= 5;
 		}
 		if(!$this->player->onGround){
-			$breakTimePerSecond *= 5;
+			$breakTimeSeconds *= 5;
 		}
 		if($this->player->canClimb() && $this->player->getWorld()->getBlock($this->player->getPosition())->canClimb()){
-			$breakTimePerSecond *= 5;
+			$breakTimeSeconds *= 5;
 		}
 
 		$effects = $this->player->getEffects();
 		if(($miningFatigue = $effects->get(VanillaEffects::MINING_FATIGUE())) !== null){
-			$breakTimePerSecond *= $breakTimePerSecond / ($breakTimePerSecond * 0.2 ** $miningFatigue->getEffectLevel());
+			$breakTimeSeconds *= $breakTimeSeconds / ($breakTimeSeconds * 0.2 ** $miningFatigue->getEffectLevel());
 		}
 		if(($haste = $effects->get(VanillaEffects::HASTE())) !== null){
-			$breakTimePerSecond -= $breakTimePerSecond * 0.2 * min($haste->getEffectLevel(), 5);
+			$breakTimeSeconds -= $breakTimeSeconds * 0.2 * min($haste->getEffectLevel(), 5);
 		}
 
-		$breakTimePerTick = $breakTimePerSecond * 20;
+		$breakTimePerTick = $breakTimeSeconds * 20;
 
 		if($breakTimePerTick > 0){
 			return 1 / $breakTimePerTick;
