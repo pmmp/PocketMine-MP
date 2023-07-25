@@ -99,10 +99,14 @@ class Hopper extends Transparent implements HopperInteractable{
 		$world = $this->position->getWorld();
 
 		$hopperBlock = $this->position->getWorld()->getBlock($this->position);
-		if(!$hopperBlock instanceof Hopper) return;
+		if(!$hopperBlock instanceof Hopper){
+			return;
+		}
 
 		$tileHopper = $this->position->getWorld()->getTile($this->position);
-		if(!$tileHopper instanceof TileHopper) return;
+		if(!$tileHopper instanceof TileHopper){
+			return;
+		}
 
 		$facingBlock = $this->getSide($this->facing);
 		$topBlock = $this->getSide(Facing::UP);
@@ -125,7 +129,9 @@ class Hopper extends Transparent implements HopperInteractable{
 
 	public function doHopperPull(BaseInventory $sourceInventory, Hopper $hopperBlock) : bool{
 		$currentTile = $this->position->getWorld()->getTile($this->position);
-		if(!$currentTile instanceof TileHopper) return false;
+		if(!$currentTile instanceof TileHopper){
+			return false;
+		}
 
 		$targetInventory = $currentTile->getInventory();
 
@@ -134,7 +140,9 @@ class Hopper extends Transparent implements HopperInteractable{
 
 	public function doHopperPush(BaseInventory $targetInventory) : bool{
 		$currentTile = $this->position->getWorld()->getTile($this->position);
-		if(!$currentTile instanceof TileHopper) return false;
+		if(!$currentTile instanceof TileHopper){
+			return false;
+		}
 
 		$sourceInventory = $currentTile->getInventory();
 
@@ -143,11 +151,15 @@ class Hopper extends Transparent implements HopperInteractable{
 
 	private function transferItem(BaseInventory $sourceInventory, BaseInventory $targetInventory) : bool{
 		foreach($sourceInventory->getContents() as $itemStack){
-			if($itemStack->isNull()) continue;
+			if($itemStack->isNull()){
+				continue;
+			}
 
 			$singleItem = $itemStack->pop(1);
 
-			if(!$targetInventory->canAddItem($singleItem)) continue;
+			if(!$targetInventory->canAddItem($singleItem)){
+				continue;
+			}
 
 			$sourceInventory->removeItem($singleItem);
 			$targetInventory->addItem($singleItem);

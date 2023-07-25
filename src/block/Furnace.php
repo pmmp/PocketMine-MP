@@ -97,7 +97,9 @@ class Furnace extends Opaque implements HopperInteractable{
 
 	public function doHopperPull(BaseInventory $sourceInventory, Hopper $hopperBlock) : bool{
 		$currentTile = $this->position->getWorld()->getTile($this->position);
-		if(!$currentTile instanceof TileFurnace) return false;
+		if(!$currentTile instanceof TileFurnace){
+			return false;
+		}
 
 		$targetInventory = $currentTile->getInventory();
 
@@ -106,7 +108,9 @@ class Furnace extends Opaque implements HopperInteractable{
 		for($i = 0; $i < $targetInventory->getSize(); $i++){
 			$itemStack = $sourceInventory->getItem($i);
 
-			if($itemStack->isNull()) continue;
+			if($itemStack->isNull()){
+				continue;
+			}
 
 			$singleItem = $itemStack->pop(1);
 
@@ -124,13 +128,17 @@ class Furnace extends Opaque implements HopperInteractable{
 
 	public function doHopperPush(BaseInventory $targetInventory) : bool{
 		$currentTile = $this->position->getWorld()->getTile($this->position);
-		if(!$currentTile instanceof TileFurnace) return false;
+		if(!$currentTile instanceof TileFurnace){
+			return false;
+		}
 
 		$sourceInventory = $currentTile->getInventory();
 
 		$itemStack = $sourceInventory->getItem($sourceInventory::SLOT_RESULT);
 
-		if($itemStack->isNull()) return false;
+		if($itemStack->isNull()){
+			return false;
+		}
 
 		$singleItem = $itemStack->pop(1);
 

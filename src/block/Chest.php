@@ -100,7 +100,9 @@ class Chest extends Transparent implements HopperInteractable{
 
 	public function doHopperPull(BaseInventory $sourceInventory, Hopper $hopperBlock) : bool{
 		$currentTile = $this->position->getWorld()->getTile($this->position);
-		if(!$currentTile instanceof TileChest) return false;
+		if(!$currentTile instanceof TileChest){
+			return false;
+		}
 
 		$targetInventory = $currentTile->getInventory();
 
@@ -109,7 +111,9 @@ class Chest extends Transparent implements HopperInteractable{
 
 	public function doHopperPush(BaseInventory $targetInventory) : bool{
 		$currentTile = $this->position->getWorld()->getTile($this->position);
-		if(!$currentTile instanceof TileChest) return false;
+		if(!$currentTile instanceof TileChest){
+			return false;
+		}
 
 		$sourceInventory = $currentTile->getInventory();
 
@@ -118,11 +122,15 @@ class Chest extends Transparent implements HopperInteractable{
 
 	private function transferItem(BaseInventory $sourceInventory, BaseInventory $targetInventory) : bool{
 		foreach($sourceInventory->getContents() as $itemStack){
-			if($itemStack->isNull()) continue;
+			if($itemStack->isNull()){
+				continue;
+			}
 
 			$singleItem = $itemStack->pop(1);
 
-			if(!$targetInventory->canAddItem($singleItem)) continue;
+			if(!$targetInventory->canAddItem($singleItem)){
+				continue;
+			}
 
 			$sourceInventory->removeItem($singleItem);
 			$targetInventory->addItem($singleItem);
