@@ -23,9 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\Hopper;
 use pocketmine\inventory\BaseInventory;
 
 interface HopperInteractable{
 	public function doHopperPush(BaseInventory $targetInventory) : bool;
-	public function doHopperPull(BaseInventory $sourceInventory, Hopper $hopperBlock) : bool;
+	public function doHopperPull(Hopper $hopperBlock) : bool;
 }

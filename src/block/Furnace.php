@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\crafting\FurnaceType;
@@ -93,12 +94,18 @@ class Furnace extends Opaque implements HopperInteractable{
 		}
 	}
 
-	public function doHopperPull(BaseInventory $sourceInventory, Hopper $hopperBlock) : bool{
+	public function doHopperPull(Hopper $hopperBlock) : bool{
 		$currentTile = $this->position->getWorld()->getTile($this->position);
 		if(!$currentTile instanceof TileFurnace){
 			return false;
 		}
 
+		$tileHopper = $this->position->getWorld()->getTile($hopperBlock->position);
+		if(!$tileHopper instanceof TileHopper){
+			return false;
+		}
+
+		$sourceInventory = $tileHopper->getInventory();
 		$targetInventory = $currentTile->getInventory();
 
 		$hopperFacing = $hopperBlock->getFacing();

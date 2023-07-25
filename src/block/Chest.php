@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Chest as TileChest;
+use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HopperInteractableTrait;
 use pocketmine\block\utils\SupportType;
@@ -99,12 +100,18 @@ class Chest extends Transparent implements HopperInteractable{
 		return 300;
 	}
 
-	public function doHopperPull(BaseInventory $sourceInventory, Hopper $hopperBlock) : bool{
+	public function doHopperPull(Hopper $hopperBlock) : bool{
 		$currentTile = $this->position->getWorld()->getTile($this->position);
 		if(!$currentTile instanceof TileChest){
 			return false;
 		}
 
+		$tileHopper = $this->position->getWorld()->getTile($hopperBlock->position);
+		if(!$tileHopper instanceof TileHopper){
+			return false;
+		}
+
+		$sourceInventory = $tileHopper->getInventory();
 		$targetInventory = $currentTile->getInventory();
 
 		return $this->transferItem($sourceInventory, $targetInventory);

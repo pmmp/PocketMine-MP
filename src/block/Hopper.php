@@ -119,7 +119,7 @@ class Hopper extends Transparent implements HopperInteractable{
 		$facingBlock = $this->getSide($this->facing);
 		$pullSuccess = false;
 		if($facingBlock instanceof HopperInteractable){
-			$pullSuccess = $facingBlock->doHopperPull($tileHopper->getInventory(), $hopperBlock);
+			$pullSuccess = $facingBlock->doHopperPull($hopperBlock);
 		}
 
 		$nextTick = ($pushSuccess || $pullSuccess ) ? 8 : 1;
@@ -127,12 +127,18 @@ class Hopper extends Transparent implements HopperInteractable{
 		$world->scheduleDelayedBlockUpdate($this->position, $nextTick);
 	}
 
-	public function doHopperPull(BaseInventory $sourceInventory, Hopper $hopperBlock) : bool{
+	public function doHopperPull(Hopper $hopperBlock) : bool{
 		$currentTile = $this->position->getWorld()->getTile($this->position);
 		if(!$currentTile instanceof TileHopper){
 			return false;
 		}
 
+		$tileHopper = $this->position->getWorld()->getTile($hopperBlock->position);
+		if(!$tileHopper instanceof TileHopper){
+			return false;
+		}
+
+		$sourceInventory = $tileHopper->getInventory();
 		$targetInventory = $currentTile->getInventory();
 
 		return $this->transferItem($sourceInventory, $targetInventory);
