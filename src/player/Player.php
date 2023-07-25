@@ -1896,8 +1896,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	/**
-	 * Performs a left-click (attack) action on air and plays sound
-	 * if it's been successfully
+	 * Performs actions associated with the attack action (left-click) without a target entity.
+	 * Under normal circumstances, this will play the no-damage attack sound and nothing else.
 	 */
 	public function missSwing() : void{
 		$ev = new PlayerMissedSwingEvent($this);

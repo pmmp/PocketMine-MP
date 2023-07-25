@@ -28,7 +28,7 @@ use pocketmine\event\CancellableTrait;
 use pocketmine\player\Player;
 
 /**
- * Called when a player attacks air
+ * Called when a player attempts to perform the attack action (left-click) without a target entity.
  */
 class PlayerMissedSwingEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
