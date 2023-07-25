@@ -39,7 +39,6 @@ use pocketmine\crash\CrashDumpRenderer;
 use pocketmine\entity\EntityDataHelper;
 use pocketmine\entity\Location;
 use pocketmine\event\HandlerListManager;
-use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\player\PlayerLoginEvent;
 use pocketmine\event\server\CommandEvent;
@@ -553,10 +552,6 @@ class Server{
 	 * @phpstan-return Promise<Player>
 	 */
 	public function createPlayer(NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, ?CompoundTag $offlinePlayerData) : Promise{
-		$ev = new PlayerCreationEvent($session);
-		$ev->call();
-		$class = $ev->getPlayerClass();
-
 		if($offlinePlayerData !== null && ($world = $this->worldManager->getWorldByName($offlinePlayerData->getString(Player::TAG_LEVEL, ""))) !== null){
 			$playerPos = EntityDataHelper::parseLocation($offlinePlayerData, $world);
 		}else{
@@ -569,8 +564,8 @@ class Server{
 		/** @phpstan-var PromiseResolver<Player> $playerPromiseResolver */
 		$playerPromiseResolver = new PromiseResolver();
 
-		$createPlayer = function(Location $location) use ($playerPromiseResolver, $class, $session, $playerInfo, $authenticated, $offlinePlayerData) : void{
-			$player = new $class($this, $session, $playerInfo, $authenticated, $location, $offlinePlayerData);
+		$createPlayer = function(Location $location) use ($playerPromiseResolver, $session, $playerInfo, $authenticated, $offlinePlayerData) : void{
+			$player = new Player($this, $session, $playerInfo, $authenticated, $location, $offlinePlayerData);
 			if(!$player->hasPlayedBefore()){
 				$player->onGround = true; //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
 			}
