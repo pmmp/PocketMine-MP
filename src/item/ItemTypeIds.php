@@ -303,7 +303,7 @@ final class ItemTypeIds{
 	public const MANGROVE_BOAT = 20264;
 	public const GLOW_BERRIES = 20265;
 	public const CHERRY_SIGN = 20266;
-  public const ICE_BOMB = 20267;
+	public const ICE_BOMB = 20267;
 
 	public const FIRST_UNUSED_ITEM_ID = 20268;
 
