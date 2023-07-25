@@ -29,6 +29,7 @@ use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\inventory\BaseInventory;
+use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -131,7 +132,7 @@ class Furnace extends Opaque implements HopperInteractable{
 		return false;
 	}
 
-	public function doHopperPush(BaseInventory $targetInventory) : bool{
+	public function doHopperPush(Inventory $targetInventory) : bool{
 		$currentTile = $this->position->getWorld()->getTile($this->position);
 		if(!$currentTile instanceof TileFurnace){
 			return false;
@@ -153,7 +154,7 @@ class Furnace extends Opaque implements HopperInteractable{
 		return true;
 	}
 
-	private function transferItem(BaseInventory $sourceInventory, BaseInventory $targetInventory, Item $item, int $slot) : void{
+	private function transferItem(Inventory $sourceInventory, Inventory $targetInventory, Item $item, int $slot) : void{
 		$sourceInventory->removeItem($item);
 
 		$currentItem = $targetInventory->getItem($slot);

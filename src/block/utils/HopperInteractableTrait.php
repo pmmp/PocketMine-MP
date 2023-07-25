@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\inventory\BaseInventory;
+use pocketmine\inventory\Inventory;
 
 trait HopperInteractableTrait{
-	public function transferItem(BaseInventory $sourceInventory, BaseInventory $targetInventory) : bool{
+	public function transferItem(Inventory $sourceInventory, Inventory $targetInventory) : bool{
 		foreach($sourceInventory->getContents() as $itemStack){
 			if($itemStack->isNull()){
 				continue;

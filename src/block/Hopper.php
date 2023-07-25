@@ -29,6 +29,7 @@ use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\inventory\BaseInventory;
+use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -144,7 +145,7 @@ class Hopper extends Transparent implements HopperInteractable{
 		return $this->transferItem($sourceInventory, $targetInventory);
 	}
 
-	public function doHopperPush(BaseInventory $targetInventory) : bool{
+	public function doHopperPush(Inventory $targetInventory) : bool{
 		$currentTile = $this->position->getWorld()->getTile($this->position);
 		if(!$currentTile instanceof TileHopper){
 			return false;

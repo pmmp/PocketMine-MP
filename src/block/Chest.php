@@ -30,6 +30,7 @@ use pocketmine\block\utils\HopperInteractableTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\ChestPairEvent;
 use pocketmine\inventory\BaseInventory;
+use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -117,7 +118,7 @@ class Chest extends Transparent implements HopperInteractable{
 		return $this->transferItem($sourceInventory, $targetInventory);
 	}
 
-	public function doHopperPush(BaseInventory $targetInventory) : bool{
+	public function doHopperPush(Inventory $targetInventory) : bool{
 		$currentTile = $this->position->getWorld()->getTile($this->position);
 		if(!$currentTile instanceof TileChest){
 			return false;
