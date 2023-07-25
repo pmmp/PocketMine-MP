@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -55,22 +55,21 @@ use function spl_object_id;
  * @see InventoryAction
  */
 class InventoryTransaction{
-	/** @var bool */
-	protected $hasExecuted = false;
-	/** @var Player */
-	protected $source;
+	protected bool $hasExecuted = false;
 
 	/** @var Inventory[] */
-	protected $inventories = [];
+	protected array $inventories = [];
 
 	/** @var InventoryAction[] */
-	protected $actions = [];
+	protected array $actions = [];
 
 	/**
 	 * @param InventoryAction[] $actions
 	 */
-	public function __construct(Player $source, array $actions = []){
-		$this->source = $source;
+	public function __construct(
+		protected Player $source,
+		array $actions = []
+	){
 		foreach($actions as $action){
 			$this->addAction($action);
 		}
@@ -134,6 +133,8 @@ class InventoryTransaction{
 	/**
 	 * @param Item[] $needItems
 	 * @param Item[] $haveItems
+	 * @phpstan-param-out Item[] $needItems
+	 * @phpstan-param-out Item[] $haveItems
 	 *
 	 * @throws TransactionValidationException
 	 */
@@ -148,7 +149,7 @@ class InventoryTransaction{
 			try{
 				$action->validate($this->source);
 			}catch(TransactionValidationException $e){
-				throw new TransactionValidationException(get_class($action) . ": " . $e->getMessage(), 0, $e);
+				throw new TransactionValidationException(get_class($action) . "#" . spl_object_id($action) . ": " . $e->getMessage(), 0, $e);
 			}
 
 			if(!$action->getSourceItem()->isNull()){

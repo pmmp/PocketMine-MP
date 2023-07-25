@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,46 +25,63 @@ namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\lang\Translatable;
 use pocketmine\player\Player;
 
+/**
+ * Called when a player attempts to be transferred to another server, e.g. by using /transferserver.
+ */
 class PlayerTransferEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var string */
-	protected $address;
-	/** @var int */
-	protected $port = 19132;
-	/** @var string */
-	protected $message;
-
-	public function __construct(Player $player, string $address, int $port, string $message){
+	public function __construct(
+		Player $player,
+		protected string $address,
+		protected int $port,
+		protected Translatable|string $message
+	){
 		$this->player = $player;
-		$this->address = $address;
-		$this->port = $port;
-		$this->message = $message;
 	}
 
+	/**
+	 * Returns the destination server address. This could be an IP or a domain name.
+	 */
 	public function getAddress() : string{
 		return $this->address;
 	}
 
+	/**
+	 * Sets the destination server address.
+	 */
 	public function setAddress(string $address) : void{
 		$this->address = $address;
 	}
 
+	/**
+	 * Returns the destination server port.
+	 */
 	public function getPort() : int{
 		return $this->port;
 	}
 
+	/**
+	 * Sets the destination server port.
+	 */
 	public function setPort(int $port) : void{
 		$this->port = $port;
 	}
 
-	public function getMessage() : string{
+	/**
+	 * Returns the disconnect reason shown in the server log and on the console.
+	 */
+	public function getMessage() : Translatable|string{
 		return $this->message;
 	}
 
-	public function setMessage(string $message) : void{
+	/**
+	 * Sets the disconnect reason shown in the server log and on the console.
+	 */
+	public function setMessage(Translatable|string $message) : void{
 		$this->message = $message;
 	}
 }

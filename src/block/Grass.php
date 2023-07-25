@@ -17,12 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\DirtType;
 use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Hoe;
@@ -33,6 +34,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\Random;
 use pocketmine\world\generator\object\TallGrass as TallGrassObject;
+use pocketmine\world\sound\ItemUseOnBlockSound;
 use function mt_rand;
 
 class Grass extends Opaque{
@@ -52,13 +54,14 @@ class Grass extends Opaque{
 	}
 
 	public function onRandomTick() : void{
-		$lightAbove = $this->position->getWorld()->getFullLightAt($this->position->x, $this->position->y + 1, $this->position->z);
-		if($lightAbove < 4 and $this->position->getWorld()->getBlockAt($this->position->x, $this->position->y + 1, $this->position->z)->getLightFilter() >= 2){
+		$world = $this->position->getWorld();
+		$lightAbove = $world->getFullLightAt($this->position->x, $this->position->y + 1, $this->position->z);
+		if($lightAbove < 4 && $world->getBlockAt($this->position->x, $this->position->y + 1, $this->position->z)->getLightFilter() >= 2){
 			//grass dies
 			$ev = new BlockSpreadEvent($this, $this, VanillaBlocks::DIRT());
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$this->position->getWorld()->setBlock($this->position, $ev->getNewState(), false);
+				$world->setBlock($this->position, $ev->getNewState(), false);
 			}
 		}elseif($lightAbove >= 9){
 			//try grass spread
@@ -67,12 +70,12 @@ class Grass extends Opaque{
 				$y = mt_rand($this->position->y - 3, $this->position->y + 1);
 				$z = mt_rand($this->position->z - 1, $this->position->z + 1);
 
-				$b = $this->position->getWorld()->getBlockAt($x, $y, $z);
+				$b = $world->getBlockAt($x, $y, $z);
 				if(
-					!($b instanceof Dirt) or
-					$b->isCoarse() or
-					$this->position->getWorld()->getFullLightAt($x, $y + 1, $z) < 4 or
-					$this->position->getWorld()->getBlockAt($x, $y + 1, $z)->getLightFilter() >= 2
+					!($b instanceof Dirt) ||
+					!$b->getDirtType()->equals(DirtType::NORMAL()) ||
+					$world->getFullLightAt($x, $y + 1, $z) < 4 ||
+					$world->getBlockAt($x, $y + 1, $z)->getLightFilter() >= 2
 				){
 					continue;
 				}
@@ -80,29 +83,34 @@ class Grass extends Opaque{
 				$ev = new BlockSpreadEvent($b, $this, VanillaBlocks::GRASS());
 				$ev->call();
 				if(!$ev->isCancelled()){
-					$this->position->getWorld()->setBlock($b->position, $ev->getNewState(), false);
+					$world->setBlock($b->position, $ev->getNewState(), false);
 				}
 			}
 		}
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($face !== Facing::UP){
 			return false;
 		}
+		$world = $this->position->getWorld();
 		if($item instanceof Fertilizer){
 			$item->pop();
-			TallGrassObject::growGrass($this->position->getWorld(), $this->position, new Random(mt_rand()), 8, 2);
+			TallGrassObject::growGrass($world, $this->position, new Random(mt_rand()), 8, 2);
 
 			return true;
 		}elseif($item instanceof Hoe){
 			$item->applyDamage(1);
-			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::FARMLAND());
+			$newBlock = VanillaBlocks::FARMLAND();
+			$world->addSound($this->position->add(0.5, 0.5, 0.5), new ItemUseOnBlockSound($newBlock));
+			$world->setBlock($this->position, $newBlock);
 
 			return true;
-		}elseif($item instanceof Shovel and $this->getSide(Facing::UP)->getId() === BlockLegacyIds::AIR){
+		}elseif($item instanceof Shovel && $this->getSide(Facing::UP)->getTypeId() === BlockTypeIds::AIR){
 			$item->applyDamage(1);
-			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::GRASS_PATH());
+			$newBlock = VanillaBlocks::GRASS_PATH();
+			$world->addSound($this->position->add(0.5, 0.5, 0.5), new ItemUseOnBlockSound($newBlock));
+			$world->setBlock($this->position, $newBlock);
 
 			return true;
 		}

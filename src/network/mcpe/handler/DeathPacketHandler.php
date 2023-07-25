@@ -17,33 +17,29 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
+use pocketmine\network\mcpe\protocol\DeathInfoPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\RespawnPacket;
 use pocketmine\network\mcpe\protocol\types\PlayerAction;
 use pocketmine\player\Player;
 
 class DeathPacketHandler extends PacketHandler{
-
-	/** @var Player */
-	private $player;
-	/** @var NetworkSession */
-	private $session;
-	private InventoryManager $inventoryManager;
-
-	public function __construct(Player $player, NetworkSession $session, InventoryManager $inventoryManager){
-		$this->player = $player;
-		$this->session = $session;
-		$this->inventoryManager = $inventoryManager;
-	}
+	public function __construct(
+		private Player $player,
+		private NetworkSession $session,
+		private InventoryManager $inventoryManager,
+		private Translatable|string $deathMessage
+	){}
 
 	public function setUp() : void{
 		$this->session->sendDataPacket(RespawnPacket::create(
@@ -51,6 +47,20 @@ class DeathPacketHandler extends PacketHandler{
 			RespawnPacket::SEARCHING_FOR_SPAWN,
 			$this->player->getId()
 		));
+
+		/** @var string[] $parameters */
+		$parameters = [];
+		if($this->deathMessage instanceof Translatable){
+			$language = $this->player->getLanguage();
+			if(!$this->player->getServer()->isLanguageForced()){
+				[$message, $parameters] = $this->session->prepareClientTranslatableMessage($this->deathMessage);
+			}else{
+				$message = $language->translate($this->deathMessage);
+			}
+		}else{
+			$message = $this->deathMessage;
+		}
+		$this->session->sendDataPacket(DeathInfoPacket::create($message, $parameters));
 	}
 
 	public function handlePlayerAction(PlayerActionPacket $packet) : bool{

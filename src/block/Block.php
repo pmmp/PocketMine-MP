@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,107 +28,292 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
-use pocketmine\block\utils\InvalidBlockStateException;
+use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\InvalidSerializedRuntimeDataException;
+use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataSizeCalculator;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
+use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\ItemBlock;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\World;
-use function assert;
 use function count;
-use function dechex;
+use function get_class;
 use const PHP_INT_MAX;
 
 class Block{
-	public const INTERNAL_METADATA_BITS = 4;
-	public const INTERNAL_METADATA_MASK = ~(~0 << self::INTERNAL_METADATA_BITS);
+	public const INTERNAL_STATE_DATA_BITS = 8;
+	public const INTERNAL_STATE_DATA_MASK = ~(~0 << self::INTERNAL_STATE_DATA_BITS);
+
+	/**
+	 * @internal
+	 */
+	public const EMPTY_STATE_ID = (BlockTypeIds::AIR << self::INTERNAL_STATE_DATA_BITS) | (BlockTypeIds::AIR & self::INTERNAL_STATE_DATA_MASK);
 
 	protected BlockIdentifier $idInfo;
 	protected string $fallbackName;
-	protected BlockBreakInfo $breakInfo;
+	protected BlockTypeInfo $typeInfo;
 	protected Position $position;
 
 	/** @var AxisAlignedBB[]|null */
 	protected ?array $collisionBoxes = null;
 
+	private int $requiredBlockItemStateDataBits;
+	private int $requiredBlockOnlyStateDataBits;
+
+	private Block $defaultState;
+
 	/**
-	 * @param string          $name English name of the block type (TODO: implement translations)
+	 * @param string $name English name of the block type (TODO: implement translations)
 	 */
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
-		if(($idInfo->getVariant() & $this->getStateBitmask()) !== 0){
-			throw new \InvalidArgumentException("Variant 0x" . dechex($idInfo->getVariant()) . " collides with state bitmask 0x" . dechex($this->getStateBitmask()));
-		}
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->idInfo = $idInfo;
 		$this->fallbackName = $name;
-		$this->breakInfo = $breakInfo;
+		$this->typeInfo = $typeInfo;
 		$this->position = new Position(0, 0, 0, null);
+
+		$calculator = new RuntimeDataSizeCalculator();
+		$this->describeBlockItemState($calculator);
+		$this->requiredBlockItemStateDataBits = $calculator->getBitsUsed();
+
+		$calculator = new RuntimeDataSizeCalculator();
+		$this->describeBlockOnlyState($calculator);
+		$this->requiredBlockOnlyStateDataBits = $calculator->getBitsUsed();
+
+		$defaultState = clone $this;
+		$this->defaultState = $defaultState;
+		$defaultState->defaultState = $defaultState;
 	}
 
 	public function __clone(){
 		$this->position = clone $this->position;
 	}
 
+	/**
+	 * Returns an object containing information about how to identify and store this block type, such as type ID and
+	 * tile type (if any).
+	 */
 	public function getIdInfo() : BlockIdentifier{
 		return $this->idInfo;
 	}
 
+	/**
+	 * Returns the printable English name of the block.
+	 */
 	public function getName() : string{
 		return $this->fallbackName;
 	}
 
-	public function getId() : int{
-		return $this->idInfo->getBlockId();
+	/**
+	 * Returns a type ID that identifies this type of block. This allows comparing basic block types, e.g. wool, stone,
+	 * glass, etc. Type ID will not change for a given block type.
+	 *
+	 * Information such as colour, powered, open/closed, etc. is **not** included in this ID.
+	 * If you want to get a state ID that includes this information, use {@link Block::getStateId()} instead.
+	 *
+	 * @see BlockTypeIds
+	 */
+	public function getTypeId() : int{
+		return $this->idInfo->getBlockTypeId();
 	}
 
 	/**
 	 * @internal
+	 *
+	 * Returns the full blockstate ID of this block. This is a compact way of representing a blockstate used to store
+	 * blocks in chunks at runtime.
+	 *
+	 * This usually encodes all properties of the block, such as facing, open/closed, powered/unpowered, colour, etc.
+	 * State ID may change depending on the properties of the block (e.g. a torch facing east will have a different
+	 * state ID to one facing west).
+	 *
+	 * Some blocks (such as signs and chests) may store additional properties in an associated "tile" if they
+	 * have too many possible values to be encoded into the state ID. These extra properties are **NOT** included in
+	 * this function's result.
+	 *
+	 * This ID can be used to later obtain a copy of the block with the same state properties by using
+	 * {@link RuntimeBlockStateRegistry::fromStateId()}.
 	 */
-	public function getFullId() : int{
-		return ($this->getId() << self::INTERNAL_METADATA_BITS) | $this->getMeta();
+	public function getStateId() : int{
+		$typeId = $this->getTypeId();
+		//TODO: this XOR mask improves hashtable distribution, but it's only effective if the number of unique block
+		//type IDs is larger than the number of available state data bits. We should probably hash (e.g. using xxhash)
+		//the type ID to create a better mask.
+		//Alternatively, we could hash the whole state ID, but this is currently problematic, since we currently need
+		//to be able to recover the state data from the state ID because of UnknownBlock.
+		return ($typeId << self::INTERNAL_STATE_DATA_BITS) | ($this->encodeFullState() ^ ($typeId & self::INTERNAL_STATE_DATA_MASK));
 	}
 
+	/**
+	 * Returns whether the given block has the same type ID as this one.
+	 */
+	public function hasSameTypeId(Block $other) : bool{
+		return $this->getTypeId() === $other->getTypeId();
+	}
+
+	/**
+	 * Returns whether the given block has the same type and properties as this block.
+	 *
+	 * Note: Tile data (e.g. sign text, chest contents) are not compared here.
+	 */
+	public function isSameState(Block $other) : bool{
+		return $this->getStateId() === $other->getStateId();
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getTypeTags() : array{
+		return $this->typeInfo->getTypeTags();
+	}
+
+	/**
+	 * Returns whether this block type has the given type tag. Type tags are used as a dynamic way to tag blocks as
+	 * having certain properties, allowing type checks which are more dynamic than hardcoding a bunch of IDs or a bunch
+	 * of instanceof checks.
+	 *
+	 * For example, grass blocks, dirt, farmland, podzol and mycelium are all dirt-like blocks, and support the
+	 * placement of blocks like flowers, so they have a common tag which allows them to be identified as such.
+	 */
+	public function hasTypeTag(string $tag) : bool{
+		return $this->typeInfo->hasTypeTag($tag);
+	}
+
+	/**
+	 * Returns the block as an item.
+	 * Block-only state such as facing, powered/unpowered, open/closed, etc., is discarded.
+	 * Block-item state such as colour, wood type, etc. is preserved.
+	 * Complex state properties stored in the tile data (e.g. inventory) are discarded.
+	 */
 	public function asItem() : Item{
-		return ItemFactory::getInstance()->get(
-			$this->idInfo->getItemId(),
-			$this->idInfo->getVariant() | $this->writeStateToItemMeta()
-		);
+		$normalized = clone $this->defaultState;
+		$normalized->decodeBlockItemState($this->encodeBlockItemState());
+		return new ItemBlock($normalized);
 	}
 
-	public function getMeta() : int{
-		$stateMeta = $this->writeStateToMeta();
-		assert(($stateMeta & ~$this->getStateBitmask()) === 0);
-		return $this->idInfo->getVariant() | $stateMeta;
+	private function decodeBlockItemState(int $data) : void{
+		$reader = new RuntimeDataReader($this->requiredBlockItemStateDataBits, $data);
+
+		$this->describeBlockItemState($reader);
+		$readBits = $reader->getOffset();
+		if($this->requiredBlockItemStateDataBits !== $readBits){
+			throw new \LogicException(get_class($this) . ": Exactly $this->requiredBlockItemStateDataBits bits of block-item state data were provided, but $readBits were read");
+		}
 	}
 
-	protected function writeStateToItemMeta() : int{
-		return 0;
+	private function decodeBlockOnlyState(int $data) : void{
+		$reader = new RuntimeDataReader($this->requiredBlockOnlyStateDataBits, $data);
+
+		$this->describeBlockOnlyState($reader);
+		$readBits = $reader->getOffset();
+		if($this->requiredBlockOnlyStateDataBits !== $readBits){
+			throw new \LogicException(get_class($this) . ": Exactly $this->requiredBlockOnlyStateDataBits bits of block-only state data were provided, but $readBits were read");
+		}
+	}
+
+	private function decodeFullState(int $data) : void{
+		$reader = new RuntimeDataReader($this->requiredBlockItemStateDataBits + $this->requiredBlockOnlyStateDataBits, $data);
+		$this->decodeBlockItemState($reader->readInt($this->requiredBlockItemStateDataBits));
+		$this->decodeBlockOnlyState($reader->readInt($this->requiredBlockOnlyStateDataBits));
+	}
+
+	private function encodeBlockItemState() : int{
+		$writer = new RuntimeDataWriter($this->requiredBlockItemStateDataBits);
+
+		$this->describeBlockItemState($writer);
+		$writtenBits = $writer->getOffset();
+		if($this->requiredBlockItemStateDataBits !== $writtenBits){
+			throw new \LogicException(get_class($this) . ": Exactly $this->requiredBlockItemStateDataBits bits of block-item state data were expected, but $writtenBits were written");
+		}
+
+		return $writer->getValue();
+	}
+
+	private function encodeBlockOnlyState() : int{
+		$writer = new RuntimeDataWriter($this->requiredBlockOnlyStateDataBits);
+
+		$this->describeBlockOnlyState($writer);
+		$writtenBits = $writer->getOffset();
+		if($this->requiredBlockOnlyStateDataBits !== $writtenBits){
+			throw new \LogicException(get_class($this) . ": Exactly $this->requiredBlockOnlyStateDataBits bits of block-only state data were expected, but $writtenBits were written");
+		}
+
+		return $writer->getValue();
+	}
+
+	private function encodeFullState() : int{
+		$writer = new RuntimeDataWriter($this->requiredBlockItemStateDataBits + $this->requiredBlockOnlyStateDataBits);
+		$writer->writeInt($this->requiredBlockItemStateDataBits, $this->encodeBlockItemState());
+		$writer->writeInt($this->requiredBlockOnlyStateDataBits, $this->encodeBlockOnlyState());
+
+		return $writer->getValue();
 	}
 
 	/**
-	 * Returns a bitmask used to extract state bits from block metadata.
+	 * Describes properties of this block which apply to both the block and item form of the block.
+	 * Examples of suitable properties include colour, skull type, and any other information which **IS** kept when the
+	 * block is mined or block-picked.
+	 *
+	 * The method implementation must NOT use conditional logic to determine which properties are written. It must
+	 * always write the same properties in the same order, regardless of the current state of the block.
 	 */
-	public function getStateBitmask() : int{
-		return 0;
-	}
-
-	protected function writeStateToMeta() : int{
-		return 0;
-	}
-
-	/**
-	 * @throws InvalidBlockStateException
-	 */
-	public function readStateFromData(int $id, int $stateMeta) : void{
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
 		//NOOP
+	}
+
+	/**
+	 * Describes properties of this block which apply only to the block form of the block.
+	 * Examples of suitable properties include facing, open/closed, powered/unpowered, on/off, and any other information
+	 * which **IS NOT** kept when the block is mined or block-picked.
+	 *
+	 * The method implementation must NOT use conditional logic to determine which properties are written. It must
+	 * always write the same properties in the same order, regardless of the current state of the block.
+	 */
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		//NOOP
+	}
+
+	/**
+	 * Generates copies of this Block in all possible state permutations.
+	 * Every possible combination of known properties (e.g. facing, open/closed, powered/unpowered, on/off) will be
+	 * generated.
+	 *
+	 * @phpstan-return \Generator<int, Block, void, void>
+	 */
+	public function generateStatePermutations() : \Generator{
+		//TODO: this bruteforce approach to discovering all valid states is very inefficient for larger state data sizes
+		//at some point we'll need to find a better way to do this
+		$bits = $this->requiredBlockItemStateDataBits + $this->requiredBlockOnlyStateDataBits;
+		if($bits > Block::INTERNAL_STATE_DATA_BITS){
+			throw new \LogicException("Block state data cannot use more than " . Block::INTERNAL_STATE_DATA_BITS . " bits");
+		}
+		for($stateData = 0; $stateData < (1 << $bits); ++$stateData){
+			$v = clone $this;
+			try{
+				$v->decodeFullState($stateData);
+				if($v->encodeFullState() !== $stateData){
+					throw new \LogicException(static::class . "::decodeStateData() accepts invalid state data (returned " . $v->encodeFullState() . " for input $stateData)");
+				}
+			}catch(InvalidSerializedRuntimeDataException){ //invalid property combination, leave it
+				continue;
+			}
+
+			yield $v;
+		}
 	}
 
 	/**
@@ -137,49 +322,48 @@ class Block{
 	 *
 	 * Clears any cached precomputed objects, such as bounding boxes. Remove any outdated precomputed things such as
 	 * AABBs and force recalculation.
+	 *
+	 * A replacement block may be returned. This is useful if the block type changed due to reading of world data (e.g.
+	 * data from a block entity).
 	 */
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		$this->collisionBoxes = null;
+
+		return $this;
 	}
 
+	/**
+	 * Writes information about the block into the world. This writes the blockstate ID into the chunk, and creates
+	 * and/or removes tiles as necessary.
+	 *
+	 * Note: Do not call this directly. Pass the block to {@link World::setBlock()} instead.
+	 */
 	public function writeStateToWorld() : void{
-		$this->position->getWorld()->getOrLoadChunkAtPosition($this->position)->setFullBlock($this->position->x & Chunk::COORD_MASK, $this->position->y, $this->position->z & Chunk::COORD_MASK, $this->getFullId());
+		$world = $this->position->getWorld();
+		$chunk = $world->getOrLoadChunkAtPosition($this->position);
+		if($chunk === null){
+			throw new AssumptionFailedError("World::setBlock() should have loaded the chunk before calling this method");
+		}
+		$chunk->setBlockStateId($this->position->x & Chunk::COORD_MASK, $this->position->y, $this->position->z & Chunk::COORD_MASK, $this->getStateId());
 
 		$tileType = $this->idInfo->getTileClass();
-		$oldTile = $this->position->getWorld()->getTile($this->position);
+		$oldTile = $world->getTile($this->position);
 		if($oldTile !== null){
-			if($tileType === null or !($oldTile instanceof $tileType)){
+			if($tileType === null || !($oldTile instanceof $tileType)){
 				$oldTile->close();
 				$oldTile = null;
 			}elseif($oldTile instanceof Spawnable){
-				$oldTile->setDirty(); //destroy old network cache
+				$oldTile->clearSpawnCompoundCache(); //destroy old network cache
 			}
 		}
-		if($oldTile === null and $tileType !== null){
+		if($oldTile === null && $tileType !== null){
 			/**
 			 * @var Tile $tile
 			 * @see Tile::__construct()
 			 */
-			$tile = new $tileType($this->position->getWorld(), $this->position->asVector3());
-			$this->position->getWorld()->addTile($tile);
+			$tile = new $tileType($world, $this->position->asVector3());
+			$world->addTile($tile);
 		}
-	}
-
-	/**
-	 * Returns whether the given block has an equivalent type to this one. This compares base legacy ID and variant.
-	 *
-	 * Note: This ignores additional IDs used to represent additional states. This means that, for example, a lit
-	 * furnace and unlit furnace are considered the same type.
-	 */
-	public function isSameType(Block $other) : bool{
-		return $this->idInfo->getBlockId() === $other->idInfo->getBlockId() and $this->idInfo->getVariant() === $other->idInfo->getVariant();
-	}
-
-	/**
-	 * Returns whether the given block has the same type and properties as this block.
-	 */
-	public function isSameState(Block $other) : bool{
-		return $this->getFullId() === $other->getFullId();
 	}
 
 	/**
@@ -189,22 +373,44 @@ class Block{
 		return true;
 	}
 
+	/**
+	 * Returns whether this block can be replaced by another block placed in the same position.
+	 */
 	public function canBeReplaced() : bool{
 		return false;
 	}
 
+	/**
+	 * Returns whether this block can replace the given block in the given placement conditions.
+	 * This is used to allow slabs of the same type to combine into double slabs.
+	 */
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
 		return $blockReplace->canBeReplaced();
 	}
 
 	/**
-	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
+	 * Generates a block transaction to set all blocks affected by placing this block. Usually this is just the block
+	 * itself, but may be multiple blocks in some cases (such as doors).
+	 *
+	 * @param BlockTransaction $tx           Blocks to be set should be added to this transaction (do not modify thr world directly)
+	 * @param Item             $item         Item used to place the block
+	 * @param Block            $blockReplace Block expected to be replaced
+	 * @param Block            $blockClicked Block that was clicked using the item
+	 * @param int              $face         Face of the clicked block which was clicked
+	 * @param Vector3          $clickVector  Exact position inside the clicked block where the click occurred, relative to the block's position
+	 * @param Player|null      $player       Player who placed the block, or null if it was not a player
+	 *
+	 * @return bool whether the placement should go ahead
 	 */
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$tx->addBlock($blockReplace->position, $this);
 		return true;
 	}
 
+	/**
+	 * Called immediately after the block has been placed in the world. Since placement uses a block transaction, some
+	 * things may not be possible until after the transaction has been executed.
+	 */
 	public function onPostPlace() : void{
 
 	}
@@ -213,17 +419,20 @@ class Block{
 	 * Returns an object containing information about the destruction requirements of this block.
 	 */
 	public function getBreakInfo() : BlockBreakInfo{
-		return $this->breakInfo;
+		return $this->typeInfo->getBreakInfo();
 	}
 
 	/**
 	 * Do the actions needed so the block is broken with the Item
+	 *
+	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if full)
 	 */
-	public function onBreak(Item $item, ?Player $player = null) : bool{
-		if(($t = $this->position->getWorld()->getTile($this->position)) !== null){
+	public function onBreak(Item $item, ?Player $player = null, array &$returnedItems = []) : bool{
+		$world = $this->position->getWorld();
+		if(($t = $world->getTile($this->position)) !== null){
 			$t->onBlockDestroyed();
 		}
-		$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
+		$world->setBlock($this->position, VanillaBlocks::AIR());
 		return true;
 	}
 
@@ -243,7 +452,7 @@ class Block{
 
 	/**
 	 * Called when this block is randomly updated due to chunk ticking.
-	 * WARNING: This will not be called if ticksRandomly() does not return true!
+	 * WARNING: This will not be called if {@link Block::ticksRandomly()} does not return true!
 	 */
 	public function onRandomTick() : void{
 
@@ -258,14 +467,16 @@ class Block{
 
 	/**
 	 * Do actions when interacted by Item. Returns if it has done anything
+	 *
+	 * @param Vector3 $clickVector    Exact position where the click occurred, relative to the block's integer position
+	 * @param Item[]  &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		return false;
 	}
 
 	/**
-	 * Called when this block is attacked (left-clicked). This is called when a player left-clicks the block to try and
-	 * start to break it in survival mode.
+	 * Called when this block is attacked (left-clicked) by a player attempting to start breaking it in survival.
 	 *
 	 * @return bool if an action took place, prevents starting to break the block if true.
 	 */
@@ -273,11 +484,19 @@ class Block{
 		return false;
 	}
 
+	/**
+	 * Returns a multiplier applied to the velocity of entities moving on top of this block. A higher value will make
+	 * the block more slippery (like ice).
+	 *
+	 * @return float 0.0-1.0
+	 */
 	public function getFrictionFactor() : float{
 		return 0.6;
 	}
 
 	/**
+	 * Returns the amount of light emitted by this block.
+	 *
 	 * @return int 0-15
 	 */
 	public function getLightLevel() : int{
@@ -320,19 +539,11 @@ class Block{
 		return false;
 	}
 
-	public function hasEntityCollision() : bool{
-		return false;
-	}
-
 	/**
 	 * Returns whether entities can climb up this block.
 	 */
 	public function canClimb() : bool{
 		return false;
-	}
-
-	public function addVelocityToEntity(Entity $entity) : ?Vector3{
-		return null;
 	}
 
 	final public function getPosition() : Position{
@@ -352,8 +563,8 @@ class Block{
 	 * @return Item[]
 	 */
 	public function getDrops(Item $item) : array{
-		if($this->breakInfo->isToolCompatible($item)){
-			if($this->isAffectedBySilkTouch() and $item->hasEnchantment(VanillaEnchantments::SILK_TOUCH())){
+		if($this->getBreakInfo()->isToolCompatible($item)){
+			if($this->isAffectedBySilkTouch() && $item->hasEnchantment(VanillaEnchantments::SILK_TOUCH())){
 				return $this->getSilkTouchDrops($item);
 			}
 
@@ -394,7 +605,7 @@ class Block{
 	 * Returns how much XP will be dropped by breaking this block with the given item.
 	 */
 	public function getXpDropForTool(Item $item) : int{
-		if($item->hasEnchantment(VanillaEnchantments::SILK_TOUCH()) or !$this->breakInfo->isToolCompatible($item)){
+		if($item->hasEnchantment(VanillaEnchantments::SILK_TOUCH()) || !$this->getBreakInfo()->isToolCompatible($item)){
 			return 0;
 		}
 
@@ -417,6 +628,7 @@ class Block{
 
 	/**
 	 * Returns the item that players will equip when middle-clicking on this block.
+	 * If addUserData is true, additional data may be added, such as banner patterns, chest contents, etc.
 	 */
 	public function getPickedItem(bool $addUserData = false) : Item{
 		$item = $this->asItem();
@@ -445,6 +657,10 @@ class Block{
 	 */
 	public function getMaxStackSize() : int{
 		return 64;
+	}
+
+	public function isFireProofAsItem() : bool{
+		return false;
 	}
 
 	/**
@@ -536,11 +752,11 @@ class Block{
 	 * @return string
 	 */
 	public function __toString(){
-		return "Block[" . $this->getName() . "] (" . $this->getId() . ":" . $this->getMeta() . ")";
+		return "Block[" . $this->getName() . "] (" . $this->getTypeId() . ":" . $this->encodeFullState() . ")";
 	}
 
 	/**
-	 * Checks for collision against an AxisAlignedBB
+	 * Returns whether any of the block's collision boxes intersect with the given AxisAlignedBB.
 	 */
 	public function collidesWithBB(AxisAlignedBB $bb) : bool{
 		foreach($this->getCollisionBoxes() as $bb2){
@@ -553,14 +769,38 @@ class Block{
 	}
 
 	/**
+	 * Returns whether the block has actions to be executed when an entity enters its cell (full cube space).
+	 *
+	 * @see Block::onEntityInside()
+	 */
+	public function hasEntityCollision() : bool{
+		return false;
+	}
+
+	/**
 	 * Called when an entity's bounding box clips inside this block's cell. Note that the entity may not be intersecting
 	 * with the collision box or bounding box.
+	 *
+	 * WARNING: This will not be called if {@link Block::hasEntityCollision()} returns false.
 	 *
 	 * @return bool Whether the block is still the same after the intersection. If it changed (e.g. due to an explosive
 	 * being ignited), this should return false.
 	 */
 	public function onEntityInside(Entity $entity) : bool{
 		return true;
+	}
+
+	/**
+	 * Returns a direction vector describing which way an entity intersecting this block should be pushed.
+	 * This is used by liquids to push entities in liquid currents.
+	 *
+	 * The returned vector is summed with vectors from every other block the entity is intersecting, and normalized to
+	 * produce a final direction vector.
+	 *
+	 * WARNING: This will not be called if {@link Block::hasEntityCollision()} does not return true!
+	 */
+	public function addVelocityToEntity(Entity $entity) : ?Vector3{
+		return null;
 	}
 
 	/**
@@ -572,6 +812,20 @@ class Block{
 	}
 
 	/**
+	 * Called when a projectile collides with one of this block's collision boxes.
+	 */
+	public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
+		//NOOP
+	}
+
+	/**
+	 * Returns an array of collision bounding boxes for this block.
+	 * These are used for:
+	 * - entity movement collision checks (to ensure entities can't clip through blocks)
+	 * - projectile flight paths
+	 * - block placement (to ensure the player can't place blocks inside itself or another entity)
+	 * - anti-cheat checks in plugins
+	 *
 	 * @return AxisAlignedBB[]
 	 */
 	final public function getCollisionBoxes() : array{
@@ -602,12 +856,28 @@ class Block{
 		return [AxisAlignedBB::one()];
 	}
 
+	/**
+	 * Returns the type of support that the block can provide on the given face. This is used to determine whether
+	 * blocks placed on the given face can be supported by this block.
+	 */
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::FULL();
+	}
+
+	protected function getAdjacentSupportType(int $facing) : SupportType{
+		return $this->getSide($facing)->getSupportType(Facing::opposite($facing));
+	}
+
 	public function isFullCube() : bool{
 		$bb = $this->getCollisionBoxes();
 
-		return count($bb) === 1 and $bb[0]->getAverageEdgeLength() >= 1 and $bb[0]->isCube();
+		return count($bb) === 1 && $bb[0]->getAverageEdgeLength() >= 1 && $bb[0]->isCube();
 	}
 
+	/**
+	 * Performs a ray trace along the line between the two positions using the block's collision boxes.
+	 * Returns the intersection point closest to pos1, or null if no intersection occurred.
+	 */
 	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2) : ?RayTraceResult{
 		$bbs = $this->getCollisionBoxes();
 		if(count($bbs) === 0){

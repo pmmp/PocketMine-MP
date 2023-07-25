@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,9 +27,10 @@ use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\utils\BannerPatternLayer;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\DyeColor;
-use pocketmine\data\bedrock\DyeColorIdMap;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Banner as ItemBanner;
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -47,18 +48,20 @@ abstract class BaseBanner extends Transparent{
 	 */
 	protected array $patterns = [];
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->color = DyeColor::BLACK();
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileBanner){
 			$this->color = $tile->getBaseColor();
 			$this->setPatterns($tile->getPatterns());
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{
@@ -86,7 +89,7 @@ abstract class BaseBanner extends Transparent{
 	}
 
 	/**
-	 * @param BannerPatternLayer[]             $patterns
+	 * @param BannerPatternLayer[] $patterns
 	 *
 	 * @phpstan-param list<BannerPatternLayer> $patterns
 	 * @return $this
@@ -107,7 +110,18 @@ abstract class BaseBanner extends Transparent{
 		return [];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
+	private function canBeSupportedBy(Block $block) : bool{
+		return $block->isSolid();
+	}
+
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if(!$this->canBeSupportedBy($blockReplace->getSide($this->getSupportingFace()))){
+			return false;
+		}
 		if($item instanceof ItemBanner){
 			$this->color = $item->getColor();
 			$this->setPatterns($item->getPatterns());
@@ -119,18 +133,14 @@ abstract class BaseBanner extends Transparent{
 	abstract protected function getSupportingFace() : int;
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide($this->getSupportingFace())->getId() === BlockLegacyIds::AIR){
+		if(!$this->canBeSupportedBy($this->getSide($this->getSupportingFace()))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
-	protected function writeStateToItemMeta() : int{
-		return DyeColorIdMap::getInstance()->toInvertedId($this->color);
-	}
-
 	public function getDropsForCompatibleTool(Item $item) : array{
 		$drop = $this->asItem();
-		if($drop instanceof ItemBanner and count($this->patterns) > 0){
+		if($drop instanceof ItemBanner && count($this->patterns) > 0){
 			$drop->setPatterns($this->patterns);
 		}
 
@@ -139,9 +149,13 @@ abstract class BaseBanner extends Transparent{
 
 	public function getPickedItem(bool $addUserData = false) : Item{
 		$result = $this->asItem();
-		if($addUserData and $result instanceof ItemBanner and count($this->patterns) > 0){
+		if($addUserData && $result instanceof ItemBanner && count($this->patterns) > 0){
 			$result->setPatterns($this->patterns);
 		}
 		return $result;
+	}
+
+	public function asItem() : Item{
+		return VanillaItems::BANNER()->setColor($this->color);
 	}
 }

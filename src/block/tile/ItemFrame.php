@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,6 +27,7 @@ use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\world\World;
 
 /**
@@ -38,12 +39,9 @@ class ItemFrame extends Spawnable{
 	public const TAG_ITEM_DROP_CHANCE = "ItemDropChance";
 	public const TAG_ITEM = "Item";
 
-	/** @var Item */
-	private $item;
-	/** @var int */
-	private $itemRotation = 0;
-	/** @var float */
-	private $itemDropChance = 1.0;
+	private Item $item;
+	private int $itemRotation = 0;
+	private float $itemDropChance = 1.0;
 
 	public function __construct(World $world, Vector3 $pos){
 		$this->item = VanillaItems::AIR();
@@ -61,7 +59,9 @@ class ItemFrame extends Spawnable{
 	protected function writeSaveData(CompoundTag $nbt) : void{
 		$nbt->setFloat(self::TAG_ITEM_DROP_CHANCE, $this->itemDropChance);
 		$nbt->setByte(self::TAG_ITEM_ROTATION, $this->itemRotation);
-		$nbt->setTag(self::TAG_ITEM, $this->item->nbtSerialize());
+		if(!$this->item->isNull()){
+			$nbt->setTag(self::TAG_ITEM, $this->item->nbtSerialize());
+		}
 	}
 
 	public function hasItem() : bool{
@@ -73,7 +73,7 @@ class ItemFrame extends Spawnable{
 	}
 
 	public function setItem(?Item $item) : void{
-		if($item !== null and !$item->isNull()){
+		if($item !== null && !$item->isNull()){
 			$this->item = clone $item;
 		}else{
 			$this->item = VanillaItems::AIR();
@@ -99,6 +99,8 @@ class ItemFrame extends Spawnable{
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->setFloat(self::TAG_ITEM_DROP_CHANCE, $this->itemDropChance);
 		$nbt->setByte(self::TAG_ITEM_ROTATION, $this->itemRotation);
-		$nbt->setTag(self::TAG_ITEM, $this->item->nbtSerialize());
+		if(!$this->item->isNull()){
+			$nbt->setTag(self::TAG_ITEM, TypeConverter::getInstance()->getItemTranslator()->toNetworkNbt($this->item));
+		}
 	}
 }

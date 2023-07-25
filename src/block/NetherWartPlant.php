@@ -17,13 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\FortuneDropHelper;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -33,27 +34,20 @@ use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
 class NetherWartPlant extends Flowable{
+	public const MAX_AGE = 3;
 
 	protected int $age = 0;
 
-	protected function writeStateToMeta() : int{
-		return $this->age;
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, 3);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b11;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->boundedInt(2, 0, self::MAX_AGE, $this->age);
 	}
 
 	public function getAge() : int{ return $this->age; }
 
 	/** @return $this */
 	public function setAge(int $age) : self{
-		if($age < 0 || $age > 3){
-			throw new \InvalidArgumentException("Age must be in range 0-3");
+		if($age < 0 || $age > self::MAX_AGE){
+			throw new \InvalidArgumentException("Age must be in range 0 ..." . self::MAX_AGE);
 		}
 		$this->age = $age;
 		return $this;
@@ -61,7 +55,7 @@ class NetherWartPlant extends Flowable{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->getId() === BlockLegacyIds::SOUL_SAND){
+		if($down->getTypeId() === BlockTypeIds::SOUL_SAND){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
@@ -69,7 +63,7 @@ class NetherWartPlant extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->getId() !== BlockLegacyIds::SOUL_SAND){
+		if($this->getSide(Facing::DOWN)->getTypeId() !== BlockTypeIds::SOUL_SAND){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -79,7 +73,7 @@ class NetherWartPlant extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->age < 3 and mt_rand(0, 10) === 0){ //Still growing
+		if($this->age < self::MAX_AGE && mt_rand(0, 10) === 0){ //Still growing
 			$block = clone $this;
 			$block->age++;
 			$ev = new BlockGrowEvent($this, $block);
@@ -92,7 +86,7 @@ class NetherWartPlant extends Flowable{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			$this->asItem()->setCount($this->age === 3 ? mt_rand(2, 4) : 1)
+			$this->asItem()->setCount($this->age === self::MAX_AGE ? FortuneDropHelper::discrete($item, 2, 4) : 1)
 		];
 	}
 }

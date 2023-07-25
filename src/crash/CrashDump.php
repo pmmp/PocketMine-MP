@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -33,7 +33,7 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function base64_encode;
 use function error_get_last;
 use function file;
@@ -43,6 +43,7 @@ use function get_loaded_extensions;
 use function json_encode;
 use function ksort;
 use function max;
+use function mb_scrub;
 use function mb_strtoupper;
 use function microtime;
 use function ob_end_clean;
@@ -54,6 +55,7 @@ use function phpversion;
 use function preg_replace;
 use function sprintf;
 use function str_split;
+use function str_starts_with;
 use function strpos;
 use function substr;
 use function zend_version;
@@ -80,18 +82,14 @@ class CrashDump{
 	public const PLUGIN_INVOLVEMENT_DIRECT = "direct";
 	public const PLUGIN_INVOLVEMENT_INDIRECT = "indirect";
 
-	/** @var Server */
-	private $server;
 	private CrashDumpData $data;
-	/** @var string */
-	private $encodedData;
+	private string $encodedData;
 
-	private ?PluginManager $pluginManager;
-
-	public function __construct(Server $server, ?PluginManager $pluginManager){
+	public function __construct(
+		private Server $server,
+		private ?PluginManager $pluginManager
+	){
 		$now = microtime(true);
-		$this->server = $server;
-		$this->pluginManager = $pluginManager;
 
 		$this->data = new CrashDumpData();
 		$this->data->format_version = self::FORMAT_VERSION;
@@ -168,6 +166,8 @@ class CrashDump{
 		}
 		$this->data->extensions = $extensions;
 
+		$this->data->jit_mode = Utils::getOpcacheJitMode();
+
 		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-phpinfo", true)){
 			ob_start();
 			phpinfo();
@@ -198,12 +198,14 @@ class CrashDump{
 				$error["message"] = substr($error["message"], 0, $pos);
 			}
 		}
+		$error["message"] = mb_scrub($error["message"], 'UTF-8');
 
 		if(isset($lastError)){
 			if(isset($lastError["trace"])){
 				$lastError["trace"] = Utils::printableTrace($lastError["trace"]);
 			}
 			$this->data->lastError = $lastError;
+			$this->data->lastError["message"] = mb_scrub($this->data->lastError["message"], 'UTF-8');
 		}
 
 		$this->data->error = $error;
@@ -222,10 +224,10 @@ class CrashDump{
 			}
 		}
 
-		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-code", true) and file_exists($error["fullFile"])){
+		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-code", true) && file_exists($error["fullFile"])){
 			$file = @file($error["fullFile"], FILE_IGNORE_NEW_LINES);
 			if($file !== false){
-				for($l = max(0, $error["line"] - 10); $l < $error["line"] + 10 and isset($file[$l]); ++$l){
+				for($l = max(0, $error["line"] - 10); $l < $error["line"] + 10 && isset($file[$l]); ++$l){
 					$this->data->code[$l + 1] = $file[$l];
 				}
 			}
@@ -236,7 +238,7 @@ class CrashDump{
 
 	private function determinePluginFromFile(string $filePath, bool $crashFrame) : bool{
 		$frameCleanPath = Filesystem::cleanPath($filePath);
-		if(strpos($frameCleanPath, Filesystem::CLEAN_PATH_SRC_PREFIX) !== 0){
+		if(!str_starts_with($frameCleanPath, Filesystem::CLEAN_PATH_SRC_PREFIX)){
 			if($crashFrame){
 				$this->data->plugin_involvement = self::PLUGIN_INVOLVEMENT_DIRECT;
 			}else{
@@ -246,10 +248,9 @@ class CrashDump{
 			if(file_exists($filePath)){
 				$reflection = new \ReflectionClass(PluginBase::class);
 				$file = $reflection->getProperty("file");
-				$file->setAccessible(true);
 				foreach($this->server->getPluginManager()->getPlugins() as $plugin){
 					$filePath = Filesystem::cleanPath($file->getValue($plugin));
-					if(strpos($frameCleanPath, $filePath) === 0){
+					if(str_starts_with($frameCleanPath, $filePath)){
 						$this->data->plugin = $plugin->getName();
 						break;
 					}

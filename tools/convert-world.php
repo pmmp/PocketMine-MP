@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -59,7 +59,7 @@ if($inputPath === false){
 	exit(1);
 }
 $backupPath = realpath($args["backup"]);
-if($backupPath === false || (!@mkdir($backupPath, 0777, true) and !is_dir($backupPath)) or !is_writable($backupPath)){
+if($backupPath === false || (!@mkdir($backupPath, 0777, true) && !is_dir($backupPath)) || !is_writable($backupPath)){
 	fwrite(STDERR, "Backup file path " . $args["backup"] . " is not writable (permission error or doesn't exist), aborting" . PHP_EOL);
 	exit(1);
 }
@@ -74,7 +74,7 @@ if(count($oldProviderClasses) > 1){
 	exit(1);
 }
 $oldProviderClass = array_shift($oldProviderClasses);
-$oldProvider = $oldProviderClass->fromPath($inputPath);
+$oldProvider = $oldProviderClass->fromPath($inputPath, new \PrefixedLogger(\GlobalLogger::get(), "Old World Provider"));
 
 $converter = new FormatConverter($oldProvider, $writableFormats[$args["format"]], $backupPath, GlobalLogger::get());
 $converter->execute();

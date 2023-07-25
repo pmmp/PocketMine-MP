@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -59,7 +59,7 @@ abstract class StringToTParser{
 	}
 
 	/**
-	 * Tries to parse the specified string into an enchantment.
+	 * Tries to parse the specified string into a corresponding instance of T.
 	 * @phpstan-return T|null
 	 */
 	public function parse(string $input){

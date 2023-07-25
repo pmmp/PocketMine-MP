@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -39,12 +39,10 @@ use function strlen;
  */
 class ChunkCache implements ChunkListener{
 	/** @var self[][] */
-	private static $instances = [];
+	private static array $instances = [];
 
 	/**
 	 * Fetches the ChunkCache instance for the given world. This lazily creates cache systems as needed.
-	 *
-	 * @return ChunkCache
 	 */
 	public static function getInstance(World $world, Compressor $compressor) : self{
 		$worldId = spl_object_id($world);
@@ -79,23 +77,16 @@ class ChunkCache implements ChunkListener{
 		}
 	}
 
-	/** @var World */
-	private $world;
-	/** @var Compressor */
-	private $compressor;
-
 	/** @var CompressBatchPromise[] */
-	private $caches = [];
+	private array $caches = [];
 
-	/** @var int */
-	private $hits = 0;
-	/** @var int */
-	private $misses = 0;
+	private int $hits = 0;
+	private int $misses = 0;
 
-	private function __construct(World $world, Compressor $compressor){
-		$this->world = $world;
-		$this->compressor = $compressor;
-	}
+	private function __construct(
+		private World $world,
+		private Compressor $compressor
+	){}
 
 	/**
 	 * Requests asynchronous preparation of the chunk at the given coordinates.
@@ -127,14 +118,7 @@ class ChunkCache implements ChunkListener{
 					$chunkZ,
 					$chunk,
 					$this->caches[$chunkHash],
-					$this->compressor,
-					function() use ($chunkHash, $chunkX, $chunkZ) : void{
-						$this->world->getLogger()->error("Failed preparing chunk $chunkX $chunkZ, retrying");
-
-						if(isset($this->caches[$chunkHash])){
-							$this->restartPendingRequest($chunkX, $chunkZ);
-						}
-					}
+					$this->compressor
 				)
 			);
 
@@ -160,7 +144,7 @@ class ChunkCache implements ChunkListener{
 	private function restartPendingRequest(int $chunkX, int $chunkZ) : void{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		$existing = $this->caches[$chunkHash] ?? null;
-		if($existing === null or $existing->hasResult()){
+		if($existing === null || $existing->hasResult()){
 			throw new \InvalidArgumentException("Restart can only be applied to unresolved promises");
 		}
 		$existing->cancel();

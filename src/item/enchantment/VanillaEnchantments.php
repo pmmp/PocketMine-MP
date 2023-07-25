@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -39,6 +39,7 @@ use pocketmine\utils\RegistryTrait;
  * @method static FireAspectEnchantment FIRE_ASPECT()
  * @method static ProtectionEnchantment FIRE_PROTECTION()
  * @method static Enchantment FLAME()
+ * @method static Enchantment FORTUNE()
  * @method static Enchantment INFINITY()
  * @method static KnockbackEnchantment KNOCKBACK()
  * @method static Enchantment MENDING()
@@ -49,6 +50,7 @@ use pocketmine\utils\RegistryTrait;
  * @method static Enchantment RESPIRATION()
  * @method static SharpnessEnchantment SHARPNESS()
  * @method static Enchantment SILK_TOUCH()
+ * @method static Enchantment SWIFT_SNEAK()
  * @method static Enchantment THORNS()
  * @method static Enchantment UNBREAKING()
  * @method static Enchantment VANISHING()
@@ -84,6 +86,7 @@ final class VanillaEnchantments{
 		self::register("FIRE_ASPECT", new FireAspectEnchantment(KnownTranslationFactory::enchantment_fire(), Rarity::RARE, ItemFlags::SWORD, ItemFlags::NONE, 2));
 
 		self::register("EFFICIENCY", new Enchantment(KnownTranslationFactory::enchantment_digging(), Rarity::COMMON, ItemFlags::DIG, ItemFlags::SHEARS, 5));
+		self::register("FORTUNE", new Enchantment(KnownTranslationFactory::enchantment_lootBonusDigger(), Rarity::RARE, ItemFlags::DIG, ItemFlags::NONE, 3));
 		self::register("SILK_TOUCH", new Enchantment(KnownTranslationFactory::enchantment_untouching(), Rarity::MYTHIC, ItemFlags::DIG, ItemFlags::SHEARS, 1));
 		self::register("UNBREAKING", new Enchantment(KnownTranslationFactory::enchantment_durability(), Rarity::UNCOMMON, ItemFlags::DIG | ItemFlags::ARMOR | ItemFlags::FISHING_ROD | ItemFlags::BOW, ItemFlags::TOOL | ItemFlags::CARROT_STICK | ItemFlags::ELYTRA, 3));
 
@@ -95,6 +98,8 @@ final class VanillaEnchantments{
 		self::register("MENDING", new Enchantment(KnownTranslationFactory::enchantment_mending(), Rarity::RARE, ItemFlags::NONE, ItemFlags::ALL, 1));
 
 		self::register("VANISHING", new Enchantment(KnownTranslationFactory::enchantment_curse_vanishing(), Rarity::MYTHIC, ItemFlags::NONE, ItemFlags::ALL, 1));
+
+		self::register("SWIFT_SNEAK", new Enchantment(KnownTranslationFactory::enchantment_swift_sneak(), Rarity::MYTHIC, ItemFlags::NONE, ItemFlags::LEGS, 3));
 	}
 
 	protected static function register(string $name, Enchantment $member) : void{

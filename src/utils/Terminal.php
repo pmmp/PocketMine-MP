@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -60,8 +60,7 @@ abstract class Terminal{
 	public static string $COLOR_WHITE = "";
 	public static string $COLOR_MINECOIN_GOLD = "";
 
-	/** @var bool|null */
-	private static $formattingCodes = null;
+	private static ?bool $formattingCodes = null;
 
 	public static function hasFormattingCodes() : bool{
 		if(self::$formattingCodes === null){
@@ -74,10 +73,10 @@ abstract class Terminal{
 		$stdout = fopen("php://stdout", "w");
 		if($stdout === false) throw new AssumptionFailedError("Opening php://stdout should never fail");
 		$result = (
-			stream_isatty($stdout) and //STDOUT isn't being piped
+			stream_isatty($stdout) && //STDOUT isn't being piped
 			(
-				getenv('TERM') !== false or //Console says it supports colours
-				(function_exists('sapi_windows_vt100_support') and sapi_windows_vt100_support($stdout)) //we're on windows and have vt100 support
+				getenv('TERM') !== false || //Console says it supports colours
+				(function_exists('sapi_windows_vt100_support') && sapi_windows_vt100_support($stdout)) //we're on windows and have vt100 support
 			)
 		);
 		fclose($stdout);
@@ -93,7 +92,7 @@ abstract class Terminal{
 
 		self::$FORMAT_RESET = "\x1b[m";
 
-		$color = fn(int $code) => "\x1b[38;5;${code}m";
+		$color = fn(int $code) => "\x1b[38;5;{$code}m";
 
 		self::$COLOR_BLACK = $color(16);
 		self::$COLOR_DARK_BLUE = $color(19);
@@ -167,8 +166,10 @@ abstract class Terminal{
 			case Utils::OS_LINUX:
 			case Utils::OS_MACOS:
 			case Utils::OS_BSD:
-				self::getEscapeCodes();
-				return;
+				if(getenv('TERM') !== false){
+					self::getEscapeCodes();
+					return;
+				}
 
 			case Utils::OS_WINDOWS:
 			case Utils::OS_ANDROID:

@@ -17,13 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\world\light;
 
-use pocketmine\block\BlockFactory;
+use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
@@ -37,15 +37,11 @@ use function igbinary_unserialize;
 class LightPopulationTask extends AsyncTask{
 	private const TLS_KEY_COMPLETION_CALLBACK = "onCompletion";
 
-	/** @var string */
-	public $chunk;
+	public string $chunk;
 
-	/** @var string */
-	private $resultHeightMap;
-	/** @var string */
-	private $resultSkyLightArrays;
-	/** @var string */
-	private $resultBlockLightArrays;
+	private string $resultHeightMap;
+	private string $resultSkyLightArrays;
+	private string $resultBlockLightArrays;
 
 	/**
 	 * @phpstan-param \Closure(array<int, LightArray> $blockLight, array<int, LightArray> $skyLight, array<int, int> $heightMap) : void $onCompletion
@@ -61,7 +57,7 @@ class LightPopulationTask extends AsyncTask{
 		$manager = new SimpleChunkManager(World::Y_MIN, World::Y_MAX);
 		$manager->setChunk(0, 0, $chunk);
 
-		$blockFactory = BlockFactory::getInstance();
+		$blockFactory = RuntimeBlockStateRegistry::getInstance();
 		foreach([
 			"Block" => new BlockLightUpdate(new SubChunkExplorer($manager), $blockFactory->lightFilter, $blockFactory->light),
 			"Sky" => new SkyLightUpdate(new SubChunkExplorer($manager), $blockFactory->lightFilter, $blockFactory->blocksDirectSkyLight),

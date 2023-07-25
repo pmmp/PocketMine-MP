@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -39,7 +39,7 @@ use pocketmine\utils\Internet;
 use pocketmine\utils\InternetException;
 use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function fgets;
 use function sleep;
 use function strtolower;
@@ -52,14 +52,11 @@ class SetupWizard{
 	public const DEFAULT_PORT = Server::DEFAULT_PORT_IPV4;
 	public const DEFAULT_PLAYERS = Server::DEFAULT_MAX_PLAYERS;
 
-	/** @var Language */
-	private $lang;
-	/** @var string */
-	private $dataPath;
+	private Language $lang;
 
-	public function __construct(string $dataPath){
-		$this->dataPath = $dataPath;
-	}
+	public function __construct(
+		private string $dataPath
+	){}
 
 	public function run() : bool{
 		$this->message(VersionInfo::NAME . " set-up wizard");
@@ -145,7 +142,7 @@ LICENSE;
 	private function askPort(Translatable $prompt, int $default) : int{
 		while(true){
 			$port = (int) $this->getInput($this->lang->translate($prompt), (string) $default);
-			if($port <= 0 or $port > 65535){
+			if($port <= 0 || $port > 65535){
 				$this->error($this->lang->translate(KnownTranslationFactory::invalid_port()));
 				continue;
 			}
@@ -264,7 +261,7 @@ LICENSE;
 	private function getInput(string $message, string $default = "", string $options = "") : string{
 		$message = "[?] " . $message;
 
-		if($options !== "" or $default !== ""){
+		if($options !== "" || $default !== ""){
 			$message .= " (" . ($options === "" ? $default : $options) . ")";
 		}
 		$message .= ": ";

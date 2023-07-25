@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -38,8 +38,8 @@ use function posix_kill;
 use function preg_match;
 use function proc_close;
 use function proc_open;
+use function str_starts_with;
 use function stream_get_contents;
-use function strpos;
 use function trim;
 
 final class Process{
@@ -56,7 +56,7 @@ final class Process{
 		$reserved = memory_get_usage();
 		$VmSize = null;
 		$VmRSS = null;
-		if(Utils::getOS() === Utils::OS_LINUX or Utils::getOS() === Utils::OS_ANDROID){
+		if(Utils::getOS() === Utils::OS_LINUX || Utils::getOS() === Utils::OS_ANDROID){
 			$status = @file_get_contents("/proc/self/status");
 			if($status === false) throw new AssumptionFailedError("/proc/self/status should always be accessible");
 
@@ -94,14 +94,14 @@ final class Process{
 		$stack = 0;
 		$heap = 0;
 
-		if(Utils::getOS() === Utils::OS_LINUX or Utils::getOS() === Utils::OS_ANDROID){
+		if(Utils::getOS() === Utils::OS_LINUX || Utils::getOS() === Utils::OS_ANDROID){
 			$mappings = @file("/proc/self/maps");
 			if($mappings === false) throw new AssumptionFailedError("/proc/self/maps should always be accessible");
 			foreach($mappings as $line){
 				if(preg_match("#([a-z0-9]+)\\-([a-z0-9]+) [rwxp\\-]{4} [a-z0-9]+ [^\\[]*\\[([a-zA-z0-9]+)\\]#", trim($line), $matches) > 0){
-					if(strpos($matches[3], "heap") === 0){
+					if(str_starts_with($matches[3], "heap")){
 						$heap += (int) hexdec($matches[2]) - (int) hexdec($matches[1]);
-					}elseif(strpos($matches[3], "stack") === 0){
+					}elseif(str_starts_with($matches[3], "stack")){
 						$stack += (int) hexdec($matches[2]) - (int) hexdec($matches[1]);
 					}
 				}
@@ -112,7 +112,7 @@ final class Process{
 	}
 
 	public static function getThreadCount() : int{
-		if(Utils::getOS() === Utils::OS_LINUX or Utils::getOS() === Utils::OS_ANDROID){
+		if(Utils::getOS() === Utils::OS_LINUX || Utils::getOS() === Utils::OS_ANDROID){
 			$status = @file_get_contents("/proc/self/status");
 			if($status === false) throw new AssumptionFailedError("/proc/self/status should always be accessible");
 			if(preg_match("/Threads:[ \t]+([0-9]+)/", $status, $matches) > 0){
@@ -125,7 +125,10 @@ final class Process{
 		return count(ThreadManager::getInstance()->getAll()) + 2; //MainLogger + Main Thread
 	}
 
-	public static function kill(int $pid, bool $subprocesses) : void{
+	/**
+	 * @param bool $subprocesses @deprecated
+	 */
+	public static function kill(int $pid, bool $subprocesses = false) : void{
 		$logger = \GlobalLogger::get();
 		if($logger instanceof MainLogger){
 			$logger->syncFlushBuffer();
@@ -150,12 +153,14 @@ final class Process{
 
 	/**
 	 * @param string      $command Command to execute
-	 * @param string|null $stdout Reference parameter to write stdout to
-	 * @param string|null $stderr Reference parameter to write stderr to
+	 * @param string|null $stdout  Reference parameter to write stdout to
+	 * @param string|null $stderr  Reference parameter to write stderr to
+	 * @phpstan-param-out string $stdout
+	 * @phpstan-param-out string $stderr
 	 *
 	 * @return int process exit code
 	 */
-	public static function execute(string $command, string &$stdout = null, string &$stderr = null) : int{
+	public static function execute(string $command, ?string &$stdout = null, ?string &$stderr = null) : int{
 		$process = proc_open($command, [
 			["pipe", "r"],
 			["pipe", "w"],

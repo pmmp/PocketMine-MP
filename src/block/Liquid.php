@@ -17,14 +17,15 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\MinimumCostFlowCalculator;
+use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockFormEvent;
 use pocketmine\event\block\BlockSpreadEvent;
@@ -37,8 +38,7 @@ use pocketmine\world\sound\Sound;
 use function lcg_value;
 
 abstract class Liquid extends Transparent{
-
-	protected BlockIdentifierFlattened $idInfoFlattened;
+	public const MAX_DECAY = 7;
 
 	public int $adjacentSources = 0;
 
@@ -48,27 +48,10 @@ abstract class Liquid extends Transparent{
 	protected int $decay = 0; //PC "level" property
 	protected bool $still = false;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
-		$this->idInfoFlattened = $idInfo;
-		parent::__construct($idInfo, $name, $breakInfo);
-	}
-
-	public function getId() : int{
-		return $this->still ? $this->idInfoFlattened->getSecondId() : parent::getId();
-	}
-
-	protected function writeStateToMeta() : int{
-		return $this->decay | ($this->falling ? BlockLegacyMetadata::LIQUID_FLAG_FALLING : 0);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->decay = BlockDataSerializer::readBoundedInt("decay", $stateMeta & 0x07, 0, 7);
-		$this->falling = ($stateMeta & BlockLegacyMetadata::LIQUID_FLAG_FALLING) !== 0;
-		$this->still = $id === $this->idInfoFlattened->getSecondId();
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->boundedInt(3, 0, self::MAX_DECAY, $this->decay);
+		$w->bool($this->falling);
+		$w->bool($this->still);
 	}
 
 	public function isFalling() : bool{ return $this->falling; }
@@ -83,6 +66,9 @@ abstract class Liquid extends Transparent{
 
 	/** @return $this */
 	public function setDecay(int $decay) : self{
+		if($decay < 0 || $decay > self::MAX_DECAY){
+			throw new \InvalidArgumentException("Decay must be in range 0 ... " . self::MAX_DECAY);
+		}
 		$this->decay = $decay;
 		return $this;
 	}
@@ -110,6 +96,10 @@ abstract class Liquid extends Transparent{
 		return [];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [];
 	}
@@ -131,7 +121,7 @@ abstract class Liquid extends Transparent{
 	abstract public function getBucketEmptySound() : Sound;
 
 	public function isSource() : bool{
-		return !$this->falling and $this->decay === 0;
+		return !$this->falling && $this->decay === 0;
 	}
 
 	/**
@@ -154,16 +144,18 @@ abstract class Liquid extends Transparent{
 	}
 
 	protected function getEffectiveFlowDecay(Block $block) : int{
-		if(!($block instanceof Liquid) or !$block->isSameType($this)){
+		if(!($block instanceof Liquid) || !$block->hasSameTypeId($this)){
 			return -1;
 		}
 
 		return $block->falling ? 0 : $block->decay;
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$this->flowVector = null;
+
+		return $this;
 	}
 
 	public function getFlowVector() : Vector3{
@@ -279,7 +271,7 @@ abstract class Liquid extends Transparent{
 			$newDecay = $smallestFlowDecay + $multiplier;
 			$falling = false;
 
-			if($newDecay >= 8 or $smallestFlowDecay < 0){
+			if($newDecay > self::MAX_DECAY || $smallestFlowDecay < 0){
 				$newDecay = -1;
 			}
 
@@ -290,14 +282,14 @@ abstract class Liquid extends Transparent{
 			$minAdjacentSources = $this->getMinAdjacentSourcesToFormSource();
 			if($minAdjacentSources !== null && $this->adjacentSources >= $minAdjacentSources){
 				$bottomBlock = $world->getBlockAt($this->position->x, $this->position->y - 1, $this->position->z);
-				if($bottomBlock->isSolid() or ($bottomBlock instanceof Liquid and $bottomBlock->isSameType($this) and $bottomBlock->isSource())){
+				if($bottomBlock->isSolid() || ($bottomBlock instanceof Liquid && $bottomBlock->hasSameTypeId($this) && $bottomBlock->isSource())){
 					$newDecay = 0;
 					$falling = false;
 				}
 			}
 
-			if($falling !== $this->falling or (!$falling and $newDecay !== $this->decay)){
-				if(!$falling and $newDecay < 0){
+			if($falling !== $this->falling || (!$falling && $newDecay !== $this->decay)){
+				if(!$falling && $newDecay < 0){
 					$world->setBlock($this->position, VanillaBlocks::AIR());
 					return;
 				}
@@ -312,15 +304,15 @@ abstract class Liquid extends Transparent{
 
 		$this->flowIntoBlock($bottomBlock, 0, true);
 
-		if($this->isSource() or !$bottomBlock->canBeFlowedInto()){
+		if($this->isSource() || !$bottomBlock->canBeFlowedInto()){
 			if($this->falling){
 				$adjacentDecay = 1; //falling liquid behaves like source block
 			}else{
 				$adjacentDecay = $this->decay + $multiplier;
 			}
 
-			if($adjacentDecay < 8){
-				$calculator = new MinimumCostFlowCalculator($this->position->getWorld(), $this->getFlowDecayPerBlock(), \Closure::fromCallable([$this, 'canFlowInto']));
+			if($adjacentDecay <= self::MAX_DECAY){
+				$calculator = new MinimumCostFlowCalculator($world, $this->getFlowDecayPerBlock(), $this->canFlowInto(...));
 				foreach($calculator->getOptimalFlowDirections($this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ()) as $facing){
 					$this->flowIntoBlock($world->getBlock($this->position->getSide($facing)), $adjacentDecay, false);
 				}
@@ -331,7 +323,7 @@ abstract class Liquid extends Transparent{
 	}
 
 	protected function flowIntoBlock(Block $block, int $newFlowDecay, bool $falling) : void{
-		if($this->canFlowInto($block) and !($block instanceof Liquid)){
+		if($this->canFlowInto($block) && !($block instanceof Liquid)){
 			$new = clone $this;
 			$new->falling = $falling;
 			$new->decay = $falling ? 0 : $newFlowDecay;
@@ -339,18 +331,19 @@ abstract class Liquid extends Transparent{
 			$ev = new BlockSpreadEvent($block, $this, $new);
 			$ev->call();
 			if(!$ev->isCancelled()){
-				if($block->getId() > 0){
-					$this->position->getWorld()->useBreakOn($block->position);
+				$world = $this->position->getWorld();
+				if($block->getTypeId() !== BlockTypeIds::AIR){
+					$world->useBreakOn($block->position);
 				}
 
-				$this->position->getWorld()->setBlock($block->position, $ev->getNewState());
+				$world->setBlock($block->position, $ev->getNewState());
 			}
 		}
 	}
 
 	/** @phpstan-impure */
 	private function getSmallestFlowDecay(Block $block, int $decay) : int{
-		if(!($block instanceof Liquid) or !$block->isSameType($this)){
+		if(!($block instanceof Liquid) || !$block->hasSameTypeId($this)){
 			return $decay;
 		}
 
@@ -370,19 +363,20 @@ abstract class Liquid extends Transparent{
 	}
 
 	protected function liquidCollide(Block $cause, Block $result) : bool{
-		$ev = new BlockFormEvent($this, $result);
+		$ev = new BlockFormEvent($this, $result, $cause);
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
-			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new FizzSound(2.6 + (lcg_value() - lcg_value()) * 0.8));
+			$world = $this->position->getWorld();
+			$world->setBlock($this->position, $ev->getNewState());
+			$world->addSound($this->position->add(0.5, 0.5, 0.5), new FizzSound(2.6 + (lcg_value() - lcg_value()) * 0.8));
 		}
 		return true;
 	}
 
 	protected function canFlowInto(Block $block) : bool{
 		return
-			$this->position->getWorld()->isInWorld($block->position->x, $block->position->y, $block->position->z) and
-			$block->canBeFlowedInto() and
-			!($block instanceof Liquid and $block->isSource()); //TODO: I think this should only be liquids of the same type
+			$this->position->getWorld()->isInWorld($block->position->x, $block->position->y, $block->position->z) &&
+			$block->canBeFlowedInto() &&
+			!($block instanceof Liquid && $block->isSource()); //TODO: I think this should only be liquids of the same type
 	}
 }

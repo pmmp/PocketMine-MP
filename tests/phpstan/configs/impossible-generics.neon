@@ -10,8 +10,3 @@ parameters:
 			count: 1
 			path: ../../../src/event/RegisteredListener.php
 
-		-
-			message: "#^Property pocketmine\\\\event\\\\RegisteredListener\\:\\:\\$handler type has no signature specified for Closure\\.$#"
-			count: 1
-			path: ../../../src/event/RegisteredListener.php
-

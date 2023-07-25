@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -38,10 +38,9 @@ final class PromiseResolver{
 	}
 
 	/**
-	 * @param mixed $value
 	 * @phpstan-param TValue $value
 	 */
-	public function resolve($value) : void{
+	public function resolve(mixed $value) : void{
 		if($this->shared->resolved){
 			throw new \LogicException("Promise has already been resolved/rejected");
 		}

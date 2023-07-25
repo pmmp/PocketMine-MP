@@ -17,13 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
+use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -32,7 +32,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 final class WallSign extends BaseSign{
-	use NormalHorizontalFacingInMetadataTrait;
+	use HorizontalFacingTrait;
 
 	protected function getSupportingFace() : int{
 		return Facing::opposite($this->facing);

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -46,21 +46,14 @@ final class ZlibCompressor implements Compressor{
 		return new self(self::DEFAULT_LEVEL, self::DEFAULT_THRESHOLD, self::DEFAULT_MAX_DECOMPRESSION_SIZE);
 	}
 
-	/** @var int */
-	private $level;
-	/** @var int */
-	private $threshold;
-	/** @var int */
-	private $maxDecompressionSize;
+	public function __construct(
+		private int $level,
+		private ?int $minCompressionSize,
+		private int $maxDecompressionSize
+	){}
 
-	public function __construct(int $level, int $minCompressionSize, int $maxDecompressionSize){
-		$this->level = $level;
-		$this->threshold = $minCompressionSize;
-		$this->maxDecompressionSize = $maxDecompressionSize;
-	}
-
-	public function willCompress(string $data) : bool{
-		return $this->threshold > -1 and strlen($data) >= $this->threshold;
+	public function getCompressionThreshold() : ?int{
+		return $this->minCompressionSize;
 	}
 
 	/**
@@ -79,11 +72,12 @@ final class ZlibCompressor implements Compressor{
 	}
 
 	public function compress(string $payload) : string{
+		$compressible = $this->minCompressionSize !== null && strlen($payload) >= $this->minCompressionSize;
 		if(function_exists('libdeflate_deflate_compress')){
-			return $this->willCompress($payload) ?
+			return $compressible ?
 				libdeflate_deflate_compress($payload, $this->level) :
 				self::zlib_encode($payload, 0);
 		}
-		return self::zlib_encode($payload, $this->willCompress($payload) ? $this->level : 0);
+		return self::zlib_encode($payload, $compressible ? $this->level : 0);
 	}
 }

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -37,24 +37,17 @@ class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
 	public const ACTION_SWAP_PAGES = 3;
 	public const ACTION_SIGN_BOOK = 4;
 
-	/** @var WritableBookBase */
-	private $oldBook;
-	/** @var int */
-	private $action;
-	/** @var WritableBookBase */
-	private $newBook;
-	/** @var int[] */
-	private $modifiedPages;
-
 	/**
 	 * @param int[] $modifiedPages
 	 */
-	public function __construct(Player $player, WritableBookBase $oldBook, WritableBookBase $newBook, int $action, array $modifiedPages){
+	public function __construct(
+		Player $player,
+		private WritableBookBase $oldBook,
+		private WritableBookBase $newBook,
+		private int $action,
+		private array $modifiedPages
+	){
 		$this->player = $player;
-		$this->oldBook = $oldBook;
-		$this->newBook = $newBook;
-		$this->action = $action;
-		$this->modifiedPages = $modifiedPages;
 	}
 
 	/**

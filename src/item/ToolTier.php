@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -34,6 +34,7 @@ use pocketmine\utils\EnumTrait;
  * @method static ToolTier DIAMOND()
  * @method static ToolTier GOLD()
  * @method static ToolTier IRON()
+ * @method static ToolTier NETHERITE()
  * @method static ToolTier STONE()
  * @method static ToolTier WOOD()
  */
@@ -48,25 +49,19 @@ final class ToolTier{
 			new self("gold", 2, 33, 5, 12),
 			new self("stone", 3, 132, 6, 4),
 			new self("iron", 4, 251, 7, 6),
-			new self("diamond", 5, 1562, 8, 8)
+			new self("diamond", 5, 1562, 8, 8),
+			new self("netherite", 6, 2032, 9, 9)
 		);
 	}
 
-	/** @var int */
-	private $harvestLevel;
-	/** @var int */
-	private $maxDurability;
-	/** @var int */
-	private $baseAttackPoints;
-	/** @var int */
-	private $baseEfficiency;
-
-	private function __construct(string $name, int $harvestLevel, int $maxDurability, int $baseAttackPoints, int $baseEfficiency){
+	private function __construct(
+		string $name,
+		private int $harvestLevel,
+		private int $maxDurability,
+		private int $baseAttackPoints,
+		private int $baseEfficiency
+	){
 		$this->Enum___construct($name);
-		$this->harvestLevel = $harvestLevel;
-		$this->maxDurability = $maxDurability;
-		$this->baseAttackPoints = $baseAttackPoints;
-		$this->baseEfficiency = $baseEfficiency;
 	}
 
 	public function getHarvestLevel() : int{

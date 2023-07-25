@@ -17,13 +17,12 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\world\generator\object;
 
-use pocketmine\block\utils\TreeType;
 use pocketmine\utils\Random;
 
 final class TreeFactory{
@@ -50,6 +49,8 @@ final class TreeFactory{
 			}else{*/
 
 			//}
+		}elseif($type->equals(TreeType::ACACIA())){
+			return new AcaciaTree();
 		}
 		return null;
 	}

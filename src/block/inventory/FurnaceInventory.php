@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -35,11 +35,11 @@ class FurnaceInventory extends SimpleInventory implements BlockInventory{
 	public const SLOT_FUEL = 1;
 	public const SLOT_RESULT = 2;
 
-	private FurnaceType $furnaceType;
-
-	public function __construct(Position $holder, FurnaceType $furnaceType){
+	public function __construct(
+		Position $holder,
+		private FurnaceType $furnaceType
+	){
 		$this->holder = $holder;
-		$this->furnaceType = $furnaceType;
 		parent::__construct(3);
 	}
 

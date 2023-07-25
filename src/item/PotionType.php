@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -65,6 +65,7 @@ use pocketmine\utils\EnumTrait;
  * @method static PotionType STRONG_LEAPING()
  * @method static PotionType STRONG_POISON()
  * @method static PotionType STRONG_REGENERATION()
+ * @method static PotionType STRONG_SLOWNESS()
  * @method static PotionType STRONG_STRENGTH()
  * @method static PotionType STRONG_SWIFTNESS()
  * @method static PotionType STRONG_TURTLE_MASTER()
@@ -80,8 +81,6 @@ final class PotionType{
 	use EnumTrait {
 		__construct as Enum___construct;
 	}
-
-	private string $displayName;
 
 	protected static function setup() : void{
 		self::registerAll(
@@ -187,33 +186,38 @@ final class PotionType{
 				new EffectInstance(VanillaEffects::WITHER(), 800, 1)
 			]),
 			new self("turtle_master", "Turtle Master", fn() => [
-				//TODO
+				new EffectInstance(VanillaEffects::SLOWNESS(), 20 * 20, 3),
+				new EffectInstance(VanillaEffects::RESISTANCE(), 20 * 20, 2),
 			]),
 			new self("long_turtle_master", "Long Turtle Master", fn() => [
-				//TODO
+				new EffectInstance(VanillaEffects::SLOWNESS(), 40 * 20, 3),
+				new EffectInstance(VanillaEffects::RESISTANCE(), 40 * 20, 2),
 			]),
 			new self("strong_turtle_master", "Strong Turtle Master", fn() => [
-				//TODO
+				new EffectInstance(VanillaEffects::SLOWNESS(), 20 * 20, 5),
+				new EffectInstance(VanillaEffects::RESISTANCE(), 20 * 20, 3),
 			]),
 			new self("slow_falling", "Slow Falling", fn() => [
 				//TODO
 			]),
 			new self("long_slow_falling", "Long Slow Falling", fn() => [
 				//TODO
+			]),
+			new self("strong_slowness", "Strong Slowness", fn() => [
+				new EffectInstance(VanillaEffects::SLOWNESS(), 20 * 20, 3)
 			])
 		);
 	}
 
-	/** @phpstan-var \Closure() : list<EffectInstance>  */
-	private \Closure $effectsGetter;
-
 	/**
 	 * @phpstan-param \Closure() : list<EffectInstance> $effectsGetter
 	 */
-	private function __construct(string $enumName, string $displayName, \Closure $effectsGetter){
+	private function __construct(
+		string $enumName,
+		private string $displayName,
+		private \Closure $effectsGetter
+	){
 		$this->Enum___construct($enumName);
-		$this->displayName = $displayName;
-		$this->effectsGetter = $effectsGetter;
 	}
 
 	public function getDisplayName() : string{ return $this->displayName; }

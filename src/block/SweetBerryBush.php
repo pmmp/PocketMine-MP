@@ -17,13 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\FortuneDropHelper;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\block\BlockGrowEvent;
@@ -45,16 +46,8 @@ class SweetBerryBush extends Flowable{
 
 	protected int $age = self::STAGE_SAPLING;
 
-	protected function writeStateToMeta() : int{
-		return $this->age;
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->age = BlockDataSerializer::readBoundedInt("stage", $stateMeta, self::STAGE_SAPLING, self::STAGE_MATURE);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->boundedInt(3, self::STAGE_SAPLING, self::STAGE_MATURE, $this->age);
 	}
 
 	public function getAge() : int{ return $this->age; }
@@ -78,8 +71,8 @@ class SweetBerryBush extends Flowable{
 	}
 
 	protected function canBeSupportedBy(Block $block) : bool{
-		$id = $block->getId();
-		return $id === BlockLegacyIds::GRASS || $id === BlockLegacyIds::DIRT || $id === BlockLegacyIds::PODZOL;
+		return $block->getTypeId() !== BlockTypeIds::FARMLAND && //bedrock-specific thing (bug?)
+			($block->hasTypeTag(BlockTypeTags::DIRT) || $block->hasTypeTag(BlockTypeTags::MUD));
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
@@ -89,22 +82,23 @@ class SweetBerryBush extends Flowable{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		$world = $this->position->getWorld();
 		if($this->age < self::STAGE_MATURE && $item instanceof Fertilizer){
 			$block = clone $this;
 			$block->age++;
 
-			$ev = new BlockGrowEvent($this, $block);
+			$ev = new BlockGrowEvent($this, $block, $player);
 			$ev->call();
 
 			if(!$ev->isCancelled()){
-				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
+				$world->setBlock($this->position, $ev->getNewState());
 				$item->pop();
 			}
 
 		}elseif(($dropAmount = $this->getBerryDropAmount()) > 0){
-			$this->position->getWorld()->setBlock($this->position, $this->setAge(self::STAGE_BUSH_NO_BERRIES));
-			$this->position->getWorld()->dropItem($this->position, $this->asItem()->setCount($dropAmount));
+			$world->setBlock($this->position, $this->setAge(self::STAGE_BUSH_NO_BERRIES));
+			$world->dropItem($this->position, $this->asItem()->setCount($dropAmount));
 		}
 
 		return true;
@@ -115,13 +109,14 @@ class SweetBerryBush extends Flowable{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if(($dropAmount = $this->getBerryDropAmount()) > 0){
-			return [
-				$this->asItem()->setCount($dropAmount)
-			];
-		}
-
-		return [];
+		$count = match($this->age){
+			self::STAGE_MATURE => FortuneDropHelper::discrete($item, 2, 3),
+			self::STAGE_BUSH_SOME_BERRIES => FortuneDropHelper::discrete($item, 1, 2),
+			default => 0
+		};
+		return [
+			$this->asItem()->setCount($count)
+		];
 	}
 
 	public function onNearbyBlockChange() : void{
@@ -135,7 +130,7 @@ class SweetBerryBush extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->age < self::STAGE_MATURE and mt_rand(0, 2) === 1){
+		if($this->age < self::STAGE_MATURE && mt_rand(0, 2) === 1){
 			$block = clone $this;
 			++$block->age;
 			$ev = new BlockGrowEvent($this, $block);
@@ -151,9 +146,11 @@ class SweetBerryBush extends Flowable{
 	}
 
 	public function onEntityInside(Entity $entity) : bool{
-		//TODO: in MCPE, this only triggers if moving while inside the bush block - we don't have the system to deal
-		//with that reliably right now
 		if($this->age >= self::STAGE_BUSH_NO_BERRIES && $entity instanceof Living){
+			$entity->resetFallDistance();
+
+			//TODO: in MCPE, this only triggers if moving while inside the bush block - we don't have the system to deal
+			//with that reliably right now
 			$entity->attack(new EntityDamageByBlockEvent($this, $entity, EntityDamageByBlockEvent::CAUSE_CONTACT, 1));
 		}
 		return true;

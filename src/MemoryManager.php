@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,7 +30,7 @@ use pocketmine\scheduler\GarbageCollectionTask;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Process;
 use pocketmine\utils\Utils;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function arsort;
 use function count;
 use function fclose;
@@ -49,6 +49,7 @@ use function ini_get;
 use function ini_set;
 use function intdiv;
 use function is_array;
+use function is_float;
 use function is_object;
 use function is_resource;
 use function is_string;
@@ -69,8 +70,9 @@ use const JSON_UNESCAPED_SLASHES;
 use const SORT_NUMERIC;
 
 class MemoryManager{
-
-	private Server $server;
+	private const DEFAULT_CHECK_RATE = Server::TARGET_TICKS_PER_SECOND;
+	private const DEFAULT_CONTINUOUS_TRIGGER_RATE = Server::TARGET_TICKS_PER_SECOND * 2;
+	private const DEFAULT_TICKS_PER_GC = 30 * 60 * Server::TARGET_TICKS_PER_SECOND;
 
 	private int $memoryLimit;
 	private int $globalMemoryLimit;
@@ -98,8 +100,9 @@ class MemoryManager{
 
 	private \Logger $logger;
 
-	public function __construct(Server $server){
-		$this->server = $server;
+	public function __construct(
+		private Server $server
+	){
 		$this->logger = new \PrefixedLogger($server->getLogger(), "Memory Manager");
 
 		$this->init($server->getConfigGroup());
@@ -115,20 +118,12 @@ class MemoryManager{
 			if($m <= 0){
 				$defaultMemory = 0;
 			}else{
-				switch(mb_strtoupper($matches[2])){
-					case "K":
-						$defaultMemory = intdiv($m, 1024);
-						break;
-					case "M":
-						$defaultMemory = $m;
-						break;
-					case "G":
-						$defaultMemory = $m * 1024;
-						break;
-					default:
-						$defaultMemory = $m;
-						break;
-				}
+				$defaultMemory = match(mb_strtoupper($matches[2])){
+					"K" => intdiv($m, 1024),
+					"M" => $m,
+					"G" => $m * 1024,
+					default => $m,
+				};
 			}
 		}
 
@@ -141,11 +136,11 @@ class MemoryManager{
 		}
 
 		$this->globalMemoryLimit = $config->getPropertyInt("memory.global-limit", 0) * 1024 * 1024;
-		$this->checkRate = $config->getPropertyInt("memory.check-rate", 20);
+		$this->checkRate = $config->getPropertyInt("memory.check-rate", self::DEFAULT_CHECK_RATE);
 		$this->continuousTrigger = $config->getPropertyBool("memory.continuous-trigger", true);
-		$this->continuousTriggerRate = $config->getPropertyInt("memory.continuous-trigger-rate", 30);
+		$this->continuousTriggerRate = $config->getPropertyInt("memory.continuous-trigger-rate", self::DEFAULT_CONTINUOUS_TRIGGER_RATE);
 
-		$this->garbageCollectionPeriod = $config->getPropertyInt("memory.garbage-collection.period", 36000);
+		$this->garbageCollectionPeriod = $config->getPropertyInt("memory.garbage-collection.period", self::DEFAULT_TICKS_PER_GC);
 		$this->garbageCollectionTrigger = $config->getPropertyBool("memory.garbage-collection.low-memory-trigger", true);
 		$this->garbageCollectionAsync = $config->getPropertyBool("memory.garbage-collection.collect-async-worker", true);
 
@@ -168,14 +163,14 @@ class MemoryManager{
 	}
 
 	public function canUseChunkCache() : bool{
-		return !$this->lowMemory or !$this->lowMemDisableChunkCache;
+		return !$this->lowMemory || !$this->lowMemDisableChunkCache;
 	}
 
 	/**
 	 * Returns the allowed chunk radius based on the current memory usage.
 	 */
 	public function getViewDistance(int $distance) : int{
-		return ($this->lowMemory and $this->lowMemChunkRadiusOverride > 0) ? min($this->lowMemChunkRadiusOverride, $distance) : $distance;
+		return ($this->lowMemory && $this->lowMemChunkRadiusOverride > 0) ? min($this->lowMemChunkRadiusOverride, $distance) : $distance;
 	}
 
 	/**
@@ -214,18 +209,18 @@ class MemoryManager{
 	public function check() : void{
 		Timings::$memoryManager->startTiming();
 
-		if(($this->memoryLimit > 0 or $this->globalMemoryLimit > 0) and ++$this->checkTicker >= $this->checkRate){
+		if(($this->memoryLimit > 0 || $this->globalMemoryLimit > 0) && ++$this->checkTicker >= $this->checkRate){
 			$this->checkTicker = 0;
 			$memory = Process::getAdvancedMemoryUsage();
 			$trigger = false;
-			if($this->memoryLimit > 0 and $memory[0] > $this->memoryLimit){
+			if($this->memoryLimit > 0 && $memory[0] > $this->memoryLimit){
 				$trigger = 0;
-			}elseif($this->globalMemoryLimit > 0 and $memory[1] > $this->globalMemoryLimit){
+			}elseif($this->globalMemoryLimit > 0 && $memory[1] > $this->globalMemoryLimit){
 				$trigger = 1;
 			}
 
 			if($trigger !== false){
-				if($this->lowMemory and $this->continuousTrigger){
+				if($this->lowMemory && $this->continuousTrigger){
 					if(++$this->continuousTriggerTicker >= $this->continuousTriggerRate){
 						$this->continuousTriggerTicker = 0;
 						$this->trigger($memory[$trigger], $this->memoryLimit, $trigger > 0, ++$this->continuousTriggerCount);
@@ -240,7 +235,7 @@ class MemoryManager{
 			}
 		}
 
-		if($this->garbageCollectionPeriod > 0 and ++$this->garbageCollectionTicker >= $this->garbageCollectionPeriod){
+		if($this->garbageCollectionPeriod > 0 && ++$this->garbageCollectionTicker >= $this->garbageCollectionPeriod){
 			$this->garbageCollectionTicker = 0;
 			$this->triggerGarbageCollector();
 		}
@@ -287,10 +282,8 @@ class MemoryManager{
 
 	/**
 	 * Static memory dumper accessible from any thread.
-	 *
-	 * @param mixed   $startingObject
 	 */
-	public static function dumpMemory($startingObject, string $outputFolder, int $maxNesting, int $maxStringSize, \Logger $logger) : void{
+	public static function dumpMemory(mixed $startingObject, string $outputFolder, int $maxNesting, int $maxStringSize, \Logger $logger) : void{
 		$hardLimit = Utils::assumeNotFalse(ini_get('memory_limit'), "memory_limit INI directive should always exist");
 		ini_set('memory_limit', '-1');
 		gc_disable();
@@ -317,13 +310,10 @@ class MemoryManager{
 			$reflection = new \ReflectionClass($className);
 			$staticProperties[$className] = [];
 			foreach($reflection->getProperties() as $property){
-				if(!$property->isStatic() or $property->getDeclaringClass()->getName() !== $className){
+				if(!$property->isStatic() || $property->getDeclaringClass()->getName() !== $className){
 					continue;
 				}
 
-				if(!$property->isPublic()){
-					$property->setAccessible(true);
-				}
 				if(!$property->isInitialized()){
 					continue;
 				}
@@ -400,7 +390,7 @@ class MemoryManager{
 
 		do{
 			$continue = false;
-			foreach($objects as $hash => $object){
+			foreach(Utils::stringifyKeys($objects) as $hash => $object){
 				if(!is_object($object)){
 					continue;
 				}
@@ -447,9 +437,6 @@ class MemoryManager{
 									continue;
 								}
 							}
-							if(!$property->isPublic()){
-								$property->setAccessible(true);
-							}
 							if(!$property->isInitialized($object)){
 								continue;
 							}
@@ -481,13 +468,15 @@ class MemoryManager{
 	}
 
 	/**
-	 * @param mixed    $from
-	 * @param object[] $objects reference parameter
+	 * @param object[] $objects   reference parameter
 	 * @param int[]    $refCounts reference parameter
 	 *
-	 * @return mixed
+	 * @phpstan-param array<string, object> $objects
+	 * @phpstan-param array<string, int> $refCounts
+	 * @phpstan-param-out array<string, object> $objects
+	 * @phpstan-param-out array<string, int> $refCounts
 	 */
-	private static function continueDump($from, array &$objects, array &$refCounts, int $recursion, int $maxNesting, int $maxStringSize){
+	private static function continueDump(mixed $from, array &$objects, array &$refCounts, int $recursion, int $maxNesting, int $maxStringSize) : mixed{
 		if($maxNesting <= 0){
 			return "(error) NESTING LIMIT REACHED";
 		}
@@ -508,13 +497,20 @@ class MemoryManager{
 				return "(error) ARRAY RECURSION LIMIT REACHED";
 			}
 			$data = [];
+			$numeric = 0;
 			foreach($from as $key => $value){
-				$data[$key] = self::continueDump($value, $objects, $refCounts, $recursion + 1, $maxNesting, $maxStringSize);
+				$data[$numeric] = [
+					"k" => self::continueDump($key, $objects, $refCounts, $recursion + 1, $maxNesting, $maxStringSize),
+					"v" => self::continueDump($value, $objects, $refCounts, $recursion + 1, $maxNesting, $maxStringSize),
+				];
+				$numeric++;
 			}
 		}elseif(is_string($from)){
 			$data = "(string) len(" . strlen($from) . ") " . substr(Utils::printable($from), 0, $maxStringSize);
 		}elseif(is_resource($from)){
 			$data = "(resource) " . print_r($from, true);
+		}elseif(is_float($from)){
+			$data = "(float) $from";
 		}else{
 			$data = $from;
 		}
