@@ -1904,9 +1904,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$this->broadcastSound(new EntityAttackNoDamageSound());
-			// https://bugs.mojang.com/browse/MCPE-107865
-			// In vanilla, this animation doesn't play when using touch controls, but
-			// it's marked as unresolved, so it does here
 			$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
 		}
 	}
