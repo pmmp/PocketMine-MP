@@ -108,16 +108,14 @@ class Hopper extends Transparent implements HopperInteractable{
 			return;
 		}
 
-		$facingBlock = $this->getSide($this->facing);
 		$topBlock = $this->getSide(Facing::UP);
-
 		$pushSuccess = false;
-		$pullSuccess = false;
-
 		if($topBlock instanceof HopperInteractable){
 			$pushSuccess = $topBlock->doHopperPush($tileHopper->getInventory());
 		}
 
+		$facingBlock = $this->getSide($this->facing);
+		$pullSuccess = false;
 		if($facingBlock instanceof HopperInteractable){
 			$pullSuccess = $facingBlock->doHopperPull($tileHopper->getInventory(), $hopperBlock);
 		}
