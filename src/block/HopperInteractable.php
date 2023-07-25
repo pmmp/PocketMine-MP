@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\Hopper;
 use pocketmine\inventory\Inventory;
 
 interface HopperInteractable{
