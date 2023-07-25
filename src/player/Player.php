@@ -1897,16 +1897,17 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	/**
 	 * Performs actions associated with the attack action (left-click) without a target entity.
-	 * Under normal circumstances, this will play the no-damage attack sound and nothing else.
+	 * Under normal circumstances, this will play the no-damage attack sound and animation and nothing else.
 	 */
-	public function missSwing(bool $broadcastAnimation) : void{
+	public function missSwing() : void{
 		$ev = new PlayerMissedSwingEvent($this);
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$this->broadcastSound(new EntityAttackNoDamageSound());
-			if($broadcastAnimation){
-				$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
-			}
+			// https://bugs.mojang.com/browse/MCPE-107865
+			// In vanilla, this animation doesn't play when using touch controls, but
+			// it's marked as unresolved, so it does here
+			$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
 		}
 	}
 
