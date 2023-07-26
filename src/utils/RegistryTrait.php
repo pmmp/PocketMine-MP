@@ -104,7 +104,7 @@ trait RegistryTrait{
 	 *
 	 * @return object
 	 */
-	public static function __callStatic($name, $arguments){
+	public static function __callStatic(string $name, array $arguments){
 		if(count($arguments) > 0){
 			throw new \ArgumentCountError("Expected exactly 0 arguments, " . count($arguments) . " passed");
 		}
