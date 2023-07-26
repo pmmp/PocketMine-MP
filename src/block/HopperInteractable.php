@@ -24,6 +24,15 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 interface HopperInteractable{
+	/**
+	 * Returns true/false if a hopper was successfully able to
+	 * push an item
+	 */
 	public function doHopperPush(Hopper $hopperBlock) : bool;
+
+	/**
+	 * Returns true/false if a hopper was successfully able to
+	 * pull an item
+	 */
 	public function doHopperPull(Hopper $hopperBlock) : bool;
 }
