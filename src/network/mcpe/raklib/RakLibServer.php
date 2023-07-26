@@ -77,7 +77,7 @@ class RakLibServer extends Thread{
 				if($crashInfo->getType() === SocketException::class){
 					throw new SocketException($crashInfo->getMessage());
 				}
-				throw new ThreadCrashException("RakLib failed to start", $crashInfo, $this->getThreadName());
+				throw new ThreadCrashException("RakLib failed to start", $crashInfo);
 			}
 		});
 	}

@@ -1529,7 +1529,7 @@ class Server{
 			$errfile = $info->getFile();
 			$errline = $info->getLine();
 			$printableTrace = $info->getTrace();
-			$thread = $e->getThreadName();
+			$thread = $info->getThreadName();
 		}else{
 			$type = get_class($e);
 			$errstr = $e->getMessage();

@@ -223,7 +223,7 @@ class AsyncPool{
 				}else{
 					$message = "Worker $workerId crashed while doing unknown work";
 				}
-				throw new ThreadCrashException($message, $info, $entry->worker->getThreadName());
+				throw new ThreadCrashException($message, $info);
 			}else{
 				throw new \RuntimeException("Worker $workerId crashed for unknown reason");
 			}

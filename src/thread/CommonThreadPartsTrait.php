@@ -114,7 +114,7 @@ trait CommonThreadPartsTrait{
 	 */
 	protected function onUncaughtException(\Throwable $e) : void{
 		$this->synchronized(function() use ($e) : void{
-			$this->crashInfo = ThreadCrashInfo::fromThrowable($e);
+			$this->crashInfo = ThreadCrashInfo::fromThrowable($e, $this->getThreadName());
 		});
 	}
 
@@ -128,10 +128,10 @@ trait CommonThreadPartsTrait{
 				$last = error_get_last();
 				if($last !== null){
 					//fatal error
-					$this->crashInfo = ThreadCrashInfo::fromLastErrorInfo($last);
+					$this->crashInfo = ThreadCrashInfo::fromLastErrorInfo($last, $this->getThreadName());
 				}else{
 					//probably misused exit()
-					$this->crashInfo = ThreadCrashInfo::fromThrowable(new \RuntimeException("Thread crashed without an error - perhaps exit() was called?"));
+					$this->crashInfo = ThreadCrashInfo::fromThrowable(new \RuntimeException("Thread crashed without an error - perhaps exit() was called?"), $this->getThreadName());
 				}
 			}
 		});

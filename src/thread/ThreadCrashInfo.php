@@ -44,26 +44,27 @@ final class ThreadCrashInfo extends ThreadSafe{
 		private string $message,
 		private string $file,
 		private int $line,
-		array $trace
+		array $trace,
+		private string $threadName
 	){
 		$this->trace = ThreadSafeArray::fromArray($trace);
 	}
 
-	public static function fromThrowable(\Throwable $e) : self{
-		return new self(get_class($e), $e->getMessage(), $e->getFile(), $e->getLine(), Utils::printableTraceWithMetadata($e->getTrace()));
+	public static function fromThrowable(\Throwable $e, string $threadName) : self{
+		return new self(get_class($e), $e->getMessage(), $e->getFile(), $e->getLine(), Utils::printableTraceWithMetadata($e->getTrace()), $threadName);
 	}
 
 	/**
 	 * @phpstan-param array{type: int, message: string, file: string, line: int} $info
 	 */
-	public static function fromLastErrorInfo(array $info) : self{
+	public static function fromLastErrorInfo(array $info, string $threadName) : self{
 		//sadly it's not possible to get a stack trace from a fatal error
 		try{
 			$class = ErrorTypeToStringMap::get($info["type"]);
 		}catch(\InvalidArgumentException){
 			$class = "Unknown error type (" . $info["type"] . ")";
 		}
-		return new self($class, $info["message"], $info["file"], $info["line"], []);
+		return new self($class, $info["message"], $info["file"], $info["line"], [], $threadName);
 	}
 
 	public function getType() : string{ return $this->type; }
@@ -80,6 +81,8 @@ final class ThreadCrashInfo extends ThreadSafe{
 	public function getTrace() : array{
 		return (array) $this->trace;
 	}
+
+	public function getThreadName() : string{ return $this->threadName; }
 
 	public function makePrettyMessage() : string{
 		return sprintf("%s: \"%s\" in \"%s\" on line %d", $this->type ?? "Fatal error", $this->message, Filesystem::cleanPath($this->file), $this->line);

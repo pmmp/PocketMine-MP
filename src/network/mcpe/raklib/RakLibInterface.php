@@ -155,7 +155,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		if(!$this->rakLib->isRunning()){
 			$e = $this->rakLib->getCrashInfo();
 			if($e !== null){
-				throw new ThreadCrashException("RakLib crashed", $e, $this->rakLib->getThreadName());
+				throw new ThreadCrashException("RakLib crashed", $e);
 			}
 			throw new \Exception("RakLib Thread crashed without crash information");
 		}

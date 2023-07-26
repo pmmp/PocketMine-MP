@@ -26,19 +26,13 @@ namespace pocketmine\thread;
 final class ThreadCrashException extends ThreadException{
 
 	private ThreadCrashInfo $crashInfo;
-	private string $threadName;
 
-	public function __construct(string $message, ThreadCrashInfo $crashInfo, string $threadName){
+	public function __construct(string $message, ThreadCrashInfo $crashInfo){
 		parent::__construct($message);
 		$this->crashInfo = $crashInfo;
-		$this->threadName = $threadName;
 	}
 
 	public function getCrashInfo() : ThreadCrashInfo{
 		return $this->crashInfo;
-	}
-
-	public function getThreadName() : string{
-		return $this->threadName;
 	}
 }
