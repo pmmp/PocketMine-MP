@@ -106,6 +106,34 @@ class Furnace extends Opaque implements HopperInteractable{
 			return false;
 		}
 
+		$sourceInventory = $currentTile->getInventory();
+		$targetInventory = $tileHopper->getInventory();
+
+		$itemStack = $sourceInventory->getResult();
+
+		if($itemStack->isNull()){
+			return false;
+		}
+
+		$singleItem = $itemStack->pop();
+
+		$sourceInventory->removeItem($singleItem);
+		$targetInventory->addItem($singleItem);
+
+		return true;
+	}
+
+	public function doHopperPush(Hopper $hopperBlock) : bool{
+		$currentTile = $this->position->getWorld()->getTile($this->position);
+		if(!$currentTile instanceof TileFurnace){
+			return false;
+		}
+
+		$tileHopper = $this->position->getWorld()->getTile($hopperBlock->position);
+		if(!$tileHopper instanceof TileHopper){
+			return false;
+		}
+
 		$sourceInventory = $tileHopper->getInventory();
 		$targetInventory = $currentTile->getInventory();
 
@@ -130,34 +158,6 @@ class Furnace extends Opaque implements HopperInteractable{
 		}
 
 		return false;
-	}
-
-	public function doHopperPush(Hopper $hopperBlock) : bool{
-		$currentTile = $this->position->getWorld()->getTile($this->position);
-		if(!$currentTile instanceof TileFurnace){
-			return false;
-		}
-
-		$tileHopper = $this->position->getWorld()->getTile($hopperBlock->position);
-		if(!$tileHopper instanceof TileHopper){
-			return false;
-		}
-
-		$sourceInventory = $currentTile->getInventory();
-		$targetInventory = $tileHopper->getInventory();
-
-		$itemStack = $sourceInventory->getResult();
-
-		if($itemStack->isNull()){
-			return false;
-		}
-
-		$singleItem = $itemStack->pop();
-
-		$sourceInventory->removeItem($singleItem);
-		$targetInventory->addItem($singleItem);
-
-		return true;
 	}
 
 	private function transferItem(Inventory $sourceInventory, Inventory $targetInventory, Item $item, int $slot) : void{
