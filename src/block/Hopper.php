@@ -28,7 +28,6 @@ use pocketmine\block\utils\HopperInteractableTrait;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
-use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -105,15 +104,10 @@ class Hopper extends Transparent implements HopperInteractable{
 			return;
 		}
 
-		$tileHopper = $this->position->getWorld()->getTile($this->position);
-		if(!$tileHopper instanceof TileHopper){
-			return;
-		}
-
 		$topBlock = $this->getSide(Facing::UP);
 		$pushSuccess = false;
 		if($topBlock instanceof HopperInteractable){
-			$pushSuccess = $topBlock->doHopperPush($tileHopper->getInventory());
+			$pushSuccess = $topBlock->doHopperPush($hopperBlock);
 		}
 
 		$facingBlock = $this->getSide($this->facing);
@@ -144,13 +138,19 @@ class Hopper extends Transparent implements HopperInteractable{
 		return $this->transferItem($sourceInventory, $targetInventory);
 	}
 
-	public function doHopperPush(Inventory $targetInventory) : bool{
+	public function doHopperPush(Hopper $hopperBlock) : bool{
 		$currentTile = $this->position->getWorld()->getTile($this->position);
 		if(!$currentTile instanceof TileHopper){
 			return false;
 		}
 
+		$tileHopper = $this->position->getWorld()->getTile($hopperBlock->position);
+		if(!$tileHopper instanceof TileHopper){
+			return false;
+		}
+
 		$sourceInventory = $currentTile->getInventory();
+		$targetInventory = $tileHopper->getInventory();
 
 		return $this->transferItem($sourceInventory, $targetInventory);
 	}
