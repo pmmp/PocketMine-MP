@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\block\inventory\EnderChestInventory;
 use pocketmine\block\tile\EnderChest as TileEnderChest;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -36,7 +35,6 @@ use pocketmine\player\Player;
 
 class EnderChest extends Transparent{
 	use FacesOppositePlacingPlayerTrait;
-	use HorizontalFacingTrait;
 
 	public function getLightLevel() : int{
 		return 7;

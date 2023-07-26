@@ -30,7 +30,7 @@ use const M_SQRT2;
 final class ChunkSelector{
 
 	/**
-	 * @preturn \Generator|int[]
+	 * @return \Generator|int[]
 	 * @phpstan-return \Generator<int, int, void, void>
 	 */
 	public function selectChunks(int $radius, int $centerX, int $centerZ) : \Generator{
