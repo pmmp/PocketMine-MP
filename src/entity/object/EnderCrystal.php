@@ -135,8 +135,6 @@ class EnderCrystal extends Entity implements Explosive{
 		parent::syncNetworkData($properties);
 
 		$properties->setGenericFlag(EntityMetadataFlags::SHOWBASE, $this->showBase);
-		if($this->beamTarget !== null){
-			$properties->setBlockPos(EntityMetadataProperties::BLOCK_TARGET, BlockPosition::fromVector3($this->beamTarget));
-		}
+		$properties->setBlockPos(EntityMetadataProperties::BLOCK_TARGET, BlockPosition::fromVector3($this->beamTarget ?? Vector3::zero()));
 	}
 }
