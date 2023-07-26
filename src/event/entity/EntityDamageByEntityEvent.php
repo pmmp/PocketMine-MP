@@ -26,6 +26,7 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
+use pocketmine\math\Vector3;
 
 /**
  * Called when an entity takes damage from another entity.
@@ -36,7 +37,7 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	/**
 	 * @param float[] $modifiers
 	 */
-	public function __construct(Entity $damager, Entity $entity, int $cause, float $damage, array $modifiers = [], private float $knockBack = 0.4){
+	public function __construct(Entity $damager, Entity $entity, int $cause, float $damage, array $modifiers = [], private Vector3 $knockBack = new Vector3(0.4, 0.4, 0.4), private ?float $verticalKnockBackLimit = 0.4){
 		$this->damagerEntityId = $damager->getId();
 		parent::__construct($entity, $cause, $damage, $modifiers);
 		$this->addAttackerModifiers($damager);
@@ -62,11 +63,19 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 		return $this->getEntity()->getWorld()->getServer()->getWorldManager()->findEntity($this->damagerEntityId);
 	}
 
-	public function getKnockBack() : float{
-		return $this->knockBack;
+	public function getKnockBack() : Vector3{
+		return clone $this->knockBack;
 	}
 
-	public function setKnockBack(float $knockBack) : void{
-		$this->knockBack = $knockBack;
+	public function setKnockBack(Vector3 $knockBack) : void{
+		$this->knockBack = clone $knockBack;
+	}
+
+	public function getVerticalKnockBackLimit() : ?float{
+		return $this->verticalKnockBackLimit;
+	}
+
+	public function setVerticalKnockBackLimit(?float $verticalKnockBackLimit) : void{
+		$this->verticalKnockBackLimit = $verticalKnockBackLimit;
 	}
 }
