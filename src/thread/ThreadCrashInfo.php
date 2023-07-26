@@ -58,13 +58,12 @@ final class ThreadCrashInfo extends ThreadSafe{
 	 * @phpstan-param array{type: int, message: string, file: string, line: int} $info
 	 */
 	public static function fromLastErrorInfo(array $info, string $threadName) : self{
-		//sadly it's not possible to get a stack trace from a fatal error
 		try{
 			$class = ErrorTypeToStringMap::get($info["type"]);
 		}catch(\InvalidArgumentException){
 			$class = "Unknown error type (" . $info["type"] . ")";
 		}
-		return new self($class, $info["message"], $info["file"], $info["line"], [], $threadName);
+		return new self($class, $info["message"], $info["file"], $info["line"], Utils::printableTraceWithMetadata(Utils::currentTrace()), $threadName);
 	}
 
 	public function getType() : string{ return $this->type; }
