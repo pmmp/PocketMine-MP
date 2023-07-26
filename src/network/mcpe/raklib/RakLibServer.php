@@ -42,7 +42,6 @@ use function gc_enable;
 use function ini_set;
 
 class RakLibServer extends Thread{
-	protected bool $cleanShutdown = false;
 	protected bool $ready = false;
 	protected string $mainPath;
 	/** @phpstan-var NonThreadSafeValue<InternetAddress> */
@@ -106,7 +105,6 @@ class RakLibServer extends Thread{
 			$manager->tickProcessor();
 		}
 		$manager->waitShutdown();
-		$this->cleanShutdown = true;
 	}
 
 	protected function onUncaughtException(\Throwable $e) : void{
