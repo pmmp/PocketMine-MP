@@ -78,7 +78,7 @@ class CrashDump{
 	 * having their content changed, version format changing, etc.
 	 * It is not necessary to increase this when adding new fields.
 	 */
-	private const FORMAT_VERSION = 5;
+	private const FORMAT_VERSION = 4;
 
 	public const PLUGIN_INVOLVEMENT_NONE = "none";
 	public const PLUGIN_INVOLVEMENT_DIRECT = "direct";
