@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\nbt\LittleEndianNbtSerializer;
+use pocketmine\nbt\NBT;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
@@ -155,7 +156,33 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$nbt = new LittleEndianNbtSerializer();
 		$palette = [];
 
-		$paletteSize = $bitsPerBlock === 0 ? 1 : $stream->getLInt();
+		if($bitsPerBlock === 0){
+			$paletteSize = 1;
+			/*
+			 * Due to code copy-paste in a public plugin, some PM4 worlds have 0 bpb palettes with a length prefix.
+			 * This is invalid and does not happen in vanilla.
+			 * These palettes were accepted by PM4 despite being invalid, but PM5 considered them corrupt, causing loss
+			 * of data. Since many users were affected by this, a workaround is therefore necessary to allow PM5 to read
+			 * these worlds without data loss.
+			 *
+			 * References:
+			 * - https://github.com/Refaltor77/CustomItemAPI/issues/68
+			 * - https://github.com/pmmp/PocketMine-MP/issues/5911
+			 */
+			$offset = $stream->getOffset();
+			$byte1 = $stream->getByte();
+			$stream->setOffset($offset); //reset offset
+
+			if($byte1 !== NBT::TAG_Compound){ //normally the first byte would be the NBT of the blockstate
+				$susLength = $stream->getLInt();
+				if($susLength !== 1){ //make sure the data isn't complete garbage
+					throw new CorruptedChunkException("CustomItemAPI borked 0 bpb palette should always have a length of 1");
+				}
+				$logger->error("Unexpected palette size for 0 bpb palette");
+			}
+		}else{
+			$paletteSize = $stream->getLInt();
+		}
 
 		for($i = 0; $i < $paletteSize; ++$i){
 			try{
@@ -276,6 +303,10 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				$previous = $decoded;
 				if($nextIndex <= Chunk::MAX_SUBCHUNK_INDEX){ //older versions wrote additional superfluous biome palettes
 					$result[$nextIndex++] = $decoded;
+				}elseif($stream->feof()){
+					//not enough padding biome arrays for the given version - this is non-critical since we discard the excess anyway, but this should be logged
+					$logger->error("Wrong number of 3D biome palettes for this chunk version: expected $expectedCount, but got " . ($i + 1) . " - this is not a problem, but may indicate a corrupted chunk");
+					break;
 				}
 			}catch(BinaryDataException $e){
 				throw new CorruptedChunkException("Failed to deserialize biome palette $i: " . $e->getMessage(), 0, $e);

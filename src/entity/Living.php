@@ -504,7 +504,7 @@ abstract class Living extends Entity{
 	}
 
 	public function attack(EntityDamageEvent $source) : void{
-		if($this->noDamageTicks > 0){
+		if($this->noDamageTicks > 0 && $source->getCause() !== EntityDamageEvent::CAUSE_SUICIDE){
 			$source->cancel();
 		}
 
@@ -517,7 +517,9 @@ abstract class Living extends Entity{
 			$source->cancel();
 		}
 
-		$this->applyDamageModifiers($source);
+		if($source->getCause() !== EntityDamageEvent::CAUSE_SUICIDE){
+			$this->applyDamageModifiers($source);
+		}
 
 		if($source instanceof EntityDamageByEntityEvent && (
 			$source->getCause() === EntityDamageEvent::CAUSE_BLOCK_EXPLOSION ||
