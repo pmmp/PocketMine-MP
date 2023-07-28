@@ -36,7 +36,15 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	/**
 	 * @param float[] $modifiers
 	 */
-	public function __construct(Entity $damager, Entity $entity, int $cause, float $damage, array $modifiers = [], private float $knockBack = Living::DEFAULT_KNOCKBACK_FORCE){
+	public function __construct(
+		Entity $damager,
+		Entity $entity,
+		int $cause,
+		float $damage,
+		array $modifiers = [],
+		private float $knockBack = Living::DEFAULT_KNOCKBACK_FORCE,
+		private float $verticalKnockBackLimit = Living::DEFAULT_KNOCKBACK_VERTICAL_LIMIT
+	){
 		$this->damagerEntityId = $damager->getId();
 		parent::__construct($entity, $cause, $damage, $modifiers);
 		$this->addAttackerModifiers($damager);
@@ -78,5 +86,23 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	 */
 	public function setKnockBack(float $knockBack) : void{
 		$this->knockBack = $knockBack;
+	}
+
+	/**
+	 * Returns the maximum upwards velocity the victim may have after being knocked back.
+	 * This ensures that the victim doesn't fly up into the sky when high levels of knockback are applied.
+	 *
+	 * @see Living::DEFAULT_KNOCKBACK_VERTICAL_LIMIT
+	 */
+	public function getVerticalKnockBackLimit() : float{
+		return $this->verticalKnockBackLimit;
+	}
+
+	/**
+	 * Sets the maximum upwards velocity the victim may have after being knocked back.
+	 * Larger values will allow the victim to fly higher if the knockback force is also large.
+	 */
+	public function setVerticalKnockBackLimit(float $verticalKnockBackLimit) : void{
+		$this->verticalKnockBackLimit = $verticalKnockBackLimit;
 	}
 }
