@@ -25,6 +25,7 @@ namespace pocketmine\item\enchantment;
 
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
+use pocketmine\math\Vector3;
 
 class KnockbackEnchantment extends MeleeWeaponEnchantment{
 
@@ -39,7 +40,8 @@ class KnockbackEnchantment extends MeleeWeaponEnchantment{
 	public function onPostAttack(Entity $attacker, Entity $victim, int $enchantmentLevel) : void{
 		if($victim instanceof Living){
 			$diff = $victim->getPosition()->subtractVector($attacker->getPosition());
-			$victim->knockBack($diff->x, $diff->z, $enchantmentLevel * 0.5);
+			$force = $enchantmentLevel * 0.5;
+			$victim->knockBack($diff->x, $diff->z, new Vector3($force, $force, $force));
 		}
 	}
 }

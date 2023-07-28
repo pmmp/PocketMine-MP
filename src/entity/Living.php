@@ -531,7 +531,9 @@ abstract class Living extends Entity{
 			//TODO: knockback should not just apply for entity damage sources
 			//this doesn't matter for TNT right now because the PrimedTNT entity is considered the source, not the block.
 			$base = $source->getKnockBack();
-			$source->setKnockBack($base - min($base, $base * $this->getHighestArmorEnchantmentLevel(VanillaEnchantments::BLAST_PROTECTION()) * 0.15));
+			$knockBackResistance = $this->getHighestArmorEnchantmentLevel(VanillaEnchantments::BLAST_PROTECTION()) * 0.15;
+			$calculateNewValue = fn(float $baseValue) => $baseValue - min($baseValue, $baseValue * $knockBackResistance);
+			$source->setKnockBack(new Vector3($calculateNewValue($base->x), $calculateNewValue($base->y), $calculateNewValue($base->z)));
 		}
 
 		parent::attack($source);
@@ -567,7 +569,7 @@ abstract class Living extends Entity{
 		$this->broadcastAnimation(new HurtAnimation($this));
 	}
 
-	public function knockBack(float $x, float $z, float $force = 0.4, ?float $verticalLimit = 0.4) : void{
+	public function knockBack(float $x, float $z, Vector3 $force = new Vector3(0.4, 0.4, 0.4), ?float $verticalLimit = 0.4) : void{
 		$f = sqrt($x * $x + $z * $z);
 		if($f <= 0){
 			return;
@@ -578,11 +580,11 @@ abstract class Living extends Entity{
 			$motionX = $this->motion->x / 2;
 			$motionY = $this->motion->y / 2;
 			$motionZ = $this->motion->z / 2;
-			$motionX += $x * $f * $force;
-			$motionY += $force;
-			$motionZ += $z * $f * $force;
+			$motionX += $x * $f * $force->x;
+			$motionY += $force->y;
+			$motionZ += $z * $f * $force->z;
 
-			$verticalLimit ??= $force;
+			$verticalLimit ??= $force->y;
 			if($motionY > $verticalLimit){
 				$motionY = $verticalLimit;
 			}
