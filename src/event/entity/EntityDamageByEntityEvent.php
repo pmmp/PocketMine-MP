@@ -62,10 +62,20 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 		return $this->getEntity()->getWorld()->getServer()->getWorldManager()->findEntity($this->damagerEntityId);
 	}
 
+	/**
+	 * Returns the force with which the victim will be knocked back from the attacking entity.
+	 *
+	 * @see Living::DEFAULT_KNOCKBACK_FORCE
+	 */
 	public function getKnockBack() : float{
 		return $this->knockBack;
 	}
 
+	/**
+	 * Sets the force with which the victim will be knocked back from the attacking entity.
+	 * Larger values will knock the victim back further.
+	 * Negative values will pull the victim towards the attacker.
+	 */
 	public function setKnockBack(float $knockBack) : void{
 		$this->knockBack = $knockBack;
 	}
