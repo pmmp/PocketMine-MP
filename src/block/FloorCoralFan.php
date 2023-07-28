@@ -53,7 +53,7 @@ final class FloorCoralFan extends BaseCoral{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy($tx->fetchBlock($blockReplace->getPosition()->down()))){
+		if(!$this->canBeSupportedAt($blockReplace)){
 			return false;
 		}
 		if($player !== null){
@@ -75,15 +75,15 @@ final class FloorCoralFan extends BaseCoral{
 
 	public function onNearbyBlockChange() : void{
 		$world = $this->position->getWorld();
-		if(!$this->canBeSupportedBy($world->getBlock($this->position->down()))){
+		if(!$this->canBeSupportedAt($this)){
 			$world->useBreakOn($this->position);
 		}else{
 			parent::onNearbyBlockChange();
 		}
 	}
 
-	private function canBeSupportedBy(Block $block) : bool{
-		return $block->getSupportType(Facing::UP)->hasCenterSupport();
+	private function canBeSupportedAt(Block $block) : bool{
+		return $block->getAdjacentSupportType(Facing::DOWN)->hasCenterSupport();
 	}
 
 	public function asItem() : Item{

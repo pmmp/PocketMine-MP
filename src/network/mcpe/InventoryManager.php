@@ -108,7 +108,7 @@ class InventoryManager{
 		private NetworkSession $session
 	){
 		$this->containerOpenCallbacks = new ObjectSet();
-		$this->containerOpenCallbacks->add(\Closure::fromCallable([self::class, 'createContainerOpen']));
+		$this->containerOpenCallbacks->add(self::createContainerOpen(...));
 
 		$this->add(ContainerIds::INVENTORY, $this->player->getInventory());
 		$this->add(ContainerIds::OFFHAND, $this->player->getOffHandInventory());
@@ -116,9 +116,7 @@ class InventoryManager{
 		$this->addComplex(UIInventorySlotOffset::CURSOR, $this->player->getCursorInventory());
 		$this->addComplex(UIInventorySlotOffset::CRAFTING2X2_INPUT, $this->player->getCraftingGrid());
 
-		$this->player->getInventory()->getHeldItemIndexChangeListeners()->add(function() : void{
-			$this->syncSelectedHotbarSlot();
-		});
+		$this->player->getInventory()->getHeldItemIndexChangeListeners()->add($this->syncSelectedHotbarSlot(...));
 	}
 
 	private function associateIdWithInventory(int $id, Inventory $inventory) : void{
