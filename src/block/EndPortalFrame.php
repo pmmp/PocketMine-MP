@@ -27,7 +27,7 @@ use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
+use pocketmine\item\ItemTypeIds;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -65,7 +65,7 @@ class EndPortalFrame extends Opaque{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if(!$item->equals(VanillaItems::ENDER_EYE()) || $this->eye){
+		if($this->eye || $item->getTypeId() !== ItemTypeIds::ENDER_EYE){
 			return false;
 		}
 		$world = $this->getPosition()->getWorld();
