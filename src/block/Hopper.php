@@ -116,7 +116,7 @@ class Hopper extends Transparent implements HopperInteractable{
 			$pullSuccess = $facingBlock->doHopperPush($hopperBlock);
 		}
 
-		$nextTick = ($pushSuccess || $pullSuccess ) ? 8 : 1;
+		$nextTick = ($pushSuccess || $pullSuccess) ? 8 : 1;
 
 		$world->scheduleDelayedBlockUpdate($this->position, $nextTick);
 	}
