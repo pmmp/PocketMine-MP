@@ -37,6 +37,7 @@ final class IncompatibleEnchantmentRegistry{
 	private function __construct(){
 		$this->register(Enchantments::PROTECTION(), Enchantments::FIRE_PROTECTION(), Enchantments::BLAST_PROTECTION(), Enchantments::PROJECTILE_PROTECTION());
 		$this->register(Enchantments::INFINITY(), Enchantments::MENDING());
+		$this->register(Enchantments::FORTUNE(), Enchantments::SILK_TOUCH());
 	}
 
 	public function register(Enchantment ...$enchantments) : void{
