@@ -26,6 +26,7 @@ namespace pocketmine\item;
 use pocketmine\color\Color;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\inventory\ArmorInventory;
+use pocketmine\item\enchantment\ItemEnchantmentFlags;
 use pocketmine\item\enchantment\ProtectionEnchantment;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\math\Vector3;
@@ -44,8 +45,8 @@ class Armor extends Durable{
 
 	protected ?Color $customColor = null;
 
-	public function __construct(ItemIdentifier $identifier, string $name, ArmorTypeInfo $info){
-		parent::__construct($identifier, $name);
+	public function __construct(ItemIdentifier $identifier, string $name, ArmorTypeInfo $info, int $enchantmentFlag = ItemEnchantmentFlags::NONE){
+		parent::__construct($identifier, $name, $enchantmentFlag);
 		$this->armorInfo = $info;
 	}
 

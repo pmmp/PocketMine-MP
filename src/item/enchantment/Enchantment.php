@@ -34,13 +34,21 @@ class Enchantment{
 	use NotCloneable;
 	use NotSerializable;
 
+	/**
+	 * @phpstan-param \Closure(int $level) : int               $minCost
+	 * @phpstan-param \Closure(int $level, int $minCost) : int $maxCost
+	 */
 	public function __construct(
 		private Translatable|string $name,
 		private int $rarity,
 		private int $primaryItemFlags,
 		private int $secondaryItemFlags,
-		private int $maxLevel
-	){}
+		private int $maxLevel,
+		private bool $isTreasure,
+		private \Closure $minCost,
+		private \Closure $maxCost
+	){
+	}
 
 	/**
 	 * Returns a translation key for this enchantment's name.
@@ -74,14 +82,14 @@ class Enchantment{
 	/**
 	 * Returns whether this enchantment can apply to the item type from an enchanting table.
 	 */
-	public function hasPrimaryItemType(int $flag) : bool{
+	public function hasPrimaryItemFlag(int $flag) : bool{
 		return ($this->primaryItemFlags & $flag) !== 0;
 	}
 
 	/**
 	 * Returns whether this enchantment can apply to the item type from an anvil, if it is not a primary item.
 	 */
-	public function hasSecondaryItemType(int $flag) : bool{
+	public function hasSecondaryItemFlag(int $flag) : bool{
 		return ($this->secondaryItemFlags & $flag) !== 0;
 	}
 
@@ -92,5 +100,33 @@ class Enchantment{
 		return $this->maxLevel;
 	}
 
-	//TODO: methods for min/max XP cost bounds based on enchantment level (not needed yet - enchanting is client-side)
+	/**
+	 * Returns whether this enchantment is a special enchantment that cannot be obtained using an enchanting table.
+	 */
+	public function isTreasure() : bool{
+		return $this->isTreasure;
+	}
+
+	/**
+	 * Returns whether this enchantment can be applied to the item along with the given enchantment.
+	 */
+	public function isCompatibleWith(Enchantment $other) : bool{
+		return IncompatibleEnchantmentRegistry::getInstance()->areCompatible($this, $other);
+	}
+
+	/**
+	 * Returns the minimum cost required for this enchantment with a particular level to be available in an
+	 * enchanting table.
+	 */
+	public function getMinCost(int $level) : int{
+		return ($this->minCost)($level);
+	}
+
+	/**
+	 * Returns the maximum cost allowed for this enchantment with a particular level to be available in an
+	 * enchanting table.
+	 */
+	public function getMaxCost(int $level) : int{
+		return ($this->maxCost)($level, $this->getMinCost($level));
+	}
 }
