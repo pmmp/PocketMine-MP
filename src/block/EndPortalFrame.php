@@ -32,7 +32,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\world\sound\EndPortalFillSound;
+use pocketmine\world\sound\EndPortalFrameFillSound;
 
 class EndPortalFrame extends Opaque{
 	use FacesOppositePlacingPlayerTrait;
@@ -70,8 +70,10 @@ class EndPortalFrame extends Opaque{
 		}
 		$world = $this->getPosition()->getWorld();
 		$world->setBlock($this->getPosition(), $this->setEye(true));
-		$world->addSound($this->getPosition(), new EndPortalFillSound());
+		$world->addSound($this->getPosition(), new EndPortalFrameFillSound());
 		$item->pop();
+
+		//TODO: portal spawn logic
 
 		return true;
 	}
