@@ -47,7 +47,7 @@ class EnchantTransaction extends InventoryTransaction{
 
 		/** @var EnchantInventory $enchantWindow */
 		$enchantWindow = $this->source->getCurrentWindow();
-		if(!$this->inputItem->equalsExact($enchantWindow->getInput())){
+		if(is_null($this->inputItem) || !$this->inputItem->equalsExact($enchantWindow->getInput())){
 			throw new TransactionValidationException("Incorrect input item");
 		}
 

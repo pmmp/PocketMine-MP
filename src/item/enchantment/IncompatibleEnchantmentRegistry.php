@@ -30,7 +30,7 @@ final class IncompatibleEnchantmentRegistry{
 	use SingletonTrait;
 
 	/**
-	 * @phpstan-var array<Enchantment, array<Enchantment, bool>>
+	 * @phpstan-var array<int, array<int, bool>>
 	 */
 	private array $incompatibilityMap = [];
 

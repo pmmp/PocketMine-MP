@@ -116,7 +116,7 @@ final class EnchantmentHelper{
 		$resultEnchantments = [];
 		$availableEnchantments = self::getAvailableEnchantments($cost, $inputItem);
 
-		if(!empty($availableEnchantments)){
+		if(count($availableEnchantments) !== 0){
 			$lastEnchantment = self::getRandomWeightedEnchantment($random, $availableEnchantments);
 			$resultEnchantments[] = $lastEnchantment;
 
@@ -130,7 +130,7 @@ final class EnchantmentHelper{
 						$e->getType()->isCompatibleWith($lastEnchantment->getType())
 				);
 
-				if(empty($availableEnchantments)){
+				if(count($availableEnchantments) === 0){
 					break;
 				}
 
@@ -157,7 +157,8 @@ final class EnchantmentHelper{
 				ToolTier::IRON() => 14,
 				ToolTier::GOLD() => 22,
 				ToolTier::DIAMOND() => 10,
-				ToolTier::NETHERITE() => 15
+				ToolTier::NETHERITE() => 15,
+				default => 1
 			};
 		}
 
@@ -172,6 +173,9 @@ final class EnchantmentHelper{
 		};
 	}
 
+	/**
+	 * @return EnchantmentInstance[]
+	 */
 	private static function getAvailableEnchantments(int $cost, Item $item) : array{
 		$list = [];
 
@@ -197,9 +201,9 @@ final class EnchantmentHelper{
 	/**
 	 * @param array<EnchantmentInstance> $enchantments
 	 */
-	private static function getRandomWeightedEnchantment(Random $random, array $enchantments) : ?EnchantmentInstance{
-		if(empty($enchantments)){
-			return null;
+	private static function getRandomWeightedEnchantment(Random $random, array $enchantments) : EnchantmentInstance{
+		if(count($enchantments) === 0){
+			throw new \RuntimeException("Cannot get random enchantment from an empty list");
 		}
 
 		$totalWeight = 0;

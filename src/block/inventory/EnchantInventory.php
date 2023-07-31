@@ -47,6 +47,8 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 
 	/** @var EnchantOption[] $options */
 	private array $options = [];
+
+	/** @var Item[] $outputs */
 	private array $outputs = [];
 
 	public function __construct(Position $holder, Player $player){
@@ -60,7 +62,7 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 			$this->options = Helper::getEnchantOptions($this->holder, $this->getItem(self::SLOT_INPUT), $this->player->getXpSeed());
 			$this->outputs = [];
 
-			if(!empty($this->options)){
+			if(count($this->options) !== 0){
 				$this->player->getNetworkSession()->sendDataPacket(PlayerEnchantOptionsPacket::create($this->options));
 			}
 		}
@@ -68,11 +70,11 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 		parent::onSlotChange($index, $before);
 	}
 
-	public function getInput() : ?Item{
+	public function getInput() : Item{
 		return $this->getItem(self::SLOT_INPUT);
 	}
 
-	public function getLapis() : ?Item{
+	public function getLapis() : Item{
 		return $this->getItem(self::SLOT_LAPIS);
 	}
 
@@ -92,7 +94,13 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 		}
 
 		$enchantments = array_map(
-			fn(Enchant $e) => new EnchantmentInstance(EnchantmentIdMap::getInstance()->fromId($e->getId()), $e->getLevel()),
+			function(Enchant $e){
+				$enchantment = EnchantmentIdMap::getInstance()->fromId($e->getId());
+				if(is_null($enchantment)){
+					throw new \RuntimeException("Failed to get enchantment with id {$e->getId()}");
+				}
+				return new EnchantmentInstance($enchantment, $e->getLevel());
+			},
 			array_merge(
 				$option->getEquipActivatedEnchantments(),
 				$option->getHeldActivatedEnchantments(),
