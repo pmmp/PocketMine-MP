@@ -151,7 +151,7 @@ class Furnace extends Opaque implements HopperInteractable{
 			if($hopperFacing === Facing::DOWN && $targetInventory->canAddSmelting($singleItem)){
 				$this->transferItem($sourceInventory, $targetInventory, $singleItem, FurnaceInventory::SLOT_INPUT);
 				return true;
-			}elseif($hopperFacing !== Facing::DOWN && $hopperFacing !== Facing::UP && $targetInventory->canAddFuel($singleItem)){
+			}elseif($hopperFacing !== Facing::DOWN && $targetInventory->canAddFuel($singleItem)){
 				$this->transferItem($sourceInventory, $targetInventory, $singleItem, FurnaceInventory::SLOT_FUEL);
 				return true;
 			}
