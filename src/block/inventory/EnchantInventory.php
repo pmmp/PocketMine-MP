@@ -36,6 +36,10 @@ use pocketmine\network\mcpe\protocol\types\Enchant;
 use pocketmine\network\mcpe\protocol\types\EnchantOption;
 use pocketmine\player\Player;
 use pocketmine\world\Position;
+use function array_map;
+use function array_merge;
+use function count;
+use function is_null;
 
 class EnchantInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
 	use BlockInventoryTrait;

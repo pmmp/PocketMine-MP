@@ -39,7 +39,7 @@ class ProtectionEnchantment extends Enchantment{
 	 * @phpstan-param \Closure(int $level) : int               $minCost
 	 * @phpstan-param \Closure(int $level, int $minCost) : int $maxCost
 	 *
-	 * @param int[]|null                                       $applicableDamageTypes EntityDamageEvent::CAUSE_* constants which this enchantment type applies to, or null if it applies to all types of damage.
+	 * @param int[]|null $applicableDamageTypes EntityDamageEvent::CAUSE_* constants which this enchantment type applies to, or null if it applies to all types of damage.
 	 */
 	public function __construct(Translatable|string $name, int $rarity, int $primaryItemFlags, int $secondaryItemFlags, int $maxLevel, bool $isTreasure, \Closure $minCost, \Closure $maxCost, float $typeModifier, ?array $applicableDamageTypes){
 		parent::__construct($name, $rarity, $primaryItemFlags, $secondaryItemFlags, $maxLevel, $isTreasure, $minCost, $maxCost);

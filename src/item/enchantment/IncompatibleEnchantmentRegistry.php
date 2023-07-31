@@ -25,13 +25,12 @@ namespace pocketmine\item\enchantment;
 
 use pocketmine\item\enchantment\VanillaEnchantments as Enchantments;
 use pocketmine\utils\SingletonTrait;
+use function spl_object_id;
 
 final class IncompatibleEnchantmentRegistry{
 	use SingletonTrait;
 
-	/**
-	 * @phpstan-var array<int, array<int, bool>>
-	 */
+	/** @phpstan-var array<int, array<int, bool>> */
 	private array $incompatibilityMap = [];
 
 	private function __construct(){

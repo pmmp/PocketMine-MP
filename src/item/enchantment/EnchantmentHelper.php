@@ -34,6 +34,13 @@ use pocketmine\network\mcpe\protocol\types\Enchant;
 use pocketmine\network\mcpe\protocol\types\EnchantOption;
 use pocketmine\utils\Random;
 use pocketmine\world\Position;
+use function abs;
+use function array_filter;
+use function array_map;
+use function count;
+use function implode;
+use function max;
+use function min;
 
 final class EnchantmentHelper{
 	public const MAX_BOOKSHELF_COUNT = 15;

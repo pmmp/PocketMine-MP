@@ -28,6 +28,8 @@ use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\player\Player;
+use function count;
+use function is_null;
 
 class EnchantTransaction extends InventoryTransaction{
 
