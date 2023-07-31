@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\item\enchantment\ItemEnchantmentFlags;
 
 /**
  * Class used for Items that directly represent blocks, such as stone, dirt, wood etc.
@@ -34,9 +35,10 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
  */
 final class ItemBlock extends Item{
 	public function __construct(
-		private Block $block
+		private Block $block,
+		int $enchantmentFlag = ItemEnchantmentFlags::NONE
 	){
-		parent::__construct(ItemIdentifier::fromBlock($block), $block->getName());
+		parent::__construct(ItemIdentifier::fromBlock($block), $block->getName(), $enchantmentFlag);
 	}
 
 	protected function describeState(RuntimeDataDescriber $w) : void{

@@ -59,6 +59,7 @@ use pocketmine\block\utils\SaplingType;
 use pocketmine\block\utils\WoodType;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\entity\projectile\Projectile;
+use pocketmine\item\enchantment\ItemEnchantmentFlags;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\math\Facing;
@@ -961,7 +962,7 @@ final class VanillaBlocks{
 
 		$pumpkinBreakInfo = new Info(BreakInfo::axe(1.0));
 		self::register("pumpkin", new Pumpkin(new BID(Ids::PUMPKIN), "Pumpkin", $pumpkinBreakInfo));
-		self::register("carved_pumpkin", new CarvedPumpkin(new BID(Ids::CARVED_PUMPKIN), "Carved Pumpkin", $pumpkinBreakInfo));
+		self::register("carved_pumpkin", new CarvedPumpkin(new BID(Ids::CARVED_PUMPKIN), "Carved Pumpkin", $pumpkinBreakInfo, ItemEnchantmentFlags::HEAD));
 		self::register("lit_pumpkin", new LitPumpkin(new BID(Ids::LIT_PUMPKIN), "Jack o'Lantern", $pumpkinBreakInfo));
 
 		self::register("pumpkin_stem", new PumpkinStem(new BID(Ids::PUMPKIN_STEM), "Pumpkin Stem", new Info(BreakInfo::instant())));

@@ -23,12 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
+use pocketmine\inventory\transaction\EnchantTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionBuilder;
 use pocketmine\inventory\transaction\TransactionBuilderInventory;
@@ -334,11 +336,20 @@ class ItemStackRequestExecutor{
 
 			$this->setNextCreatedItem($item, true);
 		}elseif($action instanceof CraftRecipeStackRequestAction){
-			$this->beginCrafting($action->getRecipeId(), 1);
+			$recipeId = $action->getRecipeId();
+			$window = $this->player->getCurrentWindow();
+			if($window instanceof EnchantInventory){
+				$this->specialTransaction = new EnchantTransaction($this->player, $recipeId);
+				$this->setNextCreatedItem($window->getOutput($recipeId));
+				return;
+			}
+			$this->beginCrafting($recipeId, 1);
 		}elseif($action instanceof CraftRecipeAutoStackRequestAction){
 			$this->beginCrafting($action->getRecipeId(), $action->getRepetitions());
 		}elseif($action instanceof CraftingConsumeInputStackRequestAction){
-			$this->assertDoingCrafting();
+			if(!$this->specialTransaction instanceof EnchantTransaction){
+				$this->assertDoingCrafting();
+			}
 			$this->removeItemFromSlot($action->getSource(), $action->getCount()); //output discarded - we allow CraftingTransaction to verify the balance
 
 		}elseif($action instanceof CraftingCreateSpecificResultStackRequestAction){
