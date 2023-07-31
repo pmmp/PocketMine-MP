@@ -117,6 +117,7 @@ final class EnchantmentHelper{
 		$availableEnchantments = self::getAvailableEnchantments($cost, $inputItem);
 
 		if(count($availableEnchantments) !== 0){
+			/** @var EnchantmentInstance $lastEnchantment */
 			$lastEnchantment = self::getRandomWeightedEnchantment($random, $availableEnchantments);
 			$resultEnchantments[] = $lastEnchantment;
 
@@ -134,6 +135,7 @@ final class EnchantmentHelper{
 					break;
 				}
 
+				/** @var EnchantmentInstance $lastEnchantment */
 				$lastEnchantment = self::getRandomWeightedEnchantment($random, $availableEnchantments);
 				$resultEnchantments[] = $lastEnchantment;
 
@@ -201,9 +203,9 @@ final class EnchantmentHelper{
 	/**
 	 * @param array<EnchantmentInstance> $enchantments
 	 */
-	private static function getRandomWeightedEnchantment(Random $random, array $enchantments) : EnchantmentInstance{
+	private static function getRandomWeightedEnchantment(Random $random, array $enchantments) : ?EnchantmentInstance{
 		if(count($enchantments) === 0){
-			throw new \RuntimeException("Cannot get random enchantment from an empty list");
+			return null;
 		}
 
 		$totalWeight = 0;
