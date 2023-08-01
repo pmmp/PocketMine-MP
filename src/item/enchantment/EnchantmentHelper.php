@@ -25,11 +25,10 @@ namespace pocketmine\item\enchantment;
 
 use pocketmine\block\BlockTypeIds;
 use pocketmine\data\bedrock\EnchantmentIdMap;
+use pocketmine\item\Armor;
 use pocketmine\item\Book;
 use pocketmine\item\Item;
-use pocketmine\item\ItemTypeIds as ItemIds;
 use pocketmine\item\TieredTool;
-use pocketmine\item\ToolTier;
 use pocketmine\network\mcpe\protocol\types\Enchant;
 use pocketmine\network\mcpe\protocol\types\EnchantOption;
 use pocketmine\utils\Random;
@@ -159,25 +158,9 @@ final class EnchantmentHelper{
 	}
 
 	private static function getEnchantability(Item $item) : int{
-		if($item instanceof TieredTool){
-			return match ($item->getTier()) {
-				ToolTier::WOOD() => 15,
-				ToolTier::STONE() => 5,
-				ToolTier::IRON() => 14,
-				ToolTier::GOLD() => 22,
-				ToolTier::DIAMOND() => 10,
-				ToolTier::NETHERITE() => 15,
-				default => 1
-			};
-		}
-
-		return match ($item->getTypeId()) {
-			ItemIds::LEATHER_CAP, ItemIds::LEATHER_TUNIC, ItemIds::LEATHER_PANTS, ItemIds::LEATHER_BOOTS => 15,
-			ItemIds::CHAINMAIL_HELMET, ItemIds::CHAINMAIL_CHESTPLATE, ItemIds::CHAINMAIL_LEGGINGS, ItemIds::CHAINMAIL_BOOTS => 12,
-			ItemIds::IRON_HELMET, ItemIds::IRON_CHESTPLATE, ItemIds::IRON_LEGGINGS, ItemIds::IRON_BOOTS, ItemIds::TURTLE_HELMET => 9,
-			ItemIds::GOLDEN_HELMET, ItemIds::GOLDEN_CHESTPLATE, ItemIds::GOLDEN_LEGGINGS, ItemIds::GOLDEN_BOOTS => 25,
-			ItemIds::DIAMOND_HELMET, ItemIds::DIAMOND_CHESTPLATE, ItemIds::DIAMOND_LEGGINGS, ItemIds::DIAMOND_BOOTS => 10,
-			ItemIds::NETHERITE_HELMET, ItemIds::NETHERITE_CHESTPLATE, ItemIds::NETHERITE_LEGGINGS, ItemIds::NETHERITE_BOOTS => 15,
+		return match ($item::class) {
+			TieredTool::class => $item->getTier()->getEnchantability(),
+			Armor::class => $item->getMaterial()->getEnchantability(),
 			default => 1
 		};
 	}
@@ -192,7 +175,7 @@ final class EnchantmentHelper{
 			if($enchantment->isTreasure()){
 				continue;
 			}
-			if(!$item instanceof Book && !$enchantment->hasPrimaryItemFlag($item->getEnchantmentFlag())){
+			if(!$item instanceof Book && !$enchantment->hasPrimaryItemType($item->getEnchantmentFlag())){
 				continue;
 			}
 

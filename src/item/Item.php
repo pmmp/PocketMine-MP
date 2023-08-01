@@ -38,7 +38,7 @@ use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\item\enchantment\EnchantmentInstance;
-use pocketmine\item\enchantment\ItemEnchantmentFlags;
+use pocketmine\item\enchantment\ItemFlags;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
@@ -112,7 +112,7 @@ class Item implements \JsonSerializable{
 	public function __construct(
 		private ItemIdentifier $identifier,
 		protected string $name = "Unknown",
-		private int $enchantmentFlag = ItemEnchantmentFlags::NONE
+		private int $enchantmentFlag = ItemFlags::NONE
 	){
 		$this->nbt = new CompoundTag();
 	}

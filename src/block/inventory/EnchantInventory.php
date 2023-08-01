@@ -34,7 +34,6 @@ use pocketmine\item\VanillaItems;
 use pocketmine\network\mcpe\protocol\PlayerEnchantOptionsPacket;
 use pocketmine\network\mcpe\protocol\types\Enchant;
 use pocketmine\network\mcpe\protocol\types\EnchantOption;
-use pocketmine\player\Player;
 use pocketmine\world\Position;
 use function array_map;
 use function array_merge;
@@ -47,27 +46,26 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 	public const SLOT_INPUT = 0;
 	public const SLOT_LAPIS = 1;
 
-	private Player $player;
-
 	/** @var EnchantOption[] $options */
 	private array $options = [];
 
 	/** @var Item[] $outputs */
 	private array $outputs = [];
 
-	public function __construct(Position $holder, Player $player){
+	public function __construct(Position $holder){
 		$this->holder = $holder;
-		$this->player = $player;
 		parent::__construct(2);
 	}
 
 	protected function onSlotChange(int $index, Item $before) : void{
 		if($index == self::SLOT_INPUT){
-			$this->options = Helper::getEnchantOptions($this->holder, $this->getItem(self::SLOT_INPUT), $this->player->getXpSeed());
-			$this->outputs = [];
+			foreach($this->viewers as $viewer){
+				$this->options = Helper::getEnchantOptions($this->holder, $this->getItem(self::SLOT_INPUT), $viewer->getEnchantmentSeed());
+				$this->outputs = [];
 
-			if(count($this->options) !== 0){
-				$this->player->getNetworkSession()->sendDataPacket(PlayerEnchantOptionsPacket::create($this->options));
+				if(count($this->options) !== 0){
+					$viewer->getNetworkSession()->sendDataPacket(PlayerEnchantOptionsPacket::create($this->options));
+				}
 			}
 		}
 

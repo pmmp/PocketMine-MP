@@ -31,54 +31,36 @@ use pocketmine\utils\EnumTrait;
  * @see build/generate-registry-annotations.php
  * @generate-registry-docblock
  *
- * @method static ToolTier DIAMOND()
- * @method static ToolTier GOLD()
- * @method static ToolTier IRON()
- * @method static ToolTier NETHERITE()
- * @method static ToolTier STONE()
- * @method static ToolTier WOOD()
+ * @method static ArmorMaterial CHAINMAIL()
+ * @method static ArmorMaterial DIAMOND()
+ * @method static ArmorMaterial GOLD()
+ * @method static ArmorMaterial IRON()
+ * @method static ArmorMaterial LEATHER()
+ * @method static ArmorMaterial NETHERITE()
+ * @method static ArmorMaterial TURTLE()
  */
-final class ToolTier{
+final class ArmorMaterial{
 	use EnumTrait {
 		__construct as Enum___construct;
 	}
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self("wood", 1, 60, 5, 2, 15),
-			new self("gold", 2, 33, 5, 12, 22),
-			new self("stone", 3, 132, 6, 4, 5),
-			new self("iron", 4, 251, 7, 6, 14),
-			new self("diamond", 5, 1562, 8, 8, 10),
-			new self("netherite", 6, 2032, 9, 9, 15)
+			new self("leather", 15),
+			new self("chainmail", 12),
+			new self("iron", 9),
+			new self("turtle", 9),
+			new self("gold", 25),
+			new self("diamond", 10),
+			new self("netherite", 15)
 		);
 	}
 
 	private function __construct(
 		string $name,
-		private int $harvestLevel,
-		private int $maxDurability,
-		private int $baseAttackPoints,
-		private int $baseEfficiency,
 		private int $enchantability
 	){
 		$this->Enum___construct($name);
-	}
-
-	public function getHarvestLevel() : int{
-		return $this->harvestLevel;
-	}
-
-	public function getMaxDurability() : int{
-		return $this->maxDurability;
-	}
-
-	public function getBaseAttackPoints() : int{
-		return $this->baseAttackPoints;
-	}
-
-	public function getBaseEfficiency() : int{
-		return $this->baseEfficiency;
 	}
 
 	public function getEnchantability() : int{

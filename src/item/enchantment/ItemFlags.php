@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item\enchantment;
 
-final class ItemEnchantmentFlags{
+final class ItemFlags{
 
 	private function __construct(){
 		//NOOP
@@ -32,10 +32,10 @@ final class ItemEnchantmentFlags{
 	public const NONE = 0x0;
 	public const ALL = 0xffffff;
 	public const BREAKABLE = self::ALL & ~self::COMPASS & ~self::RECOVERY_COMPASS & ~self::HEAD;
-	public const ARMOR = self::HELMET | self::CHESTPLATE | self::LEGGINS | self::BOOTS;
+	public const ARMOR = self::HELMET | self::CHESTPLATE | self::LEGGINGS | self::BOOTS;
 	public const HELMET = 0x1;
 	public const CHESTPLATE = 0x2;
-	public const LEGGINS = 0x4;
+	public const LEGGINGS = 0x4;
 	public const BOOTS = 0x8;
 	public const SWORD = 0x10;
 	public const TRIDENT = 0x20;

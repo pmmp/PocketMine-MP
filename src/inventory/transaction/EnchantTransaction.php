@@ -53,7 +53,7 @@ class EnchantTransaction extends InventoryTransaction{
 			throw new TransactionValidationException("Incorrect input item");
 		}
 
-		if(!$this->source->isCreative()){
+		if($this->source->hasFiniteResources()){
 			$enchantLevel = $this->getEnchantLevel();
 			if($this->lapisCost !== $enchantLevel){
 				throw new TransactionValidationException("Expected the amount of lapis lazuli spent to be {$this->getEnchantLevel()}, but received $this->lapisCost");

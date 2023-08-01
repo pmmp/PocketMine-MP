@@ -34,9 +34,15 @@ class Enchantment{
 	use NotCloneable;
 	use NotSerializable;
 
+	/** @var \Closure(int $level) : int $minCost */
+	private \Closure $minCost;
+
+	/** @var \Closure(int $level, int $minCost) : int $maxCost */
+	private \Closure $maxCost;
+
 	/**
-	 * @phpstan-param \Closure(int $level) : int               $minCost
-	 * @phpstan-param \Closure(int $level, int $minCost) : int $maxCost
+	 * @phpstan-param null|\Closure(int $level) : int               $minCost
+	 * @phpstan-param null|\Closure(int $level, int $minCost) : int $maxCost
 	 */
 	public function __construct(
 		private Translatable|string $name,
@@ -44,10 +50,12 @@ class Enchantment{
 		private int $primaryItemFlags,
 		private int $secondaryItemFlags,
 		private int $maxLevel,
-		private bool $isTreasure,
-		private \Closure $minCost,
-		private \Closure $maxCost
+		private bool $isTreasure = false,
+		?\Closure $minCost = null,
+		?\Closure $maxCost = null
 	){
+		$this->maxCost = $maxCost ?? fn() => 1;
+		$this->minCost = $minCost ?? fn() => 50;
 	}
 
 	/**
@@ -82,14 +90,14 @@ class Enchantment{
 	/**
 	 * Returns whether this enchantment can apply to the item type from an enchanting table.
 	 */
-	public function hasPrimaryItemFlag(int $flag) : bool{
+	public function hasPrimaryItemType(int $flag) : bool{
 		return ($this->primaryItemFlags & $flag) !== 0;
 	}
 
 	/**
 	 * Returns whether this enchantment can apply to the item type from an anvil, if it is not a primary item.
 	 */
-	public function hasSecondaryItemFlag(int $flag) : bool{
+	public function hasSecondaryItemType(int $flag) : bool{
 		return ($this->secondaryItemFlags & $flag) !== 0;
 	}
 

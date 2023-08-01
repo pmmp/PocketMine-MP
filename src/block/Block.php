@@ -36,7 +36,7 @@ use pocketmine\data\runtime\RuntimeDataSizeCalculator;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Projectile;
-use pocketmine\item\enchantment\ItemEnchantmentFlags;
+use pocketmine\item\enchantment\ItemFlags;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
@@ -82,7 +82,7 @@ class Block{
 	/**
 	 * @param string $name English name of the block type (TODO: implement translations)
 	 */
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, int $itemEnchantmentFlag = ItemEnchantmentFlags::NONE){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, int $itemEnchantmentFlag = ItemFlags::NONE){
 		$this->idInfo = $idInfo;
 		$this->fallbackName = $name;
 		$this->typeInfo = $typeInfo;

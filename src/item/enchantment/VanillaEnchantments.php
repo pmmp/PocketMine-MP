@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item\enchantment;
 
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\item\enchantment\ItemEnchantmentFlags as Flags;
+use pocketmine\item\enchantment\ItemFlags as Flags;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\utils\RegistryTrait;
 
@@ -63,54 +63,59 @@ final class VanillaEnchantments{
 		self::register("PROTECTION", new ProtectionEnchantment(KnownTranslationFactory::enchantment_protect_all(), Rarity::COMMON,
 			Flags::ARMOR,
 			Flags::NONE,
-			4, false,
+			4,
+			0.75, null,
+			false,
 			fn($level) => 11 * ($level - 1) + 1,
-			fn($level, $minCost) => $minCost + 20,
-			0.75, null
+			fn($level, $minCost) => $minCost + 20
 		));
 		self::register("FIRE_PROTECTION", new ProtectionEnchantment(KnownTranslationFactory::enchantment_protect_fire(), Rarity::UNCOMMON,
 			Flags::ARMOR,
 			Flags::NONE,
-			4, false,
-			fn($level) => 8 * ($level - 1) + 10,
-			fn($level, $minCost) => $minCost + 12,
+			4,
 			1.25, [
 				EntityDamageEvent::CAUSE_FIRE,
 				EntityDamageEvent::CAUSE_FIRE_TICK,
 				EntityDamageEvent::CAUSE_LAVA
 				//TODO: check fireballs
-			]));
+			], false,
+			fn($level) => 8 * ($level - 1) + 10,
+			fn($level, $minCost) => $minCost + 12
+		));
 		self::register("FEATHER_FALLING", new ProtectionEnchantment(KnownTranslationFactory::enchantment_protect_fall(), Rarity::UNCOMMON,
 			Flags::BOOTS,
 			Flags::NONE,
-			4, false,
-			fn($level) => 6 * ($level - 1) + 5,
-			fn($level, $minCost) => $minCost + 10,
+			4,
 			2.5, [
 				EntityDamageEvent::CAUSE_FALL
-			]));
+			], false,
+			fn($level) => 6 * ($level - 1) + 5,
+			fn($level, $minCost) => $minCost + 10
+		));
 		self::register("BLAST_PROTECTION", new ProtectionEnchantment(KnownTranslationFactory::enchantment_protect_explosion(), Rarity::RARE,
 			Flags::ARMOR,
 			Flags::NONE,
-			4, false,
-			fn($level) => 8 * ($level - 1) + 5,
-			fn($level, $minCost) => $minCost + 12,
+			4,
 			1.5, [
 				EntityDamageEvent::CAUSE_BLOCK_EXPLOSION,
 				EntityDamageEvent::CAUSE_ENTITY_EXPLOSION
-			]));
+			], false,
+			fn($level) => 8 * ($level - 1) + 5,
+			fn($level, $minCost) => $minCost + 12
+		));
 		self::register("PROJECTILE_PROTECTION", new ProtectionEnchantment(KnownTranslationFactory::enchantment_protect_projectile(), Rarity::UNCOMMON,
 			Flags::ARMOR,
 			Flags::NONE,
-			4, false,
-			fn($level) => 6 * ($level - 1) + 3,
-			fn($level, $minCost) => $minCost + 15,
+			4,
 			1.5, [
 				EntityDamageEvent::CAUSE_PROJECTILE
-			]));
+			], false,
+			fn($level) => 6 * ($level - 1) + 3,
+			fn($level, $minCost) => $minCost + 15
+		));
 		self::register("THORNS", new Enchantment(KnownTranslationFactory::enchantment_thorns(), Rarity::MYTHIC,
 			Flags::CHESTPLATE,
-			Flags::HELMET | Flags::LEGGINS | Flags::BOOTS,
+			Flags::HELMET | Flags::LEGGINGS | Flags::BOOTS,
 			3, false,
 			fn($level) => 20 * ($level - 1) + 10,
 			fn($level, $minCost) => $minCost + 50
@@ -221,7 +226,7 @@ final class VanillaEnchantments{
 
 		self::register("SWIFT_SNEAK", new Enchantment(KnownTranslationFactory::enchantment_swift_sneak(), Rarity::MYTHIC,
 			Flags::NONE,
-			Flags::LEGGINS,
+			Flags::LEGGINGS,
 			3, true,
 			fn($level) => 10 * $level,
 			fn($level, $minCost) => $minCost + 5

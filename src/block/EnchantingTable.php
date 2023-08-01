@@ -48,7 +48,7 @@ class EnchantingTable extends Transparent{
 		if($player instanceof Player){
 			//TODO lock
 
-			$player->setCurrentWindow(new EnchantInventory($this->position, $player));
+			$player->setCurrentWindow(new EnchantInventory($this->position));
 		}
 
 		return true;

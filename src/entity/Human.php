@@ -112,7 +112,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	protected HungerManager $hungerManager;
 	protected ExperienceManager $xpManager;
 
-	protected int $xpSeed;
+	protected int $enchantmentSeed;
 
 	public function __construct(Location $location, Skin $skin, ?CompoundTag $nbt = null){
 		$this->skin = $skin;
@@ -211,12 +211,12 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return $this->xpManager;
 	}
 
-	public function getXpSeed() : int{
-		return $this->xpSeed;
+	public function getEnchantmentSeed() : int{
+		return $this->enchantmentSeed;
 	}
 
-	protected function setRandomXpSeed() : void{
-		$this->xpSeed = random_int(Limits::INT32_MIN, Limits::INT32_MAX);
+	protected function generateEnchantmentSeed() : void{
+		$this->enchantmentSeed = mt_rand(Limits::INT32_MIN, Limits::INT32_MAX);
 	}
 
 	public function getXpDropAmount() : int{
@@ -340,9 +340,9 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->xpManager->setLifetimeTotalXp($nbt->getInt(self::TAG_LIFETIME_XP_TOTAL, 0));
 
 		if(($xpSeedTag = $nbt->getTag(self::TAG_XP_SEED)) instanceof IntTag){
-			$this->xpSeed = $xpSeedTag->getValue();
+			$this->enchantmentSeed = $xpSeedTag->getValue();
 		}else{
-			$this->setRandomXpSeed();
+			$this->generateEnchantmentSeed();
 		}
 	}
 
@@ -416,7 +416,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$nbt->setInt(self::TAG_XP_LEVEL, $this->xpManager->getXpLevel());
 		$nbt->setFloat(self::TAG_XP_PROGRESS, $this->xpManager->getXpProgress());
 		$nbt->setInt(self::TAG_LIFETIME_XP_TOTAL, $this->xpManager->getLifetimeTotalXp());
-		$nbt->setInt(self::TAG_XP_SEED, $this->xpSeed);
+		$nbt->setInt(self::TAG_XP_SEED, $this->enchantmentSeed);
 
 		$inventoryTag = new ListTag([], NBT::TAG_Compound);
 		$nbt->setTag(self::TAG_INVENTORY, $inventoryTag);

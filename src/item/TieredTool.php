@@ -23,12 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\item\enchantment\ItemEnchantmentFlags;
+use pocketmine\item\enchantment\ItemFlags;
 
 abstract class TieredTool extends Tool{
 	protected ToolTier $tier;
 
-	public function __construct(ItemIdentifier $identifier, string $name, ToolTier $tier, int $enchantmentFlag = ItemEnchantmentFlags::NONE){
+	public function __construct(ItemIdentifier $identifier, string $name, ToolTier $tier, int $enchantmentFlag = ItemFlags::NONE){
 		parent::__construct($identifier, $name, $enchantmentFlag);
 		$this->tier = $tier;
 	}
