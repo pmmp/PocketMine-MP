@@ -25,6 +25,9 @@ namespace pocketmine\item\enchantment;
 
 class EnchantmentOption{
 
+	/**
+	 * @param EnchantmentInstance[]  $enchantments
+	 */
 	public function __construct(
 		private int $cost,
 		private int $slot,
@@ -41,6 +44,9 @@ class EnchantmentOption{
 		return $this->slot;
 	}
 
+	/**
+	 * @return EnchantmentInstance[]
+	 */
 	public function getEnchantments() : array{
 		return $this->enchantments;
 	}
