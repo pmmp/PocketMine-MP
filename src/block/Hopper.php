@@ -39,7 +39,11 @@ class Hopper extends Transparent implements HopperInteractable{
 	use PoweredByRedstoneTrait;
 	use HopperInteractableTrait;
 
+	public const TRANSFER_COOLDOWN = 8;
+
 	private int $facing = Facing::DOWN;
+
+	private int $currentCooldown = 0;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->facingExcept($this->facing, Facing::UP);
@@ -104,24 +108,34 @@ class Hopper extends Transparent implements HopperInteractable{
 			return;
 		}
 
-		$facingBlock = $this->getSide($this->facing);
-		$pullSuccess = false;
-		if($facingBlock instanceof HopperInteractable){
-			$pullSuccess = $facingBlock->doHopperPush($hopperBlock);
+		if($this->hopperOnCooldown()){
+			$this->currentCooldown--;
+		}else{
+			$facingBlock = $this->getSide($this->facing);
+			$pullSuccess = false;
+			if($facingBlock instanceof HopperInteractable){
+				$pullSuccess = $facingBlock->doHopperPush($hopperBlock);
+			}
+
+			$topBlock = $this->getSide(Facing::UP);
+			$pushSuccess = false;
+			if($topBlock instanceof HopperInteractable){
+				$pushSuccess = $topBlock->doHopperPull($hopperBlock);
+			}
+
+			if($pullSuccess || $pushSuccess){
+				$this->currentCooldown = self::TRANSFER_COOLDOWN;
+			}
 		}
 
-		$topBlock = $this->getSide(Facing::UP);
-		$pushSuccess = false;
-		if($topBlock instanceof HopperInteractable){
-			$pushSuccess = $topBlock->doHopperPull($hopperBlock);
-		}
-
-		$nextTick = ($pushSuccess || $pullSuccess) ? 8 : 1;
-
-		$world->scheduleDelayedBlockUpdate($this->position, $nextTick);
+		$world->scheduleDelayedBlockUpdate($this->position, 1);
 	}
 
 	public function doHopperPush(Hopper $hopperBlock) : bool{
+		if($this->hopperOnCooldown()){
+			return false;
+		}
+
 		$currentTile = $this->position->getWorld()->getTile($this->position);
 		if(!$currentTile instanceof TileHopper){
 			return false;
@@ -139,6 +153,10 @@ class Hopper extends Transparent implements HopperInteractable{
 	}
 
 	public function doHopperPull(Hopper $hopperBlock) : bool{
+		if($this->hopperOnCooldown()){
+			return false;
+		}
+
 		$currentTile = $this->position->getWorld()->getTile($this->position);
 		if(!$currentTile instanceof TileHopper){
 			return false;
@@ -153,6 +171,10 @@ class Hopper extends Transparent implements HopperInteractable{
 		$targetInventory = $tileHopper->getInventory();
 
 		return $this->transferItem($sourceInventory, $targetInventory);
+	}
+
+	private function hopperOnCooldown() : bool{
+		return $this->currentCooldown > 0;
 	}
 
 	//TODO: redstone logic, sucking logic
