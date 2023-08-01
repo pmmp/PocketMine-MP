@@ -54,8 +54,8 @@ class Enchantment{
 		?\Closure $maxCost = null,
 		private bool $isTreasure = false,
 	){
-		$this->maxCost = $maxCost ?? fn() => 1;
-		$this->minCost = $minCost ?? fn() => 50;
+		$this->minCost = $minCost ?? fn() => 1;
+		$this->maxCost = $maxCost ?? fn() => 50;
 	}
 
 	/**
