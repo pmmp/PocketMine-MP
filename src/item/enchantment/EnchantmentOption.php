@@ -26,7 +26,7 @@ namespace pocketmine\item\enchantment;
 class EnchantmentOption{
 
 	/**
-	 * @param EnchantmentInstance[]  $enchantments
+	 * @param EnchantmentInstance[] $enchantments
 	 */
 	public function __construct(
 		private int $cost,
