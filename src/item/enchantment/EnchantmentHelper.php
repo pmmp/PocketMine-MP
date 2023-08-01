@@ -121,7 +121,7 @@ final class EnchantmentHelper{
 		$resultEnchantments = [];
 		$availableEnchantments = self::getAvailableEnchantments($cost, $inputItem);
 
-		if(count($availableEnchantments) !== 0){
+		if(count($availableEnchantments) > 0){
 			/** @var EnchantmentInstance $lastEnchantment */
 			$lastEnchantment = self::getRandomWeightedEnchantment($random, $availableEnchantments);
 			$resultEnchantments[] = $lastEnchantment;
