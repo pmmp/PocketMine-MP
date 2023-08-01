@@ -76,7 +76,7 @@ use function array_key_exists;
 use function array_merge;
 use function array_values;
 use function min;
-use function random_int;
+use function mt_rand;
 
 class Human extends Living implements ProjectileSource, InventoryHolder{
 
