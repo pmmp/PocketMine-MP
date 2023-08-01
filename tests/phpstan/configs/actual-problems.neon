@@ -846,6 +846,16 @@ parameters:
 			path: ../../../src/utils/Utils.php
 
 		-
+			message: "#^Parameter \\#2 \\$file of class pocketmine\\\\thread\\\\ThreadCrashInfoFrame constructor expects string\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../../src/utils/Utils.php
+
+		-
+			message: "#^Parameter \\#3 \\$line of class pocketmine\\\\thread\\\\ThreadCrashInfoFrame constructor expects int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/utils/Utils.php
+
+		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/world/Explosion.php

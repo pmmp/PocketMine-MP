@@ -31,7 +31,6 @@ use pocketmine\thread\Worker;
 use pocketmine\utils\AssumptionFailedError;
 use function gc_enable;
 use function ini_set;
-use function set_exception_handler;
 
 class AsyncWorker extends Worker{
 	/** @var mixed[] */
@@ -68,18 +67,15 @@ class AsyncWorker extends Worker{
 		}
 
 		$this->saveToThreadStore(self::TLS_KEY_NOTIFIER, $this->sleeperEntry->createNotifier());
+	}
 
-		set_exception_handler(function(\Throwable $e){
-			$this->logger->logException($e);
-		});
+	protected function onUncaughtException(\Throwable $e) : void{
+		parent::onUncaughtException($e);
+		$this->logger->logException($e);
 	}
 
 	public function getLogger() : ThreadSafeLogger{
 		return $this->logger;
-	}
-
-	public function handleException(\Throwable $e) : void{
-		$this->logger->logException($e);
 	}
 
 	public function getThreadName() : string{

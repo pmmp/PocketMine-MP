@@ -29,11 +29,13 @@ use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginManager;
 use pocketmine\Server;
+use pocketmine\thread\ThreadCrashInfoFrame;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
 use Symfony\Component\Filesystem\Path;
+use function array_map;
 use function base64_encode;
 use function error_get_last;
 use function file;
@@ -186,7 +188,7 @@ class CrashDump{
 			if($error === null){
 				throw new \RuntimeException("Crash error information missing - did something use exit()?");
 			}
-			$error["trace"] = Utils::currentTrace(3); //Skipping CrashDump->baseCrash, CrashDump->construct, Server->crashDump
+			$error["trace"] = Utils::printableTrace(Utils::currentTrace(3)); //Skipping CrashDump->baseCrash, CrashDump->construct, Server->crashDump
 			$error["fullFile"] = $error["file"];
 			$error["file"] = Filesystem::cleanPath($error["file"]);
 			try{
@@ -201,9 +203,6 @@ class CrashDump{
 		$error["message"] = mb_scrub($error["message"], 'UTF-8');
 
 		if(isset($lastError)){
-			if(isset($lastError["trace"])){
-				$lastError["trace"] = Utils::printableTrace($lastError["trace"]);
-			}
 			$this->data->lastError = $lastError;
 			$this->data->lastError["message"] = mb_scrub($this->data->lastError["message"], 'UTF-8');
 		}
@@ -215,10 +214,11 @@ class CrashDump{
 		$this->data->plugin_involvement = self::PLUGIN_INVOLVEMENT_NONE;
 		if(!$this->determinePluginFromFile($error["fullFile"], true)){ //fatal errors won't leave any stack trace
 			foreach($error["trace"] as $frame){
-				if(!isset($frame["file"])){
+				$frameFile = $frame->getFile();
+				if($frameFile === null){
 					continue; //PHP core
 				}
-				if($this->determinePluginFromFile($frame["file"], false)){
+				if($this->determinePluginFromFile($frameFile, false)){
 					break;
 				}
 			}
@@ -233,7 +233,8 @@ class CrashDump{
 			}
 		}
 
-		$this->data->trace = Utils::printableTrace($error["trace"]);
+		$this->data->trace = array_map(array: $error["trace"], callback: fn(ThreadCrashInfoFrame $frame) => $frame->getPrintableFrame());
+		$this->data->thread = $error["thread"];
 	}
 
 	private function determinePluginFromFile(string $filePath, bool $crashFrame) : bool{

@@ -733,23 +733,26 @@ final class BlockTypeIds{
 	public const CHERRY_TRAPDOOR = 10703;
 	public const CHERRY_WALL_SIGN = 10704;
 	public const CHERRY_WOOD = 10705;
-	public const BAMBOO_BLOCK = 10706;
-	public const BAMBOO_BUTTON = 10707;
-	public const BAMBOO_DOOR = 10708;
-	public const BAMBOO_FENCE = 10709;
-	public const BAMBOO_FENCE_GATE = 10710;
-	public const BAMBOO_MOSAIC = 10711;
-	public const BAMBOO_MOSAIC_SLAB = 10712;
-	public const BAMBOO_MOSAIC_STAIRS = 10713;
-	public const BAMBOO_PLANKS = 10714;
-	public const BAMBOO_PRESSURE_PLATE = 10715;
-	public const BAMBOO_SIGN = 10716;
-	public const BAMBOO_SLAB = 10717;
-	public const BAMBOO_STAIRS = 10718;
-	public const BAMBOO_TRAPDOOR = 10719;
-	public const BAMBOO_WALL_SIGN = 10720;
+	public const SMALL_DRIPLEAF = 10706;
+	public const BIG_DRIPLEAF_HEAD = 10707;
+	public const BIG_DRIPLEAF_STEM = 10708;
+	public const BAMBOO_BLOCK = 10709;
+	public const BAMBOO_BUTTON = 10710;
+	public const BAMBOO_DOOR = 10711;
+	public const BAMBOO_FENCE = 10712;
+	public const BAMBOO_FENCE_GATE = 10713;
+	public const BAMBOO_MOSAIC = 10714;
+	public const BAMBOO_MOSAIC_SLAB = 10715;
+	public const BAMBOO_MOSAIC_STAIRS = 10716;
+	public const BAMBOO_PLANKS = 10717;
+	public const BAMBOO_PRESSURE_PLATE = 10718;
+	public const BAMBOO_SIGN = 10719;
+	public const BAMBOO_SLAB = 10720;
+	public const BAMBOO_STAIRS = 10721;
+	public const BAMBOO_TRAPDOOR = 10722;
+	public const BAMBOO_WALL_SIGN = 10723;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10721;
+	public const FIRST_UNUSED_BLOCK_ID = 10724;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 
