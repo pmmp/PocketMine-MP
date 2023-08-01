@@ -41,6 +41,7 @@ use function array_map;
 use function count;
 use function max;
 use function min;
+use function range;
 
 final class EnchantmentHelper{
 	public const MAX_BOOKSHELF_COUNT = 15;
