@@ -46,21 +46,26 @@ final class ArmorMaterial{
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self("leather", 15),
-			new self("chainmail", 12),
-			new self("iron", 9),
-			new self("turtle", 9),
-			new self("gold", 25),
-			new self("diamond", 10),
-			new self("netherite", 15)
+			new self("leather", true, 15),
+			new self("chainmail", false, 12),
+			new self("iron", false, 9),
+			new self("turtle", false, 9),
+			new self("gold", false, 25),
+			new self("diamond", false, 10),
+			new self("netherite", false, 15)
 		);
 	}
 
 	private function __construct(
 		string $name,
+		private bool $isDyeable,
 		private int $enchantability
 	){
 		$this->Enum___construct($name);
+	}
+
+	public function isDyeable() : bool{
+		return $this->isDyeable;
 	}
 
 	public function getEnchantability() : int{

@@ -130,13 +130,7 @@ final class WaterCauldron extends FillableCauldron{
 			}
 		}elseif($item instanceof Armor){
 			if($this->customWaterColor !== null){
-				if(match($item->getTypeId()){ //TODO: a DyeableArmor class would probably be a better idea, since not all types of armor are dyeable
-					ItemTypeIds::LEATHER_CAP,
-					ItemTypeIds::LEATHER_TUNIC,
-					ItemTypeIds::LEATHER_PANTS,
-					ItemTypeIds::LEATHER_BOOTS => true,
-					default => false
-				} && $item->getCustomColor()?->toRGBA() !== $this->customWaterColor->toRGBA()){
+				if($item->getMaterial()->isDyeable() && $item->getCustomColor()?->toRGBA() !== $this->customWaterColor->toRGBA()){
 					$item->setCustomColor($this->customWaterColor);
 					$world->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::DYE_ARMOR_USE_AMOUNT));
 					$world->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronDyeItemSound());
