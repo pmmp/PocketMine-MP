@@ -200,6 +200,11 @@ class World implements ChunkManager{
 	 * @phpstan-var array<ChunkPosHash, array<ChunkBlockPosHash, Block>>
 	 */
 	private array $blockCache = [];
+	/**
+	 * @var AxisAlignedBB[][][] chunkHash => [relativeBlockHash => AxisAlignedBB[]]
+	 * @phpstan-var array<ChunkPosHash, array<ChunkBlockPosHash, list<AxisAlignedBB>>>
+	 */
+	private array $blockCollisionBoxCache = [];
 
 	private int $sendTimeTicker = 0;
 
@@ -646,6 +651,7 @@ class World implements ChunkManager{
 
 		$this->provider->close();
 		$this->blockCache = [];
+		$this->blockCollisionBoxCache = [];
 
 		$this->unloaded = true;
 	}
@@ -1117,12 +1123,23 @@ class World implements ChunkManager{
 	public function clearCache(bool $force = false) : void{
 		if($force){
 			$this->blockCache = [];
+			$this->blockCollisionBoxCache = [];
 		}else{
 			$count = 0;
 			foreach($this->blockCache as $list){
 				$count += count($list);
 				if($count > 2048){
 					$this->blockCache = [];
+					break;
+				}
+			}
+
+			$count = 0;
+			foreach($this->blockCollisionBoxCache as $list){
+				$count += count($list);
+				if($count > 2048){
+					//TODO: Is this really the best logic?
+					$this->blockCollisionBoxCache = [];
 					break;
 				}
 			}
@@ -1507,9 +1524,13 @@ class World implements ChunkManager{
 
 		for($z = $minZ; $z <= $maxZ; ++$z){
 			for($x = $minX; $x <= $maxX; ++$x){
+				$chunkPosHash = World::chunkHash($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE);
 				for($y = $minY; $y <= $maxY; ++$y){
-					$block = $this->getBlockAt($x, $y, $z);
-					foreach($block->getCollisionBoxes() as $blockBB){
+					$relativeBlockHash = World::chunkBlockHash($x, $y, $z);
+
+					$boxes = $this->blockCollisionBoxCache[$chunkPosHash][$relativeBlockHash] ??= $this->getBlockAt($x, $y, $z)->getCollisionBoxes();
+
+					foreach($boxes as $blockBB){
 						if($blockBB->intersectsWith($bb)){
 							$collides[] = $blockBB;
 						}
@@ -1858,6 +1879,7 @@ class World implements ChunkManager{
 		$relativeBlockHash = World::chunkBlockHash($x, $y, $z);
 
 		unset($this->blockCache[$chunkHash][$relativeBlockHash]);
+		unset($this->blockCollisionBoxCache[$chunkHash][$relativeBlockHash]);
 
 		if(!isset($this->changedBlocks[$chunkHash])){
 			$this->changedBlocks[$chunkHash] = [];
@@ -2454,6 +2476,7 @@ class World implements ChunkManager{
 		$this->chunks[$chunkHash] = $chunk;
 
 		unset($this->blockCache[$chunkHash]);
+		unset($this->blockCollisionBoxCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);
 		$chunk->setTerrainDirty();
 		$this->markTickingChunkForRecheck($chunkX, $chunkZ); //this replacement chunk may not meet the conditions for ticking
@@ -2733,6 +2756,7 @@ class World implements ChunkManager{
 		}
 		$this->chunks[$chunkHash] = $chunk;
 		unset($this->blockCache[$chunkHash]);
+		unset($this->blockCollisionBoxCache[$chunkHash]);
 
 		$this->initChunk($x, $z, $chunkData);
 
@@ -2887,6 +2911,7 @@ class World implements ChunkManager{
 
 		unset($this->chunks[$chunkHash]);
 		unset($this->blockCache[$chunkHash]);
+		unset($this->blockCollisionBoxCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);
 		unset($this->registeredTickingChunks[$chunkHash]);
 		$this->markTickingChunkForRecheck($x, $z);
