@@ -55,11 +55,11 @@ abstract class Event{
 		$timings = Timings::getEventTimings($this);
 		$timings->startTiming();
 
-		$handlerList = HandlerListManager::global()->getListFor(get_class($this));
+		$handlers = HandlerListManager::global()->getHandlersFor(static::class);
 
 		++self::$eventCallDepth;
 		try{
-			foreach($handlerList->getListenerList() as $registration){
+			foreach($handlers as $registration){
 				$registration->callEvent($this);
 			}
 		}finally{
@@ -75,6 +75,6 @@ abstract class Event{
 	 * Usage: SomeEventClass::hasHandlers()
 	 */
 	public static function hasHandlers() : bool{
-		return count(HandlerListManager::global()->getListFor(static::class)->getListenerList()) > 0;
+		return count(HandlerListManager::global()->getHandlersFor(static::class)) > 0;
 	}
 }
