@@ -26,7 +26,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\entity\Location;
-use pocketmine\entity\object\EnderCrystal;
+use pocketmine\entity\object\EndCrystal as EntityEndCrystal;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -47,7 +47,7 @@ class EndCrystal extends Item{
 				$world->getBlock($pos->up())->getTypeId() === BlockTypeIds::AIR &&
 				$world->getBlock($pos->up(2))->getTypeId() === BlockTypeIds::AIR
 			){
-				$crystal = new EnderCrystal(Location::fromObject($pos->add(0.5, 1, 0.5), $world));
+				$crystal = new EntityEndCrystal(Location::fromObject($pos->add(0.5, 1, 0.5), $world));
 				$crystal->spawnToAll();
 
 				$this->pop();

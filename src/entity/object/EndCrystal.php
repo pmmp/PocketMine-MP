@@ -38,7 +38,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\world\Explosion;
 
-class EnderCrystal extends Entity implements Explosive{
+class EndCrystal extends Entity implements Explosive{
 	private const TAG_SHOWBASE = "ShowBottom"; //TAG_Byte
 
 	private const TAG_BLOCKTARGET_X = "BlockTargetX"; //TAG_Int
