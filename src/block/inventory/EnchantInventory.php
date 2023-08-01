@@ -23,22 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory;
 
-use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\inventory\TemporaryInventory;
 use pocketmine\item\enchantment\EnchantmentHelper as Helper;
-use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\item\enchantment\EnchantmentOption;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\item\VanillaItems;
-use pocketmine\network\mcpe\protocol\PlayerEnchantOptionsPacket;
-use pocketmine\network\mcpe\protocol\types\Enchant;
-use pocketmine\network\mcpe\protocol\types\EnchantOption;
 use pocketmine\world\Position;
-use function array_map;
-use function array_merge;
-use function count;
-use function is_null;
 
 class EnchantInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
 	use BlockInventoryTrait;
@@ -46,7 +38,7 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 	public const SLOT_INPUT = 0;
 	public const SLOT_LAPIS = 1;
 
-	/** @var EnchantOption[] $options */
+	/** @var EnchantmentOption[] $options */
 	private array $options = [];
 
 	/** @var Item[] $outputs */
@@ -60,12 +52,8 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 	protected function onSlotChange(int $index, Item $before) : void{
 		if($index == self::SLOT_INPUT){
 			foreach($this->viewers as $viewer){
-				$this->options = Helper::getEnchantOptions($this->holder, $this->getItem(self::SLOT_INPUT), $viewer->getEnchantmentSeed());
+				$this->options = Helper::sendEnchantOptions($viewer, $this->holder, $this->getItem(self::SLOT_INPUT), $viewer->getXpSeed());
 				$this->outputs = [];
-
-				if(count($this->options) !== 0){
-					$viewer->getNetworkSession()->sendDataPacket(PlayerEnchantOptionsPacket::create($this->options));
-				}
 			}
 		}
 
@@ -91,30 +79,16 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 		}
 
 		$option = $this->options[$optionId] ?? null;
-		if(is_null($option)){
+		if($option === null){
 			throw new \RuntimeException("Failed to find enchantment option with network id $optionId");
 		}
-
-		$enchantments = array_map(
-			function(Enchant $e){
-				$enchantment = EnchantmentIdMap::getInstance()->fromId($e->getId());
-				if(is_null($enchantment)){
-					throw new \RuntimeException("Failed to get enchantment with id {$e->getId()}");
-				}
-				return new EnchantmentInstance($enchantment, $e->getLevel());
-			},
-			array_merge(
-				$option->getEquipActivatedEnchantments(),
-				$option->getHeldActivatedEnchantments(),
-				$option->getSelfActivatedEnchantments()
-			)
-		);
 
 		$outputItem = $this->getItem(self::SLOT_INPUT);
 		if($outputItem->getTypeId() === ItemTypeIds::BOOK){
 			$outputItem = VanillaItems::ENCHANTED_BOOK();
 		}
-		foreach($enchantments as $enchantment){
+
+		foreach($option->getEnchantments() as $enchantment){
 			$outputItem->addEnchantment($enchantment);
 		}
 

@@ -289,7 +289,7 @@ class ItemStackRequestExecutor{
 	 * @throws ItemStackRequestProcessException
 	 */
 	private function assertDoingCrafting() : void{
-		if(!$this->specialTransaction instanceof CraftingTransaction){
+		if(!$this->specialTransaction instanceof CraftingTransaction && !$this->specialTransaction instanceof EnchantTransaction){
 			if($this->specialTransaction === null){
 				throw new ItemStackRequestProcessException("Expected CraftRecipe or CraftRecipeAuto action to precede this action");
 			}else{
@@ -340,15 +340,13 @@ class ItemStackRequestExecutor{
 			if($window instanceof EnchantInventory){
 				$this->specialTransaction = new EnchantTransaction($this->player, $recipeId);
 				$this->setNextCreatedItem($window->getOutput($recipeId));
-				return;
+			}else{
+				$this->beginCrafting($recipeId, 1);
 			}
-			$this->beginCrafting($recipeId, 1);
 		}elseif($action instanceof CraftRecipeAutoStackRequestAction){
 			$this->beginCrafting($action->getRecipeId(), $action->getRepetitions());
 		}elseif($action instanceof CraftingConsumeInputStackRequestAction){
-			if(!$this->specialTransaction instanceof EnchantTransaction){
-				$this->assertDoingCrafting();
-			}
+			$this->assertDoingCrafting();
 			$this->removeItemFromSlot($action->getSource(), $action->getCount()); //output discarded - we allow CraftingTransaction to verify the balance
 
 		}elseif($action instanceof CraftingCreateSpecificResultStackRequestAction){

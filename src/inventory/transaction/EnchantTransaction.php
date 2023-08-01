@@ -29,7 +29,6 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\player\Player;
 use function count;
-use function is_null;
 
 class EnchantTransaction extends InventoryTransaction{
 
@@ -47,9 +46,12 @@ class EnchantTransaction extends InventoryTransaction{
 			throw new TransactionValidationException("Transaction must have at least one action to be executable");
 		}
 
-		/** @var EnchantInventory $enchantWindow */
 		$enchantWindow = $this->source->getCurrentWindow();
-		if(is_null($this->inputItem) || !$this->inputItem->equalsExact($enchantWindow->getInput())){
+		if (!$enchantWindow instanceof EnchantInventory) {
+			throw new TransactionValidationException("Current window was expected to be of type EnchantInventory");
+		}
+
+		if($this->inputItem === null || !$this->inputItem->equalsExact($enchantWindow->getInput())){
 			throw new TransactionValidationException("Incorrect input item");
 		}
 

@@ -29,15 +29,16 @@ use pocketmine\item\Armor;
 use pocketmine\item\Book;
 use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
+use pocketmine\network\mcpe\protocol\PlayerEnchantOptionsPacket;
 use pocketmine\network\mcpe\protocol\types\Enchant;
 use pocketmine\network\mcpe\protocol\types\EnchantOption;
+use pocketmine\player\Player;
 use pocketmine\utils\Random;
 use pocketmine\world\Position;
 use function abs;
 use function array_filter;
 use function array_map;
 use function count;
-use function implode;
 use function max;
 use function min;
 
@@ -48,9 +49,9 @@ final class EnchantmentHelper{
 	public const THIRD_OPTION = 2;
 
 	/**
-	 * @return EnchantOption[]
+	 * @return EnchantmentOption[]
 	 */
-	public static function getEnchantOptions(Position $tablePos, Item $input, int $seed) : array{
+	public static function sendEnchantOptions(Player $player, Position $tablePos, Item $input, int $seed) : array{
 		if($input->isNull() || $input->hasEnchantments()){
 			return [];
 		}
@@ -63,11 +64,25 @@ final class EnchantmentHelper{
 		$middleCost = (int) ($baseCost * 2 / 3 + 1);
 		$bottomCost = max($baseCost, $bookshelfCount * 2);
 
-		return [
+		/** @var EnchantmentOption[] $options */
+		$options = [
 			self::createEnchantOption($random, $input, $topCost, self::FIRST_OPTION),
 			self::createEnchantOption($random, $input, $middleCost, self::SECOND_OPTION),
 			self::createEnchantOption($random, $input, $bottomCost, self::THIRD_OPTION),
 		];
+		$protocolOptions = [];
+
+		foreach($options as $option){
+			$protocolEnchantments = array_map(
+				fn(EnchantmentInstance $e) => new Enchant(EnchantmentIdMap::getInstance()->toId($e->getType()), $e->getLevel()),
+				$option->getEnchantments()
+			);
+			$protocolOptions[] = new EnchantOption($option->getCost(), $option->getSlot(), $protocolEnchantments, [], [], $option->getName(), $option->getSlot());
+		}
+
+		$player->getNetworkSession()->sendDataPacket(PlayerEnchantOptionsPacket::create($protocolOptions));
+
+		return $options;
 	}
 
 	private static function countBookshelves(Position $tablePos) : int{
@@ -110,7 +125,7 @@ final class EnchantmentHelper{
 		return $bookshelfCount;
 	}
 
-	private static function createEnchantOption(Random $random, Item $inputItem, int $optionCost, int $slot) : EnchantOption{
+	private static function createEnchantOption(Random $random, Item $inputItem, int $optionCost, int $slot) : EnchantmentOption{
 		$cost = $optionCost;
 
 		$enchantability = self::getEnchantability($inputItem);
@@ -149,12 +164,7 @@ final class EnchantmentHelper{
 			}
 		}
 
-		$protocolEnchantments = array_map(
-			fn(EnchantmentInstance $e) => new Enchant(EnchantmentIdMap::getInstance()->toId($e->getType()), $e->getLevel()),
-			$resultEnchantments
-		);
-
-		return new EnchantOption($optionCost, $slot, $protocolEnchantments, [], [], self::getRandomOptionName($random), $slot);
+		return new EnchantmentOption($optionCost, $slot, $resultEnchantments, self::getRandomOptionName($random));
 	}
 
 	private static function getEnchantability(Item $item) : int{
@@ -219,13 +229,13 @@ final class EnchantmentHelper{
 	}
 
 	private static function getRandomOptionName(Random $random) : string{
-		$words = ['PocketMine', 'delights', 'players', 'enchanting', 'items', 'with', 'mystical', 'wonders'];
-		$selectedWords = [];
+		$symbols = range('a', 'z');
+		$name = '';
 
-		for($i = $random->nextRange(2, 3); $i > 0; $i--){
-			$selectedWords[] = $words[$random->nextBoundedInt(count($words))];
+		for($i = $random->nextRange(5, 15); $i > 0; $i--){
+			$name .= $symbols[$random->nextBoundedInt(count($symbols))];
 		}
 
-		return implode(' ', $selectedWords);
+		return $name;
 	}
 }

@@ -73,7 +73,8 @@ final class VanillaEnchantments{
 			Flags::ARMOR,
 			Flags::NONE,
 			4,
-			1.25, [
+			1.25,
+			[
 				EntityDamageEvent::CAUSE_FIRE,
 				EntityDamageEvent::CAUSE_FIRE_TICK,
 				EntityDamageEvent::CAUSE_LAVA
@@ -83,10 +84,11 @@ final class VanillaEnchantments{
 			fn($level, $minCost) => $minCost + 12
 		));
 		self::register("FEATHER_FALLING", new ProtectionEnchantment(KnownTranslationFactory::enchantment_protect_fall(), Rarity::UNCOMMON,
-			Flags::BOOTS,
+			Flags::FEET,
 			Flags::NONE,
 			4,
-			2.5, [
+			2.5,
+			[
 				EntityDamageEvent::CAUSE_FALL
 			], false,
 			fn($level) => 6 * ($level - 1) + 5,
@@ -96,7 +98,8 @@ final class VanillaEnchantments{
 			Flags::ARMOR,
 			Flags::NONE,
 			4,
-			1.5, [
+			1.5,
+			[
 				EntityDamageEvent::CAUSE_BLOCK_EXPLOSION,
 				EntityDamageEvent::CAUSE_ENTITY_EXPLOSION
 			], false,
@@ -107,21 +110,22 @@ final class VanillaEnchantments{
 			Flags::ARMOR,
 			Flags::NONE,
 			4,
-			1.5, [
+			1.5,
+			[
 				EntityDamageEvent::CAUSE_PROJECTILE
 			], false,
 			fn($level) => 6 * ($level - 1) + 3,
 			fn($level, $minCost) => $minCost + 15
 		));
 		self::register("THORNS", new Enchantment(KnownTranslationFactory::enchantment_thorns(), Rarity::MYTHIC,
-			Flags::CHESTPLATE,
-			Flags::HELMET | Flags::LEGGINGS | Flags::BOOTS,
+			Flags::TORSO,
+			Flags::HEAD | Flags::LEGS | Flags::FEET,
 			3, false,
 			fn($level) => 20 * ($level - 1) + 10,
 			fn($level, $minCost) => $minCost + 50
 		));
 		self::register("RESPIRATION", new Enchantment(KnownTranslationFactory::enchantment_oxygen(), Rarity::RARE,
-			Flags::HELMET,
+			Flags::HEAD,
 			Flags::NONE,
 			3, false,
 			fn($level) => 10 * $level,
@@ -203,8 +207,8 @@ final class VanillaEnchantments{
 		));
 
 		self::register("UNBREAKING", new Enchantment(KnownTranslationFactory::enchantment_durability(), Rarity::UNCOMMON,
-			Flags::ARMOR | Flags::DIG | Flags::SWORD | Flags::FISHING_ROD | Flags::BOW | Flags::TRIDENT | Flags::CROSSBOW,
-			Flags::SHEARS | Flags::FLINT_AND_STEEL | Flags::SHIELD | Flags::SMTH_ON_STICK | Flags::FISHING_ROD | Flags::ELYTRA | Flags::BRUSH,
+			Flags::ARMOR | Flags::DIG | Flags::SWORD | Flags::FISHING_ROD | Flags::BOW | Flags::TRIDENT,
+			Flags::SHEARS | Flags::FLINT_AND_STEEL | Flags::CARROT_STICK | Flags::FISHING_ROD | Flags::ELYTRA,
 			3, false,
 			fn($level) => 8 * ($level - 1) + 5,
 			fn($level, $minCost) => $minCost + 50
@@ -226,7 +230,7 @@ final class VanillaEnchantments{
 
 		self::register("SWIFT_SNEAK", new Enchantment(KnownTranslationFactory::enchantment_swift_sneak(), Rarity::MYTHIC,
 			Flags::NONE,
-			Flags::LEGGINGS,
+			Flags::LEGS,
 			3, true,
 			fn($level) => 10 * $level,
 			fn($level, $minCost) => $minCost + 5
@@ -243,7 +247,7 @@ final class VanillaEnchantments{
 	 */
 	public static function getAll() : array{
 		/**
-		 * @var Enchantment[]                      $result
+		 * @var Enchantment[] $result
 		 * @phpstan-var array<string, Enchantment> $result
 		 */
 		$result = self::_registryGetAll();
