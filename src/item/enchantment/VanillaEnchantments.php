@@ -212,7 +212,6 @@ final class VanillaEnchantments{
 			fn($level, $minCost) => $minCost + 30
 		));
 
-
 		self::register("MENDING", new Enchantment(KnownTranslationFactory::enchantment_mending(), Rarity::RARE,
 			Flags::NONE,
 			Flags::BREAKABLE,
