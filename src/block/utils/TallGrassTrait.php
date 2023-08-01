@@ -21,24 +21,34 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\utils\TallGrassTrait;
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 
-class DoubleTallGrass extends DoublePlant{
-	use TallGrassTrait {
-		getDropsForIncompatibleTool as traitGetDropsForIncompatibleTool;
-	}
-
+/**
+ * @internal
+ */
+trait TallGrassTrait{
 	public function canBeReplaced() : bool{
 		return true;
 	}
 
 	public function getDropsForIncompatibleTool(Item $item) : array{
-		if($this->top){
-			return $this->traitGetDropsForIncompatibleTool($item);
+		if(FortuneDropHelper::bonusChanceDivisor($item, 8, 2)){
+			return [
+				VanillaItems::WHEAT_SEEDS()
+			];
 		}
+
 		return [];
+	}
+
+	public function getFlameEncouragement() : int{
+		return 60;
+	}
+
+	public function getFlammability() : int{
+		return 100;
 	}
 }

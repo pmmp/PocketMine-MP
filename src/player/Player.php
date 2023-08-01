@@ -66,7 +66,7 @@ use pocketmine\event\player\PlayerItemUseEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerJumpEvent;
 use pocketmine\event\player\PlayerKickEvent;
-use pocketmine\event\player\PlayerMissedSwingEvent;
+use pocketmine\event\player\PlayerMissSwingEvent;
 use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\player\PlayerPostChunkSendEvent;
 use pocketmine\event\player\PlayerQuitEvent;
@@ -1900,7 +1900,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * Under normal circumstances, this will just play the no-damage attack sound and the arm-swing animation.
 	 */
 	public function missSwing() : void{
-		$ev = new PlayerMissedSwingEvent($this);
+		$ev = new PlayerMissSwingEvent($this);
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$this->broadcastSound(new EntityAttackNoDamageSound());
