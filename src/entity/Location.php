@@ -29,10 +29,8 @@ use pocketmine\world\World;
 
 class Location extends Position{
 
-	/** @var float */
-	public $yaw;
-	/** @var float */
-	public $pitch;
+	public float $yaw;
+	public float $pitch;
 
 	public function __construct(float $x, float $y, float $z, ?World $world, float $yaw, float $pitch){
 		$this->yaw = $yaw;

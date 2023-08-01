@@ -6,46 +6,25 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-php:
-    name: Prepare PHP
-    runs-on: ${{ matrix.image }}
-
-    strategy:
-      matrix:
-        image: [ubuntu-20.04]
-        php: [8.0.28, 8.1.16, 8.2.3]
-
-    steps:
-      - name: Build and prepare PHP cache
-        uses: pmmp/setup-php-action@6dd74c145250109942b08fc63cd5118edd2fd256
-        with:
-          php-version: ${{ matrix.php }}
-          install-path: "./bin"
-          pm-version-major: "4"
-
   phpstan:
     name: PHPStan analysis
-    needs: build-php
     runs-on: ${{ matrix.image }}
 
     strategy:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.28, 8.1.16, 8.2.3]
+        php: ["8.1", "8.2"]
 
     steps:
       - uses: actions/checkout@v3
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@6dd74c145250109942b08fc63cd5118edd2fd256
+        uses: pmmp/setup-php-action@2.0.0
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
-          pm-version-major: "4"
-
-      - name: Install Composer
-        run: curl -sS https://getcomposer.org/installer | php
+          pm-version-major: "5"
 
       - name: Restore Composer package cache
         uses: actions/cache@v3
@@ -58,33 +37,29 @@ jobs:
             composer-v2-cache-
 
       - name: Install Composer dependencies
-        run: php composer.phar install --prefer-dist --no-interaction
+        run: composer install --prefer-dist --no-interaction
 
       - name: Run PHPStan
         run: ./vendor/bin/phpstan analyze --no-progress --memory-limit=2G
 
   phpunit:
     name: PHPUnit tests
-    needs: build-php
     runs-on: ${{ matrix.image }}
     strategy:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.28, 8.1.16, 8.2.3]
+        php: ["8.1", "8.2"]
 
     steps:
       - uses: actions/checkout@v3
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@6dd74c145250109942b08fc63cd5118edd2fd256
+        uses: pmmp/setup-php-action@2.0.0
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
-          pm-version-major: "4"
-
-      - name: Install Composer
-        run: curl -sS https://getcomposer.org/installer | php
+          pm-version-major: "5"
 
       - name: Restore Composer package cache
         uses: actions/cache@v3
@@ -97,20 +72,19 @@ jobs:
             composer-v2-cache-
 
       - name: Install Composer dependencies
-        run: php composer.phar install --prefer-dist --no-interaction
+        run: composer install --prefer-dist --no-interaction
 
       - name: Run PHPUnit tests
         run: ./vendor/bin/phpunit --bootstrap vendor/autoload.php --fail-on-warning tests/phpunit
 
   integration:
     name: Integration tests
-    needs: build-php
     runs-on: ${{ matrix.image }}
     strategy:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.28, 8.1.16, 8.2.3]
+        php: ["8.1", "8.2"]
 
     steps:
       - uses: actions/checkout@v3
@@ -118,14 +92,11 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@6dd74c145250109942b08fc63cd5118edd2fd256
+        uses: pmmp/setup-php-action@2.0.0
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
-          pm-version-major: "4"
-
-      - name: Install Composer
-        run: curl -sS https://getcomposer.org/installer | php
+          pm-version-major: "5"
 
       - name: Restore Composer package cache
         uses: actions/cache@v3
@@ -138,33 +109,29 @@ jobs:
             composer-v2-cache-
 
       - name: Install Composer dependencies
-        run: php composer.phar install --no-dev --prefer-dist --no-interaction
+        run: composer install --no-dev --prefer-dist --no-interaction
 
       - name: Run integration tests
         run: ./tests/travis.sh -t4
 
   codegen:
     name: Generated Code consistency checks
-    needs: build-php
     runs-on: ${{ matrix.image }}
     strategy:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.28, 8.1.16, 8.2.3]
+        php: ["8.1", "8.2"]
 
     steps:
       - uses: actions/checkout@v3
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@6dd74c145250109942b08fc63cd5118edd2fd256
+        uses: pmmp/setup-php-action@2.0.0
         with:
           php-version: ${{ matrix.php }}
           install-path: "./bin"
-          pm-version-major: "4"
-
-      - name: Install Composer
-        run: curl -sS https://getcomposer.org/installer | php
+          pm-version-major: "5"
 
       - name: Restore Composer package cache
         uses: actions/cache@v3
@@ -177,13 +144,16 @@ jobs:
             composer-v2-cache-
 
       - name: Install Composer dependencies
-        run: php composer.phar install --no-dev --prefer-dist --no-interaction
+        run: composer install --no-dev --prefer-dist --no-interaction
 
       - name: Regenerate registry annotations
         run: php build/generate-registry-annotations.php src
 
       - name: Regenerate KnownTranslation APIs
         run: php build/generate-known-translation-apis.php
+
+      - name: Regenerate RuntimeEnum(De)serializer
+        run: php build/generate-runtime-enum-serializers.php
 
       - name: Regenerate BedrockData available files constants
         run: php build/generate-bedrockdata-path-consts.php
@@ -203,10 +173,10 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Setup PHP and tools
-        uses: shivammathur/setup-php@2.24.0
+        uses: shivammathur/setup-php@2.25.5
         with:
-          php-version: 8.0
-          tools: php-cs-fixer:3.11
+          php-version: 8.1
+          tools: php-cs-fixer:3.17
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

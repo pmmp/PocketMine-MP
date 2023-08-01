@@ -28,24 +28,16 @@ use pocketmine\world\format\Chunk;
 use pocketmine\world\format\SubChunk;
 
 class SubChunkExplorer{
-	/** @var ChunkManager */
-	protected $world;
+	public ?Chunk $currentChunk = null;
+	public ?SubChunk $currentSubChunk = null;
 
-	/** @var Chunk|null */
-	public $currentChunk;
-	/** @var SubChunk|null */
-	public $currentSubChunk;
+	protected int $currentX;
+	protected int $currentY;
+	protected int $currentZ;
 
-	/** @var int */
-	protected $currentX;
-	/** @var int */
-	protected $currentY;
-	/** @var int */
-	protected $currentZ;
-
-	public function __construct(ChunkManager $world){
-		$this->world = $world;
-	}
+	public function __construct(
+		protected ChunkManager $world
+	){}
 
 	/**
 	 * @phpstan-return SubChunkExplorerStatus::*

@@ -5,7 +5,7 @@
    "homepage": "https://pmmp.io",
    "license": "LGPL-3.0",
    "require": {
-      "php": "^8.0",
+      "php": "^8.1",
       "php-64bit": "*",
       "ext-chunkutils2": "^0.3.1",
       "ext-crypto": "^0.3.1",
@@ -22,7 +22,7 @@
       "ext-openssl": "*",
       "ext-pcre": "*",
       "ext-phar": "*",
-      "ext-pthreads": "^4.0",
+      "ext-pmmpthread": "^6.0.4",
       "ext-reflection": "*",
       "ext-simplexml": "*",
       "ext-sockets": "*",
@@ -31,35 +31,31 @@
       "ext-zip": "*",
       "ext-zlib": ">=1.2.11",
       "composer-runtime-api": "^2.0",
-      "adhocore/json-comment": "^1.1",
-      "fgrosse/phpasn1": "^2.3",
-      "netresearch/jsonmapper": "^4.0",
-      "pocketmine/bedrock-block-upgrade-schema": "~1.1.1+bedrock-1.19.70",
-      "pocketmine/bedrock-data": "~2.1.1+bedrock-1.19.70",
-      "pocketmine/bedrock-item-upgrade-schema": "~1.1.0+bedrock-1.19.70",
-      "pocketmine/bedrock-protocol": "~20.1.1+bedrock-1.19.70",
+      "adhocore/json-comment": "~1.2.0",
+      "pocketmine/netresearch-jsonmapper": "~v4.2.1000",
+      "pocketmine/bedrock-block-upgrade-schema": "~3.1.0+bedrock-1.20.10",
+      "pocketmine/bedrock-data": "~2.4.0+bedrock-1.20.10",
+      "pocketmine/bedrock-item-upgrade-schema": "~1.4.0+bedrock-1.20.10",
+      "pocketmine/bedrock-protocol": "~23.0.2+bedrock-1.20.10",
       "pocketmine/binaryutils": "^0.2.1",
       "pocketmine/callback-validator": "^1.0.2",
-      "pocketmine/classloader": "^0.2.0",
       "pocketmine/color": "^0.3.0",
       "pocketmine/errorhandler": "^0.6.0",
       "pocketmine/locale-data": "~2.19.0",
       "pocketmine/log": "^0.4.0",
-      "pocketmine/log-pthreads": "^0.4.0",
       "pocketmine/math": "^0.4.0",
       "pocketmine/nbt": "^0.3.2",
-      "pocketmine/raklib": "^0.14.2",
-      "pocketmine/raklib-ipc": "^0.1.0",
-      "pocketmine/snooze": "^0.3.0",
-      "ramsey/uuid": "^4.1",
-      "symfony/filesystem": "^5.4",
-      "webmozart/path-util": "^2.3"
+      "pocketmine/raklib": "^0.15.0",
+      "pocketmine/raklib-ipc": "^0.2.0",
+      "pocketmine/snooze": "^0.5.0",
+      "ramsey/uuid": "~4.7.0",
+      "symfony/filesystem": "~6.3.0"
    },
    "require-dev": {
-      "phpstan/phpstan": "1.10.13",
+      "phpstan/phpstan": "1.10.16",
       "phpstan/phpstan-phpunit": "^1.1.0",
       "phpstan/phpstan-strict-rules": "^1.2.0",
-      "phpunit/phpunit": "^9.2"
+      "phpunit/phpunit": "^10.1"
    },
    "autoload": {
       "psr-4": {
@@ -77,7 +73,7 @@
    },
    "config": {
       "platform": {
-         "php": "8.0.0"
+         "php": "8.1.0"
       },
       "sort-packages": true
    },

@@ -37,7 +37,7 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissionManager;
 use pocketmine\permission\PermissionParser;
 use pocketmine\Server;
-use pocketmine\timings\TimingsHandler;
+use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
@@ -70,10 +70,10 @@ use function strtolower;
  */
 class PluginManager{
 	/** @var Plugin[] */
-	protected $plugins = [];
+	protected array $plugins = [];
 
 	/** @var Plugin[] */
-	protected $enabledPlugins = [];
+	protected array $enabledPlugins = [];
 
 	/** @var array<string, array<string, true>> */
 	private array $pluginDependents = [];
@@ -84,7 +84,7 @@ class PluginManager{
 	 * @var PluginLoader[]
 	 * @phpstan-var array<class-string<PluginLoader>, PluginLoader>
 	 */
-	protected $fileAssociations = [];
+	protected array $fileAssociations = [];
 
 	public function __construct(
 		private Server $server,
@@ -651,7 +651,7 @@ class PluginManager{
 			throw new PluginException("Plugin attempted to register event handler " . $handlerName . "() to event " . $event . " while not enabled");
 		}
 
-		$timings = new TimingsHandler($handlerName . "(" . (new \ReflectionClass($event))->getShortName() . ")", group: $plugin->getDescription()->getFullName());
+		$timings = Timings::getEventHandlerTimings($event, $handlerName, $plugin->getDescription()->getFullName());
 
 		$registeredListener = new RegisteredListener($handler, $priority, $plugin, $handleCancelled, $timings);
 		HandlerListManager::global()->getListFor($event)->register($registeredListener);

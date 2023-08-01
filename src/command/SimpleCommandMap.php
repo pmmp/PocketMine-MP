@@ -68,6 +68,7 @@ use pocketmine\command\utils\CommandStringHelper;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\Server;
+use pocketmine\timings\Timings;
 use pocketmine\utils\TextFormat;
 use function array_shift;
 use function count;
@@ -80,7 +81,7 @@ use function trim;
 class SimpleCommandMap implements CommandMap{
 
 	/** @var Command[] */
-	protected $knownCommands = [];
+	protected array $knownCommands = [];
 
 	public function __construct(private Server $server){
 		$this->setDefaultCommands();
@@ -88,46 +89,46 @@ class SimpleCommandMap implements CommandMap{
 
 	private function setDefaultCommands() : void{
 		$this->registerAll("pocketmine", [
-			new BanCommand("ban"),
-			new BanIpCommand("ban-ip"),
-			new BanListCommand("banlist"),
-			new ClearCommand("clear"),
-			new DefaultGamemodeCommand("defaultgamemode"),
-			new DeopCommand("deop"),
-			new DifficultyCommand("difficulty"),
-			new DumpMemoryCommand("dumpmemory"),
-			new EffectCommand("effect"),
-			new EnchantCommand("enchant"),
-			new GamemodeCommand("gamemode"),
-			new GarbageCollectorCommand("gc"),
-			new GiveCommand("give"),
-			new HelpCommand("help"),
-			new KickCommand("kick"),
-			new KillCommand("kill"),
-			new ListCommand("list"),
-			new MeCommand("me"),
-			new OpCommand("op"),
-			new PardonCommand("pardon"),
-			new PardonIpCommand("pardon-ip"),
-			new ParticleCommand("particle"),
-			new PluginsCommand("plugins"),
-			new SaveCommand("save-all"),
-			new SaveOffCommand("save-off"),
-			new SaveOnCommand("save-on"),
-			new SayCommand("say"),
-			new SeedCommand("seed"),
-			new SetWorldSpawnCommand("setworldspawn"),
-			new SpawnpointCommand("spawnpoint"),
-			new StatusCommand("status"),
-			new StopCommand("stop"),
-			new TeleportCommand("tp"),
-			new TellCommand("tell"),
-			new TimeCommand("time"),
-			new TimingsCommand("timings"),
-			new TitleCommand("title"),
-			new TransferServerCommand("transferserver"),
-			new VersionCommand("version"),
-			new WhitelistCommand("whitelist")
+			new BanCommand(),
+			new BanIpCommand(),
+			new BanListCommand(),
+			new ClearCommand(),
+			new DefaultGamemodeCommand(),
+			new DeopCommand(),
+			new DifficultyCommand(),
+			new DumpMemoryCommand(),
+			new EffectCommand(),
+			new EnchantCommand(),
+			new GamemodeCommand(),
+			new GarbageCollectorCommand(),
+			new GiveCommand(),
+			new HelpCommand(),
+			new KickCommand(),
+			new KillCommand(),
+			new ListCommand(),
+			new MeCommand(),
+			new OpCommand(),
+			new PardonCommand(),
+			new PardonIpCommand(),
+			new ParticleCommand(),
+			new PluginsCommand(),
+			new SaveCommand(),
+			new SaveOffCommand(),
+			new SaveOnCommand(),
+			new SayCommand(),
+			new SeedCommand(),
+			new SetWorldSpawnCommand(),
+			new SpawnpointCommand(),
+			new StatusCommand(),
+			new StopCommand(),
+			new TeleportCommand(),
+			new TellCommand(),
+			new TimeCommand(),
+			new TimingsCommand(),
+			new TitleCommand(),
+			new TransferServerCommand(),
+			new VersionCommand(),
+			new WhitelistCommand()
 		]);
 	}
 
@@ -138,6 +139,10 @@ class SimpleCommandMap implements CommandMap{
 	}
 
 	public function register(string $fallbackPrefix, Command $command, ?string $label = null) : bool{
+		if(count($command->getPermissions()) === 0){
+			throw new \InvalidArgumentException("Commands must have a permission set");
+		}
+
 		if($label === null){
 			$label = $command->getLabel();
 		}
@@ -199,14 +204,17 @@ class SimpleCommandMap implements CommandMap{
 
 		$sentCommandLabel = array_shift($args);
 		if($sentCommandLabel !== null && ($target = $this->getCommand($sentCommandLabel)) !== null){
-			$target->timings->startTiming();
+			$timings = Timings::getCommandDispatchTimings($target->getLabel());
+			$timings->startTiming();
 
 			try{
-				$target->execute($sender, $sentCommandLabel, $args);
+				if($target->testPermission($sender)){
+					$target->execute($sender, $sentCommandLabel, $args);
+				}
 			}catch(InvalidCommandSyntaxException $e){
 				$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage())));
 			}finally{
-				$target->timings->stopTiming();
+				$timings->stopTiming();
 			}
 			return true;
 		}

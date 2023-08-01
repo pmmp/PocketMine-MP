@@ -27,18 +27,11 @@ use pocketmine\thread\Thread;
 use function time;
 
 class ServerKiller extends Thread{
-
-	/** @var int */
-	public $time;
-
 	private bool $stopped = false;
 
-	/**
-	 * @param int $time
-	 */
-	public function __construct($time = 15){
-		$this->time = $time;
-	}
+	public function __construct(
+		public int $time = 15
+	){}
 
 	protected function onRun() : void{
 		$start = time();
@@ -49,7 +42,7 @@ class ServerKiller extends Thread{
 		});
 		if(time() - $start >= $this->time){
 			echo "\nTook too long to stop, server was killed forcefully!\n";
-			@Process::kill(Process::pid(), true);
+			@Process::kill(Process::pid());
 		}
 	}
 

@@ -30,7 +30,7 @@ use function implode;
 use function spl_object_id;
 
 class TimingsHandler{
-	private const FORMAT_VERSION = 1;
+	private const FORMAT_VERSION = 2; //peak timings fix
 
 	private static bool $enabled = false;
 	private static int $timingStart = 0;
@@ -96,7 +96,7 @@ class TimingsHandler{
 	}
 
 	public static function reload() : void{
-		TimingsRecord::clearRecords();
+		TimingsRecord::reset();
 		if(self::$enabled){
 			self::$timingStart = hrtime(true);
 		}
@@ -174,12 +174,12 @@ class TimingsHandler{
 		}
 
 		$record = TimingsRecord::getCurrentRecord();
-		if($record !== null){
-			if($record->getTimerId() !== spl_object_id($this)){
-				throw new \LogicException("Timer \"" . $record->getName() . "\" should have been stopped before stopping timer \"" . $this->name . "\"");
-			}
+		$timerId = spl_object_id($this);
+		for(; $record !== null && $record->getTimerId() !== $timerId; $record = TimingsRecord::getCurrentRecord()){
+			\GlobalLogger::get()->error("Timer \"" . $record->getName() . "\" should have been stopped before stopping timer \"" . $this->name . "\"");
 			$record->stopTiming($now);
 		}
+		$record?->stopTiming($now);
 		if($this->parent !== null){
 			$this->parent->internalStopTiming($now);
 		}
@@ -204,8 +204,9 @@ class TimingsHandler{
 	/**
 	 * @internal
 	 */
-	public function destroyCycles() : void{
+	public function reset() : void{
 		$this->rootRecord = null;
 		$this->recordsByParent = [];
+		$this->timingDepth = 0;
 	}
 }

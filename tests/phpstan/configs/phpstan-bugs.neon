@@ -41,16 +41,6 @@ parameters:
 			path: ../../../src/scheduler/AsyncTask.php
 
 		-
-			message: "#^Property pocketmine\\\\thread\\\\Thread\\:\\:\\$classLoaders \\(\\(iterable\\<ClassLoader\\>&Threaded\\)\\|null\\) does not accept array\\<int, ClassLoader\\>\\|\\(iterable\\<ClassLoader\\>&Threaded\\)\\.$#"
-			count: 1
-			path: ../../../src/thread/Thread.php
-
-		-
-			message: "#^Property pocketmine\\\\thread\\\\Worker\\:\\:\\$classLoaders \\(\\(iterable\\<ClassLoader\\>&Threaded\\)\\|null\\) does not accept array\\<int, ClassLoader\\>\\|\\(iterable\\<ClassLoader\\>&Threaded\\)\\.$#"
-			count: 1
-			path: ../../../src/thread/Worker.php
-
-		-
 			message: "#^Casting to int something that's already int\\.$#"
 			count: 1
 			path: ../../../src/world/generator/normal/Normal.php

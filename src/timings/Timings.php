@@ -29,122 +29,64 @@ use pocketmine\event\Event;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\player\Player;
+use pocketmine\scheduler\AsyncTask;
 use pocketmine\scheduler\TaskHandler;
 use function get_class;
 use function str_starts_with;
 
 abstract class Timings{
-	/**
-	 * @deprecated This was used by the old timings viewer to make a timer appear in the Breakdown section of a timings
-	 * report. Provide a group to your timer's constructor instead.
-	 * @see Timings::GROUP_BREAKDOWN
-	 */
-	public const INCLUDED_BY_OTHER_TIMINGS_PREFIX = "** ";
 	public const GROUP_BREAKDOWN = "Minecraft - Breakdown";
 
 	private static bool $initialized = false;
 
-	/** @var TimingsHandler */
-	public static $fullTick;
-	/** @var TimingsHandler */
-	public static $serverTick;
-	/** @var TimingsHandler */
-	public static $serverInterrupts;
-	/** @var TimingsHandler */
-	public static $memoryManager;
-	/** @var TimingsHandler */
-	public static $garbageCollector;
-	/** @var TimingsHandler */
-	public static $titleTick;
-	/** @var TimingsHandler */
-	public static $playerNetworkSend;
-	/** @var TimingsHandler */
-	public static $playerNetworkSendCompress;
-
+	public static TimingsHandler $fullTick;
+	public static TimingsHandler $serverTick;
+	public static TimingsHandler $serverInterrupts;
+	public static TimingsHandler $memoryManager;
+	public static TimingsHandler $garbageCollector;
+	public static TimingsHandler $titleTick;
+	public static TimingsHandler $playerNetworkSend;
+	public static TimingsHandler $playerNetworkSendCompress;
 	public static TimingsHandler $playerNetworkSendCompressBroadcast;
 	public static TimingsHandler $playerNetworkSendCompressSessionBuffer;
-
-	/** @var TimingsHandler */
-	public static $playerNetworkSendEncrypt;
-
+	public static TimingsHandler $playerNetworkSendEncrypt;
 	public static TimingsHandler $playerNetworkSendInventorySync;
 	public static TimingsHandler $playerNetworkSendPreSpawnGameData;
-
-	/** @var TimingsHandler */
-	public static $playerNetworkReceive;
-	/** @var TimingsHandler */
-	public static $playerNetworkReceiveDecompress;
-	/** @var TimingsHandler */
-	public static $playerNetworkReceiveDecrypt;
-	/** @var TimingsHandler */
-	public static $playerChunkOrder;
-	/** @var TimingsHandler */
-	public static $playerChunkSend;
-	/** @var TimingsHandler */
-	public static $connection;
-	/** @var TimingsHandler */
-	public static $scheduler;
-	/** @var TimingsHandler */
-	public static $serverCommand;
-	/** @var TimingsHandler */
-	public static $worldLoad;
-	/** @var TimingsHandler */
-	public static $worldSave;
-	/** @var TimingsHandler */
-	public static $population;
-	/** @var TimingsHandler */
-	public static $generationCallback;
-	/** @var TimingsHandler */
-	public static $permissibleCalculation;
-	/** @var TimingsHandler */
-	public static $permissibleCalculationDiff;
-	/** @var TimingsHandler */
-	public static $permissibleCalculationCallback;
-
-	/** @var TimingsHandler */
-	public static $entityMove;
-
+	public static TimingsHandler $playerNetworkReceive;
+	public static TimingsHandler $playerNetworkReceiveDecompress;
+	public static TimingsHandler $playerNetworkReceiveDecrypt;
+	public static TimingsHandler $playerChunkOrder;
+	public static TimingsHandler $playerChunkSend;
+	public static TimingsHandler $connection;
+	public static TimingsHandler $scheduler;
+	public static TimingsHandler $serverCommand;
+	public static TimingsHandler $permissibleCalculation;
+	public static TimingsHandler $permissibleCalculationDiff;
+	public static TimingsHandler $permissibleCalculationCallback;
+	public static TimingsHandler $entityMove;
 	public static TimingsHandler $entityMoveCollision;
-
 	public static TimingsHandler $projectileMove;
 	public static TimingsHandler $projectileMoveRayTrace;
-
-	/** @var TimingsHandler */
-	public static $playerCheckNearEntities;
-	/** @var TimingsHandler */
-	public static $tickEntity;
-	/** @var TimingsHandler */
-	public static $tickTileEntity;
-
-	/** @var TimingsHandler */
-	public static $entityBaseTick;
-	/** @var TimingsHandler */
-	public static $livingEntityBaseTick;
-
+	public static TimingsHandler $playerCheckNearEntities;
+	public static TimingsHandler $entityBaseTick;
+	public static TimingsHandler $livingEntityBaseTick;
 	public static TimingsHandler $itemEntityBaseTick;
 
-	/** @var TimingsHandler */
-	public static $schedulerSync;
-	/** @var TimingsHandler */
-	public static $schedulerAsync;
+	public static TimingsHandler $schedulerSync;
+	public static TimingsHandler $schedulerAsync;
 
-	/** @var TimingsHandler */
-	public static $playerCommand;
+	public static TimingsHandler $playerCommand;
+	public static TimingsHandler $craftingDataCacheRebuild;
 
-	/** @var TimingsHandler */
-	public static $craftingDataCacheRebuild;
-
-	/** @var TimingsHandler */
-	public static $syncPlayerDataLoad;
-	/** @var TimingsHandler */
-	public static $syncPlayerDataSave;
+	public static TimingsHandler $syncPlayerDataLoad;
+	public static TimingsHandler $syncPlayerDataSave;
 
 	/** @var TimingsHandler[] */
-	public static $entityTypeTimingMap = [];
+	public static array $entityTypeTimingMap = [];
 	/** @var TimingsHandler[] */
-	public static $tileEntityTypeTimingMap = [];
+	public static array $tileEntityTypeTimingMap = [];
 	/** @var TimingsHandler[] */
-	public static $packetReceiveTimingMap = [];
+	public static array $packetReceiveTimingMap = [];
 
 	/** @var TimingsHandler[] */
 	private static array $packetDecodeTimingMap = [];
@@ -155,17 +97,35 @@ abstract class Timings{
 	private static array $packetEncodeTimingMap = [];
 
 	/** @var TimingsHandler[] */
-	public static $packetSendTimingMap = [];
+	public static array $packetSendTimingMap = [];
 	/** @var TimingsHandler[] */
-	public static $pluginTaskTimingMap = [];
+	public static array $pluginTaskTimingMap = [];
 
-	/** @var TimingsHandler */
-	public static $broadcastPackets;
+	/**
+	 * @var TimingsHandler[]
+	 * @phpstan-var array<string, TimingsHandler>
+	 */
+	private static array $commandTimingMap = [];
+
+	public static TimingsHandler $broadcastPackets;
 
 	public static TimingsHandler $playerMove;
 
 	/** @var TimingsHandler[] */
 	private static array $events = [];
+	/** @var TimingsHandler[][] */
+	private static array $eventHandlers = [];
+
+	private static TimingsHandler $asyncTaskProgressUpdateParent;
+	private static TimingsHandler $asyncTaskCompletionParent;
+	private static TimingsHandler $asyncTaskErrorParent;
+
+	/** @var TimingsHandler[] */
+	private static array $asyncTaskProgressUpdate = [];
+	/** @var TimingsHandler[] */
+	private static array $asyncTaskCompletion = [];
+	/** @var TimingsHandler[] */
+	private static array $asyncTaskError = [];
 
 	public static function init() : void{
 		if(self::$initialized){
@@ -201,10 +161,6 @@ abstract class Timings{
 		self::$playerChunkSend = new TimingsHandler("Player Network Send - Chunks", self::$playerNetworkSend, group: self::GROUP_BREAKDOWN);
 		self::$scheduler = new TimingsHandler("Scheduler");
 		self::$serverCommand = new TimingsHandler("Server Command");
-		self::$worldLoad = new TimingsHandler("World Load");
-		self::$worldSave = new TimingsHandler("World Save");
-		self::$population = new TimingsHandler("World Population");
-		self::$generationCallback = new TimingsHandler("World Generation Callback");
 		self::$permissibleCalculation = new TimingsHandler("Permissible Calculation");
 		self::$permissibleCalculationDiff = new TimingsHandler("Permissible Calculation - Diff", self::$permissibleCalculation, group: self::GROUP_BREAKDOWN);
 		self::$permissibleCalculationCallback = new TimingsHandler("Permissible Calculation - Callbacks", self::$permissibleCalculation, group: self::GROUP_BREAKDOWN);
@@ -219,15 +175,16 @@ abstract class Timings{
 		self::$projectileMoveRayTrace = new TimingsHandler("Projectile Movement - Ray Tracing", self::$projectileMove, group: self::GROUP_BREAKDOWN);
 
 		self::$playerCheckNearEntities = new TimingsHandler("checkNearEntities", group: self::GROUP_BREAKDOWN);
-		self::$tickEntity = new TimingsHandler("Entity Tick", group: self::GROUP_BREAKDOWN);
-		self::$tickTileEntity = new TimingsHandler("Block Entity Tick", group: self::GROUP_BREAKDOWN);
-
 		self::$entityBaseTick = new TimingsHandler("Entity Base Tick", group: self::GROUP_BREAKDOWN);
 		self::$livingEntityBaseTick = new TimingsHandler("Entity Base Tick - Living", group: self::GROUP_BREAKDOWN);
 		self::$itemEntityBaseTick = new TimingsHandler("Entity Base Tick - ItemEntity", group: self::GROUP_BREAKDOWN);
 
 		self::$schedulerSync = new TimingsHandler("Scheduler - Sync Tasks", group: self::GROUP_BREAKDOWN);
+
 		self::$schedulerAsync = new TimingsHandler("Scheduler - Async Tasks", group: self::GROUP_BREAKDOWN);
+		self::$asyncTaskProgressUpdateParent = new TimingsHandler("Async Tasks - Progress Updates", self::$schedulerAsync, group: self::GROUP_BREAKDOWN);
+		self::$asyncTaskCompletionParent = new TimingsHandler("Async Tasks - Completion Handlers", self::$schedulerAsync, group: self::GROUP_BREAKDOWN);
+		self::$asyncTaskErrorParent = new TimingsHandler("Async Tasks - Error Handlers", self::$schedulerAsync, group: self::GROUP_BREAKDOWN);
 
 		self::$playerCommand = new TimingsHandler("Player Command", group: self::GROUP_BREAKDOWN);
 		self::$craftingDataCacheRebuild = new TimingsHandler("Build CraftingDataPacket Cache", group: self::GROUP_BREAKDOWN);
@@ -235,6 +192,7 @@ abstract class Timings{
 	}
 
 	public static function getScheduledTaskTimings(TaskHandler $task, int $period) : TimingsHandler{
+		self::init();
 		$name = "Task: " . $task->getTaskName();
 
 		if($period > 0){
@@ -262,6 +220,7 @@ abstract class Timings{
 	}
 
 	public static function getEntityTimings(Entity $entity) : TimingsHandler{
+		self::init();
 		if(!isset(self::$entityTypeTimingMap[$entity::class])){
 			if($entity instanceof Player){
 				//the timings viewer calculates average player count by looking at this timer, so we need to ensure it has
@@ -270,17 +229,17 @@ abstract class Timings{
 			}else{
 				$displayName = self::shortenCoreClassName($entity::class, "pocketmine\\entity\\");
 			}
-			self::$entityTypeTimingMap[$entity::class] = new TimingsHandler("Entity Tick - " . $displayName, self::$tickEntity, group: self::GROUP_BREAKDOWN);
+			self::$entityTypeTimingMap[$entity::class] = new TimingsHandler("Entity Tick - " . $displayName, group: self::GROUP_BREAKDOWN);
 		}
 
 		return self::$entityTypeTimingMap[$entity::class];
 	}
 
 	public static function getTileEntityTimings(Tile $tile) : TimingsHandler{
+		self::init();
 		if(!isset(self::$tileEntityTypeTimingMap[$tile::class])){
 			self::$tileEntityTypeTimingMap[$tile::class] = new TimingsHandler(
 				"Block Entity Tick - " . self::shortenCoreClassName($tile::class, "pocketmine\\block\\tile\\"),
-				self::$tickTileEntity,
 				group: self::GROUP_BREAKDOWN
 			);
 		}
@@ -289,6 +248,7 @@ abstract class Timings{
 	}
 
 	public static function getReceiveDataPacketTimings(ServerboundPacket $pk) : TimingsHandler{
+		self::init();
 		if(!isset(self::$packetReceiveTimingMap[$pk::class])){
 			self::$packetReceiveTimingMap[$pk::class] = new TimingsHandler("Receive - " . $pk->getName(), self::$playerNetworkReceive, group: self::GROUP_BREAKDOWN);
 		}
@@ -321,11 +281,18 @@ abstract class Timings{
 	}
 
 	public static function getSendDataPacketTimings(ClientboundPacket $pk) : TimingsHandler{
+		self::init();
 		if(!isset(self::$packetSendTimingMap[$pk::class])){
 			self::$packetSendTimingMap[$pk::class] = new TimingsHandler("Send - " . $pk->getName(), self::$playerNetworkSend, group: self::GROUP_BREAKDOWN);
 		}
 
 		return self::$packetSendTimingMap[$pk::class];
+	}
+
+	public static function getCommandDispatchTimings(string $commandName) : TimingsHandler{
+		self::init();
+
+		return self::$commandTimingMap[$commandName] ??= new TimingsHandler("Command - " . $commandName, group: self::GROUP_BREAKDOWN);
 	}
 
 	public static function getEventTimings(Event $event) : TimingsHandler{
@@ -335,5 +302,59 @@ abstract class Timings{
 		}
 
 		return self::$events[$eventClass];
+	}
+
+	/**
+	 * @phpstan-template TEvent of Event
+	 * @phpstan-param class-string<TEvent> $event
+	 */
+	public static function getEventHandlerTimings(string $event, string $handlerName, string $group) : TimingsHandler{
+		if(!isset(self::$eventHandlers[$event][$handlerName])){
+			self::$eventHandlers[$event][$handlerName] = new TimingsHandler($handlerName . "(" . self::shortenCoreClassName($event, "pocketmine\\event\\") . ")", group: $group);
+		}
+
+		return self::$eventHandlers[$event][$handlerName];
+	}
+
+	public static function getAsyncTaskProgressUpdateTimings(AsyncTask $task, string $group = self::GROUP_BREAKDOWN) : TimingsHandler{
+		$taskClass = $task::class;
+		if(!isset(self::$asyncTaskProgressUpdate[$taskClass])){
+			self::init();
+			self::$asyncTaskProgressUpdate[$taskClass] = new TimingsHandler(
+				"AsyncTask - " . self::shortenCoreClassName($taskClass, "pocketmine\\") . " - Progress Updates",
+				self::$asyncTaskProgressUpdateParent,
+				$group
+			);
+		}
+
+		return self::$asyncTaskProgressUpdate[$taskClass];
+	}
+
+	public static function getAsyncTaskCompletionTimings(AsyncTask $task, string $group = self::GROUP_BREAKDOWN) : TimingsHandler{
+		$taskClass = $task::class;
+		if(!isset(self::$asyncTaskCompletion[$taskClass])){
+			self::init();
+			self::$asyncTaskCompletion[$taskClass] = new TimingsHandler(
+				"AsyncTask - " . self::shortenCoreClassName($taskClass, "pocketmine\\") . " - Completion Handler",
+				self::$asyncTaskCompletionParent,
+				$group
+			);
+		}
+
+		return self::$asyncTaskCompletion[$taskClass];
+	}
+
+	public static function getAsyncTaskErrorTimings(AsyncTask $task, string $group = self::GROUP_BREAKDOWN) : TimingsHandler{
+		$taskClass = $task::class;
+		if(!isset(self::$asyncTaskError[$taskClass])){
+			self::init();
+			self::$asyncTaskError[$taskClass] = new TimingsHandler(
+				"AsyncTask - " . self::shortenCoreClassName($taskClass, "pocketmine\\") . " - Error Handler",
+				self::$asyncTaskErrorParent,
+				$group
+			);
+		}
+
+		return self::$asyncTaskError[$taskClass];
 	}
 }

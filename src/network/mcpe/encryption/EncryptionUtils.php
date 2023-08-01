@@ -33,6 +33,7 @@ use function hex2bin;
 use function openssl_digest;
 use function openssl_error_string;
 use function openssl_pkey_derive;
+use function openssl_pkey_get_details;
 use function str_pad;
 use const STR_PAD_LEFT;
 
@@ -42,7 +43,20 @@ final class EncryptionUtils{
 		//NOOP
 	}
 
+	private static function validateKey(\OpenSSLAsymmetricKey $key) : void{
+		$keyDetails = Utils::assumeNotFalse(openssl_pkey_get_details($key));
+		if(!isset($keyDetails["ec"]["curve_name"])){
+			throw new \InvalidArgumentException("Key must be an EC key");
+		}
+		$curveName = $keyDetails["ec"]["curve_name"];
+		if($curveName !== JwtUtils::BEDROCK_SIGNING_KEY_CURVE_NAME){
+			throw new \InvalidArgumentException("Key must belong to the " . JwtUtils::BEDROCK_SIGNING_KEY_CURVE_NAME . " elliptic curve, got $curveName");
+		}
+	}
+
 	public static function generateSharedSecret(\OpenSSLAsymmetricKey $localPriv, \OpenSSLAsymmetricKey $remotePub) : \GMP{
+		self::validateKey($localPriv);
+		self::validateKey($remotePub);
 		$hexSecret = openssl_pkey_derive($remotePub, $localPriv, 48);
 		if($hexSecret === false){
 			throw new \InvalidArgumentException("Failed to derive shared secret: " . openssl_error_string());

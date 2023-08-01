@@ -85,8 +85,11 @@ network:
   batch-threshold: 256
   #Compression level used when sending batched packets. Higher = more CPU, less bandwidth usage
   compression-level: 6
-  #Use AsyncTasks for compression. Adds half/one tick delay, less CPU load on main thread
+  #Use AsyncTasks for compression during the main game session. Increases latency, but may reduce main thread load
   async-compression: false
+  #Threshold for async compression, in bytes. Only packets larger than this will be compressed asynchronously
+  #Due to large overhead of AsyncTask, async compression isn't worth it except for large packets
+  async-compression-threshold: 10000
   #Experimental. Use UPnP to automatically port forward
   upnp-forwarding: false
   #Maximum size in bytes of packets sent over the network (default 1492 bytes). Packets larger than this will be

@@ -85,6 +85,10 @@ class DelegateInventory extends BaseInventory{
 		$this->backingInventory->setContents($items);
 	}
 
+	public function isSlotEmpty(int $index) : bool{
+		return $this->backingInventory->isSlotEmpty($index);
+	}
+
 	protected function onSlotChange(int $index, Item $before) : void{
 		if($this->backingInventoryChanging){
 			parent::onSlotChange($index, $before);

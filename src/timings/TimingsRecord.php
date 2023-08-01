@@ -42,9 +42,12 @@ final class TimingsRecord{
 
 	private static ?self $currentRecord = null;
 
-	public static function clearRecords() : void{
+	/**
+	 * @internal
+	 */
+	public static function reset() : void{
 		foreach(self::$records as $record){
-			$record->handler->destroyCycles();
+			$record->handler->reset();
 		}
 		self::$records = [];
 		self::$currentRecord = null;
@@ -62,9 +65,6 @@ final class TimingsRecord{
 				if($record->curCount > 0){
 					if($record->curTickTotal > Server::TARGET_NANOSECONDS_PER_TICK){
 						$record->violations += (int) floor($record->curTickTotal / Server::TARGET_NANOSECONDS_PER_TICK);
-					}
-					if($record->curTickTotal > $record->peakTime){
-						$record->peakTime = $record->curTickTotal;
 					}
 					$record->curTickTotal = 0;
 					$record->curCount = 0;
@@ -123,7 +123,7 @@ final class TimingsRecord{
 
 	public function getTicksActive() : int{ return $this->ticksActive; }
 
-	public function getPeakTime() : float{ return $this->peakTime; }
+	public function getPeakTime() : int{ return $this->peakTime; }
 
 	public function startTiming(int $now) : void{
 		$this->start = $now;
@@ -149,6 +149,9 @@ final class TimingsRecord{
 		++$this->curCount;
 		++$this->count;
 		$this->start = 0;
+		if($diff > $this->peakTime){
+			$this->peakTime = $diff;
+		}
 	}
 
 	public static function getCurrentRecord() : ?self{

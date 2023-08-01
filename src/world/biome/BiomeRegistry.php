@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\world\biome;
 
-use pocketmine\block\utils\TreeType;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\world\generator\object\TreeType;
 
 final class BiomeRegistry{
 	use SingletonTrait;

@@ -121,8 +121,6 @@ trait RegistryTrait{
 	 */
 	private static function _registryGetAll() : array{
 		self::checkInit();
-		return array_map(function(object $o) : object{
-			return self::preprocessMember($o);
-		}, self::$members);
+		return array_map(self::preprocessMember(...), self::$members);
 	}
 }

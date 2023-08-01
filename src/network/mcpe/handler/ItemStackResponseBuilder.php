@@ -53,11 +53,7 @@ final class ItemStackResponseBuilder{
 	 * @phpstan-return array{Inventory, int}
 	 */
 	private function getInventoryAndSlot(int $containerInterfaceId, int $slotId) : ?array{
-		if($containerInterfaceId === ContainerUIIds::OFFHAND && $slotId === 1){
-			//TODO: HACK! The client sends an incorrect slot ID for the offhand as of 1.19.70
-			$slotId = 0;
-		}
-		$windowId = ItemStackContainerIdTranslator::translate($containerInterfaceId, $this->inventoryManager->getCurrentWindowId());
+		[$windowId, $slotId] = ItemStackContainerIdTranslator::translate($containerInterfaceId, $this->inventoryManager->getCurrentWindowId(), $slotId);
 		$windowAndSlot = $this->inventoryManager->locateWindowAndSlot($windowId, $slotId);
 		if($windowAndSlot === null){
 			return null;
