@@ -23,12 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
+use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\event\player\PlayerDuplicateLoginEvent;
 use pocketmine\event\server\DataPacketDecodeEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\form\Form;
+use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\item\enchantment\EnchantmentOption;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
 use pocketmine\math\Vector3;
@@ -62,6 +65,7 @@ use pocketmine\network\mcpe\protocol\OpenSignPacket;
 use pocketmine\network\mcpe\protocol\Packet;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\PacketPool;
+use pocketmine\network\mcpe\protocol\PlayerEnchantOptionsPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
@@ -87,6 +91,8 @@ use pocketmine\network\mcpe\protocol\types\command\CommandOverload;
 use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
 use pocketmine\network\mcpe\protocol\types\command\CommandPermissions;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
+use pocketmine\network\mcpe\protocol\types\Enchant;
+use pocketmine\network\mcpe\protocol\types\EnchantOption;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAbilitiesPacket;
@@ -1152,6 +1158,23 @@ class NetworkSession{
 
 	public function onOpenSignEditor(Vector3 $signPosition, bool $frontSide) : void{
 		$this->sendDataPacket(OpenSignPacket::create(BlockPosition::fromVector3($signPosition), $frontSide));
+	}
+
+	/**
+	 * @param EnchantmentOption[] $options
+	 */
+	public function onSendEnchantOptions(array $options) : void{
+		$protocolOptions = [];
+
+		foreach($options as $option){
+			$protocolEnchantments = array_map(
+				fn(EnchantmentInstance $e) => new Enchant(EnchantmentIdMap::getInstance()->toId($e->getType()), $e->getLevel()),
+				$option->getEnchantments()
+			);
+			$protocolOptions[] = new EnchantOption($option->getCost(), $option->getSlot(), $protocolEnchantments, [], [], $option->getName(), $option->getSlot());
+		}
+
+		$this->sendDataPacket(PlayerEnchantOptionsPacket::create($protocolOptions));
 	}
 
 	public function tick() : void{

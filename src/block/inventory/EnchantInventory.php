@@ -31,6 +31,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\item\VanillaItems;
 use pocketmine\world\Position;
+use function count;
 
 class EnchantInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
 	use BlockInventoryTrait;
@@ -52,8 +53,11 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 	protected function onSlotChange(int $index, Item $before) : void{
 		if($index == self::SLOT_INPUT){
 			foreach($this->viewers as $viewer){
-				$this->options = Helper::sendEnchantOptions($viewer, $this->holder, $this->getItem(self::SLOT_INPUT), $viewer->getXpSeed());
+				$this->options = Helper::getEnchantOptions($this->holder, $this->getItem(self::SLOT_INPUT), $viewer->getXpSeed());
 				$this->outputs = [];
+				if (count($this->options) !== 0) {
+					$viewer->getNetworkSession()->onSendEnchantOptions($this->options);
+				}
 			}
 		}
 

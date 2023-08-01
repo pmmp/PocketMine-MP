@@ -24,20 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\item\enchantment;
 
 use pocketmine\block\BlockTypeIds;
-use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\item\Armor;
 use pocketmine\item\Book;
 use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
-use pocketmine\network\mcpe\protocol\PlayerEnchantOptionsPacket;
-use pocketmine\network\mcpe\protocol\types\Enchant;
-use pocketmine\network\mcpe\protocol\types\EnchantOption;
-use pocketmine\player\Player;
 use pocketmine\utils\Random;
 use pocketmine\world\Position;
 use function abs;
 use function array_filter;
-use function array_map;
 use function count;
 use function max;
 use function min;
@@ -52,7 +46,7 @@ final class EnchantmentHelper{
 	/**
 	 * @return EnchantmentOption[]
 	 */
-	public static function sendEnchantOptions(Player $player, Position $tablePos, Item $input, int $seed) : array{
+	public static function getEnchantOptions(Position $tablePos, Item $input, int $seed) : array{
 		if($input->isNull() || $input->hasEnchantments()){
 			return [];
 		}
@@ -71,17 +65,6 @@ final class EnchantmentHelper{
 			self::createEnchantOption($random, $input, $middleCost, self::SECOND_OPTION),
 			self::createEnchantOption($random, $input, $bottomCost, self::THIRD_OPTION),
 		];
-		$protocolOptions = [];
-
-		foreach($options as $option){
-			$protocolEnchantments = array_map(
-				fn(EnchantmentInstance $e) => new Enchant(EnchantmentIdMap::getInstance()->toId($e->getType()), $e->getLevel()),
-				$option->getEnchantments()
-			);
-			$protocolOptions[] = new EnchantOption($option->getCost(), $option->getSlot(), $protocolEnchantments, [], [], $option->getName(), $option->getSlot());
-		}
-
-		$player->getNetworkSession()->sendDataPacket(PlayerEnchantOptionsPacket::create($protocolOptions));
 
 		return $options;
 	}
