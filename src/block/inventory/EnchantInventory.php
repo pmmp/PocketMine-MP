@@ -72,9 +72,9 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 		return $this->getItem(self::SLOT_LAPIS);
 	}
 
-	public function getOutput(int $optionId) : Item{
+	public function getOutput(int $optionId) : ?Item{
 		$this->prepareOutput($optionId);
-		return $this->outputs[$optionId];
+		return $this->outputs[$optionId] ?? null;
 	}
 
 	private function prepareOutput(int $optionId) : void{
@@ -84,7 +84,8 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 
 		$option = $this->options[$optionId] ?? null;
 		if($option === null){
-			throw new \RuntimeException("Failed to find enchantment option with network id $optionId");
+			// Failed to find an enchantment option with the passed network id
+			return;
 		}
 
 		$outputItem = $this->getItem(self::SLOT_INPUT);

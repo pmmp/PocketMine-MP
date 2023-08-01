@@ -34,6 +34,7 @@ class EnchantTransaction extends InventoryTransaction{
 
 	private int $optionId;
 	private ?Item $inputItem = null;
+	private ?Item $outputItem = null;
 	private int $lapisCost = 0;
 
 	public function __construct(Player $source, int $optionId){
@@ -53,6 +54,9 @@ class EnchantTransaction extends InventoryTransaction{
 
 		if($this->inputItem === null || !$this->inputItem->equalsExact($enchantWindow->getInput())){
 			throw new TransactionValidationException("Incorrect input item");
+		}
+		if($this->outputItem === null || $this->outputItem->isNull()) {
+			throw new TransactionValidationException("Incorrect output item");
 		}
 
 		if($this->source->hasFiniteResources()){
@@ -78,6 +82,7 @@ class EnchantTransaction extends InventoryTransaction{
 			$this->lapisCost = $sourceItem->getCount() - $targetItem->getCount();
 		}else{
 			$this->inputItem = $sourceItem;
+			$this->outputItem = $targetItem;
 		}
 	}
 
