@@ -71,6 +71,16 @@ trait RuntimeEnumSerializerTrait{
 		});
 	}
 
+	public function dripleafState(\pocketmine\block\utils\DripleafState &$value) : void{
+		$this->writeInt(2, match($value){
+			\pocketmine\block\utils\DripleafState::FULL_TILT() => 0,
+			\pocketmine\block\utils\DripleafState::PARTIAL_TILT() => 1,
+			\pocketmine\block\utils\DripleafState::STABLE() => 2,
+			\pocketmine\block\utils\DripleafState::UNSTABLE() => 3,
+			default => throw new \pocketmine\utils\AssumptionFailedError("All DripleafState cases should be covered")
+		});
+	}
+
 	public function dyeColor(\pocketmine\block\utils\DyeColor &$value) : void{
 		$this->writeInt(4, match($value){
 			\pocketmine\block\utils\DyeColor::BLACK() => 0,
@@ -190,16 +200,17 @@ trait RuntimeEnumSerializerTrait{
 			\pocketmine\item\PotionType::STRONG_LEAPING() => 29,
 			\pocketmine\item\PotionType::STRONG_POISON() => 30,
 			\pocketmine\item\PotionType::STRONG_REGENERATION() => 31,
-			\pocketmine\item\PotionType::STRONG_STRENGTH() => 32,
-			\pocketmine\item\PotionType::STRONG_SWIFTNESS() => 33,
-			\pocketmine\item\PotionType::STRONG_TURTLE_MASTER() => 34,
-			\pocketmine\item\PotionType::SWIFTNESS() => 35,
-			\pocketmine\item\PotionType::THICK() => 36,
-			\pocketmine\item\PotionType::TURTLE_MASTER() => 37,
-			\pocketmine\item\PotionType::WATER() => 38,
-			\pocketmine\item\PotionType::WATER_BREATHING() => 39,
-			\pocketmine\item\PotionType::WEAKNESS() => 40,
-			\pocketmine\item\PotionType::WITHER() => 41,
+			\pocketmine\item\PotionType::STRONG_SLOWNESS() => 32,
+			\pocketmine\item\PotionType::STRONG_STRENGTH() => 33,
+			\pocketmine\item\PotionType::STRONG_SWIFTNESS() => 34,
+			\pocketmine\item\PotionType::STRONG_TURTLE_MASTER() => 35,
+			\pocketmine\item\PotionType::SWIFTNESS() => 36,
+			\pocketmine\item\PotionType::THICK() => 37,
+			\pocketmine\item\PotionType::TURTLE_MASTER() => 38,
+			\pocketmine\item\PotionType::WATER() => 39,
+			\pocketmine\item\PotionType::WATER_BREATHING() => 40,
+			\pocketmine\item\PotionType::WEAKNESS() => 41,
+			\pocketmine\item\PotionType::WITHER() => 42,
 			default => throw new \pocketmine\utils\AssumptionFailedError("All PotionType cases should be covered")
 		});
 	}

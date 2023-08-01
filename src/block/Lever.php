@@ -66,7 +66,7 @@ class Lever extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy($blockReplace->getSide(Facing::opposite($face)), $face)){
+		if(!$this->canBeSupportedAt($blockReplace, Facing::opposite($face))){
 			return false;
 		}
 
@@ -90,8 +90,7 @@ class Lever extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$facing = $this->facing->getFacing();
-		if(!$this->canBeSupportedBy($this->getSide(Facing::opposite($facing)), $facing)){
+		if(!$this->canBeSupportedAt($this, Facing::opposite($this->facing->getFacing()))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -107,8 +106,8 @@ class Lever extends Flowable{
 		return true;
 	}
 
-	private function canBeSupportedBy(Block $block, int $face) : bool{
-		return $block->getSupportType($face)->hasCenterSupport();
+	private function canBeSupportedAt(Block $block, int $face) : bool{
+		return $block->getAdjacentSupportType($face)->hasCenterSupport();
 	}
 
 	//TODO
