@@ -26,7 +26,6 @@ namespace pocketmine\world\format\io\leveldb;
 use pocketmine\block\Block;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
-use pocketmine\item\StringToItemParser;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\NbtDataException;
@@ -200,16 +199,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				$blockStateData = $this->blockDataUpgrader->upgradeBlockStateNbt($blockStateNbt);
 			}catch(BlockStateDeserializeException $e){
 				//while not ideal, this is not a fatal error
-				$id = $blockStateNbt->getString("name");
-				if ($id != null) {
-					$item = StringToItemParser::getInstance()->parse($id);
-					if ($item != null) {
-						//$palette[] = $this->blockStateDeserializer->deserialize(BlockStateData::current($id, []));
-						$palette[] = $item->getBlock()->getStateId();
-						$logger->error("Failed to upgrade blockstate: " . $e->getMessage() . " offset $i in palette, blockstate NBT: " . $blockStateNbt->toString() . ". Fixed!");
-						continue;
-					}
-				}
 				$logger->error("Failed to upgrade blockstate: " . $e->getMessage() . " offset $i in palette, blockstate NBT: " . $blockStateNbt->toString());
 				$palette[] = $this->blockStateDeserializer->deserialize(GlobalBlockStateHandlers::getUnknownBlockStateData());
 				continue;
