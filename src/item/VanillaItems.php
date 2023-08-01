@@ -358,7 +358,7 @@ final class VanillaItems{
 		self::register("bone", new Item(new IID(Ids::BONE), "Bone"));
 		self::register("bone_meal", new Fertilizer(new IID(Ids::BONE_MEAL), "Bone Meal"));
 		self::register("book", new Book(new IID(Ids::BOOK), "Book"));
-		self::register("bow", new Bow(new IID(Ids::BOW), "Bow", EnchantFlags::BOW));
+		self::register("bow", new Bow(new IID(Ids::BOW), "Bow"));
 		self::register("bowl", new Bowl(new IID(Ids::BOWL), "Bowl"));
 		self::register("bread", new Bread(new IID(Ids::BREAD), "Bread"));
 		self::register("brick", new Item(new IID(Ids::BRICK), "Brick"));
@@ -410,7 +410,7 @@ final class VanillaItems{
 		self::register("clownfish", new Clownfish(new IID(Ids::CLOWNFISH), "Clownfish"));
 		self::register("coal", new Coal(new IID(Ids::COAL), "Coal"));
 		self::register("cocoa_beans", new CocoaBeans(new IID(Ids::COCOA_BEANS), "Cocoa Beans"));
-		self::register("compass", new Compass(new IID(Ids::COMPASS), "Compass", EnchantFlags::COMPASS));
+		self::register("compass", new Compass(new IID(Ids::COMPASS), "Compass"));
 		self::register("cooked_chicken", new CookedChicken(new IID(Ids::COOKED_CHICKEN), "Cooked Chicken"));
 		self::register("cooked_fish", new CookedFish(new IID(Ids::COOKED_FISH), "Cooked Fish"));
 		self::register("cooked_mutton", new CookedMutton(new IID(Ids::COOKED_MUTTON), "Cooked Mutton"));
@@ -438,9 +438,9 @@ final class VanillaItems{
 		self::register("feather", new Item(new IID(Ids::FEATHER), "Feather"));
 		self::register("fermented_spider_eye", new Item(new IID(Ids::FERMENTED_SPIDER_EYE), "Fermented Spider Eye"));
 		self::register("fire_charge", new FireCharge(new IID(Ids::FIRE_CHARGE), "Fire Charge"));
-		self::register("fishing_rod", new FishingRod(new IID(Ids::FISHING_ROD), "Fishing Rod", EnchantFlags::FISHING_ROD));
+		self::register("fishing_rod", new FishingRod(new IID(Ids::FISHING_ROD), "Fishing Rod"));
 		self::register("flint", new Item(new IID(Ids::FLINT), "Flint"));
-		self::register("flint_and_steel", new FlintSteel(new IID(Ids::FLINT_AND_STEEL), "Flint and Steel", EnchantFlags::FLINT_AND_STEEL));
+		self::register("flint_and_steel", new FlintSteel(new IID(Ids::FLINT_AND_STEEL), "Flint and Steel"));
 		self::register("ghast_tear", new Item(new IID(Ids::GHAST_TEAR), "Ghast Tear"));
 		self::register("glass_bottle", new GlassBottle(new IID(Ids::GLASS_BOTTLE), "Glass Bottle"));
 		self::register("glistering_melon", new Item(new IID(Ids::GLISTERING_MELON), "Glistering Melon"));
@@ -524,7 +524,7 @@ final class VanillaItems{
 		self::register("redstone_dust", new Redstone(new IID(Ids::REDSTONE_DUST), "Redstone"));
 		self::register("rotten_flesh", new RottenFlesh(new IID(Ids::ROTTEN_FLESH), "Rotten Flesh"));
 		self::register("scute", new Item(new IID(Ids::SCUTE), "Scute"));
-		self::register("shears", new Shears(new IID(Ids::SHEARS), "Shears", EnchantFlags::SHEARS));
+		self::register("shears", new Shears(new IID(Ids::SHEARS), "Shears"));
 		self::register("shulker_shell", new Item(new IID(Ids::SHULKER_SHELL), "Shulker Shell"));
 		self::register("slimeball", new Item(new IID(Ids::SLIMEBALL), "Slimeball"));
 		self::register("snowball", new Snowball(new IID(Ids::SNOWBALL), "Snowball"));
@@ -580,36 +580,36 @@ final class VanillaItems{
 	}
 
 	private static function registerTierToolItems() : void{
-		self::register("diamond_axe", new Axe(new IID(Ids::DIAMOND_AXE), "Diamond Axe", ToolTier::DIAMOND(), EnchantFlags::AXE));
-		self::register("golden_axe", new Axe(new IID(Ids::GOLDEN_AXE), "Golden Axe", ToolTier::GOLD(), EnchantFlags::AXE));
-		self::register("iron_axe", new Axe(new IID(Ids::IRON_AXE), "Iron Axe", ToolTier::IRON(), EnchantFlags::AXE));
-		self::register("netherite_axe", new Axe(new IID(Ids::NETHERITE_AXE), "Netherite Axe", ToolTier::NETHERITE(), EnchantFlags::AXE));
-		self::register("stone_axe", new Axe(new IID(Ids::STONE_AXE), "Stone Axe", ToolTier::STONE(), EnchantFlags::AXE));
-		self::register("wooden_axe", new Axe(new IID(Ids::WOODEN_AXE), "Wooden Axe", ToolTier::WOOD(), EnchantFlags::AXE));
-		self::register("diamond_hoe", new Hoe(new IID(Ids::DIAMOND_HOE), "Diamond Hoe", ToolTier::DIAMOND(), EnchantFlags::HOE));
-		self::register("golden_hoe", new Hoe(new IID(Ids::GOLDEN_HOE), "Golden Hoe", ToolTier::GOLD(), EnchantFlags::HOE));
-		self::register("iron_hoe", new Hoe(new IID(Ids::IRON_HOE), "Iron Hoe", ToolTier::IRON(), EnchantFlags::HOE));
-		self::register("netherite_hoe", new Hoe(new IID(Ids::NETHERITE_HOE), "Netherite Hoe", ToolTier::NETHERITE(), EnchantFlags::HOE));
-		self::register("stone_hoe", new Hoe(new IID(Ids::STONE_HOE), "Stone Hoe", ToolTier::STONE(), EnchantFlags::HOE));
-		self::register("wooden_hoe", new Hoe(new IID(Ids::WOODEN_HOE), "Wooden Hoe", ToolTier::WOOD(), EnchantFlags::HOE));
-		self::register("diamond_pickaxe", new Pickaxe(new IID(Ids::DIAMOND_PICKAXE), "Diamond Pickaxe", ToolTier::DIAMOND(), EnchantFlags::PICKAXE));
-		self::register("golden_pickaxe", new Pickaxe(new IID(Ids::GOLDEN_PICKAXE), "Golden Pickaxe", ToolTier::GOLD(), EnchantFlags::PICKAXE));
-		self::register("iron_pickaxe", new Pickaxe(new IID(Ids::IRON_PICKAXE), "Iron Pickaxe", ToolTier::IRON(), EnchantFlags::PICKAXE));
-		self::register("netherite_pickaxe", new Pickaxe(new IID(Ids::NETHERITE_PICKAXE), "Netherite Pickaxe", ToolTier::NETHERITE(), EnchantFlags::PICKAXE));
-		self::register("stone_pickaxe", new Pickaxe(new IID(Ids::STONE_PICKAXE), "Stone Pickaxe", ToolTier::STONE(), EnchantFlags::PICKAXE));
-		self::register("wooden_pickaxe", new Pickaxe(new IID(Ids::WOODEN_PICKAXE), "Wooden Pickaxe", ToolTier::WOOD(), EnchantFlags::PICKAXE));
-		self::register("diamond_shovel", new Shovel(new IID(Ids::DIAMOND_SHOVEL), "Diamond Shovel", ToolTier::DIAMOND(), EnchantFlags::SHOVEL));
-		self::register("golden_shovel", new Shovel(new IID(Ids::GOLDEN_SHOVEL), "Golden Shovel", ToolTier::GOLD(), EnchantFlags::SHOVEL));
-		self::register("iron_shovel", new Shovel(new IID(Ids::IRON_SHOVEL), "Iron Shovel", ToolTier::IRON(), EnchantFlags::SHOVEL));
-		self::register("netherite_shovel", new Shovel(new IID(Ids::NETHERITE_SHOVEL), "Netherite Shovel", ToolTier::NETHERITE(), EnchantFlags::SHOVEL));
-		self::register("stone_shovel", new Shovel(new IID(Ids::STONE_SHOVEL), "Stone Shovel", ToolTier::STONE(), EnchantFlags::SHOVEL));
-		self::register("wooden_shovel", new Shovel(new IID(Ids::WOODEN_SHOVEL), "Wooden Shovel", ToolTier::WOOD(), EnchantFlags::SHOVEL));
-		self::register("diamond_sword", new Sword(new IID(Ids::DIAMOND_SWORD), "Diamond Sword", ToolTier::DIAMOND(), EnchantFlags::SWORD));
-		self::register("golden_sword", new Sword(new IID(Ids::GOLDEN_SWORD), "Golden Sword", ToolTier::GOLD(), EnchantFlags::SWORD));
-		self::register("iron_sword", new Sword(new IID(Ids::IRON_SWORD), "Iron Sword", ToolTier::IRON(), EnchantFlags::SWORD));
-		self::register("netherite_sword", new Sword(new IID(Ids::NETHERITE_SWORD), "Netherite Sword", ToolTier::NETHERITE(), EnchantFlags::SWORD));
-		self::register("stone_sword", new Sword(new IID(Ids::STONE_SWORD), "Stone Sword", ToolTier::STONE(), EnchantFlags::SWORD));
-		self::register("wooden_sword", new Sword(new IID(Ids::WOODEN_SWORD), "Wooden Sword", ToolTier::WOOD(), EnchantFlags::SWORD));
+		self::register("diamond_axe", new Axe(new IID(Ids::DIAMOND_AXE), "Diamond Axe", ToolTier::DIAMOND()));
+		self::register("golden_axe", new Axe(new IID(Ids::GOLDEN_AXE), "Golden Axe", ToolTier::GOLD()));
+		self::register("iron_axe", new Axe(new IID(Ids::IRON_AXE), "Iron Axe", ToolTier::IRON()));
+		self::register("netherite_axe", new Axe(new IID(Ids::NETHERITE_AXE), "Netherite Axe", ToolTier::NETHERITE()));
+		self::register("stone_axe", new Axe(new IID(Ids::STONE_AXE), "Stone Axe", ToolTier::STONE()));
+		self::register("wooden_axe", new Axe(new IID(Ids::WOODEN_AXE), "Wooden Axe", ToolTier::WOOD()));
+		self::register("diamond_hoe", new Hoe(new IID(Ids::DIAMOND_HOE), "Diamond Hoe", ToolTier::DIAMOND()));
+		self::register("golden_hoe", new Hoe(new IID(Ids::GOLDEN_HOE), "Golden Hoe", ToolTier::GOLD()));
+		self::register("iron_hoe", new Hoe(new IID(Ids::IRON_HOE), "Iron Hoe", ToolTier::IRON()));
+		self::register("netherite_hoe", new Hoe(new IID(Ids::NETHERITE_HOE), "Netherite Hoe", ToolTier::NETHERITE()));
+		self::register("stone_hoe", new Hoe(new IID(Ids::STONE_HOE), "Stone Hoe", ToolTier::STONE()));
+		self::register("wooden_hoe", new Hoe(new IID(Ids::WOODEN_HOE), "Wooden Hoe", ToolTier::WOOD()));
+		self::register("diamond_pickaxe", new Pickaxe(new IID(Ids::DIAMOND_PICKAXE), "Diamond Pickaxe", ToolTier::DIAMOND()));
+		self::register("golden_pickaxe", new Pickaxe(new IID(Ids::GOLDEN_PICKAXE), "Golden Pickaxe", ToolTier::GOLD()));
+		self::register("iron_pickaxe", new Pickaxe(new IID(Ids::IRON_PICKAXE), "Iron Pickaxe", ToolTier::IRON()));
+		self::register("netherite_pickaxe", new Pickaxe(new IID(Ids::NETHERITE_PICKAXE), "Netherite Pickaxe", ToolTier::NETHERITE()));
+		self::register("stone_pickaxe", new Pickaxe(new IID(Ids::STONE_PICKAXE), "Stone Pickaxe", ToolTier::STONE()));
+		self::register("wooden_pickaxe", new Pickaxe(new IID(Ids::WOODEN_PICKAXE), "Wooden Pickaxe", ToolTier::WOOD()));
+		self::register("diamond_shovel", new Shovel(new IID(Ids::DIAMOND_SHOVEL), "Diamond Shovel", ToolTier::DIAMOND()));
+		self::register("golden_shovel", new Shovel(new IID(Ids::GOLDEN_SHOVEL), "Golden Shovel", ToolTier::GOLD()));
+		self::register("iron_shovel", new Shovel(new IID(Ids::IRON_SHOVEL), "Iron Shovel", ToolTier::IRON()));
+		self::register("netherite_shovel", new Shovel(new IID(Ids::NETHERITE_SHOVEL), "Netherite Shovel", ToolTier::NETHERITE()));
+		self::register("stone_shovel", new Shovel(new IID(Ids::STONE_SHOVEL), "Stone Shovel", ToolTier::STONE()));
+		self::register("wooden_shovel", new Shovel(new IID(Ids::WOODEN_SHOVEL), "Wooden Shovel", ToolTier::WOOD()));
+		self::register("diamond_sword", new Sword(new IID(Ids::DIAMOND_SWORD), "Diamond Sword", ToolTier::DIAMOND()));
+		self::register("golden_sword", new Sword(new IID(Ids::GOLDEN_SWORD), "Golden Sword", ToolTier::GOLD()));
+		self::register("iron_sword", new Sword(new IID(Ids::IRON_SWORD), "Iron Sword", ToolTier::IRON()));
+		self::register("netherite_sword", new Sword(new IID(Ids::NETHERITE_SWORD), "Netherite Sword", ToolTier::NETHERITE()));
+		self::register("stone_sword", new Sword(new IID(Ids::STONE_SWORD), "Stone Sword", ToolTier::STONE()));
+		self::register("wooden_sword", new Sword(new IID(Ids::WOODEN_SWORD), "Wooden Sword", ToolTier::WOOD()));
 	}
 
 	private static function registerArmorItems() : void{

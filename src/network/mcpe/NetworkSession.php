@@ -1163,7 +1163,7 @@ class NetworkSession{
 	/**
 	 * @param EnchantmentOption[] $options
 	 */
-	public function onSendEnchantOptions(array $options) : void{
+	public function sendEnchantOptions(array $options) : void{
 		$protocolOptions = [];
 
 		foreach($options as $option){

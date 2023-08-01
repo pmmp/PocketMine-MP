@@ -29,6 +29,8 @@ final class ItemFlags{
 		//NOOP
 	}
 
+	//TODO: this should probably move to protocol
+
 	public const NONE = 0x0;
 	public const ALL = 0xfffff;
 	public const BREAKABLE = self::ALL & ~self::COMPASS & ~self::HEAD_MASK;

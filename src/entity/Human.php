@@ -215,8 +215,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return $this->xpSeed;
 	}
 
-	protected function generateXpSeed() : void{
-		$this->xpSeed = mt_rand(Limits::INT32_MIN, Limits::INT32_MAX);
+	protected function generateXpSeed() : int{
+		return mt_rand(Limits::INT32_MIN, Limits::INT32_MAX);
 	}
 
 	public function getXpDropAmount() : int{
@@ -342,7 +342,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		if(($xpSeedTag = $nbt->getTag(self::TAG_XP_SEED)) instanceof IntTag){
 			$this->xpSeed = $xpSeedTag->getValue();
 		}else{
-			$this->generateXpSeed();
+			$this->xpSeed = $this->generateXpSeed();
 		}
 	}
 

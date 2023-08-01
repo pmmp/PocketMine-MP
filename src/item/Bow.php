@@ -28,6 +28,7 @@ use pocketmine\entity\projectile\Arrow as ArrowEntity;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\EntityShootBowEvent;
 use pocketmine\event\entity\ProjectileLaunchEvent;
+use pocketmine\item\enchantment\ItemFlags;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\player\Player;
 use pocketmine\world\sound\BowShootSound;
@@ -35,6 +36,10 @@ use function intdiv;
 use function min;
 
 class Bow extends Tool implements Releasable{
+
+	public function __construct(ItemIdentifier $identifier, string $name = "Unknown"){
+		parent::__construct($identifier, $name, ItemFlags::BOW);
+	}
 
 	public function getFuelTime() : int{
 		return 200;

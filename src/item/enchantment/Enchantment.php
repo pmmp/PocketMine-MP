@@ -50,9 +50,9 @@ class Enchantment{
 		private int $primaryItemFlags,
 		private int $secondaryItemFlags,
 		private int $maxLevel,
-		private bool $isTreasure = false,
 		?\Closure $minCost = null,
-		?\Closure $maxCost = null
+		?\Closure $maxCost = null,
+		private bool $isTreasure = false,
 	){
 		$this->maxCost = $maxCost ?? fn() => 1;
 		$this->minCost = $minCost ?? fn() => 50;
@@ -109,13 +109,6 @@ class Enchantment{
 	}
 
 	/**
-	 * Returns whether this enchantment is a special enchantment that cannot be obtained using an enchanting table.
-	 */
-	public function isTreasure() : bool{
-		return $this->isTreasure;
-	}
-
-	/**
 	 * Returns whether this enchantment can be applied to the item along with the given enchantment.
 	 */
 	public function isCompatibleWith(Enchantment $other) : bool{
@@ -136,5 +129,12 @@ class Enchantment{
 	 */
 	public function getMaxCost(int $level) : int{
 		return ($this->maxCost)($level, $this->getMinCost($level));
+	}
+
+	/**
+	 * Returns whether this enchantment is a special enchantment that cannot be obtained using an enchanting table.
+	 */
+	public function isTreasure() : bool{
+		return $this->isTreasure;
 	}
 }

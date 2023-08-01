@@ -26,11 +26,15 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\item\enchantment\ItemFlags;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\sound\FlintSteelSound;
 
 class FlintSteel extends Tool{
+	public function __construct(ItemIdentifier $identifier, string $name = "Unknown"){
+		parent::__construct($identifier, $name, ItemFlags::FLINT_AND_STEEL);
+	}
 
 	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		if($blockReplace->getTypeId() === BlockTypeIds::AIR){

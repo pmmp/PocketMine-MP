@@ -56,7 +56,7 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 				$this->options = Helper::getEnchantOptions($this->holder, $this->getItem(self::SLOT_INPUT), $viewer->getXpSeed());
 				$this->outputs = [];
 				if (count($this->options) !== 0) {
-					$viewer->getNetworkSession()->onSendEnchantOptions($this->options);
+					$viewer->getNetworkSession()->sendEnchantOptions($this->options);
 				}
 			}
 		}

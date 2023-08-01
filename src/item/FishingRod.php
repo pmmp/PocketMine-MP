@@ -23,7 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\item\enchantment\ItemFlags;
+
 class FishingRod extends Durable{
+
+	public function __construct(ItemIdentifier $identifier, string $name = "Unknown"){
+		parent::__construct($identifier, $name, ItemFlags::FISHING_ROD);
+	}
 
 	public function getMaxStackSize() : int{
 		return 1;
