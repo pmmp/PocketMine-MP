@@ -42,9 +42,6 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 	/** @var EnchantmentOption[] $options */
 	private array $options = [];
 
-	/** @var Item[] $outputs */
-	private array $outputs = [];
-
 	public function __construct(Position $holder){
 		$this->holder = $holder;
 		parent::__construct(2);
@@ -54,7 +51,6 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 		if($index == self::SLOT_INPUT){
 			foreach($this->viewers as $viewer){
 				$this->options = Helper::getEnchantOptions($this->holder, $this->getItem(self::SLOT_INPUT), $viewer->getXpSeed());
-				$this->outputs = [];
 				if (count($this->options) !== 0) {
 					$viewer->getNetworkSession()->sendEnchantOptions($this->options);
 				}
@@ -68,24 +64,11 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 		return $this->getItem(self::SLOT_INPUT);
 	}
 
-	public function getLapis() : Item{
-		return $this->getItem(self::SLOT_LAPIS);
-	}
-
 	public function getOutput(int $optionId) : ?Item{
-		$this->prepareOutput($optionId);
-		return $this->outputs[$optionId] ?? null;
-	}
-
-	private function prepareOutput(int $optionId) : void{
-		if(isset($this->outputs[$optionId])){
-			return;
-		}
-
 		$option = $this->options[$optionId] ?? null;
 		if($option === null){
 			// Failed to find an enchantment option with the passed network id
-			return;
+			return null;
 		}
 
 		$outputItem = $this->getItem(self::SLOT_INPUT);
@@ -97,6 +80,6 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 			$outputItem->addEnchantment($enchantment);
 		}
 
-		$this->outputs[$optionId] = $outputItem;
+		return $outputItem;
 	}
 }
