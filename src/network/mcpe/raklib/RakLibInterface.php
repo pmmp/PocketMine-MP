@@ -39,6 +39,7 @@ use pocketmine\network\NetworkInterfaceStartException;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\GameMode;
 use pocketmine\Server;
+use pocketmine\thread\ThreadCrashException;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Utils;
 use raklib\generic\DisconnectReason;
@@ -154,7 +155,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		if(!$this->rakLib->isRunning()){
 			$e = $this->rakLib->getCrashInfo();
 			if($e !== null){
-				throw new \RuntimeException("RakLib crashed: " . $e->makePrettyMessage());
+				throw new ThreadCrashException("RakLib crashed", $e);
 			}
 			throw new \Exception("RakLib Thread crashed without crash information");
 		}

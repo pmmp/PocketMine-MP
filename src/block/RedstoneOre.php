@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
@@ -81,7 +82,7 @@ class RedstoneOre extends Opaque{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			VanillaItems::REDSTONE_DUST()->setCount(mt_rand(4, 5))
+			VanillaItems::REDSTONE_DUST()->setCount(FortuneDropHelper::discrete($item, 4, 5))
 		];
 	}
 
