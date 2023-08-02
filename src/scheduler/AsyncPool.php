@@ -26,6 +26,7 @@ namespace pocketmine\scheduler;
 use pmmp\thread\Thread as NativeThread;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\thread\log\ThreadSafeLogger;
+use pocketmine\thread\ThreadCrashException;
 use pocketmine\thread\ThreadSafeClassLoader;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
@@ -215,12 +216,17 @@ class AsyncPool{
 					}
 				}
 			}
-			if($crashedTask !== null){
-				$message = "Worker $workerId crashed while running task " . get_class($crashedTask) . "#" . spl_object_id($crashedTask);
+			$info = $entry->worker->getCrashInfo();
+			if($info !== null){
+				if($crashedTask !== null){
+					$message = "Worker $workerId crashed while running task " . get_class($crashedTask) . "#" . spl_object_id($crashedTask);
+				}else{
+					$message = "Worker $workerId crashed while doing unknown work";
+				}
+				throw new ThreadCrashException($message, $info);
 			}else{
-				$message = "Worker $workerId crashed for unknown reason";
+				throw new \RuntimeException("Worker $workerId crashed for unknown reason");
 			}
-			throw new \RuntimeException($message);
 		}
 	}
 

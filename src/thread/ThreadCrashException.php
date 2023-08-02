@@ -21,24 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\thread;
 
-use pocketmine\block\utils\TallGrassTrait;
-use pocketmine\item\Item;
+final class ThreadCrashException extends ThreadException{
 
-class DoubleTallGrass extends DoublePlant{
-	use TallGrassTrait {
-		getDropsForIncompatibleTool as traitGetDropsForIncompatibleTool;
+	private ThreadCrashInfo $crashInfo;
+
+	public function __construct(string $message, ThreadCrashInfo $crashInfo){
+		parent::__construct($message);
+		$this->crashInfo = $crashInfo;
 	}
 
-	public function canBeReplaced() : bool{
-		return true;
-	}
-
-	public function getDropsForIncompatibleTool(Item $item) : array{
-		if($this->top){
-			return $this->traitGetDropsForIncompatibleTool($item);
-		}
-		return [];
+	public function getCrashInfo() : ThreadCrashInfo{
+		return $this->crashInfo;
 	}
 }

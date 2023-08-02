@@ -21,24 +21,21 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\thread;
 
-use pocketmine\block\utils\TallGrassTrait;
-use pocketmine\item\Item;
+use pmmp\thread\ThreadSafe;
 
-class DoubleTallGrass extends DoublePlant{
-	use TallGrassTrait {
-		getDropsForIncompatibleTool as traitGetDropsForIncompatibleTool;
-	}
+final class ThreadCrashInfoFrame extends ThreadSafe{
 
-	public function canBeReplaced() : bool{
-		return true;
-	}
+	public function __construct(
+		private string $printableFrame,
+		private ?string $file,
+		private int $line,
+	){}
 
-	public function getDropsForIncompatibleTool(Item $item) : array{
-		if($this->top){
-			return $this->traitGetDropsForIncompatibleTool($item);
-		}
-		return [];
-	}
+	public function getPrintableFrame() : string{ return $this->printableFrame; }
+
+	public function getFile() : ?string{ return $this->file; }
+
+	public function getLine() : int{ return $this->line; }
 }
