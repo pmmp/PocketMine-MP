@@ -2951,7 +2951,7 @@ class World implements ChunkManager{
 	 * @throws WorldException if the terrain is not generated
 	 */
 	public function getSafeSpawn(?Vector3 $spawn = null) : Position{
-		if(!($spawn instanceof Vector3) || $spawn->y < 1){
+		if(!($spawn instanceof Vector3) || $spawn->y <= $this->minY){
 			$spawn = $this->getSpawnLocation();
 		}
 
