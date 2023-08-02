@@ -1610,7 +1610,7 @@ class World implements ChunkManager{
 	 * the current weather and time of day.
 	 */
 	public function getHighestAdjacentFullLightAt(int $x, int $y, int $z) : int{
-		return $this->getHighestAdjacentLight($x, $y, $z, \Closure::fromCallable([$this, 'getFullLightAt']));
+		return $this->getHighestAdjacentLight($x, $y, $z, $this->getFullLightAt(...));
 	}
 
 	/**
@@ -1706,7 +1706,7 @@ class World implements ChunkManager{
 	 * Returns the highest potential level of sky light in the positions adjacent to the specified block coordinates.
 	 */
 	public function getHighestAdjacentPotentialBlockSkyLight(int $x, int $y, int $z) : int{
-		return $this->getHighestAdjacentLight($x, $y, $z, \Closure::fromCallable([$this, 'getPotentialBlockSkyLightAt']));
+		return $this->getHighestAdjacentLight($x, $y, $z, $this->getPotentialBlockSkyLightAt(...));
 	}
 
 	/**
@@ -1721,7 +1721,7 @@ class World implements ChunkManager{
 	 * Returns the highest block light level available in the positions adjacent to the specified block coordinates.
 	 */
 	public function getHighestAdjacentBlockLight(int $x, int $y, int $z) : int{
-		return $this->getHighestAdjacentLight($x, $y, $z, \Closure::fromCallable([$this, 'getBlockLightAt']));
+		return $this->getHighestAdjacentLight($x, $y, $z, $this->getBlockLightAt(...));
 	}
 
 	private function executeQueuedLightUpdates() : void{
