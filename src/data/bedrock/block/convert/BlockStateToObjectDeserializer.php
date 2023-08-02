@@ -35,6 +35,7 @@ use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
+use pocketmine\block\utils\DripleafState;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
@@ -826,6 +827,22 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFacing($in->readLegacyHorizontalFacing())
 				->setAttachmentType($in->readBellAttachmentType());
 		});
+		$this->map(Ids::BIG_DRIPLEAF, function(Reader $in) : Block{
+			if($in->readBool(StateNames::BIG_DRIPLEAF_HEAD)){
+				return Blocks::BIG_DRIPLEAF_HEAD()
+					->setFacing($in->readLegacyHorizontalFacing())
+					->setLeafState(match($type = $in->readString(StateNames::BIG_DRIPLEAF_TILT)){
+						StringValues::BIG_DRIPLEAF_TILT_NONE => DripleafState::STABLE(),
+						StringValues::BIG_DRIPLEAF_TILT_UNSTABLE => DripleafState::UNSTABLE(),
+						StringValues::BIG_DRIPLEAF_TILT_PARTIAL_TILT => DripleafState::PARTIAL_TILT(),
+						StringValues::BIG_DRIPLEAF_TILT_FULL_TILT => DripleafState::FULL_TILT(),
+						default => throw $in->badValueException(StateNames::BIG_DRIPLEAF_TILT, $type),
+					});
+			}else{
+				$in->ignored(StateNames::BIG_DRIPLEAF_TILT);
+				return Blocks::BIG_DRIPLEAF_STEM()->setFacing($in->readLegacyHorizontalFacing());
+			}
+		});
 		$this->mapSlab(Ids::BLACKSTONE_SLAB, Ids::BLACKSTONE_DOUBLE_SLAB, fn() => Blocks::BLACKSTONE_SLAB());
 		$this->mapStairs(Ids::BLACKSTONE_STAIRS, fn() => Blocks::BLACKSTONE_STAIRS());
 		$this->map(Ids::BLACKSTONE_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::BLACKSTONE_WALL(), $in));
@@ -1331,6 +1348,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::SMOKER()
 				->setFacing($in->readHorizontalFacing())
 				->setLit(false);
+		});
+		$this->map(Ids::SMALL_DRIPLEAF_BLOCK, function(Reader $in) : Block{
+			return Blocks::SMALL_DRIPLEAF()
+				->setFacing($in->readLegacyHorizontalFacing())
+				->setTop($in->readBool(StateNames::UPPER_BLOCK_BIT));
 		});
 		$this->mapStairs(Ids::SMOOTH_QUARTZ_STAIRS, fn() => Blocks::SMOOTH_QUARTZ_STAIRS());
 		$this->mapStairs(Ids::SMOOTH_RED_SANDSTONE_STAIRS, fn() => Blocks::SMOOTH_RED_SANDSTONE_STAIRS());
