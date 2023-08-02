@@ -77,7 +77,7 @@ class Farmland extends Transparent{
 				$event = new FarmlandHydrationChangeEvent($this, $this->wetness, $this->wetness - 1);
 				$event->call();
 				if(!$event->isCancelled()){
-					$this->wetness = $event->getNewWetness();
+					$this->wetness = $event->getNewHydration();
 					$world->setBlock($this->position, $this, false);
 				}
 			}else{
@@ -87,7 +87,7 @@ class Farmland extends Transparent{
 			$event = new FarmlandHydrationChangeEvent($this, $this->wetness, self::MAX_WETNESS);
 			$event->call();
 			if(!$event->isCancelled()){
-				$this->wetness = $event->getNewWetness();
+				$this->wetness = $event->getNewHydration();
 				$world->setBlock($this->position, $this, false);
 			}
 		}

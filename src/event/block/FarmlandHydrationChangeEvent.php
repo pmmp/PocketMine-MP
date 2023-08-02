@@ -39,11 +39,11 @@ class FarmlandHydrationChangeEvent extends BlockUpdateEvent{
 		parent::__construct($block);
 	}
 
-	public function getOldWetness() : int{
+	public function getOldHydration() : int{
 		return $this->oldWetness;
 	}
 
-	public function getNewWetness() : int{
+	public function getNewHydration() : int{
 		return $this->newWetness;
 	}
 
