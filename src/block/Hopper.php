@@ -108,7 +108,7 @@ class Hopper extends Transparent implements HopperInteractable{
 			return;
 		}
 
-		if($this->hopperOnCooldown()){
+		if($this->isOnCooldown()){
 			$this->currentCooldown--;
 		}else{
 			$facingBlock = $this->getSide($this->facing);
@@ -132,7 +132,7 @@ class Hopper extends Transparent implements HopperInteractable{
 	}
 
 	public function doHopperPush(Hopper $hopperBlock) : bool{
-		if($this->hopperOnCooldown()){
+		if($this->isOnCooldown()){
 			return false;
 		}
 
@@ -153,7 +153,7 @@ class Hopper extends Transparent implements HopperInteractable{
 	}
 
 	public function doHopperPull(Hopper $hopperBlock) : bool{
-		if($this->hopperOnCooldown()){
+		if($this->isOnCooldown()){
 			return false;
 		}
 
@@ -173,7 +173,7 @@ class Hopper extends Transparent implements HopperInteractable{
 		return $this->transferItem($sourceInventory, $targetInventory);
 	}
 
-	private function hopperOnCooldown() : bool{
+	private function isOnCooldown() : bool{
 		return $this->currentCooldown > 0;
 	}
 
