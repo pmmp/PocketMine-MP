@@ -84,7 +84,7 @@ class Hopper extends Transparent implements HopperInteractable{
 		$this->facing = $face === Facing::DOWN ? Facing::DOWN : Facing::opposite($face);
 
 		$world = $this->position->getWorld();
-		$world->scheduleDelayedBlockUpdate($blockReplace->position, 8);
+		$world->scheduleDelayedBlockUpdate($blockReplace->position, self::TRANSFER_COOLDOWN);
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
