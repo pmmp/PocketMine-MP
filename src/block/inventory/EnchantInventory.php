@@ -48,9 +48,9 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 	}
 
 	protected function onSlotChange(int $index, Item $before) : void{
-		if($index == self::SLOT_INPUT){
+		if($index === self::SLOT_INPUT){
 			foreach($this->viewers as $viewer){
-				$this->options = Helper::getEnchantOptions($this->holder, $this->getItem(self::SLOT_INPUT), $viewer->getXpSeed());
+				$this->options = Helper::getEnchantOptions($this->holder, $this->getInput(), $viewer->getXpSeed());
 				if (count($this->options) > 0) {
 					$viewer->getNetworkSession()->sendEnchantOptions($this->options);
 				}
@@ -71,7 +71,7 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 			return null;
 		}
 
-		$outputItem = $this->getItem(self::SLOT_INPUT);
+		$outputItem = $this->getInput();
 		if($outputItem->getTypeId() === ItemTypeIds::BOOK){
 			$outputItem = VanillaItems::ENCHANTED_BOOK();
 		}

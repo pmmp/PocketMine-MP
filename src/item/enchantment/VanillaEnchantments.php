@@ -65,8 +65,8 @@ final class VanillaEnchantments{
 			Flags::NONE,
 			4,
 			0.75, null,
-			fn($level) => 11 * ($level - 1) + 1,
-			fn($level, $minCost) => $minCost + 20
+			fn(int $level) : int => 11 * ($level - 1) + 1,
+			fn(int $level, int $minCost) : int => $minCost + 20
 		));
 		self::register("FIRE_PROTECTION", new ProtectionEnchantment(KnownTranslationFactory::enchantment_protect_fire(), Rarity::UNCOMMON,
 			Flags::ARMOR,
@@ -79,8 +79,8 @@ final class VanillaEnchantments{
 				EntityDamageEvent::CAUSE_LAVA
 				//TODO: check fireballs
 			],
-			fn($level) => 8 * ($level - 1) + 10,
-			fn($level, $minCost) => $minCost + 12
+			fn(int $level) : int => 8 * ($level - 1) + 10,
+			fn(int $level, int $minCost) : int => $minCost + 12
 		));
 		self::register("FEATHER_FALLING", new ProtectionEnchantment(KnownTranslationFactory::enchantment_protect_fall(), Rarity::UNCOMMON,
 			Flags::FEET,
@@ -90,8 +90,8 @@ final class VanillaEnchantments{
 			[
 				EntityDamageEvent::CAUSE_FALL
 			],
-			fn($level) => 6 * ($level - 1) + 5,
-			fn($level, $minCost) => $minCost + 10
+			fn(int $level) : int => 6 * ($level - 1) + 5,
+			fn(int $level, int $minCost) : int => $minCost + 10
 		));
 		self::register("BLAST_PROTECTION", new ProtectionEnchantment(KnownTranslationFactory::enchantment_protect_explosion(), Rarity::RARE,
 			Flags::ARMOR,
@@ -102,8 +102,8 @@ final class VanillaEnchantments{
 				EntityDamageEvent::CAUSE_BLOCK_EXPLOSION,
 				EntityDamageEvent::CAUSE_ENTITY_EXPLOSION
 			],
-			fn($level) => 8 * ($level - 1) + 5,
-			fn($level, $minCost) => $minCost + 12
+			fn(int $level) : int => 8 * ($level - 1) + 5,
+			fn(int $level, int $minCost) : int => $minCost + 12
 		));
 		self::register("PROJECTILE_PROTECTION", new ProtectionEnchantment(KnownTranslationFactory::enchantment_protect_projectile(), Rarity::UNCOMMON,
 			Flags::ARMOR,
@@ -113,44 +113,44 @@ final class VanillaEnchantments{
 			[
 				EntityDamageEvent::CAUSE_PROJECTILE
 			],
-			fn($level) => 6 * ($level - 1) + 3,
-			fn($level, $minCost) => $minCost + 15
+			fn(int $level) : int => 6 * ($level - 1) + 3,
+			fn(int $level, int $minCost) : int => $minCost + 15
 		));
 		self::register("THORNS", new Enchantment(KnownTranslationFactory::enchantment_thorns(), Rarity::MYTHIC,
 			Flags::TORSO,
 			Flags::HEAD | Flags::LEGS | Flags::FEET,
 			3,
-			fn($level) => 20 * ($level - 1) + 10,
-			fn($level, $minCost) => $minCost + 50
+			fn(int $level) : int => 20 * ($level - 1) + 10,
+			fn(int $level, int $minCost) : int => $minCost + 50
 		));
 		self::register("RESPIRATION", new Enchantment(KnownTranslationFactory::enchantment_oxygen(), Rarity::RARE,
 			Flags::HEAD,
 			Flags::NONE,
 			3,
-			fn($level) => 10 * $level,
-			fn($level, $minCost) => $minCost + 30
+			fn(int $level) : int => 10 * $level,
+			fn(int $level, int $minCost) : int => $minCost + 30
 		));
 
 		self::register("SHARPNESS", new SharpnessEnchantment(KnownTranslationFactory::enchantment_damage_all(), Rarity::COMMON,
 			Flags::SWORD | Flags::AXE,
 			Flags::NONE,
 			5,
-			fn($level) => 11 * ($level - 1) + 1,
-			fn($level, $minCost) => $minCost + 20
+			fn(int $level) : int => 11 * ($level - 1) + 1,
+			fn(int $level, int $minCost) : int => $minCost + 20
 		));
 		self::register("KNOCKBACK", new KnockbackEnchantment(KnownTranslationFactory::enchantment_knockback(), Rarity::UNCOMMON,
 			Flags::SWORD,
 			Flags::NONE,
 			2,
-			fn($level) => 20 * ($level - 1) + 5,
-			fn($level, $minCost) => $minCost + 50
+			fn(int $level) : int => 20 * ($level - 1) + 5,
+			fn(int $level, int $minCost) : int => $minCost + 50
 		));
 		self::register("FIRE_ASPECT", new FireAspectEnchantment(KnownTranslationFactory::enchantment_fire(), Rarity::RARE,
 			Flags::SWORD,
 			Flags::NONE,
 			2,
-			fn($level) => 20 * ($level - 1) + 10,
-			fn($level, $minCost) => $minCost + 50
+			fn(int $level) : int => 20 * ($level - 1) + 10,
+			fn(int $level, int $minCost) : int => $minCost + 50
 		));
 		//TODO: smite, bane of arthropods, looting (these don't make sense now because their applicable mobs don't exist yet)
 
@@ -158,66 +158,66 @@ final class VanillaEnchantments{
 			Flags::DIG,
 			Flags::SHEARS,
 			5,
-			fn($level) => 10 * ($level - 1) + 1,
-			fn($level, $minCost) => $minCost + 50
+			fn(int $level) : int => 10 * ($level - 1) + 1,
+			fn(int $level, int $minCost) : int => $minCost + 50
 		));
 		self::register("FORTUNE", new Enchantment(KnownTranslationFactory::enchantment_lootBonusDigger(), Rarity::RARE,
 			Flags::DIG,
 			Flags::NONE,
 			3,
-			fn($level) => 9 * ($level - 1) + 15,
-			fn($level, $minCost) => $minCost + 50
+			fn(int $level) : int => 9 * ($level - 1) + 15,
+			fn(int $level, int $minCost) : int => $minCost + 50
 		));
 		self::register("SILK_TOUCH", new Enchantment(KnownTranslationFactory::enchantment_untouching(), Rarity::MYTHIC,
 			Flags::DIG,
 			Flags::SHEARS,
 			1,
-			fn($level) => 15,
-			fn($level, $minCost) => $minCost + 50
+			fn(int $level) : int => 15,
+			fn(int $level, int $minCost) : int => $minCost + 50
 		));
 		self::register("UNBREAKING", new Enchantment(KnownTranslationFactory::enchantment_durability(), Rarity::UNCOMMON,
 			Flags::ARMOR | Flags::DIG | Flags::SWORD | Flags::FISHING_ROD | Flags::BOW | Flags::TRIDENT,
 			Flags::SHEARS | Flags::FLINT_AND_STEEL | Flags::CARROT_STICK | Flags::ELYTRA,
 			3,
-			fn($level) => 8 * ($level - 1) + 5,
-			fn($level, $minCost) => $minCost + 50
+			fn(int $level) : int => 8 * ($level - 1) + 5,
+			fn(int $level, int $minCost) : int => $minCost + 50
 		));
 
 		self::register("POWER", new Enchantment(KnownTranslationFactory::enchantment_arrowDamage(), Rarity::COMMON,
 			Flags::BOW,
 			Flags::NONE,
 			5,
-			fn($level) => 10 * ($level - 1) + 1,
-			fn($level, $minCost) => $minCost + 15
+			fn(int $level) : int => 10 * ($level - 1) + 1,
+			fn(int $level, int $minCost) : int => $minCost + 15
 		));
 		self::register("PUNCH", new Enchantment(KnownTranslationFactory::enchantment_arrowKnockback(), Rarity::RARE,
 			Flags::BOW,
 			Flags::NONE,
 			2,
-			fn($level) => 20 * ($level - 1) + 12,
-			fn($level, $minCost) => $minCost + 25
+			fn(int $level) : int => 20 * ($level - 1) + 12,
+			fn(int $level, int $minCost) : int => $minCost + 25
 		));
 		self::register("FLAME", new Enchantment(KnownTranslationFactory::enchantment_arrowFire(), Rarity::RARE,
 			Flags::BOW,
 			Flags::NONE,
 			1,
-			fn($level) => 20,
-			fn($level, $minCost) => $minCost + 30
+			fn(int $level) : int => 20,
+			fn(int $level, int $minCost) : int => $minCost + 30
 		));
 		self::register("INFINITY", new Enchantment(KnownTranslationFactory::enchantment_arrowInfinite(), Rarity::MYTHIC,
 			Flags::BOW,
 			Flags::NONE,
 			1,
-			fn($level) => 20,
-			fn($level, $minCost) => $minCost + 30
+			fn(int $level) : int => 20,
+			fn(int $level, int $minCost) : int => $minCost + 30
 		));
 
 		self::register("MENDING", new Enchantment(KnownTranslationFactory::enchantment_mending(), Rarity::RARE,
 			Flags::NONE,
 			Flags::BREAKABLE,
 			1,
-			fn($level) => 25,
-			fn($level, $minCost) => $minCost + 50,
+			fn(int $level) : int => 25,
+			fn(int $level, int $minCost) : int => $minCost + 50,
 			true
 		));
 
@@ -225,8 +225,8 @@ final class VanillaEnchantments{
 			Flags::NONE,
 			Flags::ALL,
 			1,
-			fn($level) => 25,
-			fn($level, $minCost) => $minCost + 25,
+			fn(int $level) : int => 25,
+			fn(int $level, int $minCost) : int => $minCost + 25,
 			true
 		));
 
@@ -234,8 +234,8 @@ final class VanillaEnchantments{
 			Flags::NONE,
 			Flags::LEGS,
 			3,
-			fn($level) => 10 * $level,
-			fn($level, $minCost) => $minCost + 5,
+			fn(int $level) : int => 10 * $level,
+			fn(int $level, int $minCost) : int => $minCost + 5,
 			true
 		));
 	}

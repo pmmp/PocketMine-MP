@@ -23,9 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\item\enchantment;
 
+use DaveRandom\CallbackValidator\CallbackType;
+use DaveRandom\CallbackValidator\ParameterType;
+use DaveRandom\CallbackValidator\ReturnType;
 use pocketmine\lang\Translatable;
 use pocketmine\utils\NotCloneable;
 use pocketmine\utils\NotSerializable;
+use pocketmine\utils\Utils;
 
 /**
  * Manages enchantment type data.
@@ -54,8 +58,18 @@ class Enchantment{
 		?\Closure $maxCost = null,
 		private bool $isTreasure = false,
 	){
-		$this->minCost = $minCost ?? fn() => 1;
-		$this->maxCost = $maxCost ?? fn() => 50;
+		$this->minCost = $minCost ?? fn(int $level) : int => 1;
+		$this->maxCost = $maxCost ?? fn(int $level, int $minCost) : int => 50;
+
+		Utils::validateCallableSignature(new CallbackType(
+			new ReturnType("int"),
+			new ParameterType("level", "int")
+		), $this->minCost);
+		Utils::validateCallableSignature(new CallbackType(
+			new ReturnType("int"),
+			new ParameterType("level", "int"),
+			new ParameterType("minCost", "int")
+		), $this->maxCost);
 	}
 
 	/**
