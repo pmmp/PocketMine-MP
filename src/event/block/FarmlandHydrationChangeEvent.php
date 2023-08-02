@@ -47,7 +47,7 @@ class FarmlandHydrationChangeEvent extends BlockUpdateEvent{
 		return $this->newWetness;
 	}
 
-	public function setNewWetness(int $wetness) : void{
+	public function setNewHydration(int $wetness) : void{
 		if($wetness < 0 || $wetness > Farmland::MAX_WETNESS){
 			throw new \InvalidArgumentException("Wetness must be in range 0 ... " . Farmland::MAX_WETNESS);
 		}
