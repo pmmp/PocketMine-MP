@@ -94,7 +94,9 @@ class FurnaceInventory extends SimpleInventory implements BlockInventory{
 			return true;
 		}
 
-		if($currentFuel->getCount() === $currentFuel->getMaxStackSize()) return false;
+		if($currentFuel->getCount() === $currentFuel->getMaxStackSize()){
+			return false;
+		}
 
 		return $item->canStackWith($currentFuel);
 	}
