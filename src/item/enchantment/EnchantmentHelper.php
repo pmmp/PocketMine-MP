@@ -152,11 +152,13 @@ final class EnchantmentHelper{
 	}
 
 	private static function getEnchantability(Item $item) : int{
-		return match ($item::class) {
-			TieredTool::class => $item->getTier()->getEnchantability(),
-			Armor::class => $item->getMaterial()->getEnchantability(),
-			default => 1
-		};
+		if ($item instanceof TieredTool) {
+			return $item->getTier()->getEnchantability();
+		}
+		if ($item instanceof Armor) {
+			return $item->getMaterial()->getEnchantability();
+		}
+		return 1;
 	}
 
 	/**
