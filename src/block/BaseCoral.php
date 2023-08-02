@@ -51,7 +51,7 @@ abstract class BaseCoral extends Transparent{
 
 			//TODO: check water inside the block itself (not supported on the API yet)
 			if(!$hasWater){
-				$ev = new BlockDeathEvent($this, $this->setDead(true));
+				$ev = new BlockDeathEvent($this, (clone $this)->setDead(true));
 				$ev->call();
 				if(!$ev->isCancelled()){
 					$world->setBlock($this->position, $ev->getNewState());

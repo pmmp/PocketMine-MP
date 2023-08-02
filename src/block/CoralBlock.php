@@ -78,7 +78,7 @@ final class CoralBlock extends Opaque{
 				}
 			}
 			if(!$hasWater){
-				$ev = new BlockDeathEvent($this, $this->setDead(true));
+				$ev = new BlockDeathEvent($this, (clone $this)->setDead(true));
 				$ev->call();
 				if(!$ev->isCancelled()){
 					$world->setBlock($this->position, $ev->getNewState());
