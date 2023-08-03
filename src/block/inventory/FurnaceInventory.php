@@ -84,7 +84,7 @@ class FurnaceInventory extends SimpleInventory implements BlockInventory{
 	}
 
 	public function canAddFuel(Item $item) : bool{
-		if($item->getFuelTime() == 0){
+		if($item->getFuelTime() === 0){
 			return false;
 		}
 
