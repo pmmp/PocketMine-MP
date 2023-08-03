@@ -89,19 +89,20 @@ class PinkPetals extends Flowable{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($item instanceof Fertilizer && $this->grow($player)){
-			$item->pop();
-			return true;
+		if($item instanceof Fertilizer){
+			$grew = false;
+			if($this->count < self::MAX_COUNT){
+				$grew = BlockEventHelper::grow($this, (clone $this)->setCount($this->count + 1), $player);
+			}else{
+				$this->position->getWorld()->dropItem($this->position->add(0, 0.5, 0), $this->asItem());
+				$grew = true;
+			}
+			if($grew){
+				$item->pop();
+				return true;
+			}
 		}
 		return false;
-	}
-
-	private function grow(?Player $player) : bool{
-		if($this->count < self::MAX_COUNT){
-			return BlockEventHelper::grow($this, (clone $this)->setCount($this->count + 1), $player);
-		}
-		$this->position->getWorld()->dropItem($this->position->add(0, 0.5, 0), $this->asItem());
-		return true;
 	}
 
 	public function getFlameEncouragement() : int{
