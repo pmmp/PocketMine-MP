@@ -95,7 +95,7 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 	}
 
 	public function getOptionEnchantmentLevel(int $optionId) : ?int{
-		$level = array_search($optionId, array_keys($this->options));
+		$level = array_search($optionId, array_keys($this->options), true);
 		return $level === false ? null : $level + 1;
 	}
 }
