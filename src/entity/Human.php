@@ -215,7 +215,11 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return $this->xpSeed;
 	}
 
-	protected function generateXpSeed() : int{
+	public function setXpSeed(int $seed) : void{
+		$this->xpSeed = $seed;
+	}
+
+	public function generateXpSeed() : int{
 		return mt_rand(Limits::INT32_MIN, Limits::INT32_MAX);
 	}
 

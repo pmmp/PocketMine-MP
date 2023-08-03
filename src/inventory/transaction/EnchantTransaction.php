@@ -88,7 +88,11 @@ class EnchantTransaction extends InventoryTransaction{
 
 	public function execute() : void{
 		parent::execute();
-		$this->source->onEnchant($this->getEnchantLevel());
+
+		if($this->source->hasFiniteResources()){
+			$this->source->getXpManager()->subtractXpLevels($this->getEnchantLevel());
+		}
+		$this->source->setXpSeed($this->source->generateXpSeed());
 	}
 
 	public function getEnchantLevel() : int{

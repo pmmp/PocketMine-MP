@@ -64,7 +64,7 @@ final class IncompatibleEnchantmentRegistry{
 	 */
 	public function unregister(string $tag, array $enchantments) : void{
 		foreach($enchantments as $enchantment){
-			if(($key = array_search($tag, $this->incompatibilityMap[spl_object_id($enchantment)])) !== false){
+			if(($key = array_search($tag, $this->incompatibilityMap[spl_object_id($enchantment)], true)) !== false){
 				unset($this->incompatibilityMap[spl_object_id($enchantment)][$key]);
 			}
 		}
@@ -75,7 +75,7 @@ final class IncompatibleEnchantmentRegistry{
 	 */
 	public function unregisterAll(string $tag) : void{
 		foreach($this->incompatibilityMap as $id => $tags){
-			if(($key = array_search($tag, $tags)) !== false){
+			if(($key = array_search($tag, $tags, true)) !== false){
 				unset($this->incompatibilityMap[$id][$key]);
 			}
 		}

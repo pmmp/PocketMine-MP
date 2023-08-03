@@ -1216,13 +1216,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return 0;
 	}
 
-	public function onEnchant(int $enchantLevel) : void{
-		if($this->hasFiniteResources()){
-			$this->xpManager->subtractXpLevels($enchantLevel);
-		}
-		$this->xpSeed = $this->generateXpSeed();
-	}
-
 	protected function checkGroundState(float $wantedX, float $wantedY, float $wantedZ, float $dx, float $dy, float $dz) : void{
 		if($this->isSpectator()){
 			$this->onGround = false;
