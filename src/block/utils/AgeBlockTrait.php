@@ -27,6 +27,10 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 use function decbin;
 use function strlen;
 
+/**
+ * This trait is used for blocks that have an age property.
+ * Need to add to the block the constant MAX_AGE.
+ */
 trait AgeBlockTrait{
 	protected int $age = 0;
 
