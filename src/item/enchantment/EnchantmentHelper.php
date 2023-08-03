@@ -57,14 +57,11 @@ final class EnchantmentHelper{
 		$middleCost = (int) ($baseCost * 2 / 3 + 1);
 		$bottomCost = max($baseCost, $bookshelfCount * 2);
 
-		/** @var EnchantmentOption[] $options */
-		$options = [
+		return [
 			self::createEnchantOption($random, $input, $topCost, 0),
 			self::createEnchantOption($random, $input, $middleCost, 1),
 			self::createEnchantOption($random, $input, $bottomCost, 2),
 		];
-
-		return $options;
 	}
 
 	private static function countBookshelves(Position $tablePos) : int{
@@ -119,9 +116,8 @@ final class EnchantmentHelper{
 		$resultEnchantments = [];
 		$availableEnchantments = self::getAvailableEnchantments($cost, $inputItem);
 
-		if(count($availableEnchantments) > 0){
-			/** @var EnchantmentInstance $lastEnchantment */
-			$lastEnchantment = self::getRandomWeightedEnchantment($random, $availableEnchantments);
+		$lastEnchantment = self::getRandomWeightedEnchantment($random, $availableEnchantments);
+		if ($lastEnchantment !== null) {
 			$resultEnchantments[] = $lastEnchantment;
 
 			// With probability (cost + 1) / 50, continue adding enchantments
@@ -136,14 +132,12 @@ final class EnchantmentHelper{
 					}
 				);
 
-				if(count($availableEnchantments) === 0){
+				$lastEnchantment = self::getRandomWeightedEnchantment($random, $availableEnchantments);
+				if($lastEnchantment === null){
 					break;
 				}
 
-				/** @var EnchantmentInstance $lastEnchantment */
-				$lastEnchantment = self::getRandomWeightedEnchantment($random, $availableEnchantments);
 				$resultEnchantments[] = $lastEnchantment;
-
 				$cost >>= 1;
 			}
 		}
