@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\block\utils\AgeBlockTrait;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
@@ -34,13 +34,8 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\Position;
 
 class Sugarcane extends Flowable{
+	use AgeBlockTrait;
 	public const MAX_AGE = 15;
-
-	protected int $age = 0;
-
-	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(4, 0, self::MAX_AGE, $this->age);
-	}
 
 	private function seekToBottom() : Position{
 		$world = $this->position->getWorld();
@@ -74,17 +69,6 @@ class Sugarcane extends Flowable{
 		$this->age = 0;
 		$world->setBlock($pos, $this);
 		return $grew;
-	}
-
-	public function getAge() : int{ return $this->age; }
-
-	/** @return $this */
-	public function setAge(int $age) : self{
-		if($age < 0 || $age > self::MAX_AGE){
-			throw new \InvalidArgumentException("Age must be in range 0 ... " . self::MAX_AGE);
-		}
-		$this->age = $age;
-		return $this;
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
