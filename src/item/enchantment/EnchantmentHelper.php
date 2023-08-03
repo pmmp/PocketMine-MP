@@ -36,12 +36,10 @@ use function count;
 use function max;
 use function min;
 use function range;
+use function round;
 
 final class EnchantmentHelper{
-	public const MAX_BOOKSHELF_COUNT = 15;
-	public const FIRST_OPTION = 0;
-	public const SECOND_OPTION = 1;
-	public const THIRD_OPTION = 2;
+	private const MAX_BOOKSHELF_COUNT = 15;
 
 	/**
 	 * @return EnchantmentOption[]
@@ -61,9 +59,9 @@ final class EnchantmentHelper{
 
 		/** @var EnchantmentOption[] $options */
 		$options = [
-			self::createEnchantOption($random, $input, $topCost, self::FIRST_OPTION),
-			self::createEnchantOption($random, $input, $middleCost, self::SECOND_OPTION),
-			self::createEnchantOption($random, $input, $bottomCost, self::THIRD_OPTION),
+			self::createEnchantOption($random, $input, $topCost, 0),
+			self::createEnchantOption($random, $input, $middleCost, 1),
+			self::createEnchantOption($random, $input, $bottomCost, 2),
 		];
 
 		return $options;
@@ -116,7 +114,7 @@ final class EnchantmentHelper{
 		$cost = $cost + $random->nextRange(0, $enchantability >> 2) + $random->nextRange(0, $enchantability >> 2) + 1;
 		// Random bonus for enchantment cost between 0.85 and 1.15
 		$bonus = 1 + ($random->nextFloat() + $random->nextFloat() - 1) * 0.15;
-		$cost = (int) ($cost * $bonus);
+		$cost = (int) round($cost * $bonus);
 
 		$resultEnchantments = [];
 		$availableEnchantments = self::getAvailableEnchantments($cost, $inputItem);
@@ -132,8 +130,10 @@ final class EnchantmentHelper{
 				// with previously-chosen enchantments
 				$availableEnchantments = array_filter(
 					$availableEnchantments,
-					fn(EnchantmentInstance $e) => $e->getType() !== $lastEnchantment->getType() &&
-						$e->getType()->isCompatibleWith($lastEnchantment->getType())
+					function(EnchantmentInstance $e) use ($lastEnchantment){
+						return $e->getType() !== $lastEnchantment->getType() &&
+							$e->getType()->isCompatibleWith($lastEnchantment->getType());
+					}
 				);
 
 				if(count($availableEnchantments) === 0){
@@ -152,10 +152,10 @@ final class EnchantmentHelper{
 	}
 
 	private static function getEnchantability(Item $item) : int{
-		if ($item instanceof TieredTool) {
+		if($item instanceof TieredTool){
 			return $item->getTier()->getEnchantability();
 		}
-		if ($item instanceof Armor) {
+		if($item instanceof Armor){
 			return $item->getMaterial()->getEnchantability();
 		}
 		return 1;
@@ -187,7 +187,7 @@ final class EnchantmentHelper{
 	}
 
 	/**
-	 * @param array<EnchantmentInstance> $enchantments
+	 * @param EnchantmentInstance[] $enchantments
 	 */
 	private static function getRandomWeightedEnchantment(Random $random, array $enchantments) : ?EnchantmentInstance{
 		if(count($enchantments) === 0){
