@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory;
 
+use pocketmine\event\inventory\PlayerEnchantmentOptionsRequestEvent;
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\inventory\TemporaryInventory;
 use pocketmine\item\enchantment\EnchantmentHelper as Helper;
@@ -31,6 +32,8 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\item\VanillaItems;
 use pocketmine\world\Position;
+use function array_keys;
+use function array_search;
 use function count;
 
 class EnchantInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
@@ -50,8 +53,16 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 	protected function onSlotChange(int $index, Item $before) : void{
 		if($index === self::SLOT_INPUT){
 			foreach($this->viewers as $viewer){
-				$this->options = Helper::getEnchantOptions($this->holder, $this->getInput(), $viewer->getXpSeed());
-				if (count($this->options) > 0) {
+				$this->options = [];
+				$item = $this->getInput();
+				$options = Helper::getEnchantOptions($this->holder, $item, $viewer->getXpSeed());
+
+				$event = new PlayerEnchantmentOptionsRequestEvent($viewer, $item, $this->holder, $options);
+				$event->call();
+				if(!$event->isCancelled() && count($event->getEnchantmentOptions()) > 0){
+					foreach($event->getEnchantmentOptions() as $option){
+						$this->options[$option->getNetworkId()] = $option;
+					}
 					$viewer->getNetworkSession()->sendEnchantOptions($this->options);
 				}
 			}
@@ -81,5 +92,10 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 		}
 
 		return $outputItem;
+	}
+
+	public function getOptionEnchantmentLevel(int $optionId) : ?int{
+		$level = array_search($optionId, array_keys($this->options));
+		return $level === false ? null : $level + 1;
 	}
 }

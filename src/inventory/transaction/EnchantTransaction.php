@@ -34,8 +34,8 @@ class EnchantTransaction extends InventoryTransaction{
 
 	private int $optionId;
 	private ?Item $inputItem = null;
-	private ?Item $outputItem = null;
 	private int $lapisCost = 0;
+	private int $enchantmentLevel = 0;
 
 	public function __construct(Player $source, int $optionId){
 		$this->optionId = $optionId;
@@ -48,26 +48,28 @@ class EnchantTransaction extends InventoryTransaction{
 		}
 
 		$enchantWindow = $this->source->getCurrentWindow();
-		if (!$enchantWindow instanceof EnchantInventory) {
+		if(!$enchantWindow instanceof EnchantInventory){
 			throw new TransactionValidationException("Current window was expected to be of type EnchantInventory");
 		}
+
+		$enchantmentLevel = $enchantWindow->getOptionEnchantmentLevel($this->optionId);
+		if($enchantmentLevel === null){
+			throw new TransactionValidationException("Incorrect option id $this->optionId");
+		}
+		$this->enchantmentLevel = $enchantmentLevel;
 
 		if($this->inputItem === null || !$this->inputItem->equalsExact($enchantWindow->getInput())){
 			throw new TransactionValidationException("Incorrect input item");
 		}
-		if($this->outputItem === null || $this->outputItem->isNull()) {
-			throw new TransactionValidationException("Incorrect output item");
-		}
 
 		if($this->source->hasFiniteResources()){
-			$enchantLevel = $this->getEnchantLevel();
-			if($this->lapisCost !== $enchantLevel){
-				throw new TransactionValidationException("Expected the amount of lapis lazuli spent to be {$this->getEnchantLevel()}, but received $this->lapisCost");
+			if($this->lapisCost !== $enchantmentLevel){
+				throw new TransactionValidationException("Expected the amount of lapis lazuli spent to be $enchantmentLevel, but received $this->lapisCost");
 			}
 
 			$xpLevel = $this->source->getXpManager()->getXpLevel();
-			if($xpLevel < $enchantLevel){
-				throw new TransactionValidationException("Expected player to have xp level at least of $enchantLevel, but received $xpLevel");
+			if($xpLevel < $enchantmentLevel){
+				throw new TransactionValidationException("Expected player to have xp level at least of $enchantmentLevel, but received $xpLevel");
 			}
 		}
 	}
@@ -82,7 +84,6 @@ class EnchantTransaction extends InventoryTransaction{
 			$this->lapisCost = $sourceItem->getCount() - $targetItem->getCount();
 		}else{
 			$this->inputItem = $sourceItem;
-			$this->outputItem = $targetItem;
 		}
 	}
 
@@ -90,12 +91,8 @@ class EnchantTransaction extends InventoryTransaction{
 		parent::execute();
 
 		if($this->source->hasFiniteResources()){
-			$this->source->getXpManager()->subtractXpLevels($this->getEnchantLevel());
+			$this->source->getXpManager()->subtractXpLevels($this->enchantmentLevel);
 		}
 		$this->source->setXpSeed($this->source->generateXpSeed());
-	}
-
-	public function getEnchantLevel() : int{
-		return $this->optionId + 1;
 	}
 }

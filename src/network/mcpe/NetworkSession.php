@@ -1180,7 +1180,7 @@ class NetworkSession{
 				fn(EnchantmentInstance $e) => new Enchant(EnchantmentIdMap::getInstance()->toId($e->getType()), $e->getLevel()),
 				$option->getEnchantments()
 			);
-			$protocolOptions[] = new EnchantOption($option->getCost(), $option->getNetworkId(), $protocolEnchantments, [], [], $option->getName(), $option->getNetworkId());
+			$protocolOptions[] = new EnchantOption($option->getRequiredLevel(), $option->getNetworkId(), $protocolEnchantments, [], [], $option->getName(), $option->getNetworkId());
 		}
 
 		$this->sendDataPacket(PlayerEnchantOptionsPacket::create($protocolOptions));

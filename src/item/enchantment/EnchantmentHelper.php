@@ -51,15 +51,15 @@ final class EnchantmentHelper{
 		$random = new Random($seed);
 
 		$bookshelfCount = self::countBookshelves($tablePos);
-		$baseCost = $random->nextRange(1, 8) + ($bookshelfCount >> 1) + $random->nextRange(0, $bookshelfCount);
-		$topCost = (int) max($baseCost / 3, 1);
-		$middleCost = (int) ($baseCost * 2 / 3 + 1);
-		$bottomCost = max($baseCost, $bookshelfCount * 2);
+		$baseRequiredLevel = $random->nextRange(1, 8) + ($bookshelfCount >> 1) + $random->nextRange(0, $bookshelfCount);
+		$topRequiredLevel = (int) max($baseRequiredLevel / 3, 1);
+		$middleRequiredLevel = (int) ($baseRequiredLevel * 2 / 3 + 1);
+		$bottomRequiredLevel = max($baseRequiredLevel, $bookshelfCount * 2);
 
 		return [
-			self::createEnchantOption($random, $input, $topCost, 0),
-			self::createEnchantOption($random, $input, $middleCost, 1),
-			self::createEnchantOption($random, $input, $bottomCost, 2),
+			self::createEnchantOption($random, $input, $topRequiredLevel, 0),
+			self::createEnchantOption($random, $input, $middleRequiredLevel, 1),
+			self::createEnchantOption($random, $input, $bottomRequiredLevel, 2),
 		];
 	}
 
@@ -103,8 +103,8 @@ final class EnchantmentHelper{
 		return $bookshelfCount;
 	}
 
-	private static function createEnchantOption(Random $random, Item $inputItem, int $optionCost, int $slot) : EnchantmentOption{
-		$enchantingPower = $optionCost;
+	private static function createEnchantOption(Random $random, Item $inputItem, int $requiredLevel, int $slot) : EnchantmentOption{
+		$enchantingPower = $requiredLevel;
 
 		$enchantability = self::getEnchantability($inputItem);
 		$enchantingPower = $enchantingPower + $random->nextRange(0, $enchantability >> 2) + $random->nextRange(0, $enchantability >> 2) + 1;
@@ -141,7 +141,7 @@ final class EnchantmentHelper{
 			}
 		}
 
-		return new EnchantmentOption($optionCost, $slot, $resultEnchantments, self::getRandomOptionName($random));
+		return new EnchantmentOption($slot, $requiredLevel, self::getRandomOptionName($random), $resultEnchantments);
 	}
 
 	private static function getEnchantability(Item $item) : int{

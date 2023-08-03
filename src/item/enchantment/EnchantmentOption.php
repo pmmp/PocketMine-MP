@@ -29,18 +29,11 @@ class EnchantmentOption{
 	 * @param EnchantmentInstance[] $enchantments
 	 */
 	public function __construct(
-		private int $cost,
 		private int $networkId,
-		private array $enchantments,
-		private string $name
+		private int $requiredLevel,
+		private string $name,
+		private array $enchantments
 	){
-	}
-
-	/**
-	 * Returns the cost of the option. This is the amount of XP levels required to select this enchantment option.
-	 */
-	public function getCost() : int{
-		return $this->cost;
 	}
 
 	/**
@@ -52,12 +45,11 @@ class EnchantmentOption{
 	}
 
 	/**
-	 * Returns the enchantments that will be applied to the item when this option is clicked.
-	 *
-	 * @return EnchantmentInstance[]
+	 * Returns the minimum amount of XP levels required to select this enchantment option.
+	 * It's NOT the number of XP levels that will be subtracted after enchanting.
 	 */
-	public function getEnchantments() : array{
-		return $this->enchantments;
+	public function getRequiredLevel() : int{
+		return $this->requiredLevel;
 	}
 
 	/**
@@ -66,5 +58,14 @@ class EnchantmentOption{
 	 */
 	public function getName() : string{
 		return $this->name;
+	}
+
+	/**
+	 * Returns the enchantments that will be applied to the item when this option is clicked.
+	 *
+	 * @return EnchantmentInstance[]
+	 */
+	public function getEnchantments() : array{
+		return $this->enchantments;
 	}
 }
