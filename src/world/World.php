@@ -1906,14 +1906,7 @@ class World implements ChunkManager{
 		unset($this->blockCollisionBoxCache[$chunkHash][$relativeBlockHash]);
 		//blocks like fences have collision boxes that reach into neighbouring blocks, so we need to invalidate the
 		//caches for those blocks as well
-		foreach([
-			[0, 0, 1],
-			[0, 0, -1],
-			[0, 1, 0],
-			[0, -1, 0],
-			[1, 0, 0],
-			[-1, 0, 0]
-		] as [$offsetX, $offsetY, $offsetZ]){
+		foreach(Facing::OFFSET as [$offsetX, $offsetY, $offsetZ]){
 			$sideChunkPosHash = World::chunkHash(($x + $offsetX) >> Chunk::COORD_BIT_SIZE, ($z + $offsetZ) >> Chunk::COORD_BIT_SIZE);
 			$sideChunkBlockHash = World::chunkBlockHash($x + $offsetX, $y + $offsetY, $z + $offsetZ);
 			unset($this->blockCollisionBoxCache[$sideChunkPosHash][$sideChunkBlockHash]);
