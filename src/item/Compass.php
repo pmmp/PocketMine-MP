@@ -23,11 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\item\enchantment\ItemFlags;
-
 class Compass extends Item{
 
-	public function __construct(ItemIdentifier $identifier, string $name = "Unknown"){
-		parent::__construct($identifier, $name, ItemFlags::COMPASS);
-	}
 }

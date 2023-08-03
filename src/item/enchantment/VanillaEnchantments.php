@@ -60,15 +60,20 @@ final class VanillaEnchantments{
 	use RegistryTrait;
 
 	protected static function setup() : void{
-		self::register("PROTECTION", new ProtectionEnchantment(KnownTranslationFactory::enchantment_protect_all(), Rarity::COMMON,
+		self::register("PROTECTION", new ProtectionEnchantment(
+			KnownTranslationFactory::enchantment_protect_all(),
+			Rarity::COMMON,
 			Flags::ARMOR,
 			Flags::NONE,
 			4,
-			0.75, null,
+			0.75,
+			null,
 			fn(int $level) : int => 11 * ($level - 1) + 1,
 			fn(int $level, int $minCost) : int => $minCost + 20
 		));
-		self::register("FIRE_PROTECTION", new ProtectionEnchantment(KnownTranslationFactory::enchantment_protect_fire(), Rarity::UNCOMMON,
+		self::register("FIRE_PROTECTION", new ProtectionEnchantment(
+			KnownTranslationFactory::enchantment_protect_fire(),
+			Rarity::UNCOMMON,
 			Flags::ARMOR,
 			Flags::NONE,
 			4,
@@ -82,7 +87,9 @@ final class VanillaEnchantments{
 			fn(int $level) : int => 8 * ($level - 1) + 10,
 			fn(int $level, int $minCost) : int => $minCost + 12
 		));
-		self::register("FEATHER_FALLING", new ProtectionEnchantment(KnownTranslationFactory::enchantment_protect_fall(), Rarity::UNCOMMON,
+		self::register("FEATHER_FALLING", new ProtectionEnchantment(
+			KnownTranslationFactory::enchantment_protect_fall(),
+			Rarity::UNCOMMON,
 			Flags::FEET,
 			Flags::NONE,
 			4,
@@ -93,7 +100,9 @@ final class VanillaEnchantments{
 			fn(int $level) : int => 6 * ($level - 1) + 5,
 			fn(int $level, int $minCost) : int => $minCost + 10
 		));
-		self::register("BLAST_PROTECTION", new ProtectionEnchantment(KnownTranslationFactory::enchantment_protect_explosion(), Rarity::RARE,
+		self::register("BLAST_PROTECTION", new ProtectionEnchantment(
+			KnownTranslationFactory::enchantment_protect_explosion(),
+			Rarity::RARE,
 			Flags::ARMOR,
 			Flags::NONE,
 			4,
@@ -105,7 +114,9 @@ final class VanillaEnchantments{
 			fn(int $level) : int => 8 * ($level - 1) + 5,
 			fn(int $level, int $minCost) : int => $minCost + 12
 		));
-		self::register("PROJECTILE_PROTECTION", new ProtectionEnchantment(KnownTranslationFactory::enchantment_protect_projectile(), Rarity::UNCOMMON,
+		self::register("PROJECTILE_PROTECTION", new ProtectionEnchantment(
+			KnownTranslationFactory::enchantment_protect_projectile(),
+			Rarity::UNCOMMON,
 			Flags::ARMOR,
 			Flags::NONE,
 			4,
@@ -116,14 +127,18 @@ final class VanillaEnchantments{
 			fn(int $level) : int => 6 * ($level - 1) + 3,
 			fn(int $level, int $minCost) : int => $minCost + 15
 		));
-		self::register("THORNS", new Enchantment(KnownTranslationFactory::enchantment_thorns(), Rarity::MYTHIC,
+		self::register("THORNS", new Enchantment(
+			KnownTranslationFactory::enchantment_thorns(),
+			Rarity::MYTHIC,
 			Flags::TORSO,
 			Flags::HEAD | Flags::LEGS | Flags::FEET,
 			3,
 			fn(int $level) : int => 20 * ($level - 1) + 10,
 			fn(int $level, int $minCost) : int => $minCost + 50
 		));
-		self::register("RESPIRATION", new Enchantment(KnownTranslationFactory::enchantment_oxygen(), Rarity::RARE,
+		self::register("RESPIRATION", new Enchantment(
+			KnownTranslationFactory::enchantment_oxygen(),
+			Rarity::RARE,
 			Flags::HEAD,
 			Flags::NONE,
 			3,
@@ -131,21 +146,27 @@ final class VanillaEnchantments{
 			fn(int $level, int $minCost) : int => $minCost + 30
 		));
 
-		self::register("SHARPNESS", new SharpnessEnchantment(KnownTranslationFactory::enchantment_damage_all(), Rarity::COMMON,
+		self::register("SHARPNESS", new SharpnessEnchantment(
+			KnownTranslationFactory::enchantment_damage_all(),
+			Rarity::COMMON,
 			Flags::SWORD | Flags::AXE,
 			Flags::NONE,
 			5,
 			fn(int $level) : int => 11 * ($level - 1) + 1,
 			fn(int $level, int $minCost) : int => $minCost + 20
 		));
-		self::register("KNOCKBACK", new KnockbackEnchantment(KnownTranslationFactory::enchantment_knockback(), Rarity::UNCOMMON,
+		self::register("KNOCKBACK", new KnockbackEnchantment(
+			KnownTranslationFactory::enchantment_knockback(),
+			Rarity::UNCOMMON,
 			Flags::SWORD,
 			Flags::NONE,
 			2,
 			fn(int $level) : int => 20 * ($level - 1) + 5,
 			fn(int $level, int $minCost) : int => $minCost + 50
 		));
-		self::register("FIRE_ASPECT", new FireAspectEnchantment(KnownTranslationFactory::enchantment_fire(), Rarity::RARE,
+		self::register("FIRE_ASPECT", new FireAspectEnchantment(
+			KnownTranslationFactory::enchantment_fire(),
+			Rarity::RARE,
 			Flags::SWORD,
 			Flags::NONE,
 			2,
@@ -154,28 +175,36 @@ final class VanillaEnchantments{
 		));
 		//TODO: smite, bane of arthropods, looting (these don't make sense now because their applicable mobs don't exist yet)
 
-		self::register("EFFICIENCY", new Enchantment(KnownTranslationFactory::enchantment_digging(), Rarity::COMMON,
+		self::register("EFFICIENCY", new Enchantment(
+			KnownTranslationFactory::enchantment_digging(),
+			Rarity::COMMON,
 			Flags::DIG,
 			Flags::SHEARS,
 			5,
 			fn(int $level) : int => 10 * ($level - 1) + 1,
 			fn(int $level, int $minCost) : int => $minCost + 50
 		));
-		self::register("FORTUNE", new Enchantment(KnownTranslationFactory::enchantment_lootBonusDigger(), Rarity::RARE,
+		self::register("FORTUNE", new Enchantment(
+			KnownTranslationFactory::enchantment_lootBonusDigger(),
+			Rarity::RARE,
 			Flags::DIG,
 			Flags::NONE,
 			3,
 			fn(int $level) : int => 9 * ($level - 1) + 15,
 			fn(int $level, int $minCost) : int => $minCost + 50
 		));
-		self::register("SILK_TOUCH", new Enchantment(KnownTranslationFactory::enchantment_untouching(), Rarity::MYTHIC,
+		self::register("SILK_TOUCH", new Enchantment(
+			KnownTranslationFactory::enchantment_untouching(),
+			Rarity::MYTHIC,
 			Flags::DIG,
 			Flags::SHEARS,
 			1,
 			fn(int $level) : int => 15,
 			fn(int $level, int $minCost) : int => $minCost + 50
 		));
-		self::register("UNBREAKING", new Enchantment(KnownTranslationFactory::enchantment_durability(), Rarity::UNCOMMON,
+		self::register("UNBREAKING", new Enchantment(
+			KnownTranslationFactory::enchantment_durability(),
+			Rarity::UNCOMMON,
 			Flags::ARMOR | Flags::DIG | Flags::SWORD | Flags::FISHING_ROD | Flags::BOW | Flags::TRIDENT,
 			Flags::SHEARS | Flags::FLINT_AND_STEEL | Flags::CARROT_STICK | Flags::ELYTRA,
 			3,
@@ -183,28 +212,36 @@ final class VanillaEnchantments{
 			fn(int $level, int $minCost) : int => $minCost + 50
 		));
 
-		self::register("POWER", new Enchantment(KnownTranslationFactory::enchantment_arrowDamage(), Rarity::COMMON,
+		self::register("POWER", new Enchantment(
+			KnownTranslationFactory::enchantment_arrowDamage(),
+			Rarity::COMMON,
 			Flags::BOW,
 			Flags::NONE,
 			5,
 			fn(int $level) : int => 10 * ($level - 1) + 1,
 			fn(int $level, int $minCost) : int => $minCost + 15
 		));
-		self::register("PUNCH", new Enchantment(KnownTranslationFactory::enchantment_arrowKnockback(), Rarity::RARE,
+		self::register("PUNCH", new Enchantment(
+			KnownTranslationFactory::enchantment_arrowKnockback(),
+			Rarity::RARE,
 			Flags::BOW,
 			Flags::NONE,
 			2,
 			fn(int $level) : int => 20 * ($level - 1) + 12,
 			fn(int $level, int $minCost) : int => $minCost + 25
 		));
-		self::register("FLAME", new Enchantment(KnownTranslationFactory::enchantment_arrowFire(), Rarity::RARE,
+		self::register("FLAME", new Enchantment(
+			KnownTranslationFactory::enchantment_arrowFire(),
+			Rarity::RARE,
 			Flags::BOW,
 			Flags::NONE,
 			1,
 			fn(int $level) : int => 20,
 			fn(int $level, int $minCost) : int => $minCost + 30
 		));
-		self::register("INFINITY", new Enchantment(KnownTranslationFactory::enchantment_arrowInfinite(), Rarity::MYTHIC,
+		self::register("INFINITY", new Enchantment(
+			KnownTranslationFactory::enchantment_arrowInfinite(),
+			Rarity::MYTHIC,
 			Flags::BOW,
 			Flags::NONE,
 			1,
@@ -212,7 +249,9 @@ final class VanillaEnchantments{
 			fn(int $level, int $minCost) : int => $minCost + 30
 		));
 
-		self::register("MENDING", new Enchantment(KnownTranslationFactory::enchantment_mending(), Rarity::RARE,
+		self::register("MENDING", new Enchantment(
+			KnownTranslationFactory::enchantment_mending(),
+			Rarity::RARE,
 			Flags::NONE,
 			Flags::BREAKABLE,
 			1,
@@ -221,7 +260,9 @@ final class VanillaEnchantments{
 			true
 		));
 
-		self::register("VANISHING", new Enchantment(KnownTranslationFactory::enchantment_curse_vanishing(), Rarity::MYTHIC,
+		self::register("VANISHING", new Enchantment(
+			KnownTranslationFactory::enchantment_curse_vanishing(),
+			Rarity::MYTHIC,
 			Flags::NONE,
 			Flags::ALL,
 			1,
@@ -230,7 +271,9 @@ final class VanillaEnchantments{
 			true
 		));
 
-		self::register("SWIFT_SNEAK", new Enchantment(KnownTranslationFactory::enchantment_swift_sneak(), Rarity::MYTHIC,
+		self::register("SWIFT_SNEAK", new Enchantment(
+			KnownTranslationFactory::enchantment_swift_sneak(),
+			Rarity::MYTHIC,
 			Flags::NONE,
 			Flags::LEGS,
 			3,

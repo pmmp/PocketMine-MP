@@ -25,7 +25,6 @@ namespace pocketmine\item\enchantment;
 
 use pocketmine\block\BlockTypeIds;
 use pocketmine\item\Armor;
-use pocketmine\item\Book;
 use pocketmine\item\Item;
 use pocketmine\item\TieredTool;
 use pocketmine\utils\Random;
@@ -117,7 +116,7 @@ final class EnchantmentHelper{
 		$availableEnchantments = self::getAvailableEnchantments($cost, $inputItem);
 
 		$lastEnchantment = self::getRandomWeightedEnchantment($random, $availableEnchantments);
-		if ($lastEnchantment !== null) {
+		if($lastEnchantment !== null){
 			$resultEnchantments[] = $lastEnchantment;
 
 			// With probability (cost + 1) / 50, continue adding enchantments
@@ -162,10 +161,7 @@ final class EnchantmentHelper{
 		$list = [];
 
 		foreach(VanillaEnchantments::getAll() as $enchantment){
-			if($enchantment->isTreasure()){
-				continue;
-			}
-			if(!$item instanceof Book && !$enchantment->hasPrimaryItemType($item->getEnchantmentFlag())){
+			if($enchantment->isTreasure() || !$enchantment->hasPrimaryItemType($item->getEnchantmentFlag())){
 				continue;
 			}
 

@@ -24,13 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\item\enchantment\ItemFlags;
 
 class CarvedPumpkin extends Opaque{
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		parent::__construct($idInfo, $name, $typeInfo, ItemFlags::HEAD_MASK);
-	}
-
 	use FacesOppositePlacingPlayerTrait;
 }

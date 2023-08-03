@@ -26,13 +26,8 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
-use pocketmine\item\enchantment\ItemFlags;
 
 class Pickaxe extends TieredTool{
-
-	public function __construct(ItemIdentifier $identifier, string $name, ToolTier $tier){
-		parent::__construct($identifier, $name, $tier, ItemFlags::PICKAXE);
-	}
 
 	public function getBlockToolType() : int{
 		return BlockToolType::PICKAXE;

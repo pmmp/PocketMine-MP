@@ -30,27 +30,40 @@ class EnchantmentOption{
 	 */
 	public function __construct(
 		private int $cost,
-		private int $slot,
+		private int $networkId,
 		private array $enchantments,
 		private string $name
 	){
 	}
 
+	/**
+	 * Returns the cost of the option. This is the amount of XP levels required to select this enchantment option.
+	 */
 	public function getCost() : int{
 		return $this->cost;
 	}
 
-	public function getSlot() : int{
-		return $this->slot;
+	/**
+	 * Returns the unique network ID for this enchantment option. When enchanting, the client
+	 * will submit this network ID in a packet, so that the server knows which enchantment option was selected.
+	 */
+	public function getNetworkId() : int{
+		return $this->networkId;
 	}
 
 	/**
+	 * Returns the enchantments that will be applied to the item when this option is clicked.
+	 *
 	 * @return EnchantmentInstance[]
 	 */
 	public function getEnchantments() : array{
 		return $this->enchantments;
 	}
 
+	/**
+	 * Returns the name that will be translated to the 'Standard Galactic Alphabet' client-side.
+	 * Such a name generally has no meaning, such as: 'bless creature range free'.
+	 */
 	public function getName() : string{
 		return $this->name;
 	}

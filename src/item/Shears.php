@@ -25,13 +25,8 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockToolType;
-use pocketmine\item\enchantment\ItemFlags;
 
 class Shears extends Tool{
-
-	public function __construct(ItemIdentifier $identifier, string $name = "Unknown"){
-		parent::__construct($identifier, $name, ItemFlags::SHEARS);
-	}
 
 	public function getMaxDurability() : int{
 		return 239;

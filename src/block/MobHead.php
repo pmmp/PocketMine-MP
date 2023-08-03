@@ -45,9 +45,9 @@ class MobHead extends Flowable{
 	protected int $facing = Facing::NORTH;
 	protected int $rotation = self::MIN_ROTATION; //TODO: split this into floor skull and wall skull handling
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, int $enchantmentFlag = ItemFlags::NONE){
 		$this->mobHeadType = MobHeadType::SKELETON(); //TODO: this should be a parameter
-		parent::__construct($idInfo, $name, $typeInfo, ItemFlags::HEAD_MASK);
+		parent::__construct($idInfo, $name, $typeInfo, $enchantmentFlag);
 	}
 
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{

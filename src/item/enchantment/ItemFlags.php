@@ -41,7 +41,8 @@ final class ItemFlags{
 	public const FEET = 0x8;
 	public const SWORD = 0x10;
 	public const BOW = 0x20;
-	public const TOOL = self::SHEARS | self::FLINT_AND_STEEL;
+	/** @deprecated */
+	public const TOOL = self::HOE | self::SHEARS | self::FLINT_AND_STEEL;
 	public const HOE = 0x40;
 	public const SHEARS = 0x80;
 	public const FLINT_AND_STEEL = 0x100;
