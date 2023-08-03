@@ -160,8 +160,8 @@ final class EnchantmentHelper{
 	private static function getAvailableEnchantments(int $cost, Item $item) : array{
 		$list = [];
 
-		foreach(VanillaEnchantments::getAll() as $enchantment){
-			if($enchantment->isTreasure() || !$enchantment->hasPrimaryItemType($item->getEnchantmentFlag())){
+		foreach(EnchantingTableOptionRegistry::getInstance()->getAll() as $enchantment){
+			if(!$enchantment->hasPrimaryItemType($item->getEnchantmentFlag())){
 				continue;
 			}
 

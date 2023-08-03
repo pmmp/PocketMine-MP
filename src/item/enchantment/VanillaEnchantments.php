@@ -256,8 +256,7 @@ final class VanillaEnchantments{
 			Flags::BREAKABLE,
 			1,
 			fn(int $level) : int => 25,
-			fn(int $level, int $minCost) : int => $minCost + 50,
-			true
+			fn(int $level, int $minCost) : int => $minCost + 50
 		));
 
 		self::register("VANISHING", new Enchantment(
@@ -267,8 +266,7 @@ final class VanillaEnchantments{
 			Flags::ALL,
 			1,
 			fn(int $level) : int => 25,
-			fn(int $level, int $minCost) : int => $minCost + 25,
-			true
+			fn(int $level, int $minCost) : int => $minCost + 25
 		));
 
 		self::register("SWIFT_SNEAK", new Enchantment(
@@ -278,8 +276,7 @@ final class VanillaEnchantments{
 			Flags::LEGS,
 			3,
 			fn(int $level) : int => 10 * $level,
-			fn(int $level, int $minCost) : int => $minCost + 5,
-			true
+			fn(int $level, int $minCost) : int => $minCost + 5
 		));
 	}
 
