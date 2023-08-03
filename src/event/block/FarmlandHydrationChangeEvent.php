@@ -27,30 +27,30 @@ use pocketmine\block\Block;
 use pocketmine\block\Farmland;
 
 /**
- * Called when farmland wetness is updated.
+ * Called when farmland hydration is updated.
  */
 class FarmlandHydrationChangeEvent extends BlockUpdateEvent{
 
 	public function __construct(
 		Block $block,
-		private int $oldWetness,
-		private int $newWetness,
+		private int $oldHydration,
+		private int $newHydration,
 	){
 		parent::__construct($block);
 	}
 
 	public function getOldHydration() : int{
-		return $this->oldWetness;
+		return $this->oldHydration;
 	}
 
 	public function getNewHydration() : int{
-		return $this->newWetness;
+		return $this->newHydration;
 	}
 
-	public function setNewHydration(int $wetness) : void{
-		if($wetness < 0 || $wetness > Farmland::MAX_WETNESS){
-			throw new \InvalidArgumentException("Wetness must be in range 0 ... " . Farmland::MAX_WETNESS);
+	public function setNewHydration(int $hydration) : void{
+		if($hydration < 0 || $hydration > Farmland::MAX_WETNESS){
+			throw new \InvalidArgumentException("Hydration must be in range 0 ... " . Farmland::MAX_WETNESS);
 		}
-		$this->newWetness = $wetness;
+		$this->newHydration = $hydration;
 	}
 }
