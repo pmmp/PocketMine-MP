@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
-use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
