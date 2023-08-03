@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\BlockGrowEvent;
@@ -98,15 +99,9 @@ class PinkPetals extends Flowable{
 
 	private function grow(?Player $player) : bool{
 		if($this->count < self::MAX_COUNT){
-			$ev = new BlockGrowEvent($this, (clone $this)->setCount($this->count + 1), $player);
-			$ev->call();
-			if($ev->isCancelled()){
-				return false;
-			}
-			$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
-		}else{
-			$this->position->getWorld()->dropItem($this->position->add(0, 0.5, 0), $this->asItem());
+			return BlockEventHelper::grow($this, (clone $this)->setCount($this->count + 1), $player);
 		}
+		$this->position->getWorld()->dropItem($this->position->add(0, 0.5, 0), $this->asItem());
 		return true;
 	}
 
