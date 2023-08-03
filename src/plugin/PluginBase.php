@@ -50,6 +50,8 @@ use const DIRECTORY_SEPARATOR;
 abstract class PluginBase implements Plugin, CommandExecutor{
 	private bool $isEnabled = false;
 
+	private string $resourceFolder;
+
 	private ?Config $config = null;
 	private string $configFile;
 
@@ -67,6 +69,8 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		$this->dataFolder = rtrim($dataFolder, "/" . DIRECTORY_SEPARATOR) . "/";
 		//TODO: this is accessed externally via reflection, not unused
 		$this->file = rtrim($file, "/" . DIRECTORY_SEPARATOR) . "/";
+		$this->resourceFolder = Path::join($this->file, "resources") . "/";
+
 		$this->configFile = Path::join($this->dataFolder, "config.yml");
 
 		$prefix = $this->getDescription()->getPrefix();
@@ -209,6 +213,17 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	}
 
 	/**
+	 * Returns the path to the folder where the plugin's embedded resource files are usually located.
+	 * Note: This is NOT the same as the data folder. The files in this folder should be considered read-only.
+	 */
+	public function getResourceFolder() : string{
+		return $this->resourceFolder;
+	}
+
+	/**
+	 * @deprecated Prefer using standard PHP functions with {@link PluginBase::getResourceFolder()}, like
+	 * file_get_contents() or fopen().
+	 *
 	 * Gets an embedded resource on the plugin file.
 	 * WARNING: You must close the resource given using fclose()
 	 *
@@ -219,6 +234,8 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	}
 
 	/**
+	 * @deprecated Prefer using standard PHP functions with {@link PluginBase::getResourceFolder()}, like copy().
+	 *
 	 * Saves an embedded resource to its relative location in the data folder
 	 */
 	public function saveResource(string $filename, bool $replace = false) : bool{
