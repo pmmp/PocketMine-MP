@@ -38,15 +38,15 @@ class Enchantment{
 	use NotCloneable;
 	use NotSerializable;
 
-	/** @var \Closure(int $level) : int $minCost */
-	private \Closure $minCost;
+	/** @var \Closure(int $level) : int $minEnchantingPower */
+	private \Closure $minEnchantingPower;
 
-	/** @var \Closure(int $level, int $minCost) : int $maxCost */
-	private \Closure $maxCost;
+	/** @var \Closure(int $level, int $minPower) : int $maxEnchantingPower */
+	private \Closure $maxEnchantingPower;
 
 	/**
-	 * @phpstan-param null|\Closure(int $level) : int               $minCost
-	 * @phpstan-param null|\Closure(int $level, int $minCost) : int $maxCost
+	 * @phpstan-param null|\Closure(int $level) : int                $minEnchantingPower
+	 * @phpstan-param null|\Closure(int $level, int $minPower) : int $maxEnchantingPower
 	 */
 	public function __construct(
 		private Translatable|string $name,
@@ -54,21 +54,21 @@ class Enchantment{
 		private int $primaryItemFlags,
 		private int $secondaryItemFlags,
 		private int $maxLevel,
-		?\Closure $minCost = null,
-		?\Closure $maxCost = null
+		?\Closure $minEnchantingPower = null,
+		?\Closure $maxEnchantingPower = null
 	){
-		$this->minCost = $minCost ?? fn(int $level) : int => 1;
-		$this->maxCost = $maxCost ?? fn(int $level, int $minCost) : int => 50;
+		$this->minEnchantingPower = $minEnchantingPower ?? fn(int $level) : int => 1;
+		$this->maxEnchantingPower = $maxEnchantingPower ?? fn(int $level, int $minPower) : int => 50;
 
 		Utils::validateCallableSignature(new CallbackType(
 			new ReturnType("int"),
 			new ParameterType("level", "int")
-		), $this->minCost);
+		), $this->minEnchantingPower);
 		Utils::validateCallableSignature(new CallbackType(
 			new ReturnType("int"),
 			new ParameterType("level", "int"),
-			new ParameterType("minCost", "int")
-		), $this->maxCost);
+			new ParameterType("minPower", "int")
+		), $this->maxEnchantingPower);
 	}
 
 	/**
@@ -129,18 +129,26 @@ class Enchantment{
 	}
 
 	/**
-	 * Returns the minimum cost required for this enchantment with a particular level to be available in an
-	 * enchanting table.
+	 * Returns the minimum enchanting power value required for the particular level of the enchantment
+	 * to be available in an enchanting table.
+	 *
+	 * Enchanting power is a random value based on the number of bookshelves around an enchanting table
+	 * and the enchantability of the item being enchanted. It is only used when determining the available
+	 * enchantments for the enchantment options.
 	 */
-	public function getMinCost(int $level) : int{
-		return ($this->minCost)($level);
+	public function getMinEnchantingPower(int $level) : int{
+		return ($this->minEnchantingPower)($level);
 	}
 
 	/**
-	 * Returns the maximum cost allowed for this enchantment with a particular level to be available in an
-	 * enchanting table.
+	 * Returns the maximum enchanting power value allowed for the particular level of the enchantment
+	 * to be available in an enchanting table.
+	 *
+	 * Enchanting power is a random value based on the number of bookshelves around an enchanting table
+	 * and the enchantability of the item being enchanted. It is only used when determining the available
+	 * enchantments for the enchantment options.
 	 */
-	public function getMaxCost(int $level) : int{
-		return ($this->maxCost)($level, $this->getMinCost($level));
+	public function getMaxEnchantingPower(int $level) : int{
+		return ($this->maxEnchantingPower)($level, $this->getMinEnchantingPower($level));
 	}
 }

@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\item\enchantment;
 
 use pocketmine\utils\SingletonTrait;
-use function spl_object_id;
 use function array_values;
+use function spl_object_id;
 
 /**
  * Registry of enchantments that can be obtained using an enchanting table.

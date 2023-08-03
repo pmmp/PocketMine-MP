@@ -104,23 +104,23 @@ final class EnchantmentHelper{
 	}
 
 	private static function createEnchantOption(Random $random, Item $inputItem, int $optionCost, int $slot) : EnchantmentOption{
-		$cost = $optionCost;
+		$enchantingPower = $optionCost;
 
 		$enchantability = self::getEnchantability($inputItem);
-		$cost = $cost + $random->nextRange(0, $enchantability >> 2) + $random->nextRange(0, $enchantability >> 2) + 1;
-		// Random bonus for enchantment cost between 0.85 and 1.15
+		$enchantingPower = $enchantingPower + $random->nextRange(0, $enchantability >> 2) + $random->nextRange(0, $enchantability >> 2) + 1;
+		// Random bonus for enchanting power between 0.85 and 1.15
 		$bonus = 1 + ($random->nextFloat() + $random->nextFloat() - 1) * 0.15;
-		$cost = (int) round($cost * $bonus);
+		$enchantingPower = (int) round($enchantingPower * $bonus);
 
 		$resultEnchantments = [];
-		$availableEnchantments = self::getAvailableEnchantments($cost, $inputItem);
+		$availableEnchantments = self::getAvailableEnchantments($enchantingPower, $inputItem);
 
 		$lastEnchantment = self::getRandomWeightedEnchantment($random, $availableEnchantments);
 		if($lastEnchantment !== null){
 			$resultEnchantments[] = $lastEnchantment;
 
-			// With probability (cost + 1) / 50, continue adding enchantments
-			while($random->nextFloat() <= ($cost + 1) / 50){
+			// With probability (power + 1) / 50, continue adding enchantments
+			while($random->nextFloat() <= ($enchantingPower + 1) / 50){
 				// Remove from the list of available enchantments anything that conflicts
 				// with previously-chosen enchantments
 				$availableEnchantments = array_filter(
@@ -137,7 +137,7 @@ final class EnchantmentHelper{
 				}
 
 				$resultEnchantments[] = $lastEnchantment;
-				$cost >>= 1;
+				$enchantingPower >>= 1;
 			}
 		}
 
@@ -157,7 +157,7 @@ final class EnchantmentHelper{
 	/**
 	 * @return EnchantmentInstance[]
 	 */
-	private static function getAvailableEnchantments(int $cost, Item $item) : array{
+	private static function getAvailableEnchantments(int $enchantingPower, Item $item) : array{
 		$list = [];
 
 		foreach(EnchantingTableOptionRegistry::getInstance()->getAll() as $enchantment){
@@ -166,7 +166,9 @@ final class EnchantmentHelper{
 			}
 
 			for($lvl = $enchantment->getMaxLevel(); $lvl > 0; $lvl--){
-				if($cost >= $enchantment->getMinCost($lvl) && $cost <= $enchantment->getMaxCost($lvl)){
+				if($enchantingPower >= $enchantment->getMinEnchantingPower($lvl) &&
+					$enchantingPower <= $enchantment->getMaxEnchantingPower($lvl)
+				){
 					$list[] = new EnchantmentInstance($enchantment, $lvl);
 					break;
 				}
