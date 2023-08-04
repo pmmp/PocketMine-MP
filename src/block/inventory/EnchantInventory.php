@@ -75,6 +75,10 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 		return $this->getItem(self::SLOT_INPUT);
 	}
 
+	public function getLapis() : Item{
+		return $this->getItem(self::SLOT_LAPIS);
+	}
+
 	public function getOutput(int $optionId) : ?Item{
 		$option = $this->options[$optionId] ?? null;
 		if($option === null){
