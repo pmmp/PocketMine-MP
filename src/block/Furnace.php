@@ -111,7 +111,7 @@ class Furnace extends Opaque implements HopperInteractable{
 
 		$hopperFacing = $hopperBlock->getFacing();
 
-		for($i = 0; $i < $targetInventory->getSize(); $i++){
+		for($i = 0; $i < $sourceInventory->getSize(); $i++){
 			$itemStack = $sourceInventory->getItem($i);
 
 			if($itemStack->isNull()){
