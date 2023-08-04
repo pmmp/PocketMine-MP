@@ -25,11 +25,14 @@ namespace pocketmine\event\block;
 
 use pocketmine\block\Block;
 use pocketmine\block\Farmland;
+use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 
 /**
  * Called when farmland hydration is updated.
  */
-class FarmlandHydrationChangeEvent extends BlockUpdateEvent{
+class FarmlandHydrationChangeEvent extends BlockEvent implements Cancellable{
+	use CancellableTrait;
 
 	public function __construct(
 		Block $block,
