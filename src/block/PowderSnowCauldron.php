@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\tile\Cauldron as TileCauldron;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\item\VanillaItems;
@@ -32,7 +31,6 @@ use pocketmine\player\Player;
 use pocketmine\world\sound\CauldronEmptyPowderSnowSound;
 use pocketmine\world\sound\CauldronFillPowderSnowSound;
 use pocketmine\world\sound\Sound;
-use function assert;
 
 final class PowderSnowCauldron extends FillableCauldron{
 

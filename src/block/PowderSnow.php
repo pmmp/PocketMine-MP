@@ -48,4 +48,5 @@ class PowderSnow extends Opaque{
 	public function getBucketEmptySound() : Sound{
 		return new BucketEmptyPowderSnowSound();
 	}
+
 }
