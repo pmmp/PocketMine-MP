@@ -321,7 +321,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return (match($liquid = $in->readString(StateNames::CAULDRON_LIQUID)){
 				StringValues::CAULDRON_LIQUID_WATER => Blocks::WATER_CAULDRON(),
 				StringValues::CAULDRON_LIQUID_LAVA => Blocks::LAVA_CAULDRON(),
-				StringValues::CAULDRON_LIQUID_POWDER_SNOW => throw new UnsupportedBlockStateException("Powder snow is not supported yet"),
+				StringValues::CAULDRON_LIQUID_POWDER_SNOW => Blocks::POWDER_SNOW_CAULDRON(),
 				default => throw $in->badValueException(StateNames::CAULDRON_LIQUID, $liquid)
 			})->setFillLevel($level);
 		};
