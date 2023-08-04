@@ -1427,6 +1427,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("porkchop", fn() => Items::RAW_PORKCHOP());
 		$result->register("potato", fn() => Items::POTATO());
 		$result->register("potion", fn() => Items::POTION());
+		$result->register("powder_snow_bucket", fn() => Items::POWDER_SNOW_BUCKET());
 		$result->register("prismarine_crystals", fn() => Items::PRISMARINE_CRYSTALS());
 		$result->register("prismarine_shard", fn() => Items::PRISMARINE_SHARD());
 		$result->register("puffer_fish", fn() => Items::PUFFERFISH());

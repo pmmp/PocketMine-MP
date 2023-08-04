@@ -879,6 +879,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::SMOOTH_BASALT(), Ids::SMOOTH_BASALT);
 		$this->mapSimple(Blocks::SMOOTH_STONE(), Ids::SMOOTH_STONE);
 		$this->mapSimple(Blocks::SNOW(), Ids::SNOW);
+		$this->mapSimple(Blocks::POWDERED_SNOW(), Ids::POWDER_SNOW);
 		$this->mapSimple(Blocks::SOUL_SAND(), Ids::SOUL_SAND);
 		$this->mapSimple(Blocks::SOUL_SOIL(), Ids::SOUL_SOIL);
 		$this->mapSimple(Blocks::SPORE_BLOSSOM(), Ids::SPORE_BLOSSOM);
