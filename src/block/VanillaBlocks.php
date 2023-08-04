@@ -963,9 +963,9 @@ final class VanillaBlocks{
 		self::register("dark_prismarine_stairs", new Stair(new BID(Ids::DARK_PRISMARINE_STAIRS), "Dark Prismarine Stairs", $prismarineBreakInfo));
 		self::register("prismarine_stairs", new Stair(new BID(Ids::PRISMARINE_STAIRS), "Prismarine Stairs", $prismarineBreakInfo));
 
-		$pumpkinBreakInfo = new Info(BreakInfo::axe(1.0));
+		$pumpkinBreakInfo = new Info(BreakInfo::axe(1.0), enchantmentFlag: ItemFlags::HEAD_MASK);
 		self::register("pumpkin", new Pumpkin(new BID(Ids::PUMPKIN), "Pumpkin", $pumpkinBreakInfo));
-		self::register("carved_pumpkin", new CarvedPumpkin(new BID(Ids::CARVED_PUMPKIN), "Carved Pumpkin", $pumpkinBreakInfo, ItemFlags::HEAD_MASK));
+		self::register("carved_pumpkin", new CarvedPumpkin(new BID(Ids::CARVED_PUMPKIN), "Carved Pumpkin", $pumpkinBreakInfo));
 		self::register("lit_pumpkin", new LitPumpkin(new BID(Ids::LIT_PUMPKIN), "Jack o'Lantern", $pumpkinBreakInfo));
 
 		self::register("pumpkin_stem", new PumpkinStem(new BID(Ids::PUMPKIN_STEM), "Pumpkin Stem", new Info(BreakInfo::instant())));
@@ -1001,7 +1001,7 @@ final class VanillaBlocks{
 
 		self::register("sea_lantern", new SeaLantern(new BID(Ids::SEA_LANTERN), "Sea Lantern", new Info(new BreakInfo(0.3))));
 		self::register("sea_pickle", new SeaPickle(new BID(Ids::SEA_PICKLE), "Sea Pickle", new Info(BreakInfo::instant())));
-		self::register("mob_head", new MobHead(new BID(Ids::MOB_HEAD, TileMobHead::class), "Mob Head", new Info(new BreakInfo(1.0)), ItemFlags::HEAD_MASK));
+		self::register("mob_head", new MobHead(new BID(Ids::MOB_HEAD, TileMobHead::class), "Mob Head", new Info(new BreakInfo(1.0), enchantmentFlag: ItemFlags::HEAD_MASK)));
 		self::register("slime", new Slime(new BID(Ids::SLIME), "Slime Block", new Info(BreakInfo::instant())));
 		self::register("snow", new Snow(new BID(Ids::SNOW), "Snow Block", new Info(BreakInfo::shovel(0.2, ToolTier::WOOD()))));
 		self::register("snow_layer", new SnowLayer(new BID(Ids::SNOW_LAYER), "Snow Layer", new Info(BreakInfo::shovel(0.1, ToolTier::WOOD()))));

@@ -45,6 +45,10 @@ abstract class TieredTool extends Tool{
 		return $this->tier->getBaseEfficiency();
 	}
 
+	public function getEnchantability() : int{
+		return $this->tier->getEnchantability();
+	}
+
 	public function getFuelTime() : int{
 		if($this->tier->equals(ToolTier::WOOD())){
 			return 200;

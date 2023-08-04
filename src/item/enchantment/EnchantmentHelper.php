@@ -32,6 +32,7 @@ use pocketmine\world\Position;
 use function abs;
 use function array_filter;
 use function count;
+use function floor;
 use function max;
 use function min;
 use function range;
@@ -52,8 +53,8 @@ final class EnchantmentHelper{
 
 		$bookshelfCount = self::countBookshelves($tablePos);
 		$baseRequiredLevel = $random->nextRange(1, 8) + ($bookshelfCount >> 1) + $random->nextRange(0, $bookshelfCount);
-		$topRequiredLevel = (int) max($baseRequiredLevel / 3, 1);
-		$middleRequiredLevel = (int) ($baseRequiredLevel * 2 / 3 + 1);
+		$topRequiredLevel = (int) floor(max($baseRequiredLevel / 3, 1));
+		$middleRequiredLevel = (int) floor($baseRequiredLevel * 2 / 3 + 1);
 		$bottomRequiredLevel = max($baseRequiredLevel, $bookshelfCount * 2);
 
 		return [
@@ -106,7 +107,7 @@ final class EnchantmentHelper{
 	private static function createEnchantOption(Random $random, Item $inputItem, int $requiredLevel, int $slot) : EnchantmentOption{
 		$enchantingPower = $requiredLevel;
 
-		$enchantability = self::getEnchantability($inputItem);
+		$enchantability = $inputItem->getEnchantability();
 		$enchantingPower = $enchantingPower + $random->nextRange(0, $enchantability >> 2) + $random->nextRange(0, $enchantability >> 2) + 1;
 		// Random bonus for enchanting power between 0.85 and 1.15
 		$bonus = 1 + ($random->nextFloat() + $random->nextFloat() - 1) * 0.15;
@@ -142,16 +143,6 @@ final class EnchantmentHelper{
 		}
 
 		return new EnchantmentOption($slot, $requiredLevel, self::getRandomOptionName($random), $resultEnchantments);
-	}
-
-	private static function getEnchantability(Item $item) : int{
-		if($item instanceof TieredTool){
-			return $item->getTier()->getEnchantability();
-		}
-		if($item instanceof Armor){
-			return $item->getMaterial()->getEnchantability();
-		}
-		return 1;
 	}
 
 	/**

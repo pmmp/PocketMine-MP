@@ -461,6 +461,16 @@ class Item implements \JsonSerializable{
 		return $this->enchantmentFlag;
 	}
 
+	/**
+	 * Returns the value that defines how enchantable the item is.
+	 *
+	 * The higher an item's enchantability is the more likely it will be to gain high-level enchantments
+	 * or multiple enchantments upon being enchanted in an enchanting table.
+	 */
+	public function getEnchantability() : int{
+		return 1;
+	}
+
 	final public function canBePlaced() : bool{
 		return $this->getBlock()->canBePlaced();
 	}

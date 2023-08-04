@@ -41,12 +41,10 @@ class Enchantment{
 	/** @var \Closure(int $level) : int $minEnchantingPower */
 	private \Closure $minEnchantingPower;
 
-	/** @var \Closure(int $level, int $minPower) : int $maxEnchantingPower */
-	private \Closure $maxEnchantingPower;
-
 	/**
-	 * @phpstan-param null|\Closure(int $level) : int                $minEnchantingPower
-	 * @phpstan-param null|\Closure(int $level, int $minPower) : int $maxEnchantingPower
+	 * @phpstan-param null|(\Closure(int $level) : int) $minEnchantingPower
+	 *
+	 * @param int $enchantingPowerRange Value used to calculate the maximum enchanting power (minEnchantingPower + enchantingPowerRange)
 	 */
 	public function __construct(
 		private Translatable|string $name,
@@ -55,20 +53,14 @@ class Enchantment{
 		private int $secondaryItemFlags,
 		private int $maxLevel,
 		?\Closure $minEnchantingPower = null,
-		?\Closure $maxEnchantingPower = null
+		private int $enchantingPowerRange = 50
 	){
 		$this->minEnchantingPower = $minEnchantingPower ?? fn(int $level) : int => 1;
-		$this->maxEnchantingPower = $maxEnchantingPower ?? fn(int $level, int $minPower) : int => 50;
 
 		Utils::validateCallableSignature(new CallbackType(
 			new ReturnType("int"),
 			new ParameterType("level", "int")
 		), $this->minEnchantingPower);
-		Utils::validateCallableSignature(new CallbackType(
-			new ReturnType("int"),
-			new ParameterType("level", "int"),
-			new ParameterType("minPower", "int")
-		), $this->maxEnchantingPower);
 	}
 
 	/**
@@ -149,6 +141,6 @@ class Enchantment{
 	 * enchantments for the enchantment options.
 	 */
 	public function getMaxEnchantingPower(int $level) : int{
-		return ($this->maxEnchantingPower)($level, $this->getMinEnchantingPower($level));
+		return $this->getMinEnchantingPower($level) + $this->enchantingPowerRange;
 	}
 }

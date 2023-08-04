@@ -69,7 +69,7 @@ final class VanillaEnchantments{
 			0.75,
 			null,
 			fn(int $level) : int => 11 * ($level - 1) + 1,
-			fn(int $level, int $minPower) : int => $minPower + 20
+			20
 		));
 		self::register("FIRE_PROTECTION", new ProtectionEnchantment(
 			KnownTranslationFactory::enchantment_protect_fire(),
@@ -85,7 +85,7 @@ final class VanillaEnchantments{
 				//TODO: check fireballs
 			],
 			fn(int $level) : int => 8 * ($level - 1) + 10,
-			fn(int $level, int $minPower) : int => $minPower + 12
+			12
 		));
 		self::register("FEATHER_FALLING", new ProtectionEnchantment(
 			KnownTranslationFactory::enchantment_protect_fall(),
@@ -98,7 +98,7 @@ final class VanillaEnchantments{
 				EntityDamageEvent::CAUSE_FALL
 			],
 			fn(int $level) : int => 6 * ($level - 1) + 5,
-			fn(int $level, int $minPower) : int => $minPower + 10
+			10
 		));
 		self::register("BLAST_PROTECTION", new ProtectionEnchantment(
 			KnownTranslationFactory::enchantment_protect_explosion(),
@@ -112,7 +112,7 @@ final class VanillaEnchantments{
 				EntityDamageEvent::CAUSE_ENTITY_EXPLOSION
 			],
 			fn(int $level) : int => 8 * ($level - 1) + 5,
-			fn(int $level, int $minPower) : int => $minPower + 12
+			12
 		));
 		self::register("PROJECTILE_PROTECTION", new ProtectionEnchantment(
 			KnownTranslationFactory::enchantment_protect_projectile(),
@@ -125,7 +125,7 @@ final class VanillaEnchantments{
 				EntityDamageEvent::CAUSE_PROJECTILE
 			],
 			fn(int $level) : int => 6 * ($level - 1) + 3,
-			fn(int $level, int $minPower) : int => $minPower + 15
+			15
 		));
 		self::register("THORNS", new Enchantment(
 			KnownTranslationFactory::enchantment_thorns(),
@@ -134,7 +134,7 @@ final class VanillaEnchantments{
 			Flags::HEAD | Flags::LEGS | Flags::FEET,
 			3,
 			fn(int $level) : int => 20 * ($level - 1) + 10,
-			fn(int $level, int $minPower) : int => $minPower + 50
+			50
 		));
 		self::register("RESPIRATION", new Enchantment(
 			KnownTranslationFactory::enchantment_oxygen(),
@@ -143,7 +143,7 @@ final class VanillaEnchantments{
 			Flags::NONE,
 			3,
 			fn(int $level) : int => 10 * $level,
-			fn(int $level, int $minPower) : int => $minPower + 30
+			30
 		));
 
 		self::register("SHARPNESS", new SharpnessEnchantment(
@@ -153,7 +153,7 @@ final class VanillaEnchantments{
 			Flags::NONE,
 			5,
 			fn(int $level) : int => 11 * ($level - 1) + 1,
-			fn(int $level, int $minPower) : int => $minPower + 20
+			20
 		));
 		self::register("KNOCKBACK", new KnockbackEnchantment(
 			KnownTranslationFactory::enchantment_knockback(),
@@ -162,7 +162,7 @@ final class VanillaEnchantments{
 			Flags::NONE,
 			2,
 			fn(int $level) : int => 20 * ($level - 1) + 5,
-			fn(int $level, int $minPower) : int => $minPower + 50
+			50
 		));
 		self::register("FIRE_ASPECT", new FireAspectEnchantment(
 			KnownTranslationFactory::enchantment_fire(),
@@ -171,7 +171,7 @@ final class VanillaEnchantments{
 			Flags::NONE,
 			2,
 			fn(int $level) : int => 20 * ($level - 1) + 10,
-			fn(int $level, int $minPower) : int => $minPower + 50
+			50
 		));
 		//TODO: smite, bane of arthropods, looting (these don't make sense now because their applicable mobs don't exist yet)
 
@@ -182,7 +182,7 @@ final class VanillaEnchantments{
 			Flags::SHEARS,
 			5,
 			fn(int $level) : int => 10 * ($level - 1) + 1,
-			fn(int $level, int $minPower) : int => $minPower + 50
+			50
 		));
 		self::register("FORTUNE", new Enchantment(
 			KnownTranslationFactory::enchantment_lootBonusDigger(),
@@ -191,7 +191,7 @@ final class VanillaEnchantments{
 			Flags::NONE,
 			3,
 			fn(int $level) : int => 9 * ($level - 1) + 15,
-			fn(int $level, int $minPower) : int => $minPower + 50
+			50
 		));
 		self::register("SILK_TOUCH", new Enchantment(
 			KnownTranslationFactory::enchantment_untouching(),
@@ -200,7 +200,7 @@ final class VanillaEnchantments{
 			Flags::SHEARS,
 			1,
 			fn(int $level) : int => 15,
-			fn(int $level, int $minPower) : int => $minPower + 50
+			50
 		));
 		self::register("UNBREAKING", new Enchantment(
 			KnownTranslationFactory::enchantment_durability(),
@@ -209,7 +209,7 @@ final class VanillaEnchantments{
 			Flags::SHEARS | Flags::FLINT_AND_STEEL | Flags::CARROT_STICK | Flags::ELYTRA,
 			3,
 			fn(int $level) : int => 8 * ($level - 1) + 5,
-			fn(int $level, int $minPower) : int => $minPower + 50
+			50
 		));
 
 		self::register("POWER", new Enchantment(
@@ -219,7 +219,7 @@ final class VanillaEnchantments{
 			Flags::NONE,
 			5,
 			fn(int $level) : int => 10 * ($level - 1) + 1,
-			fn(int $level, int $minPower) : int => $minPower + 15
+			15
 		));
 		self::register("PUNCH", new Enchantment(
 			KnownTranslationFactory::enchantment_arrowKnockback(),
@@ -228,7 +228,7 @@ final class VanillaEnchantments{
 			Flags::NONE,
 			2,
 			fn(int $level) : int => 20 * ($level - 1) + 12,
-			fn(int $level, int $minPower) : int => $minPower + 25
+			25
 		));
 		self::register("FLAME", new Enchantment(
 			KnownTranslationFactory::enchantment_arrowFire(),
@@ -237,7 +237,7 @@ final class VanillaEnchantments{
 			Flags::NONE,
 			1,
 			fn(int $level) : int => 20,
-			fn(int $level, int $minPower) : int => $minPower + 30
+			30
 		));
 		self::register("INFINITY", new Enchantment(
 			KnownTranslationFactory::enchantment_arrowInfinite(),
@@ -246,7 +246,7 @@ final class VanillaEnchantments{
 			Flags::NONE,
 			1,
 			fn(int $level) : int => 20,
-			fn(int $level, int $minPower) : int => $minPower + 30
+			30
 		));
 
 		self::register("MENDING", new Enchantment(
@@ -256,7 +256,7 @@ final class VanillaEnchantments{
 			Flags::BREAKABLE,
 			1,
 			fn(int $level) : int => 25,
-			fn(int $level, int $minPower) : int => $minPower + 50
+			50
 		));
 
 		self::register("VANISHING", new Enchantment(
@@ -266,7 +266,7 @@ final class VanillaEnchantments{
 			Flags::ALL,
 			1,
 			fn(int $level) : int => 25,
-			fn(int $level, int $minPower) : int => $minPower + 25
+			25
 		));
 
 		self::register("SWIFT_SNEAK", new Enchantment(
@@ -276,7 +276,7 @@ final class VanillaEnchantments{
 			Flags::LEGS,
 			3,
 			fn(int $level) : int => 10 * $level,
-			fn(int $level, int $minPower) : int => $minPower + 5
+			5
 		));
 	}
 

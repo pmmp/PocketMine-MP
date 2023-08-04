@@ -35,10 +35,9 @@ use pocketmine\item\enchantment\ItemFlags;
  */
 final class ItemBlock extends Item{
 	public function __construct(
-		private Block $block,
-		int $enchantmentFlag = ItemFlags::NONE
+		private Block $block
 	){
-		parent::__construct(ItemIdentifier::fromBlock($block), $block->getName(), $enchantmentFlag);
+		parent::__construct(ItemIdentifier::fromBlock($block), $block->getName(), $block->getEnchantmentFlag());
 	}
 
 	protected function describeState(RuntimeDataDescriber $w) : void{

@@ -77,6 +77,10 @@ class Armor extends Durable{
 		return $this->armorInfo->getMaterial();
 	}
 
+	public function getEnchantability() : int{
+		return $this->armorInfo->getMaterial()->getEnchantability();
+	}
+
 	/**
 	 * Returns the dyed colour of this armour piece. This generally only applies to leather armour.
 	 */

@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\item\enchantment;
 
+use pocketmine\item\enchantment\VanillaEnchantments as Enchantments;
 use pocketmine\utils\SingletonTrait;
-use function array_values;
 use function spl_object_id;
 
 /**
@@ -39,24 +39,24 @@ final class EnchantingTableOptionRegistry{
 	private array $enchantments = [];
 
 	private function __construct(){
-		$this->register(VanillaEnchantments::PROTECTION());
-		$this->register(VanillaEnchantments::FIRE_PROTECTION());
-		$this->register(VanillaEnchantments::FEATHER_FALLING());
-		$this->register(VanillaEnchantments::BLAST_PROTECTION());
-		$this->register(VanillaEnchantments::PROJECTILE_PROTECTION());
-		$this->register(VanillaEnchantments::THORNS());
-		$this->register(VanillaEnchantments::RESPIRATION());
-		$this->register(VanillaEnchantments::SHARPNESS());
-		$this->register(VanillaEnchantments::KNOCKBACK());
-		$this->register(VanillaEnchantments::FIRE_ASPECT());
-		$this->register(VanillaEnchantments::EFFICIENCY());
-		$this->register(VanillaEnchantments::FORTUNE());
-		$this->register(VanillaEnchantments::SILK_TOUCH());
-		$this->register(VanillaEnchantments::UNBREAKING());
-		$this->register(VanillaEnchantments::POWER());
-		$this->register(VanillaEnchantments::PUNCH());
-		$this->register(VanillaEnchantments::FLAME());
-		$this->register(VanillaEnchantments::INFINITY());
+		$this->register(Enchantments::PROTECTION());
+		$this->register(Enchantments::FIRE_PROTECTION());
+		$this->register(Enchantments::FEATHER_FALLING());
+		$this->register(Enchantments::BLAST_PROTECTION());
+		$this->register(Enchantments::PROJECTILE_PROTECTION());
+		$this->register(Enchantments::THORNS());
+		$this->register(Enchantments::RESPIRATION());
+		$this->register(Enchantments::SHARPNESS());
+		$this->register(Enchantments::KNOCKBACK());
+		$this->register(Enchantments::FIRE_ASPECT());
+		$this->register(Enchantments::EFFICIENCY());
+		$this->register(Enchantments::FORTUNE());
+		$this->register(Enchantments::SILK_TOUCH());
+		$this->register(Enchantments::UNBREAKING());
+		$this->register(Enchantments::POWER());
+		$this->register(Enchantments::PUNCH());
+		$this->register(Enchantments::FLAME());
+		$this->register(Enchantments::INFINITY());
 	}
 
 	public function register(Enchantment $enchantment) : void{
@@ -71,6 +71,6 @@ final class EnchantingTableOptionRegistry{
 	 * @return Enchantment[]
 	 */
 	public function getAll() : array{
-		return array_values($this->enchantments);
+		return $this->enchantments;
 	}
 }

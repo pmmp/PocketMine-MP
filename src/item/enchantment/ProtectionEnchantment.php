@@ -36,13 +36,13 @@ class ProtectionEnchantment extends Enchantment{
 	/**
 	 * ProtectionEnchantment constructor.
 	 *
-	 * @phpstan-param null|\Closure(int $level) : int                $minEnchantingPower
-	 * @phpstan-param null|\Closure(int $level, int $minPower) : int $maxEnchantingPower
+	 * @phpstan-param null|(\Closure(int $level) : int) $minEnchantingPower
 	 *
 	 * @param int[]|null $applicableDamageTypes EntityDamageEvent::CAUSE_* constants which this enchantment type applies to, or null if it applies to all types of damage.
+	 * @param int        $enchantingPowerRange Value used to calculate the maximum enchanting power (minEnchantingPower + enchantingPowerRange)
 	 */
-	public function __construct(Translatable|string $name, int $rarity, int $primaryItemFlags, int $secondaryItemFlags, int $maxLevel, float $typeModifier, ?array $applicableDamageTypes, ?\Closure $minEnchantingPower = null, ?\Closure $maxEnchantingPower = null){
-		parent::__construct($name, $rarity, $primaryItemFlags, $secondaryItemFlags, $maxLevel, $minEnchantingPower, $maxEnchantingPower);
+	public function __construct(Translatable|string $name, int $rarity, int $primaryItemFlags, int $secondaryItemFlags, int $maxLevel, float $typeModifier, ?array $applicableDamageTypes, ?\Closure $minEnchantingPower = null, int $enchantingPowerRange = 50){
+		parent::__construct($name, $rarity, $primaryItemFlags, $secondaryItemFlags, $maxLevel, $minEnchantingPower, $enchantingPowerRange);
 
 		$this->typeModifier = $typeModifier;
 		if($applicableDamageTypes !== null){
