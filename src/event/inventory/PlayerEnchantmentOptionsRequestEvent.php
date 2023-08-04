@@ -23,17 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\event\inventory;
 
+use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\event\Event;
 use pocketmine\item\enchantment\EnchantmentOption;
-use pocketmine\item\Item;
 use pocketmine\player\Player;
 use pocketmine\utils\Utils;
-use pocketmine\world\Position;
 
 /**
- * Called before sending enchantment options to the player when an item to enchant is selected in an enchanting table.
+ * Called when a player inserts an item into an enchanting table's input slot.
+ * The options provided by the event will be shown on the enchanting table menu.
  */
 class PlayerEnchantmentOptionsRequestEvent extends Event implements Cancellable{
 	use CancellableTrait;
@@ -43,8 +43,7 @@ class PlayerEnchantmentOptionsRequestEvent extends Event implements Cancellable{
 	 */
 	public function __construct(
 		private readonly Player $player,
-		private readonly Item $item,
-		private readonly Position $enchantmentTablePosition,
+		private readonly EnchantInventory $enchantInventory,
 		private array $options
 	){
 	}
@@ -53,12 +52,8 @@ class PlayerEnchantmentOptionsRequestEvent extends Event implements Cancellable{
 		return $this->player;
 	}
 
-	public function getItem() : Item{
-		return $this->item;
-	}
-
-	public function getEnchantmentTablePosition() : Position{
-		return $this->enchantmentTablePosition;
+	public function getEnchantInventory() : EnchantInventory{
+		return $this->enchantInventory;
 	}
 
 	/**
