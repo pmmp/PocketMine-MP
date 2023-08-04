@@ -25,7 +25,6 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\data\runtime\RuntimeDataDescriber;
-use pocketmine\item\enchantment\ItemFlags;
 
 /**
  * Class used for Items that directly represent blocks, such as stone, dirt, wood etc.

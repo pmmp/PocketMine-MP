@@ -24,9 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item\enchantment;
 
 use pocketmine\block\BlockTypeIds;
-use pocketmine\item\Armor;
 use pocketmine\item\Item;
-use pocketmine\item\TieredTool;
 use pocketmine\utils\Random;
 use pocketmine\world\Position;
 use function abs;
