@@ -24,7 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\inventory\transaction;
 
 use pocketmine\block\inventory\EnchantInventory;
-use pocketmine\inventory\transaction\action\InventoryAction;
+use pocketmine\event\inventory\EnchantItemEvent;
+use pocketmine\item\enchantment\EnchantmentOption;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\player\Player;
@@ -33,9 +34,10 @@ use function count;
 class EnchantTransaction extends InventoryTransaction{
 
 	private int $optionId;
-	private ?Item $inputItem = null;
+	private Item $inputItem;
+	private Item $outputItem;
 	private int $lapisCost = 0;
-	private int $enchantmentLevel = 0;
+	private EnchantmentOption $option;
 
 	public function __construct(Player $source, int $optionId){
 		$this->optionId = $optionId;
@@ -52,38 +54,56 @@ class EnchantTransaction extends InventoryTransaction{
 			throw new TransactionValidationException("Current window was expected to be of type EnchantInventory");
 		}
 
-		$enchantmentLevel = $enchantWindow->getOptionEnchantmentLevel($this->optionId);
-		if($enchantmentLevel === null){
+		$option = $enchantWindow->getOption($this->optionId);
+		if($option === null){
 			throw new TransactionValidationException("Incorrect option id $this->optionId");
 		}
-		$this->enchantmentLevel = $enchantmentLevel;
+		$this->option = $option;
 
-		if($this->inputItem === null || !$this->inputItem->equalsExact($enchantWindow->getInput())){
-			throw new TransactionValidationException("Incorrect input item");
+		/** @var Item[] $inputs */
+		$inputs = [];
+		/** @var Item[] $outputs */
+		$outputs = [];
+
+		$this->matchItems($outputs, $inputs);
+
+		$lapisCost = 0;
+
+		foreach($inputs as $input){
+			if($input->getTypeId() === ItemTypeIds::LAPIS_LAZULI){
+				$lapisCost = $input->getCount();
+			}else{
+				if(isset($this->inputItem)){
+					throw new TransactionValidationException("Received more than 1 items to enchant");
+				}
+				$this->inputItem = $input;
+			}
 		}
 
+		if(!isset($this->inputItem)){
+			throw new TransactionValidationException("No item to enchant received");
+		}
+
+		if(!$this->inputItem->equalsExact($enchantWindow->getInput())){
+			throw new TransactionValidationException("Incorrect item to enchant");
+		}
+
+		if(($outputCount = count($outputs)) !== 1){
+			throw new TransactionValidationException("Expected 1 output item, but received $outputCount");
+		}
+		$this->outputItem = $outputs[0];
+
 		if($this->source->hasFiniteResources()){
-			if($this->lapisCost !== $enchantmentLevel){
-				throw new TransactionValidationException("Expected the amount of lapis lazuli spent to be $enchantmentLevel, but received $this->lapisCost");
+			$xpLevelCost = $this->getXpLevelCost();
+
+			if($lapisCost !== $xpLevelCost){
+				throw new TransactionValidationException("Expected the amount of lapis lazuli spent to be $xpLevelCost, but received $this->lapisCost");
 			}
 
 			$xpLevel = $this->source->getXpManager()->getXpLevel();
-			if($xpLevel < $enchantmentLevel){
-				throw new TransactionValidationException("Expected player to have xp level at least of $enchantmentLevel, but received $xpLevel");
+			if($xpLevel < $xpLevelCost){
+				throw new TransactionValidationException("Expected player to have xp level at least of $xpLevelCost, but received $xpLevel");
 			}
-		}
-	}
-
-	public function addAction(InventoryAction $action) : void{
-		parent::addAction($action);
-
-		$sourceItem = $action->getSourceItem();
-		$targetItem = $action->getTargetItem();
-
-		if($sourceItem->getTypeId() === ItemTypeIds::LAPIS_LAZULI){
-			$this->lapisCost = $sourceItem->getCount() - $targetItem->getCount();
-		}else{
-			$this->inputItem = $sourceItem;
 		}
 	}
 
@@ -91,8 +111,18 @@ class EnchantTransaction extends InventoryTransaction{
 		parent::execute();
 
 		if($this->source->hasFiniteResources()){
-			$this->source->getXpManager()->subtractXpLevels($this->enchantmentLevel);
+			$this->source->getXpManager()->subtractXpLevels($this->getXpLevelCost());
 		}
 		$this->source->setXpSeed($this->source->generateXpSeed());
+	}
+
+	protected function callExecuteEvent() : bool{
+		$event = new EnchantItemEvent($this, $this->option, $this->inputItem, $this->outputItem, $this->getXpLevelCost());
+		$event->call();
+		return !$event->isCancelled();
+	}
+
+	private function getXpLevelCost() : int{
+		return $this->optionId + 1;
 	}
 }

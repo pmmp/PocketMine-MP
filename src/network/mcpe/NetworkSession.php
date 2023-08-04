@@ -1174,13 +1174,15 @@ class NetworkSession{
 	 */
 	public function sendEnchantOptions(array $options) : void{
 		$protocolOptions = [];
+		$optionId = 0;
 
 		foreach($options as $option){
 			$protocolEnchantments = array_map(
 				fn(EnchantmentInstance $e) => new Enchant(EnchantmentIdMap::getInstance()->toId($e->getType()), $e->getLevel()),
 				$option->getEnchantments()
 			);
-			$protocolOptions[] = new EnchantOption($option->getRequiredLevel(), $option->getNetworkId(), $protocolEnchantments, [], [], $option->getName(), $option->getNetworkId());
+			$protocolOptions[] = new EnchantOption($option->getRequiredXpLevel(), $optionId, $protocolEnchantments, [], [], $option->getDisplayName(), $optionId);
+			$optionId++;
 		}
 
 		$this->sendDataPacket(PlayerEnchantOptionsPacket::create($protocolOptions));

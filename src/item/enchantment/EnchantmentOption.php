@@ -29,35 +29,27 @@ class EnchantmentOption{
 	 * @param EnchantmentInstance[] $enchantments
 	 */
 	public function __construct(
-		private int $networkId,
-		private int $requiredLevel,
-		private string $name,
+		private int $requiredXpLevel,
+		private string $displayName,
 		private array $enchantments
 	){
-	}
-
-	/**
-	 * Returns the unique network ID for this enchantment option. When enchanting, the client
-	 * will submit this network ID in a packet, so that the server knows which enchantment option was selected.
-	 */
-	public function getNetworkId() : int{
-		return $this->networkId;
 	}
 
 	/**
 	 * Returns the minimum amount of XP levels required to select this enchantment option.
 	 * It's NOT the number of XP levels that will be subtracted after enchanting.
 	 */
-	public function getRequiredLevel() : int{
-		return $this->requiredLevel;
+	public function getRequiredXpLevel() : int{
+		return $this->requiredXpLevel;
 	}
 
 	/**
 	 * Returns the name that will be translated to the 'Standard Galactic Alphabet' client-side.
-	 * Such a name generally has no meaning, such as: 'bless creature range free'.
+	 * This can be any arbitrary text string, since the vanilla client cannot read the text anyway.
+	 * Example: 'bless creature range free'.
 	 */
-	public function getName() : string{
-		return $this->name;
+	public function getDisplayName() : string{
+		return $this->displayName;
 	}
 
 	/**

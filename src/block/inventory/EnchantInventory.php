@@ -32,8 +32,6 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\item\VanillaItems;
 use pocketmine\world\Position;
-use function array_keys;
-use function array_search;
 use function count;
 
 class EnchantInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
@@ -61,7 +59,7 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 				$event->call();
 				if(!$event->isCancelled() && count($event->getOptions()) > 0){
 					foreach($event->getOptions() as $option){
-						$this->options[$option->getNetworkId()] = $option;
+						$this->options[] = $option;
 					}
 					$viewer->getNetworkSession()->sendEnchantOptions($this->options);
 				}
@@ -98,8 +96,7 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 		return $outputItem;
 	}
 
-	public function getOptionEnchantmentLevel(int $optionId) : ?int{
-		$level = array_search($optionId, array_keys($this->options), true);
-		return $level === false ? null : $level + 1;
+	public function getOption(int $optionId) : ?EnchantmentOption{
+		return $this->options[$optionId] ?? null;
 	}
 }

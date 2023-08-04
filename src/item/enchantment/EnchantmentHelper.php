@@ -56,9 +56,9 @@ final class EnchantmentHelper{
 		$bottomRequiredLevel = max($baseRequiredLevel, $bookshelfCount * 2);
 
 		return [
-			self::createEnchantOption($random, $input, $topRequiredLevel, 0),
-			self::createEnchantOption($random, $input, $middleRequiredLevel, 1),
-			self::createEnchantOption($random, $input, $bottomRequiredLevel, 2),
+			self::createEnchantOption($random, $input, $topRequiredLevel),
+			self::createEnchantOption($random, $input, $middleRequiredLevel),
+			self::createEnchantOption($random, $input, $bottomRequiredLevel),
 		];
 	}
 
@@ -102,8 +102,8 @@ final class EnchantmentHelper{
 		return $bookshelfCount;
 	}
 
-	private static function createEnchantOption(Random $random, Item $inputItem, int $requiredLevel, int $slot) : EnchantmentOption{
-		$enchantingPower = $requiredLevel;
+	private static function createEnchantOption(Random $random, Item $inputItem, int $requiredXpLevel) : EnchantmentOption{
+		$enchantingPower = $requiredXpLevel;
 
 		$enchantability = $inputItem->getEnchantability();
 		$enchantingPower = $enchantingPower + $random->nextRange(0, $enchantability >> 2) + $random->nextRange(0, $enchantability >> 2) + 1;
@@ -140,7 +140,7 @@ final class EnchantmentHelper{
 			}
 		}
 
-		return new EnchantmentOption($slot, $requiredLevel, self::getRandomOptionName($random), $resultEnchantments);
+		return new EnchantmentOption($requiredXpLevel, self::getRandomOptionName($random), $resultEnchantments);
 	}
 
 	/**
