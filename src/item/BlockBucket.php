@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\PowderSnow;
 use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -55,6 +56,10 @@ class BlockBucket extends Item{
 
 		//TODO: move this to generic placement logic
 		$resultBlock = clone $this->block;
+
+		if(!$resultBlock instanceof PowderSnow){
+			return ItemUseResult::FAIL();
+		}
 
 		$ev = new PlayerBucketEmptyEvent($player, $blockReplace, $face, $this, VanillaItems::BUCKET());
 		$ev->call();
