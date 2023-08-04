@@ -736,7 +736,7 @@ final class BlockTypeIds{
 	public const SMALL_DRIPLEAF = 10706;
 	public const BIG_DRIPLEAF_HEAD = 10707;
 	public const BIG_DRIPLEAF_STEM = 10708;
-	public const POWDERED_SNOW = 10709;
+	public const POWDER_SNOW = 10709;
 
 	public const FIRST_UNUSED_BLOCK_ID = 10710;
 

@@ -432,6 +432,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	private function registerCauldronSerializers() : void{
 		$this->map(Blocks::CAULDRON(), fn() => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, 0));
 		$this->map(Blocks::LAVA_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_LAVA, $b->getFillLevel()));
+		$this->map(Blocks::POWDER_SNOW_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_POWDER_SNOW, $b->getFillLevel()));
 		//potion cauldrons store their real information in the block actor data
 		$this->map(Blocks::POTION_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, $b->getFillLevel()));
 		$this->map(Blocks::WATER_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, $b->getFillLevel()));
@@ -879,7 +880,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::SMOOTH_BASALT(), Ids::SMOOTH_BASALT);
 		$this->mapSimple(Blocks::SMOOTH_STONE(), Ids::SMOOTH_STONE);
 		$this->mapSimple(Blocks::SNOW(), Ids::SNOW);
-		$this->mapSimple(Blocks::POWDERED_SNOW(), Ids::POWDER_SNOW);
+		$this->mapSimple(Blocks::POWDER_SNOW(), Ids::POWDER_SNOW);
 		$this->mapSimple(Blocks::SOUL_SAND(), Ids::SOUL_SAND);
 		$this->mapSimple(Blocks::SOUL_SOIL(), Ids::SOUL_SOIL);
 		$this->mapSimple(Blocks::SPORE_BLOSSOM(), Ids::SPORE_BLOSSOM);

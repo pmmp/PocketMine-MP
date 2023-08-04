@@ -81,7 +81,7 @@ final class Cauldron extends Transparent{
 		}elseif($item->getTypeId() === ItemTypeIds::LAVA_BUCKET){
 			$this->fill(FillableCauldron::MAX_FILL_LEVEL, VanillaBlocks::LAVA_CAULDRON(), $item, VanillaItems::BUCKET(), $returnedItems);
 		}elseif($item->getTypeId() === ItemTypeIds::POWDER_SNOW_BUCKET){
-			//TODO: powder snow cauldron
+			$this->fill(FillableCauldron::MAX_FILL_LEVEL, VanillaBlocks::POWDER_SNOW_CAULDRON(), $item, VanillaItems::BUCKET(), $returnedItems);
 		}elseif($item instanceof Potion || $item instanceof SplashPotion){ //TODO: lingering potion
 			if($item->getType()->equals(PotionType::WATER())){
 				$this->fill(WaterCauldron::WATER_BOTTLE_FILL_AMOUNT, VanillaBlocks::WATER_CAULDRON(), $item, VanillaItems::GLASS_BOTTLE(), $returnedItems);

@@ -25,11 +25,11 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use pocketmine\world\sound\BucketEmptyPowderedSnowSound;
-use pocketmine\world\sound\BucketFillPowderedSnowSound;
+use pocketmine\world\sound\BucketEmptyPowderSnowSound;
+use pocketmine\world\sound\BucketFillPowderSnowSound;
 use pocketmine\world\sound\Sound;
 
-class PowderedSnow extends Opaque{
+class PowderSnow extends Opaque{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
@@ -42,10 +42,10 @@ class PowderedSnow extends Opaque{
 	}
 
 	public function getBucketFillSound() : Sound{
-		return new BucketFillPowderedSnowSound();
+		return new BucketFillPowderSnowSound();
 	}
 
 	public function getBucketEmptySound() : Sound{
-		return new BucketEmptyPowderedSnowSound();
+		return new BucketEmptyPowderSnowSound();
 	}
 }
