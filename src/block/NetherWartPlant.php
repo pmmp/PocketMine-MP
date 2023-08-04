@@ -23,8 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\data\runtime\RuntimeDataDescriber;
-use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -75,17 +76,13 @@ class NetherWartPlant extends Flowable{
 		if($this->age < self::MAX_AGE && mt_rand(0, 10) === 0){ //Still growing
 			$block = clone $this;
 			$block->age++;
-			$ev = new BlockGrowEvent($this, $block);
-			$ev->call();
-			if(!$ev->isCancelled()){
-				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
-			}
+			BlockEventHelper::grow($this, $block, null);
 		}
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			$this->asItem()->setCount($this->age === self::MAX_AGE ? mt_rand(2, 4) : 1)
+			$this->asItem()->setCount($this->age === self::MAX_AGE ? FortuneDropHelper::discrete($item, 2, 4) : 1)
 		];
 	}
 }

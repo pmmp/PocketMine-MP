@@ -66,4 +66,5 @@ final class PotionTypeIds{
 	public const STRONG_TURTLE_MASTER = 39;
 	public const SLOW_FALLING = 40;
 	public const LONG_SLOW_FALLING = 41;
+	public const STRONG_SLOWNESS = 42;
 }

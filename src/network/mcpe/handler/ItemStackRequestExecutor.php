@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
-use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
@@ -327,7 +326,7 @@ class ItemStackRequestExecutor{
 			$this->builder->addAction(new DestroyItemAction($destroyed));
 
 		}elseif($action instanceof CreativeCreateStackRequestAction){
-			$item = CreativeInventory::getInstance()->getItem($action->getCreativeItemId());
+			$item = $this->player->getCreativeInventory()->getItem($action->getCreativeItemId());
 			if($item === null){
 				throw new ItemStackRequestProcessException("No such creative item index: " . $action->getCreativeItemId());
 			}

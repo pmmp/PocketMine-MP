@@ -23,10 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
-use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
@@ -86,15 +87,9 @@ class SweetBerryBush extends Flowable{
 		if($this->age < self::STAGE_MATURE && $item instanceof Fertilizer){
 			$block = clone $this;
 			$block->age++;
-
-			$ev = new BlockGrowEvent($this, $block, $player);
-			$ev->call();
-
-			if(!$ev->isCancelled()){
-				$world->setBlock($this->position, $ev->getNewState());
+			if(BlockEventHelper::grow($this, $block, $player)){
 				$item->pop();
 			}
-
 		}elseif(($dropAmount = $this->getBerryDropAmount()) > 0){
 			$world->setBlock($this->position, $this->setAge(self::STAGE_BUSH_NO_BERRIES));
 			$world->dropItem($this->position, $this->asItem()->setCount($dropAmount));
@@ -108,13 +103,14 @@ class SweetBerryBush extends Flowable{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if(($dropAmount = $this->getBerryDropAmount()) > 0){
-			return [
-				$this->asItem()->setCount($dropAmount)
-			];
-		}
-
-		return [];
+		$count = match($this->age){
+			self::STAGE_MATURE => FortuneDropHelper::discrete($item, 2, 3),
+			self::STAGE_BUSH_SOME_BERRIES => FortuneDropHelper::discrete($item, 1, 2),
+			default => 0
+		};
+		return [
+			$this->asItem()->setCount($count)
+		];
 	}
 
 	public function onNearbyBlockChange() : void{
@@ -131,11 +127,7 @@ class SweetBerryBush extends Flowable{
 		if($this->age < self::STAGE_MATURE && mt_rand(0, 2) === 1){
 			$block = clone $this;
 			++$block->age;
-			$ev = new BlockGrowEvent($this, $block);
-			$ev->call();
-			if(!$ev->isCancelled()){
-				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
-			}
+			BlockEventHelper::grow($this, $block, null);
 		}
 	}
 
