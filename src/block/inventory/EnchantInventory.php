@@ -59,8 +59,8 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 
 				$event = new PlayerEnchantmentOptionsRequestEvent($viewer, $item, $this->holder, $options);
 				$event->call();
-				if(!$event->isCancelled() && count($event->getEnchantmentOptions()) > 0){
-					foreach($event->getEnchantmentOptions() as $option){
+				if(!$event->isCancelled() && count($event->getOptions()) > 0){
+					foreach($event->getOptions() as $option){
 						$this->options[$option->getNetworkId()] = $option;
 					}
 					$viewer->getNetworkSession()->sendEnchantOptions($this->options);

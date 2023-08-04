@@ -39,13 +39,13 @@ class PlayerEnchantmentOptionsRequestEvent extends Event implements Cancellable{
 	use CancellableTrait;
 
 	/**
-	 * @param EnchantmentOption[] $enchantmentOptions
+	 * @param EnchantmentOption[] $options
 	 */
 	public function __construct(
 		private readonly Player $player,
 		private readonly Item $item,
 		private readonly Position $enchantmentTablePosition,
-		private array $enchantmentOptions
+		private array $options
 	){
 	}
 
@@ -64,15 +64,15 @@ class PlayerEnchantmentOptionsRequestEvent extends Event implements Cancellable{
 	/**
 	 * @return EnchantmentOption[]
 	 */
-	public function getEnchantmentOptions() : array{
-		return $this->enchantmentOptions;
+	public function getOptions() : array{
+		return $this->options;
 	}
 
 	/**
-	 * @param EnchantmentOption[] $enchantmentOptions
+	 * @param EnchantmentOption[] $options
 	 */
-	public function setEnchantmentOptions(array $enchantmentOptions) : void{
-		Utils::validateArrayValueType($enchantmentOptions, function(EnchantmentOption $_) : void{ });
-		$this->enchantmentOptions = $enchantmentOptions;
+	public function setOptions(array $options) : void{
+		Utils::validateArrayValueType($options, function(EnchantmentOption $_) : void{ });
+		$this->options = $options;
 	}
 }
