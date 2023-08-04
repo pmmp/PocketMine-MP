@@ -602,6 +602,8 @@ use function mb_strtolower;
  * @method static Flower POPPY()
  * @method static Potato POTATOES()
  * @method static PotionCauldron POTION_CAULDRON()
+ * @method static PowderSnow POWDER_SNOW()
+ * @method static PowderSnowCauldron POWDER_SNOW_CAULDRON()
  * @method static PoweredRail POWERED_RAIL()
  * @method static Opaque PRISMARINE()
  * @method static Opaque PRISMARINE_BRICKS()
