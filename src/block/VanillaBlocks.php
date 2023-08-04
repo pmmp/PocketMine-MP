@@ -1004,6 +1004,7 @@ final class VanillaBlocks{
 		self::register("slime", new Slime(new BID(Ids::SLIME), "Slime Block", new Info(BreakInfo::instant())));
 		self::register("snow", new Snow(new BID(Ids::SNOW), "Snow Block", new Info(BreakInfo::shovel(0.2, ToolTier::WOOD()))));
 		self::register("snow_layer", new SnowLayer(new BID(Ids::SNOW_LAYER), "Snow Layer", new Info(BreakInfo::shovel(0.1, ToolTier::WOOD()))));
+		self::register("powdered_snow", new PowderedSnow(new BID(Ids::POWDERED_SNOW), "Powdered Snow Block", new Info(BreakInfo::shovel(0.2, ToolTier::WOOD()))));
 		self::register("soul_sand", new SoulSand(new BID(Ids::SOUL_SAND), "Soul Sand", new Info(BreakInfo::shovel(0.5))));
 		self::register("sponge", new Sponge(new BID(Ids::SPONGE), "Sponge", new Info(new BreakInfo(0.6, ToolType::HOE))));
 		$shulkerBoxBreakInfo = new Info(BreakInfo::pickaxe(2));
