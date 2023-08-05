@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
 use pocketmine\world\sound\BucketEmptyPowderSnowSound;
 use pocketmine\world\sound\BucketFillPowderSnowSound;
 use pocketmine\world\sound\Sound;
