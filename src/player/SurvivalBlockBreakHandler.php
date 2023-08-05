@@ -72,7 +72,7 @@ final class SurvivalBlockBreakHandler{
 		if($this->player->isUnderwater()){ //TODO: Aqua Affinity enchantment
 			$breakTimeSeconds *= 5;
 		}
-		if(!$this->player->onGround){
+		if(!$this->player->isFlying() && $this->player->getInAirTicks() > 0){
 			$breakTimeSeconds *= 5;
 		}
 		if($this->player->canClimb() && $this->player->getWorld()->getBlock($this->player->getPosition())->canClimb()){
