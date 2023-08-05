@@ -39,7 +39,7 @@ class EnchantItemEvent extends Event implements Cancellable{
 		private readonly EnchantmentOption $option,
 		private readonly Item $inputItem,
 		private readonly Item $outputItem,
-		private readonly int $xpLevelCost
+		private readonly int $cost
 	){
 	}
 
@@ -72,11 +72,11 @@ class EnchantItemEvent extends Event implements Cancellable{
 	}
 
 	/**
-	 * Returns the number of XP levels that will be subtracted after enchanting (from 1 to 3)
+	 * Returns the number of XP levels and lapis (from 1 to 3) that will be subtracted after enchanting
 	 * if the player is not in creative mode.
 	 */
-	public function getXpLevelCost() : int{
-		return $this->xpLevelCost;
+	public function getCost() : int{
+		return $this->cost;
 	}
 
 	public function getPlayer() : Player{

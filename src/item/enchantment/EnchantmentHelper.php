@@ -25,6 +25,8 @@ namespace pocketmine\item\enchantment;
 
 use pocketmine\block\BlockTypeIds;
 use pocketmine\item\Item;
+use pocketmine\item\ItemTypeIds;
+use pocketmine\item\VanillaItems as Items;
 use pocketmine\utils\Random;
 use pocketmine\world\Position;
 use function abs;
@@ -38,6 +40,16 @@ use function round;
 
 final class EnchantmentHelper{
 	private const MAX_BOOKSHELF_COUNT = 15;
+
+	public static function enchantItem(Item $item, array $enchantments) : Item{
+		$resultItem = $item->getTypeId() === ItemTypeIds::BOOK ? Items::ENCHANTED_BOOK() : clone $item;
+
+		foreach($enchantments as $enchantment){
+			$resultItem->addEnchantment($enchantment);
+		}
+
+		return $resultItem;
+	}
 
 	/**
 	 * @return EnchantmentOption[]

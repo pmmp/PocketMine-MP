@@ -26,11 +26,10 @@ namespace pocketmine\block\inventory;
 use pocketmine\event\inventory\PlayerEnchantmentOptionsRequestEvent;
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\inventory\TemporaryInventory;
+use pocketmine\item\enchantment\EnchantmentHelper;
 use pocketmine\item\enchantment\EnchantmentHelper as Helper;
 use pocketmine\item\enchantment\EnchantmentOption;
 use pocketmine\item\Item;
-use pocketmine\item\ItemTypeIds;
-use pocketmine\item\VanillaItems;
 use pocketmine\world\Position;
 use function count;
 
@@ -84,16 +83,7 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 			return null;
 		}
 
-		$outputItem = $this->getInput();
-		if($outputItem->getTypeId() === ItemTypeIds::BOOK){
-			$outputItem = VanillaItems::ENCHANTED_BOOK();
-		}
-
-		foreach($option->getEnchantments() as $enchantment){
-			$outputItem->addEnchantment($enchantment);
-		}
-
-		return $outputItem;
+		return EnchantmentHelper::enchantItem($this->getInput(), $option->getEnchantments());
 	}
 
 	public function getOption(int $optionId) : ?EnchantmentOption{
