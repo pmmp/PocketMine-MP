@@ -23,12 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\AgeBlockTrait;
+use pocketmine\block\utils\AgeableBlockTrait;
 use pocketmine\event\block\BlockMeltEvent;
 use function mt_rand;
 
 class FrostedIce extends Ice{
-	use AgeBlockTrait;
+	use AgeableBlockTrait;
 	public const MAX_AGE = 3;
 
 	public function onNearbyBlockChange() : void{

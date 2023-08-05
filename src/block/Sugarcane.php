@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\AgeBlockTrait;
+use pocketmine\block\utils\AgeableBlockTrait;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
@@ -34,7 +34,7 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\Position;
 
 class Sugarcane extends Flowable{
-	use AgeBlockTrait;
+	use AgeableBlockTrait;
 	public const MAX_AGE = 15;
 
 	private function seekToBottom() : Position{

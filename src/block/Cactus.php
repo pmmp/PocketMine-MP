@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\AgeBlockTrait;
+use pocketmine\block\utils\AgeableBlockTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockGrowEvent;
@@ -37,7 +37,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Cactus extends Transparent{
-	use AgeBlockTrait;
+	use AgeableBlockTrait;
 
 	public const MAX_AGE = 15;
 

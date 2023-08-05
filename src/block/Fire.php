@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\AgeBlockTrait;
+use pocketmine\block\utils\AgeableBlockTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\BlockBurnEvent;
 use pocketmine\event\block\BlockSpreadEvent;
@@ -36,7 +36,7 @@ use function min;
 use function mt_rand;
 
 class Fire extends BaseFire{
-	use AgeBlockTrait;
+	use AgeableBlockTrait;
 	public const MAX_AGE = 15;
 
 	protected function getFireDamage() : int{

@@ -31,7 +31,7 @@ use function strlen;
  * This trait is used for blocks that have an age property.
  * Need to add to the block the constant MAX_AGE.
  */
-trait AgeBlockTrait{
+trait AgeableBlockTrait{
 	protected int $age = 0;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{

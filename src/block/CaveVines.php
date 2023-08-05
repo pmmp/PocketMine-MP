@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\AgeBlockTrait;
+use pocketmine\block\utils\AgeableBlockTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
@@ -39,7 +39,7 @@ use pocketmine\world\sound\GlowBerriesPickSound;
 use function mt_rand;
 
 class CaveVines extends Flowable{
-	use AgeBlockTrait;
+	use AgeableBlockTrait;
 	public const MAX_AGE = 25;
 
 	protected bool $berries = false;

@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\AgeBlockTrait;
+use pocketmine\block\utils\AgeableBlockTrait;
 use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
@@ -34,7 +34,7 @@ use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
 class NetherWartPlant extends Flowable{
-	use AgeBlockTrait;
+	use AgeableBlockTrait;
 	public const MAX_AGE = 3;
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
