@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\AgeableBlockTrait;
-use pocketmine\event\block\BlockGrowEvent;
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -52,11 +52,7 @@ abstract class Crops extends Flowable{
 			if($block->age > self::MAX_AGE){
 				$block->age = self::MAX_AGE;
 			}
-
-			$ev = new BlockGrowEvent($this, $block, $player);
-			$ev->call();
-			if(!$ev->isCancelled()){
-				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
+			if(BlockEventHelper::grow($this, $block, $player)){
 				$item->pop();
 			}
 
@@ -80,11 +76,7 @@ abstract class Crops extends Flowable{
 		if($this->age < self::MAX_AGE && mt_rand(0, 2) === 1){
 			$block = clone $this;
 			++$block->age;
-			$ev = new BlockGrowEvent($this, $block);
-			$ev->call();
-			if(!$ev->isCancelled()){
-				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
-			}
+			BlockEventHelper::grow($this, $block, null);
 		}
 	}
 }

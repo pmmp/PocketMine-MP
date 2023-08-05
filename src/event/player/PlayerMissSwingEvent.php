@@ -30,7 +30,7 @@ use pocketmine\player\Player;
 /**
  * Called when a player attempts to perform the attack action (left-click) without a target entity.
  */
-class PlayerMissedSwingEvent extends PlayerEvent implements Cancellable{
+class PlayerMissSwingEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
 	public function __construct(Player $player){

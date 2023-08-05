@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\AgeableBlockTrait;
-use pocketmine\event\block\BlockMeltEvent;
+use pocketmine\block\utils\BlockEventHelper;
 use function mt_rand;
 
 class FrostedIce extends Ice{
@@ -81,11 +81,7 @@ class FrostedIce extends Ice{
 	private function tryMelt() : bool{
 		$world = $this->position->getWorld();
 		if($this->age >= self::MAX_AGE){
-			$ev = new BlockMeltEvent($this, VanillaBlocks::WATER());
-			$ev->call();
-			if(!$ev->isCancelled()){
-				$world->setBlock($this->position, $ev->getNewState());
-			}
+			BlockEventHelper::melt($this, VanillaBlocks::WATER());
 			return true;
 		}
 

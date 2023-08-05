@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\AgeableBlockTrait;
-use pocketmine\event\block\BlockGrowEvent;
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -55,13 +55,11 @@ class Sugarcane extends Flowable{
 			}
 			$b = $world->getBlockAt($pos->x, $pos->y + $y, $pos->z);
 			if($b->getTypeId() === BlockTypeIds::AIR){
-				$ev = new BlockGrowEvent($b, VanillaBlocks::SUGARCANE(), $player);
-				$ev->call();
-				if($ev->isCancelled()){
+				if(BlockEventHelper::grow($b, VanillaBlocks::SUGARCANE(), $player)){
+					$grew = true;
+				}else{
 					break;
 				}
-				$world->setBlock($b->position, $ev->getNewState());
-				$grew = true;
 			}elseif(!$b->hasSameTypeId($this)){
 				break;
 			}

@@ -24,9 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\AgeableBlockTrait;
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
-use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
@@ -96,12 +96,7 @@ class Cactus extends Transparent{
 					}
 					$b = $world->getBlockAt($this->position->x, $this->position->y + $y, $this->position->z);
 					if($b->getTypeId() === BlockTypeIds::AIR){
-						$ev = new BlockGrowEvent($b, VanillaBlocks::CACTUS());
-						$ev->call();
-						if($ev->isCancelled()){
-							break;
-						}
-						$world->setBlock($b->position, $ev->getNewState());
+						BlockEventHelper::grow($b, VanillaBlocks::CACTUS(), null);
 					}else{
 						break;
 					}
