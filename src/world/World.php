@@ -200,6 +200,11 @@ class World implements ChunkManager{
 	 * @phpstan-var array<ChunkPosHash, array<ChunkBlockPosHash, Block>>
 	 */
 	private array $blockCache = [];
+	/**
+	 * @var AxisAlignedBB[][][] chunkHash => [relativeBlockHash => AxisAlignedBB[]]
+	 * @phpstan-var array<ChunkPosHash, array<ChunkBlockPosHash, list<AxisAlignedBB>>>
+	 */
+	private array $blockCollisionBoxCache = [];
 
 	private int $sendTimeTicker = 0;
 
@@ -646,6 +651,7 @@ class World implements ChunkManager{
 
 		$this->provider->close();
 		$this->blockCache = [];
+		$this->blockCollisionBoxCache = [];
 
 		$this->unloaded = true;
 	}
@@ -1117,12 +1123,23 @@ class World implements ChunkManager{
 	public function clearCache(bool $force = false) : void{
 		if($force){
 			$this->blockCache = [];
+			$this->blockCollisionBoxCache = [];
 		}else{
 			$count = 0;
 			foreach($this->blockCache as $list){
 				$count += count($list);
 				if($count > 2048){
 					$this->blockCache = [];
+					break;
+				}
+			}
+
+			$count = 0;
+			foreach($this->blockCollisionBoxCache as $list){
+				$count += count($list);
+				if($count > 2048){
+					//TODO: Is this really the best logic?
+					$this->blockCollisionBoxCache = [];
 					break;
 				}
 			}
@@ -1492,24 +1509,52 @@ class World implements ChunkManager{
 	}
 
 	/**
+	 * Returns a list of all block AABBs which overlap the full block area at the given coordinates.
+	 * This checks a padding of 1 block around the coordinates to account for oversized AABBs of blocks like fences.
+	 * Larger AABBs (>= 2 blocks on any axis) are not accounted for.
+	 *
+	 * @return AxisAlignedBB[]
+	 */
+	private function getCollisionBoxesForCell(int $x, int $y, int $z) : array{
+		$block = $this->getBlockAt($x, $y, $z);
+		$boxes = $block->getCollisionBoxes();
+
+		$cellBB = AxisAlignedBB::one()->offset($x, $y, $z);
+		foreach(Facing::ALL as $facing){
+			$extraBoxes = $block->getSide($facing)->getCollisionBoxes();
+			foreach($extraBoxes as $extraBox){
+				if($extraBox->intersectsWith($cellBB)){
+					$boxes[] = $extraBox;
+				}
+			}
+		}
+
+		return $boxes;
+	}
+
+	/**
 	 * @return AxisAlignedBB[]
 	 * @phpstan-return list<AxisAlignedBB>
 	 */
 	public function getCollisionBoxes(Entity $entity, AxisAlignedBB $bb, bool $entities = true) : array{
-		$minX = (int) floor($bb->minX - 1);
-		$minY = (int) floor($bb->minY - 1);
-		$minZ = (int) floor($bb->minZ - 1);
-		$maxX = (int) floor($bb->maxX + 1);
-		$maxY = (int) floor($bb->maxY + 1);
-		$maxZ = (int) floor($bb->maxZ + 1);
+		$minX = (int) floor($bb->minX);
+		$minY = (int) floor($bb->minY);
+		$minZ = (int) floor($bb->minZ);
+		$maxX = (int) floor($bb->maxX);
+		$maxY = (int) floor($bb->maxY);
+		$maxZ = (int) floor($bb->maxZ);
 
 		$collides = [];
 
 		for($z = $minZ; $z <= $maxZ; ++$z){
 			for($x = $minX; $x <= $maxX; ++$x){
+				$chunkPosHash = World::chunkHash($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE);
 				for($y = $minY; $y <= $maxY; ++$y){
-					$block = $this->getBlockAt($x, $y, $z);
-					foreach($block->getCollisionBoxes() as $blockBB){
+					$relativeBlockHash = World::chunkBlockHash($x, $y, $z);
+
+					$boxes = $this->blockCollisionBoxCache[$chunkPosHash][$relativeBlockHash] ??= $this->getCollisionBoxesForCell($x, $y, $z);
+
+					foreach($boxes as $blockBB){
 						if($blockBB->intersectsWith($bb)){
 							$collides[] = $blockBB;
 						}
@@ -1682,14 +1727,10 @@ class World implements ChunkManager{
 	 */
 	private function getHighestAdjacentLight(int $x, int $y, int $z, \Closure $lightGetter) : int{
 		$max = 0;
-		foreach([
-			[$x + 1, $y, $z],
-			[$x - 1, $y, $z],
-			[$x, $y + 1, $z],
-			[$x, $y - 1, $z],
-			[$x, $y, $z + 1],
-			[$x, $y, $z - 1]
-		] as [$x1, $y1, $z1]){
+		foreach(Facing::OFFSET as [$offsetX, $offsetY, $offsetZ]){
+			$x1 = $x + $offsetX;
+			$y1 = $y + $offsetY;
+			$z1 = $z + $offsetZ;
 			if(
 				!$this->isInWorld($x1, $y1, $z1) ||
 				($chunk = $this->getChunk($x1 >> Chunk::COORD_BIT_SIZE, $z1 >> Chunk::COORD_BIT_SIZE)) === null ||
@@ -1858,6 +1899,14 @@ class World implements ChunkManager{
 		$relativeBlockHash = World::chunkBlockHash($x, $y, $z);
 
 		unset($this->blockCache[$chunkHash][$relativeBlockHash]);
+		unset($this->blockCollisionBoxCache[$chunkHash][$relativeBlockHash]);
+		//blocks like fences have collision boxes that reach into neighbouring blocks, so we need to invalidate the
+		//caches for those blocks as well
+		foreach(Facing::OFFSET as [$offsetX, $offsetY, $offsetZ]){
+			$sideChunkPosHash = World::chunkHash(($x + $offsetX) >> Chunk::COORD_BIT_SIZE, ($z + $offsetZ) >> Chunk::COORD_BIT_SIZE);
+			$sideChunkBlockHash = World::chunkBlockHash($x + $offsetX, $y + $offsetY, $z + $offsetZ);
+			unset($this->blockCollisionBoxCache[$sideChunkPosHash][$sideChunkBlockHash]);
+		}
 
 		if(!isset($this->changedBlocks[$chunkHash])){
 			$this->changedBlocks[$chunkHash] = [];
@@ -2454,6 +2503,7 @@ class World implements ChunkManager{
 		$this->chunks[$chunkHash] = $chunk;
 
 		unset($this->blockCache[$chunkHash]);
+		unset($this->blockCollisionBoxCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);
 		$chunk->setTerrainDirty();
 		$this->markTickingChunkForRecheck($chunkX, $chunkZ); //this replacement chunk may not meet the conditions for ticking
@@ -2733,6 +2783,7 @@ class World implements ChunkManager{
 		}
 		$this->chunks[$chunkHash] = $chunk;
 		unset($this->blockCache[$chunkHash]);
+		unset($this->blockCollisionBoxCache[$chunkHash]);
 
 		$this->initChunk($x, $z, $chunkData);
 
@@ -2887,6 +2938,7 @@ class World implements ChunkManager{
 
 		unset($this->chunks[$chunkHash]);
 		unset($this->blockCache[$chunkHash]);
+		unset($this->blockCollisionBoxCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);
 		unset($this->registeredTickingChunks[$chunkHash]);
 		$this->markTickingChunkForRecheck($x, $z);

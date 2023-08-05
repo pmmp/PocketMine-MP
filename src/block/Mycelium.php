@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\DirtType;
-use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use function mt_rand;
@@ -54,11 +54,7 @@ class Mycelium extends Opaque{
 		$block = $world->getBlockAt($x, $y, $z);
 		if($block instanceof Dirt && $block->getDirtType()->equals(DirtType::NORMAL())){
 			if($block->getSide(Facing::UP) instanceof Transparent){
-				$ev = new BlockSpreadEvent($block, $this, VanillaBlocks::MYCELIUM());
-				$ev->call();
-				if(!$ev->isCancelled()){
-					$world->setBlock($block->position, $ev->getNewState());
-				}
+				BlockEventHelper::spread($block, VanillaBlocks::MYCELIUM(), $this);
 			}
 		}
 	}

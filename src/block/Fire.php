@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\BlockBurnEvent;
-use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\math\Facing;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\World;
@@ -225,13 +225,6 @@ class Fire extends BaseFire{
 	}
 
 	private function spreadBlock(Block $block, Block $newState) : bool{
-		$ev = new BlockSpreadEvent($block, $this, $newState);
-		$ev->call();
-		if(!$ev->isCancelled()){
-			$block->position->getWorld()->setBlock($block->position, $ev->getNewState());
-			return true;
-		}
-
-		return false;
+		return BlockEventHelper::spread($block, $newState, $this);
 	}
 }
