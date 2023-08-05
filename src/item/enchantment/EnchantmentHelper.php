@@ -41,6 +41,9 @@ use function round;
 final class EnchantmentHelper{
 	private const MAX_BOOKSHELF_COUNT = 15;
 
+	/**
+	 * @param EnchantmentInstance[] $enchantments
+	 */
 	public static function enchantItem(Item $item, array $enchantments) : Item{
 		$resultItem = $item->getTypeId() === ItemTypeIds::BOOK ? Items::ENCHANTED_BOOK() : clone $item;
 
