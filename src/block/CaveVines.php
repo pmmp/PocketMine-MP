@@ -40,6 +40,7 @@ use function mt_rand;
 
 class CaveVines extends Flowable{
 	use AgeableBlockTrait;
+
 	public const MAX_AGE = 25;
 
 	protected bool $berries = false;

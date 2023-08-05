@@ -29,6 +29,7 @@ use function mt_rand;
 
 class FrostedIce extends Ice{
 	use AgeableBlockTrait;
+
 	public const MAX_AGE = 3;
 
 	public function onNearbyBlockChange() : void{

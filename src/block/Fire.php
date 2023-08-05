@@ -37,6 +37,7 @@ use function mt_rand;
 
 class Fire extends BaseFire{
 	use AgeableBlockTrait;
+
 	public const MAX_AGE = 15;
 
 	protected function getFireDamage() : int{

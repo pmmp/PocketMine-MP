@@ -43,6 +43,7 @@ use function mt_rand;
 
 final class ChorusFlower extends Flowable{
 	use AgeableBlockTrait;
+
 	public const MIN_AGE = 0;
 	public const MAX_AGE = 5;
 

@@ -35,6 +35,7 @@ use function mt_rand;
 
 class NetherWartPlant extends Flowable{
 	use AgeableBlockTrait;
+
 	public const MAX_AGE = 3;
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

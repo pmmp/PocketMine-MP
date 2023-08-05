@@ -35,6 +35,7 @@ use function mt_rand;
 
 abstract class Crops extends Flowable{
 	use AgeableBlockTrait;
+
 	public const MAX_AGE = 7;
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

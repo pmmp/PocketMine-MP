@@ -42,6 +42,7 @@ use function mt_rand;
  */
 class NetherVines extends Flowable{
 	use AgeableBlockTrait;
+
 	public const MAX_AGE = 25;
 
 	/** Direction the vine grows towards. */

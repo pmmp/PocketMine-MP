@@ -35,6 +35,7 @@ use pocketmine\world\Position;
 
 class Sugarcane extends Flowable{
 	use AgeableBlockTrait;
+
 	public const MAX_AGE = 15;
 
 	private function seekToBottom() : Position{
