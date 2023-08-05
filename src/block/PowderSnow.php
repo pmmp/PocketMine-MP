@@ -31,16 +31,6 @@ use pocketmine\world\sound\Sound;
 
 class PowderSnow extends Opaque{
 
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			VanillaItems::SNOWBALL()->setCount(4)
-		];
-	}
-
-	public function isAffectedBySilkTouch() : bool{
-		return true;
-	}
-
 	public function getBucketFillSound() : Sound{
 		return new BucketFillPowderSnowSound();
 	}

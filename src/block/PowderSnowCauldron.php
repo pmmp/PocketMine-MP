@@ -34,10 +34,6 @@ use pocketmine\world\sound\Sound;
 
 final class PowderSnowCauldron extends FillableCauldron{
 
-	public function writeStateToWorld() : void{
-		parent::writeStateToWorld();
-	}
-
 	public function getFillSound() : Sound{
 		return new CauldronFillPowderSnowSound();
 	}
