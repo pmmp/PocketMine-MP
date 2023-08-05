@@ -21,24 +21,19 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\event\player;
 
-use pocketmine\block\utils\TallGrassTrait;
-use pocketmine\item\Item;
+use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
+use pocketmine\player\Player;
 
-class DoubleTallGrass extends DoublePlant{
-	use TallGrassTrait {
-		getDropsForIncompatibleTool as traitGetDropsForIncompatibleTool;
-	}
+/**
+ * Called when a player attempts to perform the attack action (left-click) without a target entity.
+ */
+class PlayerMissSwingEvent extends PlayerEvent implements Cancellable{
+	use CancellableTrait;
 
-	public function canBeReplaced() : bool{
-		return true;
-	}
-
-	public function getDropsForIncompatibleTool(Item $item) : array{
-		if($this->top){
-			return $this->traitGetDropsForIncompatibleTool($item);
-		}
-		return [];
+	public function __construct(Player $player){
+		$this->player = $player;
 	}
 }

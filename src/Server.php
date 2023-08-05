@@ -81,7 +81,6 @@ use pocketmine\player\PlayerDataSaveException;
 use pocketmine\player\PlayerInfo;
 use pocketmine\plugin\FolderPluginLoader;
 use pocketmine\plugin\PharPluginLoader;
-use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginEnableOrder;
 use pocketmine\plugin\PluginGraylist;
 use pocketmine\plugin\PluginManager;
@@ -94,6 +93,7 @@ use pocketmine\scheduler\AsyncPool;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\stats\SendUsageTask;
 use pocketmine\thread\log\AttachableThreadSafeLogger;
+use pocketmine\thread\ThreadCrashException;
 use pocketmine\thread\ThreadSafeClassLoader;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
@@ -1518,23 +1518,38 @@ class Server{
 			$trace = $e->getTrace();
 		}
 
-		$errstr = $e->getMessage();
-		$errfile = $e->getFile();
-		$errline = $e->getLine();
+		//If this is a thread crash, this logs where the exception came from on the main thread, as opposed to the
+		//crashed thread. This is intentional, and might be useful for debugging
+		//Assume that the thread already logged the original exception with the correct stack trace
+		$this->logger->logException($e, $trace);
+
+		if($e instanceof ThreadCrashException){
+			$info = $e->getCrashInfo();
+			$type = $info->getType();
+			$errstr = $info->getMessage();
+			$errfile = $info->getFile();
+			$errline = $info->getLine();
+			$printableTrace = $info->getTrace();
+			$thread = $info->getThreadName();
+		}else{
+			$type = get_class($e);
+			$errstr = $e->getMessage();
+			$errfile = $e->getFile();
+			$errline = $e->getLine();
+			$printableTrace = Utils::printableTraceWithMetadata($trace);
+			$thread = "Main";
+		}
 
 		$errstr = preg_replace('/\s+/', ' ', trim($errstr));
 
-		$errfile = Filesystem::cleanPath($errfile);
-
-		$this->logger->logException($e, $trace);
-
 		$lastError = [
-			"type" => get_class($e),
+			"type" => $type,
 			"message" => $errstr,
-			"fullFile" => $e->getFile(),
-			"file" => $errfile,
+			"fullFile" => $errfile,
+			"file" => Filesystem::cleanPath($errfile),
 			"line" => $errline,
-			"trace" => $trace
+			"trace" => $printableTrace,
+			"thread" => $thread
 		];
 
 		global $lastExceptionError, $lastError;
@@ -1591,15 +1606,6 @@ class Server{
 					$this->logger->debug("Not sending crashdump due to last crash less than $crashInterval seconds ago");
 				}
 				@touch($stamp); //update file timestamp
-
-				$plugin = $dump->getData()->plugin;
-				if($plugin !== ""){
-					$p = $this->pluginManager->getPlugin($plugin);
-					if($p instanceof Plugin && !($p->getPluginLoader() instanceof PharPluginLoader)){
-						$this->logger->debug("Not sending crashdump due to caused by non-phar plugin");
-						$report = false;
-					}
-				}
 
 				if($dump->getData()->error["type"] === \ParseError::class){
 					$report = false;
