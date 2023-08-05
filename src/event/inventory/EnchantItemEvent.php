@@ -72,7 +72,7 @@ class EnchantItemEvent extends Event implements Cancellable{
 	}
 
 	/**
-	 * Returns the number of XP levels and lapis (from 1 to 3) that will be subtracted after enchanting
+	 * Returns the number of XP levels and lapis that will be subtracted after enchanting
 	 * if the player is not in creative mode.
 	 */
 	public function getCost() : int{
