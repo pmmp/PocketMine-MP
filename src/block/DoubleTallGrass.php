@@ -23,19 +23,21 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\TallGrassTrait;
 use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
-use function mt_rand;
 
 class DoubleTallGrass extends DoublePlant{
+	use TallGrassTrait {
+		getDropsForIncompatibleTool as traitGetDropsForIncompatibleTool;
+	}
 
 	public function canBeReplaced() : bool{
 		return true;
 	}
 
 	public function getDropsForIncompatibleTool(Item $item) : array{
-		if($this->top && mt_rand(0, 7) === 0){
-			return [VanillaItems::WHEAT_SEEDS()];
+		if($this->top){
+			return $this->traitGetDropsForIncompatibleTool($item);
 		}
 		return [];
 	}

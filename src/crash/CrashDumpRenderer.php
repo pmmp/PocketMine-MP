@@ -64,6 +64,7 @@ final class CrashDumpRenderer{
 
 		$this->addLine();
 
+		$this->addLine("Thread: " . $this->data->thread);
 		$this->addLine("Error: " . $this->data->error["message"]);
 		$this->addLine("File: " . $this->data->error["file"]);
 		$this->addLine("Line: " . $this->data->error["line"]);

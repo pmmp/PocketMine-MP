@@ -23,19 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\TallGrassTrait;
 use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
-use function mt_rand;
 
 class TallGrass extends Flowable{
-
-	public function canBeReplaced() : bool{
-		return true;
-	}
+	use TallGrassTrait;
 
 	private function canBeSupportedBy(Block $block) : bool{
 		return $block->hasTypeTag(BlockTypeTags::DIRT) || $block->hasTypeTag(BlockTypeTags::MUD);
@@ -53,23 +49,5 @@ class TallGrass extends Flowable{
 		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){ //Replace with common break method
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
-	}
-
-	public function getDropsForIncompatibleTool(Item $item) : array{
-		if(mt_rand(0, 15) === 0){
-			return [
-				VanillaItems::WHEAT_SEEDS()
-			];
-		}
-
-		return [];
-	}
-
-	public function getFlameEncouragement() : int{
-		return 60;
-	}
-
-	public function getFlammability() : int{
-		return 100;
 	}
 }

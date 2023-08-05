@@ -223,8 +223,12 @@ final class BlockStateSerializerHelper{
 	}
 
 	public static function encodeStem(Stem $block, BlockStateWriter $out) : BlockStateWriter{
+		//In PM, we use Facing::UP to indicate that the stem is not attached to a pumpkin/melon, since this makes the
+		//most intuitive sense (the stem is pointing at the sky). However, Bedrock uses the DOWN state for this, which
+		//is absurd, and I refuse to make our API similarly absurd.
+		$facing = $block->getFacing();
 		return self::encodeCrops($block, $out)
-			->writeHorizontalFacing(Facing::NORTH); //TODO: PM impl doesn't support this yet
+			->writeFacingWithoutUp($facing === Facing::UP ? Facing::DOWN : $facing);
 	}
 
 	public static function encodeStone(string $type) : BlockStateWriter{
