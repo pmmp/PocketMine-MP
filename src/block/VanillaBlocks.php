@@ -963,9 +963,9 @@ final class VanillaBlocks{
 		self::register("dark_prismarine_stairs", new Stair(new BID(Ids::DARK_PRISMARINE_STAIRS), "Dark Prismarine Stairs", $prismarineBreakInfo));
 		self::register("prismarine_stairs", new Stair(new BID(Ids::PRISMARINE_STAIRS), "Prismarine Stairs", $prismarineBreakInfo));
 
-		$pumpkinBreakInfo = new Info(BreakInfo::axe(1.0), enchantmentFlag: ItemFlags::HEAD_MASK);
+		$pumpkinBreakInfo = new Info(BreakInfo::axe(1.0));
 		self::register("pumpkin", new Pumpkin(new BID(Ids::PUMPKIN), "Pumpkin", $pumpkinBreakInfo));
-		self::register("carved_pumpkin", new CarvedPumpkin(new BID(Ids::CARVED_PUMPKIN), "Carved Pumpkin", $pumpkinBreakInfo));
+		self::register("carved_pumpkin", new CarvedPumpkin(new BID(Ids::CARVED_PUMPKIN), "Carved Pumpkin", new Info(BreakInfo::axe(1.0), enchantmentFlag: ItemFlags::HEAD_MASK)));
 		self::register("lit_pumpkin", new LitPumpkin(new BID(Ids::LIT_PUMPKIN), "Jack o'Lantern", $pumpkinBreakInfo));
 
 		self::register("pumpkin_stem", new PumpkinStem(new BID(Ids::PUMPKIN_STEM), "Pumpkin Stem", new Info(BreakInfo::instant())));
