@@ -68,9 +68,9 @@ class EndPortalFrame extends Opaque{
 		if($this->eye || $item->getTypeId() !== ItemTypeIds::ENDER_EYE){
 			return false;
 		}
-		$world = $this->getPosition()->getWorld();
-		$world->setBlock($this->getPosition(), $this->setEye(true));
-		$world->addSound($this->getPosition(), new EndPortalFrameFillSound());
+		$world = $this->position->getWorld();
+		$world->setBlock($this->position, $this->setEye(true));
+		$world->addSound($this->position, new EndPortalFrameFillSound());
 		$item->pop();
 
 		//TODO: portal spawn logic
