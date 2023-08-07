@@ -31,6 +31,7 @@ use pocketmine\item\enchantment\EnchantmentHelper as Helper;
 use pocketmine\item\enchantment\EnchantmentOption;
 use pocketmine\item\Item;
 use pocketmine\world\Position;
+use function array_values;
 use function count;
 
 class EnchantInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
@@ -57,9 +58,7 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 				$event = new PlayerEnchantmentOptionsRequestEvent($viewer, $this, $options);
 				$event->call();
 				if(!$event->isCancelled() && count($event->getOptions()) > 0){
-					foreach($event->getOptions() as $option){
-						$this->options[] = $option;
-					}
+					$this->options = array_values($event->getOptions());
 					$viewer->getNetworkSession()->sendEnchantOptions($this->options);
 				}
 			}
@@ -77,7 +76,7 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 	}
 
 	public function getOutput(int $optionId) : ?Item{
-		$option = $this->options[$optionId] ?? null;
+		$option = $this->getOption($optionId);
 		if($option === null){
 			// Failed to find an enchantment option with the passed network id
 			return null;
