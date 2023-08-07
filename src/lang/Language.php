@@ -23,18 +23,20 @@ declare(strict_types=1);
 
 namespace pocketmine\lang;
 
+use Phar;
 use pocketmine\utils\Utils;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
 use Symfony\Component\Filesystem\Path;
-use function array_filter;
 use function array_map;
+use function array_merge;
 use function count;
 use function explode;
 use function file_exists;
 use function is_dir;
 use function ord;
 use function parse_ini_file;
-use function scandir;
-use function str_ends_with;
 use function str_replace;
 use function str_starts_with;
 use function strlen;
@@ -42,7 +44,6 @@ use function strpos;
 use function strtolower;
 use function substr;
 use const INI_SCANNER_RAW;
-use const SCANDIR_SORT_NONE;
 
 class Language{
 
@@ -59,19 +60,13 @@ class Language{
 			$path = \pocketmine\LOCALE_DATA_PATH;
 		}
 
-		if(is_dir($path)){
-			$allFiles = scandir($path, SCANDIR_SORT_NONE);
-
-			if($allFiles !== false){
-				$files = array_filter($allFiles, function(string $filename) : bool{
-					return str_ends_with($filename, ".ini");
-				});
-
-				$result = [];
-
-				foreach($files as $file){
+		if(is_dir($path) || file_exists((Path::makeRelative($path, Phar::running(false))))) {
+			$result = [];
+			/** @var SplFileInfo $resource */
+			foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path)) as $resource){
+				if($resource->getExtension() === 'ini' && $resource->isFile()){
 					try{
-						$code = explode(".", $file)[0];
+						$code = explode(".", $resource->getFilename())[0];
 						$strings = self::loadLang($path, $code);
 						if(isset($strings[KnownTranslationKeys::LANGUAGE_NAME])){
 							$result[$code] = $strings[KnownTranslationKeys::LANGUAGE_NAME];
@@ -80,15 +75,17 @@ class Language{
 						// no-op
 					}
 				}
-
-				return $result;
 			}
+
+			return $result;
 		}
 
 		throw new LanguageNotFoundException("Language directory $path does not exist or is not a directory");
 	}
 
 	protected string $langName;
+
+	protected string $fallbackName;
 	/**
 	 * @var string[]
 	 * @phpstan-var array<string, string>
@@ -105,6 +102,7 @@ class Language{
 	 */
 	public function __construct(string $lang, ?string $path = null, string $fallback = self::FALLBACK_LANGUAGE){
 		$this->langName = strtolower($lang);
+		$this->fallbackName = strtolower($fallback);
 
 		if($path === null){
 			$path = \pocketmine\LOCALE_DATA_PATH;
@@ -122,6 +120,10 @@ class Language{
 		return $this->langName;
 	}
 
+	public function getFallbackLang() : string{
+		return $this->fallbackName;
+	}
+
 	/**
 	 * @return string[]
 	 * @phpstan-return array<string, string>
@@ -136,6 +138,17 @@ class Language{
 		}
 
 		throw new LanguageNotFoundException("Language \"$languageCode\" not found");
+	}
+
+	public function merge(Language $language) : void{
+		if($this->getLang() !== $language->getLang()){
+			throw new LanguageMismatchException("Cannot merge translations from different languages");
+		}
+		if($this->getLang() !== $language->getFallbackLang()){
+			throw new LanguageMismatchException("Cannot merge fallback translations from different languages");
+		}
+		$this->lang = array_merge($this->lang, $language->getAll());
+		$this->fallbackLang = array_merge($this->fallbackLang, $language->getAllFallback());
 	}
 
 	/**
@@ -183,6 +196,14 @@ class Language{
 	 */
 	public function getAll() : array{
 		return $this->lang;
+	}
+
+	/**
+	 * @return string[]
+	 * @phpstan-return array<string, string>
+	 */
+	public function getAllFallback() : array{
+		return $this->fallbackLang;
 	}
 
 	/**

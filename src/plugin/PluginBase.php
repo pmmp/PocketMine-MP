@@ -28,12 +28,18 @@ use pocketmine\command\CommandExecutor;
 use pocketmine\command\CommandSender;
 use pocketmine\command\PluginCommand;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\lang\Language;
+use pocketmine\lang\LanguageMismatchException;
+use pocketmine\lang\NamespacedLanguage;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Config;
 use pocketmine\utils\Utils;
+use SplFileInfo;
 use Symfony\Component\Filesystem\Path;
+use function array_filter;
+use function array_map;
 use function count;
 use function dirname;
 use function fclose;
@@ -53,6 +59,12 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	private ?Config $config = null;
 	private string $configFile;
 
+	/**
+	 * @var NamespacedLanguage[]
+	 * @phpstan-var array<string, NamespacedLanguage>
+	 */
+	private array $translations = [];
+
 	private PluginLogger $logger;
 	private TaskScheduler $scheduler;
 
@@ -68,6 +80,19 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		//TODO: this is accessed externally via reflection, not unused
 		$this->file = rtrim($file, "/" . DIRECTORY_SEPARATOR) . "/";
 		$this->configFile = Path::join($this->dataFolder, "config.yml");
+
+		$translations = Path::getLongestCommonBasePath(...array_map(
+			fn(SplFileInfo $resource) => $resource->getPathname(),
+			array_filter(
+				$resourceProvider->getResources(),
+				fn(SplFileInfo $resource) => str_contains($resource->getPath(), "resources/translations/") && $resource->getExtension() === "ini"
+			)
+		));
+		if($translations !== null && $translations !== ''){
+			foreach(Utils::stringifyKeys(Language::getLanguageList($translations)) as $code => $language){
+				$this->translations[$code] = new NamespacedLanguage($this->getName(), $code, $translations);
+			}
+		}
 
 		$prefix = $this->getDescription()->getPrefix();
 		$this->logger = new PluginLogger($server->getLogger(), $prefix !== "" ? $prefix : $this->getName());
@@ -116,6 +141,13 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 			$this->isEnabled = $enabled;
 			if($this->isEnabled){
 				$this->onEnable();
+				try{
+					foreach($this->getTranslations() as $translation){
+						$this->server->getLanguage()->merge($translation);
+					}
+				}catch(LanguageMismatchException $e){
+					throw new DisablePluginException($e->getMessage(), $e->getCode(), $e);
+				}
 			}else{
 				$this->onDisable();
 			}
@@ -251,7 +283,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	/**
 	 * Returns all the resources packaged with the plugin in the form ["path/in/resources" => SplFileInfo]
 	 *
-	 * @return \SplFileInfo[]
+	 * @return SplFileInfo[]
 	 */
 	public function getResources() : array{
 		return $this->resourceProvider->getResources();
@@ -279,6 +311,18 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	public function reloadConfig() : void{
 		$this->saveDefaultConfig();
 		$this->config = new Config($this->configFile);
+	}
+
+	public function addTranslations(NamespacedLanguage $language) : void{
+		$this->translations[$language->getLang()] = $language;
+	}
+
+	/**
+	 * @return NamespacedLanguage[]
+	 * @phpstan-return array<string, NamespacedLanguage>
+	 */
+	public function getTranslations() : array{
+		return $this->translations;
 	}
 
 	final public function getServer() : Server{
