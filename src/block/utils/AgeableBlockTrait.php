@@ -35,12 +35,18 @@ trait AgeableBlockTrait{
 	protected int $age = 0;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(strlen(decbin(self::MAX_AGE)), 0, self::MAX_AGE, $this->age);
+		$w->boundedInt((int) ceil(log(self::MAX_AGE, 2)), 0, self::MAX_AGE, $this->age);
 	}
 
+	/**
+	 * @phpstan-return int<0, self::MAX_AGE>
+	 */
 	public function getAge() : int{ return $this->age; }
 
-	/** @return $this */
+	/**
+	 * @phpstan-param int<0, self::MAX_AGE> $age
+	 * @return $this
+	 */
 	public function setAge(int $age) : self{
 		if($age < 0 || $age > self::MAX_AGE){
 			throw new \InvalidArgumentException("Age must be in range 0 ... " . self::MAX_AGE);
