@@ -35,6 +35,7 @@ use pocketmine\inventory\transaction\TransactionBuilder;
 use pocketmine\inventory\transaction\TransactionBuilderInventory;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\InventoryManager;
+use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerUIIds;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftingConsumeInputStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftingCreateSpecificResultStackRequestAction;
@@ -338,11 +339,10 @@ class ItemStackRequestExecutor{
 			$recipeId = $action->getRecipeId();
 			$window = $this->player->getCurrentWindow();
 			if($window instanceof EnchantInventory){
-				if(($option = $window->getOption($recipeId)) !== null){
-					/** @var int $optionCost */
-					$optionCost = $window->getOptionCost($recipeId);
-					$this->specialTransaction = new EnchantTransaction($this->player, $option, $optionCost);
-					$this->setNextCreatedItem($window->getOutput($recipeId));
+				$optionId = $recipeId - NetworkSession::ENCHANTMENT_OPTION_ID_OFFSET;
+				if(($option = $window->getOption($optionId)) !== null){
+					$this->specialTransaction = new EnchantTransaction($this->player, $option, $optionId + 1);
+					$this->setNextCreatedItem($window->getOutput($optionId));
 				}
 			}else{
 				$this->beginCrafting($recipeId, 1);

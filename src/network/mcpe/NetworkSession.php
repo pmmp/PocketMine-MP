@@ -134,6 +134,7 @@ use function ucfirst;
 use const JSON_THROW_ON_ERROR;
 
 class NetworkSession{
+	public const ENCHANTMENT_OPTION_ID_OFFSET = 100000;
 	private const INCOMING_PACKET_BATCH_PER_TICK = 2; //usually max 1 per tick, but transactions arrive separately
 	private const INCOMING_PACKET_BATCH_BUFFER_TICKS = 100; //enough to account for a 5-second lag spike
 
@@ -1171,18 +1172,15 @@ class NetworkSession{
 
 	/**
 	 * @param EnchantmentOption[] $options
-	 * @param int[]               $optionIds
-	 *
-	 * @phpstan-param-out int[]   $optionIds
 	 */
-	public function sendEnchantOptions(array $options, array &$optionIds) : void{
+	public function sendEnchantOptions(array $options) : void{
 		$protocolOptions = [];
 		// We set a large offset for optionId so that there is no attempt to craft an item with recipeId
 		// equal to optionId (this can happen when the plugin changes the current player window
 		// from EnchantInventory to another, since EnchantInventory is the only way to currently distinguish
 		// a crafting operation from an enchantment operation). This offset may need to be changed in the future
 		// if the number of craft recipes is close to the current offset value.
-		$optionId = 100000;
+		$optionId = self::ENCHANTMENT_OPTION_ID_OFFSET;
 
 		foreach($options as $option){
 			$protocolEnchantments = array_map(

@@ -31,9 +31,7 @@ use pocketmine\item\enchantment\EnchantmentHelper as Helper;
 use pocketmine\item\enchantment\EnchantmentOption;
 use pocketmine\item\Item;
 use pocketmine\world\Position;
-use function array_combine;
-use function array_keys;
-use function array_search;
+use function array_values;
 use function count;
 
 class EnchantInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
@@ -60,9 +58,8 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 				$event = new PlayerEnchantmentOptionsRequestEvent($viewer, $this, $options);
 				$event->call();
 				if(!$event->isCancelled() && count($event->getOptions()) > 0){
-					$optionIds = [];
-					$viewer->getNetworkSession()->sendEnchantOptions($event->getOptions(), $optionIds);
-					$this->options = array_combine($optionIds, $event->getOptions());
+					$this->options = array_values($event->getOptions());
+					$viewer->getNetworkSession()->sendEnchantOptions($this->options);
 				}
 			}
 		}
@@ -90,10 +87,5 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 
 	public function getOption(int $optionId) : ?EnchantmentOption{
 		return $this->options[$optionId] ?? null;
-	}
-
-	public function getOptionCost(int $optionId) : ?int{
-		$cost = array_search($optionId, array_keys($this->options), true);
-		return $cost === false ? null : $cost + 1;
 	}
 }
