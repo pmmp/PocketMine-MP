@@ -67,6 +67,10 @@ final class EnchantingTableOptionRegistry{
 		unset($this->enchantments[spl_object_id($enchantment)]);
 	}
 
+	public function unregisterAll() : void{
+		$this->enchantments = [];
+	}
+
 	/**
 	 * @return Enchantment[]
 	 */

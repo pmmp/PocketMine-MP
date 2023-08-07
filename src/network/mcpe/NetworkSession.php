@@ -1171,17 +1171,28 @@ class NetworkSession{
 
 	/**
 	 * @param EnchantmentOption[] $options
+	 * @param int[]               $optionIds
+	 *
+	 * @phpstan-param-out int[]   $optionIds
 	 */
-	public function sendEnchantOptions(array $options) : void{
+	public function sendEnchantOptions(array $options, array &$optionIds) : void{
 		$protocolOptions = [];
-		$optionId = 0;
+		// We set a large offset for optionId so that there is no attempt to craft an item with recipeId
+		// equal to optionId (this can happen when the plugin changes the current player window
+		// from EnchantInventory to another, since EnchantInventory is the only way to currently distinguish
+		// a crafting operation from an enchantment operation). This offset may need to be changed in the future
+		// if the number of craft recipes is close to the current offset value.
+		$optionId = 100000;
 
 		foreach($options as $option){
 			$protocolEnchantments = array_map(
 				fn(EnchantmentInstance $e) => new Enchant(EnchantmentIdMap::getInstance()->toId($e->getType()), $e->getLevel()),
 				$option->getEnchantments()
 			);
-			$protocolOptions[] = new EnchantOption($option->getRequiredXpLevel(), $optionId, $protocolEnchantments, [], [], $option->getDisplayName(), $optionId);
+			// We don't pay attention to the $slot, $heldActivatedEnchantments and $selfActivatedEnchantments
+			// as everything works fine without them (perhaps these values are used somehow in the BDS).
+			$protocolOptions[] = new EnchantOption($option->getRequiredXpLevel(), 0, $protocolEnchantments, [], [], $option->getDisplayName(), $optionId);
+			$optionIds[] = $optionId;
 			$optionId++;
 		}
 

@@ -339,7 +339,7 @@ class ItemStackRequestExecutor{
 			$window = $this->player->getCurrentWindow();
 			if($window instanceof EnchantInventory){
 				if(($option = $window->getOption($recipeId)) !== null){
-					$this->specialTransaction = new EnchantTransaction($this->player, $option, $recipeId + 1);
+					$this->specialTransaction = new EnchantTransaction($this->player, $option, $window->getOptionCost($recipeId));
 					$this->setNextCreatedItem($window->getOutput($recipeId));
 				}
 			}else{

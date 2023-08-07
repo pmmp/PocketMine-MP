@@ -457,6 +457,12 @@ class Item implements \JsonSerializable{
 		return $this->name;
 	}
 
+	/**
+	 * Returns a flag value that represents the type of item being enchanted and is used to determine
+	 * what enchantments can be applied to this item in an enchanting table and anvil.
+	 *
+	 * This is a bit mask value (see {@link ItemFlags}).
+	 */
 	public function getEnchantmentFlag() : int{
 		return $this->enchantmentFlag;
 	}
@@ -464,7 +470,7 @@ class Item implements \JsonSerializable{
 	/**
 	 * Returns the value that defines how enchantable the item is.
 	 *
-	 * The higher an item's enchantability is the more likely it will be to gain high-level enchantments
+	 * The higher an item's enchantability is, the more likely it will be to gain high-level enchantments
 	 * or multiple enchantments upon being enchanted in an enchanting table.
 	 */
 	public function getEnchantability() : int{
