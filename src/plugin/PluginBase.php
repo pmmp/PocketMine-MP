@@ -39,11 +39,15 @@ use function dirname;
 use function fclose;
 use function file_exists;
 use function fopen;
+use function is_dir;
 use function mkdir;
 use function rtrim;
 use function str_contains;
+use function str_replace;
 use function stream_copy_to_stream;
+use function strlen;
 use function strtolower;
+use function substr;
 use function trim;
 use const DIRECTORY_SEPARATOR;
 
@@ -62,11 +66,13 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		private PluginDescription $description,
 		private string $dataFolder,
 		private string $file,
-		private ResourceProvider $resourceProvider
+		private string $resourceFolder,
 	){
 		$this->dataFolder = rtrim($dataFolder, "/" . DIRECTORY_SEPARATOR) . "/";
 		//TODO: this is accessed externally via reflection, not unused
 		$this->file = rtrim($file, "/" . DIRECTORY_SEPARATOR) . "/";
+		$this->resourceFolder = rtrim(str_replace(DIRECTORY_SEPARATOR, "/", $resourceFolder), "/") . "/";
+
 		$this->configFile = Path::join($this->dataFolder, "config.yml");
 
 		$prefix = $this->getDescription()->getPrefix();
@@ -215,7 +221,14 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 * @return null|resource Resource data, or null
 	 */
 	public function getResource(string $filename){
-		return $this->resourceProvider->getResource($filename);
+		$filename = rtrim(str_replace(DIRECTORY_SEPARATOR, "/", $filename), "/");
+		if(file_exists($this->resourceFolder . $filename)){
+			$resource = fopen($this->resourceFolder . $filename, "rb");
+			if($resource === false) throw new AssumptionFailedError("fopen() should not fail on a file which exists");
+			return $resource;
+		}
+
+		return null;
 	}
 
 	/**
@@ -254,7 +267,18 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 * @return \SplFileInfo[]
 	 */
 	public function getResources() : array{
-		return $this->resourceProvider->getResources();
+		$resources = [];
+		if(is_dir($this->resourceFolder)){
+			/** @var \SplFileInfo $resource */
+			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->resourceFolder)) as $resource){
+				if($resource->isFile()){
+					$path = str_replace(DIRECTORY_SEPARATOR, "/", substr((string) $resource, strlen($this->resourceFolder)));
+					$resources[$path] = $resource;
+				}
+			}
+		}
+
+		return $resources;
 	}
 
 	public function getConfig() : Config{
