@@ -79,6 +79,8 @@ class Enchantment{
 
 	/**
 	 * Returns a bitset indicating what item types can have this item applied from an enchanting table.
+	 *
+	 * @deprecated
 	 */
 	public function getPrimaryItemFlags() : int{
 		return $this->primaryItemFlags;
@@ -87,6 +89,8 @@ class Enchantment{
 	/**
 	 * Returns a bitset indicating what item types cannot have this item applied from an enchanting table, but can from
 	 * an anvil.
+	 *
+	 * @deprecated
 	 */
 	public function getSecondaryItemFlags() : int{
 		return $this->secondaryItemFlags;
@@ -94,6 +98,8 @@ class Enchantment{
 
 	/**
 	 * Returns whether this enchantment can apply to the item type from an enchanting table.
+	 *
+	 * @deprecated
 	 */
 	public function hasPrimaryItemType(int $flag) : bool{
 		return ($this->primaryItemFlags & $flag) !== 0;
@@ -101,6 +107,8 @@ class Enchantment{
 
 	/**
 	 * Returns whether this enchantment can apply to the item type from an anvil, if it is not a primary item.
+	 *
+	 * @deprecated
 	 */
 	public function hasSecondaryItemType(int $flag) : bool{
 		return ($this->secondaryItemFlags & $flag) !== 0;

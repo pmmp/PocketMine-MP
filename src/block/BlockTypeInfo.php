@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\enchantment\ItemFlags;
 use function array_fill_keys;
 use function array_keys;
 
@@ -40,7 +39,7 @@ final class BlockTypeInfo{
 	public function __construct(
 		private BlockBreakInfo $breakInfo,
 		array $typeTags = [],
-		private int $enchantmentFlag = ItemFlags::NONE
+		private ?string $enchantmentTag = null
 	){
 		$this->typeTags = array_fill_keys($typeTags, true);
 	}
@@ -52,7 +51,7 @@ final class BlockTypeInfo{
 
 	public function hasTypeTag(string $tag) : bool{ return isset($this->typeTags[$tag]); }
 
-	public function getEnchantmentFlag() : int{
-		return $this->enchantmentFlag;
+	public function getEnchantmentTag() : ?string{
+		return $this->enchantmentTag;
 	}
 }

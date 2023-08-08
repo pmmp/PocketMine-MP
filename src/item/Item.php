@@ -38,7 +38,6 @@ use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\item\enchantment\EnchantmentInstance;
-use pocketmine\item\enchantment\ItemFlags;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
@@ -112,7 +111,7 @@ class Item implements \JsonSerializable{
 	public function __construct(
 		private ItemIdentifier $identifier,
 		protected string $name = "Unknown",
-		private int $enchantmentFlag = ItemFlags::NONE
+		private ?string $enchantmentTag = null
 	){
 		$this->nbt = new CompoundTag();
 	}
@@ -458,13 +457,11 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
-	 * Returns a flag value that represents the type of item being enchanted and is used to determine
+	 * Returns a tag that represents the type of item being enchanted and is used to determine
 	 * what enchantments can be applied to this item in an enchanting table and anvil.
-	 *
-	 * This is a bit mask value (see {@link ItemFlags}).
 	 */
-	public function getEnchantmentFlag() : int{
-		return $this->enchantmentFlag;
+	public function getEnchantmentTag() : ?string{
+		return $this->enchantmentTag;
 	}
 
 	/**

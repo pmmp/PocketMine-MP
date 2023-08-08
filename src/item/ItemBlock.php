@@ -36,7 +36,7 @@ final class ItemBlock extends Item{
 	public function __construct(
 		private Block $block
 	){
-		parent::__construct(ItemIdentifier::fromBlock($block), $block->getName(), $block->getEnchantmentFlag());
+		parent::__construct(ItemIdentifier::fromBlock($block), $block->getName(), $block->getEnchantmentTag());
 	}
 
 	protected function describeState(RuntimeDataDescriber $w) : void{

@@ -422,8 +422,12 @@ class Block{
 		return $this->typeInfo->getBreakInfo();
 	}
 
-	public function getEnchantmentFlag() : int{
-		return $this->typeInfo->getEnchantmentFlag();
+	/**
+	 * Returns a tag that represents the type of item being enchanted and is used to determine
+	 * what enchantments can be applied to the item of this block in an enchanting table and anvil.
+	 */
+	public function getEnchantmentTag() : ?string{
+		return $this->typeInfo->getEnchantmentTag();
 	}
 
 	/**

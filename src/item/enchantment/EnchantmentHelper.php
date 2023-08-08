@@ -164,11 +164,7 @@ final class EnchantmentHelper{
 	private static function getAvailableEnchantments(int $enchantingPower, Item $item) : array{
 		$list = [];
 
-		foreach(EnchantingTableOptionRegistry::getInstance()->getAll() as $enchantment){
-			if(!$enchantment->hasPrimaryItemType($item->getEnchantmentFlag())){
-				continue;
-			}
-
+		foreach(EnchantingTableOptionRegistry::getInstance()->getAvailableEnchantments($item) as $enchantment){
 			for($lvl = $enchantment->getMaxLevel(); $lvl > 0; $lvl--){
 				if($enchantingPower >= $enchantment->getMinEnchantingPower($lvl) &&
 					$enchantingPower <= $enchantment->getMaxEnchantingPower($lvl)

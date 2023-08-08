@@ -1,0 +1,177 @@
+<?php
+
+/*
+ *
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
+ *
+ *
+ */
+
+declare(strict_types=1);
+
+namespace pocketmine\item\enchantment;
+
+use pocketmine\item\enchantment\ItemEnchantmentTags as Tags;
+use pocketmine\utils\SingletonTrait;
+use function array_diff;
+use function array_intersect;
+use function array_merge;
+use function array_search;
+use function array_unique;
+use function count;
+
+final class ItemEnchantmentTagRegistry{
+	use SingletonTrait;
+
+	/** @phpstan-var array<string, string[]> */
+	private array $tagMap = [];
+
+	private function __construct(){
+		$this->register(Tags::ARMOR, [Tags::HELMET, Tags::CHESTPLATE, Tags::LEGGINGS, Tags::BOOTS]);
+		$this->register(Tags::SHIELD);
+		$this->register(Tags::SWORD);
+		$this->register(Tags::TRIDENT);
+		$this->register(Tags::BOW);
+		$this->register(Tags::CROSSBOW);
+		$this->register(Tags::SHEARS);
+		$this->register(Tags::FLINT_AND_STEEL);
+		$this->register(Tags::DIG_TOOLS, [Tags::AXE, Tags::PICKAXE, Tags::SHOVEL, Tags::HOE]);
+		$this->register(Tags::FISHING_ROD);
+		$this->register(Tags::CARROT_ON_STICK);
+		$this->register(Tags::COMPASS);
+		$this->register(Tags::MASK);
+		$this->register(Tags::ELYTRA);
+		$this->register(Tags::BRUSH);
+		$this->register(
+			Tags::BREAKABLE,
+			[
+				Tags::ARMOR, Tags::SHIELD, Tags::SWORD, Tags::TRIDENT, Tags::BOW, Tags::CROSSBOW, Tags::SHEARS,
+				Tags::FLINT_AND_STEEL, Tags::DIG_TOOLS, Tags::FISHING_ROD, Tags::CARROT_ON_STICK, Tags::ELYTRA, Tags::BRUSH
+			]
+		);
+	}
+
+	/**
+	 * Register tag and its nested tags.
+	 *
+	 * @param string[] $nestedTags
+	 */
+	public function register(string $tag, array $nestedTags = []) : void{
+		$this->assertNotInternalTag($tag);
+
+		foreach($nestedTags as $nestedTag){
+			if(!isset($this->tagMap[$nestedTag])){
+				$this->register($nestedTag);
+			}
+			$this->tagMap[$tag][] = $nestedTag;
+		}
+
+		if(!isset($this->tagMap[$tag])){
+			$this->tagMap[$tag] = [];
+			$this->tagMap[Tags::ALL][] = $tag;
+		}
+	}
+
+	public function unregister(string $tag) : void{
+		$this->assertNotInternalTag($tag);
+
+		if(!isset($this->tagMap[$tag])){
+			return;
+		}
+
+		unset($this->tagMap[$tag]);
+
+		foreach($this->tagMap as $tmpTag => $nestedTags){
+			if(($nestedKey = array_search($tag, $nestedTags, true)) !== false){
+				unset($this->tagMap[$tmpTag][$nestedKey]);
+			}
+		}
+	}
+
+	/**
+	 * Remove specified nested tags.
+	 *
+	 * @param string[] $nestedTags
+	 */
+	public function removeNested(string $tag, array $nestedTags) : void{
+		$this->assertNotInternalTag($tag);
+		$this->tagMap[$tag] = array_diff($this->tagMap[$tag], $nestedTags);
+	}
+
+	/**
+	 * Returns nested tags of a particular tag.
+	 *
+	 * @return string[]
+	 */
+	public function getNested(string $tag) : array{
+		return $this->tagMap[$tag] ?? [];
+	}
+
+	/**
+	 * Returns all tags that are recursively nested within the given tag and do not have any further
+	 * nested tags beneath it.
+	 *
+	 * @return string[]
+	 */
+	public function getNonGroupingTags(string $tag) : array{
+		$nestedTags = $this->getNested($tag);
+
+		if(count($nestedTags) === 0){
+			return [$tag];
+		}
+
+		$result = [];
+		foreach($nestedTags as $nestedTag){
+			$result = array_merge($result, $this->getNonGroupingTags($nestedTag));
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Returns whether one tag array is a subset of another tag array.
+	 *
+	 * @param string[] $firstTags
+	 * @param string[] $secondTags
+	 */
+	public function isTagArraySubset(array $firstTags, array $secondTags) : bool{
+		if(count($firstTags) === 0 || count($secondTags) === 0){
+			return false;
+		}
+
+		$firstNonGroupingTags = [];
+		$secondNonGroupingTags = [];
+
+		foreach($firstTags as $tag){
+			$firstNonGroupingTags = array_unique(array_merge($firstNonGroupingTags, $this->getNonGroupingTags($tag)));
+		}
+		foreach($secondTags as $tag){
+			$secondNonGroupingTags = array_unique(array_merge($secondNonGroupingTags, $this->getNonGroupingTags($tag)));
+		}
+
+		$intersection = array_intersect($firstNonGroupingTags, $secondNonGroupingTags);
+
+		return count(array_diff($firstNonGroupingTags, $intersection)) === 0 ||
+			count(array_diff($secondNonGroupingTags, $intersection)) === 0;
+	}
+
+	private function assertNotInternalTag(string $tag) : void{
+		if($tag === Tags::ALL){
+			throw new \InvalidArgumentException(
+				"Cannot perform register and unregister operations on the internal item enchantment tag '$tag'"
+			);
+		}
+	}
+}
