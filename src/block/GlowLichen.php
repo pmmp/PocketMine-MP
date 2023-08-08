@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
-use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -166,14 +166,7 @@ class GlowLichen extends Transparent{
 			return false;
 		}
 
-		$ev = new BlockSpreadEvent($replacedBlock, $this, $replacementBlock);
-		$ev->call();
-		if(!$ev->isCancelled()){
-			$world->setBlock($replacedBlock->getPosition(), $ev->getNewState());
-			return true;
-		}
-
-		return false;
+		return BlockEventHelper::spread($replacedBlock, $replacementBlock, $this);
 	}
 
 	/**
