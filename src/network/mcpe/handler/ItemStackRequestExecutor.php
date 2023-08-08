@@ -336,16 +336,15 @@ class ItemStackRequestExecutor{
 
 			$this->setNextCreatedItem($item, true);
 		}elseif($action instanceof CraftRecipeStackRequestAction){
-			$recipeId = $action->getRecipeId();
 			$window = $this->player->getCurrentWindow();
 			if($window instanceof EnchantInventory){
-				$optionId = $recipeId - NetworkSession::ENCHANTMENT_OPTION_ID_OFFSET;
+				$optionId = $action->getRecipeId() - NetworkSession::ENCHANTMENT_OPTION_ID_OFFSET;
 				if(($option = $window->getOption($optionId)) !== null){
 					$this->specialTransaction = new EnchantTransaction($this->player, $option, $optionId + 1);
 					$this->setNextCreatedItem($window->getOutput($optionId));
 				}
 			}else{
-				$this->beginCrafting($recipeId, 1);
+				$this->beginCrafting($action->getRecipeId(), 1);
 			}
 		}elseif($action instanceof CraftRecipeAutoStackRequestAction){
 			$this->beginCrafting($action->getRecipeId(), $action->getRepetitions());

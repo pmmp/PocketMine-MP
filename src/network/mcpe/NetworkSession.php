@@ -1187,7 +1187,7 @@ class NetworkSession{
 				fn(EnchantmentInstance $e) => new Enchant(EnchantmentIdMap::getInstance()->toId($e->getType()), $e->getLevel()),
 				$option->getEnchantments()
 			);
-			// We don't pay attention to the $slot, $heldActivatedEnchantments and $selfActivatedEnchantments
+			// We don't pay attention to the $slotFlags, $heldActivatedEnchantments and $selfActivatedEnchantments
 			// as everything works fine without them (perhaps these values are used somehow in the BDS).
 			$protocolOptions[] = new EnchantOption($option->getRequiredXpLevel(), 0, $protocolEnchantments, [], [], $option->getDisplayName(), $optionId);
 			$optionId++;

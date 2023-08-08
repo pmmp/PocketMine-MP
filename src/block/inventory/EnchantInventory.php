@@ -76,12 +76,7 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 
 	public function getOutput(int $optionId) : ?Item{
 		$option = $this->getOption($optionId);
-		if($option === null){
-			// Failed to find an enchantment option with the passed network id
-			return null;
-		}
-
-		return Helper::enchantItem($this->getInput(), $option->getEnchantments());
+		return $option === null ? null : Helper::enchantItem($this->getInput(), $option->getEnchantments());
 	}
 
 	public function getOption(int $optionId) : ?EnchantmentOption{
