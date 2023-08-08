@@ -124,7 +124,7 @@ trait CommonThreadPartsTrait{
 	 */
 	protected function onShutdown() : void{
 		$this->synchronized(function() : void{
-			if(!$this->isKilled && $this->crashInfo === null){
+			if($this->isTerminated() && $this->crashInfo === null){
 				$last = error_get_last();
 				if($last !== null){
 					//fatal error
