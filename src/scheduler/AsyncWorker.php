@@ -69,11 +69,6 @@ class AsyncWorker extends Worker{
 		$this->saveToThreadStore(self::TLS_KEY_NOTIFIER, $this->sleeperEntry->createNotifier());
 	}
 
-	protected function onUncaughtException(\Throwable $e) : void{
-		parent::onUncaughtException($e);
-		$this->logger->logException($e);
-	}
-
 	public function getLogger() : ThreadSafeLogger{
 		return $this->logger;
 	}
