@@ -28,6 +28,7 @@ use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\Server;
 use function error_get_last;
 use function error_reporting;
+use function implode;
 use function register_shutdown_function;
 use function set_exception_handler;
 
