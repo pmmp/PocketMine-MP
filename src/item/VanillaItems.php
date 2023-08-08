@@ -237,6 +237,7 @@ use pocketmine\world\World;
  * @method static Item POPPED_CHORUS_FRUIT()
  * @method static Potato POTATO()
  * @method static Potion POTION()
+ * @method static BlockBucket POWDER_SNOW_BUCKET()
  * @method static Item PRISMARINE_CRYSTALS()
  * @method static Item PRISMARINE_SHARD()
  * @method static Pufferfish PUFFERFISH()
@@ -485,6 +486,7 @@ final class VanillaItems{
 		self::register("popped_chorus_fruit", new Item(new IID(Ids::POPPED_CHORUS_FRUIT), "Popped Chorus Fruit"));
 		self::register("potato", new Potato(new IID(Ids::POTATO), "Potato"));
 		self::register("potion", new Potion(new IID(Ids::POTION), "Potion"));
+		self::register("powder_snow_bucket", new BlockBucket(new IID(Ids::POWDER_SNOW_BUCKET), "Powder Snow Bucket", Blocks::POWDER_SNOW()));
 		self::register("prismarine_crystals", new Item(new IID(Ids::PRISMARINE_CRYSTALS), "Prismarine Crystals"));
 		self::register("prismarine_shard", new Item(new IID(Ids::PRISMARINE_SHARD), "Prismarine Shard"));
 		self::register("pufferfish", new Pufferfish(new IID(Ids::PUFFERFISH), "Pufferfish"));

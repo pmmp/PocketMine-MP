@@ -323,6 +323,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::POPPED_CHORUS_FRUIT, Items::POPPED_CHORUS_FRUIT());
 		$this->map1to1Item(Ids::PORKCHOP, Items::RAW_PORKCHOP());
 		$this->map1to1Item(Ids::POTATO, Items::POTATO());
+		$this->map1to1Item(Ids::POWDER_SNOW_BUCKET, Items::POWDER_SNOW_BUCKET());
 		$this->map1to1Item(Ids::PRISMARINE_CRYSTALS, Items::PRISMARINE_CRYSTALS());
 		$this->map1to1Item(Ids::PRISMARINE_SHARD, Items::PRISMARINE_SHARD());
 		$this->map1to1Item(Ids::PUFFERFISH, Items::PUFFERFISH());

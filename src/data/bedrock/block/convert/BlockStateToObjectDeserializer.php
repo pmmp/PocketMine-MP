@@ -321,7 +321,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return (match($liquid = $in->readString(StateNames::CAULDRON_LIQUID)){
 				StringValues::CAULDRON_LIQUID_WATER => Blocks::WATER_CAULDRON(),
 				StringValues::CAULDRON_LIQUID_LAVA => Blocks::LAVA_CAULDRON(),
-				StringValues::CAULDRON_LIQUID_POWDER_SNOW => throw new UnsupportedBlockStateException("Powder snow is not supported yet"),
+				StringValues::CAULDRON_LIQUID_POWDER_SNOW => Blocks::POWDER_SNOW_CAULDRON(),
 				default => throw $in->badValueException(StateNames::CAULDRON_LIQUID, $liquid)
 			})->setFillLevel($level);
 		};
@@ -750,6 +750,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::SMOOTH_BASALT, fn() => Blocks::SMOOTH_BASALT());
 		$this->mapSimple(Ids::SMOOTH_STONE, fn() => Blocks::SMOOTH_STONE());
 		$this->mapSimple(Ids::SNOW, fn() => Blocks::SNOW());
+		$this->mapSimple(Ids::POWDER_SNOW, fn() => Blocks::POWDER_SNOW());
 		$this->mapSimple(Ids::SOUL_SAND, fn() => Blocks::SOUL_SAND());
 		$this->mapSimple(Ids::SOUL_SOIL, fn() => Blocks::SOUL_SOIL());
 		$this->mapSimple(Ids::SPORE_BLOSSOM, fn() => Blocks::SPORE_BLOSSOM());
