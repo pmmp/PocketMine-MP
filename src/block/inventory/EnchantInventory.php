@@ -52,7 +52,7 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 			foreach($this->viewers as $viewer){
 				$this->options = [];
 				$item = $this->getInput();
-				$options = Helper::getEnchantOptions($this->holder, $item, $viewer->getXpSeed());
+				$options = Helper::getEnchantOptions($this->holder, $item, $viewer->getEnchantmentSeed());
 
 				$event = new PlayerEnchantmentOptionsRequestEvent($viewer, $this, $options);
 				$event->call();

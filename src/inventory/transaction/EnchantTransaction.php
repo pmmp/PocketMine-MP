@@ -117,7 +117,7 @@ class EnchantTransaction extends InventoryTransaction{
 		if($this->source->hasFiniteResources()){
 			$this->source->getXpManager()->subtractXpLevels($this->cost);
 		}
-		$this->source->setXpSeed($this->source->generateXpSeed());
+		$this->source->setEnchantmentSeed($this->source->generateEnchantmentSeed());
 	}
 
 	protected function callExecuteEvent() : bool{
