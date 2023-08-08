@@ -93,9 +93,9 @@ final class ItemEnchantmentTagRegistry{
 
 		unset($this->tagMap[$tag]);
 
-		foreach($this->tagMap as $tmpTag => $nestedTags){
+		foreach($this->tagMap as &$nestedTags){
 			if(($nestedKey = array_search($tag, $nestedTags, true)) !== false){
-				unset($this->tagMap[$tmpTag][$nestedKey]);
+				unset($nestedTags[$nestedKey]);
 			}
 		}
 	}

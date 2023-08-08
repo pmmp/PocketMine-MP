@@ -28,6 +28,7 @@ use pocketmine\item\enchantment\ItemEnchantmentTags as Tags;
 use pocketmine\item\enchantment\VanillaEnchantments as Enchantments;
 use pocketmine\item\Item;
 use pocketmine\utils\SingletonTrait;
+use function array_filter;
 use function spl_object_id;
 
 /**
