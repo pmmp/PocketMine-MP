@@ -200,16 +200,16 @@
         },
         {
             "name": "pocketmine/bedrock-protocol",
-            "version": "23.0.2+bedrock-1.20.10",
+            "version": "23.0.3+bedrock-1.20.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "69a309a2dd7dcf3ec8c316385b866397e8c2cbfd"
+                "reference": "e4157c7af3f91e1b08fe21be171eb73dad7029e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/69a309a2dd7dcf3ec8c316385b866397e8c2cbfd",
-                "reference": "69a309a2dd7dcf3ec8c316385b866397e8c2cbfd",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/e4157c7af3f91e1b08fe21be171eb73dad7029e9",
+                "reference": "e4157c7af3f91e1b08fe21be171eb73dad7029e9",
                 "shasum": ""
             },
             "require": {
@@ -218,8 +218,8 @@
                 "php": "^8.0",
                 "pocketmine/binaryutils": "^0.2.0",
                 "pocketmine/color": "^0.2.0 || ^0.3.0",
-                "pocketmine/math": "^0.3.0 || ^0.4.0",
-                "pocketmine/nbt": "^0.3.0",
+                "pocketmine/math": "^0.3.0 || ^0.4.0 || ^1.0.0",
+                "pocketmine/nbt": "^0.3.0 || ^1.0.0",
                 "ramsey/uuid": "^4.1"
             },
             "require-dev": {
@@ -241,9 +241,9 @@
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
-                "source": "https://github.com/pmmp/BedrockProtocol/tree/23.0.2+bedrock-1.20.10"
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/23.0.3+bedrock-1.20.10"
             },
-            "time": "2023-07-24T15:35:36+00:00"
+            "time": "2023-08-03T15:30:52+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
