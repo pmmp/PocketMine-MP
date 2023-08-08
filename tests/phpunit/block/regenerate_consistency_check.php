@@ -24,6 +24,7 @@ declare(strict_types=1);
 use pocketmine\block\Block;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Utils;
 
 require dirname(__DIR__, 3) . '/vendor/autoload.php';
 
@@ -91,8 +92,9 @@ foreach($new as $stateId => $name){
 	$newTable[$name][] = $stateId;
 }
 ksort($newTable, SORT_STRING);
-foreach($newTable as &$stateIds){
+foreach(Utils::stringifyKeys($newTable) as $name => $stateIds){
 	sort($stateIds, SORT_NUMERIC);
+	$newTable[$name] = $stateIds;
 }
 
 file_put_contents(__DIR__ . '/block_factory_consistency_check.json', json_encode(
