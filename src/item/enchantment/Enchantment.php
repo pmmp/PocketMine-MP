@@ -44,8 +44,8 @@ class Enchantment{
 	/**
 	 * @phpstan-param null|(\Closure(int $level) : int) $minEnchantingPower
 	 *
-	 * @param int $primaryItemFlags @deprecated
-	 * @param int $secondaryItemFlags @deprecated
+	 * @param int $primaryItemFlags     @deprecated
+	 * @param int $secondaryItemFlags   @deprecated
 	 * @param int $enchantingPowerRange Value used to calculate the maximum enchanting power (minEnchantingPower + enchantingPowerRange)
 	 */
 	public function __construct(
