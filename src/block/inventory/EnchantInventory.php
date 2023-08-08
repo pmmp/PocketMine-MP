@@ -26,7 +26,6 @@ namespace pocketmine\block\inventory;
 use pocketmine\event\inventory\PlayerEnchantmentOptionsRequestEvent;
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\inventory\TemporaryInventory;
-use pocketmine\item\enchantment\EnchantmentHelper;
 use pocketmine\item\enchantment\EnchantmentHelper as Helper;
 use pocketmine\item\enchantment\EnchantmentOption;
 use pocketmine\item\Item;
@@ -82,7 +81,7 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 			return null;
 		}
 
-		return EnchantmentHelper::enchantItem($this->getInput(), $option->getEnchantments());
+		return Helper::enchantItem($this->getInput(), $option->getEnchantments());
 	}
 
 	public function getOption(int $optionId) : ?EnchantmentOption{
