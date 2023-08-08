@@ -52,6 +52,9 @@ final class BlockTypeInfo{
 
 	public function hasTypeTag(string $tag) : bool{ return isset($this->typeTags[$tag]); }
 
+	/**
+	 * @return string[]
+	 */
 	public function getEnchantmentTags() : array{
 		return $this->enchantmentTags;
 	}

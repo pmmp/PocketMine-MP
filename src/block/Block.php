@@ -428,6 +428,8 @@ class Block{
 	 * Returns a tag that represents the type of item being enchanted and is used to determine
 	 * what enchantments can be applied to the item of this block in an enchanting table and anvil.
 	 * @see ItemEnchantmentTags, ItemEnchantmentTagRegistry
+	 *
+	 * @return string[]
 	 */
 	public function getEnchantmentTags() : array{
 		return $this->typeInfo->getEnchantmentTags();

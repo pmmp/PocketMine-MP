@@ -46,9 +46,12 @@ class EnchantTransaction extends InventoryTransaction{
 	}
 
 	private function validateOutput() : void{
-		$enchantedInput = EnchantmentHelper::enchantItem($this->inputItem, $this->option->getEnchantments());
+		if($this->inputItem === null || $this->outputItem === null){
+			throw new AssumptionFailedError("Expected that inputItem and outputItem are not null before validating output");
+		}
 
-		if($this->outputItem === null || !$this->outputItem->equalsExact($enchantedInput)){
+		$enchantedInput = EnchantmentHelper::enchantItem($this->inputItem, $this->option->getEnchantments());
+		if(!$this->outputItem->equalsExact($enchantedInput)){
 			throw new TransactionValidationException("Invalid output item");
 		}
 	}
@@ -118,10 +121,10 @@ class EnchantTransaction extends InventoryTransaction{
 	}
 
 	protected function callExecuteEvent() : bool{
-		if ($this->inputItem === null || $this->outputItem === null) {
-			throw new AssumptionFailedError("Expected inputItem and outputItem to be set before the event executing");
+		if($this->inputItem === null || $this->outputItem === null){
+			throw new AssumptionFailedError("Expected that inputItem and outputItem are not null before executing the event");
 		}
-		
+
 		$event = new EnchantItemEvent($this, $this->option, $this->inputItem, $this->outputItem, $this->cost);
 		$event->call();
 		return !$event->isCancelled();
