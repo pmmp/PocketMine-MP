@@ -88,7 +88,7 @@ class EnchantTransaction extends InventoryTransaction{
 			if($input->getTypeId() === ItemTypeIds::LAPIS_LAZULI){
 				$lapisSpent = $input->getCount();
 			}else{
-				if(isset($this->inputItem)){
+				if($this->inputItem !== null){
 					throw new TransactionValidationException("Received more than 1 items to enchant");
 				}
 				$this->inputItem = $input;
