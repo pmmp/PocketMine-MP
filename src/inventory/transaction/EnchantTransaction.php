@@ -29,12 +29,13 @@ use pocketmine\item\enchantment\EnchantmentOption;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
 use function count;
 
 class EnchantTransaction extends InventoryTransaction{
 
-	private Item $inputItem;
-	private Item $outputItem;
+	private ?Item $inputItem = null;
+	private ?Item $outputItem = null;
 
 	public function __construct(
 		Player $source,
@@ -47,9 +48,7 @@ class EnchantTransaction extends InventoryTransaction{
 	private function validateOutput() : void{
 		$enchantedInput = EnchantmentHelper::enchantItem($this->inputItem, $this->option->getEnchantments());
 
-		if(!$this->outputItem->equalsExact($enchantedInput) ||
-			$this->outputItem->getEnchantments() !== $enchantedInput->getEnchantments()
-		){
+		if($this->outputItem === null || !$this->outputItem->equalsExact($enchantedInput)){
 			throw new TransactionValidationException("Invalid output item");
 		}
 	}
@@ -93,7 +92,7 @@ class EnchantTransaction extends InventoryTransaction{
 			}
 		}
 
-		if(!isset($this->inputItem)){
+		if($this->inputItem === null){
 			throw new TransactionValidationException("No item to enchant received");
 		}
 
@@ -119,6 +118,10 @@ class EnchantTransaction extends InventoryTransaction{
 	}
 
 	protected function callExecuteEvent() : bool{
+		if ($this->inputItem === null || $this->outputItem === null) {
+			throw new AssumptionFailedError("Expected inputItem and outputItem to be set before the event executing");
+		}
+		
 		$event = new EnchantItemEvent($this, $this->option, $this->inputItem, $this->outputItem, $this->cost);
 		$event->call();
 		return !$event->isCancelled();

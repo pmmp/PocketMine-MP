@@ -35,11 +35,12 @@ final class BlockTypeInfo{
 
 	/**
 	 * @param string[] $typeTags
+	 * @param string[] $enchantmentTags
 	 */
 	public function __construct(
 		private BlockBreakInfo $breakInfo,
 		array $typeTags = [],
-		private ?string $enchantmentTag = null
+		private array $enchantmentTags = []
 	){
 		$this->typeTags = array_fill_keys($typeTags, true);
 	}
@@ -51,7 +52,7 @@ final class BlockTypeInfo{
 
 	public function hasTypeTag(string $tag) : bool{ return isset($this->typeTags[$tag]); }
 
-	public function getEnchantmentTag() : ?string{
-		return $this->enchantmentTag;
+	public function getEnchantmentTags() : array{
+		return $this->enchantmentTags;
 	}
 }

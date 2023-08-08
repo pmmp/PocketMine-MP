@@ -31,11 +31,12 @@ use pocketmine\utils\Random;
 use pocketmine\world\Position;
 use function abs;
 use function array_filter;
+use function chr;
 use function count;
 use function floor;
 use function max;
 use function min;
-use function range;
+use function ord;
 use function round;
 
 final class EnchantmentHelper{
@@ -207,11 +208,9 @@ final class EnchantmentHelper{
 	}
 
 	private static function getRandomOptionName(Random $random) : string{
-		$symbols = range("a", "z");
 		$name = "";
-
 		for($i = $random->nextRange(5, 15); $i > 0; $i--){
-			$name .= $symbols[$random->nextBoundedInt(count($symbols))];
+			$name .= chr($random->nextRange(ord("a"), ord("z")));
 		}
 
 		return $name;

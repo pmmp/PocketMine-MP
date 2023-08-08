@@ -102,14 +102,14 @@ final class EnchantingTableOptionRegistry{
 	 * @return Enchantment[]
 	 */
 	public function getAvailableEnchantments(Item $item) : array{
-		$itemTag = $item->getEnchantmentTag();
-		if($itemTag === null){
+		$itemTags = $item->getEnchantmentTags();
+		if(count($itemTags) === 0){
 			return [];
 		}
 
 		return array_filter(
 			$this->enchantments,
-			fn(Enchantment $e) => TagRegistry::getInstance()->isTagArraySubset($this->getItemTags($e), [$itemTag])
+			fn(Enchantment $e) => TagRegistry::getInstance()->isTagArraySubset($this->getItemTags($e), $itemTags)
 		);
 	}
 

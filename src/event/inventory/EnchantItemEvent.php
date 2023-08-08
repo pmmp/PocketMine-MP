@@ -61,14 +61,14 @@ class EnchantItemEvent extends Event implements Cancellable{
 	 * Returns the item to be enchanted.
 	 */
 	public function getInputItem() : Item{
-		return $this->inputItem;
+		return clone $this->inputItem;
 	}
 
 	/**
 	 * Returns the enchanted item.
 	 */
 	public function getOutputItem() : Item{
-		return $this->outputItem;
+		return clone $this->outputItem;
 	}
 
 	/**
