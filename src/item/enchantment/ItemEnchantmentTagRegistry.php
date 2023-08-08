@@ -25,6 +25,7 @@ namespace pocketmine\item\enchantment;
 
 use pocketmine\item\enchantment\ItemEnchantmentTags as Tags;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\utils\Utils;
 use function array_diff;
 use function array_intersect;
 use function array_merge;
@@ -35,7 +36,10 @@ use function count;
 final class ItemEnchantmentTagRegistry{
 	use SingletonTrait;
 
-	/** @phpstan-var array<string, string[]> */
+	/**
+	 * @phpstan-var array<string, list<string>>
+	 * @var string[][]
+	 */
 	private array $tagMap = [];
 
 	private function __construct(){
@@ -93,9 +97,9 @@ final class ItemEnchantmentTagRegistry{
 
 		unset($this->tagMap[$tag]);
 
-		foreach($this->tagMap as &$nestedTags){
+		foreach(Utils::stringifyKeys($this->tagMap) as $key => $nestedTags){
 			if(($nestedKey = array_search($tag, $nestedTags, true)) !== false){
-				unset($nestedTags[$nestedKey]);
+				unset($this->tagMap[$key][$nestedKey]);
 			}
 		}
 	}

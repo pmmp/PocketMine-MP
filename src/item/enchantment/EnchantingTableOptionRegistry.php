@@ -39,10 +39,10 @@ use function spl_object_id;
 final class EnchantingTableOptionRegistry{
 	use SingletonTrait;
 
-	/** @phpstan-var Enchantment[] */
+	/** @var Enchantment[] */
 	private array $enchantments = [];
 
-	/** @phpstan-var string[][] */
+	/** @var string[][] */
 	private array $itemTags = [];
 
 	private function __construct(){

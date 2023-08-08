@@ -38,6 +38,8 @@ class ProtectionEnchantment extends Enchantment{
 	 *
 	 * @phpstan-param null|(\Closure(int $level) : int) $minEnchantingPower
 	 *
+	 * @param int $primaryItemFlags @deprecated
+	 * @param int $secondaryItemFlags @deprecated
 	 * @param int[]|null $applicableDamageTypes EntityDamageEvent::CAUSE_* constants which this enchantment type applies to, or null if it applies to all types of damage.
 	 * @param int        $enchantingPowerRange  Value used to calculate the maximum enchanting power (minEnchantingPower + enchantingPowerRange)
 	 */

@@ -34,7 +34,10 @@ use function spl_object_id;
 final class IncompatibleEnchantmentRegistry{
 	use SingletonTrait;
 
-	/** @phpstan-var array<int, string[]> */
+	/**
+	 * @phpstan-var array<int, list<string>>
+	 * @var string[][]
+	 */
 	private array $incompatibilityMap = [];
 
 	private function __construct(){
