@@ -211,8 +211,8 @@ final class EnchantmentHelper{
 	}
 
 	private static function getRandomOptionName(Random $random) : string{
-		$symbols = range('a', 'z');
-		$name = '';
+		$symbols = range("a", "z");
+		$name = "";
 
 		for($i = $random->nextRange(5, 15); $i > 0; $i--){
 			$name .= $symbols[$random->nextBoundedInt(count($symbols))];

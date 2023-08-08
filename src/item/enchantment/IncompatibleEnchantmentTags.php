@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item\enchantment;
 
 final class IncompatibleEnchantmentTags{
-	public const PROTECTION = 'protection';
-	public const BOW_INFINITE = 'bow_infinite';
-	public const DIG_DROP = 'dig_drop';
+	public const PROTECTION = "protection";
+	public const BOW_INFINITE = "bow_infinite";
+	public const DIG_DROP = "dig_drop";
 }
