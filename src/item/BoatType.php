@@ -33,6 +33,7 @@ use pocketmine\utils\EnumTrait;
  * @generate-registry-docblock
  *
  * @method static BoatType ACACIA()
+ * @method static BoatType BAMBOO()
  * @method static BoatType BIRCH()
  * @method static BoatType DARK_OAK()
  * @method static BoatType JUNGLE()
@@ -54,12 +55,14 @@ final class BoatType{
 			new self("acacia", WoodType::ACACIA()),
 			new self("dark_oak", WoodType::DARK_OAK()),
 			new self("mangrove", WoodType::MANGROVE()),
+			new self("bamboo", WoodType::BAMBOO(), "Raft"),
 		);
 	}
 
 	private function __construct(
 		string $enumName,
 		private WoodType $woodType,
+		private readonly ?string $suffix = null,
 	){
 		$this->Enum___construct($enumName);
 	}
@@ -68,5 +71,9 @@ final class BoatType{
 
 	public function getDisplayName() : string{
 		return $this->woodType->getDisplayName();
+	}
+
+	public function getSuffix() : ?string{
+		return $this->suffix;
 	}
 }

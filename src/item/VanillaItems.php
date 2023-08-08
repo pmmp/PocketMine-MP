@@ -38,6 +38,7 @@ use pocketmine\math\Vector3;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\CloningRegistryTrait;
 use pocketmine\world\World;
+use function mb_strtolower;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
@@ -53,6 +54,8 @@ use pocketmine\world\World;
  * @method static Arrow ARROW()
  * @method static BakedPotato BAKED_POTATO()
  * @method static Bamboo BAMBOO()
+ * @method static Boat BAMBOO_RAFT()
+ * @method static ItemBlockWallOrFloor BAMBOO_SIGN()
  * @method static Banner BANNER()
  * @method static Beetroot BEETROOT()
  * @method static BeetrootSeeds BEETROOT_SEEDS()
@@ -345,6 +348,7 @@ final class VanillaItems{
 		self::register("arrow", new Arrow(new IID(Ids::ARROW), "Arrow"));
 		self::register("baked_potato", new BakedPotato(new IID(Ids::BAKED_POTATO), "Baked Potato"));
 		self::register("bamboo", new Bamboo(new IID(Ids::BAMBOO), "Bamboo"));
+		self::register("bamboo_sign", new ItemBlockWallOrFloor(new IID(Ids::BAMBOO_SIGN), Blocks::BAMBOO_SIGN(), Blocks::BAMBOO_WALL_SIGN()));
 		self::register("banner", new Banner(new IID(Ids::BANNER), Blocks::BANNER(), Blocks::WALL_BANNER()));
 		self::register("beetroot", new Beetroot(new IID(Ids::BEETROOT), "Beetroot"));
 		self::register("beetroot_seeds", new BeetrootSeeds(new IID(Ids::BEETROOT_SEEDS), "Beetroot Seeds"));
@@ -545,7 +549,7 @@ final class VanillaItems{
 
 		foreach(BoatType::getAll() as $type){
 			//boat type is static, because different types of wood may have different properties
-			self::register($type->name() . "_boat", new Boat(new IID(match($type){
+			self::register($type->name() . "_" . (mb_strtolower($type->getSuffix() ?? "boat", 'US-ASCII')), new Boat(new IID(match($type){
 				BoatType::OAK() => Ids::OAK_BOAT,
 				BoatType::SPRUCE() => Ids::SPRUCE_BOAT,
 				BoatType::BIRCH() => Ids::BIRCH_BOAT,
@@ -553,8 +557,9 @@ final class VanillaItems{
 				BoatType::ACACIA() => Ids::ACACIA_BOAT,
 				BoatType::DARK_OAK() => Ids::DARK_OAK_BOAT,
 				BoatType::MANGROVE() => Ids::MANGROVE_BOAT,
+				BoatType::BAMBOO() => Ids::BAMBOO_RAFT,
 				default => throw new AssumptionFailedError("Unhandled tree type " . $type->name())
-			}), $type->getDisplayName() . " Boat", $type));
+			}), $type->getDisplayName() . " " . ($type->getSuffix() ?? "Boat"), $type));
 		}
 	}
 

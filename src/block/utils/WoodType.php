@@ -32,6 +32,7 @@ use pocketmine\utils\EnumTrait;
  * @generate-registry-docblock
  *
  * @method static WoodType ACACIA()
+ * @method static WoodType BAMBOO()
  * @method static WoodType BIRCH()
  * @method static WoodType CHERRY()
  * @method static WoodType CRIMSON()
@@ -59,6 +60,7 @@ final class WoodType{
 			new self("crimson", "Crimson", false, "Stem", "Hyphae"),
 			new self("warped", "Warped", false, "Stem", "Hyphae"),
 			new self("cherry", "Cherry", true),
+			new self("bamboo", "Bamboo", true, "Block"),
 		);
 	}
 

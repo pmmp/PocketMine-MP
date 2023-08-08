@@ -353,6 +353,22 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapStairs(Ids::BIRCH_STAIRS, fn() => Blocks::BIRCH_STAIRS());
 		//wood, planks and slabs still use the old way of storing wood type
 
+		$this->mapLog(Ids::BAMBOO_BLOCK, Ids::STRIPPED_BAMBOO_BLOCK, fn() => Blocks::BAMBOO_BLOCK());
+		$this->map(Ids::BAMBOO_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::BAMBOO_BUTTON(), $in));
+		$this->map(Ids::BAMBOO_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::BAMBOO_DOOR(), $in));
+		$this->map(Ids::BAMBOO_FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::BAMBOO_FENCE_GATE(), $in));
+		$this->map(Ids::BAMBOO_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::BAMBOO_PRESSURE_PLATE(), $in));
+		$this->map(Ids::BAMBOO_STANDING_SIGN, fn(Reader $in) => Helper::decodeFloorSign(Blocks::BAMBOO_SIGN(), $in));
+		$this->map(Ids::BAMBOO_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::BAMBOO_TRAPDOOR(), $in));
+		$this->map(Ids::BAMBOO_WALL_SIGN, fn(Reader $in) => Helper::decodeWallSign(Blocks::BAMBOO_WALL_SIGN(), $in));
+		$this->mapSimple(Ids::BAMBOO_FENCE, fn() => Blocks::BAMBOO_FENCE());
+		$this->mapSimple(Ids::BAMBOO_PLANKS, fn() => Blocks::BAMBOO_PLANKS());
+		$this->mapSimple(Ids::BAMBOO_MOSAIC, fn() => Blocks::BAMBOO_MOSAIC());
+		$this->mapSlab(Ids::BAMBOO_SLAB, Ids::BAMBOO_DOUBLE_SLAB, fn() => Blocks::BAMBOO_SLAB());
+		$this->mapSlab(Ids::BAMBOO_MOSAIC_SLAB, Ids::BAMBOO_MOSAIC_DOUBLE_SLAB, fn() => Blocks::BAMBOO_MOSAIC_SLAB());
+		$this->mapStairs(Ids::BAMBOO_STAIRS, fn() => Blocks::BAMBOO_STAIRS());
+		$this->mapStairs(Ids::BAMBOO_MOSAIC_STAIRS, fn() => Blocks::BAMBOO_MOSAIC_STAIRS());
+
 		$this->map(Ids::CHERRY_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::CHERRY_BUTTON(), $in));
 		$this->map(Ids::CHERRY_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::CHERRY_DOOR(), $in));
 		$this->map(Ids::CHERRY_FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::CHERRY_FENCE_GATE(), $in));

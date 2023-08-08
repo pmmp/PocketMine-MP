@@ -103,7 +103,22 @@ use function mb_strtolower;
  * @method static Leaves AZALEA_LEAVES()
  * @method static Flower AZURE_BLUET()
  * @method static Bamboo BAMBOO()
+ * @method static Wood BAMBOO_BLOCK()
+ * @method static WoodenButton BAMBOO_BUTTON()
+ * @method static WoodenDoor BAMBOO_DOOR()
+ * @method static WoodenFence BAMBOO_FENCE()
+ * @method static FenceGate BAMBOO_FENCE_GATE()
+ * @method static Planks BAMBOO_MOSAIC()
+ * @method static WoodenSlab BAMBOO_MOSAIC_SLAB()
+ * @method static WoodenStairs BAMBOO_MOSAIC_STAIRS()
+ * @method static Planks BAMBOO_PLANKS()
+ * @method static WoodenPressurePlate BAMBOO_PRESSURE_PLATE()
  * @method static BambooSapling BAMBOO_SAPLING()
+ * @method static FloorSign BAMBOO_SIGN()
+ * @method static WoodenSlab BAMBOO_SLAB()
+ * @method static WoodenStairs BAMBOO_STAIRS()
+ * @method static WoodenTrapdoor BAMBOO_TRAPDOOR()
+ * @method static WallSign BAMBOO_WALL_SIGN()
  * @method static FloorBanner BANNER()
  * @method static Barrel BARREL()
  * @method static Transparent BARRIER()
@@ -1237,6 +1252,8 @@ final class VanillaBlocks{
 		self::registerOres();
 		self::registerWoodenBlocks();
 		self::registerCauldronBlocks();
+
+		self::registerBambooMosaicBlocks();
 	}
 
 	private static function registerWoodenBlocks() : void{
@@ -1252,7 +1269,9 @@ final class VanillaBlocks{
 			$idName = fn(string $suffix) => $woodType->name() . "_" . $suffix;
 
 			self::register($idName(mb_strtolower($woodType->getStandardLogSuffix() ?? "log", 'US-ASCII')), new Wood(WoodLikeBlockIdHelper::getLogIdentifier($woodType), $name . " " . ($woodType->getStandardLogSuffix() ?? "Log"), $logBreakInfo, $woodType));
-			self::register($idName(mb_strtolower($woodType->getAllSidedLogSuffix() ?? "wood", 'US-ASCII')), new Wood(WoodLikeBlockIdHelper::getAllSidedLogIdentifier($woodType), $name . " " . ($woodType->getAllSidedLogSuffix() ?? "Wood"), $logBreakInfo, $woodType));
+			if(!WoodType::BAMBOO()->equals($woodType)) {
+				self::register($idName(mb_strtolower($woodType->getAllSidedLogSuffix() ?? "wood", 'US-ASCII')), new Wood(WoodLikeBlockIdHelper::getAllSidedLogIdentifier($woodType), $name . " " . ($woodType->getAllSidedLogSuffix() ?? "Wood"), $logBreakInfo, $woodType));
+			}
 
 			self::register($idName("planks"), new Planks(WoodLikeBlockIdHelper::getPlanksIdentifier($woodType), $name . " Planks", $planksBreakInfo, $woodType));
 			self::register($idName("fence"), new WoodenFence(WoodLikeBlockIdHelper::getFenceIdentifier($woodType), $name . " Fence", $planksBreakInfo, $woodType));
@@ -1630,5 +1649,14 @@ final class VanillaBlocks{
 		self::register("water_cauldron", new WaterCauldron(new BID(Ids::WATER_CAULDRON, TileCauldron::class), "Water Cauldron", $cauldronBreakInfo));
 		self::register("lava_cauldron", new LavaCauldron(new BID(Ids::LAVA_CAULDRON, TileCauldron::class), "Lava Cauldron", $cauldronBreakInfo));
 		self::register("potion_cauldron", new PotionCauldron(new BID(Ids::POTION_CAULDRON, TileCauldron::class), "Potion Cauldron", $cauldronBreakInfo));
+	}
+
+	private static function registerBambooMosaicBlocks() : void{
+		$woodType = WoodType::BAMBOO();
+		$planksBreakInfo = new Info(BreakInfo::axe(2.0, null, 15.0));
+
+		self::register("bamboo_mosaic", new Planks(new BID(Ids::BAMBOO_MOSAIC), "Bamboo Mosaic", $planksBreakInfo, $woodType));
+		self::register("bamboo_mosaic_slab", new WoodenSlab(new BID(Ids::BAMBOO_MOSAIC_SLAB), "Bamboo Mosaic Slab", $planksBreakInfo, $woodType));
+		self::register("bamboo_mosaic_stairs", new WoodenStairs(new BID(Ids::BAMBOO_MOSAIC_STAIRS), "Bamboo Mosaic Stairs", $planksBreakInfo, $woodType));
 	}
 }

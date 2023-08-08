@@ -450,6 +450,22 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::ACACIA_FENCE(), Ids::ACACIA_FENCE);
 		//wood, planks and slabs still use the old way of storing wood type
 
+		$this->map(Blocks::BAMBOO_BLOCK(), fn(Wood $block) => Helper::encodeLog($block, Ids::BAMBOO_BLOCK, Ids::STRIPPED_BAMBOO_BLOCK));
+		$this->map(Blocks::BAMBOO_BUTTON(), fn(Button $block) => Helper::encodeButton($block, new Writer(Ids::BAMBOO_BUTTON)));
+		$this->map(Blocks::BAMBOO_DOOR(), fn(Door $block) => Helper::encodeDoor($block, new Writer(Ids::BAMBOO_DOOR)));
+		$this->map(Blocks::BAMBOO_FENCE_GATE(), fn(FenceGate $block) => Helper::encodeFenceGate($block, new Writer(Ids::BAMBOO_FENCE_GATE)));
+		$this->map(Blocks::BAMBOO_PRESSURE_PLATE(), fn(SimplePressurePlate $block) => Helper::encodeSimplePressurePlate($block, new Writer(Ids::BAMBOO_PRESSURE_PLATE)));
+		$this->map(Blocks::BAMBOO_SIGN(), fn(FloorSign $block) => Helper::encodeFloorSign($block, new Writer(Ids::BAMBOO_STANDING_SIGN)));
+		$this->map(Blocks::BAMBOO_TRAPDOOR(), fn(Trapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::BAMBOO_TRAPDOOR)));
+		$this->map(Blocks::BAMBOO_WALL_SIGN(), fn(WallSign $block) => Helper::encodeWallSign($block, new Writer(Ids::BAMBOO_WALL_SIGN)));
+		$this->mapSimple(Blocks::BAMBOO_FENCE(), Ids::BAMBOO_FENCE);
+		$this->mapSimple(Blocks::BAMBOO_PLANKS(), Ids::BAMBOO_PLANKS);
+		$this->mapSimple(Blocks::BAMBOO_MOSAIC(), Ids::BAMBOO_MOSAIC);
+		$this->mapSlab(Blocks::BAMBOO_SLAB(), Ids::BAMBOO_SLAB, Ids::BAMBOO_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::BAMBOO_MOSAIC_SLAB(), Ids::BAMBOO_MOSAIC_SLAB, Ids::BAMBOO_MOSAIC_DOUBLE_SLAB);
+		$this->mapStairs(Blocks::BAMBOO_STAIRS(), Ids::BAMBOO_STAIRS);
+		$this->mapStairs(Blocks::BAMBOO_MOSAIC_STAIRS(), Ids::BAMBOO_MOSAIC_STAIRS);
+
 		$this->map(Blocks::BIRCH_BUTTON(), fn(WoodenButton $block) => Helper::encodeButton($block, new Writer(Ids::BIRCH_BUTTON)));
 		$this->map(Blocks::BIRCH_DOOR(), fn(WoodenDoor $block) => Helper::encodeDoor($block, new Writer(Ids::BIRCH_DOOR)));
 		$this->map(Blocks::BIRCH_FENCE_GATE(), fn(FenceGate $block) => Helper::encodeFenceGate($block, new Writer(Ids::BIRCH_FENCE_GATE)));
