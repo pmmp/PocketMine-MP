@@ -24,12 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\item\enchantment;
 
 use pocketmine\block\BlockTypeIds;
+use pocketmine\item\enchantment\AvailableEnchantmentRegistry as EnchantmentRegistry;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\item\VanillaItems as Items;
 use pocketmine\utils\Random;
 use pocketmine\world\Position;
-use pocketmine\item\enchantment\AvailableEnchantmentRegistry as EnchantmentRegistry;
 use function abs;
 use function array_filter;
 use function chr;

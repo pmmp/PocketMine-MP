@@ -152,7 +152,7 @@ final class AvailableEnchantmentRegistry{
 	 * Returns enchantments that can be applied to the specified item.
 	 *
 	 * @param bool $onlyPrimaryTags Whether to check only primary item tags for each enchantment.
-	 * This should only be used to select available enchantments for an enchanting table.
+	 *                              This should only be used to select available enchantments for an enchanting table.
 	 *
 	 * @return Enchantment[]
 	 */
