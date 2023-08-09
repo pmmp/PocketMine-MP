@@ -30,7 +30,6 @@ use pocketmine\command\PluginCommand;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Config;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
@@ -229,26 +228,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 */
 	public function getResourcePath(string $filename) : string{
 		return Path::join($this->getResourceFolder(), $filename);
-	}
-
-	/**
-	 * @deprecated Prefer using standard PHP functions with {@link PluginBase::getResourcePath()}, like
-	 * file_get_contents() or fopen().
-	 *
-	 * Gets an embedded resource on the plugin file.
-	 * WARNING: You must close the resource given using fclose()
-	 *
-	 * @return null|resource Resource data, or null
-	 */
-	public function getResource(string $filename){
-		$filename = rtrim(str_replace(DIRECTORY_SEPARATOR, "/", $filename), "/");
-		if(file_exists($this->resourceFolder . $filename)){
-			$resource = fopen($this->resourceFolder . $filename, "rb");
-			if($resource === false) throw new AssumptionFailedError("fopen() should not fail on a file which exists");
-			return $resource;
-		}
-
-		return null;
 	}
 
 	/**
