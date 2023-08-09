@@ -23,44 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\utils\EnumTrait;
+class ArmorMaterial{
 
-/**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
- *
- * @method static ArmorMaterial CHAINMAIL()
- * @method static ArmorMaterial DIAMOND()
- * @method static ArmorMaterial GOLD()
- * @method static ArmorMaterial IRON()
- * @method static ArmorMaterial LEATHER()
- * @method static ArmorMaterial NETHERITE()
- * @method static ArmorMaterial TURTLE()
- */
-final class ArmorMaterial{
-	use EnumTrait {
-		__construct as Enum___construct;
-	}
-
-	protected static function setup() : void{
-		self::registerAll(
-			new self("leather", 15),
-			new self("chainmail", 12),
-			new self("iron", 9),
-			new self("turtle", 9),
-			new self("gold", 25),
-			new self("diamond", 10),
-			new self("netherite", 15)
-		);
-	}
-
-	private function __construct(
-		string $name,
-		private int $enchantability
+	public function __construct(
+		private readonly int $enchantability
 	){
-		$this->Enum___construct($name);
 	}
 
 	/**
