@@ -157,21 +157,28 @@ final class AvailableEnchantmentRegistry{
 	 * @return Enchantment[]
 	 */
 	public function getAvailableEnchantments(Item $item, bool $onlyPrimaryTags = false) : array{
-		$itemTags = $item->getEnchantmentTags();
-		if(count($itemTags) === 0){
+		if(count($item->getEnchantmentTags()) === 0){
 			return [];
 		}
 
 		return array_filter(
 			$this->enchantments,
-			function(Enchantment $enchantment) use ($itemTags, $onlyPrimaryTags){
-				$enchantmentTags = $this->getPrimaryItemTags($enchantment);
-				if(!$onlyPrimaryTags){
-					$enchantmentTags = array_merge($enchantmentTags, $this->getSecondaryItemTags($enchantment));
-				}
-				return TagRegistry::getInstance()->isTagArraySubset($enchantmentTags, $itemTags);
-			}
+			fn(Enchantment $enchantment) => $this->isAvailableForItem($enchantment, $item, $onlyPrimaryTags)
 		);
+	}
+
+	/**
+	 * Returns whether the specified enchantment can be applied to the particular item.
+	 *
+	 * @param bool $onlyPrimaryTags Whether to check only primary item tags for the enchantment.
+	 *                              This should only be used to select available enchantments for an enchanting table.
+	 */
+	public function isAvailableForItem(Enchantment $enchantment, Item $item, bool $onlyPrimaryTags = false) : bool{
+		$enchantmentTags = $this->getPrimaryItemTags($enchantment);
+		if(!$onlyPrimaryTags){
+			$enchantmentTags = array_merge($enchantmentTags, $this->getSecondaryItemTags($enchantment));
+		}
+		return TagRegistry::getInstance()->isTagArraySubset($enchantmentTags, $item->getEnchantmentTags());
 	}
 
 	/**
