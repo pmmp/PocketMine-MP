@@ -149,35 +149,42 @@ final class AvailableEnchantmentRegistry{
 	}
 
 	/**
-	 * Returns enchantments that can be applied to the specified item.
-	 *
-	 * @param bool $onlyPrimaryTags Whether to check only primary item tags for each enchantment.
-	 *                              This should only be used to select available enchantments for an enchanting table.
+	 * Returns enchantments that can be applied to the specified item in an enchanting table.
 	 *
 	 * @return Enchantment[]
 	 */
-	public function getAvailableEnchantments(Item $item, bool $onlyPrimaryTags = false) : array{
+	public function getAvailableEnchantingTableEnchantments(Item $item) : array{
 		if(count($item->getEnchantmentTags()) === 0){
 			return [];
 		}
 
 		return array_filter(
 			$this->enchantments,
-			fn(Enchantment $enchantment) => $this->isAvailableForItem($enchantment, $item, $onlyPrimaryTags)
+			fn(Enchantment $e) => TagRegistry::getInstance()->isTagArraySubset($this->getPrimaryItemTags($e), $item->getEnchantmentTags())
+		);
+	}
+
+	/**
+	 * Returns enchantments that can be applied to the specified item.
+	 *
+	 * @return Enchantment[]
+	 */
+	public function getAvailableEnchantments(Item $item) : array{
+		if(count($item->getEnchantmentTags()) === 0){
+			return [];
+		}
+
+		return array_filter(
+			$this->enchantments,
+			fn(Enchantment $enchantment) => $this->isAvailableForItem($enchantment, $item)
 		);
 	}
 
 	/**
 	 * Returns whether the specified enchantment can be applied to the particular item.
-	 *
-	 * @param bool $onlyPrimaryTags Whether to check only primary item tags for the enchantment.
-	 *                              This should only be used to select available enchantments for an enchanting table.
 	 */
-	public function isAvailableForItem(Enchantment $enchantment, Item $item, bool $onlyPrimaryTags = false) : bool{
-		$enchantmentTags = $this->getPrimaryItemTags($enchantment);
-		if(!$onlyPrimaryTags){
-			$enchantmentTags = array_merge($enchantmentTags, $this->getSecondaryItemTags($enchantment));
-		}
+	public function isAvailableForItem(Enchantment $enchantment, Item $item) : bool{
+		$enchantmentTags = array_merge($this->getPrimaryItemTags($enchantment), $this->getSecondaryItemTags($enchantment));
 		return TagRegistry::getInstance()->isTagArraySubset($enchantmentTags, $item->getEnchantmentTags());
 	}
 
