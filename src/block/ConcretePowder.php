@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
-use pocketmine\event\block\BlockFormEvent;
 use pocketmine\math\Facing;
 
 class ConcretePowder extends Opaque implements Fallable{
@@ -43,11 +43,7 @@ class ConcretePowder extends Opaque implements Fallable{
 
 	public function onNearbyBlockChange() : void{
 		if(($water = $this->getAdjacentWater()) !== null){
-			$ev = new BlockFormEvent($this, VanillaBlocks::CONCRETE()->setColor($this->color), $water);
-			$ev->call();
-			if(!$ev->isCancelled()){
-				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
-			}
+			BlockEventHelper::form($this, VanillaBlocks::CONCRETE()->setColor($this->color), $water);
 		}else{
 			$this->startFalling();
 		}

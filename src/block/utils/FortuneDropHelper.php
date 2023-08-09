@@ -25,7 +25,6 @@ namespace pocketmine\block\utils;
 
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
 use function max;
 use function min;
 use function mt_getrandmax;
@@ -83,26 +82,6 @@ final class FortuneDropHelper{
 		}
 
 		return $count;
-	}
-
-	/**
-	 * Grass have a fixed chance to drop wheat seed.
-	 * Fortune level increases the maximum number of seeds that can be dropped.
-	 * A discrete uniform distribution is used to determine the number of seeds dropped.
-	 *
-	 * TODO: I'm not sure this really belongs here, but it's preferable not to duplicate this code between grass and
-	 * tall grass.
-	 *
-	 * @return Item[]
-	 */
-	public static function grass(Item $usedItem) : array{
-		if(FortuneDropHelper::bonusChanceDivisor($usedItem, 8, 2)){
-			return [
-				VanillaItems::WHEAT_SEEDS()
-			];
-		}
-
-		return [];
 	}
 
 	/**

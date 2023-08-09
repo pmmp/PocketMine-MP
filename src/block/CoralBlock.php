@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\CoralTypeTrait;
-use pocketmine\event\block\BlockDeathEvent;
 use pocketmine\item\Item;
 use function mt_rand;
 
@@ -55,17 +55,13 @@ final class CoralBlock extends Opaque{
 				}
 			}
 			if(!$hasWater){
-				$ev = new BlockDeathEvent($this, $this->setDead(true));
-				$ev->call();
-				if(!$ev->isCancelled()){
-					$world->setBlock($this->position, $ev->getNewState());
-				}
+				BlockEventHelper::die($this, (clone $this)->setDead(true));
 			}
 		}
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		return [$this->setDead(true)->asItem()];
+		return [(clone $this)->setDead(true)->asItem()];
 	}
 
 	public function isAffectedBySilkTouch() : bool{

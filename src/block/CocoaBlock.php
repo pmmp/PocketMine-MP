@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\WoodType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
-use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
@@ -123,12 +123,7 @@ class CocoaBlock extends Transparent{
 		if($this->age < self::MAX_AGE){
 			$block = clone $this;
 			$block->age++;
-			$ev = new BlockGrowEvent($this, $block, $player);
-			$ev->call();
-			if(!$ev->isCancelled()){
-				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
-				return true;
-			}
+			return BlockEventHelper::grow($this, $block, $player);
 		}
 		return false;
 	}

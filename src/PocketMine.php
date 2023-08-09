@@ -120,8 +120,8 @@ namespace pocketmine {
 		}
 
 		if(($pmmpthread_version = phpversion("pmmpthread")) !== false){
-			if(version_compare($pmmpthread_version, "6.0.4") < 0 || version_compare($pmmpthread_version, "7.0.0") >= 0){
-				$messages[] = "pmmpthread ^6.0.4 is required, while you have $pmmpthread_version.";
+			if(version_compare($pmmpthread_version, "6.0.7") < 0 || version_compare($pmmpthread_version, "7.0.0") >= 0){
+				$messages[] = "pmmpthread ^6.0.7 is required, while you have $pmmpthread_version.";
 			}
 		}
 
@@ -341,7 +341,7 @@ JIT_WARNING
 
 			if(ThreadManager::getInstance()->stopAll() > 0){
 				$logger->debug("Some threads could not be stopped, performing a force-kill");
-				Process::kill(Process::pid(), true);
+				Process::kill(Process::pid());
 			}
 		}while(false);
 
