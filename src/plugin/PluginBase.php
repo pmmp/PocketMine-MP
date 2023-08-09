@@ -221,7 +221,17 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	}
 
 	/**
-	 * @deprecated Prefer using standard PHP functions with {@link PluginBase::getResourceFolder()}, like
+	 * Returns the full path to a data file in the plugin's resources folder.
+	 * This path can be used with standard PHP functions like fopen() or file_get_contents().
+	 *
+	 * Note: Any path returned by this function should be considered READ-ONLY.
+	 */
+	public function getResourcePath(string $filename) : string{
+		return Path::join($this->getResourceFolder(), $filename);
+	}
+
+	/**
+	 * @deprecated Prefer using standard PHP functions with {@link PluginBase::getResourcePath()}, like
 	 * file_get_contents() or fopen().
 	 *
 	 * Gets an embedded resource on the plugin file.
@@ -234,8 +244,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	}
 
 	/**
-	 * @deprecated Prefer using standard PHP functions with {@link PluginBase::getResourceFolder()}, like copy().
-	 *
 	 * Saves an embedded resource to its relative location in the data folder
 	 */
 	public function saveResource(string $filename, bool $replace = false) : bool{
