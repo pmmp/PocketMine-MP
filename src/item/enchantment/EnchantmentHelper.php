@@ -29,6 +29,7 @@ use pocketmine\item\ItemTypeIds;
 use pocketmine\item\VanillaItems as Items;
 use pocketmine\utils\Random;
 use pocketmine\world\Position;
+use pocketmine\item\enchantment\AvailableEnchantmentRegistry as EnchantmentRegistry;
 use function abs;
 use function array_filter;
 use function chr;
@@ -165,7 +166,7 @@ final class EnchantmentHelper{
 	private static function getAvailableEnchantments(int $enchantingPower, Item $item) : array{
 		$list = [];
 
-		foreach(EnchantingTableOptionRegistry::getInstance()->getAvailableEnchantments($item) as $enchantment){
+		foreach(EnchantmentRegistry::getInstance()->getAvailableEnchantments($item, true) as $enchantment){
 			for($lvl = $enchantment->getMaxLevel(); $lvl > 0; $lvl--){
 				if($enchantingPower >= $enchantment->getMinEnchantingPower($lvl) &&
 					$enchantingPower <= $enchantment->getMaxEnchantingPower($lvl)
