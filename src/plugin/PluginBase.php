@@ -34,9 +34,9 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Config;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
+use function copy;
 use function count;
 use function dirname;
-use function fclose;
 use function file_exists;
 use function fopen;
 use function is_dir;
@@ -44,7 +44,6 @@ use function mkdir;
 use function rtrim;
 use function str_contains;
 use function str_replace;
-use function stream_copy_to_stream;
 use function strlen;
 use function strtolower;
 use function substr;
@@ -215,6 +214,27 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	}
 
 	/**
+	 * Returns the path to the folder where the plugin's embedded resource files are usually located.
+	 * Note: This is NOT the same as the data folder. The files in this folder should be considered read-only.
+	 */
+	public function getResourceFolder() : string{
+		return $this->resourceFolder;
+	}
+
+	/**
+	 * Returns the full path to a data file in the plugin's resources folder.
+	 * This path can be used with standard PHP functions like fopen() or file_get_contents().
+	 *
+	 * Note: Any path returned by this function should be considered READ-ONLY.
+	 */
+	public function getResourcePath(string $filename) : string{
+		return Path::join($this->getResourceFolder(), $filename);
+	}
+
+	/**
+	 * @deprecated Prefer using standard PHP functions with {@link PluginBase::getResourcePath()}, like
+	 * file_get_contents() or fopen().
+	 *
 	 * Gets an embedded resource on the plugin file.
 	 * WARNING: You must close the resource given using fclose()
 	 *
@@ -239,26 +259,21 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 			return false;
 		}
 
-		if(($resource = $this->getResource($filename)) === null){
+		$source = Path::join($this->resourceFolder, $filename);
+		if(!file_exists($source)){
 			return false;
 		}
 
-		$out = Path::join($this->dataFolder, $filename);
-		if(!file_exists(dirname($out))){
-			mkdir(dirname($out), 0755, true);
-		}
-
-		if(file_exists($out) && !$replace){
+		$destination = Path::join($this->dataFolder, $filename);
+		if(file_exists($destination) && !$replace){
 			return false;
 		}
 
-		$fp = fopen($out, "wb");
-		if($fp === false) throw new AssumptionFailedError("fopen() should not fail with wb flags");
+		if(!file_exists(dirname($destination))){
+			mkdir(dirname($destination), 0755, true);
+		}
 
-		$ret = stream_copy_to_stream($resource, $fp) > 0;
-		fclose($fp);
-		fclose($resource);
-		return $ret;
+		return copy($source, $destination);
 	}
 
 	/**

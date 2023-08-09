@@ -573,6 +573,7 @@ use function mb_strtolower;
  * @method static PackedIce PACKED_ICE()
  * @method static Opaque PACKED_MUD()
  * @method static DoublePlant PEONY()
+ * @method static PinkPetals PINK_PETALS()
  * @method static Flower PINK_TULIP()
  * @method static Podzol PODZOL()
  * @method static Opaque POLISHED_ANDESITE()
@@ -840,6 +841,7 @@ final class VanillaBlocks{
 		self::register("lilac", new DoublePlant(new BID(Ids::LILAC), "Lilac", new Info(BreakInfo::instant())));
 		self::register("rose_bush", new DoublePlant(new BID(Ids::ROSE_BUSH), "Rose Bush", new Info(BreakInfo::instant())));
 		self::register("peony", new DoublePlant(new BID(Ids::PEONY), "Peony", new Info(BreakInfo::instant())));
+		self::register("pink_petals", new PinkPetals(new BID(Ids::PINK_PETALS), "Pink Petals", new Info(BreakInfo::instant())));
 		self::register("double_tallgrass", new DoubleTallGrass(new BID(Ids::DOUBLE_TALLGRASS), "Double Tallgrass", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
 		self::register("large_fern", new DoubleTallGrass(new BID(Ids::LARGE_FERN), "Large Fern", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
 		self::register("dragon_egg", new DragonEgg(new BID(Ids::DRAGON_EGG), "Dragon Egg", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD()))));
