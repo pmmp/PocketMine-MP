@@ -52,6 +52,7 @@ use pocketmine\event\world\ChunkLoadEvent;
 use pocketmine\event\world\ChunkPopulateEvent;
 use pocketmine\event\world\ChunkUnloadEvent;
 use pocketmine\event\world\SpawnChangeEvent;
+use pocketmine\event\world\WorldDifficultyChangeEvent;
 use pocketmine\event\world\WorldDisplayNameChangeEvent;
 use pocketmine\event\world\WorldParticleEvent;
 use pocketmine\event\world\WorldSaveEvent;
@@ -3127,6 +3128,7 @@ class World implements ChunkManager{
 		if($difficulty < 0 || $difficulty > 3){
 			throw new \InvalidArgumentException("Invalid difficulty level $difficulty");
 		}
+		(new WorldDifficultyChangeEvent($this, $this->getDifficulty(), $difficulty))->call();
 		$this->provider->getWorldData()->setDifficulty($difficulty);
 
 		foreach($this->players as $player){

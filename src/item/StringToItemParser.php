@@ -856,6 +856,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("packed_ice", fn() => Blocks::PACKED_ICE());
 		$result->registerBlock("packed_mud", fn() => Blocks::PACKED_MUD());
 		$result->registerBlock("peony", fn() => Blocks::PEONY());
+		$result->registerBlock("pink_petals", fn() => Blocks::PINK_PETALS());
 		$result->registerBlock("pink_tulip", fn() => Blocks::PINK_TULIP());
 		$result->registerBlock("piglin_head", fn() => Blocks::MOB_HEAD()->setMobHeadType(MobHeadType::PIGLIN()));
 		$result->registerBlock("plank", fn() => Blocks::OAK_PLANKS());
