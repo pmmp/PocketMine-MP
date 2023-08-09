@@ -30,19 +30,16 @@ use pocketmine\command\PluginCommand;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Config;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
+use function copy;
 use function count;
 use function dirname;
-use function fclose;
 use function file_exists;
-use function fopen;
 use function mkdir;
 use function rtrim;
 use function str_contains;
-use function stream_copy_to_stream;
 use function strtolower;
 use function trim;
 use const DIRECTORY_SEPARATOR;
@@ -251,26 +248,21 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 			return false;
 		}
 
-		$out = Path::join($this->dataFolder, $filename);
-		if(file_exists($out) && !$replace){
+		$source = Path::join($this->resourceFolder, $filename);
+		if(!file_exists($source)){
 			return false;
 		}
 
-		if(($resource = $this->getResource($filename)) === null){
+		$destination = Path::join($this->dataFolder, $filename);
+		if(file_exists($destination) && !$replace){
 			return false;
 		}
 
-		if(!file_exists(dirname($out))){
-			mkdir(dirname($out), 0755, true);
+		if(!file_exists(dirname($destination))){
+			mkdir(dirname($destination), 0755, true);
 		}
 
-		$fp = fopen($out, "wb");
-		if($fp === false) throw new AssumptionFailedError("fopen() should not fail with wb flags");
-
-		$ret = stream_copy_to_stream($resource, $fp) > 0;
-		fclose($fp);
-		fclose($resource);
-		return $ret;
+		return copy($source, $destination);
 	}
 
 	/**
