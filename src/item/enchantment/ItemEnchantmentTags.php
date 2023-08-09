@@ -25,7 +25,6 @@ namespace pocketmine\item\enchantment;
 
 final class ItemEnchantmentTags{
 	public const ALL = "all";
-	public const BREAKABLE = "breakable";
 	public const ARMOR = "armor";
 	public const HELMET = "helmet";
 	public const CHESTPLATE = "chestplate";

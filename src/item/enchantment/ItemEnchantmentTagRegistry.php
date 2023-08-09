@@ -58,13 +58,6 @@ final class ItemEnchantmentTagRegistry{
 		$this->register(Tags::MASK);
 		$this->register(Tags::ELYTRA);
 		$this->register(Tags::BRUSH);
-		$this->register(
-			Tags::BREAKABLE,
-			[
-				Tags::ARMOR, Tags::SHIELD, Tags::SWORD, Tags::TRIDENT, Tags::BOW, Tags::CROSSBOW, Tags::SHEARS,
-				Tags::FLINT_AND_STEEL, Tags::DIG_TOOLS, Tags::FISHING_ROD, Tags::CARROT_ON_STICK, Tags::ELYTRA, Tags::BRUSH
-			]
-		);
 	}
 
 	/**
