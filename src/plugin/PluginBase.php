@@ -226,17 +226,17 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 			return false;
 		}
 
+		$out = Path::join($this->dataFolder, $filename);
+		if(file_exists($out) && !$replace){
+			return false;
+		}
+
 		if(($resource = $this->getResource($filename)) === null){
 			return false;
 		}
 
-		$out = Path::join($this->dataFolder, $filename);
 		if(!file_exists(dirname($out))){
 			mkdir(dirname($out), 0755, true);
-		}
-
-		if(file_exists($out) && !$replace){
-			return false;
 		}
 
 		$fp = fopen($out, "wb");
