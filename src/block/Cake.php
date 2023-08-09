@@ -64,7 +64,7 @@ class Cake extends BaseCake{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($item instanceof ItemBlock){
+		if($this->bites === 0 && $item instanceof ItemBlock){
 			$block = $item->getBlock();
 			$resultBlock = null;
 			if($block->getTypeId() === BlockTypeIds::CANDLE){
