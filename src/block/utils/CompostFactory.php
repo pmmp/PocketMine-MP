@@ -41,35 +41,42 @@ final class CompostFactory{
 
 	public function __construct(){
 		//region ---30% percentage compost---
-		$this->register(VanillaItems::BEETROOT_SEEDS(), 30);
-		$this->register(VanillaItems::DRIED_KELP(), 30);
-		$this->register(VanillaItems::GLOW_BERRIES(), 30);
-		$this->register(VanillaBlocks::TALL_GRASS()->asItem(), 30);
 		$this->register(VanillaBlocks::FERN()->asItem(), 30);
 		$this->register(VanillaBlocks::GRASS()->asItem(), 30);
 		$this->register(VanillaBlocks::HANGING_ROOTS()->asItem(), 30);
-		//Kelp (335, 0, 30)
-		$this->register(VanillaBlocks::OAK_LEAVES()->asItem(), 30);
+		$this->register(VanillaBlocks::TALL_GRASS()->asItem(), 30);
+		$this->register(VanillaItems::BEETROOT_SEEDS(), 30);
+		$this->register(VanillaItems::DRIED_KELP(), 30);
+		$this->register(VanillaItems::GLOW_BERRIES(), 30);
+		//Kelp
 		$this->register(VanillaBlocks::ACACIA_LEAVES()->asItem(), 30);
+		$this->register(VanillaBlocks::AZALEA_LEAVES()->asItem(), 30);
 		$this->register(VanillaBlocks::BIRCH_LEAVES()->asItem(), 30);
+		$this->register(VanillaBlocks::CHERRY_LEAVES()->asItem(), 30);
 		$this->register(VanillaBlocks::DARK_OAK_LEAVES()->asItem(), 30);
 		$this->register(VanillaBlocks::JUNGLE_LEAVES()->asItem(), 30);
-		$this->register(VanillaBlocks::SPRUCE_LEAVES()->asItem(), 30);
-		$this->register(VanillaBlocks::AZALEA_LEAVES()->asItem(), 30);
 		$this->register(VanillaBlocks::MANGROVE_LEAVES()->asItem(), 30);
-		$this->register(VanillaBlocks::CHERRY_LEAVES()->asItem(), 30);
-		$this->register(VanillaItems::MELON_SEEDS(), 30);
-		//Moss Carpet (590, 0, 30)
-		$this->register(VanillaItems::PUMPKIN_SEEDS(), 30);
+		$this->register(VanillaBlocks::OAK_LEAVES()->asItem(), 30);
+		$this->register(VanillaBlocks::SPRUCE_LEAVES()->asItem(), 30);
+
+		$this->register(VanillaBlocks::ACACIA_SAPLING()->asItem(), 30);
+		$this->register(VanillaBlocks::BIRCH_SAPLING()->asItem(), 30);
+		//Cherry sapling
+		$this->register(VanillaBlocks::DARK_OAK_SAPLING()->asItem(), 30);
+		$this->register(VanillaBlocks::JUNGLE_SAPLING()->asItem(), 30);
 		$this->register(VanillaBlocks::OAK_SAPLING()->asItem(), 30);
 		$this->register(VanillaBlocks::SPRUCE_SAPLING()->asItem(), 30);
-		$this->register(VanillaBlocks::BIRCH_SAPLING()->asItem(), 30);
-		$this->register(VanillaBlocks::JUNGLE_SAPLING()->asItem(), 30);
-		$this->register(VanillaBlocks::ACACIA_SAPLING()->asItem(), 30);
-		$this->register(VanillaBlocks::DARK_OAK_SAPLING()->asItem(), 30);
-		//Sea grass (385, 0, 30)
+		//Mangrove propagule
+		//Mangrove roots
+		$this->register(VanillaItems::MELON_SEEDS(), 30);
+		//Moss Carpet
+		$this->register(VanillaBlocks::PINK_PETALS()->asItem(), 30);
+		$this->register(VanillaItems::PUMPKIN_SEEDS(), 30);
+		//Pitcher Pod
+		//Sea grass
 		$this->register(VanillaBlocks::SMALL_DRIPLEAF()->asItem(), 30);
 		$this->register(VanillaItems::SWEET_BERRIES(), 30);
+		//Torchflower Seeds
 		$this->register(VanillaItems::WHEAT_SEEDS(), 30);
 
 		// region: 50% percentage compost
@@ -78,7 +85,8 @@ final class CompostFactory{
 		$this->register(VanillaBlocks::FLOWERING_AZALEA_LEAVES()->asItem(), 50);
 		$this->register(VanillaBlocks::GLOW_LICHEN()->asItem(), 50);
 		$this->register(VanillaItems::MELON(), 50);
-		//Nether Sprouts (Block: 493, Item: 760, 50)
+		//Nether Sprouts Block
+		//Nether Sprouts Item
 		$this->register(VanillaBlocks::SUGARCANE()->asItem(), 50);
 		$this->register(VanillaBlocks::DOUBLE_TALLGRASS()->asItem(), 50);
 
@@ -90,7 +98,7 @@ final class CompostFactory{
 
 		// region: 65% percentage compost
 		$this->register(VanillaItems::APPLE(), 65);
-		//Azalea (592, 0, 65);
+		//Azalea
 		$this->register(VanillaItems::BEETROOT(), 65);
 
 		$this->register(VanillaBlocks::BIG_DRIPLEAF_HEAD()->asItem(), 30);
@@ -99,7 +107,7 @@ final class CompostFactory{
 		$this->register(VanillaBlocks::LARGE_FERN()->asItem(), 65);
 		$this->register(VanillaBlocks::LILY_PAD()->asItem(), 65);
 		$this->register(VanillaBlocks::MELON()->asItem(), 65);
-		//Moss Block (575, 0, 65)
+		//Moss Block
 
 		$this->register(VanillaBLOCKS::BROWN_MUSHROOM()->asItem(), 65);
 		$this->register(VanillaBLOCKS::RED_MUSHROOM()->asItem(), 65);
@@ -114,18 +122,20 @@ final class CompostFactory{
 		$this->register(VanillaBlocks::SHROOMLIGHT()->asItem(), 65);
 		$this->register(VanillaBlocks::SPORE_BLOSSOM()->asItem(), 65);
 		$this->register(VanillaItems::WHEAT(), 65);
-		//Crimson fungus (483, 0, 65)
-		//Warped fungus (484, 0, 65)
-		//Crimson roots (478, 0, 65)
-		//Warped roots (479, 0, 65)
+		//Crimson fungus
+		//Warped fungus
+		//Crimson roots
+		//Warped roots
 
 		// region: 85% percentage compost
 		$this->register(VanillaItems::BAKED_POTATO(), 85);
 		$this->register(VanillaItems::BREAD(), 85);
 		$this->register(VanillaItems::COOKIE(), 85);
-		//Flowering Azalea (593, 0, 85)
+		//Flowering Azalea
 		$this->register(VanillaBlocks::HAY_BALE()->asItem(), 85);
 		$this->register(VanillaBlocks::NETHER_WART_BLOCK()->asItem(), 85);
+		//Pitcher Plant
+		//Torchflower
 		$this->register(VanillaBlocks::WARPED_WART_BLOCK()->asItem(), 85);
 
 		// region: 100% percentage compost
