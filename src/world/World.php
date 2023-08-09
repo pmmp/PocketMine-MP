@@ -972,14 +972,17 @@ class World implements ChunkManager{
 				$block = $replacement;
 			}
 
-			$ev = new BlockUpdateEvent($block);
-			$ev->call();
-			if(!$ev->isCancelled()){
-				foreach($this->getNearbyEntities(AxisAlignedBB::one()->offset($x, $y, $z)) as $entity){
-					$entity->onNearbyBlockChange();
+			if(BlockUpdateEvent::hasHandlers()){
+				$ev = new BlockUpdateEvent($block);
+				$ev->call();
+				if($ev->isCancelled()){
+					continue;
 				}
-				$block->onNearbyBlockChange();
 			}
+			foreach($this->getNearbyEntities(AxisAlignedBB::one()->offset($x, $y, $z)) as $entity){
+				$entity->onNearbyBlockChange();
+			}
+			$block->onNearbyBlockChange();
 		}
 
 		$this->timings->scheduledBlockUpdates->stopTiming();
