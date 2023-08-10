@@ -118,12 +118,30 @@ final class ItemEnchantmentTagRegistry{
 	}
 
 	/**
-	 * Returns all tags that are recursively nested within the given tag and do not have any further
-	 * nested tags beneath it.
+	 * Returns whether one tag array is a subset of another tag array.
+	 *
+	 * @param string[] $firstTags
+	 * @param string[] $secondTags
+	 */
+	public function isTagArraySubset(array $firstTags, array $secondTags) : bool{
+		if(count($firstTags) === 0 || count($secondTags) === 0){
+			return false;
+		}
+
+		$firstLeafTags = $this->getLeafTagsForArray($firstTags);
+		$secondLeafTags = $this->getLeafTagsForArray($secondTags);
+		$intersection = array_intersect($firstLeafTags, $secondLeafTags);
+
+		return count(array_diff($firstLeafTags, $intersection)) === 0 ||
+			count(array_diff($secondLeafTags, $intersection)) === 0;
+	}
+
+	/**
+	 * Returns all tags that are recursively nested within the given tag and do not have any nested tags.
 	 *
 	 * @return string[]
 	 */
-	public function getLeafTags(string $tag) : array{
+	private function getLeafTags(string $tag) : array{
 		$result = [];
 		$tagsToHandle = [$tag];
 
@@ -142,30 +160,18 @@ final class ItemEnchantmentTagRegistry{
 	}
 
 	/**
-	 * Returns whether one tag array is a subset of another tag array.
+	 * Returns all tags that are recursively nested within each tag in the array and do not have any nested tags.
 	 *
-	 * @param string[] $firstTags
-	 * @param string[] $secondTags
+	 * @param string[] $tags
+	 *
+	 * @return string[]
 	 */
-	public function isTagArraySubset(array $firstTags, array $secondTags) : bool{
-		if(count($firstTags) === 0 || count($secondTags) === 0){
-			return false;
+	private function getLeafTagsForArray(array $tags) : array{
+		$leafTagArrays = [];
+		foreach($tags as $tag){
+			$leafTagArrays[] = $this->getLeafTags($tag);
 		}
-
-		$firstLeafTags = [];
-		$secondLeafTags = [];
-
-		foreach($firstTags as $tag){
-			$firstLeafTags = array_unique(array_merge($firstLeafTags, $this->getLeafTags($tag)));
-		}
-		foreach($secondTags as $tag){
-			$secondLeafTags = array_unique(array_merge($secondLeafTags, $this->getLeafTags($tag)));
-		}
-
-		$intersection = array_intersect($firstLeafTags, $secondLeafTags);
-
-		return count(array_diff($firstLeafTags, $intersection)) === 0 ||
-			count(array_diff($secondLeafTags, $intersection)) === 0;
+		return array_unique(array_merge(...$leafTagArrays));
 	}
 
 	private function assertNotInternalTag(string $tag) : void{
