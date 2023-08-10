@@ -673,7 +673,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->networkPropertiesDirty = true;
 	}
 
-	public function allowForceEating () : bool{
+	public function allowForceEating() : bool{
 		return $this->isCreative() || $this->getWorld()->getDifficulty() === World::DIFFICULTY_PEACEFUL;
 	}
 
