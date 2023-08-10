@@ -153,7 +153,7 @@ final class AvailableEnchantmentRegistry{
 	 *
 	 * @return Enchantment[]
 	 */
-	public function getAvailableEnchantingTableEnchantments(Item $item) : array{
+	public function getEnchantingTableEnchantments(Item $item) : array{
 		if(count($item->getEnchantmentTags()) === 0){
 			return [];
 		}
@@ -169,7 +169,7 @@ final class AvailableEnchantmentRegistry{
 	 *
 	 * @return Enchantment[]
 	 */
-	public function getAvailableEnchantments(Item $item) : array{
+	public function getEnchantments(Item $item) : array{
 		if(count($item->getEnchantmentTags()) === 0){
 			return [];
 		}
