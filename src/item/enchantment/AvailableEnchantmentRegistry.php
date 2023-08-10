@@ -154,7 +154,7 @@ final class AvailableEnchantmentRegistry{
 	 * @return Enchantment[]
 	 */
 	public function getEnchantingTableEnchantments(Item $item) : array{
-		if(count($item->getEnchantmentTags()) === 0){
+		if(count($item->getEnchantmentTags()) === 0 || $item->hasEnchantments()){
 			return [];
 		}
 
@@ -166,6 +166,8 @@ final class AvailableEnchantmentRegistry{
 
 	/**
 	 * Returns enchantments that can be applied to the specified item.
+	 * Warning: not suitable for obtaining enchantments for an enchanting table
+	 * (use {@link getEnchantingTableEnchantments} for that).
 	 *
 	 * @return Enchantment[]
 	 */
@@ -182,6 +184,7 @@ final class AvailableEnchantmentRegistry{
 
 	/**
 	 * Returns whether the specified enchantment can be applied to the particular item.
+	 * Warning: not suitable for checking the availability of enchantment for an enchanting table.
 	 */
 	public function isAvailableForItem(Enchantment $enchantment, Item $item) : bool{
 		$enchantmentTags = array_merge($this->getPrimaryItemTags($enchantment), $this->getSecondaryItemTags($enchantment));
