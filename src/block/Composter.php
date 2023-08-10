@@ -43,6 +43,7 @@ use function mt_rand;
 class Composter extends Transparent{
 
 	public const MIN_LEVEL = 0;
+	public const IMMATURE_LEVEL = 7;
 	public const MAX_LEVEL = 8;
 
 	protected int $fillLevel = self::MIN_LEVEL;
@@ -65,6 +66,9 @@ class Composter extends Transparent{
 		return $this->fillLevel === self::MIN_LEVEL;
 	}
 
+	public function isImmature() : bool{
+		return $this->fillLevel === self::IMMATURE_LEVEL;
+	}
 	public function isReady() : bool{
 		return $this->fillLevel === self::MAX_LEVEL;
 	}
@@ -83,7 +87,7 @@ class Composter extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if ($this->fillLevel === 7) {
+		if ($this->isImmature()) {
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20);
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
@@ -97,7 +101,7 @@ class Composter extends Transparent{
 	}
 
 	public function onScheduledUpdate() : void{
-		if ($this->fillLevel === 7) {
+		if ($this->isImmature()) {
 			$this->position->getWorld()->addSound($this->position, new ComposterReadySound());
 			$this->fillLevel = self::MAX_LEVEL;
 			$this->position->getWorld()->setBlock($this->position, $this);
@@ -109,17 +113,17 @@ class Composter extends Transparent{
 			$this->empty(true);
 			return false;
 		}
-		if ($this->fillLevel === 7 || !CompostFactory::getInstance()->isCompostable($item)) {
+		if ($this->isImmature() || !CompostFactory::getInstance()->isCompostable($item)) {
 			return false;
 		}
 
 		$this->position->getWorld()->addParticle($this->position->add(0.5, 0.5, 0.5), new CropGrowthEmitterParticle());
 		if (mt_rand(1, 100) <= CompostFactory::getInstance()->getPercentage($item)) {
 			$this->position->getWorld()->addSound($this->position, new ComposterFillSuccessSound());
+			$this->position->getWorld()->setBlock($this->position, $this);
 			if (++$this->fillLevel === 7) {
 				$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20);
 			}
-			$this->position->getWorld()->setBlock($this->position, $this);
 		} else {
 			$this->position->getWorld()->addSound($this->position, new ComposterFillSound());
 		}
