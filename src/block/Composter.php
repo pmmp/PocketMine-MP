@@ -105,7 +105,7 @@ class Composter extends Transparent{
 	}
 
 	public function addItem(Item $item) : bool{
-		if ($this->fillLevel >= self::MAX_LEVEL) {
+		if ($this->isReady()) {
 			$this->empty(true);
 			return false;
 		}
