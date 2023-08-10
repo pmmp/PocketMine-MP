@@ -53,6 +53,10 @@ final class BlockTypeInfo{
 	public function hasTypeTag(string $tag) : bool{ return isset($this->typeTags[$tag]); }
 
 	/**
+	 * Returns tags that represent the type of item being enchanted and are used to determine
+	 * what enchantments can be applied to the item of this block in an enchanting table and anvil.
+	 * @see ItemEnchantmentTags, ItemEnchantmentTagRegistry
+	 *
 	 * @return string[]
 	 */
 	public function getEnchantmentTags() : array{
