@@ -137,6 +137,21 @@ final class ItemEnchantmentTagRegistry{
 	}
 
 	/**
+	 * Returns all tags that are recursively nested within each tag in the array and do not have any nested tags.
+	 *
+	 * @param string[] $tags
+	 *
+	 * @return string[]
+	 */
+	private function getLeafTagsForArray(array $tags) : array{
+		$leafTagArrays = [];
+		foreach($tags as $tag){
+			$leafTagArrays[] = $this->getLeafTags($tag);
+		}
+		return array_unique(array_merge(...$leafTagArrays));
+	}
+
+	/**
 	 * Returns all tags that are recursively nested within the given tag and do not have any nested tags.
 	 *
 	 * @return string[]
@@ -157,21 +172,6 @@ final class ItemEnchantmentTagRegistry{
 		}
 
 		return $result;
-	}
-
-	/**
-	 * Returns all tags that are recursively nested within each tag in the array and do not have any nested tags.
-	 *
-	 * @param string[] $tags
-	 *
-	 * @return string[]
-	 */
-	private function getLeafTagsForArray(array $tags) : array{
-		$leafTagArrays = [];
-		foreach($tags as $tag){
-			$leafTagArrays[] = $this->getLeafTags($tag);
-		}
-		return array_unique(array_merge(...$leafTagArrays));
 	}
 
 	private function assertNotInternalTag(string $tag) : void{
