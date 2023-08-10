@@ -176,7 +176,7 @@ final class ItemEnchantmentTagRegistry{
 	private function assertNotInternalTag(string $tag) : void{
 		if($tag === Tags::ALL){
 			throw new \InvalidArgumentException(
-				"Cannot perform register and unregister operations on the internal item enchantment tag '$tag'"
+				"Cannot perform any operations on the internal item enchantment tag '$tag'"
 			);
 		}
 	}
