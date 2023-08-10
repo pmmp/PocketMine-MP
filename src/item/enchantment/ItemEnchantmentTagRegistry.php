@@ -123,15 +123,18 @@ final class ItemEnchantmentTagRegistry{
 	 * @return string[]
 	 */
 	public function getLeafTags(string $tag) : array{
-		$nestedTags = $this->getNested($tag);
-
-		if(count($nestedTags) === 0){
-			return [$tag];
-		}
-
 		$result = [];
-		foreach($nestedTags as $nestedTag){
-			$result = array_merge($result, $this->getLeafTags($nestedTag));
+		$tagsToHandle = [$tag];
+
+		while (!empty($tagsToHandle)) {
+			$currentTag = array_shift($tagsToHandle);
+			$nestedTags = $this->getNested($currentTag);
+
+			if (count($nestedTags) === 0) {
+				$result[] = $currentTag;
+			} else {
+				$tagsToHandle = array_merge($tagsToHandle, $nestedTags);
+			}
 		}
 
 		return $result;
