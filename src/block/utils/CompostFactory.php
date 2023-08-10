@@ -166,11 +166,11 @@ final class CompostFactory{
 	}
 
 	public function register(Item $item, int $percentage, bool $overwrite = false) : bool{
-		if ($percentage < 0 || $percentage > 100) {
+		if($percentage < 0 || $percentage > 100){
 			throw new \InvalidArgumentException("Percentage must be in range " . self::MIN_PERCENTAGE . " ... " . self::MAX_PERCENTAGE);
 		}
 		$typeId = $item->getTypeId();
-		if (($overwrite || !isset($this->list[$typeId])) && !$item->isNull()) {
+		if(($overwrite || !isset($this->list[$typeId])) && !$item->isNull()){
 			$this->list[$typeId] = $percentage;
 			return true;
 		}

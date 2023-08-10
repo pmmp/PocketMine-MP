@@ -25,6 +25,9 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\CompostFactory;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\event\block\ComposterEmptyEvent;
+use pocketmine\event\block\ComposterFillEvent;
+use pocketmine\event\block\ComposterMatureEvent;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
@@ -102,15 +105,26 @@ class Composter extends Transparent{
 
 	public function onScheduledUpdate() : void{
 		if ($this->isImmature()) {
+			$block = clone $this;
+			$block->setFillLevel(self::MAX_LEVEL);
+
+			if(ComposterMatureEvent::hasHandlers()){
+				$ev = new ComposterMatureEvent($this, $block);
+				$ev->call();
+				if($ev->isCancelled()){
+					return;
+				}
+				$block = $ev->getNewState();
+			}
+
 			$this->position->getWorld()->addSound($this->position, new ComposterReadySound());
-			$this->fillLevel = self::MAX_LEVEL;
-			$this->position->getWorld()->setBlock($this->position, $this);
+			$this->position->getWorld()->setBlock($this->position, $block);
 		}
 	}
 
 	public function addItem(Item $item) : bool{
 		if ($this->isReady()) {
-			$this->empty(true);
+			$this->empty();
 			return false;
 		}
 		if ($this->isImmature() || !CompostFactory::getInstance()->isCompostable($item)) {
@@ -118,7 +132,17 @@ class Composter extends Transparent{
 		}
 
 		$this->position->getWorld()->addParticle($this->position->add(0.5, 0.5, 0.5), new CropGrowthEmitterParticle());
-		if (mt_rand(1, 100) <= CompostFactory::getInstance()->getPercentage($item)) {
+
+		$success = mt_rand(1,100) <= CompostFactory::getInstance()->getPercentage($item);
+		if(ComposterFillEvent::hasHandlers()){
+			$ev = new ComposterFillEvent($this, $item, $this->fillLevel, $success);
+			$ev->call();
+			if($ev->isCancelled()){
+				return false;
+			}
+			$success = $ev->isSuccess();
+		}
+		if ($success) {
 			++$this->fillLevel;
 			$this->position->getWorld()->addSound($this->position, new ComposterFillSuccessSound());
 			$this->position->getWorld()->setBlock($this->position, $this);
@@ -132,18 +156,26 @@ class Composter extends Transparent{
 		return true;
 	}
 
-	public function empty(bool $withDrop = false) : void{
-		if ($withDrop && $this->isReady()) {
+	public function empty() : void{
+		$drops = [VanillaItems::BONE_MEAL()];
+		if(ComposterEmptyEvent::hasHandlers()){
+			$ev = new ComposterEmptyEvent($this, $drops);
+			$ev->call();
+			$drops = $ev->getDrops();
+			if ($ev->isCancelled()) {
+				return;
+			}
+		}
+		foreach($drops as $drop){
 			$this->position->getWorld()->dropItem(
 				$this->position->add(0.5, 0.85, 0.5),
-				VanillaItems::BONE_MEAL(),
+				$drop,
 				new Vector3(0, 0, 0)
 			);
-			$this->position->getWorld()->addParticle($this->position, new CropGrowthEmitterParticle());
 		}
-
-		$this->position->getWorld()->addSound($this->position, new ComposterEmptySound());
 		$this->fillLevel = self::MIN_LEVEL;
+		$this->position->getWorld()->addParticle($this->position, new CropGrowthEmitterParticle());
+		$this->position->getWorld()->addSound($this->position, new ComposterEmptySound());
 		$this->position->getWorld()->setBlock($this->position, $this);
 	}
 
