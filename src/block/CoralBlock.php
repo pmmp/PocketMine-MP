@@ -61,7 +61,7 @@ final class CoralBlock extends Opaque{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		return [$this->setDead(true)->asItem()];
+		return [(clone $this)->setDead(true)->asItem()];
 	}
 
 	public function isAffectedBySilkTouch() : bool{
