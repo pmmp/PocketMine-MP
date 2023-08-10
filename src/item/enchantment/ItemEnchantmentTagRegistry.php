@@ -122,7 +122,7 @@ final class ItemEnchantmentTagRegistry{
 	 *
 	 * @return string[]
 	 */
-	public function getNonGroupingTags(string $tag) : array{
+	public function getLeafTags(string $tag) : array{
 		$nestedTags = $this->getNested($tag);
 
 		if(count($nestedTags) === 0){
@@ -131,7 +131,7 @@ final class ItemEnchantmentTagRegistry{
 
 		$result = [];
 		foreach($nestedTags as $nestedTag){
-			$result = array_merge($result, $this->getNonGroupingTags($nestedTag));
+			$result = array_merge($result, $this->getLeafTags($nestedTag));
 		}
 
 		return $result;
@@ -148,20 +148,20 @@ final class ItemEnchantmentTagRegistry{
 			return false;
 		}
 
-		$firstNonGroupingTags = [];
-		$secondNonGroupingTags = [];
+		$firstLeafTags = [];
+		$secondLeafTags = [];
 
 		foreach($firstTags as $tag){
-			$firstNonGroupingTags = array_unique(array_merge($firstNonGroupingTags, $this->getNonGroupingTags($tag)));
+			$firstLeafTags = array_unique(array_merge($firstLeafTags, $this->getLeafTags($tag)));
 		}
 		foreach($secondTags as $tag){
-			$secondNonGroupingTags = array_unique(array_merge($secondNonGroupingTags, $this->getNonGroupingTags($tag)));
+			$secondLeafTags = array_unique(array_merge($secondLeafTags, $this->getLeafTags($tag)));
 		}
 
-		$intersection = array_intersect($firstNonGroupingTags, $secondNonGroupingTags);
+		$intersection = array_intersect($firstLeafTags, $secondLeafTags);
 
-		return count(array_diff($firstNonGroupingTags, $intersection)) === 0 ||
-			count(array_diff($secondNonGroupingTags, $intersection)) === 0;
+		return count(array_diff($firstLeafTags, $intersection)) === 0 ||
+			count(array_diff($secondLeafTags, $intersection)) === 0;
 	}
 
 	private function assertNotInternalTag(string $tag) : void{
