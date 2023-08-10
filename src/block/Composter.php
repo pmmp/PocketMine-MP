@@ -59,7 +59,7 @@ class Composter extends Transparent{
 		$empty_layer = (max(1, 15 - 2 * $this->fillLevel) - (int) ($this->fillLevel === 0)) / 16;
 		$boxes = [AxisAlignedBB::one()->trim(Facing::UP, $empty_layer)];
 
-		foreach (Facing::HORIZONTAL as $side) {
+		foreach(Facing::HORIZONTAL as $side){
 			$boxes[] = AxisAlignedBB::one()->trim(Facing::opposite($side), 14 / 16);
 		}
 		return $boxes;
@@ -90,21 +90,21 @@ class Composter extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if ($this->isImmature()) {
+		if($this->isImmature()){
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20);
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if ($player !== null && $this->addItem($item)) {
+		if($player !== null && $this->addItem($item)){
 			$item->pop();
 		}
 		return true;
 	}
 
 	public function onScheduledUpdate() : void{
-		if ($this->isImmature()) {
+		if($this->isImmature()){
 			$block = clone $this;
 			$block->setFillLevel(self::MAX_LEVEL);
 
@@ -123,11 +123,11 @@ class Composter extends Transparent{
 	}
 
 	public function addItem(Item $item) : bool{
-		if ($this->isReady()) {
+		if($this->isReady()){
 			$this->empty();
 			return false;
 		}
-		if ($this->isImmature() || !CompostFactory::getInstance()->isCompostable($item)) {
+		if($this->isImmature() || !CompostFactory::getInstance()->isCompostable($item)){
 			return false;
 		}
 
@@ -142,15 +142,15 @@ class Composter extends Transparent{
 			}
 			$success = $ev->isSuccess();
 		}
-		if ($success) {
+		if($success){
 			++$this->fillLevel;
 			$this->position->getWorld()->addSound($this->position, new ComposterFillSuccessSound());
 			$this->position->getWorld()->setBlock($this->position, $this);
 
-			if ($this->isImmature()) {
+			if($this->isImmature()){
 				$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20);
 			}
-		} else {
+		}else{
 			$this->position->getWorld()->addSound($this->position, new ComposterFillSound());
 		}
 		return true;
@@ -162,7 +162,7 @@ class Composter extends Transparent{
 			$ev = new ComposterEmptyEvent($this, $drops);
 			$ev->call();
 			$drops = $ev->getDrops();
-			if ($ev->isCancelled()) {
+			if($ev->isCancelled()){
 				return;
 			}
 		}
