@@ -127,7 +127,7 @@ class Composter extends Transparent{
 	}
 
 	public function empty(bool $withDrop = false) : void{
-		if ($withDrop && $this->fillLevel === self::MAX_LEVEL) {
+		if ($withDrop && $this->isReady()) {
 			$this->position->getWorld()->dropItem(
 				$this->position->add(0.5, 0.85, 0.5),
 				VanillaItems::BONE_MEAL(),
