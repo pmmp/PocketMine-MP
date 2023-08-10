@@ -142,7 +142,7 @@ class Composter extends Transparent{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		return $this->fillLevel === self::MAX_LEVEL ? [
+		return $this->isReady() ? [
 			VanillaBlocks::COMPOSTER()->asItem(),
 			VanillaItems::BONE_MEAL()
 		] : [
