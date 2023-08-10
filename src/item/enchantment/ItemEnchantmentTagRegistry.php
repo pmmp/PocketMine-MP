@@ -30,6 +30,7 @@ use function array_diff;
 use function array_intersect;
 use function array_merge;
 use function array_search;
+use function array_shift;
 use function array_unique;
 use function count;
 
@@ -126,13 +127,13 @@ final class ItemEnchantmentTagRegistry{
 		$result = [];
 		$tagsToHandle = [$tag];
 
-		while (!empty($tagsToHandle)) {
+		while(count($tagsToHandle) !== 0){
 			$currentTag = array_shift($tagsToHandle);
 			$nestedTags = $this->getNested($currentTag);
 
-			if (count($nestedTags) === 0) {
+			if(count($nestedTags) === 0){
 				$result[] = $currentTag;
-			} else {
+			}else{
 				$tagsToHandle = array_merge($tagsToHandle, $nestedTags);
 			}
 		}
