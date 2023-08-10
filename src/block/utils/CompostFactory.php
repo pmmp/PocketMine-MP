@@ -31,7 +31,8 @@ use pocketmine\utils\SingletonTrait;
 final class CompostFactory{
 	use SingletonTrait;
 
-	protected const DEFAULT_PERCENTAGE = 0;
+	protected const MIN_PERCENTAGE = 0;
+	protected const MAX_PERCENTAGE = 100;
 
 	/**
 	 * @var int[]
@@ -165,9 +166,12 @@ final class CompostFactory{
 	}
 
 	public function register(Item $item, int $percentage, bool $overwrite = false) : bool{
-		$type_id = $item->getTypeId();
-		if (($overwrite || !isset($this->list[$type_id])) && !$item->isNull()) {
-			$this->list[$type_id] = $percentage;
+		if ($percentage < 0 || $percentage > 100) {
+			throw new \InvalidArgumentException("Percentage must be in range " . self::MIN_PERCENTAGE . " ... " . self::MAX_PERCENTAGE);
+		}
+		$typeId = $item->getTypeId();
+		if (($overwrite || !isset($this->list[$typeId])) && !$item->isNull()) {
+			$this->list[$typeId] = $percentage;
 			return true;
 		}
 		return false;
@@ -178,6 +182,6 @@ final class CompostFactory{
 	}
 
 	public function getPercentage(Item $item) : int{
-		return $this->list[$item->getTypeId()] ?? self::DEFAULT_PERCENTAGE;
+		return $this->list[$item->getTypeId()] ?? self::MIN_PERCENTAGE;
 	}
 }
