@@ -119,9 +119,11 @@ class Composter extends Transparent{
 
 		$this->position->getWorld()->addParticle($this->position->add(0.5, 0.5, 0.5), new CropGrowthEmitterParticle());
 		if (mt_rand(1, 100) <= CompostFactory::getInstance()->getPercentage($item)) {
+			++$this->fillLevel;
 			$this->position->getWorld()->addSound($this->position, new ComposterFillSuccessSound());
 			$this->position->getWorld()->setBlock($this->position, $this);
-			if (++$this->fillLevel === 7) {
+
+			if ($this->isImmature()) {
 				$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20);
 			}
 		} else {
