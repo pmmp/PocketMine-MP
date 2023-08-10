@@ -83,11 +83,10 @@ final class ItemEnchantmentTagRegistry{
 	}
 
 	public function unregister(string $tag) : void{
-		$this->assertNotInternalTag($tag);
-
 		if(!isset($this->tagMap[$tag])){
 			return;
 		}
+		$this->assertNotInternalTag($tag);
 
 		unset($this->tagMap[$tag]);
 
