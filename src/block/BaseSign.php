@@ -25,10 +25,10 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\block\utils\PlanksType;
+use pocketmine\block\utils\PlanksTypeTrait;
 use pocketmine\block\utils\SignText;
 use pocketmine\block\utils\SupportType;
-use pocketmine\block\utils\WoodType;
-use pocketmine\block\utils\WoodTypeTrait;
 use pocketmine\color\Color;
 use pocketmine\event\block\SignChangeEvent;
 use pocketmine\item\Dye;
@@ -46,7 +46,7 @@ use function assert;
 use function strlen;
 
 abstract class BaseSign extends Transparent{
-	use WoodTypeTrait;
+	use PlanksTypeTrait;
 
 	protected SignText $text;
 	protected ?int $editorEntityRuntimeId = null;
@@ -57,8 +57,8 @@ abstract class BaseSign extends Transparent{
 	/**
 	 * @param \Closure() : Item $asItemCallback
 	 */
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, WoodType $woodType, \Closure $asItemCallback){
-		$this->woodType = $woodType;
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, PlanksType $planksType, \Closure $asItemCallback){
+		$this->planksType = $planksType;
 		parent::__construct($idInfo, $name, $typeInfo);
 		$this->text = new SignText();
 		$this->asItemCallback = $asItemCallback;

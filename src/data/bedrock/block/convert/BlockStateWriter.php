@@ -26,9 +26,9 @@ namespace pocketmine\data\bedrock\block\convert;
 use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\block\utils\LogType;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\WallConnectionType;
-use pocketmine\block\utils\WoodType;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateNames;
@@ -269,14 +269,14 @@ final class BlockStateWriter{
 	}
 
 	/** @return $this */
-	public function writeLegacyWoodType(WoodType $treeType) : self{
+	public function writeLegacyLogType(LogType $treeType) : self{
 		$this->writeString(BlockStateNames::WOOD_TYPE, match($treeType->id()){
-			WoodType::OAK()->id() => StringValues::WOOD_TYPE_OAK,
-			WoodType::SPRUCE()->id() => StringValues::WOOD_TYPE_SPRUCE,
-			WoodType::BIRCH()->id() => StringValues::WOOD_TYPE_BIRCH,
-			WoodType::JUNGLE()->id() => StringValues::WOOD_TYPE_JUNGLE,
-			WoodType::ACACIA()->id() => StringValues::WOOD_TYPE_ACACIA,
-			WoodType::DARK_OAK()->id() => StringValues::WOOD_TYPE_DARK_OAK,
+			LogType::OAK()->id() => StringValues::WOOD_TYPE_OAK,
+			LogType::SPRUCE()->id() => StringValues::WOOD_TYPE_SPRUCE,
+			LogType::BIRCH()->id() => StringValues::WOOD_TYPE_BIRCH,
+			LogType::JUNGLE()->id() => StringValues::WOOD_TYPE_JUNGLE,
+			LogType::ACACIA()->id() => StringValues::WOOD_TYPE_ACACIA,
+			LogType::DARK_OAK()->id() => StringValues::WOOD_TYPE_DARK_OAK,
 			default => throw new BlockStateSerializeException("Invalid Wood type " . $treeType->name())
 		});
 		return $this;

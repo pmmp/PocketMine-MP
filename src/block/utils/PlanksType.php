@@ -21,9 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\utils\PlanksType;
 use pocketmine\utils\EnumTrait;
 
 /**
@@ -32,41 +31,37 @@ use pocketmine\utils\EnumTrait;
  * @see build/generate-registry-annotations.php
  * @generate-registry-docblock
  *
- * @method static BoatType ACACIA()
- * @method static BoatType BIRCH()
- * @method static BoatType DARK_OAK()
- * @method static BoatType JUNGLE()
- * @method static BoatType MANGROVE()
- * @method static BoatType OAK()
- * @method static BoatType SPRUCE()
+ * @method static PlanksType ACACIA()
+ * @method static PlanksType BIRCH()
+ * @method static PlanksType CHERRY()
+ * @method static PlanksType CRIMSON()
+ * @method static PlanksType DARK_OAK()
+ * @method static PlanksType JUNGLE()
+ * @method static PlanksType MANGROVE()
+ * @method static PlanksType OAK()
+ * @method static PlanksType SPRUCE()
+ * @method static PlanksType WARPED()
  */
-final class BoatType{
+final class PlanksType{
 	use EnumTrait {
-		__construct as Enum___construct;
+		__construct as private Enum___construct;
 	}
 
 	protected static function setup() : void{
-		self::registerAll(
-			new self("oak", PlanksType::OAK()),
-			new self("spruce", PlanksType::SPRUCE()),
-			new self("birch", PlanksType::BIRCH()),
-			new self("jungle", PlanksType::JUNGLE()),
-			new self("acacia", PlanksType::ACACIA()),
-			new self("dark_oak", PlanksType::DARK_OAK()),
-			new self("mangrove", PlanksType::MANGROVE()),
-		);
+		foreach(LogType::getAll() as $type) {
+			self::register(new self($type->name(), $type->getDisplayName(), $type->isFlammable()));
+		}
 	}
 
 	private function __construct(
 		string $enumName,
-		private PlanksType $planksType,
+		private string $displayName,
+		private bool $flammable,
 	){
 		$this->Enum___construct($enumName);
 	}
 
-	public function getLogType() : PlanksType{ return $this->planksType; }
+	public function getDisplayName() : string{ return $this->displayName; }
 
-	public function getDisplayName() : string{
-		return $this->planksType->getDisplayName();
-	}
+	public function isFlammable() : bool{ return $this->flammable; }
 }

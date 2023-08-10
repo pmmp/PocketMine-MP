@@ -27,8 +27,9 @@ use pocketmine\block\BlockIdentifier as BID;
 use pocketmine\block\BlockTypeIds as Ids;
 use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\utils\LeavesType;
+use pocketmine\block\utils\LogType;
+use pocketmine\block\utils\PlanksType;
 use pocketmine\block\utils\SaplingType;
-use pocketmine\block\utils\WoodType;
 use pocketmine\item\VanillaItems;
 use pocketmine\utils\AssumptionFailedError;
 
@@ -46,83 +47,82 @@ use pocketmine\utils\AssumptionFailedError;
  * @internal
  */
 final class WoodLikeBlockIdHelper{
-
-	public static function getPlanksIdentifier(WoodType $type) : BID{
+	public static function getPlanksIdentifier(PlanksType $type) : BID{
 		return new BID(match($type->id()){
-			WoodType::OAK()->id() => Ids::OAK_PLANKS,
-			WoodType::SPRUCE()->id() => Ids::SPRUCE_PLANKS,
-			WoodType::BIRCH()->id() => Ids::BIRCH_PLANKS,
-			WoodType::JUNGLE()->id() => Ids::JUNGLE_PLANKS,
-			WoodType::ACACIA()->id() => Ids::ACACIA_PLANKS,
-			WoodType::DARK_OAK()->id() => Ids::DARK_OAK_PLANKS,
-			WoodType::MANGROVE()->id() => Ids::MANGROVE_PLANKS,
-			WoodType::CRIMSON()->id() => Ids::CRIMSON_PLANKS,
-			WoodType::WARPED()->id() => Ids::WARPED_PLANKS,
-			WoodType::CHERRY()->id() => Ids::CHERRY_PLANKS,
-			default => throw new AssumptionFailedError("All tree types should be covered")
+			PlanksType::OAK()->id() => Ids::OAK_PLANKS,
+			PlanksType::SPRUCE()->id() => Ids::SPRUCE_PLANKS,
+			PlanksType::BIRCH()->id() => Ids::BIRCH_PLANKS,
+			PlanksType::JUNGLE()->id() => Ids::JUNGLE_PLANKS,
+			PlanksType::ACACIA()->id() => Ids::ACACIA_PLANKS,
+			PlanksType::DARK_OAK()->id() => Ids::DARK_OAK_PLANKS,
+			PlanksType::MANGROVE()->id() => Ids::MANGROVE_PLANKS,
+			PlanksType::CRIMSON()->id() => Ids::CRIMSON_PLANKS,
+			PlanksType::WARPED()->id() => Ids::WARPED_PLANKS,
+			PlanksType::CHERRY()->id() => Ids::CHERRY_PLANKS,
+			default => throw new AssumptionFailedError("All planks types should be covered")
 		});
 	}
 
-	public static function getFenceIdentifier(WoodType $type) : BID{
+	public static function getFenceIdentifier(PlanksType $type) : BID{
 		return new BID(match($type->id()){
-			WoodType::OAK()->id() => Ids::OAK_FENCE,
-			WoodType::SPRUCE()->id() => Ids::SPRUCE_FENCE,
-			WoodType::BIRCH()->id() => Ids::BIRCH_FENCE,
-			WoodType::JUNGLE()->id() => Ids::JUNGLE_FENCE,
-			WoodType::ACACIA()->id() => Ids::ACACIA_FENCE,
-			WoodType::DARK_OAK()->id() => Ids::DARK_OAK_FENCE,
-			WoodType::MANGROVE()->id() => Ids::MANGROVE_FENCE,
-			WoodType::CRIMSON()->id() => Ids::CRIMSON_FENCE,
-			WoodType::WARPED()->id() => Ids::WARPED_FENCE,
-			WoodType::CHERRY()->id() => Ids::CHERRY_FENCE,
-			default => throw new AssumptionFailedError("All tree types should be covered")
+			PlanksType::OAK()->id() => Ids::OAK_FENCE,
+			PlanksType::SPRUCE()->id() => Ids::SPRUCE_FENCE,
+			PlanksType::BIRCH()->id() => Ids::BIRCH_FENCE,
+			PlanksType::JUNGLE()->id() => Ids::JUNGLE_FENCE,
+			PlanksType::ACACIA()->id() => Ids::ACACIA_FENCE,
+			PlanksType::DARK_OAK()->id() => Ids::DARK_OAK_FENCE,
+			PlanksType::MANGROVE()->id() => Ids::MANGROVE_FENCE,
+			PlanksType::CRIMSON()->id() => Ids::CRIMSON_FENCE,
+			PlanksType::WARPED()->id() => Ids::WARPED_FENCE,
+			PlanksType::CHERRY()->id() => Ids::CHERRY_FENCE,
+			default => throw new AssumptionFailedError("All planks types should be covered")
 		});
 	}
 
-	public static function getSlabIdentifier(WoodType $type) : BID{
+	public static function getSlabIdentifier(PlanksType $type) : BID{
 		return new BID(match($type->id()){
-			WoodType::OAK()->id() => Ids::OAK_SLAB,
-			WoodType::SPRUCE()->id() => Ids::SPRUCE_SLAB,
-			WoodType::BIRCH()->id() => Ids::BIRCH_SLAB,
-			WoodType::JUNGLE()->id() => Ids::JUNGLE_SLAB,
-			WoodType::ACACIA()->id() => Ids::ACACIA_SLAB,
-			WoodType::DARK_OAK()->id() => Ids::DARK_OAK_SLAB,
-			WoodType::MANGROVE()->id() => Ids::MANGROVE_SLAB,
-			WoodType::CRIMSON()->id() => Ids::CRIMSON_SLAB,
-			WoodType::WARPED()->id() => Ids::WARPED_SLAB,
-			WoodType::CHERRY()->id() => Ids::CHERRY_SLAB,
-			default => throw new AssumptionFailedError("All tree types should be covered")
+			PlanksType::OAK()->id() => Ids::OAK_SLAB,
+			PlanksType::SPRUCE()->id() => Ids::SPRUCE_SLAB,
+			PlanksType::BIRCH()->id() => Ids::BIRCH_SLAB,
+			PlanksType::JUNGLE()->id() => Ids::JUNGLE_SLAB,
+			PlanksType::ACACIA()->id() => Ids::ACACIA_SLAB,
+			PlanksType::DARK_OAK()->id() => Ids::DARK_OAK_SLAB,
+			PlanksType::MANGROVE()->id() => Ids::MANGROVE_SLAB,
+			PlanksType::CRIMSON()->id() => Ids::CRIMSON_SLAB,
+			PlanksType::WARPED()->id() => Ids::WARPED_SLAB,
+			PlanksType::CHERRY()->id() => Ids::CHERRY_SLAB,
+			default => throw new AssumptionFailedError("All planks types should be covered")
 		});
 	}
 
-	public static function getLogIdentifier(WoodType $treeType) : BID{
+	public static function getLogIdentifier(LogType $treeType) : BID{
 		return new BID(match($treeType->id()){
-			WoodType::OAK()->id() => Ids::OAK_LOG,
-			WoodType::SPRUCE()->id() => Ids::SPRUCE_LOG,
-			WoodType::BIRCH()->id() => Ids::BIRCH_LOG,
-			WoodType::JUNGLE()->id() => Ids::JUNGLE_LOG,
-			WoodType::ACACIA()->id() => Ids::ACACIA_LOG,
-			WoodType::DARK_OAK()->id() => Ids::DARK_OAK_LOG,
-			WoodType::MANGROVE()->id() => Ids::MANGROVE_LOG,
-			WoodType::CRIMSON()->id() => Ids::CRIMSON_STEM,
-			WoodType::WARPED()->id() => Ids::WARPED_STEM,
-			WoodType::CHERRY()->id() => Ids::CHERRY_LOG,
+			LogType::OAK()->id() => Ids::OAK_LOG,
+			LogType::SPRUCE()->id() => Ids::SPRUCE_LOG,
+			LogType::BIRCH()->id() => Ids::BIRCH_LOG,
+			LogType::JUNGLE()->id() => Ids::JUNGLE_LOG,
+			LogType::ACACIA()->id() => Ids::ACACIA_LOG,
+			LogType::DARK_OAK()->id() => Ids::DARK_OAK_LOG,
+			LogType::MANGROVE()->id() => Ids::MANGROVE_LOG,
+			LogType::CRIMSON()->id() => Ids::CRIMSON_STEM,
+			LogType::WARPED()->id() => Ids::WARPED_STEM,
+			LogType::CHERRY()->id() => Ids::CHERRY_LOG,
 			default => throw new AssumptionFailedError("All tree types should be covered")
 		});
 	}
 
-	public static function getAllSidedLogIdentifier(WoodType $treeType) : BID{
+	public static function getAllSidedLogIdentifier(LogType $treeType) : BID{
 		return new BID(match($treeType->id()){
-			WoodType::OAK()->id() => Ids::OAK_WOOD,
-			WoodType::SPRUCE()->id() => Ids::SPRUCE_WOOD,
-			WoodType::BIRCH()->id() => Ids::BIRCH_WOOD,
-			WoodType::JUNGLE()->id() => Ids::JUNGLE_WOOD,
-			WoodType::ACACIA()->id() => Ids::ACACIA_WOOD,
-			WoodType::DARK_OAK()->id() => Ids::DARK_OAK_WOOD,
-			WoodType::MANGROVE()->id() => Ids::MANGROVE_WOOD,
-			WoodType::CRIMSON()->id() => Ids::CRIMSON_HYPHAE,
-			WoodType::WARPED()->id() => Ids::WARPED_HYPHAE,
-			WoodType::CHERRY()->id() => Ids::CHERRY_WOOD,
+			LogType::OAK()->id() => Ids::OAK_WOOD,
+			LogType::SPRUCE()->id() => Ids::SPRUCE_WOOD,
+			LogType::BIRCH()->id() => Ids::BIRCH_WOOD,
+			LogType::JUNGLE()->id() => Ids::JUNGLE_WOOD,
+			LogType::ACACIA()->id() => Ids::ACACIA_WOOD,
+			LogType::DARK_OAK()->id() => Ids::DARK_OAK_WOOD,
+			LogType::MANGROVE()->id() => Ids::MANGROVE_WOOD,
+			LogType::CRIMSON()->id() => Ids::CRIMSON_HYPHAE,
+			LogType::WARPED()->id() => Ids::WARPED_HYPHAE,
+			LogType::CHERRY()->id() => Ids::CHERRY_WOOD,
 			default => throw new AssumptionFailedError("All tree types should be covered")
 		});
 	}
@@ -159,165 +159,165 @@ final class WoodLikeBlockIdHelper{
 	 * @return BID[]|\Closure[]
 	 * @phpstan-return array{BID, BID, \Closure() : \pocketmine\item\Item}
 	 */
-	public static function getSignInfo(WoodType $treeType) : array{
-		switch($treeType->id()){
-			case WoodType::OAK()->id():
+	public static function getSignInfo(PlanksType $type) : array{
+		switch($type->id()){
+			case PlanksType::OAK()->id():
 				return [
 					new BID(Ids::OAK_SIGN, TileSign::class),
 					new BID(Ids::OAK_WALL_SIGN, TileSign::class),
 					fn() => VanillaItems::OAK_SIGN()
 				];
-			case WoodType::SPRUCE()->id():
+			case PlanksType::SPRUCE()->id():
 				return [
 					new BID(Ids::SPRUCE_SIGN, TileSign::class),
 					new BID(Ids::SPRUCE_WALL_SIGN, TileSign::class),
 					fn() => VanillaItems::SPRUCE_SIGN()
 				];
-			case WoodType::BIRCH()->id():
+			case PlanksType::BIRCH()->id():
 				return [
 					new BID(Ids::BIRCH_SIGN, TileSign::class),
 					new BID(Ids::BIRCH_WALL_SIGN, TileSign::class),
 					fn() => VanillaItems::BIRCH_SIGN()
 				];
-			case WoodType::JUNGLE()->id():
+			case PlanksType::JUNGLE()->id():
 				return [
 					new BID(Ids::JUNGLE_SIGN, TileSign::class),
 					new BID(Ids::JUNGLE_WALL_SIGN, TileSign::class),
 					fn() => VanillaItems::JUNGLE_SIGN()
 				];
-			case WoodType::ACACIA()->id():
+			case PlanksType::ACACIA()->id():
 				return [
 					new BID(Ids::ACACIA_SIGN, TileSign::class),
 					new BID(Ids::ACACIA_WALL_SIGN, TileSign::class),
 					fn() => VanillaItems::ACACIA_SIGN()
 				];
-			case WoodType::DARK_OAK()->id():
+			case PlanksType::DARK_OAK()->id():
 				return [
 					new BID(Ids::DARK_OAK_SIGN, TileSign::class),
 					new BID(Ids::DARK_OAK_WALL_SIGN, TileSign::class),
 					fn() => VanillaItems::DARK_OAK_SIGN()
 				];
-			case WoodType::MANGROVE()->id():
+			case PlanksType::MANGROVE()->id():
 				return [
 					new BID(Ids::MANGROVE_SIGN, TileSign::class),
 					new BID(Ids::MANGROVE_WALL_SIGN, TileSign::class),
 					fn() => VanillaItems::MANGROVE_SIGN()
 				];
-			case WoodType::CRIMSON()->id():
+			case PlanksType::CRIMSON()->id():
 				return [
 					new BID(Ids::CRIMSON_SIGN, TileSign::class),
 					new BID(Ids::CRIMSON_WALL_SIGN, TileSign::class),
 					fn() => VanillaItems::CRIMSON_SIGN()
 				];
-			case WoodType::WARPED()->id():
+			case PlanksType::WARPED()->id():
 				return [
 					new BID(Ids::WARPED_SIGN, TileSign::class),
 					new BID(Ids::WARPED_WALL_SIGN, TileSign::class),
 					fn() => VanillaItems::WARPED_SIGN()
 				];
-			case WoodType::CHERRY()->id():
+			case PlanksType::CHERRY()->id():
 				return [
 					new BID(Ids::CHERRY_SIGN, TileSign::class),
 					new BID(Ids::CHERRY_WALL_SIGN, TileSign::class),
 					fn() => VanillaItems::CHERRY_SIGN()
 				];
 		}
-		throw new AssumptionFailedError("Switch should cover all wood types");
+		throw new AssumptionFailedError("Switch should cover all planks types");
 	}
 
-	public static function getTrapdoorIdentifier(WoodType $treeType) : BlockIdentifier{
-		return new BID(match($treeType->id()){
-			WoodType::OAK()->id() => Ids::OAK_TRAPDOOR,
-			WoodType::SPRUCE()->id() => Ids::SPRUCE_TRAPDOOR,
-			WoodType::BIRCH()->id() => Ids::BIRCH_TRAPDOOR,
-			WoodType::JUNGLE()->id() => Ids::JUNGLE_TRAPDOOR,
-			WoodType::ACACIA()->id() => Ids::ACACIA_TRAPDOOR,
-			WoodType::DARK_OAK()->id() => Ids::DARK_OAK_TRAPDOOR,
-			WoodType::MANGROVE()->id() => Ids::MANGROVE_TRAPDOOR,
-			WoodType::CRIMSON()->id() => Ids::CRIMSON_TRAPDOOR,
-			WoodType::WARPED()->id() => Ids::WARPED_TRAPDOOR,
-			WoodType::CHERRY()->id() => Ids::CHERRY_TRAPDOOR,
-			default => throw new AssumptionFailedError("All wood types should be covered")
+	public static function getTrapdoorIdentifier(PlanksType $type) : BlockIdentifier{
+		return new BID(match($type->id()){
+			PlanksType::OAK()->id() => Ids::OAK_TRAPDOOR,
+			PlanksType::SPRUCE()->id() => Ids::SPRUCE_TRAPDOOR,
+			PlanksType::BIRCH()->id() => Ids::BIRCH_TRAPDOOR,
+			PlanksType::JUNGLE()->id() => Ids::JUNGLE_TRAPDOOR,
+			PlanksType::ACACIA()->id() => Ids::ACACIA_TRAPDOOR,
+			PlanksType::DARK_OAK()->id() => Ids::DARK_OAK_TRAPDOOR,
+			PlanksType::MANGROVE()->id() => Ids::MANGROVE_TRAPDOOR,
+			PlanksType::CRIMSON()->id() => Ids::CRIMSON_TRAPDOOR,
+			PlanksType::WARPED()->id() => Ids::WARPED_TRAPDOOR,
+			PlanksType::CHERRY()->id() => Ids::CHERRY_TRAPDOOR,
+			default => throw new AssumptionFailedError("All planks types should be covered")
 		});
 	}
 
-	public static function getButtonIdentifier(WoodType $treeType) : BlockIdentifier{
-		return new BID(match($treeType->id()){
-			WoodType::OAK()->id() => Ids::OAK_BUTTON,
-			WoodType::SPRUCE()->id() => Ids::SPRUCE_BUTTON,
-			WoodType::BIRCH()->id() => Ids::BIRCH_BUTTON,
-			WoodType::JUNGLE()->id() => Ids::JUNGLE_BUTTON,
-			WoodType::ACACIA()->id() => Ids::ACACIA_BUTTON,
-			WoodType::DARK_OAK()->id() => Ids::DARK_OAK_BUTTON,
-			WoodType::MANGROVE()->id() => Ids::MANGROVE_BUTTON,
-			WoodType::CRIMSON()->id() => Ids::CRIMSON_BUTTON,
-			WoodType::WARPED()->id() => Ids::WARPED_BUTTON,
-			WoodType::CHERRY()->id() => Ids::CHERRY_BUTTON,
-			default => throw new AssumptionFailedError("All wood types should be covered")
+	public static function getButtonIdentifier(PlanksType $type) : BlockIdentifier{
+		return new BID(match($type->id()){
+			PlanksType::OAK()->id() => Ids::OAK_BUTTON,
+			PlanksType::SPRUCE()->id() => Ids::SPRUCE_BUTTON,
+			PlanksType::BIRCH()->id() => Ids::BIRCH_BUTTON,
+			PlanksType::JUNGLE()->id() => Ids::JUNGLE_BUTTON,
+			PlanksType::ACACIA()->id() => Ids::ACACIA_BUTTON,
+			PlanksType::DARK_OAK()->id() => Ids::DARK_OAK_BUTTON,
+			PlanksType::MANGROVE()->id() => Ids::MANGROVE_BUTTON,
+			PlanksType::CRIMSON()->id() => Ids::CRIMSON_BUTTON,
+			PlanksType::WARPED()->id() => Ids::WARPED_BUTTON,
+			PlanksType::CHERRY()->id() => Ids::CHERRY_BUTTON,
+			default => throw new AssumptionFailedError("All planks types should be covered")
 		});
 	}
 
-	public static function getPressurePlateIdentifier(WoodType $treeType) : BlockIdentifier{
-		return new BID(match($treeType->id()){
-			WoodType::OAK()->id() => Ids::OAK_PRESSURE_PLATE,
-			WoodType::SPRUCE()->id() => Ids::SPRUCE_PRESSURE_PLATE,
-			WoodType::BIRCH()->id() => Ids::BIRCH_PRESSURE_PLATE,
-			WoodType::JUNGLE()->id() => Ids::JUNGLE_PRESSURE_PLATE,
-			WoodType::ACACIA()->id() => Ids::ACACIA_PRESSURE_PLATE,
-			WoodType::DARK_OAK()->id() => Ids::DARK_OAK_PRESSURE_PLATE,
-			WoodType::MANGROVE()->id() => Ids::MANGROVE_PRESSURE_PLATE,
-			WoodType::CRIMSON()->id() => Ids::CRIMSON_PRESSURE_PLATE,
-			WoodType::WARPED()->id() => Ids::WARPED_PRESSURE_PLATE,
-			WoodType::CHERRY()->id() => Ids::CHERRY_PRESSURE_PLATE,
-			default => throw new AssumptionFailedError("All wood types should be covered")
+	public static function getPressurePlateIdentifier(PlanksType $type) : BlockIdentifier{
+		return new BID(match($type->id()){
+			PlanksType::OAK()->id() => Ids::OAK_PRESSURE_PLATE,
+			PlanksType::SPRUCE()->id() => Ids::SPRUCE_PRESSURE_PLATE,
+			PlanksType::BIRCH()->id() => Ids::BIRCH_PRESSURE_PLATE,
+			PlanksType::JUNGLE()->id() => Ids::JUNGLE_PRESSURE_PLATE,
+			PlanksType::ACACIA()->id() => Ids::ACACIA_PRESSURE_PLATE,
+			PlanksType::DARK_OAK()->id() => Ids::DARK_OAK_PRESSURE_PLATE,
+			PlanksType::MANGROVE()->id() => Ids::MANGROVE_PRESSURE_PLATE,
+			PlanksType::CRIMSON()->id() => Ids::CRIMSON_PRESSURE_PLATE,
+			PlanksType::WARPED()->id() => Ids::WARPED_PRESSURE_PLATE,
+			PlanksType::CHERRY()->id() => Ids::CHERRY_PRESSURE_PLATE,
+			default => throw new AssumptionFailedError("All planks types should be covered")
 		});
 	}
 
-	public static function getDoorIdentifier(WoodType $treeType) : BlockIdentifier{
-		return new BID(match($treeType->id()){
-			WoodType::OAK()->id() => Ids::OAK_DOOR,
-			WoodType::SPRUCE()->id() => Ids::SPRUCE_DOOR,
-			WoodType::BIRCH()->id() => Ids::BIRCH_DOOR,
-			WoodType::JUNGLE()->id() => Ids::JUNGLE_DOOR,
-			WoodType::ACACIA()->id() => Ids::ACACIA_DOOR,
-			WoodType::DARK_OAK()->id() => Ids::DARK_OAK_DOOR,
-			WoodType::MANGROVE()->id() => Ids::MANGROVE_DOOR,
-			WoodType::CRIMSON()->id() => Ids::CRIMSON_DOOR,
-			WoodType::WARPED()->id() => Ids::WARPED_DOOR,
-			WoodType::CHERRY()->id() => Ids::CHERRY_DOOR,
-			default => throw new AssumptionFailedError("All wood types should be covered")
+	public static function getDoorIdentifier(PlanksType $type) : BlockIdentifier{
+		return new BID(match($type->id()){
+			PlanksType::OAK()->id() => Ids::OAK_DOOR,
+			PlanksType::SPRUCE()->id() => Ids::SPRUCE_DOOR,
+			PlanksType::BIRCH()->id() => Ids::BIRCH_DOOR,
+			PlanksType::JUNGLE()->id() => Ids::JUNGLE_DOOR,
+			PlanksType::ACACIA()->id() => Ids::ACACIA_DOOR,
+			PlanksType::DARK_OAK()->id() => Ids::DARK_OAK_DOOR,
+			PlanksType::MANGROVE()->id() => Ids::MANGROVE_DOOR,
+			PlanksType::CRIMSON()->id() => Ids::CRIMSON_DOOR,
+			PlanksType::WARPED()->id() => Ids::WARPED_DOOR,
+			PlanksType::CHERRY()->id() => Ids::CHERRY_DOOR,
+			default => throw new AssumptionFailedError("All planks types should be covered")
 		});
 	}
 
-	public static function getFenceGateIdentifier(WoodType $treeType) : BlockIdentifier{
-		return new BID(match($treeType->id()){
-			WoodType::OAK()->id() => Ids::OAK_FENCE_GATE,
-			WoodType::SPRUCE()->id() => Ids::SPRUCE_FENCE_GATE,
-			WoodType::BIRCH()->id() => Ids::BIRCH_FENCE_GATE,
-			WoodType::JUNGLE()->id() => Ids::JUNGLE_FENCE_GATE,
-			WoodType::ACACIA()->id() => Ids::ACACIA_FENCE_GATE,
-			WoodType::DARK_OAK()->id() => Ids::DARK_OAK_FENCE_GATE,
-			WoodType::MANGROVE()->id() => Ids::MANGROVE_FENCE_GATE,
-			WoodType::CRIMSON()->id() => Ids::CRIMSON_FENCE_GATE,
-			WoodType::WARPED()->id() => Ids::WARPED_FENCE_GATE,
-			WoodType::CHERRY()->id() => Ids::CHERRY_FENCE_GATE,
-			default => throw new AssumptionFailedError("All wood types should be covered")
+	public static function getFenceGateIdentifier(PlanksType $type) : BlockIdentifier{
+		return new BID(match($type->id()){
+			PlanksType::OAK()->id() => Ids::OAK_FENCE_GATE,
+			PlanksType::SPRUCE()->id() => Ids::SPRUCE_FENCE_GATE,
+			PlanksType::BIRCH()->id() => Ids::BIRCH_FENCE_GATE,
+			PlanksType::JUNGLE()->id() => Ids::JUNGLE_FENCE_GATE,
+			PlanksType::ACACIA()->id() => Ids::ACACIA_FENCE_GATE,
+			PlanksType::DARK_OAK()->id() => Ids::DARK_OAK_FENCE_GATE,
+			PlanksType::MANGROVE()->id() => Ids::MANGROVE_FENCE_GATE,
+			PlanksType::CRIMSON()->id() => Ids::CRIMSON_FENCE_GATE,
+			PlanksType::WARPED()->id() => Ids::WARPED_FENCE_GATE,
+			PlanksType::CHERRY()->id() => Ids::CHERRY_FENCE_GATE,
+			default => throw new AssumptionFailedError("All planks types should be covered")
 		});
 	}
 
-	public static function getStairsIdentifier(WoodType $treeType) : BlockIdentifier{
-		return new BID(match($treeType->id()){
-			WoodType::OAK()->id() => Ids::OAK_STAIRS,
-			WoodType::SPRUCE()->id() => Ids::SPRUCE_STAIRS,
-			WoodType::BIRCH()->id() => Ids::BIRCH_STAIRS,
-			WoodType::JUNGLE()->id() => Ids::JUNGLE_STAIRS,
-			WoodType::ACACIA()->id() => Ids::ACACIA_STAIRS,
-			WoodType::DARK_OAK()->id() => Ids::DARK_OAK_STAIRS,
-			WoodType::MANGROVE()->id() => Ids::MANGROVE_STAIRS,
-			WoodType::CRIMSON()->id() => Ids::CRIMSON_STAIRS,
-			WoodType::WARPED()->id() => Ids::WARPED_STAIRS,
-			WoodType::CHERRY()->id() => Ids::CHERRY_STAIRS,
-			default => throw new AssumptionFailedError("All wood types should be covered")
+	public static function getStairsIdentifier(PlanksType $type) : BlockIdentifier{
+		return new BID(match($type->id()){
+			PlanksType::OAK()->id() => Ids::OAK_STAIRS,
+			PlanksType::SPRUCE()->id() => Ids::SPRUCE_STAIRS,
+			PlanksType::BIRCH()->id() => Ids::BIRCH_STAIRS,
+			PlanksType::JUNGLE()->id() => Ids::JUNGLE_STAIRS,
+			PlanksType::ACACIA()->id() => Ids::ACACIA_STAIRS,
+			PlanksType::DARK_OAK()->id() => Ids::DARK_OAK_STAIRS,
+			PlanksType::MANGROVE()->id() => Ids::MANGROVE_STAIRS,
+			PlanksType::CRIMSON()->id() => Ids::CRIMSON_STAIRS,
+			PlanksType::WARPED()->id() => Ids::WARPED_STAIRS,
+			PlanksType::CHERRY()->id() => Ids::CHERRY_STAIRS,
+			default => throw new AssumptionFailedError("All planks types should be covered")
 		});
 	}
 }

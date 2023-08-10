@@ -21,22 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\utils\PlanksTypeTrait;
+use pocketmine\block\BlockIdentifier;
+use pocketmine\block\BlockTypeInfo;
 
-class Planks extends Opaque{
-	use PlanksTypeTrait;
+trait LogTypeTrait{
+	private LogType $logType; //immutable for now
 
-	public function getFuelTime() : int{
-		return $this->planksType->isFlammable() ? 300 : 0;
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, LogType $logType){
+		$this->logType = $logType;
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function getFlameEncouragement() : int{
-		return $this->planksType->isFlammable() ? 5 : 0;
-	}
-
-	public function getFlammability() : int{
-		return $this->planksType->isFlammable() ? 20 : 0;
+	public function getLogType() : LogType{
+		return $this->logType;
 	}
 }

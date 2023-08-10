@@ -62,7 +62,7 @@ final class BlockStateSerializerHelper{
 		return BlockStateWriter::create(Ids::WOOD)
 			->writeBool(BlockStateNames::STRIPPED_BIT, $block->isStripped())
 			->writePillarAxis($block->getAxis())
-			->writeLegacyWoodType($block->getWoodType());
+			->writeLegacyLogType($block->getLogType());
 	}
 
 	public static function encodeButton(Button $block, BlockStateWriter $out) : BlockStateWriter{

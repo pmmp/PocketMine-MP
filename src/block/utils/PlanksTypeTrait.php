@@ -26,15 +26,15 @@ namespace pocketmine\block\utils;
 use pocketmine\block\BlockIdentifier;
 use pocketmine\block\BlockTypeInfo;
 
-trait WoodTypeTrait{
-	private WoodType $woodType; //immutable for now
+trait PlanksTypeTrait{
+	private PlanksType $planksType; //immutable for now
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, WoodType $woodType){
-		$this->woodType = $woodType;
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, PlanksType $planksType){
+		$this->planksType = $planksType;
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function getWoodType() : WoodType{
-		return $this->woodType;
+	public function getPlanksType() : PlanksType{
+		return $this->planksType;
 	}
 }
