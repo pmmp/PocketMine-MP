@@ -262,8 +262,6 @@ class Server{
 
 	private WorldManager $worldManager;
 
-	private int $maxPlayers;
-
 	private bool $onlineMode = true;
 
 	private Network $network;
@@ -338,7 +336,7 @@ class Server{
 	}
 
 	public function getMaxPlayers() : int{
-		return $this->maxPlayers;
+		return $this->configGroup->getConfigInt("max-players", self::DEFAULT_MAX_PLAYERS);
 	}
 
 	/**
@@ -931,8 +929,6 @@ class Server{
 			@touch($bannedIpsTxt);
 			$this->banByIP = new BanList($bannedIpsTxt);
 			$this->banByIP->load();
-
-			$this->maxPlayers = $this->configGroup->getConfigInt("max-players", self::DEFAULT_MAX_PLAYERS);
 
 			$this->onlineMode = $this->configGroup->getConfigBool("xbox-auth", true);
 			if($this->onlineMode){
