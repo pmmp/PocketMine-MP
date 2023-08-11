@@ -84,7 +84,7 @@ class Config{
 
 	private string $file;
 	private int $type = Config::DETECT;
-	private int $jsonOptions = JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING;
+	private int $jsonOptions = JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_UNICODE;
 
 	private bool $changed = false;
 
