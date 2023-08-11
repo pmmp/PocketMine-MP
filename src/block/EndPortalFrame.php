@@ -25,8 +25,13 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\item\Item;
+use pocketmine\item\ItemTypeIds;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
+use pocketmine\world\sound\EndPortalFrameFillSound;
 
 class EndPortalFrame extends Opaque{
 	use FacesOppositePlacingPlayerTrait;
@@ -55,5 +60,19 @@ class EndPortalFrame extends Opaque{
 	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 3 / 16)];
+	}
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		if($this->eye || $item->getTypeId() !== ItemTypeIds::ENDER_EYE){
+			return false;
+		}
+		$world = $this->position->getWorld();
+		$world->setBlock($this->position, $this->setEye(true));
+		$world->addSound($this->position, new EndPortalFrameFillSound());
+		$item->pop();
+
+		//TODO: portal spawn logic
+
+		return true;
 	}
 }

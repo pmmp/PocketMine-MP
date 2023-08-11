@@ -152,6 +152,7 @@ use pocketmine\world\World;
  * @method static Egg EGG()
  * @method static Item EMERALD()
  * @method static GoldenAppleEnchanted ENCHANTED_GOLDEN_APPLE()
+ * @method static Item ENDER_EYE()
  * @method static EnderPearl ENDER_PEARL()
  * @method static ExperienceBottle EXPERIENCE_BOTTLE()
  * @method static Item FEATHER()
@@ -430,6 +431,7 @@ final class VanillaItems{
 		self::register("egg", new Egg(new IID(Ids::EGG), "Egg"));
 		self::register("emerald", new Item(new IID(Ids::EMERALD), "Emerald"));
 		self::register("enchanted_golden_apple", new GoldenAppleEnchanted(new IID(Ids::ENCHANTED_GOLDEN_APPLE), "Enchanted Golden Apple"));
+		self::register("ender_eye", new Item(new IID(Ids::ENDER_EYE), "Ender Eye"));
 		self::register("ender_pearl", new EnderPearl(new IID(Ids::ENDER_PEARL), "Ender Pearl"));
 		self::register("experience_bottle", new ExperienceBottle(new IID(Ids::EXPERIENCE_BOTTLE), "Bottle o' Enchanting"));
 		self::register("feather", new Item(new IID(Ids::FEATHER), "Feather"));
