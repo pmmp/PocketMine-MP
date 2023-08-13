@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\DirtType;
-use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Hoe;
 use pocketmine\item\Item;
@@ -58,11 +58,7 @@ class Grass extends Opaque{
 		$lightAbove = $world->getFullLightAt($this->position->x, $this->position->y + 1, $this->position->z);
 		if($lightAbove < 4 && $world->getBlockAt($this->position->x, $this->position->y + 1, $this->position->z)->getLightFilter() >= 2){
 			//grass dies
-			$ev = new BlockSpreadEvent($this, $this, VanillaBlocks::DIRT());
-			$ev->call();
-			if(!$ev->isCancelled()){
-				$world->setBlock($this->position, $ev->getNewState(), false);
-			}
+			BlockEventHelper::spread($this, VanillaBlocks::DIRT(), $this);
 		}elseif($lightAbove >= 9){
 			//try grass spread
 			for($i = 0; $i < 4; ++$i){
@@ -80,11 +76,7 @@ class Grass extends Opaque{
 					continue;
 				}
 
-				$ev = new BlockSpreadEvent($b, $this, VanillaBlocks::GRASS());
-				$ev->call();
-				if(!$ev->isCancelled()){
-					$world->setBlock($b->position, $ev->getNewState(), false);
-				}
+				BlockEventHelper::spread($b, VanillaBlocks::GRASS(), $this);
 			}
 		}
 	}

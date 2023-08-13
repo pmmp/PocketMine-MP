@@ -113,6 +113,8 @@ use function mb_strtolower;
  * @method static Bedrock BEDROCK()
  * @method static Beetroot BEETROOTS()
  * @method static Bell BELL()
+ * @method static BigDripleafHead BIG_DRIPLEAF_HEAD()
+ * @method static BigDripleafStem BIG_DRIPLEAF_STEM()
  * @method static WoodenButton BIRCH_BUTTON()
  * @method static WoodenDoor BIRCH_DOOR()
  * @method static WoodenFence BIRCH_FENCE()
@@ -571,6 +573,7 @@ use function mb_strtolower;
  * @method static PackedIce PACKED_ICE()
  * @method static Opaque PACKED_MUD()
  * @method static DoublePlant PEONY()
+ * @method static PinkPetals PINK_PETALS()
  * @method static Flower PINK_TULIP()
  * @method static Podzol PODZOL()
  * @method static Opaque POLISHED_ANDESITE()
@@ -658,6 +661,7 @@ use function mb_strtolower;
  * @method static Opaque SHROOMLIGHT()
  * @method static ShulkerBox SHULKER_BOX()
  * @method static Slime SLIME()
+ * @method static SmallDripleaf SMALL_DRIPLEAF()
  * @method static SmithingTable SMITHING_TABLE()
  * @method static Furnace SMOKER()
  * @method static Opaque SMOOTH_BASALT()
@@ -837,6 +841,7 @@ final class VanillaBlocks{
 		self::register("lilac", new DoublePlant(new BID(Ids::LILAC), "Lilac", new Info(BreakInfo::instant())));
 		self::register("rose_bush", new DoublePlant(new BID(Ids::ROSE_BUSH), "Rose Bush", new Info(BreakInfo::instant())));
 		self::register("peony", new DoublePlant(new BID(Ids::PEONY), "Peony", new Info(BreakInfo::instant())));
+		self::register("pink_petals", new PinkPetals(new BID(Ids::PINK_PETALS), "Pink Petals", new Info(BreakInfo::instant())));
 		self::register("double_tallgrass", new DoubleTallGrass(new BID(Ids::DOUBLE_TALLGRASS), "Double Tallgrass", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
 		self::register("large_fern", new DoubleTallGrass(new BID(Ids::LARGE_FERN), "Large Fern", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
 		self::register("dragon_egg", new DragonEgg(new BID(Ids::DRAGON_EGG), "Dragon Egg", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD()))));
@@ -1598,6 +1603,10 @@ final class VanillaBlocks{
 		self::register("hanging_roots", new HangingRoots(new BID(Ids::HANGING_ROOTS), "Hanging Roots", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
 
 		self::register("cave_vines", new CaveVines(new BID(Ids::CAVE_VINES), "Cave Vines", new Info(BreakInfo::instant())));
+
+		self::register("small_dripleaf", new SmallDripleaf(new BID(Ids::SMALL_DRIPLEAF), "Small Dripleaf", new Info(BreakInfo::instant(BlockToolType::SHEARS, toolHarvestLevel: 1))));
+		self::register("big_dripleaf_head", new BigDripleafHead(new BID(Ids::BIG_DRIPLEAF_HEAD), "Big Dripleaf", new Info(BreakInfo::instant())));
+		self::register("big_dripleaf_stem", new BigDripleafStem(new BID(Ids::BIG_DRIPLEAF_STEM), "Big Dripleaf Stem", new Info(BreakInfo::instant())));
 	}
 
 	private static function registerBlocksR18() : void{

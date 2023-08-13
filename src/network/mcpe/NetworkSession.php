@@ -197,7 +197,7 @@ class NetworkSession{
 
 		$this->setHandler(new SessionStartPacketHandler(
 			$this,
-			fn() => $this->onSessionStartSuccess()
+			$this->onSessionStartSuccess(...)
 		));
 
 		$this->manager->add($this);
@@ -225,13 +225,13 @@ class NetworkSession{
 				$this->logger->setPrefix($this->getLogPrefix());
 				$this->manager->markLoginReceived($this);
 			},
-			\Closure::fromCallable([$this, "setAuthenticationStatus"])
+			$this->setAuthenticationStatus(...)
 		));
 	}
 
 	protected function createPlayer() : void{
 		$this->server->createPlayer($this, $this->info, $this->authenticated, $this->cachedOfflinePlayerData)->onCompletion(
-			\Closure::fromCallable([$this, 'onPlayerCreated']),
+			$this->onPlayerCreated(...),
 			function() : void{
 				//TODO: this should never actually occur... right?
 				$this->logger->error("Failed to create player");
@@ -406,10 +406,12 @@ class NetworkSession{
 		$timings->startTiming();
 
 		try{
-			$ev = new DataPacketDecodeEvent($this, $packet->pid(), $buffer);
-			$ev->call();
-			if($ev->isCancelled()){
-				return;
+			if(DataPacketDecodeEvent::hasHandlers()){
+				$ev = new DataPacketDecodeEvent($this, $packet->pid(), $buffer);
+				$ev->call();
+				if($ev->isCancelled()){
+					return;
+				}
 			}
 
 			$decodeTimings = Timings::getDecodeDataPacketTimings($packet);
@@ -429,18 +431,21 @@ class NetworkSession{
 				$decodeTimings->stopTiming();
 			}
 
-			$ev = new DataPacketReceiveEvent($this, $packet);
-			$ev->call();
-			if(!$ev->isCancelled()){
-				$handlerTimings = Timings::getHandleDataPacketTimings($packet);
-				$handlerTimings->startTiming();
-				try{
-					if($this->handler === null || !$packet->handle($this->handler)){
-						$this->logger->debug("Unhandled " . $packet->getName() . ": " . base64_encode($stream->getBuffer()));
-					}
-				}finally{
-					$handlerTimings->stopTiming();
+			if(DataPacketReceiveEvent::hasHandlers()){
+				$ev = new DataPacketReceiveEvent($this, $packet);
+				$ev->call();
+				if($ev->isCancelled()){
+					return;
 				}
+			}
+			$handlerTimings = Timings::getHandleDataPacketTimings($packet);
+			$handlerTimings->startTiming();
+			try{
+				if($this->handler === null || !$packet->handle($this->handler)){
+					$this->logger->debug("Unhandled " . $packet->getName() . ": " . base64_encode($stream->getBuffer()));
+				}
+			}finally{
+				$handlerTimings->stopTiming();
 			}
 		}finally{
 			$timings->stopTiming();
@@ -459,12 +464,16 @@ class NetworkSession{
 		$timings = Timings::getSendDataPacketTimings($packet);
 		$timings->startTiming();
 		try{
-			$ev = new DataPacketSendEvent([$this], [$packet]);
-			$ev->call();
-			if($ev->isCancelled()){
-				return false;
+			if(DataPacketSendEvent::hasHandlers()){
+				$ev = new DataPacketSendEvent([$this], [$packet]);
+				$ev->call();
+				if($ev->isCancelled()){
+					return false;
+				}
+				$packets = $ev->getPackets();
+			}else{
+				$packets = [$packet];
 			}
-			$packets = $ev->getPackets();
 
 			foreach($packets as $evPacket){
 				$this->addToSendBuffer(self::encodePacketTimed(PacketSerializer::encoder($this->packetSerializerContext), $evPacket));
@@ -787,9 +796,7 @@ class NetworkSession{
 
 				$this->cipher = EncryptionContext::fakeGCM($encryptionKey);
 
-				$this->setHandler(new HandshakePacketHandler(function() : void{
-					$this->onServerLoginSuccess();
-				}));
+				$this->setHandler(new HandshakePacketHandler($this->onServerLoginSuccess(...)));
 				$this->logger->debug("Enabled encryption");
 			}));
 		}else{
@@ -818,9 +825,7 @@ class NetworkSession{
 	public function notifyTerrainReady() : void{
 		$this->logger->debug("Sending spawn notification, waiting for spawn response");
 		$this->sendDataPacket(PlayStatusPacket::create(PlayStatusPacket::PLAYER_SPAWN));
-		$this->setHandler(new SpawnResponsePacketHandler(function() : void{
-			$this->onClientSpawnResponse();
-		}));
+		$this->setHandler(new SpawnResponsePacketHandler($this->onClientSpawnResponse(...)));
 	}
 
 	private function onClientSpawnResponse() : void{

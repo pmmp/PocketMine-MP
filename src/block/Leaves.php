@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\block\utils\LeavesType;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -115,10 +116,15 @@ class Leaves extends Transparent{
 
 	public function onRandomTick() : void{
 		if(!$this->noDecay && $this->checkDecay){
-			$ev = new LeavesDecayEvent($this);
-			$ev->call();
+			$cancelled = false;
+			if(LeavesDecayEvent::hasHandlers()){
+				$ev = new LeavesDecayEvent($this);
+				$ev->call();
+				$cancelled = $ev->isCancelled();
+			}
+
 			$world = $this->position->getWorld();
-			if($ev->isCancelled() || $this->findLog($this->position)){
+			if($cancelled || $this->findLog($this->position)){
 				$this->checkDecay = false;
 				$world->setBlock($this->position, $this, false);
 			}else{
@@ -138,7 +144,8 @@ class Leaves extends Transparent{
 		}
 
 		$drops = [];
-		if(mt_rand(1, 20) === 1){ //Saplings
+		if(FortuneDropHelper::bonusChanceDivisor($item, 20, 4)){ //Saplings
+			// TODO: according to the wiki, the jungle saplings have a different drop rate
 			$sapling = (match($this->leavesType){
 				LeavesType::ACACIA() => VanillaBlocks::ACACIA_SAPLING(),
 				LeavesType::BIRCH() => VanillaBlocks::BIRCH_SAPLING(),
@@ -155,10 +162,13 @@ class Leaves extends Transparent{
 				$drops[] = $sapling;
 			}
 		}
-		if(($this->leavesType->equals(LeavesType::OAK()) || $this->leavesType->equals(LeavesType::DARK_OAK())) && mt_rand(1, 200) === 1){ //Apples
+		if(
+			($this->leavesType->equals(LeavesType::OAK()) || $this->leavesType->equals(LeavesType::DARK_OAK())) &&
+			FortuneDropHelper::bonusChanceDivisor($item, 200, 20)
+		){ //Apples
 			$drops[] = VanillaItems::APPLE();
 		}
-		if(mt_rand(1, 50) === 1){
+		if(FortuneDropHelper::bonusChanceDivisor($item, 50, 5)){
 			$drops[] = VanillaItems::STICK()->setCount(mt_rand(1, 2));
 		}
 

@@ -28,6 +28,7 @@ use pocketmine\block\Block;
 use pocketmine\block\CaveVines;
 use pocketmine\block\ChorusFlower;
 use pocketmine\block\Light;
+use pocketmine\block\PinkPetals;
 use pocketmine\block\Slab;
 use pocketmine\block\Stair;
 use pocketmine\block\SweetBerryBush;
@@ -35,6 +36,7 @@ use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
+use pocketmine\block\utils\DripleafState;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
@@ -826,6 +828,22 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFacing($in->readLegacyHorizontalFacing())
 				->setAttachmentType($in->readBellAttachmentType());
 		});
+		$this->map(Ids::BIG_DRIPLEAF, function(Reader $in) : Block{
+			if($in->readBool(StateNames::BIG_DRIPLEAF_HEAD)){
+				return Blocks::BIG_DRIPLEAF_HEAD()
+					->setFacing($in->readLegacyHorizontalFacing())
+					->setLeafState(match($type = $in->readString(StateNames::BIG_DRIPLEAF_TILT)){
+						StringValues::BIG_DRIPLEAF_TILT_NONE => DripleafState::STABLE(),
+						StringValues::BIG_DRIPLEAF_TILT_UNSTABLE => DripleafState::UNSTABLE(),
+						StringValues::BIG_DRIPLEAF_TILT_PARTIAL_TILT => DripleafState::PARTIAL_TILT(),
+						StringValues::BIG_DRIPLEAF_TILT_FULL_TILT => DripleafState::FULL_TILT(),
+						default => throw $in->badValueException(StateNames::BIG_DRIPLEAF_TILT, $type),
+					});
+			}else{
+				$in->ignored(StateNames::BIG_DRIPLEAF_TILT);
+				return Blocks::BIG_DRIPLEAF_STEM()->setFacing($in->readLegacyHorizontalFacing());
+			}
+		});
 		$this->mapSlab(Ids::BLACKSTONE_SLAB, Ids::BLACKSTONE_DOUBLE_SLAB, fn() => Blocks::BLACKSTONE_SLAB());
 		$this->mapStairs(Ids::BLACKSTONE_STAIRS, fn() => Blocks::BLACKSTONE_STAIRS());
 		$this->map(Ids::BLACKSTONE_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::BLACKSTONE_WALL(), $in));
@@ -1158,6 +1176,13 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSlab(Ids::OXIDIZED_CUT_COPPER_SLAB, Ids::OXIDIZED_DOUBLE_CUT_COPPER_SLAB, fn() => Helper::decodeCopper(Blocks::CUT_COPPER_SLAB(), CopperOxidation::OXIDIZED()));
 		$this->mapStairs(Ids::OXIDIZED_CUT_COPPER_STAIRS, fn() => Helper::decodeCopper(Blocks::CUT_COPPER_STAIRS(), CopperOxidation::OXIDIZED()));
 		$this->map(Ids::PEARLESCENT_FROGLIGHT, fn(Reader $in) => Blocks::FROGLIGHT()->setFroglightType(FroglightType::PEARLESCENT())->setAxis($in->readPillarAxis()));
+		$this->map(Ids::PINK_PETALS, function(Reader $in) : Block{
+			//Pink petals only uses 0-3, but GROWTH state can go up to 7
+			$growth = $in->readBoundedInt(StateNames::GROWTH, 0, 7);
+			return Blocks::PINK_PETALS()
+				->setFacing($in->readLegacyHorizontalFacing())
+				->setCount(min($growth + 1, PinkPetals::MAX_COUNT));
+		});
 		$this->mapStairs(Ids::POLISHED_ANDESITE_STAIRS, fn() => Blocks::POLISHED_ANDESITE_STAIRS());
 		$this->map(Ids::POLISHED_BASALT, function(Reader $in) : Block{
 			return Blocks::POLISHED_BASALT()
@@ -1331,6 +1356,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::SMOKER()
 				->setFacing($in->readHorizontalFacing())
 				->setLit(false);
+		});
+		$this->map(Ids::SMALL_DRIPLEAF_BLOCK, function(Reader $in) : Block{
+			return Blocks::SMALL_DRIPLEAF()
+				->setFacing($in->readLegacyHorizontalFacing())
+				->setTop($in->readBool(StateNames::UPPER_BLOCK_BIT));
 		});
 		$this->mapStairs(Ids::SMOOTH_QUARTZ_STAIRS, fn() => Blocks::SMOOTH_QUARTZ_STAIRS());
 		$this->mapStairs(Ids::SMOOTH_RED_SANDSTONE_STAIRS, fn() => Blocks::SMOOTH_RED_SANDSTONE_STAIRS());

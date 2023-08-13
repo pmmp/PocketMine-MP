@@ -93,6 +93,7 @@ use pocketmine\scheduler\AsyncPool;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\stats\SendUsageTask;
 use pocketmine\thread\log\AttachableThreadSafeLogger;
+use pocketmine\thread\ThreadCrashException;
 use pocketmine\thread\ThreadSafeClassLoader;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
@@ -1009,7 +1010,7 @@ class Server{
 
 			$this->playerDataProvider = new DatFilePlayerDataProvider(Path::join($this->dataPath, "players"));
 
-			register_shutdown_function([$this, "crashDump"]);
+			register_shutdown_function($this->crashDump(...));
 
 			$loadErrorCount = 0;
 			$this->pluginManager->loadPlugins($this->pluginPath, $loadErrorCount);
@@ -1516,23 +1517,38 @@ class Server{
 			$trace = $e->getTrace();
 		}
 
-		$errstr = $e->getMessage();
-		$errfile = $e->getFile();
-		$errline = $e->getLine();
+		//If this is a thread crash, this logs where the exception came from on the main thread, as opposed to the
+		//crashed thread. This is intentional, and might be useful for debugging
+		//Assume that the thread already logged the original exception with the correct stack trace
+		$this->logger->logException($e, $trace);
+
+		if($e instanceof ThreadCrashException){
+			$info = $e->getCrashInfo();
+			$type = $info->getType();
+			$errstr = $info->getMessage();
+			$errfile = $info->getFile();
+			$errline = $info->getLine();
+			$printableTrace = $info->getTrace();
+			$thread = $info->getThreadName();
+		}else{
+			$type = get_class($e);
+			$errstr = $e->getMessage();
+			$errfile = $e->getFile();
+			$errline = $e->getLine();
+			$printableTrace = Utils::printableTraceWithMetadata($trace);
+			$thread = "Main";
+		}
 
 		$errstr = preg_replace('/\s+/', ' ', trim($errstr));
 
-		$errfile = Filesystem::cleanPath($errfile);
-
-		$this->logger->logException($e, $trace);
-
 		$lastError = [
-			"type" => get_class($e),
+			"type" => $type,
 			"message" => $errstr,
-			"fullFile" => $e->getFile(),
-			"file" => $errfile,
+			"fullFile" => $errfile,
+			"file" => Filesystem::cleanPath($errfile),
 			"line" => $errline,
-			"trace" => $trace
+			"trace" => $printableTrace,
+			"thread" => $thread
 		];
 
 		global $lastExceptionError, $lastError;
