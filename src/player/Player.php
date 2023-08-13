@@ -66,6 +66,7 @@ use pocketmine\event\player\PlayerItemUseEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerJumpEvent;
 use pocketmine\event\player\PlayerKickEvent;
+use pocketmine\event\player\PlayerMissSwingEvent;
 use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\player\PlayerPostChunkSendEvent;
 use pocketmine\event\player\PlayerQuitEvent;
@@ -80,6 +81,7 @@ use pocketmine\event\player\PlayerViewDistanceChangeEvent;
 use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
 use pocketmine\inventory\CallbackInventoryListener;
+use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCraftingInventory;
 use pocketmine\inventory\PlayerCursorInventory;
@@ -217,6 +219,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected array $permanentWindows = [];
 	protected PlayerCursorInventory $cursorInventory;
 	protected PlayerCraftingInventory $craftingGrid;
+	protected CreativeInventory $creativeInventory;
 
 	protected int $messageCounter = 2;
 
@@ -306,6 +309,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->uuid = $this->playerInfo->getUuid();
 		$this->xuid = $this->playerInfo instanceof XboxLivePlayerInfo ? $this->playerInfo->getXuid() : "";
+
+		$this->creativeInventory = CreativeInventory::getInstance();
 
 		$rootPermissions = [DefaultPermissions::ROOT_USER => true];
 		if($this->server->isOp($this->username)){
@@ -1195,10 +1200,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return !$this->gamemode->equals(GameMode::CREATIVE());
 	}
 
-	public function isFireProof() : bool{
-		return $this->isCreative();
-	}
-
 	public function getDrops() : array{
 		if($this->hasFiniteResources()){
 			return parent::getDrops();
@@ -1435,6 +1436,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			Timings::$entityBaseTick->startTiming();
 			$this->entityBaseTick($tickDiff);
 			Timings::$entityBaseTick->stopTiming();
+
+			if($this->isCreative() && $this->fireTicks > 1){
+				$this->fireTicks = 1;
+			}
 
 			if(!$this->isSpectator() && $this->isAlive()){
 				Timings::$playerCheckNearEntities->startTiming();
@@ -1888,6 +1893,19 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		return true;
+	}
+
+	/**
+	 * Performs actions associated with the attack action (left-click) without a target entity.
+	 * Under normal circumstances, this will just play the no-damage attack sound and the arm-swing animation.
+	 */
+	public function missSwing() : void{
+		$ev = new PlayerMissSwingEvent($this);
+		$ev->call();
+		if(!$ev->isCancelled()){
+			$this->broadcastSound(new EntityAttackNoDamageSound());
+			$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
+		}
 	}
 
 	/**
@@ -2530,6 +2548,24 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function getCraftingGrid() : CraftingGrid{
 		return $this->craftingGrid;
+	}
+
+	/**
+	 * Returns the creative inventory shown to the player.
+	 * Unless changed by a plugin, this is usually the same for all players.
+	 */
+	public function getCreativeInventory() : CreativeInventory{
+		return $this->creativeInventory;
+	}
+
+	/**
+	 * To set a custom creative inventory, you need to make a clone of a CreativeInventory instance.
+	 */
+	public function setCreativeInventory(CreativeInventory $inventory) : void{
+		$this->creativeInventory = $inventory;
+		if($this->spawned && $this->isConnected()){
+			$this->getNetworkSession()->getInvManager()?->syncCreative();
+		}
 	}
 
 	/**

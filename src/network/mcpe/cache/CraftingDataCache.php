@@ -25,21 +25,17 @@ namespace pocketmine\network\mcpe\cache;
 
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\FurnaceType;
-use pocketmine\crafting\RecipeIngredient;
 use pocketmine\crafting\ShapedRecipe;
 use pocketmine\crafting\ShapelessRecipe;
 use pocketmine\crafting\ShapelessRecipeType;
-use pocketmine\item\Item;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
-use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\recipe\CraftingRecipeBlockName;
 use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipe as ProtocolFurnaceRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipeBlockName;
 use pocketmine\network\mcpe\protocol\types\recipe\IntIdMetaItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\PotionContainerChangeRecipe as ProtocolPotionContainerChangeRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\PotionTypeRecipe as ProtocolPotionTypeRecipe;
-use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient as ProtocolRecipeIngredient;
 use pocketmine\network\mcpe\protocol\types\recipe\ShapedRecipe as ProtocolShapedRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\ShapelessRecipe as ProtocolShapelessRecipe;
 use pocketmine\timings\Timings;
@@ -95,12 +91,8 @@ final class CraftingDataCache{
 				$recipesWithTypeIds[] = new ProtocolShapelessRecipe(
 					CraftingDataPacket::ENTRY_SHAPELESS,
 					Binary::writeInt($index),
-					array_map(function(RecipeIngredient $item) use ($converter) : ProtocolRecipeIngredient{
-						return $converter->coreRecipeIngredientToNet($item);
-					}, $recipe->getIngredientList()),
-					array_map(function(Item $item) use ($converter) : ItemStack{
-						return $converter->coreItemStackToNet($item);
-					}, $recipe->getResults()),
+					array_map($converter->coreRecipeIngredientToNet(...), $recipe->getIngredientList()),
+					array_map($converter->coreItemStackToNet(...), $recipe->getResults()),
 					$nullUUID,
 					$typeTag,
 					50,
@@ -118,9 +110,7 @@ final class CraftingDataCache{
 					CraftingDataPacket::ENTRY_SHAPED,
 					Binary::writeInt($index),
 					$inputs,
-					array_map(function(Item $item) use ($converter) : ItemStack{
-						return $converter->coreItemStackToNet($item);
-					}, $recipe->getResults()),
+					array_map($converter->coreItemStackToNet(...), $recipe->getResults()),
 					$nullUUID,
 					CraftingRecipeBlockName::CRAFTING_TABLE,
 					50,
