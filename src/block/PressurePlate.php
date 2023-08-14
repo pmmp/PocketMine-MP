@@ -24,13 +24,31 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
+use pocketmine\entity\Entity;
+use pocketmine\event\block\PressurePlateUpdateEvent;
 use pocketmine\item\Item;
+use pocketmine\math\Axis;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\sound\RedstonePowerOffSound;
+use pocketmine\world\sound\RedstonePowerOnSound;
 
 abstract class PressurePlate extends Transparent{
+
+	private readonly int $deactivationDelayTicks;
+
+	public function __construct(
+		BlockIdentifier $idInfo,
+		string $name,
+		BlockTypeInfo $typeInfo,
+		int $deactivationDelayTicks = 20 //TODO: make this mandatory in PM6
+	){
+		parent::__construct($idInfo, $name, $typeInfo);
+		$this->deactivationDelayTicks = $deactivationDelayTicks;
+	}
 
 	public function isSolid() : bool{
 		return false;
@@ -61,5 +79,84 @@ abstract class PressurePlate extends Transparent{
 		}
 	}
 
-	//TODO
+	public function hasEntityCollision() : bool{
+		return true;
+	}
+
+	public function onEntityInside(Entity $entity) : bool{
+		if(!$this->hasOutputSignal()){
+			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 0);
+		}
+		return true;
+	}
+
+	/**
+	 * Returns the AABB that entities must intersect to activate the pressure plate.
+	 * Note that this is not the same as the collision box (pressure plate doesn't have one), nor the visual bounding
+	 * box. The activation area has a height of 0.25 blocks.
+	 */
+	protected function getActivationBox() : AxisAlignedBB{
+		return AxisAlignedBB::one()
+			->squash(Axis::X, 1 / 8)
+			->squash(Axis::Z, 1 / 8)
+			->trim(Facing::UP, 3 / 4)
+			->offset($this->position->x, $this->position->y, $this->position->z);
+	}
+
+	/**
+	 * TODO: make this abstract in PM6
+	 */
+	protected function hasOutputSignal() : bool{
+		return false;
+	}
+
+	/**
+	 * TODO: make this abstract in PM6
+	 *
+	 * @param Entity[] $entities
+	 *
+	 * @return mixed[]
+	 * @phpstan-return array{Block, ?bool}
+	 */
+	protected function calculatePlateState(array $entities) : array{
+		return [$this, null];
+	}
+
+	/**
+	 * Filters entities which don't affect the pressure plate state from the given list.
+	 *
+	 * @param Entity[] $entities
+	 * @return Entity[]
+	 */
+	protected function filterIrrelevantEntities(array $entities) : array{
+		return $entities;
+	}
+
+	public function onScheduledUpdate() : void{
+		$world = $this->position->getWorld();
+
+		$intersectionAABB = $this->getActivationBox();
+		$activatingEntities = $this->filterIrrelevantEntities($world->getNearbyEntities($intersectionAABB));
+
+		[$newState, $pressedChange] = $this->calculatePlateState($activatingEntities);
+
+		//always call this, in case there are new entities on the plate
+		if(PressurePlateUpdateEvent::hasHandlers()){
+			$ev = new PressurePlateUpdateEvent($this, $newState, $activatingEntities);
+			$ev->call();
+			$newState = $ev->isCancelled() ? null : $ev->getNewState();
+		}
+		if($newState !== null){
+			$world->setBlock($this->position, $newState);
+			if($pressedChange !== null){
+				$world->addSound($this->position, $pressedChange ?
+					new RedstonePowerOnSound() :
+					new RedstonePowerOffSound()
+				);
+			}
+		}
+		if($pressedChange ?? $this->hasOutputSignal()){
+			$world->scheduleDelayedBlockUpdate($this->position, $this->deactivationDelayTicks);
+		}
+	}
 }
