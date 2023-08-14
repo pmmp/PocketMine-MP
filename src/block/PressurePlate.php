@@ -35,6 +35,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\RedstonePowerOffSound;
 use pocketmine\world\sound\RedstonePowerOnSound;
+use function count;
 
 abstract class PressurePlate extends Transparent{
 
@@ -138,25 +139,30 @@ abstract class PressurePlate extends Transparent{
 		$intersectionAABB = $this->getActivationBox();
 		$activatingEntities = $this->filterIrrelevantEntities($world->getNearbyEntities($intersectionAABB));
 
-		[$newState, $pressedChange] = $this->calculatePlateState($activatingEntities);
+		//if an irrelevant entity is inside the full cube space of the pressure plate but not activating the plate,
+		//it will cause scheduled updates on the plate every tick. We don't want to fire events in this case if the
+		//plate is already deactivated.
+		if(count($activatingEntities) > 0 || $this->hasOutputSignal()){
+			[$newState, $pressedChange] = $this->calculatePlateState($activatingEntities);
 
-		//always call this, in case there are new entities on the plate
-		if(PressurePlateUpdateEvent::hasHandlers()){
-			$ev = new PressurePlateUpdateEvent($this, $newState, $activatingEntities);
-			$ev->call();
-			$newState = $ev->isCancelled() ? null : $ev->getNewState();
-		}
-		if($newState !== null){
-			$world->setBlock($this->position, $newState);
-			if($pressedChange !== null){
-				$world->addSound($this->position, $pressedChange ?
-					new RedstonePowerOnSound() :
-					new RedstonePowerOffSound()
-				);
+			//always call this, in case there are new entities on the plate
+			if(PressurePlateUpdateEvent::hasHandlers()){
+				$ev = new PressurePlateUpdateEvent($this, $newState, $activatingEntities);
+				$ev->call();
+				$newState = $ev->isCancelled() ? null : $ev->getNewState();
 			}
-		}
-		if($pressedChange ?? $this->hasOutputSignal()){
-			$world->scheduleDelayedBlockUpdate($this->position, $this->deactivationDelayTicks);
+			if($newState !== null){
+				$world->setBlock($this->position, $newState);
+				if($pressedChange !== null){
+					$world->addSound($this->position, $pressedChange ?
+						new RedstonePowerOnSound() :
+						new RedstonePowerOffSound()
+					);
+				}
+			}
+			if($pressedChange ?? $this->hasOutputSignal()){
+				$world->scheduleDelayedBlockUpdate($this->position, $this->deactivationDelayTicks);
+			}
 		}
 	}
 }
