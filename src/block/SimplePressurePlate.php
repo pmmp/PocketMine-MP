@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\data\runtime\RuntimeDataDescriber;
-use pocketmine\entity\Entity;
 use function count;
 
 abstract class SimplePressurePlate extends PressurePlate{
@@ -46,17 +45,8 @@ abstract class SimplePressurePlate extends PressurePlate{
 		return $this->pressed;
 	}
 
-	/**
-	 * TODO: make this abstract in PM6
-	 *
-	 * @param Entity[] $entities
-	 */
-	protected function calculatePressed(array $entities) : bool{
-		return count($entities) > 0;
-	}
-
 	protected function calculatePlateState(array $entities) : array{
-		$newPressed = $this->calculatePressed($entities);
+		$newPressed = count($entities) > 0;
 		if($newPressed === $this->pressed){
 			return [$this, null];
 		}
