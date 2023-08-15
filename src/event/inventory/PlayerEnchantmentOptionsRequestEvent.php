@@ -30,6 +30,7 @@ use pocketmine\event\Event;
 use pocketmine\item\enchantment\EnchantmentOption;
 use pocketmine\player\Player;
 use pocketmine\utils\Utils;
+use function count;
 
 /**
  * Called when a player inserts an item into an enchanting table's input slot.
@@ -68,6 +69,10 @@ class PlayerEnchantmentOptionsRequestEvent extends Event implements Cancellable{
 	 */
 	public function setOptions(array $options) : void{
 		Utils::validateArrayValueType($options, function(EnchantmentOption $_) : void{ });
+		if(($optionCount = count($options)) > 3){
+			throw new \LogicException("The maximum number of options for an enchanting table is 3, but $optionCount have been passed");
+		}
+
 		$this->options = $options;
 	}
 }
