@@ -107,10 +107,13 @@ class Item implements \JsonSerializable{
 	 * NOTE: This should NOT BE USED for creating items to set into an inventory. Use VanillaItems for that
 	 * purpose.
 	 * @see VanillaItems
+	 *
+	 * @param string[] $enchantmentTags
 	 */
 	public function __construct(
 		private ItemIdentifier $identifier,
-		protected string $name = "Unknown"
+		protected string $name = "Unknown",
+		private array $enchantmentTags = []
 	){
 		$this->nbt = new CompoundTag();
 	}
@@ -453,6 +456,29 @@ class Item implements \JsonSerializable{
 	 */
 	public function getVanillaName() : string{
 		return $this->name;
+	}
+
+	/**
+	 * Returns tags that represent the type of item being enchanted and are used to determine
+	 * what enchantments can be applied to this item during in-game enchanting (enchanting table, anvil, fishing, etc.).
+	 * @see ItemEnchantmentTags
+	 * @see ItemEnchantmentTagRegistry
+	 * @see AvailableEnchantmentRegistry
+	 *
+	 * @return string[]
+	 */
+	public function getEnchantmentTags() : array{
+		return $this->enchantmentTags;
+	}
+
+	/**
+	 * Returns the value that defines how enchantable the item is.
+	 *
+	 * The higher an item's enchantability is, the more likely it will be to gain high-level enchantments
+	 * or multiple enchantments upon being enchanted in an enchanting table.
+	 */
+	public function getEnchantability() : int{
+		return 1;
 	}
 
 	final public function canBePlaced() : bool{
