@@ -37,12 +37,15 @@ class PlayerItemEnchantEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
 	public function __construct(
+		Player $player,
 		private readonly EnchantTransaction $transaction,
 		private readonly EnchantOption $option,
 		private readonly Item $inputItem,
 		private readonly Item $outputItem,
 		private readonly int $cost
-	){}
+	){
+		$this->player = $player;
+	}
 
 	/**
 	 * Returns the inventory transaction involved in this enchant event.
@@ -78,9 +81,5 @@ class PlayerItemEnchantEvent extends PlayerEvent implements Cancellable{
 	 */
 	public function getCost() : int{
 		return $this->cost;
-	}
-
-	public function getPlayer() : Player{
-		return $this->transaction->getSource();
 	}
 }

@@ -125,7 +125,7 @@ class EnchantTransaction extends InventoryTransaction{
 			throw new AssumptionFailedError("Expected that inputItem and outputItem are not null before executing the event");
 		}
 
-		$event = new PlayerItemEnchantEvent($this, $this->option, $this->inputItem, $this->outputItem, $this->cost);
+		$event = new PlayerItemEnchantEvent($this->source, $this, $this->option, $this->inputItem, $this->outputItem, $this->cost);
 		$event->call();
 		return !$event->isCancelled();
 	}
