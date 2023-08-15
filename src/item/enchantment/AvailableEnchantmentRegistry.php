@@ -29,7 +29,6 @@ use pocketmine\item\enchantment\VanillaEnchantments as Enchantments;
 use pocketmine\item\Item;
 use pocketmine\utils\SingletonTrait;
 use function array_filter;
-use function array_merge;
 use function array_values;
 use function count;
 use function spl_object_id;
@@ -161,7 +160,7 @@ final class AvailableEnchantmentRegistry{
 
 		return array_filter(
 			$this->enchantments,
-			fn(Enchantment $e) => TagRegistry::getInstance()->isTagArraySubset($this->getPrimaryItemTags($e), $itemTags)
+			fn(Enchantment $e) => TagRegistry::getInstance()->isTagArrayIntersection($this->getPrimaryItemTags($e), $itemTags)
 		);
 	}
 
@@ -188,8 +187,11 @@ final class AvailableEnchantmentRegistry{
 	 * Warning: not suitable for checking the availability of enchantment for an enchanting table.
 	 */
 	public function isAvailableForItem(Enchantment $enchantment, Item $item) : bool{
-		$enchantmentTags = array_merge($this->getPrimaryItemTags($enchantment), $this->getSecondaryItemTags($enchantment));
-		return TagRegistry::getInstance()->isTagArraySubset($enchantmentTags, $item->getEnchantmentTags());
+		$itemTags = $item->getEnchantmentTags();
+		$tagRegistry = TagRegistry::getInstance();
+
+		return $tagRegistry->isTagArrayIntersection($this->getPrimaryItemTags($enchantment), $itemTags) ||
+			$tagRegistry->isTagArrayIntersection($this->getSecondaryItemTags($enchantment), $itemTags);
 	}
 
 	/**

@@ -117,22 +117,18 @@ final class ItemEnchantmentTagRegistry{
 	}
 
 	/**
-	 * Returns whether one tag array is a subset of another tag array.
-	 *
 	 * @param string[] $firstTags
 	 * @param string[] $secondTags
 	 */
-	public function isTagArraySubset(array $firstTags, array $secondTags) : bool{
+	public function isTagArrayIntersection(array $firstTags, array $secondTags) : bool{
 		if(count($firstTags) === 0 || count($secondTags) === 0){
 			return false;
 		}
 
 		$firstLeafTags = $this->getLeafTagsForArray($firstTags);
 		$secondLeafTags = $this->getLeafTagsForArray($secondTags);
-		$intersection = array_intersect($firstLeafTags, $secondLeafTags);
 
-		return count(array_diff($firstLeafTags, $intersection)) === 0 ||
-			count(array_diff($secondLeafTags, $intersection)) === 0;
+		return count(array_intersect($firstLeafTags, $secondLeafTags)) !== 0;
 	}
 
 	/**
