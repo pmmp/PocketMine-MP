@@ -26,8 +26,7 @@ namespace pocketmine\item\enchantment;
 use pocketmine\item\enchantment\IncompatibleEnchantmentGroups as Groups;
 use pocketmine\item\enchantment\VanillaEnchantments as Enchantments;
 use pocketmine\utils\SingletonTrait;
-use function array_intersect;
-use function array_search;
+use function array_intersect_key;
 use function count;
 use function spl_object_id;
 
@@ -39,8 +38,8 @@ final class IncompatibleEnchantmentRegistry{
 	use SingletonTrait;
 
 	/**
-	 * @phpstan-var array<int, list<string>>
-	 * @var string[][]
+	 * @phpstan-var array<int, array<string, true>>
+	 * @var true[][]
 	 */
 	private array $incompatibilityMap = [];
 
@@ -60,7 +59,7 @@ final class IncompatibleEnchantmentRegistry{
 	 */
 	public function register(string $tag, array $enchantments) : void{
 		foreach($enchantments as $enchantment){
-			$this->incompatibilityMap[spl_object_id($enchantment)][] = $tag;
+			$this->incompatibilityMap[spl_object_id($enchantment)][$tag] = true;
 		}
 	}
 
@@ -71,9 +70,7 @@ final class IncompatibleEnchantmentRegistry{
 	 */
 	public function unregister(string $tag, array $enchantments) : void{
 		foreach($enchantments as $enchantment){
-			if(($key = array_search($tag, $this->incompatibilityMap[spl_object_id($enchantment)], true)) !== false){
-				unset($this->incompatibilityMap[spl_object_id($enchantment)][$key]);
-			}
+			unset($this->incompatibilityMap[spl_object_id($enchantment)][$tag]);
 		}
 	}
 
@@ -82,9 +79,7 @@ final class IncompatibleEnchantmentRegistry{
 	 */
 	public function unregisterAll(string $tag) : void{
 		foreach($this->incompatibilityMap as $id => $tags){
-			if(($key = array_search($tag, $tags, true)) !== false){
-				unset($this->incompatibilityMap[$id][$key]);
-			}
+			unset($this->incompatibilityMap[$id][$tag]);
 		}
 	}
 
@@ -94,6 +89,6 @@ final class IncompatibleEnchantmentRegistry{
 	public function areCompatible(Enchantment $first, Enchantment $second) : bool{
 		$firstIncompatibilities = $this->incompatibilityMap[spl_object_id($first)] ?? [];
 		$secondIncompatibilities = $this->incompatibilityMap[spl_object_id($second)] ?? [];
-		return count(array_intersect($firstIncompatibilities, $secondIncompatibilities)) === 0;
+		return count(array_intersect_key($firstIncompatibilities, $secondIncompatibilities)) === 0;
 	}
 }
