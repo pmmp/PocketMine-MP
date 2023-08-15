@@ -23,15 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\event\player\PlayerDuplicateLoginEvent;
 use pocketmine\event\server\DataPacketDecodeEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\form\Form;
-use pocketmine\item\enchantment\EnchantmentInstance;
-use pocketmine\item\enchantment\EnchantmentOption;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
 use pocketmine\math\Vector3;
@@ -65,7 +62,6 @@ use pocketmine\network\mcpe\protocol\OpenSignPacket;
 use pocketmine\network\mcpe\protocol\Packet;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\PacketPool;
-use pocketmine\network\mcpe\protocol\PlayerEnchantOptionsPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
@@ -91,8 +87,6 @@ use pocketmine\network\mcpe\protocol\types\command\CommandOverload;
 use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
 use pocketmine\network\mcpe\protocol\types\command\CommandPermissions;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
-use pocketmine\network\mcpe\protocol\types\Enchant;
-use pocketmine\network\mcpe\protocol\types\EnchantOption;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAbilitiesPacket;
@@ -134,7 +128,6 @@ use function ucfirst;
 use const JSON_THROW_ON_ERROR;
 
 class NetworkSession{
-	public const ENCHANTMENT_OPTION_ID_OFFSET = 100000;
 	private const INCOMING_PACKET_BATCH_PER_TICK = 2; //usually max 1 per tick, but transactions arrive separately
 	private const INCOMING_PACKET_BATCH_BUFFER_TICKS = 100; //enough to account for a 5-second lag spike
 
@@ -1168,32 +1161,6 @@ class NetworkSession{
 
 	public function onOpenSignEditor(Vector3 $signPosition, bool $frontSide) : void{
 		$this->sendDataPacket(OpenSignPacket::create(BlockPosition::fromVector3($signPosition), $frontSide));
-	}
-
-	/**
-	 * @param EnchantmentOption[] $options
-	 */
-	public function sendEnchantOptions(array $options) : void{
-		$protocolOptions = [];
-		// We set a large offset for optionId so that there is no attempt to craft an item with recipeId
-		// equal to optionId (this can happen when the plugin changes the current player window
-		// from EnchantInventory to another, since EnchantInventory is the only way to currently distinguish
-		// a crafting operation from an enchantment operation). This offset may need to be changed in the future
-		// if the number of craft recipes is close to the current offset value.
-		$optionId = self::ENCHANTMENT_OPTION_ID_OFFSET;
-
-		foreach($options as $option){
-			$protocolEnchantments = array_map(
-				fn(EnchantmentInstance $e) => new Enchant(EnchantmentIdMap::getInstance()->toId($e->getType()), $e->getLevel()),
-				$option->getEnchantments()
-			);
-			// We don't pay attention to the $slotFlags, $heldActivatedEnchantments and $selfActivatedEnchantments
-			// as everything works fine without them (perhaps these values are used somehow in the BDS).
-			$protocolOptions[] = new EnchantOption($option->getRequiredXpLevel(), 0, $protocolEnchantments, [], [], $option->getDisplayName(), $optionId);
-			$optionId++;
-		}
-
-		$this->sendDataPacket(PlayerEnchantOptionsPacket::create($protocolOptions));
 	}
 
 	public function tick() : void{
