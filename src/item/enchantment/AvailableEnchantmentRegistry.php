@@ -64,7 +64,7 @@ final class AvailableEnchantmentRegistry{
 		$this->register(Enchantments::SILK_TOUCH(), [Tags::DIG_TOOLS], [Tags::SHEARS]);
 		$this->register(
 			Enchantments::UNBREAKING(),
-			[Tags::ARMOR, Tags::DIG_TOOLS, Tags::SWORD, Tags::TRIDENT, Tags::BOW, Tags::CROSSBOW, Tags::FISHING_ROD],
+			[Tags::ARMOR, Tags::WEAPONS, Tags::FISHING_ROD],
 			[Tags::SHEARS, Tags::FLINT_AND_STEEL, Tags::SHIELD, Tags::CARROT_ON_STICK, Tags::ELYTRA, Tags::BRUSH]
 		);
 		$this->register(Enchantments::POWER(), [Tags::BOW], []);
@@ -74,7 +74,7 @@ final class AvailableEnchantmentRegistry{
 		$this->register(
 			Enchantments::MENDING(),
 			[],
-			[Tags::ARMOR, Tags::DIG_TOOLS, Tags::SWORD, Tags::TRIDENT, Tags::BOW, Tags::CROSSBOW, Tags::FISHING_ROD,
+			[Tags::ARMOR, Tags::WEAPONS, Tags::FISHING_ROD,
 				Tags::SHEARS, Tags::FLINT_AND_STEEL, Tags::SHIELD, Tags::CARROT_ON_STICK, Tags::ELYTRA, Tags::BRUSH]
 		);
 		$this->register(Enchantments::VANISHING(), [], [Tags::ALL]);
