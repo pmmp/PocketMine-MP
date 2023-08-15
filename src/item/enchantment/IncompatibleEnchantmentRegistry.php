@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item\enchantment;
 
-use pocketmine\item\enchantment\IncompatibleEnchantmentTags as Tags;
+use pocketmine\item\enchantment\IncompatibleEnchantmentGroups as Groups;
 use pocketmine\item\enchantment\VanillaEnchantments as Enchantments;
 use pocketmine\utils\SingletonTrait;
 use function array_intersect;
@@ -31,6 +31,10 @@ use function array_search;
 use function count;
 use function spl_object_id;
 
+/**
+ * Manages which enchantments are incompatible with each other.
+ * Enchantments can be added to groups to make them incompatible with all other enchantments already in that group.
+ */
 final class IncompatibleEnchantmentRegistry{
 	use SingletonTrait;
 
@@ -41,16 +45,16 @@ final class IncompatibleEnchantmentRegistry{
 	private array $incompatibilityMap = [];
 
 	private function __construct(){
-		$this->register(Tags::PROTECTION, [Enchantments::PROTECTION(), Enchantments::FIRE_PROTECTION(), Enchantments::BLAST_PROTECTION(), Enchantments::PROJECTILE_PROTECTION()]);
-		$this->register(Tags::BOW_INFINITE, [Enchantments::INFINITY(), Enchantments::MENDING()]);
-		$this->register(Tags::DIG_DROP, [Enchantments::FORTUNE(), Enchantments::SILK_TOUCH()]);
+		$this->register(Groups::PROTECTION, [Enchantments::PROTECTION(), Enchantments::FIRE_PROTECTION(), Enchantments::BLAST_PROTECTION(), Enchantments::PROJECTILE_PROTECTION()]);
+		$this->register(Groups::BOW_INFINITE, [Enchantments::INFINITY(), Enchantments::MENDING()]);
+		$this->register(Groups::DIG_DROP, [Enchantments::FORTUNE(), Enchantments::SILK_TOUCH()]);
 	}
 
 	/**
-	 * Register incompatibility for an enchantment group defined by a specific tag.
+	 * Register incompatibility for an enchantment group.
 	 *
-	 * Each of the enchantments with the same tag is incompatible with each other,
-	 * i.e. they cannot be added together on the same item in an enchanting table or anvil.
+	 * All enchantments belonging to the same group are incompatible with each other,
+	 * i.e. they cannot be added together on the same item.
 	 *
 	 * @param Enchantment[] $enchantments
 	 */
@@ -61,7 +65,7 @@ final class IncompatibleEnchantmentRegistry{
 	}
 
 	/**
-	 * Unregister incompatibility for some enchantments of a particular tag group.
+	 * Unregister incompatibility for some enchantments of a particular group.
 	 *
 	 * @param Enchantment[] $enchantments
 	 */
@@ -74,7 +78,7 @@ final class IncompatibleEnchantmentRegistry{
 	}
 
 	/**
-	 * Unregister incompatibility for all enchantments of a particular tag group.
+	 * Unregister incompatibility for all enchantments of a particular group.
 	 */
 	public function unregisterAll(string $tag) : void{
 		foreach($this->incompatibilityMap as $id => $tags){
@@ -84,6 +88,9 @@ final class IncompatibleEnchantmentRegistry{
 		}
 	}
 
+	/**
+	 * Returns whether two enchantments can be applied to the same item.
+	 */
 	public function areCompatible(Enchantment $first, Enchantment $second) : bool{
 		$firstIncompatibilities = $this->incompatibilityMap[spl_object_id($first)] ?? [];
 		$secondIncompatibilities = $this->incompatibilityMap[spl_object_id($second)] ?? [];

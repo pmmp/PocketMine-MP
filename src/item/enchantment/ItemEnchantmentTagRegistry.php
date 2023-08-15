@@ -34,6 +34,10 @@ use function array_shift;
 use function array_unique;
 use function count;
 
+/**
+ * Manages known item enchantment tags and the relations between them.
+ * Used to determine which tags belong to which other tags, and to check if lists of tags intersect.
+ */
 final class ItemEnchantmentTagRegistry{
 	use SingletonTrait;
 

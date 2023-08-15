@@ -108,8 +108,11 @@ final class AvailableEnchantmentRegistry{
 	}
 
 	/**
-	 * Returns item tags of the specified enchantment that are used to determine the available enchantments for the
-	 * item for any type of in-game enchanting: enchanting table, anvil, fishing, etc.
+	 * Returns primary compatibility tags for the specified enchantment.
+	 *
+	 * An item matching at least one of these tags (or its descendents) can be:
+	 * - Offered this enchantment in an enchanting table
+	 * - Enchanted by any means allowed by secondary tags
 	 *
 	 * @return string[]
 	 */
@@ -128,8 +131,11 @@ final class AvailableEnchantmentRegistry{
 	}
 
 	/**
-	 * Returns item tags of the specified enchantment that are not used for an enchanting table, but are used for other
-	 * types of in-game enchanting: anvil, fishing, etc.
+	 * Returns secondary compatibility tags for the specified enchantment.
+	 *
+	 * An item matching at least one of these tags (or its descendents) can be:
+	 * - Combined with an enchanted book with this enchantment in an anvil
+	 * - Obtained as loot with this enchantment, e.g. fishing, treasure chests, mob equipment, etc.
 	 *
 	 * @return string[]
 	 */
@@ -148,11 +154,11 @@ final class AvailableEnchantmentRegistry{
 	}
 
 	/**
-	 * Returns enchantments that can be applied to the specified item in an enchanting table.
+	 * Returns enchantments that can be applied to the specified item in an enchanting table (primary only).
 	 *
 	 * @return Enchantment[]
 	 */
-	public function getEnchantingTableEnchantments(Item $item) : array{
+	public function getPrimaryEnchantmentsForItem(Item $item) : array{
 		$itemTags = $item->getEnchantmentTags();
 		if(count($itemTags) === 0 || $item->hasEnchantments()){
 			return [];
@@ -165,13 +171,14 @@ final class AvailableEnchantmentRegistry{
 	}
 
 	/**
-	 * Returns enchantments that can be applied to the specified item.
+	 * Returns all available enchantments compatible with the item.
+	 *
 	 * Warning: not suitable for obtaining enchantments for an enchanting table
-	 * (use {@link getEnchantingTableEnchantments} for that).
+	 * (use {@link AvailableEnchantmentRegistry::getPrimaryEnchantmentsForItem()} for that).
 	 *
 	 * @return Enchantment[]
 	 */
-	public function getEnchantments(Item $item) : array{
+	public function getAllEnchantmentsForItem(Item $item) : array{
 		if(count($item->getEnchantmentTags()) === 0){
 			return [];
 		}
@@ -184,6 +191,7 @@ final class AvailableEnchantmentRegistry{
 
 	/**
 	 * Returns whether the specified enchantment can be applied to the particular item.
+	 *
 	 * Warning: not suitable for checking the availability of enchantment for an enchanting table.
 	 */
 	public function isAvailableForItem(Enchantment $enchantment, Item $item) : bool{

@@ -23,6 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\item\enchantment;
 
+/**
+ * Tags used by items and enchantments to determine which enchantments can be applied to which items.
+ * Some tags may contain other tags.
+ * @see ItemEnchantmentTagRegistry
+ */
 final class ItemEnchantmentTags{
 	public const ALL = "all";
 	public const ARMOR = "armor";
