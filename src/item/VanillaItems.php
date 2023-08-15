@@ -431,7 +431,7 @@ final class VanillaItems{
 		self::register("echo_shard", new Item(new IID(Ids::ECHO_SHARD), "Echo Shard"));
 		self::register("egg", new Egg(new IID(Ids::EGG), "Egg"));
 		self::register("emerald", new Item(new IID(Ids::EMERALD), "Emerald"));
-		self::register("enchanted_book", new EnchantedBook(new IID(Ids::ENCHANTED_BOOK), "Enchanted Book"));
+		self::register("enchanted_book", new EnchantedBook(new IID(Ids::ENCHANTED_BOOK), "Enchanted Book", [EnchantmentTags::ALL]));
 		self::register("enchanted_golden_apple", new GoldenAppleEnchanted(new IID(Ids::ENCHANTED_GOLDEN_APPLE), "Enchanted Golden Apple"));
 		self::register("ender_pearl", new EnderPearl(new IID(Ids::ENDER_PEARL), "Ender Pearl"));
 		self::register("experience_bottle", new ExperienceBottle(new IID(Ids::EXPERIENCE_BOTTLE), "Bottle o' Enchanting"));
