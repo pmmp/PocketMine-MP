@@ -55,12 +55,7 @@ class WeightedPressurePlate extends PressurePlate{
 		}
 		return [
 			(clone $this)->setOutputSignalStrength($newSignalStrength),
-			//I dare anyone to simplify this without breaking it
-			match(true){
-				$this->signalStrength === 0 && $newSignalStrength !== 0 => true,
-				$this->signalStrength !== 0 && $newSignalStrength === 0 => false,
-				default => null,
-			}
+			($value = $this->signalStrength === 0) === ($newSignalStrength !== 0) ? $value : null
 		];
 	}
 }
