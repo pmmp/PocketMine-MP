@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory;
 
-use pocketmine\event\inventory\PlayerEnchantmentOptionsRequestEvent;
+use pocketmine\event\player\PlayerEnchantOptionsRequestEvent;
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\inventory\TemporaryInventory;
 use pocketmine\item\enchantment\EnchantmentHelper as Helper;
-use pocketmine\item\enchantment\EnchantmentOption;
+use pocketmine\item\enchantment\EnchantOption;
 use pocketmine\item\Item;
 use pocketmine\world\Position;
 use function array_values;
@@ -39,7 +39,7 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 	public const SLOT_INPUT = 0;
 	public const SLOT_LAPIS = 1;
 
-	/** @var EnchantmentOption[] $options */
+	/** @var EnchantOption[] $options */
 	private array $options = [];
 
 	public function __construct(Position $holder){
@@ -54,7 +54,7 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 				$item = $this->getInput();
 				$options = Helper::getEnchantOptions($this->holder, $item, $viewer->getEnchantmentSeed());
 
-				$event = new PlayerEnchantmentOptionsRequestEvent($viewer, $this, $options);
+				$event = new PlayerEnchantOptionsRequestEvent($viewer, $this, $options);
 				$event->call();
 				if(!$event->isCancelled() && count($event->getOptions()) > 0){
 					$this->options = array_values($event->getOptions());
@@ -79,7 +79,7 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 		return $option === null ? null : Helper::enchantItem($this->getInput(), $option->getEnchantments());
 	}
 
-	public function getOption(int $optionId) : ?EnchantmentOption{
+	public function getOption(int $optionId) : ?EnchantOption{
 		return $this->options[$optionId] ?? null;
 	}
 }

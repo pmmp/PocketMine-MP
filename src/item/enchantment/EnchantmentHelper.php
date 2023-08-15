@@ -57,7 +57,7 @@ final class EnchantmentHelper{
 	}
 
 	/**
-	 * @return EnchantmentOption[]
+	 * @return EnchantOption[]
 	 */
 	public static function getEnchantOptions(Position $tablePos, Item $input, int $seed) : array{
 		if($input->isNull() || $input->hasEnchantments()){
@@ -117,7 +117,7 @@ final class EnchantmentHelper{
 		return $bookshelfCount;
 	}
 
-	private static function createEnchantOption(Random $random, Item $inputItem, int $requiredXpLevel) : EnchantmentOption{
+	private static function createEnchantOption(Random $random, Item $inputItem, int $requiredXpLevel) : EnchantOption{
 		$enchantingPower = $requiredXpLevel;
 
 		$enchantability = $inputItem->getEnchantability();
@@ -155,7 +155,7 @@ final class EnchantmentHelper{
 			}
 		}
 
-		return new EnchantmentOption($requiredXpLevel, self::getRandomOptionName($random), $resultEnchantments);
+		return new EnchantOption($requiredXpLevel, self::getRandomOptionName($random), $resultEnchantments);
 	}
 
 	/**

@@ -40,7 +40,7 @@ use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\enchantment\EnchantmentInstance;
-use pocketmine\item\enchantment\EnchantmentOption;
+use pocketmine\item\enchantment\EnchantOption;
 use pocketmine\network\mcpe\cache\CreativeInventoryCache;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
@@ -52,7 +52,7 @@ use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\PlayerEnchantOptionsPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\Enchant;
-use pocketmine\network\mcpe\protocol\types\EnchantOption;
+use pocketmine\network\mcpe\protocol\types\EnchantOption as ProtocolEnchantOption;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
@@ -618,7 +618,7 @@ class InventoryManager{
 	}
 
 	/**
-	 * @param EnchantmentOption[] $options
+	 * @param EnchantOption[] $options
 	 */
 	public function syncEnchantingTableOptions(array $options) : void{
 		$protocolOptions = [];
@@ -633,7 +633,7 @@ class InventoryManager{
 			);
 			// We don't pay attention to the $slotFlags, $heldActivatedEnchantments and $selfActivatedEnchantments
 			// as everything works fine without them (perhaps these values are used somehow in the BDS).
-			$protocolOptions[] = new EnchantOption(
+			$protocolOptions[] = new ProtocolEnchantOption(
 				$option->getRequiredXpLevel(),
 				0, $protocolEnchantments,
 				[],

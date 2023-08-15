@@ -23,7 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\item\enchantment;
 
-class EnchantmentOption{
+/**
+ * Represents an option on the enchanting table menu.
+ * If selected, all the enchantments in the option will be applied to the item.
+ */
+class EnchantOption{
 
 	/**
 	 * @param EnchantmentInstance[] $enchantments
@@ -32,8 +36,7 @@ class EnchantmentOption{
 		private int $requiredXpLevel,
 		private string $displayName,
 		private array $enchantments
-	){
-	}
+	){}
 
 	/**
 	 * Returns the minimum amount of XP levels required to select this enchantment option.

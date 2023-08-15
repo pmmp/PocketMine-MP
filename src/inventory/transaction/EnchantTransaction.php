@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory\transaction;
 
-use pocketmine\event\inventory\EnchantItemEvent;
+use pocketmine\event\player\PlayerItemEnchantEvent;
 use pocketmine\item\enchantment\EnchantmentHelper;
-use pocketmine\item\enchantment\EnchantmentOption;
+use pocketmine\item\enchantment\EnchantOption;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\player\Player;
@@ -39,7 +39,7 @@ class EnchantTransaction extends InventoryTransaction{
 
 	public function __construct(
 		Player $source,
-		private readonly EnchantmentOption $option,
+		private readonly EnchantOption $option,
 		private readonly int $cost
 	){
 		parent::__construct($source);
@@ -125,7 +125,7 @@ class EnchantTransaction extends InventoryTransaction{
 			throw new AssumptionFailedError("Expected that inputItem and outputItem are not null before executing the event");
 		}
 
-		$event = new EnchantItemEvent($this, $this->option, $this->inputItem, $this->outputItem, $this->cost);
+		$event = new PlayerItemEnchantEvent($this, $this->option, $this->inputItem, $this->outputItem, $this->cost);
 		$event->call();
 		return !$event->isCancelled();
 	}
