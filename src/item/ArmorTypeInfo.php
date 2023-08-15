@@ -34,7 +34,7 @@ class ArmorTypeInfo{
 		private bool $fireProof = false,
 		?ArmorMaterial $material = null
 	){
-		$this->material = $material ?? VanillaArmorMaterials::CHAINMAIL();
+		$this->material = $material ?? VanillaArmorMaterials::LEATHER();
 	}
 
 	public function getDefensePoints() : int{
