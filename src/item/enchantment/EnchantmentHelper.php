@@ -89,28 +89,26 @@ final class EnchantmentHelper{
 				if(abs($x) !== 2 && abs($z) !== 2){
 					continue;
 				}
-				for($y = 0; $y <= 1; $y++){
-					$block = $world->getBlock($tablePos->add($x, $y, $z));
-					if($block->getTypeId() !== BlockTypeIds::BOOKSHELF){
-						continue;
-					}
 
+				// Ensure the space between the bookshelf stack at this X/Z and the enchanting table is empty
+				for($y = 0; $y <= 1; $y++){
 					// Calculate the coordinates of the space between the bookshelf and the enchanting table
 					$spaceX = max(min($x, 1), -1);
 					$spaceZ = max(min($z, 1), -1);
-
-					$lowerSpaceBlock = $world->getBlock($tablePos->add($spaceX, 0, $spaceZ));
-					if($lowerSpaceBlock->getTypeId() !== BlockTypeIds::AIR){
-						break;
+					$spaceBlock = $world->getBlock($tablePos->add($spaceX, $y, $spaceZ));
+					if($spaceBlock->getTypeId() !== BlockTypeIds::AIR){
+						continue 2;
 					}
-					$upperSpaceBlock = $world->getBlock($tablePos->add($spaceX, 1, $spaceZ));
-					if($upperSpaceBlock->getTypeId() !== BlockTypeIds::AIR){
-						break;
-					}
+				}
 
-					$bookshelfCount++;
-					if($bookshelfCount === self::MAX_BOOKSHELF_COUNT){
-						return $bookshelfCount;
+				// Finally, check the number of bookshelves at the current position
+				for($y = 0; $y <= 1; $y++){
+					$block = $world->getBlock($tablePos->add($x, $y, $z));
+					if($block->getTypeId() === BlockTypeIds::BOOKSHELF){
+						$bookshelfCount++;
+						if($bookshelfCount === self::MAX_BOOKSHELF_COUNT){
+							return $bookshelfCount;
+						}
 					}
 				}
 			}
