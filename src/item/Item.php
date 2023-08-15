@@ -460,9 +460,10 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Returns tags that represent the type of item being enchanted and are used to determine
-	 * what enchantments can be applied to this item in an enchanting table and anvil.
+	 * what enchantments can be applied to this item during in-game enchanting (enchanting table, anvil, fishing, etc.).
 	 * @see ItemEnchantmentTags
 	 * @see ItemEnchantmentTagRegistry
+	 * @see AvailableEnchantmentRegistry
 	 *
 	 * @return string[]
 	 */

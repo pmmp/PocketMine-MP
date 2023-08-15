@@ -54,9 +54,10 @@ final class BlockTypeInfo{
 
 	/**
 	 * Returns tags that represent the type of item being enchanted and are used to determine
-	 * what enchantments can be applied to the item of this block in an enchanting table and anvil.
+	 * what enchantments can be applied to the item of this block during in-game enchanting (enchanting table, anvil, fishing, etc.).
 	 * @see ItemEnchantmentTags
 	 * @see ItemEnchantmentTagRegistry
+	 * @see AvailableEnchantmentRegistry
 	 *
 	 * @return string[]
 	 */

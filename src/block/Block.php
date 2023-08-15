@@ -36,6 +36,7 @@ use pocketmine\data\runtime\RuntimeDataSizeCalculator;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Projectile;
+use pocketmine\item\enchantment\AvailableEnchantmentRegistry;
 use pocketmine\item\enchantment\ItemEnchantmentTagRegistry;
 use pocketmine\item\enchantment\ItemEnchantmentTags;
 use pocketmine\item\enchantment\VanillaEnchantments;
@@ -426,9 +427,10 @@ class Block{
 
 	/**
 	 * Returns tags that represent the type of item being enchanted and are used to determine
-	 * what enchantments can be applied to the item of this block in an enchanting table and anvil.
+	 * what enchantments can be applied to the item of this block during in-game enchanting (enchanting table, anvil, fishing, etc.).
 	 * @see ItemEnchantmentTags
 	 * @see ItemEnchantmentTagRegistry
+	 * @see AvailableEnchantmentRegistry
 	 *
 	 * @return string[]
 	 */
