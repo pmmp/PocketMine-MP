@@ -35,9 +35,12 @@ use pocketmine\block\inventory\LoomInventory;
 use pocketmine\block\inventory\SmithingTableInventory;
 use pocketmine\block\inventory\StonecutterInventory;
 use pocketmine\crafting\FurnaceType;
+use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
+use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\item\enchantment\EnchantOption;
 use pocketmine\network\mcpe\cache\CreativeInventoryCache;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
@@ -46,7 +49,10 @@ use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
 use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
+use pocketmine\network\mcpe\protocol\PlayerEnchantOptionsPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
+use pocketmine\network\mcpe\protocol\types\Enchant;
+use pocketmine\network\mcpe\protocol\types\EnchantOption as ProtocolEnchantOption;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
@@ -58,6 +64,7 @@ use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\ObjectSet;
 use function array_keys;
+use function array_map;
 use function array_search;
 use function count;
 use function get_class;
@@ -102,6 +109,12 @@ class InventoryManager{
 	private ?int $currentItemStackRequestId = null;
 
 	private bool $fullSyncRequested = false;
+
+	/** @var int[] network recipe ID => enchanting table option index */
+	private array $enchantingTableOptions = [];
+	//TODO: this should be based on the total number of crafting recipes - if there are ever 100k recipes, this will
+	//conflict with regular recipes
+	private int $nextEnchantingTableOptionId = 100000;
 
 	public function __construct(
 		private Player $player,
@@ -382,6 +395,7 @@ class InventoryManager{
 				throw new AssumptionFailedError("We should not have opened a new window while a window was waiting to be closed");
 			}
 			$this->pendingCloseWindowId = $this->lastInventoryNetworkId;
+			$this->enchantingTableOptions = [];
 		}
 	}
 
@@ -601,6 +615,39 @@ class InventoryManager{
 
 	public function syncCreative() : void{
 		$this->session->sendDataPacket(CreativeInventoryCache::getInstance()->getCache($this->player->getCreativeInventory()));
+	}
+
+	/**
+	 * @param EnchantOption[] $options
+	 */
+	public function syncEnchantingTableOptions(array $options) : void{
+		$protocolOptions = [];
+
+		foreach($options as $index => $option){
+			$optionId = $this->nextEnchantingTableOptionId++;
+			$this->enchantingTableOptions[$optionId] = $index;
+
+			$protocolEnchantments = array_map(
+				fn(EnchantmentInstance $e) => new Enchant(EnchantmentIdMap::getInstance()->toId($e->getType()), $e->getLevel()),
+				$option->getEnchantments()
+			);
+			// We don't pay attention to the $slotFlags, $heldActivatedEnchantments and $selfActivatedEnchantments
+			// as everything works fine without them (perhaps these values are used somehow in the BDS).
+			$protocolOptions[] = new ProtocolEnchantOption(
+				$option->getRequiredXpLevel(),
+				0, $protocolEnchantments,
+				[],
+				[],
+				$option->getDisplayName(),
+				$optionId
+			);
+		}
+
+		$this->session->sendDataPacket(PlayerEnchantOptionsPacket::create($protocolOptions));
+	}
+
+	public function getEnchantingTableOptionIndex(int $recipeId) : ?int{
+		return $this->enchantingTableOptions[$recipeId] ?? null;
 	}
 
 	private function newItemStackId() : int{

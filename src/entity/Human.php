@@ -76,7 +76,7 @@ use function array_key_exists;
 use function array_merge;
 use function array_values;
 use function min;
-use function random_int;
+use function mt_rand;
 
 class Human extends Living implements ProjectileSource, InventoryHolder{
 
@@ -211,6 +211,18 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return $this->xpManager;
 	}
 
+	public function getEnchantmentSeed() : int{
+		return $this->xpSeed;
+	}
+
+	public function setEnchantmentSeed(int $seed) : void{
+		$this->xpSeed = $seed;
+	}
+
+	public function generateEnchantmentSeed() : int{
+		return mt_rand(Limits::INT32_MIN, Limits::INT32_MAX);
+	}
+
 	public function getXpDropAmount() : int{
 		//this causes some XP to be lost on death when above level 1 (by design), dropping at most enough points for
 		//about 7.5 levels of XP.
@@ -334,7 +346,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		if(($xpSeedTag = $nbt->getTag(self::TAG_XP_SEED)) instanceof IntTag){
 			$this->xpSeed = $xpSeedTag->getValue();
 		}else{
-			$this->xpSeed = random_int(Limits::INT32_MIN, Limits::INT32_MAX);
+			$this->xpSeed = $this->generateEnchantmentSeed();
 		}
 	}
 
