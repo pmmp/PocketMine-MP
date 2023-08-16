@@ -56,6 +56,15 @@ class EnchantTransaction extends InventoryTransaction{
 		}
 	}
 
+	/**
+	 * The selected option might be available to a player who has enough XP levels to meet the option's minimum level,
+	 * but not enough to pay the full cost (e.g. option costs 3 levels but requires only 1 to use). As much XP as
+	 * possible is spent in these cases.
+	 */
+	private function getAdjustedXpCost() : int{
+		return min($this->cost, $this->source->getXpManager()->getXpLevel());
+	}
+
 	private function validateFiniteResources(int $lapisSpent) : void{
 		if($lapisSpent !== $this->cost){
 			throw new TransactionValidationException("Expected the amount of lapis lazuli spent to be $this->cost, but received $lapisSpent");
@@ -63,12 +72,13 @@ class EnchantTransaction extends InventoryTransaction{
 
 		$xpLevel = $this->source->getXpManager()->getXpLevel();
 		$requiredXpLevel = $this->option->getRequiredXpLevel();
+		$actualCost = $this->getAdjustedXpCost();
 
 		if($xpLevel < $requiredXpLevel){
 			throw new TransactionValidationException("Player's XP level $xpLevel is less than the required XP level $requiredXpLevel");
 		}
-		if($xpLevel < $this->cost){
-			throw new TransactionValidationException("Player's XP level $xpLevel is less than the XP level cost $this->cost");
+		if($xpLevel < $actualCost){
+			throw new TransactionValidationException("Player's XP level $xpLevel is less than the XP level cost $actualCost");
 		}
 	}
 
@@ -115,7 +125,7 @@ class EnchantTransaction extends InventoryTransaction{
 		parent::execute();
 
 		if($this->source->hasFiniteResources()){
-			$this->source->getXpManager()->subtractXpLevels($this->cost);
+			$this->source->getXpManager()->subtractXpLevels($this->getAdjustedXpCost());
 		}
 		$this->source->setEnchantmentSeed($this->source->generateEnchantmentSeed());
 	}
