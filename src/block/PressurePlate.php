@@ -33,8 +33,8 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
-use pocketmine\world\sound\RedstonePowerOffSound;
-use pocketmine\world\sound\RedstonePowerOnSound;
+use pocketmine\world\sound\PressurePlateActivateSound;
+use pocketmine\world\sound\PressurePlateDeactivateSound;
 use function count;
 
 abstract class PressurePlate extends Transparent{
@@ -155,8 +155,8 @@ abstract class PressurePlate extends Transparent{
 				$world->setBlock($this->position, $newState);
 				if($pressedChange !== null){
 					$world->addSound($this->position, $pressedChange ?
-						new RedstonePowerOnSound() :
-						new RedstonePowerOffSound()
+						new PressurePlateActivateSound($this) :
+						new PressurePlateDeactivateSound($this)
 					);
 				}
 			}
