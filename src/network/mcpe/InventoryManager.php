@@ -57,6 +57,7 @@ use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\ObjectSet;
+use function array_fill_keys;
 use function array_keys;
 use function array_search;
 use function count;
@@ -498,12 +499,22 @@ class InventoryManager{
 				$info = $this->trackItemStack($entry, $slot, $itemStack, null);
 				$contents[] = new ItemStackWrapper($info->getStackId(), $itemStack);
 			}
+			$clearSlotWrapper = new ItemStackWrapper(0, ItemStack::null());
 			if($entry->complexSlotMap !== null){
 				foreach($contents as $slotId => $info){
 					$packetSlot = $entry->complexSlotMap->mapCoreToNet($slotId) ?? null;
 					if($packetSlot === null){
 						continue;
 					}
+					/*
+					 * Due to a "feature" in the client, the old itemstack ID may persist client-side if the old item
+					 * is the same as the new item. To avoid this, clear the slot first, then set the new item.
+					 */
+					$this->session->sendDataPacket(InventorySlotPacket::create(
+						$windowId,
+						$packetSlot,
+						$clearSlotWrapper
+					));
 					$this->session->sendDataPacket(InventorySlotPacket::create(
 						$windowId,
 						$packetSlot,
@@ -511,6 +522,14 @@ class InventoryManager{
 					));
 				}
 			}else{
+				/*
+				 * Due to a "feature" in the client, the old itemstack ID may persist client-side if the old item
+				 * is the same as the new item. To avoid this, clear the inventory first, then send the real contents.
+				 */
+				$this->session->sendDataPacket(InventoryContentPacket::create(
+					$windowId,
+					array_fill_keys(array_keys($contents), $clearSlotWrapper)
+				));
 				$this->session->sendDataPacket(InventoryContentPacket::create($windowId, $contents));
 			}
 		}
