@@ -21,15 +21,26 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\world\sound;
 
-use pocketmine\entity\Entity;
-use pocketmine\entity\Living;
-use function array_filter;
+use pocketmine\block\Block;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\convert\TypeConverter;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-class StonePressurePlate extends SimplePressurePlate{
+final class PressurePlateActivateSound implements Sound{
 
-	protected function filterIrrelevantEntities(array $entities) : array{
-		return array_filter($entities, fn(Entity $e) => $e instanceof Living); //TODO: armor stands should activate stone plates too
+	public function __construct(
+		private readonly Block $block
+	){}
+
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(
+			LevelSoundEvent::PRESSURE_PLATE_CLICK_ON,
+			$pos,
+			false,
+			TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkId($this->block->getStateId())
+		)];
 	}
 }

@@ -1114,8 +1114,20 @@ final class VanillaBlocks{
 		self::register("lily_pad", new WaterLily(new BID(Ids::LILY_PAD), "Lily Pad", new Info(BreakInfo::instant())));
 
 		$weightedPressurePlateBreakInfo = new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD()));
-		self::register("weighted_pressure_plate_heavy", new WeightedPressurePlateHeavy(new BID(Ids::WEIGHTED_PRESSURE_PLATE_HEAVY), "Weighted Pressure Plate Heavy", $weightedPressurePlateBreakInfo));
-		self::register("weighted_pressure_plate_light", new WeightedPressurePlateLight(new BID(Ids::WEIGHTED_PRESSURE_PLATE_LIGHT), "Weighted Pressure Plate Light", $weightedPressurePlateBreakInfo));
+		self::register("weighted_pressure_plate_heavy", new WeightedPressurePlateHeavy(
+			new BID(Ids::WEIGHTED_PRESSURE_PLATE_HEAVY),
+			"Weighted Pressure Plate Heavy",
+			$weightedPressurePlateBreakInfo,
+			deactivationDelayTicks: 10,
+			signalStrengthFactor: 0.1
+		));
+		self::register("weighted_pressure_plate_light", new WeightedPressurePlateLight(
+			new BID(Ids::WEIGHTED_PRESSURE_PLATE_LIGHT),
+			"Weighted Pressure Plate Light",
+			$weightedPressurePlateBreakInfo,
+			deactivationDelayTicks: 10,
+			signalStrengthFactor: 1.0
+		));
 		self::register("wheat", new Wheat(new BID(Ids::WHEAT), "Wheat Block", new Info(BreakInfo::instant())));
 
 		$leavesBreakInfo = new Info(new class(0.2, ToolType::HOE) extends BreakInfo{
@@ -1266,7 +1278,7 @@ final class VanillaBlocks{
 			self::register($idName("door"), new WoodenDoor(WoodLikeBlockIdHelper::getDoorIdentifier($woodType), $name . " Door", $woodenDoorBreakInfo, $woodType));
 
 			self::register($idName("button"), new WoodenButton(WoodLikeBlockIdHelper::getButtonIdentifier($woodType), $name . " Button", $woodenButtonBreakInfo, $woodType));
-			self::register($idName("pressure_plate"), new WoodenPressurePlate(WoodLikeBlockIdHelper::getPressurePlateIdentifier($woodType), $name . " Pressure Plate", $woodenPressurePlateBreakInfo, $woodType));
+			self::register($idName("pressure_plate"), new WoodenPressurePlate(WoodLikeBlockIdHelper::getPressurePlateIdentifier($woodType), $name . " Pressure Plate", $woodenPressurePlateBreakInfo, $woodType, 20));
 			self::register($idName("trapdoor"), new WoodenTrapdoor(WoodLikeBlockIdHelper::getTrapdoorIdentifier($woodType), $name . " Trapdoor", $woodenDoorBreakInfo, $woodType));
 
 			[$floorSignId, $wallSignId, $signAsItem] = WoodLikeBlockIdHelper::getSignInfo($woodType);
@@ -1491,7 +1503,7 @@ final class VanillaBlocks{
 		$prefix = fn(string $thing) => "Polished Blackstone" . ($thing !== "" ? " $thing" : "");
 		self::register("polished_blackstone", new Opaque(new BID(Ids::POLISHED_BLACKSTONE), $prefix(""), $blackstoneBreakInfo));
 		self::register("polished_blackstone_button", new StoneButton(new BID(Ids::POLISHED_BLACKSTONE_BUTTON), $prefix("Button"), new Info(BreakInfo::pickaxe(0.5))));
-		self::register("polished_blackstone_pressure_plate", new StonePressurePlate(new BID(Ids::POLISHED_BLACKSTONE_PRESSURE_PLATE), $prefix("Pressure Plate"), new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD()))));
+		self::register("polished_blackstone_pressure_plate", new StonePressurePlate(new BID(Ids::POLISHED_BLACKSTONE_PRESSURE_PLATE), $prefix("Pressure Plate"), new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD())), 20));
 		self::register("polished_blackstone_slab", new Slab(new BID(Ids::POLISHED_BLACKSTONE_SLAB), $prefix(""), $slabBreakInfo));
 		self::register("polished_blackstone_stairs", new Stair(new BID(Ids::POLISHED_BLACKSTONE_STAIRS), $prefix("Stairs"), $blackstoneBreakInfo));
 		self::register("polished_blackstone_wall", new Wall(new BID(Ids::POLISHED_BLACKSTONE_WALL), $prefix("Wall"), $blackstoneBreakInfo));
