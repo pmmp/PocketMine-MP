@@ -152,7 +152,7 @@ abstract class BaseSign extends Transparent{
 			return false;
 		}
 		$dyeColor = $this->getColorFromItem($item);
-		if($this->canOpenSign($item)){
+		if($this->canOpenSignEditor($item)){
 			$player->openSignEditor($this->position);
 			return true;
 		}
@@ -247,7 +247,7 @@ abstract class BaseSign extends Transparent{
 	/**
 	 * Returns whether player can open sign editor
 	 */
-	private function canOpenSign(Item $item) : bool{
+	private function canOpenSignEditor(Item $item) : bool{
 		$currentColor = $this->text->getBaseColor();
 		$newColor = $this->getColorFromItem($item);
 		if($newColor === null){
