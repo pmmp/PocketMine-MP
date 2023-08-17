@@ -151,12 +151,11 @@ abstract class BaseSign extends Transparent{
 		if($player === null){
 			return false;
 		}
-		$dyeColor = $item instanceof Dye ? $item->getColor() : match($item->getTypeId()){
-			ItemTypeIds::BONE_MEAL => DyeColor::WHITE(),
-			ItemTypeIds::LAPIS_LAZULI => DyeColor::BLUE(),
-			ItemTypeIds::COCOA_BEANS => DyeColor::BROWN(),
-			default => null
-		};
+		$dyeColor = $this->getColorFromItem($item);
+		if($this->canOpenSign($item)){
+			$player->openSignEditor($this->position);
+			return true;
+		}
 		if($dyeColor !== null){
 			$color = $dyeColor->equals(DyeColor::BLACK()) ? new Color(0, 0, 0) : $dyeColor->getRgbValue();
 			if($color->toARGB() === $this->text->getBaseColor()->toARGB()){
@@ -217,7 +216,7 @@ abstract class BaseSign extends Transparent{
 		}
 		$ev = new SignChangeEvent($this, $author, new SignText(array_map(function(string $line) : string{
 			return TextFormat::clean($line, false);
-		}, $text->getLines())));
+		}, $text->getLines()), $text->getBaseColor(), $text->isGlowing()));
 		if($this->editorEntityRuntimeId === null || $this->editorEntityRuntimeId !== $author->getId()){
 			$ev->cancel();
 		}
@@ -234,5 +233,36 @@ abstract class BaseSign extends Transparent{
 
 	public function asItem() : Item{
 		return ($this->asItemCallback)();
+	}
+
+	private function getColorFromItem(Item $item) : ?DyeColor{
+		return $item instanceof Dye ? $item->getColor() : match($item->getTypeId()){
+			ItemTypeIds::BONE_MEAL => DyeColor::WHITE(),
+			ItemTypeIds::LAPIS_LAZULI => DyeColor::BLUE(),
+			ItemTypeIds::COCOA_BEANS => DyeColor::BROWN(),
+			default => null
+		};
+	}
+
+	/**
+	 * Returns whether player can open sign editor
+	 */
+	private function canOpenSign(Item $item) : bool{
+		$currentColor = $this->text->getBaseColor();
+		$newColor = $this->getColorFromItem($item);
+		if($newColor === null){
+			if($item->getTypeId() === ItemTypeIds::GLOW_INK_SAC || $item->getTypeId() === ItemTypeIds::INK_SAC){
+				$wasGlowing = $this->text->isGlowing();
+				if($wasGlowing && $item->getTypeId() !== ItemTypeIds::GLOW_INK_SAC){
+					return false;
+				}
+				if(!$wasGlowing && $item->getTypeId() !== ItemTypeIds::INK_SAC){
+					return false;
+				}
+			}
+			return true;
+		}
+		$color = $newColor->equals(DyeColor::BLACK()) ? new Color(0, 0, 0) : $newColor->getRgbValue();
+		return $currentColor->equals($color);
 	}
 }

@@ -756,7 +756,9 @@ class InGamePacketHandler extends PacketHandler{
 			}
 
 			try{
-				$text = SignText::fromBlob($textBlobTag->getValue());
+				$baseColor = $block->getText()->getBaseColor();
+				$glowing = $block->getText()->isGlowing();
+				$text = SignText::fromBlob($textBlobTag->getValue(), $baseColor, $glowing);
 			}catch(\InvalidArgumentException $e){
 				throw PacketHandlingException::wrap($e, "Invalid sign text update");
 			}
