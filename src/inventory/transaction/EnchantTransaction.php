@@ -31,6 +31,7 @@ use pocketmine\item\ItemTypeIds;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use function count;
+use function min;
 
 class EnchantTransaction extends InventoryTransaction{
 
@@ -67,9 +68,8 @@ class EnchantTransaction extends InventoryTransaction{
 		if($xpLevel < $requiredXpLevel){
 			throw new TransactionValidationException("Player's XP level $xpLevel is less than the required XP level $requiredXpLevel");
 		}
-		if($xpLevel < $this->cost){
-			throw new TransactionValidationException("Player's XP level $xpLevel is less than the XP level cost $this->cost");
-		}
+		//XP level cost is intentionally not checked here, as the required level may be lower than the cost, allowing
+		//the option to be used with less XP than the cost - in this case, as much XP as possible will be deducted.
 	}
 
 	public function validate() : void{
@@ -115,7 +115,9 @@ class EnchantTransaction extends InventoryTransaction{
 		parent::execute();
 
 		if($this->source->hasFiniteResources()){
-			$this->source->getXpManager()->subtractXpLevels($this->cost);
+			//If the required XP level is less than the XP cost, the option can be selected with less XP than the cost.
+			//In this case, as much XP as possible will be taken.
+			$this->source->getXpManager()->subtractXpLevels(min($this->cost, $this->source->getXpManager()->getXpLevel()));
 		}
 		$this->source->setEnchantmentSeed($this->source->generateEnchantmentSeed());
 	}
