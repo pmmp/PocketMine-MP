@@ -46,7 +46,7 @@ abstract class BaseCoral extends Transparent{
 
 	public function onScheduledUpdate() : void{
 		if(!$this->dead && !$this->isCoveredWithWater()){
-			$ev = new BlockDeathEvent($this, $this->setDead(true));
+			$ev = new BlockDeathEvent($this, (clone $this)->setDead(true));
 			$ev->call();
 			if(!$ev->isCancelled()){
 				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());

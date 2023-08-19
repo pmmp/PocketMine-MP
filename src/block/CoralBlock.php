@@ -55,7 +55,7 @@ final class CoralBlock extends Opaque{
 				}
 			}
 			if(!$hasWater){
-				$ev = new BlockDeathEvent($this, $this->setDead(true));
+				$ev = new BlockDeathEvent($this, (clone $this)->setDead(true));
 				$ev->call();
 				if(!$ev->isCancelled()){
 					$world->setBlock($this->position, $ev->getNewState());
@@ -65,7 +65,7 @@ final class CoralBlock extends Opaque{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		return [$this->setDead(true)->asItem()];
+		return [(clone $this)->setDead(true)->asItem()];
 	}
 
 	public function isAffectedBySilkTouch() : bool{
