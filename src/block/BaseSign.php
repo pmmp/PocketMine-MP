@@ -254,7 +254,7 @@ abstract class BaseSign extends Transparent{
 		$ev = new SignChangeEvent($this, $author, new SignText(array_map(function(string $line) : string{
 			return TextFormat::clean($line, false);
 		}, $text->getLines()), $this->text->getBaseColor(), $this->text->isGlowing()));
-		if($this->waxed || $this->editorEntityRuntimeId === null || $this->editorEntityRuntimeId !== $author->getId()){
+		if($this->waxed || $this->editorEntityRuntimeId !== $author->getId()){
 			$ev->cancel();
 		}
 		$ev->call();
