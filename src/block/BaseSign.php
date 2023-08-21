@@ -159,20 +159,25 @@ abstract class BaseSign extends Transparent{
 		};
 		if($dyeColor !== null){
 			$color = $dyeColor->equals(DyeColor::BLACK()) ? new Color(0, 0, 0) : $dyeColor->getRgbValue();
-			if($color->toARGB() === $this->text->getBaseColor()->toARGB()){
-				return false;
-			}
-
-			if($this->doSignChange(new SignText($this->text->getLines(), $color, $this->text->isGlowing()), $player, $item)){
+			if(
+				$color->toARGB() !== $this->text->getBaseColor()->toARGB() &&
+				$this->doSignChange(new SignText($this->text->getLines(), $color, $this->text->isGlowing()), $player, $item)
+			){
 				$this->position->getWorld()->addSound($this->position, new DyeUseSound());
 				return true;
 			}
-		}elseif($item->getTypeId() === ItemTypeIds::INK_SAC){
-			return $this->changeSignGlowingState(false, $player, $item);
-		}elseif($item->getTypeId() === ItemTypeIds::GLOW_INK_SAC){
-			return $this->changeSignGlowingState(true, $player, $item);
+		}elseif(match($item->getTypeId()){
+			ItemTypeIds::INK_SAC => $this->changeSignGlowingState(false, $player, $item),
+			ItemTypeIds::GLOW_INK_SAC => $this->changeSignGlowingState(true, $player, $item),
+			default => false
+		}){
+			return true;
 		}
-		return false;
+
+		//TODO: editor should not open for waxed signs
+		$player->openSignEditor($this->position);
+
+		return true;
 	}
 
 	/**
@@ -217,7 +222,7 @@ abstract class BaseSign extends Transparent{
 		}
 		$ev = new SignChangeEvent($this, $author, new SignText(array_map(function(string $line) : string{
 			return TextFormat::clean($line, false);
-		}, $text->getLines())));
+		}, $text->getLines()), $this->text->getBaseColor(), $this->text->isGlowing()));
 		if($this->editorEntityRuntimeId === null || $this->editorEntityRuntimeId !== $author->getId()){
 			$ev->cancel();
 		}
