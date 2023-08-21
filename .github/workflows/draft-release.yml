@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
+      matrix:
+        php-version: [8.1]
 
     steps:
       - uses: actions/checkout@v3
@@ -20,7 +22,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@2.25.5
         with:
-          php-version: 8.1
+          php-version: ${{ matrix.php-version }}
 
       - name: Restore Composer package cache
         uses: actions/cache@v3
@@ -58,8 +60,21 @@ jobs:
           echo CHANGELOG_SUFFIX=$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::BUILD_CHANNEL === "stable" ? "" : "-" . \pocketmine\VersionInfo::BUILD_CHANNEL;') >> $GITHUB_OUTPUT
           echo PRERELEASE=$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::BUILD_CHANNEL === "stable" ? "false" : "true";') >> $GITHUB_OUTPUT
 
+      - name: Generate PHP binary download URL
+        id: php-binary-url
+        run: |
+          echo PHP_BINARY_URL="${{ github.server_url }}/${{ github.repository_owner }}/PHP-Binaries/releases/tag/php-${{ matrix.php-version }}-latest" >> $GITHUB_OUTPUT
+
       - name: Generate build info
-        run: php build/generate-build-info-json.php ${{ github.sha }} ${{ steps.get-pm-version.outputs.PM_VERSION }} ${{ github.repository }} ${{ steps.build-number.outputs.BUILD_NUMBER }} ${{ github.run_id }} > build_info.json
+        run: |
+          php build/generate-build-info-json.php \
+            ${{ github.sha }} \
+            ${{ steps.get-pm-version.outputs.PM_VERSION }} \
+            ${{ github.repository }} \
+            ${{ steps.build-number.outputs.BUILD_NUMBER }} \
+            ${{ github.run_id }} \
+            ${{ steps.php-binary-url.outputs.PHP_BINARY_URL }} \
+            > build_info.json
 
       - name: Upload release artifacts
         uses: actions/upload-artifact@v3
@@ -84,3 +99,5 @@ jobs:
             **For Minecraft: Bedrock Edition ${{ steps.get-pm-version.outputs.MCPE_VERSION }}**
 
             Please see the [changelogs](${{ github.server_url }}/${{ github.repository }}/blob/${{ steps.get-pm-version.outputs.PM_VERSION }}/changelogs/${{ steps.get-pm-version.outputs.PM_VERSION_SHORT }}${{ steps.get-pm-version.outputs.CHANGELOG_SUFFIX }}.md#${{ steps.get-pm-version.outputs.PM_VERSION_MD }}) for details.
+
+            :information_source: Download the recommended PHP binary [here](${{ steps.php-binary-url.outputs.PHP_BINARY_URL }}).
