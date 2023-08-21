@@ -755,9 +755,9 @@ class InGamePacketHandler extends PacketHandler{
 				throw new PacketHandlingException("Invalid tag type " . get_debug_type($textBlobTag) . " for tag \"" . Sign::TAG_TEXT_BLOB . "\" in sign update data");
 			}
 
+			$baseColor = $block->getText()->getBaseColor();
+			$glowing = $block->getText()->isGlowing();
 			try{
-				$baseColor = $block->getText()->getBaseColor();
-				$glowing = $block->getText()->isGlowing();
 				$text = SignText::fromBlob($textBlobTag->getValue(), $baseColor, $glowing);
 			}catch(\InvalidArgumentException $e){
 				throw PacketHandlingException::wrap($e, "Invalid sign text update");
