@@ -251,14 +251,12 @@ abstract class BaseSign extends Transparent{
 		$currentColor = $this->text->getBaseColor();
 		$newColor = $this->getColorFromItem($item);
 		if($newColor === null){
-			if($item->getTypeId() === ItemTypeIds::GLOW_INK_SAC || $item->getTypeId() === ItemTypeIds::INK_SAC){
-				$wasGlowing = $this->text->isGlowing();
-				if($wasGlowing && $item->getTypeId() !== ItemTypeIds::GLOW_INK_SAC){
-					return false;
-				}
-				if(!$wasGlowing && $item->getTypeId() !== ItemTypeIds::INK_SAC){
-					return false;
-				}
+			$wasGlowing = $this->text->isGlowing();
+			if($wasGlowing && $item->getTypeId() !== ItemTypeIds::GLOW_INK_SAC){
+				return false;
+			}
+			if(!$wasGlowing && $item->getTypeId() !== ItemTypeIds::INK_SAC){
+				return false;
 			}
 			return true;
 		}
