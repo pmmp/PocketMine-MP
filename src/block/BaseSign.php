@@ -49,6 +49,8 @@ abstract class BaseSign extends Transparent{
 	use WoodTypeTrait;
 
 	protected SignText $text;
+	private bool $waxed = false;
+
 	protected ?int $editorEntityRuntimeId = null;
 
 	/** @var \Closure() : Item */
@@ -69,6 +71,7 @@ abstract class BaseSign extends Transparent{
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileSign){
 			$this->text = $tile->getText();
+			$this->waxed = $tile->isWaxed();
 			$this->editorEntityRuntimeId = $tile->getEditorEntityRuntimeId();
 		}
 
@@ -80,6 +83,7 @@ abstract class BaseSign extends Transparent{
 		$tile = $this->position->getWorld()->getTile($this->position);
 		assert($tile instanceof TileSign);
 		$tile->setText($this->text);
+		$tile->setWaxed($this->waxed);
 		$tile->setEditorEntityRuntimeId($this->editorEntityRuntimeId);
 	}
 
@@ -147,10 +151,26 @@ abstract class BaseSign extends Transparent{
 		return false;
 	}
 
+	private function wax(Player $player, Item $item) : bool{
+		if($this->waxed){
+			return false;
+		}
+
+		$this->waxed = true;
+		$this->position->getWorld()->setBlock($this->position, $this);
+		$item->pop();
+
+		return true;
+	}
+
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player === null){
 			return false;
 		}
+		if($this->waxed){
+			return true;
+		}
+
 		$dyeColor = $item instanceof Dye ? $item->getColor() : match($item->getTypeId()){
 			ItemTypeIds::BONE_MEAL => DyeColor::WHITE(),
 			ItemTypeIds::LAPIS_LAZULI => DyeColor::BLUE(),
@@ -169,12 +189,12 @@ abstract class BaseSign extends Transparent{
 		}elseif(match($item->getTypeId()){
 			ItemTypeIds::INK_SAC => $this->changeSignGlowingState(false, $player, $item),
 			ItemTypeIds::GLOW_INK_SAC => $this->changeSignGlowingState(true, $player, $item),
+			ItemTypeIds::HONEYCOMB => $this->wax($player, $item),
 			default => false
 		}){
 			return true;
 		}
 
-		//TODO: editor should not open for waxed signs
 		$player->openSignEditor($this->position);
 
 		return true;
@@ -190,6 +210,17 @@ abstract class BaseSign extends Transparent{
 	/** @return $this */
 	public function setText(SignText $text) : self{
 		$this->text = $text;
+		return $this;
+	}
+
+	/**
+	 * Returns whether the sign has been waxed using a honeycomb. If true, the sign cannot be edited by a player.
+	 */
+	public function isWaxed() : bool{ return $this->waxed; }
+
+	/** @return $this */
+	public function setWaxed(bool $waxed) : self{
+		$this->waxed = $waxed;
 		return $this;
 	}
 
@@ -223,7 +254,7 @@ abstract class BaseSign extends Transparent{
 		$ev = new SignChangeEvent($this, $author, new SignText(array_map(function(string $line) : string{
 			return TextFormat::clean($line, false);
 		}, $text->getLines()), $this->text->getBaseColor(), $this->text->isGlowing()));
-		if($this->editorEntityRuntimeId === null || $this->editorEntityRuntimeId !== $author->getId()){
+		if($this->waxed || $this->editorEntityRuntimeId === null || $this->editorEntityRuntimeId !== $author->getId()){
 			$ev->cancel();
 		}
 		$ev->call();
