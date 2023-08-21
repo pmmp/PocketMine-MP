@@ -31,6 +31,7 @@ use pocketmine\item\ItemTypeIds;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use function count;
+use function min;
 
 class EnchantTransaction extends InventoryTransaction{
 
@@ -56,15 +57,6 @@ class EnchantTransaction extends InventoryTransaction{
 		}
 	}
 
-	/**
-	 * The selected option might be available to a player who has enough XP levels to meet the option's minimum level,
-	 * but not enough to pay the full cost (e.g. option costs 3 levels but requires only 1 to use). As much XP as
-	 * possible is spent in these cases.
-	 */
-	private function getAdjustedXpCost() : int{
-		return min($this->cost, $this->source->getXpManager()->getXpLevel());
-	}
-
 	private function validateFiniteResources(int $lapisSpent) : void{
 		if($lapisSpent !== $this->cost){
 			throw new TransactionValidationException("Expected the amount of lapis lazuli spent to be $this->cost, but received $lapisSpent");
@@ -72,14 +64,12 @@ class EnchantTransaction extends InventoryTransaction{
 
 		$xpLevel = $this->source->getXpManager()->getXpLevel();
 		$requiredXpLevel = $this->option->getRequiredXpLevel();
-		$actualCost = $this->getAdjustedXpCost();
 
 		if($xpLevel < $requiredXpLevel){
 			throw new TransactionValidationException("Player's XP level $xpLevel is less than the required XP level $requiredXpLevel");
 		}
-		if($xpLevel < $actualCost){
-			throw new TransactionValidationException("Player's XP level $xpLevel is less than the XP level cost $actualCost");
-		}
+		//XP level cost is intentionally not checked here, as the required level may be lower than the cost, allowing
+		//the option to be used with less XP than the cost - in this case, as much XP as possible will be deducted.
 	}
 
 	public function validate() : void{
@@ -125,7 +115,9 @@ class EnchantTransaction extends InventoryTransaction{
 		parent::execute();
 
 		if($this->source->hasFiniteResources()){
-			$this->source->getXpManager()->subtractXpLevels($this->getAdjustedXpCost());
+			//If the required XP level is less than the XP cost, the option can be selected with less XP than the cost.
+			//In this case, as much XP as possible will be taken.
+			$this->source->getXpManager()->subtractXpLevels(min($this->cost, $this->source->getXpManager()->getXpLevel()));
 		}
 		$this->source->setEnchantmentSeed($this->source->generateEnchantmentSeed());
 	}
