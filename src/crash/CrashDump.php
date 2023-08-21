@@ -199,6 +199,7 @@ class CrashDump{
 			if(($pos = strpos($error["message"], "\n")) !== false){
 				$error["message"] = substr($error["message"], 0, $pos);
 			}
+			$error["thread"] = "Main";
 		}
 		$error["message"] = mb_scrub($error["message"], 'UTF-8');
 
