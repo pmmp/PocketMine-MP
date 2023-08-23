@@ -37,7 +37,7 @@ use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerEnderInventory;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\PlayerOffHandInventory;
-use pocketmine\item\enchantment\EnchantHelper;
+use pocketmine\item\enchantment\EnchantingHelper;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\Totem;
@@ -219,7 +219,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	}
 
 	public function regenerateEnchantmentSeed() : void{
-		$this->xpSeed = EnchantHelper::generateSeed();
+		$this->xpSeed = EnchantingHelper::generateSeed();
 	}
 
 	public function getXpDropAmount() : int{
@@ -345,7 +345,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		if(($xpSeedTag = $nbt->getTag(self::TAG_XP_SEED)) instanceof IntTag){
 			$this->xpSeed = $xpSeedTag->getValue();
 		}else{
-			$this->xpSeed = EnchantHelper::generateSeed();
+			$this->xpSeed = EnchantingHelper::generateSeed();
 		}
 	}
 

@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\inventory\transaction;
 
 use pocketmine\event\player\PlayerItemEnchantEvent;
-use pocketmine\item\enchantment\EnchantHelper;
-use pocketmine\item\enchantment\EnchantOption;
+use pocketmine\item\enchantment\EnchantingHelper;
+use pocketmine\item\enchantment\EnchantingOption;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\player\Player;
@@ -33,14 +33,14 @@ use pocketmine\utils\AssumptionFailedError;
 use function count;
 use function min;
 
-class EnchantTransaction extends InventoryTransaction{
+class EnchantingTransaction extends InventoryTransaction{
 
 	private ?Item $inputItem = null;
 	private ?Item $outputItem = null;
 
 	public function __construct(
 		Player $source,
-		private readonly EnchantOption $option,
+		private readonly EnchantingOption $option,
 		private readonly int $cost
 	){
 		parent::__construct($source);
@@ -51,7 +51,7 @@ class EnchantTransaction extends InventoryTransaction{
 			throw new AssumptionFailedError("Expected that inputItem and outputItem are not null before validating output");
 		}
 
-		$enchantedInput = EnchantHelper::enchantItem($this->inputItem, $this->option->getEnchantments());
+		$enchantedInput = EnchantingHelper::enchantItem($this->inputItem, $this->option->getEnchantments());
 		if(!$this->outputItem->equalsExact($enchantedInput)){
 			throw new TransactionValidationException("Invalid output item");
 		}

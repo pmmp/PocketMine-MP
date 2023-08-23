@@ -25,8 +25,8 @@ namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\inventory\transaction\EnchantTransaction;
-use pocketmine\item\enchantment\EnchantOption;
+use pocketmine\inventory\transaction\EnchantingTransaction;
+use pocketmine\item\enchantment\EnchantingOption;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
 
@@ -38,8 +38,8 @@ class PlayerItemEnchantEvent extends PlayerEvent implements Cancellable{
 
 	public function __construct(
 		Player $player,
-		private readonly EnchantTransaction $transaction,
-		private readonly EnchantOption $option,
+		private readonly EnchantingTransaction $transaction,
+		private readonly EnchantingOption $option,
 		private readonly Item $inputItem,
 		private readonly Item $outputItem,
 		private readonly int $cost
@@ -50,14 +50,14 @@ class PlayerItemEnchantEvent extends PlayerEvent implements Cancellable{
 	/**
 	 * Returns the inventory transaction involved in this enchant event.
 	 */
-	public function getTransaction() : EnchantTransaction{
+	public function getTransaction() : EnchantingTransaction{
 		return $this->transaction;
 	}
 
 	/**
 	 * Returns the enchantment option used.
 	 */
-	public function getOption() : EnchantOption{
+	public function getOption() : EnchantingOption{
 		return $this->option;
 	}
 

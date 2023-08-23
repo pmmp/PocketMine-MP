@@ -27,7 +27,7 @@ use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\event\Event;
-use pocketmine\item\enchantment\EnchantOption;
+use pocketmine\item\enchantment\EnchantingOption;
 use pocketmine\player\Player;
 use pocketmine\utils\Utils;
 use function count;
@@ -36,36 +36,36 @@ use function count;
  * Called when a player inserts an item into an enchanting table's input slot.
  * The options provided by the event will be shown on the enchanting table menu.
  */
-class PlayerEnchantOptionsRequestEvent extends PlayerEvent implements Cancellable{
+class PlayerEnchantingOptionsRequestEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
 	/**
-	 * @param EnchantOption[] $options
+	 * @param EnchantingOption[] $options
 	 */
 	public function __construct(
 		Player $player,
-		private readonly EnchantInventory $enchantInventory,
+		private readonly EnchantInventory $inventory,
 		private array $options
 	){
 		$this->player = $player;
 	}
 
-	public function getEnchantInventory() : EnchantInventory{
-		return $this->enchantInventory;
+	public function getInventory() : EnchantInventory{
+		return $this->inventory;
 	}
 
 	/**
-	 * @return EnchantOption[]
+	 * @return EnchantingOption[]
 	 */
 	public function getOptions() : array{
 		return $this->options;
 	}
 
 	/**
-	 * @param EnchantOption[] $options
+	 * @param EnchantingOption[] $options
 	 */
 	public function setOptions(array $options) : void{
-		Utils::validateArrayValueType($options, function(EnchantOption $_) : void{ });
+		Utils::validateArrayValueType($options, function(EnchantingOption $_) : void{ });
 		if(($optionCount = count($options)) > 3){
 			throw new \LogicException("The maximum number of options for an enchanting table is 3, but $optionCount have been passed");
 		}
