@@ -28,6 +28,7 @@ use pocketmine\item\enchantment\AvailableEnchantmentRegistry as EnchantmentRegis
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\item\VanillaItems as Items;
+use pocketmine\utils\Limits;
 use pocketmine\utils\Random;
 use pocketmine\world\Position;
 use function abs;
@@ -37,6 +38,7 @@ use function count;
 use function floor;
 use function max;
 use function min;
+use function mt_rand;
 use function ord;
 use function round;
 
@@ -45,6 +47,13 @@ final class EnchantmentHelper{
 
 	private function __construct(){
 		//NOOP
+	}
+
+	/**
+	 * Generates a new random seed for enchant option randomization.
+	 */
+	public static function generateSeed() : int{
+		return mt_rand(Limits::INT32_MIN, Limits::INT32_MAX);
 	}
 
 	/**

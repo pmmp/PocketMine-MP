@@ -119,7 +119,7 @@ class EnchantTransaction extends InventoryTransaction{
 			//In this case, as much XP as possible will be taken.
 			$this->source->getXpManager()->subtractXpLevels(min($this->cost, $this->source->getXpManager()->getXpLevel()));
 		}
-		$this->source->setEnchantmentSeed($this->source->generateEnchantmentSeed());
+		$this->source->regenerateEnchantmentSeed();
 	}
 
 	protected function callExecuteEvent() : bool{
