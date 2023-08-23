@@ -26,7 +26,7 @@ namespace pocketmine\block\inventory;
 use pocketmine\event\player\PlayerEnchantOptionsRequestEvent;
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\inventory\TemporaryInventory;
-use pocketmine\item\enchantment\EnchantmentHelper as Helper;
+use pocketmine\item\enchantment\EnchantHelper as Helper;
 use pocketmine\item\enchantment\EnchantOption;
 use pocketmine\item\Item;
 use pocketmine\world\Position;
@@ -52,7 +52,7 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 			foreach($this->viewers as $viewer){
 				$this->options = [];
 				$item = $this->getInput();
-				$options = Helper::getEnchantOptions($this->holder, $item, $viewer->getEnchantmentSeed());
+				$options = Helper::generateOptions($this->holder, $item, $viewer->getEnchantmentSeed());
 
 				$event = new PlayerEnchantOptionsRequestEvent($viewer, $this, $options);
 				$event->call();

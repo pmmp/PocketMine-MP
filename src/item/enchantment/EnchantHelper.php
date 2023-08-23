@@ -42,7 +42,10 @@ use function mt_rand;
 use function ord;
 use function round;
 
-final class EnchantmentHelper{
+/**
+ * Helper methods used for enchanting using the enchanting table.
+ */
+final class EnchantHelper{
 	private const MAX_BOOKSHELF_COUNT = 15;
 
 	private function __construct(){
@@ -72,7 +75,7 @@ final class EnchantmentHelper{
 	/**
 	 * @return EnchantOption[]
 	 */
-	public static function getEnchantOptions(Position $tablePos, Item $input, int $seed) : array{
+	public static function generateOptions(Position $tablePos, Item $input, int $seed) : array{
 		if($input->isNull() || $input->hasEnchantments()){
 			return [];
 		}
