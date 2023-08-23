@@ -56,10 +56,11 @@ use pocketmine\utils\WaitGroup;
 	public function __construct(
 		 Player $player
 	){
-		 $this->waitGroup = new WaitGroup();
+		$this->player = $player;
+		$this->waitGroup = new WaitGroup();
 	}
 
 	public function getWaitGroup() : WaitGroup{
-		 return $this->waitGroup;
+		return $this->waitGroup;
 	}
  }
