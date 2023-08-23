@@ -26,6 +26,7 @@ namespace pocketmine\data\bedrock\block\convert;
 use pocketmine\block\Block;
 use pocketmine\block\Button;
 use pocketmine\block\Candle;
+use pocketmine\block\CeilingHangingSign;
 use pocketmine\block\Copper;
 use pocketmine\block\CopperSlab;
 use pocketmine\block\CopperStairs;
@@ -50,6 +51,7 @@ use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\block\Wall;
 use pocketmine\block\WallCoralFan;
+use pocketmine\block\WallHangingSign;
 use pocketmine\block\WallSign;
 use pocketmine\block\WeightedPressurePlate;
 use pocketmine\block\Wood;
@@ -161,6 +163,29 @@ final class BlockStateDeserializerHelper{
 	public static function decodeFloorSign(FloorSign $block, BlockStateReader $in) : FloorSign{
 		return $block
 			->setRotation($in->readBoundedInt(BlockStateNames::GROUND_SIGN_DIRECTION, 0, 15));
+	}
+
+	/**
+	 * @phpstan-param \Closure() : CeilingHangingSign $ceilingBlock
+	 * @phpstan-param \Closure() : WallHangingSign $wallBlock
+	 * @phpstan-return CeilingHangingSign|WallHangingSign
+	 *
+	 * @throws BlockStateDeserializeException
+	 */
+	public static function decodeHangingSign(\Closure $ceilingBlock, \Closure $wallBlock, BlockStateReader $in) : CeilingHangingSign|WallHangingSign{
+		$ceiling = $in->readBool(StateNames::HANGING);
+		if($ceiling){
+			$in->ignored(StateNames::FACING_DIRECTION); //assume this is correct ???
+			$block = $ceilingBlock();
+			$block->setRotation($in->readBoundedInt(StateNames::GROUND_SIGN_DIRECTION, 0, 15));
+			$block->setCenterAttached($in->readBool(StateNames::ATTACHED_BIT));
+		}else{
+			$in->ignored(StateNames::GROUND_SIGN_DIRECTION);
+			$in->ignored(StateNames::ATTACHED_BIT);
+			$block = $wallBlock();
+			$block->setFacing($in->readHorizontalFacing());
+		}
+		return $block;
 	}
 
 	public static function decodeItemFrame(ItemFrame $block, BlockStateReader $in) : ItemFrame{

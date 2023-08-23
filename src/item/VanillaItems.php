@@ -47,6 +47,7 @@ use pocketmine\world\World;
  * @generate-registry-docblock
  *
  * @method static Boat ACACIA_BOAT()
+ * @method static ItemBlockWallOrFloor ACACIA_HANGING_SIGN()
  * @method static ItemBlockWallOrFloor ACACIA_SIGN()
  * @method static ItemBlock AIR()
  * @method static Item AMETHYST_SHARD()
@@ -59,6 +60,7 @@ use pocketmine\world\World;
  * @method static BeetrootSeeds BEETROOT_SEEDS()
  * @method static BeetrootSoup BEETROOT_SOUP()
  * @method static Boat BIRCH_BOAT()
+ * @method static ItemBlockWallOrFloor BIRCH_HANGING_SIGN()
  * @method static ItemBlockWallOrFloor BIRCH_SIGN()
  * @method static Item BLAZE_POWDER()
  * @method static BlazeRod BLAZE_ROD()
@@ -115,6 +117,7 @@ use pocketmine\world\World;
  * @method static Item CHEMICAL_SULPHATE()
  * @method static Item CHEMICAL_TUNGSTEN_CHLORIDE()
  * @method static Item CHEMICAL_WATER()
+ * @method static ItemBlockWallOrFloor CHERRY_HANGING_SIGN()
  * @method static ItemBlockWallOrFloor CHERRY_SIGN()
  * @method static ChorusFruit CHORUS_FRUIT()
  * @method static Item CLAY()
@@ -132,8 +135,10 @@ use pocketmine\world\World;
  * @method static Cookie COOKIE()
  * @method static Item COPPER_INGOT()
  * @method static CoralFan CORAL_FAN()
+ * @method static ItemBlockWallOrFloor CRIMSON_HANGING_SIGN()
  * @method static ItemBlockWallOrFloor CRIMSON_SIGN()
  * @method static Boat DARK_OAK_BOAT()
+ * @method static ItemBlockWallOrFloor DARK_OAK_HANGING_SIGN()
  * @method static ItemBlockWallOrFloor DARK_OAK_SIGN()
  * @method static Item DIAMOND()
  * @method static Axe DIAMOND_AXE()
@@ -198,6 +203,7 @@ use pocketmine\world\World;
  * @method static Shovel IRON_SHOVEL()
  * @method static Sword IRON_SWORD()
  * @method static Boat JUNGLE_BOAT()
+ * @method static ItemBlockWallOrFloor JUNGLE_HANGING_SIGN()
  * @method static ItemBlockWallOrFloor JUNGLE_SIGN()
  * @method static Item LAPIS_LAZULI()
  * @method static LiquidBucket LAVA_BUCKET()
@@ -208,6 +214,7 @@ use pocketmine\world\World;
  * @method static Armor LEATHER_TUNIC()
  * @method static Item MAGMA_CREAM()
  * @method static Boat MANGROVE_BOAT()
+ * @method static ItemBlockWallOrFloor MANGROVE_HANGING_SIGN()
  * @method static ItemBlockWallOrFloor MANGROVE_SIGN()
  * @method static Medicine MEDICINE()
  * @method static Melon MELON()
@@ -231,6 +238,7 @@ use pocketmine\world\World;
  * @method static Item NETHER_QUARTZ()
  * @method static Item NETHER_STAR()
  * @method static Boat OAK_BOAT()
+ * @method static ItemBlockWallOrFloor OAK_HANGING_SIGN()
  * @method static ItemBlockWallOrFloor OAK_SIGN()
  * @method static PaintingItem PAINTING()
  * @method static Item PAPER()
@@ -282,6 +290,7 @@ use pocketmine\world\World;
  * @method static SpiderEye SPIDER_EYE()
  * @method static SplashPotion SPLASH_POTION()
  * @method static Boat SPRUCE_BOAT()
+ * @method static ItemBlockWallOrFloor SPRUCE_HANGING_SIGN()
  * @method static ItemBlockWallOrFloor SPRUCE_SIGN()
  * @method static Spyglass SPYGLASS()
  * @method static SpawnEgg SQUID_SPAWN_EGG()
@@ -299,6 +308,7 @@ use pocketmine\world\World;
  * @method static Totem TOTEM()
  * @method static TurtleHelmet TURTLE_HELMET()
  * @method static SpawnEgg VILLAGER_SPAWN_EGG()
+ * @method static ItemBlockWallOrFloor WARPED_HANGING_SIGN()
  * @method static ItemBlockWallOrFloor WARPED_SIGN()
  * @method static LiquidBucket WATER_BUCKET()
  * @method static Item WHEAT()
@@ -342,6 +352,7 @@ final class VanillaItems{
 		self::register("air", Blocks::AIR()->asItem()->setCount(0));
 
 		self::register("acacia_sign", new ItemBlockWallOrFloor(new IID(Ids::ACACIA_SIGN), Blocks::ACACIA_SIGN(), Blocks::ACACIA_WALL_SIGN()));
+		self::register("acacia_hanging_sign", new ItemBlockWallOrFloor(new IID(Ids::ACACIA_HANGING_SIGN), Blocks::ACACIA_CEILING_HANGING_SIGN(), Blocks::ACACIA_WALL_HANGING_SIGN()));
 		self::register("amethyst_shard", new Item(new IID(Ids::AMETHYST_SHARD), "Amethyst Shard"));
 		self::register("apple", new Apple(new IID(Ids::APPLE), "Apple"));
 		self::register("arrow", new Arrow(new IID(Ids::ARROW), "Arrow"));
@@ -352,6 +363,7 @@ final class VanillaItems{
 		self::register("beetroot_seeds", new BeetrootSeeds(new IID(Ids::BEETROOT_SEEDS), "Beetroot Seeds"));
 		self::register("beetroot_soup", new BeetrootSoup(new IID(Ids::BEETROOT_SOUP), "Beetroot Soup"));
 		self::register("birch_sign", new ItemBlockWallOrFloor(new IID(Ids::BIRCH_SIGN), Blocks::BIRCH_SIGN(), Blocks::BIRCH_WALL_SIGN()));
+		self::register("birch_hanging_sign", new ItemBlockWallOrFloor(new IID(Ids::BIRCH_HANGING_SIGN), Blocks::BIRCH_CEILING_HANGING_SIGN(), Blocks::BIRCH_WALL_HANGING_SIGN()));
 		self::register("blaze_powder", new Item(new IID(Ids::BLAZE_POWDER), "Blaze Powder"));
 		self::register("blaze_rod", new BlazeRod(new IID(Ids::BLAZE_ROD), "Blaze Rod"));
 		self::register("bleach", new Item(new IID(Ids::BLEACH), "Bleach"));
@@ -366,6 +378,7 @@ final class VanillaItems{
 		self::register("carrot", new Carrot(new IID(Ids::CARROT), "Carrot"));
 		self::register("charcoal", new Coal(new IID(Ids::CHARCOAL), "Charcoal"));
 		self::register("cherry_sign", new ItemBlockWallOrFloor(new IID(Ids::CHERRY_SIGN), Blocks::CHERRY_SIGN(), Blocks::CHERRY_WALL_SIGN()));
+		self::register("cherry_hanging_sign", new ItemBlockWallOrFloor(new IID(Ids::CHERRY_HANGING_SIGN), Blocks::CHERRY_CEILING_HANGING_SIGN(), Blocks::CHERRY_WALL_HANGING_SIGN()));
 		self::register("chemical_aluminium_oxide", new Item(new IID(Ids::CHEMICAL_ALUMINIUM_OXIDE), "Aluminium Oxide"));
 		self::register("chemical_ammonia", new Item(new IID(Ids::CHEMICAL_AMMONIA), "Ammonia"));
 		self::register("chemical_barium_sulphate", new Item(new IID(Ids::CHEMICAL_BARIUM_SULPHATE), "Barium Sulphate"));
@@ -421,7 +434,9 @@ final class VanillaItems{
 		self::register("copper_ingot", new Item(new IID(Ids::COPPER_INGOT), "Copper Ingot"));
 		self::register("coral_fan", new CoralFan(new IID(Ids::CORAL_FAN)));
 		self::register("crimson_sign", new ItemBlockWallOrFloor(new IID(Ids::CRIMSON_SIGN), Blocks::CRIMSON_SIGN(), Blocks::CRIMSON_WALL_SIGN()));
+		self::register("crimson_hanging_sign", new ItemBlockWallOrFloor(new IID(Ids::CRIMSON_HANGING_SIGN), Blocks::CRIMSON_CEILING_HANGING_SIGN(), Blocks::CRIMSON_WALL_HANGING_SIGN()));
 		self::register("dark_oak_sign", new ItemBlockWallOrFloor(new IID(Ids::DARK_OAK_SIGN), Blocks::DARK_OAK_SIGN(), Blocks::DARK_OAK_WALL_SIGN()));
+		self::register("dark_oak_hanging_sign", new ItemBlockWallOrFloor(new IID(Ids::DARK_OAK_HANGING_SIGN), Blocks::DARK_OAK_CEILING_HANGING_SIGN(), Blocks::DARK_OAK_WALL_HANGING_SIGN()));
 		self::register("diamond", new Item(new IID(Ids::DIAMOND), "Diamond"));
 		self::register("disc_fragment_5", new Item(new IID(Ids::DISC_FRAGMENT_5), "Disc Fragment (5)"));
 		self::register("dragon_breath", new Item(new IID(Ids::DRAGON_BREATH), "Dragon's Breath"));
@@ -459,11 +474,13 @@ final class VanillaItems{
 		self::register("iron_ingot", new Item(new IID(Ids::IRON_INGOT), "Iron Ingot"));
 		self::register("iron_nugget", new Item(new IID(Ids::IRON_NUGGET), "Iron Nugget"));
 		self::register("jungle_sign", new ItemBlockWallOrFloor(new IID(Ids::JUNGLE_SIGN), Blocks::JUNGLE_SIGN(), Blocks::JUNGLE_WALL_SIGN()));
+		self::register("jungle_hanging_sign", new ItemBlockWallOrFloor(new IID(Ids::JUNGLE_HANGING_SIGN), Blocks::JUNGLE_CEILING_HANGING_SIGN(), Blocks::JUNGLE_WALL_HANGING_SIGN()));
 		self::register("lapis_lazuli", new Item(new IID(Ids::LAPIS_LAZULI), "Lapis Lazuli"));
 		self::register("lava_bucket", new LiquidBucket(new IID(Ids::LAVA_BUCKET), "Lava Bucket", Blocks::LAVA()));
 		self::register("leather", new Item(new IID(Ids::LEATHER), "Leather"));
 		self::register("magma_cream", new Item(new IID(Ids::MAGMA_CREAM), "Magma Cream"));
 		self::register("mangrove_sign", new ItemBlockWallOrFloor(new IID(Ids::MANGROVE_SIGN), Blocks::MANGROVE_SIGN(), Blocks::MANGROVE_WALL_SIGN()));
+		self::register("mangrove_hanging_sign", new ItemBlockWallOrFloor(new IID(Ids::MANGROVE_HANGING_SIGN), Blocks::MANGROVE_CEILING_HANGING_SIGN(), Blocks::MANGROVE_WALL_HANGING_SIGN()));
 		self::register("medicine", new Medicine(new IID(Ids::MEDICINE), "Medicine"));
 		self::register("melon", new Melon(new IID(Ids::MELON), "Melon"));
 		self::register("melon_seeds", new MelonSeeds(new IID(Ids::MELON_SEEDS), "Melon Seeds"));
@@ -481,6 +498,7 @@ final class VanillaItems{
 			public function isFireProof() : bool{ return true; }
 		});
 		self::register("oak_sign", new ItemBlockWallOrFloor(new IID(Ids::OAK_SIGN), Blocks::OAK_SIGN(), Blocks::OAK_WALL_SIGN()));
+		self::register("oak_hanging_sign", new ItemBlockWallOrFloor(new IID(Ids::OAK_HANGING_SIGN), Blocks::OAK_CEILING_HANGING_SIGN(), Blocks::OAK_WALL_HANGING_SIGN()));
 		self::register("painting", new PaintingItem(new IID(Ids::PAINTING), "Painting"));
 		self::register("paper", new Item(new IID(Ids::PAPER), "Paper"));
 		self::register("phantom_membrane", new Item(new IID(Ids::PHANTOM_MEMBRANE), "Phantom Membrane"));
@@ -531,6 +549,7 @@ final class VanillaItems{
 		self::register("spider_eye", new SpiderEye(new IID(Ids::SPIDER_EYE), "Spider Eye"));
 		self::register("splash_potion", new SplashPotion(new IID(Ids::SPLASH_POTION), "Splash Potion"));
 		self::register("spruce_sign", new ItemBlockWallOrFloor(new IID(Ids::SPRUCE_SIGN), Blocks::SPRUCE_SIGN(), Blocks::SPRUCE_WALL_SIGN()));
+		self::register("spruce_hanging_sign", new ItemBlockWallOrFloor(new IID(Ids::SPRUCE_HANGING_SIGN), Blocks::SPRUCE_CEILING_HANGING_SIGN(), Blocks::SPRUCE_WALL_HANGING_SIGN()));
 		self::register("spyglass", new Spyglass(new IID(Ids::SPYGLASS), "Spyglass"));
 		self::register("steak", new Steak(new IID(Ids::STEAK), "Steak"));
 		self::register("stick", new Stick(new IID(Ids::STICK), "Stick"));
@@ -540,6 +559,7 @@ final class VanillaItems{
 		self::register("sweet_berries", new SweetBerries(new IID(Ids::SWEET_BERRIES), "Sweet Berries"));
 		self::register("totem", new Totem(new IID(Ids::TOTEM), "Totem of Undying"));
 		self::register("warped_sign", new ItemBlockWallOrFloor(new IID(Ids::WARPED_SIGN), Blocks::WARPED_SIGN(), Blocks::WARPED_WALL_SIGN()));
+		self::register("warped_hanging_sign", new ItemBlockWallOrFloor(new IID(Ids::WARPED_HANGING_SIGN), Blocks::WARPED_CEILING_HANGING_SIGN(), Blocks::WARPED_WALL_HANGING_SIGN()));
 		self::register("water_bucket", new LiquidBucket(new IID(Ids::WATER_BUCKET), "Water Bucket", Blocks::WATER()));
 		self::register("wheat", new Item(new IID(Ids::WHEAT), "Wheat"));
 		self::register("wheat_seeds", new WheatSeeds(new IID(Ids::WHEAT_SEEDS), "Wheat Seeds"));

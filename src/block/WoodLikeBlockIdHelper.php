@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\BlockIdentifier as BID;
 use pocketmine\block\BlockTypeIds as Ids;
+use pocketmine\block\tile\HangingSign as TileHangingSign;
 use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\utils\LeavesType;
 use pocketmine\block\utils\SaplingType;
@@ -223,6 +224,31 @@ final class WoodLikeBlockIdHelper{
 				];
 		}
 		throw new AssumptionFailedError("Switch should cover all wood types");
+	}
+
+	/**
+	 * @return BID[]|\Closure[]
+	 * @phpstan-return array{BID, BID, \Closure() : \pocketmine\item\Item}
+	 */
+	public static function getHangingSignInfo(WoodType $woodType) : array{
+		$make = fn(int $ceilingId, int $wallId, \Closure $getItem) => [
+			new BID($ceilingId, TileHangingSign::class),
+			new BID($wallId, TileHangingSign::class),
+			$getItem
+		];
+		return match($woodType){
+			WoodType::OAK() => $make(Ids::OAK_CEILING_HANGING_SIGN, Ids::OAK_WALL_HANGING_SIGN, fn() => VanillaItems::OAK_HANGING_SIGN()),
+			WoodType::SPRUCE() => $make(Ids::SPRUCE_CEILING_HANGING_SIGN, Ids::SPRUCE_WALL_HANGING_SIGN, fn() => VanillaItems::SPRUCE_HANGING_SIGN()),
+			WoodType::BIRCH() => $make(Ids::BIRCH_CEILING_HANGING_SIGN, Ids::BIRCH_WALL_HANGING_SIGN, fn() => VanillaItems::BIRCH_HANGING_SIGN()),
+			WoodType::JUNGLE() => $make(Ids::JUNGLE_CEILING_HANGING_SIGN, Ids::JUNGLE_WALL_HANGING_SIGN, fn() => VanillaItems::JUNGLE_HANGING_SIGN()),
+			WoodType::ACACIA() => $make(Ids::ACACIA_CEILING_HANGING_SIGN, Ids::ACACIA_WALL_HANGING_SIGN, fn() => VanillaItems::ACACIA_HANGING_SIGN()),
+			WoodType::DARK_OAK() => $make(Ids::DARK_OAK_CEILING_HANGING_SIGN, Ids::DARK_OAK_WALL_HANGING_SIGN, fn() => VanillaItems::DARK_OAK_HANGING_SIGN()),
+			WoodType::MANGROVE() => $make(Ids::MANGROVE_CEILING_HANGING_SIGN, Ids::MANGROVE_WALL_HANGING_SIGN, fn() => VanillaItems::MANGROVE_HANGING_SIGN()),
+			WoodType::CRIMSON() => $make(Ids::CRIMSON_CEILING_HANGING_SIGN, Ids::CRIMSON_WALL_HANGING_SIGN, fn() => VanillaItems::CRIMSON_HANGING_SIGN()),
+			WoodType::WARPED() => $make(Ids::WARPED_CEILING_HANGING_SIGN, Ids::WARPED_WALL_HANGING_SIGN, fn() => VanillaItems::WARPED_HANGING_SIGN()),
+			WoodType::CHERRY() => $make(Ids::CHERRY_CEILING_HANGING_SIGN, Ids::CHERRY_WALL_HANGING_SIGN, fn() => VanillaItems::CHERRY_HANGING_SIGN()),
+			default => throw new AssumptionFailedError("All wood types should be covered")
+		};
 	}
 
 	public static function getTrapdoorIdentifier(WoodType $treeType) : BlockIdentifier{

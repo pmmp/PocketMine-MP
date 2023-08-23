@@ -333,6 +333,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::ACACIA_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::ACACIA_BUTTON(), $in));
 		$this->map(Ids::ACACIA_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::ACACIA_DOOR(), $in));
 		$this->map(Ids::ACACIA_FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::ACACIA_FENCE_GATE(), $in));
+		$this->map(Ids::ACACIA_HANGING_SIGN, fn(Reader $in) => Helper::decodeHangingSign(fn() => Blocks::ACACIA_CEILING_HANGING_SIGN(), fn() => Blocks::ACACIA_WALL_HANGING_SIGN(), $in));
 		$this->map(Ids::ACACIA_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::ACACIA_PRESSURE_PLATE(), $in));
 		$this->map(Ids::ACACIA_STANDING_SIGN, fn(Reader $in) => Helper::decodeFloorSign(Blocks::ACACIA_SIGN(), $in));
 		$this->map(Ids::ACACIA_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::ACACIA_TRAPDOOR(), $in));
@@ -345,6 +346,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::BIRCH_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::BIRCH_BUTTON(), $in));
 		$this->map(Ids::BIRCH_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::BIRCH_DOOR(), $in));
 		$this->map(Ids::BIRCH_FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::BIRCH_FENCE_GATE(), $in));
+		$this->map(Ids::BIRCH_HANGING_SIGN, fn(Reader $in) => Helper::decodeHangingSign(fn() => Blocks::BIRCH_CEILING_HANGING_SIGN(), fn() => Blocks::BIRCH_WALL_HANGING_SIGN(), $in));
 		$this->map(Ids::BIRCH_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::BIRCH_PRESSURE_PLATE(), $in));
 		$this->map(Ids::BIRCH_STANDING_SIGN, fn(Reader $in) => Helper::decodeFloorSign(Blocks::BIRCH_SIGN(), $in));
 		$this->map(Ids::BIRCH_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::BIRCH_TRAPDOOR(), $in));
@@ -357,6 +359,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::CHERRY_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::CHERRY_BUTTON(), $in));
 		$this->map(Ids::CHERRY_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::CHERRY_DOOR(), $in));
 		$this->map(Ids::CHERRY_FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::CHERRY_FENCE_GATE(), $in));
+		$this->map(Ids::CHERRY_HANGING_SIGN, fn(Reader $in) => Helper::decodeHangingSign(fn() => Blocks::CHERRY_CEILING_HANGING_SIGN(), fn() => Blocks::CHERRY_WALL_HANGING_SIGN(), $in));
 		$this->map(Ids::CHERRY_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::CHERRY_PRESSURE_PLATE(), $in));
 		$this->map(Ids::CHERRY_STANDING_SIGN, fn(Reader $in) => Helper::decodeFloorSign(Blocks::CHERRY_SIGN(), $in));
 		$this->map(Ids::CHERRY_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::CHERRY_TRAPDOOR(), $in));
@@ -375,6 +378,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::CRIMSON_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::CRIMSON_BUTTON(), $in));
 		$this->map(Ids::CRIMSON_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::CRIMSON_DOOR(), $in));
 		$this->map(Ids::CRIMSON_FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::CRIMSON_FENCE_GATE(), $in));
+		$this->map(Ids::CRIMSON_HANGING_SIGN, fn(Reader $in) => Helper::decodeHangingSign(fn() => Blocks::CRIMSON_CEILING_HANGING_SIGN(), fn() => Blocks::CRIMSON_WALL_HANGING_SIGN(), $in));
 		$this->map(Ids::CRIMSON_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::CRIMSON_PRESSURE_PLATE(), $in));
 		$this->map(Ids::CRIMSON_STANDING_SIGN, fn(Reader $in) => Helper::decodeFloorSign(Blocks::CRIMSON_SIGN(), $in));
 		$this->map(Ids::CRIMSON_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::CRIMSON_TRAPDOOR(), $in));
@@ -391,6 +395,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::DARK_OAK_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::DARK_OAK_BUTTON(), $in));
 		$this->map(Ids::DARK_OAK_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::DARK_OAK_DOOR(), $in));
 		$this->map(Ids::DARK_OAK_FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::DARK_OAK_FENCE_GATE(), $in));
+		$this->map(Ids::DARK_OAK_HANGING_SIGN, fn(Reader $in) => Helper::decodeHangingSign(fn() => Blocks::DARK_OAK_CEILING_HANGING_SIGN(), fn() => Blocks::DARK_OAK_WALL_HANGING_SIGN(), $in));
 		$this->map(Ids::DARK_OAK_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::DARK_OAK_PRESSURE_PLATE(), $in));
 		$this->map(Ids::DARK_OAK_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::DARK_OAK_TRAPDOOR(), $in));
 		$this->mapLog(Ids::DARK_OAK_LOG, Ids::STRIPPED_DARK_OAK_LOG, fn() => Blocks::DARK_OAK_LOG());
@@ -401,6 +406,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::JUNGLE_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::JUNGLE_BUTTON(), $in));
 		$this->map(Ids::JUNGLE_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::JUNGLE_DOOR(), $in));
 		$this->map(Ids::JUNGLE_FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::JUNGLE_FENCE_GATE(), $in));
+		$this->map(Ids::JUNGLE_HANGING_SIGN, fn(Reader $in) => Helper::decodeHangingSign(fn() => Blocks::JUNGLE_CEILING_HANGING_SIGN(), fn() => Blocks::JUNGLE_WALL_HANGING_SIGN(), $in));
 		$this->map(Ids::JUNGLE_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::JUNGLE_PRESSURE_PLATE(), $in));
 		$this->map(Ids::JUNGLE_STANDING_SIGN, fn(Reader $in) => Helper::decodeFloorSign(Blocks::JUNGLE_SIGN(), $in));
 		$this->map(Ids::JUNGLE_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::JUNGLE_TRAPDOOR(), $in));
@@ -413,6 +419,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::MANGROVE_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::MANGROVE_BUTTON(), $in));
 		$this->map(Ids::MANGROVE_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::MANGROVE_DOOR(), $in));
 		$this->map(Ids::MANGROVE_FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::MANGROVE_FENCE_GATE(), $in));
+		$this->map(Ids::MANGROVE_HANGING_SIGN, fn(Reader $in) => Helper::decodeHangingSign(fn() => Blocks::MANGROVE_CEILING_HANGING_SIGN(), fn() => Blocks::MANGROVE_WALL_HANGING_SIGN(), $in));
 		$this->map(Ids::MANGROVE_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::MANGROVE_PRESSURE_PLATE(), $in));
 		$this->map(Ids::MANGROVE_STANDING_SIGN, fn(Reader $in) => Helper::decodeFloorSign(Blocks::MANGROVE_SIGN(), $in));
 		$this->map(Ids::MANGROVE_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::MANGROVE_TRAPDOOR(), $in));
@@ -432,6 +439,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::WOODEN_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::OAK_BUTTON(), $in));
 		$this->map(Ids::WOODEN_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::OAK_DOOR(), $in));
 		$this->map(Ids::FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::OAK_FENCE_GATE(), $in));
+		$this->map(Ids::OAK_HANGING_SIGN, fn(Reader $in) => Helper::decodeHangingSign(fn() => Blocks::OAK_CEILING_HANGING_SIGN(), fn() => Blocks::OAK_WALL_HANGING_SIGN(), $in));
 		$this->map(Ids::WOODEN_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::OAK_PRESSURE_PLATE(), $in));
 		$this->map(Ids::STANDING_SIGN, fn(Reader $in) => Helper::decodeFloorSign(Blocks::OAK_SIGN(), $in));
 		$this->map(Ids::TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::OAK_TRAPDOOR(), $in));
@@ -444,6 +452,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::SPRUCE_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::SPRUCE_BUTTON(), $in));
 		$this->map(Ids::SPRUCE_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::SPRUCE_DOOR(), $in));
 		$this->map(Ids::SPRUCE_FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::SPRUCE_FENCE_GATE(), $in));
+		$this->map(Ids::SPRUCE_HANGING_SIGN, fn(Reader $in) => Helper::decodeHangingSign(fn() => Blocks::SPRUCE_CEILING_HANGING_SIGN(), fn() => Blocks::SPRUCE_WALL_HANGING_SIGN(), $in));
 		$this->map(Ids::SPRUCE_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::SPRUCE_PRESSURE_PLATE(), $in));
 		$this->map(Ids::SPRUCE_STANDING_SIGN, fn(Reader $in) => Helper::decodeFloorSign(Blocks::SPRUCE_SIGN(), $in));
 		$this->map(Ids::SPRUCE_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::SPRUCE_TRAPDOOR(), $in));
@@ -456,6 +465,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::WARPED_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::WARPED_BUTTON(), $in));
 		$this->map(Ids::WARPED_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::WARPED_DOOR(), $in));
 		$this->map(Ids::WARPED_FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::WARPED_FENCE_GATE(), $in));
+		$this->map(Ids::WARPED_HANGING_SIGN, fn(Reader $in) => Helper::decodeHangingSign(fn() => Blocks::WARPED_CEILING_HANGING_SIGN(), fn() => Blocks::WARPED_WALL_HANGING_SIGN(), $in));
 		$this->map(Ids::WARPED_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::WARPED_PRESSURE_PLATE(), $in));
 		$this->map(Ids::WARPED_STANDING_SIGN, fn(Reader $in) => Helper::decodeFloorSign(Blocks::WARPED_SIGN(), $in));
 		$this->map(Ids::WARPED_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::WARPED_TRAPDOOR(), $in));

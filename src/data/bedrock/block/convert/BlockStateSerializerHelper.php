@@ -25,6 +25,7 @@ namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\Button;
 use pocketmine\block\Candle;
+use pocketmine\block\CeilingHangingSign;
 use pocketmine\block\ChemistryTable;
 use pocketmine\block\Crops;
 use pocketmine\block\Door;
@@ -46,6 +47,7 @@ use pocketmine\block\Trapdoor;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\Wall;
+use pocketmine\block\WallHangingSign;
 use pocketmine\block\WallSign;
 use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockStateNames;
@@ -133,6 +135,22 @@ final class BlockStateSerializerHelper{
 	public static function encodeFloorSign(FloorSign $block, BlockStateWriter $out) : BlockStateWriter{
 		return $out
 			->writeInt(BlockStateNames::GROUND_SIGN_DIRECTION, $block->getRotation());
+	}
+
+	public static function encodeCeilingHangingSign(CeilingHangingSign $block, BlockStateWriter $out) : BlockStateWriter{
+		return $out
+			->writeBool(StateNames::ATTACHED_BIT, $block->isCenterAttached())
+			->writeInt(BlockStateNames::GROUND_SIGN_DIRECTION, $block->getRotation())
+			->writeBool(StateNames::HANGING, true)
+			->writeHorizontalFacing(Facing::NORTH); //unused
+	}
+
+	public static function encodeWallHangingSign(WallHangingSign $block, BlockStateWriter $out) : BlockStateWriter{
+		return $out
+			->writeBool(StateNames::ATTACHED_BIT, false) //unused
+			->writeInt(BlockStateNames::GROUND_SIGN_DIRECTION, 0) //unused
+			->writeBool(StateNames::HANGING, false)
+			->writeHorizontalFacing($block->getFacing());
 	}
 
 	public static function encodeFurnace(Furnace $block, string $unlitId, string $litId) : BlockStateWriter{

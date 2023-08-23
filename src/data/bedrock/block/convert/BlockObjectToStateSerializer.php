@@ -47,6 +47,7 @@ use pocketmine\block\Carpet;
 use pocketmine\block\Carrot;
 use pocketmine\block\CarvedPumpkin;
 use pocketmine\block\CaveVines;
+use pocketmine\block\CeilingHangingSign;
 use pocketmine\block\Chain;
 use pocketmine\block\ChemistryTable;
 use pocketmine\block\Chest;
@@ -151,6 +152,7 @@ use pocketmine\block\Vine;
 use pocketmine\block\Wall;
 use pocketmine\block\WallBanner;
 use pocketmine\block\WallCoralFan;
+use pocketmine\block\WallHangingSign;
 use pocketmine\block\WallSign;
 use pocketmine\block\Water;
 use pocketmine\block\WeightedPressurePlateHeavy;
@@ -440,23 +442,27 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 
 	private function registerFlatWoodBlockSerializers() : void{
 		$this->map(Blocks::ACACIA_BUTTON(), fn(WoodenButton $block) => Helper::encodeButton($block, new Writer(Ids::ACACIA_BUTTON)));
+		$this->map(Blocks::ACACIA_CEILING_HANGING_SIGN(), fn(CeilingHangingSign $block) => Helper::encodeCeilingHangingSign($block, new Writer(Ids::ACACIA_HANGING_SIGN)));
 		$this->map(Blocks::ACACIA_DOOR(), fn(WoodenDoor $block) => Helper::encodeDoor($block, new Writer(Ids::ACACIA_DOOR)));
 		$this->map(Blocks::ACACIA_FENCE_GATE(), fn(FenceGate $block) => Helper::encodeFenceGate($block, new Writer(Ids::ACACIA_FENCE_GATE)));
 		$this->map(Blocks::ACACIA_PRESSURE_PLATE(), fn(WoodenPressurePlate $block) => Helper::encodeSimplePressurePlate($block, new Writer(Ids::ACACIA_PRESSURE_PLATE)));
 		$this->map(Blocks::ACACIA_SIGN(), fn(FloorSign $block) => Helper::encodeFloorSign($block, new Writer(Ids::ACACIA_STANDING_SIGN)));
 		$this->map(Blocks::ACACIA_STAIRS(), fn(WoodenStairs $block) => Helper::encodeStairs($block, new Writer(Ids::ACACIA_STAIRS)));
 		$this->map(Blocks::ACACIA_TRAPDOOR(), fn(WoodenTrapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::ACACIA_TRAPDOOR)));
+		$this->map(Blocks::ACACIA_WALL_HANGING_SIGN(), fn(WallHangingSign $block) => Helper::encodeWallHangingSign($block, new Writer(Ids::ACACIA_HANGING_SIGN)));
 		$this->map(Blocks::ACACIA_WALL_SIGN(), fn(WallSign $block) => Helper::encodeWallSign($block, new Writer(Ids::ACACIA_WALL_SIGN)));
 		$this->mapLog(Blocks::ACACIA_LOG(), Ids::ACACIA_LOG, Ids::STRIPPED_ACACIA_LOG);
 		$this->mapSimple(Blocks::ACACIA_FENCE(), Ids::ACACIA_FENCE);
 		//wood, planks and slabs still use the old way of storing wood type
 
 		$this->map(Blocks::BIRCH_BUTTON(), fn(WoodenButton $block) => Helper::encodeButton($block, new Writer(Ids::BIRCH_BUTTON)));
+		$this->map(Blocks::BIRCH_CEILING_HANGING_SIGN(), fn(CeilingHangingSign $block) => Helper::encodeCeilingHangingSign($block, new Writer(Ids::BIRCH_HANGING_SIGN)));
 		$this->map(Blocks::BIRCH_DOOR(), fn(WoodenDoor $block) => Helper::encodeDoor($block, new Writer(Ids::BIRCH_DOOR)));
 		$this->map(Blocks::BIRCH_FENCE_GATE(), fn(FenceGate $block) => Helper::encodeFenceGate($block, new Writer(Ids::BIRCH_FENCE_GATE)));
 		$this->map(Blocks::BIRCH_PRESSURE_PLATE(), fn(WoodenPressurePlate $block) => Helper::encodeSimplePressurePlate($block, new Writer(Ids::BIRCH_PRESSURE_PLATE)));
 		$this->map(Blocks::BIRCH_SIGN(), fn(FloorSign $block) => Helper::encodeFloorSign($block, new Writer(Ids::BIRCH_STANDING_SIGN)));
 		$this->map(Blocks::BIRCH_TRAPDOOR(), fn(WoodenTrapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::BIRCH_TRAPDOOR)));
+		$this->map(Blocks::BIRCH_WALL_HANGING_SIGN(), fn(WallHangingSign $block) => Helper::encodeWallHangingSign($block, new Writer(Ids::BIRCH_HANGING_SIGN)));
 		$this->map(Blocks::BIRCH_WALL_SIGN(), fn(WallSign $block) => Helper::encodeWallSign($block, new Writer(Ids::BIRCH_WALL_SIGN)));
 		$this->mapLog(Blocks::BIRCH_LOG(), Ids::BIRCH_LOG, Ids::STRIPPED_BIRCH_LOG);
 		$this->mapSimple(Blocks::BIRCH_FENCE(), Ids::BIRCH_FENCE);
@@ -464,12 +470,14 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		//wood, planks and slabs still use the old way of storing wood type
 
 		$this->map(Blocks::CHERRY_BUTTON(), fn(Button $block) => Helper::encodeButton($block, new Writer(Ids::CHERRY_BUTTON)));
+		$this->map(Blocks::CHERRY_CEILING_HANGING_SIGN(), fn(CeilingHangingSign $block) => Helper::encodeCeilingHangingSign($block, new Writer(Ids::CHERRY_HANGING_SIGN)));
 		$this->map(Blocks::CHERRY_DOOR(), fn(Door $block) => Helper::encodeDoor($block, new Writer(Ids::CHERRY_DOOR)));
 		$this->map(Blocks::CHERRY_FENCE_GATE(), fn(FenceGate $block) => Helper::encodeFenceGate($block, new Writer(Ids::CHERRY_FENCE_GATE)));
 		$this->map(Blocks::CHERRY_LOG(), fn(Wood $block) => Helper::encodeLog($block, Ids::CHERRY_LOG, Ids::STRIPPED_CHERRY_LOG));
 		$this->map(Blocks::CHERRY_PRESSURE_PLATE(), fn(SimplePressurePlate $block) => Helper::encodeSimplePressurePlate($block, new Writer(Ids::CHERRY_PRESSURE_PLATE)));
 		$this->map(Blocks::CHERRY_SIGN(), fn(FloorSign $block) => Helper::encodeFloorSign($block, new Writer(Ids::CHERRY_STANDING_SIGN)));
 		$this->map(Blocks::CHERRY_TRAPDOOR(), fn(Trapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::CHERRY_TRAPDOOR)));
+		$this->map(Blocks::CHERRY_WALL_HANGING_SIGN(), fn(WallHangingSign $block) => Helper::encodeWallHangingSign($block, new Writer(Ids::CHERRY_HANGING_SIGN)));
 		$this->map(Blocks::CHERRY_WALL_SIGN(), fn(WallSign $block) => Helper::encodeWallSign($block, new Writer(Ids::CHERRY_WALL_SIGN)));
 		$this->mapSimple(Blocks::CHERRY_FENCE(), Ids::CHERRY_FENCE);
 		$this->mapSimple(Blocks::CHERRY_PLANKS(), Ids::CHERRY_PLANKS);
@@ -488,6 +496,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 
 		$this->map(Blocks::CRIMSON_BUTTON(), fn(Button $block) => Helper::encodeButton($block, new Writer(Ids::CRIMSON_BUTTON)));
+		$this->map(Blocks::CRIMSON_CEILING_HANGING_SIGN(), fn(CeilingHangingSign $block) => Helper::encodeCeilingHangingSign($block, new Writer(Ids::CRIMSON_HANGING_SIGN)));
 		$this->map(Blocks::CRIMSON_DOOR(), fn(Door $block) => Helper::encodeDoor($block, new Writer(Ids::CRIMSON_DOOR)));
 		$this->map(Blocks::CRIMSON_FENCE_GATE(), fn(FenceGate $block) => Helper::encodeFenceGate($block, new Writer(Ids::CRIMSON_FENCE_GATE)));
 		$this->map(Blocks::CRIMSON_HYPHAE(), fn(Wood $block) => Helper::encodeLog($block, Ids::CRIMSON_HYPHAE, Ids::STRIPPED_CRIMSON_HYPHAE));
@@ -495,6 +504,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::CRIMSON_SIGN(), fn(FloorSign $block) => Helper::encodeFloorSign($block, new Writer(Ids::CRIMSON_STANDING_SIGN)));
 		$this->map(Blocks::CRIMSON_STEM(), fn(Wood $block) => Helper::encodeLog($block, Ids::CRIMSON_STEM, Ids::STRIPPED_CRIMSON_STEM));
 		$this->map(Blocks::CRIMSON_TRAPDOOR(), fn(Trapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::CRIMSON_TRAPDOOR)));
+		$this->map(Blocks::CRIMSON_WALL_HANGING_SIGN(), fn(WallHangingSign $block) => Helper::encodeWallHangingSign($block, new Writer(Ids::CRIMSON_HANGING_SIGN)));
 		$this->map(Blocks::CRIMSON_WALL_SIGN(), fn(WallSign $block) => Helper::encodeWallSign($block, new Writer(Ids::CRIMSON_WALL_SIGN)));
 		$this->mapSimple(Blocks::CRIMSON_FENCE(), Ids::CRIMSON_FENCE);
 		$this->mapSimple(Blocks::CRIMSON_PLANKS(), Ids::CRIMSON_PLANKS);
@@ -502,11 +512,13 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapStairs(Blocks::CRIMSON_STAIRS(), Ids::CRIMSON_STAIRS);
 
 		$this->map(Blocks::DARK_OAK_BUTTON(), fn(WoodenButton $block) => Helper::encodeButton($block, new Writer(Ids::DARK_OAK_BUTTON)));
+		$this->map(Blocks::DARK_OAK_CEILING_HANGING_SIGN(), fn(CeilingHangingSign $block) => Helper::encodeCeilingHangingSign($block, new Writer(Ids::DARK_OAK_HANGING_SIGN)));
 		$this->map(Blocks::DARK_OAK_DOOR(), fn(WoodenDoor $block) => Helper::encodeDoor($block, new Writer(Ids::DARK_OAK_DOOR)));
 		$this->map(Blocks::DARK_OAK_FENCE_GATE(), fn(FenceGate $block) => Helper::encodeFenceGate($block, new Writer(Ids::DARK_OAK_FENCE_GATE)));
 		$this->map(Blocks::DARK_OAK_PRESSURE_PLATE(), fn(WoodenPressurePlate $block) => Helper::encodeSimplePressurePlate($block, new Writer(Ids::DARK_OAK_PRESSURE_PLATE)));
 		$this->map(Blocks::DARK_OAK_SIGN(), fn(FloorSign $block) => Helper::encodeFloorSign($block, new Writer(Ids::DARKOAK_STANDING_SIGN)));
 		$this->map(Blocks::DARK_OAK_TRAPDOOR(), fn(WoodenTrapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::DARK_OAK_TRAPDOOR)));
+		$this->map(Blocks::DARK_OAK_WALL_HANGING_SIGN(), fn(WallHangingSign $block) => Helper::encodeWallHangingSign($block, new Writer(Ids::DARK_OAK_HANGING_SIGN)));
 		$this->map(Blocks::DARK_OAK_WALL_SIGN(), fn(WallSign $block) => Helper::encodeWallSign($block, new Writer(Ids::DARKOAK_WALL_SIGN)));
 		$this->mapLog(Blocks::DARK_OAK_LOG(), Ids::DARK_OAK_LOG, Ids::STRIPPED_DARK_OAK_LOG);
 		$this->mapSimple(Blocks::DARK_OAK_FENCE(), Ids::DARK_OAK_FENCE);
@@ -514,11 +526,13 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		//wood, planks and slabs still use the old way of storing wood type
 
 		$this->map(Blocks::JUNGLE_BUTTON(), fn(WoodenButton $block) => Helper::encodeButton($block, new Writer(Ids::JUNGLE_BUTTON)));
+		$this->map(Blocks::JUNGLE_CEILING_HANGING_SIGN(), fn(CeilingHangingSign $block) => Helper::encodeCeilingHangingSign($block, new Writer(Ids::JUNGLE_HANGING_SIGN)));
 		$this->map(Blocks::JUNGLE_DOOR(), fn(WoodenDoor $block) => Helper::encodeDoor($block, new Writer(Ids::JUNGLE_DOOR)));
 		$this->map(Blocks::JUNGLE_FENCE_GATE(), fn(FenceGate $block) => Helper::encodeFenceGate($block, new Writer(Ids::JUNGLE_FENCE_GATE)));
 		$this->map(Blocks::JUNGLE_PRESSURE_PLATE(), fn(WoodenPressurePlate $block) => Helper::encodeSimplePressurePlate($block, new Writer(Ids::JUNGLE_PRESSURE_PLATE)));
 		$this->map(Blocks::JUNGLE_SIGN(), fn(FloorSign $block) => Helper::encodeFloorSign($block, new Writer(Ids::JUNGLE_STANDING_SIGN)));
 		$this->map(Blocks::JUNGLE_TRAPDOOR(), fn(WoodenTrapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::JUNGLE_TRAPDOOR)));
+		$this->map(Blocks::JUNGLE_WALL_HANGING_SIGN(), fn(WallHangingSign $block) => Helper::encodeWallHangingSign($block, new Writer(Ids::JUNGLE_HANGING_SIGN)));
 		$this->map(Blocks::JUNGLE_WALL_SIGN(), fn(WallSign $block) => Helper::encodeWallSign($block, new Writer(Ids::JUNGLE_WALL_SIGN)));
 		$this->mapLog(Blocks::JUNGLE_LOG(), Ids::JUNGLE_LOG, Ids::STRIPPED_JUNGLE_LOG);
 		$this->mapSimple(Blocks::JUNGLE_FENCE(), Ids::JUNGLE_FENCE);
@@ -526,12 +540,14 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		//wood, planks and slabs still use the old way of storing wood type
 
 		$this->map(Blocks::MANGROVE_BUTTON(), fn(Button $block) => Helper::encodeButton($block, new Writer(Ids::MANGROVE_BUTTON)));
+		$this->map(Blocks::MANGROVE_CEILING_HANGING_SIGN(), fn(CeilingHangingSign $block) => Helper::encodeCeilingHangingSign($block, new Writer(Ids::MANGROVE_HANGING_SIGN)));
 		$this->map(Blocks::MANGROVE_DOOR(), fn(Door $block) => Helper::encodeDoor($block, new Writer(Ids::MANGROVE_DOOR)));
 		$this->map(Blocks::MANGROVE_FENCE_GATE(), fn(FenceGate $block) => Helper::encodeFenceGate($block, new Writer(Ids::MANGROVE_FENCE_GATE)));
 		$this->map(Blocks::MANGROVE_LOG(), fn(Wood $block) => Helper::encodeLog($block, Ids::MANGROVE_LOG, Ids::STRIPPED_MANGROVE_LOG));
 		$this->map(Blocks::MANGROVE_PRESSURE_PLATE(), fn(SimplePressurePlate $block) => Helper::encodeSimplePressurePlate($block, new Writer(Ids::MANGROVE_PRESSURE_PLATE)));
 		$this->map(Blocks::MANGROVE_SIGN(), fn(FloorSign $block) => Helper::encodeFloorSign($block, new Writer(Ids::MANGROVE_STANDING_SIGN)));
 		$this->map(Blocks::MANGROVE_TRAPDOOR(), fn(Trapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::MANGROVE_TRAPDOOR)));
+		$this->map(Blocks::MANGROVE_WALL_HANGING_SIGN(), fn(WallHangingSign $block) => Helper::encodeWallHangingSign($block, new Writer(Ids::MANGROVE_HANGING_SIGN)));
 		$this->map(Blocks::MANGROVE_WALL_SIGN(), fn(WallSign $block) => Helper::encodeWallSign($block, new Writer(Ids::MANGROVE_WALL_SIGN)));
 		$this->mapSimple(Blocks::MANGROVE_FENCE(), Ids::MANGROVE_FENCE);
 		$this->mapSimple(Blocks::MANGROVE_PLANKS(), Ids::MANGROVE_PLANKS);
@@ -550,11 +566,13 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 
 		$this->map(Blocks::OAK_BUTTON(), fn(WoodenButton $block) => Helper::encodeButton($block, new Writer(Ids::WOODEN_BUTTON)));
+		$this->map(Blocks::OAK_CEILING_HANGING_SIGN(), fn(CeilingHangingSign $block) => Helper::encodeCeilingHangingSign($block, new Writer(Ids::OAK_HANGING_SIGN)));
 		$this->map(Blocks::OAK_DOOR(), fn(WoodenDoor $block) => Helper::encodeDoor($block, new Writer(Ids::WOODEN_DOOR)));
 		$this->map(Blocks::OAK_FENCE_GATE(), fn(FenceGate $block) => Helper::encodeFenceGate($block, new Writer(Ids::FENCE_GATE)));
 		$this->map(Blocks::OAK_PRESSURE_PLATE(), fn(WoodenPressurePlate $block) => Helper::encodeSimplePressurePlate($block, new Writer(Ids::WOODEN_PRESSURE_PLATE)));
 		$this->map(Blocks::OAK_SIGN(), fn(FloorSign $block) => Helper::encodeFloorSign($block, new Writer(Ids::STANDING_SIGN)));
 		$this->map(Blocks::OAK_TRAPDOOR(), fn(WoodenTrapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::TRAPDOOR)));
+		$this->map(Blocks::OAK_WALL_HANGING_SIGN(), fn(WallHangingSign $block) => Helper::encodeWallHangingSign($block, new Writer(Ids::OAK_HANGING_SIGN)));
 		$this->map(Blocks::OAK_WALL_SIGN(), fn(WallSign $block) => Helper::encodeWallSign($block, new Writer(Ids::WALL_SIGN)));
 		$this->mapLog(Blocks::OAK_LOG(), Ids::OAK_LOG, Ids::STRIPPED_OAK_LOG);
 		$this->mapSimple(Blocks::OAK_FENCE(), Ids::OAK_FENCE);
@@ -564,16 +582,19 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::SPRUCE_FENCE(), Ids::SPRUCE_FENCE);
 		$this->mapLog(Blocks::SPRUCE_LOG(), Ids::SPRUCE_LOG, Ids::STRIPPED_SPRUCE_LOG);
 		$this->map(Blocks::SPRUCE_BUTTON(), fn(WoodenButton $block) => Helper::encodeButton($block, new Writer(Ids::SPRUCE_BUTTON)));
+		$this->map(Blocks::SPRUCE_CEILING_HANGING_SIGN(), fn(CeilingHangingSign $block) => Helper::encodeCeilingHangingSign($block, new Writer(Ids::SPRUCE_HANGING_SIGN)));
 		$this->map(Blocks::SPRUCE_DOOR(), fn(WoodenDoor $block) => Helper::encodeDoor($block, new Writer(Ids::SPRUCE_DOOR)));
 		$this->map(Blocks::SPRUCE_FENCE_GATE(), fn(FenceGate $block) => Helper::encodeFenceGate($block, new Writer(Ids::SPRUCE_FENCE_GATE)));
 		$this->map(Blocks::SPRUCE_PRESSURE_PLATE(), fn(WoodenPressurePlate $block) => Helper::encodeSimplePressurePlate($block, new Writer(Ids::SPRUCE_PRESSURE_PLATE)));
 		$this->map(Blocks::SPRUCE_SIGN(), fn(FloorSign $block) => Helper::encodeFloorSign($block, new Writer(Ids::SPRUCE_STANDING_SIGN)));
 		$this->mapStairs(Blocks::SPRUCE_STAIRS(), Ids::SPRUCE_STAIRS);
 		$this->map(Blocks::SPRUCE_TRAPDOOR(), fn(WoodenTrapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::SPRUCE_TRAPDOOR)));
+		$this->map(Blocks::SPRUCE_WALL_HANGING_SIGN(), fn(WallHangingSign $block) => Helper::encodeWallHangingSign($block, new Writer(Ids::SPRUCE_HANGING_SIGN)));
 		$this->map(Blocks::SPRUCE_WALL_SIGN(), fn(WallSign $block) => Helper::encodeWallSign($block, new Writer(Ids::SPRUCE_WALL_SIGN)));
 		//wood, planks and slabs still use the old way of storing wood type
 
 		$this->map(Blocks::WARPED_BUTTON(), fn(Button $block) => Helper::encodeButton($block, new Writer(Ids::WARPED_BUTTON)));
+		$this->map(Blocks::WARPED_CEILING_HANGING_SIGN(), fn(CeilingHangingSign $block) => Helper::encodeCeilingHangingSign($block, new Writer(Ids::WARPED_HANGING_SIGN)));
 		$this->map(Blocks::WARPED_DOOR(), fn(Door $block) => Helper::encodeDoor($block, new Writer(Ids::WARPED_DOOR)));
 		$this->map(Blocks::WARPED_FENCE_GATE(), fn(FenceGate $block) => Helper::encodeFenceGate($block, new Writer(Ids::WARPED_FENCE_GATE)));
 		$this->map(Blocks::WARPED_HYPHAE(), fn(Wood $block) => Helper::encodeLog($block, Ids::WARPED_HYPHAE, Ids::STRIPPED_WARPED_HYPHAE));
@@ -581,6 +602,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::WARPED_SIGN(), fn(FloorSign $block) => Helper::encodeFloorSign($block, new Writer(Ids::WARPED_STANDING_SIGN)));
 		$this->map(Blocks::WARPED_STEM(), fn(Wood $block) => Helper::encodeLog($block, Ids::WARPED_STEM, Ids::STRIPPED_WARPED_STEM));
 		$this->map(Blocks::WARPED_TRAPDOOR(), fn(Trapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::WARPED_TRAPDOOR)));
+		$this->map(Blocks::WARPED_WALL_HANGING_SIGN(), fn(WallHangingSign $block) => Helper::encodeWallHangingSign($block, new Writer(Ids::WARPED_HANGING_SIGN)));
 		$this->map(Blocks::WARPED_WALL_SIGN(), fn(WallSign $block) => Helper::encodeWallSign($block, new Writer(Ids::WARPED_WALL_SIGN)));
 		$this->mapSimple(Blocks::WARPED_FENCE(), Ids::WARPED_FENCE);
 		$this->mapSimple(Blocks::WARPED_PLANKS(), Ids::WARPED_PLANKS);

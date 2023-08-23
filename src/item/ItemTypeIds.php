@@ -304,8 +304,18 @@ final class ItemTypeIds{
 	public const GLOW_BERRIES = 20265;
 	public const CHERRY_SIGN = 20266;
 	public const ENCHANTED_BOOK = 20267;
+	public const ACACIA_HANGING_SIGN = 20268;
+	public const BIRCH_HANGING_SIGN = 20269;
+	public const CHERRY_HANGING_SIGN = 20270;
+	public const CRIMSON_HANGING_SIGN = 20271;
+	public const DARK_OAK_HANGING_SIGN = 20272;
+	public const JUNGLE_HANGING_SIGN = 20273;
+	public const MANGROVE_HANGING_SIGN = 20274;
+	public const OAK_HANGING_SIGN = 20275;
+	public const SPRUCE_HANGING_SIGN = 20276;
+	public const WARPED_HANGING_SIGN = 20277;
 
-	public const FIRST_UNUSED_ITEM_ID = 20268;
+	public const FIRST_UNUSED_ITEM_ID = 20278;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 
