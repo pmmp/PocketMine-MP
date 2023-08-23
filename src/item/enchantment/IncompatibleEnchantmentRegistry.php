@@ -46,7 +46,7 @@ final class IncompatibleEnchantmentRegistry{
 	private function __construct(){
 		$this->register(Groups::PROTECTION, [Enchantments::PROTECTION(), Enchantments::FIRE_PROTECTION(), Enchantments::BLAST_PROTECTION(), Enchantments::PROJECTILE_PROTECTION()]);
 		$this->register(Groups::BOW_INFINITE, [Enchantments::INFINITY(), Enchantments::MENDING()]);
-		$this->register(Groups::DIG_DROP, [Enchantments::FORTUNE(), Enchantments::SILK_TOUCH()]);
+		$this->register(Groups::BLOCK_DROPS, [Enchantments::FORTUNE(), Enchantments::SILK_TOUCH()]);
 	}
 
 	/**
