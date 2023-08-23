@@ -25,6 +25,7 @@ namespace pocketmine\thread;
 
 use pmmp\thread\ThreadSafe;
 use pmmp\thread\ThreadSafeArray;
+use ReflectionClass;
 use function class_exists;
 use function count;
 use function explode;
@@ -78,6 +79,7 @@ class ThreadSafeClassLoader extends ThreadSafe{
 				$this->appendOrPrependLookupEntry($this->fallbackLookup, $path, $prepend);
 			});
 		}else{
+			$count = $this->psr4Lookup->count();
 			$namespacePrefix = trim($namespacePrefix, '\\') . '\\';
 			$this->psr4Lookup->synchronized(function() use ($namespacePrefix, $path, $prepend) : void{
 				$list = $this->psr4Lookup[$namespacePrefix] ?? null;
@@ -86,6 +88,11 @@ class ThreadSafeClassLoader extends ThreadSafe{
 				}
 				$this->appendOrPrependLookupEntry($list, $path, $prepend);
 			});
+			if($this->psr4Lookup->count() <= $count) {
+				$this->fallbackLookup->synchronized(function() use ($path, $prepend) : void{
+					$this->appendOrPrependLookupEntry($this->fallbackLookup, $path, $prepend);
+				});
+			}
 		}
 	}
 
@@ -135,7 +142,7 @@ class ThreadSafeClassLoader extends ThreadSafe{
 				return false;
 			}
 
-			if(method_exists($name, "onClassLoaded") && (new \ReflectionClass($name))->getMethod("onClassLoaded")->isStatic()){
+			if(method_exists($name, "onClassLoaded") && (new ReflectionClass($name))->getMethod("onClassLoaded")->isStatic()){
 				$name::onClassLoaded();
 			}
 
