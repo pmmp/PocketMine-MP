@@ -43,6 +43,10 @@ use function round;
 final class EnchantmentHelper{
 	private const MAX_BOOKSHELF_COUNT = 15;
 
+	private function __construct(){
+		//NOOP
+	}
+
 	/**
 	 * @param EnchantmentInstance[] $enchantments
 	 */
