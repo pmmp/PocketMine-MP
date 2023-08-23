@@ -25,7 +25,6 @@ namespace pocketmine\event\block;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
-use pocketmine\event\Cancellable;
 
 /**
  * Called whenever the list of entities on a pressure plate changes.
