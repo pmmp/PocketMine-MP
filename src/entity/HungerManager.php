@@ -133,14 +133,18 @@ class HungerManager{
 		if(!$this->enabled){
 			return 0;
 		}
-		$ev = new PlayerExhaustEvent($this->entity, $amount, $cause);
-		$ev->call();
-		if($ev->isCancelled()){
-			return 0.0;
+		$evAmount = $amount;
+		if(PlayerExhaustEvent::hasHandlers()){
+			$ev = new PlayerExhaustEvent($this->entity, $amount, $cause);
+			$ev->call();
+			if($ev->isCancelled()){
+				return 0.0;
+			}
+			$evAmount = $ev->getAmount();
 		}
 
 		$exhaustion = $this->getExhaustion();
-		$exhaustion += $ev->getAmount();
+		$exhaustion += $evAmount;
 
 		while($exhaustion >= 4.0){
 			$exhaustion -= 4.0;
@@ -159,7 +163,7 @@ class HungerManager{
 		}
 		$this->setExhaustion($exhaustion);
 
-		return $ev->getAmount();
+		return $evAmount;
 	}
 
 	public function getFoodTickTimer() : int{

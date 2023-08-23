@@ -1330,18 +1330,20 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$deltaAngle = abs($this->lastLocation->yaw - $to->yaw) + abs($this->lastLocation->pitch - $to->pitch);
 
 		if($delta > 0.0001 || $deltaAngle > 1.0){
-			$ev = new PlayerMoveEvent($this, $from, $to);
+			if(PlayerMoveEvent::hasHandlers()){
+				$ev = new PlayerMoveEvent($this, $from, $to);
 
-			$ev->call();
+				$ev->call();
 
-			if($ev->isCancelled()){
-				$this->revertMovement($from);
-				return;
-			}
+				if($ev->isCancelled()){
+					$this->revertMovement($from);
+					return;
+				}
 
-			if($to->distanceSquared($ev->getTo()) > 0.01){ //If plugins modify the destination
-				$this->teleport($ev->getTo());
-				return;
+				if($to->distanceSquared($ev->getTo()) > 0.01){ //If plugins modify the destination
+					$this->teleport($ev->getTo());
+					return;
+				}
 			}
 
 			$this->lastLocation = $to;
