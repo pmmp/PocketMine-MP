@@ -50,11 +50,11 @@ use pocketmine\utils\WaitGroup;
  * After each task is completed, it's essential to call the `done` method of the WaitGroup
  * to signal its completion and allow the WaitGroup to determine when to proceed.
  */
-  class PlayerCreatedEvent extends PlayerEvent{
-	 private WaitGroup $waitGroup;
+class PlayerCreatedEvent extends PlayerEvent{
+	private WaitGroup $waitGroup;
 
 	public function __construct(
-		 Player $player
+		Player $player
 	){
 		$this->player = $player;
 		$this->waitGroup = new WaitGroup();
