@@ -694,16 +694,19 @@ class World implements ChunkManager{
 	 */
 	public function addSound(Vector3 $pos, Sound $sound, ?array $players = null) : void{
 		$players ??= $this->getViewersForPosition($pos);
-		$ev = new WorldSoundEvent($this, $sound, $pos, $players);
 
-		$ev->call();
+		if(WorldSoundEvent::hasHandlers()){
+			$ev = new WorldSoundEvent($this, $sound, $pos, $players);
+			$ev->call();
+			if($ev->isCancelled()){
+				return;
+			}
 
-		if($ev->isCancelled()){
-			return;
+			$sound = $ev->getSound();
+			$players = $ev->getRecipients();
 		}
 
-		$pk = $ev->getSound()->encode($pos);
-		$players = $ev->getRecipients();
+		$pk = $sound->encode($pos);
 		if(count($pk) > 0){
 			if($players === $this->getViewersForPosition($pos)){
 				foreach($pk as $e){
@@ -720,23 +723,26 @@ class World implements ChunkManager{
 	 */
 	public function addParticle(Vector3 $pos, Particle $particle, ?array $players = null) : void{
 		$players ??= $this->getViewersForPosition($pos);
-		$ev = new WorldParticleEvent($this, $particle, $pos, $players);
 
-		$ev->call();
+		if(WorldParticleEvent::hasHandlers()){
+			$ev = new WorldParticleEvent($this, $particle, $pos, $players);
+			$ev->call();
+			if($ev->isCancelled()){
+				return;
+			}
 
-		if($ev->isCancelled()){
-			return;
+			$particle = $ev->getParticle();
+			$players = $ev->getRecipients();
 		}
 
-		$pk = $ev->getParticle()->encode($pos);
-		$players = $ev->getRecipients();
+		$pk = $particle->encode($pos);
 		if(count($pk) > 0){
 			if($players === $this->getViewersForPosition($pos)){
 				foreach($pk as $e){
 					$this->broadcastPacketToViewers($pos, $e);
 				}
 			}else{
-				NetworkBroadcastUtils::broadcastPackets($this->filterViewersForPosition($pos, $ev->getRecipients()), $pk);
+				NetworkBroadcastUtils::broadcastPackets($this->filterViewersForPosition($pos, $players), $pk);
 			}
 		}
 	}
@@ -2517,7 +2523,9 @@ class World implements ChunkManager{
 		}
 
 		if($oldChunk === null){
-			(new ChunkLoadEvent($this, $chunkX, $chunkZ, $chunk, true))->call();
+			if(ChunkLoadEvent::hasHandlers()){
+				(new ChunkLoadEvent($this, $chunkX, $chunkZ, $chunk, true))->call();
+			}
 
 			foreach($this->getChunkListeners($chunkX, $chunkZ) as $listener){
 				$listener->onChunkLoaded($chunkX, $chunkZ, $chunk);
@@ -2791,7 +2799,9 @@ class World implements ChunkManager{
 
 		$this->initChunk($x, $z, $chunkData);
 
-		(new ChunkLoadEvent($this, $x, $z, $this->chunks[$chunkHash], false))->call();
+		if(ChunkLoadEvent::hasHandlers()){
+			(new ChunkLoadEvent($this, $x, $z, $this->chunks[$chunkHash], false))->call();
+		}
 
 		if(!$this->isChunkInUse($x, $z)){
 			$this->logger->debug("Newly loaded chunk $x $z has no loaders registered, will be unloaded at next available opportunity");
@@ -2904,12 +2914,14 @@ class World implements ChunkManager{
 		$chunk = $this->chunks[$chunkHash] ?? null;
 
 		if($chunk !== null){
-			$ev = new ChunkUnloadEvent($this, $x, $z, $chunk);
-			$ev->call();
-			if($ev->isCancelled()){
-				$this->timings->doChunkUnload->stopTiming();
+			if(ChunkUnloadEvent::hasHandlers()){
+				$ev = new ChunkUnloadEvent($this, $x, $z, $chunk);
+				$ev->call();
+				if($ev->isCancelled()){
+					$this->timings->doChunkUnload->stopTiming();
 
-				return false;
+					return false;
+				}
 			}
 
 			if($trySave && $this->getAutoSave()){
@@ -3366,7 +3378,9 @@ class World implements ChunkManager{
 				}
 
 				if(($oldChunk === null || !$oldChunk->isPopulated()) && $chunk->isPopulated()){
-					(new ChunkPopulateEvent($this, $x, $z, $chunk))->call();
+					if(ChunkPopulateEvent::hasHandlers()){
+						(new ChunkPopulateEvent($this, $x, $z, $chunk))->call();
+					}
 
 					foreach($this->getChunkListeners($x, $z) as $listener){
 						$listener->onChunkPopulated($x, $z, $chunk);
