@@ -25,7 +25,6 @@ namespace pocketmine\thread;
 
 use pmmp\thread\ThreadSafe;
 use pmmp\thread\ThreadSafeArray;
-use ReflectionClass;
 use function class_exists;
 use function count;
 use function explode;
@@ -142,7 +141,7 @@ class ThreadSafeClassLoader extends ThreadSafe{
 				return false;
 			}
 
-			if(method_exists($name, "onClassLoaded") && (new ReflectionClass($name))->getMethod("onClassLoaded")->isStatic()){
+			if(method_exists($name, "onClassLoaded") && (new \ReflectionClass($name))->getMethod("onClassLoaded")->isStatic()){
 				$name::onClassLoaded();
 			}
 
