@@ -24,14 +24,15 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\data\runtime\RuntimeDataDescriber;
-use function decbin;
-use function strlen;
+use function ceil;
+use function log;
 
 /**
  * This trait is used for blocks that have an age property.
  * Need to add to the block the constant MAX_AGE.
  */
 trait AgeableBlockTrait{
+	/** @phpstan-var int<0, self::MAX_AGE> */
 	protected int $age = 0;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
