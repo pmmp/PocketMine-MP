@@ -58,6 +58,7 @@ final class DefaultPermissionNames{
 	public const COMMAND_SAVE_PERFORM = "pocketmine.command.save.perform";
 	public const COMMAND_SAY = "pocketmine.command.say";
 	public const COMMAND_SEED = "pocketmine.command.seed";
+	public const COMMAND_SETMAXPLAYERS = "pocketmine.command.setmaxplayers";
 	public const COMMAND_SETWORLDSPAWN = "pocketmine.command.setworldspawn";
 	public const COMMAND_SPAWNPOINT_OTHER = "pocketmine.command.spawnpoint.other";
 	public const COMMAND_SPAWNPOINT_SELF = "pocketmine.command.spawnpoint.self";

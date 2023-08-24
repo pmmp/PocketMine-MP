@@ -86,6 +86,7 @@ abstract class DefaultPermissions{
 		self::registerPermission(new Permission(Names::COMMAND_SAVE_PERFORM, l10n::pocketmine_permission_command_save_enable()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_SAY, l10n::pocketmine_permission_command_say()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_SEED, l10n::pocketmine_permission_command_seed()), [$operatorRoot]);
+		self::registerPermission(new Permission(Names::COMMAND_SETMAXPLAYERS, l10n::pocketmine_permission_command_setmaxplayers()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_SETWORLDSPAWN, l10n::pocketmine_permission_command_setworldspawn()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_SPAWNPOINT_OTHER, l10n::pocketmine_permission_command_spawnpoint_other()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_SPAWNPOINT_SELF, l10n::pocketmine_permission_command_spawnpoint_self()), [$operatorRoot]);

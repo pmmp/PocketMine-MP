@@ -51,6 +51,7 @@ use pocketmine\command\defaults\SaveOffCommand;
 use pocketmine\command\defaults\SaveOnCommand;
 use pocketmine\command\defaults\SayCommand;
 use pocketmine\command\defaults\SeedCommand;
+use pocketmine\command\defaults\SetMaxPlayersCommand;
 use pocketmine\command\defaults\SetWorldSpawnCommand;
 use pocketmine\command\defaults\SpawnpointCommand;
 use pocketmine\command\defaults\StatusCommand;
@@ -117,6 +118,7 @@ class SimpleCommandMap implements CommandMap{
 			new SaveOnCommand(),
 			new SayCommand(),
 			new SeedCommand(),
+			new SetMaxPlayersCommand(),
 			new SetWorldSpawnCommand(),
 			new SpawnpointCommand(),
 			new StatusCommand(),
