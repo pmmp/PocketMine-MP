@@ -39,6 +39,7 @@ use pocketmine\world\sound\ChorusFlowerDieSound;
 use pocketmine\world\sound\ChorusFlowerGrowSound;
 use pocketmine\world\World;
 use function array_rand;
+use function min;
 use function mt_rand;
 
 final class ChorusFlower extends Flowable{
@@ -166,7 +167,7 @@ final class ChorusFlower extends Flowable{
 		if($tx === null){
 			$tx = new BlockTransaction($this->position->getWorld());
 		}
-		$tx->addBlock($this->position->getSide($facing), (clone $this)->setAge($this->getAge() + $ageChange));
+		$tx->addBlock($this->position->getSide($facing), (clone $this)->setAge(min(self::MAX_AGE, $this->getAge() + $ageChange)));
 
 		return $tx;
 	}

@@ -49,10 +49,11 @@ abstract class Crops extends Flowable{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->age < self::MAX_AGE && $item instanceof Fertilizer){
 			$block = clone $this;
-			$block->age += mt_rand(2, 5);
-			if($block->age > self::MAX_AGE){
-				$block->age = self::MAX_AGE;
+			$tempAge = $block->age + mt_rand(2, 5);
+			if($tempAge > self::MAX_AGE){
+				$tempAge = self::MAX_AGE;
 			}
+			$block->age = $tempAge;
 			if(BlockEventHelper::grow($this, $block, $player)){
 				$item->pop();
 			}
