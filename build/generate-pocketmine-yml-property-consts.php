@@ -36,7 +36,7 @@ if(!is_array($defaultConfig)){
 $constants = [];
 
 /**
- * @param mixed[] $properties
+ * @param mixed[]  $properties
  * @param string[] $constants
  * @phpstan-param array<string, string> $constants
  * @phpstan-param-out array<string, string> $constants
