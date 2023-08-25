@@ -26,8 +26,6 @@ namespace pocketmine\data\bedrock;
 use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\utils\SingletonTrait;
-use function array_key_exists;
-use function spl_object_id;
 
 final class EffectIdMap{
 	use SingletonTrait;

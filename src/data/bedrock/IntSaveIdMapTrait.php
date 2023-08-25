@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock;
 
-use function abs;
 use function array_key_exists;
 use function spl_object_id;
 

@@ -26,8 +26,6 @@ namespace pocketmine\data\bedrock;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\utils\SingletonTrait;
-use function array_key_exists;
-use function spl_object_id;
 
 /**
  * Handles translation of internal enchantment types to and from Minecraft: Bedrock IDs.
