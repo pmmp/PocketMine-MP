@@ -108,6 +108,7 @@ use pocketmine\utils\BinaryStream;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\Position;
+use pocketmine\YmlServerProperties;
 use function array_map;
 use function array_values;
 use function base64_encode;
@@ -740,7 +741,7 @@ class NetworkSession{
 		}
 		$this->logger->debug("Xbox Live authenticated: " . ($this->authenticated ? "YES" : "NO"));
 
-		$checkXUID = $this->server->getConfigGroup()->getPropertyBool("player.verify-xuid", true);
+		$checkXUID = $this->server->getConfigGroup()->getPropertyBool(YmlServerProperties::PLAYER_VERIFY_XUID, true);
 		$myXUID = $this->info instanceof XboxLivePlayerInfo ? $this->info->getXuid() : "";
 		$kickForXUIDMismatch = function(string $xuid) use ($checkXUID, $myXUID) : bool{
 			if($checkXUID && $myXUID !== $xuid){

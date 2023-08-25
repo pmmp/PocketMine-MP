@@ -104,6 +104,7 @@ use pocketmine\world\particle\Particle;
 use pocketmine\world\sound\BlockPlaceSound;
 use pocketmine\world\sound\Sound;
 use pocketmine\world\utils\SubChunkExplorer;
+use pocketmine\YmlServerProperties;
 use function abs;
 use function array_filter;
 use function array_key_exists;
@@ -513,14 +514,14 @@ class World implements ChunkManager{
 		$this->time = $this->provider->getWorldData()->getTime();
 
 		$cfg = $this->server->getConfigGroup();
-		$this->chunkTickRadius = min($this->server->getViewDistance(), max(0, $cfg->getPropertyInt("chunk-ticking.tick-radius", 4)));
+		$this->chunkTickRadius = min($this->server->getViewDistance(), max(0, $cfg->getPropertyInt(YmlServerProperties::CHUNK_TICKING_TICK_RADIUS, 4)));
 		if($cfg->getPropertyInt("chunk-ticking.per-tick", 40) <= 0){
 			//TODO: this needs l10n
 			$this->logger->warning("\"chunk-ticking.per-tick\" setting is deprecated, but you've used it to disable chunk ticking. Set \"chunk-ticking.tick-radius\" to 0 in \"pocketmine.yml\" instead.");
 			$this->chunkTickRadius = 0;
 		}
-		$this->tickedBlocksPerSubchunkPerTick = $cfg->getPropertyInt("chunk-ticking.blocks-per-subchunk-per-tick", self::DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK);
-		$this->maxConcurrentChunkPopulationTasks = $cfg->getPropertyInt("chunk-generation.population-queue-size", 2);
+		$this->tickedBlocksPerSubchunkPerTick = $cfg->getPropertyInt(YmlServerProperties::CHUNK_TICKING_BLOCKS_PER_SUBCHUNK_PER_TICK, self::DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK);
+		$this->maxConcurrentChunkPopulationTasks = $cfg->getPropertyInt(YmlServerProperties::CHUNK_GENERATION_POPULATION_QUEUE_SIZE, 2);
 
 		$this->initRandomTickBlocksFromConfig($cfg);
 
@@ -541,7 +542,7 @@ class World implements ChunkManager{
 	private function initRandomTickBlocksFromConfig(ServerConfigGroup $cfg) : void{
 		$dontTickBlocks = [];
 		$parser = StringToItemParser::getInstance();
-		foreach($cfg->getProperty("chunk-ticking.disable-block-ticking", []) as $name){
+		foreach($cfg->getProperty(YmlServerProperties::CHUNK_TICKING_DISABLE_BLOCK_TICKING, []) as $name){
 			$name = (string) $name;
 			$item = $parser->parse($name);
 			if($item !== null){

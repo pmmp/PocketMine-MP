@@ -34,6 +34,7 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
+use pocketmine\YmlServerProperties;
 use Symfony\Component\Filesystem\Path;
 use function array_map;
 use function base64_encode;
@@ -152,7 +153,7 @@ class CrashDump{
 	private function extraData() : void{
 		global $argv;
 
-		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-settings", true)){
+		if($this->server->getConfigGroup()->getPropertyBool(YmlServerProperties::AUTO_REPORT_SEND_SETTINGS, true)){
 			$this->data->parameters = (array) $argv;
 			if(($serverDotProperties = @file_get_contents(Path::join($this->server->getDataPath(), "server.properties"))) !== false){
 				$this->data->serverDotProperties = preg_replace("#^rcon\\.password=(.*)$#m", "rcon.password=******", $serverDotProperties) ?? throw new AssumptionFailedError("Pattern is valid");
@@ -170,7 +171,7 @@ class CrashDump{
 
 		$this->data->jit_mode = Utils::getOpcacheJitMode();
 
-		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-phpinfo", true)){
+		if($this->server->getConfigGroup()->getPropertyBool(YmlServerProperties::AUTO_REPORT_SEND_PHPINFO, true)){
 			ob_start();
 			phpinfo();
 			$this->data->phpinfo = ob_get_contents(); // @phpstan-ignore-line
@@ -225,7 +226,7 @@ class CrashDump{
 			}
 		}
 
-		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-code", true) && file_exists($error["fullFile"])){
+		if($this->server->getConfigGroup()->getPropertyBool(YmlServerProperties::AUTO_REPORT_SEND_CODE, true) && file_exists($error["fullFile"])){
 			$file = @file($error["fullFile"], FILE_IGNORE_NEW_LINES);
 			if($file !== false){
 				for($l = max(0, $error["line"] - 10); $l < $error["line"] + 10 && isset($file[$l]); ++$l){
