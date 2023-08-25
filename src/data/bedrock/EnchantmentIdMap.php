@@ -34,17 +34,8 @@ use function spl_object_id;
  */
 final class EnchantmentIdMap{
 	use SingletonTrait;
-
-	/**
-	 * @var Enchantment[]
-	 * @phpstan-var array<int, Enchantment>
-	 */
-	private array $idToEnch = [];
-	/**
-	 * @var int[]
-	 * @phpstan-var array<int, int>
-	 */
-	private array $enchToId = [];
+	/** @phpstan-use IntSaveIdMapTrait<Enchantment> */
+	use IntSaveIdMapTrait;
 
 	private function __construct(){
 		$this->register(EnchantmentIds::PROTECTION, VanillaEnchantments::PROTECTION());
@@ -76,23 +67,5 @@ final class EnchantmentIdMap{
 		$this->register(EnchantmentIds::VANISHING, VanillaEnchantments::VANISHING());
 
 		$this->register(EnchantmentIds::SWIFT_SNEAK, VanillaEnchantments::SWIFT_SNEAK());
-	}
-
-	public function register(int $mcpeId, Enchantment $enchantment) : void{
-		$this->idToEnch[$mcpeId] = $enchantment;
-		$this->enchToId[spl_object_id($enchantment)] = $mcpeId;
-	}
-
-	public function fromId(int $id) : ?Enchantment{
-		//we might not have all the enchantment IDs registered
-		return $this->idToEnch[$id] ?? null;
-	}
-
-	public function toId(Enchantment $enchantment) : int{
-		if(!array_key_exists(spl_object_id($enchantment), $this->enchToId)){
-			//this should never happen, so we treat it as an exceptional condition
-			throw new \InvalidArgumentException("Enchantment does not have a mapped ID");
-		}
-		return $this->enchToId[spl_object_id($enchantment)];
 	}
 }

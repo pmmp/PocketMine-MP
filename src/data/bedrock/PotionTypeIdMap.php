@@ -28,18 +28,8 @@ use pocketmine\utils\SingletonTrait;
 
 final class PotionTypeIdMap{
 	use SingletonTrait;
-
-	/**
-	 * @var PotionType[]
-	 * @phpstan-var array<int, PotionType>
-	 */
-	private array $idToEnum = [];
-
-	/**
-	 * @var int[]
-	 * @phpstan-var array<int, int>
-	 */
-	private array $enumToId = [];
+	/** @phpstan-use IntSaveIdMapTrait<PotionType> */
+	use IntSaveIdMapTrait;
 
 	private function __construct(){
 		$this->register(PotionTypeIds::WATER, PotionType::WATER());
@@ -85,21 +75,5 @@ final class PotionTypeIdMap{
 		$this->register(PotionTypeIds::SLOW_FALLING, PotionType::SLOW_FALLING());
 		$this->register(PotionTypeIds::LONG_SLOW_FALLING, PotionType::LONG_SLOW_FALLING());
 		$this->register(PotionTypeIds::STRONG_SLOWNESS, PotionType::STRONG_SLOWNESS());
-	}
-
-	private function register(int $id, PotionType $type) : void{
-		$this->idToEnum[$id] = $type;
-		$this->enumToId[$type->id()] = $id;
-	}
-
-	public function fromId(int $id) : ?PotionType{
-		return $this->idToEnum[$id] ?? null;
-	}
-
-	public function toId(PotionType $type) : int{
-		if(!isset($this->enumToId[$type->id()])){
-			throw new \InvalidArgumentException("Type does not have a mapped ID");
-		}
-		return $this->enumToId[$type->id()];
 	}
 }
