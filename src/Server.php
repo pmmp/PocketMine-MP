@@ -357,15 +357,15 @@ class Server{
 	}
 
 	public function getPort() : int{
-		return $this->configGroup->getConfigInt("server-port", self::DEFAULT_PORT_IPV4);
+		return $this->configGroup->getConfigInt(ServerProperties::SERVER_PORT_IPV4, self::DEFAULT_PORT_IPV4);
 	}
 
 	public function getPortV6() : int{
-		return $this->configGroup->getConfigInt("server-portv6", self::DEFAULT_PORT_IPV6);
+		return $this->configGroup->getConfigInt(ServerProperties::SERVER_PORT_IPV6, self::DEFAULT_PORT_IPV6);
 	}
 
 	public function getViewDistance() : int{
-		return max(2, $this->configGroup->getConfigInt("view-distance", self::DEFAULT_MAX_VIEW_DISTANCE));
+		return max(2, $this->configGroup->getConfigInt(ServerProperties::VIEW_DISTANCE, self::DEFAULT_MAX_VIEW_DISTANCE));
 	}
 
 	/**
@@ -376,12 +376,12 @@ class Server{
 	}
 
 	public function getIp() : string{
-		$str = $this->configGroup->getConfigString("server-ip");
+		$str = $this->configGroup->getConfigString(ServerProperties::SERVER_IPV4);
 		return $str !== "" ? $str : "0.0.0.0";
 	}
 
 	public function getIpV6() : string{
-		$str = $this->configGroup->getConfigString("server-ipv6");
+		$str = $this->configGroup->getConfigString(ServerProperties::SERVER_IPV6);
 		return $str !== "" ? $str : "::";
 	}
 
@@ -390,30 +390,30 @@ class Server{
 	}
 
 	public function getGamemode() : GameMode{
-		return GameMode::fromString($this->configGroup->getConfigString("gamemode", GameMode::SURVIVAL()->name())) ?? GameMode::SURVIVAL();
+		return GameMode::fromString($this->configGroup->getConfigString(ServerProperties::GAME_MODE, GameMode::SURVIVAL()->name())) ?? GameMode::SURVIVAL();
 	}
 
 	public function getForceGamemode() : bool{
-		return $this->configGroup->getConfigBool("force-gamemode", false);
+		return $this->configGroup->getConfigBool(ServerProperties::FORCE_GAME_MODE, false);
 	}
 
 	/**
 	 * Returns Server global difficulty. Note that this may be overridden in individual worlds.
 	 */
 	public function getDifficulty() : int{
-		return $this->configGroup->getConfigInt("difficulty", World::DIFFICULTY_NORMAL);
+		return $this->configGroup->getConfigInt(ServerProperties::DIFFICULTY, World::DIFFICULTY_NORMAL);
 	}
 
 	public function hasWhitelist() : bool{
-		return $this->configGroup->getConfigBool("white-list", false);
+		return $this->configGroup->getConfigBool(ServerProperties::WHITELIST, false);
 	}
 
 	public function isHardcore() : bool{
-		return $this->configGroup->getConfigBool("hardcore", false);
+		return $this->configGroup->getConfigBool(ServerProperties::HARDCORE, false);
 	}
 
 	public function getMotd() : string{
-		return $this->configGroup->getConfigString("motd", self::DEFAULT_SERVER_NAME);
+		return $this->configGroup->getConfigString(ServerProperties::MOTD, self::DEFAULT_SERVER_NAME);
 	}
 
 	public function getLoader() : ThreadSafeClassLoader{
@@ -811,26 +811,26 @@ class Server{
 			$this->configGroup = new ServerConfigGroup(
 				new Config($pocketmineYmlPath, Config::YAML, []),
 				new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES, [
-					"motd" => self::DEFAULT_SERVER_NAME,
-					"server-port" => self::DEFAULT_PORT_IPV4,
-					"server-portv6" => self::DEFAULT_PORT_IPV6,
-					"enable-ipv6" => true,
-					"white-list" => false,
-					"max-players" => self::DEFAULT_MAX_PLAYERS,
-					"gamemode" => GameMode::SURVIVAL()->name(),
-					"force-gamemode" => false,
-					"hardcore" => false,
-					"pvp" => true,
-					"difficulty" => World::DIFFICULTY_NORMAL,
-					"generator-settings" => "",
-					"level-name" => "world",
-					"level-seed" => "",
-					"level-type" => "DEFAULT",
-					"enable-query" => true,
-					"auto-save" => true,
-					"view-distance" => self::DEFAULT_MAX_VIEW_DISTANCE,
-					"xbox-auth" => true,
-					"language" => "eng"
+					ServerProperties::MOTD => self::DEFAULT_SERVER_NAME,
+					ServerProperties::SERVER_PORT_IPV4 => self::DEFAULT_PORT_IPV4,
+					ServerProperties::SERVER_PORT_IPV6 => self::DEFAULT_PORT_IPV6,
+					ServerProperties::ENABLE_IPV6 => true,
+					ServerProperties::WHITELIST => false,
+					ServerProperties::MAX_PLAYERS => self::DEFAULT_MAX_PLAYERS,
+					ServerProperties::GAME_MODE => GameMode::SURVIVAL()->name(),
+					ServerProperties::FORCE_GAME_MODE => false,
+					ServerProperties::HARDCORE => false,
+					ServerProperties::PVP => true,
+					ServerProperties::DIFFICULTY => World::DIFFICULTY_NORMAL,
+					ServerProperties::DEFAULT_WORLD_GENERATOR_SETTINGS => "",
+					ServerProperties::DEFAULT_WORLD_NAME => "world",
+					ServerProperties::DEFAULT_WORLD_SEED => "",
+					ServerProperties::DEFAULT_WORLD_GENERATOR => "DEFAULT",
+					ServerProperties::ENABLE_QUERY => true,
+					ServerProperties::AUTO_SAVE => true,
+					ServerProperties::VIEW_DISTANCE => self::DEFAULT_MAX_VIEW_DISTANCE,
+					ServerProperties::XBOX_AUTH => true,
+					ServerProperties::LANGUAGE => "eng"
 				])
 			);
 
@@ -840,7 +840,7 @@ class Server{
 			}
 
 			$this->forceLanguage = $this->configGroup->getPropertyBool("settings.force-language", false);
-			$selectedLang = $this->configGroup->getConfigString("language", $this->configGroup->getPropertyString("settings.language", Language::FALLBACK_LANGUAGE));
+			$selectedLang = $this->configGroup->getConfigString(ServerProperties::LANGUAGE, $this->configGroup->getPropertyString("settings.language", Language::FALLBACK_LANGUAGE));
 			try{
 				$this->language = new Language($selectedLang);
 			}catch(LanguageNotFoundException $e){
@@ -932,9 +932,9 @@ class Server{
 			$this->banByIP = new BanList($bannedIpsTxt);
 			$this->banByIP->load();
 
-			$this->maxPlayers = $this->configGroup->getConfigInt("max-players", self::DEFAULT_MAX_PLAYERS);
+			$this->maxPlayers = $this->configGroup->getConfigInt(ServerProperties::MAX_PLAYERS, self::DEFAULT_MAX_PLAYERS);
 
-			$this->onlineMode = $this->configGroup->getConfigBool("xbox-auth", true);
+			$this->onlineMode = $this->configGroup->getConfigBool(ServerProperties::XBOX_AUTH, true);
 			if($this->onlineMode){
 				$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_auth_enabled()));
 			}else{
@@ -943,8 +943,8 @@ class Server{
 				$this->logger->warning($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_authProperty_disabled()));
 			}
 
-			if($this->configGroup->getConfigBool("hardcore", false) && $this->getDifficulty() < World::DIFFICULTY_HARD){
-				$this->configGroup->setConfigInt("difficulty", World::DIFFICULTY_HARD);
+			if($this->configGroup->getConfigBool(ServerProperties::HARDCORE, false) && $this->getDifficulty() < World::DIFFICULTY_HARD){
+				$this->configGroup->setConfigInt(ServerProperties::DIFFICULTY, World::DIFFICULTY_HARD);
 			}
 
 			@cli_set_process_title($this->getName() . " " . $this->getPocketMineVersion());
@@ -1001,7 +1001,7 @@ class Server{
 			}
 
 			$this->worldManager = new WorldManager($this, Path::join($this->dataPath, "worlds"), $providerManager);
-			$this->worldManager->setAutoSave($this->configGroup->getConfigBool("auto-save", $this->worldManager->getAutoSave()));
+			$this->worldManager->setAutoSave($this->configGroup->getConfigBool(ServerProperties::AUTO_SAVE, $this->worldManager->getAutoSave()));
 			$this->worldManager->setAutoSaveInterval($this->configGroup->getPropertyInt("ticks-per.autosave", $this->worldManager->getAutoSaveInterval()));
 
 			$this->updater = new UpdateChecker($this, $this->configGroup->getPropertyString("auto-updater.host", "update.pmmp.io"));
@@ -1136,11 +1136,11 @@ class Server{
 		}
 
 		if($this->worldManager->getDefaultWorld() === null){
-			$default = $this->configGroup->getConfigString("level-name", "world");
+			$default = $this->configGroup->getConfigString(ServerProperties::DEFAULT_WORLD_NAME, "world");
 			if(trim($default) == ""){
 				$this->getLogger()->warning("level-name cannot be null, using default");
 				$default = "world";
-				$this->configGroup->setConfigString("level-name", "world");
+				$this->configGroup->setConfigString(ServerProperties::DEFAULT_WORLD_NAME, "world");
 			}
 			if(!$this->worldManager->loadWorld($default, true)){
 				if($this->worldManager->isWorldGenerated($default)){
@@ -1148,8 +1148,8 @@ class Server{
 
 					return false;
 				}
-				$generatorName = $this->configGroup->getConfigString("level-type");
-				$generatorOptions = $this->configGroup->getConfigString("generator-settings");
+				$generatorName = $this->configGroup->getConfigString(ServerProperties::DEFAULT_WORLD_GENERATOR);
+				$generatorOptions = $this->configGroup->getConfigString(ServerProperties::DEFAULT_WORLD_GENERATOR_SETTINGS);
 				$generatorClass = $getGenerator($generatorName, $generatorOptions, $default);
 
 				if($generatorClass === null){
@@ -1159,7 +1159,7 @@ class Server{
 				$creationOptions = WorldCreationOptions::create()
 					->setGeneratorClass($generatorClass)
 					->setGeneratorOptions($generatorOptions);
-				$convertedSeed = Generator::convertSeed($this->configGroup->getConfigString("level-seed"));
+				$convertedSeed = Generator::convertSeed($this->configGroup->getConfigString(ServerProperties::DEFAULT_WORLD_SEED));
 				if($convertedSeed !== null){
 					$creationOptions->setSeed($convertedSeed);
 				}
@@ -1213,7 +1213,7 @@ class Server{
 	}
 
 	private function startupPrepareNetworkInterfaces() : bool{
-		$useQuery = $this->configGroup->getConfigBool("enable-query", true);
+		$useQuery = $this->configGroup->getConfigBool(ServerProperties::ENABLE_QUERY, true);
 
 		$typeConverter = TypeConverter::getInstance();
 		$packetSerializerContext = new PacketSerializerContext($typeConverter->getItemTypeDictionary());
@@ -1223,7 +1223,7 @@ class Server{
 		if(
 			!$this->startupPrepareConnectableNetworkInterfaces($this->getIp(), $this->getPort(), false, $useQuery, $packetBroadcaster, $entityEventBroadcaster, $packetSerializerContext, $typeConverter) ||
 			(
-				$this->configGroup->getConfigBool("enable-ipv6", true) &&
+				$this->configGroup->getConfigBool(ServerProperties::ENABLE_IPV6, true) &&
 				!$this->startupPrepareConnectableNetworkInterfaces($this->getIpV6(), $this->getPortV6(), true, $useQuery, $packetBroadcaster, $entityEventBroadcaster, $packetSerializerContext, $typeConverter)
 			)
 		){
