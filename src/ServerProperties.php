@@ -23,6 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine;
 
+/**
+ * @internal
+ * Constants for all properties available in server.properties.
+ */
 final class ServerProperties{
 
 	public const AUTO_SAVE = "auto-save";
