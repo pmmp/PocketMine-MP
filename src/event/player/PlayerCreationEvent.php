@@ -27,11 +27,15 @@ use pocketmine\event\Event;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\player\Player;
 use pocketmine\utils\Utils;
+use pocketmine\utils\WaitGroup;
 use function is_a;
 
 /**
  * Allows the use of custom Player classes. This enables overriding built-in Player methods to change behaviour that is
  * not possible to alter any other way.
+ *
+ * Allows the plugins to specify tasks that need to be executed before the login sequence take place, use WaitGroup to
+ * manage synchronization between tasks.
  *
  * You probably don't need this event, and found your way here because you looked at some code in an old plugin that
  * abused it (very common). Instead of using custom player classes, you should consider making session classes instead.
@@ -51,8 +55,11 @@ class PlayerCreationEvent extends Event{
 	private string $baseClass = Player::class;
 	/** @phpstan-var class-string<Player> */
 	private string $playerClass = Player::class;
+	private WaitGroup $waitGroup;
 
-	public function __construct(private NetworkSession $session){}
+	public function __construct(private NetworkSession $session){
+		$this->waitGroup = new WaitGroup();
+	}
 
 	public function getNetworkSession() : NetworkSession{
 		return $this->session;
@@ -108,5 +115,21 @@ class PlayerCreationEvent extends Event{
 	public function setPlayerClass(string $class) : void{
 		Utils::testValidInstance($class, $this->baseClass);
 		$this->playerClass = $class;
+	}
+
+	/**
+	 * The typical use cases for this WaitGroup include:
+	 *  - Carrying out preparatory tasks such as configuring default preferences, setting
+	 * player-specific settings, or initializing in-game assets.
+	 *  - Loading initial player data from external sources or databases before the login sequence begins.
+	 *  - Providing a tailored welcome experience, which might involve sending messages,
+	 * granting starter items, or awarding initial rewards.
+	 *
+	 * Note:
+	 *  After each task is completed, it's essential to call the `done` method of the WaitGroup
+	 *  to signal its completion and allow the WaitGroup to determine when to proceed.
+	 */
+	public function getWaitGroup() : WaitGroup{
+		return $this->waitGroup;
 	}
 }

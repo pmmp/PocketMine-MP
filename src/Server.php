@@ -577,25 +577,27 @@ class Server{
 			$playerPromiseResolver->resolve($player);
 		};
 
-		if($playerPos === null){ //new player or no valid position due to world not being loaded
-			$world->requestSafeSpawn()->onCompletion(
-				function(Position $spawn) use ($createPlayer, $playerPromiseResolver, $session, $world) : void{
-					if(!$session->isConnected()){
+		$ev->getWaitGroup()->wait(function() use ($playerPos, $world, $playerPromiseResolver, $session, $createPlayer) : void {
+			if($playerPos === null){ //new player or no valid position due to world not being loaded
+				$world->requestSafeSpawn()->onCompletion(
+					function(Position $spawn) use ($createPlayer, $playerPromiseResolver, $session, $world) : void{
+						if(!$session->isConnected()){
+							$playerPromiseResolver->reject();
+							return;
+						}
+						$createPlayer(Location::fromObject($spawn, $world));
+					},
+					function() use ($playerPromiseResolver, $session) : void{
+						if($session->isConnected()){
+							$session->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_respawn());
+						}
 						$playerPromiseResolver->reject();
-						return;
 					}
-					$createPlayer(Location::fromObject($spawn, $world));
-				},
-				function() use ($playerPromiseResolver, $session) : void{
-					if($session->isConnected()){
-						$session->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_respawn());
-					}
-					$playerPromiseResolver->reject();
-				}
-			);
-		}else{ //returning player with a valid position - safe spawn not required
-			$createPlayer($playerPos);
-		}
+				);
+			}else{ //returning player with a valid position - safe spawn not required
+				$createPlayer($playerPos);
+			}
+		});
 
 		return $playerPromiseResolver->getPromise();
 	}

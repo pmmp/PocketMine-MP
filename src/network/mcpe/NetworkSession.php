@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe;
 
 use pocketmine\entity\effect\EffectInstance;
-use pocketmine\event\player\PlayerCreatedEvent;
 use pocketmine\event\player\PlayerDuplicateLoginEvent;
 use pocketmine\event\server\DataPacketDecodeEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
@@ -232,14 +231,7 @@ class NetworkSession{
 
 	protected function createPlayer() : void{
 		$this->server->createPlayer($this, $this->info, $this->authenticated, $this->cachedOfflinePlayerData)->onCompletion(
-			function(Player $player) : void {
-				$ev = new PlayerCreatedEvent($player);
-				$ev->call();
-
-				$ev->getWaitGroup()->wait(function() use ($player) {
-					$this->onPlayerCreated($player);
-				});
-			},
+			$this->onPlayerCreated(...),
 			function() : void{
 				//TODO: this should never actually occur... right?
 				$this->logger->error("Failed to create player");
