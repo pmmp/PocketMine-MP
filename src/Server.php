@@ -577,7 +577,7 @@ class Server{
 			$playerPromiseResolver->resolve($player);
 		};
 
-		$ev->getWaitGroup()->wait(function() use ($playerPos, $world, $playerPromiseResolver, $session, $createPlayer) : void {
+		$ev->getWaitGroup()->wait(function() use ($playerPos, $world, $playerPromiseResolver, $session, $createPlayer) : void{
 			if($playerPos === null){ //new player or no valid position due to world not being loaded
 				$world->requestSafeSpawn()->onCompletion(
 					function(Position $spawn) use ($createPlayer, $playerPromiseResolver, $session, $world) : void{
