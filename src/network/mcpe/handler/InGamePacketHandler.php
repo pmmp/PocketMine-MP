@@ -201,7 +201,7 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		$hasMoved = $this->lastPlayerAuthInputPosition === null || !$this->lastPlayerAuthInputPosition->equals($rawPos);
-		$newPos = $rawPos->round(4)->subtract(0, 1.62, 0);
+		$newPos = $rawPos->subtract(0, 1.62, 0)->round(4);
 
 		if($this->forceMoveSync && $hasMoved){
 			$curPos = $this->player->getLocation();
