@@ -52,7 +52,7 @@ class CakeWithCandle extends BaseCake{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($this->onInteractCandle($item, $face, $clickVector, $player, $returnedItems)){
+		if($face === Facing::UP && $this->onInteractCandle($item, $face, $clickVector, $player, $returnedItems)){
 			return true;
 		}
 
