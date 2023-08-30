@@ -25,6 +25,7 @@ namespace pocketmine\crafting;
 
 use pocketmine\item\Item;
 use pocketmine\utils\ObjectSet;
+use function array_search;
 
 final class FurnaceRecipeManager{
 	/** @var FurnaceRecipe[] */
@@ -39,8 +40,12 @@ final class FurnaceRecipeManager{
 	/** @phpstan-var ObjectSet<\Closure(FurnaceRecipe) : void> */
 	private ObjectSet $recipeRegisteredCallbacks;
 
+	/** @phpstan-var ObjectSet<\Closure(FurnaceRecipe) : void> */
+	private ObjectSet $recipeUnregisteredCallbacks;
+
 	public function __construct(){
 		$this->recipeRegisteredCallbacks = new ObjectSet();
+		$this->recipeUnregisteredCallbacks = new ObjectSet();
 	}
 
 	/**
@@ -48,6 +53,13 @@ final class FurnaceRecipeManager{
 	 */
 	public function getRecipeRegisteredCallbacks() : ObjectSet{
 		return $this->recipeRegisteredCallbacks;
+	}
+
+	/**
+	 * @phpstan-return ObjectSet<\Closure(FurnaceRecipe) : void>
+	 */
+	public function getRecipeUnregisteredCallbacks() : ObjectSet{
+		return $this->recipeUnregisteredCallbacks;
 	}
 
 	/**
@@ -61,6 +73,17 @@ final class FurnaceRecipeManager{
 		$this->furnaceRecipes[] = $recipe;
 		foreach($this->recipeRegisteredCallbacks as $callback){
 			$callback($recipe);
+		}
+	}
+
+	public function unregister(FurnaceRecipe $recipe) : void{
+		$index = array_search($recipe, $this->furnaceRecipes, true);
+		if($index !== false){
+			unset($this->furnaceRecipes[$index]);
+
+			foreach($this->recipeUnregisteredCallbacks as $callback){
+				$callback($recipe);
+			}
 		}
 	}
 

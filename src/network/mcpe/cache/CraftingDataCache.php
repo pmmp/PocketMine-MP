@@ -64,6 +64,9 @@ final class CraftingDataCache{
 			$manager->getRecipeRegisteredCallbacks()->add(function() use ($id) : void{
 				unset($this->caches[$id]);
 			});
+			$manager->getRecipeUnregisteredCallbacks()->add(function() use ($id) : void{
+				unset($this->caches[$id]);
+			});
 			$this->caches[$id] = $this->buildCraftingDataCache($manager);
 		}
 		return $this->caches[$id];
