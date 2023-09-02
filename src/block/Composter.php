@@ -45,14 +45,14 @@ use function mt_rand;
 
 class Composter extends Transparent{
 
-	public const MIN_LEVEL = 0;
-	public const IMMATURE_LEVEL = 7;
-	public const MAX_LEVEL = 8;
+	public const EMPTY_LEVEL = 0;
+	public const FULL_LEVEL = 7;
+	public const COLLECTING_LEVEL = 8;
 
-	protected int $fillLevel = self::MIN_LEVEL;
+	protected int $fillLevel = self::EMPTY_LEVEL;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(4, self::MIN_LEVEL, self::MAX_LEVEL, $this->fillLevel);
+		$w->boundedInt(4, self::EMPTY_LEVEL, self::COLLECTING_LEVEL, $this->fillLevel);
 	}
 
 	protected function recalculateCollisionBoxes() : array{
@@ -66,14 +66,15 @@ class Composter extends Transparent{
 	}
 
 	public function isEmpty() : bool{
-		return $this->fillLevel === self::MIN_LEVEL;
+		return $this->fillLevel === self::EMPTY_LEVEL;
 	}
 
-	public function isImmature() : bool{
-		return $this->fillLevel === self::IMMATURE_LEVEL;
+	public function isFull() : bool{
+		return $this->fillLevel === self::FULL_LEVEL;
 	}
-	public function isReady() : bool{
-		return $this->fillLevel === self::MAX_LEVEL;
+
+	public function canCollect() : bool{
+		return $this->fillLevel === self::COLLECTING_LEVEL;
 	}
 
 	public function getFillLevel() : int{
@@ -82,15 +83,15 @@ class Composter extends Transparent{
 
 	/** @return $this */
 	public function setFillLevel(int $fillLevel) : self{
-		if($fillLevel < 0 || $fillLevel > self::MAX_LEVEL){
-			throw new \InvalidArgumentException("Layers must be in range " . self::MIN_LEVEL . " ... " . self::MAX_LEVEL);
+		if($fillLevel < 0 || $fillLevel > self::COLLECTING_LEVEL){
+			throw new \InvalidArgumentException("Layers must be in range " . self::EMPTY_LEVEL . " ... " . self::COLLECTING_LEVEL);
 		}
 		$this->fillLevel = $fillLevel;
 		return $this;
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->isImmature()){
+		if($this->isFull()){
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20);
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
@@ -104,9 +105,9 @@ class Composter extends Transparent{
 	}
 
 	public function onScheduledUpdate() : void{
-		if($this->isImmature()){
+		if($this->isFull()){
 			$block = clone $this;
-			$block->setFillLevel(self::MAX_LEVEL);
+			$block->setFillLevel(self::COLLECTING_LEVEL);
 
 			if(ComposterMatureEvent::hasHandlers()){
 				$ev = new ComposterMatureEvent($this, $block);
@@ -123,11 +124,11 @@ class Composter extends Transparent{
 	}
 
 	public function addItem(Item $item) : bool{
-		if($this->isReady()){
+		if($this->canCollect()){
 			$this->empty();
 			return false;
 		}
-		if($this->isImmature() || !CompostFactory::getInstance()->isCompostable($item)){
+		if($this->isFull() || !CompostFactory::getInstance()->isCompostable($item)){
 			return false;
 		}
 
@@ -147,7 +148,7 @@ class Composter extends Transparent{
 			$this->position->getWorld()->addSound($this->position, new ComposterFillSuccessSound());
 			$this->position->getWorld()->setBlock($this->position, $this);
 
-			if($this->isImmature()){
+			if($this->isFull()){
 				$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20);
 			}
 		}else{
@@ -161,10 +162,10 @@ class Composter extends Transparent{
 		if(ComposterEmptyEvent::hasHandlers()){
 			$ev = new ComposterEmptyEvent($this, $drops);
 			$ev->call();
-			$drops = $ev->getDrops();
 			if($ev->isCancelled()){
 				return;
 			}
+			$drops = $ev->getDrops();
 		}
 		foreach($drops as $drop){
 			$this->position->getWorld()->dropItem(
@@ -173,14 +174,14 @@ class Composter extends Transparent{
 				new Vector3(0, 0, 0)
 			);
 		}
-		$this->fillLevel = self::MIN_LEVEL;
+		$this->fillLevel = self::EMPTY_LEVEL;
 		$this->position->getWorld()->addParticle($this->position, new CropGrowthEmitterParticle());
 		$this->position->getWorld()->addSound($this->position, new ComposterEmptySound());
 		$this->position->getWorld()->setBlock($this->position, $this);
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		return $this->isReady() ? [
+		return $this->canCollect() ? [
 			VanillaBlocks::COMPOSTER()->asItem(),
 			VanillaItems::BONE_MEAL()
 		] : [
