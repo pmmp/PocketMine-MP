@@ -83,6 +83,10 @@ class Cake extends BaseCake{
 		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
 	}
 
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [];
+	}
+
 	public function getResidue() : Block{
 		$clone = clone $this;
 		$clone->bites++;

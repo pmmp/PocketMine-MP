@@ -44,8 +44,11 @@ class Armor extends Durable{
 
 	protected ?Color $customColor = null;
 
-	public function __construct(ItemIdentifier $identifier, string $name, ArmorTypeInfo $info){
-		parent::__construct($identifier, $name);
+	/**
+	 * @param string[] $enchantmentTags
+	 */
+	public function __construct(ItemIdentifier $identifier, string $name, ArmorTypeInfo $info, array $enchantmentTags = []){
+		parent::__construct($identifier, $name, $enchantmentTags);
 		$this->armorInfo = $info;
 	}
 
@@ -70,6 +73,14 @@ class Armor extends Durable{
 
 	public function isFireProof() : bool{
 		return $this->armorInfo->isFireProof();
+	}
+
+	public function getMaterial() : ArmorMaterial{
+		return $this->armorInfo->getMaterial();
+	}
+
+	public function getEnchantability() : int{
+		return $this->armorInfo->getMaterial()->getEnchantability();
 	}
 
 	/**
