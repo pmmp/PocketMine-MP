@@ -26,8 +26,12 @@ namespace pocketmine\scheduler;
 use pocketmine\utils\Utils;
 
 abstract class Task{
+	/** @var TaskHandler<self>|null  */
 	private ?TaskHandler $taskHandler = null;
 
+	/**
+	 * @phpstan-return TaskHandler<self>|null
+	 */
 	final public function getHandler() : ?TaskHandler{
 		return $this->taskHandler;
 	}
@@ -36,6 +40,9 @@ abstract class Task{
 		return Utils::getNiceClassName($this);
 	}
 
+	/**
+	 * @phpstan-param TaskHandler<self>|null $taskHandler
+	 */
 	final public function setHandler(?TaskHandler $taskHandler) : void{
 		if($this->taskHandler === null || $taskHandler === null){
 			$this->taskHandler = $taskHandler;

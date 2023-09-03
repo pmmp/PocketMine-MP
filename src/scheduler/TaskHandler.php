@@ -26,6 +26,9 @@ namespace pocketmine\scheduler;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 
+/**
+ * @template TTask of Task
+ */
 class TaskHandler{
 	protected int $nextRun;
 
@@ -36,6 +39,9 @@ class TaskHandler{
 	private string $taskName;
 	private string $ownerName;
 
+	/**
+	 * @phpstan-param TTask $task
+	 */
 	public function __construct(
 		protected Task $task,
 		protected int $delay = -1,
@@ -66,6 +72,9 @@ class TaskHandler{
 		$this->nextRun = $ticks;
 	}
 
+	/**
+	 * @phpstan-return TTask
+	 */
 	public function getTask() : Task{
 		return $this->task;
 	}
