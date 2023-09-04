@@ -178,6 +178,9 @@ final class CompostFactory{
 		return !$item->isNull() && isset($this->list[$item->getTypeId()]);
 	}
 
+	/**
+	 * Returns the percentage of an item, return 0 when the percentage doesn't exist.
+	 */
 	public function getPercentage(Item $item) : ?int{
 		return $this->list[$item->getTypeId()] ?? null;
 	}
