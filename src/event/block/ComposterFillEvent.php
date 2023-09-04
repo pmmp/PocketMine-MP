@@ -51,6 +51,7 @@ class ComposterFillEvent extends BlockEvent implements Cancellable{
 	public function isSuccess() : bool{
 		return $this->success;
 	}
+
 	public function setSuccess(bool $success) : void{
 		$this->success = $success;
 	}
