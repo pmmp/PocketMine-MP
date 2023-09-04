@@ -26,7 +26,7 @@ namespace pocketmine\scheduler;
 use pocketmine\utils\Utils;
 
 abstract class Task{
-	/** @var TaskHandler<self>|null  */
+	/** @phpstan-var TaskHandler<self>|null  */
 	private ?TaskHandler $taskHandler = null;
 
 	/**

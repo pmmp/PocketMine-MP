@@ -37,7 +37,7 @@ class TaskScheduler{
 	protected ReversePriorityQueue $queue;
 
 	/**
-	 * @var ObjectSet|TaskHandler<Task>[]
+	 * @var ObjectSet|TaskHandler[]
 	 * @phpstan-var ObjectSet<TaskHandler<Task>>
 	 */
 	protected ObjectSet $tasks;
@@ -186,7 +186,7 @@ class TaskScheduler{
 
 	private function isReady(int $currentTick) : bool{
 		if(!$this->queue->isEmpty()){
-			/** @var TaskHandler<Task> $current */
+			/** @phpstan-var TaskHandler<Task> $current */
 			$current = $this->queue->current();
 			return $current->getNextRun() <= $currentTick;
 		}
