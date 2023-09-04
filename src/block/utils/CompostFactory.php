@@ -163,25 +163,25 @@ final class CompostFactory{
     }
 
     public function register(Item $item, int $percentage, bool $overwrite = false) : bool{
-        if ($percentage < 0 || $percentage > 100) {
+        if($percentage < 0 || $percentage > 100){
             throw new \InvalidArgumentException("Percentage must be in range 0 to 100");
-        }
-        $typeId = $item->getTypeId();
-        if (($overwrite || !isset($this->list[$typeId])) && !$item->isNull()) {
-            $this->list[$typeId] = $percentage;
-            return true;
-        }
-        return false;
-    }
+		}
+		$typeId = $item->getTypeId();
+		if(($overwrite || !isset($this->list[$typeId])) && !$item->isNull()){
+			$this->list[$typeId] = $percentage;
+			return true;
+		}
+		return false;
+	}
 
-    public function isCompostable(Item $item) : bool{
-        return !$item->isNull() && isset($this->list[$item->getTypeId()]);
-    }
+	public function isCompostable(Item $item) : bool{
+		return !$item->isNull() && isset($this->list[$item->getTypeId()]);
+	}
 
-    /**
-     * Returns the percentage of an item, return 0 when the percentage doesn't exist.
-     */
-    public function getPercentage(Item $item) : ?int{
-        return $this->list[$item->getTypeId()] ?? null;
-    }
+	/**
+	 * Returns the percentage of an item, return 0 when the percentage doesn't exist.
+	 */
+	public function getPercentage(Item $item) : ?int{
+		return $this->list[$item->getTypeId()] ?? null;
+	}
 }
