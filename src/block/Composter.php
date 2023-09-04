@@ -144,7 +144,7 @@ class Composter extends Transparent{
 			$success = $ev->isSuccess();
 		}
 		if($success){
-			++$this->fillLevel;
+			$this->fillLevel++;
 			$this->position->getWorld()->addSound($this->position, new ComposterFillSuccessSound());
 			$this->position->getWorld()->setBlock($this->position, $this);
 
