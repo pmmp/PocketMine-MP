@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\event\block;
 
 /**
- * Called when composter start to mature, e.g. if the fill lever is 7
+ * Called when the state of the composter allows recovery of the bone meal. e.g. the state changes from FULL_LEVEL to COLLECTING_LEVEL
  */
 class ComposterMatureEvent extends BaseBlockChangeEvent{
 
