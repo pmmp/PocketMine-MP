@@ -206,6 +206,7 @@ class CrashDump{
 		if(isset($lastError)){
 			$this->data->lastError = $lastError;
 			$this->data->lastError["message"] = mb_scrub($this->data->lastError["message"], 'UTF-8');
+			$this->data->lastError["trace"] = array_map(array: $lastError["trace"], callback: fn(ThreadCrashInfoFrame $frame) => $frame->getPrintableFrame());
 		}
 
 		$this->data->error = $error;
