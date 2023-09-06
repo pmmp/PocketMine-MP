@@ -53,7 +53,7 @@ interface CommandSender extends Permissible{
 
 	/**
 	 * This function is used to get the message from the console.
-	 * @return string
+	 * @phpstan-return string
 	 */
 	public function getMessage() : string;
 }
