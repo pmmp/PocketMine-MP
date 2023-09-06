@@ -25,7 +25,6 @@ namespace pocketmine\data\runtime;
 
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\math\Facing;
-use pocketmine\data\runtime\RuntimeDataEnum;
 use function count;
 
 final class RuntimeDataSizeCalculator implements RuntimeDataDescriber{

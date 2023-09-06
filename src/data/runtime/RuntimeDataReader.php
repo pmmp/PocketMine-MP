@@ -29,7 +29,6 @@ use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\data\runtime\RuntimeDataEnum;
 use function get_class;
 use function intdiv;
 

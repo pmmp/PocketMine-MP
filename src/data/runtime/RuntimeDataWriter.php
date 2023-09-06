@@ -28,7 +28,6 @@ use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\data\runtime\RuntimeDataEnum;
 use function array_flip;
 
 final class RuntimeDataWriter implements RuntimeDataDescriber{

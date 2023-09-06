@@ -26,7 +26,6 @@ namespace pocketmine\data\runtime;
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Facing;
-use pocketmine\data\runtime\RuntimeDataEnum;
 
 /**
  * Interface implemented by {@link RuntimeDataReader}, {@link RuntimeDataWriter} and {@link RuntimeDataSizeCalculator}.
