@@ -33,7 +33,7 @@ class ConsoleOutputEvent extends ServerEvent implements Cancellable{
 	use CancellableTrait;
 
 	/**
-	 * @var string[] $messages
+	 * @param string[] $messages
 	 */
 	public function __construct(
 		protected array $messages
