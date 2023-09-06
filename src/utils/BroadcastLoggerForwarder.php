@@ -41,7 +41,7 @@ use const PHP_INT_MAX;
 final class BroadcastLoggerForwarder implements CommandSender{
 	use PermissibleDelegateTrait;
 
-	protected Translatable|string $message = '';
+	protected string $message = '';
 
 	public function __construct(
 		private Server $server, //annoying useless dependency
