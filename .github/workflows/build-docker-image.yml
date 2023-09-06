@@ -28,7 +28,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Clone pmmp/PocketMine-Docker repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: pmmp/PocketMine-Docker
           fetch-depth: 1

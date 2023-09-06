@@ -17,7 +17,7 @@ jobs:
         php: ["8.1", "8.2"]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: pmmp/setup-php-action@2.0.0
@@ -52,7 +52,7 @@ jobs:
         php: ["8.1", "8.2"]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: pmmp/setup-php-action@2.0.0
@@ -87,7 +87,7 @@ jobs:
         php: ["8.1", "8.2"]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -124,7 +124,7 @@ jobs:
         php: ["8.1", "8.2"]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: pmmp/setup-php-action@2.0.0
@@ -170,7 +170,7 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup PHP and tools
         uses: shivammathur/setup-php@2.25.5
