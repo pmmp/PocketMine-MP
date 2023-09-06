@@ -440,17 +440,22 @@ class ParserPacketHandler extends PacketHandler{
 		//how the data is ordered doesn't matter as long as it's reproducible
 		foreach($recipes as $_type => $entries){
 			$_sortedRecipes = [];
+			$_seen = [];
 			foreach($entries as $entry){
 				$entry = self::sort($entry);
 				$_key = json_encode($entry);
-				while(isset($_sortedRecipes[$_key])){
-					echo "warning: duplicated $_type recipe: $_key\n";
-					$_key .= "a";
-				}
-				$_sortedRecipes[$_key] = $entry;
+				$duplicates = $_seen[$_key] ??= 0;
+				$_seen[$_key]++;
+				$suffix = chr(ord("a") + $duplicates);
+				$_sortedRecipes[$_key . $suffix] = $entry;
 			}
 			ksort($_sortedRecipes, SORT_STRING);
 			$recipes[$_type] = array_values($_sortedRecipes);
+			foreach($_seen as $_key => $_seenCount){
+				if($_seenCount > 1){
+					fwrite(STDERR, "warning: $_type recipe $_key was seen $_seenCount times\n");
+				}
+			}
 		}
 
 		ksort($recipes, SORT_STRING);

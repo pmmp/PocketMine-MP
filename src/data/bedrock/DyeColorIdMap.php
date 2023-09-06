@@ -29,18 +29,10 @@ use pocketmine\utils\SingletonTrait;
 
 final class DyeColorIdMap{
 	use SingletonTrait;
-
-	/**
-	 * @var DyeColor[]
-	 * @phpstan-var array<int, DyeColor>
-	 */
-	private array $idToEnum = [];
-
-	/**
-	 * @var int[]
-	 * @phpstan-var array<int, int>
-	 */
-	private array $enumToId = [];
+	/** @phpstan-use IntSaveIdMapTrait<DyeColor> */
+	use IntSaveIdMapTrait {
+		register as registerInt;
+	}
 
 	/**
 	 * @var DyeColor[]
@@ -74,14 +66,9 @@ final class DyeColorIdMap{
 	}
 
 	private function register(int $id, string $itemId, DyeColor $color) : void{
-		$this->idToEnum[$id] = $color;
-		$this->enumToId[$color->id()] = $id;
+		$this->registerInt($id, $color);
 		$this->itemIdToEnum[$itemId] = $color;
 		$this->enumToItemId[$color->id()] = $itemId;
-	}
-
-	public function toId(DyeColor $color) : int{
-		return $this->enumToId[$color->id()]; //TODO: is it possible for this to be missing?
 	}
 
 	public function toInvertedId(DyeColor $color) : int{
@@ -90,10 +77,6 @@ final class DyeColorIdMap{
 
 	public function toItemId(DyeColor $color) : string{
 		return $this->enumToItemId[$color->id()];
-	}
-
-	public function fromId(int $id) : ?DyeColor{
-		return $this->idToEnum[$id] ?? null;
 	}
 
 	public function fromInvertedId(int $id) : ?DyeColor{

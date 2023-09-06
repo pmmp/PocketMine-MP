@@ -39,8 +39,8 @@ use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
+use pocketmine\item\enchantment\EnchantingOption;
 use pocketmine\item\enchantment\EnchantmentInstance;
-use pocketmine\item\enchantment\EnchantOption;
 use pocketmine\network\mcpe\cache\CreativeInventoryCache;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
@@ -645,7 +645,7 @@ class InventoryManager{
 	}
 
 	/**
-	 * @param EnchantOption[] $options
+	 * @param EnchantingOption[] $options
 	 */
 	public function syncEnchantingTableOptions(array $options) : void{
 		$protocolOptions = [];

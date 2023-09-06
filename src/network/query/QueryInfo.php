@@ -29,6 +29,7 @@ use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
+use pocketmine\YmlServerProperties;
 use function array_map;
 use function chr;
 use function count;
@@ -66,7 +67,7 @@ final class QueryInfo{
 
 	public function __construct(Server $server){
 		$this->serverName = $server->getMotd();
-		$this->listPlugins = $server->getConfigGroup()->getPropertyBool("settings.query-plugins", true);
+		$this->listPlugins = $server->getConfigGroup()->getPropertyBool(YmlServerProperties::SETTINGS_QUERY_PLUGINS, true);
 		$this->plugins = $server->getPluginManager()->getPlugins();
 		$this->players = array_map(fn(Player $p) => $p->getName(), $server->getOnlinePlayers());
 

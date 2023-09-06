@@ -44,7 +44,7 @@
       "pocketmine/locale-data": "~2.19.0",
       "pocketmine/log": "^0.4.0",
       "pocketmine/math": "~1.0.0",
-      "pocketmine/nbt": "^0.3.2",
+      "pocketmine/nbt": "~1.0.0",
       "pocketmine/raklib": "^0.15.0",
       "pocketmine/raklib-ipc": "^0.2.0",
       "pocketmine/snooze": "^0.5.0",

@@ -42,7 +42,7 @@ final class ItemEnchantmentTags{
 	public const CROSSBOW = "crossbow";
 	public const SHEARS = "shears";
 	public const FLINT_AND_STEEL = "flint_and_steel";
-	public const DIG_TOOLS = "dig_tools";
+	public const BLOCK_TOOLS = "block_tools";
 	public const AXE = "axe";
 	public const PICKAXE = "pickaxe";
 	public const SHOVEL = "shovel";

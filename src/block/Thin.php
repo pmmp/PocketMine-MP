@@ -41,7 +41,7 @@ class Thin extends Transparent{
 
 		foreach(Facing::HORIZONTAL as $facing){
 			$side = $this->getSide($facing);
-			if($side instanceof Thin || $side instanceof Wall || $side->isFullCube()){
+			if($side instanceof Thin || $side instanceof Wall || $side->getSupportType(Facing::opposite($facing))->equals(SupportType::FULL())){
 				$this->connections[$facing] = true;
 			}else{
 				unset($this->connections[$facing]);

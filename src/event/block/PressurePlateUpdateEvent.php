@@ -25,13 +25,12 @@ namespace pocketmine\event\block;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
-use pocketmine\event\Cancellable;
 
 /**
  * Called whenever the list of entities on a pressure plate changes.
  * Depending on the type of pressure plate, this might turn on/off its signal, or change the signal strength.
  */
-final class PressurePlateUpdateEvent extends BaseBlockChangeEvent implements Cancellable{
+final class PressurePlateUpdateEvent extends BaseBlockChangeEvent{
 	/**
 	 * @param Entity[] $activatingEntities
 	 */

@@ -37,6 +37,7 @@ use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerEnderInventory;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\PlayerOffHandInventory;
+use pocketmine\item\enchantment\EnchantingHelper;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\Totem;
@@ -66,7 +67,6 @@ use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAbilitiesPacket;
 use pocketmine\player\Player;
-use pocketmine\utils\Limits;
 use pocketmine\world\sound\TotemUseSound;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -76,7 +76,6 @@ use function array_key_exists;
 use function array_merge;
 use function array_values;
 use function min;
-use function mt_rand;
 
 class Human extends Living implements ProjectileSource, InventoryHolder{
 
@@ -219,8 +218,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->xpSeed = $seed;
 	}
 
-	public function generateEnchantmentSeed() : int{
-		return mt_rand(Limits::INT32_MIN, Limits::INT32_MAX);
+	public function regenerateEnchantmentSeed() : void{
+		$this->xpSeed = EnchantingHelper::generateSeed();
 	}
 
 	public function getXpDropAmount() : int{
@@ -346,7 +345,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		if(($xpSeedTag = $nbt->getTag(self::TAG_XP_SEED)) instanceof IntTag){
 			$this->xpSeed = $xpSeedTag->getValue();
 		}else{
-			$this->xpSeed = $this->generateEnchantmentSeed();
+			$this->xpSeed = EnchantingHelper::generateSeed();
 		}
 	}
 

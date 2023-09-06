@@ -30,5 +30,5 @@ namespace pocketmine\item\enchantment;
 final class IncompatibleEnchantmentGroups{
 	public const PROTECTION = "protection";
 	public const BOW_INFINITE = "bow_infinite";
-	public const DIG_DROP = "dig_drop";
+	public const BLOCK_DROPS = "block_drops";
 }
