@@ -1473,7 +1473,7 @@ abstract class Entity{
 		return $this->hasSpawned;
 	}
 
-	abstract public static function getNetworkTypeId() : string;
+	abstract public function getNetworkTypeId() : string;
 
 	/**
 	 * Called by spawnTo() to send whatever packets needed to spawn the entity to the client.
@@ -1482,7 +1482,7 @@ abstract class Entity{
 		$player->getNetworkSession()->sendDataPacket(AddActorPacket::create(
 			$this->getId(), //TODO: actor unique ID
 			$this->getId(),
-			static::getNetworkTypeId(),
+			$this->getNetworkTypeId(),
 			$this->location->asVector3(),
 			$this->getMotion(),
 			$this->location->pitch,

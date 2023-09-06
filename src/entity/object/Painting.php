@@ -48,7 +48,7 @@ class Painting extends Entity{
 	public const TAG_DIRECTION_BE = "Direction"; //TAG_Byte
 	public const TAG_MOTIVE = "Motive"; //TAG_String
 
-	public static function getNetworkTypeId() : string{ return EntityIds::PAINTING; }
+	public function getNetworkTypeId() : string{ return EntityIds::PAINTING; }
 
 	public const DATA_TO_FACING = [
 		0 => Facing::SOUTH,

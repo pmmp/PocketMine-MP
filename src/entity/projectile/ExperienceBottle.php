@@ -30,7 +30,7 @@ use pocketmine\world\sound\PotionSplashSound;
 use function mt_rand;
 
 class ExperienceBottle extends Throwable{
-	public static function getNetworkTypeId() : string{ return EntityIds::XP_BOTTLE; }
+	public function getNetworkTypeId() : string{ return EntityIds::XP_BOTTLE; }
 
 	protected function getInitialGravity() : float{ return 0.07; }
 

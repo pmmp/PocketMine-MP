@@ -38,7 +38,7 @@ class Villager extends Living implements Ageable{
 
 	private const TAG_PROFESSION = "Profession"; //TAG_Int
 
-	public static function getNetworkTypeId() : string{ return EntityIds::VILLAGER; }
+	public function getNetworkTypeId() : string{ return EntityIds::VILLAGER; }
 
 	private bool $baby = false;
 	private int $profession = self::PROFESSION_FARMER;
