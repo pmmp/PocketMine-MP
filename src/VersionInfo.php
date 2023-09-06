@@ -31,9 +31,9 @@ use function str_repeat;
 
 final class VersionInfo{
 	public const NAME = "PocketMine-MP";
-	public const BASE_VERSION = "5.5.0-BETA2";
-	public const IS_DEVELOPMENT_BUILD = true;
-	public const BUILD_CHANNEL = "beta";
+	public const BASE_VERSION = "5.5.0";
+	public const IS_DEVELOPMENT_BUILD = false;
+	public const BUILD_CHANNEL = "stable";
 
 	/**
 	 * PocketMine-MP-specific version ID for world data. Used to determine what fixes need to be applied to old world
