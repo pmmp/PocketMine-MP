@@ -102,4 +102,4 @@ jobs:
 
             :information_source: Download the recommended PHP binary [here](${{ steps.php-binary-url.outputs.PHP_BINARY_URL }}).
 
-            :warning: **4.x is now deprecated. Please read https://github.com/pmmp/PocketMine-MP/issues/5784 for details, and prepare to upgrade to 5.x.**
+            :skull: **4.x is now obsolete and may stop getting updates at any time. Please read https://github.com/pmmp/PocketMine-MP/issues/6036 for details.**
