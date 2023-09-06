@@ -46,7 +46,7 @@ use function sqrt;
 
 class Arrow extends Projectile{
 
-	public static function getNetworkTypeId() : string{ return EntityIds::ARROW; }
+	public function getNetworkTypeId() : string{ return EntityIds::ARROW; }
 
 	public const PICKUP_NONE = 0;
 	public const PICKUP_ANY = 1;

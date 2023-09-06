@@ -44,7 +44,7 @@ class EntityLandSound implements Sound{
 			LevelSoundEvent::LAND,
 			$pos,
 			TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkId($this->blockLandedOn->getStateId()),
-			$this->entity::getNetworkTypeId(),
+			$this->entity->getNetworkTypeId(),
 			false, //TODO: does isBaby have any relevance here?
 			false
 		)];

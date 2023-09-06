@@ -98,7 +98,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	private const TAG_SKIN_GEOMETRY_NAME = "GeometryName"; //TAG_String
 	private const TAG_SKIN_GEOMETRY_DATA = "GeometryData"; //TAG_ByteArray
 
-	public static function getNetworkTypeId() : string{ return EntityIds::PLAYER; }
+	public function getNetworkTypeId() : string{ return EntityIds::PLAYER; }
 
 	protected PlayerInventory $inventory;
 	protected PlayerOffHandInventory $offHandInventory;
