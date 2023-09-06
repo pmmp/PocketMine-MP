@@ -23,14 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\event\server;
 
-use pocketmine\event\Cancellable;
-use pocketmine\event\CancellableTrait;
-
 /**
  * Called when the server outputs a message to the console.
  */
-class ConsoleOutputEvent extends ServerEvent implements Cancellable{
-	use CancellableTrait;
+class ConsoleOutputEvent extends ServerEvent {
 
 	/**
 	 * @param string[] $messages
