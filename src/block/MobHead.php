@@ -50,7 +50,7 @@ class MobHead extends Flowable{
 	}
 
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
-		$w->mobHeadType($this->mobHeadType);
+		$w->enum($this->mobHeadType);
 	}
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{

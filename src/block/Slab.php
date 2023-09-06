@@ -42,7 +42,7 @@ class Slab extends Transparent{
 	}
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->slabType($this->slabType);
+		$w->enum($this->slabType);
 	}
 
 	public function isTransparent() : bool{

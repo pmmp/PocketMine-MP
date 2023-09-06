@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\data\runtime\RuntimeDataEnum;
 use pocketmine\math\Facing;
 use pocketmine\utils\EnumTrait;
 
@@ -41,7 +42,7 @@ use pocketmine\utils\EnumTrait;
  * @method static LeverFacing UP_AXIS_Z()
  * @method static LeverFacing WEST()
  */
-final class LeverFacing{
+final class LeverFacing implements RuntimeDataEnum{
 	use EnumTrait {
 		__construct as Enum___construct;
 	}

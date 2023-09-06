@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\data\runtime\RuntimeDataEnum;
 use pocketmine\utils\EnumTrait;
 
 /**
@@ -36,7 +37,7 @@ use pocketmine\utils\EnumTrait;
  * @method static DripleafState STABLE()
  * @method static DripleafState UNSTABLE()
  */
-final class DripleafState{
+final class DripleafState implements RuntimeDataEnum{
 	use EnumTrait {
 		register as Enum_register;
 		__construct as Enum___construct;

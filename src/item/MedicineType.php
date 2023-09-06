@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\data\runtime\RuntimeDataEnum;
 use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\utils\EnumTrait;
@@ -38,7 +39,7 @@ use pocketmine\utils\EnumTrait;
  * @method static MedicineType EYE_DROPS()
  * @method static MedicineType TONIC()
  */
-final class MedicineType{
+final class MedicineType implements RuntimeDataEnum{
 	use EnumTrait {
 		__construct as Enum___construct;
 	}

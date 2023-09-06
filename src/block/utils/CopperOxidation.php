@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\data\runtime\RuntimeDataEnum;
 use pocketmine\utils\EnumTrait;
 
 /**
@@ -36,7 +37,7 @@ use pocketmine\utils\EnumTrait;
  * @method static CopperOxidation OXIDIZED()
  * @method static CopperOxidation WEATHERED()
  */
-final class CopperOxidation{
+final class CopperOxidation implements RuntimeDataEnum{
 	use EnumTrait {
 		__construct as Enum___construct;
 		register as Enum_register;

@@ -46,7 +46,7 @@ class Dirt extends Opaque{
 	}
 
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
-		$w->dirtType($this->dirtType);
+		$w->enum($this->dirtType);
 	}
 
 	public function getDirtType() : DirtType{ return $this->dirtType; }

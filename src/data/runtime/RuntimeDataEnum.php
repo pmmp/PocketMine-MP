@@ -21,25 +21,16 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\utils;
+namespace pocketmine\data\runtime;
 
-use pocketmine\block\Block;
-use pocketmine\data\runtime\RuntimeDataDescriber;
-
-trait ColoredTrait{
-	/** @var DyeColor */
-	private $color;
-
-	/** @see Block::describeBlockItemState() */
-	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
-		$w->enum($this->color);
-	}
-
-	public function getColor() : DyeColor{ return $this->color; }
-
-	/** @return $this */
-	public function setColor(DyeColor $color) : self{
-		$this->color = $color;
-		return $this;
-	}
+/**
+ * EnumTrait users must implement this if they want to be understood by {@link RuntimeDataDescriber}.
+ * Native enums can also implement this and shim {@link self::getAll()} to {@link UnitEnum::cases()}.
+ */
+interface RuntimeDataEnum{
+	/**
+	 * Used by {@link RuntimeEnumMetadata::from()}.
+	 * @return static[]
+	 */
+	public static function getAll() : array;
 }

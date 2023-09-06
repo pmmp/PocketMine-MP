@@ -37,7 +37,7 @@ class Potion extends Item implements ConsumableItem{
 	}
 
 	protected function describeState(RuntimeDataDescriber $w) : void{
-		$w->potionType($this->potionType);
+		$w->enum($this->potionType);
 	}
 
 	public function getType() : PotionType{ return $this->potionType; }

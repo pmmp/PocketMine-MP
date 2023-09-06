@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\data\runtime\RuntimeDataEnum;
 use pocketmine\utils\EnumTrait;
 
 /**
@@ -36,7 +37,7 @@ use pocketmine\utils\EnumTrait;
  * @method static BellAttachmentType ONE_WALL()
  * @method static BellAttachmentType TWO_WALLS()
  */
-final class BellAttachmentType{
+final class BellAttachmentType implements RuntimeDataEnum{
 	use EnumTrait;
 
 	protected static function setup() : void{

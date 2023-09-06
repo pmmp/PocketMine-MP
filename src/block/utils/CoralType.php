@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\data\runtime\RuntimeDataEnum;
 use pocketmine\utils\EnumTrait;
 
 /**
@@ -37,7 +38,7 @@ use pocketmine\utils\EnumTrait;
  * @method static CoralType HORN()
  * @method static CoralType TUBE()
  */
-final class CoralType{
+final class CoralType implements RuntimeDataEnum{
 	use EnumTrait {
 		__construct as Enum___construct;
 	}

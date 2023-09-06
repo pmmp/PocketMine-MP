@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\data\runtime\RuntimeDataEnum;
 use pocketmine\utils\EnumTrait;
 
 /**
@@ -35,7 +36,7 @@ use pocketmine\utils\EnumTrait;
  * @method static FroglightType PEARLESCENT()
  * @method static FroglightType VERDANT()
  */
-final class FroglightType{
+final class FroglightType implements RuntimeDataEnum{
 	use EnumTrait;
 
 	protected static function setup() : void{

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\data\runtime\RuntimeDataEnum;
 use pocketmine\utils\EnumTrait;
 
 /**
@@ -43,7 +44,7 @@ use pocketmine\utils\EnumTrait;
  * @method static MushroomBlockType CAP_WEST()
  * @method static MushroomBlockType PORES()
  */
-final class MushroomBlockType{
+final class MushroomBlockType implements RuntimeDataEnum{
 	use EnumTrait;
 
 	protected static function setup() : void{

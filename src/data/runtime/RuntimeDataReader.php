@@ -29,10 +29,12 @@ use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\data\runtime\RuntimeDataEnum;
+use function get_class;
 use function intdiv;
 
 final class RuntimeDataReader implements RuntimeDataDescriber{
-	use RuntimeEnumDeserializerTrait;
+	use LegacyRuntimeEnumDescriberTrait;
 
 	private int $offset = 0;
 
@@ -211,6 +213,17 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 		}
 
 		$railShape = $result;
+	}
+
+	public function enum(RuntimeDataEnum &$case) : void{
+		$metadata = RuntimeEnumMetadata::from($case);
+		$raw = $this->readInt($metadata->bits);
+		$result = $metadata->intToEnum($raw);
+		if($result === null){
+			throw new InvalidSerializedRuntimeDataException("Invalid serialized value $raw for " . get_class($case));
+		}
+
+		$case = $result;
 	}
 
 	public function getOffset() : int{ return $this->offset; }

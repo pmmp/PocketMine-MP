@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\data\runtime\RuntimeDataEnum;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\utils\EnumTrait;
@@ -44,7 +45,7 @@ use pocketmine\utils\EnumTrait;
  * @method static SuspiciousStewType TULIP()
  * @method static SuspiciousStewType WITHER_ROSE()
  */
-final class SuspiciousStewType{
+final class SuspiciousStewType implements RuntimeDataEnum{
 	use EnumTrait {
 		__construct as Enum___construct;
 	}

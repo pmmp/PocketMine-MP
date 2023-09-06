@@ -26,6 +26,7 @@ namespace pocketmine\data\runtime;
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Facing;
+use pocketmine\data\runtime\RuntimeDataEnum;
 
 /**
  * Interface implemented by {@link RuntimeDataReader}, {@link RuntimeDataWriter} and {@link RuntimeDataSizeCalculator}.
@@ -77,4 +78,10 @@ interface RuntimeDataDescriber extends RuntimeEnumDescriber{
 	public function railShape(int &$railShape) : void;
 
 	public function straightOnlyRailShape(int &$railShape) : void;
+
+	/**
+	 * @phpstan-template T of RuntimeDataEnum
+	 * @phpstan-param T $case
+	 */
+	public function enum(RuntimeDataEnum &$case) : void;
 }

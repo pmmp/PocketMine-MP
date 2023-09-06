@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\color\Color;
+use pocketmine\data\runtime\RuntimeDataEnum;
 use pocketmine\utils\EnumTrait;
 
 /**
@@ -49,7 +50,7 @@ use pocketmine\utils\EnumTrait;
  * @method static DyeColor WHITE()
  * @method static DyeColor YELLOW()
  */
-final class DyeColor{
+final class DyeColor implements RuntimeDataEnum{
 	use EnumTrait {
 		__construct as Enum___construct;
 	}
