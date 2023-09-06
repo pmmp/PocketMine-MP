@@ -32,10 +32,16 @@ use pocketmine\event\CancellableTrait;
 class ConsoleOutputEvent extends ServerEvent implements Cancellable{
 	use CancellableTrait;
 
+	/**
+	 * @var string[] $messages
+	 */
 	public function __construct(
 		protected array $messages
 	){}
 
+	/**
+	 * @return string[]
+	 */
 	public function getMessages() : array{
 		return $this->messages;
 	}
