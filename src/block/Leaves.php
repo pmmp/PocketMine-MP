@@ -116,10 +116,15 @@ class Leaves extends Transparent{
 
 	public function onRandomTick() : void{
 		if(!$this->noDecay && $this->checkDecay){
-			$ev = new LeavesDecayEvent($this);
-			$ev->call();
+			$cancelled = false;
+			if(LeavesDecayEvent::hasHandlers()){
+				$ev = new LeavesDecayEvent($this);
+				$ev->call();
+				$cancelled = $ev->isCancelled();
+			}
+
 			$world = $this->position->getWorld();
-			if($ev->isCancelled() || $this->findLog($this->position)){
+			if($cancelled || $this->findLog($this->position)){
 				$this->checkDecay = false;
 				$world->setBlock($this->position, $this, false);
 			}else{

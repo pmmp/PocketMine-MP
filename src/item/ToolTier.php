@@ -45,12 +45,12 @@ final class ToolTier{
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self("wood", 1, 60, 5, 2),
-			new self("gold", 2, 33, 5, 12),
-			new self("stone", 3, 132, 6, 4),
-			new self("iron", 4, 251, 7, 6),
-			new self("diamond", 5, 1562, 8, 8),
-			new self("netherite", 6, 2032, 9, 9)
+			new self("wood", 1, 60, 5, 2, 15),
+			new self("gold", 2, 33, 5, 12, 22),
+			new self("stone", 3, 132, 6, 4, 5),
+			new self("iron", 4, 251, 7, 6, 14),
+			new self("diamond", 5, 1562, 8, 8, 10),
+			new self("netherite", 6, 2032, 9, 9, 15)
 		);
 	}
 
@@ -59,7 +59,8 @@ final class ToolTier{
 		private int $harvestLevel,
 		private int $maxDurability,
 		private int $baseAttackPoints,
-		private int $baseEfficiency
+		private int $baseEfficiency,
+		private int $enchantability
 	){
 		$this->Enum___construct($name);
 	}
@@ -78,5 +79,15 @@ final class ToolTier{
 
 	public function getBaseEfficiency() : int{
 		return $this->baseEfficiency;
+	}
+
+	/**
+	 * Returns the value that defines how enchantable the item is.
+	 *
+	 * The higher an item's enchantability is, the more likely it will be to gain high-level enchantments
+	 * or multiple enchantments upon being enchanted in an enchanting table.
+	 */
+	public function getEnchantability() : int{
+		return $this->enchantability;
 	}
 }

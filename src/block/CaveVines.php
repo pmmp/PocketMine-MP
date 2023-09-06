@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
-use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
@@ -114,16 +114,12 @@ class CaveVines extends Flowable{
 			return true;
 		}
 		if($item instanceof Fertilizer){
-			$ev = new BlockGrowEvent($this, (clone $this)
+			$newState = (clone $this)
 				->setBerries(true)
-				->setHead(!$this->getSide(Facing::DOWN)->hasSameTypeId($this))
-			);
-			$ev->call();
-			if($ev->isCancelled()){
-				return false;
+				->setHead(!$this->getSide(Facing::DOWN)->hasSameTypeId($this));
+			if(BlockEventHelper::grow($this, $newState, $player)){
+				$item->pop();
 			}
-			$item->pop();
-			$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
 			return true;
 		}
 		return false;
@@ -141,16 +137,10 @@ class CaveVines extends Flowable{
 			if($world->isInWorld($growthPos->getFloorX(), $growthPos->getFloorY(), $growthPos->getFloorZ())){
 				$block = $world->getBlock($growthPos);
 				if($block->getTypeId() === BlockTypeIds::AIR){
-					$ev = new BlockGrowEvent($block, VanillaBlocks::CAVE_VINES()
+					$newState = VanillaBlocks::CAVE_VINES()
 						->setAge($this->age + 1)
-						->setBerries(mt_rand(1, 9) === 1)
-					);
-
-					$ev->call();
-
-					if(!$ev->isCancelled()){
-						$world->setBlock($growthPos, $ev->getNewState());
-					}
+						->setBerries(mt_rand(1, 9) === 1);
+					BlockEventHelper::grow($block, $newState, null);
 				}
 			}
 		}

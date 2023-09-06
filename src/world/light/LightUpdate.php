@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\light;
 
+use pocketmine\math\Facing;
 use pocketmine\world\format\LightArray;
 use pocketmine\world\format\SubChunk;
 use pocketmine\world\utils\SubChunkExplorer;
@@ -33,15 +34,6 @@ use function max;
 
 //TODO: make light updates asynchronous
 abstract class LightUpdate{
-	private const ADJACENTS = [
-		[ 1,  0,  0],
-		[-1,  0,  0],
-		[ 0,  1,  0],
-		[ 0, -1,  0],
-		[ 0,  0,  1],
-		[ 0,  0, -1]
-	];
-
 	public const BASE_LIGHT_FILTER = 1;
 
 	/**
@@ -78,7 +70,7 @@ abstract class LightUpdate{
 
 	protected function getHighestAdjacentLight(int $x, int $y, int $z) : int{
 		$adjacent = 0;
-		foreach(self::ADJACENTS as [$ox, $oy, $oz]){
+		foreach(Facing::OFFSET as [$ox, $oy, $oz]){
 			if(($adjacent = max($adjacent, $this->getEffectiveLight($x + $ox, $y + $oy, $z + $oz))) === 15){
 				break;
 			}
@@ -123,7 +115,7 @@ abstract class LightUpdate{
 			$touched++;
 			[$x, $y, $z, $oldAdjacentLight] = $context->removalQueue->dequeue();
 
-			foreach(self::ADJACENTS as [$ox, $oy, $oz]){
+			foreach(Facing::OFFSET as [$ox, $oy, $oz]){
 				$cx = $x + $ox;
 				$cy = $y + $oy;
 				$cz = $z + $oz;
@@ -163,7 +155,7 @@ abstract class LightUpdate{
 				continue;
 			}
 
-			foreach(self::ADJACENTS as [$ox, $oy, $oz]){
+			foreach(Facing::OFFSET as [$ox, $oy, $oz]){
 				$cx = $x + $ox;
 				$cy = $y + $oy;
 				$cz = $z + $oz;

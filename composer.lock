@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "27b30e0ed071ba0e6733545a695c3586",
+    "content-hash": "9237955fd97ba7c1697d80314fa9ad6f",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -480,16 +480,16 @@
         },
         {
             "name": "pocketmine/math",
-            "version": "0.4.3",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "47a243d320b01c8099d65309967934c188111549"
+                "reference": "dc132d93595b32e9f210d78b3c8d43c662a5edbf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/47a243d320b01c8099d65309967934c188111549",
-                "reference": "47a243d320b01c8099d65309967934c188111549",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/dc132d93595b32e9f210d78b3c8d43c662a5edbf",
+                "reference": "dc132d93595b32e9f210d78b3c8d43c662a5edbf",
                 "shasum": ""
             },
             "require": {
@@ -498,7 +498,7 @@
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "1.8.2",
+                "phpstan/phpstan": "~1.10.3",
                 "phpstan/phpstan-strict-rules": "^1.0",
                 "phpunit/phpunit": "^8.5 || ^9.5"
             },
@@ -515,22 +515,22 @@
             "description": "PHP library containing math related code used in PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/Math/issues",
-                "source": "https://github.com/pmmp/Math/tree/0.4.3"
+                "source": "https://github.com/pmmp/Math/tree/1.0.0"
             },
-            "time": "2022-08-25T18:43:37+00:00"
+            "time": "2023-08-03T12:56:33+00:00"
         },
         {
             "name": "pocketmine/nbt",
-            "version": "0.3.4",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "62c02464c6708b2467c1e1a2af01af09d5114eda"
+                "reference": "20540271cb59e04672cb163dca73366f207974f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/62c02464c6708b2467c1e1a2af01af09d5114eda",
-                "reference": "62c02464c6708b2467c1e1a2af01af09d5114eda",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/20540271cb59e04672cb163dca73366f207974f1",
+                "reference": "20540271cb59e04672cb163dca73366f207974f1",
                 "shasum": ""
             },
             "require": {
@@ -540,7 +540,7 @@
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "1.10.3",
+                "phpstan/phpstan": "1.10.25",
                 "phpstan/phpstan-strict-rules": "^1.0",
                 "phpunit/phpunit": "^9.5"
             },
@@ -557,9 +557,9 @@
             "description": "PHP library for working with Named Binary Tags",
             "support": {
                 "issues": "https://github.com/pmmp/NBT/issues",
-                "source": "https://github.com/pmmp/NBT/tree/0.3.4"
+                "source": "https://github.com/pmmp/NBT/tree/1.0.0"
             },
-            "time": "2023-04-10T11:31:20+00:00"
+            "time": "2023-07-14T13:01:49+00:00"
         },
         {
             "name": "pocketmine/netresearch-jsonmapper",
