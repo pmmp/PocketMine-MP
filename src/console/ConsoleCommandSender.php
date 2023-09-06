@@ -74,6 +74,10 @@ class ConsoleCommandSender implements CommandSender{
 		return "CONSOLE";
 	}
 
+	public function getMessage() : string{
+		return $this->message;
+	}
+
 	public function getScreenLineHeight() : int{
 		return $this->lineHeight ?? PHP_INT_MAX;
 	}
@@ -83,9 +87,5 @@ class ConsoleCommandSender implements CommandSender{
 			throw new \InvalidArgumentException("Line height must be at least 1");
 		}
 		$this->lineHeight = $height;
-	}
-
-	public function getMessage() : string{
-		return $this->message;
 	}
 }
