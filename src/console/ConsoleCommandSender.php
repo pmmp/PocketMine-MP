@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\console;
 
 use pocketmine\command\CommandSender;
-use pocketmine\event\server\ConsoleOutputEvent;
 use pocketmine\lang\Language;
 use pocketmine\lang\Translatable;
 use pocketmine\permission\DefaultPermissions;
@@ -43,6 +42,8 @@ class ConsoleCommandSender implements CommandSender{
 	/** @phpstan-var positive-int|null */
 	protected ?int $lineHeight = null;
 
+	protected string $message = '';
+
 	public function __construct(
 		private Server $server,
 		private Language $language
@@ -60,16 +61,13 @@ class ConsoleCommandSender implements CommandSender{
 
 	public function sendMessage(Translatable|string $message) : void{
 		if($message instanceof Translatable){
-			$message = $this->getLanguage()->translate($message);
+			$this->message = $message = $this->getLanguage()->translate($message);
 		}
 
 		$messages = explode("\n", trim($message));
 		foreach($messages as $line){
 			Terminal::writeLine(TextFormat::GREEN . "Command output | " . TextFormat::addBase(TextFormat::WHITE, $line));
 		}
-
-		$event = new ConsoleOutputEvent($messages);
-		$event->call();
 	}
 
 	public function getName() : string{
@@ -85,5 +83,9 @@ class ConsoleCommandSender implements CommandSender{
 			throw new \InvalidArgumentException("Line height must be at least 1");
 		}
 		$this->lineHeight = $height;
+	}
+
+	public function getMessage() : string{
+		return $this->message;
 	}
 }

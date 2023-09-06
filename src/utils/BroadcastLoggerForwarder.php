@@ -41,6 +41,8 @@ use const PHP_INT_MAX;
 final class BroadcastLoggerForwarder implements CommandSender{
 	use PermissibleDelegateTrait;
 
+	protected Translatable|string $message = '';
+
 	public function __construct(
 		private Server $server, //annoying useless dependency
 		private \Logger $logger,
@@ -56,10 +58,11 @@ final class BroadcastLoggerForwarder implements CommandSender{
 
 	public function sendMessage(Translatable|string $message) : void{
 		if($message instanceof Translatable){
-			$this->logger->info($this->language->translate($message));
-		}else{
-			$this->logger->info($message);
+			$message = $this->language->translate($message);
 		}
+
+		$this->message = $message;
+		$this->logger->info($message);
 	}
 
 	public function getServer() : Server{
@@ -76,5 +79,9 @@ final class BroadcastLoggerForwarder implements CommandSender{
 
 	public function setScreenLineHeight(?int $height) : void{
 		//NOOP
+	}
+
+	public function getMessage() : string{
+		return $this->message;
 	}
 }

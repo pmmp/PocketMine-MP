@@ -28,7 +28,6 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
-use pocketmine\ServerProperties;
 use pocketmine\world\World;
 use function count;
 
@@ -55,7 +54,7 @@ class DifficultyCommand extends VanillaCommand{
 		}
 
 		if($difficulty !== -1){
-			$sender->getServer()->getConfigGroup()->setConfigInt(ServerProperties::DIFFICULTY, $difficulty);
+			$sender->getServer()->getConfigGroup()->setConfigInt("difficulty", $difficulty);
 
 			//TODO: add per-world support
 			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){

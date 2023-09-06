@@ -50,4 +50,10 @@ interface CommandSender extends Permissible{
 	 * @phpstan-param positive-int|null $height
 	 */
 	public function setScreenLineHeight(?int $height) : void;
+
+	/**
+	 * This function is used to get the message from the console.
+	 * @return string
+	 */
+	public function getMessage() : string;
 }
