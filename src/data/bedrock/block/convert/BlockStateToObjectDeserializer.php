@@ -28,6 +28,7 @@ use pocketmine\block\Block;
 use pocketmine\block\CaveVines;
 use pocketmine\block\ChorusFlower;
 use pocketmine\block\Light;
+use pocketmine\block\PinkPetals;
 use pocketmine\block\Slab;
 use pocketmine\block\Stair;
 use pocketmine\block\SweetBerryBush;
@@ -1175,6 +1176,13 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSlab(Ids::OXIDIZED_CUT_COPPER_SLAB, Ids::OXIDIZED_DOUBLE_CUT_COPPER_SLAB, fn() => Helper::decodeCopper(Blocks::CUT_COPPER_SLAB(), CopperOxidation::OXIDIZED()));
 		$this->mapStairs(Ids::OXIDIZED_CUT_COPPER_STAIRS, fn() => Helper::decodeCopper(Blocks::CUT_COPPER_STAIRS(), CopperOxidation::OXIDIZED()));
 		$this->map(Ids::PEARLESCENT_FROGLIGHT, fn(Reader $in) => Blocks::FROGLIGHT()->setFroglightType(FroglightType::PEARLESCENT())->setAxis($in->readPillarAxis()));
+		$this->map(Ids::PINK_PETALS, function(Reader $in) : Block{
+			//Pink petals only uses 0-3, but GROWTH state can go up to 7
+			$growth = $in->readBoundedInt(StateNames::GROWTH, 0, 7);
+			return Blocks::PINK_PETALS()
+				->setFacing($in->readLegacyHorizontalFacing())
+				->setCount(min($growth + 1, PinkPetals::MAX_COUNT));
+		});
 		$this->mapStairs(Ids::POLISHED_ANDESITE_STAIRS, fn() => Blocks::POLISHED_ANDESITE_STAIRS());
 		$this->map(Ids::POLISHED_BASALT, function(Reader $in) : Block{
 			return Blocks::POLISHED_BASALT()

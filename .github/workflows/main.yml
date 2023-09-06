@@ -158,6 +158,9 @@ jobs:
       - name: Regenerate BedrockData available files constants
         run: php build/generate-bedrockdata-path-consts.php
 
+      - name: Regenerate YmlServerProperties constants
+        run: php build/generate-pocketmine-yml-property-consts.php
+
       - name: Verify code is unchanged
         run: |
           git diff

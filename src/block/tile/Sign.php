@@ -68,6 +68,8 @@ class Sign extends Spawnable{
 	}
 
 	protected SignText $text;
+	private bool $waxed = false;
+
 	protected ?int $editorEntityRuntimeId = null;
 
 	public function __construct(World $world, Vector3 $pos){
@@ -101,6 +103,7 @@ class Sign extends Spawnable{
 			}
 			$this->text = new SignText($text);
 		}
+		$this->waxed = $nbt->getByte(self::TAG_WAXED, 0) !== 0;
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
@@ -113,6 +116,7 @@ class Sign extends Spawnable{
 		$nbt->setInt(self::TAG_TEXT_COLOR, Binary::signInt($this->text->getBaseColor()->toARGB()));
 		$nbt->setByte(self::TAG_GLOWING_TEXT, $this->text->isGlowing() ? 1 : 0);
 		$nbt->setByte(self::TAG_LEGACY_BUG_RESOLVE, 1);
+		$nbt->setByte(self::TAG_WAXED, $this->waxed ? 1 : 0);
 	}
 
 	public function getText() : SignText{
@@ -122,6 +126,10 @@ class Sign extends Spawnable{
 	public function setText(SignText $text) : void{
 		$this->text = $text;
 	}
+
+	public function isWaxed() : bool{ return $this->waxed; }
+
+	public function setWaxed(bool $waxed) : void{ $this->waxed = $waxed; }
 
 	/**
 	 * Returns the entity runtime ID of the player who placed this sign. Only the player whose entity ID matches this
@@ -153,7 +161,7 @@ class Sign extends Spawnable{
 			->setByte(self::TAG_GLOWING_TEXT, 0)
 			->setByte(self::TAG_PERSIST_FORMATTING, 1)
 		);
-		$nbt->setByte(self::TAG_WAXED, 0);
+		$nbt->setByte(self::TAG_WAXED, $this->waxed ? 1 : 0);
 		$nbt->setLong(self::TAG_LOCKED_FOR_EDITING_BY, $this->editorEntityRuntimeId ?? -1);
 	}
 }

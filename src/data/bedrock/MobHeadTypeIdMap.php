@@ -28,18 +28,8 @@ use pocketmine\utils\SingletonTrait;
 
 final class MobHeadTypeIdMap{
 	use SingletonTrait;
-
-	/**
-	 * @var MobHeadType[]
-	 * @phpstan-var array<int, MobHeadType>
-	 */
-	private array $idToEnum = [];
-
-	/**
-	 * @var int[]
-	 * @phpstan-var array<int, int>
-	 */
-	private array $enumToId = [];
+	/** @phpstan-use IntSaveIdMapTrait<MobHeadType> */
+	use IntSaveIdMapTrait;
 
 	private function __construct(){
 		$this->register(0, MobHeadType::SKELETON());
@@ -49,21 +39,5 @@ final class MobHeadTypeIdMap{
 		$this->register(4, MobHeadType::CREEPER());
 		$this->register(5, MobHeadType::DRAGON());
 		$this->register(6, MobHeadType::PIGLIN());
-	}
-
-	private function register(int $id, MobHeadType $type) : void{
-		$this->idToEnum[$id] = $type;
-		$this->enumToId[$type->id()] = $id;
-	}
-
-	public function fromId(int $id) : ?MobHeadType{
-		return $this->idToEnum[$id] ?? null;
-	}
-
-	public function toId(MobHeadType $type) : int{
-		if(!isset($this->enumToId[$type->id()])){
-			throw new \InvalidArgumentException("Type does not have a mapped ID");
-		}
-		return $this->enumToId[$type->id()];
 	}
 }
