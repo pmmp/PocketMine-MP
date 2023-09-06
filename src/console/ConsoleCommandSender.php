@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\console;
 
 use pocketmine\command\CommandSender;
+use pocketmine\event\server\ConsoleOutputEvent;
 use pocketmine\lang\Language;
 use pocketmine\lang\Translatable;
 use pocketmine\permission\DefaultPermissions;
@@ -62,9 +63,13 @@ class ConsoleCommandSender implements CommandSender{
 			$message = $this->getLanguage()->translate($message);
 		}
 
-		foreach(explode("\n", trim($message)) as $line){
+		$messages = explode("\n", trim($message));
+		foreach($messages as $line){
 			Terminal::writeLine(TextFormat::GREEN . "Command output | " . TextFormat::addBase(TextFormat::WHITE, $line));
 		}
+
+		$event = new ConsoleOutputEvent($messages);
+		$event->call();
 	}
 
 	public function getName() : string{
