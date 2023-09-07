@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\ColoredTrait;
-use pocketmine\block\utils\DyeColor;
 
 final class StainedHardenedClay extends HardenedClay{
 	use ColoredTrait;

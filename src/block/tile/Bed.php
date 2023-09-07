@@ -25,10 +25,8 @@ namespace pocketmine\block\tile;
 
 use pocketmine\block\utils\DyeColor;
 use pocketmine\data\bedrock\DyeColorIdMap;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\world\World;
 
 class Bed extends Spawnable{
 	public const TAG_COLOR = "color";

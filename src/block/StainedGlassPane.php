@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\ColoredTrait;
-use pocketmine\block\utils\DyeColor;
 
 final class StainedGlassPane extends GlassPane{
 	use ColoredTrait;

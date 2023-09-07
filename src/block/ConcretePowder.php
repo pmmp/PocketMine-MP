@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\ColoredTrait;
-use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\math\Facing;

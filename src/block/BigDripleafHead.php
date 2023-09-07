@@ -30,7 +30,6 @@ use pocketmine\entity\projectile\Projectile;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\RayTraceResult;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\sound\DripleafTiltDownSound;
 use pocketmine\world\sound\DripleafTiltUpSound;
 

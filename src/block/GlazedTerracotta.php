@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\ColoredTrait;
-use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 
 class GlazedTerracotta extends Opaque{
