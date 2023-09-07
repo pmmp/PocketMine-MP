@@ -31,7 +31,7 @@ use function array_flip;
 use function spl_object_id;
 
 final class RuntimeDataWriter implements RuntimeDataDescriber{
-	use RuntimeEnumSerializerTrait;
+	use LegacyRuntimeEnumDescriberTrait;
 
 	private int $value = 0;
 	private int $offset = 0;
@@ -172,6 +172,11 @@ final class RuntimeDataWriter implements RuntimeDataDescriber{
 
 	public function straightOnlyRailShape(int &$railShape) : void{
 		$this->int(3, $railShape);
+	}
+
+	public function enum(\UnitEnum &$case) : void{
+		$metadata = RuntimeEnumMetadata::from($case);
+		$this->writeInt($metadata->bits, $metadata->enumToInt($case));
 	}
 
 	public function getValue() : int{ return $this->value; }

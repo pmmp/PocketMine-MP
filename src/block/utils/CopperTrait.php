@@ -38,7 +38,7 @@ trait CopperTrait{
 	private bool $waxed = false;
 
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
-		$w->copperOxidation($this->oxidation);
+		$w->enum($this->oxidation);
 		$w->bool($this->waxed);
 	}
 

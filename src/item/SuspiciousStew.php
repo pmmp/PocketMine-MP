@@ -30,7 +30,7 @@ class SuspiciousStew extends Food{
 	private SuspiciousStewType $suspiciousStewType = SuspiciousStewType::POPPY;
 
 	protected function describeState(RuntimeDataDescriber $w) : void{
-		$w->suspiciousStewType($this->suspiciousStewType);
+		$w->enum($this->suspiciousStewType);
 	}
 
 	public function getType() : SuspiciousStewType{ return $this->suspiciousStewType; }

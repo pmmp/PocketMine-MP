@@ -31,7 +31,7 @@ final class Froglight extends SimplePillar{
 	private FroglightType $froglightType = FroglightType::OCHRE;
 
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
-		$w->froglightType($this->froglightType);
+		$w->enum($this->froglightType);
 	}
 
 	public function getFroglightType() : FroglightType{ return $this->froglightType; }

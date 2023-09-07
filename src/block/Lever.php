@@ -40,7 +40,7 @@ class Lever extends Flowable{
 	protected bool $activated = false;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->leverFacing($this->facing);
+		$w->enum($this->facing);
 		$w->bool($this->activated);
 	}
 

@@ -41,7 +41,7 @@ class Dirt extends Opaque{
 	protected DirtType $dirtType = DirtType::NORMAL;
 
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
-		$w->dirtType($this->dirtType);
+		$w->enum($this->dirtType);
 	}
 
 	public function getDirtType() : DirtType{ return $this->dirtType; }

@@ -44,7 +44,7 @@ final class Bell extends Transparent{
 	private BellAttachmentType $attachmentType = BellAttachmentType::FLOOR;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->bellAttachmentType($this->attachmentType);
+		$w->enum($this->attachmentType);
 		$w->horizontalFacing($this->facing);
 	}
 

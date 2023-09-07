@@ -39,7 +39,7 @@ class BigDripleafHead extends BaseBigDripleaf{
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		parent::describeBlockOnlyState($w);
-		$w->dripleafState($this->leafState);
+		$w->enum($this->leafState);
 	}
 
 	protected function isHead() : bool{

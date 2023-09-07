@@ -32,7 +32,7 @@ trait ColoredTrait{
 
 	/** @see Block::describeBlockItemState() */
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
-		$w->dyeColor($this->color);
+		$w->enum($this->color);
 	}
 
 	public function getColor() : DyeColor{ return $this->color; }

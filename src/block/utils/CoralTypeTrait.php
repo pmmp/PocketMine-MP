@@ -32,7 +32,7 @@ trait CoralTypeTrait{
 
 	/** @see Block::describeBlockItemState() */
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
-		$w->coralType($this->coralType);
+		$w->enum($this->coralType);
 		$w->bool($this->dead);
 	}
 

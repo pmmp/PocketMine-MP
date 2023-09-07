@@ -32,7 +32,7 @@ class Medicine extends Item implements ConsumableItem{
 	private MedicineType $medicineType = MedicineType::EYE_DROPS;
 
 	protected function describeState(RuntimeDataDescriber $w) : void{
-		$w->medicineType($this->medicineType);
+		$w->enum($this->medicineType);
 	}
 
 	public function getType() : MedicineType{ return $this->medicineType; }

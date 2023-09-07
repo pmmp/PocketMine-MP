@@ -28,7 +28,7 @@ use pocketmine\math\Facing;
 use function count;
 
 final class RuntimeDataSizeCalculator implements RuntimeDataDescriber{
-	use RuntimeEnumSizeCalculatorTrait;
+	use LegacyRuntimeEnumDescriberTrait;
 
 	private int $bits = 0;
 
@@ -94,5 +94,10 @@ final class RuntimeDataSizeCalculator implements RuntimeDataDescriber{
 
 	public function straightOnlyRailShape(int &$railShape) : void{
 		$this->addBits(3);
+	}
+
+	public function enum(\UnitEnum &$case) : void{
+		$metadata = RuntimeEnumMetadata::from($case);
+		$this->addBits($metadata->bits);
 	}
 }

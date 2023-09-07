@@ -34,7 +34,7 @@ class SplashPotion extends ProjectileItem{
 	private PotionType $potionType = PotionType::WATER;
 
 	protected function describeState(RuntimeDataDescriber $w) : void{
-		$w->potionType($this->potionType);
+		$w->enum($this->potionType);
 	}
 
 	public function getType() : PotionType{ return $this->potionType; }

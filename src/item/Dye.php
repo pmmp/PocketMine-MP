@@ -30,7 +30,7 @@ class Dye extends Item{
 	private DyeColor $color = DyeColor::BLACK;
 
 	protected function describeState(RuntimeDataDescriber $w) : void{
-		$w->dyeColor($this->color);
+		$w->enum($this->color);
 	}
 
 	public function getColor() : DyeColor{

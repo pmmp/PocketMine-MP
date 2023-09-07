@@ -45,7 +45,7 @@ class MobHead extends Flowable{
 	protected int $rotation = self::MIN_ROTATION; //TODO: split this into floor skull and wall skull handling
 
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
-		$w->mobHeadType($this->mobHeadType);
+		$w->enum($this->mobHeadType);
 	}
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
