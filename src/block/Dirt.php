@@ -75,7 +75,7 @@ class Dirt extends Opaque{
 			$item->pop();
 			$world->setBlock($down->position, VanillaBlocks::HANGING_ROOTS());
 			//TODO: bonemeal particles, growth sounds
-		}elseif(($item instanceof Potion || $item instanceof SplashPotion) && $item->getType()->equals(PotionType::WATER())){
+		}elseif(($item instanceof Potion || $item instanceof SplashPotion) && $item->getType() === PotionType::WATER){
 			$item->pop();
 			$world->setBlock($this->position, VanillaBlocks::MUD());
 			$world->addSound($this->position, new WaterSplashSound(0.5));

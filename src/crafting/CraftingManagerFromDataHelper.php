@@ -270,9 +270,9 @@ final class CraftingManagerFromDataHelper{
 		}
 		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'smelting.json'), FurnaceRecipeData::class) as $recipe){
 			$furnaceType = match ($recipe->block){
-				"furnace" => FurnaceType::FURNACE(),
-				"blast_furnace" => FurnaceType::BLAST_FURNACE(),
-				"smoker" => FurnaceType::SMOKER(),
+				"furnace" => FurnaceType::FURNACE,
+				"blast_furnace" => FurnaceType::BLAST_FURNACE,
+				"smoker" => FurnaceType::SMOKER,
 				//TODO: campfire
 				default => null
 			};

@@ -36,11 +36,6 @@ class ConcretePowder extends Opaque implements Fallable{
 		onNearbyBlockChange as protected startFalling;
 	}
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->color = DyeColor::WHITE();
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
-
 	public function onNearbyBlockChange() : void{
 		if(($water = $this->getAdjacentWater()) !== null){
 			BlockEventHelper::form($this, VanillaBlocks::CONCRETE()->setColor($this->color), $water);

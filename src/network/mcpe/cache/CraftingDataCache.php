@@ -120,12 +120,11 @@ final class CraftingDataCache{
 			}
 		}
 
-		foreach(FurnaceType::getAll() as $furnaceType){
-			$typeTag = match($furnaceType->id()){
-				FurnaceType::FURNACE()->id() => FurnaceRecipeBlockName::FURNACE,
-				FurnaceType::BLAST_FURNACE()->id() => FurnaceRecipeBlockName::BLAST_FURNACE,
-				FurnaceType::SMOKER()->id() => FurnaceRecipeBlockName::SMOKER,
-				default => throw new AssumptionFailedError("Unreachable"),
+		foreach(FurnaceType::cases() as $furnaceType){
+			$typeTag = match($furnaceType){
+				FurnaceType::FURNACE => FurnaceRecipeBlockName::FURNACE,
+				FurnaceType::BLAST_FURNACE => FurnaceRecipeBlockName::BLAST_FURNACE,
+				FurnaceType::SMOKER => FurnaceRecipeBlockName::SMOKER,
 			};
 			foreach($manager->getFurnaceRecipeManager($furnaceType)->getAll() as $recipe){
 				$input = $converter->coreRecipeIngredientToNet($recipe->getInput())->getDescriptor();

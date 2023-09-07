@@ -181,24 +181,23 @@ final class BlockStateWriter{
 
 	/** @return $this */
 	public function writeColor(DyeColor $color) : self{
-		$this->writeString(BlockStateNames::COLOR, match($color->id()){
-			DyeColor::BLACK()->id() => StringValues::COLOR_BLACK,
-			DyeColor::BLUE()->id() => StringValues::COLOR_BLUE,
-			DyeColor::BROWN()->id() => StringValues::COLOR_BROWN,
-			DyeColor::CYAN()->id() => StringValues::COLOR_CYAN,
-			DyeColor::GRAY()->id() => StringValues::COLOR_GRAY,
-			DyeColor::GREEN()->id() => StringValues::COLOR_GREEN,
-			DyeColor::LIGHT_BLUE()->id() => StringValues::COLOR_LIGHT_BLUE,
-			DyeColor::LIGHT_GRAY()->id() => StringValues::COLOR_SILVER,
-			DyeColor::LIME()->id() => StringValues::COLOR_LIME,
-			DyeColor::MAGENTA()->id() => StringValues::COLOR_MAGENTA,
-			DyeColor::ORANGE()->id() => StringValues::COLOR_ORANGE,
-			DyeColor::PINK()->id() => StringValues::COLOR_PINK,
-			DyeColor::PURPLE()->id() => StringValues::COLOR_PURPLE,
-			DyeColor::RED()->id() => StringValues::COLOR_RED,
-			DyeColor::WHITE()->id() => StringValues::COLOR_WHITE,
-			DyeColor::YELLOW()->id() => StringValues::COLOR_YELLOW,
-			default => throw new BlockStateSerializeException("Invalid Color " . $color->name())
+		$this->writeString(BlockStateNames::COLOR, match($color){
+			DyeColor::BLACK => StringValues::COLOR_BLACK,
+			DyeColor::BLUE => StringValues::COLOR_BLUE,
+			DyeColor::BROWN => StringValues::COLOR_BROWN,
+			DyeColor::CYAN => StringValues::COLOR_CYAN,
+			DyeColor::GRAY => StringValues::COLOR_GRAY,
+			DyeColor::GREEN => StringValues::COLOR_GREEN,
+			DyeColor::LIGHT_BLUE => StringValues::COLOR_LIGHT_BLUE,
+			DyeColor::LIGHT_GRAY => StringValues::COLOR_SILVER,
+			DyeColor::LIME => StringValues::COLOR_LIME,
+			DyeColor::MAGENTA => StringValues::COLOR_MAGENTA,
+			DyeColor::ORANGE => StringValues::COLOR_ORANGE,
+			DyeColor::PINK => StringValues::COLOR_PINK,
+			DyeColor::PURPLE => StringValues::COLOR_PURPLE,
+			DyeColor::RED => StringValues::COLOR_RED,
+			DyeColor::WHITE => StringValues::COLOR_WHITE,
+			DyeColor::YELLOW => StringValues::COLOR_YELLOW,
 		});
 		return $this;
 	}

@@ -33,12 +33,7 @@ use pocketmine\world\World;
 class Bed extends Spawnable{
 	public const TAG_COLOR = "color";
 
-	private DyeColor $color;
-
-	public function __construct(World $world, Vector3 $pos){
-		$this->color = DyeColor::RED();
-		parent::__construct($world, $pos);
-	}
+	private DyeColor $color = DyeColor::RED;
 
 	public function getColor() : DyeColor{
 		return $this->color;
@@ -55,7 +50,7 @@ class Bed extends Spawnable{
 		){
 			$this->color = $color;
 		}else{
-			$this->color = DyeColor::RED(); //TODO: this should be an error, but we don't have the systems to handle it yet
+			$this->color = DyeColor::RED; //TODO: this should be an error, but we don't have the systems to handle it yet
 		}
 	}
 

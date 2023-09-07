@@ -28,7 +28,7 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 
 trait ColoredTrait{
 	/** @var DyeColor */
-	private $color;
+	private $color = DyeColor::WHITE;
 
 	/** @see Block::describeBlockItemState() */
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{

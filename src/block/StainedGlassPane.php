@@ -28,9 +28,4 @@ use pocketmine\block\utils\DyeColor;
 
 final class StainedGlassPane extends GlassPane{
 	use ColoredTrait;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->color = DyeColor::WHITE();
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
 }

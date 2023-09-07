@@ -29,12 +29,7 @@ use pocketmine\player\Player;
 
 class Potion extends Item implements ConsumableItem{
 
-	private PotionType $potionType;
-
-	public function __construct(ItemIdentifier $identifier, string $name){
-		$this->potionType = PotionType::WATER();
-		parent::__construct($identifier, $name);
-	}
+	private PotionType $potionType = PotionType::WATER;
 
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->potionType($this->potionType);

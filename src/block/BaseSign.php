@@ -172,13 +172,13 @@ abstract class BaseSign extends Transparent{
 		}
 
 		$dyeColor = $item instanceof Dye ? $item->getColor() : match($item->getTypeId()){
-			ItemTypeIds::BONE_MEAL => DyeColor::WHITE(),
-			ItemTypeIds::LAPIS_LAZULI => DyeColor::BLUE(),
-			ItemTypeIds::COCOA_BEANS => DyeColor::BROWN(),
+			ItemTypeIds::BONE_MEAL => DyeColor::WHITE,
+			ItemTypeIds::LAPIS_LAZULI => DyeColor::BLUE,
+			ItemTypeIds::COCOA_BEANS => DyeColor::BROWN,
 			default => null
 		};
 		if($dyeColor !== null){
-			$color = $dyeColor->equals(DyeColor::BLACK()) ? new Color(0, 0, 0) : $dyeColor->getRgbValue();
+			$color = $dyeColor === DyeColor::BLACK ? new Color(0, 0, 0) : $dyeColor->getRgbValue();
 			if(
 				$color->toARGB() !== $this->text->getBaseColor()->toARGB() &&
 				$this->doSignChange(new SignText($this->text->getLines(), $color, $this->text->isGlowing()), $player, $item)

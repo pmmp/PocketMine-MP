@@ -510,7 +510,7 @@ final class ItemSerializerDeserializerRegistrar{
 	 * complex to implement in a generic way.
 	 */
 	private function registerMiscItemMappings() : void{
-		foreach(DyeColor::getAll() as $color){
+		foreach(DyeColor::cases() as $color){
 			$id = DyeColorIdMap::getInstance()->toItemId($color);
 			$this->deserializer?->map($id, fn() => Items::DYE()->setColor($color));
 		}

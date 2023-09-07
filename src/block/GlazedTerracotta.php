@@ -30,9 +30,4 @@ use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 class GlazedTerracotta extends Opaque{
 	use ColoredTrait;
 	use FacesOppositePlacingPlayerTrait;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->color = DyeColor::BLACK();
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
 }
