@@ -57,8 +57,7 @@ class PlayerCreationEvent extends Event{
 	/** @phpstan-var Promise<mixed>[] $promises */
 	private array $promises = [];
 
-	public function __construct(private NetworkSession $session){
-	}
+	public function __construct(private NetworkSession $session){}
 
 	public function getNetworkSession() : NetworkSession{
 		return $this->session;

@@ -582,7 +582,7 @@ class Server{
 			$playerPromiseResolver->resolve($player);
 		};
 
-		$playerCreationRejected = function (Translatable|string $message) use ($playerPromiseResolver, $session) : void {
+		$playerCreationRejected = function (Translatable|string $message) use ($playerPromiseResolver, $session) : void{
 			if($session->isConnected()){
 				$session->disconnectWithError($message);
 			}
@@ -590,7 +590,7 @@ class Server{
 		};
 
 		$promise = Promise::all($ev->getPromises());
-		$promise->onCompletion(function () use ($playerPos, $world, $playerCreation, $playerCreationRejected) : void {
+		$promise->onCompletion(function () use ($playerPos, $world, $playerCreation, $playerCreationRejected) : void{
 			if($playerPos === null){ //new player or no valid position due to world not being loaded
 				$world->requestSafeSpawn()->onCompletion(
 					function(Position $spawn) use ($playerCreation, $world) : void{
@@ -603,7 +603,7 @@ class Server{
 			}else{ //returning player with a valid position - safe spawn not required
 				$playerCreation($playerPos);
 			}
-		}, function () use ($playerCreationRejected) : void {
+		}, function () use ($playerCreationRejected) : void{
 			$playerCreationRejected("Failed to create player");
 		});
 

@@ -83,8 +83,10 @@ final class Promise{
 					}
 				},
 				function() use ($resolver, &$continue) : void{
-					$continue = false;
-					$resolver->reject();
+					if($continue){
+						$continue = false;
+						$resolver->reject();
+					}
 				}
 			);
 
