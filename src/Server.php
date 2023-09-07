@@ -569,7 +569,7 @@ class Server{
 		/** @phpstan-var PromiseResolver<Player> $playerPromiseResolver */
 		$playerPromiseResolver = new PromiseResolver();
 
-		$playerCreation = function(Location $location) use ($class, $session, $playerInfo, $authenticated, $offlinePlayerData, $playerPromiseResolver) : void{
+		$createPlayer = function(Location $location) use ($playerPromiseResolver, $class, $session, $playerInfo, $authenticated, $offlinePlayerData) : void{
 			if(!$session->isConnected()){
 				$playerPromiseResolver->reject();
 				return;
@@ -590,18 +590,18 @@ class Server{
 		};
 
 		$promise = Promise::all($ev->getPromises());
-		$promise->onCompletion(function () use ($playerPos, $world, $playerCreation, $playerCreationRejected) : void{
+		$promise->onCompletion(function () use ($playerPos, $world, $createPlayer, $playerCreationRejected) : void{
 			if($playerPos === null){ //new player or no valid position due to world not being loaded
 				$world->requestSafeSpawn()->onCompletion(
-					function(Position $spawn) use ($playerCreation, $world) : void{
-						$playerCreation(Location::fromObject($spawn, $world));
+					function(Position $spawn) use ($createPlayer, $world) : void{
+						$createPlayer(Location::fromObject($spawn, $world));
 					},
 					function() use ($playerCreationRejected) : void{
 						$playerCreationRejected(KnownTranslationFactory::pocketmine_disconnect_error_respawn());
 					}
 				);
 			}else{ //returning player with a valid position - safe spawn not required
-				$playerCreation($playerPos);
+				$createPlayer($playerPos);
 			}
 		}, function () use ($playerCreationRejected) : void{
 			$playerCreationRejected("Failed to create player");
