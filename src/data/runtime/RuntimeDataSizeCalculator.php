@@ -85,7 +85,7 @@ final class RuntimeDataSizeCalculator implements RuntimeDataDescriber{
 	}
 
 	public function brewingStandSlots(array &$slots) : void{
-		$this->addBits(count(BrewingStandSlot::getAll()));
+		$this->addBits(count(BrewingStandSlot::cases()));
 	}
 
 	public function railShape(int &$railShape) : void{
@@ -96,7 +96,7 @@ final class RuntimeDataSizeCalculator implements RuntimeDataDescriber{
 		$this->addBits(3);
 	}
 
-	public function enum(RuntimeDataEnum &$case) : void{
+	public function enum(\UnitEnum &$case) : void{
 		$metadata = RuntimeEnumMetadata::from($case);
 		$this->addBits($metadata->bits);
 	}

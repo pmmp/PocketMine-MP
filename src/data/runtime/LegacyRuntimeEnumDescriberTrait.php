@@ -31,10 +31,10 @@ namespace pocketmine\data\runtime;
 trait LegacyRuntimeEnumDescriberTrait{
 
 	/**
-	 * @phpstan-template T of RuntimeDataEnum
+	 * @phpstan-template T of \UnitEnum
 	 * @phpstan-param T $case
 	 */
-	abstract protected function enum(RuntimeDataEnum &$case) : void;
+	abstract protected function enum(\UnitEnum &$case) : void;
 
 	public function bellAttachmentType(\pocketmine\block\utils\BellAttachmentType &$value) : void{
 		$this->enum($value);

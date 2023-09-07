@@ -82,6 +82,6 @@ class DragonEgg extends Transparent implements Fallable{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 }

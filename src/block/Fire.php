@@ -60,7 +60,7 @@ class Fire extends BaseFire{
 	}
 
 	private function canBeSupportedBy(Block $block) : bool{
-		return $block->getSupportType(Facing::UP)->equals(SupportType::FULL());
+		return $block->getSupportType(Facing::UP) === SupportType::FULL;
 	}
 
 	public function onNearbyBlockChange() : void{

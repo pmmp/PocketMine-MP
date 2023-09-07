@@ -60,7 +60,7 @@ abstract class PressurePlate extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
@@ -71,7 +71,7 @@ abstract class PressurePlate extends Transparent{
 	}
 
 	private function canBeSupportedAt(Block $block) : bool{
-		return !$block->getAdjacentSupportType(Facing::DOWN)->equals(SupportType::NONE());
+		return $block->getAdjacentSupportType(Facing::DOWN) !== SupportType::NONE;
 	}
 
 	public function onNearbyBlockChange() : void{

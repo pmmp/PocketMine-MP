@@ -27,7 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 
 trait CoralTypeTrait{
-	protected CoralType $coralType;
+	protected CoralType $coralType = CoralType::TUBE;
 	protected bool $dead = false;
 
 	/** @see Block::describeBlockItemState() */

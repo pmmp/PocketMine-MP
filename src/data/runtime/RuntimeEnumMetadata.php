@@ -35,7 +35,7 @@ use const SORT_STRING;
  * A big hack to allow lazily associating enum cases with packed bit values for RuntimeDataDescriber :)
  *
  * @internal
- * @phpstan-template T of object
+ * @phpstan-template T of \UnitEnum
  */
 final class RuntimeEnumMetadata{
 	public readonly int $bits;
@@ -52,13 +52,13 @@ final class RuntimeEnumMetadata{
 	private readonly array $enumToInt;
 
 	/**
-	 * @param object[] $members
-	 * @phpstan-param array<string, T> $members
+	 * @param \UnitEnum[] $members
+	 * @phpstan-param list<T> $members
 	 */
 	public function __construct(
 		array $members
 	){
-		ksort($members, SORT_STRING); //sort by name to ensure consistent ordering (and thus consistent bit assignments)
+		usort($members, fn(\UnitEnum $a, \UnitEnum $b) => $a->name <=> $b->name); //sort by name to ensure consistent ordering (and thus consistent bit assignments)
 
 		$this->bits = (int) ceil(log(count($members), 2));
 		$this->intToEnum = array_values($members);
@@ -92,17 +92,21 @@ final class RuntimeEnumMetadata{
 	private static array $cache = [];
 
 	/**
-	 * @phpstan-template TEnum of RuntimeDataEnum
+	 * @phpstan-template TEnum of \UnitEnum
 	 * @phpstan-param TEnum $case
 	 *
 	 * @phpstan-return self<TEnum>
 	 */
-	public static function from(RuntimeDataEnum $case) : self{
+	public static function from(\UnitEnum $case) : self{
 		$class = $case::class;
 		/** @phpstan-var self<TEnum>|null $metadata */
 		$metadata = self::$cache[$class] ?? null;
 		if($metadata === null){
-			$cases = $case::getAll();
+			/**
+			 * PHPStan can't infer this correctly :( https://github.com/phpstan/phpstan/issues/7162
+			 * @phpstan-var list<TEnum> $cases
+			 */
+			$cases = $case::cases();
 			self::$cache[$class] = $metadata = new self($cases);
 		}
 
