@@ -52,4 +52,52 @@ final class Promise{
 	public function isResolved() : bool{
 		return $this->shared->resolved;
 	}
+
+	/**
+	 * Returns a promise that will resolve only once all the Promises in
+	 * `$promises` have resolved. The resolution value of the returned promise
+	 * will be an array containing the resolution values of each Promises in
+	 * `$promises` indexed by the respective Promises' array keys.
+	 *
+	 * @phpstan-param Promise<mixed>[] $promises
+	 *
+	 * @phpstan-return Promise<array<int, mixed>>
+	 */
+	public static function all(array $promises) : Promise {
+		/** @phpstan-var PromiseResolver<array<int, mixed>> $resolver */
+		$resolver = new PromiseResolver();
+		$values = [];
+		$toResolve = 0;
+		$continue = true;
+
+		foreach($promises as $key => $promise){
+			$toResolve++;
+			$values[$key] = null;
+
+			$promise->onCompletion(
+				function(mixed $value) use ($resolver, $key, &$toResolve, &$continue, &$values) : void{
+					$values[$key] = $value;
+
+					if(--$toResolve === 0 && $continue){
+						$resolver->resolve($values);
+					}
+				},
+				function() use ($resolver, &$continue) : void{
+					$continue = false;
+					$resolver->reject();
+				}
+			);
+
+			if(!$continue){
+				break;
+			}
+		}
+
+		if($toResolve === 0){
+			$continue = false;
+			$resolver->resolve($values);
+		}
+
+		return $resolver->getPromise();
+	}
 }

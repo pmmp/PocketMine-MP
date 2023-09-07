@@ -26,16 +26,15 @@ namespace pocketmine\event\player;
 use pocketmine\event\Event;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\player\Player;
+use pocketmine\promise\Promise;
 use pocketmine\utils\Utils;
-use pocketmine\utils\WaitGroup;
 use function is_a;
 
 /**
  * Allows the use of custom Player classes. This enables overriding built-in Player methods to change behaviour that is
  * not possible to alter any other way.
  *
- * Allows the plugins to specify tasks that need to be executed before the login sequence take place, use WaitGroup to
- * manage synchronization between tasks.
+ * Allows the plugins to specify promise that need to be completed before the login sequence take place.
  *
  * You probably don't need this event, and found your way here because you looked at some code in an old plugin that
  * abused it (very common). Instead of using custom player classes, you should consider making session classes instead.
@@ -55,10 +54,10 @@ class PlayerCreationEvent extends Event{
 	private string $baseClass = Player::class;
 	/** @phpstan-var class-string<Player> */
 	private string $playerClass = Player::class;
-	private WaitGroup $waitGroup;
+	/** @phpstan-var Promise<mixed>[] $promises */
+	private array $promises = [];
 
 	public function __construct(private NetworkSession $session){
-		$this->waitGroup = new WaitGroup();
 	}
 
 	public function getNetworkSession() : NetworkSession{
@@ -118,18 +117,24 @@ class PlayerCreationEvent extends Event{
 	}
 
 	/**
-	 * The typical use cases for this WaitGroup include:
-	 *  - Carrying out preparatory tasks such as configuring default preferences, setting
-	 * player-specific settings, or initializing in-game assets.
-	 *  - Loading initial player data from external sources or databases before the login sequence begins.
-	 *  - Providing a tailored welcome experience, which might involve sending messages,
-	 * granting starter items, or awarding initial rewards.
+	 * Retrieves all promises that have been added to the event.
+	 * These promises must be completed before the player login sequence is initiated.
 	 *
-	 * Note:
-	 *  After each task is completed, it's essential to call the `done` method of the WaitGroup
-	 *  to signal its completion and allow the WaitGroup to determine when to proceed.
+	 * @return Promise[]
+	 * @phpstan-return Promise<mixed>[]
 	 */
-	public function getWaitGroup() : WaitGroup{
-		return $this->waitGroup;
+	public function getPromises() : array{
+		return $this->promises;
+	}
+
+	/**
+	 * Adds a promise to the waiting list for the login sequence.
+	 * Once all the promises that have been added have been completed,
+	 * the player login sequence will be initiated and the player will be created.
+	 *
+	 * @param Promise<mixed> $promise
+	 */
+	public function addPromise(Promise $promise) : void{
+		$this->promises[] = $promise;
 	}
 }

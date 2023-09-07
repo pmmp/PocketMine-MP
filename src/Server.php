@@ -569,7 +569,12 @@ class Server{
 		/** @phpstan-var PromiseResolver<Player> $playerPromiseResolver */
 		$playerPromiseResolver = new PromiseResolver();
 
-		$createPlayer = function(Location $location) use ($playerPromiseResolver, $class, $session, $playerInfo, $authenticated, $offlinePlayerData) : void{
+		$playerCreation = function(Location $location) use ($class, $session, $playerInfo, $authenticated, $offlinePlayerData, $playerPromiseResolver) : void{
+			if(!$session->isConnected()){
+				$playerPromiseResolver->reject();
+				return;
+			}
+
 			$player = new $class($this, $session, $playerInfo, $authenticated, $location, $offlinePlayerData);
 			if(!$player->hasPlayedBefore()){
 				$player->onGround = true; //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
@@ -577,26 +582,29 @@ class Server{
 			$playerPromiseResolver->resolve($player);
 		};
 
-		$ev->getWaitGroup()->wait(function() use ($playerPos, $world, $playerPromiseResolver, $session, $createPlayer) : void{
+		$playerCreationRejected = function (Translatable|string $message) use ($playerPromiseResolver, $session) : void {
+			if($session->isConnected()){
+				$session->disconnectWithError($message);
+			}
+			$playerPromiseResolver->reject();
+		};
+
+		$promise = Promise::all($ev->getPromises());
+		$promise->onCompletion(function () use ($playerPos, $world, $playerCreation, $playerCreationRejected) : void {
 			if($playerPos === null){ //new player or no valid position due to world not being loaded
 				$world->requestSafeSpawn()->onCompletion(
-					function(Position $spawn) use ($createPlayer, $playerPromiseResolver, $session, $world) : void{
-						if(!$session->isConnected()){
-							$playerPromiseResolver->reject();
-							return;
-						}
-						$createPlayer(Location::fromObject($spawn, $world));
+					function(Position $spawn) use ($playerCreation, $world) : void{
+						$playerCreation(Location::fromObject($spawn, $world));
 					},
-					function() use ($playerPromiseResolver, $session) : void{
-						if($session->isConnected()){
-							$session->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_respawn());
-						}
-						$playerPromiseResolver->reject();
+					function() use ($playerCreationRejected) : void{
+						$playerCreationRejected(KnownTranslationFactory::pocketmine_disconnect_error_respawn());
 					}
 				);
 			}else{ //returning player with a valid position - safe spawn not required
-				$createPlayer($playerPos);
+				$playerCreation($playerPos);
 			}
+		}, function () use ($playerCreationRejected) : void {
+			$playerCreationRejected("Failed to create player");
 		});
 
 		return $playerPromiseResolver->getPromise();
