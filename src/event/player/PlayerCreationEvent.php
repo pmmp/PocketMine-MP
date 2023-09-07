@@ -27,6 +27,7 @@ use pocketmine\event\Event;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\player\Player;
 use pocketmine\promise\Promise;
+use pocketmine\utils\ObjectSet;
 use pocketmine\utils\Utils;
 use function is_a;
 
@@ -54,10 +55,12 @@ class PlayerCreationEvent extends Event{
 	private string $baseClass = Player::class;
 	/** @phpstan-var class-string<Player> */
 	private string $playerClass = Player::class;
-	/** @phpstan-var Promise<mixed>[] $promises */
-	private array $promises = [];
 
-	public function __construct(private NetworkSession $session){}
+	/** @phpstan-param ObjectSet<Promise<mixed>> $promises */
+	public function __construct(
+		private NetworkSession $session,
+		private ObjectSet $promises
+	){}
 
 	public function getNetworkSession() : NetworkSession{
 		return $this->session;
@@ -116,17 +119,6 @@ class PlayerCreationEvent extends Event{
 	}
 
 	/**
-	 * Retrieves all promises that have been added to the event.
-	 * These promises must be completed before the player login sequence is initiated.
-	 *
-	 * @return Promise[]
-	 * @phpstan-return Promise<mixed>[]
-	 */
-	public function getPromises() : array{
-		return $this->promises;
-	}
-
-	/**
 	 * Adds a promise to the waiting list for the login sequence.
 	 * Once all the promises that have been added have been completed,
 	 * the player login sequence will be initiated and the player will be created.
@@ -134,6 +126,6 @@ class PlayerCreationEvent extends Event{
 	 * @param Promise<mixed> $promise
 	 */
 	public function addPromise(Promise $promise) : void{
-		$this->promises[] = $promise;
+		$this->promises->add($promise);
 	}
 }

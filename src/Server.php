@@ -106,6 +106,7 @@ use pocketmine\utils\Internet;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\NotCloneable;
 use pocketmine\utils\NotSerializable;
+use pocketmine\utils\ObjectSet;
 use pocketmine\utils\Process;
 use pocketmine\utils\SignalHandler;
 use pocketmine\utils\Terminal;
@@ -553,7 +554,9 @@ class Server{
 	 * @phpstan-return Promise<Player>
 	 */
 	public function createPlayer(NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, ?CompoundTag $offlinePlayerData) : Promise{
-		$ev = new PlayerCreationEvent($session);
+		/** @phpstan-var ObjectSet<Promise<mixed>> $promises */
+		$promises = new ObjectSet();
+		$ev = new PlayerCreationEvent($session, $promises);
 		$ev->call();
 		$class = $ev->getPlayerClass();
 
@@ -589,7 +592,7 @@ class Server{
 			$playerPromiseResolver->reject();
 		};
 
-		$promise = Promise::all($ev->getPromises());
+		$promise = Promise::all($promises->toArray());
 		$promise->onCompletion(function () use ($playerPos, $world, $createPlayer, $playerCreationRejected) : void{
 			if($playerPos === null){ //new player or no valid position due to world not being loaded
 				$world->requestSafeSpawn()->onCompletion(
