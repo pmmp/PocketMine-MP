@@ -174,7 +174,6 @@ use pocketmine\data\bedrock\block\convert\BlockStateSerializerHelper as Helper;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
-use pocketmine\utils\AssumptionFailedError;
 use function get_class;
 
 final class BlockObjectToStateSerializer implements BlockStateSerializer{
