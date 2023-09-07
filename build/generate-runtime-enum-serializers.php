@@ -38,7 +38,6 @@ use pocketmine\item\MedicineType;
 use pocketmine\item\PotionType;
 use pocketmine\item\SuspiciousStewType;
 use function array_key_first;
-use function array_keys;
 use function array_map;
 use function ceil;
 use function count;
@@ -50,6 +49,7 @@ use function lcfirst;
 use function log;
 use function ob_get_clean;
 use function ob_start;
+use function usort;
 use const SORT_STRING;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
@@ -130,32 +130,32 @@ function getBitsRequired(array $members) : int{
 }
 
 /**
- * @param object[] $members
- * @phpstan-param array<string, object> $members
+ * @param \UnitEnum[] $members
+ * @phpstan-param list<\UnitEnum> $members
  *
  * @return string[]
  * @phpstan-return list<string>
  */
 function stringifyEnumMembers(array $members, string $enumClass) : array{
-	ksort($members, SORT_STRING);
-	return array_map(fn(string $enumCaseName) => "\\$enumClass::$enumCaseName()", array_keys($members));
+	usort($members, fn(\UnitEnum $a, \UnitEnum $b) => $a->name <=> $b->name);
+	return array_map(fn(\UnitEnum $case) => "\\$enumClass::$case->name", $members);
 }
 
 $enumsUsed = [
-	BellAttachmentType::getAll(),
-	CopperOxidation::getAll(),
-	CoralType::getAll(),
-	DirtType::getAll(),
-	DripleafState::getAll(),
-	DyeColor::getAll(),
-	FroglightType::getAll(),
-	LeverFacing::getAll(),
-	MedicineType::getAll(),
-	MushroomBlockType::getAll(),
-	MobHeadType::getAll(),
-	SlabType::getAll(),
-	SuspiciousStewType::getAll(),
-	PotionType::getAll()
+	BellAttachmentType::cases(),
+	CopperOxidation::cases(),
+	CoralType::cases(),
+	DirtType::cases(),
+	DripleafState::cases(),
+	DyeColor::cases(),
+	FroglightType::cases(),
+	LeverFacing::cases(),
+	MedicineType::cases(),
+	MushroomBlockType::cases(),
+	MobHeadType::cases(),
+	SlabType::cases(),
+	SuspiciousStewType::cases(),
+	PotionType::cases()
 ];
 
 $readerFuncs = [
