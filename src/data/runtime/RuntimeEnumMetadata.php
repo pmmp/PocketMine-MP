@@ -26,10 +26,9 @@ namespace pocketmine\data\runtime;
 use function array_values;
 use function ceil;
 use function count;
-use function ksort;
 use function log;
 use function spl_object_id;
-use const SORT_STRING;
+use function usort;
 
 /**
  * A big hack to allow lazily associating enum cases with packed bit values for RuntimeDataDescriber :)
