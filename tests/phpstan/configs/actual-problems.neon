@@ -1218,5 +1218,5 @@ parameters:
 		-
 			message: "#^Right side of && is always true\\.$#"
 			count: 1
-			path: src/promise/Promise.php
+			path: ../../../src/promise/Promise.php
 
