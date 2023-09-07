@@ -174,7 +174,6 @@ use pocketmine\data\bedrock\block\convert\BlockStateSerializerHelper as Helper;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
-use pocketmine\utils\AssumptionFailedError;
 use function get_class;
 
 final class BlockObjectToStateSerializer implements BlockStateSerializer{
@@ -271,161 +270,153 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	private function registerCandleSerializers() : void{
 		$this->map(Blocks::CANDLE(), fn(Candle $block) => Helper::encodeCandle($block, new Writer(Ids::CANDLE)));
 		$this->map(Blocks::DYED_CANDLE(), fn(DyedCandle $block) => Helper::encodeCandle($block, new Writer(match($block->getColor()){
-			DyeColor::BLACK() => Ids::BLACK_CANDLE,
-			DyeColor::BLUE() => Ids::BLUE_CANDLE,
-			DyeColor::BROWN() => Ids::BROWN_CANDLE,
-			DyeColor::CYAN() => Ids::CYAN_CANDLE,
-			DyeColor::GRAY() => Ids::GRAY_CANDLE,
-			DyeColor::GREEN() => Ids::GREEN_CANDLE,
-			DyeColor::LIGHT_BLUE() => Ids::LIGHT_BLUE_CANDLE,
-			DyeColor::LIGHT_GRAY() => Ids::LIGHT_GRAY_CANDLE,
-			DyeColor::LIME() => Ids::LIME_CANDLE,
-			DyeColor::MAGENTA() => Ids::MAGENTA_CANDLE,
-			DyeColor::ORANGE() => Ids::ORANGE_CANDLE,
-			DyeColor::PINK() => Ids::PINK_CANDLE,
-			DyeColor::PURPLE() => Ids::PURPLE_CANDLE,
-			DyeColor::RED() => Ids::RED_CANDLE,
-			DyeColor::WHITE() => Ids::WHITE_CANDLE,
-			DyeColor::YELLOW() => Ids::YELLOW_CANDLE,
-			default => throw new AssumptionFailedError("Unhandled DyeColor " . $block->getColor()->name())
+			DyeColor::BLACK => Ids::BLACK_CANDLE,
+			DyeColor::BLUE => Ids::BLUE_CANDLE,
+			DyeColor::BROWN => Ids::BROWN_CANDLE,
+			DyeColor::CYAN => Ids::CYAN_CANDLE,
+			DyeColor::GRAY => Ids::GRAY_CANDLE,
+			DyeColor::GREEN => Ids::GREEN_CANDLE,
+			DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_CANDLE,
+			DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_CANDLE,
+			DyeColor::LIME => Ids::LIME_CANDLE,
+			DyeColor::MAGENTA => Ids::MAGENTA_CANDLE,
+			DyeColor::ORANGE => Ids::ORANGE_CANDLE,
+			DyeColor::PINK => Ids::PINK_CANDLE,
+			DyeColor::PURPLE => Ids::PURPLE_CANDLE,
+			DyeColor::RED => Ids::RED_CANDLE,
+			DyeColor::WHITE => Ids::WHITE_CANDLE,
+			DyeColor::YELLOW => Ids::YELLOW_CANDLE,
 		})));
 		$this->map(Blocks::CAKE_WITH_CANDLE(), fn(CakeWithCandle $block) => Writer::create(Ids::CANDLE_CAKE)
 			->writeBool(StateNames::LIT, $block->isLit()));
 		$this->map(Blocks::CAKE_WITH_DYED_CANDLE(), fn(CakeWithDyedCandle $block) => Writer::create(match($block->getColor()){
-			DyeColor::BLACK() => Ids::BLACK_CANDLE_CAKE,
-			DyeColor::BLUE() => Ids::BLUE_CANDLE_CAKE,
-			DyeColor::BROWN() => Ids::BROWN_CANDLE_CAKE,
-			DyeColor::CYAN() => Ids::CYAN_CANDLE_CAKE,
-			DyeColor::GRAY() => Ids::GRAY_CANDLE_CAKE,
-			DyeColor::GREEN() => Ids::GREEN_CANDLE_CAKE,
-			DyeColor::LIGHT_BLUE() => Ids::LIGHT_BLUE_CANDLE_CAKE,
-			DyeColor::LIGHT_GRAY() => Ids::LIGHT_GRAY_CANDLE_CAKE,
-			DyeColor::LIME() => Ids::LIME_CANDLE_CAKE,
-			DyeColor::MAGENTA() => Ids::MAGENTA_CANDLE_CAKE,
-			DyeColor::ORANGE() => Ids::ORANGE_CANDLE_CAKE,
-			DyeColor::PINK() => Ids::PINK_CANDLE_CAKE,
-			DyeColor::PURPLE() => Ids::PURPLE_CANDLE_CAKE,
-			DyeColor::RED() => Ids::RED_CANDLE_CAKE,
-			DyeColor::WHITE() => Ids::WHITE_CANDLE_CAKE,
-			DyeColor::YELLOW() => Ids::YELLOW_CANDLE_CAKE,
-			default => throw new AssumptionFailedError("Unhandled DyeColor " . $block->getColor()->name())
+			DyeColor::BLACK => Ids::BLACK_CANDLE_CAKE,
+			DyeColor::BLUE => Ids::BLUE_CANDLE_CAKE,
+			DyeColor::BROWN => Ids::BROWN_CANDLE_CAKE,
+			DyeColor::CYAN => Ids::CYAN_CANDLE_CAKE,
+			DyeColor::GRAY => Ids::GRAY_CANDLE_CAKE,
+			DyeColor::GREEN => Ids::GREEN_CANDLE_CAKE,
+			DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_CANDLE_CAKE,
+			DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_CANDLE_CAKE,
+			DyeColor::LIME => Ids::LIME_CANDLE_CAKE,
+			DyeColor::MAGENTA => Ids::MAGENTA_CANDLE_CAKE,
+			DyeColor::ORANGE => Ids::ORANGE_CANDLE_CAKE,
+			DyeColor::PINK => Ids::PINK_CANDLE_CAKE,
+			DyeColor::PURPLE => Ids::PURPLE_CANDLE_CAKE,
+			DyeColor::RED => Ids::RED_CANDLE_CAKE,
+			DyeColor::WHITE => Ids::WHITE_CANDLE_CAKE,
+			DyeColor::YELLOW => Ids::YELLOW_CANDLE_CAKE,
 		})->writeBool(StateNames::LIT, $block->isLit()));
 	}
 
 	public function registerFlatColorBlockSerializers() : void{
 		$this->map(Blocks::GLAZED_TERRACOTTA(), function(GlazedTerracotta $block) : Writer{
-			return Writer::create(match($color = $block->getColor()){
-				DyeColor::BLACK() => Ids::BLACK_GLAZED_TERRACOTTA,
-				DyeColor::BLUE() => Ids::BLUE_GLAZED_TERRACOTTA,
-				DyeColor::BROWN() => Ids::BROWN_GLAZED_TERRACOTTA,
-				DyeColor::CYAN() => Ids::CYAN_GLAZED_TERRACOTTA,
-				DyeColor::GRAY() => Ids::GRAY_GLAZED_TERRACOTTA,
-				DyeColor::GREEN() => Ids::GREEN_GLAZED_TERRACOTTA,
-				DyeColor::LIGHT_BLUE() => Ids::LIGHT_BLUE_GLAZED_TERRACOTTA,
-				DyeColor::LIGHT_GRAY() => Ids::SILVER_GLAZED_TERRACOTTA,
-				DyeColor::LIME() => Ids::LIME_GLAZED_TERRACOTTA,
-				DyeColor::MAGENTA() => Ids::MAGENTA_GLAZED_TERRACOTTA,
-				DyeColor::ORANGE() => Ids::ORANGE_GLAZED_TERRACOTTA,
-				DyeColor::PINK() => Ids::PINK_GLAZED_TERRACOTTA,
-				DyeColor::PURPLE() => Ids::PURPLE_GLAZED_TERRACOTTA,
-				DyeColor::RED() => Ids::RED_GLAZED_TERRACOTTA,
-				DyeColor::WHITE() => Ids::WHITE_GLAZED_TERRACOTTA,
-				DyeColor::YELLOW() => Ids::YELLOW_GLAZED_TERRACOTTA,
-				default => throw new AssumptionFailedError("Unhandled dye colour " . $color->name())
+			return Writer::create(match($block->getColor()){
+				DyeColor::BLACK => Ids::BLACK_GLAZED_TERRACOTTA,
+				DyeColor::BLUE => Ids::BLUE_GLAZED_TERRACOTTA,
+				DyeColor::BROWN => Ids::BROWN_GLAZED_TERRACOTTA,
+				DyeColor::CYAN => Ids::CYAN_GLAZED_TERRACOTTA,
+				DyeColor::GRAY => Ids::GRAY_GLAZED_TERRACOTTA,
+				DyeColor::GREEN => Ids::GREEN_GLAZED_TERRACOTTA,
+				DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_GLAZED_TERRACOTTA,
+				DyeColor::LIGHT_GRAY => Ids::SILVER_GLAZED_TERRACOTTA,
+				DyeColor::LIME => Ids::LIME_GLAZED_TERRACOTTA,
+				DyeColor::MAGENTA => Ids::MAGENTA_GLAZED_TERRACOTTA,
+				DyeColor::ORANGE => Ids::ORANGE_GLAZED_TERRACOTTA,
+				DyeColor::PINK => Ids::PINK_GLAZED_TERRACOTTA,
+				DyeColor::PURPLE => Ids::PURPLE_GLAZED_TERRACOTTA,
+				DyeColor::RED => Ids::RED_GLAZED_TERRACOTTA,
+				DyeColor::WHITE => Ids::WHITE_GLAZED_TERRACOTTA,
+				DyeColor::YELLOW => Ids::YELLOW_GLAZED_TERRACOTTA,
 			})
 				->writeHorizontalFacing($block->getFacing());
 		});
 
-		$this->map(Blocks::WOOL(), fn(Wool $block) => Writer::create(match($color = $block->getColor()){
-			DyeColor::BLACK() => Ids::BLACK_WOOL,
-			DyeColor::BLUE() => Ids::BLUE_WOOL,
-			DyeColor::BROWN() => Ids::BROWN_WOOL,
-			DyeColor::CYAN() => Ids::CYAN_WOOL,
-			DyeColor::GRAY() => Ids::GRAY_WOOL,
-			DyeColor::GREEN() => Ids::GREEN_WOOL,
-			DyeColor::LIGHT_BLUE() => Ids::LIGHT_BLUE_WOOL,
-			DyeColor::LIGHT_GRAY() => Ids::LIGHT_GRAY_WOOL,
-			DyeColor::LIME() => Ids::LIME_WOOL,
-			DyeColor::MAGENTA() => Ids::MAGENTA_WOOL,
-			DyeColor::ORANGE() => Ids::ORANGE_WOOL,
-			DyeColor::PINK() => Ids::PINK_WOOL,
-			DyeColor::PURPLE() => Ids::PURPLE_WOOL,
-			DyeColor::RED() => Ids::RED_WOOL,
-			DyeColor::WHITE() => Ids::WHITE_WOOL,
-			DyeColor::YELLOW() => Ids::YELLOW_WOOL,
-			default => throw new AssumptionFailedError("Unhandled dye colour " . $color->name())
+		$this->map(Blocks::WOOL(), fn(Wool $block) => Writer::create(match($block->getColor()){
+			DyeColor::BLACK => Ids::BLACK_WOOL,
+			DyeColor::BLUE => Ids::BLUE_WOOL,
+			DyeColor::BROWN => Ids::BROWN_WOOL,
+			DyeColor::CYAN => Ids::CYAN_WOOL,
+			DyeColor::GRAY => Ids::GRAY_WOOL,
+			DyeColor::GREEN => Ids::GREEN_WOOL,
+			DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_WOOL,
+			DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_WOOL,
+			DyeColor::LIME => Ids::LIME_WOOL,
+			DyeColor::MAGENTA => Ids::MAGENTA_WOOL,
+			DyeColor::ORANGE => Ids::ORANGE_WOOL,
+			DyeColor::PINK => Ids::PINK_WOOL,
+			DyeColor::PURPLE => Ids::PURPLE_WOOL,
+			DyeColor::RED => Ids::RED_WOOL,
+			DyeColor::WHITE => Ids::WHITE_WOOL,
+			DyeColor::YELLOW => Ids::YELLOW_WOOL,
 		}));
 
-		$this->map(Blocks::CARPET(), fn(Carpet $block) => Writer::create(match($color = $block->getColor()){
-			DyeColor::BLACK() => Ids::BLACK_CARPET,
-			DyeColor::BLUE() => Ids::BLUE_CARPET,
-			DyeColor::BROWN() => Ids::BROWN_CARPET,
-			DyeColor::CYAN() => Ids::CYAN_CARPET,
-			DyeColor::GRAY() => Ids::GRAY_CARPET,
-			DyeColor::GREEN() => Ids::GREEN_CARPET,
-			DyeColor::LIGHT_BLUE() => Ids::LIGHT_BLUE_CARPET,
-			DyeColor::LIGHT_GRAY() => Ids::LIGHT_GRAY_CARPET,
-			DyeColor::LIME() => Ids::LIME_CARPET,
-			DyeColor::MAGENTA() => Ids::MAGENTA_CARPET,
-			DyeColor::ORANGE() => Ids::ORANGE_CARPET,
-			DyeColor::PINK() => Ids::PINK_CARPET,
-			DyeColor::PURPLE() => Ids::PURPLE_CARPET,
-			DyeColor::RED() => Ids::RED_CARPET,
-			DyeColor::WHITE() => Ids::WHITE_CARPET,
-			DyeColor::YELLOW() => Ids::YELLOW_CARPET,
-			default => throw new AssumptionFailedError("Unhandled dye colour " . $color->name())
+		$this->map(Blocks::CARPET(), fn(Carpet $block) => Writer::create(match($block->getColor()){
+			DyeColor::BLACK => Ids::BLACK_CARPET,
+			DyeColor::BLUE => Ids::BLUE_CARPET,
+			DyeColor::BROWN => Ids::BROWN_CARPET,
+			DyeColor::CYAN => Ids::CYAN_CARPET,
+			DyeColor::GRAY => Ids::GRAY_CARPET,
+			DyeColor::GREEN => Ids::GREEN_CARPET,
+			DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_CARPET,
+			DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_CARPET,
+			DyeColor::LIME => Ids::LIME_CARPET,
+			DyeColor::MAGENTA => Ids::MAGENTA_CARPET,
+			DyeColor::ORANGE => Ids::ORANGE_CARPET,
+			DyeColor::PINK => Ids::PINK_CARPET,
+			DyeColor::PURPLE => Ids::PURPLE_CARPET,
+			DyeColor::RED => Ids::RED_CARPET,
+			DyeColor::WHITE => Ids::WHITE_CARPET,
+			DyeColor::YELLOW => Ids::YELLOW_CARPET,
 		}));
 
-		$this->map(Blocks::DYED_SHULKER_BOX(), fn(DyedShulkerBox $block) => Writer::create(match($color = $block->getColor()){
-			DyeColor::BLACK() => Ids::BLACK_SHULKER_BOX,
-			DyeColor::BLUE() => Ids::BLUE_SHULKER_BOX,
-			DyeColor::BROWN() => Ids::BROWN_SHULKER_BOX,
-			DyeColor::CYAN() => Ids::CYAN_SHULKER_BOX,
-			DyeColor::GRAY() => Ids::GRAY_SHULKER_BOX,
-			DyeColor::GREEN() => Ids::GREEN_SHULKER_BOX,
-			DyeColor::LIGHT_BLUE() => Ids::LIGHT_BLUE_SHULKER_BOX,
-			DyeColor::LIGHT_GRAY() => Ids::LIGHT_GRAY_SHULKER_BOX,
-			DyeColor::LIME() => Ids::LIME_SHULKER_BOX,
-			DyeColor::MAGENTA() => Ids::MAGENTA_SHULKER_BOX,
-			DyeColor::ORANGE() => Ids::ORANGE_SHULKER_BOX,
-			DyeColor::PINK() => Ids::PINK_SHULKER_BOX,
-			DyeColor::PURPLE() => Ids::PURPLE_SHULKER_BOX,
-			DyeColor::RED() => Ids::RED_SHULKER_BOX,
-			DyeColor::WHITE() => Ids::WHITE_SHULKER_BOX,
-			DyeColor::YELLOW() => Ids::YELLOW_SHULKER_BOX,
-			default => throw new AssumptionFailedError("Unhandled dye colour " . $color->name())
+		$this->map(Blocks::DYED_SHULKER_BOX(), fn(DyedShulkerBox $block) => Writer::create(match($block->getColor()){
+			DyeColor::BLACK => Ids::BLACK_SHULKER_BOX,
+			DyeColor::BLUE => Ids::BLUE_SHULKER_BOX,
+			DyeColor::BROWN => Ids::BROWN_SHULKER_BOX,
+			DyeColor::CYAN => Ids::CYAN_SHULKER_BOX,
+			DyeColor::GRAY => Ids::GRAY_SHULKER_BOX,
+			DyeColor::GREEN => Ids::GREEN_SHULKER_BOX,
+			DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_SHULKER_BOX,
+			DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_SHULKER_BOX,
+			DyeColor::LIME => Ids::LIME_SHULKER_BOX,
+			DyeColor::MAGENTA => Ids::MAGENTA_SHULKER_BOX,
+			DyeColor::ORANGE => Ids::ORANGE_SHULKER_BOX,
+			DyeColor::PINK => Ids::PINK_SHULKER_BOX,
+			DyeColor::PURPLE => Ids::PURPLE_SHULKER_BOX,
+			DyeColor::RED => Ids::RED_SHULKER_BOX,
+			DyeColor::WHITE => Ids::WHITE_SHULKER_BOX,
+			DyeColor::YELLOW => Ids::YELLOW_SHULKER_BOX,
 		}));
 
-		$this->map(Blocks::CONCRETE(), fn(Concrete $block) => Writer::create(match($color = $block->getColor()){
-			DyeColor::BLACK() => Ids::BLACK_CONCRETE,
-			DyeColor::BLUE() => Ids::BLUE_CONCRETE,
-			DyeColor::BROWN() => Ids::BROWN_CONCRETE,
-			DyeColor::CYAN() => Ids::CYAN_CONCRETE,
-			DyeColor::GRAY() => Ids::GRAY_CONCRETE,
-			DyeColor::GREEN() => Ids::GREEN_CONCRETE,
-			DyeColor::LIGHT_BLUE() => Ids::LIGHT_BLUE_CONCRETE,
-			DyeColor::LIGHT_GRAY() => Ids::LIGHT_GRAY_CONCRETE,
-			DyeColor::LIME() => Ids::LIME_CONCRETE,
-			DyeColor::MAGENTA() => Ids::MAGENTA_CONCRETE,
-			DyeColor::ORANGE() => Ids::ORANGE_CONCRETE,
-			DyeColor::PINK() => Ids::PINK_CONCRETE,
-			DyeColor::PURPLE() => Ids::PURPLE_CONCRETE,
-			DyeColor::RED() => Ids::RED_CONCRETE,
-			DyeColor::WHITE() => Ids::WHITE_CONCRETE,
-			DyeColor::YELLOW() => Ids::YELLOW_CONCRETE,
-			default => throw new AssumptionFailedError("Unhandled dye colour " . $color->name())
+		$this->map(Blocks::CONCRETE(), fn(Concrete $block) => Writer::create(match($block->getColor()){
+			DyeColor::BLACK => Ids::BLACK_CONCRETE,
+			DyeColor::BLUE => Ids::BLUE_CONCRETE,
+			DyeColor::BROWN => Ids::BROWN_CONCRETE,
+			DyeColor::CYAN => Ids::CYAN_CONCRETE,
+			DyeColor::GRAY => Ids::GRAY_CONCRETE,
+			DyeColor::GREEN => Ids::GREEN_CONCRETE,
+			DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_CONCRETE,
+			DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_CONCRETE,
+			DyeColor::LIME => Ids::LIME_CONCRETE,
+			DyeColor::MAGENTA => Ids::MAGENTA_CONCRETE,
+			DyeColor::ORANGE => Ids::ORANGE_CONCRETE,
+			DyeColor::PINK => Ids::PINK_CONCRETE,
+			DyeColor::PURPLE => Ids::PURPLE_CONCRETE,
+			DyeColor::RED => Ids::RED_CONCRETE,
+			DyeColor::WHITE => Ids::WHITE_CONCRETE,
+			DyeColor::YELLOW => Ids::YELLOW_CONCRETE,
 		}));
 	}
 
 	private function registerFlatCoralSerializers() : void{
 		$this->map(Blocks::CORAL(), fn(Coral $block) => Writer::create(
-			match($coralType = $block->getCoralType()){
-				CoralType::BRAIN() => $block->isDead() ? Ids::DEAD_BRAIN_CORAL : Ids::BRAIN_CORAL,
-				CoralType::BUBBLE() => $block->isDead() ? Ids::DEAD_BUBBLE_CORAL : Ids::BUBBLE_CORAL,
-				CoralType::FIRE() => $block->isDead() ? Ids::DEAD_FIRE_CORAL : Ids::FIRE_CORAL,
-				CoralType::HORN() => $block->isDead() ? Ids::DEAD_HORN_CORAL : Ids::HORN_CORAL,
-				CoralType::TUBE() => $block->isDead() ? Ids::DEAD_TUBE_CORAL : Ids::TUBE_CORAL,
-				default => throw new AssumptionFailedError("Unhandled coral type " . $coralType->name())
+			match($block->getCoralType()){
+				CoralType::BRAIN => $block->isDead() ? Ids::DEAD_BRAIN_CORAL : Ids::BRAIN_CORAL,
+				CoralType::BUBBLE => $block->isDead() ? Ids::DEAD_BUBBLE_CORAL : Ids::BUBBLE_CORAL,
+				CoralType::FIRE => $block->isDead() ? Ids::DEAD_FIRE_CORAL : Ids::FIRE_CORAL,
+				CoralType::HORN => $block->isDead() ? Ids::DEAD_HORN_CORAL : Ids::HORN_CORAL,
+				CoralType::TUBE => $block->isDead() ? Ids::DEAD_TUBE_CORAL : Ids::TUBE_CORAL,
 			}
 		));
 	}
@@ -966,12 +957,11 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::BIG_DRIPLEAF_HEAD(), function(BigDripleafHead $block) : Writer{
 			return Writer::create(Ids::BIG_DRIPLEAF)
 				->writeLegacyHorizontalFacing($block->getFacing())
-				->writeString(StateNames::BIG_DRIPLEAF_TILT, match($block->getLeafState()->id()){
-					DripleafState::STABLE()->id() => StringValues::BIG_DRIPLEAF_TILT_NONE,
-					DripleafState::UNSTABLE()->id() => StringValues::BIG_DRIPLEAF_TILT_UNSTABLE,
-					DripleafState::PARTIAL_TILT()->id() => StringValues::BIG_DRIPLEAF_TILT_PARTIAL_TILT,
-					DripleafState::FULL_TILT()->id() => StringValues::BIG_DRIPLEAF_TILT_FULL_TILT,
-					default => throw new BlockStateSerializeException("Invalid Dripleaf tilt type " . $block->getLeafState()->name())
+				->writeString(StateNames::BIG_DRIPLEAF_TILT, match($block->getLeafState()){
+					DripleafState::STABLE => StringValues::BIG_DRIPLEAF_TILT_NONE,
+					DripleafState::UNSTABLE => StringValues::BIG_DRIPLEAF_TILT_UNSTABLE,
+					DripleafState::PARTIAL_TILT => StringValues::BIG_DRIPLEAF_TILT_PARTIAL_TILT,
+					DripleafState::FULL_TILT => StringValues::BIG_DRIPLEAF_TILT_FULL_TILT,
 				})
 				->writeBool(StateNames::BIG_DRIPLEAF_HEAD, true);
 		});
@@ -995,9 +985,9 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::BREWING_STAND(), function(BrewingStand $block) : Writer{
 			return Writer::create(Ids::BREWING_STAND)
-				->writeBool(StateNames::BREWING_STAND_SLOT_A_BIT, $block->hasSlot(BrewingStandSlot::EAST()))
-				->writeBool(StateNames::BREWING_STAND_SLOT_B_BIT, $block->hasSlot(BrewingStandSlot::SOUTHWEST()))
-				->writeBool(StateNames::BREWING_STAND_SLOT_C_BIT, $block->hasSlot(BrewingStandSlot::NORTHWEST()));
+				->writeBool(StateNames::BREWING_STAND_SLOT_A_BIT, $block->hasSlot(BrewingStandSlot::EAST))
+				->writeBool(StateNames::BREWING_STAND_SLOT_B_BIT, $block->hasSlot(BrewingStandSlot::SOUTHWEST))
+				->writeBool(StateNames::BREWING_STAND_SLOT_C_BIT, $block->hasSlot(BrewingStandSlot::NORTHWEST));
 		});
 		$this->map(Blocks::BRICK_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab1($block, StringValues::STONE_SLAB_TYPE_BRICK));
 		$this->mapStairs(Blocks::BRICK_STAIRS(), Ids::BRICK_STAIRS);
@@ -1184,14 +1174,14 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::DIORITE_WALL(), fn(Wall $block) => Helper::encodeLegacyWall($block, StringValues::WALL_BLOCK_TYPE_DIORITE));
 		$this->map(Blocks::DIRT(), function(Dirt $block) : Writer{
 			$dirtType = $block->getDirtType();
-			if($dirtType->equals(DirtType::ROOTED())){
+			if($dirtType === DirtType::ROOTED){
 				return new Writer(Ids::DIRT_WITH_ROOTS);
 			}
 			return Writer::create(Ids::DIRT)
 				->writeString(StateNames::DIRT_TYPE, match($dirtType){
-					DirtType::COARSE() => StringValues::DIRT_TYPE_COARSE,
-					DirtType::NORMAL() => StringValues::DIRT_TYPE_NORMAL,
-					default => throw new AssumptionFailedError("Unhandled dirt type " . $dirtType->name())
+					DirtType::COARSE => StringValues::DIRT_TYPE_COARSE,
+					DirtType::NORMAL => StringValues::DIRT_TYPE_NORMAL,
+					//ROOTED was already checked above
 				});
 		});
 		$this->map(Blocks::DOUBLE_TALLGRASS(), fn(DoubleTallGrass $block) => Helper::encodeDoublePlant($block, StringValues::DOUBLE_PLANT_TYPE_GRASS, Writer::create(Ids::DOUBLE_PLANT)));
@@ -1229,10 +1219,9 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::FROGLIGHT(), function(Froglight $block){
 			return Writer::create(match($block->getFroglightType()){
-				FroglightType::OCHRE() => Ids::OCHRE_FROGLIGHT,
-				FroglightType::PEARLESCENT() => Ids::PEARLESCENT_FROGLIGHT,
-				FroglightType::VERDANT() => Ids::VERDANT_FROGLIGHT,
-				default => throw new AssumptionFailedError("Unhandled froglight type " . $block->getFroglightType()->name())
+				FroglightType::OCHRE => Ids::OCHRE_FROGLIGHT,
+				FroglightType::PEARLESCENT => Ids::PEARLESCENT_FROGLIGHT,
+				FroglightType::VERDANT => Ids::VERDANT_FROGLIGHT,
 			})
 				->writePillarAxis($block->getAxis());
 		});
@@ -1296,16 +1285,15 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::LEVER(), function(Lever $block) : Writer{
 			return Writer::create(Ids::LEVER)
 				->writeBool(StateNames::OPEN_BIT, $block->isActivated())
-				->writeString(StateNames::LEVER_DIRECTION, match($block->getFacing()->id()){
-					LeverFacing::DOWN_AXIS_Z()->id() => StringValues::LEVER_DIRECTION_DOWN_NORTH_SOUTH,
-					LeverFacing::DOWN_AXIS_X()->id() => StringValues::LEVER_DIRECTION_DOWN_EAST_WEST,
-					LeverFacing::UP_AXIS_Z()->id() => StringValues::LEVER_DIRECTION_UP_NORTH_SOUTH,
-					LeverFacing::UP_AXIS_X()->id() => StringValues::LEVER_DIRECTION_UP_EAST_WEST,
-					LeverFacing::NORTH()->id() => StringValues::LEVER_DIRECTION_NORTH,
-					LeverFacing::SOUTH()->id() => StringValues::LEVER_DIRECTION_SOUTH,
-					LeverFacing::WEST()->id() => StringValues::LEVER_DIRECTION_WEST,
-					LeverFacing::EAST()->id() => StringValues::LEVER_DIRECTION_EAST,
-					default => throw new BlockStateSerializeException("Invalid Lever facing " . $block->getFacing()->name()),
+				->writeString(StateNames::LEVER_DIRECTION, match($block->getFacing()){
+					LeverFacing::DOWN_AXIS_Z => StringValues::LEVER_DIRECTION_DOWN_NORTH_SOUTH,
+					LeverFacing::DOWN_AXIS_X => StringValues::LEVER_DIRECTION_DOWN_EAST_WEST,
+					LeverFacing::UP_AXIS_Z => StringValues::LEVER_DIRECTION_UP_NORTH_SOUTH,
+					LeverFacing::UP_AXIS_X => StringValues::LEVER_DIRECTION_UP_EAST_WEST,
+					LeverFacing::NORTH => StringValues::LEVER_DIRECTION_NORTH,
+					LeverFacing::SOUTH => StringValues::LEVER_DIRECTION_SOUTH,
+					LeverFacing::WEST => StringValues::LEVER_DIRECTION_WEST,
+					LeverFacing::EAST => StringValues::LEVER_DIRECTION_EAST,
 				});
 		});
 		$this->map(Blocks::LIGHT(), function(Light $block) : Writer{
@@ -1606,13 +1594,12 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::WALL_CORAL_FAN(), function(WallCoralFan $block) : Writer{
 			$coralType = $block->getCoralType();
-			return Writer::create(match($coralType->id()){
-				CoralType::TUBE()->id(), CoralType::BRAIN()->id() => Ids::CORAL_FAN_HANG,
-				CoralType::BUBBLE()->id(), CoralType::FIRE()->id() => Ids::CORAL_FAN_HANG2,
-				CoralType::HORN()->id() => Ids::CORAL_FAN_HANG3,
-				default => throw new BlockStateSerializeException("Invalid Coral type " . $coralType->name()),
+			return Writer::create(match($coralType){
+				CoralType::TUBE, CoralType::BRAIN => Ids::CORAL_FAN_HANG,
+				CoralType::BUBBLE, CoralType::FIRE => Ids::CORAL_FAN_HANG2,
+				CoralType::HORN => Ids::CORAL_FAN_HANG3,
 			})
-				->writeBool(StateNames::CORAL_HANG_TYPE_BIT, $coralType->equals(CoralType::BRAIN()) || $coralType->equals(CoralType::FIRE()))
+				->writeBool(StateNames::CORAL_HANG_TYPE_BIT, $coralType === CoralType::BRAIN || $coralType === CoralType::FIRE)
 				->writeBool(StateNames::DEAD_BIT, $block->isDead())
 				->writeCoralFacing($block->getFacing());
 		});

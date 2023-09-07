@@ -129,7 +129,7 @@ class SplashPotion extends Throwable{
 			}else{
 				//TODO: lingering potions
 			}
-		}elseif($event instanceof ProjectileHitBlockEvent && $this->getPotionType()->equals(PotionType::WATER())){
+		}elseif($event instanceof ProjectileHitBlockEvent && $this->getPotionType() === PotionType::WATER){
 			$blockIn = $event->getBlockHit()->getSide($event->getRayTraceResult()->getHitFace());
 
 			if($blockIn->hasTypeTag(BlockTypeTags::FIRE)){

@@ -94,7 +94,7 @@ class RedstoneRepeater extends Flowable{
 	}
 
 	private function canBeSupportedAt(Block $block) : bool{
-		return !$block->getAdjacentSupportType(Facing::DOWN)->equals(SupportType::NONE());
+		return $block->getAdjacentSupportType(Facing::DOWN) !== SupportType::NONE;
 	}
 
 	//TODO: redstone functionality

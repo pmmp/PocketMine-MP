@@ -331,7 +331,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$zSpawnChunk = $spawnLocation->getFloorZ() >> Chunk::COORD_BIT_SIZE;
 		$world->registerChunkLoader($this->chunkLoader, $xSpawnChunk, $zSpawnChunk, true);
 		$world->registerChunkListener($this, $xSpawnChunk, $zSpawnChunk);
-		$this->usedChunks[World::chunkHash($xSpawnChunk, $zSpawnChunk)] = UsedChunkStatus::NEEDED();
+		$this->usedChunks[World::chunkHash($xSpawnChunk, $zSpawnChunk)] = UsedChunkStatus::NEEDED;
 
 		parent::__construct($spawnLocation, $this->playerInfo->getSkin(), $namedtag);
 	}
@@ -768,7 +768,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	protected function spawnEntitiesOnAllChunks() : void{
 		foreach($this->usedChunks as $chunkHash => $status){
-			if($status->equals(UsedChunkStatus::SENT())){
+			if($status === UsedChunkStatus::SENT){
 				World::getXZ($chunkHash, $chunkX, $chunkZ);
 				$this->spawnEntitiesOnChunk($chunkX, $chunkZ);
 			}
@@ -810,7 +810,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 			++$count;
 
-			$this->usedChunks[$index] = UsedChunkStatus::REQUESTED_GENERATION();
+			$this->usedChunks[$index] = UsedChunkStatus::REQUESTED_GENERATION;
 			$this->activeChunkGenerationRequests[$index] = true;
 			unset($this->loadQueue[$index]);
 			$this->getWorld()->registerChunkLoader($this->chunkLoader, $X, $Z, true);
@@ -824,17 +824,17 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					if(!$this->isConnected() || !isset($this->usedChunks[$index]) || $world !== $this->getWorld()){
 						return;
 					}
-					if(!$this->usedChunks[$index]->equals(UsedChunkStatus::REQUESTED_GENERATION())){
+					if($this->usedChunks[$index] !== UsedChunkStatus::REQUESTED_GENERATION){
 						//We may have previously requested this, decided we didn't want it, and then decided we did want
 						//it again, all before the generation request got executed. In that case, the promise would have
 						//multiple callbacks for this player. In that case, only the first one matters.
 						return;
 					}
 					unset($this->activeChunkGenerationRequests[$index]);
-					$this->usedChunks[$index] = UsedChunkStatus::REQUESTED_SENDING();
+					$this->usedChunks[$index] = UsedChunkStatus::REQUESTED_SENDING;
 
 					$this->getNetworkSession()->startUsingChunk($X, $Z, function() use ($X, $Z, $index) : void{
-						$this->usedChunks[$index] = UsedChunkStatus::SENT();
+						$this->usedChunks[$index] = UsedChunkStatus::SENT;
 						if($this->spawnChunkLoadCount === -1){
 							$this->spawnEntitiesOnChunk($X, $Z);
 						}elseif($this->spawnChunkLoadCount++ === $this->spawnThreshold){
@@ -951,7 +951,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->location->getFloorX() >> Chunk::COORD_BIT_SIZE,
 			$this->location->getFloorZ() >> Chunk::COORD_BIT_SIZE
 		) as $radius => $hash){
-			if(!isset($this->usedChunks[$hash]) || $this->usedChunks[$hash]->equals(UsedChunkStatus::NEEDED())){
+			if(!isset($this->usedChunks[$hash]) || $this->usedChunks[$hash] === UsedChunkStatus::NEEDED){
 				$newOrder[$hash] = true;
 			}
 			if($radius < $tickingChunkRadius){
@@ -1005,7 +1005,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function hasReceivedChunk(int $chunkX, int $chunkZ) : bool{
 		$status = $this->usedChunks[World::chunkHash($chunkX, $chunkZ)] ?? null;
-		return $status !== null && $status->equals(UsedChunkStatus::SENT());
+		return $status === UsedChunkStatus::SENT;
 	}
 
 	/**
@@ -1612,7 +1612,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$returnedItems = [];
 		$result = $item->onClickAir($this, $directionVector, $returnedItems);
-		if($result->equals(ItemUseResult::FAIL())){
+		if($result === ItemUseResult::FAIL){
 			return false;
 		}
 
@@ -1672,7 +1672,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 			$returnedItems = [];
 			$result = $item->onReleaseUsing($this, $returnedItems);
-			if($result->equals(ItemUseResult::SUCCESS())){
+			if($result === ItemUseResult::SUCCESS){
 				$this->resetItemCooldown($item);
 				$this->returnItemsFromAction($oldItem, $item, $returnedItems);
 				return true;
@@ -2694,8 +2694,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function onChunkChanged(int $chunkX, int $chunkZ, Chunk $chunk) : void{
 		$status = $this->usedChunks[$hash = World::chunkHash($chunkX, $chunkZ)] ?? null;
-		if($status !== null && $status->equals(UsedChunkStatus::SENT())){
-			$this->usedChunks[$hash] = UsedChunkStatus::NEEDED();
+		if($status === UsedChunkStatus::SENT){
+			$this->usedChunks[$hash] = UsedChunkStatus::NEEDED;
 			$this->nextChunkOrderRun = 0;
 		}
 	}

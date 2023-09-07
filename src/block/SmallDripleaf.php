@@ -161,7 +161,7 @@ class SmallDripleaf extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	protected function recalculateCollisionBoxes() : array{

@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\ColoredTrait;
-use pocketmine\block\utils\DyeColor;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -34,11 +33,6 @@ use pocketmine\world\BlockTransaction;
 
 class Carpet extends Flowable{
 	use ColoredTrait;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->color = DyeColor::WHITE();
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
 
 	public function isSolid() : bool{
 		return true;

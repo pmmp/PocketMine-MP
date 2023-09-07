@@ -52,7 +52,7 @@ class Mycelium extends Opaque{
 		$z = mt_rand($this->position->z - 1, $this->position->z + 1);
 		$world = $this->position->getWorld();
 		$block = $world->getBlockAt($x, $y, $z);
-		if($block instanceof Dirt && $block->getDirtType()->equals(DirtType::NORMAL())){
+		if($block instanceof Dirt && $block->getDirtType() === DirtType::NORMAL){
 			if($block->getSide(Facing::UP) instanceof Transparent){
 				BlockEventHelper::spread($block, VanillaBlocks::MYCELIUM(), $this);
 			}

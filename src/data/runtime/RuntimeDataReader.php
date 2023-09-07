@@ -29,10 +29,12 @@ use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
+use function get_class;
 use function intdiv;
+use function spl_object_id;
 
 final class RuntimeDataReader implements RuntimeDataDescriber{
-	use RuntimeEnumDeserializerTrait;
+	use LegacyRuntimeEnumDescriberTrait;
 
 	private int $offset = 0;
 
@@ -165,8 +167,8 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 			$type = intdiv($packed,  (3 ** $offset)) % 3;
 			if($type !== 0){
 				$result[$facing] = match($type){
-					1 => WallConnectionType::SHORT(),
-					2 => WallConnectionType::TALL(),
+					1 => WallConnectionType::SHORT,
+					2 => WallConnectionType::TALL,
 					default => throw new AssumptionFailedError("Unreachable")
 				};
 			}
@@ -182,13 +184,9 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 	 */
 	public function brewingStandSlots(array &$slots) : void{
 		$result = [];
-		foreach([
-			BrewingStandSlot::EAST(),
-			BrewingStandSlot::NORTHWEST(),
-			BrewingStandSlot::SOUTHWEST(),
-		] as $member){
+		foreach(BrewingStandSlot::cases() as $member){
 			if($this->readBool()){
-				$result[$member->id()] = $member;
+				$result[spl_object_id($member)] = $member;
 			}
 		}
 
@@ -211,6 +209,17 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 		}
 
 		$railShape = $result;
+	}
+
+	public function enum(\UnitEnum &$case) : void{
+		$metadata = RuntimeEnumMetadata::from($case);
+		$raw = $this->readInt($metadata->bits);
+		$result = $metadata->intToEnum($raw);
+		if($result === null){
+			throw new InvalidSerializedRuntimeDataException("Invalid serialized value $raw for " . get_class($case));
+		}
+
+		$case = $result;
 	}
 
 	public function getOffset() : int{ return $this->offset; }
