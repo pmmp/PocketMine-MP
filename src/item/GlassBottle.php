@@ -35,9 +35,9 @@ class GlassBottle extends Item{
 			$this->pop();
 			$returnedItems[] = VanillaItems::POTION()->setType(PotionType::WATER());
 
-			return ItemUseResult::SUCCESS();
+			return ItemUseResult::SUCCESS;
 		}
 
-		return ItemUseResult::NONE();
+		return ItemUseResult::NONE;
 	}
 }

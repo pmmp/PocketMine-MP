@@ -103,7 +103,7 @@ abstract class BaseSign extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	abstract protected function getSupportingFace() : int;

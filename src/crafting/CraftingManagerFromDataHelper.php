@@ -211,10 +211,10 @@ final class CraftingManagerFromDataHelper{
 
 		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'shapeless_crafting.json'), ShapelessRecipeData::class) as $recipe){
 			$recipeType = match($recipe->block){
-				"crafting_table" => ShapelessRecipeType::CRAFTING(),
-				"stonecutter" => ShapelessRecipeType::STONECUTTER(),
-				"smithing_table" => ShapelessRecipeType::SMITHING(),
-				"cartography_table" => ShapelessRecipeType::CARTOGRAPHY(),
+				"crafting_table" => ShapelessRecipeType::CRAFTING,
+				"stonecutter" => ShapelessRecipeType::STONECUTTER,
+				"smithing_table" => ShapelessRecipeType::SMITHING,
+				"cartography_table" => ShapelessRecipeType::CARTOGRAPHY,
 				default => null
 			};
 			if($recipeType === null){

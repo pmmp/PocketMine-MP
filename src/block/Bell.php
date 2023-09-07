@@ -35,19 +35,13 @@ use pocketmine\math\Facing;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\BellRingSound;
 
 final class Bell extends Transparent{
 	use HorizontalFacingTrait;
 
-	private BellAttachmentType $attachmentType;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->attachmentType = BellAttachmentType::FLOOR();
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
+	private BellAttachmentType $attachmentType = BellAttachmentType::FLOOR;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->bellAttachmentType($this->attachmentType);
@@ -55,12 +49,12 @@ final class Bell extends Transparent{
 	}
 
 	protected function recalculateCollisionBoxes() : array{
-		if($this->attachmentType->equals(BellAttachmentType::FLOOR())){
+		if($this->attachmentType === BellAttachmentType::FLOOR){
 			return [
 				AxisAlignedBB::one()->squash(Facing::axis($this->facing), 1 / 4)->trim(Facing::UP, 3 / 16)
 			];
 		}
-		if($this->attachmentType->equals(BellAttachmentType::CEILING())){
+		if($this->attachmentType === BellAttachmentType::CEILING){
 			return [
 				AxisAlignedBB::one()->contract(1 / 4, 0, 1 / 4)->trim(Facing::DOWN, 1 / 4)
 			];
@@ -72,12 +66,12 @@ final class Bell extends Transparent{
 			->trim(Facing::DOWN, 1 / 4);
 
 		return [
-			$this->attachmentType->equals(BellAttachmentType::ONE_WALL()) ? $box->trim($this->facing, 3 / 16) : $box
+			$this->attachmentType === BellAttachmentType::ONE_WALL ? $box->trim($this->facing, 3 / 16) : $box
 		];
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function getAttachmentType() : BellAttachmentType{ return $this->attachmentType; }
@@ -89,7 +83,7 @@ final class Bell extends Transparent{
 	}
 
 	private function canBeSupportedAt(Block $block, int $face) : bool{
-		return !$block->getAdjacentSupportType($face)->equals(SupportType::NONE());
+		return $block->getAdjacentSupportType($face) !== SupportType::NONE;
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
@@ -100,15 +94,15 @@ final class Bell extends Transparent{
 			if($player !== null){
 				$this->setFacing(Facing::opposite($player->getHorizontalFacing()));
 			}
-			$this->setAttachmentType(BellAttachmentType::FLOOR());
+			$this->setAttachmentType(BellAttachmentType::FLOOR);
 		}elseif($face === Facing::DOWN){
-			$this->setAttachmentType(BellAttachmentType::CEILING());
+			$this->setAttachmentType(BellAttachmentType::CEILING);
 		}else{
 			$this->setFacing($face);
 			$this->setAttachmentType(
 				$this->canBeSupportedAt($blockReplace, $face) ?
-					BellAttachmentType::TWO_WALLS() :
-					BellAttachmentType::ONE_WALL()
+					BellAttachmentType::TWO_WALLS :
+					BellAttachmentType::ONE_WALL
 			);
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
@@ -116,11 +110,10 @@ final class Bell extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		foreach(match($this->attachmentType){
-			BellAttachmentType::CEILING() => [Facing::UP],
-			BellAttachmentType::FLOOR() => [Facing::DOWN],
-			BellAttachmentType::ONE_WALL() => [Facing::opposite($this->facing)],
-			BellAttachmentType::TWO_WALLS() => [$this->facing, Facing::opposite($this->facing)],
-			default => throw new AssumptionFailedError("All cases of BellAttachmentType must be handled")
+			BellAttachmentType::CEILING => [Facing::UP],
+			BellAttachmentType::FLOOR => [Facing::DOWN],
+			BellAttachmentType::ONE_WALL => [Facing::opposite($this->facing)],
+			BellAttachmentType::TWO_WALLS => [$this->facing, Facing::opposite($this->facing)]
 		} as $supportBlockDirection){
 			if(!$this->canBeSupportedAt($this, $supportBlockDirection)){
 				$this->position->getWorld()->useBreakOn($this->position);
@@ -159,10 +152,9 @@ final class Bell extends Transparent{
 
 	private function isValidFaceToRing(int $faceHit) : bool{
 		return match($this->attachmentType){
-			BellAttachmentType::CEILING() => true,
-			BellAttachmentType::FLOOR() => Facing::axis($faceHit) === Facing::axis($this->facing),
-			BellAttachmentType::ONE_WALL(), BellAttachmentType::TWO_WALLS() => $faceHit === Facing::rotateY($this->facing, false) || $faceHit === Facing::rotateY($this->facing, true),
-			default => throw new AssumptionFailedError("All cases of BellAttachmentType must be handled")
+			BellAttachmentType::CEILING => true,
+			BellAttachmentType::FLOOR => Facing::axis($faceHit) === Facing::axis($this->facing),
+			BellAttachmentType::ONE_WALL, BellAttachmentType::TWO_WALLS => $faceHit === Facing::rotateY($this->facing, false) || $faceHit === Facing::rotateY($this->facing, true),
 		};
 	}
 }

@@ -81,12 +81,11 @@ final class CraftingDataCache{
 
 		foreach($manager->getCraftingRecipeIndex() as $index => $recipe){
 			if($recipe instanceof ShapelessRecipe){
-				$typeTag = match($recipe->getType()->id()){
-					ShapelessRecipeType::CRAFTING()->id() => CraftingRecipeBlockName::CRAFTING_TABLE,
-					ShapelessRecipeType::STONECUTTER()->id() => CraftingRecipeBlockName::STONECUTTER,
-					ShapelessRecipeType::CARTOGRAPHY()->id() => CraftingRecipeBlockName::CARTOGRAPHY_TABLE,
-					ShapelessRecipeType::SMITHING()->id() => CraftingRecipeBlockName::SMITHING_TABLE,
-					default => throw new AssumptionFailedError("Unreachable"),
+				$typeTag = match($recipe->getType()){
+					ShapelessRecipeType::CRAFTING => CraftingRecipeBlockName::CRAFTING_TABLE,
+					ShapelessRecipeType::STONECUTTER => CraftingRecipeBlockName::STONECUTTER,
+					ShapelessRecipeType::CARTOGRAPHY => CraftingRecipeBlockName::CARTOGRAPHY_TABLE,
+					ShapelessRecipeType::SMITHING => CraftingRecipeBlockName::SMITHING_TABLE,
 				};
 				$recipesWithTypeIds[] = new ProtocolShapelessRecipe(
 					CraftingDataPacket::ENTRY_SHAPELESS,

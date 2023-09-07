@@ -36,13 +36,8 @@ use pocketmine\world\sound\RedstonePowerOffSound;
 use pocketmine\world\sound\RedstonePowerOnSound;
 
 class Lever extends Flowable{
-	protected LeverFacing $facing;
+	protected LeverFacing $facing = LeverFacing::UP_AXIS_X;
 	protected bool $activated = false;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->facing = LeverFacing::UP_AXIS_X();
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->leverFacing($this->facing);
@@ -77,12 +72,12 @@ class Lever extends Flowable{
 			return $x;
 		};
 		$this->facing = match($face){
-			Facing::DOWN => $selectUpDownPos(LeverFacing::DOWN_AXIS_X(), LeverFacing::DOWN_AXIS_Z()),
-			Facing::UP => $selectUpDownPos(LeverFacing::UP_AXIS_X(), LeverFacing::UP_AXIS_Z()),
-			Facing::NORTH => LeverFacing::NORTH(),
-			Facing::SOUTH => LeverFacing::SOUTH(),
-			Facing::WEST => LeverFacing::WEST(),
-			Facing::EAST => LeverFacing::EAST(),
+			Facing::DOWN => $selectUpDownPos(LeverFacing::DOWN_AXIS_X, LeverFacing::DOWN_AXIS_Z),
+			Facing::UP => $selectUpDownPos(LeverFacing::UP_AXIS_X, LeverFacing::UP_AXIS_Z),
+			Facing::NORTH => LeverFacing::NORTH,
+			Facing::SOUTH => LeverFacing::SOUTH,
+			Facing::WEST => LeverFacing::WEST,
+			Facing::EAST => LeverFacing::EAST,
 			default => throw new AssumptionFailedError("Bad facing value"),
 		};
 

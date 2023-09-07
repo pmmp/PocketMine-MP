@@ -111,7 +111,7 @@ abstract class BaseBanner extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	private function canBeSupportedBy(Block $block) : bool{

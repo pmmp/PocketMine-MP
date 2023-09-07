@@ -36,12 +36,7 @@ use pocketmine\world\sound\DripleafTiltUpSound;
 
 class BigDripleafHead extends BaseBigDripleaf{
 
-	protected DripleafState $leafState;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->leafState = DripleafState::STABLE();
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
+	protected DripleafState $leafState = DripleafState::STABLE;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		parent::describeBlockOnlyState($w);
@@ -76,20 +71,20 @@ class BigDripleafHead extends BaseBigDripleaf{
 
 	private function getLeafTopOffset() : float{
 		return match($this->leafState){
-			DripleafState::STABLE(), DripleafState::UNSTABLE() => 1 / 16,
-			DripleafState::PARTIAL_TILT() => 3 / 16,
+			DripleafState::STABLE, DripleafState::UNSTABLE => 1 / 16,
+			DripleafState::PARTIAL_TILT => 3 / 16,
 			default => 0
 		};
 	}
 
 	public function onEntityInside(Entity $entity) : bool{
-		if(!$entity instanceof Projectile && $this->leafState->equals(DripleafState::STABLE())){
+		if(!$entity instanceof Projectile && $this->leafState === DripleafState::STABLE){
 			//the entity must be standing on top of the leaf - do not collapse if the entity is standing underneath
 			$intersection = AxisAlignedBB::one()
 				->offset($this->position->x, $this->position->y, $this->position->z)
 				->trim(Facing::DOWN, 1 - $this->getLeafTopOffset());
 			if($entity->getBoundingBox()->intersectsWith($intersection)){
-				$this->setTiltAndScheduleTick(DripleafState::UNSTABLE());
+				$this->setTiltAndScheduleTick(DripleafState::UNSTABLE);
 				return false;
 			}
 		}
@@ -97,22 +92,21 @@ class BigDripleafHead extends BaseBigDripleaf{
 	}
 
 	public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
-		if(!$this->leafState->equals(DripleafState::FULL_TILT())){
-			$this->setTiltAndScheduleTick(DripleafState::FULL_TILT());
+		if($this->leafState !== DripleafState::FULL_TILT){
+			$this->setTiltAndScheduleTick(DripleafState::FULL_TILT);
 			$this->position->getWorld()->addSound($this->position, new DripleafTiltDownSound());
 		}
 	}
 
 	public function onScheduledUpdate() : void{
-		if(!$this->leafState->equals(DripleafState::STABLE())){
-			if($this->leafState->equals(DripleafState::FULL_TILT())){
-				$this->position->getWorld()->setBlock($this->position, $this->setLeafState(DripleafState::STABLE()));
+		if($this->leafState !== DripleafState::STABLE){
+			if($this->leafState === DripleafState::FULL_TILT){
+				$this->position->getWorld()->setBlock($this->position, $this->setLeafState(DripleafState::STABLE));
 				$this->position->getWorld()->addSound($this->position, new DripleafTiltUpSound());
 			}else{
-				$this->setTiltAndScheduleTick(match($this->leafState->id()){
-					DripleafState::UNSTABLE()->id() => DripleafState::PARTIAL_TILT(),
-					DripleafState::PARTIAL_TILT()->id() => DripleafState::FULL_TILT(),
-					default => throw new AssumptionFailedError("All types should be covered")
+				$this->setTiltAndScheduleTick(match($this->leafState){
+					DripleafState::UNSTABLE => DripleafState::PARTIAL_TILT,
+					DripleafState::PARTIAL_TILT => DripleafState::FULL_TILT,
 				});
 				$this->position->getWorld()->addSound($this->position, new DripleafTiltDownSound());
 			}
@@ -120,7 +114,7 @@ class BigDripleafHead extends BaseBigDripleaf{
 	}
 
 	protected function recalculateCollisionBoxes() : array{
-		if(!$this->leafState->equals(DripleafState::FULL_TILT())){
+		if($this->leafState !== DripleafState::FULL_TILT){
 			return [
 				AxisAlignedBB::one()
 					->trim(Facing::DOWN, 11 / 16)

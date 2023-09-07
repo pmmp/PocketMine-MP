@@ -85,7 +85,7 @@ final class RuntimeDataSizeCalculator implements RuntimeDataDescriber{
 	}
 
 	public function brewingStandSlots(array &$slots) : void{
-		$this->addBits(count(BrewingStandSlot::getAll()));
+		$this->addBits(count(BrewingStandSlot::cases()));
 	}
 
 	public function railShape(int &$railShape) : void{

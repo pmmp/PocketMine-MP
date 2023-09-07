@@ -77,11 +77,11 @@ class CocoaBlock extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	private function canAttachTo(Block $block) : bool{
-		return $block instanceof Wood && $block->getWoodType()->equals(WoodType::JUNGLE());
+		return $block instanceof Wood && $block->getWoodType() === WoodType::JUNGLE;
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

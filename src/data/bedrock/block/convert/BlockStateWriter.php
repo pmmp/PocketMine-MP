@@ -246,10 +246,10 @@ final class BlockStateWriter{
 
 	/** @return $this */
 	public function writeSlabPosition(SlabType $slabType) : self{
-		$this->writeBool(BlockStateNames::TOP_SLOT_BIT, match($slabType->id()){
-			SlabType::TOP()->id() => true,
-			SlabType::BOTTOM()->id() => false,
-			default => throw new BlockStateSerializeException("Invalid slab type " . $slabType->name())
+		$this->writeBool(BlockStateNames::TOP_SLOT_BIT, match($slabType){
+			SlabType::TOP => true,
+			SlabType::BOTTOM => false,
+			default => throw new BlockStateSerializeException("Invalid slab type " . $slabType->name)
 		});
 		return $this;
 	}
@@ -270,39 +270,37 @@ final class BlockStateWriter{
 
 	/** @return $this */
 	public function writeLegacyWoodType(WoodType $treeType) : self{
-		$this->writeString(BlockStateNames::WOOD_TYPE, match($treeType->id()){
-			WoodType::OAK()->id() => StringValues::WOOD_TYPE_OAK,
-			WoodType::SPRUCE()->id() => StringValues::WOOD_TYPE_SPRUCE,
-			WoodType::BIRCH()->id() => StringValues::WOOD_TYPE_BIRCH,
-			WoodType::JUNGLE()->id() => StringValues::WOOD_TYPE_JUNGLE,
-			WoodType::ACACIA()->id() => StringValues::WOOD_TYPE_ACACIA,
-			WoodType::DARK_OAK()->id() => StringValues::WOOD_TYPE_DARK_OAK,
-			default => throw new BlockStateSerializeException("Invalid Wood type " . $treeType->name())
+		$this->writeString(BlockStateNames::WOOD_TYPE, match($treeType){
+			WoodType::OAK => StringValues::WOOD_TYPE_OAK,
+			WoodType::SPRUCE => StringValues::WOOD_TYPE_SPRUCE,
+			WoodType::BIRCH => StringValues::WOOD_TYPE_BIRCH,
+			WoodType::JUNGLE => StringValues::WOOD_TYPE_JUNGLE,
+			WoodType::ACACIA => StringValues::WOOD_TYPE_ACACIA,
+			WoodType::DARK_OAK => StringValues::WOOD_TYPE_DARK_OAK,
+			default => throw new BlockStateSerializeException("Invalid legacy wood type " . $treeType->name)
 		});
 		return $this;
 	}
 
 	/** @return $this */
 	public function writeCoralType(CoralType $coralType) : self{
-		$this->writeString(BlockStateNames::CORAL_COLOR, match($coralType->id()){
-			CoralType::TUBE()->id() => StringValues::CORAL_COLOR_BLUE,
-			CoralType::BRAIN()->id() => StringValues::CORAL_COLOR_PINK,
-			CoralType::BUBBLE()->id() => StringValues::CORAL_COLOR_PURPLE,
-			CoralType::FIRE()->id() => StringValues::CORAL_COLOR_RED,
-			CoralType::HORN()->id() => StringValues::CORAL_COLOR_YELLOW,
-			default => throw new BlockStateSerializeException("Invalid Coral type " . $coralType->name())
+		$this->writeString(BlockStateNames::CORAL_COLOR, match($coralType){
+			CoralType::TUBE => StringValues::CORAL_COLOR_BLUE,
+			CoralType::BRAIN => StringValues::CORAL_COLOR_PINK,
+			CoralType::BUBBLE => StringValues::CORAL_COLOR_PURPLE,
+			CoralType::FIRE => StringValues::CORAL_COLOR_RED,
+			CoralType::HORN => StringValues::CORAL_COLOR_YELLOW,
 		});
 		return $this;
 	}
 
 	/** @return $this */
 	public function writeBellAttachmentType(BellAttachmentType $attachmentType) : self{
-		$this->writeString(BlockStateNames::ATTACHMENT, match($attachmentType->id()){
-			BellAttachmentType::FLOOR()->id() => StringValues::ATTACHMENT_STANDING,
-			BellAttachmentType::CEILING()->id() => StringValues::ATTACHMENT_HANGING,
-			BellAttachmentType::ONE_WALL()->id() => StringValues::ATTACHMENT_SIDE,
-			BellAttachmentType::TWO_WALLS()->id() => StringValues::ATTACHMENT_MULTIPLE,
-			default => throw new BlockStateSerializeException("Invalid Bell attachment type " . $attachmentType->name())
+		$this->writeString(BlockStateNames::ATTACHMENT, match($attachmentType){
+			BellAttachmentType::FLOOR => StringValues::ATTACHMENT_STANDING,
+			BellAttachmentType::CEILING => StringValues::ATTACHMENT_HANGING,
+			BellAttachmentType::ONE_WALL => StringValues::ATTACHMENT_SIDE,
+			BellAttachmentType::TWO_WALLS => StringValues::ATTACHMENT_MULTIPLE,
 		});
 		return $this;
 	}
@@ -311,9 +309,8 @@ final class BlockStateWriter{
 	public function writeWallConnectionType(string $name, ?WallConnectionType $wallConnectionType) : self{
 		$this->writeString($name, match($wallConnectionType){
 			null => StringValues::WALL_CONNECTION_TYPE_EAST_NONE,
-			WallConnectionType::SHORT() => StringValues::WALL_CONNECTION_TYPE_EAST_SHORT,
-			WallConnectionType::TALL() => StringValues::WALL_CONNECTION_TYPE_EAST_TALL,
-			default => throw new BlockStateSerializeException("Invalid Wall connection type " . $wallConnectionType->name())
+			WallConnectionType::SHORT => StringValues::WALL_CONNECTION_TYPE_EAST_SHORT,
+			WallConnectionType::TALL => StringValues::WALL_CONNECTION_TYPE_EAST_TALL,
 		});
 		return $this;
 	}

@@ -28,12 +28,7 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 
 final class Froglight extends SimplePillar{
 
-	private FroglightType $froglightType;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->froglightType = FroglightType::OCHRE();
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
+	private FroglightType $froglightType = FroglightType::OCHRE;
 
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
 		$w->froglightType($this->froglightType);

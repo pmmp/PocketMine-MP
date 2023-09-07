@@ -30,6 +30,7 @@ use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
 use function intdiv;
+use function spl_object_id;
 
 final class RuntimeDataReader implements RuntimeDataDescriber{
 	use RuntimeEnumDeserializerTrait;
@@ -165,8 +166,8 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 			$type = intdiv($packed,  (3 ** $offset)) % 3;
 			if($type !== 0){
 				$result[$facing] = match($type){
-					1 => WallConnectionType::SHORT(),
-					2 => WallConnectionType::TALL(),
+					1 => WallConnectionType::SHORT,
+					2 => WallConnectionType::TALL,
 					default => throw new AssumptionFailedError("Unreachable")
 				};
 			}
@@ -182,13 +183,9 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 	 */
 	public function brewingStandSlots(array &$slots) : void{
 		$result = [];
-		foreach([
-			BrewingStandSlot::EAST(),
-			BrewingStandSlot::NORTHWEST(),
-			BrewingStandSlot::SOUTHWEST(),
-		] as $member){
+		foreach(BrewingStandSlot::cases() as $member){
 			if($this->readBool()){
-				$result[$member->id()] = $member;
+				$result[spl_object_id($member)] = $member;
 			}
 		}
 

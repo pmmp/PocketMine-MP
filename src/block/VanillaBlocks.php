@@ -68,6 +68,7 @@ use pocketmine\utils\CloningRegistryTrait;
 use pocketmine\world\sound\AmethystBlockChimeSound;
 use pocketmine\world\sound\BlockPunchSound;
 use function mb_strtolower;
+use function strtolower;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
@@ -1140,13 +1141,13 @@ final class VanillaBlocks{
 		});
 		$saplingTypeInfo = new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS]);
 
-		foreach(SaplingType::getAll() as $saplingType){
+		foreach(SaplingType::cases() as $saplingType){
 			$name = $saplingType->getDisplayName();
-			self::register($saplingType->name() . "_sapling", new Sapling(WoodLikeBlockIdHelper::getSaplingIdentifier($saplingType), $name . " Sapling", $saplingTypeInfo, $saplingType));
+			self::register(strtolower($saplingType->name) . "_sapling", new Sapling(WoodLikeBlockIdHelper::getSaplingIdentifier($saplingType), $name . " Sapling", $saplingTypeInfo, $saplingType));
 		}
-		foreach(LeavesType::getAll() as $leavesType){
+		foreach(LeavesType::cases() as $leavesType){
 			$name = $leavesType->getDisplayName();
-			self::register($leavesType->name() . "_leaves", new Leaves(WoodLikeBlockIdHelper::getLeavesIdentifier($leavesType), $name . " Leaves", $leavesBreakInfo, $leavesType));
+			self::register(strtolower($leavesType->name) . "_leaves", new Leaves(WoodLikeBlockIdHelper::getLeavesIdentifier($leavesType), $name . " Leaves", $leavesBreakInfo, $leavesType));
 		}
 
 		$sandstoneBreakInfo = new Info(BreakInfo::pickaxe(0.8, ToolTier::WOOD()));
@@ -1262,9 +1263,9 @@ final class VanillaBlocks{
 		$woodenButtonBreakInfo = new Info(BreakInfo::axe(0.5));
 		$woodenPressurePlateBreakInfo = new Info(BreakInfo::axe(0.5));
 
-		foreach(WoodType::getAll() as $woodType){
+		foreach(WoodType::cases() as $woodType){
 			$name = $woodType->getDisplayName();
-			$idName = fn(string $suffix) => $woodType->name() . "_" . $suffix;
+			$idName = fn(string $suffix) => strtolower($woodType->name) . "_" . $suffix;
 
 			self::register($idName(mb_strtolower($woodType->getStandardLogSuffix() ?? "log", 'US-ASCII')), new Wood(WoodLikeBlockIdHelper::getLogIdentifier($woodType), $name . " " . ($woodType->getStandardLogSuffix() ?? "Log"), $logBreakInfo, $woodType));
 			self::register($idName(mb_strtolower($woodType->getAllSidedLogSuffix() ?? "wood", 'US-ASCII')), new Wood(WoodLikeBlockIdHelper::getAllSidedLogIdentifier($woodType), $name . " " . ($woodType->getAllSidedLogSuffix() ?? "Wood"), $logBreakInfo, $woodType));

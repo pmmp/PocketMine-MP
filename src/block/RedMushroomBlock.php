@@ -29,12 +29,7 @@ use pocketmine\item\Item;
 use function mt_rand;
 
 class RedMushroomBlock extends Opaque{
-	protected MushroomBlockType $mushroomBlockType;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->mushroomBlockType = MushroomBlockType::ALL_CAP();
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
+	protected MushroomBlockType $mushroomBlockType = MushroomBlockType::ALL_CAP;
 
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
 		//these blocks always drop as all-cap, but may exist in other forms in the inventory (particularly creative),
@@ -61,10 +56,10 @@ class RedMushroomBlock extends Opaque{
 	}
 
 	public function getSilkTouchDrops(Item $item) : array{
-		return [(clone $this)->setMushroomBlockType(MushroomBlockType::ALL_CAP())->asItem()];
+		return [(clone $this)->setMushroomBlockType(MushroomBlockType::ALL_CAP)->asItem()];
 	}
 
 	public function getPickedItem(bool $addUserData = false) : Item{
-		return (clone $this)->setMushroomBlockType(MushroomBlockType::ALL_CAP())->asItem();
+		return (clone $this)->setMushroomBlockType(MushroomBlockType::ALL_CAP)->asItem();
 	}
 }

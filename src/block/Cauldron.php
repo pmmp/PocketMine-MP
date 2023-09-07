@@ -61,7 +61,7 @@ final class Cauldron extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return $facing === Facing::UP ? SupportType::EDGE() : SupportType::NONE();
+		return $facing === Facing::UP ? SupportType::EDGE : SupportType::NONE;
 	}
 
 	/**

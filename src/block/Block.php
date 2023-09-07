@@ -877,7 +877,7 @@ class Block{
 	 * blocks placed on the given face can be supported by this block.
 	 */
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::FULL();
+		return SupportType::FULL;
 	}
 
 	protected function getAdjacentSupportType(int $facing) : SupportType{

@@ -38,12 +38,7 @@ use pocketmine\world\sound\ItemUseOnBlockSound;
 use pocketmine\world\sound\WaterSplashSound;
 
 class Dirt extends Opaque{
-	protected DirtType $dirtType;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->dirtType = DirtType::NORMAL();
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
+	protected DirtType $dirtType = DirtType::NORMAL;
 
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
 		$w->dirtType($this->dirtType);
@@ -62,16 +57,16 @@ class Dirt extends Opaque{
 		if($face === Facing::UP && $item instanceof Hoe){
 			$item->applyDamage(1);
 
-			$newBlock = $this->dirtType->equals(DirtType::NORMAL()) ? VanillaBlocks::FARMLAND() : VanillaBlocks::DIRT();
+			$newBlock = $this->dirtType === DirtType::NORMAL ? VanillaBlocks::FARMLAND() : VanillaBlocks::DIRT();
 			$center = $this->position->add(0.5, 0.5, 0.5);
 			$world->addSound($center, new ItemUseOnBlockSound($newBlock));
 			$world->setBlock($this->position, $newBlock);
-			if($this->dirtType->equals(DirtType::ROOTED())){
+			if($this->dirtType === DirtType::ROOTED){
 				$world->dropItem($center, VanillaBlocks::HANGING_ROOTS()->asItem());
 			}
 
 			return true;
-		}elseif($this->dirtType->equals(DirtType::ROOTED()) && $item instanceof Fertilizer){
+		}elseif($this->dirtType === DirtType::ROOTED && $item instanceof Fertilizer){
 			$down = $this->getSide(Facing::DOWN);
 			if($down->getTypeId() !== BlockTypeIds::AIR){
 				return true;

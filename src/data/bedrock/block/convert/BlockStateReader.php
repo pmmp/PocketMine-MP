@@ -293,7 +293,7 @@ final class BlockStateReader{
 
 	/** @throws BlockStateDeserializeException */
 	public function readSlabPosition() : SlabType{
-		return $this->readBool(BlockStateNames::TOP_SLOT_BIT) ? SlabType::TOP() : SlabType::BOTTOM();
+		return $this->readBool(BlockStateNames::TOP_SLOT_BIT) ? SlabType::TOP : SlabType::BOTTOM;
 	}
 
 	/**
@@ -316,11 +316,11 @@ final class BlockStateReader{
 	/** @throws BlockStateDeserializeException */
 	public function readCoralType() : CoralType{
 		return match($type = $this->readString(BlockStateNames::CORAL_COLOR)){
-			StringValues::CORAL_COLOR_BLUE => CoralType::TUBE(),
-			StringValues::CORAL_COLOR_PINK => CoralType::BRAIN(),
-			StringValues::CORAL_COLOR_PURPLE => CoralType::BUBBLE(),
-			StringValues::CORAL_COLOR_RED => CoralType::FIRE(),
-			StringValues::CORAL_COLOR_YELLOW => CoralType::HORN(),
+			StringValues::CORAL_COLOR_BLUE => CoralType::TUBE,
+			StringValues::CORAL_COLOR_PINK => CoralType::BRAIN,
+			StringValues::CORAL_COLOR_PURPLE => CoralType::BUBBLE,
+			StringValues::CORAL_COLOR_RED => CoralType::FIRE,
+			StringValues::CORAL_COLOR_YELLOW => CoralType::HORN,
 			default => throw $this->badValueException(BlockStateNames::CORAL_COLOR, $type),
 		};
 	}
@@ -328,10 +328,10 @@ final class BlockStateReader{
 	/** @throws BlockStateDeserializeException */
 	public function readBellAttachmentType() : BellAttachmentType{
 		return match($type = $this->readString(BlockStateNames::ATTACHMENT)){
-			StringValues::ATTACHMENT_HANGING => BellAttachmentType::CEILING(),
-			StringValues::ATTACHMENT_STANDING => BellAttachmentType::FLOOR(),
-			StringValues::ATTACHMENT_SIDE => BellAttachmentType::ONE_WALL(),
-			StringValues::ATTACHMENT_MULTIPLE => BellAttachmentType::TWO_WALLS(),
+			StringValues::ATTACHMENT_HANGING => BellAttachmentType::CEILING,
+			StringValues::ATTACHMENT_STANDING => BellAttachmentType::FLOOR,
+			StringValues::ATTACHMENT_SIDE => BellAttachmentType::ONE_WALL,
+			StringValues::ATTACHMENT_MULTIPLE => BellAttachmentType::TWO_WALLS,
 			default => throw $this->badValueException(BlockStateNames::ATTACHMENT, $type),
 		};
 	}
@@ -343,8 +343,8 @@ final class BlockStateReader{
 			//we need to find a better way to auto-generate the constant names when they are reused
 			//for now, using these constants is better than nothing since it still gives static analysability
 			StringValues::WALL_CONNECTION_TYPE_EAST_NONE => null,
-			StringValues::WALL_CONNECTION_TYPE_EAST_SHORT => WallConnectionType::SHORT(),
-			StringValues::WALL_CONNECTION_TYPE_EAST_TALL => WallConnectionType::TALL(),
+			StringValues::WALL_CONNECTION_TYPE_EAST_SHORT => WallConnectionType::SHORT,
+			StringValues::WALL_CONNECTION_TYPE_EAST_TALL => WallConnectionType::TALL,
 			default => throw $this->badValueException($name, $type),
 		};
 	}

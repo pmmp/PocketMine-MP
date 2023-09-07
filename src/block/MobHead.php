@@ -39,15 +39,10 @@ class MobHead extends Flowable{
 	public const MIN_ROTATION = 0;
 	public const MAX_ROTATION = 15;
 
-	protected MobHeadType $mobHeadType;
+	protected MobHeadType $mobHeadType = MobHeadType::SKELETON;
 
 	protected int $facing = Facing::NORTH;
 	protected int $rotation = self::MIN_ROTATION; //TODO: split this into floor skull and wall skull handling
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->mobHeadType = MobHeadType::SKELETON(); //TODO: this should be a parameter
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
 
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
 		$w->mobHeadType($this->mobHeadType);

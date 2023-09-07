@@ -419,13 +419,12 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 
 	private function registerFlatCoralSerializers() : void{
 		$this->map(Blocks::CORAL(), fn(Coral $block) => Writer::create(
-			match($coralType = $block->getCoralType()){
-				CoralType::BRAIN() => $block->isDead() ? Ids::DEAD_BRAIN_CORAL : Ids::BRAIN_CORAL,
-				CoralType::BUBBLE() => $block->isDead() ? Ids::DEAD_BUBBLE_CORAL : Ids::BUBBLE_CORAL,
-				CoralType::FIRE() => $block->isDead() ? Ids::DEAD_FIRE_CORAL : Ids::FIRE_CORAL,
-				CoralType::HORN() => $block->isDead() ? Ids::DEAD_HORN_CORAL : Ids::HORN_CORAL,
-				CoralType::TUBE() => $block->isDead() ? Ids::DEAD_TUBE_CORAL : Ids::TUBE_CORAL,
-				default => throw new AssumptionFailedError("Unhandled coral type " . $coralType->name())
+			match($block->getCoralType()){
+				CoralType::BRAIN => $block->isDead() ? Ids::DEAD_BRAIN_CORAL : Ids::BRAIN_CORAL,
+				CoralType::BUBBLE => $block->isDead() ? Ids::DEAD_BUBBLE_CORAL : Ids::BUBBLE_CORAL,
+				CoralType::FIRE => $block->isDead() ? Ids::DEAD_FIRE_CORAL : Ids::FIRE_CORAL,
+				CoralType::HORN => $block->isDead() ? Ids::DEAD_HORN_CORAL : Ids::HORN_CORAL,
+				CoralType::TUBE => $block->isDead() ? Ids::DEAD_TUBE_CORAL : Ids::TUBE_CORAL,
 			}
 		));
 	}
@@ -966,12 +965,11 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::BIG_DRIPLEAF_HEAD(), function(BigDripleafHead $block) : Writer{
 			return Writer::create(Ids::BIG_DRIPLEAF)
 				->writeLegacyHorizontalFacing($block->getFacing())
-				->writeString(StateNames::BIG_DRIPLEAF_TILT, match($block->getLeafState()->id()){
-					DripleafState::STABLE()->id() => StringValues::BIG_DRIPLEAF_TILT_NONE,
-					DripleafState::UNSTABLE()->id() => StringValues::BIG_DRIPLEAF_TILT_UNSTABLE,
-					DripleafState::PARTIAL_TILT()->id() => StringValues::BIG_DRIPLEAF_TILT_PARTIAL_TILT,
-					DripleafState::FULL_TILT()->id() => StringValues::BIG_DRIPLEAF_TILT_FULL_TILT,
-					default => throw new BlockStateSerializeException("Invalid Dripleaf tilt type " . $block->getLeafState()->name())
+				->writeString(StateNames::BIG_DRIPLEAF_TILT, match($block->getLeafState()){
+					DripleafState::STABLE => StringValues::BIG_DRIPLEAF_TILT_NONE,
+					DripleafState::UNSTABLE => StringValues::BIG_DRIPLEAF_TILT_UNSTABLE,
+					DripleafState::PARTIAL_TILT => StringValues::BIG_DRIPLEAF_TILT_PARTIAL_TILT,
+					DripleafState::FULL_TILT => StringValues::BIG_DRIPLEAF_TILT_FULL_TILT,
 				})
 				->writeBool(StateNames::BIG_DRIPLEAF_HEAD, true);
 		});
@@ -995,9 +993,9 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::BREWING_STAND(), function(BrewingStand $block) : Writer{
 			return Writer::create(Ids::BREWING_STAND)
-				->writeBool(StateNames::BREWING_STAND_SLOT_A_BIT, $block->hasSlot(BrewingStandSlot::EAST()))
-				->writeBool(StateNames::BREWING_STAND_SLOT_B_BIT, $block->hasSlot(BrewingStandSlot::SOUTHWEST()))
-				->writeBool(StateNames::BREWING_STAND_SLOT_C_BIT, $block->hasSlot(BrewingStandSlot::NORTHWEST()));
+				->writeBool(StateNames::BREWING_STAND_SLOT_A_BIT, $block->hasSlot(BrewingStandSlot::EAST))
+				->writeBool(StateNames::BREWING_STAND_SLOT_B_BIT, $block->hasSlot(BrewingStandSlot::SOUTHWEST))
+				->writeBool(StateNames::BREWING_STAND_SLOT_C_BIT, $block->hasSlot(BrewingStandSlot::NORTHWEST));
 		});
 		$this->map(Blocks::BRICK_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab1($block, StringValues::STONE_SLAB_TYPE_BRICK));
 		$this->mapStairs(Blocks::BRICK_STAIRS(), Ids::BRICK_STAIRS);
@@ -1184,14 +1182,14 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::DIORITE_WALL(), fn(Wall $block) => Helper::encodeLegacyWall($block, StringValues::WALL_BLOCK_TYPE_DIORITE));
 		$this->map(Blocks::DIRT(), function(Dirt $block) : Writer{
 			$dirtType = $block->getDirtType();
-			if($dirtType->equals(DirtType::ROOTED())){
+			if($dirtType === DirtType::ROOTED){
 				return new Writer(Ids::DIRT_WITH_ROOTS);
 			}
 			return Writer::create(Ids::DIRT)
 				->writeString(StateNames::DIRT_TYPE, match($dirtType){
-					DirtType::COARSE() => StringValues::DIRT_TYPE_COARSE,
-					DirtType::NORMAL() => StringValues::DIRT_TYPE_NORMAL,
-					default => throw new AssumptionFailedError("Unhandled dirt type " . $dirtType->name())
+					DirtType::COARSE => StringValues::DIRT_TYPE_COARSE,
+					DirtType::NORMAL => StringValues::DIRT_TYPE_NORMAL,
+					//ROOTED was already checked above
 				});
 		});
 		$this->map(Blocks::DOUBLE_TALLGRASS(), fn(DoubleTallGrass $block) => Helper::encodeDoublePlant($block, StringValues::DOUBLE_PLANT_TYPE_GRASS, Writer::create(Ids::DOUBLE_PLANT)));
@@ -1229,10 +1227,9 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::FROGLIGHT(), function(Froglight $block){
 			return Writer::create(match($block->getFroglightType()){
-				FroglightType::OCHRE() => Ids::OCHRE_FROGLIGHT,
-				FroglightType::PEARLESCENT() => Ids::PEARLESCENT_FROGLIGHT,
-				FroglightType::VERDANT() => Ids::VERDANT_FROGLIGHT,
-				default => throw new AssumptionFailedError("Unhandled froglight type " . $block->getFroglightType()->name())
+				FroglightType::OCHRE => Ids::OCHRE_FROGLIGHT,
+				FroglightType::PEARLESCENT => Ids::PEARLESCENT_FROGLIGHT,
+				FroglightType::VERDANT => Ids::VERDANT_FROGLIGHT,
 			})
 				->writePillarAxis($block->getAxis());
 		});
@@ -1296,16 +1293,15 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::LEVER(), function(Lever $block) : Writer{
 			return Writer::create(Ids::LEVER)
 				->writeBool(StateNames::OPEN_BIT, $block->isActivated())
-				->writeString(StateNames::LEVER_DIRECTION, match($block->getFacing()->id()){
-					LeverFacing::DOWN_AXIS_Z()->id() => StringValues::LEVER_DIRECTION_DOWN_NORTH_SOUTH,
-					LeverFacing::DOWN_AXIS_X()->id() => StringValues::LEVER_DIRECTION_DOWN_EAST_WEST,
-					LeverFacing::UP_AXIS_Z()->id() => StringValues::LEVER_DIRECTION_UP_NORTH_SOUTH,
-					LeverFacing::UP_AXIS_X()->id() => StringValues::LEVER_DIRECTION_UP_EAST_WEST,
-					LeverFacing::NORTH()->id() => StringValues::LEVER_DIRECTION_NORTH,
-					LeverFacing::SOUTH()->id() => StringValues::LEVER_DIRECTION_SOUTH,
-					LeverFacing::WEST()->id() => StringValues::LEVER_DIRECTION_WEST,
-					LeverFacing::EAST()->id() => StringValues::LEVER_DIRECTION_EAST,
-					default => throw new BlockStateSerializeException("Invalid Lever facing " . $block->getFacing()->name()),
+				->writeString(StateNames::LEVER_DIRECTION, match($block->getFacing()){
+					LeverFacing::DOWN_AXIS_Z => StringValues::LEVER_DIRECTION_DOWN_NORTH_SOUTH,
+					LeverFacing::DOWN_AXIS_X => StringValues::LEVER_DIRECTION_DOWN_EAST_WEST,
+					LeverFacing::UP_AXIS_Z => StringValues::LEVER_DIRECTION_UP_NORTH_SOUTH,
+					LeverFacing::UP_AXIS_X => StringValues::LEVER_DIRECTION_UP_EAST_WEST,
+					LeverFacing::NORTH => StringValues::LEVER_DIRECTION_NORTH,
+					LeverFacing::SOUTH => StringValues::LEVER_DIRECTION_SOUTH,
+					LeverFacing::WEST => StringValues::LEVER_DIRECTION_WEST,
+					LeverFacing::EAST => StringValues::LEVER_DIRECTION_EAST,
 				});
 		});
 		$this->map(Blocks::LIGHT(), function(Light $block) : Writer{
@@ -1606,13 +1602,12 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::WALL_CORAL_FAN(), function(WallCoralFan $block) : Writer{
 			$coralType = $block->getCoralType();
-			return Writer::create(match($coralType->id()){
-				CoralType::TUBE()->id(), CoralType::BRAIN()->id() => Ids::CORAL_FAN_HANG,
-				CoralType::BUBBLE()->id(), CoralType::FIRE()->id() => Ids::CORAL_FAN_HANG2,
-				CoralType::HORN()->id() => Ids::CORAL_FAN_HANG3,
-				default => throw new BlockStateSerializeException("Invalid Coral type " . $coralType->name()),
+			return Writer::create(match($coralType){
+				CoralType::TUBE, CoralType::BRAIN => Ids::CORAL_FAN_HANG,
+				CoralType::BUBBLE, CoralType::FIRE => Ids::CORAL_FAN_HANG2,
+				CoralType::HORN => Ids::CORAL_FAN_HANG3,
 			})
-				->writeBool(StateNames::CORAL_HANG_TYPE_BIT, $coralType->equals(CoralType::BRAIN()) || $coralType->equals(CoralType::FIRE()))
+				->writeBool(StateNames::CORAL_HANG_TYPE_BIT, $coralType === CoralType::BRAIN || $coralType === CoralType::FIRE)
 				->writeBool(StateNames::DEAD_BIT, $block->isDead())
 				->writeCoralFacing($block->getFacing());
 		});

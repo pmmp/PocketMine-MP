@@ -36,9 +36,9 @@ use pocketmine\item\ItemIdentifier as IID;
 use pocketmine\item\ItemTypeIds as Ids;
 use pocketmine\item\VanillaArmorMaterials as ArmorMaterials;
 use pocketmine\math\Vector3;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\CloningRegistryTrait;
 use pocketmine\world\World;
+use function strtolower;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
@@ -546,17 +546,16 @@ final class VanillaItems{
 		self::register("writable_book", new WritableBook(new IID(Ids::WRITABLE_BOOK), "Book & Quill"));
 		self::register("written_book", new WrittenBook(new IID(Ids::WRITTEN_BOOK), "Written Book"));
 
-		foreach(BoatType::getAll() as $type){
+		foreach(BoatType::cases() as $type){
 			//boat type is static, because different types of wood may have different properties
-			self::register($type->name() . "_boat", new Boat(new IID(match($type){
-				BoatType::OAK() => Ids::OAK_BOAT,
-				BoatType::SPRUCE() => Ids::SPRUCE_BOAT,
-				BoatType::BIRCH() => Ids::BIRCH_BOAT,
-				BoatType::JUNGLE() => Ids::JUNGLE_BOAT,
-				BoatType::ACACIA() => Ids::ACACIA_BOAT,
-				BoatType::DARK_OAK() => Ids::DARK_OAK_BOAT,
-				BoatType::MANGROVE() => Ids::MANGROVE_BOAT,
-				default => throw new AssumptionFailedError("Unhandled tree type " . $type->name())
+			self::register(strtolower($type->name) . "_boat", new Boat(new IID(match($type){
+				BoatType::OAK => Ids::OAK_BOAT,
+				BoatType::SPRUCE => Ids::SPRUCE_BOAT,
+				BoatType::BIRCH => Ids::BIRCH_BOAT,
+				BoatType::JUNGLE => Ids::JUNGLE_BOAT,
+				BoatType::ACACIA => Ids::ACACIA_BOAT,
+				BoatType::DARK_OAK => Ids::DARK_OAK_BOAT,
+				BoatType::MANGROVE => Ids::MANGROVE_BOAT,
 			}), $type->getDisplayName() . " Boat", $type));
 		}
 	}
