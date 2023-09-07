@@ -123,7 +123,7 @@ class PlayerCreationEvent extends Event{
 	 * Once all the promises that have been added have been completed,
 	 * the player login sequence will be initiated and the player will be created.
 	 *
-	 * @param Promise<mixed> $promise
+	 * @phpstan-param Promise<mixed> $promise
 	 */
 	public function addPromise(Promise $promise) : void{
 		$this->promises->add($promise);
