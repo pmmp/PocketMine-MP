@@ -35,7 +35,7 @@ use pocketmine\math\Facing;
  * You may use it as a type for parameters and return values, but it should not be implemented outside of this package.
  * New methods may be added without warning.
  */
-interface RuntimeDataDescriber extends RuntimeEnumDescriber{
+interface RuntimeDataDescriber{
 	public function int(int $bits, int &$value) : void;
 
 	public function boundedInt(int $bits, int $min, int $max, int &$value) : void;

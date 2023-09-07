@@ -34,8 +34,6 @@ use function intdiv;
 use function spl_object_id;
 
 final class RuntimeDataReader implements RuntimeDataDescriber{
-	use LegacyRuntimeEnumDescriberTrait;
-
 	private int $offset = 0;
 
 	public function __construct(

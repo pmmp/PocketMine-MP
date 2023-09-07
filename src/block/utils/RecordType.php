@@ -26,34 +26,12 @@ namespace pocketmine\block\utils;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
-use pocketmine\utils\LegacyEnumShimTrait;
 use function spl_object_id;
 
 /**
- * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
- *  These are retained for backwards compatibility only.
- *
- * @method static RecordType DISK_11()
- * @method static RecordType DISK_13()
- * @method static RecordType DISK_5()
- * @method static RecordType DISK_BLOCKS()
- * @method static RecordType DISK_CAT()
- * @method static RecordType DISK_CHIRP()
- * @method static RecordType DISK_FAR()
- * @method static RecordType DISK_MALL()
- * @method static RecordType DISK_MELLOHI()
- * @method static RecordType DISK_OTHERSIDE()
- * @method static RecordType DISK_PIGSTEP()
- * @method static RecordType DISK_STAL()
- * @method static RecordType DISK_STRAD()
- * @method static RecordType DISK_WAIT()
- * @method static RecordType DISK_WARD()
- *
  * @phpstan-type TMetadata array{0: string, 1: LevelSoundEvent::*, 2: Translatable}
  */
 enum RecordType{
-	use LegacyEnumShimTrait;
-
 	case DISK_13;
 	case DISK_5;
 	case DISK_CAT;

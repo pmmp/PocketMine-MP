@@ -25,62 +25,12 @@ namespace pocketmine\item;
 
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
-use pocketmine\utils\LegacyEnumShimTrait;
 use function spl_object_id;
 
 /**
- * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
- *  These are retained for backwards compatibility only.
- *
- * @method static PotionType AWKWARD()
- * @method static PotionType FIRE_RESISTANCE()
- * @method static PotionType HARMING()
- * @method static PotionType HEALING()
- * @method static PotionType INVISIBILITY()
- * @method static PotionType LEAPING()
- * @method static PotionType LONG_FIRE_RESISTANCE()
- * @method static PotionType LONG_INVISIBILITY()
- * @method static PotionType LONG_LEAPING()
- * @method static PotionType LONG_MUNDANE()
- * @method static PotionType LONG_NIGHT_VISION()
- * @method static PotionType LONG_POISON()
- * @method static PotionType LONG_REGENERATION()
- * @method static PotionType LONG_SLOWNESS()
- * @method static PotionType LONG_SLOW_FALLING()
- * @method static PotionType LONG_STRENGTH()
- * @method static PotionType LONG_SWIFTNESS()
- * @method static PotionType LONG_TURTLE_MASTER()
- * @method static PotionType LONG_WATER_BREATHING()
- * @method static PotionType LONG_WEAKNESS()
- * @method static PotionType MUNDANE()
- * @method static PotionType NIGHT_VISION()
- * @method static PotionType POISON()
- * @method static PotionType REGENERATION()
- * @method static PotionType SLOWNESS()
- * @method static PotionType SLOW_FALLING()
- * @method static PotionType STRENGTH()
- * @method static PotionType STRONG_HARMING()
- * @method static PotionType STRONG_HEALING()
- * @method static PotionType STRONG_LEAPING()
- * @method static PotionType STRONG_POISON()
- * @method static PotionType STRONG_REGENERATION()
- * @method static PotionType STRONG_SLOWNESS()
- * @method static PotionType STRONG_STRENGTH()
- * @method static PotionType STRONG_SWIFTNESS()
- * @method static PotionType STRONG_TURTLE_MASTER()
- * @method static PotionType SWIFTNESS()
- * @method static PotionType THICK()
- * @method static PotionType TURTLE_MASTER()
- * @method static PotionType WATER()
- * @method static PotionType WATER_BREATHING()
- * @method static PotionType WEAKNESS()
- * @method static PotionType WITHER()
- *
  * @phpstan-type TMetadata array{0: string, 1: \Closure() : list<EffectInstance>}
  */
 enum PotionType{
-	use LegacyEnumShimTrait;
-
 	case WATER;
 	case MUNDANE;
 	case LONG_MUNDANE;

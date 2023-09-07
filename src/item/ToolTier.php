@@ -23,26 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\utils\LegacyEnumShimTrait;
-
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
- *
- * @method static ToolTier DIAMOND()
- * @method static ToolTier GOLD()
- * @method static ToolTier IRON()
- * @method static ToolTier NETHERITE()
- * @method static ToolTier STONE()
- * @method static ToolTier WOOD()
- *
  * @phpstan-type TMetadata array{0: int, 1: int, 2: int, 3: int, 4: int}
  */
 enum ToolTier{
-	use LegacyEnumShimTrait;
-
 	case WOOD;
 	case GOLD;
 	case STONE;

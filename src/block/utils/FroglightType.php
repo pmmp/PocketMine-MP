@@ -23,19 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\LegacyEnumShimTrait;
-
-/**
- * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
- *  These are retained for backwards compatibility only.
- *
- * @method static FroglightType OCHRE()
- * @method static FroglightType PEARLESCENT()
- * @method static FroglightType VERDANT()
- */
 enum FroglightType{
-	use LegacyEnumShimTrait;
-
 	case OCHRE;
 	case PEARLESCENT;
 	case VERDANT;

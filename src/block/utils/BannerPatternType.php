@@ -23,54 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\LegacyEnumShimTrait;
-
-/**
- * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
- *  These are retained for backwards compatibility only.
- *
- * @method static BannerPatternType BORDER()
- * @method static BannerPatternType BRICKS()
- * @method static BannerPatternType CIRCLE()
- * @method static BannerPatternType CREEPER()
- * @method static BannerPatternType CROSS()
- * @method static BannerPatternType CURLY_BORDER()
- * @method static BannerPatternType DIAGONAL_LEFT()
- * @method static BannerPatternType DIAGONAL_RIGHT()
- * @method static BannerPatternType DIAGONAL_UP_LEFT()
- * @method static BannerPatternType DIAGONAL_UP_RIGHT()
- * @method static BannerPatternType FLOWER()
- * @method static BannerPatternType GRADIENT()
- * @method static BannerPatternType GRADIENT_UP()
- * @method static BannerPatternType HALF_HORIZONTAL()
- * @method static BannerPatternType HALF_HORIZONTAL_BOTTOM()
- * @method static BannerPatternType HALF_VERTICAL()
- * @method static BannerPatternType HALF_VERTICAL_RIGHT()
- * @method static BannerPatternType MOJANG()
- * @method static BannerPatternType RHOMBUS()
- * @method static BannerPatternType SKULL()
- * @method static BannerPatternType SMALL_STRIPES()
- * @method static BannerPatternType SQUARE_BOTTOM_LEFT()
- * @method static BannerPatternType SQUARE_BOTTOM_RIGHT()
- * @method static BannerPatternType SQUARE_TOP_LEFT()
- * @method static BannerPatternType SQUARE_TOP_RIGHT()
- * @method static BannerPatternType STRAIGHT_CROSS()
- * @method static BannerPatternType STRIPE_BOTTOM()
- * @method static BannerPatternType STRIPE_CENTER()
- * @method static BannerPatternType STRIPE_DOWNLEFT()
- * @method static BannerPatternType STRIPE_DOWNRIGHT()
- * @method static BannerPatternType STRIPE_LEFT()
- * @method static BannerPatternType STRIPE_MIDDLE()
- * @method static BannerPatternType STRIPE_RIGHT()
- * @method static BannerPatternType STRIPE_TOP()
- * @method static BannerPatternType TRIANGLES_BOTTOM()
- * @method static BannerPatternType TRIANGLES_TOP()
- * @method static BannerPatternType TRIANGLE_BOTTOM()
- * @method static BannerPatternType TRIANGLE_TOP()
- */
 enum BannerPatternType{
-	use LegacyEnumShimTrait;
-
 	case BORDER;
 	case BRICKS;
 	case CIRCLE;

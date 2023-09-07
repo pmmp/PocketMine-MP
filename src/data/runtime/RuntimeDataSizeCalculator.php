@@ -28,8 +28,6 @@ use pocketmine\math\Facing;
 use function count;
 
 final class RuntimeDataSizeCalculator implements RuntimeDataDescriber{
-	use LegacyRuntimeEnumDescriberTrait;
-
 	private int $bits = 0;
 
 	protected function addBits(int $bits) : void{

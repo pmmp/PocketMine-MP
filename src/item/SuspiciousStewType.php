@@ -25,26 +25,8 @@ namespace pocketmine\item;
 
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
-use pocketmine\utils\LegacyEnumShimTrait;
 
-/**
- * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
- *  These are retained for backwards compatibility only.
- *
- * @method static SuspiciousStewType ALLIUM()
- * @method static SuspiciousStewType AZURE_BLUET()
- * @method static SuspiciousStewType BLUE_ORCHID()
- * @method static SuspiciousStewType CORNFLOWER()
- * @method static SuspiciousStewType DANDELION()
- * @method static SuspiciousStewType LILY_OF_THE_VALLEY()
- * @method static SuspiciousStewType OXEYE_DAISY()
- * @method static SuspiciousStewType POPPY()
- * @method static SuspiciousStewType TULIP()
- * @method static SuspiciousStewType WITHER_ROSE()
- */
 enum SuspiciousStewType{
-	use LegacyEnumShimTrait;
-
 	case POPPY;
 	case CORNFLOWER;
 	case TULIP;

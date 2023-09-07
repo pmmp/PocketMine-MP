@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\crafting;
 
-use pocketmine\utils\LegacyEnumShimTrait;
 use pocketmine\world\sound\BlastFurnaceSound;
 use pocketmine\world\sound\FurnaceSound;
 use pocketmine\world\sound\SmokerSound;
@@ -31,18 +30,9 @@ use pocketmine\world\sound\Sound;
 use function spl_object_id;
 
 /**
- * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
- *  These are retained for backwards compatibility only.
- *
- * @method static FurnaceType BLAST_FURNACE()
- * @method static FurnaceType FURNACE()
- * @method static FurnaceType SMOKER()
- *
  * @phpstan-type TMetadata array{0: int, 1: Sound}
  */
 enum FurnaceType{
-	use LegacyEnumShimTrait;
-
 	case FURNACE;
 	case BLAST_FURNACE;
 	case SMOKER;

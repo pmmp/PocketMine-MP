@@ -23,26 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\LegacyEnumShimTrait;
-
-/**
- * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
- *  These are retained for backwards compatibility only.
- *
- * @method static LeavesType ACACIA()
- * @method static LeavesType AZALEA()
- * @method static LeavesType BIRCH()
- * @method static LeavesType CHERRY()
- * @method static LeavesType DARK_OAK()
- * @method static LeavesType FLOWERING_AZALEA()
- * @method static LeavesType JUNGLE()
- * @method static LeavesType MANGROVE()
- * @method static LeavesType OAK()
- * @method static LeavesType SPRUCE()
- */
 enum LeavesType{
-	use LegacyEnumShimTrait;
-
 	case OAK;
 	case SPRUCE;
 	case BIRCH;

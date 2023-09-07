@@ -24,35 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\color\Color;
-use pocketmine\utils\LegacyEnumShimTrait;
 use function spl_object_id;
 
 /**
- * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
- *  These are retained for backwards compatibility only.
- *
- * @method static DyeColor BLACK()
- * @method static DyeColor BLUE()
- * @method static DyeColor BROWN()
- * @method static DyeColor CYAN()
- * @method static DyeColor GRAY()
- * @method static DyeColor GREEN()
- * @method static DyeColor LIGHT_BLUE()
- * @method static DyeColor LIGHT_GRAY()
- * @method static DyeColor LIME()
- * @method static DyeColor MAGENTA()
- * @method static DyeColor ORANGE()
- * @method static DyeColor PINK()
- * @method static DyeColor PURPLE()
- * @method static DyeColor RED()
- * @method static DyeColor WHITE()
- * @method static DyeColor YELLOW()
- *
  * @phpstan-type TMetadata array{0: string, 1: Color}
  */
 enum DyeColor{
-	use LegacyEnumShimTrait;
-
 	case WHITE;
 	case ORANGE;
 	case MAGENTA;

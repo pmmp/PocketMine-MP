@@ -23,19 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\utils\LegacyEnumShimTrait;
-
-/**
- * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
- *  These are retained for backwards compatibility only.
- *
- * @method static ItemUseResult FAIL()
- * @method static ItemUseResult NONE()
- * @method static ItemUseResult SUCCESS()
- */
 enum ItemUseResult{
-	use LegacyEnumShimTrait;
-
 	case NONE;
 	case FAIL;
 	case SUCCESS;

@@ -750,8 +750,8 @@ use function strtolower;
  * @method static Water WATER()
  * @method static WaterCauldron WATER_CAULDRON()
  * @method static NetherVines WEEPING_VINES()
- * @method static WeightedPressurePlateHeavy WEIGHTED_PRESSURE_PLATE_HEAVY()
- * @method static WeightedPressurePlateLight WEIGHTED_PRESSURE_PLATE_LIGHT()
+ * @method static WeightedPressurePlate WEIGHTED_PRESSURE_PLATE_HEAVY()
+ * @method static WeightedPressurePlate WEIGHTED_PRESSURE_PLATE_LIGHT()
  * @method static Wheat WHEAT()
  * @method static Flower WHITE_TULIP()
  * @method static WitherRose WITHER_ROSE()
@@ -1115,14 +1115,14 @@ final class VanillaBlocks{
 		self::register("lily_pad", new WaterLily(new BID(Ids::LILY_PAD), "Lily Pad", new Info(BreakInfo::instant())));
 
 		$weightedPressurePlateBreakInfo = new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD));
-		self::register("weighted_pressure_plate_heavy", new WeightedPressurePlateHeavy(
+		self::register("weighted_pressure_plate_heavy", new WeightedPressurePlate(
 			new BID(Ids::WEIGHTED_PRESSURE_PLATE_HEAVY),
 			"Weighted Pressure Plate Heavy",
 			$weightedPressurePlateBreakInfo,
 			deactivationDelayTicks: 10,
 			signalStrengthFactor: 0.1
 		));
-		self::register("weighted_pressure_plate_light", new WeightedPressurePlateLight(
+		self::register("weighted_pressure_plate_light", new WeightedPressurePlate(
 			new BID(Ids::WEIGHTED_PRESSURE_PLATE_LIGHT),
 			"Weighted Pressure Plate Light",
 			$weightedPressurePlateBreakInfo,

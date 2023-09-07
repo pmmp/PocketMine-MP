@@ -23,23 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\LegacyEnumShimTrait;
-
-/**
- * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
- *  These are retained for backwards compatibility only.
- *
- * @method static MobHeadType CREEPER()
- * @method static MobHeadType DRAGON()
- * @method static MobHeadType PIGLIN()
- * @method static MobHeadType PLAYER()
- * @method static MobHeadType SKELETON()
- * @method static MobHeadType WITHER_SKELETON()
- * @method static MobHeadType ZOMBIE()
- */
 enum MobHeadType{
-	use LegacyEnumShimTrait;
-
 	case SKELETON;
 	case WITHER_SKELETON;
 	case ZOMBIE;
