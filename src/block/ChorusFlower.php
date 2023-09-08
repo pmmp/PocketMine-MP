@@ -24,17 +24,15 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\AgeableTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\block\StructureGrowEvent;
-use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
-use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
-use pocketmine\world\Position;
 use pocketmine\world\sound\ChorusFlowerDieSound;
 use pocketmine\world\sound\ChorusFlowerGrowSound;
 use pocketmine\world\World;
@@ -44,6 +42,7 @@ use function mt_rand;
 
 final class ChorusFlower extends Flowable{
 	use AgeableTrait;
+	use StaticSupportTrait;
 
 	public const MIN_AGE = 0;
 	public const MAX_AGE = 5;
@@ -54,7 +53,8 @@ final class ChorusFlower extends Flowable{
 		return [AxisAlignedBB::one()];
 	}
 
-	private function canBeSupportedAt(Position $position) : bool{
+	private function canBeSupportedAt(Block $block) : bool{
+		$position = $block->getPosition();
 		$world = $position->getWorld();
 		$down = $world->getBlock($position->down());
 
@@ -77,19 +77,6 @@ final class ChorusFlower extends Flowable{
 		}
 
 		return $plantAdjacent;
-	}
-
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedAt($blockReplace->getPosition())){
-			return false;
-		}
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedAt($this->position)){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
 	}
 
 	public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{

@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\FortuneDropHelper;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\StructureGrowEvent;
@@ -42,6 +43,7 @@ use function mt_rand;
  */
 class NetherVines extends Flowable{
 	use AgeableTrait;
+	use StaticSupportTrait;
 
 	public const MAX_AGE = 25;
 
@@ -70,12 +72,6 @@ class NetherVines extends Flowable{
 		return $supportBlock->getSupportType($this->growthFace)->hasCenterSupport() || $supportBlock->hasSameTypeId($this);
 	}
 
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedAt($this)){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
-	}
-
 	/**
 	 * Returns the block at the end of the vine structure furthest from the supporting block.
 	 */
@@ -88,9 +84,6 @@ class NetherVines extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedAt($blockReplace)){
-			return false;
-		}
 		$this->age = mt_rand(0, self::MAX_AGE - 1);
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}

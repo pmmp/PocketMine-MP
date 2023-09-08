@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -35,6 +36,7 @@ use pocketmine\world\Position;
 
 class Sugarcane extends Flowable{
 	use AgeableTrait;
+	use StaticSupportTrait;
 
 	public const MAX_AGE = 15;
 
@@ -82,18 +84,12 @@ class Sugarcane extends Flowable{
 		return false;
 	}
 
-	private function canBeSupportedBy(Block $block) : bool{
-		return
-			$block->hasTypeTag(BlockTypeTags::MUD) ||
-			$block->hasTypeTag(BlockTypeTags::DIRT) ||
-			$block->hasTypeTag(BlockTypeTags::SAND);
-	}
-
-	public function onNearbyBlockChange() : void{
-		$down = $this->getSide(Facing::DOWN);
-		if(!$down->hasSameTypeId($this) && !$this->canBeSupportedBy($down)){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
+	private function canBeSupportedAt(Block $block) : bool{
+		$supportBlock = $block->getSide(Facing::DOWN);
+		return $supportBlock->hasSameTypeId($this) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::SAND);
 	}
 
 	public function ticksRandomly() : bool{
@@ -112,15 +108,16 @@ class Sugarcane extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$down = $this->getSide(Facing::DOWN);
+		$down = $blockReplace->getSide(Facing::DOWN);
 		if($down->hasSameTypeId($this)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif($this->canBeSupportedBy($down)){
-			foreach(Facing::HORIZONTAL as $side){
-				$sideBlock = $down->getSide($side);
-				if($sideBlock instanceof Water || $sideBlock instanceof FrostedIce){
-					return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-				}
+		}
+
+		//support criteria are checked by FixedSupportTrait, but this part applies to placement only
+		foreach(Facing::HORIZONTAL as $side){
+			$sideBlock = $down->getSide($side);
+			if($sideBlock instanceof Water || $sideBlock instanceof FrostedIce){
+				return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 			}
 		}
 
