@@ -98,13 +98,10 @@ trait RegistryTrait{
 	}
 
 	/**
-	 * @param string  $name
 	 * @param mixed[] $arguments
 	 * @phpstan-param list<mixed> $arguments
-	 *
-	 * @return object
 	 */
-	public static function __callStatic($name, $arguments){
+	public static function __callStatic(string $name, array $arguments) : object{
 		if(count($arguments) > 0){
 			throw new \ArgumentCountError("Expected exactly 0 arguments, " . count($arguments) . " passed");
 		}
