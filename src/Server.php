@@ -554,7 +554,7 @@ class Server{
 	 * @phpstan-return Promise<Player>
 	 */
 	public function createPlayer(NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, ?CompoundTag $offlinePlayerData) : Promise{
-		/** @phpstan-var ObjectSet<Promise<mixed>> $promises */
+		/** @phpstan-var ObjectSet<Promise<null>> $promises */
 		$promises = new ObjectSet();
 		$ev = new PlayerCreationEvent($session, $promises);
 		$ev->call();

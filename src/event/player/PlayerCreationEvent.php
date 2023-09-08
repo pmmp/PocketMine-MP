@@ -56,7 +56,7 @@ class PlayerCreationEvent extends Event{
 	/** @phpstan-var class-string<Player> */
 	private string $playerClass = Player::class;
 
-	/** @phpstan-param ObjectSet<Promise<mixed>> $promises */
+	/** @phpstan-param ObjectSet<Promise<null>> $promises */
 	public function __construct(
 		private NetworkSession $session,
 		private ObjectSet $promises
@@ -123,7 +123,7 @@ class PlayerCreationEvent extends Event{
 	 * Once all the promises that have been added have been completed,
 	 * the player login sequence will be initiated and the player will be created.
 	 *
-	 * @phpstan-param Promise<mixed> $promise
+	 * @phpstan-param Promise<null> $promise
 	 */
 	public function addPromise(Promise $promise) : void{
 		$this->promises->add($promise);

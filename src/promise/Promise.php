@@ -59,19 +59,19 @@ final class Promise{
 	 * will be an array containing the resolution values of each Promises in
 	 * `$promises` indexed by the respective Promises' array keys.
 	 *
-	 * @phpstan-param Promise<mixed>[] $promises
+	 * @phpstan-template TTValue
+	 * @phpstan-param Promise<TTValue>[] $promises
 	 *
-	 * @phpstan-return Promise<array<int, mixed>>
+	 * @phpstan-return Promise<array<int, TTValue>>
 	 */
 	public static function all(array $promises) : Promise {
-		/** @phpstan-var PromiseResolver<array<int, mixed>> $resolver */
+		/** @phpstan-var PromiseResolver<array<int, TTValue>> $resolver */
 		$resolver = new PromiseResolver();
 		$values = [];
-		$toResolve = 0;
+		$toResolve = count($promises);
 		$continue = true;
 
 		foreach($promises as $key => $promise){
-			$toResolve++;
 			$values[$key] = null;
 
 			$promise->onCompletion(
