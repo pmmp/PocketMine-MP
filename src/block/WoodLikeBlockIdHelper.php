@@ -153,69 +153,23 @@ final class WoodLikeBlockIdHelper{
 	 * @phpstan-return array{BID, BID, \Closure() : \pocketmine\item\Item}
 	 */
 	public static function getSignInfo(WoodType $treeType) : array{
-		switch($treeType){
-			case WoodType::OAK:
-				return [
-					new BID(Ids::OAK_SIGN, TileSign::class),
-					new BID(Ids::OAK_WALL_SIGN, TileSign::class),
-					fn() => VanillaItems::OAK_SIGN()
-				];
-			case WoodType::SPRUCE:
-				return [
-					new BID(Ids::SPRUCE_SIGN, TileSign::class),
-					new BID(Ids::SPRUCE_WALL_SIGN, TileSign::class),
-					fn() => VanillaItems::SPRUCE_SIGN()
-				];
-			case WoodType::BIRCH:
-				return [
-					new BID(Ids::BIRCH_SIGN, TileSign::class),
-					new BID(Ids::BIRCH_WALL_SIGN, TileSign::class),
-					fn() => VanillaItems::BIRCH_SIGN()
-				];
-			case WoodType::JUNGLE:
-				return [
-					new BID(Ids::JUNGLE_SIGN, TileSign::class),
-					new BID(Ids::JUNGLE_WALL_SIGN, TileSign::class),
-					fn() => VanillaItems::JUNGLE_SIGN()
-				];
-			case WoodType::ACACIA:
-				return [
-					new BID(Ids::ACACIA_SIGN, TileSign::class),
-					new BID(Ids::ACACIA_WALL_SIGN, TileSign::class),
-					fn() => VanillaItems::ACACIA_SIGN()
-				];
-			case WoodType::DARK_OAK:
-				return [
-					new BID(Ids::DARK_OAK_SIGN, TileSign::class),
-					new BID(Ids::DARK_OAK_WALL_SIGN, TileSign::class),
-					fn() => VanillaItems::DARK_OAK_SIGN()
-				];
-			case WoodType::MANGROVE:
-				return [
-					new BID(Ids::MANGROVE_SIGN, TileSign::class),
-					new BID(Ids::MANGROVE_WALL_SIGN, TileSign::class),
-					fn() => VanillaItems::MANGROVE_SIGN()
-				];
-			case WoodType::CRIMSON:
-				return [
-					new BID(Ids::CRIMSON_SIGN, TileSign::class),
-					new BID(Ids::CRIMSON_WALL_SIGN, TileSign::class),
-					fn() => VanillaItems::CRIMSON_SIGN()
-				];
-			case WoodType::WARPED:
-				return [
-					new BID(Ids::WARPED_SIGN, TileSign::class),
-					new BID(Ids::WARPED_WALL_SIGN, TileSign::class),
-					fn() => VanillaItems::WARPED_SIGN()
-				];
-			case WoodType::CHERRY:
-				return [
-					new BID(Ids::CHERRY_SIGN, TileSign::class),
-					new BID(Ids::CHERRY_WALL_SIGN, TileSign::class),
-					fn() => VanillaItems::CHERRY_SIGN()
-				];
-		}
-		throw new AssumptionFailedError("Switch should cover all wood types");
+		$make = fn(int $floorId, int $wallId, \Closure $getItem) => [
+			new BID($floorId, TileSign::class),
+			new BID($wallId, TileSign::class),
+			$getItem
+		];
+		return match($treeType){
+			WoodType::OAK => $make(Ids::OAK_SIGN, Ids::OAK_WALL_SIGN, fn() => VanillaItems::OAK_SIGN()),
+			WoodType::SPRUCE => $make(Ids::SPRUCE_SIGN, Ids::SPRUCE_WALL_SIGN, fn() => VanillaItems::SPRUCE_SIGN()),
+			WoodType::BIRCH => $make(Ids::BIRCH_SIGN, Ids::BIRCH_WALL_SIGN, fn() => VanillaItems::BIRCH_SIGN()),
+			WoodType::JUNGLE => $make(Ids::JUNGLE_SIGN, Ids::JUNGLE_WALL_SIGN, fn() => VanillaItems::JUNGLE_SIGN()),
+			WoodType::ACACIA => $make(Ids::ACACIA_SIGN, Ids::ACACIA_WALL_SIGN, fn() => VanillaItems::ACACIA_SIGN()),
+			WoodType::DARK_OAK => $make(Ids::DARK_OAK_SIGN, Ids::DARK_OAK_WALL_SIGN, fn() => VanillaItems::DARK_OAK_SIGN()),
+			WoodType::MANGROVE => $make(Ids::MANGROVE_SIGN, Ids::MANGROVE_WALL_SIGN, fn() => VanillaItems::MANGROVE_SIGN()),
+			WoodType::CRIMSON => $make(Ids::CRIMSON_SIGN, Ids::CRIMSON_WALL_SIGN, fn() => VanillaItems::CRIMSON_SIGN()),
+			WoodType::WARPED => $make(Ids::WARPED_SIGN, Ids::WARPED_WALL_SIGN, fn() => VanillaItems::WARPED_SIGN()),
+			WoodType::CHERRY => $make(Ids::CHERRY_SIGN, Ids::CHERRY_WALL_SIGN, fn() => VanillaItems::CHERRY_SIGN()),
+		};
 	}
 
 	public static function getTrapdoorIdentifier(WoodType $treeType) : BlockIdentifier{
