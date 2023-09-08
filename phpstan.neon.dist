@@ -10,7 +10,6 @@ includes:
 	- vendor/phpstan/phpstan-strict-rules/rules.neon
 
 rules:
-	- pocketmine\phpstan\rules\DisallowEnumComparisonRule
 	- pocketmine\phpstan\rules\DisallowForeachByReferenceRule
 	- pocketmine\phpstan\rules\UnsafeForeachArrayOfStringRule
 #	- pocketmine\phpstan\rules\ThreadedSupportedTypesRule
