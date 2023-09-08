@@ -71,11 +71,7 @@ final class ChorusPlant extends Flowable{
 			}
 		}
 
-		if($this->canBeSupportedBy($down)){
-			return true;
-		}
-
-		return false;
+		return $this->canBeSupportedBy($down);
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
