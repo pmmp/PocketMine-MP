@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SaplingType;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Fertilizer;

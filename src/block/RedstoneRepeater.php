@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;

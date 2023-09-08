@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\AgeableTrait;
-use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\FortuneDropHelper;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\StructureGrowEvent;

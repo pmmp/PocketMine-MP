@@ -25,8 +25,8 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
-use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\FortuneDropHelper;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageByBlockEvent;

@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
-use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
