@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\FixedSupportTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\FoodSource;
@@ -34,7 +34,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
 abstract class BaseCake extends Transparent implements FoodSource{
-	use FixedSupportTrait;
+	use StaticSupportTrait;
 
 	public function getSupportType(int $facing) : SupportType{
 		return SupportType::NONE;

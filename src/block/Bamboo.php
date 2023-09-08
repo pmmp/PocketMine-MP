@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\FixedSupportTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\StructureGrowEvent;
@@ -47,7 +47,7 @@ use function mt_rand;
 use const PHP_INT_MAX;
 
 class Bamboo extends Transparent{
-	use FixedSupportTrait;
+	use StaticSupportTrait;
 
 	public const NO_LEAVES = 0;
 	public const SMALL_LEAVES = 1;

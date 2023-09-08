@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\FlowerPot as TileFlowerPot;
-use pocketmine\block\utils\FixedSupportTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -33,7 +33,7 @@ use pocketmine\player\Player;
 use function assert;
 
 class FlowerPot extends Flowable{
-	use FixedSupportTrait;
+	use StaticSupportTrait;
 
 	protected ?Block $plant = null;
 

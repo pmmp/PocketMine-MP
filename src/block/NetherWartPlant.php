@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
-use pocketmine\block\utils\FixedSupportTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -33,7 +33,7 @@ use function mt_rand;
 
 class NetherWartPlant extends Flowable{
 	use AgeableTrait;
-	use FixedSupportTrait;
+	use StaticSupportTrait;
 
 	public const MAX_AGE = 3;
 

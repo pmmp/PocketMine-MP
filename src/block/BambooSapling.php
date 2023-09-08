@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\FixedSupportTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Bamboo as ItemBamboo;
@@ -36,7 +36,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 final class BambooSapling extends Flowable{
-	use FixedSupportTrait;
+	use StaticSupportTrait;
 
 	private bool $ready = false;
 

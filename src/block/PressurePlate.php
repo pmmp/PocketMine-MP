@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\FixedSupportTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\PressurePlateUpdateEvent;
@@ -35,7 +35,7 @@ use pocketmine\world\sound\PressurePlateDeactivateSound;
 use function count;
 
 abstract class PressurePlate extends Transparent{
-	use FixedSupportTrait;
+	use StaticSupportTrait;
 
 	private readonly int $deactivationDelayTicks;
 

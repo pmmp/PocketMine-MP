@@ -23,14 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\FixedSupportTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use function mt_rand;
 
 class DeadBush extends Flowable{
-	use FixedSupportTrait;
+	use StaticSupportTrait;
 
 	public function getDropsForIncompatibleTool(Item $item) : array{
 		return [

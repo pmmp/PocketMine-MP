@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
-use pocketmine\block\utils\FixedSupportTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
@@ -41,7 +41,7 @@ use function mt_rand;
 
 class CaveVines extends Flowable{
 	use AgeableTrait;
-	use FixedSupportTrait;
+	use StaticSupportTrait;
 
 	public const MAX_AGE = 25;
 

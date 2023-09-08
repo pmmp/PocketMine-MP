@@ -24,13 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\ColoredTrait;
-use pocketmine\block\utils\FixedSupportTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 
 class Carpet extends Flowable{
 	use ColoredTrait;
-	use FixedSupportTrait;
+	use StaticSupportTrait;
 
 	public function isSolid() : bool{
 		return true;

@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\FixedSupportTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\SupportType;
@@ -38,7 +38,7 @@ use pocketmine\world\BlockTransaction;
 class RedstoneRepeater extends Flowable{
 	use HorizontalFacingTrait;
 	use PoweredByRedstoneTrait;
-	use FixedSupportTrait;
+	use StaticSupportTrait;
 
 	public const MIN_DELAY = 1;
 	public const MAX_DELAY = 4;

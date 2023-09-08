@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
-use pocketmine\block\utils\FixedSupportTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Fertilizer;
@@ -36,7 +36,7 @@ use pocketmine\world\BlockTransaction;
 
 class PinkPetals extends Flowable{
 	use HorizontalFacingTrait;
-	use FixedSupportTrait {
+	use StaticSupportTrait {
 		canBePlacedAt as supportedWhenPlacedAt;
 	}
 

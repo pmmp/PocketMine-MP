@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\FixedSupportTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
@@ -36,7 +36,7 @@ use function atan2;
 use function rad2deg;
 
 final class FloorCoralFan extends BaseCoral{
-	use FixedSupportTrait;
+	use StaticSupportTrait;
 
 	private int $axis = Axis::X;
 

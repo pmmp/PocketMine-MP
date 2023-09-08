@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\FixedSupportTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SaplingType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\StructureGrowEvent;
@@ -37,7 +37,7 @@ use pocketmine\world\generator\object\TreeFactory;
 use function mt_rand;
 
 class Sapling extends Flowable{
-	use FixedSupportTrait;
+	use StaticSupportTrait;
 
 	protected bool $ready = false;
 
