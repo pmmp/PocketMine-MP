@@ -27,7 +27,6 @@ declare(strict_types=1);
  */
 namespace pocketmine\wizard;
 
-use pocketmine\data\java\GameModeIdMap;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
@@ -168,8 +167,12 @@ LICENSE;
 		$this->message($this->lang->translate(KnownTranslationFactory::gamemode_info()));
 
 		do{
-			//TODO: drop the usage of internal Mojang IDs for this - we really just need a set of options to choose from
-			$gamemode = GameModeIdMap::getInstance()->fromId((int) $this->getInput($this->lang->translate(KnownTranslationFactory::default_gamemode()), (string) GameModeIdMap::getInstance()->toId(GameMode::SURVIVAL)));
+			$input = (int) $this->getInput($this->lang->translate(KnownTranslationFactory::default_gamemode()), "0");
+			$gamemode = match($input){
+				0 => GameMode::SURVIVAL,
+				1 => GameMode::CREATIVE,
+				default => null
+			};
 		}while($gamemode === null);
 		//TODO: this probably shouldn't use the enum name directly
 		$config->set(ServerProperties::GAME_MODE, $gamemode->name);
