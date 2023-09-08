@@ -30,7 +30,6 @@ use pocketmine\block\utils\LeavesType;
 use pocketmine\block\utils\SaplingType;
 use pocketmine\block\utils\WoodType;
 use pocketmine\item\VanillaItems;
-use pocketmine\utils\AssumptionFailedError;
 
 /**
  * All wood-like blocks have different IDs for different wood types.
