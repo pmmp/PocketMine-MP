@@ -56,7 +56,6 @@ use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
 use pocketmine\math\Facing;
-use pocketmine\utils\AssumptionFailedError;
 
 final class BlockStateSerializerHelper{
 
@@ -103,11 +102,10 @@ final class BlockStateSerializerHelper{
 
 	public static function selectCopperId(CopperOxidation $oxidation, string $noneId, string $exposedId, string $weatheredId, string $oxidizedId) : string{
 		return match($oxidation){
-			CopperOxidation::NONE() => $noneId,
-			CopperOxidation::EXPOSED() => $exposedId,
-			CopperOxidation::WEATHERED() => $weatheredId,
-			CopperOxidation::OXIDIZED() => $oxidizedId,
-			default => throw new AssumptionFailedError("Unhandled copper oxidation " . $oxidation->name())
+			CopperOxidation::NONE => $noneId,
+			CopperOxidation::EXPOSED => $exposedId,
+			CopperOxidation::WEATHERED => $weatheredId,
+			CopperOxidation::OXIDIZED => $oxidizedId,
 		};
 	}
 
@@ -228,10 +226,10 @@ final class BlockStateSerializerHelper{
 
 	public static function encodeSlab(Slab $block, string $singleId, string $doubleId) : BlockStateWriter{
 		$slabType = $block->getSlabType();
-		return BlockStateWriter::create($slabType->equals(SlabType::DOUBLE()) ? $doubleId : $singleId)
+		return BlockStateWriter::create($slabType === SlabType::DOUBLE ? $doubleId : $singleId)
 
 			//this is (intentionally) also written for double slabs (as zero) to maintain bug parity with MCPE
-			->writeBool(BlockStateNames::TOP_SLOT_BIT, $slabType->equals(SlabType::TOP()));
+			->writeBool(BlockStateNames::TOP_SLOT_BIT, $slabType === SlabType::TOP);
 	}
 
 	public static function encodeStairs(Stair $block, BlockStateWriter $out) : BlockStateWriter{

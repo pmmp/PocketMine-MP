@@ -48,11 +48,6 @@ class Bed extends Transparent{
 	protected bool $occupied = false;
 	protected bool $head = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->color = DyeColor::RED();
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
-
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->bool($this->occupied);
@@ -65,6 +60,8 @@ class Bed extends Transparent{
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileBed){
 			$this->color = $tile->getColor();
+		}else{
+			$this->color = DyeColor::RED; //legacy pre-1.1 beds don't have tiles
 		}
 
 		return $this;
@@ -87,7 +84,7 @@ class Bed extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function isHeadPart() : bool{
@@ -209,7 +206,7 @@ class Bed extends Transparent{
 	}
 
 	private function canBeSupportedAt(Block $block) : bool{
-		return !$block->getAdjacentSupportType(Facing::DOWN)->equals(SupportType::NONE());
+		return $block->getAdjacentSupportType(Facing::DOWN) !== SupportType::NONE;
 	}
 
 	public function getMaxStackSize() : int{ return 1; }

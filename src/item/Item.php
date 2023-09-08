@@ -588,7 +588,7 @@ class Item implements \JsonSerializable{
 	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
 	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
-		return ItemUseResult::NONE();
+		return ItemUseResult::NONE;
 	}
 
 	/**
@@ -598,7 +598,7 @@ class Item implements \JsonSerializable{
 	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
 	public function onClickAir(Player $player, Vector3 $directionVector, array &$returnedItems) : ItemUseResult{
-		return ItemUseResult::NONE();
+		return ItemUseResult::NONE;
 	}
 
 	/**
@@ -608,7 +608,7 @@ class Item implements \JsonSerializable{
 	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
 	public function onReleaseUsing(Player $player, array &$returnedItems) : ItemUseResult{
-		return ItemUseResult::NONE();
+		return ItemUseResult::NONE;
 	}
 
 	/**

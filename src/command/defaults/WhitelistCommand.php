@@ -30,6 +30,7 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\Server;
+use pocketmine\ServerProperties;
 use function count;
 use function implode;
 use function sort;
@@ -71,7 +72,7 @@ class WhitelistCommand extends VanillaCommand{
 				case "on":
 					if($this->testPermission($sender, DefaultPermissionNames::COMMAND_WHITELIST_ENABLE)){
 						$server = $sender->getServer();
-						$server->getConfigGroup()->setConfigBool("white-list", true);
+						$server->getConfigGroup()->setConfigBool(ServerProperties::WHITELIST, true);
 						$this->kickNonWhitelistedPlayers($server);
 						Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_whitelist_enabled());
 					}
@@ -79,7 +80,7 @@ class WhitelistCommand extends VanillaCommand{
 					return true;
 				case "off":
 					if($this->testPermission($sender, DefaultPermissionNames::COMMAND_WHITELIST_DISABLE)){
-						$sender->getServer()->getConfigGroup()->setConfigBool("white-list", false);
+						$sender->getServer()->getConfigGroup()->setConfigBool(ServerProperties::WHITELIST, false);
 						Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_whitelist_disabled());
 					}
 

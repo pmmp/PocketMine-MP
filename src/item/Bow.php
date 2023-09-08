@@ -53,7 +53,7 @@ class Bow extends Tool implements Releasable{
 		};
 
 		if($player->hasFiniteResources() && $inventory === null){
-			return ItemUseResult::FAIL();
+			return ItemUseResult::FAIL;
 		}
 
 		$location = $player->getLocation();
@@ -95,7 +95,7 @@ class Bow extends Tool implements Releasable{
 
 		if($ev->isCancelled()){
 			$entity->flagForDespawn();
-			return ItemUseResult::FAIL();
+			return ItemUseResult::FAIL;
 		}
 
 		$entity->setMotion($entity->getMotion()->multiply($ev->getForce()));
@@ -105,7 +105,7 @@ class Bow extends Tool implements Releasable{
 			$projectileEv->call();
 			if($projectileEv->isCancelled()){
 				$ev->getProjectile()->flagForDespawn();
-				return ItemUseResult::FAIL();
+				return ItemUseResult::FAIL;
 			}
 
 			$ev->getProjectile()->spawnToAll();
@@ -121,7 +121,7 @@ class Bow extends Tool implements Releasable{
 			$this->applyDamage(1);
 		}
 
-		return ItemUseResult::SUCCESS();
+		return ItemUseResult::SUCCESS;
 	}
 
 	public function canStartUsingItem(Player $player) : bool{

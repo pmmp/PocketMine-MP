@@ -27,7 +27,7 @@ namespace pocketmine\item\enchantment;
  * Represents an option on the enchanting table menu.
  * If selected, all the enchantments in the option will be applied to the item.
  */
-class EnchantOption{
+class EnchantingOption{
 
 	/**
 	 * @param EnchantmentInstance[] $enchantments

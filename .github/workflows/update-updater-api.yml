@@ -14,7 +14,7 @@ jobs:
       - name: Install jq
         run: sudo apt update && sudo apt install jq -y
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           repository: ${{ github.repository_owner }}/update.pmmp.io
           ssh-key: ${{ secrets.UPDATE_PMMP_IO_DEPLOY_KEY }}

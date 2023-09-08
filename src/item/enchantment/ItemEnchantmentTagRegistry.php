@@ -56,7 +56,7 @@ final class ItemEnchantmentTagRegistry{
 		$this->register(Tags::CROSSBOW);
 		$this->register(Tags::SHEARS);
 		$this->register(Tags::FLINT_AND_STEEL);
-		$this->register(Tags::DIG_TOOLS, [Tags::AXE, Tags::PICKAXE, Tags::SHOVEL, Tags::HOE]);
+		$this->register(Tags::BLOCK_TOOLS, [Tags::AXE, Tags::PICKAXE, Tags::SHOVEL, Tags::HOE]);
 		$this->register(Tags::FISHING_ROD);
 		$this->register(Tags::CARROT_ON_STICK);
 		$this->register(Tags::COMPASS);
@@ -68,7 +68,7 @@ final class ItemEnchantmentTagRegistry{
 			Tags::TRIDENT,
 			Tags::BOW,
 			Tags::CROSSBOW,
-			Tags::DIG_TOOLS,
+			Tags::BLOCK_TOOLS,
 		]);
 	}
 

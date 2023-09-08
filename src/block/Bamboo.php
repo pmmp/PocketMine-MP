@@ -95,7 +95,7 @@ class Bamboo extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	private static function getOffsetSeed(int $x, int $y, int $z) : int{

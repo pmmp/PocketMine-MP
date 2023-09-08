@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\CoralTypeTrait;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -37,7 +36,6 @@ final class CoralFan extends Item{
 	}
 
 	public function __construct(ItemIdentifier $identifier){
-		$this->coralType = CoralType::TUBE();
 		parent::__construct($identifier, VanillaBlocks::CORAL_FAN()->getName());
 	}
 

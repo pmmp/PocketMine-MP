@@ -24,13 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\color\Color;
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
+use function spl_object_id;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static DyeColor BLACK()
  * @method static DyeColor BLUE()
@@ -48,46 +47,70 @@ use pocketmine\utils\EnumTrait;
  * @method static DyeColor RED()
  * @method static DyeColor WHITE()
  * @method static DyeColor YELLOW()
+ *
+ * @phpstan-type TMetadata array{0: string, 1: Color}
  */
-final class DyeColor{
-	use EnumTrait {
-		__construct as Enum___construct;
+enum DyeColor{
+	use LegacyEnumShimTrait;
+
+	case WHITE;
+	case ORANGE;
+	case MAGENTA;
+	case LIGHT_BLUE;
+	case YELLOW;
+	case LIME;
+	case PINK;
+	case GRAY;
+	case LIGHT_GRAY;
+	case CYAN;
+	case PURPLE;
+	case BLUE;
+	case BROWN;
+	case GREEN;
+	case RED;
+	case BLACK;
+
+	/**
+	 * This function exists only to permit the use of named arguments and to make the code easier to read in PhpStorm.
+	 *
+	 * @phpstan-return TMetadata
+	 */
+	private static function meta(string $displayName, Color $rgbValue) : array{
+		return [$displayName, $rgbValue];
 	}
 
-	protected static function setup() : void{
-		self::registerAll(
-			new DyeColor("white", "White", new Color(0xf0, 0xf0, 0xf0)),
-			new DyeColor("orange", "Orange", new Color(0xf9, 0x80, 0x1d)),
-			new DyeColor("magenta", "Magenta", new Color(0xc7, 0x4e, 0xbd)),
-			new DyeColor("light_blue", "Light Blue", new Color(0x3a, 0xb3, 0xda)),
-			new DyeColor("yellow", "Yellow", new Color(0xfe, 0xd8, 0x3d)),
-			new DyeColor("lime", "Lime", new Color(0x80, 0xc7, 0x1f)),
-			new DyeColor("pink", "Pink", new Color(0xf3, 0x8b, 0xaa)),
-			new DyeColor("gray", "Gray", new Color(0x47, 0x4f, 0x52)),
-			new DyeColor("light_gray", "Light Gray", new Color(0x9d, 0x9d, 0x97)),
-			new DyeColor("cyan", "Cyan", new Color(0x16, 0x9c, 0x9c)),
-			new DyeColor("purple", "Purple", new Color(0x89, 0x32, 0xb8)),
-			new DyeColor("blue", "Blue", new Color(0x3c, 0x44, 0xaa)),
-			new DyeColor("brown", "Brown", new Color(0x83, 0x54, 0x32)),
-			new DyeColor("green", "Green", new Color(0x5e, 0x7c, 0x16)),
-			new DyeColor("red", "Red", new Color(0xb0, 0x2e, 0x26)),
-			new DyeColor("black", "Black", new Color(0x1d, 0x1d, 0x21))
-		);
-	}
+	/**
+	 * @phpstan-return TMetadata
+	 */
+	private function getMetadata() : array{
+		/** @phpstan-var array<int, TMetadata> $cache */
+		static $cache = [];
 
-	private function __construct(
-		string $enumName,
-		private string $displayName,
-		private Color $rgbValue
-	){
-		$this->Enum___construct($enumName);
+		return $cache[spl_object_id($this)] ??= match($this){
+			self::WHITE => self::meta("White", new Color(0xf0, 0xf0, 0xf0)),
+			self::ORANGE => self::meta("Orange", new Color(0xf9, 0x80, 0x1d)),
+			self::MAGENTA => self::meta("Magenta", new Color(0xc7, 0x4e, 0xbd)),
+			self::LIGHT_BLUE => self::meta("Light Blue", new Color(0x3a, 0xb3, 0xda)),
+			self::YELLOW => self::meta("Yellow", new Color(0xfe, 0xd8, 0x3d)),
+			self::LIME => self::meta("Lime", new Color(0x80, 0xc7, 0x1f)),
+			self::PINK => self::meta("Pink", new Color(0xf3, 0x8b, 0xaa)),
+			self::GRAY => self::meta("Gray", new Color(0x47, 0x4f, 0x52)),
+			self::LIGHT_GRAY => self::meta("Light Gray", new Color(0x9d, 0x9d, 0x97)),
+			self::CYAN => self::meta("Cyan", new Color(0x16, 0x9c, 0x9c)),
+			self::PURPLE => self::meta("Purple", new Color(0x89, 0x32, 0xb8)),
+			self::BLUE => self::meta("Blue", new Color(0x3c, 0x44, 0xaa)),
+			self::BROWN => self::meta("Brown", new Color(0x83, 0x54, 0x32)),
+			self::GREEN => self::meta("Green", new Color(0x5e, 0x7c, 0x16)),
+			self::RED => self::meta("Red", new Color(0xb0, 0x2e, 0x26)),
+			self::BLACK => self::meta("Black", new Color(0x1d, 0x1d, 0x21)),
+		};
 	}
 
 	public function getDisplayName() : string{
-		return $this->displayName;
+		return $this->getMetadata()[0];
 	}
 
 	public function getRgbValue() : Color{
-		return $this->rgbValue;
+		return $this->getMetadata()[1];
 	}
 }

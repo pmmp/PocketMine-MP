@@ -28,6 +28,7 @@ use pocketmine\item\enchantment\AvailableEnchantmentRegistry as EnchantmentRegis
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\item\VanillaItems as Items;
+use pocketmine\utils\Limits;
 use pocketmine\utils\Random;
 use pocketmine\world\Position;
 use function abs;
@@ -37,11 +38,26 @@ use function count;
 use function floor;
 use function max;
 use function min;
+use function mt_rand;
 use function ord;
 use function round;
 
-final class EnchantmentHelper{
+/**
+ * Helper methods used for enchanting using the enchanting table.
+ */
+final class EnchantingHelper{
 	private const MAX_BOOKSHELF_COUNT = 15;
+
+	private function __construct(){
+		//NOOP
+	}
+
+	/**
+	 * Generates a new random seed for enchant option randomization.
+	 */
+	public static function generateSeed() : int{
+		return mt_rand(Limits::INT32_MIN, Limits::INT32_MAX);
+	}
 
 	/**
 	 * @param EnchantmentInstance[] $enchantments
@@ -57,9 +73,9 @@ final class EnchantmentHelper{
 	}
 
 	/**
-	 * @return EnchantOption[]
+	 * @return EnchantingOption[]
 	 */
-	public static function getEnchantOptions(Position $tablePos, Item $input, int $seed) : array{
+	public static function generateOptions(Position $tablePos, Item $input, int $seed) : array{
 		if($input->isNull() || $input->hasEnchantments()){
 			return [];
 		}
@@ -73,9 +89,9 @@ final class EnchantmentHelper{
 		$bottomRequiredLevel = max($baseRequiredLevel, $bookshelfCount * 2);
 
 		return [
-			self::createEnchantOption($random, $input, $topRequiredLevel),
-			self::createEnchantOption($random, $input, $middleRequiredLevel),
-			self::createEnchantOption($random, $input, $bottomRequiredLevel),
+			self::createOption($random, $input, $topRequiredLevel),
+			self::createOption($random, $input, $middleRequiredLevel),
+			self::createOption($random, $input, $bottomRequiredLevel),
 		];
 	}
 
@@ -117,7 +133,7 @@ final class EnchantmentHelper{
 		return $bookshelfCount;
 	}
 
-	private static function createEnchantOption(Random $random, Item $inputItem, int $requiredXpLevel) : EnchantOption{
+	private static function createOption(Random $random, Item $inputItem, int $requiredXpLevel) : EnchantingOption{
 		$enchantingPower = $requiredXpLevel;
 
 		$enchantability = $inputItem->getEnchantability();
@@ -155,7 +171,7 @@ final class EnchantmentHelper{
 			}
 		}
 
-		return new EnchantOption($requiredXpLevel, self::getRandomOptionName($random), $resultEnchantments);
+		return new EnchantingOption($requiredXpLevel, self::getRandomOptionName($random), $resultEnchantments);
 	}
 
 	/**

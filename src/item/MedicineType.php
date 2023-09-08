@@ -25,42 +25,39 @@ namespace pocketmine\item;
 
 use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\VanillaEffects;
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static MedicineType ANTIDOTE()
  * @method static MedicineType ELIXIR()
  * @method static MedicineType EYE_DROPS()
  * @method static MedicineType TONIC()
  */
-final class MedicineType{
-	use EnumTrait {
-		__construct as Enum___construct;
+enum MedicineType{
+	use LegacyEnumShimTrait;
+
+	case ANTIDOTE;
+	case ELIXIR;
+	case EYE_DROPS;
+	case TONIC;
+
+	/**
+	 * @phpstan-return array{0: string, 1: Effect}
+	 */
+	private function getMetadata() : array{
+		//cache not required here - VanillaEffects always returns the same object
+		return match($this){
+			self::ANTIDOTE => ['Antidote', VanillaEffects::POISON()],
+			self::ELIXIR => ['Elixir', VanillaEffects::WEAKNESS()],
+			self::EYE_DROPS => ['Eye Drops', VanillaEffects::BLINDNESS()],
+			self::TONIC => ['Tonic', VanillaEffects::NAUSEA()]
+		};
 	}
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self('antidote', 'Antidote', VanillaEffects::POISON()),
-			new self('elixir', 'Elixir', VanillaEffects::WEAKNESS()),
-			new self('eye_drops', 'Eye Drops', VanillaEffects::BLINDNESS()),
-			new self('tonic', 'Tonic', VanillaEffects::NAUSEA())
-		);
-	}
+	public function getDisplayName() : string{ return $this->getMetadata()[0]; }
 
-	private function __construct(
-		string $enumName,
-		private string $displayName,
-		private Effect $curedEffect
-	){
-		$this->Enum___construct($enumName);
-	}
-
-	public function getDisplayName() : string{ return $this->displayName; }
-
-	public function getCuredEffect() : Effect{ return $this->curedEffect; }
+	public function getCuredEffect() : Effect{ return $this->getMetadata()[1]; }
 }
