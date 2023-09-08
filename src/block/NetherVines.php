@@ -166,6 +166,6 @@ class NetherVines extends Flowable{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 }

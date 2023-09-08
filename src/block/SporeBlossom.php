@@ -33,7 +33,7 @@ use pocketmine\world\BlockTransaction;
 final class SporeBlossom extends Flowable{
 
 	private function canBeSupportedAt(Block $block) : bool{
-		return $block->getAdjacentSupportType(Facing::UP)->equals(SupportType::FULL());
+		return $block->getAdjacentSupportType(Facing::UP) === SupportType::FULL;
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

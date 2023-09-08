@@ -223,6 +223,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::ECHO_SHARD, Items::ECHO_SHARD());
 		$this->map1to1Item(Ids::EGG, Items::EGG());
 		$this->map1to1Item(Ids::EMERALD, Items::EMERALD());
+		$this->map1to1Item(Ids::ENCHANTED_BOOK, Items::ENCHANTED_BOOK());
 		$this->map1to1Item(Ids::ENCHANTED_GOLDEN_APPLE, Items::ENCHANTED_GOLDEN_APPLE());
 		$this->map1to1Item(Ids::ENDER_PEARL, Items::ENDER_PEARL());
 		$this->map1to1Item(Ids::EXPERIENCE_BOTTLE, Items::EXPERIENCE_BOTTLE());
@@ -509,7 +510,7 @@ final class ItemSerializerDeserializerRegistrar{
 	 * complex to implement in a generic way.
 	 */
 	private function registerMiscItemMappings() : void{
-		foreach(DyeColor::getAll() as $color){
+		foreach(DyeColor::cases() as $color){
 			$id = DyeColorIdMap::getInstance()->toItemId($color);
 			$this->deserializer?->map($id, fn() => Items::DYE()->setColor($color));
 		}
