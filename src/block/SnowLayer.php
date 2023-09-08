@@ -91,11 +91,7 @@ class SnowLayer extends Flowable implements Fallable{
 			}
 			$this->layers = $blockReplace->layers + 1;
 		}
-		if($this->canBeSupportedAt($blockReplace)){
-			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}
-
-		return false;
+		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function ticksRandomly() : bool{
