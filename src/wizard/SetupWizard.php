@@ -49,8 +49,11 @@ use const PHP_EOL;
 use const STDIN;
 
 class SetupWizard{
+	/** @deprecated */
 	public const DEFAULT_NAME = Server::DEFAULT_SERVER_NAME;
+	/** @deprecated */
 	public const DEFAULT_PORT = Server::DEFAULT_PORT_IPV4;
+	/** @deprecated */
 	public const DEFAULT_PLAYERS = Server::DEFAULT_MAX_PLAYERS;
 
 	private Language $lang;
@@ -155,7 +158,7 @@ LICENSE;
 	}
 
 	private function generateBaseConfig(Config $config) : void{
-		$config->set(ServerProperties::MOTD, ($name = $this->getInput($this->lang->translate(KnownTranslationFactory::name_your_server()), self::DEFAULT_NAME)));
+		$config->set(ServerProperties::MOTD, ($name = $this->getInput($this->lang->translate(KnownTranslationFactory::name_your_server()), Server::DEFAULT_SERVER_NAME)));
 
 		$this->message($this->lang->translate(KnownTranslationFactory::port_warning()));
 
@@ -171,7 +174,7 @@ LICENSE;
 		//TODO: this probably shouldn't use the enum name directly
 		$config->set(ServerProperties::GAME_MODE, $gamemode->name);
 
-		$config->set(ServerProperties::MAX_PLAYERS, (int) $this->getInput($this->lang->translate(KnownTranslationFactory::max_players()), (string) self::DEFAULT_PLAYERS));
+		$config->set(ServerProperties::MAX_PLAYERS, (int) $this->getInput($this->lang->translate(KnownTranslationFactory::max_players()), (string) Server::DEFAULT_MAX_PLAYERS));
 
 		$config->set(ServerProperties::VIEW_DISTANCE, (int) $this->getInput($this->lang->translate(KnownTranslationFactory::view_distance()), (string) Server::DEFAULT_MAX_VIEW_DISTANCE));
 	}
