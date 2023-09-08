@@ -60,13 +60,13 @@ final class Promise{
 	 * will be an array containing the resolution values of each Promises in
 	 * `$promises` indexed by the respective Promises' array keys.
 	 *
-	 * @phpstan-template TTValue
-	 * @phpstan-param Promise<TTValue>[] $promises
+	 * @phpstan-template TValue
+	 * @phpstan-param Promise<TValue>[] $promises
 	 *
-	 * @phpstan-return Promise<array<int, TTValue>>
+	 * @phpstan-return Promise<array<int, TValue>>
 	 */
 	public static function all(array $promises) : Promise {
-		/** @phpstan-var PromiseResolver<array<int, TTValue>> $resolver */
+		/** @phpstan-var PromiseResolver<array<int, TValue>> $resolver */
 		$resolver = new PromiseResolver();
 		$values = [];
 		$toResolve = count($promises);
