@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\player;
 
+use DateTimeImmutable;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\LongTag;
-use DateTimeImmutable;
 
 class OfflinePlayer implements IPlayer{
 	public function __construct(
