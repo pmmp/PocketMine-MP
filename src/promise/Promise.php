@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\promise;
 
+use function count;
 use function spl_object_id;
 
 /**
