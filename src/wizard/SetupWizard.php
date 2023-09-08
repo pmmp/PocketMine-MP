@@ -102,10 +102,12 @@ class SetupWizard{
 
 		$this->writeLine();
 		$this->welcome();
-		$this->generateBaseConfig();
-		$this->generateUserFiles();
 
-		$this->networkFunctions();
+		$this->generateBaseConfig($config);
+		$this->generateUserFiles($config);
+		$this->networkFunctions($config);
+		$config->save();
+
 		$this->printIpDetails();
 
 		$this->endWizard();
@@ -152,9 +154,7 @@ LICENSE;
 		}
 	}
 
-	private function generateBaseConfig() : void{
-		$config = new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES);
-
+	private function generateBaseConfig(Config $config) : void{
 		$config->set(ServerProperties::MOTD, ($name = $this->getInput($this->lang->translate(KnownTranslationFactory::name_your_server()), self::DEFAULT_NAME)));
 
 		$this->message($this->lang->translate(KnownTranslationFactory::port_warning()));
@@ -174,11 +174,9 @@ LICENSE;
 		$config->set(ServerProperties::MAX_PLAYERS, (int) $this->getInput($this->lang->translate(KnownTranslationFactory::max_players()), (string) self::DEFAULT_PLAYERS));
 
 		$config->set(ServerProperties::VIEW_DISTANCE, (int) $this->getInput($this->lang->translate(KnownTranslationFactory::view_distance()), (string) Server::DEFAULT_MAX_VIEW_DISTANCE));
-
-		$config->save();
 	}
 
-	private function generateUserFiles() : void{
+	private function generateUserFiles(Config $config) : void{
 		$this->message($this->lang->translate(KnownTranslationFactory::op_info()));
 
 		$op = strtolower($this->getInput($this->lang->translate(KnownTranslationFactory::op_who()), ""));
@@ -192,18 +190,15 @@ LICENSE;
 
 		$this->message($this->lang->translate(KnownTranslationFactory::whitelist_info()));
 
-		$config = new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES);
 		if(strtolower($this->getInput($this->lang->translate(KnownTranslationFactory::whitelist_enable()), "n", "y/N")) === "y"){
 			$this->error($this->lang->translate(KnownTranslationFactory::whitelist_warning()));
 			$config->set(ServerProperties::WHITELIST, true);
 		}else{
 			$config->set(ServerProperties::WHITELIST, false);
 		}
-		$config->save();
 	}
 
-	private function networkFunctions() : void{
-		$config = new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES);
+	private function networkFunctions(Config $config) : void{
 		$this->error($this->lang->translate(KnownTranslationFactory::query_warning1()));
 		$this->error($this->lang->translate(KnownTranslationFactory::query_warning2()));
 		if(strtolower($this->getInput($this->lang->translate(KnownTranslationFactory::query_disable()), "n", "y/N")) === "y"){
@@ -211,8 +206,6 @@ LICENSE;
 		}else{
 			$config->set(ServerProperties::ENABLE_QUERY, true);
 		}
-
-		$config->save();
 	}
 
 	private function printIpDetails() : void{
