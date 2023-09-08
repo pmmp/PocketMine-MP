@@ -32,20 +32,15 @@ use function log;
  * Need to add to the block the constant MAX_AGE.
  */
 trait AgeableBlockTrait{
-	/** @phpstan-var int<0, self::MAX_AGE> */
 	protected int $age = 0;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt((int) ceil(log(self::MAX_AGE, 2)), 0, self::MAX_AGE, $this->age);
 	}
 
-	/**
-	 * @phpstan-return int<0, self::MAX_AGE>
-	 */
 	public function getAge() : int{ return $this->age; }
 
 	/**
-	 * @phpstan-param int<0, self::MAX_AGE> $age
 	 * @return $this
 	 */
 	public function setAge(int $age) : self{
