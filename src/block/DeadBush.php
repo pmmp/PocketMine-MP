@@ -52,16 +52,19 @@ class DeadBush extends Flowable{
 
 	private function canBeSupportedAt(Block $block) : bool{
 		$supportBlock = $block->getSide(Facing::DOWN);
-		//TODO: can we use tags here?
-		return match($supportBlock->getTypeId()){
-			BlockTypeIds::SAND,
-			BlockTypeIds::RED_SAND,
-			BlockTypeIds::PODZOL,
-			BlockTypeIds::MYCELIUM,
-			BlockTypeIds::DIRT,
-			BlockTypeIds::HARDENED_CLAY,
-			BlockTypeIds::STAINED_CLAY => true,
-			default => false
-		};
+		return
+			$supportBlock->hasTypeTag(BlockTypeTags::SAND) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
+			match($supportBlock->getTypeId()){
+				//can't use DIRT tag here because it includes farmland
+				BlockTypeIds::PODZOL,
+				BlockTypeIds::MYCELIUM,
+				BlockTypeIds::DIRT,
+				BlockTypeIds::GRASS,
+				BlockTypeIds::HARDENED_CLAY,
+				BlockTypeIds::STAINED_CLAY => true,
+				//TODO: moss block
+				default => false,
+			};
 	}
 }
