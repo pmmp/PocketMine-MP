@@ -77,7 +77,8 @@ class CaveVines extends Flowable{
 	}
 
 	private function canBeSupportedAt(Block $block) : bool{
-		return $block->getAdjacentSupportType(Facing::UP) === SupportType::FULL || $block->hasSameTypeId($this);
+		$supportBlock = $block->getSide(Facing::UP);
+		return $supportBlock->getSupportType(Facing::DOWN) === SupportType::FULL || $supportBlock->hasSameTypeId($this);
 	}
 
 	public function onNearbyBlockChange() : void{
