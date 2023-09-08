@@ -390,7 +390,7 @@ class Server{
 	}
 
 	public function getGamemode() : GameMode{
-		return GameMode::fromString($this->configGroup->getConfigString(ServerProperties::GAME_MODE, GameMode::SURVIVAL()->name())) ?? GameMode::SURVIVAL();
+		return GameMode::fromString($this->configGroup->getConfigString(ServerProperties::GAME_MODE)) ?? GameMode::SURVIVAL;
 	}
 
 	public function getForceGamemode() : bool{
@@ -817,7 +817,7 @@ class Server{
 					ServerProperties::ENABLE_IPV6 => true,
 					ServerProperties::WHITELIST => false,
 					ServerProperties::MAX_PLAYERS => self::DEFAULT_MAX_PLAYERS,
-					ServerProperties::GAME_MODE => GameMode::SURVIVAL()->name(),
+					ServerProperties::GAME_MODE => GameMode::SURVIVAL->name, //TODO: this probably shouldn't use the enum name directly
 					ServerProperties::FORCE_GAME_MODE => false,
 					ServerProperties::HARDCORE => false,
 					ServerProperties::PVP => true,
@@ -1019,7 +1019,7 @@ class Server{
 				$this->forceShutdownExit();
 				return;
 			}
-			if(!$this->enablePlugins(PluginEnableOrder::STARTUP())){
+			if(!$this->enablePlugins(PluginEnableOrder::STARTUP)){
 				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
 				$this->forceShutdownExit();
 				return;
@@ -1030,7 +1030,7 @@ class Server{
 				return;
 			}
 
-			if(!$this->enablePlugins(PluginEnableOrder::POSTWORLD())){
+			if(!$this->enablePlugins(PluginEnableOrder::POSTWORLD)){
 				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
 				$this->forceShutdownExit();
 				return;
@@ -1385,14 +1385,14 @@ class Server{
 	public function enablePlugins(PluginEnableOrder $type) : bool{
 		$allSuccess = true;
 		foreach($this->pluginManager->getPlugins() as $plugin){
-			if(!$plugin->isEnabled() && $plugin->getDescription()->getOrder()->equals($type)){
+			if(!$plugin->isEnabled() && $plugin->getDescription()->getOrder() === $type){
 				if(!$this->pluginManager->enablePlugin($plugin)){
 					$allSuccess = false;
 				}
 			}
 		}
 
-		if($type->equals(PluginEnableOrder::POSTWORLD())){
+		if($type === PluginEnableOrder::POSTWORLD){
 			$this->commandMap->registerServerAliases();
 		}
 
