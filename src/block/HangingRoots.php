@@ -32,19 +32,19 @@ use pocketmine\world\BlockTransaction;
 
 final class HangingRoots extends Flowable{
 
-	private function canBeSupportedBy(Block $block) : bool{
-		return $block->isSolid(); //TODO: not sure if this is the correct logic
+	private function canBeSupportedAt(Block $block) : bool{
+		return $block->getAdjacentSupportType(Facing::DOWN)->hasCenterSupport(); //weird I know, but they can be placed on the bottom of fences
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$blockReplace->getSide(Facing::UP)->isSolid()){
+		if(!$this->canBeSupportedAt($blockReplace)){
 			return false;
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->getSide(Facing::UP))){
+		if(!$this->canBeSupportedAt($this)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
