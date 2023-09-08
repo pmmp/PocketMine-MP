@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\FortuneDropHelper;
-use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
@@ -39,27 +39,13 @@ use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
 class SweetBerryBush extends Flowable{
+	use AgeableTrait;
+
 	public const STAGE_SAPLING = 0;
 	public const STAGE_BUSH_NO_BERRIES = 1;
 	public const STAGE_BUSH_SOME_BERRIES = 2;
 	public const STAGE_MATURE = 3;
-
-	protected int $age = self::STAGE_SAPLING;
-
-	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(3, self::STAGE_SAPLING, self::STAGE_MATURE, $this->age);
-	}
-
-	public function getAge() : int{ return $this->age; }
-
-	/** @return $this */
-	public function setAge(int $age) : self{
-		if($age < self::STAGE_SAPLING || $age > self::STAGE_MATURE){
-			throw new \InvalidArgumentException("Age must be in range 0-3");
-		}
-		$this->age = $age;
-		return $this;
-	}
+	public const MAX_AGE = self::STAGE_MATURE;
 
 	public function getBerryDropAmount() : int{
 		if($this->age === self::STAGE_MATURE){

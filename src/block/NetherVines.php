@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Fertilizer;
@@ -41,34 +41,16 @@ use function mt_rand;
  * This class is used for Weeping & Twisting vines, because they have same behaviour
  */
 class NetherVines extends Flowable{
+	use AgeableTrait;
+
 	public const MAX_AGE = 25;
 
 	/** Direction the vine grows towards. */
 	private int $growthFace;
 
-	protected int $age = 0;
-
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, int $growthFace){
 		$this->growthFace = $growthFace;
 		parent::__construct($idInfo, $name, $typeInfo);
-	}
-
-	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(5, 0, self::MAX_AGE, $this->age);
-	}
-
-	public function getAge() : int{
-		return $this->age;
-	}
-
-	/** @return $this */
-	public function setAge(int $age) : self{
-		if($age < 0 || $age > self::MAX_AGE){
-			throw new \InvalidArgumentException("Age must be in range 0-" . self::MAX_AGE);
-		}
-
-		$this->age = $age;
-		return $this;
 	}
 
 	public function isAffectedBySilkTouch() : bool{

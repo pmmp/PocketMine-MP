@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\block\utils\AgeableTrait;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Item;
@@ -39,30 +39,16 @@ use pocketmine\world\sound\ChorusFlowerDieSound;
 use pocketmine\world\sound\ChorusFlowerGrowSound;
 use pocketmine\world\World;
 use function array_rand;
+use function min;
 use function mt_rand;
 
 final class ChorusFlower extends Flowable{
+	use AgeableTrait;
+
 	public const MIN_AGE = 0;
 	public const MAX_AGE = 5;
 
 	private const MAX_STEM_HEIGHT = 5;
-
-	private int $age = self::MIN_AGE;
-
-	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(3, self::MIN_AGE, self::MAX_AGE, $this->age);
-	}
-
-	public function getAge() : int{ return $this->age; }
-
-	/** @return $this */
-	public function setAge(int $age) : self{
-		if($age < self::MIN_AGE || $age > self::MAX_AGE){
-			throw new \InvalidArgumentException("Age must be in the range " . self::MIN_AGE . " ... " . self::MAX_AGE);
-		}
-		$this->age = $age;
-		return $this;
-	}
 
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()];
@@ -181,7 +167,7 @@ final class ChorusFlower extends Flowable{
 		if($tx === null){
 			$tx = new BlockTransaction($this->position->getWorld());
 		}
-		$tx->addBlock($this->position->getSide($facing), (clone $this)->setAge($this->getAge() + $ageChange));
+		$tx->addBlock($this->position->getSide($facing), (clone $this)->setAge(min(self::MAX_AGE, $this->getAge() + $ageChange)));
 
 		return $tx;
 	}

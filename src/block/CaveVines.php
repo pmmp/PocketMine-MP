@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -38,9 +39,10 @@ use pocketmine\world\sound\GlowBerriesPickSound;
 use function mt_rand;
 
 class CaveVines extends Flowable{
+	use AgeableTrait;
+
 	public const MAX_AGE = 25;
 
-	protected int $age = 0;
 	protected bool $berries = false;
 	protected bool $head = false;
 
@@ -63,19 +65,6 @@ class CaveVines extends Flowable{
 	/** @return $this */
 	public function setHead(bool $head) : self{
 		$this->head = $head;
-		return $this;
-	}
-
-	public function getAge() : int{
-		return $this->age;
-	}
-
-	/** @return $this */
-	public function setAge(int $age) : self{
-		if($age < 0 || $age > self::MAX_AGE){
-			throw new \InvalidArgumentException("Age must be in range 0-" . self::MAX_AGE);
-		}
-		$this->age = $age;
 		return $this;
 	}
 

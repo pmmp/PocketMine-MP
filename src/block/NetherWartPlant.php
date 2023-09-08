@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\FortuneDropHelper;
-use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -34,24 +34,9 @@ use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
 class NetherWartPlant extends Flowable{
+	use AgeableTrait;
+
 	public const MAX_AGE = 3;
-
-	protected int $age = 0;
-
-	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(2, 0, self::MAX_AGE, $this->age);
-	}
-
-	public function getAge() : int{ return $this->age; }
-
-	/** @return $this */
-	public function setAge(int $age) : self{
-		if($age < 0 || $age > self::MAX_AGE){
-			throw new \InvalidArgumentException("Age must be in range 0 ..." . self::MAX_AGE);
-		}
-		$this->age = $age;
-		return $this;
-	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
