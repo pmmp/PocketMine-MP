@@ -717,6 +717,7 @@ use function strtolower;
  * @method static StonePressurePlate STONE_PRESSURE_PLATE()
  * @method static Slab STONE_SLAB()
  * @method static Stair STONE_STAIRS()
+ * @method static StructureBlock STRUCTURE_BLOCK()
  * @method static Sugarcane SUGARCANE()
  * @method static DoublePlant SUNFLOWER()
  * @method static SweetBerryBush SWEET_BERRY_BUSH()
@@ -1092,6 +1093,8 @@ final class VanillaBlocks{
 		self::register("mossy_stone_brick_slab", new Slab(new BID(Ids::MOSSY_STONE_BRICK_SLAB), "Mossy Stone Brick", $stoneSlabBreakInfo));
 		self::register("smooth_quartz_slab", new Slab(new BID(Ids::SMOOTH_QUARTZ_SLAB), "Smooth Quartz", $stoneSlabBreakInfo));
 		self::register("stone_slab", new Slab(new BID(Ids::STONE_SLAB), "Stone", $stoneSlabBreakInfo));
+		
+		self::register("structure_block", new StructureBlock(new BID(Ids::STRUCTURE_BLOCK), "Structure Block", new Info(BreakInfo::indestructible(3600000))));
 
 		self::register("legacy_stonecutter", new Opaque(new BID(Ids::LEGACY_STONECUTTER), "Legacy Stonecutter", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD))));
 		self::register("sugarcane", new Sugarcane(new BID(Ids::SUGARCANE), "Sugarcane", new Info(BreakInfo::instant())));
