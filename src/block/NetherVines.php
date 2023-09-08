@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\AgeableBlockTrait;
+use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
@@ -41,7 +41,7 @@ use function mt_rand;
  * This class is used for Weeping & Twisting vines, because they have same behaviour
  */
 class NetherVines extends Flowable{
-	use AgeableBlockTrait;
+	use AgeableTrait;
 
 	public const MAX_AGE = 25;
 

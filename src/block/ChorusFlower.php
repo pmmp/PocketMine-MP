@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\AgeableBlockTrait;
+use pocketmine\block\utils\AgeableTrait;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Item;
@@ -43,7 +43,7 @@ use function min;
 use function mt_rand;
 
 final class ChorusFlower extends Flowable{
-	use AgeableBlockTrait;
+	use AgeableTrait;
 
 	public const MIN_AGE = 0;
 	public const MAX_AGE = 5;

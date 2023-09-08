@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\AgeableBlockTrait;
+use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
@@ -42,7 +42,7 @@ use function mt_rand;
 
 class CocoaBlock extends Transparent{
 	use HorizontalFacingTrait;
-	use AgeableBlockTrait;
+	use AgeableTrait;
 
 	public const MAX_AGE = 2;
 

@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\AgeableBlockTrait;
+use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\entity\Entity;
@@ -39,7 +39,7 @@ use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
 class SweetBerryBush extends Flowable{
-	use AgeableBlockTrait;
+	use AgeableTrait;
 
 	public const STAGE_SAPLING = 0;
 	public const STAGE_BUSH_NO_BERRIES = 1;
