@@ -25,6 +25,7 @@ namespace pocketmine\player;
 
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\LongTag;
+use DateTimeImmutable;
 
 class OfflinePlayer implements IPlayer{
 	public function __construct(
@@ -36,12 +37,12 @@ class OfflinePlayer implements IPlayer{
 		return $this->name;
 	}
 
-	public function getFirstPlayed() : ?int{
-		return ($this->namedtag !== null && ($firstPlayedTag = $this->namedtag->getTag(Player::TAG_FIRST_PLAYED)) instanceof LongTag) ? $firstPlayedTag->getValue() : null;
+	public function getFirstPlayed() : ?DateTimeImmutable{
+		return ($this->namedtag !== null && ($firstPlayedTag = $this->namedtag->getTag(Player::TAG_FIRST_PLAYED)) instanceof LongTag) ? (new DateTimeImmutable())->setTimestamp($firstPlayedTag->getValue()) : null;
 	}
 
-	public function getLastPlayed() : ?int{
-		return ($this->namedtag !== null && ($lastPlayedTag = $this->namedtag->getTag(Player::TAG_LAST_PLAYED)) instanceof LongTag) ? $lastPlayedTag->getValue() : null;
+	public function getLastPlayed() : ?DateTimeImmutable{
+		return ($this->namedtag !== null && ($lastPlayedTag = $this->namedtag->getTag(Player::TAG_LAST_PLAYED)) instanceof LongTag) ? (new DateTimeImmutable())->setTimestamp($lastPlayedTag->getValue()) : null;
 	}
 
 	public function hasPlayedBefore() : bool{
