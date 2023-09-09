@@ -23,7 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\StructureVoidType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\math\AxisAlignedBB;
+
 class StructureVoid extends Transparent{
+	private StructureVoidType $type;
+
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
+		$this->type = StructureVoidType::VOID;
+		parent::__construct($idInfo, $name, $typeInfo);
+	}
+
 	/**
 	 * @return AxisAlignedBB[]
 	 */
@@ -33,5 +44,19 @@ class StructureVoid extends Transparent{
 
 	public function isSolid() : bool{
 		return false;
+	}
+
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
+		$w->enum($this->type);
+	}
+
+	public function getType() : StructureVoidType{
+		return $this->type;
+	}
+
+	/** @return $this */
+	public function setType(StructureVoidType $type) : self{
+		$this->type = $type;
+		return $this;
 	}
 }

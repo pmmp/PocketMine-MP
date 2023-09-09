@@ -1094,7 +1094,7 @@ final class VanillaBlocks{
 		self::register("mossy_stone_brick_slab", new Slab(new BID(Ids::MOSSY_STONE_BRICK_SLAB), "Mossy Stone Brick", $stoneSlabBreakInfo));
 		self::register("smooth_quartz_slab", new Slab(new BID(Ids::SMOOTH_QUARTZ_SLAB), "Smooth Quartz", $stoneSlabBreakInfo));
 		self::register("stone_slab", new Slab(new BID(Ids::STONE_SLAB), "Stone", $stoneSlabBreakInfo));
-		
+
 		self::register("structure_block", new StructureBlock(new BID(Ids::STRUCTURE_BLOCK), "Structure Block", new Info(BreakInfo::indestructible(3600000))));
 		self::register("structure_void", new StructureVoid(new BID(Ids::STRUCTURE_VOID), "Structure Void", new Info(BreakInfo::indestructible(3600000))));
 

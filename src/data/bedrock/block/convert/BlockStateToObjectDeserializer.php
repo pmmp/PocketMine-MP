@@ -1438,6 +1438,10 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::STONECUTTER()
 				->setFacing($in->readHorizontalFacing());
 		});
+		$this->map(Ids::STRUCTURE_VOID, function(Reader $in) : Block{
+			return Blocks::STRUCTURE_VOID()
+				->setType($in->readStructureVoidType());
+		});
 		$this->map(Ids::SWEET_BERRY_BUSH, function(Reader $in) : Block{
 			//berry bush only wants 0-3, but it can be bigger in MCPE due to misuse of GROWTH state which goes up to 7
 			$growth = $in->readBoundedInt(StateNames::GROWTH, 0, 7);
