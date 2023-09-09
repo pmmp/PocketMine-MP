@@ -317,9 +317,9 @@ final class BlockStateWriter{
 
 	/** @return $this */
 	public function writeStructureVoidType(StructureVoidType $structureVoidType) : self{
-		$this->writeInt(BlockStateNames::STRUCTURE_VOID_TYPE, match($structureVoidType){
-			StructureVoidType::VOID => 0,
-			StructureVoidType::AIR => 0,
+		$this->writeString(BlockStateNames::STRUCTURE_VOID_TYPE, match($structureVoidType){
+			StructureVoidType::VOID => StringValues::STRUCTURE_VOID_TYPE_VOID,
+			StructureVoidType::AIR => StringValues::STRUCTURE_VOID_TYPE_AIR,
 		});
 		return $this;
 	}

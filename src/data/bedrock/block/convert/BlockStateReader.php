@@ -353,9 +353,9 @@ final class BlockStateReader{
 
 	/** @throws BlockStateDeserializeException */
 	public function readStructureVoidType() : ?StructureVoidType{
-		return match($type = $this->readInt(BlockStateNames::STRUCTURE_VOID_TYPE)){
-			0 => StructureVoidType::VOID,
-			1 => StructureVoidType::AIR,
+		return match($type = $this->readString(BlockStateNames::STRUCTURE_VOID_TYPE)){
+			StringValues::STRUCTURE_VOID_TYPE_VOID => StructureVoidType::VOID,
+			StringValues::STRUCTURE_VOID_TYPE_AIR => StructureVoidType::AIR,
 			default => throw $this->badValueException(BlockStateNames::STRUCTURE_VOID_TYPE, strval($type)),
 		};
 	}
