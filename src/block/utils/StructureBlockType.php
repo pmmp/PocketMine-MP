@@ -21,30 +21,13 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\utils\StructureBlockType;
-use pocketmine\data\runtime\RuntimeDataDescriber;
-
-class StructureBlock extends Opaque{
-	private StructureBlockType $type;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->type = StructureBlockType::SAVE;
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
-
-	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
-		$w->enum($this->type);
-	}
-
-	public function getType() : StructureBlockType{
-		return $this->type;
-	}
-
-	/** @return $this */
-	public function setType(StructureBlockType $type) : self{
-		$this->type = $type;
-		return $this;
-	}
+enum StructureBlockType{
+	case DATA;
+	case SAVE;
+	case LOAD;
+	case CORNER;
+	case INVALID;				// Inventory Structure Block
+	case EXPORT;
 }

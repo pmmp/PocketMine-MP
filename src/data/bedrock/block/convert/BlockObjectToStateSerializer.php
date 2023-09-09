@@ -130,6 +130,7 @@ use pocketmine\block\Stair;
 use pocketmine\block\StoneButton;
 use pocketmine\block\Stonecutter;
 use pocketmine\block\StonePressurePlate;
+use pocketmine\block\StructureBlock;
 use pocketmine\block\StructureVoid;
 use pocketmine\block\Sugarcane;
 use pocketmine\block\SweetBerryBush;
@@ -1543,6 +1544,10 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::SUGARCANE(), function(Sugarcane $block) : Writer{
 			return Writer::create(Ids::REEDS)
 				->writeInt(StateNames::AGE, $block->getAge());
+		});
+		$this->map(Blocks::STRUCTURE_BLOCK(), function(StructureBlock $block) : Writer{
+			return Writer::create(Ids::STRUCTURE_BLOCK)
+				->writeStructureBlockType($block->getType());
 		});
 		$this->map(Blocks::STRUCTURE_VOID(), function(StructureVoid $block) : Writer{
 			return Writer::create(Ids::STRUCTURE_VOID)

@@ -1438,6 +1438,10 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::STONECUTTER()
 				->setFacing($in->readHorizontalFacing());
 		});
+		$this->map(Ids::STRUCTURE_BLOCK, function(Reader $in) : Block{
+			return Blocks::STRUCTURE_BLOCK()
+				->setType($in->readStructureBlockType());
+		});
 		$this->map(Ids::STRUCTURE_VOID, function(Reader $in) : Block{
 			return Blocks::STRUCTURE_VOID()
 				->setType($in->readStructureVoidType());
