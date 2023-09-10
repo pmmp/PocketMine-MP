@@ -446,7 +446,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function hasPlayedBefore() : bool{
-		return $this->firstPlayed->diff($this->lastPlayed)->format('Uu') > 1;
+		return ((int) $this->firstPlayed->diff($this->lastPlayed)->format('%f')) > 1;
 	}
 
 	/**
