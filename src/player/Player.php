@@ -157,7 +157,6 @@ use function str_starts_with;
 use function strlen;
 use function strtolower;
 use function substr;
-use function substr_replace;
 use function trim;
 use const M_PI;
 use const M_SQRT3;
@@ -370,9 +369,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		));
 
 		$createDateTimeImmutable = static function(string $tag) use ($nbt) : DateTimeImmutable{
-			$value = $nbt->getLong($tag, (int) (new DateTimeImmutable())->format('Uv'));
-
-			return (new DateTimeImmutable('@' . substr_replace((string) $value, '.', 10, 0)));
+			return new DateTimeImmutable('@' . $nbt->getLong($tag, (int) (new DateTimeImmutable())->format('Uv')) / 1000);
 		};
 		$this->firstPlayed = $createDateTimeImmutable(self::TAG_FIRST_PLAYED);
 		$this->lastPlayed = $createDateTimeImmutable(self::TAG_LAST_PLAYED);

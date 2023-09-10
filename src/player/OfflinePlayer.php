@@ -26,7 +26,6 @@ namespace pocketmine\player;
 use DateTimeImmutable;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\LongTag;
-use function substr_replace;
 
 class OfflinePlayer implements IPlayer{
 	public function __construct(
@@ -39,11 +38,11 @@ class OfflinePlayer implements IPlayer{
 	}
 
 	public function getFirstPlayed() : ?DateTimeImmutable{
-		return ($this->namedtag !== null && ($firstPlayedTag = $this->namedtag->getTag(Player::TAG_FIRST_PLAYED)) instanceof LongTag) ? (new DateTimeImmutable('@' . substr_replace((string) $firstPlayedTag->getValue(), '.', 10, 0))) : null;
+		return ($this->namedtag !== null && ($firstPlayedTag = $this->namedtag->getTag(Player::TAG_FIRST_PLAYED)) instanceof LongTag) ? new DateTimeImmutable('@' . $firstPlayedTag->getValue() / 1000) : null;
 	}
 
 	public function getLastPlayed() : ?DateTimeImmutable{
-		return ($this->namedtag !== null && ($lastPlayedTag = $this->namedtag->getTag(Player::TAG_LAST_PLAYED)) instanceof LongTag) ? (new DateTimeImmutable('@' . substr_replace((string) $lastPlayedTag->getValue(), '.', 10, 0))) : null;
+		return ($this->namedtag !== null && ($lastPlayedTag = $this->namedtag->getTag(Player::TAG_LAST_PLAYED)) instanceof LongTag) ? new DateTimeImmutable('@' . $lastPlayedTag->getValue() / 1000) : null;
 	}
 
 	public function hasPlayedBefore() : bool{
