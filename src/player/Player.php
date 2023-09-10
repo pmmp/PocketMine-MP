@@ -378,7 +378,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->lastPlayed = $createDateTimeImmutable(self::TAG_LAST_PLAYED);
 
 		if(!$this->server->getForceGamemode() && ($gameModeTag = $nbt->getTag(self::TAG_GAME_MODE)) instanceof IntTag){
-			$this->internalSetGameMode(GameModeIdMap::getInstance()->fromId($gameModeTag->getValue()) ?? GameMode::SURVIVAL()); //TODO: bad hack here to avoid crashes on corrupted data
+			$this->internalSetGameMode(GameModeIdMap::getInstance()->fromId($gameModeTag->getValue()) ?? GameMode::SURVIVAL); //TODO: bad hack here to avoid crashes on corrupted data
 		}else{
 			$this->internalSetGameMode($this->server->getGamemode());
 		}
@@ -1119,7 +1119,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected function internalSetGameMode(GameMode $gameMode) : void{
 		$this->gamemode = $gameMode;
 
-		$this->allowFlight = $this->gamemode->equals(GameMode::CREATIVE());
+		$this->allowFlight = $this->gamemode === GameMode::CREATIVE;
 		$this->hungerManager->setEnabled($this->isSurvival());
 
 		if($this->isSpectator()){
@@ -1145,7 +1145,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * Sets the provided gamemode.
 	 */
 	public function setGamemode(GameMode $gm) : bool{
-		if($this->gamemode->equals($gm)){
+		if($this->gamemode === $gm){
 			return false;
 		}
 
@@ -1174,7 +1174,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @param bool $literal whether a literal check should be performed
 	 */
 	public function isSurvival(bool $literal = false) : bool{
-		return $this->gamemode->equals(GameMode::SURVIVAL()) || (!$literal && $this->gamemode->equals(GameMode::ADVENTURE()));
+		return $this->gamemode === GameMode::SURVIVAL || (!$literal && $this->gamemode === GameMode::ADVENTURE);
 	}
 
 	/**
@@ -1184,7 +1184,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @param bool $literal whether a literal check should be performed
 	 */
 	public function isCreative(bool $literal = false) : bool{
-		return $this->gamemode->equals(GameMode::CREATIVE()) || (!$literal && $this->gamemode->equals(GameMode::SPECTATOR()));
+		return $this->gamemode === GameMode::CREATIVE || (!$literal && $this->gamemode === GameMode::SPECTATOR);
 	}
 
 	/**
@@ -1194,18 +1194,18 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @param bool $literal whether a literal check should be performed
 	 */
 	public function isAdventure(bool $literal = false) : bool{
-		return $this->gamemode->equals(GameMode::ADVENTURE()) || (!$literal && $this->gamemode->equals(GameMode::SPECTATOR()));
+		return $this->gamemode === GameMode::ADVENTURE || (!$literal && $this->gamemode === GameMode::SPECTATOR);
 	}
 
 	public function isSpectator() : bool{
-		return $this->gamemode->equals(GameMode::SPECTATOR());
+		return $this->gamemode === GameMode::SPECTATOR;
 	}
 
 	/**
 	 * TODO: make this a dynamic ability instead of being hardcoded
 	 */
 	public function hasFiniteResources() : bool{
-		return !$this->gamemode->equals(GameMode::CREATIVE());
+		return $this->gamemode !== GameMode::CREATIVE;
 	}
 
 	public function getDrops() : array{

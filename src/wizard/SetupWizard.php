@@ -165,9 +165,11 @@ LICENSE;
 		$this->message($this->lang->translate(KnownTranslationFactory::gamemode_info()));
 
 		do{
-			$gamemode = GameModeIdMap::getInstance()->fromId((int) $this->getInput($this->lang->translate(KnownTranslationFactory::default_gamemode()), (string) GameModeIdMap::getInstance()->toId(GameMode::SURVIVAL())));
+			//TODO: drop the usage of internal Mojang IDs for this - we really just need a set of options to choose from
+			$gamemode = GameModeIdMap::getInstance()->fromId((int) $this->getInput($this->lang->translate(KnownTranslationFactory::default_gamemode()), (string) GameModeIdMap::getInstance()->toId(GameMode::SURVIVAL)));
 		}while($gamemode === null);
-		$config->set("gamemode", $gamemode->name());
+		//TODO: this probably shouldn't use the enum name directly
+		$config->set("gamemode", $gamemode->name);
 
 		$config->set("max-players", (int) $this->getInput($this->lang->translate(KnownTranslationFactory::max_players()), (string) self::DEFAULT_PLAYERS));
 
