@@ -25,6 +25,12 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\StructureBlockType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\item\Item;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
+use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
+use pocketmine\player\Player;
 
 class StructureBlock extends Opaque{
 	private StructureBlockType $type;
@@ -32,6 +38,15 @@ class StructureBlock extends Opaque{
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
 		$this->type = StructureBlockType::SAVE;
 		parent::__construct($idInfo, $name, $typeInfo);
+	}
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		if ($player instanceof Player) {
+			$pk = ContainerOpenPacket::blockInv(0, WindowTypes::STRUCTURE_EDITOR, BlockPosition::fromVector3($this->getPosition()));
+			$player->getNetworkSession()->sendDataPacket($pk);
+			return true;
+		}
+		return false;
 	}
 
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
@@ -45,6 +60,11 @@ class StructureBlock extends Opaque{
 	/** @return $this */
 	public function setType(StructureBlockType $type) : self{
 		$this->type = $type;
+		if ($this->position->isValid()){
+			$this->position->getWorld()->setBlock($this->position, $this);
+		}
 		return $this;
 	}
+
+	//TODO: The Structure Block has redstone effects, they are not implemented.
 }

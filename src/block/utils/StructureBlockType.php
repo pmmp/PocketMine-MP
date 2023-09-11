@@ -28,6 +28,32 @@ enum StructureBlockType{
 	case SAVE;
 	case LOAD;
 	case CORNER;
-	case INVALID;				// Inventory Structure Block
+	case INVALID;
 	case EXPORT;
+
+	/**
+	 *  @throws \UnexpectedValueException
+	 */
+	public static function fromInt(int $type) : StructureBlockType{
+		return match($type){
+			0 => self::DATA,
+			1 => self::SAVE,
+			2 => self::LOAD,
+			3 => self::CORNER,
+			4 => self::INVALID,
+			5 => self::EXPORT,
+			default => throw new \UnexpectedValueException("Unknown structure block type " . $type),
+		};
+	}
+
+	public static function toInt(StructureBlockType $type) : int{
+		return match($type){
+			self::DATA => 0,
+			self::SAVE => 1,
+			self::LOAD => 2,
+			self::CORNER => 3,
+			self::INVALID => 4,
+			self::EXPORT => 5,
+		};
+	}
 }
