@@ -7,7 +7,7 @@ SET F="./PocketMine-MP.phar"
 IF EXIST %F% (
 	echo PocketMine-MP.phar registered
 ) ELSE (
-	node make-server.js	
+	php make-server.php
 )
 
 set PHP_BINARY=
