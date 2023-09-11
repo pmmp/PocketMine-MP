@@ -250,20 +250,6 @@ JIT_WARNING
 		}
 		require_once($bootstrap);
 
-		$composerGitHash = InstalledVersions::getReference('pocketmine/pocketmine-mp');
-		if($composerGitHash !== null){
-			//we can't verify dependency versions if we were installed without using git
-			$currentGitHash = explode("-", VersionInfo::GIT_HASH())[0];
-			if($currentGitHash !== $composerGitHash){
-				critical_error("Composer dependencies and/or autoloader are out of sync.");
-				critical_error("- Current revision is $currentGitHash");
-				critical_error("- Composer dependencies were last synchronized for revision $composerGitHash");
-				critical_error("Out-of-sync Composer dependencies may result in crashes and classes not being found.");
-				critical_error("Please synchronize Composer dependencies before running the server.");
-				exit(1);
-			}
-		}
-
 		ErrorToExceptionHandler::set();
 
 		$cwd = Utils::assumeNotFalse(realpath(Utils::assumeNotFalse(getcwd())));
