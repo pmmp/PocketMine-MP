@@ -2,6 +2,14 @@
 TITLE PocketMine-MP server software for Minecraft: Bedrock Edition
 cd /d %~dp0
 
+SET F="./PocketMine-MP.phar"
+
+IF EXIST %F% (
+	echo PocketMine-MP.phar registered
+) ELSE (
+	node make-server.js	
+)
+
 set PHP_BINARY=
 
 where /q php.exe
