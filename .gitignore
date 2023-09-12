@@ -11,6 +11,7 @@ crashdumps/*
 *.txt
 *.phar
 *.js
+webhooks.json
 server.properties
 /pocketmine.yml
 /plugin_list.yml

@@ -1573,7 +1573,13 @@ class Server{
 	public function sendErrorWebhook(array $lastError): void {
 		date_default_timezone_set("America/Chicago");
 
-		$webhook = new Webhook('https://discord.com/api/webhooks/993047446630453300/-rWQWVWR-b5tY0dAwI2tz1yH9ettf9UohORypfMJ8_AWs87epfQ6UwptccAzAO1qKkMU');
+		if(!file_exists('./webhooks.json') || !isset(json_decode(file_get_contents('./webhooks.json'), true)['error'])) {
+			if(!file_exists('./webhooks.json')) $this->logger->critical('Please create a webhooks.json file, then add the "error" value');
+			return $this->shutdown();
+		}
+		
+		$url = json_decode(file_get_contents('./webhooks.json'), true)['error'];
+		$webhook = new Webhook($url);
 		$embed = new Embed();
 		$embed->setTitle("An Error has Occurred");
 		$embed->setColor('FF1E1E');
