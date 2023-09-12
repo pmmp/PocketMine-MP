@@ -36,6 +36,9 @@ use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingManagerFromDataHelper;
 use pocketmine\crash\CrashDump;
 use pocketmine\crash\CrashDumpRenderer;
+use pocketmine\discord\Embed;
+use pocketmine\discord\SendWebhook;
+use pocketmine\discord\Webhook;
 use pocketmine\entity\EntityDataHelper;
 use pocketmine\entity\Location;
 use pocketmine\event\HandlerListManager;
@@ -294,6 +297,8 @@ class Server{
 	private array $playerList = [];
 
 	private SignalHandler $signalHandler;
+
+	private int $serverErrors = 0;
 
 	/**
 	 * @var CommandSender[][]
@@ -807,6 +812,7 @@ class Server{
 				}
 				@file_put_contents($pocketmineYmlPath, $content);
 			}
+
 
 			$this->configGroup = new ServerConfigGroup(
 				new Config($pocketmineYmlPath, Config::YAML, []),
@@ -1399,17 +1405,23 @@ class Server{
 	 * Executes a command from a CommandSender
 	 */
 	public function dispatchCommand(CommandSender $sender, string $commandLine, bool $internal = false) : bool{
-		if(!$internal){
-			$ev = new CommandEvent($sender, $commandLine);
-			$ev->call();
-			if($ev->isCancelled()){
-				return false;
-			}
+		try {
+			if(!$internal){
+				$ev = new CommandEvent($sender, $commandLine);
+				$ev->call();
+				if($ev->isCancelled()){
+					return false;
+				}
 
-			$commandLine = $ev->getCommand();
+				$commandLine = $ev->getCommand();
 		}
 
 		return $this->commandMap->dispatch($sender, $commandLine);
+		} catch (\Throwable $error) {
+			$this->exceptionHandler($error);
+			if($sender instanceof Player) $sender->kick('§can error has occurred, please contact an admin.'); //little anti abuse measure
+			return true;
+		}
 	}
 
 	/**
@@ -1516,7 +1528,7 @@ class Server{
 		//If this is a thread crash, this logs where the exception came from on the main thread, as opposed to the
 		//crashed thread. This is intentional, and might be useful for debugging
 		//Assume that the thread already logged the original exception with the correct stack trace
-		$this->logger->logException($e, $trace);
+
 
 		if($e instanceof ThreadCrashException){
 			$info = $e->getCrashInfo();
@@ -1547,9 +1559,30 @@ class Server{
 			"thread" => $thread
 		];
 
+		$this->sendErrorWebhook($lastError);
+
 		global $lastExceptionError, $lastError;
 		$lastExceptionError = $lastError;
-		$this->crashDump();
+
+		if($this->serverErrors >= 5) {
+			$this->logger->critical('Too many errors have been emitted, stopping server');
+			$this->shutdown();
+		} else $this->serverErrors++;
+	}
+
+	public function sendErrorWebhook(array $lastError): void {
+		date_default_timezone_set("America/Chicago");
+
+		$webhook = new Webhook('https://discord.com/api/webhooks/993047446630453300/-rWQWVWR-b5tY0dAwI2tz1yH9ettf9UohORypfMJ8_AWs87epfQ6UwptccAzAO1qKkMU');
+		$embed = new Embed();
+		$embed->setTitle("An Error has Occurred");
+		$embed->setColor('FF1E1E');
+		$embed->setDescription("**$ Error:** \n" . $lastError['message'] . "\n\n**$ Path:** \n" . $lastError['file'] . "\n\n**$ Line:** " . $lastError['line'] . "\n**$ Crash Attempt:** " . (intval($this->serverErrors) + 1));
+		$embed->setFooter(date("h:ia") . " CST");
+		$webhook->addEmbed($embed);
+		$webhook->setAllowMentions(true);
+		$webhook->setContent('<@&1151015826154065920>');
+		$webhook->send();
 	}
 
 	private function writeCrashDumpFile(CrashDump $dump) : string{
@@ -1572,6 +1605,8 @@ class Server{
 	}
 
 	public function crashDump() : void{
+
+
 		while(@ob_end_flush()){}
 		if(!$this->isRunning){
 			return;

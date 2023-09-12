@@ -25,6 +25,7 @@ namespace pocketmine\thread;
 
 use pmmp\thread\ThreadSafe;
 use pmmp\thread\ThreadSafeArray;
+use pocketmine\Server;
 use function class_exists;
 use function count;
 use function explode;
@@ -120,7 +121,11 @@ class ThreadSafeClassLoader extends ThreadSafe{
 
 	public function register(bool $prepend = false) : bool{
 		return spl_autoload_register(function(string $name) : void{
-			$this->loadClass($name);
+			try {
+				$this->loadClass($name);
+			}catch(\Throwable $e){
+				Server::getInstance()->exceptionHandler($e);
+			}
 		}, true, $prepend);
 	}
 
