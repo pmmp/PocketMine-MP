@@ -42,6 +42,7 @@ class StructureBlock extends Opaque{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if ($player instanceof Player) {
+			if (!$player->isCreative(true)) return false;
 			$pk = ContainerOpenPacket::blockInv(0, WindowTypes::STRUCTURE_EDITOR, BlockPosition::fromVector3($this->getPosition()));
 			$player->getNetworkSession()->sendDataPacket($pk);
 			return true;
