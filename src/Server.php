@@ -298,7 +298,7 @@ class Server{
 
 	private SignalHandler $signalHandler;
 
-	private int $serverErrors = 0;
+	private array $serverErrors = ['total' => 0];
 
 	/**
 	 * @var CommandSender[][]
@@ -1556,18 +1556,22 @@ class Server{
 			"file" => Filesystem::cleanPath($errfile),
 			"line" => $errline,
 			"trace" => $printableTrace,
-			"thread" => $thread
+			"thread" => $thread,
 		];
-
-		$this->sendErrorWebhook($lastError);
 
 		global $lastExceptionError, $lastError;
 		$lastExceptionError = $lastError;
 
-		if($this->serverErrors >= 5) {
+		if(isset($lastError['file']) && intval($lastError['file']) >= 5) {
 			$this->logger->critical('Too many errors have been emitted, stopping server');
 			$this->shutdown();
-		} else $this->serverErrors++;
+		} else {
+			if(!isset($this->serverErrors[$lastError['file']])) $this->serverErrors[$lastError['file']] = 1;
+			else $this->serverErrors[$lastError['file']]++;
+			$this->serverErrors['total']++;
+		}
+
+		$this->sendErrorWebhook($lastError);
 	}
 
 	public function sendErrorWebhook(array $lastError): void {
@@ -1575,15 +1579,20 @@ class Server{
 
 		if(!file_exists('./webhooks.json') || !isset(json_decode(file_get_contents('./webhooks.json'), true)['error'])) {
 			if(!file_exists('./webhooks.json')) $this->logger->critical('Please create a webhooks.json file, then add the "error" value');
-			return $this->shutdown();
+			$this->shutdown();
+			return;
 		}
-		
+
 		$url = json_decode(file_get_contents('./webhooks.json'), true)['error'];
 		$webhook = new Webhook($url);
 		$embed = new Embed();
 		$embed->setTitle("An Error has Occurred");
 		$embed->setColor('FF1E1E');
-		$embed->setDescription("**$ Error:** \n" . $lastError['message'] . "\n\n**$ Path:** \n" . $lastError['file'] . "\n\n**$ Line:** " . $lastError['line'] . "\n**$ Crash Attempt:** " . (intval($this->serverErrors) + 1));
+		$embed->setDescription("**$ Error:** \n" . $lastError['message'] . 
+		"\n\n**$ Path:** \n" . $lastError['file'] . 
+		"\n\n**$ Line:** " . $lastError['line'] . 
+		"\n**$ Class Exceptions:** " . intval($this->serverErrors[$lastError['file']]) . 
+		"\n\n**$ Total Crash Attempts:** " . intval($this->serverErrors['total']));
 		$embed->setFooter(date("h:ia") . " CST");
 		$webhook->addEmbed($embed);
 		$webhook->setAllowMentions(true);
