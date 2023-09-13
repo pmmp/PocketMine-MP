@@ -25,6 +25,7 @@ namespace pocketmine\block\tile;
 
 use pocketmine\block\utils\StructureBlockType;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\StructureBlockUpdatePacket;
 use pocketmine\world\World;
@@ -85,7 +86,7 @@ class StructureBlock extends Spawnable{
 	public function readSaveData(CompoundTag $nbt) : void{
 		$this->animationMode = $nbt->getByte(self::TAG_ANIMATION_MODE, $this->animationMode);
 		$this->animationSeconds = $nbt->getFloat(self::TAG_ANIMATION_SECONDS, $this->animationSeconds);
-		$this->type = StructureBlockType::fromInt($nbt->getByte(self::TAG_DATA, StructureBlockType::toInt($this->type)));
+		$this->type = StructureBlockType::tryFrom($nbt->getByte(self::TAG_DATA, $this->type->value)) ?? throw new NbtDataException("Invalid StructureBlockType value");
 		$this->dataField = $nbt->getString(self::TAG_DATA_FIELD, $this->dataField);
 		$this->ignoreEntities = (bool) $nbt->getByte(self::TAG_IGNORE_ENTITIES, (int) $this->ignoreEntities);
 		$this->integrityValue = $nbt->getFloat(self::TAG_INTEGRITY, $this->integrityValue);
@@ -112,7 +113,7 @@ class StructureBlock extends Spawnable{
 	protected function writeSaveData(CompoundTag $nbt) : void{
 		$nbt->setByte(self::TAG_ANIMATION_MODE, $this->animationMode);
 		$nbt->setFloat(self::TAG_ANIMATION_SECONDS, $this->animationSeconds);
-		$nbt->setInt(self::TAG_DATA, StructureBlockType::toInt($this->type));
+		$nbt->setInt(self::TAG_DATA, $this->type->value);
 		$nbt->setString(self::TAG_DATA_FIELD, $this->dataField);
 		$nbt->setByte(self::TAG_IGNORE_ENTITIES, (int) $this->ignoreEntities);
 		$nbt->setFloat(self::TAG_INTEGRITY, $this->integrityValue);
@@ -137,9 +138,10 @@ class StructureBlock extends Spawnable{
 	}
 
 	/**
-	 *  @throws \UnexpectedValueException
+	 *  @internal
+	 *  @throws \ValueError
 	 */
-		public function updateFromPacket(StructureBlockUpdatePacket $packet) : void{
+	public function updateFromPacket(StructureBlockUpdatePacket $packet) : void{
 		//waterlogged
 		$this->isPowered = $packet->isPowered;
 
@@ -148,7 +150,7 @@ class StructureBlock extends Spawnable{
 		$this->dataField = $data->structureDataField;
 		//includePlayers
 		$this->showBoundingBox = $data->showBoundingBox;
-		$this->type = StructureBlockType::fromInt($data->structureBlockType);
+		$this->type = StructureBlockType::from($data->structureBlockType);
 		$this->redstoneSaveMode = $data->structureRedstoneSaveMove;
 
 		$settings = $data->structureSettings;
