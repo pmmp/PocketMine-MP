@@ -23,9 +23,36 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-enum StructureRotation : int{
-	case _0 = 0;
-	case _90 = 90;
-	case _180 = 180;
-	case _270 = 270;
+class StructureRotation{
+	protected int $quarterTurns;
+
+	/**
+	 * @param $angle The rotation in degrees. This must be a multiple of 90.
+	 */
+	public function __construct(int $angle){
+		$this->setAngle($angle);
+	}
+
+	public function getAngle() : int{
+		return $this->quarterTurns * 90;
+	}
+
+	/**
+	 * @param $angle The rotation in degrees. This must be a multiple of 90.
+	 * @throws \ValueError
+	 */
+	public function setAngle(int $angle) : void{
+		if ($angle % 90 != 0){
+			throw new \ValueError("StructureRotation must be a multiple of 90, " . $angle . " given.");
+		}
+		$this->quarterTurns = ($angle / 90) % 4;
+	}
+
+	public function getQuarterTurns() : int{
+		return $this->quarterTurns;
+	}
+
+	public function setQuarterTurns(int $quarterTurns) : void{
+		$this->quarterTurns = $quarterTurns % 4;
+	}
 };

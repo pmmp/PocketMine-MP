@@ -29,12 +29,18 @@ class StructureAxes{
 		public bool $yMirror
 	){}
 
+	/**
+	 * @internal
+	 */
 	public static function fromInt(int $mirror) : StructureAxes{
 		$xMirror = ($mirror >> 0) & 1;
 		$yMirror = ($mirror >> 1) & 1;
 		return new StructureAxes((bool) $xMirror, (bool) $yMirror);
 	}
 
+	/**
+	 * @internal
+	 */
 	public function toInt() : int{
 		return $this->xMirror | ($this->yMirror << 1);
 	}

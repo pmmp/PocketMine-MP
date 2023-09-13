@@ -1068,7 +1068,7 @@ class InGamePacketHandler extends PacketHandler{
 		$block = $world->getBlockAt($pos->getX(), $pos->getY(), $pos->getZ());
 		if($tile instanceof TileStructureBlock && $block instanceof StructureBlock && $this->player->canInteract($block->getPosition(), 15)){
 			try{
-				$type = StructureBlockType::from($packet->structureEditorData->structureBlockType);
+				$type = StructureBlockType::fromInt($packet->structureEditorData->structureBlockType);
 				$tile->updateFromPacket($packet);
 			}catch(\ValueError $e){
 				throw PacketHandlingException::wrap($e);

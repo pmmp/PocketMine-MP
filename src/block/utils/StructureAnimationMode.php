@@ -23,8 +23,32 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-enum StructureAnimationMode : int{
-	case NONE = 0;
-	case BY_LAYER = 1;
-	case BY_BLOCK = 2;
+enum StructureAnimationMode{
+	case NONE;
+	case BY_LAYER;
+	case BY_BLOCK;
+
+	/**
+	 * @internal
+	 * @throws \ValueError
+	 */
+	public static function fromInt(int $mode) : StructureAnimationMode{
+		return match($mode){
+			0 => self::NONE,
+			1 => self::BY_LAYER,
+			2 => self::BY_BLOCK,
+			default => throw new \ValueError("Unknown structure animation mode " . $mode),
+		};
+	}
+
+	/**
+	 * @internal
+	 */
+	public function toInt() : int{
+		return match($this){
+			self::NONE => 0,
+			self::BY_LAYER => 1,
+			self::BY_BLOCK => 2,
+		};
+	}
 };

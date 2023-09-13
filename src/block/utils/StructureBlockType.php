@@ -23,11 +23,41 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-enum StructureBlockType : int{
-	case DATA = 0;
-	case SAVE = 1;
-	case LOAD = 2;
-	case CORNER = 3;
-	case INVALID = 4;
-	case EXPORT = 5;
+enum StructureBlockType{
+	case DATA;
+	case SAVE;
+	case LOAD;
+	case CORNER;
+	case INVALID;
+	case EXPORT;
+
+	/**
+	 * @internal
+	 * @throws \ValueError
+	 */
+	public static function fromInt(int $type) : StructureBlockType{
+		return match($type){
+			0 => self::DATA,
+			1 => self::SAVE,
+			2 => self::LOAD,
+			3 => self::CORNER,
+			4 => self::INVALID,
+			5 => self::EXPORT,
+			default => throw new \ValueError("Unknown structure block type " . $type),
+		};
+	}
+
+	/**
+	 * @internal
+	 */
+	public function toInt() : int{
+		return match($this){
+			self::DATA => 0,
+			self::SAVE => 1,
+			self::LOAD => 2,
+			self::CORNER => 3,
+			self::INVALID => 4,
+			self::EXPORT => 5,
+		};
+	}
 }

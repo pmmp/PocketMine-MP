@@ -66,7 +66,7 @@ class StructureBlock extends Spawnable{
 	private StructureAxes $mirror;
 	private int $redstoneSaveMode = 0;
 	private bool $removeBlocks = false;
-	private StructureRotation $rotation = StructureRotation::_0;
+	private StructureRotation $rotation;
 	private bool $showBoundingBox = true;
 	private string $structureName = "";
 	private Vector3 $structureOffset;
@@ -80,6 +80,7 @@ class StructureBlock extends Spawnable{
 	// Vector3 pivot
 
 	public function __construct(World $world, Vector3 $pos){
+		$this->rotation = new StructureRotation(0);
 		$this->mirror = new StructureAxes(false, false);
 		$this->structureOffset = new Vector3(0, -1, 0);
 		$this->structureSize = new Vector3(5, 5, 5);
@@ -88,13 +89,14 @@ class StructureBlock extends Spawnable{
 
 	// TODO : check values
 	public function readSaveData(CompoundTag $nbt) : void{
-		$this->animationMode = StructureAnimationMode::tryFrom($nbt->getByte(self::TAG_ANIMATION_MODE, $this->animationMode->value))
-			?? throw new NbtDataException("Invalid StructureAnimationMode value");
-		$this->type = StructureBlockType::tryFrom($nbt->getInt(self::TAG_DATA, $this->type->value))
-			?? throw new NbtDataException("Invalid StructureBlockType value");
-		$this->rotation = StructureRotation::tryFrom($nbt->getByte(self::TAG_ROTATION, $this->rotation->value))
-			?? throw new NbtDataException("Invalid StructureRotation value");
-		$this->mirror = StructureAxes::fromInt($nbt->getByte(self::TAG_MIRROR, $this->mirror->toInt()));
+		try{
+			$this->animationMode = StructureAnimationMode::fromInt($nbt->getByte(self::TAG_ANIMATION_MODE, $this->animationMode->toInt()));
+			$this->type = StructureBlockType::fromInt($nbt->getInt(self::TAG_DATA, $this->type->toInt()));
+			$this->rotation->setQuarterTurns($nbt->getByte(self::TAG_ROTATION, $this->rotation->getQuarterTurns()));
+			$this->mirror = StructureAxes::fromInt($nbt->getByte(self::TAG_MIRROR, $this->mirror->toInt()));
+		}catch(\ValueError $e){
+			throw new NbtDataException($e->getMessage());
+		}
 
 		$this->animationSeconds = $nbt->getFloat(self::TAG_ANIMATION_SECONDS, $this->animationSeconds);
 		$this->dataField = $nbt->getString(self::TAG_DATA_FIELD, $this->dataField);
@@ -120,9 +122,9 @@ class StructureBlock extends Spawnable{
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
-		$nbt->setByte(self::TAG_ANIMATION_MODE, $this->animationMode->value);
+		$nbt->setByte(self::TAG_ANIMATION_MODE, $this->animationMode->toInt());
 		$nbt->setFloat(self::TAG_ANIMATION_SECONDS, $this->animationSeconds);
-		$nbt->setInt(self::TAG_DATA, $this->type->value);
+		$nbt->setInt(self::TAG_DATA, $this->type->toInt());
 		$nbt->setString(self::TAG_DATA_FIELD, $this->dataField);
 		$nbt->setByte(self::TAG_IGNORE_ENTITIES, (int) $this->ignoreEntities);
 		$nbt->setFloat(self::TAG_INTEGRITY, $this->integrityValue);
@@ -130,7 +132,7 @@ class StructureBlock extends Spawnable{
 		$nbt->setByte(self::TAG_MIRROR, $this->mirror->toInt());
 		$nbt->setByte(self::TAG_REDSTONE_SAVE_MODE, $this->redstoneSaveMode);
 		$nbt->setByte(self::TAG_REMOVE_BLOCKS, (int) $this->removeBlocks);
-		$nbt->setByte(self::TAG_ROTATION, $this->rotation->value);
+		$nbt->setByte(self::TAG_ROTATION, $this->rotation->getQuarterTurns());
 		$nbt->setLong(self::TAG_SEED, $this->integritySeed);
 		$nbt->setByte(self::TAG_SHOW_BOUNDING_BOX, (int) $this->showBoundingBox);
 		$nbt->setString(self::TAG_STRUCTURE_NAME, $this->structureName);
@@ -159,7 +161,7 @@ class StructureBlock extends Spawnable{
 		$this->dataField = $data->structureDataField;
 		//includePlayers
 		$this->showBoundingBox = $data->showBoundingBox;
-		$this->type = StructureBlockType::from($data->structureBlockType);
+		$this->type = StructureBlockType::fromInt($data->structureBlockType);
 		$this->redstoneSaveMode = $data->structureRedstoneSaveMove;
 
 		$settings = $data->structureSettings;
@@ -170,9 +172,9 @@ class StructureBlock extends Spawnable{
 		$this->structureSize = new Vector3($settings->dimensions->getX(), $settings->dimensions->getY(), $settings->dimensions->getZ());
 		$this->structureOffset = new Vector3($settings->offset->getX(), $settings->offset->getY(), $settings->offset->getZ());
 		//lastTouchedByPlayerId
-		$this->rotation = StructureRotation::from($settings->rotation);
+		$this->rotation->setQuarterTurns($settings->rotation);
 		$this->mirror = StructureAxes::fromInt($settings->mirror);
-		$this->animationMode = StructureAnimationMode::from($settings->animationMode);
+		$this->animationMode = StructureAnimationMode::fromInt($settings->animationMode);
 		$this->animationSeconds = $settings->animationSeconds;
 		$this->integrityValue = $settings->integrityValue;
 		$this->integritySeed = $settings->integritySeed;
