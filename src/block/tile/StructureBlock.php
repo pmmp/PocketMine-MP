@@ -23,7 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
+use pocketmine\block\utils\StructureAnimationMode;
+use pocketmine\block\utils\StructureAxes;
 use pocketmine\block\utils\StructureBlockType;
+use pocketmine\block\utils\StructureRotation;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
@@ -52,18 +55,18 @@ class StructureBlock extends Spawnable{
 	public const TAG_Y_STRUCTURE_SIZE = "yStructureSize";
 	public const TAG_Z_STRUCTURE_SIZE = "zStructureSize";
 
-	private int $animationMode = 0;	// byte
+	private StructureAnimationMode $animationMode = StructureAnimationMode::NONE;
 	private float $animationSeconds = 0;
 	private StructureBlockType $type = StructureBlockType::SAVE;
 	private string $dataField = "";	// unused
 	private bool $ignoreEntities = false;
 	private float $integrityValue = 100;
-	private int $integritySeed = 0;	// long, 0 means random
+	private int $integritySeed = 0;	// 0 means random
 	private bool $isPowered = false; // TODO : set by client, should be server side
-	private int $mirror = 0;	// byte
+	private StructureAxes $mirror;
 	private int $redstoneSaveMode = 0;
 	private bool $removeBlocks = false;
-	private int $rotation = 0;	// byte
+	private StructureRotation $rotation = StructureRotation::_0;
 	private bool $showBoundingBox = true;
 	private string $structureName = "";
 	private Vector3 $structureOffset;
@@ -77,6 +80,7 @@ class StructureBlock extends Spawnable{
 	// Vector3 pivot
 
 	public function __construct(World $world, Vector3 $pos){
+		$this->mirror = new StructureAxes(false, false);
 		$this->structureOffset = new Vector3(0, -1, 0);
 		$this->structureSize = new Vector3(5, 5, 5);
 		parent::__construct($world, $pos);
@@ -84,20 +88,25 @@ class StructureBlock extends Spawnable{
 
 	// TODO : check values
 	public function readSaveData(CompoundTag $nbt) : void{
-		$this->animationMode = $nbt->getByte(self::TAG_ANIMATION_MODE, $this->animationMode);
+		$this->animationMode = StructureAnimationMode::tryFrom($nbt->getByte(self::TAG_ANIMATION_MODE, $this->animationMode->value))
+			?? throw new NbtDataException("Invalid StructureAnimationMode value");
+		$this->type = StructureBlockType::tryFrom($nbt->getInt(self::TAG_DATA, $this->type->value))
+			?? throw new NbtDataException("Invalid StructureBlockType value");
+		$this->rotation = StructureRotation::tryFrom($nbt->getByte(self::TAG_ROTATION, $this->rotation->value))
+			?? throw new NbtDataException("Invalid StructureRotation value");
+		$this->mirror = StructureAxes::fromInt($nbt->getByte(self::TAG_MIRROR, $this->mirror->toInt()));
+
 		$this->animationSeconds = $nbt->getFloat(self::TAG_ANIMATION_SECONDS, $this->animationSeconds);
-		$this->type = StructureBlockType::tryFrom($nbt->getByte(self::TAG_DATA, $this->type->value)) ?? throw new NbtDataException("Invalid StructureBlockType value");
 		$this->dataField = $nbt->getString(self::TAG_DATA_FIELD, $this->dataField);
 		$this->ignoreEntities = (bool) $nbt->getByte(self::TAG_IGNORE_ENTITIES, (int) $this->ignoreEntities);
 		$this->integrityValue = $nbt->getFloat(self::TAG_INTEGRITY, $this->integrityValue);
 		$this->isPowered = (bool) $nbt->getByte(self::TAG_IS_POWERED, (int) $this->isPowered);
-		$this->mirror = $nbt->getByte(self::TAG_MIRROR, $this->mirror);
 		$this->redstoneSaveMode = $nbt->getByte(self::TAG_REDSTONE_SAVE_MODE, $this->redstoneSaveMode);
 		$this->removeBlocks = (bool) $nbt->getByte(self::TAG_REMOVE_BLOCKS, (int) $this->removeBlocks);
-		$this->rotation = $nbt->getByte(self::TAG_ROTATION, $this->rotation);
 		$this->integritySeed = $nbt->getLong(self::TAG_SEED, $this->integritySeed);
 		$this->showBoundingBox = (bool) $nbt->getByte(self::TAG_SHOW_BOUNDING_BOX, (int) $this->showBoundingBox);
 		$this->structureName = $nbt->getString(self::TAG_STRUCTURE_NAME, $this->structureName);
+
 		$this->structureOffset = new Vector3(
 			$nbt->getInt(self::TAG_X_STRUCTURE_OFFSET, $this->structureOffset->getFloorX()),
 			$nbt->getInt(self::TAG_Y_STRUCTURE_OFFSET, $this->structureOffset->getFloorY()),
@@ -111,17 +120,17 @@ class StructureBlock extends Spawnable{
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
-		$nbt->setByte(self::TAG_ANIMATION_MODE, $this->animationMode);
+		$nbt->setByte(self::TAG_ANIMATION_MODE, $this->animationMode->value);
 		$nbt->setFloat(self::TAG_ANIMATION_SECONDS, $this->animationSeconds);
 		$nbt->setInt(self::TAG_DATA, $this->type->value);
 		$nbt->setString(self::TAG_DATA_FIELD, $this->dataField);
 		$nbt->setByte(self::TAG_IGNORE_ENTITIES, (int) $this->ignoreEntities);
 		$nbt->setFloat(self::TAG_INTEGRITY, $this->integrityValue);
 		$nbt->setByte(self::TAG_IS_POWERED, (int) $this->isPowered);
-		$nbt->setByte(self::TAG_MIRROR, $this->mirror);
+		$nbt->setByte(self::TAG_MIRROR, $this->mirror->toInt());
 		$nbt->setByte(self::TAG_REDSTONE_SAVE_MODE, $this->redstoneSaveMode);
 		$nbt->setByte(self::TAG_REMOVE_BLOCKS, (int) $this->removeBlocks);
-		$nbt->setByte(self::TAG_ROTATION, $this->rotation);
+		$nbt->setByte(self::TAG_ROTATION, $this->rotation->value);
 		$nbt->setLong(self::TAG_SEED, $this->integritySeed);
 		$nbt->setByte(self::TAG_SHOW_BOUNDING_BOX, (int) $this->showBoundingBox);
 		$nbt->setString(self::TAG_STRUCTURE_NAME, $this->structureName);
@@ -161,12 +170,205 @@ class StructureBlock extends Spawnable{
 		$this->structureSize = new Vector3($settings->dimensions->getX(), $settings->dimensions->getY(), $settings->dimensions->getZ());
 		$this->structureOffset = new Vector3($settings->offset->getX(), $settings->offset->getY(), $settings->offset->getZ());
 		//lastTouchedByPlayerId
-		$this->rotation = $settings->rotation;
-		$this->mirror = $settings->mirror;
-		$this->animationMode = $settings->animationMode;
+		$this->rotation = StructureRotation::from($settings->rotation);
+		$this->mirror = StructureAxes::fromInt($settings->mirror);
+		$this->animationMode = StructureAnimationMode::from($settings->animationMode);
 		$this->animationSeconds = $settings->animationSeconds;
 		$this->integrityValue = $settings->integrityValue;
 		$this->integritySeed = $settings->integritySeed;
 		//pivot
+	}
+
+	public function getAnimationMode() : StructureAnimationMode{
+		return $this->animationMode;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setAnimationMode(StructureAnimationMode $mode) : self{
+		$this->animationMode = $mode;
+		return $this;
+	}
+
+	public function getAnimationSeconds() : float{
+		return $this->animationSeconds;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setAnimationSeconds(float $seconds) : self{
+		$this->animationSeconds = $seconds;
+		return $this;
+	}
+
+	public function getType() : StructureBlockType{
+		return $this->type;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setType(StructureBlockType $type) : self{
+		$this->type = $type;
+		return $this;
+	}
+
+	public function getDataField() : string{
+		return $this->dataField;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setDataField(string $dataField) : self{
+		$this->dataField = $dataField;
+		return $this;
+	}
+
+	public function getIgnoreEntities() : bool{
+		return $this->ignoreEntities;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setIgnoreEntities(bool $ignore) : self{
+		$this->ignoreEntities = $ignore;
+		return $this;
+	}
+
+	public function getIntegrity() : float{
+		return $this->integrityValue;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setIntegrity(float $value) : self{
+		$this->integrityValue = $value;
+		return $this;
+	}
+
+	public function getIntegritySeed() : int{
+		return $this->integritySeed;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setIntegritySeed(int $seed) : self{
+		$this->integritySeed = $seed;
+		return $this;
+	}
+
+	public function getIsPowered() : bool{
+		return $this->isPowered;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setIsPowered(bool $power) : self{
+		$this->isPowered = $power;
+		return $this;
+	}
+
+	public function getMirroredAxes() : StructureAxes{
+		return $this->mirror;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setMirroredAxes(StructureAxes $axes) : self{
+		$this->mirror = $axes;
+		return $this;
+	}
+
+	// TODO : enum / bool ?
+	public function getRedstoneSaveMode() : int{
+		return $this->redstoneSaveMode;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setRedstoneSaveMode(int $saveMode) : self{
+		$this->redstoneSaveMode = $saveMode;
+		return $this;
+	}
+
+	public function getRemoveBlocks() : bool{
+		return $this->removeBlocks;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setRemoveBlocks(bool $remove) : self{
+		$this->removeBlocks = $remove;
+		return $this;
+	}
+
+	public function getRotation() : StructureRotation{
+		return $this->rotation;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setRotation(StructureRotation $rotation) : self{
+		$this->rotation = $rotation;
+		return $this;
+	}
+
+	public function getShowBoundingBox() : bool{
+		return $this->showBoundingBox;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setShowBoundingBox(bool $show) : self{
+		$this->showBoundingBox = $show;
+		return $this;
+	}
+
+	public function getStructureName() : string{
+		return $this->structureName;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setStructureName(string $name) : self{
+		$this->structureName = $name;
+		return $this;
+	}
+
+	public function getStructureOffset() : Vector3{
+		return $this->structureOffset;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setStructureOffset(Vector3 $offset) : self{
+		$this->structureOffset = $offset;
+		return $this;
+	}
+
+	public function getStructureSize() : Vector3{
+		return $this->structureSize;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setStructureSize(Vector3 $size) : self{
+		$this->structureSize = $size;
+		return $this;
 	}
 }
