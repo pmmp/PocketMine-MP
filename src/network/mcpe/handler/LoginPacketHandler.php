@@ -85,9 +85,9 @@ class LoginPacketHandler extends PacketHandler{
 
 		
 		$uuid = Uuid::fromString($extraData->identity);
-		$clientData = (array) $clientData;
+		$arrClientData = (array) $clientData;
 
-		$clientData["TitleID"] = $extraData->titleId;
+		$arrClientData["TitleID"] = $extraData->titleId;
 		if($extraData->XUID !== ""){
 			$playerInfo = new XboxLivePlayerInfo(
 				$extraData->XUID,
@@ -95,7 +95,7 @@ class LoginPacketHandler extends PacketHandler{
 				$uuid,
 				$skin,
 				$clientData->LanguageCode,
-				$clientData
+				$arrClientData
 			);
 		}else{
 			$playerInfo = new PlayerInfo(
@@ -103,7 +103,7 @@ class LoginPacketHandler extends PacketHandler{
 				$uuid,
 				$skin,
 				$clientData->LanguageCode,
-				$clientData
+				$arrClientData
 			);
 		}
 		($this->playerInfoConsumer)($playerInfo);
