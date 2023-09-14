@@ -95,7 +95,7 @@ class LoginPacketHandler extends PacketHandler{
 				$uuid,
 				$skin,
 				$clientData->LanguageCode,
-				(array) $clientData
+				$clientData
 			);
 		}else{
 			$playerInfo = new PlayerInfo(
@@ -103,7 +103,7 @@ class LoginPacketHandler extends PacketHandler{
 				$uuid,
 				$skin,
 				$clientData->LanguageCode,
-				(array) $clientData
+				$clientData
 			);
 		}
 		($this->playerInfoConsumer)($playerInfo);
