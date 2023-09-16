@@ -352,7 +352,7 @@ final class BlockStateReader{
 	}
 
 	/** @throws BlockStateDeserializeException */
-	public function readStructureVoidType() : ?StructureVoidType{
+	public function readStructureVoidType() : StructureVoidType{
 		return match($type = $this->readString(BlockStateNames::STRUCTURE_VOID_TYPE)){
 			StringValues::STRUCTURE_VOID_TYPE_VOID => StructureVoidType::VOID,
 			StringValues::STRUCTURE_VOID_TYPE_AIR => StructureVoidType::AIR,
@@ -361,7 +361,7 @@ final class BlockStateReader{
 	}
 
 	/** @throws BlockStateDeserializeException */
-	public function readStructureBlockType() : ?StructureBlockType{
+	public function readStructureBlockType() : StructureBlockType{
 		return match($type = $this->readString(BlockStateNames::STRUCTURE_BLOCK_TYPE)){
 			StringValues::STRUCTURE_BLOCK_TYPE_CORNER => StructureBlockType::CORNER,
 			StringValues::STRUCTURE_BLOCK_TYPE_DATA => StructureBlockType::DATA,
