@@ -30,6 +30,7 @@ use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\TypeWithClassName;
 use pocketmine\utils\LegacyEnumShimTrait;
+use function sprintf;
 
 /**
  * @phpstan-implements Rule<StaticCall>
