@@ -27,8 +27,6 @@ use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SlabType;
-use pocketmine\block\utils\StructureBlockType;
-use pocketmine\block\utils\StructureVoidType;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\block\utils\WoodType;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
@@ -312,28 +310,6 @@ final class BlockStateWriter{
 			null => StringValues::WALL_CONNECTION_TYPE_EAST_NONE,
 			WallConnectionType::SHORT => StringValues::WALL_CONNECTION_TYPE_EAST_SHORT,
 			WallConnectionType::TALL => StringValues::WALL_CONNECTION_TYPE_EAST_TALL,
-		});
-		return $this;
-	}
-
-	/** @return $this */
-	public function writeStructureVoidType(StructureVoidType $structureVoidType) : self{
-		$this->writeString(BlockStateNames::STRUCTURE_VOID_TYPE, match($structureVoidType){
-			StructureVoidType::VOID => StringValues::STRUCTURE_VOID_TYPE_VOID,
-			StructureVoidType::AIR => StringValues::STRUCTURE_VOID_TYPE_AIR,
-		});
-		return $this;
-	}
-
-	/** @return $this */
-	public function writeStructureBlockType(StructureBlockType $structureBlockType) : self{
-		$this->writeString(BlockStateNames::STRUCTURE_BLOCK_TYPE, match($structureBlockType){
-			StructureBlockType::CORNER => StringValues::STRUCTURE_BLOCK_TYPE_CORNER,
-			StructureBlockType::DATA => StringValues::STRUCTURE_BLOCK_TYPE_DATA,
-			StructureBlockType::EXPORT => StringValues::STRUCTURE_BLOCK_TYPE_EXPORT,
-			StructureBlockType::INVALID => StringValues::STRUCTURE_BLOCK_TYPE_INVALID,
-			StructureBlockType::LOAD => StringValues::STRUCTURE_BLOCK_TYPE_LOAD,
-			StructureBlockType::SAVE => StringValues::STRUCTURE_BLOCK_TYPE_SAVE,
 		});
 		return $this;
 	}

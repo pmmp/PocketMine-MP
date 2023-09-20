@@ -1547,11 +1547,21 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::STRUCTURE_BLOCK(), function(StructureBlock $block) : Writer{
 			return Writer::create(Ids::STRUCTURE_BLOCK)
-				->writeStructureBlockType($block->getType());
+				->writeString(BlockStateNames::STRUCTURE_BLOCK_TYPE, match($block->getType()){
+						StructureBlockType::CORNER => StringValues::STRUCTURE_BLOCK_TYPE_CORNER,
+						StructureBlockType::DATA => StringValues::STRUCTURE_BLOCK_TYPE_DATA,
+						StructureBlockType::EXPORT => StringValues::STRUCTURE_BLOCK_TYPE_EXPORT,
+						StructureBlockType::INVALID => StringValues::STRUCTURE_BLOCK_TYPE_INVALID,
+						StructureBlockType::LOAD => StringValues::STRUCTURE_BLOCK_TYPE_LOAD,
+						StructureBlockType::SAVE => StringValues::STRUCTURE_BLOCK_TYPE_SAVE,
+					});
 		});
 		$this->map(Blocks::STRUCTURE_VOID(), function(StructureVoid $block) : Writer{
 			return Writer::create(Ids::STRUCTURE_VOID)
-				->writeStructureVoidType($block->getType());
+				->writeString(BlockStateNames::STRUCTURE_VOID_TYPE, match($block->getType()){
+						StructureVoidType::VOID => StringValues::STRUCTURE_VOID_TYPE_VOID,
+						StructureVoidType::AIR => StringValues::STRUCTURE_VOID_TYPE_AIR,
+					});
 		});
 		$this->map(Blocks::SUNFLOWER(), fn(DoublePlant $block) => Helper::encodeDoublePlant($block, StringValues::DOUBLE_PLANT_TYPE_SUNFLOWER, Writer::create(Ids::DOUBLE_PLANT)));
 		$this->map(Blocks::SWEET_BERRY_BUSH(), function(SweetBerryBush $block) : Writer{
