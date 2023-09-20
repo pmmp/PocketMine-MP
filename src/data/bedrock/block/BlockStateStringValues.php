@@ -131,6 +131,13 @@ final class BlockStateStringValues{
 	public const LEVER_DIRECTION_UP_NORTH_SOUTH = "up_north_south";
 	public const LEVER_DIRECTION_WEST = "west";
 
+	public const MC_BLOCK_FACE_DOWN = "down";
+	public const MC_BLOCK_FACE_EAST = "east";
+	public const MC_BLOCK_FACE_NORTH = "north";
+	public const MC_BLOCK_FACE_SOUTH = "south";
+	public const MC_BLOCK_FACE_UP = "up";
+	public const MC_BLOCK_FACE_WEST = "west";
+
 	public const MC_CARDINAL_DIRECTION_EAST = "east";
 	public const MC_CARDINAL_DIRECTION_NORTH = "north";
 	public const MC_CARDINAL_DIRECTION_SOUTH = "south";
@@ -142,6 +149,9 @@ final class BlockStateStringValues{
 	public const MC_FACING_DIRECTION_SOUTH = "south";
 	public const MC_FACING_DIRECTION_UP = "up";
 	public const MC_FACING_DIRECTION_WEST = "west";
+
+	public const MC_VERTICAL_HALF_BOTTOM = "bottom";
+	public const MC_VERTICAL_HALF_TOP = "top";
 
 	public const MONSTER_EGG_STONE_TYPE_CHISELED_STONE_BRICK = "chiseled_stone_brick";
 	public const MONSTER_EGG_STONE_TYPE_COBBLESTONE = "cobblestone";

@@ -245,9 +245,9 @@ final class BlockStateWriter{
 
 	/** @return $this */
 	public function writeSlabPosition(SlabType $slabType) : self{
-		$this->writeBool(BlockStateNames::TOP_SLOT_BIT, match($slabType){
-			SlabType::TOP => true,
-			SlabType::BOTTOM => false,
+		$this->writeString(BlockStateNames::MC_VERTICAL_HALF, match($slabType){
+			SlabType::TOP => StringValues::MC_VERTICAL_HALF_TOP,
+			SlabType::BOTTOM => StringValues::MC_VERTICAL_HALF_BOTTOM,
 			default => throw new BlockStateSerializeException("Invalid slab type " . $slabType->name)
 		});
 		return $this;

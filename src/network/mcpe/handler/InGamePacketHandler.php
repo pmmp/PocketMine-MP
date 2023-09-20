@@ -82,7 +82,6 @@ use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
-use pocketmine\network\mcpe\protocol\RequestAbilityPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
@@ -120,7 +119,6 @@ use function fmod;
 use function get_debug_type;
 use function implode;
 use function in_array;
-use function is_bool;
 use function is_infinite;
 use function is_nan;
 use function json_decode;
@@ -228,11 +226,13 @@ class InGamePacketHandler extends PacketHandler{
 			$sprinting = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SPRINTING, PlayerAuthInputFlags::STOP_SPRINTING);
 			$swimming = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SWIMMING, PlayerAuthInputFlags::STOP_SWIMMING);
 			$gliding = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_GLIDING, PlayerAuthInputFlags::STOP_GLIDING);
+			$flying = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_FLYING, PlayerAuthInputFlags::STOP_FLYING);
 			$mismatch =
 				($sneaking !== null && !$this->player->toggleSneak($sneaking)) |
 				($sprinting !== null && !$this->player->toggleSprint($sprinting)) |
 				($swimming !== null && !$this->player->toggleSwim($swimming)) |
-				($gliding !== null && !$this->player->toggleGlide($gliding));
+				($gliding !== null && !$this->player->toggleGlide($gliding)) |
+				($flying !== null && !$this->player->toggleFlight($flying));
 			if((bool) $mismatch){
 				$this->player->sendData([$this->player]);
 			}
