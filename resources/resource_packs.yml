@@ -14,7 +14,7 @@ resource_stack:
 
 cdn:
   #Resource packs listed here will allow the client to download the resource pack from an external web server rather than PocketMine.
-  #This option is much faster than the PocketMine and can be used even if your server has low bandwidth.
+  #This option is much faster to download multiple packs than the PocketMine and can be used even if your server has low bandwidth.
   #However, the resource packs still need to be loaded into PocketMine.
   #Example
   #natural.zip: https://example.com/natural
