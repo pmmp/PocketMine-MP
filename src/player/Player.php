@@ -369,7 +369,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		));
 
 		$createDateTimeImmutable = static function(string $tag) use ($nbt) : DateTimeImmutable{
-			return new DateTimeImmutable('@' . $nbt->getLong($tag, (int) (new DateTimeImmutable())->format('Uv')) / 1000);
+			return new DateTimeImmutable('@' . $nbt->getLong($tag, (int) (microtime(true) * 1000)) / 1000);
 		};
 		$this->firstPlayed = $createDateTimeImmutable(self::TAG_FIRST_PLAYED);
 		$this->lastPlayed = $createDateTimeImmutable(self::TAG_LAST_PLAYED);
