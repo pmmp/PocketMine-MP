@@ -23,38 +23,21 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 
 class Cactus extends Transparent{
+	use AgeableTrait;
+	use StaticSupportTrait;
+
 	public const MAX_AGE = 15;
-
-	protected int $age = 0;
-
-	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(4, 0, self::MAX_AGE, $this->age);
-	}
-
-	public function getAge() : int{ return $this->age; }
-
-	/** @return $this */
-	public function setAge(int $age) : self{
-		if($age < 0 || $age > self::MAX_AGE){
-			throw new \InvalidArgumentException("Age must be in range 0 ... " . self::MAX_AGE);
-		}
-		$this->age = $age;
-		return $this;
-	}
 
 	public function hasEntityCollision() : bool{
 		return true;
@@ -78,23 +61,18 @@ class Cactus extends Transparent{
 		return true;
 	}
 
-	private function canBeSupportedBy(Block $block) : bool{
-		return $block->hasSameTypeId($this) || $block->hasTypeTag(BlockTypeTags::SAND);
-	}
-
-	public function onNearbyBlockChange() : void{
-		$world = $this->position->getWorld();
-		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
-			$world->useBreakOn($this->position);
-		}else{
-			foreach(Facing::HORIZONTAL as $side){
-				$b = $this->getSide($side);
-				if($b->isSolid()){
-					$world->useBreakOn($this->position);
-					break;
-				}
+	private function canBeSupportedAt(Block $block) : bool{
+		$supportBlock = $block->getSide(Facing::DOWN);
+		if(!$supportBlock->hasSameTypeId($this) && !$supportBlock->hasTypeTag(BlockTypeTags::SAND)){
+			return false;
+		}
+		foreach(Facing::HORIZONTAL as $side){
+			if($block->getSide($side)->isSolid()){
+				return false;
 			}
 		}
+
+		return true;
 	}
 
 	public function ticksRandomly() : bool{
@@ -123,19 +101,5 @@ class Cactus extends Transparent{
 				$world->setBlock($this->position, $this);
 			}
 		}
-	}
-
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->canBeSupportedBy($this->getSide(Facing::DOWN))){
-			foreach(Facing::HORIZONTAL as $side){
-				if($this->getSide($side)->isSolid()){
-					return false;
-				}
-			}
-
-			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}
-
-		return false;
 	}
 }

@@ -21,37 +21,33 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\utils\ColoredTrait;
-use pocketmine\block\utils\StaticSupportTrait;
-use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Facing;
+use pocketmine\data\runtime\RuntimeDataDescriber;
+use function ceil;
+use function log;
 
-class Carpet extends Flowable{
-	use ColoredTrait;
-	use StaticSupportTrait;
+/**
+ * This trait is used for blocks that have an age property.
+ * Need to add to the block the constant MAX_AGE.
+ */
+trait AgeableTrait{
+	protected int $age = 0;
 
-	public function isSolid() : bool{
-		return true;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->boundedInt((int) ceil(log(self::MAX_AGE, 2)), 0, self::MAX_AGE, $this->age);
 	}
+
+	public function getAge() : int{ return $this->age; }
 
 	/**
-	 * @return AxisAlignedBB[]
+	 * @return $this
 	 */
-	protected function recalculateCollisionBoxes() : array{
-		return [AxisAlignedBB::one()->trim(Facing::UP, 15 / 16)];
-	}
-
-	private function canBeSupportedAt(Block $block) : bool{
-		return $block->getSide(Facing::DOWN)->getTypeId() !== BlockTypeIds::AIR;
-	}
-
-	public function getFlameEncouragement() : int{
-		return 30;
-	}
-
-	public function getFlammability() : int{
-		return 20;
+	public function setAge(int $age) : self{
+		if($age < 0 || $age > self::MAX_AGE){
+			throw new \InvalidArgumentException("Age must be in range 0 ... " . self::MAX_AGE);
+		}
+		$this->age = $age;
+		return $this;
 	}
 }

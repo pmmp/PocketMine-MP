@@ -21,30 +21,37 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\utils\StaticSupportTrait;
-use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Facing;
+use pocketmine\block\Block;
 use pocketmine\math\Vector3;
 
-class WaterLily extends Flowable{
-	use StaticSupportTrait {
-		canBePlacedAt as supportedWhenPlacedAt;
+/**
+ * Used by blocks which always have the same support requirements no matter what state they are in.
+ * Prevents placement if support isn't available, and automatically destroys itself if support is removed.
+ */
+trait StaticSupportTrait{
+
+	/**
+	 * Implement this to define the block's support requirements.
+	 */
+	abstract private function canBeSupportedAt(Block $block) : bool;
+
+	/**
+	 * @see Block::canBePlacedAt()
+	 */
+	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
+		return $this->canBeSupportedAt($blockReplace) && parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
 	}
 
 	/**
-	 * @return AxisAlignedBB[]
+	 * @see Block::onNearbyBlockChange()
 	 */
-	protected function recalculateCollisionBoxes() : array{
-		return [AxisAlignedBB::one()->contract(1 / 16, 0, 1 / 16)->trim(Facing::UP, 63 / 64)];
-	}
-
-	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
-		return !$blockReplace instanceof Water && $this->supportedWhenPlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
-	}
-
-	private function canBeSupportedAt(Block $block) : bool{
-		return $block->getSide(Facing::DOWN) instanceof Water;
+	public function onNearbyBlockChange() : void{
+		if(!$this->canBeSupportedAt($this)){
+			$this->position->getWorld()->useBreakOn($this->position);
+		}else{
+			parent::onNearbyBlockChange();
+		}
 	}
 }

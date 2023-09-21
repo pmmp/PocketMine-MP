@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
@@ -35,6 +36,9 @@ use pocketmine\world\BlockTransaction;
 
 class PinkPetals extends Flowable{
 	use HorizontalFacingTrait;
+	use StaticSupportTrait {
+		canBePlacedAt as supportedWhenPlacedAt;
+	}
 
 	public const MIN_COUNT = 1;
 	public const MAX_COUNT = 4;
@@ -65,20 +69,11 @@ class PinkPetals extends Flowable{
 		return $supportBlock->hasTypeTag(BlockTypeTags::DIRT) || $supportBlock->hasTypeTag(BlockTypeTags::MUD);
 	}
 
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedAt($this)){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
-	}
-
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
-		return ($blockReplace instanceof PinkPetals && $blockReplace->getCount() < self::MAX_COUNT) || parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
+		return ($blockReplace instanceof PinkPetals && $blockReplace->getCount() < self::MAX_COUNT) || $this->supportedWhenPlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedAt($this)){
-			return false;
-		}
 		if($blockReplace instanceof PinkPetals && $blockReplace->getCount() < self::MAX_COUNT){
 			$this->count = $blockReplace->getCount() + 1;
 			$this->facing = $blockReplace->getFacing();

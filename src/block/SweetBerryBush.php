@@ -23,9 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\FortuneDropHelper;
-use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
@@ -35,31 +36,17 @@ use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
 class SweetBerryBush extends Flowable{
+	use AgeableTrait;
+	use StaticSupportTrait;
+
 	public const STAGE_SAPLING = 0;
 	public const STAGE_BUSH_NO_BERRIES = 1;
 	public const STAGE_BUSH_SOME_BERRIES = 2;
 	public const STAGE_MATURE = 3;
-
-	protected int $age = self::STAGE_SAPLING;
-
-	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(3, self::STAGE_SAPLING, self::STAGE_MATURE, $this->age);
-	}
-
-	public function getAge() : int{ return $this->age; }
-
-	/** @return $this */
-	public function setAge(int $age) : self{
-		if($age < self::STAGE_SAPLING || $age > self::STAGE_MATURE){
-			throw new \InvalidArgumentException("Age must be in range 0-3");
-		}
-		$this->age = $age;
-		return $this;
-	}
+	public const MAX_AGE = self::STAGE_MATURE;
 
 	public function getBerryDropAmount() : int{
 		if($this->age === self::STAGE_MATURE){
@@ -70,16 +57,17 @@ class SweetBerryBush extends Flowable{
 		return 0;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	protected function canBeSupportedBy(Block $block) : bool{
 		return $block->getTypeId() !== BlockTypeIds::FARMLAND && //bedrock-specific thing (bug?)
 			($block->hasTypeTag(BlockTypeTags::DIRT) || $block->hasTypeTag(BlockTypeTags::MUD));
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN))){
-			return false;
-		}
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+	private function canBeSupportedAt(Block $block) : bool{
+		$supportBlock = $block->getSide(Facing::DOWN);
+		return $this->canBeSupportedBy($supportBlock);
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
@@ -111,12 +99,6 @@ class SweetBerryBush extends Flowable{
 		return [
 			$this->asItem()->setCount($count)
 		];
-	}
-
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
 	}
 
 	public function ticksRandomly() : bool{

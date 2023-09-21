@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\StructureGrowEvent;
@@ -46,6 +47,7 @@ use function mt_rand;
 use const PHP_INT_MAX;
 
 class Bamboo extends Transparent{
+	use StaticSupportTrait;
 
 	public const NO_LEAVES = 0;
 	public const SMALL_LEAVES = 1;
@@ -120,12 +122,14 @@ class Bamboo extends Transparent{
 		return new Vector3($retX, 0, $retZ);
 	}
 
-	private function canBeSupportedBy(Block $block) : bool{
+	private function canBeSupportedAt(Block $block) : bool{
+		$supportBlock = $block->getSide(Facing::DOWN);
 		return
-			$block->getTypeId() === BlockTypeIds::GRAVEL ||
-			$block->hasTypeTag(BlockTypeTags::DIRT) ||
-			$block->hasTypeTag(BlockTypeTags::MUD) ||
-			$block->hasTypeTag(BlockTypeTags::SAND);
+			$supportBlock->hasSameTypeId($this) ||
+			$supportBlock->getTypeId() === BlockTypeIds::GRAVEL ||
+			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::SAND);
 	}
 
 	private function seekToTop() : Bamboo{
@@ -151,14 +155,6 @@ class Bamboo extends Transparent{
 			}
 		}
 		return false;
-	}
-
-	public function onNearbyBlockChange() : void{
-		$world = $this->position->getWorld();
-		$below = $world->getBlock($this->position->down());
-		if(!$this->canBeSupportedBy($below) && !$below->hasSameTypeId($this)){
-			$world->useBreakOn($this->position);
-		}
 	}
 
 	private function grow(int $maxHeight, int $growAmount, ?Player $player) : bool{
