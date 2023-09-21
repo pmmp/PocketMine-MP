@@ -80,7 +80,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 			);
 		}, $this->resourcePackManager->getResourceStack());
 		//TODO: support forcing server packs
-		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($resourcePackEntries, [], $this->resourcePackManager->resourcePacksRequired(), false, false, []));
+		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($resourcePackEntries, [], $this->resourcePackManager->resourcePacksRequired(), false, false, $this->resourcePackManager->getPackURLs()));
 		$this->session->getLogger()->debug("Waiting for client to accept resource packs");
 	}
 

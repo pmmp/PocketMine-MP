@@ -58,6 +58,9 @@ class ResourcePackManager{
 	 */
 	private array $encryptionKeys = [];
 
+	/** @var string[] */
+	private array $packURLs = [];
+
 	/**
 	 * @param string $path Path to resource-packs directory.
 	 */
@@ -87,6 +90,11 @@ class ResourcePackManager{
 			throw new \InvalidArgumentException("\"resource_stack\" key should contain a list of pack names");
 		}
 
+		$remotePacks = $resourcePacksConfig->get("cdn", []);
+		if(!is_array($remotePacks)){
+			throw new \InvalidArgumentException("\"cdn\" should be an array of pack URLs");
+		}
+
 		foreach($resourceStack as $pos => $pack){
 			if(!is_string($pack) && !is_int($pack) && !is_float($pack)){
 				$logger->critical("Found invalid entry in resource pack list at offset $pos of type " . gettype($pack));
@@ -112,6 +120,13 @@ class ResourcePackManager{
 						throw new ResourcePackException("Invalid encryption key length, must be exactly 32 bytes");
 					}
 					$this->encryptionKeys[$index] = $key;
+				}
+				if(isset($remotePacks[$pack])){
+					$url = $remotePacks[$pack];
+					if(!is_string($url)){
+						throw new ResourcePackException("Invalid URL for pack $pack");
+					}
+					$this->packURLs[$newPack->getPackId() . "_" . $newPack->getPackVersion()] = $url;
 				}
 			}catch(ResourcePackException $e){
 				$logger->critical("Could not load resource pack \"$pack\": " . $e->getMessage());
@@ -167,6 +182,14 @@ class ResourcePackManager{
 	 */
 	public function getResourceStack() : array{
 		return $this->resourcePacks;
+	}
+
+	/**
+	 * Returns an array of pack URLs.
+	 * @return string[]
+	 */
+	public function getPackURLs() : array{
+		return $this->packURLs;
 	}
 
 	/**
