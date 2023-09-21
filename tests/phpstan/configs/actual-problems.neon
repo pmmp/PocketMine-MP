@@ -1316,16 +1316,6 @@ parameters:
 			path: ../../phpunit/block/regenerate_consistency_check.php
 
 		-
-			message: "#^Property pocketmine\\\\event\\\\HandlerListManagerTest\\:\\:\\$isValidFunc \\(Closure\\(ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\)\\: bool\\) does not accept Closure\\|null\\.$#"
-			count: 1
-			path: ../../phpunit/event/HandlerListManagerTest.php
-
-		-
-			message: "#^Property pocketmine\\\\event\\\\HandlerListManagerTest\\:\\:\\$resolveParentFunc \\(Closure\\(ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\)\\: ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\|null\\) does not accept Closure\\|null\\.$#"
-			count: 1
-			path: ../../phpunit/event/HandlerListManagerTest.php
-
-		-
 			message: "#^Parameter \\#1 \\$logFile of class pocketmine\\\\utils\\\\MainLogger constructor expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../phpunit/scheduler/AsyncPoolTest.php
