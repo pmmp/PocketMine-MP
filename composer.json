@@ -52,7 +52,7 @@
       "symfony/filesystem": "~6.3.0"
    },
    "require-dev": {
-      "phpstan/phpstan": "1.10.16",
+      "phpstan/phpstan": "1.10.35",
       "phpstan/phpstan-phpunit": "^1.1.0",
       "phpstan/phpstan-strict-rules": "^1.2.0",
       "phpunit/phpunit": "^10.1"
