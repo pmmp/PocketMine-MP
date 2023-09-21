@@ -82,7 +82,6 @@ class LoginPacketHandler extends PacketHandler{
 		if(!Uuid::isValid($extraData->identity)){
 			throw new PacketHandlingException("Invalid login UUID");
 		}
-		
 		$uuid = Uuid::fromString($extraData->identity);
 		$arrClientData = (array) $clientData;
 		$arrClientData["TitleID"] = $extraData->titleId;
