@@ -66,13 +66,19 @@ class DeadBush extends Flowable{
 	}
 
 	private function canBeSupportedBy(Block $block) : bool{
-		$blockId = $block->getTypeId();
-		return $blockId === BlockTypeIds::SAND
-			|| $blockId === BlockTypeIds::RED_SAND
-			|| $blockId === BlockTypeIds::PODZOL
-			|| $blockId === BlockTypeIds::MYCELIUM
-			|| $blockId === BlockTypeIds::DIRT
-			|| $blockId === BlockTypeIds::HARDENED_CLAY
-			|| $blockId === BlockTypeIds::STAINED_CLAY;
+		return
+			$block->hasTypeTag(BlockTypeTags::SAND) ||
+			$block->hasTypeTag(BlockTypeTags::MUD) ||
+			match($block->getTypeId()){
+				//can't use DIRT tag here because it includes farmland
+				BlockTypeIds::PODZOL,
+				BlockTypeIds::MYCELIUM,
+				BlockTypeIds::DIRT,
+				BlockTypeIds::GRASS,
+				BlockTypeIds::HARDENED_CLAY,
+				BlockTypeIds::STAINED_CLAY => true,
+				//TODO: moss block
+				default => false,
+			};
 	}
 }

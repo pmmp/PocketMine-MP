@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\data\runtime\RuntimeDataDescriber;
-use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use function array_rand;
@@ -64,11 +64,7 @@ abstract class Stem extends Crops{
 			if($this->age < self::MAX_AGE){
 				$block = clone $this;
 				++$block->age;
-				$ev = new BlockGrowEvent($this, $block);
-				$ev->call();
-				if(!$ev->isCancelled()){
-					$world->setBlock($this->position, $ev->getNewState());
-				}
+				BlockEventHelper::grow($this, $block, null);
 			}else{
 				$grow = $this->getPlant();
 				foreach(Facing::HORIZONTAL as $side){
@@ -80,12 +76,7 @@ abstract class Stem extends Crops{
 				$facing = Facing::HORIZONTAL[array_rand(Facing::HORIZONTAL)];
 				$side = $this->getSide($facing);
 				if($side->getTypeId() === BlockTypeIds::AIR && $side->getSide(Facing::DOWN)->hasTypeTag(BlockTypeTags::DIRT)){
-					$ev = new BlockGrowEvent($side, $grow);
-					$ev->call();
-					if(!$ev->isCancelled()){
-						$world->setBlock($this->position, $this->setFacing($facing));
-						$world->setBlock($side->position, $ev->getNewState());
-					}
+					BlockEventHelper::grow($side, $grow, null);
 				}
 			}
 		}

@@ -59,6 +59,7 @@ use pocketmine\block\utils\SaplingType;
 use pocketmine\block\utils\WoodType;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\entity\projectile\Projectile;
+use pocketmine\item\enchantment\ItemEnchantmentTags as EnchantmentTags;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\math\Facing;
@@ -573,6 +574,7 @@ use function mb_strtolower;
  * @method static PackedIce PACKED_ICE()
  * @method static Opaque PACKED_MUD()
  * @method static DoublePlant PEONY()
+ * @method static PinkPetals PINK_PETALS()
  * @method static Flower PINK_TULIP()
  * @method static Podzol PODZOL()
  * @method static Opaque POLISHED_ANDESITE()
@@ -840,6 +842,7 @@ final class VanillaBlocks{
 		self::register("lilac", new DoublePlant(new BID(Ids::LILAC), "Lilac", new Info(BreakInfo::instant())));
 		self::register("rose_bush", new DoublePlant(new BID(Ids::ROSE_BUSH), "Rose Bush", new Info(BreakInfo::instant())));
 		self::register("peony", new DoublePlant(new BID(Ids::PEONY), "Peony", new Info(BreakInfo::instant())));
+		self::register("pink_petals", new PinkPetals(new BID(Ids::PINK_PETALS), "Pink Petals", new Info(BreakInfo::instant())));
 		self::register("double_tallgrass", new DoubleTallGrass(new BID(Ids::DOUBLE_TALLGRASS), "Double Tallgrass", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
 		self::register("large_fern", new DoubleTallGrass(new BID(Ids::LARGE_FERN), "Large Fern", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
 		self::register("dragon_egg", new DragonEgg(new BID(Ids::DRAGON_EGG), "Dragon Egg", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD()))));
@@ -964,7 +967,7 @@ final class VanillaBlocks{
 
 		$pumpkinBreakInfo = new Info(BreakInfo::axe(1.0));
 		self::register("pumpkin", new Pumpkin(new BID(Ids::PUMPKIN), "Pumpkin", $pumpkinBreakInfo));
-		self::register("carved_pumpkin", new CarvedPumpkin(new BID(Ids::CARVED_PUMPKIN), "Carved Pumpkin", $pumpkinBreakInfo));
+		self::register("carved_pumpkin", new CarvedPumpkin(new BID(Ids::CARVED_PUMPKIN), "Carved Pumpkin", new Info(BreakInfo::axe(1.0), enchantmentTags: [EnchantmentTags::MASK])));
 		self::register("lit_pumpkin", new LitPumpkin(new BID(Ids::LIT_PUMPKIN), "Jack o'Lantern", $pumpkinBreakInfo));
 
 		self::register("pumpkin_stem", new PumpkinStem(new BID(Ids::PUMPKIN_STEM), "Pumpkin Stem", new Info(BreakInfo::instant())));
@@ -1000,7 +1003,7 @@ final class VanillaBlocks{
 
 		self::register("sea_lantern", new SeaLantern(new BID(Ids::SEA_LANTERN), "Sea Lantern", new Info(new BreakInfo(0.3))));
 		self::register("sea_pickle", new SeaPickle(new BID(Ids::SEA_PICKLE), "Sea Pickle", new Info(BreakInfo::instant())));
-		self::register("mob_head", new MobHead(new BID(Ids::MOB_HEAD, TileMobHead::class), "Mob Head", new Info(new BreakInfo(1.0))));
+		self::register("mob_head", new MobHead(new BID(Ids::MOB_HEAD, TileMobHead::class), "Mob Head", new Info(new BreakInfo(1.0), enchantmentTags: [EnchantmentTags::MASK])));
 		self::register("slime", new Slime(new BID(Ids::SLIME), "Slime Block", new Info(BreakInfo::instant())));
 		self::register("snow", new Snow(new BID(Ids::SNOW), "Snow Block", new Info(BreakInfo::shovel(0.2, ToolTier::WOOD()))));
 		self::register("snow_layer", new SnowLayer(new BID(Ids::SNOW_LAYER), "Snow Layer", new Info(BreakInfo::shovel(0.1, ToolTier::WOOD()))));
@@ -1111,8 +1114,20 @@ final class VanillaBlocks{
 		self::register("lily_pad", new WaterLily(new BID(Ids::LILY_PAD), "Lily Pad", new Info(BreakInfo::instant())));
 
 		$weightedPressurePlateBreakInfo = new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD()));
-		self::register("weighted_pressure_plate_heavy", new WeightedPressurePlateHeavy(new BID(Ids::WEIGHTED_PRESSURE_PLATE_HEAVY), "Weighted Pressure Plate Heavy", $weightedPressurePlateBreakInfo));
-		self::register("weighted_pressure_plate_light", new WeightedPressurePlateLight(new BID(Ids::WEIGHTED_PRESSURE_PLATE_LIGHT), "Weighted Pressure Plate Light", $weightedPressurePlateBreakInfo));
+		self::register("weighted_pressure_plate_heavy", new WeightedPressurePlateHeavy(
+			new BID(Ids::WEIGHTED_PRESSURE_PLATE_HEAVY),
+			"Weighted Pressure Plate Heavy",
+			$weightedPressurePlateBreakInfo,
+			deactivationDelayTicks: 10,
+			signalStrengthFactor: 0.1
+		));
+		self::register("weighted_pressure_plate_light", new WeightedPressurePlateLight(
+			new BID(Ids::WEIGHTED_PRESSURE_PLATE_LIGHT),
+			"Weighted Pressure Plate Light",
+			$weightedPressurePlateBreakInfo,
+			deactivationDelayTicks: 10,
+			signalStrengthFactor: 1.0
+		));
 		self::register("wheat", new Wheat(new BID(Ids::WHEAT), "Wheat Block", new Info(BreakInfo::instant())));
 
 		$leavesBreakInfo = new Info(new class(0.2, ToolType::HOE) extends BreakInfo{
@@ -1263,7 +1278,7 @@ final class VanillaBlocks{
 			self::register($idName("door"), new WoodenDoor(WoodLikeBlockIdHelper::getDoorIdentifier($woodType), $name . " Door", $woodenDoorBreakInfo, $woodType));
 
 			self::register($idName("button"), new WoodenButton(WoodLikeBlockIdHelper::getButtonIdentifier($woodType), $name . " Button", $woodenButtonBreakInfo, $woodType));
-			self::register($idName("pressure_plate"), new WoodenPressurePlate(WoodLikeBlockIdHelper::getPressurePlateIdentifier($woodType), $name . " Pressure Plate", $woodenPressurePlateBreakInfo, $woodType));
+			self::register($idName("pressure_plate"), new WoodenPressurePlate(WoodLikeBlockIdHelper::getPressurePlateIdentifier($woodType), $name . " Pressure Plate", $woodenPressurePlateBreakInfo, $woodType, 20));
 			self::register($idName("trapdoor"), new WoodenTrapdoor(WoodLikeBlockIdHelper::getTrapdoorIdentifier($woodType), $name . " Trapdoor", $woodenDoorBreakInfo, $woodType));
 
 			[$floorSignId, $wallSignId, $signAsItem] = WoodLikeBlockIdHelper::getSignInfo($woodType);
@@ -1488,7 +1503,7 @@ final class VanillaBlocks{
 		$prefix = fn(string $thing) => "Polished Blackstone" . ($thing !== "" ? " $thing" : "");
 		self::register("polished_blackstone", new Opaque(new BID(Ids::POLISHED_BLACKSTONE), $prefix(""), $blackstoneBreakInfo));
 		self::register("polished_blackstone_button", new StoneButton(new BID(Ids::POLISHED_BLACKSTONE_BUTTON), $prefix("Button"), new Info(BreakInfo::pickaxe(0.5))));
-		self::register("polished_blackstone_pressure_plate", new StonePressurePlate(new BID(Ids::POLISHED_BLACKSTONE_PRESSURE_PLATE), $prefix("Pressure Plate"), new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD()))));
+		self::register("polished_blackstone_pressure_plate", new StonePressurePlate(new BID(Ids::POLISHED_BLACKSTONE_PRESSURE_PLATE), $prefix("Pressure Plate"), new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD())), 20));
 		self::register("polished_blackstone_slab", new Slab(new BID(Ids::POLISHED_BLACKSTONE_SLAB), $prefix(""), $slabBreakInfo));
 		self::register("polished_blackstone_stairs", new Stair(new BID(Ids::POLISHED_BLACKSTONE_STAIRS), $prefix("Stairs"), $blackstoneBreakInfo));
 		self::register("polished_blackstone_wall", new Wall(new BID(Ids::POLISHED_BLACKSTONE_WALL), $prefix("Wall"), $blackstoneBreakInfo));

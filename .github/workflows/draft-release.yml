@@ -15,12 +15,12 @@ jobs:
         php-version: [8.1]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.25.5
+        uses: shivammathur/setup-php@2.26.0
         with:
           php-version: ${{ matrix.php-version }}
 

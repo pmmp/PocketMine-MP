@@ -26,21 +26,11 @@ namespace pocketmine\data\bedrock;
 use pocketmine\block\utils\MushroomBlockType;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata as LegacyMeta;
 use pocketmine\utils\SingletonTrait;
-use function array_key_exists;
 
 final class MushroomBlockTypeIdMap{
 	use SingletonTrait;
-
-	/**
-	 * @var MushroomBlockType[]
-	 * @phpstan-var array<int, MushroomBlockType>
-	 */
-	private array $idToEnum = [];
-	/**
-	 * @var int[]
-	 * @phpstan-var array<int, int>
-	 */
-	private array $enumToId = [];
+	/** @phpstan-use IntSaveIdMapTrait<MushroomBlockType> */
+	use IntSaveIdMapTrait;
 
 	public function __construct(){
 		$this->register(LegacyMeta::MUSHROOM_BLOCK_ALL_PORES, MushroomBlockType::PORES());
@@ -54,21 +44,5 @@ final class MushroomBlockTypeIdMap{
 		$this->register(LegacyMeta::MUSHROOM_BLOCK_CAP_SOUTH_SIDE, MushroomBlockType::CAP_SOUTH());
 		$this->register(LegacyMeta::MUSHROOM_BLOCK_CAP_SOUTHEAST_CORNER, MushroomBlockType::CAP_SOUTHEAST());
 		$this->register(LegacyMeta::MUSHROOM_BLOCK_ALL_CAP, MushroomBlockType::ALL_CAP());
-	}
-
-	public function register(int $id, MushroomBlockType $type) : void{
-		$this->idToEnum[$id] = $type;
-		$this->enumToId[$type->id()] = $id;
-	}
-
-	public function fromId(int $id) : ?MushroomBlockType{
-		return $this->idToEnum[$id] ?? null;
-	}
-
-	public function toId(MushroomBlockType $type) : int{
-		if(!array_key_exists($type->id(), $this->enumToId)){
-			throw new \InvalidArgumentException("Mushroom block type does not have a mapped ID"); //this should never happen
-		}
-		return $this->enumToId[$type->id()];
 	}
 }
