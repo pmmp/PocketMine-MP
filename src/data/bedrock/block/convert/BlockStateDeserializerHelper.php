@@ -26,6 +26,7 @@ namespace pocketmine\data\bedrock\block\convert;
 use pocketmine\block\Block;
 use pocketmine\block\Button;
 use pocketmine\block\Candle;
+use pocketmine\block\ChiseledBookshelf;
 use pocketmine\block\Copper;
 use pocketmine\block\CopperSlab;
 use pocketmine\block\CopperStairs;
@@ -59,14 +60,10 @@ use pocketmine\data\bedrock\block\BlockStateNames;
 use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
 use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
-use pocketmine\item\Book;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
-use function array_fill;
-use function array_filter;
-use const ARRAY_FILTER_USE_BOTH;
 
 final class BlockStateDeserializerHelper{
 
@@ -382,13 +379,18 @@ final class BlockStateDeserializerHelper{
 		};
 	}
 
+	/** @throws BlockStateDeserializeException */
 	public static function mapChiseledBookshelf(BlockStateReader $in) : Block{
-		$bit = $in->readInt(StateNames::BOOKS_STORED);
-		$items = array_filter(array_fill(0, 6, VanillaItems::BOOK()),
-			fn(Book $book, int $slot) => (($bit & (1 << $slot)) === (1 << $slot)),
-			ARRAY_FILTER_USE_BOTH);
-		return VanillaBlocks::CHISELED_BOOKSHELF()
-			->setFacing($in->readLegacyHorizontalFacing())
-			->setBooks($items);
+		$block = VanillaBlocks::CHISELED_BOOKSHELF()
+			->setFacing($in->readLegacyHorizontalFacing());
+
+		//we don't use API constant for bounds here as the data bounds might be different to what we support internally
+		$flags = $in->readBoundedInt(StateNames::BOOKS_STORED, 0, (1 << 6) - 1);
+
+		for($i = 0; $i < ChiseledBookshelf::SLOTS; ++$i){
+			$block->setBook($i, ($flags & (1 << $i)) !== 0 ? VanillaItems::BOOK() : null);
+		}
+
+		return $block;
 	}
 }

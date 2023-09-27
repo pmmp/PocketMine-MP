@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\data\bedrock\item\SavedItemStackData;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\item\Book;
 use pocketmine\item\Item;
 use pocketmine\item\WritableBookBase;
@@ -34,6 +35,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\world\World;
 use function array_keys;
 use function array_map;
+use function get_class;
 
 class ChiseledBookshelf extends Spawnable{
 
@@ -55,8 +57,10 @@ class ChiseledBookshelf extends Spawnable{
 		if($itemsTag !== null && $itemsTag->getTagType() === NBT::TAG_Compound){
 			/** @var CompoundTag $itemNBT */
 			foreach($itemsTag->getValue() as $itemNBT){
-				/** @var WritableBookBase|Book $item */
 				$item = Item::nbtDeserialize($itemNBT);
+				if(!$item instanceof WritableBookBase && !$item instanceof Book){
+					throw new SavedDataLoadingException("Unexpected " . get_class($item) . " item in Chiseled Bookshelf saved data");
+				}
 				$this->items[$itemNBT->getByte(SavedItemStackData::TAG_SLOT)] = $item;
 			}
 		}

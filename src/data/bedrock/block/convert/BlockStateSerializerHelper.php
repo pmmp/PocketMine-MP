@@ -55,7 +55,6 @@ use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
 use pocketmine\math\Facing;
-use function array_keys;
 
 final class BlockStateSerializerHelper{
 
@@ -293,13 +292,12 @@ final class BlockStateSerializerHelper{
 	}
 
 	public static function encodeChiseledBookshelf(ChiseledBookshelf $block) : BlockStateWriter{
-		$slots = array_keys($block->getBooks());
-		$bit = 0;
-		foreach($slots as $slot){
-			$bit |= 1 << $slot;
+		$flags = 0;
+		foreach($block->getBooks() as $slot => $book){
+			$flags |= 1 << $slot;
 		}
 		return Writer::create(Ids::CHISELED_BOOKSHELF)
 			->writeLegacyHorizontalFacing($block->getFacing())
-			->writeInt(StateNames::BOOKS_STORED, $bit);
+			->writeInt(StateNames::BOOKS_STORED, $flags);
 	}
 }
