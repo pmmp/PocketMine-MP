@@ -69,14 +69,14 @@ class ChiseledBookshelf extends Spawnable{
 	/**
 	 * @return (WritableBookBase|Book)[]
 	 */
-	public function getItems() : array{
+	public function getBooks() : array{
 		return $this->items;
 	}
 
 	/**
 	 * @param (WritableBookBase|Book)[] $items
 	 */
-	public function setItems(array $items) : void{
+	public function setBooks(array $items) : void{
 		$this->items = $items;
 	}
 }

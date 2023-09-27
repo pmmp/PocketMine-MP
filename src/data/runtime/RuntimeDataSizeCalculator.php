@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\data\runtime;
 
+use pocketmine\block\ChiseledBookshelf;
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\math\Facing;
 use function count;
@@ -97,7 +98,7 @@ final class RuntimeDataSizeCalculator implements RuntimeDataDescriber{
 	}
 
 	public function chiseledBookshelfSlots(array &$slots) : void{
-		$this->addBits(6);
+		$this->addBits(ChiseledBookshelf::SLOTS);
 	}
 
 	public function enum(\UnitEnum &$case) : void{

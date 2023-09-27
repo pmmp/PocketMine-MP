@@ -28,7 +28,6 @@ use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\RailConnectionInfo;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\item\Book;
-use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\item\WritableBookBase;
 use pocketmine\math\Axis;
@@ -217,13 +216,13 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 	}
 
 	/**
-	 * @param Item[] $slots
+	 * @param (Book|WritableBookBase)[] $slots
 	 * @phpstan-param array<int, Book|WritableBookBase> $slots
 	 */
 	public function chiseledBookshelfSlots(array &$slots) : void{
 		$result = [];
-		for ($slot = 0; $slot < ChiseledBookshelf::SLOTS; $slot++){
-			if ($this->readBool()){
+		for($slot = 0; $slot < ChiseledBookshelf::SLOTS; $slot++){
+			if($this->readBool()){
 				$result[$slot] = VanillaItems::BOOK();
 			}
 		}

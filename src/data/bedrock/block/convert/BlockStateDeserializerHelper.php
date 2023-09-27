@@ -389,6 +389,6 @@ final class BlockStateDeserializerHelper{
 			ARRAY_FILTER_USE_BOTH);
 		return VanillaBlocks::CHISELED_BOOKSHELF()
 			->setFacing($in->readLegacyHorizontalFacing())
-			->setItems($items);
+			->setBooks($items);
 	}
 }

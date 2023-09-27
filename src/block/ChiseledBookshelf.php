@@ -29,35 +29,40 @@ use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Book;
 use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
 use pocketmine\item\WritableBookBase;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\utils\Utils;
 use function count;
-use function floor;
-use function min;
+use function is_int;
+use function ksort;
+use const SORT_NUMERIC;
 
-class ChiseledBookshelf extends Opaque {
+class ChiseledBookshelf extends Opaque{
 	use HorizontalFacingTrait;
 	use FacesOppositePlacingPlayerTrait;
 
-	public const SLOTS = 6;
+	public const SLOTS = self::SLOTS_PER_SHELF * 2;
+	private const SLOTS_PER_SHELF = 3;
 
-	/** @var (WritableBookBase|Book)[] $items */
-	private array $items = [];
+	/**
+	 * @var (WritableBookBase|Book)[] $books
+	 * @phpstan-var array<int, Book|WritableBookBase>
+	 */
+	private array $books = [];
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
-		$w->chiseledBookshelfSlots($this->items);
+		$w->chiseledBookshelfSlots($this->books);
 	}
 
 	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileChiseledBookshelf){
-			$this->items = $tile->getItems();
+			$this->books = $tile->getBooks();
 		}
 		return $this;
 	}
@@ -66,73 +71,80 @@ class ChiseledBookshelf extends Opaque {
 		parent::writeStateToWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileChiseledBookshelf){
-			$tile->setItems($this->items);
+			$tile->setBooks($this->books);
 		}
 	}
 
-	public function getItem(int $index) : WritableBookBase|Book|null{
-		return $this->items[$index] ?? null;
+	public function getBook(int $slot) : WritableBookBase|Book|null{
+		return $this->books[$slot] ?? null;
 	}
 
-	public function setItem(int $index, WritableBookBase|Book|null $item) : self{
+	public function setBook(int $slot, WritableBookBase|Book|null $item) : self{
+		if($slot < 0 || $slot >= self::SLOTS){
+			throw new \InvalidArgumentException("Cannot set a book in nonexisting bookshelf slot $slot");
+		}
 		if($item === null){
-			if(isset($this->items[$index])){
-				unset($this->items[$index]);
-			}
-			return $this;
+			unset($this->books[$slot]);
+		}else{
+			$this->books[$slot] = $item;
 		}
-		$this->items[$index] = $item;
 		return $this;
 	}
 
 	/**
-	 * @param (WritableBookBase|Book)[] $items
+	 * @param (WritableBookBase|Book)[] $books
+	 * @phpstan-param array<int, Book|WritableBookBase> $books
 	 */
-	public function setItems(array $items) : self{
-		$this->items = $items;
+	public function setBooks(array $books) : self{
+		if(count($books) > self::SLOTS){
+			throw new \InvalidArgumentException("Expected at most " . self::SLOTS . " books, but have " . count($books));
+		}
+		foreach($books as $slot => $book){
+			if(!is_int($slot) || $slot < 0 || $slot >= self::SLOTS){
+				throw new \InvalidArgumentException("Cannot set a book in nonexisting bookshelf slot $slot");
+			}
+		}
+		ksort($books, SORT_NUMERIC);
+		$this->books = Utils::cloneObjectArray($books);
 		return $this;
 	}
 
 	/**
 	 * @return (WritableBookBase|Book)[]
+	 * @phpstan-return array<int, Book|WritableBookBase>
 	 */
-	public function getItems() : array{
-		return $this->items;
+	public function getBooks() : array{
+		return Utils::cloneObjectArray($this->books);
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($face !== $this->getFacing()){
 			return false;
 		}
-		$x = (Facing::axis($face) === Axis::X ? $clickVector->getZ() : $clickVector->getX());
-		$x = min(match($face){
-			Facing::NORTH, Facing::EAST => 1 - $x,
-			default => $x
-		}, 0.9);
-		$index = ($clickVector->y < 0.5 ? 3 : 0) + (int) floor($x * 3);
-		if(!$item instanceof WritableBookBase && !$item instanceof Book){
-			if($player instanceof Player){
-				$item = $this->getItem($index) ?? VanillaItems::AIR();
 
-				$leftover = $player->getInventory()->addItem($item);
-				if(count($leftover) > 0){
-					$player->getWorld()->dropItem($player->getEyePos(), $leftover[0], $player->getDirectionVector()->multiply(0.2));
-				}
-				$this->setItem($index, null);
-			}
+		$horizontalOffset = (Facing::axis($face) === Axis::X ? $clickVector->getZ() : $clickVector->getX());
+		$slot = ($clickVector->y < 0.5 ? self::SLOTS_PER_SHELF : 0) + match (true) {
+				//we can't use simple maths here as the action is aligned to the 16x16 pixel grid :(
+				$horizontalOffset < 6 / 16 => 0,
+				$horizontalOffset < 11 / 16 => 1,
+				default => 2
+			};
+
+		if(($existing = $this->getBook($slot)) !== null){
+			$returnedItems[] = $existing;
+			$this->setBook($slot, null);
+		}elseif($item instanceof WritableBookBase || $item instanceof Book){
+			$this->setBook($slot, $item->pop());
 		}else{
-			 if($this->getItem($index) instanceof Item){
-				 return false;
-			 }
-			 /** @var WritableBookBase|Book $item */
-			 $this->setItem($index, $item->pop());
+			return true;
 		}
+
 		$this->position->getWorld()->setBlock($this->position, $this);
 		return true;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		return $this->items;
+		return $this->books;
 	}
 
 	public function isAffectedBySilkTouch() : bool{
@@ -140,6 +152,6 @@ class ChiseledBookshelf extends Opaque {
 	}
 
 	public function getSilkTouchDrops(Item $item) : array{
-		return [$this->asItem(), ...$this->items];
+		return [$this->asItem(), ...$this->books];
 	}
 }

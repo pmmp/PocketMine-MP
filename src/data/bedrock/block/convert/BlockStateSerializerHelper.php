@@ -293,7 +293,7 @@ final class BlockStateSerializerHelper{
 	}
 
 	public static function encodeChiseledBookshelf(ChiseledBookshelf $block) : BlockStateWriter{
-		$slots = array_keys($block->getItems());
+		$slots = array_keys($block->getBooks());
 		$bit = 0;
 		foreach($slots as $slot){
 			$bit |= 1 << $slot;
