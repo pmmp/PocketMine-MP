@@ -31,11 +31,11 @@ use pocketmine\item\Item;
 use pocketmine\item\WritableBookBase;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
-use pocketmine\utils\AssumptionFailedError;
 use function array_flip;
+use function spl_object_id;
 
 final class RuntimeDataWriter implements RuntimeDataDescriber{
-	use RuntimeEnumSerializerTrait;
+	use LegacyRuntimeEnumDescriberTrait;
 
 	private int $value = 0;
 	private int $offset = 0;
@@ -152,9 +152,8 @@ final class RuntimeDataWriter implements RuntimeDataDescriber{
 		foreach(Facing::HORIZONTAL as $facing){
 			$packed += match($connections[$facing] ?? null){
 				null => 0,
-				WallConnectionType::SHORT() => 1,
-				WallConnectionType::TALL() => 2,
-				default => throw new AssumptionFailedError("Unreachable")
+				WallConnectionType::SHORT => 1,
+				WallConnectionType::TALL => 2,
 			} * (3 ** $offset);
 			$offset++;
 		}
@@ -166,12 +165,8 @@ final class RuntimeDataWriter implements RuntimeDataDescriber{
 	 * @phpstan-param array<int, BrewingStandSlot> $slots
 	 */
 	public function brewingStandSlots(array &$slots) : void{
-		foreach([
-			BrewingStandSlot::EAST(),
-			BrewingStandSlot::NORTHWEST(),
-			BrewingStandSlot::SOUTHWEST(),
-		] as $member){
-			$this->writeBool(isset($slots[$member->id()]));
+		foreach(BrewingStandSlot::cases() as $member){
+			$this->writeBool(isset($slots[spl_object_id($member)]));
 		}
 	}
 
@@ -191,6 +186,11 @@ final class RuntimeDataWriter implements RuntimeDataDescriber{
 		for ($slot = 0; $slot < ChiseledBookshelf::SLOTS; $slot++){
 			$this->writeBool(isset($slots[$slot]));
 		}
+	}
+
+	public function enum(\UnitEnum &$case) : void{
+		$metadata = RuntimeEnumMetadata::from($case);
+		$this->writeInt($metadata->bits, $metadata->enumToInt($case));
 	}
 
 	public function getValue() : int{ return $this->value; }

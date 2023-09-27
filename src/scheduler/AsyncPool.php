@@ -26,12 +26,16 @@ namespace pocketmine\scheduler;
 use pmmp\thread\Thread as NativeThread;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\thread\log\ThreadSafeLogger;
+use pocketmine\thread\ThreadCrashException;
 use pocketmine\thread\ThreadSafeClassLoader;
+use pocketmine\timings\Timings;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use function array_keys;
 use function array_map;
 use function assert;
 use function count;
+use function get_class;
 use function spl_object_id;
 use function time;
 use const PHP_INT_MAX;
@@ -129,6 +133,8 @@ class AsyncPool{
 			foreach($this->workerStartHooks as $hook){
 				$hook($workerId);
 			}
+		}else{
+			$this->checkCrashedWorker($workerId, null);
 		}
 
 		return $this->workers[$workerId];
@@ -197,6 +203,33 @@ class AsyncPool{
 		return $worker;
 	}
 
+	private function checkCrashedWorker(int $workerId, ?AsyncTask $crashedTask) : void{
+		$entry = $this->workers[$workerId];
+		if($entry->worker->isTerminated()){
+			if($crashedTask === null){
+				foreach($entry->tasks as $task){
+					if($task->isTerminated()){
+						$crashedTask = $task;
+						break;
+					}elseif(!$task->isFinished()){
+						break;
+					}
+				}
+			}
+			$info = $entry->worker->getCrashInfo();
+			if($info !== null){
+				if($crashedTask !== null){
+					$message = "Worker $workerId crashed while running task " . get_class($crashedTask) . "#" . spl_object_id($crashedTask);
+				}else{
+					$message = "Worker $workerId crashed while doing unknown work";
+				}
+				throw new ThreadCrashException($message, $info);
+			}else{
+				throw new \RuntimeException("Worker $workerId crashed for unknown reason");
+			}
+		}
+	}
+
 	/**
 	 * Collects finished and/or crashed tasks from the workers, firing their on-completion hooks where appropriate.
 	 *
@@ -229,10 +262,10 @@ class AsyncPool{
 			if($task->isFinished()){ //make sure the task actually executed before trying to collect
 				$queue->dequeue();
 
-				if($task->isCrashed()){
-					$this->logger->critical("Could not execute asynchronous task " . (new \ReflectionClass($task))->getShortName() . ": Task crashed");
-					$task->onError();
-				}elseif(!$task->hasCancelledRun()){
+				if($task->isTerminated()){
+					$this->checkCrashedWorker($worker, $task);
+					throw new AssumptionFailedError("checkCrashedWorker() should have thrown an exception, making this unreachable");
+				}else{
 					/*
 					 * It's possible for a task to submit a progress update and then finish before the progress
 					 * update is detected by the parent thread, so here we consume any missed updates.
@@ -242,11 +275,13 @@ class AsyncPool{
 					 * lost. Thus, it's necessary to do one last check here to make sure all progress updates have
 					 * been consumed before completing.
 					 */
-					$task->checkProgressUpdates();
-					$task->onCompletion();
+					$this->checkTaskProgressUpdates($task);
+					Timings::getAsyncTaskCompletionTimings($task)->time(function() use ($task) : void{
+						$task->onCompletion();
+					});
 				}
 			}else{
-				$task->checkProgressUpdates();
+				$this->checkTaskProgressUpdates($task);
 				$more = true;
 				break; //current task is still running, skip to next worker
 			}
@@ -293,5 +328,11 @@ class AsyncPool{
 			$this->eventLoop->removeNotifier($worker->sleeperNotifierId);
 		}
 		$this->workers = [];
+	}
+
+	private function checkTaskProgressUpdates(AsyncTask $task) : void{
+		Timings::getAsyncTaskProgressUpdateTimings($task)->time(function() use ($task) : void{
+			$task->checkProgressUpdates();
+		});
 	}
 }

@@ -139,7 +139,7 @@ function generateBlockStateNames(BlockPaletteReport $data) : void{
 
 	fwrite($output, generateClassHeader(BlockStateNames::class));
 	foreach(Utils::stringifyKeys($data->seenStateValues) as $state => $values){
-		$constName = mb_strtoupper(preg_replace("/^minecraft:/", "", $state) ?? throw new AssumptionFailedError("This regex is not invalid"), 'US-ASCII');
+		$constName = mb_strtoupper(preg_replace("/^minecraft:/", "mc_", $state) ?? throw new AssumptionFailedError("This regex is not invalid"), 'US-ASCII');
 		fwrite($output, "\tpublic const $constName = \"$state\";\n");
 	}
 
@@ -159,7 +159,7 @@ function generateBlockStringValues(BlockPaletteReport $data) : void{
 				continue;
 			}
 			$anyWritten = true;
-			$constName = mb_strtoupper(preg_replace("/^minecraft:/", "", $stateName) . "_" . $value, 'US-ASCII');
+			$constName = mb_strtoupper(preg_replace("/^minecraft:/", "mc_", $stateName) . "_" . $value, 'US-ASCII');
 			fwrite($output, "\tpublic const $constName = \"$value\";\n");
 		}
 		if($anyWritten){

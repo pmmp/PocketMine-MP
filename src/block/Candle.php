@@ -91,7 +91,7 @@ class Candle extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	protected function getCandleIfCompatibleType(Block $block) : ?Candle{
@@ -104,8 +104,7 @@ class Candle extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$down = $blockReplace->getSide(Facing::DOWN);
-		if(!$down->getSupportType(Facing::UP)->hasCenterSupport()){
+		if(!$blockReplace->getAdjacentSupportType(Facing::DOWN)->hasCenterSupport()){
 			return false;
 		}
 		$existing = $this->getCandleIfCompatibleType($blockReplace);

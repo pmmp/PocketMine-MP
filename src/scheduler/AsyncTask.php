@@ -61,35 +61,25 @@ use function spl_object_id;
  */
 abstract class AsyncTask extends Runnable{
 	/**
-	 * @var \ArrayObject|mixed[]|null object hash => mixed data
-	 * @phpstan-var \ArrayObject<int, array<string, mixed>>|null
+	 * @var mixed[][] object hash => mixed data
+	 * @phpstan-var array<int, array<string, mixed>>
 	 *
-	 * Used to store objects which are only needed on one thread and should not be serialized.
+	 * Used to store thread-local data to be used by onCompletion().
 	 */
-	private static ?\ArrayObject $threadLocalStorage = null;
+	private static array $threadLocalStorage = [];
 
 	/** @phpstan-var ThreadSafeArray<int, string>|null */
 	private ?ThreadSafeArray $progressUpdates = null;
 
 	private ThreadSafe|string|int|bool|null|float $result = null;
-	private bool $cancelRun = false;
-	private bool $submitted = false;
 
-	private bool $crashed = false;
+	private bool $submitted = false;
 	private bool $finished = false;
 
 	public function run() : void{
 		$this->result = null;
 
-		if(!$this->cancelRun){
-			try{
-				$this->onRun();
-			}catch(\Throwable $e){
-				$this->crashed = true;
-
-				\GlobalLogger::get()->logException($e);
-			}
-		}
+		$this->onRun();
 
 		$this->finished = true;
 		$worker = NativeThread::getCurrentThread();
@@ -97,8 +87,11 @@ abstract class AsyncTask extends Runnable{
 		$worker->getNotifier()->wakeupSleeper();
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function isCrashed() : bool{
-		return $this->crashed || $this->isTerminated();
+		return $this->isTerminated();
 	}
 
 	/**
@@ -106,7 +99,7 @@ abstract class AsyncTask extends Runnable{
 	 * because it is not true prior to task execution.
 	 */
 	public function isFinished() : bool{
-		return $this->finished || $this->isCrashed();
+		return $this->finished || $this->isTerminated();
 	}
 
 	public function hasResult() : bool{
@@ -127,12 +120,18 @@ abstract class AsyncTask extends Runnable{
 		$this->result = is_scalar($result) || is_null($result) || $result instanceof ThreadSafe ? $result : new NonThreadSafeValue($result);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function cancelRun() : void{
-		$this->cancelRun = true;
+		//NOOP
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function hasCancelledRun() : bool{
-		return $this->cancelRun;
+		return false;
 	}
 
 	public function setSubmitted() : void{
@@ -195,8 +194,7 @@ abstract class AsyncTask extends Runnable{
 	}
 
 	/**
-	 * Called from the main thread when the async task experiences an error during onRun(). Use this for things like
-	 * promise rejection.
+	 * @deprecated No longer used
 	 */
 	public function onError() : void{
 
@@ -217,15 +215,6 @@ abstract class AsyncTask extends Runnable{
 	 * from.
 	 */
 	protected function storeLocal(string $key, mixed $complexData) : void{
-		if(self::$threadLocalStorage === null){
-			/*
-			 * It's necessary to use an object (not array) here because pthreads is stupid. Non-default array statics
-			 * will be inherited when task classes are copied to the worker thread, which would cause unwanted
-			 * inheritance of primitive thread-locals, which we really don't want for various reasons.
-			 * It won't try to inherit objects though, so this is the easiest solution.
-			 */
-			self::$threadLocalStorage = new \ArrayObject();
-		}
 		self::$threadLocalStorage[spl_object_id($this)][$key] = $complexData;
 	}
 
@@ -241,7 +230,7 @@ abstract class AsyncTask extends Runnable{
 	 */
 	protected function fetchLocal(string $key){
 		$id = spl_object_id($this);
-		if(self::$threadLocalStorage === null || !isset(self::$threadLocalStorage[$id][$key])){
+		if(!isset(self::$threadLocalStorage[$id][$key])){
 			throw new \InvalidArgumentException("No matching thread-local data found on this thread");
 		}
 
@@ -250,12 +239,7 @@ abstract class AsyncTask extends Runnable{
 
 	final public function __destruct(){
 		$this->reallyDestruct();
-		if(self::$threadLocalStorage !== null && isset(self::$threadLocalStorage[$h = spl_object_id($this)])){
-			unset(self::$threadLocalStorage[$h]);
-			if(self::$threadLocalStorage->count() === 0){
-				self::$threadLocalStorage = null;
-			}
-		}
+		unset(self::$threadLocalStorage[spl_object_id($this)]);
 	}
 
 	/**

@@ -562,10 +562,10 @@ final class BlockTypeIds{
 	public const WEIGHTED_PRESSURE_PLATE_HEAVY = 10532;
 	public const WEIGHTED_PRESSURE_PLATE_LIGHT = 10533;
 	public const WHEAT = 10534;
-
+	public const BUDDING_AMETHYST = 10535;
 	public const WHITE_TULIP = 10536;
 	public const WOOL = 10537;
-
+	public const AMETHYST_CLUSTER = 10538;
 	public const GLAZED_TERRACOTTA = 10539;
 	public const AMETHYST = 10540;
 	public const ANCIENT_DEBRIS = 10541;
@@ -733,9 +733,15 @@ final class BlockTypeIds{
 	public const CHERRY_TRAPDOOR = 10703;
 	public const CHERRY_WALL_SIGN = 10704;
 	public const CHERRY_WOOD = 10705;
-	public const CHISELED_BOOKSHELF = 10706;
+	public const SMALL_DRIPLEAF = 10706;
+	public const BIG_DRIPLEAF_HEAD = 10707;
+	public const BIG_DRIPLEAF_STEM = 10708;
+	public const PINK_PETALS = 10709;
+	public const CRIMSON_ROOTS = 10710;
+	public const WARPED_ROOTS = 10711;
+	public const CHISELED_BOOKSHELF = 10712;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10707;
+	public const FIRST_UNUSED_BLOCK_ID = 10713;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 

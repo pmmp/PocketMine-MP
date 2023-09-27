@@ -73,10 +73,6 @@ class AsyncWorker extends Worker{
 		return $this->logger;
 	}
 
-	public function handleException(\Throwable $e) : void{
-		$this->logger->logException($e);
-	}
-
 	public function getThreadName() : string{
 		return "AsyncWorker#" . $this->id;
 	}

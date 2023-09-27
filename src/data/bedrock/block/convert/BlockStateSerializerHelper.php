@@ -55,7 +55,6 @@ use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
 use pocketmine\math\Facing;
-use pocketmine\utils\AssumptionFailedError;
 use function array_keys;
 
 final class BlockStateSerializerHelper{
@@ -103,11 +102,10 @@ final class BlockStateSerializerHelper{
 
 	public static function selectCopperId(CopperOxidation $oxidation, string $noneId, string $exposedId, string $weatheredId, string $oxidizedId) : string{
 		return match($oxidation){
-			CopperOxidation::NONE() => $noneId,
-			CopperOxidation::EXPOSED() => $exposedId,
-			CopperOxidation::WEATHERED() => $weatheredId,
-			CopperOxidation::OXIDIZED() => $oxidizedId,
-			default => throw new AssumptionFailedError("Unhandled copper oxidation " . $oxidation->name())
+			CopperOxidation::NONE => $noneId,
+			CopperOxidation::EXPOSED => $exposedId,
+			CopperOxidation::WEATHERED => $weatheredId,
+			CopperOxidation::OXIDIZED => $oxidizedId,
 		};
 	}
 
@@ -139,7 +137,7 @@ final class BlockStateSerializerHelper{
 
 	public static function encodeFurnace(Furnace $block, string $unlitId, string $litId) : BlockStateWriter{
 		return BlockStateWriter::create($block->isLit() ? $litId : $unlitId)
-			->writeHorizontalFacing($block->getFacing());
+			->writeCardinalHorizontalFacing($block->getFacing());
 	}
 
 	public static function encodeItemFrame(ItemFrame $block, string $id) : BlockStateWriter{
@@ -212,10 +210,9 @@ final class BlockStateSerializerHelper{
 
 	public static function encodeSlab(Slab $block, string $singleId, string $doubleId) : BlockStateWriter{
 		$slabType = $block->getSlabType();
-		return BlockStateWriter::create($slabType->equals(SlabType::DOUBLE()) ? $doubleId : $singleId)
-
+		return BlockStateWriter::create($slabType === SlabType::DOUBLE ? $doubleId : $singleId)
 			//this is (intentionally) also written for double slabs (as zero) to maintain bug parity with MCPE
-			->writeBool(BlockStateNames::TOP_SLOT_BIT, $slabType->equals(SlabType::TOP()));
+			->writeSlabPosition($slabType === SlabType::DOUBLE ? SlabType::BOTTOM : $slabType);
 	}
 
 	public static function encodeStairs(Stair $block, BlockStateWriter $out) : BlockStateWriter{
@@ -225,8 +222,12 @@ final class BlockStateSerializerHelper{
 	}
 
 	public static function encodeStem(Stem $block, BlockStateWriter $out) : BlockStateWriter{
+		//In PM, we use Facing::UP to indicate that the stem is not attached to a pumpkin/melon, since this makes the
+		//most intuitive sense (the stem is pointing at the sky). However, Bedrock uses the DOWN state for this, which
+		//is absurd, and I refuse to make our API similarly absurd.
+		$facing = $block->getFacing();
 		return self::encodeCrops($block, $out)
-			->writeHorizontalFacing(Facing::NORTH); //TODO: PM impl doesn't support this yet
+			->writeFacingWithoutUp($facing === Facing::UP ? Facing::DOWN : $facing);
 	}
 
 	public static function encodeStone(string $type) : BlockStateWriter{

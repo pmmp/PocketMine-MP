@@ -36,11 +36,15 @@ use pocketmine\data\runtime\RuntimeDataSizeCalculator;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Projectile;
+use pocketmine\item\enchantment\AvailableEnchantmentRegistry;
+use pocketmine\item\enchantment\ItemEnchantmentTagRegistry;
+use pocketmine\item\enchantment\ItemEnchantmentTags;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -422,6 +426,19 @@ class Block{
 	}
 
 	/**
+	 * Returns tags that represent the type of item being enchanted and are used to determine
+	 * what enchantments can be applied to the item of this block during in-game enchanting (enchanting table, anvil, fishing, etc.).
+	 * @see ItemEnchantmentTags
+	 * @see ItemEnchantmentTagRegistry
+	 * @see AvailableEnchantmentRegistry
+	 *
+	 * @return string[]
+	 */
+	public function getEnchantmentTags() : array{
+		return $this->typeInfo->getEnchantmentTags();
+	}
+
+	/**
 	 * Do the actions needed so the block is broken with the Item
 	 *
 	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if full)
@@ -467,7 +484,8 @@ class Block{
 	/**
 	 * Do actions when interacted by Item. Returns if it has done anything
 	 *
-	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
+	 * @param Vector3 $clickVector    Exact position where the click occurred, relative to the block's integer position
+	 * @param Item[]  &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		return false;
@@ -859,7 +877,11 @@ class Block{
 	 * blocks placed on the given face can be supported by this block.
 	 */
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::FULL();
+		return SupportType::FULL;
+	}
+
+	protected function getAdjacentSupportType(int $facing) : SupportType{
+		return $this->getSide($facing)->getSupportType(Facing::opposite($facing));
 	}
 
 	public function isFullCube() : bool{
