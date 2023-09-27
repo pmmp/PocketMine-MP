@@ -2873,7 +2873,15 @@ class World implements ChunkManager{
 				}elseif($this->getTile($tilePosition) !== null){
 					$logger->error("Cannot add tile at x=$tilePosition->x,y=$tilePosition->y,z=$tilePosition->z: Another tile is already at that position");
 				}else{
-					$this->addTile($tile);
+					$block = $this->getBlockAt($tilePosition->getFloorX(), $tilePosition->getFloorY(), $tilePosition->getFloorZ());
+					$expectedClass = $block->getIdInfo()->getTileClass();
+					if($expectedClass === null){
+						$logger->error("Cannot add tile at x=$tilePosition->x,y=$tilePosition->y,z=$tilePosition->z: Block at that position (" . $block->getName() . ") does not expect a tile");
+					}elseif(!($tile instanceof $expectedClass)){
+						$logger->error("Cannot add tile at x=$tilePosition->x,y=$tilePosition->y,z=$tilePosition->z: Tile is of wrong type (expected $expectedClass but have " . get_class($tile) . ")");
+					}else{
+						$this->addTile($tile);
+					}
 				}
 			}
 
