@@ -737,6 +737,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::CRACKED_NETHER_BRICKS(), Ids::CRACKED_NETHER_BRICKS);
 		$this->mapSimple(Blocks::CRACKED_POLISHED_BLACKSTONE_BRICKS(), Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS);
 		$this->mapSimple(Blocks::CRAFTING_TABLE(), Ids::CRAFTING_TABLE);
+		$this->mapSimple(Blocks::CRIMSON_ROOTS(), Ids::CRIMSON_ROOTS);
 		$this->mapSimple(Blocks::CRYING_OBSIDIAN(), Ids::CRYING_OBSIDIAN);
 		$this->mapSimple(Blocks::DANDELION(), Ids::YELLOW_FLOWER);
 		$this->mapSimple(Blocks::DEAD_BUSH(), Ids::DEADBUSH);
@@ -953,6 +954,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::TINTED_GLASS(), Ids::TINTED_GLASS);
 		$this->mapSimple(Blocks::TUFF(), Ids::TUFF);
 		$this->mapSimple(Blocks::WARPED_WART_BLOCK(), Ids::WARPED_WART_BLOCK);
+		$this->mapSimple(Blocks::WARPED_ROOTS(), Ids::WARPED_ROOTS);
 		$this->mapSimple(Blocks::WITHER_ROSE(), Ids::WITHER_ROSE);
 	}
 

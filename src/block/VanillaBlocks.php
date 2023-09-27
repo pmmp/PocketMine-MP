@@ -222,6 +222,7 @@ use function strtolower;
  * @method static Wood CRIMSON_HYPHAE()
  * @method static Planks CRIMSON_PLANKS()
  * @method static WoodenPressurePlate CRIMSON_PRESSURE_PLATE()
+ * @method static NetherRoots CRIMSON_ROOTS()
  * @method static FloorSign CRIMSON_SIGN()
  * @method static WoodenSlab CRIMSON_SLAB()
  * @method static WoodenStairs CRIMSON_STAIRS()
@@ -740,6 +741,7 @@ use function strtolower;
  * @method static Wood WARPED_HYPHAE()
  * @method static Planks WARPED_PLANKS()
  * @method static WoodenPressurePlate WARPED_PRESSURE_PLATE()
+ * @method static NetherRoots WARPED_ROOTS()
  * @method static FloorSign WARPED_SIGN()
  * @method static WoodenSlab WARPED_SLAB()
  * @method static WoodenStairs WARPED_STAIRS()
@@ -1534,6 +1536,10 @@ final class VanillaBlocks{
 
 		self::register("twisting_vines", new NetherVines(new BID(Ids::TWISTING_VINES), "Twisting Vines", new Info(BreakInfo::instant()), Facing::UP));
 		self::register("weeping_vines", new NetherVines(new BID(Ids::WEEPING_VINES), "Weeping Vines", new Info(BreakInfo::instant()), Facing::DOWN));
+
+		$netherRootsInfo = new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS]);
+		self::register("crimson_roots", new NetherRoots(new BID(Ids::CRIMSON_ROOTS), "Crimson Roots", $netherRootsInfo));
+		self::register("warped_roots", new NetherRoots(new BID(Ids::WARPED_ROOTS), "Warped Roots", $netherRootsInfo));
 
 		self::register("chain", new Chain(new BID(Ids::CHAIN), "Chain", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD))));
 	}

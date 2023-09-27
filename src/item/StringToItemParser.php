@@ -287,6 +287,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("crimson_hyphae", fn() => Blocks::CRIMSON_HYPHAE()->setStripped(false));
 		$result->registerBlock("crimson_planks", fn() => Blocks::CRIMSON_PLANKS());
 		$result->registerBlock("crimson_pressure_plate", fn() => Blocks::CRIMSON_PRESSURE_PLATE());
+		$result->registerBlock("crimson_roots", fn() => Blocks::CRIMSON_ROOTS());
 		$result->registerBlock("crimson_sign", fn() => Blocks::CRIMSON_SIGN());
 		$result->registerBlock("crimson_slab", fn() => Blocks::CRIMSON_SLAB());
 		$result->registerBlock("crimson_stairs", fn() => Blocks::CRIMSON_STAIRS());
@@ -1104,6 +1105,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("warped_hyphae", fn() => Blocks::WARPED_HYPHAE()->setStripped(false));
 		$result->registerBlock("warped_planks", fn() => Blocks::WARPED_PLANKS());
 		$result->registerBlock("warped_pressure_plate", fn() => Blocks::WARPED_PRESSURE_PLATE());
+		$result->registerBlock("warped_roots", fn() => Blocks::WARPED_ROOTS());
 		$result->registerBlock("warped_sign", fn() => Blocks::WARPED_SIGN());
 		$result->registerBlock("warped_slab", fn() => Blocks::WARPED_SLAB());
 		$result->registerBlock("warped_stairs", fn() => Blocks::WARPED_STAIRS());
