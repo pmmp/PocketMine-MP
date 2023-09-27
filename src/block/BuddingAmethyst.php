@@ -27,6 +27,7 @@ use pocketmine\block\utils\AmethystTrait;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
+use function array_rand;
 use function mt_rand;
 
 final class BuddingAmethyst extends Opaque{

@@ -59,15 +59,11 @@ use pocketmine\block\utils\LeavesType;
 use pocketmine\block\utils\SaplingType;
 use pocketmine\block\utils\WoodType;
 use pocketmine\crafting\FurnaceType;
-use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\enchantment\ItemEnchantmentTags as EnchantmentTags;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\math\Facing;
-use pocketmine\math\RayTraceResult;
 use pocketmine\utils\CloningRegistryTrait;
-use pocketmine\world\sound\AmethystBlockChimeSound;
-use pocketmine\world\sound\BlockPunchSound;
 use function mb_strtolower;
 use function strtolower;
 
