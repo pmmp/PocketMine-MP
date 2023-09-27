@@ -216,6 +216,10 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 		$railShape = $result;
 	}
 
+	/**
+	 * @param Item[] $slots
+	 * @phpstan-param array<int, Book|WritableBookBase> $slots
+	 */
 	public function chiseledBookshelfSlots(array &$slots) : void{
 		$result = [];
 		for ($slot = 0; $slot < ChiseledBookshelf::SLOTS; $slot++){
