@@ -562,10 +562,10 @@ final class BlockTypeIds{
 	public const WEIGHTED_PRESSURE_PLATE_HEAVY = 10532;
 	public const WEIGHTED_PRESSURE_PLATE_LIGHT = 10533;
 	public const WHEAT = 10534;
-
+	public const BUDDING_AMETHYST = 10535;
 	public const WHITE_TULIP = 10536;
 	public const WOOL = 10537;
-
+	public const AMETHYST_CLUSTER = 10538;
 	public const GLAZED_TERRACOTTA = 10539;
 	public const AMETHYST = 10540;
 	public const ANCIENT_DEBRIS = 10541;

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\AmethystCluster;
 use pocketmine\block\Block;
 use pocketmine\block\Light;
 use pocketmine\block\utils\CopperOxidation;
@@ -134,6 +135,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("all_sided_mushroom_stem", fn() => Blocks::ALL_SIDED_MUSHROOM_STEM());
 		$result->registerBlock("allium", fn() => Blocks::ALLIUM());
 		$result->registerBlock("amethyst_block", fn() => Blocks::AMETHYST());
+		$result->registerBlock("amethyst_cluster", fn() => Blocks::AMETHYST_CLUSTER());
 		$result->registerBlock("ancient_debris", fn() => Blocks::ANCIENT_DEBRIS());
 		$result->registerBlock("andesite", fn() => Blocks::ANDESITE());
 		$result->registerBlock("andesite_slab", fn() => Blocks::ANDESITE_SLAB());
@@ -196,6 +198,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("bricks_block", fn() => Blocks::BRICKS());
 		$result->registerBlock("brown_mushroom", fn() => Blocks::BROWN_MUSHROOM());
 		$result->registerBlock("brown_mushroom_block", fn() => Blocks::BROWN_MUSHROOM_BLOCK());
+		$result->registerBlock("budding_amethyst", fn() => Blocks::BUDDING_AMETHYST());
 		$result->registerBlock("burning_furnace", fn() => Blocks::FURNACE());
 		$result->registerBlock("bush", fn() => Blocks::DEAD_BUSH());
 		$result->registerBlock("cactus", fn() => Blocks::CACTUS());
@@ -744,6 +747,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("lapis_lazuli_block", fn() => Blocks::LAPIS_LAZULI());
 		$result->registerBlock("lapis_lazuli_ore", fn() => Blocks::LAPIS_LAZULI_ORE());
 		$result->registerBlock("lapis_ore", fn() => Blocks::LAPIS_LAZULI_ORE());
+		$result->registerBlock("large_amethyst_bud", fn() => Blocks::AMETHYST_CLUSTER()->setStage(AmethystCluster::STAGE_LARGE_BUD));
 		$result->registerBlock("large_fern", fn() => Blocks::LARGE_FERN());
 		$result->registerBlock("lava", fn() => Blocks::LAVA());
 		$result->registerBlock("leave", fn() => Blocks::OAK_LEAVES());
@@ -786,6 +790,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("mangrove_trapdoor", fn() => Blocks::MANGROVE_TRAPDOOR());
 		$result->registerBlock("mangrove_wood", fn() => Blocks::MANGROVE_WOOD()->setStripped(false));
 		$result->registerBlock("material_reducer", fn() => Blocks::MATERIAL_REDUCER());
+		$result->registerBlock("medium_amethyst_bud", fn() => Blocks::AMETHYST_CLUSTER()->setStage(AmethystCluster::STAGE_MEDIUM_BUD));
 		$result->registerBlock("melon_block", fn() => Blocks::MELON());
 		$result->registerBlock("melon_stem", fn() => Blocks::MELON_STEM());
 		$result->registerBlock("mob_head", fn() => Blocks::MOB_HEAD());
@@ -976,6 +981,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("slabs", fn() => Blocks::SMOOTH_STONE_SLAB());
 		$result->registerBlock("slime", fn() => Blocks::SLIME());
 		$result->registerBlock("slime_block", fn() => Blocks::SLIME());
+		$result->registerBlock("small_amethyst_bud", fn() => Blocks::AMETHYST_CLUSTER()->setStage(AmethystCluster::STAGE_SMALL_BUD));
 		$result->registerBlock("small_dripleaf", fn() => Blocks::SMALL_DRIPLEAF());
 		$result->registerBlock("smoker", fn() => Blocks::SMOKER());
 		$result->registerBlock("smooth_basalt", fn() => Blocks::SMOOTH_BASALT());

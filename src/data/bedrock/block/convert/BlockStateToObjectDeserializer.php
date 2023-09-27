@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\convert;
 
+use pocketmine\block\AmethystCluster;
 use pocketmine\block\Bamboo;
 use pocketmine\block\Block;
 use pocketmine\block\CaveVines;
@@ -611,6 +612,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::BOOKSHELF, fn() => Blocks::BOOKSHELF());
 		$this->mapSimple(Ids::BRICK_BLOCK, fn() => Blocks::BRICKS());
 		$this->mapSimple(Ids::BROWN_MUSHROOM, fn() => Blocks::BROWN_MUSHROOM());
+		$this->mapSimple(Ids::BUDDING_AMETHYST, fn() => Blocks::BUDDING_AMETHYST());
 		$this->mapSimple(Ids::CALCITE, fn() => Blocks::CALCITE());
 		$this->mapSimple(Ids::CARTOGRAPHY_TABLE, fn() => Blocks::CARTOGRAPHY_TABLE());
 		$this->mapSimple(Ids::CHEMICAL_HEAT, fn() => Blocks::CHEMICAL_HEAT());
@@ -856,6 +858,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::ACTIVATOR_RAIL()
 				->setPowered($in->readBool(StateNames::RAIL_DATA_BIT))
 				->setShape($in->readBoundedInt(StateNames::RAIL_DIRECTION, 0, 5));
+		});
+		$this->map(Ids::AMETHYST_CLUSTER, function(Reader $in) : Block{
+			return Blocks::AMETHYST_CLUSTER()
+				->setStage(AmethystCluster::STAGE_CLUSTER)
+				->setFacing($in->readBlockFace());
 		});
 		$this->mapStairs(Ids::ANDESITE_STAIRS, fn() => Blocks::ANDESITE_STAIRS());
 		$this->map(Ids::ANVIL, function(Reader $in) : Block{
@@ -1163,6 +1170,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::LANTERN()
 				->setHanging($in->readBool(StateNames::HANGING));
 		});
+		$this->map(Ids::LARGE_AMETHYST_BUD, function(Reader $in) : Block{
+			return Blocks::AMETHYST_CLUSTER()
+				->setStage(AmethystCluster::STAGE_LARGE_BUD)
+				->setFacing($in->readBlockFace());
+		});
 		$this->map(Ids::LAVA, fn(Reader $in) => Helper::decodeStillLiquid(Blocks::LAVA(), $in));
 		$this->map(Ids::LECTERN, function(Reader $in) : Block{
 			return Blocks::LECTERN()
@@ -1224,6 +1236,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::LOOM, function(Reader $in) : Block{
 			return Blocks::LOOM()
 				->setFacing($in->readLegacyHorizontalFacing());
+		});
+		$this->map(Ids::MEDIUM_AMETHYST_BUD, function(Reader $in) : Block{
+			return Blocks::AMETHYST_CLUSTER()
+				->setStage(AmethystCluster::STAGE_MEDIUM_BUD)
+				->setFacing($in->readBlockFace());
 		});
 		$this->map(Ids::MELON_STEM, fn(Reader $in) => Helper::decodeStem(Blocks::MELON_STEM(), $in));
 		$this->map(Ids::MONSTER_EGG, function(Reader $in) : Block{
@@ -1438,6 +1455,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::SMOKER()
 				->setFacing($in->readCardinalHorizontalFacing())
 				->setLit(false);
+		});
+		$this->map(Ids::SMALL_AMETHYST_BUD, function(Reader $in) : Block{
+			return Blocks::AMETHYST_CLUSTER()
+				->setStage(AmethystCluster::STAGE_SMALL_BUD)
+				->setFacing($in->readBlockFace());
 		});
 		$this->map(Ids::SMALL_DRIPLEAF_BLOCK, function(Reader $in) : Block{
 			return Blocks::SMALL_DRIPLEAF()

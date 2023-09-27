@@ -54,6 +54,7 @@ use pocketmine\block\tile\NormalFurnace as TileNormalFurnace;
 use pocketmine\block\tile\Note as TileNote;
 use pocketmine\block\tile\ShulkerBox as TileShulkerBox;
 use pocketmine\block\tile\Smoker as TileSmoker;
+use pocketmine\block\utils\AmethystTrait;
 use pocketmine\block\utils\LeavesType;
 use pocketmine\block\utils\SaplingType;
 use pocketmine\block\utils\WoodType;
@@ -96,6 +97,7 @@ use function strtolower;
  * @method static Flower ALLIUM()
  * @method static MushroomStem ALL_SIDED_MUSHROOM_STEM()
  * @method static Opaque AMETHYST()
+ * @method static AmethystCluster AMETHYST_CLUSTER()
  * @method static Opaque ANCIENT_DEBRIS()
  * @method static Opaque ANDESITE()
  * @method static Slab ANDESITE_SLAB()
@@ -149,6 +151,7 @@ use function strtolower;
  * @method static Wall BRICK_WALL()
  * @method static BrownMushroom BROWN_MUSHROOM()
  * @method static BrownMushroomBlock BROWN_MUSHROOM_BLOCK()
+ * @method static BuddingAmethyst BUDDING_AMETHYST()
  * @method static Cactus CACTUS()
  * @method static Cake CAKE()
  * @method static CakeWithCandle CAKE_WITH_CANDLE()
@@ -1546,12 +1549,12 @@ final class VanillaBlocks{
 
 	private static function registerBlocksR17() : void{
 		//in java this can be acquired using any tool - seems to be a parity issue in bedrock
-		self::register("amethyst", new class(new BID(Ids::AMETHYST), "Amethyst", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD))) extends Opaque{
-			public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
-				$this->position->getWorld()->addSound($this->position, new AmethystBlockChimeSound());
-				$this->position->getWorld()->addSound($this->position, new BlockPunchSound($this));
-			}
+		$amethystInfo = new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD));
+		self::register("amethyst", new class(new BID(Ids::AMETHYST), "Amethyst", $amethystInfo) extends Opaque{
+			use AmethystTrait;
 		});
+		self::register("budding_amethyst", new BuddingAmethyst(new BID(Ids::BUDDING_AMETHYST), "Budding Amethyst", $amethystInfo));
+		self::register("amethyst_cluster", new AmethystCluster(new BID(Ids::AMETHYST_CLUSTER), "Amethyst Cluster", $amethystInfo));
 
 		self::register("calcite", new Opaque(new BID(Ids::CALCITE), "Calcite", new Info(BreakInfo::pickaxe(0.75, ToolTier::WOOD))));
 		self::register("tuff", new Opaque(new BID(Ids::TUFF), "Tuff", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 30.0))));
