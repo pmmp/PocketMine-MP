@@ -34,6 +34,7 @@ use pocketmine\block\Slab;
 use pocketmine\block\Stair;
 use pocketmine\block\SweetBerryBush;
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
@@ -992,7 +993,18 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::CHAIN()
 				->setAxis($in->readPillarAxis());
 		});
-		$this->map(Ids::CHISELED_BOOKSHELF, fn(Reader $in) => Helper::mapChiseledBookshelf($in));
+		$this->map(Ids::CHISELED_BOOKSHELF, function(Reader $in) : Block{
+			$block = Blocks::CHISELED_BOOKSHELF()
+				->setFacing($in->readLegacyHorizontalFacing());
+
+			//we don't use API constant for bounds here as the data bounds might be different to what we support internally
+			$flags = $in->readBoundedInt(StateNames::BOOKS_STORED, 0, (1 << 6) - 1);
+			foreach(ChiseledBookshelfSlot::cases() as $slot){
+				$block->setSlot($slot, ($flags & (1 << $slot->value)) !== 0);
+			}
+
+			return $block;
+		});
 		$this->map(Ids::CHEMISTRY_TABLE, function(Reader $in) : Block{
 			return (match($type = $in->readString(StateNames::CHEMISTRY_TABLE_TYPE)){
 				StringValues::CHEMISTRY_TABLE_TYPE_COMPOUND_CREATOR => Blocks::COMPOUND_CREATOR(),

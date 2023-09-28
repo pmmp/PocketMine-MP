@@ -1116,7 +1116,15 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::CHEST)
 				->writeHorizontalFacing($block->getFacing());
 		});
-		$this->map(Blocks::CHISELED_BOOKSHELF(), fn(ChiseledBookshelf $block) => Helper::encodeChiseledBookshelf($block));
+		$this->map(Blocks::CHISELED_BOOKSHELF(), function(ChiseledBookshelf $block) : Writer{
+			$flags = 0;
+			foreach($block->getSlots() as $slot){
+				$flags |= 1 << $slot->value;
+			}
+			return Writer::create(Ids::CHISELED_BOOKSHELF)
+				->writeLegacyHorizontalFacing($block->getFacing())
+				->writeInt(StateNames::BOOKS_STORED, $flags);
+		});
 		$this->map(Blocks::CHISELED_QUARTZ(), fn(SimplePillar $block) => Helper::encodeQuartz(StringValues::CHISEL_TYPE_CHISELED, $block->getAxis()));
 		$this->map(Blocks::CHISELED_RED_SANDSTONE(), fn() => Helper::encodeSandstone(Ids::RED_SANDSTONE, StringValues::SAND_STONE_TYPE_HEIROGLYPHS));
 		$this->map(Blocks::CHISELED_SANDSTONE(), fn() => Helper::encodeSandstone(Ids::SANDSTONE, StringValues::SAND_STONE_TYPE_HEIROGLYPHS));

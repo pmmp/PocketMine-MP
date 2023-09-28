@@ -46,7 +46,6 @@ use pocketmine\block\Slab;
 use pocketmine\block\Stair;
 use pocketmine\block\Stem;
 use pocketmine\block\Trapdoor;
-use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\block\Wall;
@@ -376,20 +375,5 @@ final class BlockStateDeserializerHelper{
 			StringValues::WOOD_TYPE_SPRUCE => VanillaBlocks::SPRUCE_SLAB(),
 			default => throw $in->badValueException(BlockStateNames::WOOD_TYPE, $type),
 		};
-	}
-
-	/** @throws BlockStateDeserializeException */
-	public static function mapChiseledBookshelf(BlockStateReader $in) : Block{
-		$block = VanillaBlocks::CHISELED_BOOKSHELF()
-			->setFacing($in->readLegacyHorizontalFacing());
-
-		//we don't use API constant for bounds here as the data bounds might be different to what we support internally
-		$flags = $in->readBoundedInt(StateNames::BOOKS_STORED, 0, (1 << 6) - 1);
-
-		foreach(ChiseledBookshelfSlot::cases() as $slot){
-			$block->setSlot($slot, ($flags & (1 << $slot->value)) !== 0);
-		}
-
-		return $block;
 	}
 }
