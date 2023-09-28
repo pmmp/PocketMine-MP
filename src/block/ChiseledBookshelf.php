@@ -29,6 +29,7 @@ use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Book;
+use pocketmine\item\EnchantedBook;
 use pocketmine\item\Item;
 use pocketmine\item\WritableBookBase;
 use pocketmine\math\Axis;
@@ -110,8 +111,8 @@ class ChiseledBookshelf extends Opaque{
 			$returnedItems[] = $inventory->getItem($slot->value);
 			$inventory->clear($slot->value);
 			$this->setSlot($slot, false);
-		}elseif($item instanceof WritableBookBase || $item instanceof Book){
-			//TODO: tags like blocks would be better for this
+		}elseif($item instanceof WritableBookBase || $item instanceof Book || $item instanceof EnchantedBook){
+			//TODO: type tags like blocks would be better for this
 			$inventory->setItem($slot->value, $item);
 			$this->setSlot($slot, true);
 		}else{
