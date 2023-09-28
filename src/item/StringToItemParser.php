@@ -1082,6 +1082,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("tinted_glass", fn() => Blocks::TINTED_GLASS());
 		$result->registerBlock("tnt", fn() => Blocks::TNT());
 		$result->registerBlock("torch", fn() => Blocks::TORCH());
+		$result->registerBlock("torchflower", fn() => Blocks::TORCHFLOWER());
 		$result->registerBlock("trapdoor", fn() => Blocks::OAK_TRAPDOOR());
 		$result->registerBlock("trapped_chest", fn() => Blocks::TRAPPED_CHEST());
 		$result->registerBlock("trip_wire", fn() => Blocks::TRIPWIRE());
@@ -1467,6 +1468,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("suspicious_stew", fn() => Items::SUSPICIOUS_STEW());
 		$result->register("sweet_berries", fn() => Items::SWEET_BERRIES());
 		$result->register("tonic", fn() => Items::MEDICINE()->setType(MedicineType::TONIC));
+		$result->register("torchflower_seeds", fn() => Items::TORCHFLOWER_SEEDS());
 		$result->register("totem", fn() => Items::TOTEM());
 		$result->register("turtle_helmet", fn() => Items::TURTLE_HELMET());
 		$result->register("turtle_shell_piece", fn() => Items::SCUTE());

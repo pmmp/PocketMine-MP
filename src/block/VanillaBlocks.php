@@ -726,6 +726,8 @@ use function strtolower;
  * @method static TintedGlass TINTED_GLASS()
  * @method static TNT TNT()
  * @method static Torch TORCH()
+ * @method static Flower TORCHFLOWER()
+ * @method static TorchflowerCrop TORCHFLOWER_CROP()
  * @method static TrappedChest TRAPPED_CHEST()
  * @method static Tripwire TRIPWIRE()
  * @method static TripwireHook TRIPWIRE_HOOK()
@@ -879,6 +881,8 @@ final class VanillaBlocks{
 		self::register("pink_tulip", new Flower(new BID(Ids::PINK_TULIP), "Pink Tulip", $flowerTypeInfo));
 		self::register("red_tulip", new Flower(new BID(Ids::RED_TULIP), "Red Tulip", $flowerTypeInfo));
 		self::register("white_tulip", new Flower(new BID(Ids::WHITE_TULIP), "White Tulip", $flowerTypeInfo));
+		self::register("torchflower", new Flower(new BID(Ids::TORCHFLOWER), "Torchflower", $flowerTypeInfo));
+		self::register("torchflower_crop", new TorchflowerCrop(new BID(Ids::TORCHFLOWER_CROP), "Torchflower Crop", new Info(BreakInfo::instant())));
 		self::register("flower_pot", new FlowerPot(new BID(Ids::FLOWER_POT, TileFlowerPot::class), "Flower Pot", new Info(BreakInfo::instant())));
 		self::register("frosted_ice", new FrostedIce(new BID(Ids::FROSTED_ICE), "Frosted Ice", new Info(BreakInfo::pickaxe(2.5))));
 		self::register("furnace", new Furnace(new BID(Ids::FURNACE, TileNormalFurnace::class), "Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD)), FurnaceType::FURNACE));

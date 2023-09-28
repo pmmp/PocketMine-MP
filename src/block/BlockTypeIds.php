@@ -740,8 +740,10 @@ final class BlockTypeIds{
 	public const CRIMSON_ROOTS = 10710;
 	public const WARPED_ROOTS = 10711;
 	public const CHISELED_BOOKSHELF = 10712;
+	public const TORCHFLOWER = 10713;
+	public const TORCHFLOWER_CROP = 10714;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10713;
+	public const FIRST_UNUSED_BLOCK_ID = 10715;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 

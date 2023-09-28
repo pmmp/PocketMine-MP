@@ -844,6 +844,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::SPORE_BLOSSOM, fn() => Blocks::SPORE_BLOSSOM());
 		$this->mapSimple(Ids::STONECUTTER, fn() => Blocks::LEGACY_STONECUTTER());
 		$this->mapSimple(Ids::TINTED_GLASS, fn() => Blocks::TINTED_GLASS());
+		$this->mapSimple(Ids::TORCHFLOWER, fn() => Blocks::TORCHFLOWER());
 		$this->mapSimple(Ids::TUFF, fn() => Blocks::TUFF());
 		$this->mapSimple(Ids::UNDYED_SHULKER_BOX, fn() => Blocks::SHULKER_BOX());
 		$this->mapSimple(Ids::WARPED_WART_BLOCK, fn() => Blocks::WARPED_WART_BLOCK());
@@ -1564,6 +1565,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::TORCH, function(Reader $in) : Block{
 			return Blocks::TORCH()
 				->setFacing($in->readTorchFacing());
+		});
+		$this->map(Ids::TORCHFLOWER_CROP, function(Reader $in) : Block{
+			return Blocks::TORCHFLOWER_CROP()
+				//this property can have values 0-7, but only 0-1 are valid
+				->setReady($in->readBoundedInt(StateNames::GROWTH, 0, 7) !== 0);
 		});
 		$this->map(Ids::TRAPPED_CHEST, function(Reader $in) : Block{
 			return Blocks::TRAPPED_CHEST()

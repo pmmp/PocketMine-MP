@@ -136,6 +136,7 @@ use pocketmine\block\Sugarcane;
 use pocketmine\block\SweetBerryBush;
 use pocketmine\block\TNT;
 use pocketmine\block\Torch;
+use pocketmine\block\TorchflowerCrop;
 use pocketmine\block\Trapdoor;
 use pocketmine\block\TrappedChest;
 use pocketmine\block\Tripwire;
@@ -955,6 +956,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::SOUL_SOIL(), Ids::SOUL_SOIL);
 		$this->mapSimple(Blocks::SPORE_BLOSSOM(), Ids::SPORE_BLOSSOM);
 		$this->mapSimple(Blocks::TINTED_GLASS(), Ids::TINTED_GLASS);
+		$this->mapSimple(Blocks::TORCHFLOWER(), Ids::TORCHFLOWER);
 		$this->mapSimple(Blocks::TUFF(), Ids::TUFF);
 		$this->mapSimple(Blocks::WARPED_WART_BLOCK(), Ids::WARPED_WART_BLOCK);
 		$this->mapSimple(Blocks::WARPED_ROOTS(), Ids::WARPED_ROOTS);
@@ -1642,6 +1644,10 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::TORCH(), function(Torch $block) : Writer{
 			return Writer::create(Ids::TORCH)
 				->writeTorchFacing($block->getFacing());
+		});
+		$this->map(Blocks::TORCHFLOWER_CROP(), function(TorchflowerCrop $block){
+			return Writer::create(Ids::TORCHFLOWER_CROP)
+				->writeInt(StateNames::GROWTH, $block->isReady() ? 1 : 0);
 		});
 		$this->map(Blocks::TRAPPED_CHEST(), function(TrappedChest $block) : Writer{
 			return Writer::create(Ids::TRAPPED_CHEST)
