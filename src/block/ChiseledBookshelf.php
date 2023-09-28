@@ -93,7 +93,7 @@ class ChiseledBookshelf extends Opaque{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($face !== $this->getFacing()){
+		if($face !== $this->facing){
 			return false;
 		}
 
