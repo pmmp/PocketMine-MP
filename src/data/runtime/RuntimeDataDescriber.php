@@ -72,6 +72,8 @@ interface RuntimeDataDescriber extends RuntimeEnumDescriber{
 	/**
 	 * @param BrewingStandSlot[] $slots
 	 * @phpstan-param array<int, BrewingStandSlot> $slots
+	 *
+	 * @deprecated Use {@link enumSet()} instead.
 	 */
 	public function brewingStandSlots(array &$slots) : void;
 
@@ -80,14 +82,18 @@ interface RuntimeDataDescriber extends RuntimeEnumDescriber{
 	public function straightOnlyRailShape(int &$railShape) : void;
 
 	/**
-	 * @param ChiseledBookshelfSlot[] $slots
-	 * @phpstan-param array<int, ChiseledBookshelfSlot> $slots
-	 */
-	public function chiseledBookshelfSlots(array &$slots) : void;
-
-	/**
 	 * @phpstan-template T of \UnitEnum
 	 * @phpstan-param T $case
 	 */
 	public function enum(\UnitEnum &$case) : void;
+
+	/**
+	 * @param \UnitEnum[] &$set
+	 * @param \UnitEnum[] $allCases
+	 *
+	 * @phpstan-template T of \UnitEnum
+	 * @phpstan-param array<int, T> &$set
+	 * @phpstan-param array<int, T> $allCases
+	 */
+	public function enumSet(array &$set, array $allCases) : void;
 }

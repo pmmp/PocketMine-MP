@@ -50,7 +50,7 @@ class ChiseledBookshelf extends Opaque{
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
-		$w->chiseledBookshelfSlots($this->slots);
+		$w->enumSet($this->slots, ChiseledBookshelfSlot::cases());
 	}
 
 	/**

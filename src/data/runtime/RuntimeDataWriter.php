@@ -160,11 +160,11 @@ final class RuntimeDataWriter implements RuntimeDataDescriber{
 	/**
 	 * @param BrewingStandSlot[] $slots
 	 * @phpstan-param array<int, BrewingStandSlot> $slots
+	 *
+	 * @deprecated Use {@link enumSet()} instead.
 	 */
 	public function brewingStandSlots(array &$slots) : void{
-		foreach(BrewingStandSlot::cases() as $member){
-			$this->writeBool(isset($slots[spl_object_id($member)]));
-		}
+		$this->enumSet($slots, BrewingStandSlot::cases());
 	}
 
 	public function railShape(int &$railShape) : void{
@@ -175,19 +175,15 @@ final class RuntimeDataWriter implements RuntimeDataDescriber{
 		$this->int(3, $railShape);
 	}
 
-	/**
-	 * @param ChiseledBookshelfSlot[] $slots
-	 * @phpstan-param array<int, ChiseledBookshelfSlot> $slots
-	 */
-	public function chiseledBookshelfSlots(array &$slots) : void{
-		foreach(ChiseledBookshelfSlot::cases() as $member){
-			$this->writeBool(isset($slots[spl_object_id($member)]));
-		}
-	}
-
 	public function enum(\UnitEnum &$case) : void{
 		$metadata = RuntimeEnumMetadata::from($case);
 		$this->writeInt($metadata->bits, $metadata->enumToInt($case));
+	}
+
+	public function enumSet(array &$set, array $allCases) : void{
+		foreach($allCases as $case){
+			$this->writeBool(isset($set[spl_object_id($case)]));
+		}
 	}
 
 	public function getValue() : int{ return $this->value; }

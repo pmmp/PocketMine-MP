@@ -97,12 +97,12 @@ final class RuntimeDataSizeCalculator implements RuntimeDataDescriber{
 		$this->addBits(3);
 	}
 
-	public function chiseledBookshelfSlots(array &$slots) : void{
-		$this->addBits(count(ChiseledBookshelfSlot::cases()));
-	}
-
 	public function enum(\UnitEnum &$case) : void{
 		$metadata = RuntimeEnumMetadata::from($case);
 		$this->addBits($metadata->bits);
+	}
+
+	public function enumSet(array &$set, array $allCases) : void{
+		$this->addBits(count($allCases));
 	}
 }
