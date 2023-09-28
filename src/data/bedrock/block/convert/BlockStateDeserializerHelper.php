@@ -26,7 +26,6 @@ namespace pocketmine\data\bedrock\block\convert;
 use pocketmine\block\Block;
 use pocketmine\block\Button;
 use pocketmine\block\Candle;
-use pocketmine\block\ChiseledBookshelf;
 use pocketmine\block\Copper;
 use pocketmine\block\CopperSlab;
 use pocketmine\block\CopperStairs;
@@ -47,6 +46,7 @@ use pocketmine\block\Slab;
 use pocketmine\block\Stair;
 use pocketmine\block\Stem;
 use pocketmine\block\Trapdoor;
+use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\block\Wall;
@@ -60,7 +60,6 @@ use pocketmine\data\bedrock\block\BlockStateNames;
 use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
 use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
-use pocketmine\item\VanillaItems;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
@@ -387,8 +386,8 @@ final class BlockStateDeserializerHelper{
 		//we don't use API constant for bounds here as the data bounds might be different to what we support internally
 		$flags = $in->readBoundedInt(StateNames::BOOKS_STORED, 0, (1 << 6) - 1);
 
-		for($i = 0; $i < ChiseledBookshelf::SLOTS; ++$i){
-			$block->setBook($i, ($flags & (1 << $i)) !== 0 ? VanillaItems::BOOK() : null);
+		foreach(ChiseledBookshelfSlot::cases() as $slot){
+			$block->setSlot($slot, ($flags & (1 << $slot->value)) !== 0);
 		}
 
 		return $block;

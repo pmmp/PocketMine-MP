@@ -23,13 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\data\runtime;
 
-use pocketmine\block\ChiseledBookshelf;
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\block\utils\RailConnectionInfo;
 use pocketmine\block\utils\WallConnectionType;
-use pocketmine\item\Book;
-use pocketmine\item\VanillaItems;
-use pocketmine\item\WritableBookBase;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
@@ -216,14 +213,14 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 	}
 
 	/**
-	 * @param (Book|WritableBookBase)[] $slots
-	 * @phpstan-param array<int, Book|WritableBookBase> $slots
+	 * @param ChiseledBookshelfSlot[] $slots
+	 * @phpstan-param array<int, ChiseledBookshelfSlot> $slots
 	 */
 	public function chiseledBookshelfSlots(array &$slots) : void{
 		$result = [];
-		for($slot = 0; $slot < ChiseledBookshelf::SLOTS; $slot++){
+		foreach(ChiseledBookshelfSlot::cases() as $member){
 			if($this->readBool()){
-				$result[$slot] = VanillaItems::BOOK();
+				$result[spl_object_id($member)] = $member;
 			}
 		}
 		$slots = $result;

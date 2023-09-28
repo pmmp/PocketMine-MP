@@ -23,11 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\data\runtime;
 
-use pocketmine\block\ChiseledBookshelf;
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\block\utils\WallConnectionType;
-use pocketmine\item\Book;
-use pocketmine\item\WritableBookBase;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use function array_flip;
@@ -178,12 +176,12 @@ final class RuntimeDataWriter implements RuntimeDataDescriber{
 	}
 
 	/**
-	 * @param (Book|WritableBookBase)[] $slots
-	 * @phpstan-param array<int, Book|WritableBookBase> $slots
+	 * @param ChiseledBookshelfSlot[] $slots
+	 * @phpstan-param array<int, ChiseledBookshelfSlot> $slots
 	 */
 	public function chiseledBookshelfSlots(array &$slots) : void{
-		for ($slot = 0; $slot < ChiseledBookshelf::SLOTS; $slot++){
-			$this->writeBool(isset($slots[$slot]));
+		foreach(ChiseledBookshelfSlot::cases() as $member){
+			$this->writeBool(isset($slots[spl_object_id($member)]));
 		}
 	}
 

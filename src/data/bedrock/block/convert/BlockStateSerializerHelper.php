@@ -293,8 +293,8 @@ final class BlockStateSerializerHelper{
 
 	public static function encodeChiseledBookshelf(ChiseledBookshelf $block) : BlockStateWriter{
 		$flags = 0;
-		foreach($block->getBooks() as $slot => $book){
-			$flags |= 1 << $slot;
+		foreach($block->getSlots() as $slot){
+			$flags |= 1 << $slot->value;
 		}
 		return Writer::create(Ids::CHISELED_BOOKSHELF)
 			->writeLegacyHorizontalFacing($block->getFacing())

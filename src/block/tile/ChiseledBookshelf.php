@@ -23,64 +23,40 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
-use pocketmine\data\bedrock\item\SavedItemStackData;
-use pocketmine\data\SavedDataLoadingException;
-use pocketmine\item\Book;
-use pocketmine\item\Item;
-use pocketmine\item\WritableBookBase;
+use pocketmine\block\utils\ChiseledBookshelfSlot;
+use pocketmine\inventory\SimpleInventory;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\world\World;
-use function array_keys;
-use function array_map;
-use function get_class;
+use function count;
 
-class ChiseledBookshelf extends Spawnable{
+class ChiseledBookshelf extends Spawnable implements Container{
+	use ContainerTrait;
 
-	public const TAG_ITEMS = "Items";
+	private SimpleInventory $inventory;
 
-	/** @var (WritableBookBase|Book)[] $items */
-	private array $items = [];
-
-	public function __construct(World $world, Vector3 $pos) {
+	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
+		$this->inventory = new SimpleInventory(count(ChiseledBookshelfSlot::cases()));
+	}
+
+	public function getInventory() : SimpleInventory{
+		return $this->inventory;
+	}
+
+	public function getRealInventory() : SimpleInventory{
+		return $this->inventory;
+	}
+
+	public function readSaveData(CompoundTag $nbt) : void{
+		$this->loadItems($nbt);
+	}
+
+	public function writeSaveData(CompoundTag $nbt) : void{
+		$this->saveItems($nbt);
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 
-	}
-
-	public function readSaveData(CompoundTag $nbt) : void{
-		$itemsTag = $nbt->getListTag(self::TAG_ITEMS);
-		if($itemsTag !== null && $itemsTag->getTagType() === NBT::TAG_Compound){
-			/** @var CompoundTag $itemNBT */
-			foreach($itemsTag->getValue() as $itemNBT){
-				$item = Item::nbtDeserialize($itemNBT);
-				if(!$item instanceof WritableBookBase && !$item instanceof Book){
-					throw new SavedDataLoadingException("Unexpected " . get_class($item) . " item in Chiseled Bookshelf saved data");
-				}
-				$this->items[$itemNBT->getByte(SavedItemStackData::TAG_SLOT)] = $item;
-			}
-		}
-	}
-
-	protected function writeSaveData(CompoundTag $nbt) : void{
-		$nbt->setTag(self::TAG_ITEMS, new ListTag(array_map(fn(WritableBookBase|Book $item, int $index) => $item->nbtSerialize($index), $this->items, array_keys($this->items)), NBT::TAG_Compound));
-	}
-
-	/**
-	 * @return (WritableBookBase|Book)[]
-	 */
-	public function getBooks() : array{
-		return $this->items;
-	}
-
-	/**
-	 * @param (WritableBookBase|Book)[] $items
-	 */
-	public function setBooks(array $items) : void{
-		$this->items = $items;
 	}
 }

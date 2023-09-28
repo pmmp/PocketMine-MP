@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\ChiseledBookshelf as TileChiseledBookshelf;
+use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -34,87 +35,60 @@ use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\utils\Utils;
-use function count;
-use function is_int;
-use function ksort;
-use const SORT_NUMERIC;
+use function spl_object_id;
 
 class ChiseledBookshelf extends Opaque{
 	use HorizontalFacingTrait;
 	use FacesOppositePlacingPlayerTrait;
 
-	public const SLOTS = self::SLOTS_PER_SHELF * 2;
-	private const SLOTS_PER_SHELF = 3;
-
 	/**
-	 * @var (WritableBookBase|Book)[] $books
-	 * @phpstan-var array<int, Book|WritableBookBase>
+	 * @var ChiseledBookshelfSlot[]
+	 * @phpstan-var array<int, ChiseledBookshelfSlot>
 	 */
-	private array $books = [];
+	private array $slots = [];
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
-		$w->chiseledBookshelfSlots($this->books);
+		$w->chiseledBookshelfSlots($this->slots);
 	}
 
-	public function readStateFromWorld() : Block{
-		parent::readStateFromWorld();
-		$tile = $this->position->getWorld()->getTile($this->position);
-		if($tile instanceof TileChiseledBookshelf){
-			$this->books = $tile->getBooks();
-		}
-		return $this;
+	/**
+	 * Returns whether the given slot is displayed as occupied.
+	 * This doesn't guarantee that there is or isn't a book in the bookshelf's inventory.
+	 */
+	public function hasSlot(ChiseledBookshelfSlot $slot) : bool{
+		return isset($this->slots[spl_object_id($slot)]);
 	}
 
-	public function writeStateToWorld() : void{
-		parent::writeStateToWorld();
-		$tile = $this->position->getWorld()->getTile($this->position);
-		if($tile instanceof TileChiseledBookshelf){
-			$tile->setBooks($this->books);
-		}
-	}
-
-	public function getBook(int $slot) : WritableBookBase|Book|null{
-		return $this->books[$slot] ?? null;
-	}
-
-	public function setBook(int $slot, WritableBookBase|Book|null $item) : self{
-		if($slot < 0 || $slot >= self::SLOTS){
-			throw new \InvalidArgumentException("Cannot set a book in nonexisting bookshelf slot $slot");
-		}
-		if($item === null){
-			unset($this->books[$slot]);
+	/**
+	 * Sets whether the given slot is displayed as occupied.
+	 *
+	 * This doesn't modify the bookshelf's inventory, so you can use this to make invisible
+	 * books or display books that aren't actually in the bookshelf.
+	 *
+	 * To modify the contents of the bookshelf inventory, access the tile inventory.
+	 *
+	 * @return $this
+	 */
+	public function setSlot(ChiseledBookshelfSlot $slot, bool $occupied) : self{
+		if($occupied){
+			$this->slots[spl_object_id($slot)] = $slot;
 		}else{
-			$this->books[$slot] = $item;
+			unset($this->slots[spl_object_id($slot)]);
 		}
 		return $this;
 	}
 
 	/**
-	 * @param (WritableBookBase|Book)[] $books
-	 * @phpstan-param array<int, Book|WritableBookBase> $books
+	 * Returns which slots of the bookshelf are displayed as occupied.
+	 * As above, these values do not necessarily reflect the contents of the bookshelf inventory,
+	 * although they usually will unless modified by plugins.
+	 *
+	 * @return ChiseledBookshelfSlot[]
+	 * @phpstan-return array<int, ChiseledBookshelfSlot>
 	 */
-	public function setBooks(array $books) : self{
-		if(count($books) > self::SLOTS){
-			throw new \InvalidArgumentException("Expected at most " . self::SLOTS . " books, but have " . count($books));
-		}
-		foreach($books as $slot => $book){
-			if(!is_int($slot) || $slot < 0 || $slot >= self::SLOTS){
-				throw new \InvalidArgumentException("Cannot set a book in nonexisting bookshelf slot $slot");
-			}
-		}
-		ksort($books, SORT_NUMERIC);
-		$this->books = Utils::cloneObjectArray($books);
-		return $this;
-	}
-
-	/**
-	 * @return (WritableBookBase|Book)[]
-	 * @phpstan-return array<int, Book|WritableBookBase>
-	 */
-	public function getBooks() : array{
-		return Utils::cloneObjectArray($this->books);
+	public function getSlots() : array{
+		return $this->slots;
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
@@ -122,19 +96,24 @@ class ChiseledBookshelf extends Opaque{
 			return false;
 		}
 
-		$horizontalOffset = (Facing::axis($face) === Axis::X ? $clickVector->getZ() : $clickVector->getX());
-		$slot = ($clickVector->y < 0.5 ? self::SLOTS_PER_SHELF : 0) + match (true) {
-				//we can't use simple maths here as the action is aligned to the 16x16 pixel grid :(
-				$horizontalOffset < 6 / 16 => 0,
-				$horizontalOffset < 11 / 16 => 1,
-				default => 2
-			};
+		$slot = ChiseledBookshelfSlot::fromBlockFaceCoordinates(
+			Facing::axis($face) === Axis::X ? $clickVector->getZ() : $clickVector->getX(),
+			$clickVector->y
+		);
+		$tile = $this->position->getWorld()->getTile($this->position);
+		if(!$tile instanceof TileChiseledBookshelf){
+			return false;
+		}
 
-		if(($existing = $this->getBook($slot)) !== null){
-			$returnedItems[] = $existing;
-			$this->setBook($slot, null);
+		$inventory = $tile->getInventory();
+		if(!$inventory->isSlotEmpty($slot->value)){
+			$returnedItems[] = $inventory->getItem($slot->value);
+			$inventory->clear($slot->value);
+			$this->setSlot($slot, false);
 		}elseif($item instanceof WritableBookBase || $item instanceof Book){
-			$this->setBook($slot, $item->pop());
+			//TODO: tags like blocks would be better for this
+			$inventory->setItem($slot->value, $item);
+			$this->setSlot($slot, true);
 		}else{
 			return true;
 		}
@@ -144,14 +123,10 @@ class ChiseledBookshelf extends Opaque{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		return $this->books;
+		return [];
 	}
 
 	public function isAffectedBySilkTouch() : bool{
 		return true;
-	}
-
-	public function getSilkTouchDrops(Item $item) : array{
-		return [$this->asItem(), ...$this->books];
 	}
 }
