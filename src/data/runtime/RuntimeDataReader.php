@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\data\runtime;
 
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\block\utils\RailConnectionInfo;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Axis;
@@ -209,6 +210,20 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 		}
 
 		$railShape = $result;
+	}
+
+	/**
+	 * @param ChiseledBookshelfSlot[] $slots
+	 * @phpstan-param array<int, ChiseledBookshelfSlot> $slots
+	 */
+	public function chiseledBookshelfSlots(array &$slots) : void{
+		$result = [];
+		foreach(ChiseledBookshelfSlot::cases() as $member){
+			if($this->readBool()){
+				$result[spl_object_id($member)] = $member;
+			}
+		}
+		$slots = $result;
 	}
 
 	public function enum(\UnitEnum &$case) : void{

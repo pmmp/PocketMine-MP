@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\data\runtime;
 
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Facing;
 
@@ -77,6 +78,12 @@ interface RuntimeDataDescriber extends RuntimeEnumDescriber{
 	public function railShape(int &$railShape) : void;
 
 	public function straightOnlyRailShape(int &$railShape) : void;
+
+	/**
+	 * @param ChiseledBookshelfSlot[] $slots
+	 * @phpstan-param array<int, ChiseledBookshelfSlot> $slots
+	 */
+	public function chiseledBookshelfSlots(array &$slots) : void;
 
 	/**
 	 * @phpstan-template T of \UnitEnum

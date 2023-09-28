@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\data\runtime;
 
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -172,6 +173,16 @@ final class RuntimeDataWriter implements RuntimeDataDescriber{
 
 	public function straightOnlyRailShape(int &$railShape) : void{
 		$this->int(3, $railShape);
+	}
+
+	/**
+	 * @param ChiseledBookshelfSlot[] $slots
+	 * @phpstan-param array<int, ChiseledBookshelfSlot> $slots
+	 */
+	public function chiseledBookshelfSlots(array &$slots) : void{
+		foreach(ChiseledBookshelfSlot::cases() as $member){
+			$this->writeBool(isset($slots[spl_object_id($member)]));
+		}
 	}
 
 	public function enum(\UnitEnum &$case) : void{

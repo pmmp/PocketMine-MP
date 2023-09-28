@@ -230,6 +230,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("chemistry_table", fn() => Blocks::COMPOUND_CREATOR());
 		$result->registerBlock("chest", fn() => Blocks::CHEST());
 		$result->registerBlock("chipped_anvil", fn() => Blocks::ANVIL()->setDamage(1));
+		$result->registerBlock("chiseled_bookshelf", fn() => Blocks::CHISELED_BOOKSHELF());
 		$result->registerBlock("chiseled_deepslate", fn() => Blocks::CHISELED_DEEPSLATE());
 		$result->registerBlock("chiseled_nether_bricks", fn() => Blocks::CHISELED_NETHER_BRICKS());
 		$result->registerBlock("chiseled_polished_blackstone", fn() => Blocks::CHISELED_POLISHED_BLACKSTONE());

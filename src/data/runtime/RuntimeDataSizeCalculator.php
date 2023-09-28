@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\data\runtime;
 
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\math\Facing;
 use function count;
 
@@ -94,6 +95,10 @@ final class RuntimeDataSizeCalculator implements RuntimeDataDescriber{
 
 	public function straightOnlyRailShape(int &$railShape) : void{
 		$this->addBits(3);
+	}
+
+	public function chiseledBookshelfSlots(array &$slots) : void{
+		$this->addBits(count(ChiseledBookshelfSlot::cases()));
 	}
 
 	public function enum(\UnitEnum &$case) : void{
