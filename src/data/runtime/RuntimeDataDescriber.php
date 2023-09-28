@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\data\runtime;
 
 use pocketmine\block\utils\BrewingStandSlot;
-use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Facing;
 
