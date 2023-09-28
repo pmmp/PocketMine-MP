@@ -30,7 +30,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\world\World;
 use function count;
 
-class ChiseledBookshelf extends Spawnable implements Container{
+class ChiseledBookshelf extends Tile implements Container{
 	use ContainerTrait;
 
 	private SimpleInventory $inventory;
@@ -54,9 +54,5 @@ class ChiseledBookshelf extends Spawnable implements Container{
 
 	public function writeSaveData(CompoundTag $nbt) : void{
 		$this->saveItems($nbt);
-	}
-
-	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
-
 	}
 }
