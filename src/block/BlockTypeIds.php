@@ -742,8 +742,11 @@ final class BlockTypeIds{
 	public const CHISELED_BOOKSHELF = 10712;
 	public const TORCHFLOWER = 10713;
 	public const TORCHFLOWER_CROP = 10714;
+	public const PITCHER_PLANT = 10715;
+	public const PITCHER_CROP = 10716;
+	public const DOUBLE_PITCHER_CROP = 10717;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10715;
+	public const FIRST_UNUSED_BLOCK_ID = 10718;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 

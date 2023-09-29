@@ -65,6 +65,7 @@ use pocketmine\block\DaylightSensor;
 use pocketmine\block\DetectorRail;
 use pocketmine\block\Dirt;
 use pocketmine\block\Door;
+use pocketmine\block\DoublePitcherCrop;
 use pocketmine\block\DoublePlant;
 use pocketmine\block\DoubleTallGrass;
 use pocketmine\block\DyedCandle;
@@ -103,6 +104,7 @@ use pocketmine\block\NetherPortal;
 use pocketmine\block\NetherVines;
 use pocketmine\block\NetherWartPlant;
 use pocketmine\block\PinkPetals;
+use pocketmine\block\PitcherCrop;
 use pocketmine\block\Potato;
 use pocketmine\block\PoweredRail;
 use pocketmine\block\PumpkinStem;
@@ -1457,6 +1459,20 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeInt(StateNames::GROWTH, $block->getCount() - 1);
 		});
 		$this->map(Blocks::PINK_TULIP(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_TULIP_PINK));
+		$this->map(Blocks::PITCHER_PLANT(), function(DoublePlant $block) : Writer{
+			return Writer::create(Ids::PITCHER_PLANT)
+				->writeBool(StateNames::UPPER_BLOCK_BIT, $block->isTop());
+		});
+		$this->map(Blocks::PITCHER_CROP(), function(PitcherCrop $block) : Writer{
+			return Writer::create(Ids::PITCHER_CROP)
+				->writeInt(StateNames::GROWTH, $block->getAge())
+				->writeBool(StateNames::UPPER_BLOCK_BIT, false);
+		});
+		$this->map(Blocks::DOUBLE_PITCHER_CROP(), function(DoublePitcherCrop $block) : Writer{
+			return Writer::create(Ids::PITCHER_CROP)
+				->writeInt(StateNames::GROWTH, $block->getAge() + 1 + PitcherCrop::MAX_AGE)
+				->writeBool(StateNames::UPPER_BLOCK_BIT, $block->isTop());
+		});
 		$this->map(Blocks::POLISHED_ANDESITE(), fn() => Helper::encodeStone(StringValues::STONE_TYPE_ANDESITE_SMOOTH));
 		$this->map(Blocks::POLISHED_ANDESITE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab3($block, StringValues::STONE_SLAB_TYPE_3_POLISHED_ANDESITE));
 		$this->mapStairs(Blocks::POLISHED_ANDESITE_STAIRS(), Ids::POLISHED_ANDESITE_STAIRS);

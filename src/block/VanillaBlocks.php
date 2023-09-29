@@ -284,6 +284,7 @@ use function strtolower;
  * @method static Stair DIORITE_STAIRS()
  * @method static Wall DIORITE_WALL()
  * @method static Dirt DIRT()
+ * @method static DoublePitcherCrop DOUBLE_PITCHER_CROP()
  * @method static DoubleTallGrass DOUBLE_TALLGRASS()
  * @method static DragonEgg DRAGON_EGG()
  * @method static DriedKelp DRIED_KELP()
@@ -579,6 +580,8 @@ use function strtolower;
  * @method static DoublePlant PEONY()
  * @method static PinkPetals PINK_PETALS()
  * @method static Flower PINK_TULIP()
+ * @method static PitcherCrop PITCHER_CROP()
+ * @method static DoublePlant PITCHER_PLANT()
  * @method static Podzol PODZOL()
  * @method static Opaque POLISHED_ANDESITE()
  * @method static Slab POLISHED_ANDESITE_SLAB()
@@ -852,6 +855,9 @@ final class VanillaBlocks{
 		self::register("pink_petals", new PinkPetals(new BID(Ids::PINK_PETALS), "Pink Petals", new Info(BreakInfo::instant())));
 		self::register("double_tallgrass", new DoubleTallGrass(new BID(Ids::DOUBLE_TALLGRASS), "Double Tallgrass", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
 		self::register("large_fern", new DoubleTallGrass(new BID(Ids::LARGE_FERN), "Large Fern", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
+		self::register("pitcher_plant", new DoublePlant(new BID(Ids::PITCHER_PLANT), "Pitcher Plant", new Info(BreakInfo::instant())));
+		self::register("pitcher_crop", new PitcherCrop(new BID(Ids::PITCHER_CROP), "Pitcher Crop", new Info(BreakInfo::instant())));
+		self::register("double_pitcher_crop", new DoublePitcherCrop(new BID(Ids::DOUBLE_PITCHER_CROP), "Double Pitcher Crop", new Info(BreakInfo::instant())));
 		self::register("dragon_egg", new DragonEgg(new BID(Ids::DRAGON_EGG), "Dragon Egg", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD))));
 		self::register("dried_kelp", new DriedKelp(new BID(Ids::DRIED_KELP), "Dried Kelp Block", new Info(new BreakInfo(0.5, ToolType::NONE, 0, 12.5))));
 		self::register("emerald", new Opaque(new BID(Ids::EMERALD), "Emerald Block", new Info(BreakInfo::pickaxe(5.0, ToolTier::IRON, 30.0))));

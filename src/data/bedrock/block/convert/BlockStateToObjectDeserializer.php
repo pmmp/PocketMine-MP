@@ -28,8 +28,10 @@ use pocketmine\block\Bamboo;
 use pocketmine\block\Block;
 use pocketmine\block\CaveVines;
 use pocketmine\block\ChorusFlower;
+use pocketmine\block\DoublePitcherCrop;
 use pocketmine\block\Light;
 use pocketmine\block\PinkPetals;
+use pocketmine\block\PitcherCrop;
 use pocketmine\block\Slab;
 use pocketmine\block\Stair;
 use pocketmine\block\SweetBerryBush;
@@ -1295,6 +1297,22 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::PINK_PETALS()
 				->setFacing($in->readCardinalHorizontalFacing())
 				->setCount(min($growth + 1, PinkPetals::MAX_COUNT));
+		});
+		$this->map(Ids::PITCHER_CROP, function(Reader $in) : Block{
+			$growth = $in->readBoundedInt(StateNames::GROWTH, 0, 7);
+			$top = $in->readBool(StateNames::UPPER_BLOCK_BIT);
+			if($growth <= PitcherCrop::MAX_AGE){
+				//top pitcher crop with age 0-2 is an invalid state
+				//only the bottom half should exist in this case
+				return $top ? Blocks::AIR() : Blocks::PITCHER_CROP()->setAge($growth);
+			}
+			return Blocks::DOUBLE_PITCHER_CROP()
+				->setAge(min($growth - PitcherCrop::MAX_AGE - 1, DoublePitcherCrop::MAX_AGE))
+				->setTop($top);
+		});
+		$this->map(Ids::PITCHER_PLANT, function(Reader $in) : Block{
+			return Blocks::PITCHER_PLANT()
+				->setTop($in->readBool(StateNames::UPPER_BLOCK_BIT));
 		});
 		$this->mapStairs(Ids::POLISHED_ANDESITE_STAIRS, fn() => Blocks::POLISHED_ANDESITE_STAIRS());
 		$this->map(Ids::POLISHED_BASALT, function(Reader $in) : Block{
