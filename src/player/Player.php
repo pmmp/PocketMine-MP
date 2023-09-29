@@ -2332,7 +2332,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$nbt->setInt(self::TAG_GAME_MODE, GameModeIdMap::getInstance()->toId($this->gamemode));
 		$nbt->setLong(self::TAG_FIRST_PLAYED, (int) $this->firstPlayed->format('Uv'));
-		$nbt->setLong(self::TAG_LAST_PLAYED, (int) (new DateTimeImmutable())->format('Uv'));
+		$nbt->setLong(self::TAG_LAST_PLAYED, (int) floor(microtime(true) * 1000));
 
 		return $nbt;
 	}
