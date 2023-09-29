@@ -144,6 +144,7 @@ use function array_shift;
 use function assert;
 use function count;
 use function explode;
+use function floor;
 use function get_class;
 use function is_int;
 use function max;
