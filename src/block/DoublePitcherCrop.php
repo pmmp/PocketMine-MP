@@ -97,7 +97,7 @@ final class DoublePitcherCrop extends DoublePlant{
 	}
 
 	public function ticksRandomly() : bool{
-		return true;
+		return $this->age < self::MAX_AGE && !$this->top;
 	}
 
 	public function onRandomTick() : void{

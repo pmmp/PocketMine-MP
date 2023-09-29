@@ -59,10 +59,6 @@ class NetherVines extends Flowable{
 		return true;
 	}
 
-	public function ticksRandomly() : bool{
-		return true;
-	}
-
 	public function canClimb() : bool{
 		return true;
 	}
@@ -96,6 +92,10 @@ class NetherVines extends Flowable{
 			return true;
 		}
 		return false;
+	}
+
+	public function ticksRandomly() : bool{
+		return $this->age < self::MAX_AGE;
 	}
 
 	public function onRandomTick() : void{
