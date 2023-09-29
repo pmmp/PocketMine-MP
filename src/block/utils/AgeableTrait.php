@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\data\runtime\RuntimeDataDescriber;
-use function ceil;
 use function log;
 
 /**
