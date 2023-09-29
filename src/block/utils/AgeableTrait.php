@@ -35,7 +35,7 @@ trait AgeableTrait{
 	protected int $age = 0;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt((int) ceil(log(self::MAX_AGE, 2)), 0, self::MAX_AGE, $this->age);
+		$w->boundedInt(((int) log(self::MAX_AGE, 2)) + 1, 0, self::MAX_AGE, $this->age);
 	}
 
 	public function getAge() : int{ return $this->age; }
