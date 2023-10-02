@@ -77,13 +77,13 @@ class Dirt extends Opaque{
 
 			return true;
 		}elseif($this->dirtType->equals(DirtType::ROOTED()) && $item instanceof Fertilizer){
-			$up = $this->getSide(Facing::DOWN);
-			if($up->getTypeId() !== BlockTypeIds::AIR){
+			$down = $this->getSide(Facing::DOWN);
+			if($down->getTypeId() !== BlockTypeIds::AIR){
 				return true;
 			}
 
 			$item->pop();
-			$world->setBlock($up->position, VanillaBlocks::HANGING_ROOTS());
+			$world->setBlock($down->position, VanillaBlocks::HANGING_ROOTS());
 			//TODO: bonemeal particles, growth sounds
 		}elseif(($item instanceof Potion || $item instanceof SplashPotion) && $item->getType()->equals(PotionType::WATER())){
 			$item->pop();
