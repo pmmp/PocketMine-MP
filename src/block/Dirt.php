@@ -60,8 +60,8 @@ class Dirt extends Opaque{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$world = $this->position->getWorld();
 		if($face !== Facing::DOWN && $item instanceof Hoe){
-			$down = $this->getSide(Facing::UP);
-			if($down->getTypeId() !== BlockTypeIds::AIR){
+			$up = $this->getSide(Facing::UP);
+			if($up->getTypeId() !== BlockTypeIds::AIR){
 				return true;
 			}
 
@@ -77,13 +77,13 @@ class Dirt extends Opaque{
 
 			return true;
 		}elseif($this->dirtType->equals(DirtType::ROOTED()) && $item instanceof Fertilizer){
-			$down = $this->getSide(Facing::DOWN);
-			if($down->getTypeId() !== BlockTypeIds::AIR){
+			$up = $this->getSide(Facing::DOWN);
+			if($up->getTypeId() !== BlockTypeIds::AIR){
 				return true;
 			}
 
 			$item->pop();
-			$world->setBlock($down->position, VanillaBlocks::HANGING_ROOTS());
+			$world->setBlock($up->position, VanillaBlocks::HANGING_ROOTS());
 			//TODO: bonemeal particles, growth sounds
 		}elseif(($item instanceof Potion || $item instanceof SplashPotion) && $item->getType()->equals(PotionType::WATER())){
 			$item->pop();
