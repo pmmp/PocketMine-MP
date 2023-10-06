@@ -24,9 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Chest as TileChest;
-use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\HopperTransferHelper;
+use pocketmine\block\utils\HopperInteractableContainerTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\ChestPairEvent;
 use pocketmine\item\Item;
@@ -36,6 +35,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
 class Chest extends Transparent implements HopperInteractable{
+	use HopperInteractableContainerTrait;
 	use FacesOppositePlacingPlayerTrait;
 
 	/**
@@ -98,37 +98,4 @@ class Chest extends Transparent implements HopperInteractable{
 		return 300;
 	}
 
-	public function doHopperPush(Hopper $hopperBlock) : bool{
-		$currentTile = $this->position->getWorld()->getTile($this->position);
-		if(!$currentTile instanceof TileChest){
-			return false;
-		}
-
-		$tileHopper = $this->position->getWorld()->getTile($hopperBlock->position);
-		if(!$tileHopper instanceof TileHopper){
-			return false;
-		}
-
-		return HopperTransferHelper::transferOneItem(
-			$tileHopper->getInventory(),
-			$currentTile->getInventory()
-		);
-	}
-
-	public function doHopperPull(Hopper $hopperBlock) : bool{
-		$currentTile = $this->position->getWorld()->getTile($this->position);
-		if(!$currentTile instanceof TileChest){
-			return false;
-		}
-
-		$tileHopper = $this->position->getWorld()->getTile($hopperBlock->position);
-		if(!$tileHopper instanceof TileHopper){
-			return false;
-		}
-
-		return HopperTransferHelper::transferOneItem(
-			$currentTile->getInventory(),
-			$tileHopper->getInventory()
-		);
-	}
 }
