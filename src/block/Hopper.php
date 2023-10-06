@@ -145,10 +145,16 @@ class Hopper extends Transparent implements HopperInteractable{
 			return false;
 		}
 
-		return HopperTransferHelper::transferOneItem(
+		if(HopperTransferHelper::transferOneItem(
 			$tileHopper->getInventory(),
 			$currentTile->getInventory()
-		);
+		)){
+			$hopperBlock->lastActionTick = $this->position->getWorld()->getServer()->getTick();
+			$hopperBlock->position->getWorld()->scheduleDelayedBlockUpdate($hopperBlock->position, self::TRANSFER_COOLDOWN);
+			return true;
+		}
+
+		return false;
 	}
 
 	public function doHopperPull(Hopper $hopperBlock) : bool{
