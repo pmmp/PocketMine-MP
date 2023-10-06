@@ -47,7 +47,7 @@ class Chest extends Transparent implements HopperInteractable{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function onPostPlace() : void{

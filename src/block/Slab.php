@@ -34,19 +34,18 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Slab extends Transparent{
-	protected SlabType $slabType;
+	protected SlabType $slabType = SlabType::BOTTOM;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->slabType = SlabType::BOTTOM();
 		parent::__construct($idInfo, $name . " Slab", $typeInfo);
 	}
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->slabType($this->slabType);
+		$w->enum($this->slabType);
 	}
 
 	public function isTransparent() : bool{
-		return !$this->slabType->equals(SlabType::DOUBLE());
+		return $this->slabType !== SlabType::DOUBLE;
 	}
 
 	/**
@@ -69,8 +68,8 @@ class Slab extends Transparent{
 			return true;
 		}
 
-		if($blockReplace instanceof Slab && !$blockReplace->slabType->equals(SlabType::DOUBLE()) && $blockReplace->hasSameTypeId($this)){
-			if($blockReplace->slabType->equals(SlabType::TOP())){ //Trying to combine with top slab
+		if($blockReplace instanceof Slab && $blockReplace->slabType !== SlabType::DOUBLE && $blockReplace->hasSameTypeId($this)){
+			if($blockReplace->slabType === SlabType::TOP){ //Trying to combine with top slab
 				return $clickVector->y <= 0.5 || (!$isClickedBlock && $face === Facing::UP);
 			}else{
 				return $clickVector->y >= 0.5 || (!$isClickedBlock && $face === Facing::DOWN);
@@ -81,14 +80,14 @@ class Slab extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($blockReplace instanceof Slab && !$blockReplace->slabType->equals(SlabType::DOUBLE()) && $blockReplace->hasSameTypeId($this) && (
-			($blockReplace->slabType->equals(SlabType::TOP()) && ($clickVector->y <= 0.5 || $face === Facing::UP)) ||
-			($blockReplace->slabType->equals(SlabType::BOTTOM()) && ($clickVector->y >= 0.5 || $face === Facing::DOWN))
+		if($blockReplace instanceof Slab && $blockReplace->slabType !== SlabType::DOUBLE && $blockReplace->hasSameTypeId($this) && (
+			($blockReplace->slabType === SlabType::TOP && ($clickVector->y <= 0.5 || $face === Facing::UP)) ||
+			($blockReplace->slabType === SlabType::BOTTOM && ($clickVector->y >= 0.5 || $face === Facing::DOWN))
 		)){
 			//Clicked in empty half of existing slab
-			$this->slabType = SlabType::DOUBLE();
+			$this->slabType = SlabType::DOUBLE;
 		}else{
-			$this->slabType = (($face !== Facing::UP && $clickVector->y > 0.5) || $face === Facing::DOWN) ? SlabType::TOP() : SlabType::BOTTOM();
+			$this->slabType = (($face !== Facing::UP && $clickVector->y > 0.5) || $face === Facing::DOWN) ? SlabType::TOP : SlabType::BOTTOM;
 		}
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
@@ -98,22 +97,22 @@ class Slab extends Transparent{
 	 * @return AxisAlignedBB[]
 	 */
 	protected function recalculateCollisionBoxes() : array{
-		if($this->slabType->equals(SlabType::DOUBLE())){
+		if($this->slabType === SlabType::DOUBLE){
 			return [AxisAlignedBB::one()];
 		}
-		return [AxisAlignedBB::one()->trim($this->slabType->equals(SlabType::TOP()) ? Facing::DOWN : Facing::UP, 0.5)];
+		return [AxisAlignedBB::one()->trim($this->slabType === SlabType::TOP ? Facing::DOWN : Facing::UP, 0.5)];
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		if($this->slabType->equals(SlabType::DOUBLE())){
-			return SupportType::FULL();
-		}elseif(($facing === Facing::UP && $this->slabType->equals(SlabType::TOP())) || ($facing === Facing::DOWN && $this->slabType->equals(SlabType::BOTTOM()))){
-			return SupportType::FULL();
+		if($this->slabType === SlabType::DOUBLE){
+			return SupportType::FULL;
+		}elseif(($facing === Facing::UP && $this->slabType === SlabType::TOP) || ($facing === Facing::DOWN && $this->slabType === SlabType::BOTTOM)){
+			return SupportType::FULL;
 		}
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		return [$this->asItem()->setCount($this->slabType->equals(SlabType::DOUBLE()) ? 2 : 1)];
+		return [$this->asItem()->setCount($this->slabType === SlabType::DOUBLE ? 2 : 1)];
 	}
 }

@@ -27,13 +27,13 @@ declare(strict_types=1);
  */
 namespace pocketmine\wizard;
 
-use pocketmine\data\java\GameModeIdMap;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\lang\Translatable;
 use pocketmine\player\GameMode;
 use pocketmine\Server;
+use pocketmine\ServerProperties;
 use pocketmine\utils\Config;
 use pocketmine\utils\Internet;
 use pocketmine\utils\InternetException;
@@ -48,8 +48,11 @@ use const PHP_EOL;
 use const STDIN;
 
 class SetupWizard{
+	/** @deprecated */
 	public const DEFAULT_NAME = Server::DEFAULT_SERVER_NAME;
+	/** @deprecated */
 	public const DEFAULT_PORT = Server::DEFAULT_PORT_IPV4;
+	/** @deprecated */
 	public const DEFAULT_PLAYERS = Server::DEFAULT_MAX_PLAYERS;
 
 	private Language $lang;
@@ -91,7 +94,7 @@ class SetupWizard{
 
 		//this has to happen here to prevent user avoiding agreeing to license
 		$config = new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES);
-		$config->set("language", $lang);
+		$config->set(ServerProperties::LANGUAGE, $lang);
 		$config->save();
 
 		if(strtolower($this->getInput($this->lang->translate(KnownTranslationFactory::skip_installer()), "n", "y/N")) === "y"){
@@ -101,10 +104,12 @@ class SetupWizard{
 
 		$this->writeLine();
 		$this->welcome();
-		$this->generateBaseConfig();
-		$this->generateUserFiles();
 
-		$this->networkFunctions();
+		$this->generateBaseConfig($config);
+		$this->generateUserFiles($config);
+		$this->networkFunctions($config);
+		$config->save();
+
 		$this->printIpDetails();
 
 		$this->endWizard();
@@ -151,32 +156,33 @@ LICENSE;
 		}
 	}
 
-	private function generateBaseConfig() : void{
-		$config = new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES);
-
-		$config->set("motd", ($name = $this->getInput($this->lang->translate(KnownTranslationFactory::name_your_server()), self::DEFAULT_NAME)));
-		$config->set("server-name", $name);
+	private function generateBaseConfig(Config $config) : void{
+		$config->set(ServerProperties::MOTD, ($name = $this->getInput($this->lang->translate(KnownTranslationFactory::name_your_server()), Server::DEFAULT_SERVER_NAME)));
 
 		$this->message($this->lang->translate(KnownTranslationFactory::port_warning()));
 
-		$config->set("server-port", $this->askPort(KnownTranslationFactory::server_port_v4(), Server::DEFAULT_PORT_IPV4));
-		$config->set("server-portv6", $this->askPort(KnownTranslationFactory::server_port_v6(), Server::DEFAULT_PORT_IPV6));
+		$config->set(ServerProperties::SERVER_PORT_IPV4, $this->askPort(KnownTranslationFactory::server_port_v4(), Server::DEFAULT_PORT_IPV4));
+		$config->set(ServerProperties::SERVER_PORT_IPV6, $this->askPort(KnownTranslationFactory::server_port_v6(), Server::DEFAULT_PORT_IPV6));
 
 		$this->message($this->lang->translate(KnownTranslationFactory::gamemode_info()));
 
 		do{
-			$gamemode = GameModeIdMap::getInstance()->fromId((int) $this->getInput($this->lang->translate(KnownTranslationFactory::default_gamemode()), (string) GameModeIdMap::getInstance()->toId(GameMode::SURVIVAL())));
+			$input = (int) $this->getInput($this->lang->translate(KnownTranslationFactory::default_gamemode()), "0");
+			$gamemode = match($input){
+				0 => GameMode::SURVIVAL,
+				1 => GameMode::CREATIVE,
+				default => null
+			};
 		}while($gamemode === null);
-		$config->set("gamemode", $gamemode->name());
+		//TODO: this probably shouldn't use the enum name directly
+		$config->set(ServerProperties::GAME_MODE, $gamemode->name);
 
-		$config->set("max-players", (int) $this->getInput($this->lang->translate(KnownTranslationFactory::max_players()), (string) self::DEFAULT_PLAYERS));
+		$config->set(ServerProperties::MAX_PLAYERS, (int) $this->getInput($this->lang->translate(KnownTranslationFactory::max_players()), (string) Server::DEFAULT_MAX_PLAYERS));
 
-		$config->set("view-distance", (int) $this->getInput($this->lang->translate(KnownTranslationFactory::view_distance()), (string) Server::DEFAULT_MAX_VIEW_DISTANCE));
-
-		$config->save();
+		$config->set(ServerProperties::VIEW_DISTANCE, (int) $this->getInput($this->lang->translate(KnownTranslationFactory::view_distance()), (string) Server::DEFAULT_MAX_VIEW_DISTANCE));
 	}
 
-	private function generateUserFiles() : void{
+	private function generateUserFiles(Config $config) : void{
 		$this->message($this->lang->translate(KnownTranslationFactory::op_info()));
 
 		$op = strtolower($this->getInput($this->lang->translate(KnownTranslationFactory::op_who()), ""));
@@ -190,27 +196,22 @@ LICENSE;
 
 		$this->message($this->lang->translate(KnownTranslationFactory::whitelist_info()));
 
-		$config = new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES);
 		if(strtolower($this->getInput($this->lang->translate(KnownTranslationFactory::whitelist_enable()), "n", "y/N")) === "y"){
 			$this->error($this->lang->translate(KnownTranslationFactory::whitelist_warning()));
-			$config->set("white-list", true);
+			$config->set(ServerProperties::WHITELIST, true);
 		}else{
-			$config->set("white-list", false);
+			$config->set(ServerProperties::WHITELIST, false);
 		}
-		$config->save();
 	}
 
-	private function networkFunctions() : void{
-		$config = new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES);
+	private function networkFunctions(Config $config) : void{
 		$this->error($this->lang->translate(KnownTranslationFactory::query_warning1()));
 		$this->error($this->lang->translate(KnownTranslationFactory::query_warning2()));
 		if(strtolower($this->getInput($this->lang->translate(KnownTranslationFactory::query_disable()), "n", "y/N")) === "y"){
-			$config->set("enable-query", false);
+			$config->set(ServerProperties::ENABLE_QUERY, false);
 		}else{
-			$config->set("enable-query", true);
+			$config->set(ServerProperties::ENABLE_QUERY, true);
 		}
-
-		$config->save();
 	}
 
 	private function printIpDetails() : void{

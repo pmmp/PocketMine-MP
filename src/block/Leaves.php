@@ -33,7 +33,6 @@ use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\World;
 use function mt_rand;
@@ -111,15 +110,20 @@ class Leaves extends Transparent{
 	}
 
 	public function ticksRandomly() : bool{
-		return true;
+		return !$this->noDecay && $this->checkDecay;
 	}
 
 	public function onRandomTick() : void{
 		if(!$this->noDecay && $this->checkDecay){
-			$ev = new LeavesDecayEvent($this);
-			$ev->call();
+			$cancelled = false;
+			if(LeavesDecayEvent::hasHandlers()){
+				$ev = new LeavesDecayEvent($this);
+				$ev->call();
+				$cancelled = $ev->isCancelled();
+			}
+
 			$world = $this->position->getWorld();
-			if($ev->isCancelled() || $this->findLog($this->position)){
+			if($cancelled || $this->findLog($this->position)){
 				$this->checkDecay = false;
 				$world->setBlock($this->position, $this, false);
 			}else{
@@ -142,23 +146,22 @@ class Leaves extends Transparent{
 		if(FortuneDropHelper::bonusChanceDivisor($item, 20, 4)){ //Saplings
 			// TODO: according to the wiki, the jungle saplings have a different drop rate
 			$sapling = (match($this->leavesType){
-				LeavesType::ACACIA() => VanillaBlocks::ACACIA_SAPLING(),
-				LeavesType::BIRCH() => VanillaBlocks::BIRCH_SAPLING(),
-				LeavesType::DARK_OAK() => VanillaBlocks::DARK_OAK_SAPLING(),
-				LeavesType::JUNGLE() => VanillaBlocks::JUNGLE_SAPLING(),
-				LeavesType::OAK() => VanillaBlocks::OAK_SAPLING(),
-				LeavesType::SPRUCE() => VanillaBlocks::SPRUCE_SAPLING(),
-				LeavesType::MANGROVE(), //TODO: mangrove propagule
-				LeavesType::AZALEA(), LeavesType::FLOWERING_AZALEA() => null, //TODO: azalea
-				LeavesType::CHERRY() => null, //TODO: cherry
-				default => throw new AssumptionFailedError("Unreachable")
+				LeavesType::ACACIA => VanillaBlocks::ACACIA_SAPLING(),
+				LeavesType::BIRCH => VanillaBlocks::BIRCH_SAPLING(),
+				LeavesType::DARK_OAK => VanillaBlocks::DARK_OAK_SAPLING(),
+				LeavesType::JUNGLE => VanillaBlocks::JUNGLE_SAPLING(),
+				LeavesType::OAK => VanillaBlocks::OAK_SAPLING(),
+				LeavesType::SPRUCE => VanillaBlocks::SPRUCE_SAPLING(),
+				LeavesType::MANGROVE, //TODO: mangrove propagule
+				LeavesType::AZALEA, LeavesType::FLOWERING_AZALEA => null, //TODO: azalea
+				LeavesType::CHERRY => null, //TODO: cherry
 			})?->asItem();
 			if($sapling !== null){
 				$drops[] = $sapling;
 			}
 		}
 		if(
-			($this->leavesType->equals(LeavesType::OAK()) || $this->leavesType->equals(LeavesType::DARK_OAK())) &&
+			($this->leavesType === LeavesType::OAK || $this->leavesType === LeavesType::DARK_OAK) &&
 			FortuneDropHelper::bonusChanceDivisor($item, 200, 20)
 		){ //Apples
 			$drops[] = VanillaItems::APPLE();
@@ -183,6 +186,6 @@ class Leaves extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 }

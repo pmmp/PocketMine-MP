@@ -28,6 +28,7 @@ use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\Server;
 use function error_get_last;
 use function error_reporting;
+use function implode;
 use function register_shutdown_function;
 use function set_exception_handler;
 
@@ -115,6 +116,7 @@ trait CommonThreadPartsTrait{
 	protected function onUncaughtException(\Throwable $e) : void{
 		$this->synchronized(function() use ($e) : void{
 			$this->crashInfo = ThreadCrashInfo::fromThrowable($e, $this->getThreadName());
+			\GlobalLogger::get()->logException($e);
 		});
 	}
 
@@ -124,15 +126,26 @@ trait CommonThreadPartsTrait{
 	 */
 	protected function onShutdown() : void{
 		$this->synchronized(function() : void{
-			if(!$this->isKilled && $this->crashInfo === null){
+			if($this->isTerminated() && $this->crashInfo === null){
 				$last = error_get_last();
 				if($last !== null){
 					//fatal error
-					$this->crashInfo = ThreadCrashInfo::fromLastErrorInfo($last, $this->getThreadName());
+					$crashInfo = ThreadCrashInfo::fromLastErrorInfo($last, $this->getThreadName());
 				}else{
 					//probably misused exit()
-					$this->crashInfo = ThreadCrashInfo::fromThrowable(new \RuntimeException("Thread crashed without an error - perhaps exit() was called?"), $this->getThreadName());
+					$crashInfo = ThreadCrashInfo::fromThrowable(new \RuntimeException("Thread crashed without an error - perhaps exit() was called?"), $this->getThreadName());
 				}
+				$this->crashInfo = $crashInfo;
+
+				$lines = [];
+				//mimic exception printed format
+				$lines[] = "Fatal error: " . $crashInfo->makePrettyMessage();
+				$lines[] = "--- Stack trace ---";
+				foreach($crashInfo->getTrace() as $frame){
+					$lines[] = "  " . $frame->getPrintableFrame();
+				}
+				$lines[] = "--- End of fatal error information ---";
+				\GlobalLogger::get()->critical(implode("\n", $lines));
 			}
 		});
 	}

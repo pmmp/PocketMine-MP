@@ -21,19 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event\player;
+namespace pocketmine\item;
 
-use pocketmine\event\Cancellable;
-use pocketmine\event\CancellableTrait;
-use pocketmine\player\Player;
+use pocketmine\block\Block;
+use pocketmine\block\VanillaBlocks;
 
-/**
- * Called when a player attempts to perform the attack action (left-click) without a target entity.
- */
-class PlayerMissedSwingEvent extends PlayerEvent implements Cancellable{
-	use CancellableTrait;
+final class TorchflowerSeeds extends Item{
 
-	public function __construct(Player $player){
-		$this->player = $player;
+	public function getBlock(?int $clickedFace = null) : Block{
+		return VanillaBlocks::TORCHFLOWER_CROP();
 	}
 }

@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
+use pocketmine\event\block\FarmlandHydrationChangeEvent;
 use pocketmine\event\entity\EntityTrampleFarmlandEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -73,14 +74,22 @@ class Farmland extends Transparent{
 		$world = $this->position->getWorld();
 		if(!$this->canHydrate()){
 			if($this->wetness > 0){
-				$this->wetness--;
-				$world->setBlock($this->position, $this, false);
+				$event = new FarmlandHydrationChangeEvent($this, $this->wetness, $this->wetness - 1);
+				$event->call();
+				if(!$event->isCancelled()){
+					$this->wetness = $event->getNewHydration();
+					$world->setBlock($this->position, $this, false);
+				}
 			}else{
 				$world->setBlock($this->position, VanillaBlocks::DIRT());
 			}
 		}elseif($this->wetness < self::MAX_WETNESS){
-			$this->wetness = self::MAX_WETNESS;
-			$world->setBlock($this->position, $this, false);
+			$event = new FarmlandHydrationChangeEvent($this, $this->wetness, self::MAX_WETNESS);
+			$event->call();
+			if(!$event->isCancelled()){
+				$this->wetness = $event->getNewHydration();
+				$world->setBlock($this->position, $this, false);
+			}
 		}
 	}
 

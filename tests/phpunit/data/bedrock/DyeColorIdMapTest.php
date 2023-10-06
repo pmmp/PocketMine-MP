@@ -29,10 +29,10 @@ use pocketmine\block\utils\DyeColor;
 class DyeColorIdMapTest extends TestCase{
 
 	public function testAllColorsMapped() : void{
-		foreach(DyeColor::getAll() as $color){
+		foreach(DyeColor::cases() as $color){
 			$id = DyeColorIdMap::getInstance()->toId($color);
 			$color2 = DyeColorIdMap::getInstance()->fromId($id);
-			self::assertTrue($color2 !== null && $color->equals($color2));
+			self::assertTrue($color === $color2);
 		}
 	}
 }
