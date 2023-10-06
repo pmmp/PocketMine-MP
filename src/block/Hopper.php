@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Hopper as TileHopper;
-use pocketmine\block\utils\HopperInteractableTrait;
+use pocketmine\block\utils\HopperTransferHelper;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -37,13 +37,12 @@ use pocketmine\world\BlockTransaction;
 
 class Hopper extends Transparent implements HopperInteractable{
 	use PoweredByRedstoneTrait;
-	use HopperInteractableTrait;
 
 	public const TRANSFER_COOLDOWN = 8;
 
 	private int $facing = Facing::DOWN;
 
-	private int $currentCooldown = 0;
+	private int $lastActionTick = 0;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->facingExcept($this->facing, Facing::UP);
@@ -83,8 +82,7 @@ class Hopper extends Transparent implements HopperInteractable{
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->facing = $face === Facing::DOWN ? Facing::DOWN : Facing::opposite($face);
 
-		$world = $this->position->getWorld();
-		$world->scheduleDelayedBlockUpdate($blockReplace->position, self::TRANSFER_COOLDOWN);
+		$this->lastActionTick = $this->position->getWorld()->getServer()->getTick();
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
@@ -103,28 +101,21 @@ class Hopper extends Transparent implements HopperInteractable{
 	public function onScheduledUpdate() : void{
 		$world = $this->position->getWorld();
 
-		$hopperBlock = $this->position->getWorld()->getBlock($this->position);
-		if(!$hopperBlock instanceof Hopper){
-			return;
-		}
-
-		if($this->isOnCooldown()){
-			$this->currentCooldown--;
-		}else{
+		if(!$this->isOnCooldown()){
 			$facingBlock = $this->getSide($this->facing);
-			$pullSuccess = false;
+			$pushSuccess = false;
 			if($facingBlock instanceof HopperInteractable){
-				$pullSuccess = $facingBlock->doHopperPush($hopperBlock);
+				$pushSuccess = $facingBlock->doHopperPush($this);
 			}
 
 			$topBlock = $this->getSide(Facing::UP);
-			$pushSuccess = false;
+			$pullSuccess = false;
 			if($topBlock instanceof HopperInteractable){
-				$pushSuccess = $topBlock->doHopperPull($hopperBlock);
+				$pullSuccess = $topBlock->doHopperPull($this);
 			}
 
 			if($pullSuccess || $pushSuccess){
-				$this->currentCooldown = self::TRANSFER_COOLDOWN;
+				$this->lastActionTick = $world->getServer()->getTick();
 			}
 		}
 
@@ -146,10 +137,10 @@ class Hopper extends Transparent implements HopperInteractable{
 			return false;
 		}
 
-		$sourceInventory = $tileHopper->getInventory();
-		$targetInventory = $currentTile->getInventory();
-
-		return $this->transferItem($sourceInventory, $targetInventory);
+		return HopperTransferHelper::transferOneItem(
+			$tileHopper->getInventory(),
+			$currentTile->getInventory()
+		);
 	}
 
 	public function doHopperPull(Hopper $hopperBlock) : bool{
@@ -167,14 +158,15 @@ class Hopper extends Transparent implements HopperInteractable{
 			return false;
 		}
 
-		$sourceInventory = $currentTile->getInventory();
-		$targetInventory = $tileHopper->getInventory();
-
-		return $this->transferItem($sourceInventory, $targetInventory);
+		return HopperTransferHelper::transferOneItem(
+			$currentTile->getInventory(),
+			$tileHopper->getInventory()
+		);
 	}
 
 	private function isOnCooldown() : bool{
-		return $this->currentCooldown > 0;
+		$currentTick = $this->position->getWorld()->getServer()->getTick();
+		return $currentTick - $this->lastActionTick < self::TRANSFER_COOLDOWN;
 	}
 
 	//TODO: redstone logic, sucking logic

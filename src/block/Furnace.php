@@ -27,6 +27,7 @@ use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\block\utils\HopperTransferHelper;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\inventory\Inventory;
@@ -111,22 +112,20 @@ class Furnace extends Opaque implements HopperInteractable{
 
 		$hopperFacing = $hopperBlock->getFacing();
 
-		for($i = 0; $i < $sourceInventory->getSize(); $i++){
-			$itemStack = $sourceInventory->getItem($i);
-
-			if($itemStack->isNull()){
+		foreach($sourceInventory->getContents() as $item) {
+			if($item->isNull()){
 				continue;
 			}
 
-			$singleItem = $itemStack->pop();
+			$singleItem = $item->pop();
 
 			if($hopperFacing === Facing::DOWN && $targetInventory->canAddSmelting($singleItem)){
 				$this->transferItem($sourceInventory, $targetInventory, $singleItem, FurnaceInventory::SLOT_INPUT);
-				return true;
 			}elseif($hopperFacing !== Facing::DOWN && $targetInventory->canAddFuel($singleItem)){
 				$this->transferItem($sourceInventory, $targetInventory, $singleItem, FurnaceInventory::SLOT_FUEL);
-				return true;
 			}
+
+			return true;
 		}
 
 		return false;
@@ -146,18 +145,11 @@ class Furnace extends Opaque implements HopperInteractable{
 		$sourceInventory = $currentTile->getInventory();
 		$targetInventory = $tileHopper->getInventory();
 
-		$itemStack = $sourceInventory->getResult();
-
-		if($itemStack->isNull()){
-			return false;
-		}
-
-		$singleItem = $itemStack->pop();
-
-		$sourceInventory->removeItem($singleItem);
-		$targetInventory->addItem($singleItem);
-
-		return true;
+		return HopperTransferHelper::transferSpecificItem(
+			$sourceInventory,
+			$targetInventory,
+			$sourceInventory->getResult()
+		);
 	}
 
 	private function transferItem(Inventory $sourceInventory, Inventory $targetInventory, Item $item, int $slot) : void{

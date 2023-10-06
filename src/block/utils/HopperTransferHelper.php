@@ -24,26 +24,33 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\inventory\Inventory;
+use pocketmine\item\Item;
 
-trait HopperInteractableTrait{
-	public function transferItem(Inventory $sourceInventory, Inventory $targetInventory) : bool{
-		foreach($sourceInventory->getContents() as $itemStack){
-			if($itemStack->isNull()){
-				continue;
+class HopperTransferHelper{
+	public static function transferOneItem(Inventory $sourceInventory, Inventory $targetInventory) : bool{
+		foreach($sourceInventory->getContents() as $item){
+			if(self::transferSpecificItem($sourceInventory, $targetInventory, $item)){
+				return true;
 			}
-
-			$singleItem = $itemStack->pop();
-
-			if(!$targetInventory->canAddItem($singleItem)){
-				continue;
-			}
-
-			$sourceInventory->removeItem($singleItem);
-			$targetInventory->addItem($singleItem);
-
-			return true;
 		}
 
 		return false;
+	}
+
+	public static function transferSpecificItem(Inventory $sourceInventory, Inventory $targetInventory, Item $item) : bool{
+		if($item->isNull()){
+			return false;
+		}
+
+		$singleItem = $item->pop();
+
+		if(!$targetInventory->canAddItem($singleItem)){
+			return false;
+		}
+
+		$sourceInventory->removeItem($singleItem);
+		$targetInventory->addItem($singleItem);
+
+		return true;
 	}
 }
