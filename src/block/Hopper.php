@@ -82,7 +82,11 @@ class Hopper extends Transparent implements HopperInteractable{
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->facing = $face === Facing::DOWN ? Facing::DOWN : Facing::opposite($face);
 
-		$this->lastActionTick = $this->position->getWorld()->getServer()->getTick();
+		$world = $this->position->getWorld();
+		$this->lastActionTick = $world->getServer()->getTick();
+		if(!$this->powered){
+			$world->scheduleDelayedBlockUpdate($this->position, 1);
+		}
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
@@ -99,6 +103,10 @@ class Hopper extends Transparent implements HopperInteractable{
 	}
 
 	public function onScheduledUpdate() : void{
+		if($this->powered){
+			return;
+		}
+
 		$world = $this->position->getWorld();
 
 		if(!$this->isOnCooldown()){
