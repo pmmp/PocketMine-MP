@@ -30,11 +30,35 @@ final class NearbyBlockChangeFlags{
 		// NOOP
 	}
 
-	public const FLAG_SELF = -1;
-	public const FLAG_DOWN = Facing::DOWN;
-	public const FLAG_UP = Facing::UP;
-	public const FLAG_NORTH = Facing::NORTH;
-	public const FLAG_SOUTH = Facing::SOUTH;
-	public const FLAG_WEST = Facing::WEST;
-	public const FLAG_EAST = Facing::EAST;
+	public const FLAG_SELF = 1;
+	public const FLAG_DOWN = self::FLAG_SELF << 1;
+	public const FLAG_UP = self::FLAG_DOWN << 1;
+	public const FLAG_NORTH = self::FLAG_UP << 1;
+	public const FLAG_SOUTH = self::FLAG_NORTH << 1;
+	public const FLAG_WEST = self::FLAG_SOUTH << 1;
+	public const FLAG_EAST = self::FLAG_WEST << 1;
+
+	public static function fromFacing(int $facing) : int{
+		return match($facing){
+			Facing::DOWN => self::FLAG_DOWN,
+			Facing::UP => self::FLAG_UP,
+			Facing::NORTH => self::FLAG_NORTH,
+			Facing::SOUTH => self::FLAG_SOUTH,
+			Facing::WEST => self::FLAG_WEST,
+			Facing::EAST => self::FLAG_EAST,
+			default => throw new \InvalidArgumentException("Unknown facing $facing"),
+		};
+	}
+
+	public static function toFacing(int $flag) : ?int{
+		return match($flag){
+			self::FLAG_DOWN => Facing::DOWN,
+			self::FLAG_UP => Facing::UP,
+			self::FLAG_NORTH => Facing::NORTH,
+			self::FLAG_SOUTH => Facing::SOUTH,
+			self::FLAG_WEST => Facing::WEST,
+			self::FLAG_EAST => Facing::EAST,
+			default => null,
+		};
+	}
 }

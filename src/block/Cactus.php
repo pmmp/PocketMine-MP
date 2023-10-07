@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
@@ -59,6 +60,22 @@ class Cactus extends Transparent{
 		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_CONTACT, 1);
 		$entity->attack($ev);
 		return true;
+	}
+
+	public function onNearbyBlockChange2(int $flags) : void{
+		if(($flags & NearbyBlockChangeFlags::FLAG_UP) !== 0){
+			return;
+		}
+		if(($flags & NearbyBlockChangeFlags::FLAG_DOWN) !== 0){
+			$supportBlock = $this->getSide(Facing::DOWN);
+			if(!$supportBlock->hasSameTypeId($this) && !$supportBlock->hasTypeTag(BlockTypeTags::SAND)){
+				$this->position->getWorld()->useBreakOn($this->position);
+			}
+		}elseif(($flags & NearbyBlockChangeFlags::FLAG_SELF) === 0){
+			if($this->getSide(NearbyBlockChangeFlags::toFacing($flags))->isSolid()){
+				$this->position->getWorld()->useBreakOn($this->position);
+			}
+		}
 	}
 
 	private function canBeSupportedAt(Block $block) : bool{

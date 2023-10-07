@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -54,9 +55,12 @@ class Torch extends Flowable{
 		return 14;
 	}
 
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedAt($this, Facing::opposite($this->facing))){
-			$this->position->getWorld()->useBreakOn($this->position);
+	public function onNearbyBlockChange2($flags) : void{
+		$opposite = Facing::opposite($this->facing);
+		if(($flags & NearbyBlockChangeFlags::fromFacing($opposite)) !== 0){
+			if(!$this->canBeSupportedAt($this, $opposite)){
+				$this->position->getWorld()->useBreakOn($this->position);
+			}
 		}
 	}
 

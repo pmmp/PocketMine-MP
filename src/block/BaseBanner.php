@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\utils\BannerPatternLayer;
 use pocketmine\block\utils\ColoredTrait;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Banner as ItemBanner;
 use pocketmine\item\Item;
@@ -126,9 +127,12 @@ abstract class BaseBanner extends Transparent{
 
 	abstract protected function getSupportingFace() : int;
 
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->getSide($this->getSupportingFace()))){
-			$this->position->getWorld()->useBreakOn($this->position);
+	public function onNearbyBlockChange2(int $flags) : void{
+		$facing = $this->getSupportingFace();
+		if(($flags & NearbyBlockChangeFlags::fromFacing($facing)) !== 0){
+			if(!$this->canBeSupportedBy($this->getSide($facing))){
+				$this->position->getWorld()->useBreakOn($this->position);
+			}
 		}
 	}
 

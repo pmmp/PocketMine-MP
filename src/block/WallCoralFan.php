@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
@@ -52,12 +53,14 @@ final class WallCoralFan extends BaseCoral{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onNearbyBlockChange() : void{
-		$world = $this->position->getWorld();
-		if(!$this->canBeSupportedAt($this, Facing::opposite($this->facing))){
-			$world->useBreakOn($this->position);
-		}else{
-			parent::onNearbyBlockChange();
+	public function onNearbyBlockChange2(int $flags) : void{
+		$opposite = Facing::opposite($this->facing);
+		if(($flags & NearbyBlockChangeFlags::fromFacing($opposite)) !== 0){
+			if(!$this->canBeSupportedAt($this, $opposite)){
+				$this->position->getWorld()->useBreakOn($this->position);
+			}else{
+				parent::onNearbyBlockChange2($flags);
+			}
 		}
 	}
 

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\FortuneDropHelper;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
@@ -62,10 +63,12 @@ class RedstoneOre extends Opaque{
 		return false;
 	}
 
-	public function onNearbyBlockChange() : void{
-		if(!$this->lit){
-			$this->lit = true;
-			$this->position->getWorld()->setBlock($this->position, $this);
+	public function onNearbyBlockChange2(int $flags) : void{
+		if(($flags & NearbyBlockChangeFlags::FLAG_SELF) === 0){
+			if(!$this->lit){
+				$this->lit = true;
+				$this->position->getWorld()->setBlock($this->position, $this);
+			}
 		}
 	}
 

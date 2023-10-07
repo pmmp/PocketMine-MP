@@ -997,25 +997,26 @@ class World implements ChunkManager{
 			}
 			$block->onNearbyBlockChange();
 
+			$updateFlag = 0;
 			foreach(array_keys($this->neighbourBlockUpdateReferenceQueue[$index]) as $refHash){
 				unset($this->neighbourBlockUpdateReferenceQueue[$index][$refHash]);
 				if($index === $refHash){
-					$block->onNearbyBlockChange2(NearbyBlockChangeFlags::FLAG_SELF);
+					$updateFlag |= NearbyBlockChangeFlags::FLAG_SELF;
 					continue;
 				}
 
 				World::getBlockXYZ($refHash, $refX, $refY, $refZ);
 
 				if($refX === $x && $refZ === $z){
-					$face = $refY > $y ? NearbyBlockChangeFlags::FLAG_UP : NearbyBlockChangeFlags::FLAG_DOWN;
+					$updateFlag |= $refY > $y ? NearbyBlockChangeFlags::FLAG_UP : NearbyBlockChangeFlags::FLAG_DOWN;
 				}elseif($refX === $x){
-					$face = $refZ > $z ? NearbyBlockChangeFlags::FLAG_SOUTH : NearbyBlockChangeFlags::FLAG_NORTH;
+					$updateFlag |= $refZ > $z ? NearbyBlockChangeFlags::FLAG_SOUTH : NearbyBlockChangeFlags::FLAG_NORTH;
 				}else{
-					$face = $refX > $x ? NearbyBlockChangeFlags::FLAG_EAST : NearbyBlockChangeFlags::FLAG_WEST;
+					$updateFlag |= $refX > $x ? NearbyBlockChangeFlags::FLAG_EAST : NearbyBlockChangeFlags::FLAG_WEST;
 				}
-
-				$block->onNearbyBlockChange2($face);
 			}
+
+			$block->onNearbyBlockChange2($updateFlag);
 		}
 
 		$this->timings->scheduledBlockUpdates->stopTiming();

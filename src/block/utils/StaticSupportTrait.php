@@ -44,14 +44,13 @@ trait StaticSupportTrait{
 		return $this->canBeSupportedAt($blockReplace) && parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
 	}
 
-	/**
-	 * @see Block::onNearbyBlockChange()
-	 */
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedAt($this)){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}else{
-			parent::onNearbyBlockChange();
+	public function onNearbyBlockChange2(int $flags) : void{
+		if(($flags & NearbyBlockChangeFlags::FLAG_DOWN) !== 0){
+			if(!$this->canBeSupportedAt($this)){
+				$this->position->getWorld()->useBreakOn($this->position);
+			}else{
+				parent::onNearbyBlockChange2($flags);
+			}
 		}
 	}
 }
