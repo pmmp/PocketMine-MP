@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\BlockBurnEvent;
 use pocketmine\math\Facing;
@@ -48,13 +49,15 @@ class Fire extends BaseFire{
 		return $block->getSupportType(Facing::UP) === SupportType::FULL;
 	}
 
-	public function onNearbyBlockChange() : void{
+	public function onNearbyBlockChange2(int $flags) : void{
 		$world = $this->position->getWorld();
-		$down = $this->getSide(Facing::DOWN);
-		if(SoulFire::canBeSupportedBy($down)){
-			$world->setBlock($this->position, VanillaBlocks::SOUL_FIRE());
-		}elseif(!$this->canBeSupportedBy($this->getSide(Facing::DOWN)) && !$this->hasAdjacentFlammableBlocks()){
-			$world->setBlock($this->position, VanillaBlocks::AIR());
+		if(($flags & NearbyBlockChangeFlags::FLAG_DOWN) !== 0){
+			$down = $this->getSide(Facing::DOWN);
+			if(SoulFire::canBeSupportedBy($down)){
+				$world->setBlock($this->position, VanillaBlocks::SOUL_FIRE());
+			}elseif(!$this->canBeSupportedBy($this->getSide(Facing::DOWN)) && !$this->hasAdjacentFlammableBlocks()){
+				$world->setBlock($this->position, VanillaBlocks::AIR());
+			}
 		}else{
 			$world->scheduleDelayedBlockUpdate($this->position, mt_rand(30, 40));
 		}

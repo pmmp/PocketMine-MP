@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\RailConnectionInfo;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -220,17 +221,26 @@ abstract class BaseRail extends Flowable{
 		$this->setShapeFromConnections($connections);
 	}
 
-	public function onNearbyBlockChange() : void{
+	public function onNearbyBlockChange2(int $flags) : void{
 		$world = $this->position->getWorld();
-		if(!$this->getAdjacentSupportType(Facing::DOWN)->hasEdgeSupport()){
-			$world->useBreakOn($this->position);
-		}else{
+		$break = false;
+		if(($flags & NearbyBlockChangeFlags::FLAG_DOWN) !== 0){
+			//check if we're still on a solid block
+			if(!$this->getAdjacentSupportType(Facing::DOWN)->hasEdgeSupport()){
+				$break = true;
+			}
+		}
+		if(!$break){
 			foreach($this->getCurrentShapeConnections() as $connection){
 				if(($connection & RailConnectionInfo::FLAG_ASCEND) !== 0 && !$this->getSide($connection & ~RailConnectionInfo::FLAG_ASCEND)->getSupportType(Facing::UP)->hasEdgeSupport()){
-					$world->useBreakOn($this->position);
+					$break = true;
 					break;
 				}
 			}
+		}
+
+		if($break){
+			$world->useBreakOn($this->position);
 		}
 	}
 }

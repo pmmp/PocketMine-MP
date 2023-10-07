@@ -32,7 +32,7 @@ class FrostedIce extends Ice{
 
 	public const MAX_AGE = 3;
 
-	public function onNearbyBlockChange() : void{
+	public function onNearbyBlockChange2(int $flags) : void{
 		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(20, 40));
 	}
 

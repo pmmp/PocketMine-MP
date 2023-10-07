@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -105,9 +106,11 @@ class Door extends Transparent{
 		return SupportType::NONE;
 	}
 
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedAt($this) && !$this->getSide(Facing::DOWN) instanceof Door){ //Replace with common break method
-			$this->position->getWorld()->useBreakOn($this->position); //this will delete both halves if they exist
+	public function onNearbyBlockChange2(int $flags) : void{
+		if(($flags & NearbyBlockChangeFlags::FLAG_DOWN) !== 0){
+			if(!$this->canBeSupportedAt($this) && !$this->getSide(Facing::DOWN) instanceof Door){ //Replace with common break method
+				$this->position->getWorld()->useBreakOn($this->position); //this will delete both halves if they exist
+			}
 		}
 	}
 

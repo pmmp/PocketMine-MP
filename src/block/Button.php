@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\AnyFacingTrait;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -82,9 +83,11 @@ abstract class Button extends Flowable{
 		}
 	}
 
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedAt($this, $this->facing)){
-			$this->position->getWorld()->useBreakOn($this->position);
+	public function onNearbyBlockChange2(int $flags) : void{
+		if(($flags & NearbyBlockChangeFlags::fromFacing(Facing::opposite($this->facing))) !== 0){
+			if(!$this->canBeSupportedAt($this, $this->facing)){
+				$this->position->getWorld()->useBreakOn($this->position);
+			}
 		}
 	}
 

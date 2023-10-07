@@ -38,6 +38,15 @@ final class NearbyBlockChangeFlags{
 	public const FLAG_WEST = self::FLAG_SOUTH << 1;
 	public const FLAG_EAST = self::FLAG_WEST << 1;
 
+	public const ALL_FACING = [
+		self::FLAG_DOWN,
+		self::FLAG_UP,
+		self::FLAG_NORTH,
+		self::FLAG_SOUTH,
+		self::FLAG_WEST,
+		self::FLAG_EAST,
+	];
+
 	public static function fromFacing(int $facing) : int{
 		return match($facing){
 			Facing::DOWN => self::FLAG_DOWN,
@@ -50,7 +59,7 @@ final class NearbyBlockChangeFlags{
 		};
 	}
 
-	public static function toFacing(int $flag) : ?int{
+	public static function toFacing(int $flag) : int{
 		return match($flag){
 			self::FLAG_DOWN => Facing::DOWN,
 			self::FLAG_UP => Facing::UP,
@@ -58,7 +67,18 @@ final class NearbyBlockChangeFlags{
 			self::FLAG_SOUTH => Facing::SOUTH,
 			self::FLAG_WEST => Facing::WEST,
 			self::FLAG_EAST => Facing::EAST,
-			default => null,
+			default => throw new \AssertionError("Unknown facing flag $flag"),
 		};
+	}
+
+	/** @return int[] */
+	public static function getSides(int $flag) : array{
+		$sides = [];
+		foreach(self::ALL_FACING as $facing){
+			if(($flag & $facing) !== 0){
+				$sides[] = $facing;
+			}
+		}
+		return $sides;
 	}
 }

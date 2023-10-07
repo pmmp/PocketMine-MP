@@ -27,6 +27,7 @@ use pocketmine\block\tile\Bed as TileBed;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
@@ -158,10 +159,12 @@ class Bed extends Transparent{
 
 	}
 
-	public function onNearbyBlockChange() : void{
-		if(!$this->head && ($other = $this->getOtherHalf()) !== null && $other->occupied !== $this->occupied){
-			$this->occupied = $other->occupied;
-			$this->position->getWorld()->setBlock($this->position, $this);
+	public function onNearbyBlockChange2(int $flags) : void{
+		if(($flags & NearbyBlockChangeFlags::fromFacing($this->getOtherHalfSide())) !== 0){
+			if(!$this->head && ($other = $this->getOtherHalf()) !== null && $other->occupied !== $this->occupied){
+				$this->occupied = $other->occupied;
+				$this->position->getWorld()->setBlock($this->position, $this);
+			}
 		}
 	}
 

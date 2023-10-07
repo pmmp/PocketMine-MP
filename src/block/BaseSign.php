@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\SignText;
 use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\WoodType;
@@ -108,9 +109,11 @@ abstract class BaseSign extends Transparent{
 
 	abstract protected function getSupportingFace() : int;
 
-	public function onNearbyBlockChange() : void{
-		if($this->getSide($this->getSupportingFace())->getTypeId() === BlockTypeIds::AIR){
-			$this->position->getWorld()->useBreakOn($this->position);
+	public function onNearbyBlockChange2(int $flags) : void{
+		if(($flags & NearbyBlockChangeFlags::fromFacing($this->getSupportingFace())) !== 0){
+			if($this->getSide($this->getSupportingFace())->getTypeId() === BlockTypeIds::AIR){
+				$this->position->getWorld()->useBreakOn($this->position);
+			}
 		}
 	}
 

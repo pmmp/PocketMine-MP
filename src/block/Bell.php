@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Bell as TileBell;
 use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\projectile\Projectile;
@@ -37,6 +38,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\BellRingSound;
+use function in_array;
 
 final class Bell extends Transparent{
 	use HorizontalFacingTrait;
@@ -108,16 +110,20 @@ final class Bell extends Transparent{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onNearbyBlockChange() : void{
-		foreach(match($this->attachmentType){
+	public function onNearbyBlockChange2(int $flags) : void{
+		$sides = match($this->attachmentType){
 			BellAttachmentType::CEILING => [Facing::UP],
 			BellAttachmentType::FLOOR => [Facing::DOWN],
 			BellAttachmentType::ONE_WALL => [Facing::opposite($this->facing)],
 			BellAttachmentType::TWO_WALLS => [$this->facing, Facing::opposite($this->facing)]
-		} as $supportBlockDirection){
-			if(!$this->canBeSupportedAt($this, $supportBlockDirection)){
-				$this->position->getWorld()->useBreakOn($this->position);
-				break;
+		};
+		foreach(NearbyBlockChangeFlags::getSides($flags) as $sideFlag){
+			$supportBlockDirection = NearbyBlockChangeFlags::toFacing($sideFlag);
+			if(in_array($supportBlockDirection, $sides, true)){
+				if(!$this->canBeSupportedAt($this, $supportBlockDirection)){
+					$this->position->getWorld()->useBreakOn($this->position);
+					break;
+				}
 			}
 		}
 	}

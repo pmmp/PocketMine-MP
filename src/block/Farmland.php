@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
@@ -60,9 +61,11 @@ class Farmland extends Transparent{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 1 / 16)];
 	}
 
-	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::UP)->isSolid()){
-			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::DIRT());
+	public function onNearbyBlockChange2(int $flags) : void{
+		if(($flags & NearbyBlockChangeFlags::FLAG_UP) !== 0){
+			if($this->getSide(Facing::UP)->isSolid()){
+				$this->position->getWorld()->setBlock($this->position, VanillaBlocks::DIRT());
+			}
 		}
 	}
 

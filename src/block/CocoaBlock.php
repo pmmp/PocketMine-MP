@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\WoodType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -92,9 +93,12 @@ class CocoaBlock extends Transparent{
 		return false;
 	}
 
-	public function onNearbyBlockChange() : void{
-		if(!$this->canAttachTo($this->getSide(Facing::opposite($this->facing)))){
-			$this->position->getWorld()->useBreakOn($this->position);
+	public function onNearbyBlockChange2(int $flags) : void{
+		$face = Facing::opposite($this->facing);
+		if(($flags & NearbyBlockChangeFlags::fromFacing($face)) !== 0){
+			if(!$this->canAttachTo($this->getSide(Facing::opposite($this->facing)))){
+				$this->position->getWorld()->useBreakOn($this->position);
+			}
 		}
 	}
 

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\WoodTypeTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -92,11 +93,15 @@ class FenceGate extends Transparent{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onNearbyBlockChange() : void{
-		$inWall = $this->checkInWall();
-		if($inWall !== $this->inWall){
-			$this->inWall = $inWall;
-			$this->position->getWorld()->setBlock($this->position, $this);
+	public function onNearbyBlockChange2(int $flags) : void{
+		$facing1 = Facing::rotateY($this->facing, false);
+		$facing2 = Facing::rotateY($this->facing, true);
+		if(($flags & (NearbyBlockChangeFlags::fromFacing($facing1) | NearbyBlockChangeFlags::fromFacing($facing2))) !== 0){
+			$inWall = $this->checkInWall();
+			if($inWall !== $this->inWall){
+				$this->inWall = $inWall;
+				$this->position->getWorld()->setBlock($this->position, $this);
+			}
 		}
 	}
 

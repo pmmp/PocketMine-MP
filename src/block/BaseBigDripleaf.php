@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Fertilizer;
@@ -47,11 +48,19 @@ abstract class BaseBigDripleaf extends Transparent{
 			$block->hasTypeTag(BlockTypeTags::MUD);
 	}
 
-	public function onNearbyBlockChange() : void{
-		if(
-			(!$this->isHead() && !$this->getSide(Facing::UP) instanceof BaseBigDripleaf) ||
-			!$this->canBeSupportedBy($this->getSide(Facing::DOWN), false)
-		){
+	public function onNearbyBlockChange2(int $flags) : void{
+		$break = false;
+		if(($flags & NearbyBlockChangeFlags::FLAG_UP) !== 0){
+			if((!$this->isHead() && !$this->getSide(Facing::UP) instanceof BaseBigDripleaf)){
+				$break = true;
+			}
+		}
+		if(($flags & NearbyBlockChangeFlags::FLAG_DOWN) !== 0){
+			if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN), false)){
+				$break = true;
+			}
+		}
+		if($break){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
