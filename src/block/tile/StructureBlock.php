@@ -162,7 +162,7 @@ class StructureBlock extends Spawnable{
 		//includePlayers
 		$this->showBoundingBox = $data->showBoundingBox;
 		$this->type = StructureBlockType::fromInt($data->structureBlockType);
-		$this->redstoneSaveMode = $data->structureRedstoneSaveMove;
+		$this->redstoneSaveMode = $data->structureRedstoneSaveMode;
 
 		$settings = $data->structureSettings;
 		//paletteName

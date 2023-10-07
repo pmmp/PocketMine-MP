@@ -138,6 +138,8 @@ use pocketmine\block\StructureBlock;
 use pocketmine\block\StructureVoid;
 use pocketmine\block\Sugarcane;
 use pocketmine\block\SweetBerryBush;
+use pocketmine\block\tile\utils\StructureBlockType;
+use pocketmine\block\tile\utils\StructureVoidType;
 use pocketmine\block\TNT;
 use pocketmine\block\Torch;
 use pocketmine\block\TorchflowerCrop;
@@ -1649,7 +1651,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::STRUCTURE_BLOCK(), function(StructureBlock $block) : Writer{
 			return Writer::create(Ids::STRUCTURE_BLOCK)
-				->writeString(BlockStateNames::STRUCTURE_BLOCK_TYPE, match($block->getType()){
+				->writeString(StateNames::STRUCTURE_BLOCK_TYPE, match($block->getType()){
 						StructureBlockType::CORNER => StringValues::STRUCTURE_BLOCK_TYPE_CORNER,
 						StructureBlockType::DATA => StringValues::STRUCTURE_BLOCK_TYPE_DATA,
 						StructureBlockType::EXPORT => StringValues::STRUCTURE_BLOCK_TYPE_EXPORT,
@@ -1660,7 +1662,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::STRUCTURE_VOID(), function(StructureVoid $block) : Writer{
 			return Writer::create(Ids::STRUCTURE_VOID)
-				->writeString(BlockStateNames::STRUCTURE_VOID_TYPE, match($block->getType()){
+				->writeString(StateNames::STRUCTURE_VOID_TYPE, match($block->getType()){
 						StructureVoidType::VOID => StringValues::STRUCTURE_VOID_TYPE_VOID,
 						StructureVoidType::AIR => StringValues::STRUCTURE_VOID_TYPE_AIR,
 					});
