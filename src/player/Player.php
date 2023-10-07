@@ -183,6 +183,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	private const MAX_REACH_DISTANCE_SURVIVAL = 7;
 	private const MAX_REACH_DISTANCE_ENTITY_INTERACTION = 8;
 
+	public const DEFAULT_FLY_SPEED = 0.05;
+
 	public const TAG_FIRST_PLAYED = "firstPlayed"; //TAG_Long
 	public const TAG_LAST_PLAYED = "lastPlayed"; //TAG_Long
 	private const TAG_GAME_MODE = "playerGameType"; //TAG_Int
@@ -277,6 +279,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected bool $allowFlight = false;
 	protected bool $blockCollision = true;
 	protected bool $flying = false;
+
+	protected float $flySpeed = self::DEFAULT_FLY_SPEED;
 
 	/** @phpstan-var positive-int|null  */
 	protected ?int $lineHeight = null;
@@ -513,6 +517,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function hasAutoJump() : bool{
 		return $this->autoJump;
+	}
+
+	public function setFlySpeed(float $flySpeed) : void{
+		$this->flySpeed = $flySpeed;
+		$this->getNetworkSession()->syncAbilities($this);
+	}
+
+	public function getFlySpeed() : float{
+		return $this->flySpeed;
 	}
 
 	public function spawnTo(Player $player) : void{
