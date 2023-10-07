@@ -1037,24 +1037,6 @@ class InGamePacketHandler extends PacketHandler{
 		return true;
 	}
 
-	public function handleRequestAbility(RequestAbilityPacket $packet) : bool{
-		if($packet->getAbilityId() === RequestAbilityPacket::ABILITY_FLYING){
-			$isFlying = $packet->getAbilityValue();
-			if(!is_bool($isFlying)){
-				throw new PacketHandlingException("Flying ability should always have a bool value");
-			}
-			if($isFlying !== $this->player->isFlying()){
-				if(!$this->player->toggleFlight($isFlying)){
-					$this->session->syncAbilities($this->player);
-				}
-			}
-
-			return true;
-		}
-
-		return false;
-	}
-
 	public function handleStructureBlockUpdate(StructureBlockUpdatePacket $packet) : bool{
 		$pos = $packet->blockPosition;
 		$chunkX = $pos->getX() >> Chunk::COORD_BIT_SIZE;
