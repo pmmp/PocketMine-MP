@@ -28,6 +28,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\InvalidSerializedRuntimeDataException;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -454,8 +455,18 @@ class Block{
 
 	/**
 	 * Called when this block or a block immediately adjacent to it changes state.
+	 *
+	 * @deprecated {@see Block::onNearbyBlockChange2()}
 	 */
 	public function onNearbyBlockChange() : void{
+
+	}
+
+	/**
+	 * Called when this block or a block immediately adjacent to it changes state.
+	 * @phpstan-param NearbyBlockChangeFlags::FLAG_* $flags
+	 */
+	public function onNearbyBlockChange2(int $flags) : void{
 
 	}
 

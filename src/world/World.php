@@ -34,6 +34,7 @@ use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\tile\TileFactory;
 use pocketmine\block\UnknownBlock;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\block\BlockStateData;
@@ -303,6 +304,11 @@ class World implements ChunkManager{
 	 * @phpstan-var array<BlockPosHash, true>
 	 */
 	private array $neighbourBlockUpdateQueueIndex = [];
+	/**
+	 * @var bool[][] blockhash => blockhashreference => dummy
+	 * @phpstan-var array<BlockPosHash, array<BlockPosHash, true>>
+	 */
+	private array $neighbourBlockUpdateReferenceQueue = [];
 
 	/**
 	 * @var bool[] chunkHash => isValid
@@ -990,6 +996,26 @@ class World implements ChunkManager{
 				$entity->onNearbyBlockChange();
 			}
 			$block->onNearbyBlockChange();
+
+			foreach(array_keys($this->neighbourBlockUpdateReferenceQueue[$index]) as $refHash){
+				unset($this->neighbourBlockUpdateReferenceQueue[$index][$refHash]);
+				if($index === $refHash){
+					$block->onNearbyBlockChange2(NearbyBlockChangeFlags::FLAG_SELF);
+					continue;
+				}
+
+				World::getBlockXYZ($refHash, $refX, $refY, $refZ);
+
+				if($refX === $x && $refZ === $z){
+					$face = $refY > $y ? NearbyBlockChangeFlags::FLAG_UP : NearbyBlockChangeFlags::FLAG_DOWN;
+				}elseif($refX === $x){
+					$face = $refZ > $z ? NearbyBlockChangeFlags::FLAG_SOUTH : NearbyBlockChangeFlags::FLAG_NORTH;
+				}else{
+					$face = $refX > $x ? NearbyBlockChangeFlags::FLAG_EAST : NearbyBlockChangeFlags::FLAG_WEST;
+				}
+
+				$block->onNearbyBlockChange2($face);
+			}
 		}
 
 		$this->timings->scheduledBlockUpdates->stopTiming();
@@ -1455,12 +1481,16 @@ class World implements ChunkManager{
 		$this->scheduledBlockUpdateQueue->insert(new Vector3((int) $pos->x, (int) $pos->y, (int) $pos->z), $delay + $this->server->getTick());
 	}
 
-	private function tryAddToNeighbourUpdateQueue(Vector3 $pos) : void{
-		if($this->isInWorld($pos->x, $pos->y, $pos->z)){
+	private function tryAddToNeighbourUpdateQueue(Vector3 $pos, Vector3 $ref) : void{
+		if($this->isInWorld($pos->x, $pos->y, $pos->z) && $this->isInWorld($ref->x, $ref->y, $ref->z)){
 			$hash = World::blockHash($pos->x, $pos->y, $pos->z);
+			$refHash = World::blockHash($ref->x, $ref->y, $ref->z);
 			if(!isset($this->neighbourBlockUpdateQueueIndex[$hash])){
 				$this->neighbourBlockUpdateQueue->enqueue($hash);
 				$this->neighbourBlockUpdateQueueIndex[$hash] = true;
+			}
+			if(!isset($this->neighbourBlockUpdateReferenceQueue[$hash][$refHash])){
+				$this->neighbourBlockUpdateReferenceQueue[$hash][$refHash] = true;
 			}
 		}
 	}
@@ -1472,9 +1502,9 @@ class World implements ChunkManager{
 	 * @see Block::onNearbyBlockChange()
 	 */
 	public function notifyNeighbourBlockUpdate(Vector3 $pos) : void{
-		$this->tryAddToNeighbourUpdateQueue($pos);
+		$this->tryAddToNeighbourUpdateQueue($pos, $pos);
 		foreach($pos->sides() as $side){
-			$this->tryAddToNeighbourUpdateQueue($side);
+			$this->tryAddToNeighbourUpdateQueue($side, $pos);
 		}
 	}
 
