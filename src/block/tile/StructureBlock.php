@@ -34,26 +34,26 @@ use pocketmine\network\mcpe\protocol\StructureBlockUpdatePacket;
 use pocketmine\world\World;
 
 class StructureBlock extends Spawnable{
-	public const TAG_ANIMATION_MODE = "animationMode";
-	public const TAG_ANIMATION_SECONDS = "animationSeconds";
-	public const TAG_DATA = "data";
-	public const TAG_DATA_FIELD = "dataField";
-	public const TAG_IGNORE_ENTITIES = "ignoreEntities";
-	public const TAG_INTEGRITY = "integrity";
-	public const TAG_IS_POWERED = "isPowered";
-	public const TAG_MIRROR = "mirror";
-	public const TAG_REDSTONE_SAVE_MODE = "redstoneSaveMode";
-	public const TAG_REMOVE_BLOCKS = "removeBlocks";
-	public const TAG_ROTATION = "rotation";
-	public const TAG_SEED = "seed";
-	public const TAG_SHOW_BOUNDING_BOX = "showBoundingBox";
-	public const TAG_STRUCTURE_NAME = "structureName";
-	public const TAG_X_STRUCTURE_OFFSET = "xStructureOffset";
-	public const TAG_Y_STRUCTURE_OFFSET = "yStructureOffset";
-	public const TAG_Z_STRUCTURE_OFFSET = "zStructureOffset";
-	public const TAG_X_STRUCTURE_SIZE = "xStructureSize";
-	public const TAG_Y_STRUCTURE_SIZE = "yStructureSize";
-	public const TAG_Z_STRUCTURE_SIZE = "zStructureSize";
+	public const TAG_ANIMATION_MODE = "animationMode"; // TAG_Int
+	public const TAG_ANIMATION_SECONDS = "animationSeconds"; // TAG_Float
+	public const TAG_DATA = "data"; // TAG_Int
+	public const TAG_DATA_FIELD = "dataField"; // TAG_String
+	public const TAG_IGNORE_ENTITIES = "ignoreEntities"; // TAG_Byte
+	public const TAG_INTEGRITY = "integrity"; // TAG_Float
+	public const TAG_IS_POWERED = "isPowered"; // TAG_Byte
+	public const TAG_MIRROR = "mirror"; // TAG_Int
+	public const TAG_REDSTONE_SAVE_MODE = "redstoneSaveMode"; // TAG_Byte
+	public const TAG_REMOVE_BLOCKS = "removeBlocks"; // TAG_Byte
+	public const TAG_ROTATION = "rotation"; // TAG_Byte
+	public const TAG_SEED = "seed"; // TAG_Long
+	public const TAG_SHOW_BOUNDING_BOX = "showBoundingBox"; // TAG_Byte
+	public const TAG_STRUCTURE_NAME = "structureName"; // TAG_String
+	public const TAG_X_STRUCTURE_OFFSET = "xStructureOffset"; // TAG_Int
+	public const TAG_Y_STRUCTURE_OFFSET = "yStructureOffset"; // TAG_Int
+	public const TAG_Z_STRUCTURE_OFFSET = "zStructureOffset"; // TAG_Int
+	public const TAG_X_STRUCTURE_SIZE = "xStructureSize"; // TAG_Int
+	public const TAG_Y_STRUCTURE_SIZE = "yStructureSize"; // TAG_Int
+	public const TAG_Z_STRUCTURE_SIZE = "zStructureSize"; // TAG_Int
 
 	private StructureAnimationMode $animationMode = StructureAnimationMode::NONE;
 	private float $animationSeconds = 0;
