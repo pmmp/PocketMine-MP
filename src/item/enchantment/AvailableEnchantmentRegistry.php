@@ -59,9 +59,9 @@ final class AvailableEnchantmentRegistry{
 		$this->register(Enchantments::SHARPNESS(), [Tags::SWORD, Tags::AXE], []);
 		$this->register(Enchantments::KNOCKBACK(), [Tags::SWORD], []);
 		$this->register(Enchantments::FIRE_ASPECT(), [Tags::SWORD], []);
-		$this->register(Enchantments::EFFICIENCY(), [Tags::DIG_TOOLS], [Tags::SHEARS]);
-		$this->register(Enchantments::FORTUNE(), [Tags::DIG_TOOLS], []);
-		$this->register(Enchantments::SILK_TOUCH(), [Tags::DIG_TOOLS], [Tags::SHEARS]);
+		$this->register(Enchantments::EFFICIENCY(), [Tags::BLOCK_TOOLS], [Tags::SHEARS]);
+		$this->register(Enchantments::FORTUNE(), [Tags::BLOCK_TOOLS], []);
+		$this->register(Enchantments::SILK_TOUCH(), [Tags::BLOCK_TOOLS], [Tags::SHEARS]);
 		$this->register(
 			Enchantments::UNBREAKING(),
 			[Tags::ARMOR, Tags::WEAPONS, Tags::FISHING_ROD],

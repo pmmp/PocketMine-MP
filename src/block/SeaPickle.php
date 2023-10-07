@@ -78,7 +78,7 @@ class SeaPickle extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{

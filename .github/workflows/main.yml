@@ -17,7 +17,7 @@ jobs:
         php: ["8.1", "8.2"]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: pmmp/setup-php-action@2.0.0
@@ -52,7 +52,7 @@ jobs:
         php: ["8.1", "8.2"]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: pmmp/setup-php-action@2.0.0
@@ -87,7 +87,7 @@ jobs:
         php: ["8.1", "8.2"]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -124,7 +124,7 @@ jobs:
         php: ["8.1", "8.2"]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: pmmp/setup-php-action@2.0.0
@@ -152,11 +152,11 @@ jobs:
       - name: Regenerate KnownTranslation APIs
         run: php build/generate-known-translation-apis.php
 
-      - name: Regenerate RuntimeEnum(De)serializer
-        run: php build/generate-runtime-enum-serializers.php
-
       - name: Regenerate BedrockData available files constants
         run: php build/generate-bedrockdata-path-consts.php
+
+      - name: Regenerate YmlServerProperties constants
+        run: php build/generate-pocketmine-yml-property-consts.php
 
       - name: Verify code is unchanged
         run: |
@@ -170,7 +170,7 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup PHP and tools
         uses: shivammathur/setup-php@2.25.5
