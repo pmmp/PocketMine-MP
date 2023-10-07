@@ -45,12 +45,10 @@ trait StaticSupportTrait{
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
-		if(($flags & NearbyBlockChangeFlags::FLAG_DOWN) !== 0){
-			if(!$this->canBeSupportedAt($this)){
-				$this->position->getWorld()->useBreakOn($this->position);
-			}else{
-				parent::onNearbyBlockChange2($flags);
-			}
+		if(!$this->canBeSupportedAt($this)){
+			$this->position->getWorld()->useBreakOn($this->position);
+		}else{
+			parent::onNearbyBlockChange2($flags);
 		}
 	}
 }
