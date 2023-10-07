@@ -83,8 +83,6 @@ final class ChorusFlower extends Flowable{
 		$this->position->getWorld()->useBreakOn($this->position);
 	}
 
-	public function ticksRandomly() : bool{ return $this->age < self::MAX_AGE; }
-
 	/**
 	 * @phpstan-return array{int, bool}
 	 */
@@ -158,6 +156,8 @@ final class ChorusFlower extends Flowable{
 
 		return $tx;
 	}
+
+	public function ticksRandomly() : bool{ return $this->age < self::MAX_AGE; }
 
 	public function onRandomTick() : void{
 		$world = $this->position->getWorld();

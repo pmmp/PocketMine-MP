@@ -59,6 +59,7 @@ final class TileFactory{
 		$this->register(BrewingStand::class, ["BrewingStand", "minecraft:brewing_stand"]);
 		$this->register(Cauldron::class, ["Cauldron", "minecraft:cauldron"]);
 		$this->register(Chest::class, ["Chest", "minecraft:chest"]);
+		$this->register(ChiseledBookshelf::class, ["ChiseledBookshelf", "minecraft:chiseled_bookshelf"]);
 		$this->register(Comparator::class, ["Comparator", "minecraft:comparator"]);
 		$this->register(DaylightSensor::class, ["DaylightDetector", "minecraft:daylight_detector"]);
 		$this->register(EnchantTable::class, ["EnchantTable", "minecraft:enchanting_table"]);

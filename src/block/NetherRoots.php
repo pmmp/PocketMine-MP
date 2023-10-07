@@ -23,39 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\AgeableTrait;
-use pocketmine\block\utils\BlockEventHelper;
-use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\block\utils\StaticSupportTrait;
-use pocketmine\item\Item;
 use pocketmine\math\Facing;
-use function mt_rand;
 
-class NetherWartPlant extends Flowable{
-	use AgeableTrait;
+final class NetherRoots extends Flowable{
 	use StaticSupportTrait;
 
-	public const MAX_AGE = 3;
-
 	private function canBeSupportedAt(Block $block) : bool{
-		return $block->getSide(Facing::DOWN)->getTypeId() === BlockTypeIds::SOUL_SAND;
-	}
-
-	public function ticksRandomly() : bool{
-		return $this->age < self::MAX_AGE;
-	}
-
-	public function onRandomTick() : void{
-		if($this->age < self::MAX_AGE && mt_rand(0, 10) === 0){ //Still growing
-			$block = clone $this;
-			$block->age++;
-			BlockEventHelper::grow($this, $block, null);
-		}
-	}
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			$this->asItem()->setCount($this->age === self::MAX_AGE ? FortuneDropHelper::discrete($item, 2, 4) : 1)
-		];
+		//TODO: nylium, moss
+		$supportBlock = $block->getSide(Facing::DOWN);
+		return
+			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::MUD);
 	}
 }

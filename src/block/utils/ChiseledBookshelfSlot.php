@@ -23,30 +23,31 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\data\runtime\RuntimeDataDescriber;
-use function log;
+enum ChiseledBookshelfSlot : int{
+	case TOP_LEFT = 0;
+	case TOP_MIDDLE = 1;
+	case TOP_RIGHT = 2;
+	case BOTTOM_LEFT = 3;
+	case BOTTOM_MIDDLE = 4;
+	case BOTTOM_RIGHT = 5;
 
-/**
- * This trait is used for blocks that have an age property.
- * Need to add to the block the constant MAX_AGE.
- */
-trait AgeableTrait{
-	protected int $age = 0;
+	private const SLOTS_PER_SHELF = 3;
 
-	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(((int) log(self::MAX_AGE, 2)) + 1, 0, self::MAX_AGE, $this->age);
-	}
-
-	public function getAge() : int{ return $this->age; }
-
-	/**
-	 * @return $this
-	 */
-	public function setAge(int $age) : self{
-		if($age < 0 || $age > self::MAX_AGE){
-			throw new \InvalidArgumentException("Age must be in range 0 ... " . self::MAX_AGE);
+	public static function fromBlockFaceCoordinates(float $x, float $y) : self{
+		if($x < 0 || $x > 1){
+			throw new \InvalidArgumentException("X must be between 0 and 1, got $x");
 		}
-		$this->age = $age;
-		return $this;
+		if($y < 0 || $y > 1){
+			throw new \InvalidArgumentException("Y must be between 0 and 1, got $y");
+		}
+
+		$slot = ($y < 0.5 ? self::SLOTS_PER_SHELF : 0) + match(true){
+			//we can't use simple maths here as the action is aligned to the 16x16 pixel grid :(
+			$x < 6 / 16 => 0,
+			$x < 11 / 16 => 1,
+			default => 2
+		};
+
+		return self::from($slot);
 	}
 }
