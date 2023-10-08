@@ -117,8 +117,7 @@ final class Bell extends Transparent{
 			BellAttachmentType::ONE_WALL => [Facing::opposite($this->facing)],
 			BellAttachmentType::TWO_WALLS => [$this->facing, Facing::opposite($this->facing)]
 		};
-		foreach(NearbyBlockChangeFlags::getSides($flags) as $sideFlag){
-			$supportBlockDirection = NearbyBlockChangeFlags::toFacing($sideFlag);
+		foreach(NearbyBlockChangeFlags::getSidesAsFacing($flags) as $supportBlockDirection){
 			if(in_array($supportBlockDirection, $sides, true)){
 				if(!$this->canBeSupportedAt($this, $supportBlockDirection)){
 					$this->position->getWorld()->useBreakOn($this->position);

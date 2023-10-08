@@ -120,8 +120,7 @@ class Vine extends Flowable{
 		//check which faces have corresponding vines in the block above
 		$supportedFaces = $up instanceof Vine ? array_intersect_key($this->faces, $up->faces) : [];
 
-		foreach(NearbyBlockChangeFlags::getSides($flags) as $side){
-			$face = NearbyBlockChangeFlags::toFacing($side);
+		foreach(NearbyBlockChangeFlags::getSidesAsFacing($flags) as $face){
 			if(!isset($supportedFaces[$face]) && !$this->getSide($face)->isSolid()){
 				unset($this->faces[$face]);
 				$changed = true;

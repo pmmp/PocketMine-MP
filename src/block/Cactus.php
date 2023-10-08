@@ -69,9 +69,8 @@ class Cactus extends Transparent{
 				$this->position->getWorld()->useBreakOn($this->position);
 			}
 		}
-		foreach(NearbyBlockChangeFlags::getSides($flags) as $side){
-			if($side !== NearbyBlockChangeFlags::FLAG_UP){
-				$facing = NearbyBlockChangeFlags::toFacing($side);
+		foreach(NearbyBlockChangeFlags::getSidesAsFacing($flags) as $facing){
+			if($facing !== Facing::UP){
 				if($this->getSide($facing)->isSolid()){
 					$this->position->getWorld()->useBreakOn($this->position);
 				}
