@@ -997,6 +997,7 @@ class World implements ChunkManager{
 			}
 			$block->onNearbyBlockChange();
 
+			/** @phpstan-var int-mask-of<NearbyBlockChangeFlags::FLAG_*> $updateFlag */
 			$updateFlag = 0;
 			foreach(array_keys($this->neighbourBlockUpdateReferenceQueue[$index]) as $refHash){
 				unset($this->neighbourBlockUpdateReferenceQueue[$index][$refHash]);

@@ -23,8 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use AssertionError;
 use pocketmine\math\Facing;
+use function array_map;
+use function array_reduce;
 
+/**
+ * @phpstan-type FlagValue NearbyBlockChangeFlags::FLAG_*
+ * @phpstan-type Flag int-mask-of<FlagValue>
+ * @phpstan-type FacingValue int
+ * FacingValue can be value-of<Facing::ALL> in the future when Facing functions no longer return generic integers.
+ */
 final class NearbyBlockChangeFlags{
 	public function __construct(){
 		// NOOP
@@ -38,6 +47,9 @@ final class NearbyBlockChangeFlags{
 	public const FLAG_WEST = self::FLAG_SOUTH << 1;
 	public const FLAG_EAST = self::FLAG_WEST << 1;
 
+	/**
+	 * @phpstan-var FlagValue[]
+	 */
 	public const ALL_FACING = [
 		self::FLAG_DOWN,
 		self::FLAG_UP,
@@ -47,6 +59,11 @@ final class NearbyBlockChangeFlags{
 		self::FLAG_EAST,
 	];
 
+	/**
+	 * @phpstan-param FacingValue $facing
+	 *
+	 * @phpstan-return FlagValue
+	 */
 	public static function fromFacing(int $facing) : int{
 		return match($facing){
 			Facing::DOWN => self::FLAG_DOWN,
@@ -59,6 +76,11 @@ final class NearbyBlockChangeFlags{
 		};
 	}
 
+	/**
+	 * @phpstan-param FlagValue $flag
+	 * @phpstan-return FacingValue
+	 * @throws AssertionError if the flag is not a valid facing flag
+	 */
 	public static function toFacing(int $flag) : int{
 		return match($flag){
 			self::FLAG_DOWN => Facing::DOWN,
@@ -67,11 +89,16 @@ final class NearbyBlockChangeFlags{
 			self::FLAG_SOUTH => Facing::SOUTH,
 			self::FLAG_WEST => Facing::WEST,
 			self::FLAG_EAST => Facing::EAST,
-			default => throw new \AssertionError("Unknown facing flag $flag"),
+			default => throw new AssertionError("Unknown facing flag $flag"),
 		};
 	}
 
-	/** @return int[] */
+	/**
+	 * @phpstan-param Flag $flag
+	 *
+	 * @return int[]
+	 * @phpstan-return FlagValue[]
+	 */
 	public static function getSides(int $flag) : array{
 		$sides = [];
 		foreach(self::ALL_FACING as $facing){
@@ -80,5 +107,21 @@ final class NearbyBlockChangeFlags{
 			}
 		}
 		return $sides;
+	}
+
+	/**
+	 * @phpstan-param Flag $flag
+	 * @phpstan-param FlagValue ...$others
+	 */
+	public static function contain(int $flag, int ...$others) : bool{
+		return ($flag & array_reduce($others, fn(int $carry, int $other) => $carry | $other, 0)) !== 0;
+	}
+
+	/**
+	 * @phpstan-param Flag $flag
+	 * @phpstan-param FacingValue ...$facings
+	 */
+	public static function containFacing(int $flag, int ...$facings) : bool{
+		return self::contain($flag, ...array_map(fn(int $facing) => self::fromFacing($facing), $facings));
 	}
 }

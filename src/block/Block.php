@@ -464,7 +464,7 @@ class Block{
 
 	/**
 	 * Called when this block or a block immediately adjacent to it changes state.
-	 * @phpstan-param NearbyBlockChangeFlags::FLAG_* $flags
+	 * @phpstan-param int-mask-of<NearbyBlockChangeFlags::FLAG_*> $flags
 	 */
 	public function onNearbyBlockChange2(int $flags) : void{
 

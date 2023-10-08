@@ -37,9 +37,8 @@ class ConcretePowder extends Opaque implements Fallable{
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
-		$sides = NearbyBlockChangeFlags::getSides($flags);
 		$water = null;
-		foreach($sides as $side){
+		foreach(NearbyBlockChangeFlags::getSides($flags) as $side){
 			$side = NearbyBlockChangeFlags::toFacing($side);
 			if($side === Facing::DOWN){
 				continue;

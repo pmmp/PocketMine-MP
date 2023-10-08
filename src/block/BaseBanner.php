@@ -129,7 +129,7 @@ abstract class BaseBanner extends Transparent{
 
 	public function onNearbyBlockChange2(int $flags) : void{
 		$facing = $this->getSupportingFace();
-		if(($flags & NearbyBlockChangeFlags::fromFacing($facing)) !== 0){
+		if(NearbyBlockChangeFlags::containFacing($flags, $facing)){
 			if(!$this->canBeSupportedBy($this->getSide($facing))){
 				$this->position->getWorld()->useBreakOn($this->position);
 			}
