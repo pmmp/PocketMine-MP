@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -35,9 +36,11 @@ class RedMushroom extends Flowable{
 		return true;
 	}
 
-	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->isTransparent()){
-			$this->position->getWorld()->useBreakOn($this->position);
+	public function onNearbyBlockChange2(int $flags) : void{
+		if(NearbyBlockChangeFlags::contain($flags, NearbyBlockChangeFlags::FLAG_DOWN)){
+			if($this->getSide(Facing::DOWN)->isTransparent()){
+				$this->position->getWorld()->useBreakOn($this->position);
+			}
 		}
 	}
 

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -36,9 +37,11 @@ class GrassPath extends Transparent{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 1 / 16)];
 	}
 
-	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::UP)->isSolid()){
-			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::DIRT());
+	public function onNearbyBlockChange2(int $flags) : void{
+		if(NearbyBlockChangeFlags::contain($flags, NearbyBlockChangeFlags::FLAG_UP)){
+			if($this->getSide(Facing::UP)->isSolid()){
+				$this->position->getWorld()->setBlock($this->position, VanillaBlocks::DIRT());
+			}
 		}
 	}
 

@@ -23,12 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use function in_array;
 
 /**
  * @phpstan-type WallConnectionSet array<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST, WallConnectionType>
@@ -88,8 +90,18 @@ class Wall extends Transparent{
 		return $this;
 	}
 
-	public function onNearbyBlockChange() : void{
-		if($this->recalculateConnections()){
+	public function onNearbyBlockChange2(int $flags) : void{
+		$faces = NearbyBlockChangeFlags::getSidesAsFacing($flags);
+		$check = NearbyBlockChangeFlags::contain($flags, NearbyBlockChangeFlags::FLAG_SELF);
+		if(!$check){
+			foreach($faces as $face){
+				if(in_array($face, Facing::HORIZONTAL, true)){
+					$check = true;
+					break;
+				}
+			}
+		}
+		if($check && $this->recalculateConnections()){
 			$this->position->getWorld()->setBlock($this->position, $this);
 		}
 	}

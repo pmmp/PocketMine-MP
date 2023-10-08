@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -51,11 +52,13 @@ abstract class Stem extends Crops{
 
 	abstract protected function getPlant() : Block;
 
-	public function onNearbyBlockChange() : void{
-		if($this->facing !== Facing::UP && !$this->getSide($this->facing)->hasSameTypeId($this->getPlant())){
-			$this->position->getWorld()->setBlock($this->position, $this->setFacing(Facing::UP));
+	public function onNearbyBlockChange2(int $flags) : void{
+		if(NearbyBlockChangeFlags::containFacing($flags, $this->facing)){
+			if($this->facing !== Facing::UP && !$this->getSide($this->facing)->hasSameTypeId($this->getPlant())){
+				$this->position->getWorld()->setBlock($this->position, $this->setFacing(Facing::UP));
+			}
 		}
-		parent::onNearbyBlockChange();
+		parent::onNearbyBlockChange2($flags);
 	}
 
 	public function onRandomTick() : void{

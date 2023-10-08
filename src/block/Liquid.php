@@ -249,7 +249,7 @@ abstract class Liquid extends Transparent{
 		return null;
 	}
 
-	public function onNearbyBlockChange() : void{
+	public function onNearbyBlockChange2(int $flags) : void{
 		if(!$this->checkForHarden()){
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, $this->tickRate());
 		}

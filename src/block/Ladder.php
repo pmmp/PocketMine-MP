@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
@@ -78,9 +79,12 @@ class Ladder extends Transparent{
 		return false;
 	}
 
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedAt($this, Facing::opposite($this->facing))){ //Replace with common break method
-			$this->position->getWorld()->useBreakOn($this->position);
+	public function onNearbyBlockChange2(int $flags) : void{
+		$opposite = Facing::opposite($this->facing);
+		if(NearbyBlockChangeFlags::containFacing($flags, $opposite)){
+			if(!$this->canBeSupportedAt($this, $opposite)){ //Replace with common break method
+				$this->position->getWorld()->useBreakOn($this->position);
+			}
 		}
 	}
 

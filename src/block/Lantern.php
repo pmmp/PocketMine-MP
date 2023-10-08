@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -86,10 +87,12 @@ class Lantern extends Transparent{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onNearbyBlockChange() : void{
+	public function onNearbyBlockChange2(int $flags) : void{
 		$face = $this->hanging ? Facing::UP : Facing::DOWN;
-		if(!$this->canBeSupportedAt($this, $face)){
-			$this->position->getWorld()->useBreakOn($this->position);
+		if(NearbyBlockChangeFlags::containFacing($flags, $face)){
+			if(!$this->canBeSupportedAt($this, $face)){
+				$this->position->getWorld()->useBreakOn($this->position);
+			}
 		}
 	}
 

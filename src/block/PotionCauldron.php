@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Cauldron as TileCauldron;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\item\VanillaItems;
@@ -105,12 +106,14 @@ final class PotionCauldron extends FillableCauldron{
 		return true;
 	}
 
-	public function onNearbyBlockChange() : void{
-		$world = $this->position->getWorld();
-		if($world->getBlock($this->position->up())->getTypeId() === BlockTypeIds::WATER){
-			$cauldron = VanillaBlocks::WATER_CAULDRON()->setFillLevel(FillableCauldron::MAX_FILL_LEVEL);
-			$world->setBlock($this->position, $cauldron);
-			$world->addSound($this->position->add(0.5, 0.5, 0.5), $cauldron->getFillSound());
+	public function onNearbyBlockChange2(int $flags) : void{
+		if(NearbyBlockChangeFlags::contain($flags, NearbyBlockChangeFlags::FLAG_UP)){
+			$world = $this->position->getWorld();
+			if($world->getBlock($this->position->up())->getTypeId() === BlockTypeIds::WATER){
+				$cauldron = VanillaBlocks::WATER_CAULDRON()->setFillLevel(FillableCauldron::MAX_FILL_LEVEL);
+				$world->setBlock($this->position, $cauldron);
+				$world->addSound($this->position->add(0.5, 0.5, 0.5), $cauldron->getFillSound());
+			}
 		}
 	}
 }

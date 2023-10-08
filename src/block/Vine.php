@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
@@ -112,14 +113,15 @@ class Vine extends Flowable{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onNearbyBlockChange() : void{
+	public function onNearbyBlockChange2(int $flags) : void{
 		$changed = false;
 
 		$up = $this->getSide(Facing::UP);
 		//check which faces have corresponding vines in the block above
 		$supportedFaces = $up instanceof Vine ? array_intersect_key($this->faces, $up->faces) : [];
 
-		foreach($this->faces as $face){
+		foreach(NearbyBlockChangeFlags::getSides($flags) as $side){
+			$face = NearbyBlockChangeFlags::toFacing($side);
 			if(!isset($supportedFaces[$face]) && !$this->getSide($face)->isSolid()){
 				unset($this->faces[$face]);
 				$changed = true;

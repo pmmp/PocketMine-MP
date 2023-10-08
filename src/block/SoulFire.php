@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\math\Facing;
 
 final class SoulFire extends BaseFire{
@@ -41,9 +42,11 @@ final class SoulFire extends BaseFire{
 		return $id === BlockTypeIds::SOUL_SAND || $id === BlockTypeIds::SOUL_SOIL;
 	}
 
-	public function onNearbyBlockChange() : void{
-		if(!self::canBeSupportedBy($this->getSide(Facing::DOWN))){
-			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
+	public function onNearbyBlockChange2(int $flags) : void{
+		if(NearbyBlockChangeFlags::contain($flags, NearbyBlockChangeFlags::FLAG_DOWN)){
+			if(!self::canBeSupportedBy($this->getSide(Facing::DOWN))){
+				$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
+			}
 		}
 	}
 }

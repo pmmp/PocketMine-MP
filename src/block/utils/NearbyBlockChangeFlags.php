@@ -111,6 +111,16 @@ final class NearbyBlockChangeFlags{
 
 	/**
 	 * @phpstan-param Flag $flag
+	 *
+	 * @return int[]
+	 * @phpstan-return FacingValue[]
+	 */
+	public static function getSidesAsFacing(int $flag) : array{
+		return array_map(fn(int $facing) => self::toFacing($facing), self::getSides($flag));
+	}
+
+	/**
+	 * @phpstan-param Flag $flag
 	 * @phpstan-param FlagValue ...$others
 	 */
 	public static function contain(int $flag, int ...$others) : bool{

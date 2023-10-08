@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\LeverFacing;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
@@ -84,9 +85,12 @@ class Lever extends Flowable{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedAt($this, Facing::opposite($this->facing->getFacing()))){
-			$this->position->getWorld()->useBreakOn($this->position);
+	public function onNearbyBlockChange2(int $flags) : void{
+		$opposite = Facing::opposite($this->facing->getFacing());
+		if(NearbyBlockChangeFlags::containFacing($flags, $opposite)){
+			if(!$this->canBeSupportedAt($this, $opposite)){
+				$this->position->getWorld()->useBreakOn($this->position);
+			}
 		}
 	}
 

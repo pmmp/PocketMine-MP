@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\StructureGrowEvent;
@@ -63,14 +64,18 @@ class SmallDripleaf extends Transparent{
 		return $block->getTypeId() === BlockTypeIds::CLAY;
 	}
 
-	public function onNearbyBlockChange() : void{
-		if(!$this->top && !$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
-			$this->position->getWorld()->useBreakOn($this->position);
-			return;
+	public function onNearbyBlockChange2(int $flags) : void{
+		if(!$this->top && NearbyBlockChangeFlags::contain($flags, NearbyBlockChangeFlags::FLAG_DOWN)){
+			if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
+				$this->position->getWorld()->useBreakOn($this->position);
+				return;
+			}
 		}
 		$face = $this->top ? Facing::DOWN : Facing::UP;
-		if(!$this->getSide($face)->hasSameTypeId($this)){
-			$this->position->getWorld()->useBreakOn($this->position);
+		if(NearbyBlockChangeFlags::containFacing($flags, $face)){
+			if(!$this->getSide($face)->hasSameTypeId($this)){
+				$this->position->getWorld()->useBreakOn($this->position);
+			}
 		}
 	}
 

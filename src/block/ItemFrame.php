@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
 use pocketmine\block\utils\AnyFacingTrait;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -167,9 +168,12 @@ class ItemFrame extends Flowable{
 		return $block->getAdjacentSupportType($face) !== SupportType::NONE;
 	}
 
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedAt($this, Facing::opposite($this->facing))){
-			$this->position->getWorld()->useBreakOn($this->position);
+	public function onNearbyBlockChange2(int $flags) : void{
+		$opposite = Facing::opposite($this->facing);
+		if(NearbyBlockChangeFlags::containFacing($flags, $opposite)){
+			if(!$this->canBeSupportedAt($this, $opposite)){
+				$this->position->getWorld()->useBreakOn($this->position);
+			}
 		}
 	}
 

@@ -31,7 +31,7 @@ use function mt_rand;
 final class CoralBlock extends Opaque{
 	use CoralTypeTrait;
 
-	public function onNearbyBlockChange() : void{
+	public function onNearbyBlockChange2(int $flags) : void{
 		if(!$this->dead){
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(40, 200));
 		}

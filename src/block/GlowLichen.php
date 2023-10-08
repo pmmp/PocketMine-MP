@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Fertilizer;
@@ -117,12 +118,14 @@ class GlowLichen extends Transparent{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onNearbyBlockChange() : void{
+	public function onNearbyBlockChange2(int $flags) : void{
 		$changed = false;
 
-		foreach($this->faces as $face){
-			if($this->getAdjacentSupportType($face) !== SupportType::FULL){
-				unset($this->faces[$face]);
+		$faces = NearbyBlockChangeFlags::getSides($flags);
+		foreach($faces as $face){
+			$face = NearbyBlockChangeFlags::toFacing($face);
+			if($this->getAdjacentSupportType($face) === SupportType::FULL){
+				$this->faces[$face] = $face;
 				$changed = true;
 			}
 		}

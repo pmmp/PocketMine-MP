@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Cauldron as TileCauldron;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\color\Color;
 use pocketmine\entity\Entity;
 use pocketmine\item\Armor;
@@ -192,16 +193,18 @@ final class WaterCauldron extends FillableCauldron{
 		return true;
 	}
 
-	public function onNearbyBlockChange() : void{
-		$hasCustomWaterColor = $this->customWaterColor !== null;
-		if($this->getFillLevel() < self::MAX_FILL_LEVEL || $hasCustomWaterColor){
-			$world = $this->position->getWorld();
-			if($world->getBlock($this->position->up())->getTypeId() === BlockTypeIds::WATER){
-				if($hasCustomWaterColor){
-					//TODO: particles
+	public function onNearbyBlockChange2(int $flags) : void{
+		if(NearbyBlockChangeFlags::contain($flags, NearbyBlockChangeFlags::FLAG_UP)){
+			$hasCustomWaterColor = $this->customWaterColor !== null;
+			if($this->getFillLevel() < self::MAX_FILL_LEVEL || $hasCustomWaterColor){
+				$world = $this->position->getWorld();
+				if($world->getBlock($this->position->up())->getTypeId() === BlockTypeIds::WATER){
+					if($hasCustomWaterColor){
+						//TODO: particles
+					}
+					$world->setBlock($this->position, $this->setCustomWaterColor(null)->setFillLevel(FillableCauldron::MAX_FILL_LEVEL));
+					$world->addSound($this->position->add(0.5, 0.5, 0.5), $this->getFillSound());
 				}
-				$world->setBlock($this->position, $this->setCustomWaterColor(null)->setFillLevel(FillableCauldron::MAX_FILL_LEVEL));
-				$world->addSound($this->position->add(0.5, 0.5, 0.5), $this->getFillSound());
 			}
 		}
 	}
