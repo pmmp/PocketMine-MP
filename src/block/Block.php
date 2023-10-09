@@ -456,7 +456,8 @@ class Block{
 	/**
 	 * Called when this block or a block immediately adjacent to it changes state.
 	 *
-	 * @deprecated {@see Block::onNearbyBlockChange2()}
+	 * @deprecated
+	 * @see Block::onNearbyBlockChange2() which provides information about which adjacent blocks caused the update
 	 */
 	public function onNearbyBlockChange() : void{
 
@@ -464,6 +465,11 @@ class Block{
 
 	/**
 	 * Called when this block or a block immediately adjacent to it changes state.
+	 * The provided flags indicate which adjacent blocks triggered this update, and/or if the block itself was directly
+	 * updated (e.g. due to placement).
+	 *
+	 * @see NearbyBlockChangeFlags
+	 *
 	 * @phpstan-param int-mask-of<NearbyBlockChangeFlags::FLAG_*> $flags
 	 */
 	public function onNearbyBlockChange2(int $flags) : void{

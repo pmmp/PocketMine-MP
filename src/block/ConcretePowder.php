@@ -33,7 +33,7 @@ use pocketmine\math\Facing;
 class ConcretePowder extends Opaque implements Fallable{
 	use ColoredTrait;
 	use FallableTrait {
-		onNearbyBlockChange as protected startFalling;
+		onNearbyBlockChange2 as protected startFalling;
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
@@ -51,7 +51,7 @@ class ConcretePowder extends Opaque implements Fallable{
 		if($water !== null){
 			BlockEventHelper::form($this, VanillaBlocks::CONCRETE()->setColor($this->color), $water);
 		}else{
-			$this->startFalling();
+			$this->startFalling($flags);
 		}
 	}
 
