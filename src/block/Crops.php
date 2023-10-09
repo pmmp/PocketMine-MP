@@ -66,7 +66,62 @@ abstract class Crops extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->age < self::MAX_AGE && mt_rand(0, 2) === 1){
+		$above = $this->getSide(Facing::UP);
+
+		if ($above->blocksDirectSkyLight() || $this->getPosition()->getWorld()->getFullLight($above->getPosition()) < 9) {
+			return;
+		}
+
+		$points = 2;
+		$below = $this->getSide(Facing::DOWN);
+
+		if (!$below instanceof Farmland) return;
+		$points += $below->getWetness() > 0 ? 4 : 2;
+
+		$adjacent = [];
+		$corners = [];
+		foreach ([Facing::NORTH, Facing::EAST, Facing::SOUTH, Facing::WEST] as $side) {
+			$adjacent[$side] = $below->getSide($side);
+		}
+
+		foreach ([Facing::EAST, Facing::WEST] as $side) {
+			$corners[Facing::NORTH][$side] = $adjacent[Facing::NORTH]->getSide($side);
+			$corners[Facing::SOUTH][$side] = $adjacent[Facing::SOUTH]->getSide($side);
+		}
+
+		$nS = $eW = false;
+		foreach ($adjacent as $side => $block) {
+			if ($block instanceof Farmland) {
+				$points += $block->getWetness() > 0 ? 3 : 1;
+
+				$cropAbove = $block->getSide(Facing::UP);
+				if ($cropAbove instanceof Crops && $cropAbove->getTypeId() === $this->getTypeId()) {
+					if (in_array($side, [Facing::NORTH, Facing::SOUTH])) $nS = true;
+					if (in_array($side, [Facing::EAST, Facing::WEST])) $eW = true;
+				}
+			}
+		}
+
+		$cE = $cW = false;
+		foreach ($corners as $sA) {
+			foreach ($sA as $side => $block) {
+				if ($block instanceof Farmland) {
+					$points += $block->getWetness() > 0 ? 0.75 : 0.25;
+
+					$cropAbove = $block->getSide(Facing::UP);
+					if ($cropAbove instanceof Crops && $cropAbove->getTypeId() === $this->getTypeId()) {
+						if ($side === Facing::EAST) $cE = true;
+						if ($side === Facing::WEST) $cW = true;
+					}
+				}
+			}
+		}
+
+		if ($nS && $eW && ($cE || $cW)) $points /= 2;
+
+		$percent = 1 / (floor(25 / $points) + 1);
+
+		if($this->age < self::MAX_AGE && $percent >= lcg_value()){
 			$block = clone $this;
 			++$block->age;
 			BlockEventHelper::grow($this, $block, null);
