@@ -30,7 +30,6 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
-use function in_array;
 
 /**
  * @phpstan-type WallConnectionSet array<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST, WallConnectionType>
@@ -91,16 +90,7 @@ class Wall extends Transparent{
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
-		$faces = NearbyBlockChangeFlags::getSidesAsFacing($flags);
-		$check = NearbyBlockChangeFlags::contain($flags, NearbyBlockChangeFlags::FLAG_SELF);
-		if(!$check){
-			foreach($faces as $face){
-				if(in_array($face, Facing::HORIZONTAL, true)){
-					$check = true;
-					break;
-				}
-			}
-		}
+		$check = ($flags & (NearbyBlockChangeFlags::FLAG_SELF | NearbyBlockChangeFlags::FLAG_HORIZONTAL)) !== 0;
 		if($check && $this->recalculateConnections()){
 			$this->position->getWorld()->setBlock($this->position, $this);
 		}

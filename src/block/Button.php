@@ -84,10 +84,8 @@ abstract class Button extends Flowable{
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
-		if(NearbyBlockChangeFlags::containFacing($flags, Facing::opposite($this->facing))){
-			if(!$this->canBeSupportedAt($this, $this->facing)){
-				$this->position->getWorld()->useBreakOn($this->position);
-			}
+		if(NearbyBlockChangeFlags::hasFaces($flags, Facing::opposite($this->facing)) && !$this->canBeSupportedAt($this, $this->facing)){
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 

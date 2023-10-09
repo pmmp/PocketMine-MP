@@ -38,7 +38,7 @@ class GrassPath extends Transparent{
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
-		if(NearbyBlockChangeFlags::contain($flags, NearbyBlockChangeFlags::FLAG_UP)){
+		if(($flags & NearbyBlockChangeFlags::FLAG_UP) !== 0){
 			if($this->getSide(Facing::UP)->isSolid()){
 				$this->position->getWorld()->setBlock($this->position, VanillaBlocks::DIRT());
 			}

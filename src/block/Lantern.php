@@ -89,10 +89,8 @@ class Lantern extends Transparent{
 
 	public function onNearbyBlockChange2(int $flags) : void{
 		$face = $this->hanging ? Facing::UP : Facing::DOWN;
-		if(NearbyBlockChangeFlags::containFacing($flags, $face)){
-			if(!$this->canBeSupportedAt($this, $face)){
-				$this->position->getWorld()->useBreakOn($this->position);
-			}
+		if(NearbyBlockChangeFlags::hasFaces($flags, $face) && !$this->canBeSupportedAt($this, $face)){
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 

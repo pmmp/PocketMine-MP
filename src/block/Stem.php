@@ -53,10 +53,8 @@ abstract class Stem extends Crops{
 	abstract protected function getPlant() : Block;
 
 	public function onNearbyBlockChange2(int $flags) : void{
-		if(NearbyBlockChangeFlags::containFacing($flags, $this->facing)){
-			if($this->facing !== Facing::UP && !$this->getSide($this->facing)->hasSameTypeId($this->getPlant())){
-				$this->position->getWorld()->setBlock($this->position, $this->setFacing(Facing::UP));
-			}
+		if(NearbyBlockChangeFlags::hasFaces($flags, $this->facing) && $this->facing !== Facing::UP && !$this->getSide($this->facing)->hasSameTypeId($this->getPlant())){
+			$this->position->getWorld()->setBlock($this->position, $this->setFacing(Facing::UP));
 		}
 		parent::onNearbyBlockChange2($flags);
 	}

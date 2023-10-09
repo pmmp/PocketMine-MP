@@ -107,7 +107,7 @@ final class PotionCauldron extends FillableCauldron{
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
-		if(NearbyBlockChangeFlags::contain($flags, NearbyBlockChangeFlags::FLAG_UP)){
+		if(($flags & NearbyBlockChangeFlags::FLAG_UP) !== 0){
 			$world = $this->position->getWorld();
 			if($world->getBlock($this->position->up())->getTypeId() === BlockTypeIds::WATER){
 				$cauldron = VanillaBlocks::WATER_CAULDRON()->setFillLevel(FillableCauldron::MAX_FILL_LEVEL);

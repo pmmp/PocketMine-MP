@@ -194,7 +194,7 @@ final class WaterCauldron extends FillableCauldron{
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
-		if(NearbyBlockChangeFlags::contain($flags, NearbyBlockChangeFlags::FLAG_UP)){
+		if(($flags & NearbyBlockChangeFlags::FLAG_UP) !== 0){
 			$hasCustomWaterColor = $this->customWaterColor !== null;
 			if($this->getFillLevel() < self::MAX_FILL_LEVEL || $hasCustomWaterColor){
 				$world = $this->position->getWorld();

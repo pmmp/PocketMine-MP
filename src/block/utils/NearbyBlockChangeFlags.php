@@ -25,8 +25,6 @@ namespace pocketmine\block\utils;
 
 use AssertionError;
 use pocketmine\math\Facing;
-use function array_map;
-use function array_reduce;
 
 /**
  * @phpstan-type FlagValue NearbyBlockChangeFlags::FLAG_*
@@ -46,6 +44,8 @@ final class NearbyBlockChangeFlags{
 	public const FLAG_SOUTH = self::FLAG_NORTH << 1;
 	public const FLAG_WEST = self::FLAG_SOUTH << 1;
 	public const FLAG_EAST = self::FLAG_WEST << 1;
+
+	public const FLAG_HORIZONTAL = self::FLAG_NORTH | self::FLAG_SOUTH | self::FLAG_WEST | self::FLAG_EAST;
 
 	/**
 	 * @phpstan-var FlagValue[]
@@ -97,41 +97,29 @@ final class NearbyBlockChangeFlags{
 	 * @phpstan-param Flag $flag
 	 *
 	 * @return int[]
-	 * @phpstan-return FlagValue[]
-	 */
-	public static function getSides(int $flag) : array{
-		$sides = [];
-		foreach(self::ALL_FACING as $facing){
-			if(($flag & $facing) !== 0){
-				$sides[] = $facing;
-			}
-		}
-		return $sides;
-	}
-
-	/**
-	 * @phpstan-param Flag $flag
-	 *
-	 * @return int[]
 	 * @phpstan-return FacingValue[]
 	 */
-	public static function getSidesAsFacing(int $flag) : array{
-		return array_map(fn(int $facing) => self::toFacing($facing), self::getSides($flag));
-	}
-
-	/**
-	 * @phpstan-param Flag $flag
-	 * @phpstan-param FlagValue ...$others
-	 */
-	public static function contain(int $flag, int ...$others) : bool{
-		return ($flag & array_reduce($others, fn(int $carry, int $other) => $carry | $other, 0)) !== 0;
+	public static function getFaces(int $flag) : array{
+		$result = [];
+		foreach(self::ALL_FACING as $facing){
+			if(($flag & $facing) !== 0){
+				$result[] = self::toFacing($facing);
+			}
+		}
+		return $result;
 	}
 
 	/**
 	 * @phpstan-param Flag $flag
 	 * @phpstan-param FacingValue ...$facings
 	 */
-	public static function containFacing(int $flag, int ...$facings) : bool{
-		return self::contain($flag, ...array_map(fn(int $facing) => self::fromFacing($facing), $facings));
+	public static function hasFaces(int $flag, int ...$facings) : bool{
+		foreach($facings as $facing){
+			if(($flag & self::fromFacing($facing)) !== 0){
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

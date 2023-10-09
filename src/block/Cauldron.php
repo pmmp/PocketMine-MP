@@ -96,7 +96,7 @@ final class Cauldron extends Transparent{
 
 	public function onNearbyBlockChange2(int $flags) : void{
 		$world = $this->position->getWorld();
-		if(NearbyBlockChangeFlags::contain($flags, NearbyBlockChangeFlags::FLAG_UP)){
+		if(($flags & NearbyBlockChangeFlags::FLAG_UP) !== 0){
 			if($world->getBlock($this->position->up())->getTypeId() === BlockTypeIds::WATER){
 				$cauldron = VanillaBlocks::WATER_CAULDRON()->setFillLevel(FillableCauldron::MAX_FILL_LEVEL);
 				$world->setBlock($this->position, $cauldron);

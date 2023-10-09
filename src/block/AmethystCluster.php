@@ -108,10 +108,8 @@ final class AmethystCluster extends Transparent{
 
 	public function onNearbyBlockChange2(int $flags) : void{
 		$opposite = Facing::opposite($this->facing);
-		if(NearbyBlockChangeFlags::containFacing($flags, $opposite)){
-			if(!$this->canBeSupportedAt($this, $opposite)){
-				$this->position->getWorld()->useBreakOn($this->position);
-			}
+		if(NearbyBlockChangeFlags::hasFaces($flags, $opposite) && !$this->canBeSupportedAt($this, $opposite)){
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 

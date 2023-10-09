@@ -43,7 +43,7 @@ final class SoulFire extends BaseFire{
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
-		if(NearbyBlockChangeFlags::contain($flags, NearbyBlockChangeFlags::FLAG_DOWN)){
+		if(($flags & NearbyBlockChangeFlags::FLAG_DOWN) !== 0){
 			if(!self::canBeSupportedBy($this->getSide(Facing::DOWN))){
 				$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
 			}

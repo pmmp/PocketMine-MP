@@ -38,7 +38,6 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\BellRingSound;
-use function in_array;
 
 final class Bell extends Transparent{
 	use HorizontalFacingTrait;
@@ -111,18 +110,15 @@ final class Bell extends Transparent{
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
-		$sides = match($this->attachmentType){
+		foreach(match($this->attachmentType){
 			BellAttachmentType::CEILING => [Facing::UP],
 			BellAttachmentType::FLOOR => [Facing::DOWN],
 			BellAttachmentType::ONE_WALL => [Facing::opposite($this->facing)],
 			BellAttachmentType::TWO_WALLS => [$this->facing, Facing::opposite($this->facing)]
-		};
-		foreach(NearbyBlockChangeFlags::getSidesAsFacing($flags) as $supportBlockDirection){
-			if(in_array($supportBlockDirection, $sides, true)){
-				if(!$this->canBeSupportedAt($this, $supportBlockDirection)){
-					$this->position->getWorld()->useBreakOn($this->position);
-					break;
-				}
+		} as $supportBlockDirection){
+			if(($flags & NearbyBlockChangeFlags::fromFacing($supportBlockDirection)) !== 0 && !$this->canBeSupportedAt($this, $supportBlockDirection)){
+				$this->position->getWorld()->useBreakOn($this->position);
+				break;
 			}
 		}
 	}

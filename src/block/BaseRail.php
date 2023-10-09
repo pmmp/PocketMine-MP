@@ -224,7 +224,7 @@ abstract class BaseRail extends Flowable{
 	public function onNearbyBlockChange2(int $flags) : void{
 		$world = $this->position->getWorld();
 		$break = false;
-		if(NearbyBlockChangeFlags::contain($flags, NearbyBlockChangeFlags::FLAG_DOWN)){
+		if(($flags & NearbyBlockChangeFlags::FLAG_DOWN) !== 0){
 			//check if we're still on a solid block
 			if(!$this->getAdjacentSupportType(Facing::DOWN)->hasEdgeSupport()){
 				$break = true;
