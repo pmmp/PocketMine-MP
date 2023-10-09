@@ -37,10 +37,8 @@ class RedMushroom extends Flowable{
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
-		if(($flags & NearbyBlockChangeFlags::FLAG_DOWN) !== 0){
-			if($this->getSide(Facing::DOWN)->isTransparent()){
-				$this->position->getWorld()->useBreakOn($this->position);
-			}
+		if(($flags & NearbyBlockChangeFlags::FLAG_DOWN) !== 0 && $this->getSide(Facing::DOWN)->isTransparent()){
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 

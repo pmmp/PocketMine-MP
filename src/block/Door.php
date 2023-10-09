@@ -107,10 +107,8 @@ class Door extends Transparent{
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
-		if(($flags & NearbyBlockChangeFlags::FLAG_DOWN) !== 0){
-			if(!$this->canBeSupportedAt($this) && !$this->getSide(Facing::DOWN) instanceof Door){ //Replace with common break method
-				$this->position->getWorld()->useBreakOn($this->position); //this will delete both halves if they exist
-			}
+		if(($flags & NearbyBlockChangeFlags::FLAG_DOWN) !== 0 && !$this->canBeSupportedAt($this) && !$this->getSide(Facing::DOWN) instanceof Door){ //Replace with common break method
+			$this->position->getWorld()->useBreakOn($this->position); //this will delete both halves if they exist
 		}
 	}
 
