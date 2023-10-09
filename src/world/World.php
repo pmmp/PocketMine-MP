@@ -300,15 +300,10 @@ class World implements ChunkManager{
 	/** @phpstan-var \SplQueue<int> */
 	private \SplQueue $neighbourBlockUpdateQueue;
 	/**
-	 * @var true[] blockhash => dummy
-	 * @phpstan-var array<BlockPosHash, true>
+	 * @var int[] blockhash => dummy
+	 * @phpstan-var array<BlockPosHash, int-mask-of<NearbyBlockChangeFlags::FLAG_*>>
 	 */
 	private array $neighbourBlockUpdateQueueIndex = [];
-	/**
-	 * @var bool[][] blockhash => blockhashreference => dummy
-	 * @phpstan-var array<BlockPosHash, array<BlockPosHash, true>>
-	 */
-	private array $neighbourBlockUpdateReferenceQueue = [];
 
 	/**
 	 * @var bool[] chunkHash => isValid
@@ -972,7 +967,9 @@ class World implements ChunkManager{
 		//Normal updates
 		while($this->neighbourBlockUpdateQueue->count() > 0){
 			$index = $this->neighbourBlockUpdateQueue->dequeue();
+			$updateFlags = $this->neighbourBlockUpdateQueueIndex[$index];
 			unset($this->neighbourBlockUpdateQueueIndex[$index]);
+
 			World::getBlockXYZ($index, $x, $y, $z);
 			if(!$this->isChunkLoaded($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)){
 				continue;
@@ -997,27 +994,7 @@ class World implements ChunkManager{
 			}
 			$block->onNearbyBlockChange();
 
-			/** @phpstan-var int-mask-of<NearbyBlockChangeFlags::FLAG_*> $updateFlag */
-			$updateFlag = 0;
-			foreach(array_keys($this->neighbourBlockUpdateReferenceQueue[$index]) as $refHash){
-				unset($this->neighbourBlockUpdateReferenceQueue[$index][$refHash]);
-				if($index === $refHash){
-					$updateFlag |= NearbyBlockChangeFlags::FLAG_SELF;
-					continue;
-				}
-
-				World::getBlockXYZ($refHash, $refX, $refY, $refZ);
-
-				if($refX === $x && $refZ === $z){
-					$updateFlag |= $refY > $y ? NearbyBlockChangeFlags::FLAG_UP : NearbyBlockChangeFlags::FLAG_DOWN;
-				}elseif($refX === $x){
-					$updateFlag |= $refZ > $z ? NearbyBlockChangeFlags::FLAG_SOUTH : NearbyBlockChangeFlags::FLAG_NORTH;
-				}else{
-					$updateFlag |= $refX > $x ? NearbyBlockChangeFlags::FLAG_EAST : NearbyBlockChangeFlags::FLAG_WEST;
-				}
-			}
-
-			$block->onNearbyBlockChange2($updateFlag);
+			$block->onNearbyBlockChange2($updateFlags);
 		}
 
 		$this->timings->scheduledBlockUpdates->stopTiming();
@@ -1483,16 +1460,17 @@ class World implements ChunkManager{
 		$this->scheduledBlockUpdateQueue->insert(new Vector3((int) $pos->x, (int) $pos->y, (int) $pos->z), $delay + $this->server->getTick());
 	}
 
-	private function tryAddToNeighbourUpdateQueue(Vector3 $pos, Vector3 $ref) : void{
-		if($this->isInWorld($pos->x, $pos->y, $pos->z) && $this->isInWorld($ref->x, $ref->y, $ref->z)){
+	/**
+	 * @phpstan-param int-mask-of<NearbyBlockChangeFlags::FLAG_*> $nearbyUpdateFlag
+	 */
+	private function tryAddToNeighbourUpdateQueue(Vector3 $pos, int $nearbyUpdateFlag) : void{
+		if($this->isInWorld($pos->x, $pos->y, $pos->z)){
 			$hash = World::blockHash($pos->x, $pos->y, $pos->z);
-			$refHash = World::blockHash($ref->x, $ref->y, $ref->z);
 			if(!isset($this->neighbourBlockUpdateQueueIndex[$hash])){
 				$this->neighbourBlockUpdateQueue->enqueue($hash);
-				$this->neighbourBlockUpdateQueueIndex[$hash] = true;
-			}
-			if(!isset($this->neighbourBlockUpdateReferenceQueue[$hash][$refHash])){
-				$this->neighbourBlockUpdateReferenceQueue[$hash][$refHash] = true;
+				$this->neighbourBlockUpdateQueueIndex[$hash] = $nearbyUpdateFlag;
+			}else{
+				$this->neighbourBlockUpdateQueueIndex[$hash] |= $nearbyUpdateFlag;
 			}
 		}
 	}
@@ -1504,9 +1482,9 @@ class World implements ChunkManager{
 	 * @see Block::onNearbyBlockChange()
 	 */
 	public function notifyNeighbourBlockUpdate(Vector3 $pos) : void{
-		$this->tryAddToNeighbourUpdateQueue($pos, $pos);
-		foreach($pos->sides() as $side){
-			$this->tryAddToNeighbourUpdateQueue($side, $pos);
+		$this->tryAddToNeighbourUpdateQueue($pos, NearbyBlockChangeFlags::FLAG_SELF);
+		foreach($pos->sides() as $facing => $vector3){
+			$this->tryAddToNeighbourUpdateQueue($vector3, NearbyBlockChangeFlags::fromFacing(Facing::opposite($facing)));
 		}
 	}
 
