@@ -31,6 +31,9 @@ use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
++use function floor;
++use function in_array;
++use function lcg_value;
 use function mt_rand;
 
 abstract class Crops extends Flowable{
