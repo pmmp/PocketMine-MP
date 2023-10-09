@@ -96,8 +96,8 @@ abstract class Crops extends Flowable{
 
 				$cropAbove = $block->getSide(Facing::UP);
 				if ($cropAbove instanceof Crops && $cropAbove->getTypeId() === $this->getTypeId()) {
-					if (in_array($side, [Facing::NORTH, Facing::SOUTH])) $nS = true;
-					if (in_array($side, [Facing::EAST, Facing::WEST])) $eW = true;
+					if (in_array($side, [Facing::NORTH, Facing::SOUTH], true)) $nS = true;
+					if (in_array($side, [Facing::EAST, Facing::WEST], true)) $eW = true;
 				}
 			}
 		}
