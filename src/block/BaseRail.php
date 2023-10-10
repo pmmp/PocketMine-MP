@@ -224,16 +224,13 @@ abstract class BaseRail extends Flowable{
 	public function onNearbyBlockChange2(int $flags) : void{
 		$world = $this->position->getWorld();
 		$break = false;
-		if(($flags & NearbyBlockChangeFlags::DOWN) !== 0){
-			//check if we're still on a solid block
-			if(!$this->getAdjacentSupportType(Facing::DOWN)->hasEdgeSupport()){
-				$break = true;
-			}
+		if(($flags & NearbyBlockChangeFlags::DOWN) !== 0 && !$this->getAdjacentSupportType(Facing::DOWN)->hasEdgeSupport()){
+			$break = true;
 		}
-		if(!$break){
-			foreach($this->getCurrentShapeConnections() as $connection){
-				// TODO: check with the flag
-				if(($connection & RailConnectionInfo::FLAG_ASCEND) !== 0 && !$this->getSide($connection & ~RailConnectionInfo::FLAG_ASCEND)->getSupportType(Facing::UP)->hasEdgeSupport()){
+		foreach($this->getCurrentShapeConnections() as $connection){
+			if(($connection & RailConnectionInfo::FLAG_ASCEND) !== 0){
+				$supportFace = $connection & ~RailConnectionInfo::FLAG_ASCEND;
+				if(NearbyBlockChangeFlags::hasFaces($flags, $supportFace) && !$this->getSide($supportFace)->getSupportType(Facing::UP)->hasEdgeSupport()){
 					$break = true;
 					break;
 				}
