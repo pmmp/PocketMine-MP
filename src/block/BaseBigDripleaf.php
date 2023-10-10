@@ -50,15 +50,11 @@ abstract class BaseBigDripleaf extends Transparent{
 
 	public function onNearbyBlockChange2(int $flags) : void{
 		$break = false;
-		if(($flags & NearbyBlockChangeFlags::UP) !== 0){
-			if((!$this->isHead() && !$this->getSide(Facing::UP) instanceof BaseBigDripleaf)){
-				$break = true;
-			}
+		if(($flags & NearbyBlockChangeFlags::UP) !== 0 && !$this->isHead() && !$this->getSide(Facing::UP) instanceof BaseBigDripleaf){
+			$break = true;
 		}
-		if(($flags & NearbyBlockChangeFlags::DOWN) !== 0){
-			if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN), false)){
-				$break = true;
-			}
+		if(!$break && ($flags & NearbyBlockChangeFlags::DOWN) !== 0 && !$this->canBeSupportedBy($this->getSide(Facing::DOWN), false)){
+			$break = true;
 		}
 		if($break){
 			$this->position->getWorld()->useBreakOn($this->position);
