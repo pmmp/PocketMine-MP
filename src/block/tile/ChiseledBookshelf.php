@@ -24,9 +24,15 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\block\utils\ChiseledBookshelfSlot;
+use pocketmine\data\bedrock\item\SavedItemStackData;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\inventory\SimpleInventory;
+use pocketmine\item\Item;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\world\World;
 use function count;
 
@@ -54,5 +60,36 @@ class ChiseledBookshelf extends Tile implements Container{
 
 	public function writeSaveData(CompoundTag $nbt) : void{
 		$this->saveItems($nbt);
+	}
+
+	protected function loadItems(CompoundTag $tag) : void{
+		if(($inventoryTag = $tag->getTag(Container::TAG_ITEMS)) instanceof ListTag && $inventoryTag->getTagType() === NBT::TAG_Compound){
+			$inventory = $this->getRealInventory();
+			$listeners = $inventory->getListeners()->toArray();
+			$inventory->getListeners()->remove(...$listeners); //prevent any events being fired by initialization
+
+			$newContents = [];
+			/** @var CompoundTag $itemNBT */
+			foreach($inventoryTag as $vanillaSlot => $itemNBT){
+				try{
+					$count = $itemNBT->getByte(SavedItemStackData::TAG_COUNT);
+					if($count === 0){
+						continue;
+					}
+					$newContents[$itemNBT->getByte(SavedItemStackData::TAG_SLOT, $vanillaSlot)] = Item::nbtDeserialize($itemNBT);
+				}catch(SavedDataLoadingException $e){
+					//TODO: not the best solution
+					\GlobalLogger::get()->logException($e);
+					continue;
+				}
+			}
+			$inventory->setContents($newContents);
+
+			$inventory->getListeners()->add(...$listeners);
+		}
+
+		if(($lockTag = $tag->getTag(Container::TAG_LOCK)) instanceof StringTag){
+			$this->lock = $lockTag->getValue();
+		}
 	}
 }
