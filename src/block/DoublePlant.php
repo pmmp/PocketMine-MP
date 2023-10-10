@@ -72,11 +72,23 @@ class DoublePlant extends Flowable{
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
-		if(($flags & NearbyBlockChangeFlags::DOWN) !== 0){
+		$break = false;
+		if(!$this->top && ($flags & NearbyBlockChangeFlags::DOWN) !== 0){
 			$down = $this->getSide(Facing::DOWN);
-			if(!$this->isValidHalfPlant() || (!$this->top && !$down->hasTypeTag(BlockTypeTags::DIRT) && !$down->hasTypeTag(BlockTypeTags::MUD))){
-				$this->position->getWorld()->useBreakOn($this->position);
+			if(!$down->hasTypeTag(BlockTypeTags::DIRT) && !$down->hasTypeTag(BlockTypeTags::MUD)){
+				$break = true;
 			}
+		}
+		if(
+			!$break &&
+			($flags & ($this->top ? NearbyBlockChangeFlags::DOWN : NearbyBlockChangeFlags::UP)) !== 0 &&
+			!$this->isValidHalfPlant()
+		){
+			$break = true;
+		}
+
+		if($break){
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
