@@ -89,9 +89,7 @@ class Hopper extends Transparent implements HopperInteractable{
 
 		$world = $this->position->getWorld();
 		$this->lastTransferActionTick = $world->getServer()->getTick();
-		if(!$this->powered){
-			$world->scheduleDelayedBlockUpdate($this->position, 1);
-		}
+		$world->scheduleDelayedBlockUpdate($this->position, 1);
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
@@ -108,11 +106,12 @@ class Hopper extends Transparent implements HopperInteractable{
 	}
 
 	public function onScheduledUpdate() : void{
+		$world = $this->position->getWorld();
+		$world->scheduleDelayedBlockUpdate($this->position, 1);
+
 		if($this->powered){
 			return;
 		}
-
-		$world = $this->position->getWorld();
 
 		$currentTile = $world->getTile($this->position);
 		if(!$currentTile instanceof TileHopper){
@@ -156,8 +155,6 @@ class Hopper extends Transparent implements HopperInteractable{
 				break;
 			}
 		}
-
-		$world->scheduleDelayedBlockUpdate($this->position, 1);
 	}
 
 	public function doHopperPush(Hopper $hopperBlock) : bool{
@@ -218,5 +215,5 @@ class Hopper extends Transparent implements HopperInteractable{
 		return $currentTick - $this->lastEntityPickupTick < self::ENTITY_PICKUP_COOLDOWN;
 	}
 
-	//TODO: redstone logic, sucking logic
+	//TODO: redstone logic
 }
