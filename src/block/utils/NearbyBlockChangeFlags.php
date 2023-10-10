@@ -48,18 +48,6 @@ final class NearbyBlockChangeFlags{
 	public const FLAG_HORIZONTAL = self::FLAG_NORTH | self::FLAG_SOUTH | self::FLAG_WEST | self::FLAG_EAST;
 
 	/**
-	 * @phpstan-var FlagValue[]
-	 */
-	public const ALL_FACING = [
-		self::FLAG_DOWN,
-		self::FLAG_UP,
-		self::FLAG_NORTH,
-		self::FLAG_SOUTH,
-		self::FLAG_WEST,
-		self::FLAG_EAST,
-	];
-
-	/**
 	 * @phpstan-param FacingValue $facing
 	 *
 	 * @phpstan-return FlagValue
@@ -77,33 +65,23 @@ final class NearbyBlockChangeFlags{
 	}
 
 	/**
-	 * @phpstan-param FlagValue $flag
-	 * @phpstan-return FacingValue
-	 * @throws AssertionError if the flag is not a valid facing flag
+	 * @phpstan-param Flag $flags
+	 *
+	 * @return int[]
+	 * @phpstan-return FacingValue[]
 	 */
-	public static function toFacing(int $flag) : int{
-		return match($flag){
+	public static function getFaces(int $flags) : array{
+		$result = [];
+		foreach([
 			self::FLAG_DOWN => Facing::DOWN,
 			self::FLAG_UP => Facing::UP,
 			self::FLAG_NORTH => Facing::NORTH,
 			self::FLAG_SOUTH => Facing::SOUTH,
 			self::FLAG_WEST => Facing::WEST,
 			self::FLAG_EAST => Facing::EAST,
-			default => throw new AssertionError("Unknown facing flag $flag"),
-		};
-	}
-
-	/**
-	 * @phpstan-param Flag $flag
-	 *
-	 * @return int[]
-	 * @phpstan-return FacingValue[]
-	 */
-	public static function getFaces(int $flag) : array{
-		$result = [];
-		foreach(self::ALL_FACING as $facing){
-			if(($flag & $facing) !== 0){
-				$result[] = self::toFacing($facing);
+		] as $flag => $facing){
+			if(($flags & $flag) !== 0){
+				$result[] = $facing;
 			}
 		}
 		return $result;
