@@ -125,6 +125,7 @@ final class ItemTypeNames{
 	public const COMPASS = "minecraft:compass";
 	public const COMPOUND = "minecraft:compound";
 	public const CONCRETE = "minecraft:concrete";
+	public const CONCRETE_POWDER = "minecraft:concrete_powder";
 	public const COOKED_BEEF = "minecraft:cooked_beef";
 	public const COOKED_CHICKEN = "minecraft:cooked_chicken";
 	public const COOKED_COD = "minecraft:cooked_cod";
@@ -437,6 +438,9 @@ final class ItemTypeNames{
 	public const SPRUCE_SIGN = "minecraft:spruce_sign";
 	public const SPYGLASS = "minecraft:spyglass";
 	public const SQUID_SPAWN_EGG = "minecraft:squid_spawn_egg";
+	public const STAINED_GLASS = "minecraft:stained_glass";
+	public const STAINED_GLASS_PANE = "minecraft:stained_glass_pane";
+	public const STAINED_HARDENED_CLAY = "minecraft:stained_hardened_clay";
 	public const STICK = "minecraft:stick";
 	public const STONE_AXE = "minecraft:stone_axe";
 	public const STONE_HOE = "minecraft:stone_hoe";

@@ -42,7 +42,7 @@ class Fence extends Transparent{
 
 		foreach(Facing::HORIZONTAL as $facing){
 			$block = $this->getSide($facing);
-			if($block instanceof static || $block instanceof FenceGate || ($block->isSolid() && !$block->isTransparent())){
+			if($block instanceof static || $block instanceof FenceGate || $block->getSupportType(Facing::opposite($facing))->equals(SupportType::FULL())){
 				$this->connections[$facing] = true;
 			}else{
 				unset($this->connections[$facing]);

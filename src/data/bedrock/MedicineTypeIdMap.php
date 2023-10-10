@@ -28,39 +28,13 @@ use pocketmine\utils\SingletonTrait;
 
 final class MedicineTypeIdMap{
 	use SingletonTrait;
-
-	/**
-	 * @var MedicineType[]
-	 * @phpstan-var array<int, MedicineType>
-	 */
-	private array $idToEnum = [];
-
-	/**
-	 * @var int[]
-	 * @phpstan-var array<int, int>
-	 */
-	private array $enumToId = [];
+	/** @phpstan-use IntSaveIdMapTrait<MedicineType> */
+	use IntSaveIdMapTrait;
 
 	private function __construct(){
 		$this->register(MedicineTypeIds::ANTIDOTE, MedicineType::ANTIDOTE());
 		$this->register(MedicineTypeIds::ELIXIR, MedicineType::ELIXIR());
 		$this->register(MedicineTypeIds::EYE_DROPS, MedicineType::EYE_DROPS());
 		$this->register(MedicineTypeIds::TONIC, MedicineType::TONIC());
-	}
-
-	private function register(int $id, MedicineType $type) : void{
-		$this->idToEnum[$id] = $type;
-		$this->enumToId[$type->id()] = $id;
-	}
-
-	public function fromId(int $id) : ?MedicineType{
-		return $this->idToEnum[$id] ?? null;
-	}
-
-	public function toId(MedicineType $type) : int{
-		if(!isset($this->enumToId[$type->id()])){
-			throw new \InvalidArgumentException("Type does not have a mapped ID");
-		}
-		return $this->enumToId[$type->id()];
 	}
 }
