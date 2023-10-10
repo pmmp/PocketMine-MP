@@ -97,8 +97,9 @@ class ChiseledBookshelf extends Opaque{
 			return false;
 		}
 
+		$x = Facing::axis($face) === Axis::X ? $clickVector->getZ() : $clickVector->getX();
 		$slot = ChiseledBookshelfSlot::fromBlockFaceCoordinates(
-			Facing::axis($face) === Axis::X ? $clickVector->getZ() : $clickVector->getX(),
+			Facing::isPositive(Facing::rotateY($face, true)) ? 1 - $x : $x,
 			$clickVector->y
 		);
 		$tile = $this->position->getWorld()->getTile($this->position);
