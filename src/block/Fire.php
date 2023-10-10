@@ -50,14 +50,13 @@ class Fire extends BaseFire{
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
+		//if any neighbour changed, all sides need to be checked, as we don't know which block provided support
 		$world = $this->position->getWorld();
-		if(($flags & NearbyBlockChangeFlags::DOWN) !== 0){
-			$down = $this->getSide(Facing::DOWN);
-			if(SoulFire::canBeSupportedBy($down)){
-				$world->setBlock($this->position, VanillaBlocks::SOUL_FIRE());
-			}elseif(!$this->canBeSupportedBy($this->getSide(Facing::DOWN)) && !$this->hasAdjacentFlammableBlocks()){
-				$world->setBlock($this->position, VanillaBlocks::AIR());
-			}
+		$down = $this->getSide(Facing::DOWN);
+		if(SoulFire::canBeSupportedBy($down)){
+			$world->setBlock($this->position, VanillaBlocks::SOUL_FIRE());
+		}elseif(!$this->canBeSupportedBy($this->getSide(Facing::DOWN)) && !$this->hasAdjacentFlammableBlocks()){
+			$world->setBlock($this->position, VanillaBlocks::AIR());
 		}else{
 			$world->scheduleDelayedBlockUpdate($this->position, mt_rand(30, 40));
 		}
