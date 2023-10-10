@@ -114,14 +114,24 @@ class Vine extends Flowable{
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
+		$upChanged = ($flags & NearbyBlockChangeFlags::UP) !== 0;
+		if(!$upChanged && ($flags & NearbyBlockChangeFlags::HORIZONTAL) === 0){
+			return;
+		}
+
 		$changed = false;
 
 		$up = $this->getSide(Facing::UP);
 		//check which faces have corresponding vines in the block above
 		$supportedFaces = $up instanceof Vine ? array_intersect_key($this->faces, $up->faces) : [];
 
-		foreach(NearbyBlockChangeFlags::getFaces($flags) as $face){
-			if(!isset($supportedFaces[$face]) && !$this->getSide($face)->isSolid()){
+		//if the upper block changed, all set faces must be checked, as we don't know whether they were supported by the
+		//upper block or a side block
+		//otherwise, we should be ok to only check the changed side faces
+		$checkFaces = ($flags & NearbyBlockChangeFlags::UP) !== 0 ? $this->faces : NearbyBlockChangeFlags::getFaces($flags & NearbyBlockChangeFlags::HORIZONTAL);
+
+		foreach($checkFaces as $face){
+			if(isset($this->faces[$face]) && !isset($supportedFaces[$face]) && !$this->getSide($face)->isSolid()){
 				unset($this->faces[$face]);
 				$changed = true;
 			}
