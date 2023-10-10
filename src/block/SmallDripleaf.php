@@ -70,7 +70,7 @@ class SmallDripleaf extends Transparent{
 			return;
 		}
 		$face = $this->top ? Facing::DOWN : Facing::UP;
-		if(NearbyBlockChangeFlags::hasFaces($flags, $face) && !$this->getSide($face)->hasSameTypeId($this)){
+		if(NearbyBlockChangeFlags::hasFace($flags, $face) && !$this->getSide($face)->hasSameTypeId($this)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}

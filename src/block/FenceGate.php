@@ -96,7 +96,7 @@ class FenceGate extends Transparent{
 	public function onNearbyBlockChange2(int $flags) : void{
 		$facing1 = Facing::rotateY($this->facing, false);
 		$facing2 = Facing::rotateY($this->facing, true);
-		if(NearbyBlockChangeFlags::hasFaces($flags, $facing1, $facing2)){
+		if(NearbyBlockChangeFlags::hasFace($flags, $facing1) || NearbyBlockChangeFlags::hasFace($flags, $facing2)){
 			$inWall = $this->checkInWall();
 			if($inWall !== $this->inWall){
 				$this->inWall = $inWall;

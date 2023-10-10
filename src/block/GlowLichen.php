@@ -122,7 +122,7 @@ class GlowLichen extends Transparent{
 		$changed = false;
 
 		foreach($this->faces as $face){
-			if(NearbyBlockChangeFlags::hasFaces($flags, $face) && $this->getAdjacentSupportType($face) !== SupportType::FULL){
+			if(NearbyBlockChangeFlags::hasFace($flags, $face) && $this->getAdjacentSupportType($face) !== SupportType::FULL){
 				unset($this->faces[$face]);
 				$changed = true;
 			}

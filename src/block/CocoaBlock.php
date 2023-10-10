@@ -94,8 +94,8 @@ class CocoaBlock extends Transparent{
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
-		$face = Facing::opposite($this->facing);
-		if(NearbyBlockChangeFlags::hasFaces($flags, $face) && !$this->canAttachTo($this->getSide(Facing::opposite($this->facing)))){
+		$supportFace = Facing::opposite($this->facing);
+		if(NearbyBlockChangeFlags::hasFace($flags, $supportFace) && !$this->canAttachTo($this->getSide($supportFace))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}

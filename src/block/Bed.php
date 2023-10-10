@@ -160,7 +160,7 @@ class Bed extends Transparent{
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
-		if(NearbyBlockChangeFlags::hasFaces($flags, $this->getOtherHalfSide()) && !$this->head && ($other = $this->getOtherHalf()) !== null && $other->occupied !== $this->occupied){
+		if(!$this->head && NearbyBlockChangeFlags::hasFace($flags, $this->getOtherHalfSide()) && ($other = $this->getOtherHalf()) !== null && $other->occupied !== $this->occupied){
 			$this->occupied = $other->occupied;
 			$this->position->getWorld()->setBlock($this->position, $this);
 		}

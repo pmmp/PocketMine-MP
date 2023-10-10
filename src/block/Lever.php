@@ -87,7 +87,7 @@ class Lever extends Flowable{
 
 	public function onNearbyBlockChange2(int $flags) : void{
 		$opposite = Facing::opposite($this->facing->getFacing());
-		if(NearbyBlockChangeFlags::hasFaces($flags, $opposite) && !$this->canBeSupportedAt($this, $opposite)){
+		if(NearbyBlockChangeFlags::hasFace($flags, $opposite) && !$this->canBeSupportedAt($this, $opposite)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}

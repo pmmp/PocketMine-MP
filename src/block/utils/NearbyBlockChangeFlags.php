@@ -92,15 +92,9 @@ final class NearbyBlockChangeFlags{
 
 	/**
 	 * @phpstan-param Flag $flag
-	 * @phpstan-param FacingValue ...$facings
+	 * @phpstan-param FacingValue $facing
 	 */
-	public static function hasFaces(int $flag, int ...$facings) : bool{
-		foreach($facings as $facing){
-			if(($flag & self::fromFacing($facing)) !== 0){
-				return true;
-			}
-		}
-
-		return false;
+	public static function hasFace(int $flag, int $facing) : bool{
+		return ($flag & self::fromFacing($facing)) !== 0;
 	}
 }
