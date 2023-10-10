@@ -300,7 +300,7 @@ class World implements ChunkManager{
 	/** @phpstan-var \SplQueue<int> */
 	private \SplQueue $neighbourBlockUpdateQueue;
 	/**
-	 * @var int[] blockhash => dummy
+	 * @var int[] blockhash => update source flags
 	 * @phpstan-var array<BlockPosHash, int-mask-of<NearbyBlockChangeFlags::FLAG_*>>
 	 */
 	private array $neighbourBlockUpdateQueueIndex = [];
