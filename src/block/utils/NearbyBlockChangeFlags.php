@@ -27,7 +27,7 @@ use AssertionError;
 use pocketmine\math\Facing;
 
 /**
- * @phpstan-type FlagValue NearbyBlockChangeFlags::FLAG_*
+ * @phpstan-type FlagValue NearbyBlockChangeFlags::*
  * @phpstan-type Flag int-mask-of<FlagValue>
  * @phpstan-type FacingValue int
  * FacingValue can be value-of<Facing::ALL> in the future when Facing functions no longer return generic integers.
@@ -37,15 +37,15 @@ final class NearbyBlockChangeFlags{
 		// NOOP
 	}
 
-	public const FLAG_SELF = 1;
-	public const FLAG_DOWN = self::FLAG_SELF << 1;
-	public const FLAG_UP = self::FLAG_DOWN << 1;
-	public const FLAG_NORTH = self::FLAG_UP << 1;
-	public const FLAG_SOUTH = self::FLAG_NORTH << 1;
-	public const FLAG_WEST = self::FLAG_SOUTH << 1;
-	public const FLAG_EAST = self::FLAG_WEST << 1;
+	public const SELF = 1;
+	public const DOWN = self::SELF << 1;
+	public const UP = self::DOWN << 1;
+	public const NORTH = self::UP << 1;
+	public const SOUTH = self::NORTH << 1;
+	public const WEST = self::SOUTH << 1;
+	public const EAST = self::WEST << 1;
 
-	public const FLAG_HORIZONTAL = self::FLAG_NORTH | self::FLAG_SOUTH | self::FLAG_WEST | self::FLAG_EAST;
+	public const HORIZONTAL = self::NORTH | self::SOUTH | self::WEST | self::EAST;
 
 	/**
 	 * @phpstan-param FacingValue $facing
@@ -54,12 +54,12 @@ final class NearbyBlockChangeFlags{
 	 */
 	public static function fromFacing(int $facing) : int{
 		return match($facing){
-			Facing::DOWN => self::FLAG_DOWN,
-			Facing::UP => self::FLAG_UP,
-			Facing::NORTH => self::FLAG_NORTH,
-			Facing::SOUTH => self::FLAG_SOUTH,
-			Facing::WEST => self::FLAG_WEST,
-			Facing::EAST => self::FLAG_EAST,
+			Facing::DOWN => self::DOWN,
+			Facing::UP => self::UP,
+			Facing::NORTH => self::NORTH,
+			Facing::SOUTH => self::SOUTH,
+			Facing::WEST => self::WEST,
+			Facing::EAST => self::EAST,
 			default => throw new \InvalidArgumentException("Unknown facing $facing"),
 		};
 	}
@@ -73,12 +73,12 @@ final class NearbyBlockChangeFlags{
 	public static function getFaces(int $flags) : array{
 		$result = [];
 		foreach([
-			self::FLAG_DOWN => Facing::DOWN,
-			self::FLAG_UP => Facing::UP,
-			self::FLAG_NORTH => Facing::NORTH,
-			self::FLAG_SOUTH => Facing::SOUTH,
-			self::FLAG_WEST => Facing::WEST,
-			self::FLAG_EAST => Facing::EAST,
+			self::DOWN => Facing::DOWN,
+			self::UP => Facing::UP,
+			self::NORTH => Facing::NORTH,
+			self::SOUTH => Facing::SOUTH,
+			self::WEST => Facing::WEST,
+			self::EAST => Facing::EAST,
 		] as $flag => $facing){
 			if(($flags & $flag) !== 0){
 				$result[] = $facing;

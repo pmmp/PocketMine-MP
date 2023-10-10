@@ -62,7 +62,7 @@ class Farmland extends Transparent{
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
-		if(($flags & NearbyBlockChangeFlags::FLAG_UP) !== 0 && $this->getSide(Facing::UP)->isSolid()){
+		if(($flags & NearbyBlockChangeFlags::UP) !== 0 && $this->getSide(Facing::UP)->isSolid()){
 			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::DIRT());
 		}
 	}

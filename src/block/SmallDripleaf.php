@@ -65,7 +65,7 @@ class SmallDripleaf extends Transparent{
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
-		if(!$this->top && ($flags & NearbyBlockChangeFlags::FLAG_DOWN) !== 0 && !$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
+		if(!$this->top && ($flags & NearbyBlockChangeFlags::DOWN) !== 0 && !$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
 			$this->position->getWorld()->useBreakOn($this->position);
 			return;
 		}

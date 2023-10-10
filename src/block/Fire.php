@@ -51,7 +51,7 @@ class Fire extends BaseFire{
 
 	public function onNearbyBlockChange2(int $flags) : void{
 		$world = $this->position->getWorld();
-		if(($flags & NearbyBlockChangeFlags::FLAG_DOWN) !== 0){
+		if(($flags & NearbyBlockChangeFlags::DOWN) !== 0){
 			$down = $this->getSide(Facing::DOWN);
 			if(SoulFire::canBeSupportedBy($down)){
 				$world->setBlock($this->position, VanillaBlocks::SOUL_FIRE());
