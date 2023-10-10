@@ -128,7 +128,7 @@ class Vine extends Flowable{
 		//if the upper block changed, all set faces must be checked, as we don't know whether they were supported by the
 		//upper block or a side block
 		//otherwise, we should be ok to only check the changed side faces
-		$checkFaces = ($flags & NearbyBlockChangeFlags::UP) !== 0 ? $this->faces : NearbyBlockChangeFlags::getFaces($flags & NearbyBlockChangeFlags::HORIZONTAL);
+		$checkFaces = $upChanged ? $this->faces : NearbyBlockChangeFlags::getFaces($flags & NearbyBlockChangeFlags::HORIZONTAL);
 
 		foreach($checkFaces as $face){
 			if(isset($this->faces[$face]) && !isset($supportedFaces[$face]) && !$this->getSide($face)->isSolid()){
