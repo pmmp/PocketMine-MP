@@ -113,7 +113,7 @@ class ChiseledBookshelf extends Opaque{
 			$this->setSlot($slot, false);
 		}elseif($item instanceof WritableBookBase || $item instanceof Book || $item instanceof EnchantedBook){
 			//TODO: type tags like blocks would be better for this
-			$inventory->setItem($slot->value, $item);
+			$inventory->setItem($slot->value, $item->pop());
 			$this->setSlot($slot, true);
 		}else{
 			return true;
