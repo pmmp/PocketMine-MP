@@ -71,6 +71,9 @@ final class NearbyBlockChangeFlags{
 	 * @phpstan-return FacingValue[]
 	 */
 	public static function getFaces(int $flags) : array{
+		if($flags === 0){
+			return [];
+		}
 		$result = [];
 		foreach([
 			self::DOWN => Facing::DOWN,
