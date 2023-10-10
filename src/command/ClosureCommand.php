@@ -29,7 +29,7 @@ use pocketmine\utils\Utils;
 /**
  * @phpstan-type Execute \Closure(CommandSender $sender, Command $command, string $commandLabel, list<string> $args) : mixed
  */
-class ClosureCommand extends Command{
+final class ClosureCommand extends Command{
 	/** @phpstan-var Execute */
 	private \Closure $execute;
 
