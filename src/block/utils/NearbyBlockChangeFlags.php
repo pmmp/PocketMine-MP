@@ -37,13 +37,13 @@ final class NearbyBlockChangeFlags{
 		// NOOP
 	}
 
-	public const SELF = 1;
-	public const DOWN = self::SELF << 1;
-	public const UP = self::DOWN << 1;
-	public const NORTH = self::UP << 1;
-	public const SOUTH = self::NORTH << 1;
-	public const WEST = self::SOUTH << 1;
-	public const EAST = self::WEST << 1;
+	public const SELF = 1 << 0;
+	public const DOWN = 1 << 1;
+	public const UP = 1 << 2;
+	public const NORTH = 1 << 3;
+	public const SOUTH = 1 << 4;
+	public const WEST = 1 << 5;
+	public const EAST = 1 << 6;
 
 	public const HORIZONTAL = self::NORTH | self::SOUTH | self::WEST | self::EAST;
 
