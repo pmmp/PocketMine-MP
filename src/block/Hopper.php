@@ -48,6 +48,7 @@ class Hopper extends Transparent implements HopperInteractable{
 
 	private int $lastTransferActionTick = 0;
 	private int $lastEntityPickupTick = 0;
+	private AxisAlignedBB $pickingBox;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->facingExcept($this->facing, Facing::UP);
@@ -137,8 +138,7 @@ class Hopper extends Transparent implements HopperInteractable{
 		}
 
 		if(!$this->isEntityPickingInCooldown()){
-			$boxe = AxisAlignedBB::one()->expand(0, 1, 0)->offset($this->position->x, $this->position->y, $this->position->z);
-			foreach($world->getNearbyEntities($boxe) as $entity){
+			foreach($world->getNearbyEntities($this->getPickingBox()) as $entity){
 				if(!$entity instanceof ItemEntity){
 					continue;
 				}
@@ -213,6 +213,14 @@ class Hopper extends Transparent implements HopperInteractable{
 	private function isEntityPickingInCooldown() : bool{
 		$currentTick = $this->position->getWorld()->getServer()->getTick();
 		return $currentTick - $this->lastEntityPickupTick < self::ENTITY_PICKUP_COOLDOWN;
+	}
+
+	public function getPickingBox() : AxisAlignedBB {
+		return $this->pickingBox ??= $this->recalculateBoundingBox();
+	}
+
+	protected function recalculateBoundingBox() : ?AxisAlignedBB {
+		return AxisAlignedBB::one()->expand(0, 1, 0)->offset($this->position->x, $this->position->y, $this->position->z);
 	}
 
 	//TODO: redstone logic
