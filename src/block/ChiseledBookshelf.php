@@ -98,7 +98,7 @@ class ChiseledBookshelf extends Opaque{
 		}
 
 		$x = Facing::axis($face) === Axis::X ? $clickVector->getZ() : $clickVector->getX();
-		$x = match ($face) {
+		$x = match($face){
 			Facing::NORTH, Facing::EAST => 1 - $x,
 			default => $x
 		};
