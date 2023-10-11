@@ -93,6 +93,22 @@ class Farmland extends Transparent{
 	}
 
 	/**
+	 * @internal
+	 */
+	public function getWaterSquareIndex() : int{ return $this->waterSquareIndex; }
+
+	/**
+	 * @internal
+	 */
+	public function setWaterSquareIndex(int $waterSquareIndex) : self{
+		if($waterSquareIndex < -1 || $waterSquareIndex >= self::WATER_SEARCH_SQUARES_TOTAL){
+			throw new \InvalidArgumentException("Water square index must be in range -1 ... " . (self::WATER_SEARCH_SQUARES_TOTAL - 1));
+		}
+		$this->waterSquareIndex = $waterSquareIndex;
+		return $this;
+	}
+
+	/**
 	 * @return AxisAlignedBB[]
 	 */
 	protected function recalculateCollisionBoxes() : array{
