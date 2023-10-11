@@ -29,6 +29,8 @@ use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\object\ItemEntity;
+use pocketmine\event\block\HopperActionEvent;
+use pocketmine\event\block\HopperPickupItemEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -108,27 +110,21 @@ class Hopper extends Transparent implements HopperInteractable{
 
 	public function onScheduledUpdate() : void{
 		$world = $this->position->getWorld();
-		$world->scheduleDelayedBlockUpdate($this->position, 1);
 
-		if($this->powered){
-			return;
-		}
-
-		$currentTile = $world->getTile($this->position);
-		if(!$currentTile instanceof TileHopper){
-			return;
-		}
-
-		if(!$this->isTransferInCooldown()){
+		if(!$this->powered && !$this->isTransferInCooldown()){
 			$facingBlock = $this->getSide($this->facing);
 			$pushSuccess = false;
-			if($facingBlock instanceof HopperInteractable){
+			$ev = new HopperActionEvent($this, $facingBlock, HopperActionEvent::ACTION_PUSH);
+			$ev->call();
+			if(!$ev->isCancelled() && $facingBlock instanceof HopperInteractable){
 				$pushSuccess = $facingBlock->doHopperPush($this);
 			}
 
 			$topBlock = $this->getSide(Facing::UP);
 			$pullSuccess = false;
-			if($topBlock instanceof HopperInteractable){
+			$ev = new HopperActionEvent($this, $topBlock, HopperActionEvent::ACTION_PULL);
+			$ev->call();
+			if(!$ev->isCancelled() && $topBlock instanceof HopperInteractable){
 				$pullSuccess = $topBlock->doHopperPull($this);
 			}
 
@@ -137,10 +133,23 @@ class Hopper extends Transparent implements HopperInteractable{
 			}
 		}
 
-		if(!$this->isEntityPickingInCooldown()){
+		if(!$this->powered && !$this->isEntityPickingInCooldown()){
+			$currentTile = $world->getTile($this->position);
+			if(!$currentTile instanceof TileHopper){
+				return;
+			}
+
 			foreach($world->getNearbyEntities($this->getPickingBox()) as $entity){
 				if(!$entity instanceof ItemEntity){
 					continue;
+				}
+
+				if(HopperPickupItemEvent::hasHandlers()){
+					$ev = new HopperPickupItemEvent($entity, $this);
+					$ev->call();
+					if($ev->isCancelled()){
+						continue;
+					}
 				}
 
 				$item = $entity->getItem();
@@ -155,6 +164,8 @@ class Hopper extends Transparent implements HopperInteractable{
 				break;
 			}
 		}
+
+		$world->scheduleDelayedBlockUpdate($this->position, 1);
 	}
 
 	public function doHopperPush(Hopper $hopperBlock) : bool{
