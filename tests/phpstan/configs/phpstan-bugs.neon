@@ -11,6 +11,11 @@ parameters:
 			path: ../../../src/block/CakeWithCandle.php
 
 		-
+			message: "#^Parameter \\#1 \\$flags of static method pocketmine\\\\block\\\\utils\\\\NearbyBlockChangeFlags\\:\\:getFaces\\(\\) expects int\\<0, 63\\>, int given\\.$#"
+			count: 1
+			path: ../../../src/block/ConcretePowder.php
+
+		-
 			message: "#^Method pocketmine\\\\block\\\\DoubleTallGrass\\:\\:traitGetDropsForIncompatibleTool\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: ../../../src/block/DoubleTallGrass.php
@@ -49,6 +54,11 @@ parameters:
 			message: "#^Dead catch \\- RuntimeException is never thrown in the try block\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginManager.php
+
+		-
+			message: "#^Property pocketmine\\\\world\\\\World\\:\\:\\$neighbourBlockUpdateQueueIndex \\(array\\<int, int\\<0, 63\\>\\>\\) does not accept non\\-empty\\-array\\<int, int\\>\\.$#"
+			count: 1
+			path: ../../../src/world/World.php
 
 		-
 			message: "#^Casting to int something that's already int\\.$#"
