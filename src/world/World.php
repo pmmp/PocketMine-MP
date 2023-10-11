@@ -1482,7 +1482,8 @@ class World implements ChunkManager{
 	 * @see Block::onNearbyBlockChange()
 	 */
 	public function notifyNeighbourBlockUpdate(Vector3 $pos) : void{
-		$this->tryAddToNeighbourUpdateQueue($pos, NearbyBlockChangeFlags::SELF);
+		//freshly placed blocks must check all neighbours - this is required for stuff like wall connections
+		$this->tryAddToNeighbourUpdateQueue($pos, NearbyBlockChangeFlags::ALL);
 		foreach($pos->sides() as $facing => $vector3){
 			$this->tryAddToNeighbourUpdateQueue($vector3, NearbyBlockChangeFlags::fromFacing(Facing::opposite($facing)));
 		}

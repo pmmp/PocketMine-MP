@@ -37,15 +37,16 @@ final class NearbyBlockChangeFlags{
 		// NOOP
 	}
 
-	public const SELF = 1 << 0;
-	public const DOWN = 1 << 1;
-	public const UP = 1 << 2;
-	public const NORTH = 1 << 3;
-	public const SOUTH = 1 << 4;
-	public const WEST = 1 << 5;
-	public const EAST = 1 << 6;
+	public const DOWN = 1 << 0;
+	public const UP = 1 << 1;
+	public const NORTH = 1 << 2;
+	public const SOUTH = 1 << 3;
+	public const WEST = 1 << 4;
+	public const EAST = 1 << 5;
 
 	public const HORIZONTAL = self::NORTH | self::SOUTH | self::WEST | self::EAST;
+	public const VERTICAL = self::DOWN | self::UP;
+	public const ALL = self::HORIZONTAL | self::VERTICAL;
 
 	/**
 	 * @phpstan-param FacingValue $facing
