@@ -179,13 +179,13 @@ class Farmland extends Transparent{
 	private function findWaterInLocationSquare(int $squareIndex) : bool{
 		$raw = $squareIndex;
 
-		$baseY = $this->position->getFloorY() + ($raw % self::WATER_SEARCH_VERTICAL_LENGTH);
-		$raw = intdiv($raw, self::WATER_SEARCH_VERTICAL_LENGTH);
-
 		$baseX = $this->position->getFloorX() + self::coordOffsetFromSquareIndexValue($raw % self::WATER_SEARCH_SQUARES_PER_AXIS);
 		$raw = intdiv($raw, self::WATER_SEARCH_SQUARES_PER_AXIS);
 
 		$baseZ = $this->position->getFloorZ() + self::coordOffsetFromSquareIndexValue($raw % self::WATER_SEARCH_SQUARES_PER_AXIS);
+		$raw = intdiv($raw, self::WATER_SEARCH_SQUARES_PER_AXIS);
+
+		$baseY = $this->position->getFloorY() + ($raw % self::WATER_SEARCH_VERTICAL_LENGTH);
 
 		$world = $this->position->getWorld();
 
