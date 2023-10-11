@@ -301,7 +301,7 @@ class World implements ChunkManager{
 	private \SplQueue $neighbourBlockUpdateQueue;
 	/**
 	 * @var int[] blockhash => update source flags
-	 * @phpstan-var array<BlockPosHash, int-mask-of<NearbyBlockChangeFlags::FLAG_*>>
+	 * @phpstan-var array<BlockPosHash, int-mask-of<NearbyBlockChangeFlags::*>>
 	 */
 	private array $neighbourBlockUpdateQueueIndex = [];
 
@@ -1461,7 +1461,7 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * @phpstan-param int-mask-of<NearbyBlockChangeFlags::FLAG_*> $nearbyUpdateFlag
+	 * @phpstan-param int-mask-of<NearbyBlockChangeFlags::*> $nearbyUpdateFlag
 	 */
 	private function tryAddToNeighbourUpdateQueue(Vector3 $pos, int $nearbyUpdateFlag) : void{
 		if($this->isInWorld($pos->x, $pos->y, $pos->z)){
