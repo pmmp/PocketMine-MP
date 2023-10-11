@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
-use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\BlockBurnEvent;
 use pocketmine\math\Facing;

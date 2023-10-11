@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use AssertionError;
 use pocketmine\math\Facing;
 
 /**
