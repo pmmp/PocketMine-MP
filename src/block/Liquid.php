@@ -250,6 +250,8 @@ abstract class Liquid extends Transparent{
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
+		//TODO: Using flags here would benefit checkForHarden() - sadly it's protected so we can't directly change it
+		//this would likely have a significant performance benefit for lava
 		if(!$this->checkForHarden()){
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, $this->tickRate());
 		}

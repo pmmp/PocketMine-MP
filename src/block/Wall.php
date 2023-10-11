@@ -90,6 +90,7 @@ class Wall extends Transparent{
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
+		//TODO: recalculateConnections could benefit from flags information
 		if(($flags & NearbyBlockChangeFlags::HORIZONTAL) !== 0 && $this->recalculateConnections()){
 			$this->position->getWorld()->setBlock($this->position, $this);
 		}
