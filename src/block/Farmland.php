@@ -31,15 +31,54 @@ use pocketmine\event\entity\EntityTrampleFarmlandEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use function intdiv;
 use function lcg_value;
 
 class Farmland extends Transparent{
 	public const MAX_WETNESS = 7;
 
+	private const WATER_SQUARE_INDEX_UNKNOWN = -1;
+
+	private const WATER_SEARCH_HORIZONTAL_LENGTH = 9;
+	private const WATER_SEARCH_VERTICAL_LENGTH = 2;
+
+	/**
+	 * Known water location is recorded to a square (xyz 3x1x3) in the search area with this edge length.
+	 * Smaller values increase precision, but also require more bits in the blockstate data to store.
+	 *
+	 * Why, you might ask, not just store the exact coordinates of the water block? That would require 8 bits to store,
+	 * requiring the standard size of state data to be increased. While this is easily possible, it would reduce
+	 * performance in other areas due to less efficient hashtable indexing.
+	 *
+	 * This value must divide WATER_SEARCH_HORIZONTAL_LENGTH with no remainder.
+	 */
+	private const WATER_LOCATION_SQUARE_EDGE_LENGTH = 3;
+	/** Number of location squares along each horizontal axis of the search area. Do not change this value. */
+	private const WATER_SEARCH_SQUARES_PER_AXIS = self::WATER_SEARCH_HORIZONTAL_LENGTH / self::WATER_LOCATION_SQUARE_EDGE_LENGTH;
+	/** Total location squares in the search area. Do not change this value. */
+	private const WATER_SEARCH_SQUARES_TOTAL = self::WATER_SEARCH_SQUARES_PER_AXIS ** 2 * self::WATER_SEARCH_VERTICAL_LENGTH;
+
 	protected int $wetness = 0; //"moisture" blockstate property in PC
+
+	/**
+	 * Approximate location (to an xyz 3x1x3 square) of a known water block found by a previous search.
+	 *
+	 * If this is set to a non-unknown value, the 3x1x3 square of blocks indicated will be searched for water before
+	 * searching the entire 9x2x9 grid around the farmland. If nearby water sources don't change much (the 99% case for
+	 * large farms, unless redstone is involved), this reduces the average number of blocks searched for water from
+	 * about 41 to 5, which is a significant performance improvement.
+	 *
+	 * If the 3x1x3 square of blocks indicated doesn't contain any water blocks, the full 9x2x9 volume will be searched
+	 * as before. A new square index will be recorded if water is found, otherwise it will be set to unknown and future
+	 * searches will search the full 9x2x9 volume again.
+	 *
+	 * This property is not exposed to the API or saved on disk. It is only used by PocketMine-MP at runtime as a cache.
+	 */
+	private int $waterSquareIndex = self::WATER_SQUARE_INDEX_UNKNOWN;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->boundedInt(3, 0, self::MAX_WETNESS, $this->wetness);
+		$w->boundedInt(5, -1, self::WATER_SEARCH_SQUARES_TOTAL - 1, $this->waterSquareIndex);
 	}
 
 	public function getWetness() : int{ return $this->wetness; }
@@ -72,6 +111,11 @@ class Farmland extends Transparent{
 
 	public function onRandomTick() : void{
 		$world = $this->position->getWorld();
+
+		//this property may be updated by canHydrate() - track this so we know if we need to set the block again
+		$oldWaterSquareIndex = $this->waterSquareIndex;
+		$changed = false;
+
 		if(!$this->canHydrate()){
 			if($this->wetness > 0){
 				$event = new FarmlandHydrationChangeEvent($this, $this->wetness, $this->wetness - 1);
@@ -79,9 +123,11 @@ class Farmland extends Transparent{
 				if(!$event->isCancelled()){
 					$this->wetness = $event->getNewHydration();
 					$world->setBlock($this->position, $this, false);
+					$changed = true;
 				}
 			}else{
 				$world->setBlock($this->position, VanillaBlocks::DIRT());
+				$changed = true;
 			}
 		}elseif($this->wetness < self::MAX_WETNESS){
 			$event = new FarmlandHydrationChangeEvent($this, $this->wetness, self::MAX_WETNESS);
@@ -89,7 +135,13 @@ class Farmland extends Transparent{
 			if(!$event->isCancelled()){
 				$this->wetness = $event->getNewHydration();
 				$world->setBlock($this->position, $this, false);
+				$changed = true;
 			}
+		}
+
+		if(!$changed && $oldWaterSquareIndex !== $this->waterSquareIndex){
+			//ensure the water square index is saved regardless of whether anything else happened
+			$world->setBlock($this->position, $this, false);
 		}
 	}
 
@@ -104,20 +156,53 @@ class Farmland extends Transparent{
 		return null;
 	}
 
-	protected function canHydrate() : bool{
-		//TODO: check rain
-		$start = $this->position->add(-4, 0, -4);
-		$end = $this->position->add(4, 1, 4);
-		for($y = $start->y; $y <= $end->y; ++$y){
-			for($z = $start->z; $z <= $end->z; ++$z){
-				for($x = $start->x; $x <= $end->x; ++$x){
-					if($this->position->getWorld()->getBlockAt($x, $y, $z) instanceof Water){
-						return true;
-					}
+	private static function coordOffsetFromSquareIndexValue(int $value) : int{
+		return ($value * self::WATER_LOCATION_SQUARE_EDGE_LENGTH) - (int) (self::WATER_SEARCH_HORIZONTAL_LENGTH / 2);
+	}
+
+	private function findWaterInLocationSquare(int $squareIndex) : bool{
+		$raw = $squareIndex;
+
+		$baseY = $this->position->getFloorY() + ($raw % self::WATER_SEARCH_VERTICAL_LENGTH);
+		$raw = intdiv($raw, self::WATER_SEARCH_VERTICAL_LENGTH);
+
+		$baseX = $this->position->getFloorX() + self::coordOffsetFromSquareIndexValue($raw % self::WATER_SEARCH_SQUARES_PER_AXIS);
+		$raw = intdiv($raw, self::WATER_SEARCH_SQUARES_PER_AXIS);
+
+		$baseZ = $this->position->getFloorZ() + self::coordOffsetFromSquareIndexValue($raw % self::WATER_SEARCH_SQUARES_PER_AXIS);
+
+		$world = $this->position->getWorld();
+
+		for($x = 0; $x < self::WATER_LOCATION_SQUARE_EDGE_LENGTH; $x++){
+			for($z = 0; $z < self::WATER_LOCATION_SQUARE_EDGE_LENGTH; $z++){
+				if($world->getBlockAt($baseX + $x, $baseY, $baseZ + $z) instanceof Water){
+					return true;
 				}
 			}
 		}
 
+		return false;
+	}
+
+	protected function canHydrate() : bool{
+		if($this->waterSquareIndex !== self::WATER_SQUARE_INDEX_UNKNOWN){
+			if($this->findWaterInLocationSquare($this->waterSquareIndex)){
+				return true;
+			}
+		}
+
+		for($squareIndex = 0; $squareIndex < self::WATER_SEARCH_SQUARES_TOTAL; $squareIndex++){
+			if($squareIndex === $this->waterSquareIndex){
+				continue;
+			}
+
+			if($this->findWaterInLocationSquare($squareIndex)){
+				$this->waterSquareIndex = $squareIndex;
+				return true;
+			}
+		}
+
+		$this->waterSquareIndex = self::WATER_SQUARE_INDEX_UNKNOWN;
 		return false;
 	}
 
