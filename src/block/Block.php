@@ -470,7 +470,7 @@ class Block{
 	 *
 	 * @see NearbyBlockChangeFlags
 	 *
-	 * @phpstan-param int-mask-of<NearbyBlockChangeFlags::FLAG_*> $flags
+	 * @phpstan-param int-mask-of<NearbyBlockChangeFlags::*> $flags
 	 */
 	public function onNearbyBlockChange2(int $flags) : void{
 
