@@ -39,6 +39,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function array_shift;
 use function count;
+use function min;
 
 class Hopper extends Transparent implements HopperInteractable{
 	use PoweredByRedstoneTrait;
@@ -91,8 +92,9 @@ class Hopper extends Transparent implements HopperInteractable{
 		$this->facing = $face === Facing::DOWN ? Facing::DOWN : Facing::opposite($face);
 
 		$world = $this->position->getWorld();
-		$this->lastTransferActionTick = $world->getServer()->getTick();
-		$world->scheduleDelayedBlockUpdate($this->position, 1);
+		$this->updateTransferCooldown();
+		$this->updateEntityPickingCooldown();
+		$world->scheduleDelayedBlockUpdate($this->position, $this->getNextTickUpdate());
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
@@ -129,7 +131,7 @@ class Hopper extends Transparent implements HopperInteractable{
 			}
 
 			if($pullSuccess || $pushSuccess){
-				$this->lastTransferActionTick = $world->getServer()->getTick();
+				$this->updateTransferCooldown();
 			}
 		}
 
@@ -161,11 +163,13 @@ class Hopper extends Transparent implements HopperInteractable{
 					$entity->flagForDespawn();
 				}
 
+				$this->updateEntityPickingCooldown();
+
 				break;
 			}
 		}
 
-		$world->scheduleDelayedBlockUpdate($this->position, 1);
+		$world->scheduleDelayedBlockUpdate($this->position, $this->getNextTickUpdate());
 	}
 
 	public function doHopperPush(Hopper $hopperBlock) : bool{
@@ -187,8 +191,8 @@ class Hopper extends Transparent implements HopperInteractable{
 			$tileHopper->getInventory(),
 			$currentTile->getInventory()
 		)){
-			$hopperBlock->lastTransferActionTick = $this->position->getWorld()->getServer()->getTick();
-			$hopperBlock->position->getWorld()->scheduleDelayedBlockUpdate($hopperBlock->position, self::TRANSFER_COOLDOWN);
+			$hopperBlock->updateTransferCooldown();
+			// don't schedule another update, hopper block update themselves automatically if needed
 			return true;
 		}
 
@@ -216,6 +220,14 @@ class Hopper extends Transparent implements HopperInteractable{
 		);
 	}
 
+	public function getPickingBox() : AxisAlignedBB {
+		return $this->pickingBox ??= $this->recalculateBoundingBox();
+	}
+
+	protected function recalculateBoundingBox() : ?AxisAlignedBB {
+		return AxisAlignedBB::one()->expand(0, 1, 0)->offset($this->position->x, $this->position->y, $this->position->z);
+	}
+
 	private function isTransferInCooldown() : bool{
 		$currentTick = $this->position->getWorld()->getServer()->getTick();
 		return $currentTick - $this->lastTransferActionTick < self::TRANSFER_COOLDOWN;
@@ -226,12 +238,26 @@ class Hopper extends Transparent implements HopperInteractable{
 		return $currentTick - $this->lastEntityPickupTick < self::ENTITY_PICKUP_COOLDOWN;
 	}
 
-	public function getPickingBox() : AxisAlignedBB {
-		return $this->pickingBox ??= $this->recalculateBoundingBox();
+	private function updateTransferCooldown() : void{
+		$this->lastTransferActionTick = $this->position->getWorld()->getServer()->getTick();
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB {
-		return AxisAlignedBB::one()->expand(0, 1, 0)->offset($this->position->x, $this->position->y, $this->position->z);
+	private function updateEntityPickingCooldown() : void{
+		$this->lastEntityPickupTick = $this->position->getWorld()->getServer()->getTick();
+	}
+
+	private function getNextTickUpdate() : int {
+		$currentTick = $this->position->getWorld()->getServer()->getTick();
+
+		$nextTick = 1;
+		if($this->isTransferInCooldown()) {
+			$nextTick = self::TRANSFER_COOLDOWN - ($currentTick - $this->lastTransferActionTick);
+		}
+		if($this->isEntityPickingInCooldown()) {
+			$nextTick = min($nextTick, self::ENTITY_PICKUP_COOLDOWN - ($currentTick - $this->lastEntityPickupTick));
+		}
+
+		return $nextTick;
 	}
 
 	//TODO: redstone logic
