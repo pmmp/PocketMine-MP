@@ -87,7 +87,6 @@ class StructureBlock extends Spawnable{
 		parent::__construct($world, $pos);
 	}
 
-	// TODO : check values
 	public function readSaveData(CompoundTag $nbt) : void{
 		try{
 			$this->animationMode = StructureAnimationMode::fromInt($nbt->getByte(self::TAG_ANIMATION_MODE, $this->animationMode->toInt()));

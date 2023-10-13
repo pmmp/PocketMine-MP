@@ -43,6 +43,7 @@ class StructureBlock extends Opaque{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if ($player instanceof Player) {
 			if (!$player->isCreative(true)) return false;
+			// the 0 is dubious but any value works
 			$pk = ContainerOpenPacket::blockInv(0, WindowTypes::STRUCTURE_EDITOR, BlockPosition::fromVector3($this->getPosition()));
 			$player->getNetworkSession()->sendDataPacket($pk);
 			return true;
@@ -61,11 +62,6 @@ class StructureBlock extends Opaque{
 	/** @return $this */
 	public function setType(StructureBlockType $type) : self{
 		$this->type = $type;
-		if ($this->position->isValid()){
-			$this->position->getWorld()->setBlock($this->position, $this);
-		}
 		return $this;
 	}
-
-	//TODO: The Structure Block has redstone effects, they are not implemented.
 }

@@ -25,8 +25,8 @@ namespace pocketmine\block\utils;
 
 class StructureAxes{
 	public function __construct(
-		public bool $xMirror,
-		public bool $yMirror
+		protected bool $xMirror,
+		protected bool $yMirror
 	){}
 
 	/**
@@ -43,5 +43,29 @@ class StructureAxes{
 	 */
 	public function toInt() : int{
 		return $this->xMirror | ($this->yMirror << 1);
+	}
+
+	public function getXMirror() : bool{
+		return $this->xMirror;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setXMirror(bool $xMirror) : self{
+		$this->xMirror = $xMirror;
+		return $this;
+	}
+
+	public function getYMirror() : bool{
+		return $this->yMirror;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setYMirror(bool $yMirror) : self{
+		$this->yMirror = $yMirror;
+		return $this;
 	}
 }

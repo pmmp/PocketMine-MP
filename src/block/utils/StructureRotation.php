@@ -28,6 +28,7 @@ class StructureRotation{
 
 	/**
 	 * @param $angle The rotation in degrees. This must be a multiple of 90.
+	 * @throws \ValueError
 	 */
 	public function __construct(int $angle){
 		$this->setAngle($angle);

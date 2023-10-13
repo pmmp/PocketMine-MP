@@ -45,6 +45,8 @@ use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\SlabType;
+use pocketmine\block\utils\StructureBlockType;
+use pocketmine\block\utils\StructureVoidType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
@@ -1564,22 +1566,22 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		});
 		$this->map(Ids::STRUCTURE_BLOCK, function(Reader $in) : Block{
 			return Blocks::STRUCTURE_BLOCK()
-				->setType(match($type = $this->readString(BlockStateNames::STRUCTURE_BLOCK_TYPE)){
+				->setType(match($type = $in->readString(StateNames::STRUCTURE_BLOCK_TYPE)){
 						StringValues::STRUCTURE_BLOCK_TYPE_CORNER => StructureBlockType::CORNER,
 						StringValues::STRUCTURE_BLOCK_TYPE_DATA => StructureBlockType::DATA,
 						StringValues::STRUCTURE_BLOCK_TYPE_EXPORT => StructureBlockType::EXPORT,
 						StringValues::STRUCTURE_BLOCK_TYPE_INVALID => StructureBlockType::INVALID,
 						StringValues::STRUCTURE_BLOCK_TYPE_LOAD => StructureBlockType::LOAD,
 						StringValues::STRUCTURE_BLOCK_TYPE_SAVE => StructureBlockType::SAVE,
-						default => throw $this->badValueException(BlockStateNames::STRUCTURE_BLOCK_TYPE, $type),
+						default => throw $in->badValueException(StateNames::STRUCTURE_BLOCK_TYPE, $type),
 					});
 		});
 		$this->map(Ids::STRUCTURE_VOID, function(Reader $in) : Block{
 			return Blocks::STRUCTURE_VOID()
-				->setType(match($type = $in->readString(BlockStateNames::STRUCTURE_VOID_TYPE)){
+				->setType(match($type = $in->readString(StateNames::STRUCTURE_VOID_TYPE)){
 						StringValues::STRUCTURE_VOID_TYPE_VOID => StructureVoidType::VOID,
 						StringValues::STRUCTURE_VOID_TYPE_AIR => StructureVoidType::AIR,
-						default => throw $this->badValueException(BlockStateNames::STRUCTURE_VOID_TYPE, $type),
+						default => throw $in->badValueException(StateNames::STRUCTURE_VOID_TYPE, $type),
 					});
 		});
 		$this->map(Ids::SWEET_BERRY_BUSH, function(Reader $in) : Block{
