@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
@@ -50,7 +51,10 @@ class DeadBush extends Flowable{
 		return 100;
 	}
 
-	private function canBeSupportedAt(Block $block) : bool{
+	private function canBeSupportedAt(Block $block, int $nearbyUpdateFlags) : bool{
+		if(($nearbyUpdateFlags & NearbyBlockChangeFlags::DOWN) === 0){
+			return true;
+		}
 		$supportBlock = $block->getSide(Facing::DOWN);
 		return
 			$supportBlock->hasTypeTag(BlockTypeTags::SAND) ||

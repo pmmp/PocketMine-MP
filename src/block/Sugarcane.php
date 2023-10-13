@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
@@ -84,7 +85,10 @@ class Sugarcane extends Flowable{
 		return false;
 	}
 
-	private function canBeSupportedAt(Block $block) : bool{
+	private function canBeSupportedAt(Block $block, int $nearbyUpdateFlags) : bool{
+		if(($nearbyUpdateFlags & NearbyBlockChangeFlags::DOWN) === 0){
+			return true;
+		}
 		$supportBlock = $block->getSide(Facing::DOWN);
 		return $supportBlock->hasSameTypeId($this) ||
 			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||

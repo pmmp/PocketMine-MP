@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
@@ -39,7 +40,10 @@ abstract class Crops extends Flowable{
 
 	public const MAX_AGE = 7;
 
-	private function canBeSupportedAt(Block $block) : bool{
+	private function canBeSupportedAt(Block $block, int $nearbyUpdateFlags) : bool{
+		if(($nearbyUpdateFlags & NearbyBlockChangeFlags::DOWN) === 0){
+			return true;
+		}
 		return $block->getSide(Facing::DOWN)->getTypeId() === BlockTypeIds::FARMLAND;
 	}
 

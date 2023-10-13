@@ -62,27 +62,14 @@ class Cactus extends Transparent{
 		return true;
 	}
 
-	public function onNearbyBlockChange2(int $flags) : void{
-		if(($flags & NearbyBlockChangeFlags::DOWN) !== 0){
-			$supportBlock = $this->getSide(Facing::DOWN);
+	private function canBeSupportedAt(Block $block, int $nearbyUpdateFlags) : bool{
+		if(($nearbyUpdateFlags & NearbyBlockChangeFlags::DOWN) !== 0){
+			$supportBlock = $block->getSide(Facing::DOWN);
 			if(!$supportBlock->hasSameTypeId($this) && !$supportBlock->hasTypeTag(BlockTypeTags::SAND)){
-				$this->position->getWorld()->useBreakOn($this->position);
+				return false;
 			}
 		}
-		foreach(NearbyBlockChangeFlags::getFaces($flags & NearbyBlockChangeFlags::HORIZONTAL) as $facing){
-			if($this->getSide($facing)->isSolid()){
-				$this->position->getWorld()->useBreakOn($this->position);
-				break;
-			}
-		}
-	}
-
-	private function canBeSupportedAt(Block $block) : bool{
-		$supportBlock = $block->getSide(Facing::DOWN);
-		if(!$supportBlock->hasSameTypeId($this) && !$supportBlock->hasTypeTag(BlockTypeTags::SAND)){
-			return false;
-		}
-		foreach(Facing::HORIZONTAL as $side){
+		foreach(NearbyBlockChangeFlags::getFaces($nearbyUpdateFlags & NearbyBlockChangeFlags::HORIZONTAL) as $side){
 			if($block->getSide($side)->isSolid()){
 				return false;
 			}

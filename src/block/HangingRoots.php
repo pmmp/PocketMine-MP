@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
@@ -31,7 +32,10 @@ use pocketmine\math\Facing;
 final class HangingRoots extends Flowable{
 	use StaticSupportTrait;
 
-	private function canBeSupportedAt(Block $block) : bool{
+	private function canBeSupportedAt(Block $block, int $nearbyUpdateFlags) : bool{
+		if(($nearbyUpdateFlags & NearbyBlockChangeFlags::UP) === 0){
+			return true;
+		}
 		return $block->getAdjacentSupportType(Facing::UP)->hasCenterSupport(); //weird I know, but they can be placed on the bottom of fences
 	}
 

@@ -50,7 +50,7 @@ final class ChorusPlant extends Flowable{
 		return $block->hasSameTypeId($this) || $block->getTypeId() === BlockTypeIds::END_STONE;
 	}
 
-	private function canBeSupportedAt(Block $block) : bool{
+	private function canBeSupportedAt(Block $block, int $nearbyUpdateFlags) : bool{
 		$position = $block->getPosition();
 		$world = $position->getWorld();
 

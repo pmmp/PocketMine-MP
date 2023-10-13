@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\FortuneDropHelper;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
@@ -65,7 +66,10 @@ class SweetBerryBush extends Flowable{
 			($block->hasTypeTag(BlockTypeTags::DIRT) || $block->hasTypeTag(BlockTypeTags::MUD));
 	}
 
-	private function canBeSupportedAt(Block $block) : bool{
+	private function canBeSupportedAt(Block $block, int $nearbyUpdateFlags) : bool{
+		if(($nearbyUpdateFlags & NearbyBlockChangeFlags::DOWN) === 0){
+			return true;
+		}
 		$supportBlock = $block->getSide(Facing::DOWN);
 		return $this->canBeSupportedBy($supportBlock);
 	}

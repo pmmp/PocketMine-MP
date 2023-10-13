@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\FortuneDropHelper;
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
@@ -63,8 +64,12 @@ class NetherVines extends Flowable{
 		return true;
 	}
 
-	private function canBeSupportedAt(Block $block) : bool{
-		$supportBlock = $block->getSide(Facing::opposite($this->growthFace));
+	private function canBeSupportedAt(Block $block, int $nearbyUpdateFlags) : bool{
+		$supportingNeighbor = Facing::opposite($this->growthFace);
+		if(!NearbyBlockChangeFlags::hasFace($nearbyUpdateFlags, $supportingNeighbor)){
+			return true;
+		}
+		$supportBlock = $block->getSide($supportingNeighbor);
 		return $supportBlock->getSupportType($this->growthFace)->hasCenterSupport() || $supportBlock->hasSameTypeId($this);
 	}
 

@@ -53,7 +53,8 @@ final class ChorusFlower extends Flowable{
 		return [AxisAlignedBB::one()];
 	}
 
-	private function canBeSupportedAt(Block $block) : bool{
+	private function canBeSupportedAt(Block $block, int $nearbyUpdateFlags) : bool{
+		//update flags can't be used here since we don't know which neighbour is providing support
 		$position = $block->getPosition();
 		$world = $position->getWorld();
 		$down = $world->getBlock($position->down());

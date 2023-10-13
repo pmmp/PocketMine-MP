@@ -34,18 +34,19 @@ trait StaticSupportTrait{
 
 	/**
 	 * Implement this to define the block's support requirements.
+	 * @phpstan-param int-mask-of<NearbyBlockChangeFlags::*> $nearbyUpdateFlags
 	 */
-	abstract private function canBeSupportedAt(Block $block) : bool;
+	abstract private function canBeSupportedAt(Block $block, int $nearbyUpdateFlags) : bool;
 
 	/**
 	 * @see Block::canBePlacedAt()
 	 */
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
-		return $this->canBeSupportedAt($blockReplace) && parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
+		return $this->canBeSupportedAt($blockReplace, NearbyBlockChangeFlags::ALL) && parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
 	}
 
 	public function onNearbyBlockChange2(int $flags) : void{
-		if(!$this->canBeSupportedAt($this)){
+		if(!$this->canBeSupportedAt($this, $flags)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}else{
 			parent::onNearbyBlockChange2($flags);

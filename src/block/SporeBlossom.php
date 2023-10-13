@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\NearbyBlockChangeFlags;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\math\Facing;
@@ -30,7 +31,10 @@ use pocketmine\math\Facing;
 final class SporeBlossom extends Flowable{
 	use StaticSupportTrait;
 
-	private function canBeSupportedAt(Block $block) : bool{
+	private function canBeSupportedAt(Block $block, int $nearbyUpdateFlags) : bool{
+		if(($nearbyUpdateFlags & NearbyBlockChangeFlags::UP) === 0){
+			return true;
+		}
 		return $block->getAdjacentSupportType(Facing::UP) === SupportType::FULL;
 	}
 }
