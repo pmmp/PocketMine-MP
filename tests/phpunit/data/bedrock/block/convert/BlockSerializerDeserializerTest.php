@@ -78,7 +78,7 @@ final class BlockSerializerDeserializerTest extends TestCase{
 			}elseif($block instanceof CaveVines && $newBlock instanceof CaveVines && !$block->hasBerries()){
 				$newBlock->setHead($block->isHead());
 			}elseif($block instanceof Farmland && $newBlock instanceof Farmland){
-				$block->setWaterSquareIndex($newBlock->getWaterSquareIndex());
+				$block->setWaterXZIndex($newBlock->getWaterXZIndex());
 			}
 
 			self::assertSame($block->getStateId(), $newBlock->getStateId(), "Mismatch of blockstate for " . $block->getName() . ", " . print_r($block, true) . " vs " . print_r($newBlock, true));
