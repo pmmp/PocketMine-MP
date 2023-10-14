@@ -986,11 +986,8 @@ class World implements ChunkManager{
 					continue;
 				}
 			}
-			$cellAABB = AxisAlignedBB::one()->offset($x, $y, $z);
-			foreach($this->getChunkEntities($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE) as $entity){
-				if($entity->getBoundingBox()->intersectsWith($cellAABB)){
-					$entity->onNearbyBlockChange();
-				}
+			foreach($this->getNearbyEntities(AxisAlignedBB::one()->offset($x, $y, $z)) as $entity){
+				$entity->onNearbyBlockChange();
 			}
 			$block->onNearbyBlockChange();
 		}
