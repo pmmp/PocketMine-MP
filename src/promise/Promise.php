@@ -23,10 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\promise;
 
+use function count;
 use function spl_object_id;
 
 /**
- * @phpstan-template TValue
+ * @phpstan-template-covariant TValue
  */
 final class Promise{
 	/**
@@ -51,5 +52,55 @@ final class Promise{
 
 	public function isResolved() : bool{
 		return $this->shared->resolved;
+	}
+
+	/**
+	 * Returns a promise that will resolve only once all the Promises in
+	 * `$promises` have resolved. The resolution value of the returned promise
+	 * will be an array containing the resolution values of each Promises in
+	 * `$promises` indexed by the respective Promises' array keys.
+	 *
+	 * @template TPromiseValue
+	 * @phpstan-param Promise<TPromiseValue>[] $promises
+	 *
+	 * @phpstan-return Promise<array<int, TPromiseValue>>
+	 */
+	public static function all(array $promises) : Promise {
+		/** @phpstan-var PromiseResolver<array<int, TPromiseValue>> $resolver */
+		$resolver = new PromiseResolver();
+		$values = [];
+		$toResolve = count($promises);
+		$continue = true;
+
+		foreach($promises as $key => $promise){
+			$values[$key] = null;
+
+			$promise->onCompletion(
+				function(mixed $value) use ($resolver, $key, &$toResolve, &$continue, &$values) : void{
+					$values[$key] = $value;
+
+					if(--$toResolve === 0 && $continue){
+						$resolver->resolve($values);
+					}
+				},
+				function() use ($resolver, &$continue) : void{
+					if($continue){
+						$continue = false;
+						$resolver->reject();
+					}
+				}
+			);
+
+			if(!$continue){
+				break;
+			}
+		}
+
+		if($toResolve === 0){
+			$continue = false;
+			$resolver->resolve($values);
+		}
+
+		return $resolver->getPromise();
 	}
 }
