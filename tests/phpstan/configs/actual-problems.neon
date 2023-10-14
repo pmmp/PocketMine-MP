@@ -1205,3 +1205,8 @@ parameters:
 			count: 1
 			path: ../../phpunit/scheduler/AsyncPoolTest.php
 
+		-
+			message: "#^Right side of && is always true\\.$#"
+			count: 1
+			path: ../../../src/promise/Promise.php
+
