@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\block\utils\HopperInteractableContainerTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\ChestPairEvent;
 use pocketmine\item\Item;
@@ -33,7 +34,8 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
-class Chest extends Transparent{
+class Chest extends Transparent implements HopperInteractable{
+	use HopperInteractableContainerTrait;
 	use FacesOppositePlacingPlayerTrait;
 
 	/**
@@ -95,4 +97,5 @@ class Chest extends Transparent{
 	public function getFuelTime() : int{
 		return 300;
 	}
+
 }

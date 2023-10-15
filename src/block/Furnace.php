@@ -23,16 +23,21 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\block\tile\Furnace as TileFurnace;
+use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\block\utils\HopperTransferHelper;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function mt_rand;
 
-class Furnace extends Opaque{
+class Furnace extends Opaque implements HopperInteractable{
 	use FacesOppositePlacingPlayerTrait;
 
 	protected FurnaceType $furnaceType;
@@ -89,5 +94,75 @@ class Furnace extends Opaque{
 			}
 			$world->scheduleDelayedBlockUpdate($this->position, 1); //TODO: check this
 		}
+	}
+
+	public function doHopperPush(Hopper $hopperBlock) : bool{
+		$currentTile = $this->position->getWorld()->getTile($this->position);
+		if(!$currentTile instanceof TileFurnace){
+			return false;
+		}
+
+		$tileHopper = $this->position->getWorld()->getTile($hopperBlock->position);
+		if(!$tileHopper instanceof TileHopper){
+			return false;
+		}
+
+		$sourceInventory = $tileHopper->getInventory();
+		$targetInventory = $currentTile->getInventory();
+
+		$hopperFacing = $hopperBlock->getFacing();
+
+		foreach($sourceInventory->getContents() as $item) {
+			if($item->isNull()){
+				continue;
+			}
+
+			$singleItem = $item->pop();
+
+			if($hopperFacing === Facing::DOWN && $targetInventory->canAddSmelting($singleItem)){
+				$this->transferItem($sourceInventory, $targetInventory, $singleItem, FurnaceInventory::SLOT_INPUT);
+			}elseif($hopperFacing !== Facing::DOWN && $targetInventory->canAddFuel($singleItem)){
+				$this->transferItem($sourceInventory, $targetInventory, $singleItem, FurnaceInventory::SLOT_FUEL);
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	public function doHopperPull(Hopper $hopperBlock) : bool{
+		$currentTile = $this->position->getWorld()->getTile($this->position);
+		if(!$currentTile instanceof TileFurnace){
+			return false;
+		}
+
+		$tileHopper = $this->position->getWorld()->getTile($hopperBlock->position);
+		if(!$tileHopper instanceof TileHopper){
+			return false;
+		}
+
+		$sourceInventory = $currentTile->getInventory();
+		$targetInventory = $tileHopper->getInventory();
+
+		return HopperTransferHelper::transferSpecificItem(
+			$sourceInventory,
+			$targetInventory,
+			$sourceInventory->getResult()
+		);
+	}
+
+	private function transferItem(Inventory $sourceInventory, Inventory $targetInventory, Item $item, int $slot) : void{
+		$sourceInventory->removeItem($item);
+
+		$currentItem = $targetInventory->getItem($slot);
+
+		if($currentItem->isNull()){
+			$targetInventory->setItem($slot, $item);
+			return;
+		}
+
+		$currentItem->setCount($currentItem->getCount() + 1);
+		$targetInventory->setItem($slot, $currentItem);
 	}
 }

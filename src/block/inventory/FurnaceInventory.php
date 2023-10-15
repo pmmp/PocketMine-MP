@@ -68,4 +68,36 @@ class FurnaceInventory extends SimpleInventory implements BlockInventory{
 	public function setSmelting(Item $item) : void{
 		$this->setItem(self::SLOT_INPUT, $item);
 	}
+
+	public function canAddSmelting(Item $item) : bool{
+		$currentInput = $this->getSmelting();
+
+		if($currentInput->isNull()){
+			return true;
+		}
+
+		if($currentInput->getCount() >= $currentInput->getMaxStackSize()){
+			return false;
+		}
+
+		return $item->canStackWith($currentInput);
+	}
+
+	public function canAddFuel(Item $item) : bool{
+		if($item->getFuelTime() === 0){
+			return false;
+		}
+
+		$currentFuel = $this->getFuel();
+
+		if($currentFuel->isNull()){
+			return true;
+		}
+
+		if($currentFuel->getCount() >= $currentFuel->getMaxStackSize()){
+			return false;
+		}
+
+		return $item->canStackWith($currentFuel);
+	}
 }

@@ -23,11 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\inventory\BrewingStandInventory;
 use pocketmine\block\tile\BrewingStand as TileBrewingStand;
+use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\HopperTransferHelper;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
+use pocketmine\item\ItemTypeIds;
+use pocketmine\item\Potion;
+use pocketmine\item\PotionType;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -36,7 +43,7 @@ use pocketmine\player\Player;
 use function array_key_exists;
 use function spl_object_id;
 
-class BrewingStand extends Transparent{
+class BrewingStand extends Transparent implements HopperInteractable{
 
 	/**
 	 * @var BrewingStandSlot[]
@@ -127,5 +134,100 @@ class BrewingStand extends Transparent{
 				$world->setBlock($this->position, $this);
 			}
 		}
+	}
+
+	public function doHopperPush(Hopper $hopperBlock) : bool{
+		$currentTile = $this->position->getWorld()->getTile($this->position);
+		if(!$currentTile instanceof TileBrewingStand){
+			return false;
+		}
+
+		$tileHopper = $this->position->getWorld()->getTile($hopperBlock->position);
+		if(!$tileHopper instanceof TileHopper){
+			return false;
+		}
+
+		$sourceInventory = $tileHopper->getInventory();
+		$targetInventory = $currentTile->getInventory();
+
+		$hopperFacing = $hopperBlock->getFacing();
+
+		foreach($sourceInventory->getContents() as $item){
+			if($item->isNull()){
+				continue;
+			}
+
+			$singleItem = $item->pop();
+
+			if($hopperFacing === Facing::DOWN){
+				$ingredient = $targetInventory->getItem(BrewingStandInventory::SLOT_INGREDIENT);
+				if($ingredient->isNull() || $ingredient->canStackWith($singleItem)){
+					$this->transferItem($sourceInventory, $targetInventory, $singleItem, BrewingStandInventory::SLOT_INGREDIENT);
+
+					return true;
+				}
+			}else{
+				if($singleItem->getTypeId() === ItemTypeIds::BLAZE_POWDER){
+					$this->transferItem($sourceInventory, $targetInventory, $singleItem, BrewingStandInventory::SLOT_FUEL);
+
+					return true;
+				}elseif($singleItem instanceof Potion && $singleItem->getType() === PotionType::WATER){
+					foreach(BrewingStandSlot::cases() as $slot){
+						$bottle = $targetInventory->getItem($slot->getSlotNumber());
+						if($bottle->isNull()){
+							$this->transferItem($sourceInventory, $targetInventory, $singleItem, $slot->getSlotNumber());
+
+							return true;
+						}
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public function doHopperPull(Hopper $hopperBlock) : bool{
+		$currentTile = $this->position->getWorld()->getTile($this->position);
+		if(!$currentTile instanceof TileBrewingStand){
+			return false;
+		}
+
+		$tileHopper = $this->position->getWorld()->getTile($hopperBlock->position);
+		if(!$tileHopper instanceof TileHopper){
+			return false;
+		}
+
+		$sourceInventory = $currentTile->getInventory();
+		$targetInventory = $tileHopper->getInventory();
+
+		foreach(BrewingStandSlot::cases() as $slot){
+			$bottle = $sourceInventory->getItem($slot->getSlotNumber());
+			if(!$bottle->isNull()){
+				if(HopperTransferHelper::transferSpecificItem(
+					$sourceInventory,
+					$targetInventory,
+					$bottle
+				)){
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	private function transferItem(Inventory $sourceInventory, Inventory $targetInventory, Item $item, int $slot) : void{
+		$sourceInventory->removeItem($item);
+
+		$currentItem = $targetInventory->getItem($slot);
+
+		if($currentItem->isNull()){
+			$targetInventory->setItem($slot, $item);
+			return;
+		}
+
+		$currentItem->setCount($currentItem->getCount() + 1);
+		$targetInventory->setItem($slot, $currentItem);
 	}
 }
