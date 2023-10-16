@@ -123,6 +123,7 @@ use pocketmine\world\World;
  * @method static Coal COAL()
  * @method static CocoaBeans COCOA_BEANS()
  * @method static Compass COMPASS()
+ * @method static Steak COOKED_BEEF()
  * @method static CookedChicken COOKED_CHICKEN()
  * @method static CookedFish COOKED_FISH()
  * @method static CookedMutton COOKED_MUTTON()
@@ -411,6 +412,7 @@ final class VanillaItems{
 		self::register("coal", new Coal(new IID(Ids::COAL), "Coal"));
 		self::register("cocoa_beans", new CocoaBeans(new IID(Ids::COCOA_BEANS), "Cocoa Beans"));
 		self::register("compass", new Compass(new IID(Ids::COMPASS), "Compass", [EnchantmentTags::COMPASS]));
+		self::register("cooked_beef", new Steak(new IID(Ids::STEAK), "Steak"));
 		self::register("cooked_chicken", new CookedChicken(new IID(Ids::COOKED_CHICKEN), "Cooked Chicken"));
 		self::register("cooked_fish", new CookedFish(new IID(Ids::COOKED_FISH), "Cooked Fish"));
 		self::register("cooked_mutton", new CookedMutton(new IID(Ids::COOKED_MUTTON), "Cooked Mutton"));
