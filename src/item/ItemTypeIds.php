@@ -243,6 +243,7 @@ final class ItemTypeIds{
 	public const SPRUCE_SIGN = 20204;
 	public const SQUID_SPAWN_EGG = 20205;
 	public const STEAK = 20206;
+	public const COOKED_BEEF = 20206;
 	public const STICK = 20207;
 	public const STONE_AXE = 20208;
 	public const STONE_HOE = 20209;
