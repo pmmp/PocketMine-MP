@@ -179,16 +179,11 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 	/**
 	 * @param BrewingStandSlot[] $slots
 	 * @phpstan-param array<int, BrewingStandSlot> $slots
+	 *
+	 * @deprecated Use {@link enumSet()} instead.
 	 */
 	public function brewingStandSlots(array &$slots) : void{
-		$result = [];
-		foreach(BrewingStandSlot::cases() as $member){
-			if($this->readBool()){
-				$result[spl_object_id($member)] = $member;
-			}
-		}
-
-		$slots = $result;
+		$this->enumSet($slots, BrewingStandSlot::cases());
 	}
 
 	public function railShape(int &$railShape) : void{
@@ -218,6 +213,16 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 		}
 
 		$case = $result;
+	}
+
+	public function enumSet(array &$set, array $allCases) : void{
+		$result = [];
+		foreach($allCases as $case){
+			if($this->readBool()){
+				$result[spl_object_id($case)] = $case;
+			}
+		}
+		$set = $result;
 	}
 
 	public function getOffset() : int{ return $this->offset; }

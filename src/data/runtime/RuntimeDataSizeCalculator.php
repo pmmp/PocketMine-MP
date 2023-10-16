@@ -98,4 +98,8 @@ final class RuntimeDataSizeCalculator implements RuntimeDataDescriber{
 		$metadata = RuntimeEnumMetadata::from($case);
 		$this->addBits($metadata->bits);
 	}
+
+	public function enumSet(array &$set, array $allCases) : void{
+		$this->addBits(count($allCases));
+	}
 }

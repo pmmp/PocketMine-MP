@@ -23,30 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\data\runtime\RuntimeDataDescriber;
-use function log;
+use pocketmine\block\Block;
+use pocketmine\entity\projectile\Projectile;
+use pocketmine\math\RayTraceResult;
+use pocketmine\world\sound\AmethystBlockChimeSound;
+use pocketmine\world\sound\BlockPunchSound;
 
-/**
- * This trait is used for blocks that have an age property.
- * Need to add to the block the constant MAX_AGE.
- */
-trait AgeableTrait{
-	protected int $age = 0;
-
-	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(((int) log(self::MAX_AGE, 2)) + 1, 0, self::MAX_AGE, $this->age);
-	}
-
-	public function getAge() : int{ return $this->age; }
-
+trait AmethystTrait{
 	/**
-	 * @return $this
+	 * @see Block::onProjectileHit()
 	 */
-	public function setAge(int $age) : self{
-		if($age < 0 || $age > self::MAX_AGE){
-			throw new \InvalidArgumentException("Age must be in range 0 ... " . self::MAX_AGE);
-		}
-		$this->age = $age;
-		return $this;
+	public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
+		$this->position->getWorld()->addSound($this->position, new AmethystBlockChimeSound());
+		$this->position->getWorld()->addSound($this->position, new BlockPunchSound($this));
 	}
 }

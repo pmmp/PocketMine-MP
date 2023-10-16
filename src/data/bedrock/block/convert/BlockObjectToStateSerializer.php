@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\ActivatorRail;
+use pocketmine\block\AmethystCluster;
 use pocketmine\block\Anvil;
 use pocketmine\block\Bamboo;
 use pocketmine\block\BambooSapling;
@@ -50,6 +51,7 @@ use pocketmine\block\CaveVines;
 use pocketmine\block\Chain;
 use pocketmine\block\ChemistryTable;
 use pocketmine\block\Chest;
+use pocketmine\block\ChiseledBookshelf;
 use pocketmine\block\ChorusFlower;
 use pocketmine\block\CocoaBlock;
 use pocketmine\block\Concrete;
@@ -63,6 +65,7 @@ use pocketmine\block\DaylightSensor;
 use pocketmine\block\DetectorRail;
 use pocketmine\block\Dirt;
 use pocketmine\block\Door;
+use pocketmine\block\DoublePitcherCrop;
 use pocketmine\block\DoublePlant;
 use pocketmine\block\DoubleTallGrass;
 use pocketmine\block\DyedCandle;
@@ -101,6 +104,7 @@ use pocketmine\block\NetherPortal;
 use pocketmine\block\NetherVines;
 use pocketmine\block\NetherWartPlant;
 use pocketmine\block\PinkPetals;
+use pocketmine\block\PitcherCrop;
 use pocketmine\block\Potato;
 use pocketmine\block\PoweredRail;
 use pocketmine\block\PumpkinStem;
@@ -134,6 +138,7 @@ use pocketmine\block\Sugarcane;
 use pocketmine\block\SweetBerryBush;
 use pocketmine\block\TNT;
 use pocketmine\block\Torch;
+use pocketmine\block\TorchflowerCrop;
 use pocketmine\block\Trapdoor;
 use pocketmine\block\TrappedChest;
 use pocketmine\block\Tripwire;
@@ -717,6 +722,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::BOOKSHELF(), Ids::BOOKSHELF);
 		$this->mapSimple(Blocks::BRICKS(), Ids::BRICK_BLOCK);
 		$this->mapSimple(Blocks::BROWN_MUSHROOM(), Ids::BROWN_MUSHROOM);
+		$this->mapSimple(Blocks::BUDDING_AMETHYST(), Ids::BUDDING_AMETHYST);
 		$this->mapSimple(Blocks::CALCITE(), Ids::CALCITE);
 		$this->mapSimple(Blocks::CARTOGRAPHY_TABLE(), Ids::CARTOGRAPHY_TABLE);
 		$this->mapSimple(Blocks::CHEMICAL_HEAT(), Ids::CHEMICAL_HEAT);
@@ -736,6 +742,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::CRACKED_NETHER_BRICKS(), Ids::CRACKED_NETHER_BRICKS);
 		$this->mapSimple(Blocks::CRACKED_POLISHED_BLACKSTONE_BRICKS(), Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS);
 		$this->mapSimple(Blocks::CRAFTING_TABLE(), Ids::CRAFTING_TABLE);
+		$this->mapSimple(Blocks::CRIMSON_ROOTS(), Ids::CRIMSON_ROOTS);
 		$this->mapSimple(Blocks::CRYING_OBSIDIAN(), Ids::CRYING_OBSIDIAN);
 		$this->mapSimple(Blocks::DANDELION(), Ids::YELLOW_FLOWER);
 		$this->mapSimple(Blocks::DEAD_BUSH(), Ids::DEADBUSH);
@@ -950,8 +957,10 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::SOUL_SOIL(), Ids::SOUL_SOIL);
 		$this->mapSimple(Blocks::SPORE_BLOSSOM(), Ids::SPORE_BLOSSOM);
 		$this->mapSimple(Blocks::TINTED_GLASS(), Ids::TINTED_GLASS);
+		$this->mapSimple(Blocks::TORCHFLOWER(), Ids::TORCHFLOWER);
 		$this->mapSimple(Blocks::TUFF(), Ids::TUFF);
 		$this->mapSimple(Blocks::WARPED_WART_BLOCK(), Ids::WARPED_WART_BLOCK);
+		$this->mapSimple(Blocks::WARPED_ROOTS(), Ids::WARPED_ROOTS);
 		$this->mapSimple(Blocks::WITHER_ROSE(), Ids::WITHER_ROSE);
 	}
 
@@ -965,6 +974,16 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::ALLIUM(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_ALLIUM));
 		$this->map(Blocks::ALL_SIDED_MUSHROOM_STEM(), fn() => Writer::create(Ids::BROWN_MUSHROOM_BLOCK)
 				->writeInt(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_ALL_STEM));
+		$this->map(Blocks::AMETHYST_CLUSTER(), fn(AmethystCluster $block) => Writer::create(
+			match($stage = $block->getStage()){
+				AmethystCluster::STAGE_SMALL_BUD => Ids::SMALL_AMETHYST_BUD,
+				AmethystCluster::STAGE_MEDIUM_BUD => Ids::MEDIUM_AMETHYST_BUD,
+				AmethystCluster::STAGE_LARGE_BUD => Ids::LARGE_AMETHYST_BUD,
+				AmethystCluster::STAGE_CLUSTER => Ids::AMETHYST_CLUSTER,
+				default => throw new BlockStateSerializeException("Invalid Amethyst Cluster stage $stage"),
+			})
+			->writeBlockFace($block->getFacing())
+		);
 		$this->map(Blocks::ANDESITE(), fn() => Helper::encodeStone(StringValues::STONE_TYPE_ANDESITE));
 		$this->map(Blocks::ANDESITE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab3($block, StringValues::STONE_SLAB_TYPE_3_ANDESITE));
 		$this->map(Blocks::ANDESITE_STAIRS(), fn(Stair $block) => Helper::encodeStairs($block, new Writer(Ids::ANDESITE_STAIRS)));
@@ -1099,6 +1118,15 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::CHEST(), function(Chest $block) : Writer{
 			return Writer::create(Ids::CHEST)
 				->writeHorizontalFacing($block->getFacing());
+		});
+		$this->map(Blocks::CHISELED_BOOKSHELF(), function(ChiseledBookshelf $block) : Writer{
+			$flags = 0;
+			foreach($block->getSlots() as $slot){
+				$flags |= 1 << $slot->value;
+			}
+			return Writer::create(Ids::CHISELED_BOOKSHELF)
+				->writeLegacyHorizontalFacing($block->getFacing())
+				->writeInt(StateNames::BOOKS_STORED, $flags);
 		});
 		$this->map(Blocks::CHISELED_QUARTZ(), fn(SimplePillar $block) => Helper::encodeQuartz(StringValues::CHISEL_TYPE_CHISELED, $block->getAxis()));
 		$this->map(Blocks::CHISELED_RED_SANDSTONE(), fn() => Helper::encodeSandstone(Ids::RED_SANDSTONE, StringValues::SAND_STONE_TYPE_HEIROGLYPHS));
@@ -1430,6 +1458,20 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeInt(StateNames::GROWTH, $block->getCount() - 1);
 		});
 		$this->map(Blocks::PINK_TULIP(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_TULIP_PINK));
+		$this->map(Blocks::PITCHER_PLANT(), function(DoublePlant $block) : Writer{
+			return Writer::create(Ids::PITCHER_PLANT)
+				->writeBool(StateNames::UPPER_BLOCK_BIT, $block->isTop());
+		});
+		$this->map(Blocks::PITCHER_CROP(), function(PitcherCrop $block) : Writer{
+			return Writer::create(Ids::PITCHER_CROP)
+				->writeInt(StateNames::GROWTH, $block->getAge())
+				->writeBool(StateNames::UPPER_BLOCK_BIT, false);
+		});
+		$this->map(Blocks::DOUBLE_PITCHER_CROP(), function(DoublePitcherCrop $block) : Writer{
+			return Writer::create(Ids::PITCHER_CROP)
+				->writeInt(StateNames::GROWTH, $block->getAge() + 1 + PitcherCrop::MAX_AGE)
+				->writeBool(StateNames::UPPER_BLOCK_BIT, $block->isTop());
+		});
 		$this->map(Blocks::POLISHED_ANDESITE(), fn() => Helper::encodeStone(StringValues::STONE_TYPE_ANDESITE_SMOOTH));
 		$this->map(Blocks::POLISHED_ANDESITE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab3($block, StringValues::STONE_SLAB_TYPE_3_POLISHED_ANDESITE));
 		$this->mapStairs(Blocks::POLISHED_ANDESITE_STAIRS(), Ids::POLISHED_ANDESITE_STAIRS);
@@ -1617,6 +1659,10 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::TORCH(), function(Torch $block) : Writer{
 			return Writer::create(Ids::TORCH)
 				->writeTorchFacing($block->getFacing());
+		});
+		$this->map(Blocks::TORCHFLOWER_CROP(), function(TorchflowerCrop $block){
+			return Writer::create(Ids::TORCHFLOWER_CROP)
+				->writeInt(StateNames::GROWTH, $block->isReady() ? 1 : 0);
 		});
 		$this->map(Blocks::TRAPPED_CHEST(), function(TrappedChest $block) : Writer{
 			return Writer::create(Ids::TRAPPED_CHEST)
