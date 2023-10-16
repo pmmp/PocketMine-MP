@@ -276,7 +276,7 @@ class ParserPacketHandler extends PacketHandler{
 			$meta = $descriptor->getMeta();
 			if($meta !== 32767){
 				$blockStateId = $this->blockTranslator->getBlockStateDictionary()->lookupStateIdFromIdMeta($data->name, $meta);
-				if($blockStateId !== null){
+				if($this->blockItemIdMap->lookupBlockId($data->name) !== null && $blockStateId !== null){
 					$blockState = $this->blockTranslator->getBlockStateDictionary()->generateDataFromStateId($blockStateId);
 					if($blockState !== null && count($blockState->getStates()) > 0){
 						$data->block_states = self::blockStatePropertiesToString($blockState);
