@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\player;
 
+use DateTimeImmutable;
 use pocketmine\block\BaseSign;
 use pocketmine\block\Bed;
 use pocketmine\block\BlockTypeTags;
@@ -225,8 +226,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	protected int $messageCounter = 2;
 
-	protected int $firstPlayed;
-	protected int $lastPlayed;
+	protected DateTimeImmutable $firstPlayed;
+	protected DateTimeImmutable $lastPlayed;
 	protected GameMode $gamemode;
 
 	/**
@@ -368,8 +369,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			}
 		));
 
-		$this->firstPlayed = $nbt->getLong(self::TAG_FIRST_PLAYED, $now = (int) (microtime(true) * 1000));
-		$this->lastPlayed = $nbt->getLong(self::TAG_LAST_PLAYED, $now);
+		$now = (int) (microtime(true) * 1000);
+		$createDateTimeImmutable = static function(string $tag) use ($nbt, $now) : DateTimeImmutable{
+			return new DateTimeImmutable('@' . $nbt->getLong($tag, $now) / 1000);
+		};
+		$this->firstPlayed = $createDateTimeImmutable(self::TAG_FIRST_PLAYED);
+		$this->lastPlayed = $createDateTimeImmutable(self::TAG_LAST_PLAYED);
 
 		if(!$this->server->getForceGamemode() && ($gameModeTag = $nbt->getTag(self::TAG_GAME_MODE)) instanceof IntTag){
 			$this->internalSetGameMode(GameModeIdMap::getInstance()->fromId($gameModeTag->getValue()) ?? GameMode::SURVIVAL); //TODO: bad hack here to avoid crashes on corrupted data
@@ -428,19 +433,19 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/**
 	 * TODO: not sure this should be nullable
 	 */
-	public function getFirstPlayed() : ?int{
+	public function getFirstPlayed() : ?DateTimeImmutable{
 		return $this->firstPlayed;
 	}
 
 	/**
 	 * TODO: not sure this should be nullable
 	 */
-	public function getLastPlayed() : ?int{
+	public function getLastPlayed() : ?DateTimeImmutable{
 		return $this->lastPlayed;
 	}
 
 	public function hasPlayedBefore() : bool{
-		return $this->lastPlayed - $this->firstPlayed > 1; // microtime(true) - microtime(true) may have less than one millisecond difference
+		return ((int) $this->firstPlayed->diff($this->lastPlayed)->format('%s')) > 1;
 	}
 
 	/**
@@ -2328,7 +2333,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		$nbt->setInt(self::TAG_GAME_MODE, GameModeIdMap::getInstance()->toId($this->gamemode));
-		$nbt->setLong(self::TAG_FIRST_PLAYED, $this->firstPlayed);
+		$nbt->setLong(self::TAG_FIRST_PLAYED, (int) $this->firstPlayed->format('Uv'));
 		$nbt->setLong(self::TAG_LAST_PLAYED, (int) floor(microtime(true) * 1000));
 
 		return $nbt;
