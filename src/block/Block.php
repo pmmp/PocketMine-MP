@@ -61,7 +61,7 @@ use function hash;
 use const PHP_INT_MAX;
 
 class Block{
-	public const INTERNAL_STATE_DATA_BITS = 8;
+	public const INTERNAL_STATE_DATA_BITS = 11;
 	public const INTERNAL_STATE_DATA_MASK = ~(~0 << self::INTERNAL_STATE_DATA_BITS);
 
 	/**
