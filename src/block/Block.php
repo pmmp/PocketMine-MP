@@ -228,12 +228,6 @@ class Block{
 		}
 	}
 
-	private function decodeFullState(int $data) : void{
-		$reader = new RuntimeDataReader($this->requiredBlockItemStateDataBits + $this->requiredBlockOnlyStateDataBits, $data);
-		$this->decodeBlockItemState($reader->readInt($this->requiredBlockItemStateDataBits));
-		$this->decodeBlockOnlyState($reader->readInt($this->requiredBlockOnlyStateDataBits));
-	}
-
 	private function encodeBlockItemState() : int{
 		$writer = new RuntimeDataWriter($this->requiredBlockItemStateDataBits);
 
