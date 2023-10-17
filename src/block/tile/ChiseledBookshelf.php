@@ -24,9 +24,16 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\block\utils\ChiseledBookshelfSlot;
+use pocketmine\data\bedrock\item\SavedItemData;
+use pocketmine\data\bedrock\item\SavedItemStackData;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\inventory\SimpleInventory;
+use pocketmine\item\Item;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\world\World;
 use function count;
 
@@ -54,5 +61,57 @@ class ChiseledBookshelf extends Tile implements Container{
 
 	public function writeSaveData(CompoundTag $nbt) : void{
 		$this->saveItems($nbt);
+	}
+
+	protected function loadItems(CompoundTag $tag) : void{
+		if(($inventoryTag = $tag->getTag(Container::TAG_ITEMS)) instanceof ListTag && $inventoryTag->getTagType() === NBT::TAG_Compound){
+			$inventory = $this->getRealInventory();
+			$listeners = $inventory->getListeners()->toArray();
+			$inventory->getListeners()->remove(...$listeners); //prevent any events being fired by initialization
+
+			$newContents = [];
+			/** @var CompoundTag $itemNBT */
+			foreach($inventoryTag as $slot => $itemNBT){
+				try{
+					$count = $itemNBT->getByte(SavedItemStackData::TAG_COUNT);
+					if($count === 0){
+						continue;
+					}
+					$newContents[$slot] = Item::nbtDeserialize($itemNBT);
+				}catch(SavedDataLoadingException $e){
+					//TODO: not the best solution
+					\GlobalLogger::get()->logException($e);
+					continue;
+				}
+			}
+			$inventory->setContents($newContents);
+
+			$inventory->getListeners()->add(...$listeners);
+		}
+
+		if(($lockTag = $tag->getTag(Container::TAG_LOCK)) instanceof StringTag){
+			$this->lock = $lockTag->getValue();
+		}
+	}
+
+	protected function saveItems(CompoundTag $tag) : void{
+		$items = [];
+		foreach($this->getRealInventory()->getContents(true) as $slot => $item){
+			if($item->isNull()){
+				$items[$slot] = CompoundTag::create()
+					->setByte(SavedItemStackData::TAG_COUNT, 0)
+					->setShort(SavedItemData::TAG_DAMAGE, 0)
+					->setString(SavedItemData::TAG_NAME, "")
+					->setByte(SavedItemStackData::TAG_WAS_PICKED_UP, 0);
+			}else{
+				$items[$slot] = $item->nbtSerialize();
+			}
+		}
+
+		$tag->setTag(Container::TAG_ITEMS, new ListTag($items, NBT::TAG_Compound));
+
+		if($this->lock !== null){
+			$tag->setString(Container::TAG_LOCK, $this->lock);
+		}
 	}
 }
