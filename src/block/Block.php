@@ -50,12 +50,14 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Binary;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function count;
 use function get_class;
+use function hash;
 use const PHP_INT_MAX;
 
 class Block{
@@ -64,8 +66,10 @@ class Block{
 
 	/**
 	 * @internal
+	 * Hardcoded int is `Binary::readLong(hash('xxh3', Binary::writeLLong(BlockTypeIds::AIR), binary: true))`
+	 * TODO: it would be much easier if we could just make this 0 or some other easy value
 	 */
-	public const EMPTY_STATE_ID = (BlockTypeIds::AIR << self::INTERNAL_STATE_DATA_BITS) | (BlockTypeIds::AIR & self::INTERNAL_STATE_DATA_MASK);
+	public const EMPTY_STATE_ID = (BlockTypeIds::AIR << self::INTERNAL_STATE_DATA_BITS) | (-7482769108513497636 & self::INTERNAL_STATE_DATA_MASK);
 
 	protected BlockIdentifier $idInfo;
 	protected string $fallbackName;
@@ -79,6 +83,23 @@ class Block{
 	private int $requiredBlockOnlyStateDataBits;
 
 	private Block $defaultState;
+
+	private int $stateIdXorMask;
+
+	/**
+	 * Computes the mask to be XOR'd with the state data.
+	 * This is to improve distribution of the state data bits, which occupy the least significant bits of the state ID.
+	 * Improved distribution improves PHP array performance when using the state ID as a key, as PHP arrays use some of
+	 * the lower bits of integer keys directly without hashing.
+	 *
+	 * The type ID is included in the XOR mask. This is not necessary to improve distribution, but it reduces the number
+	 * of operations required to compute the state ID (micro optimization).
+	 */
+	public static function computeStateIdXorMask(int $typeId) : int{
+		return
+			$typeId << self::INTERNAL_STATE_DATA_BITS |
+			(Binary::readLong(hash('xxh3', Binary::writeLLong($typeId), binary: true)) & self::INTERNAL_STATE_DATA_MASK);
+	}
 
 	/**
 	 * @param string $name English name of the block type (TODO: implement translations)
@@ -97,6 +118,9 @@ class Block{
 		$this->describeBlockOnlyState($calculator);
 		$this->requiredBlockOnlyStateDataBits = $calculator->getBitsUsed();
 
+		$this->stateIdXorMask = self::computeStateIdXorMask($idInfo->getBlockTypeId());
+
+		//this must be done last, otherwise the defaultState could have uninitialized fields
 		$defaultState = clone $this;
 		$this->defaultState = $defaultState;
 		$defaultState->defaultState = $defaultState;
@@ -152,13 +176,7 @@ class Block{
 	 * {@link RuntimeBlockStateRegistry::fromStateId()}.
 	 */
 	public function getStateId() : int{
-		$typeId = $this->getTypeId();
-		//TODO: this XOR mask improves hashtable distribution, but it's only effective if the number of unique block
-		//type IDs is larger than the number of available state data bits. We should probably hash (e.g. using xxhash)
-		//the type ID to create a better mask.
-		//Alternatively, we could hash the whole state ID, but this is currently problematic, since we currently need
-		//to be able to recover the state data from the state ID because of UnknownBlock.
-		return ($typeId << self::INTERNAL_STATE_DATA_BITS) | ($this->encodeFullState() ^ ($typeId & self::INTERNAL_STATE_DATA_MASK));
+		return $this->encodeFullState() ^ $this->stateIdXorMask;
 	}
 
 	/**
