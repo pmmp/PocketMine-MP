@@ -64,8 +64,8 @@ class Farmland extends Transparent{
 	private int $waterXZIndex = self::WATER_XZ_INDEX_UNKNOWN;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(3, 0, self::MAX_WETNESS, $this->wetness);
-		$w->boundedInt(7, -1, self::WATER_XZ_INDICES_TOTAL - 1, $this->waterXZIndex);
+		$w->boundedIntAuto(0, self::MAX_WETNESS, $this->wetness);
+		$w->boundedIntAuto(-1, self::WATER_XZ_INDICES_TOTAL - 1, $this->waterXZIndex);
 	}
 
 	public function getWetness() : int{ return $this->wetness; }

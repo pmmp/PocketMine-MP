@@ -47,7 +47,7 @@ class PinkPetals extends Flowable{
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
-		$w->boundedInt(2, self::MIN_COUNT, self::MAX_COUNT, $this->count);
+		$w->boundedIntAuto(self::MIN_COUNT, self::MAX_COUNT, $this->count);
 	}
 
 	public function getCount() : int{

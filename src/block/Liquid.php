@@ -49,7 +49,7 @@ abstract class Liquid extends Transparent{
 	protected bool $still = false;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(3, 0, self::MAX_DECAY, $this->decay);
+		$w->boundedIntAuto(0, self::MAX_DECAY, $this->decay);
 		$w->bool($this->falling);
 		$w->bool($this->still);
 	}
