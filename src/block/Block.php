@@ -304,18 +304,32 @@ class Block{
 		if($bits > Block::INTERNAL_STATE_DATA_BITS){
 			throw new \LogicException("Block state data cannot use more than " . Block::INTERNAL_STATE_DATA_BITS . " bits");
 		}
-		for($stateData = 0; $stateData < (1 << $bits); ++$stateData){
-			$v = clone $this;
+		for($blockItemStateData = 0; $blockItemStateData < (1 << $this->requiredBlockItemStateDataBits); ++$blockItemStateData){
+			$withType = clone $this;
 			try{
-				$v->decodeFullState($stateData);
-				if($v->encodeFullState() !== $stateData){
-					throw new \LogicException(static::class . "::decodeStateData() accepts invalid state data (returned " . $v->encodeFullState() . " for input $stateData)");
+				$withType->decodeBlockItemState($blockItemStateData);
+				$encoded = $withType->encodeBlockItemState();
+				if($encoded !== $blockItemStateData){
+					throw new \LogicException(static::class . "::decodeBlockItemState() accepts invalid inputs (returned $encoded for input $blockItemStateData)");
 				}
 			}catch(InvalidSerializedRuntimeDataException){ //invalid property combination, leave it
 				continue;
 			}
 
-			yield $v;
+			for($blockOnlyStateData = 0; $blockOnlyStateData < (1 << $this->requiredBlockOnlyStateDataBits); ++$blockOnlyStateData){
+				$withState = clone $withType;
+				try{
+					$withState->decodeBlockOnlyState($blockOnlyStateData);
+					$encoded = $withState->encodeBlockOnlyState();
+					if($encoded !== $blockOnlyStateData){
+						throw new \LogicException(static::class . "::decodeBlockOnlyState() accepts invalid inputs (returned $encoded for input $blockOnlyStateData)");
+					}
+				}catch(InvalidSerializedRuntimeDataException){ //invalid property combination, leave it
+					continue;
+				}
+
+				yield $withState;
+			}
 		}
 	}
 
