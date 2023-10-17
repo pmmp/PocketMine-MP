@@ -30,6 +30,12 @@ use function count;
 trait AnimatedBlockInventoryTrait{
 	use BlockInventoryTrait;
 
+	protected bool $closed = true;
+
+	public function isClosed() : bool{
+		return $this->closed;
+	}
+
 	public function getViewerCount() : int{
 		return count($this->getViewers());
 	}
@@ -47,21 +53,39 @@ trait AnimatedBlockInventoryTrait{
 	public function onOpen(Player $who) : void{
 		parent::onOpen($who);
 
-		if($this->getHolder()->isValid() && $this->getViewerCount() === 1){
+		if($this->getViewerCount() === 1){
 			//TODO: this crap really shouldn't be managed by the inventory
-			$this->animateBlock(true);
-			$this->getHolder()->getWorld()->addSound($this->getHolder()->add(0.5, 0.5, 0.5), $this->getOpenSound());
+			$this->open();
 		}
 	}
 
 	abstract protected function animateBlock(bool $isOpen) : void;
 
 	public function onClose(Player $who) : void{
-		if($this->getHolder()->isValid() && $this->getViewerCount() === 1){
+		if($this->getViewerCount() === 1){
 			//TODO: this crap really shouldn't be managed by the inventory
-			$this->animateBlock(false);
-			$this->getHolder()->getWorld()->addSound($this->getHolder()->add(0.5, 0.5, 0.5), $this->getCloseSound());
+			$this->close();
 		}
 		parent::onClose($who);
+	}
+
+	public function open() : void{
+		$holder = $this->getHolder();
+		if($this->closed && $holder->isValid()){
+			$this->animateBlock(true);
+			$holder->getWorld()->addSound($holder->add(0.5, 0.5, 0.5), $this->getOpenSound());
+
+			$this->closed = false;
+		}
+	}
+
+	public function close() : void{
+		$holder = $this->getHolder();
+		if(!$this->closed && $holder->isValid()){
+			$this->animateBlock(false);
+			$holder->getWorld()->addSound($holder->add(0.5, 0.5, 0.5), $this->getCloseSound());
+
+			$this->closed = true;
+		}
 	}
 }
