@@ -95,7 +95,7 @@ class Block{
 	 * The type ID is included in the XOR mask. This is not necessary to improve distribution, but it reduces the number
 	 * of operations required to compute the state ID (micro optimization).
 	 */
-	public static function computeStateIdXorMask(int $typeId) : int{
+	private static function computeStateIdXorMask(int $typeId) : int{
 		return
 			$typeId << self::INTERNAL_STATE_DATA_BITS |
 			(Binary::readLong(hash('xxh3', Binary::writeLLong($typeId), binary: true)) & self::INTERNAL_STATE_DATA_MASK);
