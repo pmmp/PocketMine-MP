@@ -39,7 +39,7 @@ class Farmland extends Transparent{
 	protected int $wetness = 0; //"moisture" blockstate property in PC
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(3, 0, self::MAX_WETNESS, $this->wetness);
+		$w->boundedIntAuto(0, self::MAX_WETNESS, $this->wetness);
 	}
 
 	public function getWetness() : int{ return $this->wetness; }
