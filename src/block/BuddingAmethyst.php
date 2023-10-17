@@ -23,39 +23,46 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\AgeableTrait;
+use pocketmine\block\utils\AmethystTrait;
 use pocketmine\block\utils\BlockEventHelper;
-use pocketmine\block\utils\FortuneDropHelper;
-use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
+use function array_rand;
 use function mt_rand;
 
-class NetherWartPlant extends Flowable{
-	use AgeableTrait;
-	use StaticSupportTrait;
-
-	public const MAX_AGE = 3;
-
-	private function canBeSupportedAt(Block $block) : bool{
-		return $block->getSide(Facing::DOWN)->getTypeId() === BlockTypeIds::SOUL_SAND;
-	}
+final class BuddingAmethyst extends Opaque{
+	use AmethystTrait;
 
 	public function ticksRandomly() : bool{
-		return $this->age < self::MAX_AGE;
+		return true;
 	}
 
 	public function onRandomTick() : void{
-		if($this->age < self::MAX_AGE && mt_rand(0, 10) === 0){ //Still growing
-			$block = clone $this;
-			$block->age++;
-			BlockEventHelper::grow($this, $block, null);
+		if(mt_rand(1, 5) === 1){
+			$face = Facing::ALL[array_rand(Facing::ALL)];
+
+			$adjacent = $this->getSide($face);
+			//TODO: amethyst buds can spawn in water - we need waterlogging support for this
+
+			$newStage = null;
+
+			if($adjacent->getTypeId() === BlockTypeIds::AIR){
+				$newStage = AmethystCluster::STAGE_SMALL_BUD;
+			}elseif(
+				$adjacent->getTypeId() === BlockTypeIds::AMETHYST_CLUSTER &&
+				$adjacent instanceof AmethystCluster &&
+				$adjacent->getStage() < AmethystCluster::STAGE_CLUSTER &&
+				$adjacent->getFacing() === $face
+			){
+				$newStage = $adjacent->getStage() + 1;
+			}
+			if($newStage !== null){
+				BlockEventHelper::grow($adjacent, VanillaBlocks::AMETHYST_CLUSTER()->setStage($newStage)->setFacing($face), null);
+			}
 		}
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			$this->asItem()->setCount($this->age === self::MAX_AGE ? FortuneDropHelper::discrete($item, 2, 4) : 1)
-		];
+		return [];
 	}
 }

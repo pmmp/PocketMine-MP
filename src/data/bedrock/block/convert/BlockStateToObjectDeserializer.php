@@ -23,16 +23,20 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\convert;
 
+use pocketmine\block\AmethystCluster;
 use pocketmine\block\Bamboo;
 use pocketmine\block\Block;
 use pocketmine\block\CaveVines;
 use pocketmine\block\ChorusFlower;
+use pocketmine\block\DoublePitcherCrop;
 use pocketmine\block\Light;
 use pocketmine\block\PinkPetals;
+use pocketmine\block\PitcherCrop;
 use pocketmine\block\Slab;
 use pocketmine\block\Stair;
 use pocketmine\block\SweetBerryBush;
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
@@ -611,6 +615,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::BOOKSHELF, fn() => Blocks::BOOKSHELF());
 		$this->mapSimple(Ids::BRICK_BLOCK, fn() => Blocks::BRICKS());
 		$this->mapSimple(Ids::BROWN_MUSHROOM, fn() => Blocks::BROWN_MUSHROOM());
+		$this->mapSimple(Ids::BUDDING_AMETHYST, fn() => Blocks::BUDDING_AMETHYST());
 		$this->mapSimple(Ids::CALCITE, fn() => Blocks::CALCITE());
 		$this->mapSimple(Ids::CARTOGRAPHY_TABLE, fn() => Blocks::CARTOGRAPHY_TABLE());
 		$this->mapSimple(Ids::CHEMICAL_HEAT, fn() => Blocks::CHEMICAL_HEAT());
@@ -629,6 +634,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::CRACKED_NETHER_BRICKS, fn() => Blocks::CRACKED_NETHER_BRICKS());
 		$this->mapSimple(Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS, fn() => Blocks::CRACKED_POLISHED_BLACKSTONE_BRICKS());
 		$this->mapSimple(Ids::CRAFTING_TABLE, fn() => Blocks::CRAFTING_TABLE());
+		$this->mapSimple(Ids::CRIMSON_ROOTS, fn() => Blocks::CRIMSON_ROOTS());
 		$this->mapSimple(Ids::CRYING_OBSIDIAN, fn() => Blocks::CRYING_OBSIDIAN());
 		$this->mapSimple(Ids::DEADBUSH, fn() => Blocks::DEAD_BUSH());
 		$this->mapSimple(Ids::DEEPSLATE_BRICKS, fn() => Blocks::DEEPSLATE_BRICKS());
@@ -840,9 +846,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::SPORE_BLOSSOM, fn() => Blocks::SPORE_BLOSSOM());
 		$this->mapSimple(Ids::STONECUTTER, fn() => Blocks::LEGACY_STONECUTTER());
 		$this->mapSimple(Ids::TINTED_GLASS, fn() => Blocks::TINTED_GLASS());
+		$this->mapSimple(Ids::TORCHFLOWER, fn() => Blocks::TORCHFLOWER());
 		$this->mapSimple(Ids::TUFF, fn() => Blocks::TUFF());
 		$this->mapSimple(Ids::UNDYED_SHULKER_BOX, fn() => Blocks::SHULKER_BOX());
 		$this->mapSimple(Ids::WARPED_WART_BLOCK, fn() => Blocks::WARPED_WART_BLOCK());
+		$this->mapSimple(Ids::WARPED_ROOTS, fn() => Blocks::WARPED_ROOTS());
 		$this->mapSimple(Ids::WATERLILY, fn() => Blocks::LILY_PAD());
 		$this->mapSimple(Ids::WEB, fn() => Blocks::COBWEB());
 		$this->mapSimple(Ids::WITHER_ROSE, fn() => Blocks::WITHER_ROSE());
@@ -854,6 +862,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::ACTIVATOR_RAIL()
 				->setPowered($in->readBool(StateNames::RAIL_DATA_BIT))
 				->setShape($in->readBoundedInt(StateNames::RAIL_DIRECTION, 0, 5));
+		});
+		$this->map(Ids::AMETHYST_CLUSTER, function(Reader $in) : Block{
+			return Blocks::AMETHYST_CLUSTER()
+				->setStage(AmethystCluster::STAGE_CLUSTER)
+				->setFacing($in->readBlockFace());
 		});
 		$this->mapStairs(Ids::ANDESITE_STAIRS, fn() => Blocks::ANDESITE_STAIRS());
 		$this->map(Ids::ANVIL, function(Reader $in) : Block{
@@ -982,6 +995,18 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::CHAIN, function(Reader $in) : Block{
 			return Blocks::CHAIN()
 				->setAxis($in->readPillarAxis());
+		});
+		$this->map(Ids::CHISELED_BOOKSHELF, function(Reader $in) : Block{
+			$block = Blocks::CHISELED_BOOKSHELF()
+				->setFacing($in->readLegacyHorizontalFacing());
+
+			//we don't use API constant for bounds here as the data bounds might be different to what we support internally
+			$flags = $in->readBoundedInt(StateNames::BOOKS_STORED, 0, (1 << 6) - 1);
+			foreach(ChiseledBookshelfSlot::cases() as $slot){
+				$block->setSlot($slot, ($flags & (1 << $slot->value)) !== 0);
+			}
+
+			return $block;
 		});
 		$this->map(Ids::CHEMISTRY_TABLE, function(Reader $in) : Block{
 			return (match($type = $in->readString(StateNames::CHEMISTRY_TABLE_TYPE)){
@@ -1161,6 +1186,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::LANTERN()
 				->setHanging($in->readBool(StateNames::HANGING));
 		});
+		$this->map(Ids::LARGE_AMETHYST_BUD, function(Reader $in) : Block{
+			return Blocks::AMETHYST_CLUSTER()
+				->setStage(AmethystCluster::STAGE_LARGE_BUD)
+				->setFacing($in->readBlockFace());
+		});
 		$this->map(Ids::LAVA, fn(Reader $in) => Helper::decodeStillLiquid(Blocks::LAVA(), $in));
 		$this->map(Ids::LECTERN, function(Reader $in) : Block{
 			return Blocks::LECTERN()
@@ -1223,6 +1253,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::LOOM()
 				->setFacing($in->readLegacyHorizontalFacing());
 		});
+		$this->map(Ids::MEDIUM_AMETHYST_BUD, function(Reader $in) : Block{
+			return Blocks::AMETHYST_CLUSTER()
+				->setStage(AmethystCluster::STAGE_MEDIUM_BUD)
+				->setFacing($in->readBlockFace());
+		});
 		$this->map(Ids::MELON_STEM, fn(Reader $in) => Helper::decodeStem(Blocks::MELON_STEM(), $in));
 		$this->map(Ids::MONSTER_EGG, function(Reader $in) : Block{
 			return match($type = $in->readString(StateNames::MONSTER_EGG_STONE_TYPE)){
@@ -1262,6 +1297,22 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::PINK_PETALS()
 				->setFacing($in->readCardinalHorizontalFacing())
 				->setCount(min($growth + 1, PinkPetals::MAX_COUNT));
+		});
+		$this->map(Ids::PITCHER_CROP, function(Reader $in) : Block{
+			$growth = $in->readBoundedInt(StateNames::GROWTH, 0, 7);
+			$top = $in->readBool(StateNames::UPPER_BLOCK_BIT);
+			if($growth <= PitcherCrop::MAX_AGE){
+				//top pitcher crop with age 0-2 is an invalid state
+				//only the bottom half should exist in this case
+				return $top ? Blocks::AIR() : Blocks::PITCHER_CROP()->setAge($growth);
+			}
+			return Blocks::DOUBLE_PITCHER_CROP()
+				->setAge(min($growth - PitcherCrop::MAX_AGE - 1, DoublePitcherCrop::MAX_AGE))
+				->setTop($top);
+		});
+		$this->map(Ids::PITCHER_PLANT, function(Reader $in) : Block{
+			return Blocks::PITCHER_PLANT()
+				->setTop($in->readBool(StateNames::UPPER_BLOCK_BIT));
 		});
 		$this->mapStairs(Ids::POLISHED_ANDESITE_STAIRS, fn() => Blocks::POLISHED_ANDESITE_STAIRS());
 		$this->map(Ids::POLISHED_BASALT, function(Reader $in) : Block{
@@ -1437,6 +1488,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFacing($in->readCardinalHorizontalFacing())
 				->setLit(false);
 		});
+		$this->map(Ids::SMALL_AMETHYST_BUD, function(Reader $in) : Block{
+			return Blocks::AMETHYST_CLUSTER()
+				->setStage(AmethystCluster::STAGE_SMALL_BUD)
+				->setFacing($in->readBlockFace());
+		});
 		$this->map(Ids::SMALL_DRIPLEAF_BLOCK, function(Reader $in) : Block{
 			return Blocks::SMALL_DRIPLEAF()
 				->setFacing($in->readCardinalHorizontalFacing())
@@ -1527,6 +1583,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::TORCH, function(Reader $in) : Block{
 			return Blocks::TORCH()
 				->setFacing($in->readTorchFacing());
+		});
+		$this->map(Ids::TORCHFLOWER_CROP, function(Reader $in) : Block{
+			return Blocks::TORCHFLOWER_CROP()
+				//this property can have values 0-7, but only 0-1 are valid
+				->setReady($in->readBoundedInt(StateNames::GROWTH, 0, 7) !== 0);
 		});
 		$this->map(Ids::TRAPPED_CHEST, function(Reader $in) : Block{
 			return Blocks::TRAPPED_CHEST()
