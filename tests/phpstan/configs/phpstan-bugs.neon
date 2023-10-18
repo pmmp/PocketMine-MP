@@ -6,9 +6,24 @@ parameters:
 			path: ../../../src/block/BaseBanner.php
 
 		-
+			message: "#^Method pocketmine\\\\block\\\\CakeWithCandle\\:\\:onInteractCandle\\(\\) has parameter \\$returnedItems with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../src/block/CakeWithCandle.php
+
+		-
+			message: "#^Method pocketmine\\\\block\\\\DoubleTallGrass\\:\\:traitGetDropsForIncompatibleTool\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../src/block/DoubleTallGrass.php
+
+		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
+
+		-
+			message: "#^Match arm comparison between 1\\|2\\|3\\|4 and 0 is always false\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
 
 		-
 			message: "#^Match arm comparison between 4 and 4 is always true\\.$#"
@@ -34,11 +49,6 @@ parameters:
 			message: "#^Dead catch \\- RuntimeException is never thrown in the try block\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginManager.php
-
-		-
-			message: "#^Static property pocketmine\\\\scheduler\\\\AsyncTask\\:\\:\\$threadLocalStorage \\(ArrayObject\\<int, array\\<string, mixed\\>\\>\\|null\\) does not accept non\\-empty\\-array\\<int, non\\-empty\\-array\\<string, mixed\\>\\>\\|ArrayObject\\<int, array\\<string, mixed\\>\\>\\.$#"
-			count: 1
-			path: ../../../src/scheduler/AsyncTask.php
 
 		-
 			message: "#^Casting to int something that's already int\\.$#"

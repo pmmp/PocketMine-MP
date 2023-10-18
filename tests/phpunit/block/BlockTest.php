@@ -28,6 +28,7 @@ use function asort;
 use function file_get_contents;
 use function is_array;
 use function json_decode;
+use function log;
 use function print_r;
 use const SORT_STRING;
 
@@ -123,6 +124,14 @@ class BlockTest extends TestCase{
 	public function testEmptyStateId() : void{
 		$block = $this->blockFactory->fromStateId(Block::EMPTY_STATE_ID);
 		self::assertInstanceOf(Air::class, $block);
+	}
+
+	public function testStateDataSizeNotTooLarge() : void{
+		$typeIdBitsMin = ((int) log(BlockTypeIds::FIRST_UNUSED_BLOCK_ID, 2)) + 1;
+
+		$typeIdBitsMin++; //for custom blocks
+
+		self::assertLessThanOrEqual(32, Block::INTERNAL_STATE_DATA_BITS + $typeIdBitsMin, "State data size cannot be larger than " . (32 - $typeIdBitsMin) . " bits (need at least $typeIdBitsMin bits for block type ID)");
 	}
 
 	public function testAsItemFromItem() : void{

@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\block\inventory\StonecutterInventory;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -35,7 +34,6 @@ use pocketmine\player\Player;
 
 class Stonecutter extends Transparent{
 	use FacesOppositePlacingPlayerTrait;
-	use HorizontalFacingTrait;
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
@@ -49,6 +47,6 @@ class Stonecutter extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 }

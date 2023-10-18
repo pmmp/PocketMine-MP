@@ -39,18 +39,13 @@ class MobHead extends Flowable{
 	public const MIN_ROTATION = 0;
 	public const MAX_ROTATION = 15;
 
-	protected MobHeadType $mobHeadType;
+	protected MobHeadType $mobHeadType = MobHeadType::SKELETON;
 
 	protected int $facing = Facing::NORTH;
 	protected int $rotation = self::MIN_ROTATION; //TODO: split this into floor skull and wall skull handling
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->mobHeadType = MobHeadType::SKELETON(); //TODO: this should be a parameter
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
-
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
-		$w->mobHeadType($this->mobHeadType);
+		$w->enum($this->mobHeadType);
 	}
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
@@ -113,14 +108,15 @@ class MobHead extends Flowable{
 	 * @return AxisAlignedBB[]
 	 */
 	protected function recalculateCollisionBoxes() : array{
-		$collisionBox = AxisAlignedBB::one()->contract(0.25, 0, 0.25)->trim(Facing::UP, 0.5);
-		return match($this->facing){
-			Facing::NORTH => [$collisionBox->offset(0, 0.25, 0.25)],
-			Facing::SOUTH => [$collisionBox->offset(0, 0.25, -0.25)],
-			Facing::WEST => [$collisionBox->offset(0.25, 0.25, 0)],
-			Facing::EAST => [$collisionBox->offset(-0.25, 0.25, 0)],
-			default => [$collisionBox]
-		};
+		$collisionBox = AxisAlignedBB::one()
+			->contract(0.25, 0, 0.25)
+			->trim(Facing::UP, 0.5);
+		if($this->facing !== Facing::UP){
+			$collisionBox = $collisionBox
+				->offsetTowards(Facing::opposite($this->facing), 0.25)
+				->offsetTowards(Facing::UP, 0.25);
+		}
+		return [$collisionBox];
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

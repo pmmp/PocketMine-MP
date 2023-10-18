@@ -98,6 +98,10 @@ final class BlockStateNames{
 	public const LEVER_DIRECTION = "lever_direction";
 	public const LIQUID_DEPTH = "liquid_depth";
 	public const LIT = "lit";
+	public const MC_BLOCK_FACE = "minecraft:block_face";
+	public const MC_CARDINAL_DIRECTION = "minecraft:cardinal_direction";
+	public const MC_FACING_DIRECTION = "minecraft:facing_direction";
+	public const MC_VERTICAL_HALF = "minecraft:vertical_half";
 	public const MOISTURIZED_AMOUNT = "moisturized_amount";
 	public const MONSTER_EGG_STONE_TYPE = "monster_egg_stone_type";
 	public const MULTI_FACE_DIRECTION_BITS = "multi_face_direction_bits";
@@ -122,6 +126,7 @@ final class BlockStateNames{
 	public const SAND_STONE_TYPE = "sand_stone_type";
 	public const SAND_TYPE = "sand_type";
 	public const SAPLING_TYPE = "sapling_type";
+	public const SCULK_SENSOR_PHASE = "sculk_sensor_phase";
 	public const SEA_GRASS_TYPE = "sea_grass_type";
 	public const SPONGE_TYPE = "sponge_type";
 	public const STABILITY = "stability";
@@ -138,7 +143,6 @@ final class BlockStateNames{
 	public const SUSPENDED_BIT = "suspended_bit";
 	public const TALL_GRASS_TYPE = "tall_grass_type";
 	public const TOGGLE_BIT = "toggle_bit";
-	public const TOP_SLOT_BIT = "top_slot_bit";
 	public const TORCH_FACING_DIRECTION = "torch_facing_direction";
 	public const TRIGGERED_BIT = "triggered_bit";
 	public const TURTLE_EGG_COUNT = "turtle_egg_count";

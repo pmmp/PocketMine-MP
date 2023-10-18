@@ -82,7 +82,8 @@ class TypeConverter{
 			$this->itemTypeDictionary,
 			$this->blockTranslator->getBlockStateDictionary(),
 			GlobalItemDataHandlers::getSerializer(),
-			GlobalItemDataHandlers::getDeserializer()
+			GlobalItemDataHandlers::getDeserializer(),
+			$this->blockItemIdMap
 		);
 
 		$this->skinAdapter = new LegacySkinAdapter();
@@ -107,33 +108,23 @@ class TypeConverter{
 	 * @internal
 	 */
 	public function coreGameModeToProtocol(GameMode $gamemode) : int{
-		switch($gamemode->id()){
-			case GameMode::SURVIVAL()->id():
-				return ProtocolGameMode::SURVIVAL;
-			case GameMode::CREATIVE()->id():
-			case GameMode::SPECTATOR()->id():
-				return ProtocolGameMode::CREATIVE;
-			case GameMode::ADVENTURE()->id():
-				return ProtocolGameMode::ADVENTURE;
-			default:
-				throw new AssumptionFailedError("Unknown game mode");
-		}
+		return match($gamemode){
+			GameMode::SURVIVAL => ProtocolGameMode::SURVIVAL,
+			//TODO: native spectator support
+			GameMode::CREATIVE, GameMode::SPECTATOR => ProtocolGameMode::CREATIVE,
+			GameMode::ADVENTURE => ProtocolGameMode::ADVENTURE,
+		};
 	}
 
 	public function protocolGameModeToCore(int $gameMode) : ?GameMode{
-		switch($gameMode){
-			case ProtocolGameMode::SURVIVAL:
-				return GameMode::SURVIVAL();
-			case ProtocolGameMode::CREATIVE:
-				return GameMode::CREATIVE();
-			case ProtocolGameMode::ADVENTURE:
-				return GameMode::ADVENTURE();
-			case ProtocolGameMode::CREATIVE_VIEWER:
-			case ProtocolGameMode::SURVIVAL_VIEWER:
-				return GameMode::SPECTATOR();
-			default:
-				return null;
-		}
+		return match($gameMode){
+			ProtocolGameMode::SURVIVAL => GameMode::SURVIVAL,
+			ProtocolGameMode::CREATIVE => GameMode::CREATIVE,
+			ProtocolGameMode::ADVENTURE => GameMode::ADVENTURE,
+			ProtocolGameMode::SURVIVAL_VIEWER, ProtocolGameMode::CREATIVE_VIEWER => GameMode::SPECTATOR,
+			//TODO: native spectator support
+			default => null,
+		};
 	}
 
 	public function coreRecipeIngredientToNet(?RecipeIngredient $ingredient) : ProtocolRecipeIngredient{
@@ -147,7 +138,7 @@ class TypeConverter{
 		}elseif($ingredient instanceof ExactRecipeIngredient){
 			$item = $ingredient->getItem();
 			[$id, $meta, $blockRuntimeId] = $this->itemTranslator->toNetworkId($item);
-			if($blockRuntimeId !== ItemTranslator::NO_BLOCK_RUNTIME_ID){
+			if($blockRuntimeId !== null){
 				$meta = $this->blockTranslator->getBlockStateDictionary()->getMetaFromStateId($blockRuntimeId);
 				if($meta === null){
 					throw new AssumptionFailedError("Every block state should have an associated meta value");
@@ -230,7 +221,7 @@ class TypeConverter{
 			$id,
 			$meta,
 			$itemStack->getCount(),
-			$blockRuntimeId,
+			$blockRuntimeId ?? ItemTranslator::NO_BLOCK_RUNTIME_ID,
 			$nbt,
 			[],
 			[],

@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\MinimumCostFlowCalculator;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
-use pocketmine\event\block\BlockFormEvent;
 use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -49,7 +49,7 @@ abstract class Liquid extends Transparent{
 	protected bool $still = false;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(3, 0, self::MAX_DECAY, $this->decay);
+		$w->boundedIntAuto(0, self::MAX_DECAY, $this->decay);
 		$w->bool($this->falling);
 		$w->bool($this->still);
 	}
@@ -97,7 +97,7 @@ abstract class Liquid extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
@@ -312,7 +312,7 @@ abstract class Liquid extends Transparent{
 			}
 
 			if($adjacentDecay <= self::MAX_DECAY){
-				$calculator = new MinimumCostFlowCalculator($world, $this->getFlowDecayPerBlock(), \Closure::fromCallable([$this, 'canFlowInto']));
+				$calculator = new MinimumCostFlowCalculator($world, $this->getFlowDecayPerBlock(), $this->canFlowInto(...));
 				foreach($calculator->getOptimalFlowDirections($this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ()) as $facing){
 					$this->flowIntoBlock($world->getBlock($this->position->getSide($facing)), $adjacentDecay, false);
 				}
@@ -363,12 +363,8 @@ abstract class Liquid extends Transparent{
 	}
 
 	protected function liquidCollide(Block $cause, Block $result) : bool{
-		$ev = new BlockFormEvent($this, $result, $cause);
-		$ev->call();
-		if(!$ev->isCancelled()){
-			$world = $this->position->getWorld();
-			$world->setBlock($this->position, $ev->getNewState());
-			$world->addSound($this->position->add(0.5, 0.5, 0.5), new FizzSound(2.6 + (lcg_value() - lcg_value()) * 0.8));
+		if(BlockEventHelper::form($this, $result, $cause)){
+			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new FizzSound(2.6 + (lcg_value() - lcg_value()) * 0.8));
 		}
 		return true;
 	}

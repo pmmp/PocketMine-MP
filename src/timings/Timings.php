@@ -29,6 +29,7 @@ use pocketmine\event\Event;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\player\Player;
+use pocketmine\scheduler\AsyncTask;
 use pocketmine\scheduler\TaskHandler;
 use function get_class;
 use function str_starts_with;
@@ -115,6 +116,17 @@ abstract class Timings{
 	/** @var TimingsHandler[][] */
 	private static array $eventHandlers = [];
 
+	private static TimingsHandler $asyncTaskProgressUpdateParent;
+	private static TimingsHandler $asyncTaskCompletionParent;
+	private static TimingsHandler $asyncTaskErrorParent;
+
+	/** @var TimingsHandler[] */
+	private static array $asyncTaskProgressUpdate = [];
+	/** @var TimingsHandler[] */
+	private static array $asyncTaskCompletion = [];
+	/** @var TimingsHandler[] */
+	private static array $asyncTaskError = [];
+
 	public static function init() : void{
 		if(self::$initialized){
 			return;
@@ -168,7 +180,11 @@ abstract class Timings{
 		self::$itemEntityBaseTick = new TimingsHandler("Entity Base Tick - ItemEntity", group: self::GROUP_BREAKDOWN);
 
 		self::$schedulerSync = new TimingsHandler("Scheduler - Sync Tasks", group: self::GROUP_BREAKDOWN);
+
 		self::$schedulerAsync = new TimingsHandler("Scheduler - Async Tasks", group: self::GROUP_BREAKDOWN);
+		self::$asyncTaskProgressUpdateParent = new TimingsHandler("Async Tasks - Progress Updates", self::$schedulerAsync, group: self::GROUP_BREAKDOWN);
+		self::$asyncTaskCompletionParent = new TimingsHandler("Async Tasks - Completion Handlers", self::$schedulerAsync, group: self::GROUP_BREAKDOWN);
+		self::$asyncTaskErrorParent = new TimingsHandler("Async Tasks - Error Handlers", self::$schedulerAsync, group: self::GROUP_BREAKDOWN);
 
 		self::$playerCommand = new TimingsHandler("Player Command", group: self::GROUP_BREAKDOWN);
 		self::$craftingDataCacheRebuild = new TimingsHandler("Build CraftingDataPacket Cache", group: self::GROUP_BREAKDOWN);
@@ -298,5 +314,47 @@ abstract class Timings{
 		}
 
 		return self::$eventHandlers[$event][$handlerName];
+	}
+
+	public static function getAsyncTaskProgressUpdateTimings(AsyncTask $task, string $group = self::GROUP_BREAKDOWN) : TimingsHandler{
+		$taskClass = $task::class;
+		if(!isset(self::$asyncTaskProgressUpdate[$taskClass])){
+			self::init();
+			self::$asyncTaskProgressUpdate[$taskClass] = new TimingsHandler(
+				"AsyncTask - " . self::shortenCoreClassName($taskClass, "pocketmine\\") . " - Progress Updates",
+				self::$asyncTaskProgressUpdateParent,
+				$group
+			);
+		}
+
+		return self::$asyncTaskProgressUpdate[$taskClass];
+	}
+
+	public static function getAsyncTaskCompletionTimings(AsyncTask $task, string $group = self::GROUP_BREAKDOWN) : TimingsHandler{
+		$taskClass = $task::class;
+		if(!isset(self::$asyncTaskCompletion[$taskClass])){
+			self::init();
+			self::$asyncTaskCompletion[$taskClass] = new TimingsHandler(
+				"AsyncTask - " . self::shortenCoreClassName($taskClass, "pocketmine\\") . " - Completion Handler",
+				self::$asyncTaskCompletionParent,
+				$group
+			);
+		}
+
+		return self::$asyncTaskCompletion[$taskClass];
+	}
+
+	public static function getAsyncTaskErrorTimings(AsyncTask $task, string $group = self::GROUP_BREAKDOWN) : TimingsHandler{
+		$taskClass = $task::class;
+		if(!isset(self::$asyncTaskError[$taskClass])){
+			self::init();
+			self::$asyncTaskError[$taskClass] = new TimingsHandler(
+				"AsyncTask - " . self::shortenCoreClassName($taskClass, "pocketmine\\") . " - Error Handler",
+				self::$asyncTaskErrorParent,
+				$group
+			);
+		}
+
+		return self::$asyncTaskError[$taskClass];
 	}
 }

@@ -136,6 +136,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Block(Ids::CAKE, Blocks::CAKE());
 		$this->map1to1Block(Ids::CAULDRON, Blocks::CAULDRON());
 		$this->map1to1Block(Ids::CHAIN, Blocks::CHAIN());
+		$this->map1to1Block(Ids::CHERRY_DOOR, Blocks::CHERRY_DOOR());
 		$this->map1to1Block(Ids::COMPARATOR, Blocks::REDSTONE_COMPARATOR());
 		$this->map1to1Block(Ids::CRIMSON_DOOR, Blocks::CRIMSON_DOOR());
 		$this->map1to1Block(Ids::DARK_OAK_DOOR, Blocks::DARK_OAK_DOOR());
@@ -147,6 +148,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Block(Ids::JUNGLE_DOOR, Blocks::JUNGLE_DOOR());
 		$this->map1to1Block(Ids::MANGROVE_DOOR, Blocks::MANGROVE_DOOR());
 		$this->map1to1Block(Ids::NETHER_WART, Blocks::NETHER_WART());
+		$this->map1to1Block(Ids::PITCHER_POD, Blocks::PITCHER_CROP());
 		$this->map1to1Block(Ids::REPEATER, Blocks::REDSTONE_REPEATER());
 		$this->map1to1Block(Ids::SPRUCE_DOOR, Blocks::SPRUCE_DOOR());
 		$this->map1to1Block(Ids::SUGAR_CANE, Blocks::SUGARCANE());
@@ -186,6 +188,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::CHAINMAIL_HELMET, Items::CHAINMAIL_HELMET());
 		$this->map1to1Item(Ids::CHAINMAIL_LEGGINGS, Items::CHAINMAIL_LEGGINGS());
 		$this->map1to1Item(Ids::CHARCOAL, Items::CHARCOAL());
+		$this->map1to1Item(Ids::CHERRY_SIGN, Items::CHERRY_SIGN());
 		$this->map1to1Item(Ids::CHICKEN, Items::RAW_CHICKEN());
 		$this->map1to1Item(Ids::CHORUS_FRUIT, Items::CHORUS_FRUIT());
 		$this->map1to1Item(Ids::CLAY_BALL, Items::CLAY());
@@ -222,6 +225,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::ECHO_SHARD, Items::ECHO_SHARD());
 		$this->map1to1Item(Ids::EGG, Items::EGG());
 		$this->map1to1Item(Ids::EMERALD, Items::EMERALD());
+		$this->map1to1Item(Ids::ENCHANTED_BOOK, Items::ENCHANTED_BOOK());
 		$this->map1to1Item(Ids::ENCHANTED_GOLDEN_APPLE, Items::ENCHANTED_GOLDEN_APPLE());
 		$this->map1to1Item(Ids::ENDER_PEARL, Items::ENDER_PEARL());
 		$this->map1to1Item(Ids::EXPERIENCE_BOTTLE, Items::EXPERIENCE_BOTTLE());
@@ -358,6 +362,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::STRING, Items::STRING());
 		$this->map1to1Item(Ids::SUGAR, Items::SUGAR());
 		$this->map1to1Item(Ids::SWEET_BERRIES, Items::SWEET_BERRIES());
+		$this->map1to1Item(Ids::TORCHFLOWER_SEEDS, Items::TORCHFLOWER_SEEDS());
 		$this->map1to1Item(Ids::TOTEM_OF_UNDYING, Items::TOTEM());
 		$this->map1to1Item(Ids::TROPICAL_FISH, Items::CLOWNFISH());
 		$this->map1to1Item(Ids::TURTLE_HELMET, Items::TURTLE_HELMET());
@@ -517,7 +522,7 @@ final class ItemSerializerDeserializerRegistrar{
 	 * complex to implement in a generic way.
 	 */
 	private function registerMiscItemMappings() : void{
-		foreach(DyeColor::getAll() as $color){
+		foreach(DyeColor::cases() as $color){
 			$id = DyeColorIdMap::getInstance()->toItemId($color);
 			$this->deserializer?->map($id, fn() => Items::DYE()->setColor($color));
 		}
