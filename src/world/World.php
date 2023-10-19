@@ -1531,8 +1531,8 @@ class World implements ChunkManager{
 		$boxes = $block->getCollisionBoxes();
 
 		$cellBB = AxisAlignedBB::one()->offset($x, $y, $z);
-		foreach(Facing::ALL as $facing){
-			$extraBoxes = $block->getSide($facing)->getCollisionBoxes();
+		foreach(Facing::OFFSET as [$dx, $dy, $dz]){
+			$extraBoxes = $this->getBlockAt($x + $dx, $y + $dy, $z + $dz)->getCollisionBoxes();
 			foreach($extraBoxes as $extraBox){
 				if($extraBox->intersectsWith($cellBB)){
 					$boxes[] = $extraBox;
