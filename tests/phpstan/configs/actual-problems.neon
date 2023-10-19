@@ -46,7 +46,22 @@ parameters:
 			path: ../../../src/VersionInfo.php
 
 		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/Block.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/Block.php
+
+		-
 			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\format\\\\Chunk\\:\\:setBlockStateId\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/Block.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/block/Block.php
 
