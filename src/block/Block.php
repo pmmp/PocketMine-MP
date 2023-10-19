@@ -749,7 +749,7 @@ class Block{
 	public function getSide(int $side, int $step = 1){
 		$position = $this->position;
 		if($position->isValid()){
-			[$dx, $dy, $dz] = Facing::OFFSET[$side] ?? throw new \InvalidArgumentException("Unknown side $side");
+			[$dx, $dy, $dz] = Facing::OFFSET[$side] ?? [0, 0, 0];
 			return $position->getWorld()->getBlockAt(
 				$position->x + ($dx * $step),
 				$position->y + ($dy * $step),
