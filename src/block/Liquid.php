@@ -170,16 +170,11 @@ abstract class Liquid extends Transparent{
 		$world = $this->position->getWorld();
 
 		foreach(Facing::HORIZONTAL as $j){
-			$x = $this->position->x;
-			$y = $this->position->y;
-			$z = $this->position->z;
+			[$dx, $dy, $dz] = Facing::OFFSET[$j];
 
-			match($j){
-				Facing::WEST => --$x,
-				Facing::EAST => ++$x,
-				Facing::NORTH => --$z,
-				Facing::SOUTH => ++$z
-			};
+			$x = $this->position->x + $dx;
+			$y = $this->position->y + $dy;
+			$z = $this->position->z + $dz;
 
 			$sideBlock = $world->getBlockAt($x, $y, $z);
 			$blockDecay = $this->getEffectiveFlowDecay($sideBlock);
