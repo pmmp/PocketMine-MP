@@ -747,8 +747,14 @@ class Block{
 	 * @return Block
 	 */
 	public function getSide(int $side, int $step = 1){
-		if($this->position->isValid()){
-			return $this->position->getWorld()->getBlock($this->position->getSide($side, $step));
+		$position = $this->position;
+		if($position->isValid()){
+			[$dx, $dy, $dz] = Facing::OFFSET[$side] ?? throw new \InvalidArgumentException("Unknown side $side");
+			return $position->getWorld()->getBlockAt(
+				$position->x + ($dx * $step),
+				$position->y + ($dy * $step),
+				$position->z + ($dz * $step)
+			);
 		}
 
 		throw new \LogicException("Block does not have a valid world");
