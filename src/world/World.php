@@ -1526,7 +1526,7 @@ class World implements ChunkManager{
 	 *
 	 * @return AxisAlignedBB[]
 	 */
-	private function getCollisionBoxesForCell(int $x, int $y, int $z) : array{
+	private function getBlockCollisionBoxesForCell(int $x, int $y, int $z) : array{
 		$block = $this->getBlockAt($x, $y, $z);
 		$boxes = $block->getCollisionBoxes();
 
@@ -1547,7 +1547,7 @@ class World implements ChunkManager{
 	 * @return AxisAlignedBB[]
 	 * @phpstan-return list<AxisAlignedBB>
 	 */
-	public function getCollisionBoxes(Entity $entity, AxisAlignedBB $bb, bool $entities = true) : array{
+	public function getBlockCollisionBoxes(AxisAlignedBB $bb) : array{
 		$minX = (int) floor($bb->minX);
 		$minY = (int) floor($bb->minY);
 		$minZ = (int) floor($bb->minZ);
@@ -1563,7 +1563,7 @@ class World implements ChunkManager{
 				for($y = $minY; $y <= $maxY; ++$y){
 					$relativeBlockHash = World::chunkBlockHash($x, $y, $z);
 
-					$boxes = $this->blockCollisionBoxCache[$chunkPosHash][$relativeBlockHash] ??= $this->getCollisionBoxesForCell($x, $y, $z);
+					$boxes = $this->blockCollisionBoxCache[$chunkPosHash][$relativeBlockHash] ??= $this->getBlockCollisionBoxesForCell($x, $y, $z);
 
 					foreach($boxes as $blockBB){
 						if($blockBB->intersectsWith($bb)){
@@ -1573,6 +1573,19 @@ class World implements ChunkManager{
 				}
 			}
 		}
+
+		return $collides;
+	}
+
+	/**
+	 * @deprecated Use {@link World::getBlockCollisionBoxes()} instead (alongside {@link World::getCollidingEntities()}
+	 * if entity collision boxes are also required).
+	 *
+	 * @return AxisAlignedBB[]
+	 * @phpstan-return list<AxisAlignedBB>
+	 */
+	public function getCollisionBoxes(Entity $entity, AxisAlignedBB $bb, bool $entities = true) : array{
+		$collides = $this->getBlockCollisionBoxes($bb);
 
 		if($entities){
 			foreach($this->getCollidingEntities($bb->expandedCopy(0.25, 0.25, 0.25), $entity) as $ent){
