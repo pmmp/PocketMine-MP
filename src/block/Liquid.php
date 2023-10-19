@@ -188,17 +188,17 @@ abstract class Liquid extends Transparent{
 
 				if($blockDecay >= 0){
 					$realDecay = $blockDecay - ($decay - 8);
-					$vX += ($x - $this->position->x) * $realDecay;
-					$vY += ($y - $this->position->y) * $realDecay;
-					$vZ += ($z - $this->position->z) * $realDecay;
+					$vX += $dx * $realDecay;
+					$vY += $dy * $realDecay;
+					$vZ += $dz * $realDecay;
 				}
 
 				continue;
 			}else{
 				$realDecay = $blockDecay - $decay;
-				$vX += ($x - $this->position->x) * $realDecay;
-				$vY += ($y - $this->position->y) * $realDecay;
-				$vZ += ($z - $this->position->z) * $realDecay;
+				$vX += $dx * $realDecay;
+				$vY += $dy * $realDecay;
+				$vZ += $dz * $realDecay;
 			}
 		}
 
