@@ -255,13 +255,17 @@ abstract class Liquid extends Transparent{
 
 		$world = $this->position->getWorld();
 
+		$x = $this->position->getFloorX();
+		$y = $this->position->getFloorY();
+		$z = $this->position->getFloorZ();
+
 		if(!$this->isSource()){
 			$smallestFlowDecay = -100;
 			$this->adjacentSources = 0;
-			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($this->position->x, $this->position->y, $this->position->z - 1), $smallestFlowDecay);
-			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($this->position->x, $this->position->y, $this->position->z + 1), $smallestFlowDecay);
-			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($this->position->x - 1, $this->position->y, $this->position->z), $smallestFlowDecay);
-			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($this->position->x + 1, $this->position->y, $this->position->z), $smallestFlowDecay);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($x, $y, $z - 1), $smallestFlowDecay);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($x, $y, $z + 1), $smallestFlowDecay);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($x - 1, $y, $z), $smallestFlowDecay);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($x + 1, $y, $z), $smallestFlowDecay);
 
 			$newDecay = $smallestFlowDecay + $multiplier;
 			$falling = false;
@@ -270,13 +274,13 @@ abstract class Liquid extends Transparent{
 				$newDecay = -1;
 			}
 
-			if($this->getEffectiveFlowDecay($world->getBlockAt($this->position->x, $this->position->y + 1, $this->position->z)) >= 0){
+			if($this->getEffectiveFlowDecay($world->getBlockAt($x, $y + 1, $z)) >= 0){
 				$falling = true;
 			}
 
 			$minAdjacentSources = $this->getMinAdjacentSourcesToFormSource();
 			if($minAdjacentSources !== null && $this->adjacentSources >= $minAdjacentSources){
-				$bottomBlock = $world->getBlockAt($this->position->x, $this->position->y - 1, $this->position->z);
+				$bottomBlock = $world->getBlockAt($x, $y - 1, $z);
 				if($bottomBlock->isSolid() || ($bottomBlock instanceof Liquid && $bottomBlock->hasSameTypeId($this) && $bottomBlock->isSource())){
 					$newDecay = 0;
 					$falling = false;
@@ -285,17 +289,17 @@ abstract class Liquid extends Transparent{
 
 			if($falling !== $this->falling || (!$falling && $newDecay !== $this->decay)){
 				if(!$falling && $newDecay < 0){
-					$world->setBlock($this->position, VanillaBlocks::AIR());
+					$world->setBlockAt($x, $y, $z, VanillaBlocks::AIR());
 					return;
 				}
 
 				$this->falling = $falling;
 				$this->decay = $falling ? 0 : $newDecay;
-				$world->setBlock($this->position, $this); //local block update will cause an update to be scheduled
+				$world->setBlockAt($x, $y, $z, $this); //local block update will cause an update to be scheduled
 			}
 		}
 
-		$bottomBlock = $world->getBlockAt($this->position->x, $this->position->y - 1, $this->position->z);
+		$bottomBlock = $world->getBlockAt($x, $y - 1, $z);
 
 		$this->flowIntoBlock($bottomBlock, 0, true);
 
@@ -308,8 +312,9 @@ abstract class Liquid extends Transparent{
 
 			if($adjacentDecay <= self::MAX_DECAY){
 				$calculator = new MinimumCostFlowCalculator($world, $this->getFlowDecayPerBlock(), $this->canFlowInto(...));
-				foreach($calculator->getOptimalFlowDirections($this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ()) as $facing){
-					$this->flowIntoBlock($world->getBlock($this->position->getSide($facing)), $adjacentDecay, false);
+				foreach($calculator->getOptimalFlowDirections($x, $y, $z) as $facing){
+					[$dx, $dy, $dz] = Facing::OFFSET[$facing];
+					$this->flowIntoBlock($world->getBlockAt($x + $dx, $y + $dy, $z + $dz), $adjacentDecay, false);
 				}
 			}
 		}
