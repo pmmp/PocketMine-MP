@@ -165,6 +165,10 @@ abstract class Liquid extends Transparent{
 
 		$vX = $vY = $vZ = 0;
 
+		$x = $this->position->getFloorX();
+		$y = $this->position->getFloorY();
+		$z = $this->position->getFloorZ();
+
 		$decay = $this->getEffectiveFlowDecay($this);
 
 		$world = $this->position->getWorld();
@@ -172,11 +176,11 @@ abstract class Liquid extends Transparent{
 		foreach(Facing::HORIZONTAL as $j){
 			[$dx, $dy, $dz] = Facing::OFFSET[$j];
 
-			$x = $this->position->x + $dx;
-			$y = $this->position->y + $dy;
-			$z = $this->position->z + $dz;
+			$sideX = $x + $dx;
+			$sideY = $y + $dy;
+			$sideZ = $z + $dz;
 
-			$sideBlock = $world->getBlockAt($x, $y, $z);
+			$sideBlock = $world->getBlockAt($sideX, $sideY, $sideZ);
 			$blockDecay = $this->getEffectiveFlowDecay($sideBlock);
 
 			if($blockDecay < 0){
@@ -184,7 +188,7 @@ abstract class Liquid extends Transparent{
 					continue;
 				}
 
-				$blockDecay = $this->getEffectiveFlowDecay($world->getBlockAt($x, $y - 1, $z));
+				$blockDecay = $this->getEffectiveFlowDecay($world->getBlockAt($sideX, $sideY - 1, $sideZ));
 
 				if($blockDecay >= 0){
 					$realDecay = $blockDecay - ($decay - 8);
@@ -206,10 +210,10 @@ abstract class Liquid extends Transparent{
 
 		if($this->falling){
 			foreach(Facing::HORIZONTAL as $facing){
-				$pos = $this->position->getSide($facing);
+				[$dx, $dy, $dz] = Facing::OFFSET[$facing];
 				if(
-					!$this->canFlowInto($world->getBlockAt($pos->x, $pos->y, $pos->z)) ||
-					!$this->canFlowInto($world->getBlockAt($pos->x, $pos->y + 1, $pos->z))
+					!$this->canFlowInto($world->getBlockAt($x + $dx, $y + $dy, $z + $dz)) ||
+					!$this->canFlowInto($world->getBlockAt($x + $dx, $y + $dy + 1, $z + $dz))
 				){
 					$vector = $vector->normalize()->add(0, -6, 0);
 					break;
