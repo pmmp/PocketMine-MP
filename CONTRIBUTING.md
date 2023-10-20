@@ -117,6 +117,19 @@ It's your responsibility to ensure your code matches the formatting and styling 
 If you use PhpStorm, a `Project` code style is provided, which you can use to automatically format new code.
 You can also use [`php-cs-fixer`](https://github.com/FriendsOfPHP/PHP-CS-Fixer) to format your code.
 
+#### Use `final` and `private` wherever possible
+- Changing from `private` to `protected` or `final` to non-`final` doesn't break backwards compatibility, but the opposite does.
+- `private` and `final` also enable certain performance optimizations which are otherwise not possible.
+- `private` members can be freely changed, added and removed in the future, so it's ideal for internal functions. Abusing `protected` makes internal improvements inconvenient.
+- "Let's leave it protected/public in case someone needs it for ... idk what" is **not a valid reason to expose things**. If there isn't a clear reason for something to be accessible from the outside, don't expose it.
+- **This is a lesson learned through years of experience.** You may not like it, but it's for the best.
+
+#### Immutable things are almost always preferred
+- Do not add unnecessary setters or public writable properties to classes. As above, "Let's leave it in case someone needs it" is **not a valid reason to expose things**.
+- Mutable classes and properties are unpredictable, since code has no way to know if the object it's working with might be randomly modified by another part of the code. This makes it harder to maintain code and debug issues.
+- Most classes exist only to hold some data. These are called "data transfer objects" (DTOs). These types of classes should pretty much always be immutable.
+- Make use of `final`, `private` and `readonly` modifiers.
+
 ### Recommendations
 
 - **Do not edit code directly on github.com.** We recommend learning how to use [`git`](https://git-scm.com). `git` allows you to "clone" a repository onto your computer, so that you can make changes using an IDE.
