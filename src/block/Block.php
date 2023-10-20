@@ -768,8 +768,14 @@ class Block{
 	 */
 	public function getHorizontalSides() : \Generator{
 		$world = $this->position->getWorld();
-		foreach($this->position->sidesAroundAxis(Axis::Y) as $vector3){
-			yield $world->getBlock($vector3);
+		foreach(Facing::HORIZONTAL as $facing){
+			[$dx, $dy, $dz] = Facing::OFFSET[$facing];
+			//TODO: yield Facing as the key?
+			yield $world->getBlockAt(
+				$this->position->x + $dx,
+				$this->position->y + $dy,
+				$this->position->z + $dz
+			);
 		}
 	}
 
@@ -781,8 +787,13 @@ class Block{
 	 */
 	public function getAllSides() : \Generator{
 		$world = $this->position->getWorld();
-		foreach($this->position->sides() as $vector3){
-			yield $world->getBlock($vector3);
+		foreach(Facing::OFFSET as [$dx, $dy, $dz]){
+			//TODO: yield Facing as the key?
+			yield $world->getBlockAt(
+				$this->position->x + $dx,
+				$this->position->y + $dy,
+				$this->position->z + $dz
+			);
 		}
 	}
 
