@@ -1463,9 +1463,9 @@ class World implements ChunkManager{
 	/**
 	 * @phpstan-param int-mask-of<NearbyBlockChangeFlags::*> $nearbyUpdateFlag
 	 */
-	private function tryAddToNeighbourUpdateQueue(Vector3 $pos, int $nearbyUpdateFlag) : void{
-		if($this->isInWorld($pos->x, $pos->y, $pos->z)){
-			$hash = World::blockHash($pos->x, $pos->y, $pos->z);
+	private function tryAddToNeighbourUpdateQueue(int $x, int $y, int $z, int $nearbyUpdateFlag) : void{
+		if($this->isInWorld($x, $y, $z)){
+			$hash = World::blockHash($x, $y, $z);
 			if(!isset($this->neighbourBlockUpdateQueueIndex[$hash])){
 				$this->neighbourBlockUpdateQueue->enqueue($hash);
 				$this->neighbourBlockUpdateQueueIndex[$hash] = $nearbyUpdateFlag;
@@ -1476,17 +1476,27 @@ class World implements ChunkManager{
 	}
 
 	/**
+	 * Identical to {@link World::notifyNeighbourBlockUpdate()}, but without the Vector3 requirement. We don't want or
+	 * need Vector3 in the places where this is called.
+	 *
+	 * TODO: make this the primary method in PM6
+	 */
+	private function internalNotifyNeighbourBlockUpdate(int $x, int $y, int $z) : void{
+		$this->tryAddToNeighbourUpdateQueue($x, $y, $z, NearbyBlockChangeFlags::ALL);
+		foreach(Facing::OFFSET as $facing => [$dx, $dy, $dz]){
+			$this->tryAddToNeighbourUpdateQueue($x + $dx, $y + $dy, $z + $dz, NearbyBlockChangeFlags::fromFacing(Facing::opposite($facing)));
+		}
+	}
+
+	/**
 	 * Notify the blocks at and around the position that the block at the position may have changed.
 	 * This will cause onNearbyBlockChange() to be called for these blocks.
+	 * TODO: Accept plain integers in PM6 - the Vector3 requirement is an unnecessary inconvenience
 	 *
 	 * @see Block::onNearbyBlockChange()
 	 */
 	public function notifyNeighbourBlockUpdate(Vector3 $pos) : void{
-		//freshly placed blocks must check all neighbours - this is required for stuff like wall connections
-		$this->tryAddToNeighbourUpdateQueue($pos, NearbyBlockChangeFlags::ALL);
-		foreach($pos->sides() as $facing => $vector3){
-			$this->tryAddToNeighbourUpdateQueue($vector3, NearbyBlockChangeFlags::fromFacing(Facing::opposite($facing)));
-		}
+		$this->internalNotifyNeighbourBlockUpdate($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ());
 	}
 
 	/**
@@ -1537,13 +1547,13 @@ class World implements ChunkManager{
 	 *
 	 * @return AxisAlignedBB[]
 	 */
-	private function getCollisionBoxesForCell(int $x, int $y, int $z) : array{
+	private function getBlockCollisionBoxesForCell(int $x, int $y, int $z) : array{
 		$block = $this->getBlockAt($x, $y, $z);
 		$boxes = $block->getCollisionBoxes();
 
 		$cellBB = AxisAlignedBB::one()->offset($x, $y, $z);
-		foreach(Facing::ALL as $facing){
-			$extraBoxes = $block->getSide($facing)->getCollisionBoxes();
+		foreach(Facing::OFFSET as [$dx, $dy, $dz]){
+			$extraBoxes = $this->getBlockAt($x + $dx, $y + $dy, $z + $dz)->getCollisionBoxes();
 			foreach($extraBoxes as $extraBox){
 				if($extraBox->intersectsWith($cellBB)){
 					$boxes[] = $extraBox;
@@ -1558,7 +1568,7 @@ class World implements ChunkManager{
 	 * @return AxisAlignedBB[]
 	 * @phpstan-return list<AxisAlignedBB>
 	 */
-	public function getCollisionBoxes(Entity $entity, AxisAlignedBB $bb, bool $entities = true) : array{
+	public function getBlockCollisionBoxes(AxisAlignedBB $bb) : array{
 		$minX = (int) floor($bb->minX);
 		$minY = (int) floor($bb->minY);
 		$minZ = (int) floor($bb->minZ);
@@ -1574,7 +1584,7 @@ class World implements ChunkManager{
 				for($y = $minY; $y <= $maxY; ++$y){
 					$relativeBlockHash = World::chunkBlockHash($x, $y, $z);
 
-					$boxes = $this->blockCollisionBoxCache[$chunkPosHash][$relativeBlockHash] ??= $this->getCollisionBoxesForCell($x, $y, $z);
+					$boxes = $this->blockCollisionBoxCache[$chunkPosHash][$relativeBlockHash] ??= $this->getBlockCollisionBoxesForCell($x, $y, $z);
 
 					foreach($boxes as $blockBB){
 						if($blockBB->intersectsWith($bb)){
@@ -1584,6 +1594,19 @@ class World implements ChunkManager{
 				}
 			}
 		}
+
+		return $collides;
+	}
+
+	/**
+	 * @deprecated Use {@link World::getBlockCollisionBoxes()} instead (alongside {@link World::getCollidingEntities()}
+	 * if entity collision boxes are also required).
+	 *
+	 * @return AxisAlignedBB[]
+	 * @phpstan-return list<AxisAlignedBB>
+	 */
+	public function getCollisionBoxes(Entity $entity, AxisAlignedBB $bb, bool $entities = true) : array{
+		$collides = $this->getBlockCollisionBoxes($bb);
 
 		if($entities){
 			foreach($this->getCollidingEntities($bb->expandedCopy(0.25, 0.25, 0.25), $entity) as $ent){
@@ -1941,7 +1964,7 @@ class World implements ChunkManager{
 
 		if($update){
 			$this->updateAllLight($x, $y, $z);
-			$this->notifyNeighbourBlockUpdate($pos);
+			$this->internalNotifyNeighbourBlockUpdate($x, $y, $z);
 		}
 
 		$this->timings->setBlock->stopTiming();
@@ -2884,7 +2907,15 @@ class World implements ChunkManager{
 				}elseif($this->getTile($tilePosition) !== null){
 					$logger->error("Cannot add tile at x=$tilePosition->x,y=$tilePosition->y,z=$tilePosition->z: Another tile is already at that position");
 				}else{
-					$this->addTile($tile);
+					$block = $this->getBlockAt($tilePosition->getFloorX(), $tilePosition->getFloorY(), $tilePosition->getFloorZ());
+					$expectedClass = $block->getIdInfo()->getTileClass();
+					if($expectedClass === null){
+						$logger->error("Cannot add tile at x=$tilePosition->x,y=$tilePosition->y,z=$tilePosition->z: Block at that position (" . $block->getName() . ") does not expect a tile");
+					}elseif(!($tile instanceof $expectedClass)){
+						$logger->error("Cannot add tile at x=$tilePosition->x,y=$tilePosition->y,z=$tilePosition->z: Tile is of wrong type (expected $expectedClass but have " . get_class($tile) . ")");
+					}else{
+						$this->addTile($tile);
+					}
 				}
 			}
 
