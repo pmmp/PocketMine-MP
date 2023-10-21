@@ -38,12 +38,14 @@ class Elytra extends Armor{
 			// Check if the player's pitch is within the allowed range between -59 and 38.
 			if ($pitch >= -59 && $pitch <= 38) {
 				$entity->resetFallDistance();
+				return true;
 			}
 
 			// If the player is on the ground, reset the fall distance and disable gliding.
 			if ($entity->isOnGround()) {
 				$entity->resetFallDistance();
 				$entity->setGliding(false);
+				return true;
 			}
 
 			return true;
