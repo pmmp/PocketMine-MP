@@ -27,7 +27,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\LevelEvent;
 
-final class ElytraLoopSound implements Sound{
+class ElytraLoopSound implements Sound{
 
 	//needs to play elytra.loop, idk so I need to ask
 	public function encode(Vector3 $pos) : array{
