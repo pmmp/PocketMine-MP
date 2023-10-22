@@ -1210,3 +1210,14 @@ parameters:
 			count: 1
 			path: ../../../src/promise/Promise.php
 
+		-
+			message: "#^Parameter \\#1 \\$value of method pocketmine\\\\promise\\\\PromiseResolver\\<null\\>\\:\\:resolve\\(\\) expects null, string given\\.$#"
+			count: 2
+			path: ../../../src/event/AsyncEventDelegate.php
+
+		-
+			message: "#^Parameter \\#1 \\$handler of class pocketmine\\\\event\\\\RegisteredAsyncListener constructor expects Closure\\(pocketmine\\\\event\\\\AsyncEvent&pocketmine\\\\event\\\\Event\\)\\: pocketmine\\\\promise\\\\Promise\\<null\\>, \\(Closure\\(TEvent\\)\\: void\\)\\|\\(Closure\\(pocketmine\\\\event\\\\AsyncEvent&TEvent\\)\\: pocketmine\\\\promise\\\\Promise\\<null\\>\\) given\\.$#"
+			count: 1
+			path: ../../../src/plugin/PluginManager.php
+
+
