@@ -1513,13 +1513,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					Timings::$playerCommand->stopTiming();
 				}else{
 					$ev = new PlayerChatEvent($this, $messagePart, $this->server->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_USERS), new StandardChatFormatter());
-					$ev->callAsync()
-						->onCompletion(function() use ($ev) {
-							if(!$ev->isCancelled()){
-								$this->server->broadcastMessage($ev->getFormatter()->format($ev->getPlayer()->getDisplayName(), $ev->getMessage()), $ev->getRecipients());
-							}
-						}, function (){
-						});
+					$ev->call();
+					if(!$ev->isCancelled()){
+						$this->server->broadcastMessage($ev->getFormatter()->format($ev->getPlayer()->getDisplayName(), $ev->getMessage()), $ev->getRecipients());
+					}
 
 				}
 			}
