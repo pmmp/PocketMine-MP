@@ -28,11 +28,10 @@ use pocketmine\entity\Living;
 
 class Elytra extends Armor{
 
-	//Check if the player's pitch is within the allowed range between -59 and 38.
 	private const MINIMUM_PITCH = -59;
 	private const MAXIMUM_PITCH = 38;
 
-	const APPLY_DAMAGE_INTERVAL = 61;
+	private const APPLY_DAMAGE_INTERVAL = 21;
 	private int $applyDamageTime = self::APPLY_DAMAGE_INTERVAL;
 
 	public function onTickWorn(Living $entity) : bool {
@@ -48,13 +47,15 @@ class Elytra extends Armor{
 			// Check if the player's pitch is within the allowed range between -59 and 38.
 			if ($pitch >= self::MINIMUM_PITCH && $pitch <= self::MAXIMUM_PITCH) {
 				$entity->resetFallDistance();
+				$entity->setFallDistance(0.0);
 				return true;
 			}
 
 			// If the player is on the ground, reset the fall distance and disable gliding.
 			if ($entity->isOnGround()) {
-				$entity->resetFallDistance();
 				$entity->setGliding(false);
+				$entity->resetFallDistance();
+				$entity->setFallDistance(0.0);
 				return true;
 			}
 
