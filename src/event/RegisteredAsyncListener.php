@@ -38,7 +38,7 @@ class RegisteredAsyncListener extends RegisteredListener{
 		private bool $noConcurrentCall,
 		TimingsHandler $timings
 	){
-		$handler = function(AsyncEvent&Event $event) use($handler) : void {
+		$handler = function(AsyncEvent&Event $event) use($handler) : void{
 			$this->returnPromise = $handler($event);
 			if(!$this->returnPromise instanceof Promise){
 				throw new \TypeError("Async event handler must return a Promise");

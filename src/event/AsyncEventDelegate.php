@@ -42,7 +42,7 @@ final class AsyncEventDelegate extends Event{
 	/**
 	 * @phpstan-return Promise<null>
 	 */
-	public function callAsync() : Promise {
+	public function callAsync() : Promise{
 		$this->promises->clear();
 		return $this->callDepth($this->callAsyncDepth(...));
 	}
@@ -75,7 +75,7 @@ final class AsyncEventDelegate extends Event{
 	/**
 	 * @phpstan-return Promise<null>
 	 */
-	private function callPriority(int $priority) : Promise {
+	private function callPriority(int $priority) : Promise{
 		$handlers = HandlerListManager::global()->getListFor($this->event::class)->getListenersByPriority($priority);
 
 		/** @phpstan-var PromiseResolver<null> $resolver */
@@ -102,7 +102,7 @@ final class AsyncEventDelegate extends Event{
 					$resolver->reject();
 				});
 			}else{
-				$this->waitForPromises()->onCompletion(function() use (&$nonConcurrentHandlers, $testResolve) {
+				$this->waitForPromises()->onCompletion(function() use (&$nonConcurrentHandlers, $testResolve){
 					$handler = array_shift($nonConcurrentHandlers);
 					if($handler instanceof RegisteredAsyncListener){
 						$this->promises->add($handler->callAsync($this->event));
@@ -122,7 +122,7 @@ final class AsyncEventDelegate extends Event{
 	/**
 	 * @phpstan-return Promise<null>
 	 */
-	private function waitForPromises() : Promise {
+	private function waitForPromises() : Promise{
 		$array = $this->promises->toArray();
 		$this->promises->clear();
 

@@ -692,7 +692,7 @@ class PluginManager{
 	 * @phpstan-template TEvent of Event
 	 * @phpstan-param (\Closure(TEvent) : void)|(\Closure(AsyncEvent&TEvent) : Promise<null>) $handler
 	 */
-	private function canHandleAsyncEvent(\Closure $handler) : bool {
+	private function canHandleAsyncEvent(\Closure $handler) : bool{
 		$reflection = new \ReflectionFunction($handler);
 		$return = $reflection->getReturnType();
 

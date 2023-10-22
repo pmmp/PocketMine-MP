@@ -47,7 +47,7 @@ abstract class Event{
 	 * @throws \RuntimeException if event call recursion reaches the max depth limit
 	 */
 	public function call() : void{
-		$this->callDepth(function() {
+		$this->callDepth(function(){
 			$handlers = HandlerListManager::global()->getHandlersFor(static::class);
 
 			foreach($handlers as $registration){
