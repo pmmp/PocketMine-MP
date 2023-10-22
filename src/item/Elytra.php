@@ -34,7 +34,7 @@ class Elytra extends Armor{
 
 	private int $applyDamageTime = 61;
 
-	public function onTickWorn(Living $entity): bool {
+	public function onTickWorn(Living $entity) : bool {
 		if ($entity instanceof Human && $entity->isGliding()) {
 
 			$this->applyDamageTime--;
