@@ -1292,6 +1292,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("echo_shard", fn() => Items::ECHO_SHARD());
 		$result->register("egg", fn() => Items::EGG());
 		$result->register("elixir", fn() => Items::MEDICINE()->setType(MedicineType::ELIXIR));
+		$result->register("elytra", fn() => Items::ELYTRA());
 		$result->register("emerald", fn() => Items::EMERALD());
 		$result->register("enchanted_book", fn() => Items::ENCHANTED_BOOK());
 		$result->register("enchanted_golden_apple", fn() => Items::ENCHANTED_GOLDEN_APPLE());
