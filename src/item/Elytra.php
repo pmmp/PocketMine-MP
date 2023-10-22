@@ -32,7 +32,8 @@ class Elytra extends Armor{
 	private const MINIMUM_PITCH = -59;
 	private const MAXIMUM_PITCH = 38;
 
-	private int $applyDamageTime = 61;
+	const APPLY_DAMAGE_INTERVAL = 61;
+	private int $applyDamageTime = self::APPLY_DAMAGE_INTERVAL;
 
 	public function onTickWorn(Living $entity) : bool {
 		if ($entity instanceof Human && $entity->isGliding()) {
@@ -40,12 +41,10 @@ class Elytra extends Armor{
 			$this->applyDamageTime--;
 			if($this->applyDamageTime <= 0){
 				$this->applyDamage(1);
-				$this->applyDamageTime = 61;
+				$this->applyDamageTime = self::APPLY_DAMAGE_INTERVAL;
 			}
 
-			$location = $entity->getLocation();
-			$pitch = $location->pitch;
-
+			$pitch = $entity->getLocation()->pitch;
 			// Check if the player's pitch is within the allowed range between -59 and 38.
 			if ($pitch >= self::MINIMUM_PITCH && $pitch <= self::MAXIMUM_PITCH) {
 				$entity->resetFallDistance();
