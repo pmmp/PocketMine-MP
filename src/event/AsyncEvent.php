@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\event;
 
 use pocketmine\promise\Promise;
-use pocketmine\utils\ObjectSet;
 
 /**
  * This interface is implemented by an Event subclass if and only if it can be called asynchronously.
@@ -35,19 +34,10 @@ use pocketmine\utils\ObjectSet;
  */
 interface AsyncEvent{
 	/**
-	 * Add a promise to the set of promises that will be awaited before the next priority level is called.
-	 *
-	 * @phpstan-param Promise<null> $promise
-	 */
-	public function addPromise(Promise $promise) : void;
-
-	/**
 	 * Be prudent, calling an event asynchronously can produce unexpected results.
 	 * During the execution of the event, the server, the player and the event context may have changed state.
 	 *
-	 * @phpstan-param ObjectSet<Promise<null>> $promiseSet
-	 *
 	 * @phpstan-return Promise<null>
 	 */
-	public static function callAsync(AsyncEvent&Event $event, ObjectSet $promiseSet) : Promise;
+	public function callAsync() : Promise;
 }

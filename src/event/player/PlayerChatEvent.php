@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\event\player;
 
 use pocketmine\command\CommandSender;
+use pocketmine\event\AsyncEvent;
+use pocketmine\event\AsyncEventTrait;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\player\chat\ChatFormatter;
@@ -33,8 +35,9 @@ use pocketmine\utils\Utils;
 /**
  * Called when a player chats something
  */
-class PlayerChatEvent extends PlayerEvent implements Cancellable{
+class PlayerChatEvent extends PlayerEvent implements Cancellable, AsyncEvent{
 	use CancellableTrait;
+	use AsyncEventTrait;
 
 	/**
 	 * @param CommandSender[] $recipients

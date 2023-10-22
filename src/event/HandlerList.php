@@ -24,9 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\event;
 
 use pocketmine\plugin\Plugin;
+use function array_filter;
 use function array_merge;
 use function krsort;
 use function spl_object_id;
+use function usort;
 use const SORT_NUMERIC;
 
 class HandlerList{
@@ -128,10 +130,25 @@ class HandlerList{
 		}
 
 		$listenersByPriority = [];
+		$asyncListenersByPriority = [];
 		foreach($handlerLists as $currentList){
 			foreach($currentList->handlerSlots as $priority => $listeners){
-				$listenersByPriority[$priority] = array_merge($listenersByPriority[$priority] ?? [], $listeners);
+				$syncListeners = array_filter($listeners, static function(RegisteredListener $listener) : bool{ return !($listener instanceof RegisteredAsyncListener); });
+				$listenersByPriority[$priority] = array_merge($listenersByPriority[$priority] ?? [], $syncListeners);
+
+				$asyncListeners = array_filter($listeners, static function(RegisteredListener $listener) : bool{ return $listener instanceof RegisteredAsyncListener; });
+				$asyncListenersByPriority[$priority] = array_merge($asyncListenersByPriority[$priority] ?? [], $asyncListeners);
 			}
+		}
+		foreach($asyncListenersByPriority as $priority => $asyncListeners){
+			usort($asyncListeners, static function(RegisteredAsyncListener $a, RegisteredAsyncListener $b) : int{
+				if($a->canBeCallConcurrently()){
+					return $b->canBeCallConcurrently() ? 0 : -1;
+				}else{
+					return $b->canBeCallConcurrently() ? -1 : 0;
+				}
+			});
+			$listenersByPriority[$priority] = array_merge($listenersByPriority[$priority] ?? [], $asyncListeners);
 		}
 
 		//TODO: why on earth do the priorities have higher values for lower priority?

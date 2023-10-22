@@ -31,4 +31,5 @@ final class ListenerMethodTags{
 	public const HANDLE_CANCELLED = "handleCancelled";
 	public const NOT_HANDLER = "notHandler";
 	public const PRIORITY = "priority";
+	public const NO_CONCURRENT_CALL = "noConcurrentCall";
 }

@@ -24,61 +24,17 @@ declare(strict_types=1);
 namespace pocketmine\event;
 
 use pocketmine\promise\Promise;
-use pocketmine\promise\PromiseResolver;
-use pocketmine\utils\ObjectSet;
-use function array_shift;
-use function count;
 
 trait AsyncEventTrait {
-	/** @phpstan-var ObjectSet<Promise<null>> */
-	private ObjectSet $promises;
+	private AsyncEventDelegate $delegate;
 
 	/**
-	 * @phpstan-param ObjectSet<Promise<null>>|null $promises
+	 * @phpstan-return Promise<null>
 	 */
-	private function initializePromises(?ObjectSet &$promises) : void{
-		$promises ??= new ObjectSet();
-		$this->promises = $promises;
-	}
-
-	public function addPromise(Promise $promise) : void{
-		if(!isset($this->promises)){
-			throw new \RuntimeException("Cannot add promises, be sure to initialize the promises set in the constructor");
+	final public function callAsync() : Promise{
+		if(!isset($this->delegate)){
+			$this->delegate = new AsyncEventDelegate($this);
 		}
-		$this->promises->add($promise);
-	}
-
-	final public static function callAsync(AsyncEvent&Event $event, ObjectSet $promiseSet) : Promise{
-		$event->checkMaxDepthCall();
-
-		/** @phpstan-var PromiseResolver<null> $globalResolver */
-		$globalResolver = new PromiseResolver();
-
-		$callable = function(int $priority) use ($event, $promiseSet) : Promise{
-			$handlers = HandlerListManager::global()->getListFor(static::class)->getListenersByPriority($priority);
-			$event->callHandlers($handlers);
-
-			$array = $promiseSet->toArray();
-			$promiseSet->clear();
-
-			return Promise::all($array);
-		};
-
-		$priorities = EventPriority::ALL;
-		$testResolve = function () use (&$testResolve, &$priorities, $callable, $globalResolver){
-			if(count($priorities) === 0){
-				$globalResolver->resolve(null);
-			}else{
-				$callable(array_shift($priorities))->onCompletion(function() use ($testResolve) : void{
-					$testResolve();
-				}, function () use ($globalResolver) {
-					$globalResolver->reject();
-				});
-			}
-		};
-
-		$testResolve();
-
-		return $globalResolver->getPromise();
+		return $this->delegate->callAsync();
 	}
 }

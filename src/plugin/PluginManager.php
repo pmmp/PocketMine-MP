@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
+use pocketmine\event\AsyncEvent;
 use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
 use pocketmine\event\EventPriority;
@@ -31,11 +32,13 @@ use pocketmine\event\Listener;
 use pocketmine\event\ListenerMethodTags;
 use pocketmine\event\plugin\PluginDisableEvent;
 use pocketmine\event\plugin\PluginEnableEvent;
+use pocketmine\event\RegisteredAsyncListener;
 use pocketmine\event\RegisteredListener;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissionManager;
 use pocketmine\permission\PermissionParser;
+use pocketmine\promise\Promise;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
@@ -626,8 +629,29 @@ class PluginManager{
 						throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() declares invalid @" . ListenerMethodTags::HANDLE_CANCELLED . " value \"" . $tags[ListenerMethodTags::HANDLE_CANCELLED] . "\"");
 				}
 			}
+			$noConcurrentCall = false;
+			if(isset($tags[ListenerMethodTags::NO_CONCURRENT_CALL])){
+				if(!is_a($eventClass, AsyncEvent::class, true)){
+					throw new PluginException(sprintf(
+						"Event handler %s() declares @%s for non-async event of type %s",
+						Utils::getNiceClosureName($handlerClosure),
+						ListenerMethodTags::NO_CONCURRENT_CALL,
+						$eventClass
+					));
+				}
+				switch(strtolower($tags[ListenerMethodTags::NO_CONCURRENT_CALL])){
+					case "true":
+					case "":
+						$noConcurrentCall = true;
+						break;
+					case "false":
+						break;
+					default:
+						throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() declares invalid @" . ListenerMethodTags::NO_CONCURRENT_CALL . " value \"" . $tags[ListenerMethodTags::NO_CONCURRENT_CALL] . "\"");
+				}
+			}
 
-			$this->registerEvent($eventClass, $handlerClosure, $priority, $plugin, $handleCancelled);
+			$this->registerEvent($eventClass, $handlerClosure, $priority, $plugin, $handleCancelled, $noConcurrentCall);
 		}
 	}
 
@@ -636,11 +660,11 @@ class PluginManager{
 	 *
 	 * @phpstan-template TEvent of Event
 	 * @phpstan-param class-string<TEvent> $event
-	 * @phpstan-param \Closure(TEvent) : void $handler
+	 * @phpstan-param (\Closure(TEvent) : void)|(\Closure(AsyncEvent&TEvent) : Promise<null>) $handler
 	 *
 	 * @throws \ReflectionException
 	 */
-	public function registerEvent(string $event, \Closure $handler, int $priority, Plugin $plugin, bool $handleCancelled = false) : RegisteredListener{
+	public function registerEvent(string $event, \Closure $handler, int $priority, Plugin $plugin, bool $handleCancelled = false, bool $noConcurrentCall = false) : RegisteredListener{
 		if(!is_subclass_of($event, Event::class)){
 			throw new PluginException($event . " is not an Event");
 		}
@@ -653,8 +677,25 @@ class PluginManager{
 
 		$timings = Timings::getEventHandlerTimings($event, $handlerName, $plugin->getDescription()->getFullName());
 
-		$registeredListener = new RegisteredListener($handler, $priority, $plugin, $handleCancelled, $timings);
+		if(is_subclass_of($event, AsyncEvent::class) && $this->canHandleAsyncEvent($handler)){
+			$registeredListener = new RegisteredAsyncListener($handler, $priority, $plugin, $handleCancelled, $noConcurrentCall, $timings);
+		}else{
+			$registeredListener = new RegisteredListener($handler, $priority, $plugin, $handleCancelled, $timings);
+		}
 		HandlerListManager::global()->getListFor($event)->register($registeredListener);
 		return $registeredListener;
+	}
+
+	/**
+	 * Check if the given handler return type is async-compatible (equal to Promise)
+	 *
+	 * @phpstan-template TEvent of Event
+	 * @phpstan-param (\Closure(TEvent) : void)|(\Closure(AsyncEvent&TEvent) : Promise<null>) $handler
+	 */
+	private function canHandleAsyncEvent(\Closure $handler) : bool {
+		$reflection = new \ReflectionFunction($handler);
+		$return = $reflection->getReturnType();
+
+		return $return instanceof \ReflectionNamedType && $return->getName() === Promise::class;
 	}
 }

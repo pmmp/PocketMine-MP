@@ -47,36 +47,27 @@ abstract class Event{
 	 * @throws \RuntimeException if event call recursion reaches the max depth limit
 	 */
 	public function call() : void{
-		$this->checkMaxDepthCall();
-		$this->callHandlers(null);
+		$this->callDepth(function() {
+			$handlers = HandlerListManager::global()->getHandlersFor(static::class);
+
+			foreach($handlers as $registration){
+				$registration->callEvent($this);
+			}
+		});
 	}
 
-	/**
-	 * @internal used by AsyncEventTrait and Event
-	 */
-	final protected function checkMaxDepthCall() : void{
+	final protected function callDepth(\Closure $closure) : mixed{
 		if(self::$eventCallDepth >= self::MAX_EVENT_CALL_DEPTH){
 			//this exception will be caught by the parent event call if all else fails
 			throw new \RuntimeException("Recursive event call detected (reached max depth of " . self::MAX_EVENT_CALL_DEPTH . " calls)");
 		}
-	}
 
-	/**
-	 * @param RegisteredListener[]|null $handlers
-	 *
-	 * @internal used by AsyncEventTrait and Event
-	 */
-	final protected function callHandlers(?array $handlers) : void{
 		$timings = Timings::getEventTimings($this);
 		$timings->startTiming();
 
-		$handlers = $handlers ?? HandlerListManager::global()->getHandlersFor(static::class);
-
 		++self::$eventCallDepth;
 		try{
-			foreach($handlers as $registration){
-				$registration->callEvent($this);
-			}
+			return $closure();
 		}finally{
 			--self::$eventCallDepth;
 			$timings->stopTiming();
