@@ -28,8 +28,12 @@ use pocketmine\promise\Promise;
 use pocketmine\timings\TimingsHandler;
 
 class RegisteredAsyncListener extends RegisteredListener{
+	/** @phpstan-var Promise<null> $returnPromise */
 	private Promise $returnPromise;
 
+	/**
+	 * @phpstan-param \Closure(AsyncEvent&Event) : Promise<null> $handler
+	 */
 	public function __construct(
 		\Closure $handler,
 		int $priority,
@@ -51,6 +55,9 @@ class RegisteredAsyncListener extends RegisteredListener{
 		return !$this->noConcurrentCall;
 	}
 
+	/**
+	 * @phpstan-return Promise<null>
+	 */
 	public function callAsync(AsyncEvent&Event $event) : Promise{
 		$this->callEvent($event);
 		return $this->returnPromise;

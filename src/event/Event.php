@@ -56,6 +56,11 @@ abstract class Event{
 		});
 	}
 
+	/**
+	 * @template T
+	 * @phpstan-param \Closure() : T $closure
+	 * @phpstan-return T
+	 */
 	final protected function callDepth(\Closure $closure) : mixed{
 		if(self::$eventCallDepth >= self::MAX_EVENT_CALL_DEPTH){
 			//this exception will be caught by the parent event call if all else fails

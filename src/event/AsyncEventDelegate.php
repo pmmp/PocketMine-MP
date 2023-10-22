@@ -120,7 +120,7 @@ final class AsyncEventDelegate extends Event{
 	}
 
 	/**
-	 * @phpstan-return Promise<null>
+	 * @phpstan-return Promise<array<int, null>>
 	 */
 	private function waitForPromises() : Promise{
 		$array = $this->promises->toArray();
