@@ -29,7 +29,7 @@ class Moss extends Opaque{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			VanillaBlocks::MOSS_BLOCK()->asItem()->setCount(1)
+			$this->asItem()->setCount(1)
 		];
 	}
 
