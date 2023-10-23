@@ -830,7 +830,8 @@ final class VanillaBlocks{
 		self::register("cobblestone_stairs", new Stair(new BID(Ids::COBBLESTONE_STAIRS), "Cobblestone Stairs", $cobblestoneBreakInfo));
 		self::register("mossy_cobblestone_stairs", new Stair(new BID(Ids::MOSSY_COBBLESTONE_STAIRS), "Mossy Cobblestone Stairs", $cobblestoneBreakInfo));
 
-		self::register("moss_block", new Opaque(new BID(Ids::MOSS), "Moss Block", $cobblestoneBreakInfo));
+		$mossBreakInfo = new Info(BreakInfo::pickaxe(0.1));
+		self::register("moss_block", new Moss(new BID(Ids::MOSS_BLOCK), "Moss Block", $mossBreakInfo));
 
 		self::register("cobweb", new Cobweb(new BID(Ids::COBWEB), "Cobweb", new Info(new BreakInfo(4.0, ToolType::SWORD | ToolType::SHEARS, 1))));
 		self::register("cocoa_pod", new CocoaBlock(new BID(Ids::COCOA_POD), "Cocoa Block", new Info(BreakInfo::axe(0.2, null, 15.0))));
