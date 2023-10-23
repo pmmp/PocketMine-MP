@@ -23,26 +23,20 @@ declare(strict_types=1);
 
 namespace pocketmine\promise;
 
-/**
- * @internal
- * @see PromiseResolver
- * @phpstan-template TValue
- */
-final class PromiseSharedData{
-	/**
-	 * @var \Closure[]
-	 * @phpstan-var array<int, \Closure(TValue) : void>
-	 */
-	public array $onSuccess = [];
+use PHPUnit\Framework\TestCase;
 
-	/**
-	 * @var \Closure[]
-	 * @phpstan-var array<int, \Closure() : void>
-	 */
-	public array $onFailure = [];
+final class PromiseTest extends TestCase{
 
-	public ?bool $state = null;
-
-	/** @phpstan-var TValue */
-	public mixed $result;
+	public function testPromiseNull() : void{
+		$resolver = new PromiseResolver();
+		$resolver->resolve(null);
+		$resolver->getPromise()->onCompletion(
+			function(mixed $value) : void{
+				self::assertNull($value);
+			},
+			function() : void{
+				self::fail("Promise should not be rejected");
+			}
+		);
+	}
 }
