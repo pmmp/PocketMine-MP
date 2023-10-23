@@ -737,9 +737,10 @@ final class BlockTypeIds{
 	public const BIG_DRIPLEAF_HEAD = 10707;
 	public const BIG_DRIPLEAF_STEM = 10708;
 	public const PINK_PETALS = 10709;
-	public const FIRST_UNUSED_BLOCK_ID = 10710;
-	public const MOSS_BLOCK = 10711;
-	public const MOSS_CARPET = 10712;
+	public const MOSS_BLOCK = 10715;
+	public const MOSS_CARPET = 10716;
+
+	public const FIRST_UNUSED_BLOCK_ID = 10720;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 
