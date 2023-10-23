@@ -948,9 +948,7 @@ class World implements ChunkManager{
 			$this->providerGarbageCollectionTicker = 0;
 		}
 
-		//Do block updates
 		$this->timings->scheduledBlockUpdates->startTiming();
-
 		//Delayed updates
 		while($this->scheduledBlockUpdateQueue->count() > 0 && $this->scheduledBlockUpdateQueue->current()["priority"] <= $currentTick){
 			/** @var Vector3 $vec */
@@ -962,7 +960,9 @@ class World implements ChunkManager{
 			$block = $this->getBlock($vec);
 			$block->onScheduledUpdate();
 		}
+		$this->timings->scheduledBlockUpdates->stopTiming();
 
+		$this->timings->neighbourBlockUpdates->startTiming();
 		//Normal updates
 		while($this->neighbourBlockUpdateQueue->count() > 0){
 			$index = $this->neighbourBlockUpdateQueue->dequeue();
@@ -987,7 +987,7 @@ class World implements ChunkManager{
 			$block->onNearbyBlockChange();
 		}
 
-		$this->timings->scheduledBlockUpdates->stopTiming();
+		$this->timings->neighbourBlockUpdates->stopTiming();
 
 		$this->timings->entityTick->startTiming();
 		//Update entities that need update
