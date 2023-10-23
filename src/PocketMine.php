@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -36,18 +36,40 @@ namespace pocketmine {
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\SetupWizard;
 	use Symfony\Component\Filesystem\Path;
+	use function count;
 	use function defined;
+	use function dirname;
+	use function error_reporting;
+	use function explode;
 	use function extension_loaded;
+	use function file_exists;
 	use function function_exists;
 	use function getcwd;
-	use function is_dir;
-	use function mkdir;
-	use function phpversion;
-	use function preg_match;
-	use function preg_quote;
-	use function realpath;
-	use function version_compare;
-	use const DIRECTORY_SEPARATOR;
+	use function getenv;
+	use function getopt;
+	use function ini_get;
+use function ini_set;
+use function is_array;
+use function is_dir;
+use function is_file;
+use function is_string;
+use function mkdir;
+use function opcache_get_status;
+use function php_ini_loaded_file;
+use function php_sapi_name;
+use function phpversion;
+use function preg_match;
+use function preg_quote;
+use function realpath;
+use function usleep;
+use function version_compare;
+use function xdebug_info;
+use const DIRECTORY_SEPARATOR;
+use const PHP_BINARY;
+use const PHP_DEBUG;
+use const PHP_EOL;
+use const PHP_INT_SIZE;
+use const PHP_VERSION;
 
 	require_once __DIR__ . '/VersionInfo.php';
 
