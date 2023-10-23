@@ -29,7 +29,10 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 class RedstoneTorch extends Torch{
 	use LitTrait;
 
-	protected bool $lit = true;
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
+		$this->lit = true;
+		parent::__construct($idInfo, $name, $typeInfo);
+	}
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		parent::describeBlockOnlyState($w);
