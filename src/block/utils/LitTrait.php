@@ -26,7 +26,7 @@ namespace pocketmine\block\utils;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 
 trait LitTrait{
-	protected bool $lit = true;
+	protected bool $lit = false;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->lit);
