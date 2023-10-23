@@ -1517,7 +1517,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					if(!$ev->isCancelled()){
 						$this->server->broadcastMessage($ev->getFormatter()->format($ev->getPlayer()->getDisplayName(), $ev->getMessage()), $ev->getRecipients());
 					}
-
 				}
 			}
 		}
