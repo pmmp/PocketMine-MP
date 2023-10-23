@@ -24,11 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\event;
 
 use pocketmine\plugin\Plugin;
-use function array_filter;
 use function array_merge;
+use function array_merge_recursive;
 use function krsort;
 use function spl_object_id;
-use function usort;
 use const SORT_NUMERIC;
 
 class HandlerList{
