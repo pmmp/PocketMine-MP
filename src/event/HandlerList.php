@@ -130,26 +130,24 @@ class HandlerList{
 		}
 
 		$listenersByPriority = [];
+		$concurrentAsyncListenersByPriority = [];
 		$asyncListenersByPriority = [];
 		foreach($handlerLists as $currentList){
 			foreach($currentList->handlerSlots as $priority => $listeners){
-				$syncListeners = array_filter($listeners, static function(RegisteredListener $listener) : bool{ return !($listener instanceof RegisteredAsyncListener); });
-				$listenersByPriority[$priority] = array_merge($listenersByPriority[$priority] ?? [], $syncListeners);
-
-				$asyncListeners = array_filter($listeners, static function(RegisteredListener $listener) : bool{ return $listener instanceof RegisteredAsyncListener; });
-				$asyncListenersByPriority[$priority] = array_merge($asyncListenersByPriority[$priority] ?? [], $asyncListeners);
+				foreach($listeners as $listener){
+					if(!$listener instanceof RegisteredAsyncListener){
+						$listenersByPriority[$priority][] = $listener;
+						continue;
+					}
+					if(!$listener->canBeCallConcurrently()){
+						$asyncListenersByPriority[$priority][] = $listener;
+						continue;
+					}
+					$concurrentAsyncListenersByPriority[$priority][] = $listener;
+				}
 			}
 		}
-		foreach($asyncListenersByPriority as $priority => $asyncListeners){
-			usort($asyncListeners, static function(RegisteredAsyncListener $a, RegisteredAsyncListener $b) : int{
-				if($a->canBeCallConcurrently()){
-					return $b->canBeCallConcurrently() ? 0 : -1;
-				}else{
-					return $b->canBeCallConcurrently() ? -1 : 0;
-				}
-			});
-			$listenersByPriority[$priority] = array_merge($listenersByPriority[$priority] ?? [], $asyncListeners);
-		}
+		$listenersByPriority = array_merge_recursive($listenersByPriority, $concurrentAsyncListenersByPriority, $asyncListenersByPriority);
 
 		//TODO: why on earth do the priorities have higher values for lower priority?
 		krsort($listenersByPriority, SORT_NUMERIC);
