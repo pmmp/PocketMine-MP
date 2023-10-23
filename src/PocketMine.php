@@ -36,7 +36,6 @@ namespace pocketmine {
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\SetupWizard;
 	use Symfony\Component\Filesystem\Path;
-	use function count;
 	use function defined;
 	use function dirname;
 	use function error_reporting;
