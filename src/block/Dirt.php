@@ -59,7 +59,12 @@ class Dirt extends Opaque{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$world = $this->position->getWorld();
-		if($face === Facing::UP && $item instanceof Hoe){
+		if($face !== Facing::DOWN && $item instanceof Hoe){
+			$up = $this->getSide(Facing::UP);
+			if($up->getTypeId() !== BlockTypeIds::AIR){
+				return true;
+			}
+
 			$item->applyDamage(1);
 
 			$newBlock = $this->dirtType->equals(DirtType::NORMAL()) ? VanillaBlocks::FARMLAND() : VanillaBlocks::DIRT();

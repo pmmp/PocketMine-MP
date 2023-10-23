@@ -293,7 +293,11 @@ final class BlockStateReader{
 
 	/** @throws BlockStateDeserializeException */
 	public function readSlabPosition() : SlabType{
-		return $this->readBool(BlockStateNames::TOP_SLOT_BIT) ? SlabType::TOP() : SlabType::BOTTOM();
+		return match($rawValue = $this->readString(BlockStateNames::MC_VERTICAL_HALF)){
+			StringValues::MC_VERTICAL_HALF_BOTTOM => SlabType::BOTTOM(),
+			StringValues::MC_VERTICAL_HALF_TOP => SlabType::TOP(),
+			default => throw $this->badValueException(BlockStateNames::MC_VERTICAL_HALF, $rawValue, "Invalid slab position"),
+		};
 	}
 
 	/**

@@ -137,7 +137,7 @@ final class BlockStateSerializerHelper{
 
 	public static function encodeFurnace(Furnace $block, string $unlitId, string $litId) : BlockStateWriter{
 		return BlockStateWriter::create($block->isLit() ? $litId : $unlitId)
-			->writeHorizontalFacing($block->getFacing());
+			->writeCardinalHorizontalFacing($block->getFacing());
 	}
 
 	public static function encodeItemFrame(ItemFrame $block, string $id) : BlockStateWriter{
@@ -211,9 +211,8 @@ final class BlockStateSerializerHelper{
 	public static function encodeSlab(Slab $block, string $singleId, string $doubleId) : BlockStateWriter{
 		$slabType = $block->getSlabType();
 		return BlockStateWriter::create($slabType->equals(SlabType::DOUBLE()) ? $doubleId : $singleId)
-
 			//this is (intentionally) also written for double slabs (as zero) to maintain bug parity with MCPE
-			->writeBool(BlockStateNames::TOP_SLOT_BIT, $slabType->equals(SlabType::TOP()));
+			->writeSlabPosition($slabType->equals(SlabType::DOUBLE()) ? SlabType::BOTTOM() : $slabType);
 	}
 
 	public static function encodeStairs(Stair $block, BlockStateWriter $out) : BlockStateWriter{
