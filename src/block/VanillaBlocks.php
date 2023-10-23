@@ -831,7 +831,7 @@ final class VanillaBlocks{
 		self::register("cobblestone_stairs", new Stair(new BID(Ids::COBBLESTONE_STAIRS), "Cobblestone Stairs", $cobblestoneBreakInfo));
 		self::register("mossy_cobblestone_stairs", new Stair(new BID(Ids::MOSSY_COBBLESTONE_STAIRS), "Mossy Cobblestone Stairs", $cobblestoneBreakInfo));
 
-		$mossBreakInfo = new Info(BreakInfo::pickaxe(0.1));
+		$mossBreakInfo = new Info(BreakInfo::hoe(0.1));
 		self::register("moss_block", new Moss(new BID(Ids::MOSS_BLOCK), "Moss Block", $mossBreakInfo));
 		self::register("moss_carpet", new MossCarpet(new BID(Ids::MOSS_CARPET), "Moss Carpet", $mossBreakInfo));
 
