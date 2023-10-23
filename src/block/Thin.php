@@ -39,6 +39,8 @@ class Thin extends Transparent{
 	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 
+		$this->collisionBoxes = null;
+
 		foreach(Facing::HORIZONTAL as $facing){
 			$side = $this->getSide($facing);
 			if($side instanceof Thin || $side instanceof Wall || $side->getSupportType(Facing::opposite($facing)) === SupportType::FULL){

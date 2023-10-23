@@ -346,17 +346,13 @@ class Block{
 
 	/**
 	 * Called when this block is created, set, or has a neighbouring block update, to re-detect dynamic properties which
-	 * are not saved on the world.
-	 *
-	 * Clears any cached precomputed objects, such as bounding boxes. Remove any outdated precomputed things such as
-	 * AABBs and force recalculation.
+	 * are not saved in the blockstate ID.
+	 * If any such properties are updated, don't forget to clear things like AABB caches if necessary.
 	 *
 	 * A replacement block may be returned. This is useful if the block type changed due to reading of world data (e.g.
 	 * data from a block entity).
 	 */
 	public function readStateFromWorld() : Block{
-		$this->collisionBoxes = null;
-
 		return $this;
 	}
 
@@ -596,6 +592,7 @@ class Block{
 	 */
 	final public function position(World $world, int $x, int $y, int $z) : void{
 		$this->position = new Position($x, $y, $z, $world);
+		$this->collisionBoxes = null;
 	}
 
 	/**
