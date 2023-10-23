@@ -26,11 +26,4 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class Moss extends Opaque{
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			$this->asItem()->setCount(1)
-		];
-	}
-
 }

@@ -36,12 +36,6 @@ class MossCarpet extends Flowable{
 		return true;
 	}
 
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			$this->asItem()->setCount(1)
-		];
-	}
-
 	/**
 	 * @return AxisAlignedBB[]
 	 */
@@ -62,14 +56,6 @@ class MossCarpet extends Flowable{
 		if($this->getSide(Facing::DOWN)->getTypeId() === BlockTypeIds::AIR){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
-	}
-
-	public function getFlameEncouragement() : int{
-		return 30;
-	}
-
-	public function getFlammability() : int{
-		return 20;
 	}
 
 }
