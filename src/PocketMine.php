@@ -37,38 +37,17 @@ namespace pocketmine {
 	use pocketmine\wizard\SetupWizard;
 	use Symfony\Component\Filesystem\Path;
 	use function defined;
-	use function dirname;
-	use function error_reporting;
-	use function explode;
 	use function extension_loaded;
-	use function file_exists;
 	use function function_exists;
 	use function getcwd;
-	use function getenv;
-	use function getopt;
-	use function ini_get;
-use function ini_set;
-use function is_array;
-use function is_dir;
-use function is_file;
-use function is_string;
-use function mkdir;
-use function opcache_get_status;
-use function php_ini_loaded_file;
-use function php_sapi_name;
-use function phpversion;
-use function preg_match;
-use function preg_quote;
-use function realpath;
-use function usleep;
-use function version_compare;
-use function xdebug_info;
-use const DIRECTORY_SEPARATOR;
-use const PHP_BINARY;
-use const PHP_DEBUG;
-use const PHP_EOL;
-use const PHP_INT_SIZE;
-use const PHP_VERSION;
+	use function is_dir;
+	use function mkdir;
+	use function phpversion;
+	use function preg_match;
+	use function preg_quote;
+	use function realpath;
+	use function version_compare;
+	use const DIRECTORY_SEPARATOR;
 
 	require_once __DIR__ . '/VersionInfo.php';
 
@@ -159,9 +138,9 @@ use const PHP_VERSION;
 		$wantedVersionLock = "0.3";
 		$wantedVersionMin = "$wantedVersionLock.0";
 		if($chunkutils2_version !== false && (
-			version_compare($chunkutils2_version, $wantedVersionMin) < 0 ||
-			preg_match("/^" . preg_quote($wantedVersionLock, "/") . "\.\d+(?:-dev)?$/", $chunkutils2_version) === 0 //lock in at ^0.2, optionally at a patch release
-		)){
+				version_compare($chunkutils2_version, $wantedVersionMin) < 0 ||
+				preg_match("/^" . preg_quote($wantedVersionLock, "/") . "\.\d+(?:-dev)?$/", $chunkutils2_version) === 0 //lock in at ^0.2, optionally at a patch release
+			)){
 			$messages[] = "chunkutils2 ^$wantedVersionMin is required, while you have $chunkutils2_version.";
 		}
 
@@ -207,7 +186,7 @@ use const PHP_VERSION;
 	-------------------------------------------------------------------------------------------
 
 JIT_WARNING
-);
+				);
 			}
 		}
 	}
