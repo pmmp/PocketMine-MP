@@ -531,7 +531,7 @@ use function mb_strtolower;
  * @method static Slab MOSSY_STONE_BRICK_SLAB()
  * @method static Stair MOSSY_STONE_BRICK_STAIRS()
  * @method static Wall MOSSY_STONE_BRICK_WALL()
- * @method static Moss MOSS_BLOCK()
+ * @method static Opaque MOSS_BLOCK()
  * @method static MossCarpet MOSS_CARPET()
  * @method static Opaque MUD()
  * @method static SimplePillar MUDDY_MANGROVE_ROOTS()
@@ -832,7 +832,7 @@ final class VanillaBlocks{
 		self::register("mossy_cobblestone_stairs", new Stair(new BID(Ids::MOSSY_COBBLESTONE_STAIRS), "Mossy Cobblestone Stairs", $cobblestoneBreakInfo));
 
 		$mossBreakInfo = new Info(BreakInfo::hoe(0.1));
-		self::register("moss_block", new Moss(new BID(Ids::MOSS_BLOCK), "Moss Block", $mossBreakInfo));
+		self::register("moss_block", new Opaque(new BID(Ids::MOSS_BLOCK), "Moss Block", $mossBreakInfo));
 		self::register("moss_carpet", new MossCarpet(new BID(Ids::MOSS_CARPET), "Moss Carpet", $mossBreakInfo));
 
 		self::register("cobweb", new Cobweb(new BID(Ids::COBWEB), "Cobweb", new Info(new BreakInfo(4.0, ToolType::SWORD | ToolType::SHEARS, 1))));
