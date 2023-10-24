@@ -355,4 +355,4 @@ JIT_WARNING
 	}
 
 	\pocketmine\server();
-} 
+}
