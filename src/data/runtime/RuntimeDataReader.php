@@ -31,6 +31,7 @@ use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
 use function get_class;
 use function intdiv;
+use function log;
 use function spl_object_id;
 
 final class RuntimeDataReader implements RuntimeDataDescriber{
@@ -56,7 +57,20 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 		$value = $this->readInt($bits);
 	}
 
-	protected function readBoundedInt(int $bits, int $min, int $max) : int{
+	/**
+	 * @deprecated Use {@link self::boundedIntAuto()} instead.
+	 */
+	public function boundedInt(int $bits, int $min, int $max, int &$value) : void{
+		$offset = $this->offset;
+		$this->boundedIntAuto($min, $max, $value);
+		$actualBits = $this->offset - $offset;
+		if($this->offset !== $offset + $bits){
+			throw new \InvalidArgumentException("Bits should be $actualBits for the given bounds, but received $bits. Use boundedIntAuto() for automatic bits calculation.");
+		}
+	}
+
+	private function readBoundedIntAuto(int $min, int $max) : int{
+		$bits = ((int) log($max - $min, 2)) + 1;
 		$result = $this->readInt($bits) + $min;
 		if($result < $min || $result > $max){
 			throw new InvalidSerializedRuntimeDataException("Value is outside the range $min - $max");
@@ -64,8 +78,8 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 		return $result;
 	}
 
-	public function boundedInt(int $bits, int $min, int $max, int &$value) : void{
-		$value = $this->readBoundedInt($bits, $min, $max);
+	public function boundedIntAuto(int $min, int $max, int &$value) : void{
+		$value = $this->readBoundedIntAuto($min, $max);
 	}
 
 	protected function readBool() : bool{
@@ -160,7 +174,7 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 	public function wallConnections(array &$connections) : void{
 		$result = [];
 		$offset = 0;
-		$packed = $this->readBoundedInt(7, 0, (3 ** 4) - 1);
+		$packed = $this->readBoundedIntAuto(0, (3 ** 4) - 1);
 		foreach(Facing::HORIZONTAL as $facing){
 			$type = intdiv($packed,  (3 ** $offset)) % 3;
 			if($type !== 0){

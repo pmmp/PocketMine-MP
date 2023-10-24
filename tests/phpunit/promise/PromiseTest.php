@@ -21,31 +21,22 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\utils;
+namespace pocketmine\promise;
 
-use pocketmine\data\runtime\RuntimeDataDescriber;
-use function floor;
+use PHPUnit\Framework\TestCase;
 
-trait SignLikeRotationTrait{
-	/** @var int */
-	private $rotation = 0;
+final class PromiseTest extends TestCase{
 
-	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedIntAuto(0, 15, $this->rotation);
-	}
-
-	public function getRotation() : int{ return $this->rotation; }
-
-	/** @return $this */
-	public function setRotation(int $rotation) : self{
-		if($rotation < 0 || $rotation > 15){
-			throw new \InvalidArgumentException("Rotation must be in range 0-15");
-		}
-		$this->rotation = $rotation;
-		return $this;
-	}
-
-	private static function getRotationFromYaw(float $yaw) : int{
-		return ((int) floor((($yaw + 180) * 16 / 360) + 0.5)) & 0xf;
+	public function testPromiseNull() : void{
+		$resolver = new PromiseResolver();
+		$resolver->resolve(null);
+		$resolver->getPromise()->onCompletion(
+			function(mixed $value) : void{
+				self::assertNull($value);
+			},
+			function() : void{
+				self::fail("Promise should not be rejected");
+			}
+		);
 	}
 }

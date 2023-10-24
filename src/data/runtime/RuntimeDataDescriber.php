@@ -38,7 +38,16 @@ use pocketmine\math\Facing;
 interface RuntimeDataDescriber{
 	public function int(int $bits, int &$value) : void;
 
+	/**
+	 * @deprecated Use {@link RuntimeDataDescriber::boundedIntAuto()} instead.
+	 */
 	public function boundedInt(int $bits, int $min, int $max, int &$value) : void;
+
+	/**
+	 * Same as boundedInt() but automatically calculates the required number of bits from the range.
+	 * The range bounds must be constant.
+	 */
+	public function boundedIntAuto(int $min, int $max, int &$value) : void;
 
 	public function bool(bool &$value) : void;
 

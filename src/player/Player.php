@@ -1224,7 +1224,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	protected function checkGroundState(float $wantedX, float $wantedY, float $wantedZ, float $dx, float $dy, float $dz) : void{
-		if($this->isSpectator()){
+		if($this->gamemode === GameMode::SPECTATOR){
 			$this->onGround = false;
 		}else{
 			$bb = clone $this->boundingBox;
