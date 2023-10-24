@@ -140,7 +140,7 @@ namespace pocketmine {
 		if($chunkutils2_version !== false && (
 			version_compare($chunkutils2_version, $wantedVersionMin) < 0 ||
 			preg_match("/^" . preg_quote($wantedVersionLock, "/") . "\.\d+(?:-dev)?$/", $chunkutils2_version) === 0 //lock in at ^0.2, optionally at a patch release
-			)){
+				)){
 			$messages[] = "chunkutils2 ^$wantedVersionMin is required, while you have $chunkutils2_version.";
 		}
 
@@ -355,4 +355,4 @@ JIT_WARNING
 	}
 
 	\pocketmine\server();
-}
+ }
