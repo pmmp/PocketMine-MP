@@ -352,11 +352,10 @@ class InventoryManager{
 			$blockPosition = BlockPosition::fromVector3($inv->getHolder());
 			$windowType = match(true){
 				$inv instanceof LoomInventory => WindowTypes::LOOM,
-				$inv instanceof FurnaceInventory => match($inv->getFurnaceType()->id()){
-						FurnaceType::FURNACE()->id() => WindowTypes::FURNACE,
-						FurnaceType::BLAST_FURNACE()->id() => WindowTypes::BLAST_FURNACE,
-						FurnaceType::SMOKER()->id() => WindowTypes::SMOKER,
-						default => throw new AssumptionFailedError("Unreachable")
+				$inv instanceof FurnaceInventory => match($inv->getFurnaceType()){
+						FurnaceType::FURNACE => WindowTypes::FURNACE,
+						FurnaceType::BLAST_FURNACE => WindowTypes::BLAST_FURNACE,
+						FurnaceType::SMOKER => WindowTypes::SMOKER,
 					},
 				$inv instanceof EnchantInventory => WindowTypes::ENCHANTMENT,
 				$inv instanceof BrewingStandInventory => WindowTypes::BREWING_STAND,
