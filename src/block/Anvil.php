@@ -52,7 +52,7 @@ class Anvil extends Transparent implements Fallable{
 	private int $damage = self::UNDAMAGED;
 
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(2, self::UNDAMAGED, self::VERY_DAMAGED, $this->damage);
+		$w->boundedIntAuto(self::UNDAMAGED, self::VERY_DAMAGED, $this->damage);
 	}
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
@@ -78,7 +78,7 @@ class Anvil extends Transparent implements Fallable{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
