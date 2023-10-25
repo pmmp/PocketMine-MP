@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\entity\Living;
+use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\math\Vector2;
 
 class Elytra extends Armor{
 
@@ -40,23 +42,6 @@ class Elytra extends Armor{
 				$entity->resetFallDistance();
 			}
 
-			/**
-			 * $eyePos = $entity->getEyePos();
-			 * $viewVector = $directionVector->normalize();
-			 * $length = $xzVel; // Trace the full speed distance
-			 * $blockPos = $eyePos->addVector($viewVector->multiply($length));
-			 *
-			 * $block = $entity->getWorld()->getBlock($blockPos->floor());
-			 *
-			 * if($block->isSolid()) {
-			 * $health = $entity->getHealth();
-			 * $mass = $health * 10; // 10 kg per health point
-			 *
-			 * $energy = 0.5 * $mass * $xzVel ** 2;
-			 * $entity->setHealth($health - $energy);
-			 * }
-			 */
-
 			//Apply damage to elytra.
 			$this->applyDamageTime--;
 			if($this->applyDamageTime <= 0){
@@ -69,6 +54,23 @@ class Elytra extends Armor{
 				$entity->resetFallDistance();
 				$entity->setGliding(false);
 				return true;
+			}
+
+			//Calculate kinetic energy.
+			$xzVector = new Vector2($direction->x, $direction->z);
+			$horizontalSpeed = $xzVector->length();
+
+			$eyePos = $entity->getEyePos();
+			$viewVector = $direction->normalize();
+
+			$block = $entity->getWorld()->getBlock($eyePos->addVector($viewVector->multiply($horizontalSpeed)));
+
+			if($block->isSolid()){
+				$mass = $entity->getHealth() * 10;
+				$kineticEnergy = 0.5 * $mass * $horizontalSpeed ** 2;
+
+				$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_CONTACT, $kineticEnergy);
+				$entity->attack($ev);
 			}
 
 			return true;
