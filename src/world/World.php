@@ -948,9 +948,7 @@ class World implements ChunkManager{
 			$this->providerGarbageCollectionTicker = 0;
 		}
 
-		//Do block updates
 		$this->timings->scheduledBlockUpdates->startTiming();
-
 		//Delayed updates
 		while($this->scheduledBlockUpdateQueue->count() > 0 && $this->scheduledBlockUpdateQueue->current()["priority"] <= $currentTick){
 			/** @var Vector3 $vec */
@@ -962,7 +960,9 @@ class World implements ChunkManager{
 			$block = $this->getBlock($vec);
 			$block->onScheduledUpdate();
 		}
+		$this->timings->scheduledBlockUpdates->stopTiming();
 
+		$this->timings->neighbourBlockUpdates->startTiming();
 		//Normal updates
 		while($this->neighbourBlockUpdateQueue->count() > 0){
 			$index = $this->neighbourBlockUpdateQueue->dequeue();
@@ -973,11 +973,6 @@ class World implements ChunkManager{
 			}
 
 			$block = $this->getBlockAt($x, $y, $z);
-			$replacement = $block->readStateFromWorld(); //for blocks like fences, force recalculation of connected AABBs
-			if($replacement !== $block){
-				$replacement->position($this, $x, $y, $z);
-				$block = $replacement;
-			}
 
 			if(BlockUpdateEvent::hasHandlers()){
 				$ev = new BlockUpdateEvent($block);
@@ -992,7 +987,7 @@ class World implements ChunkManager{
 			$block->onNearbyBlockChange();
 		}
 
-		$this->timings->scheduledBlockUpdates->stopTiming();
+		$this->timings->neighbourBlockUpdates->stopTiming();
 
 		$this->timings->entityTick->startTiming();
 		//Update entities that need update
@@ -1102,19 +1097,22 @@ class World implements ChunkManager{
 			$blockPosition = BlockPosition::fromVector3($b);
 
 			$tile = $this->getTileAt($b->x, $b->y, $b->z);
-			if($tile instanceof Spawnable && count($fakeStateProperties = $tile->getRenderUpdateBugWorkaroundStateProperties($fullBlock)) > 0){
-				$originalStateData = $blockTranslator->internalIdToNetworkStateData($fullBlock->getStateId());
-				$fakeStateData = new BlockStateData(
-					$originalStateData->getName(),
-					array_merge($originalStateData->getStates(), $fakeStateProperties),
-					$originalStateData->getVersion()
-				);
-				$packets[] = UpdateBlockPacket::create(
-					$blockPosition,
-					$blockTranslator->getBlockStateDictionary()->lookupStateIdFromData($fakeStateData) ?? throw new AssumptionFailedError("Unmapped fake blockstate data: " . $fakeStateData->toNbt()),
-					UpdateBlockPacket::FLAG_NETWORK,
-					UpdateBlockPacket::DATA_LAYER_NORMAL
-				);
+			if($tile instanceof Spawnable){
+				$expectedClass = $fullBlock->getIdInfo()->getTileClass();
+				if($expectedClass !== null && $tile instanceof $expectedClass && count($fakeStateProperties = $tile->getRenderUpdateBugWorkaroundStateProperties($fullBlock)) > 0){
+					$originalStateData = $blockTranslator->internalIdToNetworkStateData($fullBlock->getStateId());
+					$fakeStateData = new BlockStateData(
+						$originalStateData->getName(),
+						array_merge($originalStateData->getStates(), $fakeStateProperties),
+						$originalStateData->getVersion()
+					);
+					$packets[] = UpdateBlockPacket::create(
+						$blockPosition,
+						$blockTranslator->getBlockStateDictionary()->lookupStateIdFromData($fakeStateData) ?? throw new AssumptionFailedError("Unmapped fake blockstate data: " . $fakeStateData->toNbt()),
+						UpdateBlockPacket::FLAG_NETWORK,
+						UpdateBlockPacket::DATA_LAYER_NORMAL
+					);
+				}
 			}
 			$packets[] = UpdateBlockPacket::create(
 				$blockPosition,
@@ -2897,15 +2895,7 @@ class World implements ChunkManager{
 				}elseif($this->getTile($tilePosition) !== null){
 					$logger->error("Cannot add tile at x=$tilePosition->x,y=$tilePosition->y,z=$tilePosition->z: Another tile is already at that position");
 				}else{
-					$block = $this->getBlockAt($tilePosition->getFloorX(), $tilePosition->getFloorY(), $tilePosition->getFloorZ());
-					$expectedClass = $block->getIdInfo()->getTileClass();
-					if($expectedClass === null){
-						$logger->error("Cannot add tile at x=$tilePosition->x,y=$tilePosition->y,z=$tilePosition->z: Block at that position (" . $block->getName() . ") does not expect a tile");
-					}elseif(!($tile instanceof $expectedClass)){
-						$logger->error("Cannot add tile at x=$tilePosition->x,y=$tilePosition->y,z=$tilePosition->z: Tile is of wrong type (expected $expectedClass but have " . get_class($tile) . ")");
-					}else{
-						$this->addTile($tile);
-					}
+					$this->addTile($tile);
 				}
 			}
 

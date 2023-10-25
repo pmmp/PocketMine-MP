@@ -21,22 +21,22 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\promise;
 
-use pocketmine\block\utils\WoodTypeTrait;
+use PHPUnit\Framework\TestCase;
 
-class WoodenButton extends Button{
-	use WoodTypeTrait;
+final class PromiseTest extends TestCase{
 
-	protected function getActivationTime() : int{
-		return 30;
-	}
-
-	public function hasEntityCollision() : bool{
-		return false; //TODO: arrows activate wooden buttons
-	}
-
-	public function getFuelTime() : int{
-		return $this->woodType->isFlammable() ? 100 : 0;
+	public function testPromiseNull() : void{
+		$resolver = new PromiseResolver();
+		$resolver->resolve(null);
+		$resolver->getPromise()->onCompletion(
+			function(mixed $value) : void{
+				self::assertNull($value);
+			},
+			function() : void{
+				self::fail("Promise should not be rejected");
+			}
+		);
 	}
 }
