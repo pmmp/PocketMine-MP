@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -31,6 +32,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class MossCarpet extends Flowable{
+	use StaticSupportTrait;
 
 	public function isSolid() : bool{
 		return true;
@@ -44,18 +46,14 @@ class MossCarpet extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$down = $this->getSide(Facing::DOWN);
-		if($down->getTypeId() !== BlockTypeIds::AIR){
+		if($this->getSide(Facing::DOWN)->getTypeId() !== BlockTypeIds::AIR){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
 		return false;
 	}
 
-	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->getTypeId() === BlockTypeIds::AIR){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
+	private function canBeSupportedAt(Block $block) : bool{
+		return $block->getSide(Facing::DOWN)->getTypeId() !== BlockTypeIds::AIR;
 	}
-
 }
