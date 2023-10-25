@@ -32,7 +32,7 @@ class Elytra extends Armor{
 
 	public function onTickWorn(Living $entity) : bool {
 		if ($entity->isGliding()) {
-			
+
 			$direction = $entity->getDirectionVector();
 			$yVel = $direction->y;
 
