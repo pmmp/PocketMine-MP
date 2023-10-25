@@ -23,39 +23,51 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\entity\Human;
 use pocketmine\entity\Living;
 
 class Elytra extends Armor{
 
-	private const MINIMUM_PITCH = -59;
-	private const MAXIMUM_PITCH = 38;
-
-	private const APPLY_DAMAGE_INTERVAL = 21;
+	private const APPLY_DAMAGE_INTERVAL = 20;
 	private int $applyDamageTime = self::APPLY_DAMAGE_INTERVAL;
 
 	public function onTickWorn(Living $entity) : bool {
-		if ($entity instanceof Human && $entity->isGliding()) {
+		if ($entity->isGliding()) {
+			
+			$direction = $entity->getDirectionVector();
+			$yVel = $direction->y;
 
+			if($yVel < 0.5){
+				$entity->resetFallDistance();
+			}
+
+			/**
+			 * $eyePos = $entity->getEyePos();
+			 * $viewVector = $directionVector->normalize();
+			 * $length = $xzVel; // Trace the full speed distance
+			 * $blockPos = $eyePos->addVector($viewVector->multiply($length));
+			 *
+			 * $block = $entity->getWorld()->getBlock($blockPos->floor());
+			 *
+			 * if($block->isSolid()) {
+			 * $health = $entity->getHealth();
+			 * $mass = $health * 10; // 10 kg per health point
+			 *
+			 * $energy = 0.5 * $mass * $xzVel ** 2;
+			 * $entity->setHealth($health - $energy);
+			 * }
+			 */
+
+			//Apply damage to elytra.
 			$this->applyDamageTime--;
 			if($this->applyDamageTime <= 0){
 				$this->applyDamage(1);
 				$this->applyDamageTime = self::APPLY_DAMAGE_INTERVAL;
 			}
 
-			$pitch = $entity->getLocation()->pitch;
-			// Check if the player's pitch is within the allowed range between -59 and 38.
-			if ($pitch >= self::MINIMUM_PITCH && $pitch <= self::MAXIMUM_PITCH) {
-				$entity->resetFallDistance();
-				$entity->setFallDistance(0.0);
-				return true;
-			}
-
 			// If the player is on the ground, reset the fall distance and disable gliding.
 			if ($entity->isOnGround()) {
-				$entity->setGliding(false);
 				$entity->resetFallDistance();
-				$entity->setFallDistance(0.0);
+				$entity->setGliding(false);
 				return true;
 			}
 
