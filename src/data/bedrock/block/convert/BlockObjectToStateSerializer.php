@@ -1113,7 +1113,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::CHEST(), function(Chest $block) : Writer{
 			return Writer::create(Ids::CHEST)
-				->writeHorizontalFacing($block->getFacing());
+				->writeCardinalHorizontalFacing($block->getFacing());
 		});
 		$this->map(Blocks::CHISELED_QUARTZ(), fn(SimplePillar $block) => Helper::encodeQuartz(StringValues::CHISEL_TYPE_CHISELED, $block->getAxis()));
 		$this->map(Blocks::CHISELED_RED_SANDSTONE(), fn() => Helper::encodeSandstone(Ids::RED_SANDSTONE, StringValues::SAND_STONE_TYPE_HEIROGLYPHS));
@@ -1274,7 +1274,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::ELEMENT_CONSTRUCTOR(), fn(ChemistryTable $block) => Helper::encodeChemistryTable($block, StringValues::CHEMISTRY_TABLE_TYPE_ELEMENT_CONSTRUCTOR, new Writer(Ids::CHEMISTRY_TABLE)));
 		$this->map(Blocks::ENDER_CHEST(), function(EnderChest $block) : Writer{
 			return Writer::create(Ids::ENDER_CHEST)
-				->writeHorizontalFacing($block->getFacing());
+				->writeCardinalHorizontalFacing($block->getFacing());
 		});
 		$this->map(Blocks::END_PORTAL_FRAME(), function(EndPortalFrame $block) : Writer{
 			return Writer::create(Ids::END_PORTAL_FRAME)
@@ -1606,7 +1606,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::STONE(), fn() => Helper::encodeStone(StringValues::STONE_TYPE_STONE));
 		$this->map(Blocks::STONECUTTER(), fn(Stonecutter $block) => Writer::create(Ids::STONECUTTER_BLOCK)
-			->writeHorizontalFacing($block->getFacing()));
+			->writeCardinalHorizontalFacing($block->getFacing()));
 		$this->map(Blocks::STONE_BRICKS(), fn() => Helper::encodeStoneBricks(StringValues::STONE_BRICK_TYPE_DEFAULT));
 		$this->map(Blocks::STONE_BRICK_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab1($block, StringValues::STONE_SLAB_TYPE_STONE_BRICK));
 		$this->mapStairs(Blocks::STONE_BRICK_STAIRS(), Ids::STONE_BRICK_STAIRS);
@@ -1637,7 +1637,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::TRAPPED_CHEST(), function(TrappedChest $block) : Writer{
 			return Writer::create(Ids::TRAPPED_CHEST)
-				->writeHorizontalFacing($block->getFacing());
+				->writeCardinalHorizontalFacing($block->getFacing());
 		});
 		$this->map(Blocks::TRIPWIRE(), function(Tripwire $block) : Writer{
 			return Writer::create(Ids::TRIP_WIRE)
