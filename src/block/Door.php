@@ -52,6 +52,8 @@ class Door extends Transparent{
 	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 
+		$this->collisionBoxes = null;
+
 		//copy door properties from other half
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
 		if($other instanceof Door && $other->hasSameTypeId($this)){
