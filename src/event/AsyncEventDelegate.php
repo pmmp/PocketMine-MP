@@ -33,7 +33,7 @@ use function count;
 final class AsyncEventDelegate{
 	/** @phpstan-var ObjectSet<Promise<null>> $promises */
 	private ObjectSet $promises;
-	/** @var array<class-string<AsyncEvent&Event>, int> $delegatesCall */
+	/** @var array<class-string<AsyncEvent&Event>, int> $delegatesCallDepth */
 	private static array $delegatesCallDepth = [];
 	private const MAX_EVENT_CALL_DEPTH = 50;
 

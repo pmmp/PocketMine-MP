@@ -1205,4 +1205,8 @@ parameters:
 			count: 1
 			path: ../../../src/plugin/PluginManager.php
 
+		-
+			message: "#^Parameter \\#1 \\$handler of class pocketmine\\\\event\\\\RegisteredAsyncListener constructor expects Closure\\(pocketmine\\\\event\\\\AsyncEvent&pocketmine\\\\event\\\\Event\\)\\: pocketmine\\\\promise\\\\Promise\\<null\\>, Closure\\(TEvent\\)\\: pocketmine\\\\promise\\\\Promise\\<null\\> given\\.$#"
+			count: 1
+			path: ../../../src/plugin/PluginManager.php
 
