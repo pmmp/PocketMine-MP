@@ -39,7 +39,7 @@ class RegisteredAsyncListener extends RegisteredListener{
 		int $priority,
 		Plugin $plugin,
 		bool $handleCancelled,
-		private bool $noConcurrentCall,
+		private bool $exclusiveCall,
 		TimingsHandler $timings
 	){
 		$handler = function(AsyncEvent&Event $event) use($handler) : void{
@@ -52,7 +52,7 @@ class RegisteredAsyncListener extends RegisteredListener{
 	}
 
 	public function canBeCalledConcurrently() : bool{
-		return !$this->noConcurrentCall;
+		return !$this->exclusiveCall;
 	}
 
 	/**
