@@ -58,7 +58,7 @@ class ResourcePackManager{
 	 */
 	private array $encryptionKeys = [];
 
-	/** @var string[] */
+	/** @phpstan-var array<string, string> */
 	private array $packURLs = [];
 
 	/**
@@ -186,7 +186,7 @@ class ResourcePackManager{
 
 	/**
 	 * Returns an array of pack URLs.
-	 * @return string[]
+	 * @phpstan-return array<string, string>
 	 */
 	public function getPackURLs() : array{
 		return $this->packURLs;
