@@ -628,7 +628,7 @@ class Server{
 	}
 
 	/**
-	 * @return Promise<null[]>
+	 * @return Promise<array<int, null>>
 	 */
 	private function preparePlayerCreation(NetworkSession $session) : Promise{
 		/** @phpstan-var ObjectSet<Promise<null>> $promises */

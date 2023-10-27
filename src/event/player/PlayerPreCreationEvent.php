@@ -29,7 +29,7 @@ use pocketmine\promise\Promise;
 use pocketmine\utils\ObjectSet;
 
 /**
- * Allows the plugins to specify promise that need to be completed before the PlayerPreLoginEvent is fired.
+ * Allows the plugins to specify promise that need to be completed before the PlayerCreationEvent is fired.
  */
 class PlayerPreCreationEvent extends Event{
 	/** @phpstan-param ObjectSet<Promise<null>> $promises */
@@ -51,9 +51,9 @@ class PlayerPreCreationEvent extends Event{
 	}
 
 	/**
-	 * Adds a promise to the waiting list for the login sequence.
+	 * Adds a promise to the waiting list.
 	 * Once all the promises that have been added have been completed,
-	 * the player login sequence will continue and the PlayerPreLoginEvent will be fired.
+	 * the player creation sequence will continue and the PlayerCreationEvent will be fired.
 	 *
 	 * @phpstan-param Promise<null> $promise
 	 */
