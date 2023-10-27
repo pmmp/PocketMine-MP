@@ -24,11 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\event;
 
 use pocketmine\plugin\Plugin;
-use function array_filter;
 use function array_merge;
+use function array_merge_recursive;
 use function krsort;
 use function spl_object_id;
-use function usort;
 use const SORT_NUMERIC;
 
 class HandlerList{
@@ -129,24 +128,23 @@ class HandlerList{
 			$handlerLists[] = $currentList;
 		}
 
-		$listenersByPriority = [];
-		$asyncListenersByPriority = [];
+		$listeners = [];
+		$asyncListeners = [];
+		$exclusiveAsyncListeners = [];
 		foreach($handlerLists as $currentList){
-			foreach($currentList->handlerSlots as $priority => $listeners){
-				$syncListeners = array_filter($listeners, static function(RegisteredListener $listener) : bool{ return !($listener instanceof RegisteredAsyncListener); });
-				$listenersByPriority[$priority] = array_merge($listenersByPriority[$priority] ?? [], $syncListeners);
-
-				$asyncListeners = array_filter($listeners, static function(RegisteredListener $listener) : bool{ return $listener instanceof RegisteredAsyncListener; });
-				$asyncListenersByPriority[$priority] = array_merge($asyncListenersByPriority[$priority] ?? [], $asyncListeners);
+			foreach($currentList->handlerSlots as $priority => $listenersToSort){
+				foreach($listenersToSort as $listener){
+					if(!$listener instanceof RegisteredAsyncListener){
+						$listeners[$priority][] = $listener;
+					}elseif(!$listener->canBeCalledConcurrently()){
+						$asyncListeners[$priority][] = $listener;
+					}else{
+						$exclusiveAsyncListeners[$priority][] = $listener;
+					}
+				}
 			}
 		}
-		foreach($asyncListenersByPriority as $priority => $asyncListeners){
-			usort($asyncListeners, static function(RegisteredAsyncListener $a, RegisteredAsyncListener $b) : int{
-				// concurrent listeners are sorted to the end of the list
-				return $b->canBeCalledConcurrently() <=> $a->canBeCalledConcurrently();
-			});
-			$listenersByPriority[$priority] = array_merge($listenersByPriority[$priority] ?? [], $asyncListeners);
-		}
+		$listenersByPriority = array_merge_recursive($listeners, $asyncListeners, $exclusiveAsyncListeners);
 
 		//TODO: why on earth do the priorities have higher values for lower priority?
 		krsort($listenersByPriority, SORT_NUMERIC);
