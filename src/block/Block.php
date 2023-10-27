@@ -42,7 +42,6 @@ use pocketmine\item\enchantment\ItemEnchantmentTags;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
-use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\RayTraceResult;
@@ -50,22 +49,26 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Binary;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function count;
 use function get_class;
+use function hash;
 use const PHP_INT_MAX;
 
 class Block{
-	public const INTERNAL_STATE_DATA_BITS = 8;
+	public const INTERNAL_STATE_DATA_BITS = 11;
 	public const INTERNAL_STATE_DATA_MASK = ~(~0 << self::INTERNAL_STATE_DATA_BITS);
 
 	/**
 	 * @internal
+	 * Hardcoded int is `Binary::readLong(hash('xxh3', Binary::writeLLong(BlockTypeIds::AIR), binary: true))`
+	 * TODO: it would be much easier if we could just make this 0 or some other easy value
 	 */
-	public const EMPTY_STATE_ID = (BlockTypeIds::AIR << self::INTERNAL_STATE_DATA_BITS) | (BlockTypeIds::AIR & self::INTERNAL_STATE_DATA_MASK);
+	public const EMPTY_STATE_ID = (BlockTypeIds::AIR << self::INTERNAL_STATE_DATA_BITS) | (-7482769108513497636 & self::INTERNAL_STATE_DATA_MASK);
 
 	protected BlockIdentifier $idInfo;
 	protected string $fallbackName;
@@ -79,6 +82,23 @@ class Block{
 	private int $requiredBlockOnlyStateDataBits;
 
 	private Block $defaultState;
+
+	private int $stateIdXorMask;
+
+	/**
+	 * Computes the mask to be XOR'd with the state data.
+	 * This is to improve distribution of the state data bits, which occupy the least significant bits of the state ID.
+	 * Improved distribution improves PHP array performance when using the state ID as a key, as PHP arrays use some of
+	 * the lower bits of integer keys directly without hashing.
+	 *
+	 * The type ID is included in the XOR mask. This is not necessary to improve distribution, but it reduces the number
+	 * of operations required to compute the state ID (micro optimization).
+	 */
+	private static function computeStateIdXorMask(int $typeId) : int{
+		return
+			$typeId << self::INTERNAL_STATE_DATA_BITS |
+			(Binary::readLong(hash('xxh3', Binary::writeLLong($typeId), binary: true)) & self::INTERNAL_STATE_DATA_MASK);
+	}
 
 	/**
 	 * @param string $name English name of the block type (TODO: implement translations)
@@ -97,6 +117,9 @@ class Block{
 		$this->describeBlockOnlyState($calculator);
 		$this->requiredBlockOnlyStateDataBits = $calculator->getBitsUsed();
 
+		$this->stateIdXorMask = self::computeStateIdXorMask($idInfo->getBlockTypeId());
+
+		//this must be done last, otherwise the defaultState could have uninitialized fields
 		$defaultState = clone $this;
 		$this->defaultState = $defaultState;
 		$defaultState->defaultState = $defaultState;
@@ -152,13 +175,7 @@ class Block{
 	 * {@link RuntimeBlockStateRegistry::fromStateId()}.
 	 */
 	public function getStateId() : int{
-		$typeId = $this->getTypeId();
-		//TODO: this XOR mask improves hashtable distribution, but it's only effective if the number of unique block
-		//type IDs is larger than the number of available state data bits. We should probably hash (e.g. using xxhash)
-		//the type ID to create a better mask.
-		//Alternatively, we could hash the whole state ID, but this is currently problematic, since we currently need
-		//to be able to recover the state data from the state ID because of UnknownBlock.
-		return ($typeId << self::INTERNAL_STATE_DATA_BITS) | ($this->encodeFullState() ^ ($typeId & self::INTERNAL_STATE_DATA_MASK));
+		return $this->encodeFullState() ^ $this->stateIdXorMask;
 	}
 
 	/**
@@ -226,12 +243,6 @@ class Block{
 		if($this->requiredBlockOnlyStateDataBits !== $readBits){
 			throw new \LogicException(get_class($this) . ": Exactly $this->requiredBlockOnlyStateDataBits bits of block-only state data were provided, but $readBits were read");
 		}
-	}
-
-	private function decodeFullState(int $data) : void{
-		$reader = new RuntimeDataReader($this->requiredBlockItemStateDataBits + $this->requiredBlockOnlyStateDataBits, $data);
-		$this->decodeBlockItemState($reader->readInt($this->requiredBlockItemStateDataBits));
-		$this->decodeBlockOnlyState($reader->readInt($this->requiredBlockOnlyStateDataBits));
 	}
 
 	private function encodeBlockItemState() : int{
@@ -304,34 +315,44 @@ class Block{
 		if($bits > Block::INTERNAL_STATE_DATA_BITS){
 			throw new \LogicException("Block state data cannot use more than " . Block::INTERNAL_STATE_DATA_BITS . " bits");
 		}
-		for($stateData = 0; $stateData < (1 << $bits); ++$stateData){
-			$v = clone $this;
+		for($blockItemStateData = 0; $blockItemStateData < (1 << $this->requiredBlockItemStateDataBits); ++$blockItemStateData){
+			$withType = clone $this;
 			try{
-				$v->decodeFullState($stateData);
-				if($v->encodeFullState() !== $stateData){
-					throw new \LogicException(static::class . "::decodeStateData() accepts invalid state data (returned " . $v->encodeFullState() . " for input $stateData)");
+				$withType->decodeBlockItemState($blockItemStateData);
+				$encoded = $withType->encodeBlockItemState();
+				if($encoded !== $blockItemStateData){
+					throw new \LogicException(static::class . "::decodeBlockItemState() accepts invalid inputs (returned $encoded for input $blockItemStateData)");
 				}
 			}catch(InvalidSerializedRuntimeDataException){ //invalid property combination, leave it
 				continue;
 			}
 
-			yield $v;
+			for($blockOnlyStateData = 0; $blockOnlyStateData < (1 << $this->requiredBlockOnlyStateDataBits); ++$blockOnlyStateData){
+				$withState = clone $withType;
+				try{
+					$withState->decodeBlockOnlyState($blockOnlyStateData);
+					$encoded = $withState->encodeBlockOnlyState();
+					if($encoded !== $blockOnlyStateData){
+						throw new \LogicException(static::class . "::decodeBlockOnlyState() accepts invalid inputs (returned $encoded for input $blockOnlyStateData)");
+					}
+				}catch(InvalidSerializedRuntimeDataException){ //invalid property combination, leave it
+					continue;
+				}
+
+				yield $withState;
+			}
 		}
 	}
 
 	/**
 	 * Called when this block is created, set, or has a neighbouring block update, to re-detect dynamic properties which
-	 * are not saved on the world.
-	 *
-	 * Clears any cached precomputed objects, such as bounding boxes. Remove any outdated precomputed things such as
-	 * AABBs and force recalculation.
+	 * are not saved in the blockstate ID.
+	 * If any such properties are updated, don't forget to clear things like AABB caches if necessary.
 	 *
 	 * A replacement block may be returned. This is useful if the block type changed due to reading of world data (e.g.
 	 * data from a block entity).
 	 */
 	public function readStateFromWorld() : Block{
-		$this->collisionBoxes = null;
-
 		return $this;
 	}
 
@@ -571,6 +592,7 @@ class Block{
 	 */
 	final public function position(World $world, int $x, int $y, int $z) : void{
 		$this->position = new Position($x, $y, $z, $world);
+		$this->collisionBoxes = null;
 	}
 
 	/**
@@ -721,8 +743,14 @@ class Block{
 	 * @return Block
 	 */
 	public function getSide(int $side, int $step = 1){
-		if($this->position->isValid()){
-			return $this->position->getWorld()->getBlock($this->position->getSide($side, $step));
+		$position = $this->position;
+		if($position->isValid()){
+			[$dx, $dy, $dz] = Facing::OFFSET[$side] ?? [0, 0, 0];
+			return $position->getWorld()->getBlockAt(
+				$position->x + ($dx * $step),
+				$position->y + ($dy * $step),
+				$position->z + ($dz * $step)
+			);
 		}
 
 		throw new \LogicException("Block does not have a valid world");
@@ -736,8 +764,14 @@ class Block{
 	 */
 	public function getHorizontalSides() : \Generator{
 		$world = $this->position->getWorld();
-		foreach($this->position->sidesAroundAxis(Axis::Y) as $vector3){
-			yield $world->getBlock($vector3);
+		foreach(Facing::HORIZONTAL as $facing){
+			[$dx, $dy, $dz] = Facing::OFFSET[$facing];
+			//TODO: yield Facing as the key?
+			yield $world->getBlockAt(
+				$this->position->x + $dx,
+				$this->position->y + $dy,
+				$this->position->z + $dz
+			);
 		}
 	}
 
@@ -749,8 +783,13 @@ class Block{
 	 */
 	public function getAllSides() : \Generator{
 		$world = $this->position->getWorld();
-		foreach($this->position->sides() as $vector3){
-			yield $world->getBlock($vector3);
+		foreach(Facing::OFFSET as [$dx, $dy, $dz]){
+			//TODO: yield Facing as the key?
+			yield $world->getBlockAt(
+				$this->position->x + $dx,
+				$this->position->y + $dy,
+				$this->position->z + $dz
+			);
 		}
 	}
 

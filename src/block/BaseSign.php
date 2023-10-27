@@ -271,4 +271,8 @@ abstract class BaseSign extends Transparent{
 	public function asItem() : Item{
 		return ($this->asItemCallback)();
 	}
+
+	public function getFuelTime() : int{
+		return $this->woodType->isFlammable() ? 200 : 0;
+	}
 }

@@ -49,6 +49,8 @@ class Stair extends Transparent{
 	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 
+		$this->collisionBoxes = null;
+
 		$clockwise = Facing::rotateY($this->facing, true);
 		if(($backFacing = $this->getPossibleCornerFacing(false)) !== null){
 			$this->shape = $backFacing === $clockwise ? StairShape::OUTER_RIGHT : StairShape::OUTER_LEFT;
