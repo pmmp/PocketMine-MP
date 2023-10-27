@@ -227,12 +227,14 @@ abstract class BaseRail extends Flowable{
 		if(($flags & NearbyBlockChangeFlags::DOWN) !== 0 && !$this->getAdjacentSupportType(Facing::DOWN)->hasEdgeSupport()){
 			$break = true;
 		}
-		foreach($this->getCurrentShapeConnections() as $connection){
-			if(($connection & RailConnectionInfo::FLAG_ASCEND) !== 0){
-				$supportFace = $connection & ~RailConnectionInfo::FLAG_ASCEND;
-				if(NearbyBlockChangeFlags::hasFace($flags, $supportFace) && !$this->getSide($supportFace)->getSupportType(Facing::UP)->hasEdgeSupport()){
-					$break = true;
-					break;
+		if(!$break){
+			foreach($this->getCurrentShapeConnections() as $connection){
+				if(($connection & RailConnectionInfo::FLAG_ASCEND) !== 0){
+					$supportFace = $connection & ~RailConnectionInfo::FLAG_ASCEND;
+					if(NearbyBlockChangeFlags::hasFace($flags, $supportFace) && !$this->getSide($supportFace)->getSupportType(Facing::UP)->hasEdgeSupport()){
+						$break = true;
+						break;
+					}
 				}
 			}
 		}
