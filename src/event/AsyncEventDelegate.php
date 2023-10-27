@@ -25,13 +25,17 @@ namespace pocketmine\event;
 
 use pocketmine\promise\Promise;
 use pocketmine\promise\PromiseResolver;
+use pocketmine\timings\Timings;
 use pocketmine\utils\ObjectSet;
 use function array_shift;
 use function count;
 
-final class AsyncEventDelegate extends Event{
+final class AsyncEventDelegate{
 	/** @phpstan-var ObjectSet<Promise<null>> $promises */
 	private ObjectSet $promises;
+	/** @var array<class-string<AsyncEvent&Event>, int> $delegatesCall */
+	private static array $delegatesCallDepth = [];
+	private const MAX_EVENT_CALL_DEPTH = 50;
 
 	public function __construct(
 		private AsyncEvent&Event $event
@@ -42,9 +46,27 @@ final class AsyncEventDelegate extends Event{
 	/**
 	 * @phpstan-return Promise<null>
 	 */
-	public function callAsync() : Promise{
+	public function call() : Promise{
 		$this->promises->clear();
-		return $this->callDepth($this->callAsyncDepth(...));
+		if(!isset(self::$delegatesCallDepth[$class = $this->event::class])){
+			self::$delegatesCallDepth[$class] = 0;
+		}
+
+		if(self::$delegatesCallDepth[$class] >= self::MAX_EVENT_CALL_DEPTH){
+			//this exception will be caught by the parent event call if all else fails
+			throw new \RuntimeException("Recursive event call detected (reached max depth of " . self::MAX_EVENT_CALL_DEPTH . " calls)");
+		}
+
+		$timings = Timings::getAsyncEventTimings($this->event);
+		$timings->startTiming();
+
+		++self::$delegatesCallDepth[$class];
+		try{
+			return $this->callAsyncDepth();
+		}finally{
+			--self::$delegatesCallDepth[$class];
+			$timings->stopTiming();
+		}
 	}
 
 	/**

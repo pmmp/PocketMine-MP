@@ -25,6 +25,7 @@ namespace pocketmine\timings;
 
 use pocketmine\block\tile\Tile;
 use pocketmine\entity\Entity;
+use pocketmine\event\AsyncEvent;
 use pocketmine\event\Event;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
@@ -113,6 +114,8 @@ abstract class Timings{
 
 	/** @var TimingsHandler[] */
 	private static array $events = [];
+	/** @var TimingsHandler[] */
+	private static array $asyncEvents = [];
 	/** @var TimingsHandler[][] */
 	private static array $eventHandlers = [];
 
@@ -302,6 +305,15 @@ abstract class Timings{
 		}
 
 		return self::$events[$eventClass];
+	}
+
+	public static function getAsyncEventTimings(AsyncEvent&Event $event) : TimingsHandler{
+		$eventClass = get_class($event);
+		if(!isset(self::$asyncEvents[$eventClass])){
+			self::$asyncEvents[$eventClass] = new TimingsHandler(self::shortenCoreClassName($eventClass, "pocketmine\\event\\"), group: "Events");
+		}
+
+		return self::$asyncEvents[$eventClass];
 	}
 
 	/**

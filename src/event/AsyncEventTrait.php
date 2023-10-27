@@ -32,9 +32,6 @@ trait AsyncEventTrait {
 	 * @phpstan-return Promise<null>
 	 */
 	final public function callAsync() : Promise{
-		if(!isset($this->delegate)){
-			$this->delegate = new AsyncEventDelegate($this);
-		}
-		return $this->delegate->callAsync();
+		return (new AsyncEventDelegate($this))->call();
 	}
 }
