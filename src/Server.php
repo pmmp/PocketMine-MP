@@ -42,6 +42,7 @@ use pocketmine\event\HandlerListManager;
 use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\player\PlayerLoginEvent;
+use pocketmine\event\player\PlayerPreCreationEvent;
 use pocketmine\event\server\CommandEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\lang\KnownTranslationFactory;
@@ -105,6 +106,7 @@ use pocketmine\utils\Internet;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\NotCloneable;
 use pocketmine\utils\NotSerializable;
+use pocketmine\utils\ObjectSet;
 use pocketmine\utils\Process;
 use pocketmine\utils\SignalHandler;
 use pocketmine\utils\Terminal;
@@ -553,6 +555,31 @@ class Server{
 	 * @phpstan-return Promise<Player>
 	 */
 	public function createPlayer(NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, ?CompoundTag $offlinePlayerData) : Promise{
+		/** @var PromiseResolver<Player> $globalResolver */
+		$globalResolver = new PromiseResolver();
+
+		$this->preparePlayerCreation($session)->onCompletion(
+			function() use ($session, $playerInfo, $authenticated, $offlinePlayerData, $globalResolver) : void{
+				$this->createPlayerInternal($session, $playerInfo, $authenticated, $offlinePlayerData)->onCompletion(
+					function(Player $player) use ($globalResolver) : void {
+						$globalResolver->resolve($player);
+					}, function() use ($globalResolver) : void {
+						$globalResolver->reject();
+					}
+				);
+			},
+			function() use ($globalResolver) : void {
+				$globalResolver->reject();
+			}
+		);
+
+		return $globalResolver->getPromise();
+	}
+
+	/**
+	 * @phpstan-return Promise<Player>
+	 */
+	private function createPlayerInternal(NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, ?CompoundTag $offlinePlayerData) : Promise{
 		$ev = new PlayerCreationEvent($session);
 		$ev->call();
 		$class = $ev->getPlayerClass();
@@ -598,6 +625,18 @@ class Server{
 		}
 
 		return $playerPromiseResolver->getPromise();
+	}
+
+	/**
+	 * @return Promise<null[]>
+	 */
+	private function preparePlayerCreation(NetworkSession $session) : Promise{
+		/** @phpstan-var ObjectSet<Promise<null>> $promises */
+		$promises = new ObjectSet();
+		$ev = new PlayerPreCreationEvent($session, $promises);
+		$ev->call();
+
+		return Promise::all($promises->toArray());
 	}
 
 	/**

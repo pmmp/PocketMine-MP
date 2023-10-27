@@ -35,7 +35,7 @@ final class Promise{
 	 * @see PromiseResolver
 	 * @phpstan-param PromiseSharedData<TValue> $shared
 	 */
-	public function __construct(private PromiseSharedData $shared){}
+	public function __construct(private wPromiseSharedData $shared){}
 
 	/**
 	 * @phpstan-param \Closure(TValue) : void $onSuccess

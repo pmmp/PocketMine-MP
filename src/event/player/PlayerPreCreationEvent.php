@@ -31,7 +31,7 @@ use pocketmine\utils\ObjectSet;
 /**
  * Allows the plugins to specify promise that need to be completed before the PlayerPreLoginEvent is fired.
  */
-class PlayerLoginPrepareEvent extends Event{
+class PlayerPreCreationEvent extends Event{
 	/** @phpstan-param ObjectSet<Promise<null>> $promises */
 	public function __construct(
 		private NetworkSession $session,

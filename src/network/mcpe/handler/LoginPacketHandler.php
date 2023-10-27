@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\entity\InvalidSkinException;
-use pocketmine\event\player\PlayerLoginPrepareEvent;
 use pocketmine\event\player\PlayerPreLoginEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
@@ -41,9 +40,7 @@ use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\player\PlayerInfo;
 use pocketmine\player\XboxLivePlayerInfo;
-use pocketmine\promise\Promise;
 use pocketmine\Server;
-use pocketmine\utils\ObjectSet;
 use Ramsey\Uuid\Uuid;
 use function is_array;
 
@@ -109,50 +106,38 @@ class LoginPacketHandler extends PacketHandler{
 		}
 		($this->playerInfoConsumer)($playerInfo);
 
-		/** @phpstan-var ObjectSet<Promise<null>> $promises */
-		$promises = new ObjectSet();
-		$ev = new PlayerLoginPrepareEvent($this->session, $promises);
+		$ev = new PlayerPreLoginEvent(
+			$playerInfo,
+			$this->session->getIp(),
+			$this->session->getPort(),
+			$this->server->requiresAuthentication()
+		);
+		if($this->server->getNetwork()->getValidConnectionCount() > $this->server->getMaxPlayers()){
+			$ev->setKickFlag(PlayerPreLoginEvent::KICK_FLAG_SERVER_FULL, KnownTranslationFactory::disconnectionScreen_serverFull());
+		}
+		if(!$this->server->isWhitelisted($playerInfo->getUsername())){
+			$ev->setKickFlag(PlayerPreLoginEvent::KICK_FLAG_SERVER_WHITELISTED, KnownTranslationFactory::pocketmine_disconnect_whitelisted());
+		}
+
+		$banMessage = null;
+		if(($banEntry = $this->server->getNameBans()->getEntry($playerInfo->getUsername())) !== null){
+			$banReason = $banEntry->getReason();
+			$banMessage = $banReason === "" ? KnownTranslationFactory::pocketmine_disconnect_ban_noReason() : KnownTranslationFactory::pocketmine_disconnect_ban($banReason);
+		}elseif(($banEntry = $this->server->getIPBans()->getEntry($this->session->getIp())) !== null){
+			$banReason = $banEntry->getReason();
+			$banMessage = KnownTranslationFactory::pocketmine_disconnect_ban($banReason !== "" ? $banReason : KnownTranslationFactory::pocketmine_disconnect_ban_ip());
+		}
+		if($banMessage !== null){
+			$ev->setKickFlag(PlayerPreLoginEvent::KICK_FLAG_BANNED, $banMessage);
+		}
+
 		$ev->call();
+		if(!$ev->isAllowed()){
+			$this->session->disconnect($ev->getFinalDisconnectReason(), $ev->getFinalDisconnectScreenMessage());
+			return true;
+		}
 
-		$promise = Promise::all($promises->toArray());
-		$promise->onCompletion(function() use ($playerInfo, $packet) : void{
-			$ev = new PlayerPreLoginEvent(
-				$playerInfo,
-				$this->session->getIp(),
-				$this->session->getPort(),
-				$this->server->requiresAuthentication()
-			);
-			if($this->server->getNetwork()->getValidConnectionCount() > $this->server->getMaxPlayers()){
-				$ev->setKickFlag(PlayerPreLoginEvent::KICK_FLAG_SERVER_FULL, KnownTranslationFactory::disconnectionScreen_serverFull());
-			}
-			if(!$this->server->isWhitelisted($playerInfo->getUsername())){
-				$ev->setKickFlag(PlayerPreLoginEvent::KICK_FLAG_SERVER_WHITELISTED, KnownTranslationFactory::pocketmine_disconnect_whitelisted());
-			}
-
-			$banMessage = null;
-			if(($banEntry = $this->server->getNameBans()->getEntry($playerInfo->getUsername())) !== null){
-				$banReason = $banEntry->getReason();
-				$banMessage = $banReason === "" ? KnownTranslationFactory::pocketmine_disconnect_ban_noReason() : KnownTranslationFactory::pocketmine_disconnect_ban($banReason);
-			}elseif(($banEntry = $this->server->getIPBans()->getEntry($this->session->getIp())) !== null){
-				$banReason = $banEntry->getReason();
-				$banMessage = KnownTranslationFactory::pocketmine_disconnect_ban($banReason !== "" ? $banReason : KnownTranslationFactory::pocketmine_disconnect_ban_ip());
-			}
-			if($banMessage !== null){
-				$ev->setKickFlag(PlayerPreLoginEvent::KICK_FLAG_BANNED, $banMessage);
-			}
-
-			$ev->call();
-			if(!$ev->isAllowed()){
-				$this->session->disconnect($ev->getFinalDisconnectReason(), $ev->getFinalDisconnectScreenMessage());
-				return;
-			}
-
-			$this->processLogin($packet, $ev->isAuthRequired());
-		}, function () {
-			if($this->session->isConnected()){
-				$this->session->disconnect("Failed to prepare login packet handling");
-			}
-		});
+		$this->processLogin($packet, $ev->isAuthRequired());
 
 		return true;
 	}
