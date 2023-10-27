@@ -24,8 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\data\runtime\RuntimeDataDescriber;
-use function ceil;
-use function log;
 
 /**
  * This trait is used for blocks that have an age property.
@@ -35,7 +33,7 @@ trait AgeableTrait{
 	protected int $age = 0;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt((int) ceil(log(self::MAX_AGE, 2)), 0, self::MAX_AGE, $this->age);
+		$w->boundedIntAuto(0, self::MAX_AGE, $this->age);
 	}
 
 	public function getAge() : int{ return $this->age; }

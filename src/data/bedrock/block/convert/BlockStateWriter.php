@@ -90,6 +90,20 @@ final class BlockStateWriter{
 		return $this;
 	}
 
+	/** @return $this */
+	public function writeBlockFace(int $value) : self{
+		$this->writeString(BlockStateNames::MC_BLOCK_FACE, match($value){
+			Facing::DOWN => StringValues::MC_BLOCK_FACE_DOWN,
+			Facing::UP => StringValues::MC_BLOCK_FACE_UP,
+			Facing::NORTH => StringValues::MC_BLOCK_FACE_NORTH,
+			Facing::SOUTH => StringValues::MC_BLOCK_FACE_SOUTH,
+			Facing::WEST => StringValues::MC_BLOCK_FACE_WEST,
+			Facing::EAST => StringValues::MC_BLOCK_FACE_EAST,
+			default => throw new BlockStateSerializeException("Invalid Facing $value")
+		});
+		return $this;
+	}
+
 	/**
 	 * @param int[] $faces
 	 * @phpstan-param array<int, int> $faces

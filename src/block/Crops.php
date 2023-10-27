@@ -62,7 +62,7 @@ abstract class Crops extends Flowable{
 	}
 
 	public function ticksRandomly() : bool{
-		return true;
+		return $this->age < self::MAX_AGE;
 	}
 
 	public function onRandomTick() : void{

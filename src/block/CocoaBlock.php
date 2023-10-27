@@ -48,7 +48,7 @@ class CocoaBlock extends Transparent{
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
-		$w->boundedInt(2, 0, self::MAX_AGE, $this->age);
+		$w->boundedIntAuto(0, self::MAX_AGE, $this->age);
 	}
 
 	/**
@@ -99,7 +99,7 @@ class CocoaBlock extends Transparent{
 	}
 
 	public function ticksRandomly() : bool{
-		return true;
+		return $this->age < self::MAX_AGE;
 	}
 
 	public function onRandomTick() : void{

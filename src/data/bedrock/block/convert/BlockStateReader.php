@@ -135,6 +135,19 @@ final class BlockStateReader{
 		]);
 	}
 
+	/** @throws BlockStateDeserializeException */
+	public function readBlockFace() : int{
+		return match($raw = $this->readString(BlockStateNames::MC_BLOCK_FACE)){
+			StringValues::MC_BLOCK_FACE_DOWN => Facing::DOWN,
+			StringValues::MC_BLOCK_FACE_UP => Facing::UP,
+			StringValues::MC_BLOCK_FACE_NORTH => Facing::NORTH,
+			StringValues::MC_BLOCK_FACE_SOUTH => Facing::SOUTH,
+			StringValues::MC_BLOCK_FACE_WEST => Facing::WEST,
+			StringValues::MC_BLOCK_FACE_EAST => Facing::EAST,
+			default => throw $this->badValueException(BlockStateNames::MC_BLOCK_FACE, $raw)
+		};
+	}
+
 	/**
 	 * @return int[]
 	 * @phpstan-return array<int, int>

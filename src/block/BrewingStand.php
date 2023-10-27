@@ -45,7 +45,7 @@ class BrewingStand extends Transparent{
 	protected array $slots = [];
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->brewingStandSlots($this->slots);
+		$w->enumSet($this->slots, BrewingStandSlot::cases());
 	}
 
 	protected function recalculateCollisionBoxes() : array{
