@@ -27,7 +27,7 @@ use function count;
 use function spl_object_id;
 
 /**
- * @phpstan-template-covariant TValue
+ * @phpstan-template TValue
  */
 final class Promise{
 	/**
@@ -35,7 +35,7 @@ final class Promise{
 	 * @see PromiseResolver
 	 * @phpstan-param PromiseSharedData<TValue> $shared
 	 */
-	public function __construct(private wPromiseSharedData $shared){}
+	public function __construct(private PromiseSharedData $shared){}
 
 	/**
 	 * @phpstan-param \Closure(TValue) : void $onSuccess
