@@ -51,7 +51,7 @@ class RegisteredAsyncListener extends RegisteredListener{
 		parent::__construct($handler, $priority, $plugin, $handleCancelled, $timings);
 	}
 
-	public function canBeCallConcurrently() : bool{
+	public function canBeCalledConcurrently() : bool{
 		return !$this->noConcurrentCall;
 	}
 

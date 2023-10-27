@@ -26,8 +26,6 @@ namespace pocketmine\event;
 use pocketmine\promise\Promise;
 
 trait AsyncEventTrait {
-	private AsyncEventDelegate $delegate;
-
 	/**
 	 * @phpstan-return Promise<null>
 	 */

@@ -142,11 +142,8 @@ class HandlerList{
 		}
 		foreach($asyncListenersByPriority as $priority => $asyncListeners){
 			usort($asyncListeners, static function(RegisteredAsyncListener $a, RegisteredAsyncListener $b) : int{
-				if($a->canBeCallConcurrently()){
-					return $b->canBeCallConcurrently() ? 0 : -1;
-				}else{
-					return $b->canBeCallConcurrently() ? -1 : 0;
-				}
+				// concurrent listeners are sorted to the end of the list
+				return $b->canBeCalledConcurrently() <=> $a->canBeCalledConcurrently();
 			});
 			$listenersByPriority[$priority] = array_merge($listenersByPriority[$priority] ?? [], $asyncListeners);
 		}

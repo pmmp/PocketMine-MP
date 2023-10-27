@@ -106,7 +106,7 @@ final class AsyncEventDelegate{
 		$nonConcurrentHandlers = [];
 		foreach($handlers as $registration){
 			if($registration instanceof RegisteredAsyncListener){
-				if($registration->canBeCallConcurrently()){
+				if($registration->canBeCalledConcurrently()){
 					$this->promises->add($registration->callAsync($this->event));
 				}else{
 					$nonConcurrentHandlers[] = $registration;
