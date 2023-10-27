@@ -52,7 +52,7 @@ abstract class Event{
 			throw new \RuntimeException("Recursive event call detected (reached max depth of " . self::MAX_EVENT_CALL_DEPTH . " calls)");
 		}
 		if($this instanceof AsyncEvent){
-			throw new \InvalidArgumentException("Cannot call async event synchronously");
+			throw new \InvalidArgumentException("Cannot call async event synchronously, use callAsync() instead");
 		}
 
 		$timings = Timings::getEventTimings($this);
