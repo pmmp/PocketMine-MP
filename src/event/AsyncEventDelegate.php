@@ -79,7 +79,7 @@ final class AsyncEventDelegate{
 		$priorities = EventPriority::ALL;
 		$testResolve = function () use (&$testResolve, &$priorities, $globalResolver){
 			if(count($priorities) === 0){
-				$globalResolver->resolve(""); // TODO: see #6110
+				$globalResolver->resolve(null);
 			}else{
 				$this->callPriority(array_shift($priorities))->onCompletion(function() use ($testResolve) : void{
 					$testResolve();
@@ -119,7 +119,7 @@ final class AsyncEventDelegate{
 		$testResolve = function() use (&$nonConcurrentHandlers, &$testResolve, $resolver){
 			if(count($nonConcurrentHandlers) === 0){
 				$this->waitForPromises()->onCompletion(function() use ($resolver){
-					$resolver->resolve(""); // TODO: see #6110
+					$resolver->resolve(null);
 				}, function() use ($resolver){
 					$resolver->reject();
 				});
