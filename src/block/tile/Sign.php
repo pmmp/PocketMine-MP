@@ -78,7 +78,10 @@ class Sign extends Spawnable{
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
-		if(($textBlobTag = $nbt->getTag(self::TAG_TEXT_BLOB)) instanceof StringTag){ //MCPE 1.2 save format
+		$frontTextTag = $nbt->getTag(self::TAG_FRONT_TEXT);
+		if($frontTextTag instanceof CompoundTag){
+			$this->readSaveData($frontTextTag);
+		}elseif(($textBlobTag = $nbt->getTag(self::TAG_TEXT_BLOB)) instanceof StringTag){ //MCPE 1.2 save format
 			$baseColor = new Color(0, 0, 0);
 			$glowingText = false;
 			if(($baseColorTag = $nbt->getTag(self::TAG_TEXT_COLOR)) instanceof IntTag){
@@ -107,7 +110,20 @@ class Sign extends Spawnable{
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
-		$nbt->setString(self::TAG_TEXT_BLOB, implode("\n", $this->text->getLines()));
+		$nbt->setTag(self::TAG_FRONT_TEXT, CompoundTag::create()
+			->setString(self::TAG_TEXT_BLOB, implode("\n", $this->text->getLines()))
+			->setInt(self::TAG_TEXT_COLOR, Binary::signInt($this->text->getBaseColor()->toARGB()))
+			->setByte(self::TAG_GLOWING_TEXT, $this->text->isGlowing() ? 1 : 0)
+			->setByte(self::TAG_PERSIST_FORMATTING, 1)
+		);
+		$nbt->setTag(self::TAG_BACK_TEXT, CompoundTag::create()
+			->setString(self::TAG_TEXT_BLOB, "")
+			->setInt(self::TAG_TEXT_COLOR, Binary::signInt(0xff_00_00_00))
+			->setByte(self::TAG_GLOWING_TEXT, 0)
+			->setByte(self::TAG_PERSIST_FORMATTING, 1)
+		);
+
+		$nbt->setString(self::TAG_TEXT_BLOB, implode("\n", $this->text->getLines())); //Backwards-compatibility
 
 		for($i = 0; $i < SignText::LINE_COUNT; ++$i){ //Backwards-compatibility
 			$textKey = sprintf(self::TAG_TEXT_LINE, $i + 1);
