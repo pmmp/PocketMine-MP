@@ -77,25 +77,29 @@ class Sign extends Spawnable{
 		parent::__construct($world, $pos);
 	}
 
+	private function readTextTag(CompoundTag $nbt) : void{
+		$baseColor = new Color(0, 0, 0);
+		$glowingText = false;
+		if(($baseColorTag = $nbt->getTag(self::TAG_TEXT_COLOR)) instanceof IntTag){
+			$baseColor = Color::fromARGB(Binary::unsignInt($baseColorTag->getValue()));
+		}
+		if(
+			($glowingTextTag = $nbt->getTag(self::TAG_GLOWING_TEXT)) instanceof ByteTag &&
+			($lightingBugResolvedTag = $nbt->getTag(self::TAG_LEGACY_BUG_RESOLVE)) instanceof ByteTag
+		){
+			//both of these must be 1 - if only one is set, it's a leftover from 1.16.210 experimental features
+			//see https://bugs.mojang.com/browse/MCPE-117835
+			$glowingText = $glowingTextTag->getValue() !== 0 && $lightingBugResolvedTag->getValue() !== 0;
+		}
+		$this->text = SignText::fromBlob(mb_scrub($nbt->getString(self::TAG_TEXT_BLOB), 'UTF-8'), $baseColor, $glowingText);
+	}
+
 	public function readSaveData(CompoundTag $nbt) : void{
 		$frontTextTag = $nbt->getTag(self::TAG_FRONT_TEXT);
 		if($frontTextTag instanceof CompoundTag){
-			$this->readSaveData($frontTextTag);
-		}elseif(($textBlobTag = $nbt->getTag(self::TAG_TEXT_BLOB)) instanceof StringTag){ //MCPE 1.2 save format
-			$baseColor = new Color(0, 0, 0);
-			$glowingText = false;
-			if(($baseColorTag = $nbt->getTag(self::TAG_TEXT_COLOR)) instanceof IntTag){
-				$baseColor = Color::fromARGB(Binary::unsignInt($baseColorTag->getValue()));
-			}
-			if(
-				($glowingTextTag = $nbt->getTag(self::TAG_GLOWING_TEXT)) instanceof ByteTag &&
-				($lightingBugResolvedTag = $nbt->getTag(self::TAG_LEGACY_BUG_RESOLVE)) instanceof ByteTag
-			){
-				//both of these must be 1 - if only one is set, it's a leftover from 1.16.210 experimental features
-				//see https://bugs.mojang.com/browse/MCPE-117835
-				$glowingText = $glowingTextTag->getValue() !== 0 && $lightingBugResolvedTag->getValue() !== 0;
-			}
-			$this->text = SignText::fromBlob(mb_scrub($textBlobTag->getValue(), 'UTF-8'), $baseColor, $glowingText);
+			$this->readTextTag($frontTextTag);
+		}elseif($nbt->getTag(self::TAG_TEXT_BLOB) instanceof StringTag){ //MCPE 1.2 save format
+			$this->readTextTag($nbt);
 		}else{
 			$text = [];
 			for($i = 0; $i < SignText::LINE_COUNT; ++$i){
