@@ -47,7 +47,7 @@ class SnowLayer extends Flowable implements Fallable{
 	protected int $layers = self::MIN_LAYERS;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(3, self::MIN_LAYERS, self::MAX_LAYERS, $this->layers);
+		$w->boundedIntAuto(self::MIN_LAYERS, self::MAX_LAYERS, $this->layers);
 	}
 
 	public function getLayers() : int{ return $this->layers; }
@@ -75,13 +75,13 @@ class SnowLayer extends Flowable implements Fallable{
 
 	public function getSupportType(int $facing) : SupportType{
 		if(!$this->canBeReplaced()){
-			return SupportType::FULL();
+			return SupportType::FULL;
 		}
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	private function canBeSupportedAt(Block $block) : bool{
-		return $block->getAdjacentSupportType(Facing::DOWN)->equals(SupportType::FULL());
+		return $block->getAdjacentSupportType(Facing::DOWN) === SupportType::FULL;
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

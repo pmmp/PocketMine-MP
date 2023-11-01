@@ -32,9 +32,9 @@ final class MedicineTypeIdMap{
 	use IntSaveIdMapTrait;
 
 	private function __construct(){
-		$this->register(MedicineTypeIds::ANTIDOTE, MedicineType::ANTIDOTE());
-		$this->register(MedicineTypeIds::ELIXIR, MedicineType::ELIXIR());
-		$this->register(MedicineTypeIds::EYE_DROPS, MedicineType::EYE_DROPS());
-		$this->register(MedicineTypeIds::TONIC, MedicineType::TONIC());
+		$this->register(MedicineTypeIds::ANTIDOTE, MedicineType::ANTIDOTE);
+		$this->register(MedicineTypeIds::ELIXIR, MedicineType::ELIXIR);
+		$this->register(MedicineTypeIds::EYE_DROPS, MedicineType::EYE_DROPS);
+		$this->register(MedicineTypeIds::TONIC, MedicineType::TONIC);
 	}
 }

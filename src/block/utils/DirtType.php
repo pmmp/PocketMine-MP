@@ -23,26 +23,20 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static DirtType COARSE()
  * @method static DirtType NORMAL()
  * @method static DirtType ROOTED()
  */
-final class DirtType{
-	use EnumTrait;
+enum DirtType{
+	use LegacyEnumShimTrait;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("normal"),
-			new self("coarse"),
-			new self("rooted")
-		);
-	}
+	case NORMAL;
+	case COARSE;
+	case ROOTED;
 }
