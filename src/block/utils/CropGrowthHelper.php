@@ -66,7 +66,8 @@ final class CropGrowthHelper{
 
 		$xRow = false;
 		$zRow = false;
-		$diagonalRow = false;
+		$improperArrangement = false;
+
 		for($x = -1; $x <= 1; $x++){
 			for($z = -1; $z <= 1; $z++){
 				if($x === 0 && $z === 0){
@@ -74,23 +75,27 @@ final class CropGrowthHelper{
 				}
 				$nextFarmland = $world->getBlockAt($baseX + $x, $baseY - 1, $baseZ + $z);
 
-				if($nextFarmland instanceof Farmland){
-					$result += $nextFarmland->getWetness() > 0 ? self::ADJACENT_HYDRATED_FARMLAND_BONUS : self::ADJACENT_DRY_FARMLAND_BONUS;
+				if(!$nextFarmland instanceof Farmland){
+					continue;
 				}
 
-				$nextCrop = $world->getBlockAt($baseX + $x, $baseY, $baseZ + $z);
-				if($nextCrop->hasSameTypeId($block)){
-					match(0){
-						$x => $xRow = true,
-						$z => $zRow = true,
-						default => $diagonalRow = true,
-					};
+				$result += $nextFarmland->getWetness() > 0 ? self::ADJACENT_HYDRATED_FARMLAND_BONUS : self::ADJACENT_DRY_FARMLAND_BONUS;
+
+				if(!$improperArrangement){
+					$nextCrop = $world->getBlockAt($baseX + $x, $baseY, $baseZ + $z);
+					if($nextCrop->hasSameTypeId($block)){
+						match(0){
+							$x => $zRow ? $improperArrangement = true : $xRow = true,
+							$z => $xRow ? $improperArrangement = true : $zRow = true,
+							default => $improperArrangement = true,
+						};
+					}
 				}
 			}
 		}
 
 		//crops can be arranged in rows, but the rows must not cross and must be spaced apart by at least one block
-		if(($xRow && $zRow) || $diagonalRow){
+		if($improperArrangement){
 			$result /= self::IMPROPER_ARRANGEMENT_DIVISOR;
 		}
 
