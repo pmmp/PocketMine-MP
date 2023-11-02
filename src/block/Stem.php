@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\CropGrowthHelper;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -63,7 +64,7 @@ abstract class Stem extends Crops{
 	}
 
 	public function onRandomTick() : void{
-		if($this->facing === Facing::UP && mt_rand(0, 2) === 1){
+		if($this->facing === Facing::UP && CropGrowthHelper::canGrow($this)){
 			$world = $this->position->getWorld();
 			if($this->age < self::MAX_AGE){
 				$block = clone $this;
