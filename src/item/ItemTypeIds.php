@@ -305,8 +305,25 @@ final class ItemTypeIds{
 	public const CHERRY_SIGN = 20266;
 	public const ENCHANTED_BOOK = 20267;
 	public const TORCHFLOWER_SEEDS = 20268;
+	public const NETHERITE_UPGRADE = 20269;
+	public const SENTRY_ARMOR_TRIM = 20270;
+	public const VEX_ARMOR_TRIM = 20271;
+	public const WILD_ARMOR_TRIM = 20272;
+	public const COAST_ARMOR_TRIM = 20273;
+	public const DUNE_ARMOR_TRIM = 20274;
+	public const WAYFINDER_ARMOR_TRIM = 20275;
+	public const RAISER_ARMOR_TRIM = 20276;
+	public const SHAPER_ARMOR_TRIM = 20277;
+	public const HOST_ARMOR_TRIM = 20278;
+	public const WARD_ARMOR_TRIM = 20279;
+	public const SILENCE_ARMOR_TRIM = 20280;
+	public const TIDE_ARMOR_TRIM = 20281;
+	public const SNOUT_ARMOR_TRIM = 20282;
+	public const RIB_ARMOR_TRIM = 20283;
+	public const EYE_ARMOR_TRIM = 20284;
+	public const SPIRE_ARMOR_TRIM = 20285;
 
-	public const FIRST_UNUSED_ITEM_ID = 20269;
+	public const FIRST_UNUSED_ITEM_ID = 20286;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 

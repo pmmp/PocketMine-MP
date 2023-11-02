@@ -339,6 +339,7 @@ final class VanillaItems{
 		self::registerArmorItems();
 		self::registerSpawnEggs();
 		self::registerTierToolItems();
+		self::registerSmithingTemplates();
 
 		self::register("air", Blocks::AIR()->asItem()->setCount(0));
 
@@ -642,6 +643,27 @@ final class VanillaItems{
 		self::register("iron_leggings", new Armor(new IID(Ids::IRON_LEGGINGS), "Iron Leggings", new ArmorTypeInfo(5, 226, ArmorInventory::SLOT_LEGS, material: ArmorMaterials::IRON()), [EnchantmentTags::LEGGINGS]));
 		self::register("leather_pants", new Armor(new IID(Ids::LEATHER_PANTS), "Leather Pants", new ArmorTypeInfo(2, 76, ArmorInventory::SLOT_LEGS, material: ArmorMaterials::LEATHER()), [EnchantmentTags::LEGGINGS]));
 		self::register("netherite_leggings", new Armor(new IID(Ids::NETHERITE_LEGGINGS), "Netherite Leggings", new ArmorTypeInfo(6, 556, ArmorInventory::SLOT_LEGS, 3, true, material: ArmorMaterials::NETHERITE()), [EnchantmentTags::LEGGINGS]));
+	}
+
+	private static function registerSmithingTemplates() : void{
+		self::register("netherite_upgrade_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::NETHERITE_UPGRADE), "Smithing Template"));
+
+		self::register("coast_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::COAST_ARMOR_TRIM), "Coast Armor Trim"));
+		self::register("dune_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::DUNE_ARMOR_TRIM), "Dune Armor Trim"));
+		self::register("eye_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::COAST_ARMOR_TRIM), "Eye Armor Trim"));
+		self::register("host_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::HOST_ARMOR_TRIM), "Host Armor Trim"));
+		self::register("raiser_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::RAISER_ARMOR_TRIM), "Raiser Armor Trim"));
+		self::register("rib_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::RIB_ARMOR_TRIM), "Rib Armor Trim"));
+		self::register("sentry_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::SENTRY_ARMOR_TRIM), "Sentry Armor Trim"));
+		self::register("shaper_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::SHAPER_ARMOR_TRIM), "Shaper Armor Trim"));
+		self::register("silence_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::SILENCE_ARMOR_TRIM), "Silence Armor Trim"));
+		self::register("snout_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::SNOUT_ARMOR_TRIM), "Snout Armor Trim"));
+		self::register("spire_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::SPIRE_ARMOR_TRIM), "Spire Armor Trim"));
+		self::register("tide_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::TIDE_ARMOR_TRIM), "Tide Armor Trim"));
+		self::register("vex_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::VEX_ARMOR_TRIM), "Vex Armor Trim"));
+		self::register("ward_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::WARD_ARMOR_TRIM), "Ward Armor Trim"));
+		self::register("wayfinder_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::WAYFINDER_ARMOR_TRIM), "Wayfinder Armor Trim"));
+		self::register("wild_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::WILD_ARMOR_TRIM), "Wild Armor Trim"));
 	}
 
 }
