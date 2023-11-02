@@ -58,6 +58,10 @@ abstract class Stem extends Crops{
 		parent::onNearbyBlockChange();
 	}
 
+	public function ticksRandomly() : bool{
+		return $this->age < self::MAX_AGE || $this->facing === Facing::UP;
+	}
+
 	public function onRandomTick() : void{
 		if($this->facing === Facing::UP && mt_rand(0, 2) === 1){
 			$world = $this->position->getWorld();
