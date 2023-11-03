@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\StainedGlassPane;
 use pocketmine\block\utils\RecordType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\entity\Entity;
@@ -41,10 +42,6 @@ use pocketmine\world\World;
 use function strtolower;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
  *
  * @method static Boat ACACIA_BOAT()
  * @method static ItemBlockWallOrFloor ACACIA_SIGN()
@@ -121,6 +118,7 @@ use function strtolower;
  * @method static Clock CLOCK()
  * @method static Clownfish CLOWNFISH()
  * @method static Coal COAL()
+ * @method static Item COAST_ARMOR_TRIM_SMITHING_TEMPLATE();
  * @method static CocoaBeans COCOA_BEANS()
  * @method static Compass COMPASS()
  * @method static CookedChicken COOKED_CHICKEN()
@@ -148,6 +146,7 @@ use function strtolower;
  * @method static Item DISC_FRAGMENT_5()
  * @method static Item DRAGON_BREATH()
  * @method static DriedKelp DRIED_KELP()
+ * @method static Item DUNE_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Dye DYE()
  * @method static Item ECHO_SHARD()
  * @method static Egg EGG()
@@ -156,6 +155,7 @@ use function strtolower;
  * @method static GoldenAppleEnchanted ENCHANTED_GOLDEN_APPLE()
  * @method static EnderPearl ENDER_PEARL()
  * @method static ExperienceBottle EXPERIENCE_BOTTLE()
+ * @method static Item EYE_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Item FEATHER()
  * @method static Item FERMENTED_SPIDER_EYE()
  * @method static FireCharge FIRE_CHARGE()
@@ -185,6 +185,7 @@ use function strtolower;
  * @method static Item HEART_OF_THE_SEA()
  * @method static Item HONEYCOMB()
  * @method static HoneyBottle HONEY_BOTTLE()
+ * @method static Item HOST_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Item INK_SAC()
  * @method static Axe IRON_AXE()
  * @method static Armor IRON_BOOTS()
@@ -230,6 +231,7 @@ use function strtolower;
  * @method static Item NETHER_BRICK()
  * @method static Item NETHER_QUARTZ()
  * @method static Item NETHER_STAR()
+ * @method static Item NETHERITE_UPGRADE_SMITHING_TEMPLATE()
  * @method static Boat OAK_BOAT()
  * @method static ItemBlockWallOrFloor OAK_SIGN()
  * @method static PaintingItem PAINTING()
@@ -247,6 +249,7 @@ use function strtolower;
  * @method static Item RABBIT_FOOT()
  * @method static Item RABBIT_HIDE()
  * @method static RabbitStew RABBIT_STEW()
+ * @method static Item RAISER_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static RawBeef RAW_BEEF()
  * @method static RawChicken RAW_CHICKEN()
  * @method static Item RAW_COPPER()
@@ -273,13 +276,19 @@ use function strtolower;
  * @method static Record RECORD_WAIT()
  * @method static Record RECORD_WARD()
  * @method static Redstone REDSTONE_DUST()
+ * @method static Item RIB_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static RottenFlesh ROTTEN_FLESH()
  * @method static Item SCUTE()
+ * @method static Item SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE()
+ * @method static Item SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Shears SHEARS()
  * @method static Item SHULKER_SHELL()
+ * @method static Item SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Item SLIMEBALL()
+ * @method static Item SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Snowball SNOWBALL()
  * @method static SpiderEye SPIDER_EYE()
+ * @method static Item SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static SplashPotion SPLASH_POTION()
  * @method static Boat SPRUCE_BOAT()
  * @method static ItemBlockWallOrFloor SPRUCE_SIGN()
@@ -297,13 +306,18 @@ use function strtolower;
  * @method static SuspiciousStew SUSPICIOUS_STEW()
  * @method static SweetBerries SWEET_BERRIES()
  * @method static TorchflowerSeeds TORCHFLOWER_SEEDS()
+ * @method static Item TIDE_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Totem TOTEM()
  * @method static TurtleHelmet TURTLE_HELMET()
+ * @method static Item VEX_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static SpawnEgg VILLAGER_SPAWN_EGG()
+ * @method static Item WARD_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static ItemBlockWallOrFloor WARPED_SIGN()
  * @method static LiquidBucket WATER_BUCKET()
+ * @method static Item WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Item WHEAT()
  * @method static WheatSeeds WHEAT_SEEDS()
+ * @method static Item WILD_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Axe WOODEN_AXE()
  * @method static Hoe WOODEN_HOE()
  * @method static Pickaxe WOODEN_PICKAXE()
@@ -646,24 +660,23 @@ final class VanillaItems{
 	}
 
 	private static function registerSmithingTemplates() : void{
-		self::register("netherite_upgrade_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::NETHERITE_UPGRADE), "Smithing Template"));
-
-		self::register("coast_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::COAST_ARMOR_TRIM), "Coast Armor Trim"));
-		self::register("dune_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::DUNE_ARMOR_TRIM), "Dune Armor Trim"));
-		self::register("eye_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::COAST_ARMOR_TRIM), "Eye Armor Trim"));
-		self::register("host_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::HOST_ARMOR_TRIM), "Host Armor Trim"));
-		self::register("raiser_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::RAISER_ARMOR_TRIM), "Raiser Armor Trim"));
-		self::register("rib_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::RIB_ARMOR_TRIM), "Rib Armor Trim"));
-		self::register("sentry_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::SENTRY_ARMOR_TRIM), "Sentry Armor Trim"));
-		self::register("shaper_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::SHAPER_ARMOR_TRIM), "Shaper Armor Trim"));
-		self::register("silence_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::SILENCE_ARMOR_TRIM), "Silence Armor Trim"));
-		self::register("snout_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::SNOUT_ARMOR_TRIM), "Snout Armor Trim"));
-		self::register("spire_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::SPIRE_ARMOR_TRIM), "Spire Armor Trim"));
-		self::register("tide_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::TIDE_ARMOR_TRIM), "Tide Armor Trim"));
-		self::register("vex_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::VEX_ARMOR_TRIM), "Vex Armor Trim"));
-		self::register("ward_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::WARD_ARMOR_TRIM), "Ward Armor Trim"));
-		self::register("wayfinder_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::WAYFINDER_ARMOR_TRIM), "Wayfinder Armor Trim"));
-		self::register("wild_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::WILD_ARMOR_TRIM), "Wild Armor Trim"));
+		self::register("netherite_upgrade_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::NETHERITE_UPGRADE_SMITHING_TEMPLATE), "Smithing Template"));
+		self::register("coast_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::COAST_ARMOR_TRIM_SMITHING_TEMPLATE), "Coast Armor Trim"));
+		self::register("dune_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::DUNE_ARMOR_TRIM_SMITHING_TEMPLATE), "Dune Armor Trim"));
+		self::register("eye_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::EYE_ARMOR_TRIM_SMITHING_TEMPLATE), "Eye Armor Trim"));
+		self::register("host_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::HOST_ARMOR_TRIM_SMITHING_TEMPLATE), "Host Armor Trim"));
+		self::register("raiser_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::RAISER_ARMOR_TRIM_SMITHING_TEMPLATE), "Raiser Armor Trim"));
+		self::register("rib_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::RIB_ARMOR_TRIM_SMITHING_TEMPLATE), "Rib Armor Trim"));
+		self::register("sentry_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE), "Sentry Armor Trim"));
+		self::register("shaper_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE), "Shaper Armor Trim"));
+		self::register("silence_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE), "Silence Armor Trim"));
+		self::register("snout_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE), "Snout Armor Trim"));
+		self::register("spire_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE), "Spire Armor Trim"));
+		self::register("tide_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::TIDE_ARMOR_TRIM_SMITHING_TEMPLATE), "Tide Armor Trim"));
+		self::register("vex_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::VEX_ARMOR_TRIM_SMITHING_TEMPLATE), "Vex Armor Trim"));
+		self::register("ward_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::WARD_ARMOR_TRIM_SMITHING_TEMPLATE), "Ward Armor Trim"));
+		self::register("wayfinder_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE), "Wayfinder Armor Trim"));
+		self::register("wild_armor_trim_smithing_template", new Item(new ItemIdentifier(ItemTypeIds::WILD_ARMOR_TRIM_SMITHING_TEMPLATE), "Wild Armor Trim"));
 	}
 
 }
