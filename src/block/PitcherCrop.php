@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\CropGrowthHelper;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Fertilizer;
@@ -35,7 +36,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
-use function mt_rand;
 
 final class PitcherCrop extends Flowable{
 	use AgeableTrait;
@@ -97,8 +97,7 @@ final class PitcherCrop extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		//TODO: the growth speed is influenced by farmland and nearby crops
-		if(mt_rand(0, 2) === 0){
+		if(CropGrowthHelper::canGrow($this)){
 			$this->grow(null);
 		}
 	}

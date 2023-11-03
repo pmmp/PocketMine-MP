@@ -826,14 +826,15 @@ class World implements ChunkManager{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		$loaderId = spl_object_id($loader);
 		if(isset($this->chunkLoaders[$chunkHash][$loaderId])){
-			unset($this->chunkLoaders[$chunkHash][$loaderId]);
-			if(count($this->chunkLoaders[$chunkHash]) === 0){
+			if(count($this->chunkLoaders[$chunkHash]) === 1){
 				unset($this->chunkLoaders[$chunkHash]);
 				$this->unloadChunkRequest($chunkX, $chunkZ, true);
 				if(isset($this->chunkPopulationRequestMap[$chunkHash]) && !isset($this->activeChunkPopulationTasks[$chunkHash])){
 					$this->chunkPopulationRequestMap[$chunkHash]->reject();
 					unset($this->chunkPopulationRequestMap[$chunkHash]);
 				}
+			}else{
+				unset($this->chunkLoaders[$chunkHash][$loaderId]);
 			}
 		}
 	}
@@ -861,11 +862,12 @@ class World implements ChunkManager{
 	public function unregisterChunkListener(ChunkListener $listener, int $chunkX, int $chunkZ) : void{
 		$hash = World::chunkHash($chunkX, $chunkZ);
 		if(isset($this->chunkListeners[$hash])){
-			unset($this->chunkListeners[$hash][spl_object_id($listener)]);
-			unset($this->playerChunkListeners[$hash][spl_object_id($listener)]);
-			if(count($this->chunkListeners[$hash]) === 0){
+			if(count($this->chunkListeners[$hash]) === 1){
 				unset($this->chunkListeners[$hash]);
 				unset($this->playerChunkListeners[$hash]);
+			}else{
+				unset($this->chunkListeners[$hash][spl_object_id($listener)]);
+				unset($this->playerChunkListeners[$hash][spl_object_id($listener)]);
 			}
 		}
 	}
@@ -948,9 +950,7 @@ class World implements ChunkManager{
 			$this->providerGarbageCollectionTicker = 0;
 		}
 
-		//Do block updates
 		$this->timings->scheduledBlockUpdates->startTiming();
-
 		//Delayed updates
 		while($this->scheduledBlockUpdateQueue->count() > 0 && $this->scheduledBlockUpdateQueue->current()["priority"] <= $currentTick){
 			/** @var Vector3 $vec */
@@ -962,7 +962,9 @@ class World implements ChunkManager{
 			$block = $this->getBlock($vec);
 			$block->onScheduledUpdate();
 		}
+		$this->timings->scheduledBlockUpdates->stopTiming();
 
+		$this->timings->neighbourBlockUpdates->startTiming();
 		//Normal updates
 		while($this->neighbourBlockUpdateQueue->count() > 0){
 			$index = $this->neighbourBlockUpdateQueue->dequeue();
@@ -973,11 +975,6 @@ class World implements ChunkManager{
 			}
 
 			$block = $this->getBlockAt($x, $y, $z);
-			$replacement = $block->readStateFromWorld(); //for blocks like fences, force recalculation of connected AABBs
-			if($replacement !== $block){
-				$replacement->position($this, $x, $y, $z);
-				$block = $replacement;
-			}
 
 			if(BlockUpdateEvent::hasHandlers()){
 				$ev = new BlockUpdateEvent($block);
@@ -992,7 +989,7 @@ class World implements ChunkManager{
 			$block->onNearbyBlockChange();
 		}
 
-		$this->timings->scheduledBlockUpdates->stopTiming();
+		$this->timings->neighbourBlockUpdates->stopTiming();
 
 		$this->timings->entityTick->startTiming();
 		//Update entities that need update
@@ -1102,19 +1099,22 @@ class World implements ChunkManager{
 			$blockPosition = BlockPosition::fromVector3($b);
 
 			$tile = $this->getTileAt($b->x, $b->y, $b->z);
-			if($tile instanceof Spawnable && count($fakeStateProperties = $tile->getRenderUpdateBugWorkaroundStateProperties($fullBlock)) > 0){
-				$originalStateData = $blockTranslator->internalIdToNetworkStateData($fullBlock->getStateId());
-				$fakeStateData = new BlockStateData(
-					$originalStateData->getName(),
-					array_merge($originalStateData->getStates(), $fakeStateProperties),
-					$originalStateData->getVersion()
-				);
-				$packets[] = UpdateBlockPacket::create(
-					$blockPosition,
-					$blockTranslator->getBlockStateDictionary()->lookupStateIdFromData($fakeStateData) ?? throw new AssumptionFailedError("Unmapped fake blockstate data: " . $fakeStateData->toNbt()),
-					UpdateBlockPacket::FLAG_NETWORK,
-					UpdateBlockPacket::DATA_LAYER_NORMAL
-				);
+			if($tile instanceof Spawnable){
+				$expectedClass = $fullBlock->getIdInfo()->getTileClass();
+				if($expectedClass !== null && $tile instanceof $expectedClass && count($fakeStateProperties = $tile->getRenderUpdateBugWorkaroundStateProperties($fullBlock)) > 0){
+					$originalStateData = $blockTranslator->internalIdToNetworkStateData($fullBlock->getStateId());
+					$fakeStateData = new BlockStateData(
+						$originalStateData->getName(),
+						array_merge($originalStateData->getStates(), $fakeStateProperties),
+						$originalStateData->getVersion()
+					);
+					$packets[] = UpdateBlockPacket::create(
+						$blockPosition,
+						$blockTranslator->getBlockStateDictionary()->lookupStateIdFromData($fakeStateData) ?? throw new AssumptionFailedError("Unmapped fake blockstate data: " . $fakeStateData->toNbt()),
+						UpdateBlockPacket::FLAG_NETWORK,
+						UpdateBlockPacket::DATA_LAYER_NORMAL
+					);
+				}
 			}
 			$packets[] = UpdateBlockPacket::create(
 				$blockPosition,
@@ -1221,13 +1221,14 @@ class World implements ChunkManager{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		$tickerId = spl_object_id($ticker);
 		if(isset($this->registeredTickingChunks[$chunkHash][$tickerId])){
-			unset($this->registeredTickingChunks[$chunkHash][$tickerId]);
-			if(count($this->registeredTickingChunks[$chunkHash]) === 0){
+			if(count($this->registeredTickingChunks[$chunkHash]) === 1){
 				unset(
 					$this->registeredTickingChunks[$chunkHash],
 					$this->recheckTickingChunks[$chunkHash],
 					$this->validTickingChunks[$chunkHash]
 				);
+			}else{
+				unset($this->registeredTickingChunks[$chunkHash][$tickerId]);
 			}
 		}
 	}
@@ -2294,9 +2295,6 @@ class World implements ChunkManager{
 
 		for($x = $minX; $x <= $maxX; ++$x){
 			for($z = $minZ; $z <= $maxZ; ++$z){
-				if(!$this->isChunkLoaded($x, $z)){
-					continue;
-				}
 				foreach($this->getChunkEntities($x, $z) as $ent){
 					if($ent !== $entity && $ent->boundingBox->intersectsWith($bb)){
 						$nearby[] = $ent;
@@ -2337,9 +2335,6 @@ class World implements ChunkManager{
 
 		for($x = $minX; $x <= $maxX; ++$x){
 			for($z = $minZ; $z <= $maxZ; ++$z){
-				if(!$this->isChunkLoaded($x, $z)){
-					continue;
-				}
 				foreach($this->getChunkEntities($x, $z) as $entity){
 					if(!($entity instanceof $entityType) || $entity->isFlaggedForDespawn() || (!$includeDead && !$entity->isAlive())){
 						continue;
@@ -2666,9 +2661,10 @@ class World implements ChunkManager{
 		$pos = $this->entityLastKnownPositions[$entity->getId()];
 		$chunkHash = World::chunkHash($pos->getFloorX() >> Chunk::COORD_BIT_SIZE, $pos->getFloorZ() >> Chunk::COORD_BIT_SIZE);
 		if(isset($this->entitiesByChunk[$chunkHash][$entity->getId()])){
-			unset($this->entitiesByChunk[$chunkHash][$entity->getId()]);
-			if(count($this->entitiesByChunk[$chunkHash]) === 0){
+			if(count($this->entitiesByChunk[$chunkHash]) === 1){
 				unset($this->entitiesByChunk[$chunkHash]);
+			}else{
+				unset($this->entitiesByChunk[$chunkHash][$entity->getId()]);
 			}
 		}
 		unset($this->entityLastKnownPositions[$entity->getId()]);
@@ -2701,9 +2697,10 @@ class World implements ChunkManager{
 		if($oldChunkX !== $newChunkX || $oldChunkZ !== $newChunkZ){
 			$oldChunkHash = World::chunkHash($oldChunkX, $oldChunkZ);
 			if(isset($this->entitiesByChunk[$oldChunkHash][$entity->getId()])){
-				unset($this->entitiesByChunk[$oldChunkHash][$entity->getId()]);
-				if(count($this->entitiesByChunk[$oldChunkHash]) === 0){
+				if(count($this->entitiesByChunk[$oldChunkHash]) === 1){
 					unset($this->entitiesByChunk[$oldChunkHash]);
+				}else{
+					unset($this->entitiesByChunk[$oldChunkHash][$entity->getId()]);
 				}
 			}
 
@@ -2897,15 +2894,7 @@ class World implements ChunkManager{
 				}elseif($this->getTile($tilePosition) !== null){
 					$logger->error("Cannot add tile at x=$tilePosition->x,y=$tilePosition->y,z=$tilePosition->z: Another tile is already at that position");
 				}else{
-					$block = $this->getBlockAt($tilePosition->getFloorX(), $tilePosition->getFloorY(), $tilePosition->getFloorZ());
-					$expectedClass = $block->getIdInfo()->getTileClass();
-					if($expectedClass === null){
-						$logger->error("Cannot add tile at x=$tilePosition->x,y=$tilePosition->y,z=$tilePosition->z: Block at that position (" . $block->getName() . ") does not expect a tile");
-					}elseif(!($tile instanceof $expectedClass)){
-						$logger->error("Cannot add tile at x=$tilePosition->x,y=$tilePosition->y,z=$tilePosition->z: Tile is of wrong type (expected $expectedClass but have " . get_class($tile) . ")");
-					}else{
-						$this->addTile($tile);
-					}
+					$this->addTile($tile);
 				}
 			}
 
