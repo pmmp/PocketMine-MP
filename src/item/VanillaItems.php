@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\block\StainedGlassPane;
 use pocketmine\block\utils\RecordType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\entity\Entity;
@@ -42,6 +41,10 @@ use pocketmine\world\World;
 use function strtolower;
 
 /**
+ * This doc-block is generated automatically, do not modify it manually.
+ * This must be regenerated whenever registry members are added, removed or changed.
+ * @see build/generate-registry-annotations.php
+ * @generate-registry-docblock
  *
  * @method static Boat ACACIA_BOAT()
  * @method static ItemBlockWallOrFloor ACACIA_SIGN()
