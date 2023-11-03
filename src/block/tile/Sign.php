@@ -127,12 +127,6 @@ class Sign extends Spawnable{
 			->setByte(self::TAG_PERSIST_FORMATTING, 1)
 		);
 
-		$nbt->setString(self::TAG_TEXT_BLOB, implode("\n", $this->text->getLines())); //Backwards-compatibility
-
-		for($i = 0; $i < SignText::LINE_COUNT; ++$i){ //Backwards-compatibility
-			$textKey = sprintf(self::TAG_TEXT_LINE, $i + 1);
-			$nbt->setString($textKey, $this->text->getLine($i));
-		}
 		$nbt->setInt(self::TAG_TEXT_COLOR, Binary::signInt($this->text->getBaseColor()->toARGB()));
 		$nbt->setByte(self::TAG_GLOWING_TEXT, $this->text->isGlowing() ? 1 : 0);
 		$nbt->setByte(self::TAG_LEGACY_BUG_RESOLVE, 1);
