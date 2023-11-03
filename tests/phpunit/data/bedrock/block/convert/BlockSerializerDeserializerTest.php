@@ -28,6 +28,7 @@ use pocketmine\block\BaseBanner;
 use pocketmine\block\Bed;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\block\CaveVines;
+use pocketmine\block\Farmland;
 use pocketmine\block\MobHead;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
@@ -76,6 +77,8 @@ final class BlockSerializerDeserializerTest extends TestCase{
 				$newBlock->setMobHeadType($block->getMobHeadType());
 			}elseif($block instanceof CaveVines && $newBlock instanceof CaveVines && !$block->hasBerries()){
 				$newBlock->setHead($block->isHead());
+			}elseif($block instanceof Farmland && $newBlock instanceof Farmland){
+				$block->setWaterPositionIndex($newBlock->getWaterPositionIndex());
 			}
 
 			self::assertSame($block->getStateId(), $newBlock->getStateId(), "Mismatch of blockstate for " . $block->getName() . ", " . print_r($block, true) . " vs " . print_r($newBlock, true));

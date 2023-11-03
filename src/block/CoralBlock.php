@@ -24,18 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
-use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\CoralTypeTrait;
 use pocketmine\item\Item;
 use function mt_rand;
 
 final class CoralBlock extends Opaque{
 	use CoralTypeTrait;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->coralType = CoralType::TUBE();
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->dead){

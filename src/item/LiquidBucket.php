@@ -56,7 +56,7 @@ class LiquidBucket extends Item{
 
 	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		if(!$blockReplace->canBeReplaced()){
-			return ItemUseResult::NONE();
+			return ItemUseResult::NONE;
 		}
 
 		//TODO: move this to generic placement logic
@@ -70,10 +70,10 @@ class LiquidBucket extends Item{
 
 			$this->pop();
 			$returnedItems[] = $ev->getItem();
-			return ItemUseResult::SUCCESS();
+			return ItemUseResult::SUCCESS;
 		}
 
-		return ItemUseResult::FAIL();
+		return ItemUseResult::FAIL;
 	}
 
 	public function getLiquid() : Liquid{

@@ -39,7 +39,7 @@ class SeaPickle extends Transparent{
 	protected bool $underwater = false;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(2, self::MIN_COUNT, self::MAX_COUNT, $this->count);
+		$w->boundedIntAuto(self::MIN_COUNT, self::MAX_COUNT, $this->count);
 		$w->bool($this->underwater);
 	}
 
@@ -78,7 +78,7 @@ class SeaPickle extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
