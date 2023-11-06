@@ -1670,7 +1670,10 @@ class World implements ChunkManager{
 	 * time of day.
 	 */
 	public function getFullLight(Vector3 $pos) : int{
-		return $this->getFullLightAt($pos->x, $pos->y, $pos->z);
+		$floorX = $pos->getFloorX();
+		$floorY = $pos->getFloorY();
+		$floorZ = $pos->getFloorZ();
+		return $this->getFullLightAt($floorX, $floorY, $floorZ);
 	}
 
 	/**
@@ -1699,7 +1702,10 @@ class World implements ChunkManager{
 	 * This is not affected by weather or time of day.
 	 */
 	public function getPotentialLight(Vector3 $pos) : int{
-		return $this->getPotentialLightAt($pos->x, $pos->y, $pos->z);
+		$floorX = $pos->getFloorX();
+		$floorY = $pos->getFloorY();
+		$floorZ = $pos->getFloorZ();
+		return $this->getPotentialLightAt($floorX, $floorY, $floorZ);
 	}
 
 	/**

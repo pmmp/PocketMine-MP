@@ -109,7 +109,7 @@ final class CropGrowthHelper{
 		$world = $position->getWorld();
 
 		//crop growth is not affected by time of day since 1.11 or so
-		return $world->getPotentialLight($position) >= $minLevel;
+		return $world->getPotentialLightAt($position->x, $position->y, $position->z) >= $minLevel;
 	}
 
 	public static function canGrow(Block $block) : bool{
