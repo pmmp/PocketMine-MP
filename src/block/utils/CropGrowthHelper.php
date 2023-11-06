@@ -36,6 +36,8 @@ final class CropGrowthHelper{
 
 	private const IMPROPER_ARRANGEMENT_DIVISOR = 2;
 
+	private const MIN_LIGHT_LEVEL = 9;
+
 	private function __construct(){
 		//NOOP
 	}
@@ -102,9 +104,17 @@ final class CropGrowthHelper{
 		return $result;
 	}
 
+	public static function hasEnoughLight(Block $block, int $minLevel = self::MIN_LIGHT_LEVEL) : bool{
+		$position = $block->getPosition();
+		$world = $position->getWorld();
+
+		//crop growth is not affected by time of day since 1.11 or so
+		return $world->getPotentialLight($position) >= $minLevel;
+	}
+
 	public static function canGrow(Block $block) : bool{
 		//while it may be tempting to use mt_rand(0, 25) < multiplier, this would make crops grow a bit faster than
 		//vanilla in most cases due to the remainder of 25 / multiplier not being discarded
-		return mt_rand(0, (int) (25 / self::calculateMultiplier($block))) === 0;
+		return mt_rand(0, (int) (25 / self::calculateMultiplier($block))) === 0 && self::hasEnoughLight($block);
 	}
 }
