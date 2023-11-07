@@ -270,11 +270,22 @@ class Block{
 	}
 
 	private function encodeFullState() : int{
-		$writer = new RuntimeDataWriter($this->requiredBlockItemStateDataBits + $this->requiredBlockOnlyStateDataBits);
-		$writer->writeInt($this->requiredBlockItemStateDataBits, $this->encodeBlockItemState());
-		$writer->writeInt($this->requiredBlockOnlyStateDataBits, $this->encodeBlockOnlyState());
+		$blockItemBits = $this->requiredBlockItemStateDataBits;
+		$blockOnlyBits = $this->requiredBlockOnlyStateDataBits;
 
-		return $writer->getValue();
+		if($blockOnlyBits === 0 && $blockItemBits === 0){
+			return 0;
+		}
+
+		$result = 0;
+		if($blockItemBits > 0){
+			$result |= $this->encodeBlockItemState();
+		}
+		if($blockOnlyBits > 0){
+			$result |= $this->encodeBlockOnlyState() << $blockItemBits;
+		}
+
+		return $result;
 	}
 
 	/**
