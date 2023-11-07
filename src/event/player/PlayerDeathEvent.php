@@ -24,13 +24,16 @@ declare(strict_types=1);
 namespace pocketmine\event\player;
 
 use pocketmine\block\BlockTypeIds;
+use pocketmine\entity\Human;
 use pocketmine\entity\Living;
 use pocketmine\entity\object\FallingBlock;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
+use pocketmine\item\Elytra;
 use pocketmine\item\Item;
+use pocketmine\item\ItemTypeIds;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
 use pocketmine\player\Player;
@@ -146,7 +149,12 @@ class PlayerDeathEvent extends EntityDeathEvent{
 				return KnownTranslationFactory::death_attack_drown($name);
 
 			case EntityDamageEvent::CAUSE_CONTACT:
-				if($deathCause instanceof EntityDamageByBlockEvent){
+				$entity = $deathCause->getEntity();
+				if($entity instanceof Living){
+					if($entity->getArmorInventory()->getChestplate()->getTypeId() === ItemTypeIds::ELYTRA){
+						return KnownTranslationFactory::death_attack_flyIntoWall($name);
+					}
+				}elseif($deathCause instanceof EntityDamageByBlockEvent){
 					if($deathCause->getDamager()->getTypeId() === BlockTypeIds::CACTUS){
 						return KnownTranslationFactory::death_attack_cactus($name);
 					}
