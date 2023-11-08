@@ -46,7 +46,6 @@ use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\VanillaBlocks as Blocks;
-use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
@@ -470,7 +469,8 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapLog(Ids::CRIMSON_HYPHAE, Ids::STRIPPED_CRIMSON_HYPHAE, fn() => Blocks::CRIMSON_HYPHAE());
 		$this->mapLog(Ids::CRIMSON_STEM, Ids::STRIPPED_CRIMSON_STEM, fn() => Blocks::CRIMSON_STEM());
 		$this->mapSimple(Ids::CRIMSON_FENCE, fn() => Blocks::CRIMSON_FENCE());
-		$this->mapSimple(Ids::CRIMSON_PLANKS, fn() => Blocks::CRIMSON_PLANKS());
+        $this->mapSimple(Ids::CRIMSON_NYLIUM, fn() => Blocks::CRIMSON_NYLIUM());
+        $this->mapSimple(Ids::CRIMSON_PLANKS, fn() => Blocks::CRIMSON_PLANKS());
 		$this->mapSlab(Ids::CRIMSON_SLAB, Ids::CRIMSON_DOUBLE_SLAB, fn() => Blocks::CRIMSON_SLAB());
 		$this->mapStairs(Ids::CRIMSON_STAIRS, fn() => Blocks::CRIMSON_STAIRS());
 
@@ -551,6 +551,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapLog(Ids::WARPED_HYPHAE, Ids::STRIPPED_WARPED_HYPHAE, fn() => Blocks::WARPED_HYPHAE());
 		$this->mapLog(Ids::WARPED_STEM, Ids::STRIPPED_WARPED_STEM, fn() => Blocks::WARPED_STEM());
 		$this->mapSimple(Ids::WARPED_FENCE, fn() => Blocks::WARPED_FENCE());
+        $this->mapSimple(Ids::WARPED_NYLIUM, fn() => Blocks::WARPED_NYLIUM());
 		$this->mapSimple(Ids::WARPED_PLANKS, fn() => Blocks::WARPED_PLANKS());
 		$this->mapSlab(Ids::WARPED_SLAB, Ids::WARPED_DOUBLE_SLAB, fn() => Blocks::WARPED_SLAB());
 		$this->mapStairs(Ids::WARPED_STAIRS, fn() => Blocks::WARPED_STAIRS());
@@ -1019,7 +1020,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		});
 		$this->map(Ids::CHEST, function(Reader $in) : Block{
 			return Blocks::CHEST()
-				->setFacing($in->readCardinalHorizontalFacing());
+				->setFacing($in->readHorizontalFacing());
 		});
 		$this->map(Ids::CHORUS_FLOWER, function(Reader $in) : Block{
 			return Blocks::CHORUS_FLOWER()
@@ -1120,7 +1121,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		});
 		$this->map(Ids::ENDER_CHEST, function(Reader $in) : Block{
 			return Blocks::ENDER_CHEST()
-				->setFacing($in->readCardinalHorizontalFacing());
+				->setFacing($in->readHorizontalFacing());
 		});
 		$this->map(Ids::EXPOSED_COPPER, fn() => Helper::decodeCopper(Blocks::COPPER(), CopperOxidation::EXPOSED));
 		$this->map(Ids::EXPOSED_CUT_COPPER, fn() => Helper::decodeCopper(Blocks::CUT_COPPER(), CopperOxidation::EXPOSED));
@@ -1560,7 +1561,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		});
 		$this->map(Ids::STONECUTTER_BLOCK, function(Reader $in) : Block{
 			return Blocks::STONECUTTER()
-				->setFacing($in->readCardinalHorizontalFacing());
+				->setFacing($in->readHorizontalFacing());
 		});
 		$this->map(Ids::SWEET_BERRY_BUSH, function(Reader $in) : Block{
 			//berry bush only wants 0-3, but it can be bigger in MCPE due to misuse of GROWTH state which goes up to 7
@@ -1591,7 +1592,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		});
 		$this->map(Ids::TRAPPED_CHEST, function(Reader $in) : Block{
 			return Blocks::TRAPPED_CHEST()
-				->setFacing($in->readCardinalHorizontalFacing());
+				->setFacing($in->readHorizontalFacing());
 		});
 		$this->map(Ids::TRIP_WIRE, function(Reader $in) : Block{
 			return Blocks::TRIPWIRE()
