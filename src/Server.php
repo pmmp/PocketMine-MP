@@ -570,6 +570,7 @@ class Server{
 		$playerPromiseResolver = new PromiseResolver();
 
 		$createPlayer = function(Location $location) use ($playerPromiseResolver, $class, $session, $playerInfo, $authenticated, $offlinePlayerData) : void{
+			/** @see Player::__construct() */
 			$player = new $class($this, $session, $playerInfo, $authenticated, $location, $offlinePlayerData);
 			if(!$player->hasPlayedBefore()){
 				$player->onGround = true; //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
@@ -1258,9 +1259,10 @@ class Server{
 	 */
 	public function unsubscribeFromBroadcastChannel(string $channelId, CommandSender $subscriber) : void{
 		if(isset($this->broadcastSubscribers[$channelId][spl_object_id($subscriber)])){
-			unset($this->broadcastSubscribers[$channelId][spl_object_id($subscriber)]);
-			if(count($this->broadcastSubscribers[$channelId]) === 0){
+			if(count($this->broadcastSubscribers[$channelId]) === 1){
 				unset($this->broadcastSubscribers[$channelId]);
+			}else{
+				unset($this->broadcastSubscribers[$channelId][spl_object_id($subscriber)]);
 			}
 		}
 	}

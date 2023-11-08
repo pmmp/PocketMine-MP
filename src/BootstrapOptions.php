@@ -21,28 +21,28 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\promise;
+namespace pocketmine;
 
 /**
+ * Constants for all the command-line options that PocketMine-MP supports.
+ * Other options not listed here can be used to override server.properties and pocketmine.yml values temporarily.
+ *
  * @internal
- * @see PromiseResolver
- * @phpstan-template TValue
  */
-final class PromiseSharedData{
-	/**
-	 * @var \Closure[]
-	 * @phpstan-var array<int, \Closure(TValue) : void>
-	 */
-	public array $onSuccess = [];
+final class BootstrapOptions{
 
-	/**
-	 * @var \Closure[]
-	 * @phpstan-var array<int, \Closure() : void>
-	 */
-	public array $onFailure = [];
+	private function __construct(){
+		//NOOP
+	}
 
-	public ?bool $state = null;
-
-	/** @phpstan-var TValue */
-	public mixed $result;
+	/** Disables the setup wizard on first startup */
+	public const NO_WIZARD = "no-wizard";
+	/** Force-disables console text colour and formatting */
+	public const DISABLE_ANSI = "disable-ansi";
+	/** Force-enables console text colour and formatting */
+	public const ENABLE_ANSI = "enable-ansi";
+	/** Path to look in for plugins */
+	public const PLUGINS = "plugins";
+	/** Path to store and load server data */
+	public const DATA = "data";
 }

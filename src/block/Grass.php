@@ -82,7 +82,7 @@ class Grass extends Opaque{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($face !== Facing::UP){
+		if($this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR){
 			return false;
 		}
 		$world = $this->position->getWorld();
@@ -91,20 +91,23 @@ class Grass extends Opaque{
 			TallGrassObject::growGrass($world, $this->position, new Random(mt_rand()), 8, 2);
 
 			return true;
-		}elseif($item instanceof Hoe){
-			$item->applyDamage(1);
-			$newBlock = VanillaBlocks::FARMLAND();
-			$world->addSound($this->position->add(0.5, 0.5, 0.5), new ItemUseOnBlockSound($newBlock));
-			$world->setBlock($this->position, $newBlock);
+		}
+		if($face !== Facing::DOWN){
+			if($item instanceof Hoe){
+				$item->applyDamage(1);
+				$newBlock = VanillaBlocks::FARMLAND();
+				$world->addSound($this->position->add(0.5, 0.5, 0.5), new ItemUseOnBlockSound($newBlock));
+				$world->setBlock($this->position, $newBlock);
 
-			return true;
-		}elseif($item instanceof Shovel && $this->getSide(Facing::UP)->getTypeId() === BlockTypeIds::AIR){
-			$item->applyDamage(1);
-			$newBlock = VanillaBlocks::GRASS_PATH();
-			$world->addSound($this->position->add(0.5, 0.5, 0.5), new ItemUseOnBlockSound($newBlock));
-			$world->setBlock($this->position, $newBlock);
+				return true;
+			}elseif($item instanceof Shovel){
+				$item->applyDamage(1);
+				$newBlock = VanillaBlocks::GRASS_PATH();
+				$world->addSound($this->position->add(0.5, 0.5, 0.5), new ItemUseOnBlockSound($newBlock));
+				$world->setBlock($this->position, $newBlock);
 
-			return true;
+				return true;
+			}
 		}
 
 		return false;
