@@ -54,8 +54,8 @@ class NetherNylium extends Opaque{
 
 	public function onRandomTick() : void{
 		$world = $this->position->getWorld();
-		$lightAbove = $world->getFullLightAt($this->position->x, $this->position->y + 1, $this->position->z);
-		if($lightAbove < 4 && $world->getBlockAt($this->position->x, $this->position->y + 1, $this->position->z)->getLightFilter() >= 2){
+		$lightAbove = $world->getFullLightAt($this->position->getFloorX(), $this->position->getFloorY() + 1, $this->position->getFloorZ());
+		if($lightAbove < 4 && $world->getBlockAt($this->position->getFloorX(), $this->position->getFloorY() + 1, $this->position->getFloorZ())->getLightFilter() >= 2){
 			//nylium dies
 			BlockEventHelper::spread($this, VanillaBlocks::NETHERRACK(), $this);
 		}
