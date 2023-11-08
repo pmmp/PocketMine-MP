@@ -28,10 +28,6 @@ use pocketmine\item\Item;
 
 class NetherNylium extends Opaque{
 
-	public function getDrops(Item $item) : array{
-		return [];
-	}
-
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			VanillaBlocks::NETHERRACK()->asItem()
@@ -61,22 +57,4 @@ class NetherNylium extends Opaque{
 		}
 	}
 
-	/**
-	 * @TODO add nether "grass"
-	 *
-	 * public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-	 * if($this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR){
-	 * return false;
-	 * }
-	 * $world = $this->position->getWorld();
-	 * if($item instanceof Fertilizer){
-	 * $item->pop();
-	 * TallGrassObject::growGrass($world, $this->position, new Random(mt_rand()), 8, 2);
-	 *
-	 * return true;
-	 * }
-	 *
-	 * return false;
-	 * }
-	 */
 }
