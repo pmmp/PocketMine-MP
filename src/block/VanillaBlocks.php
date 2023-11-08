@@ -960,6 +960,10 @@ final class VanillaBlocks{
 		self::register("chiseled_nether_bricks", new Opaque(new BID(Ids::CHISELED_NETHER_BRICKS), "Chiseled Nether Bricks", $netherBrickBreakInfo));
 		self::register("cracked_nether_bricks", new Opaque(new BID(Ids::CRACKED_NETHER_BRICKS), "Cracked Nether Bricks", $netherBrickBreakInfo));
 
+        $netherNyliumBreakInfo = new Info(BreakInfo::pickaxe(0.4, ToolTier::WOOD, 0.4));
+        self::register("crimson_nylium", new Netherrack(new BID(Ids::CRIMSON_NYLIUM), "Crimson Nylium", $netherNyliumBreakInfo));
+        self::register("warped_nylium", new Netherrack(new BID(Ids::WARPED_NYLIUM), "Warped Nylium", $netherNyliumBreakInfo));
+
 		self::register("nether_portal", new NetherPortal(new BID(Ids::NETHER_PORTAL), "Nether Portal", new Info(BreakInfo::indestructible(0.0))));
 		self::register("nether_reactor_core", new NetherReactor(new BID(Ids::NETHER_REACTOR_CORE), "Nether Reactor Core", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD))));
 		self::register("nether_wart_block", new Opaque(new BID(Ids::NETHER_WART_BLOCK), "Nether Wart Block", new Info(new BreakInfo(1.0, ToolType::HOE))));
