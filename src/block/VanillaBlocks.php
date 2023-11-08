@@ -221,6 +221,7 @@ use function strtolower;
  * @method static WoodenFence CRIMSON_FENCE()
  * @method static FenceGate CRIMSON_FENCE_GATE()
  * @method static Wood CRIMSON_HYPHAE()
+ * @method static NetherNylium CRIMSON_NYLIUM()
  * @method static Planks CRIMSON_PLANKS()
  * @method static WoodenPressurePlate CRIMSON_PRESSURE_PLATE()
  * @method static NetherRoots CRIMSON_ROOTS()
@@ -745,6 +746,7 @@ use function strtolower;
  * @method static WoodenFence WARPED_FENCE()
  * @method static FenceGate WARPED_FENCE_GATE()
  * @method static Wood WARPED_HYPHAE()
+ * @method static NetherNylium WARPED_NYLIUM()
  * @method static Planks WARPED_PLANKS()
  * @method static WoodenPressurePlate WARPED_PRESSURE_PLATE()
  * @method static NetherRoots WARPED_ROOTS()
@@ -959,6 +961,10 @@ final class VanillaBlocks{
 		self::register("red_nether_brick_stairs", new Stair(new BID(Ids::RED_NETHER_BRICK_STAIRS), "Red Nether Brick Stairs", $netherBrickBreakInfo));
 		self::register("chiseled_nether_bricks", new Opaque(new BID(Ids::CHISELED_NETHER_BRICKS), "Chiseled Nether Bricks", $netherBrickBreakInfo));
 		self::register("cracked_nether_bricks", new Opaque(new BID(Ids::CRACKED_NETHER_BRICKS), "Cracked Nether Bricks", $netherBrickBreakInfo));
+
+		$netherNyliumBreakInfo = new Info(BreakInfo::pickaxe(0.4, ToolTier::WOOD, 0.4));
+		self::register("crimson_nylium", new NetherNylium(new BID(Ids::CRIMSON_NYLIUM), "Crimson Nylium", $netherNyliumBreakInfo));
+		self::register("warped_nylium", new NetherNylium(new BID(Ids::WARPED_NYLIUM), "Warped Nylium", $netherNyliumBreakInfo));
 
 		self::register("nether_portal", new NetherPortal(new BID(Ids::NETHER_PORTAL), "Nether Portal", new Info(BreakInfo::indestructible(0.0))));
 		self::register("nether_reactor_core", new NetherReactor(new BID(Ids::NETHER_REACTOR_CORE), "Nether Reactor Core", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD))));
