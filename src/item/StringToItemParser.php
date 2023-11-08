@@ -209,7 +209,6 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("carpet", fn() => Blocks::CARPET());
 		$result->registerBlock("carrot_block", fn() => Blocks::CARROTS());
 		$result->registerBlock("carrots", fn() => Blocks::CARROTS());
-		$result->registerBlock("cartography_table", fn() => Blocks::CARTOGRAPHY_TABLE());
 		$result->registerBlock("carved_pumpkin", fn() => Blocks::CARVED_PUMPKIN());
 		$result->registerBlock("cauldron", fn() => Blocks::CAULDRON());
 		$result->registerBlock("cave_vines", fn() => Blocks::CAVE_VINES());
@@ -290,7 +289,8 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("crimson_fence", fn() => Blocks::CRIMSON_FENCE());
 		$result->registerBlock("crimson_fence_gate", fn() => Blocks::CRIMSON_FENCE_GATE());
 		$result->registerBlock("crimson_hyphae", fn() => Blocks::CRIMSON_HYPHAE()->setStripped(false));
-		$result->registerBlock("crimson_planks", fn() => Blocks::CRIMSON_PLANKS());
+        $result->registerBlock("crimson_nylium", fn() => Blocks::CRIMSON_NYLIUM());
+        $result->registerBlock("crimson_planks", fn() => Blocks::CRIMSON_PLANKS());
 		$result->registerBlock("crimson_pressure_plate", fn() => Blocks::CRIMSON_PRESSURE_PLATE());
 		$result->registerBlock("crimson_roots", fn() => Blocks::CRIMSON_ROOTS());
 		$result->registerBlock("crimson_sign", fn() => Blocks::CRIMSON_SIGN());
@@ -985,7 +985,6 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("slime_block", fn() => Blocks::SLIME());
 		$result->registerBlock("small_amethyst_bud", fn() => Blocks::AMETHYST_CLUSTER()->setStage(AmethystCluster::STAGE_SMALL_BUD));
 		$result->registerBlock("small_dripleaf", fn() => Blocks::SMALL_DRIPLEAF());
-		$result->registerBlock("smithing_table", fn() => Blocks::SMITHING_TABLE());
 		$result->registerBlock("smoker", fn() => Blocks::SMOKER());
 		$result->registerBlock("smooth_basalt", fn() => Blocks::SMOOTH_BASALT());
 		$result->registerBlock("smooth_quartz", fn() => Blocks::SMOOTH_QUARTZ());
@@ -1058,8 +1057,6 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("stripped_acacia_wood", fn() => Blocks::ACACIA_WOOD()->setStripped(true));
 		$result->registerBlock("stripped_birch_log", fn() => Blocks::BIRCH_LOG()->setStripped(true));
 		$result->registerBlock("stripped_birch_wood", fn() => Blocks::BIRCH_WOOD()->setStripped(true));
-		$result->registerBlock("stripped_cherry_log", fn() => Blocks::CHERRY_LOG()->setStripped(true));
-		$result->registerBlock("stripped_cherry_wood", fn() => Blocks::CHERRY_WOOD()->setStripped(true));
 		$result->registerBlock("stripped_crimson_hyphae", fn() => Blocks::CRIMSON_HYPHAE()->setStripped(true));
 		$result->registerBlock("stripped_crimson_stem", fn() => Blocks::CRIMSON_STEM()->setStripped(true));
 		$result->registerBlock("stripped_dark_oak_log", fn() => Blocks::DARK_OAK_LOG()->setStripped(true));
@@ -1115,7 +1112,8 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("warped_fence", fn() => Blocks::WARPED_FENCE());
 		$result->registerBlock("warped_fence_gate", fn() => Blocks::WARPED_FENCE_GATE());
 		$result->registerBlock("warped_hyphae", fn() => Blocks::WARPED_HYPHAE()->setStripped(false));
-		$result->registerBlock("warped_planks", fn() => Blocks::WARPED_PLANKS());
+        $result->registerBlock("warped_nylium", fn() => Blocks::WARPED_NYLIUM());
+        $result->registerBlock("warped_planks", fn() => Blocks::WARPED_PLANKS());
 		$result->registerBlock("warped_pressure_plate", fn() => Blocks::WARPED_PRESSURE_PLATE());
 		$result->registerBlock("warped_roots", fn() => Blocks::WARPED_ROOTS());
 		$result->registerBlock("warped_sign", fn() => Blocks::WARPED_SIGN());
