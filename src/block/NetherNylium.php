@@ -28,20 +28,14 @@ use pocketmine\item\Item;
 
 class NetherNylium extends Opaque{
 
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
+
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			VanillaBlocks::NETHERRACK()->asItem()
 		];
-	}
-
-	public function getSilkTouchDrops(Item $item) : array{
-		return [
-			$this->asItem()
-		];
-	}
-
-	public function isAffectedBySilkTouch() : bool{
-		return true;
 	}
 
 	public function ticksRandomly() : bool{
@@ -49,10 +43,8 @@ class NetherNylium extends Opaque{
 	}
 
 	public function onRandomTick() : void{
-		$world = $this->position->getWorld();
-		$lightAbove = $world->getFullLightAt($this->position->getFloorX(), $this->position->getFloorY() + 1, $this->position->getFloorZ());
-		if($lightAbove < 4 && $world->getBlockAt($this->position->getFloorX(), $this->position->getFloorY() + 1, $this->position->getFloorZ())->getLightFilter() >= 2){
-			//nylium dies
+		$blockAbove = $this->position->getWorld()->getBlockAt($this->position->getFloorX(), $this->position->getFloorY() + 1, $this->position->getFloorZ());
+		if(!$blockAbove->isTransparent()){
 			BlockEventHelper::spread($this, VanillaBlocks::NETHERRACK(), $this);
 		}
 	}
