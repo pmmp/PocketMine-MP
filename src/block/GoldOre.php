@@ -23,13 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 
 final class GoldOre extends Opaque{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		return [VanillaItems::RAW_GOLD()];
+		return [VanillaItems::RAW_GOLD()->setCount(FortuneDropHelper::weighted($item, min: 1, maxBase: 1))];
 	}
 
 	public function isAffectedBySilkTouch() : bool{ return true; }
