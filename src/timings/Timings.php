@@ -49,6 +49,8 @@ abstract class Timings{
 	public static TimingsHandler $playerNetworkSendCompress;
 	public static TimingsHandler $playerNetworkSendCompressBroadcast;
 	public static TimingsHandler $playerNetworkSendCompressSessionBuffer;
+	public static TimingsHandler $playerNetworkSendCompressSync;
+	public static TimingsHandler $playerNetworkSendCompressAsync;
 	public static TimingsHandler $playerNetworkSendEncrypt;
 	public static TimingsHandler $playerNetworkSendInventorySync;
 	public static TimingsHandler $playerNetworkSendPreSpawnGameData;
@@ -146,6 +148,8 @@ abstract class Timings{
 		self::$playerNetworkSendCompress = new TimingsHandler("Player Network Send - Compression", self::$playerNetworkSend, group: self::GROUP_BREAKDOWN);
 		self::$playerNetworkSendCompressBroadcast = new TimingsHandler("Player Network Send - Compression (Broadcast)", self::$playerNetworkSendCompress, group: self::GROUP_BREAKDOWN);
 		self::$playerNetworkSendCompressSessionBuffer = new TimingsHandler("Player Network Send - Compression (Session Buffer)", self::$playerNetworkSendCompress, group: self::GROUP_BREAKDOWN);
+		self::$playerNetworkSendCompressSync = new TimingsHandler("Player Network Send - Compression (Main Thread)", self::$playerNetworkSendCompress, group: self::GROUP_BREAKDOWN);
+		self::$playerNetworkSendCompressAsync = new TimingsHandler("Player Network Send - Compression (Handoff to Worker Thread)", self::$playerNetworkSendCompress, group: self::GROUP_BREAKDOWN);
 		self::$playerNetworkSendEncrypt = new TimingsHandler("Player Network Send - Encryption", self::$playerNetworkSend, group: self::GROUP_BREAKDOWN);
 		self::$playerNetworkSendInventorySync = new TimingsHandler("Player Network Send - Inventory Sync", self::$playerNetworkSend, group: self::GROUP_BREAKDOWN);
 		self::$playerNetworkSendPreSpawnGameData = new TimingsHandler("Player Network Send - Pre-Spawn Game Data", self::$playerNetworkSend, group: self::GROUP_BREAKDOWN);
