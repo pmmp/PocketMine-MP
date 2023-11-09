@@ -46,6 +46,7 @@ use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\VanillaBlocks as Blocks;
+use pocketmine\block\Wall;
 use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateData;
@@ -56,6 +57,7 @@ use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\block\convert\BlockStateDeserializerHelper as Helper;
 use pocketmine\data\bedrock\block\convert\BlockStateReader as Reader;
+use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use function array_key_exists;
@@ -613,7 +615,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::BLACKSTONE, fn() => Blocks::BLACKSTONE());
 		$this->mapSimple(Ids::BLUE_ICE, fn() => Blocks::BLUE_ICE());
 		$this->mapSimple(Ids::BOOKSHELF, fn() => Blocks::BOOKSHELF());
-		$this->mapSimple(Ids::BORDER_BLOCK, fn() => Blocks::BORDER_BLOCK());
 		$this->mapSimple(Ids::BRICK_BLOCK, fn() => Blocks::BRICKS());
 		$this->mapSimple(Ids::BROWN_MUSHROOM, fn() => Blocks::BROWN_MUSHROOM());
 		$this->mapSimple(Ids::BUDDING_AMETHYST, fn() => Blocks::BUDDING_AMETHYST());
@@ -954,6 +955,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			$in->ignored(StateNames::DEPRECATED);
 			return Blocks::BONE_BLOCK()->setAxis($in->readPillarAxis());
 		});
+		$this->map(Ids::BORDER_BLOCK, fn(Reader $in) => Helper::decodeWall(Blocks::BORDER_BLOCK(), $in));
 		$this->map(Ids::BREWING_STAND, function(Reader $in) : Block{
 			return Blocks::BREWING_STAND()
 				->setSlot(BrewingStandSlot::EAST, $in->readBool(StateNames::BREWING_STAND_SLOT_A_BIT))

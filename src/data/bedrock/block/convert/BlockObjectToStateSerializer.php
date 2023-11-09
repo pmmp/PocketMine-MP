@@ -721,7 +721,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::BLACKSTONE(), Ids::BLACKSTONE);
 		$this->mapSimple(Blocks::BLUE_ICE(), Ids::BLUE_ICE);
 		$this->mapSimple(Blocks::BOOKSHELF(), Ids::BOOKSHELF);
-		$this->mapSimple(Blocks::BORDER_BLOCK(), Ids::BORDER_BLOCK);
 		$this->mapSimple(Blocks::BRICKS(), Ids::BRICK_BLOCK);
 		$this->mapSimple(Blocks::BROWN_MUSHROOM(), Ids::BROWN_MUSHROOM);
 		$this->mapSimple(Blocks::BUDDING_AMETHYST(), Ids::BUDDING_AMETHYST);
@@ -1079,6 +1078,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeInt(StateNames::DEPRECATED, 0)
 				->writePillarAxis($block->getAxis());
 		});
+		$this->map(Blocks::BORDER_BLOCK(), fn(Wall $block) => Helper::encodeWall($block, new Writer(Ids::BORDER_BLOCK)));
 		$this->map(Blocks::BREWING_STAND(), function(BrewingStand $block) : Writer{
 			return Writer::create(Ids::BREWING_STAND)
 				->writeBool(StateNames::BREWING_STAND_SLOT_A_BIT, $block->hasSlot(BrewingStandSlot::EAST))
