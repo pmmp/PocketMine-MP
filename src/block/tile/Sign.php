@@ -128,7 +128,6 @@ class Sign extends Spawnable{
 			->setByte(self::TAG_PERSIST_FORMATTING, 1)
 		);
 
-		$nbt->setByte(self::TAG_LEGACY_BUG_RESOLVE, 1);
 		$nbt->setByte(self::TAG_WAXED, $this->waxed ? 1 : 0);
 	}
 
