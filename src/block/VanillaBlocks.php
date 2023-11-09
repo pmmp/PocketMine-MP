@@ -141,7 +141,7 @@ use function strtolower;
  * @method static Torch BLUE_TORCH()
  * @method static BoneBlock BONE_BLOCK()
  * @method static Bookshelf BOOKSHELF()
- * @method static Border BORDER()
+ * @method static Border BORDER_BLOCK()
  * @method static BrewingStand BREWING_STAND()
  * @method static Opaque BRICKS()
  * @method static Slab BRICK_SLAB()
@@ -818,7 +818,7 @@ final class VanillaBlocks{
 		self::register("bone_block", new BoneBlock(new BID(Ids::BONE_BLOCK), "Bone Block", new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD))));
 		self::register("bookshelf", new Bookshelf(new BID(Ids::BOOKSHELF), "Bookshelf", new Info(BreakInfo::axe(1.5))));
 		self::register("chiseled_bookshelf", new ChiseledBookshelf(new BID(Ids::CHISELED_BOOKSHELF, TileChiseledBookshelf::class), "Chiseled Bookshelf", new Info(BreakInfo::axe(1.5))));
-		self::register("border_block", new Border(new BID(Ids::BORDER), "Border", new Info(BreakInfo::indestructible())));
+		self::register("border_block", new Border(new BID(Ids::BORDER_BLOCK), "Border", new Info(BreakInfo::indestructible())));
 		self::register("brewing_stand", new BrewingStand(new BID(Ids::BREWING_STAND, TileBrewingStand::class), "Brewing Stand", new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD))));
 
 		$bricksBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0));

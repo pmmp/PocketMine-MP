@@ -745,7 +745,7 @@ final class BlockTypeIds{
 	public const PITCHER_PLANT = 10715;
 	public const PITCHER_CROP = 10716;
 	public const DOUBLE_PITCHER_CROP = 10717;
-	public const BORDER = 10718;
+	public const BORDER_BLOCK = 10718;
 
 	public const FIRST_UNUSED_BLOCK_ID = 10719;
 
