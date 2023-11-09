@@ -1584,7 +1584,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
             return Writer::create(Ids::SCAFFOLDING)
                 ->writeInt(StateNames::STABILITY, 0)
                 ->writeBool(StateNames::STABILITY_CHECK, false);
-        });
+		});
 		$this->map(Blocks::SEA_PICKLE(), function(SeaPickle $block) : Writer{
 			return Writer::create(Ids::SEA_PICKLE)
 				->writeBool(StateNames::DEAD_BIT, !$block->isUnderwater())

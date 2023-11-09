@@ -32,7 +32,6 @@ use pocketmine\block\DoublePitcherCrop;
 use pocketmine\block\Light;
 use pocketmine\block\PinkPetals;
 use pocketmine\block\PitcherCrop;
-use pocketmine\block\Scaffolding;
 use pocketmine\block\Slab;
 use pocketmine\block\Stair;
 use pocketmine\block\SweetBerryBush;
@@ -1477,7 +1476,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		});
         $this->map(Ids::SCAFFOLDING, function(Reader $in) : Block{
             return Blocks::SCAFFOLDING();
-        });
+		});
 		$this->map(Ids::SEA_PICKLE, function(Reader $in) : Block{
 			return Blocks::SEA_PICKLE()
 				->setCount($in->readBoundedInt(StateNames::CLUSTER_COUNT, 0, 3) + 1)
