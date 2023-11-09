@@ -46,8 +46,23 @@ parameters:
 			path: ../../../src/VersionInfo.php
 
 		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 3
+			path: ../../../src/block/Block.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 3
+			path: ../../../src/block/Block.php
+
+		-
 			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\format\\\\Chunk\\:\\:setBlockStateId\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
+			path: ../../../src/block/Block.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 3
 			path: ../../../src/block/Block.php
 
 		-
@@ -139,21 +154,6 @@ parameters:
 			message: "#^Parameter \\#3 \\$zDiff of class pocketmine\\\\world\\\\particle\\\\DragonEggTeleportParticle constructor expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/block/DragonEgg.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/block/Farmland.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/block/Farmland.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/block/Farmland.php
 
 		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
@@ -286,28 +286,13 @@ parameters:
 			path: ../../../src/block/Leaves.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 11
-			path: ../../../src/block/Liquid.php
-
-		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/block/Liquid.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 11
-			path: ../../../src/block/Liquid.php
-
-		-
 			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
-			path: ../../../src/block/Liquid.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 11
 			path: ../../../src/block/Liquid.php
 
 		-
@@ -439,6 +424,21 @@ parameters:
 			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setInt\\(\\) expects int, float\\|int given\\.$#"
 			count: 3
 			path: ../../../src/block/tile/Spawnable.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getPotentialLightAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/utils/CropGrowthHelper.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getPotentialLightAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/utils/CropGrowthHelper.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getPotentialLightAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/utils/CropGrowthHelper.php
 
 		-
 			message: "#^Cannot call method addParticle\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
@@ -846,6 +846,16 @@ parameters:
 			path: ../../../src/utils/Utils.php
 
 		-
+			message: "#^Parameter \\#2 \\$file of class pocketmine\\\\thread\\\\ThreadCrashInfoFrame constructor expects string\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../../src/utils/Utils.php
+
+		-
+			message: "#^Parameter \\#3 \\$line of class pocketmine\\\\thread\\\\ThreadCrashInfoFrame constructor expects int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/utils/Utils.php
+
+		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/world/Explosion.php
@@ -916,23 +926,18 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
 
 		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
-			count: 3
+			count: 2
 			path: ../../../src/world/World.php
 
 		-
 			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\world\\\\World\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
-			count: 3
+			count: 2
 			path: ../../../src/world/World.php
 
 		-
@@ -946,23 +951,18 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
 			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
 
 		-
 			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
-			count: 3
+			count: 2
 			path: ../../../src/world/World.php
 
 		-
 			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\world\\\\World\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
-			count: 3
+			count: 2
 			path: ../../../src/world/World.php
 
 		-
@@ -981,23 +981,18 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
 			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
 
 		-
 			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
-			count: 3
+			count: 2
 			path: ../../../src/world/World.php
 
 		-
 			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\world\\\\World\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
-			count: 3
+			count: 2
 			path: ../../../src/world/World.php
 
 		-
@@ -1189,16 +1184,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../phpunit/block/regenerate_consistency_check.php
-
-		-
-			message: "#^Property pocketmine\\\\event\\\\HandlerListManagerTest\\:\\:\\$isValidFunc \\(Closure\\(ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\)\\: bool\\) does not accept Closure\\|null\\.$#"
-			count: 1
-			path: ../../phpunit/event/HandlerListManagerTest.php
-
-		-
-			message: "#^Property pocketmine\\\\event\\\\HandlerListManagerTest\\:\\:\\$resolveParentFunc \\(Closure\\(ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\)\\: ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\|null\\) does not accept Closure\\|null\\.$#"
-			count: 1
-			path: ../../phpunit/event/HandlerListManagerTest.php
 
 		-
 			message: "#^Parameter \\#1 \\$logFile of class pocketmine\\\\utils\\\\MainLogger constructor expects string, string\\|false given\\.$#"

@@ -209,15 +209,12 @@ final class CraftingManagerFromDataHelper{
 	public static function make(string $directoryPath) : CraftingManager{
 		$result = new CraftingManager();
 
-		$ingredientDeserializerFunc = \Closure::fromCallable([self::class, "deserializeIngredient"]);
-		$itemDeserializerFunc = \Closure::fromCallable([self::class, 'deserializeItemStack']);
-
 		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'shapeless_crafting.json'), ShapelessRecipeData::class) as $recipe){
 			$recipeType = match($recipe->block){
-				"crafting_table" => ShapelessRecipeType::CRAFTING(),
-				"stonecutter" => ShapelessRecipeType::STONECUTTER(),
-				"smithing_table" => ShapelessRecipeType::SMITHING(),
-				"cartography_table" => ShapelessRecipeType::CARTOGRAPHY(),
+				"crafting_table" => ShapelessRecipeType::CRAFTING,
+				"stonecutter" => ShapelessRecipeType::STONECUTTER,
+				"smithing_table" => ShapelessRecipeType::SMITHING,
+				"cartography_table" => ShapelessRecipeType::CARTOGRAPHY,
 				default => null
 			};
 			if($recipeType === null){
@@ -225,7 +222,7 @@ final class CraftingManagerFromDataHelper{
 			}
 			$inputs = [];
 			foreach($recipe->input as $inputData){
-				$input = $ingredientDeserializerFunc($inputData);
+				$input = self::deserializeIngredient($inputData);
 				if($input === null){ //unknown input item
 					continue 2;
 				}
@@ -233,7 +230,7 @@ final class CraftingManagerFromDataHelper{
 			}
 			$outputs = [];
 			foreach($recipe->output as $outputData){
-				$output = $itemDeserializerFunc($outputData);
+				$output = self::deserializeItemStack($outputData);
 				if($output === null){ //unknown output item
 					continue 2;
 				}
@@ -251,7 +248,7 @@ final class CraftingManagerFromDataHelper{
 			}
 			$inputs = [];
 			foreach(Utils::stringifyKeys($recipe->input) as $symbol => $inputData){
-				$input = $ingredientDeserializerFunc($inputData);
+				$input = self::deserializeIngredient($inputData);
 				if($input === null){ //unknown input item
 					continue 2;
 				}
@@ -259,7 +256,7 @@ final class CraftingManagerFromDataHelper{
 			}
 			$outputs = [];
 			foreach($recipe->output as $outputData){
-				$output = $itemDeserializerFunc($outputData);
+				$output = self::deserializeItemStack($outputData);
 				if($output === null){ //unknown output item
 					continue 2;
 				}
@@ -273,9 +270,9 @@ final class CraftingManagerFromDataHelper{
 		}
 		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'smelting.json'), FurnaceRecipeData::class) as $recipe){
 			$furnaceType = match ($recipe->block){
-				"furnace" => FurnaceType::FURNACE(),
-				"blast_furnace" => FurnaceType::BLAST_FURNACE(),
-				"smoker" => FurnaceType::SMOKER(),
+				"furnace" => FurnaceType::FURNACE,
+				"blast_furnace" => FurnaceType::BLAST_FURNACE,
+				"smoker" => FurnaceType::SMOKER,
 				//TODO: campfire
 				default => null
 			};

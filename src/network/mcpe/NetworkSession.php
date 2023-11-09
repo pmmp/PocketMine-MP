@@ -83,6 +83,7 @@ use pocketmine\network\mcpe\protocol\types\AbilitiesLayer;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\command\CommandData;
 use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\command\CommandOverload;
 use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
 use pocketmine\network\mcpe\protocol\types\command\CommandPermissions;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
@@ -107,6 +108,7 @@ use pocketmine\utils\BinaryStream;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\Position;
+use pocketmine\YmlServerProperties;
 use function array_map;
 use function array_values;
 use function base64_encode;
@@ -196,7 +198,7 @@ class NetworkSession{
 
 		$this->setHandler(new SessionStartPacketHandler(
 			$this,
-			fn() => $this->onSessionStartSuccess()
+			$this->onSessionStartSuccess(...)
 		));
 
 		$this->manager->add($this);
@@ -224,13 +226,13 @@ class NetworkSession{
 				$this->logger->setPrefix($this->getLogPrefix());
 				$this->manager->markLoginReceived($this);
 			},
-			\Closure::fromCallable([$this, "setAuthenticationStatus"])
+			$this->setAuthenticationStatus(...)
 		));
 	}
 
 	protected function createPlayer() : void{
 		$this->server->createPlayer($this, $this->info, $this->authenticated, $this->cachedOfflinePlayerData)->onCompletion(
-			\Closure::fromCallable([$this, 'onPlayerCreated']),
+			$this->onPlayerCreated(...),
 			function() : void{
 				//TODO: this should never actually occur... right?
 				$this->logger->error("Failed to create player");
@@ -405,10 +407,12 @@ class NetworkSession{
 		$timings->startTiming();
 
 		try{
-			$ev = new DataPacketDecodeEvent($this, $packet->pid(), $buffer);
-			$ev->call();
-			if($ev->isCancelled()){
-				return;
+			if(DataPacketDecodeEvent::hasHandlers()){
+				$ev = new DataPacketDecodeEvent($this, $packet->pid(), $buffer);
+				$ev->call();
+				if($ev->isCancelled()){
+					return;
+				}
 			}
 
 			$decodeTimings = Timings::getDecodeDataPacketTimings($packet);
@@ -428,18 +432,21 @@ class NetworkSession{
 				$decodeTimings->stopTiming();
 			}
 
-			$ev = new DataPacketReceiveEvent($this, $packet);
-			$ev->call();
-			if(!$ev->isCancelled()){
-				$handlerTimings = Timings::getHandleDataPacketTimings($packet);
-				$handlerTimings->startTiming();
-				try{
-					if($this->handler === null || !$packet->handle($this->handler)){
-						$this->logger->debug("Unhandled " . $packet->getName() . ": " . base64_encode($stream->getBuffer()));
-					}
-				}finally{
-					$handlerTimings->stopTiming();
+			if(DataPacketReceiveEvent::hasHandlers()){
+				$ev = new DataPacketReceiveEvent($this, $packet);
+				$ev->call();
+				if($ev->isCancelled()){
+					return;
 				}
+			}
+			$handlerTimings = Timings::getHandleDataPacketTimings($packet);
+			$handlerTimings->startTiming();
+			try{
+				if($this->handler === null || !$packet->handle($this->handler)){
+					$this->logger->debug("Unhandled " . $packet->getName() . ": " . base64_encode($stream->getBuffer()));
+				}
+			}finally{
+				$handlerTimings->stopTiming();
 			}
 		}finally{
 			$timings->stopTiming();
@@ -458,12 +465,16 @@ class NetworkSession{
 		$timings = Timings::getSendDataPacketTimings($packet);
 		$timings->startTiming();
 		try{
-			$ev = new DataPacketSendEvent([$this], [$packet]);
-			$ev->call();
-			if($ev->isCancelled()){
-				return false;
+			if(DataPacketSendEvent::hasHandlers()){
+				$ev = new DataPacketSendEvent([$this], [$packet]);
+				$ev->call();
+				if($ev->isCancelled()){
+					return false;
+				}
+				$packets = $ev->getPackets();
+			}else{
+				$packets = [$packet];
 			}
-			$packets = $ev->getPackets();
 
 			foreach($packets as $evPacket){
 				$this->addToSendBuffer(self::encodePacketTimed(PacketSerializer::encoder($this->packetSerializerContext), $evPacket));
@@ -631,7 +642,7 @@ class NetworkSession{
 		}else{
 			$translated = $message;
 		}
-		$this->sendDataPacket(DisconnectPacket::create($translated));
+		$this->sendDataPacket(DisconnectPacket::create(0, $translated));
 	}
 
 	/**
@@ -730,7 +741,7 @@ class NetworkSession{
 		}
 		$this->logger->debug("Xbox Live authenticated: " . ($this->authenticated ? "YES" : "NO"));
 
-		$checkXUID = $this->server->getConfigGroup()->getPropertyBool("player.verify-xuid", true);
+		$checkXUID = $this->server->getConfigGroup()->getPropertyBool(YmlServerProperties::PLAYER_VERIFY_XUID, true);
 		$myXUID = $this->info instanceof XboxLivePlayerInfo ? $this->info->getXuid() : "";
 		$kickForXUIDMismatch = function(string $xuid) use ($checkXUID, $myXUID) : bool{
 			if($checkXUID && $myXUID !== $xuid){
@@ -786,9 +797,7 @@ class NetworkSession{
 
 				$this->cipher = EncryptionContext::fakeGCM($encryptionKey);
 
-				$this->setHandler(new HandshakePacketHandler(function() : void{
-					$this->onServerLoginSuccess();
-				}));
+				$this->setHandler(new HandshakePacketHandler($this->onServerLoginSuccess(...)));
 				$this->logger->debug("Enabled encryption");
 			}));
 		}else{
@@ -817,9 +826,7 @@ class NetworkSession{
 	public function notifyTerrainReady() : void{
 		$this->logger->debug("Sending spawn notification, waiting for spawn response");
 		$this->sendDataPacket(PlayStatusPacket::create(PlayStatusPacket::PLAYER_SPAWN));
-		$this->setHandler(new SpawnResponsePacketHandler(function() : void{
-			$this->onClientSpawnResponse();
-		}));
+		$this->setHandler(new SpawnResponsePacketHandler($this->onClientSpawnResponse(...)));
 	}
 
 	private function onClientSpawnResponse() : void{
@@ -985,8 +992,9 @@ class NetworkSession{
 				0,
 				$aliasObj,
 				[
-					[CommandParameter::standard("args", AvailableCommandsPacket::ARG_TYPE_RAWTEXT, 0, true)]
-				]
+					new CommandOverload(chaining: false, parameters: [CommandParameter::standard("args", AvailableCommandsPacket::ARG_TYPE_RAWTEXT, 0, true)])
+				],
+				chainedSubCommandData: []
 			);
 
 			$commandData[$command->getLabel()] = $data;
@@ -1061,7 +1069,7 @@ class NetworkSession{
 					$this->logger->debug("Tried to send no-longer-active chunk $chunkX $chunkZ in world " . $world->getFolderName());
 					return;
 				}
-				if(!$status->equals(UsedChunkStatus::REQUESTED_SENDING())){
+				if($status !== UsedChunkStatus::REQUESTED_SENDING){
 					//TODO: make this an error
 					//this could be triggered due to the shitty way that chunk resends are handled
 					//right now - not because of the spammy re-requesting, but because the chunk status reverts

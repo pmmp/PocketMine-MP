@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -35,7 +34,6 @@ use function mt_rand;
 
 class Furnace extends Opaque{
 	use FacesOppositePlacingPlayerTrait;
-	use HorizontalFacingTrait;
 
 	protected FurnaceType $furnaceType;
 

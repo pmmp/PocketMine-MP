@@ -26,20 +26,29 @@ namespace pocketmine\tools\generate_blockstate_upgrade_schema;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchema;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaBlockRemap;
+use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaFlattenedName;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaUtils;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaValueRemap;
+use pocketmine\nbt\LittleEndianNbtSerializer;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
+use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
+use function array_filter;
 use function array_key_first;
-use function array_merge;
+use function array_keys;
+use function array_map;
+use function array_shift;
 use function array_values;
-use function assert;
 use function count;
 use function dirname;
+use function explode;
 use function file_put_contents;
 use function fwrite;
+use function implode;
 use function json_encode;
 use function ksort;
 use function usort;
@@ -57,8 +66,21 @@ class BlockStateMapping{
 }
 
 /**
+ * @param Tag[] $properties
+ * @phpstan-param array<string, Tag> $properties
+ */
+function encodeOrderedProperties(array $properties) : string{
+	ksort($properties, SORT_STRING);
+	return implode("", array_map(fn(Tag $tag) => encodeProperty($tag), array_values($properties)));
+}
+
+function encodeProperty(Tag $tag) : string{
+	return (new LittleEndianNbtSerializer())->write(new TreeRoot($tag));
+}
+
+/**
  * @return BlockStateMapping[][]
- * @phpstan-return array<string, list<BlockStateMapping>>
+ * @phpstan-return array<string, array<string, BlockStateMapping>>
  */
 function loadUpgradeTable(string $file, bool $reverse) : array{
 	$contents = Filesystem::fileGetContents($file);
@@ -72,7 +94,7 @@ function loadUpgradeTable(string $file, bool $reverse) : array{
 		$old = BlockStateData::fromNbt($reverse ? $newTag : $oldTag);
 		$new = BlockStateData::fromNbt($reverse ? $oldTag : $newTag);
 
-		$result[$old->getName()][] = new BlockStateMapping(
+		$result[$old->getName()][encodeOrderedProperties($old->getStates())] = new BlockStateMapping(
 			$old,
 			$new
 		);
@@ -82,111 +104,176 @@ function loadUpgradeTable(string $file, bool $reverse) : array{
 }
 
 /**
- * @param true[]  $removedPropertiesCache
- * @param Tag[][] $remappedPropertyValuesCache
- * @phpstan-param array<string, true> $removedPropertiesCache
- * @phpstan-param array<string, array<string, Tag>> $remappedPropertyValuesCache
+ * @param BlockStateData[] $states
+ * @phpstan-param array<string, BlockStateData> $states
+ *
+ * @return Tag[][]
+ * @phpstan-return array<string, array<string, Tag>>
  */
-function processState(BlockStateData $old, BlockStateData $new, BlockStateUpgradeSchema $result, array &$removedPropertiesCache, array &$remappedPropertyValuesCache) : void{
+function buildStateGroupSchema(array $states) : ?array{
+	$first = $states[array_key_first($states)];
 
-	//new and old IDs are the same; compare states
-	$oldName = $old->getName();
+	$properties = [];
+	foreach(Utils::stringifyKeys($first->getStates()) as $propertyName => $propertyValue){
+		$properties[$propertyName][encodeProperty($propertyValue)] = $propertyValue;
+	}
+	foreach($states as $state){
+		if(count($state->getStates()) !== count($properties)){
+			return null;
+		}
+		foreach(Utils::stringifyKeys($state->getStates()) as $propertyName => $propertyValue){
+			if(!isset($properties[$propertyName])){
+				return null;
+			}
+			$properties[$propertyName][encodeProperty($propertyValue)] = $propertyValue;
+		}
+	}
 
-	$oldStates = $old->getStates();
-	$newStates = $new->getStates();
+	return $properties;
+}
 
-	$propertyRemoved = [];
-	$propertyAdded = [];
-	foreach(Utils::stringifyKeys($oldStates) as $propertyName => $oldProperty){
-		$newProperty = $new->getState($propertyName);
-		if($newProperty === null){
-			$propertyRemoved[$propertyName] = $oldProperty;
-		}elseif(!$newProperty->equals($oldProperty)){
-			if(!isset($remappedPropertyValuesCache[$propertyName][$oldProperty->getValue()])){
-				$result->remappedPropertyValues[$oldName][$propertyName][] = new BlockStateUpgradeSchemaValueRemap(
-					$oldProperty,
-					$newProperty
-				);
-				$remappedPropertyValuesCache[$propertyName][$oldProperty->getValue()] = $newProperty;
+/**
+ * @param BlockStateMapping[] $upgradeTable
+ * @phpstan-param array<string, BlockStateMapping> $upgradeTable
+ */
+function processStateGroup(string $oldName, array $upgradeTable, BlockStateUpgradeSchema $result) : bool{
+	$newProperties = buildStateGroupSchema(array_map(fn(BlockStateMapping $m) => $m->new, $upgradeTable));
+	if($newProperties === null){
+		\GlobalLogger::get()->warning("New states for $oldName don't all have the same set of properties - processing as remaps instead");
+		return false;
+	}
+	$oldProperties = buildStateGroupSchema(array_map(fn(BlockStateMapping $m) => $m->old, $upgradeTable));
+	if($oldProperties === null){
+		//TODO: not sure if this is actually required - we may be able to apply some transformations even if the states are not consistent
+		//however, this should never normally occur anyway
+		\GlobalLogger::get()->warning("Old states for $oldName don't all have the same set of properties - processing as remaps instead");
+		return false;
+	}
+
+	$remappedPropertyValues = [];
+	$addedProperties = [];
+	$removedProperties = [];
+	$renamedProperties = [];
+
+	foreach(Utils::stringifyKeys($newProperties) as $newPropertyName => $newPropertyValues){
+		if(count($newPropertyValues) === 1){
+			$newPropertyValue = $newPropertyValues[array_key_first($newPropertyValues)];
+			if(isset($oldProperties[$newPropertyName])){
+				//all the old values for this property were mapped to the same new value
+				//it would be more space-efficient to represent this as a remove+add, but we can't guarantee that the
+				//removal of the old value will be done before the addition of the new value
+				foreach($oldProperties[$newPropertyName] as $oldPropertyValue){
+					$remappedPropertyValues[$newPropertyName][encodeProperty($oldPropertyValue)] = $newPropertyValue;
+				}
+			}else{
+				//this property has no relation to any property value in any of the old states - it's a new property
+				$addedProperties[$newPropertyName] = $newPropertyValue;
 			}
 		}
 	}
 
-	foreach(Utils::stringifyKeys($newStates) as $propertyName => $value){
-		if($old->getState($propertyName) === null){
-			$propertyAdded[$propertyName] = $value;
-		}
-	}
-
-	if(count($propertyAdded) === 0 && count($propertyRemoved) === 0){
-		return;
-	}
-	if(count($propertyAdded) === 1 && count($propertyRemoved) === 1){
-		$propertyOldName = array_key_first($propertyRemoved);
-		$propertyNewName = array_key_first($propertyAdded);
-
-		$propertyOldValue = $propertyRemoved[$propertyOldName];
-		$propertyNewValue = $propertyAdded[$propertyNewName];
-
-		$existingPropertyValueMap = $remappedPropertyValuesCache[$propertyOldName][$propertyOldValue->getValue()] ?? null;
-		if($propertyOldName !== $propertyNewName){
-			if(!$propertyOldValue->equals($propertyNewValue) && $existingPropertyValueMap === null){
-				\GlobalLogger::get()->warning("warning: guessing that $oldName has $propertyOldName renamed to $propertyNewName with a value map of $propertyOldValue mapped to $propertyNewValue");;
-			}
-			//this is a guess; it might not be reliable if the value changed as well
-			//this will probably never be an issue, but it might rear its ugly head in the future
-			$result->renamedProperties[$oldName][$propertyOldName] = $propertyNewName;
-		}
-		if(!$propertyOldValue->equals($propertyNewValue)){
-			$mapped = true;
-			if($existingPropertyValueMap !== null && !$existingPropertyValueMap->equals($propertyNewValue)){
-				if($existingPropertyValueMap->equals($propertyOldValue)){
-					\GlobalLogger::get()->warning("warning: guessing that the value $propertyOldValue of $propertyNewValue did not change");;
-					$mapped = false;
-				}else{
-					\GlobalLogger::get()->warning("warning: mismatch of new value for $propertyNewName for $oldName: $propertyOldValue seen mapped to $propertyNewValue and $existingPropertyValueMap");;
+	foreach(Utils::stringifyKeys($oldProperties) as $oldPropertyName => $oldPropertyValues){
+		$mappingsContainingOldValue = [];
+		foreach($upgradeTable as $mapping){
+			$mappingOldValue = $mapping->old->getState($oldPropertyName) ?? throw new AssumptionFailedError("This should never happen");
+			foreach($oldPropertyValues as $oldPropertyValue){
+				if($mappingOldValue->equals($oldPropertyValue)){
+					$mappingsContainingOldValue[encodeProperty($oldPropertyValue)][] = $mapping;
+					break;
 				}
 			}
-			if($mapped && !isset($remappedPropertyValuesCache[$propertyOldName][$propertyOldValue->getValue()])){
-				//value remap
-				$result->remappedPropertyValues[$oldName][$propertyOldName][] = new BlockStateUpgradeSchemaValueRemap(
-					$propertyRemoved[$propertyOldName],
-					$propertyAdded[$propertyNewName]
-				);
-				$remappedPropertyValuesCache[$propertyOldName][$propertyOldValue->getValue()] = $propertyNewValue;
-			}
-		}elseif($existingPropertyValueMap !== null){
-			\GlobalLogger::get()->warning("warning: multiple values found for value $propertyOldValue of $propertyNewName on block $oldName, guessing it did not change");;
-			$remappedPropertyValuesCache[$propertyOldName][$propertyOldValue->getValue()] = $propertyNewValue;
 		}
-	}else{
-		if(count($propertyAdded) !== 0 && count($propertyRemoved) === 0){
-			foreach(Utils::stringifyKeys($propertyAdded) as $propertyAddedName => $propertyAddedValue){
-				$existingDefault = $result->addedProperties[$oldName][$propertyAddedName] ?? null;
-				if($existingDefault !== null && !$existingDefault->equals($propertyAddedValue)){
-					throw new \UnexpectedValueException("Ambiguous default value for added property $propertyAddedName on block $oldName");
-				}
 
-				$result->addedProperties[$oldName][$propertyAddedName] = $propertyAddedValue;
+		$candidateNewPropertyNames = [];
+		//foreach mappings by unique value, compute the diff across all the states in the list
+		foreach(Utils::stringifyKeys($mappingsContainingOldValue) as $rawOldValue => $mappingList){
+			$first = array_shift($mappingList);
+			foreach(Utils::stringifyKeys($first->new->getStates()) as $newPropertyName => $newPropertyValue){
+				if(isset($addedProperties[$newPropertyName])){
+					//this property was already determined to be unrelated to any old property
+					continue;
+				}
+				foreach($mappingList as $pair){
+					if(!($pair->new->getState($newPropertyName)?->equals($newPropertyValue) ?? false)){
+						//if the new property is different with an unchanged old value,
+						//the property may be influenced by multiple old properties, or be unrelated entirely
+						continue 2;
+					}
+				}
+				$candidateNewPropertyNames[$newPropertyName][$rawOldValue] = $newPropertyValue;
 			}
-		}elseif(count($propertyRemoved) !== 0 && count($propertyAdded) === 0){
-			foreach(Utils::stringifyKeys($propertyRemoved) as $propertyRemovedName => $propertyRemovedValue){
-				if(!isset($removedPropertiesCache[$propertyRemovedName])){
-					//to avoid having useless keys in the output
-					$result->removedProperties[$oldName][] = $propertyRemovedName;
-					$removedPropertiesCache[$propertyRemovedName] = $propertyRemovedName;
+		}
+
+		if(count($candidateNewPropertyNames) === 0){
+			$removedProperties[$oldPropertyName] = $oldPropertyName;
+		}elseif(count($candidateNewPropertyNames) === 1){
+			$newPropertyName = array_key_first($candidateNewPropertyNames);
+			$newPropertyValues = $candidateNewPropertyNames[$newPropertyName];
+
+			if($oldPropertyName !== $newPropertyName){
+				$renamedProperties[$oldPropertyName] = $newPropertyName;
+			}
+
+			foreach(Utils::stringifyKeys($newPropertyValues) as $rawOldValue => $newPropertyValue){
+				if(!$newPropertyValue->equals($oldPropertyValues[$rawOldValue])){
+					$remappedPropertyValues[$oldPropertyName][$rawOldValue] = $newPropertyValue;
 				}
 			}
 		}else{
-			$result->remappedStates[$oldName][] = new BlockStateUpgradeSchemaBlockRemap(
-				$oldStates,
-				$new->getName(),
-				$newStates,
-				[]
-			);
-			\GlobalLogger::get()->warning("warning: multiple properties added and removed for $oldName; added full state remap");;
+			$split = true;
+			if(isset($candidateNewPropertyNames[$oldPropertyName])){
+				//In 1.10, direction wasn't changed at all, but not all state permutations were present in the palette,
+				//making it appear that door_hinge_bit was correlated with direction.
+				//If a new property is present with the same name and values as an old property, we can assume that
+				//the property was unchanged, and that any extra matches properties are probably unrelated.
+				$changedValues = false;
+				foreach(Utils::stringifyKeys($candidateNewPropertyNames[$oldPropertyName]) as $rawOldValue => $newPropertyValue){
+					if(!$newPropertyValue->equals($oldPropertyValues[$rawOldValue])){
+						//if any of the new values are different, we may be dealing with a property being split into
+						//multiple new properties - hand this off to the remap handler
+						$changedValues = true;
+						break;
+					}
+				}
+				if(!$changedValues){
+					$split = false;
+				}
+			}
+			if($split){
+				\GlobalLogger::get()->warning(
+					"Multiple new properties (" . (implode(", ", array_keys($candidateNewPropertyNames))) . ") are correlated with $oldName property $oldPropertyName, processing as remaps instead"
+				);
+				return false;
+			}else{
+				//is it safe to ignore the rest?
+			}
 		}
 	}
+
+	//finally, write the results to the schema
+
+	if(count($remappedPropertyValues) !== 0){
+		foreach(Utils::stringifyKeys($remappedPropertyValues) as $oldPropertyName => $propertyValues){
+			foreach(Utils::stringifyKeys($propertyValues) as $rawOldValue => $newPropertyValue){
+				$oldPropertyValue = $oldProperties[$oldPropertyName][$rawOldValue];
+				$result->remappedPropertyValues[$oldName][$oldPropertyName][] = new BlockStateUpgradeSchemaValueRemap(
+					$oldPropertyValue,
+					$newPropertyValue
+				);
+			}
+		}
+	}
+	if(count($addedProperties) !== 0){
+		$result->addedProperties[$oldName] = $addedProperties;
+	}
+	if(count($removedProperties) !== 0){
+		$result->removedProperties[$oldName] = array_values($removedProperties);
+	}
+	if(count($renamedProperties) !== 0){
+		$result->renamedProperties[$oldName] = $renamedProperties;
+	}
+
+	return true;
 }
 
 /**
@@ -194,17 +281,18 @@ function processState(BlockStateData $old, BlockStateData $new, BlockStateUpgrad
  * This significantly reduces the output size during flattening when the flattened block has many permutations
  * (e.g. walls).
  *
- * @param BlockStateUpgradeSchemaBlockRemap[] $stateRemaps
- * @param BlockStateMapping[]                 $upgradeTable
+ * @param BlockStateMapping[] $upgradeTable
+ * @phpstan-param array<string, BlockStateMapping>        $upgradeTable
  *
  * @return BlockStateUpgradeSchemaBlockRemap[]
+ * @phpstan-return list<BlockStateUpgradeSchemaBlockRemap>
  */
-function compressRemappedStates(array $upgradeTable, array $stateRemaps) : array{
+function processRemappedStates(array $upgradeTable) : array{
 	$unchangedStatesByNewName = [];
 
 	foreach($upgradeTable as $pair){
 		if(count($pair->old->getStates()) === 0 || count($pair->new->getStates()) === 0){
-			//all states have changed in some way - compression not possible
+			//all states have changed in some way - no states are copied over
 			$unchangedStatesByNewName[$pair->new->getName()] = [];
 			continue;
 		}
@@ -240,78 +328,115 @@ function compressRemappedStates(array $upgradeTable, array $stateRemaps) : array
 		$unchangedStatesByNewName[$newName] = $unchangedStates;
 	}
 
-	$compressedRemaps = [];
+	$flattenedProperties = [];
+	$notFlattenedProperties = [];
+	$notFlattenedPropertyValues = [];
+	foreach($upgradeTable as $pair){
+		foreach(Utils::stringifyKeys($pair->old->getStates()) as $propertyName => $propertyValue){
+			if(isset($notFlattenedProperties[$propertyName])){
+				continue;
+			}
+			if(!$propertyValue instanceof StringTag){
+				$notFlattenedProperties[$propertyName] = true;
+				continue;
+			}
+			$rawValue = $propertyValue->getValue();
+			if($rawValue === ""){
+				$notFlattenedProperties[$propertyName] = true;
+				continue;
+			}
+			$parts = explode($rawValue, $pair->new->getName(), 2);
+			if(count($parts) !== 2){
+				//the new name does not contain the property value, but it may still be able to be flattened in other cases
+				$notFlattenedPropertyValues[$propertyName][$rawValue] = $rawValue;
+				continue;
+			}
+			[$prefix, $suffix] = $parts;
 
-	foreach($stateRemaps as $remap){
-		$oldState = $remap->oldState;
-		$newState = $remap->newState;
-
-		if($oldState === null || $newState === null){
-			//no unchanged states - no compression possible
-			assert(!isset($unchangedStatesByNewName[$remap->newName]));
-			$compressedRemaps[$remap->newName][] = $remap;
-			continue;
+			$filter = $pair->old->getStates();
+			foreach($unchangedStatesByNewName[$pair->new->getName()] as $unchangedPropertyName){
+				unset($filter[$unchangedPropertyName]);
+			}
+			unset($filter[$propertyName]);
+			$rawFilter = encodeOrderedProperties($filter);
+			$flattenRule = new BlockStateUpgradeSchemaFlattenedName(
+				prefix: $prefix,
+				flattenedProperty: $propertyName,
+				suffix: $suffix
+			);
+			if(!isset($flattenedProperties[$propertyName][$rawFilter])){
+				$flattenedProperties[$propertyName][$rawFilter] = $flattenRule;
+			}elseif(!$flattenRule->equals($flattenedProperties[$propertyName][$rawFilter])){
+				$notFlattenedProperties[$propertyName] = true;
+			}
 		}
+	}
+	foreach(Utils::stringifyKeys($notFlattenedProperties) as $propertyName => $_){
+		unset($flattenedProperties[$propertyName]);
+	}
+
+	ksort($flattenedProperties, SORT_STRING);
+	$flattenProperty = array_key_first($flattenedProperties);
+
+	$list = [];
+
+	foreach($upgradeTable as $pair){
+		$oldState = $pair->old->getStates();
+		$newState = $pair->new->getStates();
 
 		$cleanedOldState = $oldState;
 		$cleanedNewState = $newState;
+		$newName = $pair->new->getName();
 
-		foreach($unchangedStatesByNewName[$remap->newName] as $propertyName){
+		foreach($unchangedStatesByNewName[$newName] as $propertyName){
 			unset($cleanedOldState[$propertyName]);
 			unset($cleanedNewState[$propertyName]);
 		}
 		ksort($cleanedOldState);
 		ksort($cleanedNewState);
-
-		$duplicate = false;
-		$compressedRemaps[$remap->newName] ??= [];
-		foreach($compressedRemaps[$remap->newName] as $k => $compressedRemap){
-			assert($compressedRemap->oldState !== null && $compressedRemap->newState !== null);
-
-			if(
-				count($compressedRemap->oldState) !== count($cleanedOldState) ||
-				count($compressedRemap->newState) !== count($cleanedNewState)
-			){
-				continue;
+		$flattened = false;
+		if($flattenProperty !== null){
+			$flattenedValue = $cleanedOldState[$flattenProperty] ?? null;
+			if(!$flattenedValue instanceof StringTag){
+				throw new AssumptionFailedError("This should always be a TAG_String");
 			}
-			foreach(Utils::stringifyKeys($cleanedOldState) as $propertyName => $propertyValue){
-				if(!isset($compressedRemap->oldState[$propertyName]) || !$compressedRemap->oldState[$propertyName]->equals($propertyValue)){
-					//different filter value
-					continue 2;
-				}
+			if(!isset($notFlattenedPropertyValues[$flattenProperty][$flattenedValue->getValue()])){
+				unset($cleanedOldState[$flattenProperty]);
+				$flattened = true;
 			}
-			foreach(Utils::stringifyKeys($cleanedNewState) as $propertyName => $propertyValue){
-				if(!isset($compressedRemap->newState[$propertyName]) || !$compressedRemap->newState[$propertyName]->equals($propertyValue)){
-					//different replacement value
-					continue 2;
-				}
-			}
-			$duplicate = true;
-			break;
 		}
-		if(!$duplicate){
-			$compressedRemaps[$remap->newName][] = new BlockStateUpgradeSchemaBlockRemap(
-				$cleanedOldState,
-				$remap->newName,
-				$cleanedNewState,
-				$unchangedStatesByNewName[$remap->newName]
-			);
+		$rawOldState = encodeOrderedProperties($cleanedOldState);
+		$newNameRule = $flattenProperty !== null && $flattened ?
+			$flattenedProperties[$flattenProperty][$rawOldState] ?? throw new AssumptionFailedError("This should always be set") :
+			$newName;
+
+		$remap = new BlockStateUpgradeSchemaBlockRemap(
+			$cleanedOldState,
+			$newNameRule,
+			$cleanedNewState,
+			$unchangedStatesByNewName[$pair->new->getName()]
+		);
+
+		$existing = $list[$rawOldState] ?? null;
+		if($existing === null || $existing->equals($remap)){
+			$list[$rawOldState] = $remap;
+		}else{
+			//match criteria is borked
+			throw new AssumptionFailedError("Match criteria resulted in two ambiguous remaps");
 		}
 	}
-
-	$list = array_merge(...array_values($compressedRemaps));
 
 	//more specific filters must come before less specific ones, in case of a remap on a certain value which is
 	//otherwise unchanged
 	usort($list, function(BlockStateUpgradeSchemaBlockRemap $a, BlockStateUpgradeSchemaBlockRemap $b) : int{
 		return count($b->oldState) <=> count($a->oldState);
 	});
-	return $list;
+	return array_values($list);
 }
 
 /**
  * @param BlockStateMapping[][] $upgradeTable
- * @phpstan-param array<string, list<BlockStateMapping>> $upgradeTable
+ * @phpstan-param array<string, array<string, BlockStateMapping>> $upgradeTable
  */
 function generateBlockStateUpgradeSchema(array $upgradeTable) : BlockStateUpgradeSchema{
 	$foundVersion = -1;
@@ -343,8 +468,6 @@ function generateBlockStateUpgradeSchema(array $upgradeTable) : BlockStateUpgrad
 	foreach(Utils::stringifyKeys($upgradeTable) as $oldName => $blockStateMappings){
 		$newNameFound = [];
 
-		$removedPropertiesCache = [];
-		$remappedPropertyValuesCache = [];
 		foreach($blockStateMappings as $mapping){
 			$newName = $mapping->new->getName();
 			$newNameFound[$newName] = true;
@@ -354,34 +477,22 @@ function generateBlockStateUpgradeSchema(array $upgradeTable) : BlockStateUpgrad
 			if($newName !== $oldName){
 				$result->renamedIds[$oldName] = array_key_first($newNameFound);
 			}
-			foreach($blockStateMappings as $mapping){
-				processState($mapping->old, $mapping->new, $result, $removedPropertiesCache, $remappedPropertyValuesCache);
+			if(!processStateGroup($oldName, $blockStateMappings, $result)){
+				throw new \RuntimeException("States with the same ID should be fully consistent");
 			}
 		}else{
 			if(isset($newNameFound[$oldName])){
 				//some of the states stayed under the same ID - we can process these as normal states
-				foreach($blockStateMappings as $k => $mapping){
-					if($mapping->new->getName() === $oldName){
-						processState($mapping->old, $mapping->new, $result, $removedPropertiesCache, $remappedPropertyValuesCache);
+				$stateGroup = array_filter($blockStateMappings, fn(BlockStateMapping $m) => $m->new->getName() === $oldName);
+				if(processStateGroup($oldName, $stateGroup, $result)){
+					foreach(Utils::stringifyKeys($stateGroup) as $k => $mapping){
 						unset($blockStateMappings[$k]);
 					}
 				}
 			}
 			//block mapped to multiple different new IDs; we can't guess these, so we just do a plain old remap
-			foreach($blockStateMappings as $mapping){
-				if(!$mapping->old->equals($mapping->new)){
-					$result->remappedStates[$mapping->old->getName()][] = new BlockStateUpgradeSchemaBlockRemap(
-						$mapping->old->getStates(),
-						$mapping->new->getName(),
-						$mapping->new->getStates(),
-						[]
-					);
-				}
-			}
+			$result->remappedStates[$oldName] = processRemappedStates($blockStateMappings);
 		}
-	}
-	foreach(Utils::stringifyKeys($result->remappedStates) as $oldName => $remap){
-		$result->remappedStates[$oldName] = compressRemappedStates($upgradeTable[$oldName], $remap);
 	}
 
 	return $result;

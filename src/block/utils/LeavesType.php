@@ -23,17 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static LeavesType ACACIA()
  * @method static LeavesType AZALEA()
  * @method static LeavesType BIRCH()
+ * @method static LeavesType CHERRY()
  * @method static LeavesType DARK_OAK()
  * @method static LeavesType FLOWERING_AZALEA()
  * @method static LeavesType JUNGLE()
@@ -41,34 +40,32 @@ use pocketmine\utils\EnumTrait;
  * @method static LeavesType OAK()
  * @method static LeavesType SPRUCE()
  */
-final class LeavesType{
-	use EnumTrait {
-		register as Enum_register;
-		__construct as Enum___construct;
-	}
+enum LeavesType{
+	use LegacyEnumShimTrait;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("oak", "Oak"),
-			new self("spruce", "Spruce"),
-			new self("birch", "Birch"),
-			new self("jungle", "Jungle"),
-			new self("acacia", "Acacia"),
-			new self("dark_oak", "Dark Oak"),
-			new self("mangrove", "Mangrove"),
-			new self("azalea", "Azalea"),
-			new self("flowering_azalea", "Flowering Azalea")
-		);
-	}
-
-	private function __construct(
-		string $enumName,
-		private string $displayName
-	){
-		$this->Enum___construct($enumName);
-	}
+	case OAK;
+	case SPRUCE;
+	case BIRCH;
+	case JUNGLE;
+	case ACACIA;
+	case DARK_OAK;
+	case MANGROVE;
+	case AZALEA;
+	case FLOWERING_AZALEA;
+	case CHERRY;
 
 	public function getDisplayName() : string{
-		return $this->displayName;
+		return match($this){
+			self::OAK => "Oak",
+			self::SPRUCE => "Spruce",
+			self::BIRCH => "Birch",
+			self::JUNGLE => "Jungle",
+			self::ACACIA => "Acacia",
+			self::DARK_OAK => "Dark Oak",
+			self::MANGROVE => "Mangrove",
+			self::AZALEA => "Azalea",
+			self::FLOWERING_AZALEA => "Flowering Azalea",
+			self::CHERRY => "Cherry"
+		};
 	}
 }

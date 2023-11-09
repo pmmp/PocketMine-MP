@@ -80,7 +80,6 @@ use pocketmine\player\PlayerDataProvider;
 use pocketmine\player\PlayerDataSaveException;
 use pocketmine\player\PlayerInfo;
 use pocketmine\plugin\PharPluginLoader;
-use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginEnableOrder;
 use pocketmine\plugin\PluginGraylist;
 use pocketmine\plugin\PluginManager;
@@ -93,6 +92,7 @@ use pocketmine\scheduler\AsyncPool;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\stats\SendUsageTask;
 use pocketmine\thread\log\AttachableThreadSafeLogger;
+use pocketmine\thread\ThreadCrashException;
 use pocketmine\thread\ThreadSafeClassLoader;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
@@ -119,6 +119,7 @@ use pocketmine\world\Position;
 use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
 use pocketmine\world\WorldManager;
+use pocketmine\YmlServerProperties as Yml;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Filesystem\Path;
 use function array_fill;
@@ -359,15 +360,15 @@ class Server{
 	}
 
 	public function getPort() : int{
-		return $this->configGroup->getConfigInt("server-port", self::DEFAULT_PORT_IPV4);
+		return $this->configGroup->getConfigInt(ServerProperties::SERVER_PORT_IPV4, self::DEFAULT_PORT_IPV4);
 	}
 
 	public function getPortV6() : int{
-		return $this->configGroup->getConfigInt("server-portv6", self::DEFAULT_PORT_IPV6);
+		return $this->configGroup->getConfigInt(ServerProperties::SERVER_PORT_IPV6, self::DEFAULT_PORT_IPV6);
 	}
 
 	public function getViewDistance() : int{
-		return max(2, $this->configGroup->getConfigInt("view-distance", self::DEFAULT_MAX_VIEW_DISTANCE));
+		return max(2, $this->configGroup->getConfigInt(ServerProperties::VIEW_DISTANCE, self::DEFAULT_MAX_VIEW_DISTANCE));
 	}
 
 	/**
@@ -378,12 +379,12 @@ class Server{
 	}
 
 	public function getIp() : string{
-		$str = $this->configGroup->getConfigString("server-ip");
+		$str = $this->configGroup->getConfigString(ServerProperties::SERVER_IPV4);
 		return $str !== "" ? $str : "0.0.0.0";
 	}
 
 	public function getIpV6() : string{
-		$str = $this->configGroup->getConfigString("server-ipv6");
+		$str = $this->configGroup->getConfigString(ServerProperties::SERVER_IPV6);
 		return $str !== "" ? $str : "::";
 	}
 
@@ -392,30 +393,30 @@ class Server{
 	}
 
 	public function getGamemode() : GameMode{
-		return GameMode::fromString($this->configGroup->getConfigString("gamemode", GameMode::SURVIVAL()->name())) ?? GameMode::SURVIVAL();
+		return GameMode::fromString($this->configGroup->getConfigString(ServerProperties::GAME_MODE)) ?? GameMode::SURVIVAL;
 	}
 
 	public function getForceGamemode() : bool{
-		return $this->configGroup->getConfigBool("force-gamemode", false);
+		return $this->configGroup->getConfigBool(ServerProperties::FORCE_GAME_MODE, false);
 	}
 
 	/**
 	 * Returns Server global difficulty. Note that this may be overridden in individual worlds.
 	 */
 	public function getDifficulty() : int{
-		return $this->configGroup->getConfigInt("difficulty", World::DIFFICULTY_NORMAL);
+		return $this->configGroup->getConfigInt(ServerProperties::DIFFICULTY, World::DIFFICULTY_NORMAL);
 	}
 
 	public function hasWhitelist() : bool{
-		return $this->configGroup->getConfigBool("white-list", false);
+		return $this->configGroup->getConfigBool(ServerProperties::WHITELIST, false);
 	}
 
 	public function isHardcore() : bool{
-		return $this->configGroup->getConfigBool("hardcore", false);
+		return $this->configGroup->getConfigBool(ServerProperties::HARDCORE, false);
 	}
 
 	public function getMotd() : string{
-		return $this->configGroup->getConfigString("motd", self::DEFAULT_SERVER_NAME);
+		return $this->configGroup->getConfigString(ServerProperties::MOTD, self::DEFAULT_SERVER_NAME);
 	}
 
 	public function getLoader() : ThreadSafeClassLoader{
@@ -498,7 +499,7 @@ class Server{
 	}
 
 	public function shouldSavePlayerData() : bool{
-		return $this->configGroup->getPropertyBool("player.save-player-data", true);
+		return $this->configGroup->getPropertyBool(Yml::PLAYER_SAVE_PLAYER_DATA, true);
 	}
 
 	public function getOfflinePlayer(string $name) : Player|OfflinePlayer|null{
@@ -572,6 +573,7 @@ class Server{
 		$playerPromiseResolver = new PromiseResolver();
 
 		$createPlayer = function(Location $location) use ($playerPromiseResolver, $class, $session, $playerInfo, $authenticated, $offlinePlayerData) : void{
+			/** @see Player::__construct() */
 			$player = new $class($this, $session, $playerInfo, $authenticated, $location, $offlinePlayerData);
 			if(!$player->hasPlayedBefore()){
 				$player->onGround = true; //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
@@ -738,7 +740,7 @@ class Server{
 	 * @return string[][]
 	 */
 	public function getCommandAliases() : array{
-		$section = $this->configGroup->getProperty("aliases");
+		$section = $this->configGroup->getProperty(YmlServerProperties::ALIASES);
 		$result = [];
 		if(is_array($section)){
 			foreach($section as $key => $value){
@@ -813,36 +815,36 @@ class Server{
 			$this->configGroup = new ServerConfigGroup(
 				new Config($pocketmineYmlPath, Config::YAML, []),
 				new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES, [
-					"motd" => self::DEFAULT_SERVER_NAME,
-					"server-port" => self::DEFAULT_PORT_IPV4,
-					"server-portv6" => self::DEFAULT_PORT_IPV6,
-					"enable-ipv6" => true,
-					"white-list" => false,
-					"max-players" => self::DEFAULT_MAX_PLAYERS,
-					"gamemode" => GameMode::SURVIVAL()->name(),
-					"force-gamemode" => false,
-					"hardcore" => false,
-					"pvp" => true,
-					"difficulty" => World::DIFFICULTY_NORMAL,
-					"generator-settings" => "",
-					"level-name" => "world",
-					"level-seed" => "",
-					"level-type" => "DEFAULT",
-					"enable-query" => true,
-					"auto-save" => true,
-					"view-distance" => self::DEFAULT_MAX_VIEW_DISTANCE,
-					"xbox-auth" => true,
-					"language" => "eng"
+					ServerProperties::MOTD => self::DEFAULT_SERVER_NAME,
+					ServerProperties::SERVER_PORT_IPV4 => self::DEFAULT_PORT_IPV4,
+					ServerProperties::SERVER_PORT_IPV6 => self::DEFAULT_PORT_IPV6,
+					ServerProperties::ENABLE_IPV6 => true,
+					ServerProperties::WHITELIST => false,
+					ServerProperties::MAX_PLAYERS => self::DEFAULT_MAX_PLAYERS,
+					ServerProperties::GAME_MODE => GameMode::SURVIVAL->name, //TODO: this probably shouldn't use the enum name directly
+					ServerProperties::FORCE_GAME_MODE => false,
+					ServerProperties::HARDCORE => false,
+					ServerProperties::PVP => true,
+					ServerProperties::DIFFICULTY => World::DIFFICULTY_NORMAL,
+					ServerProperties::DEFAULT_WORLD_GENERATOR_SETTINGS => "",
+					ServerProperties::DEFAULT_WORLD_NAME => "world",
+					ServerProperties::DEFAULT_WORLD_SEED => "",
+					ServerProperties::DEFAULT_WORLD_GENERATOR => "DEFAULT",
+					ServerProperties::ENABLE_QUERY => true,
+					ServerProperties::AUTO_SAVE => true,
+					ServerProperties::VIEW_DISTANCE => self::DEFAULT_MAX_VIEW_DISTANCE,
+					ServerProperties::XBOX_AUTH => true,
+					ServerProperties::LANGUAGE => "eng"
 				])
 			);
 
-			$debugLogLevel = $this->configGroup->getPropertyInt("debug.level", 1);
+			$debugLogLevel = $this->configGroup->getPropertyInt(Yml::DEBUG_LEVEL, 1);
 			if($this->logger instanceof MainLogger){
 				$this->logger->setLogDebug($debugLogLevel > 1);
 			}
 
-			$this->forceLanguage = $this->configGroup->getPropertyBool("settings.force-language", false);
-			$selectedLang = $this->configGroup->getConfigString("language", $this->configGroup->getPropertyString("settings.language", Language::FALLBACK_LANGUAGE));
+			$this->forceLanguage = $this->configGroup->getPropertyBool(Yml::SETTINGS_FORCE_LANGUAGE, false);
+			$selectedLang = $this->configGroup->getConfigString(ServerProperties::LANGUAGE, $this->configGroup->getPropertyString("settings.language", Language::FALLBACK_LANGUAGE));
 			try{
 				$this->language = new Language($selectedLang);
 			}catch(LanguageNotFoundException $e){
@@ -858,11 +860,11 @@ class Server{
 			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::language_selected($this->getLanguage()->getName(), $this->getLanguage()->getLang())));
 
 			if(VersionInfo::IS_DEVELOPMENT_BUILD){
-				if(!$this->configGroup->getPropertyBool("settings.enable-dev-builds", false)){
+				if(!$this->configGroup->getPropertyBool(Yml::SETTINGS_ENABLE_DEV_BUILDS, false)){
 					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error1(VersionInfo::NAME)));
 					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error2()));
 					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error3()));
-					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error4("settings.enable-dev-builds")));
+					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error4(YmlServerProperties::SETTINGS_ENABLE_DEV_BUILDS)));
 					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error5("https://github.com/pmmp/PocketMine-MP/releases")));
 					$this->forceShutdownExit();
 
@@ -880,7 +882,7 @@ class Server{
 
 			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_start(TextFormat::AQUA . $this->getVersion() . TextFormat::RESET)));
 
-			if(($poolSize = $this->configGroup->getPropertyString("settings.async-workers", "auto")) === "auto"){
+			if(($poolSize = $this->configGroup->getPropertyString(Yml::SETTINGS_ASYNC_WORKERS, "auto")) === "auto"){
 				$poolSize = 2;
 				$processors = Utils::getCoreCount() - 2;
 
@@ -891,33 +893,33 @@ class Server{
 				$poolSize = max(1, (int) $poolSize);
 			}
 
-			$this->asyncPool = new AsyncPool($poolSize, max(-1, $this->configGroup->getPropertyInt("memory.async-worker-hard-limit", 256)), $this->autoloader, $this->logger, $this->tickSleeper);
+			$this->asyncPool = new AsyncPool($poolSize, max(-1, $this->configGroup->getPropertyInt(Yml::MEMORY_ASYNC_WORKER_HARD_LIMIT, 256)), $this->autoloader, $this->logger, $this->tickSleeper);
 
 			$netCompressionThreshold = -1;
-			if($this->configGroup->getPropertyInt("network.batch-threshold", 256) >= 0){
-				$netCompressionThreshold = $this->configGroup->getPropertyInt("network.batch-threshold", 256);
+			if($this->configGroup->getPropertyInt(Yml::NETWORK_BATCH_THRESHOLD, 256) >= 0){
+				$netCompressionThreshold = $this->configGroup->getPropertyInt(Yml::NETWORK_BATCH_THRESHOLD, 256);
 			}
 			if($netCompressionThreshold < 0){
 				$netCompressionThreshold = null;
 			}
 
-			$netCompressionLevel = $this->configGroup->getPropertyInt("network.compression-level", 6);
+			$netCompressionLevel = $this->configGroup->getPropertyInt(Yml::NETWORK_COMPRESSION_LEVEL, 6);
 			if($netCompressionLevel < 1 || $netCompressionLevel > 9){
 				$this->logger->warning("Invalid network compression level $netCompressionLevel set, setting to default 6");
 				$netCompressionLevel = 6;
 			}
 			ZlibCompressor::setInstance(new ZlibCompressor($netCompressionLevel, $netCompressionThreshold, ZlibCompressor::DEFAULT_MAX_DECOMPRESSION_SIZE));
 
-			$netCompressionThreads = $this->configGroup->getPropertyString("network.compression-threads", "auto");
+			$netCompressionThreads = $this->configGroup->getPropertyString(Yml::NETWORK_COMPRESSION_THREADS, "auto");
 			if($netCompressionThreads === "auto"){
 				$this->networkCompressionThreads = max(1, Utils::getCoreCount() - 2);
 			}else{
 				$this->networkCompressionThreads = max(0, (int) $netCompressionThreads);
 			}
 
-			EncryptionContext::$ENABLED = $this->configGroup->getPropertyBool("network.enable-encryption", true);
+			EncryptionContext::$ENABLED = $this->configGroup->getPropertyBool(Yml::NETWORK_ENABLE_ENCRYPTION, true);
 
-			$this->doTitleTick = $this->configGroup->getPropertyBool("console.title-tick", true) && Terminal::hasFormattingCodes();
+			$this->doTitleTick = $this->configGroup->getPropertyBool(Yml::CONSOLE_TITLE_TICK, true) && Terminal::hasFormattingCodes();
 
 			$this->operators = new Config(Path::join($this->dataPath, "ops.txt"), Config::ENUM);
 			$this->whitelist = new Config(Path::join($this->dataPath, "white-list.txt"), Config::ENUM);
@@ -935,9 +937,9 @@ class Server{
 			$this->banByIP = new BanList($bannedIpsTxt);
 			$this->banByIP->load();
 
-			$this->maxPlayers = $this->configGroup->getConfigInt("max-players", self::DEFAULT_MAX_PLAYERS);
+			$this->maxPlayers = $this->configGroup->getConfigInt(ServerProperties::MAX_PLAYERS, self::DEFAULT_MAX_PLAYERS);
 
-			$this->onlineMode = $this->configGroup->getConfigBool("xbox-auth", true);
+			$this->onlineMode = $this->configGroup->getConfigBool(ServerProperties::XBOX_AUTH, true);
 			if($this->onlineMode){
 				$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_auth_enabled()));
 			}else{
@@ -946,8 +948,8 @@ class Server{
 				$this->logger->warning($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_authProperty_disabled()));
 			}
 
-			if($this->configGroup->getConfigBool("hardcore", false) && $this->getDifficulty() < World::DIFFICULTY_HARD){
-				$this->configGroup->setConfigInt("difficulty", World::DIFFICULTY_HARD);
+			if($this->configGroup->getConfigBool(ServerProperties::HARDCORE, false) && $this->getDifficulty() < World::DIFFICULTY_HARD){
+				$this->configGroup->setConfigInt(ServerProperties::DIFFICULTY, World::DIFFICULTY_HARD);
 			}
 
 			@cli_set_process_title($this->getName() . " " . $this->getPocketMineVersion());
@@ -966,8 +968,8 @@ class Server{
 			)));
 			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_license($this->getName())));
 
-			TimingsHandler::setEnabled($this->configGroup->getPropertyBool("settings.enable-profiling", false));
-			$this->profilingTickRate = $this->configGroup->getPropertyInt("settings.profile-report-trigger", self::TARGET_TICKS_PER_SECOND);
+			TimingsHandler::setEnabled($this->configGroup->getPropertyBool(Yml::SETTINGS_ENABLE_PROFILING, false));
+			$this->profilingTickRate = $this->configGroup->getPropertyInt(Yml::SETTINGS_PROFILE_REPORT_TRIGGER, self::TARGET_TICKS_PER_SECOND);
 
 			DefaultPermissions::registerCorePermissions();
 
@@ -989,13 +991,13 @@ class Server{
 				$this->forceShutdownExit();
 				return;
 			}
-			$this->pluginManager = new PluginManager($this, $this->configGroup->getPropertyBool("plugins.legacy-data-dir", true) ? null : Path::join($this->getDataPath(), "plugin_data"), $pluginGraylist);
+			$this->pluginManager = new PluginManager($this, $this->configGroup->getPropertyBool(Yml::PLUGINS_LEGACY_DATA_DIR, true) ? null : Path::join($this->getDataPath(), "plugin_data"), $pluginGraylist);
 			$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
 			$this->pluginManager->registerInterface(new ScriptPluginLoader());
 
 			$providerManager = new WorldProviderManager();
 			if(
-				($format = $providerManager->getProviderByName($formatName = $this->configGroup->getPropertyString("level-settings.default-format", ""))) !== null &&
+				($format = $providerManager->getProviderByName($formatName = $this->configGroup->getPropertyString(Yml::LEVEL_SETTINGS_DEFAULT_FORMAT, ""))) !== null &&
 				$format instanceof WritableWorldProviderManagerEntry
 			){
 				$providerManager->setDefault($format);
@@ -1004,16 +1006,16 @@ class Server{
 			}
 
 			$this->worldManager = new WorldManager($this, Path::join($this->dataPath, "worlds"), $providerManager);
-			$this->worldManager->setAutoSave($this->configGroup->getConfigBool("auto-save", $this->worldManager->getAutoSave()));
-			$this->worldManager->setAutoSaveInterval($this->configGroup->getPropertyInt("ticks-per.autosave", $this->worldManager->getAutoSaveInterval()));
+			$this->worldManager->setAutoSave($this->configGroup->getConfigBool(ServerProperties::AUTO_SAVE, $this->worldManager->getAutoSave()));
+			$this->worldManager->setAutoSaveInterval($this->configGroup->getPropertyInt(Yml::TICKS_PER_AUTOSAVE, $this->worldManager->getAutoSaveInterval()));
 
-			$this->updater = new UpdateChecker($this, $this->configGroup->getPropertyString("auto-updater.host", "update.pmmp.io"));
+			$this->updater = new UpdateChecker($this, $this->configGroup->getPropertyString(Yml::AUTO_UPDATER_HOST, "update.pmmp.io"));
 
 			$this->queryInfo = new QueryInfo($this);
 
 			$this->playerDataProvider = new DatFilePlayerDataProvider(Path::join($this->dataPath, "players"));
 
-			register_shutdown_function([$this, "crashDump"]);
+			register_shutdown_function($this->crashDump(...));
 
 			$loadErrorCount = 0;
 			$this->pluginManager->loadPlugins($this->pluginPath, $loadErrorCount);
@@ -1022,7 +1024,7 @@ class Server{
 				$this->forceShutdownExit();
 				return;
 			}
-			if(!$this->enablePlugins(PluginEnableOrder::STARTUP())){
+			if(!$this->enablePlugins(PluginEnableOrder::STARTUP)){
 				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
 				$this->forceShutdownExit();
 				return;
@@ -1033,7 +1035,7 @@ class Server{
 				return;
 			}
 
-			if(!$this->enablePlugins(PluginEnableOrder::POSTWORLD())){
+			if(!$this->enablePlugins(PluginEnableOrder::POSTWORLD)){
 				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
 				$this->forceShutdownExit();
 				return;
@@ -1044,7 +1046,7 @@ class Server{
 				return;
 			}
 
-			if($this->configGroup->getPropertyBool("anonymous-statistics.enabled", true)){
+			if($this->configGroup->getPropertyBool(Yml::ANONYMOUS_STATISTICS_ENABLED, true)){
 				$this->sendUsageTicker = self::TICKS_PER_STATS_REPORT;
 				$this->sendUsage(SendUsageTask::TYPE_OPEN);
 			}
@@ -1060,7 +1062,7 @@ class Server{
 			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $forwarder);
 
 			//TODO: move console parts to a separate component
-			if($this->configGroup->getPropertyBool("console.enable-input", true)){
+			if($this->configGroup->getPropertyBool(Yml::CONSOLE_ENABLE_INPUT, true)){
 				$this->console = new ConsoleReaderChildProcessDaemon($this->logger);
 			}
 
@@ -1095,7 +1097,7 @@ class Server{
 
 		$anyWorldFailedToLoad = false;
 
-		foreach((array) $this->configGroup->getProperty("worlds", []) as $name => $options){
+		foreach((array) $this->configGroup->getProperty(Yml::WORLDS, []) as $name => $options){
 			if($options === null){
 				$options = [];
 			}elseif(!is_array($options)){
@@ -1139,11 +1141,11 @@ class Server{
 		}
 
 		if($this->worldManager->getDefaultWorld() === null){
-			$default = $this->configGroup->getConfigString("level-name", "world");
+			$default = $this->configGroup->getConfigString(ServerProperties::DEFAULT_WORLD_NAME, "world");
 			if(trim($default) == ""){
 				$this->getLogger()->warning("level-name cannot be null, using default");
 				$default = "world";
-				$this->configGroup->setConfigString("level-name", "world");
+				$this->configGroup->setConfigString(ServerProperties::DEFAULT_WORLD_NAME, "world");
 			}
 			if(!$this->worldManager->loadWorld($default, true)){
 				if($this->worldManager->isWorldGenerated($default)){
@@ -1151,8 +1153,8 @@ class Server{
 
 					return false;
 				}
-				$generatorName = $this->configGroup->getConfigString("level-type");
-				$generatorOptions = $this->configGroup->getConfigString("generator-settings");
+				$generatorName = $this->configGroup->getConfigString(ServerProperties::DEFAULT_WORLD_GENERATOR);
+				$generatorOptions = $this->configGroup->getConfigString(ServerProperties::DEFAULT_WORLD_GENERATOR_SETTINGS);
 				$generatorClass = $getGenerator($generatorName, $generatorOptions, $default);
 
 				if($generatorClass === null){
@@ -1162,7 +1164,7 @@ class Server{
 				$creationOptions = WorldCreationOptions::create()
 					->setGeneratorClass($generatorClass)
 					->setGeneratorOptions($generatorOptions);
-				$convertedSeed = Generator::convertSeed($this->configGroup->getConfigString("level-seed"));
+				$convertedSeed = Generator::convertSeed($this->configGroup->getConfigString(ServerProperties::DEFAULT_WORLD_SEED));
 				if($convertedSeed !== null){
 					$creationOptions->setSeed($convertedSeed);
 				}
@@ -1216,7 +1218,7 @@ class Server{
 	}
 
 	private function startupPrepareNetworkInterfaces() : bool{
-		$useQuery = $this->configGroup->getConfigBool("enable-query", true);
+		$useQuery = $this->configGroup->getConfigBool(ServerProperties::ENABLE_QUERY, true);
 
 		$typeConverter = TypeConverter::getInstance();
 		$packetSerializerContext = new PacketSerializerContext($typeConverter->getItemTypeDictionary());
@@ -1226,7 +1228,7 @@ class Server{
 		if(
 			!$this->startupPrepareConnectableNetworkInterfaces($this->getIp(), $this->getPort(), false, $useQuery, $packetBroadcaster, $entityEventBroadcaster, $packetSerializerContext, $typeConverter) ||
 			(
-				$this->configGroup->getConfigBool("enable-ipv6", true) &&
+				$this->configGroup->getConfigBool(ServerProperties::ENABLE_IPV6, true) &&
 				!$this->startupPrepareConnectableNetworkInterfaces($this->getIpV6(), $this->getPortV6(), true, $useQuery, $packetBroadcaster, $entityEventBroadcaster, $packetSerializerContext, $typeConverter)
 			)
 		){
@@ -1241,7 +1243,7 @@ class Server{
 			$this->network->blockAddress($entry->getName(), -1);
 		}
 
-		if($this->configGroup->getPropertyBool("network.upnp-forwarding", false)){
+		if($this->configGroup->getPropertyBool(Yml::NETWORK_UPNP_FORWARDING, false)){
 			$this->network->registerInterface(new UPnPNetworkInterface($this->logger, Internet::getInternalIP(), $this->getPort()));
 		}
 
@@ -1261,9 +1263,10 @@ class Server{
 	 */
 	public function unsubscribeFromBroadcastChannel(string $channelId, CommandSender $subscriber) : void{
 		if(isset($this->broadcastSubscribers[$channelId][spl_object_id($subscriber)])){
-			unset($this->broadcastSubscribers[$channelId][spl_object_id($subscriber)]);
-			if(count($this->broadcastSubscribers[$channelId]) === 0){
+			if(count($this->broadcastSubscribers[$channelId]) === 1){
 				unset($this->broadcastSubscribers[$channelId]);
+			}else{
+				unset($this->broadcastSubscribers[$channelId][spl_object_id($subscriber)]);
 			}
 		}
 	}
@@ -1401,14 +1404,14 @@ class Server{
 	public function enablePlugins(PluginEnableOrder $type) : bool{
 		$allSuccess = true;
 		foreach($this->pluginManager->getPlugins() as $plugin){
-			if(!$plugin->isEnabled() && $plugin->getDescription()->getOrder()->equals($type)){
+			if(!$plugin->isEnabled() && $plugin->getDescription()->getOrder() === $type){
 				if(!$this->pluginManager->enablePlugin($plugin)){
 					$allSuccess = false;
 				}
 			}
 		}
 
-		if($type->equals(PluginEnableOrder::POSTWORLD())){
+		if($type === PluginEnableOrder::POSTWORLD){
 			$this->commandMap->registerServerAliases();
 		}
 
@@ -1444,7 +1447,7 @@ class Server{
 
 	private function forceShutdownExit() : void{
 		$this->forceShutdown();
-		Process::kill(Process::pid(), true);
+		Process::kill(Process::pid());
 	}
 
 	public function forceShutdown() : void{
@@ -1474,7 +1477,7 @@ class Server{
 			}
 
 			if(isset($this->network)){
-				$this->network->getSessionManager()->close($this->configGroup->getPropertyString("settings.shutdown-message", "Server closed"));
+				$this->network->getSessionManager()->close($this->configGroup->getPropertyString(YmlServerProperties::SETTINGS_SHUTDOWN_MESSAGE, "Server closed"));
 			}
 
 			if(isset($this->worldManager)){
@@ -1516,7 +1519,7 @@ class Server{
 		}catch(\Throwable $e){
 			$this->logger->logException($e);
 			$this->logger->emergency("Crashed while crashing, killing process");
-			@Process::kill(Process::pid(), true);
+			@Process::kill(Process::pid());
 		}
 
 	}
@@ -1537,23 +1540,38 @@ class Server{
 			$trace = $e->getTrace();
 		}
 
-		$errstr = $e->getMessage();
-		$errfile = $e->getFile();
-		$errline = $e->getLine();
+		//If this is a thread crash, this logs where the exception came from on the main thread, as opposed to the
+		//crashed thread. This is intentional, and might be useful for debugging
+		//Assume that the thread already logged the original exception with the correct stack trace
+		$this->logger->logException($e, $trace);
+
+		if($e instanceof ThreadCrashException){
+			$info = $e->getCrashInfo();
+			$type = $info->getType();
+			$errstr = $info->getMessage();
+			$errfile = $info->getFile();
+			$errline = $info->getLine();
+			$printableTrace = $info->getTrace();
+			$thread = $info->getThreadName();
+		}else{
+			$type = get_class($e);
+			$errstr = $e->getMessage();
+			$errfile = $e->getFile();
+			$errline = $e->getLine();
+			$printableTrace = Utils::printableTraceWithMetadata($trace);
+			$thread = "Main";
+		}
 
 		$errstr = preg_replace('/\s+/', ' ', trim($errstr));
 
-		$errfile = Filesystem::cleanPath($errfile);
-
-		$this->logger->logException($e, $trace);
-
 		$lastError = [
-			"type" => get_class($e),
+			"type" => $type,
 			"message" => $errstr,
-			"fullFile" => $e->getFile(),
-			"file" => $errfile,
+			"fullFile" => $errfile,
+			"file" => Filesystem::cleanPath($errfile),
 			"line" => $errline,
-			"trace" => $trace
+			"trace" => $printableTrace,
+			"thread" => $thread
 		];
 
 		global $lastExceptionError, $lastError;
@@ -1600,7 +1618,7 @@ class Server{
 
 			$this->logger->emergency($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_crash_submit($crashDumpPath)));
 
-			if($this->configGroup->getPropertyBool("auto-report.enabled", true)){
+			if($this->configGroup->getPropertyBool(Yml::AUTO_REPORT_ENABLED, true)){
 				$report = true;
 
 				$stamp = Path::join($this->getDataPath(), "crashdumps", ".last_crash");
@@ -1610,15 +1628,6 @@ class Server{
 					$this->logger->debug("Not sending crashdump due to last crash less than $crashInterval seconds ago");
 				}
 				@touch($stamp); //update file timestamp
-
-				$plugin = $dump->getData()->plugin;
-				if($plugin !== ""){
-					$p = $this->pluginManager->getPlugin($plugin);
-					if($p instanceof Plugin && !($p->getPluginLoader() instanceof PharPluginLoader)){
-						$this->logger->debug("Not sending crashdump due to caused by non-phar plugin");
-						$report = false;
-					}
-				}
 
 				if($dump->getData()->error["type"] === \ParseError::class){
 					$report = false;
@@ -1630,7 +1639,7 @@ class Server{
 				}
 
 				if($report){
-					$url = ($this->configGroup->getPropertyBool("auto-report.use-https", true) ? "https" : "http") . "://" . $this->configGroup->getPropertyString("auto-report.host", "crash.pmmp.io") . "/submit/api";
+					$url = ($this->configGroup->getPropertyBool(Yml::AUTO_REPORT_USE_HTTPS, true) ? "https" : "http") . "://" . $this->configGroup->getPropertyString(Yml::AUTO_REPORT_HOST, "crash.pmmp.io") . "/submit/api";
 					$postUrlError = "Unknown error";
 					$reply = Internet::postURL($url, [
 						"report" => "yes",
@@ -1670,7 +1679,7 @@ class Server{
 			echo "--- Waiting $spacing seconds to throttle automatic restart (you can kill the process safely now) ---" . PHP_EOL;
 			sleep($spacing);
 		}
-		@Process::kill(Process::pid(), true);
+		@Process::kill(Process::pid());
 		exit(1);
 	}
 
@@ -1741,7 +1750,7 @@ class Server{
 	}
 
 	public function sendUsage(int $type = SendUsageTask::TYPE_STATUS) : void{
-		if($this->configGroup->getPropertyBool("anonymous-statistics.enabled", true)){
+		if($this->configGroup->getPropertyBool(Yml::ANONYMOUS_STATISTICS_ENABLED, true)){
 			$this->asyncPool->submitTask(new SendUsageTask($this, $type, $this->uniquePlayers));
 		}
 		$this->uniquePlayers = [];

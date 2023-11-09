@@ -43,6 +43,7 @@ use pocketmine\world\WorldCreationOptions;
 use Symfony\Component\Filesystem\Path;
 use function array_map;
 use function file_put_contents;
+use function sprintf;
 use function strlen;
 use function substr;
 use function time;
@@ -50,12 +51,12 @@ use function time;
 class BedrockWorldData extends BaseNbtWorldData{
 
 	public const CURRENT_STORAGE_VERSION = 10;
-	public const CURRENT_STORAGE_NETWORK_VERSION = 582;
+	public const CURRENT_STORAGE_NETWORK_VERSION = 622;
 	public const CURRENT_CLIENT_VERSION_TARGET = [
 		1, //major
-		19, //minor
-		80, //patch
-		0, //revision
+		20, //minor
+		40, //patch
+		1, //revision
 		0 //is beta
 	];
 
@@ -154,12 +155,18 @@ class BedrockWorldData extends BaseNbtWorldData{
 		}
 
 		$version = $worldData->getInt(self::TAG_STORAGE_VERSION, Limits::INT32_MAX);
+		if($version === Limits::INT32_MAX){
+			throw new CorruptedWorldException(sprintf("Missing '%s' tag in level.dat", self::TAG_STORAGE_VERSION));
+		}
 		if($version > self::CURRENT_STORAGE_VERSION){
 			throw new UnsupportedWorldFormatException("LevelDB world format version $version is currently unsupported");
 		}
 		//StorageVersion is rarely updated - instead, the game relies on the NetworkVersion tag, which is synced with
 		//the network protocol version for that version.
 		$protocolVersion = $worldData->getInt(self::TAG_NETWORK_VERSION, Limits::INT32_MAX);
+		if($protocolVersion === Limits::INT32_MAX){
+			throw new CorruptedWorldException(sprintf("Missing '%s' tag in level.dat", self::TAG_NETWORK_VERSION));
+		}
 		if($protocolVersion > self::CURRENT_STORAGE_NETWORK_VERSION){
 			throw new UnsupportedWorldFormatException("LevelDB world protocol version $protocolVersion is currently unsupported");
 		}

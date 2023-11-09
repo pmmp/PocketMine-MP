@@ -24,11 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\upgrade;
 
 use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\utils\Utils;
 use function count;
+use function is_string;
 use function ksort;
 use function max;
+use function sprintf;
 use const SORT_NUMERIC;
 
 final class BlockStateUpgrader{
@@ -79,6 +82,20 @@ final class BlockStateUpgrader{
 							continue 2; //try next state
 						}
 					}
+
+					if(is_string($remap->newName)){
+						$newName = $remap->newName;
+					}else{
+						$flattenedValue = $oldState[$remap->newName->flattenedProperty];
+						if($flattenedValue instanceof StringTag){
+							$newName = sprintf("%s%s%s", $remap->newName->prefix, $flattenedValue->getValue(), $remap->newName->suffix);
+							unset($oldState[$remap->newName->flattenedProperty]);
+						}else{
+							//flattened property is not a TAG_String, so this transformation is not applicable
+							continue;
+						}
+					}
+
 					$newState = $remap->newState;
 					foreach($remap->copiedState as $stateName){
 						if(isset($oldState[$stateName])){
@@ -86,7 +103,7 @@ final class BlockStateUpgrader{
 						}
 					}
 
-					$blockStateData = new BlockStateData($remap->newName, $newState, $resultVersion);
+					$blockStateData = new BlockStateData($newName, $newState, $resultVersion);
 					continue 2; //try next schema
 				}
 			}

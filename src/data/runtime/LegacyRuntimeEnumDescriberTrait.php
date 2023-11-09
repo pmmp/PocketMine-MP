@@ -24,63 +24,71 @@ declare(strict_types=1);
 namespace pocketmine\data\runtime;
 
 /**
- * This class is auto-generated. Do not edit it manually.
- * @see build/generate-runtime-enum-serializers.php
+ * Provides backwards-compatible shims for the old codegen'd enum describer methods.
+ * This is kept for plugin backwards compatibility, but these functions should not be used in new code.
+ * @deprecated
  */
-trait RuntimeEnumSizeCalculatorTrait{
+trait LegacyRuntimeEnumDescriberTrait{
 
-	abstract protected function addBits(int $bits) : void;
+	/**
+	 * @phpstan-template T of \UnitEnum
+	 * @phpstan-param T $case
+	 */
+	abstract protected function enum(\UnitEnum &$case) : void;
 
 	public function bellAttachmentType(\pocketmine\block\utils\BellAttachmentType &$value) : void{
-		$this->addBits(2);
+		$this->enum($value);
 	}
 
 	public function copperOxidation(\pocketmine\block\utils\CopperOxidation &$value) : void{
-		$this->addBits(2);
+		$this->enum($value);
 	}
 
 	public function coralType(\pocketmine\block\utils\CoralType &$value) : void{
-		$this->addBits(3);
+		$this->enum($value);
 	}
 
 	public function dirtType(\pocketmine\block\utils\DirtType &$value) : void{
-		$this->addBits(2);
+		$this->enum($value);
+	}
+
+	public function dripleafState(\pocketmine\block\utils\DripleafState &$value) : void{
+		$this->enum($value);
 	}
 
 	public function dyeColor(\pocketmine\block\utils\DyeColor &$value) : void{
-		$this->addBits(4);
+		$this->enum($value);
 	}
 
 	public function froglightType(\pocketmine\block\utils\FroglightType &$value) : void{
-		$this->addBits(2);
+		$this->enum($value);
 	}
 
 	public function leverFacing(\pocketmine\block\utils\LeverFacing &$value) : void{
-		$this->addBits(3);
+		$this->enum($value);
 	}
 
 	public function medicineType(\pocketmine\item\MedicineType &$value) : void{
-		$this->addBits(2);
+		$this->enum($value);
 	}
 
 	public function mobHeadType(\pocketmine\block\utils\MobHeadType &$value) : void{
-		$this->addBits(3);
+		$this->enum($value);
 	}
 
 	public function mushroomBlockType(\pocketmine\block\utils\MushroomBlockType &$value) : void{
-		$this->addBits(4);
+		$this->enum($value);
 	}
 
 	public function potionType(\pocketmine\item\PotionType &$value) : void{
-		$this->addBits(6);
+		$this->enum($value);
 	}
 
 	public function slabType(\pocketmine\block\utils\SlabType &$value) : void{
-		$this->addBits(2);
+		$this->enum($value);
 	}
 
 	public function suspiciousStewType(\pocketmine\item\SuspiciousStewType &$value) : void{
-		$this->addBits(4);
+		$this->enum($value);
 	}
-
 }

@@ -66,6 +66,7 @@ use pocketmine\event\player\PlayerItemUseEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerJumpEvent;
 use pocketmine\event\player\PlayerKickEvent;
+use pocketmine\event\player\PlayerMissSwingEvent;
 use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\player\PlayerPostChunkSendEvent;
 use pocketmine\event\player\PlayerQuitEvent;
@@ -80,6 +81,7 @@ use pocketmine\event\player\PlayerViewDistanceChangeEvent;
 use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
 use pocketmine\inventory\CallbackInventoryListener;
+use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCraftingInventory;
 use pocketmine\inventory\PlayerCursorInventory;
@@ -117,6 +119,7 @@ use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
 use pocketmine\player\chat\StandardChatFormatter;
 use pocketmine\Server;
+use pocketmine\ServerProperties;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\TextFormat;
@@ -132,6 +135,7 @@ use pocketmine\world\sound\FireExtinguishSound;
 use pocketmine\world\sound\ItemBreakSound;
 use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
+use pocketmine\YmlServerProperties;
 use Ramsey\Uuid\UuidInterface;
 use function abs;
 use function array_filter;
@@ -217,6 +221,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected array $permanentWindows = [];
 	protected PlayerCursorInventory $cursorInventory;
 	protected PlayerCraftingInventory $craftingGrid;
+	protected CreativeInventory $creativeInventory;
 
 	protected int $messageCounter = 2;
 
@@ -307,13 +312,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->uuid = $this->playerInfo->getUuid();
 		$this->xuid = $this->playerInfo instanceof XboxLivePlayerInfo ? $this->playerInfo->getXuid() : "";
 
+		$this->creativeInventory = CreativeInventory::getInstance();
+
 		$rootPermissions = [DefaultPermissions::ROOT_USER => true];
 		if($this->server->isOp($this->username)){
 			$rootPermissions[DefaultPermissions::ROOT_OPERATOR] = true;
 		}
 		$this->perm = new PermissibleBase($rootPermissions);
-		$this->chunksPerTick = $this->server->getConfigGroup()->getPropertyInt("chunk-sending.per-tick", 4);
-		$this->spawnThreshold = (int) (($this->server->getConfigGroup()->getPropertyInt("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
+		$this->chunksPerTick = $this->server->getConfigGroup()->getPropertyInt(YmlServerProperties::CHUNK_SENDING_PER_TICK, 4);
+		$this->spawnThreshold = (int) (($this->server->getConfigGroup()->getPropertyInt(YmlServerProperties::CHUNK_SENDING_SPAWN_RADIUS, 4) ** 2) * M_PI);
 		$this->chunkSelector = new ChunkSelector();
 
 		$this->chunkLoader = new class implements ChunkLoader{};
@@ -324,7 +331,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$zSpawnChunk = $spawnLocation->getFloorZ() >> Chunk::COORD_BIT_SIZE;
 		$world->registerChunkLoader($this->chunkLoader, $xSpawnChunk, $zSpawnChunk, true);
 		$world->registerChunkListener($this, $xSpawnChunk, $zSpawnChunk);
-		$this->usedChunks[World::chunkHash($xSpawnChunk, $zSpawnChunk)] = UsedChunkStatus::NEEDED();
+		$this->usedChunks[World::chunkHash($xSpawnChunk, $zSpawnChunk)] = UsedChunkStatus::NEEDED;
 
 		parent::__construct($spawnLocation, $this->playerInfo->getSkin(), $namedtag);
 	}
@@ -365,7 +372,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->lastPlayed = $nbt->getLong(self::TAG_LAST_PLAYED, $now);
 
 		if(!$this->server->getForceGamemode() && ($gameModeTag = $nbt->getTag(self::TAG_GAME_MODE)) instanceof IntTag){
-			$this->internalSetGameMode(GameModeIdMap::getInstance()->fromId($gameModeTag->getValue()) ?? GameMode::SURVIVAL()); //TODO: bad hack here to avoid crashes on corrupted data
+			$this->internalSetGameMode(GameModeIdMap::getInstance()->fromId($gameModeTag->getValue()) ?? GameMode::SURVIVAL); //TODO: bad hack here to avoid crashes on corrupted data
 		}else{
 			$this->internalSetGameMode($this->server->getGamemode());
 		}
@@ -578,7 +585,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->viewDistance = $newViewDistance;
 
-		$this->spawnThreshold = (int) (min($this->viewDistance, $this->server->getConfigGroup()->getPropertyInt("chunk-sending.spawn-radius", 4)) ** 2 * M_PI);
+		$this->spawnThreshold = (int) (min($this->viewDistance, $this->server->getConfigGroup()->getPropertyInt(YmlServerProperties::CHUNK_SENDING_SPAWN_RADIUS, 4)) ** 2 * M_PI);
 
 		$this->nextChunkOrderRun = 0;
 
@@ -761,7 +768,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	protected function spawnEntitiesOnAllChunks() : void{
 		foreach($this->usedChunks as $chunkHash => $status){
-			if($status->equals(UsedChunkStatus::SENT())){
+			if($status === UsedChunkStatus::SENT){
 				World::getXZ($chunkHash, $chunkX, $chunkZ);
 				$this->spawnEntitiesOnChunk($chunkX, $chunkZ);
 			}
@@ -803,7 +810,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 			++$count;
 
-			$this->usedChunks[$index] = UsedChunkStatus::REQUESTED_GENERATION();
+			$this->usedChunks[$index] = UsedChunkStatus::REQUESTED_GENERATION;
 			$this->activeChunkGenerationRequests[$index] = true;
 			unset($this->loadQueue[$index]);
 			$this->getWorld()->registerChunkLoader($this->chunkLoader, $X, $Z, true);
@@ -817,17 +824,17 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					if(!$this->isConnected() || !isset($this->usedChunks[$index]) || $world !== $this->getWorld()){
 						return;
 					}
-					if(!$this->usedChunks[$index]->equals(UsedChunkStatus::REQUESTED_GENERATION())){
+					if($this->usedChunks[$index] !== UsedChunkStatus::REQUESTED_GENERATION){
 						//We may have previously requested this, decided we didn't want it, and then decided we did want
 						//it again, all before the generation request got executed. In that case, the promise would have
 						//multiple callbacks for this player. In that case, only the first one matters.
 						return;
 					}
 					unset($this->activeChunkGenerationRequests[$index]);
-					$this->usedChunks[$index] = UsedChunkStatus::REQUESTED_SENDING();
+					$this->usedChunks[$index] = UsedChunkStatus::REQUESTED_SENDING;
 
 					$this->getNetworkSession()->startUsingChunk($X, $Z, function() use ($X, $Z, $index) : void{
-						$this->usedChunks[$index] = UsedChunkStatus::SENT();
+						$this->usedChunks[$index] = UsedChunkStatus::SENT;
 						if($this->spawnChunkLoadCount === -1){
 							$this->spawnEntitiesOnChunk($X, $Z);
 						}elseif($this->spawnChunkLoadCount++ === $this->spawnThreshold){
@@ -944,7 +951,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->location->getFloorX() >> Chunk::COORD_BIT_SIZE,
 			$this->location->getFloorZ() >> Chunk::COORD_BIT_SIZE
 		) as $radius => $hash){
-			if(!isset($this->usedChunks[$hash]) || $this->usedChunks[$hash]->equals(UsedChunkStatus::NEEDED())){
+			if(!isset($this->usedChunks[$hash]) || $this->usedChunks[$hash] === UsedChunkStatus::NEEDED){
 				$newOrder[$hash] = true;
 			}
 			if($radius < $tickingChunkRadius){
@@ -998,7 +1005,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function hasReceivedChunk(int $chunkX, int $chunkZ) : bool{
 		$status = $this->usedChunks[World::chunkHash($chunkX, $chunkZ)] ?? null;
-		return $status !== null && $status->equals(UsedChunkStatus::SENT());
+		return $status === UsedChunkStatus::SENT;
 	}
 
 	/**
@@ -1106,7 +1113,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected function internalSetGameMode(GameMode $gameMode) : void{
 		$this->gamemode = $gameMode;
 
-		$this->allowFlight = $this->gamemode->equals(GameMode::CREATIVE());
+		$this->allowFlight = $this->gamemode === GameMode::CREATIVE;
 		$this->hungerManager->setEnabled($this->isSurvival());
 
 		if($this->isSpectator()){
@@ -1129,10 +1136,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	/**
-	 * Sets the gamemode, and if needed, kicks the Player.
+	 * Sets the provided gamemode.
 	 */
 	public function setGamemode(GameMode $gm) : bool{
-		if($this->gamemode->equals($gm)){
+		if($this->gamemode === $gm){
 			return false;
 		}
 
@@ -1161,7 +1168,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @param bool $literal whether a literal check should be performed
 	 */
 	public function isSurvival(bool $literal = false) : bool{
-		return $this->gamemode->equals(GameMode::SURVIVAL()) || (!$literal && $this->gamemode->equals(GameMode::ADVENTURE()));
+		return $this->gamemode === GameMode::SURVIVAL || (!$literal && $this->gamemode === GameMode::ADVENTURE);
 	}
 
 	/**
@@ -1171,7 +1178,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @param bool $literal whether a literal check should be performed
 	 */
 	public function isCreative(bool $literal = false) : bool{
-		return $this->gamemode->equals(GameMode::CREATIVE()) || (!$literal && $this->gamemode->equals(GameMode::SPECTATOR()));
+		return $this->gamemode === GameMode::CREATIVE || (!$literal && $this->gamemode === GameMode::SPECTATOR);
 	}
 
 	/**
@@ -1181,22 +1188,18 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @param bool $literal whether a literal check should be performed
 	 */
 	public function isAdventure(bool $literal = false) : bool{
-		return $this->gamemode->equals(GameMode::ADVENTURE()) || (!$literal && $this->gamemode->equals(GameMode::SPECTATOR()));
+		return $this->gamemode === GameMode::ADVENTURE || (!$literal && $this->gamemode === GameMode::SPECTATOR);
 	}
 
 	public function isSpectator() : bool{
-		return $this->gamemode->equals(GameMode::SPECTATOR());
+		return $this->gamemode === GameMode::SPECTATOR;
 	}
 
 	/**
 	 * TODO: make this a dynamic ability instead of being hardcoded
 	 */
 	public function hasFiniteResources() : bool{
-		return !$this->gamemode->equals(GameMode::CREATIVE());
-	}
-
-	public function isFireProof() : bool{
-		return $this->isCreative();
+		return $this->gamemode !== GameMode::CREATIVE;
 	}
 
 	public function getDrops() : array{
@@ -1216,7 +1219,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	protected function checkGroundState(float $wantedX, float $wantedY, float $wantedZ, float $dx, float $dy, float $dz) : void{
-		if($this->isSpectator()){
+		if($this->gamemode === GameMode::SPECTATOR){
 			$this->onGround = false;
 		}else{
 			$bb = clone $this->boundingBox;
@@ -1329,18 +1332,20 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$deltaAngle = abs($this->lastLocation->yaw - $to->yaw) + abs($this->lastLocation->pitch - $to->pitch);
 
 		if($delta > 0.0001 || $deltaAngle > 1.0){
-			$ev = new PlayerMoveEvent($this, $from, $to);
+			if(PlayerMoveEvent::hasHandlers()){
+				$ev = new PlayerMoveEvent($this, $from, $to);
 
-			$ev->call();
+				$ev->call();
 
-			if($ev->isCancelled()){
-				$this->revertMovement($from);
-				return;
-			}
+				if($ev->isCancelled()){
+					$this->revertMovement($from);
+					return;
+				}
 
-			if($to->distanceSquared($ev->getTo()) > 0.01){ //If plugins modify the destination
-				$this->teleport($ev->getTo());
-				return;
+				if($to->distanceSquared($ev->getTo()) > 0.01){ //If plugins modify the destination
+					$this->teleport($ev->getTo());
+					return;
+				}
 			}
 
 			$this->lastLocation = $to;
@@ -1435,6 +1440,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			Timings::$entityBaseTick->startTiming();
 			$this->entityBaseTick($tickDiff);
 			Timings::$entityBaseTick->stopTiming();
+
+			if($this->isCreative() && $this->fireTicks > 1){
+				$this->fireTicks = 1;
+			}
 
 			if(!$this->isSpectator() && $this->isAlive()){
 				Timings::$playerCheckNearEntities->startTiming();
@@ -1603,7 +1612,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$returnedItems = [];
 		$result = $item->onClickAir($this, $directionVector, $returnedItems);
-		if($result->equals(ItemUseResult::FAIL())){
+		if($result === ItemUseResult::FAIL){
 			return false;
 		}
 
@@ -1663,7 +1672,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 			$returnedItems = [];
 			$result = $item->onReleaseUsing($this, $returnedItems);
-			if($result->equals(ItemUseResult::SUCCESS())){
+			if($result === ItemUseResult::SUCCESS){
 				$this->resetItemCooldown($item);
 				$this->returnItemsFromAction($oldItem, $item, $returnedItems);
 				return true;
@@ -1837,7 +1846,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if(!$this->canInteract($entity->getLocation(), self::MAX_REACH_DISTANCE_ENTITY_INTERACTION)){
 			$this->logger->debug("Cancelled attack of entity " . $entity->getId() . " due to not currently being interactable");
 			$ev->cancel();
-		}elseif($this->isSpectator() || ($entity instanceof Player && !$this->server->getConfigGroup()->getConfigBool("pvp"))){
+		}elseif($this->isSpectator() || ($entity instanceof Player && !$this->server->getConfigGroup()->getConfigBool(ServerProperties::PVP))){
 			$ev->cancel();
 		}
 
@@ -1888,6 +1897,19 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		return true;
+	}
+
+	/**
+	 * Performs actions associated with the attack action (left-click) without a target entity.
+	 * Under normal circumstances, this will just play the no-damage attack sound and the arm-swing animation.
+	 */
+	public function missSwing() : void{
+		$ev = new PlayerMissSwingEvent($this);
+		$ev->call();
+		if(!$ev->isCancelled()){
+			$this->broadcastSound(new EntityAttackNoDamageSound());
+			$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
+		}
 	}
 
 	/**
@@ -2533,6 +2555,24 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	/**
+	 * Returns the creative inventory shown to the player.
+	 * Unless changed by a plugin, this is usually the same for all players.
+	 */
+	public function getCreativeInventory() : CreativeInventory{
+		return $this->creativeInventory;
+	}
+
+	/**
+	 * To set a custom creative inventory, you need to make a clone of a CreativeInventory instance.
+	 */
+	public function setCreativeInventory(CreativeInventory $inventory) : void{
+		$this->creativeInventory = $inventory;
+		if($this->spawned && $this->isConnected()){
+			$this->getNetworkSession()->getInvManager()?->syncCreative();
+		}
+	}
+
+	/**
 	 * @internal Called to clean up crafting grid and cursor inventory when it is detected that the player closed their
 	 * inventory.
 	 */
@@ -2654,8 +2694,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function onChunkChanged(int $chunkX, int $chunkZ, Chunk $chunk) : void{
 		$status = $this->usedChunks[$hash = World::chunkHash($chunkX, $chunkZ)] ?? null;
-		if($status !== null && $status->equals(UsedChunkStatus::SENT())){
-			$this->usedChunks[$hash] = UsedChunkStatus::NEEDED();
+		if($status === UsedChunkStatus::SENT){
+			$this->usedChunks[$hash] = UsedChunkStatus::NEEDED;
 			$this->nextChunkOrderRun = 0;
 		}
 	}

@@ -26,7 +26,11 @@ namespace pocketmine\thread;
 use pmmp\thread\ThreadSafeArray;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\Server;
+use function error_get_last;
 use function error_reporting;
+use function implode;
+use function register_shutdown_function;
+use function set_exception_handler;
 
 trait CommonThreadPartsTrait{
 	/**
@@ -37,6 +41,8 @@ trait CommonThreadPartsTrait{
 	protected ?string $composerAutoloaderPath = null;
 
 	protected bool $isKilled = false;
+
+	private ?ThreadCrashInfo $crashInfo = null;
 
 	/**
 	 * @return ThreadSafeClassLoader[]
@@ -88,12 +94,60 @@ trait CommonThreadPartsTrait{
 		}
 	}
 
+	public function getCrashInfo() : ?ThreadCrashInfo{ return $this->crashInfo; }
+
 	final public function run() : void{
 		error_reporting(-1);
 		$this->registerClassLoaders();
 		//set this after the autoloader is registered
 		ErrorToExceptionHandler::set();
+
+		//this permits adding extra functionality to the exception and shutdown handlers via overriding
+		set_exception_handler($this->onUncaughtException(...));
+		register_shutdown_function($this->onShutdown(...));
+
 		$this->onRun();
+		$this->isKilled = true;
+	}
+
+	/**
+	 * Called by set_exception_handler() when an uncaught exception is thrown.
+	 */
+	protected function onUncaughtException(\Throwable $e) : void{
+		$this->synchronized(function() use ($e) : void{
+			$this->crashInfo = ThreadCrashInfo::fromThrowable($e, $this->getThreadName());
+			\GlobalLogger::get()->logException($e);
+		});
+	}
+
+	/**
+	 * Called by register_shutdown_function() when the thread shuts down. This may be because of a benign shutdown, or
+	 * because of a fatal error. Use isKilled to determine which.
+	 */
+	protected function onShutdown() : void{
+		$this->synchronized(function() : void{
+			if($this->isTerminated() && $this->crashInfo === null){
+				$last = error_get_last();
+				if($last !== null){
+					//fatal error
+					$crashInfo = ThreadCrashInfo::fromLastErrorInfo($last, $this->getThreadName());
+				}else{
+					//probably misused exit()
+					$crashInfo = ThreadCrashInfo::fromThrowable(new \RuntimeException("Thread crashed without an error - perhaps exit() was called?"), $this->getThreadName());
+				}
+				$this->crashInfo = $crashInfo;
+
+				$lines = [];
+				//mimic exception printed format
+				$lines[] = "Fatal error: " . $crashInfo->makePrettyMessage();
+				$lines[] = "--- Stack trace ---";
+				foreach($crashInfo->getTrace() as $frame){
+					$lines[] = "  " . $frame->getPrintableFrame();
+				}
+				$lines[] = "--- End of fatal error information ---";
+				\GlobalLogger::get()->critical(implode("\n", $lines));
+			}
+		});
 	}
 
 	/**

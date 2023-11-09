@@ -64,7 +64,7 @@ class CakeWithCandle extends BaseCake{
 	}
 
 	public function getPickedItem(bool $addUserData = false) : Item{
-		return VanillaBlocks::CAKE()->getPickedItem($addUserData);
+		return VanillaBlocks::CAKE()->asItem();
 	}
 
 	public function getResidue() : Block{

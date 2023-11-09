@@ -519,7 +519,12 @@ abstract class Entity{
 	}
 
 	public function attack(EntityDamageEvent $source) : void{
-		if($this->isFireProof() && ($source->getCause() === EntityDamageEvent::CAUSE_FIRE || $source->getCause() === EntityDamageEvent::CAUSE_FIRE_TICK)){
+		if($this->isFireProof() && (
+				$source->getCause() === EntityDamageEvent::CAUSE_FIRE ||
+				$source->getCause() === EntityDamageEvent::CAUSE_FIRE_TICK ||
+				$source->getCause() === EntityDamageEvent::CAUSE_LAVA
+			)
+		){
 			$source->cancel();
 		}
 		$source->call();
@@ -686,8 +691,10 @@ abstract class Entity{
 		if($fireTicks < 0 || $fireTicks > 0x7fff){
 			throw new \InvalidArgumentException("Fire ticks must be in range 0 ... " . 0x7fff . ", got $fireTicks");
 		}
-		$this->fireTicks = $fireTicks;
-		$this->networkPropertiesDirty = true;
+		if(!$this->isFireProof()){
+			$this->fireTicks = $fireTicks;
+			$this->networkPropertiesDirty = true;
+		}
 	}
 
 	public function extinguish() : void{
@@ -700,11 +707,12 @@ abstract class Entity{
 	}
 
 	protected function doOnFireTick(int $tickDiff = 1) : bool{
-		if($this->isFireProof() && $this->fireTicks > 1){
-			$this->fireTicks = 1;
-		}else{
-			$this->fireTicks -= $tickDiff;
+		if($this->isFireProof() && $this->isOnFire()){
+			$this->extinguish();
+			return false;
 		}
+
+		$this->fireTicks -= $tickDiff;
 
 		if(($this->fireTicks % 20 === 0) || $tickDiff > 20){
 			$this->dealFireDamage();
@@ -766,29 +774,21 @@ abstract class Entity{
 	}
 
 	protected function broadcastMovement(bool $teleport = false) : void{
-		if($teleport){
-			//TODO: HACK! workaround for https://github.com/pmmp/PocketMine-MP/issues/4394
-			//this happens because MoveActor*Packet doesn't clear interpolation targets on the client, so the entity
-			//snaps to the teleport position, but then lerps back to the original position if a normal movement for the
-			//entity was recently broadcasted. This can be seen with players throwing ender pearls.
-			//TODO: remove this if the bug ever gets fixed (lol)
-			foreach($this->hasSpawned as $player){
-				$this->despawnFrom($player);
-				$this->spawnTo($player);
-			}
-		}else{
-			NetworkBroadcastUtils::broadcastPackets($this->hasSpawned, [MoveActorAbsolutePacket::create(
-				$this->id,
-				$this->getOffsetPosition($this->location),
-				$this->location->pitch,
-				$this->location->yaw,
-				$this->location->yaw,
-				(
-					//TODO: if the above hack for #4394 gets removed, we should be setting FLAG_TELEPORT here
-					($this->onGround ? MoveActorAbsolutePacket::FLAG_GROUND : 0)
-				)
-			)]);
-		}
+		NetworkBroadcastUtils::broadcastPackets($this->hasSpawned, [MoveActorAbsolutePacket::create(
+			$this->id,
+			$this->getOffsetPosition($this->location),
+			$this->location->pitch,
+			$this->location->yaw,
+			$this->location->yaw,
+			(
+				//TODO: We should be setting FLAG_TELEPORT here to disable client-side movement interpolation, but it
+				//breaks player teleporting (observers see the player rubberband back to the pre-teleport position while
+				//the teleported player sees themselves at the correct position), and does nothing whatsoever for
+				//non-player entities (movement is still interpolated). Both of these are client bugs.
+				//See https://github.com/pmmp/PocketMine-MP/issues/4394
+				($this->onGround ? MoveActorAbsolutePacket::FLAG_GROUND : 0)
+			)
+		)]);
 	}
 
 	protected function broadcastMotion() : void{
@@ -842,7 +842,7 @@ abstract class Entity{
 
 	protected function checkObstruction(float $x, float $y, float $z) : bool{
 		$world = $this->getWorld();
-		if(count($world->getCollisionBoxes($this, $this->getBoundingBox(), false)) === 0){
+		if(count($world->getBlockCollisionBoxes($this->boundingBox)) === 0){
 			return false;
 		}
 
@@ -1144,7 +1144,7 @@ abstract class Entity{
 
 			assert(abs($dx) <= 20 && abs($dy) <= 20 && abs($dz) <= 20, "Movement distance is excessive: dx=$dx, dy=$dy, dz=$dz");
 
-			$list = $this->getWorld()->getCollisionBoxes($this, $moveBB->addCoord($dx, $dy, $dz), false);
+			$list = $this->getWorld()->getBlockCollisionBoxes($moveBB->addCoord($dx, $dy, $dz));
 
 			foreach($list as $bb){
 				$dy = $bb->calculateYOffset($moveBB, $dy);
@@ -1176,7 +1176,7 @@ abstract class Entity{
 
 				$stepBB = clone $this->boundingBox;
 
-				$list = $this->getWorld()->getCollisionBoxes($this, $stepBB->addCoord($dx, $dy, $dz), false);
+				$list = $this->getWorld()->getBlockCollisionBoxes($stepBB->addCoord($dx, $dy, $dz));
 				foreach($list as $bb){
 					$dy = $bb->calculateYOffset($stepBB, $dy);
 				}
@@ -1686,7 +1686,7 @@ abstract class Entity{
 	 */
 	public function broadcastSound(Sound $sound, ?array $targets = null) : void{
 		if(!$this->silent){
-			NetworkBroadcastUtils::broadcastPackets($targets ?? $this->getViewers(), $sound->encode($this->location));
+			$this->getWorld()->addSound($this->location->asVector3(), $sound, $targets ?? $this->getViewers());
 		}
 	}
 
