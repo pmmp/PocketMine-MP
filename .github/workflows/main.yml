@@ -173,7 +173,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup PHP and tools
-        uses: shivammathur/setup-php@2.26.0
+        uses: shivammathur/setup-php@2.27.1
         with:
           php-version: 8.1
           tools: php-cs-fixer:3.17
