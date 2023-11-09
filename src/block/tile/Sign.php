@@ -92,14 +92,14 @@ class Sign extends Spawnable{
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
-		$lightingBugResolved = false;
-		if(($lightingBugResolvedTag = $nbt->getTag(self::TAG_LEGACY_BUG_RESOLVE)) instanceof ByteTag){
-			$lightingBugResolved = $lightingBugResolvedTag->getValue() !== 0;
-		}
 		$frontTextTag = $nbt->getTag(self::TAG_FRONT_TEXT);
 		if($frontTextTag instanceof CompoundTag){
-			$this->readTextTag($frontTextTag, $lightingBugResolved);
+			$this->readTextTag($frontTextTag, true);
 		}elseif($nbt->getTag(self::TAG_TEXT_BLOB) instanceof StringTag){ //MCPE 1.2 save format
+			$lightingBugResolved = false;
+			if(($lightingBugResolvedTag = $nbt->getTag(self::TAG_LEGACY_BUG_RESOLVE)) instanceof ByteTag){
+				$lightingBugResolved = $lightingBugResolvedTag->getValue() !== 0;
+			}
 			$this->readTextTag($nbt, $lightingBugResolved);
 		}else{
 			$text = [];
