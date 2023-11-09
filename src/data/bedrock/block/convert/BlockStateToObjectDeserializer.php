@@ -613,7 +613,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::BLACKSTONE, fn() => Blocks::BLACKSTONE());
 		$this->mapSimple(Ids::BLUE_ICE, fn() => Blocks::BLUE_ICE());
 		$this->mapSimple(Ids::BOOKSHELF, fn() => Blocks::BOOKSHELF());
-		$this->mapSimple(Ids::BORDER_BLOCK, fn() => Blocks::BORDER());
+		$this->mapSimple(Ids::BORDER_BLOCK, fn() => Blocks::BORDER_BLOCK());
 		$this->mapSimple(Ids::BRICK_BLOCK, fn() => Blocks::BRICKS());
 		$this->mapSimple(Ids::BROWN_MUSHROOM, fn() => Blocks::BROWN_MUSHROOM());
 		$this->mapSimple(Ids::BUDDING_AMETHYST, fn() => Blocks::BUDDING_AMETHYST());
