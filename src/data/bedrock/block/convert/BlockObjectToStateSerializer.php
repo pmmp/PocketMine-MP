@@ -118,6 +118,7 @@ use pocketmine\block\RedstoneTorch;
 use pocketmine\block\RedstoneWire;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\Sapling;
+use pocketmine\block\Scaffolding;
 use pocketmine\block\SeaPickle;
 use pocketmine\block\SimplePillar;
 use pocketmine\block\SimplePressurePlate;
@@ -1579,6 +1580,11 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::SANDSTONE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab1($block, StringValues::STONE_SLAB_TYPE_SANDSTONE));
 		$this->mapStairs(Blocks::SANDSTONE_STAIRS(), Ids::SANDSTONE_STAIRS);
 		$this->map(Blocks::SANDSTONE_WALL(), fn(Wall $block) => Helper::encodeLegacyWall($block, StringValues::WALL_BLOCK_TYPE_SANDSTONE));
+        $this->map(Blocks::SCAFFOLDING(), function(Scaffolding $block) : Writer{
+            return Writer::create(Ids::SCAFFOLDING)
+                ->writeInt(StateNames::STABILITY, 0)
+                ->writeBool(StateNames::STABILITY_CHECK, false);
+        });
 		$this->map(Blocks::SEA_PICKLE(), function(SeaPickle $block) : Writer{
 			return Writer::create(Ids::SEA_PICKLE)
 				->writeBool(StateNames::DEAD_BIT, !$block->isUnderwater())

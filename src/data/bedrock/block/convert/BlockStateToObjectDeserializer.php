@@ -32,6 +32,7 @@ use pocketmine\block\DoublePitcherCrop;
 use pocketmine\block\Light;
 use pocketmine\block\PinkPetals;
 use pocketmine\block\PitcherCrop;
+use pocketmine\block\Scaffolding;
 use pocketmine\block\Slab;
 use pocketmine\block\Stair;
 use pocketmine\block\SweetBerryBush;
@@ -56,6 +57,7 @@ use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\block\convert\BlockStateDeserializerHelper as Helper;
 use pocketmine\data\bedrock\block\convert\BlockStateReader as Reader;
+use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use function array_key_exists;
@@ -1474,6 +1476,9 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				})
 				->setReady($in->readBool(StateNames::AGE_BIT));
 		});
+        $this->map(Ids::SCAFFOLDING, function(Reader $in) : Block{
+            return Blocks::SCAFFOLDING();
+        });
 		$this->map(Ids::SEA_PICKLE, function(Reader $in) : Block{
 			return Blocks::SEA_PICKLE()
 				->setCount($in->readBoundedInt(StateNames::CLUSTER_COUNT, 0, 3) + 1)
