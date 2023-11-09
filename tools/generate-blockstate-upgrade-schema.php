@@ -37,7 +37,6 @@ use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
-use function array_filter;
 use function array_key_first;
 use function array_keys;
 use function array_map;
@@ -481,16 +480,9 @@ function generateBlockStateUpgradeSchema(array $upgradeTable) : BlockStateUpgrad
 				throw new \RuntimeException("States with the same ID should be fully consistent");
 			}
 		}else{
-			if(isset($newNameFound[$oldName])){
-				//some of the states stayed under the same ID - we can process these as normal states
-				$stateGroup = array_filter($blockStateMappings, fn(BlockStateMapping $m) => $m->new->getName() === $oldName);
-				if(processStateGroup($oldName, $stateGroup, $result)){
-					foreach(Utils::stringifyKeys($stateGroup) as $k => $mapping){
-						unset($blockStateMappings[$k]);
-					}
-				}
-			}
 			//block mapped to multiple different new IDs; we can't guess these, so we just do a plain old remap
+			//even if some of the states stay under the same ID, the compression techniques used by this function
+			//implicitly rely on knowing the full set of old states and their new transformations
 			$result->remappedStates[$oldName] = processRemappedStates($blockStateMappings);
 		}
 	}
