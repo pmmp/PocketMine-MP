@@ -20,6 +20,25 @@
 	<a href="https://github.com/pmmp/PocketMine-MP/releases/latest"><img alt="GitHub release (latest by SemVer)" src="https://img.shields.io/github/downloads/pmmp/PocketMine-MP/latest/total?sort=semver"></a>
 </p>
 
+## What is this?
+PocketMine-MP is a highly customisable server software for Minecraft: Bedrock Edition, built from scratch in PHP, with over 10 years of history.
+
+If you're looking to create a Minecraft: Bedrock server with **custom functionality**, look no further.
+
+- 🧩 **Powerful plugin API** - extend and customise gameplay as you see fit
+- 🗺️ **Rich ecosystem** and **large developer community** - find plugins easily and learn to develop your own
+- 🌐 **Multi-world support** - offer a more varied game experience to players without transferring them to other server nodes
+- 🏎️ **Performance** - get 100+ players onto one server (depending on hardware and plugins)
+- ⤴️ **Continuously updated** - new Minecraft versions are usually supported within days
+
+## :x: PocketMine-MP is NOT a vanilla Minecraft server software.
+**It is poorly suited to hosting vanilla survival servers.**
+It doesn't have many features from the vanilla game, such as vanilla world generation, redstone, mob AI, and various other things.
+
+If you just want to play **vanilla survival multiplayer**, consider using the [official Minecraft: Bedrock server software](https://minecraft.net/download/server/bedrock) instead of PocketMine-MP.
+
+If that's not an option for you, you may be able to add some of PocketMine-MP's missing features using plugins from [Poggit](https://poggit.pmmp.io/plugins), or write plugins to implement them yourself.
+
 ## Getting started
 - [Documentation](http://pmmp.readthedocs.org/)
 - [Installation instructions](https://pmmp.readthedocs.io/en/rtfd/installation.html)
