@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world;
 
-use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 
 class WorldTimings{
