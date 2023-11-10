@@ -58,7 +58,7 @@ class Bamboo extends Transparent{
 	protected int $leafSize = self::NO_LEAVES;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(2, self::NO_LEAVES, self::LARGE_LEAVES, $this->leafSize);
+		$w->boundedIntAuto(self::NO_LEAVES, self::LARGE_LEAVES, $this->leafSize);
 		$w->bool($this->thick);
 		$w->bool($this->ready);
 	}

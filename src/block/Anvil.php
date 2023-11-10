@@ -52,7 +52,7 @@ class Anvil extends Transparent implements Fallable{
 	private int $damage = self::UNDAMAGED;
 
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(2, self::UNDAMAGED, self::VERY_DAMAGED, $this->damage);
+		$w->boundedIntAuto(self::UNDAMAGED, self::VERY_DAMAGED, $this->damage);
 	}
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{

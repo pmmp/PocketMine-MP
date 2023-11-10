@@ -21,17 +21,22 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\promise;
 
-use pocketmine\block\utils\FortuneDropHelper;
-use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
+use PHPUnit\Framework\TestCase;
 
-final class IronOre extends Opaque{
+final class PromiseTest extends TestCase{
 
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [VanillaItems::RAW_IRON()->setCount(FortuneDropHelper::weighted($item, min: 1, maxBase: 1))];
+	public function testPromiseNull() : void{
+		$resolver = new PromiseResolver();
+		$resolver->resolve(null);
+		$resolver->getPromise()->onCompletion(
+			function(mixed $value) : void{
+				self::assertNull($value);
+			},
+			function() : void{
+				self::fail("Promise should not be rejected");
+			}
+		);
 	}
-
-	public function isAffectedBySilkTouch() : bool{ return true; }
 }

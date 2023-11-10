@@ -48,7 +48,7 @@ class Candle extends Transparent{
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$this->encodeLitState($w);
-		$w->boundedInt(2, self::MIN_COUNT, self::MAX_COUNT, $this->count);
+		$w->boundedIntAuto(self::MIN_COUNT, self::MAX_COUNT, $this->count);
 	}
 
 	public function getCount() : int{ return $this->count; }
