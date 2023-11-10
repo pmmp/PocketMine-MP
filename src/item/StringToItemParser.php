@@ -868,6 +868,8 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("pink_petals", fn() => Blocks::PINK_PETALS());
 		$result->registerBlock("pink_tulip", fn() => Blocks::PINK_TULIP());
 		$result->registerBlock("piglin_head", fn() => Blocks::MOB_HEAD()->setMobHeadType(MobHeadType::PIGLIN));
+		$result->registerBlock("pitcher_plant", fn() => Blocks::PITCHER_PLANT());
+		$result->registerBlock("pitcher_pod", fn() => Blocks::PITCHER_CROP());
 		$result->registerBlock("plank", fn() => Blocks::OAK_PLANKS());
 		$result->registerBlock("planks", fn() => Blocks::OAK_PLANKS());
 		$result->registerBlock("player_head", fn() => Blocks::MOB_HEAD()->setMobHeadType(MobHeadType::PLAYER));
