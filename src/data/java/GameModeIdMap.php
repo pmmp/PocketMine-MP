@@ -26,6 +26,7 @@ namespace pocketmine\data\java;
 use pocketmine\player\GameMode;
 use pocketmine\utils\SingletonTrait;
 use function array_key_exists;
+use function spl_object_id;
 
 final class GameModeIdMap{
 	use SingletonTrait;
@@ -43,15 +44,15 @@ final class GameModeIdMap{
 	private array $enumToId = [];
 
 	public function __construct(){
-		$this->register(0, GameMode::SURVIVAL());
-		$this->register(1, GameMode::CREATIVE());
-		$this->register(2, GameMode::ADVENTURE());
-		$this->register(3, GameMode::SPECTATOR());
+		$this->register(0, GameMode::SURVIVAL);
+		$this->register(1, GameMode::CREATIVE);
+		$this->register(2, GameMode::ADVENTURE);
+		$this->register(3, GameMode::SPECTATOR);
 	}
 
 	private function register(int $id, GameMode $type) : void{
 		$this->idToEnum[$id] = $type;
-		$this->enumToId[$type->id()] = $id;
+		$this->enumToId[spl_object_id($type)] = $id;
 	}
 
 	public function fromId(int $id) : ?GameMode{
@@ -59,9 +60,10 @@ final class GameModeIdMap{
 	}
 
 	public function toId(GameMode $type) : int{
-		if(!array_key_exists($type->id(), $this->enumToId)){
-			throw new \InvalidArgumentException("Game mode does not have a mapped ID"); //this should never happen
+		$k = spl_object_id($type);
+		if(!array_key_exists($k, $this->enumToId)){
+			throw new \InvalidArgumentException("Game mode $type->name does not have a mapped ID"); //this should never happen
 		}
-		return $this->enumToId[$type->id()];
+		return $this->enumToId[$k];
 	}
 }

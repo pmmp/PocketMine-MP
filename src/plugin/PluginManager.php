@@ -510,9 +510,12 @@ class PluginManager{
 
 			unset($this->enabledPlugins[$plugin->getDescription()->getName()]);
 			foreach(Utils::stringifyKeys($this->pluginDependents) as $dependency => $dependentList){
-				unset($this->pluginDependents[$dependency][$plugin->getDescription()->getName()]);
-				if(count($this->pluginDependents[$dependency]) === 0){
-					unset($this->pluginDependents[$dependency]);
+				if(isset($this->pluginDependents[$dependency][$plugin->getDescription()->getName()])){
+					if(count($this->pluginDependents[$dependency]) === 1){
+						unset($this->pluginDependents[$dependency]);
+					}else{
+						unset($this->pluginDependents[$dependency][$plugin->getDescription()->getName()]);
+					}
 				}
 			}
 

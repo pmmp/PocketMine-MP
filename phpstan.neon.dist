@@ -10,7 +10,9 @@ includes:
 	- vendor/phpstan/phpstan-strict-rules/rules.neon
 
 rules:
+	- pocketmine\phpstan\rules\DeprecatedLegacyEnumAccessRule
 	- pocketmine\phpstan\rules\DisallowEnumComparisonRule
+	- pocketmine\phpstan\rules\DisallowForeachByReferenceRule
 	- pocketmine\phpstan\rules\UnsafeForeachArrayOfStringRule
 #	- pocketmine\phpstan\rules\ThreadedSupportedTypesRule
 
@@ -43,7 +45,6 @@ parameters:
 	stubFiles:
 		- tests/phpstan/stubs/JsonMapper.stub
 		- tests/phpstan/stubs/leveldb.stub
-		- tests/phpstan/stubs/phpasn1.stub
 		- tests/phpstan/stubs/pmmpthread.stub
 	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
 	staticReflectionClassNamePatterns:

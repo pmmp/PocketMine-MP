@@ -93,7 +93,7 @@ final class BlockStateDeserializerHelper{
 	/** @throws BlockStateDeserializeException */
 	public static function decodeComparator(RedstoneComparator $block, BlockStateReader $in) : RedstoneComparator{
 		return $block
-			->setFacing($in->readLegacyHorizontalFacing())
+			->setFacing($in->readCardinalHorizontalFacing())
 			->setPowered($in->readBool(BlockStateNames::OUTPUT_LIT_BIT))
 			->setSubtractMode($in->readBool(BlockStateNames::OUTPUT_SUBTRACT_BIT));
 	}
@@ -216,7 +216,7 @@ final class BlockStateDeserializerHelper{
 	/** @throws BlockStateDeserializeException */
 	public static function decodeRepeater(RedstoneRepeater $block, BlockStateReader $in) : RedstoneRepeater{
 		return $block
-			->setFacing($in->readLegacyHorizontalFacing())
+			->setFacing($in->readCardinalHorizontalFacing())
 			->setDelay($in->readBoundedInt(BlockStateNames::REPEATER_DELAY, 0, 3) + 1);
 	}
 

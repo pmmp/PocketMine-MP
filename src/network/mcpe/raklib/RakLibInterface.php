@@ -39,8 +39,10 @@ use pocketmine\network\NetworkInterfaceStartException;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\GameMode;
 use pocketmine\Server;
+use pocketmine\thread\ThreadCrashException;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Utils;
+use pocketmine\YmlServerProperties;
 use raklib\generic\DisconnectReason;
 use raklib\generic\SocketException;
 use raklib\protocol\EncapsulatedPacket;
@@ -124,7 +126,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			$threadToMainBuffer,
 			new InternetAddress($ip, $port, $ipV6 ? 6 : 4),
 			$this->rakServerId,
-			$this->server->getConfigGroup()->getPropertyInt("network.max-mtu-size", 1492),
+			$this->server->getConfigGroup()->getPropertyInt(YmlServerProperties::NETWORK_MAX_MTU_SIZE, 1492),
 			self::MCPE_RAKNET_PROTOCOL_VERSION,
 			$sleeperEntry
 		);
@@ -154,7 +156,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		if(!$this->rakLib->isRunning()){
 			$e = $this->rakLib->getCrashInfo();
 			if($e !== null){
-				throw new \RuntimeException("RakLib crashed: " . $e->makePrettyMessage());
+				throw new ThreadCrashException("RakLib crashed", $e);
 			}
 			throw new \Exception("RakLib Thread crashed without crash information");
 		}
@@ -269,8 +271,8 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 				$this->rakServerId,
 				$this->server->getName(),
 				match($this->server->getGamemode()){
-					GameMode::SURVIVAL() => "Survival",
-					GameMode::ADVENTURE() => "Adventure",
+					GameMode::SURVIVAL => "Survival",
+					GameMode::ADVENTURE => "Adventure",
 					default => "Creative"
 				}
 			]) . ";"

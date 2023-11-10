@@ -72,19 +72,21 @@ class PermissionManager{
 	}
 
 	public function unsubscribeFromPermission(string $permission, PermissibleInternal $permissible) : void{
-		if(isset($this->permSubs[$permission])){
-			unset($this->permSubs[$permission][spl_object_id($permissible)]);
-			if(count($this->permSubs[$permission]) === 0){
+		if(isset($this->permSubs[$permission][spl_object_id($permissible)])){
+			if(count($this->permSubs[$permission]) === 1){
 				unset($this->permSubs[$permission]);
+			}else{
+				unset($this->permSubs[$permission][spl_object_id($permissible)]);
 			}
 		}
 	}
 
 	public function unsubscribeFromAllPermissions(PermissibleInternal $permissible) : void{
-		foreach($this->permSubs as $permission => &$subs){
-			unset($subs[spl_object_id($permissible)]);
-			if(count($subs) === 0){
+		foreach($this->permSubs as $permission => $subs){
+			if(count($subs) === 1 && isset($subs[spl_object_id($permissible)])){
 				unset($this->permSubs[$permission]);
+			}else{
+				unset($this->permSubs[$permission][spl_object_id($permissible)]);
 			}
 		}
 	}
