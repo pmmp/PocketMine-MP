@@ -51,9 +51,9 @@ class EndCrystal extends Item{
 				$crystal->spawnToAll();
 
 				$this->pop();
-				return ItemUseResult::SUCCESS();
+				return ItemUseResult::SUCCESS;
 			}
 		}
-		return ItemUseResult::NONE();
+		return ItemUseResult::NONE;
 	}
 }
