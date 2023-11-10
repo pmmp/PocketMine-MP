@@ -39,31 +39,42 @@ If you just want to play **vanilla survival multiplayer**, consider using the [o
 
 If that's not an option for you, you may be able to add some of PocketMine-MP's missing features using plugins from [Poggit](https://poggit.pmmp.io/plugins), or write plugins to implement them yourself.
 
-## Getting started
+## Getting Started
 - [Documentation](http://pmmp.readthedocs.org/)
 - [Installation instructions](https://pmmp.readthedocs.io/en/rtfd/installation.html)
 - [Docker image](https://github.com/pmmp/PocketMine-MP/pkgs/container/pocketmine-mp)
 - [Plugin repository](https://poggit.pmmp.io/plugins)
 
 ## Community & Support
-- [Forums](https://forums.pmmp.io/)
-- [Discord](https://discord.gg/bmSAZBG)
-- [StackOverflow](https://stackoverflow.com/tags/pocketmine)
+Join our [Discord](https://discord.gg/bmSAZBG) server to chat with other users and developers.
 
-## For developers
- * [Building and running from source](BUILDING.md)
+You can also post questions on [StackOverflow](https://stackoverflow.com/tags/pocketmine) under the tag `pocketmine`.
+
+## Developing Plugins
+If you want to write your own plugins, the following resources may be useful.
+Don't forget you can always ask our community if you need help.
+
  * [Developer documentation](https://devdoc.pmmp.io) - General documentation for PocketMine-MP plugin developers
  * [Latest release API documentation](https://apidoc.pmmp.io) - Doxygen API documentation generated for each release
  * [Latest bleeding-edge API documentation](https://apidoc-dev.pmmp.io) - Doxygen API documentation generated weekly from `major-next` branch
  * [DevTools](https://github.com/pmmp/DevTools/) - Development tools plugin for creating plugins
  * [ExamplePlugin](https://github.com/pmmp/ExamplePlugin/) - Example plugin demonstrating some basic API features
+
+## Contributing to PocketMine-MP
+PocketMine-MP accepts community contributions! The following resources will be useful if you want to contribute to PocketMine-MP.
+ * [Building and running PocketMine-MP from source](BUILDING.md)
  * [Contributing Guidelines](CONTRIBUTING.md)
 
 ## Donate
-- Bitcoin Cash (BCH): `qq3r46hn6ljnhnqnfwxt5pg3g447eq9jhvw5ddfear`
+PocketMine-MP is free, but it requires a lot of time and effort from unpaid volunteers to develop. Donations enable us to keep delivering support for new versions and adding features your players love.
+
+You can support development using the following methods:
+
+- [Patreon](https://www.patreon.com/pocketminemp)
 - Bitcoin (BTC): `171u8K9e4FtU6j3e5sqNoxKUgEw9qWQdRV`
 - Stellar Lumens (XLM): `GAAC5WZ33HCTE3BFJFZJXONMEIBNHFLBXM2HJVAZHXXPYA3HP5XPPS7T`
-- [Patreon](https://www.patreon.com/pocketminemp)
+
+Thanks for your support!
 
 ## Licensing information
 This project is licensed under LGPL-3.0. Please see the [LICENSE](/LICENSE) file for details.
