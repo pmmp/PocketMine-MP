@@ -27,7 +27,6 @@ use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SlabType;
-use pocketmine\block\utils\StructureVoidType;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateData;
@@ -42,7 +41,6 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\utils\Utils;
 use function get_class;
-use function strval;
 
 final class BlockStateReader{
 
@@ -365,15 +363,6 @@ final class BlockStateReader{
 			StringValues::WALL_CONNECTION_TYPE_EAST_SHORT => WallConnectionType::SHORT,
 			StringValues::WALL_CONNECTION_TYPE_EAST_TALL => WallConnectionType::TALL,
 			default => throw $this->badValueException($name, $type),
-		};
-	}
-
-	/** @throws BlockStateDeserializeException */
-	public function readStructureVoidType() : ?StructureVoidType{
-		return match($type = $this->readString(BlockStateNames::STRUCTURE_VOID_TYPE)){
-			StringValues::STRUCTURE_VOID_TYPE_VOID => StructureVoidType::VOID,
-			StringValues::STRUCTURE_VOID_TYPE_AIR => StructureVoidType::AIR,
-			default => throw $this->badValueException(BlockStateNames::STRUCTURE_VOID_TYPE, strval($type)),
 		};
 	}
 

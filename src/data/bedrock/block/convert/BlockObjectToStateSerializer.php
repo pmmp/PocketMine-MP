@@ -152,6 +152,7 @@ use pocketmine\block\utils\DripleafState;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
+use pocketmine\block\utils\StructureVoidType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Vine;
 use pocketmine\block\Wall;
@@ -1642,7 +1643,10 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::STRUCTURE_VOID(), function(StructureVoid $block) : Writer{
 			return Writer::create(Ids::STRUCTURE_VOID)
-				->writeStructureVoidType($block->getType());
+				->writeString(StateNames::STRUCTURE_VOID_TYPE, match($block->getType()){
+						StructureVoidType::VOID => StringValues::STRUCTURE_VOID_TYPE_VOID,
+						StructureVoidType::AIR => StringValues::STRUCTURE_VOID_TYPE_AIR,
+					});
 		});
 		$this->map(Blocks::SUNFLOWER(), fn(DoublePlant $block) => Helper::encodeDoublePlant($block, StringValues::DOUBLE_PLANT_TYPE_SUNFLOWER, Writer::create(Ids::DOUBLE_PLANT)));
 		$this->map(Blocks::SWEET_BERRY_BUSH(), function(SweetBerryBush $block) : Writer{
