@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
@@ -35,6 +36,8 @@ use function atan2;
 use function rad2deg;
 
 final class FloorCoralFan extends BaseCoral{
+	use StaticSupportTrait;
+
 	private int $axis = Axis::X;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
@@ -53,9 +56,6 @@ final class FloorCoralFan extends BaseCoral{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedAt($blockReplace)){
-			return false;
-		}
 		if($player !== null){
 			$playerBlockPos = $player->getPosition()->floor();
 			$directionVector = $blockReplace->getPosition()->subtractVector($playerBlockPos)->normalize();
@@ -71,15 +71,6 @@ final class FloorCoralFan extends BaseCoral{
 		$this->dead = !$this->isCoveredWithWater();
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	public function onNearbyBlockChange() : void{
-		$world = $this->position->getWorld();
-		if(!$this->canBeSupportedAt($this)){
-			$world->useBreakOn($this->position);
-		}else{
-			parent::onNearbyBlockChange();
-		}
 	}
 
 	private function canBeSupportedAt(Block $block) : bool{

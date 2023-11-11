@@ -203,7 +203,7 @@ class PluginDescription{
 			}
 			$this->order = $order;
 		}else{
-			$this->order = PluginEnableOrder::POSTWORLD();
+			$this->order = PluginEnableOrder::POSTWORLD;
 		}
 
 		$this->authors = [];

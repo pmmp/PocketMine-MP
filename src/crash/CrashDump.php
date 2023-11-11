@@ -143,7 +143,7 @@ class CrashDump{
 					depends: $d->getDepend(),
 					softDepends: $d->getSoftDepend(),
 					main: $d->getMain(),
-					load: mb_strtoupper($d->getOrder()->name()),
+					load: mb_strtoupper($d->getOrder()->name),
 					website: $d->getWebsite()
 				);
 			}

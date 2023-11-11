@@ -86,7 +86,7 @@ final class BlockStateUpgrader{
 					if(is_string($remap->newName)){
 						$newName = $remap->newName;
 					}else{
-						$flattenedValue = $oldState[$remap->newName->flattenedProperty];
+						$flattenedValue = $oldState[$remap->newName->flattenedProperty] ?? null;
 						if($flattenedValue instanceof StringTag){
 							$newName = sprintf("%s%s%s", $remap->newName->prefix, $flattenedValue->getValue(), $remap->newName->suffix);
 							unset($oldState[$remap->newName->flattenedProperty]);

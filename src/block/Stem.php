@@ -58,6 +58,10 @@ abstract class Stem extends Crops{
 		parent::onNearbyBlockChange();
 	}
 
+	public function ticksRandomly() : bool{
+		return $this->age < self::MAX_AGE || $this->facing === Facing::UP;
+	}
+
 	public function onRandomTick() : void{
 		if($this->facing === Facing::UP && mt_rand(0, 2) === 1){
 			$world = $this->position->getWorld();
@@ -76,7 +80,9 @@ abstract class Stem extends Crops{
 				$facing = Facing::HORIZONTAL[array_rand(Facing::HORIZONTAL)];
 				$side = $this->getSide($facing);
 				if($side->getTypeId() === BlockTypeIds::AIR && $side->getSide(Facing::DOWN)->hasTypeTag(BlockTypeTags::DIRT)){
-					BlockEventHelper::grow($side, $grow, null);
+					if(BlockEventHelper::grow($side, $grow, null)){
+						$this->position->getWorld()->setBlock($this->position, $this->setFacing($facing));
+					}
 				}
 			}
 		}

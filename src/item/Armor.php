@@ -150,7 +150,7 @@ class Armor extends Durable{
 			//if the stack size was bigger than 1 (usually won't happen, but might be caused by plugins)
 			$returnedItems[] = $thisCopy;
 		}
-		return ItemUseResult::SUCCESS();
+		return ItemUseResult::SUCCESS;
 	}
 
 	protected function deserializeCompoundTag(CompoundTag $tag) : void{
