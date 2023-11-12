@@ -37,7 +37,7 @@ use pocketmine\world\sound\FireExtinguishSound;
 use pocketmine\world\sound\FlintSteelSound;
 
 trait CandleTrait{
-	use LitTrait;
+	use LightableTrait;
 
 	public function getLightLevel() : int{
 		return $this->lit ? 3 : 0;

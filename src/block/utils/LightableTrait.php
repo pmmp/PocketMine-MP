@@ -25,7 +25,7 @@ namespace pocketmine\block\utils;
 
 use pocketmine\data\runtime\RuntimeDataDescriber;
 
-trait LitTrait{
+trait LightableTrait{
 	protected bool $lit = false;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
