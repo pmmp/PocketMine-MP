@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\StructureVoidType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 
 class StructureVoid extends Transparent{
 	private StructureVoidType $type;
@@ -44,6 +45,14 @@ class StructureVoid extends Transparent{
 
 	public function isSolid() : bool{
 		return false;
+	}
+
+	public function canBeReplaced() : bool{
+		return true;
+	}
+
+	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
+		return $blockReplace->getTypeId() !== BlockTypeIds::STRUCTURE_VOID && $blockReplace->canBeReplaced();
 	}
 
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
