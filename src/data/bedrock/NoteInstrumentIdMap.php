@@ -32,21 +32,21 @@ final class NoteInstrumentIdMap{
 	use IntSaveIdMapTrait;
 
 	private function __construct(){
-		$this->register(0, NoteInstrument::PIANO());
-		$this->register(1, NoteInstrument::BASS_DRUM());
-		$this->register(2, NoteInstrument::SNARE());
-		$this->register(3, NoteInstrument::CLICKS_AND_STICKS());
-		$this->register(4, NoteInstrument::DOUBLE_BASS());
-		$this->register(5, NoteInstrument::BELL());
-		$this->register(6, NoteInstrument::FLUTE());
-		$this->register(7, NoteInstrument::CHIME());
-		$this->register(8, NoteInstrument::GUITAR());
-		$this->register(9, NoteInstrument::XYLOPHONE());
-		$this->register(10, NoteInstrument::IRON_XYLOPHONE());
-		$this->register(11, NoteInstrument::COW_BELL());
-		$this->register(12, NoteInstrument::DIDGERIDOO());
-		$this->register(13, NoteInstrument::BIT());
-		$this->register(14, NoteInstrument::BANJO());
-		$this->register(15, NoteInstrument::PLING());
+		$this->register(0, NoteInstrument::PIANO);
+		$this->register(1, NoteInstrument::BASS_DRUM);
+		$this->register(2, NoteInstrument::SNARE);
+		$this->register(3, NoteInstrument::CLICKS_AND_STICKS);
+		$this->register(4, NoteInstrument::DOUBLE_BASS);
+		$this->register(5, NoteInstrument::BELL);
+		$this->register(6, NoteInstrument::FLUTE);
+		$this->register(7, NoteInstrument::CHIME);
+		$this->register(8, NoteInstrument::GUITAR);
+		$this->register(9, NoteInstrument::XYLOPHONE);
+		$this->register(10, NoteInstrument::IRON_XYLOPHONE);
+		$this->register(11, NoteInstrument::COW_BELL);
+		$this->register(12, NoteInstrument::DIDGERIDOO);
+		$this->register(13, NoteInstrument::BIT);
+		$this->register(14, NoteInstrument::BANJO);
+		$this->register(15, NoteInstrument::PLING);
 	}
 }

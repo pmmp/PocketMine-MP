@@ -24,13 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\utils\WoodType;
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static BoatType ACACIA()
  * @method static BoatType BIRCH()
@@ -40,33 +38,30 @@ use pocketmine\utils\EnumTrait;
  * @method static BoatType OAK()
  * @method static BoatType SPRUCE()
  */
-final class BoatType{
-	use EnumTrait {
-		__construct as Enum___construct;
-	}
+enum BoatType{
+	use LegacyEnumShimTrait;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("oak", WoodType::OAK()),
-			new self("spruce", WoodType::SPRUCE()),
-			new self("birch", WoodType::BIRCH()),
-			new self("jungle", WoodType::JUNGLE()),
-			new self("acacia", WoodType::ACACIA()),
-			new self("dark_oak", WoodType::DARK_OAK()),
-			new self("mangrove", WoodType::MANGROVE()),
-		);
-	}
+	case OAK;
+	case SPRUCE;
+	case BIRCH;
+	case JUNGLE;
+	case ACACIA;
+	case DARK_OAK;
+	case MANGROVE;
 
-	private function __construct(
-		string $enumName,
-		private WoodType $woodType,
-	){
-		$this->Enum___construct($enumName);
+	public function getWoodType() : WoodType{
+		return match($this){
+			self::OAK => WoodType::OAK,
+			self::SPRUCE => WoodType::SPRUCE,
+			self::BIRCH => WoodType::BIRCH,
+			self::JUNGLE => WoodType::JUNGLE,
+			self::ACACIA => WoodType::ACACIA,
+			self::DARK_OAK => WoodType::DARK_OAK,
+			self::MANGROVE => WoodType::MANGROVE,
+		};
 	}
-
-	public function getWoodType() : WoodType{ return $this->woodType; }
 
 	public function getDisplayName() : string{
-		return $this->woodType->getDisplayName();
+		return $this->getWoodType()->getDisplayName();
 	}
 }

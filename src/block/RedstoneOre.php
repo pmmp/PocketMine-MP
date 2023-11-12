@@ -54,7 +54,7 @@ class RedstoneOre extends Opaque{
 	}
 
 	public function ticksRandomly() : bool{
-		return true;
+		return $this->lit;
 	}
 
 	public function onRandomTick() : void{

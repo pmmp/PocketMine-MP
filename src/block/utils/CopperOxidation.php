@@ -23,57 +23,30 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static CopperOxidation EXPOSED()
  * @method static CopperOxidation NONE()
  * @method static CopperOxidation OXIDIZED()
  * @method static CopperOxidation WEATHERED()
  */
-final class CopperOxidation{
-	use EnumTrait {
-		__construct as Enum___construct;
-		register as Enum_register;
-	}
+enum CopperOxidation : int{
+	use LegacyEnumShimTrait;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("none", 0),
-			new self("exposed", 1),
-			new self("weathered", 2),
-			new self("oxidized", 3)
-		);
-	}
-
-	protected static function register(self $member) : void{
-		self::Enum_register($member);
-		self::$levelMap[$member->value] = $member;
-	}
-
-	/**
-	 * @var self[]
-	 * @phpstan-var array<int, self>
-	 */
-	private static array $levelMap = [];
-
-	private function __construct(
-		string $name,
-		private int $value
-	){
-		$this->Enum___construct($name);
-	}
+	case NONE = 0;
+	case EXPOSED = 1;
+	case WEATHERED = 2;
+	case OXIDIZED = 3;
 
 	public function getPrevious() : ?self{
-		return self::$levelMap[$this->value - 1] ?? null;
+		return self::tryFrom($this->value - 1);
 	}
 
 	public function getNext() : ?self{
-		return self::$levelMap[$this->value + 1] ?? null;
+		return self::tryFrom($this->value + 1);
 	}
 }

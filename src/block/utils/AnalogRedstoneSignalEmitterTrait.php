@@ -29,7 +29,7 @@ trait AnalogRedstoneSignalEmitterTrait{
 	protected int $signalStrength = 0;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(4, 0, 15, $this->signalStrength);
+		$w->boundedIntAuto(0, 15, $this->signalStrength);
 	}
 
 	public function getOutputSignalStrength() : int{ return $this->signalStrength; }

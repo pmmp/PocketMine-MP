@@ -32,12 +32,12 @@ final class MobHeadTypeIdMap{
 	use IntSaveIdMapTrait;
 
 	private function __construct(){
-		$this->register(0, MobHeadType::SKELETON());
-		$this->register(1, MobHeadType::WITHER_SKELETON());
-		$this->register(2, MobHeadType::ZOMBIE());
-		$this->register(3, MobHeadType::PLAYER());
-		$this->register(4, MobHeadType::CREEPER());
-		$this->register(5, MobHeadType::DRAGON());
-		$this->register(6, MobHeadType::PIGLIN());
+		$this->register(0, MobHeadType::SKELETON);
+		$this->register(1, MobHeadType::WITHER_SKELETON);
+		$this->register(2, MobHeadType::ZOMBIE);
+		$this->register(3, MobHeadType::PLAYER);
+		$this->register(4, MobHeadType::CREEPER);
+		$this->register(5, MobHeadType::DRAGON);
+		$this->register(6, MobHeadType::PIGLIN);
 	}
 }
