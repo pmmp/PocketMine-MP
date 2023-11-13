@@ -1387,17 +1387,13 @@ class Server{
 			}
 
 			if(!$sync && $this->networkCompressionThreads > 0){
-				Timings::$playerNetworkSendCompressAsync->startTiming();
 				$workerPool = $this->getNetworkCompressionWorkerPool($compressor);
 
 				//TODO: we really want to be submitting all sessions' buffers in one go to maximize performance
 				$promise = $workerPool->submit($buffer);
-				Timings::$playerNetworkSendCompressAsync->stopTiming();
 			}else{
-				Timings::$playerNetworkSendCompressSync->startTiming();
 				$promise = new CompressBatchPromise();
 				$promise->resolve($compressor->compress($buffer));
-				Timings::$playerNetworkSendCompressSync->stopTiming();
 			}
 
 			return $promise;
