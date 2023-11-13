@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\compression;
 use pmmp\thread\ThreadSafeArray;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\snooze\SleeperHandlerEntry;
+use pocketmine\snooze\SleeperNotifier;
 use pocketmine\thread\Thread;
 use pocketmine\utils\AssumptionFailedError;
 use function count;
@@ -82,10 +83,14 @@ final class CompressorWorker{
 			public function onRun() : void{
 				/** @var Compressor $compressor */
 				$compressor = unserialize($this->compressor);
-				$inChannel = $this->inChannel;
-				$outChannel = $this->outChannel;
-				$sleeperNotifier = $this->sleeperEntry->createNotifier();
+				self::thread($this->inChannel, $compressor, $this->outChannel, $this->sleeperEntry->createNotifier());
+			}
 
+			/**
+			 * @phpstan-param ThreadSafeArray<int, string|null> $inChannel
+			 * @phpstan-param ThreadSafeArray<int, string> $outChannel
+			 */
+			private static function thread(ThreadSafeArray $inChannel, Compressor $compressor, ThreadSafeArray $outChannel, SleeperNotifier $sleeperNotifier) : void{
 				$shutdown = false;
 
 				while(!$shutdown){
