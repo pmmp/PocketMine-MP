@@ -1371,6 +1371,7 @@ class Server{
 	}
 
 	/**
+	 * @internal
 	 * Broadcasts a list of packets in a batch to a list of players
 	 *
 	 * @param bool|null $sync Compression on the main thread (true) or workers (false). Default is automatic (null).
