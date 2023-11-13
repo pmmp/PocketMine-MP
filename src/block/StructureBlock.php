@@ -30,19 +30,21 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
+use pocketmine\player\Gamemode;
 use pocketmine\player\Player;
 
 class StructureBlock extends Opaque{
-	private StructureBlockType $type;
+	private StructureBlockType $type = StructureBlockType::SAVE;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->type = StructureBlockType::SAVE;
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if ($player instanceof Player) {
-			if (!$player->isCreative(true)) return false;
+			if (!$player->getGamemode() === GameMode::CREATIVE) {
+				return false;
+			}
 			// the 0 is dubious but any value works
 			$pk = ContainerOpenPacket::blockInv(0, WindowTypes::STRUCTURE_EDITOR, BlockPosition::fromVector3($this->getPosition()));
 			$player->getNetworkSession()->sendDataPacket($pk);
