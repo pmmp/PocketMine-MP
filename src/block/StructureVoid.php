@@ -31,10 +31,6 @@ use pocketmine\math\Vector3;
 class StructureVoid extends Transparent{
 	private StructureVoidType $type = StructureVoidType::VOID;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
-
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
 		$w->enum($this->type);
 	}
