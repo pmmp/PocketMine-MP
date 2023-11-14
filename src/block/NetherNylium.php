@@ -38,12 +38,6 @@ class NetherNylium extends Opaque{
 		];
 	}
 
-	public function getSilkTouchDrops(Item $item) : array{
-		return [
-			$this->asItem()
-		];
-	}
-
 	public function ticksRandomly() : bool{
 		return true;
 	}
