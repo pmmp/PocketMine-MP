@@ -70,7 +70,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 		$this->configFile = Path::join($this->dataFolder, "config.yml");
 
-		$prefix = $this->getDescription()->getPrefix();
+		$prefix = $this->description->getPrefix();
 		$this->logger = new PluginLogger($server->getLogger(), $prefix !== "" ? $prefix : $this->getName());
 		$this->scheduler = new TaskScheduler($this->getFullName());
 
@@ -145,14 +145,14 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	private function registerYamlCommands() : void{
 		$pluginCmds = [];
 
-		foreach(Utils::stringifyKeys($this->getDescription()->getCommands()) as $key => $data){
+		foreach(Utils::stringifyKeys($this->description->getCommands()) as $key => $data){
 			if(str_contains($key, ":")){
-				$this->logger->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_commandError($key, $this->getDescription()->getFullName(), ":")));
+				$this->logger->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_commandError($key, $this->description->getFullName(), ":")));
 				continue;
 			}
 
 			$newCmd = new PluginCommand($key, $this, $this);
-			if(($description = $data->getDescription()) !== null){
+			if(($description = $data->description) !== null){
 				$newCmd->setDescription($description);
 			}
 
@@ -163,7 +163,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 			$aliasList = [];
 			foreach($data->getAliases() as $alias){
 				if(str_contains($alias, ":")){
-					$this->logger->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_aliasError($alias, $this->getDescription()->getFullName(), ":")));
+					$this->logger->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_aliasError($alias, $this->description->getFullName(), ":")));
 					continue;
 				}
 				$aliasList[] = $alias;
@@ -181,7 +181,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		}
 
 		if(count($pluginCmds) > 0){
-			$this->server->getCommandMap()->registerAll($this->getDescription()->getName(), $pluginCmds);
+			$this->server->getCommandMap()->registerAll($this->description->getName(), $pluginCmds);
 		}
 	}
 
@@ -190,9 +190,9 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 * @phpstan-return (Command&PluginOwned)|null
 	 */
 	public function getCommand(string $name){
-		$command = $this->getServer()->getPluginCommand($name);
+		$command = $this->server->getPluginCommand($name);
 		if($command === null || $command->getOwningPlugin() !== $this){
-			$command = $this->getServer()->getPluginCommand(strtolower($this->description->getName()) . ":" . $name);
+			$command = $this->server->getPluginCommand(strtolower($this->description->getName()) . ":" . $name);
 		}
 
 		if($command instanceof PluginOwned && $command->getOwningPlugin() === $this){
