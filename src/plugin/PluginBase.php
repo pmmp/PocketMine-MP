@@ -152,7 +152,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 			}
 
 			$newCmd = new PluginCommand($key, $this, $this);
-			if(($description = $data->description) !== null){
+			if(($description = $data->getDescription()) !== null){
 				$newCmd->setDescription($description);
 			}
 
