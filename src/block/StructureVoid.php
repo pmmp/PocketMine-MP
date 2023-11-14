@@ -29,11 +29,24 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 
 class StructureVoid extends Transparent{
-	private StructureVoidType $type;
+	private StructureVoidType $type = StructureVoidType::VOID;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->type = StructureVoidType::VOID;
 		parent::__construct($idInfo, $name, $typeInfo);
+	}
+
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
+		$w->enum($this->type);
+	}
+
+	public function getType() : StructureVoidType{
+		return $this->type;
+	}
+
+	/** @return $this */
+	public function setType(StructureVoidType $type) : self{
+		$this->type = $type;
+		return $this;
 	}
 
 	/**
@@ -53,19 +66,5 @@ class StructureVoid extends Transparent{
 
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
 		return $blockReplace->getTypeId() !== BlockTypeIds::STRUCTURE_VOID && $blockReplace->canBeReplaced();
-	}
-
-	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
-		$w->enum($this->type);
-	}
-
-	public function getType() : StructureVoidType{
-		return $this->type;
-	}
-
-	/** @return $this */
-	public function setType(StructureVoidType $type) : self{
-		$this->type = $type;
-		return $this;
 	}
 }
