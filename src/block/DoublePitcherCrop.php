@@ -28,6 +28,7 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -105,6 +106,18 @@ final class DoublePitcherCrop extends DoublePlant{
 		//only the bottom half of the plant can grow randomly
 		if(mt_rand(0, 2) === 0 && !$this->top){
 			$this->grow(null);
+		}
+	}
+
+	public function getDropsForCompatibleTool(Item $item) : array{
+		if($this->age >= self::MAX_AGE){
+			return [
+				VanillaBlocks::PITCHER_PLANT()->asItem()
+			];
+		}else{
+			return [
+				VanillaItems::PITCHER_POD()
+			];
 		}
 	}
 }
