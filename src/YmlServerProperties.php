@@ -90,10 +90,9 @@ final class YmlServerProperties{
 	public const MEMORY_WORLD_CACHES_DISABLE_CHUNK_CACHE = 'memory.world-caches.disable-chunk-cache';
 	public const MEMORY_WORLD_CACHES_LOW_MEMORY_TRIGGER = 'memory.world-caches.low-memory-trigger';
 	public const NETWORK = 'network';
-	public const NETWORK_ASYNC_COMPRESSION = 'network.async-compression';
-	public const NETWORK_ASYNC_COMPRESSION_THRESHOLD = 'network.async-compression-threshold';
 	public const NETWORK_BATCH_THRESHOLD = 'network.batch-threshold';
 	public const NETWORK_COMPRESSION_LEVEL = 'network.compression-level';
+	public const NETWORK_COMPRESSION_THREADS = 'network.compression-threads';
 	public const NETWORK_ENABLE_ENCRYPTION = 'network.enable-encryption';
 	public const NETWORK_MAX_MTU_SIZE = 'network.max-mtu-size';
 	public const NETWORK_UPNP_FORWARDING = 'network.upnp-forwarding';
