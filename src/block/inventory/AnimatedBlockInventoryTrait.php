@@ -47,20 +47,20 @@ trait AnimatedBlockInventoryTrait{
 	public function onOpen(Player $who) : void{
 		parent::onOpen($who);
 
-		if($this->getHolder()->isValid() && $this->getViewerCount() === 1){
+		if($this->holder->isValid() && $this->getViewerCount() === 1){
 			//TODO: this crap really shouldn't be managed by the inventory
 			$this->animateBlock(true);
-			$this->getHolder()->getWorld()->addSound($this->getHolder()->add(0.5, 0.5, 0.5), $this->getOpenSound());
+			$this->holder->getWorld()->addSound($this->holder->add(0.5, 0.5, 0.5), $this->getOpenSound());
 		}
 	}
 
 	abstract protected function animateBlock(bool $isOpen) : void;
 
 	public function onClose(Player $who) : void{
-		if($this->getHolder()->isValid() && $this->getViewerCount() === 1){
+		if($this->holder->isValid() && $this->getViewerCount() === 1){
 			//TODO: this crap really shouldn't be managed by the inventory
 			$this->animateBlock(false);
-			$this->getHolder()->getWorld()->addSound($this->getHolder()->add(0.5, 0.5, 0.5), $this->getCloseSound());
+			$this->holder->getWorld()->addSound($this->holder->add(0.5, 0.5, 0.5), $this->getCloseSound());
 		}
 		parent::onClose($who);
 	}
