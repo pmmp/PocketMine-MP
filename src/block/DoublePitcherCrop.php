@@ -110,14 +110,8 @@ final class DoublePitcherCrop extends DoublePlant{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if($this->age >= self::MAX_AGE){
-			return [
-				VanillaBlocks::PITCHER_PLANT()->asItem()
-			];
-		}else{
-			return [
-				VanillaItems::PITCHER_POD()
-			];
-		}
+		return [
+			$this->age >= self::MAX_AGE ? VanillaBlocks::PITCHER_PLANT()->asItem() : VanillaItems::PITCHER_POD()
+		];
 	}
 }
