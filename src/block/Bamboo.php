@@ -173,7 +173,7 @@ class Bamboo extends Transparent{
 		$newHeight = $height + $growAmount;
 
 		$stemBlock = (clone $this)->setReady(false)->setLeafSize(self::NO_LEAVES);
-		if($newHeight >= 4 && !$stemBlock->isThick()){ //don't change it to false if height is less, because it might have been chopped
+		if($newHeight >= 4 && !$stemBlock->thick){ //don't change it to false if height is less, because it might have been chopped
 			$stemBlock = $stemBlock->setThick(true);
 		}
 		$smallLeavesBlock = (clone $stemBlock)->setLeafSize(self::SMALL_LEAVES);
