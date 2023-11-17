@@ -1357,7 +1357,14 @@ class Server{
 
 	/**
 	 * @internal
-	 * Broadcasts a list of packets in a batch to a list of players
+	 * Promises to compress the given batch buffer using the selected compressor, optionally on a separate thread.
+	 *
+	 * If the buffer is smaller than the batch-threshold (usually 256), the buffer will be compressed at level 0 if supported
+	 * by the compressor. This means that the payload will be wrapped with the appropriate header and footer, but not
+	 * actually compressed.
+	 *
+	 * If the buffer is larger than the async-compression-threshold (usually 10,000), the buffer may be compressed in
+	 * a separate thread (if available).
 	 *
 	 * @param bool|null $sync Compression on the main thread (true) or workers (false). Default is automatic (null).
 	 */
