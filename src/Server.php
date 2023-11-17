@@ -1357,11 +1357,18 @@ class Server{
 
 	/**
 	 * @internal
-	 * Broadcasts a list of packets in a batch to a list of players
+	 * Promises to compress the given batch buffer using the selected compressor, optionally on a separate thread.
+	 *
+	 * If the buffer is smaller than the batch-threshold (usually 256), the buffer will be compressed at level 0 if supported
+	 * by the compressor. This means that the payload will be wrapped with the appropriate header and footer, but not
+	 * actually compressed.
+	 *
+	 * If the buffer is larger than the async-compression-threshold (usually 10,000), the buffer may be compressed in
+	 * a separate thread (if available).
 	 *
 	 * @param bool|null $sync Compression on the main thread (true) or workers (false). Default is automatic (null).
 	 */
-	public function prepareBatch(string $buffer, Compressor $compressor, ?bool $sync = null, ?TimingsHandler $timings = null) : CompressBatchPromise{
+	public function prepareBatch(string $buffer, Compressor $compressor, ?bool $sync = null, ?TimingsHandler $timings = null) : CompressBatchPromise|string{
 		$timings ??= Timings::$playerNetworkSendCompress;
 		try{
 			$timings->startTiming();
@@ -1371,15 +1378,14 @@ class Server{
 				$sync = !$this->networkCompressionAsync || $threshold === null || strlen($buffer) < $threshold;
 			}
 
-			$promise = new CompressBatchPromise();
 			if(!$sync && strlen($buffer) >= $this->networkCompressionAsyncThreshold){
+				$promise = new CompressBatchPromise();
 				$task = new CompressBatchTask($buffer, $promise, $compressor);
 				$this->asyncPool->submitTask($task);
-			}else{
-				$promise->resolve($compressor->compress($buffer));
+				return $promise;
 			}
 
-			return $promise;
+			return $compressor->compress($buffer);
 		}finally{
 			$timings->stopTiming();
 		}
