@@ -117,6 +117,7 @@ use function count;
 use function get_class;
 use function implode;
 use function in_array;
+use function is_string;
 use function json_encode;
 use function random_bytes;
 use function str_split;
@@ -158,8 +159,8 @@ class NetworkSession{
 	private array $sendBuffer = [];
 
 	/**
-	 * @var \SplQueue|CompressBatchPromise[]
-	 * @phpstan-var \SplQueue<CompressBatchPromise>
+	 * @var \SplQueue|CompressBatchPromise[]|string[]
+	 * @phpstan-var \SplQueue<CompressBatchPromise|string>
 	 */
 	private \SplQueue $compressedQueue;
 	private bool $forceAsyncCompression = true;
@@ -525,13 +526,12 @@ class NetworkSession{
 				PacketBatch::encodeRaw($stream, $this->sendBuffer);
 
 				if($this->enableCompression){
-					$promise = $this->server->prepareBatch($stream->getBuffer(), $this->compressor, $syncMode, Timings::$playerNetworkSendCompressSessionBuffer);
+					$batch = $this->server->prepareBatch($stream->getBuffer(), $this->compressor, $syncMode, Timings::$playerNetworkSendCompressSessionBuffer);
 				}else{
-					$promise = new CompressBatchPromise();
-					$promise->resolve($stream->getBuffer());
+					$batch = $stream->getBuffer();
 				}
 				$this->sendBuffer = [];
-				$this->queueCompressedNoBufferFlush($promise, $immediate);
+				$this->queueCompressedNoBufferFlush($batch, $immediate);
 			}finally{
 				Timings::$playerNetworkSend->stopTiming();
 			}
@@ -550,7 +550,7 @@ class NetworkSession{
 
 	public function getTypeConverter() : TypeConverter{ return $this->typeConverter; }
 
-	public function queueCompressed(CompressBatchPromise $payload, bool $immediate = false) : void{
+	public function queueCompressed(CompressBatchPromise|string $payload, bool $immediate = false) : void{
 		Timings::$playerNetworkSend->startTiming();
 		try{
 			$this->flushSendBuffer($immediate); //Maintain ordering if possible
@@ -560,38 +560,51 @@ class NetworkSession{
 		}
 	}
 
-	private function queueCompressedNoBufferFlush(CompressBatchPromise $payload, bool $immediate = false) : void{
+	private function queueCompressedNoBufferFlush(CompressBatchPromise|string $batch, bool $immediate = false) : void{
 		Timings::$playerNetworkSend->startTiming();
 		try{
-			if($immediate){
+			if(is_string($batch)){
+				if($immediate){
+					//Skips all queues
+					$this->sendEncoded($batch, true);
+				}else{
+					$this->compressedQueue->enqueue($batch);
+					$this->flushCompressedQueue();
+				}
+			}elseif($immediate){
 				//Skips all queues
-				$this->sendEncoded($payload->getResult(), true);
+				$this->sendEncoded($batch->getResult(), true);
 			}else{
-				$this->compressedQueue->enqueue($payload);
-				$payload->onResolve(function(CompressBatchPromise $payload) : void{
-					if($this->connected && $this->compressedQueue->bottom() === $payload){
-						Timings::$playerNetworkSend->startTiming();
-						try{
-							$this->compressedQueue->dequeue(); //result unused
-							$this->sendEncoded($payload->getResult());
-
-							while(!$this->compressedQueue->isEmpty()){
-								/** @var CompressBatchPromise $current */
-								$current = $this->compressedQueue->bottom();
-								if($current->hasResult()){
-									$this->compressedQueue->dequeue();
-
-									$this->sendEncoded($current->getResult());
-								}else{
-									//can't send any more queued until this one is ready
-									break;
-								}
-							}
-						}finally{
-							Timings::$playerNetworkSend->stopTiming();
-						}
+				$this->compressedQueue->enqueue($batch);
+				$batch->onResolve(function() : void{
+					if($this->connected){
+						$this->flushCompressedQueue();
 					}
 				});
+			}
+		}finally{
+			Timings::$playerNetworkSend->stopTiming();
+		}
+	}
+
+	private function flushCompressedQueue() : void{
+		Timings::$playerNetworkSend->startTiming();
+		try{
+			while(!$this->compressedQueue->isEmpty()){
+				/** @var CompressBatchPromise|string $current */
+				$current = $this->compressedQueue->bottom();
+				if(is_string($current)){
+					$this->compressedQueue->dequeue();
+					$this->sendEncoded($current);
+
+				}elseif($current->hasResult()){
+					$this->compressedQueue->dequeue();
+					$this->sendEncoded($current->getResult());
+
+				}else{
+					//can't send any more queued until this one is ready
+					break;
+				}
 			}
 		}finally{
 			Timings::$playerNetworkSend->stopTiming();

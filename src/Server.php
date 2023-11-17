@@ -1368,7 +1368,7 @@ class Server{
 	 *
 	 * @param bool|null $sync Compression on the main thread (true) or workers (false). Default is automatic (null).
 	 */
-	public function prepareBatch(string $buffer, Compressor $compressor, ?bool $sync = null, ?TimingsHandler $timings = null) : CompressBatchPromise{
+	public function prepareBatch(string $buffer, Compressor $compressor, ?bool $sync = null, ?TimingsHandler $timings = null) : CompressBatchPromise|string{
 		$timings ??= Timings::$playerNetworkSendCompress;
 		try{
 			$timings->startTiming();
@@ -1378,15 +1378,14 @@ class Server{
 				$sync = !$this->networkCompressionAsync || $threshold === null || strlen($buffer) < $threshold;
 			}
 
-			$promise = new CompressBatchPromise();
 			if(!$sync && strlen($buffer) >= $this->networkCompressionAsyncThreshold){
+				$promise = new CompressBatchPromise();
 				$task = new CompressBatchTask($buffer, $promise, $compressor);
 				$this->asyncPool->submitTask($task);
-			}else{
-				$promise->resolve($compressor->compress($buffer));
+				return $promise;
 			}
 
-			return $promise;
+			return $compressor->compress($buffer);
 		}finally{
 			$timings->stopTiming();
 		}
