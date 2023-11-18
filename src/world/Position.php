@@ -39,10 +39,27 @@ class Position extends Vector3{
 		$this->world = $world;
 	}
 
-	/**
-	 * @return Position
-	 */
-	public static function fromObject(Vector3 $pos, ?World $world){
+	public function add(float|int $x, float|int $y, float|int $z) : Position{
+		return Position::fromObject(parent::add($x, $y, $z), $this->world);
+	}
+
+	public function multiply(float $number) : Position{
+		return Position::fromObject(parent::multiply($number), $this->world);
+	}
+
+	public function divide(float $number) : Position{
+		return Position::fromObject(parent::divide($number), $this->world);
+	}
+
+	public function ceil() : Position{
+		return Position::fromObject(parent::ceil(), $this->world);
+	}
+
+	public function floor() : Position{
+		return Position::fromObject(parent::floor(), $this->world);
+	}
+
+	public static function fromObject(Vector3 $pos, ?World $world) : Position{
 		return new Position($pos->x, $pos->y, $pos->z, $world);
 	}
 
@@ -81,13 +98,11 @@ class Position extends Vector3{
 
 	/**
 	 * Returns a side Vector
-	 *
-	 * @return Position
 	 */
-	public function getSide(int $side, int $step = 1){
+	public function getSide(int $side, int $step = 1) : static{
 		assert($this->isValid());
 
-		return Position::fromObject(parent::getSide($side, $step), $this->world);
+		return parent::getSide($side, $step);
 	}
 
 	public function __toString(){

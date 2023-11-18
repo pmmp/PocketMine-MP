@@ -38,10 +38,7 @@ class Location extends Position{
 		parent::__construct($x, $y, $z, $world);
 	}
 
-	/**
-	 * @return Location
-	 */
-	public static function fromObject(Vector3 $pos, ?World $world, float $yaw = 0.0, float $pitch = 0.0){
+	public static function fromObject(Vector3 $pos, ?World $world, float $yaw = 0.0, float $pitch = 0.0) : Location{
 		return new Location($pos->x, $pos->y, $pos->z, $world ?? (($pos instanceof Position) ? $pos->world : null), $yaw, $pitch);
 	}
 
@@ -69,5 +66,25 @@ class Location extends Position{
 			return parent::equals($v) && $v->yaw == $this->yaw && $v->pitch == $this->pitch;
 		}
 		return parent::equals($v);
+	}
+
+	public function add(float|int $x, float|int $y, float|int $z) : Location{
+		return Location::fromObject(parent::add($x, $y, $z), $this->world, $this->yaw, $this->pitch);
+	}
+
+	public function multiply(float $number) : Location{
+		return Location::fromObject(parent::multiply($number), $this->world, $this->yaw, $this->pitch);
+	}
+
+	public function divide(float $number) : Location{
+		return Location::fromObject(parent::divide($number), $this->world, $this->yaw, $this->pitch);
+	}
+
+	public function ceil() : Location{
+		return Location::fromObject(parent::ceil(), $this->world, $this->yaw, $this->pitch);
+	}
+
+	public function floor() : Location{
+		return Location::fromObject(parent::floor(), $this->world, $this->yaw, $this->pitch);
 	}
 }
