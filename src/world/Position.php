@@ -102,7 +102,7 @@ class Position extends Vector3{
 	public function getSide(int $side, int $step = 1) : Position{
 		assert($this->isValid());
 
-		return parent::getSide($side, $step);
+		return Position::fromObject(parent::getSide($side, $step), $this->world);
 	}
 
 	public function __toString(){
