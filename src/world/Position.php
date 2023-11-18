@@ -99,7 +99,7 @@ class Position extends Vector3{
 	/**
 	 * Returns a side Vector
 	 */
-	public function getSide(int $side, int $step = 1) : static{
+	public function getSide(int $side, int $step = 1) : Position{
 		assert($this->isValid());
 
 		return parent::getSide($side, $step);
