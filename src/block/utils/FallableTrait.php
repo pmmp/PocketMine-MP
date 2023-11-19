@@ -25,6 +25,7 @@ namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\entity\Location;
 use pocketmine\entity\object\FallingBlock;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;
@@ -50,7 +51,7 @@ trait FallableTrait{
 			$block = $this;
 			if(!($block instanceof Block)) throw new AssumptionFailedError(__TRAIT__ . " should only be used by Blocks");
 
-			$fall = new FallingBlock($pos->add(0.5, 0, 0.5), $block);
+			$fall = new FallingBlock(Location::fromObject($pos->add(0.5, 0, 0.5), null), $block);
 			$fall->spawnToAll();
 		}
 	}
