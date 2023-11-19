@@ -25,7 +25,6 @@ namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
 use pocketmine\block\VanillaBlocks;
-use pocketmine\entity\Location;
 use pocketmine\entity\object\FallingBlock;
 use pocketmine\math\Facing;
 use pocketmine\utils\AssumptionFailedError;

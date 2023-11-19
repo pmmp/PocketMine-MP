@@ -35,7 +35,6 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\world\Explosion;
-use pocketmine\world\Position;
 
 class PrimedTNT extends Entity implements Explosive{
 
