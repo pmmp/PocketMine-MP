@@ -59,6 +59,17 @@ class Position extends Vector3{
 		return Position::fromObject(parent::floor(), $this->world);
 	}
 
+	/**
+	 * @phpstan-param 1|2|3|4 $mode
+	 */
+	public function round(int $precision = 0, int $mode = PHP_ROUND_HALF_UP) : Position{
+		return Position::fromObject(parent::round($precision, $mode), $this->world);
+	}
+
+	public function abs() : Position{
+		return Position::fromObject(parent::abs(), $this->world);
+	}
+
 	public static function fromObject(Vector3 $pos, ?World $world) : Position{
 		return new Position($pos->x, $pos->y, $pos->z, $world);
 	}

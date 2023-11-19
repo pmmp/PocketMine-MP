@@ -87,4 +87,15 @@ class Location extends Position{
 	public function floor() : Location{
 		return Location::fromObject(parent::floor(), $this->world, $this->yaw, $this->pitch);
 	}
+
+	/**
+	 * @phpstan-param 1|2|3|4 $mode
+	 */
+	public function round(int $precision = 0, int $mode = PHP_ROUND_HALF_UP) : Location{
+		return Location::fromObject(parent::round($precision, $mode), $this->world, $this->yaw, $this->pitch);
+	}
+
+	public function abs() : Location{
+		return Location::fromObject(parent::abs(), $this->world, $this->yaw, $this->pitch);
+	}
 }
