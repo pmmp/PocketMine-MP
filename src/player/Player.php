@@ -2408,7 +2408,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$ev = new PlayerRespawnEvent($this, $safeSpawn);
 				$ev->call();
 
-				$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getWorld());
+				$realSpawn = $ev->getRespawnPosition()->add(0.5, 0, 0.5);
 				$this->teleport($realSpawn);
 
 				$this->setSprinting(false);

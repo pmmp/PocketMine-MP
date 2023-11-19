@@ -51,7 +51,7 @@ trait FallableTrait{
 			$block = $this;
 			if(!($block instanceof Block)) throw new AssumptionFailedError(__TRAIT__ . " should only be used by Blocks");
 
-			$fall = new FallingBlock(Location::fromObject($pos->add(0.5, 0, 0.5), $world), $block);
+			$fall = new FallingBlock($pos->add(0.5, 0, 0.5), $block);
 			$fall->spawnToAll();
 		}
 	}

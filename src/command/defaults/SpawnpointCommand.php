@@ -67,7 +67,7 @@ class SpawnpointCommand extends VanillaCommand{
 			return true;
 		}elseif(count($args) <= 1 && $sender instanceof Player){
 			$cpos = $sender->getPosition();
-			$pos = Position::fromObject($cpos->floor(), $cpos->getWorld());
+			$pos = $cpos->floor();
 			$target->setSpawn($pos);
 
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_spawnpoint_success($target->getName(), (string) round($pos->x, 2), (string) round($pos->y, 2), (string) round($pos->z, 2)));
