@@ -26,6 +26,7 @@ namespace pocketmine\entity;
 use pocketmine\math\Vector3;
 use pocketmine\world\Position;
 use pocketmine\world\World;
+use const PHP_ROUND_HALF_UP;
 
 class Location extends Position{
 

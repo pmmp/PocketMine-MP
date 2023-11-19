@@ -26,6 +26,7 @@ namespace pocketmine\world;
 use pocketmine\math\Vector3;
 use pocketmine\utils\AssumptionFailedError;
 use function assert;
+use const PHP_ROUND_HALF_UP;
 
 class Position extends Vector3{
 	public ?World $world = null;
