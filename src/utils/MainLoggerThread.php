@@ -25,6 +25,7 @@ namespace pocketmine\utils;
 
 use pmmp\thread\Thread;
 use pmmp\thread\ThreadSafeArray;
+use pocketmine\errorhandler\ErrorToExceptionHandler;
 use function date;
 use function fclose;
 use function file_exists;
@@ -130,15 +131,13 @@ final class MainLoggerThread extends Thread{
 			$i++;
 		}while(file_exists($out));
 
-		$logFile = fopen($this->logFile, 'rb');
-		$archiveFile = gzopen($out, 'wb');
-		if($logFile === false || $archiveFile === false){
-			throw new AssumptionFailedError();
-		}
+		$logFile = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen($this->logFile, 'rb'));
+		$archiveFile = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => gzopen($out, 'wb'));
 
-		if(stream_copy_to_stream($logFile, $archiveFile) === false){
-			throw new AssumptionFailedError("Something is wrong");
-		}
+		//TODO: the disk could run out of space during this operation
+		//we have no log context here so I'm not sure what to do about it
+		ErrorToExceptionHandler::trapAndRemoveFalse(fn() => stream_copy_to_stream($logFile, $archiveFile));
+
 		fclose($logFile);
 		fclose($archiveFile);
 		@unlink($this->logFile);
