@@ -145,7 +145,7 @@ class Bed extends Transparent{
 
 			$b = ($this->isHeadPart() ? $this : $other);
 
-			if($b->isOccupied()){
+			if($b->occupied){
 				$player->sendMessage(KnownTranslationFactory::tile_bed_occupied()->prefix(TextFormat::GRAY));
 
 				return true;

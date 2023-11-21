@@ -2623,7 +2623,7 @@ class World implements ChunkManager{
 
 	public function isChunkPopulated(int $x, int $z) : bool{
 		$chunk = $this->loadChunk($x, $z);
-		return $chunk !== null ? $chunk->isPopulated() : false;
+		return $chunk !== null && $chunk->isPopulated();
 	}
 
 	/**
