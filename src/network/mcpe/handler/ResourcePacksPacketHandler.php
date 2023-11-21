@@ -17,13 +17,15 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkDataPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackClientResponsePacket;
@@ -33,6 +35,7 @@ use pocketmine\network\mcpe\protocol\ResourcePackStackPacket;
 use pocketmine\network\mcpe\protocol\types\Experiments;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackInfoEntry;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackStackEntry;
+use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackType;
 use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\resourcepacks\ResourcePackManager;
 use function array_map;
@@ -49,47 +52,48 @@ use function substr;
 class ResourcePacksPacketHandler extends PacketHandler{
 	private const PACK_CHUNK_SIZE = 128 * 1024; //128KB
 
-	/** @var NetworkSession */
-	private $session;
-	/** @var ResourcePackManager */
-	private $resourcePackManager;
-	/**
-	 * @var \Closure
-	 * @phpstan-var \Closure() : void
-	 */
-	private $completionCallback;
-
 	/** @var bool[][] uuid => [chunk index => hasSent] */
-	private $downloadedChunks = [];
+	private array $downloadedChunks = [];
 
 	/**
 	 * @phpstan-param \Closure() : void $completionCallback
 	 */
-	public function __construct(NetworkSession $session, ResourcePackManager $resourcePackManager, \Closure $completionCallback){
-		$this->session = $session;
-		$this->resourcePackManager = $resourcePackManager;
-		$this->completionCallback = $completionCallback;
-	}
+	public function __construct(
+		private NetworkSession $session,
+		private ResourcePackManager $resourcePackManager,
+		private \Closure $completionCallback
+	){}
 
 	public function setUp() : void{
-		$resourcePackEntries = array_map(static function(ResourcePack $pack) : ResourcePackInfoEntry{
+		$resourcePackEntries = array_map(function(ResourcePack $pack) : ResourcePackInfoEntry{
 			//TODO: more stuff
-			return new ResourcePackInfoEntry($pack->getPackId(), $pack->getPackVersion(), $pack->getPackSize(), "", "", "", false);
+			$encryptionKey = $this->resourcePackManager->getPackEncryptionKey($pack->getPackId());
+
+			return new ResourcePackInfoEntry(
+				$pack->getPackId(),
+				$pack->getPackVersion(),
+				$pack->getPackSize(),
+				$encryptionKey ?? "",
+				"",
+				$pack->getPackId(),
+				false
+			);
 		}, $this->resourcePackManager->getResourceStack());
-		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($resourcePackEntries, [], $this->resourcePackManager->resourcePacksRequired(), false));
+		//TODO: support forcing server packs
+		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($resourcePackEntries, [], $this->resourcePackManager->resourcePacksRequired(), false, false, []));
 		$this->session->getLogger()->debug("Waiting for client to accept resource packs");
 	}
 
 	private function disconnectWithError(string $error) : void{
 		$this->session->getLogger()->error("Error downloading resource packs: " . $error);
-		$this->session->disconnect("disconnectionScreen.resourcePack");
+		$this->session->disconnectWithError(KnownTranslationFactory::disconnectionScreen_resourcePack());
 	}
 
 	public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet) : bool{
 		switch($packet->status){
 			case ResourcePackClientResponsePacket::STATUS_REFUSED:
 				//TODO: add lang strings for this
-				$this->session->disconnect("You must accept resource packs to join this server.", true);
+				$this->session->disconnect("Refused resource packs", "You must accept resource packs to join this server.", true);
 				break;
 			case ResourcePackClientResponsePacket::STATUS_SEND_PACKS:
 				foreach($packet->packIds as $uuid){
@@ -111,7 +115,9 @@ class ResourcePacksPacketHandler extends PacketHandler{
 						self::PACK_CHUNK_SIZE,
 						(int) ceil($pack->getPackSize() / self::PACK_CHUNK_SIZE),
 						$pack->getPackSize(),
-						$pack->getSha256()
+						$pack->getSha256(),
+						false,
+						ResourcePackType::RESOURCES //TODO: this might be an addon (not behaviour pack), needed to properly support client-side custom items
 					));
 				}
 				$this->session->getLogger()->debug("Player requested download of " . count($packet->packIds) . " resource packs");
@@ -128,7 +134,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 				//we don't force here, because it doesn't have user-facing effects
 				//but it does have an annoying side-effect when true: it makes
 				//the client remove its own non-server-supplied resource packs.
-				$this->session->sendDataPacket(ResourcePackStackPacket::create($stack, [], false, new Experiments([], false)));
+				$this->session->sendDataPacket(ResourcePackStackPacket::create($stack, [], false, ProtocolInfo::MINECRAFT_VERSION_NETWORK, new Experiments([], false)));
 				$this->session->getLogger()->debug("Applying resource pack stack");
 				break;
 			case ResourcePackClientResponsePacket::STATUS_COMPLETED:
@@ -157,7 +163,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 		}
 
 		$offset = $packet->chunkIndex * self::PACK_CHUNK_SIZE;
-		if($offset < 0 or $offset >= $pack->getPackSize()){
+		if($offset < 0 || $offset >= $pack->getPackSize()){
 			$this->disconnectWithError("Invalid out-of-bounds request for chunk $packet->chunkIndex of $packet->packId: offset $offset, file size " . $pack->getPackSize());
 			return false;
 		}

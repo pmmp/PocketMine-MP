@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -64,22 +64,18 @@ use const SOCK_DGRAM;
 use const SOL_UDP;
 
 class Internet{
-	/** @var string|false */
-	public static $ip = false;
-	/** @var bool */
-	public static $online = true;
+	public static string|false $ip = false;
+	public static bool $online = true;
 
 	/**
-	 * Gets the External IP using an external service, it is cached
+	 * Lazily gets the External IP using an external service and caches the result
 	 *
 	 * @param bool $force default false, force IP check even when cached
-	 *
-	 * @return string|false
 	 */
-	public static function getIP(bool $force = false){
+	public static function getIP(bool $force = false) : string|false{
 		if(!self::$online){
 			return false;
-		}elseif(self::$ip !== false and !$force){
+		}elseif(self::$ip !== false && !$force){
 			return self::$ip;
 		}
 
@@ -89,22 +85,22 @@ class Internet{
 		}
 
 		$ip = self::getURL("http://checkip.dyndns.org/");
-		if($ip !== null and preg_match('#Current IP Address\: ([0-9a-fA-F\:\.]*)#', trim(strip_tags($ip->getBody())), $matches) > 0){
+		if($ip !== null && preg_match('#Current IP Address\: ([0-9a-fA-F\:\.]*)#', trim(strip_tags($ip->getBody())), $matches) > 0){
 			return self::$ip = $matches[1];
 		}
 
 		$ip = self::getURL("http://www.checkip.org/");
-		if($ip !== null and preg_match('#">([0-9a-fA-F\:\.]*)</span>#', $ip->getBody(), $matches) > 0){
+		if($ip !== null && preg_match('#">([0-9a-fA-F\:\.]*)</span>#', $ip->getBody(), $matches) > 0){
 			return self::$ip = $matches[1];
 		}
 
 		$ip = self::getURL("http://checkmyip.org/");
-		if($ip !== null and preg_match('#Your IP address is ([0-9a-fA-F\:\.]*)#', $ip->getBody(), $matches) > 0){
+		if($ip !== null && preg_match('#Your IP address is ([0-9a-fA-F\:\.]*)#', $ip->getBody(), $matches) > 0){
 			return self::$ip = $matches[1];
 		}
 
 		$ip = self::getURL("http://ifconfig.me/ip");
-		if($ip !== null and ($addr = trim($ip->getBody())) != ""){
+		if($ip !== null && ($addr = trim($ip->getBody())) != ""){
 			return self::$ip = $addr;
 		}
 
@@ -139,10 +135,14 @@ class Internet{
 	 * GETs an URL using cURL
 	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
 	 *
-	 * @param int         $timeout default 10
+	 * @phpstan-template TErrorVar of mixed
+	 *
+	 * @param int         $timeout      default 10
 	 * @param string[]    $extraHeaders
-	 * @param string|null $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
+	 * @param string|null $err          reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
 	 * @phpstan-param list<string>          $extraHeaders
+	 * @phpstan-param TErrorVar             $err
+	 * @phpstan-param-out TErrorVar|string  $err
 	 */
 	public static function getURL(string $page, int $timeout = 10, array $extraHeaders = [], &$err = null) : ?InternetRequestResult{
 		try{
@@ -157,13 +157,17 @@ class Internet{
 	 * POSTs data to an URL
 	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
 	 *
+	 * @phpstan-template TErrorVar of mixed
+	 *
 	 * @param string[]|string $args
 	 * @param string[]        $extraHeaders
-	 * @param string|null     $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
+	 * @param string|null     $err          reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occurred during the operation.
 	 * @phpstan-param string|array<string, string> $args
 	 * @phpstan-param list<string>                 $extraHeaders
+	 * @phpstan-param TErrorVar                    $err
+	 * @phpstan-param-out TErrorVar|string         $err
 	 */
-	public static function postURL(string $page, $args, int $timeout = 10, array $extraHeaders = [], &$err = null) : ?InternetRequestResult{
+	public static function postURL(string $page, array|string $args, int $timeout = 10, array $extraHeaders = [], &$err = null) : ?InternetRequestResult{
 		try{
 			return self::simpleCurl($page, $timeout, $extraHeaders, [
 				CURLOPT_POST => 1,
@@ -179,17 +183,17 @@ class Internet{
 	 * General cURL shorthand function.
 	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
 	 *
-	 * @param float|int     $timeout The maximum connect timeout and timeout in seconds, correct to ms.
+	 * @param float         $timeout      The maximum connect timeout and timeout in seconds, correct to ms.
 	 * @param string[]      $extraHeaders extra headers to send as a plain string array
 	 * @param array         $extraOpts    extra CURLOPT_* to set as an [opt => value] map
 	 * @param \Closure|null $onSuccess    function to be called if there is no error. Accepts a resource argument as the cURL handle.
 	 * @phpstan-param array<int, mixed>                $extraOpts
 	 * @phpstan-param list<string>                     $extraHeaders
-	 * @phpstan-param (\Closure(resource) : void)|null $onSuccess
+	 * @phpstan-param (\Closure(\CurlHandle) : void)|null $onSuccess
 	 *
 	 * @throws InternetException if a cURL error occurs
 	 */
-	public static function simpleCurl(string $page, $timeout = 10, array $extraHeaders = [], array $extraOpts = [], ?\Closure $onSuccess = null) : InternetRequestResult{
+	public static function simpleCurl(string $page, float $timeout = 10, array $extraHeaders = [], array $extraOpts = [], ?\Closure $onSuccess = null) : InternetRequestResult{
 		if(!self::$online){
 			throw new InternetException("Cannot execute web request while offline");
 		}
@@ -209,7 +213,7 @@ class Internet{
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_CONNECTTIMEOUT_MS => (int) ($timeout * 1000),
 			CURLOPT_TIMEOUT_MS => (int) ($timeout * 1000),
-			CURLOPT_HTTPHEADER => array_merge(["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 " . VersionInfo::NAME . "/" . VersionInfo::getVersionObj()->getFullVersion(true)], $extraHeaders),
+			CURLOPT_HTTPHEADER => array_merge(["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 " . VersionInfo::NAME . "/" . VersionInfo::VERSION()->getFullVersion(true)], $extraHeaders),
 			CURLOPT_HEADER => true
 		]);
 		try{
@@ -218,7 +222,6 @@ class Internet{
 				throw new InternetException(curl_error($ch));
 			}
 			if(!is_string($raw)) throw new AssumptionFailedError("curl_exec() should return string|false when CURLOPT_RETURNTRANSFER is set");
-			/** @var int $httpCode */
 			$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 			$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 			$rawHeaders = substr($raw, 0, $headerSize);

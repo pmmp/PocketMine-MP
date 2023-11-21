@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,16 +29,12 @@ use function count;
 
 final class BandwidthStatsTracker{
 	/** @var int[] */
-	private $history;
-	/** @var int */
-	private $nextHistoryIndex = 0;
+	private array $history;
+	private int $nextHistoryIndex = 0;
+	private int $bytesSinceLastRotation = 0;
+	private int $totalBytes = 0;
 
-	/** @var int */
-	private $bytesSinceLastRotation = 0;
-
-	/** @var int */
-	private $totalBytes = 0;
-
+	/** @phpstan-param positive-int $historySize */
 	public function __construct(int $historySize){
 		$this->history = array_fill(0, $historySize, 0);
 	}

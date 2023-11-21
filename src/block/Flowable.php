@@ -17,14 +17,19 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
 use pocketmine\math\AxisAlignedBB;
 
+/**
+ * "Flowable" blocks are destroyed if water flows into the same space as the block. These blocks usually don't have any
+ * collision boxes, and can't provide support for other blocks.
+ */
 abstract class Flowable extends Transparent{
 
 	public function canBeFlowedInto() : bool{
@@ -40,5 +45,9 @@ abstract class Flowable extends Transparent{
 	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE;
 	}
 }

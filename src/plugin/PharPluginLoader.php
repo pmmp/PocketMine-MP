@@ -17,38 +17,36 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
+use pocketmine\thread\ThreadSafeClassLoader;
 use function is_file;
-use function strlen;
-use function substr;
+use function str_ends_with;
 
 /**
  * Handles different types of plugins
  */
 class PharPluginLoader implements PluginLoader{
-
-	/** @var \DynamicClassLoader */
-	private $loader;
-
-	public function __construct(\DynamicClassLoader $loader){
-		$this->loader = $loader;
-	}
+	public function __construct(
+		private ThreadSafeClassLoader $loader
+	){}
 
 	public function canLoadPlugin(string $path) : bool{
-		$ext = ".phar";
-		return is_file($path) and substr($path, -strlen($ext)) === $ext;
+		return is_file($path) && str_ends_with($path, ".phar");
 	}
 
 	/**
 	 * Loads the plugin contained in $file
 	 */
 	public function loadPlugin(string $file) : void{
-		$this->loader->addPath("$file/src");
+		$description = $this->getPluginDescription($file);
+		if($description !== null){
+			$this->loader->addPath($description->getSrcNamespacePrefix(), "$file/src");
+		}
 	}
 
 	/**

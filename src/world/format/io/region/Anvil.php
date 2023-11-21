@@ -17,29 +17,25 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\world\format\io\region;
 
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\Block;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\world\format\io\SubChunkConverter;
+use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
 
 class Anvil extends RegionWorldProvider{
 	use LegacyAnvilChunkTrait;
 
-	protected function serializeSubChunk(SubChunk $subChunk) : CompoundTag{
-		throw new \RuntimeException("Unsupported");
-	}
-
-	protected function deserializeSubChunk(CompoundTag $subChunk) : SubChunk{
-		return new SubChunk(BlockLegacyIds::AIR << 4, [SubChunkConverter::convertSubChunkYZX(
+	protected function deserializeSubChunk(CompoundTag $subChunk, PalettedBlockArray $biomes3d) : SubChunk{
+		return new SubChunk(Block::EMPTY_STATE_ID, [$this->palettizeLegacySubChunkYZX(
 			self::readFixedSizeByteArray($subChunk, "Blocks", 4096),
 			self::readFixedSizeByteArray($subChunk, "Data", 2048)
-		)]);
+		)], $biomes3d);
 		//ignore legacy light information
 	}
 
@@ -51,7 +47,11 @@ class Anvil extends RegionWorldProvider{
 		return 19133;
 	}
 
-	public function getWorldHeight() : int{
+	public function getWorldMinY() : int{
+		return 0;
+	}
+
+	public function getWorldMaxY() : int{
 		//TODO: add world height options
 		return 256;
 	}

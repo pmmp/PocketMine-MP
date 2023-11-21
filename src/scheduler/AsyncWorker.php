@@ -17,41 +17,40 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
+use pmmp\thread\Thread as NativeThread;
+use pocketmine\snooze\SleeperHandlerEntry;
 use pocketmine\snooze\SleeperNotifier;
+use pocketmine\thread\log\ThreadSafeLogger;
 use pocketmine\thread\Worker;
+use pocketmine\utils\AssumptionFailedError;
 use function gc_enable;
 use function ini_set;
 
 class AsyncWorker extends Worker{
 	/** @var mixed[] */
-	private static $store = [];
+	private static array $store = [];
 
-	/** @var \ThreadedLogger */
-	private $logger;
-	/** @var int */
-	private $id;
+	private const TLS_KEY_NOTIFIER = self::class . "::notifier";
 
-	/** @var int */
-	private $memoryLimit;
-
-	/** @var SleeperNotifier */
-	private $notifier;
-
-	public function __construct(\ThreadedLogger $logger, int $id, int $memoryLimit, SleeperNotifier $notifier){
-		$this->logger = $logger;
-		$this->id = $id;
-		$this->memoryLimit = $memoryLimit;
-		$this->notifier = $notifier;
-	}
+	public function __construct(
+		private ThreadSafeLogger $logger,
+		private int $id,
+		private int $memoryLimit,
+		private SleeperHandlerEntry $sleeperEntry
+	){}
 
 	public function getNotifier() : SleeperNotifier{
-		return $this->notifier;
+		$notifier = $this->getFromThreadStore(self::TLS_KEY_NOTIFIER);
+		if(!$notifier instanceof SleeperNotifier){
+			throw new AssumptionFailedError("SleeperNotifier not found in thread-local storage");
+		}
+		return $notifier;
 	}
 
 	protected function onRun() : void{
@@ -66,14 +65,12 @@ class AsyncWorker extends Worker{
 			ini_set('memory_limit', '-1');
 			$this->logger->debug("No memory limit set");
 		}
+
+		$this->saveToThreadStore(self::TLS_KEY_NOTIFIER, $this->sleeperEntry->createNotifier());
 	}
 
-	public function getLogger() : \ThreadedLogger{
+	public function getLogger() : ThreadSafeLogger{
 		return $this->logger;
-	}
-
-	public function handleException(\Throwable $e) : void{
-		$this->logger->logException($e);
 	}
 
 	public function getThreadName() : string{
@@ -87,12 +84,10 @@ class AsyncWorker extends Worker{
 	/**
 	 * Saves mixed data into the worker's thread-local object store. This can be used to store objects which you
 	 * want to use on this worker thread from multiple AsyncTasks.
-	 *
-	 * @param mixed  $value
 	 */
-	public function saveToThreadStore(string $identifier, $value) : void{
-		if(\Thread::getCurrentThread() !== $this){
-			throw new \InvalidStateException("Thread-local data can only be stored in the thread context");
+	public function saveToThreadStore(string $identifier, mixed $value) : void{
+		if(NativeThread::getCurrentThread() !== $this){
+			throw new \LogicException("Thread-local data can only be stored in the thread context");
 		}
 		self::$store[$identifier] = $value;
 	}
@@ -104,12 +99,10 @@ class AsyncWorker extends Worker{
 	 * account for the possibility that what you're trying to retrieve might not exist.
 	 *
 	 * Objects stored in this storage may ONLY be retrieved while the task is running.
-	 *
-	 * @return mixed
 	 */
-	public function getFromThreadStore(string $identifier){
-		if(\Thread::getCurrentThread() !== $this){
-			throw new \InvalidStateException("Thread-local data can only be fetched in the thread context");
+	public function getFromThreadStore(string $identifier) : mixed{
+		if(NativeThread::getCurrentThread() !== $this){
+			throw new \LogicException("Thread-local data can only be fetched in the thread context");
 		}
 		return self::$store[$identifier] ?? null;
 	}
@@ -118,8 +111,8 @@ class AsyncWorker extends Worker{
 	 * Removes previously-stored mixed data from the worker's thread-local object store.
 	 */
 	public function removeFromThreadStore(string $identifier) : void{
-		if(\Thread::getCurrentThread() !== $this){
-			throw new \InvalidStateException("Thread-local data can only be removed in the thread context");
+		if(NativeThread::getCurrentThread() !== $this){
+			throw new \LogicException("Thread-local data can only be removed in the thread context");
 		}
 		unset(self::$store[$identifier]);
 	}

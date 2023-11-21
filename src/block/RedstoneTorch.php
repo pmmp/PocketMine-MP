@@ -17,31 +17,20 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\data\runtime\RuntimeDataDescriber;
+
 class RedstoneTorch extends Torch{
+	protected bool $lit = true;
 
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
-
-	/** @var bool */
-	protected $lit = true;
-
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name){
-		parent::__construct($idInfo, $name);
-	}
-
-	public function getId() : int{
-		return $this->lit ? parent::getId() : $this->idInfo->getSecondId();
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		parent::readStateFromData($id, $stateMeta);
-		$this->lit = $id !== $this->idInfo->getSecondId();
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		parent::describeBlockOnlyState($w);
+		$w->bool($this->lit);
 	}
 
 	public function isLit() : bool{

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,21 +30,12 @@ use pocketmine\utils\Process;
  * Plugins should free caches or other non-essential data.
  */
 class LowMemoryEvent extends ServerEvent{
-	/** @var int */
-	private $memory;
-	/** @var int */
-	private $memoryLimit;
-	/** @var int */
-	private $triggerCount;
-	/** @var bool */
-	private $global;
-
-	public function __construct(int $memory, int $memoryLimit, bool $isGlobal = false, int $triggerCount = 0){
-		$this->memory = $memory;
-		$this->memoryLimit = $memoryLimit;
-		$this->global = $isGlobal;
-		$this->triggerCount = $triggerCount;
-	}
+	public function __construct(
+		private int $memory,
+		private int $memoryLimit,
+		private bool $isGlobal = false,
+		private int $triggerCount = 0
+	){}
 
 	/**
 	 * Returns the memory usage at the time of the event call (in bytes)
@@ -68,7 +59,7 @@ class LowMemoryEvent extends ServerEvent{
 	}
 
 	public function isGlobal() : bool{
-		return $this->global;
+		return $this->isGlobal;
 	}
 
 	/**

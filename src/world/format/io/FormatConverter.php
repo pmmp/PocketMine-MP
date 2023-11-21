@@ -17,15 +17,18 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
 use pocketmine\utils\Filesystem;
-use pocketmine\utils\Utils;
+use pocketmine\world\format\Chunk;
 use pocketmine\world\generator\GeneratorManager;
+use pocketmine\world\generator\normal\Normal;
+use pocketmine\world\WorldCreationOptions;
+use Symfony\Component\Filesystem\Path;
 use function basename;
 use function crc32;
 use function file_exists;
@@ -39,34 +42,24 @@ use function rtrim;
 use const DIRECTORY_SEPARATOR;
 
 class FormatConverter{
+	private string $backupPath;
+	private \Logger $logger;
 
-	/** @var WorldProvider */
-	private $oldProvider;
-	/** @var WritableWorldProvider|string */
-	private $newProvider;
-
-	/** @var string */
-	private $backupPath;
-
-	/** @var \Logger */
-	private $logger;
-
-	/** @var int */
-	private $chunksPerProgressUpdate;
-
-	public function __construct(WorldProvider $oldProvider, string $newProvider, string $backupPath, \Logger $logger, int $chunksPerProgressUpdate = 256){
-		$this->oldProvider = $oldProvider;
-		Utils::testValidInstance($newProvider, WritableWorldProvider::class);
-		$this->newProvider = $newProvider;
+	public function __construct(
+		private WorldProvider $oldProvider,
+		private WritableWorldProviderManagerEntry $newProvider,
+		string $backupPath,
+		\Logger $logger,
+		private int $chunksPerProgressUpdate = 256
+	){
 		$this->logger = new \PrefixedLogger($logger, "World Converter: " . $this->oldProvider->getWorldData()->getName());
-		$this->chunksPerProgressUpdate = $chunksPerProgressUpdate;
 
 		if(!file_exists($backupPath)){
 			@mkdir($backupPath, 0777, true);
 		}
 		$nextSuffix = "";
 		do{
-			$this->backupPath = $backupPath . DIRECTORY_SEPARATOR . basename($this->oldProvider->getPath()) . $nextSuffix;
+			$this->backupPath = Path::join($backupPath, basename($this->oldProvider->getPath()) . $nextSuffix);
 			$nextSuffix = "_" . crc32(random_bytes(4));
 		}while(file_exists($this->backupPath));
 	}
@@ -75,7 +68,7 @@ class FormatConverter{
 		return $this->backupPath;
 	}
 
-	public function execute() : WritableWorldProvider{
+	public function execute() : void{
 		$new = $this->generateNew();
 
 		$this->populateLevelData($new->getWorldData());
@@ -86,14 +79,19 @@ class FormatConverter{
 		$new->close();
 
 		$this->logger->info("Backing up pre-conversion world to " . $this->backupPath);
-		rename($path, $this->backupPath);
-		rename($new->getPath(), $path);
+		if(!@rename($path, $this->backupPath)){
+			$this->logger->warning("Moving old world files for backup failed, attempting copy instead. This might take a long time.");
+			Filesystem::recursiveCopy($path, $this->backupPath);
+			Filesystem::recursiveUnlink($path);
+		}
+		if(!@rename($new->getPath(), $path)){
+			//we don't expect this to happen because worlds/ should most likely be all on the same FS, but just in case...
+			$this->logger->debug("Relocation of new world files to location failed, attempting copy and delete instead");
+			Filesystem::recursiveCopy($new->getPath(), $path);
+			Filesystem::recursiveUnlink($new->getPath());
+		}
 
 		$this->logger->info("Conversion completed");
-		/**
-		 * @see WritableWorldProvider::__construct()
-		 */
-		return new $this->newProvider($path);
 	}
 
 	private function generateNew() : WritableWorldProvider{
@@ -105,12 +103,17 @@ class FormatConverter{
 			$this->logger->info("Found previous conversion attempt, deleting...");
 			Filesystem::recursiveUnlink($convertedOutput);
 		}
-		$this->newProvider::generate($convertedOutput, $data->getName(), $data->getSeed(), GeneratorManager::getInstance()->getGenerator($data->getGenerator()), $data->getGeneratorOptions());
+		$this->newProvider->generate($convertedOutput, $data->getName(), WorldCreationOptions::create()
+			//TODO: defaulting to NORMAL here really isn't very good behaviour, but it's consistent with what we already
+			//did previously; besides, WorldManager checks for unknown generators before this is reached anyway.
+			->setGeneratorClass(GeneratorManager::getInstance()->getGenerator($data->getGenerator())?->getGeneratorClass() ?? Normal::class)
+			->setGeneratorOptions($data->getGeneratorOptions())
+			->setSeed($data->getSeed())
+			->setSpawnPosition($data->getSpawn())
+			->setDifficulty($data->getDifficulty())
+		);
 
-		/**
-		 * @see WritableWorldProvider::__construct()
-		 */
-		return new $this->newProvider($convertedOutput);
+		return $this->newProvider->fromPath($convertedOutput, $this->logger);
 	}
 
 	private function populateLevelData(WorldData $data) : void{
@@ -138,10 +141,9 @@ class FormatConverter{
 
 		$start = microtime(true);
 		$thisRound = $start;
-		foreach($this->oldProvider->getAllChunks(true, $this->logger) as $coords => $chunk){
+		foreach($this->oldProvider->getAllChunks(true, $this->logger) as $coords => $loadedChunkData){
 			[$chunkX, $chunkZ] = $coords;
-			$chunk->setDirty();
-			$new->saveChunk($chunkX, $chunkZ, $chunk);
+			$new->saveChunk($chunkX, $chunkZ, $loadedChunkData->getData(), Chunk::DIRTY_FLAGS_ALL);
 			$counter++;
 			if(($counter % $this->chunksPerProgressUpdate) === 0){
 				$time = microtime(true);

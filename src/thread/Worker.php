@@ -17,26 +17,35 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\thread;
 
-use const PTHREADS_INHERIT_NONE;
+use pmmp\thread\Thread as NativeThread;
+use pmmp\thread\Worker as NativeWorker;
+use pocketmine\scheduler\AsyncTask;
 
 /**
- * This class must be extended by all custom threading classes
+ * Specialized Worker class for PocketMine-MP-related use cases. It handles setting up autoloading and error handling.
+ *
+ * Workers are a special type of thread which execute tasks passed to them during their lifetime. Since creating a new
+ * thread has a high resource cost, workers can be kept around and reused for lots of short-lived tasks.
+ *
+ * As a plugin developer, you'll rarely (if ever) actually need to use this class directly.
+ * If you want to run tasks on other CPU cores, check out AsyncTask first.
+ * @see AsyncTask
  */
-abstract class Worker extends \Worker{
+abstract class Worker extends NativeWorker{
 	use CommonThreadPartsTrait;
 
-	public function start(int $options = PTHREADS_INHERIT_NONE) : bool{
+	public function start(int $options = NativeThread::INHERIT_NONE) : bool{
 		//this is intentionally not traitified
 		ThreadManager::getInstance()->add($this);
 
-		if($this->getClassLoader() === null){
-			$this->setClassLoader();
+		if($this->getClassLoaders() === null){
+			$this->setClassLoaders();
 		}
 		return parent::start($options);
 	}
@@ -47,8 +56,10 @@ abstract class Worker extends \Worker{
 	public function quit() : void{
 		$this->isKilled = true;
 
-		if($this->isRunning()){
-			while($this->unstack() !== null);
+		if(!$this->isShutdown()){
+			$this->synchronized(function() : void{
+				while($this->unstack() !== null);
+			});
 			$this->notify();
 			$this->shutdown();
 		}

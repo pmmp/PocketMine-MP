@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,6 +28,7 @@ namespace pocketmine\network;
 
 use pocketmine\event\server\NetworkInterfaceRegisterEvent;
 use pocketmine\event\server\NetworkInterfaceUnregisterEvent;
+use pocketmine\utils\Utils;
 use function base64_encode;
 use function get_class;
 use function preg_match;
@@ -37,32 +38,28 @@ use const PHP_INT_MAX;
 
 class Network{
 	/** @var NetworkInterface[] */
-	private $interfaces = [];
+	private array $interfaces = [];
 
 	/** @var AdvancedNetworkInterface[] */
-	private $advancedInterfaces = [];
+	private array $advancedInterfaces = [];
 
 	/** @var RawPacketHandler[] */
-	private $rawPacketHandlers = [];
+	private array $rawPacketHandlers = [];
 
-	/** @var int[] */
-	private $bannedIps = [];
+	/**
+	 * @var int[]
+	 * @phpstan-var array<string, int>
+	 */
+	private array $bannedIps = [];
 
-	/** @var BidirectionalBandwidthStatsTracker */
-	private $bandwidthTracker;
+	private BidirectionalBandwidthStatsTracker $bandwidthTracker;
+	private string $name;
+	private NetworkSessionManager $sessionManager;
 
-	/** @var string */
-	private $name;
-
-	/** @var NetworkSessionManager */
-	private $sessionManager;
-
-	/** @var \Logger */
-	private $logger;
-
-	public function __construct(\Logger $logger){
+	public function __construct(
+		private \Logger $logger
+	){
 		$this->sessionManager = new NetworkSessionManager();
-		$this->logger = $logger;
 		$this->bandwidthTracker = new BidirectionalBandwidthStatsTracker(5);
 	}
 
@@ -83,6 +80,10 @@ class Network{
 		return $this->sessionManager->getSessionCount();
 	}
 
+	public function getValidConnectionCount() : int{
+		return $this->sessionManager->getValidSessionCount();
+	}
+
 	public function tick() : void{
 		foreach($this->interfaces as $interface){
 			$interface->tick();
@@ -91,6 +92,9 @@ class Network{
 		$this->sessionManager->tick();
 	}
 
+	/**
+	 * @throws NetworkInterfaceStartException
+	 */
 	public function registerInterface(NetworkInterface $interface) : bool{
 		$ev = new NetworkInterfaceRegisterEvent($interface);
 		$ev->call();
@@ -100,7 +104,7 @@ class Network{
 			if($interface instanceof AdvancedNetworkInterface){
 				$this->advancedInterfaces[$hash] = $interface;
 				$interface->setNetwork($this);
-				foreach($this->bannedIps as $ip => $until){
+				foreach(Utils::stringifyKeys($this->bannedIps) as $ip => $until){
 					$interface->blockAddress($ip);
 				}
 				foreach($this->rawPacketHandlers as $handler){
@@ -188,7 +192,7 @@ class Network{
 	}
 
 	public function processRawPacket(AdvancedNetworkInterface $interface, string $address, int $port, string $packet) : void{
-		if(isset($this->bannedIps[$address]) and time() < $this->bannedIps[$address]){
+		if(isset($this->bannedIps[$address]) && time() < $this->bannedIps[$address]){
 			$this->logger->debug("Dropped raw packet from banned address $address $port");
 			return;
 		}
@@ -197,7 +201,7 @@ class Network{
 			if(preg_match($handler->getPattern(), $packet) === 1){
 				try{
 					$handled = $handler->handle($interface, $address, $port, $packet);
-				}catch(BadPacketException $e){
+				}catch(PacketHandlingException $e){
 					$handled = true;
 					$this->logger->error("Bad raw packet from /$address:$port: " . $e->getMessage());
 					$this->blockAddress($address, 600);

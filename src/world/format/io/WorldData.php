@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -34,16 +34,14 @@ interface WorldData{
 
 	public function getName() : string;
 
+	public function setName(string $value) : void;
+
 	/**
 	 * Returns the generator name
 	 */
 	public function getGenerator() : string;
 
-	/**
-	 * @return mixed[]
-	 * @phpstan-return array<string, mixed>
-	 */
-	public function getGeneratorOptions() : array;
+	public function getGeneratorOptions() : string;
 
 	public function getSeed() : int;
 

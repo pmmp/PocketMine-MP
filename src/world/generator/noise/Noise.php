@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -111,18 +111,11 @@ abstract class Noise{
 		);
 	}
 
-	/** @var float */
-	protected $persistence;
-	/** @var float */
-	protected $expansion;
-	/** @var int */
-	protected $octaves;
-
-	public function __construct(int $octaves, float $persistence, float $expansion){
-		$this->octaves = $octaves;
-		$this->persistence = $persistence;
-		$this->expansion = $expansion;
-	}
+	public function __construct(
+		protected int $octaves,
+		protected float $persistence,
+		protected float $expansion
+	){}
 
 	/**
 	 * @param float $x
@@ -256,7 +249,7 @@ abstract class Noise{
 			}
 
 			for($zz = 0; $zz < $zSize; ++$zz){
-				if($xx % $samplingRate !== 0 or $zz % $samplingRate !== 0){
+				if($xx % $samplingRate !== 0 || $zz % $samplingRate !== 0){
 					$nx = (int) ($xx / $samplingRate) * $samplingRate;
 					$nz = (int) ($zz / $samplingRate) * $samplingRate;
 					$noiseArray[$xx][$zz] = Noise::bilinearLerp(
@@ -320,7 +313,7 @@ abstract class Noise{
 				$dz2 = ($zz - $nz) / ($nnz - $nz);
 
 				for($yy = 0; $yy < $ySize; ++$yy){
-					if($xx % $xSamplingRate !== 0 or $zz % $zSamplingRate !== 0 or $yy % $ySamplingRate !== 0){
+					if($xx % $xSamplingRate !== 0 || $zz % $zSamplingRate !== 0 || $yy % $ySamplingRate !== 0){
 						$ny = (int) ($yy / $ySamplingRate) * $ySamplingRate;
 						$nny = $ny + $ySamplingRate;
 

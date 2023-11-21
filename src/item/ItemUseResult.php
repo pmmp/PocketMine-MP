@@ -17,31 +17,26 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever enum members are added, removed or changed.
- * @see EnumTrait::_generateMethodAnnotations()
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
- * @method static self NONE()
- * @method static self FAIL()
- * @method static self SUCCESS()
+ * @method static ItemUseResult FAIL()
+ * @method static ItemUseResult NONE()
+ * @method static ItemUseResult SUCCESS()
  */
-final class ItemUseResult{
-	use EnumTrait;
+enum ItemUseResult{
+	use LegacyEnumShimTrait;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("none"),
-			new self("fail"),
-			new self("success")
-		);
-	}
+	case NONE;
+	case FAIL;
+	case SUCCESS;
 }

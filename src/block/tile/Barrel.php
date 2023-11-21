@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,12 +32,11 @@ class Barrel extends Spawnable implements Container, Nameable{
 	use NameableTrait;
 	use ContainerTrait;
 
-	/** @var BarrelInventory */
-	protected $inventory;
+	protected BarrelInventory $inventory;
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
-		$this->inventory = new BarrelInventory($this->pos);
+		$this->inventory = new BarrelInventory($this->position);
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
@@ -53,22 +52,15 @@ class Barrel extends Spawnable implements Container, Nameable{
 	public function close() : void{
 		if(!$this->closed){
 			$this->inventory->removeAllViewers();
-			$this->inventory = null;
 			parent::close();
 		}
 	}
 
-	/**
-	 * @return BarrelInventory
-	 */
-	public function getInventory(){
+	public function getInventory() : BarrelInventory{
 		return $this->inventory;
 	}
 
-	/**
-	 * @return BarrelInventory
-	 */
-	public function getRealInventory(){
+	public function getRealInventory() : BarrelInventory{
 		return $this->inventory;
 	}
 

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,21 +27,21 @@ use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\player\Player;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Internet;
 use pocketmine\utils\Process;
 use pocketmine\utils\Utils;
-use pocketmine\uuid\UUID;
 use pocketmine\VersionInfo;
+use pocketmine\YmlServerProperties;
+use Ramsey\Uuid\Uuid;
 use function array_map;
 use function array_values;
 use function count;
 use function json_encode;
-use function json_last_error_msg;
 use function md5;
 use function microtime;
 use function php_uname;
 use function strlen;
+use const JSON_THROW_ON_ERROR;
 use const PHP_VERSION;
 
 class SendUsageTask extends AsyncTask{
@@ -50,28 +50,26 @@ class SendUsageTask extends AsyncTask{
 	public const TYPE_STATUS = 2;
 	public const TYPE_CLOSE = 3;
 
-	/** @var string */
-	public $endpoint;
-	/** @var string */
-	public $data;
+	public string $endpoint;
+	public string $data;
 
 	/**
 	 * @param string[] $playerList
 	 * @phpstan-param array<string, string> $playerList
 	 */
 	public function __construct(Server $server, int $type, array $playerList = []){
-		$endpoint = "http://" . $server->getConfigGroup()->getProperty("anonymous-statistics.host", "stats.pocketmine.net") . "/";
+		$endpoint = "http://" . $server->getConfigGroup()->getPropertyString(YmlServerProperties::ANONYMOUS_STATISTICS_HOST, "stats.pocketmine.net") . "/";
 
 		$data = [];
 		$data["uniqueServerId"] = $server->getServerUniqueId()->toString();
 		$data["uniqueMachineId"] = Utils::getMachineUniqueId()->toString();
-		$data["uniqueRequestId"] = UUID::fromData($server->getServerUniqueId()->toString(), microtime(false))->toString();
+		$data["uniqueRequestId"] = Uuid::uuid3($server->getServerUniqueId()->toString(), microtime(false))->toString();
 
 		switch($type){
 			case self::TYPE_OPEN:
 				$data["event"] = "open";
 
-				$version = VersionInfo::getVersionObj();
+				$version = VersionInfo::VERSION();
 
 				$data["server"] = [
 					"port" => $server->getPort(),
@@ -123,11 +121,9 @@ class SendUsageTask extends AsyncTask{
 				];
 
 				//This anonymizes the user ids so they cannot be reversed to the original
-				foreach($playerList as $k => $v){
-					$playerList[$k] = md5($v);
-				}
+				$playerList = array_map('md5', $playerList);
 
-				$players = array_map(function(Player $p) : string{ return md5($p->getUniqueId()->toBinary()); }, $server->getOnlinePlayers());
+				$players = array_map(function(Player $p) : string{ return md5($p->getUniqueId()->getBytes()); }, $server->getOnlinePlayers());
 
 				$data["players"] = [
 					"count" => count($players),
@@ -152,9 +148,7 @@ class SendUsageTask extends AsyncTask{
 		}
 
 		$this->endpoint = $endpoint . "api/post";
-		$data = json_encode($data/*, JSON_PRETTY_PRINT*/);
-		if($data === false) throw new AssumptionFailedError("Statistics JSON should never fail to encode: " . json_last_error_msg());
-		$this->data = $data;
+		$this->data = json_encode($data, /*JSON_PRETTY_PRINT |*/ JSON_THROW_ON_ERROR);
 	}
 
 	public function onRun() : void{

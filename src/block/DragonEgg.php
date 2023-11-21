@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,10 +25,11 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\BlockTeleportEvent;
 use pocketmine\item\Item;
-use pocketmine\item\ToolTier;
 use pocketmine\math\Vector3;
+use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\world\particle\DragonEggTeleportParticle;
 use pocketmine\world\World;
@@ -39,48 +40,48 @@ use function mt_rand;
 class DragonEgg extends Transparent implements Fallable{
 	use FallableTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
-	}
-
 	public function getLightLevel() : int{
 		return 1;
 	}
 
-	public function tickFalling() : ?Block{
-		return null;
-	}
-
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->teleport();
 		return true;
 	}
 
 	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
-		$this->teleport();
-		return true;
+		if($player !== null && $player->getGamemode() !== GameMode::CREATIVE){
+			$this->teleport();
+			return true;
+		}
+		return false;
 	}
 
 	public function teleport() : void{
+		$world = $this->position->getWorld();
 		for($tries = 0; $tries < 16; ++$tries){
-			$block = $this->pos->getWorld()->getBlockAt(
-				$this->pos->x + mt_rand(-16, 16),
-				max(0, min(World::Y_MAX - 1, $this->pos->y + mt_rand(-8, 8))),
-				$this->pos->z + mt_rand(-16, 16)
+			$block = $world->getBlockAt(
+				$this->position->x + mt_rand(-16, 16),
+				max(World::Y_MIN, min(World::Y_MAX - 1, $this->position->y + mt_rand(-8, 8))),
+				$this->position->z + mt_rand(-16, 16)
 			);
 			if($block instanceof Air){
-				$ev = new BlockTeleportEvent($this, $block->pos);
+				$ev = new BlockTeleportEvent($this, $block->position);
 				$ev->call();
 				if($ev->isCancelled()){
 					break;
 				}
 
 				$blockPos = $ev->getTo();
-				$this->pos->getWorld()->addParticle($this->pos, new DragonEggTeleportParticle($this->pos->x - $blockPos->x, $this->pos->y - $blockPos->y, $this->pos->z - $blockPos->z));
-				$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::AIR());
-				$this->pos->getWorld()->setBlock($blockPos, $this);
+				$world->addParticle($this->position, new DragonEggTeleportParticle($this->position->x - $blockPos->x, $this->position->y - $blockPos->y, $this->position->z - $blockPos->z));
+				$world->setBlock($this->position, VanillaBlocks::AIR());
+				$world->setBlock($blockPos, $this);
 				break;
 			}
 		}
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE;
 	}
 }

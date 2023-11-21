@@ -17,50 +17,40 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Furnace as TileFurnace;
-use pocketmine\block\utils\BlockDataSerializer;
-use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\crafting\FurnaceType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
-use pocketmine\item\ToolTier;
-use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
+use function mt_rand;
 
 class Furnace extends Opaque{
-	use HorizontalFacingTrait;
+	use FacesOppositePlacingPlayerTrait;
 
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
+	protected FurnaceType $furnaceType;
 
-	/** @var bool */
-	protected $lit = false; //this is set based on the blockID
+	protected bool $lit = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, FurnaceType $furnaceType){
+		$this->furnaceType = $furnaceType;
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	public function getId() : int{
-		return $this->lit ? $this->idInfo->getSecondId() : parent::getId();
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->bool($this->lit);
 	}
 
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeHorizontalFacing($this->facing);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readHorizontalFacing($stateMeta);
-		$this->lit = $id === $this->idInfo->getSecondId();
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
+	public function getFurnaceType() : FurnaceType{
+		return $this->furnaceType;
 	}
 
 	public function getLightLevel() : int{
@@ -79,18 +69,10 @@ class Furnace extends Opaque{
 		return $this;
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($player !== null){
-			$this->facing = Facing::opposite($player->getHorizontalFacing());
-		}
-
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
-			$furnace = $this->pos->getWorld()->getTile($this->pos);
-			if($furnace instanceof TileFurnace and $furnace->canOpenWith($item->getCustomName())){
+			$furnace = $this->position->getWorld()->getTile($this->position);
+			if($furnace instanceof TileFurnace && $furnace->canOpenWith($item->getCustomName())){
 				$player->setCurrentWindow($furnace->getInventory());
 			}
 		}
@@ -99,9 +81,13 @@ class Furnace extends Opaque{
 	}
 
 	public function onScheduledUpdate() : void{
-		$furnace = $this->pos->getWorld()->getTile($this->pos);
-		if($furnace instanceof TileFurnace and $furnace->onUpdate()){
-			$this->pos->getWorld()->scheduleDelayedBlockUpdate($this->pos, 1); //TODO: check this
+		$world = $this->position->getWorld();
+		$furnace = $world->getTile($this->position);
+		if($furnace instanceof TileFurnace && $furnace->onUpdate()){
+			if(mt_rand(1, 60) === 1){ //in vanilla this is between 1 and 5 seconds; try to average about 3
+				$world->addSound($this->position, $furnace->getFurnaceType()->getCookSound());
+			}
+			$world->scheduleDelayedBlockUpdate($this->position, 1); //TODO: check this
 		}
 	}
 }

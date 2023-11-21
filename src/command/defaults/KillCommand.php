@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,62 +27,37 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\lang\TranslationContainer;
-use pocketmine\player\Player;
-use pocketmine\utils\TextFormat;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\DefaultPermissionNames;
 use function count;
 
 class KillCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
-			"%pocketmine.command.kill.description",
-			"%pocketmine.command.kill.usage",
+			"kill",
+			KnownTranslationFactory::pocketmine_command_kill_description(),
+			KnownTranslationFactory::pocketmine_command_kill_usage(),
 			["suicide"]
 		);
-		$this->setPermission("pocketmine.command.kill.self;pocketmine.command.kill.other");
+		$this->setPermissions([DefaultPermissionNames::COMMAND_KILL_SELF, DefaultPermissionNames::COMMAND_KILL_OTHER]);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) >= 2){
 			throw new InvalidCommandSyntaxException();
 		}
 
-		if(count($args) === 1){
-			if(!$sender->hasPermission("pocketmine.command.kill.other")){
-				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
-
-				return true;
-			}
-
-			$player = $sender->getServer()->getPlayerByPrefix($args[0]);
-
-			if($player instanceof Player){
-				$player->attack(new EntityDamageEvent($player, EntityDamageEvent::CAUSE_SUICIDE, 1000));
-				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.kill.successful", [$player->getName()]));
-			}else{
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
-			}
-
+		$player = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, DefaultPermissionNames::COMMAND_KILL_SELF, DefaultPermissionNames::COMMAND_KILL_OTHER);
+		if($player === null){
 			return true;
 		}
 
-		if($sender instanceof Player){
-			if(!$sender->hasPermission("pocketmine.command.kill.self")){
-				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
-
-				return true;
-			}
-
-			$sender->attack(new EntityDamageEvent($sender, EntityDamageEvent::CAUSE_SUICIDE, 1000));
-			$sender->sendMessage(new TranslationContainer("commands.kill.successful", [$sender->getName()]));
+		$player->attack(new EntityDamageEvent($player, EntityDamageEvent::CAUSE_SUICIDE, $player->getHealth()));
+		if($player === $sender){
+			$sender->sendMessage(KnownTranslationFactory::commands_kill_successful($sender->getName()));
 		}else{
-			throw new InvalidCommandSyntaxException();
+			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_kill_successful($player->getName()));
 		}
 
 		return true;

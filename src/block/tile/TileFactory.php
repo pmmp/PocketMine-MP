@@ -17,13 +17,15 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
@@ -40,38 +42,44 @@ final class TileFactory{
 	 * @var string[] classes that extend Tile
 	 * @phpstan-var array<string, class-string<Tile>>
 	 */
-	private $knownTiles = [];
+	private array $knownTiles = [];
 	/**
 	 * @var string[]
 	 * @phpstan-var array<class-string<Tile>, string>
 	 */
-	private $saveNames = [];
+	private array $saveNames = [];
 
 	public function __construct(){
 		$this->register(Barrel::class, ["Barrel", "minecraft:barrel"]);
 		$this->register(Banner::class, ["Banner", "minecraft:banner"]);
 		$this->register(Beacon::class, ["Beacon", "minecraft:beacon"]);
 		$this->register(Bed::class, ["Bed", "minecraft:bed"]);
+		$this->register(Bell::class, ["Bell", "minecraft:bell"]);
+		$this->register(BlastFurnace::class, ["BlastFurnace", "minecraft:blast_furnace"]);
 		$this->register(BrewingStand::class, ["BrewingStand", "minecraft:brewing_stand"]);
+		$this->register(Cauldron::class, ["Cauldron", "minecraft:cauldron"]);
 		$this->register(Chest::class, ["Chest", "minecraft:chest"]);
+		$this->register(ChiseledBookshelf::class, ["ChiseledBookshelf", "minecraft:chiseled_bookshelf"]);
 		$this->register(Comparator::class, ["Comparator", "minecraft:comparator"]);
 		$this->register(DaylightSensor::class, ["DaylightDetector", "minecraft:daylight_detector"]);
 		$this->register(EnchantTable::class, ["EnchantTable", "minecraft:enchanting_table"]);
 		$this->register(EnderChest::class, ["EnderChest", "minecraft:ender_chest"]);
 		$this->register(FlowerPot::class, ["FlowerPot", "minecraft:flower_pot"]);
-		$this->register(Furnace::class, ["Furnace", "minecraft:furnace"]);
+		$this->register(NormalFurnace::class, ["Furnace", "minecraft:furnace"]);
 		$this->register(Hopper::class, ["Hopper", "minecraft:hopper"]);
 		$this->register(ItemFrame::class, ["ItemFrame"]); //this is an entity in PC
 		$this->register(Jukebox::class, ["Jukebox", "RecordPlayer", "minecraft:jukebox"]);
+		$this->register(Lectern::class, ["Lectern", "minecraft:lectern"]);
 		$this->register(MonsterSpawner::class, ["MobSpawner", "minecraft:mob_spawner"]);
 		$this->register(Note::class, ["Music", "minecraft:noteblock"]);
+		$this->register(ShulkerBox::class, ["ShulkerBox", "minecraft:shulker_box"]);
 		$this->register(Sign::class, ["Sign", "minecraft:sign"]);
-		$this->register(Skull::class, ["Skull", "minecraft:skull"]);
+		$this->register(Smoker::class, ["Smoker", "minecraft:smoker"]);
+		$this->register(SporeBlossom::class, ["SporeBlossom", "minecraft:spore_blossom"]);
+		$this->register(MobHead::class, ["Skull", "minecraft:skull"]);
+		$this->register(GlowingItemFrame::class, ["GlowItemFrame"]);
 
-		//TODO: Bell
-		//TODO: BlastFurnace
 		//TODO: Campfire
-		//TODO: Cauldron
 		//TODO: ChalkboardBlock
 		//TODO: ChemistryTable
 		//TODO: CommandBlock
@@ -81,12 +89,9 @@ final class TileFactory{
 		//TODO: EndGateway
 		//TODO: EndPortal
 		//TODO: JigsawBlock
-		//TODO: Lectern
 		//TODO: MovingBlock
 		//TODO: NetherReactor
 		//TODO: PistonArm
-		//TODO: ShulkerBox
-		//TODO: Smoker
 		//TODO: StructureBlock
 	}
 
@@ -111,20 +116,25 @@ final class TileFactory{
 
 	/**
 	 * @internal
+	 * @throws SavedDataLoadingException
 	 */
 	public function createFromData(World $world, CompoundTag $nbt) : ?Tile{
-		$type = $nbt->getString(Tile::TAG_ID, "");
-		if(!isset($this->knownTiles[$type])){
-			return null;
+		try{
+			$type = $nbt->getString(Tile::TAG_ID, "");
+			if(!isset($this->knownTiles[$type])){
+				return null;
+			}
+			$class = $this->knownTiles[$type];
+			assert(is_a($class, Tile::class, true));
+			/**
+			 * @var Tile $tile
+			 * @see Tile::__construct()
+			 */
+			$tile = new $class($world, new Vector3($nbt->getInt(Tile::TAG_X), $nbt->getInt(Tile::TAG_Y), $nbt->getInt(Tile::TAG_Z)));
+			$tile->readSaveData($nbt);
+		}catch(NbtException $e){
+			throw new SavedDataLoadingException($e->getMessage(), 0, $e);
 		}
-		$class = $this->knownTiles[$type];
-		assert(is_a($class, Tile::class, true));
-		/**
-		 * @var Tile $tile
-		 * @see Tile::__construct()
-		 */
-		$tile = new $class($world, new Vector3($nbt->getInt(Tile::TAG_X), $nbt->getInt(Tile::TAG_Y), $nbt->getInt(Tile::TAG_Z)));
-		$tile->readSaveData($nbt);
 
 		return $tile;
 	}

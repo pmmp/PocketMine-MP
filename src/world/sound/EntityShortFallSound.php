@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,26 +26,22 @@ namespace pocketmine\world\sound;
 use pocketmine\entity\Entity;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
 /**
  * Played when an entity hits the ground after falling a short distance.
  */
 class EntityShortFallSound implements Sound{
+	public function __construct(private Entity $entity){}
 
-	/** @var Entity */
-	private $entity;
-
-	public function __construct(Entity $entity){
-		$this->entity = $entity;
-	}
-
-	public function encode(?Vector3 $pos) : array{
+	public function encode(Vector3 $pos) : array{
 		return [LevelSoundEventPacket::create(
-			LevelSoundEventPacket::SOUND_FALL_SMALL,
+			LevelSoundEvent::FALL_SMALL,
 			$pos,
 			-1,
-			$this->entity::getNetworkTypeId()
-			//TODO: does isBaby have any relevance here?
+			$this->entity::getNetworkTypeId(),
+			false, //TODO: does isBaby have any relevance here?
+			false
 		)];
 	}
 }

@@ -17,17 +17,18 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\TreeType;
+use pocketmine\block\utils\FortuneDropHelper;
+use pocketmine\block\utils\LeavesType;
+use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\item\ItemIds;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -37,31 +38,23 @@ use pocketmine\world\World;
 use function mt_rand;
 
 class Leaves extends Transparent{
-	/** @var TreeType */
-	protected $treeType;
+	private const MAX_LOG_DISTANCE = 4;
 
-	/** @var bool */
-	protected $noDecay = false;
-	/** @var bool */
-	protected $checkDecay = false;
+	protected LeavesType $leavesType; //immutable for now
+	protected bool $noDecay = false;
+	protected bool $checkDecay = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, TreeType $treeType, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::SHEARS));
-		$this->treeType = $treeType;
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, LeavesType $leavesType){
+		parent::__construct($idInfo, $name, $typeInfo);
+		$this->leavesType = $leavesType;
 	}
 
-	protected function writeStateToMeta() : int{
-		return ($this->noDecay ? BlockLegacyMetadata::LEAVES_FLAG_NO_DECAY : 0) | ($this->checkDecay ? BlockLegacyMetadata::LEAVES_FLAG_CHECK_DECAY : 0);
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->bool($this->noDecay);
+		$w->bool($this->checkDecay);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->noDecay = ($stateMeta & BlockLegacyMetadata::LEAVES_FLAG_NO_DECAY) !== 0;
-		$this->checkDecay = ($stateMeta & BlockLegacyMetadata::LEAVES_FLAG_CHECK_DECAY) !== 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1100;
-	}
+	public function getLeavesType() : LeavesType{ return $this->leavesType; }
 
 	public function isNoDecay() : bool{ return $this->noDecay; }
 
@@ -86,6 +79,7 @@ class Leaves extends Transparent{
 	/**
 	 * @param true[] $visited reference parameter
 	 * @phpstan-param array<int, true> $visited
+	 * @phpstan-param-out array<int, true> $visited
 	 */
 	protected function findLog(Vector3 $pos, array &$visited = [], int $distance = 0) : bool{
 		$index = World::blockHash($pos->x, $pos->y, $pos->z);
@@ -94,12 +88,12 @@ class Leaves extends Transparent{
 		}
 		$visited[$index] = true;
 
-		$block = $this->pos->getWorld()->getBlock($pos);
+		$block = $this->position->getWorld()->getBlock($pos);
 		if($block instanceof Wood){ //type doesn't matter
 			return true;
 		}
 
-		if($block->getId() === $this->getId() and $distance <= 4){
+		if($block instanceof Leaves && $distance <= self::MAX_LOG_DISTANCE){
 			foreach(Facing::ALL as $side){
 				if($this->findLog($pos->getSide($side), $visited, $distance + 1)){
 					return true;
@@ -111,25 +105,31 @@ class Leaves extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->noDecay and !$this->checkDecay){
+		if(!$this->noDecay && !$this->checkDecay){
 			$this->checkDecay = true;
-			$this->pos->getWorld()->setBlock($this->pos, $this, false);
+			$this->position->getWorld()->setBlock($this->position, $this, false);
 		}
 	}
 
 	public function ticksRandomly() : bool{
-		return true;
+		return !$this->noDecay && $this->checkDecay;
 	}
 
 	public function onRandomTick() : void{
-		if(!$this->noDecay and $this->checkDecay){
-			$ev = new LeavesDecayEvent($this);
-			$ev->call();
-			if($ev->isCancelled() or $this->findLog($this->pos)){
+		if(!$this->noDecay && $this->checkDecay){
+			$cancelled = false;
+			if(LeavesDecayEvent::hasHandlers()){
+				$ev = new LeavesDecayEvent($this);
+				$ev->call();
+				$cancelled = $ev->isCancelled();
+			}
+
+			$world = $this->position->getWorld();
+			if($cancelled || $this->findLog($this->position)){
 				$this->checkDecay = false;
-				$this->pos->getWorld()->setBlock($this->pos, $this, false);
+				$world->setBlock($this->position, $this, false);
 			}else{
-				$this->pos->getWorld()->useBreakOn($this->pos);
+				$world->useBreakOn($this->position);
 			}
 		}
 	}
@@ -139,20 +139,44 @@ class Leaves extends Transparent{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0){
-			return $this->getDropsForCompatibleTool($item);
+			return parent::getDropsForCompatibleTool($item);
 		}
 
 		$drops = [];
-		if(mt_rand(1, 20) === 1){ //Saplings
-			$drops[] = ItemFactory::getInstance()->get(ItemIds::SAPLING, $this->treeType->getMagicNumber());
+		if(FortuneDropHelper::bonusChanceDivisor($item, 20, 4)){ //Saplings
+			// TODO: according to the wiki, the jungle saplings have a different drop rate
+			$sapling = (match($this->leavesType){
+				LeavesType::ACACIA => VanillaBlocks::ACACIA_SAPLING(),
+				LeavesType::BIRCH => VanillaBlocks::BIRCH_SAPLING(),
+				LeavesType::DARK_OAK => VanillaBlocks::DARK_OAK_SAPLING(),
+				LeavesType::JUNGLE => VanillaBlocks::JUNGLE_SAPLING(),
+				LeavesType::OAK => VanillaBlocks::OAK_SAPLING(),
+				LeavesType::SPRUCE => VanillaBlocks::SPRUCE_SAPLING(),
+				LeavesType::MANGROVE, //TODO: mangrove propagule
+				LeavesType::AZALEA, LeavesType::FLOWERING_AZALEA => null, //TODO: azalea
+				LeavesType::CHERRY => null, //TODO: cherry
+			})?->asItem();
+			if($sapling !== null){
+				$drops[] = $sapling;
+			}
 		}
-		if(($this->treeType->equals(TreeType::OAK()) or $this->treeType->equals(TreeType::DARK_OAK())) and mt_rand(1, 200) === 1){ //Apples
+		if(
+			($this->leavesType === LeavesType::OAK || $this->leavesType === LeavesType::DARK_OAK) &&
+			FortuneDropHelper::bonusChanceDivisor($item, 200, 20)
+		){ //Apples
 			$drops[] = VanillaItems::APPLE();
+		}
+		if(FortuneDropHelper::bonusChanceDivisor($item, 50, 5)){
+			$drops[] = VanillaItems::STICK()->setCount(mt_rand(1, 2));
 		}
 
 		return $drops;
+	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
 	}
 
 	public function getFlameEncouragement() : int{
@@ -161,5 +185,9 @@ class Leaves extends Transparent{
 
 	public function getFlammability() : int{
 		return 60;
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE;
 	}
 }

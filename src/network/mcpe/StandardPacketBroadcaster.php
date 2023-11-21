@@ -17,55 +17,88 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use pocketmine\network\mcpe\compression\Compressor;
+use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\Server;
+use pocketmine\timings\Timings;
+use pocketmine\utils\BinaryStream;
+use function count;
+use function log;
 use function spl_object_id;
+use function strlen;
 
 final class StandardPacketBroadcaster implements PacketBroadcaster{
-
-	/** @var Server */
-	private $server;
-
-	public function __construct(Server $server){
-		$this->server = $server;
-	}
+	public function __construct(
+		private Server $server,
+		private PacketSerializerContext $protocolContext
+	){}
 
 	public function broadcastPackets(array $recipients, array $packets) : void{
-		$stream = PacketBatch::fromPackets(...$packets);
-
-		/** @var Compressor[] $compressors */
-		$compressors = [];
-		/** @var NetworkSession[][] $compressorTargets */
-		$compressorTargets = [];
-		foreach($recipients as $recipient){
-			$compressor = $recipient->getCompressor();
-			$compressorId = spl_object_id($compressor);
-			//TODO: different compressors might be compatible, it might not be necessary to split them up by object
-			$compressors[$compressorId] = $compressor;
-			$compressorTargets[$compressorId][] = $recipient;
+		//TODO: this shouldn't really be called here, since the broadcaster might be replaced by an alternative
+		//implementation that doesn't fire events
+		if(DataPacketSendEvent::hasHandlers()){
+			$ev = new DataPacketSendEvent($recipients, $packets);
+			$ev->call();
+			if($ev->isCancelled()){
+				return;
+			}
+			$packets = $ev->getPackets();
 		}
 
-		foreach($compressors as $compressorId => $compressor){
-			if(!$compressor->willCompress($stream->getBuffer())){
-				foreach($compressorTargets[$compressorId] as $target){
-					foreach($packets as $pk){
-						$target->addToSendBuffer($pk);
-					}
+		$compressors = [];
+
+		/** @var NetworkSession[][] $targetsByCompressor */
+		$targetsByCompressor = [];
+		foreach($recipients as $recipient){
+			if($recipient->getPacketSerializerContext() !== $this->protocolContext){
+				throw new \InvalidArgumentException("Only recipients with the same protocol context as the broadcaster can be broadcast to by this broadcaster");
+			}
+
+			//TODO: different compressors might be compatible, it might not be necessary to split them up by object
+			$compressor = $recipient->getCompressor();
+			$compressors[spl_object_id($compressor)] = $compressor;
+
+			$targetsByCompressor[spl_object_id($compressor)][] = $recipient;
+		}
+
+		$totalLength = 0;
+		$packetBuffers = [];
+		foreach($packets as $packet){
+			$buffer = NetworkSession::encodePacketTimed(PacketSerializer::encoder($this->protocolContext), $packet);
+			//varint length prefix + packet buffer
+			$totalLength += (((int) log(strlen($buffer), 128)) + 1) + strlen($buffer);
+			$packetBuffers[] = $buffer;
+		}
+
+		foreach($targetsByCompressor as $compressorId => $compressorTargets){
+			$compressor = $compressors[$compressorId];
+
+			$threshold = $compressor->getCompressionThreshold();
+			if(count($compressorTargets) > 1 && $threshold !== null && $totalLength >= $threshold){
+				//do not prepare shared batch unless we're sure it will be compressed
+				$stream = new BinaryStream();
+				PacketBatch::encodeRaw($stream, $packetBuffers);
+				$batchBuffer = $stream->getBuffer();
+
+				$batch = $this->server->prepareBatch($batchBuffer, $compressor, timings: Timings::$playerNetworkSendCompressBroadcast);
+				foreach($compressorTargets as $target){
+					$target->queueCompressed($batch);
 				}
 			}else{
-				$promise = $this->server->prepareBatch($stream, $compressor);
-				foreach($compressorTargets[$compressorId] as $target){
-					$target->queueCompressed($promise);
+				foreach($compressorTargets as $target){
+					foreach($packetBuffers as $packetBuffer){
+						$target->addToSendBuffer($packetBuffer);
+					}
 				}
 			}
 		}
-
 	}
 }

@@ -17,39 +17,36 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use Ds\Set;
 use pocketmine\entity\Human;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
+use pocketmine\utils\ObjectSet;
 
-class PlayerInventory extends BaseInventory{
+class PlayerInventory extends SimpleInventory{
 
-	/** @var Human */
-	protected $holder;
-
-	/** @var int */
-	protected $itemInHandIndex = 0;
+	protected Human $holder;
+	protected int $itemInHandIndex = 0;
 
 	/**
-	 * @var \Closure[]|Set
-	 * @phpstan-var Set<\Closure(int $oldIndex) : void>
+	 * @var \Closure[]|ObjectSet
+	 * @phpstan-var ObjectSet<\Closure(int $oldIndex) : void>
 	 */
-	protected $heldItemIndexChangeListeners;
+	protected ObjectSet $heldItemIndexChangeListeners;
 
 	public function __construct(Human $player){
 		$this->holder = $player;
-		$this->heldItemIndexChangeListeners = new Set();
+		$this->heldItemIndexChangeListeners = new ObjectSet();
 		parent::__construct(36);
 	}
 
 	public function isHotbarSlot(int $slot) : bool{
-		return $slot >= 0 and $slot <= $this->getHotbarSize();
+		return $slot >= 0 && $slot < $this->getHotbarSize();
 	}
 
 	/**
@@ -97,10 +94,10 @@ class PlayerInventory extends BaseInventory{
 	}
 
 	/**
-	 * @return \Closure[]|Set
-	 * @phpstan-return Set<\Closure(int $oldIndex) : void>
+	 * @return \Closure[]|ObjectSet
+	 * @phpstan-return ObjectSet<\Closure(int $oldIndex) : void>
 	 */
-	public function getHeldItemIndexChangeListeners() : Set{ return $this->heldItemIndexChangeListeners; }
+	public function getHeldItemIndexChangeListeners() : ObjectSet{ return $this->heldItemIndexChangeListeners; }
 
 	/**
 	 * Returns the currently-held item.
@@ -123,10 +120,7 @@ class PlayerInventory extends BaseInventory{
 		return 9;
 	}
 
-	/**
-	 * @return Human|Player
-	 */
-	public function getHolder(){
+	public function getHolder() : Human{
 		return $this->holder;
 	}
 }

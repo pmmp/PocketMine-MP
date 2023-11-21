@@ -17,22 +17,25 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block\inventory;
 
 use pocketmine\block\Barrel;
+use pocketmine\inventory\SimpleInventory;
 use pocketmine\world\Position;
 use pocketmine\world\sound\BarrelCloseSound;
 use pocketmine\world\sound\BarrelOpenSound;
 use pocketmine\world\sound\Sound;
 
-class BarrelInventory extends AnimatedBlockInventory{
+class BarrelInventory extends SimpleInventory implements BlockInventory{
+	use AnimatedBlockInventoryTrait;
 
 	public function __construct(Position $holder){
-		parent::__construct($holder, 27);
+		$this->holder = $holder;
+		parent::__construct(27);
 	}
 
 	protected function getOpenSound() : Sound{
@@ -45,9 +48,10 @@ class BarrelInventory extends AnimatedBlockInventory{
 
 	protected function animateBlock(bool $isOpen) : void{
 		$holder = $this->getHolder();
-		$block = $holder->getWorld()->getBlock($holder);
+		$world = $holder->getWorld();
+		$block = $world->getBlock($holder);
 		if($block instanceof Barrel){
-			$holder->getWorld()->setBlock($holder, $block->setOpen($isOpen));
+			$world->setBlock($holder, $block->setOpen($isOpen));
 		}
 	}
 }

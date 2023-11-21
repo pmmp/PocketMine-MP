@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -34,7 +34,7 @@ interface Form extends \JsonSerializable{
 	/**
 	 * Handles a form response from a player.
 	 *
-	 * @param mixed  $data
+	 * @param mixed $data
 	 *
 	 * @throws FormValidationException if the data could not be processed
 	 */

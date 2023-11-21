@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -40,6 +40,7 @@ interface PluginLoader{
 
 	/**
 	 * Gets the PluginDescription from the file
+	 * @throws PluginDescriptionParseException
 	 */
 	public function getPluginDescription(string $file) : ?PluginDescription;
 

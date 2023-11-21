@@ -17,20 +17,19 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Banner as TileBanner;
-use pocketmine\block\utils\BannerPattern;
-use pocketmine\block\utils\DyeColor;
-use pocketmine\data\bedrock\DyeColorIdMap;
+use pocketmine\block\utils\BannerPatternLayer;
+use pocketmine\block\utils\ColoredTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Banner as ItemBanner;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\item\ItemIds;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -40,34 +39,30 @@ use function assert;
 use function count;
 
 abstract class BaseBanner extends Transparent{
-	/** @var DyeColor */
-	protected $baseColor;
+	use ColoredTrait;
 
 	/**
-	 * @var BannerPattern[]
-	 * @phpstan-var list<BannerPattern>
+	 * @var BannerPatternLayer[]
+	 * @phpstan-var list<BannerPatternLayer>
 	 */
-	protected $patterns = [];
+	protected array $patterns = [];
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.0, BlockToolType::AXE));
-		$this->baseColor = DyeColor::BLACK();
-	}
-
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileBanner){
-			$this->baseColor = $tile->getBaseColor();
+			$this->color = $tile->getBaseColor();
 			$this->setPatterns($tile->getPatterns());
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		assert($tile instanceof TileBanner);
-		$tile->setBaseColor($this->baseColor);
+		$tile->setBaseColor($this->color);
 		$tile->setPatterns($this->patterns);
 	}
 
@@ -75,30 +70,28 @@ abstract class BaseBanner extends Transparent{
 		return false;
 	}
 
-	/**
-	 * TODO: interface method? this is only the BASE colour...
-	 */
-	public function getColor() : DyeColor{
-		return $this->baseColor;
+	public function getMaxStackSize() : int{
+		return 16;
 	}
 
 	/**
-	 * @return BannerPattern[]
-	 * @phpstan-return list<BannerPattern>
+	 * @return BannerPatternLayer[]
+	 * @phpstan-return list<BannerPatternLayer>
 	 */
 	public function getPatterns() : array{
 		return $this->patterns;
 	}
 
 	/**
-	 * @param BannerPattern[] $patterns
-	 * @phpstan-param list<BannerPattern> $patterns
+	 * @param BannerPatternLayer[] $patterns
+	 *
+	 * @phpstan-param list<BannerPatternLayer> $patterns
 	 * @return $this
 	 */
 	public function setPatterns(array $patterns) : self{
-		$checked = array_filter($patterns, fn($v) => $v instanceof BannerPattern);
+		$checked = array_filter($patterns, fn($v) => $v instanceof BannerPatternLayer);
 		if(count($checked) !== count($patterns)){
-			throw new \TypeError("Deque must only contain " . BannerPattern::class . " objects");
+			throw new \TypeError("Deque must only contain " . BannerPatternLayer::class . " objects");
 		}
 		$this->patterns = $checked;
 		return $this;
@@ -111,9 +104,20 @@ abstract class BaseBanner extends Transparent{
 		return [];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE;
+	}
+
+	private function canBeSupportedBy(Block $block) : bool{
+		return $block->isSolid();
+	}
+
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if(!$this->canBeSupportedBy($blockReplace->getSide($this->getSupportingFace()))){
+			return false;
+		}
 		if($item instanceof ItemBanner){
-			$this->baseColor = $item->getColor();
+			$this->color = $item->getColor();
 			$this->setPatterns($item->getPatterns());
 		}
 
@@ -123,18 +127,14 @@ abstract class BaseBanner extends Transparent{
 	abstract protected function getSupportingFace() : int;
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide($this->getSupportingFace())->getId() === BlockLegacyIds::AIR){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+		if(!$this->canBeSupportedBy($this->getSide($this->getSupportingFace()))){
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
-	}
-
-	public function asItem() : Item{
-		return ItemFactory::getInstance()->get(ItemIds::BANNER, DyeColorIdMap::getInstance()->toInvertedId($this->baseColor));
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		$drop = $this->asItem();
-		if($drop instanceof ItemBanner and count($this->patterns) > 0){
+		if($drop instanceof ItemBanner && count($this->patterns) > 0){
 			$drop->setPatterns($this->patterns);
 		}
 
@@ -143,9 +143,13 @@ abstract class BaseBanner extends Transparent{
 
 	public function getPickedItem(bool $addUserData = false) : Item{
 		$result = $this->asItem();
-		if($addUserData and $result instanceof ItemBanner and count($this->patterns) > 0){
+		if($addUserData && $result instanceof ItemBanner && count($this->patterns) > 0){
 			$result->setPatterns($this->patterns);
 		}
 		return $result;
+	}
+
+	public function asItem() : Item{
+		return VanillaItems::BANNER()->setColor($this->color);
 	}
 }

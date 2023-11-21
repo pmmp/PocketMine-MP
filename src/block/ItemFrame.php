@@ -17,52 +17,47 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
-use pocketmine\block\utils\BlockDataSerializer;
-use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\AnyFacingTrait;
+use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\sound\ItemFrameAddItemSound;
+use pocketmine\world\sound\ItemFrameRemoveItemSound;
+use pocketmine\world\sound\ItemFrameRotateItemSound;
+use function is_infinite;
+use function is_nan;
 use function lcg_value;
 
 class ItemFrame extends Flowable{
-	use HorizontalFacingTrait;
+	use AnyFacingTrait;
 
 	public const ROTATIONS = 8;
 
-	/** @var bool */
-	protected $hasMap = false; //makes frame appear large if set
-	/** @var Item|null */
-	protected $framedItem = null;
-	/** @var int */
-	protected $itemRotation = 0;
-	/** @var float */
-	protected $itemDropChance = 1.0;
+	protected bool $hasMap = false; //makes frame appear large if set
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.25));
+	protected ?Item $framedItem = null;
+	protected int $itemRotation = 0;
+	protected float $itemDropChance = 1.0;
+
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->facing($this->facing);
+		$w->bool($this->hasMap);
 	}
 
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::write5MinusHorizontalFacing($this->facing) | ($this->hasMap ? BlockLegacyMetadata::ITEM_FRAME_FLAG_HAS_MAP : 0);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::read5MinusHorizontalFacing($stateMeta);
-		$this->hasMap = ($stateMeta & BlockLegacyMetadata::ITEM_FRAME_FLAG_HAS_MAP) !== 0;
-	}
-
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileItemFrame){
 			$this->framedItem = $tile->getItem();
 			if($this->framedItem->isNull()){
@@ -71,20 +66,18 @@ class ItemFrame extends Flowable{
 			$this->itemRotation = $tile->getItemRotation() % self::ROTATIONS;
 			$this->itemDropChance = $tile->getItemDropChance();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileItemFrame){
 			$tile->setItem($this->framedItem);
 			$tile->setItemRotation($this->itemRotation);
 			$tile->setItemDropChance($this->itemDropChance);
 		}
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
 	}
 
 	public function getFramedItem() : ?Item{
@@ -93,7 +86,7 @@ class ItemFrame extends Flowable{
 
 	/** @return $this */
 	public function setFramedItem(?Item $item) : self{
-		if($item === null or $item->isNull()){
+		if($item === null || $item->isNull()){
 			$this->framedItem = null;
 			$this->itemRotation = 0;
 		}else{
@@ -118,6 +111,9 @@ class ItemFrame extends Flowable{
 
 	/** @return $this */
 	public function setItemDropChance(float $itemDropChance) : self{
+		if($itemDropChance < 0.0 || $itemDropChance > 1.0 || is_nan($itemDropChance) || is_infinite($itemDropChance)){
+			throw new \InvalidArgumentException("Drop chance must be in range 0-1");
+		}
 		$this->itemDropChance = $itemDropChance;
 		return $this;
 	}
@@ -135,16 +131,20 @@ class ItemFrame extends Flowable{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->framedItem !== null){
 			$this->itemRotation = ($this->itemRotation + 1) % self::ROTATIONS;
+
+			$this->position->getWorld()->addSound($this->position, new ItemFrameRotateItemSound());
 		}elseif(!$item->isNull()){
 			$this->framedItem = $item->pop();
+
+			$this->position->getWorld()->addSound($this->position, new ItemFrameAddItemSound());
 		}else{
 			return true;
 		}
 
-		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$this->position->getWorld()->setBlock($this->position, $this);
 
 		return true;
 	}
@@ -153,22 +153,28 @@ class ItemFrame extends Flowable{
 		if($this->framedItem === null){
 			return false;
 		}
+		$world = $this->position->getWorld();
 		if(lcg_value() <= $this->itemDropChance){
-			$this->pos->getWorld()->dropItem($this->pos->add(0.5, 0.5, 0.5), clone $this->framedItem);
+			$world->dropItem($this->position->add(0.5, 0.5, 0.5), clone $this->framedItem);
+			$world->addSound($this->position, new ItemFrameRemoveItemSound());
 		}
 		$this->setFramedItem(null);
-		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$world->setBlock($this->position, $this);
 		return true;
 	}
 
+	private function canBeSupportedAt(Block $block, int $face) : bool{
+		return $block->getAdjacentSupportType($face) !== SupportType::NONE;
+	}
+
 	public function onNearbyBlockChange() : void{
-		if(!$this->getSide(Facing::opposite($this->facing))->isSolid()){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+		if(!$this->canBeSupportedAt($this, Facing::opposite($this->facing))){
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($face === Facing::DOWN or $face === Facing::UP or !$blockClicked->isSolid()){
+		if(!$this->canBeSupportedAt($blockReplace, Facing::opposite($face))){
 			return false;
 		}
 
@@ -179,7 +185,7 @@ class ItemFrame extends Flowable{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		$drops = parent::getDropsForCompatibleTool($item);
-		if($this->framedItem !== null and lcg_value() <= $this->itemDropChance){
+		if($this->framedItem !== null && lcg_value() <= $this->itemDropChance){
 			$drops[] = clone $this->framedItem;
 		}
 

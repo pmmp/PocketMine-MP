@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,37 +32,52 @@ use function strlen;
 use function substr;
 
 class EncryptionContext{
-	private const ENCRYPTION_SCHEME = "AES-256-CFB8";
 	private const CHECKSUM_ALGO = "sha256";
 
-	/** @var bool */
-	public static $ENABLED = true;
+	public static bool $ENABLED = true;
 
-	/** @var string */
-	private $key;
+	private string $key;
 
-	/** @var Cipher */
-	private $decryptCipher;
-	/** @var int */
-	private $decryptCounter = 0;
+	private Cipher $decryptCipher;
+	private int $decryptCounter = 0;
 
-	/** @var Cipher */
-	private $encryptCipher;
-	/** @var int */
-	private $encryptCounter = 0;
+	private Cipher $encryptCipher;
+	private int $encryptCounter = 0;
 
-	public function __construct(string $encryptionKey){
-		//TODO: ext/crypto doesn't offer us a way to disable padding. This doesn't matter at the moment because we're
-		//using CFB8, but this might change in the future. This is supposed to be CFB8 no-padding.
-
+	public function __construct(string $encryptionKey, string $algorithm, string $iv){
 		$this->key = $encryptionKey;
-		$iv = substr($this->key, 0, 16);
 
-		$this->decryptCipher = new Cipher(self::ENCRYPTION_SCHEME);
+		$this->decryptCipher = new Cipher($algorithm);
 		$this->decryptCipher->decryptInit($this->key, $iv);
 
-		$this->encryptCipher = new Cipher(self::ENCRYPTION_SCHEME);
+		$this->encryptCipher = new Cipher($algorithm);
 		$this->encryptCipher->encryptInit($this->key, $iv);
+	}
+
+	/**
+	 * Returns an EncryptionContext suitable for decrypting Minecraft packets from 1.16.220.50 (protocol version 429) and up.
+	 *
+	 * MCPE uses GCM, but without the auth tag, which defeats the whole purpose of using GCM.
+	 * GCM is just a wrapper around CTR which adds the auth tag, so CTR can replace GCM for this case.
+	 * However, since GCM passes only the first 12 bytes of the IV followed by 0002, we must do the same for
+	 * compatibility with MCPE.
+	 * In PM, we could skip this and just use GCM directly (since we use OpenSSL), but this way is more portable, and
+	 * better for developers who come digging in the PM code looking for answers.
+	 */
+	public static function fakeGCM(string $encryptionKey) : self{
+		return new EncryptionContext(
+			$encryptionKey,
+			"AES-256-CTR",
+			substr($encryptionKey, 0, 12) . "\x00\x00\x00\x02"
+		);
+	}
+
+	public static function cfb8(string $encryptionKey) : self{
+		return new EncryptionContext(
+			$encryptionKey,
+			"AES-256-CFB8",
+			substr($encryptionKey, 0, 16)
+		);
 	}
 
 	/**

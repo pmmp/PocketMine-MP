@@ -17,13 +17,12 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
@@ -34,18 +33,6 @@ use pocketmine\world\BlockTransaction;
 
 final class WallBanner extends BaseBanner{
 	use HorizontalFacingTrait;
-
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeHorizontalFacing($this->facing);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readHorizontalFacing($stateMeta);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
-	}
 
 	protected function getSupportingFace() : int{
 		return Facing::opposite($this->facing);

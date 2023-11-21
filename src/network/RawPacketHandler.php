@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,7 +32,7 @@ interface RawPacketHandler{
 	public function getPattern() : string;
 
 	/**
-	 * @throws BadPacketException
+	 * @throws PacketHandlingException
 	 */
 	public function handle(AdvancedNetworkInterface $interface, string $address, int $port, string $packet) : bool;
 }

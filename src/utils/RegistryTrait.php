@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,10 +26,27 @@ namespace pocketmine\utils;
 use function array_map;
 use function count;
 use function mb_strtoupper;
+use function preg_match;
 
+/**
+ * This trait allows a class to simulate object class constants, since PHP doesn't currently support this.
+ * These faux constants are exposed in static class methods, which are handled using __callStatic().
+ *
+ * Classes using this trait need to include \@method tags in their class docblock for every faux constant.
+ * Alternatively, just put \@generate-registry-docblock in the docblock and run build/generate-registry-annotations.php
+ */
 trait RegistryTrait{
-	/** @var object[] */
+	/**
+	 * @var object[]|null
+	 * @phpstan-var array<string, object>|null
+	 */
 	private static $members = null;
+
+	private static function verifyName(string $name) : void{
+		if(preg_match('/^(?!\d)[A-Za-z\d_]+$/u', $name) === 0){
+			throw new \InvalidArgumentException("Invalid member name \"$name\", should only contain letters, numbers and underscores, and must not start with a number");
+		}
+	}
 
 	/**
 	 * Adds the given object to the registry.
@@ -37,11 +54,15 @@ trait RegistryTrait{
 	 * @throws \InvalidArgumentException
 	 */
 	private static function _registryRegister(string $name, object $member) : void{
-		$name = mb_strtoupper($name);
-		if(isset(self::$members[$name])){
-			throw new \InvalidArgumentException("\"$name\" is already reserved");
+		if(self::$members === null){
+			throw new AssumptionFailedError("Cannot register members outside of " . self::class . "::setup()");
 		}
-		self::$members[mb_strtoupper($name)] = $member;
+		self::verifyName($name);
+		$upperName = mb_strtoupper($name);
+		if(isset(self::$members[$upperName])){
+			throw new \InvalidArgumentException("\"$upperName\" is already reserved");
+		}
+		self::$members[$upperName] = $member;
 	}
 
 	/**
@@ -68,11 +89,14 @@ trait RegistryTrait{
 	 */
 	private static function _registryFromString(string $name) : object{
 		self::checkInit();
-		$name = mb_strtoupper($name);
-		if(!isset(self::$members[$name])){
-			throw new \InvalidArgumentException("No such registry member: " . self::class . "::" . $name);
+		if(self::$members === null){
+			throw new AssumptionFailedError(self::class . "::checkInit() did not initialize self::\$members correctly");
 		}
-		return self::preprocessMember(self::$members[$name]);
+		$upperName = mb_strtoupper($name);
+		if(!isset(self::$members[$upperName])){
+			throw new \InvalidArgumentException("No such registry member: " . self::class . "::" . $upperName);
+		}
+		return self::preprocessMember(self::$members[$upperName]);
 	}
 
 	protected static function preprocessMember(object $member) : object{
@@ -99,11 +123,10 @@ trait RegistryTrait{
 
 	/**
 	 * @return object[]
+	 * @phpstan-return array<string, object>
 	 */
 	private static function _registryGetAll() : array{
 		self::checkInit();
-		return array_map(function(object $o) : object{
-			return self::preprocessMember($o);
-		}, self::$members);
+		return array_map(self::preprocessMember(...), self::$members ?? throw new AssumptionFailedError(self::class . "::checkInit() did not initialize self::\$members correctly"));
 	}
 }

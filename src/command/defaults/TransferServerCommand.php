@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,25 +25,23 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use function count;
 
 class TransferServerCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
-			"%pocketmine.command.transferserver.description",
-			"%pocketmine.command.transferserver.usage"
+			"transferserver",
+			KnownTranslationFactory::pocketmine_command_transferserver_description(),
+			KnownTranslationFactory::pocketmine_command_transferserver_usage()
 		);
-		$this->setPermission("pocketmine.command.transferserver");
+		$this->setPermission(DefaultPermissionNames::COMMAND_TRANSFERSERVER);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) < 1){
 			throw new InvalidCommandSyntaxException();
 		}elseif(!($sender instanceof Player)){

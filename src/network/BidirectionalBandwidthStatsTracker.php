@@ -17,20 +17,17 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network;
 
 final class BidirectionalBandwidthStatsTracker{
+	private BandwidthStatsTracker $send;
+	private BandwidthStatsTracker $receive;
 
-	/** @var BandwidthStatsTracker */
-	private $send;
-
-	/** @var BandwidthStatsTracker */
-	private $receive;
-
+	/** @phpstan-param positive-int $historySize */
 	public function __construct(int $historySize){
 		$this->send = new BandwidthStatsTracker($historySize);
 		$this->receive = new BandwidthStatsTracker($historySize);

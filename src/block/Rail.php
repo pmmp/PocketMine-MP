@@ -17,53 +17,43 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\RailConnectionInfo;
+use pocketmine\data\bedrock\block\BlockLegacyMetadata;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\math\Facing;
+use function array_keys;
+use function implode;
 
 class Rail extends BaseRail{
 
-	/* extended meta values for regular rails, to allow curving */
+	private int $railShape = BlockLegacyMetadata::RAIL_STRAIGHT_NORTH_SOUTH;
 
-	private const CURVE_CONNECTIONS = [
-		BlockLegacyMetadata::RAIL_CURVE_SOUTHEAST => [
-			Facing::SOUTH,
-			Facing::EAST
-		],
-		BlockLegacyMetadata::RAIL_CURVE_SOUTHWEST => [
-			Facing::SOUTH,
-			Facing::WEST
-		],
-		BlockLegacyMetadata::RAIL_CURVE_NORTHWEST => [
-			Facing::NORTH,
-			Facing::WEST
-		],
-		BlockLegacyMetadata::RAIL_CURVE_NORTHEAST => [
-			Facing::NORTH,
-			Facing::EAST
-		]
-	];
-
-	protected function getMetaForState(array $connections) : int{
-		try{
-			return self::searchState($connections, self::CURVE_CONNECTIONS);
-		}catch(\InvalidArgumentException $e){
-			return parent::getMetaForState($connections);
-		}
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->railShape($this->railShape);
 	}
 
-	protected function getConnectionsFromMeta(int $meta) : ?array{
-		return self::CURVE_CONNECTIONS[$meta] ?? self::CONNECTIONS[$meta] ?? null;
+	protected function setShapeFromConnections(array $connections) : void{
+		$railShape = self::searchState($connections, RailConnectionInfo::CONNECTIONS) ?? self::searchState($connections, RailConnectionInfo::CURVE_CONNECTIONS);
+		if($railShape === null){
+			throw new \InvalidArgumentException("No rail shape matches these connections");
+		}
+		$this->railShape = $railShape;
+	}
+
+	protected function getCurrentShapeConnections() : array{
+		return RailConnectionInfo::CURVE_CONNECTIONS[$this->railShape] ?? RailConnectionInfo::CONNECTIONS[$this->railShape];
 	}
 
 	protected function getPossibleConnectionDirectionsOneConstraint(int $constraint) : array{
 		$possible = parent::getPossibleConnectionDirectionsOneConstraint($constraint);
 
-		if(($constraint & self::FLAG_ASCEND) === 0){
+		if(($constraint & RailConnectionInfo::FLAG_ASCEND) === 0){
 			foreach([
 				Facing::NORTH,
 				Facing::SOUTH,
@@ -77,5 +67,16 @@ class Rail extends BaseRail{
 		}
 
 		return $possible;
+	}
+
+	public function getShape() : int{ return $this->railShape; }
+
+	/** @return $this */
+	public function setShape(int $shape) : self{
+		if(!isset(RailConnectionInfo::CONNECTIONS[$shape]) && !isset(RailConnectionInfo::CURVE_CONNECTIONS[$shape])){
+			throw new \InvalidArgumentException("Invalid shape, must be one of " . implode(", ", [...array_keys(RailConnectionInfo::CONNECTIONS), ...array_keys(RailConnectionInfo::CURVE_CONNECTIONS)]));
+		}
+		$this->railShape = $shape;
+		return $this;
 	}
 }

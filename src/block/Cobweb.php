@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,10 +29,6 @@ use pocketmine\item\VanillaItems;
 
 class Cobweb extends Flowable{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(4.0, BlockToolType::SWORD | BlockToolType::SHEARS, 1));
-	}
-
 	public function hasEntityCollision() : bool{
 		return true;
 	}
@@ -43,6 +39,9 @@ class Cobweb extends Flowable{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
+		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0){
+			return [$this->asItem()];
+		}
 		return [
 			VanillaItems::STRING()
 		];

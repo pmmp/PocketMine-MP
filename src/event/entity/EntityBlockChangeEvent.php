@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -35,15 +35,12 @@ use pocketmine\event\CancellableTrait;
 class EntityBlockChangeEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Block */
-	private $from;
-	/** @var Block */
-	private $to;
-
-	public function __construct(Entity $entity, Block $from, Block $to){
+	public function __construct(
+		Entity $entity,
+		private Block $from,
+		private Block $to
+	){
 		$this->entity = $entity;
-		$this->from = $from;
-		$this->to = $to;
 	}
 
 	public function getBlock() : Block{

@@ -17,25 +17,24 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\item;
 
 class ArmorTypeInfo{
+	private ArmorMaterial $material;
 
-	/** @var int */
-	private $defensePoints;
-	/** @var int */
-	private $maxDurability;
-	/** @var int */
-	private $armorSlot;
-
-	public function __construct(int $defensePoints, int $maxDurability, int $armorSlot){
-		$this->defensePoints = $defensePoints;
-		$this->maxDurability = $maxDurability;
-		$this->armorSlot = $armorSlot;
+	public function __construct(
+		private int $defensePoints,
+		private int $maxDurability,
+		private int $armorSlot,
+		private int $toughness = 0,
+		private bool $fireProof = false,
+		?ArmorMaterial $material = null
+	){
+		$this->material = $material ?? VanillaArmorMaterials::LEATHER();
 	}
 
 	public function getDefensePoints() : int{
@@ -48,5 +47,17 @@ class ArmorTypeInfo{
 
 	public function getArmorSlot() : int{
 		return $this->armorSlot;
+	}
+
+	public function getToughness() : int{
+		return $this->toughness;
+	}
+
+	public function isFireProof() : bool{
+		return $this->fireProof;
+	}
+
+	public function getMaterial() : ArmorMaterial{
+		return $this->material;
 	}
 }

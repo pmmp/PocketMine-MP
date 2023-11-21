@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,35 +27,28 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
-use Ds\Set;
+use pocketmine\utils\ObjectSet;
 use pocketmine\utils\ReversePriorityQueue;
 
 class TaskScheduler{
-	/** @var string|null */
-	private $owner;
+	private bool $enabled = true;
 
-	/** @var bool */
-	private $enabled = true;
-
-	/**
-	 * @var ReversePriorityQueue
-	 * @phpstan-var ReversePriorityQueue<int, TaskHandler>
-	 */
-	protected $queue;
+	/** @phpstan-var ReversePriorityQueue<int, TaskHandler> */
+	protected ReversePriorityQueue $queue;
 
 	/**
-	 * @var Set|TaskHandler[]
-	 * @phpstan-var Set<TaskHandler>
+	 * @var ObjectSet|TaskHandler[]
+	 * @phpstan-var ObjectSet<TaskHandler>
 	 */
-	protected $tasks;
+	protected ObjectSet $tasks;
 
-	/** @var int */
-	protected $currentTick = 0;
+	protected int $currentTick = 0;
 
-	public function __construct(?string $owner = null){
-		$this->owner = $owner;
+	public function __construct(
+		private ?string $owner = null
+	){
 		$this->queue = new ReversePriorityQueue();
-		$this->tasks = new Set();
+		$this->tasks = new ObjectSet();
 	}
 
 	public function scheduleTask(Task $task) : TaskHandler{
@@ -88,12 +81,9 @@ class TaskScheduler{
 		return $this->tasks->contains($task);
 	}
 
-	/**
-	 * @throws \InvalidStateException
-	 */
 	private function addTask(Task $task, int $delay, int $period) : TaskHandler{
 		if(!$this->enabled){
-			throw new \InvalidStateException("Tried to schedule task to disabled scheduler");
+			throw new \LogicException("Tried to schedule task to disabled scheduler");
 		}
 
 		if($delay <= 0){
@@ -133,6 +123,9 @@ class TaskScheduler{
 	}
 
 	public function mainThreadHeartbeat(int $currentTick) : void{
+		if(!$this->enabled){
+			throw new \LogicException("Cannot run heartbeat on a disabled scheduler");
+		}
 		$this->currentTick = $currentTick;
 		while($this->isReady($this->currentTick)){
 			/** @var TaskHandler $task */
@@ -142,7 +135,7 @@ class TaskScheduler{
 				continue;
 			}
 			$task->run();
-			if($task->isRepeating()){
+			if(!$task->isCancelled() && $task->isRepeating()){
 				$task->setNextRun($this->currentTick + $task->getPeriod());
 				$this->queue->insert($task, $this->currentTick + $task->getPeriod());
 			}else{
@@ -153,6 +146,6 @@ class TaskScheduler{
 	}
 
 	private function isReady(int $currentTick) : bool{
-		return !$this->queue->isEmpty() and $this->queue->current()->getNextRun() <= $currentTick;
+		return !$this->queue->isEmpty() && $this->queue->current()->getNextRun() <= $currentTick;
 	}
 }

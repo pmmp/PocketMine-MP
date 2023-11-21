@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -44,10 +44,16 @@ class Bow extends Tool implements Releasable{
 		return 385;
 	}
 
-	public function onReleaseUsing(Player $player) : ItemUseResult{
+	public function onReleaseUsing(Player $player, array &$returnedItems) : ItemUseResult{
 		$arrow = VanillaItems::ARROW();
-		if($player->hasFiniteResources() and !$player->getInventory()->contains($arrow)){
-			return ItemUseResult::FAIL();
+		$inventory = match(true){
+			$player->getOffHandInventory()->contains($arrow) => $player->getOffHandInventory(),
+			$player->getInventory()->contains($arrow) => $player->getInventory(),
+			default => null
+		};
+
+		if($player->hasFiniteResources() && $inventory === null){
+			return ItemUseResult::FAIL;
 		}
 
 		$location = $player->getLocation();
@@ -79,7 +85,7 @@ class Bow extends Tool implements Releasable{
 		}
 		$ev = new EntityShootBowEvent($player, $this, $entity, $baseForce * 3);
 
-		if($baseForce < 0.1 or $diff < 5 or $player->isSpectator()){
+		if($baseForce < 0.1 || $diff < 5 || $player->isSpectator()){
 			$ev->cancel();
 		}
 
@@ -89,7 +95,7 @@ class Bow extends Tool implements Releasable{
 
 		if($ev->isCancelled()){
 			$entity->flagForDespawn();
-			return ItemUseResult::FAIL();
+			return ItemUseResult::FAIL;
 		}
 
 		$entity->setMotion($entity->getMotion()->multiply($ev->getForce()));
@@ -99,7 +105,7 @@ class Bow extends Tool implements Releasable{
 			$projectileEv->call();
 			if($projectileEv->isCancelled()){
 				$ev->getProjectile()->flagForDespawn();
-				return ItemUseResult::FAIL();
+				return ItemUseResult::FAIL;
 			}
 
 			$ev->getProjectile()->spawnToAll();
@@ -110,11 +116,15 @@ class Bow extends Tool implements Releasable{
 
 		if($player->hasFiniteResources()){
 			if(!$infinity){ //TODO: tipped arrows are still consumed when Infinity is applied
-				$player->getInventory()->removeItem($arrow);
+				$inventory?->removeItem($arrow);
 			}
 			$this->applyDamage(1);
 		}
 
-		return ItemUseResult::SUCCESS();
+		return ItemUseResult::SUCCESS;
+	}
+
+	public function canStartUsingItem(Player $player) : bool{
+		return !$player->hasFiniteResources() || $player->getOffHandInventory()->contains($arrow = VanillaItems::ARROW()) || $player->getInventory()->contains($arrow);
 	}
 }

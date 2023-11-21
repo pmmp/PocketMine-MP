@@ -17,17 +17,16 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class WoodenButton extends Button{
+use pocketmine\block\utils\WoodTypeTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::AXE));
-	}
+class WoodenButton extends Button{
+	use WoodTypeTrait;
 
 	protected function getActivationTime() : int{
 		return 30;
@@ -35,5 +34,9 @@ class WoodenButton extends Button{
 
 	public function hasEntityCollision() : bool{
 		return false; //TODO: arrows activate wooden buttons
+	}
+
+	public function getFuelTime() : int{
+		return $this->woodType->isFlammable() ? 100 : 0;
 	}
 }

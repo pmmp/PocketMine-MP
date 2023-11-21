@@ -17,13 +17,15 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\Process;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -34,25 +36,19 @@ use function round;
 
 class StatusCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
-			"%pocketmine.command.status.description",
-			"%pocketmine.command.status.usage"
+			"status",
+			KnownTranslationFactory::pocketmine_command_status_description()
 		);
-		$this->setPermission("pocketmine.command.status");
+		$this->setPermission(DefaultPermissionNames::COMMAND_STATUS);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
-		$rUsage = Process::getRealMemoryUsage();
 		$mUsage = Process::getAdvancedMemoryUsage();
 
 		$server = $sender->getServer();
-		$sender->sendMessage(TextFormat::GREEN . "---- " . TextFormat::WHITE . "Server status" . TextFormat::GREEN . " ----");
+		$sender->sendMessage(TextFormat::GREEN . "---- " . TextFormat::RESET . "Server status" . TextFormat::GREEN . " ----");
 
 		$time = (int) (microtime(true) - $server->getStartTime());
 
@@ -82,10 +78,10 @@ class StatusCommand extends VanillaCommand{
 		$sender->sendMessage(TextFormat::GOLD . "Uptime: " . TextFormat::RED . $uptime);
 
 		$tpsColor = TextFormat::GREEN;
-		if($server->getTicksPerSecond() < 17){
-			$tpsColor = TextFormat::GOLD;
-		}elseif($server->getTicksPerSecond() < 12){
+		if($server->getTicksPerSecond() < 12){
 			$tpsColor = TextFormat::RED;
+		}elseif($server->getTicksPerSecond() < 17){
+			$tpsColor = TextFormat::GOLD;
 		}
 
 		$sender->sendMessage(TextFormat::GOLD . "Current TPS: {$tpsColor}{$server->getTicksPerSecond()} ({$server->getTickUsage()}%)");
@@ -100,18 +96,18 @@ class StatusCommand extends VanillaCommand{
 		$sender->sendMessage(TextFormat::GOLD . "Main thread memory: " . TextFormat::RED . number_format(round(($mUsage[0] / 1024) / 1024, 2), 2) . " MB.");
 		$sender->sendMessage(TextFormat::GOLD . "Total memory: " . TextFormat::RED . number_format(round(($mUsage[1] / 1024) / 1024, 2), 2) . " MB.");
 		$sender->sendMessage(TextFormat::GOLD . "Total virtual memory: " . TextFormat::RED . number_format(round(($mUsage[2] / 1024) / 1024, 2), 2) . " MB.");
-		$sender->sendMessage(TextFormat::GOLD . "Heap memory: " . TextFormat::RED . number_format(round(($rUsage[0] / 1024) / 1024, 2), 2) . " MB.");
 
 		$globalLimit = $server->getMemoryManager()->getGlobalMemoryLimit();
 		if($globalLimit > 0){
-			$sender->sendMessage(TextFormat::GOLD . "Maximum memory (manager): " . TextFormat::RED . number_format(round($globalLimit, 2), 2) . " MB.");
+			$sender->sendMessage(TextFormat::GOLD . "Maximum memory (manager): " . TextFormat::RED . number_format(round(($globalLimit / 1024) / 1024, 2), 2) . " MB.");
 		}
 
 		foreach($server->getWorldManager()->getWorlds() as $world){
 			$worldName = $world->getFolderName() !== $world->getDisplayName() ? " (" . $world->getDisplayName() . ")" : "";
 			$timeColor = $world->getTickRateTime() > 40 ? TextFormat::RED : TextFormat::YELLOW;
 			$sender->sendMessage(TextFormat::GOLD . "World \"{$world->getFolderName()}\"$worldName: " .
-				TextFormat::RED . number_format(count($world->getChunks())) . TextFormat::GREEN . " chunks, " .
+				TextFormat::RED . number_format(count($world->getLoadedChunks())) . TextFormat::GREEN . " loaded chunks, " .
+				TextFormat::RED . number_format(count($world->getTickingChunks())) . TextFormat::GREEN . " ticking chunks, " .
 				TextFormat::RED . number_format(count($world->getEntities())) . TextFormat::GREEN . " entities. " .
 				"Time $timeColor" . round($world->getTickRateTime(), 2) . "ms"
 			);

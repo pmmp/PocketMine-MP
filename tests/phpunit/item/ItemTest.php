@@ -17,13 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\item;
 
 use PHPUnit\Framework\TestCase;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\VanillaEnchantments;
 
@@ -33,14 +34,14 @@ class ItemTest extends TestCase{
 	private $item;
 
 	public function setUp() : void{
-		$this->item = ItemFactory::getInstance()->get(ItemIds::DIAMOND_SWORD);
+		$this->item = VanillaItems::DIAMOND_SWORD();
 	}
 
 	/**
 	 * Test for issue #1145 (items aren't considered equal after NBT serializing and deserializing
 	 */
 	public function testItemEquals() : void{
-		$item = ItemFactory::getInstance()->get(ItemIds::STONE)->setCustomName("HI");
+		$item = VanillaBlocks::STONE()->asItem()->setCustomName("HI");
 		$item2 = Item::nbtDeserialize($item->nbtSerialize());
 		self::assertTrue($item2->equals($item));
 		self::assertTrue($item->equals($item2));
@@ -50,7 +51,7 @@ class ItemTest extends TestCase{
 	 * Test that same items without NBT are considered equal
 	 */
 	public function testItemEqualsNoNbt() : void{
-		$item1 = ItemFactory::getInstance()->get(ItemIds::DIAMOND_SWORD);
+		$item1 = VanillaItems::DIAMOND_SWORD();
 		$item2 = clone $item1;
 		self::assertTrue($item1->equals($item2));
 	}
@@ -62,7 +63,7 @@ class ItemTest extends TestCase{
 	public function testItemPersistsDisplayProperties() : void{
 		$lore = ["Line A", "Line B"];
 		$name = "HI";
-		$item = ItemFactory::getInstance()->get(ItemIds::DIAMOND_SWORD);
+		$item = VanillaItems::DIAMOND_SWORD();
 		$item->setCustomName($name);
 		$item->setLore($lore);
 		$item = Item::nbtDeserialize($item->nbtSerialize());
@@ -98,12 +99,12 @@ class ItemTest extends TestCase{
 		}
 		foreach($this->item->getEnchantments() as $enchantment){
 			foreach($enchantments as $k => $applied){
-				if($enchantment->getType() === $applied->getType() and $enchantment->getLevel() === $applied->getLevel()){
+				if($enchantment->getType() === $applied->getType() && $enchantment->getLevel() === $applied->getLevel()){
 					unset($enchantments[$k]);
 					continue 2;
 				}
 			}
-			self::fail("Unknown extra enchantment found: " . $enchantment->getType()->getName() . " x" . $enchantment->getLevel());
+			self::fail("Unknown extra enchantment found");
 		}
 		self::assertEmpty($enchantments, "Expected all enchantments to be present");
 	}
@@ -135,5 +136,14 @@ class ItemTest extends TestCase{
 		self::assertCount(2, $this->item->getEnchantments());
 		$this->item->removeEnchantment(VanillaEnchantments::FIRE_ASPECT(), 2);
 		self::assertFalse($this->item->hasEnchantment(VanillaEnchantments::FIRE_ASPECT()));
+	}
+
+	/**
+	 * Tests that when all enchantments are removed from an item, the "ench" tag is removed as well
+	 */
+	public function testRemoveAllEnchantmentsNBT() : void{
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::SHARPNESS(), 1));
+		$this->item->removeEnchantment(VanillaEnchantments::SHARPNESS());
+		self::assertNull($this->item->getNamedTag()->getTag(Item::TAG_ENCH));
 	}
 }

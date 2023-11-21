@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,25 +25,21 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\DefaultPermissionNames;
 
 class StopCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
-			"%pocketmine.command.stop.description",
-			"%commands.stop.usage"
+			"stop",
+			KnownTranslationFactory::pocketmine_command_stop_description()
 		);
-		$this->setPermission("pocketmine.command.stop");
+		$this->setPermission(DefaultPermissionNames::COMMAND_STOP);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
-		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.stop.start"));
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_stop_start());
 
 		$sender->getServer()->shutdown();
 

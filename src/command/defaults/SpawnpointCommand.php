@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,9 +26,9 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
-use pocketmine\utils\TextFormat;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function count;
@@ -36,63 +36,42 @@ use function round;
 
 class SpawnpointCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
-			"%pocketmine.command.spawnpoint.description",
-			"%commands.spawnpoint.usage"
+			"spawnpoint",
+			KnownTranslationFactory::pocketmine_command_spawnpoint_description(),
+			KnownTranslationFactory::commands_spawnpoint_usage()
 		);
-		$this->setPermission("pocketmine.command.spawnpoint");
+		$this->setPermissions([
+			DefaultPermissionNames::COMMAND_SPAWNPOINT_SELF,
+			DefaultPermissionNames::COMMAND_SPAWNPOINT_OTHER
+		]);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
+		$target = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, DefaultPermissionNames::COMMAND_SPAWNPOINT_SELF, DefaultPermissionNames::COMMAND_SPAWNPOINT_OTHER);
+		if($target === null){
 			return true;
-		}
-
-		$target = null;
-
-		if(count($args) === 0){
-			if($sender instanceof Player){
-				$target = $sender;
-			}else{
-				$sender->sendMessage(TextFormat::RED . "Please provide a player!");
-
-				return true;
-			}
-		}else{
-			$target = $sender->getServer()->getPlayerByPrefix($args[0]);
-			if($target === null){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
-
-				return true;
-			}
 		}
 
 		if(count($args) === 4){
 			$world = $target->getWorld();
 			$pos = $sender instanceof Player ? $sender->getPosition() : $world->getSpawnLocation();
 			$x = $this->getRelativeDouble($pos->x, $sender, $args[1]);
-			$y = $this->getRelativeDouble($pos->y, $sender, $args[2], 0, World::Y_MAX);
+			$y = $this->getRelativeDouble($pos->y, $sender, $args[2], World::Y_MIN, World::Y_MAX);
 			$z = $this->getRelativeDouble($pos->z, $sender, $args[3]);
 			$target->setSpawn(new Position($x, $y, $z, $world));
 
-			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.spawnpoint.success", [$target->getName(), round($x, 2), round($y, 2), round($z, 2)]));
+			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_spawnpoint_success($target->getName(), (string) round($x, 2), (string) round($y, 2), (string) round($z, 2)));
 
 			return true;
-		}elseif(count($args) <= 1){
-			if($sender instanceof Player){
-				$cpos = $sender->getPosition();
-				$pos = Position::fromObject($cpos->floor(), $cpos->getWorld());
-				$target->setSpawn($pos);
+		}elseif(count($args) <= 1 && $sender instanceof Player){
+			$cpos = $sender->getPosition();
+			$pos = Position::fromObject($cpos->floor(), $cpos->getWorld());
+			$target->setSpawn($pos);
 
-				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.spawnpoint.success", [$target->getName(), round($pos->x, 2), round($pos->y, 2), round($pos->z, 2)]));
-				return true;
-			}else{
-				$sender->sendMessage(TextFormat::RED . "Please provide a player!");
-
-				return true;
-			}
+			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_spawnpoint_success($target->getName(), (string) round($pos->x, 2), (string) round($pos->y, 2), (string) round($pos->z, 2)));
+			return true;
 		}
 
 		throw new InvalidCommandSyntaxException();

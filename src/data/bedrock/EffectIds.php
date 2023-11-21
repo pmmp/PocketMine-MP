@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -58,4 +58,5 @@ final class EffectIds{
 	public const SLOW_FALLING = 27;
 	public const BAD_OMEN = 28;
 	public const VILLAGE_HERO = 29;
+	public const DARKNESS = 30;
 }

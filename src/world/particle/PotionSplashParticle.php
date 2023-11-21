@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,15 +26,10 @@ namespace pocketmine\world\particle;
 use pocketmine\color\Color;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelEvent;
 
 class PotionSplashParticle implements Particle{
-
-	/** @var Color */
-	private $color;
-
-	public function __construct(Color $color){
-		$this->color = $color;
-	}
+	public function __construct(private Color $color){}
 
 	/**
 	 * Returns the default water-bottle splash colour.
@@ -50,6 +45,6 @@ class PotionSplashParticle implements Particle{
 	}
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_SPLASH, $this->color->toARGB(), $pos)];
+		return [LevelEventPacket::create(LevelEvent::PARTICLE_SPLASH, $this->color->toARGB(), $pos)];
 	}
 }

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -36,18 +36,13 @@ use function strlen;
 
 /**
  * This class is used by the current MCPE protocol system to store cached chunk packets for fast resending.
- *
- * TODO: make MemoryManager aware of this so the cache can be destroyed when memory is low
- * TODO: this needs a hook for world unloading
  */
 class ChunkCache implements ChunkListener{
 	/** @var self[][] */
-	private static $instances = [];
+	private static array $instances = [];
 
 	/**
 	 * Fetches the ChunkCache instance for the given world. This lazily creates cache systems as needed.
-	 *
-	 * @return ChunkCache
 	 */
 	public static function getInstance(World $world, Compressor $compressor) : self{
 		$worldId = spl_object_id($world);
@@ -69,23 +64,29 @@ class ChunkCache implements ChunkListener{
 		return self::$instances[$worldId][$compressorId];
 	}
 
-	/** @var World */
-	private $world;
-	/** @var Compressor */
-	private $compressor;
+	public static function pruneCaches() : void{
+		foreach(self::$instances as $compressorMap){
+			foreach($compressorMap as $chunkCache){
+				foreach($chunkCache->caches as $chunkHash => $promise){
+					if($promise->hasResult()){
+						//Do not clear promises that are not yet fulfilled; they will have requesters waiting on them
+						unset($chunkCache->caches[$chunkHash]);
+					}
+				}
+			}
+		}
+	}
 
 	/** @var CompressBatchPromise[] */
-	private $caches = [];
+	private array $caches = [];
 
-	/** @var int */
-	private $hits = 0;
-	/** @var int */
-	private $misses = 0;
+	private int $hits = 0;
+	private int $misses = 0;
 
-	private function __construct(World $world, Compressor $compressor){
-		$this->world = $world;
-		$this->compressor = $compressor;
-	}
+	private function __construct(
+		private World $world,
+		private Compressor $compressor
+	){}
 
 	/**
 	 * Requests asynchronous preparation of the chunk at the given coordinates.
@@ -117,12 +118,7 @@ class ChunkCache implements ChunkListener{
 					$chunkZ,
 					$chunk,
 					$this->caches[$chunkHash],
-					$this->compressor,
-					function() use ($chunkX, $chunkZ) : void{
-						$this->world->getLogger()->error("Failed preparing chunk $chunkX $chunkZ, retrying");
-
-						$this->restartPendingRequest($chunkX, $chunkZ);
-					}
+					$this->compressor
 				)
 			);
 
@@ -141,31 +137,18 @@ class ChunkCache implements ChunkListener{
 	}
 
 	/**
-	 * Restarts an async request for an unresolved chunk.
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	private function restartPendingRequest(int $chunkX, int $chunkZ) : void{
-		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		$existing = $this->caches[$chunkHash] ?? null;
-		if($existing === null or $existing->hasResult()){
-			throw new \InvalidArgumentException("Restart can only be applied to unresolved promises");
-		}
-		$existing->cancel();
-		unset($this->caches[$chunkHash]);
-
-		$this->request($chunkX, $chunkZ)->onResolve(...$existing->getResolveCallbacks());
-	}
-
-	/**
 	 * @throws \InvalidArgumentException
 	 */
 	private function destroyOrRestart(int $chunkX, int $chunkZ) : void{
-		$cache = $this->caches[World::chunkHash($chunkX, $chunkZ)] ?? null;
+		$chunkPosHash = World::chunkHash($chunkX, $chunkZ);
+		$cache = $this->caches[$chunkPosHash] ?? null;
 		if($cache !== null){
 			if(!$cache->hasResult()){
 				//some requesters are waiting for this chunk, so their request needs to be fulfilled
-				$this->restartPendingRequest($chunkX, $chunkZ);
+				$cache->cancel();
+				unset($this->caches[$chunkPosHash]);
+
+				$this->request($chunkX, $chunkZ)->onResolve(...$cache->getResolveCallbacks());
 			}else{
 				//dump the cache, it'll be regenerated the next time it's requested
 				$this->destroy($chunkX, $chunkZ);
@@ -184,7 +167,6 @@ class ChunkCache implements ChunkListener{
 	 * @see ChunkListener::onChunkChanged()
 	 */
 	public function onChunkChanged(int $chunkX, int $chunkZ, Chunk $chunk) : void{
-		//FIXME: this gets fired for stuff that doesn't change terrain related things (like lighting updates)
 		$this->destroyOrRestart($chunkX, $chunkZ);
 	}
 
@@ -194,7 +176,7 @@ class ChunkCache implements ChunkListener{
 	public function onBlockChanged(Vector3 $block) : void{
 		//FIXME: requesters will still receive this chunk after it's been dropped, but we can't mark this for a simple
 		//sync here because it can spam the worker pool
-		$this->destroy($block->getFloorX() >> 4, $block->getFloorZ() >> 4);
+		$this->destroy($block->getFloorX() >> Chunk::COORD_BIT_SIZE, $block->getFloorZ() >> Chunk::COORD_BIT_SIZE);
 	}
 
 	/**

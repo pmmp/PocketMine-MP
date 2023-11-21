@@ -20,7 +20,7 @@ mkdir "$DATA_DIR"
 mkdir "$PLUGINS_DIR"
 
 cd tests/plugins/DevTools
-php -dphar.readonly=0 ./src/DevTools/ConsoleScript.php --make ./ --relative ./ --out "$PLUGINS_DIR/DevTools.phar"
+php -dphar.readonly=0 ./src/ConsoleScript.php --make ./ --relative ./ --out "$PLUGINS_DIR/DevTools.phar"
 cd ../../..
 composer make-server
 

@@ -17,14 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\item\Item;
@@ -37,22 +37,6 @@ use pocketmine\world\BlockTransaction;
 
 class Ladder extends Transparent{
 	use HorizontalFacingTrait;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.4, BlockToolType::AXE));
-	}
-
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeHorizontalFacing($this->facing);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readHorizontalFacing($stateMeta);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
-	}
 
 	public function hasEntityCollision() : bool{
 		return true;
@@ -67,7 +51,7 @@ class Ladder extends Transparent{
 	}
 
 	public function onEntityInside(Entity $entity) : bool{
-		if($entity instanceof Living && $entity->getPosition()->floor()->distanceSquared($this->pos) < 1){ //entity coordinates must be inside block
+		if($entity instanceof Living && $entity->getPosition()->floor()->distanceSquared($this->position) < 1){ //entity coordinates must be inside block
 			$entity->resetFallDistance();
 			$entity->onGround = true;
 		}
@@ -81,8 +65,12 @@ class Ladder extends Transparent{
 		return [AxisAlignedBB::one()->trim($this->facing, 13 / 16)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE;
+	}
+
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$blockClicked->isTransparent() and Facing::axis($face) !== Axis::Y){
+		if($this->canBeSupportedAt($blockReplace, Facing::opposite($face)) && Facing::axis($face) !== Axis::Y){
 			$this->facing = $face;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
@@ -91,8 +79,12 @@ class Ladder extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->getSide(Facing::opposite($this->facing))->isSolid()){ //Replace with common break method
-			$this->pos->getWorld()->useBreakOn($this->pos);
+		if(!$this->canBeSupportedAt($this, Facing::opposite($this->facing))){ //Replace with common break method
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
+	}
+
+	private function canBeSupportedAt(Block $block, int $face) : bool{
+		return $block->getAdjacentSupportType($face) === SupportType::FULL;
 	}
 }

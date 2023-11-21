@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,20 +29,16 @@ use pocketmine\math\Facing;
 
 class GrassPath extends Transparent{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6, BlockToolType::SHOVEL));
-	}
-
 	/**
 	 * @return AxisAlignedBB[]
 	 */
 	protected function recalculateCollisionBoxes() : array{
-		return [AxisAlignedBB::one()]; //TODO: this should be trimmed at the top by 1/16, but MCPE currently treats them as a full block (https://bugs.mojang.com/browse/MCPE-12109)
+		return [AxisAlignedBB::one()->trim(Facing::UP, 1 / 16)];
 	}
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::UP)->isSolid()){
-			$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::DIRT());
+			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::DIRT());
 		}
 	}
 

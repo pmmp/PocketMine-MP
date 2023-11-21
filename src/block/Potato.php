@@ -17,12 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use function mt_rand;
@@ -31,15 +32,16 @@ class Potato extends Crops{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		$result = [
-			VanillaItems::POTATO()->setCount($this->age >= 7 ? mt_rand(1, 5) : 1)
+			//min/max would be 2-5 in Java
+			VanillaItems::POTATO()->setCount($this->age >= self::MAX_AGE ? FortuneDropHelper::binomial($item, 1) : 1)
 		];
-		if($this->age >= 7 && mt_rand(0, 49) === 0){
+		if($this->age >= self::MAX_AGE && mt_rand(0, 49) === 0){
 			$result[] = VanillaItems::POISONOUS_POTATO();
 		}
 		return $result;
 	}
 
-	public function getPickedItem(bool $addUserData = false) : Item{
+	public function asItem() : Item{
 		return VanillaItems::POTATO();
 	}
 }

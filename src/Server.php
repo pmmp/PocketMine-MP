@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,94 +28,119 @@ declare(strict_types=1);
 namespace pocketmine;
 
 use pocketmine\command\Command;
-use pocketmine\command\CommandReader;
 use pocketmine\command\CommandSender;
-use pocketmine\command\ConsoleCommandSender;
 use pocketmine\command\SimpleCommandMap;
+use pocketmine\console\ConsoleCommandSender;
+use pocketmine\console\ConsoleReaderChildProcessDaemon;
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingManagerFromDataHelper;
+use pocketmine\crash\CrashDump;
+use pocketmine\crash\CrashDumpRenderer;
+use pocketmine\entity\EntityDataHelper;
+use pocketmine\entity\Location;
 use pocketmine\event\HandlerListManager;
 use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\event\player\PlayerDataSaveEvent;
+use pocketmine\event\player\PlayerLoginEvent;
 use pocketmine\event\server\CommandEvent;
-use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
-use pocketmine\lang\TranslationContainer;
-use pocketmine\nbt\BigEndianNbtSerializer;
-use pocketmine\nbt\NbtDataException;
+use pocketmine\lang\Translatable;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\CompressBatchTask;
 use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\network\mcpe\compression\ZlibCompressor;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\encryption\EncryptionContext;
+use pocketmine\network\mcpe\EntityEventBroadcaster;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketBroadcaster;
-use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
-use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\network\mcpe\raklib\RakLibInterface;
+use pocketmine\network\mcpe\StandardEntityEventBroadcaster;
+use pocketmine\network\mcpe\StandardPacketBroadcaster;
 use pocketmine\network\Network;
+use pocketmine\network\NetworkInterfaceStartException;
 use pocketmine\network\query\DedicatedQueryNetworkInterface;
 use pocketmine\network\query\QueryHandler;
 use pocketmine\network\query\QueryInfo;
-use pocketmine\network\upnp\UPnP;
+use pocketmine\network\upnp\UPnPNetworkInterface;
 use pocketmine\permission\BanList;
 use pocketmine\permission\DefaultPermissions;
+use pocketmine\player\DatFilePlayerDataProvider;
 use pocketmine\player\GameMode;
 use pocketmine\player\OfflinePlayer;
 use pocketmine\player\Player;
+use pocketmine\player\PlayerDataLoadException;
+use pocketmine\player\PlayerDataProvider;
+use pocketmine\player\PlayerDataSaveException;
 use pocketmine\player\PlayerInfo;
 use pocketmine\plugin\PharPluginLoader;
-use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginEnableOrder;
 use pocketmine\plugin\PluginGraylist;
 use pocketmine\plugin\PluginManager;
 use pocketmine\plugin\PluginOwned;
 use pocketmine\plugin\ScriptPluginLoader;
+use pocketmine\promise\Promise;
+use pocketmine\promise\PromiseResolver;
 use pocketmine\resourcepacks\ResourcePackManager;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\snooze\SleeperHandler;
-use pocketmine\snooze\SleeperNotifier;
 use pocketmine\stats\SendUsageTask;
+use pocketmine\thread\log\AttachableThreadSafeLogger;
+use pocketmine\thread\ThreadCrashException;
+use pocketmine\thread\ThreadSafeClassLoader;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
-use pocketmine\updater\AutoUpdater;
+use pocketmine\updater\UpdateChecker;
+use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\BroadcastLoggerForwarder;
 use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Internet;
 use pocketmine\utils\MainLogger;
+use pocketmine\utils\NotCloneable;
+use pocketmine\utils\NotSerializable;
 use pocketmine\utils\Process;
+use pocketmine\utils\SignalHandler;
 use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
-use pocketmine\uuid\UUID;
 use pocketmine\world\format\io\WorldProviderManager;
-use pocketmine\world\format\io\WritableWorldProvider;
+use pocketmine\world\format\io\WritableWorldProviderManagerEntry;
 use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\GeneratorManager;
-use pocketmine\world\generator\normal\Normal;
+use pocketmine\world\generator\InvalidGeneratorOptionsException;
+use pocketmine\world\Position;
 use pocketmine\world\World;
+use pocketmine\world\WorldCreationOptions;
 use pocketmine\world\WorldManager;
-use function array_shift;
+use pocketmine\YmlServerProperties as Yml;
+use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Filesystem\Path;
+use function array_fill;
 use function array_sum;
 use function base64_encode;
 use function cli_set_process_title;
 use function copy;
 use function count;
-use function explode;
+use function date;
+use function fclose;
 use function file_exists;
-use function file_get_contents;
 use function file_put_contents;
 use function filemtime;
+use function fopen;
 use function get_class;
-use function implode;
 use function ini_set;
-use function is_a;
 use function is_array;
+use function is_dir;
+use function is_int;
+use function is_object;
+use function is_resource;
 use function is_string;
 use function json_decode;
 use function max;
@@ -137,153 +162,144 @@ use function stripos;
 use function strlen;
 use function strrpos;
 use function strtolower;
+use function strval;
 use function time;
 use function touch;
 use function trim;
 use function yaml_parse;
-use function zlib_decode;
-use function zlib_encode;
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 use const PHP_INT_MAX;
-use const PTHREADS_INHERIT_NONE;
-use const ZLIB_ENCODING_GZIP;
 
 /**
  * The class that manages everything
  */
 class Server{
+	use NotCloneable;
+	use NotSerializable;
+
 	public const BROADCAST_CHANNEL_ADMINISTRATIVE = "pocketmine.broadcast.admin";
 	public const BROADCAST_CHANNEL_USERS = "pocketmine.broadcast.user";
 
-	/** @var Server|null */
-	private static $instance = null;
-
-	/** @var SleeperHandler */
-	private $tickSleeper;
-
-	/** @var BanList */
-	private $banByName;
-
-	/** @var BanList */
-	private $banByIP;
-
-	/** @var Config */
-	private $operators;
-
-	/** @var Config */
-	private $whitelist;
-
-	/** @var bool */
-	private $isRunning = true;
-
-	/** @var bool */
-	private $hasStopped = false;
-
-	/** @var PluginManager */
-	private $pluginManager;
-
-	/** @var float */
-	private $profilingTickRate = 20;
-
-	/** @var AutoUpdater */
-	private $updater;
-
-	/** @var AsyncPool */
-	private $asyncPool;
+	public const DEFAULT_SERVER_NAME = VersionInfo::NAME . " Server";
+	public const DEFAULT_MAX_PLAYERS = 20;
+	public const DEFAULT_PORT_IPV4 = 19132;
+	public const DEFAULT_PORT_IPV6 = 19133;
+	public const DEFAULT_MAX_VIEW_DISTANCE = 16;
 
 	/**
-	 * Counts the ticks since the server start
-	 *
-	 * @var int
+	 * Worlds, network, commands and most other things are polled this many times per second on average.
+	 * Between ticks, the server will sleep to ensure that the average tick rate is maintained.
+	 * It may wake up between ticks if a Snooze notification source is triggered (e.g. to process network packets).
 	 */
-	private $tickCounter = 0;
-	/** @var float */
-	private $nextTick = 0;
+	public const TARGET_TICKS_PER_SECOND = 20;
+	/**
+	 * The average time between ticks, in seconds.
+	 */
+	public const TARGET_SECONDS_PER_TICK = 1 / self::TARGET_TICKS_PER_SECOND;
+	public const TARGET_NANOSECONDS_PER_TICK = 1_000_000_000 / self::TARGET_TICKS_PER_SECOND;
+
+	/**
+	 * The TPS threshold below which the server will generate log warnings.
+	 */
+	private const TPS_OVERLOAD_WARNING_THRESHOLD = self::TARGET_TICKS_PER_SECOND * 0.6;
+
+	private const TICKS_PER_WORLD_CACHE_CLEAR = 5 * self::TARGET_TICKS_PER_SECOND;
+	private const TICKS_PER_TPS_OVERLOAD_WARNING = 5 * self::TARGET_TICKS_PER_SECOND;
+	private const TICKS_PER_STATS_REPORT = 300 * self::TARGET_TICKS_PER_SECOND;
+
+	private const DEFAULT_ASYNC_COMPRESSION_THRESHOLD = 10_000;
+
+	private static ?Server $instance = null;
+
+	private TimeTrackingSleeperHandler $tickSleeper;
+
+	private BanList $banByName;
+
+	private BanList $banByIP;
+
+	private Config $operators;
+
+	private Config $whitelist;
+
+	private bool $isRunning = true;
+
+	private bool $hasStopped = false;
+
+	private PluginManager $pluginManager;
+
+	private float $profilingTickRate = self::TARGET_TICKS_PER_SECOND;
+
+	private UpdateChecker $updater;
+
+	private AsyncPool $asyncPool;
+
+	/** Counts the ticks since the server start */
+	private int $tickCounter = 0;
+	private float $nextTick = 0;
 	/** @var float[] */
-	private $tickAverage = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20];
+	private array $tickAverage;
 	/** @var float[] */
-	private $useAverage = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-	/** @var float */
-	private $currentTPS = 20;
-	/** @var float */
-	private $currentUse = 0;
-	/** @var float */
-	private $startTime;
+	private array $useAverage;
+	private float $currentTPS = self::TARGET_TICKS_PER_SECOND;
+	private float $currentUse = 0;
+	private float $startTime;
 
-	/** @var bool */
-	private $doTitleTick = true;
+	private bool $doTitleTick = true;
 
-	/** @var int */
-	private $sendUsageTicker = 0;
+	private int $sendUsageTicker = 0;
 
-	/** @var \AttachableThreadedLogger */
-	private $logger;
+	private MemoryManager $memoryManager;
 
-	/** @var MemoryManager */
-	private $memoryManager;
+	private ?ConsoleReaderChildProcessDaemon $console = null;
+	private ?ConsoleCommandSender $consoleSender = null;
 
-	/** @var CommandReader */
-	private $console;
+	private SimpleCommandMap $commandMap;
 
-	/** @var SimpleCommandMap */
-	private $commandMap;
+	private CraftingManager $craftingManager;
 
-	/** @var CraftingManager */
-	private $craftingManager;
+	private ResourcePackManager $resourceManager;
 
-	/** @var ResourcePackManager */
-	private $resourceManager;
+	private WorldManager $worldManager;
 
-	/** @var WorldManager */
-	private $worldManager;
+	private int $maxPlayers;
 
-	/** @var int */
-	private $maxPlayers;
+	private bool $onlineMode = true;
 
-	/** @var bool */
-	private $onlineMode = true;
+	private Network $network;
+	private bool $networkCompressionAsync = true;
+	private int $networkCompressionAsyncThreshold = self::DEFAULT_ASYNC_COMPRESSION_THRESHOLD;
 
-	/** @var Network */
-	private $network;
-	/** @var bool */
-	private $networkCompressionAsync = true;
+	private Language $language;
+	private bool $forceLanguage = false;
 
-	/** @var Language */
-	private $language;
-	/** @var bool */
-	private $forceLanguage = false;
+	private UuidInterface $serverID;
 
-	/** @var UUID */
-	private $serverID;
+	private string $dataPath;
+	private string $pluginPath;
 
-	/** @var \DynamicClassLoader */
-	private $autoloader;
-	/** @var string */
-	private $dataPath;
-	/** @var string */
-	private $pluginPath;
+	private PlayerDataProvider $playerDataProvider;
 
 	/**
 	 * @var string[]
 	 * @phpstan-var array<string, string>
 	 */
-	private $uniquePlayers = [];
+	private array $uniquePlayers = [];
 
-	/** @var QueryInfo */
-	private $queryInfo;
+	private QueryInfo $queryInfo;
 
-	/** @var ServerConfigGroup */
-	private $configGroup;
+	private ServerConfigGroup $configGroup;
 
 	/** @var Player[] */
-	private $playerList = [];
+	private array $playerList = [];
+
+	private SignalHandler $signalHandler;
 
 	/**
 	 * @var CommandSender[][]
 	 * @phpstan-var array<string, array<int, CommandSender>>
 	 */
-	private $broadcastSubscribers = [];
+	private array $broadcastSubscribers = [];
 
 	public function getName() : string{
 		return VersionInfo::NAME;
@@ -294,7 +310,7 @@ class Server{
 	}
 
 	public function getPocketMineVersion() : string{
-		return VersionInfo::getVersionObj()->getFullVersion(true);
+		return VersionInfo::VERSION()->getFullVersion(true);
 	}
 
 	public function getVersion() : string{
@@ -341,11 +357,15 @@ class Server{
 	}
 
 	public function getPort() : int{
-		return $this->configGroup->getConfigInt("server-port", 19132);
+		return $this->configGroup->getConfigInt(ServerProperties::SERVER_PORT_IPV4, self::DEFAULT_PORT_IPV4);
+	}
+
+	public function getPortV6() : int{
+		return $this->configGroup->getConfigInt(ServerProperties::SERVER_PORT_IPV6, self::DEFAULT_PORT_IPV6);
 	}
 
 	public function getViewDistance() : int{
-		return max(2, $this->configGroup->getConfigInt("view-distance", 8));
+		return max(2, $this->configGroup->getConfigInt(ServerProperties::VIEW_DISTANCE, self::DEFAULT_MAX_VIEW_DISTANCE));
 	}
 
 	/**
@@ -356,76 +376,63 @@ class Server{
 	}
 
 	public function getIp() : string{
-		$str = $this->configGroup->getConfigString("server-ip");
+		$str = $this->configGroup->getConfigString(ServerProperties::SERVER_IPV4);
 		return $str !== "" ? $str : "0.0.0.0";
 	}
 
-	/**
-	 * @return UUID
-	 */
-	public function getServerUniqueId(){
+	public function getIpV6() : string{
+		$str = $this->configGroup->getConfigString(ServerProperties::SERVER_IPV6);
+		return $str !== "" ? $str : "::";
+	}
+
+	public function getServerUniqueId() : UuidInterface{
 		return $this->serverID;
 	}
 
 	public function getGamemode() : GameMode{
-		return GameMode::fromMagicNumber($this->configGroup->getConfigInt("gamemode", 0) & 0b11);
+		return GameMode::fromString($this->configGroup->getConfigString(ServerProperties::GAME_MODE)) ?? GameMode::SURVIVAL;
 	}
 
 	public function getForceGamemode() : bool{
-		return $this->configGroup->getConfigBool("force-gamemode", false);
+		return $this->configGroup->getConfigBool(ServerProperties::FORCE_GAME_MODE, false);
 	}
 
 	/**
 	 * Returns Server global difficulty. Note that this may be overridden in individual worlds.
 	 */
 	public function getDifficulty() : int{
-		return $this->configGroup->getConfigInt("difficulty", World::DIFFICULTY_NORMAL);
+		return $this->configGroup->getConfigInt(ServerProperties::DIFFICULTY, World::DIFFICULTY_NORMAL);
 	}
 
 	public function hasWhitelist() : bool{
-		return $this->configGroup->getConfigBool("white-list", false);
+		return $this->configGroup->getConfigBool(ServerProperties::WHITELIST, false);
 	}
 
 	public function isHardcore() : bool{
-		return $this->configGroup->getConfigBool("hardcore", false);
+		return $this->configGroup->getConfigBool(ServerProperties::HARDCORE, false);
 	}
 
 	public function getMotd() : string{
-		return $this->configGroup->getConfigString("motd", VersionInfo::NAME . " Server");
+		return $this->configGroup->getConfigString(ServerProperties::MOTD, self::DEFAULT_SERVER_NAME);
 	}
 
-	/**
-	 * @return \DynamicClassLoader
-	 */
-	public function getLoader(){
+	public function getLoader() : ThreadSafeClassLoader{
 		return $this->autoloader;
 	}
 
-	/**
-	 * @return \AttachableThreadedLogger
-	 */
-	public function getLogger(){
+	public function getLogger() : AttachableThreadSafeLogger{
 		return $this->logger;
 	}
 
-	/**
-	 * @return AutoUpdater
-	 */
-	public function getUpdater(){
+	public function getUpdater() : UpdateChecker{
 		return $this->updater;
 	}
 
-	/**
-	 * @return PluginManager
-	 */
-	public function getPluginManager(){
+	public function getPluginManager() : PluginManager{
 		return $this->pluginManager;
 	}
 
-	/**
-	 * @return CraftingManager
-	 */
-	public function getCraftingManager(){
+	public function getCraftingManager() : CraftingManager{
 		return $this->craftingManager;
 	}
 
@@ -477,10 +484,7 @@ class Server{
 		return $this->startTime;
 	}
 
-	/**
-	 * @return SimpleCommandMap
-	 */
-	public function getCommandMap(){
+	public function getCommandMap() : SimpleCommandMap{
 		return $this->commandMap;
 	}
 
@@ -492,13 +496,10 @@ class Server{
 	}
 
 	public function shouldSavePlayerData() : bool{
-		return (bool) $this->configGroup->getProperty("player.save-player-data", true);
+		return $this->configGroup->getPropertyBool(Yml::PLAYER_SAVE_PLAYER_DATA, true);
 	}
 
-	/**
-	 * @return OfflinePlayer|Player
-	 */
-	public function getOfflinePlayer(string $name){
+	public function getOfflinePlayer(string $name) : Player|OfflinePlayer|null{
 		$name = strtolower($name);
 		$result = $this->getPlayerExact($name);
 
@@ -509,49 +510,22 @@ class Server{
 		return $result;
 	}
 
-	private function getPlayerDataPath(string $username) : string{
-		return $this->getDataPath() . '/players/' . strtolower($username) . '.dat';
-	}
-
 	/**
 	 * Returns whether the server has stored any saved data for this player.
 	 */
 	public function hasOfflinePlayerData(string $name) : bool{
-		return file_exists($this->getPlayerDataPath($name));
-	}
-
-	private function handleCorruptedPlayerData(string $name) : void{
-		$path = $this->getPlayerDataPath($name);
-		rename($path, $path . '.bak');
-		$this->logger->error($this->getLanguage()->translateString("pocketmine.data.playerCorrupted", [$name]));
+		return $this->playerDataProvider->hasData($name);
 	}
 
 	public function getOfflinePlayerData(string $name) : ?CompoundTag{
 		return Timings::$syncPlayerDataLoad->time(function() use ($name) : ?CompoundTag{
-			$name = strtolower($name);
-			$path = $this->getPlayerDataPath($name);
-
-			if(file_exists($path)){
-				$contents = @file_get_contents($path);
-				if($contents === false){
-					throw new \RuntimeException("Failed to read player data file \"$path\" (permission denied?)");
-				}
-				$decompressed = @zlib_decode($contents);
-				if($decompressed === false){
-					$this->logger->debug("Failed to decompress raw player data for \"$name\"");
-					$this->handleCorruptedPlayerData($name);
-					return null;
-				}
-
-				try{
-					return (new BigEndianNbtSerializer())->read($decompressed)->mustGetCompoundTag();
-				}catch(NbtDataException $e){ //corrupt data
-					$this->logger->debug("Failed to decode NBT data for \"$name\": " . $e->getMessage());
-					$this->handleCorruptedPlayerData($name);
-					return null;
-				}
+			try{
+				return $this->playerDataProvider->loadData($name);
+			}catch(PlayerDataLoadException $e){
+				$this->logger->debug("Failed to load player data for $name: " . $e->getMessage());
+				$this->logger->error($this->language->translate(KnownTranslationFactory::pocketmine_data_playerCorrupted($name)));
+				return null;
 			}
-			return null;
 		});
 	}
 
@@ -565,31 +539,73 @@ class Server{
 
 		if(!$ev->isCancelled()){
 			Timings::$syncPlayerDataSave->time(function() use ($name, $ev) : void{
-				$nbt = new BigEndianNbtSerializer();
 				try{
-					file_put_contents($this->getPlayerDataPath($name), zlib_encode($nbt->write(new TreeRoot($ev->getSaveData())), ZLIB_ENCODING_GZIP));
-				}catch(\ErrorException $e){
-					$this->logger->critical($this->getLanguage()->translateString("pocketmine.data.saveError", [$name, $e->getMessage()]));
+					$this->playerDataProvider->saveData($name, $ev->getSaveData());
+				}catch(PlayerDataSaveException $e){
+					$this->logger->critical($this->language->translate(KnownTranslationFactory::pocketmine_data_saveError($name, $e->getMessage())));
 					$this->logger->logException($e);
 				}
 			});
 		}
 	}
 
-	public function createPlayer(NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, ?CompoundTag $offlinePlayerData) : Player{
+	/**
+	 * @phpstan-return Promise<Player>
+	 */
+	public function createPlayer(NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, ?CompoundTag $offlinePlayerData) : Promise{
 		$ev = new PlayerCreationEvent($session);
 		$ev->call();
 		$class = $ev->getPlayerClass();
 
-		/**
-		 * @see Player::__construct()
-		 * @var Player $player
-		 */
-		$player = new $class($this, $session, $playerInfo, $authenticated, $offlinePlayerData);
-		return $player;
+		if($offlinePlayerData !== null && ($world = $this->worldManager->getWorldByName($offlinePlayerData->getString(Player::TAG_LEVEL, ""))) !== null){
+			$playerPos = EntityDataHelper::parseLocation($offlinePlayerData, $world);
+		}else{
+			$world = $this->worldManager->getDefaultWorld();
+			if($world === null){
+				throw new AssumptionFailedError("Default world should always be loaded");
+			}
+			$playerPos = null;
+		}
+		/** @phpstan-var PromiseResolver<Player> $playerPromiseResolver */
+		$playerPromiseResolver = new PromiseResolver();
+
+		$createPlayer = function(Location $location) use ($playerPromiseResolver, $class, $session, $playerInfo, $authenticated, $offlinePlayerData) : void{
+			/** @see Player::__construct() */
+			$player = new $class($this, $session, $playerInfo, $authenticated, $location, $offlinePlayerData);
+			if(!$player->hasPlayedBefore()){
+				$player->onGround = true; //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
+			}
+			$playerPromiseResolver->resolve($player);
+		};
+
+		if($playerPos === null){ //new player or no valid position due to world not being loaded
+			$world->requestSafeSpawn()->onCompletion(
+				function(Position $spawn) use ($createPlayer, $playerPromiseResolver, $session, $world) : void{
+					if(!$session->isConnected()){
+						$playerPromiseResolver->reject();
+						return;
+					}
+					$createPlayer(Location::fromObject($spawn, $world));
+				},
+				function() use ($playerPromiseResolver, $session) : void{
+					if($session->isConnected()){
+						$session->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_respawn());
+					}
+					$playerPromiseResolver->reject();
+				}
+			);
+		}else{ //returning player with a valid position - safe spawn not required
+			$createPlayer($playerPos);
+		}
+
+		return $playerPromiseResolver->getPromise();
 	}
 
 	/**
+	 * @deprecated This method's results are unpredictable. The string "Steve" will return the player named "SteveJobs",
+	 * until another player named "SteveJ" joins the server, at which point it will return that player instead. Prefer
+	 * filtering the results of {@link Server::getOnlinePlayers()} yourself.
+	 *
 	 * Returns an online player whose name begins with or equals the given string (case insensitive).
 	 * The closest match will be returned, or null if there are no online matches.
 	 *
@@ -637,10 +653,10 @@ class Server{
 	}
 
 	/**
-	 * Returns the player online with a UUID equivalent to the specified UUID object, or null if not found
+	 * Returns the player online with a UUID equivalent to the specified UuidInterface object, or null if not found
 	 */
-	public function getPlayerByUUID(UUID $uuid) : ?Player{
-		return $this->getPlayerByRawUUID($uuid->toBinary());
+	public function getPlayerByUUID(UuidInterface $uuid) : ?Player{
+		return $this->getPlayerByRawUUID($uuid->getBytes());
 	}
 
 	public function getConfigGroup() : ServerConfigGroup{
@@ -659,17 +675,11 @@ class Server{
 		}
 	}
 
-	/**
-	 * @return BanList
-	 */
-	public function getNameBans(){
+	public function getNameBans() : BanList{
 		return $this->banByName;
 	}
 
-	/**
-	 * @return BanList
-	 */
-	public function getIPBans(){
+	public function getIPBans() : BanList{
 		return $this->banByIP;
 	}
 
@@ -683,7 +693,13 @@ class Server{
 	}
 
 	public function removeOp(string $name) : void{
-		$this->operators->remove(strtolower($name));
+		$lowercaseName = strtolower($name);
+		foreach($this->operators->getAll() as $operatorName => $_){
+			$operatorName = (string) $operatorName;
+			if($lowercaseName === strtolower($operatorName)){
+				$this->operators->remove($operatorName);
+			}
+		}
 
 		if(($player = $this->getPlayerExact($name)) !== null){
 			$player->unsetBasePermission(DefaultPermissions::ROOT_OPERATOR);
@@ -702,24 +718,18 @@ class Server{
 	}
 
 	public function isWhitelisted(string $name) : bool{
-		return !$this->hasWhitelist() or $this->operators->exists($name, true) or $this->whitelist->exists($name, true);
+		return !$this->hasWhitelist() || $this->operators->exists($name, true) || $this->whitelist->exists($name, true);
 	}
 
 	public function isOp(string $name) : bool{
 		return $this->operators->exists($name, true);
 	}
 
-	/**
-	 * @return Config
-	 */
-	public function getWhitelisted(){
+	public function getWhitelisted() : Config{
 		return $this->whitelist;
 	}
 
-	/**
-	 * @return Config
-	 */
-	public function getOps(){
+	public function getOps() : Config{
 		return $this->operators;
 	}
 
@@ -727,7 +737,7 @@ class Server{
 	 * @return string[][]
 	 */
 	public function getCommandAliases() : array{
-		$section = $this->configGroup->getProperty("aliases");
+		$section = $this->configGroup->getProperty(YmlServerProperties::ALIASES);
 		$result = [];
 		if(is_array($section)){
 			foreach($section as $key => $value){
@@ -752,73 +762,86 @@ class Server{
 		return self::$instance;
 	}
 
-	public function __construct(\DynamicClassLoader $autoloader, \AttachableThreadedLogger $logger, string $dataPath, string $pluginPath){
+	public function __construct(
+		private ThreadSafeClassLoader $autoloader,
+		private AttachableThreadSafeLogger $logger,
+		string $dataPath,
+		string $pluginPath
+	){
 		if(self::$instance !== null){
-			throw new \InvalidStateException("Only one server instance can exist at once");
+			throw new \LogicException("Only one server instance can exist at once");
 		}
 		self::$instance = $this;
 		$this->startTime = microtime(true);
+		$this->tickAverage = array_fill(0, self::TARGET_TICKS_PER_SECOND, self::TARGET_TICKS_PER_SECOND);
+		$this->useAverage = array_fill(0, self::TARGET_TICKS_PER_SECOND, 0);
 
-		$this->tickSleeper = new SleeperHandler();
-		$this->autoloader = $autoloader;
-		$this->logger = $logger;
+		Timings::init();
+		$this->tickSleeper = new TimeTrackingSleeperHandler(Timings::$serverInterrupts);
+
+		$this->signalHandler = new SignalHandler(function() : void{
+			$this->logger->info("Received signal interrupt, stopping the server");
+			$this->shutdown();
+		});
 
 		try{
-			if(!file_exists($dataPath . "worlds/")){
-				mkdir($dataPath . "worlds/", 0777);
-			}
-
-			if(!file_exists($dataPath . "players/")){
-				mkdir($dataPath . "players/", 0777);
-			}
-
-			if(!file_exists($pluginPath)){
-				mkdir($pluginPath, 0777);
+			foreach([
+				$dataPath,
+				$pluginPath,
+				Path::join($dataPath, "worlds"),
+				Path::join($dataPath, "players")
+			] as $neededPath){
+				if(!file_exists($neededPath)){
+					mkdir($neededPath, 0777);
+				}
 			}
 
 			$this->dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
 			$this->pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
 
 			$this->logger->info("Loading server configuration");
-			if(!file_exists($this->dataPath . "pocketmine.yml")){
-				$content = file_get_contents(\pocketmine\RESOURCE_PATH . "pocketmine.yml");
+			$pocketmineYmlPath = Path::join($this->dataPath, "pocketmine.yml");
+			if(!file_exists($pocketmineYmlPath)){
+				$content = Filesystem::fileGetContents(Path::join(\pocketmine\RESOURCE_PATH, "pocketmine.yml"));
 				if(VersionInfo::IS_DEVELOPMENT_BUILD){
 					$content = str_replace("preferred-channel: stable", "preferred-channel: beta", $content);
 				}
-				@file_put_contents($this->dataPath . "pocketmine.yml", $content);
+				@file_put_contents($pocketmineYmlPath, $content);
 			}
 
 			$this->configGroup = new ServerConfigGroup(
-				new Config($this->dataPath . "pocketmine.yml", Config::YAML, []),
-				new Config($this->dataPath . "server.properties", Config::PROPERTIES, [
-					"motd" => VersionInfo::NAME . " Server",
-					"server-port" => 19132,
-					"white-list" => false,
-					"max-players" => 20,
-					"gamemode" => 0,
-					"force-gamemode" => false,
-					"hardcore" => false,
-					"pvp" => true,
-					"difficulty" => World::DIFFICULTY_NORMAL,
-					"generator-settings" => "",
-					"level-name" => "world",
-					"level-seed" => "",
-					"level-type" => "DEFAULT",
-					"enable-query" => true,
-					"auto-save" => true,
-					"view-distance" => 8,
-					"xbox-auth" => true,
-					"language" => "eng"
+				new Config($pocketmineYmlPath, Config::YAML, []),
+				new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES, [
+					ServerProperties::MOTD => self::DEFAULT_SERVER_NAME,
+					ServerProperties::SERVER_PORT_IPV4 => self::DEFAULT_PORT_IPV4,
+					ServerProperties::SERVER_PORT_IPV6 => self::DEFAULT_PORT_IPV6,
+					ServerProperties::ENABLE_IPV6 => true,
+					ServerProperties::WHITELIST => false,
+					ServerProperties::MAX_PLAYERS => self::DEFAULT_MAX_PLAYERS,
+					ServerProperties::GAME_MODE => GameMode::SURVIVAL->name, //TODO: this probably shouldn't use the enum name directly
+					ServerProperties::FORCE_GAME_MODE => false,
+					ServerProperties::HARDCORE => false,
+					ServerProperties::PVP => true,
+					ServerProperties::DIFFICULTY => World::DIFFICULTY_NORMAL,
+					ServerProperties::DEFAULT_WORLD_GENERATOR_SETTINGS => "",
+					ServerProperties::DEFAULT_WORLD_NAME => "world",
+					ServerProperties::DEFAULT_WORLD_SEED => "",
+					ServerProperties::DEFAULT_WORLD_GENERATOR => "DEFAULT",
+					ServerProperties::ENABLE_QUERY => true,
+					ServerProperties::AUTO_SAVE => true,
+					ServerProperties::VIEW_DISTANCE => self::DEFAULT_MAX_VIEW_DISTANCE,
+					ServerProperties::XBOX_AUTH => true,
+					ServerProperties::LANGUAGE => "eng"
 				])
 			);
 
-			$debugLogLevel = (int) $this->configGroup->getProperty("debug.level", 1);
+			$debugLogLevel = $this->configGroup->getPropertyInt(Yml::DEBUG_LEVEL, 1);
 			if($this->logger instanceof MainLogger){
 				$this->logger->setLogDebug($debugLogLevel > 1);
 			}
 
-			$this->forceLanguage = (bool) $this->configGroup->getProperty("settings.force-language", false);
-			$selectedLang = $this->configGroup->getConfigString("language", $this->configGroup->getProperty("settings.language", Language::FALLBACK_LANGUAGE));
+			$this->forceLanguage = $this->configGroup->getPropertyBool(Yml::SETTINGS_FORCE_LANGUAGE, false);
+			$selectedLang = $this->configGroup->getConfigString(ServerProperties::LANGUAGE, $this->configGroup->getPropertyString("settings.language", Language::FALLBACK_LANGUAGE));
 			try{
 				$this->language = new Language($selectedLang);
 			}catch(LanguageNotFoundException $e){
@@ -831,32 +854,32 @@ class Server{
 				}
 			}
 
-			$this->logger->info($this->getLanguage()->translateString("language.selected", [$this->getLanguage()->getName(), $this->getLanguage()->getLang()]));
+			$this->logger->info($this->language->translate(KnownTranslationFactory::language_selected($this->language->getName(), $this->language->getLang())));
 
 			if(VersionInfo::IS_DEVELOPMENT_BUILD){
-				if(!((bool) $this->configGroup->getProperty("settings.enable-dev-builds", false))){
-					$this->logger->emergency($this->language->translateString("pocketmine.server.devBuild.error1", [VersionInfo::NAME]));
-					$this->logger->emergency($this->language->translateString("pocketmine.server.devBuild.error2"));
-					$this->logger->emergency($this->language->translateString("pocketmine.server.devBuild.error3"));
-					$this->logger->emergency($this->language->translateString("pocketmine.server.devBuild.error4", ["settings.enable-dev-builds"]));
-					$this->logger->emergency($this->language->translateString("pocketmine.server.devBuild.error5", ["https://github.com/pmmp/PocketMine-MP/releases"]));
-					$this->forceShutdown();
+				if(!$this->configGroup->getPropertyBool(Yml::SETTINGS_ENABLE_DEV_BUILDS, false)){
+					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error1(VersionInfo::NAME)));
+					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error2()));
+					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error3()));
+					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error4(YmlServerProperties::SETTINGS_ENABLE_DEV_BUILDS)));
+					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error5("https://github.com/pmmp/PocketMine-MP/releases")));
+					$this->forceShutdownExit();
 
 					return;
 				}
 
 				$this->logger->warning(str_repeat("-", 40));
-				$this->logger->warning($this->language->translateString("pocketmine.server.devBuild.warning1", [VersionInfo::NAME]));
-				$this->logger->warning($this->language->translateString("pocketmine.server.devBuild.warning2"));
-				$this->logger->warning($this->language->translateString("pocketmine.server.devBuild.warning3"));
+				$this->logger->warning($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_warning1(VersionInfo::NAME)));
+				$this->logger->warning($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_warning2()));
+				$this->logger->warning($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_warning3()));
 				$this->logger->warning(str_repeat("-", 40));
 			}
 
 			$this->memoryManager = new MemoryManager($this);
 
-			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.start", [TextFormat::AQUA . $this->getVersion() . TextFormat::RESET]));
+			$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_start(TextFormat::AQUA . $this->getVersion() . TextFormat::RESET)));
 
-			if(($poolSize = $this->configGroup->getProperty("settings.async-workers", "auto")) === "auto"){
+			if(($poolSize = $this->configGroup->getPropertyString(Yml::SETTINGS_ASYNC_WORKERS, "auto")) === "auto"){
 				$poolSize = 2;
 				$processors = Utils::getCoreCount() - 2;
 
@@ -867,227 +890,360 @@ class Server{
 				$poolSize = max(1, (int) $poolSize);
 			}
 
-			$this->asyncPool = new AsyncPool($poolSize, max(-1, (int) $this->configGroup->getProperty("memory.async-worker-hard-limit", 256)), $this->autoloader, $this->logger, $this->tickSleeper);
+			$this->asyncPool = new AsyncPool($poolSize, max(-1, $this->configGroup->getPropertyInt(Yml::MEMORY_ASYNC_WORKER_HARD_LIMIT, 256)), $this->autoloader, $this->logger, $this->tickSleeper);
 
 			$netCompressionThreshold = -1;
-			if($this->configGroup->getProperty("network.batch-threshold", 256) >= 0){
-				$netCompressionThreshold = (int) $this->configGroup->getProperty("network.batch-threshold", 256);
+			if($this->configGroup->getPropertyInt(Yml::NETWORK_BATCH_THRESHOLD, 256) >= 0){
+				$netCompressionThreshold = $this->configGroup->getPropertyInt(Yml::NETWORK_BATCH_THRESHOLD, 256);
+			}
+			if($netCompressionThreshold < 0){
+				$netCompressionThreshold = null;
 			}
 
-			$netCompressionLevel = (int) $this->configGroup->getProperty("network.compression-level", 6);
-			if($netCompressionLevel < 1 or $netCompressionLevel > 9){
+			$netCompressionLevel = $this->configGroup->getPropertyInt(Yml::NETWORK_COMPRESSION_LEVEL, 6);
+			if($netCompressionLevel < 1 || $netCompressionLevel > 9){
 				$this->logger->warning("Invalid network compression level $netCompressionLevel set, setting to default 6");
 				$netCompressionLevel = 6;
 			}
 			ZlibCompressor::setInstance(new ZlibCompressor($netCompressionLevel, $netCompressionThreshold, ZlibCompressor::DEFAULT_MAX_DECOMPRESSION_SIZE));
 
-			$this->networkCompressionAsync = (bool) $this->configGroup->getProperty("network.async-compression", true);
+			$this->networkCompressionAsync = $this->configGroup->getPropertyBool(Yml::NETWORK_ASYNC_COMPRESSION, true);
+			$this->networkCompressionAsyncThreshold = max(
+				$this->configGroup->getPropertyInt(Yml::NETWORK_ASYNC_COMPRESSION_THRESHOLD, self::DEFAULT_ASYNC_COMPRESSION_THRESHOLD),
+				$netCompressionThreshold ?? self::DEFAULT_ASYNC_COMPRESSION_THRESHOLD
+			);
 
-			EncryptionContext::$ENABLED = (bool) $this->configGroup->getProperty("network.enable-encryption", true);
+			EncryptionContext::$ENABLED = $this->configGroup->getPropertyBool(Yml::NETWORK_ENABLE_ENCRYPTION, true);
 
-			$this->doTitleTick = ((bool) $this->configGroup->getProperty("console.title-tick", true)) && Terminal::hasFormattingCodes();
+			$this->doTitleTick = $this->configGroup->getPropertyBool(Yml::CONSOLE_TITLE_TICK, true) && Terminal::hasFormattingCodes();
 
-			$this->operators = new Config($this->dataPath . "ops.txt", Config::ENUM);
-			$this->whitelist = new Config($this->dataPath . "white-list.txt", Config::ENUM);
-			if(file_exists($this->dataPath . "banned.txt") and !file_exists($this->dataPath . "banned-players.txt")){
-				@rename($this->dataPath . "banned.txt", $this->dataPath . "banned-players.txt");
+			$this->operators = new Config(Path::join($this->dataPath, "ops.txt"), Config::ENUM);
+			$this->whitelist = new Config(Path::join($this->dataPath, "white-list.txt"), Config::ENUM);
+
+			$bannedTxt = Path::join($this->dataPath, "banned.txt");
+			$bannedPlayersTxt = Path::join($this->dataPath, "banned-players.txt");
+			if(file_exists($bannedTxt) && !file_exists($bannedPlayersTxt)){
+				@rename($bannedTxt, $bannedPlayersTxt);
 			}
-			@touch($this->dataPath . "banned-players.txt");
-			$this->banByName = new BanList($this->dataPath . "banned-players.txt");
+			@touch($bannedPlayersTxt);
+			$this->banByName = new BanList($bannedPlayersTxt);
 			$this->banByName->load();
-			@touch($this->dataPath . "banned-ips.txt");
-			$this->banByIP = new BanList($this->dataPath . "banned-ips.txt");
+			$bannedIpsTxt = Path::join($this->dataPath, "banned-ips.txt");
+			@touch($bannedIpsTxt);
+			$this->banByIP = new BanList($bannedIpsTxt);
 			$this->banByIP->load();
 
-			$this->maxPlayers = $this->configGroup->getConfigInt("max-players", 20);
+			$this->maxPlayers = $this->configGroup->getConfigInt(ServerProperties::MAX_PLAYERS, self::DEFAULT_MAX_PLAYERS);
 
-			$this->onlineMode = $this->configGroup->getConfigBool("xbox-auth", true);
+			$this->onlineMode = $this->configGroup->getConfigBool(ServerProperties::XBOX_AUTH, true);
 			if($this->onlineMode){
-				$this->logger->notice($this->getLanguage()->translateString("pocketmine.server.auth.enabled"));
-				$this->logger->notice($this->getLanguage()->translateString("pocketmine.server.authProperty.enabled"));
+				$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_auth_enabled()));
 			}else{
-				$this->logger->warning($this->getLanguage()->translateString("pocketmine.server.auth.disabled"));
-				$this->logger->warning($this->getLanguage()->translateString("pocketmine.server.authWarning"));
-				$this->logger->warning($this->getLanguage()->translateString("pocketmine.server.authProperty.disabled"));
+				$this->logger->warning($this->language->translate(KnownTranslationFactory::pocketmine_server_auth_disabled()));
+				$this->logger->warning($this->language->translate(KnownTranslationFactory::pocketmine_server_authWarning()));
+				$this->logger->warning($this->language->translate(KnownTranslationFactory::pocketmine_server_authProperty_disabled()));
 			}
 
-			if($this->configGroup->getConfigBool("hardcore", false) and $this->getDifficulty() < World::DIFFICULTY_HARD){
-				$this->configGroup->setConfigInt("difficulty", World::DIFFICULTY_HARD);
+			if($this->configGroup->getConfigBool(ServerProperties::HARDCORE, false) && $this->getDifficulty() < World::DIFFICULTY_HARD){
+				$this->configGroup->setConfigInt(ServerProperties::DIFFICULTY, World::DIFFICULTY_HARD);
 			}
 
 			@cli_set_process_title($this->getName() . " " . $this->getPocketMineVersion());
 
 			$this->serverID = Utils::getMachineUniqueId($this->getIp() . $this->getPort());
 
-			$this->getLogger()->debug("Server unique id: " . $this->getServerUniqueId());
-			$this->getLogger()->debug("Machine unique id: " . Utils::getMachineUniqueId());
+			$this->logger->debug("Server unique id: " . $this->getServerUniqueId());
+			$this->logger->debug("Machine unique id: " . Utils::getMachineUniqueId());
 
 			$this->network = new Network($this->logger);
 			$this->network->setName($this->getMotd());
 
-			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.info", [
+			$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_info(
 				$this->getName(),
 				(VersionInfo::IS_DEVELOPMENT_BUILD ? TextFormat::YELLOW : "") . $this->getPocketMineVersion() . TextFormat::RESET
-			]));
-			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.license", [$this->getName()]));
+			)));
+			$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_license($this->getName())));
 
-			Timings::init();
-			TimingsHandler::setEnabled((bool) $this->configGroup->getProperty("settings.enable-profiling", false));
-			$this->profilingTickRate = (float) $this->configGroup->getProperty("settings.profile-report-trigger", 20);
+			TimingsHandler::setEnabled($this->configGroup->getPropertyBool(Yml::SETTINGS_ENABLE_PROFILING, false));
+			$this->profilingTickRate = $this->configGroup->getPropertyInt(Yml::SETTINGS_PROFILE_REPORT_TRIGGER, self::TARGET_TICKS_PER_SECOND);
 
 			DefaultPermissions::registerCorePermissions();
 
 			$this->commandMap = new SimpleCommandMap($this);
 
-			$this->craftingManager = CraftingManagerFromDataHelper::make(\pocketmine\RESOURCE_PATH . '/vanilla/recipes.json');
+			$this->craftingManager = CraftingManagerFromDataHelper::make(Path::join(\pocketmine\BEDROCK_DATA_PATH, "recipes"));
 
-			$this->resourceManager = new ResourcePackManager($this->getDataPath() . "resource_packs" . DIRECTORY_SEPARATOR, $this->logger);
+			$this->resourceManager = new ResourcePackManager(Path::join($this->dataPath, "resource_packs"), $this->logger);
 
 			$pluginGraylist = null;
-			$graylistFile = $this->dataPath . "plugin_list.yml";
+			$graylistFile = Path::join($this->dataPath, "plugin_list.yml");
 			if(!file_exists($graylistFile)){
-				copy(\pocketmine\RESOURCE_PATH . 'plugin_list.yml', $graylistFile);
+				copy(Path::join(\pocketmine\RESOURCE_PATH, 'plugin_list.yml'), $graylistFile);
 			}
 			try{
-				$pluginGraylist = PluginGraylist::fromArray(yaml_parse(file_get_contents($graylistFile)));
+				$pluginGraylist = PluginGraylist::fromArray(yaml_parse(Filesystem::fileGetContents($graylistFile)));
 			}catch(\InvalidArgumentException $e){
 				$this->logger->emergency("Failed to load $graylistFile: " . $e->getMessage());
-				$this->forceShutdown();
+				$this->forceShutdownExit();
 				return;
 			}
-			$this->pluginManager = new PluginManager($this, ((bool) $this->configGroup->getProperty("plugins.legacy-data-dir", true)) ? null : $this->getDataPath() . "plugin_data" . DIRECTORY_SEPARATOR, $pluginGraylist);
+			$this->pluginManager = new PluginManager($this, $this->configGroup->getPropertyBool(Yml::PLUGINS_LEGACY_DATA_DIR, true) ? null : Path::join($this->dataPath, "plugin_data"), $pluginGraylist);
 			$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
 			$this->pluginManager->registerInterface(new ScriptPluginLoader());
 
 			$providerManager = new WorldProviderManager();
 			if(
-				($format = $providerManager->getProviderByName($formatName = (string) $this->configGroup->getProperty("level-settings.default-format"))) !== null and
-				is_a($format, WritableWorldProvider::class, true)
+				($format = $providerManager->getProviderByName($formatName = $this->configGroup->getPropertyString(Yml::LEVEL_SETTINGS_DEFAULT_FORMAT, ""))) !== null &&
+				$format instanceof WritableWorldProviderManagerEntry
 			){
 				$providerManager->setDefault($format);
 			}elseif($formatName !== ""){
-				$this->logger->warning($this->language->translateString("pocketmine.level.badDefaultFormat", [$formatName]));
+				$this->logger->warning($this->language->translate(KnownTranslationFactory::pocketmine_level_badDefaultFormat($formatName)));
 			}
 
-			$this->worldManager = new WorldManager($this, $this->dataPath . "/worlds", $providerManager);
-			$this->worldManager->setAutoSave($this->configGroup->getConfigBool("auto-save", $this->worldManager->getAutoSave()));
-			$this->worldManager->setAutoSaveInterval((int) $this->configGroup->getProperty("ticks-per.autosave", 6000));
+			$this->worldManager = new WorldManager($this, Path::join($this->dataPath, "worlds"), $providerManager);
+			$this->worldManager->setAutoSave($this->configGroup->getConfigBool(ServerProperties::AUTO_SAVE, $this->worldManager->getAutoSave()));
+			$this->worldManager->setAutoSaveInterval($this->configGroup->getPropertyInt(Yml::TICKS_PER_AUTOSAVE, $this->worldManager->getAutoSaveInterval()));
 
-			$this->updater = new AutoUpdater($this, $this->configGroup->getProperty("auto-updater.host", "update.pmmp.io"));
+			$this->updater = new UpdateChecker($this, $this->configGroup->getPropertyString(Yml::AUTO_UPDATER_HOST, "update.pmmp.io"));
 
 			$this->queryInfo = new QueryInfo($this);
 
-			register_shutdown_function([$this, "crashDump"]);
+			$this->playerDataProvider = new DatFilePlayerDataProvider(Path::join($this->dataPath, "players"));
 
-			$this->pluginManager->loadPlugins($this->pluginPath);
-			$this->enablePlugins(PluginEnableOrder::STARTUP());
+			register_shutdown_function($this->crashDump(...));
 
-			foreach((array) $this->configGroup->getProperty("worlds", []) as $name => $options){
-				if($options === null){
-					$options = [];
-				}elseif(!is_array($options)){
-					continue;
-				}
-				if(!$this->worldManager->loadWorld($name, true)){
-					if(isset($options["generator"])){
-						$generatorOptions = explode(":", $options["generator"]);
-						$generator = GeneratorManager::getInstance()->getGenerator(array_shift($generatorOptions));
-						if(count($generatorOptions) > 0){
-							$options["preset"] = implode(":", $generatorOptions);
-						}
-					}else{
-						$generator = Normal::class;
-					}
-
-					$this->worldManager->generateWorld($name, Generator::convertSeed((string) ($options["seed"] ?? "")), $generator, $options);
-				}
+			$loadErrorCount = 0;
+			$this->pluginManager->loadPlugins($this->pluginPath, $loadErrorCount);
+			if($loadErrorCount > 0){
+				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someLoadErrors()));
+				$this->forceShutdownExit();
+				return;
+			}
+			if(!$this->enablePlugins(PluginEnableOrder::STARTUP)){
+				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
+				$this->forceShutdownExit();
+				return;
 			}
 
-			if($this->worldManager->getDefaultWorld() === null){
-				$default = $this->configGroup->getConfigString("level-name", "world");
-				if(trim($default) == ""){
-					$this->getLogger()->warning("level-name cannot be null, using default");
-					$default = "world";
-					$this->configGroup->setConfigString("level-name", "world");
-				}
-				if(!$this->worldManager->loadWorld($default, true)){
-					$this->worldManager->generateWorld(
-						$default,
-						Generator::convertSeed($this->configGroup->getConfigString("level-seed")),
-						GeneratorManager::getInstance()->getGenerator($this->configGroup->getConfigString("level-type")),
-						["preset" => $this->configGroup->getConfigString("generator-settings")]
-					);
-				}
-
-				$world = $this->worldManager->getWorldByName($default);
-				if($world === null){
-					$this->getLogger()->emergency($this->getLanguage()->translateString("pocketmine.level.defaultError"));
-					$this->forceShutdown();
-
-					return;
-				}
-				$this->worldManager->setDefaultWorld($world);
+			if(!$this->startupPrepareWorlds()){
+				$this->forceShutdownExit();
+				return;
 			}
 
-			$this->enablePlugins(PluginEnableOrder::POSTWORLD());
-
-			$useQuery = $this->configGroup->getConfigBool("enable-query", true);
-			if(!$this->network->registerInterface(new RakLibInterface($this)) && $useQuery){
-				//RakLib would normally handle the transport for Query packets
-				//if it's not registered we need to make sure Query still works
-				$this->network->registerInterface(new DedicatedQueryNetworkInterface($this->getIp(), $this->getPort(), new \PrefixedLogger($this->logger, "Dedicated Query Interface")));
-			}
-			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.networkStart", [$this->getIp(), $this->getPort()]));
-
-			if($useQuery){
-				$this->network->registerRawPacketHandler(new QueryHandler($this));
+			if(!$this->enablePlugins(PluginEnableOrder::POSTWORLD)){
+				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
+				$this->forceShutdownExit();
+				return;
 			}
 
-			foreach($this->getIPBans()->getEntries() as $entry){
-				$this->network->blockAddress($entry->getName(), -1);
+			if(!$this->startupPrepareNetworkInterfaces()){
+				$this->forceShutdownExit();
+				return;
 			}
 
-			if((bool) $this->configGroup->getProperty("network.upnp-forwarding", false)){
-				try{
-					$this->network->registerInterface(new UPnP($this->logger, Internet::getInternalIP(), $this->getPort()));
-				}catch(\RuntimeException $e){
-					$this->logger->alert("UPnP portforward failed: " . $e->getMessage());
-				}
-			}
-
-			if((bool) $this->configGroup->getProperty("settings.send-usage", true)){
-				$this->sendUsageTicker = 6000;
+			if($this->configGroup->getPropertyBool(Yml::ANONYMOUS_STATISTICS_ENABLED, true)){
+				$this->sendUsageTicker = self::TICKS_PER_STATS_REPORT;
 				$this->sendUsage(SendUsageTask::TYPE_OPEN);
 			}
 
 			$this->configGroup->save();
 
-			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.defaultGameMode", [$this->getGamemode()->getTranslationKey()]));
-			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.donate", [TextFormat::AQUA . "https://patreon.com/pocketminemp" . TextFormat::RESET]));
-			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.startFinished", [round(microtime(true) - $this->startTime, 3)]));
+			$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_defaultGameMode($this->getGamemode()->getTranslatableName())));
+			$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_donate(TextFormat::AQUA . "https://patreon.com/pocketminemp" . TextFormat::RESET)));
+			$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_startFinished(strval(round(microtime(true) - $this->startTime, 3)))));
+
+			$forwarder = new BroadcastLoggerForwarder($this, $this->logger, $this->language);
+			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_ADMINISTRATIVE, $forwarder);
+			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $forwarder);
 
 			//TODO: move console parts to a separate component
-			$consoleSender = new ConsoleCommandSender($this, $this->language);
-			$consoleSender->recalculatePermissions();
-			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_ADMINISTRATIVE, $consoleSender);
-			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $consoleSender);
-
-			$consoleNotifier = new SleeperNotifier();
-			$this->console = new CommandReader($consoleNotifier);
-			$this->tickSleeper->addNotifier($consoleNotifier, function() use ($consoleSender) : void{
-				Timings::$serverCommand->startTiming();
-				while(($line = $this->console->getLine()) !== null){
-					$this->dispatchCommand($consoleSender, $line);
-				}
-				Timings::$serverCommand->stopTiming();
-			});
-			$this->console->start(PTHREADS_INHERIT_NONE);
+			if($this->configGroup->getPropertyBool(Yml::CONSOLE_ENABLE_INPUT, true)){
+				$this->console = new ConsoleReaderChildProcessDaemon($this->logger);
+			}
 
 			$this->tickProcessor();
 			$this->forceShutdown();
 		}catch(\Throwable $e){
 			$this->exceptionHandler($e);
 		}
+	}
+
+	private function startupPrepareWorlds() : bool{
+		$getGenerator = function(string $generatorName, string $generatorOptions, string $worldName) : ?string{
+			$generatorEntry = GeneratorManager::getInstance()->getGenerator($generatorName);
+			if($generatorEntry === null){
+				$this->logger->error($this->language->translate(KnownTranslationFactory::pocketmine_level_generationError(
+					$worldName,
+					KnownTranslationFactory::pocketmine_level_unknownGenerator($generatorName)
+				)));
+				return null;
+			}
+			try{
+				$generatorEntry->validateGeneratorOptions($generatorOptions);
+			}catch(InvalidGeneratorOptionsException $e){
+				$this->logger->error($this->language->translate(KnownTranslationFactory::pocketmine_level_generationError(
+					$worldName,
+					KnownTranslationFactory::pocketmine_level_invalidGeneratorOptions($generatorOptions, $generatorName, $e->getMessage())
+				)));
+				return null;
+			}
+			return $generatorEntry->getGeneratorClass();
+		};
+
+		$anyWorldFailedToLoad = false;
+
+		foreach((array) $this->configGroup->getProperty(Yml::WORLDS, []) as $name => $options){
+			if($options === null){
+				$options = [];
+			}elseif(!is_array($options)){
+				//TODO: this probably should be an error
+				continue;
+			}
+			if(!$this->worldManager->loadWorld($name, true)){
+				if($this->worldManager->isWorldGenerated($name)){
+					//allow checking if other worlds are loadable, so the user gets all the errors in one go
+					$anyWorldFailedToLoad = true;
+					continue;
+				}
+				$creationOptions = WorldCreationOptions::create();
+				//TODO: error checking
+
+				$generatorName = $options["generator"] ?? "default";
+				$generatorOptions = isset($options["preset"]) && is_string($options["preset"]) ? $options["preset"] : "";
+
+				$generatorClass = $getGenerator($generatorName, $generatorOptions, $name);
+				if($generatorClass === null){
+					$anyWorldFailedToLoad = true;
+					continue;
+				}
+				$creationOptions->setGeneratorClass($generatorClass);
+				$creationOptions->setGeneratorOptions($generatorOptions);
+
+				$creationOptions->setDifficulty($this->getDifficulty());
+				if(isset($options["difficulty"]) && is_string($options["difficulty"])){
+					$creationOptions->setDifficulty(World::getDifficultyFromString($options["difficulty"]));
+				}
+
+				if(isset($options["seed"])){
+					$convertedSeed = Generator::convertSeed((string) ($options["seed"] ?? ""));
+					if($convertedSeed !== null){
+						$creationOptions->setSeed($convertedSeed);
+					}
+				}
+
+				$this->worldManager->generateWorld($name, $creationOptions);
+			}
+		}
+
+		if($this->worldManager->getDefaultWorld() === null){
+			$default = $this->configGroup->getConfigString(ServerProperties::DEFAULT_WORLD_NAME, "world");
+			if(trim($default) == ""){
+				$this->logger->warning("level-name cannot be null, using default");
+				$default = "world";
+				$this->configGroup->setConfigString(ServerProperties::DEFAULT_WORLD_NAME, "world");
+			}
+			if(!$this->worldManager->loadWorld($default, true)){
+				if($this->worldManager->isWorldGenerated($default)){
+					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_level_defaultError()));
+
+					return false;
+				}
+				$generatorName = $this->configGroup->getConfigString(ServerProperties::DEFAULT_WORLD_GENERATOR);
+				$generatorOptions = $this->configGroup->getConfigString(ServerProperties::DEFAULT_WORLD_GENERATOR_SETTINGS);
+				$generatorClass = $getGenerator($generatorName, $generatorOptions, $default);
+
+				if($generatorClass === null){
+					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_level_defaultError()));
+					return false;
+				}
+				$creationOptions = WorldCreationOptions::create()
+					->setGeneratorClass($generatorClass)
+					->setGeneratorOptions($generatorOptions);
+				$convertedSeed = Generator::convertSeed($this->configGroup->getConfigString(ServerProperties::DEFAULT_WORLD_SEED));
+				if($convertedSeed !== null){
+					$creationOptions->setSeed($convertedSeed);
+				}
+				$creationOptions->setDifficulty($this->getDifficulty());
+				$this->worldManager->generateWorld($default, $creationOptions);
+			}
+
+			$world = $this->worldManager->getWorldByName($default);
+			if($world === null){
+				throw new AssumptionFailedError("We just loaded/generated the default world, so it must exist");
+			}
+			$this->worldManager->setDefaultWorld($world);
+		}
+
+		return !$anyWorldFailedToLoad;
+	}
+
+	private function startupPrepareConnectableNetworkInterfaces(
+		string $ip,
+		int $port,
+		bool $ipV6,
+		bool $useQuery,
+		PacketBroadcaster $packetBroadcaster,
+		EntityEventBroadcaster $entityEventBroadcaster,
+		PacketSerializerContext $packetSerializerContext,
+		TypeConverter $typeConverter
+	) : bool{
+		$prettyIp = $ipV6 ? "[$ip]" : $ip;
+		try{
+			$rakLibRegistered = $this->network->registerInterface(new RakLibInterface($this, $ip, $port, $ipV6, $packetBroadcaster, $entityEventBroadcaster, $packetSerializerContext, $typeConverter));
+		}catch(NetworkInterfaceStartException $e){
+			$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_networkStartFailed(
+				$ip,
+				(string) $port,
+				$e->getMessage()
+			)));
+			return false;
+		}
+		if($rakLibRegistered){
+			$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_networkStart($prettyIp, (string) $port)));
+		}
+		if($useQuery){
+			if(!$rakLibRegistered){
+				//RakLib would normally handle the transport for Query packets
+				//if it's not registered we need to make sure Query still works
+				$this->network->registerInterface(new DedicatedQueryNetworkInterface($ip, $port, $ipV6, new \PrefixedLogger($this->logger, "Dedicated Query Interface")));
+			}
+			$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_query_running($prettyIp, (string) $port)));
+		}
+		return true;
+	}
+
+	private function startupPrepareNetworkInterfaces() : bool{
+		$useQuery = $this->configGroup->getConfigBool(ServerProperties::ENABLE_QUERY, true);
+
+		$typeConverter = TypeConverter::getInstance();
+		$packetSerializerContext = new PacketSerializerContext($typeConverter->getItemTypeDictionary());
+		$packetBroadcaster = new StandardPacketBroadcaster($this, $packetSerializerContext);
+		$entityEventBroadcaster = new StandardEntityEventBroadcaster($packetBroadcaster, $typeConverter);
+
+		if(
+			!$this->startupPrepareConnectableNetworkInterfaces($this->getIp(), $this->getPort(), false, $useQuery, $packetBroadcaster, $entityEventBroadcaster, $packetSerializerContext, $typeConverter) ||
+			(
+				$this->configGroup->getConfigBool(ServerProperties::ENABLE_IPV6, true) &&
+				!$this->startupPrepareConnectableNetworkInterfaces($this->getIpV6(), $this->getPortV6(), true, $useQuery, $packetBroadcaster, $entityEventBroadcaster, $packetSerializerContext, $typeConverter)
+			)
+		){
+			return false;
+		}
+
+		if($useQuery){
+			$this->network->registerRawPacketHandler(new QueryHandler($this));
+		}
+
+		foreach($this->getIPBans()->getEntries() as $entry){
+			$this->network->blockAddress($entry->getName(), -1);
+		}
+
+		if($this->configGroup->getPropertyBool(Yml::NETWORK_UPNP_FORWARDING, false)){
+			$this->network->registerInterface(new UPnPNetworkInterface($this->logger, Internet::getInternalIP(), $this->getPort()));
+		}
+
+		return true;
 	}
 
 	/**
@@ -1103,9 +1259,10 @@ class Server{
 	 */
 	public function unsubscribeFromBroadcastChannel(string $channelId, CommandSender $subscriber) : void{
 		if(isset($this->broadcastSubscribers[$channelId][spl_object_id($subscriber)])){
-			unset($this->broadcastSubscribers[$channelId][spl_object_id($subscriber)]);
-			if(count($this->broadcastSubscribers[$channelId]) === 0){
+			if(count($this->broadcastSubscribers[$channelId]) === 1){
 				unset($this->broadcastSubscribers[$channelId]);
+			}else{
+				unset($this->broadcastSubscribers[$channelId][spl_object_id($subscriber)]);
 			}
 		}
 	}
@@ -1114,7 +1271,7 @@ class Server{
 	 * Unsubscribes from all broadcast channels.
 	 */
 	public function unsubscribeFromAllBroadcastChannels(CommandSender $subscriber) : void{
-		foreach($this->broadcastSubscribers as $channelId => $recipients){
+		foreach(Utils::stringifyKeys($this->broadcastSubscribers) as $channelId => $recipients){
 			$this->unsubscribeFromBroadcastChannel($channelId, $subscriber);
 		}
 	}
@@ -1130,10 +1287,9 @@ class Server{
 	}
 
 	/**
-	 * @param TranslationContainer|string $message
-	 * @param CommandSender[]|null        $recipients
+	 * @param CommandSender[]|null $recipients
 	 */
-	public function broadcastMessage($message, ?array $recipients = null) : int{
+	public function broadcastMessage(Translatable|string $message, ?array $recipients = null) : int{
 		$recipients = $recipients ?? $this->getBroadcastChannelSubscribers(self::BROADCAST_CHANNEL_USERS);
 
 		foreach($recipients as $recipient){
@@ -1184,9 +1340,9 @@ class Server{
 	}
 
 	/**
-	 * @param int           $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
-	 * @param int           $stay Duration in ticks to stay on screen for
-	 * @param int           $fadeOut Duration in ticks for fade-out.
+	 * @param int           $fadeIn     Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
+	 * @param int           $stay       Duration in ticks to stay on screen for
+	 * @param int           $fadeOut    Duration in ticks for fade-out.
 	 * @param Player[]|null $recipients
 	 */
 	public function broadcastTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1, ?array $recipients = null) : int{
@@ -1200,89 +1356,56 @@ class Server{
 	}
 
 	/**
-	 * @param Player[]            $players
-	 * @param ClientboundPacket[] $packets
-	 */
-	public function broadcastPackets(array $players, array $packets) : bool{
-		if(count($packets) === 0){
-			throw new \InvalidArgumentException("Cannot broadcast empty list of packets");
-		}
-
-		return Timings::$broadcastPackets->time(function() use ($players, $packets) : bool{
-			/** @var NetworkSession[] $recipients */
-			$recipients = [];
-			foreach($players as $player){
-				if($player->isConnected()){
-					$recipients[] = $player->getNetworkSession();
-				}
-			}
-			if(count($recipients) === 0){
-				return false;
-			}
-
-			$ev = new DataPacketSendEvent($recipients, $packets);
-			$ev->call();
-			if($ev->isCancelled()){
-				return false;
-			}
-			$recipients = $ev->getTargets();
-
-			/** @var PacketBroadcaster[] $broadcasters */
-			$broadcasters = [];
-			/** @var NetworkSession[][] $broadcasterTargets */
-			$broadcasterTargets = [];
-			foreach($recipients as $recipient){
-				$broadcaster = $recipient->getBroadcaster();
-				$broadcasters[spl_object_id($broadcaster)] = $broadcaster;
-				$broadcasterTargets[spl_object_id($broadcaster)][] = $recipient;
-			}
-			foreach($broadcasters as $broadcaster){
-				$broadcaster->broadcastPackets($broadcasterTargets[spl_object_id($broadcaster)], $packets);
-			}
-
-			return true;
-		});
-	}
-
-	/**
-	 * Broadcasts a list of packets in a batch to a list of players
+	 * @internal
+	 * Promises to compress the given batch buffer using the selected compressor, optionally on a separate thread.
+	 *
+	 * If the buffer is smaller than the batch-threshold (usually 256), the buffer will be compressed at level 0 if supported
+	 * by the compressor. This means that the payload will be wrapped with the appropriate header and footer, but not
+	 * actually compressed.
+	 *
+	 * If the buffer is larger than the async-compression-threshold (usually 10,000), the buffer may be compressed in
+	 * a separate thread (if available).
 	 *
 	 * @param bool|null $sync Compression on the main thread (true) or workers (false). Default is automatic (null).
 	 */
-	public function prepareBatch(PacketBatch $stream, Compressor $compressor, ?bool $sync = null) : CompressBatchPromise{
+	public function prepareBatch(string $buffer, Compressor $compressor, ?bool $sync = null, ?TimingsHandler $timings = null) : CompressBatchPromise|string{
+		$timings ??= Timings::$playerNetworkSendCompress;
 		try{
-			Timings::$playerNetworkSendCompress->startTiming();
-
-			$buffer = $stream->getBuffer();
+			$timings->startTiming();
 
 			if($sync === null){
-				$sync = !($this->networkCompressionAsync && $compressor->willCompress($buffer));
+				$threshold = $compressor->getCompressionThreshold();
+				$sync = !$this->networkCompressionAsync || $threshold === null || strlen($buffer) < $threshold;
 			}
 
-			$promise = new CompressBatchPromise();
-			if(!$sync){
+			if(!$sync && strlen($buffer) >= $this->networkCompressionAsyncThreshold){
+				$promise = new CompressBatchPromise();
 				$task = new CompressBatchTask($buffer, $promise, $compressor);
 				$this->asyncPool->submitTask($task);
-			}else{
-				$promise->resolve($compressor->compress($buffer));
+				return $promise;
 			}
 
-			return $promise;
+			return $compressor->compress($buffer);
 		}finally{
-			Timings::$playerNetworkSendCompress->stopTiming();
+			$timings->stopTiming();
 		}
 	}
 
-	public function enablePlugins(PluginEnableOrder $type) : void{
+	public function enablePlugins(PluginEnableOrder $type) : bool{
+		$allSuccess = true;
 		foreach($this->pluginManager->getPlugins() as $plugin){
-			if(!$plugin->isEnabled() and $plugin->getDescription()->getOrder()->equals($type)){
-				$this->pluginManager->enablePlugin($plugin);
+			if(!$plugin->isEnabled() && $plugin->getDescription()->getOrder() === $type){
+				if(!$this->pluginManager->enablePlugin($plugin)){
+					$allSuccess = false;
+				}
 			}
 		}
 
-		if($type->equals(PluginEnableOrder::POSTWORLD())){
+		if($type === PluginEnableOrder::POSTWORLD){
 			$this->commandMap->registerServerAliases();
 		}
+
+		return $allSuccess;
 	}
 
 	/**
@@ -1299,20 +1422,22 @@ class Server{
 			$commandLine = $ev->getCommand();
 		}
 
-		if($this->commandMap->dispatch($sender, $commandLine)){
-			return true;
-		}
-
-		$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%commands.generic.notFound"));
-
-		return false;
+		return $this->commandMap->dispatch($sender, $commandLine);
 	}
 
 	/**
 	 * Shuts the server down correctly
 	 */
 	public function shutdown() : void{
-		$this->isRunning = false;
+		if($this->isRunning){
+			$this->isRunning = false;
+			$this->signalHandler->unregister();
+		}
+	}
+
+	private function forceShutdownExit() : void{
+		$this->forceShutdown();
+		Process::kill(Process::pid());
 	}
 
 	public function forceShutdown() : void{
@@ -1324,6 +1449,9 @@ class Server{
 			echo "\x1b]0;\x07";
 		}
 
+		if($this->isRunning){
+			$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_forcingShutdown()));
+		}
 		try{
 			if(!$this->isRunning()){
 				$this->sendUsage(SendUsageTask::TYPE_CLOSE);
@@ -1333,45 +1461,44 @@ class Server{
 
 			$this->shutdown();
 
-			if($this->pluginManager instanceof PluginManager){
-				$this->getLogger()->debug("Disabling all plugins");
+			if(isset($this->pluginManager)){
+				$this->logger->debug("Disabling all plugins");
 				$this->pluginManager->disablePlugins();
 			}
 
-			if($this->network instanceof Network){
-				$this->network->getSessionManager()->close($this->configGroup->getProperty("settings.shutdown-message", "Server closed"));
+			if(isset($this->network)){
+				$this->network->getSessionManager()->close($this->configGroup->getPropertyString(YmlServerProperties::SETTINGS_SHUTDOWN_MESSAGE, "Server closed"));
 			}
 
-			if($this->worldManager instanceof WorldManager){
-				$this->getLogger()->debug("Unloading all worlds");
+			if(isset($this->worldManager)){
+				$this->logger->debug("Unloading all worlds");
 				foreach($this->worldManager->getWorlds() as $world){
 					$this->worldManager->unloadWorld($world, true);
 				}
 			}
 
-			$this->getLogger()->debug("Removing event handlers");
+			$this->logger->debug("Removing event handlers");
 			HandlerListManager::global()->unregisterAll();
 
-			if($this->asyncPool instanceof AsyncPool){
-				$this->getLogger()->debug("Shutting down async task worker pool");
+			if(isset($this->asyncPool)){
+				$this->logger->debug("Shutting down async task worker pool");
 				$this->asyncPool->shutdown();
 			}
 
-			if($this->configGroup !== null){
-				$this->getLogger()->debug("Saving properties");
+			if(isset($this->configGroup)){
+				$this->logger->debug("Saving properties");
 				$this->configGroup->save();
 			}
 
-			if($this->console instanceof CommandReader){
-				$this->getLogger()->debug("Closing console");
-				$this->console->shutdown();
-				$this->console->notify();
+			if($this->console !== null){
+				$this->logger->debug("Closing console");
+				$this->console->quit();
 			}
 
-			if($this->network instanceof Network){
-				$this->getLogger()->debug("Stopping network interfaces");
+			if(isset($this->network)){
+				$this->logger->debug("Stopping network interfaces");
 				foreach($this->network->getInterfaces() as $interface){
-					$this->getLogger()->debug("Stopping network interface " . get_class($interface));
+					$this->logger->debug("Stopping network interface " . get_class($interface));
 					$this->network->unregisterInterface($interface);
 				}
 			}
@@ -1383,10 +1510,7 @@ class Server{
 
 	}
 
-	/**
-	 * @return QueryInfo
-	 */
-	public function getQueryInformation(){
+	public function getQueryInformation() : QueryInfo{
 		return $this->queryInfo;
 	}
 
@@ -1394,7 +1518,7 @@ class Server{
 	 * @param mixed[][]|null $trace
 	 * @phpstan-param list<array<string, mixed>>|null $trace
 	 */
-	public function exceptionHandler(\Throwable $e, $trace = null) : void{
+	public function exceptionHandler(\Throwable $e, ?array $trace = null) : void{
 		while(@ob_end_flush()){}
 		global $lastError;
 
@@ -1402,28 +1526,62 @@ class Server{
 			$trace = $e->getTrace();
 		}
 
-		$errstr = $e->getMessage();
-		$errfile = $e->getFile();
-		$errline = $e->getLine();
+		//If this is a thread crash, this logs where the exception came from on the main thread, as opposed to the
+		//crashed thread. This is intentional, and might be useful for debugging
+		//Assume that the thread already logged the original exception with the correct stack trace
+		$this->logger->logException($e, $trace);
+
+		if($e instanceof ThreadCrashException){
+			$info = $e->getCrashInfo();
+			$type = $info->getType();
+			$errstr = $info->getMessage();
+			$errfile = $info->getFile();
+			$errline = $info->getLine();
+			$printableTrace = $info->getTrace();
+			$thread = $info->getThreadName();
+		}else{
+			$type = get_class($e);
+			$errstr = $e->getMessage();
+			$errfile = $e->getFile();
+			$errline = $e->getLine();
+			$printableTrace = Utils::printableTraceWithMetadata($trace);
+			$thread = "Main";
+		}
 
 		$errstr = preg_replace('/\s+/', ' ', trim($errstr));
 
-		$errfile = Filesystem::cleanPath($errfile);
-
-		$this->logger->logException($e, $trace);
-
 		$lastError = [
-			"type" => get_class($e),
+			"type" => $type,
 			"message" => $errstr,
-			"fullFile" => $e->getFile(),
-			"file" => $errfile,
+			"fullFile" => $errfile,
+			"file" => Filesystem::cleanPath($errfile),
 			"line" => $errline,
-			"trace" => $trace
+			"trace" => $printableTrace,
+			"thread" => $thread
 		];
 
 		global $lastExceptionError, $lastError;
 		$lastExceptionError = $lastError;
 		$this->crashDump();
+	}
+
+	private function writeCrashDumpFile(CrashDump $dump) : string{
+		$crashFolder = Path::join($this->dataPath, "crashdumps");
+		if(!is_dir($crashFolder)){
+			mkdir($crashFolder);
+		}
+		$crashDumpPath = Path::join($crashFolder, date("D_M_j-H.i.s-T_Y", (int) $dump->getData()->time) . ".log");
+
+		$fp = @fopen($crashDumpPath, "wb");
+		if(!is_resource($fp)){
+			throw new \RuntimeException("Unable to open new file to generate crashdump");
+		}
+		$writer = new CrashDumpRenderer($fp, $dump->getData());
+		$writer->renderHumanReadable();
+		$dump->encodeData($writer);
+
+		fclose($fp);
+		return $crashDumpPath;
 	}
 
 	public function crashDump() : void{
@@ -1439,41 +1597,35 @@ class Server{
 		ini_set("error_reporting", '0');
 		ini_set("memory_limit", '-1'); //Fix error dump not dumped on memory problems
 		try{
-			$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.create"));
-			$dump = new CrashDump($this);
+			$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_crash_create()));
+			$dump = new CrashDump($this, $this->pluginManager ?? null);
 
-			$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.submit", [$dump->getPath()]));
+			$crashDumpPath = $this->writeCrashDumpFile($dump);
 
-			if($this->configGroup->getProperty("auto-report.enabled", true) !== false){
+			$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_crash_submit($crashDumpPath)));
+
+			if($this->configGroup->getPropertyBool(Yml::AUTO_REPORT_ENABLED, true)){
 				$report = true;
 
-				$stamp = $this->getDataPath() . "crashdumps/.last_crash";
+				$stamp = Path::join($this->dataPath, "crashdumps", ".last_crash");
 				$crashInterval = 120; //2 minutes
-				if(file_exists($stamp) and !($report = (filemtime($stamp) + $crashInterval < time()))){
+				if(($lastReportTime = @filemtime($stamp)) !== false && $lastReportTime + $crashInterval >= time()){
+					$report = false;
 					$this->logger->debug("Not sending crashdump due to last crash less than $crashInterval seconds ago");
 				}
 				@touch($stamp); //update file timestamp
 
-				$plugin = $dump->getData()["plugin"];
-				if(is_string($plugin)){
-					$p = $this->pluginManager->getPlugin($plugin);
-					if($p instanceof Plugin and !($p->getPluginLoader() instanceof PharPluginLoader)){
-						$this->logger->debug("Not sending crashdump due to caused by non-phar plugin");
-						$report = false;
-					}
-				}
-
-				if($dump->getData()["error"]["type"] === \ParseError::class){
+				if($dump->getData()->error["type"] === \ParseError::class){
 					$report = false;
 				}
 
-				if(strrpos(VersionInfo::getGitHash(), "-dirty") !== false or VersionInfo::getGitHash() === str_repeat("00", 20)){
+				if(strrpos(VersionInfo::GIT_HASH(), "-dirty") !== false || VersionInfo::GIT_HASH() === str_repeat("00", 20)){
 					$this->logger->debug("Not sending crashdump due to locally modified");
 					$report = false; //Don't send crashdumps for locally modified builds
 				}
 
 				if($report){
-					$url = ((bool) $this->configGroup->getProperty("auto-report.use-https", true) ? "https" : "http") . "://" . $this->configGroup->getProperty("auto-report.host", "crash.pmmp.io") . "/submit/api";
+					$url = ($this->configGroup->getPropertyBool(Yml::AUTO_REPORT_USE_HTTPS, true) ? "https" : "http") . "://" . $this->configGroup->getPropertyString(Yml::AUTO_REPORT_HOST, "crash.pmmp.io") . "/submit/api";
 					$postUrlError = "Unknown error";
 					$reply = Internet::postURL($url, [
 						"report" => "yes",
@@ -1482,13 +1634,15 @@ class Server{
 						"reportPaste" => base64_encode($dump->getEncodedData())
 					], 10, [], $postUrlError);
 
-					if($reply !== null and ($data = json_decode($reply->getBody())) !== null){
-						if(isset($data->crashId) and isset($data->crashUrl)){
+					if($reply !== null && is_object($data = json_decode($reply->getBody()))){
+						if(isset($data->crashId) && is_int($data->crashId) && isset($data->crashUrl) && is_string($data->crashUrl)){
 							$reportId = $data->crashId;
 							$reportUrl = $data->crashUrl;
-							$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.archive", [$reportUrl, $reportId]));
-						}elseif(isset($data->error)){
+							$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_crash_archive($reportUrl, (string) $reportId)));
+						}elseif(isset($data->error) && is_string($data->error)){
 							$this->logger->emergency("Automatic crash report submission failed: $data->error");
+						}else{
+							$this->logger->emergency("Invalid JSON response received from crash archive: " . $reply->getBody());
 						}
 					}else{
 						$this->logger->emergency("Failed to communicate with crash archive: $postUrlError");
@@ -1498,7 +1652,7 @@ class Server{
 		}catch(\Throwable $e){
 			$this->logger->logException($e);
 			try{
-				$this->logger->critical($this->getLanguage()->translateString("pocketmine.crash.error", [$e->getMessage()]));
+				$this->logger->critical($this->language->translate(KnownTranslationFactory::pocketmine_crash_error($e->getMessage())));
 			}catch(\Throwable $e){}
 		}
 
@@ -1537,20 +1691,43 @@ class Server{
 		}
 	}
 
-	public function addOnlinePlayer(Player $player) : void{
+	public function addOnlinePlayer(Player $player) : bool{
+		$ev = new PlayerLoginEvent($player, "Plugin reason");
+		$ev->call();
+		if($ev->isCancelled() || !$player->isConnected()){
+			$player->disconnect($ev->getKickMessage());
+
+			return false;
+		}
+
+		$session = $player->getNetworkSession();
+		$position = $player->getPosition();
+		$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_player_logIn(
+			TextFormat::AQUA . $player->getName() . TextFormat::RESET,
+			$session->getIp(),
+			(string) $session->getPort(),
+			(string) $player->getId(),
+			$position->getWorld()->getDisplayName(),
+			(string) round($position->x, 4),
+			(string) round($position->y, 4),
+			(string) round($position->z, 4)
+		)));
+
 		foreach($this->playerList as $p){
 			$p->getNetworkSession()->onPlayerAdded($player);
 		}
-		$rawUUID = $player->getUniqueId()->toBinary();
+		$rawUUID = $player->getUniqueId()->getBytes();
 		$this->playerList[$rawUUID] = $player;
 
 		if($this->sendUsageTicker > 0){
 			$this->uniquePlayers[$rawUUID] = $rawUUID;
 		}
+
+		return true;
 	}
 
 	public function removeOnlinePlayer(Player $player) : void{
-		if(isset($this->playerList[$rawUUID = $player->getUniqueId()->toBinary()])){
+		if(isset($this->playerList[$rawUUID = $player->getUniqueId()->getBytes()])){
 			unset($this->playerList[$rawUUID]);
 			foreach($this->playerList as $p){
 				$p->getNetworkSession()->onPlayerRemoved($player);
@@ -1559,16 +1736,13 @@ class Server{
 	}
 
 	public function sendUsage(int $type = SendUsageTask::TYPE_STATUS) : void{
-		if((bool) $this->configGroup->getProperty("anonymous-statistics.enabled", true)){
+		if($this->configGroup->getPropertyBool(Yml::ANONYMOUS_STATISTICS_ENABLED, true)){
 			$this->asyncPool->submitTask(new SendUsageTask($this, $type, $this->uniquePlayers));
 		}
 		$this->uniquePlayers = [];
 	}
 
-	/**
-	 * @return Language
-	 */
-	public function getLanguage(){
+	public function getLanguage() : Language{
 		return $this->language;
 	}
 
@@ -1576,26 +1750,19 @@ class Server{
 		return $this->forceLanguage;
 	}
 
-	/**
-	 * @return Network
-	 */
-	public function getNetwork(){
+	public function getNetwork() : Network{
 		return $this->network;
 	}
 
-	/**
-	 * @return MemoryManager
-	 */
-	public function getMemoryManager(){
+	public function getMemoryManager() : MemoryManager{
 		return $this->memoryManager;
 	}
 
 	private function titleTick() : void{
 		Timings::$titleTick->startTiming();
-		$d = Process::getRealMemoryUsage();
 
 		$u = Process::getAdvancedMemoryUsage();
-		$usage = sprintf("%g/%g/%g/%g MB @ %d threads", round(($u[0] / 1024) / 1024, 2), round(($d[0] / 1024) / 1024, 2), round(($u[1] / 1024) / 1024, 2), round(($u[2] / 1024) / 1024, 2), Process::getThreadCount());
+		$usage = sprintf("%g/%g/%g MB @ %d threads", round(($u[0] / 1024) / 1024, 2), round(($u[1] / 1024) / 1024, 2), round(($u[2] / 1024) / 1024, 2), Process::getThreadCount());
 
 		$online = count($this->playerList);
 		$connecting = $this->network->getConnectionCount() - $online;
@@ -1603,7 +1770,7 @@ class Server{
 
 		echo "\x1b]0;" . $this->getName() . " " .
 			$this->getPocketMineVersion() .
-			" | Online $online/" . $this->getMaxPlayers() .
+			" | Online $online/" . $this->maxPlayers .
 			($connecting > 0 ? " (+$connecting connecting)" : "") .
 			" | Memory " . $usage .
 			" | U " . round($bandwidthStats->getSend()->getAverageBytes() / 1024, 2) .
@@ -1641,11 +1808,11 @@ class Server{
 		$this->network->tick();
 		Timings::$connection->stopTiming();
 
-		if(($this->tickCounter % 20) === 0){
+		if(($this->tickCounter % self::TARGET_TICKS_PER_SECOND) === 0){
 			if($this->doTitleTick){
 				$this->titleTick();
 			}
-			$this->currentTPS = 20;
+			$this->currentTPS = self::TARGET_TICKS_PER_SECOND;
 			$this->currentUse = 0;
 
 			$queryRegenerateEvent = new QueryRegenerateEvent(new QueryInfo($this));
@@ -1656,48 +1823,50 @@ class Server{
 			$this->network->getBandwidthTracker()->rotateAverageHistory();
 		}
 
-		if($this->sendUsageTicker > 0 and --$this->sendUsageTicker === 0){
-			$this->sendUsageTicker = 6000;
+		if($this->sendUsageTicker > 0 && --$this->sendUsageTicker === 0){
+			$this->sendUsageTicker = self::TICKS_PER_STATS_REPORT;
 			$this->sendUsage(SendUsageTask::TYPE_STATUS);
 		}
 
-		if(($this->tickCounter % 100) === 0){
+		if(($this->tickCounter % self::TICKS_PER_WORLD_CACHE_CLEAR) === 0){
 			foreach($this->worldManager->getWorlds() as $world){
 				$world->clearCache();
 			}
-
-			if($this->getTicksPerSecondAverage() < 12){
-				$this->logger->warning($this->getLanguage()->translateString("pocketmine.server.tickOverload"));
-			}
 		}
 
-		$this->getMemoryManager()->check();
+		if(($this->tickCounter % self::TICKS_PER_TPS_OVERLOAD_WARNING) === 0 && $this->getTicksPerSecondAverage() < self::TPS_OVERLOAD_WARNING_THRESHOLD){
+			$this->logger->warning($this->language->translate(KnownTranslationFactory::pocketmine_server_tickOverload()));
+		}
+
+		$this->memoryManager->check();
+
+		if($this->console !== null){
+			Timings::$serverCommand->startTiming();
+			while(($line = $this->console->readLine()) !== null){
+				$this->consoleSender ??= new ConsoleCommandSender($this, $this->language);
+				$this->dispatchCommand($this->consoleSender, $line);
+			}
+			Timings::$serverCommand->stopTiming();
+		}
 
 		Timings::$serverTick->stopTiming();
 
 		$now = microtime(true);
-		$this->currentTPS = min(20, 1 / max(0.001, $now - $tickTime));
-		$this->currentUse = min(1, ($now - $tickTime) / 0.05);
+		$totalTickTimeSeconds = $now - $tickTime + ($this->tickSleeper->getNotificationProcessingTime() / 1_000_000_000);
+		$this->currentTPS = min(self::TARGET_TICKS_PER_SECOND, 1 / max(0.001, $totalTickTimeSeconds));
+		$this->currentUse = min(1, $totalTickTimeSeconds / self::TARGET_SECONDS_PER_TICK);
 
 		TimingsHandler::tick($this->currentTPS <= $this->profilingTickRate);
 
-		$idx = $this->tickCounter % 20;
+		$idx = $this->tickCounter % self::TARGET_TICKS_PER_SECOND;
 		$this->tickAverage[$idx] = $this->currentTPS;
 		$this->useAverage[$idx] = $this->currentUse;
+		$this->tickSleeper->resetNotificationProcessingTime();
 
 		if(($this->nextTick - $tickTime) < -1){
 			$this->nextTick = $tickTime;
 		}else{
-			$this->nextTick += 0.05;
+			$this->nextTick += self::TARGET_SECONDS_PER_TICK;
 		}
-	}
-
-	/**
-	 * Called when something attempts to serialize the server instance.
-	 *
-	 * @throws \BadMethodCallException because Server instances cannot be serialized
-	 */
-	public function __sleep(){
-		throw new \BadMethodCallException("Cannot serialize Server instance");
 	}
 }

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,6 +32,8 @@ use function mb_strtoupper;
  * LOWEST -> LOW -> NORMAL -> HIGH -> HIGHEST -> MONITOR
  *
  * MONITOR events should not change the event outcome or contents
+ *
+ * WARNING: If these values are changed, handler sorting in HandlerList::getListenerList() may need to be updated.
  */
 final class EventPriority{
 

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -40,12 +40,13 @@ use function rtrim;
 use function sprintf;
 use function str_replace;
 use function unlink;
+use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 /**
- * @param string[]    $strings
+ * @param string[] $strings
  *
  * @return string[]
  */
@@ -134,12 +135,17 @@ function main() : void{
 		exit(1);
 	}
 
-	$opts = getopt("", ["out:", "git:"]);
+	$opts = getopt("", ["out:", "git:", "build:"]);
 	if(isset($opts["git"])){
 		$gitHash = $opts["git"];
 	}else{
 		$gitHash = Git::getRepositoryStatePretty(dirname(__DIR__));
 		echo "Git hash detected as $gitHash" . PHP_EOL;
+	}
+	if(isset($opts["build"])){
+		$build = (int) $opts["build"];
+	}else{
+		$build = 0;
 	}
 	foreach(buildPhar(
 		$opts["out"] ?? getcwd() . DIRECTORY_SEPARATOR . "PocketMine-MP.phar",
@@ -150,7 +156,8 @@ function main() : void{
 			'vendor'
 		],
 		[
-			'git' => $gitHash
+			'git' => $gitHash,
+			'build' => $build
 		],
 		<<<'STUB'
 <?php

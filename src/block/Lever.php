@@ -17,109 +17,92 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\LeverFacing;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\RedstonePowerOffSound;
 use pocketmine\world\sound\RedstonePowerOnSound;
 
 class Lever extends Flowable{
-	protected const BOTTOM = 0;
-	protected const SIDE = 1;
-	protected const TOP = 2;
+	protected LeverFacing $facing = LeverFacing::UP_AXIS_X;
+	protected bool $activated = false;
 
-	/** @var int */
-	protected $leverPos = self::BOTTOM;
-	/** @var int */
-	protected $facing = Facing::NORTH;
-	/** @var bool */
-	protected $powered = false;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5));
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->enum($this->facing);
+		$w->bool($this->activated);
 	}
 
-	protected function writeStateToMeta() : int{
-		if($this->leverPos === self::BOTTOM){
-			$rotationMeta = Facing::axis($this->facing) === Axis::Z ? 7 : 0;
-		}elseif($this->leverPos === self::TOP){
-			$rotationMeta = Facing::axis($this->facing) === Axis::Z ? 5 : 6;
-		}else{
-			$rotationMeta = 6 - BlockDataSerializer::writeHorizontalFacing($this->facing);
-		}
-		return $rotationMeta | ($this->powered ? BlockLegacyMetadata::LEVER_FLAG_POWERED : 0);
+	public function getFacing() : LeverFacing{ return $this->facing; }
+
+	/** @return $this */
+	public function setFacing(LeverFacing $facing) : self{
+		$this->facing = $facing;
+		return $this;
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$rotationMeta = $stateMeta & 0x07;
-		if($rotationMeta === 5 or $rotationMeta === 6){
-			$this->leverPos = self::TOP;
-			$this->facing = $rotationMeta === 5 ? Facing::SOUTH : Facing::EAST;
-		}elseif($rotationMeta === 7 or $rotationMeta === 0){
-			$this->leverPos = self::BOTTOM;
-			$this->facing = $rotationMeta === 7 ? Facing::SOUTH : Facing::EAST;
-		}else{
-			$this->leverPos = self::SIDE;
-			$this->facing = BlockDataSerializer::readHorizontalFacing(6 - $rotationMeta);
-		}
+	public function isActivated() : bool{ return $this->activated; }
 
-		$this->powered = ($stateMeta & BlockLegacyMetadata::LEVER_FLAG_POWERED) !== 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	/** @return $this */
+	public function setActivated(bool $activated) : self{
+		$this->activated = $activated;
+		return $this;
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$blockClicked->isSolid()){
+		if(!$this->canBeSupportedAt($blockReplace, Facing::opposite($face))){
 			return false;
 		}
 
-		if(Facing::axis($face) === Axis::Y){
+		$selectUpDownPos = function(LeverFacing $x, LeverFacing $z) use ($player) : LeverFacing{
 			if($player !== null){
-				$this->facing = Facing::opposite($player->getHorizontalFacing());
+				return Facing::axis($player->getHorizontalFacing()) === Axis::X ? $x : $z;
 			}
-			$this->leverPos = $face === Facing::DOWN ? self::BOTTOM : self::TOP;
-		}else{
-			$this->facing = $face;
-			$this->leverPos = self::SIDE;
-		}
+			return $x;
+		};
+		$this->facing = match($face){
+			Facing::DOWN => $selectUpDownPos(LeverFacing::DOWN_AXIS_X, LeverFacing::DOWN_AXIS_Z),
+			Facing::UP => $selectUpDownPos(LeverFacing::UP_AXIS_X, LeverFacing::UP_AXIS_Z),
+			Facing::NORTH => LeverFacing::NORTH,
+			Facing::SOUTH => LeverFacing::SOUTH,
+			Facing::WEST => LeverFacing::WEST,
+			Facing::EAST => LeverFacing::EAST,
+			default => throw new AssumptionFailedError("Bad facing value"),
+		};
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->leverPos === self::BOTTOM){
-			$face = Facing::UP;
-		}elseif($this->leverPos === self::TOP){
-			$face = Facing::DOWN;
-		}else{
-			$face = Facing::opposite($this->facing);
-		}
-
-		if(!$this->getSide($face)->isSolid()){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+		if(!$this->canBeSupportedAt($this, Facing::opposite($this->facing->getFacing()))){
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$this->powered = !$this->powered;
-		$this->pos->getWorld()->setBlock($this->pos, $this);
-		$this->pos->getWorld()->addSound(
-			$this->pos->add(0.5, 0.5, 0.5),
-			$this->powered ? new RedstonePowerOnSound() : new RedstonePowerOffSound()
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		$this->activated = !$this->activated;
+		$world = $this->position->getWorld();
+		$world->setBlock($this->position, $this);
+		$world->addSound(
+			$this->position->add(0.5, 0.5, 0.5),
+			$this->activated ? new RedstonePowerOnSound() : new RedstonePowerOffSound()
 		);
 		return true;
+	}
+
+	private function canBeSupportedAt(Block $block, int $face) : bool{
+		return $block->getAdjacentSupportType($face)->hasCenterSupport();
 	}
 
 	//TODO

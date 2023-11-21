@@ -17,167 +17,110 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
+use pocketmine\data\bedrock\item\BlockItemIdMap;
+use pocketmine\data\bedrock\item\ItemDeserializer;
+use pocketmine\data\bedrock\item\ItemSerializer;
+use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
+use pocketmine\data\bedrock\item\ItemTypeSerializeException;
+use pocketmine\data\bedrock\item\SavedItemData;
+use pocketmine\item\Item;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\utils\SingletonTrait;
-use function array_key_exists;
-use function file_get_contents;
-use function is_array;
-use function is_numeric;
-use function is_string;
-use function json_decode;
 
 /**
  * This class handles translation between network item ID+metadata to PocketMine-MP internal ID+metadata and vice versa.
  */
 final class ItemTranslator{
-	use SingletonTrait;
+	public const NO_BLOCK_RUNTIME_ID = 0; //this is technically a valid block runtime ID, but is used to represent "no block" (derp mojang)
+
+	public function __construct(
+		private ItemTypeDictionary $itemTypeDictionary,
+		private BlockStateDictionary $blockStateDictionary,
+		private ItemSerializer $itemSerializer,
+		private ItemDeserializer $itemDeserializer,
+		private BlockItemIdMap $blockItemIdMap
+	){}
 
 	/**
-	 * @var int[]
-	 * @phpstan-var array<int, int>
+	 * @return int[]|null
+	 * @phpstan-return array{int, int, ?int}|null
 	 */
-	private $simpleCoreToNetMapping = [];
-	/**
-	 * @var int[]
-	 * @phpstan-var array<int, int>
-	 */
-	private $simpleNetToCoreMapping = [];
-
-	/**
-	 * runtimeId = array[internalId][metadata]
-	 * @var int[][]
-	 * @phpstan-var array<int, array<int, int>>
-	 */
-	private $complexCoreToNetMapping = [];
-	/**
-	 * [internalId, metadata] = array[runtimeId]
-	 * @var int[][]
-	 * @phpstan-var array<int, array{int, int}>
-	 */
-	private $complexNetToCoreMapping = [];
-
-	private static function make() : self{
-		$data = file_get_contents(\pocketmine\RESOURCE_PATH . '/vanilla/r16_to_current_item_map.json');
-		if($data === false) throw new AssumptionFailedError("Missing required resource file");
-		$json = json_decode($data, true);
-		if(!is_array($json) or !isset($json["simple"], $json["complex"]) || !is_array($json["simple"]) || !is_array($json["complex"])){
-			throw new AssumptionFailedError("Invalid item table format");
-		}
-
-		$legacyStringToIntMapRaw = file_get_contents(\pocketmine\RESOURCE_PATH . '/vanilla/item_id_map.json');
-		if($legacyStringToIntMapRaw === false){
-			throw new AssumptionFailedError("Missing required resource file");
-		}
-		$legacyStringToIntMap = json_decode($legacyStringToIntMapRaw, true);
-		if(!is_array($legacyStringToIntMap)){
-			throw new AssumptionFailedError("Invalid mapping table format");
-		}
-
-		/** @phpstan-var array<string, int> $simpleMappings */
-		$simpleMappings = [];
-		foreach($json["simple"] as $oldId => $newId){
-			if(!is_string($oldId) || !is_string($newId)){
-				throw new AssumptionFailedError("Invalid item table format");
-			}
-			$simpleMappings[$newId] = $legacyStringToIntMap[$oldId];
-		}
-		foreach($legacyStringToIntMap as $stringId => $intId){
-			if(isset($simpleMappings[$stringId])){
-				throw new \UnexpectedValueException("Old ID $stringId collides with new ID");
-			}
-			$simpleMappings[$stringId] = $intId;
-		}
-
-		/** @phpstan-var array<string, array{int, int}> $complexMappings */
-		$complexMappings = [];
-		foreach($json["complex"] as $oldId => $map){
-			if(!is_string($oldId) || !is_array($map)){
-				throw new AssumptionFailedError("Invalid item table format");
-			}
-			foreach($map as $meta => $newId){
-				if(!is_numeric($meta) || !is_string($newId)){
-					throw new AssumptionFailedError("Invalid item table format");
-				}
-				$complexMappings[$newId] = [$legacyStringToIntMap[$oldId], (int) $meta];
-			}
-		}
-
-		return new self(ItemTypeDictionary::getInstance(), $simpleMappings, $complexMappings);
-	}
-
-	/**
-	 * @param int[] $simpleMappings
-	 * @param int[][] $complexMappings
-	 * @phpstan-param array<string, int> $simpleMappings
-	 * @phpstan-param array<string, array<int, int>> $complexMappings
-	 */
-	public function __construct(ItemTypeDictionary $dictionary, array $simpleMappings, array $complexMappings){
-		foreach($dictionary->getEntries() as $entry){
-			$stringId = $entry->getStringId();
-			$netId = $entry->getNumericId();
-			if(isset($complexMappings[$stringId])){
-				[$id, $meta] = $complexMappings[$stringId];
-				$this->complexCoreToNetMapping[$id][$meta] = $netId;
-				$this->complexNetToCoreMapping[$netId] = [$id, $meta];
-			}elseif(isset($simpleMappings[$stringId])){
-				$this->simpleCoreToNetMapping[$simpleMappings[$stringId]] = $netId;
-				$this->simpleNetToCoreMapping[$netId] = $simpleMappings[$stringId];
-			}elseif($stringId !== "minecraft:unknown"){
-				throw new \InvalidArgumentException("Unmapped entry " . $stringId);
-			}
+	public function toNetworkIdQuiet(Item $item) : ?array{
+		try{
+			return $this->toNetworkId($item);
+		}catch(ItemTypeSerializeException){
+			return null;
 		}
 	}
 
 	/**
 	 * @return int[]
-	 * @phpstan-return array{int, int}
+	 * @phpstan-return array{int, int, ?int}
+	 *
+	 * @throws ItemTypeSerializeException
 	 */
-	public function toNetworkId(int $internalId, int $internalMeta) : array{
-		if(isset($this->complexCoreToNetMapping[$internalId][$internalMeta])){
-			return [$this->complexCoreToNetMapping[$internalId][$internalMeta], 0];
-		}
-		if(array_key_exists($internalId, $this->simpleCoreToNetMapping)){
-			return [$this->simpleCoreToNetMapping[$internalId], $internalMeta];
-		}
+	public function toNetworkId(Item $item) : array{
+		//TODO: we should probably come up with a cache for this
 
-		throw new \InvalidArgumentException("Unmapped ID/metadata combination $internalId:$internalMeta");
-	}
+		$itemData = $this->itemSerializer->serializeType($item);
 
-	/**
-	 * @return int[]
-	 * @phpstan-return array{int, int}
-	 */
-	public function fromNetworkId(int $networkId, int $networkMeta, ?bool &$isComplexMapping = null) : array{
-		if(isset($this->complexNetToCoreMapping[$networkId])){
-			if($networkMeta !== 0){
-				throw new \UnexpectedValueException("Unexpected non-zero network meta on complex item mapping");
+		$numericId = $this->itemTypeDictionary->fromStringId($itemData->getName());
+		$blockStateData = $itemData->getBlock();
+
+		if($blockStateData !== null){
+			$blockRuntimeId = $this->blockStateDictionary->lookupStateIdFromData($blockStateData);
+			if($blockRuntimeId === null){
+				throw new AssumptionFailedError("Unmapped blockstate returned by blockstate serializer: " . $blockStateData->toNbt());
 			}
-			$isComplexMapping = true;
-			return $this->complexNetToCoreMapping[$networkId];
+		}else{
+			$blockRuntimeId = null;
 		}
-		$isComplexMapping = false;
-		if(isset($this->simpleNetToCoreMapping[$networkId])){
-			return [$this->simpleNetToCoreMapping[$networkId], $networkMeta];
-		}
-		throw new \UnexpectedValueException("Unmapped network ID/metadata combination $networkId:$networkMeta");
+
+		return [$numericId, $itemData->getMeta(), $blockRuntimeId];
 	}
 
 	/**
-	 * @return int[]
-	 * @phpstan-return array{int, int}
+	 * @throws ItemTypeSerializeException
 	 */
-	public function fromNetworkIdWithWildcardHandling(int $networkId, int $networkMeta) : array{
-		$isComplexMapping = false;
-		if($networkMeta !== 0x7fff){
-			return $this->fromNetworkId($networkId, $networkMeta);
+	public function toNetworkNbt(Item $item) : CompoundTag{
+		//TODO: this relies on the assumption that network item NBT is the same as disk item NBT, which may not always
+		//be true - if we stick on an older world version while updating network version, this could be a problem (and
+		//may be a problem for multi version implementations)
+		return $this->itemSerializer->serializeStack($item)->toNbt();
+	}
+
+	/**
+	 * @throws TypeConversionException
+	 */
+	public function fromNetworkId(int $networkId, int $networkMeta, int $networkBlockRuntimeId) : Item{
+		try{
+			$stringId = $this->itemTypeDictionary->fromIntId($networkId);
+		}catch(\InvalidArgumentException $e){
+			//TODO: a quiet version of fromIntId() would be better than catching InvalidArgumentException
+			throw TypeConversionException::wrap($e, "Invalid network itemstack ID $networkId");
 		}
-		[$id, $meta] = $this->fromNetworkId($networkId, 0, $isComplexMapping);
-		return [$id, $isComplexMapping ? $meta : -1];
+
+		$blockStateData = null;
+		if($this->blockItemIdMap->lookupBlockId($stringId) !== null){
+			$blockStateData = $this->blockStateDictionary->generateDataFromStateId($networkBlockRuntimeId);
+			if($blockStateData === null){
+				throw new TypeConversionException("Blockstate runtimeID $networkBlockRuntimeId does not correspond to any known blockstate");
+			}
+		}elseif($networkBlockRuntimeId !== self::NO_BLOCK_RUNTIME_ID){
+			throw new TypeConversionException("Item $stringId is not a blockitem, but runtime ID $networkBlockRuntimeId was provided");
+		}
+
+		try{
+			return $this->itemDeserializer->deserializeType(new SavedItemData($stringId, $networkMeta, $blockStateData));
+		}catch(ItemTypeDeserializeException $e){
+			throw TypeConversionException::wrap($e, "Invalid network itemstack data");
+		}
 	}
 }

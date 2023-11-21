@@ -1,57 +1,57 @@
 includes:
+	- tests/phpstan/analyse-for-current-php-version.neon.php
 	- tests/phpstan/configs/actual-problems.neon
-	- tests/phpstan/configs/check-explicit-mixed-baseline.neon
-	- tests/phpstan/configs/com-dotnet-magic.neon
-	- tests/phpstan/configs/ds-bugs.neon
-	- tests/phpstan/configs/gc-hacks.neon
 	- tests/phpstan/configs/impossible-generics.neon
-	- tests/phpstan/configs/l7-baseline.neon
-	- tests/phpstan/configs/l8-baseline.neon
 	- tests/phpstan/configs/php-bugs.neon
 	- tests/phpstan/configs/phpstan-bugs.neon
-	- tests/phpstan/configs/phpunit-wiring-tests.neon
-	- tests/phpstan/configs/pthreads-bugs.neon
-	- tests/phpstan/configs/runtime-type-checks.neon
+	- tests/phpstan/configs/spl-fixed-array-sucks.neon
 	- vendor/phpstan/phpstan-phpunit/extension.neon
 	- vendor/phpstan/phpstan-phpunit/rules.neon
 	- vendor/phpstan/phpstan-strict-rules/rules.neon
 
 rules:
+	- pocketmine\phpstan\rules\DeprecatedLegacyEnumAccessRule
 	- pocketmine\phpstan\rules\DisallowEnumComparisonRule
+	- pocketmine\phpstan\rules\DisallowForeachByReferenceRule
+	- pocketmine\phpstan\rules\UnsafeForeachArrayOfStringRule
 #	- pocketmine\phpstan\rules\ThreadedSupportedTypesRule
 
 parameters:
-	level: 8
-	checkExplicitMixed: true
+	level: 9
 	checkMissingCallableSignature: true
+	treatPhpDocTypesAsCertain: false
 	bootstrapFiles:
 		- tests/phpstan/bootstrap.php
 	scanDirectories:
-	    - tests/plugins/TesterPlugin
+		- build
+		- tests/plugins/TesterPlugin
+		- tools
 	scanFiles:
 		- src/PocketMine.php
-		- build/make-release.php
-		- build/server-phar.php
 	paths:
+		- build
 		- src
 		- tests/phpstan/rules
-		- build/make-release.php
-		- build/server-phar.php
 		- tests/phpunit
 		- tests/plugins/TesterPlugin
+		- tools
+	excludePaths:
+		analyseAndScan:
+			- build/php
 	dynamicConstantNames:
 		- pocketmine\VersionInfo::IS_DEVELOPMENT_BUILD
 		- pocketmine\DEBUG
+		- pocketmine\IS_DEVELOPMENT_BUILD
 	stubFiles:
 		- tests/phpstan/stubs/JsonMapper.stub
-		- tests/phpstan/stubs/pthreads.stub
 		- tests/phpstan/stubs/leveldb.stub
+		- tests/phpstan/stubs/pmmpthread.stub
 	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
 	staticReflectionClassNamePatterns:
 		- "#^COM$#"
 	typeAliases:
-	    #variadics don't work for this - mixed probably shouldn't work either, but for now it does
-	    #what we actually need is something that accepts an infinite number of parameters, but in the absence of that,
-	    #we'll just fill it with 10 - it's very unlikely to encounter a callable with 10 parameters anyway.
-	    anyCallable: 'callable(mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed) : mixed'
-	    anyClosure: '\Closure(mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed) : mixed'
+		#variadics don't work for this - mixed probably shouldn't work either, but for now it does
+		#what we actually need is something that accepts an infinite number of parameters, but in the absence of that,
+		#we'll just fill it with 10 - it's very unlikely to encounter a callable with 10 parameters anyway.
+		anyCallable: 'callable(never, never, never, never, never, never, never, never, never, never) : mixed'
+		anyClosure: '\Closure(never, never, never, never, never, never, never, never, never, never) : mixed'

@@ -17,107 +17,84 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\player;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\lang\Translatable;
+use pocketmine\utils\LegacyEnumShimTrait;
+use function mb_strtolower;
+use function spl_object_id;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever enum members are added, removed or changed.
- * @see EnumTrait::_generateMethodAnnotations()
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
- * @method static self SURVIVAL()
- * @method static self CREATIVE()
- * @method static self ADVENTURE()
- * @method static self SPECTATOR()
+ * @method static GameMode ADVENTURE()
+ * @method static GameMode CREATIVE()
+ * @method static GameMode SPECTATOR()
+ * @method static GameMode SURVIVAL()
+ *
+ * @phpstan-type TMetadata array{0: string, 1: Translatable, 2: list<string>}
  */
-final class GameMode{
-	use EnumTrait {
-		__construct as Enum___construct;
-		register as Enum_register;
-		fromString as Enum_fromString;
-	}
+enum GameMode{
+	use LegacyEnumShimTrait;
 
-	/** @var self[] */
-	protected static $aliasMap = [];
-	/** @var self[] */
-	protected static $magicNumberMap = [];
+	case SURVIVAL;
+	case CREATIVE;
+	case ADVENTURE;
+	case SPECTATOR;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("survival", 0, "Survival", "gameMode.survival", ["s", "0"]),
-			new self("creative", 1, "Creative", "gameMode.creative", ["c", "1"]),
-			new self("adventure", 2, "Adventure", "gameMode.adventure", ["a", "2"]),
-			new self("spectator", 3, "Spectator", "gameMode.spectator", ["v", "view", "3"])
-		);
-	}
+	public static function fromString(string $str) : ?self{
+		/**
+		 * @var self[]|null $aliasMap
+		 * @phpstan-var array<string, self>|null $aliasMap
+		 */
+		static $aliasMap = null;
 
-	protected static function register(self $member) : void{
-		self::Enum_register($member);
-		self::$magicNumberMap[$member->getMagicNumber()] = $member;
-		foreach($member->getAliases() as $alias){
-			self::$aliasMap[$alias] = $member;
+		if($aliasMap === null){
+			$aliasMap = [];
+			foreach(self::cases() as $case){
+				foreach($case->getAliases() as $alias){
+					$aliasMap[$alias] = $case;
+				}
+			}
 		}
-	}
 
-	public static function fromString(string $str) : self{
-		self::checkInit();
-		return self::$aliasMap[$str] ?? self::Enum_fromString($str);
+		return $aliasMap[mb_strtolower($str)] ?? null;
 	}
 
 	/**
-	 * @return GameMode
-	 * @throws \InvalidArgumentException
+	 * @phpstan-return TMetadata
 	 */
-	public static function fromMagicNumber(int $n) : self{
-		self::checkInit();
-		if(!isset(self::$magicNumberMap[$n])){
-			throw new \InvalidArgumentException("No " . self::class . " enum member matches magic number $n");
-		}
-		return self::$magicNumberMap[$n];
-	}
+	private function getMetadata() : array{
+		/** @phpstan-var array<int, TMetadata> $cache */
+		static $cache = [];
 
-	/** @var int */
-	private $magicNumber;
-	/** @var string */
-	private $englishName;
-	/** @var string */
-	private $translationKey;
-	/** @var string[] */
-	private $aliases;
-
-	/**
-	 * @param string[] $aliases
-	 */
-	private function __construct(string $enumName, int $magicNumber, string $englishName, string $translationKey, array $aliases = []){
-		$this->Enum___construct($enumName);
-		$this->magicNumber = $magicNumber;
-		$this->englishName = $englishName;
-		$this->translationKey = $translationKey;
-		$this->aliases = $aliases;
-	}
-
-	public function getMagicNumber() : int{
-		return $this->magicNumber;
+		return $cache[spl_object_id($this)] ??= match($this){
+			self::SURVIVAL => ["Survival", KnownTranslationFactory::gameMode_survival(), ["survival", "s", "0"]],
+			self::CREATIVE => ["Creative", KnownTranslationFactory::gameMode_creative(), ["creative", "c", "1"]],
+			self::ADVENTURE => ["Adventure", KnownTranslationFactory::gameMode_adventure(), ["adventure", "a", "2"]],
+			self::SPECTATOR => ["Spectator", KnownTranslationFactory::gameMode_spectator(), ["spectator", "v", "view", "3"]]
+		};
 	}
 
 	public function getEnglishName() : string{
-		return $this->englishName;
+		return $this->getMetadata()[0];
 	}
 
-	public function getTranslationKey() : string{
-		return "%" . $this->translationKey;
+	public function getTranslatableName() : Translatable{
+		return $this->getMetadata()[1];
 	}
 
 	/**
 	 * @return string[]
 	 */
 	public function getAliases() : array{
-		return $this->aliases;
+		return $this->getMetadata()[2];
 	}
 
 	//TODO: ability sets per gamemode

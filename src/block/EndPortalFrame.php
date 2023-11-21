@@ -17,42 +17,25 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
-use pocketmine\block\utils\HorizontalFacingTrait;
-use pocketmine\item\Item;
+use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 
 class EndPortalFrame extends Opaque{
-	use HorizontalFacingTrait;
+	use FacesOppositePlacingPlayerTrait;
 
-	/** @var bool */
-	protected $eye = false;
+	protected bool $eye = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::indestructible());
-	}
-
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) | ($this->eye ? BlockLegacyMetadata::END_PORTAL_FRAME_FLAG_EYE : 0);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
-		$this->eye = ($stateMeta & BlockLegacyMetadata::END_PORTAL_FRAME_FLAG_EYE) !== 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->bool($this->eye);
 	}
 
 	public function hasEye() : bool{ return $this->eye; }
@@ -72,12 +55,5 @@ class EndPortalFrame extends Opaque{
 	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 3 / 16)];
-	}
-
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($player !== null){
-			$this->facing = Facing::opposite($player->getHorizontalFacing());
-		}
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 }

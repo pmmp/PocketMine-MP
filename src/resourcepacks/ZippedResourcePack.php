@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,6 +25,7 @@ namespace pocketmine\resourcepacks;
 
 use Ahc\Json\Comment as CommentedJsonDecoder;
 use pocketmine\resourcepacks\json\Manifest;
+use pocketmine\utils\Utils;
 use function assert;
 use function fclose;
 use function feof;
@@ -40,15 +41,9 @@ use function preg_match;
 use function strlen;
 
 class ZippedResourcePack implements ResourcePack{
-
-	/** @var string */
-	protected $path;
-
-	/** @var Manifest */
-	protected $manifest;
-
-	/** @var string|null */
-	protected $sha256 = null;
+	protected string $path;
+	protected Manifest $manifest;
+	protected ?string $sha256 = null;
 
 	/** @var resource */
 	protected $fileResource;
@@ -63,6 +58,13 @@ class ZippedResourcePack implements ResourcePack{
 		if(!file_exists($zipPath)){
 			throw new ResourcePackException("File not found");
 		}
+		$size = filesize($zipPath);
+		if($size === false){
+			throw new ResourcePackException("Unable to determine size of file");
+		}
+		if($size === 0){
+			throw new ResourcePackException("Empty file, probably corrupted");
+		}
 
 		$archive = new \ZipArchive();
 		if(($openResult = $archive->open($zipPath)) !== true){
@@ -73,9 +75,9 @@ class ZippedResourcePack implements ResourcePack{
 			$manifestPath = null;
 			$manifestIdx = null;
 			for($i = 0; $i < $archive->numFiles; ++$i){
-				$name = $archive->getNameIndex($i);
+				$name = Utils::assumeNotFalse($archive->getNameIndex($i), "This index should be valid");
 				if(
-					($manifestPath === null or strlen($name) < strlen($manifestPath)) and
+					($manifestPath === null || strlen($name) < strlen($manifestPath)) &&
 					preg_match('#.*/manifest.json$#', $name) === 1
 				){
 					$manifestPath = $name;
@@ -105,7 +107,6 @@ class ZippedResourcePack implements ResourcePack{
 		}
 
 		$mapper = new \JsonMapper();
-		$mapper->bExceptionOnUndefinedProperty = true;
 		$mapper->bExceptionOnMissingData = true;
 
 		try{
@@ -145,7 +146,7 @@ class ZippedResourcePack implements ResourcePack{
 	}
 
 	public function getSha256(bool $cached = true) : string{
-		if($this->sha256 === null or !$cached){
+		if($this->sha256 === null || !$cached){
 			$this->sha256 = hash_file("sha256", $this->path, true);
 		}
 		return $this->sha256;
@@ -156,6 +157,6 @@ class ZippedResourcePack implements ResourcePack{
 		if(feof($this->fileResource)){
 			throw new \InvalidArgumentException("Requested a resource pack chunk with invalid start offset");
 		}
-		return fread($this->fileResource, $length);
+		return Utils::assumeNotFalse(fread($this->fileResource, $length), "Already checked that we're not at EOF");
 	}
 }

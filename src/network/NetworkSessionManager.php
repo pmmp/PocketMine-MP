@@ -17,13 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network;
 
-use pocketmine\event\player\PlayerDuplicateLoginEvent;
+use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\NetworkSession;
 use function count;
 use function spl_object_id;
@@ -31,16 +31,27 @@ use function spl_object_id;
 class NetworkSessionManager{
 
 	/** @var NetworkSession[] */
-	private $sessions = [];
+	private array $sessions = [];
+
 	/** @var NetworkSession[] */
-	private $updateSessions = [];
+	private array $pendingLoginSessions = [];
 
 	/**
 	 * Adds a network session to the manager. This should only be called on session creation.
 	 */
 	public function add(NetworkSession $session) : void{
 		$idx = spl_object_id($session);
-		$this->sessions[$idx] = $this->updateSessions[$idx] = $session;
+		$this->sessions[$idx] = $session;
+		$this->pendingLoginSessions[$idx] = $session;
+	}
+
+	/**
+	 * Marks the session as having sent a login request. After this point, they are counted towards the total player
+	 * count.
+	 */
+	public function markLoginReceived(NetworkSession $session) : void{
+		$idx = spl_object_id($session);
+		unset($this->pendingLoginSessions[$idx]);
 	}
 
 	/**
@@ -49,69 +60,50 @@ class NetworkSessionManager{
 	 */
 	public function remove(NetworkSession $session) : void{
 		$idx = spl_object_id($session);
-		unset($this->sessions[$idx], $this->updateSessions[$idx]);
+		unset($this->sessions[$idx]);
+		unset($this->pendingLoginSessions[$idx]);
 	}
 
 	/**
-	 * Requests an update to be scheduled on the given network session at the next tick.
-	 */
-	public function scheduleUpdate(NetworkSession $session) : void{
-		$this->updateSessions[spl_object_id($session)] = $session;
-	}
-
-	/**
-	 * Checks whether this network session is a duplicate of an already-connected session (same player connecting from
-	 * 2 locations).
-	 *
-	 * @return bool if the network session is still connected.
-	 */
-	public function kickDuplicates(NetworkSession $connectingSession) : bool{
-		foreach($this->sessions as $existingSession){
-			if($existingSession === $connectingSession){
-				continue;
-			}
-			$info = $existingSession->getPlayerInfo();
-			if($info !== null and ($info->getUsername() === $connectingSession->getPlayerInfo()->getUsername() or $info->getUuid()->equals($connectingSession->getPlayerInfo()->getUuid()))){
-				$ev = new PlayerDuplicateLoginEvent($connectingSession, $existingSession);
-				$ev->call();
-				if($ev->isCancelled()){
-					$connectingSession->disconnect($ev->getDisconnectMessage());
-					return false;
-				}
-
-				$existingSession->disconnect($ev->getDisconnectMessage());
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Returns the number of known connected sessions.
+	 * Returns the number of known connected sessions, including sessions which have not yet sent a login request.
 	 */
 	public function getSessionCount() : int{
 		return count($this->sessions);
 	}
 
 	/**
+	 * Returns the number of connected sessions which have either sent a login request, or have already completed the
+	 * login sequence.
+	 */
+	public function getValidSessionCount() : int{
+		return count($this->sessions) - count($this->pendingLoginSessions);
+	}
+
+	/** @return NetworkSession[] */
+	public function getSessions() : array{ return $this->sessions; }
+
+	/**
 	 * Updates all sessions which need it.
 	 */
 	public function tick() : void{
-		foreach($this->updateSessions as $k => $session){
-			if(!$session->tick()){
-				unset($this->updateSessions[$k]);
+		foreach($this->sessions as $k => $session){
+			$session->tick();
+			if(!$session->isConnected()){
+				unset($this->sessions[$k]);
 			}
 		}
 	}
 
 	/**
 	 * Terminates all connected sessions with the given reason.
+	 *
+	 * @param Translatable|string      $reason                  Shown in the server log - this should be a short one-line message
+	 * @param Translatable|string|null $disconnectScreenMessage Shown on the player's disconnection screen (null will use the reason)
 	 */
-	public function close(string $reason = "") : void{
+	public function close(Translatable|string $reason = "", Translatable|string|null $disconnectScreenMessage = null) : void{
 		foreach($this->sessions as $session){
-			$session->disconnect($reason);
+			$session->disconnect($reason, $disconnectScreenMessage);
 		}
 		$this->sessions = [];
-		$this->updateSessions = [];
 	}
 }

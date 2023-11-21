@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,13 +28,19 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use DaveRandom\CallbackValidator\CallbackType;
-use pocketmine\uuid\UUID;
+use pocketmine\entity\Location;
+use pocketmine\errorhandler\ErrorTypeToStringMap;
+use pocketmine\math\Vector3;
+use pocketmine\thread\ThreadCrashInfoFrame;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use function array_combine;
 use function array_map;
 use function array_reverse;
 use function array_values;
 use function bin2hex;
 use function chunk_split;
+use function class_exists;
 use function count;
 use function debug_zval_dump;
 use function dechex;
@@ -44,18 +50,27 @@ use function file;
 use function file_exists;
 use function file_get_contents;
 use function function_exists;
+use function get_class;
 use function get_current_user;
 use function get_loaded_extensions;
 use function getenv;
 use function gettype;
 use function implode;
+use function interface_exists;
+use function is_a;
 use function is_array;
+use function is_bool;
+use function is_float;
+use function is_infinite;
+use function is_int;
+use function is_nan;
 use function is_object;
 use function is_string;
 use function mb_check_encoding;
 use function ob_end_clean;
 use function ob_get_contents;
 use function ob_start;
+use function opcache_get_status;
 use function ord;
 use function php_uname;
 use function phpversion;
@@ -63,11 +78,14 @@ use function preg_grep;
 use function preg_match;
 use function preg_match_all;
 use function preg_replace;
+use function shell_exec;
+use function spl_object_id;
+use function str_ends_with;
 use function str_pad;
 use function str_split;
+use function str_starts_with;
 use function stripos;
 use function strlen;
-use function strpos;
 use function substr;
 use function sys_get_temp_dir;
 use function trim;
@@ -91,10 +109,9 @@ final class Utils{
 	public const OS_BSD = "bsd";
 	public const OS_UNKNOWN = "other";
 
-	/** @var string|null */
-	private static $os;
-	/** @var UUID|null */
-	private static $serverUniqueId = null;
+	private static ?string $os = null;
+	private static ?UuidInterface $serverUniqueId = null;
+	private static ?int $cpuCores = null;
 
 	/**
 	 * Returns a readable identifier for the given Closure, including file and line.
@@ -104,7 +121,7 @@ final class Utils{
 	 */
 	public static function getNiceClosureName(\Closure $closure) : string{
 		$func = new \ReflectionFunction($closure);
-		if(substr($func->getName(), -strlen('{closure}')) !== '{closure}'){
+		if(!str_ends_with($func->getName(), '{closure}')){
 			//closure wraps a named function, can be done with reflection or fromCallable()
 			//isClosure() is useless here because it just tells us if $func is reflecting a Closure object
 
@@ -178,8 +195,8 @@ final class Utils{
 	 *
 	 * @param string $extra optional, additional data to identify the machine
 	 */
-	public static function getMachineUniqueId(string $extra = "") : UUID{
-		if(self::$serverUniqueId !== null and $extra === ""){
+	public static function getMachineUniqueId(string $extra = "") : UuidInterface{
+		if(self::$serverUniqueId !== null && $extra === ""){
 			return self::$serverUniqueId;
 		}
 
@@ -224,7 +241,7 @@ final class Utils{
 		}elseif($os === Utils::OS_ANDROID){
 			$machine .= @file_get_contents("/system/build.prop");
 		}elseif($os === Utils::OS_MACOS){
-			$machine .= `system_profiler SPHardwareDataType | grep UUID`;
+			$machine .= shell_exec("system_profiler SPHardwareDataType | grep UUID");
 		}
 		$data = $machine . PHP_MAXPATHLEN;
 		$data .= PHP_INT_MAX;
@@ -234,7 +251,8 @@ final class Utils{
 			$data .= $ext . ":" . phpversion($ext);
 		}
 
-		$uuid = UUID::fromData($machine, $data);
+		//TODO: use of NIL as namespace is a hack; it works for now, but we should have a proper namespace UUID
+		$uuid = Uuid::uuid3(Uuid::NIL, $data);
 
 		if($extra === ""){
 			self::$serverUniqueId = $uuid;
@@ -254,15 +272,15 @@ final class Utils{
 	 * Other => other
 	 */
 	public static function getOS(bool $recalculate = false) : string{
-		if(self::$os === null or $recalculate){
+		if(self::$os === null || $recalculate){
 			$uname = php_uname("s");
 			if(stripos($uname, "Darwin") !== false){
-				if(strpos(php_uname("m"), "iP") === 0){
+				if(str_starts_with(php_uname("m"), "iP")){
 					self::$os = self::OS_IOS;
 				}else{
 					self::$os = self::OS_MACOS;
 				}
-			}elseif(stripos($uname, "Win") !== false or $uname === "Msys"){
+			}elseif(stripos($uname, "Win") !== false || $uname === "Msys"){
 				self::$os = self::OS_WINDOWS;
 			}elseif(stripos($uname, "Linux") !== false){
 				if(@file_exists("/system/build.prop")){
@@ -270,7 +288,7 @@ final class Utils{
 				}else{
 					self::$os = self::OS_LINUX;
 				}
-			}elseif(stripos($uname, "BSD") !== false or $uname === "DragonFly"){
+			}elseif(stripos($uname, "BSD") !== false || $uname === "DragonFly"){
 				self::$os = self::OS_BSD;
 			}else{
 				self::$os = self::OS_UNKNOWN;
@@ -281,14 +299,11 @@ final class Utils{
 	}
 
 	public static function getCoreCount(bool $recalculate = false) : int{
-		static $processors = 0;
-
-		if($processors > 0 and !$recalculate){
-			return $processors;
-		}else{
-			$processors = 0;
+		if(self::$cpuCores !== null && !$recalculate){
+			return self::$cpuCores;
 		}
 
+		$processors = 0;
 		switch(Utils::getOS()){
 			case Utils::OS_LINUX:
 			case Utils::OS_ANDROID:
@@ -300,19 +315,19 @@ final class Utils{
 					}
 				}elseif(($cpuPresent = @file_get_contents("/sys/devices/system/cpu/present")) !== false){
 					if(preg_match("/^([0-9]+)\\-([0-9]+)$/", trim($cpuPresent), $matches) > 0){
-						$processors = (int) ($matches[2] - $matches[1]);
+						$processors = ((int) $matches[2]) - ((int) $matches[1]);
 					}
 				}
 				break;
 			case Utils::OS_BSD:
 			case Utils::OS_MACOS:
-				$processors = (int) `sysctl -n hw.ncpu`;
+				$processors = (int) shell_exec("sysctl -n hw.ncpu");
 				break;
 			case Utils::OS_WINDOWS:
 				$processors = (int) getenv("NUMBER_OF_PROCESSORS");
 				break;
 		}
-		return $processors;
+		return self::$cpuCores = $processors;
 	}
 
 	/**
@@ -332,28 +347,14 @@ final class Utils{
 
 	/**
 	 * Returns a string that can be printed, replaces non-printable characters
-	 *
-	 * @param mixed $str
 	 */
-	public static function printable($str) : string{
+	public static function printable(mixed $str) : string{
 		if(!is_string($str)){
 			return gettype($str);
 		}
 
 		return preg_replace('#([^\x20-\x7E])#', '.', $str);
 	}
-
-	/*
-	public static function angle3D($pos1, $pos2){
-		$X = $pos1["x"] - $pos2["x"];
-		$Z = $pos1["z"] - $pos2["z"];
-		$dXZ = sqrt(pow($X, 2) + pow($Z, 2));
-		$Y = $pos1["y"] - $pos2["y"];
-		$hAngle = rad2deg(atan2($Z, $X) - M_PI_2);
-		$vAngle = rad2deg(-atan2($Y, $dXZ));
-
-		return array("yaw" => $hAngle, "pitch" => $vAngle);
-	}*/
 
 	public static function javaStringHash(string $string) : int{
 		$hash = 0;
@@ -363,21 +364,12 @@ final class Utils{
 				$ord -= 0x100;
 			}
 			$hash = 31 * $hash + $ord;
-			while($hash > 0x7FFFFFFF){
-				$hash -= 0x100000000;
-			}
-			while($hash < -0x80000000){
-				$hash += 0x100000000;
-			}
 			$hash &= 0xFFFFFFFF;
 		}
 		return $hash;
 	}
 
-	/**
-	 * @param object $value
-	 */
-	public static function getReferenceCount($value, bool $includeCurrent = true) : int{
+	public static function getReferenceCount(object $value, bool $includeCurrent = true) : int{
 		ob_start();
 		debug_zval_dump($value);
 		$contents = ob_get_contents();
@@ -391,6 +383,62 @@ final class Utils{
 		return -1;
 	}
 
+	private static function printableExceptionMessage(\Throwable $e) : string{
+		$errstr = preg_replace('/\s+/', ' ', trim($e->getMessage()));
+
+		$errno = $e->getCode();
+		if(is_int($errno)){
+			try{
+				$errno = ErrorTypeToStringMap::get($errno);
+			}catch(\InvalidArgumentException $ex){
+				//pass
+			}
+		}
+
+		$errfile = Filesystem::cleanPath($e->getFile());
+		$errline = $e->getLine();
+
+		return get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline";
+	}
+
+	/**
+	 * @param mixed[] $trace
+	 * @return string[]
+	 */
+	public static function printableExceptionInfo(\Throwable $e, $trace = null) : array{
+		if($trace === null){
+			$trace = $e->getTrace();
+		}
+
+		$lines = [self::printableExceptionMessage($e)];
+		$lines[] = "--- Stack trace ---";
+		foreach(Utils::printableTrace($trace) as $line){
+			$lines[] = "  " . $line;
+		}
+		for($prev = $e->getPrevious(); $prev !== null; $prev = $prev->getPrevious()){
+			$lines[] = "--- Previous ---";
+			$lines[] = self::printableExceptionMessage($prev);
+			foreach(Utils::printableTrace($prev->getTrace()) as $line){
+				$lines[] = "  " . $line;
+			}
+		}
+		$lines[] = "--- End of exception information ---";
+		return $lines;
+	}
+
+	private static function stringifyValueForTrace(mixed $value, int $maxStringLength) : string{
+		return match(true){
+			is_object($value) => "object " . self::getNiceClassName($value) . "#" . spl_object_id($value),
+			is_array($value) => "array[" . count($value) . "]",
+			is_string($value) => "string[" . strlen($value) . "] " . substr(Utils::printable($value), 0, $maxStringLength),
+			is_bool($value) => $value ? "true" : "false",
+			is_int($value) => "int " . $value,
+			is_float($value) => "float " . $value,
+			$value === null => "null",
+			default => gettype($value) . " " . Utils::printable((string) $value)
+		};
+	}
+
 	/**
 	 * @param mixed[][] $trace
 	 * @phpstan-param list<array<string, mixed>> $trace
@@ -401,29 +449,49 @@ final class Utils{
 		$messages = [];
 		for($i = 0; isset($trace[$i]); ++$i){
 			$params = "";
-			if(isset($trace[$i]["args"]) or isset($trace[$i]["params"])){
+			if(isset($trace[$i]["args"]) || isset($trace[$i]["params"])){
 				if(isset($trace[$i]["args"])){
 					$args = $trace[$i]["args"];
 				}else{
 					$args = $trace[$i]["params"];
 				}
+				/** @var mixed[] $args */
 
-				$params = implode(", ", array_map(function($value) use($maxStringLength) : string{
-					if(is_object($value)){
-						return "object " . self::getNiceClassName($value);
-					}
-					if(is_array($value)){
-						return "array[" . count($value) . "]";
-					}
-					if(is_string($value)){
-						return "string[" . strlen($value) . "] " . substr(Utils::printable($value), 0, $maxStringLength);
-					}
-					return gettype($value) . " " . Utils::printable((string) $value);
-				}, $args));
+				$paramsList = [];
+				$offset = 0;
+				foreach($args as $argId => $value){
+					$paramsList[] = ($argId === $offset ? "" : "$argId: ") . self::stringifyValueForTrace($value, $maxStringLength);
+					$offset++;
+				}
+				$params = implode(", ", $paramsList);
 			}
-			$messages[] = "#$i " . (isset($trace[$i]["file"]) ? Filesystem::cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" or $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
+			$messages[] = "#$i " . (isset($trace[$i]["file"]) ? Filesystem::cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" || $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
 		}
 		return $messages;
+	}
+
+	/**
+	 * Similar to {@link Utils::printableTrace()}, but associates metadata such as file and line number with each frame.
+	 * This is used to transmit thread-safe information about crash traces to the main thread when a thread crashes.
+	 *
+	 * @param mixed[][] $rawTrace
+	 * @phpstan-param list<array<string, mixed>> $rawTrace
+	 *
+	 * @return ThreadCrashInfoFrame[]
+	 */
+	public static function printableTraceWithMetadata(array $rawTrace, int $maxStringLength = 80) : array{
+		$printableTrace = self::printableTrace($rawTrace, $maxStringLength);
+		$safeTrace = [];
+		foreach($printableTrace as $frameId => $printableFrame){
+			$rawFrame = $rawTrace[$frameId];
+			$safeTrace[$frameId] = new ThreadCrashInfoFrame(
+				$printableFrame,
+				$rawFrame["file"] ?? "unknown",
+				$rawFrame["line"] ?? 0
+			);
+		}
+
+		return $safeTrace;
 	}
 
 	/**
@@ -432,8 +500,8 @@ final class Utils{
 	 */
 	public static function currentTrace(int $skipFrames = 0) : array{
 		++$skipFrames; //omit this frame from trace, in addition to other skipped frames
-		if(function_exists("xdebug_get_function_stack")){
-			$trace = array_reverse(xdebug_get_function_stack());
+		if(function_exists("xdebug_get_function_stack") && count($trace = @xdebug_get_function_stack()) !== 0){
+			$trace = array_reverse($trace);
 		}else{
 			$e = new \Exception();
 			$trace = $e->getTrace();
@@ -458,14 +526,9 @@ final class Utils{
 	 */
 	public static function parseDocComment(string $docComment) : array{
 		$rawDocComment = substr($docComment, 3, -2); //remove the opening and closing markers
-		if($rawDocComment === false){ //usually empty doc comment, but this is safer and statically analysable
-			return [];
-		}
-		preg_match_all('/(*ANYCRLF)^[\t ]*(?:\* )?@([a-zA-Z]+)(?:[\t ]+(.+?))?[\t ]*$/m', $rawDocComment, $matches);
+		preg_match_all('/(*ANYCRLF)^[\t ]*(?:\* )?@([a-zA-Z\-]+)(?:[\t ]+(.+?))?[\t ]*$/m', $rawDocComment, $matches);
 
-		$result = array_combine($matches[1], $matches[2]);
-		if($result === false) throw new AssumptionFailedError("array_combine() doesn't return false with two equal-sized arrays");
-		return $result;
+		return array_combine($matches[1], $matches[2]);
 	}
 
 	/**
@@ -473,21 +536,20 @@ final class Utils{
 	 * @phpstan-param class-string $baseName
 	 */
 	public static function testValidInstance(string $className, string $baseName) : void{
-		try{
-			$base = new \ReflectionClass($baseName);
-		}catch(\ReflectionException $e){
-			throw new \InvalidArgumentException("Base class $baseName does not exist");
+		$baseInterface = false;
+		if(!class_exists($baseName)){
+			if(!interface_exists($baseName)){
+				throw new \InvalidArgumentException("Base class $baseName does not exist");
+			}
+			$baseInterface = true;
 		}
-
-		try{
-			$class = new \ReflectionClass($className);
-		}catch(\ReflectionException $e){
-			throw new \InvalidArgumentException("Class $className does not exist");
+		if(!class_exists($className)){
+			throw new \InvalidArgumentException("Class $className does not exist or is not a class");
 		}
-
-		if(!$class->isSubclassOf($baseName)){
-			throw new \InvalidArgumentException("Class $className does not " . ($base->isInterface() ? "implement" : "extend") . " " . $baseName);
+		if(!is_a($className, $baseName, true)){
+			throw new \InvalidArgumentException("Class $className does not " . ($baseInterface ? "implement" : "extend") . " $baseName");
 		}
+		$class = new \ReflectionClass($className);
 		if(!$class->isInstantiable()){
 			throw new \InvalidArgumentException("Class $className cannot be constructed");
 		}
@@ -497,17 +559,20 @@ final class Utils{
 	 * Verifies that the given callable is compatible with the desired signature. Throws a TypeError if they are
 	 * incompatible.
 	 *
-	 * @param callable $signature Dummy callable with the required parameters and return type
-	 * @param callable $subject Callable to check the signature of
-	 * @phpstan-param anyCallable $signature
-	 * @phpstan-param anyCallable $subject
+	 * @param callable|CallbackType $signature Dummy callable with the required parameters and return type
+	 * @param callable              $subject   Callable to check the signature of
+	 * @phpstan-param anyCallable|CallbackType $signature
+	 * @phpstan-param anyCallable              $subject
 	 *
 	 * @throws \DaveRandom\CallbackValidator\InvalidCallbackException
 	 * @throws \TypeError
 	 */
-	public static function validateCallableSignature(callable $signature, callable $subject) : void{
-		if(!($sigType = CallbackType::createFromCallable($signature))->isSatisfiedBy($subject)){
-			throw new \TypeError("Declaration of callable `" . CallbackType::createFromCallable($subject) . "` must be compatible with `" . $sigType . "`");
+	public static function validateCallableSignature(callable|CallbackType $signature, callable $subject) : void{
+		if(!($signature instanceof CallbackType)){
+			$signature = CallbackType::createFromCallable($signature);
+		}
+		if(!$signature->isSatisfiedBy($subject)){
+			throw new \TypeError("Declaration of callable `" . CallbackType::createFromCallable($subject) . "` must be compatible with `" . $signature . "`");
 		}
 	}
 
@@ -526,9 +591,87 @@ final class Utils{
 		}
 	}
 
+	/**
+	 * Generator which forces array keys to string during iteration.
+	 * This is necessary because PHP has an anti-feature where it casts numeric string keys to integers, leading to
+	 * various crashes.
+	 *
+	 * @phpstan-template TKeyType of string
+	 * @phpstan-template TValueType
+	 * @phpstan-param array<TKeyType, TValueType> $array
+	 * @phpstan-return \Generator<TKeyType, TValueType, void, void>
+	 */
+	public static function stringifyKeys(array $array) : \Generator{
+		foreach($array as $key => $value){ // @phpstan-ignore-line - this is where we fix the stupid bullshit with array keys :)
+			yield (string) $key => $value;
+		}
+	}
+
 	public static function checkUTF8(string $string) : void{
 		if(!mb_check_encoding($string, 'UTF-8')){
 			throw new \InvalidArgumentException("Text must be valid UTF-8");
 		}
+	}
+
+	/**
+	 * @phpstan-template TValue
+	 * @phpstan-param TValue|false $value
+	 * @phpstan-param string|\Closure() : string $context
+	 * @phpstan-return TValue
+	 */
+	public static function assumeNotFalse(mixed $value, \Closure|string $context = "This should never be false") : mixed{
+		if($value === false){
+			throw new AssumptionFailedError("Assumption failure: " . (is_string($context) ? $context : $context()) . " (THIS IS A BUG)");
+		}
+		return $value;
+	}
+
+	public static function checkFloatNotInfOrNaN(string $name, float $float) : void{
+		if(is_nan($float)){
+			throw new \InvalidArgumentException("$name cannot be NaN");
+		}
+		if(is_infinite($float)){
+			throw new \InvalidArgumentException("$name cannot be infinite");
+		}
+	}
+
+	public static function checkVector3NotInfOrNaN(Vector3 $vector3) : void{
+		if($vector3 instanceof Location){ //location could be masquerading as vector3
+			self::checkFloatNotInfOrNaN("yaw", $vector3->yaw);
+			self::checkFloatNotInfOrNaN("pitch", $vector3->pitch);
+		}
+		self::checkFloatNotInfOrNaN("x", $vector3->x);
+		self::checkFloatNotInfOrNaN("y", $vector3->y);
+		self::checkFloatNotInfOrNaN("z", $vector3->z);
+	}
+
+	public static function checkLocationNotInfOrNaN(Location $location) : void{
+		self::checkVector3NotInfOrNaN($location);
+	}
+
+	/**
+	 * Returns an integer describing the current OPcache JIT setting.
+	 * @see https://www.php.net/manual/en/opcache.configuration.php#ini.opcache.jit
+	 */
+	public static function getOpcacheJitMode() : ?int{
+		if(
+			function_exists('opcache_get_status') &&
+			($opcacheStatus = opcache_get_status(false)) !== false &&
+			isset($opcacheStatus["jit"]["on"])
+		){
+			$jit = $opcacheStatus["jit"];
+			if($jit["on"] === true){
+				return (($jit["opt_flags"] >> 2) * 1000) +
+					(($jit["opt_flags"] & 0x03) * 100) +
+					($jit["kind"] * 10) +
+					$jit["opt_level"];
+			}
+
+			//jit available, but disabled
+			return 0;
+		}
+
+		//jit not available
+		return null;
 	}
 }

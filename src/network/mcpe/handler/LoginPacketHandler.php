@@ -17,106 +17,75 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
-use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use pocketmine\entity\InvalidSkinException;
 use pocketmine\event\player\PlayerPreLoginEvent;
-use pocketmine\network\BadPacketException;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\auth\ProcessLoginTask;
-use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\JwtException;
 use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\LoginPacket;
-use pocketmine\network\mcpe\protocol\PlayStatusPacket;
-use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\login\AuthenticationData;
 use pocketmine\network\mcpe\protocol\types\login\ClientData;
 use pocketmine\network\mcpe\protocol\types\login\ClientDataToSkinDataHelper;
 use pocketmine\network\mcpe\protocol\types\login\JwtChain;
+use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\player\PlayerInfo;
 use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
-use pocketmine\uuid\UUID;
+use Ramsey\Uuid\Uuid;
 use function is_array;
 
 /**
  * Handles the initial login phase of the session. This handler is used as the initial state.
  */
 class LoginPacketHandler extends PacketHandler{
-
-	/** @var Server */
-	private $server;
-	/** @var NetworkSession */
-	private $session;
-	/**
-	 * @var \Closure
-	 * @phpstan-var \Closure(PlayerInfo) : void
-	 */
-	private $playerInfoConsumer;
-	/**
-	 * @var \Closure
-	 * @phpstan-var \Closure(bool, bool, ?string, ?PublicKeyInterface) : void
-	 */
-	private $authCallback;
-
 	/**
 	 * @phpstan-param \Closure(PlayerInfo) : void $playerInfoConsumer
-	 * @phpstan-param \Closure(bool $isAuthenticated, bool $authRequired, ?string $error, ?PublicKeyInterface $clientPubKey) : void $authCallback
+	 * @phpstan-param \Closure(bool $isAuthenticated, bool $authRequired, Translatable|string|null $error, ?string $clientPubKey) : void $authCallback
 	 */
-	public function __construct(Server $server, NetworkSession $session, \Closure $playerInfoConsumer, \Closure $authCallback){
-		$this->session = $session;
-		$this->server = $server;
-		$this->playerInfoConsumer = $playerInfoConsumer;
-		$this->authCallback = $authCallback;
-	}
-
-	private static function dummy() : void{
-		echo PublicKeyInterface::class; //this prevents the import getting removed by tools that don't understand phpstan
-	}
+	public function __construct(
+		private Server $server,
+		private NetworkSession $session,
+		private \Closure $playerInfoConsumer,
+		private \Closure $authCallback
+	){}
 
 	public function handleLogin(LoginPacket $packet) : bool{
-		if(!$this->isCompatibleProtocol($packet->protocol)){
-			$this->session->sendDataPacket(PlayStatusPacket::create($packet->protocol < ProtocolInfo::CURRENT_PROTOCOL ? PlayStatusPacket::LOGIN_FAILED_CLIENT : PlayStatusPacket::LOGIN_FAILED_SERVER), true);
-
-			//This pocketmine disconnect message will only be seen by the console (PlayStatusPacket causes the messages to be shown for the client)
-			$this->session->disconnect(
-				$this->server->getLanguage()->translateString("pocketmine.disconnect.incompatibleProtocol", [$packet->protocol]),
-				false
-			);
-
-			return true;
-		}
-
 		$extraData = $this->fetchAuthData($packet->chainDataJwt);
 
 		if(!Player::isValidUserName($extraData->displayName)){
-			$this->session->disconnect("disconnectionScreen.invalidName");
+			$this->session->disconnectWithError(KnownTranslationFactory::disconnectionScreen_invalidName());
 
 			return true;
 		}
 
 		$clientData = $this->parseClientData($packet->clientDataJwt);
+
 		try{
-			$skin = SkinAdapterSingleton::get()->fromSkinData(ClientDataToSkinDataHelper::getInstance()->fromClientData($clientData));
+			$skin = $this->session->getTypeConverter()->getSkinAdapter()->fromSkinData(ClientDataToSkinDataHelper::fromClientData($clientData));
 		}catch(\InvalidArgumentException | InvalidSkinException $e){
 			$this->session->getLogger()->debug("Invalid skin: " . $e->getMessage());
-			$this->session->disconnect("disconnectionScreen.invalidSkin");
+			$this->session->disconnectWithError(KnownTranslationFactory::disconnectionScreen_invalidSkin());
 
 			return true;
 		}
 
-		try{
-			$uuid = UUID::fromString($extraData->identity);
-		}catch(\InvalidArgumentException $e){
-			throw BadPacketException::wrap($e, "Failed to parse login UUID");
+		if(!Uuid::isValid($extraData->identity)){
+			throw new PacketHandlingException("Invalid login UUID");
 		}
+		$uuid = Uuid::fromString($extraData->identity);
+		$arrClientData = (array) $clientData;
+		$arrClientData["TitleID"] = $extraData->titleId;
+
 		if($extraData->XUID !== ""){
 			$playerInfo = new XboxLivePlayerInfo(
 				$extraData->XUID,
@@ -124,7 +93,7 @@ class LoginPacketHandler extends PacketHandler{
 				$uuid,
 				$skin,
 				$clientData->LanguageCode,
-				(array) $clientData
+				$arrClientData
 			);
 		}else{
 			$playerInfo = new PlayerInfo(
@@ -132,7 +101,7 @@ class LoginPacketHandler extends PacketHandler{
 				$uuid,
 				$skin,
 				$clientData->LanguageCode,
-				(array) $clientData
+				$arrClientData
 			);
 		}
 		($this->playerInfoConsumer)($playerInfo);
@@ -143,19 +112,28 @@ class LoginPacketHandler extends PacketHandler{
 			$this->session->getPort(),
 			$this->server->requiresAuthentication()
 		);
-		if($this->server->getNetwork()->getConnectionCount() > $this->server->getMaxPlayers()){
-			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_FULL, "disconnectionScreen.serverFull");
+		if($this->server->getNetwork()->getValidConnectionCount() > $this->server->getMaxPlayers()){
+			$ev->setKickFlag(PlayerPreLoginEvent::KICK_FLAG_SERVER_FULL, KnownTranslationFactory::disconnectionScreen_serverFull());
 		}
 		if(!$this->server->isWhitelisted($playerInfo->getUsername())){
-			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_WHITELISTED, "Server is whitelisted");
+			$ev->setKickFlag(PlayerPreLoginEvent::KICK_FLAG_SERVER_WHITELISTED, KnownTranslationFactory::pocketmine_disconnect_whitelisted());
 		}
-		if($this->server->getNameBans()->isBanned($playerInfo->getUsername()) or $this->server->getIPBans()->isBanned($this->session->getIp())){
-			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_BANNED, "You are banned");
+
+		$banMessage = null;
+		if(($banEntry = $this->server->getNameBans()->getEntry($playerInfo->getUsername())) !== null){
+			$banReason = $banEntry->getReason();
+			$banMessage = $banReason === "" ? KnownTranslationFactory::pocketmine_disconnect_ban_noReason() : KnownTranslationFactory::pocketmine_disconnect_ban($banReason);
+		}elseif(($banEntry = $this->server->getIPBans()->getEntry($this->session->getIp())) !== null){
+			$banReason = $banEntry->getReason();
+			$banMessage = KnownTranslationFactory::pocketmine_disconnect_ban($banReason !== "" ? $banReason : KnownTranslationFactory::pocketmine_disconnect_ban_ip());
+		}
+		if($banMessage !== null){
+			$ev->setKickFlag(PlayerPreLoginEvent::KICK_FLAG_BANNED, $banMessage);
 		}
 
 		$ev->call();
 		if(!$ev->isAllowed()){
-			$this->session->disconnect($ev->getFinalKickMessage());
+			$this->session->disconnect($ev->getFinalDisconnectReason(), $ev->getFinalDisconnectScreenMessage());
 			return true;
 		}
 
@@ -165,7 +143,7 @@ class LoginPacketHandler extends PacketHandler{
 	}
 
 	/**
-	 * @throws BadPacketException
+	 * @throws PacketHandlingException
 	 */
 	protected function fetchAuthData(JwtChain $chain) : AuthenticationData{
 		/** @var AuthenticationData|null $extraData */
@@ -175,52 +153,52 @@ class LoginPacketHandler extends PacketHandler{
 			try{
 				[, $claims, ] = JwtUtils::parse($jwt);
 			}catch(JwtException $e){
-				throw BadPacketException::wrap($e);
+				throw PacketHandlingException::wrap($e);
 			}
 			if(isset($claims["extraData"])){
 				if($extraData !== null){
-					throw new BadPacketException("Found 'extraData' more than once in chainData");
+					throw new PacketHandlingException("Found 'extraData' more than once in chainData");
 				}
 
 				if(!is_array($claims["extraData"])){
-					throw new BadPacketException("'extraData' key should be an array");
+					throw new PacketHandlingException("'extraData' key should be an array");
 				}
-				$mapper = new \JsonMapper;
+				$mapper = new \JsonMapper();
 				$mapper->bEnforceMapType = false; //TODO: we don't really need this as an array, but right now we don't have enough models
 				$mapper->bExceptionOnMissingData = true;
 				$mapper->bExceptionOnUndefinedProperty = true;
 				try{
 					/** @var AuthenticationData $extraData */
-					$extraData = $mapper->map($claims["extraData"], new AuthenticationData);
+					$extraData = $mapper->map($claims["extraData"], new AuthenticationData());
 				}catch(\JsonMapper_Exception $e){
-					throw BadPacketException::wrap($e);
+					throw PacketHandlingException::wrap($e);
 				}
 			}
 		}
 		if($extraData === null){
-			throw new BadPacketException("'extraData' not found in chain data");
+			throw new PacketHandlingException("'extraData' not found in chain data");
 		}
 		return $extraData;
 	}
 
 	/**
-	 * @throws BadPacketException
+	 * @throws PacketHandlingException
 	 */
 	protected function parseClientData(string $clientDataJwt) : ClientData{
 		try{
 			[, $clientDataClaims, ] = JwtUtils::parse($clientDataJwt);
 		}catch(JwtException $e){
-			throw BadPacketException::wrap($e);
+			throw PacketHandlingException::wrap($e);
 		}
 
-		$mapper = new \JsonMapper;
+		$mapper = new \JsonMapper();
 		$mapper->bEnforceMapType = false; //TODO: we don't really need this as an array, but right now we don't have enough models
 		$mapper->bExceptionOnMissingData = true;
 		$mapper->bExceptionOnUndefinedProperty = true;
 		try{
-			$clientData = $mapper->map($clientDataClaims, new ClientData);
+			$clientData = $mapper->map($clientDataClaims, new ClientData());
 		}catch(\JsonMapper_Exception $e){
-			throw BadPacketException::wrap($e);
+			throw PacketHandlingException::wrap($e);
 		}
 		return $clientData;
 	}
@@ -234,9 +212,5 @@ class LoginPacketHandler extends PacketHandler{
 	protected function processLogin(LoginPacket $packet, bool $authRequired) : void{
 		$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($packet->chainDataJwt->chain, $packet->clientDataJwt, $authRequired, $this->authCallback));
 		$this->session->setHandler(null); //drop packets received during login verification
-	}
-
-	protected function isCompatibleProtocol(int $protocolVersion) : bool{
-		return $protocolVersion === ProtocolInfo::CURRENT_PROTOCOL;
 	}
 }

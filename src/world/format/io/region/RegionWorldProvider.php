@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,18 +27,16 @@ use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\utils\Utils;
-use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\BaseWorldProvider;
 use pocketmine\world\format\io\data\JavaWorldData;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
+use pocketmine\world\format\io\LoadedChunkData;
 use pocketmine\world\format\io\WorldData;
-use pocketmine\world\generator\Generator;
+use Symfony\Component\Filesystem\Path;
 use function assert;
 use function file_exists;
 use function is_dir;
 use function is_int;
-use function mkdir;
 use function morton2d_encode;
 use function rename;
 use function scandir;
@@ -46,7 +44,6 @@ use function strlen;
 use function strrpos;
 use function substr;
 use function time;
-use const DIRECTORY_SEPARATOR;
 use const SCANDIR_SORT_NONE;
 
 abstract class RegionWorldProvider extends BaseWorldProvider{
@@ -62,8 +59,8 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	abstract protected static function getPcWorldFormatVersion() : int;
 
 	public static function isValid(string $path) : bool{
-		if(file_exists($path . "/level.dat") and is_dir($path . "/region/")){
-			foreach(scandir($path . "/region/", SCANDIR_SORT_NONE) as $file){
+		if(file_exists(Path::join($path, "level.dat")) && is_dir($regionPath = Path::join($path, "region"))){
+			foreach(scandir($regionPath, SCANDIR_SORT_NONE) as $file){
 				$extPos = strrpos($file, ".");
 				if($extPos !== false && substr($file, $extPos + 1) === static::getRegionFileExtension()){
 					//we don't care if other region types exist, we only care if this format is possible
@@ -75,29 +72,11 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 		return false;
 	}
 
-	/**
-	 * @param mixed[] $options
-	 * @phpstan-param class-string<Generator> $generator
-	 * @phpstan-param array<string, mixed>    $options
-	 */
-	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void{
-		Utils::testValidInstance($generator, Generator::class);
-		if(!file_exists($path)){
-			mkdir($path, 0777, true);
-		}
-
-		if(!file_exists($path . "/region")){
-			mkdir($path . "/region", 0777);
-		}
-
-		JavaWorldData::generate($path, $name, $seed, $generator, $options, static::getPcWorldFormatVersion());
-	}
-
 	/** @var RegionLoader[] */
-	protected $regions = [];
+	protected array $regions = [];
 
 	protected function loadLevelData() : WorldData{
-		return new JavaWorldData($this->getPath() . DIRECTORY_SEPARATOR . "level.dat");
+		return new JavaWorldData(Path::join($this->getPath(), "level.dat"));
 	}
 
 	public function doGarbageCollection() : void{
@@ -113,6 +92,8 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	/**
 	 * @param int $regionX reference parameter
 	 * @param int $regionZ reference parameter
+	 * @phpstan-param-out int $regionX
+	 * @phpstan-param-out int $regionZ
 	 */
 	public static function getRegionIndex(int $chunkX, int $chunkZ, &$regionX, &$regionZ) : void{
 		$regionX = $chunkX >> 5;
@@ -127,31 +108,24 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	 * Returns the path to a specific region file based on its X/Z coordinates
 	 */
 	protected function pathToRegion(int $regionX, int $regionZ) : string{
-		return $this->path . "/region/r.$regionX.$regionZ." . static::getRegionFileExtension();
+		return Path::join($this->path, "region", "r.$regionX.$regionZ." . static::getRegionFileExtension());
 	}
 
 	protected function loadRegion(int $regionX, int $regionZ) : RegionLoader{
 		if(!isset($this->regions[$index = morton2d_encode($regionX, $regionZ)])){
 			$path = $this->pathToRegion($regionX, $regionZ);
 
-			$region = new RegionLoader($path);
 			try{
-				$region->open();
+				$this->regions[$index] = RegionLoader::loadExisting($path);
 			}catch(CorruptedRegionException $e){
-				$logger = \GlobalLogger::get();
-				$logger->error("Corrupted region file detected: " . $e->getMessage());
-
-				$region->close(); //Do not write anything to the file
+				$this->logger->error("Corrupted region file detected: " . $e->getMessage());
 
 				$backupPath = $path . ".bak." . time();
 				rename($path, $backupPath);
-				$logger->error("Corrupted region file has been backed up to " . $backupPath);
+				$this->logger->error("Corrupted region file has been backed up to " . $backupPath);
 
-				$region = new RegionLoader($path);
-				$region->open(); //this will create a new empty region to replace the corrupted one
+				$this->regions[$index] = RegionLoader::createNew($path);
 			}
-
-			$this->regions[$index] = $region;
 		}
 		return $this->regions[$index];
 	}
@@ -170,12 +144,10 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 		}
 	}
 
-	abstract protected function serializeChunk(Chunk $chunk) : string;
-
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	abstract protected function deserializeChunk(string $data) : Chunk;
+	abstract protected function deserializeChunk(string $data) : ?LoadedChunkData;
 
 	/**
 	 * @return CompoundTag[]
@@ -202,6 +174,9 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	protected static function readFixedSizeByteArray(CompoundTag $chunk, string $tagName, int $length) : string{
 		$tag = $chunk->getTag($tagName);
 		if(!($tag instanceof ByteArrayTag)){
+			if($tag === null){
+				throw new CorruptedChunkException("'$tagName' key is missing from chunk NBT");
+			}
 			throw new CorruptedChunkException("Expected TAG_ByteArray for '$tagName'");
 		}
 		$data = $tag->getValue();
@@ -214,10 +189,10 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{
+	public function loadChunk(int $chunkX, int $chunkZ) : ?LoadedChunkData{
 		$regionX = $regionZ = null;
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
-		assert(is_int($regionX) and is_int($regionZ));
+		assert(is_int($regionX) && is_int($regionZ));
 
 		if(!file_exists($this->pathToRegion($regionX, $regionZ))){
 			return null;
@@ -231,15 +206,10 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 		return null;
 	}
 
-	protected function writeChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
-		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
-		$this->loadRegion($regionX, $regionZ)->writeChunk($chunkX & 0x1f, $chunkZ & 0x1f, $this->serializeChunk($chunk));
-	}
-
 	private function createRegionIterator() : \RegexIterator{
 		return new \RegexIterator(
 			new \FilesystemIterator(
-				$this->path . '/region/',
+				Path::join($this->path, 'region'),
 				\FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
 			),
 			'/\/r\.(-?\d+)\.(-?\d+)\.' . static::getRegionFileExtension() . '$/',

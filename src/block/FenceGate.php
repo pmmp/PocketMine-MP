@@ -17,14 +17,16 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SupportType;
+use pocketmine\block\utils\WoodTypeTrait;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -34,31 +36,16 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\DoorSound;
 
 class FenceGate extends Transparent{
+	use WoodTypeTrait;
 	use HorizontalFacingTrait;
 
-	/** @var bool */
-	protected $open = false;
-	/** @var bool */
-	protected $inWall = false;
+	protected bool $open = false;
+	protected bool $inWall = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.0, BlockToolType::AXE));
-	}
-
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) |
-			($this->open ? BlockLegacyMetadata::FENCE_GATE_FLAG_OPEN : 0) |
-			($this->inWall ? BlockLegacyMetadata::FENCE_GATE_FLAG_IN_WALL : 0);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
-		$this->open = ($stateMeta & BlockLegacyMetadata::FENCE_GATE_FLAG_OPEN) !== 0;
-		$this->inWall = ($stateMeta & BlockLegacyMetadata::FENCE_GATE_FLAG_IN_WALL) !== 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->bool($this->open);
+		$w->bool($this->inWall);
 	}
 
 	public function isOpen() : bool{ return $this->open; }
@@ -84,9 +71,13 @@ class FenceGate extends Transparent{
 		return $this->open ? [] : [AxisAlignedBB::one()->extend(Facing::UP, 0.5)->squash(Facing::axis($this->facing), 6 / 16)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE;
+	}
+
 	private function checkInWall() : bool{
 		return (
-			$this->getSide(Facing::rotateY($this->facing, false)) instanceof Wall or
+			$this->getSide(Facing::rotateY($this->facing, false)) instanceof Wall ||
 			$this->getSide(Facing::rotateY($this->facing, true)) instanceof Wall
 		);
 	}
@@ -105,33 +96,34 @@ class FenceGate extends Transparent{
 		$inWall = $this->checkInWall();
 		if($inWall !== $this->inWall){
 			$this->inWall = $inWall;
-			$this->pos->getWorld()->setBlock($this->pos, $this);
+			$this->position->getWorld()->setBlock($this->position, $this);
 		}
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->open = !$this->open;
-		if($this->open and $player !== null){
+		if($this->open && $player !== null){
 			$playerFacing = $player->getHorizontalFacing();
 			if($playerFacing === Facing::opposite($this->facing)){
 				$this->facing = $playerFacing;
 			}
 		}
 
-		$this->pos->getWorld()->setBlock($this->pos, $this);
-		$this->pos->getWorld()->addSound($this->pos, new DoorSound());
+		$world = $this->position->getWorld();
+		$world->setBlock($this->position, $this);
+		$world->addSound($this->position, new DoorSound());
 		return true;
 	}
 
 	public function getFuelTime() : int{
-		return 300;
+		return $this->woodType->isFlammable() ? 300 : 0;
 	}
 
 	public function getFlameEncouragement() : int{
-		return 5;
+		return $this->woodType->isFlammable() ? 5 : 0;
 	}
 
 	public function getFlammability() : int{
-		return 20;
+		return $this->woodType->isFlammable() ? 20 : 0;
 	}
 }

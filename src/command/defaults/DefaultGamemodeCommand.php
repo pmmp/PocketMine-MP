@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,39 +25,37 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\GameMode;
+use pocketmine\ServerProperties;
 use function count;
 
 class DefaultGamemodeCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
-			"%pocketmine.command.defaultgamemode.description",
-			"%commands.defaultgamemode.usage"
+			"defaultgamemode",
+			KnownTranslationFactory::pocketmine_command_defaultgamemode_description(),
+			KnownTranslationFactory::commands_defaultgamemode_usage()
 		);
-		$this->setPermission("pocketmine.command.defaultgamemode");
+		$this->setPermission(DefaultPermissionNames::COMMAND_DEFAULTGAMEMODE);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) === 0){
 			throw new InvalidCommandSyntaxException();
 		}
 
-		try{
-			$gameMode = GameMode::fromString($args[0]);
-		}catch(\InvalidArgumentException $e){
-			$sender->sendMessage("Unknown game mode");
+		$gameMode = GameMode::fromString($args[0]);
+		if($gameMode === null){
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_gamemode_unknown($args[0]));
 			return true;
 		}
 
-		$sender->getServer()->getConfigGroup()->setConfigInt("gamemode", $gameMode->getMagicNumber());
-		$sender->sendMessage(new TranslationContainer("commands.defaultgamemode.success", [$gameMode->getTranslationKey()]));
+		//TODO: this probably shouldn't use the enum name directly
+		$sender->getServer()->getConfigGroup()->setConfigString(ServerProperties::GAME_MODE, $gameMode->name);
+		$sender->sendMessage(KnownTranslationFactory::commands_defaultgamemode_success($gameMode->getTranslatableName()));
 		return true;
 	}
 }

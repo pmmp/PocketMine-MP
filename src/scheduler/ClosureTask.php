@@ -17,12 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
+use DaveRandom\CallbackValidator\CallbackType;
+use DaveRandom\CallbackValidator\ReturnType;
 use pocketmine\utils\Utils;
 
 /**
@@ -37,20 +39,14 @@ use pocketmine\utils\Utils;
  * ```
  */
 class ClosureTask extends Task{
-
-	/**
-	 * @var \Closure
-	 * @phpstan-var \Closure() : void
-	 */
-	private $closure;
-
 	/**
 	 * @param \Closure $closure Must accept zero parameters
 	 * @phpstan-param \Closure() : void $closure
 	 */
-	public function __construct(\Closure $closure){
-		Utils::validateCallableSignature(function() : void{}, $closure);
-		$this->closure = $closure;
+	public function __construct(
+		private \Closure $closure
+	){
+		Utils::validateCallableSignature(new CallbackType(new ReturnType()), $closure);
 	}
 
 	public function getName() : string{

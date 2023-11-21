@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -48,24 +48,12 @@ abstract class Generator{
 		return $convertedSeed;
 	}
 
-	/** @var int */
-	protected $seed;
-	/**
-	 * @var mixed[]
-	 * @phpstan-var array<string, mixed>
-	 */
-	protected $options;
+	protected Random $random;
 
-	/** @var Random */
-	protected $random;
-
-	/**
-	 * @param mixed[] $options
-	 * @phpstan-param array<string, mixed> $options
-	 */
-	public function __construct(int $seed, array $options = []){
-		$this->seed = $seed;
-		$this->options = $options;
+	public function __construct(
+		protected int $seed,
+		protected string $preset
+	){
 		$this->random = new Random($seed);
 	}
 

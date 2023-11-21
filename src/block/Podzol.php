@@ -17,15 +17,23 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Item;
+
 class Podzol extends Opaque{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::SHOVEL));
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
+
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			VanillaBlocks::DIRT()->asItem()
+		];
 	}
 }

@@ -17,40 +17,30 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\crafting;
 
-use pocketmine\inventory\BaseInventory;
+use pocketmine\inventory\SimpleInventory;
 use pocketmine\item\Item;
-use pocketmine\player\Player;
 use function max;
 use function min;
 use const PHP_INT_MAX;
 
-class CraftingGrid extends BaseInventory{
+abstract class CraftingGrid extends SimpleInventory{
 	public const SIZE_SMALL = 2;
 	public const SIZE_BIG = 3;
 
-	/** @var Player */
-	protected $holder;
-	/** @var int */
-	private $gridWidth;
+	private ?int $startX = null;
+	private ?int $xLen = null;
+	private ?int $startY = null;
+	private ?int $yLen = null;
 
-	/** @var int|null */
-	private $startX;
-	/** @var int|null */
-	private $xLen;
-	/** @var int|null */
-	private $startY;
-	/** @var int|null */
-	private $yLen;
-
-	public function __construct(Player $holder, int $gridWidth){
-		$this->holder = $holder;
-		$this->gridWidth = $gridWidth;
+	public function __construct(
+		private int $gridWidth
+	){
 		parent::__construct($this->getGridWidth() ** 2);
 	}
 
@@ -61,13 +51,6 @@ class CraftingGrid extends BaseInventory{
 	public function setItem(int $index, Item $item) : void{
 		parent::setItem($index, $item);
 		$this->seekRecipeBounds();
-	}
-
-	/**
-	 * @return Player
-	 */
-	public function getHolder(){
-		return $this->holder;
 	}
 
 	private function seekRecipeBounds() : void{
@@ -107,11 +90,11 @@ class CraftingGrid extends BaseInventory{
 	 * Returns the item at offset x,y, offset by where the starts of the recipe rectangle are.
 	 */
 	public function getIngredient(int $x, int $y) : Item{
-		if($this->startX !== null and $this->startY !== null){
+		if($this->startX !== null && $this->startY !== null){
 			return $this->getItem(($y + $this->startY) * $this->gridWidth + ($x + $this->startX));
 		}
 
-		throw new \InvalidStateException("No ingredients found in grid");
+		throw new \LogicException("No ingredients found in grid");
 	}
 
 	/**

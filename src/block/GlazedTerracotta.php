@@ -17,45 +17,16 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
-use pocketmine\block\utils\HorizontalFacingTrait;
-use pocketmine\item\Item;
-use pocketmine\item\ToolTier;
-use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
+use pocketmine\block\utils\ColoredTrait;
+use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 
 class GlazedTerracotta extends Opaque{
-	use HorizontalFacingTrait;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.4, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
-	}
-
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeHorizontalFacing($this->facing);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readHorizontalFacing($stateMeta);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
-	}
-
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($player !== null){
-			$this->facing = Facing::opposite($player->getHorizontalFacing());
-		}
-
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
+	use ColoredTrait;
+	use FacesOppositePlacingPlayerTrait;
 }

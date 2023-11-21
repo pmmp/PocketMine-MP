@@ -17,17 +17,16 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class WoodenTrapdoor extends Trapdoor{
+use pocketmine\block\utils\WoodTypeTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::AXE, 0, 15.0));
-	}
+class WoodenTrapdoor extends Trapdoor{
+	use WoodTypeTrait;
 
 	public function getFuelTime() : int{
 		return 300;

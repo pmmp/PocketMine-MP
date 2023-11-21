@@ -17,27 +17,26 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class WoodenSlab extends Slab{
+use pocketmine\block\utils\WoodTypeTrait;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.0, BlockToolType::AXE, 0, 15.0));
-	}
+class WoodenSlab extends Slab{
+	use WoodTypeTrait;
 
 	public function getFuelTime() : int{
-		return 300;
+		return $this->woodType->isFlammable() ? 300 : 0;
 	}
 
 	public function getFlameEncouragement() : int{
-		return 5;
+		return $this->woodType->isFlammable() ? 5 : 0;
 	}
 
 	public function getFlammability() : int{
-		return 20;
+		return $this->woodType->isFlammable() ? 20 : 0;
 	}
 }

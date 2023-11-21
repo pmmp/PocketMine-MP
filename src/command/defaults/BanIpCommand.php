@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,29 +26,26 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use function array_shift;
 use function count;
 use function implode;
-use function preg_match;
+use function inet_pton;
 
 class BanIpCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
-			"%pocketmine.command.ban.ip.description",
-			"%commands.banip.usage"
+			"ban-ip",
+			KnownTranslationFactory::pocketmine_command_ban_ip_description(),
+			KnownTranslationFactory::commands_banip_usage()
 		);
-		$this->setPermission("pocketmine.command.ban.ip");
+		$this->setPermission(DefaultPermissionNames::COMMAND_BAN_IP);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) === 0){
 			throw new InvalidCommandSyntaxException();
 		}
@@ -56,18 +53,18 @@ class BanIpCommand extends VanillaCommand{
 		$value = array_shift($args);
 		$reason = implode(" ", $args);
 
-		if(preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $value)){
+		if(inet_pton($value) !== false){
 			$this->processIPBan($value, $sender, $reason);
 
-			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.banip.success", [$value]));
+			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_banip_success($value));
 		}else{
 			if(($player = $sender->getServer()->getPlayerByPrefix($value)) instanceof Player){
 				$ip = $player->getNetworkSession()->getIp();
 				$this->processIPBan($ip, $sender, $reason);
 
-				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.banip.success.players", [$ip, $player->getName()]));
+				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_banip_success_players($ip, $player->getName()));
 			}else{
-				$sender->sendMessage(new TranslationContainer("commands.banip.invalid"));
+				$sender->sendMessage(KnownTranslationFactory::commands_banip_invalid());
 
 				return false;
 			}
@@ -81,7 +78,7 @@ class BanIpCommand extends VanillaCommand{
 
 		foreach($sender->getServer()->getOnlinePlayers() as $player){
 			if($player->getNetworkSession()->getIp() === $ip){
-				$player->kick("Banned by admin. Reason: " . ($reason !== "" ? $reason : "IP banned."));
+				$player->kick(KnownTranslationFactory::pocketmine_disconnect_ban($reason !== "" ? $reason : KnownTranslationFactory::pocketmine_disconnect_ban_ip()));
 			}
 		}
 

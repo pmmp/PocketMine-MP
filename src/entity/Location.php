@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,12 +29,10 @@ use pocketmine\world\World;
 
 class Location extends Position{
 
-	/** @var float */
-	public $yaw;
-	/** @var float */
-	public $pitch;
+	public float $yaw;
+	public float $pitch;
 
-	public function __construct(float $x, float $y, float $z, float $yaw = 0.0, float $pitch = 0.0, ?World $world = null){
+	public function __construct(float $x, float $y, float $z, ?World $world, float $yaw, float $pitch){
 		$this->yaw = $yaw;
 		$this->pitch = $pitch;
 		parent::__construct($x, $y, $z, $world);
@@ -44,14 +42,14 @@ class Location extends Position{
 	 * @return Location
 	 */
 	public static function fromObject(Vector3 $pos, ?World $world, float $yaw = 0.0, float $pitch = 0.0){
-		return new Location($pos->x, $pos->y, $pos->z, $yaw, $pitch, $world ?? (($pos instanceof Position) ? $pos->world : null));
+		return new Location($pos->x, $pos->y, $pos->z, $world ?? (($pos instanceof Position) ? $pos->world : null), $yaw, $pitch);
 	}
 
 	/**
 	 * Return a Location instance
 	 */
 	public function asLocation() : Location{
-		return new Location($this->x, $this->y, $this->z, $this->yaw, $this->pitch, $this->world);
+		return new Location($this->x, $this->y, $this->z, $this->world, $this->yaw, $this->pitch);
 	}
 
 	public function getYaw() : float{
@@ -68,7 +66,7 @@ class Location extends Position{
 
 	public function equals(Vector3 $v) : bool{
 		if($v instanceof Location){
-			return parent::equals($v) and $v->yaw == $this->yaw and $v->pitch == $this->pitch;
+			return parent::equals($v) && $v->yaw == $this->yaw && $v->pitch == $this->pitch;
 		}
 		return parent::equals($v);
 	}

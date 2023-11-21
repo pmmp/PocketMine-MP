@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,12 +28,12 @@ use pocketmine\entity\projectile\Projectile;
 use pocketmine\math\RayTraceResult;
 
 class ProjectileHitBlockEvent extends ProjectileHitEvent{
-	/** @var Block */
-	private $blockHit;
-
-	public function __construct(Projectile $entity, RayTraceResult $rayTraceResult, Block $blockHit){
+	public function __construct(
+		Projectile $entity,
+		RayTraceResult $rayTraceResult,
+		private Block $blockHit
+	){
 		parent::__construct($entity, $rayTraceResult);
-		$this->blockHit = $blockHit;
 	}
 
 	/**

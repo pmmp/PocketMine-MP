@@ -17,17 +17,26 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block\inventory;
 
+use pocketmine\inventory\SimpleInventory;
 use pocketmine\world\Position;
 
-class BrewingStandInventory extends BlockInventory{
+class BrewingStandInventory extends SimpleInventory implements BlockInventory{
+	use BlockInventoryTrait;
+
+	public const SLOT_INGREDIENT = 0;
+	public const SLOT_BOTTLE_LEFT = 1;
+	public const SLOT_BOTTLE_MIDDLE = 2;
+	public const SLOT_BOTTLE_RIGHT = 3;
+	public const SLOT_FUEL = 4;
 
 	public function __construct(Position $holder, int $size = 5){
-		parent::__construct($holder, $size);
+		$this->holder = $holder;
+		parent::__construct($size);
 	}
 }

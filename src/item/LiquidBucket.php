@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,9 +31,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
 class LiquidBucket extends Item{
-
-	/** @var Liquid */
-	private $liquid;
+	private Liquid $liquid;
 
 	public function __construct(ItemIdentifier $identifier, string $name, Liquid $liquid){
 		parent::__construct($identifier, $name);
@@ -56,9 +54,9 @@ class LiquidBucket extends Item{
 		return VanillaItems::BUCKET();
 	}
 
-	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		if(!$blockReplace->canBeReplaced()){
-			return ItemUseResult::NONE();
+			return ItemUseResult::NONE;
 		}
 
 		//TODO: move this to generic placement logic
@@ -67,16 +65,15 @@ class LiquidBucket extends Item{
 		$ev = new PlayerBucketEmptyEvent($player, $blockReplace, $face, $this, VanillaItems::BUCKET());
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$player->getWorld()->setBlock($blockReplace->getPos(), $resultBlock->getFlowingForm());
-			$player->getWorld()->addSound($blockReplace->getPos()->add(0.5, 0.5, 0.5), $resultBlock->getBucketEmptySound());
+			$player->getWorld()->setBlock($blockReplace->getPosition(), $resultBlock->getFlowingForm());
+			$player->getWorld()->addSound($blockReplace->getPosition()->add(0.5, 0.5, 0.5), $resultBlock->getBucketEmptySound());
 
-			if($player->hasFiniteResources()){
-				$player->getInventory()->setItemInHand($ev->getItem());
-			}
-			return ItemUseResult::SUCCESS();
+			$this->pop();
+			$returnedItems[] = $ev->getItem();
+			return ItemUseResult::SUCCESS;
 		}
 
-		return ItemUseResult::FAIL();
+		return ItemUseResult::FAIL;
 	}
 
 	public function getLiquid() : Liquid{

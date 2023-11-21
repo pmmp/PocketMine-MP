@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,34 +25,33 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\DefaultPermissionNames;
 use function array_slice;
 use function count;
 use function implode;
 
 class TitleCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
-			"%pocketmine.command.title.description",
-			"%commands.title.usage"
+			"title",
+			KnownTranslationFactory::pocketmine_command_title_description(),
+			KnownTranslationFactory::commands_title_usage()
 		);
-		$this->setPermission("pocketmine.command.title");
+		$this->setPermissions([
+			DefaultPermissionNames::COMMAND_TITLE_SELF,
+			DefaultPermissionNames::COMMAND_TITLE_OTHER
+		]);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) < 2){
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $sender->getServer()->getPlayerByPrefix($args[0]);
+		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissionNames::COMMAND_TITLE_SELF, DefaultPermissionNames::COMMAND_TITLE_OTHER);
 		if($player === null){
-			$sender->sendMessage(new TranslationContainer("commands.generic.player.notFound"));
 			return true;
 		}
 
@@ -95,7 +94,7 @@ class TitleCommand extends VanillaCommand{
 				throw new InvalidCommandSyntaxException();
 		}
 
-		$sender->sendMessage(new TranslationContainer("commands.title.success"));
+		$sender->sendMessage(KnownTranslationFactory::commands_title_success());
 
 		return true;
 	}

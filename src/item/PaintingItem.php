@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -37,9 +37,9 @@ use function count;
 
 class PaintingItem extends Item{
 
-	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		if(Facing::axis($face) === Axis::Y){
-			return ItemUseResult::NONE();
+			return ItemUseResult::NONE;
 		}
 
 		$motives = [];
@@ -51,7 +51,7 @@ class PaintingItem extends Item{
 				continue;
 			}
 
-			if(Painting::canFit($player->getWorld(), $blockReplace->getPos(), $face, true, $motive)){
+			if(Painting::canFit($player->getWorld(), $blockReplace->getPosition(), $face, true, $motive)){
 				if($currentTotalDimension > $totalDimension){
 					$totalDimension = $currentTotalDimension;
 					/*
@@ -67,20 +67,20 @@ class PaintingItem extends Item{
 		}
 
 		if(count($motives) === 0){ //No space available
-			return ItemUseResult::NONE();
+			return ItemUseResult::NONE;
 		}
 
 		/** @var PaintingMotive $motive */
 		$motive = $motives[array_rand($motives)];
 
-		$replacePos = $blockReplace->getPos();
-		$clickedPos = $blockClicked->getPos();
+		$replacePos = $blockReplace->getPosition();
+		$clickedPos = $blockClicked->getPosition();
 
 		$entity = new Painting(Location::fromObject($replacePos, $replacePos->getWorld()), $clickedPos, $face, $motive);
 		$this->pop();
 		$entity->spawnToAll();
 
 		$player->getWorld()->addSound($replacePos->add(0.5, 0.5, 0.5), new PaintingPlaceSound());
-		return ItemUseResult::SUCCESS();
+		return ItemUseResult::SUCCESS;
 	}
 }

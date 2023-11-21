@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -43,8 +43,10 @@ use function rename;
 use function round;
 use function scandir;
 use function unlink;
-use function zlib_decode;
-use function zlib_encode;
+use const PATHINFO_EXTENSION;
+use const PHP_BINARY;
+use const SCANDIR_SORT_NONE;
+use const SORT_NUMERIC;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -59,13 +61,17 @@ const SUPPORTED_EXTENSIONS = [
  * @phpstan-param array<string, int> $files
  */
 function find_regions_recursive(string $dir, array &$files) : void{
-	foreach(scandir($dir, SCANDIR_SORT_NONE) as $file){
-		if($file === "." or $file === ".."){
+	$dirFiles = scandir($dir, SCANDIR_SORT_NONE);
+	if($dirFiles === false){
+		return;
+	}
+	foreach($dirFiles as $file){
+		if($file === "." || $file === ".."){
 			continue;
 		}
 		$fullPath = $dir . "/" . $file;
 		if(
-			in_array(pathinfo($fullPath, PATHINFO_EXTENSION), SUPPORTED_EXTENSIONS, true) and
+			in_array(pathinfo($fullPath, PATHINFO_EXTENSION), SUPPORTED_EXTENSIONS, true) &&
 			is_file($fullPath)
 		){
 			$files[$fullPath] = filesize($fullPath);
@@ -107,9 +113,8 @@ function main(array $argv) : int{
 	$doneCount = 0;
 	$totalCount = count($files);
 	foreach($files as $file => $size){
-		$oldRegion = new RegionLoader($file);
 		try{
-			$oldRegion->open();
+			$oldRegion = RegionLoader::loadExisting($file);
 		}catch(CorruptedRegionException $e){
 			$logger->error("Damaged region in file $file (" . $e->getMessage() . "), skipping");
 			$corruptedFiles[] = $file;
@@ -118,8 +123,7 @@ function main(array $argv) : int{
 		}
 
 		$newFile = $file . ".compacted";
-		$newRegion = new RegionLoader($newFile);
-		$newRegion->open();
+		$newRegion = RegionLoader::createNew($newFile);
 
 		$emptyRegion = true;
 		$corruption = false;

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,35 +29,16 @@ namespace pocketmine\item\enchantment;
  * Note: This class is assumed to be immutable. Consider this before making alterations.
  */
 final class EnchantmentInstance{
-	/** @var Enchantment */
-	private $enchantment;
-	/** @var int */
-	private $level;
-
-	/**
-	 * EnchantmentInstance constructor.
-	 *
-	 * @param Enchantment $enchantment Enchantment type
-	 * @param int         $level Level of enchantment
-	 */
-	public function __construct(Enchantment $enchantment, int $level = 1){
-		$this->enchantment = $enchantment;
-		$this->level = $level;
-	}
+	public function __construct(
+		private Enchantment $enchantment,
+		private int $level = 1
+	){}
 
 	/**
 	 * Returns the type of this enchantment.
 	 */
 	public function getType() : Enchantment{
 		return $this->enchantment;
-	}
-
-	/**
-	 * Returns the runtime type identifier of this enchantment instance.
-	 * WARNING: DO NOT STORE THIS IDENTIFIER - IT MAY CHANGE AFTER SERVER RESTART
-	 */
-	public function getRuntimeId() : int{
-		return $this->enchantment->getRuntimeId();
 	}
 
 	/**

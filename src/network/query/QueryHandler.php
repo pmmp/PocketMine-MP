@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -40,24 +40,18 @@ use function strlen;
 use function substr;
 
 class QueryHandler implements RawPacketHandler{
-	/** @var Server */
-	private $server;
-	/** @var string */
-	private $lastToken;
-	/** @var string */
-	private $token;
+	private string $lastToken;
+	private string $token;
 
-	/** @var \Logger */
-	private $logger;
+	private \Logger $logger;
 
 	public const HANDSHAKE = 9;
 	public const STATISTICS = 0;
 
-	public function __construct(Server $server){
-		$this->server = $server;
+	public function __construct(
+		private Server $server
+	){
 		$this->logger = new \PrefixedLogger($this->server->getLogger(), "Query Handler");
-		$addr = $this->server->getIp();
-		$port = $this->server->getPort();
 
 		/*
 		The Query protocol is built on top of the existing Minecraft PE UDP network stack.
@@ -68,18 +62,21 @@ class QueryHandler implements RawPacketHandler{
 		packets can conflict with the MCPE ones.
 		*/
 
-		$this->regenerateToken();
+		$this->token = $this->generateToken();
 		$this->lastToken = $this->token;
-		$this->logger->info($this->server->getLanguage()->translateString("pocketmine.server.query.running", [$addr, $port]));
 	}
 
 	public function getPattern() : string{
 		return '/^\xfe\xfd.+$/s';
 	}
 
+	private function generateToken() : string{
+		return random_bytes(16);
+	}
+
 	public function regenerateToken() : void{
 		$this->lastToken = $this->token;
-		$this->token = random_bytes(16);
+		$this->token = $this->generateToken();
 	}
 
 	public static function getTokenString(string $token, string $salt) : int{
@@ -107,7 +104,7 @@ class QueryHandler implements RawPacketHandler{
 					return true;
 				case self::STATISTICS: //Stat
 					$token = $stream->getInt();
-					if($token !== ($t1 = self::getTokenString($this->token, $address)) and $token !== ($t2 = self::getTokenString($this->lastToken, $address))){
+					if($token !== ($t1 = self::getTokenString($this->token, $address)) && $token !== ($t2 = self::getTokenString($this->lastToken, $address))){
 						$this->logger->debug("Bad token $token from $address $port, expected $t1 or $t2");
 
 						return true;

@@ -17,27 +17,15 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
-use pocketmine\world\format\Chunk;
-use pocketmine\world\generator\Generator;
-
 interface WritableWorldProvider extends WorldProvider{
-	/**
-	 * Generate the needed files in the path given
-	 *
-	 * @param mixed[] $options
-	 * @phpstan-param class-string<Generator> $generator
-	 * @phpstan-param array<string, mixed>    $options
-	 */
-	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void;
-
 	/**
 	 * Saves a chunk (usually to disk).
 	 */
-	public function saveChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void;
+	public function saveChunk(int $chunkX, int $chunkZ, ChunkData $chunkData, int $dirtyFlags) : void;
 }

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -34,11 +34,15 @@ use function socket_recvfrom;
 use function socket_select;
 use function socket_sendto;
 use function socket_set_nonblock;
+use function socket_set_option;
 use function socket_strerror;
 use function strlen;
 use function time;
 use function trim;
 use const AF_INET;
+use const AF_INET6;
+use const IPPROTO_IPV6;
+use const IPV6_V6ONLY;
 use const PHP_INT_MAX;
 use const SOCK_DGRAM;
 use const SOCKET_EADDRINUSE;
@@ -56,33 +60,28 @@ use const SOL_UDP;
  * or running on a different port than Query.
  */
 final class DedicatedQueryNetworkInterface implements AdvancedNetworkInterface{
-
-	/** @var string */
-	private $ip;
-	/** @var int */
-	private $port;
-	/** @var \Logger */
-	private $logger;
-	/** @var resource */
-	private $socket;
-	/** @var Network */
-	private $network;
+	private \Socket $socket;
+	private Network $network;
 	/**
 	 * @var int[] address => timeout time
 	 * @phpstan-var array<string, int>
 	 */
-	private $blockedIps = [];
+	private array $blockedIps = [];
 	/** @var string[] */
-	private $rawPacketPatterns = [];
+	private array $rawPacketPatterns = [];
 
-	public function __construct(string $ip, int $port, \Logger $logger){
-		$this->ip = $ip;
-		$this->port = $port;
-		$this->logger = $logger;
-
-		$socket = @socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+	public function __construct(
+		private string $ip,
+		private int $port,
+		bool $ipV6,
+		private \Logger $logger
+	){
+		$socket = @socket_create($ipV6 ? AF_INET6 : AF_INET, SOCK_DGRAM, SOL_UDP);
 		if($socket === false){
 			throw new \RuntimeException("Failed to create socket");
+		}
+		if($ipV6){
+			socket_set_option($socket, IPPROTO_IPV6, IPV6_V6ONLY, 1); //disable linux's cool but annoying ipv4-over-ipv6 network stack
 		}
 		$this->socket = $socket;
 	}

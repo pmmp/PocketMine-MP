@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,22 +27,18 @@ use pocketmine\item\Item;
 
 class FurnaceRecipe{
 
-	/** @var Item */
-	private $output;
-
-	/** @var Item */
-	private $ingredient;
-
-	public function __construct(Item $result, Item $ingredient){
-		$this->output = clone $result;
-		$this->ingredient = clone $ingredient;
+	public function __construct(
+		private Item $result,
+		private RecipeIngredient $ingredient
+	){
+		$this->result = clone $result;
 	}
 
-	public function getInput() : Item{
-		return clone $this->ingredient;
+	public function getInput() : RecipeIngredient{
+		return $this->ingredient;
 	}
 
 	public function getResult() : Item{
-		return clone $this->output;
+		return clone $this->result;
 	}
 }

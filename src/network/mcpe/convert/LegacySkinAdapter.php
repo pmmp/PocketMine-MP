@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,9 +31,9 @@ use function is_array;
 use function is_string;
 use function json_decode;
 use function json_encode;
-use function json_last_error_msg;
 use function random_bytes;
 use function str_repeat;
+use const JSON_THROW_ON_ERROR;
 
 class LegacySkinAdapter implements SkinAdapter{
 
@@ -44,13 +44,10 @@ class LegacySkinAdapter implements SkinAdapter{
 		if($geometryName === ""){
 			$geometryName = "geometry.humanoid.custom";
 		}
-		$resourcePatch = json_encode(["geometry" => ["default" => $geometryName]]);
-		if($resourcePatch === false){
-			throw new \RuntimeException("json_encode() failed: " . json_last_error_msg());
-		}
 		return new SkinData(
 			$skin->getSkinId(),
-			$resourcePatch,
+			"", //TODO: playfab ID
+			json_encode(["geometry" => ["default" => $geometryName]], JSON_THROW_ON_ERROR),
 			SkinImage::fromLegacy($skin->getSkinData()), [],
 			$capeImage,
 			$skin->getGeometryData()
@@ -59,7 +56,7 @@ class LegacySkinAdapter implements SkinAdapter{
 
 	public function fromSkinData(SkinData $data) : Skin{
 		if($data->isPersona()){
-			return new Skin("Standard_Custom", str_repeat(random_bytes(3) . "\xff", 2048));
+			return new Skin("Standard_Custom", str_repeat(random_bytes(3) . "\xff", 4096));
 		}
 
 		$capeData = $data->isPersonaCapeOnClassic() ? "" : $data->getCapeImage()->getData();

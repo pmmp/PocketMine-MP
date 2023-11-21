@@ -17,37 +17,16 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
-use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 
 class NetherReactor extends Opaque{
-
-	/** @var int */
-	protected $state = BlockLegacyMetadata::NETHER_REACTOR_INACTIVE;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
-	}
-
-	protected function writeStateToMeta() : int{
-		return $this->state;
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->state = BlockDataSerializer::readBoundedInt("state", $stateMeta, 0, 2);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b11;
-	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [

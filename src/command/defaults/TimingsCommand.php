@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,12 +26,17 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\scheduler\BulkCurlTask;
 use pocketmine\scheduler\BulkCurlTaskOperation;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\InternetException;
+use pocketmine\utils\InternetRequestResult;
+use pocketmine\utils\Utils;
+use pocketmine\YmlServerProperties;
+use Symfony\Component\Filesystem\Path;
 use function count;
 use function fclose;
 use function file_exists;
@@ -53,20 +58,16 @@ use const PHP_EOL;
 
 class TimingsCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
-			"%pocketmine.command.timings.description",
-			"%pocketmine.command.timings.usage"
+			"timings",
+			KnownTranslationFactory::pocketmine_command_timings_description(),
+			KnownTranslationFactory::pocketmine_command_timings_usage()
 		);
-		$this->setPermission("pocketmine.command.timings");
+		$this->setPermission(DefaultPermissionNames::COMMAND_TIMINGS);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) !== 1){
 			throw new InvalidCommandSyntaxException();
 		}
@@ -74,18 +75,22 @@ class TimingsCommand extends VanillaCommand{
 		$mode = strtolower($args[0]);
 
 		if($mode === "on"){
+			if(TimingsHandler::isEnabled()){
+				$sender->sendMessage(KnownTranslationFactory::pocketmine_command_timings_alreadyEnabled());
+				return true;
+			}
 			TimingsHandler::setEnabled();
-			Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.enable"));
+			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_enable());
 
 			return true;
 		}elseif($mode === "off"){
 			TimingsHandler::setEnabled(false);
-			Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.disable"));
+			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_disable());
 			return true;
 		}
 
 		if(!TimingsHandler::isEnabled()){
-			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsDisabled"));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_timings_timingsDisabled());
 
 			return true;
 		}
@@ -94,21 +99,21 @@ class TimingsCommand extends VanillaCommand{
 
 		if($mode === "reset"){
 			TimingsHandler::reload();
-			Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.reset"));
-		}elseif($mode === "merged" or $mode === "report" or $paste){
+			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_reset());
+		}elseif($mode === "merged" || $mode === "report" || $paste){
 			$timings = "";
 			if($paste){
-				$fileTimings = fopen("php://temp", "r+b");
+				$fileTimings = Utils::assumeNotFalse(fopen("php://temp", "r+b"), "Opening php://temp should never fail");
 			}else{
 				$index = 0;
-				$timingFolder = $sender->getServer()->getDataPath() . "timings/";
+				$timingFolder = Path::join($sender->getServer()->getDataPath(), "timings");
 
 				if(!file_exists($timingFolder)){
 					mkdir($timingFolder, 0777);
 				}
-				$timings = $timingFolder . "timings.txt";
+				$timings = Path::join($timingFolder, "timings.txt");
 				while(file_exists($timings)){
-					$timings = $timingFolder . "timings" . (++$index) . ".txt";
+					$timings = Path::join($timingFolder, "timings" . (++$index) . ".txt");
 				}
 
 				$fileTimings = fopen($timings, "a+b");
@@ -126,63 +131,47 @@ class TimingsCommand extends VanillaCommand{
 				];
 				fclose($fileTimings);
 
-				$host = $sender->getServer()->getConfigGroup()->getProperty("timings.host", "timings.pmmp.io");
+				$host = $sender->getServer()->getConfigGroup()->getPropertyString(YmlServerProperties::TIMINGS_HOST, "timings.pmmp.io");
 
-				$sender->getServer()->getAsyncPool()->submitTask(new class($sender, $host, $agent, $data) extends BulkCurlTask{
-					private const TLS_KEY_SENDER = "sender";
-
-					/** @var string */
-					private $host;
-
-					/**
-					 * @param string[] $data
-					 * @phpstan-param array<string, string> $data
-					 */
-					public function __construct(CommandSender $sender, string $host, string $agent, array $data){
-						parent::__construct([
-							new BulkCurlTaskOperation(
-								"https://$host?upload=true",
-								10,
-								[],
-								[
-									CURLOPT_HTTPHEADER => [
-										"User-Agent: $agent",
-										"Content-Type: application/x-www-form-urlencoded"
-									],
-									CURLOPT_POST => true,
-									CURLOPT_POSTFIELDS => http_build_query($data),
-									CURLOPT_AUTOREFERER => false,
-									CURLOPT_FOLLOWLOCATION => false
-								]
-							)
-						]);
-						$this->host = $host;
-						$this->storeLocal(self::TLS_KEY_SENDER, $sender);
-					}
-
-					public function onCompletion() : void{
-						/** @var CommandSender $sender */
-						$sender = $this->fetchLocal(self::TLS_KEY_SENDER);
-						if($sender instanceof Player and !$sender->isOnline()){ // TODO replace with a more generic API method for checking availability of CommandSender
+				$sender->getServer()->getAsyncPool()->submitTask(new BulkCurlTask(
+					[new BulkCurlTaskOperation(
+						"https://$host?upload=true",
+						10,
+						[],
+						[
+							CURLOPT_HTTPHEADER => [
+								"User-Agent: $agent",
+								"Content-Type: application/x-www-form-urlencoded"
+							],
+							CURLOPT_POST => true,
+							CURLOPT_POSTFIELDS => http_build_query($data),
+							CURLOPT_AUTOREFERER => false,
+							CURLOPT_FOLLOWLOCATION => false
+						]
+					)],
+					function(array $results) use ($sender, $host) : void{
+						/** @phpstan-var array<InternetRequestResult|InternetException> $results */
+						if($sender instanceof Player && !$sender->isOnline()){ // TODO replace with a more generic API method for checking availability of CommandSender
 							return;
 						}
-						$result = $this->getResult()[0];
+						$result = $results[0];
 						if($result instanceof InternetException){
 							$sender->getServer()->getLogger()->logException($result);
 							return;
 						}
 						$response = json_decode($result->getBody(), true);
 						if(is_array($response) && isset($response["id"])){
-							Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.timingsRead",
-								["https://" . $this->host . "/?id=" . $response["id"]]));
+							Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsRead(
+								"https://" . $host . "/?id=" . $response["id"]));
 						}else{
-							Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.pasteError"));
+							$sender->getServer()->getLogger()->debug("Invalid response from timings server (" . $result->getCode() . "): " . $result->getBody());
+							Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_pasteError());
 						}
 					}
-				});
+				));
 			}else{
 				fclose($fileTimings);
-				Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.timingsWrite", [$timings]));
+				Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timings));
 			}
 		}else{
 			throw new InvalidCommandSyntaxException();

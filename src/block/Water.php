@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -44,6 +44,10 @@ class Water extends Liquid{
 
 	public function tickRate() : int{
 		return 5;
+	}
+
+	public function getMinAdjacentSourcesToFormSource() : ?int{
+		return 2;
 	}
 
 	public function onEntityInside(Entity $entity) : bool{

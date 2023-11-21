@@ -17,22 +17,22 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\world\generator\populator;
 
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\BlockTypeIds;
+use pocketmine\block\Leaves;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
+use pocketmine\world\format\Chunk;
 
-class TallGrass extends Populator{
-	/** @var int */
-	private $randomAmount = 1;
-	/** @var int */
-	private $baseAmount = 0;
+class TallGrass implements Populator{
+	private int $randomAmount = 1;
+	private int $baseAmount = 0;
 
 	public function setRandomAmount(int $amount) : void{
 		$this->randomAmount = $amount;
@@ -47,25 +47,25 @@ class TallGrass extends Populator{
 
 		$block = VanillaBlocks::TALL_GRASS();
 		for($i = 0; $i < $amount; ++$i){
-			$x = $random->nextRange($chunkX * 16, $chunkX * 16 + 15);
-			$z = $random->nextRange($chunkZ * 16, $chunkZ * 16 + 15);
+			$x = $random->nextRange($chunkX * Chunk::EDGE_LENGTH, $chunkX * Chunk::EDGE_LENGTH + (Chunk::EDGE_LENGTH - 1));
+			$z = $random->nextRange($chunkZ * Chunk::EDGE_LENGTH, $chunkZ * Chunk::EDGE_LENGTH + (Chunk::EDGE_LENGTH - 1));
 			$y = $this->getHighestWorkableBlock($world, $x, $z);
 
-			if($y !== -1 and $this->canTallGrassStay($world, $x, $y, $z)){
+			if($y !== -1 && $this->canTallGrassStay($world, $x, $y, $z)){
 				$world->setBlockAt($x, $y, $z, $block);
 			}
 		}
 	}
 
 	private function canTallGrassStay(ChunkManager $world, int $x, int $y, int $z) : bool{
-		$b = $world->getBlockAt($x, $y, $z)->getId();
-		return ($b === BlockLegacyIds::AIR or $b === BlockLegacyIds::SNOW_LAYER) and $world->getBlockAt($x, $y - 1, $z)->getId() === BlockLegacyIds::GRASS;
+		$b = $world->getBlockAt($x, $y, $z)->getTypeId();
+		return ($b === BlockTypeIds::AIR || $b === BlockTypeIds::SNOW_LAYER) && $world->getBlockAt($x, $y - 1, $z)->getTypeId() === BlockTypeIds::GRASS;
 	}
 
 	private function getHighestWorkableBlock(ChunkManager $world, int $x, int $z) : int{
 		for($y = 127; $y >= 0; --$y){
-			$b = $world->getBlockAt($x, $y, $z)->getId();
-			if($b !== BlockLegacyIds::AIR and $b !== BlockLegacyIds::LEAVES and $b !== BlockLegacyIds::LEAVES2 and $b !== BlockLegacyIds::SNOW_LAYER){
+			$b = $world->getBlockAt($x, $y, $z);
+			if($b->getTypeId() !== BlockTypeIds::AIR && !($b instanceof Leaves) && $b->getTypeId() !== BlockTypeIds::SNOW_LAYER){
 				return $y + 1;
 			}
 		}

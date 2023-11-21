@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,7 +26,8 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use function array_shift;
@@ -36,20 +37,16 @@ use function trim;
 
 class KickCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
-			"%pocketmine.command.kick.description",
-			"%commands.kick.usage"
+			"kick",
+			KnownTranslationFactory::pocketmine_command_kick_description(),
+			KnownTranslationFactory::commands_kick_usage()
 		);
-		$this->setPermission("pocketmine.command.kick");
+		$this->setPermission(DefaultPermissionNames::COMMAND_KICK);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) === 0){
 			throw new InvalidCommandSyntaxException();
 		}
@@ -58,14 +55,14 @@ class KickCommand extends VanillaCommand{
 		$reason = trim(implode(" ", $args));
 
 		if(($player = $sender->getServer()->getPlayerByPrefix($name)) instanceof Player){
-			$player->kick("Kicked by admin." . ($reason !== "" ? "Reason: " . $reason : ""));
+			$player->kick($reason !== "" ? KnownTranslationFactory::pocketmine_disconnect_kick($reason) : KnownTranslationFactory::pocketmine_disconnect_kick_noReason());
 			if($reason !== ""){
-				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.kick.success.reason", [$player->getName(), $reason]));
+				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_kick_success_reason($player->getName(), $reason));
 			}else{
-				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.kick.success", [$player->getName()]));
+				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_kick_success($player->getName()));
 			}
 		}else{
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
+			$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound()->prefix(TextFormat::RED));
 		}
 
 		return true;

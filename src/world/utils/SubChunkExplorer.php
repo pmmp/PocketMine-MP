@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,32 +28,26 @@ use pocketmine\world\format\Chunk;
 use pocketmine\world\format\SubChunk;
 
 class SubChunkExplorer{
-	/** @var ChunkManager */
-	public $world;
+	public ?Chunk $currentChunk = null;
+	public ?SubChunk $currentSubChunk = null;
 
-	/** @var Chunk|null */
-	public $currentChunk;
-	/** @var SubChunk|null */
-	public $currentSubChunk;
+	protected int $currentX;
+	protected int $currentY;
+	protected int $currentZ;
 
-	/** @var int */
-	protected $currentX;
-	/** @var int */
-	protected $currentY;
-	/** @var int */
-	protected $currentZ;
-
-	public function __construct(ChunkManager $world){
-		$this->world = $world;
-	}
+	public function __construct(
+		protected ChunkManager $world
+	){}
 
 	/**
 	 * @phpstan-return SubChunkExplorerStatus::*
 	 */
 	public function moveTo(int $x, int $y, int $z) : int{
-		if($this->currentChunk === null or $this->currentX !== ($x >> 4) or $this->currentZ !== ($z >> 4)){
-			$this->currentX = $x >> 4;
-			$this->currentZ = $z >> 4;
+		$newChunkX = $x >> SubChunk::COORD_BIT_SIZE;
+		$newChunkZ = $z >> SubChunk::COORD_BIT_SIZE;
+		if($this->currentChunk === null || $this->currentX !== $newChunkX || $this->currentZ !== $newChunkZ){
+			$this->currentX = $newChunkX;
+			$this->currentZ = $newChunkZ;
 			$this->currentSubChunk = null;
 
 			$this->currentChunk = $this->world->getChunk($this->currentX, $this->currentZ);
@@ -62,15 +56,16 @@ class SubChunkExplorer{
 			}
 		}
 
-		if($this->currentSubChunk === null or $this->currentY !== ($y >> 4)){
-			$this->currentY = $y >> 4;
+		$newChunkY = $y >> SubChunk::COORD_BIT_SIZE;
+		if($this->currentSubChunk === null || $this->currentY !== $newChunkY){
+			$this->currentY = $newChunkY;
 
-			if($this->currentY < 0 or $this->currentY >= $this->currentChunk->getHeight()){
+			if($this->currentY < Chunk::MIN_SUBCHUNK_INDEX || $this->currentY > Chunk::MAX_SUBCHUNK_INDEX){
 				$this->currentSubChunk = null;
 				return SubChunkExplorerStatus::INVALID;
 			}
 
-			$this->currentSubChunk = $this->currentChunk->getSubChunk($y >> 4);
+			$this->currentSubChunk = $this->currentChunk->getSubChunk($newChunkY);
 			return SubChunkExplorerStatus::MOVED;
 		}
 
@@ -82,7 +77,7 @@ class SubChunkExplorer{
 	 */
 	public function moveToChunk(int $chunkX, int $chunkY, int $chunkZ) : int{
 		//this is a cold path, so we don't care much if it's a bit slower (extra fcall overhead)
-		return $this->moveTo($chunkX << 4, $chunkY << 4, $chunkZ << 4);
+		return $this->moveTo($chunkX << SubChunk::COORD_BIT_SIZE, $chunkY << SubChunk::COORD_BIT_SIZE, $chunkZ << SubChunk::COORD_BIT_SIZE);
 	}
 
 	/**

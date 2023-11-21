@@ -17,17 +17,16 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class WoodenStairs extends Stair{
+use pocketmine\block\utils\WoodTypeTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.0, BlockToolType::AXE, 0, 15.0));
-	}
+class WoodenStairs extends Stair{
+	use WoodTypeTrait;
 
 	public function getFlameEncouragement() : int{
 		return 5;

@@ -17,36 +17,32 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\MushroomBlockType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use function mt_rand;
 
 class RedMushroomBlock extends Opaque{
+	protected MushroomBlockType $mushroomBlockType = MushroomBlockType::ALL_CAP;
 
-	/**
-	 * @var int
-	 * In PC they have blockstate properties for each of the sides (pores/not pores). Unfortunately, we can't support
-	 * that because we can't serialize 2^6 combinations into a 4-bit metadata value, so this has to stick with storing
-	 * the legacy crap for now.
-	 * TODO: change this once proper blockstates are implemented
-	 */
-	protected $rotationData = 0;
-
-	protected function writeStateToMeta() : int{
-		return $this->rotationData;
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
+		//these blocks always drop as all-cap, but may exist in other forms in the inventory (particularly creative),
+		//so this information needs to be kept in the type info
+		$w->enum($this->mushroomBlockType);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->rotationData = $stateMeta;
-	}
+	public function getMushroomBlockType() : MushroomBlockType{ return $this->mushroomBlockType; }
 
-	public function getStateBitmask() : int{
-		return 0b1111;
+	/** @return $this */
+	public function setMushroomBlockType(MushroomBlockType $mushroomBlockType) : self{
+		$this->mushroomBlockType = $mushroomBlockType;
+		return $this;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
@@ -57,5 +53,13 @@ class RedMushroomBlock extends Opaque{
 
 	public function isAffectedBySilkTouch() : bool{
 		return true;
+	}
+
+	public function getSilkTouchDrops(Item $item) : array{
+		return [(clone $this)->setMushroomBlockType(MushroomBlockType::ALL_CAP)->asItem()];
+	}
+
+	public function getPickedItem(bool $addUserData = false) : Item{
+		return (clone $this)->setMushroomBlockType(MushroomBlockType::ALL_CAP)->asItem();
 	}
 }

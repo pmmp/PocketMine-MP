@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\RailPoweredByRedstoneTrait;
 
-class ActivatorRail extends BaseRail{
+class ActivatorRail extends StraightOnlyRail{
 	use RailPoweredByRedstoneTrait;
 
 	//TODO

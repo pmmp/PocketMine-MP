@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,31 +28,16 @@ use pocketmine\timings\TimingsHandler;
 use function in_array;
 
 class RegisteredListener{
-
-	/** @var \Closure */
-	private $handler;
-
-	/** @var int */
-	private $priority;
-
-	/** @var Plugin */
-	private $plugin;
-
-	/** @var bool */
-	private $handleCancelled;
-
-	/** @var TimingsHandler */
-	private $timings;
-
-	public function __construct(\Closure $handler, int $priority, Plugin $plugin, bool $handleCancelled, TimingsHandler $timings){
+	public function __construct(
+		private \Closure $handler,
+		private int $priority,
+		private Plugin $plugin,
+		private bool $handleCancelled,
+		private TimingsHandler $timings
+	){
 		if(!in_array($priority, EventPriority::ALL, true)){
 			throw new \InvalidArgumentException("Invalid priority number $priority");
 		}
-		$this->handler = $handler;
-		$this->priority = $priority;
-		$this->plugin = $plugin;
-		$this->handleCancelled = $handleCancelled;
-		$this->timings = $timings;
 	}
 
 	public function getHandler() : \Closure{
@@ -68,12 +53,15 @@ class RegisteredListener{
 	}
 
 	public function callEvent(Event $event) : void{
-		if($event instanceof Cancellable and $event->isCancelled() and !$this->isHandlingCancelled()){
+		if($event instanceof Cancellable && $event->isCancelled() && !$this->isHandlingCancelled()){
 			return;
 		}
 		$this->timings->startTiming();
-		($this->handler)($event);
-		$this->timings->stopTiming();
+		try{
+			($this->handler)($event);
+		}finally{
+			$this->timings->stopTiming();
+		}
 	}
 
 	public function isHandlingCancelled() : bool{

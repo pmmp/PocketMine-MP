@@ -17,44 +17,38 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\world\particle;
 
+use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
-use pocketmine\entity\Skin;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
-use pocketmine\network\mcpe\protocol\AddPlayerPacket;
-use pocketmine\network\mcpe\protocol\PlayerListPacket;
+use pocketmine\network\mcpe\convert\TypeConverter;
+use pocketmine\network\mcpe\protocol\AddActorPacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
+use pocketmine\network\mcpe\protocol\types\entity\ByteMetadataProperty;
+use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\FloatMetadataProperty;
+use pocketmine\network\mcpe\protocol\types\entity\IntMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\LongMetadataProperty;
-use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
-use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
-use pocketmine\uuid\UUID;
-use function str_repeat;
+use pocketmine\network\mcpe\protocol\types\entity\PropertySyncData;
+use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 
 class FloatingTextParticle implements Particle{
 	//TODO: HACK!
 
-	/** @var string */
-	protected $text;
-	/** @var string */
-	protected $title;
-	/** @var int|null */
-	protected $entityId = null;
-	/** @var bool */
-	protected $invisible = false;
+	protected ?int $entityId = null;
+	protected bool $invisible = false;
 
-	public function __construct(string $text, string $title = ""){
-		$this->text = $text;
-		$this->title = $title;
-	}
+	public function __construct(
+		protected string $text,
+		protected string $title = ""
+	){}
 
 	public function getText() : string{
 		return $this->text;
@@ -90,29 +84,35 @@ class FloatingTextParticle implements Particle{
 		}
 
 		if(!$this->invisible){
-			$uuid = UUID::fromRandom();
 			$name = $this->title . ($this->text !== "" ? "\n" . $this->text : "");
 
-			$p[] = PlayerListPacket::add([PlayerListEntry::createAdditionEntry($uuid, $this->entityId, $name, SkinAdapterSingleton::get()->toSkinData(new Skin("Standard_Custom", str_repeat("\x00", 8192))))]);
-
-			$pk = new AddPlayerPacket();
-			$pk->uuid = $uuid;
-			$pk->username = $name;
-			$pk->entityRuntimeId = $this->entityId;
-			$pk->position = $pos; //TODO: check offset
-			$pk->item = ItemStack::null();
-
-			$flags = (
-				1 << EntityMetadataFlags::IMMOBILE
+			$actorFlags = (
+				1 << EntityMetadataFlags::NO_AI
 			);
-			$pk->metadata = [
-				EntityMetadataProperties::FLAGS => new LongMetadataProperty($flags),
-				EntityMetadataProperties::SCALE => new FloatMetadataProperty(0.01) //zero causes problems on debug builds
+			$actorMetadata = [
+				EntityMetadataProperties::FLAGS => new LongMetadataProperty($actorFlags),
+				EntityMetadataProperties::SCALE => new FloatMetadataProperty(0.01), //zero causes problems on debug builds
+				EntityMetadataProperties::BOUNDING_BOX_WIDTH => new FloatMetadataProperty(0.0),
+				EntityMetadataProperties::BOUNDING_BOX_HEIGHT => new FloatMetadataProperty(0.0),
+				EntityMetadataProperties::NAMETAG => new StringMetadataProperty($name),
+				EntityMetadataProperties::VARIANT => new IntMetadataProperty(TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkId(VanillaBlocks::AIR()->getStateId())),
+				EntityMetadataProperties::ALWAYS_SHOW_NAMETAG => new ByteMetadataProperty(1),
 			];
-
-			$p[] = $pk;
-
-			$p[] = PlayerListPacket::remove([PlayerListEntry::createRemovalEntry($uuid)]);
+			$p[] = AddActorPacket::create(
+				$this->entityId, //TODO: actor unique ID
+				$this->entityId,
+				EntityIds::FALLING_BLOCK,
+				$pos, //TODO: check offset (0.49?)
+				null,
+				0,
+				0,
+				0,
+				0,
+				[],
+				$actorMetadata,
+				new PropertySyncData([], []),
+				[]
+			);
 		}
 
 		return $p;

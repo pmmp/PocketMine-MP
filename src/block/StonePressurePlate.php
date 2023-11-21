@@ -17,17 +17,19 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\ToolTier;
+use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
+use function array_filter;
 
 class StonePressurePlate extends SimplePressurePlate{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
+	protected function filterIrrelevantEntities(array $entities) : array{
+		return array_filter($entities, fn(Entity $e) => $e instanceof Living); //TODO: armor stands should activate stone plates too
 	}
 }

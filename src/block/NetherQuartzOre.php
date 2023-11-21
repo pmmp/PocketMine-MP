@@ -17,26 +17,22 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
-use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 use function mt_rand;
 
 class NetherQuartzOre extends Opaque{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
-	}
-
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			VanillaItems::NETHER_QUARTZ()
+			VanillaItems::NETHER_QUARTZ()->setCount(FortuneDropHelper::weighted($item, min: 1, maxBase: 1))
 		];
 	}
 

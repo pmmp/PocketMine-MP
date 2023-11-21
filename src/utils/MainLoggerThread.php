@@ -17,12 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use pmmp\thread\Thread;
+use pmmp\thread\ThreadSafeArray;
 use function date;
 use function fclose;
 use function file_exists;
@@ -36,28 +38,27 @@ use function is_resource;
 use function mkdir;
 use function stream_copy_to_stream;
 use function strlen;
-use function time;
 use function touch;
 use function unlink;
 
-final class MainLoggerThread extends \Thread{
+final class MainLoggerThread extends Thread{
 	private const MAX_FILE_SIZE = 32 * 1024 * 1024; //32 MB
 
-	private string $logFile;
-	private \Threaded $buffer;
+	/** @phpstan-var ThreadSafeArray<int, string> */
+	private ThreadSafeArray $buffer;
 	private bool $syncFlush = false;
 	private bool $shutdown = false;
-	private string $archiveDir;
 
-	public function __construct(string $logFile, string $archiveDir){
-		$this->buffer = new \Threaded();
-		touch($logFile);
-		$this->logFile = $logFile;
-		if(!@mkdir($archiveDir) && !is_dir($archiveDir)){
+	public function __construct(
+		private string $logFile,
+		private string $archiveDir
+	){
+		$this->buffer = new ThreadSafeArray();
+		touch($this->logFile);
+		if(!@mkdir($this->archiveDir) && !is_dir($this->archiveDir)){
 			throw new \RuntimeException("Unable to create archive directory: " . (
-				is_file($archiveDir) ? "it already exists and is not a directory" : "permission denied"));
+				is_file($this->archiveDir) ? "it already exists and is not a directory" : "permission denied"));
 		}
-		$this->archiveDir = $archiveDir;
 	}
 
 	public function write(string $line) : void{
@@ -68,10 +69,11 @@ final class MainLoggerThread extends \Thread{
 	}
 
 	public function syncFlushBuffer() : void{
-		$this->syncFlush = true;
 		$this->synchronized(function() : void{
+			$this->syncFlush = true;
 			$this->notify(); //write immediately
-
+		});
+		$this->synchronized(function() : void{
 			while($this->syncFlush){
 				$this->wait(); //block until it's all been written to disk
 			}
@@ -90,9 +92,7 @@ final class MainLoggerThread extends \Thread{
 	 * @param resource $logResource
 	 */
 	private function writeLogStream($logResource, int &$offset) : bool{
-		while($this->buffer->count() > 0){
-			/** @var string $chunk */
-			$chunk = $this->buffer->shift();
+		while(($chunk = $this->buffer->shift()) !== null){
 			fwrite($logResource, $chunk);
 			$offset += strlen($chunk);
 			if($offset >= self::MAX_FILE_SIZE){
@@ -126,7 +126,7 @@ final class MainLoggerThread extends \Thread{
 		$date = date("Y-m-d\TH.i.s");
 		do{
 			//this shouldn't be necessary, but in case the user messes with the system time for some reason ...
-			$out = $this->archiveDir . "/server.${date}_$i.log.gz";
+			$out = $this->archiveDir . "/server.{$date}_$i.log.gz";
 			$i++;
 		}while(file_exists($out));
 
@@ -155,7 +155,7 @@ final class MainLoggerThread extends \Thread{
 				$logResource = $this->openLogFile($this->logFile, $size);
 			}
 			$this->synchronized(function() : void{
-				if(!$this->shutdown){
+				if(!$this->shutdown && !$this->syncFlush){
 					$this->wait();
 				}
 			});

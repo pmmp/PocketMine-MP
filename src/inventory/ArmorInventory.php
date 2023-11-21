@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,17 +26,15 @@ namespace pocketmine\inventory;
 use pocketmine\entity\Living;
 use pocketmine\item\Item;
 
-class ArmorInventory extends BaseInventory{
+class ArmorInventory extends SimpleInventory{
 	public const SLOT_HEAD = 0;
 	public const SLOT_CHEST = 1;
 	public const SLOT_LEGS = 2;
 	public const SLOT_FEET = 3;
 
-	/** @var Living */
-	protected $holder;
-
-	public function __construct(Living $holder){
-		$this->holder = $holder;
+	public function __construct(
+		protected Living $holder
+	){
 		parent::__construct(4);
 	}
 

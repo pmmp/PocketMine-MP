@@ -17,13 +17,15 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\TextFormat;
 use function count;
 use function memory_get_usage;
@@ -32,42 +34,37 @@ use function round;
 
 class GarbageCollectorCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
-			"%pocketmine.command.gc.description",
-			"%pocketmine.command.gc.usage"
+			"gc",
+			KnownTranslationFactory::pocketmine_command_gc_description()
 		);
-		$this->setPermission("pocketmine.command.gc");
+		$this->setPermission(DefaultPermissionNames::COMMAND_GC);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		$chunksCollected = 0;
 		$entitiesCollected = 0;
 
 		$memory = memory_get_usage();
 
 		foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
-			$diff = [count($world->getChunks()), count($world->getEntities())];
+			$diff = [count($world->getLoadedChunks()), count($world->getEntities())];
 			$world->doChunkGarbageCollection();
 			$world->unloadChunks(true);
-			$chunksCollected += $diff[0] - count($world->getChunks());
+			$chunksCollected += $diff[0] - count($world->getLoadedChunks());
 			$entitiesCollected += $diff[1] - count($world->getEntities());
 			$world->clearCache(true);
 		}
 
 		$cyclesCollected = $sender->getServer()->getMemoryManager()->triggerGarbageCollector();
 
-		$sender->sendMessage(TextFormat::GREEN . "---- " . TextFormat::WHITE . "Garbage collection result" . TextFormat::GREEN . " ----");
-		$sender->sendMessage(TextFormat::GOLD . "Chunks: " . TextFormat::RED . number_format($chunksCollected));
-		$sender->sendMessage(TextFormat::GOLD . "Entities: " . TextFormat::RED . number_format($entitiesCollected));
+		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_gc_header()->format(TextFormat::GREEN . "---- " . TextFormat::RESET, TextFormat::GREEN . " ----" . TextFormat::RESET));
+		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_gc_chunks(TextFormat::RED . number_format($chunksCollected))->prefix(TextFormat::GOLD));
+		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_gc_entities(TextFormat::RED . number_format($entitiesCollected))->prefix(TextFormat::GOLD));
 
-		$sender->sendMessage(TextFormat::GOLD . "Cycles: " . TextFormat::RED . number_format($cyclesCollected));
-		$sender->sendMessage(TextFormat::GOLD . "Memory freed: " . TextFormat::RED . number_format(round((($memory - memory_get_usage()) / 1024) / 1024, 2), 2) . " MB");
+		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_gc_cycles(TextFormat::RED . number_format($cyclesCollected))->prefix(TextFormat::GOLD));
+		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_gc_memoryFreed(TextFormat::RED . number_format(round((($memory - memory_get_usage()) / 1024) / 1024, 2), 2))->prefix(TextFormat::GOLD));
 		return true;
 	}
 }

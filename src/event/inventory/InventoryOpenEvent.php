@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,11 +31,10 @@ use pocketmine\player\Player;
 class InventoryOpenEvent extends InventoryEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Player */
-	private $who;
-
-	public function __construct(Inventory $inventory, Player $who){
-		$this->who = $who;
+	public function __construct(
+		Inventory $inventory,
+		private Player $who
+	){
 		parent::__construct($inventory);
 	}
 

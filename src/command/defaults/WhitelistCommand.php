@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,9 +26,11 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
-use pocketmine\utils\TextFormat;
+use pocketmine\Server;
+use pocketmine\ServerProperties;
 use function count;
 use function implode;
 use function sort;
@@ -37,75 +39,94 @@ use const SORT_STRING;
 
 class WhitelistCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
-			"%pocketmine.command.whitelist.description",
-			"%commands.whitelist.usage"
+			"whitelist",
+			KnownTranslationFactory::pocketmine_command_whitelist_description(),
+			KnownTranslationFactory::commands_whitelist_usage()
 		);
-		$this->setPermission("pocketmine.command.whitelist.reload;pocketmine.command.whitelist.enable;pocketmine.command.whitelist.disable;pocketmine.command.whitelist.list;pocketmine.command.whitelist.add;pocketmine.command.whitelist.remove");
+		$this->setPermissions([
+			DefaultPermissionNames::COMMAND_WHITELIST_RELOAD,
+			DefaultPermissionNames::COMMAND_WHITELIST_ENABLE,
+			DefaultPermissionNames::COMMAND_WHITELIST_DISABLE,
+			DefaultPermissionNames::COMMAND_WHITELIST_LIST,
+			DefaultPermissionNames::COMMAND_WHITELIST_ADD,
+			DefaultPermissionNames::COMMAND_WHITELIST_REMOVE
+		]);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) === 1){
-			if($this->badPerm($sender, strtolower($args[0]))){
-				return false;
-			}
 			switch(strtolower($args[0])){
 				case "reload":
-					$sender->getServer()->getWhitelisted()->reload();
-					Command::broadcastCommandMessage($sender, new TranslationContainer("commands.whitelist.reloaded"));
+					if($this->testPermission($sender, DefaultPermissionNames::COMMAND_WHITELIST_RELOAD)){
+						$server = $sender->getServer();
+						$server->getWhitelisted()->reload();
+						if($server->hasWhitelist()){
+							$this->kickNonWhitelistedPlayers($server);
+						}
+						Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_whitelist_reloaded());
+					}
 
 					return true;
 				case "on":
-					$sender->getServer()->getConfigGroup()->setConfigBool("white-list", true);
-					Command::broadcastCommandMessage($sender, new TranslationContainer("commands.whitelist.enabled"));
+					if($this->testPermission($sender, DefaultPermissionNames::COMMAND_WHITELIST_ENABLE)){
+						$server = $sender->getServer();
+						$server->getConfigGroup()->setConfigBool(ServerProperties::WHITELIST, true);
+						$this->kickNonWhitelistedPlayers($server);
+						Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_whitelist_enabled());
+					}
 
 					return true;
 				case "off":
-					$sender->getServer()->getConfigGroup()->setConfigBool("white-list", false);
-					Command::broadcastCommandMessage($sender, new TranslationContainer("commands.whitelist.disabled"));
+					if($this->testPermission($sender, DefaultPermissionNames::COMMAND_WHITELIST_DISABLE)){
+						$sender->getServer()->getConfigGroup()->setConfigBool(ServerProperties::WHITELIST, false);
+						Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_whitelist_disabled());
+					}
 
 					return true;
 				case "list":
-					$entries = $sender->getServer()->getWhitelisted()->getAll(true);
-					sort($entries, SORT_STRING);
-					$result = implode(", ", $entries);
-					$count = count($entries);
+					if($this->testPermission($sender, DefaultPermissionNames::COMMAND_WHITELIST_LIST)){
+						$entries = $sender->getServer()->getWhitelisted()->getAll(true);
+						sort($entries, SORT_STRING);
+						$result = implode(", ", $entries);
+						$count = (string) count($entries);
 
-					$sender->sendMessage(new TranslationContainer("commands.whitelist.list", [$count, $count]));
-					$sender->sendMessage($result);
+						$sender->sendMessage(KnownTranslationFactory::commands_whitelist_list($count, $count));
+						$sender->sendMessage($result);
+					}
 
 					return true;
 
 				case "add":
-					$sender->sendMessage(new TranslationContainer("commands.generic.usage", ["%commands.whitelist.add.usage"]));
+					$sender->sendMessage(KnownTranslationFactory::commands_generic_usage(KnownTranslationFactory::commands_whitelist_add_usage()));
 					return true;
 
 				case "remove":
-					$sender->sendMessage(new TranslationContainer("commands.generic.usage", ["%commands.whitelist.remove.usage"]));
+					$sender->sendMessage(KnownTranslationFactory::commands_generic_usage(KnownTranslationFactory::commands_whitelist_remove_usage()));
 					return true;
 			}
 		}elseif(count($args) === 2){
-			if($this->badPerm($sender, strtolower($args[0]))){
-				return false;
-			}
 			if(!Player::isValidUserName($args[1])){
 				throw new InvalidCommandSyntaxException();
 			}
 			switch(strtolower($args[0])){
 				case "add":
-					$sender->getServer()->addWhitelist($args[1]);
-					Command::broadcastCommandMessage($sender, new TranslationContainer("commands.whitelist.add.success", [$args[1]]));
+					if($this->testPermission($sender, DefaultPermissionNames::COMMAND_WHITELIST_ADD)){
+						$sender->getServer()->addWhitelist($args[1]);
+						Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_whitelist_add_success($args[1]));
+					}
 
 					return true;
 				case "remove":
-					$sender->getServer()->removeWhitelist($args[1]);
-					Command::broadcastCommandMessage($sender, new TranslationContainer("commands.whitelist.remove.success", [$args[1]]));
+					if($this->testPermission($sender, DefaultPermissionNames::COMMAND_WHITELIST_REMOVE)){
+						$server = $sender->getServer();
+						$server->removeWhitelist($args[1]);
+						if(!$server->isWhitelisted($args[1])){
+							$server->getPlayerExact($args[1])?->kick(KnownTranslationFactory::pocketmine_disconnect_kick(KnownTranslationFactory::pocketmine_disconnect_whitelisted()));
+						}
+						Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_whitelist_remove_success($args[1]));
+					}
 
 					return true;
 			}
@@ -114,17 +135,12 @@ class WhitelistCommand extends VanillaCommand{
 		throw new InvalidCommandSyntaxException();
 	}
 
-	private function badPerm(CommandSender $sender, string $subcommand) : bool{
-		static $map = [
-			"on" => "enable",
-			"off" => "disable"
-		];
-		if(!$sender->hasPermission("pocketmine.command.whitelist." . ($map[$subcommand] ?? $subcommand))){
-			$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
-
-			return true;
+	private function kickNonWhitelistedPlayers(Server $server) : void{
+		$message = KnownTranslationFactory::pocketmine_disconnect_kick(KnownTranslationFactory::pocketmine_disconnect_whitelisted());
+		foreach($server->getOnlinePlayers() as $player){
+			if(!$server->isWhitelisted($player->getName())){
+				$player->kick($message);
+			}
 		}
-
-		return false;
 	}
 }

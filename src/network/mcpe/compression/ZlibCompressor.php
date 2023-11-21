@@ -17,14 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\compression;
 
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\utils\Utils;
 use function function_exists;
 use function libdeflate_deflate_compress;
 use function strlen;
@@ -46,21 +46,14 @@ final class ZlibCompressor implements Compressor{
 		return new self(self::DEFAULT_LEVEL, self::DEFAULT_THRESHOLD, self::DEFAULT_MAX_DECOMPRESSION_SIZE);
 	}
 
-	/** @var int */
-	private $level;
-	/** @var int */
-	private $threshold;
-	/** @var int */
-	private $maxDecompressionSize;
+	public function __construct(
+		private int $level,
+		private ?int $minCompressionSize,
+		private int $maxDecompressionSize
+	){}
 
-	public function __construct(int $level, int $minCompressionSize, int $maxDecompressionSize){
-		$this->level = $level;
-		$this->threshold = $minCompressionSize;
-		$this->maxDecompressionSize = $maxDecompressionSize;
-	}
-
-	public function willCompress(string $data) : bool{
-		return $this->threshold > -1 and strlen($data) >= $this->threshold;
+	public function getCompressionThreshold() : ?int{
+		return $this->minCompressionSize;
 	}
 
 	/**
@@ -74,18 +67,12 @@ final class ZlibCompressor implements Compressor{
 		return $result;
 	}
 
-	private static function zlib_encode(string $data, int $level) : string{
-		$result = zlib_encode($data, ZLIB_ENCODING_RAW, $level);
-		if($result === false) throw new AssumptionFailedError("ZLIB compression failed");
-		return $result;
-	}
-
 	public function compress(string $payload) : string{
-		if(function_exists('libdeflate_deflate_compress')){
-			return $this->willCompress($payload) ?
-				libdeflate_deflate_compress($payload, $this->level) :
-				self::zlib_encode($payload, 0);
-		}
-		return self::zlib_encode($payload, $this->willCompress($payload) ? $this->level : 0);
+		$compressible = $this->minCompressionSize !== null && strlen($payload) >= $this->minCompressionSize;
+		$level = $compressible ? $this->level : 0;
+
+		return function_exists('libdeflate_deflate_compress') ?
+			libdeflate_deflate_compress($payload, $level) :
+			Utils::assumeNotFalse(zlib_encode($payload, ZLIB_ENCODING_RAW, $level), "ZLIB compression failed");
 	}
 }

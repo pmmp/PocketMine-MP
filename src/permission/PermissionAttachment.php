@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,47 +25,38 @@ namespace pocketmine\permission;
 
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginException;
+use function spl_object_id;
 
 class PermissionAttachment{
-	/** @var PermissionRemovedExecutor|null */
-	private $removed = null;
-
 	/** @var bool[] */
-	private $permissions = [];
+	private array $permissions = [];
 
-	/** @var Permissible */
-	private $permissible;
-
-	/** @var Plugin */
-	private $plugin;
+	/**
+	 * @var PermissibleInternal[]
+	 * @phpstan-var array<int, PermissibleInternal>
+	 */
+	private array $subscribers = [];
 
 	/**
 	 * @throws PluginException
 	 */
-	public function __construct(Plugin $plugin, Permissible $permissible){
+	public function __construct(
+		private Plugin $plugin
+	){
 		if(!$plugin->isEnabled()){
 			throw new PluginException("Plugin " . $plugin->getDescription()->getName() . " is disabled");
 		}
-
-		$this->permissible = $permissible;
-		$this->plugin = $plugin;
 	}
 
 	public function getPlugin() : Plugin{
 		return $this->plugin;
 	}
 
-	public function setRemovalCallback(PermissionRemovedExecutor $ex) : void{
-		$this->removed = $ex;
-	}
-
-	public function getRemovalCallback() : ?PermissionRemovedExecutor{
-		return $this->removed;
-	}
-
-	public function getPermissible() : Permissible{
-		return $this->permissible;
-	}
+	/**
+	 * @return PermissibleInternal[]
+	 * @phpstan-return array<int, PermissibleInternal>
+	 */
+	public function getSubscribers() : array{ return $this->subscribers; }
 
 	/**
 	 * @return bool[]
@@ -74,9 +65,15 @@ class PermissionAttachment{
 		return $this->permissions;
 	}
 
+	private function recalculatePermissibles() : void{
+		foreach($this->subscribers as $permissible){
+			$permissible->recalculatePermissions();
+		}
+	}
+
 	public function clearPermissions() : void{
 		$this->permissions = [];
-		$this->permissible->recalculatePermissions();
+		$this->recalculatePermissibles();
 	}
 
 	/**
@@ -86,7 +83,7 @@ class PermissionAttachment{
 		foreach($permissions as $key => $value){
 			$this->permissions[$key] = $value;
 		}
-		$this->permissible->recalculatePermissions();
+		$this->recalculatePermissibles();
 	}
 
 	/**
@@ -96,13 +93,10 @@ class PermissionAttachment{
 		foreach($permissions as $node){
 			unset($this->permissions[$node]);
 		}
-		$this->permissible->recalculatePermissions();
+		$this->recalculatePermissibles();
 	}
 
-	/**
-	 * @param string|Permission $name
-	 */
-	public function setPermission($name, bool $value) : void{
+	public function setPermission(Permission|string $name, bool $value) : void{
 		$name = $name instanceof Permission ? $name->getName() : $name;
 		if(isset($this->permissions[$name])){
 			if($this->permissions[$name] === $value){
@@ -120,21 +114,28 @@ class PermissionAttachment{
 			unset($this->permissions[$name]);
 		}
 		$this->permissions[$name] = $value;
-		$this->permissible->recalculatePermissions();
+		$this->recalculatePermissibles();
 	}
 
-	/**
-	 * @param string|Permission $name
-	 */
-	public function unsetPermission($name) : void{
+	public function unsetPermission(Permission|string $name) : void{
 		$name = $name instanceof Permission ? $name->getName() : $name;
 		if(isset($this->permissions[$name])){
 			unset($this->permissions[$name]);
-			$this->permissible->recalculatePermissions();
+			$this->recalculatePermissibles();
 		}
 	}
 
-	public function remove() : void{
-		$this->permissible->removeAttachment($this);
+	/**
+	 * @internal
+	 */
+	public function subscribePermissible(PermissibleInternal $permissible) : void{
+		$this->subscribers[spl_object_id($permissible)] = $permissible;
+	}
+
+	/**
+	 * @internal
+	 */
+	public function unsubscribePermissible(PermissibleInternal $permissible) : void{
+		unset($this->subscribers[spl_object_id($permissible)]);
 	}
 }

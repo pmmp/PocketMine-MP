@@ -17,79 +17,94 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
-use pocketmine\utils\EnumTrait;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\lang\Translatable;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
+use pocketmine\utils\LegacyEnumShimTrait;
+use function spl_object_id;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see RegistryTrait::_generateMethodAnnotations()
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
- * @method static self DISK_13()
- * @method static self DISK_CAT()
- * @method static self DISK_BLOCKS()
- * @method static self DISK_CHIRP()
- * @method static self DISK_FAR()
- * @method static self DISK_MALL()
- * @method static self DISK_MELLOHI()
- * @method static self DISK_STAL()
- * @method static self DISK_STRAD()
- * @method static self DISK_WARD()
- * @method static self DISK_11()
- * @method static self DISK_WAIT()
+ * @method static RecordType DISK_11()
+ * @method static RecordType DISK_13()
+ * @method static RecordType DISK_5()
+ * @method static RecordType DISK_BLOCKS()
+ * @method static RecordType DISK_CAT()
+ * @method static RecordType DISK_CHIRP()
+ * @method static RecordType DISK_FAR()
+ * @method static RecordType DISK_MALL()
+ * @method static RecordType DISK_MELLOHI()
+ * @method static RecordType DISK_OTHERSIDE()
+ * @method static RecordType DISK_PIGSTEP()
+ * @method static RecordType DISK_STAL()
+ * @method static RecordType DISK_STRAD()
+ * @method static RecordType DISK_WAIT()
+ * @method static RecordType DISK_WARD()
+ *
+ * @phpstan-type TMetadata array{0: string, 1: LevelSoundEvent::*, 2: Translatable}
  */
-final class RecordType{
-	use EnumTrait {
-		__construct as Enum___construct;
-	}
+enum RecordType{
+	use LegacyEnumShimTrait;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new RecordType("disk_13", "C418 - 13", LevelSoundEventPacket::SOUND_RECORD_13, "item.record_13.desc"),
-			new RecordType("disk_cat", "C418 - cat", LevelSoundEventPacket::SOUND_RECORD_CAT, "item.record_cat.desc"),
-			new RecordType("disk_blocks", "C418 - blocks", LevelSoundEventPacket::SOUND_RECORD_BLOCKS, "item.record_blocks.desc"),
-			new RecordType("disk_chirp", "C418 - chirp", LevelSoundEventPacket::SOUND_RECORD_CHIRP, "item.record_chirp.desc"),
-			new RecordType("disk_far", "C418 - far", LevelSoundEventPacket::SOUND_RECORD_FAR, "item.record_far.desc"),
-			new RecordType("disk_mall", "C418 - mall", LevelSoundEventPacket::SOUND_RECORD_MALL, "item.record_mall.desc"),
-			new RecordType("disk_mellohi", "C418 - mellohi", LevelSoundEventPacket::SOUND_RECORD_MELLOHI, "item.record_mellohi.desc"),
-			new RecordType("disk_stal", "C418 - stal", LevelSoundEventPacket::SOUND_RECORD_STAL, "item.record_stal.desc"),
-			new RecordType("disk_strad", "C418 - strad", LevelSoundEventPacket::SOUND_RECORD_STRAD, "item.record_strad.desc"),
-			new RecordType("disk_ward", "C418 - ward", LevelSoundEventPacket::SOUND_RECORD_WARD, "item.record_ward.desc"),
-			new RecordType("disk_11", "C418 - 11", LevelSoundEventPacket::SOUND_RECORD_11, "item.record_11.desc"),
-			new RecordType("disk_wait", "C418 - wait", LevelSoundEventPacket::SOUND_RECORD_WAIT, "item.record_wait.desc")
-			//TODO: Lena Raine - Pigstep
-		);
-	}
+	case DISK_13;
+	case DISK_5;
+	case DISK_CAT;
+	case DISK_BLOCKS;
+	case DISK_CHIRP;
+	case DISK_FAR;
+	case DISK_MALL;
+	case DISK_MELLOHI;
+	case DISK_OTHERSIDE;
+	case DISK_PIGSTEP;
+	case DISK_STAL;
+	case DISK_STRAD;
+	case DISK_WARD;
+	case DISK_11;
+	case DISK_WAIT;
 
-	/** @var string */
-	private $soundName;
-	/** @var int */
-	private $soundId;
-	/** @var string */
-	private $translationKey;
+	/**
+	 * @phpstan-return TMetadata
+	 */
+	private function getMetadata() : array{
+		/** @phpstan-var array<int, TMetadata> $cache */
+		static $cache = [];
 
-	private function __construct(string $enumName, string $soundName, int $soundId, string $translationKey){
-		$this->Enum___construct($enumName);
-		$this->soundName = $soundName;
-		$this->soundId = $soundId;
-		$this->translationKey = $translationKey;
+		return $cache[spl_object_id($this)] ??= match($this){
+			self::DISK_13 => ["C418 - 13", LevelSoundEvent::RECORD_13, KnownTranslationFactory::item_record_13_desc()],
+			self::DISK_5 => ["Samuel Åberg - 5", LevelSoundEvent::RECORD_5, KnownTranslationFactory::item_record_5_desc()],
+			self::DISK_CAT => ["C418 - cat", LevelSoundEvent::RECORD_CAT, KnownTranslationFactory::item_record_cat_desc()],
+			self::DISK_BLOCKS => ["C418 - blocks", LevelSoundEvent::RECORD_BLOCKS, KnownTranslationFactory::item_record_blocks_desc()],
+			self::DISK_CHIRP => ["C418 - chirp", LevelSoundEvent::RECORD_CHIRP, KnownTranslationFactory::item_record_chirp_desc()],
+			self::DISK_FAR => ["C418 - far", LevelSoundEvent::RECORD_FAR, KnownTranslationFactory::item_record_far_desc()],
+			self::DISK_MALL => ["C418 - mall", LevelSoundEvent::RECORD_MALL, KnownTranslationFactory::item_record_mall_desc()],
+			self::DISK_MELLOHI => ["C418 - mellohi", LevelSoundEvent::RECORD_MELLOHI, KnownTranslationFactory::item_record_mellohi_desc()],
+			self::DISK_OTHERSIDE => ["Lena Raine - otherside", LevelSoundEvent::RECORD_OTHERSIDE, KnownTranslationFactory::item_record_otherside_desc()],
+			self::DISK_PIGSTEP => ["Lena Raine - Pigstep", LevelSoundEvent::RECORD_PIGSTEP, KnownTranslationFactory::item_record_pigstep_desc()],
+			self::DISK_STAL => ["C418 - stal", LevelSoundEvent::RECORD_STAL, KnownTranslationFactory::item_record_stal_desc()],
+			self::DISK_STRAD => ["C418 - strad", LevelSoundEvent::RECORD_STRAD, KnownTranslationFactory::item_record_strad_desc()],
+			self::DISK_WARD => ["C418 - ward", LevelSoundEvent::RECORD_WARD, KnownTranslationFactory::item_record_ward_desc()],
+			self::DISK_11 => ["C418 - 11", LevelSoundEvent::RECORD_11, KnownTranslationFactory::item_record_11_desc()],
+			self::DISK_WAIT => ["C418 - wait", LevelSoundEvent::RECORD_WAIT, KnownTranslationFactory::item_record_wait_desc()]
+		};
 	}
 
 	public function getSoundName() : string{
-		return $this->soundName;
+		return $this->getMetadata()[0];
 	}
 
 	public function getSoundId() : int{
-		return $this->soundId;
+		return $this->getMetadata()[1];
 	}
 
-	public function getTranslationKey() : string{
-		return $this->translationKey;
+	public function getTranslatableName() : Translatable{
+		return $this->getMetadata()[2];
 	}
 }

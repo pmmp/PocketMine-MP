@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,18 +28,11 @@ use pocketmine\utils\AssumptionFailedError;
 use function assert;
 
 class Position extends Vector3{
+	public ?World $world = null;
 
-	/** @var World|null */
-	public $world = null;
-
-	/**
-	 * @param float|int $x
-	 * @param float|int $y
-	 * @param float|int $z
-	 */
-	public function __construct($x, $y, $z, ?World $world){
+	public function __construct(float|int $x, float|int $y, float|int $z, ?World $world){
 		parent::__construct($x, $y, $z);
-		if($world !== null and $world->isClosed()){
+		if($world !== null && !$world->isLoaded()){
 			throw new \InvalidArgumentException("Specified world has been unloaded and cannot be used");
 		}
 
@@ -66,7 +59,7 @@ class Position extends Vector3{
 	 * @throws AssumptionFailedError
 	 */
 	public function getWorld() : World{
-		if($this->world === null || $this->world->isClosed()){
+		if($this->world === null || !$this->world->isLoaded()){
 			throw new AssumptionFailedError("Position world is null or has been unloaded");
 		}
 
@@ -77,7 +70,7 @@ class Position extends Vector3{
 	 * Checks if this object has a valid reference to a loaded world
 	 */
 	public function isValid() : bool{
-		if($this->world !== null and $this->world->isClosed()){
+		if($this->world !== null && !$this->world->isLoaded()){
 			$this->world = null;
 
 			return false;
@@ -98,12 +91,12 @@ class Position extends Vector3{
 	}
 
 	public function __toString(){
-		return "Position(level=" . ($this->isValid() ? $this->getWorld()->getDisplayName() : "null") . ",x=" . $this->x . ",y=" . $this->y . ",z=" . $this->z . ")";
+		return "Position(world=" . ($this->isValid() ? $this->getWorld()->getDisplayName() : "null") . ",x=" . $this->x . ",y=" . $this->y . ",z=" . $this->z . ")";
 	}
 
 	public function equals(Vector3 $v) : bool{
 		if($v instanceof Position){
-			return parent::equals($v) and $v->world === $this->world;
+			return parent::equals($v) && $v->world === $this->world;
 		}
 		return parent::equals($v);
 	}

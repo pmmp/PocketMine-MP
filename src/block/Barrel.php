@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Barrel as TileBarrel;
 use pocketmine\block\utils\AnyFacingTrait;
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -36,24 +36,11 @@ use function abs;
 class Barrel extends Opaque{
 	use AnyFacingTrait;
 
-	/** @var bool */
-	protected $open = false;
+	protected bool $open = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.5, BlockToolType::AXE));
-	}
-
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeFacing($this->facing) | ($this->open ? BlockLegacyMetadata::BARREL_FLAG_OPEN : 0);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readFacing($stateMeta & 0x07);
-		$this->open = ($stateMeta & BlockLegacyMetadata::BARREL_FLAG_OPEN) === BlockLegacyMetadata::BARREL_FLAG_OPEN;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->facing($this->facing);
+		$w->bool($this->open);
 	}
 
 	public function isOpen() : bool{
@@ -68,12 +55,12 @@ class Barrel extends Opaque{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
-			if(abs($player->getPosition()->getX() - $this->pos->getX()) < 2 && abs($player->getPosition()->getZ() - $this->pos->getZ()) < 2){
-				$y = $player->getEyePos()->getY();
+			if(abs($player->getPosition()->x - $this->position->x) < 2 && abs($player->getPosition()->z - $this->position->z) < 2){
+				$y = $player->getEyePos()->y;
 
-				if($y - $this->pos->getY() > 2){
+				if($y - $this->position->y > 2){
 					$this->facing = Facing::UP;
-				}elseif($this->pos->getY() - $y > 0){
+				}elseif($this->position->y - $y > 0){
 					$this->facing = Facing::DOWN;
 				}else{
 					$this->facing = Facing::opposite($player->getHorizontalFacing());
@@ -86,9 +73,9 @@ class Barrel extends Opaque{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
-			$barrel = $this->pos->getWorld()->getTile($this->pos);
+			$barrel = $this->position->getWorld()->getTile($this->position);
 			if($barrel instanceof TileBarrel){
 				if(!$barrel->canOpenWith($item->getCustomName())){
 					return true;

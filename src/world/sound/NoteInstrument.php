@@ -17,49 +17,52 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\world\sound;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever enum members are added, removed or changed.
- * @see EnumTrait::_generateMethodAnnotations()
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
- * @method static self PIANO()
- * @method static self BASS_DRUM()
- * @method static self SNARE()
- * @method static self CLICKS_AND_STICKS()
- * @method static self DOUBLE_BASS()
+ * @method static NoteInstrument BANJO()
+ * @method static NoteInstrument BASS_DRUM()
+ * @method static NoteInstrument BELL()
+ * @method static NoteInstrument BIT()
+ * @method static NoteInstrument CHIME()
+ * @method static NoteInstrument CLICKS_AND_STICKS()
+ * @method static NoteInstrument COW_BELL()
+ * @method static NoteInstrument DIDGERIDOO()
+ * @method static NoteInstrument DOUBLE_BASS()
+ * @method static NoteInstrument FLUTE()
+ * @method static NoteInstrument GUITAR()
+ * @method static NoteInstrument IRON_XYLOPHONE()
+ * @method static NoteInstrument PIANO()
+ * @method static NoteInstrument PLING()
+ * @method static NoteInstrument SNARE()
+ * @method static NoteInstrument XYLOPHONE()
  */
-final class NoteInstrument{
-	use EnumTrait {
-		__construct as Enum___construct;
-	}
+enum NoteInstrument{
+	use LegacyEnumShimTrait;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("piano", 0),
-			new self("bass_drum", 1),
-			new self("snare", 2),
-			new self("clicks_and_sticks", 3),
-			new self("double_bass", 4)
-		);
-	}
-
-	/** @var int */
-	private $magicNumber;
-
-	private function __construct(string $name, int $magicNumber){
-		$this->Enum___construct($name);
-		$this->magicNumber = $magicNumber;
-	}
-
-	public function getMagicNumber() : int{
-		return $this->magicNumber;
-	}
+	case PIANO;
+	case BASS_DRUM;
+	case SNARE;
+	case CLICKS_AND_STICKS;
+	case DOUBLE_BASS;
+	case BELL;
+	case FLUTE;
+	case CHIME;
+	case GUITAR;
+	case XYLOPHONE;
+	case IRON_XYLOPHONE;
+	case COW_BELL;
+	case DIDGERIDOO;
+	case BIT;
+	case BANJO;
+	case PLING;
 }

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -48,32 +48,19 @@ class Attribute{
 	public const ZOMBIE_SPAWN_REINFORCEMENTS = self::MC_PREFIX . "zombie.spawn_reinforcements";
 	public const LAVA_MOVEMENT = self::MC_PREFIX . "lava_movement";
 
-	/** @var string */
-	protected $id;
-	/** @var float */
-	protected $minValue;
-	/** @var float */
-	protected $maxValue;
-	/** @var float */
-	protected $defaultValue;
-	/** @var float */
-	protected $currentValue;
-	/** @var bool */
-	protected $shouldSend;
+	protected float $currentValue;
+	protected bool $desynchronized = true;
 
-	/** @var bool */
-	protected $desynchronized = true;
-
-	public function __construct(string $id, float $minValue, float $maxValue, float $defaultValue, bool $shouldSend = true){
-		if($minValue > $maxValue or $defaultValue > $maxValue or $defaultValue < $minValue){
+	public function __construct(
+		protected string $id,
+		protected float $minValue,
+		protected float $maxValue,
+		protected float $defaultValue,
+		protected bool $shouldSend = true
+	){
+		if($minValue > $maxValue || $defaultValue > $maxValue || $defaultValue < $minValue){
 			throw new \InvalidArgumentException("Invalid ranges: min value: $minValue, max value: $maxValue, $defaultValue: $defaultValue");
 		}
-		$this->id = $id;
-		$this->minValue = $minValue;
-		$this->maxValue = $maxValue;
-		$this->defaultValue = $defaultValue;
-		$this->shouldSend = $shouldSend;
-
 		$this->currentValue = $this->defaultValue;
 	}
 
@@ -123,7 +110,7 @@ class Attribute{
 	 * @return $this
 	 */
 	public function setDefaultValue(float $defaultValue){
-		if($defaultValue > $this->getMaxValue() or $defaultValue < $this->getMinValue()){
+		if($defaultValue > $this->getMaxValue() || $defaultValue < $this->getMinValue()){
 			throw new \InvalidArgumentException("Default $defaultValue is outside the range " . $this->getMinValue() . " - " . $this->getMaxValue());
 		}
 
@@ -146,7 +133,7 @@ class Attribute{
 	 * @return $this
 	 */
 	public function setValue(float $value, bool $fit = false, bool $forceSend = false){
-		if($value > $this->getMaxValue() or $value < $this->getMinValue()){
+		if($value > $this->getMaxValue() || $value < $this->getMinValue()){
 			if(!$fit){
 				throw new \InvalidArgumentException("Value $value is outside the range " . $this->getMinValue() . " - " . $this->getMaxValue());
 			}
@@ -172,7 +159,7 @@ class Attribute{
 	}
 
 	public function isDesynchronized() : bool{
-		return $this->shouldSend and $this->desynchronized;
+		return $this->shouldSend && $this->desynchronized;
 	}
 
 	public function markSynchronized(bool $synced = true) : void{

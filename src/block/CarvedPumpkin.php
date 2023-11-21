@@ -17,39 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
-use pocketmine\block\utils\HorizontalFacingTrait;
-use pocketmine\item\Item;
-use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
+use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 
 class CarvedPumpkin extends Opaque{
-	use HorizontalFacingTrait;
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
-	}
-
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b11;
-	}
-
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($player !== null){
-			$this->facing = Facing::opposite($player->getHorizontalFacing());
-		}
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
+	use FacesOppositePlacingPlayerTrait;
 }

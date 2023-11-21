@@ -26,17 +26,32 @@ namespace pocketmine {
 	use Composer\InstalledVersions;
 	use pocketmine\errorhandler\ErrorToExceptionHandler;
 	use pocketmine\thread\ThreadManager;
+	use pocketmine\thread\ThreadSafeClassLoader;
 	use pocketmine\utils\Filesystem;
 	use pocketmine\utils\MainLogger;
 	use pocketmine\utils\Process;
 	use pocketmine\utils\ServerKiller;
 	use pocketmine\utils\Terminal;
 	use pocketmine\utils\Timezone;
+	use pocketmine\utils\Utils;
 	use pocketmine\wizard\SetupWizard;
+	use Symfony\Component\Filesystem\Path;
+	use function defined;
+	use function extension_loaded;
+	use function function_exists;
+	use function getcwd;
+	use function is_dir;
+	use function mkdir;
+	use function phpversion;
+	use function preg_match;
+	use function preg_quote;
+	use function realpath;
+	use function version_compare;
+	use const DIRECTORY_SEPARATOR;
 
 	require_once __DIR__ . '/VersionInfo.php';
 
-	const MIN_PHP_VERSION = "7.4.0";
+	const MIN_PHP_VERSION = "8.1.0";
 
 	/**
 	 * @param string $message
@@ -79,7 +94,6 @@ namespace pocketmine {
 			"crypto" => "php-crypto",
 			"ctype" => "ctype",
 			"date" => "Date",
-			"ds" => "Data Structures",
 			"gmp" => "GMP",
 			"hash" => "Hash",
 			"igbinary" => "igbinary",
@@ -90,7 +104,7 @@ namespace pocketmine {
 			"openssl" => "OpenSSL",
 			"pcre" => "PCRE",
 			"phar" => "Phar",
-			"pthreads" => "pthreads",
+			"pmmpthread" => "pmmpthread",
 			"reflection" => "Reflection",
 			"sockets" => "Sockets",
 			"spl" => "SPL",
@@ -105,25 +119,44 @@ namespace pocketmine {
 			}
 		}
 
-		if(extension_loaded("pthreads")){
-			$pthreads_version = phpversion("pthreads");
-			if(substr_count($pthreads_version, ".") < 2){
-				$pthreads_version = "0.$pthreads_version";
-			}
-			if(version_compare($pthreads_version, "3.2.0") < 0){
-				$messages[] = "pthreads >= 3.2.0 is required, while you have $pthreads_version.";
+		if(($pmmpthread_version = phpversion("pmmpthread")) !== false){
+			if(version_compare($pmmpthread_version, "6.0.7") < 0 || version_compare($pmmpthread_version, "7.0.0") >= 0){
+				$messages[] = "pmmpthread ^6.0.7 is required, while you have $pmmpthread_version.";
 			}
 		}
 
-		if(extension_loaded("leveldb")){
-			$leveldb_version = phpversion("leveldb");
+		if(($leveldb_version = phpversion("leveldb")) !== false){
 			if(version_compare($leveldb_version, "0.2.1") < 0){
 				$messages[] = "php-leveldb >= 0.2.1 is required, while you have $leveldb_version.";
+			}
+			if(!defined('LEVELDB_ZLIB_RAW_COMPRESSION')){
+				$messages[] = "Given version of php-leveldb doesn't support ZLIB_RAW compression (use https://github.com/pmmp/php-leveldb)";
+			}
+		}
+
+		$chunkutils2_version = phpversion("chunkutils2");
+		$wantedVersionLock = "0.3";
+		$wantedVersionMin = "$wantedVersionLock.0";
+		if($chunkutils2_version !== false && (
+			version_compare($chunkutils2_version, $wantedVersionMin) < 0 ||
+			preg_match("/^" . preg_quote($wantedVersionLock, "/") . "\.\d+(?:-dev)?$/", $chunkutils2_version) === 0 //lock in at ^0.2, optionally at a patch release
+		)){
+			$messages[] = "chunkutils2 ^$wantedVersionMin is required, while you have $chunkutils2_version.";
+		}
+
+		if(($libdeflate_version = phpversion("libdeflate")) !== false){
+			//make sure level 0 compression is available
+			if(version_compare($libdeflate_version, "0.2.0") < 0 || version_compare($libdeflate_version, "0.3.0") >= 0){
+				$messages[] = "php-libdeflate ^0.2.0 is required, while you have $libdeflate_version.";
 			}
 		}
 
 		if(extension_loaded("pocketmine")){
 			$messages[] = "The native PocketMine extension is no longer supported.";
+		}
+
+		if(!defined('AF_INET6')){
+			$messages[] = "IPv6 support is required, but your PHP binary was built without IPv6 support.";
 		}
 
 		return $messages;
@@ -133,7 +166,10 @@ namespace pocketmine {
 	 * @return void
 	 */
 	function emit_performance_warnings(\Logger $logger){
-		if(extension_loaded("xdebug")){
+		if(PHP_DEBUG !== 0){
+			$logger->warning("This PHP binary was compiled in debug mode. This has a major impact on performance.");
+		}
+		if(extension_loaded("xdebug") && (!function_exists('xdebug_info') || count(xdebug_info('mode')) !== 0)){
 			$logger->warning("Xdebug extension is enabled. This has a major impact on performance.");
 		}
 		if(((int) ini_get('zend.assertions')) !== -1){
@@ -141,6 +177,24 @@ namespace pocketmine {
 		}
 		if(\Phar::running(true) === ""){
 			$logger->warning("Non-packaged installation detected. This will degrade autoloading speed and make startup times longer.");
+		}
+		if(function_exists('opcache_get_status') && ($opcacheStatus = opcache_get_status(false)) !== false){
+			$jitEnabled = $opcacheStatus["jit"]["on"] ?? false;
+			if($jitEnabled !== false){
+				$logger->warning(<<<'JIT_WARNING'
+
+
+	--------------------------------------- ! WARNING ! ---------------------------------------
+	You're using PHP with JIT enabled. This provides significant performance improvements.
+	HOWEVER, it is EXPERIMENTAL, and has already been seen to cause weird and unexpected bugs.
+	Proceed with caution.
+	If you want to report any bugs, make sure to mention that you have enabled PHP JIT.
+	To turn off JIT, change `opcache.jit` to `0` in your php.ini file.
+	-------------------------------------------------------------------------------------------
+
+JIT_WARNING
+);
+			}
 		}
 	}
 
@@ -155,6 +209,22 @@ namespace pocketmine {
 		ini_set('assert.exception', '1');
 	}
 
+	function getopt_string(string $opt) : ?string{
+		$opts = getopt("", ["$opt:"]);
+		if(isset($opts[$opt])){
+			if(is_string($opts[$opt])){
+				return $opts[$opt];
+			}
+			if(is_array($opts[$opt])){
+				critical_error("Cannot specify --$opt multiple times");
+			}else{
+				critical_error("Missing value for --$opt");
+			}
+			exit(1);
+		}
+		return null;
+	}
+
 	/**
 	 * @return void
 	 */
@@ -162,10 +232,14 @@ namespace pocketmine {
 		if(count($messages = check_platform_dependencies()) > 0){
 			echo PHP_EOL;
 			$binary = version_compare(PHP_VERSION, "5.4") >= 0 ? PHP_BINARY : "unknown";
-			critical_error("Selected PHP binary ($binary) does not satisfy some requirements.");
+			critical_error("Selected PHP binary does not satisfy some requirements.");
 			foreach($messages as $m){
 				echo " - $m" . PHP_EOL;
 			}
+			critical_error("PHP binary used: " . $binary);
+			critical_error("Loaded php.ini: " . (($file = php_ini_loaded_file()) !== false ? $file : "none"));
+			$phprc = getenv("PHPRC");
+			critical_error("Value of PHPRC environment variable: " . ($phprc === false ? "" : $phprc));
 			critical_error("Please recompile PHP with the needed configuration, or refer to the installation instructions at http://pmmp.rtfd.io/en/rtfd/installation.html.");
 			echo PHP_EOL;
 			exit(1);
@@ -175,25 +249,18 @@ namespace pocketmine {
 		error_reporting(-1);
 		set_ini_entries();
 
-		$opts = getopt("", ["bootstrap:"]);
-		if(isset($opts["bootstrap"])){
-			$bootstrap = ($real = realpath($opts["bootstrap"])) !== false ? $real : $opts["bootstrap"];
-		}else{
-			$bootstrap = dirname(__FILE__, 2) . '/vendor/autoload.php';
-		}
-
-		if($bootstrap === false or !is_file($bootstrap)){
+		$bootstrap = dirname(__FILE__, 2) . '/vendor/autoload.php';
+		if(!is_file($bootstrap)){
 			critical_error("Composer autoloader not found at " . $bootstrap);
 			critical_error("Please install/update Composer dependencies or use provided builds.");
 			exit(1);
 		}
-		define('pocketmine\COMPOSER_AUTOLOADER_PATH', $bootstrap);
-		require_once(\pocketmine\COMPOSER_AUTOLOADER_PATH);
+		require_once($bootstrap);
 
 		$composerGitHash = InstalledVersions::getReference('pocketmine/pocketmine-mp');
 		if($composerGitHash !== null){
 			//we can't verify dependency versions if we were installed without using git
-			$currentGitHash = explode("-", VersionInfo::getGitHash())[0];
+			$currentGitHash = explode("-", VersionInfo::GIT_HASH())[0];
 			if($currentGitHash !== $composerGitHash){
 				critical_error("Composer dependencies and/or autoloader are out of sync.");
 				critical_error("- Current revision is $currentGitHash");
@@ -203,48 +270,62 @@ namespace pocketmine {
 				exit(1);
 			}
 		}
-		if(extension_loaded('parallel')){
-			\parallel\bootstrap(\pocketmine\COMPOSER_AUTOLOADER_PATH);
-		}
 
 		ErrorToExceptionHandler::set();
 
-		$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-ansi", "disable-ansi"]);
-
-		$dataPath = isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : realpath(getcwd()) . DIRECTORY_SEPARATOR;
-		$pluginPath = isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : realpath(getcwd()) . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR;
+		$cwd = Utils::assumeNotFalse(realpath(Utils::assumeNotFalse(getcwd())));
+		$dataPath = getopt_string(BootstrapOptions::DATA) ?? $cwd;
+		$pluginPath = getopt_string(BootstrapOptions::PLUGINS) ?? $cwd . DIRECTORY_SEPARATOR . "plugins";
 		Filesystem::addCleanedPath($pluginPath, Filesystem::CLEAN_PATH_PLUGINS_PREFIX);
 
-		if(!file_exists($dataPath)){
-			mkdir($dataPath, 0777, true);
+		if(!@mkdir($dataPath, 0777, true) && !is_dir($dataPath)){
+			critical_error("Unable to create/access data directory at $dataPath. Check that the target location is accessible by the current user.");
+			exit(1);
 		}
+		//this has to be done after we're sure the data path exists
+		$dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
 
-		$lockFilePath = $dataPath . '/server.lock';
-		if(($pid = Filesystem::createLockFile($lockFilePath)) !== null){
+		$lockFilePath = Path::join($dataPath, 'server.lock');
+		try{
+			$pid = Filesystem::createLockFile($lockFilePath);
+		}catch(\InvalidArgumentException $e){
+			critical_error($e->getMessage());
+			critical_error("Please ensure that there is enough space on the disk and that the current user has read/write permissions to the selected data directory $dataPath.");
+			exit(1);
+		}
+		if($pid !== null){
 			critical_error("Another " . VersionInfo::NAME . " instance (PID $pid) is already using this folder (" . realpath($dataPath) . ").");
 			critical_error("Please stop the other server first before running a new one.");
 			exit(1);
 		}
 
+		if(!@mkdir($pluginPath, 0777, true) && !is_dir($pluginPath)){
+			critical_error("Unable to create plugin directory at $pluginPath. Check that the target location is accessible by the current user.");
+			exit(1);
+		}
+		$pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
+
 		//Logger has a dependency on timezone
 		Timezone::init();
 
-		if(isset($opts["enable-ansi"])){
+		$opts = getopt("", [BootstrapOptions::NO_WIZARD, BootstrapOptions::ENABLE_ANSI, BootstrapOptions::DISABLE_ANSI]);
+		if(isset($opts[BootstrapOptions::ENABLE_ANSI])){
 			Terminal::init(true);
-		}elseif(isset($opts["disable-ansi"])){
+		}elseif(isset($opts[BootstrapOptions::DISABLE_ANSI])){
 			Terminal::init(false);
 		}else{
 			Terminal::init();
 		}
 
-		$logger = new MainLogger($dataPath . "server.log", $dataPath . '/log_archive', Terminal::hasFormattingCodes(), "Server", new \DateTimeZone(Timezone::get()));
+		$logger = new MainLogger(Path::join($dataPath, "server.log"), Path::join($dataPath, "log_archive"), Terminal::hasFormattingCodes(), "Server", new \DateTimeZone(Timezone::get()));
+
 		\GlobalLogger::set($logger);
 
 		emit_performance_warnings($logger);
 
 		$exitCode = 0;
 		do{
-			if(!file_exists($dataPath . "server.properties") and !isset($opts["no-wizard"])){
+			if(!file_exists(Path::join($dataPath, "server.properties")) && !isset($opts[BootstrapOptions::NO_WIZARD])){
 				$installer = new SetupWizard($dataPath);
 				if(!$installer->run()){
 					$exitCode = -1;
@@ -255,7 +336,7 @@ namespace pocketmine {
 			/*
 			 * We now use the Composer autoloader, but this autoloader is still for loading plugins.
 			 */
-			$autoloader = new \BaseClassLoader();
+			$autoloader = new ThreadSafeClassLoader();
 			$autoloader->register(false);
 
 			new Server($autoloader, $logger, $dataPath, $pluginPath);
@@ -263,7 +344,7 @@ namespace pocketmine {
 			$logger->info("Stopping other threads");
 
 			$killer = new ServerKiller(8);
-			$killer->start(PTHREADS_INHERIT_NONE);
+			$killer->start();
 			usleep(10000); //Fixes ServerKiller not being able to start on single-core machines
 
 			if(ThreadManager::getInstance()->stopAll() > 0){

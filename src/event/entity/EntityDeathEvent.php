@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,18 +31,16 @@ use pocketmine\utils\Utils;
  * @phpstan-extends EntityEvent<Living>
  */
 class EntityDeathEvent extends EntityEvent{
-	/** @var Item[] */
-	private $drops = [];
-	/** @var int */
-	private $xp;
 
 	/**
 	 * @param Item[] $drops
 	 */
-	public function __construct(Living $entity, array $drops = [], int $xp = 0){
+	public function __construct(
+		Living $entity,
+		private array $drops = [],
+		private int $xp = 0
+	){
 		$this->entity = $entity;
-		$this->drops = $drops;
-		$this->xp = $xp;
 	}
 
 	/**

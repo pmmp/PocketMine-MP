@@ -1,4 +1,5 @@
 <?php
+
 /*
  *
  *  ____            _        _   __  __ _                  __  __ ____
@@ -16,51 +17,88 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
-use pocketmine\block\inventory\AnvilInventory;
-use pocketmine\block\inventory\EnchantInventory;
-use pocketmine\crafting\CraftingGrid;
-use pocketmine\inventory\Inventory;
-use pocketmine\inventory\transaction\action\CreateItemAction;
-use pocketmine\inventory\transaction\action\DestroyItemAction;
-use pocketmine\inventory\transaction\action\DropItemAction;
-use pocketmine\inventory\transaction\action\InventoryAction;
-use pocketmine\inventory\transaction\action\SlotChangeAction;
-use pocketmine\item\Durable;
+use pocketmine\block\VanillaBlocks;
+use pocketmine\crafting\ExactRecipeIngredient;
+use pocketmine\crafting\MetaWildcardRecipeIngredient;
+use pocketmine\crafting\RecipeIngredient;
+use pocketmine\crafting\TagWildcardRecipeIngredient;
+use pocketmine\data\bedrock\BedrockDataFiles;
+use pocketmine\data\bedrock\item\BlockItemIdMap;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\item\ItemIds;
+use pocketmine\item\VanillaItems;
+use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
+use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\types\GameMode as ProtocolGameMode;
-use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
-use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
-use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
-use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
+use pocketmine\network\mcpe\protocol\types\recipe\IntIdMetaItemDescriptor;
+use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient as ProtocolRecipeIngredient;
+use pocketmine\network\mcpe\protocol\types\recipe\StringIdMetaItemDescriptor;
+use pocketmine\network\mcpe\protocol\types\recipe\TagItemDescriptor;
 use pocketmine\player\GameMode;
-use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
-use function array_key_exists;
+use pocketmine\world\format\io\GlobalBlockStateHandlers;
+use pocketmine\world\format\io\GlobalItemDataHandlers;
+use function get_class;
 
 class TypeConverter{
 	use SingletonTrait;
 
-	private const DAMAGE_TAG = "Damage"; //TAG_Int
-	private const DAMAGE_TAG_CONFLICT_RESOLUTION = "___Damage_ProtocolCollisionResolution___";
+	private const PM_ID_TAG = "___Id___";
 
-	/** @var int */
-	private $shieldRuntimeId;
+	private const RECIPE_INPUT_WILDCARD_META = 0x7fff;
+
+	private BlockItemIdMap $blockItemIdMap;
+	private BlockTranslator $blockTranslator;
+	private ItemTranslator $itemTranslator;
+	private ItemTypeDictionary $itemTypeDictionary;
+	private int $shieldRuntimeId;
+
+	private SkinAdapter $skinAdapter;
 
 	public function __construct(){
 		//TODO: inject stuff via constructor
-		$this->shieldRuntimeId = ItemTypeDictionary::getInstance()->fromStringId("minecraft:shield");
+		$this->blockItemIdMap = BlockItemIdMap::getInstance();
+
+		$canonicalBlockStatesRaw = Filesystem::fileGetContents(BedrockDataFiles::CANONICAL_BLOCK_STATES_NBT);
+		$metaMappingRaw = Filesystem::fileGetContents(BedrockDataFiles::BLOCK_STATE_META_MAP_JSON);
+		$this->blockTranslator = new BlockTranslator(
+			BlockStateDictionary::loadFromString($canonicalBlockStatesRaw, $metaMappingRaw),
+			GlobalBlockStateHandlers::getSerializer()
+		);
+
+		$this->itemTypeDictionary = ItemTypeDictionaryFromDataHelper::loadFromString(Filesystem::fileGetContents(BedrockDataFiles::REQUIRED_ITEM_LIST_JSON));
+		$this->shieldRuntimeId = $this->itemTypeDictionary->fromStringId("minecraft:shield");
+
+		$this->itemTranslator = new ItemTranslator(
+			$this->itemTypeDictionary,
+			$this->blockTranslator->getBlockStateDictionary(),
+			GlobalItemDataHandlers::getSerializer(),
+			GlobalItemDataHandlers::getDeserializer(),
+			$this->blockItemIdMap
+		);
+
+		$this->skinAdapter = new LegacySkinAdapter();
+	}
+
+	public function getBlockTranslator() : BlockTranslator{ return $this->blockTranslator; }
+
+	public function getItemTypeDictionary() : ItemTypeDictionary{ return $this->itemTypeDictionary; }
+
+	public function getItemTranslator() : ItemTranslator{ return $this->itemTranslator; }
+
+	public function getSkinAdapter() : SkinAdapter{ return $this->skinAdapter; }
+
+	public function setSkinAdapter(SkinAdapter $skinAdapter) : void{
+		$this->skinAdapter = $skinAdapter;
 	}
 
 	/**
@@ -70,81 +108,120 @@ class TypeConverter{
 	 * @internal
 	 */
 	public function coreGameModeToProtocol(GameMode $gamemode) : int{
-		switch($gamemode->id()){
-			case GameMode::SURVIVAL()->id():
-				return ProtocolGameMode::SURVIVAL;
-			case GameMode::CREATIVE()->id():
-			case GameMode::SPECTATOR()->id():
-				return ProtocolGameMode::CREATIVE;
-			case GameMode::ADVENTURE()->id():
-				return ProtocolGameMode::ADVENTURE;
-			default:
-				throw new AssumptionFailedError("Unknown game mode");
-		}
+		return match($gamemode){
+			GameMode::SURVIVAL => ProtocolGameMode::SURVIVAL,
+			//TODO: native spectator support
+			GameMode::CREATIVE, GameMode::SPECTATOR => ProtocolGameMode::CREATIVE,
+			GameMode::ADVENTURE => ProtocolGameMode::ADVENTURE,
+		};
 	}
 
-	public function protocolGameModeToCore(int $gameMode) : GameMode{
-		switch($gameMode){
-			case ProtocolGameMode::SURVIVAL:
-				return GameMode::SURVIVAL();
-			case ProtocolGameMode::CREATIVE:
-				return GameMode::CREATIVE();
-			case ProtocolGameMode::ADVENTURE:
-				return GameMode::ADVENTURE();
-			case ProtocolGameMode::CREATIVE_VIEWER:
-			case ProtocolGameMode::SURVIVAL_VIEWER:
-				return GameMode::SPECTATOR();
-			default:
-				throw new \UnexpectedValueException("Unmapped protocol game mode $gameMode");
-		}
+	public function protocolGameModeToCore(int $gameMode) : ?GameMode{
+		return match($gameMode){
+			ProtocolGameMode::SURVIVAL => GameMode::SURVIVAL,
+			ProtocolGameMode::CREATIVE => GameMode::CREATIVE,
+			ProtocolGameMode::ADVENTURE => GameMode::ADVENTURE,
+			ProtocolGameMode::SURVIVAL_VIEWER, ProtocolGameMode::CREATIVE_VIEWER => GameMode::SPECTATOR,
+			//TODO: native spectator support
+			default => null,
+		};
 	}
 
-	public function coreItemStackToRecipeIngredient(Item $itemStack) : RecipeIngredient{
-		if($itemStack->isNull()){
-			return new RecipeIngredient(0, 0, 0);
+	public function coreRecipeIngredientToNet(?RecipeIngredient $ingredient) : ProtocolRecipeIngredient{
+		if($ingredient === null){
+			return new ProtocolRecipeIngredient(null, 0);
 		}
-		if($itemStack->hasAnyDamageValue()){
-			[$id, ] = ItemTranslator::getInstance()->toNetworkId($itemStack->getId(), 0);
-			$meta = 0x7fff;
+		if($ingredient instanceof MetaWildcardRecipeIngredient){
+			$id = $this->itemTypeDictionary->fromStringId($ingredient->getItemId());
+			$meta = self::RECIPE_INPUT_WILDCARD_META;
+			$descriptor = new IntIdMetaItemDescriptor($id, $meta);
+		}elseif($ingredient instanceof ExactRecipeIngredient){
+			$item = $ingredient->getItem();
+			[$id, $meta, $blockRuntimeId] = $this->itemTranslator->toNetworkId($item);
+			if($blockRuntimeId !== null){
+				$meta = $this->blockTranslator->getBlockStateDictionary()->getMetaFromStateId($blockRuntimeId);
+				if($meta === null){
+					throw new AssumptionFailedError("Every block state should have an associated meta value");
+				}
+			}
+			$descriptor = new IntIdMetaItemDescriptor($id, $meta);
+		}elseif($ingredient instanceof TagWildcardRecipeIngredient){
+			$descriptor = new TagItemDescriptor($ingredient->getTagName());
 		}else{
-			[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($itemStack->getId(), $itemStack->getMeta());
+			throw new \LogicException("Unsupported recipe ingredient type " . get_class($ingredient) . ", only " . ExactRecipeIngredient::class . " and " . MetaWildcardRecipeIngredient::class . " are supported");
 		}
-		return new RecipeIngredient($id, $meta, $itemStack->getCount());
+
+		return new ProtocolRecipeIngredient($descriptor, 1);
 	}
 
-	public function recipeIngredientToCoreItemStack(RecipeIngredient $ingredient) : Item{
-		if($ingredient->getId() === 0){
-			return ItemFactory::getInstance()->get(ItemIds::AIR, 0, 0);
+	public function netRecipeIngredientToCore(ProtocolRecipeIngredient $ingredient) : ?RecipeIngredient{
+		$descriptor = $ingredient->getDescriptor();
+		if($descriptor === null){
+			return null;
 		}
-		[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($ingredient->getId(), $ingredient->getMeta());
-		return ItemFactory::getInstance()->get($id, $meta, $ingredient->getCount());
+
+		if($descriptor instanceof TagItemDescriptor){
+			return new TagWildcardRecipeIngredient($descriptor->getTag());
+		}
+
+		if($descriptor instanceof IntIdMetaItemDescriptor){
+			$stringId = $this->itemTypeDictionary->fromIntId($descriptor->getId());
+			$meta = $descriptor->getMeta();
+		}elseif($descriptor instanceof StringIdMetaItemDescriptor){
+			$stringId = $descriptor->getId();
+			$meta = $descriptor->getMeta();
+		}else{
+			throw new \LogicException("Unsupported conversion of recipe ingredient to core item stack");
+		}
+
+		if($meta === self::RECIPE_INPUT_WILDCARD_META){
+			return new MetaWildcardRecipeIngredient($stringId);
+		}
+
+		$blockRuntimeId = null;
+		if(($blockId = $this->blockItemIdMap->lookupBlockId($stringId)) !== null){
+			$blockRuntimeId = $this->blockTranslator->getBlockStateDictionary()->lookupStateIdFromIdMeta($blockId, $meta);
+			if($blockRuntimeId !== null){
+				$meta = 0;
+			}
+		}
+		$result = $this->itemTranslator->fromNetworkId(
+			$this->itemTypeDictionary->fromStringId($stringId),
+			$meta,
+			$blockRuntimeId ?? ItemTranslator::NO_BLOCK_RUNTIME_ID
+		);
+		return new ExactRecipeIngredient($result);
 	}
 
 	public function coreItemStackToNet(Item $itemStack) : ItemStack{
 		if($itemStack->isNull()){
 			return ItemStack::null();
 		}
-		$nbt = null;
-		if($itemStack->hasNamedTag()){
-			$nbt = clone $itemStack->getNamedTag();
+		$nbt = $itemStack->getNamedTag();
+		if($nbt->count() === 0){
+			$nbt = null;
+		}else{
+			$nbt = clone $nbt;
 		}
-		if($itemStack instanceof Durable and $itemStack->getDamage() > 0){
-			if($nbt !== null){
-				if(($existing = $nbt->getTag(self::DAMAGE_TAG)) !== null){
-					$nbt->removeTag(self::DAMAGE_TAG);
-					$nbt->setTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION, $existing);
-				}
-			}else{
+
+		$idMeta = $this->itemTranslator->toNetworkIdQuiet($itemStack);
+		if($idMeta === null){
+			//Display unmapped items as INFO_UPDATE, but stick something in their NBT to make sure they don't stack with
+			//other unmapped items.
+			[$id, $meta, $blockRuntimeId] = $this->itemTranslator->toNetworkId(VanillaBlocks::INFO_UPDATE()->asItem());
+			if($nbt === null){
 				$nbt = new CompoundTag();
 			}
-			$nbt->setInt(self::DAMAGE_TAG, $itemStack->getDamage());
+			$nbt->setLong(self::PM_ID_TAG, $itemStack->getStateId());
+		}else{
+			[$id, $meta, $blockRuntimeId] = $idMeta;
 		}
-		[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($itemStack->getId(), $itemStack->getMeta());
 
 		return new ItemStack(
 			$id,
 			$meta,
 			$itemStack->getCount(),
+			$blockRuntimeId ?? ItemTranslator::NO_BLOCK_RUNTIME_ID,
 			$nbt,
 			[],
 			[],
@@ -152,125 +229,30 @@ class TypeConverter{
 		);
 	}
 
+	/**
+	 * @throws TypeConversionException
+	 */
 	public function netItemStackToCore(ItemStack $itemStack) : Item{
 		if($itemStack->getId() === 0){
-			return ItemFactory::getInstance()->get(ItemIds::AIR, 0, 0);
+			return VanillaItems::AIR();
 		}
 		$compound = $itemStack->getNbt();
 
-		[$id, $meta] = ItemTranslator::getInstance()->fromNetworkId($itemStack->getId(), $itemStack->getMeta());
+		$itemResult = $this->itemTranslator->fromNetworkId($itemStack->getId(), $itemStack->getMeta(), $itemStack->getBlockRuntimeId());
 
 		if($compound !== null){
 			$compound = clone $compound;
-			if(($damageTag = $compound->getTag(self::DAMAGE_TAG)) instanceof IntTag){
-				$meta = $damageTag->getValue();
-				$compound->removeTag(self::DAMAGE_TAG);
-				if(($conflicted = $compound->getTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION)) !== null){
-					$compound->removeTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION);
-					$compound->setTag(self::DAMAGE_TAG, $conflicted);
-				}elseif($compound->count() === 0){
-					$compound = null;
-				}
+		}
+
+		$itemResult->setCount($itemStack->getCount());
+		if($compound !== null){
+			try{
+				$itemResult->setNamedTag($compound);
+			}catch(NbtException $e){
+				throw TypeConversionException::wrap($e, "Bad itemstack NBT data");
 			}
 		}
 
-		return ItemFactory::getInstance()->get(
-			$id,
-			$meta,
-			$itemStack->getCount(),
-			$compound
-		);
-	}
-
-	/**
-	 * @param int[] $test
-	 * @phpstan-param array<int, int> $test
-	 * @phpstan-param \Closure(Inventory) : bool $c
-	 * @phpstan-return array{int, Inventory}
-	 */
-	protected function mapUIInventory(int $slot, array $test, ?Inventory $inventory, \Closure $c) : ?array{
-		if($inventory === null){
-			return null;
-		}
-		if(array_key_exists($slot, $test) && $c($inventory)){
-			return [$test[$slot], $inventory];
-		}
-		return null;
-	}
-
-	/**
-	 * @throws \UnexpectedValueException
-	 */
-	public function createInventoryAction(NetworkInventoryAction $action, Player $player) : ?InventoryAction{
-		if($action->oldItem->equals($action->newItem)){
-			//filter out useless noise in 1.13
-			return null;
-		}
-		$old = $this->netItemStackToCore($action->oldItem);
-		$new = $this->netItemStackToCore($action->newItem);
-		switch($action->sourceType){
-			case NetworkInventoryAction::SOURCE_CONTAINER:
-				if($action->windowId === ContainerIds::UI and $action->inventorySlot > 0){
-					if($action->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
-						return null; //useless noise
-					}
-					$pSlot = $action->inventorySlot;
-
-					$craftingGrid = $player->getCraftingGrid();
-					$mapped =
-						$this->mapUIInventory($pSlot, UIInventorySlotOffset::CRAFTING2X2_INPUT, $craftingGrid,
-							function(Inventory $i) : bool{ return $i instanceof CraftingGrid && $i->getGridWidth() === CraftingGrid::SIZE_SMALL; }) ??
-						$this->mapUIInventory($pSlot, UIInventorySlotOffset::CRAFTING3X3_INPUT, $craftingGrid,
-							function(Inventory $i) : bool{ return $i instanceof CraftingGrid && $i->getGridWidth() === CraftingGrid::SIZE_BIG; });
-					if($mapped === null){
-						$current = $player->getCurrentWindow();
-						$mapped =
-							$this->mapUIInventory($pSlot, UIInventorySlotOffset::ANVIL, $current,
-								function(Inventory $i) : bool{ return $i instanceof AnvilInventory; }) ??
-							$this->mapUIInventory($pSlot, UIInventorySlotOffset::ENCHANTING_TABLE, $current,
-								function(Inventory $i) : bool{ return $i instanceof EnchantInventory; });
-					}
-					if($mapped === null){
-						throw new \UnexpectedValueException("Unmatched UI inventory slot offset $pSlot");
-					}
-					[$slot, $window] = $mapped;
-				}else{
-					$window = $player->getNetworkSession()->getInvManager()->getWindow($action->windowId);
-					$slot = $action->inventorySlot;
-				}
-				if($window !== null){
-					return new SlotChangeAction($window, $slot, $old, $new);
-				}
-
-				throw new \UnexpectedValueException("No open container with window ID $action->windowId");
-			case NetworkInventoryAction::SOURCE_WORLD:
-				if($action->inventorySlot !== NetworkInventoryAction::ACTION_MAGIC_SLOT_DROP_ITEM){
-					throw new \UnexpectedValueException("Only expecting drop-item world actions from the client!");
-				}
-
-				return new DropItemAction($new);
-			case NetworkInventoryAction::SOURCE_CREATIVE:
-				switch($action->inventorySlot){
-					case NetworkInventoryAction::ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM:
-						return new DestroyItemAction($new);
-					case NetworkInventoryAction::ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM:
-						return new CreateItemAction($old);
-					default:
-						throw new \UnexpectedValueException("Unexpected creative action type $action->inventorySlot");
-
-				}
-			case NetworkInventoryAction::SOURCE_TODO:
-				//These types need special handling.
-				switch($action->windowId){
-					case NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT:
-					case NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
-						return null;
-				}
-
-				//TODO: more stuff
-				throw new \UnexpectedValueException("No open container with window ID $action->windowId");
-			default:
-				throw new \UnexpectedValueException("Unknown inventory source type $action->sourceType");
-		}
+		return $itemResult;
 	}
 }

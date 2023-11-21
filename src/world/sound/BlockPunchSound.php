@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,26 +25,22 @@ namespace pocketmine\world\sound;
 
 use pocketmine\block\Block;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
 /**
  * Played when a player attacks a block in survival, attempting to break it.
  */
 class BlockPunchSound implements Sound{
+	public function __construct(private Block $block){}
 
-	/** @var Block */
-	private $block;
-
-	public function __construct(Block $block){
-		$this->block = $block;
-	}
-
-	public function encode(?Vector3 $pos) : array{
-		return [LevelSoundEventPacket::create(
-			LevelSoundEventPacket::SOUND_HIT,
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(
+			LevelSoundEvent::HIT,
 			$pos,
-			RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId())
+			false,
+			TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkId($this->block->getStateId())
 		)];
 	}
 }

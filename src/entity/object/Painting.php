@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -36,11 +36,18 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddPaintingPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\player\Player;
-use pocketmine\world\particle\DestroyBlockParticle;
+use pocketmine\world\particle\BlockBreakParticle;
 use pocketmine\world\World;
 use function ceil;
 
 class Painting extends Entity{
+	public const TAG_TILE_X = "TileX"; //TAG_Int
+	public const TAG_TILE_Y = "TileY"; //TAG_Int
+	public const TAG_TILE_Z = "TileZ"; //TAG_Int
+	public const TAG_FACING_JE = "Facing"; //TAG_Byte
+	public const TAG_DIRECTION_BE = "Direction"; //TAG_Byte
+	public const TAG_MOTIVE = "Motive"; //TAG_String
+
 	public static function getNetworkTypeId() : string{ return EntityIds::PAINTING; }
 
 	public const DATA_TO_FACING = [
@@ -56,17 +63,9 @@ class Painting extends Entity{
 		Facing::EAST => 3
 	];
 
-	/** @var float */
-	protected $gravity = 0.0;
-	/** @var float */
-	protected $drag = 1.0;
-
-	/** @var Vector3 */
-	protected $blockIn;
-	/** @var int */
-	protected $facing = Facing::NORTH;
-	/** @var PaintingMotive */
-	protected $motive;
+	protected Vector3 $blockIn;
+	protected int $facing;
+	protected PaintingMotive $motive;
 
 	public function __construct(Location $location, Vector3 $blockIn, int $facing, PaintingMotive $motive, ?CompoundTag $nbt = null){
 		$this->motive = $motive;
@@ -80,6 +79,10 @@ class Painting extends Entity{
 		return new EntitySizeInfo(0.5, 0.5);
 	}
 
+	protected function getInitialDragMultiplier() : float{ return 1.0; }
+
+	protected function getInitialGravity() : float{ return 0.0; }
+
 	protected function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(1);
 		$this->setHealth(1);
@@ -88,14 +91,14 @@ class Painting extends Entity{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setInt("TileX", (int) $this->blockIn->x);
-		$nbt->setInt("TileY", (int) $this->blockIn->y);
-		$nbt->setInt("TileZ", (int) $this->blockIn->z);
+		$nbt->setInt(self::TAG_TILE_X, (int) $this->blockIn->x);
+		$nbt->setInt(self::TAG_TILE_Y, (int) $this->blockIn->y);
+		$nbt->setInt(self::TAG_TILE_Z, (int) $this->blockIn->z);
 
-		$nbt->setByte("Facing", self::FACING_TO_DATA[$this->facing]);
-		$nbt->setByte("Direction", self::FACING_TO_DATA[$this->facing]); //Save both for full compatibility
+		$nbt->setByte(self::TAG_FACING_JE, self::FACING_TO_DATA[$this->facing]);
+		$nbt->setByte(self::TAG_DIRECTION_BE, self::FACING_TO_DATA[$this->facing]); //Save both for full compatibility
 
-		$nbt->setString("Motive", $this->motive->getName());
+		$nbt->setString(self::TAG_MOTIVE, $this->motive->getName());
 
 		return $nbt;
 	}
@@ -107,7 +110,7 @@ class Painting extends Entity{
 
 		if($this->lastDamageCause instanceof EntityDamageByEntityEvent){
 			$killer = $this->lastDamageCause->getDamager();
-			if($killer instanceof Player and !$killer->hasFiniteResources()){
+			if($killer instanceof Player && !$killer->hasFiniteResources()){
 				$drops = false;
 			}
 		}
@@ -116,7 +119,7 @@ class Painting extends Entity{
 			//non-living entities don't have a way to create drops generically yet
 			$this->getWorld()->dropItem($this->location, VanillaItems::PAINTING());
 		}
-		$this->getWorld()->addParticle($this->location->add(0.5, 0.5, 0.5), new DestroyBlockParticle(VanillaBlocks::OAK_PLANKS()));
+		$this->getWorld()->addParticle($this->location->add(0.5, 0.5, 0.5), new BlockBreakParticle(VanillaBlocks::OAK_PLANKS()));
 	}
 
 	protected function recalculateBoundingBox() : void{
@@ -149,17 +152,17 @@ class Painting extends Entity{
 	}
 
 	protected function sendSpawnPacket(Player $player) : void{
-		$pk = new AddPaintingPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->position = new Vector3(
-			($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
-			($this->boundingBox->minY + $this->boundingBox->maxY) / 2,
-			($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2
-		);
-		$pk->direction = self::FACING_TO_DATA[$this->facing];
-		$pk->title = $this->motive->getName();
-
-		$player->getNetworkSession()->sendDataPacket($pk);
+		$player->getNetworkSession()->sendDataPacket(AddPaintingPacket::create(
+			$this->getId(), //TODO: entity unique ID
+			$this->getId(),
+			new Vector3(
+				($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
+				($this->boundingBox->minY + $this->boundingBox->maxY) / 2,
+				($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2
+			),
+			self::FACING_TO_DATA[$this->facing],
+			$this->motive->getName()
+		));
 	}
 
 	/**
@@ -212,7 +215,7 @@ class Painting extends Entity{
 				$pos = $startPos->getSide($rotatedFace, $w)->getSide(Facing::UP, $h);
 
 				$block = $world->getBlockAt($pos->x, $pos->y, $pos->z);
-				if($block->isSolid() or !$block->getSide($oppositeSide)->isSolid()){
+				if($block->isSolid() || !$block->getSide($oppositeSide)->isSolid()){
 					return false;
 				}
 			}

@@ -17,12 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\permission;
 
+use pocketmine\utils\Utils;
 use function is_bool;
 use function strtolower;
 
@@ -52,25 +53,23 @@ class PermissionParser{
 		"false" => self::DEFAULT_FALSE,
 	];
 
+	private const KEY_DEFAULT = "default";
+	private const KEY_CHILDREN = "children";
+	private const KEY_DESCRIPTION = "description";
+
 	/**
-	 * @param bool|string $value
-	 *
-	 * @throws \InvalidArgumentException
+	 * @throws PermissionParserException
 	 */
-	public static function defaultFromString($value) : string{
+	public static function defaultFromString(bool|string $value) : string{
 		if(is_bool($value)){
-			if($value){
-				return "true";
-			}else{
-				return "false";
-			}
+			return $value ? self::DEFAULT_TRUE : self::DEFAULT_FALSE;
 		}
 		$lower = strtolower($value);
 		if(isset(self::DEFAULT_STRING_MAP[$lower])){
 			return self::DEFAULT_STRING_MAP[$lower];
 		}
 
-		throw new \InvalidArgumentException("Unknown permission default name \"$value\"");
+		throw new PermissionParserException("Unknown permission default name \"$value\"");
 	}
 
 	/**
@@ -79,21 +78,22 @@ class PermissionParser{
 	 *
 	 * @return Permission[][]
 	 * @phpstan-return array<string, list<Permission>>
+	 * @throws PermissionParserException
 	 */
 	public static function loadPermissions(array $data, string $default = self::DEFAULT_FALSE) : array{
 		$result = [];
-		foreach($data as $name => $entry){
+		foreach(Utils::stringifyKeys($data) as $name => $entry){
 			$desc = null;
-			if(isset($entry["default"])){
-				$default = PermissionParser::defaultFromString($entry["default"]);
+			if(isset($entry[self::KEY_DEFAULT])){
+				$default = PermissionParser::defaultFromString($entry[self::KEY_DEFAULT]);
 			}
 
-			if(isset($entry["children"])){
-				throw new \InvalidArgumentException("Nested permission declarations are no longer supported. Declare each permission separately.");
+			if(isset($entry[self::KEY_CHILDREN])){
+				throw new PermissionParserException("Nested permission declarations are no longer supported. Declare each permission separately.");
 			}
 
-			if(isset($entry["description"])){
-				$desc = $entry["description"];
+			if(isset($entry[self::KEY_DESCRIPTION])){
+				$desc = $entry[self::KEY_DESCRIPTION];
 			}
 
 			$result[$default][] = new Permission($name, $desc);
