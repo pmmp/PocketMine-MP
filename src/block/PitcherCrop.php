@@ -108,4 +108,8 @@ final class PitcherCrop extends Flowable{
 			VanillaItems::PITCHER_POD()
 		];
 	}
+
+	public function asItem() : Item{
+		return VanillaItems::PITCHER_POD();
+	}
 }

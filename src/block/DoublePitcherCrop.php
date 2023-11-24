@@ -113,4 +113,8 @@ final class DoublePitcherCrop extends DoublePlant{
 			$this->age >= self::MAX_AGE ? VanillaBlocks::PITCHER_PLANT()->asItem() : VanillaItems::PITCHER_POD()
 		];
 	}
+
+	public function asItem() : Item{
+		return VanillaItems::PITCHER_POD();
+	}
 }
