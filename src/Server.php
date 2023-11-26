@@ -158,7 +158,7 @@ use function spl_object_id;
 use function sprintf;
 use function str_repeat;
 use function str_replace;
-use function stripos;
+use function str_starts_with;
 use function strlen;
 use function strrpos;
 use function strtolower;
@@ -169,7 +169,6 @@ use function trim;
 use function yaml_parse;
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
-use const PHP_INT_MAX;
 
 /**
  * The class that manages everything
@@ -612,23 +611,13 @@ class Server{
 	 * @see Server::getPlayerExact()
 	 */
 	public function getPlayerByPrefix(string $name) : ?Player{
-		$found = null;
-		$name = strtolower($name);
-		$delta = PHP_INT_MAX;
 		foreach($this->getOnlinePlayers() as $player){
-			if(stripos($player->getName(), $name) === 0){
-				$curDelta = strlen($player->getName()) - strlen($name);
-				if($curDelta < $delta){
-					$found = $player;
-					$delta = $curDelta;
-				}
-				if($curDelta === 0){
-					break;
-				}
+			if(str_starts_with(strtlower($player->getName()), strtolower($name))){
+				return $player;
 			}
 		}
 
-		return $found;
+		return null;
 	}
 
 	/**
