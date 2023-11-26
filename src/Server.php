@@ -612,23 +612,12 @@ class Server{
 	 * @see Server::getPlayerExact()
 	 */
 	public function getPlayerByPrefix(string $name) : ?Player{
-		$found = null;
-		$name = strtolower($name);
-		$delta = PHP_INT_MAX;
 		foreach($this->getOnlinePlayers() as $player){
-			if(stripos($player->getName(), $name) === 0){
-				$curDelta = strlen($player->getName()) - strlen($name);
-				if($curDelta < $delta){
-					$found = $player;
-					$delta = $curDelta;
-				}
-				if($curDelta === 0){
-					break;
-				}
+			if(str_starts_with(strtolower($player->getName), strtolower($name))) {
+				return $player;
 			}
 		}
-
-		return $found;
+		return null;
 	}
 
 	/**
