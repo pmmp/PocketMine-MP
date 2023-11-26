@@ -57,6 +57,7 @@ use pocketmine\event\world\WorldDisplayNameChangeEvent;
 use pocketmine\event\world\WorldParticleEvent;
 use pocketmine\event\world\WorldSaveEvent;
 use pocketmine\event\world\WorldSoundEvent;
+use pocketmine\event\world\WorldSyncTimeEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\LegacyStringToItemParser;
@@ -899,8 +900,15 @@ class World implements ChunkManager{
 		if(count($targets) === 0){
 			$targets = $this->players;
 		}
-		foreach($targets as $player){
-			$player->getNetworkSession()->syncWorldTime($this->time);
+
+		$ev = new WorldSyncTimeEvent($this, $targets, $this->time);
+		$ev->call();
+		if($ev->isCancelled()){
+			return;
+		}
+
+		foreach($ev->getRecipients() as $player){
+			$player->getNetworkSession()->syncWorldTime($ev->getTime());
 		}
 	}
 
