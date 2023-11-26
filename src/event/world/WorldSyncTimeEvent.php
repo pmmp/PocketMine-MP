@@ -23,40 +23,24 @@ declare(strict_types=1);
 
 namespace pocketmine\event\world;
 
-use pocketmine\event\Cancellable;
-use pocketmine\event\CancellableTrait;
 use pocketmine\player\Player;
 use pocketmine\world\World;
 
 /**
  * Called when syncs time with players.
  */
-class WorldSyncTimeEvent extends WorldEvent implements Cancellable{
-	use CancellableTrait;
+class WorldSyncTimeEvent extends WorldEvent{
 
-	/**
-	 * @param Player[] $recipients
-	 */
 	public function __construct(
 		World $world,
-		private array $recipients,
+		private Player $player,
 		private int $time
 	){
 		parent::__construct($world);
 	}
 
-	/**
-	 * @return Player[]
-	 */
-	public function getRecipients() : array{
-		return $this->recipients;
-	}
-
-	/**
-	 * @param Player[] $recipients
-	 */
-	public function setRecipients(array $recipients) : void{
-		$this->recipients = $recipients;
+	public function getPlayer() : Player{
+		return $this->player;
 	}
 
 	public function getTime() : int{
