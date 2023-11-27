@@ -121,4 +121,26 @@ class AsyncPoolTest extends TestCase{
 			usleep(50 * 1000);
 		}
 	}
+
+	/**
+	 * @doesNotPerformAssertions This test is checking for a crash condition, not a specific output.
+	 */
+	public function testNullComplexDataFetch() : void{
+		$this->pool->submitTask(new class extends AsyncTask{
+			public function __construct(){
+				$this->storeLocal("null", null);
+			}
+
+			public function onRun() : void{
+				//dummy
+			}
+
+			public function onCompletion() : void{
+				$this->fetchLocal("null");
+			}
+		});
+		while($this->pool->collectTasks()){
+			usleep(50 * 1000);
+		}
+	}
 }
