@@ -240,6 +240,7 @@ use function strtolower;
  * @method static PaintingItem PAINTING()
  * @method static Item PAPER()
  * @method static Item PHANTOM_MEMBRANE()
+ * @method static PitcherPod PITCHER_POD()
  * @method static PoisonousPotato POISONOUS_POTATO()
  * @method static Item POPPED_CHORUS_FRUIT()
  * @method static Potato POTATO()
@@ -503,6 +504,7 @@ final class VanillaItems{
 		self::register("painting", new PaintingItem(new IID(Ids::PAINTING), "Painting"));
 		self::register("paper", new Item(new IID(Ids::PAPER), "Paper"));
 		self::register("phantom_membrane", new Item(new IID(Ids::PHANTOM_MEMBRANE), "Phantom Membrane"));
+		self::register("pitcher_pod", new PitcherPod(new IID(Ids::PITCHER_POD), "Pitcher Pod"));
 		self::register("poisonous_potato", new PoisonousPotato(new IID(Ids::POISONOUS_POTATO), "Poisonous Potato"));
 		self::register("popped_chorus_fruit", new Item(new IID(Ids::POPPED_CHORUS_FRUIT), "Popped Chorus Fruit"));
 		self::register("potato", new Potato(new IID(Ids::POTATO), "Potato"));
