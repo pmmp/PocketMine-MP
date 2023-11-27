@@ -901,10 +901,13 @@ class World implements ChunkManager{
 			$targets = $this->players;
 		}
 
-		foreach($targets as $player){
-			$ev = new WorldSyncTimeEvent($this, $player, $this->time);
-			$ev->call();
+		$ev = new WorldSyncTimeEvent($this, $targets, $this->time);
+		$ev->call();
+		if($ev->isCancelled()){
+			return;
+		}
 
+		foreach($ev->getRecipients() as $player){
 			$player->getNetworkSession()->syncWorldTime($ev->getTime());
 		}
 	}
