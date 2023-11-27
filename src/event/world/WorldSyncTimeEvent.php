@@ -34,6 +34,9 @@ use pocketmine\world\World;
 class WorldSyncTimeEvent extends WorldEvent implements Cancellable{
 	use CancellableTrait;
 
+	/** @var array<int, int> */
+	private array $perPlayerTime = [];
+
 	/**
 	 * @param Player[] $recipients
 	 */
@@ -52,18 +55,18 @@ class WorldSyncTimeEvent extends WorldEvent implements Cancellable{
 		return $this->recipients;
 	}
 
-	/**
-	 * @param Player[] $recipients
-	 */
-	public function setRecipients(array $recipients) : void{
-		$this->recipients = $recipients;
-	}
-
-	public function getTime() : int{
+	public function getWorldTime() : int{
 		return $this->time;
 	}
 
-	public function setTime(int $time) : void{
-		$this->time = $time;
+	public function getTimeFor(Player $player) : int{
+		return $this->perPlayerTime[$player->getId()] ?? $this->time;
+	}
+
+	/**
+	 * Sets a custom time for the given player.
+	 */
+	public function setTimeFor(Player $player, int $time) : void{
+		$this->perPlayerTime[$player->getId()] = $time;
 	}
 }

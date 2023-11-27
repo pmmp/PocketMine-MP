@@ -907,8 +907,8 @@ class World implements ChunkManager{
 			return;
 		}
 
-		foreach($ev->getRecipients() as $player){
-			$player->getNetworkSession()->syncWorldTime($ev->getTime());
+		foreach($targets as $player){
+			$player->getNetworkSession()->syncWorldTime($ev->getTimeFor($player));
 		}
 	}
 
