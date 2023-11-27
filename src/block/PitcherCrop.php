@@ -103,12 +103,6 @@ final class PitcherCrop extends Flowable{
 		}
 	}
 
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			VanillaItems::PITCHER_POD()
-		];
-	}
-
 	public function asItem() : Item{
 		return VanillaItems::PITCHER_POD();
 	}
