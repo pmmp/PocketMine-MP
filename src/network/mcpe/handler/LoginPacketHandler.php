@@ -73,8 +73,10 @@ class LoginPacketHandler extends PacketHandler{
 		try{
 			$skin = $this->session->getTypeConverter()->getSkinAdapter()->fromSkinData(ClientDataToSkinDataHelper::fromClientData($clientData));
 		}catch(\InvalidArgumentException | InvalidSkinException $e){
-			$this->session->getLogger()->debug("Invalid skin: " . $e->getMessage());
-			$this->session->disconnectWithError(KnownTranslationFactory::disconnectionScreen_invalidSkin());
+			$this->session->disconnectWithError(
+				reason: "Invalid skin: " . $e->getMessage(),
+				disconnectScreenMessage: KnownTranslationFactory::disconnectionScreen_invalidSkin()
+			);
 
 			return true;
 		}

@@ -236,8 +236,10 @@ class NetworkSession{
 			$this->onPlayerCreated(...),
 			function() : void{
 				//TODO: this should never actually occur... right?
-				$this->logger->error("Failed to create player");
-				$this->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_internal());
+				$this->disconnectWithError(
+					reason: "Failed to create player",
+					disconnectScreenMessage: KnownTranslationFactory::pocketmine_disconnect_error_internal()
+				);
 			}
 		);
 	}
@@ -675,8 +677,13 @@ class NetworkSession{
 		}, $reason);
 	}
 
-	public function disconnectWithError(Translatable|string $reason) : void{
-		$this->disconnect(KnownTranslationFactory::pocketmine_disconnect_error($reason, implode("-", str_split(bin2hex(random_bytes(6)), 4))));
+	public function disconnectWithError(Translatable|string $reason, Translatable|string|null $disconnectScreenMessage = null) : void{
+		$errorId = implode("-", str_split(bin2hex(random_bytes(6)), 4));
+
+		$this->disconnect(
+			reason: KnownTranslationFactory::pocketmine_disconnect_error($reason, $errorId)->prefix(TextFormat::RED),
+			disconnectScreenMessage: KnownTranslationFactory::pocketmine_disconnect_error($disconnectScreenMessage ?? $reason, $errorId),
+		);
 	}
 
 	public function disconnectIncompatibleProtocol(int $protocolVersion) : void{
@@ -735,7 +742,10 @@ class NetworkSession{
 		}
 
 		if($error !== null){
-			$this->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_invalidSession($error));
+			$this->disconnectWithError(
+				reason: KnownTranslationFactory::pocketmine_disconnect_invalidSession($error),
+				disconnectScreenMessage: KnownTranslationFactory::pocketmine_disconnect_error_authentication()
+			);
 
 			return;
 		}
