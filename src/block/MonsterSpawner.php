@@ -23,8 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\tile\MonsterSpawner as TileSpawner;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
+use pocketmine\item\SpawnEgg;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
 use function mt_rand;
 
 class MonsterSpawner extends Transparent{
@@ -38,10 +42,27 @@ class MonsterSpawner extends Transparent{
 	}
 
 	public function onScheduledUpdate() : void{
-		//TODO
+		$world = $this->position->getWorld();
+		$spawner = $world->getTile($this->position);
+		if($spawner instanceof TileSpawner && $spawner->onUpdate()){
+			$world->scheduleDelayedBlockUpdate($this->position, 1);
+		}
 	}
 
 	public function getSupportType(int $facing) : SupportType{
 		return SupportType::NONE;
+	}
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		if($item instanceof SpawnEgg){
+			$spawner = $this->position->getWorld()->getTile($this->position);
+			if($spawner instanceof TileSpawner){
+				$spawner->setEntityTypeId($item->getEntityTypeId());
+				$this->position->getWorld()->setBlock($this->position, $this);
+				$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
+				return true;
+			}
+		}
+		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
 	}
 }
