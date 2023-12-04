@@ -37,6 +37,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\player\Player;
 use pocketmine\world\particle\MobSpawnParticle;
+use function mt_rand;
 
 /**
  * @deprecated
