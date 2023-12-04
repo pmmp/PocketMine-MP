@@ -166,12 +166,14 @@ class MonsterSpawner extends Spawnable{
 				}
 			}
 		}
+		$entityTypeId = $this->entityTypeId;
 		if(SpawnerAttemptSpawnEvent::hasHandlers()){
-			$ev = new SpawnerAttemptSpawnEvent($this->getBlock(), $this->entityTypeId);
+			$ev = new SpawnerAttemptSpawnEvent($this->getBlock(), $entityTypeId);
 			$ev->call();
 			if($ev->isCancelled()){
 				return true;
 			}
+			$entityTypeId = $ev->getEntityType();
 		}
 		// TODO: spawn condition check (light level etc.)
 		for($i = 0; $i < $this->spawnPerAttempt; $i++){
@@ -179,7 +181,7 @@ class MonsterSpawner extends Spawnable{
 			$spawnLocation = $world->getSafeSpawn($spawnLocation);
 			$spawnLocation = Location::fromObject($spawnLocation, $world);
 			$nbt = CompoundTag::create()
-				->setString(EntityFactory::TAG_IDENTIFIER, $this->entityTypeId)
+				->setString(EntityFactory::TAG_IDENTIFIER, $entityTypeId)
 				->setTag(Entity::TAG_POS, new ListTag([
 					new DoubleTag($spawnLocation->x),
 					new DoubleTag($spawnLocation->y),
