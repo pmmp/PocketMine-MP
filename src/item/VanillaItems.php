@@ -589,7 +589,7 @@ final class VanillaItems{
 				return new Zombie(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 
-			public function getEntityTypeId() : string{
+			public function getEntityTypeId() : ?string{
 				return EntityIds::ZOMBIE;
 			}
 		});
@@ -598,7 +598,7 @@ final class VanillaItems{
 				return new Squid(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 
-			public function getEntityTypeId() : string{
+			public function getEntityTypeId() : ?string{
 				return EntityIds::SQUID;
 			}
 		});
@@ -607,7 +607,7 @@ final class VanillaItems{
 				return new Villager(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 
-			public function getEntityTypeId() : string{
+			public function getEntityTypeId() : ?string{
 				return EntityIds::VILLAGER;
 			}
 		});

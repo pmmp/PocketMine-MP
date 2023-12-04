@@ -55,6 +55,9 @@ class MonsterSpawner extends Transparent{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof SpawnEgg){
+			if($item->getEntityTypeId() === null){
+				return false;
+			}
 			$spawner = $this->position->getWorld()->getTile($this->position);
 			if($spawner instanceof TileSpawner){
 				$spawner->setEntityTypeId($item->getEntityTypeId());
