@@ -28,6 +28,7 @@ use pmmp\thread\Thread as NativeThread;
 use pmmp\thread\ThreadSafe;
 use pmmp\thread\ThreadSafeArray;
 use pocketmine\thread\NonThreadSafeValue;
+use function array_key_exists;
 use function assert;
 use function igbinary_serialize;
 use function igbinary_unserialize;
@@ -230,7 +231,7 @@ abstract class AsyncTask extends Runnable{
 	 */
 	protected function fetchLocal(string $key){
 		$id = spl_object_id($this);
-		if(!isset(self::$threadLocalStorage[$id][$key])){
+		if(!isset(self::$threadLocalStorage[$id]) || !array_key_exists($key, self::$threadLocalStorage[$id])){
 			throw new \InvalidArgumentException("No matching thread-local data found on this thread");
 		}
 
