@@ -11,21 +11,6 @@ parameters:
 			path: ../../../src/entity/projectile/Projectile.php
 
 		-
-			message: "#^Match arm comparison between 1\\|2\\|3\\|4 and 0 is always false\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
-
-		-
-			message: "#^Match arm comparison between 4 and 4 is always true\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
-
-		-
-			message: "#^Match arm is unreachable because previous comparison is always true\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
-
-		-
 			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\raklib\\\\PthreadsChannelWriter\\:\\:\\$buffer is never read, only written\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/raklib/PthreadsChannelWriter.php
