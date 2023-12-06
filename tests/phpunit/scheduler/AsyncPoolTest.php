@@ -122,9 +122,6 @@ class AsyncPoolTest extends TestCase{
 		}
 	}
 
-	/**
-	 * @doesNotPerformAssertions This test is checking for a crash condition, not a specific output.
-	 */
 	public function testNullComplexDataFetch() : void{
 		$this->pool->submitTask(new class extends AsyncTask{
 			public function __construct(){
@@ -136,7 +133,7 @@ class AsyncPoolTest extends TestCase{
 			}
 
 			public function onCompletion() : void{
-				$this->fetchLocal("null");
+				AsyncPoolTest::assertNull($this->fetchLocal("null"));
 			}
 		});
 		while($this->pool->collectTasks()){
