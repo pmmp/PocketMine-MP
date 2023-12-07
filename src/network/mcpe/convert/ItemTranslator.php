@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\data\bedrock\item\BlockItemIdMap;
+use pocketmine\data\bedrock\item\downgrade\ItemIdMetaDowngrader;
 use pocketmine\data\bedrock\item\ItemDeserializer;
 use pocketmine\data\bedrock\item\ItemSerializer;
 use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
@@ -31,8 +32,10 @@ use pocketmine\data\bedrock\item\ItemTypeSerializeException;
 use pocketmine\data\bedrock\item\SavedItemData;
 use pocketmine\item\Item;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\world\format\io\GlobalItemDataHandlers;
 
 /**
  * This class handles translation between network item ID+metadata to PocketMine-MP internal ID+metadata and vice versa.
@@ -45,7 +48,8 @@ final class ItemTranslator{
 		private BlockStateDictionary $blockStateDictionary,
 		private ItemSerializer $itemSerializer,
 		private ItemDeserializer $itemDeserializer,
-		private BlockItemIdMap $blockItemIdMap
+		private BlockItemIdMap $blockItemIdMap,
+		private ItemIdMetaDowngrader $itemDataDowngrader,
 	){}
 
 	/**
@@ -69,9 +73,14 @@ final class ItemTranslator{
 	public function toNetworkId(Item $item) : array{
 		//TODO: we should probably come up with a cache for this
 
-		$itemData = $this->itemSerializer->serializeType($item);
+		$itemData = $this->itemSerializer->serializeType($item, $this->itemDataDowngrader);
 
-		$numericId = $this->itemTypeDictionary->fromStringId($itemData->getName());
+		try {
+			$numericId = $this->itemTypeDictionary->fromStringId($itemData->getName());
+		} catch (\InvalidArgumentException) {
+			throw new ItemTypeSerializeException("Unknown item type " . $itemData->getName());
+		}
+
 		$blockStateData = $itemData->getBlock();
 
 		if($blockStateData !== null){
@@ -93,7 +102,7 @@ final class ItemTranslator{
 		//TODO: this relies on the assumption that network item NBT is the same as disk item NBT, which may not always
 		//be true - if we stick on an older world version while updating network version, this could be a problem (and
 		//may be a problem for multi version implementations)
-		return $this->itemSerializer->serializeStack($item)->toNbt();
+		return $this->itemSerializer->serializeStack($item, null, $this->itemDataDowngrader)->toNbt();
 	}
 
 	/**
@@ -109,7 +118,7 @@ final class ItemTranslator{
 
 		$blockStateData = null;
 		if($this->blockItemIdMap->lookupBlockId($stringId) !== null){
-			$blockStateData = $this->blockStateDictionary->generateDataFromStateId($networkBlockRuntimeId);
+			$blockStateData = $this->blockStateDictionary->generateCurrentDataFromStateId($networkBlockRuntimeId);
 			if($blockStateData === null){
 				throw new TypeConversionException("Blockstate runtimeID $networkBlockRuntimeId does not correspond to any known blockstate");
 			}
@@ -117,10 +126,25 @@ final class ItemTranslator{
 			throw new TypeConversionException("Item $stringId is not a blockitem, but runtime ID $networkBlockRuntimeId was provided");
 		}
 
+		[$stringId, $networkMeta] = GlobalItemDataHandlers::getUpgrader()->getIdMetaUpgrader()->upgrade($stringId, $networkMeta);
+
 		try{
 			return $this->itemDeserializer->deserializeType(new SavedItemData($stringId, $networkMeta, $blockStateData));
 		}catch(ItemTypeDeserializeException $e){
 			throw TypeConversionException::wrap($e, "Invalid network itemstack data");
 		}
+	}
+
+	public static function getItemSchemaId(int $protocolId) : int{
+		return match($protocolId){
+			ProtocolInfo::PROTOCOL_1_20_40,
+			ProtocolInfo::PROTOCOL_1_20_30 => 141,
+
+			ProtocolInfo::PROTOCOL_1_20_10 => 121,
+
+			ProtocolInfo::PROTOCOL_1_20_0 => 111,
+
+			default => throw new AssumptionFailedError("Unknown protocol ID $protocolId"),
+		};
 	}
 }
