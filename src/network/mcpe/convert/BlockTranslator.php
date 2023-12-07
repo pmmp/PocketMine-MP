@@ -23,16 +23,43 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
+use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
 use pocketmine\data\bedrock\block\BlockStateSerializer;
 use pocketmine\data\bedrock\block\BlockTypeNames;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Filesystem;
+use pocketmine\world\format\io\GlobalBlockStateHandlers;
+use function str_replace;
 
 /**
  * @internal
  */
 final class BlockTranslator{
+	public const CANONICAL_BLOCK_STATES_PATH = 0;
+	public const BLOCK_STATE_META_MAP_PATH = 1;
+
+	private const PATHS = [
+		ProtocolInfo::CURRENT_PROTOCOL => [
+			self::CANONICAL_BLOCK_STATES_PATH => '',
+			self::BLOCK_STATE_META_MAP_PATH => '',
+		],
+		ProtocolInfo::PROTOCOL_1_20_30 => [
+			self::CANONICAL_BLOCK_STATES_PATH => '-1.20.30',
+			self::BLOCK_STATE_META_MAP_PATH => '-1.20.30',
+		],
+		ProtocolInfo::PROTOCOL_1_20_10 => [
+			self::CANONICAL_BLOCK_STATES_PATH => '-1.20.10',
+			self::BLOCK_STATE_META_MAP_PATH => '-1.20.10',
+		],
+		ProtocolInfo::PROTOCOL_1_20_0 => [
+			self::CANONICAL_BLOCK_STATES_PATH => '-1.20.0',
+			self::BLOCK_STATE_META_MAP_PATH => '-1.20.0',
+		]
+	];
+
 	/**
 	 * @var int[]
 	 * @phpstan-var array<int, int>
@@ -42,6 +69,15 @@ final class BlockTranslator{
 	/** Used when a blockstate can't be correctly serialized (e.g. because it's unknown) */
 	private BlockStateData $fallbackStateData;
 	private int $fallbackStateId;
+
+	public static function loadFromProtocolId(int $protocolId) : BlockTranslator{
+		$canonicalBlockStatesRaw = Filesystem::fileGetContents(str_replace(".nbt", self::PATHS[$protocolId][self::CANONICAL_BLOCK_STATES_PATH] . ".nbt", BedrockDataFiles::CANONICAL_BLOCK_STATES_NBT));
+		$metaMappingRaw = Filesystem::fileGetContents(str_replace(".json", self::PATHS[$protocolId][self::BLOCK_STATE_META_MAP_PATH] . ".json", BedrockDataFiles::BLOCK_STATE_META_MAP_JSON));
+		return new self(
+			BlockStateDictionary::loadFromString($canonicalBlockStatesRaw, $metaMappingRaw),
+			GlobalBlockStateHandlers::getSerializer(),
+		);
+	}
 
 	public function __construct(
 		private BlockStateDictionary $blockStateDictionary,
@@ -62,7 +98,7 @@ final class BlockTranslator{
 
 			$networkId = $this->blockStateDictionary->lookupStateIdFromData($blockStateData);
 			if($networkId === null){
-				throw new AssumptionFailedError("Unmapped blockstate returned by blockstate serializer: " . $blockStateData->toNbt());
+				throw new BlockStateSerializeException("Unmapped blockstate returned by blockstate serializer: " . $blockStateData->toNbt());
 			}
 		}catch(BlockStateSerializeException){
 			//TODO: this will swallow any error caused by invalid block properties; this is not ideal, but it should be
@@ -83,6 +119,18 @@ final class BlockTranslator{
 		$networkRuntimeId = $this->internalIdToNetworkId($internalStateId);
 
 		return $this->blockStateDictionary->generateDataFromStateId($networkRuntimeId) ?? throw new AssumptionFailedError("We just looked up this state ID, so it must exist");
+	}
+
+	/**
+	 * Looks up the current network state data associated with the given internal state ID.
+	 */
+	public function internalIdToCurrentNetworkStateData(int $internalStateId) : BlockStateData{
+		//we don't directly use the blockstate serializer here - we can't assume that the network blockstate NBT is the
+		//same as the disk blockstate NBT, in case we decide to have different world version than network version (or in
+		//case someone wants to implement multi version).
+		$networkRuntimeId = $this->internalIdToNetworkId($internalStateId);
+
+		return $this->blockStateDictionary->generateCurrentDataFromStateId($networkRuntimeId) ?? throw new AssumptionFailedError("We just looked up this state ID, so it must exist");
 	}
 
 	public function getBlockStateDictionary() : BlockStateDictionary{ return $this->blockStateDictionary; }
