@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\event\player\PlayerDuplicateLoginEvent;
+use pocketmine\event\player\PlayerPacketHandlerChangeEvent;
 use pocketmine\event\server\DataPacketDecodeEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
@@ -324,7 +325,10 @@ class NetworkSession{
 
 	public function setHandler(?PacketHandler $handler) : void{
 		if($this->connected){ //TODO: this is fine since we can't handle anything from a disconnected session, but it might produce surprises in some cases
-			$this->handler = $handler;
+			$event = new PlayerPacketHandlerChangeEvent($this, $handler);
+			$event->call();
+
+			$this->handler = $event->getHandler();
 			if($this->handler !== null){
 				$this->handler->setUp();
 			}
