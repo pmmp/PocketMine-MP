@@ -219,11 +219,14 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 				$session->handleEncoded($buf);
 			}catch(PacketHandlingException $e){
 				$logger = $session->getLogger();
-				$logger->error("Bad packet: " . $e->getMessage());
 
+				$session->disconnectWithError(
+					reason: "Bad packet: " . $e->getMessage(),
+					disconnectScreenMessage: KnownTranslationFactory::pocketmine_disconnect_error_badPacket()
+				);
 				//intentionally doesn't use logException, we don't want spammy packet error traces to appear in release mode
 				$logger->debug(implode("\n", Utils::printableExceptionInfo($e)));
-				$session->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_badPacket());
+
 				$this->interface->blockAddress($address, 5);
 			}catch(\Throwable $e){
 				//record the name of the player who caused the crash, to make it easier to find the reproducing steps

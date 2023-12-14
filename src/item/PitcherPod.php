@@ -21,19 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity\projectile;
+namespace pocketmine\item;
 
-use pocketmine\event\entity\ProjectileHitEvent;
-use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
-use pocketmine\world\particle\SnowballPoofParticle;
+use pocketmine\block\Block;
+use pocketmine\block\VanillaBlocks;
 
-class Snowball extends Throwable{
-	public function getNetworkTypeId() : string{ return EntityIds::SNOWBALL; }
+final class PitcherPod extends Item{
 
-	protected function onHit(ProjectileHitEvent $event) : void{
-		$world = $this->getWorld();
-		for($i = 0; $i < 6; ++$i){
-			$world->addParticle($this->location, new SnowballPoofParticle());
-		}
+	public function getBlock(?int $clickedFace = null) : Block{
+		return VanillaBlocks::PITCHER_CROP();
 	}
 }

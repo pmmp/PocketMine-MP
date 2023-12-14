@@ -35,6 +35,7 @@ use function get_class;
 use function str_starts_with;
 
 abstract class Timings{
+	public const GROUP_MINECRAFT = "Minecraft";
 	public const GROUP_BREAKDOWN = "Minecraft - Breakdown";
 
 	private static bool $initialized = false;
@@ -134,8 +135,8 @@ abstract class Timings{
 		self::$initialized = true;
 
 		self::$fullTick = new TimingsHandler("Full Server Tick");
-		self::$serverTick = new TimingsHandler("Server Tick Update Cycle", self::$fullTick, group: self::GROUP_BREAKDOWN);
-		self::$serverInterrupts = new TimingsHandler("Server Mid-Tick Processing", self::$fullTick, group: self::GROUP_BREAKDOWN);
+		self::$serverTick = new TimingsHandler("Server Tick Update Cycle", self::$fullTick);
+		self::$serverInterrupts = new TimingsHandler("Server Mid-Tick Processing", self::$fullTick);
 		self::$memoryManager = new TimingsHandler("Memory Manager");
 		self::$garbageCollector = new TimingsHandler("Garbage Collector", self::$memoryManager);
 		self::$titleTick = new TimingsHandler("Console Title Tick");
@@ -143,51 +144,51 @@ abstract class Timings{
 		self::$connection = new TimingsHandler("Connection Handler");
 
 		self::$playerNetworkSend = new TimingsHandler("Player Network Send", self::$connection);
-		self::$playerNetworkSendCompress = new TimingsHandler("Player Network Send - Compression", self::$playerNetworkSend, group: self::GROUP_BREAKDOWN);
-		self::$playerNetworkSendCompressBroadcast = new TimingsHandler("Player Network Send - Compression (Broadcast)", self::$playerNetworkSendCompress, group: self::GROUP_BREAKDOWN);
-		self::$playerNetworkSendCompressSessionBuffer = new TimingsHandler("Player Network Send - Compression (Session Buffer)", self::$playerNetworkSendCompress, group: self::GROUP_BREAKDOWN);
-		self::$playerNetworkSendEncrypt = new TimingsHandler("Player Network Send - Encryption", self::$playerNetworkSend, group: self::GROUP_BREAKDOWN);
-		self::$playerNetworkSendInventorySync = new TimingsHandler("Player Network Send - Inventory Sync", self::$playerNetworkSend, group: self::GROUP_BREAKDOWN);
-		self::$playerNetworkSendPreSpawnGameData = new TimingsHandler("Player Network Send - Pre-Spawn Game Data", self::$playerNetworkSend, group: self::GROUP_BREAKDOWN);
+		self::$playerNetworkSendCompress = new TimingsHandler("Player Network Send - Compression", self::$playerNetworkSend);
+		self::$playerNetworkSendCompressBroadcast = new TimingsHandler("Player Network Send - Compression (Broadcast)", self::$playerNetworkSendCompress);
+		self::$playerNetworkSendCompressSessionBuffer = new TimingsHandler("Player Network Send - Compression (Session Buffer)", self::$playerNetworkSendCompress);
+		self::$playerNetworkSendEncrypt = new TimingsHandler("Player Network Send - Encryption", self::$playerNetworkSend);
+		self::$playerNetworkSendInventorySync = new TimingsHandler("Player Network Send - Inventory Sync", self::$playerNetworkSend);
+		self::$playerNetworkSendPreSpawnGameData = new TimingsHandler("Player Network Send - Pre-Spawn Game Data", self::$playerNetworkSend);
 
 		self::$playerNetworkReceive = new TimingsHandler("Player Network Receive", self::$connection);
-		self::$playerNetworkReceiveDecompress = new TimingsHandler("Player Network Receive - Decompression", self::$playerNetworkReceive, group: self::GROUP_BREAKDOWN);
-		self::$playerNetworkReceiveDecrypt = new TimingsHandler("Player Network Receive - Decryption", self::$playerNetworkReceive, group: self::GROUP_BREAKDOWN);
+		self::$playerNetworkReceiveDecompress = new TimingsHandler("Player Network Receive - Decompression", self::$playerNetworkReceive);
+		self::$playerNetworkReceiveDecrypt = new TimingsHandler("Player Network Receive - Decryption", self::$playerNetworkReceive);
 
-		self::$broadcastPackets = new TimingsHandler("Broadcast Packets", self::$playerNetworkSend, group: self::GROUP_BREAKDOWN);
+		self::$broadcastPackets = new TimingsHandler("Broadcast Packets", self::$playerNetworkSend);
 
 		self::$playerMove = new TimingsHandler("Player Movement");
 		self::$playerChunkOrder = new TimingsHandler("Player Order Chunks");
-		self::$playerChunkSend = new TimingsHandler("Player Network Send - Chunks", self::$playerNetworkSend, group: self::GROUP_BREAKDOWN);
+		self::$playerChunkSend = new TimingsHandler("Player Network Send - Chunks", self::$playerNetworkSend);
 		self::$scheduler = new TimingsHandler("Scheduler");
 		self::$serverCommand = new TimingsHandler("Server Command");
 		self::$permissibleCalculation = new TimingsHandler("Permissible Calculation");
-		self::$permissibleCalculationDiff = new TimingsHandler("Permissible Calculation - Diff", self::$permissibleCalculation, group: self::GROUP_BREAKDOWN);
-		self::$permissibleCalculationCallback = new TimingsHandler("Permissible Calculation - Callbacks", self::$permissibleCalculation, group: self::GROUP_BREAKDOWN);
+		self::$permissibleCalculationDiff = new TimingsHandler("Permissible Calculation - Diff", self::$permissibleCalculation);
+		self::$permissibleCalculationCallback = new TimingsHandler("Permissible Calculation - Callbacks", self::$permissibleCalculation);
 
 		self::$syncPlayerDataLoad = new TimingsHandler("Player Data Load");
 		self::$syncPlayerDataSave = new TimingsHandler("Player Data Save");
 
-		self::$entityMove = new TimingsHandler("Entity Movement", group: self::GROUP_BREAKDOWN);
-		self::$entityMoveCollision = new TimingsHandler("Entity Movement - Collision Checks", self::$entityMove, group: self::GROUP_BREAKDOWN);
+		self::$entityMove = new TimingsHandler("Entity Movement");
+		self::$entityMoveCollision = new TimingsHandler("Entity Movement - Collision Checks", self::$entityMove);
 
-		self::$projectileMove = new TimingsHandler("Projectile Movement", self::$entityMove, group: self::GROUP_BREAKDOWN);
-		self::$projectileMoveRayTrace = new TimingsHandler("Projectile Movement - Ray Tracing", self::$projectileMove, group: self::GROUP_BREAKDOWN);
+		self::$projectileMove = new TimingsHandler("Projectile Movement", self::$entityMove);
+		self::$projectileMoveRayTrace = new TimingsHandler("Projectile Movement - Ray Tracing", self::$projectileMove);
 
-		self::$playerCheckNearEntities = new TimingsHandler("checkNearEntities", group: self::GROUP_BREAKDOWN);
-		self::$entityBaseTick = new TimingsHandler("Entity Base Tick", group: self::GROUP_BREAKDOWN);
-		self::$livingEntityBaseTick = new TimingsHandler("Entity Base Tick - Living", group: self::GROUP_BREAKDOWN);
-		self::$itemEntityBaseTick = new TimingsHandler("Entity Base Tick - ItemEntity", group: self::GROUP_BREAKDOWN);
+		self::$playerCheckNearEntities = new TimingsHandler("checkNearEntities");
+		self::$entityBaseTick = new TimingsHandler("Entity Base Tick");
+		self::$livingEntityBaseTick = new TimingsHandler("Entity Base Tick - Living");
+		self::$itemEntityBaseTick = new TimingsHandler("Entity Base Tick - ItemEntity");
 
-		self::$schedulerSync = new TimingsHandler("Scheduler - Sync Tasks", group: self::GROUP_BREAKDOWN);
+		self::$schedulerSync = new TimingsHandler("Scheduler - Sync Tasks");
 
-		self::$schedulerAsync = new TimingsHandler("Scheduler - Async Tasks", group: self::GROUP_BREAKDOWN);
-		self::$asyncTaskProgressUpdateParent = new TimingsHandler("Async Tasks - Progress Updates", self::$schedulerAsync, group: self::GROUP_BREAKDOWN);
-		self::$asyncTaskCompletionParent = new TimingsHandler("Async Tasks - Completion Handlers", self::$schedulerAsync, group: self::GROUP_BREAKDOWN);
-		self::$asyncTaskErrorParent = new TimingsHandler("Async Tasks - Error Handlers", self::$schedulerAsync, group: self::GROUP_BREAKDOWN);
+		self::$schedulerAsync = new TimingsHandler("Scheduler - Async Tasks");
+		self::$asyncTaskProgressUpdateParent = new TimingsHandler("Async Tasks - Progress Updates", self::$schedulerAsync);
+		self::$asyncTaskCompletionParent = new TimingsHandler("Async Tasks - Completion Handlers", self::$schedulerAsync);
+		self::$asyncTaskErrorParent = new TimingsHandler("Async Tasks - Error Handlers", self::$schedulerAsync);
 
-		self::$playerCommand = new TimingsHandler("Player Command", group: self::GROUP_BREAKDOWN);
-		self::$craftingDataCacheRebuild = new TimingsHandler("Build CraftingDataPacket Cache", group: self::GROUP_BREAKDOWN);
+		self::$playerCommand = new TimingsHandler("Player Command");
+		self::$craftingDataCacheRebuild = new TimingsHandler("Build CraftingDataPacket Cache");
 
 	}
 
@@ -229,7 +230,7 @@ abstract class Timings{
 			}else{
 				$displayName = self::shortenCoreClassName($entity::class, "pocketmine\\entity\\");
 			}
-			self::$entityTypeTimingMap[$entity::class] = new TimingsHandler("Entity Tick - " . $displayName, group: self::GROUP_BREAKDOWN);
+			self::$entityTypeTimingMap[$entity::class] = new TimingsHandler("Entity Tick - " . $displayName);
 		}
 
 		return self::$entityTypeTimingMap[$entity::class];
@@ -239,8 +240,7 @@ abstract class Timings{
 		self::init();
 		if(!isset(self::$tileEntityTypeTimingMap[$tile::class])){
 			self::$tileEntityTypeTimingMap[$tile::class] = new TimingsHandler(
-				"Block Entity Tick - " . self::shortenCoreClassName($tile::class, "pocketmine\\block\\tile\\"),
-				group: self::GROUP_BREAKDOWN
+				"Block Entity Tick - " . self::shortenCoreClassName($tile::class, "pocketmine\\block\\tile\\")
 			);
 		}
 
@@ -250,7 +250,7 @@ abstract class Timings{
 	public static function getReceiveDataPacketTimings(ServerboundPacket $pk) : TimingsHandler{
 		self::init();
 		if(!isset(self::$packetReceiveTimingMap[$pk::class])){
-			self::$packetReceiveTimingMap[$pk::class] = new TimingsHandler("Receive - " . $pk->getName(), self::$playerNetworkReceive, group: self::GROUP_BREAKDOWN);
+			self::$packetReceiveTimingMap[$pk::class] = new TimingsHandler("Receive - " . $pk->getName(), self::$playerNetworkReceive);
 		}
 
 		return self::$packetReceiveTimingMap[$pk::class];
@@ -259,31 +259,28 @@ abstract class Timings{
 	public static function getDecodeDataPacketTimings(ServerboundPacket $pk) : TimingsHandler{
 		return self::$packetDecodeTimingMap[$pk::class] ??= new TimingsHandler(
 			"Decode - " . $pk->getName(),
-			self::getReceiveDataPacketTimings($pk),
-			group: self::GROUP_BREAKDOWN
+			self::getReceiveDataPacketTimings($pk)
 		);
 	}
 
 	public static function getHandleDataPacketTimings(ServerboundPacket $pk) : TimingsHandler{
 		return self::$packetHandleTimingMap[$pk::class] ??= new TimingsHandler(
 			"Handler - " . $pk->getName(),
-			self::getReceiveDataPacketTimings($pk),
-			group: self::GROUP_BREAKDOWN
+			self::getReceiveDataPacketTimings($pk)
 		);
 	}
 
 	public static function getEncodeDataPacketTimings(ClientboundPacket $pk) : TimingsHandler{
 		return self::$packetEncodeTimingMap[$pk::class] ??= new TimingsHandler(
 			"Encode - " . $pk->getName(),
-			self::getSendDataPacketTimings($pk),
-			group: self::GROUP_BREAKDOWN
+			self::getSendDataPacketTimings($pk)
 		);
 	}
 
 	public static function getSendDataPacketTimings(ClientboundPacket $pk) : TimingsHandler{
 		self::init();
 		if(!isset(self::$packetSendTimingMap[$pk::class])){
-			self::$packetSendTimingMap[$pk::class] = new TimingsHandler("Send - " . $pk->getName(), self::$playerNetworkSend, group: self::GROUP_BREAKDOWN);
+			self::$packetSendTimingMap[$pk::class] = new TimingsHandler("Send - " . $pk->getName(), self::$playerNetworkSend);
 		}
 
 		return self::$packetSendTimingMap[$pk::class];
@@ -292,7 +289,7 @@ abstract class Timings{
 	public static function getCommandDispatchTimings(string $commandName) : TimingsHandler{
 		self::init();
 
-		return self::$commandTimingMap[$commandName] ??= new TimingsHandler("Command - " . $commandName, group: self::GROUP_BREAKDOWN);
+		return self::$commandTimingMap[$commandName] ??= new TimingsHandler("Command - " . $commandName);
 	}
 
 	public static function getEventTimings(Event $event) : TimingsHandler{
@@ -316,7 +313,7 @@ abstract class Timings{
 		return self::$eventHandlers[$event][$handlerName];
 	}
 
-	public static function getAsyncTaskProgressUpdateTimings(AsyncTask $task, string $group = self::GROUP_BREAKDOWN) : TimingsHandler{
+	public static function getAsyncTaskProgressUpdateTimings(AsyncTask $task, string $group = self::GROUP_MINECRAFT) : TimingsHandler{
 		$taskClass = $task::class;
 		if(!isset(self::$asyncTaskProgressUpdate[$taskClass])){
 			self::init();
@@ -330,7 +327,7 @@ abstract class Timings{
 		return self::$asyncTaskProgressUpdate[$taskClass];
 	}
 
-	public static function getAsyncTaskCompletionTimings(AsyncTask $task, string $group = self::GROUP_BREAKDOWN) : TimingsHandler{
+	public static function getAsyncTaskCompletionTimings(AsyncTask $task, string $group = self::GROUP_MINECRAFT) : TimingsHandler{
 		$taskClass = $task::class;
 		if(!isset(self::$asyncTaskCompletion[$taskClass])){
 			self::init();
@@ -344,7 +341,7 @@ abstract class Timings{
 		return self::$asyncTaskCompletion[$taskClass];
 	}
 
-	public static function getAsyncTaskErrorTimings(AsyncTask $task, string $group = self::GROUP_BREAKDOWN) : TimingsHandler{
+	public static function getAsyncTaskErrorTimings(AsyncTask $task, string $group = self::GROUP_MINECRAFT) : TimingsHandler{
 		$taskClass = $task::class;
 		if(!isset(self::$asyncTaskError[$taskClass])){
 			self::init();

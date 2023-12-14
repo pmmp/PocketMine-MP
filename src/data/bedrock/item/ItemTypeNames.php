@@ -134,6 +134,7 @@ final class ItemTypeNames{
 	public const COOKED_RABBIT = "minecraft:cooked_rabbit";
 	public const COOKED_SALMON = "minecraft:cooked_salmon";
 	public const COOKIE = "minecraft:cookie";
+	public const COPPER_DOOR = "minecraft:copper_door";
 	public const COPPER_INGOT = "minecraft:copper_ingot";
 	public const CORAL = "minecraft:coral";
 	public const COW_SPAWN_EGG = "minecraft:cow_spawn_egg";
@@ -150,6 +151,7 @@ final class ItemTypeNames{
 	public const DARK_OAK_DOOR = "minecraft:dark_oak_door";
 	public const DARK_OAK_HANGING_SIGN = "minecraft:dark_oak_hanging_sign";
 	public const DARK_OAK_SIGN = "minecraft:dark_oak_sign";
+	public const DEBUG_STICK = "minecraft:debug_stick";
 	public const DIAMOND = "minecraft:diamond";
 	public const DIAMOND_AXE = "minecraft:diamond_axe";
 	public const DIAMOND_BOOTS = "minecraft:diamond_boots";
@@ -186,6 +188,7 @@ final class ItemTypeNames{
 	public const EVOKER_SPAWN_EGG = "minecraft:evoker_spawn_egg";
 	public const EXPERIENCE_BOTTLE = "minecraft:experience_bottle";
 	public const EXPLORER_POTTERY_SHERD = "minecraft:explorer_pottery_sherd";
+	public const EXPOSED_COPPER_DOOR = "minecraft:exposed_copper_door";
 	public const EYE_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:eye_armor_trim_smithing_template";
 	public const FEATHER = "minecraft:feather";
 	public const FENCE = "minecraft:fence";
@@ -347,6 +350,7 @@ final class ItemTypeNames{
 	public const OAK_SIGN = "minecraft:oak_sign";
 	public const OCELOT_SPAWN_EGG = "minecraft:ocelot_spawn_egg";
 	public const ORANGE_DYE = "minecraft:orange_dye";
+	public const OXIDIZED_COPPER_DOOR = "minecraft:oxidized_copper_door";
 	public const PAINTING = "minecraft:painting";
 	public const PANDA_SPAWN_EGG = "minecraft:panda_spawn_egg";
 	public const PAPER = "minecraft:paper";
@@ -360,6 +364,7 @@ final class ItemTypeNames{
 	public const PILLAGER_SPAWN_EGG = "minecraft:pillager_spawn_egg";
 	public const PINK_DYE = "minecraft:pink_dye";
 	public const PITCHER_POD = "minecraft:pitcher_pod";
+	public const PLANKS = "minecraft:planks";
 	public const PLENTY_POTTERY_SHERD = "minecraft:plenty_pottery_sherd";
 	public const POISONOUS_POTATO = "minecraft:poisonous_potato";
 	public const POLAR_BEAR_SPAWN_EGG = "minecraft:polar_bear_spawn_egg";
@@ -479,7 +484,12 @@ final class ItemTypeNames{
 	public const WARPED_HANGING_SIGN = "minecraft:warped_hanging_sign";
 	public const WARPED_SIGN = "minecraft:warped_sign";
 	public const WATER_BUCKET = "minecraft:water_bucket";
+	public const WAXED_COPPER_DOOR = "minecraft:waxed_copper_door";
+	public const WAXED_EXPOSED_COPPER_DOOR = "minecraft:waxed_exposed_copper_door";
+	public const WAXED_OXIDIZED_COPPER_DOOR = "minecraft:waxed_oxidized_copper_door";
+	public const WAXED_WEATHERED_COPPER_DOOR = "minecraft:waxed_weathered_copper_door";
 	public const WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:wayfinder_armor_trim_smithing_template";
+	public const WEATHERED_COPPER_DOOR = "minecraft:weathered_copper_door";
 	public const WHEAT = "minecraft:wheat";
 	public const WHEAT_SEEDS = "minecraft:wheat_seeds";
 	public const WHITE_DYE = "minecraft:white_dye";
