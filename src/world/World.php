@@ -1670,16 +1670,19 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * Returns the highest available level of any type of light at the given coordinates, adjusted for the current
-	 * weather and time of day.
+	 * Returns the highest level of any type of light at the given coordinates, adjusted for the current weather and
+	 * time of day.
 	 */
 	public function getFullLight(Vector3 $pos) : int{
-		return $this->getFullLightAt($pos->x, $pos->y, $pos->z);
+		$floorX = $pos->getFloorX();
+		$floorY = $pos->getFloorY();
+		$floorZ = $pos->getFloorZ();
+		return $this->getFullLightAt($floorX, $floorY, $floorZ);
 	}
 
 	/**
-	 * Returns the highest available level of any type of light at the given coordinates, adjusted for the current
-	 * weather and time of day.
+	 * Returns the highest level of any type of light at the given coordinates, adjusted for the current weather and
+	 * time of day.
 	 */
 	public function getFullLightAt(int $x, int $y, int $z) : int{
 		$skyLight = $this->getRealBlockSkyLightAt($x, $y, $z);
@@ -1691,18 +1694,43 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * Returns the highest available level of any type of light at, or adjacent to, the given coordinates, adjusted for
-	 * the current weather and time of day.
+	 * Returns the highest level of any type of light at, or adjacent to, the given coordinates, adjusted for the
+	 * current weather and time of day.
 	 */
 	public function getHighestAdjacentFullLightAt(int $x, int $y, int $z) : int{
 		return $this->getHighestAdjacentLight($x, $y, $z, $this->getFullLightAt(...));
 	}
 
 	/**
+	 * Returns the highest potential level of any type of light at the target coordinates.
+	 * This is not affected by weather or time of day.
+	 */
+	public function getPotentialLight(Vector3 $pos) : int{
+		$floorX = $pos->getFloorX();
+		$floorY = $pos->getFloorY();
+		$floorZ = $pos->getFloorZ();
+		return $this->getPotentialLightAt($floorX, $floorY, $floorZ);
+	}
+
+	/**
+	 * Returns the highest potential level of any type of light at the target coordinates.
+	 * This is not affected by weather or time of day.
+	 */
+	public function getPotentialLightAt(int $x, int $y, int $z) : int{
+		return max($this->getPotentialBlockSkyLightAt($x, $y, $z), $this->getBlockLightAt($x, $y, $z));
+	}
+
+	/**
+	 * Returns the highest potential level of any type of light at, or adjacent to, the given coordinates.
+	 * This is not affected by weather or time of day.
+	 */
+	public function getHighestAdjacentPotentialLightAt(int $x, int $y, int $z) : int{
+		return $this->getHighestAdjacentLight($x, $y, $z, $this->getPotentialLightAt(...));
+	}
+
+	/**
 	 * Returns the highest potential level of sky light at the target coordinates, regardless of the time of day or
 	 * weather conditions.
-	 * You usually don't want to use this for vanilla gameplay logic; prefer the real sky light instead.
-	 * @see World::getRealBlockSkyLightAt()
 	 *
 	 * @return int 0-15
 	 */
@@ -2599,7 +2627,7 @@ class World implements ChunkManager{
 
 	public function isChunkPopulated(int $x, int $z) : bool{
 		$chunk = $this->loadChunk($x, $z);
-		return $chunk !== null ? $chunk->isPopulated() : false;
+		return $chunk !== null && $chunk->isPopulated();
 	}
 
 	/**
