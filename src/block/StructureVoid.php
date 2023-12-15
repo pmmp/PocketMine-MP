@@ -61,6 +61,6 @@ class StructureVoid extends Transparent{
 	}
 
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
-		return $blockReplace->getTypeId() !== BlockTypeIds::STRUCTURE_VOID && $blockReplace->canBeReplaced();
+		return !$blockReplace->hasSameTypeId($this) && $blockReplace->canBeReplaced();
 	}
 }

@@ -1644,9 +1644,9 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::STRUCTURE_VOID(), function(StructureVoid $block) : Writer{
 			return Writer::create(Ids::STRUCTURE_VOID)
 				->writeString(StateNames::STRUCTURE_VOID_TYPE, match($block->getType()){
-						StructureVoidType::VOID => StringValues::STRUCTURE_VOID_TYPE_VOID,
-						StructureVoidType::AIR => StringValues::STRUCTURE_VOID_TYPE_AIR,
-					});
+					StructureVoidType::VOID => StringValues::STRUCTURE_VOID_TYPE_VOID,
+					StructureVoidType::AIR => StringValues::STRUCTURE_VOID_TYPE_AIR,
+				});
 		});
 		$this->map(Blocks::SUNFLOWER(), fn(DoublePlant $block) => Helper::encodeDoublePlant($block, StringValues::DOUBLE_PLANT_TYPE_SUNFLOWER, Writer::create(Ids::DOUBLE_PLANT)));
 		$this->map(Blocks::SWEET_BERRY_BUSH(), function(SweetBerryBush $block) : Writer{
