@@ -30,6 +30,8 @@ use pocketmine\crafting\json\PotionTypeRecipeData;
 use pocketmine\crafting\json\RecipeIngredientData;
 use pocketmine\crafting\json\ShapedRecipeData;
 use pocketmine\crafting\json\ShapelessRecipeData;
+use pocketmine\crafting\json\SmithingTransformRecipeData;
+use pocketmine\crafting\json\SmithingTrimRecipeData;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\item\BlockItemIdMap;
 use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
@@ -292,7 +294,6 @@ final class CraftingManagerFromDataHelper{
 				$input
 			));
 		}
-
 		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'potion_type.json'), PotionTypeRecipeData::class) as $recipe){
 			$input = self::deserializeIngredient($recipe->input);
 			$ingredient = self::deserializeIngredient($recipe->ingredient);
@@ -329,9 +330,27 @@ final class CraftingManagerFromDataHelper{
 				$outputId
 			));
 		}
+		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'smithing.json'), SmithingTransformRecipeData::class) as $recipe){
+			$input = self::deserializeIngredient($recipe->input);
+			$addition = self::deserializeIngredient($recipe->addition);
+			$template = self::deserializeIngredient($recipe->template);
+			$output = self::deserializeItemStack($recipe->output);
 
-		//TODO: smithing
+			if($input === null || $template === null || $addition === null || $output === null){
+				continue;
+			}
+			$result->registerSmithingRecipe(new SmithingTransformRecipe($input, $addition, $template, $output));
+		}
+		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'smithing_trim.json'), SmithingTrimRecipeData::class) as $recipe){
+			$input = self::deserializeIngredient($recipe->input);
+			$addition = self::deserializeIngredient($recipe->addition);
+			$template = self::deserializeIngredient($recipe->template);
 
+			if($input === null || $template === null || $addition === null){
+				continue;
+			}
+			$result->registerSmithingRecipe(new SmithingTrimRecipe($input, $addition, $template,));
+		}
 		return $result;
 	}
 }

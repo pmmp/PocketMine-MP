@@ -28,6 +28,8 @@ use pocketmine\crafting\FurnaceType;
 use pocketmine\crafting\ShapedRecipe;
 use pocketmine\crafting\ShapelessRecipe;
 use pocketmine\crafting\ShapelessRecipeType;
+use pocketmine\crafting\SmithingTransformRecipe;
+use pocketmine\crafting\SmithingTrimRecipe;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\network\mcpe\protocol\types\recipe\CraftingRecipeBlockName;
@@ -38,6 +40,8 @@ use pocketmine\network\mcpe\protocol\types\recipe\PotionContainerChangeRecipe as
 use pocketmine\network\mcpe\protocol\types\recipe\PotionTypeRecipe as ProtocolPotionTypeRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\ShapedRecipe as ProtocolShapedRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\ShapelessRecipe as ProtocolShapelessRecipe;
+use pocketmine\network\mcpe\protocol\types\recipe\SmithingTransformRecipe as ProtocolSmithingTransformRecipe;
+use pocketmine\network\mcpe\protocol\types\recipe\SmithingTrimRecipe as ProtocolSmithingTrimRecipe;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Binary;
@@ -79,6 +83,7 @@ final class CraftingDataCache{
 		$converter = TypeConverter::getInstance();
 		$recipesWithTypeIds = [];
 
+		$index = 0;
 		foreach($manager->getCraftingRecipeIndex() as $index => $recipe){
 			if($recipe instanceof ShapelessRecipe){
 				$typeTag = match($recipe->getType()){
@@ -137,6 +142,31 @@ final class CraftingDataCache{
 					$input->getMeta(),
 					$converter->coreItemStackToNet($recipe->getResult()),
 					$typeTag
+				);
+			}
+		}
+		foreach($manager->getSmithingRecipes() as $recipe){
+			$index++;
+			if($recipe instanceof SmithingTransformRecipe){
+				$recipesWithTypeIds[] = new ProtocolSmithingTransformRecipe(
+					CraftingDataPacket::ENTRY_SMITHING_TRANSFORM,
+					Binary::writeInt($index),
+					$converter->coreRecipeIngredientToNet($recipe->getTemplate()),
+					$converter->coreRecipeIngredientToNet($recipe->getInput()),
+					$converter->coreRecipeIngredientToNet($recipe->getAddition()),
+					$converter->coreItemStackToNet($recipe->getResult()),
+					CraftingRecipeBlockName::SMITHING_TABLE,
+					$index
+				);
+			}elseif($recipe instanceof SmithingTrimRecipe){
+				$recipesWithTypeIds[] = new ProtocolSmithingTrimRecipe(
+					CraftingDataPacket::ENTRY_SMITHING_TRIM,
+					Binary::writeInt($index),
+					$converter->coreRecipeIngredientToNet($recipe->getTemplate()),
+					$converter->coreRecipeIngredientToNet($recipe->getInput()),
+					$converter->coreRecipeIngredientToNet($recipe->getAddition()),
+					CraftingRecipeBlockName::SMITHING_TABLE,
+					$index
 				);
 			}
 		}
