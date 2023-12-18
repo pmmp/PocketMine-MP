@@ -10,7 +10,6 @@ use pocketmine\item\ItemTypeIds;
 use pocketmine\item\TieredTool;
 use pocketmine\Server;
 use function count;
-use function var_dump;
 
 class SmithingTransaction extends InventoryTransaction{
 

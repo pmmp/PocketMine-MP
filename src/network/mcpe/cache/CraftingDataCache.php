@@ -83,7 +83,6 @@ final class CraftingDataCache{
 		$converter = TypeConverter::getInstance();
 		$recipesWithTypeIds = [];
 
-		$index = 0;
 		foreach($manager->getCraftingRecipeIndex() as $index => $recipe){
 			if($recipe instanceof ShapelessRecipe){
 				$typeTag = match($recipe->getType()){
@@ -145,6 +144,8 @@ final class CraftingDataCache{
 				);
 			}
 		}
+
+		$index ??= 0;
 		foreach($manager->getSmithingRecipes() as $recipe){
 			$index++;
 			if($recipe instanceof SmithingTransformRecipe){
