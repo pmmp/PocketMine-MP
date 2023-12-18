@@ -332,8 +332,8 @@ final class CraftingManagerFromDataHelper{
 		}
 		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'smithing.json'), SmithingTransformRecipeData::class) as $recipe){
 			$input = self::deserializeIngredient($recipe->input);
-			$addition = self::deserializeIngredient($recipe->addition);
 			$template = self::deserializeIngredient($recipe->template);
+			$addition = self::deserializeIngredient($recipe->addition);
 			$output = self::deserializeItemStack($recipe->output);
 
 			if($input === null || $template === null || $addition === null || $output === null){
@@ -349,7 +349,7 @@ final class CraftingManagerFromDataHelper{
 			if($input === null || $template === null || $addition === null){
 				continue;
 			}
-			$result->registerSmithingRecipe(new SmithingTrimRecipe($input, $addition, $template,));
+			$result->registerSmithingRecipe(new SmithingTrimRecipe($input, $addition, $template));
 		}
 		return $result;
 	}

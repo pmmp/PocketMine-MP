@@ -31,12 +31,10 @@ use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\player\Player;
 use pocketmine\utils\Binary;
 use function lcg_value;
 use function mt_rand;
-use function strtolower;
 
 class Armor extends Durable{
 
@@ -120,12 +118,14 @@ class Armor extends Durable{
 		return $this->armorTrim;
 	}
 
+	/** @return $this */
 	public function setTrim(ArmorTrim $trim) : self{
 		$this->armorTrim = $trim;
 		return $this;
 	}
 
-	public function removeTrim() : self{
+	/** @return $this */
+	public function clearTrim() : self{
 		$this->armorTrim = null;
 		return $this;
 	}

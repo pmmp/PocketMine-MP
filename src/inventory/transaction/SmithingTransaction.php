@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory\transaction;
 
+use pocketmine\item\Armor;
 use pocketmine\item\Item;
+use pocketmine\item\ItemTypeIds;
+use pocketmine\item\TieredTool;
 use pocketmine\Server;
-use function array_map;
 use function count;
 use function var_dump;
 
@@ -23,8 +25,6 @@ class SmithingTransaction extends InventoryTransaction{
 		$outputs = [];
 		$this->matchItems($outputs, $inputs);
 
-		var_dump(array_map("strval", $inputs));
-
 		if(($inputCount = count($inputs)) !== 3){
 			throw new TransactionValidationException("Expected 3 input items, got $inputCount");
 		}
@@ -32,15 +32,32 @@ class SmithingTransaction extends InventoryTransaction{
 			throw new TransactionValidationException("Expected 1 output item, but received $outputCount");
 		}
 
-		[$input, $template, $addition] = $inputs;
+		$input = $addition = $template = null;
+		foreach($inputs as $item){
+			switch(true){
+				case $item instanceof Armor || $item instanceof TieredTool:
+					$input = $item;
+					break;
+				case $item->getTypeId() >= ItemTypeIds::NETHERITE_UPGRADE_SMITHING_TEMPLATE && $item->getTypeId() <= ItemTypeIds::SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE:
+					$template = $item;
+					break;
+				default:
+					$addition = $item;
+					break;
+			}
+		}
+
+		if($input === null || $addition === null || $template === null){
+			throw new TransactionValidationException("The given inputs are no valid smithing ingredients");
+		}
 
 		$craftingManager = Server::getInstance()->getCraftingManager();
 		$recipe = $craftingManager->matchSmithingRecipe($input, $addition, $template);
-		var_dump($recipe);
 
 		if(($output = $recipe?->constructOutput($input, $addition, $template)) === null){
 			throw new TransactionValidationException("Could find a matching output item for the given inputs");
 		}
+
 		if(!$output->equalsExact($outputs[0])){
 			throw new TransactionValidationException("Invalid output item");
 		}

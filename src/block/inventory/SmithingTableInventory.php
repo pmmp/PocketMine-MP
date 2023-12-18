@@ -23,23 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory;
 
-use InvalidArgumentException;
-use pocketmine\crafting\SmithingRecipe;
-use pocketmine\crafting\SmithingTransformRecipe;
-use pocketmine\crafting\SmithingTrimRecipe;
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\inventory\TemporaryInventory;
-use pocketmine\item\Armor;
-use pocketmine\item\ArmorTrim;
-use pocketmine\item\ArmorTrimMaterial;
-use pocketmine\item\ArmorTrimPattern;
 use pocketmine\item\Item;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\cache\TrimDataHelper;
-use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\Server;
 use pocketmine\world\Position;
-use function var_dump;
 
 final class SmithingTableInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
 	use BlockInventoryTrait;

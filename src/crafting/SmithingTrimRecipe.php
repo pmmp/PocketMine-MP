@@ -53,7 +53,7 @@ class SmithingTrimRecipe extends SmithingRecipe{
 		if(!$input instanceof Armor){
 			return null;
 		}
-		if (($material = ArmorTrimMaterial::fromItem($addition)) === null || ($pattern = ArmorTrimPattern::fromItem($template)) === null){
+		if(($material = ArmorTrimMaterial::fromItem($addition)) === null || ($pattern = ArmorTrimPattern::fromItem($template)) === null){
 			return null;
 		}
 		return $input->setTrim(new ArmorTrim($material, $pattern));

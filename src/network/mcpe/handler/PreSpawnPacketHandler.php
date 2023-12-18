@@ -28,7 +28,6 @@ use pocketmine\item\ArmorTrimPattern;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\cache\CraftingDataCache;
 use pocketmine\network\mcpe\cache\StaticPacketCache;
-use pocketmine\network\mcpe\cache\TrimDataHelper;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
@@ -152,10 +151,9 @@ class PreSpawnPacketHandler extends PacketHandler{
 			$this->inventoryManager->syncCreative();
 
 			$this->session->getLogger()->debug("Sending armor trim data");
-			$this->session->sendDataPacket(TrimDataPacket::create(
-				array_map(fn(ArmorTrimPattern $pattern) => new TrimPattern($pattern->getItemId(), $pattern->value), ArmorTrimPattern::cases()),
-				array_map(fn(ArmorTrimMaterial $material) => new TrimMaterial($material->value, $material->getColor(), $material->getItemId()), ArmorTrimMaterial::cases())
-			));
+			$patterns = array_map(fn(ArmorTrimPattern $pattern) => new TrimPattern($pattern->getItemId(), $pattern->value), ArmorTrimPattern::cases());
+			$materials = array_map(fn(ArmorTrimMaterial $material) => new TrimMaterial($material->value, $material->getColor(), $material->getItemId()), ArmorTrimMaterial::cases());
+			$this->session->sendDataPacket(TrimDataPacket::create($patterns, $materials));
 
 			$this->session->getLogger()->debug("Sending crafting data");
 			$this->session->sendDataPacket(CraftingDataCache::getInstance()->getCache($this->server->getCraftingManager()));

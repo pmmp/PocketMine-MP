@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\data\bedrock\item\ItemTypeNames;
 use function str_ends_with;
 use function strlen;
 use function substr;
-use function var_dump;
 
 enum ArmorTrimPattern : string{
 
