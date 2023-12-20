@@ -33,12 +33,12 @@ use pocketmine\utils\ReversePriorityQueue;
 class TaskScheduler{
 	private bool $enabled = true;
 
-	/** @phpstan-var ReversePriorityQueue<int, TaskHandler<Task>> */
+	/** @phpstan-var ReversePriorityQueue<int, TaskHandler<covariant Task>> */
 	protected ReversePriorityQueue $queue;
 
 	/**
 	 * @var ObjectSet|TaskHandler[]
-	 * @phpstan-var ObjectSet<TaskHandler<Task>>
+	 * @phpstan-var ObjectSet<TaskHandler<covariant Task>>
 	 */
 	protected ObjectSet $tasks;
 
@@ -167,7 +167,7 @@ class TaskScheduler{
 		}
 		$this->currentTick = $currentTick;
 		while($this->isReady($this->currentTick)){
-			/** @var TaskHandler<Task> $task */
+			/** @phpstan-var TaskHandler<covariant Task> $task */
 			$task = $this->queue->extract();
 			if($task->isCancelled()){
 				$this->tasks->remove($task);
@@ -186,7 +186,7 @@ class TaskScheduler{
 
 	private function isReady(int $currentTick) : bool{
 		if(!$this->queue->isEmpty()){
-			/** @phpstan-var TaskHandler<Task> $current */
+			/** @phpstan-var TaskHandler<covariant Task> $current */
 			$current = $this->queue->current();
 			return $current->getNextRun() <= $currentTick;
 		}
