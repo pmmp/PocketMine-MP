@@ -1,11 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Instanceof between pocketmine\\\\block\\\\utils\\\\BannerPatternLayer and pocketmine\\\\block\\\\utils\\\\BannerPatternLayer will always evaluate to true\\.$#"
-			count: 1
-			path: ../../../src/block/BaseBanner.php
-
-		-
 			message: "#^Method pocketmine\\\\block\\\\CakeWithCandle\\:\\:onInteractCandle\\(\\) has parameter \\$returnedItems with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: ../../../src/block/CakeWithCandle.php
