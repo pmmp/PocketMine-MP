@@ -80,13 +80,15 @@ class ResourcePacksPacketHandler extends PacketHandler{
 			);
 		}, $this->resourcePackManager->getResourceStack());
 		//TODO: support forcing server packs
-		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($resourcePackEntries, [], $this->resourcePackManager->resourcePacksRequired(), false, false));
+		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($resourcePackEntries, [], $this->resourcePackManager->resourcePacksRequired(), false, false, []));
 		$this->session->getLogger()->debug("Waiting for client to accept resource packs");
 	}
 
 	private function disconnectWithError(string $error) : void{
-		$this->session->getLogger()->error("Error downloading resource packs: " . $error);
-		$this->session->disconnectWithError(KnownTranslationFactory::disconnectionScreen_resourcePack());
+		$this->session->disconnectWithError(
+			reason: "Error downloading resource packs: " . $error,
+			disconnectScreenMessage: KnownTranslationFactory::disconnectionScreen_resourcePack()
+		);
 	}
 
 	public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet) : bool{

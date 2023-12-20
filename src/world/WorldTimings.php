@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world;
 
-use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 
 class WorldTimings{
@@ -34,6 +33,7 @@ class WorldTimings{
 
 	public TimingsHandler $doChunkUnload;
 	public TimingsHandler $scheduledBlockUpdates;
+	public TimingsHandler $neighbourBlockUpdates;
 	public TimingsHandler $randomChunkUpdates;
 	public TimingsHandler $randomChunkUpdatesChunkSelection;
 	public TimingsHandler $doChunkGC;
@@ -65,7 +65,7 @@ class WorldTimings{
 	private static function newTimer(string $worldName, string $timerName) : TimingsHandler{
 		$aggregator = self::$aggregators[$timerName] ??= new TimingsHandler("Worlds - $timerName"); //displayed in Minecraft primary table
 
-		return new TimingsHandler("$worldName - $timerName", $aggregator, Timings::GROUP_BREAKDOWN);
+		return new TimingsHandler("$worldName - $timerName", $aggregator);
 	}
 
 	public function __construct(World $world){
@@ -77,6 +77,7 @@ class WorldTimings{
 
 		$this->doChunkUnload = self::newTimer($name, "Unload Chunks");
 		$this->scheduledBlockUpdates = self::newTimer($name, "Scheduled Block Updates");
+		$this->neighbourBlockUpdates = self::newTimer($name, "Neighbour Block Updates");
 		$this->randomChunkUpdates = self::newTimer($name, "Random Chunk Updates");
 		$this->randomChunkUpdatesChunkSelection = self::newTimer($name, "Random Chunk Updates - Chunk Selection");
 		$this->doChunkGC = self::newTimer($name, "Garbage Collection");

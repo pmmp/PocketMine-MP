@@ -23,13 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static StairShape INNER_LEFT()
  * @method static StairShape INNER_RIGHT()
@@ -37,16 +35,12 @@ use pocketmine\utils\EnumTrait;
  * @method static StairShape OUTER_RIGHT()
  * @method static StairShape STRAIGHT()
  */
-final class StairShape{
-	use EnumTrait;
+enum StairShape{
+	use LegacyEnumShimTrait;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("straight"),
-			new self("inner_left"),
-			new self("inner_right"),
-			new self("outer_left"),
-			new self("outer_right")
-		);
-	}
+	case STRAIGHT;
+	case INNER_LEFT;
+	case INNER_RIGHT;
+	case OUTER_LEFT;
+	case OUTER_RIGHT;
 }

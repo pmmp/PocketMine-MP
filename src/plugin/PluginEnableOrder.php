@@ -23,63 +23,48 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 use function mb_strtolower;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static PluginEnableOrder POSTWORLD()
  * @method static PluginEnableOrder STARTUP()
  */
-final class PluginEnableOrder{
-	use EnumTrait {
-		__construct as Enum___construct;
-		register as Enum_register;
-	}
+enum PluginEnableOrder{
+	use LegacyEnumShimTrait;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("startup", ["startup"]),
-			new self("postworld", ["postworld"])
-		);
-	}
-
-	/**
-	 * @var self[]
-	 * @phpstan-var array<string, self>
-	 */
-	private static array $aliasMap = [];
-
-	protected static function register(self $member) : void{
-		self::Enum_register($member);
-		foreach($member->getAliases() as $alias){
-			self::$aliasMap[mb_strtolower($alias)] = $member;
-		}
-	}
+	case STARTUP;
+	case POSTWORLD;
 
 	public static function fromString(string $name) : ?self{
-		self::checkInit();
-		return self::$aliasMap[mb_strtolower($name)] ?? null;
-	}
+		/**
+		 * @var self[]|null $aliasMap
+		 * @phpstan-var array<string, self>|null $aliasMap
+		 */
+		static $aliasMap = null;
 
-	/**
-	 * @param string[] $aliases
-	 * @phpstan-param list<string> $aliases
-	 */
-	private function __construct(
-		string $enumName,
-		private array $aliases
-	){
-		$this->Enum___construct($enumName);
+		if($aliasMap === null){
+			$aliasMap = [];
+			foreach(self::cases() as $case){
+				foreach($case->getAliases() as $alias){
+					$aliasMap[$alias] = $case;
+				}
+			}
+		}
+		return $aliasMap[mb_strtolower($name)] ?? null;
 	}
 
 	/**
 	 * @return string[]
 	 * @phpstan-return list<string>
 	 */
-	public function getAliases() : array{ return $this->aliases; }
+	public function getAliases() : array{
+		return match($this){
+			self::STARTUP => ["startup"],
+			self::POSTWORLD => ["postworld"]
+		};
+	}
 }

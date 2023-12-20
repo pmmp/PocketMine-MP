@@ -128,7 +128,6 @@ class ProcessLoginTask extends AsyncTask{
 		try{
 			[$headersArray, $claimsArray, ] = JwtUtils::parse($jwt);
 		}catch(JwtException $e){
-			//TODO: we shouldn't be showing internal information like this to the client
 			throw new VerifyLoginException("Failed to parse JWT: " . $e->getMessage(), null, 0, $e);
 		}
 
@@ -141,13 +140,11 @@ class ProcessLoginTask extends AsyncTask{
 			/** @var JwtHeader $headers */
 			$headers = $mapper->map($headersArray, new JwtHeader());
 		}catch(\JsonMapper_Exception $e){
-			//TODO: we shouldn't be showing internal information like this to the client
 			throw new VerifyLoginException("Invalid JWT header: " . $e->getMessage(), null, 0, $e);
 		}
 
 		$headerDerKey = base64_decode($headers->x5u, true);
 		if($headerDerKey === false){
-			//TODO: we shouldn't be showing internal information like this to the client
 			throw new VerifyLoginException("Invalid JWT public key: base64 decoding error decoding x5u");
 		}
 
@@ -163,7 +160,6 @@ class ProcessLoginTask extends AsyncTask{
 		try{
 			$signingKeyOpenSSL = JwtUtils::parseDerPublicKey($headerDerKey);
 		}catch(JwtException $e){
-			//TODO: we shouldn't be showing this internal information to the client
 			throw new VerifyLoginException("Invalid JWT public key: " . $e->getMessage(), null, 0, $e);
 		}
 		try{
