@@ -57,6 +57,7 @@ use pocketmine\event\world\WorldDisplayNameChangeEvent;
 use pocketmine\event\world\WorldParticleEvent;
 use pocketmine\event\world\WorldSaveEvent;
 use pocketmine\event\world\WorldSoundEvent;
+use pocketmine\event\world\WorldTickedBlocksChangeEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\LegacyStringToItemParser;
@@ -119,6 +120,8 @@ use function floor;
 use function get_class;
 use function gettype;
 use function is_a;
+use function is_array;
+use function is_int;
 use function is_object;
 use function lcg_value;
 use function max;
@@ -520,7 +523,7 @@ class World implements ChunkManager{
 			$this->logger->warning("\"chunk-ticking.per-tick\" setting is deprecated, but you've used it to disable chunk ticking. Set \"chunk-ticking.tick-radius\" to 0 in \"pocketmine.yml\" instead.");
 			$this->chunkTickRadius = 0;
 		}
-		$this->tickedBlocksPerSubchunkPerTick = $cfg->getPropertyInt(YmlServerProperties::CHUNK_TICKING_BLOCKS_PER_SUBCHUNK_PER_TICK, self::DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK);
+		$this->initTickedBlocksPerSubchunkPerTick($cfg);
 		$this->maxConcurrentChunkPopulationTasks = $cfg->getPropertyInt(YmlServerProperties::CHUNK_GENERATION_POPULATION_QUEUE_SIZE, 2);
 
 		$this->initRandomTickBlocksFromConfig($cfg);
@@ -3460,5 +3463,34 @@ class World implements ChunkManager{
 				}
 			}
 		}
+	}
+
+	private function initTickedBlocksPerSubchunkPerTick(ServerConfigGroup $cfg) : void {
+		$defaultTick = $cfg->getPropertyInt(YmlServerProperties::CHUNK_TICKING_BLOCKS_PER_SUBCHUNK_PER_TICK, self::DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK);
+		$worlds = $cfg->getProperty(YmlServerProperties::CHUNK_TICKING_BLOCKS_PER_SUBCHUNK_PER_WORLD_PER_TICK, []);
+		if(!is_array($worlds)){
+			throw new \InvalidArgumentException("Expected array for " . YmlServerProperties::CHUNK_TICKING_BLOCKS_PER_SUBCHUNK_PER_WORLD_PER_TICK . " but got " . gettype($worlds));
+		}
+		foreach($worlds as $world => $blocksPerTick){
+			if($world === $this->getFolderName()){
+				if(is_int($blocksPerTick) && $blocksPerTick >= 0){
+					$this->setTickedBlocksPerSubchunkPerTick($blocksPerTick);
+					return;
+				}
+			}
+		}
+		$this->setTickedBlocksPerSubchunkPerTick($defaultTick);
+	}
+
+	public function setTickedBlocksPerSubchunkPerTick(int $tickedBlocksPerSubchunkPerTick) : void{
+		$old = $this->tickedBlocksPerSubchunkPerTick ?? null;
+		$this->tickedBlocksPerSubchunkPerTick = $tickedBlocksPerSubchunkPerTick;
+		if($old !== null){
+			(new WorldTickedBlocksChangeEvent($this, $old, $tickedBlocksPerSubchunkPerTick))->call();
+		}
+	}
+
+	public  function getTickedBlocksPerSubchunkPerTick() : int{
+		return $this->tickedBlocksPerSubchunkPerTick;
 	}
 }
