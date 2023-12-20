@@ -52,7 +52,7 @@ class TaskScheduler{
 	}
 
 	/**
-	 * @template TTask of Task
+	 * @phpstan-template TTask of Task
 	 * @phpstan-param TTask $task
 	 *
 	 * @phpstan-return TaskHandler<TTask>
@@ -62,7 +62,7 @@ class TaskScheduler{
 	}
 
 	/**
-	 * @template TTask of Task
+	 * @phpstan-template TTask of Task
 	 * @phpstan-param TTask $task
 	 *
 	 * @phpstan-return TaskHandler<TTask>
@@ -72,7 +72,7 @@ class TaskScheduler{
 	}
 
 	/**
-	 * @template TTask of Task
+	 * @phpstan-template TTask of Task
 	 * @phpstan-param TTask $task
 	 *
 	 * @phpstan-return TaskHandler<TTask>
@@ -82,7 +82,7 @@ class TaskScheduler{
 	}
 
 	/**
-	 * @template TTask of Task
+	 * @phpstan-template TTask of Task
 	 * @phpstan-param TTask $task
 	 *
 	 * @phpstan-return TaskHandler<TTask>
@@ -102,15 +102,14 @@ class TaskScheduler{
 	}
 
 	/**
-	 * @template TTask of Task
-	 * @phpstan-param TaskHandler<TTask> $task
+	 * @phpstan-param TaskHandler<covariant Task> $task
 	 */
 	public function isQueued(TaskHandler $task) : bool{
 		return $this->tasks->contains($task);
 	}
 
 	/**
-	 * @template TTask of Task
+	 * @phpstan-template TTask of Task
 	 * @phpstan-param TTask $task
 	 *
 	 * @phpstan-return TaskHandler<TTask>
@@ -134,7 +133,7 @@ class TaskScheduler{
 	}
 
 	/**
-	 * @template TTask of Task
+	 * @phpstan-template TTask of Task
 	 * @phpstan-param TaskHandler<TTask> $handler
 	 * @phpstan-return TaskHandler<TTask>
 	 */
