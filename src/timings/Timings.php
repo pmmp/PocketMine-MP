@@ -210,8 +210,7 @@ abstract class Timings{
 	}
 
 	/**
-	 * @phpstan-template T of object
-	 * @phpstan-param class-string<T> $class
+	 * @phpstan-param class-string<covariant object> $class
 	 */
 	private static function shortenCoreClassName(string $class, string $prefix) : string{
 		if(str_starts_with($class, $prefix)){
@@ -302,8 +301,7 @@ abstract class Timings{
 	}
 
 	/**
-	 * @phpstan-template TEvent of Event
-	 * @phpstan-param class-string<TEvent> $event
+	 * @phpstan-param class-string<covariant Event> $event
 	 */
 	public static function getEventHandlerTimings(string $event, string $handlerName, string $group) : TimingsHandler{
 		if(!isset(self::$eventHandlers[$event][$handlerName])){
