@@ -83,6 +83,8 @@ class AsyncWorker extends Worker{
 	/**
 	 * Saves mixed data into the worker's thread-local object store. This can be used to store objects which you
 	 * want to use on this worker thread from multiple AsyncTasks.
+	 *
+	 * @deprecated Use static class properties instead.
 	 */
 	public function saveToThreadStore(string $identifier, mixed $value) : void{
 		if(NativeThread::getCurrentThread() !== $this){
@@ -98,6 +100,8 @@ class AsyncWorker extends Worker{
 	 * account for the possibility that what you're trying to retrieve might not exist.
 	 *
 	 * Objects stored in this storage may ONLY be retrieved while the task is running.
+	 *
+	 * @deprecated Use static class properties instead.
 	 */
 	public function getFromThreadStore(string $identifier) : mixed{
 		if(NativeThread::getCurrentThread() !== $this){
@@ -108,6 +112,8 @@ class AsyncWorker extends Worker{
 
 	/**
 	 * Removes previously-stored mixed data from the worker's thread-local object store.
+	 *
+	 * @deprecated Use static class properties instead.
 	 */
 	public function removeFromThreadStore(string $identifier) : void{
 		if(NativeThread::getCurrentThread() !== $this){
