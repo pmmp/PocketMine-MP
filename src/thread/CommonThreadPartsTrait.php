@@ -78,9 +78,7 @@ trait CommonThreadPartsTrait{
 	/**
 	 * Registers the class loaders for this thread.
 	 *
-	 * WARNING: This method MUST be called from any descendent threads' run() method to make autoloading usable.
-	 * If you do not do this, you will not be able to use new classes that were not loaded when the thread was started
-	 * (unless you are using a custom autoloader).
+	 * @internal
 	 */
 	public function registerClassLoaders() : void{
 		if($this->composerAutoloaderPath !== null){
