@@ -121,6 +121,20 @@ trait CommonThreadPartsTrait{
 	}
 
 	/**
+	 * Stops the thread using the best way possible. Try to stop it yourself before calling this.
+	 */
+	public function quit() : void{
+		$this->isKilled = true;
+
+		if(!$this->isJoined()){
+			$this->notify();
+			$this->join();
+		}
+
+		ThreadManager::getInstance()->remove($this);
+	}
+
+	/**
 	 * Called by set_exception_handler() when an uncaught exception is thrown.
 	 */
 	protected function onUncaughtException(\Throwable $e) : void{

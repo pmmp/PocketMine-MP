@@ -37,18 +37,4 @@ use pocketmine\scheduler\AsyncTask;
  */
 abstract class Thread extends NativeThread{
 	use CommonThreadPartsTrait;
-
-	/**
-	 * Stops the thread using the best way possible. Try to stop it yourself before calling this.
-	 */
-	public function quit() : void{
-		$this->isKilled = true;
-
-		if(!$this->isJoined()){
-			$this->notify();
-			$this->join();
-		}
-
-		ThreadManager::getInstance()->remove($this);
-	}
 }
