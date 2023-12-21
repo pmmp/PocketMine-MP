@@ -36,7 +36,7 @@ class AsyncWorker extends Worker{
 	/** @var mixed[] */
 	private static array $store = [];
 
-	private const TLS_KEY_NOTIFIER = self::class . "::notifier";
+	private static ?SleeperNotifier $notifier = null;
 
 	public function __construct(
 		private ThreadSafeLogger $logger,
@@ -45,12 +45,11 @@ class AsyncWorker extends Worker{
 		private SleeperHandlerEntry $sleeperEntry
 	){}
 
-	public function getNotifier() : SleeperNotifier{
-		$notifier = $this->getFromThreadStore(self::TLS_KEY_NOTIFIER);
-		if(!$notifier instanceof SleeperNotifier){
-			throw new AssumptionFailedError("SleeperNotifier not found in thread-local storage");
+	public static function getNotifier() : SleeperNotifier{
+		if(self::$notifier !== null){
+			return self::$notifier;
 		}
-		return $notifier;
+		throw new AssumptionFailedError("SleeperNotifier not found in thread-local storage");
 	}
 
 	protected function onRun() : void{
@@ -66,7 +65,7 @@ class AsyncWorker extends Worker{
 			$this->logger->debug("No memory limit set");
 		}
 
-		$this->saveToThreadStore(self::TLS_KEY_NOTIFIER, $this->sleeperEntry->createNotifier());
+		self::$notifier = $this->sleeperEntry->createNotifier();
 	}
 
 	public function getLogger() : ThreadSafeLogger{
