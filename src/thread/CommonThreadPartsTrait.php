@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\thread;
 
+use pmmp\thread\Thread as NativeThread;
 use pmmp\thread\ThreadSafeArray;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\Server;
@@ -95,6 +96,15 @@ trait CommonThreadPartsTrait{
 	}
 
 	public function getCrashInfo() : ?ThreadCrashInfo{ return $this->crashInfo; }
+
+	public function start(int $options = NativeThread::INHERIT_NONE) : bool{
+		ThreadManager::getInstance()->add($this);
+
+		if($this->getClassLoaders() === null){
+			$this->setClassLoaders();
+		}
+		return parent::start($options);
+	}
 
 	final public function run() : void{
 		error_reporting(-1);
