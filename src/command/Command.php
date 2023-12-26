@@ -31,7 +31,6 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
 use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
-use pocketmine\utils\BroadcastLoggerForwarder;
 use pocketmine\utils\TextFormat;
 use function explode;
 use function implode;
@@ -223,19 +222,17 @@ abstract class Command{
 	}
 
 	public static function broadcastCommandMessage(CommandSender $source, Translatable|string $message, bool $sendToSource = true) : void{
-		$users = $source->getServer()->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
-		$result = KnownTranslationFactory::chat_type_admin($source->getName(), $message);
-		$colored = $result->prefix(TextFormat::GRAY . TextFormat::ITALIC);
+		$subscribers = $source->getServer()->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
+		$broadcast = KnownTranslationFactory::chat_type_admin($source->getName(), $message);
 
 		if($sendToSource){
 			$source->sendMessage($message);
 		}
 
-		foreach($users as $user){
-			if($user instanceof BroadcastLoggerForwarder){
-				$user->sendMessage($result);
-			}elseif($user !== $source){
-				$user->sendMessage($colored);
+		foreach($subscribers as $user){
+			//TODO: this check is flaky, since the sender might have broadcast subscribers that we don't know about
+			if($user !== $source){
+				$user->onBroadcast(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $broadcast);
 			}
 		}
 	}
