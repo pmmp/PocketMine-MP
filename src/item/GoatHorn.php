@@ -23,21 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\sound\GoatHornSound;
 
 class GoatHorn extends Item implements Releasable{
 
-	private GoatHornType $goatHornType;
+	private GoatHornType $goatHornType = GoatHornType::PONDER;
 
-	public function __construct(ItemIdentifier $identifier, string $name){
-		$this->goatHornType = GoatHornType::PONDER();
-		parent::__construct($identifier, $name);
-	}
-
-	protected function encodeType(RuntimeDataWriter $w) : void{
-		$w->goatHornType($this->goatHornType);
+	protected function describeState(RuntimeDataDescriber $w) : void{
+		$w->enum($this->goatHornType);
 	}
 
 	public function getType() : GoatHornType{ return $this->goatHornType; }
@@ -64,8 +60,8 @@ class GoatHorn extends Item implements Releasable{
 
 	public function onClickAir(Player $player, Vector3 $directionVector, array &$returnedItems) : ItemUseResult{
 		$position = $player->getPosition();
-		$position->getWorld()->addSound($position, $this->goatHornType->getSound());
+		$position->getWorld()->addSound($position, new GoatHornSound($this->goatHornType));
 
-		return ItemUseResult::SUCCESS();
+		return ItemUseResult::SUCCESS;
 	}
 }

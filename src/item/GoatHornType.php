@@ -23,61 +23,32 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\utils\EnumTrait;
-use pocketmine\world\sound\GoatHornAdmireSound;
-use pocketmine\world\sound\GoatHornCallSound;
-use pocketmine\world\sound\GoatHornDreamSound;
-use pocketmine\world\sound\GoatHornFeelSound;
-use pocketmine\world\sound\GoatHornPonderSound;
-use pocketmine\world\sound\GoatHornSeekSound;
-use pocketmine\world\sound\GoatHornSingSound;
-use pocketmine\world\sound\GoatHornYearnSound;
-use pocketmine\world\sound\Sound;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-/**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
- *
- * @method static GoatHornType ADMIRE()
- * @method static GoatHornType CALL()
- * @method static GoatHornType DREAM()
- * @method static GoatHornType FEEL()
- * @method static GoatHornType PONDER()
- * @method static GoatHornType SEEK()
- * @method static GoatHornType SING()
- * @method static GoatHornType YEARN()
- */
-final class GoatHornType{
-	use EnumTrait {
-		__construct as Enum___construct;
-	}
+enum GoatHornType{
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("ponder", fn() => new GoatHornPonderSound()),
-			new self("sing", fn() => new GoatHornSingSound()),
-			new self("seek", fn() => new GoatHornSeekSound()),
-			new self("feel", fn() => new GoatHornFeelSound()),
-			new self("admire", fn() => new GoatHornAdmireSound()),
-			new self("call", fn() => new GoatHornCallSound()),
-			new self("yearn", fn() => new GoatHornYearnSound()),
-			new self("dream", fn() => new GoatHornDreamSound())
-		);
-	}
+	case PONDER;
+	case SING;
+	case SEEK;
+	case FEEL;
+	case ADMIRE;
+	case CALL;
+	case YEARN;
+	case DREAM;
 
 	/**
-	 * @phpstan-param \Closure() : Sound $soundGetter
+	 * @phpstan-return LevelSoundEvent::*
 	 */
-	private function __construct(
-		string $enumName,
-		private \Closure $soundGetter
-	){
-		$this->Enum___construct($enumName);
-	}
-
-	public function getSound() : Sound{
-		return ($this->soundGetter)();
+	public function getSoundId() : int{
+		return match($this){
+			self::PONDER => LevelSoundEvent::HORN_CALL0,
+			self::SING => LevelSoundEvent::HORN_CALL1,
+			self::SEEK => LevelSoundEvent::HORN_CALL2,
+			self::FEEL => LevelSoundEvent::HORN_CALL3,
+			self::ADMIRE => LevelSoundEvent::HORN_CALL4,
+			self::CALL => LevelSoundEvent::HORN_CALL5,
+			self::YEARN => LevelSoundEvent::HORN_CALL6,
+			self::DREAM => LevelSoundEvent::HORN_CALL7
+		};
 	}
 }

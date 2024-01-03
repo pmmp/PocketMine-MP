@@ -1165,8 +1165,8 @@ final class StringToItemParser extends StringToTParser{
 			$result->register($prefix("dye"), fn() => Items::DYE()->setColor($color));
 		}
 
-		foreach(GoatHornType::getAll() as $goatHornType){
-			$prefix = fn(string $name) => $goatHornType->name() . "_" . $name;
+		foreach(GoatHornType::cases() as $goatHornType){
+			$prefix = fn(string $name) => strtolower($goatHornType->name) . "_" . $name;
 
 			$result->register($prefix("goat_horn"), fn() => Items::GOAT_HORN()->setType($goatHornType));
 		}

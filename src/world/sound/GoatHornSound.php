@@ -23,13 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\world\sound;
 
+use pocketmine\item\GoatHornType;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
-use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-class GoatHornAdmireSound implements Sound{
+class GoatHornSound implements Sound{
+	public function __construct(private GoatHornType $goatHornType){}
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::HORN_CALL4, $pos, false)];
+		return [LevelSoundEventPacket::nonActorSound($this->goatHornType->getSoundId(), $pos, false)];
 	}
 }
