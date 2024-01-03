@@ -73,26 +73,27 @@ class Lantern extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy($blockReplace->getSide(Facing::UP), Facing::DOWN) && !$this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN), Facing::UP)){
+		$downSupport = $this->canBeSupportedAt($blockReplace, Facing::DOWN);
+		if(!$downSupport && !$this->canBeSupportedAt($blockReplace, Facing::UP)){
 			return false;
 		}
 
-		$this->hanging = ($face === Facing::DOWN || !$this->canBeSupportedBy($this->position->getWorld()->getBlock($blockReplace->getPosition()->down()), Facing::UP));
+		$this->hanging = $face === Facing::DOWN || !$downSupport;
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onNearbyBlockChange() : void{
 		$face = $this->hanging ? Facing::UP : Facing::DOWN;
-		if(!$this->canBeSupportedBy($this->getSide($face), Facing::opposite($face))){
+		if(!$this->canBeSupportedAt($this, $face)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
-	private function canBeSupportedBy(Block $block, int $face) : bool{
-		return $block->getSupportType($face)->hasCenterSupport();
+	private function canBeSupportedAt(Block $block, int $face) : bool{
+		return $block->getAdjacentSupportType($face)->hasCenterSupport();
 	}
 }

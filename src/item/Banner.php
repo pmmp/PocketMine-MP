@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\block\Block;
 use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\utils\BannerPatternLayer;
 use pocketmine\block\utils\DyeColor;
@@ -40,18 +39,13 @@ class Banner extends ItemBlockWallOrFloor{
 	public const TAG_PATTERN_COLOR = TileBanner::TAG_PATTERN_COLOR;
 	public const TAG_PATTERN_NAME = TileBanner::TAG_PATTERN_NAME;
 
-	private DyeColor $color;
+	private DyeColor $color = DyeColor::BLACK;
 
 	/**
 	 * @var BannerPatternLayer[]
 	 * @phpstan-var list<BannerPatternLayer>
 	 */
 	private array $patterns = [];
-
-	public function __construct(ItemIdentifier $identifier, Block $floorVariant, Block $wallVariant){
-		parent::__construct($identifier, $floorVariant, $wallVariant);
-		$this->color = DyeColor::BLACK();
-	}
 
 	public function getColor() : DyeColor{
 		return $this->color;
@@ -64,7 +58,7 @@ class Banner extends ItemBlockWallOrFloor{
 	}
 
 	protected function describeState(RuntimeDataDescriber $w) : void{
-		$w->dyeColor($this->color);
+		$w->enum($this->color);
 	}
 
 	/**
@@ -102,7 +96,7 @@ class Banner extends ItemBlockWallOrFloor{
 		if($patterns !== null && $patterns->getTagType() === NBT::TAG_Compound){
 			/** @var CompoundTag $t */
 			foreach($patterns as $t){
-				$patternColor = $colorIdMap->fromInvertedId($t->getInt(self::TAG_PATTERN_COLOR)) ?? DyeColor::BLACK(); //TODO: missing pattern colour should be an error
+				$patternColor = $colorIdMap->fromInvertedId($t->getInt(self::TAG_PATTERN_COLOR)) ?? DyeColor::BLACK; //TODO: missing pattern colour should be an error
 				$patternType = $patternIdMap->fromId($t->getString(self::TAG_PATTERN_NAME));
 				if($patternType === null){
 					continue; //TODO: this should be an error

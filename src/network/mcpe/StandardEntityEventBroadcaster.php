@@ -51,7 +51,7 @@ use const SORT_NUMERIC;
 final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 
 	public function __construct(
-		private StandardPacketBroadcaster $broadcaster,
+		private PacketBroadcaster $broadcaster,
 		private TypeConverter $typeConverter
 	){}
 
@@ -139,6 +139,6 @@ final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 	}
 
 	public function onEmote(array $recipients, Human $from, string $emoteId) : void{
-		$this->sendDataPacket($recipients, EmotePacket::create($from->getId(), $emoteId, EmotePacket::FLAG_SERVER));
+		$this->sendDataPacket($recipients, EmotePacket::create($from->getId(), $emoteId, "", "", EmotePacket::FLAG_SERVER | EmotePacket::FLAG_MUTE_ANNOUNCEMENT));
 	}
 }

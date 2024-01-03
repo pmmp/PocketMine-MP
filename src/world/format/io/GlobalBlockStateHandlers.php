@@ -70,7 +70,7 @@ final class GlobalBlockStateHandlers{
 				BlockIdMetaUpgrader::loadFromString(
 					Filesystem::fileGetContents(Path::join(
 						BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH,
-						'1.12.0_to_1.18.10_blockstate_map.bin'
+						'id_meta_to_nbt/1.12.0.bin'
 					)),
 					LegacyBlockIdToStringIdMap::getInstance(),
 					$blockStateUpgrader

@@ -23,37 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\RuntimeDataDescriber;
-use pocketmine\event\block\BlockMeltEvent;
+use pocketmine\block\utils\AgeableTrait;
+use pocketmine\block\utils\BlockEventHelper;
 use function mt_rand;
 
 class FrostedIce extends Ice{
+	use AgeableTrait;
+
 	public const MAX_AGE = 3;
 
-	protected int $age = 0;
-
-	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(2, 0, self::MAX_AGE, $this->age);
-	}
-
-	public function getAge() : int{ return $this->age; }
-
-	/** @return $this */
-	public function setAge(int $age) : self{
-		if($age < 0 || $age > self::MAX_AGE){
-			throw new \InvalidArgumentException("Age must be in range 0 ... " . self::MAX_AGE);
-		}
-		$this->age = $age;
-		return $this;
-	}
-
 	public function onNearbyBlockChange() : void{
-		$world = $this->position->getWorld();
-		if(!$this->checkAdjacentBlocks(2)){
-			$world->useBreakOn($this->position);
-		}else{
-			$world->scheduleDelayedBlockUpdate($this->position, mt_rand(20, 40));
-		}
+		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(20, 40));
 	}
 
 	public function onRandomTick() : void{
@@ -102,11 +82,7 @@ class FrostedIce extends Ice{
 	private function tryMelt() : bool{
 		$world = $this->position->getWorld();
 		if($this->age >= self::MAX_AGE){
-			$ev = new BlockMeltEvent($this, VanillaBlocks::WATER());
-			$ev->call();
-			if(!$ev->isCancelled()){
-				$world->setBlock($this->position, $ev->getNewState());
-			}
+			BlockEventHelper::melt($this, VanillaBlocks::WATER());
 			return true;
 		}
 

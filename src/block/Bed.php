@@ -48,11 +48,6 @@ class Bed extends Transparent{
 	protected bool $occupied = false;
 	protected bool $head = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->color = DyeColor::RED();
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
-
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->bool($this->occupied);
@@ -65,6 +60,8 @@ class Bed extends Transparent{
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileBed){
 			$this->color = $tile->getColor();
+		}else{
+			$this->color = DyeColor::RED; //legacy pre-1.1 beds don't have tiles
 		}
 
 		return $this;
@@ -87,7 +84,7 @@ class Bed extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function isHeadPart() : bool{
@@ -148,7 +145,7 @@ class Bed extends Transparent{
 
 			$b = ($this->isHeadPart() ? $this : $other);
 
-			if($b->isOccupied()){
+			if($b->occupied){
 				$player->sendMessage(KnownTranslationFactory::tile_bed_occupied()->prefix(TextFormat::GRAY));
 
 				return true;
@@ -177,11 +174,11 @@ class Bed extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->canBeSupportedBy($this->getSide(Facing::DOWN))){
+		if($this->canBeSupportedAt($blockReplace)){
 			$this->facing = $player !== null ? $player->getHorizontalFacing() : Facing::NORTH;
 
 			$next = $this->getSide($this->getOtherHalfSide());
-			if($next->canBeReplaced() && $this->canBeSupportedBy($next->getSide(Facing::DOWN))){
+			if($next->canBeReplaced() && $this->canBeSupportedAt($next)){
 				$nextState = clone $this;
 				$nextState->head = true;
 				$tx->addBlock($blockReplace->position, $this)->addBlock($next->position, $nextState);
@@ -208,8 +205,8 @@ class Bed extends Transparent{
 		return parent::getAffectedBlocks();
 	}
 
-	private function canBeSupportedBy(Block $block) : bool{
-		return !$block->getSupportType(Facing::UP)->equals(SupportType::NONE());
+	private function canBeSupportedAt(Block $block) : bool{
+		return $block->getAdjacentSupportType(Facing::DOWN) !== SupportType::NONE;
 	}
 
 	public function getMaxStackSize() : int{ return 1; }

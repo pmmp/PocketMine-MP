@@ -120,8 +120,8 @@ namespace pocketmine {
 		}
 
 		if(($pmmpthread_version = phpversion("pmmpthread")) !== false){
-			if(version_compare($pmmpthread_version, "6.0.1") < 0 || version_compare($pmmpthread_version, "7.0.0") >= 0){
-				$messages[] = "pmmpthread ^6.0.1 is required, while you have $pmmpthread_version.";
+			if(version_compare($pmmpthread_version, "6.0.7") < 0 || version_compare($pmmpthread_version, "7.0.0") >= 0){
+				$messages[] = "pmmpthread ^6.0.7 is required, while you have $pmmpthread_version.";
 			}
 		}
 
@@ -142,6 +142,13 @@ namespace pocketmine {
 			preg_match("/^" . preg_quote($wantedVersionLock, "/") . "\.\d+(?:-dev)?$/", $chunkutils2_version) === 0 //lock in at ^0.2, optionally at a patch release
 		)){
 			$messages[] = "chunkutils2 ^$wantedVersionMin is required, while you have $chunkutils2_version.";
+		}
+
+		if(($libdeflate_version = phpversion("libdeflate")) !== false){
+			//make sure level 0 compression is available
+			if(version_compare($libdeflate_version, "0.2.0") < 0 || version_compare($libdeflate_version, "0.3.0") >= 0){
+				$messages[] = "php-libdeflate ^0.2.0 is required, while you have $libdeflate_version.";
+			}
 		}
 
 		if(extension_loaded("pocketmine")){
@@ -267,8 +274,8 @@ JIT_WARNING
 		ErrorToExceptionHandler::set();
 
 		$cwd = Utils::assumeNotFalse(realpath(Utils::assumeNotFalse(getcwd())));
-		$dataPath = getopt_string("data") ?? $cwd;
-		$pluginPath = getopt_string("plugins") ?? $cwd . DIRECTORY_SEPARATOR . "plugins";
+		$dataPath = getopt_string(BootstrapOptions::DATA) ?? $cwd;
+		$pluginPath = getopt_string(BootstrapOptions::PLUGINS) ?? $cwd . DIRECTORY_SEPARATOR . "plugins";
 		Filesystem::addCleanedPath($pluginPath, Filesystem::CLEAN_PATH_PLUGINS_PREFIX);
 
 		if(!@mkdir($dataPath, 0777, true) && !is_dir($dataPath)){
@@ -301,10 +308,10 @@ JIT_WARNING
 		//Logger has a dependency on timezone
 		Timezone::init();
 
-		$opts = getopt("", ["no-wizard", "enable-ansi", "disable-ansi"]);
-		if(isset($opts["enable-ansi"])){
+		$opts = getopt("", [BootstrapOptions::NO_WIZARD, BootstrapOptions::ENABLE_ANSI, BootstrapOptions::DISABLE_ANSI]);
+		if(isset($opts[BootstrapOptions::ENABLE_ANSI])){
 			Terminal::init(true);
-		}elseif(isset($opts["disable-ansi"])){
+		}elseif(isset($opts[BootstrapOptions::DISABLE_ANSI])){
 			Terminal::init(false);
 		}else{
 			Terminal::init();
@@ -317,7 +324,7 @@ JIT_WARNING
 
 		$exitCode = 0;
 		do{
-			if(!file_exists(Path::join($dataPath, "server.properties")) && !isset($opts["no-wizard"])){
+			if(!file_exists(Path::join($dataPath, "server.properties")) && !isset($opts[BootstrapOptions::NO_WIZARD])){
 				$installer = new SetupWizard($dataPath);
 				if(!$installer->run()){
 					$exitCode = -1;
@@ -341,7 +348,7 @@ JIT_WARNING
 
 			if(ThreadManager::getInstance()->stopAll() > 0){
 				$logger->debug("Some threads could not be stopped, performing a force-kill");
-				Process::kill(Process::pid(), true);
+				Process::kill(Process::pid());
 			}
 		}while(false);
 

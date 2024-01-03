@@ -35,10 +35,12 @@ use pocketmine\block\inventory\LoomInventory;
 use pocketmine\block\inventory\SmithingTableInventory;
 use pocketmine\block\inventory\StonecutterInventory;
 use pocketmine\crafting\FurnaceType;
-use pocketmine\inventory\CreativeInventory;
+use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
+use pocketmine\item\enchantment\EnchantingOption;
+use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\network\mcpe\cache\CreativeInventoryCache;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
@@ -47,7 +49,10 @@ use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
 use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
+use pocketmine\network\mcpe\protocol\PlayerEnchantOptionsPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
+use pocketmine\network\mcpe\protocol\types\Enchant;
+use pocketmine\network\mcpe\protocol\types\EnchantOption as ProtocolEnchantOption;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
@@ -58,7 +63,9 @@ use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\ObjectSet;
+use function array_fill_keys;
 use function array_keys;
+use function array_map;
 use function array_search;
 use function count;
 use function get_class;
@@ -104,12 +111,18 @@ class InventoryManager{
 
 	private bool $fullSyncRequested = false;
 
+	/** @var int[] network recipe ID => enchanting table option index */
+	private array $enchantingTableOptions = [];
+	//TODO: this should be based on the total number of crafting recipes - if there are ever 100k recipes, this will
+	//conflict with regular recipes
+	private int $nextEnchantingTableOptionId = 100000;
+
 	public function __construct(
 		private Player $player,
 		private NetworkSession $session
 	){
 		$this->containerOpenCallbacks = new ObjectSet();
-		$this->containerOpenCallbacks->add(\Closure::fromCallable([self::class, 'createContainerOpen']));
+		$this->containerOpenCallbacks->add(self::createContainerOpen(...));
 
 		$this->add(ContainerIds::INVENTORY, $this->player->getInventory());
 		$this->add(ContainerIds::OFFHAND, $this->player->getOffHandInventory());
@@ -117,9 +130,7 @@ class InventoryManager{
 		$this->addComplex(UIInventorySlotOffset::CURSOR, $this->player->getCursorInventory());
 		$this->addComplex(UIInventorySlotOffset::CRAFTING2X2_INPUT, $this->player->getCraftingGrid());
 
-		$this->player->getInventory()->getHeldItemIndexChangeListeners()->add(function() : void{
-			$this->syncSelectedHotbarSlot();
-		});
+		$this->player->getInventory()->getHeldItemIndexChangeListeners()->add($this->syncSelectedHotbarSlot(...));
 	}
 
 	private function associateIdWithInventory(int $id, Inventory $inventory) : void{
@@ -341,11 +352,10 @@ class InventoryManager{
 			$blockPosition = BlockPosition::fromVector3($inv->getHolder());
 			$windowType = match(true){
 				$inv instanceof LoomInventory => WindowTypes::LOOM,
-				$inv instanceof FurnaceInventory => match($inv->getFurnaceType()->id()){
-						FurnaceType::FURNACE()->id() => WindowTypes::FURNACE,
-						FurnaceType::BLAST_FURNACE()->id() => WindowTypes::BLAST_FURNACE,
-						FurnaceType::SMOKER()->id() => WindowTypes::SMOKER,
-						default => throw new AssumptionFailedError("Unreachable")
+				$inv instanceof FurnaceInventory => match($inv->getFurnaceType()){
+						FurnaceType::FURNACE => WindowTypes::FURNACE,
+						FurnaceType::BLAST_FURNACE => WindowTypes::BLAST_FURNACE,
+						FurnaceType::SMOKER => WindowTypes::SMOKER,
 					},
 				$inv instanceof EnchantInventory => WindowTypes::ENCHANTMENT,
 				$inv instanceof BrewingStandInventory => WindowTypes::BREWING_STAND,
@@ -385,6 +395,7 @@ class InventoryManager{
 				throw new AssumptionFailedError("We should not have opened a new window while a window was waiting to be closed");
 			}
 			$this->pendingCloseWindowId = $this->lastInventoryNetworkId;
+			$this->enchantingTableOptions = [];
 		}
 	}
 
@@ -433,6 +444,50 @@ class InventoryManager{
 		unset($inventoryEntry->predictions[$slot]);
 	}
 
+	private function sendInventorySlotPackets(int $windowId, int $netSlot, ItemStackWrapper $itemStackWrapper) : void{
+		/*
+		 * TODO: HACK!
+		 * As of 1.20.12, the client ignores change of itemstackID in some cases when the old item == the new item.
+		 * Notably, this happens with armor, offhand and enchanting tables, but not with main inventory.
+		 * While we could track the items previously sent to the client, that's a waste of memory and would
+		 * cost performance. Instead, clear the slot(s) first, then send the new item(s).
+		 * The network cost of doing this is fortunately minimal, as an air itemstack is only 1 byte.
+		 */
+		if($itemStackWrapper->getStackId() !== 0){
+			$this->session->sendDataPacket(InventorySlotPacket::create(
+				$windowId,
+				$netSlot,
+				new ItemStackWrapper(0, ItemStack::null())
+			));
+		}
+		//now send the real contents
+		$this->session->sendDataPacket(InventorySlotPacket::create(
+			$windowId,
+			$netSlot,
+			$itemStackWrapper
+		));
+	}
+
+	/**
+	 * @param ItemStackWrapper[] $itemStackWrappers
+	 */
+	private function sendInventoryContentPackets(int $windowId, array $itemStackWrappers) : void{
+		/*
+		 * TODO: HACK!
+		 * As of 1.20.12, the client ignores change of itemstackID in some cases when the old item == the new item.
+		 * Notably, this happens with armor, offhand and enchanting tables, but not with main inventory.
+		 * While we could track the items previously sent to the client, that's a waste of memory and would
+		 * cost performance. Instead, clear the slot(s) first, then send the new item(s).
+		 * The network cost of doing this is fortunately minimal, as an air itemstack is only 1 byte.
+		 */
+		$this->session->sendDataPacket(InventoryContentPacket::create(
+			$windowId,
+			array_fill_keys(array_keys($itemStackWrappers), new ItemStackWrapper(0, ItemStack::null()))
+		));
+		//now send the real contents
+		$this->session->sendDataPacket(InventoryContentPacket::create($windowId, $itemStackWrappers));
+	}
+
 	public function syncSlot(Inventory $inventory, int $slot, ItemStack $itemStack) : void{
 		$entry = $this->inventories[spl_object_id($inventory)] ?? null;
 		if($entry === null){
@@ -457,24 +512,9 @@ class InventoryManager{
 			//This can cause a lot of problems (totems, arrows, and more...).
 			//The workaround is to send an InventoryContentPacket instead
 			//BDS (Bedrock Dedicated Server) also seems to work this way.
-			$this->session->sendDataPacket(InventoryContentPacket::create($windowId, [$itemStackWrapper]));
+			$this->sendInventoryContentPackets($windowId, [$itemStackWrapper]);
 		}else{
-			if($windowId === ContainerIds::ARMOR){
-				//TODO: HACK!
-				//When right-clicking to equip armour, the client predicts the content of the armour slot, but
-				//doesn't report it in the transaction packet. The server then sends an InventorySlotPacket to
-				//the client, assuming the slot changed for some other reason, since there is no prediction for
-				//the slot.
-				//However, later requests involving that itemstack will refer to the request ID in which the
-				//armour was equipped, instead of the stack ID provided by the server in the outgoing
-				//InventorySlotPacket. (Perhaps because the item is already the same as the client actually
-				//predicted, but didn't tell us?)
-				//We work around this bug by setting the slot to air and then back to the correct item. In
-				//theory, setting a different count and then back again (or changing any other property) would
-				//also work, but this is simpler.
-				$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $netSlot, new ItemStackWrapper(0, ItemStack::null())));
-			}
-			$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $netSlot, $itemStackWrapper));
+			$this->sendInventorySlotPackets($windowId, $netSlot, $itemStackWrapper);
 		}
 		unset($entry->predictions[$slot], $entry->pendingSyncs[$slot]);
 	}
@@ -501,20 +541,17 @@ class InventoryManager{
 				$info = $this->trackItemStack($entry, $slot, $itemStack, null);
 				$contents[] = new ItemStackWrapper($info->getStackId(), $itemStack);
 			}
+			$clearSlotWrapper = new ItemStackWrapper(0, ItemStack::null());
 			if($entry->complexSlotMap !== null){
 				foreach($contents as $slotId => $info){
 					$packetSlot = $entry->complexSlotMap->mapCoreToNet($slotId) ?? null;
 					if($packetSlot === null){
 						continue;
 					}
-					$this->session->sendDataPacket(InventorySlotPacket::create(
-						$windowId,
-						$packetSlot,
-						$info
-					));
+					$this->sendInventorySlotPackets($windowId, $packetSlot, $info);
 				}
 			}else{
-				$this->session->sendDataPacket(InventoryContentPacket::create($windowId, $contents));
+				$this->sendInventoryContentPackets($windowId, $contents);
 			}
 		}
 	}
@@ -603,7 +640,40 @@ class InventoryManager{
 	}
 
 	public function syncCreative() : void{
-		$this->session->sendDataPacket(CreativeInventoryCache::getInstance()->getCache(CreativeInventory::getInstance()));
+		$this->session->sendDataPacket(CreativeInventoryCache::getInstance()->getCache($this->player->getCreativeInventory()));
+	}
+
+	/**
+	 * @param EnchantingOption[] $options
+	 */
+	public function syncEnchantingTableOptions(array $options) : void{
+		$protocolOptions = [];
+
+		foreach($options as $index => $option){
+			$optionId = $this->nextEnchantingTableOptionId++;
+			$this->enchantingTableOptions[$optionId] = $index;
+
+			$protocolEnchantments = array_map(
+				fn(EnchantmentInstance $e) => new Enchant(EnchantmentIdMap::getInstance()->toId($e->getType()), $e->getLevel()),
+				$option->getEnchantments()
+			);
+			// We don't pay attention to the $slotFlags, $heldActivatedEnchantments and $selfActivatedEnchantments
+			// as everything works fine without them (perhaps these values are used somehow in the BDS).
+			$protocolOptions[] = new ProtocolEnchantOption(
+				$option->getRequiredXpLevel(),
+				0, $protocolEnchantments,
+				[],
+				[],
+				$option->getDisplayName(),
+				$optionId
+			);
+		}
+
+		$this->session->sendDataPacket(PlayerEnchantOptionsPacket::create($protocolOptions));
+	}
+
+	public function getEnchantingTableOptionIndex(int $recipeId) : ?int{
+		return $this->enchantingTableOptions[$recipeId] ?? null;
 	}
 
 	private function newItemStackId() : int{
