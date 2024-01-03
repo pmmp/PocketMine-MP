@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use function mt_rand;
 
 class Wheat extends Crops{
 
@@ -33,7 +33,7 @@ class Wheat extends Crops{
 		if($this->age >= self::MAX_AGE){
 			return [
 				VanillaItems::WHEAT(),
-				VanillaItems::WHEAT_SEEDS()->setCount(mt_rand(0, 3))
+				VanillaItems::WHEAT_SEEDS()->setCount(FortuneDropHelper::binomial($item, 0))
 			];
 		}else{
 			return [

@@ -73,8 +73,10 @@ class LoginPacketHandler extends PacketHandler{
 		try{
 			$skin = $this->session->getTypeConverter()->getSkinAdapter()->fromSkinData(ClientDataToSkinDataHelper::fromClientData($clientData));
 		}catch(\InvalidArgumentException | InvalidSkinException $e){
-			$this->session->getLogger()->debug("Invalid skin: " . $e->getMessage());
-			$this->session->disconnectWithError(KnownTranslationFactory::disconnectionScreen_invalidSkin());
+			$this->session->disconnectWithError(
+				reason: "Invalid skin: " . $e->getMessage(),
+				disconnectScreenMessage: KnownTranslationFactory::disconnectionScreen_invalidSkin()
+			);
 
 			return true;
 		}
@@ -83,6 +85,9 @@ class LoginPacketHandler extends PacketHandler{
 			throw new PacketHandlingException("Invalid login UUID");
 		}
 		$uuid = Uuid::fromString($extraData->identity);
+		$arrClientData = (array) $clientData;
+		$arrClientData["TitleID"] = $extraData->titleId;
+
 		if($extraData->XUID !== ""){
 			$playerInfo = new XboxLivePlayerInfo(
 				$extraData->XUID,
@@ -90,7 +95,7 @@ class LoginPacketHandler extends PacketHandler{
 				$uuid,
 				$skin,
 				$clientData->LanguageCode,
-				(array) $clientData
+				$arrClientData
 			);
 		}else{
 			$playerInfo = new PlayerInfo(
@@ -98,7 +103,7 @@ class LoginPacketHandler extends PacketHandler{
 				$uuid,
 				$skin,
 				$clientData->LanguageCode,
-				(array) $clientData
+				$arrClientData
 			);
 		}
 		($this->playerInfoConsumer)($playerInfo);

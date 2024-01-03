@@ -23,13 +23,13 @@ declare(strict_types=1);
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-if(count($argv) !== 6){
-	fwrite(STDERR, "required args: <git hash> <tag name> <github repo (owner/name)> <build number> <github actions run ID>\n");
+if(count($argv) !== 7){
+	fwrite(STDERR, "required args: <git hash> <tag name> <github repo (owner/name)> <build number> <github actions run ID> <PHP binary download URL>\n");
 	exit(1);
 }
 
 echo json_encode([
-	"php_version" => sprintf("%d.%d", PHP_MAJOR_VERSION, PHP_MINOR_VERSION),
+	"php_version" => sprintf("%d.%d", PHP_MAJOR_VERSION, PHP_MINOR_VERSION), //deprecated
 	"base_version" => \pocketmine\VersionInfo::BASE_VERSION,
 	"build" => (int) $argv[4],
 	"is_dev" => \pocketmine\VersionInfo::IS_DEVELOPMENT_BUILD,
@@ -41,4 +41,5 @@ echo json_encode([
 	"download_url" => "https://github.com/$argv[3]/releases/download/$argv[2]/PocketMine-MP.phar",
 	"source_url" => "https://github.com/$argv[3]/tree/$argv[2]",
 	"build_log_url" => "https://github.com/$argv[3]/actions/runs/$argv[5]",
+	"php_download_url" => $argv[6],
 ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR) . "\n";

@@ -41,8 +41,11 @@ final class Promise{
 	 * @phpstan-param \Closure() : void $onFailure
 	 */
 	public function onCompletion(\Closure $onSuccess, \Closure $onFailure) : void{
-		if($this->shared->resolved){
-			$this->shared->result === null ? $onFailure() : $onSuccess($this->shared->result);
+		$state = $this->shared->state;
+		if($state === true){
+			$onSuccess($this->shared->result);
+		}elseif($state === false){
+			$onFailure();
 		}else{
 			$this->shared->onSuccess[spl_object_id($onSuccess)] = $onSuccess;
 			$this->shared->onFailure[spl_object_id($onFailure)] = $onFailure;
@@ -50,6 +53,8 @@ final class Promise{
 	}
 
 	public function isResolved() : bool{
-		return $this->shared->resolved;
+		//TODO: perhaps this should return true when rejected? currently there's no way to tell if a promise was
+		//rejected or just hasn't been resolved yet
+		return $this->shared->state === true;
 	}
 }

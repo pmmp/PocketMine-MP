@@ -23,8 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
+use function min;
 
 class SeaLantern extends Transparent{
 
@@ -34,7 +36,7 @@ class SeaLantern extends Transparent{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			VanillaItems::PRISMARINE_CRYSTALS()->setCount(3)
+			VanillaItems::PRISMARINE_CRYSTALS()->setCount(min(5, FortuneDropHelper::discrete($item, 2, 3)))
 		];
 	}
 

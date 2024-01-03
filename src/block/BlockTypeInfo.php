@@ -35,10 +35,12 @@ final class BlockTypeInfo{
 
 	/**
 	 * @param string[] $typeTags
+	 * @param string[] $enchantmentTags
 	 */
 	public function __construct(
 		private BlockBreakInfo $breakInfo,
-		array $typeTags = []
+		array $typeTags = [],
+		private array $enchantmentTags = []
 	){
 		$this->typeTags = array_fill_keys($typeTags, true);
 	}
@@ -49,4 +51,17 @@ final class BlockTypeInfo{
 	public function getTypeTags() : array{ return array_keys($this->typeTags); }
 
 	public function hasTypeTag(string $tag) : bool{ return isset($this->typeTags[$tag]); }
+
+	/**
+	 * Returns tags that represent the type of item being enchanted and are used to determine
+	 * what enchantments can be applied to the item of this block during in-game enchanting (enchanting table, anvil, fishing, etc.).
+	 * @see ItemEnchantmentTags
+	 * @see ItemEnchantmentTagRegistry
+	 * @see AvailableEnchantmentRegistry
+	 *
+	 * @return string[]
+	 */
+	public function getEnchantmentTags() : array{
+		return $this->enchantmentTags;
+	}
 }
