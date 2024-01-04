@@ -175,9 +175,6 @@ namespace pocketmine {
 		if(((int) ini_get('zend.assertions')) !== -1){
 			$logger->warning("Debugging assertions are enabled. This may degrade performance. To disable them, set `zend.assertions = -1` in php.ini.");
 		}
-		if(\Phar::running(true) === ""){
-			$logger->warning("Non-packaged installation detected. This will degrade autoloading speed and make startup times longer.");
-		}
 		if(function_exists('opcache_get_status') && ($opcacheStatus = opcache_get_status(false)) !== false){
 			$jitEnabled = $opcacheStatus["jit"]["on"] ?? false;
 			if($jitEnabled !== false){
