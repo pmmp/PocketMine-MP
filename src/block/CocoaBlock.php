@@ -64,10 +64,6 @@ class CocoaBlock extends Flowable{
 		];
 	}
 
-	public function isSolid() : bool{
-		return true;
-	}
-
 	private function canAttachTo(Block $block) : bool{
 		return $block instanceof Wood && $block->getWoodType() === WoodType::JUNGLE;
 	}
