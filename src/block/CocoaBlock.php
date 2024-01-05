@@ -40,7 +40,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
-class CocoaBlock extends Transparent{
+class CocoaBlock extends Flowable{
 	use HorizontalFacingTrait;
 	use AgeableTrait;
 
@@ -65,8 +65,8 @@ class CocoaBlock extends Transparent{
 		];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE;
+	public function isSolid() : bool{
+		return true;
 	}
 
 	private function canAttachTo(Block $block) : bool{
