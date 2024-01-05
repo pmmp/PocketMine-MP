@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\HorizontalFacingTrait;
-use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\WoodType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Fertilizer;
