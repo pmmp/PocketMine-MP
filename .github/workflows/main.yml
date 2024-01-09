@@ -6,162 +6,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  phpstan:
-    name: PHPStan analysis
-    runs-on: ${{ matrix.image }}
-
+  all-php-versions:
+    name: PHP ${{ matrix.php }}
     strategy:
       fail-fast: false
       matrix:
-        image: [ubuntu-20.04]
         php: ["8.1", "8.2", "8.3"]
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: pmmp/setup-php-action@2.0.0
-        with:
-          php-version: ${{ matrix.php }}
-          install-path: "./bin"
-          pm-version-major: "5"
-
-      - name: Restore Composer package cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/composer/files
-            ~/.cache/composer/vcs
-          key: "composer-v2-cache-${{ matrix.php }}-${{ hashFiles('./composer.lock') }}"
-          restore-keys: |
-            composer-v2-cache-
-
-      - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-interaction
-
-      - name: Run PHPStan
-        run: ./vendor/bin/phpstan analyze --no-progress --memory-limit=2G
-
-  phpunit:
-    name: PHPUnit tests
-    runs-on: ${{ matrix.image }}
-    strategy:
-      fail-fast: false
-      matrix:
-        image: [ubuntu-20.04]
-        php: ["8.1", "8.2", "8.3"]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: pmmp/setup-php-action@2.0.0
-        with:
-          php-version: ${{ matrix.php }}
-          install-path: "./bin"
-          pm-version-major: "5"
-
-      - name: Restore Composer package cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/composer/files
-            ~/.cache/composer/vcs
-          key: "composer-v2-cache-${{ matrix.php }}-${{ hashFiles('./composer.lock') }}"
-          restore-keys: |
-            composer-v2-cache-
-
-      - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-interaction
-
-      - name: Run PHPUnit tests
-        run: ./vendor/bin/phpunit --bootstrap vendor/autoload.php --fail-on-warning tests/phpunit
-
-  integration:
-    name: Integration tests
-    runs-on: ${{ matrix.image }}
-    strategy:
-      fail-fast: false
-      matrix:
-        image: [ubuntu-20.04]
-        php: ["8.1", "8.2", "8.3"]
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-
-      - name: Setup PHP
-        uses: pmmp/setup-php-action@2.0.0
-        with:
-          php-version: ${{ matrix.php }}
-          install-path: "./bin"
-          pm-version-major: "5"
-
-      - name: Restore Composer package cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/composer/files
-            ~/.cache/composer/vcs
-          key: "composer-v2-cache-${{ matrix.php }}-${{ hashFiles('./composer.lock') }}"
-          restore-keys: |
-            composer-v2-cache-
-
-      - name: Install Composer dependencies
-        run: composer install --no-dev --prefer-dist --no-interaction
-
-      - name: Run integration tests
-        run: ./tests/travis.sh -t4
-
-  codegen:
-    name: Generated Code consistency checks
-    runs-on: ${{ matrix.image }}
-    strategy:
-      fail-fast: false
-      matrix:
-        image: [ubuntu-20.04]
-        php: ["8.1", "8.2", "8.3"]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: pmmp/setup-php-action@2.0.0
-        with:
-          php-version: ${{ matrix.php }}
-          install-path: "./bin"
-          pm-version-major: "5"
-
-      - name: Restore Composer package cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/composer/files
-            ~/.cache/composer/vcs
-          key: "composer-v2-cache-${{ matrix.php }}-${{ hashFiles('./composer.lock') }}"
-          restore-keys: |
-            composer-v2-cache-
-
-      - name: Install Composer dependencies
-        run: composer install --no-dev --prefer-dist --no-interaction
-
-      - name: Regenerate registry annotations
-        run: php build/generate-registry-annotations.php src
-
-      - name: Regenerate KnownTranslation APIs
-        run: php build/generate-known-translation-apis.php
-
-      - name: Regenerate BedrockData available files constants
-        run: php build/generate-bedrockdata-path-consts.php
-
-      - name: Regenerate YmlServerProperties constants
-        run: php build/generate-pocketmine-yml-property-consts.php
-
-      - name: Verify code is unchanged
-        run: |
-          git diff
-          git diff --quiet
+    uses: ./.github/workflows/main-php-matrix.yml
+    with:
+      php: ${{ matrix.php }}
+    secrets: inherit
 
   codestyle:
     name: Code Style checks
