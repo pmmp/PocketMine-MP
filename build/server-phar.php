@@ -32,6 +32,7 @@ use function getcwd;
 use function getopt;
 use function implode;
 use function ini_get;
+use function is_string;
 use function microtime;
 use function preg_quote;
 use function realpath;
@@ -147,8 +148,17 @@ function main() : void{
 	}else{
 		$build = 0;
 	}
+	if(isset($opts["out"])){
+		if(!is_string($opts["out"])){
+			echo "--out cannot be specified multiple times" . PHP_EOL;
+			exit(1);
+		}
+		$pharPath = $opts["out"];
+	}else{
+		$pharPath = getcwd() . DIRECTORY_SEPARATOR . "PocketMine-MP.phar";
+	}
 	foreach(buildPhar(
-		$opts["out"] ?? getcwd() . DIRECTORY_SEPARATOR . "PocketMine-MP.phar",
+		$pharPath,
 		dirname(__DIR__) . DIRECTORY_SEPARATOR,
 		[
 			'resources',
