@@ -402,7 +402,7 @@ class Block{
 	}
 
 	/**
-	 * AKA: Block->isPlaceable
+	 * Returns whether this block can be placed when obtained as an item.
 	 */
 	public function canBePlaced() : bool{
 		return true;
@@ -572,6 +572,9 @@ class Block{
 		return $this->getLightFilter() > 0;
 	}
 
+	/**
+	 * Returns whether this block allows any light to pass through it.
+	 */
 	public function isTransparent() : bool{
 		return false;
 	}
@@ -590,7 +593,7 @@ class Block{
 	}
 
 	/**
-	 * AKA: Block->isFlowable
+	 * Returns whether this block can be destroyed by liquid flowing into its cell.
 	 */
 	public function canBeFlowedInto() : bool{
 		return false;
