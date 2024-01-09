@@ -166,7 +166,7 @@ namespace pocketmine {
 	 * @return void
 	 */
 	function emit_performance_warnings(\Logger $logger){
-		if(PHP_DEBUG !== 0){
+		if(ZEND_DEBUG_BUILD){
 			$logger->warning("This PHP binary was compiled in debug mode. This has a major impact on performance.");
 		}
 		if(extension_loaded("xdebug") && (!function_exists('xdebug_info') || count(xdebug_info('mode')) !== 0)){
