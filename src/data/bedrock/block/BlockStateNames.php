@@ -66,6 +66,7 @@ final class BlockStateNames{
 	public const CORAL_HANG_TYPE_BIT = "coral_hang_type_bit";
 	public const COVERED_BIT = "covered_bit";
 	public const CRACKED_STATE = "cracked_state";
+	public const CRAFTING = "crafting";
 	public const DAMAGE = "damage";
 	public const DEAD_BIT = "dead_bit";
 	public const DEPRECATED = "deprecated";
@@ -109,6 +110,7 @@ final class BlockStateNames{
 	public const OCCUPIED_BIT = "occupied_bit";
 	public const OLD_LEAF_TYPE = "old_leaf_type";
 	public const OPEN_BIT = "open_bit";
+	public const ORIENTATION = "orientation";
 	public const OUTPUT_LIT_BIT = "output_lit_bit";
 	public const OUTPUT_SUBTRACT_BIT = "output_subtract_bit";
 	public const PERSISTENT_BIT = "persistent_bit";
@@ -136,7 +138,6 @@ final class BlockStateNames{
 	public const STONE_SLAB_TYPE_2 = "stone_slab_type_2";
 	public const STONE_SLAB_TYPE_3 = "stone_slab_type_3";
 	public const STONE_SLAB_TYPE_4 = "stone_slab_type_4";
-	public const STONE_TYPE = "stone_type";
 	public const STRIPPED_BIT = "stripped_bit";
 	public const STRUCTURE_BLOCK_TYPE = "structure_block_type";
 	public const STRUCTURE_VOID_TYPE = "structure_void_type";

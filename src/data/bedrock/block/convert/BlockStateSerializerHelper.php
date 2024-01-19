@@ -228,11 +228,6 @@ final class BlockStateSerializerHelper{
 			->writeFacingWithoutUp($facing === Facing::UP ? Facing::DOWN : $facing);
 	}
 
-	public static function encodeStone(string $type) : BlockStateWriter{
-		return BlockStateWriter::create(Ids::STONE)
-			->writeString(BlockStateNames::STONE_TYPE, $type);
-	}
-
 	public static function encodeStoneBricks(string $type) : BlockStateWriter{
 		return BlockStateWriter::create(Ids::STONEBRICK)
 			->writeString(BlockStateNames::STONE_BRICK_TYPE, $type);

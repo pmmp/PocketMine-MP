@@ -27,4 +27,8 @@ use pocketmine\block\utils\WoodTypeTrait;
 
 class WoodenDoor extends Door{
 	use WoodTypeTrait;
+
+	public function getFuelTime() : int{
+		return $this->woodType->isFlammable() ? 200 : 0;
+	}
 }

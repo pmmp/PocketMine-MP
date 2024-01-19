@@ -97,8 +97,9 @@ class ChiseledBookshelf extends Opaque{
 			return false;
 		}
 
+		$x = Facing::axis($face) === Axis::X ? $clickVector->z : $clickVector->x;
 		$slot = ChiseledBookshelfSlot::fromBlockFaceCoordinates(
-			Facing::axis($face) === Axis::X ? $clickVector->getZ() : $clickVector->getX(),
+			Facing::isPositive(Facing::rotateY($face, true)) ? 1 - $x : $x,
 			$clickVector->y
 		);
 		$tile = $this->position->getWorld()->getTile($this->position);
@@ -113,7 +114,7 @@ class ChiseledBookshelf extends Opaque{
 			$this->setSlot($slot, false);
 		}elseif($item instanceof WritableBookBase || $item instanceof Book || $item instanceof EnchantedBook){
 			//TODO: type tags like blocks would be better for this
-			$inventory->setItem($slot->value, $item);
+			$inventory->setItem($slot->value, $item->pop());
 			$this->setSlot($slot, true);
 		}else{
 			return true;
