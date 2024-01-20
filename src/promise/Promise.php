@@ -90,6 +90,10 @@ final class Promise{
 					}
 				}
 			);
+
+			if(!$continue){
+				break;
+			}
 		}
 
 		if($toResolve === 0){
