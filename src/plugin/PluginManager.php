@@ -692,9 +692,8 @@ class PluginManager{
 	/**
 	 * @param string $event Class name that extends Event and AsyncEvent
 	 *
-	 * @phpstan-template TEvent of AsyncEvent
-	 * @phpstan-param class-string<TEvent> $event
-	 * @phpstan-param \Closure(TEvent) : Promise<null> $handler
+	 * @phpstan-param class-string<AsyncEvent> $event
+	 * @phpstan-param \Closure(AsyncEvent) : Promise<null> $handler
 	 *
 	 * @throws \ReflectionException
 	 */
@@ -719,8 +718,7 @@ class PluginManager{
 	/**
 	 * Check if the given handler return type is async-compatible (equal to Promise)
 	 *
-	 * @phpstan-template TEvent of Event&AsyncEvent
-	 * @phpstan-param \Closure(TEvent) : Promise<null> $handler
+	 * @phpstan-param \Closure(AsyncEvent) : Promise<null> $handler
 	 *
 	 * @throws \ReflectionException
 	 */

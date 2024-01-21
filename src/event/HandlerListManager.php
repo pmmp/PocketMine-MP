@@ -38,7 +38,7 @@ class HandlerListManager{
 	private array $allLists = [];
 	/**
 	 * @var RegisteredListenerCache[] event class name => cache
-	 * @phpstan-var array<class-string<Event>, RegisteredListenerCache>
+	 * @phpstan-var array<class-string<Event|AsyncEvent>, RegisteredListenerCache>
 	 */
 	private array $handlerCaches = [];
 
@@ -59,7 +59,7 @@ class HandlerListManager{
 	}
 
 	/**
-	 * @phpstan-param \ReflectionClass<Event> $class
+	 * @phpstan-param \ReflectionClass<Event|AsyncEvent> $class
 	 */
 	private static function isValidClass(\ReflectionClass $class) : bool{
 		$tags = Utils::parseDocComment((string) $class->getDocComment());
@@ -67,9 +67,9 @@ class HandlerListManager{
 	}
 
 	/**
-	 * @phpstan-param \ReflectionClass<Event> $class
+	 * @phpstan-param \ReflectionClass<Event|AsyncEvent> $class
 	 *
-	 * @phpstan-return \ReflectionClass<Event>|null
+	 * @phpstan-return \ReflectionClass<Event|AsyncEvent>|null
 	 */
 	private static function resolveNearestHandleableParent(\ReflectionClass $class) : ?\ReflectionClass{
 		for($parent = $class->getParentClass(); $parent !== false; $parent = $parent->getParentClass()){
@@ -113,7 +113,7 @@ class HandlerListManager{
 	}
 
 	/**
-	 * @phpstan-param class-string<covariant Event> $event
+	 * @phpstan-param class-string<Event|AsyncEvent> $event
 	 *
 	 * @return RegisteredListener[]
 	 */

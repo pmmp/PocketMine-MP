@@ -38,7 +38,7 @@ class HandlerList{
 	private array $affectedHandlerCaches = [];
 
 	/**
-	 * @phpstan-param class-string<covariant Event> $class
+	 * @phpstan-param class-string<Event|AsyncEvent> $class
 	 */
 	public function __construct(
 		private string $class,
