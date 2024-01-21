@@ -121,7 +121,7 @@ use function strtolower;
  * @method static Clock CLOCK()
  * @method static Clownfish CLOWNFISH()
  * @method static Coal COAL()
- * @method static Item COAST_ARMOR_TRIM_SMITHING_TEMPLATE()
+ * @method static SmithingTemplate COAST_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static CocoaBeans COCOA_BEANS()
  * @method static Compass COMPASS()
  * @method static CookedChicken COOKED_CHICKEN()
