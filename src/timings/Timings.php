@@ -307,7 +307,7 @@ abstract class Timings{
 		return self::$events[$eventClass];
 	}
 
-	public static function getAsyncEventTimings(AsyncEvent&Event $event) : TimingsHandler{
+	public static function getAsyncEventTimings(AsyncEvent $event) : TimingsHandler{
 		$eventClass = get_class($event);
 		if(!isset(self::$asyncEvents[$eventClass])){
 			self::$asyncEvents[$eventClass] = new TimingsHandler(self::shortenCoreClassName($eventClass, "pocketmine\\event\\"), group: "Events");
@@ -317,7 +317,7 @@ abstract class Timings{
 	}
 
 	/**
-	 * @phpstan-template TEvent of Event
+	 * @phpstan-template TEvent of Event|AsyncEvent
 	 * @phpstan-param class-string<TEvent> $event
 	 */
 	public static function getEventHandlerTimings(string $event, string $handlerName, string $group) : TimingsHandler{

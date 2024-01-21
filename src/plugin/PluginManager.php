@@ -689,17 +689,13 @@ class PluginManager{
 	/**
 	 * @param string $event Class name that extends Event and AsyncEvent
 	 *
-	 * @phpstan-template TEvent of Event&AsyncEvent
+	 * @phpstan-template TEvent of AsyncEvent
 	 * @phpstan-param class-string<TEvent> $event
 	 * @phpstan-param \Closure(TEvent) : Promise<null> $handler
 	 *
 	 * @throws \ReflectionException
 	 */
 	public function registerAsyncEvent(string $event, \Closure $handler, int $priority, Plugin $plugin, bool $handleCancelled = false, bool $exclusiveCall = false) : RegisteredAsyncListener{
-		if(!is_subclass_of($event, Event::class)){
-			throw new PluginException($event . " is not an Event");
-		}
-
 		if(!is_subclass_of($event, AsyncEvent::class)){
 			throw new PluginException($event . " is not an AsyncEvent");
 		}

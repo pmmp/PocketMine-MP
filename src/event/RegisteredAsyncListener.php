@@ -28,26 +28,17 @@ use pocketmine\promise\Promise;
 use pocketmine\timings\TimingsHandler;
 
 class RegisteredAsyncListener extends RegisteredListener{
-	/** @phpstan-var Promise<null> $returnPromise */
-	private Promise $returnPromise;
-
 	/**
-	 * @phpstan-param \Closure(AsyncEvent&Event) : Promise<null> $handler
+	 * @phpstan-param \Closure(AsyncEvent) : Promise<null> $handler
 	 */
 	public function __construct(
-		\Closure $handler,
+		protected \Closure $handler,
 		int $priority,
 		Plugin $plugin,
 		bool $handleCancelled,
 		private bool $exclusiveCall,
-		TimingsHandler $timings
+		protected TimingsHandler $timings
 	){
-		$handler = function(AsyncEvent&Event $event) use($handler) : void{
-			$this->returnPromise = $handler($event);
-			if(!$this->returnPromise instanceof Promise){
-				throw new \TypeError("Async event handler must return a Promise");
-			}
-		};
 		parent::__construct($handler, $priority, $plugin, $handleCancelled, $timings);
 	}
 
@@ -55,11 +46,22 @@ class RegisteredAsyncListener extends RegisteredListener{
 		return !$this->exclusiveCall;
 	}
 
+	public function callEvent(Event $event) : void{
+		throw new \BadMethodCallException("Cannot call async event synchronously, use callAsync() instead");
+	}
+
 	/**
-	 * @phpstan-return Promise<null>
+	 * @phpstan-return Promise<null>|null
 	 */
-	public function callAsync(AsyncEvent&Event $event) : Promise{
-		$this->callEvent($event);
-		return $this->returnPromise;
+	public function callAsync(AsyncEvent $event) : ?Promise{
+		if($event instanceof Cancellable && $event->isCancelled() && !$this->isHandlingCancelled()){
+			return null;
+		}
+		$this->timings->startTiming();
+		try{
+			return ($this->handler)($event);
+		}finally{
+			$this->timings->stopTiming();
+		}
 	}
 }

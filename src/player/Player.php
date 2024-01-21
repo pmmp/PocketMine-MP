@@ -51,6 +51,7 @@ use pocketmine\event\player\PlayerBedEnterEvent;
 use pocketmine\event\player\PlayerBedLeaveEvent;
 use pocketmine\event\player\PlayerBlockPickEvent;
 use pocketmine\event\player\PlayerChangeSkinEvent;
+use pocketmine\event\player\PlayerChatAsyncEvent;
 use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerDisplayNameChangeEvent;
@@ -158,6 +159,7 @@ use function strlen;
 use function strtolower;
 use function substr;
 use function trim;
+use function var_dump;
 use const M_PI;
 use const M_SQRT3;
 use const PHP_INT_MAX;
@@ -1517,6 +1519,19 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					if(!$ev->isCancelled()){
 						$this->server->broadcastMessage($ev->getFormatter()->format($ev->getPlayer()->getDisplayName(), $ev->getMessage()), $ev->getRecipients());
 					}
+
+					$ev = new PlayerChatAsyncEvent(
+						$this, $messagePart,
+						$this->server->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_USERS),
+						new StandardChatFormatter()
+					);
+					$ev->call()->onCompletion(function () use ($ev) {
+						if(!$ev->isCancelled()){
+							$this->server->broadcastMessage($ev->getFormatter()->format($ev->getPlayer()->getDisplayName(), $ev->getMessage()), $ev->getRecipients());
+						}
+					}, function () {
+						var_dump("Failed to send chat message");
+					});
 				}
 			}
 		}
