@@ -1259,9 +1259,10 @@ class Server{
 	 */
 	public function unsubscribeFromBroadcastChannel(string $channelId, CommandSender $subscriber) : void{
 		if(isset($this->broadcastSubscribers[$channelId][spl_object_id($subscriber)])){
-			unset($this->broadcastSubscribers[$channelId][spl_object_id($subscriber)]);
-			if(count($this->broadcastSubscribers[$channelId]) === 0){
+			if(count($this->broadcastSubscribers[$channelId]) === 1){
 				unset($this->broadcastSubscribers[$channelId]);
+			}else{
+				unset($this->broadcastSubscribers[$channelId][spl_object_id($subscriber)]);
 			}
 		}
 	}
