@@ -45,7 +45,7 @@ abstract class AsyncEvent{
 	private const MAX_EVENT_CALL_DEPTH = 50;
 
 	/**
-	 * @phpstan-return Promise<null>
+	 * @phpstan-return Promise<self>
 	 */
 	final public function call() : Promise{
 		$this->promises = new ObjectSet();
@@ -71,16 +71,16 @@ abstract class AsyncEvent{
 	}
 
 	/**
-	 * @phpstan-return Promise<null>
+	 * @phpstan-return Promise<self>
 	 */
 	private function callAsyncDepth() : Promise{
-		/** @phpstan-var PromiseResolver<null> $globalResolver */
+		/** @phpstan-var PromiseResolver<self> $globalResolver */
 		$globalResolver = new PromiseResolver();
 
 		$priorities = EventPriority::ALL;
 		$testResolve = function () use (&$testResolve, &$priorities, $globalResolver){
 			if(count($priorities) === 0){
-				$globalResolver->resolve(null);
+				$globalResolver->resolve($this);
 			}else{
 				$this->callPriority(array_shift($priorities))->onCompletion(function() use ($testResolve) : void{
 					$testResolve();

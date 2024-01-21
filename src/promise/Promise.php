@@ -83,8 +83,10 @@ final class Promise{
 				function(mixed $value) use ($resolver, $key, &$toResolve, &$continue, &$values) : void{
 					$values[$key] = $value;
 
-					if(--$toResolve === 0 && $continue){
+					$toResolve--;
+					if($toResolve === 0 && $continue){
 						$resolver->resolve($values);
+						$continue = false;
 					}
 				},
 				function() use ($resolver, &$continue) : void{
@@ -100,7 +102,7 @@ final class Promise{
 			}
 		}
 
-		if($toResolve === 0){
+		if($toResolve === 0 && $continue){
 			$continue = false;
 			$resolver->resolve($values);
 		}

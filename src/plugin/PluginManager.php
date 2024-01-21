@@ -578,7 +578,7 @@ class PluginManager{
 		/** @phpstan-var class-string $paramClass */
 		$paramClass = $paramType->getName();
 		$eventClass = new \ReflectionClass($paramClass);
-		if(!$eventClass->isSubclassOf(Event::class)){
+		if(!$eventClass->isSubclassOf(Event::class) && !$eventClass->isSubclassOf(AsyncEvent::class)){
 			return null;
 		}
 
