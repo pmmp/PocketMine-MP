@@ -21,25 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\item;
 
-use pocketmine\block\utils\LightableTrait;
-use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\block\Block;
+use pocketmine\block\VanillaBlocks;
 
-class RedstoneTorch extends Torch{
-	use LightableTrait;
+final class PitcherPod extends Item{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->lit = true;
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
-
-	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		parent::describeBlockOnlyState($w);
-		$w->bool($this->lit);
-	}
-
-	public function getLightLevel() : int{
-		return $this->lit ? 7 : 0;
+	public function getBlock(?int $clickedFace = null) : Block{
+		return VanillaBlocks::PITCHER_CROP();
 	}
 }

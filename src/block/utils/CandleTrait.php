@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
-use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\VanillaEnchantments;
@@ -38,22 +37,10 @@ use pocketmine\world\sound\FireExtinguishSound;
 use pocketmine\world\sound\FlintSteelSound;
 
 trait CandleTrait{
-	private bool $lit = false;
-
-	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->bool($this->lit);
-	}
+	use LightableTrait;
 
 	public function getLightLevel() : int{
 		return $this->lit ? 3 : 0;
-	}
-
-	public function isLit() : bool{ return $this->lit; }
-
-	/** @return $this */
-	public function setLit(bool $lit) : self{
-		$this->lit = $lit;
-		return $this;
 	}
 
 	/** @see Block::onInteract() */

@@ -45,4 +45,6 @@ final class BootstrapOptions{
 	public const PLUGINS = "plugins";
 	/** Path to store and load server data */
 	public const DATA = "data";
+	/** Shows basic server version information and exits */
+	public const VERSION = "version";
 }

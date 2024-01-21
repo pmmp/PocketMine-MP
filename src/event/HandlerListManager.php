@@ -113,8 +113,7 @@ class HandlerListManager{
 	}
 
 	/**
-	 * @phpstan-template TEvent of Event
-	 * @phpstan-param class-string<TEvent> $event
+	 * @phpstan-param class-string<covariant Event> $event
 	 *
 	 * @return RegisteredListener[]
 	 */

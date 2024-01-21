@@ -168,6 +168,19 @@ final class BlockStateStringValues{
 	public const OLD_LEAF_TYPE_OAK = "oak";
 	public const OLD_LEAF_TYPE_SPRUCE = "spruce";
 
+	public const ORIENTATION_DOWN_EAST = "down_east";
+	public const ORIENTATION_DOWN_NORTH = "down_north";
+	public const ORIENTATION_DOWN_SOUTH = "down_south";
+	public const ORIENTATION_DOWN_WEST = "down_west";
+	public const ORIENTATION_EAST_UP = "east_up";
+	public const ORIENTATION_NORTH_UP = "north_up";
+	public const ORIENTATION_SOUTH_UP = "south_up";
+	public const ORIENTATION_UP_EAST = "up_east";
+	public const ORIENTATION_UP_NORTH = "up_north";
+	public const ORIENTATION_UP_SOUTH = "up_south";
+	public const ORIENTATION_UP_WEST = "up_west";
+	public const ORIENTATION_WEST_UP = "west_up";
+
 	public const PILLAR_AXIS_X = "x";
 	public const PILLAR_AXIS_Y = "y";
 	public const PILLAR_AXIS_Z = "z";
@@ -240,14 +253,6 @@ final class BlockStateStringValues{
 	public const STONE_SLAB_TYPE_4_MOSSY_STONE_BRICK = "mossy_stone_brick";
 	public const STONE_SLAB_TYPE_4_SMOOTH_QUARTZ = "smooth_quartz";
 	public const STONE_SLAB_TYPE_4_STONE = "stone";
-
-	public const STONE_TYPE_ANDESITE = "andesite";
-	public const STONE_TYPE_ANDESITE_SMOOTH = "andesite_smooth";
-	public const STONE_TYPE_DIORITE = "diorite";
-	public const STONE_TYPE_DIORITE_SMOOTH = "diorite_smooth";
-	public const STONE_TYPE_GRANITE = "granite";
-	public const STONE_TYPE_GRANITE_SMOOTH = "granite_smooth";
-	public const STONE_TYPE_STONE = "stone";
 
 	public const STRUCTURE_BLOCK_TYPE_CORNER = "corner";
 	public const STRUCTURE_BLOCK_TYPE_DATA = "data";

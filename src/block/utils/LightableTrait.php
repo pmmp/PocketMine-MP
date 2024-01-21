@@ -21,18 +21,26 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock;
+namespace pocketmine\block\utils;
 
-use PHPUnit\Framework\TestCase;
-use pocketmine\block\utils\DyeColor;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 
-class DyeColorIdMapTest extends TestCase{
+trait LightableTrait{
+	protected bool $lit = false;
 
-	public function testAllColorsMapped() : void{
-		foreach(DyeColor::cases() as $color){
-			$id = DyeColorIdMap::getInstance()->toId($color);
-			$color2 = DyeColorIdMap::getInstance()->fromId($id);
-			self::assertTrue($color === $color2);
-		}
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->bool($this->lit);
+	}
+
+	public function isLit() : bool{
+		return $this->lit;
+	}
+
+	/**
+	 * @return $this
+	 */
+	public function setLit(bool $lit = true) : self{
+		$this->lit = $lit;
+		return $this;
 	}
 }

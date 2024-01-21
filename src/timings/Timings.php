@@ -213,8 +213,7 @@ abstract class Timings{
 	}
 
 	/**
-	 * @phpstan-template T of object
-	 * @phpstan-param class-string<T> $class
+	 * @phpstan-param class-string<covariant object> $class
 	 */
 	private static function shortenCoreClassName(string $class, string $prefix) : string{
 		if(str_starts_with($class, $prefix)){
