@@ -55,6 +55,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\TakeStackReque
 use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponse;
 use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\player\Player;
+use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
 use function array_key_first;
 use function count;
@@ -345,8 +346,12 @@ class ItemStackRequestExecutor{
 					$this->setNextCreatedItem($window->getOutput($optionId));
 				}
 			}elseif($window instanceof SmithingTableInventory){
-				$this->specialTransaction = new SmithingTransaction($this->player);
-				$this->setNextCreatedItem($window->getOutput());
+				$craftingManager = Server::getInstance()->getCraftingManager();
+				$recipe = $craftingManager->getSmithingRecipeFromIndex($action->getRecipeId());
+				if ($recipe !== null){
+					$this->specialTransaction = new SmithingTransaction($this->player, $recipe);
+					$this->setNextCreatedItem($recipe->getResultFor($window->getContents()));
+				}
 			}else{
 				$this->beginCrafting($action->getRecipeId(), 1);
 			}

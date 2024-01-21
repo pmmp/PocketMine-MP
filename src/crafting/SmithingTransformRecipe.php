@@ -23,14 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\crafting;
 
+use pocketmine\item\Armor;
 use pocketmine\item\Item;
+use pocketmine\item\TieredTool;
 
-class SmithingTransformRecipe extends SmithingRecipe{
+class SmithingTransformRecipe implements SmithingRecipe{
 
 	public function __construct(
-		private RecipeIngredient $input,
-		private RecipeIngredient $addition,
-		private RecipeIngredient $template,
+		private readonly RecipeIngredient $input,
+		private readonly RecipeIngredient $addition,
+		private readonly RecipeIngredient $template,
 		private Item $result
 	){
 		$this->result = clone $this->result;
@@ -52,7 +54,20 @@ class SmithingTransformRecipe extends SmithingRecipe{
 		return clone $this->result;
 	}
 
-	public function constructOutput(Item $input, Item $addition, Item $template) : ?Item{
+	/**
+	 * @param Item[] $inputs
+	 * @phpstan-param list<Item> $inputs
+	 */
+	public function getResultFor(array $inputs) : ?Item{
+		$input = null;
+		foreach($inputs as $item){
+			if ($item instanceof Armor || $item instanceof TieredTool){
+				$input = $item;
+			}
+		}
+		if($input === null){
+			return null;
+		}
 		return $this->getResult()->setNamedTag($input->getNamedTag());
 	}
 }

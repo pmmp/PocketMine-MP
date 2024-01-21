@@ -28,7 +28,7 @@ class ArmorTrim{
 	public function __construct(
 		private readonly ArmorTrimMaterial $material,
 		private readonly ArmorTrimPattern $pattern
-	){ }
+	){}
 
 	public function getMaterial() : ArmorTrimMaterial{
 		return $this->material;

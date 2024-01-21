@@ -29,6 +29,7 @@ use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\DestructorCallbackTrait;
 use pocketmine\utils\ObjectSet;
+use function count;
 use function spl_object_id;
 use function usort;
 
@@ -211,6 +212,15 @@ class CraftingManager{
 		return $this->smithingRecipes;
 	}
 
+	public function getSmithingRecipeFromIndex(int $index) : ?SmithingRecipe{
+		$craftingOffset = count($this->craftingRecipeIndex) - 1;
+
+		if($index < $craftingOffset || $index > ($craftingOffset + count($this->smithingRecipes))){
+			return null;
+		}
+		return $this->smithingRecipes[$index - $craftingOffset - 1];
+	}
+
 	public function registerShapedRecipe(ShapedRecipe $recipe) : void{
 		$this->shapedRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 		$this->craftingRecipeIndex[] = $recipe;
@@ -324,15 +334,6 @@ class CraftingManager{
 			}
 		}
 
-		return null;
-	}
-
-	public function matchSmithingRecipe(Item $input, Item $addition, Item $template) : ?SmithingRecipe{
-		foreach($this->smithingRecipes as $recipe){
-			if($recipe->getInput()->accepts($input) && $recipe->getAddition()->accepts($addition) && $recipe->getTemplate()->accepts($template)){
-				return $recipe;
-			}
-		}
 		return null;
 	}
 }

@@ -151,7 +151,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 			$this->inventoryManager->syncCreative();
 
 			$this->session->getLogger()->debug("Sending armor trim data");
-			$patterns = array_map(fn(ArmorTrimPattern $pattern) => new TrimPattern($pattern->getItemId(), $pattern->value), ArmorTrimPattern::cases());
+			$patterns = array_map(fn(ArmorTrimPattern $pattern) => new TrimPattern("minecraft:" . $pattern->value . ArmorTrimPattern::TEMPLATE_SUFFIX, $pattern->value), ArmorTrimPattern::cases());
 			$materials = array_map(fn(ArmorTrimMaterial $material) => new TrimMaterial($material->value, $material->getColor(), $material->getItemId()), ArmorTrimMaterial::cases());
 			$this->session->sendDataPacket(TrimDataPacket::create($patterns, $materials));
 

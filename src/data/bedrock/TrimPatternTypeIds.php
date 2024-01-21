@@ -21,21 +21,24 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\crafting;
+namespace pocketmine\data\bedrock;
 
-use pocketmine\item\Item;
+final class TrimPatternTypeIds{
 
-interface SmithingRecipe{
-
-	public function getInput() : RecipeIngredient;
-
-	public function getAddition() : RecipeIngredient;
-
-	public function getTemplate() : RecipeIngredient;
-
-	/**
-	 * @param Item[] $inputs
-	 * @phpstan-param list<Item> $inputs
-	 */
-	public function getResultFor(array $inputs) : ?Item;
+	public const COAST = 0;
+	public const DUNE = 1;
+	public const EYE = 2;
+	public const HOST = 3;
+	public const RAISER = 4;
+	public const RIB = 5;
+	public const SENTRY = 6;
+	public const SHAPER = 7;
+	public const SILENCE = 8;
+	public const SNOUT = 9;
+	public const SPIRE = 10;
+	public const TIDE = 11;
+	public const VEX = 12;
+	public const WARD = 13;
+	public const WAYFINDER = 14;
+	public const WILD = 15;
 }

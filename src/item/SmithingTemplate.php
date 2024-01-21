@@ -21,21 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\crafting;
+namespace pocketmine\item;
 
-use pocketmine\item\Item;
+class SmithingTemplate extends Item{
 
-interface SmithingRecipe{
-
-	public function getInput() : RecipeIngredient;
-
-	public function getAddition() : RecipeIngredient;
-
-	public function getTemplate() : RecipeIngredient;
-
-	/**
-	 * @param Item[] $inputs
-	 * @phpstan-param list<Item> $inputs
-	 */
-	public function getResultFor(array $inputs) : ?Item;
 }

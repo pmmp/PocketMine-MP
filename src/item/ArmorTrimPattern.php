@@ -46,7 +46,7 @@ enum ArmorTrimPattern : string{
 	case WAYFINDER = "wayfinder";
 	case WILD = "wild";
 
-	private const TEMPLATE_SUFFIX = "_armor_trim_smithing_template";
+	public const TEMPLATE_SUFFIX = "_armor_trim_smithing_template";
 
 	public static function fromItem(Item $item) : ?ArmorTrimPattern{
 		foreach(StringToItemParser::getInstance()->lookupAliases($item) as $alias){
@@ -56,9 +56,5 @@ enum ArmorTrimPattern : string{
 			return self::tryFrom(substr($alias, 0, strlen($alias) - strlen(self::TEMPLATE_SUFFIX)));
 		}
 		return null;
-	}
-
-	public function getItemId() : string{
-		return "minecraft:" . $this->value . self::TEMPLATE_SUFFIX;
 	}
 }

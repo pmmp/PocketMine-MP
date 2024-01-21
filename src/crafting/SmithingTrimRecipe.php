@@ -28,13 +28,14 @@ use pocketmine\item\ArmorTrim;
 use pocketmine\item\ArmorTrimMaterial;
 use pocketmine\item\ArmorTrimPattern;
 use pocketmine\item\Item;
+use pocketmine\item\SmithingTemplate;
 
-class SmithingTrimRecipe extends SmithingRecipe{
+class SmithingTrimRecipe implements SmithingRecipe{
 
 	public function __construct(
-		private RecipeIngredient $input,
-		private RecipeIngredient $addition,
-		private RecipeIngredient $template){
+		private readonly RecipeIngredient $input,
+		private readonly RecipeIngredient $addition,
+		private readonly RecipeIngredient $template){
 	}
 
 	public function getInput() : RecipeIngredient{
@@ -49,8 +50,23 @@ class SmithingTrimRecipe extends SmithingRecipe{
 		return $this->template;
 	}
 
-	public function constructOutput(Item $input, Item $addition, Item $template) : ?Item{
-		if(!$input instanceof Armor){
+	/**
+	 * @param Item[] $inputs
+	 * @phpstan-param list<Item> $inputs
+	 */
+	public function getResultFor(array $inputs) : ?Item{
+		$input = $template = $addition = null;
+		foreach($inputs as $item){
+			if($item instanceof Armor){
+				$input = $item;
+			}elseif($item instanceof SmithingTemplate){
+				$template = $item;
+			}else{
+				$addition = $item;
+			}
+		}
+
+		if($input === null || $addition === null || $template === null){
 			return null;
 		}
 		if(($material = ArmorTrimMaterial::fromItem($addition)) === null || ($pattern = ArmorTrimPattern::fromItem($template)) === null){

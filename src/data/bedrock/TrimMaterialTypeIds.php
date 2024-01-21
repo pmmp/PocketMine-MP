@@ -21,21 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\crafting;
+namespace pocketmine\data\bedrock;
 
-use pocketmine\item\Item;
+final class TrimMaterialTypeIds{
 
-interface SmithingRecipe{
-
-	public function getInput() : RecipeIngredient;
-
-	public function getAddition() : RecipeIngredient;
-
-	public function getTemplate() : RecipeIngredient;
-
-	/**
-	 * @param Item[] $inputs
-	 * @phpstan-param list<Item> $inputs
-	 */
-	public function getResultFor(array $inputs) : ?Item;
+	public const AMETHYST = 0;
+	public const COPPER = 1;
+	public const DIAMOND = 2;
+	public const EMERALD = 3;
+	public const GOLD = 4;
+	public const IRON = 5;
+	public const LAPIS = 6;
+	public const NETHERITE = 7;
+	public const QUARTZ = 8;
+	public const REDSTONE = 9;
 }
