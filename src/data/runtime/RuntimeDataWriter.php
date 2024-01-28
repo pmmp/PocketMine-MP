@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\data\runtime;
 
-use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;

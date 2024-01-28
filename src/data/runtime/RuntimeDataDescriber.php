@@ -23,9 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\data\runtime;
 
-use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\WallConnectionType;
-use pocketmine\math\Facing;
 
 /**
  * Interface implemented by {@link RuntimeDataReader}, {@link RuntimeDataWriter} and {@link RuntimeDataSizeCalculator}.
