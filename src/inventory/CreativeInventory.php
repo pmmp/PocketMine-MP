@@ -80,7 +80,7 @@ final class CreativeInventory{
 
 	public function getItemIndex(Item $item) : int{
 		foreach($this->creative as $i => $d){
-			if($item->equals($d, true, false)){
+			if($item->equals($d, false)){
 				return $i;
 			}
 		}

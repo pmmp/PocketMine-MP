@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\data\runtime;
 
-use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\math\Facing;
 use function count;
 use function log;
@@ -81,10 +80,6 @@ final class RuntimeDataSizeCalculator implements RuntimeDataDescriber{
 
 	public function wallConnections(array &$connections) : void{
 		$this->addBits(7);
-	}
-
-	public function brewingStandSlots(array &$slots) : void{
-		$this->addBits(count(BrewingStandSlot::cases()));
 	}
 
 	public function railShape(int &$railShape) : void{

@@ -47,7 +47,7 @@ final class ExactRecipeIngredient implements RecipeIngredient{
 		//client-side, recipe inputs can't actually require NBT
 		//but on the PM side, we currently check for it if the input requires it, so we have to continue to do so for
 		//the sake of consistency
-		return $item->getCount() >= 1 && $this->item->equals($item, true, $this->item->hasNamedTag());
+		return $item->getCount() >= 1 && $this->item->equals($item, $this->item->hasNamedTag());
 	}
 
 	public function __toString() : string{

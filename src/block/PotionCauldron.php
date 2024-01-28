@@ -87,7 +87,7 @@ final class PotionCauldron extends FillableCauldron{
 	 * @param Item[] &$returnedItems
 	 */
 	protected function addFillLevelsOrMix(int $amount, Item $usedItem, Item $returnedItem, array &$returnedItems) : void{
-		if($this->potionItem !== null && !$usedItem->equals($this->potionItem, true, false)){
+		if($this->potionItem !== null && !$usedItem->equals($this->potionItem, false)){
 			$this->mix($usedItem, $returnedItem, $returnedItems);
 		}else{
 			$this->addFillLevels($amount, $usedItem, $returnedItem, $returnedItems);
