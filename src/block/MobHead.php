@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\tile\MobHead as TileMobHead;
 use pocketmine\block\utils\MobHeadType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -32,7 +31,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
-use function assert;
 use function floor;
 
 class MobHead extends Flowable{
@@ -50,26 +48,7 @@ class MobHead extends Flowable{
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->facingExcept($this->facing, Facing::DOWN);
-	}
-
-	public function readStateFromWorld() : Block{
-		parent::readStateFromWorld();
-		$tile = $this->position->getWorld()->getTile($this->position);
-		if($tile instanceof TileMobHead){
-			$this->mobHeadType = $tile->getMobHeadType();
-			$this->rotation = $tile->getRotation();
-		}
-
-		return $this;
-	}
-
-	public function writeStateToWorld() : void{
-		parent::writeStateToWorld();
-		//extra block properties storage hack
-		$tile = $this->position->getWorld()->getTile($this->position);
-		assert($tile instanceof TileMobHead);
-		$tile->setRotation($this->rotation);
-		$tile->setMobHeadType($this->mobHeadType);
+		$w->boundedIntAuto(self::MIN_ROTATION, self::MAX_ROTATION, $this->rotation);
 	}
 
 	public function getMobHeadType() : MobHeadType{

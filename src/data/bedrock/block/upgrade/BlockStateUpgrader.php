@@ -62,7 +62,7 @@ final class BlockStateUpgrader{
 		$version = $blockStateData->getVersion();
 		$highestVersion = $version;
 		foreach($this->upgradeSchemas as $schema){
-			$resultVersion = $schema->getVersionId();
+			$resultVersion = $schema->getSchemaId();
 			$highestVersion = max($highestVersion, $resultVersion);
 			if($version > $resultVersion){
 				//even if this is actually the same version, we have to apply it anyway because mojang are dumb and

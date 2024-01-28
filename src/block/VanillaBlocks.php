@@ -39,8 +39,6 @@ use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\tile\Cauldron as TileCauldron;
 use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\tile\ChiseledBookshelf as TileChiseledBookshelf;
-use pocketmine\block\tile\Comparator as TileComparator;
-use pocketmine\block\tile\DaylightSensor as TileDaylightSensor;
 use pocketmine\block\tile\EnchantTable as TileEnchantingTable;
 use pocketmine\block\tile\EnderChest as TileEnderChest;
 use pocketmine\block\tile\FlowerPot as TileFlowerPot;
@@ -49,10 +47,8 @@ use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
 use pocketmine\block\tile\Jukebox as TileJukebox;
 use pocketmine\block\tile\Lectern as TileLectern;
-use pocketmine\block\tile\MobHead as TileMobHead;
 use pocketmine\block\tile\MonsterSpawner as TileMonsterSpawner;
 use pocketmine\block\tile\NormalFurnace as TileNormalFurnace;
-use pocketmine\block\tile\Note as TileNote;
 use pocketmine\block\tile\ShulkerBox as TileShulkerBox;
 use pocketmine\block\tile\Smoker as TileSmoker;
 use pocketmine\block\utils\AmethystTrait;
@@ -842,7 +838,7 @@ final class VanillaBlocks{
 		self::register("cobweb", new Cobweb(new BID(Ids::COBWEB), "Cobweb", new Info(new BreakInfo(4.0, ToolType::SWORD | ToolType::SHEARS, 1))));
 		self::register("cocoa_pod", new CocoaBlock(new BID(Ids::COCOA_POD), "Cocoa Block", new Info(BreakInfo::axe(0.2, null, 15.0))));
 		self::register("coral_block", new CoralBlock(new BID(Ids::CORAL_BLOCK), "Coral Block", new Info(BreakInfo::pickaxe(7.0, ToolTier::WOOD))));
-		self::register("daylight_sensor", new DaylightSensor(new BID(Ids::DAYLIGHT_SENSOR, TileDaylightSensor::class), "Daylight Sensor", new Info(BreakInfo::axe(0.2))));
+		self::register("daylight_sensor", new DaylightSensor(new BID(Ids::DAYLIGHT_SENSOR), "Daylight Sensor", new Info(BreakInfo::axe(0.2))));
 		self::register("dead_bush", new DeadBush(new BID(Ids::DEAD_BUSH), "Dead Bush", new Info(BreakInfo::instant(ToolType::SHEARS, 1), [Tags::POTTABLE_PLANTS])));
 		self::register("detector_rail", new DetectorRail(new BID(Ids::DETECTOR_RAIL), "Detector Rail", $railBreakInfo));
 
@@ -965,7 +961,7 @@ final class VanillaBlocks{
 		self::register("nether_wart_block", new Opaque(new BID(Ids::NETHER_WART_BLOCK), "Nether Wart Block", new Info(new BreakInfo(1.0, ToolType::HOE))));
 		self::register("nether_wart", new NetherWartPlant(new BID(Ids::NETHER_WART), "Nether Wart", new Info(BreakInfo::instant())));
 		self::register("netherrack", new Netherrack(new BID(Ids::NETHERRACK), "Netherrack", new Info(BreakInfo::pickaxe(0.4, ToolTier::WOOD))));
-		self::register("note_block", new Note(new BID(Ids::NOTE_BLOCK, TileNote::class), "Note Block", new Info(BreakInfo::axe(0.8))));
+		self::register("note_block", new Note(new BID(Ids::NOTE_BLOCK), "Note Block", new Info(BreakInfo::axe(0.8))));
 		self::register("obsidian", new Opaque(new BID(Ids::OBSIDIAN), "Obsidian", new Info(BreakInfo::pickaxe(35.0 /* 50 in PC */,  ToolTier::DIAMOND, 6000.0))));
 		self::register("packed_ice", new PackedIce(new BID(Ids::PACKED_ICE), "Packed Ice", new Info(BreakInfo::pickaxe(0.5))));
 		self::register("podzol", new Podzol(new BID(Ids::PODZOL), "Podzol", new Info(BreakInfo::shovel(0.5), [Tags::DIRT])));
@@ -1005,7 +1001,7 @@ final class VanillaBlocks{
 		self::register("rail", new Rail(new BID(Ids::RAIL), "Rail", $railBreakInfo));
 		self::register("red_mushroom", new RedMushroom(new BID(Ids::RED_MUSHROOM), "Red Mushroom", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
 		self::register("redstone", new Redstone(new BID(Ids::REDSTONE), "Redstone Block", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD, 30.0))));
-		self::register("redstone_comparator", new RedstoneComparator(new BID(Ids::REDSTONE_COMPARATOR, TileComparator::class), "Redstone Comparator", new Info(BreakInfo::instant())));
+		self::register("redstone_comparator", new RedstoneComparator(new BID(Ids::REDSTONE_COMPARATOR), "Redstone Comparator", new Info(BreakInfo::instant())));
 		self::register("redstone_lamp", new RedstoneLamp(new BID(Ids::REDSTONE_LAMP), "Redstone Lamp", new Info(new BreakInfo(0.3))));
 		self::register("redstone_repeater", new RedstoneRepeater(new BID(Ids::REDSTONE_REPEATER), "Redstone Repeater", new Info(BreakInfo::instant())));
 		self::register("redstone_torch", new RedstoneTorch(new BID(Ids::REDSTONE_TORCH), "Redstone Torch", new Info(BreakInfo::instant())));
@@ -1018,7 +1014,7 @@ final class VanillaBlocks{
 
 		self::register("sea_lantern", new SeaLantern(new BID(Ids::SEA_LANTERN), "Sea Lantern", new Info(new BreakInfo(0.3))));
 		self::register("sea_pickle", new SeaPickle(new BID(Ids::SEA_PICKLE), "Sea Pickle", new Info(BreakInfo::instant())));
-		self::register("mob_head", new MobHead(new BID(Ids::MOB_HEAD, TileMobHead::class), "Mob Head", new Info(new BreakInfo(1.0), enchantmentTags: [EnchantmentTags::MASK])));
+		self::register("mob_head", new MobHead(new BID(Ids::MOB_HEAD), "Mob Head", new Info(new BreakInfo(1.0), enchantmentTags: [EnchantmentTags::MASK])));
 		self::register("slime", new Slime(new BID(Ids::SLIME), "Slime Block", new Info(BreakInfo::instant())));
 		self::register("snow", new Snow(new BID(Ids::SNOW), "Snow Block", new Info(BreakInfo::shovel(0.2, ToolTier::WOOD))));
 		self::register("snow_layer", new SnowLayer(new BID(Ids::SNOW_LAYER), "Snow Layer", new Info(BreakInfo::shovel(0.1, ToolTier::WOOD))));

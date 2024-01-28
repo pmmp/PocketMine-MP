@@ -35,20 +35,6 @@ abstract class Spawnable extends Tile{
 	/** @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag>|null */
 	private ?CacheableNbt $spawnCompoundCache = null;
 
-	/**
-	 * @deprecated
-	 */
-	public function isDirty() : bool{
-		return $this->spawnCompoundCache === null;
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function setDirty(bool $dirty = true) : void{
-		$this->clearSpawnCompoundCache();
-	}
-
 	public function clearSpawnCompoundCache() : void{
 		$this->spawnCompoundCache = null;
 	}

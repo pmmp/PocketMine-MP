@@ -125,24 +125,18 @@ final class Process{
 		return count(ThreadManager::getInstance()->getAll()) + 2; //MainLogger + Main Thread
 	}
 
-	/**
-	 * @param bool $subprocesses @deprecated
-	 */
-	public static function kill(int $pid, bool $subprocesses = false) : void{
+	public static function kill(int $pid) : void{
 		$logger = \GlobalLogger::get();
 		if($logger instanceof MainLogger){
 			$logger->syncFlushBuffer();
 		}
 		switch(Utils::getOS()){
 			case Utils::OS_WINDOWS:
-				exec("taskkill.exe /F " . ($subprocesses ? "/T " : "") . "/PID $pid > NUL 2> NUL");
+				exec("taskkill.exe /F /PID $pid > NUL 2> NUL");
 				break;
 			case Utils::OS_MACOS:
 			case Utils::OS_LINUX:
 			default:
-				if($subprocesses){
-					$pid = -$pid;
-				}
 				if(function_exists("posix_kill")){
 					posix_kill($pid, 9); //SIGKILL
 				}else{

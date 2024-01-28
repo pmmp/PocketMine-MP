@@ -23,8 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\tile\Note as TileNote;
-use function assert;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 
 class Note extends Opaque{
 	public const MIN_PITCH = 0;
@@ -32,23 +31,8 @@ class Note extends Opaque{
 
 	private int $pitch = self::MIN_PITCH;
 
-	public function readStateFromWorld() : Block{
-		parent::readStateFromWorld();
-		$tile = $this->position->getWorld()->getTile($this->position);
-		if($tile instanceof TileNote){
-			$this->pitch = $tile->getPitch();
-		}else{
-			$this->pitch = self::MIN_PITCH;
-		}
-
-		return $this;
-	}
-
-	public function writeStateToWorld() : void{
-		parent::writeStateToWorld();
-		$tile = $this->position->getWorld()->getTile($this->position);
-		assert($tile instanceof TileNote);
-		$tile->setPitch($this->pitch);
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->boundedIntAuto(self::MIN_PITCH, self::MAX_PITCH, $this->pitch);
 	}
 
 	public function getFuelTime() : int{

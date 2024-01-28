@@ -60,8 +60,6 @@ final class TileFactory{
 		$this->register(Cauldron::class, ["Cauldron", "minecraft:cauldron"]);
 		$this->register(Chest::class, ["Chest", "minecraft:chest"]);
 		$this->register(ChiseledBookshelf::class, ["ChiseledBookshelf", "minecraft:chiseled_bookshelf"]);
-		$this->register(Comparator::class, ["Comparator", "minecraft:comparator"]);
-		$this->register(DaylightSensor::class, ["DaylightDetector", "minecraft:daylight_detector"]);
 		$this->register(EnchantTable::class, ["EnchantTable", "minecraft:enchanting_table"]);
 		$this->register(EnderChest::class, ["EnderChest", "minecraft:ender_chest"]);
 		$this->register(FlowerPot::class, ["FlowerPot", "minecraft:flower_pot"]);
@@ -71,12 +69,10 @@ final class TileFactory{
 		$this->register(Jukebox::class, ["Jukebox", "RecordPlayer", "minecraft:jukebox"]);
 		$this->register(Lectern::class, ["Lectern", "minecraft:lectern"]);
 		$this->register(MonsterSpawner::class, ["MobSpawner", "minecraft:mob_spawner"]);
-		$this->register(Note::class, ["Music", "minecraft:noteblock"]);
 		$this->register(ShulkerBox::class, ["ShulkerBox", "minecraft:shulker_box"]);
 		$this->register(Sign::class, ["Sign", "minecraft:sign"]);
 		$this->register(Smoker::class, ["Smoker", "minecraft:smoker"]);
 		$this->register(SporeBlossom::class, ["SporeBlossom", "minecraft:spore_blossom"]);
-		$this->register(MobHead::class, ["Skull", "minecraft:skull"]);
 		$this->register(GlowingItemFrame::class, ["GlowItemFrame"]);
 
 		//TODO: Campfire

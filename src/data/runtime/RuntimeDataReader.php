@@ -57,18 +57,6 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 		$value = $this->readInt($bits);
 	}
 
-	/**
-	 * @deprecated Use {@link self::boundedIntAuto()} instead.
-	 */
-	public function boundedInt(int $bits, int $min, int $max, int &$value) : void{
-		$offset = $this->offset;
-		$this->boundedIntAuto($min, $max, $value);
-		$actualBits = $this->offset - $offset;
-		if($this->offset !== $offset + $bits){
-			throw new \InvalidArgumentException("Bits should be $actualBits for the given bounds, but received $bits. Use boundedIntAuto() for automatic bits calculation.");
-		}
-	}
-
 	private function readBoundedIntAuto(int $min, int $max) : int{
 		$bits = ((int) log($max - $min, 2)) + 1;
 		$result = $this->readInt($bits) + $min;
@@ -188,16 +176,6 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 		}
 
 		$connections = $result;
-	}
-
-	/**
-	 * @param BrewingStandSlot[] $slots
-	 * @phpstan-param array<int, BrewingStandSlot> $slots
-	 *
-	 * @deprecated Use {@link enumSet()} instead.
-	 */
-	public function brewingStandSlots(array &$slots) : void{
-		$this->enumSet($slots, BrewingStandSlot::cases());
 	}
 
 	public function railShape(int &$railShape) : void{

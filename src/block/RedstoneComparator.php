@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\tile\Comparator;
 use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
@@ -36,7 +35,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
-use function assert;
 
 class RedstoneComparator extends Flowable{
 	use HorizontalFacingTrait;
@@ -50,23 +48,7 @@ class RedstoneComparator extends Flowable{
 		$w->horizontalFacing($this->facing);
 		$w->bool($this->isSubtractMode);
 		$w->bool($this->powered);
-	}
-
-	public function readStateFromWorld() : Block{
-		parent::readStateFromWorld();
-		$tile = $this->position->getWorld()->getTile($this->position);
-		if($tile instanceof Comparator){
-			$this->signalStrength = $tile->getSignalStrength();
-		}
-
-		return $this;
-	}
-
-	public function writeStateToWorld() : void{
-		parent::writeStateToWorld();
-		$tile = $this->position->getWorld()->getTile($this->position);
-		assert($tile instanceof Comparator);
-		$tile->setSignalStrength($this->signalStrength);
+		$w->boundedIntAuto(0, 15, $this->signalStrength);
 	}
 
 	public function isSubtractMode() : bool{

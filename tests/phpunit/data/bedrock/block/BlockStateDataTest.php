@@ -38,7 +38,7 @@ final class BlockStateDataTest extends TestCase{
 				PHP_INT_MAX
 		) as $schema){
 			$expected = BlockStateData::CURRENT_VERSION;
-			$actual = $schema->getVersionId();
+			$actual = $schema->getSchemaId();
 			self::assertLessThanOrEqual($expected, $actual, "Schema version $actual is newer than the current version $expected");
 		}
 	}
