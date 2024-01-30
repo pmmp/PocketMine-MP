@@ -1011,26 +1011,50 @@ class World implements ChunkManager{
 
 		if(count($this->changedBlocks) > 0){
 			if(count($this->players) > 0){
-				foreach($this->changedBlocks as $index => $blocks){
-					if(count($blocks) === 0){ //blocks can be set normally and then later re-set with direct send
-						continue;
-					}
-					World::getXZ($index, $chunkX, $chunkZ);
-					if(!$this->isChunkLoaded($chunkX, $chunkZ)){
-						//a previous chunk may have caused this one to be unloaded by a ChunkListener
-						continue;
-					}
-					if(count($blocks) > 512){
-						$chunk = $this->getChunk($chunkX, $chunkZ) ?? throw new AssumptionFailedError("We already checked that the chunk is loaded");
-						foreach($this->getChunkPlayers($chunkX, $chunkZ) as $p){
-							$p->onChunkChanged($chunkX, $chunkZ, $chunk);
-						}
-					}else{
-						foreach($this->createBlockUpdatePackets($blocks) as $packet){
-							$this->broadcastPacketToPlayersUsingChunk($chunkX, $chunkZ, $packet);
-						}
-					}
-				}
+				foreach ($this->changedBlocks as $index => $blocks) {
+    if (count($blocks) === 0) {
+        continue;
+    }
+
+    World::getXZ($index, $chunkX, $chunkZ);
+
+    // Check if the chunk is loaded before processing block updates
+    if (!$this->isChunkLoaded($chunkX, $chunkZ)) {
+        continue;
+    }
+
+    $chunk = $this->getChunk($chunkX, $chunkZ) ?? throw new AssumptionFailedError("We already checked that the chunk is loaded");
+
+    // Group block updates into chunks for more efficient processing
+    $chunkUpdates = [];
+
+    foreach ($blocks as $block) {
+        $blockX = $block->getX();
+        $blockZ = $block->getZ();
+
+        $chunkX = $blockX >> 4;
+        $chunkZ = $blockZ >> 4;
+
+        $chunkIndex = Level::chunkHash($chunkX, $chunkZ);
+        $chunkUpdates[$chunkIndex][] = $block;
+    }
+
+    // Process chunk updates
+    foreach ($chunkUpdates as $chunkIndex => $blockUpdates) {
+        list($chunkX, $chunkZ) = Level::getChunkXZ($chunkIndex);
+
+        if (count($blockUpdates) > 512) {
+            foreach ($this->getChunkPlayers($chunkX, $chunkZ) as $player) {
+                $player->onChunkChanged($chunkX, $chunkZ, $chunk);
+            }
+        } else {
+            foreach ($this->createBlockUpdatePackets($blockUpdates) as $packet) {
+                $this->broadcastPacketToPlayersUsingChunk($chunkX, $chunkZ, $packet);
+            }
+        }
+    }
+}
+
 			}
 
 			$this->changedBlocks = [];
