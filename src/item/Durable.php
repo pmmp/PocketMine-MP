@@ -30,6 +30,8 @@ use function min;
 
 abstract class Durable extends Item{
 	protected int $damage = 0;
+	protected int $lastDamage = 0;
+
 	private bool $unbreakable = false;
 
 	/**
@@ -59,6 +61,7 @@ abstract class Durable extends Item{
 			return false;
 		}
 
+		$this->lastDamage = $amount;
 		$amount -= $this->getUnbreakingDamageReduction($amount);
 
 		$this->damage = min($this->damage + $amount, $this->getMaxDurability());
@@ -71,6 +74,10 @@ abstract class Durable extends Item{
 
 	public function getDamage() : int{
 		return $this->damage;
+	}
+
+	public function getLastDamage() : int{
+		return $this->lastDamage;
 	}
 
 	public function setDamage(int $damage) : Item{
