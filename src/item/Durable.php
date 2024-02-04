@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\event\inventory\ItemDamageEvent;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\nbt\tag\CompoundTag;
 use function lcg_value;
@@ -59,7 +60,14 @@ abstract class Durable extends Item{
 			return false;
 		}
 
-		$amount -= $this->getUnbreakingDamageReduction($amount);
+		$ev = new ItemDamageEvent($this, $amount, $this->getUnbreakingDamageReduction($amount));
+		$ev->call();
+
+		if ($ev->isCancelled()) {
+			return false;
+		}
+
+		$amount = $ev->getDamage() - $ev->getUnbreakingDamageReduction();
 
 		$this->damage = min($this->damage + $amount, $this->getMaxDurability());
 		if($this->isBroken()){

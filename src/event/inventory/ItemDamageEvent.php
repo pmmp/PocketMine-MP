@@ -23,62 +23,41 @@ declare(strict_types=1);
 
 namespace pocketmine\event\inventory;
 
-use pocketmine\crafting\CraftingRecipe;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\event\Event;
-use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\item\Durable;
-use pocketmine\item\Item;
-use pocketmine\player\Player;
-use pocketmine\utils\Utils;
 
+/**
+ * Called when an item is damaged
+ */
 class ItemDamageEvent extends Event implements Cancellable{
-    use CancellableTrait;
+	use CancellableTrait;
 
-    public function __construct(
-        private Durable $item,
-        private int $damage,
-        private int $unbreakingDamageReduction = 0
-    ){}
+	public function __construct(
+		private Durable $item,
+		private int $damage,
+		private int $unbreakingDamageReduction = 0
+	){
+	}
 
-    /**
-     * @return int
-     */
-    public function getDamage(): int
-    {
-        return $this->damage;
-    }
+	public function getDamage() : int{
+		return $this->damage;
+	}
 
-    /**
-     * @return Durable
-     */
-    public function getItem(): Durable
-    {
-        return $this->item;
-    }
+	public function getItem() : Durable{
+		return $this->item;
+	}
 
-    /**
-     * @return int
-     */
-    public function getUnbreakingDamageReduction(): int
-    {
-        return $this->unbreakingDamageReduction;
-    }
+	public function getUnbreakingDamageReduction() : int{
+		return $this->unbreakingDamageReduction;
+	}
 
-    /**
-     * @param int $damage
-     */
-    public function setDamage(int $damage): void
-    {
-        $this->damage = $damage;
-    }
+	public function setDamage(int $damage) : void{
+		$this->damage = $damage;
+	}
 
-    /**
-     * @param int $unbreakingDamageReduction
-     */
-    public function setUnbreakingDamageReduction(int $unbreakingDamageReduction): void
-    {
-        $this->unbreakingDamageReduction = $unbreakingDamageReduction;
-    }
+	public function setUnbreakingDamageReduction(int $unbreakingDamageReduction) : void{
+		$this->unbreakingDamageReduction = $unbreakingDamageReduction;
+	}
 }
