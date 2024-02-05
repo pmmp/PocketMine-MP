@@ -165,7 +165,7 @@ class ParserPacketHandler extends PacketHandler{
 				$data->block_states = self::blockStatePropertiesToString($blockState);
 			}
 		}elseif($itemStack->getBlockRuntimeId() !== ItemTranslator::NO_BLOCK_RUNTIME_ID){
-			throw new PacketHandlingException("Non-blockitems should have a zero block runtime ID");
+			throw new PacketHandlingException("Non-blockitems should have a zero block runtime ID (" . $itemStack->getBlockRuntimeId() . " on " . $itemStringId . ")");
 		}elseif($meta !== 0){
 			$data->meta = $meta;
 		}
