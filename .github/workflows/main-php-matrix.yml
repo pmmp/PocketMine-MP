@@ -37,7 +37,7 @@ jobs:
           pm-version-major: ${{ inputs.pm-version-major }}
 
       - name: Restore Composer package cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/composer/files
@@ -69,7 +69,7 @@ jobs:
           pm-version-major: ${{ inputs.pm-version-major }}
 
       - name: Restore Composer package cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/composer/files
@@ -103,7 +103,7 @@ jobs:
           pm-version-major: ${{ inputs.pm-version-major }}
 
       - name: Restore Composer package cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/composer/files
@@ -135,7 +135,7 @@ jobs:
           pm-version-major: ${{ inputs.pm-version-major }}
 
       - name: Restore Composer package cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/composer/files
