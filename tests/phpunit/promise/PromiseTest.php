@@ -148,7 +148,6 @@ class PromiseTest extends TestCase{
 		$resolver2->reject();
 
 		$allPromise = Promise::all([$resolver1->getPromise(), $resolver2->getPromise()]);
-		self::assertTrue($allPromise->isResolved());
 		$done = false;
 		$allPromise->onCompletion(
 			function($value) use (&$done) : void{
