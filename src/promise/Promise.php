@@ -71,7 +71,7 @@ final class Promise{
 	 *
 	 * @phpstan-return Promise<array<TKey, TPromiseValue>>
 	 */
-	public static function all(array $promises) : Promise {
+	public static function all(array $promises) : Promise{
 		/** @phpstan-var PromiseResolver<array<TKey, TPromiseValue>> $resolver */
 		$resolver = new PromiseResolver();
 		$values = [];
