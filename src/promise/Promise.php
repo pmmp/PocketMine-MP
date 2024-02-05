@@ -83,11 +83,10 @@ final class Promise{
 
 		foreach($promises as $key => $promise){
 			$promise->onCompletion(
-				function(mixed $value) use ($resolver, $key, &$toResolve, &$continue, &$values) : void{
+				function(mixed $value) use ($resolver, $key, $toResolve, &$values) : void{
 					$values[$key] = $value;
 
-					$toResolve--;
-					if($toResolve === 0 && $continue){
+					if(count($values) === $toResolve){
 						$resolver->resolve($values);
 					}
 				},
