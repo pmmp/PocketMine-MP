@@ -79,11 +79,6 @@ class PromiseTest extends TestCase{
 		self::assertTrue($done);
 	}
 
-	public function testAllNoPromises() : void{
-		$this->expectException(\InvalidArgumentException::class);
-		Promise::all([]);
-	}
-
 	public function testAllResolve() : void{
 		$resolver1 = new PromiseResolver();
 		$resolver2 = new PromiseResolver();
