@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 
 /**
@@ -36,7 +37,7 @@ final class ItemBlock extends Item{
 	public function __construct(
 		private Block $block
 	){
-		parent::__construct(ItemIdentifier::fromBlock($block), $block->getName());
+		parent::__construct(ItemIdentifier::fromBlock($block), $block->getName(), $block->getEnchantmentTags());
 	}
 
 	protected function describeState(RuntimeDataDescriber $w) : void{
@@ -57,5 +58,13 @@ final class ItemBlock extends Item{
 
 	public function getMaxStackSize() : int{
 		return $this->block->getMaxStackSize();
+	}
+
+	public function isNull() : bool{
+		//TODO: we really shouldn't need to treat air as a special case here
+		//this is needed because the "null" empty slot item is represented by an air block, but there's no real reason
+		//why air should be needed at all. A separate special item type (or actual null) should be used instead, but
+		//this would cause a lot of BC breaks, so we can't do it yet.
+		return parent::isNull() || $this->block->getTypeId() === BlockTypeIds::AIR;
 	}
 }

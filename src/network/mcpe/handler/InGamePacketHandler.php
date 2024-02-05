@@ -57,7 +57,6 @@ use pocketmine\network\mcpe\protocol\BossEventPacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
-use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
@@ -79,7 +78,6 @@ use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
-use pocketmine\network\mcpe\protocol\RequestAbilityPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
@@ -116,7 +114,6 @@ use function fmod;
 use function get_debug_type;
 use function implode;
 use function in_array;
-use function is_bool;
 use function is_infinite;
 use function is_nan;
 use function json_decode;
@@ -201,7 +198,7 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		$hasMoved = $this->lastPlayerAuthInputPosition === null || !$this->lastPlayerAuthInputPosition->equals($rawPos);
-		$newPos = $rawPos->round(4)->subtract(0, 1.62, 0);
+		$newPos = $rawPos->subtract(0, 1.62, 0)->round(4);
 
 		if($this->forceMoveSync && $hasMoved){
 			$curPos = $this->player->getLocation();
@@ -224,11 +221,13 @@ class InGamePacketHandler extends PacketHandler{
 			$sprinting = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SPRINTING, PlayerAuthInputFlags::STOP_SPRINTING);
 			$swimming = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SWIMMING, PlayerAuthInputFlags::STOP_SWIMMING);
 			$gliding = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_GLIDING, PlayerAuthInputFlags::STOP_GLIDING);
+			$flying = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_FLYING, PlayerAuthInputFlags::STOP_FLYING);
 			$mismatch =
 				($sneaking !== null && !$this->player->toggleSneak($sneaking)) |
 				($sprinting !== null && !$this->player->toggleSprint($sprinting)) |
 				($swimming !== null && !$this->player->toggleSwim($swimming)) |
-				($gliding !== null && !$this->player->toggleGlide($gliding));
+				($gliding !== null && !$this->player->toggleGlide($gliding)) |
+				($flying !== null && !$this->player->toggleFlight($flying));
 			if((bool) $mismatch){
 				$this->player->sendData([$this->player]);
 			}
@@ -731,10 +730,6 @@ class InGamePacketHandler extends PacketHandler{
 		return true; //this packet is useless
 	}
 
-	public function handleCraftingEvent(CraftingEventPacket $packet) : bool{
-		return true; //this is a broken useless packet, so we don't use it
-	}
-
 	public function handleBlockActorData(BlockActorDataPacket $packet) : bool{
 		$pos = new Vector3($packet->blockPosition->getX(), $packet->blockPosition->getY(), $packet->blockPosition->getZ());
 		if($pos->distanceSquared($this->player->getLocation()) > 10000){
@@ -783,7 +778,7 @@ class InGamePacketHandler extends PacketHandler{
 
 	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
 		$gameMode = $this->session->getTypeConverter()->protocolGameModeToCore($packet->gamemode);
-		if($gameMode === null || !$gameMode->equals($this->player->getGamemode())){
+		if($gameMode !== $this->player->getGamemode()){
 			//Set this back to default. TODO: handle this properly
 			$this->session->syncGameMode($this->player->getGamemode(), true);
 		}
@@ -1031,23 +1026,5 @@ class InGamePacketHandler extends PacketHandler{
 	public function handleEmote(EmotePacket $packet) : bool{
 		$this->player->emote($packet->getEmoteId());
 		return true;
-	}
-
-	public function handleRequestAbility(RequestAbilityPacket $packet) : bool{
-		if($packet->getAbilityId() === RequestAbilityPacket::ABILITY_FLYING){
-			$isFlying = $packet->getAbilityValue();
-			if(!is_bool($isFlying)){
-				throw new PacketHandlingException("Flying ability should always have a bool value");
-			}
-			if($isFlying !== $this->player->isFlying()){
-				if(!$this->player->toggleFlight($isFlying)){
-					$this->session->syncAbilities($this->player);
-				}
-			}
-
-			return true;
-		}
-
-		return false;
 	}
 }

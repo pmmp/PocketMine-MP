@@ -27,6 +27,19 @@ use PHPUnit\Framework\TestCase;
 
 class PromiseTest extends TestCase{
 
+	public function testPromiseNull() : void{
+		$resolver = new PromiseResolver();
+		$resolver->resolve(null);
+		$resolver->getPromise()->onCompletion(
+			function(mixed $value) : void{
+				self::assertNull($value);
+			},
+			function() : void{
+				self::fail("Promise should not be rejected");
+			}
+		);
+	}
+
 	public function testAllPreResolved() : void{
 		$resolver = new PromiseResolver();
 		$resolver->resolve(1);

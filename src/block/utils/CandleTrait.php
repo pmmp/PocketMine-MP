@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
-use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\VanillaEnchantments;
@@ -33,36 +32,29 @@ use pocketmine\item\ItemTypeIds;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\sound\BlazeShootSound;
 use pocketmine\world\sound\FireExtinguishSound;
 use pocketmine\world\sound\FlintSteelSound;
 
 trait CandleTrait{
-	private bool $lit = false;
-
-	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->bool($this->lit);
-	}
+	use LightableTrait;
 
 	public function getLightLevel() : int{
 		return $this->lit ? 3 : 0;
 	}
 
-	public function isLit() : bool{ return $this->lit; }
-
-	/** @return $this */
-	public function setLit(bool $lit) : self{
-		$this->lit = $lit;
-		return $this;
-	}
-
 	/** @see Block::onInteract() */
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($item->getTypeId() === ItemTypeIds::FLINT_AND_STEEL || $item->hasEnchantment(VanillaEnchantments::FIRE_ASPECT())){
+		if($item->getTypeId() === ItemTypeIds::FIRE_CHARGE || $item->getTypeId() === ItemTypeIds::FLINT_AND_STEEL || $item->hasEnchantment(VanillaEnchantments::FIRE_ASPECT())){
 			if($this->lit){
 				return true;
 			}
 			if($item instanceof Durable){
 				$item->applyDamage(1);
+			}elseif($item->getTypeId() === ItemTypeIds::FIRE_CHARGE){
+				$item->pop();
+				//TODO: not sure if this is intentional, but it's what Bedrock currently does as of 1.20.10
+				$this->position->getWorld()->addSound($this->position, new BlazeShootSound());
 			}
 			$this->position->getWorld()->addSound($this->position, new FlintSteelSound());
 			$this->position->getWorld()->setBlock($this->position, $this->setLit(true));

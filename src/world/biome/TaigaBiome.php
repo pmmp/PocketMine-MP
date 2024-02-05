@@ -32,7 +32,7 @@ class TaigaBiome extends SnowyBiome{
 	public function __construct(){
 		parent::__construct();
 
-		$trees = new Tree(TreeType::SPRUCE());
+		$trees = new Tree(TreeType::SPRUCE);
 		$trees->setBaseAmount(10);
 		$this->addPopulator($trees);
 
