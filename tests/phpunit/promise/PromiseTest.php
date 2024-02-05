@@ -80,19 +80,8 @@ class PromiseTest extends TestCase{
 	}
 
 	public function testAllNoPromises() : void{
-		$allPromise = Promise::all([]);
-		$done = false;
-		$allPromise->onCompletion(
-			function($value) use (&$done) : void{
-				$done = true;
-				self::assertEquals([], $value);
-			},
-			function() use (&$done) : void{
-				$done = true;
-				self::fail("Promise was rejected");
-			}
-		);
-		self::assertTrue($done);
+		$this->expectException(\InvalidArgumentException::class);
+		Promise::all([]);
 	}
 
 	public function testAllResolve() : void{
