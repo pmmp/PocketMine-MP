@@ -67,7 +67,7 @@ final class Promise{
 	 *
 	 * @template TPromiseValue
 	 * @template TKey of array-key
-	 * @phpstan-param array<TKey, Promise<TPromiseValue>> $promises
+	 * @phpstan-param non-empty-array<TKey, Promise<TPromiseValue>> $promises
 	 *
 	 * @phpstan-return Promise<array<TKey, TPromiseValue>>
 	 */
