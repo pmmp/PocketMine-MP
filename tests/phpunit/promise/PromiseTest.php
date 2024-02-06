@@ -25,7 +25,7 @@ namespace pocketmine\promise;
 
 use PHPUnit\Framework\TestCase;
 
-class PromiseTest extends TestCase{
+final class PromiseTest extends TestCase{
 
 	public function testPromiseNull() : void{
 		$resolver = new PromiseResolver();
