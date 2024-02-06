@@ -65,8 +65,10 @@ final class Promise{
 	 * will be an array containing the resolution values of each Promises in
 	 * `$promises` indexed by the respective Promises' array keys.
 	 *
-	 * @template TPromiseValue
-	 * @template TKey of array-key
+	 * @param Promise[] $promises
+	 *
+	 * @phpstan-template TPromiseValue
+	 * @phpstan-template TKey of array-key
 	 * @phpstan-param non-empty-array<TKey, Promise<TPromiseValue>> $promises
 	 *
 	 * @phpstan-return Promise<array<TKey, TPromiseValue>>
