@@ -60,6 +60,7 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketBroadcaster;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
+use pocketmine\network\mcpe\protocol\types\CompressionAlgorithm;
 use pocketmine\network\mcpe\raklib\RakLibInterface;
 use pocketmine\network\mcpe\StandardEntityEventBroadcaster;
 use pocketmine\network\mcpe\StandardPacketBroadcaster;
@@ -125,6 +126,7 @@ use Symfony\Component\Filesystem\Path;
 use function array_fill;
 use function array_sum;
 use function base64_encode;
+use function chr;
 use function cli_set_process_title;
 use function copy;
 use function count;
@@ -1373,19 +1375,26 @@ class Server{
 		try{
 			$timings->startTiming();
 
-			if($sync === null){
-				$threshold = $compressor->getCompressionThreshold();
-				$sync = !$this->networkCompressionAsync || $threshold === null || strlen($buffer) < $threshold;
+			$threshold = $compressor->getCompressionThreshold();
+			if($threshold === null || strlen($buffer) < $compressor->getCompressionThreshold()){
+				$compressionType = CompressionAlgorithm::NONE;
+				$compressed = $buffer;
+
+			}else{
+				$sync ??= !$this->networkCompressionAsync;
+
+				if(!$sync && strlen($buffer) >= $this->networkCompressionAsyncThreshold){
+					$promise = new CompressBatchPromise();
+					$task = new CompressBatchTask($buffer, $promise, $compressor);
+					$this->asyncPool->submitTask($task);
+					return $promise;
+				}
+
+				$compressionType = $compressor->getNetworkId();
+				$compressed = $compressor->compress($buffer);
 			}
 
-			if(!$sync && strlen($buffer) >= $this->networkCompressionAsyncThreshold){
-				$promise = new CompressBatchPromise();
-				$task = new CompressBatchTask($buffer, $promise, $compressor);
-				$this->asyncPool->submitTask($task);
-				return $promise;
-			}
-
-			return $compressor->compress($buffer);
+			return chr($compressionType) . $compressed;
 		}finally{
 			$timings->stopTiming();
 		}
