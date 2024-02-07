@@ -71,7 +71,7 @@ final class ChunkSerializer{
 		//if the protocol world bounds ever exceed the PM supported bounds again in the future, we might need to
 		//polyfill some stuff here
 		[$minSubChunkIndex, $maxSubChunkIndex] = self::getDimensionChunkBounds($dimensionId);
-		for($y = $maxSubChunkIndex, $count = count($chunk->getSubChunks()); $y >= $minSubChunkIndex; --$y, --$count){
+		for($y = $maxSubChunkIndex, $count = $maxSubChunkIndex - $minSubChunkIndex + 1; $y >= $minSubChunkIndex; --$y, --$count){
 			if($chunk->getSubChunk($y)->isEmptyFast()){
 				continue;
 			}
