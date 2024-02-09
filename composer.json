@@ -62,6 +62,7 @@
          "pocketmine\\": "src/"
       },
       "files": [
+         "src/AutoloadBootstrap.php",
          "src/CoreConstants.php"
       ]
    },

@@ -30,6 +30,7 @@ namespace pocketmine {
 	use pocketmine\thread\ThreadSafeClassLoader;
 	use pocketmine\utils\Filesystem;
 	use pocketmine\utils\MainLogger;
+	use pocketmine\utils\PharStreamWrapper;
 	use pocketmine\utils\Process;
 	use pocketmine\utils\ServerKiller;
 	use pocketmine\utils\Terminal;
@@ -274,6 +275,10 @@ JIT_WARNING
 				exit(1);
 			}
 		}
+		$pharPath = \Phar::running(false);
+		if($pharPath !== ""){
+			PharStreamWrapper::cachePhar($pharPath);
+		}
 
 		ErrorToExceptionHandler::set();
 
@@ -367,6 +372,7 @@ JIT_WARNING
 
 		Filesystem::releaseLockFile($lockFilePath);
 
+		PharStreamWrapper::deleteCaches();
 		exit($exitCode);
 	}
 
