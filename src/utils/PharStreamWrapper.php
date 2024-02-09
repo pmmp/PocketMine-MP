@@ -25,7 +25,6 @@ namespace pocketmine\utils;
 
 use pmmp\thread\Thread;
 use function assert;
-use function basename;
 use function chgrp;
 use function chmod;
 use function chown;
@@ -44,7 +43,6 @@ use function fstat;
 use function ftell;
 use function ftruncate;
 use function fwrite;
-use function get_class;
 use function hash_file;
 use function hrtime;
 use function is_array;
@@ -56,7 +54,6 @@ use function is_string;
 use function mkdir;
 use function number_format;
 use function opendir;
-use function parse_url;
 use function pathinfo;
 use function readdir;
 use function rename;
@@ -72,6 +69,7 @@ use function stream_wrapper_register;
 use function stream_wrapper_restore;
 use function stream_wrapper_unregister;
 use function strlen;
+use function strrpos;
 use function substr;
 use function touch;
 use function unlink;
@@ -103,7 +101,7 @@ class PharStreamWrapper{
 	/** @var resource */
 	public $context;
 
-	/** @var resource|false */
+	/** @var resource */
 	protected $internalResource;
 
 	public function dir_closedir() : bool{
@@ -117,8 +115,12 @@ class PharStreamWrapper{
 
 	public function dir_opendir(string $path, int $options) : bool{
 		//TODO: why is $options not used?
-		$this->internalResource = self::withOriginalWrapper(fn() => opendir($path, $this->context));
-		return is_resource($this->internalResource);
+		$resource = self::withOriginalWrapper(fn() => opendir($path, $this->context));
+		if(is_resource($resource)){
+			$this->internalResource = $resource;
+			return true;
+		}
+		return false;
 	}
 
 	public function dir_readdir() : string|false{
@@ -126,10 +128,6 @@ class PharStreamWrapper{
 	}
 
 	public function dir_rewinddir() : bool{
-		if(!is_resource($this->internalResource)){
-			return false;
-		}
-
 		rewinddir($this->internalResource);
 		return true;
 	}
@@ -138,59 +136,33 @@ class PharStreamWrapper{
 		return self::withOriginalWrapper(fn() => mkdir($path, $mode, ($options & STREAM_MKDIR_RECURSIVE) !== 0, $this->context));
 	}
 
-	/**
-	 * @param string $path_from
-	 * @param string $path_to
-	 *
-	 * @return bool
-	 */
 	public function rename(string $path_from, string $path_to) : bool{
 		return self::withOriginalWrapper(fn() => rename($path_from, $path_to, $this->context));
 	}
 
-	/**
-	 * @param string $path
-	 * @param int    $options
-	 *
-	 * @return bool
-	 */
 	public function rmdir(string $path, int $options) : bool{
 		return self::withOriginalWrapper(fn() => rmdir($path, $this->context));
 	}
 
-	/**
-	 * @param int $cast_as
-	 */
-	public function stream_cast(int $cast_as){
+	public function stream_cast(int $cast_as) : void{
 		throw new \Exception(
 			'Method stream_select() cannot be used',
 			1530103999
 		);
 	}
 
-	public function stream_close(){
+	public function stream_close() : void{
 		fclose($this->internalResource);
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function stream_eof() : bool{
 		return feof($this->internalResource);
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function stream_flush() : bool{
 		return fflush($this->internalResource);
 	}
 
-	/**
-	 * @param int $operation
-	 *
-	 * @return bool
-	 */
 	public function stream_lock(int $operation) : bool{
 		return flock($this->internalResource, $operation);
 	}
@@ -227,14 +199,6 @@ class PharStreamWrapper{
 		return false;
 	}
 
-	/**
-	 * @param string      $path
-	 * @param string      $mode
-	 * @param int         $options
-	 * @param string|null $opened_path
-	 *
-	 * @return bool
-	 */
 	public function stream_open(
 		string $path,
 		string $mode,
@@ -243,10 +207,11 @@ class PharStreamWrapper{
 	) : bool{
 		$cacheUri = self::getPharCacheUri($path);
 
-		$this->internalResource = self::withOriginalWrapper(fn() => fopen($cacheUri ?? $path, $mode, (bool) ($options & STREAM_USE_PATH), $this->context));
-		if(!is_resource($this->internalResource)){
+		$resource = self::withOriginalWrapper(fn() => fopen($cacheUri ?? $path, $mode, (bool) ($options & STREAM_USE_PATH), $this->context));
+		if(!is_resource($resource)){
 			return false;
 		}
+		$this->internalResource = $resource;
 
 		if($opened_path !== null){
 			$opened_path = $path;
@@ -254,18 +219,18 @@ class PharStreamWrapper{
 		return true;
 	}
 
+	/**
+	 * @phpstan-param int<0, max> $count
+	 */
 	public function stream_read(int $count) : string|false{
-		return is_resource($this->internalResource) ? fread($this->internalResource, $count) : false;
+		return fread($this->internalResource, $count);
 	}
 
 	public function stream_seek(int $offset, int $whence = SEEK_SET) : bool{
-		return is_resource($this->internalResource) && fseek($this->internalResource, $offset, $whence) !== -1;
+		return fseek($this->internalResource, $offset, $whence) !== -1;
 	}
 
 	public function stream_set_option(int $option, int $arg1, int $arg2) : bool{
-		if(!is_resource($this->internalResource)){
-			return false;
-		}
 		if($option === STREAM_OPTION_BLOCKING){
 			return stream_set_blocking($this->internalResource, $arg1 !== 0);
 		}
@@ -278,48 +243,40 @@ class PharStreamWrapper{
 		return false;
 	}
 
-	public function stream_stat() : array{
+	/**
+	 * @return int[]|false
+	 */
+	public function stream_stat() : array|false{
 		return fstat($this->internalResource);
 	}
 
-	/**
-	 * @return int
-	 */
 	public function stream_tell() : int{
-		return ftell($this->internalResource);
+		$pos = ftell($this->internalResource);
+		return $pos !== false ? $pos : 0;
 	}
 
+	/**
+	 * @phpstan-param int<0, max> $new_size
+	 */
 	public function stream_truncate(int $new_size) : bool{
 		//TODO: This will mess with the cache instead of the real phar - that's probably not what this should be doing
 		return ftruncate($this->internalResource, $new_size);
 	}
 
-	/**
-	 * @param string $data
-	 *
-	 * @return int
-	 */
 	public function stream_write(string $data) : int{
 		//TODO: This will mess with the cache instead of the real phar - that's probably not what this should be doing
-		return fwrite($this->internalResource, $data);
+		$written = fwrite($this->internalResource, $data);
+		return $written !== false ? $written : 0;
 	}
 
-	/**
-	 * @param string $path
-	 *
-	 * @return bool
-	 */
 	public function unlink(string $path) : bool{
 		return self::withOriginalWrapper(fn() => unlink($path, $this->context));
 	}
 
 	/**
-	 * @param string $path
-	 * @param int    $flags
-	 *
-	 * @return array|false
+	 * @return int[]|false
 	 */
-	public function url_stat(string $path, int $flags){
+	public function url_stat(string $path, int $flags) : array|false{
 		return self::withOriginalWrapper(fn() => ($flags & STREAM_URL_STAT_QUIET) !== 0 ? @stat($path) : stat($path));
 	}
 
@@ -442,4 +399,3 @@ class PharStreamWrapper{
 		self::$caches = [];
 	}
 }
-
