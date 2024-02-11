@@ -37,12 +37,14 @@ use function is_float;
 use function is_int;
 use function is_string;
 use function mkdir;
+use function preg_match;
 use function rtrim;
 use function strlen;
 use function strtolower;
 use const DIRECTORY_SEPARATOR;
 
 class ResourcePackManager{
+	private const URL_REGEX = "\b(?:https?:\/\/)?(?:www\.)?(?:[a-zA-Z0-9-]+(?:\.[a-zA-Z]{2,})+|\d{1,3}(?:\.\d{1,3}){3})(?:\/[^\s]*)?\b";
 	private string $path;
 	private bool $serverForceResources = false;
 
@@ -123,8 +125,8 @@ class ResourcePackManager{
 				}
 				if(isset($remotePacks[$pack])){
 					$url = $remotePacks[$pack];
-					if(!is_string($url)){
-						throw new ResourcePackException("Invalid URL for pack $pack");
+					if(!is_string($url) || preg_match(self::URL_REGEX, $url) !== 1){
+						throw new ResourcePackException("Invalid CDN URL for pack $pack");
 					}
 					$this->packURLs[$newPack->getPackId() . "_" . $newPack->getPackVersion()] = $url;
 				}
