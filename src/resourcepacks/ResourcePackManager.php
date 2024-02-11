@@ -28,6 +28,7 @@ use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use function array_keys;
+use function assert;
 use function copy;
 use function count;
 use function file_exists;
