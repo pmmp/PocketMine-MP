@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\resourcepacks;
 
+use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use Symfony\Component\Filesystem\Path;
@@ -51,6 +52,12 @@ class ResourcePackManager{
 
 	/** @var ResourcePack[] */
 	private array $uuidList = [];
+
+	/**
+	 * @var ResourcePack[][]
+	 * @phpstan-var array<string, list<ResourcePack>>
+	 */
+	private array $playerSpecificResourceStacks = [];
 
 	/**
 	 * @var string[]
@@ -163,10 +170,11 @@ class ResourcePackManager{
 
 	/**
 	 * Returns an array of resource packs in use, sorted in order of priority.
+	 * @param NetworkSession|null $session
 	 * @return ResourcePack[]
 	 */
-	public function getResourceStack() : array{
-		return $this->resourcePacks;
+	public function getResourceStack(?NetworkSession $session = null) : array{
+		return $session === null ? $this->resourcePacks : ($this->playerSpecificResourceStacks[$session->getPlayerInfo()?->getUuid()->toString()] ?? $this->resourcePacks);
 	}
 
 	/**
@@ -176,8 +184,9 @@ class ResourcePackManager{
 	 *
 	 * @param ResourcePack[] $resourceStack
 	 * @phpstan-param list<ResourcePack> $resourceStack
+	 * @param NetworkSession|null $session
 	 */
-	public function setResourceStack(array $resourceStack) : void{
+	public function setResourceStack(array $resourceStack, ?NetworkSession $session = null) : void{
 		$uuidList = [];
 		$resourcePacks = [];
 		foreach($resourceStack as $pack){
@@ -188,7 +197,11 @@ class ResourcePackManager{
 			$uuidList[$uuid] = $pack;
 			$resourcePacks[] = $pack;
 		}
-		$this->resourcePacks = $resourcePacks;
+		if($session === null) {
+			$this->resourcePacks = $resourcePacks;
+		} else {
+			$this->playerSpecificResourceStacks[$session->getPlayerInfo()?->getUuid()->toString()] = $resourcePacks;
+		}
 		$this->uuidList = $uuidList;
 	}
 
