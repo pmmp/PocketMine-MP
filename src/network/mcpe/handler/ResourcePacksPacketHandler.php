@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\event\server\ResourcePackStackSendEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
@@ -65,6 +66,8 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	){}
 
 	public function setUp() : void{
+		$event = new ResourcePackStackSendEvent($this->session, $this->resourcePackManager->getResourceStack(), $this->resourcePackManager->resourcePacksRequired(), false);
+		$event->call();
 		$resourcePackEntries = array_map(function(ResourcePack $pack) : ResourcePackInfoEntry{
 			//TODO: more stuff
 			$encryptionKey = $this->resourcePackManager->getPackEncryptionKey($pack->getPackId());
@@ -78,9 +81,8 @@ class ResourcePacksPacketHandler extends PacketHandler{
 				$pack->getPackId(),
 				false
 			);
-		}, $this->session->getPlayerInfo() === null ? $this->resourcePackManager->getResourceStack() : $this->resourcePackManager->getSessionResourceStack($this->session));
-		//TODO: support forcing server packs
-		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($resourcePackEntries, [], $this->resourcePackManager->resourcePacksRequired(), false, false, []));
+		}, $event->getResourcePackEntries());
+		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($resourcePackEntries, [], $event->isResourcePacksRequired(), false, $event->isForceServerResources(), []));
 		$this->session->getLogger()->debug("Waiting for client to accept resource packs");
 	}
 

@@ -23,12 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\resourcepacks;
 
-use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use function array_keys;
-use function assert;
 use function copy;
 use function count;
 use function file_exists;
@@ -53,12 +51,6 @@ class ResourcePackManager{
 
 	/** @var ResourcePack[] */
 	private array $uuidList = [];
-
-	/**
-	 * @var ResourcePack[][]
-	 * @phpstan-var array<string, list<ResourcePack>>
-	 */
-	private array $playerSpecificResourceStacks = [];
 
 	/**
 	 * @var string[]
@@ -178,15 +170,6 @@ class ResourcePackManager{
 	}
 
 	/**
-	 * Returns an array of resource packs in use by a specified session, sorted in order of priority. If the session
-	 * information cannot be found, the global resource pack stack is returned.
-	 * @return ResourcePack[]
-	 */
-	public function getSessionResourceStack(NetworkSession $session) : array {
-		return $this->playerSpecificResourceStacks[$session->getPlayerInfo()?->getUuid()->toString()] ?? $this->resourcePacks;
-	}
-
-	/**
 	 * Sets the resource packs to use. Packs earliest in the list will appear at the top of the stack (maximum
 	 * priority), and later ones will appear below (lower priority), in the same manner as the Bedrock resource packs
 	 * screen in-game.
@@ -194,7 +177,7 @@ class ResourcePackManager{
 	 * @param ResourcePack[] $resourceStack
 	 * @phpstan-param list<ResourcePack> $resourceStack
 	 */
-	public function setResourceStack(array $resourceStack, ?NetworkSession $session = null) : void{
+	public function setResourceStack(array $resourceStack) : void{
 		$uuidList = [];
 		$resourcePacks = [];
 		foreach($resourceStack as $pack){
@@ -205,12 +188,7 @@ class ResourcePackManager{
 			$uuidList[$uuid] = $pack;
 			$resourcePacks[] = $pack;
 		}
-		if($session === null) {
-			$this->resourcePacks = $resourcePacks;
-		} else {
-			assert($session->getPlayerInfo() !== null, "Session has no player info");
-			$this->playerSpecificResourceStacks[$session->getPlayerInfo()->getUuid()->toString()] = $resourcePacks;
-		}
+		$this->resourcePacks = $resourcePacks;
 		$this->uuidList = $uuidList;
 	}
 
