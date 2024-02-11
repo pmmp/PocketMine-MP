@@ -44,7 +44,7 @@ use function strtolower;
 use const DIRECTORY_SEPARATOR;
 
 class ResourcePackManager{
-	private const URL_REGEX = "\b(?:https?:\/\/)?(?:www\.)?(?:[a-zA-Z0-9-]+(?:\.[a-zA-Z]{2,})+|\d{1,3}(?:\.\d{1,3}){3})(?:\/[^\s]*)?\b";
+	private const URL_REGEX = "/\b(?:https?:\/\/)?(?:www\.)?(?:[a-zA-Z0-9-]+(?:\.[a-zA-Z]{2,})+|\d{1,3}(?:\.\d{1,3}){3})(?:\/[^\s]*)?\b/";
 	private string $path;
 	private bool $serverForceResources = false;
 
