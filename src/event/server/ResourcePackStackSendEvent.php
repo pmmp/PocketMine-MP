@@ -67,12 +67,12 @@ class ResourcePackStackSendEvent extends Event{
 		return $this->forceServerResources;
 	}
 
-	public function resourcePacksRequired() : bool{
-		return $this->resourcePacksRequired;
-	}
-
 	public function setResourcePacksRequired(bool $resourcePacksRequired) : self{
 		$this->resourcePacksRequired = $resourcePacksRequired;
 		return $this;
+	}
+
+	public function resourcePacksRequired() : bool{
+		return $this->resourcePacksRequired;
 	}
 }
