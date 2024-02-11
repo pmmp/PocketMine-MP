@@ -172,8 +172,17 @@ class ResourcePackManager{
 	 * Returns an array of resource packs in use, sorted in order of priority.
 	 * @return ResourcePack[]
 	 */
-	public function getResourceStack(?NetworkSession $session = null) : array{
-		return $session === null ? $this->resourcePacks : ($this->playerSpecificResourceStacks[$session->getPlayerInfo()?->getUuid()->toString()] ?? $this->resourcePacks);
+	public function getResourceStack() : array{
+		return $this->resourcePacks;
+	}
+
+	/**
+	 * Returns an array of resource packs in use by a specified session, sorted in order of priority. If the session
+	 * information cannot be found, the global resource pack stack is returned.
+	 * @return ResourcePack[]
+	 */
+	public function getSessionResourceStack(NetworkSession $session) : array {
+		return $this->playerSpecificResourceStacks[$session->getPlayerInfo()?->getUuid()->toString()] ?? $this->resourcePacks;
 	}
 
 	/**
