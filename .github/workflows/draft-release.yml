@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [8.1]
+        php-version: [8.2]
 
     steps:
       - uses: actions/checkout@v4
@@ -20,12 +20,12 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.26.0
+        uses: shivammathur/setup-php@2.29.0
         with:
           php-version: ${{ matrix.php-version }}
 
       - name: Restore Composer package cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/composer/files
@@ -77,7 +77,7 @@ jobs:
             > build_info.json
 
       - name: Upload release artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: release_artifacts
           path: |

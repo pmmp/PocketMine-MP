@@ -32,7 +32,7 @@ parameters:
 
 		-
 			message: "#^Cannot access offset 'git' on mixed\\.$#"
-			count: 2
+			count: 1
 			path: ../../../src/VersionInfo.php
 
 		-
@@ -426,6 +426,21 @@ parameters:
 			path: ../../../src/block/tile/Spawnable.php
 
 		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getPotentialLightAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/utils/CropGrowthHelper.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getPotentialLightAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/utils/CropGrowthHelper.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getPotentialLightAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/utils/CropGrowthHelper.php
+
+		-
 			message: "#^Cannot call method addParticle\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/ParticleCommand.php
@@ -792,7 +807,7 @@ parameters:
 
 		-
 			message: "#^Cannot access offset string on mixed\\.$#"
-			count: 3
+			count: 2
 			path: ../../../src/utils/Config.php
 
 		-
@@ -911,11 +926,6 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
@@ -941,11 +951,6 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
 			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
@@ -961,22 +966,12 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#3 \\$chunk of method pocketmine\\\\player\\\\Player\\:\\:onChunkChanged\\(\\) expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
 			message: "#^Parameter \\#3 \\$y of method pocketmine\\\\block\\\\Block\\:\\:position\\(\\) expects int, float\\|int given\\.$#"
 			count: 2
 			path: ../../../src/world/World.php
 
 		-
 			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
 
@@ -1074,6 +1069,21 @@ parameters:
 			message: "#^Cannot call method getBiomeId\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/generator/hell/Nether.php
+
+		-
+			message: "#^Offset int does not exist on SplFixedArray\\<float\\>\\|null\\.$#"
+			count: 4
+			path: ../../../src/world/generator/noise/Noise.php
+
+		-
+			message: "#^Parameter \\$q0 of static method pocketmine\\\\world\\\\generator\\\\noise\\\\Noise\\:\\:linearLerp\\(\\) expects float, float\\|null given\\.$#"
+			count: 1
+			path: ../../../src/world/generator/noise/Noise.php
+
+		-
+			message: "#^Parameter \\$q1 of static method pocketmine\\\\world\\\\generator\\\\noise\\\\Noise\\:\\:linearLerp\\(\\) expects float, float\\|null given\\.$#"
+			count: 1
+			path: ../../../src/world/generator/noise/Noise.php
 
 		-
 			message: "#^Cannot call method getBiomeId\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"

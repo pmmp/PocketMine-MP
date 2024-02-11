@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world;
 
-use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 
 class WorldTimings{
@@ -66,7 +65,7 @@ class WorldTimings{
 	private static function newTimer(string $worldName, string $timerName) : TimingsHandler{
 		$aggregator = self::$aggregators[$timerName] ??= new TimingsHandler("Worlds - $timerName"); //displayed in Minecraft primary table
 
-		return new TimingsHandler("$worldName - $timerName", $aggregator, Timings::GROUP_BREAKDOWN);
+		return new TimingsHandler("$worldName - $timerName", $aggregator);
 	}
 
 	public function __construct(World $world){

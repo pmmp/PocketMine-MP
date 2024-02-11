@@ -140,7 +140,7 @@ class Fire extends BaseFire{
 				$block->onIncinerate();
 
 				$world = $this->position->getWorld();
-				if($world->getBlock($block->getPosition())->isSameState($block)){
+				if($world->getBlock($block->position)->isSameState($block)){
 					$spreadedFire = false;
 					if(mt_rand(0, $this->age + 9) < 5){ //TODO: check rain
 						$fire = clone $this;

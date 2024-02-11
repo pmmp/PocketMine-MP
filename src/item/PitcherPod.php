@@ -21,17 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\item;
 
-use pocketmine\block\utils\FortuneDropHelper;
-use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
+use pocketmine\block\Block;
+use pocketmine\block\VanillaBlocks;
 
-final class IronOre extends Opaque{
+final class PitcherPod extends Item{
 
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [VanillaItems::RAW_IRON()->setCount(FortuneDropHelper::weighted($item, min: 1, maxBase: 1))];
+	public function getBlock(?int $clickedFace = null) : Block{
+		return VanillaBlocks::PITCHER_CROP();
 	}
-
-	public function isAffectedBySilkTouch() : bool{ return true; }
 }
