@@ -170,7 +170,6 @@ class ResourcePackManager{
 
 	/**
 	 * Returns an array of resource packs in use, sorted in order of priority.
-	 * @param NetworkSession|null $session
 	 * @return ResourcePack[]
 	 */
 	public function getResourceStack(?NetworkSession $session = null) : array{
@@ -184,7 +183,6 @@ class ResourcePackManager{
 	 *
 	 * @param ResourcePack[] $resourceStack
 	 * @phpstan-param list<ResourcePack> $resourceStack
-	 * @param NetworkSession|null $session
 	 */
 	public function setResourceStack(array $resourceStack, ?NetworkSession $session = null) : void{
 		$uuidList = [];
