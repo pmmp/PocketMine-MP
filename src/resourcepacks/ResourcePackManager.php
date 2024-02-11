@@ -207,7 +207,8 @@ class ResourcePackManager{
 		if($session === null) {
 			$this->resourcePacks = $resourcePacks;
 		} else {
-			$this->playerSpecificResourceStacks[$session->getPlayerInfo()?->getUuid()->toString()] = $resourcePacks;
+			assert($session->getPlayerInfo() !== null, "Session has no player info");
+			$this->playerSpecificResourceStacks[$session->getPlayerInfo()->getUuid()->toString()] = $resourcePacks;
 		}
 		$this->uuidList = $uuidList;
 	}
