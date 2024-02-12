@@ -63,7 +63,8 @@ final class VersionInfo{
 			if(\Phar::running(true) === ""){
 				$gitHash = Git::getRepositoryStatePretty(\pocketmine\PATH);
 			}else{
-				$phar = new \Phar(\Phar::running(false));
+				$pharPath = \Phar::running(false);
+				$phar = \Phar::isValidPharFilename($pharPath) ? new \Phar($pharPath) : new \PharData($pharPath);
 				$meta = $phar->getMetadata();
 				if(isset($meta["git"])){
 					$gitHash = $meta["git"];
@@ -82,7 +83,8 @@ final class VersionInfo{
 		if(self::$buildNumber === null){
 			self::$buildNumber = 0;
 			if(\Phar::running(true) !== ""){
-				$phar = new \Phar(\Phar::running(false));
+				$pharPath = \Phar::running(false);
+				$phar = \Phar::isValidPharFilename($pharPath) ? new \Phar($pharPath) : new \PharData($pharPath);
 				$meta = $phar->getMetadata();
 				if(is_array($meta) && isset($meta["build"]) && is_int($meta["build"])){
 					self::$buildNumber = $meta["build"];

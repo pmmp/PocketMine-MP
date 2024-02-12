@@ -22,52 +22,41 @@
 declare(strict_types=1);
 
 /**
- * Dependency-free version of Filesystem::recursiveUnlink().
- * We can't access that from here because it's in the phar, which we've yet to extract.
+ * Prepares a decompressed .tar of PocketMine-MP.phar in the system temp directory for loading code from.
+ *
+ * @return string path to the temporary decompressed phar (actually a .tar)
  */
-function recursiveUnlink(string $dir) : void{
-	if(is_dir($dir)){
-		$objects = scandir($dir, SCANDIR_SORT_NONE);
-		if($objects === false){
-			throw new RuntimeException("Failed to scan directory \"$dir\"");
-		}
-		foreach($objects as $object){
-			if($object !== "." && $object !== ".."){
-				recursiveUnlink($dir . DIRECTORY_SEPARATOR . $object);
-			}
-		}
-		rmdir($dir);
-	}elseif(is_file($dir)){
-		unlink($dir);
+function preparePharCache() : string{
+	$tmp = tempnam(sys_get_temp_dir(), "PMMP");
+	if($tmp === false){
+		throw new RuntimeException("Failed to create temporary file");
 	}
+
+	$tmpPharPath = $tmp . ".phar";
+	copy(__FILE__, $tmpPharPath);
+
+	$phar = new \Phar($tmpPharPath);
+	//phar requires phar.readonly=0, and zip doesn't support disabling compression - tar is the only viable option
+	//we don't need phar anyway since we don't need to directly execute the file, only require files from inside it
+	$phar->convertToData(\Phar::TAR, \Phar::NONE);
+	unset($phar);
+	\Phar::unlinkArchive($tmpPharPath);
+
+	//I'd rather use rename here, but I'm not taking any chances with antivirus locking the file
+	copy($tmp . '.tar', $tmp);
+	unlink($tmp . '.tar');
+
+	return $tmp;
 }
 
-function prepareSourceCache(string $sourceDir) : void{
-	$expectedHash = hash_file("sha256", __FILE__);
-
-	$prepare = true;
-	if(file_exists($sourceDir)){
-		$cacheHash = @file_get_contents($sourceDir . DIRECTORY_SEPARATOR . "phar-hash.txt");
-		if($cacheHash === $expectedHash){
-			echo "Using existing source cache" . PHP_EOL;
-			$prepare = false;
-		}else{
-			echo "Removing old source cache..." . PHP_EOL;
-			recursiveUnlink($sourceDir);
-			echo "Done!" . PHP_EOL;
-		}
+echo "Preparing PocketMine-MP.phar decompressed cache...\n";
+$start = hrtime(true);
+$cacheName = preparePharCache();
+echo "Cache ready at $cacheName in " . number_format((hrtime(true) - $start) / 1e9, 2) . "s\n";
+register_shutdown_function(static function() use ($cacheName) : void{
+	if(is_file($cacheName)){
+		\Phar::unlinkArchive($cacheName);
 	}
+});
 
-	if($prepare){
-		$phar = new \Phar(__FILE__);
-		echo "Preparing source cache..." . PHP_EOL;
-		$phar->extractTo($sourceDir);
-		file_put_contents($sourceDir . DIRECTORY_SEPARATOR . "phar-hash.txt", $expectedHash);
-		echo "Done!" . PHP_EOL;
-	}
-}
-
-$sourceDir = getcwd() . "/.PocketMine-MP.phar/";
-prepareSourceCache($sourceDir);
-
-require $sourceDir . '/src/PocketMine.php';
+require 'phar://' . str_replace(DIRECTORY_SEPARATOR, '/', $cacheName) . '/src/PocketMine.php';
