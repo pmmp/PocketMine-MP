@@ -64,10 +64,11 @@ class ResourcePacksPacketHandler extends PacketHandler{
 		private NetworkSession $session,
 		private ResourcePackManager $resourcePackManager,
 		private \Closure $completionCallback
-	){}
+	){
+		assert($this->session->getPlayerInfo() !== null, "PlayerInfo should be set before ResourcePacksPacketHandler is used");
+	}
 
 	public function setUp() : void{
-		assert($this->session->getPlayerInfo() !== null, "PlayerInfo should be set before ResourcePacksPacketHandler is used");
 		$event = new PlayerResourcePackOfferEvent($this->session->getPlayerInfo(), $this->resourcePackManager->getResourceStack(), $this->resourcePackManager->resourcePacksRequired());
 		$event->call();
 		$resourcePackEntries = array_map(function(ResourcePack $pack) : ResourcePackInfoEntry{
