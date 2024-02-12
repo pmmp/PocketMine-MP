@@ -21,6 +21,19 @@
 
 declare(strict_types=1);
 
+namespace pocketmine\server_phar_stub;
+
+use function copy;
+use function hrtime;
+use function is_file;
+use function number_format;
+use function register_shutdown_function;
+use function str_replace;
+use function sys_get_temp_dir;
+use function tempnam;
+use function unlink;
+use const DIRECTORY_SEPARATOR;
+
 /**
  * Prepares a decompressed .tar of PocketMine-MP.phar in the system temp directory for loading code from.
  *
@@ -29,7 +42,7 @@ declare(strict_types=1);
 function preparePharCache() : array{
 	$tmp = tempnam(sys_get_temp_dir(), "PMMP");
 	if($tmp === false){
-		throw new RuntimeException("Failed to create temporary file");
+		throw new \RuntimeException("Failed to create temporary file");
 	}
 
 	$tmpPharPath = $tmp . ".phar";
