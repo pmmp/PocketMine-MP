@@ -36,11 +36,11 @@ use pocketmine\resourcepacks\ResourcePack;
 class PlayerResourcePackOfferEvent extends Event{
 
 	/**
-	 * @param ResourcePack[] $resourcePackEntries
+	 * @param ResourcePack[] $resourcePacks
 	 */
 	public function __construct(
 		private readonly PlayerInfo $playerInfo,
-		private array $resourcePackEntries,
+		private array $resourcePacks,
 		private bool $resourcePacksRequired
 	){}
 
@@ -49,23 +49,23 @@ class PlayerResourcePackOfferEvent extends Event{
 	}
 
 	public function addResourcePack(ResourcePack $entry) : self{
-		$this->resourcePackEntries[] = $entry;
+		$this->resourcePacks[] = $entry;
 		return $this;
 	}
 
 	/**
-	 * @param ResourcePack[] $resourcePackEntries
+	 * @param ResourcePack[] $resourcePacks
 	 */
-	public function setResourcePackEntries(array $resourcePackEntries) : self{
-		$this->resourcePackEntries = $resourcePackEntries;
+	public function setResourcePacks(array $resourcePacks) : self{
+		$this->resourcePacks = $resourcePacks;
 		return $this;
 	}
 
 	/**
 	 * @return ResourcePack[]
 	 */
-	public function getResourcePackEntries() : array{
-		return $this->resourcePackEntries;
+	public function getResourcePacks() : array{
+		return $this->resourcePacks;
 	}
 
 	public function setResourcePacksRequired(bool $resourcePacksRequired) : self{
