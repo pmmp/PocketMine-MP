@@ -40,7 +40,6 @@ use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackType;
 use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\resourcepacks\ResourcePackManager;
 use function array_map;
-use function assert;
 use function ceil;
 use function count;
 use function implode;

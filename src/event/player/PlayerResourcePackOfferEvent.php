@@ -26,6 +26,7 @@ namespace pocketmine\event\player;
 use pocketmine\event\Event;
 use pocketmine\player\PlayerInfo;
 use pocketmine\resourcepacks\ResourcePack;
+use function assert;
 
 /**
  * Called after a player authenticates and is being offered resource packs to download.
