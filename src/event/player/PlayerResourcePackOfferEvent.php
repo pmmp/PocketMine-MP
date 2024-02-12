@@ -21,13 +21,13 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event\server;
+namespace pocketmine\event\player;
 
 use pocketmine\event\Event;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\resourcepacks\ResourcePack;
 
-class ResourcePackStackSendEvent extends Event{
+class PlayerResourcePackOfferEvent extends Event{
 
 	/**
 	 * @param ResourcePack[] $resourcePackEntries

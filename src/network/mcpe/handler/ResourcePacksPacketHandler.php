@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
-use pocketmine\event\server\ResourcePackStackSendEvent;
+use pocketmine\event\player\PlayerResourcePackOfferEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
@@ -66,7 +66,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	){}
 
 	public function setUp() : void{
-		$event = new ResourcePackStackSendEvent($this->session, $this->resourcePackManager->getResourceStack(), $this->resourcePackManager->resourcePacksRequired());
+		$event = new PlayerResourcePackOfferEvent($this->session, $this->resourcePackManager->getResourceStack(), $this->resourcePackManager->resourcePacksRequired());
 		$event->call();
 		$resourcePackEntries = array_map(function(ResourcePack $pack) : ResourcePackInfoEntry{
 			//TODO: more stuff
