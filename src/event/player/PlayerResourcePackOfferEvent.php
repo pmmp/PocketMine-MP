@@ -38,7 +38,7 @@ class ResourcePackStackSendEvent extends Event{
 		return $this->session;
 	}
 
-	public function addResourcePackEntry(ResourcePack $entry) : self{
+	public function addResourcePack(ResourcePack $entry) : self{
 		$this->resourcePackEntries[] = $entry;
 		return $this;
 	}
