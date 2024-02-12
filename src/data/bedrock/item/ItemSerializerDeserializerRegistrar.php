@@ -348,7 +348,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::RIB_ARMOR_TRIM_SMITHING_TEMPLATE, Items::RIB_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$this->map1to1Item(Ids::ROTTEN_FLESH, Items::ROTTEN_FLESH());
 		$this->map1to1Item(Ids::SALMON, Items::RAW_SALMON());
-		$this->map1to1Item(Ids::SCUTE, Items::SCUTE());
+		$this->map1to1Item(Ids::TURTLE_SCUTE, Items::SCUTE());
 		$this->map1to1Item(Ids::SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE, Items::SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$this->map1to1Item(Ids::SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE, Items::SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$this->map1to1Item(Ids::SHEARS, Items::SHEARS());

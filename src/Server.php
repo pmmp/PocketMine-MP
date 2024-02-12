@@ -60,6 +60,7 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketBroadcaster;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
+use pocketmine\network\mcpe\protocol\types\CompressionAlgorithm;
 use pocketmine\network\mcpe\raklib\RakLibInterface;
 use pocketmine\network\mcpe\StandardEntityEventBroadcaster;
 use pocketmine\network\mcpe\StandardPacketBroadcaster;
@@ -125,6 +126,7 @@ use Symfony\Component\Filesystem\Path;
 use function array_fill;
 use function array_sum;
 use function base64_encode;
+use function chr;
 use function cli_set_process_title;
 use function copy;
 use function count;
@@ -737,7 +739,7 @@ class Server{
 	 * @return string[][]
 	 */
 	public function getCommandAliases() : array{
-		$section = $this->configGroup->getProperty(YmlServerProperties::ALIASES);
+		$section = $this->configGroup->getProperty(Yml::ALIASES);
 		$result = [];
 		if(is_array($section)){
 			foreach($section as $key => $value){
@@ -861,7 +863,7 @@ class Server{
 					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error1(VersionInfo::NAME)));
 					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error2()));
 					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error3()));
-					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error4(YmlServerProperties::SETTINGS_ENABLE_DEV_BUILDS)));
+					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error4(Yml::SETTINGS_ENABLE_DEV_BUILDS)));
 					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error5("https://github.com/pmmp/PocketMine-MP/releases")));
 					$this->forceShutdownExit();
 
@@ -1373,19 +1375,26 @@ class Server{
 		try{
 			$timings->startTiming();
 
-			if($sync === null){
-				$threshold = $compressor->getCompressionThreshold();
-				$sync = !$this->networkCompressionAsync || $threshold === null || strlen($buffer) < $threshold;
+			$threshold = $compressor->getCompressionThreshold();
+			if($threshold === null || strlen($buffer) < $compressor->getCompressionThreshold()){
+				$compressionType = CompressionAlgorithm::NONE;
+				$compressed = $buffer;
+
+			}else{
+				$sync ??= !$this->networkCompressionAsync;
+
+				if(!$sync && strlen($buffer) >= $this->networkCompressionAsyncThreshold){
+					$promise = new CompressBatchPromise();
+					$task = new CompressBatchTask($buffer, $promise, $compressor);
+					$this->asyncPool->submitTask($task);
+					return $promise;
+				}
+
+				$compressionType = $compressor->getNetworkId();
+				$compressed = $compressor->compress($buffer);
 			}
 
-			if(!$sync && strlen($buffer) >= $this->networkCompressionAsyncThreshold){
-				$promise = new CompressBatchPromise();
-				$task = new CompressBatchTask($buffer, $promise, $compressor);
-				$this->asyncPool->submitTask($task);
-				return $promise;
-			}
-
-			return $compressor->compress($buffer);
+			return chr($compressionType) . $compressed;
 		}finally{
 			$timings->stopTiming();
 		}
@@ -1467,7 +1476,7 @@ class Server{
 			}
 
 			if(isset($this->network)){
-				$this->network->getSessionManager()->close($this->configGroup->getPropertyString(YmlServerProperties::SETTINGS_SHUTDOWN_MESSAGE, "Server closed"));
+				$this->network->getSessionManager()->close($this->configGroup->getPropertyString(Yml::SETTINGS_SHUTDOWN_MESSAGE, "Server closed"));
 			}
 
 			if(isset($this->worldManager)){
