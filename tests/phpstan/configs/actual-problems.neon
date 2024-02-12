@@ -706,6 +706,11 @@ parameters:
 			path: ../../../src/network/mcpe/encryption/PrepareEncryptionTask.php
 
 		-
+			message: "#^Parameter \\#1 \\$playerInfo of class pocketmine\\\\event\\\\player\\\\PlayerResourcePackOfferEvent constructor expects pocketmine\\\\player\\\\PlayerInfo, pocketmine\\\\player\\\\PlayerInfo\\|null given\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/handler/ResourcePacksPacketHandler.php
+
+		-
 			message: "#^Method pocketmine\\\\permission\\\\DefaultPermissions\\:\\:registerPermission\\(\\) should return pocketmine\\\\permission\\\\Permission but returns pocketmine\\\\permission\\\\Permission\\|null\\.$#"
 			count: 1
 			path: ../../../src/permission/DefaultPermissions.php
