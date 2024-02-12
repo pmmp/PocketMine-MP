@@ -24,9 +24,9 @@ declare(strict_types=1);
 /**
  * Prepares a decompressed .tar of PocketMine-MP.phar in the system temp directory for loading code from.
  *
- * @return string path to the temporary decompressed phar (actually a .tar)
+ * @return string[] path to the temporary decompressed phar (actually a .tar) + path to tmpfile used to reserve the name
  */
-function preparePharCache() : string{
+function preparePharCache() : array{
 	$tmp = tempnam(sys_get_temp_dir(), "PMMP");
 	if($tmp === false){
 		throw new RuntimeException("Failed to create temporary file");
@@ -42,20 +42,17 @@ function preparePharCache() : string{
 	unset($phar);
 	\Phar::unlinkArchive($tmpPharPath);
 
-	//I'd rather use rename here, but I'm not taking any chances with antivirus locking the file
-	copy($tmp . '.tar', $tmp);
-	unlink($tmp . '.tar');
-
-	return $tmp;
+	return [$tmp . '.tar', $tmp];
 }
 
 echo "Preparing PocketMine-MP.phar decompressed cache...\n";
 $start = hrtime(true);
-$cacheName = preparePharCache();
+[$cacheName, $tmpReserveName] = preparePharCache();
 echo "Cache ready at $cacheName in " . number_format((hrtime(true) - $start) / 1e9, 2) . "s\n";
-register_shutdown_function(static function() use ($cacheName) : void{
+register_shutdown_function(static function() use ($cacheName, $tmpReserveName) : void{
 	if(is_file($cacheName)){
 		\Phar::unlinkArchive($cacheName);
+		unlink($tmpReserveName);
 	}
 });
 
