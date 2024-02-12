@@ -35,14 +35,19 @@ use pocketmine\resourcepacks\ResourcePack;
  */
 class PlayerResourcePackOfferEvent extends Event{
 
+	private readonly PlayerInfo $playerInfo;
+
 	/**
 	 * @param ResourcePack[] $resourcePacks
 	 */
 	public function __construct(
-		private readonly PlayerInfo $playerInfo,
+		?PlayerInfo $playerInfo,
 		private array $resourcePacks,
 		private bool $mustAccept
-	){}
+	){
+		assert($playerInfo !== null, "PlayerInfo cannot be null");
+		$this->playerInfo = $playerInfo;
+	}
 
 	public function getPlayerInfo() : PlayerInfo{
 		return $this->playerInfo;
