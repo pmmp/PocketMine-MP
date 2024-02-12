@@ -186,6 +186,48 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 
 	private function registerFlatColorBlockDeserializers() : void{
 		foreach([
+			Ids::HARD_BLACK_STAINED_GLASS => DyeColor::BLACK,
+			Ids::HARD_BLUE_STAINED_GLASS => DyeColor::BLUE,
+			Ids::HARD_BROWN_STAINED_GLASS => DyeColor::BROWN,
+			Ids::HARD_CYAN_STAINED_GLASS => DyeColor::CYAN,
+			Ids::HARD_GRAY_STAINED_GLASS => DyeColor::GRAY,
+			Ids::HARD_GREEN_STAINED_GLASS => DyeColor::GREEN,
+			Ids::HARD_LIGHT_BLUE_STAINED_GLASS => DyeColor::LIGHT_BLUE,
+			Ids::HARD_LIGHT_GRAY_STAINED_GLASS => DyeColor::LIGHT_GRAY,
+			Ids::HARD_LIME_STAINED_GLASS => DyeColor::LIME,
+			Ids::HARD_MAGENTA_STAINED_GLASS => DyeColor::MAGENTA,
+			Ids::HARD_ORANGE_STAINED_GLASS => DyeColor::ORANGE,
+			Ids::HARD_PINK_STAINED_GLASS => DyeColor::PINK,
+			Ids::HARD_PURPLE_STAINED_GLASS => DyeColor::PURPLE,
+			Ids::HARD_RED_STAINED_GLASS => DyeColor::RED,
+			Ids::HARD_WHITE_STAINED_GLASS => DyeColor::WHITE,
+			Ids::HARD_YELLOW_STAINED_GLASS => DyeColor::YELLOW,
+		] as $id => $color){
+			$this->map($id, fn(Reader $in) => Blocks::STAINED_HARDENED_GLASS()->setColor($color));
+		}
+
+		foreach([
+			Ids::HARD_BLACK_STAINED_GLASS_PANE => DyeColor::BLACK,
+			Ids::HARD_BLUE_STAINED_GLASS_PANE => DyeColor::BLUE,
+			Ids::HARD_BROWN_STAINED_GLASS_PANE => DyeColor::BROWN,
+			Ids::HARD_CYAN_STAINED_GLASS_PANE => DyeColor::CYAN,
+			Ids::HARD_GRAY_STAINED_GLASS_PANE => DyeColor::GRAY,
+			Ids::HARD_GREEN_STAINED_GLASS_PANE => DyeColor::GREEN,
+			Ids::HARD_LIGHT_BLUE_STAINED_GLASS_PANE => DyeColor::LIGHT_BLUE,
+			Ids::HARD_LIGHT_GRAY_STAINED_GLASS_PANE => DyeColor::LIGHT_GRAY,
+			Ids::HARD_LIME_STAINED_GLASS_PANE => DyeColor::LIME,
+			Ids::HARD_MAGENTA_STAINED_GLASS_PANE => DyeColor::MAGENTA,
+			Ids::HARD_ORANGE_STAINED_GLASS_PANE => DyeColor::ORANGE,
+			Ids::HARD_PINK_STAINED_GLASS_PANE => DyeColor::PINK,
+			Ids::HARD_PURPLE_STAINED_GLASS_PANE => DyeColor::PURPLE,
+			Ids::HARD_RED_STAINED_GLASS_PANE => DyeColor::RED,
+			Ids::HARD_WHITE_STAINED_GLASS_PANE => DyeColor::WHITE,
+			Ids::HARD_YELLOW_STAINED_GLASS_PANE => DyeColor::YELLOW,
+		] as $id => $color){
+			$this->map($id, fn(Reader $in) => Blocks::STAINED_HARDENED_GLASS_PANE()->setColor($color));
+		}
+
+		foreach([
 			Ids::BLACK_GLAZED_TERRACOTTA => DyeColor::BLACK,
 			Ids::BLUE_GLAZED_TERRACOTTA => DyeColor::BLUE,
 			Ids::BROWN_GLAZED_TERRACOTTA => DyeColor::BROWN,
@@ -1159,14 +1201,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setShape($in->readBoundedInt(StateNames::RAIL_DIRECTION, 0, 5));
 		});
 		$this->mapStairs(Ids::GRANITE_STAIRS, fn() => Blocks::GRANITE_STAIRS());
-		$this->map(Ids::HARD_STAINED_GLASS, function(Reader $in) : Block{
-			return Blocks::STAINED_HARDENED_GLASS()
-				->setColor($in->readColor());
-		});
-		$this->map(Ids::HARD_STAINED_GLASS_PANE, function(Reader $in) : Block{
-			return Blocks::STAINED_HARDENED_GLASS_PANE()
-				->setColor($in->readColor());
-		});
 		$this->map(Ids::HAY_BLOCK, function(Reader $in) : Block{
 			$in->ignored(StateNames::DEPRECATED);
 			return Blocks::HAY_BALE()->setAxis($in->readPillarAxis());

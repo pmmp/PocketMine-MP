@@ -788,7 +788,7 @@ final class VanillaBlocks{
 	}
 
 	protected static function setup() : void{
-		$railBreakInfo = new Info(new BlockBreakInfo(0.7));
+		$railBreakInfo = new Info(new BreakInfo(0.7));
 		self::register("activator_rail", new ActivatorRail(new BID(Ids::ACTIVATOR_RAIL), "Activator Rail", $railBreakInfo));
 		self::register("air", new Air(new BID(Ids::AIR), "Air", new Info(BreakInfo::indestructible(-1.0))));
 		self::register("anvil", new Anvil(new BID(Ids::ANVIL), "Anvil", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD, 6000.0))));
@@ -1638,7 +1638,7 @@ final class VanillaBlocks{
 
 		self::register("cave_vines", new CaveVines(new BID(Ids::CAVE_VINES), "Cave Vines", new Info(BreakInfo::instant())));
 
-		self::register("small_dripleaf", new SmallDripleaf(new BID(Ids::SMALL_DRIPLEAF), "Small Dripleaf", new Info(BreakInfo::instant(BlockToolType::SHEARS, toolHarvestLevel: 1))));
+		self::register("small_dripleaf", new SmallDripleaf(new BID(Ids::SMALL_DRIPLEAF), "Small Dripleaf", new Info(BreakInfo::instant(ToolType::SHEARS, toolHarvestLevel: 1))));
 		self::register("big_dripleaf_head", new BigDripleafHead(new BID(Ids::BIG_DRIPLEAF_HEAD), "Big Dripleaf", new Info(BreakInfo::instant())));
 		self::register("big_dripleaf_stem", new BigDripleafStem(new BID(Ids::BIG_DRIPLEAF_STEM), "Big Dripleaf Stem", new Info(BreakInfo::instant())));
 	}

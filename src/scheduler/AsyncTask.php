@@ -24,12 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\scheduler;
 
 use pmmp\thread\Runnable;
-use pmmp\thread\Thread as NativeThread;
 use pmmp\thread\ThreadSafe;
 use pmmp\thread\ThreadSafeArray;
 use pocketmine\thread\NonThreadSafeValue;
 use function array_key_exists;
-use function assert;
 use function igbinary_serialize;
 use function igbinary_unserialize;
 use function is_null;
@@ -83,9 +81,7 @@ abstract class AsyncTask extends Runnable{
 		$this->onRun();
 
 		$this->finished = true;
-		$worker = NativeThread::getCurrentThread();
-		assert($worker instanceof AsyncWorker);
-		$worker->getNotifier()->wakeupSleeper();
+		AsyncWorker::getNotifier()->wakeupSleeper();
 	}
 
 	/**
