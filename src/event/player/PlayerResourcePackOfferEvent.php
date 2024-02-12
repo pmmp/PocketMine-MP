@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\event\player;
 
 use pocketmine\event\Event;
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\player\PlayerInfo;
 use pocketmine\resourcepacks\ResourcePack;
 
 class PlayerResourcePackOfferEvent extends Event{
@@ -32,10 +32,14 @@ class PlayerResourcePackOfferEvent extends Event{
 	/**
 	 * @param ResourcePack[] $resourcePackEntries
 	 */
-	public function __construct(private readonly NetworkSession $session, private array $resourcePackEntries, private bool $resourcePacksRequired, private bool $forceServerResources){}
+	public function __construct(
+		private readonly PlayerInfo $playerInfo,
+		private array $resourcePackEntries,
+		private bool $resourcePacksRequired
+	){}
 
-	public function getSession() : NetworkSession{
-		return $this->session;
+	public function getPlayerInfo() : PlayerInfo{
+		return $this->playerInfo;
 	}
 
 	public function addResourcePack(ResourcePack $entry) : self{

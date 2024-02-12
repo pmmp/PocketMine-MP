@@ -66,7 +66,8 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	){}
 
 	public function setUp() : void{
-		$event = new PlayerResourcePackOfferEvent($this->session, $this->resourcePackManager->getResourceStack(), $this->resourcePackManager->resourcePacksRequired());
+		assert($this->session->getPlayerInfo() !== null, "PlayerInfo should be set before ResourcePacksPacketHandler is used");
+		$event = new PlayerResourcePackOfferEvent($this->session->getPlayerInfo(), $this->resourcePackManager->getResourceStack(), $this->resourcePackManager->resourcePacksRequired());
 		$event->call();
 		$resourcePackEntries = array_map(function(ResourcePack $pack) : ResourcePackInfoEntry{
 			//TODO: more stuff
