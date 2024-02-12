@@ -36,19 +36,14 @@ use function assert;
  */
 class PlayerResourcePackOfferEvent extends Event{
 
-	private readonly PlayerInfo $playerInfo;
-
 	/**
 	 * @param ResourcePack[] $resourcePacks
 	 */
 	public function __construct(
-		?PlayerInfo $playerInfo,
+		private readonly PlayerInfo $playerInfo,
 		private array $resourcePacks,
 		private bool $mustAccept
-	){
-		assert($playerInfo !== null, "PlayerInfo cannot be null");
-		$this->playerInfo = $playerInfo;
-	}
+	){}
 
 	public function getPlayerInfo() : PlayerInfo{
 		return $this->playerInfo;
