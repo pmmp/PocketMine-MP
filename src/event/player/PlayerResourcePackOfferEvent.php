@@ -30,11 +30,8 @@ use pocketmine\resourcepacks\ResourcePack;
 /**
  * Called after a player authenticates and is being offered resource packs to download.
  *
- * This event should be used to decide which resource packs to offer to the player, and whether to require them to
+ * This event should be used to decide which resource packs to offer the player and whether to require the player to
  * download the packs before they can join the server.
- *
- * The Player object has not yet been instantiated, so PlayerInfo is used instead. The player is authenticated at this
- * point, but the information should still be treated with caution.
  */
 class PlayerResourcePackOfferEvent extends Event{
 
@@ -47,10 +44,6 @@ class PlayerResourcePackOfferEvent extends Event{
 		private bool $resourcePacksRequired
 	){}
 
-	/**
-	 * Returns an object containing self-proclaimed information about the connecting player. The player has been
-	 * authenticated at this point, but the information should still be treated with caution.
-	 */
 	public function getPlayerInfo() : PlayerInfo{
 		return $this->playerInfo;
 	}
