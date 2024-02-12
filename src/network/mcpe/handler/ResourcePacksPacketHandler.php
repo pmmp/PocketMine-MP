@@ -66,7 +66,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	){}
 
 	public function setUp() : void{
-		$event = new ResourcePackStackSendEvent($this->session, $this->resourcePackManager->getResourceStack(), $this->resourcePackManager->resourcePacksRequired(), false);
+		$event = new ResourcePackStackSendEvent($this->session, $this->resourcePackManager->getResourceStack(), $this->resourcePackManager->resourcePacksRequired());
 		$event->call();
 		$resourcePackEntries = array_map(function(ResourcePack $pack) : ResourcePackInfoEntry{
 			//TODO: more stuff
@@ -82,7 +82,8 @@ class ResourcePacksPacketHandler extends PacketHandler{
 				false
 			);
 		}, $event->getResourcePackEntries());
-		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($resourcePackEntries, [], $event->resourcePacksRequired(), false, $event->forceServerResources(), []));
+		// TODO: support forcing server packs
+		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($resourcePackEntries, [], $event->resourcePacksRequired(), false, false, []));
 		$this->session->getLogger()->debug("Waiting for client to accept resource packs");
 	}
 
