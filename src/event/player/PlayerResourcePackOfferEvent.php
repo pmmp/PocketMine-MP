@@ -41,7 +41,7 @@ class PlayerResourcePackOfferEvent extends Event{
 	public function __construct(
 		private readonly PlayerInfo $playerInfo,
 		private array $resourcePacks,
-		private bool $resourcePacksRequired
+		private bool $mustAccept
 	){}
 
 	public function getPlayerInfo() : PlayerInfo{
@@ -68,12 +68,12 @@ class PlayerResourcePackOfferEvent extends Event{
 		return $this->resourcePacks;
 	}
 
-	public function setResourcePacksRequired(bool $resourcePacksRequired) : self{
-		$this->resourcePacksRequired = $resourcePacksRequired;
+	public function setMustAccept(bool $mustAccept) : self{
+		$this->mustAccept = $mustAccept;
 		return $this;
 	}
 
-	public function resourcePacksRequired() : bool{
-		return $this->resourcePacksRequired;
+	public function mustAccept() : bool{
+		return $this->mustAccept;
 	}
 }

@@ -86,7 +86,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 			);
 		}, $event->getResourcePacks());
 		// TODO: support forcing server packs
-		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($resourcePackEntries, [], $event->resourcePacksRequired(), false, false, []));
+		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($resourcePackEntries, [], $event->mustAccept(), false, false, []));
 		$this->session->getLogger()->debug("Waiting for client to accept resource packs");
 	}
 
