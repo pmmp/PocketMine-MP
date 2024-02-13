@@ -44,6 +44,7 @@ use function array_map;
 use function ceil;
 use function count;
 use function implode;
+use function is_string;
 use function strpos;
 use function substr;
 
@@ -70,6 +71,12 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	public function setUp() : void{
 		$event = new PlayerResourcePackOfferEvent($this->playerInfo, $this->resourcePackManager->getResourceStack(), $this->resourcePackManager->resourcePacksRequired());
 		$event->call();
+		foreach($event->getEncryptionKeys() as $packId => $key) {
+			$existingKey = $this->resourcePackManager->getPackEncryptionKey($packId);
+			if(is_string($existingKey) && $existingKey !== $key)
+				continue;
+			$this->resourcePackManager->setPackEncryptionKey($packId, $key);
+		}
 		$resourcePackEntries = array_map(function(ResourcePack $pack) : ResourcePackInfoEntry{
 			//TODO: more stuff
 			$encryptionKey = $this->resourcePackManager->getPackEncryptionKey($pack->getPackId());

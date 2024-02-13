@@ -26,6 +26,8 @@ namespace pocketmine\event\player;
 use pocketmine\event\Event;
 use pocketmine\player\PlayerInfo;
 use pocketmine\resourcepacks\ResourcePack;
+use pocketmine\utils\Utils;
+use function array_unshift;
 
 /**
  * Called after a player authenticates and is being offered resource packs to download.
@@ -34,6 +36,11 @@ use pocketmine\resourcepacks\ResourcePack;
  * download the packs before they can join the server.
  */
 class PlayerResourcePackOfferEvent extends Event{
+	/**
+	 * @var string[] $encryptionKeys
+	 * @phpstan-var array<string, string> $encryptionKeys
+	 */
+	private array $encryptionKeys = [];
 
 	/**
 	 * @param ResourcePack[] $resourcePacks
@@ -48,17 +55,25 @@ class PlayerResourcePackOfferEvent extends Event{
 		return $this->playerInfo;
 	}
 
-	public function addResourcePack(ResourcePack $entry) : self{
-		$this->resourcePacks[] = $entry;
-		return $this;
+	public function addResourcePack(ResourcePack $entry, ?string $encryptionKey = null) : void{
+		array_unshift($this->resourcePacks, $entry);
+		if($encryptionKey !== null){
+			$this->encryptionKeys[$entry->getPackId()] = $encryptionKey;
+		}
 	}
 
 	/**
 	 * @param ResourcePack[] $resourcePacks
+	 * @param string[]       $encryptionKeys
+	 * @phpstan-param array<string, string> $encryptionKeys
 	 */
-	public function setResourcePacks(array $resourcePacks) : self{
+	public function setResourcePacks(array $resourcePacks, ?array $encryptionKeys = null) : void{
 		$this->resourcePacks = $resourcePacks;
-		return $this;
+		if($encryptionKeys !== null){
+			foreach(Utils::stringifyKeys($encryptionKeys) as $packId => $key){
+				$this->encryptionKeys[$packId] ??= $key;
+			}
+		}
 	}
 
 	/**
@@ -68,9 +83,15 @@ class PlayerResourcePackOfferEvent extends Event{
 		return $this->resourcePacks;
 	}
 
-	public function setMustAccept(bool $mustAccept) : self{
+	/**
+	 * @return string[]
+	 */
+	public function getEncryptionKeys() : array{
+		return $this->encryptionKeys;
+	}
+
+	public function setMustAccept(bool $mustAccept) : void{
 		$this->mustAccept = $mustAccept;
-		return $this;
 	}
 
 	public function mustAccept() : bool{
