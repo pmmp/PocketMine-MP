@@ -177,7 +177,6 @@ final class Utils{
 	 * @phpstan-template U of object
 	 *
 	 * @param object[] $array
-	 *
 	 * @phpstan-param array<T, U> $array
 	 *
 	 * @return object[]
