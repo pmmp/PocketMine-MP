@@ -173,13 +173,13 @@ final class Utils{
 	}
 
 	/**
-	 * @phpstan-template T of object
+	 * @phpstan-template T of object[]
 	 *
 	 * @param object[] $array
-	 * @phpstan-param T[] $array
+	 * @phpstan-param T $array
 	 *
 	 * @return object[]
-	 * @phpstan-return T[]
+	 * @phpstan-return T
 	 */
 	public static function cloneObjectArray(array $array) : array{
 		/** @phpstan-var \Closure(T) : T $callback */
