@@ -32,15 +32,15 @@ final class SuspiciousStewTypeIdMap{
 	use IntSaveIdMapTrait;
 
 	private function __construct(){
-		$this->register(SuspiciousStewTypeIds::POPPY, SuspiciousStewType::POPPY());
-		$this->register(SuspiciousStewTypeIds::CORNFLOWER, SuspiciousStewType::CORNFLOWER());
-		$this->register(SuspiciousStewTypeIds::TULIP, SuspiciousStewType::TULIP());
-		$this->register(SuspiciousStewTypeIds::AZURE_BLUET, SuspiciousStewType::AZURE_BLUET());
-		$this->register(SuspiciousStewTypeIds::LILY_OF_THE_VALLEY, SuspiciousStewType::LILY_OF_THE_VALLEY());
-		$this->register(SuspiciousStewTypeIds::DANDELION, SuspiciousStewType::DANDELION());
-		$this->register(SuspiciousStewTypeIds::BLUE_ORCHID, SuspiciousStewType::BLUE_ORCHID());
-		$this->register(SuspiciousStewTypeIds::ALLIUM, SuspiciousStewType::ALLIUM());
-		$this->register(SuspiciousStewTypeIds::OXEYE_DAISY, SuspiciousStewType::OXEYE_DAISY());
-		$this->register(SuspiciousStewTypeIds::WITHER_ROSE, SuspiciousStewType::WITHER_ROSE());
+		$this->register(SuspiciousStewTypeIds::POPPY, SuspiciousStewType::POPPY);
+		$this->register(SuspiciousStewTypeIds::CORNFLOWER, SuspiciousStewType::CORNFLOWER);
+		$this->register(SuspiciousStewTypeIds::TULIP, SuspiciousStewType::TULIP);
+		$this->register(SuspiciousStewTypeIds::AZURE_BLUET, SuspiciousStewType::AZURE_BLUET);
+		$this->register(SuspiciousStewTypeIds::LILY_OF_THE_VALLEY, SuspiciousStewType::LILY_OF_THE_VALLEY);
+		$this->register(SuspiciousStewTypeIds::DANDELION, SuspiciousStewType::DANDELION);
+		$this->register(SuspiciousStewTypeIds::BLUE_ORCHID, SuspiciousStewType::BLUE_ORCHID);
+		$this->register(SuspiciousStewTypeIds::ALLIUM, SuspiciousStewType::ALLIUM);
+		$this->register(SuspiciousStewTypeIds::OXEYE_DAISY, SuspiciousStewType::OXEYE_DAISY);
+		$this->register(SuspiciousStewTypeIds::WITHER_ROSE, SuspiciousStewType::WITHER_ROSE);
 	}
 }
