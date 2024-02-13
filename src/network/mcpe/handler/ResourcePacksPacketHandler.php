@@ -58,8 +58,6 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	private array $downloadedChunks = [];
 
 	/**
-	 * @param PlayerInfo $playerInfo *
-	 *
 	 * @phpstan-param \Closure() : void $completionCallback
 	 */
 	public function __construct(
