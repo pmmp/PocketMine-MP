@@ -834,21 +834,21 @@ class NetworkSession{
 
 				$this->cipher = EncryptionContext::fakeGCM($encryptionKey);
 
-				$this->setHandler(new HandshakePacketHandler($this->onServerLoginSuccess(...)));
+				$this->setHandler(new HandshakePacketHandler(fn() => $this->onServerLoginSuccess($this->info)));
 				$this->logger->debug("Enabled encryption");
 			}));
 		}else{
-			$this->onServerLoginSuccess();
+			$this->onServerLoginSuccess($this->info);
 		}
 	}
 
-	private function onServerLoginSuccess() : void{
+	private function onServerLoginSuccess(PlayerInfo $playerInfo) : void{
 		$this->loggedIn = true;
 
 		$this->sendDataPacket(PlayStatusPacket::create(PlayStatusPacket::LOGIN_SUCCESS));
 
 		$this->logger->debug("Initiating resource packs phase");
-		$this->setHandler(new ResourcePacksPacketHandler($this, $this->server->getResourcePackManager(), function() : void{
+		$this->setHandler(new ResourcePacksPacketHandler($this, $playerInfo, $this->server->getResourcePackManager(), function() : void{
 			$this->createPlayer();
 		}));
 	}

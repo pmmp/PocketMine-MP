@@ -37,10 +37,10 @@ use pocketmine\network\mcpe\protocol\types\Experiments;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackInfoEntry;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackStackEntry;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackType;
+use pocketmine\player\PlayerInfo;
 use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\resourcepacks\ResourcePackManager;
 use function array_map;
-use function assert;
 use function ceil;
 use function count;
 use function implode;
@@ -58,18 +58,19 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	private array $downloadedChunks = [];
 
 	/**
+	 * @param PlayerInfo $playerInfo *
+	 *
 	 * @phpstan-param \Closure() : void $completionCallback
 	 */
 	public function __construct(
 		private NetworkSession $session,
+		private PlayerInfo $playerInfo,
 		private ResourcePackManager $resourcePackManager,
 		private \Closure $completionCallback
-	){
-		assert($this->session->getPlayerInfo() !== null, "PlayerInfo should be set before ResourcePacksPacketHandler is used");
-	}
+	){}
 
 	public function setUp() : void{
-		$event = new PlayerResourcePackOfferEvent($this->session->getPlayerInfo(), $this->resourcePackManager->getResourceStack(), $this->resourcePackManager->resourcePacksRequired());
+		$event = new PlayerResourcePackOfferEvent($this->playerInfo, $this->resourcePackManager->getResourceStack(), $this->resourcePackManager->resourcePacksRequired());
 		$event->call();
 		$resourcePackEntries = array_map(function(ResourcePack $pack) : ResourcePackInfoEntry{
 			//TODO: more stuff
