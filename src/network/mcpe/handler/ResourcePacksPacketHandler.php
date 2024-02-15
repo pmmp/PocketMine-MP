@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
-use pocketmine\event\player\PlayerResourcePackOfferEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
@@ -37,15 +36,14 @@ use pocketmine\network\mcpe\protocol\types\Experiments;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackInfoEntry;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackStackEntry;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackType;
-use pocketmine\player\PlayerInfo;
 use pocketmine\resourcepacks\ResourcePack;
-use pocketmine\resourcepacks\ResourcePackManager;
+use function array_keys;
 use function array_map;
 use function ceil;
 use function count;
 use function implode;
-use function is_string;
 use function strpos;
+use function strtolower;
 use function substr;
 
 /**
@@ -55,44 +53,55 @@ use function substr;
 class ResourcePacksPacketHandler extends PacketHandler{
 	private const PACK_CHUNK_SIZE = 128 * 1024; //128KB
 
+	/**
+	 * @var ResourcePack[]
+	 * @phpstan-var array<string, ResourcePack>
+	 */
+	private array $resourcePacksById = [];
+
 	/** @var bool[][] uuid => [chunk index => hasSent] */
 	private array $downloadedChunks = [];
 
 	/**
-	 * @phpstan-param \Closure() : void $completionCallback
+	 * @param ResourcePack[] $resourcePackStack
+	 * @param string[]       $encryptionKeys    pack UUID => key, leave unset for any packs that are not encrypted
+	 *
+	 * @phpstan-param list<ResourcePack>    $resourcePackStack
+	 * @phpstan-param array<string, string> $encryptionKeys
+	 * @phpstan-param \Closure() : void     $completionCallback
 	 */
 	public function __construct(
 		private NetworkSession $session,
-		private PlayerInfo $playerInfo,
-		private ResourcePackManager $resourcePackManager,
+		private array $resourcePackStack,
+		private array $encryptionKeys,
+		private bool $mustAccept,
 		private \Closure $completionCallback
-	){}
+	){
+		foreach($resourcePackStack as $pack){
+			$this->resourcePacksById[$pack->getPackId()] = $pack;
+		}
+	}
+
+	private function getPackById(string $id) : ?ResourcePack{
+		return $this->resourcePacksById[strtolower($id)] ?? null;
+	}
 
 	public function setUp() : void{
-		$event = new PlayerResourcePackOfferEvent($this->playerInfo, $this->resourcePackManager->getResourceStack(), $this->resourcePackManager->resourcePacksRequired());
-		$event->call();
-		foreach($event->getEncryptionKeys() as $packId => $key) {
-			$existingKey = $this->resourcePackManager->getPackEncryptionKey($packId);
-			if(is_string($existingKey) && $existingKey !== $key)
-				continue;
-			$this->resourcePackManager->setPackEncryptionKey($packId, $key);
-		}
 		$resourcePackEntries = array_map(function(ResourcePack $pack) : ResourcePackInfoEntry{
 			//TODO: more stuff
-			$encryptionKey = $this->resourcePackManager->getPackEncryptionKey($pack->getPackId());
 
 			return new ResourcePackInfoEntry(
 				$pack->getPackId(),
 				$pack->getPackVersion(),
 				$pack->getPackSize(),
-				$encryptionKey ?? "",
+				$this->encryptionKeys[$pack->getPackId()] ?? "",
 				"",
 				$pack->getPackId(),
 				false
 			);
-		}, $event->getResourcePacks());
+		}, $this->resourcePackStack);
 		// TODO: support forcing server packs
-		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($resourcePackEntries, [], $event->mustAccept(), false, false, []));
+		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($resourcePackEntries, [], $this->mustAccept, false, false, []));
 		$this->session->getLogger()->debug("Waiting for client to accept resource packs");
 	}
 
@@ -116,11 +125,11 @@ class ResourcePacksPacketHandler extends PacketHandler{
 					if($splitPos !== false){
 						$uuid = substr($uuid, 0, $splitPos);
 					}
-					$pack = $this->resourcePackManager->getPackById($uuid);
+					$pack = $this->getPackById($uuid);
 
 					if(!($pack instanceof ResourcePack)){
 						//Client requested a resource pack but we don't have it available on the server
-						$this->disconnectWithError("Unknown pack $uuid requested, available packs: " . implode(", ", $this->resourcePackManager->getPackIdList()));
+						$this->disconnectWithError("Unknown pack $uuid requested, available packs: " . implode(", ", array_keys($this->resourcePacksById)));
 						return false;
 					}
 
@@ -140,7 +149,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 			case ResourcePackClientResponsePacket::STATUS_HAVE_ALL_PACKS:
 				$stack = array_map(static function(ResourcePack $pack) : ResourcePackStackEntry{
 					return new ResourcePackStackEntry($pack->getPackId(), $pack->getPackVersion(), ""); //TODO: subpacks
-				}, $this->resourcePackManager->getResourceStack());
+				}, $this->resourcePackStack);
 
 				//we support chemistry blocks by default, the client should already have this installed
 				$stack[] = new ResourcePackStackEntry("0fba4063-dba1-4281-9b89-ff9390653530", "1.0.0", "");
@@ -163,9 +172,9 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	}
 
 	public function handleResourcePackChunkRequest(ResourcePackChunkRequestPacket $packet) : bool{
-		$pack = $this->resourcePackManager->getPackById($packet->packId);
+		$pack = $this->getPackById($packet->packId);
 		if(!($pack instanceof ResourcePack)){
-			$this->disconnectWithError("Invalid request for chunk $packet->chunkIndex of unknown pack $packet->packId, available packs: " . implode(", ", $this->resourcePackManager->getPackIdList()));
+			$this->disconnectWithError("Invalid request for chunk $packet->chunkIndex of unknown pack $packet->packId, available packs: " . implode(", ", array_keys($this->resourcePacksById)));
 			return false;
 		}
 

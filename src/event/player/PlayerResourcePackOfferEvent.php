@@ -26,7 +26,6 @@ namespace pocketmine\event\player;
 use pocketmine\event\Event;
 use pocketmine\player\PlayerInfo;
 use pocketmine\resourcepacks\ResourcePack;
-use pocketmine\utils\Utils;
 use function array_unshift;
 
 /**
@@ -37,17 +36,16 @@ use function array_unshift;
  */
 class PlayerResourcePackOfferEvent extends Event{
 	/**
-	 * @var string[] $encryptionKeys
-	 * @phpstan-var array<string, string> $encryptionKeys
-	 */
-	private array $encryptionKeys = [];
-
-	/**
 	 * @param ResourcePack[] $resourcePacks
+	 * @param string[]       $encryptionKeys pack UUID => key, leave unset for any packs that are not encrypted
+	 *
+	 * @phpstan-param list<ResourcePack>    $resourcePacks
+	 * @phpstan-param array<string, string> $encryptionKeys
 	 */
 	public function __construct(
 		private readonly PlayerInfo $playerInfo,
 		private array $resourcePacks,
+		private array $encryptionKeys,
 		private bool $mustAccept
 	){}
 
@@ -55,6 +53,10 @@ class PlayerResourcePackOfferEvent extends Event{
 		return $this->playerInfo;
 	}
 
+	/**
+	 * Adds a resource pack to the top of the stack.
+	 * The resources in this pack will be applied over the top of any existing packs.
+	 */
 	public function addResourcePack(ResourcePack $entry, ?string $encryptionKey = null) : void{
 		array_unshift($this->resourcePacks, $entry);
 		if($encryptionKey !== null){
@@ -63,21 +65,24 @@ class PlayerResourcePackOfferEvent extends Event{
 	}
 
 	/**
+	 * Sets the resource packs to offer. Packs are applied from the highest key to the lowest, with each pack
+	 * overwriting any resources from the previous pack. This means that the pack at index 0 gets the final say on which
+	 * resources are used.
+	 *
 	 * @param ResourcePack[] $resourcePacks
-	 * @param string[]       $encryptionKeys
+	 * @param string[]       $encryptionKeys pack UUID => key, leave unset for any packs that are not encrypted
+	 *
+	 * @phpstan-param list<ResourcePack>    $resourcePacks
 	 * @phpstan-param array<string, string> $encryptionKeys
 	 */
-	public function setResourcePacks(array $resourcePacks, ?array $encryptionKeys = null) : void{
+	public function setResourcePacks(array $resourcePacks, array $encryptionKeys) : void{
 		$this->resourcePacks = $resourcePacks;
-		if($encryptionKeys !== null){
-			foreach(Utils::stringifyKeys($encryptionKeys) as $packId => $key){
-				$this->encryptionKeys[$packId] ??= $key;
-			}
-		}
+		$this->encryptionKeys = $encryptionKeys;
 	}
 
 	/**
 	 * @return ResourcePack[]
+	 * @phpstan-return list<ResourcePack>
 	 */
 	public function getResourcePacks() : array{
 		return $this->resourcePacks;
@@ -85,6 +90,7 @@ class PlayerResourcePackOfferEvent extends Event{
 
 	/**
 	 * @return string[]
+	 * @phpstan-return array<string, string>
 	 */
 	public function getEncryptionKeys() : array{
 		return $this->encryptionKeys;
