@@ -35,7 +35,7 @@ class LingeringPotion extends ProjectileItem{
 	private PotionType $potionType;
 
 	public function __construct(ItemIdentifier $identifier, string $name){
-		$this->potionType = PotionType::WATER();
+		$this->potionType = PotionType::WATER;
 		parent::__construct($identifier, $name);
 	}
 
