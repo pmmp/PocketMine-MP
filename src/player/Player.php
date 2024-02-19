@@ -267,10 +267,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	protected float $stepHeight = 0.6;
 
-	protected ?string $interactiveTag = null;
-
-	protected ?int $lookingId = null;
-
 	protected ?Vector3 $sleeping = null;
 	private ?Position $spawnPosition = null;
 
@@ -632,36 +628,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$ev->call();
 
 		$this->displayName = $ev->getNewName();
-	}
-
-	/**
-	 * Returns the entity ID of the entity being looked, or null if it doesn't is looking an entity.
-	 */
-	public function getLookingEntityId() : ?int{
-		return $this->lookingId;
-	}
-
-	/**
-	 * Returns the entity being looked, or null if not found.
-	 * This is used for things like interactive tags.
-	 */
-	public function getLookingEntity() : ?Entity{
-		return $this->lookingId !== null ? $this->server->getWorldManager()->findEntity($this->lookingId) : null;
-	}
-
-	/**
-	 * Sets the looking entity. Passing null will remove the current looking entity.
-	 *
-	 * @throws \InvalidArgumentException if the looking entity is not valid
-	 */
-	public function setLookingEntity(?Entity $looking) : void{
-		if($looking === null){
-			$this->lookingId = null;
-		}elseif($looking->closed){
-			throw new \InvalidArgumentException("Supplied looking entity is garbage and cannot be used");
-		}else{
-			$this->lookingId = $looking->getId();
-		}
 	}
 
 	/**
@@ -1574,7 +1540,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->inventory->setHeldItemIndex($hotbarSlot);
 		$this->setUsingItem(false);
-		$this->updateInteractiveTag();
 
 		return true;
 	}
@@ -1972,23 +1937,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				}
 			}
 			return $entity->onInteract($this, $clickPos);
-		}
-		return false;
-	}
-
-	/**
-	 * Updates the interactive tag displayed as a button or removes it if necessary.
-	 * Returns whether it did something.
-	 */
-	public function updateInteractiveTag() : bool{
-		$looking = $this->getLookingEntity();
-		$item = $this->inventory->getItemInHand();
-		$interactiveTag = ($looking !== null ? $looking->getInteractiveTag($this, $item) : null) ?? $item->getInteractiveTag();
-		if($interactiveTag !== $this->interactiveTag){
-			$this->interactiveTag = $interactiveTag;
-			$this->networkPropertiesDirty = true;
-			$this->sendData([$this]);
-			return true;
 		}
 		return false;
 	}
@@ -2526,7 +2474,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$properties->setPlayerFlag(PlayerMetadataFlags::SLEEP, $this->sleeping !== null);
 		$properties->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, $this->sleeping !== null ? BlockPosition::fromVector3($this->sleeping) : new BlockPosition(0, 0, 0));
-		$properties->setString(EntityMetadataProperties::INTERACTIVE_TAG, $this->interactiveTag ?? "");
 	}
 
 	public function sendData(?array $targets, ?array $data = null) : void{

@@ -637,19 +637,15 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleInteract(InteractPacket $packet) : bool{
-		$target = $this->player->getWorld()->getEntity($packet->targetActorRuntimeId);
 		if($packet->action === InteractPacket::ACTION_MOUSEOVER){
 			//TODO HACK: silence useless spam (MCPE 1.8)
 			//due to some messy Mojang hacks, it sends this when changing the held item now, which causes us to think
 			//the inventory was closed when it wasn't.
 			//this is also sent whenever entity metadata updates, which can get really spammy.
-			if($target !== null && !$target->isClosed()){
-				$this->player->setLookingEntity($target);
-			}else{
-				$this->player->setLookingEntity(null);
-			}
-			return $this->player->updateInteractiveTag();
+			//TODO: implement handling for this where it matters
+			return true;
 		}
+		$target = $this->player->getWorld()->getEntity($packet->targetActorRuntimeId);
 		if($target === null){
 			return false;
 		}

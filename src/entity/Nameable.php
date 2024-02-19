@@ -23,17 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
-
+/**
+ * Implemented by mobs that can be named using a name tag.
+ * TODO: we could probably drop this in favour of isNameable() since all entities have setNameTag() anyway
+ */
 interface Nameable{
 
-	public function getNameTag() : string;
-
-	public function setNameTag(string $name) : void;
-
-	public function getInteractiveTag(Player $player, Item $item) : ?string;
-
-	public function onInteract(Player $player, Vector3 $clickPos) : bool;
 }
