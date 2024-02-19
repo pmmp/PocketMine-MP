@@ -315,6 +315,44 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	}
 
 	public function registerFlatColorBlockSerializers() : void{
+		$this->map(Blocks::STAINED_HARDENED_GLASS(), fn(StainedHardenedGlass $block) => Writer::create(match($block->getColor()){
+			DyeColor::BLACK => Ids::HARD_BLACK_STAINED_GLASS,
+			DyeColor::BLUE => Ids::HARD_BLUE_STAINED_GLASS,
+			DyeColor::BROWN => Ids::HARD_BROWN_STAINED_GLASS,
+			DyeColor::CYAN => Ids::HARD_CYAN_STAINED_GLASS,
+			DyeColor::GRAY => Ids::HARD_GRAY_STAINED_GLASS,
+			DyeColor::GREEN => Ids::HARD_GREEN_STAINED_GLASS,
+			DyeColor::LIGHT_BLUE => Ids::HARD_LIGHT_BLUE_STAINED_GLASS,
+			DyeColor::LIGHT_GRAY => Ids::HARD_LIGHT_GRAY_STAINED_GLASS,
+			DyeColor::LIME => Ids::HARD_LIME_STAINED_GLASS,
+			DyeColor::MAGENTA => Ids::HARD_MAGENTA_STAINED_GLASS,
+			DyeColor::ORANGE => Ids::HARD_ORANGE_STAINED_GLASS,
+			DyeColor::PINK => Ids::HARD_PINK_STAINED_GLASS,
+			DyeColor::PURPLE => Ids::HARD_PURPLE_STAINED_GLASS,
+			DyeColor::RED => Ids::HARD_RED_STAINED_GLASS,
+			DyeColor::WHITE => Ids::HARD_WHITE_STAINED_GLASS,
+			DyeColor::YELLOW => Ids::HARD_YELLOW_STAINED_GLASS,
+		}));
+
+		$this->map(Blocks::STAINED_HARDENED_GLASS_PANE(), fn(StainedHardenedGlassPane $block) => Writer::create(match($block->getColor()){
+			DyeColor::BLACK => Ids::HARD_BLACK_STAINED_GLASS_PANE,
+			DyeColor::BLUE => Ids::HARD_BLUE_STAINED_GLASS_PANE,
+			DyeColor::BROWN => Ids::HARD_BROWN_STAINED_GLASS_PANE,
+			DyeColor::CYAN => Ids::HARD_CYAN_STAINED_GLASS_PANE,
+			DyeColor::GRAY => Ids::HARD_GRAY_STAINED_GLASS_PANE,
+			DyeColor::GREEN => Ids::HARD_GREEN_STAINED_GLASS_PANE,
+			DyeColor::LIGHT_BLUE => Ids::HARD_LIGHT_BLUE_STAINED_GLASS_PANE,
+			DyeColor::LIGHT_GRAY => Ids::HARD_LIGHT_GRAY_STAINED_GLASS_PANE,
+			DyeColor::LIME => Ids::HARD_LIME_STAINED_GLASS_PANE,
+			DyeColor::MAGENTA => Ids::HARD_MAGENTA_STAINED_GLASS_PANE,
+			DyeColor::ORANGE => Ids::HARD_ORANGE_STAINED_GLASS_PANE,
+			DyeColor::PINK => Ids::HARD_PINK_STAINED_GLASS_PANE,
+			DyeColor::PURPLE => Ids::HARD_PURPLE_STAINED_GLASS_PANE,
+			DyeColor::RED => Ids::HARD_RED_STAINED_GLASS_PANE,
+			DyeColor::WHITE => Ids::HARD_WHITE_STAINED_GLASS_PANE,
+			DyeColor::YELLOW => Ids::HARD_YELLOW_STAINED_GLASS_PANE,
+		}));
+
 		$this->map(Blocks::GLAZED_TERRACOTTA(), function(GlazedTerracotta $block) : Writer{
 			return Writer::create(match($block->getColor()){
 				DyeColor::BLACK => Ids::BLACK_GLAZED_TERRACOTTA,
@@ -1617,14 +1655,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeString(StateNames::SPONGE_TYPE, $block->isWet() ? StringValues::SPONGE_TYPE_WET : StringValues::SPONGE_TYPE_DRY);
 		});
 		$this->map(Blocks::SPRUCE_SAPLING(), fn(Sapling $block) => Helper::encodeSapling($block, StringValues::SAPLING_TYPE_SPRUCE));
-		$this->map(Blocks::STAINED_HARDENED_GLASS(), function(StainedHardenedGlass $block) : Writer{
-			return Writer::create(Ids::HARD_STAINED_GLASS)
-				->writeColor($block->getColor());
-		});
-		$this->map(Blocks::STAINED_HARDENED_GLASS_PANE(), function(StainedHardenedGlassPane $block) : Writer{
-			return Writer::create(Ids::HARD_STAINED_GLASS_PANE)
-				->writeColor($block->getColor());
-		});
 		$this->map(Blocks::STONECUTTER(), fn(Stonecutter $block) => Writer::create(Ids::STONECUTTER_BLOCK)
 			->writeCardinalHorizontalFacing($block->getFacing()));
 		$this->map(Blocks::STONE_BRICKS(), fn() => Helper::encodeStoneBricks(StringValues::STONE_BRICK_TYPE_DEFAULT));

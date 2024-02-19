@@ -38,6 +38,8 @@ final class ItemTypeNames{
 	public const ANGLER_POTTERY_SHERD = "minecraft:angler_pottery_sherd";
 	public const APPLE = "minecraft:apple";
 	public const ARCHER_POTTERY_SHERD = "minecraft:archer_pottery_sherd";
+	public const ARMADILLO_SCUTE = "minecraft:armadillo_scute";
+	public const ARMADILLO_SPAWN_EGG = "minecraft:armadillo_spawn_egg";
 	public const ARMOR_STAND = "minecraft:armor_stand";
 	public const ARMS_UP_POTTERY_SHERD = "minecraft:arms_up_pottery_sherd";
 	public const ARROW = "minecraft:arrow";
@@ -79,6 +81,7 @@ final class ItemTypeNames{
 	public const BOW = "minecraft:bow";
 	public const BOWL = "minecraft:bowl";
 	public const BREAD = "minecraft:bread";
+	public const BREEZE_SPAWN_EGG = "minecraft:breeze_spawn_egg";
 	public const BREWER_POTTERY_SHERD = "minecraft:brewer_pottery_sherd";
 	public const BREWING_STAND = "minecraft:brewing_stand";
 	public const BRICK = "minecraft:brick";
@@ -238,6 +241,8 @@ final class ItemTypeNames{
 	public const GREEN_DYE = "minecraft:green_dye";
 	public const GUARDIAN_SPAWN_EGG = "minecraft:guardian_spawn_egg";
 	public const GUNPOWDER = "minecraft:gunpowder";
+	public const HARD_STAINED_GLASS = "minecraft:hard_stained_glass";
+	public const HARD_STAINED_GLASS_PANE = "minecraft:hard_stained_glass_pane";
 	public const HEART_OF_THE_SEA = "minecraft:heart_of_the_sea";
 	public const HEART_POTTERY_SHERD = "minecraft:heart_pottery_sherd";
 	public const HEARTBREAK_POTTERY_SHERD = "minecraft:heartbreak_pottery_sherd";
@@ -404,7 +409,6 @@ final class ItemTypeNames{
 	public const SALMON = "minecraft:salmon";
 	public const SALMON_BUCKET = "minecraft:salmon_bucket";
 	public const SALMON_SPAWN_EGG = "minecraft:salmon_spawn_egg";
-	public const SCUTE = "minecraft:scute";
 	public const SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:sentry_armor_trim_smithing_template";
 	public const SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:shaper_armor_trim_smithing_template";
 	public const SHEAF_POTTERY_SHERD = "minecraft:sheaf_pottery_sherd";
@@ -466,11 +470,13 @@ final class ItemTypeNames{
 	public const TORCHFLOWER_SEEDS = "minecraft:torchflower_seeds";
 	public const TOTEM_OF_UNDYING = "minecraft:totem_of_undying";
 	public const TRADER_LLAMA_SPAWN_EGG = "minecraft:trader_llama_spawn_egg";
+	public const TRIAL_KEY = "minecraft:trial_key";
 	public const TRIDENT = "minecraft:trident";
 	public const TROPICAL_FISH = "minecraft:tropical_fish";
 	public const TROPICAL_FISH_BUCKET = "minecraft:tropical_fish_bucket";
 	public const TROPICAL_FISH_SPAWN_EGG = "minecraft:tropical_fish_spawn_egg";
 	public const TURTLE_HELMET = "minecraft:turtle_helmet";
+	public const TURTLE_SCUTE = "minecraft:turtle_scute";
 	public const TURTLE_SPAWN_EGG = "minecraft:turtle_spawn_egg";
 	public const VEX_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:vex_armor_trim_smithing_template";
 	public const VEX_SPAWN_EGG = "minecraft:vex_spawn_egg";
@@ -497,6 +503,7 @@ final class ItemTypeNames{
 	public const WITCH_SPAWN_EGG = "minecraft:witch_spawn_egg";
 	public const WITHER_SKELETON_SPAWN_EGG = "minecraft:wither_skeleton_spawn_egg";
 	public const WITHER_SPAWN_EGG = "minecraft:wither_spawn_egg";
+	public const WOLF_ARMOR = "minecraft:wolf_armor";
 	public const WOLF_SPAWN_EGG = "minecraft:wolf_spawn_egg";
 	public const WOODEN_AXE = "minecraft:wooden_axe";
 	public const WOODEN_DOOR = "minecraft:wooden_door";

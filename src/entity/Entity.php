@@ -252,6 +252,14 @@ abstract class Entity{
 		return $this->alwaysShowNameTag;
 	}
 
+	/**
+	 * Returns whether players can rename this entity using a name tag.
+	 * Note that plugins can still name entities using setNameTag().
+	 */
+	public function canBeRenamed() : bool{
+		return false;
+	}
+
 	public function setNameTag(string $name) : void{
 		$this->nameTag = $name;
 		$this->networkPropertiesDirty = true;
