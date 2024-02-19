@@ -56,7 +56,6 @@ final class BlockStateNames{
 	public const CHEMISTRY_TABLE_TYPE = "chemistry_table_type";
 	public const CHISEL_TYPE = "chisel_type";
 	public const CLUSTER_COUNT = "cluster_count";
-	public const COLOR = "color";
 	public const COLOR_BIT = "color_bit";
 	public const COMPOSTER_FILL_LEVEL = "composter_fill_level";
 	public const CONDITIONAL_BIT = "conditional_bit";
@@ -145,6 +144,7 @@ final class BlockStateNames{
 	public const TALL_GRASS_TYPE = "tall_grass_type";
 	public const TOGGLE_BIT = "toggle_bit";
 	public const TORCH_FACING_DIRECTION = "torch_facing_direction";
+	public const TRIAL_SPAWNER_STATE = "trial_spawner_state";
 	public const TRIGGERED_BIT = "triggered_bit";
 	public const TURTLE_EGG_COUNT = "turtle_egg_count";
 	public const TWISTING_VINES_AGE = "twisting_vines_age";
