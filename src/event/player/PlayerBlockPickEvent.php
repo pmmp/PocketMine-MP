@@ -50,4 +50,8 @@ class PlayerBlockPickEvent extends PlayerEvent implements Cancellable{
 	public function getResultItem() : Item{
 		return $this->resultItem;
 	}
+
+	public function setResultItem(Item $resultItem) : void{
+		$this->resultItem = clone $resultItem;
+	}
 }
