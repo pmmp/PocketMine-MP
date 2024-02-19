@@ -1168,7 +1168,7 @@ final class StringToItemParser extends StringToTParser{
 		foreach(GoatHornType::cases() as $goatHornType){
 			$prefix = fn(string $name) => strtolower($goatHornType->name) . "_" . $name;
 
-			$result->register($prefix("goat_horn"), fn() => Items::GOAT_HORN()->setType($goatHornType));
+			$result->register($prefix("goat_horn"), fn() => Items::GOAT_HORN()->setHornType($goatHornType));
 		}
 
 		foreach(SuspiciousStewType::cases() as $suspiciousStewType){
