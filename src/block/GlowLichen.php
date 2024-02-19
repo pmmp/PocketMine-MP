@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
-use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -95,7 +95,7 @@ class GlowLichen extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function canBeReplaced() : bool{
@@ -121,7 +121,7 @@ class GlowLichen extends Transparent{
 		$changed = false;
 
 		foreach($this->faces as $face){
-			if(!$this->getSide($face)->getSupportType(Facing::opposite($face))->equals(SupportType::FULL())){
+			if($this->getAdjacentSupportType($face) !== SupportType::FULL){
 				unset($this->faces[$face]);
 				$changed = true;
 			}
@@ -156,7 +156,7 @@ class GlowLichen extends Transparent{
 		$supportBlock = $world->getBlock($replacePos->getSide($spreadFace));
 		$supportFace = Facing::opposite($spreadFace);
 
-		if(!$supportBlock->getSupportType($supportFace)->equals(SupportType::FULL())){
+		if($supportBlock->getSupportType($supportFace) !== SupportType::FULL){
 			return false;
 		}
 
@@ -166,14 +166,7 @@ class GlowLichen extends Transparent{
 			return false;
 		}
 
-		$ev = new BlockSpreadEvent($replacedBlock, $this, $replacementBlock);
-		$ev->call();
-		if(!$ev->isCancelled()){
-			$world->setBlock($replacedBlock->getPosition(), $ev->getNewState());
-			return true;
-		}
-
-		return false;
+		return BlockEventHelper::spread($replacedBlock, $replacementBlock, $this);
 	}
 
 	/**
@@ -275,7 +268,7 @@ class GlowLichen extends Transparent{
 	private function getAvailableFaces() : array{
 		$faces = [];
 		foreach(Facing::ALL as $face){
-			if(!$this->hasFace($face) && $this->getSide($face)->getSupportType(Facing::opposite($face))->equals(SupportType::FULL())){
+			if(!$this->hasFace($face) && $this->getAdjacentSupportType($face) === SupportType::FULL){
 				$faces[$face] = $face;
 			}
 		}

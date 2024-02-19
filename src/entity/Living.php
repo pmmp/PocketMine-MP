@@ -80,6 +80,17 @@ use const M_PI;
 abstract class Living extends Entity{
 	protected const DEFAULT_BREATH_TICKS = 300;
 
+	/**
+	 * The default knockback multiplier when an entity is hit by another entity.
+	 * Larger values knock the entity back with increased velocity.
+	 */
+	public const DEFAULT_KNOCKBACK_FORCE = 0.4;
+	/**
+	 * Limit of an entity's vertical knockback velocity when hit by another entity. Without this limit, the entity
+	 * may be knocked far up into the air with large knockback forces.
+	 */
+	public const DEFAULT_KNOCKBACK_VERTICAL_LIMIT = 0.4;
+
 	private const TAG_LEGACY_HEALTH = "HealF"; //TAG_Float
 	private const TAG_HEALTH = "Health"; //TAG_Float
 	private const TAG_BREATH_TICKS = "Air"; //TAG_Short
@@ -217,6 +228,7 @@ abstract class Living extends Entity{
 	public function setSneaking(bool $value = true) : void{
 		$this->sneaking = $value;
 		$this->networkPropertiesDirty = true;
+		$this->recalculateSize();
 	}
 
 	public function isSprinting() : bool{
@@ -258,6 +270,8 @@ abstract class Living extends Entity{
 		if($this->isSwimming() || $this->isGliding()){
 			$width = $size->getWidth();
 			$this->setSize((new EntitySizeInfo($width, $width, $width * 0.9))->scale($this->getScale()));
+		}elseif($this->isSneaking()){
+			$this->setSize((new EntitySizeInfo(3 / 4 * $size->getHeight(), $size->getWidth(), 3 / 4 * $size->getEyeHeight()))->scale($this->getScale()));
 		}else{
 			$this->setSize($size->scale($this->getScale()));
 		}
@@ -484,14 +498,16 @@ abstract class Living extends Entity{
 	public function damageArmor(float $damage) : void{
 		$durabilityRemoved = (int) max(floor($damage / 4), 1);
 
-		$armor = $this->armorInventory->getContents(true);
-		foreach($armor as $item){
+		$armor = $this->armorInventory->getContents();
+		foreach($armor as $slotId => $item){
 			if($item instanceof Armor){
+				$oldItem = clone $item;
 				$this->damageItem($item, $durabilityRemoved);
+				if(!$item->equalsExact($oldItem)){
+					$this->armorInventory->setItem($slotId, $item);
+				}
 			}
 		}
-
-		$this->armorInventory->setContents($armor);
 	}
 
 	private function damageItem(Durable $item, int $durabilityRemoved) : void{
@@ -502,7 +518,7 @@ abstract class Living extends Entity{
 	}
 
 	public function attack(EntityDamageEvent $source) : void{
-		if($this->noDamageTicks > 0){
+		if($this->noDamageTicks > 0 && $source->getCause() !== EntityDamageEvent::CAUSE_SUICIDE){
 			$source->cancel();
 		}
 
@@ -515,7 +531,9 @@ abstract class Living extends Entity{
 			$source->cancel();
 		}
 
-		$this->applyDamageModifiers($source);
+		if($source->getCause() !== EntityDamageEvent::CAUSE_SUICIDE){
+			$this->applyDamageModifiers($source);
+		}
 
 		if($source instanceof EntityDamageByEntityEvent && (
 			$source->getCause() === EntityDamageEvent::CAUSE_BLOCK_EXPLOSION ||
@@ -539,14 +557,14 @@ abstract class Living extends Entity{
 			$e = $source->getChild();
 			if($e !== null){
 				$motion = $e->getMotion();
-				$this->knockBack($motion->x, $motion->z, $source->getKnockBack());
+				$this->knockBack($motion->x, $motion->z, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
 			}
 		}elseif($source instanceof EntityDamageByEntityEvent){
 			$e = $source->getDamager();
 			if($e !== null){
 				$deltaX = $this->location->x - $e->location->x;
 				$deltaZ = $this->location->z - $e->location->z;
-				$this->knockBack($deltaX, $deltaZ, $source->getKnockBack());
+				$this->knockBack($deltaX, $deltaZ, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
 			}
 		}
 
@@ -560,7 +578,7 @@ abstract class Living extends Entity{
 		$this->broadcastAnimation(new HurtAnimation($this));
 	}
 
-	public function knockBack(float $x, float $z, float $force = 0.4, ?float $verticalLimit = 0.4) : void{
+	public function knockBack(float $x, float $z, float $force = self::DEFAULT_KNOCKBACK_FORCE, ?float $verticalLimit = self::DEFAULT_KNOCKBACK_VERTICAL_LIMIT) : void{
 		$f = sqrt($x * $x + $z * $z);
 		if($f <= 0){
 			return;
@@ -637,9 +655,12 @@ abstract class Living extends Entity{
 			}
 
 			foreach($this->armorInventory->getContents() as $index => $item){
+				$oldItem = clone $item;
 				if($item->onTickWorn($this)){
 					$hasUpdate = true;
-					$this->armorInventory->setItem($index, $item);
+					if(!$item->equalsExact($oldItem)){
+						$this->armorInventory->setItem($index, $item);
+					}
 				}
 			}
 		}

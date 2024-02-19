@@ -23,14 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
-use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 
 class WaterLily extends Flowable{
+	use StaticSupportTrait {
+		canBePlacedAt as supportedWhenPlacedAt;
+	}
 
 	/**
 	 * @return AxisAlignedBB[]
@@ -40,23 +41,10 @@ class WaterLily extends Flowable{
 	}
 
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
-		return !$blockReplace instanceof Water && parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
+		return !$blockReplace instanceof Water && $this->supportedWhenPlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
 	}
 
-	private function canBeSupportedBy(Block $block) : bool{
-		return $block instanceof Water;
-	}
-
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN))){
-			return false;
-		}
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
+	private function canBeSupportedAt(Block $block) : bool{
+		return $block->getSide(Facing::DOWN) instanceof Water;
 	}
 }

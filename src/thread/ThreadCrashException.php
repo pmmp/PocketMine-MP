@@ -21,18 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock;
+namespace pocketmine\thread;
 
-use PHPUnit\Framework\TestCase;
-use pocketmine\block\utils\DyeColor;
+final class ThreadCrashException extends ThreadException{
 
-class DyeColorIdMapTest extends TestCase{
+	private ThreadCrashInfo $crashInfo;
 
-	public function testAllColorsMapped() : void{
-		foreach(DyeColor::getAll() as $color){
-			$id = DyeColorIdMap::getInstance()->toId($color);
-			$color2 = DyeColorIdMap::getInstance()->fromId($id);
-			self::assertTrue($color2 !== null && $color->equals($color2));
-		}
+	public function __construct(string $message, ThreadCrashInfo $crashInfo){
+		parent::__construct($message);
+		$this->crashInfo = $crashInfo;
+	}
+
+	public function getCrashInfo() : ThreadCrashInfo{
+		return $this->crashInfo;
 	}
 }

@@ -33,20 +33,17 @@ class HandlerList{
 	/** @var RegisteredListener[][] */
 	private array $handlerSlots = [];
 
-	private RegisteredListenerCache $handlerCache;
-
 	/** @var RegisteredListenerCache[] */
 	private array $affectedHandlerCaches = [];
 
 	/**
-	 * @phpstan-template TEvent of Event
-	 * @phpstan-param class-string<TEvent> $class
+	 * @phpstan-param class-string<covariant Event> $class
 	 */
 	public function __construct(
 		private string $class,
-		private ?HandlerList $parentList
+		private ?HandlerList $parentList,
+		private RegisteredListenerCache $handlerCache = new RegisteredListenerCache()
 	){
-		$this->handlerCache = new RegisteredListenerCache();
 		for($list = $this; $list !== null; $list = $list->parentList){
 			$list->affectedHandlerCaches[spl_object_id($this->handlerCache)] = $this->handlerCache;
 		}

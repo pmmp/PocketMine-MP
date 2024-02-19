@@ -93,7 +93,7 @@ final class BlockStateDeserializerHelper{
 	/** @throws BlockStateDeserializeException */
 	public static function decodeComparator(RedstoneComparator $block, BlockStateReader $in) : RedstoneComparator{
 		return $block
-			->setFacing($in->readLegacyHorizontalFacing())
+			->setFacing($in->readCardinalHorizontalFacing())
 			->setPowered($in->readBool(BlockStateNames::OUTPUT_LIT_BIT))
 			->setSubtractMode($in->readBool(BlockStateNames::OUTPUT_SUBTRACT_BIT));
 	}
@@ -216,7 +216,7 @@ final class BlockStateDeserializerHelper{
 	/** @throws BlockStateDeserializeException */
 	public static function decodeRepeater(RedstoneRepeater $block, BlockStateReader $in) : RedstoneRepeater{
 		return $block
-			->setFacing($in->readLegacyHorizontalFacing())
+			->setFacing($in->readCardinalHorizontalFacing())
 			->setDelay($in->readBoundedInt(BlockStateNames::REPEATER_DELAY, 0, 3) + 1);
 	}
 
@@ -236,9 +236,12 @@ final class BlockStateDeserializerHelper{
 
 	/** @throws BlockStateDeserializeException */
 	public static function decodeStem(Stem $block, BlockStateReader $in) : Stem{
-		//TODO: our stems don't support facings yet (facing_direction)
-		$in->todo(BlockStateNames::FACING_DIRECTION);
-		return self::decodeCrops($block, $in);
+		//In PM, we use Facing::UP to indicate that the stem is not attached to a pumpkin/melon, since this makes the
+		//most intuitive sense (the stem is pointing at the sky). However, Bedrock uses the DOWN state for this, which
+		//is absurd, and I refuse to make our API similarly absurd.
+		$facing = $in->readFacingWithoutUp();
+		return self::decodeCrops($block, $in)
+			->setFacing($facing === Facing::DOWN ? Facing::UP : $facing);
 	}
 
 	/** @throws BlockStateDeserializeException */

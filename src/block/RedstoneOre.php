@@ -23,7 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\block\utils\FortuneDropHelper;
+use pocketmine\block\utils\LightableTrait;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
@@ -31,23 +32,7 @@ use pocketmine\player\Player;
 use function mt_rand;
 
 class RedstoneOre extends Opaque{
-	protected bool $lit = false;
-
-	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->bool($this->lit);
-	}
-
-	public function isLit() : bool{
-		return $this->lit;
-	}
-
-	/**
-	 * @return $this
-	 */
-	public function setLit(bool $lit = true) : self{
-		$this->lit = $lit;
-		return $this;
-	}
+	use LightableTrait;
 
 	public function getLightLevel() : int{
 		return $this->lit ? 9 : 0;
@@ -69,7 +54,7 @@ class RedstoneOre extends Opaque{
 	}
 
 	public function ticksRandomly() : bool{
-		return true;
+		return $this->lit;
 	}
 
 	public function onRandomTick() : void{
@@ -81,7 +66,7 @@ class RedstoneOre extends Opaque{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			VanillaItems::REDSTONE_DUST()->setCount(mt_rand(4, 5))
+			VanillaItems::REDSTONE_DUST()->setCount(FortuneDropHelper::discrete($item, 4, 5))
 		];
 	}
 

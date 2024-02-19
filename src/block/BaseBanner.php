@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\utils\BannerPatternLayer;
 use pocketmine\block\utils\ColoredTrait;
-use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Banner as ItemBanner;
 use pocketmine\item\Item;
@@ -35,7 +34,6 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
-use function array_filter;
 use function assert;
 use function count;
 
@@ -47,11 +45,6 @@ abstract class BaseBanner extends Transparent{
 	 * @phpstan-var list<BannerPatternLayer>
 	 */
 	protected array $patterns = [];
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->color = DyeColor::BLACK();
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
 
 	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
@@ -95,11 +88,12 @@ abstract class BaseBanner extends Transparent{
 	 * @return $this
 	 */
 	public function setPatterns(array $patterns) : self{
-		$checked = array_filter($patterns, fn($v) => $v instanceof BannerPatternLayer);
-		if(count($checked) !== count($patterns)){
-			throw new \TypeError("Deque must only contain " . BannerPatternLayer::class . " objects");
+		foreach($patterns as $pattern){
+			if(!$pattern instanceof BannerPatternLayer){
+				throw new \TypeError("Array must only contain " . BannerPatternLayer::class . " objects");
+			}
 		}
-		$this->patterns = $checked;
+		$this->patterns = $patterns;
 		return $this;
 	}
 
@@ -111,7 +105,7 @@ abstract class BaseBanner extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	private function canBeSupportedBy(Block $block) : bool{
