@@ -116,7 +116,7 @@ class FireworkRocket extends Item{
 
 		$this->pop();
 
-		return ItemUseResult::SUCCESS();
+		return ItemUseResult::SUCCESS;
 	}
 
 	protected function deserializeCompoundTag(CompoundTag $tag) : void{
