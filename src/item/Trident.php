@@ -43,7 +43,7 @@ class Trident extends Tool implements Releasable{
 
 		$diff = $player->getItemUseDuration();
 		if($diff < 14){
-			return ItemUseResult::FAIL();
+			return ItemUseResult::FAIL;
 		}
 
 		$entity = new TridentEntity(Location::fromObject(
@@ -60,7 +60,7 @@ class Trident extends Tool implements Releasable{
 		$ev->call();
 		if($ev->isCancelled()){
 			$ev->getEntity()->flagForDespawn();
-			return ItemUseResult::FAIL();
+			return ItemUseResult::FAIL;
 		}
 		$ev->getEntity()->spawnToAll();
 		$location->getWorld()->addSound($location, new TridentThrowSound());
@@ -71,7 +71,7 @@ class Trident extends Tool implements Releasable{
 			$entity->setItem($item);
 			$this->pop();
 		}
-		return ItemUseResult::SUCCESS();
+		return ItemUseResult::SUCCESS;
 	}
 
 	public function getAttackPoints() : int{

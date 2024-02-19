@@ -48,7 +48,7 @@ class Trident extends Projectile{
 	public const TAG_ITEM = "Trident"; //TAG_Compound
 	protected const TAG_SPAWNED_IN_CREATIVE = "isCreative"; //TAG_Byte
 
-	public static function getNetworkTypeId() : string{ return EntityIds::THROWN_TRIDENT; }
+	public function getNetworkTypeId() : string{ return EntityIds::THROWN_TRIDENT; }
 
 	protected float $damage = 8.0;
 
