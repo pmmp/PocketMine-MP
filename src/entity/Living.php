@@ -132,6 +132,10 @@ abstract class Living extends Entity{
 
 	abstract public function getName() : string;
 
+	public function canBeRenamed() : bool{
+		return true;
+	}
+
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 

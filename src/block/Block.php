@@ -42,7 +42,6 @@ use pocketmine\item\enchantment\ItemEnchantmentTags;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
-use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\RayTraceResult;
@@ -271,11 +270,22 @@ class Block{
 	}
 
 	private function encodeFullState() : int{
-		$writer = new RuntimeDataWriter($this->requiredBlockItemStateDataBits + $this->requiredBlockOnlyStateDataBits);
-		$writer->writeInt($this->requiredBlockItemStateDataBits, $this->encodeBlockItemState());
-		$writer->writeInt($this->requiredBlockOnlyStateDataBits, $this->encodeBlockOnlyState());
+		$blockItemBits = $this->requiredBlockItemStateDataBits;
+		$blockOnlyBits = $this->requiredBlockOnlyStateDataBits;
 
-		return $writer->getValue();
+		if($blockOnlyBits === 0 && $blockItemBits === 0){
+			return 0;
+		}
+
+		$result = 0;
+		if($blockItemBits > 0){
+			$result |= $this->encodeBlockItemState();
+		}
+		if($blockOnlyBits > 0){
+			$result |= $this->encodeBlockOnlyState() << $blockItemBits;
+		}
+
+		return $result;
 	}
 
 	/**
@@ -347,17 +357,13 @@ class Block{
 
 	/**
 	 * Called when this block is created, set, or has a neighbouring block update, to re-detect dynamic properties which
-	 * are not saved on the world.
-	 *
-	 * Clears any cached precomputed objects, such as bounding boxes. Remove any outdated precomputed things such as
-	 * AABBs and force recalculation.
+	 * are not saved in the blockstate ID.
+	 * If any such properties are updated, don't forget to clear things like AABB caches if necessary.
 	 *
 	 * A replacement block may be returned. This is useful if the block type changed due to reading of world data (e.g.
 	 * data from a block entity).
 	 */
 	public function readStateFromWorld() : Block{
-		$this->collisionBoxes = null;
-
 		return $this;
 	}
 
@@ -396,7 +402,7 @@ class Block{
 	}
 
 	/**
-	 * AKA: Block->isPlaceable
+	 * Returns whether this block can be placed when obtained as an item.
 	 */
 	public function canBePlaced() : bool{
 		return true;
@@ -566,16 +572,28 @@ class Block{
 		return $this->getLightFilter() > 0;
 	}
 
+	/**
+	 * Returns whether this block allows any light to pass through it.
+	 */
 	public function isTransparent() : bool{
 		return false;
 	}
 
+	/**
+	 * @deprecated TL;DR: Don't use this function. Its results are confusing and inconsistent.
+	 *
+	 * No one is sure what the meaning of this property actually is. It's borrowed from Minecraft Java Edition, and is
+	 * used by various blocks for support checks.
+	 *
+	 * Things like signs and banners are considered "solid" despite having no collision box, and things like skulls and
+	 * flower pots are considered non-solid despite obviously being "solid" in the conventional, real-world sense.
+	 */
 	public function isSolid() : bool{
 		return true;
 	}
 
 	/**
-	 * AKA: Block->isFlowable
+	 * Returns whether this block can be destroyed by liquid flowing into its cell.
 	 */
 	public function canBeFlowedInto() : bool{
 		return false;
@@ -597,6 +615,7 @@ class Block{
 	 */
 	final public function position(World $world, int $x, int $y, int $z) : void{
 		$this->position = new Position($x, $y, $z, $world);
+		$this->collisionBoxes = null;
 	}
 
 	/**
@@ -747,8 +766,14 @@ class Block{
 	 * @return Block
 	 */
 	public function getSide(int $side, int $step = 1){
-		if($this->position->isValid()){
-			return $this->position->getWorld()->getBlock($this->position->getSide($side, $step));
+		$position = $this->position;
+		if($position->isValid()){
+			[$dx, $dy, $dz] = Facing::OFFSET[$side] ?? [0, 0, 0];
+			return $position->getWorld()->getBlockAt(
+				$position->x + ($dx * $step),
+				$position->y + ($dy * $step),
+				$position->z + ($dz * $step)
+			);
 		}
 
 		throw new \LogicException("Block does not have a valid world");
@@ -762,8 +787,14 @@ class Block{
 	 */
 	public function getHorizontalSides() : \Generator{
 		$world = $this->position->getWorld();
-		foreach($this->position->sidesAroundAxis(Axis::Y) as $vector3){
-			yield $world->getBlock($vector3);
+		foreach(Facing::HORIZONTAL as $facing){
+			[$dx, $dy, $dz] = Facing::OFFSET[$facing];
+			//TODO: yield Facing as the key?
+			yield $world->getBlockAt(
+				$this->position->x + $dx,
+				$this->position->y + $dy,
+				$this->position->z + $dz
+			);
 		}
 	}
 
@@ -775,8 +806,13 @@ class Block{
 	 */
 	public function getAllSides() : \Generator{
 		$world = $this->position->getWorld();
-		foreach($this->position->sides() as $vector3){
-			yield $world->getBlock($vector3);
+		foreach(Facing::OFFSET as [$dx, $dy, $dz]){
+			//TODO: yield Facing as the key?
+			yield $world->getBlockAt(
+				$this->position->x + $dx,
+				$this->position->y + $dy,
+				$this->position->z + $dz
+			);
 		}
 	}
 

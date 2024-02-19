@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\compression;
 
+use pocketmine\network\mcpe\protocol\types\CompressionAlgorithm;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
 use function function_exists;
@@ -67,17 +68,16 @@ final class ZlibCompressor implements Compressor{
 		return $result;
 	}
 
-	private static function zlib_encode(string $data, int $level) : string{
-		return Utils::assumeNotFalse(zlib_encode($data, ZLIB_ENCODING_RAW, $level), "ZLIB compression failed");
-	}
-
 	public function compress(string $payload) : string{
 		$compressible = $this->minCompressionSize !== null && strlen($payload) >= $this->minCompressionSize;
-		if(function_exists('libdeflate_deflate_compress')){
-			return $compressible ?
-				libdeflate_deflate_compress($payload, $this->level) :
-				self::zlib_encode($payload, 0);
-		}
-		return self::zlib_encode($payload, $compressible ? $this->level : 0);
+		$level = $compressible ? $this->level : 0;
+
+		return function_exists('libdeflate_deflate_compress') ?
+			libdeflate_deflate_compress($payload, $level) :
+			Utils::assumeNotFalse(zlib_encode($payload, ZLIB_ENCODING_RAW, $level), "ZLIB compression failed");
+	}
+
+	public function getNetworkId() : int{
+		return CompressionAlgorithm::ZLIB;
 	}
 }

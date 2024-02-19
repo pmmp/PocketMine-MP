@@ -25,7 +25,6 @@ namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\CoralType;
-use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\block\utils\WoodType;
@@ -191,29 +190,6 @@ final class BlockStateWriter{
 			Facing::EAST => StringValues::MC_CARDINAL_DIRECTION_EAST,
 			default => throw new BlockStateSerializeException("Invalid horizontal facing $value")
 		});
-	}
-
-	/** @return $this */
-	public function writeColor(DyeColor $color) : self{
-		$this->writeString(BlockStateNames::COLOR, match($color){
-			DyeColor::BLACK => StringValues::COLOR_BLACK,
-			DyeColor::BLUE => StringValues::COLOR_BLUE,
-			DyeColor::BROWN => StringValues::COLOR_BROWN,
-			DyeColor::CYAN => StringValues::COLOR_CYAN,
-			DyeColor::GRAY => StringValues::COLOR_GRAY,
-			DyeColor::GREEN => StringValues::COLOR_GREEN,
-			DyeColor::LIGHT_BLUE => StringValues::COLOR_LIGHT_BLUE,
-			DyeColor::LIGHT_GRAY => StringValues::COLOR_SILVER,
-			DyeColor::LIME => StringValues::COLOR_LIME,
-			DyeColor::MAGENTA => StringValues::COLOR_MAGENTA,
-			DyeColor::ORANGE => StringValues::COLOR_ORANGE,
-			DyeColor::PINK => StringValues::COLOR_PINK,
-			DyeColor::PURPLE => StringValues::COLOR_PURPLE,
-			DyeColor::RED => StringValues::COLOR_RED,
-			DyeColor::WHITE => StringValues::COLOR_WHITE,
-			DyeColor::YELLOW => StringValues::COLOR_YELLOW,
-		});
-		return $this;
 	}
 
 	/** @return $this */
