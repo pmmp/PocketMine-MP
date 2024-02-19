@@ -36,12 +36,12 @@ class GoatHorn extends Item implements Releasable{
 		$w->enum($this->goatHornType);
 	}
 
-	public function getType() : GoatHornType{ return $this->goatHornType; }
+	public function getHornType() : GoatHornType{ return $this->goatHornType; }
 
 	/**
 	 * @return $this
 	 */
-	public function setType(GoatHornType $type) : self{
+	public function setHornType(GoatHornType $type) : self{
 		$this->goatHornType = $type;
 		return $this;
 	}

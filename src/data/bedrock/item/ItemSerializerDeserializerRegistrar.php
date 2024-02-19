@@ -494,9 +494,9 @@ final class ItemSerializerDeserializerRegistrar{
 			Ids::GOAT_HORN,
 			Items::GOAT_HORN(),
 			function(GoatHorn $item, int $meta) : void{
-				$item->setType(GoatHornTypeIdMap::getInstance()->fromId($meta) ?? throw new ItemTypeDeserializeException("Unknown goat horn type ID $meta"));
+				$item->setHornType(GoatHornTypeIdMap::getInstance()->fromId($meta) ?? throw new ItemTypeDeserializeException("Unknown goat horn type ID $meta"));
 			},
-			fn(GoatHorn $item) => GoatHornTypeIdMap::getInstance()->toId($item->getType())
+			fn(GoatHorn $item) => GoatHornTypeIdMap::getInstance()->toId($item->getHornType())
 		);
 		$this->map1to1ItemWithMeta(
 			Ids::MEDICINE,
