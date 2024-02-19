@@ -173,7 +173,7 @@ final class EntityFactory{
 			if($item->isNull() || !$item instanceof TridentItem){
 				throw new SavedDataLoadingException("Trident item is invalid");
 			}
-			return new Trident(EntityDataHelper::parseLocation($nbt, $world), $item, null, $nbt);
+			return new Trident(Helper::parseLocation($nbt, $world), $item, null, $nbt);
 		}, ['Trident', 'ThrownTrident', 'minecraft:trident']);
 
 		$this->register(Squid::class, function(World $world, CompoundTag $nbt) : Squid{
