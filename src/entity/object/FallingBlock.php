@@ -24,39 +24,40 @@ declare(strict_types=1);
 namespace pocketmine\entity\object;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
+use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\utils\Fallable;
+use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
+use pocketmine\entity\Living;
 use pocketmine\entity\Location;
 use pocketmine\event\entity\EntityBlockChangeEvent;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
+use pocketmine\world\format\io\GlobalBlockStateHandlers;
+use pocketmine\world\sound\BlockBreakSound;
 use function abs;
+use function min;
+use function round;
 
 class FallingBlock extends Entity{
-
+	private const TAG_FALLING_BLOCK = "FallingBlock"; //TAG_Compound
 	private const TAG_TILE_ID = "TileID"; //TAG_Int
 	private const TAG_TILE = "Tile"; //TAG_Byte
 	private const TAG_DATA = "Data"; //TAG_Byte
 
 	public static function getNetworkTypeId() : string{ return EntityIds::FALLING_BLOCK; }
 
-	protected $gravity = 0.04;
-	protected $drag = 0.02;
-
-	/** @var Block */
-	protected $block;
-
-	public $canCollide = false;
+	protected Block $block;
 
 	public function __construct(Location $location, Block $block, ?CompoundTag $nbt = null){
 		$this->block = $block;
@@ -65,23 +66,44 @@ class FallingBlock extends Entity{
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.98, 0.98); }
 
-	public static function parseBlockNBT(BlockFactory $factory, CompoundTag $nbt) : Block{
-		$blockId = 0;
+	protected function getInitialDragMultiplier() : float{ return 0.02; }
+
+	protected function getInitialGravity() : float{ return 0.04; }
+
+	public static function parseBlockNBT(RuntimeBlockStateRegistry $factory, CompoundTag $nbt) : Block{
 
 		//TODO: 1.8+ save format
-		if(($tileIdTag = $nbt->getTag(self::TAG_TILE_ID)) instanceof IntTag){
-			$blockId = $tileIdTag->getValue();
-		}elseif(($tileTag = $nbt->getTag(self::TAG_TILE)) instanceof ByteTag){
-			$blockId = $tileTag->getValue();
+		$blockDataUpgrader = GlobalBlockStateHandlers::getUpgrader();
+		if(($fallingBlockTag = $nbt->getCompoundTag(self::TAG_FALLING_BLOCK)) !== null){
+			try{
+				$blockStateData = $blockDataUpgrader->upgradeBlockStateNbt($fallingBlockTag);
+			}catch(BlockStateDeserializeException $e){
+				throw new SavedDataLoadingException("Invalid falling block blockstate: " . $e->getMessage(), 0, $e);
+			}
+		}else{
+			if(($tileIdTag = $nbt->getTag(self::TAG_TILE_ID)) instanceof IntTag){
+				$blockId = $tileIdTag->getValue();
+			}elseif(($tileTag = $nbt->getTag(self::TAG_TILE)) instanceof ByteTag){
+				$blockId = $tileTag->getValue();
+			}else{
+				throw new SavedDataLoadingException("Missing legacy falling block info");
+			}
+			$damage = $nbt->getByte(self::TAG_DATA, 0);
+
+			try{
+				$blockStateData = $blockDataUpgrader->upgradeIntIdMeta($blockId, $damage);
+			}catch(BlockStateDeserializeException $e){
+				throw new SavedDataLoadingException("Invalid legacy falling block data: " . $e->getMessage(), 0, $e);
+			}
 		}
 
-		if($blockId === 0){
-			throw new SavedDataLoadingException("Missing block info from NBT");
+		try{
+			$blockStateId = GlobalBlockStateHandlers::getDeserializer()->deserialize($blockStateData);
+		}catch(BlockStateDeserializeException $e){
+			throw new SavedDataLoadingException($e->getMessage(), 0, $e);
 		}
 
-		$damage = $nbt->getByte(self::TAG_DATA, 0);
-
-		return $factory->get($blockId, $damage);
+		return $factory->fromStateId($blockStateId);
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
@@ -119,14 +141,20 @@ class FallingBlock extends Entity{
 			if($this->onGround || $blockTarget !== null){
 				$this->flagForDespawn();
 
+				$blockResult = $blockTarget ?? $this->block;
 				$block = $world->getBlock($pos);
 				if(!$block->canBeReplaced() || !$world->isInWorld($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ()) || ($this->onGround && abs($this->location->y - $this->location->getFloorY()) > 0.001)){
 					$world->dropItem($this->location, $this->block->asItem());
+					$world->addSound($pos->add(0.5, 0.5, 0.5), new BlockBreakSound($blockResult));
 				}else{
-					$ev = new EntityBlockChangeEvent($this, $block, $blockTarget ?? $this->block);
+					$ev = new EntityBlockChangeEvent($this, $block, $blockResult);
 					$ev->call();
 					if(!$ev->isCancelled()){
-						$world->setBlock($pos, $ev->getTo());
+						$b = $ev->getTo();
+						$world->setBlock($pos, $b);
+						if($this->onGround && $b instanceof Fallable && ($sound = $b->getLandSound()) !== null){
+							$world->addSound($pos->add(0.5, 0.5, 0.5), $sound);
+						}
 					}
 				}
 				$hasUpdate = true;
@@ -136,14 +164,32 @@ class FallingBlock extends Entity{
 		return $hasUpdate;
 	}
 
+	protected function onHitGround() : ?float{
+		if($this->block instanceof Fallable){
+			$damagePerBlock = $this->block->getFallDamagePerBlock();
+			if($damagePerBlock > 0 && ($fallenBlocks = round($this->fallDistance) - 1) > 0){
+				$damage = min($fallenBlocks * $damagePerBlock, $this->block->getMaxFallDamage());
+				foreach($this->getWorld()->getCollidingEntities($this->getBoundingBox()) as $entity){
+					if($entity instanceof Living){
+						$ev = new EntityDamageByEntityEvent($this, $entity, EntityDamageEvent::CAUSE_FALLING_BLOCK, $damage);
+						$entity->attack($ev);
+					}
+				}
+			}
+			if(!$this->block->onHitGround($this)){
+				$this->flagForDespawn();
+			}
+		}
+		return null;
+	}
+
 	public function getBlock() : Block{
 		return $this->block;
 	}
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setInt(self::TAG_TILE_ID, $this->block->getId());
-		$nbt->setByte(self::TAG_DATA, $this->block->getMeta());
+		$nbt->setTag(self::TAG_FALLING_BLOCK, GlobalBlockStateHandlers::getSerializer()->serialize($this->block->getStateId())->toNbt());
 
 		return $nbt;
 	}
@@ -151,7 +197,7 @@ class FallingBlock extends Entity{
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
 		parent::syncNetworkData($properties);
 
-		$properties->setInt(EntityMetadataProperties::VARIANT, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId()));
+		$properties->setInt(EntityMetadataProperties::VARIANT, TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkId($this->block->getStateId()));
 	}
 
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{

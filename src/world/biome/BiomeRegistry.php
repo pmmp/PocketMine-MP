@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\world\biome;
 
-use pocketmine\block\utils\TreeType;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\world\generator\object\TreeType;
 
 final class BiomeRegistry{
 	use SingletonTrait;
@@ -54,7 +54,7 @@ final class BiomeRegistry{
 
 		$this->register(BiomeIds::EXTREME_HILLS_EDGE, new SmallMountainsBiome());
 
-		$this->register(BiomeIds::BIRCH_FOREST, new ForestBiome(TreeType::BIRCH()));
+		$this->register(BiomeIds::BIRCH_FOREST, new ForestBiome(TreeType::BIRCH));
 	}
 
 	public function register(int $id, Biome $biome) : void{

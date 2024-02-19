@@ -23,27 +23,26 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\StaticSupportTrait;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Bamboo as ItemBamboo;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 final class BambooSapling extends Flowable{
+	use StaticSupportTrait;
 
 	private bool $ready = false;
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->ready = ($stateMeta & BlockLegacyMetadata::BAMBOO_SAPLING_FLAG_READY) !== 0;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->bool($this->ready);
 	}
-
-	protected function writeStateToMeta() : int{
-		return $this->ready ? BlockLegacyMetadata::BAMBOO_SAPLING_FLAG_READY : 0;
-	}
-
-	public function getStateBitmask() : int{ return 0b1; }
 
 	public function isReady() : bool{ return $this->ready; }
 
@@ -53,25 +52,16 @@ final class BambooSapling extends Flowable{
 		return $this;
 	}
 
-	private function canBeSupportedBy(Block $block) : bool{
-		//TODO: tags would be better for this
+	private function canBeSupportedAt(Block $block) : bool{
+		$supportBlock = $block->getSide(Facing::DOWN);
 		return
-			$block instanceof Dirt ||
-			$block instanceof Grass ||
-			$block instanceof Gravel ||
-			$block instanceof Sand ||
-			$block instanceof Mycelium ||
-			$block instanceof Podzol;
+			$supportBlock->getTypeId() === BlockTypeIds::GRAVEL ||
+			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::SAND);
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy($blockReplace->position->getWorld()->getBlock($blockReplace->position->down()))){
-			return false;
-		}
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer || $item instanceof ItemBamboo){
 			if($this->grow($player)){
 				$item->pop();
@@ -79,13 +69,6 @@ final class BambooSapling extends Flowable{
 			}
 		}
 		return false;
-	}
-
-	public function onNearbyBlockChange() : void{
-		$world = $this->position->getWorld();
-		if(!$this->canBeSupportedBy($world->getBlock($this->position->down()))){
-			$world->useBreakOn($this->position);
-		}
 	}
 
 	private function grow(?Player $player) : bool{
@@ -126,6 +109,6 @@ final class BambooSapling extends Flowable{
 	}
 
 	public function asItem() : Item{
-		return VanillaBlocks::BAMBOO()->asItem();
+		return VanillaItems::BAMBOO();
 	}
 }

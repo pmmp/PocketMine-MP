@@ -31,20 +31,16 @@ use function date;
 
 class DumpMemoryCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"dumpmemory",
 			KnownTranslationFactory::pocketmine_command_dumpmemory_description(),
-			"/$name [path]"
+			"/dumpmemory [path]"
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_DUMPMEMORY);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		$sender->getServer()->getMemoryManager()->dumpServerMemory($args[0] ?? (Path::join($sender->getServer()->getDataPath(), "memory_dumps", date("D_M_j-H.i.s-T_Y"))), 48, 80);
 		return true;
 	}

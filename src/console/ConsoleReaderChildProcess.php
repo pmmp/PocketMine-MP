@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\console;
 
+use pmmp\thread\Thread as NativeThread;
+use pmmp\thread\ThreadSafeArray;
 use pocketmine\utils\Process;
 use function cli_set_process_title;
 use function count;
@@ -30,7 +32,6 @@ use function dirname;
 use function fwrite;
 use function ini_set;
 use const PHP_EOL;
-use const PTHREADS_INHERIT_NONE;
 use const STDOUT;
 
 ini_set('display_errors', 'stderr');
@@ -46,13 +47,17 @@ require dirname(__DIR__, 2) . '/vendor/autoload.php';
 
 @cli_set_process_title('PocketMine-MP Console Reader');
 
-$channel = new \Threaded();
-$thread = new class($channel) extends \Thread{
+/** @phpstan-var ThreadSafeArray<int, string> $channel */
+$channel = new ThreadSafeArray();
+$thread = new class($channel) extends NativeThread{
+	/**
+	 * @phpstan-param ThreadSafeArray<int, string> $channel
+	 */
 	public function __construct(
-		private \Threaded $channel,
+		private ThreadSafeArray $channel,
 	){}
 
-	public function run(){
+	public function run() : void{
 		require dirname(__DIR__, 2) . '/vendor/autoload.php';
 
 		$channel = $this->channel;
@@ -69,13 +74,12 @@ $thread = new class($channel) extends \Thread{
 	}
 };
 
-$thread->start(PTHREADS_INHERIT_NONE);
+$thread->start(NativeThread::INHERIT_NONE);
 while(true){
 	$line = $channel->synchronized(function() use ($channel) : ?string{
 		if(count($channel) === 0){
 			$channel->wait(1_000_000);
 		}
-		/** @var string|null $line */
 		$line = $channel->shift();
 		return $line;
 	});
@@ -91,4 +95,4 @@ while(true){
 //For simplicity's sake, we don't bother with a graceful shutdown here.
 //The parent process would normally forcibly terminate the child process anyway, so we only reach this point if the
 //parent process was terminated forcibly and didn't clean up after itself.
-Process::kill(Process::pid(), false);
+Process::kill(Process::pid());

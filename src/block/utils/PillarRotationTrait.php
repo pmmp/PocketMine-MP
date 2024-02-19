@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -32,9 +33,11 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 trait PillarRotationTrait{
+	protected int $axis = Axis::Y;
 
-	/** @var int */
-	protected $axis = Axis::Y;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->axis($this->axis);
+	}
 
 	/** @see Axis */
 	public function getAxis() : int{ return $this->axis; }

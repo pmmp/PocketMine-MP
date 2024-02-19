@@ -34,11 +34,13 @@ use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\convert\TypeConverter;
+use pocketmine\network\mcpe\EntityEventBroadcaster;
+use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\protocol\AddItemActorPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\player\Player;
+use pocketmine\timings\Timings;
 use function max;
 
 class ItemEntity extends Entity{
@@ -57,22 +59,11 @@ class ItemEntity extends Entity{
 	public const NEVER_DESPAWN = -1;
 	public const MAX_DESPAWN_DELAY = 32767 + self::DEFAULT_DESPAWN_DELAY; //max value storable by mojang NBT :(
 
-	/** @var string */
-	protected $owner = "";
-	/** @var string */
-	protected $thrower = "";
-	/** @var int */
-	protected $pickupDelay = 0;
-	/** @var Item */
-	protected $item;
-
-	protected $gravity = 0.04;
-	protected $drag = 0.02;
-
-	public $canCollide = false;
-
-	/** @var int */
-	protected $despawnDelay = self::DEFAULT_DESPAWN_DELAY;
+	protected string $owner = "";
+	protected string $thrower = "";
+	protected int $pickupDelay = 0;
+	protected int $despawnDelay = self::DEFAULT_DESPAWN_DELAY;
+	protected Item $item;
 
 	public function __construct(Location $location, Item $item, ?CompoundTag $nbt = null){
 		if($item->isNull()){
@@ -83,6 +74,10 @@ class ItemEntity extends Entity{
 	}
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.25, 0.25); }
+
+	protected function getInitialDragMultiplier() : float{ return 0.02; }
+
+	protected function getInitialGravity() : float{ return 0.04; }
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
@@ -111,65 +106,78 @@ class ItemEntity extends Entity{
 			return false;
 		}
 
-		$hasUpdate = parent::entityBaseTick($tickDiff);
+		Timings::$itemEntityBaseTick->startTiming();
+		try{
 
-		if($this->isFlaggedForDespawn()){
-			return $hasUpdate;
-		}
+			$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		if($this->pickupDelay !== self::NEVER_DESPAWN && $this->pickupDelay > 0){ //Infinite delay
-			$hasUpdate = true;
-			$this->pickupDelay -= $tickDiff;
-			if($this->pickupDelay < 0){
-				$this->pickupDelay = 0;
+			if($this->isFlaggedForDespawn()){
+				return $hasUpdate;
 			}
-		}
 
-		if($this->hasMovementUpdate() && $this->despawnDelay % self::MERGE_CHECK_PERIOD === 0){
-			$mergeable = [$this]; //in case the merge target ends up not being this
-			$mergeTarget = $this;
-			foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(0.5, 0.5, 0.5), $this) as $entity){
-				if(!$entity instanceof ItemEntity || $entity->isFlaggedForDespawn()){
-					continue;
+			if($this->pickupDelay !== self::NEVER_DESPAWN && $this->pickupDelay > 0){ //Infinite delay
+				$hasUpdate = true;
+				$this->pickupDelay -= $tickDiff;
+				if($this->pickupDelay < 0){
+					$this->pickupDelay = 0;
 				}
+			}
 
-				if($entity->isMergeable($this)){
-					$mergeable[] = $entity;
-					if($entity->item->getCount() > $mergeTarget->item->getCount()){
-						$mergeTarget = $entity;
+			if($this->hasMovementUpdate() && $this->isMergeCandidate() && $this->despawnDelay % self::MERGE_CHECK_PERIOD === 0){
+				$mergeable = [$this]; //in case the merge target ends up not being this
+				$mergeTarget = $this;
+				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(0.5, 0.5, 0.5), $this) as $entity){
+					if(!$entity instanceof ItemEntity || $entity->isFlaggedForDespawn()){
+						continue;
+					}
+
+					if($entity->isMergeable($this)){
+						$mergeable[] = $entity;
+						if($entity->item->getCount() > $mergeTarget->item->getCount()){
+							$mergeTarget = $entity;
+						}
+					}
+				}
+				foreach($mergeable as $itemEntity){
+					if($itemEntity !== $mergeTarget){
+						$itemEntity->tryMergeInto($mergeTarget);
 					}
 				}
 			}
-			foreach($mergeable as $itemEntity){
-				if($itemEntity !== $mergeTarget){
-					$itemEntity->tryMergeInto($mergeTarget);
+
+			if(!$this->isFlaggedForDespawn() && $this->despawnDelay !== self::NEVER_DESPAWN){
+				$hasUpdate = true;
+				$this->despawnDelay -= $tickDiff;
+				if($this->despawnDelay <= 0){
+					$ev = new ItemDespawnEvent($this);
+					$ev->call();
+					if($ev->isCancelled()){
+						$this->despawnDelay = self::DEFAULT_DESPAWN_DELAY;
+					}else{
+						$this->flagForDespawn();
+					}
 				}
 			}
-		}
 
-		if(!$this->isFlaggedForDespawn() && $this->despawnDelay !== self::NEVER_DESPAWN){
-			$hasUpdate = true;
-			$this->despawnDelay -= $tickDiff;
-			if($this->despawnDelay <= 0){
-				$ev = new ItemDespawnEvent($this);
-				$ev->call();
-				if($ev->isCancelled()){
-					$this->despawnDelay = self::DEFAULT_DESPAWN_DELAY;
-				}else{
-					$this->flagForDespawn();
-				}
-			}
+			return $hasUpdate;
+		}finally{
+			Timings::$itemEntityBaseTick->stopTiming();
 		}
+	}
 
-		return $hasUpdate;
+	private function isMergeCandidate() : bool{
+		return $this->pickupDelay !== self::NEVER_DESPAWN && $this->item->getCount() < $this->item->getMaxStackSize();
 	}
 
 	/**
 	 * Returns whether this item entity can merge with the given one.
 	 */
 	public function isMergeable(ItemEntity $entity) : bool{
+		if(!$this->isMergeCandidate() || !$entity->isMergeCandidate()){
+			return false;
+		}
 		$item = $entity->item;
-		return $entity !== $this && $entity->pickupDelay !== self::NEVER_DESPAWN && $item->canStackWith($this->item) && $item->getCount() + $this->item->getCount() <= $item->getMaxStackSize();
+		return $entity !== $this && $item->canStackWith($this->item) && $item->getCount() + $this->item->getCount() <= $item->getMaxStackSize();
 	}
 
 	/**
@@ -219,18 +227,18 @@ class ItemEntity extends Entity{
 		}
 		$nbt->setShort(self::TAG_AGE, $age);
 		$nbt->setShort(self::TAG_PICKUP_DELAY, $this->pickupDelay);
-		if($this->owner !== null){
-			$nbt->setString(self::TAG_OWNER, $this->owner);
-		}
-		if($this->thrower !== null){
-			$nbt->setString(self::TAG_THROWER, $this->thrower);
-		}
+		$nbt->setString(self::TAG_OWNER, $this->owner);
+		$nbt->setString(self::TAG_THROWER, $this->thrower);
 
 		return $nbt;
 	}
 
 	public function getItem() : Item{
 		return $this->item;
+	}
+
+	public function isFireProof() : bool{
+		return $this->item->isFireProof();
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
@@ -283,10 +291,11 @@ class ItemEntity extends Entity{
 	}
 
 	protected function sendSpawnPacket(Player $player) : void{
-		$player->getNetworkSession()->sendDataPacket(AddItemActorPacket::create(
+		$networkSession = $player->getNetworkSession();
+		$networkSession->sendDataPacket(AddItemActorPacket::create(
 			$this->getId(), //TODO: entity unique ID
 			$this->getId(),
-			ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->getItem())),
+			ItemStackWrapper::legacy($networkSession->getTypeConverter()->coreItemStackToNet($this->getItem())),
 			$this->location->asVector3(),
 			$this->getMotion(),
 			$this->getAllNetworkData(),
@@ -328,9 +337,10 @@ class ItemEntity extends Entity{
 			return;
 		}
 
-		foreach($this->getViewers() as $viewer){
-			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
-		}
+		NetworkBroadcastUtils::broadcastEntityEvent(
+			$this->getViewers(),
+			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onPickUpItem($recipients, $player, $this)
+		);
 
 		$inventory = $ev->getInventory();
 		if($inventory !== null){

@@ -26,6 +26,7 @@ namespace pocketmine\command;
 use pocketmine\command\utils\CommandStringHelper;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\TextFormat;
 use function array_shift;
@@ -95,14 +96,15 @@ class FormattedCommandAlias extends Command{
 			}
 
 			if(($target = $commandMap->getCommand($commandLabel)) !== null){
-				$target->timings->startTiming();
+				$timings = Timings::getCommandDispatchTimings($target->getLabel());
+				$timings->startTiming();
 
 				try{
 					$target->execute($sender, $commandLabel, $commandArgs);
 				}catch(InvalidCommandSyntaxException $e){
 					$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage())));
 				}finally{
-					$target->timings->stopTiming();
+					$timings->stopTiming();
 				}
 			}else{
 				$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::pocketmine_command_notFound($commandLabel, "/help")->prefix(TextFormat::RED)));

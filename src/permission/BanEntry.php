@@ -33,8 +33,7 @@ use function strtolower;
 use function trim;
 
 class BanEntry{
-	/** @var string */
-	public static $format = "Y-m-d H:i:s O";
+	public static string $format = "Y-m-d H:i:s O";
 
 	private string $name;
 	private \DateTime $creationDate;
