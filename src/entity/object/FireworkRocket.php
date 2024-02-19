@@ -134,6 +134,7 @@ class FireworkRocket extends Entity implements Explosive{
 			$this->addMotion($this->motion->x * 0.15, 0.04, $this->motion->z * 0.15);
 
 			if($this->ticksLived >= $this->lifeTicks){
+				$this->flagForDespawn();
 				$this->explode();
 			}
 		}
@@ -176,8 +177,6 @@ class FireworkRocket extends Entity implements Explosive{
 				$entity->attack($ev);
 			}
 		}
-
-		$this->flagForDespawn();
 	}
 
 	public function canBeCollidedWith() : bool{
