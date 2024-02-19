@@ -305,6 +305,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::MUSIC_DISC_WAIT, Items::RECORD_WAIT());
 		$this->map1to1Item(Ids::MUSIC_DISC_WARD, Items::RECORD_WARD());
 		$this->map1to1Item(Ids::MUTTON, Items::RAW_MUTTON());
+		$this->map1to1Item(Ids::NAME_TAG, Items::NAME_TAG());
 		$this->map1to1Item(Ids::NAUTILUS_SHELL, Items::NAUTILUS_SHELL());
 		$this->map1to1Item(Ids::NETHER_STAR, Items::NETHER_STAR());
 		$this->map1to1Item(Ids::NETHERBRICK, Items::NETHER_BRICK());

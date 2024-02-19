@@ -630,6 +630,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->displayName = $ev->getNewName();
 	}
 
+	public function canBeRenamed() : bool{
+		return false;
+	}
+
 	/**
 	 * Returns the player's locale, e.g. en_US.
 	 */
