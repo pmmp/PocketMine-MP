@@ -24,14 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\Nameable;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
 class NameTag extends Item{
 
 	public function onInteractEntity(Player $player, Entity $entity, Vector3 $clickVector) : bool{
-		if($entity instanceof Nameable && $this->hasCustomName()){
+		if($entity->canBeRenamed() && $this->hasCustomName()){
 			$entity->setNameTag($this->getCustomName());
 			$this->pop();
 			return true;
