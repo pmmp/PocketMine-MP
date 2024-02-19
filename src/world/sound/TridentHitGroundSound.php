@@ -21,23 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity\projectile;
+namespace pocketmine\world\sound;
 
-use pocketmine\event\entity\ProjectileHitEvent;
-use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
-use pocketmine\world\particle\ItemBreakParticle;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-class Egg extends Throwable{
-	public function getNetworkTypeId() : string{ return EntityIds::EGG; }
+class TridentHitGroundSound implements Sound{
 
-	//TODO: spawn chickens on collision
-
-	protected function onHit(ProjectileHitEvent $event) : Vector3{
-		for($i = 0; $i < 6; ++$i){
-			$this->getWorld()->addParticle($this->location, new ItemBreakParticle(VanillaItems::EGG()));
-		}
-		return parent::onHit($event);
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::ITEM_TRIDENT_HIT_GROUND, $pos, false)];
 	}
 }

@@ -234,17 +234,17 @@ abstract class Projectile extends Entity{
 
 			if($ev !== null){
 				$ev->call();
-				$this->onHit($ev);
+				$motion = $this->onHit($ev);
 
 				if($ev instanceof ProjectileHitEntityEvent){
 					$this->onHitEntity($ev->getEntityHit(), $ev->getRayTraceResult());
 				}elseif($ev instanceof ProjectileHitBlockEvent){
 					$this->onHitBlock($ev->getBlockHit(), $ev->getRayTraceResult());
 				}
+				$this->setMotion($motion);
 			}
 
 			$this->isCollided = $this->onGround = true;
-			$this->motion = Vector3::zero();
 		}else{
 			$this->isCollided = $this->onGround = false;
 			$this->blockHit = null;
@@ -277,9 +277,11 @@ abstract class Projectile extends Entity{
 	/**
 	 * Called when the projectile hits something. Override this to perform non-target-specific effects when the
 	 * projectile hits something.
+	 *
+	 * Returns the resulting motion applied to this entity.
 	 */
-	protected function onHit(ProjectileHitEvent $event) : void{
-
+	protected function onHit(ProjectileHitEvent $event) : Vector3{
+		return Vector3::zero();
 	}
 
 	/**
@@ -305,8 +307,6 @@ abstract class Projectile extends Entity{
 				}
 			}
 		}
-
-		$this->flagForDespawn();
 	}
 
 	/**

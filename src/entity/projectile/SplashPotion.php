@@ -37,6 +37,7 @@ use pocketmine\event\entity\ProjectileHitEntityEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\Potion;
 use pocketmine\item\PotionType;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
@@ -75,7 +76,7 @@ class SplashPotion extends Throwable{
 		return -1; //no damage
 	}
 
-	protected function onHit(ProjectileHitEvent $event) : void{
+	protected function onHit(ProjectileHitEvent $event) : Vector3{
 		$effects = $this->getPotionEffects();
 		$hasEffects = true;
 
@@ -141,6 +142,8 @@ class SplashPotion extends Throwable{
 				}
 			}
 		}
+
+		return parent::onHit($event);
 	}
 
 	/**

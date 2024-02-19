@@ -312,6 +312,7 @@ use function strtolower;
  * @method static Item TIDE_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static TorchflowerSeeds TORCHFLOWER_SEEDS()
  * @method static Totem TOTEM()
+ * @method static Trident TRIDENT()
  * @method static TurtleHelmet TURTLE_HELMET()
  * @method static Item VEX_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static SpawnEgg VILLAGER_SPAWN_EGG()
@@ -561,6 +562,7 @@ final class VanillaItems{
 		self::register("sweet_berries", new SweetBerries(new IID(Ids::SWEET_BERRIES), "Sweet Berries"));
 		self::register("torchflower_seeds", new TorchflowerSeeds(new IID(Ids::TORCHFLOWER_SEEDS), "Torchflower Seeds"));
 		self::register("totem", new Totem(new IID(Ids::TOTEM), "Totem of Undying"));
+		self::register("trident", new Trident(new IID(Ids::TRIDENT), "Trident"));
 		self::register("warped_sign", new ItemBlockWallOrFloor(new IID(Ids::WARPED_SIGN), Blocks::WARPED_SIGN(), Blocks::WARPED_WALL_SIGN()));
 		self::register("water_bucket", new LiquidBucket(new IID(Ids::WATER_BUCKET), "Water Bucket", Blocks::WATER()));
 		self::register("wheat", new Item(new IID(Ids::WHEAT), "Wheat"));

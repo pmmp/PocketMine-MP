@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\projectile;
 
-use pocketmine\block\Block;
 use pocketmine\entity\EntitySizeInfo;
-use pocketmine\math\RayTraceResult;
+use pocketmine\event\entity\ProjectileHitEvent;
+use pocketmine\math\Vector3;
 
 abstract class Throwable extends Projectile{
 
@@ -35,8 +35,8 @@ abstract class Throwable extends Projectile{
 
 	protected function getInitialGravity() : float{ return 0.03; }
 
-	protected function onHitBlock(Block $blockHit, RayTraceResult $hitResult) : void{
-		parent::onHitBlock($blockHit, $hitResult);
+	protected function onHit(ProjectileHitEvent $event) : Vector3{
 		$this->flagForDespawn();
+		return parent::onHit($event);
 	}
 }

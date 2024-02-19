@@ -1489,6 +1489,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("torchflower_seeds", fn() => Items::TORCHFLOWER_SEEDS());
 		$result->register("tide_armor_trim_smithing_template", fn() => Items::TIDE_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("totem", fn() => Items::TOTEM());
+		$result->register("trident", fn() => Items::TRIDENT());
 		$result->register("turtle_helmet", fn() => Items::TURTLE_HELMET());
 		$result->register("vex_armor_trim_smithing_template", fn() => Items::VEX_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("turtle_shell_piece", fn() => Items::SCUTE());

@@ -32,6 +32,7 @@ use pocketmine\event\entity\EntityItemPickupEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\RayTraceResult;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\EntityEventBroadcaster;
 use pocketmine\network\mcpe\NetworkBroadcastUtils;
@@ -135,9 +136,10 @@ class Arrow extends Projectile{
 		return $hasUpdate;
 	}
 
-	protected function onHit(ProjectileHitEvent $event) : void{
+	protected function onHit(ProjectileHitEvent $event) : Vector3{
 		$this->setCritical(false);
 		$this->broadcastSound(new ArrowHitSound());
+		return parent::onHit($event);
 	}
 
 	protected function onHitBlock(Block $blockHit, RayTraceResult $hitResult) : void{
@@ -154,6 +156,7 @@ class Arrow extends Projectile{
 				$entityHit->setMotion($entityHit->getMotion()->add($this->motion->x * $multiplier, 0.1, $this->motion->z * $multiplier));
 			}
 		}
+		$this->flagForDespawn();
 	}
 
 	public function getPickupMode() : int{

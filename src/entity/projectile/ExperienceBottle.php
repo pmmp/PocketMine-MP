@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\projectile;
 
 use pocketmine\event\entity\ProjectileHitEvent;
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\world\particle\PotionSplashParticle;
 use pocketmine\world\sound\PotionSplashSound;
@@ -38,10 +39,11 @@ class ExperienceBottle extends Throwable{
 		return -1;
 	}
 
-	public function onHit(ProjectileHitEvent $event) : void{
+	public function onHit(ProjectileHitEvent $event) : Vector3{
 		$this->getWorld()->addParticle($this->location, new PotionSplashParticle(PotionSplashParticle::DEFAULT_COLOR()));
 		$this->broadcastSound(new PotionSplashSound());
 
 		$this->getWorld()->dropExperience($this->location, mt_rand(3, 11));
+		return parent::onHit($event);
 	}
 }
