@@ -23,30 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\EnumTrait;
-
-/**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
- *
- * @method static StairShape INNER_LEFT()
- * @method static StairShape INNER_RIGHT()
- * @method static StairShape OUTER_LEFT()
- * @method static StairShape OUTER_RIGHT()
- * @method static StairShape STRAIGHT()
- */
-final class StairShape{
-	use EnumTrait;
-
-	protected static function setup() : void{
-		self::registerAll(
-			new self("straight"),
-			new self("inner_left"),
-			new self("inner_right"),
-			new self("outer_left"),
-			new self("outer_right")
-		);
-	}
+enum StairShape{
+	case STRAIGHT;
+	case INNER_LEFT;
+	case INNER_RIGHT;
+	case OUTER_LEFT;
+	case OUTER_RIGHT;
 }

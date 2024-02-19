@@ -152,10 +152,10 @@ final class CraftingManagerFromDataHelper{
 	 * @return mixed[]
 	 *
 	 * @phpstan-template TData of object
-	 * @phpstan-param class-string<TData> $modelCLass
+	 * @phpstan-param class-string<TData> $modelClass
 	 * @phpstan-return list<TData>
 	 */
-	public static function loadJsonArrayOfObjectsFile(string $filePath, string $modelCLass) : array{
+	public static function loadJsonArrayOfObjectsFile(string $filePath, string $modelClass) : array{
 		$recipes = json_decode(Filesystem::fileGetContents($filePath));
 		if(!is_array($recipes)){
 			throw new SavedDataLoadingException("$filePath root should be an array, got " . get_debug_type($recipes));
@@ -166,7 +166,7 @@ final class CraftingManagerFromDataHelper{
 		$mapper->bExceptionOnUndefinedProperty = true;
 		$mapper->bExceptionOnMissingData = true;
 
-		return self::loadJsonObjectListIntoModel($mapper, $modelCLass, $recipes);
+		return self::loadJsonObjectListIntoModel($mapper, $modelClass, $recipes);
 	}
 
 	/**
@@ -209,15 +209,12 @@ final class CraftingManagerFromDataHelper{
 	public static function make(string $directoryPath) : CraftingManager{
 		$result = new CraftingManager();
 
-		$ingredientDeserializerFunc = \Closure::fromCallable([self::class, "deserializeIngredient"]);
-		$itemDeserializerFunc = \Closure::fromCallable([self::class, 'deserializeItemStack']);
-
 		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'shapeless_crafting.json'), ShapelessRecipeData::class) as $recipe){
 			$recipeType = match($recipe->block){
-				"crafting_table" => ShapelessRecipeType::CRAFTING(),
-				"stonecutter" => ShapelessRecipeType::STONECUTTER(),
-				"smithing_table" => ShapelessRecipeType::SMITHING(),
-				"cartography_table" => ShapelessRecipeType::CARTOGRAPHY(),
+				"crafting_table" => ShapelessRecipeType::CRAFTING,
+				"stonecutter" => ShapelessRecipeType::STONECUTTER,
+				"smithing_table" => ShapelessRecipeType::SMITHING,
+				"cartography_table" => ShapelessRecipeType::CARTOGRAPHY,
 				default => null
 			};
 			if($recipeType === null){
@@ -225,7 +222,7 @@ final class CraftingManagerFromDataHelper{
 			}
 			$inputs = [];
 			foreach($recipe->input as $inputData){
-				$input = $ingredientDeserializerFunc($inputData);
+				$input = self::deserializeIngredient($inputData);
 				if($input === null){ //unknown input item
 					continue 2;
 				}
@@ -233,7 +230,7 @@ final class CraftingManagerFromDataHelper{
 			}
 			$outputs = [];
 			foreach($recipe->output as $outputData){
-				$output = $itemDeserializerFunc($outputData);
+				$output = self::deserializeItemStack($outputData);
 				if($output === null){ //unknown output item
 					continue 2;
 				}
@@ -251,7 +248,7 @@ final class CraftingManagerFromDataHelper{
 			}
 			$inputs = [];
 			foreach(Utils::stringifyKeys($recipe->input) as $symbol => $inputData){
-				$input = $ingredientDeserializerFunc($inputData);
+				$input = self::deserializeIngredient($inputData);
 				if($input === null){ //unknown input item
 					continue 2;
 				}
@@ -259,7 +256,7 @@ final class CraftingManagerFromDataHelper{
 			}
 			$outputs = [];
 			foreach($recipe->output as $outputData){
-				$output = $itemDeserializerFunc($outputData);
+				$output = self::deserializeItemStack($outputData);
 				if($output === null){ //unknown output item
 					continue 2;
 				}
@@ -273,9 +270,9 @@ final class CraftingManagerFromDataHelper{
 		}
 		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'smelting.json'), FurnaceRecipeData::class) as $recipe){
 			$furnaceType = match ($recipe->block){
-				"furnace" => FurnaceType::FURNACE(),
-				"blast_furnace" => FurnaceType::BLAST_FURNACE(),
-				"smoker" => FurnaceType::SMOKER(),
+				"furnace" => FurnaceType::FURNACE,
+				"blast_furnace" => FurnaceType::BLAST_FURNACE,
+				"smoker" => FurnaceType::SMOKER,
 				//TODO: campfire
 				default => null
 			};

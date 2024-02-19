@@ -23,45 +23,24 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\EnumTrait;
-
-/**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
- *
- * @method static MobHeadType CREEPER()
- * @method static MobHeadType DRAGON()
- * @method static MobHeadType PLAYER()
- * @method static MobHeadType SKELETON()
- * @method static MobHeadType WITHER_SKELETON()
- * @method static MobHeadType ZOMBIE()
- */
-final class MobHeadType{
-	use EnumTrait {
-		__construct as Enum___construct;
-	}
-
-	protected static function setup() : void{
-		self::registerAll(
-			new MobHeadType("skeleton", "Skeleton Skull"),
-			new MobHeadType("wither_skeleton", "Wither Skeleton Skull"),
-			new MobHeadType("zombie", "Zombie Head"),
-			new MobHeadType("player", "Player Head"),
-			new MobHeadType("creeper", "Creeper Head"),
-			new MobHeadType("dragon", "Dragon Head")
-		);
-	}
-
-	private function __construct(
-		string $enumName,
-		private string $displayName
-	){
-		$this->Enum___construct($enumName);
-	}
+enum MobHeadType{
+	case SKELETON;
+	case WITHER_SKELETON;
+	case ZOMBIE;
+	case PLAYER;
+	case CREEPER;
+	case DRAGON;
+	case PIGLIN;
 
 	public function getDisplayName() : string{
-		return $this->displayName;
+		return match($this){
+			self::SKELETON => "Skeleton Skull",
+			self::WITHER_SKELETON => "Wither Skeleton Skull",
+			self::ZOMBIE => "Zombie Head",
+			self::PLAYER => "Player Head",
+			self::CREEPER => "Creeper Head",
+			self::DRAGON => "Dragon Head",
+			self::PIGLIN => "Piglin Head"
+		};
 	}
 }

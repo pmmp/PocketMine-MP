@@ -213,7 +213,7 @@ class PluginManager{
 		 * @var Plugin $plugin
 		 * @see Plugin::__construct()
 		 */
-		$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $prefixed, new DiskResourceProvider($prefixed . "/resources/"));
+		$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $prefixed, $prefixed . "/resources/");
 		$this->plugins[$plugin->getDescription()->getName()] = $plugin;
 
 		return $plugin;
@@ -486,12 +486,10 @@ class PluginManager{
 		return true; //TODO: maybe this should be an error?
 	}
 
+	/** @internal */
 	public function disablePlugins() : void{
 		while(count($this->enabledPlugins) > 0){
 			foreach($this->enabledPlugins as $plugin){
-				if(!$plugin->isEnabled()){
-					continue; //in case a plugin disabled another plugin
-				}
 				$name = $plugin->getDescription()->getName();
 				if(isset($this->pluginDependents[$name]) && count($this->pluginDependents[$name]) > 0){
 					$this->server->getLogger()->debug("Deferring disable of plugin $name due to dependent plugins still enabled: " . implode(", ", array_keys($this->pluginDependents[$name])));
@@ -503,16 +501,19 @@ class PluginManager{
 		}
 	}
 
-	public function disablePlugin(Plugin $plugin) : void{
+	private function disablePlugin(Plugin $plugin) : void{
 		if($plugin->isEnabled()){
 			$this->server->getLogger()->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_disable($plugin->getDescription()->getFullName())));
 			(new PluginDisableEvent($plugin))->call();
 
 			unset($this->enabledPlugins[$plugin->getDescription()->getName()]);
 			foreach(Utils::stringifyKeys($this->pluginDependents) as $dependency => $dependentList){
-				unset($this->pluginDependents[$dependency][$plugin->getDescription()->getName()]);
-				if(count($this->pluginDependents[$dependency]) === 0){
-					unset($this->pluginDependents[$dependency]);
+				if(isset($this->pluginDependents[$dependency][$plugin->getDescription()->getName()])){
+					if(count($this->pluginDependents[$dependency]) === 1){
+						unset($this->pluginDependents[$dependency]);
+					}else{
+						unset($this->pluginDependents[$dependency][$plugin->getDescription()->getName()]);
+					}
 				}
 			}
 
@@ -524,19 +525,8 @@ class PluginManager{
 
 	public function tickSchedulers(int $currentTick) : void{
 		foreach($this->enabledPlugins as $pluginName => $p){
-			if(isset($this->enabledPlugins[$pluginName])){
-				//the plugin may have been disabled as a result of updating other plugins' schedulers, and therefore
-				//removed from enabledPlugins; however, foreach will still see it due to copy-on-write
-				$p->getScheduler()->mainThreadHeartbeat($currentTick);
-			}
+			$p->getScheduler()->mainThreadHeartbeat($currentTick);
 		}
-	}
-
-	public function clearPlugins() : void{
-		$this->disablePlugins();
-		$this->plugins = [];
-		$this->enabledPlugins = [];
-		$this->fileAssociations = [];
 	}
 
 	/**

@@ -24,15 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\ColoredTrait;
-use pocketmine\block\utils\DyeColor;
 
 class Wool extends Opaque{
 	use ColoredTrait;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->color = DyeColor::WHITE();
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
 
 	public function getFlameEncouragement() : int{
 		return 30;

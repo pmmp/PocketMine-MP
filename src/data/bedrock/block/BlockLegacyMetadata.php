@@ -38,6 +38,13 @@ final class BlockLegacyMetadata{
 	public const CORAL_VARIANT_FIRE = 3;
 	public const CORAL_VARIANT_HORN = 4;
 
+	public const MULTI_FACE_DIRECTION_FLAG_DOWN = 0x01;
+	public const MULTI_FACE_DIRECTION_FLAG_UP = 0x02;
+	public const MULTI_FACE_DIRECTION_FLAG_SOUTH = 0x04;
+	public const MULTI_FACE_DIRECTION_FLAG_WEST = 0x08;
+	public const MULTI_FACE_DIRECTION_FLAG_NORTH = 0x10;
+	public const MULTI_FACE_DIRECTION_FLAG_EAST = 0x20;
+
 	public const MUSHROOM_BLOCK_ALL_PORES = 0;
 	public const MUSHROOM_BLOCK_CAP_NORTHWEST_CORNER = 1;
 	public const MUSHROOM_BLOCK_CAP_NORTH_SIDE = 2;

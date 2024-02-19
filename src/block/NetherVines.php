@@ -23,8 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\AgeableTrait;
+use pocketmine\block\utils\FortuneDropHelper;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Fertilizer;
@@ -40,41 +42,20 @@ use function mt_rand;
  * This class is used for Weeping & Twisting vines, because they have same behaviour
  */
 class NetherVines extends Flowable{
+	use AgeableTrait;
+	use StaticSupportTrait;
+
 	public const MAX_AGE = 25;
 
 	/** Direction the vine grows towards. */
 	private int $growthFace;
-
-	protected int $age = 0;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, int $growthFace){
 		$this->growthFace = $growthFace;
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(5, 0, self::MAX_AGE, $this->age);
-	}
-
-	public function getAge() : int{
-		return $this->age;
-	}
-
-	/** @return $this */
-	public function setAge(int $age) : self{
-		if($age < 0 || $age > self::MAX_AGE){
-			throw new \InvalidArgumentException("Age must be in range 0-" . self::MAX_AGE);
-		}
-
-		$this->age = $age;
-		return $this;
-	}
-
 	public function isAffectedBySilkTouch() : bool{
-		return true;
-	}
-
-	public function ticksRandomly() : bool{
 		return true;
 	}
 
@@ -82,18 +63,9 @@ class NetherVines extends Flowable{
 		return true;
 	}
 
-	private function getSupportFace() : int{
-		return Facing::opposite($this->growthFace);
-	}
-
-	private function canBeSupportedBy(Block $block) : bool{
-		return $block->getSupportType($this->getSupportFace())->hasCenterSupport() || $block->hasSameTypeId($this);
-	}
-
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->getSide($this->getSupportFace()))){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
+	private function canBeSupportedAt(Block $block) : bool{
+		$supportBlock = $block->getSide(Facing::opposite($this->growthFace));
+		return $supportBlock->getSupportType($this->growthFace)->hasCenterSupport() || $supportBlock->hasSameTypeId($this);
 	}
 
 	/**
@@ -108,9 +80,6 @@ class NetherVines extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy($blockReplace->getSide($this->getSupportFace()))){
-			return false;
-		}
 		$this->age = mt_rand(0, self::MAX_AGE - 1);
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
@@ -125,8 +94,12 @@ class NetherVines extends Flowable{
 		return false;
 	}
 
+	public function ticksRandomly() : bool{
+		return $this->age < self::MAX_AGE;
+	}
+
 	public function onRandomTick() : void{
-		if(mt_rand(1, 10) === 1 && $this->age < self::MAX_AGE){
+		if($this->age < self::MAX_AGE && mt_rand(1, 10) === 1){
 			if($this->getSide($this->growthFace)->canBeReplaced()){
 				$this->grow(null);
 			}
@@ -135,8 +108,8 @@ class NetherVines extends Flowable{
 
 	private function grow(?Player $player, int $growthAmount = 1) : bool{
 		$top = $this->seekToTip();
-		$age = $top->getAge();
-		$pos = $top->getPosition();
+		$age = $top->age;
+		$pos = $top->position;
 		$world = $pos->getWorld();
 		$changedBlocks = 0;
 
@@ -179,13 +152,13 @@ class NetherVines extends Flowable{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0 || mt_rand(1, 3) === 1){
+		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0 || FortuneDropHelper::bonusChanceFixed($item, 1 / 3, 2 / 9)){
 			return [$this->asItem()];
 		}
 		return [];
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 }

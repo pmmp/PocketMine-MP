@@ -31,7 +31,7 @@ class RegionLocationTableEntryTest extends TestCase{
 	/**
 	 * @phpstan-return \Generator<int, array{RegionLocationTableEntry, RegionLocationTableEntry, bool}, void, void>
 	 */
-	public function overlapDataProvider() : \Generator{
+	public static function overlapDataProvider() : \Generator{
 		yield [new RegionLocationTableEntry(2, 1, 0), new RegionLocationTableEntry(2, 1, 0), true];
 		yield [new RegionLocationTableEntry(2, 1, 0), new RegionLocationTableEntry(3, 1, 0), false];
 		yield [new RegionLocationTableEntry(2, 2, 0), new RegionLocationTableEntry(3, 2, 0), true];

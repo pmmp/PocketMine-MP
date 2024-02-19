@@ -42,18 +42,18 @@ class PharPluginLoader implements PluginLoader{
 	/**
 	 * Loads the plugin contained in $file
 	 */
-	public function loadPlugin(string $file) : void{
-		$description = $this->getPluginDescription($file);
+	public function loadPlugin(string $path) : void{
+		$description = $this->getPluginDescription($path);
 		if($description !== null){
-			$this->loader->addPath($description->getSrcNamespacePrefix(), "$file/src");
+			$this->loader->addPath($description->getSrcNamespacePrefix(), "$path/src");
 		}
 	}
 
 	/**
 	 * Gets the PluginDescription from the file
 	 */
-	public function getPluginDescription(string $file) : ?PluginDescription{
-		$phar = new \Phar($file);
+	public function getPluginDescription(string $path) : ?PluginDescription{
+		$phar = new \Phar($path);
 		if(isset($phar["plugin.yml"])){
 			return new PluginDescription($phar["plugin.yml"]->getContent());
 		}

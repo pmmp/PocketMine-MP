@@ -23,42 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\EnumTrait;
-
-/**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
- *
- * @method static MushroomBlockType ALL_CAP()
- * @method static MushroomBlockType CAP_EAST()
- * @method static MushroomBlockType CAP_MIDDLE()
- * @method static MushroomBlockType CAP_NORTH()
- * @method static MushroomBlockType CAP_NORTHEAST()
- * @method static MushroomBlockType CAP_NORTHWEST()
- * @method static MushroomBlockType CAP_SOUTH()
- * @method static MushroomBlockType CAP_SOUTHEAST()
- * @method static MushroomBlockType CAP_SOUTHWEST()
- * @method static MushroomBlockType CAP_WEST()
- * @method static MushroomBlockType PORES()
- */
-final class MushroomBlockType{
-	use EnumTrait;
-
-	protected static function setup() : void{
-		self::registerAll(
-			new self("PORES"),
-			new self("CAP_NORTHWEST"),
-			new self("CAP_NORTH"),
-			new self("CAP_NORTHEAST"),
-			new self("CAP_WEST"),
-			new self("CAP_MIDDLE"),
-			new self("CAP_EAST"),
-			new self("CAP_SOUTHWEST"),
-			new self("CAP_SOUTH"),
-			new self("CAP_SOUTHEAST"),
-			new self("ALL_CAP")
-		);
-	}
+enum MushroomBlockType{
+	case PORES;
+	case CAP_NORTHWEST;
+	case CAP_NORTH;
+	case CAP_NORTHEAST;
+	case CAP_WEST;
+	case CAP_MIDDLE;
+	case CAP_EAST;
+	case CAP_SOUTHWEST;
+	case CAP_SOUTH;
+	case CAP_SOUTHEAST;
+	case ALL_CAP;
 }

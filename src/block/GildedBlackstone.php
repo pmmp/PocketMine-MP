@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use function mt_rand;
@@ -30,7 +31,7 @@ use function mt_rand;
 final class GildedBlackstone extends Opaque{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if(mt_rand(1, 10) === 1){
+		if(FortuneDropHelper::bonusChanceDivisor($item, 10, 3)){
 			return [VanillaItems::GOLD_NUGGET()->setCount(mt_rand(2, 5))];
 		}
 

@@ -37,7 +37,7 @@ use const M_PI;
 
 class Squid extends WaterAnimal{
 
-	public static function getNetworkTypeId() : string{ return EntityIds::SQUID; }
+	public function getNetworkTypeId() : string{ return EntityIds::SQUID; }
 
 	public ?Vector3 $swimDirection = null;
 	public float $swimSpeed = 0.1;

@@ -23,36 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\EnumTrait;
-
-/**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
- *
- * @method static SupportType CENTER()
- * @method static SupportType EDGE()
- * @method static SupportType FULL()
- * @method static SupportType NONE()
- */
-final class SupportType{
-	use EnumTrait;
-
-	protected static function setup() : void{
-		self::registerAll(
-			new self("full"),
-			new self("center"),
-			new self("edge"),
-			new self("none")
-		);
-	}
+enum SupportType{
+	case FULL;
+	case CENTER;
+	case EDGE;
+	case NONE;
 
 	public function hasEdgeSupport() : bool{
-		return $this->equals(self::EDGE()) || $this->equals(self::FULL());
+		return $this === self::EDGE || $this === self::FULL;
 	}
 
 	public function hasCenterSupport() : bool{
-		return $this->equals(self::CENTER()) || $this->equals(self::FULL());
+		return $this === self::CENTER || $this === self::FULL;
 	}
 }

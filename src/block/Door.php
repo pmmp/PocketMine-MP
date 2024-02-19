@@ -51,6 +51,8 @@ class Door extends Transparent{
 	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 
+		$this->collisionBoxes = null;
+
 		//copy door properties from other half
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
 		if($other instanceof Door && $other->hasSameTypeId($this)){
@@ -102,11 +104,11 @@ class Door extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN)) && !$this->getSide(Facing::DOWN) instanceof Door){ //Replace with common break method
+		if(!$this->canBeSupportedAt($this) && !$this->getSide(Facing::DOWN) instanceof Door){ //Replace with common break method
 			$this->position->getWorld()->useBreakOn($this->position); //this will delete both halves if they exist
 		}
 	}
@@ -114,8 +116,7 @@ class Door extends Transparent{
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($face === Facing::UP){
 			$blockUp = $this->getSide(Facing::UP);
-			$blockDown = $this->getSide(Facing::DOWN);
-			if(!$blockUp->canBeReplaced() || !$this->canBeSupportedBy($blockDown)){
+			if(!$blockUp->canBeReplaced() || !$this->canBeSupportedAt($blockReplace)){
 				return false;
 			}
 
@@ -172,7 +173,7 @@ class Door extends Transparent{
 		return parent::getAffectedBlocks();
 	}
 
-	private function canBeSupportedBy(Block $block) : bool{
-		return $block->getSupportType(Facing::UP)->hasEdgeSupport();
+	private function canBeSupportedAt(Block $block) : bool{
+		return $block->getAdjacentSupportType(Facing::DOWN)->hasEdgeSupport();
 	}
 }

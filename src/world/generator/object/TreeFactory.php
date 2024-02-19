@@ -31,25 +31,13 @@ final class TreeFactory{
 	 * @param TreeType|null $type default oak
 	 */
 	public static function get(Random $random, ?TreeType $type = null) : ?Tree{
-		$type = $type ?? TreeType::OAK();
-		if($type->equals(TreeType::SPRUCE())){
-			return new SpruceTree();
-		}elseif($type->equals(TreeType::BIRCH())){
-			if($random->nextBoundedInt(39) === 0){
-				return new BirchTree(true);
-			}else{
-				return new BirchTree();
-			}
-		}elseif($type->equals(TreeType::JUNGLE())){
-			return new JungleTree();
-		}elseif($type->equals(TreeType::OAK())){ //default
-			return new OakTree();
-			/*if($random->nextRange(0, 9) === 0){
-				$tree = new BigTree();
-			}else{*/
-
-			//}
-		}
-		return null;
+		return match($type){
+			null, TreeType::OAK => new OakTree(), //TODO: big oak has a 1/10 chance
+			TreeType::SPRUCE => new SpruceTree(),
+			TreeType::JUNGLE => new JungleTree(),
+			TreeType::ACACIA => new AcaciaTree(),
+			TreeType::BIRCH => new BirchTree($random->nextBoundedInt(39) === 0),
+			default => null,
+		};
 	}
 }

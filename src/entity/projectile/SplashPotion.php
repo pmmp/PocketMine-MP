@@ -53,7 +53,7 @@ class SplashPotion extends Throwable{
 
 	public const TAG_POTION_ID = "PotionId"; //TAG_Short
 
-	public static function getNetworkTypeId() : string{ return EntityIds::SPLASH_POTION; }
+	public function getNetworkTypeId() : string{ return EntityIds::SPLASH_POTION; }
 
 	protected bool $linger = false;
 	protected PotionType $potionType;
@@ -130,7 +130,7 @@ class SplashPotion extends Throwable{
 			}else{
 				//TODO: lingering potions
 			}
-		}elseif($event instanceof ProjectileHitBlockEvent && $this->getPotionType()->equals(PotionType::WATER())){
+		}elseif($event instanceof ProjectileHitBlockEvent && $this->getPotionType() === PotionType::WATER){
 			$blockIn = $event->getBlockHit()->getSide($event->getRayTraceResult()->getHitFace());
 
 			if($blockIn->hasTypeTag(BlockTypeTags::FIRE)){

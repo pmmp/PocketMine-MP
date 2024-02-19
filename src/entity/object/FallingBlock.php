@@ -55,7 +55,7 @@ class FallingBlock extends Entity{
 	private const TAG_TILE = "Tile"; //TAG_Byte
 	private const TAG_DATA = "Data"; //TAG_Byte
 
-	public static function getNetworkTypeId() : string{ return EntityIds::FALLING_BLOCK; }
+	public function getNetworkTypeId() : string{ return EntityIds::FALLING_BLOCK; }
 
 	protected Block $block;
 

@@ -23,9 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\block\utils\AgeableTrait;
+use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\BlockBurnEvent;
-use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\math\Facing;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\World;
@@ -35,27 +36,16 @@ use function min;
 use function mt_rand;
 
 class Fire extends BaseFire{
+	use AgeableTrait;
+
 	public const MAX_AGE = 15;
-
-	protected int $age = 0;
-
-	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(4, 0, self::MAX_AGE, $this->age);
-	}
-
-	public function getAge() : int{ return $this->age; }
-
-	/** @return $this */
-	public function setAge(int $age) : self{
-		if($age < 0 || $age > self::MAX_AGE){
-			throw new \InvalidArgumentException("Age must be in range 0 ... " . self::MAX_AGE);
-		}
-		$this->age = $age;
-		return $this;
-	}
 
 	protected function getFireDamage() : int{
 		return 1;
+	}
+
+	private function canBeSupportedBy(Block $block) : bool{
+		return $block->getSupportType(Facing::UP) === SupportType::FULL;
 	}
 
 	public function onNearbyBlockChange() : void{
@@ -63,7 +53,7 @@ class Fire extends BaseFire{
 		$down = $this->getSide(Facing::DOWN);
 		if(SoulFire::canBeSupportedBy($down)){
 			$world->setBlock($this->position, VanillaBlocks::SOUL_FIRE());
-		}elseif($down->isTransparent() && !$this->hasAdjacentFlammableBlocks()){
+		}elseif(!$this->canBeSupportedBy($this->getSide(Facing::DOWN)) && !$this->hasAdjacentFlammableBlocks()){
 			$world->setBlock($this->position, VanillaBlocks::AIR());
 		}else{
 			$world->scheduleDelayedBlockUpdate($this->position, mt_rand(30, 40));
@@ -140,13 +130,17 @@ class Fire extends BaseFire{
 
 	private function burnBlock(Block $block, int $chanceBound) : void{
 		if(mt_rand(0, $chanceBound) < $block->getFlammability()){
-			$ev = new BlockBurnEvent($block, $this);
-			$ev->call();
-			if(!$ev->isCancelled()){
+			$cancelled = false;
+			if(BlockBurnEvent::hasHandlers()){
+				$ev = new BlockBurnEvent($block, $this);
+				$ev->call();
+				$cancelled = $ev->isCancelled();
+			}
+			if(!$cancelled){
 				$block->onIncinerate();
 
 				$world = $this->position->getWorld();
-				if($world->getBlock($block->getPosition())->isSameState($block)){
+				if($world->getBlock($block->position)->isSameState($block)){
 					$spreadedFire = false;
 					if(mt_rand(0, $this->age + 9) < 5){ //TODO: check rain
 						$fire = clone $this;
@@ -220,13 +214,6 @@ class Fire extends BaseFire{
 	}
 
 	private function spreadBlock(Block $block, Block $newState) : bool{
-		$ev = new BlockSpreadEvent($block, $this, $newState);
-		$ev->call();
-		if(!$ev->isCancelled()){
-			$block->position->getWorld()->setBlock($block->position, $ev->getNewState());
-			return true;
-		}
-
-		return false;
+		return BlockEventHelper::spread($block, $newState, $this);
 	}
 }
