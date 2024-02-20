@@ -32,7 +32,6 @@ use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\RespawnPacket;
 use pocketmine\network\mcpe\protocol\types\PlayerAction;
 use pocketmine\player\Player;
-use function array_map;
 
 class DeathPacketHandler extends PacketHandler{
 	public function __construct(
@@ -52,17 +51,11 @@ class DeathPacketHandler extends PacketHandler{
 		/** @var string[] $parameters */
 		$parameters = [];
 		if($this->deathMessage instanceof Translatable){
-			//we can't send nested translations to the client, so make sure they are always pre-translated by the server
 			$language = $this->player->getLanguage();
-			$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $language->translate($p) : $p, $this->deathMessage->getParameters());
 			if(!$this->player->getServer()->isLanguageForced()){
-				foreach($parameters as $i => $p){
-					$parameters[$i] = $language->translateString($p, [], "pocketmine.");
-				}
-				$message = $language->translateString($this->deathMessage->getText(), $parameters, "pocketmine.");
+				[$message, $parameters] = $this->session->prepareClientTranslatableMessage($this->deathMessage);
 			}else{
-				$message = $language->translateString($this->deathMessage->getText(), $parameters);
-				$parameters = [];
+				$message = $language->translate($this->deathMessage);
 			}
 		}else{
 			$message = $this->deathMessage;

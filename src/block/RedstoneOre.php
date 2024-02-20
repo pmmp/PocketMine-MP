@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
+use pocketmine\block\utils\LightableTrait;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
@@ -30,41 +32,13 @@ use pocketmine\player\Player;
 use function mt_rand;
 
 class RedstoneOre extends Opaque{
-
-	protected BlockIdentifierFlattened $idInfoFlattened;
-
-	protected bool $lit = false;
-
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
-		$this->idInfoFlattened = $idInfo;
-		parent::__construct($idInfo, $name, $breakInfo);
-	}
-
-	public function getId() : int{
-		return $this->lit ? $this->idInfoFlattened->getSecondId() : parent::getId();
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->lit = $id === $this->idInfoFlattened->getSecondId();
-	}
-
-	public function isLit() : bool{
-		return $this->lit;
-	}
-
-	/**
-	 * @return $this
-	 */
-	public function setLit(bool $lit = true) : self{
-		$this->lit = $lit;
-		return $this;
-	}
+	use LightableTrait;
 
 	public function getLightLevel() : int{
 		return $this->lit ? 9 : 0;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if(!$this->lit){
 			$this->lit = true;
 			$this->position->getWorld()->setBlock($this->position, $this); //no return here - this shouldn't prevent block placement
@@ -80,7 +54,7 @@ class RedstoneOre extends Opaque{
 	}
 
 	public function ticksRandomly() : bool{
-		return true;
+		return $this->lit;
 	}
 
 	public function onRandomTick() : void{
@@ -92,7 +66,7 @@ class RedstoneOre extends Opaque{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			VanillaItems::REDSTONE_DUST()->setCount(mt_rand(4, 5))
+			VanillaItems::REDSTONE_DUST()->setCount(FortuneDropHelper::discrete($item, 4, 5))
 		];
 	}
 

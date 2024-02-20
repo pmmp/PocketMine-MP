@@ -27,6 +27,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\ChunkRequestTask;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Compressor;
+use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\world\ChunkListener;
 use pocketmine\world\ChunkListenerNoOpTrait;
 use pocketmine\world\format\Chunk;
@@ -116,16 +117,10 @@ class ChunkCache implements ChunkListener{
 				new ChunkRequestTask(
 					$chunkX,
 					$chunkZ,
+					DimensionIds::OVERWORLD, //TODO: not hardcode this
 					$chunk,
 					$this->caches[$chunkHash],
-					$this->compressor,
-					function() use ($chunkHash, $chunkX, $chunkZ) : void{
-						$this->world->getLogger()->error("Failed preparing chunk $chunkX $chunkZ, retrying");
-
-						if(isset($this->caches[$chunkHash])){
-							$this->restartPendingRequest($chunkX, $chunkZ);
-						}
-					}
+					$this->compressor
 				)
 			);
 
@@ -144,31 +139,18 @@ class ChunkCache implements ChunkListener{
 	}
 
 	/**
-	 * Restarts an async request for an unresolved chunk.
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	private function restartPendingRequest(int $chunkX, int $chunkZ) : void{
-		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		$existing = $this->caches[$chunkHash] ?? null;
-		if($existing === null || $existing->hasResult()){
-			throw new \InvalidArgumentException("Restart can only be applied to unresolved promises");
-		}
-		$existing->cancel();
-		unset($this->caches[$chunkHash]);
-
-		$this->request($chunkX, $chunkZ)->onResolve(...$existing->getResolveCallbacks());
-	}
-
-	/**
 	 * @throws \InvalidArgumentException
 	 */
 	private function destroyOrRestart(int $chunkX, int $chunkZ) : void{
-		$cache = $this->caches[World::chunkHash($chunkX, $chunkZ)] ?? null;
+		$chunkPosHash = World::chunkHash($chunkX, $chunkZ);
+		$cache = $this->caches[$chunkPosHash] ?? null;
 		if($cache !== null){
 			if(!$cache->hasResult()){
 				//some requesters are waiting for this chunk, so their request needs to be fulfilled
-				$this->restartPendingRequest($chunkX, $chunkZ);
+				$cache->cancel();
+				unset($this->caches[$chunkPosHash]);
+
+				$this->request($chunkX, $chunkZ)->onResolve(...$cache->getResolveCallbacks());
 			}else{
 				//dump the cache, it'll be regenerated the next time it's requested
 				$this->destroy($chunkX, $chunkZ);

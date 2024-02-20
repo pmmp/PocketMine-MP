@@ -18,15 +18,21 @@ require dirname(__DIR__, 2) . '/vendor/autoload.php';
 /**
  * @phpstan-return array<string, mixed>
  */
-function generateDiscordEmbed(string $version, string $channel, string $description, string $detailsUrl, string $sourceUrl, string $pharDownloadUrl, string $buildLogUrl) : array{
+function generateDiscordEmbed(string $version, string $channel, string $description, string $detailsUrl, string $sourceUrl, string $pharDownloadUrl, string $buildLogUrl, int $newsPingRoleId, ?string $phpDownloadUrl) : array{
+	if($phpDownloadUrl !== null){
+		$phpEmbedLink = " | [PHP Binaries]($phpDownloadUrl)";
+	}else{
+		$phpEmbedLink = "";
+	}
 	return [
+		"content" => "<@&$newsPingRoleId> New PocketMine-MP release: $version ($channel)",
 		"embeds" => [
 			[
 				"title" => "New PocketMine-MP release: $version ($channel)",
 				"description" => <<<DESCRIPTION
 $description
 
-[Details]($detailsUrl) | [Source Code]($sourceUrl) | [Build Log]($buildLogUrl) | [Download]($pharDownloadUrl)
+[Details]($detailsUrl) | [Source Code]($sourceUrl) | [Build Log]($buildLogUrl) | [Download]($pharDownloadUrl)$phpEmbedLink
 DESCRIPTION,
 				"url" => $detailsUrl,
 				"color" => $channel === "stable" ? 0x57ab5a : 0xc69026
@@ -35,11 +41,11 @@ DESCRIPTION,
 	];
 }
 
-if(count($argv) !== 5){
-	fwrite(STDERR, "Required arguments: github repo, version, API token\n");
+if(count($argv) !== 6){
+	fwrite(STDERR, "Required arguments: github repo, version, API token, webhook URL, ping role ID\n");
 	exit(1);
 }
-[, $repo, $tagName, $token, $hookURL] = $argv;
+[, $repo, $tagName, $token, $hookURL, $newsPingRoleId] = $argv;
 
 $result = Internet::getURL('https://api.github.com/repos/' . $repo . '/releases/tags/' . $tagName, extraHeaders: [
 	'Authorization: token ' . $token
@@ -83,10 +89,21 @@ $detailsUrl = $buildInfoJson["details_url"];
 $sourceUrl = $buildInfoJson["source_url"];
 $pharDownloadUrl = $buildInfoJson["download_url"];
 $buildLogUrl = $buildInfoJson["build_log_url"];
+$phpBinaryUrl = $buildInfoJson["php_download_url"] ?? null;
 
 $description = $releaseInfoJson["body"];
 
-$discordPayload = generateDiscordEmbed($buildInfoJson["base_version"], $buildInfoJson["channel"], $description, $detailsUrl, $sourceUrl, $pharDownloadUrl, $buildLogUrl);
+$discordPayload = generateDiscordEmbed(
+	$buildInfoJson["base_version"],
+	$buildInfoJson["channel"],
+	$description,
+	$detailsUrl,
+	$sourceUrl,
+	$pharDownloadUrl,
+	$buildLogUrl,
+	(int) $newsPingRoleId,
+	$phpBinaryUrl
+);
 
 $response = Internet::postURL(
 	$hookURL,

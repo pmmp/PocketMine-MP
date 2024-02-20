@@ -23,11 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
-use pocketmine\utils\AssumptionFailedError;
+use pmmp\thread\Runnable;
+use pmmp\thread\ThreadSafe;
+use pmmp\thread\ThreadSafeArray;
+use pocketmine\thread\NonThreadSafeValue;
+use function array_key_exists;
 use function igbinary_serialize;
 use function igbinary_unserialize;
+use function is_null;
 use function is_scalar;
-use function is_string;
 use function spl_object_id;
 
 /**
@@ -51,55 +55,40 @@ use function spl_object_id;
  * thread, e.g. during {@link AsyncTask::onCompletion()} or {@link AsyncTask::onProgressUpdate()}. This means that
  * whatever you do in onRun() must be able to work without the Server instance.
  *
- * WARNING: Any non-Threaded objects WILL BE SERIALIZED when assigned to members of AsyncTasks or other Threaded object.
- * If later accessed from said Threaded object, you will be operating on a COPY OF THE OBJECT, NOT THE ORIGINAL OBJECT.
- * If you want to store non-serializable objects to access when the task completes, store them using
+ * If you want to store non-thread-safe objects to access when the task completes, store them using
  * {@link AsyncTask::storeLocal}.
- *
- * WARNING: Arrays are converted to Volatile objects when assigned as members of Threaded objects.
- * Keep this in mind when using arrays stored as members of your AsyncTask.
  */
-abstract class AsyncTask extends \Threaded{
+abstract class AsyncTask extends Runnable{
 	/**
-	 * @var \ArrayObject|mixed[]|null object hash => mixed data
-	 * @phpstan-var \ArrayObject<int, array<string, mixed>>|null
+	 * @var mixed[][] object hash => mixed data
+	 * @phpstan-var array<int, array<string, mixed>>
 	 *
-	 * Used to store objects which are only needed on one thread and should not be serialized.
+	 * Used to store thread-local data to be used by onCompletion().
 	 */
-	private static ?\ArrayObject $threadLocalStorage = null;
+	private static array $threadLocalStorage = [];
 
-	/** @var AsyncWorker|null $worker */
-	public $worker = null;
+	/** @phpstan-var ThreadSafeArray<int, string>|null */
+	private ?ThreadSafeArray $progressUpdates = null;
 
-	/** @var \Threaded */
-	public $progressUpdates;
+	private ThreadSafe|string|int|bool|null|float $result = null;
 
-	private string|int|bool|null|float $result = null;
-	private bool $serialized = false;
-	private bool $cancelRun = false;
 	private bool $submitted = false;
-
-	private bool $crashed = false;
 	private bool $finished = false;
 
 	public function run() : void{
 		$this->result = null;
 
-		if(!$this->cancelRun){
-			try{
-				$this->onRun();
-			}catch(\Throwable $e){
-				$this->crashed = true;
-				$this->worker->handleException($e);
-			}
-		}
+		$this->onRun();
 
 		$this->finished = true;
-		$this->worker->getNotifier()->wakeupSleeper();
+		AsyncWorker::getNotifier()->wakeupSleeper();
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function isCrashed() : bool{
-		return $this->crashed || $this->isTerminated();
+		return $this->isTerminated();
 	}
 
 	/**
@@ -107,7 +96,7 @@ abstract class AsyncTask extends \Threaded{
 	 * because it is not true prior to task execution.
 	 */
 	public function isFinished() : bool{
-		return $this->finished || $this->isCrashed();
+		return $this->finished || $this->isTerminated();
 	}
 
 	public function hasResult() : bool{
@@ -118,26 +107,28 @@ abstract class AsyncTask extends \Threaded{
 	 * @return mixed
 	 */
 	public function getResult(){
-		if($this->serialized){
-			if(!is_string($this->result)) throw new AssumptionFailedError("Result expected to be a serialized string");
-			return igbinary_unserialize($this->result);
+		if($this->result instanceof NonThreadSafeValue){
+			return $this->result->deserialize();
 		}
 		return $this->result;
 	}
 
+	public function setResult(mixed $result) : void{
+		$this->result = is_scalar($result) || is_null($result) || $result instanceof ThreadSafe ? $result : new NonThreadSafeValue($result);
+	}
+
 	/**
-	 * @param mixed $result
+	 * @deprecated
 	 */
-	public function setResult($result) : void{
-		$this->result = ($this->serialized = !is_scalar($result)) ? igbinary_serialize($result) : $result;
-	}
-
 	public function cancelRun() : void{
-		$this->cancelRun = true;
+		//NOOP
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function hasCancelledRun() : bool{
-		return $this->cancelRun;
+		return false;
 	}
 
 	public function setSubmitted() : void{
@@ -167,17 +158,23 @@ abstract class AsyncTask extends \Threaded{
 	 *
 	 * @param mixed $progress A value that can be safely serialize()'ed.
 	 */
-	public function publishProgress($progress) : void{
-		$this->progressUpdates[] = igbinary_serialize($progress);
+	public function publishProgress(mixed $progress) : void{
+		$progressUpdates = $this->progressUpdates;
+		if($progressUpdates === null){
+			$progressUpdates = $this->progressUpdates = new ThreadSafeArray();
+		}
+		$progressUpdates[] = igbinary_serialize($progress) ?? throw new \InvalidArgumentException("Progress must be serializable");
 	}
 
 	/**
 	 * @internal Only call from AsyncPool.php on the main thread
 	 */
 	public function checkProgressUpdates() : void{
-		while($this->progressUpdates->count() !== 0){
-			$progress = $this->progressUpdates->shift();
-			$this->onProgressUpdate(igbinary_unserialize($progress));
+		$progressUpdates = $this->progressUpdates;
+		if($progressUpdates !== null){
+			while(($progress = $progressUpdates->shift()) !== null){
+				$this->onProgressUpdate(igbinary_unserialize($progress));
+			}
 		}
 	}
 
@@ -194,8 +191,7 @@ abstract class AsyncTask extends \Threaded{
 	}
 
 	/**
-	 * Called from the main thread when the async task experiences an error during onRun(). Use this for things like
-	 * promise rejection.
+	 * @deprecated No longer used
 	 */
 	public function onError() : void{
 
@@ -214,19 +210,8 @@ abstract class AsyncTask extends \Threaded{
 	 *
 	 * Objects stored in this storage can be retrieved using fetchLocal() on the same thread that this method was called
 	 * from.
-	 *
-	 * @param mixed $complexData the data to store
 	 */
-	protected function storeLocal(string $key, $complexData) : void{
-		if(self::$threadLocalStorage === null){
-			/*
-			 * It's necessary to use an object (not array) here because pthreads is stupid. Non-default array statics
-			 * will be inherited when task classes are copied to the worker thread, which would cause unwanted
-			 * inheritance of primitive thread-locals, which we really don't want for various reasons.
-			 * It won't try to inherit objects though, so this is the easiest solution.
-			 */
-			self::$threadLocalStorage = new \ArrayObject();
-		}
+	protected function storeLocal(string $key, mixed $complexData) : void{
 		self::$threadLocalStorage[spl_object_id($this)][$key] = $complexData;
 	}
 
@@ -242,7 +227,7 @@ abstract class AsyncTask extends \Threaded{
 	 */
 	protected function fetchLocal(string $key){
 		$id = spl_object_id($this);
-		if(self::$threadLocalStorage === null || !isset(self::$threadLocalStorage[$id][$key])){
+		if(!isset(self::$threadLocalStorage[$id]) || !array_key_exists($key, self::$threadLocalStorage[$id])){
 			throw new \InvalidArgumentException("No matching thread-local data found on this thread");
 		}
 
@@ -251,12 +236,7 @@ abstract class AsyncTask extends \Threaded{
 
 	final public function __destruct(){
 		$this->reallyDestruct();
-		if(self::$threadLocalStorage !== null && isset(self::$threadLocalStorage[$h = spl_object_id($this)])){
-			unset(self::$threadLocalStorage[$h]);
-			if(self::$threadLocalStorage->count() === 0){
-				self::$threadLocalStorage = null;
-			}
-		}
+		unset(self::$threadLocalStorage[spl_object_id($this)]);
 	}
 
 	/**

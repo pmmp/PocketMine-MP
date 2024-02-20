@@ -23,7 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\WoodTypeTrait;
+
 class WoodenButton extends Button{
+	use WoodTypeTrait;
 
 	protected function getActivationTime() : int{
 		return 30;
@@ -31,5 +34,9 @@ class WoodenButton extends Button{
 
 	public function hasEntityCollision() : bool{
 		return false; //TODO: arrows activate wooden buttons
+	}
+
+	public function getFuelTime() : int{
+		return $this->woodType->isFlammable() ? 100 : 0;
 	}
 }

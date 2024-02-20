@@ -30,17 +30,14 @@ use pocketmine\utils\ObjectSet;
 
 class PlayerInventory extends SimpleInventory{
 
-	/** @var Human */
-	protected $holder;
-
-	/** @var int */
-	protected $itemInHandIndex = 0;
+	protected Human $holder;
+	protected int $itemInHandIndex = 0;
 
 	/**
 	 * @var \Closure[]|ObjectSet
 	 * @phpstan-var ObjectSet<\Closure(int $oldIndex) : void>
 	 */
-	protected $heldItemIndexChangeListeners;
+	protected ObjectSet $heldItemIndexChangeListeners;
 
 	public function __construct(Human $player){
 		$this->holder = $player;
@@ -123,10 +120,7 @@ class PlayerInventory extends SimpleInventory{
 		return 9;
 	}
 
-	/**
-	 * @return Human|Player
-	 */
-	public function getHolder(){
+	public function getHolder() : Human{
 		return $this->holder;
 	}
 }

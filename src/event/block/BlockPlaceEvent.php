@@ -26,32 +26,28 @@ namespace pocketmine\event\block;
 use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\event\Event;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
+use pocketmine\world\BlockTransaction;
 
 /**
- * Called when a player places a block
+ * Called when a player initiates a block placement action.
+ * More than one block may be changed by a single placement action, for example when placing a door.
  */
-class BlockPlaceEvent extends BlockEvent implements Cancellable{
+class BlockPlaceEvent extends Event implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Player */
-	protected $player;
-
-	/** @var Item */
-	protected $item;
-
-	/** @var Block */
-	protected $blockReplace;
-	/** @var Block */
-	protected $blockAgainst;
-
-	public function __construct(Player $player, Block $blockPlace, Block $blockReplace, Block $blockAgainst, Item $item){
-		parent::__construct($blockPlace);
-		$this->blockReplace = $blockReplace;
-		$this->blockAgainst = $blockAgainst;
-		$this->item = $item;
-		$this->player = $player;
+	public function __construct(
+		protected Player $player,
+		protected BlockTransaction $transaction,
+		protected Block $blockAgainst,
+		protected Item $item
+	){
+		$world = $this->blockAgainst->getPosition()->getWorld();
+		foreach($this->transaction->getBlocks() as [$x, $y, $z, $block]){
+			$block->position($world, $x, $y, $z);
+		}
 	}
 
 	/**
@@ -68,8 +64,15 @@ class BlockPlaceEvent extends BlockEvent implements Cancellable{
 		return clone $this->item;
 	}
 
-	public function getBlockReplaced() : Block{
-		return $this->blockReplace;
+	/**
+	 * Returns a BlockTransaction object containing all the block positions that will be changed by this event, and the
+	 * states they will be changed to.
+	 *
+	 * This will usually contain only one block, but may contain more if the block being placed is a multi-block
+	 * structure such as a door or bed.
+	 */
+	public function getTransaction() : BlockTransaction{
+		return $this->transaction;
 	}
 
 	public function getBlockAgainst() : Block{

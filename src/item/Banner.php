@@ -23,12 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\block\Block;
 use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\utils\BannerPatternLayer;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\data\bedrock\BannerPatternTypeIdMap;
 use pocketmine\data\bedrock\DyeColorIdMap;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
@@ -39,18 +39,13 @@ class Banner extends ItemBlockWallOrFloor{
 	public const TAG_PATTERN_COLOR = TileBanner::TAG_PATTERN_COLOR;
 	public const TAG_PATTERN_NAME = TileBanner::TAG_PATTERN_NAME;
 
-	private DyeColor $color;
+	private DyeColor $color = DyeColor::BLACK;
 
 	/**
 	 * @var BannerPatternLayer[]
 	 * @phpstan-var list<BannerPatternLayer>
 	 */
 	private array $patterns = [];
-
-	public function __construct(ItemIdentifier $identifier, Block $floorVariant, Block $wallVariant){
-		parent::__construct($identifier, $floorVariant, $wallVariant);
-		$this->color = DyeColor::BLACK();
-	}
 
 	public function getColor() : DyeColor{
 		return $this->color;
@@ -62,8 +57,8 @@ class Banner extends ItemBlockWallOrFloor{
 		return $this;
 	}
 
-	public function getMeta() : int{
-		return DyeColorIdMap::getInstance()->toInvertedId($this->color);
+	protected function describeState(RuntimeDataDescriber $w) : void{
+		$w->enum($this->color);
 	}
 
 	/**
@@ -101,7 +96,7 @@ class Banner extends ItemBlockWallOrFloor{
 		if($patterns !== null && $patterns->getTagType() === NBT::TAG_Compound){
 			/** @var CompoundTag $t */
 			foreach($patterns as $t){
-				$patternColor = $colorIdMap->fromInvertedId($t->getInt(self::TAG_PATTERN_COLOR)) ?? DyeColor::BLACK(); //TODO: missing pattern colour should be an error
+				$patternColor = $colorIdMap->fromInvertedId($t->getInt(self::TAG_PATTERN_COLOR)) ?? DyeColor::BLACK; //TODO: missing pattern colour should be an error
 				$patternType = $patternIdMap->fromId($t->getString(self::TAG_PATTERN_NAME));
 				if($patternType === null){
 					continue; //TODO: this should be an error

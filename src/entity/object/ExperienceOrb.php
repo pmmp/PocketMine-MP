@@ -32,6 +32,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\player\Player;
+use function max;
 use function sqrt;
 
 class ExperienceOrb extends Entity{
@@ -47,6 +48,10 @@ class ExperienceOrb extends Entity{
 
 	/** Split sizes used for dropping experience orbs. */
 	public const ORB_SPLIT_SIZES = [2477, 1237, 617, 307, 149, 73, 37, 17, 7, 3, 1]; //This is indexed biggest to smallest so that we can return as soon as we found the biggest value.
+
+	public const DEFAULT_DESPAWN_DELAY = 6000;
+	public const NEVER_DESPAWN = -1;
+	public const MAX_DESPAWN_DELAY = 32767 + self::DEFAULT_DESPAWN_DELAY; //max value storable by mojang NBT :(
 
 	/**
 	 * Returns the largest size of normal XP orb that will be spawned for the specified amount of XP. Used to split XP
@@ -79,26 +84,15 @@ class ExperienceOrb extends Entity{
 		return $result;
 	}
 
-	public $gravity = 0.04;
-	public $drag = 0.02;
+	/** Ticker used for determining interval in which to look for new target players. */
+	protected int $lookForTargetTime = 0;
 
-	/** @var int */
-	protected $age = 0;
+	/** Runtime entity ID of the player this XP orb is targeting. */
+	protected ?int $targetPlayerRuntimeId = null;
 
-	/**
-	 * @var int
-	 * Ticker used for determining interval in which to look for new target players.
-	 */
-	protected $lookForTargetTime = 0;
+	protected int $xpValue;
 
-	/**
-	 * @var int|null
-	 * Runtime entity ID of the player this XP orb is targeting.
-	 */
-	protected $targetPlayerRuntimeId = null;
-
-	/** @var int */
-	protected $xpValue;
+	private int $despawnDelay = self::DEFAULT_DESPAWN_DELAY;
 
 	public function __construct(Location $location, int $xpValue, ?CompoundTag $nbt = null){
 		$this->xpValue = $xpValue;
@@ -107,21 +101,44 @@ class ExperienceOrb extends Entity{
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.25, 0.25); }
 
+	protected function getInitialDragMultiplier() : float{ return 0.02; }
+
+	protected function getInitialGravity() : float{ return 0.04; }
+
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
-		$this->age = $nbt->getShort(self::TAG_AGE, 0);
+		$age = $nbt->getShort(self::TAG_AGE, 0);
+		if($age === -32768){
+			$this->despawnDelay = self::NEVER_DESPAWN;
+		}else{
+			$this->despawnDelay = max(0, self::DEFAULT_DESPAWN_DELAY - $age);
+		}
 	}
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
 
-		$nbt->setShort(self::TAG_AGE, $this->age);
+		if($this->despawnDelay === self::NEVER_DESPAWN){
+			$age = -32768;
+		}else{
+			$age = self::DEFAULT_DESPAWN_DELAY - $this->despawnDelay;
+		}
+		$nbt->setShort(self::TAG_AGE, $age);
 
 		$nbt->setShort(self::TAG_VALUE_PC, $this->getXpValue());
 		$nbt->setInt(self::TAG_VALUE_PE, $this->getXpValue());
 
 		return $nbt;
+	}
+
+	public function getDespawnDelay() : int{ return $this->despawnDelay; }
+
+	public function setDespawnDelay(int $despawnDelay) : void{
+		if(($despawnDelay < 0 || $despawnDelay > self::MAX_DESPAWN_DELAY) && $despawnDelay !== self::NEVER_DESPAWN){
+			throw new \InvalidArgumentException("Despawn ticker must be in range 0 ... " . self::MAX_DESPAWN_DELAY . " or " . self::NEVER_DESPAWN . ", got $despawnDelay");
+		}
+		$this->despawnDelay = $despawnDelay;
 	}
 
 	public function getXpValue() : int{
@@ -160,8 +177,8 @@ class ExperienceOrb extends Entity{
 	protected function entityBaseTick(int $tickDiff = 1) : bool{
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		$this->age += $tickDiff;
-		if($this->age > 6000){
+		$this->despawnDelay -= $tickDiff;
+		if($this->despawnDelay <= 0){
 			$this->flagForDespawn();
 			return true;
 		}

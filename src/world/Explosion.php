@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
+use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\TNT;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
@@ -35,6 +35,7 @@ use pocketmine\event\entity\EntityExplodeEvent;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\format\SubChunk;
 use pocketmine\world\particle\HugeExplodeSeedParticle;
 use pocketmine\world\sound\ExplodeSound;
@@ -48,35 +49,27 @@ use function sqrt;
 
 class Explosion{
 	private int $rays = 16;
-	/** @var World */
-	public $world;
-	/** @var Position */
-	public $source;
-	/** @var float */
-	public $size;
+	public World $world;
 
 	/** @var Block[] */
-	public $affectedBlocks = [];
-	/** @var float */
-	public $stepLen = 0.3;
-
-	private Entity|Block|null $what;
+	public array $affectedBlocks = [];
+	public float $stepLen = 0.3;
 
 	private SubChunkExplorer $subChunkExplorer;
 
-	public function __construct(Position $center, float $size, Entity|Block|null $what = null){
-		if(!$center->isValid()){
+	public function __construct(
+		public Position $source,
+		public float $radius,
+		private Entity|Block|null $what = null
+	){
+		if(!$this->source->isValid()){
 			throw new \InvalidArgumentException("Position does not have a valid world");
 		}
-		$this->source = $center;
-		$this->world = $center->getWorld();
+		$this->world = $this->source->getWorld();
 
-		if($size <= 0){
-			throw new \InvalidArgumentException("Explosion radius must be greater than 0, got $size");
+		if($radius <= 0){
+			throw new \InvalidArgumentException("Explosion radius must be greater than 0, got $radius");
 		}
-		$this->size = $size;
-
-		$this->what = $what;
 		$this->subChunkExplorer = new SubChunkExplorer($this->world);
 	}
 
@@ -85,11 +78,11 @@ class Explosion{
 	 * will be destroyed.
 	 */
 	public function explodeA() : bool{
-		if($this->size < 0.1){
+		if($this->radius < 0.1){
 			return false;
 		}
 
-		$blockFactory = BlockFactory::getInstance();
+		$blockFactory = RuntimeBlockStateRegistry::getInstance();
 
 		$mRays = $this->rays - 1;
 		for($i = 0; $i < $this->rays; ++$i){
@@ -104,7 +97,7 @@ class Explosion{
 						$pointerY = $this->source->y;
 						$pointerZ = $this->source->z;
 
-						for($blastForce = $this->size * (mt_rand(700, 1300) / 1000); $blastForce > 0; $blastForce -= $this->stepLen * 0.75){
+						for($blastForce = $this->radius * (mt_rand(700, 1300) / 1000); $blastForce > 0; $blastForce -= $this->stepLen * 0.75){
 							$x = (int) $pointerX;
 							$y = (int) $pointerY;
 							$z = (int) $pointerZ;
@@ -119,10 +112,14 @@ class Explosion{
 							if($this->subChunkExplorer->moveTo($vBlockX, $vBlockY, $vBlockZ) === SubChunkExplorerStatus::INVALID){
 								continue;
 							}
+							$subChunk = $this->subChunkExplorer->currentSubChunk;
+							if($subChunk === null){
+								throw new AssumptionFailedError("SubChunkExplorer subchunk should not be null here");
+							}
 
-							$state = $this->subChunkExplorer->currentSubChunk->getFullBlock($vBlockX & SubChunk::COORD_MASK, $vBlockY & SubChunk::COORD_MASK, $vBlockZ & SubChunk::COORD_MASK);
+							$state = $subChunk->getBlockStateId($vBlockX & SubChunk::COORD_MASK, $vBlockY & SubChunk::COORD_MASK, $vBlockZ & SubChunk::COORD_MASK);
 
-							$blastResistance = $blockFactory->blastResistance[$state];
+							$blastResistance = $blockFactory->blastResistance[$state] ?? 0;
 							if($blastResistance >= 0){
 								$blastForce -= ($blastResistance / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
@@ -150,7 +147,7 @@ class Explosion{
 	 */
 	public function explodeB() : bool{
 		$source = (new Vector3($this->source->x, $this->source->y, $this->source->z))->floor();
-		$yield = min(100, (1 / $this->size) * 100);
+		$yield = min(100, (1 / $this->radius) * 100);
 
 		if($this->what instanceof Entity){
 			$ev = new EntityExplodeEvent($this->what, $this->source, $this->affectedBlocks, $yield);
@@ -163,7 +160,7 @@ class Explosion{
 			}
 		}
 
-		$explosionSize = $this->size * 2;
+		$explosionSize = $this->radius * 2;
 		$minX = (int) floor($this->source->x - $explosionSize - 1);
 		$maxX = (int) ceil($this->source->x + $explosionSize + 1);
 		$minY = (int) floor($this->source->y - $explosionSize - 1);

@@ -30,19 +30,15 @@ use pocketmine\permission\DefaultPermissionNames;
 
 class StopCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"stop",
 			KnownTranslationFactory::pocketmine_command_stop_description()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_STOP);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_stop_start());
 
 		$sender->getServer()->shutdown();
