@@ -28,7 +28,6 @@ use pocketmine\block\Bed;
 use pocketmine\block\BlockTypeTags;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
-use pocketmine\camera\VanillaCameraPresets;
 use pocketmine\command\CommandSender;
 use pocketmine\crafting\CraftingGrid;
 use pocketmine\data\java\GameModeIdMap;
@@ -107,10 +106,13 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
+use pocketmine\network\mcpe\protocol\CameraInstructionPacket;
 use pocketmine\network\mcpe\protocol\CameraPresetsPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
+use pocketmine\network\mcpe\protocol\types\camera\CameraFadeInstruction;
+use pocketmine\network\mcpe\protocol\types\camera\CameraSetInstruction;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
@@ -119,6 +121,11 @@ use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
+use pocketmine\player\camera\instruction\CameraInstruction;
+use pocketmine\player\camera\instruction\ClearCameraInstruction;
+use pocketmine\player\camera\instruction\FadeCameraInstruction;
+use pocketmine\player\camera\instruction\SetCameraInstruction;
+use pocketmine\player\camera\VanillaCameraPresets;
 use pocketmine\player\chat\StandardChatFormatter;
 use pocketmine\Server;
 use pocketmine\ServerProperties;
@@ -141,6 +148,7 @@ use pocketmine\YmlServerProperties;
 use Ramsey\Uuid\UuidInterface;
 use function abs;
 use function array_filter;
+use function array_search;
 use function array_shift;
 use function assert;
 use function count;
@@ -2708,6 +2716,16 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($this->isUsingChunk($chunkX, $chunkZ)){
 			$this->logger->debug("Detected forced unload of chunk " . $chunkX . " " . $chunkZ);
 			$this->unloadChunk($chunkX, $chunkZ);
+		}
+	}
+
+	public function sendCameraInstruction(CameraInstruction $cameraInstruction) : void{
+		if($cameraInstruction instanceof SetCameraInstruction){
+			$this->getNetworkSession()->sendDataPacket(CameraInstructionPacket::create(new CameraSetInstruction(array_search($cameraInstruction->cameraPreset, VanillaCameraPresets::getAll(), true), $cameraInstruction->ease, $cameraInstruction->cameraPosition, $cameraInstruction->rotation, $cameraInstruction->facingPosition, null), null, null));
+		}elseif($cameraInstruction instanceof FadeCameraInstruction){
+			$this->getNetworkSession()->sendDataPacket(CameraInstructionPacket::create(null, null, new CameraFadeInstruction($cameraInstruction->time, $cameraInstruction->color)));
+		}elseif($cameraInstruction instanceof ClearCameraInstruction){
+			$this->getNetworkSession()->sendDataPacket(CameraInstructionPacket::create(null, $cameraInstruction->clear, null));
 		}
 	}
 }
