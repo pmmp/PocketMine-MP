@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
-
 enum GoatHornType{
 
 	case PONDER;
@@ -35,20 +33,4 @@ enum GoatHornType{
 	case CALL;
 	case YEARN;
 	case DREAM;
-
-	/**
-	 * @phpstan-return LevelSoundEvent::*
-	 */
-	public function getSoundId() : int{
-		return match($this){
-			self::PONDER => LevelSoundEvent::HORN_CALL0,
-			self::SING => LevelSoundEvent::HORN_CALL1,
-			self::SEEK => LevelSoundEvent::HORN_CALL2,
-			self::FEEL => LevelSoundEvent::HORN_CALL3,
-			self::ADMIRE => LevelSoundEvent::HORN_CALL4,
-			self::CALL => LevelSoundEvent::HORN_CALL5,
-			self::YEARN => LevelSoundEvent::HORN_CALL6,
-			self::DREAM => LevelSoundEvent::HORN_CALL7
-		};
-	}
 }
