@@ -150,6 +150,6 @@ abstract class BaseBanner extends Transparent{
 	}
 
 	public function asItem() : Item{
-		return VanillaItems::BANNER()->setColor($this->color);
+		return VanillaItems::BANNER()->setColor($this->color)->setPatterns($this->patterns);
 	}
 }
