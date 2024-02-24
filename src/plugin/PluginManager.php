@@ -650,6 +650,11 @@ class PluginManager{
 
 		$handlerName = Utils::getNiceClosureName($handler);
 
+		$reflect = new \ReflectionFunction($handler);
+		if($reflect->isGenerator()){
+			throw new PluginException("Generator function $handlerName cannot be used as an event handler");
+		}
+
 		if(!$plugin->isEnabled()){
 			throw new PluginException("Plugin attempted to register event handler " . $handlerName . "() to event " . $event . " while not enabled");
 		}

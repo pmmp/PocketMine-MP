@@ -62,23 +62,6 @@ final class BlockStateStringValues{
 	public const CHISEL_TYPE_LINES = "lines";
 	public const CHISEL_TYPE_SMOOTH = "smooth";
 
-	public const COLOR_BLACK = "black";
-	public const COLOR_BLUE = "blue";
-	public const COLOR_BROWN = "brown";
-	public const COLOR_CYAN = "cyan";
-	public const COLOR_GRAY = "gray";
-	public const COLOR_GREEN = "green";
-	public const COLOR_LIGHT_BLUE = "light_blue";
-	public const COLOR_LIME = "lime";
-	public const COLOR_MAGENTA = "magenta";
-	public const COLOR_ORANGE = "orange";
-	public const COLOR_PINK = "pink";
-	public const COLOR_PURPLE = "purple";
-	public const COLOR_RED = "red";
-	public const COLOR_SILVER = "silver";
-	public const COLOR_WHITE = "white";
-	public const COLOR_YELLOW = "yellow";
-
 	public const CORAL_COLOR_BLUE = "blue";
 	public const CORAL_COLOR_PINK = "pink";
 	public const CORAL_COLOR_PURPLE = "purple";
