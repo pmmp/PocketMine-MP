@@ -869,8 +869,12 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleBookEdit(BookEditPacket $packet) : bool{
+		$inventory = $this->player->getInventory();
+		if(!$inventory->slotExists($packet->inventorySlot)){
+			return false;
+		}
 		//TODO: break this up into book API things
-		$oldBook = $this->player->getInventory()->getItem($packet->inventorySlot);
+		$oldBook = $inventory->getItem($packet->inventorySlot);
 		if(!($oldBook instanceof WritableBook)){
 			return false;
 		}
