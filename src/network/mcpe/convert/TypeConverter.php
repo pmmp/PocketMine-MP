@@ -248,10 +248,7 @@ class TypeConverter{
 		if($itemStack->getId() === 0){
 			return VanillaItems::AIR();
 		}
-		$extraDataDeserializer = PacketSerializer::decoder($itemStack->getRawExtraData(), 0);
-		$extraData = $itemStack->getId() === $this->shieldRuntimeId ?
-			ItemStackExtraDataShield::read($extraDataDeserializer) :
-			ItemStackExtraData::read($extraDataDeserializer);
+		$extraData = $this->deserializeItemStackExtraData($itemStack->getRawExtraData(), $itemStack->getId());
 
 		$compound = $extraData->getNbt();
 
@@ -271,5 +268,12 @@ class TypeConverter{
 		}
 
 		return $itemResult;
+	}
+
+	public function deserializeItemStackExtraData(string $extraData, int $id) : ItemStackExtraData{
+		$extraDataDeserializer = PacketSerializer::decoder($extraData, 0);
+		return $id === $this->shieldRuntimeId ?
+			ItemStackExtraDataShield::read($extraDataDeserializer) :
+			ItemStackExtraData::read($extraDataDeserializer);
 	}
 }
