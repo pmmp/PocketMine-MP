@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1786511a89ee1a1e932ecc68834ec476",
+    "content-hash": "8b860493cc27ba81e717153651a786b6",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -200,7 +200,7 @@
         },
         {
             "name": "pocketmine/bedrock-protocol",
-            "version": "dev-master",
+            "version": "28.0.0+bedrock-1.20.60",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
@@ -227,7 +227,6 @@
                 "phpstan/phpstan-strict-rules": "^1.0.0",
                 "phpunit/phpunit": "^9.5 || ^10.0"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -241,7 +240,7 @@
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
-                "source": "https://github.com/pmmp/BedrockProtocol/tree/master"
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/28.0.0+bedrock-1.20.60"
             },
             "time": "2024-02-26T16:18:34+00:00"
         },
@@ -2931,9 +2930,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "pocketmine/bedrock-protocol": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
