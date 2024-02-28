@@ -1071,6 +1071,21 @@ parameters:
 			path: ../../../src/world/generator/hell/Nether.php
 
 		-
+			message: "#^Offset int does not exist on SplFixedArray\\<float\\>\\|null\\.$#"
+			count: 4
+			path: ../../../src/world/generator/noise/Noise.php
+
+		-
+			message: "#^Parameter \\$q0 of static method pocketmine\\\\world\\\\generator\\\\noise\\\\Noise\\:\\:linearLerp\\(\\) expects float, float\\|null given\\.$#"
+			count: 1
+			path: ../../../src/world/generator/noise/Noise.php
+
+		-
+			message: "#^Parameter \\$q1 of static method pocketmine\\\\world\\\\generator\\\\noise\\\\Noise\\:\\:linearLerp\\(\\) expects float, float\\|null given\\.$#"
+			count: 1
+			path: ../../../src/world/generator/noise/Noise.php
+
+		-
 			message: "#^Cannot call method getBiomeId\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/generator/normal/Normal.php

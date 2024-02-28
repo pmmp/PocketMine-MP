@@ -40,16 +40,6 @@ class ProcessLoginTask extends AsyncTask{
 	private const TLS_KEY_ON_COMPLETION = "completion";
 
 	/**
-	 * Old Mojang root auth key. This was used since the introduction of Xbox Live authentication in 0.15.0.
-	 * This key is expected to be replaced by the key below in the future, but this has not yet happened as of
-	 * 2023-07-01.
-	 * Ideally we would place a time expiry on this key, but since Mojang have not given a hard date for the key change,
-	 * and one bad guess has already caused a major outage, we can't do this.
-	 * TODO: This needs to be removed as soon as the new key is deployed by Mojang's authentication servers.
-	 */
-	public const MOJANG_OLD_ROOT_PUBLIC_KEY = "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAE8ELkixyLcwlZryUQcu1TvPOmI2B7vX83ndnWRUaXm74wFfa5f/lwQNTfrLVHa2PmenpGI6JhIMUJaWZrjmMj90NoKNFSNBuKdm8rYiXsfaz3K36x/1U26HpG0ZxK/V1V";
-
-	/**
 	 * New Mojang root auth key. Mojang notified third-party developers of this change prior to the release of 1.20.0.
 	 * Expectations were that this would be used starting a "couple of weeks" after the release, but as of 2023-07-01,
 	 * it has not yet been deployed.
@@ -128,7 +118,6 @@ class ProcessLoginTask extends AsyncTask{
 		try{
 			[$headersArray, $claimsArray, ] = JwtUtils::parse($jwt);
 		}catch(JwtException $e){
-			//TODO: we shouldn't be showing internal information like this to the client
 			throw new VerifyLoginException("Failed to parse JWT: " . $e->getMessage(), null, 0, $e);
 		}
 
@@ -142,13 +131,11 @@ class ProcessLoginTask extends AsyncTask{
 			/** @var JwtHeader $headers */
 			$headers = $mapper->map($headersArray, new JwtHeader());
 		}catch(\JsonMapper_Exception $e){
-			//TODO: we shouldn't be showing internal information like this to the client
 			throw new VerifyLoginException("Invalid JWT header: " . $e->getMessage(), null, 0, $e);
 		}
 
 		$headerDerKey = base64_decode($headers->x5u, true);
 		if($headerDerKey === false){
-			//TODO: we shouldn't be showing internal information like this to the client
 			throw new VerifyLoginException("Invalid JWT public key: base64 decoding error decoding x5u");
 		}
 
@@ -164,7 +151,6 @@ class ProcessLoginTask extends AsyncTask{
 		try{
 			$signingKeyOpenSSL = JwtUtils::parseDerPublicKey($headerDerKey);
 		}catch(JwtException $e){
-			//TODO: we shouldn't be showing this internal information to the client
 			throw new VerifyLoginException("Invalid JWT public key: " . $e->getMessage(), null, 0, $e);
 		}
 		try{
@@ -175,7 +161,7 @@ class ProcessLoginTask extends AsyncTask{
 			throw new VerifyLoginException($e->getMessage(), null, 0, $e);
 		}
 
-		if($headers->x5u === self::MOJANG_ROOT_PUBLIC_KEY || $headers->x5u === self::MOJANG_OLD_ROOT_PUBLIC_KEY){
+		if($headers->x5u === self::MOJANG_ROOT_PUBLIC_KEY){
 			$this->authenticated = true; //we're signed into xbox live
 		}
 

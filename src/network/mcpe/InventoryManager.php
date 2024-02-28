@@ -423,6 +423,41 @@ class InventoryManager{
 		}
 	}
 
+	/**
+	 * Compares itemstack extra data for equality. This is used to verify legacy InventoryTransaction slot predictions.
+	 *
+	 * TODO: It would be preferable if we didn't have to deserialize this, to improve performance and reduce attack
+	 * surface. However, the raw data may not match due to differences in ordering. Investigate whether the
+	 * client-provided NBT is consistently sorted.
+	 */
+	private function itemStackExtraDataEqual(ItemStack $left, ItemStack $right) : bool{
+		if($left->getRawExtraData() === $right->getRawExtraData()){
+			return true;
+		}
+
+		$typeConverter = $this->session->getTypeConverter();
+		$leftExtraData = $typeConverter->deserializeItemStackExtraData($left->getRawExtraData(), $left->getId());
+		$rightExtraData = $typeConverter->deserializeItemStackExtraData($right->getRawExtraData(), $right->getId());
+
+		$leftNbt = $leftExtraData->getNbt();
+		$rightNbt = $rightExtraData->getNbt();
+		return
+			$leftExtraData->getCanPlaceOn() === $rightExtraData->getCanPlaceOn() &&
+			$leftExtraData->getCanDestroy() === $rightExtraData->getCanDestroy() && (
+				$leftNbt === $rightNbt || //this covers null === null and fast object identity
+				($leftNbt !== null && $rightNbt !== null && $leftNbt->equals($rightNbt))
+			);
+	}
+
+	private function itemStacksEqual(ItemStack $left, ItemStack $right) : bool{
+		return
+			$left->getId() === $right->getId() &&
+			$left->getMeta() === $right->getMeta() &&
+			$left->getBlockRuntimeId() === $right->getBlockRuntimeId() &&
+			$left->getCount() === $right->getCount() &&
+			$this->itemStackExtraDataEqual($left, $right);
+	}
+
 	public function onSlotChange(Inventory $inventory, int $slot) : void{
 		$inventoryEntry = $this->inventories[spl_object_id($inventory)] ?? null;
 		if($inventoryEntry === null){
@@ -432,7 +467,7 @@ class InventoryManager{
 		}
 		$currentItem = $this->session->getTypeConverter()->coreItemStackToNet($inventory->getItem($slot));
 		$clientSideItem = $inventoryEntry->predictions[$slot] ?? null;
-		if($clientSideItem === null || !$clientSideItem->equals($currentItem)){
+		if($clientSideItem === null || !$this->itemStacksEqual($currentItem, $clientSideItem)){
 			//no prediction or incorrect - do not associate this with the currently active itemstack request
 			$this->trackItemStack($inventoryEntry, $slot, $currentItem, null);
 			$inventoryEntry->pendingSyncs[$slot] = $currentItem;

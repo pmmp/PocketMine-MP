@@ -25,6 +25,7 @@ namespace pocketmine {
 
 	use Composer\InstalledVersions;
 	use pocketmine\errorhandler\ErrorToExceptionHandler;
+	use pocketmine\network\mcpe\protocol\ProtocolInfo;
 	use pocketmine\thread\ThreadManager;
 	use pocketmine\thread\ThreadSafeClassLoader;
 	use pocketmine\utils\Filesystem;
@@ -40,14 +41,17 @@ namespace pocketmine {
 	use function extension_loaded;
 	use function function_exists;
 	use function getcwd;
+	use function getopt;
 	use function is_dir;
 	use function mkdir;
 	use function phpversion;
 	use function preg_match;
 	use function preg_quote;
+	use function printf;
 	use function realpath;
 	use function version_compare;
 	use const DIRECTORY_SEPARATOR;
+	use const PHP_EOL;
 
 	require_once __DIR__ . '/VersionInfo.php';
 
@@ -166,7 +170,7 @@ namespace pocketmine {
 	 * @return void
 	 */
 	function emit_performance_warnings(\Logger $logger){
-		if(PHP_DEBUG !== 0){
+		if(ZEND_DEBUG_BUILD){
 			$logger->warning("This PHP binary was compiled in debug mode. This has a major impact on performance.");
 		}
 		if(extension_loaded("xdebug") && (!function_exists('xdebug_info') || count(xdebug_info('mode')) !== 0)){
@@ -272,6 +276,11 @@ JIT_WARNING
 		}
 
 		ErrorToExceptionHandler::set();
+
+		if(count(getopt("", [BootstrapOptions::VERSION])) > 0){
+			printf("%s %s (git hash %s) for Minecraft: Bedrock Edition %s\n", VersionInfo::NAME, VersionInfo::VERSION()->getFullVersion(true), VersionInfo::GIT_HASH(), ProtocolInfo::MINECRAFT_VERSION);
+			exit(0);
+		}
 
 		$cwd = Utils::assumeNotFalse(realpath(Utils::assumeNotFalse(getcwd())));
 		$dataPath = getopt_string(BootstrapOptions::DATA) ?? $cwd;

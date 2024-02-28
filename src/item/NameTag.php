@@ -21,25 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\item;
 
-use pocketmine\block\utils\LightableTrait;
-use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\entity\Entity;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
 
-class RedstoneTorch extends Torch{
-	use LightableTrait;
+class NameTag extends Item{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->lit = true;
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
-
-	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		parent::describeBlockOnlyState($w);
-		$w->bool($this->lit);
-	}
-
-	public function getLightLevel() : int{
-		return $this->lit ? 7 : 0;
+	public function onInteractEntity(Player $player, Entity $entity, Vector3 $clickVector) : bool{
+		if($entity->canBeRenamed() && $this->hasCustomName()){
+			$entity->setNameTag($this->getCustomName());
+			$this->pop();
+			return true;
+		}
+		return false;
 	}
 }
