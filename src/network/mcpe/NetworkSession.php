@@ -360,12 +360,12 @@ class NetworkSession{
 			}
 
 			if($this->enableCompression){
-				Timings::$playerNetworkReceiveDecompress->startTiming();
 				$compressionType = ord($payload[0]);
 				$compressed = substr($payload, 1);
 				if($compressionType === CompressionAlgorithm::NONE){
 					$decompressed = $compressed;
 				}elseif($compressionType === $this->compressor->getNetworkId()){
+					Timings::$playerNetworkReceiveDecompress->startTiming();
 					try{
 						$decompressed = $this->compressor->decompress($compressed);
 					}catch(DecompressionException $e){
