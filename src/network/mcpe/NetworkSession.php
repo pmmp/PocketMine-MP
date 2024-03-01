@@ -707,7 +707,6 @@ class NetworkSession{
 			$this->disconnectGuard = false;
 			$this->flushSendBuffer(true);
 			$this->sender->close("");
-
 			foreach($this->disposeHooks as $callback){
 				$callback();
 			}
