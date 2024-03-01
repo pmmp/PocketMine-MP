@@ -26,7 +26,6 @@ namespace pocketmine\network\mcpe;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\BinaryStream;
@@ -37,8 +36,7 @@ use function strlen;
 
 final class StandardPacketBroadcaster implements PacketBroadcaster{
 	public function __construct(
-		private Server $server,
-		private PacketSerializerContext $protocolContext
+		private Server $server
 	){}
 
 	public function broadcastPackets(array $recipients, array $packets) : void{
@@ -58,10 +56,6 @@ final class StandardPacketBroadcaster implements PacketBroadcaster{
 		/** @var NetworkSession[][] $targetsByCompressor */
 		$targetsByCompressor = [];
 		foreach($recipients as $recipient){
-			if($recipient->getPacketSerializerContext() !== $this->protocolContext){
-				throw new \InvalidArgumentException("Only recipients with the same protocol context as the broadcaster can be broadcast to by this broadcaster");
-			}
-
 			//TODO: different compressors might be compatible, it might not be necessary to split them up by object
 			$compressor = $recipient->getCompressor();
 			$compressors[spl_object_id($compressor)] = $compressor;
@@ -72,7 +66,7 @@ final class StandardPacketBroadcaster implements PacketBroadcaster{
 		$totalLength = 0;
 		$packetBuffers = [];
 		foreach($packets as $packet){
-			$buffer = NetworkSession::encodePacketTimed(PacketSerializer::encoder($this->protocolContext), $packet);
+			$buffer = NetworkSession::encodePacketTimed(PacketSerializer::encoder(), $packet);
 			//varint length prefix + packet buffer
 			$totalLength += (((int) log(strlen($buffer), 128)) + 1) + strlen($buffer);
 			$packetBuffers[] = $buffer;
