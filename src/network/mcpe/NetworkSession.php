@@ -708,23 +708,25 @@ class NetworkSession{
 			$this->flushSendBuffer(true);
 			$this->sender->close("");
 
-			foreach($this->ackPromisesByReceiptId as $resolvers){
-				foreach($resolvers as $resolver){
-					$resolver->reject();
-				}
-			}
-			$this->ackPromisesByReceiptId = [];
-			foreach($this->sendBufferAckPromises as $resolver){
-				$resolver->reject();
-			}
-			$this->sendBufferAckPromises = [];
-
 			foreach($this->disposeHooks as $callback){
 				$callback();
 			}
 			$this->disposeHooks->clear();
 			$this->setHandler(null);
 			$this->connected = false;
+
+			$ackPromisesByReceiptId = $this->ackPromisesByReceiptId;
+			$this->ackPromisesByReceiptId = [];
+			foreach($ackPromisesByReceiptId as $resolvers){
+				foreach($resolvers as $resolver){
+					$resolver->reject();
+				}
+			}
+			$sendBufferAckPromises = $this->sendBufferAckPromises;
+			$this->sendBufferAckPromises = [];
+			foreach($sendBufferAckPromises as $resolver){
+				$resolver->reject();
+			}
 
 			$this->logger->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_network_session_close($reason)));
 		}
