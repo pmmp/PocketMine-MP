@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\event\player\PlayerDuplicateLoginEvent;
+use pocketmine\event\player\PlayerResourcePackOfferEvent;
 use pocketmine\event\server\DataPacketDecodeEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
@@ -844,7 +845,19 @@ class NetworkSession{
 		$this->sendDataPacket(PlayStatusPacket::create(PlayStatusPacket::LOGIN_SUCCESS));
 
 		$this->logger->debug("Initiating resource packs phase");
-		$this->setHandler(new ResourcePacksPacketHandler($this, $this->server->getResourcePackManager(), function() : void{
+
+		$packManager = $this->server->getResourcePackManager();
+		$resourcePacks = $packManager->getResourceStack();
+		$keys = [];
+		foreach($resourcePacks as $resourcePack){
+			$key = $packManager->getPackEncryptionKey($resourcePack->getPackId());
+			if($key !== null){
+				$keys[$resourcePack->getPackId()] = $key;
+			}
+		}
+		$event = new PlayerResourcePackOfferEvent($this->info, $resourcePacks, $keys, $packManager->resourcePacksRequired());
+		$event->call();
+		$this->setHandler(new ResourcePacksPacketHandler($this, $event->getResourcePacks(), $event->getEncryptionKeys(), $event->mustAccept(), function() : void{
 			$this->createPlayer();
 		}));
 	}
