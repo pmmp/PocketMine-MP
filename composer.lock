@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "651b773ac69b4a68e59f32b7a72ab357",
+    "content-hash": "665baa60fbb39de57c133c35b26eb7c3",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -616,17 +616,11 @@
         },
         {
             "name": "pocketmine/raklib",
-            "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "fd74ba254d2cfaed1369ae5684cf85773edaaae9"
-            },
+            "version": "dev-client-reliable-buffer",
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/fd74ba254d2cfaed1369ae5684cf85773edaaae9",
-                "reference": "fd74ba254d2cfaed1369ae5684cf85773edaaae9",
-                "shasum": ""
+                "type": "path",
+                "url": "../deps/RakLib",
+                "reference": "90d8ce314ac59244d738d20313cb3525ab5d63d8"
             },
             "require": {
                 "ext-sockets": "*",
@@ -646,16 +640,13 @@
                     "raklib\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-3.0"
             ],
             "description": "A RakNet server implementation written in PHP",
-            "support": {
-                "issues": "https://github.com/pmmp/RakLib/issues",
-                "source": "https://github.com/pmmp/RakLib/tree/1.0.0"
-            },
-            "time": "2024-03-01T15:38:54+00:00"
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "pocketmine/raklib-ipc",
@@ -2928,9 +2919,18 @@
             "time": "2023-11-20T00:12:19+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "pocketmine/raklib",
+            "version": "dev-client-reliable-buffer",
+            "alias": "1.0.0",
+            "alias_normalized": "1.0.0.0"
+        }
+    ],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "pocketmine/raklib": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
