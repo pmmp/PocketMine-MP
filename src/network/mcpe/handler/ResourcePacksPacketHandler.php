@@ -212,7 +212,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 		$this->session
 			->sendDataPacketWithReceipt(ResourcePackChunkDataPacket::create($packId, $chunkIndex, $offset, $chunkData))
 			->onCompletion(
-				function() use ($packId, $chunkIndex) : void{
+				function() : void{
 					$this->activeRequests--;
 					$this->processChunkRequestQueue();
 				},
@@ -221,6 +221,5 @@ class ResourcePacksPacketHandler extends PacketHandler{
 					$this->disconnectWithError("Plugin interrupted sending of resource packs");
 				}
 			);
-		$this->session->getLogger()->debug("Sent resource pack $packId chunk $chunkIndex");
 	}
 }
