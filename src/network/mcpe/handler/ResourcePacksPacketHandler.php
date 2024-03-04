@@ -51,7 +51,13 @@ use function substr;
  * packs to the client.
  */
 class ResourcePacksPacketHandler extends PacketHandler{
-	private const PACK_CHUNK_SIZE = 128 * 1024; //128KB
+	private const PACK_CHUNK_SIZE = 256 * 1024; //256KB
+
+	/**
+	 * Larger values allow downloading more chunks at the same time, increasing download speed, but the client may choke
+	 * and cause the download speed to drop (due to ACKs taking too long to arrive).
+	 */
+	private const MAX_CONCURRENT_CHUNK_REQUESTS = 1;
 
 	/**
 	 * @var ResourcePack[]
@@ -61,6 +67,11 @@ class ResourcePacksPacketHandler extends PacketHandler{
 
 	/** @var bool[][] uuid => [chunk index => hasSent] */
 	private array $downloadedChunks = [];
+
+	/** @phpstan-var \SplQueue<array{ResourcePack, int}> */
+	private \SplQueue $requestQueue;
+
+	private int $activeRequests = 0;
 
 	/**
 	 * @param ResourcePack[] $resourcePackStack
@@ -77,6 +88,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 		private bool $mustAccept,
 		private \Closure $completionCallback
 	){
+		$this->requestQueue = new \SplQueue();
 		foreach($resourcePackStack as $pack){
 			$this->resourcePacksById[$pack->getPackId()] = $pack;
 		}
@@ -197,8 +209,37 @@ class ResourcePacksPacketHandler extends PacketHandler{
 			$this->downloadedChunks[$packId][$packet->chunkIndex] = true;
 		}
 
-		$this->session->sendDataPacket(ResourcePackChunkDataPacket::create($packId, $packet->chunkIndex, $offset, $pack->getPackChunk($offset, self::PACK_CHUNK_SIZE)));
+		$this->requestQueue->enqueue([$pack, $packet->chunkIndex]);
+		$this->processChunkRequestQueue();
 
 		return true;
+	}
+
+	private function processChunkRequestQueue() : void{
+		if($this->activeRequests >= self::MAX_CONCURRENT_CHUNK_REQUESTS || $this->requestQueue->isEmpty()){
+			return;
+		}
+		/**
+		 * @var ResourcePack $pack
+		 * @var int          $chunkIndex
+		 */
+		[$pack, $chunkIndex] = $this->requestQueue->dequeue();
+
+		$packId = $pack->getPackId();
+		$offset = $chunkIndex * self::PACK_CHUNK_SIZE;
+		$chunkData = $pack->getPackChunk($offset, self::PACK_CHUNK_SIZE);
+		$this->activeRequests++;
+		$this->session
+			->sendDataPacketWithReceipt(ResourcePackChunkDataPacket::create($packId, $chunkIndex, $offset, $chunkData))
+			->onCompletion(
+				function() : void{
+					$this->activeRequests--;
+					$this->processChunkRequestQueue();
+				},
+				function() : void{
+					//this may have been rejected because of a disconnection - this will do nothing in that case
+					$this->disconnectWithError("Plugin interrupted sending of resource packs");
+				}
+			);
 	}
 }

@@ -252,7 +252,9 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	}
 
 	public function onPacketAck(int $sessionId, int $identifierACK) : void{
-
+		if(isset($this->sessions[$sessionId])){
+			$this->sessions[$sessionId]->handleAckReceipt($identifierACK);
+		}
 	}
 
 	public function setName(string $name) : void{
@@ -289,12 +291,13 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		$this->network->getBandwidthTracker()->add($bytesSentDiff, $bytesReceivedDiff);
 	}
 
-	public function putPacket(int $sessionId, string $payload, bool $immediate = true) : void{
+	public function putPacket(int $sessionId, string $payload, bool $immediate = true, ?int $receiptId = null) : void{
 		if(isset($this->sessions[$sessionId])){
 			$pk = new EncapsulatedPacket();
 			$pk->buffer = self::MCPE_RAKNET_PACKET_ID . $payload;
 			$pk->reliability = PacketReliability::RELIABLE_ORDERED;
 			$pk->orderChannel = 0;
+			$pk->identifierACK = $receiptId;
 
 			$this->interface->sendEncapsulated($sessionId, $pk, $immediate);
 		}
