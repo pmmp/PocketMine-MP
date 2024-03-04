@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -49,7 +48,7 @@ class NetherSprouts extends Opaque{
 		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0){
 			return [$this->asItem()];
 		}
-		
+
 		return [];
 	}
 
