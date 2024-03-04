@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f43d60f8c44393f5c42b7ba27cd8ccc0",
+    "content-hash": "6bbd2cd7298a11694e7d2b1519b45c0d",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -246,16 +246,16 @@
         },
         {
             "name": "pocketmine/binaryutils",
-            "version": "0.2.4",
+            "version": "0.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BinaryUtils.git",
-                "reference": "5ac7eea91afbad8dc498f5ce34ce6297d5e6ea9a"
+                "reference": "2530d458df5c9c2a618390c751febd67df2f1918"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/5ac7eea91afbad8dc498f5ce34ce6297d5e6ea9a",
-                "reference": "5ac7eea91afbad8dc498f5ce34ce6297d5e6ea9a",
+                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/2530d458df5c9c2a618390c751febd67df2f1918",
+                "reference": "2530d458df5c9c2a618390c751febd67df2f1918",
                 "shasum": ""
             },
             "require": {
@@ -264,10 +264,10 @@
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "1.3.0",
+                "phpstan/phpstan": "~1.10.3",
                 "phpstan/phpstan-phpunit": "^1.0",
                 "phpstan/phpstan-strict-rules": "^1.0.0",
-                "phpunit/phpunit": "^9.5"
+                "phpunit/phpunit": "^9.5 || ^10.0 || ^11.0"
             },
             "type": "library",
             "autoload": {
@@ -282,9 +282,9 @@
             "description": "Classes and methods for conveniently handling binary data",
             "support": {
                 "issues": "https://github.com/pmmp/BinaryUtils/issues",
-                "source": "https://github.com/pmmp/BinaryUtils/tree/0.2.4"
+                "source": "https://github.com/pmmp/BinaryUtils/tree/0.2.5"
             },
-            "time": "2022-01-12T18:06:33+00:00"
+            "time": "2024-02-28T13:20:27+00:00"
         },
         {
             "name": "pocketmine/callback-validator",
@@ -659,26 +659,26 @@
         },
         {
             "name": "pocketmine/raklib-ipc",
-            "version": "0.2.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLibIpc.git",
-                "reference": "26ed56fa9db06e4ca6e8920c0ede2e01e219bb9c"
+                "reference": "ce632ef2c6743e71eddb5dc329c49af6555f90bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLibIpc/zipball/26ed56fa9db06e4ca6e8920c0ede2e01e219bb9c",
-                "reference": "26ed56fa9db06e4ca6e8920c0ede2e01e219bb9c",
+                "url": "https://api.github.com/repos/pmmp/RakLibIpc/zipball/ce632ef2c6743e71eddb5dc329c49af6555f90bc",
+                "reference": "ce632ef2c6743e71eddb5dc329c49af6555f90bc",
                 "shasum": ""
             },
             "require": {
                 "php": "^8.0",
                 "php-64bit": "*",
                 "pocketmine/binaryutils": "^0.2.0",
-                "pocketmine/raklib": "^0.15.0"
+                "pocketmine/raklib": "^0.15.0 || ^1.0.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "1.9.17",
+                "phpstan/phpstan": "1.10.1",
                 "phpstan/phpstan-strict-rules": "^1.0.0"
             },
             "type": "library",
@@ -694,9 +694,9 @@
             "description": "Channel-based protocols for inter-thread/inter-process communication with RakLib",
             "support": {
                 "issues": "https://github.com/pmmp/RakLibIpc/issues",
-                "source": "https://github.com/pmmp/RakLibIpc/tree/0.2.0"
+                "source": "https://github.com/pmmp/RakLibIpc/tree/1.0.1"
             },
-            "time": "2023-02-13T13:40:40+00:00"
+            "time": "2024-03-01T15:55:05+00:00"
         },
         {
             "name": "pocketmine/snooze",
