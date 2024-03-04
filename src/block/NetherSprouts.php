@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -42,6 +43,14 @@ class NetherSprouts extends Opaque{
 		if($this->getSide(Facing::DOWN)->isTransparent()){
 			$this->position->world->useBreakOn($this->position);
 		}
+	}
+
+	public function getDropsForCompatibleTool(Item $item) : array{
+		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0){
+			return [$this->asItem()];
+		}
+		
+		return [];
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
