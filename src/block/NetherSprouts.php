@@ -28,8 +28,11 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use function in_array;
 
-class RedMushroom extends Flowable{
+class NetherSprouts extends Opaque{
+
+	private const PLACEMENT = [BlockTypeIds::GRASS, BlockTypeIds::DIRT, BlockTypeIds::PODZOL, BlockTypeIds::FARMLAND, BlockTypeIds::CRIMSON_NYLIUM, BlockTypeIds::WARPED_NYLIUM, BlockTypeIds::MYCELIUM, BlockTypeIds::SOUL_SOIL, BlockTypeIds::MUD, BlockTypeIds::MUDDY_MANGROVE_ROOTS, BlockTypeIds::FLOWER_POT];
 
 	public function ticksRandomly() : bool{
 		return true;
@@ -37,16 +40,12 @@ class RedMushroom extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->isTransparent()){
-			$this->position->getWorld()->useBreakOn($this->position);
+			$this->position->world->useBreakOn($this->position);
 		}
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$down = $this->getSide(Facing::DOWN);
-		$position = $this->position;
-		$lightLevel = $position->getWorld()->getFullLightAt($position->x, $position->y, $position->z);
-		$downId = $down->getTypeId();
-		if(($lightLevel <= 12 && !$down->isTransparent()) || $downId === BlockTypeIds::CRIMSON_NYLIUM || $downId === BlockTypeIds::MYCELIUM || $downId === BlockTypeIds::PODZOL || $downId === BlockTypeIds::WARPED_NYLIUM){
+		if(in_array($this->getSide(Facing::DOWN)->getTypeId(), self::PLACEMENT, true)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 

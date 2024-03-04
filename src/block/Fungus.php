@@ -28,15 +28,15 @@ use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\utils\Random;
+use pocketmine\world\generator\object\CrimsonFungi;
+use pocketmine\world\generator\object\WarpedFungi;
+use function mt_rand;
 
-class Netherrack extends Opaque{
-
-	public function burnsForever() : bool{
-		return true;
-	}
+class Fungus extends NetherSprouts {
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($item instanceof Fertilizer && $this->changeToNextNyliumBlock()){
+		if($item instanceof Fertilizer && $this->grow()){
 			$item->pop();
 
 			return true;
@@ -45,14 +45,16 @@ class Netherrack extends Opaque{
 		return true;
 	}
 
-	private function changeToNextNyliumBlock() : bool{
-		$blocksOnSides = $this->getHorizontalSides();
+	public function grow() : bool{
+		$blockId = $this->getTypeId();
+		if ($blockId === BlockTypeIds::CRIMSON_FUNGUS) {
+			(new CrimsonFungi())->getBlockTransaction($this->position->world, $this->position->x, $this->position->y, $this->position->z, new Random(mt_rand()));
+			return true;
+		}
 
-		foreach ($blocksOnSides as $blockOnSide){
-			if ($blockOnSide instanceof Nylium) {
-				$this->position->world->setBlock($this->position->asVector3(), $blockOnSide);
-				return true;
-			}
+		if ($blockId === BlockTypeIds::WARPED_FUNGUS){
+			(new WarpedFungi())->getBlockTransaction($this->position->world, $this->position->x, $this->position->y, $this->position->z, new Random(mt_rand()));
+			return true;
 		}
 
 		return false;
