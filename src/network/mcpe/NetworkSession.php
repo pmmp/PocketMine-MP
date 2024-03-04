@@ -361,12 +361,12 @@ class NetworkSession{
 			}
 
 			if($this->enableCompression){
-				Timings::$playerNetworkReceiveDecompress->startTiming();
 				$compressionType = ord($payload[0]);
 				$compressed = substr($payload, 1);
 				if($compressionType === CompressionAlgorithm::NONE){
 					$decompressed = $compressed;
 				}elseif($compressionType === $this->compressor->getNetworkId()){
+					Timings::$playerNetworkReceiveDecompress->startTiming();
 					try{
 						$decompressed = $this->compressor->decompress($compressed);
 					}catch(DecompressionException $e){
@@ -384,12 +384,8 @@ class NetworkSession{
 
 			try{
 				$stream = new BinaryStream($decompressed);
-				$count = 0;
 				foreach(PacketBatch::decodeRaw($stream) as $buffer){
 					$this->gamePacketLimiter->decrement();
-					if(++$count > 100){
-						throw new PacketHandlingException("Too many packets in batch");
-					}
 					$packet = $this->packetPool->getPacket($buffer);
 					if($packet === null){
 						$this->logger->debug("Unknown packet: " . base64_encode($buffer));
