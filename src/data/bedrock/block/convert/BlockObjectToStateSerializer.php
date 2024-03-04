@@ -798,6 +798,8 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::CRACKED_NETHER_BRICKS(), Ids::CRACKED_NETHER_BRICKS);
 		$this->mapSimple(Blocks::CRACKED_POLISHED_BLACKSTONE_BRICKS(), Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS);
 		$this->mapSimple(Blocks::CRAFTING_TABLE(), Ids::CRAFTING_TABLE);
+		$this->mapSimple(Blocks::CRIMSON_FUNGUS(), Ids::CRIMSON_FUNGUS);
+		$this->mapSimple(Blocks::CRIMSON_NYLIUM(), Ids::CRIMSON_NYLIUM);
 		$this->mapSimple(Blocks::CRIMSON_ROOTS(), Ids::CRIMSON_ROOTS);
 		$this->mapSimple(Blocks::CRYING_OBSIDIAN(), Ids::CRYING_OBSIDIAN);
 		$this->mapSimple(Blocks::DANDELION(), Ids::YELLOW_FLOWER);
@@ -982,6 +984,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::NETHERRACK(), Ids::NETHERRACK);
 		$this->mapSimple(Blocks::NETHER_BRICKS(), Ids::NETHER_BRICK);
 		$this->mapSimple(Blocks::NETHER_BRICK_FENCE(), Ids::NETHER_BRICK_FENCE);
+		$this->mapSimple(Blocks::NETHER_SPROUTS(), Ids::NETHER_SPROUTS);
 		$this->mapSimple(Blocks::NETHER_GOLD_ORE(), Ids::NETHER_GOLD_ORE);
 		$this->mapSimple(Blocks::NETHER_QUARTZ_ORE(), Ids::QUARTZ_ORE);
 		$this->mapSimple(Blocks::NETHER_REACTOR_CORE(), Ids::NETHERREACTOR);
@@ -1024,6 +1027,8 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::TORCHFLOWER(), Ids::TORCHFLOWER);
 		$this->mapSimple(Blocks::TUFF(), Ids::TUFF);
 		$this->mapSimple(Blocks::WARPED_WART_BLOCK(), Ids::WARPED_WART_BLOCK);
+		$this->mapSimple(Blocks::WARPED_FUNGUS(), Ids::WARPED_FUNGUS);
+		$this->mapSimple(Blocks::WARPED_NYLIUM(), Ids::WARPED_NYLIUM);
 		$this->mapSimple(Blocks::WARPED_ROOTS(), Ids::WARPED_ROOTS);
 		$this->mapSimple(Blocks::WITHER_ROSE(), Ids::WITHER_ROSE);
 
