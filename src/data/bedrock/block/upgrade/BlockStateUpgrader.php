@@ -69,44 +69,14 @@ final class BlockStateUpgrader{
 				//didn't always bump the blockstate version when changing it :(
 				continue;
 			}
-			$oldName = $blockStateData->getName();
-			$oldState = $blockStateData->getStates();
-			if(isset($schema->remappedStates[$oldName])){
-				foreach($schema->remappedStates[$oldName] as $remap){
-					if(count($remap->oldState) > count($oldState)){
-						//match criteria has more requirements than we have state properties
-						continue; //try next state
-					}
-					foreach(Utils::stringifyKeys($remap->oldState) as $k => $v){
-						if(!isset($oldState[$k]) || !$oldState[$k]->equals($v)){
-							continue 2; //try next state
-						}
-					}
 
-					if(is_string($remap->newName)){
-						$newName = $remap->newName;
-					}else{
-						$flattenedValue = $oldState[$remap->newName->flattenedProperty] ?? null;
-						if($flattenedValue instanceof StringTag){
-							$newName = sprintf("%s%s%s", $remap->newName->prefix, $flattenedValue->getValue(), $remap->newName->suffix);
-							unset($oldState[$remap->newName->flattenedProperty]);
-						}else{
-							//flattened property is not a TAG_String, so this transformation is not applicable
-							continue;
-						}
-					}
-
-					$newState = $remap->newState;
-					foreach($remap->copiedState as $stateName){
-						if(isset($oldState[$stateName])){
-							$newState[$stateName] = $oldState[$stateName];
-						}
-					}
-
-					$blockStateData = new BlockStateData($newName, $newState, $resultVersion);
-					continue 2; //try next schema
-				}
+			$newStateData = $this->applyStateRemapped($schema, $blockStateData);
+			if($newStateData !== null){
+				$blockStateData = $newStateData;
+				continue;
 			}
+
+			$oldName = $blockStateData->getName();
 			$newName = $schema->renamedIds[$oldName] ?? null;
 
 			$stateChanges = 0;
@@ -129,6 +99,49 @@ final class BlockStateUpgrader{
 			$blockStateData = new BlockStateData($blockStateData->getName(), $blockStateData->getStates(), $highestVersion);
 		}
 		return $blockStateData;
+	}
+
+	private function applyStateRemapped(BlockStateUpgradeSchema $schema, BlockStateData $blockStateData) : ?BlockStateData{
+		$oldName = $blockStateData->getName();
+		$oldState = $blockStateData->getStates();
+
+		if(isset($schema->remappedStates[$oldName])){
+			foreach($schema->remappedStates[$oldName] as $remap){
+				if(count($remap->oldState) > count($oldState)){
+					//match criteria has more requirements than we have state properties
+					continue; //try next state
+				}
+				foreach(Utils::stringifyKeys($remap->oldState) as $k => $v){
+					if(!isset($oldState[$k]) || !$oldState[$k]->equals($v)){
+						continue 2; //try next state
+					}
+				}
+
+				if(is_string($remap->newName)){
+					$newName = $remap->newName;
+				}else{
+					$flattenedValue = $oldState[$remap->newName->flattenedProperty] ?? null;
+					if($flattenedValue instanceof StringTag){
+						$newName = sprintf("%s%s%s", $remap->newName->prefix, $flattenedValue->getValue(), $remap->newName->suffix);
+						unset($oldState[$remap->newName->flattenedProperty]);
+					}else{
+						//flattened property is not a TAG_String, so this transformation is not applicable
+						continue;
+					}
+				}
+
+				$newState = $remap->newState;
+				foreach($remap->copiedState as $stateName){
+					if(isset($oldState[$stateName])){
+						$newState[$stateName] = $oldState[$stateName];
+					}
+				}
+
+				return new BlockStateData($newName, $newState, $schema->getVersionId());
+			}
+		}
+
+		return null;
 	}
 
 	/**
