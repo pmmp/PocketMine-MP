@@ -38,6 +38,8 @@ final class BlockStateUpgrader{
 	/** @var BlockStateUpgradeSchema[] */
 	private array $upgradeSchemas = [];
 
+	private int $outputVersion = 0;
+
 	/**
 	 * @param BlockStateUpgradeSchema[] $upgradeSchemas
 	 * @phpstan-param array<int, BlockStateUpgradeSchema> $upgradeSchemas
@@ -56,14 +58,14 @@ final class BlockStateUpgrader{
 		$this->upgradeSchemas[$schemaId] = $schema;
 
 		ksort($this->upgradeSchemas, SORT_NUMERIC);
+
+		$this->outputVersion = max($this->outputVersion, $schema->getVersionId());
 	}
 
 	public function upgrade(BlockStateData $blockStateData) : BlockStateData{
 		$version = $blockStateData->getVersion();
-		$highestVersion = $version;
 		foreach($this->upgradeSchemas as $schema){
 			$resultVersion = $schema->versionId;
-			$highestVersion = max($highestVersion, $resultVersion);
 			if($version > $resultVersion){
 				//even if this is actually the same version, we have to apply it anyway because mojang are dumb and
 				//didn't always bump the blockstate version when changing it :(
@@ -93,10 +95,10 @@ final class BlockStateUpgrader{
 			}
 		}
 
-		if($highestVersion > $version){
+		if($this->outputVersion > $version){
 			//always update the version number of the blockstate, even if it didn't change - this is needed for
 			//external tools
-			$blockStateData = new BlockStateData($blockStateData->getName(), $blockStateData->getStates(), $highestVersion);
+			$blockStateData = new BlockStateData($blockStateData->getName(), $blockStateData->getStates(), $this->outputVersion);
 		}
 		return $blockStateData;
 	}
