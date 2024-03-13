@@ -35,7 +35,10 @@ use function sprintf;
 use const SORT_NUMERIC;
 
 final class BlockStateUpgrader{
-	/** @var BlockStateUpgradeSchema[] */
+	/**
+	 * @var BlockStateUpgradeSchema[][] versionId => [schemaId => schema]
+	 * @phpstan-var array<int, array<int, BlockStateUpgradeSchema>>
+	 */
 	private array $upgradeSchemas = [];
 
 	private int $outputVersion = 0;
@@ -52,46 +55,37 @@ final class BlockStateUpgrader{
 
 	public function addSchema(BlockStateUpgradeSchema $schema) : void{
 		$schemaId = $schema->getSchemaId();
-		if(isset($this->upgradeSchemas[$schemaId])){
-			throw new \InvalidArgumentException("Cannot add two schemas with the same schema ID");
+		$versionId = $schema->getVersionId();
+		if(isset($this->upgradeSchemas[$versionId][$schemaId])){
+			throw new \InvalidArgumentException("Cannot add two schemas with the same schema ID and version ID");
 		}
-		$this->upgradeSchemas[$schemaId] = $schema;
+
+		//schema ID tells us the order when multiple schemas use the same version ID
+		$this->upgradeSchemas[$versionId][$schemaId] = $schema;
 
 		ksort($this->upgradeSchemas, SORT_NUMERIC);
+		ksort($this->upgradeSchemas[$versionId], SORT_NUMERIC);
 
 		$this->outputVersion = max($this->outputVersion, $schema->getVersionId());
 	}
 
 	public function upgrade(BlockStateData $blockStateData) : BlockStateData{
 		$version = $blockStateData->getVersion();
-		foreach($this->upgradeSchemas as $schema){
-			$resultVersion = $schema->versionId;
-			if($version > $resultVersion){
-				//even if this is actually the same version, we have to apply it anyway because mojang are dumb and
-				//didn't always bump the blockstate version when changing it :(
+		foreach($this->upgradeSchemas as $resultVersion => $schemaList){
+			/*
+			 * Sometimes Mojang made changes without bumping the version ID.
+			 * A notable example is 0131_1.18.20.27_beta_to_1.18.30.json, which renamed a bunch of blockIDs.
+			 * When this happens, all the schemas must be applied even if the version is the same, because the input
+			 * version doesn't tell us which of the schemas have already been applied.
+			 * If there's only one schema for a version (the norm), we can safely assume it's already been applied if
+			 * the version is the same, and skip over it.
+			 */
+			if($version > $resultVersion || (count($schemaList) === 1 && $version === $resultVersion)){
 				continue;
 			}
 
-			$newStateData = $this->applyStateRemapped($schema, $blockStateData);
-			if($newStateData !== null){
-				$blockStateData = $newStateData;
-				continue;
-			}
-
-			$oldName = $blockStateData->getName();
-			$newName = $schema->renamedIds[$oldName] ?? null;
-
-			$stateChanges = 0;
-			$states = $blockStateData->getStates();
-
-			$states = $this->applyPropertyAdded($schema, $oldName, $states, $stateChanges);
-			$states = $this->applyPropertyRemoved($schema, $oldName, $states, $stateChanges);
-			$states = $this->applyPropertyRenamedOrValueChanged($schema, $oldName, $states, $stateChanges);
-			$states = $this->applyPropertyValueChanged($schema, $oldName, $states, $stateChanges);
-
-			if($newName !== null || $stateChanges > 0){
-				$blockStateData = new BlockStateData($newName ?? $oldName, $states, $resultVersion);
-				//don't break out; we may need to further upgrade the state
+			foreach($schemaList as $schema){
+				$blockStateData = $this->applySchema($schema, $blockStateData);
 			}
 		}
 
@@ -100,6 +94,30 @@ final class BlockStateUpgrader{
 			//external tools
 			$blockStateData = new BlockStateData($blockStateData->getName(), $blockStateData->getStates(), $this->outputVersion);
 		}
+		return $blockStateData;
+	}
+
+	private function applySchema(BlockStateUpgradeSchema $schema, BlockStateData $blockStateData) : BlockStateData{
+		$newStateData = $this->applyStateRemapped($schema, $blockStateData);
+		if($newStateData !== null){
+			return $newStateData;
+		}
+
+		$oldName = $blockStateData->getName();
+		$newName = $schema->renamedIds[$oldName] ?? null;
+
+		$stateChanges = 0;
+		$states = $blockStateData->getStates();
+
+		$states = $this->applyPropertyAdded($schema, $oldName, $states, $stateChanges);
+		$states = $this->applyPropertyRemoved($schema, $oldName, $states, $stateChanges);
+		$states = $this->applyPropertyRenamedOrValueChanged($schema, $oldName, $states, $stateChanges);
+		$states = $this->applyPropertyValueChanged($schema, $oldName, $states, $stateChanges);
+
+		if($newName !== null || $stateChanges > 0){
+			return new BlockStateData($newName ?? $oldName, $states, $schema->getVersionId());
+		}
+
 		return $blockStateData;
 	}
 
