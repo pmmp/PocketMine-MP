@@ -74,6 +74,7 @@ final class ItemTypeNames{
 	public const BLEACH = "minecraft:bleach";
 	public const BLUE_DYE = "minecraft:blue_dye";
 	public const BOAT = "minecraft:boat";
+	public const BOGGED_SPAWN_EGG = "minecraft:bogged_spawn_egg";
 	public const BONE = "minecraft:bone";
 	public const BONE_MEAL = "minecraft:bone_meal";
 	public const BOOK = "minecraft:book";
@@ -286,6 +287,8 @@ final class ItemTypeNames{
 	public const LEATHER_HELMET = "minecraft:leather_helmet";
 	public const LEATHER_HORSE_ARMOR = "minecraft:leather_horse_armor";
 	public const LEATHER_LEGGINGS = "minecraft:leather_leggings";
+	public const LEAVES = "minecraft:leaves";
+	public const LEAVES2 = "minecraft:leaves2";
 	public const LIGHT_BLUE_DYE = "minecraft:light_blue_dye";
 	public const LIGHT_GRAY_DYE = "minecraft:light_gray_dye";
 	public const LIME_DYE = "minecraft:lime_dye";
@@ -500,16 +503,19 @@ final class ItemTypeNames{
 	public const WHEAT_SEEDS = "minecraft:wheat_seeds";
 	public const WHITE_DYE = "minecraft:white_dye";
 	public const WILD_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:wild_armor_trim_smithing_template";
+	public const WIND_CHARGE = "minecraft:wind_charge";
 	public const WITCH_SPAWN_EGG = "minecraft:witch_spawn_egg";
 	public const WITHER_SKELETON_SPAWN_EGG = "minecraft:wither_skeleton_spawn_egg";
 	public const WITHER_SPAWN_EGG = "minecraft:wither_spawn_egg";
 	public const WOLF_ARMOR = "minecraft:wolf_armor";
 	public const WOLF_SPAWN_EGG = "minecraft:wolf_spawn_egg";
+	public const WOOD = "minecraft:wood";
 	public const WOODEN_AXE = "minecraft:wooden_axe";
 	public const WOODEN_DOOR = "minecraft:wooden_door";
 	public const WOODEN_HOE = "minecraft:wooden_hoe";
 	public const WOODEN_PICKAXE = "minecraft:wooden_pickaxe";
 	public const WOODEN_SHOVEL = "minecraft:wooden_shovel";
+	public const WOODEN_SLAB = "minecraft:wooden_slab";
 	public const WOODEN_SWORD = "minecraft:wooden_sword";
 	public const WOOL = "minecraft:wool";
 	public const WRITABLE_BOOK = "minecraft:writable_book";

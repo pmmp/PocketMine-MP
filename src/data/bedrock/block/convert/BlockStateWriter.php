@@ -258,20 +258,6 @@ final class BlockStateWriter{
 	}
 
 	/** @return $this */
-	public function writeLegacyWoodType(WoodType $treeType) : self{
-		$this->writeString(BlockStateNames::WOOD_TYPE, match($treeType){
-			WoodType::OAK => StringValues::WOOD_TYPE_OAK,
-			WoodType::SPRUCE => StringValues::WOOD_TYPE_SPRUCE,
-			WoodType::BIRCH => StringValues::WOOD_TYPE_BIRCH,
-			WoodType::JUNGLE => StringValues::WOOD_TYPE_JUNGLE,
-			WoodType::ACACIA => StringValues::WOOD_TYPE_ACACIA,
-			WoodType::DARK_OAK => StringValues::WOOD_TYPE_DARK_OAK,
-			default => throw new BlockStateSerializeException("Invalid legacy wood type " . $treeType->name)
-		});
-		return $this;
-	}
-
-	/** @return $this */
 	public function writeCoralType(CoralType $coralType) : self{
 		$this->writeString(BlockStateNames::CORAL_COLOR, match($coralType){
 			CoralType::TUBE => StringValues::CORAL_COLOR_BLUE,
