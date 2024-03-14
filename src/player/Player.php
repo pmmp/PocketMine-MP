@@ -1393,7 +1393,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function setMotion(Vector3 $motion) : bool{
 		if(parent::setMotion($motion)){
 			$this->broadcastMotion();
-			$this->getNetworkSession()->sendDataPacket(SetActorMotionPacket::create($this->id, $motion));
+			$this->getNetworkSession()->sendDataPacket(SetActorMotionPacket::create($this->id, $motion, tick: 0));
 
 			return true;
 		}
