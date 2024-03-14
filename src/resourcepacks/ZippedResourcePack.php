@@ -108,6 +108,7 @@ class ZippedResourcePack implements ResourcePack{
 
 		$mapper = new \JsonMapper();
 		$mapper->bExceptionOnMissingData = true;
+		$mapper->bStrictObjectTypeChecking = true;
 
 		try{
 			/** @var Manifest $manifest */
