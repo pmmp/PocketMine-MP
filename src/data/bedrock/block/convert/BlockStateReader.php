@@ -38,20 +38,24 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
-use pocketmine\utils\Utils;
+use function array_keys;
+use function count;
 use function get_class;
+use function implode;
 
 final class BlockStateReader{
 
 	/**
-	 * @var true[]
-	 * @phpstan-var array<string, true>
+	 * @var Tag[]
+	 * @phpstan-var array<string, Tag>
 	 */
-	private array $usedStates = [];
+	private array $unusedStates;
 
 	public function __construct(
 		private BlockStateData $data
-	){}
+	){
+		$this->unusedStates = $this->data->getStates();
+	}
 
 	public function missingOrWrongTypeException(string $name, ?Tag $tag) : BlockStateDeserializeException{
 		return new BlockStateDeserializeException("Property \"$name\" " . ($tag !== null ? "has unexpected type " . get_class($tag) : "is missing"));
@@ -66,7 +70,7 @@ final class BlockStateReader{
 
 	/** @throws BlockStateDeserializeException */
 	public function readBool(string $name) : bool{
-		$this->usedStates[$name] = true;
+		unset($this->unusedStates[$name]);
 		$tag = $this->data->getState($name);
 		if($tag instanceof ByteTag){
 			switch($tag->getValue()){
@@ -80,7 +84,7 @@ final class BlockStateReader{
 
 	/** @throws BlockStateDeserializeException */
 	public function readInt(string $name) : int{
-		$this->usedStates[$name] = true;
+		unset($this->unusedStates[$name]);
 		$tag = $this->data->getState($name);
 		if($tag instanceof IntTag){
 			return $tag->getValue();
@@ -99,7 +103,7 @@ final class BlockStateReader{
 
 	/** @throws BlockStateDeserializeException */
 	public function readString(string $name) : string{
-		$this->usedStates[$name] = true;
+		unset($this->unusedStates[$name]);
 		//TODO: only allow a specific set of values (strings are primarily used for enums)
 		$tag = $this->data->getState($name);
 		if($tag instanceof StringTag){
@@ -346,7 +350,7 @@ final class BlockStateReader{
 	 */
 	public function ignored(string $name) : void{
 		if($this->data->getState($name) !== null){
-			$this->usedStates[$name] = true;
+			unset($this->unusedStates[$name]);
 		}else{
 			throw $this->missingOrWrongTypeException($name, null);
 		}
@@ -363,10 +367,8 @@ final class BlockStateReader{
 	 * @throws BlockStateDeserializeException
 	 */
 	public function checkUnreadProperties() : void{
-		foreach(Utils::stringifyKeys($this->data->getStates()) as $name => $tag){
-			if(!isset($this->usedStates[$name])){
-				throw new BlockStateDeserializeException("Unread property \"$name\"");
-			}
+		if(count($this->unusedStates) > 0){
+			throw new BlockStateDeserializeException("Unread properties: " . implode(", ", array_keys($this->unusedStates)));
 		}
 	}
 }
