@@ -89,22 +89,18 @@ final class MainLoggerThread extends Thread{
 		$this->join();
 	}
 
-	/**
-	 * @param resource $logResource
-	 */
-	private function logFileReadyToArchive($logResource) : bool{
-		$stat = fstat($logResource);
-		if($stat === false) throw new AssumptionFailedError("fstat() should not fail here");
-		return $stat['size'] >= self::MAX_FILE_SIZE;
+	private function logFileReadyToArchive(int $size) : bool{
+		return $size >= self::MAX_FILE_SIZE;
 	}
 
 	/**
 	 * @param resource $logResource
 	 */
-	private function writeLogStream($logResource) : bool{
+	private function writeLogStream($logResource, int &$size) : bool{
 		while(($chunk = $this->buffer->shift()) !== null){
 			fwrite($logResource, $chunk);
-			if($this->logFileReadyToArchive($logResource)){
+			$size += strlen($chunk);
+			if($this->logFileReadyToArchive($size)){
 				return false;
 			}
 		}
@@ -119,11 +115,16 @@ final class MainLoggerThread extends Thread{
 	}
 
 	/** @return resource */
-	private function openLogFile(string $file){
+	private function openLogFile(string $file, int &$size){
 		$logResource = fopen($file, "ab");
 		if(!is_resource($logResource)){
 			throw new \RuntimeException("Couldn't open log file");
 		}
+		$stat = fstat($logResource);
+		if($stat === false){
+			throw new AssumptionFailedError("fstat() should not fail here");
+		}
+		$size = $stat['size'];
 		return $logResource;
 	}
 
@@ -131,7 +132,7 @@ final class MainLoggerThread extends Thread{
 	 * @param resource $logResource
 	 * @return resource
 	 */
-	private function archiveLogFile($logResource){
+	private function archiveLogFile($logResource, int &$size){
 		fclose($logResource);
 
 		clearstatcache();
@@ -151,21 +152,22 @@ final class MainLoggerThread extends Thread{
 		@mkdir($this->archiveDir);
 		rename($this->logFile, $out);
 
-		$logResource = $this->openLogFile($this->logFile);
+		$logResource = $this->openLogFile($this->logFile, $size);
 		fwrite($logResource, "--- Starting new log file - old log file archived as $fileName ---\n");
 
 		return $logResource;
 	}
 
 	public function run() : void{
-		$logResource = $this->openLogFile($this->logFile);
-		if($this->logFileReadyToArchive($logResource)){
-			$logResource = $this->archiveLogFile($logResource);
+		$size = 0;
+		$logResource = $this->openLogFile($this->logFile, $size);
+		if($this->logFileReadyToArchive($size)){
+			$logResource = $this->archiveLogFile($logResource, $size);
 		}
 
 		while(!$this->shutdown || $this->buffer->count() > 0){
-			if(!$this->writeLogStream($logResource)){
-				$logResource = $this->archiveLogFile($logResource);
+			if(!$this->writeLogStream($logResource, $size)){
+				$logResource = $this->archiveLogFile($logResource, $size);
 			}
 			$this->synchronized(function() : void{
 				if(!$this->shutdown && !$this->syncFlush){
