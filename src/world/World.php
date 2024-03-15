@@ -1016,8 +1016,12 @@ class World implements ChunkManager{
 						continue;
 					}
 					World::getXZ($index, $chunkX, $chunkZ);
+					if(!$this->isChunkLoaded($chunkX, $chunkZ)){
+						//a previous chunk may have caused this one to be unloaded by a ChunkListener
+						continue;
+					}
 					if(count($blocks) > 512){
-						$chunk = $this->getChunk($chunkX, $chunkZ);
+						$chunk = $this->getChunk($chunkX, $chunkZ) ?? throw new AssumptionFailedError("We already checked that the chunk is loaded");
 						foreach($this->getChunkPlayers($chunkX, $chunkZ) as $p){
 							$p->onChunkChanged($chunkX, $chunkZ, $chunk);
 						}

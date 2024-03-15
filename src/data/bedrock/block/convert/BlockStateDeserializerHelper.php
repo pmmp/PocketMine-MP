@@ -362,18 +362,4 @@ final class BlockStateDeserializerHelper{
 			default => throw $in->badValueException(BlockStateNames::STONE_SLAB_TYPE_4, $type),
 		};
 	}
-
-	/** @throws BlockStateDeserializeException */
-	public static function mapWoodenSlabType(BlockStateReader $in) : Slab{
-		// * wood_type (StringTag) = acacia, birch, dark_oak, jungle, oak, spruce
-		return match($type = $in->readString(BlockStateNames::WOOD_TYPE)){
-			StringValues::WOOD_TYPE_ACACIA => VanillaBlocks::ACACIA_SLAB(),
-			StringValues::WOOD_TYPE_BIRCH => VanillaBlocks::BIRCH_SLAB(),
-			StringValues::WOOD_TYPE_DARK_OAK => VanillaBlocks::DARK_OAK_SLAB(),
-			StringValues::WOOD_TYPE_JUNGLE => VanillaBlocks::JUNGLE_SLAB(),
-			StringValues::WOOD_TYPE_OAK => VanillaBlocks::OAK_SLAB(),
-			StringValues::WOOD_TYPE_SPRUCE => VanillaBlocks::SPRUCE_SLAB(),
-			default => throw $in->badValueException(BlockStateNames::WOOD_TYPE, $type),
-		};
-	}
 }

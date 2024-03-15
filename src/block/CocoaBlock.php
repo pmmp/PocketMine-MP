@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\HorizontalFacingTrait;
-use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\WoodType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Fertilizer;
@@ -40,7 +39,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
-class CocoaBlock extends Transparent{
+class CocoaBlock extends Flowable{
 	use HorizontalFacingTrait;
 	use AgeableTrait;
 
@@ -63,10 +62,6 @@ class CocoaBlock extends Transparent{
 				->trim(Facing::opposite($this->facing), 1 / 16) //gap between log and pod
 				->trim($this->facing, (11 - $this->age * 2) / 16) //outward face
 		];
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE;
 	}
 
 	private function canAttachTo(Block $block) : bool{

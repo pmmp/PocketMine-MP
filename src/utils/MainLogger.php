@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
-use LogLevel;
 use pmmp\thread\Thread as NativeThread;
 use pocketmine\thread\log\AttachableThreadSafeLogger;
 use pocketmine\thread\log\ThreadSafeLoggerAttachment;
@@ -132,28 +131,28 @@ class MainLogger extends AttachableThreadSafeLogger implements \BufferedLogger{
 
 	public function log($level, $message){
 		switch($level){
-			case LogLevel::EMERGENCY:
+			case \LogLevel::EMERGENCY:
 				$this->emergency($message);
 				break;
-			case LogLevel::ALERT:
+			case \LogLevel::ALERT:
 				$this->alert($message);
 				break;
-			case LogLevel::CRITICAL:
+			case \LogLevel::CRITICAL:
 				$this->critical($message);
 				break;
-			case LogLevel::ERROR:
+			case \LogLevel::ERROR:
 				$this->error($message);
 				break;
-			case LogLevel::WARNING:
+			case \LogLevel::WARNING:
 				$this->warning($message);
 				break;
-			case LogLevel::NOTICE:
+			case \LogLevel::NOTICE:
 				$this->notice($message);
 				break;
-			case LogLevel::INFO:
+			case \LogLevel::INFO:
 				$this->info($message);
 				break;
-			case LogLevel::DEBUG:
+			case \LogLevel::DEBUG:
 				$this->debug($message);
 				break;
 		}

@@ -252,6 +252,14 @@ abstract class Entity{
 		return $this->alwaysShowNameTag;
 	}
 
+	/**
+	 * Returns whether players can rename this entity using a name tag.
+	 * Note that plugins can still name entities using setNameTag().
+	 */
+	public function canBeRenamed() : bool{
+		return false;
+	}
+
 	public function setNameTag(string $name) : void{
 		$this->nameTag = $name;
 		$this->networkPropertiesDirty = true;
@@ -792,7 +800,7 @@ abstract class Entity{
 	}
 
 	protected function broadcastMotion() : void{
-		NetworkBroadcastUtils::broadcastPackets($this->hasSpawned, [SetActorMotionPacket::create($this->id, $this->getMotion())]);
+		NetworkBroadcastUtils::broadcastPackets($this->hasSpawned, [SetActorMotionPacket::create($this->id, $this->getMotion(), tick: 0)]);
 	}
 
 	public function getGravity() : float{
