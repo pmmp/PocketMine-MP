@@ -163,7 +163,7 @@ final class MainLoggerThread extends Thread{
 			$logResource = $this->archiveLogFile($logResource);
 		}
 
-		while(!$this->shutdown){
+		while(!$this->shutdown || $this->buffer->count() > 0){
 			if(!$this->writeLogStream($logResource)){
 				$logResource = $this->archiveLogFile($logResource);
 			}
@@ -173,8 +173,6 @@ final class MainLoggerThread extends Thread{
 				}
 			});
 		}
-
-		$this->writeLogStream($logResource);
 
 		fclose($logResource);
 	}
