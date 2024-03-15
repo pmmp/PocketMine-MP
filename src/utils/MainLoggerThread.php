@@ -96,12 +96,12 @@ final class MainLoggerThread extends Thread{
 	/**
 	 * @param resource $logResource
 	 */
-	private function writeLogStream($logResource, int &$size) : bool{
+	private function writeLogStream(&$logResource, int &$size) : void{
 		while(($chunk = $this->buffer->shift()) !== null){
 			fwrite($logResource, $chunk);
 			$size += strlen($chunk);
 			if($this->logFileReadyToArchive($size)){
-				return false;
+				$logResource = $this->archiveLogFile($logResource, $size);
 			}
 		}
 
@@ -111,7 +111,6 @@ final class MainLoggerThread extends Thread{
 				$this->notify(); //if this was due to a sync flush, tell the caller to stop waiting
 			}
 		});
-		return true;
 	}
 
 	/** @return resource */
@@ -165,16 +164,16 @@ final class MainLoggerThread extends Thread{
 			$logResource = $this->archiveLogFile($logResource, $size);
 		}
 
-		while(!$this->shutdown || $this->buffer->count() > 0){
-			if(!$this->writeLogStream($logResource, $size)){
-				$logResource = $this->archiveLogFile($logResource, $size);
-			}
+		while(!$this->shutdown){
+			$this->writeLogStream($logResource, $size);
 			$this->synchronized(function() : void{
 				if(!$this->shutdown && !$this->syncFlush){
 					$this->wait();
 				}
 			});
 		}
+
+		$this->writeLogStream($logResource, $size);
 
 		fclose($logResource);
 	}
