@@ -326,7 +326,8 @@ JIT_WARNING
 			Terminal::init();
 		}
 
-		$logger = new MainLogger(Path::join($dataPath, "server.log"), Terminal::hasFormattingCodes(), "Server", new \DateTimeZone(Timezone::get()));
+		$logger = new MainLogger(Path::join($dataPath, "server.log"), Path::join($dataPath, "log_archive"), Terminal::hasFormattingCodes(), "Server", new \DateTimeZone(Timezone::get()));
+
 		\GlobalLogger::set($logger);
 
 		emit_performance_warnings($logger);

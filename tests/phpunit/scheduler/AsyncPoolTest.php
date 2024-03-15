@@ -45,7 +45,7 @@ class AsyncPoolTest extends TestCase{
 
 	public function setUp() : void{
 		@define('pocketmine\\COMPOSER_AUTOLOADER_PATH', dirname(__DIR__, 3) . '/vendor/autoload.php');
-		$this->mainLogger = new MainLogger(tempnam(sys_get_temp_dir(), "pmlog"), false, "Main", new \DateTimeZone('UTC'));
+		$this->mainLogger = new MainLogger(tempnam(sys_get_temp_dir(), "pmlog"), sys_get_temp_dir(), false, "Main", new \DateTimeZone('UTC'));
 		$this->pool = new AsyncPool(2, 1024, new ThreadSafeClassLoader(), $this->mainLogger, new SleeperHandler());
 	}
 
