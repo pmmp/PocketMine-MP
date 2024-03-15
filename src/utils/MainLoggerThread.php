@@ -43,7 +43,6 @@ use const PATHINFO_EXTENSION;
 use const PATHINFO_FILENAME;
 
 final class MainLoggerThread extends Thread{
-	private const MAX_FILE_SIZE = 32 * 1024 * 1024; //32 MB
 
 	/** @phpstan-var ThreadSafeArray<int, string> */
 	private ThreadSafeArray $buffer;
@@ -52,7 +51,8 @@ final class MainLoggerThread extends Thread{
 
 	public function __construct(
 		private string $logFile,
-		private string $archiveDir
+		private string $archiveDir,
+		private readonly int $maxFileSize = 32 * 1024 * 1024 //32 MB
 	){
 		$this->buffer = new ThreadSafeArray();
 		touch($this->logFile);
@@ -134,7 +134,7 @@ final class MainLoggerThread extends Thread{
 	}
 
 	private function logFileReadyToArchive(int $size) : bool{
-		return $size >= self::MAX_FILE_SIZE;
+		return $size >= $this->maxFileSize;
 	}
 
 	/**
