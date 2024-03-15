@@ -33,7 +33,6 @@ use function define;
 use function dirname;
 use function microtime;
 use function sys_get_temp_dir;
-use function tempnam;
 use function usleep;
 
 class AsyncPoolTest extends TestCase{
