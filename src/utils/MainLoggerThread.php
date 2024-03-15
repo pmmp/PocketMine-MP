@@ -25,22 +25,22 @@ namespace pocketmine\utils;
 
 use pmmp\thread\Thread;
 use pmmp\thread\ThreadSafeArray;
-use pocketmine\errorhandler\ErrorToExceptionHandler;
+use function clearstatcache;
 use function date;
 use function fclose;
 use function file_exists;
 use function fopen;
 use function fstat;
 use function fwrite;
-use function gzopen;
 use function is_dir;
 use function is_file;
 use function is_resource;
 use function mkdir;
-use function stream_copy_to_stream;
-use function strlen;
+use function pathinfo;
+use function rename;
 use function touch;
-use function unlink;
+use const PATHINFO_EXTENSION;
+use const PATHINFO_FILENAME;
 
 final class MainLoggerThread extends Thread{
 	private const MAX_FILE_SIZE = 32 * 1024 * 1024; //32 MB
@@ -92,11 +92,19 @@ final class MainLoggerThread extends Thread{
 	/**
 	 * @param resource $logResource
 	 */
-	private function writeLogStream($logResource, int &$offset) : bool{
+	private function logFileReadyToArchive($logResource) : bool{
+		$stat = fstat($logResource);
+		if($stat === false) throw new AssumptionFailedError("fstat() should not fail here");
+		return $stat['size'] >= self::MAX_FILE_SIZE;
+	}
+
+	/**
+	 * @param resource $logResource
+	 */
+	private function writeLogStream($logResource) : bool{
 		while(($chunk = $this->buffer->shift()) !== null){
 			fwrite($logResource, $chunk);
-			$offset += strlen($chunk);
-			if($offset >= self::MAX_FILE_SIZE){
+			if($this->logFileReadyToArchive($logResource)){
 				return false;
 			}
 		}
@@ -111,47 +119,53 @@ final class MainLoggerThread extends Thread{
 	}
 
 	/** @return resource */
-	private function openLogFile(string $file, int &$size){
+	private function openLogFile(string $file){
 		$logResource = fopen($file, "ab");
 		if(!is_resource($logResource)){
 			throw new \RuntimeException("Couldn't open log file");
 		}
-		$stat = fstat($logResource);
-		if($stat === false) throw new AssumptionFailedError("ftell() should not fail here");
-		$size = $stat['size'];
 		return $logResource;
 	}
 
-	private function compressLogFile() : void{
+	/**
+	 * @param resource $logResource
+	 * @return resource
+	 */
+	private function archiveLogFile($logResource){
+		fclose($logResource);
+
+		clearstatcache();
+
 		$i = 0;
 		$date = date("Y-m-d\TH.i.s");
+		$baseName = pathinfo($this->logFile, PATHINFO_FILENAME);
+		$extension = pathinfo($this->logFile, PATHINFO_EXTENSION);
 		do{
 			//this shouldn't be necessary, but in case the user messes with the system time for some reason ...
-			$out = $this->archiveDir . "/server.{$date}_$i.log.gz";
+			$fileName = "$baseName.$date.$i.$extension";
+			$out = $this->archiveDir . "/" . $fileName;
 			$i++;
 		}while(file_exists($out));
 
-		$logFile = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen($this->logFile, 'rb'));
-		$archiveFile = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => gzopen($out, 'wb'));
+		//the user may have externally deleted the whole directory - make sure it exists before we do anything
+		@mkdir($this->archiveDir);
+		rename($this->logFile, $out);
 
-		//TODO: the disk could run out of space during this operation
-		//we have no log context here so I'm not sure what to do about it
-		ErrorToExceptionHandler::trapAndRemoveFalse(fn() => stream_copy_to_stream($logFile, $archiveFile));
+		$logResource = $this->openLogFile($this->logFile);
+		fwrite($logResource, "--- Starting new log file - old log file archived as $fileName ---\n");
 
-		fclose($logFile);
-		fclose($archiveFile);
-		@unlink($this->logFile);
+		return $logResource;
 	}
 
 	public function run() : void{
-		$size = 0;
-		$logResource = $this->openLogFile($this->logFile, $size);
+		$logResource = $this->openLogFile($this->logFile);
+		if($this->logFileReadyToArchive($logResource)){
+			$logResource = $this->archiveLogFile($logResource);
+		}
 
 		while(!$this->shutdown){
-			while(!$this->writeLogStream($logResource, $size)){
-				fclose($logResource);
-				$this->compressLogFile();
-				$logResource = $this->openLogFile($this->logFile, $size);
+			if(!$this->writeLogStream($logResource)){
+				$logResource = $this->archiveLogFile($logResource);
 			}
 			$this->synchronized(function() : void{
 				if(!$this->shutdown && !$this->syncFlush){
@@ -160,7 +174,7 @@ final class MainLoggerThread extends Thread{
 			});
 		}
 
-		$this->writeLogStream($logResource, $size);
+		$this->writeLogStream($logResource);
 
 		fclose($logResource);
 	}
