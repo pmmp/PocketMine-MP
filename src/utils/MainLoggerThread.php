@@ -38,6 +38,7 @@ use function is_resource;
 use function mkdir;
 use function pathinfo;
 use function rename;
+use function strlen;
 use function touch;
 use const PATHINFO_EXTENSION;
 use const PATHINFO_FILENAME;
