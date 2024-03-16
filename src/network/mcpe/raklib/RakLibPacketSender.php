@@ -33,9 +33,9 @@ class RakLibPacketSender implements PacketSender{
 		private RakLibInterface $handler
 	){}
 
-	public function send(string $payload, bool $immediate) : void{
+	public function send(string $payload, bool $immediate, ?int $receiptId) : void{
 		if(!$this->closed){
-			$this->handler->putPacket($this->sessionId, $payload, $immediate);
+			$this->handler->putPacket($this->sessionId, $payload, $immediate, $receiptId);
 		}
 	}
 

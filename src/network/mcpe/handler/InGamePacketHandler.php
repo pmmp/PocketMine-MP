@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\block\BaseSign;
-use pocketmine\block\ItemFrame;
 use pocketmine\block\Lectern;
 use pocketmine\block\tile\Sign;
 use pocketmine\block\utils\SignText;
@@ -60,7 +59,6 @@ use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
-use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\ItemStackRequestPacket;
 use pocketmine\network\mcpe\protocol\ItemStackResponsePacket;
 use pocketmine\network\mcpe\protocol\LabTablePacket;
@@ -808,15 +806,6 @@ class InGamePacketHandler extends PacketHandler{
 		return true;
 	}
 
-	public function handleItemFrameDropItem(ItemFrameDropItemPacket $packet) : bool{
-		$blockPosition = $packet->blockPosition;
-		$block = $this->player->getWorld()->getBlockAt($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ());
-		if($block instanceof ItemFrame && $block->getFramedItem() !== null){
-			return $this->player->attackBlock(new Vector3($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ()), $block->getFacing());
-		}
-		return false;
-	}
-
 	public function handleBossEvent(BossEventPacket $packet) : bool{
 		return false; //TODO
 	}
@@ -998,11 +987,6 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleLecternUpdate(LecternUpdatePacket $packet) : bool{
-		if($packet->dropBook){
-			//Drop book is handled with an interact event on use item transaction
-			return true;
-		}
-
 		$pos = $packet->blockPosition;
 		$chunkX = $pos->getX() >> Chunk::COORD_BIT_SIZE;
 		$chunkZ = $pos->getZ() >> Chunk::COORD_BIT_SIZE;
