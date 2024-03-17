@@ -30,6 +30,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\Random;
+use function count;
 use function mt_rand;
 
 class Nylium extends Opaque{
