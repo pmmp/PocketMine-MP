@@ -558,7 +558,7 @@ use function strtolower;
  * @method static NetherPortal NETHER_PORTAL()
  * @method static NetherQuartzOre NETHER_QUARTZ_ORE()
  * @method static NetherReactor NETHER_REACTOR_CORE()
- * @method static Fungus NETHER_SPROUTS()
+ * @method static NetherSprouts NETHER_SPROUTS()
  * @method static NetherWartPlant NETHER_WART()
  * @method static Opaque NETHER_WART_BLOCK()
  * @method static Note NOTE_BLOCK()
@@ -981,7 +981,7 @@ final class VanillaBlocks{
 		self::register("crimson_fungus", new Fungus(new BID(Ids::CRIMSON_FUNGUS), "Crimson Fungus", $fungusBreakInfo));
 		self::register("warped_fungus", new Fungus(new BID(Ids::WARPED_FUNGUS), "Warped Fungus", $fungusBreakInfo));
 
-		self::register("nether_sprouts", new Fungus(new BID(Ids::NETHER_SPROUTS), "Nether Sprouts", $fungusBreakInfo));
+		self::register("nether_sprouts", new NetherSprouts(new BID(Ids::NETHER_SPROUTS), "Nether Sprouts", $fungusBreakInfo));
 
 		self::register("nether_portal", new NetherPortal(new BID(Ids::NETHER_PORTAL), "Nether Portal", new Info(BreakInfo::indestructible(0.0))));
 		self::register("nether_reactor_core", new NetherReactor(new BID(Ids::NETHER_REACTOR_CORE), "Nether Reactor Core", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD))));
