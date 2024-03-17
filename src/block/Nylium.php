@@ -104,7 +104,7 @@ class Nylium extends Opaque{
 		for($c = 0; $c < $count; ++$c){
 			$x = $random->nextRange($this->position->x - $radius, $this->position->x + $radius);
 			$z = $random->nextRange($this->position->z - $radius, $this->position->z + $radius);
-			if($this->position->world->getBlockAt($x, $this->position->y + 1, $z)->getTypeId() === BlockTypeIds::AIR){
+			if($this->position->world->getBlockAt($x, $this->position->y + 1, $z)->getTypeId() === BlockTypeIds::AIR && $this->position->world->getBlockAt($x, $this->position->y, $z) instanceof Nylium){
 				$this->position->world->setBlockAt($x, $this->position->y + 1, $z, $arr[$random->nextRange(0, $arrC)]);
 			}
 		}
