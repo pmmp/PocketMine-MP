@@ -23,37 +23,29 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\utils\Random;
-use pocketmine\world\generator\object\CrimsonFungi;
-use pocketmine\world\generator\object\WarpedFungi;
-use function mt_rand;
+use pocketmine\world\BlockTransaction;
 
-class Fungus extends NetherSprouts {
+class Fungus extends Flowable{
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($item instanceof Fertilizer && $this->grow()){
-			$item->pop();
-
-			return true;
-		}
-
+	public function ticksRandomly() : bool{
 		return true;
 	}
 
-	public function grow() : bool{
-		$blockId = $this->getTypeId();
-		if ($blockId === BlockTypeIds::CRIMSON_FUNGUS) {
-			(new CrimsonFungi())->getBlockTransaction($this->position->world, $this->position->x, $this->position->y, $this->position->z, new Random(mt_rand()));
-			return true;
+	public function onNearbyBlockChange() : void{
+		if($this->getSide(Facing::DOWN)->isTransparent()){
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
+	}
 
-		if ($blockId === BlockTypeIds::WARPED_FUNGUS){
-			(new WarpedFungi())->getBlockTransaction($this->position->world, $this->position->x, $this->position->y, $this->position->z, new Random(mt_rand()));
-			return true;
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		$down = $this->getSide(Facing::DOWN);
+		$downId = $down->getTypeId();
+		if((!$down->isTransparent()) || $downId === BlockTypeIds::MYCELIUM || $downId === BlockTypeIds::PODZOL || $downId === BlockTypeIds::CRIMSON_NYLIUM || $downId === BlockTypeIds::WARPED_NYLIUM || $downId === BlockTypeIds::FLOWER_POT){
+			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
 		return false;

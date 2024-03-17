@@ -30,7 +30,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\Random;
-use function count;
 use function mt_rand;
 
 class Nylium extends Opaque{
@@ -50,59 +49,64 @@ class Nylium extends Opaque{
 	}
 
 	public function onRandomTick() : void{
-		if($this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR){
-			return;
-		}
-
 		$blockAbove = $this->getSide(Facing::UP);
-		if(!$blockAbove->isTransparent() || $blockAbove->getTypeId() === BlockTypeIds::SNOW_LAYER){
+		if(!$blockAbove->isTransparent() && $blockAbove->getTypeId() === BlockTypeIds::SNOW_LAYER){
+			//nylium dies
 			BlockEventHelper::spread($this, VanillaBlocks::NETHERRACK(), $this);
 		}
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($item instanceof Fertilizer && $this->grow()){
+		if($this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR){
+			return false;
+		}
+
+		if($item instanceof Fertilizer){
 			$item->pop();
+			$this->grow();
 
 			return true;
 		}
 
-		return true;
+		return false;
 	}
 
-	private function grow() : bool{
+	private function grow() : void{
 		/** @var Block[] $arr */
 		$arr = [];
 
-		if($this->getTypeId() === BlockTypeIds::WARPED_NYLIUM && $this->getSide(Facing::DOWN)->getTypeId() === BlockTypeIds::WARPED_NYLIUM){
+		if($this->getTypeId() === BlockTypeIds::CRIMSON_NYLIUM){
 			$arr = [
-				VanillaBlocks::WARPED_FUNGUS(), VanillaBlocks::WARPED_ROOTS(), VanillaBlocks::WARPED_ROOTS(), VanillaBlocks::WARPED_ROOTS(), VanillaBlocks::WARPED_ROOTS()
+				VanillaBlocks::CRIMSON_FUNGUS(),
+				$roots = VanillaBlocks::CRIMSON_ROOTS(),
+				$roots,
+				$roots,
+				$roots
 			];
 		}
 
-		if($this->getTypeId() === BlockTypeIds::CRIMSON_NYLIUM && $this->getSide(Facing::DOWN)->getTypeId() === BlockTypeIds::CRIMSON_NYLIUM){
+		if($this->getTypeId() === BlockTypeIds::WARPED_NYLIUM){
 			$arr = [
-				VanillaBlocks::CRIMSON_FUNGUS(), VanillaBlocks::CRIMSON_ROOTS(), VanillaBlocks::NETHER_SPROUTS(), VanillaBlocks::CRIMSON_ROOTS(), VanillaBlocks::NETHER_SPROUTS()
+				VanillaBlocks::WARPED_FUNGUS(),
+				VanillaBlocks::NETHER_SPROUTS(),
+				$roots = VanillaBlocks::WARPED_ROOTS(),
+				$roots,
+				$roots
 			];
-		}
-
-		if (count($arr) < 1){
-			return false;
 		}
 
 		$random = new Random(mt_rand());
 
 		$count = 8;
-		$radius = 5;
+		$radius = 2;
 
 		$arrC = count($arr) - 1;
 		for($c = 0; $c < $count; ++$c){
 			$x = $random->nextRange($this->position->x - $radius, $this->position->x + $radius);
 			$z = $random->nextRange($this->position->z - $radius, $this->position->z + $radius);
-			if($this->position->world->getBlockAt($x, $this->position->y + 1, $z)->getTypeId() === BlockTypeIds::AIR && $this->position->world->getBlockAt($x, $this->position->y, $z)->getTypeId() === $this->getTypeId()){
+			if($this->position->world->getBlockAt($x, $this->position->y + 1, $z)->getTypeId() === BlockTypeIds::AIR){
 				$this->position->world->setBlockAt($x, $this->position->y + 1, $z, $arr[$random->nextRange(0, $arrC)]);
 			}
 		}
-		return true;
 	}
 }
