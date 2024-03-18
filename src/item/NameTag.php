@@ -21,17 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe;
+namespace pocketmine\item;
 
-interface PacketSender{
+use pocketmine\entity\Entity;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
 
-	/**
-	 * Pushes a packet into the channel to be processed.
-	 */
-	public function send(string $payload, bool $immediate, ?int $receiptId) : void;
+class NameTag extends Item{
 
-	/**
-	 * Closes the channel, terminating the connection.
-	 */
-	public function close(string $reason = "unknown reason") : void;
+	public function onInteractEntity(Player $player, Entity $entity, Vector3 $clickVector) : bool{
+		if($entity->canBeRenamed() && $this->hasCustomName()){
+			$entity->setNameTag($this->getCustomName());
+			$this->pop();
+			return true;
+		}
+		return false;
+	}
 }

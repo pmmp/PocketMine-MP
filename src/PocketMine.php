@@ -317,7 +317,7 @@ JIT_WARNING
 		//Logger has a dependency on timezone
 		Timezone::init();
 
-		$opts = getopt("", [BootstrapOptions::NO_WIZARD, BootstrapOptions::ENABLE_ANSI, BootstrapOptions::DISABLE_ANSI]);
+		$opts = getopt("", [BootstrapOptions::NO_WIZARD, BootstrapOptions::ENABLE_ANSI, BootstrapOptions::DISABLE_ANSI, BootstrapOptions::NO_LOG_FILE]);
 		if(isset($opts[BootstrapOptions::ENABLE_ANSI])){
 			Terminal::init(true);
 		}elseif(isset($opts[BootstrapOptions::DISABLE_ANSI])){
@@ -325,8 +325,13 @@ JIT_WARNING
 		}else{
 			Terminal::init();
 		}
+		$logFile = isset($opts[BootstrapOptions::NO_LOG_FILE]) ? null : Path::join($dataPath, "server.log");
 
-		$logger = new MainLogger(Path::join($dataPath, "server.log"), Terminal::hasFormattingCodes(), "Server", new \DateTimeZone(Timezone::get()));
+		$logger = new MainLogger($logFile, Path::join($dataPath, "log_archive"), Terminal::hasFormattingCodes(), "Server", new \DateTimeZone(Timezone::get()));
+		if($logFile === null){
+			$logger->notice("Logging to file disabled. Ensure logs are collected by other means (e.g. Docker logs).");
+		}
+
 		\GlobalLogger::set($logger);
 
 		emit_performance_warnings($logger);

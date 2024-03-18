@@ -31,7 +31,9 @@ use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\WorldException;
+use function count;
 use function file_exists;
+use function implode;
 
 abstract class BaseWorldProvider implements WorldProvider{
 	protected WorldData $worldData;
@@ -62,25 +64,33 @@ abstract class BaseWorldProvider implements WorldProvider{
 	 */
 	abstract protected function loadLevelData() : WorldData;
 
-	private function translatePalette(PalettedBlockArray $blockArray) : PalettedBlockArray{
+	private function translatePalette(PalettedBlockArray $blockArray, \Logger $logger) : PalettedBlockArray{
 		$palette = $blockArray->getPalette();
 
 		$newPalette = [];
+		$blockDecodeErrors = [];
 		foreach($palette as $k => $legacyIdMeta){
 			//TODO: remember data for unknown states so we can implement them later
+			$id = $legacyIdMeta >> 4;
+			$meta = $legacyIdMeta & 0xf;
 			try{
-				$newStateData = $this->blockDataUpgrader->upgradeIntIdMeta($legacyIdMeta >> 4, $legacyIdMeta & 0xf);
+				$newStateData = $this->blockDataUpgrader->upgradeIntIdMeta($id, $meta);
 			}catch(BlockStateDeserializeException $e){
+				$blockDecodeErrors[] = "Palette offset $k / Failed to upgrade legacy ID/meta $id:$meta: " . $e->getMessage();
 				$newStateData = GlobalBlockStateHandlers::getUnknownBlockStateData();
 			}
 
 			try{
 				$newPalette[$k] = $this->blockStateDeserializer->deserialize($newStateData);
-			}catch(BlockStateDeserializeException){
-				//TODO: this needs to be logged
-				//TODO: maybe we can remember unknown states for later saving instead of discarding them and destroying maps...
+			}catch(BlockStateDeserializeException $e){
+				//this should never happen anyway - if the upgrader returned an invalid state, we have bigger problems
+				$blockDecodeErrors[] = "Palette offset $k / Failed to deserialize upgraded state $id:$meta: " . $e->getMessage();
 				$newPalette[$k] = $this->blockStateDeserializer->deserialize(GlobalBlockStateHandlers::getUnknownBlockStateData());
 			}
+		}
+
+		if(count($blockDecodeErrors) > 0){
+			$logger->error("Errors decoding/upgrading blocks:\n - " . implode("\n - ", $blockDecodeErrors));
 		}
 
 		//TODO: this is sub-optimal since it reallocates the offset table multiple times
@@ -91,16 +101,16 @@ abstract class BaseWorldProvider implements WorldProvider{
 		);
 	}
 
-	protected function palettizeLegacySubChunkXZY(string $idArray, string $metaArray) : PalettedBlockArray{
-		return $this->translatePalette(SubChunkConverter::convertSubChunkXZY($idArray, $metaArray));
+	protected function palettizeLegacySubChunkXZY(string $idArray, string $metaArray, \Logger $logger) : PalettedBlockArray{
+		return $this->translatePalette(SubChunkConverter::convertSubChunkXZY($idArray, $metaArray), $logger);
 	}
 
-	protected function palettizeLegacySubChunkYZX(string $idArray, string $metaArray) : PalettedBlockArray{
-		return $this->translatePalette(SubChunkConverter::convertSubChunkYZX($idArray, $metaArray));
+	protected function palettizeLegacySubChunkYZX(string $idArray, string $metaArray, \Logger $logger) : PalettedBlockArray{
+		return $this->translatePalette(SubChunkConverter::convertSubChunkYZX($idArray, $metaArray), $logger);
 	}
 
-	protected function palettizeLegacySubChunkFromColumn(string $idArray, string $metaArray, int $yOffset) : PalettedBlockArray{
-		return $this->translatePalette(SubChunkConverter::convertSubChunkFromLegacyColumn($idArray, $metaArray, $yOffset));
+	protected function palettizeLegacySubChunkFromColumn(string $idArray, string $metaArray, int $yOffset, \Logger $logger) : PalettedBlockArray{
+		return $this->translatePalette(SubChunkConverter::convertSubChunkFromLegacyColumn($idArray, $metaArray, $yOffset), $logger);
 	}
 
 	public function getPath() : string{
