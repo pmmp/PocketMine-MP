@@ -84,8 +84,9 @@ function cleanupPharCache(string $tmpPath) : void{
 		$lockFilePath = $matches[0];
 		$baseTmpPath = $matches[1];
 
-		$file = fopen($lockFilePath, "rb");
+		$file = @fopen($lockFilePath, "rb");
 		if($file === false){
+			//another process probably deleted the lock file already
 			continue;
 		}
 
