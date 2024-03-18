@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\build\server_phar;
 
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\Git;
+use Symfony\Component\Filesystem\Path;
 use function array_map;
 use function count;
 use function dirname;
@@ -169,21 +171,7 @@ function main() : void{
 			'git' => $gitHash,
 			'build' => $build
 		],
-		<<<'STUB'
-<?php
-
-$tmpDir = sys_get_temp_dir();
-if(!is_readable($tmpDir) or !is_writable($tmpDir)){
-	echo "ERROR: tmpdir $tmpDir is not accessible." . PHP_EOL;
-	echo "Check that the directory exists, and that the current user has read/write permissions for it." . PHP_EOL;
-	echo "Alternatively, set 'sys_temp_dir' to a different directory in your php.ini file." . PHP_EOL;
-	exit(1);
-}
-
-require("phar://" . __FILE__ . "/src/PocketMine.php");
-__HALT_COMPILER();
-STUB
-,
+		Filesystem::fileGetContents(Path::join(__DIR__, 'server-phar-stub.php')) . "\n__HALT_COMPILER();",
 		\Phar::SHA1,
 		\Phar::GZ
 	) as $line){
