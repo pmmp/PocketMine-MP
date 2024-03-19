@@ -53,7 +53,7 @@ class Nylium extends Opaque{
 		$blockAbove = $this->getSide(Facing::UP);
 		if(!$blockAbove->isTransparent() && $blockAbove->getTypeId() === BlockTypeIds::SNOW_LAYER){
 			//nylium dies
-			BlockEventHelper::spread($this, VanillaBlocks::NETHERRACK(), $this);
+			BlockEventHelper::die($this, VanillaBlocks::NETHERRACK());
 		}
 	}
 
@@ -105,8 +105,8 @@ class Nylium extends Opaque{
 		for($c = 0; $c < $count; ++$c){
 			$x = $random->nextRange($this->position->x - $radius, $this->position->x + $radius);
 			$z = $random->nextRange($this->position->z - $radius, $this->position->z + $radius);
-			if($this->position->world->getBlockAt($x, $this->position->y + 1, $z)->getTypeId() === BlockTypeIds::AIR && $this->position->world->getBlockAt($x, $this->position->y, $z) instanceof Nylium){
-				$this->position->world->setBlockAt($x, $this->position->y + 1, $z, $arr[$random->nextRange(0, $arrC)]);
+			if($this->position->getWorld()->getBlockAt($x, $this->position->y + 1, $z)->getTypeId() === BlockTypeIds::AIR && $this->position->getWorld()->getBlockAt($x, $this->position->y, $z) instanceof Nylium){
+				$this->position->getWorld()->setBlockAt($x, $this->position->y + 1, $z, $arr[$random->nextRange(0, $arrC)]);
 			}
 		}
 	}
