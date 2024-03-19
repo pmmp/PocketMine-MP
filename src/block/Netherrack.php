@@ -52,7 +52,7 @@ class Netherrack extends Opaque{
 	private function transformToNylium() : bool{
 		foreach($this->getHorizontalSides() as $side){
 			if($side instanceof Nylium){
-				$this->position->world->setBlock($this->position, $side);
+				$this->position->getWorld()->setBlock($this->position, $side);
 
 				return true;
 			}

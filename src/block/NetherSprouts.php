@@ -37,7 +37,7 @@ class NetherSprouts extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->isTransparent()){
-			$this->position->world->useBreakOn($this->position);
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
