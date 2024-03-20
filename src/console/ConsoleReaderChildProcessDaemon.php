@@ -27,21 +27,20 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
 use function base64_encode;
+use function count;
+use function explode;
 use function fgets;
 use function fopen;
 use function preg_replace;
 use function proc_close;
 use function proc_open;
 use function proc_terminate;
+use function random_bytes;
+use function rtrim;
 use function sprintf;
 use function stream_select;
-use function stream_socket_accept;
-use function stream_socket_get_name;
-use function stream_socket_server;
-use function stream_socket_shutdown;
 use function trim;
 use const PHP_BINARY;
-use const STREAM_SHUT_RDWR;
 
 /**
  * This pile of shit exists because PHP on Windows is broken, and can't handle stream_select() on stdin or pipes
@@ -63,6 +62,7 @@ final class ConsoleReaderChildProcessDaemon{
 	private $subprocess;
 	/** @var resource */
 	private $socket;
+	private string $commandPrefix;
 
 	public function __construct(
 		\Logger $logger
@@ -72,30 +72,26 @@ final class ConsoleReaderChildProcessDaemon{
 	}
 
 	private function prepareSubprocess() : void{
-		$server = stream_socket_server("tcp://127.0.0.1:0");
-		if($server === false){
-			throw new \RuntimeException("Failed to open console reader socket server");
-		}
-		$address = Utils::assumeNotFalse(stream_socket_get_name($server, false), "stream_socket_get_name() shouldn't return false here");
-
 		//Windows sucks, and likes to corrupt UTF-8 file paths when they travel to the subprocess, so we base64 encode
 		//the path to avoid the problem. This is an abysmally shitty hack, but here we are :(
+		$this->commandPrefix = rtrim(base64_encode(random_bytes(8)), '=');
 		$sub = Utils::assumeNotFalse(proc_open(
-			[PHP_BINARY, '-dopcache.enable_cli=0', '-r', sprintf('require base64_decode("%s", true);', base64_encode(Path::join(__DIR__, 'ConsoleReaderChildProcess.php'))), $address],
 			[
+				PHP_BINARY,
+				'-dopcache.enable_cli=0',
+				'-r',
+				sprintf('require base64_decode("%s", true);', base64_encode(Path::join(__DIR__, 'ConsoleReaderChildProcess.php'))),
+				$this->commandPrefix
+			],
+			[
+				1 => ['socket'],
 				2 => fopen("php://stderr", "w"),
 			],
 			$pipes
 		), "Something has gone horribly wrong");
 
-		$client = stream_socket_accept($server, 15);
-		if($client === false){
-			throw new AssumptionFailedError("stream_socket_accept() returned false");
-		}
-		stream_socket_shutdown($server, STREAM_SHUT_RDWR);
-
 		$this->subprocess = $sub;
-		$this->socket = $client;
+		$this->socket = $pipes[1];
 	}
 
 	private function shutdownSubprocess() : void{
@@ -104,7 +100,6 @@ final class ConsoleReaderChildProcessDaemon{
 		//the first place).
 		proc_terminate($this->subprocess);
 		proc_close($this->subprocess);
-		stream_socket_shutdown($this->socket, STREAM_SHUT_RDWR);
 	}
 
 	public function readLine() : ?string{
@@ -112,13 +107,22 @@ final class ConsoleReaderChildProcessDaemon{
 		$w = null;
 		$e = null;
 		if(stream_select($r, $w, $e, 0, 0) === 1){
-			$command = fgets($this->socket);
-			if($command === false){
+			$line = fgets($this->socket);
+			if($line === false){
 				$this->logger->debug("Lost connection to subprocess, restarting (maybe the child process was killed from outside?)");
 				$this->shutdownSubprocess();
 				$this->prepareSubprocess();
 				return null;
 			}
+
+			$parts = explode(":", $line, 2);
+			if(count($parts) !== 2 || $parts[0] !== $this->commandPrefix){
+				//this is not a command - it may be some kind of error output from the subprocess
+				//write it directly to the console
+				echo $line;
+				return null;
+			}
+			$command = $parts[1];
 
 			$command = preg_replace("#\\x1b\\x5b([^\\x1b]*\\x7e|[\\x40-\\x50])#", "", trim($command)) ?? throw new AssumptionFailedError("This regex is assumed to be valid");
 			$command = preg_replace('/[[:cntrl:]]/', '', $command) ?? throw new AssumptionFailedError("This regex is assumed to be valid");
