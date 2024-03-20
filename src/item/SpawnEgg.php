@@ -35,10 +35,6 @@ abstract class SpawnEgg extends Item{
 
 	abstract protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity;
 
-	public function getEntityTypeId() : ?string{
-		return null;
-	}
-
 	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		if($blockClicked instanceof MonsterSpawner){
 			return ItemUseResult::NONE;

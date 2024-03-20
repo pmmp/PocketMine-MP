@@ -590,27 +590,15 @@ final class VanillaItems{
 			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
 				return new Zombie(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
-
-			public function getEntityTypeId() : ?string{
-				return EntityIds::ZOMBIE;
-			}
 		});
 		self::register("squid_spawn_egg", new class(new IID(Ids::SQUID_SPAWN_EGG), "Squid Spawn Egg") extends SpawnEgg{
 			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
 				return new Squid(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
-
-			public function getEntityTypeId() : ?string{
-				return EntityIds::SQUID;
-			}
 		});
 		self::register("villager_spawn_egg", new class(new IID(Ids::VILLAGER_SPAWN_EGG), "Villager Spawn Egg") extends SpawnEgg{
 			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
 				return new Villager(Location::fromObject($pos, $world, $yaw, $pitch));
-			}
-
-			public function getEntityTypeId() : ?string{
-				return EntityIds::VILLAGER;
 			}
 		});
 	}

@@ -27,6 +27,7 @@ use pocketmine\block\tile\MonsterSpawner as TileSpawner;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\item\SpawnEgg;
+use pocketmine\item\SpawnEggEntityRegistry;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function mt_rand;
@@ -55,12 +56,13 @@ class MonsterSpawner extends Transparent{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof SpawnEgg){
-			if($item->getEntityTypeId() === null){
+			$entityId = SpawnEggEntityRegistry::getInstance()->getEntityId($item);
+			if($entityId === null){
 				return false;
 			}
 			$spawner = $this->position->getWorld()->getTile($this->position);
 			if($spawner instanceof TileSpawner){
-				$spawner->setEntityTypeId($item->getEntityTypeId());
+				$spawner->setEntityTypeId($entityId);
 				$this->position->getWorld()->setBlock($this->position, $this);
 				$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
 				return true;
