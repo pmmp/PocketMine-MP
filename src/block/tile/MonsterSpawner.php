@@ -66,8 +66,11 @@ class MonsterSpawner extends Spawnable{
 	public const DEFAULT_SPAWN_RANGE = 4; //blocks
 	public const DEFAULT_REQUIRED_PLAYER_RANGE = 16;
 
+	public const DEFAULT_ENTITY_TYPE_ID = "";
+	public const DEFAULT_LEGACY_ENTITY_TYPE_ID = ":";
+
 	/** TODO: replace this with a cached entity or something of that nature */
-	private string $entityTypeId = ":";
+	private string $entityTypeId = self::DEFAULT_ENTITY_TYPE_ID;
 	/** TODO: deserialize this properly and drop the NBT (PC and PE formats are different, just for fun) */
 	private ?ListTag $spawnPotentials = null;
 	/** TODO: deserialize this properly and drop the NBT (PC and PE formats are different, just for fun) */
@@ -88,11 +91,14 @@ class MonsterSpawner extends Spawnable{
 	public function readSaveData(CompoundTag $nbt) : void{
 		if(($legacyIdTag = $nbt->getTag(self::TAG_LEGACY_ENTITY_TYPE_ID)) instanceof IntTag){
 			//TODO: this will cause unexpected results when there's no mapping for the entity
-			$this->entityTypeId = LegacyEntityIdToStringIdMap::getInstance()->legacyToString($legacyIdTag->getValue()) ?? ":";
+			$this->entityTypeId = LegacyEntityIdToStringIdMap::getInstance()->legacyToString($legacyIdTag->getValue()) ?? self::DEFAULT_ENTITY_TYPE_ID;
 		}elseif(($idTag = $nbt->getTag(self::TAG_ENTITY_TYPE_ID)) instanceof StringTag){
 			$this->entityTypeId = $idTag->getValue();
+			if($this->entityTypeId === self::DEFAULT_LEGACY_ENTITY_TYPE_ID){
+				$this->entityTypeId = self::DEFAULT_ENTITY_TYPE_ID;
+			}
 		}else{
-			$this->entityTypeId = ":"; //default - TODO: replace this with a constant
+			$this->entityTypeId = self::DEFAULT_ENTITY_TYPE_ID;
 		}
 
 		$this->spawnData = $nbt->getCompoundTag(self::TAG_SPAWN_DATA);
@@ -142,7 +148,7 @@ class MonsterSpawner extends Spawnable{
 	}
 
 	public function onUpdate() : bool{
-		if($this->closed || $this->entityTypeId === ":"){
+		if($this->closed || $this->entityTypeId === self::DEFAULT_ENTITY_TYPE_ID){
 			return false;
 		}
 		if($this->spawnDelay > 0){
