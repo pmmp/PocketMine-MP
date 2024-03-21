@@ -36,7 +36,6 @@ use pocketmine\item\ItemIdentifier as IID;
 use pocketmine\item\ItemTypeIds as Ids;
 use pocketmine\item\VanillaArmorMaterials as ArmorMaterials;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\utils\CloningRegistryTrait;
 use pocketmine\world\World;
 use function strtolower;
