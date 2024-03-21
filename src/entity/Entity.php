@@ -89,6 +89,7 @@ abstract class Entity{
 	private const TAG_FALL_DISTANCE = "FallDistance"; //TAG_Float
 	private const TAG_CUSTOM_NAME = "CustomName"; //TAG_String
 	private const TAG_CUSTOM_NAME_VISIBLE = "CustomNameVisible"; //TAG_Byte
+	private const TAG_CUSTOM_NAME_ALWAYS_VISIBLE = "CustomNameAlwaysVisible"; //TAG_Byte
 	public const TAG_POS = "Pos"; //TAG_List<TAG_Double>|TAG_List<TAG_Float>
 	public const TAG_MOTION = "Motion"; //TAG_List<TAG_Double>|TAG_List<TAG_Float>
 	public const TAG_ROTATION = "Rotation"; //TAG_List<TAG_Float>
@@ -491,6 +492,7 @@ abstract class Entity{
 			if($this->getNameTag() !== ""){
 				$nbt->setString(self::TAG_CUSTOM_NAME, $this->getNameTag());
 				$nbt->setByte(self::TAG_CUSTOM_NAME_VISIBLE, $this->isNameTagVisible() ? 1 : 0);
+				$nbt->setByte(self::TAG_CUSTOM_NAME_ALWAYS_VISIBLE, $this->isNameTagAlwaysVisible() ? 1 : 0);
 			}
 		}
 
@@ -519,6 +521,8 @@ abstract class Entity{
 			}else{
 				$this->setNameTagVisible($nbt->getByte(self::TAG_CUSTOM_NAME_VISIBLE, 1) !== 0);
 			}
+
+			$this->setNameTagAlwaysVisible($nbt->getByte(self::TAG_CUSTOM_NAME_ALWAYS_VISIBLE, 0) !== 0);
 		}
 	}
 
