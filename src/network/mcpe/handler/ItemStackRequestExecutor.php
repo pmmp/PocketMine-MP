@@ -55,7 +55,6 @@ use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\TakeStackReque
 use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponse;
 use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\player\Player;
-use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
 use function array_key_first;
 use function count;

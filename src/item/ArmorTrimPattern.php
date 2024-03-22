@@ -23,10 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use function str_ends_with;
-use function strlen;
-use function substr;
-
 enum ArmorTrimPattern : string{
 
 	case COAST = "coast";
