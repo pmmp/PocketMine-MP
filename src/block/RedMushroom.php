@@ -33,7 +33,7 @@ class RedMushroom extends Flowable{
 		//TODO: moss
 		$supportBlock = $block->getSide(Facing::DOWN);
 		$position = $this->position;
-		$lightLevel = $position->world->getFullLightAt($position->x, $position->y, $position->z);
+		$lightLevel = $position->getWorld()->getFullLightAt($position->x, $position->y, $position->z);
 
 		return
 			$lightLevel <= 12 &&
