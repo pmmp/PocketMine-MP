@@ -65,7 +65,6 @@ use pocketmine\item\enchantment\ItemEnchantmentTags as EnchantmentTags;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\math\Facing;
-use pocketmine\nbt\tag\Tag;
 use pocketmine\utils\CloningRegistryTrait;
 use function mb_strtolower;
 use function strtolower;
