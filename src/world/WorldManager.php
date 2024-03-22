@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world;
 
 use pocketmine\entity\Entity;
+use pocketmine\event\entity\EntityTeleportEvent;
 use pocketmine\event\world\WorldInitEvent;
 use pocketmine\event\world\WorldLoadEvent;
 use pocketmine\event\world\WorldUnloadEvent;
@@ -146,7 +147,7 @@ class WorldManager{
 				if($safeSpawn === null){
 					$player->disconnect("Forced default world unload");
 				}else{
-					$player->teleport($safeSpawn);
+					$player->teleport($safeSpawn, cause: EntityTeleportEvent::CAUSE_WORLD);
 				}
 			}
 		}

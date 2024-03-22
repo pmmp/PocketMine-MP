@@ -1434,7 +1434,7 @@ abstract class Entity{
 	/**
 	 * @param Vector3|Position|Location $pos
 	 */
-	public function teleport(Vector3 $pos, ?float $yaw = null, ?float $pitch = null) : bool{
+	public function teleport(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, int $cause = EntityTeleportEvent::CAUSE_PLUGIN) : bool{
 		Utils::checkVector3NotInfOrNaN($pos);
 		if($pos instanceof Location){
 			$yaw = $yaw ?? $pos->yaw;
@@ -1449,7 +1449,7 @@ abstract class Entity{
 
 		$from = $this->location->asPosition();
 		$to = Position::fromObject($pos, $pos instanceof Position ? $pos->getWorld() : $this->getWorld());
-		$ev = new EntityTeleportEvent($this, $from, $to);
+		$ev = new EntityTeleportEvent($this, $from, $to, $cause);
 		$ev->call();
 		if($ev->isCancelled()){
 			return false;
