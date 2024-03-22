@@ -684,6 +684,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->networkPropertiesDirty = true;
 	}
 
+	public function allowForceEating() : bool{
+		return $this->isCreative() || $this->getWorld()->getDifficulty() === World::DIFFICULTY_PEACEFUL;
+	}
+
 	/**
 	 * Returns how long the player has been using their currently-held item for. Used for determining arrow shoot force
 	 * for bows.
