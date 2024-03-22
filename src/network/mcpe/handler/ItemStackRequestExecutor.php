@@ -346,7 +346,7 @@ class ItemStackRequestExecutor{
 					$this->setNextCreatedItem($window->getOutput($optionId));
 				}
 			}elseif($window instanceof SmithingTableInventory){
-				$craftingManager = Server::getInstance()->getCraftingManager();
+				$craftingManager = $this->player->getServer()->getCraftingManager();
 				$recipe = $craftingManager->getSmithingRecipeFromIndex($action->getRecipeId());
 				if($recipe !== null){
 					$this->specialTransaction = new SmithingTransaction($this->player, $recipe);

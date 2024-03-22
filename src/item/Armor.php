@@ -24,8 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\color\Color;
-use pocketmine\data\bedrock\TrimMaterialTypeIdMap;
-use pocketmine\data\bedrock\TrimPatternTypeIdMap;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\item\enchantment\ProtectionEnchantment;
@@ -42,11 +40,11 @@ class Armor extends Durable{
 
 	public const TAG_CUSTOM_COLOR = "customColor"; //TAG_Int
 
-	public const TAG_TRIM = "Trim";
+	public const TAG_TRIM = "Trim"; // TAG_Compound
 
-	public const TAG_TRIM_MATERIAL = "Material"; //TAG_Int
+	public const TAG_TRIM_MATERIAL = "Material"; //TAG_String
 
-	public const TAG_TRIM_PATTERN = "Pattern"; //TAG_Int
+	public const TAG_TRIM_PATTERN = "Pattern"; //TAG_String
 
 	private ArmorTypeInfo $armorInfo;
 
@@ -188,8 +186,8 @@ class Armor extends Durable{
 		}
 		$trimTag = $tag->getTag(self::TAG_TRIM);
 		if($trimTag instanceof CompoundTag){
-			$material = TrimMaterialTypeIdMap::getInstance()->fromId($trimTag->getInt(self::TAG_TRIM_MATERIAL, -1));
-			$pattern = TrimPatternTypeIdMap::getInstance()->fromId($trimTag->getInt(self::TAG_TRIM_PATTERN, -1));
+			$material = ArmorTrimMaterial::tryFrom($trimTag->getString(self::TAG_TRIM_MATERIAL));
+			$pattern = ArmorTrimPattern::tryFrom($trimTag->getString(self::TAG_TRIM_PATTERN));
 			if($material instanceof ArmorTrimMaterial && $pattern instanceof ArmorTrimPattern){
 				$this->armorTrim = new ArmorTrim($material, $pattern);
 			}
@@ -203,8 +201,8 @@ class Armor extends Durable{
 			$tag->removeTag(self::TAG_CUSTOM_COLOR);
 		$this->armorTrim !== null ?
 			$tag->setTag(self::TAG_TRIM, CompoundTag::create()
-				->setInt(self::TAG_TRIM_MATERIAL, TrimMaterialTypeIdMap::getInstance()->toId($this->armorTrim->getMaterial()))
-				->setInt(self::TAG_TRIM_PATTERN, TrimPatternTypeIdMap::getInstance()->toId($this->armorTrim->getPattern()))) :
+				->setString(self::TAG_TRIM_MATERIAL, $this->armorTrim->getMaterial()->value)
+				->setString(self::TAG_TRIM_PATTERN, $this->armorTrim->getPattern()->value)) :
 			$tag->removeTag(self::TAG_TRIM);
 	}
 }

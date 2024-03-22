@@ -38,7 +38,7 @@ enum ArmorTrimPattern : string{
 	case SENTRY = "sentry";
 	case SHAPER = "shaper";
 	case SILENCE = "silence";
-	case SNOUT = "snouth";
+	case SNOUT = "snout";
 	case SPIRE = "spire";
 	case TIDE = "tide";
 	case VEX = "vex";
@@ -49,12 +49,24 @@ enum ArmorTrimPattern : string{
 	public const TEMPLATE_SUFFIX = "_armor_trim_smithing_template";
 
 	public static function fromItem(Item $item) : ?ArmorTrimPattern{
-		foreach(StringToItemParser::getInstance()->lookupAliases($item) as $alias){
-			if (!str_ends_with($alias, self::TEMPLATE_SUFFIX)){
-				continue;
-			}
-			return self::tryFrom(substr($alias, 0, strlen($alias) - strlen(self::TEMPLATE_SUFFIX)));
-		}
-		return null;
+		return match($item->getTypeId()){
+			ItemTypeIds::COAST_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::COAST,
+			ItemTypeIds::DUNE_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::DUNE,
+			ItemTypeIds::EYE_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::EYE,
+			ItemTypeIds::HOST_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::HOST,
+			ItemTypeIds::RAISER_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::RAISER,
+			ItemTypeIds::RIB_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::RIB,
+			ItemTypeIds::SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::SENTRY,
+			ItemTypeIds::SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::SHAPER,
+			ItemTypeIds::SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::SILENCE,
+			ItemTypeIds::SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::SNOUT,
+			ItemTypeIds::SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::SPIRE,
+			ItemTypeIds::TIDE_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::TIDE,
+			ItemTypeIds::VEX_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::VEX,
+			ItemTypeIds::WARD_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::WARD,
+			ItemTypeIds::WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::WAYFINDER,
+			ItemTypeIds::WILD_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::WILD,
+			default => null
+		};
 	}
 }

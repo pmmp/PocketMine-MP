@@ -145,9 +145,8 @@ final class CraftingDataCache{
 			}
 		}
 
-		$index ??= 0;
+		$index = CraftingManager::SMITHING_RECIPES_OFFSET;
 		foreach($manager->getSmithingRecipes() as $recipe){
-			$index++;
 			if($recipe instanceof SmithingTransformRecipe){
 				$recipesWithTypeIds[] = new ProtocolSmithingTransformRecipe(
 					CraftingDataPacket::ENTRY_SMITHING_TRANSFORM,
@@ -170,6 +169,7 @@ final class CraftingDataCache{
 					$index
 				);
 			}
+			$index++;
 		}
 
 		$potionTypeRecipes = [];

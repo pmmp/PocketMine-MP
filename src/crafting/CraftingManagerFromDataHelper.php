@@ -294,6 +294,7 @@ final class CraftingManagerFromDataHelper{
 				$input
 			));
 		}
+
 		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'potion_type.json'), PotionTypeRecipeData::class) as $recipe){
 			$input = self::deserializeIngredient($recipe->input);
 			$ingredient = self::deserializeIngredient($recipe->ingredient);

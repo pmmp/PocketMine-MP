@@ -36,6 +36,8 @@ use function usort;
 class CraftingManager{
 	use DestructorCallbackTrait;
 
+	public const SMITHING_RECIPES_OFFSET = 200000;
+
 	/**
 	 * @var ShapedRecipe[][]
 	 * @phpstan-var array<string, list<ShapedRecipe>>
@@ -213,12 +215,10 @@ class CraftingManager{
 	}
 
 	public function getSmithingRecipeFromIndex(int $index) : ?SmithingRecipe{
-		$craftingOffset = count($this->craftingRecipeIndex) - 1;
-
-		if($index < $craftingOffset || $index > ($craftingOffset + count($this->smithingRecipes))){
+		if($index < self::SMITHING_RECIPES_OFFSET || $index > (self::SMITHING_RECIPES_OFFSET + count($this->smithingRecipes))){
 			return null;
 		}
-		return $this->smithingRecipes[$index - $craftingOffset - 1];
+		return $this->smithingRecipes[$index - self::SMITHING_RECIPES_OFFSET];
 	}
 
 	public function registerShapedRecipe(ShapedRecipe $recipe) : void{
