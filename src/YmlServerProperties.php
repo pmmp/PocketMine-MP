@@ -104,6 +104,7 @@ final class YmlServerProperties{
 	public const PLUGINS_LEGACY_DATA_DIR = 'plugins.legacy-data-dir';
 	public const SETTINGS = 'settings';
 	public const SETTINGS_ASYNC_WORKERS = 'settings.async-workers';
+	public const SETTINGS_DYLAN_THANK_YOU = 'settings.dylan-thank-you';
 	public const SETTINGS_ENABLE_DEV_BUILDS = 'settings.enable-dev-builds';
 	public const SETTINGS_ENABLE_PROFILING = 'settings.enable-profiling';
 	public const SETTINGS_FORCE_LANGUAGE = 'settings.force-language';

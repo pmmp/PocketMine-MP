@@ -4,6 +4,7 @@
 # New settings/defaults won't appear automatically in this file when upgrading.
 
 settings:
+  dylan-thank-you: true
   #Whether to send all strings translated to server locale or let the device handle them
   force-language: false
   shutdown-message: "Server closed"
