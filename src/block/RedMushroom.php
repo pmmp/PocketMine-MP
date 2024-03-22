@@ -23,33 +23,22 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 
 class RedMushroom extends Flowable{
+	use StaticSupportTrait;
 
-	public function ticksRandomly() : bool{
-		return true;
-	}
-
-	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->isTransparent()){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
-	}
-
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$down = $this->getSide(Facing::DOWN);
+	private function canBeSupportedAt(Block $block) : bool{
+		//TODO: moss
+		$supportBlock = $block->getSide(Facing::DOWN);
 		$position = $this->position;
-		$lightLevel = $position->getWorld()->getFullLightAt($position->x, $position->y, $position->z);
-		$downId = $down->getTypeId();
-		if(($lightLevel <= 12 && !$down->isTransparent()) || $downId === BlockTypeIds::MYCELIUM || $downId === BlockTypeIds::PODZOL || $downId === BlockTypeIds::CRIMSON_NYLIUM || $downId === BlockTypeIds::WARPED_NYLIUM){
-			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}
+		$lightLevel = $position->world->getFullLightAt($position->x, $position->y, $position->z);
 
-		return false;
+		return
+			$lightLevel <= 12 &&
+			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::NYLIUM);
 	}
 }

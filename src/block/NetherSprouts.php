@@ -23,39 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 
 class NetherSprouts extends Flowable{
+	use StaticSupportTrait;
 
-	public function ticksRandomly() : bool{
-		return true;
-	}
-
-	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->isTransparent()){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
-	}
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0){
-			return [$this->asItem()];
-		}
-
-		return [];
-	}
-
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$down = $this->getSide(Facing::DOWN);
-		$downId = $down->getTypeId();
-		if((!$down->isTransparent()) || $downId === BlockTypeIds::MYCELIUM || $downId === BlockTypeIds::PODZOL || $downId === BlockTypeIds::CRIMSON_NYLIUM || $downId === BlockTypeIds::WARPED_NYLIUM){
-			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}
-
-		return false;
+	private function canBeSupportedAt(Block $block) : bool{
+		//TODO: moss
+		$supportBlock = $block->getSide(Facing::DOWN);
+		return
+			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::NYLIUM);
 	}
 }

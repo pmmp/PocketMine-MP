@@ -65,6 +65,7 @@ use pocketmine\item\enchantment\ItemEnchantmentTags as EnchantmentTags;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\math\Facing;
+use pocketmine\nbt\tag\Tag;
 use pocketmine\utils\CloningRegistryTrait;
 use function mb_strtolower;
 use function strtolower;
@@ -973,7 +974,7 @@ final class VanillaBlocks{
 		self::register("chiseled_nether_bricks", new Opaque(new BID(Ids::CHISELED_NETHER_BRICKS), "Chiseled Nether Bricks", $netherBrickBreakInfo));
 		self::register("cracked_nether_bricks", new Opaque(new BID(Ids::CRACKED_NETHER_BRICKS), "Cracked Nether Bricks", $netherBrickBreakInfo));
 
-		$nyliumBreakInfo = new Info(BreakInfo::axe(0.4, ToolTier::WOOD, 0.4));
+		$nyliumBreakInfo = new Info(BreakInfo::axe(0.4, ToolTier::WOOD, 0.4), [Tags::NYLIUM]);
 		self::register("crimson_nylium", new Nylium(new BID(Ids::CRIMSON_NYLIUM), "Crimson Nylium", $nyliumBreakInfo));
 		self::register("warped_nylium", new Nylium(new BID(Ids::WARPED_NYLIUM), "Warped Nylium", $nyliumBreakInfo));
 
