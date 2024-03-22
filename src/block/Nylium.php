@@ -51,9 +51,9 @@ class Nylium extends Opaque{
 
 	public function onRandomTick() : void{
 		$blockAbove = $this->getSide(Facing::UP);
-		if(!$blockAbove->isTransparent() && $blockAbove->getTypeId() === BlockTypeIds::SNOW_LAYER){
+		if(!$blockAbove->isTransparent() || $blockAbove->getTypeId() === BlockTypeIds::SNOW_LAYER){
 			//nylium dies
-			BlockEventHelper::die($this, VanillaBlocks::NETHERRACK());
+			BlockEventHelper::spread($this, VanillaBlocks::NETHERRACK(), $this);
 		}
 	}
 
