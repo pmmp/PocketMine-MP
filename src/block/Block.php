@@ -476,12 +476,17 @@ class Block{
 	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if full)
 	 */
 	public function onBreak(Item $item, ?Player $player = null, array &$returnedItems = []) : bool{
-		$world = $this->position->getWorld();
-		if(($t = $world->getTile($this->position)) !== null){
-			$t->onBlockDestroyed();
-		}
-		$world->setBlock($this->position, VanillaBlocks::AIR());
+		$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
 		return true;
+	}
+
+	/**
+	 * Called when this block is destroyed either when a player breaks it or is hit by an explosion.
+	 */
+	public function onDestroy() : void{
+		if(($t = $this->position->getWorld()->getTile($this->position)) !== null){
+			$t->onBlockDestroyed(); //needed to create drops for inventories
+		}
 	}
 
 	/**
