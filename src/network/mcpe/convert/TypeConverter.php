@@ -30,13 +30,17 @@ use pocketmine\crafting\RecipeIngredient;
 use pocketmine\crafting\TagWildcardRecipeIngredient;
 use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\data\bedrock\item\BlockItemIdMap;
+use pocketmine\data\bedrock\item\ItemTypeNames;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\GameMode as ProtocolGameMode;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackExtraData;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackExtraDataShield;
 use pocketmine\network\mcpe\protocol\types\recipe\IntIdMetaItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient as ProtocolRecipeIngredient;
 use pocketmine\network\mcpe\protocol\types\recipe\StringIdMetaItemDescriptor;
@@ -76,7 +80,7 @@ class TypeConverter{
 		);
 
 		$this->itemTypeDictionary = ItemTypeDictionaryFromDataHelper::loadFromString(Filesystem::fileGetContents(BedrockDataFiles::REQUIRED_ITEM_LIST_JSON));
-		$this->shieldRuntimeId = $this->itemTypeDictionary->fromStringId("minecraft:shield");
+		$this->shieldRuntimeId = $this->itemTypeDictionary->fromStringId(ItemTypeNames::SHIELD);
 
 		$this->itemTranslator = new ItemTranslator(
 			$this->itemTypeDictionary,
@@ -217,26 +221,36 @@ class TypeConverter{
 			[$id, $meta, $blockRuntimeId] = $idMeta;
 		}
 
+		$extraData = $id === $this->shieldRuntimeId ?
+			new ItemStackExtraDataShield($nbt, canPlaceOn: [], canDestroy: [], blockingTick: 0) :
+			new ItemStackExtraData($nbt, canPlaceOn: [], canDestroy: []);
+		$extraDataSerializer = PacketSerializer::encoder();
+		$extraData->write($extraDataSerializer);
+
 		return new ItemStack(
 			$id,
 			$meta,
 			$itemStack->getCount(),
 			$blockRuntimeId ?? ItemTranslator::NO_BLOCK_RUNTIME_ID,
-			$nbt,
-			[],
-			[],
-			$id === $this->shieldRuntimeId ? 0 : null
+			$extraDataSerializer->getBuffer(),
 		);
 	}
 
 	/**
+	 * WARNING: Avoid this in server-side code. If you need to compare ItemStacks provided by the client to the
+	 * server, prefer encoding the server's itemstack and comparing the serialized ItemStack, instead of converting
+	 * the client's ItemStack to a core Item.
+	 * This method will fully decode the item's extra data, which can be very costly if the item has a lot of NBT data.
+	 *
 	 * @throws TypeConversionException
 	 */
 	public function netItemStackToCore(ItemStack $itemStack) : Item{
 		if($itemStack->getId() === 0){
 			return VanillaItems::AIR();
 		}
-		$compound = $itemStack->getNbt();
+		$extraData = $this->deserializeItemStackExtraData($itemStack->getRawExtraData(), $itemStack->getId());
+
+		$compound = $extraData->getNbt();
 
 		$itemResult = $this->itemTranslator->fromNetworkId($itemStack->getId(), $itemStack->getMeta(), $itemStack->getBlockRuntimeId());
 
@@ -254,5 +268,12 @@ class TypeConverter{
 		}
 
 		return $itemResult;
+	}
+
+	public function deserializeItemStackExtraData(string $extraData, int $id) : ItemStackExtraData{
+		$extraDataDeserializer = PacketSerializer::decoder($extraData, 0);
+		return $id === $this->shieldRuntimeId ?
+			ItemStackExtraDataShield::read($extraDataDeserializer) :
+			ItemStackExtraData::read($extraDataDeserializer);
 	}
 }

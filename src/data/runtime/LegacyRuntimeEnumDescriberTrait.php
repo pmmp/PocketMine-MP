@@ -29,11 +29,6 @@ namespace pocketmine\data\runtime;
  * @deprecated
  */
 trait LegacyRuntimeEnumDescriberTrait{
-
-	/**
-	 * @phpstan-template T of \UnitEnum
-	 * @phpstan-param T $case
-	 */
 	abstract protected function enum(\UnitEnum &$case) : void;
 
 	public function bellAttachmentType(\pocketmine\block\utils\BellAttachmentType &$value) : void{

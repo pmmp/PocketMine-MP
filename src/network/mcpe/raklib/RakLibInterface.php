@@ -33,7 +33,6 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketBroadcaster;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\network\Network;
 use pocketmine\network\NetworkInterfaceStartException;
 use pocketmine\network\PacketHandlingException;
@@ -84,7 +83,6 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 
 	private PacketBroadcaster $packetBroadcaster;
 	private EntityEventBroadcaster $entityEventBroadcaster;
-	private PacketSerializerContext $packetSerializerContext;
 	private TypeConverter $typeConverter;
 
 	public function __construct(
@@ -94,12 +92,10 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		bool $ipV6,
 		PacketBroadcaster $packetBroadcaster,
 		EntityEventBroadcaster $entityEventBroadcaster,
-		PacketSerializerContext $packetSerializerContext,
 		TypeConverter $typeConverter
 	){
 		$this->server = $server;
 		$this->packetBroadcaster = $packetBroadcaster;
-		$this->packetSerializerContext = $packetSerializerContext;
 		$this->entityEventBroadcaster = $entityEventBroadcaster;
 		$this->typeConverter = $typeConverter;
 
@@ -192,7 +188,6 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			$this->server,
 			$this->network->getSessionManager(),
 			PacketPool::getInstance(),
-			$this->packetSerializerContext,
 			new RakLibPacketSender($sessionId, $this),
 			$this->packetBroadcaster,
 			$this->entityEventBroadcaster,
@@ -257,7 +252,9 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	}
 
 	public function onPacketAck(int $sessionId, int $identifierACK) : void{
-
+		if(isset($this->sessions[$sessionId])){
+			$this->sessions[$sessionId]->handleAckReceipt($identifierACK);
+		}
 	}
 
 	public function setName(string $name) : void{
@@ -294,12 +291,13 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		$this->network->getBandwidthTracker()->add($bytesSentDiff, $bytesReceivedDiff);
 	}
 
-	public function putPacket(int $sessionId, string $payload, bool $immediate = true) : void{
+	public function putPacket(int $sessionId, string $payload, bool $immediate = true, ?int $receiptId = null) : void{
 		if(isset($this->sessions[$sessionId])){
 			$pk = new EncapsulatedPacket();
 			$pk->buffer = self::MCPE_RAKNET_PACKET_ID . $payload;
 			$pk->reliability = PacketReliability::RELIABLE_ORDERED;
 			$pk->orderChannel = 0;
+			$pk->identifierACK = $receiptId;
 
 			$this->interface->sendEncapsulated($sessionId, $pk, $immediate);
 		}
