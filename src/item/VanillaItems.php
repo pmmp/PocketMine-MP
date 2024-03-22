@@ -287,6 +287,7 @@ use function strtolower;
  * @method static Item SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Item SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Shears SHEARS()
+ * @method static Shield SHIELD()
  * @method static Item SHULKER_SHELL()
  * @method static Item SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Item SLIMEBALL()
@@ -548,6 +549,7 @@ final class VanillaItems{
 		self::register("rotten_flesh", new RottenFlesh(new IID(Ids::ROTTEN_FLESH), "Rotten Flesh"));
 		self::register("scute", new Item(new IID(Ids::SCUTE), "Scute"));
 		self::register("shears", new Shears(new IID(Ids::SHEARS), "Shears", [EnchantmentTags::SHEARS]));
+		self::register("shield", new Shield(new IID(Ids::SHIELD), "Shield"));
 		self::register("shulker_shell", new Item(new IID(Ids::SHULKER_SHELL), "Shulker Shell"));
 		self::register("slimeball", new Item(new IID(Ids::SLIMEBALL), "Slimeball"));
 		self::register("snowball", new Snowball(new IID(Ids::SNOWBALL), "Snowball"));
