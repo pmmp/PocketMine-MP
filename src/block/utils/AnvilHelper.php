@@ -41,6 +41,7 @@ use pocketmine\player\Player;
 use function ceil;
 use function max;
 use function min;
+use function strlen;
 
 final class AnvilHelper{
 
@@ -63,7 +64,7 @@ final class AnvilHelper{
 				$base->setDamage(max(0, $base->getDamage() - $l));
 				$cost += self::COST_REPAIR_MATERIAL;
 
-				if($sacrifice->getCount() === 0 || $base->getDamage() === 0){
+				if($sacrifice->isNull() || $base->getDamage() === 0){
 					break;
 				}
 			}
@@ -82,7 +83,7 @@ final class AnvilHelper{
 		}
 
 		$rename = false;
-		if(empty($customName)){
+		if($customName === null || strlen($customName) === 0){
 			if($base->hasCustomName()){
 				$cost += self::COST_RENAME;
 				$base->clearCustomName();
@@ -158,7 +159,7 @@ final class AnvilHelper{
 			};
 		}
 		return match($equipment->getTier()){
-			ToolTier::WOOD => $material instanceof Planks,
+			ToolTier::WOOD => $material->getBlock() instanceof Planks,
 			ToolTier::STONE => $material->equals(VanillaBlocks::COBBLESTONE()->asItem()),
 			ToolTier::IRON => $material->equals(VanillaItems::IRON_INGOT()),
 			ToolTier::GOLD => $material->equals(VanillaItems::GOLD_INGOT()),
