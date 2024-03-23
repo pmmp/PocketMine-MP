@@ -23,10 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\entity\EntityFactory;
-use pocketmine\entity\Squid;
-use pocketmine\entity\Villager;
-use pocketmine\entity\Zombie;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
 
@@ -40,10 +36,9 @@ final class SpawnEggEntityRegistry{
 	private array $entityMap = [];
 
 	private function __construct(){
-		$entityFactory = EntityFactory::getInstance();
-		$this->register($entityFactory->getSaveId(Squid::class), VanillaItems::SQUID_SPAWN_EGG());
-		$this->register($entityFactory->getSaveId(Villager::class), VanillaItems::VILLAGER_SPAWN_EGG());
-		$this->register($entityFactory->getSaveId(Zombie::class), VanillaItems::ZOMBIE_SPAWN_EGG());
+		$this->register('minecraft:squid', VanillaItems::SQUID_SPAWN_EGG());
+		$this->register('minecraft:villager', VanillaItems::VILLAGER_SPAWN_EGG());
+		$this->register('minecraft:zombie', VanillaItems::ZOMBIE_SPAWN_EGG());
 	}
 
 	public function register(string $entitySaveId, SpawnEgg $spawnEgg) : void{
