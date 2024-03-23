@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\inventory\transaction;
 
 use pocketmine\item\Item;
+use function array_map;
+use function var_dump;
 
 class AnvilTransaction extends InventoryTransaction{
 
@@ -39,5 +41,6 @@ class AnvilTransaction extends InventoryTransaction{
 		$this->matchItems($outputs, $inputs);
 
 		// todo: validation
+		var_dump(array_map(fn(Item $item) => $item->getName(), $inputs), array_map(fn(Item $item) => $item->getName(), $outputs));
 	}
 }

@@ -58,7 +58,6 @@ final class AnvilHelper{
 
 		if(($base instanceof Armor || $base instanceof TieredTool) && self::isValidRepairMaterial($base, $sacrifice) && $base->getDamage() > 0){
 			$l = min($base->getDamage(), (int) ceil($base->getMaxDurability() / 4));
-
 			for($i = 0; $i < 4; $i++) {
 				$sacrifice->pop();
 				$base->setDamage(max(0, $base->getDamage() - $l));
@@ -147,24 +146,25 @@ final class AnvilHelper{
 	}
 
 	public static function isValidRepairMaterial(Armor|TieredTool $equipment, Item $material) : bool{
+		$equals = fn(Item $item) => $material->equals($item, checkCompound: false);
 		if($equipment instanceof Armor){
 			return match($equipment->getMaterial()){
-				VanillaArmorMaterials::LEATHER() => $material->equals(VanillaItems::LEATHER()),
-				VanillaArmorMaterials::CHAINMAIL(), VanillaArmorMaterials::IRON() => $material->equals(VanillaItems::IRON_INGOT()),
-				VanillaArmorMaterials::GOLD() => $material->equals(VanillaItems::GOLD_INGOT()),
-				VanillaArmorMaterials::DIAMOND() => $material->equals(VanillaItems::DIAMOND()),
-				VanillaArmorMaterials::NETHERITE() => $material->equals(VanillaItems::NETHERITE_INGOT()),
-				VanillaArmorMaterials::TURTLE() => $material->equals(VanillaItems::SCUTE()),
+				VanillaArmorMaterials::LEATHER() => $equals(VanillaItems::LEATHER()),
+				VanillaArmorMaterials::CHAINMAIL(), VanillaArmorMaterials::IRON() => $equals(VanillaItems::IRON_INGOT()),
+				VanillaArmorMaterials::GOLD() => $equals(VanillaItems::GOLD_INGOT()),
+				VanillaArmorMaterials::DIAMOND() => $equals(VanillaItems::DIAMOND()),
+				VanillaArmorMaterials::NETHERITE() => $equals(VanillaItems::NETHERITE_INGOT()),
+				VanillaArmorMaterials::TURTLE() => $equals(VanillaItems::SCUTE()),
 				default => false
 			};
 		}
 		return match($equipment->getTier()){
 			ToolTier::WOOD => $material->getBlock() instanceof Planks,
-			ToolTier::STONE => $material->equals(VanillaBlocks::COBBLESTONE()->asItem()),
-			ToolTier::IRON => $material->equals(VanillaItems::IRON_INGOT()),
-			ToolTier::GOLD => $material->equals(VanillaItems::GOLD_INGOT()),
-			ToolTier::DIAMOND => $material->equals(VanillaItems::DIAMOND()),
-			ToolTier::NETHERITE => $material->equals(VanillaItems::NETHERITE_INGOT())
+			ToolTier::STONE => $equals(VanillaBlocks::COBBLESTONE()->asItem()),
+			ToolTier::IRON => $equals(VanillaItems::IRON_INGOT()),
+			ToolTier::GOLD => $equals(VanillaItems::GOLD_INGOT()),
+			ToolTier::DIAMOND => $equals(VanillaItems::DIAMOND()),
+			ToolTier::NETHERITE => $equals(VanillaItems::NETHERITE_INGOT())
 		};
 	}
 }
