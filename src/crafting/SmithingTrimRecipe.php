@@ -28,7 +28,6 @@ use pocketmine\item\ArmorTrim;
 use pocketmine\item\ArmorTrimMaterial;
 use pocketmine\item\ArmorTrimPattern;
 use pocketmine\item\Item;
-use pocketmine\item\SmithingTemplate;
 
 class SmithingTrimRecipe implements SmithingRecipe{
 
@@ -59,7 +58,7 @@ class SmithingTrimRecipe implements SmithingRecipe{
 		foreach($inputs as $item){
 			if($item instanceof Armor){
 				$input = $item;
-			}elseif($item instanceof SmithingTemplate){
+			}elseif(ArmorTrimPattern::fromItem($item) !== null){
 				$template = $item;
 			}else{
 				$addition = $item;

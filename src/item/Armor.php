@@ -119,14 +119,8 @@ class Armor extends Durable{
 	}
 
 	/** @return $this */
-	public function setTrim(ArmorTrim $trim) : self{
+	public function setTrim(?ArmorTrim $trim) : self{
 		$this->armorTrim = $trim;
-		return $this;
-	}
-
-	/** @return $this */
-	public function clearTrim() : self{
-		$this->armorTrim = null;
 		return $this;
 	}
 

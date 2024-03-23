@@ -26,8 +26,8 @@ namespace pocketmine\item;
 class ArmorTrim{
 
 	public function __construct(
-		private readonly ArmorTrimMaterial $material,
-		private readonly ArmorTrimPattern $pattern
+		private ArmorTrimMaterial $material,
+		private ArmorTrimPattern $pattern
 	){}
 
 	public function getMaterial() : ArmorTrimMaterial{

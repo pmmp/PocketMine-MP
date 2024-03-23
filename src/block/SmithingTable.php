@@ -34,6 +34,7 @@ final class SmithingTable extends Opaque{
 		if($player !== null){
 			$player->setCurrentWindow(new SmithingTableInventory($this->position));
 		}
+
 		return true;
 	}
 
