@@ -1,5 +1,6 @@
 #!/bin/bash
 
+echo "Dylan bye bye"
 rm -f *
 if type -p java; then
     _java=java
