@@ -185,7 +185,6 @@ class MonsterSpawner extends Spawnable{
 		// TODO: spawn condition check (light level etc.)
 		for($i = 0; $i < $this->spawnPerAttempt; $i++){
 			$spawnLocation = $position->add(mt_rand(-$this->spawnRange, $this->spawnRange), 0, mt_rand(-$this->spawnRange, $this->spawnRange));
-			$spawnLocation = $world->getSafeSpawn($spawnLocation);
 			$spawnLocation = Location::fromObject($spawnLocation, $world);
 			$nbt = CompoundTag::create()
 				->setString(EntityFactory::TAG_IDENTIFIER, $entityTypeId)
