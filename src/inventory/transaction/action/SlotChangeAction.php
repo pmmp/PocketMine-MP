@@ -24,9 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\inventory\transaction\action;
 
 use pocketmine\inventory\Inventory;
+use pocketmine\inventory\SlotSafeInventory;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
 
 /**
@@ -73,6 +75,17 @@ class SlotChangeAction extends InventoryAction{
 		}
 		if($this->targetItem->getCount() > $this->inventory->getMaxStackSize()){
 			throw new TransactionValidationException("Target item exceeds inventory max stack size");
+		}
+		if($this->inventory instanceof SlotSafeInventory && !$this->targetItem->equals(VanillaItems::AIR())){
+			$result = false;
+			foreach($this->inventory::getSlotValidators() as $validator){
+				if(($result = $validator->validate($this->inventory, $this->targetItem, $this->inventorySlot))){
+					break;
+				}
+			}
+			if(!$result){
+				throw new TransactionValidationException("Target item is not accepted by the inventory");
+			}
 		}
 	}
 

@@ -24,9 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\entity\Living;
+use pocketmine\inventory\transaction\validator\ArmorInventoryValidator;
 use pocketmine\item\Item;
 
-class ArmorInventory extends SimpleInventory{
+class ArmorInventory extends SimpleInventory implements SlotSafeInventory{
 	public const SLOT_HEAD = 0;
 	public const SLOT_CHEST = 1;
 	public const SLOT_LEGS = 2;
@@ -72,5 +73,11 @@ class ArmorInventory extends SimpleInventory{
 
 	public function setBoots(Item $boots) : void{
 		$this->setItem(self::SLOT_FEET, $boots);
+	}
+
+	public static function getSlotValidators() : array{
+		return [
+			new ArmorInventoryValidator()
+		];
 	}
 }
