@@ -25,7 +25,6 @@ namespace pocketmine\inventory\transaction;
 
 use pocketmine\item\Item;
 use function array_map;
-use function count;
 use function var_dump;
 
 class AnvilTransaction extends InventoryTransaction{
