@@ -96,7 +96,7 @@ class Nylium extends Opaque{
 			];
 		}
 
-		$random = new Random(mt_rand());
+		$random = new Random();
 
 		$count = 8;
 		$radius = 2;
