@@ -181,6 +181,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::BRICK, Items::BRICK());
 		$this->map1to1Item(Ids::BUCKET, Items::BUCKET());
 		$this->map1to1Item(Ids::CARROT, Items::CARROT());
+		$this->map1to1Item(Ids::CARROT_ON_A_STICK, Items::CARROT_ON_A_STICK());
 		$this->map1to1Item(Ids::CHAINMAIL_BOOTS, Items::CHAINMAIL_BOOTS());
 		$this->map1to1Item(Ids::CHAINMAIL_CHESTPLATE, Items::CHAINMAIL_CHESTPLATE());
 		$this->map1to1Item(Ids::CHAINMAIL_HELMET, Items::CHAINMAIL_HELMET());
@@ -381,6 +382,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::VEX_ARMOR_TRIM_SMITHING_TEMPLATE, Items::VEX_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$this->map1to1Item(Ids::VILLAGER_SPAWN_EGG, Items::VILLAGER_SPAWN_EGG());
 		$this->map1to1Item(Ids::WARD_ARMOR_TRIM_SMITHING_TEMPLATE, Items::WARD_ARMOR_TRIM_SMITHING_TEMPLATE());
+		$this->map1to1Item(Ids::WARPED_FUNGUS_ON_A_STICK, Items::WARPED_FUNGUS_ON_A_STICK());
 		$this->map1to1Item(Ids::WARPED_SIGN, Items::WARPED_SIGN());
 		$this->map1to1Item(Ids::WATER_BUCKET, Items::WATER_BUCKET());
 		$this->map1to1Item(Ids::WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE, Items::WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE());
