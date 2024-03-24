@@ -358,10 +358,10 @@ class ItemStackRequestExecutor{
 
 				$input = $window->getItem(AnvilInventory::SLOT_INPUT);
 				$material = $window->getItem(AnvilInventory::SLOT_MATERIAL);
-				$result = AnvilHelper::createResult($this->player, $input, $material, $xp, $this->request->getFilterStrings()[0] ?? null);
+				$result = AnvilHelper::createResult($this->player, $input, $material, $cost, $this->request->getFilterStrings()[0] ?? null);
 
-				if($result !== null/* && $this->player->getXpManager()->getXpLevel() >= $xp*/){
-					//$this->player->getXpManager()->subtractXpLevels($xp);
+				if($result !== null && $this->player->getXpManager()->getXpLevel() >= $cost){
+					$this->player->getXpManager()->subtractXpLevels($cost);
 					$this->setNextCreatedItem($result);
 				}
 			}
