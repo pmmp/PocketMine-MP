@@ -41,6 +41,10 @@ class Axe extends TieredTool{
 		return $this->tier->getBaseAttackPoints() - 1;
 	}
 
+	public function canBreakShield() : bool{
+		return true;
+	}
+
 	public function onDestroyBlock(Block $block, array &$returnedItems) : bool{
 		if(!$block->getBreakInfo()->breaksInstantly()){
 			return $this->applyDamage(1);
