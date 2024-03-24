@@ -180,8 +180,8 @@ class Armor extends Durable{
 		}
 		$trimTag = $tag->getTag(self::TAG_TRIM);
 		if($trimTag instanceof CompoundTag){
-			$material = ArmorTrimMaterial::tryFrom($trimTag->getString(self::TAG_TRIM_MATERIAL));
-			$pattern = ArmorTrimPattern::tryFrom($trimTag->getString(self::TAG_TRIM_PATTERN));
+			$material = ArmorTrimRegistry::getInstance()->getMaterial($trimTag->getString(self::TAG_TRIM_MATERIAL));
+			$pattern = ArmorTrimRegistry::getInstance()->getPattern($trimTag->getString(self::TAG_TRIM_PATTERN));
 			if($material instanceof ArmorTrimMaterial && $pattern instanceof ArmorTrimPattern){
 				$this->armorTrim = new ArmorTrim($material, $pattern);
 			}
@@ -195,8 +195,8 @@ class Armor extends Durable{
 			$tag->removeTag(self::TAG_CUSTOM_COLOR);
 		$this->armorTrim !== null ?
 			$tag->setTag(self::TAG_TRIM, CompoundTag::create()
-				->setString(self::TAG_TRIM_MATERIAL, $this->armorTrim->getMaterial()->value)
-				->setString(self::TAG_TRIM_PATTERN, $this->armorTrim->getPattern()->value)) :
+				->setString(self::TAG_TRIM_MATERIAL, $this->armorTrim->getMaterial()->getIdentifier())
+				->setString(self::TAG_TRIM_PATTERN, $this->armorTrim->getPattern()->getIdentifier())) :
 			$tag->removeTag(self::TAG_TRIM);
 	}
 }

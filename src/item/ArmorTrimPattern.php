@@ -23,46 +23,40 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-enum ArmorTrimPattern : string{
+class ArmorTrimPattern{
 
-	case COAST = "coast";
-	case DUNE = "dune";
-	case EYE = "eye";
-	case HOST = "host";
-	case RAISER = "raiser";
-	case RIB = "rib";
-	case SENTRY = "sentry";
-	case SHAPER = "shaper";
-	case SILENCE = "silence";
-	case SNOUT = "snout";
-	case SPIRE = "spire";
-	case TIDE = "tide";
-	case VEX = "vex";
-	case WARD = "ward";
-	case WAYFINDER = "wayfinder";
-	case WILD = "wild";
+	public const COAST = "coast";
+	public const DUNE = "dune";
+	public const EYE = "eye";
+	public const HOST = "host";
+	public const RAISER = "raiser";
+	public const RIB = "rib";
+	public const SENTRY = "sentry";
+	public const SHAPER = "shaper";
+	public const SILENCE = "silence";
+	public const SNOUT = "snout";
+	public const SPIRE = "spire";
+	public const TIDE = "tide";
+	public const VEX = "vex";
+	public const WARD = "ward";
+	public const WAYFINDER = "wayfinder";
+	public const WILD = "wild";
 
-	public const TEMPLATE_SUFFIX = "_armor_trim_smithing_template";
+	public function __construct(
+		private string $identifier,
+		private string $itemName,
+		private int $typeId
+	){}
 
-	public static function fromItem(Item $item) : ?ArmorTrimPattern{
-		return match($item->getTypeId()){
-			ItemTypeIds::COAST_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::COAST,
-			ItemTypeIds::DUNE_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::DUNE,
-			ItemTypeIds::EYE_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::EYE,
-			ItemTypeIds::HOST_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::HOST,
-			ItemTypeIds::RAISER_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::RAISER,
-			ItemTypeIds::RIB_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::RIB,
-			ItemTypeIds::SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::SENTRY,
-			ItemTypeIds::SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::SHAPER,
-			ItemTypeIds::SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::SILENCE,
-			ItemTypeIds::SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::SNOUT,
-			ItemTypeIds::SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::SPIRE,
-			ItemTypeIds::TIDE_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::TIDE,
-			ItemTypeIds::VEX_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::VEX,
-			ItemTypeIds::WARD_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::WARD,
-			ItemTypeIds::WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::WAYFINDER,
-			ItemTypeIds::WILD_ARMOR_TRIM_SMITHING_TEMPLATE => ArmorTrimPattern::WILD,
-			default => null
-		};
+	public function getIdentifier() : string{
+		return $this->identifier;
+	}
+
+	public function getItemName() : string{
+		return $this->itemName;
+	}
+
+	public function getTypeId() : int{
+		return $this->typeId;
 	}
 }

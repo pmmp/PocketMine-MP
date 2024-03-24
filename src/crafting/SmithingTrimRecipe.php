@@ -25,8 +25,7 @@ namespace pocketmine\crafting;
 
 use pocketmine\item\Armor;
 use pocketmine\item\ArmorTrim;
-use pocketmine\item\ArmorTrimMaterial;
-use pocketmine\item\ArmorTrimPattern;
+use pocketmine\item\ArmorTrimRegistry;
 use pocketmine\item\Item;
 
 class SmithingTrimRecipe implements SmithingRecipe{
@@ -58,7 +57,7 @@ class SmithingTrimRecipe implements SmithingRecipe{
 		foreach($inputs as $item){
 			if($item instanceof Armor){
 				$input = $item;
-			}elseif(ArmorTrimPattern::fromItem($item) !== null){
+			}elseif(ArmorTrimRegistry::getInstance()->getPatternFromItem($item) !== null){
 				$template = $item;
 			}else{
 				$addition = $item;
@@ -68,7 +67,9 @@ class SmithingTrimRecipe implements SmithingRecipe{
 		if($input === null || $addition === null || $template === null){
 			return null;
 		}
-		if(($material = ArmorTrimMaterial::fromItem($addition)) === null || ($pattern = ArmorTrimPattern::fromItem($template)) === null){
+		$material = ArmorTrimRegistry::getInstance()->getMaterialFromItem($addition);
+		$pattern = ArmorTrimRegistry::getInstance()->getPatternFromItem($template);
+		if($material === null || $pattern === null){
 			return null;
 		}
 		return $input->setTrim(new ArmorTrim($material, $pattern));
