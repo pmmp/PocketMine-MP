@@ -989,7 +989,7 @@ final class VanillaBlocks{
 		self::register("nether_wart", new NetherWartPlant(new BID(Ids::NETHER_WART), "Nether Wart", new Info(BreakInfo::instant())));
 		self::register("netherrack", new Netherrack(new BID(Ids::NETHERRACK), "Netherrack", new Info(BreakInfo::pickaxe(0.4, ToolTier::WOOD))));
 		self::register("note_block", new Note(new BID(Ids::NOTE_BLOCK, TileNote::class), "Note Block", new Info(BreakInfo::axe(0.8))));
-		self::register("obsidian", new Opaque(new BID(Ids::OBSIDIAN), "Obsidian", new Info(BreakInfo::pickaxe(35.0 /* 50 in PC */, ToolTier::DIAMOND, 6000.0))));
+		self::register("obsidian", new Opaque(new BID(Ids::OBSIDIAN), "Obsidian", new Info(BreakInfo::pickaxe(35.0 /* 50 in PC */,  ToolTier::DIAMOND, 6000.0))));
 		self::register("packed_ice", new PackedIce(new BID(Ids::PACKED_ICE), "Packed Ice", new Info(BreakInfo::pickaxe(0.5))));
 		self::register("podzol", new Podzol(new BID(Ids::PODZOL), "Podzol", new Info(BreakInfo::shovel(0.5), [Tags::DIRT])));
 		self::register("potatoes", new Potato(new BID(Ids::POTATOES), "Potato Block", new Info(BreakInfo::instant())));
@@ -1340,7 +1340,8 @@ final class VanillaBlocks{
 		$instaBreak = new Info(BreakInfo::instant());
 		self::register("element_zero", new Opaque(new BID(Ids::ELEMENT_ZERO), "???", $instaBreak));
 
-		$register = fn(string $name, int $id, string $displayName, string $symbol, int $atomicWeight, int $group) => self::register("element_$name", new Element(new BID($id), $displayName, $instaBreak, $symbol, $atomicWeight, $group));
+		$register = fn(string $name, int $id, string $displayName, string $symbol, int $atomicWeight, int $group) =>
+				self::register("element_$name", new Element(new BID($id), $displayName, $instaBreak, $symbol, $atomicWeight, $group));
 
 		$register("hydrogen", Ids::ELEMENT_HYDROGEN, "Hydrogen", "h", 1, 5);
 		$register("helium", Ids::ELEMENT_HELIUM, "Helium", "he", 2, 7);
@@ -1567,7 +1568,7 @@ final class VanillaBlocks{
 
 		self::register("warped_wart_block", new Opaque(new BID(Ids::WARPED_WART_BLOCK), "Warped Wart Block", new Info(new BreakInfo(1.0, ToolType::HOE))));
 		self::register("crying_obsidian", new class(new BID(Ids::CRYING_OBSIDIAN), "Crying Obsidian", new Info(BreakInfo::pickaxe(35.0 /* 50 in Java */, ToolTier::DIAMOND, 6000.0))) extends Opaque{
-			public function getLightLevel() : int{ return 10; }
+			public function getLightLevel() : int{ return 10;}
 		});
 
 		self::register("twisting_vines", new NetherVines(new BID(Ids::TWISTING_VINES), "Twisting Vines", new Info(BreakInfo::instant()), Facing::UP));
