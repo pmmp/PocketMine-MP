@@ -356,6 +356,7 @@ final class VanillaItems{
 
 	protected static function setup() : void{
 		self::registerArmorItems();
+		self::registerHorseArmorItems();
 		self::registerSpawnEggs();
 		self::registerTierToolItems();
 		self::registerSmithingTemplates();
@@ -546,6 +547,7 @@ final class VanillaItems{
 		self::register("record_ward", new Record(new IID(Ids::RECORD_WARD), RecordType::DISK_WARD, "Record Ward"));
 		self::register("redstone_dust", new Redstone(new IID(Ids::REDSTONE_DUST), "Redstone"));
 		self::register("rotten_flesh", new RottenFlesh(new IID(Ids::ROTTEN_FLESH), "Rotten Flesh"));
+		self::register("saddle", new Item(new IID(Ids::SADDLE), "Saddle"));
 		self::register("scute", new Item(new IID(Ids::SCUTE), "Scute"));
 		self::register("shears", new Shears(new IID(Ids::SHEARS), "Shears", [EnchantmentTags::SHEARS]));
 		self::register("shulker_shell", new Item(new IID(Ids::SHULKER_SHELL), "Shulker Shell"));
@@ -664,6 +666,13 @@ final class VanillaItems{
 		self::register("iron_leggings", new Armor(new IID(Ids::IRON_LEGGINGS), "Iron Leggings", new ArmorTypeInfo(5, 226, ArmorInventory::SLOT_LEGS, material: ArmorMaterials::IRON()), [EnchantmentTags::LEGGINGS]));
 		self::register("leather_pants", new Armor(new IID(Ids::LEATHER_PANTS), "Leather Pants", new ArmorTypeInfo(2, 76, ArmorInventory::SLOT_LEGS, material: ArmorMaterials::LEATHER()), [EnchantmentTags::LEGGINGS]));
 		self::register("netherite_leggings", new Armor(new IID(Ids::NETHERITE_LEGGINGS), "Netherite Leggings", new ArmorTypeInfo(6, 556, ArmorInventory::SLOT_LEGS, 3, true, material: ArmorMaterials::NETHERITE()), [EnchantmentTags::LEGGINGS]));
+	}
+
+	private static function registerHorseArmorItems() : void{
+		self::register("leather_horse_armor", new HorseArmor(new IID(Ids::LEATHER_HORSE_ARMOR), "Leather Horse Armor"));
+		self::register("iron_horse_armor", new HorseArmor(new IID(Ids::IRON_HORSE_ARMOR), "Iron Horse Armor"));
+		self::register("diamond_horse_armor", new HorseArmor(new IID(Ids::DIAMOND_HORSE_ARMOR), "Diamond Horse Armor"));
+		self::register("golden_horse_armor", new HorseArmor(new IID(Ids::GOLDEN_HORSE_ARMOR), "Golden Horse Armor"));
 	}
 
 	private static function registerSmithingTemplates() : void{
