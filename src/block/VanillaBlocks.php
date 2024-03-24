@@ -1341,7 +1341,7 @@ final class VanillaBlocks{
 		self::register("element_zero", new Opaque(new BID(Ids::ELEMENT_ZERO), "???", $instaBreak));
 
 		$register = fn(string $name, int $id, string $displayName, string $symbol, int $atomicWeight, int $group) =>
-				self::register("element_$name", new Element(new BID($id), $displayName, $instaBreak, $symbol, $atomicWeight, $group));
+			self::register("element_$name", new Element(new BID($id), $displayName, $instaBreak, $symbol, $atomicWeight, $group));
 
 		$register("hydrogen", Ids::ELEMENT_HYDROGEN, "Hydrogen", "h", 1, 5);
 		$register("helium", Ids::ELEMENT_HELIUM, "Helium", "he", 2, 7);
