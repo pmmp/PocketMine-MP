@@ -42,6 +42,7 @@ use function ceil;
 use function max;
 use function min;
 use function strlen;
+use function var_dump;
 
 final class AnvilHelper{
 
@@ -57,16 +58,18 @@ final class AnvilHelper{
 		$cost = 0;
 
 		if(($base instanceof Armor || $base instanceof TieredTool) && self::isValidRepairMaterial($base, $sacrifice) && $base->getDamage() > 0){
-			$l = min($base->getDamage(), (int) ceil($base->getMaxDurability() / 4));
+			$damage = $base->getDamage();
+			$l = min($damage, (int) ceil($base->getMaxDurability() / 4));
 			for($i = 0; $i < 4; $i++) {
 				$sacrifice->pop();
-				$base->setDamage(max(0, $base->getDamage() - $l));
+				$damage = max(0, $damage - $l);
 				$cost += self::COST_REPAIR_MATERIAL;
 
-				if($sacrifice->isNull() || $base->getDamage() === 0){
+				if($sacrifice->isNull() || $damage === 0){
 					break;
 				}
 			}
+			$base->setDamage($damage);
 		}else{
 			if($base instanceof Durable && $sacrifice instanceof Durable && $base->getTypeId() === $sacrifice->getTypeId()){
 				$baseDurability = $base->getMaxDurability() - $base->getDamage();
@@ -104,7 +107,7 @@ final class AnvilHelper{
 		if($cost <= 0 || ($cost > self::COST_LIMIT && !$source->isCreative())){
 			return null;
 		}
-		var_dump("debug: calculated cost of $cost xp level, " . ($rename ? "renamed the item" : "no rename") .", new repair cost " . ($repairCost ?? 0));
+		var_dump("debug: calculated cost of $cost xp level, " . ($rename ? "renamed the item" : "no rename") . ", new repair cost " . ($repairCost ?? 0));
 		return $base;
 	}
 
