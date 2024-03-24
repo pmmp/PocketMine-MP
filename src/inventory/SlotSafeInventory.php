@@ -24,22 +24,22 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\inventory\transaction\validator\InventoryTransactionValidator;
+use pocketmine\utils\ObjectSet;
 
 /**
- * A "slot safe inventory" is an inventory that has a set of rules that determine whether or not an item can be placed in a
+ * A "slot safe inventory" is an inventory that has a set of rules that determine whether an item can be placed in a
  * particular slot. This ensures that the inventory's internal state is always valid and consistent.
  */
 interface SlotSafeInventory{
 	/**
-	 * Return a list of validators that will be used to determine whether or not an item can be placed in a particular slot.
+	 * Return a set of validators that will be used to determine whether an item can be placed in a particular slot.
 	 * All validators need to return true for the transaction to be allowed.
 	 * If one of the validators returns false, the transaction will be cancelled.
 	 *
-	 * There is no guarantee that the validators will be called in any particular order. All validators need to be stateless
-	 * and not depend on the order in which they are called.
+	 * There is no guarantee that the validators will be called in any particular order.
+	 * All validators need to be stateless and not depend on the order in which they are called.
 	 *
-	 * @return InventoryTransactionValidator[]
-	 * @phpstan-return InventoryTransactionValidator[]
+	 * @phpstan-return ObjectSet<InventoryTransactionValidator>
 	 */
-	public static function getSlotValidators() : array;
+	public static function getSlotValidators() : ObjectSet;
 }
