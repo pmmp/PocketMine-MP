@@ -61,8 +61,8 @@ final class TradeInventory extends EntityInventory{
 		$recipesTag = new ListTag();
 		for($i = 0; $i < count($recipes); $i++){
 			$recipeNBT = $recipes[$i]->nbtSerialize();
-			//TODO: This is a bit of a hack, where the client sends some random number as the recipe ID.
-			//setting the net ID to the recipe is the workaround for now.
+			//TODO: net ID behaves like index of the recipe.
+			//If we don't set this client sends some random number that we can't track.
 			$recipeNBT->setInt(TradeRecipe::TAG_NET_ID, $i + 1);
 			$recipesTag->push($recipeNBT);
 		}
