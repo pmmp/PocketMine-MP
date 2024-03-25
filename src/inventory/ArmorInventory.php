@@ -23,14 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\block\BlockTypeIds;
+use pocketmine\block\MobHead;
 use pocketmine\entity\Living;
-use pocketmine\inventory\transaction\validator\ArmorInventoryValidator;
+use pocketmine\item\Armor;
 use pocketmine\item\Item;
-use pocketmine\utils\ObjectSet;
+use pocketmine\item\ItemBlock;
 
-class ArmorInventory extends SimpleInventory implements SlotSafeInventory{
-	use SlotSafeInventoryTrait;
-
+class ArmorInventory extends SimpleInventory{
 	public const SLOT_HEAD = 0;
 	public const SLOT_CHEST = 1;
 	public const SLOT_LEGS = 2;
@@ -40,6 +40,14 @@ class ArmorInventory extends SimpleInventory implements SlotSafeInventory{
 		protected Living $holder
 	){
 		parent::__construct(4);
+
+		$this->validators->add(function (Inventory $inventory, Item $item, int $slot) : bool {
+			return ($item instanceof Armor && $item->getArmorSlot() === $slot) ||
+				($slot === ArmorInventory::SLOT_HEAD && $item instanceof ItemBlock && (
+						$item->getBlock()->getTypeId() === BlockTypeIds::CARVED_PUMPKIN ||
+						$item->getBlock() instanceof MobHead
+					));
+		});
 	}
 
 	public function getHolder() : Living{
@@ -76,9 +84,5 @@ class ArmorInventory extends SimpleInventory implements SlotSafeInventory{
 
 	public function setBoots(Item $boots) : void{
 		$this->setItem(self::SLOT_FEET, $boots);
-	}
-
-	protected static function initSlotValidators(ObjectSet $validators) : void{
-		$validators->add(new ArmorInventoryValidator());
 	}
 }
