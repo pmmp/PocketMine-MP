@@ -111,7 +111,7 @@ final class TradingTransaction extends InventoryTransaction{
 	public function execute() : void{
 		parent::execute();
 
-		$this->recipe->setTier($this->recipe->getUses() + 1);
+		$this->recipe->setUses($this->recipe->getUses() + 1);
 	}
 
 	protected function callExecuteEvent() : bool{
