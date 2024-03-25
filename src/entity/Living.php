@@ -157,13 +157,14 @@ abstract class Living extends Entity{
 				}
 			}
 		};
-		$this->armorInventory->getListeners()->add(new CallbackInventoryListener(function(Inventory $inventory, int $slot, Item $oldItem) use ($playArmorSound) : void{
-			$playArmorSound($inventory->getItem($slot), $oldItem);
-		}, function(Inventory $inventory, array $oldContents) use ($playArmorSound) : void{
-			foreach($oldContents as $slot => $oldItem){
-				$playArmorSound($inventory->getItem($slot), $oldItem);
+		$this->armorInventory->getListeners()->add(new CallbackInventoryListener(
+			function(Inventory $inventory, int $slot, Item $oldItem) => $playArmorSound($inventory->getItem($slot), $oldItem),
+			function(Inventory $inventory, array $oldContents) use ($playArmorSound) : void{
+				foreach($oldContents as $slot => $oldItem){
+					$playArmorSound($inventory->getItem($slot), $oldItem);
+				}
 			}
-		}));
+		));
 
 		$health = $this->getMaxHealth();
 
