@@ -36,7 +36,9 @@ use pocketmine\block\inventory\SmithingTableInventory;
 use pocketmine\block\inventory\StonecutterInventory;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\data\bedrock\EnchantmentIdMap;
+use pocketmine\inventory\EntityInventory;
 use pocketmine\inventory\Inventory;
+use pocketmine\inventory\TradeInventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\enchantment\EnchantingOption;
@@ -157,7 +159,8 @@ class InventoryManager{
 	}
 
 	/**
-	 * @param int[]|int $slotMap
+	 * @param int[]|int                   $slotMap
+	 *
 	 * @phpstan-param array<int, int>|int $slotMap
 	 */
 	private function addComplex(array|int $slotMap, Inventory $inventory) : void{
@@ -175,7 +178,8 @@ class InventoryManager{
 	}
 
 	/**
-	 * @param int[]|int $slotMap
+	 * @param int[]|int                   $slotMap
+	 *
 	 * @phpstan-param array<int, int>|int $slotMap
 	 */
 	private function addComplexDynamic(array|int $slotMap, Inventory $inventory) : int{
@@ -243,6 +247,7 @@ class InventoryManager{
 
 	/**
 	 * @param NetworkInventoryAction[] $networkInventoryActions
+	 *
 	 * @throws PacketHandlingException
 	 */
 	public function addRawPredictedSlotChanges(array $networkInventoryActions) : void{
@@ -253,7 +258,7 @@ class InventoryManager{
 
 			//legacy transactions should not modify or predict anything other than these inventories, since these are
 			//the only ones accessible when not in-game (ItemStackRequest is used for everything else)
-			if(match($action->windowId){
+			if(match ($action->windowId) {
 				ContainerIds::INVENTORY, ContainerIds::OFFHAND, ContainerIds::ARMOR => false,
 				default => true
 			}){
@@ -302,7 +307,7 @@ class InventoryManager{
 	 */
 	private function createComplexSlotMapping(Inventory $inventory) : ?array{
 		//TODO: make this dynamic so plugins can add mappings for stuff not implemented by PM
-		return match(true){
+		return match (true) {
 			$inventory instanceof AnvilInventory => UIInventorySlotOffset::ANVIL,
 			$inventory instanceof EnchantInventory => UIInventorySlotOffset::ENCHANTING_TABLE,
 			$inventory instanceof LoomInventory => UIInventorySlotOffset::LOOM,
@@ -310,6 +315,7 @@ class InventoryManager{
 			$inventory instanceof CraftingTableInventory => UIInventorySlotOffset::CRAFTING3X3_INPUT,
 			$inventory instanceof CartographyTableInventory => UIInventorySlotOffset::CARTOGRAPHY_TABLE,
 			$inventory instanceof SmithingTableInventory => UIInventorySlotOffset::SMITHING_TABLE,
+			$inventory instanceof TradeInventory => UIInventorySlotOffset::TRADE2_INGREDIENT,
 			default => null,
 		};
 	}
@@ -350,13 +356,13 @@ class InventoryManager{
 		//if the class isn't final, not to mention being inflexible.
 		if($inv instanceof BlockInventory){
 			$blockPosition = BlockPosition::fromVector3($inv->getHolder());
-			$windowType = match(true){
+			$windowType = match (true) {
 				$inv instanceof LoomInventory => WindowTypes::LOOM,
-				$inv instanceof FurnaceInventory => match($inv->getFurnaceType()){
-						FurnaceType::FURNACE => WindowTypes::FURNACE,
-						FurnaceType::BLAST_FURNACE => WindowTypes::BLAST_FURNACE,
-						FurnaceType::SMOKER => WindowTypes::SMOKER,
-					},
+				$inv instanceof FurnaceInventory => match ($inv->getFurnaceType()) {
+					FurnaceType::FURNACE => WindowTypes::FURNACE,
+					FurnaceType::BLAST_FURNACE => WindowTypes::BLAST_FURNACE,
+					FurnaceType::SMOKER => WindowTypes::SMOKER,
+				},
 				$inv instanceof EnchantInventory => WindowTypes::ENCHANTMENT,
 				$inv instanceof BrewingStandInventory => WindowTypes::BREWING_STAND,
 				$inv instanceof AnvilInventory => WindowTypes::ANVIL,
@@ -368,6 +374,9 @@ class InventoryManager{
 				default => WindowTypes::CONTAINER
 			};
 			return [ContainerOpenPacket::blockInv($id, $windowType, $blockPosition)];
+		}
+		if($inv instanceof EntityInventory){
+			return $inv->createInventoryOpenPackets($id);
 		}
 		return null;
 	}
@@ -400,6 +409,9 @@ class InventoryManager{
 	}
 
 	public function onClientRemoveWindow(int $id) : void{
+		if(($tradeInventory = $this->player->getCurrentWindow()) instanceof TradeInventory){
+			$id = $this->getWindowId($tradeInventory);
+		}
 		if($id === $this->lastInventoryNetworkId){
 			if(isset($this->networkIdToInventoryMap[$id]) && $id !== $this->pendingCloseWindowId){
 				$this->remove($id);

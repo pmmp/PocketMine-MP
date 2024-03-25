@@ -23,11 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use pocketmine\entity\trade\TradeRecipe;
+use pocketmine\entity\trade\TradeRecipeData;
+use pocketmine\entity\trade\VillagerProfession;
+use pocketmine\inventory\TradeInventory;
+use pocketmine\item\VanillaItems;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
+use pocketmine\player\Player;
 
 class Villager extends Living implements Ageable{
 	public const PROFESSION_FARMER = 0;
@@ -41,7 +48,11 @@ class Villager extends Living implements Ageable{
 	public static function getNetworkTypeId() : string{ return EntityIds::VILLAGER; }
 
 	private bool $baby = false;
-	private int $profession = self::PROFESSION_FARMER;
+	private VillagerProfession $profession = VillagerProfession::FARMER;
+
+	private TradeRecipeData $data;
+
+	private TradeInventory $inventory;
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{
 		return new EntitySizeInfo(1.8, 0.6); //TODO: eye height??
@@ -54,14 +65,17 @@ class Villager extends Living implements Ageable{
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
-		/** @var int $profession */
-		$profession = $nbt->getInt(self::TAG_PROFESSION, self::PROFESSION_FARMER);
+		$this->data = new TradeRecipeData([
+			new TradeRecipe(VanillaItems::STICK()->setCount(5), VanillaItems::EMERALD()->setCount(1)),
+			new TradeRecipe(VanillaItems::EMERALD()->setCount(1), VanillaItems::STICK()->setCount(1))
+		], [
+			0 => 10
+		]); // TODO
+		$this->inventory = new TradeInventory($this);
 
-		if($profession > 4 || $profession < 0){
-			$profession = self::PROFESSION_FARMER;
-		}
+		$profession = VillagerProfession::from($nbt->getInt(self::TAG_PROFESSION, self::PROFESSION_FARMER));
 
-		$this->setProfession($profession);
+		$this->setVillagerProfession($profession);
 	}
 
 	public function saveNBT() : CompoundTag{
@@ -71,15 +85,35 @@ class Villager extends Living implements Ageable{
 		return $nbt;
 	}
 
+	public function onInteract(Player $player, Vector3 $clickPos) : bool{
+		return $player->setCurrentWindow($this->inventory);
+	}
+
+	/**
+	 * @deprecated
+	 * @see Villager::setVillagerProfession()
+	 */
+	public function setProfession(int $profession) : void{
+		$this->setVillagerProfession(VillagerProfession::from($profession));
+	}
+
 	/**
 	 * Sets the villager profession
 	 */
-	public function setProfession(int $profession) : void{
-		$this->profession = $profession; //TODO: validation
+	public function setVillagerProfession(VillagerProfession $profession) : void{
+		$this->profession = $profession;
 		$this->networkPropertiesDirty = true;
 	}
 
+	/**
+	 * @deprecated
+	 * @see Villager::getVillagerProfession()
+	 */
 	public function getProfession() : int{
+		return $this->profession->value;
+	}
+
+	public function getVillagerProfession() : VillagerProfession{
 		return $this->profession;
 	}
 
@@ -87,10 +121,18 @@ class Villager extends Living implements Ageable{
 		return $this->baby;
 	}
 
+	public function getTradeData() : TradeRecipeData{
+		return $this->data;
+	}
+
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
 		parent::syncNetworkData($properties);
 		$properties->setGenericFlag(EntityMetadataFlags::BABY, $this->baby);
 
-		$properties->setInt(EntityMetadataProperties::VARIANT, $this->profession);
+		$properties->setInt(EntityMetadataProperties::VARIANT, $this->profession->value);
+	}
+
+	public function getInventory() : TradeInventory{
+		return $this->inventory;
 	}
 }

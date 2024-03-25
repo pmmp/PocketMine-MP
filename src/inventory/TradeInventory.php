@@ -1,0 +1,87 @@
+<?php
+
+/*
+ *
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
+ *
+ *
+ */
+
+declare(strict_types=1);
+
+namespace pocketmine\inventory;
+
+use pocketmine\entity\trade\TradeRecipe;
+use pocketmine\entity\Villager;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\network\mcpe\protocol\types\CacheableNbt;
+use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
+use pocketmine\network\mcpe\protocol\UpdateTradePacket;
+use function count;
+
+final class TradeInventory extends EntityInventory{
+
+	private const TAG_RECIPES = "Recipes";
+	private const TAG_TIER_EXP_REQUIREMENTS = "TierExpRequirements";
+
+	public function __construct(private readonly Villager $entity){
+		parent::__construct(3);
+	}
+
+	public function getHolder() : Villager{
+		return $this->entity;
+	}
+
+	public function createInventoryOpenPackets(int $id) : array{
+		$holder = $this->getHolder();
+
+		$tradeData = $holder->getTradeData();
+		$recipes = $tradeData->getRecipes();
+
+		$tierExpRequirements = [];
+
+		foreach($tradeData->getTierExpRequirements() as $tier => $expRequirement){
+			$tierExpRequirements[] = CompoundTag::create()
+				->setInt((string) $tier, $expRequirement);
+		}
+
+		$recipesTag = new ListTag();
+		for($i = 0; $i < count($recipes); $i++){
+			$recipeNBT = $recipes[$i]->nbtSerialize();
+			//TODO: This is a bit of a hack, where the client sends some random number as the recipe ID.
+			//setting the net ID to the recipe is the workaround for now.
+			$recipeNBT->setInt(TradeRecipe::TAG_NET_ID, $i + 1);
+			$recipesTag->push($recipeNBT);
+		}
+
+		$nbt = CompoundTag::create()
+			->setTag(self::TAG_RECIPES, $recipesTag)
+			->setTag(self::TAG_TIER_EXP_REQUIREMENTS, new ListTag($tierExpRequirements));
+
+		return [UpdateTradePacket::create(
+			$id,
+			WindowTypes::TRADING,
+			0,
+			$tradeData->getTier(),
+			$holder->getId(),
+			-1,
+			"Trade", // TODO
+			true,
+			true,
+			new CacheableNbt($nbt)
+		)];
+	}
+}
