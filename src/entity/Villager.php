@@ -48,7 +48,7 @@ class Villager extends Living implements Ageable{
 	public static function getNetworkTypeId() : string{ return EntityIds::VILLAGER; }
 
 	private bool $baby = false;
-	private VillagerProfession $profession = VillagerProfession::FARMER;
+	private int $profession = self::PROFESSION_FARMER;
 
 	private TradeRecipeData $data;
 
@@ -73,9 +73,14 @@ class Villager extends Living implements Ageable{
 		]); // TODO
 		$this->inventory = new TradeInventory($this);
 
-		$profession = VillagerProfession::from($nbt->getInt(self::TAG_PROFESSION, self::PROFESSION_FARMER));
+		/** @var int $profession */
+		$profession = $nbt->getInt(self::TAG_PROFESSION, self::PROFESSION_FARMER);
 
-		$this->setVillagerProfession($profession);
+		if($profession > 4 || $profession < 0){
+			$profession = self::PROFESSION_FARMER;
+		}
+
+		$this->setProfession($profession);
 	}
 
 	public function saveNBT() : CompoundTag{
@@ -90,30 +95,14 @@ class Villager extends Living implements Ageable{
 	}
 
 	/**
-	 * @deprecated
-	 * @see Villager::setVillagerProfession()
-	 */
-	public function setProfession(int $profession) : void{
-		$this->setVillagerProfession(VillagerProfession::from($profession));
-	}
-
-	/**
 	 * Sets the villager profession
 	 */
-	public function setVillagerProfession(VillagerProfession $profession) : void{
-		$this->profession = $profession;
+	public function setProfession(int $profession) : void{
+		$this->profession = $profession; //TODO: validation
 		$this->networkPropertiesDirty = true;
 	}
 
-	/**
-	 * @deprecated
-	 * @see Villager::getVillagerProfession()
-	 */
 	public function getProfession() : int{
-		return $this->profession->value;
-	}
-
-	public function getVillagerProfession() : VillagerProfession{
 		return $this->profession;
 	}
 
@@ -129,7 +118,7 @@ class Villager extends Living implements Ageable{
 		parent::syncNetworkData($properties);
 		$properties->setGenericFlag(EntityMetadataFlags::BABY, $this->baby);
 
-		$properties->setInt(EntityMetadataProperties::VARIANT, $this->profession->value);
+		$properties->setInt(EntityMetadataProperties::VARIANT, $this->profession);
 	}
 
 	public function getInventory() : TradeInventory{
