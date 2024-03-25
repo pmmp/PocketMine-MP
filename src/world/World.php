@@ -46,6 +46,7 @@ use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
+use pocketmine\event\block\BlockSupportBreakEvent;
 use pocketmine\event\block\BlockUpdateEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\world\ChunkLoadEvent;
@@ -2096,7 +2097,14 @@ class World implements ChunkManager{
 
 		}elseif(!$target->getBreakInfo()->isBreakable()){
 			return false;
-		}
+		}else{
+            $ev = new BlockSupportBreakEvent($target, $drops, $xpDrop);
+
+            $ev->call();
+
+            $drops = $ev->getDrops();
+            $xpDrop = $ev->getXpDropAmount();
+        }
 
 		foreach($affectedBlocks as $t){
 			$this->destroyBlockInternal($t, $item, $player, $createParticles, $returnedItems);
