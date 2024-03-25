@@ -21,32 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\world\sound;
 
-use pocketmine\world\sound\Sound;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-class ArmorMaterial{
+class ArmorEquipGoldSound implements Sound{
 
-	public function __construct(
-		private readonly int $enchantability,
-		private readonly ?Sound $equipSound = null
-	){
-	}
-
-	/**
-	 * Returns the value that defines how enchantable the item is.
-	 *
-	 * The higher an item's enchantability is, the more likely it will be to gain high-level enchantments
-	 * or multiple enchantments upon being enchanted in an enchanting table.
-	 */
-	public function getEnchantability() : int{
-		return $this->enchantability;
-	}
-
-	/**
-	 * Returns the sound that plays when equipping the armor
-	 */
-	public function getEquipSound() : ?Sound{
-		return $this->equipSound;
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::ARMOR_EQUIP_GOLD, $pos, false)];
 	}
 }
