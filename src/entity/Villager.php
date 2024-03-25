@@ -25,7 +25,6 @@ namespace pocketmine\entity;
 
 use pocketmine\entity\trade\TradeRecipe;
 use pocketmine\entity\trade\TradeRecipeData;
-use pocketmine\entity\trade\VillagerProfession;
 use pocketmine\inventory\TradeInventory;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
