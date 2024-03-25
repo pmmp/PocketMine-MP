@@ -149,23 +149,19 @@ abstract class Living extends Entity{
 			$this->getViewers(),
 			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onMobArmorChange($recipients, $this)
 		)));
-		$this->armorInventory->getListeners()->add(new CallbackInventoryListener(function(Inventory $inventory, int $slot, Item $oldItem) : void{
-			$newItem = $inventory->getItem($slot);
+		$playArmorSound = function(Item $newItem, Item $oldItem) : void{
 			if(!$newItem->isNull() && $newItem instanceof Armor && !$newItem->equalsExact($oldItem)){
 				$equipSound = $newItem->getMaterial()->getEquipSound();
 				if($equipSound !== null){
 					$this->broadcastSound($equipSound);
 				}
 			}
-		}, function(Inventory $inventory, array $oldContents) : void{
+		};
+		$this->armorInventory->getListeners()->add(new CallbackInventoryListener(function(Inventory $inventory, int $slot, Item $oldItem) use ($playArmorSound) : void{
+			$playArmorSound($inventory->getItem($slot), $oldItem);
+		}, function(Inventory $inventory, array $oldContents) use ($playArmorSound) : void{
 			foreach($oldContents as $slot => $oldItem){
-				$newItem = $inventory->getItem($slot);
-				if(!$newItem->isNull() && $newItem instanceof Armor && !$newItem->equalsExact($oldItem)){
-					$equipSound = $newItem->getMaterial()->getEquipSound();
-					if($equipSound !== null){
-						$this->broadcastSound($equipSound);
-					}
-				}
+				$playArmorSound($inventory->getItem($slot), $oldItem);
 			}
 		}));
 
