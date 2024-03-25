@@ -35,7 +35,7 @@ class Fungus extends Flowable{
 		return
 			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
 			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
-			$supportBlock->getTypeId() === BlockTypeIds::SOUL_SOIL ||
-			$supportBlock->hasTypeTag(BlockTypeTags::NYLIUM);
+			$supportBlock->hasTypeTag(BlockTypeTags::NYLIUM) ||
+			$supportBlock->getTypeId() === BlockTypeIds::SOUL_SOIL;
 	}
 }
