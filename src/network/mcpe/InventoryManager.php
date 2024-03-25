@@ -159,7 +159,7 @@ class InventoryManager{
 	}
 
 	/**
-	 * @param int[]|int                   $slotMap
+	 * @param int[]|int $slotMap
 	 *
 	 * @phpstan-param array<int, int>|int $slotMap
 	 */
@@ -178,7 +178,7 @@ class InventoryManager{
 	}
 
 	/**
-	 * @param int[]|int                   $slotMap
+	 * @param int[]|int $slotMap
 	 *
 	 * @phpstan-param array<int, int>|int $slotMap
 	 */
