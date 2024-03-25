@@ -134,6 +134,8 @@ use pocketmine\block\Stair;
 use pocketmine\block\StoneButton;
 use pocketmine\block\Stonecutter;
 use pocketmine\block\StonePressurePlate;
+use pocketmine\block\StructureBlock;
+use pocketmine\block\StructureVoid;
 use pocketmine\block\Sugarcane;
 use pocketmine\block\SweetBerryBush;
 use pocketmine\block\TNT;
@@ -151,6 +153,8 @@ use pocketmine\block\utils\DripleafState;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
+use pocketmine\block\utils\StructureBlockType;
+use pocketmine\block\utils\StructureVoidType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Vine;
 use pocketmine\block\Wall;
@@ -1650,6 +1654,24 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::SUGARCANE(), function(Sugarcane $block) : Writer{
 			return Writer::create(Ids::REEDS)
 				->writeInt(StateNames::AGE, $block->getAge());
+		});
+		$this->map(Blocks::STRUCTURE_BLOCK(), function(StructureBlock $block) : Writer{
+			return Writer::create(Ids::STRUCTURE_BLOCK)
+				->writeString(StateNames::STRUCTURE_BLOCK_TYPE, match($block->getType()){
+						StructureBlockType::CORNER => StringValues::STRUCTURE_BLOCK_TYPE_CORNER,
+						StructureBlockType::DATA => StringValues::STRUCTURE_BLOCK_TYPE_DATA,
+						StructureBlockType::EXPORT => StringValues::STRUCTURE_BLOCK_TYPE_EXPORT,
+						StructureBlockType::INVALID => StringValues::STRUCTURE_BLOCK_TYPE_INVALID,
+						StructureBlockType::LOAD => StringValues::STRUCTURE_BLOCK_TYPE_LOAD,
+						StructureBlockType::SAVE => StringValues::STRUCTURE_BLOCK_TYPE_SAVE,
+					});
+		});
+		$this->map(Blocks::STRUCTURE_VOID(), function(StructureVoid $block) : Writer{
+			return Writer::create(Ids::STRUCTURE_VOID)
+				->writeString(StateNames::STRUCTURE_VOID_TYPE, match($block->getType()){
+						StructureVoidType::VOID => StringValues::STRUCTURE_VOID_TYPE_VOID,
+						StructureVoidType::AIR => StringValues::STRUCTURE_VOID_TYPE_AIR,
+					});
 		});
 		$this->map(Blocks::SUNFLOWER(), fn(DoublePlant $block) => Helper::encodeDoublePlant($block, StringValues::DOUBLE_PLANT_TYPE_SUNFLOWER, Writer::create(Ids::DOUBLE_PLANT)));
 		$this->map(Blocks::SWEET_BERRY_BUSH(), function(SweetBerryBush $block) : Writer{

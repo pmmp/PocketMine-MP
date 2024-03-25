@@ -78,6 +78,7 @@ final class TileFactory{
 		$this->register(SporeBlossom::class, ["SporeBlossom", "minecraft:spore_blossom"]);
 		$this->register(MobHead::class, ["Skull", "minecraft:skull"]);
 		$this->register(GlowingItemFrame::class, ["GlowItemFrame"]);
+		$this->register(StructureBlock::class, ["StructureBlock", "minecraft:structure_block"]);
 
 		//TODO: Campfire
 		//TODO: ChalkboardBlock
@@ -92,7 +93,6 @@ final class TileFactory{
 		//TODO: MovingBlock
 		//TODO: NetherReactor
 		//TODO: PistonArm
-		//TODO: StructureBlock
 	}
 
 	/**
