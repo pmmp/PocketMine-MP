@@ -41,7 +41,7 @@ class ArmorInventory extends SimpleInventory{
 	){
 		parent::__construct(4);
 
-		$this->validators->add(static function (Inventory $inventory, Item $item, int $slot) : bool {
+		$this->validators->add(static function (Inventory $inventory, Item $item, int $slot) : bool{
 			return ($item instanceof Armor && $item->getArmorSlot() === $slot) ||
 				($slot === ArmorInventory::SLOT_HEAD && $item instanceof ItemBlock && (
 						$item->getBlock()->getTypeId() === BlockTypeIds::CARVED_PUMPKIN ||

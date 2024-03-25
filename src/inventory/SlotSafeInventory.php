@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use Closure;
 use pocketmine\item\Item;
 use pocketmine\utils\ObjectSet;
 
@@ -39,7 +40,6 @@ interface SlotSafeInventory{
 	 * There is no guarantee that the validators will be called in any particular order.
 	 * All validators need to be stateless and not depend on the order in which they are called.
 	 *
-	 * @return \Closure[]|ObjectSet
 	 * @phpstan-return ObjectSet<Closure(Inventory $inventory, Item $item, int $slot): bool>
 	 */
 	public function getSlotValidators() : ObjectSet;

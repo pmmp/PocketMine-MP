@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use Closure;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
@@ -46,10 +47,7 @@ abstract class BaseInventory implements Inventory, SlotSafeInventory{
 	 * @phpstan-var ObjectSet<InventoryListener>
 	 */
 	protected ObjectSet $listeners;
-	/**
-	 * @var Closure[]|ObjectSet
-	 * @phpstan-var ObjectSet<Closure(Inventory $inventory, Item $item, int $slot): bool>
-	 */
+	/** @phpstan-var ObjectSet<Closure(Inventory $inventory, Item $item, int $slot): bool> */
 	protected ObjectSet $validators;
 
 	public function __construct(){
