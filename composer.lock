@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "549a32065a300a7dfe74df2407b81126",
+    "content-hash": "ef9f275c4be8bc09da410e668b2decbf",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -1380,16 +1380,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.10.62",
+            "version": "1.10.65",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "cd5c8a1660ed3540b211407c77abf4af193a6af9"
+                "reference": "3c657d057a0b7ecae19cb12db446bbc99d8839c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/cd5c8a1660ed3540b211407c77abf4af193a6af9",
-                "reference": "cd5c8a1660ed3540b211407c77abf4af193a6af9",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/3c657d057a0b7ecae19cb12db446bbc99d8839c6",
+                "reference": "3c657d057a0b7ecae19cb12db446bbc99d8839c6",
                 "shasum": ""
             },
             "require": {
@@ -1438,7 +1438,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-03-13T12:27:20+00:00"
+            "time": "2024-03-23T10:30:26+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
