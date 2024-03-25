@@ -410,7 +410,9 @@ class InventoryManager{
 
 	public function onClientRemoveWindow(int $id) : void{
 		if(($tradeInventory = $this->player->getCurrentWindow()) instanceof TradeInventory){
-			$id = $this->getWindowId($tradeInventory);
+			//TODO: The client always sends 255 as a container ID for trade window
+			//so we manually correct window ID here
+			$id = $this->getWindowId($tradeInventory) ?? throw new AssumptionFailedError("No opened trading inventory");
 		}
 		if($id === $this->lastInventoryNetworkId){
 			if(isset($this->networkIdToInventoryMap[$id]) && $id !== $this->pendingCloseWindowId){
