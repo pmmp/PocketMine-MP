@@ -30,7 +30,7 @@ use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use function count;
 
-final class TradeTransaction extends InventoryTransaction{
+final class TradingTransaction extends InventoryTransaction{
 
 	private ?Item $buyA = null;
 	private ?Item $buyB = null;

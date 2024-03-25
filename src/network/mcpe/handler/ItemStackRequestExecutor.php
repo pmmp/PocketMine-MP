@@ -32,7 +32,7 @@ use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\EnchantingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
-use pocketmine\inventory\transaction\TradeTransaction;
+use pocketmine\inventory\transaction\TradingTransaction;
 use pocketmine\inventory\transaction\TransactionBuilder;
 use pocketmine\inventory\transaction\TransactionBuilderInventory;
 use pocketmine\item\Item;
@@ -291,7 +291,7 @@ class ItemStackRequestExecutor{
 	 * @throws ItemStackRequestProcessException
 	 */
 	private function assertDoingCrafting() : void{
-		if(!$this->specialTransaction instanceof CraftingTransaction && !$this->specialTransaction instanceof EnchantingTransaction && !$this->specialTransaction instanceof TradeTransaction){
+		if(!$this->specialTransaction instanceof CraftingTransaction && !$this->specialTransaction instanceof EnchantingTransaction && !$this->specialTransaction instanceof TradingTransaction){
 			if($this->specialTransaction === null){
 				throw new ItemStackRequestProcessException("Expected CraftRecipe or CraftRecipeAuto action to precede this action");
 			}else{
@@ -348,7 +348,7 @@ class ItemStackRequestExecutor{
 				$holder = $window->getHolder();
 				$recipe = $holder->getTradeData()->getRecipe($action->getRecipeId() - 1);
 				if($recipe !== null){
-					$this->specialTransaction = new TradeTransaction($this->player, $recipe);
+					$this->specialTransaction = new TradingTransaction($this->player, $recipe);
 					$this->setNextCreatedItem($recipe->getSell());
 				}
 			}else{
