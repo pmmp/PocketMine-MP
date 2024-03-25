@@ -158,7 +158,7 @@ abstract class Living extends Entity{
 			}
 		};
 		$this->armorInventory->getListeners()->add(new CallbackInventoryListener(
-			function(Inventory $inventory, int $slot, Item $oldItem) : void{
+			function(Inventory $inventory, int $slot, Item $oldItem) use ($playArmorSound) : void{
 				$playArmorSound($inventory->getItem($slot), $oldItem);
 			},
 			function(Inventory $inventory, array $oldContents) use ($playArmorSound) : void{
