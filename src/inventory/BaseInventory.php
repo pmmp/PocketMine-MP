@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use Closure;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
@@ -37,7 +38,7 @@ use function spl_object_id;
 /**
  * This class provides everything needed to implement an inventory, minus the underlying storage system.
  */
-abstract class BaseInventory implements Inventory{
+abstract class BaseInventory implements Inventory, SlotSafeInventory{
 	protected int $maxStackSize = Inventory::MAX_STACK;
 	/** @var Player[] */
 	protected array $viewers = [];
@@ -46,9 +47,12 @@ abstract class BaseInventory implements Inventory{
 	 * @phpstan-var ObjectSet<InventoryListener>
 	 */
 	protected ObjectSet $listeners;
+	/** @phpstan-var ObjectSet<Closure(Inventory $inventory, Item $item, int $slot): bool> */
+	protected ObjectSet $validators;
 
 	public function __construct(){
 		$this->listeners = new ObjectSet();
+		$this->validators = new ObjectSet();
 	}
 
 	public function getMaxStackSize() : int{
@@ -397,5 +401,9 @@ abstract class BaseInventory implements Inventory{
 
 	public function getListeners() : ObjectSet{
 		return $this->listeners;
+	}
+
+	public function getSlotValidators() : ObjectSet{
+		return $this->validators;
 	}
 }

@@ -23,8 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\block\BlockTypeIds;
+use pocketmine\block\MobHead;
 use pocketmine\entity\Living;
+use pocketmine\item\Armor;
 use pocketmine\item\Item;
+use pocketmine\item\ItemBlock;
 
 class ArmorInventory extends SimpleInventory{
 	public const SLOT_HEAD = 0;
@@ -36,6 +40,14 @@ class ArmorInventory extends SimpleInventory{
 		protected Living $holder
 	){
 		parent::__construct(4);
+
+		$this->validators->add(static function (Inventory $inventory, Item $item, int $slot) : bool{
+			return ($item instanceof Armor && $item->getArmorSlot() === $slot) ||
+				($slot === ArmorInventory::SLOT_HEAD && $item instanceof ItemBlock && (
+						$item->getBlock()->getTypeId() === BlockTypeIds::CARVED_PUMPKIN ||
+						$item->getBlock() instanceof MobHead
+					));
+		});
 	}
 
 	public function getHolder() : Living{
