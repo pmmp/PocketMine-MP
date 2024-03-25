@@ -45,6 +45,9 @@ final class TradingTransaction extends InventoryTransaction{
 		if(count($this->actions) < 1){
 			throw new TransactionValidationException("Transaction must have at least one action to be executable");
 		}
+		if($this->recipe->isDisabled()){
+			throw new TransactionValidationException("Tried to execute transaction on disabled trade recipe");
+		}
 		/** @var Item[] $inputs */
 		$inputs = [];
 		/** @var Item[] $outputs */
