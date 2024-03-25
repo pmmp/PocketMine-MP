@@ -77,9 +77,9 @@ class SlotChangeAction extends InventoryAction{
 			throw new TransactionValidationException("Target item exceeds inventory max stack size");
 		}
 		if($this->inventory instanceof SlotSafeInventory && !$this->targetItem->equals(VanillaItems::AIR())){
-			$result = false;
-			foreach($this->inventory::getSlotValidators() as $validator){
-				if(($result = $validator->validate($this->inventory, $this->targetItem, $this->inventorySlot))){
+			$result = true;
+			foreach($this->inventory->getSlotValidators() as $validator){
+				if(($result = $validator($this->inventory, $this->targetItem, $this->inventorySlot))){
 					break;
 				}
 			}
