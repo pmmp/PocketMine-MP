@@ -65,6 +65,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	public const CAUSE_CUSTOM = 14;
 	public const CAUSE_STARVATION = 15;
 	public const CAUSE_FALLING_BLOCK = 16;
+	public const CAUSE_BLOCKING = 17;
 
 	private float $baseDamage;
 	private float $originalBase;
@@ -72,6 +73,9 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	/** @var float[] */
 	private array $originals;
 	private int $attackCooldown = 10;
+
+	private bool $breakShield = false;
+	private int $shieldBreakCooldown = 100;
 
 	/**
 	 * @param float[] $modifiers
@@ -182,5 +186,21 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	 */
 	public function setAttackCooldown(int $attackCooldown) : void{
 		$this->attackCooldown = $attackCooldown;
+	}
+
+	public function isBreakShield(): bool{
+		return $this->breakShield;
+	}
+
+	public function setBreakShield(bool $value): void{
+		$this->breakShield = $value;
+	}
+
+	public function getBreakShieldCooldown() : int{
+		return $this->shieldBreakCooldown;
+	}
+
+	public function setBreakShieldCooldown(int $cooldown): void{
+		$this->shieldBreakCooldown = $cooldown;
 	}
 }
