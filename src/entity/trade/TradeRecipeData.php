@@ -25,14 +25,22 @@ namespace pocketmine\entity\trade;
 
 final class TradeRecipeData{
 
+	public const DEFAULT_TIER_EXP_REQUIREMENTS = [
+		0 => 0,
+		1 => 10,
+		2 => 70,
+		3 => 150,
+		4 => 250
+	];
+
 	/**
 	 * @phpstan-param list<TradeRecipe> $recipes
 	 * @phpstan-param array<int, int>   $tierExpRequirements
 	 */
 	public function __construct(
 		private array $recipes,
-		private array $tierExpRequirements,
-		private int $tier = 0
+		private int $tier = 0,
+		private array $tierExpRequirements = self::DEFAULT_TIER_EXP_REQUIREMENTS,
 	){
 	}
 
@@ -40,7 +48,7 @@ final class TradeRecipeData{
 		$this->recipes[] = $recipe;
 	}
 
-	public function addTierExpRequirement(int $tier, int $expRequirement) : void{
+	public function setTierExpRequirement(int $tier, int $expRequirement) : void{
 		$this->tierExpRequirements[$tier] = $expRequirement;
 	}
 
