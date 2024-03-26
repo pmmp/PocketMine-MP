@@ -36,15 +36,15 @@ class Shield extends Durable{
 		return 1;
 	}
 
+	public function getCooldownTicks() : int{
+		return 10;
+	}
+
 	public function onDestroyBlock(Block $block, array &$returnedItems) : bool{
 		if(!$block->getBreakInfo()->breaksInstantly()){
 			return $this->applyDamage(2);
 		}
 
-		return false;
-	}
-
-	public function onTickWorn(Living $entity) : bool{
 		return false;
 	}
 }
