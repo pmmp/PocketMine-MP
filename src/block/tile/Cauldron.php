@@ -31,6 +31,7 @@ use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
+use pocketmine\item\LingeringPotion;
 use pocketmine\item\Potion;
 use pocketmine\item\SplashPotion;
 use pocketmine\item\VanillaItems;
@@ -76,8 +77,7 @@ final class Cauldron extends Spawnable{
 			default => throw new AssumptionFailedError("Unexpected potion item type")
 		});
 
-		//TODO: lingering potion
-		$type = $this->potionItem instanceof Potion || $this->potionItem instanceof SplashPotion ? $this->potionItem->getType() : null;
+		$type = $this->potionItem instanceof LingeringPotion || $this->potionItem instanceof Potion || $this->potionItem instanceof SplashPotion ? $this->potionItem->getType() : null;
 		$nbt->setShort(self::TAG_POTION_ID, $type === null ? self::POTION_ID_NONE : PotionTypeIdMap::getInstance()->toId($type));
 
 		if($this->customWaterColor !== null){
@@ -96,7 +96,7 @@ final class Cauldron extends Spawnable{
 			$this->potionItem = match($containerType){
 				self::POTION_CONTAINER_TYPE_NORMAL => VanillaItems::POTION()->setType($potionType),
 				self::POTION_CONTAINER_TYPE_SPLASH => VanillaItems::SPLASH_POTION()->setType($potionType),
-				self::POTION_CONTAINER_TYPE_LINGERING => throw new SavedDataLoadingException("Not implemented"),
+				self::POTION_CONTAINER_TYPE_LINGERING => VanillaItems::LINGERING_POTION()->setType($potionType),
 				default => throw new SavedDataLoadingException("Invalid potion container type ID $containerType")
 			};
 		}else{
@@ -115,8 +115,7 @@ final class Cauldron extends Spawnable{
 			default => throw new AssumptionFailedError("Unexpected potion item type")
 		});
 
-		//TODO: lingering potion
-		$type = $this->potionItem instanceof Potion || $this->potionItem instanceof SplashPotion ? $this->potionItem->getType() : null;
+		$type = $this->potionItem instanceof LingeringPotion || $this->potionItem instanceof Potion || $this->potionItem instanceof SplashPotion ? $this->potionItem->getType() : null;
 		$nbt->setShort(self::TAG_POTION_ID, $type === null ? self::POTION_ID_NONE : PotionTypeIdMap::getInstance()->toId($type));
 
 		if($this->customWaterColor !== null){

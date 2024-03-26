@@ -39,6 +39,7 @@ use pocketmine\data\bedrock\SuspiciousStewTypeIdMap;
 use pocketmine\item\Banner;
 use pocketmine\item\Dye;
 use pocketmine\item\Item;
+use pocketmine\item\LingeringPotion;
 use pocketmine\item\Medicine;
 use pocketmine\item\Potion;
 use pocketmine\item\SplashPotion;
@@ -487,6 +488,14 @@ final class ItemSerializerDeserializerRegistrar{
 				$item->setColor(DyeColorIdMap::getInstance()->fromInvertedId($meta) ?? throw new ItemTypeDeserializeException("Unknown banner meta $meta"));
 			},
 			fn(Banner $item) => DyeColorIdMap::getInstance()->toInvertedId($item->getColor())
+		);
+		$this->map1to1ItemWithMeta(
+			Ids::LINGERING_POTION,
+			Items::LINGERING_POTION(),
+			function(LingeringPotion $item, int $meta) : void{
+				$item->setType(PotionTypeIdMap::getInstance()->fromId($meta) ?? throw new ItemTypeDeserializeException("Unknown potion type ID $meta"));
+			},
+			fn(LingeringPotion $item) => PotionTypeIdMap::getInstance()->toId($item->getType())
 		);
 		$this->map1to1ItemWithMeta(
 			Ids::MEDICINE,
