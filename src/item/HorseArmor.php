@@ -50,16 +50,10 @@ class HorseArmor extends Item{
 	 *
 	 * @return $this
 	 */
-	public function setCustomColor(Color $color) : self{
+	public function setCustomColor(?Color $color) : self{
 		if($this->getTypeId() === ItemTypeIds::LEATHER_HORSE_ARMOR){
 			$this->customColor = $color;
 		}
-		return $this;
-	}
-
-	/** @return $this */
-	public function clearCustomColor() : self{
-		$this->customColor = null;
 		return $this;
 	}
 
