@@ -38,7 +38,11 @@ final class TradeInventory extends EntityInventory{
 	private const TAG_RECIPES = "Recipes";
 	private const TAG_TIER_EXP_REQUIREMENTS = "TierExpRequirements";
 
-	public function __construct(private readonly Living $entity, private readonly TradeRecipeData $recipeData){
+	public function __construct(
+		private readonly string $name,
+		private readonly Living $entity,
+		private readonly TradeRecipeData $recipeData
+	){
 		parent::__construct(3);
 	}
 
@@ -83,7 +87,7 @@ final class TradeInventory extends EntityInventory{
 			$recipeData->getTier(),
 			$holder->getId(),
 			-1,
-			"Trade", // TODO
+			$this->name,
 			true,
 			true,
 			new CacheableNbt($nbt)
