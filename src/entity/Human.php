@@ -558,9 +558,15 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$shieldOffhand = $this->getOffhandInventory()->getItem(0);
 
 		if($shield instanceof Shield){
-			$this->getInventory()->setItemInHand($this->damageShield($shield, $e->getFinalDamage()));
+			$dShield = $this->damageShield($shield, $e->getFinalDamage());
+			if($dShield !== null){
+				$this->getInventory()->setItemInHand($dShield);
+			}
 		}elseif($shieldOffhand instanceof Shield){
-			$this->getOffHandInventory()->setItem(0, $this->damageShield($shieldOffhand, $e->getFinalDamage()));
+			$dShield = $this->damageShield($shieldOffhand, $e->getFinalDamage());
+			if($dShield !== null){
+				$this->getOffHandInventory()->setItem(0, $dShield);
+			}
 		}
 	}
 
