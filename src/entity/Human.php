@@ -37,8 +37,6 @@ use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerEnderInventory;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\PlayerOffHandInventory;
-use pocketmine\item\Armor;
-use pocketmine\item\Durable;
 use pocketmine\item\enchantment\EnchantingHelper;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
@@ -61,7 +59,6 @@ use pocketmine\network\mcpe\protocol\types\AbilitiesLayer;
 use pocketmine\network\mcpe\protocol\types\command\CommandPermissions;
 use pocketmine\network\mcpe\protocol\types\DeviceOS;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
-use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\PropertySyncData;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
@@ -71,7 +68,6 @@ use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAbilitiesPacket;
 use pocketmine\player\Player;
-use pocketmine\scheduler\ClosureTask;
 use pocketmine\world\sound\ItemBreakSound;
 use pocketmine\world\sound\TotemUseSound;
 use Ramsey\Uuid\Uuid;
@@ -81,6 +77,8 @@ use function array_filter;
 use function array_key_exists;
 use function array_merge;
 use function array_values;
+use function floor;
+use function max;
 use function min;
 
 class Human extends Living implements ProjectileSource, InventoryHolder{
@@ -118,8 +116,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	protected ExperienceManager $xpManager;
 
 	protected int $xpSeed;
-
-	protected const NO_SHIELD_DELAY = 10;
 
 	public function __construct(Location $location, Skin $skin, ?CompoundTag $nbt = null){
 		$this->skin = $skin;
@@ -568,7 +564,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		}
 	}
 
-	public function damageShield(Shield $item, float $damage): ?Item{
+	public function damageShield(Shield $item, float $damage) : ?Item{
 		$durabilityRemoved = (int) max(floor($damage / 4), 1);
 
 		$item->applyDamage($durabilityRemoved);

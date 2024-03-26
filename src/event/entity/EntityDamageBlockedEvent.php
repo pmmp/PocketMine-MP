@@ -24,13 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\event\entity;
 
 use pocketmine\entity\Entity;
-use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\utils\Utils;
-use pocketmine\world\Position;
-
 /**
- * @phpstan-extends EntityEvent<Entity>
+ * @phpstan-extends EntityDamageByEntityEvent<Entity>
  */
 class EntityDamageBlockedEvent extends EntityDamageByEntityEvent{
 	use CancellableTrait;

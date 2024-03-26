@@ -188,11 +188,11 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 		$this->attackCooldown = $attackCooldown;
 	}
 
-	public function isBreakShield(): bool{
+	public function isBreakShield() : bool{
 		return $this->breakShield;
 	}
 
-	public function setBreakShield(bool $value): void{
+	public function setBreakShield(bool $value) : void{
 		$this->breakShield = $value;
 	}
 
@@ -200,7 +200,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 		return $this->shieldBreakCooldown;
 	}
 
-	public function setBreakShieldCooldown(int $cooldown): void{
+	public function setBreakShieldCooldown(int $cooldown) : void{
 		$this->shieldBreakCooldown = $cooldown;
 	}
 }
