@@ -289,7 +289,9 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("crimson_door", fn() => Blocks::CRIMSON_DOOR());
 		$result->registerBlock("crimson_fence", fn() => Blocks::CRIMSON_FENCE());
 		$result->registerBlock("crimson_fence_gate", fn() => Blocks::CRIMSON_FENCE_GATE());
+		$result->registerBlock("crimson_fungus", fn() => Blocks::CRIMSON_FUNGUS());
 		$result->registerBlock("crimson_hyphae", fn() => Blocks::CRIMSON_HYPHAE()->setStripped(false));
+		$result->registerBlock("crimson_nylium", fn() => Blocks::CRIMSON_NYLIUM());
 		$result->registerBlock("crimson_planks", fn() => Blocks::CRIMSON_PLANKS());
 		$result->registerBlock("crimson_pressure_plate", fn() => Blocks::CRIMSON_PRESSURE_PLATE());
 		$result->registerBlock("crimson_roots", fn() => Blocks::CRIMSON_ROOTS());
@@ -835,6 +837,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("nether_wart_block", fn() => Blocks::NETHER_WART_BLOCK());
 		$result->registerBlock("nether_wart_plant", fn() => Blocks::NETHER_WART());
 		$result->registerBlock("netherite_block", fn() => Blocks::NETHERITE());
+		$result->registerBlock("nether_sprouts", fn() => Blocks::NETHER_SPROUTS());
 		$result->registerBlock("netherrack", fn() => Blocks::NETHERRACK());
 		$result->registerBlock("netherreactor", fn() => Blocks::NETHER_REACTOR_CORE());
 		$result->registerBlock("normal_stone_stairs", fn() => Blocks::STONE_STAIRS());
@@ -1115,7 +1118,9 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("warped_door", fn() => Blocks::WARPED_DOOR());
 		$result->registerBlock("warped_fence", fn() => Blocks::WARPED_FENCE());
 		$result->registerBlock("warped_fence_gate", fn() => Blocks::WARPED_FENCE_GATE());
+		$result->registerBlock("warped_fungus", fn() => Blocks::WARPED_FUNGUS());
 		$result->registerBlock("warped_hyphae", fn() => Blocks::WARPED_HYPHAE()->setStripped(false));
+		$result->registerBlock("warped_nylium", fn() => Blocks::WARPED_NYLIUM());
 		$result->registerBlock("warped_planks", fn() => Blocks::WARPED_PLANKS());
 		$result->registerBlock("warped_pressure_plate", fn() => Blocks::WARPED_PRESSURE_PLATE());
 		$result->registerBlock("warped_roots", fn() => Blocks::WARPED_ROOTS());

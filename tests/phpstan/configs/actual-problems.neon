@@ -311,6 +311,26 @@ parameters:
 			path: ../../../src/block/Mycelium.php
 
 		-
+			message: "#^Parameter \\#1 \\$start of method pocketmine\\\\utils\\\\Random\\:\\:nextRange\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/block/Nylium.php
+
+		-
+			message: "#^Parameter \\#2 \\$end of method pocketmine\\\\utils\\\\Random\\:\\:nextRange\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/block/Nylium.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/block/Nylium.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:setBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/Nylium.php
+
+		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/block/RedMushroom.php
@@ -1199,9 +1219,4 @@ parameters:
 			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../phpunit/block/regenerate_consistency_check.php
-
-		-
-			message: "#^Parameter \\#1 \\$logFile of class pocketmine\\\\utils\\\\MainLogger constructor expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../phpunit/scheduler/AsyncPoolTest.php
 
