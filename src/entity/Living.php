@@ -32,6 +32,8 @@ use pocketmine\entity\animation\RespawnAnimation;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\EffectManager;
 use pocketmine\entity\effect\VanillaEffects;
+use pocketmine\entity\projectile\Projectile;
+use pocketmine\event\entity\EntityDamageBlockedEvent;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -63,6 +65,7 @@ use pocketmine\world\sound\EntityLandSound;
 use pocketmine\world\sound\EntityLongFallSound;
 use pocketmine\world\sound\EntityShortFallSound;
 use pocketmine\world\sound\ItemBreakSound;
+use pocketmine\world\sound\ShieldBlockSound;
 use function array_shift;
 use function atan2;
 use function ceil;
@@ -126,6 +129,10 @@ abstract class Living extends Entity{
 	protected bool $gliding = false;
 	protected bool $swimming = false;
 
+	private bool $isAttackTimeByShieldKb = false;
+	private int $attackTimeBefore = 20;
+	private bool $isBlocking = false;
+
 	protected function getInitialDragMultiplier() : float{ return 0.02; }
 
 	protected function getInitialGravity() : float{ return 0.08; }
@@ -149,24 +156,6 @@ abstract class Living extends Entity{
 			$this->getViewers(),
 			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onMobArmorChange($recipients, $this)
 		)));
-		$playArmorSound = function(Item $newItem, Item $oldItem) : void{
-			if(!$newItem->isNull() && $newItem instanceof Armor && !$newItem->equalsExact($oldItem)){
-				$equipSound = $newItem->getMaterial()->getEquipSound();
-				if($equipSound !== null){
-					$this->broadcastSound($equipSound);
-				}
-			}
-		};
-		$this->armorInventory->getListeners()->add(new CallbackInventoryListener(
-			function(Inventory $inventory, int $slot, Item $oldItem) use ($playArmorSound) : void{
-				$playArmorSound($inventory->getItem($slot), $oldItem);
-			},
-			function(Inventory $inventory, array $oldContents) use ($playArmorSound) : void{
-				foreach($oldContents as $slot => $oldItem){
-					$playArmorSound($inventory->getItem($slot), $oldItem);
-				}
-			}
-		));
 
 		$health = $this->getMaxHealth();
 
@@ -251,6 +240,8 @@ abstract class Living extends Entity{
 		$this->sneaking = $value;
 		$this->networkPropertiesDirty = true;
 		$this->recalculateSize();
+
+		$this->setBlocking($value);
 	}
 
 	public function isSprinting() : bool{
@@ -542,6 +533,15 @@ abstract class Living extends Entity{
 	public function attack(EntityDamageEvent $source) : void{
 		if($this->noDamageTicks > 0 && $source->getCause() !== EntityDamageEvent::CAUSE_SUICIDE){
 			$source->cancel();
+		}elseif($this->attackTime > 0 && !$this->isAttackTimeByShieldKb){
+			$lastCause = $this->getLastDamageCause();
+			if($lastCause !== null && $lastCause->getFinalDamage() >= $source->getFinalDamage()){
+				$source->cancel();
+			}
+		}
+
+		if($this->isBlocking && $this->blockedByShield($source)){
+			$source->cancel();
 		}
 
 		if($this->effectManager->has(VanillaEffects::FIRE_RESISTANCE()) && (
@@ -574,6 +574,7 @@ abstract class Living extends Entity{
 		}
 
 		$this->attackTime = $source->getAttackCooldown();
+		$this->isAttackTimeByShieldKb = false;
 
 		if($source instanceof EntityDamageByChildEntityEvent){
 			$e = $source->getChild();
@@ -685,10 +686,14 @@ abstract class Living extends Entity{
 					}
 				}
 			}
+
 		}
 
 		if($this->attackTime > 0){
 			$this->attackTime -= $tickDiff;
+			if($this->attackTime <= 0){
+				$this->isAttackTimeByShieldKb = false;
+			}
 		}
 
 		Timings::$livingEntityBaseTick->stopTiming();
@@ -904,6 +909,7 @@ abstract class Living extends Entity{
 		$properties->setGenericFlag(EntityMetadataFlags::SPRINTING, $this->sprinting);
 		$properties->setGenericFlag(EntityMetadataFlags::GLIDING, $this->gliding);
 		$properties->setGenericFlag(EntityMetadataFlags::SWIMMING, $this->swimming);
+		$properties->setGenericFlag(EntityMetadataFlags::BLOCKING, $this->isBlocking);
 	}
 
 	protected function onDispose() : void{
@@ -919,5 +925,71 @@ abstract class Living extends Entity{
 			$this->effectManager
 		);
 		parent::destroyCycles();
+	}
+
+	protected function blockedByShield(EntityDamageEvent $source) : bool{
+		$damager = null;
+		if($source instanceof EntityDamageByChildEntityEvent){
+			$damager = $source->getChild();
+		}elseif($source instanceof EntityDamageByEntityEvent){
+			$damager = $source->getDamager();
+		}
+
+		if($damager === null || !$this->isBlocking()){
+			return false;
+		}
+
+		$entityPos = $damager->getPosition();
+		$direction = $this->getDirectionVector();
+		$normalizedVector = $this->getPosition()->subtractVector($entityPos)->normalize();
+
+		$blocked = ($normalizedVector->x * $direction->x) + ($normalizedVector->z * $direction->z) < 0.0;
+
+		$event = new EntityDamageBlockedEvent($damager, $this, $source->getFinalDamage());
+
+		if(!$blocked || !$source->canBeReducedByArmor()){
+			$event->cancel();
+		}
+
+		if($event->isCancelled()){
+			return false;
+		}
+
+		if($damager instanceof Living){
+			$deltaX = $damager->getPosition()->x - $this->getPosition()->x;
+			$deltaZ = $damager->getPosition()->z - $this->getPosition()->z;
+			$damager->knockBack($deltaX, $deltaZ);
+			$damager->attackTime = 10;
+			$damager->isAttackTimeByShieldKb = true;
+		}
+
+		$this->onBlock($damager, $source);
+		return true;
+	}
+
+	protected function onBlock(Entity $entity, EntityDamageEvent $e) : void{
+		$this->getWorld()->addSound($entity->getPosition(), new ShieldBlockSound());
+	}
+
+	public function isBlocking() : bool{
+		return $this->isBlocking;
+	}
+
+	public function setBlocking(bool $value) : void{
+		$this->getNetworkProperties()->setGenericFlag(EntityMetadataFlags::BLOCKING, $value);
+		$this->isBlocking = $value;
+	}
+
+	public function preAttack(Player $player) : void{
+		if($this->isAttackTimeByShieldKb){
+			$this->attackTimeBefore = $this->attackTime;
+			$this->attackTime = 0;
+		}
+	}
+
+	public function postAttack(Player $player) : void{
+		if($this->isAttackTimeByShieldKb && $this->attackTime == 0){
+			$this->attackTime = $this->attackTimeBefore;
+		}
 	}
 }

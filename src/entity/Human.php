@@ -37,9 +37,12 @@ use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerEnderInventory;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\PlayerOffHandInventory;
+use pocketmine\item\Armor;
+use pocketmine\item\Durable;
 use pocketmine\item\enchantment\EnchantingHelper;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
+use pocketmine\item\Shield;
 use pocketmine\item\Totem;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
@@ -58,6 +61,7 @@ use pocketmine\network\mcpe\protocol\types\AbilitiesLayer;
 use pocketmine\network\mcpe\protocol\types\command\CommandPermissions;
 use pocketmine\network\mcpe\protocol\types\DeviceOS;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\PropertySyncData;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
@@ -67,6 +71,8 @@ use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAbilitiesPacket;
 use pocketmine\player\Player;
+use pocketmine\scheduler\ClosureTask;
+use pocketmine\world\sound\ItemBreakSound;
 use pocketmine\world\sound\TotemUseSound;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -112,6 +118,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	protected ExperienceManager $xpManager;
 
 	protected int $xpSeed;
+
+	protected const NO_SHIELD_DELAY = 10;
 
 	public function __construct(Location $location, Skin $skin, ?CompoundTag $nbt = null){
 		$this->skin = $skin;
@@ -545,5 +553,30 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			$this->xpManager
 		);
 		parent::destroyCycles();
+	}
+
+	protected function onBlock(Entity $entity, EntityDamageEvent $e) : void{
+		parent::onBlock($entity, $e);
+
+		$shield = $this->getInventory()->getItemInHand();
+		$shieldOffhand = $this->getOffhandInventory()->getItem(0);
+
+		if($shield instanceof Shield){
+			$this->getInventory()->setItemInHand($this->damageShield($shield, $e->getFinalDamage()));
+		}elseif($shieldOffhand instanceof Shield){
+			$this->getOffHandInventory()->setItem(0, $this->damageShield($shieldOffhand, $e->getFinalDamage()));
+		}
+	}
+
+	public function damageShield(Shield $item, float $damage): ?Item{
+		$durabilityRemoved = (int) max(floor($damage / 4), 1);
+
+		$item->applyDamage($durabilityRemoved);
+		if($item->isBroken()){
+			$this->broadcastSound(new ItemBreakSound());
+			return null;
+		}
+
+		return $item;
 	}
 }
