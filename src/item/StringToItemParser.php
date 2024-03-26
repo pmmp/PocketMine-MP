@@ -1286,6 +1286,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("diamond_boots", fn() => Items::DIAMOND_BOOTS());
 		$result->register("diamond_chestplate", fn() => Items::DIAMOND_CHESTPLATE());
 		$result->register("diamond_helmet", fn() => Items::DIAMOND_HELMET());
+		$result->register("diamond_horse_armor", fn() => Items::DIAMOND_HORSE_ARMOR());
 		$result->register("diamond_hoe", fn() => Items::DIAMOND_HOE());
 		$result->register("diamond_leggings", fn() => Items::DIAMOND_LEGGINGS());
 		$result->register("diamond_pickaxe", fn() => Items::DIAMOND_PICKAXE());
@@ -1325,6 +1326,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("gold_boots", fn() => Items::GOLDEN_BOOTS());
 		$result->register("gold_chestplate", fn() => Items::GOLDEN_CHESTPLATE());
 		$result->register("gold_helmet", fn() => Items::GOLDEN_HELMET());
+		$result->register("golden_horse_armor", fn() => Items::GOLDEN_HORSE_ARMOR());
 		$result->register("gold_hoe", fn() => Items::GOLDEN_HOE());
 		$result->register("gold_ingot", fn() => Items::GOLD_INGOT());
 		$result->register("gold_leggings", fn() => Items::GOLDEN_LEGGINGS());
@@ -1354,6 +1356,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("iron_boots", fn() => Items::IRON_BOOTS());
 		$result->register("iron_chestplate", fn() => Items::IRON_CHESTPLATE());
 		$result->register("iron_helmet", fn() => Items::IRON_HELMET());
+		$result->register("iron_horse_armor", fn() => Items::IRON_HORSE_ARMOR());
 		$result->register("iron_hoe", fn() => Items::IRON_HOE());
 		$result->register("iron_ingot", fn() => Items::IRON_INGOT());
 		$result->register("iron_leggings", fn() => Items::IRON_LEGGINGS());
@@ -1369,6 +1372,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("leather_cap", fn() => Items::LEATHER_CAP());
 		$result->register("leather_chestplate", fn() => Items::LEATHER_TUNIC());
 		$result->register("leather_helmet", fn() => Items::LEATHER_CAP());
+		$result->register("leather_horse_armor", fn() => Items::LEATHER_HORSE_ARMOR());
 		$result->register("leather_leggings", fn() => Items::LEATHER_PANTS());
 		$result->register("leather_pants", fn() => Items::LEATHER_PANTS());
 		$result->register("leather_tunic", fn() => Items::LEATHER_TUNIC());
@@ -1455,6 +1459,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("redstone_dust", fn() => Items::REDSTONE_DUST());
 		$result->register("rib_armor_trim_smithing_template", fn() => Items::RIB_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("rotten_flesh", fn() => Items::ROTTEN_FLESH());
+		$result->register("saddle", fn() => Items::SADDLE());
 		$result->register("salmon", fn() => Items::RAW_SALMON());
 		$result->register("scute", fn() => Items::SCUTE());
 		$result->register("sentry_armor_trim_smithing_template", fn() => Items::SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE());

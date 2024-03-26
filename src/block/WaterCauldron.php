@@ -30,6 +30,7 @@ use pocketmine\entity\Entity;
 use pocketmine\item\Armor;
 use pocketmine\item\Banner;
 use pocketmine\item\Dye;
+use pocketmine\item\HorseArmor;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\item\Potion;
@@ -128,9 +129,10 @@ final class WaterCauldron extends FillableCauldron{
 			}else{
 				$this->mix($item, VanillaItems::GLASS_BOTTLE(), $returnedItems);
 			}
-		}elseif($item instanceof Armor){
+		}elseif($item instanceof Armor || $item instanceof HorseArmor){
 			if($this->customWaterColor !== null){
 				if(match($item->getTypeId()){ //TODO: a DyeableArmor class would probably be a better idea, since not all types of armor are dyeable
+					ItemTypeIds::LEATHER_HORSE_ARMOR,
 					ItemTypeIds::LEATHER_CAP,
 					ItemTypeIds::LEATHER_TUNIC,
 					ItemTypeIds::LEATHER_PANTS,
@@ -142,7 +144,12 @@ final class WaterCauldron extends FillableCauldron{
 					$world->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronDyeItemSound());
 				}
 			}elseif($item->getCustomColor() !== null){
-				$item->clearCustomColor();
+				if($item instanceof HorseArmor){
+					$item->setCustomColor(null);
+				}else{
+					$item->clearCustomColor();
+				}
+
 				$world->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::CLEAN_ARMOR_USE_AMOUNT));
 				$world->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronCleanItemSound());
 			}

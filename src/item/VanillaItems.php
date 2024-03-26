@@ -142,6 +142,7 @@ use function strtolower;
  * @method static Armor DIAMOND_CHESTPLATE()
  * @method static Armor DIAMOND_HELMET()
  * @method static Hoe DIAMOND_HOE()
+ * @method static HorseArmor DIAMOND_HORSE_ARMOR()
  * @method static Armor DIAMOND_LEGGINGS()
  * @method static Pickaxe DIAMOND_PICKAXE()
  * @method static Shovel DIAMOND_SHOVEL()
@@ -178,6 +179,7 @@ use function strtolower;
  * @method static Armor GOLDEN_CHESTPLATE()
  * @method static Armor GOLDEN_HELMET()
  * @method static Hoe GOLDEN_HOE()
+ * @method static HorseArmor GOLDEN_HORSE_ARMOR()
  * @method static Armor GOLDEN_LEGGINGS()
  * @method static Pickaxe GOLDEN_PICKAXE()
  * @method static Shovel GOLDEN_SHOVEL()
@@ -195,6 +197,7 @@ use function strtolower;
  * @method static Armor IRON_CHESTPLATE()
  * @method static Armor IRON_HELMET()
  * @method static Hoe IRON_HOE()
+ * @method static HorseArmor IRON_HORSE_ARMOR()
  * @method static Item IRON_INGOT()
  * @method static Armor IRON_LEGGINGS()
  * @method static Item IRON_NUGGET()
@@ -208,6 +211,7 @@ use function strtolower;
  * @method static Item LEATHER()
  * @method static Armor LEATHER_BOOTS()
  * @method static Armor LEATHER_CAP()
+ * @method static HorseArmor LEATHER_HORSE_ARMOR()
  * @method static Armor LEATHER_PANTS()
  * @method static Armor LEATHER_TUNIC()
  * @method static Item MAGMA_CREAM()
@@ -283,6 +287,7 @@ use function strtolower;
  * @method static Redstone REDSTONE_DUST()
  * @method static Item RIB_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static RottenFlesh ROTTEN_FLESH()
+ * @method static Item SADDLE()
  * @method static Item SCUTE()
  * @method static Item SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Item SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE()
@@ -356,6 +361,7 @@ final class VanillaItems{
 
 	protected static function setup() : void{
 		self::registerArmorItems();
+		self::registerHorseArmorItems();
 		self::registerSpawnEggs();
 		self::registerTierToolItems();
 		self::registerSmithingTemplates();
@@ -546,6 +552,7 @@ final class VanillaItems{
 		self::register("record_ward", new Record(new IID(Ids::RECORD_WARD), RecordType::DISK_WARD, "Record Ward"));
 		self::register("redstone_dust", new Redstone(new IID(Ids::REDSTONE_DUST), "Redstone"));
 		self::register("rotten_flesh", new RottenFlesh(new IID(Ids::ROTTEN_FLESH), "Rotten Flesh"));
+		self::register("saddle", new Item(new IID(Ids::SADDLE), "Saddle"));
 		self::register("scute", new Item(new IID(Ids::SCUTE), "Scute"));
 		self::register("shears", new Shears(new IID(Ids::SHEARS), "Shears", [EnchantmentTags::SHEARS]));
 		self::register("shulker_shell", new Item(new IID(Ids::SHULKER_SHELL), "Shulker Shell"));
@@ -664,6 +671,13 @@ final class VanillaItems{
 		self::register("iron_leggings", new Armor(new IID(Ids::IRON_LEGGINGS), "Iron Leggings", new ArmorTypeInfo(5, 226, ArmorInventory::SLOT_LEGS, material: ArmorMaterials::IRON()), [EnchantmentTags::LEGGINGS]));
 		self::register("leather_pants", new Armor(new IID(Ids::LEATHER_PANTS), "Leather Pants", new ArmorTypeInfo(2, 76, ArmorInventory::SLOT_LEGS, material: ArmorMaterials::LEATHER()), [EnchantmentTags::LEGGINGS]));
 		self::register("netherite_leggings", new Armor(new IID(Ids::NETHERITE_LEGGINGS), "Netherite Leggings", new ArmorTypeInfo(6, 556, ArmorInventory::SLOT_LEGS, 3, true, material: ArmorMaterials::NETHERITE()), [EnchantmentTags::LEGGINGS]));
+	}
+
+	private static function registerHorseArmorItems() : void{
+		self::register("leather_horse_armor", new HorseArmor(new IID(Ids::LEATHER_HORSE_ARMOR), "Leather Horse Armor"));
+		self::register("iron_horse_armor", new HorseArmor(new IID(Ids::IRON_HORSE_ARMOR), "Iron Horse Armor"));
+		self::register("diamond_horse_armor", new HorseArmor(new IID(Ids::DIAMOND_HORSE_ARMOR), "Diamond Horse Armor"));
+		self::register("golden_horse_armor", new HorseArmor(new IID(Ids::GOLDEN_HORSE_ARMOR), "Golden Horse Armor"));
 	}
 
 	private static function registerSmithingTemplates() : void{
