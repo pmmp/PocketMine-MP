@@ -49,12 +49,12 @@ final class TradeInventory extends EntityInventory{
 	public function createInventoryOpenPackets(int $id) : array{
 		$holder = $this->getHolder();
 
-		$tradeData = $this->recipeData;
-		$recipes = $tradeData->getRecipes();
+		$recipeData = $this->recipeData;
+		$recipes = $recipeData->getRecipes();
 
 		$tierExpRequirements = [];
 
-		foreach($tradeData->getTierExpRequirements() as $tier => $expRequirement){
+		foreach($recipeData->getTierExpRequirements() as $tier => $expRequirement){
 			$tierExpRequirements[] = CompoundTag::create()
 				->setInt((string) $tier, $expRequirement);
 		}
@@ -76,7 +76,7 @@ final class TradeInventory extends EntityInventory{
 			$id,
 			WindowTypes::TRADING,
 			0,
-			$tradeData->getTier(),
+			$recipeData->getTier(),
 			$holder->getId(),
 			-1,
 			"Trade", // TODO
