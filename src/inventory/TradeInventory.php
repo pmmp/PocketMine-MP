@@ -46,6 +46,10 @@ final class TradeInventory extends EntityInventory{
 		return $this->entity;
 	}
 
+	public function getRecipeData() : TradeRecipeData{
+		return $this->recipeData;
+	}
+
 	public function createInventoryOpenPackets(int $id) : array{
 		$holder = $this->getHolder();
 

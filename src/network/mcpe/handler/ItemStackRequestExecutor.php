@@ -345,8 +345,7 @@ class ItemStackRequestExecutor{
 					$this->setNextCreatedItem($window->getOutput($optionId));
 				}
 			}elseif($window instanceof TradeInventory){
-				$holder = $window->getHolder();
-				$recipe = $holder->getTradeData()->getRecipe($action->getRecipeId() - 1);
+				$recipe = $window->getRecipeData()->getRecipe($action->getRecipeId() - 1);
 				if($recipe !== null){
 					$this->specialTransaction = new TradingTransaction($this->player, $recipe);
 					$this->setNextCreatedItem($recipe->getSell());
