@@ -1,6 +1,16 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Parameter \\#3 \\$subject of function preg_replace expects array\\|string, string\\|null given\\.$#"
+			count: 2
+			path: ../../../build/make-release.php
+
+		-
+			message: "#^Parameter \\#1 \\$strings of function pocketmine\\\\build\\\\server_phar\\\\preg_quote_array expects array\\<string\\>, array\\<int, string\\|false\\> given\\.$#"
+			count: 1
+			path: ../../../build/server-phar.php
+
+		-
 			message: "#^Do\\-while loop condition is always false\\.$#"
 			count: 1
 			path: ../../../src/PocketMine.php
@@ -501,7 +511,7 @@ parameters:
 			path: ../../../src/console/ConsoleReaderChildProcess.php
 
 		-
-			message: "#^Call to an undefined method class@anonymous/console/ConsoleReaderChildProcess\\.php\\:52\\:\\:start\\(\\)\\.$#"
+			message: "#^Call to an undefined method class@anonymous/src/console/ConsoleReaderChildProcess\\.php\\:52\\:\\:start\\(\\)\\.$#"
 			count: 1
 			path: ../../../src/console/ConsoleReaderChildProcess.php
 
@@ -541,12 +551,12 @@ parameters:
 			path: ../../../src/console/ConsoleReaderChildProcess.php
 
 		-
-			message: "#^Parameter \\$channel of method class@anonymous/console/ConsoleReaderChildProcess\\.php\\:52\\:\\:__construct\\(\\) has invalid type pmmp\\\\thread\\\\ThreadSafeArray\\.$#"
+			message: "#^Parameter \\$channel of method class@anonymous/src/console/ConsoleReaderChildProcess\\.php\\:52\\:\\:__construct\\(\\) has invalid type pmmp\\\\thread\\\\ThreadSafeArray\\.$#"
 			count: 2
 			path: ../../../src/console/ConsoleReaderChildProcess.php
 
 		-
-			message: "#^Property class@anonymous/console/ConsoleReaderChildProcess\\.php\\:52\\:\\:\\$channel has unknown class pmmp\\\\thread\\\\ThreadSafeArray as its type\\.$#"
+			message: "#^Property class@anonymous/src/console/ConsoleReaderChildProcess\\.php\\:52\\:\\:\\$channel has unknown class pmmp\\\\thread\\\\ThreadSafeArray as its type\\.$#"
 			count: 2
 			path: ../../../src/console/ConsoleReaderChildProcess.php
 
@@ -2359,4 +2369,64 @@ parameters:
 			message: "#^Parameter \\#1 \\$chunk of static method pocketmine\\\\world\\\\light\\\\SkyLightUpdate\\:\\:recalculateHeightMapColumn\\(\\) expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"
 			count: 1
 			path: ../../../src/world/light/SkyLightUpdate.php
+
+		-
+			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../phpunit/block/BlockTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../phpunit/block/regenerate_consistency_check.php
+
+		-
+			message: "#^Parameter \\#2 \\$haystack of static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertCount\\(\\) expects Countable\\|iterable, pmmp\\\\thread\\\\ThreadSafeArray given\\.$#"
+			count: 1
+			path: ../../phpunit/scheduler/AsyncPoolTest.php
+
+		-
+			message: "#^Parameter \\$result of anonymous function has invalid type pmmp\\\\thread\\\\ThreadSafeArray\\.$#"
+			count: 1
+			path: ../../phpunit/scheduler/AsyncPoolTest.php
+
+		-
+			message: "#^Access to an offset on an unknown class pmmp\\\\thread\\\\ThreadSafeArray\\.$#"
+			count: 1
+			path: ../../phpunit/scheduler/ThreadSafeResultAsyncTask.php
+
+		-
+			message: "#^Instantiated class pmmp\\\\thread\\\\ThreadSafeArray not found\\.$#"
+			count: 1
+			path: ../../phpunit/scheduler/ThreadSafeResultAsyncTask.php
+
+		-
+			message: "#^PHPDoc tag @var for variable \\$promise contains unknown class pmmp\\\\thread\\\\ThreadSafeArray\\.$#"
+			count: 1
+			path: ../../phpunit/scheduler/ThreadSafeResultAsyncTask.php
+
+		-
+			message: "#^PHPDoc tag @var for variable \\$result contains unknown class pmmp\\\\thread\\\\ThreadSafeArray\\.$#"
+			count: 1
+			path: ../../phpunit/scheduler/ThreadSafeResultAsyncTask.php
+
+		-
+			message: "#^Parameter \\$promise of method pocketmine\\\\scheduler\\\\ThreadSafeResultAsyncTask\\:\\:__construct\\(\\) has invalid type pmmp\\\\thread\\\\ThreadSafeArray\\.$#"
+			count: 1
+			path: ../../phpunit/scheduler/ThreadSafeResultAsyncTask.php
+
+		-
+			message: "#^Call to method get\\(\\) on an unknown class pocketmine\\\\world\\\\format\\\\LightArray\\.$#"
+			count: 4
+			path: ../../phpunit/world/format/SubChunkTest.php
+
+		-
+			message: "#^Call to method set\\(\\) on an unknown class pocketmine\\\\world\\\\format\\\\LightArray\\.$#"
+			count: 4
+			path: ../../phpunit/world/format/SubChunkTest.php
+
+		-
+			message: "#^Instantiated class pocketmine\\\\world\\\\format\\\\PalettedBlockArray not found\\.$#"
+			count: 1
+			path: ../../phpunit/world/format/SubChunkTest.php
 
