@@ -43,7 +43,7 @@ final class TradeInventory extends EntityInventory{
 		private readonly Living $entity,
 		private readonly TradeRecipeData $recipeData
 	){
-		parent::__construct(3);
+		parent::__construct(2);
 	}
 
 	public function getHolder() : Living{

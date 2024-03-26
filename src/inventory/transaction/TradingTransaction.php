@@ -57,14 +57,17 @@ final class TradingTransaction extends InventoryTransaction{
 		$buyA = $this->recipe->getBuyA();
 		$buyB = $this->recipe->getBuyB();
 
+		$maxInputs = $buyB === null ? 1 : 2;
+
+		if(count($inputs) > $maxInputs){
+			throw new TransactionValidationException("Expected $maxInputs input items, but received " . count($inputs));
+		}
+
 		foreach($inputs as $input){
 			if($input->getTypeId() === $buyA->getTypeId()){
 				$this->buyA = $input;
 			}elseif($buyB !== null && $input->getTypeId() === $buyB->getTypeId()){
 				$this->buyB = $input;
-			}
-			if($this->buyA !== null && ($buyB !== null && $this->buyB !== null)){
-				throw new TransactionValidationException("Transaction has too many input items");
 			}
 		}
 		if($this->buyA === null || ($buyB !== null && $this->buyB === null)){
