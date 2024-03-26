@@ -70,7 +70,7 @@ class Villager extends Living implements Ageable{
 		], [
 			0 => 10
 		]); // TODO
-		$this->inventory = new TradeInventory($this);
+		$this->inventory = new TradeInventory($this, $this->data);
 
 		/** @var int $profession */
 		$profession = $nbt->getInt(self::TAG_PROFESSION, self::PROFESSION_FARMER);

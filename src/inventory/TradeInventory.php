@@ -23,8 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\entity\Living;
 use pocketmine\entity\trade\TradeRecipe;
-use pocketmine\entity\Villager;
+use pocketmine\entity\trade\TradeRecipeData;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
@@ -37,18 +38,18 @@ final class TradeInventory extends EntityInventory{
 	private const TAG_RECIPES = "Recipes";
 	private const TAG_TIER_EXP_REQUIREMENTS = "TierExpRequirements";
 
-	public function __construct(private readonly Villager $entity){
+	public function __construct(private readonly Living $entity, private readonly TradeRecipeData $recipeData){
 		parent::__construct(3);
 	}
 
-	public function getHolder() : Villager{
+	public function getHolder() : Living{
 		return $this->entity;
 	}
 
 	public function createInventoryOpenPackets(int $id) : array{
 		$holder = $this->getHolder();
 
-		$tradeData = $holder->getTradeData();
+		$tradeData = $this->recipeData;
 		$recipes = $tradeData->getRecipes();
 
 		$tierExpRequirements = [];
