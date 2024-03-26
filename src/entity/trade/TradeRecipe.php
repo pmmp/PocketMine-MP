@@ -53,7 +53,10 @@ final class TradeRecipe{
 		private int $uses = 0
 	){
 		if($buyA->isNull() || $sell->isNull() || ($buyB !== null && $buyB->isNull())){
-			throw new \InvalidArgumentException("TradeRecipe items cannot be null");
+			throw new \InvalidArgumentException("Recipe items cannot be null");
+		}
+		if($tier < 0){
+			throw new \InvalidArgumentException("Tier must be a positive integer");
 		}
 	}
 
