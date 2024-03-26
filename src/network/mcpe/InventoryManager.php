@@ -160,7 +160,6 @@ class InventoryManager{
 
 	/**
 	 * @param int[]|int $slotMap
-	 *
 	 * @phpstan-param array<int, int>|int $slotMap
 	 */
 	private function addComplex(array|int $slotMap, Inventory $inventory) : void{
@@ -179,7 +178,6 @@ class InventoryManager{
 
 	/**
 	 * @param int[]|int $slotMap
-	 *
 	 * @phpstan-param array<int, int>|int $slotMap
 	 */
 	private function addComplexDynamic(array|int $slotMap, Inventory $inventory) : int{
@@ -247,7 +245,6 @@ class InventoryManager{
 
 	/**
 	 * @param NetworkInventoryAction[] $networkInventoryActions
-	 *
 	 * @throws PacketHandlingException
 	 */
 	public function addRawPredictedSlotChanges(array $networkInventoryActions) : void{
@@ -258,7 +255,7 @@ class InventoryManager{
 
 			//legacy transactions should not modify or predict anything other than these inventories, since these are
 			//the only ones accessible when not in-game (ItemStackRequest is used for everything else)
-			if(match ($action->windowId) {
+			if(match($action->windowId){
 				ContainerIds::INVENTORY, ContainerIds::OFFHAND, ContainerIds::ARMOR => false,
 				default => true
 			}){
@@ -307,7 +304,7 @@ class InventoryManager{
 	 */
 	private function createComplexSlotMapping(Inventory $inventory) : ?array{
 		//TODO: make this dynamic so plugins can add mappings for stuff not implemented by PM
-		return match (true) {
+		return match(true){
 			$inventory instanceof AnvilInventory => UIInventorySlotOffset::ANVIL,
 			$inventory instanceof EnchantInventory => UIInventorySlotOffset::ENCHANTING_TABLE,
 			$inventory instanceof LoomInventory => UIInventorySlotOffset::LOOM,
@@ -356,13 +353,13 @@ class InventoryManager{
 		//if the class isn't final, not to mention being inflexible.
 		if($inv instanceof BlockInventory){
 			$blockPosition = BlockPosition::fromVector3($inv->getHolder());
-			$windowType = match (true) {
+			$windowType = match(true){
 				$inv instanceof LoomInventory => WindowTypes::LOOM,
-				$inv instanceof FurnaceInventory => match ($inv->getFurnaceType()) {
-					FurnaceType::FURNACE => WindowTypes::FURNACE,
-					FurnaceType::BLAST_FURNACE => WindowTypes::BLAST_FURNACE,
-					FurnaceType::SMOKER => WindowTypes::SMOKER,
-				},
+				$inv instanceof FurnaceInventory => match($inv->getFurnaceType()){
+						FurnaceType::FURNACE => WindowTypes::FURNACE,
+						FurnaceType::BLAST_FURNACE => WindowTypes::BLAST_FURNACE,
+						FurnaceType::SMOKER => WindowTypes::SMOKER,
+					},
 				$inv instanceof EnchantInventory => WindowTypes::ENCHANTMENT,
 				$inv instanceof BrewingStandInventory => WindowTypes::BREWING_STAND,
 				$inv instanceof AnvilInventory => WindowTypes::ANVIL,
