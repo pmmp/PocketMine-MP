@@ -144,7 +144,7 @@ final class WaterCauldron extends FillableCauldron{
 					$world->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronDyeItemSound());
 				}
 			}elseif($item->getCustomColor() !== null){
-				if($item->getTypeId() === ItemTypeIds::LEATHER_HORSE_ARMOR){
+				if($item instanceof HorseArmor){
 					$item->setCustomColor(null);
 				}else{
 					$item->clearCustomColor();
