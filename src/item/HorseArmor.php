@@ -34,13 +34,6 @@ class HorseArmor extends Item{
 
 	protected ?Color $customColor = null;
 
-	/**
-	 * @param string[] $enchantmentTags
-	 */
-	public function __construct(ItemIdentifier $identifier, string $name, array $enchantmentTags = []){
-		parent::__construct($identifier, $name, $enchantmentTags);
-	}
-
 	public function getMaxStackSize() : int{
 		return 1;
 	}
@@ -58,7 +51,9 @@ class HorseArmor extends Item{
 	 * @return $this
 	 */
 	public function setCustomColor(Color $color) : self{
-		$this->customColor = $color;
+		if($this->getTypeId() === ItemTypeIds::LEATHER_HORSE_ARMOR){
+			$this->customColor = $color;
+		}
 		return $this;
 	}
 
