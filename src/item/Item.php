@@ -553,9 +553,9 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
-	 * Returns if item can break the shield.
+	 * Returns if item can disable the shield.
 	 */
-	public function canBreakShield() : bool{
+	public function canDisableShield() : bool{
 		return false;
 	}
 

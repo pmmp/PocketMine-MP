@@ -41,7 +41,7 @@ class Axe extends TieredTool{
 		return $this->tier->getBaseAttackPoints() - 1;
 	}
 
-	public function canBreakShield() : bool{
+	public function canDisableShield() : bool{
 		return true;
 	}
 
