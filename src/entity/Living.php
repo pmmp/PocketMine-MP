@@ -89,7 +89,7 @@ abstract class Living extends Entity{
 	 * Limit of an entity's vertical knockback velocity when hit by another entity. Without this limit, the entity
 	 * may be knocked far up into the air with large knockback forces.
 	 */
-	public const DEFAULT_KNOCKBACK_VERTICAL_LIMIT = 0.4;
+	public const DEFAULT_KNOCKBACK_VERTICAL_LIMIT = 0.3608;
 
 	private const TAG_LEGACY_HEALTH = "HealF"; //TAG_Float
 	private const TAG_HEALTH = "Health"; //TAG_Float
