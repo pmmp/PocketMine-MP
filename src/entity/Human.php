@@ -550,35 +550,4 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		);
 		parent::destroyCycles();
 	}
-
-	protected function onBlock(Entity $entity, EntityDamageEvent $e) : void{
-		parent::onBlock($entity, $e);
-
-		$shield = $this->getInventory()->getItemInHand();
-		$shieldOffhand = $this->getOffhandInventory()->getItem(0);
-
-		if($shield instanceof Shield){
-			$dShield = $this->damageShield($shield, $e->getFinalDamage());
-			if($dShield !== null){
-				$this->getInventory()->setItemInHand($dShield);
-			}
-		}elseif($shieldOffhand instanceof Shield){
-			$dShield = $this->damageShield($shieldOffhand, $e->getFinalDamage());
-			if($dShield !== null){
-				$this->getOffHandInventory()->setItem(0, $dShield);
-			}
-		}
-	}
-
-	public function damageShield(Shield $item, float $damage) : ?Item{
-		$durabilityRemoved = (int) max(floor($damage / 4), 1);
-
-		$item->applyDamage($durabilityRemoved);
-		if($item->isBroken()){
-			$this->broadcastSound(new ItemBreakSound());
-			return null;
-		}
-
-		return $item;
-	}
 }
