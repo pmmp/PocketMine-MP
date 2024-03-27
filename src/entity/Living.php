@@ -39,6 +39,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\inventory\CallbackInventoryListener;
+use pocketmine\inventory\Inventory;
 use pocketmine\item\Armor;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
@@ -154,6 +155,24 @@ abstract class Living extends Entity{
 			$this->getViewers(),
 			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onMobArmorChange($recipients, $this)
 		)));
+		$playArmorSound = function(Item $newItem, Item $oldItem) : void{
+			if(!$newItem->isNull() && $newItem instanceof Armor && !$newItem->equalsExact($oldItem)){
+				$equipSound = $newItem->getMaterial()->getEquipSound();
+				if($equipSound !== null){
+					$this->broadcastSound($equipSound);
+				}
+			}
+		};
+		$this->armorInventory->getListeners()->add(new CallbackInventoryListener(
+			function(Inventory $inventory, int $slot, Item $oldItem) use ($playArmorSound) : void{
+				$playArmorSound($inventory->getItem($slot), $oldItem);
+			},
+			function(Inventory $inventory, array $oldContents) use ($playArmorSound) : void{
+				foreach($oldContents as $slot => $oldItem){
+					$playArmorSound($inventory->getItem($slot), $oldItem);
+				}
+			}
+		));
 
 		$health = $this->getMaxHealth();
 
