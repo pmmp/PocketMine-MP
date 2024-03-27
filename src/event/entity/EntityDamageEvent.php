@@ -74,8 +74,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	private array $originals;
 	private int $attackCooldown = 10;
 
-	private bool $breakShield = false;
-	private int $shieldBreakCooldown = 100;
+	private bool $shieldDisabled = false;
 
 	/**
 	 * @param float[] $modifiers
@@ -188,19 +187,11 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 		$this->attackCooldown = $attackCooldown;
 	}
 
-	public function isBreakShield() : bool{
-		return $this->breakShield;
+	public function isShieldDisabled() : bool{
+		return $this->shieldDisabled;
 	}
 
-	public function setBreakShield(bool $value) : void{
-		$this->breakShield = $value;
-	}
-
-	public function getBreakShieldCooldown() : int{
-		return $this->shieldBreakCooldown;
-	}
-
-	public function setBreakShieldCooldown(int $cooldown) : void{
-		$this->shieldBreakCooldown = $cooldown;
+	public function setShieldDisabled(bool $value) : void{
+		$this->shieldDisabled = $value;
 	}
 }
