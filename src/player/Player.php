@@ -98,7 +98,6 @@ use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\Releasable;
-use pocketmine\item\Shield;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\Translatable;
@@ -2710,26 +2709,5 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->logger->debug("Detected forced unload of chunk " . $chunkX . " " . $chunkZ);
 			$this->unloadChunk($chunkX, $chunkZ);
 		}
-	}
-
-	protected function updateBlockingFlag() : void{
-		$shouldBlock = $this->hasItemCooldown($this->inventory->getItemInHand()) || $this->hasItemCooldown($this->offHandInventory->getItem(0)) &&
-			$this->isSneaking() &&
-			$this->inventory->getItemInHand() instanceof Shield || $this->offHandInventory->getItem(0) instanceof Shield;
-
-		if($this->isBlocking() !== $shouldBlock){
-			$this->setBlocking($shouldBlock);
-		}
-	}
-
-	protected function onBlock(Entity $entity, EntityDamageEvent $e) : void{
-		parent::onBlock($entity, $e);
-
-		if($e->isBreakShield()){
-			$this->resetItemCooldown($this->getInventory()->getItemInHand());
-			$this->resetItemCooldown($this->getOffHandInventory()->getItem(0));
-		}
-
-		$this->getNetworkProperties()->setGenericFlag(EntityMetadataFlags::BLOCKED_USING_DAMAGED_SHIELD, true);
 	}
 }
