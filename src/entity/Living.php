@@ -40,10 +40,12 @@ use pocketmine\inventory\ArmorInventory;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Armor;
+use pocketmine\item\Axe;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
+use pocketmine\item\Shield;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\CompoundTag;
@@ -52,6 +54,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\EntityEventBroadcaster;
 use pocketmine\network\mcpe\NetworkBroadcastUtils;
+use pocketmine\network\mcpe\protocol\PlayerStartItemCooldownPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
@@ -63,6 +66,7 @@ use pocketmine\world\sound\EntityLandSound;
 use pocketmine\world\sound\EntityLongFallSound;
 use pocketmine\world\sound\EntityShortFallSound;
 use pocketmine\world\sound\ItemBreakSound;
+use pocketmine\world\sound\ShieldBlockSound;
 use function array_shift;
 use function atan2;
 use function ceil;
@@ -79,6 +83,7 @@ use const M_PI;
 
 abstract class Living extends Entity{
 	protected const DEFAULT_BREATH_TICKS = 300;
+	protected const DEFAULT_SHIELD_COOLDOWN_TICKS = 100;
 
 	/**
 	 * The default knockback multiplier when an entity is hit by another entity.
@@ -125,6 +130,10 @@ abstract class Living extends Entity{
 	protected bool $sneaking = false;
 	protected bool $gliding = false;
 	protected bool $swimming = false;
+
+	protected bool $blocking = false;
+	protected int $blockingTicks = self::DEFAULT_SHIELD_COOLDOWN_TICKS;
+	protected int $maxBlockingTicks = self::DEFAULT_SHIELD_COOLDOWN_TICKS;
 
 	protected function getInitialDragMultiplier() : float{ return 0.02; }
 
@@ -250,6 +259,9 @@ abstract class Living extends Entity{
 	public function setSneaking(bool $value = true) : void{
 		$this->sneaking = $value;
 		$this->networkPropertiesDirty = true;
+
+		$this->setBlocking($value);
+
 		$this->recalculateSize();
 	}
 
@@ -544,6 +556,10 @@ abstract class Living extends Entity{
 			$source->cancel();
 		}
 
+		if($this->blocking && $this->blockedByShield()){
+			$source->cancel();
+		}
+
 		if($this->effectManager->has(VanillaEffects::FIRE_RESISTANCE()) && (
 				$source->getCause() === EntityDamageEvent::CAUSE_FIRE
 				|| $source->getCause() === EntityDamageEvent::CAUSE_FIRE_TICK
@@ -558,8 +574,8 @@ abstract class Living extends Entity{
 		}
 
 		if($source instanceof EntityDamageByEntityEvent && (
-			$source->getCause() === EntityDamageEvent::CAUSE_BLOCK_EXPLOSION ||
-			$source->getCause() === EntityDamageEvent::CAUSE_ENTITY_EXPLOSION)
+				$source->getCause() === EntityDamageEvent::CAUSE_BLOCK_EXPLOSION ||
+				$source->getCause() === EntityDamageEvent::CAUSE_ENTITY_EXPLOSION)
 		){
 			//TODO: knockback should not just apply for entity damage sources
 			//this doesn't matter for TNT right now because the PrimedTNT entity is considered the source, not the block.
@@ -687,6 +703,13 @@ abstract class Living extends Entity{
 			}
 		}
 
+		if($this->blockingTicks > 0){
+			$this->blockingTicks -= $tickDiff;
+			var_dump($this->blocking);
+			var_dump($this->blockingTicks);
+			var_dump($this->maxBlockingTicks);
+		}
+
 		if($this->attackTime > 0){
 			$this->attackTime -= $tickDiff;
 		}
@@ -809,7 +832,8 @@ abstract class Living extends Entity{
 	}
 
 	/**
-	 * @param true[] $transparent
+	 * @param true[]                   $transparent
+	 *
 	 * @phpstan-param array<int, true> $transparent
 	 *
 	 * @return Block[]
@@ -852,7 +876,8 @@ abstract class Living extends Entity{
 	}
 
 	/**
-	 * @param true[] $transparent
+	 * @param true[]                   $transparent
+	 *
 	 * @phpstan-param array<int, true> $transparent
 	 */
 	public function getTargetBlock(int $maxDistance, array $transparent = []) : ?Block{
@@ -904,6 +929,7 @@ abstract class Living extends Entity{
 		$properties->setGenericFlag(EntityMetadataFlags::SPRINTING, $this->sprinting);
 		$properties->setGenericFlag(EntityMetadataFlags::GLIDING, $this->gliding);
 		$properties->setGenericFlag(EntityMetadataFlags::SWIMMING, $this->swimming);
+		$properties->setGenericFlag(EntityMetadataFlags::BLOCKING, $this->blocking);
 	}
 
 	protected function onDispose() : void{
@@ -919,5 +945,110 @@ abstract class Living extends Entity{
 			$this->effectManager
 		);
 		parent::destroyCycles();
+	}
+
+	public function isBlocking() : bool{
+		return $this->blocking;
+	}
+
+	public function setBlocking(bool $value) : void{
+		if($this->blockingTicks > 0) return;
+
+		$this->getNetworkProperties()->setGenericFlag(EntityMetadataFlags::BLOCKING, $value);
+		$this->blocking = $value;
+	}
+
+	protected function isBlockedByShield(EntityDamageByEntityEvent $event) : bool{
+		$entity = $event->getEntity();
+
+		if(!$entity instanceof Player){
+			return false;
+		}
+
+		$damager = $event instanceof EntityDamageByChildEntityEvent ? $event->getChild() : $event->getDamager();
+
+		if($damager === null || !$this->isBlocking()){
+			return false;
+		}
+
+		$damagerPos = $damager->getPosition();
+
+		$direction = $this->getDirectionVector();
+		$normalizedVector = $this->getPosition()->subtractVector($damagerPos)->normalize();
+
+		$blocked = ($normalizedVector->x * $direction->x) + ($normalizedVector->z * $direction->z) < 0.0;
+
+		$event = new EntityDamageByEntityEvent($damager, $this, EntityDamageEvent::CAUSE_BLOCKING, $event->getFinalDamage());
+
+		if($event->isCancelled()){
+			return false;
+		}
+
+		if(!$blocked || !$event->canBeReducedByArmor()){
+			return false;
+		}
+
+		if($damager instanceof Human && $damager->getInventory()->getItemInHand() instanceof Axe){
+			$this->blockingTicks = self::DEFAULT_SHIELD_COOLDOWN_TICKS;
+			$this->sendShieldCooldownPacket($this->blockingTicks);
+		}
+
+		$this->getWorld()->addSound($this->getPosition(), new ShieldBlockSound());
+		return true;
+	}
+
+	public function sendShieldCooldownPacket(int $ticks) : void{
+		if(!$this instanceof Player) return;
+
+		$this->getNetworkSession()->sendDataPacket(PlayerStartItemCooldownPacket::create("shield", $ticks));
+	}
+
+	protected function damageShield(float $damage, EntityDamageEvent $event) : void{
+		if(!$this instanceof Human) return;
+
+		$inventory = $this->getInventory();
+		$offHandInventory = $this->getOffHandInventory();
+
+		$damage = (int) (2 * ($damage + array_sum([
+					$event->getModifier(EntityDamageEvent::MODIFIER_STRENGTH),
+					$event->getModifier(EntityDamageEvent::MODIFIER_WEAKNESS),
+					$event->getModifier(EntityDamageEvent::MODIFIER_CRITICAL),
+					$event->getModifier(EntityDamageEvent::MODIFIER_WEAPON_ENCHANTMENTS)
+				])));
+
+		$shield = $inventory->getItemInHand();
+		if($shield instanceof Shield){
+			$shield->applyDamage($damage);
+			$inventory->setItemInHand($shield);
+		}else{
+			$shieldOffhand = $offHandInventory->getItem(0);
+			if($shieldOffhand instanceof Shield){
+				$shieldOffhand->applyDamage($damage);
+			}
+		}
+	}
+
+	public function setShieldDisableCooldown(int $value) : void{
+		if($this->isSneaking()){
+			$this->getNetworkProperties()->setGenericFlag(EntityMetadataFlags::BLOCKING, false);
+		}
+
+		$effects = $this->getEffects();
+
+		if(($effectLevel = $effects->get(VanillaEffects::HASTE())?->getEffectLevel() ?? 0) > 1){
+			$value -= $effectLevel;
+		}else{
+			$value += 2 * ($effects->get(VanillaEffects::MINING_FATIGUE())?->getEffectLevel() ?? 0);
+		}
+
+		$this->blockingTicks = $value;
+	}
+
+	public function getShieldDisableCooldown() : int{
+		return $this->blockingTicks;
+	}
+
+	public function hasShieldDisableCooldown() : bool{
+		return $this->blockingTicks < 0;
 	}
 }

@@ -24,35 +24,22 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockToolType;
-use pocketmine\entity\Entity;
 
-class Axe extends TieredTool{
+class Shield extends Durable{
 
-	public function getBlockToolType() : int{
-		return BlockToolType::AXE;
+	public function getMaxDurability() : int{
+		return 336;
 	}
 
-	public function getBlockToolHarvestLevel() : int{
-		return $this->tier->getHarvestLevel();
-	}
-
-	public function getAttackPoints() : int{
-		return $this->tier->getBaseAttackPoints() - 1;
-	}
-
-	public function canDisableShield() : bool{
-		return true;
+	public function getMaxStackSize() : int{
+		return 1;
 	}
 
 	public function onDestroyBlock(Block $block, array &$returnedItems) : bool{
 		if(!$block->getBreakInfo()->breaksInstantly()){
-			return $this->applyDamage(1);
+			return $this->applyDamage(2);
 		}
-		return false;
-	}
 
-	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
-		return $this->applyDamage(2);
+		return false;
 	}
 }

@@ -553,6 +553,13 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
+	 * Returns if item can disable the shield.
+	 */
+	public function canDisableShield() : bool{
+		return false;
+	}
+
+	/**
 	 * Returns how many armor points can be gained by wearing this item.
 	 */
 	public function getDefensePoints() : int{
