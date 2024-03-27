@@ -40,7 +40,6 @@ use pocketmine\inventory\PlayerOffHandInventory;
 use pocketmine\item\enchantment\EnchantingHelper;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
-use pocketmine\item\Shield;
 use pocketmine\item\Totem;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
@@ -68,7 +67,6 @@ use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAbilitiesPacket;
 use pocketmine\player\Player;
-use pocketmine\world\sound\ItemBreakSound;
 use pocketmine\world\sound\TotemUseSound;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -77,8 +75,6 @@ use function array_filter;
 use function array_key_exists;
 use function array_merge;
 use function array_values;
-use function floor;
-use function max;
 use function min;
 
 class Human extends Living implements ProjectileSource, InventoryHolder{
