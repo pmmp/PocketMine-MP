@@ -51,7 +51,7 @@ use const SORT_NUMERIC;
 final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 
 	public function __construct(
-		private StandardPacketBroadcaster $broadcaster,
+		private PacketBroadcaster $broadcaster,
 		private TypeConverter $typeConverter
 	){}
 
@@ -87,12 +87,13 @@ final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 			EffectIdMap::getInstance()->toId($effect->getType()),
 			$effect->getAmplifier(),
 			$effect->isVisible(),
-			$effect->getDuration()
+			$effect->getDuration(),
+			tick: 0
 		));
 	}
 
 	public function onEntityEffectRemoved(array $recipients, Living $entity, EffectInstance $effect) : void{
-		$this->sendDataPacket($recipients, MobEffectPacket::remove($entity->getId(), EffectIdMap::getInstance()->toId($effect->getType())));
+		$this->sendDataPacket($recipients, MobEffectPacket::remove($entity->getId(), EffectIdMap::getInstance()->toId($effect->getType()), tick: 0));
 	}
 
 	public function onEntityRemoved(array $recipients, Entity $entity) : void{
@@ -139,6 +140,6 @@ final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 	}
 
 	public function onEmote(array $recipients, Human $from, string $emoteId) : void{
-		$this->sendDataPacket($recipients, EmotePacket::create($from->getId(), $emoteId, "", "", EmotePacket::FLAG_SERVER));
+		$this->sendDataPacket($recipients, EmotePacket::create($from->getId(), $emoteId, "", "", EmotePacket::FLAG_SERVER | EmotePacket::FLAG_MUTE_ANNOUNCEMENT));
 	}
 }

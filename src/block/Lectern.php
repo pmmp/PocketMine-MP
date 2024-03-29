@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Lectern as TileLectern;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -39,7 +38,6 @@ use function count;
 
 class Lectern extends Transparent{
 	use FacesOppositePlacingPlayerTrait;
-	use HorizontalFacingTrait;
 
 	protected int $viewedPage = 0;
 	protected ?WritableBookBase $book = null;
@@ -89,7 +87,7 @@ class Lectern extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function isProducingSignal() : bool{ return $this->producingSignal; }

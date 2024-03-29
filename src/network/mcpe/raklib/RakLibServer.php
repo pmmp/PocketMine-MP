@@ -29,6 +29,7 @@ use pocketmine\snooze\SleeperHandlerEntry;
 use pocketmine\thread\log\ThreadSafeLogger;
 use pocketmine\thread\NonThreadSafeValue;
 use pocketmine\thread\Thread;
+use pocketmine\thread\ThreadCrashException;
 use raklib\generic\SocketException;
 use raklib\server\ipc\RakLibToUserThreadMessageSender;
 use raklib\server\ipc\UserToRakLibThreadMessageReceiver;
@@ -37,17 +38,12 @@ use raklib\server\ServerSocket;
 use raklib\server\SimpleProtocolAcceptor;
 use raklib\utils\ExceptionTraceCleaner;
 use raklib\utils\InternetAddress;
-use function error_get_last;
 use function gc_enable;
 use function ini_set;
-use function register_shutdown_function;
 
 class RakLibServer extends Thread{
-	protected bool $cleanShutdown = false;
 	protected bool $ready = false;
 	protected string $mainPath;
-	/** @phpstan-var NonThreadSafeValue<RakLibThreadCrashInfo>|null */
-	public ?NonThreadSafeValue $crashInfo = null;
 	/** @phpstan-var NonThreadSafeValue<InternetAddress> */
 	protected NonThreadSafeValue $address;
 
@@ -69,86 +65,48 @@ class RakLibServer extends Thread{
 		$this->address = new NonThreadSafeValue($address);
 	}
 
-	/**
-	 * @return void
-	 */
-	public function shutdownHandler(){
-		if($this->cleanShutdown !== true && $this->crashInfo === null){
-			$error = error_get_last();
-
-			if($error !== null){
-				$this->logger->emergency("Fatal error: " . $error["message"] . " in " . $error["file"] . " on line " . $error["line"]);
-				$this->setCrashInfo(RakLibThreadCrashInfo::fromLastErrorInfo($error));
-			}else{
-				$this->logger->emergency("RakLib shutdown unexpectedly");
-			}
-		}
-	}
-
-	public function getCrashInfo() : ?RakLibThreadCrashInfo{
-		return $this->crashInfo?->deserialize();
-	}
-
-	private function setCrashInfo(RakLibThreadCrashInfo $info) : void{
-		$this->synchronized(function() use ($info) : void{
-			$this->crashInfo = new NonThreadSafeValue($info);
-			$this->notify();
-		});
-	}
-
 	public function startAndWait(int $options = NativeThread::INHERIT_NONE) : void{
 		$this->start($options);
 		$this->synchronized(function() : void{
-			while(!$this->ready && $this->crashInfo === null){
+			while(!$this->ready && $this->getCrashInfo() === null){
 				$this->wait();
 			}
-			$crashInfo = $this->crashInfo?->deserialize();
+			$crashInfo = $this->getCrashInfo();
 			if($crashInfo !== null){
-				if($crashInfo->getClass() === SocketException::class){
+				if($crashInfo->getType() === SocketException::class){
 					throw new SocketException($crashInfo->getMessage());
 				}
-				throw new \RuntimeException("RakLib failed to start: " . $crashInfo->makePrettyMessage());
+				throw new ThreadCrashException("RakLib failed to start", $crashInfo);
 			}
 		});
 	}
 
 	protected function onRun() : void{
-		try{
-			gc_enable();
-			ini_set("display_errors", '1');
-			ini_set("display_startup_errors", '1');
+		gc_enable();
+		ini_set("display_errors", '1');
+		ini_set("display_startup_errors", '1');
+		\GlobalLogger::set($this->logger);
 
-			register_shutdown_function([$this, "shutdownHandler"]);
-
-			try{
-				$socket = new ServerSocket($this->address->deserialize());
-			}catch(SocketException $e){
-				$this->setCrashInfo(RakLibThreadCrashInfo::fromThrowable($e));
-				return;
-			}
-			$manager = new Server(
-				$this->serverId,
-				$this->logger,
-				$socket,
-				$this->maxMtuSize,
-				new SimpleProtocolAcceptor($this->protocolVersion),
-				new UserToRakLibThreadMessageReceiver(new PthreadsChannelReader($this->mainToThreadBuffer)),
-				new RakLibToUserThreadMessageSender(new SnoozeAwarePthreadsChannelWriter($this->threadToMainBuffer, $this->sleeperEntry->createNotifier())),
-				new ExceptionTraceCleaner($this->mainPath)
-			);
-			$this->synchronized(function() : void{
-				$this->ready = true;
-				$this->notify();
-			});
-			while(!$this->isKilled){
-				$manager->tickProcessor();
-			}
-			$manager->waitShutdown();
-			$this->cleanShutdown = true;
-		}catch(\Throwable $e){
-			$this->setCrashInfo(RakLibThreadCrashInfo::fromThrowable($e));
-			$this->logger->logException($e);
+		$socket = new ServerSocket($this->address->deserialize());
+		$manager = new Server(
+			$this->serverId,
+			$this->logger,
+			$socket,
+			$this->maxMtuSize,
+			new SimpleProtocolAcceptor($this->protocolVersion),
+			new UserToRakLibThreadMessageReceiver(new PthreadsChannelReader($this->mainToThreadBuffer)),
+			new RakLibToUserThreadMessageSender(new SnoozeAwarePthreadsChannelWriter($this->threadToMainBuffer, $this->sleeperEntry->createNotifier())),
+			new ExceptionTraceCleaner($this->mainPath),
+			recvMaxSplitParts: 512
+		);
+		$this->synchronized(function() : void{
+			$this->ready = true;
+			$this->notify();
+		});
+		while(!$this->isKilled){
+			$manager->tickProcessor();
 		}
+		$manager->waitShutdown();
 	}
 
 	public function getThreadName() : string{

@@ -30,9 +30,6 @@ namespace pocketmine\block;
  * Type ID is also used internally as part of block state ID, which is used to store blocks and their simple properties
  * in a memory-efficient way in chunks at runtime.
  *
- * WARNING: These constants are generated from {@link VanillaBlocks} by build/generate-type-id-consts.php.
- * Do not modify them manually.
- *
  * WARNING: These are NOT a replacement for Minecraft legacy IDs. Do **NOT** hardcode their values, or store them in
  * configs or databases. They will change without warning.
  */
@@ -551,8 +548,10 @@ final class BlockTypeIds{
 	public const WEIGHTED_PRESSURE_PLATE_HEAVY = 10532;
 	public const WEIGHTED_PRESSURE_PLATE_LIGHT = 10533;
 	public const WHEAT = 10534;
+	public const BUDDING_AMETHYST = 10535;
 	public const WHITE_TULIP = 10536;
 	public const WOOL = 10537;
+	public const AMETHYST_CLUSTER = 10538;
 	public const GLAZED_TERRACOTTA = 10539;
 	public const AMETHYST = 10540;
 	public const ANCIENT_DEBRIS = 10541;
@@ -704,9 +703,36 @@ final class BlockTypeIds{
 	public const REINFORCED_DEEPSLATE = 10688;
 	public const CAVE_VINES = 10689;
 	public const GLOW_LICHEN = 10690;
-	public const POWDER_SNOW_CAULDRON = 10691;
+	public const CHERRY_BUTTON = 10691;
+	public const CHERRY_DOOR = 10692;
+	public const CHERRY_FENCE = 10693;
+	public const CHERRY_FENCE_GATE = 10694;
+	public const CHERRY_LEAVES = 10695;
+	public const CHERRY_LOG = 10696;
+	public const CHERRY_PLANKS = 10697;
+	public const CHERRY_PRESSURE_PLATE = 10698;
+	public const CHERRY_SIGN = 10700;
+	public const CHERRY_SLAB = 10701;
+	public const CHERRY_STAIRS = 10702;
+	public const CHERRY_TRAPDOOR = 10703;
+	public const CHERRY_WALL_SIGN = 10704;
+	public const CHERRY_WOOD = 10705;
+	public const SMALL_DRIPLEAF = 10706;
+	public const BIG_DRIPLEAF_HEAD = 10707;
+	public const BIG_DRIPLEAF_STEM = 10708;
+	public const PINK_PETALS = 10709;
+	public const CRIMSON_ROOTS = 10710;
+	public const WARPED_ROOTS = 10711;
+	public const CHISELED_BOOKSHELF = 10712;
+	public const TORCHFLOWER = 10713;
+	public const TORCHFLOWER_CROP = 10714;
+	public const PITCHER_PLANT = 10715;
+	public const PITCHER_CROP = 10716;
+	public const DOUBLE_PITCHER_CROP = 10717;
+	public const POWDER_SNOW_CAULDRON = 10718;
+	public const CHERRY_SAPLING = 10719;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10692;
+	public const FIRST_UNUSED_BLOCK_ID = 10720;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 

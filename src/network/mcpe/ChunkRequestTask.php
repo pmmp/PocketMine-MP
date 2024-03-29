@@ -28,62 +28,56 @@ use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\LevelChunkPacket;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\network\mcpe\protocol\types\ChunkPosition;
+use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\serializer\ChunkSerializer;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\thread\NonThreadSafeValue;
 use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
+use function chr;
 
 class ChunkRequestTask extends AsyncTask{
 	private const TLS_KEY_PROMISE = "promise";
-	private const TLS_KEY_ERROR_HOOK = "errorHook";
 
 	protected string $chunk;
 	protected int $chunkX;
 	protected int $chunkZ;
+	/** @phpstan-var DimensionIds::* */
+	private int $dimensionId;
 	/** @phpstan-var NonThreadSafeValue<Compressor> */
 	protected NonThreadSafeValue $compressor;
 	private string $tiles;
 
 	/**
-	 * @phpstan-param (\Closure() : void)|null $onError
+	 * @phpstan-param DimensionIds::* $dimensionId
 	 */
-	public function __construct(int $chunkX, int $chunkZ, Chunk $chunk, CompressBatchPromise $promise, Compressor $compressor, ?\Closure $onError = null){
+	public function __construct(int $chunkX, int $chunkZ, int $dimensionId, Chunk $chunk, CompressBatchPromise $promise, Compressor $compressor){
 		$this->compressor = new NonThreadSafeValue($compressor);
 
 		$this->chunk = FastChunkSerializer::serializeTerrain($chunk);
 		$this->chunkX = $chunkX;
 		$this->chunkZ = $chunkZ;
+		$this->dimensionId = $dimensionId;
 		$this->tiles = ChunkSerializer::serializeTiles($chunk);
 
 		$this->storeLocal(self::TLS_KEY_PROMISE, $promise);
-		$this->storeLocal(self::TLS_KEY_ERROR_HOOK, $onError);
 	}
 
 	public function onRun() : void{
 		$chunk = FastChunkSerializer::deserializeTerrain($this->chunk);
-		$subCount = ChunkSerializer::getSubChunkCount($chunk);
+		$dimensionId = $this->dimensionId;
+
+		$subCount = ChunkSerializer::getSubChunkCount($chunk, $dimensionId);
 		$converter = TypeConverter::getInstance();
-		$encoderContext = new PacketSerializerContext($converter->getItemTypeDictionary());
-		$payload = ChunkSerializer::serializeFullChunk($chunk, $converter->getBlockTranslator(), $encoderContext, $this->tiles);
+		$payload = ChunkSerializer::serializeFullChunk($chunk, $dimensionId, $converter->getBlockTranslator(), $this->tiles);
 
 		$stream = new BinaryStream();
-		PacketBatch::encodePackets($stream, $encoderContext, [LevelChunkPacket::create(new ChunkPosition($this->chunkX, $this->chunkZ), $subCount, false, null, $payload)]);
-		$this->setResult($this->compressor->deserialize()->compress($stream->getBuffer()));
-	}
+		PacketBatch::encodePackets($stream, [LevelChunkPacket::create(new ChunkPosition($this->chunkX, $this->chunkZ), $dimensionId, $subCount, false, null, $payload)]);
 
-	public function onError() : void{
-		/**
-		 * @var \Closure|null $hook
-		 * @phpstan-var (\Closure() : void)|null $hook
-		 */
-		$hook = $this->fetchLocal(self::TLS_KEY_ERROR_HOOK);
-		if($hook !== null){
-			$hook();
-		}
+		$compressor = $this->compressor->deserialize();
+		$this->setResult(chr($compressor->getNetworkId()) . $compressor->compress($stream->getBuffer()));
 	}
 
 	public function onCompletion() : void{

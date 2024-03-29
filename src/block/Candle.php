@@ -48,7 +48,7 @@ class Candle extends Transparent{
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$this->encodeLitState($w);
-		$w->boundedInt(2, self::MIN_COUNT, self::MAX_COUNT, $this->count);
+		$w->boundedIntAuto(self::MIN_COUNT, self::MAX_COUNT, $this->count);
 	}
 
 	public function getCount() : int{ return $this->count; }
@@ -91,7 +91,7 @@ class Candle extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	protected function getCandleIfCompatibleType(Block $block) : ?Candle{
@@ -104,8 +104,7 @@ class Candle extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$down = $blockReplace->getSide(Facing::DOWN);
-		if(!$down->getSupportType(Facing::UP)->hasCenterSupport()){
+		if(!$blockReplace->getAdjacentSupportType(Facing::DOWN)->hasCenterSupport()){
 			return false;
 		}
 		$existing = $this->getCandleIfCompatibleType($blockReplace);

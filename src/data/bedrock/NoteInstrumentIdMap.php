@@ -28,51 +28,29 @@ use pocketmine\world\sound\NoteInstrument;
 
 final class NoteInstrumentIdMap{
 	use SingletonTrait;
-
-	/**
-	 * @var NoteInstrument[]
-	 * @phpstan-var array<int, NoteInstrument>
-	 */
-	private array $idToEnum = [];
-
-	/**
-	 * @var int[]
-	 * @phpstan-var array<int, int>
-	 */
-	private array $enumToId = [];
+	/** @phpstan-use IntSaveIdMapTrait<NoteInstrument> */
+	use IntSaveIdMapTrait;
 
 	private function __construct(){
-		$this->register(0, NoteInstrument::PIANO());
-		$this->register(1, NoteInstrument::BASS_DRUM());
-		$this->register(2, NoteInstrument::SNARE());
-		$this->register(3, NoteInstrument::CLICKS_AND_STICKS());
-		$this->register(4, NoteInstrument::DOUBLE_BASS());
-		$this->register(5, NoteInstrument::BELL());
-		$this->register(6, NoteInstrument::FLUTE());
-		$this->register(7, NoteInstrument::CHIME());
-		$this->register(8, NoteInstrument::GUITAR());
-		$this->register(9, NoteInstrument::XYLOPHONE());
-		$this->register(10, NoteInstrument::IRON_XYLOPHONE());
-		$this->register(11, NoteInstrument::COW_BELL());
-		$this->register(12, NoteInstrument::DIDGERIDOO());
-		$this->register(13, NoteInstrument::BIT());
-		$this->register(14, NoteInstrument::BANJO());
-		$this->register(15, NoteInstrument::PLING());
-	}
-
-	private function register(int $id, NoteInstrument $instrument) : void{
-		$this->idToEnum[$id] = $instrument;
-		$this->enumToId[$instrument->id()] = $id;
-	}
-
-	public function fromId(int $id) : ?NoteInstrument{
-		return $this->idToEnum[$id] ?? null;
-	}
-
-	public function toId(NoteInstrument $instrument) : int{
-		if(!isset($this->enumToId[$instrument->id()])){
-			throw new \InvalidArgumentException("Type does not have a mapped ID");
+		foreach(NoteInstrument::cases() as $case){
+			$this->register(match($case){
+				NoteInstrument::PIANO => 0,
+				NoteInstrument::BASS_DRUM => 1,
+				NoteInstrument::SNARE => 2,
+				NoteInstrument::CLICKS_AND_STICKS => 3,
+				NoteInstrument::DOUBLE_BASS => 4,
+				NoteInstrument::BELL => 5,
+				NoteInstrument::FLUTE => 6,
+				NoteInstrument::CHIME => 7,
+				NoteInstrument::GUITAR => 8,
+				NoteInstrument::XYLOPHONE => 9,
+				NoteInstrument::IRON_XYLOPHONE => 10,
+				NoteInstrument::COW_BELL => 11,
+				NoteInstrument::DIDGERIDOO => 12,
+				NoteInstrument::BIT => 13,
+				NoteInstrument::BANJO => 14,
+				NoteInstrument::PLING => 15,
+			}, $case);
 		}
-		return $this->enumToId[$instrument->id()];
 	}
 }

@@ -24,15 +24,16 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\FlowerPot as TileFlowerPot;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 use function assert;
 
 class FlowerPot extends Flowable{
+	use StaticSupportTrait;
 
 	protected ?Block $plant = null;
 
@@ -89,22 +90,8 @@ class FlowerPot extends Flowable{
 		return [AxisAlignedBB::one()->contract(3 / 16, 0, 3 / 16)->trim(Facing::UP, 5 / 8)];
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
-			return false;
-		}
-
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
-	}
-
-	private function canBeSupportedBy(Block $block) : bool{
-		return $block->getSupportType(Facing::UP)->hasCenterSupport();
+	private function canBeSupportedAt(Block $block) : bool{
+		return $block->getAdjacentSupportType(Facing::DOWN)->hasCenterSupport();
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{

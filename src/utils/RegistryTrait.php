@@ -33,12 +33,12 @@ use function preg_match;
  * These faux constants are exposed in static class methods, which are handled using __callStatic().
  *
  * Classes using this trait need to include \@method tags in their class docblock for every faux constant.
- * Alternatively, just put \@generate-registry-docblock in the docblock and run tools/generate-registry-annotations.php
+ * Alternatively, just put \@generate-registry-docblock in the docblock and run build/generate-registry-annotations.php
  */
 trait RegistryTrait{
 	/**
-	 * @var object[]
-	 * @phpstan-var array<string, object>
+	 * @var object[]|null
+	 * @phpstan-var array<string, object>|null
 	 */
 	private static $members = null;
 
@@ -54,6 +54,9 @@ trait RegistryTrait{
 	 * @throws \InvalidArgumentException
 	 */
 	private static function _registryRegister(string $name, object $member) : void{
+		if(self::$members === null){
+			throw new AssumptionFailedError("Cannot register members outside of " . self::class . "::setup()");
+		}
 		self::verifyName($name);
 		$upperName = mb_strtoupper($name);
 		if(isset(self::$members[$upperName])){
@@ -86,6 +89,9 @@ trait RegistryTrait{
 	 */
 	private static function _registryFromString(string $name) : object{
 		self::checkInit();
+		if(self::$members === null){
+			throw new AssumptionFailedError(self::class . "::checkInit() did not initialize self::\$members correctly");
+		}
 		$upperName = mb_strtoupper($name);
 		if(!isset(self::$members[$upperName])){
 			throw new \InvalidArgumentException("No such registry member: " . self::class . "::" . $upperName);
@@ -108,6 +114,13 @@ trait RegistryTrait{
 		if(count($arguments) > 0){
 			throw new \ArgumentCountError("Expected exactly 0 arguments, " . count($arguments) . " passed");
 		}
+
+		//fast path
+		if(self::$members !== null && isset(self::$members[$name])){
+			return self::preprocessMember(self::$members[$name]);
+		}
+
+		//fallback
 		try{
 			return self::_registryFromString($name);
 		}catch(\InvalidArgumentException $e){
@@ -121,8 +134,6 @@ trait RegistryTrait{
 	 */
 	private static function _registryGetAll() : array{
 		self::checkInit();
-		return array_map(function(object $o) : object{
-			return self::preprocessMember($o);
-		}, self::$members);
+		return array_map(self::preprocessMember(...), self::$members ?? throw new AssumptionFailedError(self::class . "::checkInit() did not initialize self::\$members correctly"));
 	}
 }

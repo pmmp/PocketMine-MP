@@ -34,15 +34,16 @@ use pocketmine\thread\NonThreadSafeValue;
 use function base64_decode;
 use function igbinary_serialize;
 use function igbinary_unserialize;
-use function openssl_error_string;
 use function time;
 
 class ProcessLoginTask extends AsyncTask{
 	private const TLS_KEY_ON_COMPLETION = "completion";
 
-	public const MOJANG_OLD_ROOT_PUBLIC_KEY = "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAE8ELkixyLcwlZryUQcu1TvPOmI2B7vX83ndnWRUaXm74wFfa5f/lwQNTfrLVHa2PmenpGI6JhIMUJaWZrjmMj90NoKNFSNBuKdm8rYiXsfaz3K36x/1U26HpG0ZxK/V1V";
-	public const MOJANG_OLD_KEY_EXPIRY = 1688169600; //2023-07-01 00:00:00 UTC - there is no official date for the changeover to the new key, so this is a guess
-
+	/**
+	 * New Mojang root auth key. Mojang notified third-party developers of this change prior to the release of 1.20.0.
+	 * Expectations were that this would be used starting a "couple of weeks" after the release, but as of 2023-07-01,
+	 * it has not yet been deployed.
+	 */
 	public const MOJANG_ROOT_PUBLIC_KEY = "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAECRXueJeTDqNRRgJi/vlRufByu/2G0i2Ebt6YMar5QX/R0DIIyrJMcUpruK4QveTfJSTp3Shlq4Gk34cD/4GUWwkv0DVuzeuB+tXija7HBxii03NHDbPAD0AKnLr2wdAp";
 
 	private const CLOCK_DRIFT_MAX = 60;
@@ -117,26 +118,24 @@ class ProcessLoginTask extends AsyncTask{
 		try{
 			[$headersArray, $claimsArray, ] = JwtUtils::parse($jwt);
 		}catch(JwtException $e){
-			//TODO: we shouldn't be showing internal information like this to the client
 			throw new VerifyLoginException("Failed to parse JWT: " . $e->getMessage(), null, 0, $e);
 		}
 
 		$mapper = new \JsonMapper();
 		$mapper->bExceptionOnMissingData = true;
 		$mapper->bExceptionOnUndefinedProperty = true;
+		$mapper->bStrictObjectTypeChecking = true;
 		$mapper->bEnforceMapType = false;
 
 		try{
 			/** @var JwtHeader $headers */
 			$headers = $mapper->map($headersArray, new JwtHeader());
 		}catch(\JsonMapper_Exception $e){
-			//TODO: we shouldn't be showing internal information like this to the client
 			throw new VerifyLoginException("Invalid JWT header: " . $e->getMessage(), null, 0, $e);
 		}
 
 		$headerDerKey = base64_decode($headers->x5u, true);
 		if($headerDerKey === false){
-			//TODO: we shouldn't be showing internal information like this to the client
 			throw new VerifyLoginException("Invalid JWT public key: base64 decoding error decoding x5u");
 		}
 
@@ -152,7 +151,7 @@ class ProcessLoginTask extends AsyncTask{
 		try{
 			$signingKeyOpenSSL = JwtUtils::parseDerPublicKey($headerDerKey);
 		}catch(JwtException $e){
-			throw new VerifyLoginException("Invalid JWT public key: " . openssl_error_string());
+			throw new VerifyLoginException("Invalid JWT public key: " . $e->getMessage(), null, 0, $e);
 		}
 		try{
 			if(!JwtUtils::verify($jwt, $signingKeyOpenSSL)){
@@ -162,13 +161,14 @@ class ProcessLoginTask extends AsyncTask{
 			throw new VerifyLoginException($e->getMessage(), null, 0, $e);
 		}
 
-		if($headers->x5u === self::MOJANG_ROOT_PUBLIC_KEY || (time() < self::MOJANG_OLD_KEY_EXPIRY && $headers->x5u === self::MOJANG_OLD_ROOT_PUBLIC_KEY)){
+		if($headers->x5u === self::MOJANG_ROOT_PUBLIC_KEY){
 			$this->authenticated = true; //we're signed into xbox live
 		}
 
 		$mapper = new \JsonMapper();
 		$mapper->bExceptionOnUndefinedProperty = false; //we only care about the properties we're using in this case
 		$mapper->bExceptionOnMissingData = true;
+		$mapper->bStrictObjectTypeChecking = true;
 		$mapper->bEnforceMapType = false;
 		$mapper->bRemoveUndefinedAttributes = true;
 		try{
@@ -191,6 +191,12 @@ class ProcessLoginTask extends AsyncTask{
 			$identityPublicKey = base64_decode($claims->identityPublicKey, true);
 			if($identityPublicKey === false){
 				throw new VerifyLoginException("Invalid identityPublicKey: base64 error decoding");
+			}
+			try{
+				//verify key format and parameters
+				JwtUtils::parseDerPublicKey($identityPublicKey);
+			}catch(JwtException $e){
+				throw new VerifyLoginException("Invalid identityPublicKey: " . $e->getMessage(), null, 0, $e);
 			}
 			$currentPublicKey = $identityPublicKey; //if there are further links, the next link should be signed with this
 		}

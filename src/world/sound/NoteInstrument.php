@@ -23,13 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\world\sound;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static NoteInstrument BANJO()
  * @method static NoteInstrument BASS_DRUM()
@@ -48,27 +46,23 @@ use pocketmine\utils\EnumTrait;
  * @method static NoteInstrument SNARE()
  * @method static NoteInstrument XYLOPHONE()
  */
-final class NoteInstrument{
-	use EnumTrait;
+enum NoteInstrument{
+	use LegacyEnumShimTrait;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("piano"),
-			new self("bass_drum"),
-			new self("snare"),
-			new self("clicks_and_sticks"),
-			new self("double_bass"),
-			new self("bell"),
-			new self("flute"),
-			new self("chime"),
-			new self("guitar"),
-			new self("xylophone"),
-			new self("iron_xylophone"),
-			new self("cow_bell"),
-			new self("didgeridoo"),
-			new self("bit"),
-			new self("banjo"),
-			new self("pling")
-		);
-	}
+	case PIANO;
+	case BASS_DRUM;
+	case SNARE;
+	case CLICKS_AND_STICKS;
+	case DOUBLE_BASS;
+	case BELL;
+	case FLUTE;
+	case CHIME;
+	case GUITAR;
+	case XYLOPHONE;
+	case IRON_XYLOPHONE;
+	case COW_BELL;
+	case DIDGERIDOO;
+	case BIT;
+	case BANJO;
+	case PLING;
 }

@@ -33,6 +33,8 @@ use pocketmine\crafting\json\ShapelessRecipeData;
 use pocketmine\crafting\json\SmithingTransformRecipeData;
 use pocketmine\crafting\json\SmithingTrimRecipeData;
 use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\data\bedrock\item\BlockItemIdMap;
+use pocketmine\data\bedrock\item\ItemTypeNames;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
@@ -40,6 +42,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\convert\BlockStateDictionary;
 use pocketmine\network\mcpe\convert\BlockTranslator;
+use pocketmine\network\mcpe\convert\ItemTranslator;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\protocol\AvailableActorIdentifiersPacket;
 use pocketmine\network\mcpe\protocol\BiomeDefinitionListPacket;
@@ -48,12 +51,12 @@ use pocketmine\network\mcpe\protocol\CreativeContentPacket;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
-use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackExtraData;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackExtraDataShield;
 use pocketmine\network\mcpe\protocol\types\recipe\ComplexAliasItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\IntIdMetaItemDescriptor;
@@ -110,6 +113,7 @@ class ParserPacketHandler extends PacketHandler{
 
 	public ?ItemTypeDictionary $itemTypeDictionary = null;
 	private BlockTranslator $blockTranslator;
+	private BlockItemIdMap $blockItemIdMap;
 
 	public function __construct(private string $bedrockDataPath){
 		$this->blockTranslator = new BlockTranslator(
@@ -119,6 +123,7 @@ class ParserPacketHandler extends PacketHandler{
 			),
 			GlobalBlockStateHandlers::getSerializer()
 		);
+		$this->blockItemIdMap = BlockItemIdMap::getInstance();
 	}
 
 	private static function blockStatePropertiesToString(BlockStateData $blockStateData) : string{
@@ -136,7 +141,8 @@ class ParserPacketHandler extends PacketHandler{
 		if($this->itemTypeDictionary === null){
 			throw new PacketHandlingException("Can't process item yet; haven't received item type dictionary");
 		}
-		$data = new ItemStackData($this->itemTypeDictionary->fromIntId($itemStack->getId()));
+		$itemStringId = $this->itemTypeDictionary->fromIntId($itemStack->getId());
+		$data = new ItemStackData($itemStringId);
 
 		if($itemStack->getCount() !== 1){
 			$data->count = $itemStack->getCount();
@@ -146,7 +152,7 @@ class ParserPacketHandler extends PacketHandler{
 		if($meta === 32767){
 			$meta = 0; //kick wildcard magic bullshit
 		}
-		if($itemStack->getBlockRuntimeId() !== 0){
+		if($this->blockItemIdMap->lookupBlockId($itemStringId) !== null){
 			if($meta !== 0){
 				throw new PacketHandlingException("Unexpected non-zero blockitem meta");
 			}
@@ -159,20 +165,27 @@ class ParserPacketHandler extends PacketHandler{
 			if(count($stateProperties) > 0){
 				$data->block_states = self::blockStatePropertiesToString($blockState);
 			}
+		}elseif($itemStack->getBlockRuntimeId() !== ItemTranslator::NO_BLOCK_RUNTIME_ID){
+			throw new PacketHandlingException("Non-blockitems should have a zero block runtime ID (" . $itemStack->getBlockRuntimeId() . " on " . $itemStringId . ")");
 		}elseif($meta !== 0){
 			$data->meta = $meta;
 		}
 
-		$nbt = $itemStack->getNbt();
-		if($nbt !== null && count($nbt) > 0){
-			$data->nbt = base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($nbt)));
-		}
+		$rawExtraData = $itemStack->getRawExtraData();
+		if($rawExtraData !== ""){
+			$decoder = PacketSerializer::decoder($rawExtraData, 0);
+			$extraData = $itemStringId === ItemTypeNames::SHIELD ? ItemStackExtraDataShield::read($decoder) : ItemStackExtraData::read($decoder);
+			$nbt = $extraData->getNbt();
+			if($nbt !== null && count($nbt) > 0){
+				$data->nbt = base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($nbt)));
+			}
 
-		if(count($itemStack->getCanPlaceOn()) > 0){
-			$data->can_place_on = $itemStack->getCanPlaceOn();
-		}
-		if(count($itemStack->getCanDestroy()) > 0){
-			$data->can_destroy = $itemStack->getCanDestroy();
+			if(count($extraData->getCanPlaceOn()) > 0){
+				$data->can_place_on = $extraData->getCanPlaceOn();
+			}
+			if(count($extraData->getCanDestroy()) > 0){
+				$data->can_destroy = $extraData->getCanDestroy();
+			}
 		}
 
 		return $data;
@@ -269,7 +282,7 @@ class ParserPacketHandler extends PacketHandler{
 			$meta = $descriptor->getMeta();
 			if($meta !== 32767){
 				$blockStateId = $this->blockTranslator->getBlockStateDictionary()->lookupStateIdFromIdMeta($data->name, $meta);
-				if($blockStateId !== null){
+				if($this->blockItemIdMap->lookupBlockId($data->name) !== null && $blockStateId !== null){
 					$blockState = $this->blockTranslator->getBlockStateDictionary()->generateDataFromStateId($blockStateId);
 					if($blockState !== null && count($blockState->getStates()) > 0){
 						$data->block_states = self::blockStatePropertiesToString($blockState);
@@ -414,7 +427,7 @@ class ParserPacketHandler extends PacketHandler{
 			$recipes["potion_type"][] = new PotionTypeRecipeData(
 				$this->recipeIngredientToJson(new RecipeIngredient(new IntIdMetaItemDescriptor($recipe->getInputItemId(), $recipe->getInputItemMeta()), 1)),
 				$this->recipeIngredientToJson(new RecipeIngredient(new IntIdMetaItemDescriptor($recipe->getIngredientItemId(), $recipe->getIngredientItemMeta()), 1)),
-				$this->itemStackToJson(new ItemStack($recipe->getOutputItemId(), $recipe->getOutputItemMeta(), 1, 0, null, [], [], null)),
+				$this->itemStackToJson(new ItemStack($recipe->getOutputItemId(), $recipe->getOutputItemMeta(), 1, 0, "")),
 			);
 		}
 
@@ -433,17 +446,22 @@ class ParserPacketHandler extends PacketHandler{
 		//how the data is ordered doesn't matter as long as it's reproducible
 		foreach($recipes as $_type => $entries){
 			$_sortedRecipes = [];
+			$_seen = [];
 			foreach($entries as $entry){
 				$entry = self::sort($entry);
 				$_key = json_encode($entry);
-				while(isset($_sortedRecipes[$_key])){
-					echo "warning: duplicated $_type recipe: $_key\n";
-					$_key .= "a";
-				}
-				$_sortedRecipes[$_key] = $entry;
+				$duplicates = $_seen[$_key] ??= 0;
+				$_seen[$_key]++;
+				$suffix = chr(ord("a") + $duplicates);
+				$_sortedRecipes[$_key . $suffix] = $entry;
 			}
 			ksort($_sortedRecipes, SORT_STRING);
 			$recipes[$_type] = array_values($_sortedRecipes);
+			foreach($_seen as $_key => $_seenCount){
+				if($_seenCount > 1){
+					fwrite(STDERR, "warning: $_type recipe $_key was seen $_seenCount times\n");
+				}
+			}
 		}
 
 		ksort($recipes, SORT_STRING);
@@ -559,10 +577,7 @@ function main(array $argv) : int{
 			fwrite(STDERR, "Unknown packet on line " . ($lineNum + 1) . ": " . $parts[1]);
 			continue;
 		}
-		$serializer = PacketSerializer::decoder($raw, 0, new PacketSerializerContext(
-				$handler->itemTypeDictionary ??
-				new ItemTypeDictionary([new ItemTypeEntry("minecraft:shield", 0, false)]))
-		);
+		$serializer = PacketSerializer::decoder($raw, 0);
 
 		$pk->decode($serializer);
 		$pk->handle($handler);

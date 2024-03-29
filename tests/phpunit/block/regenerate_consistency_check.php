@@ -24,12 +24,13 @@ declare(strict_types=1);
 use pocketmine\block\Block;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Utils;
 
 require dirname(__DIR__, 3) . '/vendor/autoload.php';
 
 /* This script needs to be re-run after any intentional blockfactory change (adding or removing a block state). */
 
-$factory = new \pocketmine\block\RuntimeBlockStateRegistry();
+$factory = new RuntimeBlockStateRegistry();
 $remaps = [];
 $new = [];
 foreach(RuntimeBlockStateRegistry::getInstance()->getAllKnownStates() as $index => $block){
@@ -43,7 +44,7 @@ $oldTablePath = __DIR__ . '/block_factory_consistency_check.json';
 if(file_exists($oldTablePath)){
 	$oldTable = json_decode(file_get_contents($oldTablePath), true);
 	if(!is_array($oldTable)){
-		throw new \pocketmine\utils\AssumptionFailedError("Old table should be array{knownStates: array<string, string>, stateDataBits: int}");
+		throw new AssumptionFailedError("Old table should be array{knownStates: array<string, string>, stateDataBits: int}");
 	}
 	$old = [];
 	/**
@@ -91,8 +92,9 @@ foreach($new as $stateId => $name){
 	$newTable[$name][] = $stateId;
 }
 ksort($newTable, SORT_STRING);
-foreach($newTable as &$stateIds){
+foreach(Utils::stringifyKeys($newTable) as $name => $stateIds){
 	sort($stateIds, SORT_NUMERIC);
+	$newTable[$name] = $stateIds;
 }
 
 file_put_contents(__DIR__ . '/block_factory_consistency_check.json', json_encode(

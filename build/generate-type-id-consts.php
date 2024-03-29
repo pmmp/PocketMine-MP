@@ -87,7 +87,8 @@ patchTypeIds(
 	dirname(__DIR__) . '/src/block/BlockTypeIds.php',
 	array_map(array: VanillaBlocks::getAll(), callback: fn(Block $b) => $b->getTypeId()),
 	[
-		"POWDER_SNOW_CAULDRON"
+		"POWDER_SNOW_CAULDRON",
+		"CHERRY_SAPLING",
 	] //not yet implemented stuff that had manually-defined type IDs prior to 5.0.0 release - we need to make sure these still exist for backwards compatibility
 );
 patchTypeIds(
