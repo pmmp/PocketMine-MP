@@ -39,7 +39,6 @@ use pocketmine\utils\Utils;
 use function array_filter;
 use function array_map;
 use function asort;
-use function assert;
 use function dirname;
 use function max;
 use function preg_last_error_msg;
