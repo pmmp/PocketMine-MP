@@ -127,9 +127,6 @@ chunk-ticking:
   #Number of blocks inside ticking areas' subchunks that get ticked every tick. Higher values will accelerate events
   #like tree and plant growth, but at a higher performance cost.
   blocks-per-subchunk-per-tick: 3
-  blocks-per-subchunk-per-world-per-tick:
-    # List of worlds with custom blocks-per-subchunk-per-tick values
-    # world: 5
   #IDs of blocks not to perform random ticking on.
   disable-block-ticking:
     #- grass
@@ -218,6 +215,7 @@ worlds:
   # seed: 404
   # generator: FLAT
   # preset: 2;bedrock,59xstone,3xdirt,grass;1
+  # blocks-per-subchunk-per-tick: xx
 
 plugins:
   #Setting this to true will cause the legacy structure to be used where plugin data is placed inside the --plugins dir.
