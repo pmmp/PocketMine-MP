@@ -3464,7 +3464,7 @@ class World implements ChunkManager{
 
 	private function initTickedBlocksPerSubchunkPerTick(ServerConfigGroup $cfg) : void {
 		$this->tickedBlocksPerSubchunkPerTick = $cfg->getPropertyInt(YmlServerProperties::CHUNK_TICKING_BLOCKS_PER_SUBCHUNK_PER_TICK, self::DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK);
-		$specificTick = $cfg->getPropertyInt(YmlServerProperties::WORLD_BLOCKS_PER_SUBCHUNK_PER_TICK($this->getFolderName()), -1);
+		$specificTick = $cfg->getPropertyInt("worlds." . $this->getFolderName() . ".blocks-per-subchunk-per-tick", -1);
 		if($specificTick >= 0){
 			$this->tickedBlocksPerSubchunkPerTick = $specificTick;
 		}

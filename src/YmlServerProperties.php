@@ -115,8 +115,4 @@ final class YmlServerProperties{
 	public const TIMINGS = 'timings';
 	public const TIMINGS_HOST = 'timings.host';
 	public const WORLDS = 'worlds';
-
-	public static function WORLD_BLOCKS_PER_SUBCHUNK_PER_TICK(string $worldName) : string{
-		return "worlds.$worldName.blocks-per-subchunk-per-tick";
-	}
 }
