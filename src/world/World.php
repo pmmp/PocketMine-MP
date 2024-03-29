@@ -3470,6 +3470,13 @@ class World implements ChunkManager{
 		}
 	}
 
+	public function setTickedBlocksPerSubchunkPerTick(int $tickedBlocksPerSubchunkPerTick) : void{
+		if($tickedBlocksPerSubchunkPerTick < 0){
+			throw new \InvalidArgumentException("Ticked blocks per subchunk per tick must be non-negative");
+		}
+		$this->tickedBlocksPerSubchunkPerTick = $tickedBlocksPerSubchunkPerTick;
+	}
+
 	public function getTickedBlocksPerSubchunkPerTick() : int{
 		return $this->tickedBlocksPerSubchunkPerTick;
 	}
