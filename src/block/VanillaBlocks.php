@@ -1307,7 +1307,7 @@ final class VanillaBlocks{
 			self::register($idName("pressure_plate"), new WoodenPressurePlate(self::newBID(), $name . " Pressure Plate", $woodenPressurePlateBreakInfo, $woodType, 20));
 			self::register($idName("trapdoor"), new WoodenTrapdoor(self::newBID(), $name . " Trapdoor", $woodenDoorBreakInfo, $woodType));
 
-			$signAsItem = match($treeType){
+			$signAsItem = match($woodType){
 				WoodType::OAK => VanillaItems::OAK_SIGN(...),
 				WoodType::SPRUCE => VanillaItems::SPRUCE_SIGN(...),
 				WoodType::BIRCH => VanillaItems::BIRCH_SIGN(...),
