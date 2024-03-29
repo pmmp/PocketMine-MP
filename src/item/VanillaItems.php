@@ -343,6 +343,13 @@ final class VanillaItems{
 		self::_registryRegister($name, $item);
 	}
 
+	private static int $nextTypeId = 20_000;
+
+	private static function newIID() : IID{
+		//TODO: IID barely has a reason to exist anymore - perhaps we should just use integers directly in PM6
+		return new IID(self::$nextTypeId++);
+	}
+
 	/**
 	 * @return Item[]
 	 * @phpstan-return array<string, Item>
@@ -362,240 +369,232 @@ final class VanillaItems{
 
 		self::register("air", Blocks::AIR()->asItem()->setCount(0));
 
-		self::register("acacia_sign", new ItemBlockWallOrFloor(new IID(Ids::ACACIA_SIGN), Blocks::ACACIA_SIGN(), Blocks::ACACIA_WALL_SIGN()));
-		self::register("amethyst_shard", new Item(new IID(Ids::AMETHYST_SHARD), "Amethyst Shard"));
-		self::register("apple", new Apple(new IID(Ids::APPLE), "Apple"));
-		self::register("arrow", new Arrow(new IID(Ids::ARROW), "Arrow"));
-		self::register("baked_potato", new BakedPotato(new IID(Ids::BAKED_POTATO), "Baked Potato"));
-		self::register("bamboo", new Bamboo(new IID(Ids::BAMBOO), "Bamboo"));
-		self::register("banner", new Banner(new IID(Ids::BANNER), Blocks::BANNER(), Blocks::WALL_BANNER()));
-		self::register("beetroot", new Beetroot(new IID(Ids::BEETROOT), "Beetroot"));
-		self::register("beetroot_seeds", new BeetrootSeeds(new IID(Ids::BEETROOT_SEEDS), "Beetroot Seeds"));
-		self::register("beetroot_soup", new BeetrootSoup(new IID(Ids::BEETROOT_SOUP), "Beetroot Soup"));
-		self::register("birch_sign", new ItemBlockWallOrFloor(new IID(Ids::BIRCH_SIGN), Blocks::BIRCH_SIGN(), Blocks::BIRCH_WALL_SIGN()));
-		self::register("blaze_powder", new Item(new IID(Ids::BLAZE_POWDER), "Blaze Powder"));
-		self::register("blaze_rod", new BlazeRod(new IID(Ids::BLAZE_ROD), "Blaze Rod"));
-		self::register("bleach", new Item(new IID(Ids::BLEACH), "Bleach"));
-		self::register("bone", new Item(new IID(Ids::BONE), "Bone"));
-		self::register("bone_meal", new Fertilizer(new IID(Ids::BONE_MEAL), "Bone Meal"));
-		self::register("book", new Book(new IID(Ids::BOOK), "Book", [EnchantmentTags::ALL]));
-		self::register("bow", new Bow(new IID(Ids::BOW), "Bow", [EnchantmentTags::BOW]));
-		self::register("bowl", new Bowl(new IID(Ids::BOWL), "Bowl"));
-		self::register("bread", new Bread(new IID(Ids::BREAD), "Bread"));
-		self::register("brick", new Item(new IID(Ids::BRICK), "Brick"));
-		self::register("bucket", new Bucket(new IID(Ids::BUCKET), "Bucket"));
-		self::register("carrot", new Carrot(new IID(Ids::CARROT), "Carrot"));
-		self::register("charcoal", new Coal(new IID(Ids::CHARCOAL), "Charcoal"));
-		self::register("cherry_sign", new ItemBlockWallOrFloor(new IID(Ids::CHERRY_SIGN), Blocks::CHERRY_SIGN(), Blocks::CHERRY_WALL_SIGN()));
-		self::register("chemical_aluminium_oxide", new Item(new IID(Ids::CHEMICAL_ALUMINIUM_OXIDE), "Aluminium Oxide"));
-		self::register("chemical_ammonia", new Item(new IID(Ids::CHEMICAL_AMMONIA), "Ammonia"));
-		self::register("chemical_barium_sulphate", new Item(new IID(Ids::CHEMICAL_BARIUM_SULPHATE), "Barium Sulphate"));
-		self::register("chemical_benzene", new Item(new IID(Ids::CHEMICAL_BENZENE), "Benzene"));
-		self::register("chemical_boron_trioxide", new Item(new IID(Ids::CHEMICAL_BORON_TRIOXIDE), "Boron Trioxide"));
-		self::register("chemical_calcium_bromide", new Item(new IID(Ids::CHEMICAL_CALCIUM_BROMIDE), "Calcium Bromide"));
-		self::register("chemical_calcium_chloride", new Item(new IID(Ids::CHEMICAL_CALCIUM_CHLORIDE), "Calcium Chloride"));
-		self::register("chemical_cerium_chloride", new Item(new IID(Ids::CHEMICAL_CERIUM_CHLORIDE), "Cerium Chloride"));
-		self::register("chemical_charcoal", new Item(new IID(Ids::CHEMICAL_CHARCOAL), "Charcoal"));
-		self::register("chemical_crude_oil", new Item(new IID(Ids::CHEMICAL_CRUDE_OIL), "Crude Oil"));
-		self::register("chemical_glue", new Item(new IID(Ids::CHEMICAL_GLUE), "Glue"));
-		self::register("chemical_hydrogen_peroxide", new Item(new IID(Ids::CHEMICAL_HYDROGEN_PEROXIDE), "Hydrogen Peroxide"));
-		self::register("chemical_hypochlorite", new Item(new IID(Ids::CHEMICAL_HYPOCHLORITE), "Hypochlorite"));
-		self::register("chemical_ink", new Item(new IID(Ids::CHEMICAL_INK), "Ink"));
-		self::register("chemical_iron_sulphide", new Item(new IID(Ids::CHEMICAL_IRON_SULPHIDE), "Iron Sulphide"));
-		self::register("chemical_latex", new Item(new IID(Ids::CHEMICAL_LATEX), "Latex"));
-		self::register("chemical_lithium_hydride", new Item(new IID(Ids::CHEMICAL_LITHIUM_HYDRIDE), "Lithium Hydride"));
-		self::register("chemical_luminol", new Item(new IID(Ids::CHEMICAL_LUMINOL), "Luminol"));
-		self::register("chemical_magnesium_nitrate", new Item(new IID(Ids::CHEMICAL_MAGNESIUM_NITRATE), "Magnesium Nitrate"));
-		self::register("chemical_magnesium_oxide", new Item(new IID(Ids::CHEMICAL_MAGNESIUM_OXIDE), "Magnesium Oxide"));
-		self::register("chemical_magnesium_salts", new Item(new IID(Ids::CHEMICAL_MAGNESIUM_SALTS), "Magnesium Salts"));
-		self::register("chemical_mercuric_chloride", new Item(new IID(Ids::CHEMICAL_MERCURIC_CHLORIDE), "Mercuric Chloride"));
-		self::register("chemical_polyethylene", new Item(new IID(Ids::CHEMICAL_POLYETHYLENE), "Polyethylene"));
-		self::register("chemical_potassium_chloride", new Item(new IID(Ids::CHEMICAL_POTASSIUM_CHLORIDE), "Potassium Chloride"));
-		self::register("chemical_potassium_iodide", new Item(new IID(Ids::CHEMICAL_POTASSIUM_IODIDE), "Potassium Iodide"));
-		self::register("chemical_rubbish", new Item(new IID(Ids::CHEMICAL_RUBBISH), "Rubbish"));
-		self::register("chemical_salt", new Item(new IID(Ids::CHEMICAL_SALT), "Salt"));
-		self::register("chemical_soap", new Item(new IID(Ids::CHEMICAL_SOAP), "Soap"));
-		self::register("chemical_sodium_acetate", new Item(new IID(Ids::CHEMICAL_SODIUM_ACETATE), "Sodium Acetate"));
-		self::register("chemical_sodium_fluoride", new Item(new IID(Ids::CHEMICAL_SODIUM_FLUORIDE), "Sodium Fluoride"));
-		self::register("chemical_sodium_hydride", new Item(new IID(Ids::CHEMICAL_SODIUM_HYDRIDE), "Sodium Hydride"));
-		self::register("chemical_sodium_hydroxide", new Item(new IID(Ids::CHEMICAL_SODIUM_HYDROXIDE), "Sodium Hydroxide"));
-		self::register("chemical_sodium_hypochlorite", new Item(new IID(Ids::CHEMICAL_SODIUM_HYPOCHLORITE), "Sodium Hypochlorite"));
-		self::register("chemical_sodium_oxide", new Item(new IID(Ids::CHEMICAL_SODIUM_OXIDE), "Sodium Oxide"));
-		self::register("chemical_sugar", new Item(new IID(Ids::CHEMICAL_SUGAR), "Sugar"));
-		self::register("chemical_sulphate", new Item(new IID(Ids::CHEMICAL_SULPHATE), "Sulphate"));
-		self::register("chemical_tungsten_chloride", new Item(new IID(Ids::CHEMICAL_TUNGSTEN_CHLORIDE), "Tungsten Chloride"));
-		self::register("chemical_water", new Item(new IID(Ids::CHEMICAL_WATER), "Water"));
-		self::register("chorus_fruit", new ChorusFruit(new IID(Ids::CHORUS_FRUIT), "Chorus Fruit"));
-		self::register("clay", new Item(new IID(Ids::CLAY), "Clay"));
-		self::register("clock", new Clock(new IID(Ids::CLOCK), "Clock"));
-		self::register("clownfish", new Clownfish(new IID(Ids::CLOWNFISH), "Clownfish"));
-		self::register("coal", new Coal(new IID(Ids::COAL), "Coal"));
-		self::register("cocoa_beans", new CocoaBeans(new IID(Ids::COCOA_BEANS), "Cocoa Beans"));
-		self::register("compass", new Compass(new IID(Ids::COMPASS), "Compass", [EnchantmentTags::COMPASS]));
-		self::register("cooked_chicken", new CookedChicken(new IID(Ids::COOKED_CHICKEN), "Cooked Chicken"));
-		self::register("cooked_fish", new CookedFish(new IID(Ids::COOKED_FISH), "Cooked Fish"));
-		self::register("cooked_mutton", new CookedMutton(new IID(Ids::COOKED_MUTTON), "Cooked Mutton"));
-		self::register("cooked_porkchop", new CookedPorkchop(new IID(Ids::COOKED_PORKCHOP), "Cooked Porkchop"));
-		self::register("cooked_rabbit", new CookedRabbit(new IID(Ids::COOKED_RABBIT), "Cooked Rabbit"));
-		self::register("cooked_salmon", new CookedSalmon(new IID(Ids::COOKED_SALMON), "Cooked Salmon"));
-		self::register("cookie", new Cookie(new IID(Ids::COOKIE), "Cookie"));
-		self::register("copper_ingot", new Item(new IID(Ids::COPPER_INGOT), "Copper Ingot"));
-		self::register("coral_fan", new CoralFan(new IID(Ids::CORAL_FAN)));
-		self::register("crimson_sign", new ItemBlockWallOrFloor(new IID(Ids::CRIMSON_SIGN), Blocks::CRIMSON_SIGN(), Blocks::CRIMSON_WALL_SIGN()));
-		self::register("dark_oak_sign", new ItemBlockWallOrFloor(new IID(Ids::DARK_OAK_SIGN), Blocks::DARK_OAK_SIGN(), Blocks::DARK_OAK_WALL_SIGN()));
-		self::register("diamond", new Item(new IID(Ids::DIAMOND), "Diamond"));
-		self::register("disc_fragment_5", new Item(new IID(Ids::DISC_FRAGMENT_5), "Disc Fragment (5)"));
-		self::register("dragon_breath", new Item(new IID(Ids::DRAGON_BREATH), "Dragon's Breath"));
-		self::register("dried_kelp", new DriedKelp(new IID(Ids::DRIED_KELP), "Dried Kelp"));
+		self::register("acacia_sign", new ItemBlockWallOrFloor(self::newIID(), Blocks::ACACIA_SIGN(), Blocks::ACACIA_WALL_SIGN()));
+		self::register("amethyst_shard", new Item(self::newIID(), "Amethyst Shard"));
+		self::register("apple", new Apple(self::newIID(), "Apple"));
+		self::register("arrow", new Arrow(self::newIID(), "Arrow"));
+		self::register("baked_potato", new BakedPotato(self::newIID(), "Baked Potato"));
+		self::register("bamboo", new Bamboo(self::newIID(), "Bamboo"));
+		self::register("banner", new Banner(self::newIID(), Blocks::BANNER(), Blocks::WALL_BANNER()));
+		self::register("beetroot", new Beetroot(self::newIID(), "Beetroot"));
+		self::register("beetroot_seeds", new BeetrootSeeds(self::newIID(), "Beetroot Seeds"));
+		self::register("beetroot_soup", new BeetrootSoup(self::newIID(), "Beetroot Soup"));
+		self::register("birch_sign", new ItemBlockWallOrFloor(self::newIID(), Blocks::BIRCH_SIGN(), Blocks::BIRCH_WALL_SIGN()));
+		self::register("blaze_powder", new Item(self::newIID(), "Blaze Powder"));
+		self::register("blaze_rod", new BlazeRod(self::newIID(), "Blaze Rod"));
+		self::register("bleach", new Item(self::newIID(), "Bleach"));
+		self::register("bone", new Item(self::newIID(), "Bone"));
+		self::register("bone_meal", new Fertilizer(self::newIID(), "Bone Meal"));
+		self::register("book", new Book(self::newIID(), "Book", [EnchantmentTags::ALL]));
+		self::register("bow", new Bow(self::newIID(), "Bow", [EnchantmentTags::BOW]));
+		self::register("bowl", new Bowl(self::newIID(), "Bowl"));
+		self::register("bread", new Bread(self::newIID(), "Bread"));
+		self::register("brick", new Item(self::newIID(), "Brick"));
+		self::register("bucket", new Bucket(self::newIID(), "Bucket"));
+		self::register("carrot", new Carrot(self::newIID(), "Carrot"));
+		self::register("charcoal", new Coal(self::newIID(), "Charcoal"));
+		self::register("cherry_sign", new ItemBlockWallOrFloor(self::newIID(), Blocks::CHERRY_SIGN(), Blocks::CHERRY_WALL_SIGN()));
+		self::register("chemical_aluminium_oxide", new Item(self::newIID(), "Aluminium Oxide"));
+		self::register("chemical_ammonia", new Item(self::newIID(), "Ammonia"));
+		self::register("chemical_barium_sulphate", new Item(self::newIID(), "Barium Sulphate"));
+		self::register("chemical_benzene", new Item(self::newIID(), "Benzene"));
+		self::register("chemical_boron_trioxide", new Item(self::newIID(), "Boron Trioxide"));
+		self::register("chemical_calcium_bromide", new Item(self::newIID(), "Calcium Bromide"));
+		self::register("chemical_calcium_chloride", new Item(self::newIID(), "Calcium Chloride"));
+		self::register("chemical_cerium_chloride", new Item(self::newIID(), "Cerium Chloride"));
+		self::register("chemical_charcoal", new Item(self::newIID(), "Charcoal"));
+		self::register("chemical_crude_oil", new Item(self::newIID(), "Crude Oil"));
+		self::register("chemical_glue", new Item(self::newIID(), "Glue"));
+		self::register("chemical_hydrogen_peroxide", new Item(self::newIID(), "Hydrogen Peroxide"));
+		self::register("chemical_hypochlorite", new Item(self::newIID(), "Hypochlorite"));
+		self::register("chemical_ink", new Item(self::newIID(), "Ink"));
+		self::register("chemical_iron_sulphide", new Item(self::newIID(), "Iron Sulphide"));
+		self::register("chemical_latex", new Item(self::newIID(), "Latex"));
+		self::register("chemical_lithium_hydride", new Item(self::newIID(), "Lithium Hydride"));
+		self::register("chemical_luminol", new Item(self::newIID(), "Luminol"));
+		self::register("chemical_magnesium_nitrate", new Item(self::newIID(), "Magnesium Nitrate"));
+		self::register("chemical_magnesium_oxide", new Item(self::newIID(), "Magnesium Oxide"));
+		self::register("chemical_magnesium_salts", new Item(self::newIID(), "Magnesium Salts"));
+		self::register("chemical_mercuric_chloride", new Item(self::newIID(), "Mercuric Chloride"));
+		self::register("chemical_polyethylene", new Item(self::newIID(), "Polyethylene"));
+		self::register("chemical_potassium_chloride", new Item(self::newIID(), "Potassium Chloride"));
+		self::register("chemical_potassium_iodide", new Item(self::newIID(), "Potassium Iodide"));
+		self::register("chemical_rubbish", new Item(self::newIID(), "Rubbish"));
+		self::register("chemical_salt", new Item(self::newIID(), "Salt"));
+		self::register("chemical_soap", new Item(self::newIID(), "Soap"));
+		self::register("chemical_sodium_acetate", new Item(self::newIID(), "Sodium Acetate"));
+		self::register("chemical_sodium_fluoride", new Item(self::newIID(), "Sodium Fluoride"));
+		self::register("chemical_sodium_hydride", new Item(self::newIID(), "Sodium Hydride"));
+		self::register("chemical_sodium_hydroxide", new Item(self::newIID(), "Sodium Hydroxide"));
+		self::register("chemical_sodium_hypochlorite", new Item(self::newIID(), "Sodium Hypochlorite"));
+		self::register("chemical_sodium_oxide", new Item(self::newIID(), "Sodium Oxide"));
+		self::register("chemical_sugar", new Item(self::newIID(), "Sugar"));
+		self::register("chemical_sulphate", new Item(self::newIID(), "Sulphate"));
+		self::register("chemical_tungsten_chloride", new Item(self::newIID(), "Tungsten Chloride"));
+		self::register("chemical_water", new Item(self::newIID(), "Water"));
+		self::register("chorus_fruit", new ChorusFruit(self::newIID(), "Chorus Fruit"));
+		self::register("clay", new Item(self::newIID(), "Clay"));
+		self::register("clock", new Clock(self::newIID(), "Clock"));
+		self::register("clownfish", new Clownfish(self::newIID(), "Clownfish"));
+		self::register("coal", new Coal(self::newIID(), "Coal"));
+		self::register("cocoa_beans", new CocoaBeans(self::newIID(), "Cocoa Beans"));
+		self::register("compass", new Compass(self::newIID(), "Compass", [EnchantmentTags::COMPASS]));
+		self::register("cooked_chicken", new CookedChicken(self::newIID(), "Cooked Chicken"));
+		self::register("cooked_fish", new CookedFish(self::newIID(), "Cooked Fish"));
+		self::register("cooked_mutton", new CookedMutton(self::newIID(), "Cooked Mutton"));
+		self::register("cooked_porkchop", new CookedPorkchop(self::newIID(), "Cooked Porkchop"));
+		self::register("cooked_rabbit", new CookedRabbit(self::newIID(), "Cooked Rabbit"));
+		self::register("cooked_salmon", new CookedSalmon(self::newIID(), "Cooked Salmon"));
+		self::register("cookie", new Cookie(self::newIID(), "Cookie"));
+		self::register("copper_ingot", new Item(self::newIID(), "Copper Ingot"));
+		self::register("coral_fan", new CoralFan(self::newIID()));
+		self::register("crimson_sign", new ItemBlockWallOrFloor(self::newIID(), Blocks::CRIMSON_SIGN(), Blocks::CRIMSON_WALL_SIGN()));
+		self::register("dark_oak_sign", new ItemBlockWallOrFloor(self::newIID(), Blocks::DARK_OAK_SIGN(), Blocks::DARK_OAK_WALL_SIGN()));
+		self::register("diamond", new Item(self::newIID(), "Diamond"));
+		self::register("disc_fragment_5", new Item(self::newIID(), "Disc Fragment (5)"));
+		self::register("dragon_breath", new Item(self::newIID(), "Dragon's Breath"));
+		self::register("dried_kelp", new DriedKelp(self::newIID(), "Dried Kelp"));
 		//TODO: add interface to dye-colour objects
-		self::register("dye", new Dye(new IID(Ids::DYE), "Dye"));
-		self::register("echo_shard", new Item(new IID(Ids::ECHO_SHARD), "Echo Shard"));
-		self::register("egg", new Egg(new IID(Ids::EGG), "Egg"));
-		self::register("emerald", new Item(new IID(Ids::EMERALD), "Emerald"));
-		self::register("enchanted_book", new EnchantedBook(new IID(Ids::ENCHANTED_BOOK), "Enchanted Book", [EnchantmentTags::ALL]));
-		self::register("enchanted_golden_apple", new GoldenAppleEnchanted(new IID(Ids::ENCHANTED_GOLDEN_APPLE), "Enchanted Golden Apple"));
-		self::register("ender_pearl", new EnderPearl(new IID(Ids::ENDER_PEARL), "Ender Pearl"));
-		self::register("experience_bottle", new ExperienceBottle(new IID(Ids::EXPERIENCE_BOTTLE), "Bottle o' Enchanting"));
-		self::register("feather", new Item(new IID(Ids::FEATHER), "Feather"));
-		self::register("fermented_spider_eye", new Item(new IID(Ids::FERMENTED_SPIDER_EYE), "Fermented Spider Eye"));
-		self::register("fire_charge", new FireCharge(new IID(Ids::FIRE_CHARGE), "Fire Charge"));
-		self::register("fishing_rod", new FishingRod(new IID(Ids::FISHING_ROD), "Fishing Rod", [EnchantmentTags::FISHING_ROD]));
-		self::register("flint", new Item(new IID(Ids::FLINT), "Flint"));
-		self::register("flint_and_steel", new FlintSteel(new IID(Ids::FLINT_AND_STEEL), "Flint and Steel", [EnchantmentTags::FLINT_AND_STEEL]));
-		self::register("ghast_tear", new Item(new IID(Ids::GHAST_TEAR), "Ghast Tear"));
-		self::register("glass_bottle", new GlassBottle(new IID(Ids::GLASS_BOTTLE), "Glass Bottle"));
-		self::register("glistering_melon", new Item(new IID(Ids::GLISTERING_MELON), "Glistering Melon"));
-		self::register("glow_berries", new GlowBerries(new IID(Ids::GLOW_BERRIES), "Glow Berries"));
-		self::register("glow_ink_sac", new Item(new IID(Ids::GLOW_INK_SAC), "Glow Ink Sac"));
-		self::register("glowstone_dust", new Item(new IID(Ids::GLOWSTONE_DUST), "Glowstone Dust"));
-		self::register("gold_ingot", new Item(new IID(Ids::GOLD_INGOT), "Gold Ingot"));
-		self::register("gold_nugget", new Item(new IID(Ids::GOLD_NUGGET), "Gold Nugget"));
-		self::register("golden_apple", new GoldenApple(new IID(Ids::GOLDEN_APPLE), "Golden Apple"));
-		self::register("golden_carrot", new GoldenCarrot(new IID(Ids::GOLDEN_CARROT), "Golden Carrot"));
-		self::register("gunpowder", new Item(new IID(Ids::GUNPOWDER), "Gunpowder"));
-		self::register("heart_of_the_sea", new Item(new IID(Ids::HEART_OF_THE_SEA), "Heart of the Sea"));
-		self::register("honey_bottle", new HoneyBottle(new IID(Ids::HONEY_BOTTLE), "Honey Bottle"));
-		self::register("honeycomb", new Item(new IID(Ids::HONEYCOMB), "Honeycomb"));
-		self::register("ink_sac", new Item(new IID(Ids::INK_SAC), "Ink Sac"));
-		self::register("iron_ingot", new Item(new IID(Ids::IRON_INGOT), "Iron Ingot"));
-		self::register("iron_nugget", new Item(new IID(Ids::IRON_NUGGET), "Iron Nugget"));
-		self::register("jungle_sign", new ItemBlockWallOrFloor(new IID(Ids::JUNGLE_SIGN), Blocks::JUNGLE_SIGN(), Blocks::JUNGLE_WALL_SIGN()));
-		self::register("lapis_lazuli", new Item(new IID(Ids::LAPIS_LAZULI), "Lapis Lazuli"));
-		self::register("lava_bucket", new LiquidBucket(new IID(Ids::LAVA_BUCKET), "Lava Bucket", Blocks::LAVA()));
-		self::register("leather", new Item(new IID(Ids::LEATHER), "Leather"));
-		self::register("magma_cream", new Item(new IID(Ids::MAGMA_CREAM), "Magma Cream"));
-		self::register("mangrove_sign", new ItemBlockWallOrFloor(new IID(Ids::MANGROVE_SIGN), Blocks::MANGROVE_SIGN(), Blocks::MANGROVE_WALL_SIGN()));
-		self::register("medicine", new Medicine(new IID(Ids::MEDICINE), "Medicine"));
-		self::register("melon", new Melon(new IID(Ids::MELON), "Melon"));
-		self::register("melon_seeds", new MelonSeeds(new IID(Ids::MELON_SEEDS), "Melon Seeds"));
-		self::register("milk_bucket", new MilkBucket(new IID(Ids::MILK_BUCKET), "Milk Bucket"));
-		self::register("minecart", new Minecart(new IID(Ids::MINECART), "Minecart"));
-		self::register("mushroom_stew", new MushroomStew(new IID(Ids::MUSHROOM_STEW), "Mushroom Stew"));
-		self::register("name_tag", new NameTag(new IID(Ids::NAME_TAG), "Name Tag"));
-		self::register("nautilus_shell", new Item(new IID(Ids::NAUTILUS_SHELL), "Nautilus Shell"));
-		self::register("nether_brick", new Item(new IID(Ids::NETHER_BRICK), "Nether Brick"));
-		self::register("nether_quartz", new Item(new IID(Ids::NETHER_QUARTZ), "Nether Quartz"));
-		self::register("nether_star", new Item(new IID(Ids::NETHER_STAR), "Nether Star"));
-		self::register("netherite_ingot", new class(new IID(Ids::NETHERITE_INGOT), "Netherite Ingot") extends Item{
+		self::register("dye", new Dye(self::newIID(), "Dye"));
+		self::register("echo_shard", new Item(self::newIID(), "Echo Shard"));
+		self::register("egg", new Egg(self::newIID(), "Egg"));
+		self::register("emerald", new Item(self::newIID(), "Emerald"));
+		self::register("enchanted_book", new EnchantedBook(self::newIID(), "Enchanted Book", [EnchantmentTags::ALL]));
+		self::register("enchanted_golden_apple", new GoldenAppleEnchanted(self::newIID(), "Enchanted Golden Apple"));
+		self::register("ender_pearl", new EnderPearl(self::newIID(), "Ender Pearl"));
+		self::register("experience_bottle", new ExperienceBottle(self::newIID(), "Bottle o' Enchanting"));
+		self::register("feather", new Item(self::newIID(), "Feather"));
+		self::register("fermented_spider_eye", new Item(self::newIID(), "Fermented Spider Eye"));
+		self::register("fire_charge", new FireCharge(self::newIID(), "Fire Charge"));
+		self::register("fishing_rod", new FishingRod(self::newIID(), "Fishing Rod", [EnchantmentTags::FISHING_ROD]));
+		self::register("flint", new Item(self::newIID(), "Flint"));
+		self::register("flint_and_steel", new FlintSteel(self::newIID(), "Flint and Steel", [EnchantmentTags::FLINT_AND_STEEL]));
+		self::register("ghast_tear", new Item(self::newIID(), "Ghast Tear"));
+		self::register("glass_bottle", new GlassBottle(self::newIID(), "Glass Bottle"));
+		self::register("glistering_melon", new Item(self::newIID(), "Glistering Melon"));
+		self::register("glow_berries", new GlowBerries(self::newIID(), "Glow Berries"));
+		self::register("glow_ink_sac", new Item(self::newIID(), "Glow Ink Sac"));
+		self::register("glowstone_dust", new Item(self::newIID(), "Glowstone Dust"));
+		self::register("gold_ingot", new Item(self::newIID(), "Gold Ingot"));
+		self::register("gold_nugget", new Item(self::newIID(), "Gold Nugget"));
+		self::register("golden_apple", new GoldenApple(self::newIID(), "Golden Apple"));
+		self::register("golden_carrot", new GoldenCarrot(self::newIID(), "Golden Carrot"));
+		self::register("gunpowder", new Item(self::newIID(), "Gunpowder"));
+		self::register("heart_of_the_sea", new Item(self::newIID(), "Heart of the Sea"));
+		self::register("honey_bottle", new HoneyBottle(self::newIID(), "Honey Bottle"));
+		self::register("honeycomb", new Item(self::newIID(), "Honeycomb"));
+		self::register("ink_sac", new Item(self::newIID(), "Ink Sac"));
+		self::register("iron_ingot", new Item(self::newIID(), "Iron Ingot"));
+		self::register("iron_nugget", new Item(self::newIID(), "Iron Nugget"));
+		self::register("jungle_sign", new ItemBlockWallOrFloor(self::newIID(), Blocks::JUNGLE_SIGN(), Blocks::JUNGLE_WALL_SIGN()));
+		self::register("lapis_lazuli", new Item(self::newIID(), "Lapis Lazuli"));
+		self::register("lava_bucket", new LiquidBucket(self::newIID(), "Lava Bucket", Blocks::LAVA()));
+		self::register("leather", new Item(self::newIID(), "Leather"));
+		self::register("magma_cream", new Item(self::newIID(), "Magma Cream"));
+		self::register("mangrove_sign", new ItemBlockWallOrFloor(self::newIID(), Blocks::MANGROVE_SIGN(), Blocks::MANGROVE_WALL_SIGN()));
+		self::register("medicine", new Medicine(self::newIID(), "Medicine"));
+		self::register("melon", new Melon(self::newIID(), "Melon"));
+		self::register("melon_seeds", new MelonSeeds(self::newIID(), "Melon Seeds"));
+		self::register("milk_bucket", new MilkBucket(self::newIID(), "Milk Bucket"));
+		self::register("minecart", new Minecart(self::newIID(), "Minecart"));
+		self::register("mushroom_stew", new MushroomStew(self::newIID(), "Mushroom Stew"));
+		self::register("name_tag", new NameTag(self::newIID(), "Name Tag"));
+		self::register("nautilus_shell", new Item(self::newIID(), "Nautilus Shell"));
+		self::register("nether_brick", new Item(self::newIID(), "Nether Brick"));
+		self::register("nether_quartz", new Item(self::newIID(), "Nether Quartz"));
+		self::register("nether_star", new Item(self::newIID(), "Nether Star"));
+		self::register("netherite_ingot", new class(self::newIID(), "Netherite Ingot") extends Item{
 			public function isFireProof() : bool{ return true; }
 		});
-		self::register("netherite_scrap", new class(new IID(Ids::NETHERITE_SCRAP), "Netherite Scrap") extends Item{
+		self::register("netherite_scrap", new class(self::newIID(), "Netherite Scrap") extends Item{
 			public function isFireProof() : bool{ return true; }
 		});
-		self::register("oak_sign", new ItemBlockWallOrFloor(new IID(Ids::OAK_SIGN), Blocks::OAK_SIGN(), Blocks::OAK_WALL_SIGN()));
-		self::register("painting", new PaintingItem(new IID(Ids::PAINTING), "Painting"));
-		self::register("paper", new Item(new IID(Ids::PAPER), "Paper"));
-		self::register("phantom_membrane", new Item(new IID(Ids::PHANTOM_MEMBRANE), "Phantom Membrane"));
-		self::register("pitcher_pod", new PitcherPod(new IID(Ids::PITCHER_POD), "Pitcher Pod"));
-		self::register("poisonous_potato", new PoisonousPotato(new IID(Ids::POISONOUS_POTATO), "Poisonous Potato"));
-		self::register("popped_chorus_fruit", new Item(new IID(Ids::POPPED_CHORUS_FRUIT), "Popped Chorus Fruit"));
-		self::register("potato", new Potato(new IID(Ids::POTATO), "Potato"));
-		self::register("potion", new Potion(new IID(Ids::POTION), "Potion"));
-		self::register("prismarine_crystals", new Item(new IID(Ids::PRISMARINE_CRYSTALS), "Prismarine Crystals"));
-		self::register("prismarine_shard", new Item(new IID(Ids::PRISMARINE_SHARD), "Prismarine Shard"));
-		self::register("pufferfish", new Pufferfish(new IID(Ids::PUFFERFISH), "Pufferfish"));
-		self::register("pumpkin_pie", new PumpkinPie(new IID(Ids::PUMPKIN_PIE), "Pumpkin Pie"));
-		self::register("pumpkin_seeds", new PumpkinSeeds(new IID(Ids::PUMPKIN_SEEDS), "Pumpkin Seeds"));
-		self::register("rabbit_foot", new Item(new IID(Ids::RABBIT_FOOT), "Rabbit's Foot"));
-		self::register("rabbit_hide", new Item(new IID(Ids::RABBIT_HIDE), "Rabbit Hide"));
-		self::register("rabbit_stew", new RabbitStew(new IID(Ids::RABBIT_STEW), "Rabbit Stew"));
-		self::register("raw_beef", new RawBeef(new IID(Ids::RAW_BEEF), "Raw Beef"));
-		self::register("raw_chicken", new RawChicken(new IID(Ids::RAW_CHICKEN), "Raw Chicken"));
-		self::register("raw_copper", new Item(new IID(Ids::RAW_COPPER), "Raw Copper"));
-		self::register("raw_fish", new RawFish(new IID(Ids::RAW_FISH), "Raw Fish"));
-		self::register("raw_gold", new Item(new IID(Ids::RAW_GOLD), "Raw Gold"));
-		self::register("raw_iron", new Item(new IID(Ids::RAW_IRON), "Raw Iron"));
-		self::register("raw_mutton", new RawMutton(new IID(Ids::RAW_MUTTON), "Raw Mutton"));
-		self::register("raw_porkchop", new RawPorkchop(new IID(Ids::RAW_PORKCHOP), "Raw Porkchop"));
-		self::register("raw_rabbit", new RawRabbit(new IID(Ids::RAW_RABBIT), "Raw Rabbit"));
-		self::register("raw_salmon", new RawSalmon(new IID(Ids::RAW_SALMON), "Raw Salmon"));
-		self::register("record_11", new Record(new IID(Ids::RECORD_11), RecordType::DISK_11, "Record 11"));
-		self::register("record_13", new Record(new IID(Ids::RECORD_13), RecordType::DISK_13, "Record 13"));
-		self::register("record_5", new Record(new IID(Ids::RECORD_5), RecordType::DISK_5, "Record 5"));
-		self::register("record_blocks", new Record(new IID(Ids::RECORD_BLOCKS), RecordType::DISK_BLOCKS, "Record Blocks"));
-		self::register("record_cat", new Record(new IID(Ids::RECORD_CAT), RecordType::DISK_CAT, "Record Cat"));
-		self::register("record_chirp", new Record(new IID(Ids::RECORD_CHIRP), RecordType::DISK_CHIRP, "Record Chirp"));
-		self::register("record_far", new Record(new IID(Ids::RECORD_FAR), RecordType::DISK_FAR, "Record Far"));
-		self::register("record_mall", new Record(new IID(Ids::RECORD_MALL), RecordType::DISK_MALL, "Record Mall"));
-		self::register("record_mellohi", new Record(new IID(Ids::RECORD_MELLOHI), RecordType::DISK_MELLOHI, "Record Mellohi"));
-		self::register("record_otherside", new Record(new IID(Ids::RECORD_OTHERSIDE), RecordType::DISK_OTHERSIDE, "Record Otherside"));
-		self::register("record_pigstep", new Record(new IID(Ids::RECORD_PIGSTEP), RecordType::DISK_PIGSTEP, "Record Pigstep"));
-		self::register("record_stal", new Record(new IID(Ids::RECORD_STAL), RecordType::DISK_STAL, "Record Stal"));
-		self::register("record_strad", new Record(new IID(Ids::RECORD_STRAD), RecordType::DISK_STRAD, "Record Strad"));
-		self::register("record_wait", new Record(new IID(Ids::RECORD_WAIT), RecordType::DISK_WAIT, "Record Wait"));
-		self::register("record_ward", new Record(new IID(Ids::RECORD_WARD), RecordType::DISK_WARD, "Record Ward"));
-		self::register("redstone_dust", new Redstone(new IID(Ids::REDSTONE_DUST), "Redstone"));
-		self::register("rotten_flesh", new RottenFlesh(new IID(Ids::ROTTEN_FLESH), "Rotten Flesh"));
-		self::register("scute", new Item(new IID(Ids::SCUTE), "Scute"));
-		self::register("shears", new Shears(new IID(Ids::SHEARS), "Shears", [EnchantmentTags::SHEARS]));
-		self::register("shulker_shell", new Item(new IID(Ids::SHULKER_SHELL), "Shulker Shell"));
-		self::register("slimeball", new Item(new IID(Ids::SLIMEBALL), "Slimeball"));
-		self::register("snowball", new Snowball(new IID(Ids::SNOWBALL), "Snowball"));
-		self::register("spider_eye", new SpiderEye(new IID(Ids::SPIDER_EYE), "Spider Eye"));
-		self::register("splash_potion", new SplashPotion(new IID(Ids::SPLASH_POTION), "Splash Potion"));
-		self::register("spruce_sign", new ItemBlockWallOrFloor(new IID(Ids::SPRUCE_SIGN), Blocks::SPRUCE_SIGN(), Blocks::SPRUCE_WALL_SIGN()));
-		self::register("spyglass", new Spyglass(new IID(Ids::SPYGLASS), "Spyglass"));
-		self::register("steak", new Steak(new IID(Ids::STEAK), "Steak"));
-		self::register("stick", new Stick(new IID(Ids::STICK), "Stick"));
-		self::register("string", new StringItem(new IID(Ids::STRING), "String"));
-		self::register("sugar", new Item(new IID(Ids::SUGAR), "Sugar"));
-		self::register("suspicious_stew", new SuspiciousStew(new IID(Ids::SUSPICIOUS_STEW), "Suspicious Stew"));
-		self::register("sweet_berries", new SweetBerries(new IID(Ids::SWEET_BERRIES), "Sweet Berries"));
-		self::register("torchflower_seeds", new TorchflowerSeeds(new IID(Ids::TORCHFLOWER_SEEDS), "Torchflower Seeds"));
-		self::register("totem", new Totem(new IID(Ids::TOTEM), "Totem of Undying"));
-		self::register("warped_sign", new ItemBlockWallOrFloor(new IID(Ids::WARPED_SIGN), Blocks::WARPED_SIGN(), Blocks::WARPED_WALL_SIGN()));
-		self::register("water_bucket", new LiquidBucket(new IID(Ids::WATER_BUCKET), "Water Bucket", Blocks::WATER()));
-		self::register("wheat", new Item(new IID(Ids::WHEAT), "Wheat"));
-		self::register("wheat_seeds", new WheatSeeds(new IID(Ids::WHEAT_SEEDS), "Wheat Seeds"));
-		self::register("writable_book", new WritableBook(new IID(Ids::WRITABLE_BOOK), "Book & Quill"));
-		self::register("written_book", new WrittenBook(new IID(Ids::WRITTEN_BOOK), "Written Book"));
+		self::register("oak_sign", new ItemBlockWallOrFloor(self::newIID(), Blocks::OAK_SIGN(), Blocks::OAK_WALL_SIGN()));
+		self::register("painting", new PaintingItem(self::newIID(), "Painting"));
+		self::register("paper", new Item(self::newIID(), "Paper"));
+		self::register("phantom_membrane", new Item(self::newIID(), "Phantom Membrane"));
+		self::register("pitcher_pod", new PitcherPod(self::newIID(), "Pitcher Pod"));
+		self::register("poisonous_potato", new PoisonousPotato(self::newIID(), "Poisonous Potato"));
+		self::register("popped_chorus_fruit", new Item(self::newIID(), "Popped Chorus Fruit"));
+		self::register("potato", new Potato(self::newIID(), "Potato"));
+		self::register("potion", new Potion(self::newIID(), "Potion"));
+		self::register("prismarine_crystals", new Item(self::newIID(), "Prismarine Crystals"));
+		self::register("prismarine_shard", new Item(self::newIID(), "Prismarine Shard"));
+		self::register("pufferfish", new Pufferfish(self::newIID(), "Pufferfish"));
+		self::register("pumpkin_pie", new PumpkinPie(self::newIID(), "Pumpkin Pie"));
+		self::register("pumpkin_seeds", new PumpkinSeeds(self::newIID(), "Pumpkin Seeds"));
+		self::register("rabbit_foot", new Item(self::newIID(), "Rabbit's Foot"));
+		self::register("rabbit_hide", new Item(self::newIID(), "Rabbit Hide"));
+		self::register("rabbit_stew", new RabbitStew(self::newIID(), "Rabbit Stew"));
+		self::register("raw_beef", new RawBeef(self::newIID(), "Raw Beef"));
+		self::register("raw_chicken", new RawChicken(self::newIID(), "Raw Chicken"));
+		self::register("raw_copper", new Item(self::newIID(), "Raw Copper"));
+		self::register("raw_fish", new RawFish(self::newIID(), "Raw Fish"));
+		self::register("raw_gold", new Item(self::newIID(), "Raw Gold"));
+		self::register("raw_iron", new Item(self::newIID(), "Raw Iron"));
+		self::register("raw_mutton", new RawMutton(self::newIID(), "Raw Mutton"));
+		self::register("raw_porkchop", new RawPorkchop(self::newIID(), "Raw Porkchop"));
+		self::register("raw_rabbit", new RawRabbit(self::newIID(), "Raw Rabbit"));
+		self::register("raw_salmon", new RawSalmon(self::newIID(), "Raw Salmon"));
+		self::register("record_11", new Record(self::newIID(), RecordType::DISK_11, "Record 11"));
+		self::register("record_13", new Record(self::newIID(), RecordType::DISK_13, "Record 13"));
+		self::register("record_5", new Record(self::newIID(), RecordType::DISK_5, "Record 5"));
+		self::register("record_blocks", new Record(self::newIID(), RecordType::DISK_BLOCKS, "Record Blocks"));
+		self::register("record_cat", new Record(self::newIID(), RecordType::DISK_CAT, "Record Cat"));
+		self::register("record_chirp", new Record(self::newIID(), RecordType::DISK_CHIRP, "Record Chirp"));
+		self::register("record_far", new Record(self::newIID(), RecordType::DISK_FAR, "Record Far"));
+		self::register("record_mall", new Record(self::newIID(), RecordType::DISK_MALL, "Record Mall"));
+		self::register("record_mellohi", new Record(self::newIID(), RecordType::DISK_MELLOHI, "Record Mellohi"));
+		self::register("record_otherside", new Record(self::newIID(), RecordType::DISK_OTHERSIDE, "Record Otherside"));
+		self::register("record_pigstep", new Record(self::newIID(), RecordType::DISK_PIGSTEP, "Record Pigstep"));
+		self::register("record_stal", new Record(self::newIID(), RecordType::DISK_STAL, "Record Stal"));
+		self::register("record_strad", new Record(self::newIID(), RecordType::DISK_STRAD, "Record Strad"));
+		self::register("record_wait", new Record(self::newIID(), RecordType::DISK_WAIT, "Record Wait"));
+		self::register("record_ward", new Record(self::newIID(), RecordType::DISK_WARD, "Record Ward"));
+		self::register("redstone_dust", new Redstone(self::newIID(), "Redstone"));
+		self::register("rotten_flesh", new RottenFlesh(self::newIID(), "Rotten Flesh"));
+		self::register("scute", new Item(self::newIID(), "Scute"));
+		self::register("shears", new Shears(self::newIID(), "Shears", [EnchantmentTags::SHEARS]));
+		self::register("shulker_shell", new Item(self::newIID(), "Shulker Shell"));
+		self::register("slimeball", new Item(self::newIID(), "Slimeball"));
+		self::register("snowball", new Snowball(self::newIID(), "Snowball"));
+		self::register("spider_eye", new SpiderEye(self::newIID(), "Spider Eye"));
+		self::register("splash_potion", new SplashPotion(self::newIID(), "Splash Potion"));
+		self::register("spruce_sign", new ItemBlockWallOrFloor(self::newIID(), Blocks::SPRUCE_SIGN(), Blocks::SPRUCE_WALL_SIGN()));
+		self::register("spyglass", new Spyglass(self::newIID(), "Spyglass"));
+		self::register("steak", new Steak(self::newIID(), "Steak"));
+		self::register("stick", new Stick(self::newIID(), "Stick"));
+		self::register("string", new StringItem(self::newIID(), "String"));
+		self::register("sugar", new Item(self::newIID(), "Sugar"));
+		self::register("suspicious_stew", new SuspiciousStew(self::newIID(), "Suspicious Stew"));
+		self::register("sweet_berries", new SweetBerries(self::newIID(), "Sweet Berries"));
+		self::register("torchflower_seeds", new TorchflowerSeeds(self::newIID(), "Torchflower Seeds"));
+		self::register("totem", new Totem(self::newIID(), "Totem of Undying"));
+		self::register("warped_sign", new ItemBlockWallOrFloor(self::newIID(), Blocks::WARPED_SIGN(), Blocks::WARPED_WALL_SIGN()));
+		self::register("water_bucket", new LiquidBucket(self::newIID(), "Water Bucket", Blocks::WATER()));
+		self::register("wheat", new Item(self::newIID(), "Wheat"));
+		self::register("wheat_seeds", new WheatSeeds(self::newIID(), "Wheat Seeds"));
+		self::register("writable_book", new WritableBook(self::newIID(), "Book & Quill"));
+		self::register("written_book", new WrittenBook(self::newIID(), "Written Book"));
 
 		foreach(BoatType::cases() as $type){
 			//boat type is static, because different types of wood may have different properties
-			self::register(strtolower($type->name) . "_boat", new Boat(new IID(match($type){
-				BoatType::OAK => Ids::OAK_BOAT,
-				BoatType::SPRUCE => Ids::SPRUCE_BOAT,
-				BoatType::BIRCH => Ids::BIRCH_BOAT,
-				BoatType::JUNGLE => Ids::JUNGLE_BOAT,
-				BoatType::ACACIA => Ids::ACACIA_BOAT,
-				BoatType::DARK_OAK => Ids::DARK_OAK_BOAT,
-				BoatType::MANGROVE => Ids::MANGROVE_BOAT,
-			}), $type->getDisplayName() . " Boat", $type));
+			self::register(strtolower($type->name) . "_boat", new Boat(self::newIID(), $type->getDisplayName() . " Boat", $type));
 		}
 	}
 
 	private static function registerSpawnEggs() : void{
-		self::register("zombie_spawn_egg", new class(new IID(Ids::ZOMBIE_SPAWN_EGG), "Zombie Spawn Egg") extends SpawnEgg{
+		self::register("zombie_spawn_egg", new class(self::newIID(), "Zombie Spawn Egg") extends SpawnEgg{
 			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
 				return new Zombie(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});
-		self::register("squid_spawn_egg", new class(new IID(Ids::SQUID_SPAWN_EGG), "Squid Spawn Egg") extends SpawnEgg{
+		self::register("squid_spawn_egg", new class(self::newIID(), "Squid Spawn Egg") extends SpawnEgg{
 			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
 				return new Squid(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});
-		self::register("villager_spawn_egg", new class(new IID(Ids::VILLAGER_SPAWN_EGG), "Villager Spawn Egg") extends SpawnEgg{
+		self::register("villager_spawn_egg", new class(self::newIID(), "Villager Spawn Egg") extends SpawnEgg{
 			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
 				return new Villager(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
@@ -603,87 +602,87 @@ final class VanillaItems{
 	}
 
 	private static function registerTierToolItems() : void{
-		self::register("diamond_axe", new Axe(new IID(Ids::DIAMOND_AXE), "Diamond Axe", ToolTier::DIAMOND, [EnchantmentTags::AXE]));
-		self::register("golden_axe", new Axe(new IID(Ids::GOLDEN_AXE), "Golden Axe", ToolTier::GOLD, [EnchantmentTags::AXE]));
-		self::register("iron_axe", new Axe(new IID(Ids::IRON_AXE), "Iron Axe", ToolTier::IRON, [EnchantmentTags::AXE]));
-		self::register("netherite_axe", new Axe(new IID(Ids::NETHERITE_AXE), "Netherite Axe", ToolTier::NETHERITE, [EnchantmentTags::AXE]));
-		self::register("stone_axe", new Axe(new IID(Ids::STONE_AXE), "Stone Axe", ToolTier::STONE, [EnchantmentTags::AXE]));
-		self::register("wooden_axe", new Axe(new IID(Ids::WOODEN_AXE), "Wooden Axe", ToolTier::WOOD, [EnchantmentTags::AXE]));
-		self::register("diamond_hoe", new Hoe(new IID(Ids::DIAMOND_HOE), "Diamond Hoe", ToolTier::DIAMOND, [EnchantmentTags::HOE]));
-		self::register("golden_hoe", new Hoe(new IID(Ids::GOLDEN_HOE), "Golden Hoe", ToolTier::GOLD, [EnchantmentTags::HOE]));
-		self::register("iron_hoe", new Hoe(new IID(Ids::IRON_HOE), "Iron Hoe", ToolTier::IRON, [EnchantmentTags::HOE]));
-		self::register("netherite_hoe", new Hoe(new IID(Ids::NETHERITE_HOE), "Netherite Hoe", ToolTier::NETHERITE, [EnchantmentTags::HOE]));
-		self::register("stone_hoe", new Hoe(new IID(Ids::STONE_HOE), "Stone Hoe", ToolTier::STONE, [EnchantmentTags::HOE]));
-		self::register("wooden_hoe", new Hoe(new IID(Ids::WOODEN_HOE), "Wooden Hoe", ToolTier::WOOD, [EnchantmentTags::HOE]));
-		self::register("diamond_pickaxe", new Pickaxe(new IID(Ids::DIAMOND_PICKAXE), "Diamond Pickaxe", ToolTier::DIAMOND, [EnchantmentTags::PICKAXE]));
-		self::register("golden_pickaxe", new Pickaxe(new IID(Ids::GOLDEN_PICKAXE), "Golden Pickaxe", ToolTier::GOLD, [EnchantmentTags::PICKAXE]));
-		self::register("iron_pickaxe", new Pickaxe(new IID(Ids::IRON_PICKAXE), "Iron Pickaxe", ToolTier::IRON, [EnchantmentTags::PICKAXE]));
-		self::register("netherite_pickaxe", new Pickaxe(new IID(Ids::NETHERITE_PICKAXE), "Netherite Pickaxe", ToolTier::NETHERITE, [EnchantmentTags::PICKAXE]));
-		self::register("stone_pickaxe", new Pickaxe(new IID(Ids::STONE_PICKAXE), "Stone Pickaxe", ToolTier::STONE, [EnchantmentTags::PICKAXE]));
-		self::register("wooden_pickaxe", new Pickaxe(new IID(Ids::WOODEN_PICKAXE), "Wooden Pickaxe", ToolTier::WOOD, [EnchantmentTags::PICKAXE]));
-		self::register("diamond_shovel", new Shovel(new IID(Ids::DIAMOND_SHOVEL), "Diamond Shovel", ToolTier::DIAMOND, [EnchantmentTags::SHOVEL]));
-		self::register("golden_shovel", new Shovel(new IID(Ids::GOLDEN_SHOVEL), "Golden Shovel", ToolTier::GOLD, [EnchantmentTags::SHOVEL]));
-		self::register("iron_shovel", new Shovel(new IID(Ids::IRON_SHOVEL), "Iron Shovel", ToolTier::IRON, [EnchantmentTags::SHOVEL]));
-		self::register("netherite_shovel", new Shovel(new IID(Ids::NETHERITE_SHOVEL), "Netherite Shovel", ToolTier::NETHERITE, [EnchantmentTags::SHOVEL]));
-		self::register("stone_shovel", new Shovel(new IID(Ids::STONE_SHOVEL), "Stone Shovel", ToolTier::STONE, [EnchantmentTags::SHOVEL]));
-		self::register("wooden_shovel", new Shovel(new IID(Ids::WOODEN_SHOVEL), "Wooden Shovel", ToolTier::WOOD, [EnchantmentTags::SHOVEL]));
-		self::register("diamond_sword", new Sword(new IID(Ids::DIAMOND_SWORD), "Diamond Sword", ToolTier::DIAMOND, [EnchantmentTags::SWORD]));
-		self::register("golden_sword", new Sword(new IID(Ids::GOLDEN_SWORD), "Golden Sword", ToolTier::GOLD, [EnchantmentTags::SWORD]));
-		self::register("iron_sword", new Sword(new IID(Ids::IRON_SWORD), "Iron Sword", ToolTier::IRON, [EnchantmentTags::SWORD]));
-		self::register("netherite_sword", new Sword(new IID(Ids::NETHERITE_SWORD), "Netherite Sword", ToolTier::NETHERITE, [EnchantmentTags::SWORD]));
-		self::register("stone_sword", new Sword(new IID(Ids::STONE_SWORD), "Stone Sword", ToolTier::STONE, [EnchantmentTags::SWORD]));
-		self::register("wooden_sword", new Sword(new IID(Ids::WOODEN_SWORD), "Wooden Sword", ToolTier::WOOD, [EnchantmentTags::SWORD]));
+		self::register("diamond_axe", new Axe(self::newIID(), "Diamond Axe", ToolTier::DIAMOND, [EnchantmentTags::AXE]));
+		self::register("golden_axe", new Axe(self::newIID(), "Golden Axe", ToolTier::GOLD, [EnchantmentTags::AXE]));
+		self::register("iron_axe", new Axe(self::newIID(), "Iron Axe", ToolTier::IRON, [EnchantmentTags::AXE]));
+		self::register("netherite_axe", new Axe(self::newIID(), "Netherite Axe", ToolTier::NETHERITE, [EnchantmentTags::AXE]));
+		self::register("stone_axe", new Axe(self::newIID(), "Stone Axe", ToolTier::STONE, [EnchantmentTags::AXE]));
+		self::register("wooden_axe", new Axe(self::newIID(), "Wooden Axe", ToolTier::WOOD, [EnchantmentTags::AXE]));
+		self::register("diamond_hoe", new Hoe(self::newIID(), "Diamond Hoe", ToolTier::DIAMOND, [EnchantmentTags::HOE]));
+		self::register("golden_hoe", new Hoe(self::newIID(), "Golden Hoe", ToolTier::GOLD, [EnchantmentTags::HOE]));
+		self::register("iron_hoe", new Hoe(self::newIID(), "Iron Hoe", ToolTier::IRON, [EnchantmentTags::HOE]));
+		self::register("netherite_hoe", new Hoe(self::newIID(), "Netherite Hoe", ToolTier::NETHERITE, [EnchantmentTags::HOE]));
+		self::register("stone_hoe", new Hoe(self::newIID(), "Stone Hoe", ToolTier::STONE, [EnchantmentTags::HOE]));
+		self::register("wooden_hoe", new Hoe(self::newIID(), "Wooden Hoe", ToolTier::WOOD, [EnchantmentTags::HOE]));
+		self::register("diamond_pickaxe", new Pickaxe(self::newIID(), "Diamond Pickaxe", ToolTier::DIAMOND, [EnchantmentTags::PICKAXE]));
+		self::register("golden_pickaxe", new Pickaxe(self::newIID(), "Golden Pickaxe", ToolTier::GOLD, [EnchantmentTags::PICKAXE]));
+		self::register("iron_pickaxe", new Pickaxe(self::newIID(), "Iron Pickaxe", ToolTier::IRON, [EnchantmentTags::PICKAXE]));
+		self::register("netherite_pickaxe", new Pickaxe(self::newIID(), "Netherite Pickaxe", ToolTier::NETHERITE, [EnchantmentTags::PICKAXE]));
+		self::register("stone_pickaxe", new Pickaxe(self::newIID(), "Stone Pickaxe", ToolTier::STONE, [EnchantmentTags::PICKAXE]));
+		self::register("wooden_pickaxe", new Pickaxe(self::newIID(), "Wooden Pickaxe", ToolTier::WOOD, [EnchantmentTags::PICKAXE]));
+		self::register("diamond_shovel", new Shovel(self::newIID(), "Diamond Shovel", ToolTier::DIAMOND, [EnchantmentTags::SHOVEL]));
+		self::register("golden_shovel", new Shovel(self::newIID(), "Golden Shovel", ToolTier::GOLD, [EnchantmentTags::SHOVEL]));
+		self::register("iron_shovel", new Shovel(self::newIID(), "Iron Shovel", ToolTier::IRON, [EnchantmentTags::SHOVEL]));
+		self::register("netherite_shovel", new Shovel(self::newIID(), "Netherite Shovel", ToolTier::NETHERITE, [EnchantmentTags::SHOVEL]));
+		self::register("stone_shovel", new Shovel(self::newIID(), "Stone Shovel", ToolTier::STONE, [EnchantmentTags::SHOVEL]));
+		self::register("wooden_shovel", new Shovel(self::newIID(), "Wooden Shovel", ToolTier::WOOD, [EnchantmentTags::SHOVEL]));
+		self::register("diamond_sword", new Sword(self::newIID(), "Diamond Sword", ToolTier::DIAMOND, [EnchantmentTags::SWORD]));
+		self::register("golden_sword", new Sword(self::newIID(), "Golden Sword", ToolTier::GOLD, [EnchantmentTags::SWORD]));
+		self::register("iron_sword", new Sword(self::newIID(), "Iron Sword", ToolTier::IRON, [EnchantmentTags::SWORD]));
+		self::register("netherite_sword", new Sword(self::newIID(), "Netherite Sword", ToolTier::NETHERITE, [EnchantmentTags::SWORD]));
+		self::register("stone_sword", new Sword(self::newIID(), "Stone Sword", ToolTier::STONE, [EnchantmentTags::SWORD]));
+		self::register("wooden_sword", new Sword(self::newIID(), "Wooden Sword", ToolTier::WOOD, [EnchantmentTags::SWORD]));
 	}
 
 	private static function registerArmorItems() : void{
-		self::register("chainmail_boots", new Armor(new IID(Ids::CHAINMAIL_BOOTS), "Chainmail Boots", new ArmorTypeInfo(1, 196, ArmorInventory::SLOT_FEET, material: ArmorMaterials::CHAINMAIL()), [EnchantmentTags::BOOTS]));
-		self::register("diamond_boots", new Armor(new IID(Ids::DIAMOND_BOOTS), "Diamond Boots", new ArmorTypeInfo(3, 430, ArmorInventory::SLOT_FEET, 2, material: ArmorMaterials::DIAMOND()), [EnchantmentTags::BOOTS]));
-		self::register("golden_boots", new Armor(new IID(Ids::GOLDEN_BOOTS), "Golden Boots", new ArmorTypeInfo(1, 92, ArmorInventory::SLOT_FEET, material: ArmorMaterials::GOLD()), [EnchantmentTags::BOOTS]));
-		self::register("iron_boots", new Armor(new IID(Ids::IRON_BOOTS), "Iron Boots", new ArmorTypeInfo(2, 196, ArmorInventory::SLOT_FEET, material: ArmorMaterials::IRON()), [EnchantmentTags::BOOTS]));
-		self::register("leather_boots", new Armor(new IID(Ids::LEATHER_BOOTS), "Leather Boots", new ArmorTypeInfo(1, 66, ArmorInventory::SLOT_FEET, material: ArmorMaterials::LEATHER()), [EnchantmentTags::BOOTS]));
-		self::register("netherite_boots", new Armor(new IID(Ids::NETHERITE_BOOTS), "Netherite Boots", new ArmorTypeInfo(3, 482, ArmorInventory::SLOT_FEET, 3, true, material: ArmorMaterials::NETHERITE()), [EnchantmentTags::BOOTS]));
+		self::register("chainmail_boots", new Armor(self::newIID(), "Chainmail Boots", new ArmorTypeInfo(1, 196, ArmorInventory::SLOT_FEET, material: ArmorMaterials::CHAINMAIL()), [EnchantmentTags::BOOTS]));
+		self::register("diamond_boots", new Armor(self::newIID(), "Diamond Boots", new ArmorTypeInfo(3, 430, ArmorInventory::SLOT_FEET, 2, material: ArmorMaterials::DIAMOND()), [EnchantmentTags::BOOTS]));
+		self::register("golden_boots", new Armor(self::newIID(), "Golden Boots", new ArmorTypeInfo(1, 92, ArmorInventory::SLOT_FEET, material: ArmorMaterials::GOLD()), [EnchantmentTags::BOOTS]));
+		self::register("iron_boots", new Armor(self::newIID(), "Iron Boots", new ArmorTypeInfo(2, 196, ArmorInventory::SLOT_FEET, material: ArmorMaterials::IRON()), [EnchantmentTags::BOOTS]));
+		self::register("leather_boots", new Armor(self::newIID(), "Leather Boots", new ArmorTypeInfo(1, 66, ArmorInventory::SLOT_FEET, material: ArmorMaterials::LEATHER()), [EnchantmentTags::BOOTS]));
+		self::register("netherite_boots", new Armor(self::newIID(), "Netherite Boots", new ArmorTypeInfo(3, 482, ArmorInventory::SLOT_FEET, 3, true, material: ArmorMaterials::NETHERITE()), [EnchantmentTags::BOOTS]));
 
-		self::register("chainmail_chestplate", new Armor(new IID(Ids::CHAINMAIL_CHESTPLATE), "Chainmail Chestplate", new ArmorTypeInfo(5, 241, ArmorInventory::SLOT_CHEST, material: ArmorMaterials::CHAINMAIL()), [EnchantmentTags::CHESTPLATE]));
-		self::register("diamond_chestplate", new Armor(new IID(Ids::DIAMOND_CHESTPLATE), "Diamond Chestplate", new ArmorTypeInfo(8, 529, ArmorInventory::SLOT_CHEST, 2, material: ArmorMaterials::DIAMOND()), [EnchantmentTags::CHESTPLATE]));
-		self::register("golden_chestplate", new Armor(new IID(Ids::GOLDEN_CHESTPLATE), "Golden Chestplate", new ArmorTypeInfo(5, 113, ArmorInventory::SLOT_CHEST, material: ArmorMaterials::GOLD()), [EnchantmentTags::CHESTPLATE]));
-		self::register("iron_chestplate", new Armor(new IID(Ids::IRON_CHESTPLATE), "Iron Chestplate", new ArmorTypeInfo(6, 241, ArmorInventory::SLOT_CHEST, material: ArmorMaterials::IRON()), [EnchantmentTags::CHESTPLATE]));
-		self::register("leather_tunic", new Armor(new IID(Ids::LEATHER_TUNIC), "Leather Tunic", new ArmorTypeInfo(3, 81, ArmorInventory::SLOT_CHEST, material: ArmorMaterials::LEATHER()), [EnchantmentTags::CHESTPLATE]));
-		self::register("netherite_chestplate", new Armor(new IID(Ids::NETHERITE_CHESTPLATE), "Netherite Chestplate", new ArmorTypeInfo(8, 593, ArmorInventory::SLOT_CHEST, 3, true, material: ArmorMaterials::NETHERITE()), [EnchantmentTags::CHESTPLATE]));
+		self::register("chainmail_chestplate", new Armor(self::newIID(), "Chainmail Chestplate", new ArmorTypeInfo(5, 241, ArmorInventory::SLOT_CHEST, material: ArmorMaterials::CHAINMAIL()), [EnchantmentTags::CHESTPLATE]));
+		self::register("diamond_chestplate", new Armor(self::newIID(), "Diamond Chestplate", new ArmorTypeInfo(8, 529, ArmorInventory::SLOT_CHEST, 2, material: ArmorMaterials::DIAMOND()), [EnchantmentTags::CHESTPLATE]));
+		self::register("golden_chestplate", new Armor(self::newIID(), "Golden Chestplate", new ArmorTypeInfo(5, 113, ArmorInventory::SLOT_CHEST, material: ArmorMaterials::GOLD()), [EnchantmentTags::CHESTPLATE]));
+		self::register("iron_chestplate", new Armor(self::newIID(), "Iron Chestplate", new ArmorTypeInfo(6, 241, ArmorInventory::SLOT_CHEST, material: ArmorMaterials::IRON()), [EnchantmentTags::CHESTPLATE]));
+		self::register("leather_tunic", new Armor(self::newIID(), "Leather Tunic", new ArmorTypeInfo(3, 81, ArmorInventory::SLOT_CHEST, material: ArmorMaterials::LEATHER()), [EnchantmentTags::CHESTPLATE]));
+		self::register("netherite_chestplate", new Armor(self::newIID(), "Netherite Chestplate", new ArmorTypeInfo(8, 593, ArmorInventory::SLOT_CHEST, 3, true, material: ArmorMaterials::NETHERITE()), [EnchantmentTags::CHESTPLATE]));
 
-		self::register("chainmail_helmet", new Armor(new IID(Ids::CHAINMAIL_HELMET), "Chainmail Helmet", new ArmorTypeInfo(2, 166, ArmorInventory::SLOT_HEAD, material: ArmorMaterials::CHAINMAIL()), [EnchantmentTags::HELMET]));
-		self::register("diamond_helmet", new Armor(new IID(Ids::DIAMOND_HELMET), "Diamond Helmet", new ArmorTypeInfo(3, 364, ArmorInventory::SLOT_HEAD, 2, material: ArmorMaterials::DIAMOND()), [EnchantmentTags::HELMET]));
-		self::register("golden_helmet", new Armor(new IID(Ids::GOLDEN_HELMET), "Golden Helmet", new ArmorTypeInfo(2, 78, ArmorInventory::SLOT_HEAD, material: ArmorMaterials::GOLD()), [EnchantmentTags::HELMET]));
-		self::register("iron_helmet", new Armor(new IID(Ids::IRON_HELMET), "Iron Helmet", new ArmorTypeInfo(2, 166, ArmorInventory::SLOT_HEAD, material: ArmorMaterials::IRON()), [EnchantmentTags::HELMET]));
-		self::register("leather_cap", new Armor(new IID(Ids::LEATHER_CAP), "Leather Cap", new ArmorTypeInfo(1, 56, ArmorInventory::SLOT_HEAD, material: ArmorMaterials::LEATHER()), [EnchantmentTags::HELMET]));
-		self::register("netherite_helmet", new Armor(new IID(Ids::NETHERITE_HELMET), "Netherite Helmet", new ArmorTypeInfo(3, 408, ArmorInventory::SLOT_HEAD, 3, true, material: ArmorMaterials::NETHERITE()), [EnchantmentTags::HELMET]));
-		self::register("turtle_helmet", new TurtleHelmet(new IID(Ids::TURTLE_HELMET), "Turtle Shell", new ArmorTypeInfo(2, 276, ArmorInventory::SLOT_HEAD, material: ArmorMaterials::TURTLE()), [EnchantmentTags::HELMET]));
+		self::register("chainmail_helmet", new Armor(self::newIID(), "Chainmail Helmet", new ArmorTypeInfo(2, 166, ArmorInventory::SLOT_HEAD, material: ArmorMaterials::CHAINMAIL()), [EnchantmentTags::HELMET]));
+		self::register("diamond_helmet", new Armor(self::newIID(), "Diamond Helmet", new ArmorTypeInfo(3, 364, ArmorInventory::SLOT_HEAD, 2, material: ArmorMaterials::DIAMOND()), [EnchantmentTags::HELMET]));
+		self::register("golden_helmet", new Armor(self::newIID(), "Golden Helmet", new ArmorTypeInfo(2, 78, ArmorInventory::SLOT_HEAD, material: ArmorMaterials::GOLD()), [EnchantmentTags::HELMET]));
+		self::register("iron_helmet", new Armor(self::newIID(), "Iron Helmet", new ArmorTypeInfo(2, 166, ArmorInventory::SLOT_HEAD, material: ArmorMaterials::IRON()), [EnchantmentTags::HELMET]));
+		self::register("leather_cap", new Armor(self::newIID(), "Leather Cap", new ArmorTypeInfo(1, 56, ArmorInventory::SLOT_HEAD, material: ArmorMaterials::LEATHER()), [EnchantmentTags::HELMET]));
+		self::register("netherite_helmet", new Armor(self::newIID(), "Netherite Helmet", new ArmorTypeInfo(3, 408, ArmorInventory::SLOT_HEAD, 3, true, material: ArmorMaterials::NETHERITE()), [EnchantmentTags::HELMET]));
+		self::register("turtle_helmet", new TurtleHelmet(self::newIID(), "Turtle Shell", new ArmorTypeInfo(2, 276, ArmorInventory::SLOT_HEAD, material: ArmorMaterials::TURTLE()), [EnchantmentTags::HELMET]));
 
-		self::register("chainmail_leggings", new Armor(new IID(Ids::CHAINMAIL_LEGGINGS), "Chainmail Leggings", new ArmorTypeInfo(4, 226, ArmorInventory::SLOT_LEGS, material: ArmorMaterials::CHAINMAIL()), [EnchantmentTags::LEGGINGS]));
-		self::register("diamond_leggings", new Armor(new IID(Ids::DIAMOND_LEGGINGS), "Diamond Leggings", new ArmorTypeInfo(6, 496, ArmorInventory::SLOT_LEGS, 2, material: ArmorMaterials::DIAMOND()), [EnchantmentTags::LEGGINGS]));
-		self::register("golden_leggings", new Armor(new IID(Ids::GOLDEN_LEGGINGS), "Golden Leggings", new ArmorTypeInfo(3, 106, ArmorInventory::SLOT_LEGS, material: ArmorMaterials::GOLD()), [EnchantmentTags::LEGGINGS]));
-		self::register("iron_leggings", new Armor(new IID(Ids::IRON_LEGGINGS), "Iron Leggings", new ArmorTypeInfo(5, 226, ArmorInventory::SLOT_LEGS, material: ArmorMaterials::IRON()), [EnchantmentTags::LEGGINGS]));
-		self::register("leather_pants", new Armor(new IID(Ids::LEATHER_PANTS), "Leather Pants", new ArmorTypeInfo(2, 76, ArmorInventory::SLOT_LEGS, material: ArmorMaterials::LEATHER()), [EnchantmentTags::LEGGINGS]));
-		self::register("netherite_leggings", new Armor(new IID(Ids::NETHERITE_LEGGINGS), "Netherite Leggings", new ArmorTypeInfo(6, 556, ArmorInventory::SLOT_LEGS, 3, true, material: ArmorMaterials::NETHERITE()), [EnchantmentTags::LEGGINGS]));
+		self::register("chainmail_leggings", new Armor(self::newIID(), "Chainmail Leggings", new ArmorTypeInfo(4, 226, ArmorInventory::SLOT_LEGS, material: ArmorMaterials::CHAINMAIL()), [EnchantmentTags::LEGGINGS]));
+		self::register("diamond_leggings", new Armor(self::newIID(), "Diamond Leggings", new ArmorTypeInfo(6, 496, ArmorInventory::SLOT_LEGS, 2, material: ArmorMaterials::DIAMOND()), [EnchantmentTags::LEGGINGS]));
+		self::register("golden_leggings", new Armor(self::newIID(), "Golden Leggings", new ArmorTypeInfo(3, 106, ArmorInventory::SLOT_LEGS, material: ArmorMaterials::GOLD()), [EnchantmentTags::LEGGINGS]));
+		self::register("iron_leggings", new Armor(self::newIID(), "Iron Leggings", new ArmorTypeInfo(5, 226, ArmorInventory::SLOT_LEGS, material: ArmorMaterials::IRON()), [EnchantmentTags::LEGGINGS]));
+		self::register("leather_pants", new Armor(self::newIID(), "Leather Pants", new ArmorTypeInfo(2, 76, ArmorInventory::SLOT_LEGS, material: ArmorMaterials::LEATHER()), [EnchantmentTags::LEGGINGS]));
+		self::register("netherite_leggings", new Armor(self::newIID(), "Netherite Leggings", new ArmorTypeInfo(6, 556, ArmorInventory::SLOT_LEGS, 3, true, material: ArmorMaterials::NETHERITE()), [EnchantmentTags::LEGGINGS]));
 	}
 
 	private static function registerSmithingTemplates() : void{
-		self::register("netherite_upgrade_smithing_template", new Item(new IID(Ids::NETHERITE_UPGRADE_SMITHING_TEMPLATE), "Netherite Upgrade Smithing Template"));
-		self::register("coast_armor_trim_smithing_template", new Item(new IID(Ids::COAST_ARMOR_TRIM_SMITHING_TEMPLATE), "Coast Armor Trim Smithing Template"));
-		self::register("dune_armor_trim_smithing_template", new Item(new IID(Ids::DUNE_ARMOR_TRIM_SMITHING_TEMPLATE), "Dune Armor Trim Smithing Template"));
-		self::register("eye_armor_trim_smithing_template", new Item(new IID(Ids::EYE_ARMOR_TRIM_SMITHING_TEMPLATE), "Eye Armor Trim Smithing Template"));
-		self::register("host_armor_trim_smithing_template", new Item(new IID(Ids::HOST_ARMOR_TRIM_SMITHING_TEMPLATE), "Host Armor Trim Smithing Template"));
-		self::register("raiser_armor_trim_smithing_template", new Item(new IID(Ids::RAISER_ARMOR_TRIM_SMITHING_TEMPLATE), "Raiser Armor Trim Smithing Template"));
-		self::register("rib_armor_trim_smithing_template", new Item(new IID(Ids::RIB_ARMOR_TRIM_SMITHING_TEMPLATE), "Rib Armor Trim Smithing Template"));
-		self::register("sentry_armor_trim_smithing_template", new Item(new IID(Ids::SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE), "Sentry Armor Trim Smithing Template"));
-		self::register("shaper_armor_trim_smithing_template", new Item(new IID(Ids::SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE), "Shaper Armor Trim Smithing Template"));
-		self::register("silence_armor_trim_smithing_template", new Item(new IID(Ids::SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE), "Silence Armor Trim Smithing Template"));
-		self::register("snout_armor_trim_smithing_template", new Item(new IID(Ids::SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE), "Snout Armor Trim Smithing Template"));
-		self::register("spire_armor_trim_smithing_template", new Item(new IID(Ids::SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE), "Spire Armor Trim Smithing Template"));
-		self::register("tide_armor_trim_smithing_template", new Item(new IID(Ids::TIDE_ARMOR_TRIM_SMITHING_TEMPLATE), "Tide Armor Trim Smithing Template"));
-		self::register("vex_armor_trim_smithing_template", new Item(new IID(Ids::VEX_ARMOR_TRIM_SMITHING_TEMPLATE), "Vex Armor Trim Smithing Template"));
-		self::register("ward_armor_trim_smithing_template", new Item(new IID(Ids::WARD_ARMOR_TRIM_SMITHING_TEMPLATE), "Ward Armor Trim Smithing Template"));
-		self::register("wayfinder_armor_trim_smithing_template", new Item(new IID(Ids::WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE), "Wayfinder Armor Trim Smithing Template"));
-		self::register("wild_armor_trim_smithing_template", new Item(new IID(Ids::WILD_ARMOR_TRIM_SMITHING_TEMPLATE), "Wild Armor Trim Smithing Template"));
+		self::register("netherite_upgrade_smithing_template", new Item(self::newIID(), "Netherite Upgrade Smithing Template"));
+		self::register("coast_armor_trim_smithing_template", new Item(self::newIID(), "Coast Armor Trim Smithing Template"));
+		self::register("dune_armor_trim_smithing_template", new Item(self::newIID(), "Dune Armor Trim Smithing Template"));
+		self::register("eye_armor_trim_smithing_template", new Item(self::newIID(), "Eye Armor Trim Smithing Template"));
+		self::register("host_armor_trim_smithing_template", new Item(self::newIID(), "Host Armor Trim Smithing Template"));
+		self::register("raiser_armor_trim_smithing_template", new Item(self::newIID(), "Raiser Armor Trim Smithing Template"));
+		self::register("rib_armor_trim_smithing_template", new Item(self::newIID(), "Rib Armor Trim Smithing Template"));
+		self::register("sentry_armor_trim_smithing_template", new Item(self::newIID(), "Sentry Armor Trim Smithing Template"));
+		self::register("shaper_armor_trim_smithing_template", new Item(self::newIID(), "Shaper Armor Trim Smithing Template"));
+		self::register("silence_armor_trim_smithing_template", new Item(self::newIID(), "Silence Armor Trim Smithing Template"));
+		self::register("snout_armor_trim_smithing_template", new Item(self::newIID(), "Snout Armor Trim Smithing Template"));
+		self::register("spire_armor_trim_smithing_template", new Item(self::newIID(), "Spire Armor Trim Smithing Template"));
+		self::register("tide_armor_trim_smithing_template", new Item(self::newIID(), "Tide Armor Trim Smithing Template"));
+		self::register("vex_armor_trim_smithing_template", new Item(self::newIID(), "Vex Armor Trim Smithing Template"));
+		self::register("ward_armor_trim_smithing_template", new Item(self::newIID(), "Ward Armor Trim Smithing Template"));
+		self::register("wayfinder_armor_trim_smithing_template", new Item(self::newIID(), "Wayfinder Armor Trim Smithing Template"));
+		self::register("wild_armor_trim_smithing_template", new Item(self::newIID(), "Wild Armor Trim Smithing Template"));
 	}
 
 }
