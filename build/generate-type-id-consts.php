@@ -33,11 +33,13 @@ use pocketmine\block\VanillaBlocks;
 use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
 use pocketmine\item\VanillaItems;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use function array_filter;
 use function array_map;
 use function asort;
+use function assert;
 use function dirname;
 use function max;
 use function preg_last_error_msg;
@@ -55,27 +57,43 @@ require dirname(__DIR__) . '/vendor/autoload.php';
  */
 function patchTypeIds(string $file, array $stringToTypeIdMap, array $backwardsCompatibilityConstants) : void{
 	$replacement = "";
-	asort($stringToTypeIdMap, SORT_NUMERIC);
-	foreach(Utils::stringifyKeys($stringToTypeIdMap) as $typeName => $typeId){
-		//this shouldn't need any preprocessing - VanillaBlocks/VanillaItems should enforce that only valid type names are used
-		$replacement .= "\tpublic const $typeName = $typeId;\n";
-	}
+
 	$max = max($stringToTypeIdMap);
 	foreach($backwardsCompatibilityConstants as $name){
 		if(!isset($stringToTypeIdMap[$name])){
-			$replacement .= "\tpublic const $name = " . (++$max) . ";\n";
+			$stringToTypeIdMap[$name] = ++$max;
 		}
+	}
+
+	asort($stringToTypeIdMap, SORT_NUMERIC);
+	$previousTypeName = null;
+	foreach(Utils::stringifyKeys($stringToTypeIdMap) as $typeName => $typeId){
+		//this shouldn't need any preprocessing - VanillaBlocks/VanillaItems should enforce that only valid type names are used
+		if($previousTypeName !== null){
+			$diff = $typeId - $stringToTypeIdMap[$previousTypeName];
+			$value = "self::$previousTypeName + $diff";
+		}else{
+			$value = $typeId;
+		}
+		$replacement .= "\tpublic const $typeName = $value;\n";
+		$previousTypeName = $typeName;
 	}
 
 	$contents = Filesystem::fileGetContents($file);
 	$patched = preg_replace(
-		'/((?:[\h ]*public const (?!FIRST_UNUSED)[A-Z_\d]+ = \d+;\n+)+)/',
+		'/((?:[\h ]*public const (?!FIRST_UNUSED)[A-Z_\d]+ = (?:self::[A-Z_\d]+ \+ )?\d+;\n+)+)/',
 		$replacement . "\n",
 		$contents
 	) ?? throw new \RuntimeException("Failed to patch $file (PCRE error " . preg_last_error_msg() . ")");
+
+	if($previousTypeName !== null){
+		$firstUnusedValue = "self::$previousTypeName + 1";
+	}else{
+		throw new AssumptionFailedError("No type IDs given???");
+	}
 	$patched = preg_replace(
-		'/([\h ]*public const FIRST_UNUSED_[A-Z_\d]+_ID = )(\d+);/',
-		'${1}' . ($max + 1) . ';',
+		'/([\h ]*public const FIRST_UNUSED_[A-Z_\d]+_ID = )((?:self::[A-Z_\d]+ \+ )?\d+);/',
+		'${1}' . $firstUnusedValue . ';',
 		$patched
 	) ?? throw new \RuntimeException("Failed to patch $file (PCRE error " . preg_last_error_msg() . ")");
 
