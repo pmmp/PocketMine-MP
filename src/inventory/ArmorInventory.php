@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\block\BlockTypeIds;
-use pocketmine\block\MobHead;
 use pocketmine\entity\Living;
 use pocketmine\item\Armor;
 use pocketmine\item\Item;
@@ -45,7 +44,7 @@ class ArmorInventory extends SimpleInventory{
 			return ($item instanceof Armor && $item->getArmorSlot() === $slot) ||
 				($slot === ArmorInventory::SLOT_HEAD && $item instanceof ItemBlock && (
 						$item->getBlock()->getTypeId() === BlockTypeIds::CARVED_PUMPKIN ||
-						$item->getBlock() instanceof MobHead
+						$item->getBlock()->getTypeId() === BlockTypeIds::MOB_HEAD
 					));
 		});
 	}
