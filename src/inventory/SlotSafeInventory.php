@@ -23,13 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use Closure;
 use pocketmine\item\Item;
 use pocketmine\utils\ObjectSet;
 
 /**
  * A "slot safe inventory" has validators which may restrict items
  * from being placed in particular slots of the inventory.
+ *
+ * @phpstan-type SlotValidators ObjectSet<\Closure(Inventory $inventory, Item $item, int $slot): bool>
  */
 interface SlotSafeInventory{
 	/**
@@ -39,7 +40,7 @@ interface SlotSafeInventory{
 	 *
 	 * There is no guarantee that the validators will be called in any particular order.
 	 *
-	 * @phpstan-return ObjectSet<Closure(Inventory $inventory, Item $item, int $slot): bool>
+	 * @phpstan-return SlotValidators
 	 */
 	public function getSlotValidators() : ObjectSet;
 }
