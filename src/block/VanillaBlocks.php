@@ -63,6 +63,7 @@ use pocketmine\crafting\FurnaceType;
 use pocketmine\item\enchantment\ItemEnchantmentTags as EnchantmentTags;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\utils\CloningRegistryTrait;
 use function mb_strtolower;
@@ -1306,7 +1307,18 @@ final class VanillaBlocks{
 			self::register($idName("pressure_plate"), new WoodenPressurePlate(self::newBID(), $name . " Pressure Plate", $woodenPressurePlateBreakInfo, $woodType, 20));
 			self::register($idName("trapdoor"), new WoodenTrapdoor(self::newBID(), $name . " Trapdoor", $woodenDoorBreakInfo, $woodType));
 
-			$signAsItem = WoodLikeBlockIdHelper::getSignItem($woodType);
+			$signAsItem = match($treeType){
+				WoodType::OAK => VanillaItems::OAK_SIGN(...),
+				WoodType::SPRUCE => VanillaItems::SPRUCE_SIGN(...),
+				WoodType::BIRCH => VanillaItems::BIRCH_SIGN(...),
+				WoodType::JUNGLE => VanillaItems::JUNGLE_SIGN(...),
+				WoodType::ACACIA => VanillaItems::ACACIA_SIGN(...),
+				WoodType::DARK_OAK => VanillaItems::DARK_OAK_SIGN(...),
+				WoodType::MANGROVE => VanillaItems::MANGROVE_SIGN(...),
+				WoodType::CRIMSON => VanillaItems::CRIMSON_SIGN(...),
+				WoodType::WARPED => VanillaItems::WARPED_SIGN(...),
+				WoodType::CHERRY => VanillaItems::CHERRY_SIGN(...),
+			};
 			self::register($idName("sign"), new FloorSign(self::newBID(), $name . " Sign", $signBreakInfo, $woodType, $signAsItem));
 			self::register($idName("wall_sign"), new WallSign(self::newBID(), $name . " Wall Sign", $signBreakInfo, $woodType, $signAsItem));
 		}
