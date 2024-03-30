@@ -326,7 +326,7 @@ final class ItemTypeIds{
 
 	public const FIRST_RESERVED_ID = self::MANGROVE_BOAT + 1;
 
-	public const POWDER_SNOW_BUCKET = self::FIRST_RESERVED_ID;
+	public const POWDER_SNOW_BUCKET = self::FIRST_RESERVED_ID + 1;
 	public const LINGERING_POTION = self::POWDER_SNOW_BUCKET + 1;
 
 	public const FIRST_UNUSED_ITEM_ID = self::LINGERING_POTION + 1;

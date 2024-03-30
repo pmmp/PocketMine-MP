@@ -63,7 +63,7 @@ function patchTypeIds(string $file, array $stringToTypeIdMap, array $backwardsCo
 	$replacement = "";
 
 	$max = max($stringToTypeIdMap);
-	$stringToTypeIdMap["FIRST_RESERVED_ID"] = $max + 1;
+	$stringToTypeIdMap["FIRST_RESERVED_ID"] = ++$max;
 
 	foreach($backwardsCompatibilityConstants as $name){
 		if(!isset($stringToTypeIdMap[$name])){
