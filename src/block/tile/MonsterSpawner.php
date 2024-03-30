@@ -161,10 +161,10 @@ class MonsterSpawner extends Spawnable{
 			return true;
 		}
 		$count = 0;
+		$spawnRange = SpawnerSpawnRangeRegistry::getInstance()->getSpawnRange($this->entityTypeId) ?? AxisAlignedBB::one()->expand($this->spawnRange * 2 + 1, 8, $this->spawnRange * 2 + 1);
+		$spawnRange->offset($position->x, $position->y, $position->z);
 		foreach($world->getNearbyEntities(
-			AxisAlignedBB::one()
-				->offset($position->x, $position->y, $position->z)
-				->expand($this->spawnRange * 2 + 1, 8, $this->spawnRange * 2 + 1)
+			$spawnRange,
 		) as $entity){
 			if($entity::getNetworkTypeId() === $this->entityTypeId){
 				$count++;
