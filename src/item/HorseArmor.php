@@ -68,8 +68,10 @@ class HorseArmor extends Item{
 
 	protected function serializeCompoundTag(CompoundTag $tag) : void{
 		parent::serializeCompoundTag($tag);
-		$this->customColor !== null ?
-			$tag->setInt(self::TAG_CUSTOM_COLOR, Binary::signInt($this->customColor->toARGB())) :
+		if($this->customColor !== null){
+			$tag->setInt(self::TAG_CUSTOM_COLOR, Binary::signInt($this->customColor->toARGB()));
+		}else{
 			$tag->removeTag(self::TAG_CUSTOM_COLOR);
+		}
 	}
 }
