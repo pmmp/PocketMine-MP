@@ -132,11 +132,11 @@ final class WaterCauldron extends FillableCauldron{
 		}elseif($item instanceof Armor || $item instanceof HorseArmor){
 			if($this->customWaterColor !== null){
 				if(match($item->getTypeId()){ //TODO: a DyeableArmor class would probably be a better idea, since not all types of armor are dyeable
-					ItemTypeIds::LEATHER_HORSE_ARMOR,
 					ItemTypeIds::LEATHER_CAP,
 					ItemTypeIds::LEATHER_TUNIC,
 					ItemTypeIds::LEATHER_PANTS,
-					ItemTypeIds::LEATHER_BOOTS => true,
+					ItemTypeIds::LEATHER_BOOTS,
+					ItemTypeIds::LEATHER_HORSE_ARMOR => true,
 					default => false
 				} && $item->getCustomColor()?->toRGBA() !== $this->customWaterColor->toRGBA()){
 					$item->setCustomColor($this->customWaterColor);
