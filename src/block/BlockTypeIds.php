@@ -732,7 +732,10 @@ final class BlockTypeIds{
 	public const WATER_CAULDRON = self::CAULDRON + 1;
 	public const LAVA_CAULDRON = self::WATER_CAULDRON + 1;
 	public const POTION_CAULDRON = self::LAVA_CAULDRON + 1;
-	public const POWDER_SNOW_CAULDRON = self::POTION_CAULDRON + 1;
+
+	public const FIRST_RESERVED_ID = self::POTION_CAULDRON + 1;
+
+	public const POWDER_SNOW_CAULDRON = self::FIRST_RESERVED_ID;
 	public const CHERRY_SAPLING = self::POWDER_SNOW_CAULDRON + 1;
 
 	public const FIRST_UNUSED_BLOCK_ID = self::CHERRY_SAPLING + 1;

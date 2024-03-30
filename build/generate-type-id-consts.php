@@ -42,8 +42,13 @@ use function asort;
 use function dirname;
 use function max;
 use function preg_last_error_msg;
+use function preg_match;
 use function preg_replace;
 use const SORT_NUMERIC;
+
+//Do NOT remove this - it's used to disable consistency checks in VanillaBlocks/VanillaItems
+//Consistency checks get in the way of regenerating the constants
+const RUNNING = 1;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -58,6 +63,8 @@ function patchTypeIds(string $file, array $stringToTypeIdMap, array $backwardsCo
 	$replacement = "";
 
 	$max = max($stringToTypeIdMap);
+	$stringToTypeIdMap["FIRST_RESERVED_ID"] = $max + 1;
+
 	foreach($backwardsCompatibilityConstants as $name){
 		if(!isset($stringToTypeIdMap[$name])){
 			$stringToTypeIdMap[$name] = ++$max;
@@ -70,30 +77,36 @@ function patchTypeIds(string $file, array $stringToTypeIdMap, array $backwardsCo
 		//this shouldn't need any preprocessing - VanillaBlocks/VanillaItems should enforce that only valid type names are used
 		if($previousTypeName !== null){
 			$diff = $typeId - $stringToTypeIdMap[$previousTypeName];
-			$value = "self::$previousTypeName + $diff";
+			$value = "self::$previousTypeName" . ($diff !== 0 ? " + $diff" : "");
 		}else{
 			$value = $typeId;
 		}
+		if($typeName === "FIRST_RESERVED_ID"){
+			$replacement .= "\n";
+		}
 		$replacement .= "\tpublic const $typeName = $value;\n";
+		if($typeName === "FIRST_RESERVED_ID"){
+			$replacement .= "\n";
+		}
 		$previousTypeName = $typeName;
 	}
 
 	$contents = Filesystem::fileGetContents($file);
-	$patched = preg_replace(
-		'/((?:[\h ]*public const (?!FIRST_UNUSED)[A-Z_\d]+ = (?:self::[A-Z_\d]+ \+ )?\d+;\n+)+)/',
-		$replacement . "\n",
-		$contents
-	) ?? throw new \RuntimeException("Failed to patch $file (PCRE error " . preg_last_error_msg() . ")");
-
+	if(preg_match('/[\h ]*public const (FIRST_UNUSED_[A-Z_\d]+_ID) = (?:self::[A-Z_\d]+ \+ )?\d+;/', $contents, $matches) !== 1){
+		throw new AssumptionFailedError("Failed to find FIRST_UNUSED_*_ID constant in $file");
+	}
+	$firstUnusedName = $matches[1];
 	if($previousTypeName !== null){
 		$firstUnusedValue = "self::$previousTypeName + 1";
 	}else{
 		throw new AssumptionFailedError("No type IDs given???");
 	}
+	$replacement .= "\n\tpublic const $firstUnusedName = $firstUnusedValue;\n\n";
+
 	$patched = preg_replace(
-		'/([\h ]*public const FIRST_UNUSED_[A-Z_\d]+_ID = )((?:self::[A-Z_\d]+ \+ )?\d+);/',
-		'${1}' . $firstUnusedValue . ';',
-		$patched
+		'/((?:\h*public const [A-Z_\d]+ = (?:self::[A-Z_\d]+(?: \+ \d)?|\d+);\n+)+)/',
+		$replacement,
+		$contents
 	) ?? throw new \RuntimeException("Failed to patch $file (PCRE error " . preg_last_error_msg() . ")");
 
 	Filesystem::safeFilePutContents($file, $patched);

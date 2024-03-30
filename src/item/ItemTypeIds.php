@@ -323,7 +323,10 @@ final class ItemTypeIds{
 	public const ACACIA_BOAT = self::JUNGLE_BOAT + 1;
 	public const DARK_OAK_BOAT = self::ACACIA_BOAT + 1;
 	public const MANGROVE_BOAT = self::DARK_OAK_BOAT + 1;
-	public const POWDER_SNOW_BUCKET = self::MANGROVE_BOAT + 1;
+
+	public const FIRST_RESERVED_ID = self::MANGROVE_BOAT + 1;
+
+	public const POWDER_SNOW_BUCKET = self::FIRST_RESERVED_ID;
 	public const LINGERING_POTION = self::POWDER_SNOW_BUCKET + 1;
 
 	public const FIRST_UNUSED_ITEM_ID = self::LINGERING_POTION + 1;

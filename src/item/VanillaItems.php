@@ -35,8 +35,10 @@ use pocketmine\item\enchantment\ItemEnchantmentTags as EnchantmentTags;
 use pocketmine\item\ItemIdentifier as IID;
 use pocketmine\item\VanillaArmorMaterials as ArmorMaterials;
 use pocketmine\math\Vector3;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\CloningRegistryTrait;
 use pocketmine\world\World;
+use function defined;
 use function strtolower;
 
 /**
@@ -579,6 +581,12 @@ final class VanillaItems{
 		foreach(BoatType::cases() as $type){
 			//boat type is static, because different types of wood may have different properties
 			self::register(strtolower($type->name) . "_boat", new Boat(self::newIID(), $type->getDisplayName() . " Boat", $type));
+		}
+
+		//this hack ensures that contributors don't accidentally break the entire server by adding new things without
+		//regenerating type IDs. Unit tests will normally catch this, but contributors might not run them
+		if(!defined('pocketmine\build\generate_type_id_consts\RUNNING') && self::$nextTypeId !== ItemTypeIds::FIRST_RESERVED_ID){
+			throw new AssumptionFailedError("ItemTypeIds is not in sync with VanillaItems - regenerate it using build/generate-type-id-consts.php");
 		}
 	}
 

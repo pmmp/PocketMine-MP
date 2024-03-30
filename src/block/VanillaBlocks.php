@@ -65,7 +65,9 @@ use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\CloningRegistryTrait;
+use function defined;
 use function mb_strtolower;
 use function strtolower;
 
@@ -1278,6 +1280,12 @@ final class VanillaBlocks{
 		self::registerOres();
 		self::registerWoodenBlocks();
 		self::registerCauldronBlocks();
+
+		//this hack ensures that contributors don't accidentally break the entire server by adding new things without
+		//regenerating type IDs. Unit tests will normally catch this, but contributors might not run them
+		if(!defined('pocketmine\build\generate_type_id_consts\RUNNING') && self::$nextTypeId !== BlockTypeIds::FIRST_RESERVED_ID){
+			throw new AssumptionFailedError("BlockTypeIds is not in sync with VanillaBlocks - regenerate it using build/generate-type-id-consts.php");
+		}
 	}
 
 	private static function registerWoodenBlocks() : void{
