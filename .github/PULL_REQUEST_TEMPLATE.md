@@ -34,7 +34,10 @@ Requires translations:
 
 ## Tests
 <!--
-Details should be provided of tests done. Simply saying "tested" or equivalent is not acceptable.
-
-Attach scripts or actions to test this pull request, as well as the result
+PRs which have not been tested MUST be marked as draft.
 -->
+I tested this PR by doing the following (tick all that apply):
+- [ ] Writing PHPUnit tests (commit these in the `tests/phpunit` folder)
+- [ ] Playtesting using a Minecraft client (provide screenshots or a video)
+- [ ] Writing a test plugin (provide the code and sample output)
+- [ ] Other (provide details)

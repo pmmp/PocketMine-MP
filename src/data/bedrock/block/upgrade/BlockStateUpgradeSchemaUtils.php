@@ -389,6 +389,9 @@ final class BlockStateUpgradeSchemaUtils{
 		}
 
 		$jsonMapper = new \JsonMapper();
+		$jsonMapper->bExceptionOnMissingData = true;
+		$jsonMapper->bExceptionOnUndefinedProperty = true;
+		$jsonMapper->bStrictObjectTypeChecking = true;
 		try{
 			$model = $jsonMapper->map($json, new BlockStateUpgradeSchemaModel());
 		}catch(\JsonMapper_Exception $e){

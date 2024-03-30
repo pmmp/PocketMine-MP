@@ -38,6 +38,8 @@ final class ItemTypeNames{
 	public const ANGLER_POTTERY_SHERD = "minecraft:angler_pottery_sherd";
 	public const APPLE = "minecraft:apple";
 	public const ARCHER_POTTERY_SHERD = "minecraft:archer_pottery_sherd";
+	public const ARMADILLO_SCUTE = "minecraft:armadillo_scute";
+	public const ARMADILLO_SPAWN_EGG = "minecraft:armadillo_spawn_egg";
 	public const ARMOR_STAND = "minecraft:armor_stand";
 	public const ARMS_UP_POTTERY_SHERD = "minecraft:arms_up_pottery_sherd";
 	public const ARROW = "minecraft:arrow";
@@ -72,6 +74,7 @@ final class ItemTypeNames{
 	public const BLEACH = "minecraft:bleach";
 	public const BLUE_DYE = "minecraft:blue_dye";
 	public const BOAT = "minecraft:boat";
+	public const BOGGED_SPAWN_EGG = "minecraft:bogged_spawn_egg";
 	public const BONE = "minecraft:bone";
 	public const BONE_MEAL = "minecraft:bone_meal";
 	public const BOOK = "minecraft:book";
@@ -79,6 +82,7 @@ final class ItemTypeNames{
 	public const BOW = "minecraft:bow";
 	public const BOWL = "minecraft:bowl";
 	public const BREAD = "minecraft:bread";
+	public const BREEZE_SPAWN_EGG = "minecraft:breeze_spawn_egg";
 	public const BREWER_POTTERY_SHERD = "minecraft:brewer_pottery_sherd";
 	public const BREWING_STAND = "minecraft:brewing_stand";
 	public const BRICK = "minecraft:brick";
@@ -238,6 +242,8 @@ final class ItemTypeNames{
 	public const GREEN_DYE = "minecraft:green_dye";
 	public const GUARDIAN_SPAWN_EGG = "minecraft:guardian_spawn_egg";
 	public const GUNPOWDER = "minecraft:gunpowder";
+	public const HARD_STAINED_GLASS = "minecraft:hard_stained_glass";
+	public const HARD_STAINED_GLASS_PANE = "minecraft:hard_stained_glass_pane";
 	public const HEART_OF_THE_SEA = "minecraft:heart_of_the_sea";
 	public const HEART_POTTERY_SHERD = "minecraft:heart_pottery_sherd";
 	public const HEARTBREAK_POTTERY_SHERD = "minecraft:heartbreak_pottery_sherd";
@@ -281,6 +287,8 @@ final class ItemTypeNames{
 	public const LEATHER_HELMET = "minecraft:leather_helmet";
 	public const LEATHER_HORSE_ARMOR = "minecraft:leather_horse_armor";
 	public const LEATHER_LEGGINGS = "minecraft:leather_leggings";
+	public const LEAVES = "minecraft:leaves";
+	public const LEAVES2 = "minecraft:leaves2";
 	public const LIGHT_BLUE_DYE = "minecraft:light_blue_dye";
 	public const LIGHT_GRAY_DYE = "minecraft:light_gray_dye";
 	public const LIME_DYE = "minecraft:lime_dye";
@@ -404,7 +412,6 @@ final class ItemTypeNames{
 	public const SALMON = "minecraft:salmon";
 	public const SALMON_BUCKET = "minecraft:salmon_bucket";
 	public const SALMON_SPAWN_EGG = "minecraft:salmon_spawn_egg";
-	public const SCUTE = "minecraft:scute";
 	public const SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:sentry_armor_trim_smithing_template";
 	public const SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:shaper_armor_trim_smithing_template";
 	public const SHEAF_POTTERY_SHERD = "minecraft:sheaf_pottery_sherd";
@@ -466,11 +473,13 @@ final class ItemTypeNames{
 	public const TORCHFLOWER_SEEDS = "minecraft:torchflower_seeds";
 	public const TOTEM_OF_UNDYING = "minecraft:totem_of_undying";
 	public const TRADER_LLAMA_SPAWN_EGG = "minecraft:trader_llama_spawn_egg";
+	public const TRIAL_KEY = "minecraft:trial_key";
 	public const TRIDENT = "minecraft:trident";
 	public const TROPICAL_FISH = "minecraft:tropical_fish";
 	public const TROPICAL_FISH_BUCKET = "minecraft:tropical_fish_bucket";
 	public const TROPICAL_FISH_SPAWN_EGG = "minecraft:tropical_fish_spawn_egg";
 	public const TURTLE_HELMET = "minecraft:turtle_helmet";
+	public const TURTLE_SCUTE = "minecraft:turtle_scute";
 	public const TURTLE_SPAWN_EGG = "minecraft:turtle_spawn_egg";
 	public const VEX_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:vex_armor_trim_smithing_template";
 	public const VEX_SPAWN_EGG = "minecraft:vex_spawn_egg";
@@ -494,15 +503,19 @@ final class ItemTypeNames{
 	public const WHEAT_SEEDS = "minecraft:wheat_seeds";
 	public const WHITE_DYE = "minecraft:white_dye";
 	public const WILD_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:wild_armor_trim_smithing_template";
+	public const WIND_CHARGE = "minecraft:wind_charge";
 	public const WITCH_SPAWN_EGG = "minecraft:witch_spawn_egg";
 	public const WITHER_SKELETON_SPAWN_EGG = "minecraft:wither_skeleton_spawn_egg";
 	public const WITHER_SPAWN_EGG = "minecraft:wither_spawn_egg";
+	public const WOLF_ARMOR = "minecraft:wolf_armor";
 	public const WOLF_SPAWN_EGG = "minecraft:wolf_spawn_egg";
+	public const WOOD = "minecraft:wood";
 	public const WOODEN_AXE = "minecraft:wooden_axe";
 	public const WOODEN_DOOR = "minecraft:wooden_door";
 	public const WOODEN_HOE = "minecraft:wooden_hoe";
 	public const WOODEN_PICKAXE = "minecraft:wooden_pickaxe";
 	public const WOODEN_SHOVEL = "minecraft:wooden_shovel";
+	public const WOODEN_SLAB = "minecraft:wooden_slab";
 	public const WOODEN_SWORD = "minecraft:wooden_sword";
 	public const WOOL = "minecraft:wool";
 	public const WRITABLE_BOOK = "minecraft:writable_book";

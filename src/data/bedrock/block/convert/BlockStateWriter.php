@@ -25,10 +25,8 @@ namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\CoralType;
-use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\WallConnectionType;
-use pocketmine\block\utils\WoodType;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateNames;
@@ -194,29 +192,6 @@ final class BlockStateWriter{
 	}
 
 	/** @return $this */
-	public function writeColor(DyeColor $color) : self{
-		$this->writeString(BlockStateNames::COLOR, match($color){
-			DyeColor::BLACK => StringValues::COLOR_BLACK,
-			DyeColor::BLUE => StringValues::COLOR_BLUE,
-			DyeColor::BROWN => StringValues::COLOR_BROWN,
-			DyeColor::CYAN => StringValues::COLOR_CYAN,
-			DyeColor::GRAY => StringValues::COLOR_GRAY,
-			DyeColor::GREEN => StringValues::COLOR_GREEN,
-			DyeColor::LIGHT_BLUE => StringValues::COLOR_LIGHT_BLUE,
-			DyeColor::LIGHT_GRAY => StringValues::COLOR_SILVER,
-			DyeColor::LIME => StringValues::COLOR_LIME,
-			DyeColor::MAGENTA => StringValues::COLOR_MAGENTA,
-			DyeColor::ORANGE => StringValues::COLOR_ORANGE,
-			DyeColor::PINK => StringValues::COLOR_PINK,
-			DyeColor::PURPLE => StringValues::COLOR_PURPLE,
-			DyeColor::RED => StringValues::COLOR_RED,
-			DyeColor::WHITE => StringValues::COLOR_WHITE,
-			DyeColor::YELLOW => StringValues::COLOR_YELLOW,
-		});
-		return $this;
-	}
-
-	/** @return $this */
 	public function writeCoralFacing(int $value) : self{
 		$this->writeInt(BlockStateNames::CORAL_DIRECTION, match($value){
 			Facing::WEST => 0,
@@ -277,20 +252,6 @@ final class BlockStateWriter{
 			Facing::EAST => StringValues::TORCH_FACING_DIRECTION_WEST,
 			Facing::WEST => StringValues::TORCH_FACING_DIRECTION_EAST,
 			default => throw new BlockStateSerializeException("Invalid Torch facing $facing")
-		});
-		return $this;
-	}
-
-	/** @return $this */
-	public function writeLegacyWoodType(WoodType $treeType) : self{
-		$this->writeString(BlockStateNames::WOOD_TYPE, match($treeType){
-			WoodType::OAK => StringValues::WOOD_TYPE_OAK,
-			WoodType::SPRUCE => StringValues::WOOD_TYPE_SPRUCE,
-			WoodType::BIRCH => StringValues::WOOD_TYPE_BIRCH,
-			WoodType::JUNGLE => StringValues::WOOD_TYPE_JUNGLE,
-			WoodType::ACACIA => StringValues::WOOD_TYPE_ACACIA,
-			WoodType::DARK_OAK => StringValues::WOOD_TYPE_DARK_OAK,
-			default => throw new BlockStateSerializeException("Invalid legacy wood type " . $treeType->name)
 		});
 		return $this;
 	}

@@ -23,26 +23,20 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\LightableTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 
 class RedstoneTorch extends Torch{
-	protected bool $lit = true;
+	use LightableTrait;
+
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
+		$this->lit = true;
+		parent::__construct($idInfo, $name, $typeInfo);
+	}
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		parent::describeBlockOnlyState($w);
 		$w->bool($this->lit);
-	}
-
-	public function isLit() : bool{
-		return $this->lit;
-	}
-
-	/**
-	 * @return $this
-	 */
-	public function setLit(bool $lit = true) : self{
-		$this->lit = $lit;
-		return $this;
 	}
 
 	public function getLightLevel() : int{

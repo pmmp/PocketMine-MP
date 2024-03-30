@@ -44,10 +44,14 @@ final class GameModeIdMap{
 	private array $enumToId = [];
 
 	public function __construct(){
-		$this->register(0, GameMode::SURVIVAL);
-		$this->register(1, GameMode::CREATIVE);
-		$this->register(2, GameMode::ADVENTURE);
-		$this->register(3, GameMode::SPECTATOR);
+		foreach(GameMode::cases() as $case){
+			$this->register(match($case){
+				GameMode::SURVIVAL => 0,
+				GameMode::CREATIVE => 1,
+				GameMode::ADVENTURE => 2,
+				GameMode::SPECTATOR => 3,
+			}, $case);
+		}
 	}
 
 	private function register(int $id, GameMode $type) : void{

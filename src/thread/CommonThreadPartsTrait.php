@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\thread;
 
+use pmmp\thread\Thread as NativeThread;
 use pmmp\thread\ThreadSafeArray;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\Server;
@@ -77,9 +78,7 @@ trait CommonThreadPartsTrait{
 	/**
 	 * Registers the class loaders for this thread.
 	 *
-	 * WARNING: This method MUST be called from any descendent threads' run() method to make autoloading usable.
-	 * If you do not do this, you will not be able to use new classes that were not loaded when the thread was started
-	 * (unless you are using a custom autoloader).
+	 * @internal
 	 */
 	public function registerClassLoaders() : void{
 		if($this->composerAutoloaderPath !== null){
@@ -96,6 +95,15 @@ trait CommonThreadPartsTrait{
 
 	public function getCrashInfo() : ?ThreadCrashInfo{ return $this->crashInfo; }
 
+	public function start(int $options = NativeThread::INHERIT_NONE) : bool{
+		ThreadManager::getInstance()->add($this);
+
+		if($this->getClassLoaders() === null){
+			$this->setClassLoaders();
+		}
+		return parent::start($options);
+	}
+
 	final public function run() : void{
 		error_reporting(-1);
 		$this->registerClassLoaders();
@@ -108,6 +116,20 @@ trait CommonThreadPartsTrait{
 
 		$this->onRun();
 		$this->isKilled = true;
+	}
+
+	/**
+	 * Stops the thread using the best way possible. Try to stop it yourself before calling this.
+	 */
+	public function quit() : void{
+		$this->isKilled = true;
+
+		if(!$this->isJoined()){
+			$this->notify();
+			$this->join();
+		}
+
+		ThreadManager::getInstance()->remove($this);
 	}
 
 	/**

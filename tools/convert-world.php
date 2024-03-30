@@ -21,10 +21,29 @@
 
 declare(strict_types=1);
 
+namespace pocketmine\tools\convert_world;
+
 use pocketmine\world\format\io\FormatConverter;
 use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WorldProviderManagerEntry;
 use pocketmine\world\format\io\WritableWorldProviderManagerEntry;
+use function array_filter;
+use function array_key_exists;
+use function array_keys;
+use function array_map;
+use function array_shift;
+use function count;
+use function dirname;
+use function fwrite;
+use function getopt;
+use function implode;
+use function is_dir;
+use function is_string;
+use function is_writable;
+use function mkdir;
+use function realpath;
+use const PHP_EOL;
+use const STDERR;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -76,5 +95,5 @@ if(count($oldProviderClasses) > 1){
 $oldProviderClass = array_shift($oldProviderClasses);
 $oldProvider = $oldProviderClass->fromPath($inputPath, new \PrefixedLogger(\GlobalLogger::get(), "Old World Provider"));
 
-$converter = new FormatConverter($oldProvider, $writableFormats[$args["format"]], $backupPath, GlobalLogger::get());
+$converter = new FormatConverter($oldProvider, $writableFormats[$args["format"]], $backupPath, \GlobalLogger::get());
 $converter->execute();

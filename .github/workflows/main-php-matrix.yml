@@ -30,14 +30,14 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@2.0.0
+        uses: pmmp/setup-php-action@3.1.0
         with:
           php-version: ${{ inputs.php }}
           install-path: "./bin"
           pm-version-major: ${{ inputs.pm-version-major }}
 
       - name: Restore Composer package cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/composer/files
@@ -62,14 +62,14 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@2.0.0
+        uses: pmmp/setup-php-action@3.1.0
         with:
           php-version: ${{ inputs.php }}
           install-path: "./bin"
           pm-version-major: ${{ inputs.pm-version-major }}
 
       - name: Restore Composer package cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/composer/files
@@ -96,14 +96,14 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@2.0.0
+        uses: pmmp/setup-php-action@3.1.0
         with:
           php-version: ${{ inputs.php }}
           install-path: "./bin"
           pm-version-major: ${{ inputs.pm-version-major }}
 
       - name: Restore Composer package cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/composer/files
@@ -128,14 +128,14 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@2.0.0
+        uses: pmmp/setup-php-action@3.1.0
         with:
           php-version: ${{ inputs.php }}
           install-path: "./bin"
           pm-version-major: ${{ inputs.pm-version-major }}
 
       - name: Restore Composer package cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/composer/files
