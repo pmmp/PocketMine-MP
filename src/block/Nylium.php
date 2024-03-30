@@ -29,8 +29,8 @@ use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\utils\Random;
 use function count;
+use function mt_rand;
 
 class Nylium extends Opaque{
 
@@ -102,10 +102,11 @@ class Nylium extends Opaque{
 
 		$arrC = count($arr) - 1;
 		for($c = 0; $c < $count; ++$c){
-			$x = mt_rand($this->position->x - $radius, $this->position->x + $radius);
-			$z = mt_rand($this->position->z - $radius, $this->position->z + $radius);
-			if($world->getBlockAt($x, $this->position->y + 1, $z)->getTypeId() === BlockTypeIds::AIR && $world->getBlockAt($x, $this->position->y, $z) instanceof Nylium){
-				$world->setBlockAt($x, $this->position->y + 1, $z, $arr[mt_rand(0, $arrC)]);
+			$x = mt_rand($this->position->getFloorX() - $radius, $this->position->getFloorX() + $radius);
+			$z = mt_rand($this->position->getFloorZ() - $radius, $this->position->getFloorZ() + $radius);
+			$y = $this->position->y;
+			if($world->getBlockAt($x, $y + 1, $z)->getTypeId() === BlockTypeIds::AIR && $world->getBlockAt($x, $y, $z) instanceof Nylium){
+				$world->setBlockAt($x, $y + 1, $z, $arr[mt_rand(0, $arrC)]);
 			}
 		}
 	}
